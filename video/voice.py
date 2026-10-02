@@ -50,8 +50,8 @@ speech = sum(s["audio_sec"] for s in segs)
 print(f"speech total {speech:.1f}s (+ pauses = video length)")
 json.dump(segs, open(HERE / "narration.json", "w"), indent=1, ensure_ascii=False)
 
-# total video length follows the voice: speech + 2.2 s pause per segment, outro holds 3 s extra
-total = round(speech + 2.2 * len(segs) + 3, 1)
+# total video length follows the voice: speech + 1.8 s pause per segment (PAUSE in build.py), outro holds 3 s extra
+total = round(speech + 1.8 * len(segs) + 3, 1)
 b = (HERE / "build.py").read_text()
 b = re.sub(r"TOTAL = [\d.]+", f"TOTAL = {total}", b)
 (HERE / "build.py").write_text(b)

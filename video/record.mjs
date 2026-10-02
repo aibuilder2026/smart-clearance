@@ -5,7 +5,7 @@ import { mkdirSync, writeFileSync, renameSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const HTML = 'file://' + resolve('walkthrough.html') + '?autoplay=1';
-const TOTAL = 180;
+const TOTAL = 188;
 mkdirSync('out', { recursive: true });
 
 const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
