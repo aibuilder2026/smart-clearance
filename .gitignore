@@ -1,0 +1,7 @@
+node_modules/
+.venv/
+video/out/
+video/my-voice/
+*.mp4
+.DS_Store
+.impeccable/

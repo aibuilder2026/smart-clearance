@@ -1,0 +1,635 @@
+<title>Smart-Clearance Tech Stack</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: a colour-banded stack. Each architectural layer owns one hue, used on its band in the
+     big diagram, its card border, and its chips, so the reader can follow a colour through the page. */
+  :root {
+    --bg: #f4f6f3; --surface: #ffffff; --surface-2: #eaefea; --ink: #15201b; --ink-2: #46524c; --ink-3: #6d7a73; --line: #d3dcd6;
+    --accent: #176b4e; --accent-soft: #dcefe5;
+    --l-device: #0c5f78; --l-device-soft: #d6f0f5;
+    --l-web: #9a3412; --l-web-soft: #fde3d4;
+    --l-agent: #176b4e; --l-agent-soft: #dcefe5;
+    --l-ai: #5b21b6; --l-ai-soft: #e9e2f7;
+    --l-data: #92400e; --l-data-soft: #fbefcf;
+    --l-platform: #2b3a4d; --l-platform-soft: #e2e8f0;
+    --l-quality: #9d174d; --l-quality-soft: #fce7f3;
+    --warn: #b4232c; --warn-soft: #fbe3e4;
+    --display: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif;
+    --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1512; --surface: #171f1a; --surface-2: #1f2923; --ink: #edf2ee; --ink-2: #b4bfb8; --ink-3: #8a968f; --line: #2b3630;
+      --accent: #4fc08e; --accent-soft: #163427;
+      --l-device: #67d3e6; --l-device-soft: #0b3540; --l-web: #ff9a66; --l-web-soft: #3d1a0b; --l-agent: #4fc08e; --l-agent-soft: #163427;
+      --l-ai: #c4a7f5; --l-ai-soft: #2a1f47; --l-data: #e3b74d; --l-data-soft: #3a2d0c; --l-platform: #b7c4d6; --l-platform-soft: #1f2a38;
+      --l-quality: #f68fbf; --l-quality-soft: #3d1428; --warn: #ff8088; --warn-soft: #3d1a1d; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1512; --surface: #171f1a; --surface-2: #1f2923; --ink: #edf2ee; --ink-2: #b4bfb8; --ink-3: #8a968f; --line: #2b3630;
+    --accent: #4fc08e; --accent-soft: #163427;
+    --l-device: #67d3e6; --l-device-soft: #0b3540; --l-web: #ff9a66; --l-web-soft: #3d1a0b; --l-agent: #4fc08e; --l-agent-soft: #163427;
+    --l-ai: #c4a7f5; --l-ai-soft: #2a1f47; --l-data: #e3b74d; --l-data-soft: #3a2d0c; --l-platform: #b7c4d6; --l-platform-soft: #1f2a38;
+    --l-quality: #f68fbf; --l-quality-soft: #3d1428; --warn: #ff8088; --warn-soft: #3d1a1d; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.55; margin: 0; }
+  a { color: var(--accent); }
+  .wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 80px; display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 36px; }
+  @media (max-width: 860px) { .wrap { grid-template-columns: minmax(0, 1fr); gap: 0; padding-inline: 16px; } .rail { display: none; } }
+  .rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 20px); align-self: start; font-size: 13px; }
+  .rail .brand { font-family: var(--display); font-weight: 800; font-size: 19px; letter-spacing: -0.02em; }
+  .rail ol { list-style: none; margin: 16px 0 0; padding: 0; border-left: 2px solid var(--line); }
+  .rail li a { display: block; padding: 5px 12px; color: var(--ink-2); text-decoration: none; border-left: 2px solid transparent; margin-left: -2px; }
+  .rail li a:hover, .rail li a:focus-visible { color: var(--ink); border-left-color: var(--accent); outline: none; }
+  main { min-width: 0; }
+  .kicker { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); }
+  h1 { font-family: var(--display); font-weight: 800; font-size: clamp(34px, 5.5vw, 56px); line-height: 1.1; letter-spacing: -0.03em; margin: 10px 0 8px; text-wrap: balance; }
+  .lede { font-size: 17px; color: var(--ink-2); max-width: 64ch; margin: 0; text-wrap: pretty; }
+  h2 { font-family: var(--display); font-weight: 700; font-size: 27px; letter-spacing: -0.02em; margin: 0 0 6px; text-wrap: balance; }
+  h3 { font-family: var(--display); font-weight: 700; font-size: 17px; letter-spacing: -0.01em; margin: 0 0 6px; }
+  section { padding-top: 54px; }
+  section > p.intro { color: var(--ink-2); max-width: 68ch; margin: 0 0 18px; font-size: 15.5px; }
+  p { max-width: 72ch; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .chip { font-family: var(--mono); font-size: 12px; padding: 5px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink-2); }
+  .chip.c-device { border-color: var(--l-device); color: var(--l-device); background: var(--l-device-soft); }
+  .chip.c-web { border-color: var(--l-web); color: var(--l-web); background: var(--l-web-soft); }
+  .chip.c-agent { border-color: var(--l-agent); color: var(--l-agent); background: var(--l-agent-soft); }
+  .chip.c-ai { border-color: var(--l-ai); color: var(--l-ai); background: var(--l-ai-soft); }
+  .chip.c-data { border-color: var(--l-data); color: var(--l-data); background: var(--l-data-soft); }
+  .chip.c-platform { border-color: var(--l-platform); color: var(--l-platform); background: var(--l-platform-soft); }
+  .chip.c-quality { border-color: var(--l-quality); color: var(--l-quality); background: var(--l-quality-soft); }
+  .chip.warn { border-color: var(--warn); color: var(--warn); background: var(--warn-soft); }
+  .changed { display: inline-block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; background: var(--warn-soft); color: var(--warn); padding: 5px 10px; border-radius: 4px; vertical-align: middle; margin-left: 8px; }
+
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 22px; }
+  .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .tile .k { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2); }
+  .tile .v { font-family: var(--display); font-size: 28px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; margin-top: 4px; }
+  .tile small { display: block; font-size: 12px; color: var(--ink-2); margin-top: 3px; }
+
+  .stack { display: grid; gap: 8px; margin-top: 16px; }
+  .band { display: grid; grid-template-columns: 150px minmax(0, 1fr); border-radius: 10px; overflow: hidden; border: 1px solid var(--line); background: var(--surface); }
+  @media (max-width: 640px) { .band { grid-template-columns: minmax(0, 1fr); } }
+  .band .lab { padding: 14px 16px; color: #fff; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+  .band .lab b { font-family: var(--display); font-size: 15px; letter-spacing: -0.01em; }
+  .band .lab span { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .band .boxes { padding: 12px 14px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .bx { border: 1px solid var(--line); border-radius: 7px; padding: 9px 12px; font-size: 13px; background: var(--surface); min-width: 0; }
+  .bx b { display: block; font-family: var(--display); font-size: 13.5px; }
+  .bx span { display: block; font-size: 11.5px; color: var(--ink); font-family: var(--mono); }
+  .bx.mock { border-style: dashed; }
+  .b-device .lab { background: var(--l-device); } .b-device .bx { border-color: var(--l-device); background: var(--l-device-soft); }
+  .b-web .lab { background: var(--l-web); } .b-web .bx { border-color: var(--l-web); background: var(--l-web-soft); }
+  .b-agent .lab { background: var(--l-agent); } .b-agent .bx { border-color: var(--l-agent); background: var(--l-agent-soft); }
+  .b-ai .lab { background: var(--l-ai); } .b-ai .bx { border-color: var(--l-ai); background: var(--l-ai-soft); }
+  .b-data .lab { background: var(--l-data); } .b-data .bx { border-color: var(--l-data); background: var(--l-data-soft); }
+  .b-platform .lab { background: var(--l-platform); } .b-platform .bx { border-color: var(--l-platform); background: var(--l-platform-soft); }
+  .b-quality .lab { background: var(--l-quality); } .b-quality .bx { border-color: var(--l-quality); background: var(--l-quality-soft); }
+  .flowarrow { text-align: center; color: var(--ink-3); font-size: 18px; line-height: 1; margin: -2px 0; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12.5px; color: var(--ink-2); margin-top: 10px; }
+  .legend i { display: inline-block; width: 26px; height: 0; border-top: 1px dashed var(--ink-3); vertical-align: middle; margin-right: 6px; }
+
+  .layer { background: var(--surface); border: 1px solid var(--line); border-radius: 0; padding: 20px 22px; margin-top: 14px; border-top-width: 3px; }
+  .layer.l-web { border-top-color: var(--l-web); } .layer.l-agent { border-top-color: var(--l-agent); } .layer.l-ai { border-top-color: var(--l-ai); }
+  .layer.l-data { border-top-color: var(--l-data); } .layer.l-platform { border-top-color: var(--l-platform); } .layer.l-quality { border-top-color: var(--l-quality); } .layer.l-device { border-top-color: var(--l-device); }
+  .layer h3 { font-size: 20px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .layer .why { color: var(--ink-2); font-size: 14px; margin: 0 0 12px; max-width: 76ch; }
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+  table.grid { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 680px; }
+  table.grid th, table.grid td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.grid th { background: var(--surface-2); font-family: var(--display); font-weight: 700; font-size: 13px; }
+  table.grid tr:last-child td { border-bottom: none; }
+  table.grid td.mono, table.grid th.mono { font-family: var(--mono); font-size: 12.5px; white-space: nowrap; }
+  .tag { font-family: var(--mono); font-size: 11.5px; padding: 4px 9px; border-radius: 4px; background: var(--surface-2); color: var(--ink-2); white-space: nowrap; }
+  .tag.oss { background: var(--accent-soft); color: var(--accent); }
+  .tag.gcp { background: var(--l-platform-soft); color: var(--l-platform); }
+  .tag.mock { background: var(--l-ai-soft); color: var(--l-ai); }
+  .tag.warn { background: var(--warn-soft); color: var(--warn); }
+
+  .seq { display: grid; gap: 8px; margin-top: 14px; }
+  .st { display: grid; grid-template-columns: 34px 170px minmax(0, 1fr); gap: 12px; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: 9px; padding: 12px 14px; }
+  @media (max-width: 640px) { .st { grid-template-columns: 34px minmax(0, 1fr); } .st .who { grid-column: 2; } }
+  .st .n { font-family: var(--display); font-weight: 800; font-size: 20px; color: var(--accent); line-height: 1; }
+  .st .who { font-family: var(--mono); font-size: 12px; padding: 4px 10px; border-radius: 5px; display: inline-block; justify-self: start; }
+  .st .who.w-web { background: var(--l-web-soft); color: var(--l-web); } .st .who.w-agent { background: var(--l-agent-soft); color: var(--l-agent); }
+  .st .who.w-ai { background: var(--l-ai-soft); color: var(--l-ai); } .st .who.w-data { background: var(--l-data-soft); color: var(--l-data); }
+  .st .who.w-device { background: var(--l-device-soft); color: var(--l-device); } .st .who.w-platform { background: var(--l-platform-soft); color: var(--l-platform); }
+  .st .d { font-size: 13.5px; }
+  .st .d code { font-family: var(--mono); font-size: 12px; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; }
+
+  pre { background: #121a16; color: #e6efe9; border-radius: 10px; padding: 14px 16px; overflow-x: auto; font-family: var(--mono); font-size: 12.5px; line-height: 1.5; margin: 12px 0 0; }
+  pre .c { color: #a9c9b7; }
+
+  .pipe { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; margin-top: 14px; }
+  .pstep { flex: 1 1 150px; min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 9px; padding: 12px 14px; }
+  .pstep b { display: block; font-family: var(--display); font-size: 14px; }
+  .pstep span { display: block; font-size: 12px; color: var(--ink-2); margin-top: 3px; }
+  .pstep.q { border-color: var(--l-quality); background: var(--l-quality-soft); } .pstep.p { border-color: var(--l-platform); background: var(--l-platform-soft); } .pstep.g { border-color: var(--l-agent); background: var(--l-agent-soft); }
+  .parrow { align-self: center; color: var(--ink-3); flex: 0 0 auto; }
+
+  .tl { display: grid; gap: 8px; margin-top: 14px; }
+  .day { display: grid; grid-template-columns: 110px minmax(0, 1fr) 190px; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 9px; padding: 12px 14px; align-items: start; }
+  @media (max-width: 700px) { .day { grid-template-columns: 90px minmax(0, 1fr); } .day .ms { grid-column: 2; } }
+  .day .dt { font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
+  .day .dt b { display: block; font-family: var(--display); font-size: 15px; color: var(--ink); }
+  .day .wk { font-size: 13.5px; }
+  .day .ms { font-size: 12px; font-family: var(--mono); color: var(--accent); background: var(--accent-soft); padding: 5px 10px; border-radius: 5px; justify-self: start; }
+  .day.buffer { border-style: dashed; }
+  .day.demo .ms { background: var(--l-web-soft); color: var(--l-web); }
+
+  ul.check { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 6px; max-width: 76ch; }
+  ul.check li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; font-size: 14px; }
+  ul.check li::before { content: "✓"; color: var(--accent); font-weight: 700; }
+  .note { font-size: 13.5px; color: var(--ink-2); border-left: 3px solid var(--line); padding: 6px 12px; margin: 14px 0 0; max-width: 76ch; }
+  .note b { color: var(--ink); }
+  .push { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-top: 14px; }
+  .pc { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .pc .to { font-family: var(--mono); font-size: 11.5px; color: var(--l-device); background: var(--l-device-soft); display: inline-block; padding: 4px 9px; border-radius: 4px; }
+  .pc .msg { margin-top: 10px; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; background: var(--surface-2); font-size: 13px; }
+  .pc .msg b { display: block; font-family: var(--display); font-size: 13.5px; }
+  .pc .msg small { display: block; font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); margin-top: 4px; }
+  .pc .act { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .pc .act span { font-size: 12px; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; padding: 6px 12px; }
+  .pc .then { font-size: 12.5px; color: var(--ink-2); margin-top: 8px; }
+  .sources { columns: 2; column-gap: 28px; font-size: 13px; margin-top: 12px; }
+  @media (max-width: 700px) { .sources { columns: 1; } }
+  .sources div { break-inside: avoid; margin-bottom: 6px; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+  <nav class="rail" aria-label="Sections">
+    <div class="brand">Smart-Clearance</div>
+    <div class="kicker">Tech stack · v2</div>
+    <ol>
+      <li><a href="#glance">At a glance</a></li>
+      <li><a href="#changes">What changed in v2</a></li>
+      <li><a href="#layers">Layer by layer</a></li>
+      <li><a href="#push">Push notifications</a></li>
+      <li><a href="#auth">Authentication</a></li>
+      <li><a href="#cdn">CDN</a></li>
+      <li><a href="#ai">AI and agents</a></li>
+      <li><a href="#flow">One request, end to end</a></li>
+      <li><a href="#local">Local dev with Claude Code</a></li>
+      <li><a href="#repo">Repository</a></li>
+      <li><a href="#cicd">CI/CD and testing</a></li>
+      <li><a href="#pwa">PWA</a></li>
+      <li><a href="#plan">15-day plan</a></li>
+      <li><a href="#cost">Cost</a></li>
+      <li><a href="#risks">Risks and fallbacks</a></li>
+      <li><a href="#done">Definition of done</a></li>
+      <li><a href="#sources">Sources</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header>
+      <div class="kicker">Google AI Hackathon · deadline 17 Oct 2026 · v2, 2 Oct 2026</div>
+      <h1>How we build Smart-Clearance in 15 days</h1>
+      <p class="lede">A working prototype, not a slide deck: a SvelteKit progressive web app served from Firebase Hosting's CDN, signed in with Firebase Authentication, nudged by in-app push through Firebase Cloud Messaging, with a Python agent service on Cloud Run built on Google's Agent Development Kit, Gemini on Vertex AI doing the reading, pricing and talking, PostgreSQL and BigQuery underneath, and Playwright with Argos guarding every screen.</p>
+      <div class="chips">
+        <span class="chip c-device">PWA · installs on Android, iOS, desktop</span>
+        <span class="chip c-device">In-app push · Firebase Cloud Messaging</span>
+        <span class="chip c-web">SvelteKit 3 RC · Svelte 5 · static build</span>
+        <span class="chip c-platform">Firebase Hosting CDN · Firebase Auth</span>
+        <span class="chip c-agent">Google ADK · FastAPI · Cloud Run</span>
+        <span class="chip c-ai">Gemini 3.1 Pro · Gemini 3 Flash · Vertex AI</span>
+        <span class="chip c-data">Cloud SQL Postgres · BigQuery · Pub/Sub</span>
+        <span class="chip c-quality">Playwright · Argos · Vitest</span>
+      </div>
+      <div class="tiles">
+        <div class="tile"><div class="k">Days left</div><div class="v">15</div><small>2 Oct to 17 Oct</small></div>
+        <div class="tile"><div class="k">Cloud Run services</div><div class="v">1</div><small>agents API; the web app is static on the CDN</small></div>
+        <div class="tile"><div class="k">Agents</div><div class="v">10</div><small>one orchestrator, nine specialists</small></div>
+        <div class="tile"><div class="k">Real Gemini calls</div><div class="v">5</div><small>vision, pricing notes, routing text, copy, chat</small></div>
+        <div class="tile"><div class="k">Push moments</div><div class="v">6</div><small>photo, approve, offer, bid, papers, report</small></div>
+        <div class="tile"><div class="k">Estimated cloud spend</div><div class="v">&lt; $50</div><small>for the whole build</small></div>
+      </div>
+    </header>
+
+    <section id="glance">
+      <h2>The stack at a glance</h2>
+      <p class="intro">Seven layers, one colour each. Follow a colour down the page to see why each piece was chosen, how it is tested and when it gets built. Dashed boxes are mocks that stand in for third parties we cannot integrate before the deadline.</p>
+      <div class="stack">
+        <div class="band b-device"><div class="lab"><b>Devices</b><span>what people hold</span></div><div class="boxes">
+          <div class="bx"><b>Priya's phone</b><span>installed PWA, push on</span></div>
+          <div class="bx"><b>Rakesh bhai's phone</b><span>same PWA, distributor role, phone-OTP sign-in</span></div>
+          <div class="bx"><b>Ganesh ji's phone</b><span>same PWA, retailer role, offers by push</span></div>
+          <div class="bx"><b>Anita's and Vikram's laptops</b><span>desktop layout, Google sign-in</span></div>
+          <div class="bx"><b>Judges' screen</b><span>any browser, demo sign-in</span></div>
+        </div></div>
+        <div class="flowarrow">↓ https from the CDN edge · push via FCM</div>
+        <div class="band b-web"><div class="lab"><b>Web app</b><span>Firebase Hosting CDN</span></div><div class="boxes">
+          <div class="bx"><b>SvelteKit 3 (RC) + Svelte 5</b><span>adapter-static, SPA fallback, TypeScript 6</span></div>
+          <div class="bx"><b>Tailwind CSS 4 + shadcn-svelte</b><span>design tokens from the journey map</span></div>
+          <div class="bx"><b>LayerChart</b><span>channel chart, split bar, trends</span></div>
+          <div class="bx"><b>@vite-pwa/sveltekit (injectManifest)</b><span>Workbox + FCM in one service worker</span></div>
+          <div class="bx"><b>Firebase JS SDK</b><span>auth, messaging</span></div>
+          <div class="bx"><b>Paraglide i18n</b><span>English, Hindi, Marathi strings</span></div>
+          <div class="bx mock"><b>ExpireSoon marketplace</b><span>route group /expiresoon, own look</span></div>
+          <div class="bx"><b>Notification inbox</b><span>bell + unread badge, always available</span></div>
+        </div></div>
+        <div class="flowarrow">↓ REST + server-sent events, Firebase ID token in the header</div>
+        <div class="band b-agent"><div class="lab"><b>Agents</b><span>Cloud Run · agents</span></div><div class="boxes">
+          <div class="bx"><b>FastAPI + Google ADK</b><span>Python 3.12, uv, Pydantic</span></div>
+          <div class="bx"><b>Orchestrator</b><span>SequentialAgent → ParallelAgent → Sequential</span></div>
+          <div class="bx"><b>Watcher · Vision · Valuer · Router</b><span>decide</span></div>
+          <div class="bx"><b>Lister · Outreach · Negotiator · Donation</b><span>execute, in parallel</span></div>
+          <div class="bx"><b>Paperwork · Impact</b><span>settle and report</span></div>
+          <div class="bx"><b>Notifier</b><span>firebase-admin sends FCM + writes the inbox</span></div>
+          <div class="bx"><b>Vertex AI Agent Engine</b><span>managed runtime for the orchestrator (stretch)</span></div>
+        </div></div>
+        <div class="flowarrow">↓ google-genai SDK · Vertex AI endpoints</div>
+        <div class="band b-ai"><div class="lab"><b>AI models</b><span>Vertex AI only</span></div><div class="boxes">
+          <div class="bx"><b>Gemini 3.1 Pro Preview</b><span>routing explanation, negotiation, plan text</span></div>
+          <div class="bx"><b>Gemini 3 Flash Preview</b><span>label vision, offer copy, chat replies</span></div>
+          <div class="bx"><b>Gemini 2.5 Flash (GA)</b><span>fallback behind a config switch</span></div>
+          <div class="bx"><b>Structured output</b><span>JSON schemas for every model call</span></div>
+        </div></div>
+        <div class="flowarrow">↓ SQLAlchemy · BigQuery client · Pub/Sub</div>
+        <div class="band b-data"><div class="lab"><b>Data</b><span>stores and events</span></div><div class="boxes">
+          <div class="bx"><b>Cloud SQL for PostgreSQL 16</b><span>batches, runs, listings, bids, documents, notifications, device tokens</span></div>
+          <div class="bx"><b>BigQuery</b><span>sell-through by pincode, price history, impact ledger</span></div>
+          <div class="bx"><b>Cloud Storage</b><span>label photos, generated PDFs</span></div>
+          <div class="bx"><b>Pub/Sub</b><span>batch.at_risk · offer.received · deal.closed</span></div>
+          <div class="bx"><b>Cloud Scheduler</b><span>09:00 IST daily Watcher run</span></div>
+        </div></div>
+        <div class="flowarrow">↓</div>
+        <div class="band b-platform"><div class="lab"><b>Platform</b><span>Google Cloud + Firebase</span></div><div class="boxes">
+          <div class="bx"><b>Firebase Hosting</b><span>global CDN, Brotli, HTTP/2, preview channels per PR</span></div>
+          <div class="bx"><b>Firebase Authentication</b><span>Google, phone OTP, custom claims for roles</span></div>
+          <div class="bx"><b>Firebase Cloud Messaging</b><span>web push, VAPID key, topic per role</span></div>
+          <div class="bx"><b>Cloud Run</b><span>agents service, min instances 1 for demo day</span></div>
+          <div class="bx"><b>Artifact Registry + Cloud Build</b><span>image, migrate, deploy on merge</span></div>
+          <div class="bx"><b>Secret Manager + IAM</b><span>one service account, least privilege</span></div>
+          <div class="bx"><b>Cloud Logging · Trace · Monitoring</b><span>OpenTelemetry from the API</span></div>
+          <div class="bx"><b>Budget alert</b><span>$40 soft cap, email</span></div>
+        </div></div>
+        <div class="flowarrow">↓ guarded by</div>
+        <div class="band b-quality"><div class="lab"><b>Quality</b><span>every PR, every deploy</span></div><div class="boxes">
+          <div class="bx"><b>Vitest + Testing Library</b><span>components, money maths in TS</span></div>
+          <div class="bx"><b>pytest + ruff</b><span>agents, allocation solver, documents</span></div>
+          <div class="bx"><b>Playwright</b><span>10 end-to-end flows, 3 browsers, 3 viewports</span></div>
+          <div class="bx"><b>Argos CI</b><span>visual regression on every screen and preview channel</span></div>
+          <div class="bx"><b>Firebase emulators</b><span>Auth and Hosting locally and in CI</span></div>
+          <div class="bx"><b>Lighthouse CI</b><span>PWA and performance budget</span></div>
+          <div class="bx"><b>GitHub Actions</b><span>runs it all; Cloud Build deploys</span></div>
+        </div></div>
+      </div>
+      <div class="legend"><span><i></i>dashed box = mocked third party, swappable behind an interface</span><span>stretch = built only if days 11 to 13 are free</span></div>
+    </section>
+
+    <section id="changes">
+      <h2>What changed from v1</h2>
+      <div class="tablewrap"><table class="grid">
+        <tr><th>Decision</th><th>v1</th><th>v2</th><th>Effect</th></tr>
+        <tr><td>Messaging people</td><td>WhatsApp (simulated)</td><td><b>In-app push through Firebase Cloud Messaging</b>, plus an in-app inbox for anyone who declines push</td><td>Rakesh bhai and the kirana owners become users of the same PWA with their own roles. No WhatsApp simulator to build; one notification pipeline for everyone.</td></tr>
+        <tr><td>Authentication</td><td>Identity Platform, demo switch</td><td><b>Firebase Authentication</b>: Google sign-in for brand staff, phone OTP for distributors and retailers, custom claims for roles, demo accounts for judges</td><td>Free tier, one SDK on the client, token verification in the API with firebase-admin. Phone OTP is the sign-in Indian trade already understands.</td></tr>
+        <tr><td>Serving the web app</td><td>SvelteKit SSR on Cloud Run</td><td><b>Static SvelteKit build on Firebase Hosting's global CDN</b>; the API stays on Cloud Run</td><td>Shell and assets served from the edge nearest the user; one fewer Cloud Run service; preview URL per pull request for Argos.</td></tr>
+        <tr><td>Cloud Run services</td><td>2 (web, agents)</td><td>1 (agents)</td><td>Simpler deploys, lower cost.</td></tr>
+      </table></div>
+      <p class="note"><b>Still true from v1:</b> ADK agents on Cloud Run with Agent Engine as the stretch goal, Gemini preview models with a GA fallback switch, Cloud SQL + BigQuery + Pub/Sub, Playwright + Argos on every PR, medicines out of scope, ExpireSoon and the food-bank partner mocked.</p>
+    </section>
+
+    <section id="layers">
+      <h2>Layer by layer</h2>
+      <p class="intro">Each layer lists what we use, the licence, why it won, and what we rejected. Everything we write runs on open-source components; the proprietary pieces are Google Cloud and Firebase services and the Gemini models, which the brief requires.</p>
+
+      <div class="layer l-web">
+        <h3>Web app <span class="chip c-web">Firebase Hosting CDN</span></h3>
+        <p class="why">SvelteKit 3 is a release candidate as of September 2026 (Node 22, TypeScript 6, Vite 8 as the floor). We adopt it with a day-1 compatibility spike and keep SvelteKit 2.x as a same-code fallback. Because the app is a PWA talking to an API, we build it static: no server-side rendering to host, every byte cacheable at the edge.</p>
+        <div class="tablewrap"><table class="grid">
+          <tr><th>Component</th><th>Version</th><th>Licence</th><th>Job</th><th>Why this, not that</th></tr>
+          <tr><td>SvelteKit 3 + Svelte 5</td><td class="mono">3.0.0-rc · 5.57</td><td><span class="tag oss">MIT</span></td><td>App framework, client routing, state with runes</td><td><span class="tag">adapter-static</span> with <span class="tag">fallback: 'index.html'</span>: dynamic routes like <span class="tag">/batch/[id]</span> resolve client-side. Rejected: adapter-node on Cloud Run (an extra service for no SSR benefit here).</td></tr>
+          <tr><td>TypeScript 6 · Vite 8</td><td class="mono">6.x · 8.x</td><td><span class="tag oss">Apache-2.0 · MIT</span></td><td>Types, build, dev server</td><td>Required floor for SvelteKit 3.</td></tr>
+          <tr><td>Tailwind CSS 4</td><td class="mono">4.x</td><td><span class="tag oss">MIT</span></td><td>Styling, design tokens</td><td>Tokens map to the journey-map palette.</td></tr>
+          <tr><td>shadcn-svelte (bits-ui)</td><td class="mono">latest</td><td><span class="tag oss">MIT</span></td><td>Dialogs, sheets, tabs, toasts, tables</td><td>Copy-in components, accessible by default.</td></tr>
+          <tr><td>LayerChart</td><td class="mono">latest</td><td><span class="tag oss">MIT</span></td><td>Channel bar chart, split bar, weekly trend, channel mix</td><td>Native Svelte, SVG, themeable, follows the dataviz rules.</td></tr>
+          <tr><td>Firebase JS SDK</td><td class="mono">11.x</td><td><span class="tag oss">Apache-2.0</span></td><td><span class="tag">firebase/auth</span>, <span class="tag">firebase/messaging</span></td><td>Modular imports keep the bundle small; the SDK is open source, the backend services are Google's.</td></tr>
+          <tr><td>@vite-pwa/sveltekit</td><td class="mono">latest</td><td><span class="tag oss">MIT</span></td><td>Manifest and the service worker</td><td><span class="tag">injectManifest</span> strategy so one worker file holds Workbox precaching and the FCM background handler. Verified against SvelteKit 3 RC on day 1.</td></tr>
+          <tr><td>Paraglide (inlang)</td><td class="mono">latest</td><td><span class="tag oss">MIT</span></td><td>English UI; Hindi and Marathi for distributor and retailer screens and push text</td><td>Compile-time messages, zero runtime cost.</td></tr>
+          <tr><td>Lucide icons</td><td class="mono">latest</td><td><span class="tag oss">ISC</span></td><td>Icons</td><td>Consistent stroke set; tree-shaken.</td></tr>
+          <tr><td>ExpireSoon marketplace</td><td class="mono">ours</td><td><span class="tag mock">mock</span></td><td>Route group <span class="tag">/expiresoon</span> with its own layout, listing page, bids and chat</td><td>Same app for speed; separate theme so it reads as another site.</td></tr>
+        </table></div>
+      </div>
+
+      <div class="layer l-agent">
+        <h3>Agents service <span class="chip c-agent">Cloud Run · agents</span></h3>
+        <p class="why">Python, because Google's Agent Development Kit is Python-first and the money maths already exists in Python. One FastAPI process hosts the ADK runner, streams agent events to the web app over server-sent events, sends push through firebase-admin, and owns the mocks.</p>
+        <div class="tablewrap"><table class="grid">
+          <tr><th>Component</th><th>Licence</th><th>Job</th><th>Notes</th></tr>
+          <tr><td>Python 3.12 · uv · ruff</td><td><span class="tag oss">PSF · MIT</span></td><td>Runtime, packaging, lint</td><td>Lockfile committed; one <span class="tag">uv run</span> starts everything locally.</td></tr>
+          <tr><td>FastAPI + Uvicorn</td><td><span class="tag oss">MIT · BSD</span></td><td>REST API, SSE streams, Pub/Sub push handlers</td><td>CORS allow-list: the Hosting domain, preview channels, localhost. Every request carries a Firebase ID token.</td></tr>
+          <tr><td>Google ADK (google-adk)</td><td><span class="tag oss">Apache-2.0</span></td><td>Agent definitions, tools, sessions, event stream</td><td>Orchestrator = SequentialAgent(Watcher, Vision, Valuer, Router) → human gate → ParallelAgent(Lister, Outreach, Negotiator, Donation) → SequentialAgent(Paperwork, Impact). Tools are typed Python functions.</td></tr>
+          <tr><td>google-genai SDK</td><td><span class="tag oss">Apache-2.0</span></td><td>Gemini calls on Vertex AI with JSON-schema structured output</td><td>Project and region from ADC; no API keys.</td></tr>
+          <tr><td>firebase-admin (Python)</td><td><span class="tag oss">Apache-2.0</span></td><td>Verify ID tokens, read custom claims, send FCM messages, mint demo custom tokens</td><td>Uses the service account's own credentials; no Firebase key file.</td></tr>
+          <tr><td>SQLAlchemy 2 + Alembic</td><td><span class="tag oss">MIT</span></td><td>Postgres models and migrations</td><td>Cloud SQL Python Connector with IAM auth; local docker Postgres.</td></tr>
+          <tr><td>google-cloud-bigquery · pubsub · storage</td><td><span class="tag oss">Apache-2.0</span></td><td>Analytics reads, events, photo and PDF storage</td><td>BigQuery seeded from the synthetic generator on day 1.</td></tr>
+          <tr><td>WeasyPrint</td><td><span class="tag oss">BSD</span></td><td>Invoice, credit note, memo PDFs from HTML templates</td><td>Same templates render in the Paperwork screen.</td></tr>
+          <tr><td>Mocks: ExpireSoon API, food bank</td><td><span class="tag mock">mock</span></td><td>Deterministic partner responses with realistic delays</td><td>Each behind a Protocol class; <span class="tag">PARTNER_MODE=mock|live</span> switches implementations.</td></tr>
+          <tr><td>Vertex AI Agent Engine</td><td><span class="tag gcp">Google Cloud</span></td><td>Managed runtime for the orchestrator</td><td>Stretch goal (day 12): <span class="tag">adk deploy agent_engine</span>; the API proxies to it.</td></tr>
+        </table></div>
+      </div>
+
+      <div class="layer l-data">
+        <h3>Data <span class="chip c-data">Cloud SQL · BigQuery · Pub/Sub</span></h3>
+        <div class="tablewrap"><table class="grid">
+          <tr><th>Store</th><th>Holds</th><th>Why</th></tr>
+          <tr><td>Cloud SQL for PostgreSQL 16 (smallest Enterprise tier, zonal)</td><td>Clients, distributors, retailers, SKUs, batches, runs, allocations, listings, bids, messages, documents, approvals, <b>notifications</b>, <b>device tokens</b></td><td>Open-source engine, transactional, one relational model shared by API and tests. The notification table is the inbox and the audit trail of every push.</td></tr>
+          <tr><td>BigQuery (dataset <span class="tag">smartclearance</span>)</td><td>Secondary sales by pincode and day, channel price history, impact ledger, Watcher run log</td><td>Sell-through projections and price lookups are SQL over BigQuery; Looker Studio can sit on top for finance.</td></tr>
+          <tr><td>Cloud Storage (2 buckets)</td><td>Label photos (uploaded from the PWA camera or file picker), generated PDFs</td><td>Signed URLs for the UI; lifecycle delete after 30 days.</td></tr>
+          <tr><td>Pub/Sub (3 topics)</td><td><span class="tag">batch.at_risk</span>, <span class="tag">offer.received</span>, <span class="tag">deal.closed</span></td><td>Decouples the Watcher from the UI; the Notifier subscribes to all three.</td></tr>
+          <tr><td>Cloud Scheduler</td><td>Daily 09:00 IST Watcher trigger; a "demo reset" job</td><td>Shows the real cadence; the reset returns the demo batch to its starting state.</td></tr>
+        </table></div>
+      </div>
+
+      <div class="layer l-platform">
+        <h3>Platform and security <span class="chip c-platform">Google Cloud + Firebase</span></h3>
+        <div class="tablewrap"><table class="grid">
+          <tr><th>Service</th><th>Use</th><th>Setting</th></tr>
+          <tr><td>Firebase Hosting</td><td>Serves the static PWA from Google's global CDN</td><td><span class="tag">firebase.json</span> headers: <span class="tag">/_app/immutable/**</span> → <span class="tag">public, max-age=31536000, immutable</span>; <span class="tag">index.html</span> and <span class="tag">sw.js</span> → <span class="tag">no-cache</span>. Preview channel per PR, 7-day expiry.</td></tr>
+          <tr><td>Firebase Authentication</td><td>Sign-in and roles</td><td>Providers: Google, Phone. Custom claims <span class="tag">role=brand|distributor|retailer|finance|sustainability</span> and <span class="tag">org_id</span>. Authorized domains: Hosting domain, preview channels, localhost.</td></tr>
+          <tr><td>Firebase Cloud Messaging</td><td>Web push to installed PWAs</td><td>VAPID key pair; device tokens stored per user; topics per role for broadcasts (<span class="tag">retailers-nagpur</span>). Sent from the API with firebase-admin.</td></tr>
+          <tr><td>Cloud Run</td><td><span class="tag">agents</span> (Python container)</td><td>Region asia-south1 (Mumbai). Request timeout 3600 s for SSE. Public ingress, auth enforced in the app by verifying Firebase ID tokens. min-instances 1 from 15 Oct.</td></tr>
+          <tr><td>Cloud Build + Artifact Registry</td><td>Build the image on merge, run Alembic, deploy Cloud Run, deploy Hosting</td><td>One pipeline; image tagged with git SHA; rollback is one command.</td></tr>
+          <tr><td>Secret Manager</td><td>DB password, VAPID private key, Argos token (CI only)</td><td>Mounted as env vars; never in the repo.</td></tr>
+          <tr><td>IAM</td><td>One service account for the API</td><td>Vertex AI User, BigQuery Data Viewer/Job User, Pub/Sub Publisher/Subscriber, Cloud SQL Client, Storage Object Admin on its buckets, Firebase Admin SDK roles (Auth and Messaging).</td></tr>
+          <tr><td>Cloud Logging, Trace, Monitoring</td><td>Structured logs with run_id; OpenTelemetry traces API → Gemini → BigQuery</td><td>One dashboard: route runs, Gemini latency, SSE connections, push delivery, errors.</td></tr>
+          <tr><td>Billing budget</td><td>$40 alert at 50/90/100%</td><td>Protects against a runaway loop during development.</td></tr>
+        </table></div>
+      </div>
+    </section>
+
+    <section id="push">
+      <h2>In-app push notifications<span class="changed">new in v2</span></h2>
+      <p class="intro">Every nudge that used to be a WhatsApp message is now a push notification to the installed PWA, deep-linking into the screen where the action happens. The action itself (approve, send photo, accept offer) always happens inside the app, so the human gate stays auditable. A notification inbox inside the app shows the same items for anyone who has not allowed push.</p>
+      <div class="push">
+        <div class="pc"><span class="to">to Priya · brand</span><div class="msg"><b>1,360 packets at risk in Nagpur</b>Masala Chips 150 g, best before 18 Nov. Quick-commerce gates failed.<small>Smart-Clearance · 09:00</small><div class="act"><span>Open batch</span></div></div><div class="then">Opens the Route Room; the agent timeline starts on arrival.</div></div>
+        <div class="pc"><span class="to">to Rakesh bhai · distributor</span><div class="msg"><b>Ek photo chahiye</b>MF-2409-117 ke carton ka label photo bhejein. Bas ek.<small>Smart-Clearance · 09:05</small><div class="act"><span>Take photo</span></div></div><div class="then">Opens the camera sheet; the upload goes straight to Cloud Storage and the Vision Agent.</div></div>
+        <div class="pc"><span class="to">to Priya · brand</span><div class="msg"><b>Plan ready: net ₹21,770</b>588 kirana + 772 ExpireSoon. Write-off would cost ₹27,717. ITC ₹2,611 safe.<small>Smart-Clearance · 09:23</small><div class="act"><span>Review and approve</span></div></div><div class="then">Opens the approve sheet; one tap, logged with user and time.</div></div>
+        <div class="pc"><span class="to">to 38 retailers · Nagpur topic</span><div class="msg"><b>आज का ऑफर: Masala Chips 150g</b>10 पैकेट लो, 2 मुफ़्त. 48 घंटे.<small>Rakesh Traders via Smart-Clearance · 09:41</small><div class="act"><span>Order</span></div></div><div class="then">Opens the retailer offer page with a quantity stepper; orders land on Rakesh bhai's van route.</div></div>
+        <div class="pc"><span class="to">to Priya · exceptions only</span><div class="msg"><b>Bid below reserve twice</b>Venkat offers ₹13.00 for 772. Counter ₹14.20 was declined.<small>Negotiator · 11:05</small><div class="act"><span>Decide</span></div></div><div class="then">Only sent when the Negotiator's rules say escalate; otherwise the deal closes without her.</div></div>
+        <div class="pc"><span class="to">to Anita · finance</span><div class="msg"><b>Papers ready for MF-2409-117</b>Invoice, credit note, ITC memo. E-way bill not required.<small>Paperwork Agent · day 3</small><div class="act"><span>Open documents</span></div></div><div class="then">Opens the Paperwork screen; PDFs download from Cloud Storage.</div></div>
+      </div>
+      <div class="tablewrap" style="margin-top:14px"><table class="grid">
+        <tr><th>Piece</th><th>How it works</th></tr>
+        <tr><td>Permission</td><td>Asked after the first useful moment (Priya's first batch view), from a button, never on load. Denied or unsupported → the inbox carries the same items with an unread badge.</td></tr>
+        <tr><td>Service worker</td><td>One file built with vite-pwa <span class="tag">injectManifest</span>: Workbox precaching plus <span class="tag">onBackgroundMessage</span> from <span class="tag">firebase/messaging/sw</span>. Clicking a notification focuses or opens the app at the deep link.</td></tr>
+        <tr><td>Device tokens</td><td>Saved to Postgres per user and device after sign-in; refreshed on each app start; removed on sign-out or on an FCM "unregistered" error.</td></tr>
+        <tr><td>Sending</td><td>The Notifier agent subscribes to Pub/Sub, writes the inbox row, then calls <span class="tag">messaging.send_each_for_multicast</span> (per user) or <span class="tag">messaging.send</span> to a topic (retailer broadcasts). Payload: title, body, deep link, <span class="tag">run_id</span>.</td></tr>
+        <tr><td>iOS</td><td>Web push works on iOS 16.4+ only for PWAs added to the Home Screen; the install hint says so. Notification action buttons are not supported there, so the body text always says what tapping does.</td></tr>
+        <tr><td>Testing</td><td>FCM has no emulator: tests assert the inbox row and the <span class="tag">push_sent</span> log line; a nightly job sends one real push to a test device token.</td></tr>
+        <tr><td>Future scope</td><td>WhatsApp Business Cloud API as a second delivery channel behind the same Notifier interface (<span class="tag">CHANNELS=push,whatsapp</span>), for retailers who prefer it. Not in the 17 Oct demo.</td></tr>
+      </table></div>
+    </section>
+
+    <section id="auth">
+      <h2>Authentication with Firebase<span class="changed">new in v2</span></h2>
+      <p class="intro">Firebase Authentication covers all five roles with two sign-in methods and costs nothing at this scale. The API trusts only Firebase ID tokens; Cloud Run itself is reachable, the app is not.</p>
+      <div class="tablewrap"><table class="grid">
+        <tr><th>Who</th><th>Signs in with</th><th>Role claim</th><th>Sees</th></tr>
+        <tr><td>Priya</td><td>Google</td><td class="mono">brand</td><td>All batches for Munchly, Route Room, approvals</td></tr>
+        <tr><td>Rakesh bhai</td><td>Phone number + OTP</td><td class="mono">distributor</td><td>His godown's batches, photo requests, van route, retailer orders</td></tr>
+        <tr><td>Ganesh ji and 37 others</td><td>Phone number + OTP</td><td class="mono">retailer</td><td>Offers for his shop, order history</td></tr>
+        <tr><td>Anita</td><td>Google</td><td class="mono">finance</td><td>Paperwork, ITC memos, ledger</td></tr>
+        <tr><td>Vikram</td><td>Google</td><td class="mono">sustainability</td><td>Impact dashboard, BRSR export</td></tr>
+        <tr><td>Judges</td><td>"Sign in as…" buttons (demo mode)</td><td class="mono">any</td><td>Pre-provisioned accounts via custom tokens; a visible "demo user" badge; disabled outside <span class="tag">AUTH_MODE=demo</span></td></tr>
+      </table></div>
+      <div class="tablewrap" style="margin-top:14px"><table class="grid">
+        <tr><th>Concern</th><th>Answer</th></tr>
+        <tr><td>Where tokens are checked</td><td>The API verifies every request's ID token with <span class="tag">firebase_admin.auth.verify_id_token</span>, reads <span class="tag">role</span> and <span class="tag">org_id</span> claims, and filters queries by them. The agent event stream is read with <span class="tag">fetch()</span> and a streamed response body, so the same Authorization header is used; no token ever appears in a URL.</td></tr>
+        <tr><td>Roles</td><td>Custom claims set by an admin script (<span class="tag">uv run set-role &lt;uid&gt; distributor D-NGP</span>); the client reads them from the token to pick its layout.</td></tr>
+        <tr><td>Phone OTP in India</td><td>Firebase sends the SMS; the free quota covers development. The demo accounts use fixed test phone numbers configured in the Firebase console so no real SMS is needed on stage.</td></tr>
+        <tr><td>Local and CI</td><td>Firebase Local Emulator Suite (Auth, Hosting) in docker compose and GitHub Actions; Playwright signs in through the emulator with seeded users.</td></tr>
+        <tr><td>Why not Identity Platform</td><td>Same engine, enterprise billing; nothing we need (SAML, multi-tenancy) before the deadline. Upgrade path is a console toggle.</td></tr>
+      </table></div>
+    </section>
+
+    <section id="cdn">
+      <h2>Static assets on a CDN<span class="changed">new in v2</span></h2>
+      <p class="intro">Yes, and it changes the shape of the deployment for the better: the PWA becomes a static build on Firebase Hosting, which is a global CDN with Brotli, HTTP/2, free TLS and per-PR preview URLs. The agents API stays on Cloud Run.</p>
+      <div class="tablewrap"><table class="grid">
+        <tr><th>Option</th><th>What it is</th><th>Verdict</th></tr>
+        <tr><td><b>Firebase Hosting (chosen)</b></td><td>Static SvelteKit build uploaded by <span class="tag">firebase deploy</span>; served from Google's edge network; cache headers from <span class="tag">firebase.json</span>; preview channels for pull requests</td><td>Fastest to set up, pairs with Firebase Auth and FCM, free at our scale. Preview URLs let Argos screenshot every PR on a real CDN origin.</td></tr>
+        <tr><td>Cloud CDN + global external Application Load Balancer</td><td>Backend bucket for <span class="tag">/_app/immutable/**</span>, serverless NEG to Cloud Run for the API, Cloud CDN enabled on both, Cloud Armor optional</td><td>The "pure GCP" form; more control (custom cache keys, signed URLs) but about $20 a month for the forwarding rule and a day of Terraform. Documented as the enterprise path; not needed by 17 Oct.</td></tr>
+        <tr><td>SSR on Cloud Run with Cloud CDN</td><td>Keep adapter-node and cache rendered pages at the edge</td><td>No benefit for an app whose pages are user-specific; dropped.</td></tr>
+      </table></div>
+      <p class="note"><b>What goes where.</b> SvelteKit emits hashed, immutable files under <span class="tag">/_app/immutable/</span>: cached for a year at the edge and in the service worker. <span class="tag">index.html</span>, the manifest and the service worker are served with <span class="tag">no-cache</span> so a deploy reaches users on the next open. API calls and the SSE stream go directly to the Cloud Run URL (CORS) rather than through a Hosting rewrite, so long-lived streams are never buffered by the CDN.</p>
+    </section>
+
+    <section id="ai">
+      <h2>AI and agents: what Gemini actually does</h2>
+      <p class="intro">Five real model calls per route run, each with a JSON schema so the output is machine-checkable. The maths (gates, at-risk units, channel economics, allocation) stays deterministic Python; Gemini reads, explains, writes and talks.</p>
+      <div class="tablewrap"><table class="grid">
+        <tr><th>Agent</th><th>Model</th><th>Input</th><th>Structured output</th><th>Fallback</th></tr>
+        <tr><td>Vision</td><td class="mono">gemini-3-flash-preview</td><td>Carton label photo + DMS record</td><td>{batch_no, mfg, best_before, mrp, pack, condition, confidence, mismatches[]}</td><td>Canned extraction for the demo photo</td></tr>
+        <tr><td>Valuer</td><td class="mono">gemini-3.1-pro-preview</td><td>Computed channel table, batch facts, tax rules</td><td>{per_channel_note[], risks[], indicative_flags[]}</td><td>Template notes</td></tr>
+        <tr><td>Router</td><td class="mono">gemini-3.1-pro-preview</td><td>Allocation, alternative, guardrails</td><td>{explanation, alternative_comparison, push_title, push_body_en, push_body_hi}</td><td>Template text</td></tr>
+        <tr><td>Lister + Outreach</td><td class="mono">gemini-3-flash-preview</td><td>Verified fields, scheme, retailer language</td><td>{listing_title, description, offer_push_hi|mr|te, offer_page_copy}</td><td>Template copy</td></tr>
+        <tr><td>Negotiator</td><td class="mono">gemini-3.1-pro-preview</td><td>Bid, reserve, buyer history, dispatch calendar</td><td>{action: accept|counter|reject|escalate, price, reply_text, reason}</td><td>Rule-only decision, template reply</td></tr>
+      </table></div>
+      <p class="note"><b>Model policy.</b> Preview models give the best demo; GA Gemini 2.5 Flash sits behind <span class="tag">MODEL_TIER=stable</span> so a preview deprecation the week of the demo costs one environment variable. Every call has a 20-second timeout and a deterministic fallback. Temperature 0.2 for structured calls, 0.7 for offer copy.</p>
+      <p class="note"><b>Agent engine choice.</b> ADK runs inside our Cloud Run service for the whole build because the UI needs the event stream and we need the mocks next to the agents. Deploying the orchestrator to Vertex AI Agent Engine is the stretch goal for day 12.</p>
+    </section>
+
+    <section id="flow">
+      <h2>One request, end to end</h2>
+      <p class="intro">What happens from the Watcher's morning run to Priya's tap.</p>
+      <div class="seq">
+        <div class="st"><div class="n">1</div><span class="who w-platform">Cloud Scheduler</span><div class="d">09:00 IST hits <code>POST /jobs/watch</code> on the API. Watcher runs the gates over every batch and publishes <code>batch.at_risk</code>.</div></div>
+        <div class="st"><div class="n">2</div><span class="who w-agent">Notifier</span><div class="d">Writes an inbox row for Priya and sends an FCM message to her devices; sends Rakesh bhai the photo request.</div></div>
+        <div class="st"><div class="n">3</div><span class="who w-device">PWA · Priya</span><div class="d">She taps the notification. The service worker opens the app at <code>/batch/MF-2409-117</code>; the shell loads from the Firebase Hosting edge cache; the Firebase SDK refreshes her ID token silently.</div></div>
+        <div class="st"><div class="n">4</div><span class="who w-web">web</span><div class="d">The page fetches <code>GET /api/batches/MF-2409-117</code> from Cloud Run with <code>Authorization: Bearer &lt;ID token&gt;</code>, then opens the event stream with <code>fetch('/api/batches/…/route', { headers: { Authorization } })</code> and reads the body as it arrives.</div></div>
+        <div class="st"><div class="n">5</div><span class="who w-agent">agents · ADK</span><div class="d">The orchestrator starts a session. Vision reads Rakesh bhai's photo (already uploaded from his camera sheet to Cloud Storage), Valuer reads BigQuery, Router allocates. Each ADK event is forwarded as an SSE message.</div></div>
+        <div class="st"><div class="n">6</div><span class="who w-ai">Vertex AI</span><div class="d">Four Gemini calls return JSON matching the schema; Pydantic validates before anything reaches the UI.</div></div>
+        <div class="st"><div class="n">7</div><span class="who w-data">Postgres</span><div class="d">The run and its plan are saved with status <code>awaiting_approval</code>; the Notifier pushes "Plan ready: net ₹21,770".</div></div>
+        <div class="st"><div class="n">8</div><span class="who w-device">PWA · Priya</span><div class="d">She taps Approve in the sheet. <code>POST /approve</code> records who, when and from which device.</div></div>
+        <div class="st"><div class="n">9</div><span class="who w-agent">agents · ADK</span><div class="d"><code>GET /execute</code> streams the ParallelAgent: Lister calls the ExpireSoon mock API, Outreach pushes the offer to the <code>retailers-nagpur</code> topic and opens the offer page, Negotiator handles the scripted bid with a real Gemini reply, Donation is idle for this batch.</div></div>
+        <div class="st"><div class="n">10</div><span class="who w-data">Pub/Sub</span><div class="d">The mock marketplace publishes <code>offer.received</code>; the Negotiator's push subscription wakes it. <code>deal.closed</code> triggers Paperwork, Impact and Anita's notification.</div></div>
+        <div class="st"><div class="n">11</div><span class="who w-platform">observability</span><div class="d">One trace spans the run: scheduler → API → each Gemini call → BigQuery → FCM send. Logs carry <code>run_id</code> so a judge's question is answered from Cloud Logging in seconds.</div></div>
+      </div>
+    </section>
+
+    <section id="local">
+      <h2>Local development with Claude Code</h2>
+      <p class="intro">Everything runs on a laptop with two commands, and Claude Code can see the result in its own browser pane, so the build loop is write, run, look, fix.</p>
+      <div class="tablewrap"><table class="grid">
+        <tr><th>Piece</th><th>Setup</th></tr>
+        <tr><td>Monorepo</td><td>pnpm workspace for <span class="tag">web/</span>, uv project for <span class="tag">agents/</span>, shared <span class="tag">contracts/</span> (JSON schemas generated from Pydantic, consumed by TypeScript via openapi-typescript).</td></tr>
+        <tr><td>Local services</td><td><span class="tag">docker compose up</span> starts PostgreSQL 16, the Pub/Sub emulator and the Firebase emulators (Auth, Hosting). BigQuery has no emulator: local runs use a DuckDB shim with the same SQL.</td></tr>
+        <tr><td>Google auth</td><td><span class="tag">gcloud auth application-default login</span> once; Gemini calls from the laptop go to Vertex AI directly. The Firebase emulator issues local ID tokens the API accepts in dev mode.</td></tr>
+        <tr><td>Run</td><td><span class="tag">pnpm dev</span> (SvelteKit on :5173 against the emulators) and <span class="tag">uv run agents</span> (FastAPI on :8000). <span class="tag">adk web</span> opens ADK's debug UI on :8080.</td></tr>
+        <tr><td>Push locally</td><td>Real FCM works from localhost in Chrome; the inbox panel shows the same items regardless.</td></tr>
+        <tr><td>Claude Code</td><td><span class="tag">CLAUDE.md</span> carries the stack rules, money-maths invariants and demo numbers. <span class="tag">.claude/launch.json</span> defines the web and agents servers for the browser pane. The Playwright MCP server lets Claude run the end-to-end flows itself.</td></tr>
+        <tr><td>Hooks</td><td>PostToolUse hooks run <span class="tag">ruff</span>, <span class="tag">svelte-check</span> and the affected unit tests on every edit; a pre-push hook runs the Playwright smoke suite.</td></tr>
+        <tr><td>Demo reset</td><td><span class="tag">pnpm demo:reset</span> reseeds Postgres, BigQuery (or DuckDB), clears the mock marketplace and the inboxes.</td></tr>
+      </table></div>
+    </section>
+
+    <section id="repo">
+      <h2>Repository layout</h2>
+<pre>smart-clearance/
+├── CLAUDE.md                     <span class="c"># stack rules, invariants, demo numbers</span>
+├── .claude/launch.json           <span class="c"># web + agents servers for the browser pane</span>
+├── docker-compose.yml            <span class="c"># postgres, pubsub emulator, firebase emulators</span>
+├── firebase.json · .firebaserc   <span class="c"># hosting headers, emulators, preview channels</span>
+├── contracts/                    <span class="c"># JSON schemas shared by both sides</span>
+├── web/                          <span class="c"># SvelteKit 3 PWA, static build</span>
+│   ├── src/routes/(app)/         <span class="c"># dashboard, batch/[id], paperwork, impact, setup, inbox</span>
+│   ├── src/routes/(trade)/       <span class="c"># distributor and retailer screens: photo, offers, orders</span>
+│   ├── src/routes/(expiresoon)/  <span class="c"># mock marketplace with its own layout</span>
+│   ├── src/lib/firebase/         <span class="c"># auth, messaging, token helper</span>
+│   ├── src/lib/components/       <span class="c"># agent timeline, money panel, charts, inbox</span>
+│   ├── src/service-worker.ts     <span class="c"># Workbox precache + FCM background handler</span>
+│   ├── src/lib/i18n/             <span class="c"># en, hi, mr messages (Paraglide)</span>
+│   ├── tests/e2e/                <span class="c"># Playwright + argosScreenshot</span>
+│   └── vite.config.ts            <span class="c"># SvelteKitPWA({ strategies: 'injectManifest' })</span>
+├── agents/                       <span class="c"># FastAPI + ADK</span>
+│   ├── app/agents/               <span class="c"># watcher.py vision.py valuer.py router.py lister.py ... notifier.py</span>
+│   ├── app/tools/                <span class="c"># gates, money, allocation, documents (pure Python)</span>
+│   ├── app/partners/             <span class="c"># expiresoon_mock.py foodbank_mock.py + protocols</span>
+│   ├── app/auth/                 <span class="c"># firebase token verification, role dependency</span>
+│   ├── app/api/                  <span class="c"># routes, SSE, pubsub push handlers, jobs</span>
+│   ├── app/db/                   <span class="c"># SQLAlchemy models, alembic/</span>
+│   ├── data/                     <span class="c"># synthetic generator, seeds</span>
+│   └── tests/                    <span class="c"># pytest</span>
+├── infra/                        <span class="c"># Terraform: Cloud Run, Cloud SQL, BigQuery, Pub/Sub, IAM, budgets, Firebase project</span>
+├── .github/workflows/ci.yml      <span class="c"># lint, unit, build, emulators, Playwright + Argos, Lighthouse, Hosting preview</span>
+└── cloudbuild.yaml               <span class="c"># build image, migrate, deploy Cloud Run, deploy Hosting, smoke test</span></pre>
+    </section>
+
+    <section id="cicd">
+      <h2>CI/CD and testing</h2>
+      <p class="intro">Every pull request gets the full gate and a live preview URL on the CDN; every merge to main deploys. Visual regression is not optional: the money panel, the listing page and the dashboard are the demo.</p>
+      <div class="pipe">
+        <div class="pstep"><b>Pull request</b><span>GitHub</span></div><div class="parrow">→</div>
+        <div class="pstep q"><b>Lint + types</b><span>ruff, svelte-check, tsc</span></div><div class="parrow">→</div>
+        <div class="pstep q"><b>Unit</b><span>Vitest (web), pytest (agents, maths golden tests)</span></div><div class="parrow">→</div>
+        <div class="pstep q"><b>Build</b><span>SvelteKit static build, Docker image</span></div><div class="parrow">→</div>
+        <div class="pstep q"><b>Preview channel</b><span>Firebase Hosting URL for this PR</span></div><div class="parrow">→</div>
+        <div class="pstep q"><b>E2E + visual</b><span>Playwright 3 browsers × 3 viewports against emulators, Argos upload</span></div><div class="parrow">→</div>
+        <div class="pstep q"><b>Lighthouse CI</b><span>on the preview URL: PWA, perf ≥ 85 mobile</span></div><div class="parrow">→</div>
+        <div class="pstep p"><b>Merge → Cloud Build</b><span>image to Artifact Registry, Alembic migrate, Cloud Run deploy, Hosting deploy</span></div><div class="parrow">→</div>
+        <div class="pstep g"><b>Smoke + Argos prod</b><span>Playwright against the live URL</span></div>
+      </div>
+      <div class="layer l-quality" style="margin-top:18px">
+        <h3>Playwright suite <span class="chip c-quality">10 flows · Chromium, Firefox, WebKit · 390, 820, 1440 px</span></h3>
+        <div class="tablewrap"><table class="grid">
+          <tr><th>Flow</th><th>Asserts</th><th>Argos screenshots</th></tr>
+          <tr><td>Sign in as each role (emulator)</td><td>Correct layout per role claim; demo badge visible in demo mode</td><td class="mono">signin, layout-brand, layout-distributor, layout-retailer</td></tr>
+          <tr><td>Dashboard loads with KPIs and at-risk list</td><td>Tiles present, countdown bars, gate chips for the demo batch</td><td class="mono">dashboard</td></tr>
+          <tr><td>Route run streams to completion</td><td>SSE events arrive in order; channel table has 6 rows; split = 588/772; swing ₹49,487</td><td class="mono">route-room-channels, route-room-split, money-panel</td></tr>
+          <tr><td>Photo request → upload → verified</td><td>Distributor sees the request in the inbox; upload lands; Vision result renders with confidence</td><td class="mono">photo-sheet, label-card</td></tr>
+          <tr><td>Approve</td><td>Inbox item "Plan ready" present; status awaiting_approval → approved; approval row has user, time, device</td><td class="mono">inbox, approve-sheet</td></tr>
+          <tr><td>Execution: listing posted</td><td>API card shows request and 201 response; listing opens on /expiresoon</td><td class="mono">execution-api-card, expiresoon-listing</td></tr>
+          <tr><td>Execution: negotiation</td><td>Bid 13 → counter 14.20 → accepted; planned vs actual updates</td><td class="mono">negotiation-chat</td></tr>
+          <tr><td>Retailer offer and orders</td><td>Retailer inbox shows the offer; order of 24 units; distributor van route updates to 588</td><td class="mono">retailer-offer, van-route</td></tr>
+          <tr><td>Paperwork</td><td>7 documents with correct statuses; invoice totals; e-way bill "not required"</td><td class="mono">paperwork-list, invoice-preview, itc-memo</td></tr>
+          <tr><td>Impact dashboard + BRSR export</td><td>Tiles, trend, mix; CSV download has header and rows</td><td class="mono">impact-dashboard, brsr-table</td></tr>
+        </table></div>
+        <p class="note"><b>Determinism.</b> Tests run with <span class="tag">PARTNER_MODE=mock</span>, <span class="tag">MODEL_TIER=stub</span> (recorded Gemini responses), the Firebase emulators and <span class="tag">DEMO_CLOCK=2026-10-02</span>, so screenshots are stable and Argos only flags real UI changes. A nightly job runs the same flows with <span class="tag">MODEL_TIER=preview</span> against live Gemini and sends one real push to a test device.</p>
+        <p class="note"><b>Argos setup.</b> <span class="tag">@argos-ci/cli</span> and <span class="tag">@argos-ci/playwright</span>; the Argos reporter in <span class="tag">playwright.config.ts</span> uploads on CI; the GitHub app comments on the PR with a diff gallery; approving the baseline is a click. Free tier covers the build; token in GitHub secrets only.</p>
+      </div>
+    </section>
+
+    <section id="pwa">
+      <h2>Progressive web app</h2>
+      <p class="intro">One codebase that installs on Priya's Android phone, Rakesh bhai's budget phone, Anita's MacBook and a judge's iPad, keeps working on one bar of signal, and taps people on the shoulder when it needs them.</p>
+      <ul class="check">
+        <li>Web app manifest: name, maskable icons, theme colour, display standalone, start URL on the role's home.</li>
+        <li>Service worker (Workbox via vite-pwa injectManifest): precache the app shell; stale-while-revalidate for <span class="tag">/api/batches</span>, <span class="tag">/api/impact</span>, <span class="tag">/api/inbox</span>; network-only for SSE and writes; FCM background handler in the same worker.</li>
+        <li>Push: FCM web push with deep links; permission asked from a button after the first useful moment; inbox as the always-on fallback.</li>
+        <li>Offline state: last dashboard snapshot with an "offline, showing 09:12 data" banner; Route, Approve and Order disabled until back online; photo uploads queued with Background Sync where supported.</li>
+        <li>Install: prompt on Android and desktop Chrome; Safari gets the "Add to Home Screen" hint on iOS, which also unlocks push there.</li>
+        <li>Responsive: phone, tablet and desktop layouts; the Route Room stacks timeline over money panel on phones; touch targets 44 px.</li>
+        <li>Dark mode from the OS plus a toggle; Hindi and Marathi text in Noto Sans Devanagari served from the CDN.</li>
+        <li>Lighthouse CI budget on the preview URL: PWA installable, performance ≥ 85 on mobile, accessibility ≥ 95.</li>
+      </ul>
+    </section>
+
+    <section id="plan">
+      <h2>15-day plan</h2>
+      <p class="intro">Front-loaded on the maths and the event stream so every later screen shows real numbers. Firebase Auth and Hosting land on day 5, push on day 6, so every later screen is built behind real sign-in.</p>
+      <div class="tl">
+        <div class="day"><div class="dt"><b>Day 1</b>Fri 2 Oct</div><div class="wk">Repo, CLAUDE.md, docker compose with Firebase emulators, SvelteKit 3 RC spike with the PWA plugin in injectManifest mode (go/no-go by evening), GCP + Firebase project, Terraform for Cloud SQL, BigQuery, Pub/Sub, IAM, budget. Port the money maths into <span class="tag">agents/app/tools</span>.</div><div class="ms">pytest green on the 588/772 split</div></div>
+        <div class="day"><div class="dt"><b>Day 2</b>Sat 3 Oct</div><div class="wk">Synthetic data generator (now with retailers as users), Postgres models incl. notifications and device tokens, Alembic, BigQuery seed. FastAPI skeleton with batches, inbox and impact endpoints.</div><div class="ms">API returns the demo batch plan</div></div>
+        <div class="day"><div class="dt"><b>Day 3</b>Sun 4 Oct</div><div class="wk">ADK orchestrator: Watcher, Vision (stub), Valuer, Router as agents with tools; SSE endpoint; approval gate.</div><div class="ms">route run streams in adk web</div></div>
+        <div class="day"><div class="dt"><b>Day 4</b>Mon 5 Oct</div><div class="wk">First real Gemini calls: Vision structured output on the demo photo, Router explanation. Stub mode recorded for tests.</div><div class="ms">Gemini JSON validated by Pydantic</div></div>
+        <div class="day"><div class="dt"><b>Day 5</b>Tue 6 Oct</div><div class="wk">Firebase Auth (Google + phone, custom claims, demo accounts), token verification in the API, Firebase Hosting with cache headers and a preview channel; design tokens, layout, Command Center (S1).</div><div class="ms">signed-in dashboard on a CDN URL</div></div>
+        <div class="day"><div class="dt"><b>Day 6</b>Wed 7 Oct</div><div class="wk">FCM: VAPID key, device tokens, Notifier agent, service worker with background handler, inbox screen; permission flow; first push on a phone. PWA manifest and install prompt.</div><div class="ms">push opens the batch on a phone</div></div>
+        <div class="day"><div class="dt"><b>Day 7</b>Thu 8 Oct</div><div class="wk">Route Room (S2): live agent timeline over SSE, channel chart and table, split bar, money panel, approve sheet. Distributor photo sheet with camera upload to Cloud Storage.</div><div class="ms">Priya can route and approve; Rakesh can send a photo</div></div>
+        <div class="day"><div class="dt"><b>Day 8</b>Fri 9 Oct</div><div class="wk">Executors: Lister, Outreach (retailer offer push + offer page + orders), Negotiator, Donation with mocks; Pub/Sub topics and push handlers; Execution view (S3) with API card and negotiation chat.</div><div class="ms">offer ordered by a retailer; bid countered and awarded</div></div>
+        <div class="day"><div class="dt"><b>Day 9</b>Sat 10 Oct</div><div class="wk">ExpireSoon marketplace (S4): home grid, listing page, bid panel, chat. Mango Drink batch as the donation case.</div><div class="ms">listing opens as a buyer sees it</div></div>
+        <div class="day"><div class="dt"><b>Day 10</b>Sun 11 Oct</div><div class="wk">Paperwork (S5): templates, PDFs to Cloud Storage, previews, Anita's push. Impact (S6): ledger, trend, mix, BRSR table, CSV export, tax-maths panel. First production deploy via Cloud Build.</div><div class="ms">live URL, ITC memo and BRSR line generated</div></div>
+        <div class="day"><div class="dt"><b>Day 11</b>Mon 12 Oct</div><div class="wk">Playwright suite complete across emulators; Argos baselines approved; Lighthouse fixes; Setup screen (S0), Hindi and Marathi strings, dark mode, offline state.</div><div class="ms">CI green, Lighthouse PWA pass</div></div>
+        <div class="day"><div class="dt"><b>Day 12</b>Tue 13 Oct</div><div class="wk">Stretch: deploy orchestrator to Vertex AI Agent Engine behind the API; OpenTelemetry traces end to end; Cloud Monitoring dashboard with push delivery.</div><div class="ms">Agent Engine run visible in console</div></div>
+        <div class="day"><div class="dt"><b>Day 13</b>Wed 14 Oct</div><div class="wk">Polish pass on the four demo screens; demo reset job; min-instances 1; copy review of offer and push text in Hindi and Marathi.</div><div class="ms">feature freeze</div></div>
+        <div class="day buffer"><div class="dt"><b>Day 14</b>Thu 15 Oct</div><div class="wk">Buffer and rehearsal: two full six-minute runs on the live URL from two phones and a laptop, push included; fix only what breaks; record a backup video.</div><div class="ms">backup video saved</div></div>
+        <div class="day demo"><div class="dt"><b>Day 15</b>Fri 16 Oct</div><div class="wk">Submission pack: repo, live URL, architecture diagram, 3-minute video, write-up. Submit a day early.</div><div class="ms">submitted</div></div>
+        <div class="day demo"><div class="dt"><b>Deadline</b>Sat 17 Oct</div><div class="wk">Spare day. Nothing scheduled on purpose.</div><div class="ms">done</div></div>
+      </div>
+    </section>
+
+    <section id="cost">
+      <h2>What it costs</h2>
+      <div class="tablewrap"><table class="grid">
+        <tr><th>Item</th><th>Estimate for 2 to 17 Oct</th><th>Note</th></tr>
+        <tr><td>Firebase Hosting, Authentication, Cloud Messaging</td><td>$0</td><td>Free tiers: hosting storage and transfer, auth sign-ins, unlimited FCM. Phone OTP SMS within the free quota for development; demo accounts use test numbers.</td></tr>
+        <tr><td>Cloud Run (agents, min-instances 1 for the last 3 days)</td><td>$5 to $10</td><td>Free tier covers most development traffic.</td></tr>
+        <tr><td>Cloud SQL PostgreSQL (smallest Enterprise, zonal)</td><td>$10 to $20</td><td>Stop the instance on idle days.</td></tr>
+        <tr><td>Gemini on Vertex AI</td><td>$5 to $15</td><td>About 1,500 route runs during development; preview models at list price.</td></tr>
+        <tr><td>BigQuery, Pub/Sub, Cloud Storage, Scheduler, Secret Manager, Logging</td><td>$0 to $5</td><td>Inside free tiers at this scale.</td></tr>
+        <tr><td>Argos CI · GitHub Actions</td><td>$0</td><td>Free plans.</td></tr>
+        <tr><td><b>Total</b></td><td><b>under $50</b></td><td>Budget alert set at $40.</td></tr>
+      </table></div>
+    </section>
+
+    <section id="risks">
+      <h2>Risks and fallbacks</h2>
+      <div class="tablewrap"><table class="grid">
+        <tr><th>Risk</th><th>Likelihood</th><th>Fallback</th></tr>
+        <tr><td>SvelteKit 3 RC breaks @vite-pwa/sveltekit (injectManifest) or adapter-static</td><td><span class="tag warn">medium</span></td><td>Day-1 spike. If it fails, SvelteKit 2.x with Svelte 5: identical code.</td></tr>
+        <tr><td>Push permission denied or unsupported on a judge's device</td><td><span class="tag warn">medium</span></td><td>The inbox shows every item with an unread badge; the demo narrates "notification or inbox". iOS needs the app installed to the Home Screen; the rehearsal phones are set up in advance.</td></tr>
+        <tr><td>Workbox and the FCM handler fight inside one service worker</td><td><span class="tag">low</span></td><td>injectManifest keeps one file we control; the fallback is the FCM-recommended separate <span class="tag">firebase-messaging-sw.js</span> at the root, registered alongside.</td></tr>
+        <tr><td>A Gemini preview model is retired or rate-limited in demo week</td><td><span class="tag warn">medium</span></td><td><span class="tag">MODEL_TIER=stable</span> switches to Gemini 2.5 Flash GA; every call has a deterministic fallback.</td></tr>
+        <tr><td>Agent Engine packaging eats days</td><td><span class="tag warn">medium</span></td><td>Stretch item on day 12 only; the demo runs on Cloud Run regardless.</td></tr>
+        <tr><td>SSE through Cloud Run drops long streams</td><td><span class="tag">low</span></td><td>Timeout 3600 s; keep-alive comment every 20 s; the UI reconnects with <span class="tag">?after=&lt;seq&gt;</span> and falls back to 2-second polling; runs resume from Postgres. Streams go straight to Cloud Run, never through Hosting rewrites or the service worker cache. Firestore listeners are the escape hatch if streaming proves flaky on day 3.</td></tr>
+        <tr><td>Phone OTP SMS fails on stage</td><td><span class="tag">low</span></td><td>Demo accounts use Firebase test phone numbers with fixed codes; no SMS is sent.</td></tr>
+        <tr><td>Playwright flakiness on streaming screens</td><td><span class="tag">low</span></td><td>Stub model tier, mock partners and emulators make runs deterministic; waits on data-testids.</td></tr>
+        <tr><td>Cost runaway from an agent loop</td><td><span class="tag">low</span></td><td>Max 12 tool calls per run, 20 s timeouts, $40 budget alert.</td></tr>
+      </table></div>
+    </section>
+
+    <section id="done">
+      <h2>Definition of done, 17 Oct</h2>
+      <ul class="check">
+        <li>Live Firebase Hosting URL opens on a phone and a laptop; installs as a PWA on both; the agents API runs on Cloud Run in asia-south1.</li>
+        <li>Five roles sign in with Firebase Authentication (Google and phone OTP); judges use demo sign-in with a visible badge.</li>
+        <li>Push notifications reach Priya, Rakesh bhai and a retailer on real phones and deep-link to the right screen; the inbox mirrors them.</li>
+        <li>The nine-stage demo runs end to end on the live URL in six minutes with real Gemini calls (vision, routing text, negotiation reply).</li>
+        <li>Money, GST ITC and BRSR numbers are visible at detect, decide, approve and report; the ITC memo and BRSR CSV download.</li>
+        <li>ExpireSoon listing opens as a buyer sees it; bid, counter and award work; a retailer can order from an offer.</li>
+        <li>CI green: lint, unit, Playwright across three browsers and three viewports on the emulators, Argos baselines approved, Lighthouse PWA pass on the preview URL.</li>
+        <li>Terraform in <span class="tag">infra/</span> recreates the project; no secrets in the repo; budget alert active.</li>
+        <li>Submission pack: repo link, live URL, architecture diagram, three-minute video, write-up naming ADK, Vertex AI, Firebase and the open-source stack.</li>
+      </ul>
+    </section>
+
+    <section id="sources">
+      <h2>Sources</h2>
+      <div class="sources">
+        <div><a href="https://www.i-programmer.info/news/167-javascript/19131-sveltekit-3-release-candidate-available.html">SvelteKit 3 release candidate (Sept 2026)</a> · <a href="https://svelte.dev/blog/whats-new-in-svelte-september-2026">What's new in Svelte, September 2026</a></div>
+        <div><a href="https://github.com/vite-pwa/sveltekit">@vite-pwa/sveltekit</a> · <a href="https://firebase.google.com/docs/cloud-messaging/js/client">FCM for web</a> · <a href="https://firebase.google.com/docs/auth">Firebase Authentication</a> · <a href="https://firebase.google.com/docs/hosting">Firebase Hosting</a></div>
+        <div><a href="https://docs.cloud.google.com/agent-builder/agent-development-kit/overview">Agent Development Kit overview</a> · <a href="https://docs.cloud.google.com/agent-builder/agent-engine/quickstart-adk">Deploy ADK agents on Vertex AI Agent Engine</a></div>
+        <div><a href="https://www.sim.ai/models/vertex">Gemini models on Vertex AI (3.1 Pro Preview, 3 Flash Preview, 2.5 Flash)</a></div>
+        <div><a href="https://argos-ci.com/blog/playwright">Argos CI with Playwright and GitHub Actions</a> · <a href="https://argos-ci.com/docs/llms-full.txt">Argos CI docs</a></div>
+        <div><a href="https://cloud.google.com/cdn/docs">Cloud CDN</a> (the enterprise alternative) · <a href="https://playwright.dev/">Playwright</a> · <a href="https://vitest.dev/">Vitest</a> · <a href="https://www.layerchart.com/">LayerChart</a> · <a href="https://www.shadcn-svelte.com/">shadcn-svelte</a></div>
+      </div>
+    </section>
+  </main>
+</div>
