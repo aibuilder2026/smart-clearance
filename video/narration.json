@@ -8,8 +8,8 @@
  {
   "id": "01-warning",
   "scene": "warning",
-  "text": "Munchly Foods, Pune. In a Nagpur warehouse, eighteen hundred packets of Masala Chips have forty-seven days left. Every morning, the Smart-Clearance agent checks every batch against the delivery apps' date rules and real sell-through. Today, one batch fails. Priya gets a push notification: thirteen hundred and sixty packets will not sell in time.",
-  "audio_sec": 18.09
+  "text": "Munchly Foods, Pune. In a Nagpur warehouse, seventy-seven cartons of Masala Chips have forty-seven days left. Every morning at nine, the Smart-Clearance agent checks every batch against the delivery apps' date rules and the real rate of sale. Today, one batch fails. Priya gets a push notification: thirteen hundred and sixty packets will not sell in time.",
+  "audio_sec": 19.48
  },
  {
   "id": "02-photo",
@@ -33,13 +33,13 @@
   "id": "05-selling",
   "scene": "selling",
   "text": "Then four agents go to work at once. One posts the listing on the marketplace. One sends thirty-eight shopkeepers a Hindi notification with a buy ten, get two offer. Fourteen of them order by lunch. One haggles with a Hyderabad wholesaler. Thirteen rupees is below the floor, so it counters at fourteen twenty with next-day dispatch. Done. Token paid.",
-  "audio_sec": 20.38
+  "audio_sec": 20.4
  },
  {
   "id": "06-road",
   "scene": "road",
-  "text": "Rakesh bhai's van drops the packs at the shops on his normal round. The Hyderabad lot ships once the balance lands. Every packet, still well inside its date.",
-  "audio_sec": 8.6
+  "text": "Rakesh bhai's van drops the cartons at fourteen shops on his normal Tuesday round. The Hyderabad lot ships once the balance lands, five hundred kilometres by truck. Every packet, still well inside its date.",
+  "audio_sec": 11.26
  },
  {
   "id": "07-paperwork",
@@ -62,7 +62,7 @@
  {
   "id": "10-outro",
   "scene": "outro",
-  "text": "Smart-Clearance. Built on Google Cloud with Gemini and the Agent Development Kit. Every carton gets a second chance.",
-  "audio_sec": 6.52
+  "text": "Smart-Clearance. Built on Google Cloud with Gemini and the Agent Development Kit. One tap, twenty-one thousand rupees recovered, two hundred and eighteen kilos saved. Every carton gets a second chance.",
+  "audio_sec": 11.39
  }
 ]

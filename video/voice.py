@@ -9,6 +9,10 @@ Scene durations follow the recordings, so the video is re-timed to the voice.
 """
 import json, re, subprocess, sys, pathlib
 HERE = pathlib.Path(__file__).parent
+# trim leading silence, then trailing silence (by reversing); never cuts inside the speech
+TRIM = ("silenceremove=start_periods=1:start_duration=0.15:start_threshold=-42dB,"
+        "areverse,silenceremove=start_periods=1:start_duration=0.15:start_threshold=-42dB,areverse,"
+        "apad=pad_dur=0.25")
 MV = HERE / "my-voice"
 segs = json.load(open(HERE / "narration.json"))
 
@@ -32,7 +36,7 @@ if single:
         sys.exit(f"found {len(cuts)-1} spoken chunks in all.*, expected {len(segs)}; adjust pauses or record per segment")
     for s, a, b in zip(segs, cuts, cuts[1:]):
         run(["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{a}", "-to", f"{b}", "-i", str(single),
-             "-af", "silenceremove=start_periods=1:start_threshold=-40dB:stop_periods=1:stop_threshold=-40dB",
+             "-af", TRIM,
              "-ar", "48000", "-ac", "1", f"narration/{s['id']}.aiff"])
 else:
     for s in segs:
@@ -40,7 +44,7 @@ else:
         if not src:
             sys.exit(f"missing recording for {s['id']} in my-voice/ (see RECORDING-KIT.md)")
         run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(src),
-             "-af", "silenceremove=start_periods=1:start_threshold=-40dB:stop_periods=1:stop_threshold=-40dB,loudnorm=I=-16:TP=-1.5",
+             "-af", TRIM + ",loudnorm=I=-16:TP=-1.5",
              "-ar", "48000", "-ac", "1", f"narration/{s['id']}.aiff"])
 
 for s in segs:
@@ -50,8 +54,8 @@ speech = sum(s["audio_sec"] for s in segs)
 print(f"speech total {speech:.1f}s (+ pauses = video length)")
 json.dump(segs, open(HERE / "narration.json", "w"), indent=1, ensure_ascii=False)
 
-# total video length follows the voice: speech + 2.2 s pause per segment, outro holds 3 s extra
-total = round(speech + 2.2 * len(segs) + 3, 1)
+# total video length follows the voice: speech + 1.8 s pause per segment (PAUSE in build.py), outro holds 3 s extra
+total = round(speech + 1.8 * len(segs) + 3, 1)
 b = (HERE / "build.py").read_text()
 b = re.sub(r"TOTAL = [\d.]+", f"TOTAL = {total}", b)
 (HERE / "build.py").write_text(b)

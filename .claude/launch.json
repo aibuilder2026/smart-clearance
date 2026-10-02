@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "voice-recorder",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["video/recorder/server.py"],
+      "port": 8765
+    }
+  ]
+}

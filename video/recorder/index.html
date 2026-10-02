@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart-Clearance voice recorder</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{--bg:#0f1512;--panel:#171f1a;--panel2:#1f2923;--ink:#edf2ee;--ink2:#b4bfb8;--line:#2b3630;--green:#4fc08e;--amber:#e3b74d;--red:#ff6b74;
+    --display:"Bricolage Grotesque",system-ui,sans-serif;--body:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);min-height:100vh}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 20px 60px;display:grid;grid-template-columns:300px minmax(0,1fr);gap:22px}
+  @media (max-width:820px){.wrap{grid-template-columns:minmax(0,1fr)}}
+  h1{font-family:var(--display);font-weight:800;font-size:24px;margin:0 0 4px;letter-spacing:-.02em}
+  .sub{color:var(--ink2);font-size:14px;margin:0 0 16px}
+  .list{display:grid;gap:6px}
+  .seg{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border-radius:10px;background:var(--panel);border:1px solid var(--line);cursor:pointer;font-size:14px}
+  .seg.on{border-color:var(--amber);background:var(--panel2)}
+  .seg .dot{width:12px;height:12px;border-radius:50%;background:#3a4a42;justify-self:center}
+  .seg.done .dot{background:var(--green)} .seg .n{font-family:var(--mono);font-size:12px;color:var(--ink2)}
+  .stage{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px 30px;display:grid;gap:18px;min-width:0}
+  .k{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2)}
+  .prompt{font-family:var(--display);font-weight:700;font-size:clamp(24px,2.6vw,34px);line-height:1.35;letter-spacing:-.01em;text-wrap:pretty;min-height:140px}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  button{font-family:var(--body);font-weight:600;font-size:16px;padding:14px 22px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);cursor:pointer}
+  button:disabled{opacity:.4;cursor:default}
+  button.rec{background:var(--red);color:#1a0a0c;border-color:transparent;font-size:18px;padding:16px 28px}
+  button.stop{background:var(--amber);color:#2a1d02;border-color:transparent;font-size:18px;padding:16px 28px}
+  button.ok{background:var(--green);color:#06281a;border-color:transparent}
+  .meter{height:10px;border-radius:5px;background:#243029;overflow:hidden}.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--amber) 70%,var(--red));transition:width .06s}
+  .status{font-family:var(--mono);font-size:13px;color:var(--ink2);min-height:18px}
+  .status b{color:var(--ink)}
+  .count{font-family:var(--display);font-weight:800;font-size:72px;color:var(--amber);line-height:1}
+  audio{width:100%;margin-top:4px}
+  .build{margin-top:10px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 24px;display:grid;gap:12px}
+  pre{margin:0;background:#0b1410;border-radius:10px;padding:12px;font-family:var(--mono);font-size:12px;color:var(--ink2);max-height:260px;overflow:auto;white-space:pre-wrap}
+  kbd{font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--ink2)}
+  .tips{font-size:13px;color:var(--ink2);line-height:1.5}
+</style></head>
+<body><div class="wrap">
+  <aside>
+    <h1>Voice recorder</h1>
+    <p class="sub">Smart-Clearance narration, 11 lines. Click a line, press <kbd>Space</kbd> to record, <kbd>Space</kbd> again to stop.</p>
+    <div class="list" id="list"></div>
+    <p class="tips" style="margin-top:14px">Quiet room, mic about 30 cm away, a touch slower than conversation. Numbers are written the way they should be spoken; "MRP" is said as letters. Re-record any line as often as you like.</p>
+  </aside>
+  <main>
+    <section class="stage">
+      <div class="k" id="label">Pick a line on the left</div>
+      <div class="prompt" id="prompt">Allow the microphone when the browser asks.</div>
+      <div class="meter"><i id="meter"></i></div>
+      <div class="controls">
+        <button id="rec" class="rec" disabled>● Record</button>
+        <button id="stop" class="stop" hidden>■ Stop</button>
+        <button id="play" disabled>▶ Play back</button>
+        <button id="redo" disabled>↺ Re-record</button>
+        <button id="next">Next line →</button>
+      </div>
+      <div class="status" id="status"></div>
+      <audio id="audio" controls hidden></audio>
+    </section>
+    <section class="build">
+      <div class="k">When all 11 lines are green</div>
+      <div class="controls"><button id="build" class="ok" disabled>Build the video with my voice</button><span class="status" id="bstatus"></span></div>
+      <pre id="log" hidden></pre>
+    </section>
+  </main>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+let segs = [], have = {}, cur = 0, stream, ctx, analyser, rafId, recorder, chunks = [], recording = false;
+
+async function load() {
+  segs = await (await fetch('/script.json')).json();
+  await refresh();
+  renderList(); select(firstMissing());
+}
+async function refresh() { const s = await (await fetch('/status')).json(); have = s.have; renderList(); $('build').disabled = Object.values(have).some(v => !v) || s.building; }
+function firstMissing() { const i = segs.findIndex(s => !have[s.id]); return i < 0 ? 0 : i; }
+function renderList() {
+  $('list').innerHTML = segs.map((s, i) => `<div class="seg ${i === cur ? 'on' : ''} ${have[s.id] ? 'done' : ''}" data-i="${i}"><span class="dot"></span><span>${s.scene}</span><span class="n">${s.id.slice(0, 2)} · ~${Math.round(s.placeholder_sec)} s</span></div>`).join('');
+  $('list').querySelectorAll('.seg').forEach(el => el.onclick = () => select(+el.dataset.i));
+}
+function select(i) {
+  cur = i; const s = segs[i]; renderList();
+  $('label').textContent = `${s.id} · ${s.scene} · placeholder ${s.placeholder_sec.toFixed(1)} s`;
+  $('prompt').textContent = s.text;
+  $('rec').disabled = false; $('status').textContent = have[s.id] ? `recorded: ${have[s.id]}` : 'not recorded yet';
+  const a = $('audio'); a.hidden = !have[s.id]; if (have[s.id]) a.src = '/audio/' + have[s.id] + '?t=' + Date.now();
+  $('play').disabled = !have[s.id]; $('redo').disabled = !have[s.id];
+}
+async function mic() {
+  if (stream) return stream;
+  stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: true, autoGainControl: false, channelCount: 1 } });
+  ctx = new AudioContext(); analyser = ctx.createAnalyser(); analyser.fftSize = 1024; ctx.createMediaStreamSource(stream).connect(analyser);
+  const buf = new Float32Array(analyser.fftSize);
+  (function tick() { analyser.getFloatTimeDomainData(buf); let p = 0; for (const v of buf) p = Math.max(p, Math.abs(v)); $('meter').style.width = Math.min(100, p * 180) + '%'; rafId = requestAnimationFrame(tick); })();
+  return stream;
+}
+async function startRec() {
+  if (recording) return;
+  try { await mic(); } catch (e) { $('status').textContent = 'Microphone blocked: ' + e.message + '. Allow the mic for this page, or open http://localhost:8765 in Chrome.'; return; }
+  for (const n of [3, 2, 1]) { $('prompt').innerHTML = `<span class="count">${n}</span>`; await new Promise(r => setTimeout(r, 650)); }
+  $('prompt').textContent = segs[cur].text;
+  chunks = []; const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
+  recorder = new MediaRecorder(stream, { mimeType: mime, audioBitsPerSecond: 128000 });
+  recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+  recorder.onstop = save;
+  recorder.start(); recording = true; const t0 = Date.now();
+  $('rec').hidden = true; $('stop').hidden = false; $('status').innerHTML = '<b>Recording…</b> press Space or Stop when done';
+  recorder._timer = setInterval(() => { $('status').innerHTML = `<b>Recording</b> ${((Date.now() - t0) / 1000).toFixed(1)} s · press Space or Stop when done`; }, 100);
+}
+function stopRec() { if (!recording) return; clearInterval(recorder._timer); recorder.stop(); recording = false; $('rec').hidden = false; $('stop').hidden = true; }
+async function save() {
+  const blob = new Blob(chunks, { type: 'audio/webm' }); const s = segs[cur];
+  $('status').textContent = 'saving…';
+  const r = await (await fetch('/save/' + s.id, { method: 'POST', body: blob })).json();
+  await refresh(); select(cur); $('status').textContent = `saved ${r.saved} (${Math.round(r.bytes / 1024)} KB). Play it back, re-record, or go to the next line.`;
+}
+$('rec').onclick = startRec; $('stop').onclick = stopRec;
+$('play').onclick = () => { const a = $('audio'); a.currentTime = 0; a.play(); };
+$('redo').onclick = startRec;
+$('next').onclick = () => select(Math.min(segs.length - 1, cur + 1));
+document.addEventListener('keydown', e => { if (e.code === 'Space' && e.target.tagName !== 'BUTTON') { e.preventDefault(); recording ? stopRec() : startRec(); } if (e.key === 'ArrowRight') select(Math.min(segs.length - 1, cur + 1)); if (e.key === 'ArrowLeft') select(Math.max(0, cur - 1)); });
+$('build').onclick = async () => {
+  $('build').disabled = true; $('bstatus').textContent = 'building… about 5 minutes (re-timing, re-recording the animation, mixing)'; $('log').hidden = false;
+  const r = await fetch('/build', { method: 'POST' }); if (!r.ok) { $('bstatus').textContent = (await r.json()).error; $('build').disabled = false; return; }
+  const poll = setInterval(async () => { const l = await (await fetch('/log')).json(); $('log').textContent = l.log; $('log').scrollTop = 1e9;
+    if (!l.building) { clearInterval(poll); $('bstatus').textContent = l.exit === 0 ? 'done: video/walkthrough.mp4 now has your voice' : 'build failed, see the log'; $('build').disabled = false; } }, 2000);
+};
+load();
+</script></body></html>
