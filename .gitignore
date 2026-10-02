@@ -6,3 +6,4 @@ video/my-voice/
 .DS_Store
 .impeccable/
 docs/story-img/*.png
+video/clips/*.json
