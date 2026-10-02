@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "jira": {
+    "site": "https://duttaarun2015.atlassian.net",
+    "cloudId": "81c51173-bbea-4905-bbc5-1a880fa348bb",
+    "projectKey": "SC",
+    "projectName": "smart-clearance",
+    "issueTypes": {
+      "epic": "Epic",
+      "story": "Story",
+      "task": "Task",
+      "bug": "Bug",
+      "subtask": "Subtask"
+    },
+    "transitions": {
+      "todo": "",
+      "inProgress": "",
+      "inReview": "",
+      "done": ""
+    },
+    "fields": {
+      "storyPoints": "customfield_10016",
+      "sprint": "customfield_10020"
+    },
+    "labels": {
+      "bug": "bug",
+      "platforms": [],
+      "themes": []
+    },
+    "taxonomy": ".claude/jira/taxonomy.md"
+  },
+  "git": {
+    "baseBranch": "main",
+    "protectedBranches": [
+      "main"
+    ],
+    "requireKey": true,
+    "branch": "{key}-{slug}",
+    "commit": "{key}: {subject}",
+    "prTitle": "[{key}] {title}",
+    "prTemplate": ".github/pull_request_template.md",
+    "route": "gh"
+  },
+  "gates": [
+    {
+      "name": "web",
+      "cwd": "web",
+      "run": "pnpm lint && pnpm check && pnpm test",
+      "paths": [
+        "web/**"
+      ]
+    },
+    {
+      "name": "agents",
+      "cwd": "agents",
+      "run": "uv run ruff check . && uv run pytest",
+      "paths": [
+        "agents/**"
+      ]
+    }
+  ],
+  "work": {
+    "checkpoint": "step",
+    "commitEach": "never",
+    "stateDir": ""
+  },
+  "approvals": {
+    "createIssues": false,
+    "comments": false
+  },
+  "ship": {
+    "askBefore": [
+      "pr",
+      "merge",
+      "close"
+    ],
+    "mergeMethod": "merge",
+    "deleteBranchOnMerge": true,
+    "waitForChecks": true
+  }
+}

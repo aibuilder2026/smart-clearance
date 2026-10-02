@@ -1,0 +1,864 @@
+<title>Smart-Clearance Journey Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Devanagari:wght@500;700&display=swap">
+<style>
+  /* Layout: a godown ledger. Sticky section rail on the left (desktop), one reading column,
+     a horizontally scrolling swimlane map, and money set like a challan (tabular, ruled). */
+  :root {
+    --bg: #f3f6f2;
+    --surface: #ffffff;
+    --surface-2: #e9efe9;
+    --ink: #15201b;
+    --ink-2: #4e5c55;
+    --ink-3: #7d8a83;
+    --line: #d5ded8;
+    --accent: #176b4e;        /* godown green: recovery, second chance */
+    --accent-soft: #dcefe5;
+    --money: #8a5f05;         /* rupee amber: every ₹ highlight */
+    --money-soft: #fbefcf;
+    --urgent: #b4232c;        /* best-before stamp red: expiry, countdown */
+    --urgent-soft: #fbe3e4;
+    --es: #4c2a9c;            /* ExpireSoon marketplace purple */
+    --es-soft: #e9e2f7;
+    --display: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif;
+    --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --hindi: "Noto Sans Devanagari", "IBM Plex Sans", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1512; --surface: #171f1a; --surface-2: #1f2923; --ink: #edf2ee; --ink-2: #aab6ae; --ink-3: #7f8b84;
+      --line: #2b3630; --accent: #4fc08e; --accent-soft: #163427; --money: #e3b74d; --money-soft: #3a2d0c;
+      --urgent: #ff8088; --urgent-soft: #3d1a1d; --es: #b79cf2; --es-soft: #2a1f47; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1512; --surface: #171f1a; --surface-2: #1f2923; --ink: #edf2ee; --ink-2: #aab6ae; --ink-3: #7f8b84;
+    --line: #2b3630; --accent: #4fc08e; --accent-soft: #163427; --money: #e3b74d; --money-soft: #3a2d0c;
+    --urgent: #ff8088; --urgent-soft: #3d1a1d; --es: #b79cf2; --es-soft: #2a1f47; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.55; margin: 0; }
+  a { color: var(--accent); }
+  .wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 24px 80px; display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 36px; }
+  @media (max-width: 860px) { .wrap { grid-template-columns: minmax(0, 1fr); gap: 0; padding-inline: 16px; } .rail { display: none; } }
+  .rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 20px); align-self: start; font-size: 13px; }
+  .rail .brand { font-family: var(--display); font-weight: 800; font-size: 19px; letter-spacing: -0.02em; margin-bottom: 4px; }
+  .rail .brand span { font-family: var(--hindi); color: var(--accent); font-weight: 700; font-size: 16px; margin-left: 6px; }
+  .rail ol { list-style: none; margin: 18px 0 0; padding: 0; border-left: 2px solid var(--line); }
+  .rail li a { display: block; padding: 5px 12px; color: var(--ink-2); text-decoration: none; border-left: 2px solid transparent; margin-left: -2px; }
+  .rail li a:hover, .rail li a:focus-visible { color: var(--ink); border-left-color: var(--accent); outline: none; }
+  main { min-width: 0; }
+  .kicker { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+  h1 { font-family: var(--display); font-weight: 800; font-size: clamp(38px, 6vw, 64px); line-height: 1; letter-spacing: -0.03em; margin: 10px 0 6px; text-wrap: balance; }
+  h1 .hi { font-family: var(--hindi); font-weight: 700; color: var(--accent); font-size: 0.55em; display: block; margin-top: 8px; letter-spacing: 0; }
+  .tagline { font-size: 20px; color: var(--ink-2); max-width: 46ch; margin: 10px 0 0; text-wrap: balance; }
+  h2 { font-family: var(--display); font-weight: 700; font-size: 28px; letter-spacing: -0.02em; margin: 0 0 6px; text-wrap: balance; }
+  h3 { font-family: var(--display); font-weight: 700; font-size: 18px; letter-spacing: -0.01em; margin: 0 0 6px; }
+  section { padding-top: 56px; }
+  section > p.lede { color: var(--ink-2); max-width: 66ch; margin: 0 0 20px; font-size: 16px; }
+  p { max-width: 70ch; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+  .chip { font-family: var(--mono); font-size: 12px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink-2); }
+  .chip.accent { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .chip.money { border-color: var(--money); color: var(--money); background: var(--money-soft); }
+  .chip.urgent { border-color: var(--urgent); color: var(--urgent); background: var(--urgent-soft); }
+  .chip.es { border-color: var(--es); color: var(--es); background: var(--es-soft); }
+
+  /* name card */
+  .namecard { margin-top: 28px; border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 18px 20px; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 20px; }
+  @media (max-width: 700px) { .namecard { grid-template-columns: minmax(0, 1fr); } }
+  .namecard .big { font-family: var(--display); font-size: 34px; font-weight: 800; letter-spacing: -0.02em; line-height: 1; }
+  .namecard .big .hi { font-family: var(--hindi); font-size: 22px; color: var(--accent); margin-left: 8px; }
+  .alts { display: grid; gap: 8px; font-size: 14px; }
+  .alts div { display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); }
+  .alts b { font-family: var(--display); }
+  .alts .hi { font-family: var(--hindi); color: var(--ink-2); }
+
+  /* people */
+  .people { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-top: 14px; }
+  .person { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .person .who { font-family: var(--display); font-weight: 700; font-size: 16px; }
+  .person .role { color: var(--ink-2); font-size: 13px; margin: 2px 0 8px; }
+  .person .want { font-size: 13.5px; }
+  .person .want b { color: var(--accent); }
+  .person.ext { background: var(--surface-2); }
+
+  /* flow strip */
+  .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 10px; margin-top: 16px; }
+  .flow .node { flex: 1 1 150px; min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; position: relative; }
+  .flow .node b { font-family: var(--display); font-size: 15px; display: block; }
+  .flow .node span { font-size: 12.5px; color: var(--ink-2); }
+  .flow .node.agent { border-color: var(--accent); }
+  .flow .node.es { border-color: var(--es); background: var(--es-soft); }
+  .flow .node.money { border-color: var(--money); background: var(--money-soft); }
+  .flow .arrow { align-self: center; color: var(--ink-3); font-size: 18px; flex: 0 0 auto; }
+  .channels-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-top: 10px; }
+  .channels-row .node { padding: 10px 12px; }
+
+  /* swimlane map */
+  .mapwrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); margin-top: 16px; }
+  table.map { border-collapse: separate; border-spacing: 0; min-width: 1500px; font-size: 13px; }
+  table.map th, table.map td { vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); min-width: 150px; }
+  table.map th { text-align: left; background: var(--surface-2); font-family: var(--display); font-weight: 700; font-size: 14px; position: sticky; top: 0; z-index: 2; }
+  table.map th .n { font-family: var(--mono); font-size: 11px; color: var(--ink-3); display: block; font-weight: 400; letter-spacing: 0.08em; }
+  table.map th .t { font-family: var(--mono); font-size: 11px; color: var(--accent); display: block; font-weight: 400; margin-top: 2px; }
+  table.map td.lane, table.map th.lane { position: sticky; left: 0; z-index: 3; background: var(--surface-2); font-family: var(--display); font-weight: 700; min-width: 140px; width: 140px; font-size: 13px; }
+  table.map th.lane { z-index: 4; }
+  table.map td.lane small { display: block; font-family: var(--body); font-weight: 400; color: var(--ink-2); font-size: 11.5px; }
+  table.map tr.money td { background: var(--money-soft); }
+  table.map tr.money td.lane { background: var(--surface-2); }
+  table.map td .pain { color: var(--urgent); }
+  table.map td .relief { color: var(--accent); }
+  table.map td code { font-family: var(--mono); font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+  table.map tr:last-child td { border-bottom: none; }
+  table.map tr.screen td { font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
+  .scrollhint { font-family: var(--mono); font-size: 11px; color: var(--ink-3); margin: 6px 2px 0; }
+
+  /* stage cards */
+  .stages { display: grid; gap: 14px; margin-top: 16px; }
+  .stage { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; display: grid; grid-template-columns: 56px minmax(0, 1fr) minmax(0, 220px); gap: 18px; }
+  @media (max-width: 760px) { .stage { grid-template-columns: 56px minmax(0, 1fr); } .stage .side { grid-column: 2; } }
+  .stage .num { font-family: var(--display); font-weight: 800; font-size: 34px; line-height: 1; color: var(--accent); letter-spacing: -0.03em; }
+  .stage .num small { display: block; font-family: var(--mono); font-size: 10px; color: var(--ink-3); letter-spacing: 0.1em; margin-top: 4px; }
+  .stage h3 { font-size: 20px; }
+  .stage .who { font-family: var(--mono); font-size: 12px; color: var(--ink-2); margin-bottom: 8px; }
+  .stage ul { margin: 6px 0 0; padding-left: 18px; }
+  .stage li { margin: 3px 0; }
+  .stage .side { display: grid; gap: 10px; align-content: start; }
+  .callout { border-radius: 10px; padding: 10px 12px; font-size: 13px; }
+  .callout .lbl { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; display: block; margin-bottom: 3px; }
+  .callout.money { background: var(--money-soft); color: var(--ink); border: 1px solid var(--money); }
+  .callout.money .lbl { color: var(--money); }
+  .callout.money .v { font-family: var(--display); font-size: 22px; font-weight: 800; letter-spacing: -0.02em; display: block; }
+  .callout.screen { background: var(--surface-2); border: 1px solid var(--line); }
+  .callout.screen .lbl { color: var(--ink-3); }
+  .callout.urgent { background: var(--urgent-soft); border: 1px solid var(--urgent); }
+  .callout.urgent .lbl { color: var(--urgent); }
+  .bubble { font-family: var(--hindi); background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px 12px 12px 2px; padding: 8px 12px; font-size: 13.5px; max-width: 46ch; margin-top: 8px; }
+  .bubble small { display: block; font-family: var(--mono); font-size: 10.5px; color: var(--ink-3); margin-top: 4px; }
+
+  /* tables */
+  .tablewrap { overflow-x: auto; margin-top: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+  table.grid { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 700px; }
+  table.grid th, table.grid td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.grid th { background: var(--surface-2); font-family: var(--display); font-weight: 700; font-size: 13px; }
+  table.grid tr:last-child td { border-bottom: none; }
+  table.grid td.num, table.grid th.num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--mono); white-space: nowrap; }
+  table.grid tr.total td { font-weight: 600; background: var(--money-soft); }
+  table.grid tr.neg td.num { color: var(--urgent); }
+  .tag { font-family: var(--mono); font-size: 11px; padding: 2px 7px; border-radius: 4px; background: var(--surface-2); color: var(--ink-2); white-space: nowrap; }
+  .tag.ok { background: var(--accent-soft); color: var(--accent); }
+  .tag.no { background: var(--urgent-soft); color: var(--urgent); }
+  .tag.mock { background: var(--es-soft); color: var(--es); }
+
+  /* channel cards */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 14px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; min-width: 0; }
+  .card h3 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .card .rule { font-family: var(--mono); font-size: 12px; color: var(--ink-2); margin: 4px 0 8px; }
+  .card ul { margin: 0; padding-left: 18px; font-size: 13.5px; }
+  .card li { margin: 3px 0; }
+  .card.es { border-color: var(--es); }
+  .card.base { border-color: var(--urgent); }
+
+  /* ledger */
+  .ledger { margin-top: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .ledger .head { padding: 14px 18px; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: baseline; }
+  .ledger .head b { font-family: var(--display); font-size: 17px; }
+  .ledger .head span { font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
+  .ledger .cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  @media (max-width: 760px) { .ledger .cols { grid-template-columns: minmax(0, 1fr); } }
+  .ledger .col { padding: 14px 18px; min-width: 0; }
+  .ledger .col + .col { border-left: 1px solid var(--line); }
+  @media (max-width: 760px) { .ledger .col + .col { border-left: none; border-top: 1px solid var(--line); } }
+  .ledger .col h4 { margin: 0 0 8px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+  .ledger .row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; padding: 6px 0; border-bottom: 1px dashed var(--line); font-size: 13.5px; }
+  .ledger .row .v { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .ledger .row.sum { border-bottom: none; border-top: 2px solid var(--ink); margin-top: 4px; padding-top: 8px; font-weight: 600; }
+  .ledger .row.neg .v { color: var(--urgent); }
+  .ledger .row.pos .v { color: var(--accent); }
+  .ledger .swing { padding: 16px 18px; background: var(--money-soft); border-top: 1px solid var(--money); display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; }
+  .ledger .swing .v { font-family: var(--display); font-size: 36px; font-weight: 800; letter-spacing: -0.03em; color: var(--money); line-height: 1; }
+  .ledger .swing span { font-size: 13.5px; color: var(--ink-2); }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 14px; }
+  .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .tile .lbl { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+  .tile .v { font-family: var(--display); font-size: 26px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; margin-top: 4px; }
+  .tile .v.money { color: var(--money); }
+  .tile .v.accent { color: var(--accent); }
+  .tile small { display: block; font-size: 12px; color: var(--ink-2); margin-top: 3px; }
+  .note { font-size: 13px; color: var(--ink-2); border-left: 3px solid var(--line); padding: 6px 12px; margin: 14px 0 0; max-width: 72ch; }
+  .note b { color: var(--ink); }
+
+  /* screens */
+  .screens { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-top: 14px; }
+  .screen { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+  .screen .k { font-family: var(--mono); font-size: 11px; color: var(--ink-3); letter-spacing: 0.08em; text-transform: uppercase; }
+  .screen h3 { margin-top: 2px; }
+  .screen ul { margin: 6px 0 0; padding-left: 18px; font-size: 13.5px; }
+  .screen li { margin: 3px 0; }
+  .screen .hl { background: var(--money-soft); color: var(--ink); padding: 0 4px; border-radius: 3px; }
+  /* ExpireSoon mini mock */
+  .esmock { margin-top: 12px; border: 1px solid var(--es); border-radius: 10px; overflow: hidden; font-size: 12.5px; background: var(--surface); }
+  .esmock .bar { background: var(--es); color: #fff; padding: 8px 12px; font-family: var(--display); font-weight: 700; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .esmock .bar span { font-family: var(--mono); font-weight: 400; font-size: 11px; opacity: 0.9; }
+  .esmock .bodyx { padding: 12px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 150px); gap: 12px; }
+  @media (max-width: 500px) { .esmock .bodyx { grid-template-columns: minmax(0, 1fr); } }
+  .esmock .title { font-family: var(--display); font-weight: 700; font-size: 15px; }
+  .esmock .price { margin-top: 4px; }
+  .esmock .price s { color: var(--ink-3); }
+  .esmock .price b { font-family: var(--display); font-size: 20px; color: var(--es); }
+  .esmock .price .off { font-family: var(--mono); font-size: 11px; background: var(--es-soft); color: var(--es); padding: 1px 6px; border-radius: 4px; margin-left: 6px; }
+  .esmock dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 10px; margin: 8px 0 0; font-size: 12px; }
+  .esmock dt { color: var(--ink-3); font-family: var(--mono); font-size: 11px; }
+  .esmock dd { margin: 0; }
+  .esmock .bid { border: 1px solid var(--line); border-radius: 8px; padding: 10px; display: grid; gap: 6px; }
+  .esmock .bid .btn { background: var(--es); color: #fff; text-align: center; padding: 7px; border-radius: 6px; font-weight: 600; }
+  .esmock .bid small { color: var(--ink-2); font-size: 11px; }
+  .esmock .chat { grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 8px; display: grid; gap: 4px; font-size: 12px; }
+  .esmock .chat div { padding: 5px 9px; border-radius: 8px; max-width: 80%; background: var(--surface-2); }
+  .esmock .chat div.me { background: var(--es-soft); justify-self: end; }
+  .esmock .chat small { font-family: var(--mono); font-size: 10px; color: var(--ink-3); display: block; }
+
+  /* decisions, questions */
+  .decisions { display: grid; gap: 10px; margin-top: 14px; }
+  .dec { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 14px; }
+  .dec .ok { font-family: var(--display); font-weight: 800; color: var(--accent); font-size: 18px; line-height: 1.2; }
+  .dec b { font-family: var(--display); }
+  ol.q { padding-left: 20px; margin: 10px 0 0; max-width: 70ch; }
+  ol.q li { margin: 6px 0; }
+  .sources { columns: 2; column-gap: 28px; font-size: 13px; margin-top: 12px; }
+  @media (max-width: 700px) { .sources { columns: 1; } }
+  .sources div { break-inside: avoid; margin-bottom: 6px; }
+  .mono { font-family: var(--mono); }
+  @media (prefers-reduced-motion: no-preference) { .flow .node, .stage, .card { transition: border-color .15s ease; } }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+  <nav class="rail" aria-label="Sections">
+    <div class="brand">Smart-Clearance</div>
+    <div class="kicker">Solution doc · v4</div>
+    <ol>
+      <li><a href="#name">Name & pitch</a></li>
+      <li><a href="#client">The client</a></li>
+      <li><a href="#picture">One picture</a></li>
+      <li><a href="#map">Journey map</a></li>
+      <li><a href="#stages">Stage by stage</a></li>
+      <li><a href="#agents">The agents</a></li>
+      <li><a href="#channels">Channels</a></li>
+      <li><a href="#money">Money & tax</a></li>
+      <li><a href="#prototype">Prototype scope</a></li>
+      <li><a href="#decisions">Decisions</a></li>
+      <li><a href="#next">Build order</a></li>
+      <li><a href="#sources">Sources</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header id="name">
+      <div class="kicker">AI Hackathon · Retail & Commerce / Manufacturing track · Signed-off solution v4 · 2 Oct 2026</div>
+      <h1>Smart-Clearance<span class="hi">हर कार्टन को दूसरा मौका</span></h1>
+      <p class="tagline">Every near-expiry carton gets a second chance, chosen by AI. An agent that decides, batch by batch, where short-dated stock earns the most in the days it has left, then goes and does it.</p>
+      <div class="meta">
+        <span class="chip accent">Client: Munchly Foods (fictional)</span>
+        <span class="chip es">Marketplace: ExpireSoon (generic Indian B2B marketplace, mocked)</span>
+        <span class="chip">Demo: full 9 stages · about 6 min</span>
+        <span class="chip accent">PWA with in-app push · WhatsApp = future scope</span>
+        <span class="chip money">Highlights: ₹ recovered · GST ITC · BRSR</span>
+        <span class="chip urgent">Out of scope: medicines</span>
+      </div>
+
+      <div class="namecard">
+        <div>
+          <div class="kicker">Name, decided by the team</div>
+          <div class="big" style="margin-top:8px">Smart-Clearance</div>
+          <p style="margin:10px 0 0;font-size:14px">Says what it does in two words, and reads the same to judges, finance and a distributor. "Short-Date Router" stays as the internal name of the routing engine inside it.</p>
+          <p style="margin:8px 0 0;font-size:13px;color:var(--ink-2)">Tagline: "Every near-expiry carton gets a second chance, chosen by AI." Hindi line for the notification voice: <span class="hi">हर कार्टन को दूसरा मौका</span>.</p>
+        </div>
+        <div class="alts">
+          <div class="kicker" style="grid-template-columns:1fr">Considered and dropped</div>
+          <div><b>Dobara</b><span>Warm, but only lands for Hindi speakers.</span></div>
+          <div><b>Mauka</b><span>Generic; several Indian apps already use it.</span></div>
+          <div><b>Nikaasi</b><span>Trade-accurate, less friendly.</span></div>
+        </div>
+      </div>
+    </header>
+
+    <section id="client">
+      <h2>The client we are prototyping for</h2>
+      <p class="lede">One fictional B2B client, built in enough detail that every number in the demo has a source. Munchly Foods is a mid-size listed snacks company, so GST, BRSR and FSSAI all apply to it.</p>
+      <div class="tablewrap">
+        <table class="grid">
+          <tr><th style="width:200px">Munchly Foods Pvt Ltd</th><td>Pune. Listed on NSE (so BRSR Core applies). GSTIN 27AABCM1234F1Z5. FSSAI licence 10019022001234. ₹640 crore revenue, 8 demo SKUs: Masala Chips, Choco Cream Biscuits, Peanut Chikki, Instant Poha, Masala Oats, Mango Drink, plus a personal-care line (Glowra Face Wash, Coconut Hair Oil).</td></tr>
+          <tr><th>Distributor network</th><td>4 super-stockists in the demo: Rakesh Traders (Nagpur), Patil Distributors (Pune), Gupta &amp; Sons (Indore), Lakshmi Agencies (Hyderabad). 195 kiranas in their clusters. Stock data comes from a Bizom-style DMS export plus label photos taken in the Smart-Clearance app.</td></tr>
+          <tr><th>The problem, in numbers</th><td>Quick-commerce apps reject stock below their shelf-life gate (Blinkit 90+ days; Zepto and Instamart 60% of life). Munchly gets about ₹18 lakh of short-dated stock pushed back per quarter. Today 70% of it is destroyed, which also reverses the GST input credit on it.</td></tr>
+        </table>
+      </div>
+      <div class="people">
+        <div class="person"><div class="who">Priya Deshmukh</div><div class="role">Regional Supply-Chain Manager, Munchly · primary user</div><div class="want">Wants <b>one decision per batch</b> she can approve from her phone, with the money shown before she says yes.</div></div>
+        <div class="person"><div class="who">Rakesh bhai</div><div class="role">Owner, Rakesh Traders, Nagpur · distributor</div><div class="want">Runs on Tally and his phone. Signs in with his phone number. Wants <b>stock out of the godown</b> with as few taps as possible.</div></div>
+        <div class="person"><div class="who">Anita Rao</div><div class="role">Finance &amp; GST, Munchly</div><div class="want">Wants to <b>stop reversing ITC</b> on destroyed goods and get the invoice, credit note and e-way bill without chasing.</div></div>
+        <div class="person"><div class="who">Vikram Sethi</div><div class="role">Sustainability &amp; BRSR, Munchly</div><div class="want">Wants a <b>waste-diverted number with evidence</b> for the BRSR Core Principle 6 table.</div></div>
+        <div class="person ext"><div class="who">Sri Venkateswara Traders</div><div class="role">Kirana wholesaler, Hyderabad · ExpireSoon buyer</div><div class="want">Wants <b>visible dates, a fair price and 24-hour dispatch</b>. Bids with a 15% token.</div></div>
+        <div class="person ext"><div class="who">38 kirana owners</div><div class="role">Nagpur, Wardha, Kamptee cluster</div><div class="want">Want a <b>scheme in Hindi as a notification</b> they can accept with one tap in the app.</div></div>
+        <div class="person ext"><div class="who">Feeding India &amp; IFBN coordinators</div><div class="role">Surplus-food organisations (both supported)</div><div class="want">Want <b>packaged food with 15–21+ days left</b>, an FSSAI checklist and a pickup slot.</div></div>
+      </div>
+    </section>
+
+    <section id="picture">
+      <h2>What Smart-Clearance does, in one picture</h2>
+      <p class="lede">The same shape as the whiteboard sketch, with two additions: a verification step (the label photo) and a settlement step (money and paperwork), because in India both are where value leaks.</p>
+      <div class="flow">
+        <div class="node"><b>Inventory feed</b><span>Batches, best-before dates, sell-through by pincode (DMS export → BigQuery)</span></div>
+        <div class="arrow">→</div>
+        <div class="node agent"><b>Risk detected</b><span>Watcher Agent: q-commerce gates fail, batch will not sell out in time</span></div>
+        <div class="arrow">→</div>
+        <div class="node agent"><b>Label verified</b><span>Vision Agent reads the carton photo taken in the app</span></div>
+        <div class="arrow">→</div>
+        <div class="node agent"><b>Router compares channels</b><span>₹ recovered vs days left, with the GST-aware write-off as the baseline</span></div>
+      </div>
+      <div class="channels-row">
+        <div class="node es"><b>ExpireSoon</b><span>Online B2B listing, bids, chat</span></div>
+        <div class="node"><b>Kirana cluster</b><span>Push offer in the app, van delivery</span></div>
+        <div class="node"><b>Discount D2C / Staff</b><span>Brand clearance page, HR notice</span></div>
+        <div class="node"><b>Food bank</b><span>Feeding India or IFBN, FSSAI checklist</span></div>
+        <div class="node" style="border-style:dashed"><b>Write-off</b><span>Last resort, with ITC reversal booked</span></div>
+      </div>
+      <div class="flow">
+        <div class="node agent"><b>Agents execute</b><span>Lister, Outreach, Negotiator, Donation agents post, message and close deals</span></div>
+        <div class="arrow">→</div>
+        <div class="node money"><b>Settle &amp; paper</b><span>Invoice, e-way bill check, credit note, ITC memo, FSSAI checklist</span></div>
+        <div class="arrow">→</div>
+        <div class="node money"><b>Finance &amp; ESG dashboard</b><span>₹ recovered, ITC protected, BRSR waste line, meals</span></div>
+      </div>
+    </section>
+
+    <section id="map">
+      <h2>End-to-end journey map</h2>
+      <p class="lede">Nine stages from connecting the data to the quarterly report. Read down a column for one stage; read across the money lane to see where the ₹ and tax story is made visible in the prototype.</p>
+      <div class="mapwrap">
+        <table class="map">
+          <thead>
+            <tr>
+              <th class="lane">Lane</th>
+              <th><span class="n">STAGE 1</span>Connect<span class="t">once · 15 min</span></th>
+              <th><span class="n">STAGE 2</span>Detect<span class="t">day 0 · 09:00</span></th>
+              <th><span class="n">STAGE 3</span>Verify<span class="t">day 0 · 09:20</span></th>
+              <th><span class="n">STAGE 4</span>Value<span class="t">day 0 · 09:21</span></th>
+              <th><span class="n">STAGE 5</span>Decide<span class="t">day 0 · 09:22</span></th>
+              <th><span class="n">STAGE 6</span>Approve<span class="t">day 0 · 09:40</span></th>
+              <th><span class="n">STAGE 7</span>Execute<span class="t">day 0–3</span></th>
+              <th><span class="n">STAGE 8</span>Settle<span class="t">day 3–7</span></th>
+              <th><span class="n">STAGE 9</span>Report<span class="t">monthly · quarterly</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="lane">Who acts<small>people</small></td>
+              <td>Priya, Anita (guardrails)</td>
+              <td>Nobody. The Watcher runs.</td>
+              <td>Rakesh bhai (one photo)</td>
+              <td>Nobody. Valuer runs.</td>
+              <td>Router proposes</td>
+              <td>Priya (one tap)</td>
+              <td>Buyers, kiranas, food bank respond</td>
+              <td>Anita reviews, Rakesh bhai dispatches</td>
+              <td>Vikram, Anita, CFO</td>
+            </tr>
+            <tr>
+              <td class="lane">User sees / does<small>front stage</small></td>
+              <td>Connects DMS export, sets channel allow-list, floor price per category (e.g. 35% of MRP), donation partners, brand-safety rules.</td>
+              <td>Push notification + dashboard alert: "MF-2409-117 Masala Chips: blocked from q-commerce, 1,360 units will not sell by 18 Nov."</td>
+              <td>Rakesh bhai gets a Hindi push: "carton ka photo bhejo". He taps it, the camera opens, one picture.</td>
+              <td>Channel table appears: price, days to clear, net ₹ per channel, with ineligible channels greyed and the reason shown.</td>
+              <td>A recommended split with plain-language reasoning and one alternative ("all to ExpireSoon") side by side.</td>
+              <td>Taps <b>Approve</b> in the app, from the push or the dashboard. Nothing is published before this.</td>
+              <td>Watches the agent timeline: listing live, kirana orders ticking up, bid countered, award.</td>
+              <td>Document pack ready: invoice, e-way bill check, credit note, ITC memo. Dispatch calendar updated.</td>
+              <td>Finance &amp; ESG dashboard; one click exports the BRSR waste table and the GST memo.</td>
+            </tr>
+            <tr>
+              <td class="lane">Agents do<small>back stage</small></td>
+              <td>Data Agent maps DMS columns, loads BigQuery, back-fills 90 days of sell-through by pincode.</td>
+              <td>Watcher checks each q-commerce gate, projects sell-through to expiry, raises <code>batch.at_risk</code>.</td>
+              <td>Vision Agent (Gemini) reads batch no., MFG, best-before, MRP from the photo; reconciles with the DMS record.</td>
+              <td>Valuer prices 6 channels against days left, capacities and floor; computes the GST-aware write-off baseline.</td>
+              <td>Router allocates units greedily by net ₹/unit under capacity and time limits; writes the explanation.</td>
+              <td>Waits. Logs the approval with who, when, channel.</td>
+              <td>Lister posts to ExpireSoon; Outreach pushes a Hindi offer to 38 kiranas' phones; Negotiator handles bids and chat; Donation Agent books pickup.</td>
+              <td>Paperwork Agent drafts invoice, checks e-way bill threshold, issues credit note, writes ITC memo and FSSAI checklist.</td>
+              <td>Impact Agent posts the ledger: ₹ recovered, ITC retained, kg diverted, CO₂e, meals; builds BRSR rows.</td>
+            </tr>
+            <tr>
+              <td class="lane">Touchpoint<small>channel</small></td>
+              <td>Web dashboard</td>
+              <td>Push notification, dashboard</td>
+              <td>Push + in-app camera</td>
+              <td>Dashboard</td>
+              <td>Dashboard, push summary</td>
+              <td>Push → approve sheet, dashboard button</td>
+              <td>ExpireSoon (web), push + in-app offer page for kiranas, HR channel, food-bank partner</td>
+              <td>Dashboard documents, email to finance</td>
+              <td>Dashboard, CSV/PDF export</td>
+            </tr>
+            <tr>
+              <td class="lane">Data &amp; tools<small>mocked in prototype</small></td>
+              <td>BigQuery (synthetic 8 SKUs, 4 distributors), Pub/Sub</td>
+              <td>Gate rules table, sell-through model</td>
+              <td>Gemini vision (mocked response with confidence)</td>
+              <td>Price history by category and days-left, GST rates per HSN, EPR factors</td>
+              <td>Allocation solver, guardrails</td>
+              <td>Approval log</td>
+              <td><span class="tag mock">ExpireSoon API (mock)</span> <span class="tag ok">FCM push (real)</span> <span class="tag mock">Food-bank API (mock)</span></td>
+              <td>Document templates, e-way bill rule, Legal Metrology check</td>
+              <td>Ledger, BRSR Core template</td>
+            </tr>
+            <tr class="money">
+              <td class="lane">Money &amp; tax moment<small>highlighted on screen</small></td>
+              <td>Floor price and "true cost of write-off" formula shown during setup.</td>
+              <td><b>₹40,800</b> at MRP at risk; write-off would cost <b>−₹27,717</b> incl. ITC reversal.</td>
+              <td>MRP ₹30 confirmed from the pack: prices anchor to a verified number.</td>
+              <td>Per channel: <b>net ₹/unit</b> and whether ITC is retained (sale) or reversed (destroy, donation-indicative).</td>
+              <td><b>₹21,770</b> net recovered vs <b>−₹27,717</b> write-off: swing <b>₹49,487</b>. 54% of MRP.</td>
+              <td>Approval screen repeats the swing and the ITC retained (<b>₹2,611</b>).</td>
+              <td>Negotiator shows planned vs actual as bids land (₹15 → ₹14.2/unit).</td>
+              <td>ITC memo: "no reversal u/s 17(5)(h), goods supplied under invoice". E-way bill: not required (&lt; ₹50,000).</td>
+              <td>Month: ₹ recovered, ITC protected, disposal avoided, EPR avoided; BRSR Principle 6 line with evidence.</td>
+            </tr>
+            <tr>
+              <td class="lane">Pain → relief<small>emotion</small></td>
+              <td><span class="pain">"Another tool to feed"</span> → <span class="relief">15-minute setup from an export</span></td>
+              <td><span class="pain">"We find out when it's already expired"</span> → <span class="relief">47 days of warning</span></td>
+              <td><span class="pain">"DMS data is wrong half the time"</span> → <span class="relief">the photo is the truth</span></td>
+              <td><span class="pain">"We just dump it to whoever answers"</span> → <span class="relief">six options, priced</span></td>
+              <td><span class="pain">"Who decides?"</span> → <span class="relief">a recommendation with reasons</span></td>
+              <td><span class="pain">"I don't trust a bot to sell my brand"</span> → <span class="relief">nothing goes out without a tap</span></td>
+              <td><span class="pain">"Listing and chasing takes days"</span> → <span class="relief">live in minutes, agent chases</span></td>
+              <td><span class="pain">"Finance finds out at month end"</span> → <span class="relief">papers ready at award</span></td>
+              <td><span class="pain">"We have no waste number"</span> → <span class="relief">BRSR line with evidence</span></td>
+            </tr>
+            <tr class="screen">
+              <td class="lane">Prototype screen</td>
+              <td>S0 Setup (static)</td>
+              <td>S1 Command Center</td>
+              <td>S2 Route Room · label card</td>
+              <td>S2 Route Room · channel table + chart</td>
+              <td>S2 Route Room · split + money panel</td>
+              <td>S2 · Approve sheet + push</td>
+              <td>S3 Execution + S4 ExpireSoon listing</td>
+              <td>S5 Paperwork</td>
+              <td>S6 Finance &amp; ESG dashboard</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="scrollhint">← scroll sideways for all nine stages · the first column stays put</div>
+    </section>
+
+    <section id="stages">
+      <h2>Stage by stage, with the demo batch</h2>
+      <p class="lede">The demo follows one batch end to end: <span class="mono">MF-2409-117</span>, Munchly Masala Chips 150 g, 1,840 units at Rakesh Traders' godown in Nagpur, best-before in 47 days, MRP ₹30, selling 12 units a day in that cluster.</p>
+      <div class="stages">
+
+        <div class="stage">
+          <div class="num">1<small>CONNECT</small></div>
+          <div>
+            <h3>Priya connects the data and sets the guardrails</h3>
+            <div class="who">Priya · Anita · Data Agent · once, 15 minutes</div>
+            <p>Priya uploads the distributor stock export (batch, best-before, units, godown) and the last 90 days of secondary sales. The Data Agent maps the columns and loads BigQuery. Anita sets the money rules the Router must obey.</p>
+            <ul>
+              <li>Channel allow-list per category (personal care never goes to food banks; premium gift packs never to staff sale).</li>
+              <li>Floor price: never below 35% of MRP for snacks and biscuits, 40% for staples, 30% for beverages.</li>
+              <li>Donation partners: Feeding India and India FoodBanking Network, both with their intake rules.</li>
+              <li>Approval policy: first 10 routes per channel need a tap; after that the agent runs within guardrails and reports.</li>
+            </ul>
+          </div>
+          <div class="side">
+            <div class="callout money"><span class="lbl">Shown on screen</span>The write-off formula: inventory at cost + ITC reversal + disposal + EPR. Anita sees it before any batch is routed.</div>
+            <div class="callout screen"><span class="lbl">Prototype</span>S0 Setup, static page with the rules pre-filled.</div>
+          </div>
+        </div>
+
+        <div class="stage">
+          <div class="num">2<small>DETECT</small></div>
+          <div>
+            <h3>The Watcher raises a batch that will not make it</h3>
+            <div class="who">Watcher Agent · day 0, 09:00 · Pub/Sub <span class="mono">batch.at_risk</span></div>
+            <p>Every morning the Watcher runs every batch through the three quick-commerce gates and projects sell-through to the best-before date. Retailers will not take stock in the last week, so the projection stops seven days before expiry.</p>
+            <ul>
+              <li>Blinkit needs 90+ days: batch has 47. Blocked.</li>
+              <li>Zepto and Instamart need 60% of a 365-day life (219 days). Blocked.</li>
+              <li>Sell-through 12 a day × 40 usable days = 480 units will sell. <b>1,360 units at risk</b>, ₹40,800 at MRP.</li>
+            </ul>
+            <div class="bubble">Priya ji, Nagpur godown mein Masala Chips 150g (batch MF-2409-117) ki 1,360 units 18 Nov se pehle nahi bikengi. Q-commerce block hai. Route dekhne ke liye tap karein.<small>Push notification · Smart-Clearance → Priya · 09:00</small></div>
+          </div>
+          <div class="side">
+            <div class="callout urgent"><span class="lbl">Countdown</span>47 days left · 1,360 of 1,840 units at risk</div>
+            <div class="callout money"><span class="lbl">If destroyed</span><span class="v">−₹27,717</span>₹21,760 inventory + ₹2,611 ITC reversal + ₹2,040 disposal + ₹1,306 EPR</div>
+            <div class="callout screen"><span class="lbl">Prototype</span>S1 Command Center: KPI tiles, at-risk list with countdown bars and gate chips.</div>
+          </div>
+        </div>
+
+        <div class="stage">
+          <div class="num">3<small>VERIFY</small></div>
+          <div>
+            <h3>Rakesh bhai sends one photo; Gemini reads the carton</h3>
+            <div class="who">Vision Agent · Rakesh bhai · day 0, 09:20</div>
+            <p>Distributor stock data in India is often stale, so before any money is quoted the agent asks for the truth from the godown floor. Rakesh bhai taps the notification and photographs the carton label with the app's camera. Gemini extracts batch number, MFG date, best-before and MRP, with a confidence score, and reconciles it with the DMS record.</p>
+            <ul>
+              <li>Batch MF-2409-117 · MFG 18 May 2026 · Best before 18 Nov 2026 · MRP ₹30.00 · confidence 0.97. Matches.</li>
+              <li>If it did not match, the agent would re-run the risk on the photo's date and flag the DMS row for correction.</li>
+              <li>The photo becomes the listing image and the audit evidence for the BRSR line.</li>
+            </ul>
+            <div class="bubble">Rakesh bhai, Masala Chips 150g ka ek carton ka label photo bhej dein (batch MF-2409-117). Bas ek photo, baaki hum kar lenge.<small>Push · Smart-Clearance → Rakesh Traders · 09:05 · photo uploaded 09:19</small></div>
+          </div>
+          <div class="side">
+            <div class="callout screen"><span class="lbl">Prototype</span>S2 Route Room, label card: photo thumbnail, extracted fields, "Verified by Gemini vision" with confidence.</div>
+            <div class="callout money"><span class="lbl">Why it matters for money</span>Every ₹ in the next step is anchored to the MRP printed on the pack, not a spreadsheet.</div>
+          </div>
+        </div>
+
+        <div class="stage">
+          <div class="num">4<small>VALUE</small></div>
+          <div>
+            <h3>The Valuer prices six channels against the clock</h3>
+            <div class="who">Valuer Agent · day 0, 09:21 · BigQuery price history + GST and EPR factors</div>
+            <p>For the 1,360 at-risk units the Valuer builds one table: what each channel pays, how long it takes, how many units it can absorb, what it costs to use, and whether the GST input credit survives. The write-off is not "zero"; it is a negative number.</p>
+            <div class="tablewrap">
+              <table class="grid">
+                <tr><th>Channel</th><th>Needs</th><th class="num">Price</th><th class="num">Net ₹/unit</th><th class="num">Capacity</th><th>Clears in</th><th>ITC</th></tr>
+                <tr><td>ExpireSoon listing</td><td>30+ days left</td><td class="num">₹15.00 (50%)</td><td class="num">15.00</td><td class="num">unlimited</td><td>5–9 days</td><td><span class="tag ok">retained</span></td></tr>
+                <tr><td>Kirana cluster push</td><td>20+ days</td><td class="num">₹18.00 (60%)</td><td class="num">17.50</td><td class="num">588</td><td>10–14 days</td><td><span class="tag ok">retained</span></td></tr>
+                <tr><td>Discount D2C</td><td>25+ days</td><td class="num">₹15.00 (50%)</td><td class="num">12.00</td><td class="num">147</td><td>7–12 days</td><td><span class="tag ok">retained</span></td></tr>
+                <tr><td>Staff sale</td><td>any</td><td class="num">₹12.00 (40%)</td><td class="num">12.00</td><td class="num">150</td><td>2–3 days</td><td><span class="tag ok">retained</span></td></tr>
+                <tr><td>Food bank donation</td><td>15+ days, food</td><td class="num">₹0</td><td class="num">−0.50</td><td class="num">unlimited</td><td>1–2 days</td><td><span class="tag">reversed · indicative</span></td></tr>
+                <tr class="neg"><td>Write-off (destroy)</td><td>—</td><td class="num">₹0</td><td class="num">−20.38</td><td class="num">—</td><td>—</td><td><span class="tag no">reversed</span></td></tr>
+              </table>
+            </div>
+          </div>
+          <div class="side">
+            <div class="callout money"><span class="lbl">The number nobody shows today</span><span class="v">−₹20.38</span>per unit destroyed: ₹16 cost + ₹1.92 ITC reversal + ₹1.50 disposal + ₹0.96 EPR</div>
+            <div class="callout screen"><span class="lbl">Prototype</span>S2 Route Room: channel table with eligibility reasons, bar chart of net ₹ per channel with the write-off bar below zero. Table view toggle for accessibility.</div>
+          </div>
+        </div>
+
+        <div class="stage">
+          <div class="num">5<small>DECIDE</small></div>
+          <div>
+            <h3>The Router proposes a split, not a single channel</h3>
+            <div class="who">Router Agent · day 0, 09:22</div>
+            <p>The Router fills the best-paying channel to its capacity, then the next, until the at-risk units are placed. Anything that cannot be placed before expiry goes to a food bank; only after that, write-off. It writes its reasoning in plain language and shows one alternative so Priya can disagree with something concrete.</p>
+            <ul>
+              <li><b>588 units → kirana cluster</b> at ₹18: the best price, and it keeps stock inside Munchly's own trade. Capped by what 38 kiranas can move in 14 days with a buy-10-get-2 scheme.</li>
+              <li><b>772 units → ExpireSoon</b> at ₹15 (reserve ₹13.50): unlimited depth, 5–9 days, buyer pays freight.</li>
+              <li>D2C and staff sale are eligible but pay less per unit than ExpireSoon, so they get nothing this time.</li>
+              <li>Alternative shown: all 1,360 to ExpireSoon, net ₹20,300. ₹1,470 less, and nothing stays in own trade.</li>
+            </ul>
+          </div>
+          <div class="side">
+            <div class="callout money"><span class="lbl">Recommended plan</span><span class="v">₹21,770 net</span>₹22,164 gross, 54% of MRP, vs −₹27,717 if destroyed</div>
+            <div class="callout money"><span class="lbl">Swing</span><span class="v">₹49,487</span>on one batch of chips</div>
+            <div class="callout screen"><span class="lbl">Prototype</span>S2: stacked split bar, "why" text, alternative card, money panel.</div>
+          </div>
+        </div>
+
+        <div class="stage">
+          <div class="num">6<small>APPROVE</small></div>
+          <div>
+            <h3>Priya approves with one tap</h3>
+            <div class="who">Priya · day 0, 09:40 · push or dashboard</div>
+            <p>Nothing is listed, messaged or shipped before this tap. The approval screen repeats the three numbers that matter (net recovered, swing, ITC retained) and the two actions about to happen (list on ExpireSoon, message 38 kiranas). After ten approved routes per channel, Priya can let the agent run inside the guardrails and only see the summary.</p>
+            <div class="bubble">Plan for MF-2409-117: 588 units kirana (₹18), 772 units ExpireSoon (₹15). Net ₹21,770, vs −₹27,717 write-off. GST ITC ₹2,611 safe. Tap to review and approve.<small>Push · Smart-Clearance → Priya · 09:23 · Priya taps Approve at 09:40</small></div>
+          </div>
+          <div class="side">
+            <div class="callout money"><span class="lbl">Repeated on the approval screen</span>Net ₹21,770 · Swing ₹49,487 · ITC retained ₹2,611</div>
+            <div class="callout screen"><span class="lbl">Prototype</span>S2: Approve sheet opened from the push, with the phone showing the notification.</div>
+          </div>
+        </div>
+
+        <div class="stage">
+          <div class="num">7<small>EXECUTE</small></div>
+          <div>
+            <h3>Four agents go to work, in parallel</h3>
+            <div class="who">Lister · Outreach · Negotiator · Donation · day 0 to day 3</div>
+            <ul>
+              <li><b>Lister</b> builds the ExpireSoon listing (title, batch, best-before, MRP ₹30, offer ₹15, 772 units, Nagpur, ambient storage, the label photo, invoice available) and calls <span class="mono">POST /v1/listings</span>. In the prototype that call is mocked; the response is a listing ID and a URL that opens the ExpireSoon page.</li>
+              <li><b>Outreach</b> picks the 38 kiranas with the best 30-day sell-through for this SKU and sends a Hindi push notification with the scheme that opens an in-app offer page with a quantity stepper. Orders flow to Rakesh bhai's van route. 14 kiranas order 588 units within about two hours.</li>
+              <li><b>Negotiator</b> watches the listing. Sri Venkateswara Traders bids ₹13.00 for all 772 (below the ₹13.50 reserve). The agent counters at ₹14.20 with a 24-hour dispatch promise taken from Rakesh bhai's calendar. Buyer accepts, pays the 15% token (₹1,644), balance due in 48 hours.</li>
+              <li><b>Donation</b> is idle for this batch. For the Mango Drink batch (22 days left) it books Feeding India in Hyderabad, because IFBN needs 21+ days and 100+ units and that batch's donation remainder is 58 units.</li>
+            </ul>
+            <div class="bubble">नमस्ते Shree Ganesh Kirana! Munchly Masala Chips 150g पर आज खास ऑफर: 10 पैकेट लो, 2 मुफ़्त. Best before 18 Nov 2026. सिर्फ़ 48 घंटे. ऑर्डर के लिए टैप करें — Rakesh Traders<small>Push · Outreach Agent → 38 kiranas · 09:41</small></div>
+          </div>
+          <div class="side">
+            <div class="callout money"><span class="lbl">Planned → actual</span>ExpireSoon ₹11,580 → ₹10,962 after negotiation. Kirana ₹10,584 as planned. Net ₹21,222.</div>
+            <div class="callout screen"><span class="lbl">Prototype</span>S3 Execution: API call card (request and response JSON), retailer orders ticking up as the push is answered, negotiation chat. S4 ExpireSoon: the listing as a buyer sees it.</div>
+          </div>
+        </div>
+
+        <div class="stage">
+          <div class="num">8<small>SETTLE</small></div>
+          <div>
+            <h3>The Paperwork Agent closes the loop for finance</h3>
+            <div class="who">Paperwork Agent · Anita · Rakesh bhai · day 3 to 7</div>
+            <ul>
+              <li><b>Tax invoice</b> from Rakesh Traders to the Hyderabad buyer: 772 × ₹14.20 = ₹10,962 taxable, IGST 12% (Maharashtra → Telangana). MRP stays ₹30 on the pack; a discounted sale is fine, a second MRP is not (Legal Metrology rules).</li>
+              <li><b>E-way bill check</b>: consignment ₹12,278 incl. GST is below the ₹50,000 threshold, so none is needed. The agent re-checks if dispatch is split.</li>
+              <li><b>Credit note</b> from Munchly to Rakesh Traders for the buy-10-get-2 scheme: 98 free units at cost, ₹1,568.</li>
+              <li><b>GST ITC memo</b>: goods were supplied under tax invoices, so Section 17(5)(h) reversal does not apply. ₹2,611 of input credit stays. Any donated units are shown as reversed, labelled indicative.</li>
+              <li><b>FSSAI surplus-food checklist</b> and partner receipt for any donated units (Mango Drink batch).</li>
+              <li><b>Destruction certificate</b> only if units remain, with the ITC reversal entry pre-filled so finance is never surprised.</li>
+            </ul>
+          </div>
+          <div class="side">
+            <div class="callout money"><span class="lbl">ITC retained</span><span class="v">₹2,611</span>not reversed, with the memo to prove it</div>
+            <div class="callout screen"><span class="lbl">Prototype</span>S5 Paperwork: document list with status (generated / not required) and a preview for each.</div>
+          </div>
+        </div>
+
+        <div class="stage">
+          <div class="num">9<small>REPORT</small></div>
+          <div>
+            <h3>Finance and sustainability get the same ledger</h3>
+            <div class="who">Impact Agent · Vikram · Anita · CFO · monthly and quarterly</div>
+            <p>Every routed batch lands in one ledger with both readings of the same event: the money reading (₹ recovered, write-off avoided, ITC protected, disposal and EPR avoided) and the circularity reading (kg diverted, CO₂e, meals). The BRSR Core Principle 6 table exports with the evidence links: invoices, listing IDs, in-app order logs, food-bank receipts.</p>
+            <ul>
+              <li>Headline tiles: ₹ recovered this month, swing vs write-off, ITC protected, kg diverted, meals.</li>
+              <li>Trend: weekly recovered vs would-be write-off, one axis, two series.</li>
+              <li>Channel mix: where the units went, so Priya can see if one channel is being over-used.</li>
+              <li>"How the tax maths works" panel: the Section 17(5)(h) rule in one paragraph, with the indicative flags.</li>
+            </ul>
+          </div>
+          <div class="side">
+            <div class="callout money"><span class="lbl">This batch's BRSR line</span>217.6 kg diverted from disposal · 544 kg CO₂e avoided (indicative) · 0 meals (nothing donated)</div>
+            <div class="callout screen"><span class="lbl">Prototype</span>S6 Finance &amp; ESG dashboard with "Export BRSR table" (CSV).</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="agents">
+      <h2>The agents</h2>
+      <p class="lede">One orchestrator and ten specialists on Google ADK, deployed on Vertex AI Agent Engine. In the prototype each agent's reasoning and tool calls are streamed to the screen so judges can see the hand-offs.</p>
+      <div class="tablewrap">
+        <table class="grid">
+          <tr><th>Agent</th><th>Job</th><th>Reads</th><th>Tools (prototype → production)</th><th>Writes</th><th>Human checkpoint</th></tr>
+          <tr><td><b>Data</b></td><td>Onboard the client's stock and sales data</td><td>DMS export, secondary sales</td><td>Column mapper → BigQuery load jobs</td><td>Batches, sell-through by pincode</td><td>Priya confirms mapping once</td></tr>
+          <tr><td><b>Watcher</b></td><td>Find batches that will not sell in time</td><td>Batches, gates, sell-through</td><td>Gate rules, projection → Pub/Sub</td><td><span class="mono">batch.at_risk</span> events, alerts</td><td>None</td></tr>
+          <tr><td><b>Vision</b></td><td>Verify the batch from a label photo</td><td>Photo from the app camera (Cloud Storage)</td><td>Mocked extraction → Gemini vision</td><td>Verified fields, confidence, evidence</td><td>Rakesh bhai sends the photo</td></tr>
+          <tr><td><b>Valuer</b></td><td>Price every channel against time</td><td>Price history, GST, EPR, capacities</td><td>Pricing model → BigQuery ML</td><td>Channel table, write-off baseline</td><td>None</td></tr>
+          <tr><td><b>Router</b></td><td>Split the batch to maximise net ₹ under constraints</td><td>Channel table, guardrails</td><td>Allocation solver</td><td>Plan, alternative, explanation</td><td><b>Priya approves</b></td></tr>
+          <tr><td><b>Lister</b></td><td>Create the ExpireSoon listing</td><td>Plan, verified fields, photo</td><td><span class="tag mock">mock POST /v1/listings</span> → partner API or Gemini computer-use on the marketplace form</td><td>Listing ID, URL, reserve price</td><td>Pause before Publish (first 10)</td></tr>
+          <tr><td><b>Outreach</b></td><td>Sell to the kirana cluster</td><td>Kirana sell-through, language</td><td>Firebase Cloud Messaging push + in-app offer page (WhatsApp Business API: future scope)</td><td>Broadcast, orders, van route</td><td>None after approval</td></tr>
+          <tr><td><b>Negotiator</b></td><td>Handle bids and chat on the listing</td><td>Bids, reserve, buyer history, dispatch calendar</td><td>Counter/accept rules → marketplace chat</td><td>Award, token receipt</td><td>Exceptions only (below reserve twice)</td></tr>
+          <tr><td><b>Donation</b></td><td>Place what cannot be sold</td><td>Food-bank intake rules, hubs</td><td><span class="tag mock">mock partner API</span></td><td>Pickup slot, FSSAI checklist</td><td>None after approval</td></tr>
+          <tr><td><b>Paperwork</b></td><td>Produce the documents</td><td>Awards, orders, GST rules</td><td>Templates, e-way bill rule, Legal Metrology check</td><td>Invoice, EWB check, credit note, ITC memo, FSSAI, destruction</td><td>Anita reviews before filing</td></tr>
+          <tr><td><b>Impact</b></td><td>Keep the ledger and BRSR rows</td><td>All of the above</td><td>Ledger → Looker</td><td>Dashboard, CSV export</td><td>Vikram signs off quarterly</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section id="channels">
+      <h2>Channels</h2>
+      <p class="lede">Five places a carton can go, plus the baseline it is measured against. The rules below are the ones the Valuer uses in the prototype.</p>
+      <div class="cards">
+        <div class="card es">
+          <h3>ExpireSoon <span class="chip es">Indian B2B near-expiry marketplace</span></h3>
+          <div class="rule">30+ days left · 45–55% of MRP · 5–9 days · unlimited depth</div>
+          <ul>
+            <li>Seller flow: business account → product, batch, labelled date, location → quantity and offer → publish for buyer review.</li>
+            <li>Buyers bid; a bid carries a 15% token, balance within 48 hours; in-app chat with the seller.</li>
+            <li>First 5 listings free, then ₹100 each. Buyer pays freight.</li>
+            <li>Prototype: our own marketplace UI and a mocked <span class="mono">POST /v1/listings</span>. Production: a partner API with a real marketplace, or a Gemini computer-use agent on its web form.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Kirana cluster push</h3>
+          <div class="rule">20+ days · 60% of MRP · 10–14 days · capacity = cluster sell-through × 14 days × 3.5 (scheme uplift)</div>
+          <ul>
+            <li>The distributor's own kiranas, ranked by 30-day sell-through for the SKU.</li>
+            <li>Hindi / Marathi / Telugu push notification with a scheme (buy 10 get 2), a 48-hour window and an in-app order page.</li>
+            <li>Van delivery ₹0.50 per unit. Brand issues a credit note for the free goods.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Discount D2C</h3>
+          <div class="rule">25+ days · 50% of MRP · 7–12 days · capacity 8% of batch</div>
+          <ul>
+            <li>Clearance page on the brand's site plus GoFig-style partners (Pune, Mumbai).</li>
+            <li>Courier ₹3 per unit, so it rarely wins on net ₹; included so the Router can show why not.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Staff sale</h3>
+          <div class="rule">any days · 40% of MRP · 2–3 days · cap 150 units</div>
+          <ul>
+            <li>HR notice with a UPI QR at the Pune plant and the Nagpur godown.</li>
+            <li>Fast and cheap; capped so it never becomes the default.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Food banks <span class="chip accent">both supported</span></h3>
+          <div class="rule">food only · ₹0 · 1–2 days · FSSAI surplus-food regulations 2019</div>
+          <div class="tablewrap" style="margin-top:8px">
+            <table class="grid" style="min-width:0">
+              <tr><th>Intake rule</th><th>Feeding India (Zomato)</th><th>India FoodBanking Network</th></tr>
+              <tr><td>Minimum days to best-before at hand-over</td><td>15</td><td>21</td></tr>
+              <tr><td>Minimum quantity per pickup</td><td>50 units</td><td>100 units or 1 pallet</td></tr>
+              <tr><td>Logistics</td><td>Volunteer pickup within 48 h, hunger spots in 100+ cities</td><td>Drop at member food-bank warehouse (Delhi NCR, Hyderabad, Pune, Chennai, Kolkata) or scheduled pickup</td></tr>
+              <tr><td>Paper</td><td>In-app receipt</td><td>Donation acknowledgement (CSR / 80G, indicative)</td></tr>
+            </table>
+          </div>
+          <ul style="margin-top:8px">
+            <li>The Donation Agent picks the partner whose rules the batch meets and whose hub is nearest; large lots can be split across both.</li>
+            <li>ITC on donated units is shown as reversed and labelled <b>indicative</b> (team decision).</li>
+          </ul>
+        </div>
+        <div class="card base">
+          <h3>Write-off <span class="chip urgent">baseline</span></h3>
+          <div class="rule">−(cost + ITC reversal + disposal + EPR) per unit</div>
+          <ul>
+            <li>CGST s.17(5)(h) blocks input credit on goods destroyed, written off or given as gifts; CBIC Circular 72/46/2018 covers time-expired goods.</li>
+            <li>Disposal ₹1.50 per unit and EPR ₹6 per kg of packaging are indicative factors; both are visible and editable in setup.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="money">
+      <h2>Money and tax, worked through</h2>
+      <p class="lede">The same batch, set out the way a challan would be. Left: what destroying 1,360 units really costs. Right: what the recommended split recovers. The swing is the number for the CFO slide.</p>
+      <div class="ledger">
+        <div class="head"><b>MF-2409-117 · Munchly Masala Chips 150 g</b><span>1,360 units at risk · MRP ₹30 · cost ₹16 · GST 12% · 47 days left</span></div>
+        <div class="cols">
+          <div class="col">
+            <h4>If destroyed (do nothing)</h4>
+            <div class="row neg"><span>Inventory written off at cost (1,360 × ₹16)</span><span class="v">−₹21,760</span></div>
+            <div class="row neg"><span>GST input credit reversed u/s 17(5)(h) (12% of cost)</span><span class="v">−₹2,611</span></div>
+            <div class="row neg"><span>Disposal and transport (₹1.50 / unit)</span><span class="v">−₹2,040</span></div>
+            <div class="row neg"><span>EPR / waste liability (217.6 kg × ₹6)</span><span class="v">−₹1,306</span></div>
+            <div class="row sum neg"><span>Cost of the write-off</span><span class="v">−₹27,717</span></div>
+          </div>
+          <div class="col">
+            <h4>If routed (recommended split)</h4>
+            <div class="row pos"><span>588 units → kirana cluster at ₹18</span><span class="v">₹10,584</span></div>
+            <div class="row pos"><span>772 units → ExpireSoon at ₹15</span><span class="v">₹11,580</span></div>
+            <div class="row neg"><span>Van delivery (588 × ₹0.50) and listing fee</span><span class="v">−₹394</span></div>
+            <div class="row sum pos"><span>Net recovered (54% of MRP)</span><span class="v">₹21,770</span></div>
+            <div class="row"><span>Input credit retained, not reversed</span><span class="v">₹2,611</span></div>
+            <div class="row"><span>Disposal and EPR avoided</span><span class="v">₹3,346</span></div>
+          </div>
+        </div>
+        <div class="swing"><span class="v">₹49,487</span><span>swing on one batch: ₹21,770 recovered instead of ₹27,717 lost</span><span>After negotiation the actual is ₹21,222 net (buyer paid ₹14.20, not ₹15).</span></div>
+      </div>
+      <div class="tiles">
+        <div class="tile"><div class="lbl">Recovered</div><div class="v money">54%</div><small>of MRP on at-risk units</small></div>
+        <div class="tile"><div class="lbl">GST ITC protected</div><div class="v money">₹2,611</div><small>s.17(5)(h) not triggered</small></div>
+        <div class="tile"><div class="lbl">Waste diverted</div><div class="v accent">217.6 kg</div><small>BRSR Principle 6</small></div>
+        <div class="tile"><div class="lbl">CO₂e avoided</div><div class="v accent">544 kg</div><small>indicative, 2.5 kg/kg</small></div>
+        <div class="tile"><div class="lbl">Per quarter, client-wide</div><div class="v money">₹18 lakh</div><small>short-dated stock in play</small></div>
+      </div>
+      <p class="note"><b>Indicative labels.</b> Three figures are indicative, and the prototype says so on screen: the ITC treatment of donated units (s.17(5)(h) blocks credit on gifts; a CSR-route donation may differ), the EPR rupee factor, and the CO₂e factor. Every other number is either a published rule (q-commerce gates, GST rates, e-way bill threshold, Legal Metrology) or the client's own data.</p>
+      <p class="note"><b>Why finance cares more than supply chain.</b> Supply chain sees ₹40,800 of chips. Finance sees ₹27,717 of cash and credit leaving the business, which the write-off hides as a stock adjustment. Smart-Clearance puts both on the same screen.</p>
+    </section>
+
+    <section id="prototype">
+      <h2>Prototype scope</h2>
+      <p class="lede">Seven screens, one demo batch, synthetic data. ExpireSoon is a marketplace of our own, presented as a generic Indian B2B near-expiry marketplace, so the judges see the listing exactly as a buyer would; the API call is mocked but visible.</p>
+      <div class="screens">
+        <div class="screen"><div class="k">S0</div><h3>Setup</h3><ul><li>Rules pre-filled: allow-list, floors, donation partners, approval policy.</li><li>The write-off formula shown in plain language.</li></ul></div>
+        <div class="screen"><div class="k">S1</div><h3>Command Center</h3><ul><li>Tiles: <span class="hl">₹ at risk</span>, <span class="hl">₹ recovered MTD</span>, <span class="hl">ITC protected</span>, kg diverted, meals.</li><li>At-risk batches with countdown bars, gate chips (Blinkit / Zepto / Instamart), risk level, "Route" button.</li></ul></div>
+        <div class="screen"><div class="k">S2</div><h3>Route Room</h3><ul><li>Batch card with the verified label.</li><li>Live agent timeline: thinking, tool calls, results, hand-offs.</li><li>Channel chart and table; split bar; <span class="hl">money panel with write-off vs recovered, swing, ITC</span>.</li><li>Approve sheet opened from a push notification.</li></ul></div>
+        <div class="screen"><div class="k">S3</div><h3>Execution</h3><ul><li>API call card: request and response JSON of the mocked ExpireSoon call, with "Open on ExpireSoon".</li><li>Retailer offer push with orders ticking up.</li><li>Negotiation chat: bid, counter, accept, token paid. <span class="hl">Planned vs actual ₹</span>.</li></ul></div>
+        <div class="screen">
+          <div class="k">S4</div><h3>ExpireSoon marketplace</h3>
+          <ul><li>Separate look and feel (purple, "dates visible" badges) so it reads as another company's site.</li><li>Listing page, bid panel with 15% token, seller chat answered by the Negotiator.</li><li>Marketplace home with a few other sellers' listings for realism.</li></ul>
+          <div class="esmock" aria-label="ExpireSoon listing mock">
+            <div class="bar">ExpireSoon <span>Near-expiry B2B marketplace · dates visible</span></div>
+            <div class="bodyx">
+              <div>
+                <div class="title">Munchly Masala Chips 150 g · 772 units</div>
+                <div class="price"><s>MRP ₹30</s> <b>₹15</b><span class="off">50% off</span></div>
+                <dl>
+                  <dt>Best before</dt><dd>18 Nov 2026 · 47 days</dd>
+                  <dt>Batch</dt><dd>MF-2409-117</dd>
+                  <dt>Seller</dt><dd>Rakesh Traders, Nagpur · verified</dd>
+                  <dt>Dispatch</dt><dd>24 h after balance · buyer pays freight</dd>
+                </dl>
+              </div>
+              <div class="bid"><div class="btn">Place bid</div><small>15% token on your bid · balance in 48 h</small><small>Min order 100 units</small></div>
+              <div class="chat">
+                <div>Can you do ₹13 for all 772? <small>Sri Venkateswara Traders · 11:02</small></div>
+                <div class="me">₹14.20 for 772, Nagpur stock, dispatch within 24 h of balance. <small>Rakesh Traders (Negotiator Agent) · 11:03</small></div>
+                <div>Ok, ₹14.20. Token paid. <small>Sri Venkateswara Traders · 11:09</small></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="screen"><div class="k">S5</div><h3>Paperwork</h3><ul><li>Document list with status: generated / not required.</li><li>Previews: invoice, e-way bill check, credit note, <span class="hl">ITC memo</span>, FSSAI checklist, destruction certificate.</li></ul></div>
+        <div class="screen"><div class="k">S6</div><h3>Finance &amp; ESG dashboard</h3><ul><li>Hero tiles: <span class="hl">₹ recovered</span>, <span class="hl">swing</span>, <span class="hl">ITC protected</span>, kg diverted, CO₂e, meals.</li><li>Weekly trend, channel mix, <span class="hl">BRSR Principle 6 table with Export CSV</span>.</li><li>"How the tax maths works" panel with the indicative flags.</li></ul></div>
+      </div>
+      <div class="tablewrap">
+        <table class="grid">
+          <tr><th>Real in the prototype</th><th>Mocked in the prototype</th><th>Google Cloud, when built for real</th></tr>
+          <tr>
+            <td>Gate rules, at-risk projection, channel economics, GST-aware baseline, allocation, documents, ledger and BRSR export, the agent orchestration shape (events, hand-offs, approval gate).</td>
+            <td>ExpireSoon API and marketplace, retailer replies, food-bank booking, buyer bids. Gemini label extraction and push notifications are real. All deterministic so the demo never fails on stage.</td>
+            <td>BigQuery (batches, sell-through, price history) · Pub/Sub (<span class="mono">batch.at_risk</span>, <span class="mono">offer.received</span>) · ADK multi-agent on Vertex AI Agent Engine · Gemini Pro for routing, Flash for chat volume, vision for labels · Firebase Cloud Messaging for push, Firebase Authentication for sign-in, Firebase Hosting CDN for the PWA · Looker for the dashboard · Gemini computer-use for marketplaces without an API.</td>
+          </tr>
+        </table>
+      </div>
+    </section>
+
+    <section id="decisions">
+      <h2>Decisions taken, 2 Oct 2026</h2>
+      <div class="decisions">
+        <div class="dec"><div class="ok">✓</div><div><b>Name: Smart-Clearance.</b> UI, repo and Slack channel to be renamed. Dobara, Mauka and Nikaasi dropped.</div></div>
+        <div class="dec"><div class="ok">✓</div><div><b>Full nine-stage demo, about six minutes.</b> Built end to end. A shorter cut (stages 2, 5, 7, 9) can be made by hand later if the slot demands it.</div></div>
+        <div class="dec"><div class="ok">✓</div><div><b>Food-bank rules are used as written.</b> Feeding India (15+ days, 50 units, volunteer pickup) and India FoodBanking Network (21+ days, 100 units, warehouse drop) are both supported; the Donation Agent chooses per batch. No "modelled" label anywhere in the prototype.</div></div>
+        <div class="dec"><div class="ok">✓</div><div><b>ExpireSoon presents as a generic Indian B2B near-expiry marketplace.</b> No reference to any real marketplace on stage. Our own marketplace UI, mocked API, visible request and response.</div></div>
+        <div class="dec"><div class="ok">✓</div><div><b>ITC on donations is labelled indicative.</b> Section 17(5)(h) blocks credit on gifts; a CSR-route donation may differ. The prototype shows the reversal and the label.</div></div>
+        <div class="dec"><div class="ok">✓</div><div><b>One fictional client.</b> Munchly Foods Pvt Ltd, Pune, listed, four distributors, eight SKUs.</div></div>
+        <div class="dec"><div class="ok">✓</div><div><b>Money, GST and BRSR are first-class on screen.</b> Every stage has a highlighted money moment; the dashboard exports the BRSR line and the ITC memo.</div></div>
+        <div class="dec"><div class="ok">✓</div><div><b>Medicines out of scope.</b> Packaged food and personal care only.</div></div>
+        <div class="dec"><div class="ok">✓</div><div><b>In-app push instead of WhatsApp (v4).</b> The PWA with Firebase Cloud Messaging carries every nudge to Priya, Rakesh bhai and the kiranas, with an in-app inbox as the fallback. WhatsApp Business integration is future scope, behind the same Notifier interface.</div></div>
+        <div class="dec"><div class="ok">✓</div><div><b>Firebase Authentication and Firebase Hosting (v4).</b> Google sign-in for brand staff, phone OTP for distributors and retailers; the PWA is served from Firebase Hosting's CDN; the agents API runs on Cloud Run.</div></div>
+        <div class="dec"><div class="ok">✓</div><div><b>Build order approved.</b> Six steps, below.</div></div>
+      </div>
+    </section>
+
+    <section id="next">
+      <h2>Build order, approved</h2>
+      <p class="lede">Six steps, each ending in something you can click. The maths comes first so every later screen shows real numbers from day one.</p>
+      <div class="tablewrap">
+        <table class="grid">
+          <tr><th style="width:40px">#</th><th>Step</th><th>What gets built</th><th>Done when</th><th>Screens</th></tr>
+          <tr><td class="num">1</td><td>Synthetic data and money maths</td><td>Client, distributors, 8 SKUs, 8 batches, sell-through by pincode; quick-commerce gates; channel economics; GST-aware write-off; allocation solver</td><td>Demo batch returns the 588 / 772 split, net ₹21,770, write-off −₹27,717</td><td>—</td></tr>
+          <tr><td class="num">2</td><td>Agent event stream</td><td>Watcher → Vision → Valuer → Router pipeline streaming thinking, tool calls and results; approval gate; executors; Paperwork; Impact</td><td>A route run plays end to end in the API</td><td>—</td></tr>
+          <tr><td class="num">3</td><td>Command Center and Route Room</td><td>KPI tiles, at-risk list with countdowns and gate chips; live agent timeline, channel chart and table, split bar, money panel, approve sheet from a push</td><td>Priya can route and approve the demo batch</td><td>S1, S2</td></tr>
+          <tr><td class="num">4</td><td>Execution and ExpireSoon</td><td>API call card, retailer offer push and orders, negotiation chat; ExpireSoon marketplace home and listing page with bid panel and chat</td><td>Listing opens as a buyer sees it; bid countered and awarded</td><td>S3, S4</td></tr>
+          <tr><td class="num">5</td><td>Paperwork and Finance &amp; ESG</td><td>Document list and previews; dashboard tiles, trend, channel mix, BRSR table and CSV export, tax-maths panel</td><td>ITC memo and BRSR line generated for the demo batch</td><td>S5, S6</td></tr>
+          <tr><td class="num">6</td><td>Demo script</td><td>Nine-stage script with timings, the Mango Drink batch as the donation case, a reset button for a clean run</td><td>Two clean six-minute run-throughs</td><td>all</td></tr>
+        </table>
+      </div>
+      <p class="note"><b>Still to confirm while building:</b> who reviews the Hindi and Marathi push copy so it reads like a distributor, not a bank.</p>
+    </section>
+
+    <section id="sources">
+      <h2>Sources</h2>
+      <div class="sources">
+        <div><a href="https://www.spoileralert.com/iq">Spoiler Alert iQ</a> · <a href="https://www.spoileralert.com/enterprise/">Spoiler Alert enterprise workflow</a> (the US model)</div>
+        <div><a href="https://nearxpiry.com/sell/">NearXpiry sell page</a> · <a href="https://nearxpiry.com/demo/">NearXpiry demo (bids, 15% token, chat)</a> · <a href="https://nearxpiry.com/blog/sell-near-expiry-stock/">NearXpiry seller guide</a></div>
+        <div><a href="https://confetti.design/blog/quick-commerce-brand-eligibility-india">Quick-commerce shelf-life gates</a> · <a href="https://unicommerce.com/blog/how-to-sell-on-blinkit-seller-onboarding-guide-2026/">Blinkit seller onboarding 2026</a></div>
+        <div><a href="https://www.taxmann.com/post/blog/analysis-itc-reversal-for-time-expired-goods-under-the-cgst-act">ITC reversal for time-expired goods, s.17(5)(h), Circular 72/46/2018</a></div>
+        <div><a href="https://www.fssai.gov.in/upload/uploadfiles/files/Press_Release_Gazette_Notification_Surplus_Food_06_08_2019.pdf">FSSAI surplus food regulations 2019</a> · <a href="https://foodbanking.org/?p=2144">GFN partners in India (Feeding India, IFBN, No Food Waste)</a></div>
+        <div><a href="https://greensutra.in/news/brsr-all-you-need-to-know/">BRSR Core 2026 overview</a> · <a href="https://assets.kpmg.com/content/dam/kpmgsites/in/pdf/2026/02/chapter-1-emerging-trends-in-brsr-reporting-by-listed-companies.pdf.coredownload.pdf">KPMG BRSR trends 2026</a></div>
+        <div><a href="https://ssrana.in/articles/importance-of-writing-best-before-and-manufacturing-date-on-labels/">Legal Metrology: best-before and MRP rules</a></div>
+        <div><a href="https://blog.massistcrm.com/the-dms-revolution-in-fmcg-whats-changing-across-indias-supply-chains">DMS and the secondary-sales gap in India</a> · <a href="https://richautomate.in/blog/whatsapp-b2b-fmcg-distribution-india-2026">WhatsApp-run distribution 2026</a></div>
+        <div><a href="https://blog.google/technology/google-deepmind/gemini-computer-use-model/">Gemini 2.5 Computer Use</a></div>
+        <div><a href="https://gofig.in/">GoFig</a> · <a href="https://thebetterindia.com/315182/kolkata-milind-shah-started-gauraa-to-prevents-fmcg-products-from-going-to-landfills/">Gauraa</a> · <a href="https://yourstory.com/2020/12/startup-ahmedabad-eol-stocks-b2b-marketplace">EOL Stocks</a> · <a href="https://kirana.club/">Kirana Club</a></div>
+      </div>
+    </section>
+  </main>
+</div>
