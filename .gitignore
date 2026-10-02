@@ -5,3 +5,4 @@ video/my-voice/
 *.mp4
 .DS_Store
 .impeccable/
+docs/story-img/*.png
