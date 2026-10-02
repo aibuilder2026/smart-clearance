@@ -40,10 +40,10 @@ covers them.
 
 | Status | transitionId | When |
 | --- | --- | --- |
-| To Do | (looked up per issue) | created |
-| In Progress | (looked up per issue) | first edit for the story |
-| In Review | (looked up per issue) | PR raised |
-| Done | (looked up per issue) | PR merged (only when asked) |
+| To Do | 11 | created |
+| In Progress | 21 | first edit for the story |
+| In Review | 31 | PR raised |
+| Done | 41 | PR merged (only when asked) |
 
 ## Story template
 
