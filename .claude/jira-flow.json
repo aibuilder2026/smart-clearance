@@ -13,10 +13,10 @@
       "subtask": "Subtask"
     },
     "transitions": {
-      "todo": "",
-      "inProgress": "",
-      "inReview": "",
-      "done": ""
+      "todo": "11",
+      "inProgress": "21",
+      "inReview": "31",
+      "done": "41"
     },
     "fields": {
       "storyPoints": "customfield_10016",
