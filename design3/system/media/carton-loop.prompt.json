@@ -1,0 +1,94 @@
+{
+  "name": "carton-loop",
+  "model": "LTX 2.5 Fast (local, LTX Desktop 1.2.7)",
+  "prompt": "Exactly as in the image: a closed kraft-brown corrugated cardboard carton with brown tape, a lime-green label on its front side and a small white sticker on the top corner, floating a few centimetres above a smooth pale mint-green studio floor, with a faint soft shadow on the floor beneath it and the same soft mint backdrop behind. The carton keeps its exact shape, colour, size, tape and label throughout, and the printed label text never changes. Over the clip the carton gently bobs up and down by a centimetre and slowly turns a few degrees to the right, then eases back to exactly its starting angle, like a calm breathing loop. A faint soft highlight drifts slowly from left to right across the mint backdrop, the backdrop stays the same pale mint colour the whole time, and a few tiny dust motes float slowly in the air, catching the light. Locked-off tripod shot, no camera movement, no zoom, the carton stays the same size in the centre of the frame. Soft even studio lighting from the upper left, no lens flare, no dark shadows. Calm, minimal, premium product film. No people, no hands.",
+  "seed": 23001,
+  "created": "2026-10-03T11:10:36Z",
+  "attempts": 2,
+  "settings": {
+    "mode": "image-to-video with first and last keyframe",
+    "aspect": "16:9",
+    "resolution": "540p",
+    "native_output_px": [
+      1024,
+      576
+    ],
+    "duration_s": 5,
+    "actual_duration_s": 5.04,
+    "fps": 24,
+    "frames": 121,
+    "camera": "static",
+    "fit": "pad",
+    "audio": false,
+    "loras": []
+  },
+  "first_frame": {
+    "file": "src/loop-first.png",
+    "px": [
+      1280,
+      720
+    ],
+    "made_with": "ffmpeg filter_complex",
+    "recipe": "img/src/carton-hero.png scaled to 640x640 (lanczos) and overlaid at x=322,y=2 on a vertical gradient #EEF6F1 (top) to #D9EDE2 (bottom) with +/-0.5 level dither, plus a faint Gaussian floor shadow rgb(79,111,94), peak alpha 0.20, centred at (660,574), radii 235x22 px",
+    "ffmpeg": "ffmpeg -f lavfi -i color=c=black:s=1280x720:d=1 -f lavfi -i color=c=black:s=1280x720:d=1 -i img/src/carton-hero.png -filter_complex \"[0:v]format=gbrp,geq=r='238-21*Y/719+random(0)-0.5':g='246-9*Y/719+random(1)-0.5':b='241-15*Y/719+random(2)-0.5'[bg];[1:v]format=gbrap,geq=r='79':g='111':b='94':a='255*0.20*exp(-(pow((X-660)/235,2)+pow((Y-574)/22,2)))'[sh];[2:v]scale=640:640:flags=lanczos,format=rgba[ct];[bg][sh]overlay=0:0:format=rgb[b1];[b1][ct]overlay=x=322:y=2:format=rgb,format=rgb24[out]\" -map [out] -frames:v 1 media/src/loop-first.png"
+  },
+  "last_frame": {
+    "file": "src/loop-first.png",
+    "note": "same image as the first frame so the clip loops; measured seam step (last->first frame) is within the clip's normal frame-to-frame motion"
+  },
+  "raw_clip": {
+    "file": "src/carton-loop-ltx-v2.mp4",
+    "sidecar": "src/carton-loop-ltx-v2.json"
+  },
+  "rejected_attempts": [
+    {
+      "attempt": 1,
+      "seed": 23000,
+      "prompt": "A closed kraft cardboard carton floats a few centimetres above a soft mint-green studio floor and turns slowly a quarter of the way around, a soft band of light glides across the backdrop, tiny dust motes drift in the light, the camera stays still, calm and premium product film, no text changes, no people.",
+      "reason": "carton tumbled on several axes, turned ghostly/doubled mid-clip with smeared label text, and the 'band of light' became a large lens flare that turned the mint backdrop grey-brown"
+    }
+  ],
+  "prompt_change_note": "Attempt 1 used the brief's prompt verbatim. For the single allowed regeneration the prompt was rewritten per the LTX prompting guide: restate the image, a gentle bob and a few-degree turn that eases back (a quarter turn cannot end on the identical first frame without a fast out-and-back), a faint highlight with no lens flare, backdrop colour held, label text held.",
+  "encodes": [
+    {
+      "file": "carton-loop.mp4",
+      "codec": "H.264 High (libx264)",
+      "px": [
+        960,
+        540
+      ],
+      "pix_fmt": "yuv420p",
+      "audio": false,
+      "args": "-an -vf scale=960:540:flags=lanczos -c:v libx264 -preset slow -profile:v high -crf 26 -pix_fmt yuv420p -movflags +faststart",
+      "bytes": 144232
+    },
+    {
+      "file": "carton-loop.webm",
+      "codec": "VP9 (libvpx-vp9, two-pass constant quality)",
+      "px": [
+        960,
+        540
+      ],
+      "pix_fmt": "yuv420p",
+      "audio": false,
+      "args": "-an -vf scale=960:540:flags=lanczos -c:v libvpx-vp9 -crf 36 -b:v 0 -pix_fmt yuv420p -row-mt 1 -deadline good -cpu-used 1 (pass 1 + pass 2)",
+      "bytes": 103689
+    },
+    {
+      "file": "carton-loop-poster.webp",
+      "px": [
+        960,
+        540
+      ],
+      "source": "src/loop-first.png scaled to 960x540 (lanczos)",
+      "args": "cwebp -q 82",
+      "bytes": 6978,
+      "note": "Made from the clip's source first frame, not the decoded video frame 0: LTX re-renders the keyframe and its small label text reads 'Maxata Chipo'. Position matches video frame 0 within 2 px, colour within 2-4 levels."
+    }
+  ],
+  "known_defects": [
+    "Small label lines ('Masala Chips', '150 g') smear into illegible glyphs throughout the clip, worst when the carton faces front (~0.9 s and ~3.3 s); 'MUNCHLY' stays legible.",
+    "Motion is a slow rock/turn of roughly 20 degrees plus a bob rather than a quarter turn; at the low point (~3.3 s) the carton sinks to about floor level and its floor shadow fades.",
+    "Encodes show faint 1-2 level banding on the smooth mint backdrop (8-bit gradient at CRF 26/36); not visible at normal viewing."
+  ]
+}

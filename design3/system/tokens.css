@@ -1,0 +1,203 @@
+/* Smart-Clearance design system v3 · tokens
+   Light and dark are composed separately, never inverted. Names follow shadcn/ui theming
+   (--background, --foreground, --card, --primary, --muted, --accent, --destructive, --border,
+   --input, --ring, --radius) so the same values drop into shadcn-svelte; the extra roles carry
+   the live-tracking world (amber = the human yes, red = risk, violet = ExpireSoon only). */
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Geist:wght@300..800&family=Geist+Mono:wght@400..600&family=Noto+Sans+Devanagari:wght@400..800&display=swap");
+
+:root, [data-theme="light"] {
+  color-scheme: light;
+  /* ground */
+  --bg: #f2f6f3;
+  --aurora-1: #d9f0e3;
+  --aurora-2: #e2eef7;
+  --aurora-3: transparent;
+  --surface: #ffffff;
+  --surface-2: #f8faf9;
+  --surface-sunken: #eaf0ec;
+  --elevated: #ffffff;
+  --glass: rgb(250 252 251 / 0.74);
+  --glass-strong: rgb(255 255 255 / 0.9);
+  --scrim: rgb(9 22 16 / 0.32);
+  /* ink */
+  --fg: #0d1c15;
+  --fg-2: #45554d;
+  --fg-3: #5f6e67;
+  --fg-4: #a1aca6;
+  --fill: rgb(17 41 30 / 0.045);
+  --fill-2: rgb(17 41 30 / 0.075);
+  --fill-3: rgb(17 41 30 / 0.12);
+  --line: rgb(17 41 30 / 0.1);
+  --line-2: rgb(17 41 30 / 0.17);
+  /* brand: the v1 green, modernised */
+  --green-50: #ecf8f1; --green-100: #d4efe0; --green-200: #a9dfc2; --green-300: #73c99d;
+  --green-400: #3fb07b; --green-500: #1f9563; --green-600: #177c52; --green-700: #176b4e;
+  --green-800: #12513a; --green-900: #0e3c2b; --green-950: #07261a;
+  --primary: #167a52;
+  --primary-hover: #126a47;
+  --primary-fg: #ffffff;
+  --primary-soft: #e3f4ea;
+  --primary-text: #12704a;
+  --glow: #34d399;
+  /* the human yes */
+  --amber: #f2b437;
+  --amber-hover: #e8a722;
+  --amber-fg: #2a1c00;
+  --amber-soft: #fff3d4;
+  --amber-text: #8a5a00;
+  /* risk */
+  --red: #e5484d;
+  --red-text: #c42a30;
+  --red-soft: #fdebec;
+  --destructive: #c9363b;
+  --destructive-fg: #ffffff;
+  /* ExpireSoon only */
+  --violet: #6e56cf;
+  --violet-hover: #5f48bf;
+  --violet-fg: #ffffff;
+  --violet-text: #5b45b5;
+  --violet-soft: #f1edfd;
+  /* push, info */
+  --blue: #0a7ae0;
+  --blue-text: #0b66bc;
+  --blue-soft: #e6f1fc;
+  /* channel colours for charts, in fixed series order kirana, ExpireSoon, staff, D2C, food bank, write-off
+     (validated with the dataviz palette checks: lightness band, chroma, CVD and normal-vision separation) */
+  --ch-kirana: #178a58;
+  --ch-expiresoon: #7c5cd6;
+  --ch-staff: #e08a0b;
+  --ch-d2c: #2a8fd8;
+  --ch-foodbank: #a3519a;
+  --ch-writeoff: #d23b3b;
+  /* the agent aura */
+  --aura: conic-gradient(from var(--aura-angle, 0deg), #34d399, #2dd4bf, #38bdf8, #a3e635, #34d399);
+  --aura-soft: radial-gradient(60% 60% at 50% 50%, rgb(52 211 153 / 0.35), rgb(56 189 248 / 0.12) 60%, transparent 75%);
+  /* depth */
+  --shadow-1: 0 1px 2px rgb(13 28 21 / 0.06), 0 1px 1px rgb(13 28 21 / 0.04);
+  --shadow-2: 0 6px 16px -6px rgb(13 28 21 / 0.12), 0 2px 5px -2px rgb(13 28 21 / 0.07);
+  --shadow-3: 0 22px 48px -16px rgb(13 28 21 / 0.26), 0 8px 18px -8px rgb(13 28 21 / 0.12);
+  --shadow-float: 0 30px 60px -20px rgb(13 28 21 / 0.3), 0 10px 22px -10px rgb(13 28 21 / 0.16);
+  --highlight: inset 0 1px 0 rgb(255 255 255 / 0.9);
+  /* map */
+  --map-ground: #e7efe9;
+  --map-block: #dde8e0;
+  --map-road: #ffffff;
+  --map-road-2: #f4f8f5;
+  --map-water: #cfe4ef;
+  --map-ink: #5f6e67;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #070b09;
+  --aurora-1: rgb(22 122 82 / 0.34);
+  --aurora-2: rgb(16 112 150 / 0.22);
+  --aurora-3: rgb(140 110 30 / 0.12);
+  --surface: #101613;
+  --surface-2: #141b17;
+  --surface-sunken: #0a0f0c;
+  --elevated: #18201c;
+  --glass: rgb(14 20 17 / 0.72);
+  --glass-strong: rgb(20 27 23 / 0.92);
+  --scrim: rgb(0 0 0 / 0.55);
+  --fg: #ecf2ee;
+  --fg-2: #a7b4ad;
+  --fg-3: #82908a;
+  --fg-4: #56625c;
+  --fill: rgb(214 255 232 / 0.05);
+  --fill-2: rgb(214 255 232 / 0.08);
+  --fill-3: rgb(214 255 232 / 0.12);
+  --line: rgb(214 255 232 / 0.085);
+  --line-2: rgb(214 255 232 / 0.14);
+  --primary: #3ccb8a;
+  --primary-hover: #52d699;
+  --primary-fg: #03170d;
+  --primary-soft: rgb(60 203 138 / 0.14);
+  --primary-text: #5fdca2;
+  --glow: #5eeab4;
+  --amber: #f7c04a;
+  --amber-hover: #fbcc66;
+  --amber-fg: #241700;
+  --amber-soft: rgb(247 192 74 / 0.14);
+  --amber-text: #f5c76a;
+  --red: #ec5d5e;
+  --red-text: #ff8f8d;
+  --red-soft: rgb(236 93 94 / 0.15);
+  --destructive: #b92f35;
+  --destructive-fg: #ffffff;
+  --violet: #8b74f0;
+  --violet-hover: #9b87f4;
+  --violet-fg: #0b0b14;
+  --violet-text: #b9a9ff;
+  --violet-soft: rgb(139 116 240 / 0.18);
+  --blue: #3b9eff;
+  --blue-text: #7cc0ff;
+  --blue-soft: rgb(59 158 255 / 0.15);
+  --ch-kirana: #24a068;
+  --ch-expiresoon: #8a6ee8;
+  --ch-staff: #c97b0c;
+  --ch-d2c: #2f8bd4;
+  --ch-foodbank: #b25aa8;
+  --ch-writeoff: #d94643;
+  --aura-soft: radial-gradient(60% 60% at 50% 50%, rgb(94 234 180 / 0.32), rgb(56 189 248 / 0.14) 60%, transparent 75%);
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.5);
+  --shadow-2: 0 10px 24px -10px rgb(0 0 0 / 0.65), 0 2px 6px -2px rgb(0 0 0 / 0.5);
+  --shadow-3: 0 26px 56px -18px rgb(0 0 0 / 0.8), 0 10px 22px -10px rgb(0 0 0 / 0.6);
+  --shadow-float: 0 34px 70px -22px rgb(0 0 0 / 0.85), 0 12px 26px -12px rgb(0 0 0 / 0.6);
+  --highlight: inset 0 1px 0 rgb(255 255 255 / 0.05);
+  --map-ground: #0d1411;
+  --map-block: #111a16;
+  --map-road: #1d2823;
+  --map-road-2: #17211c;
+  --map-water: #0e2230;
+  --map-ink: #82908a;
+}
+
+:root {
+  /* shadcn aliases */
+  --background: var(--bg);
+  --foreground: var(--fg);
+  --card: var(--surface);
+  --card-foreground: var(--fg);
+  --popover: var(--elevated);
+  --muted: var(--fill-2);
+  --muted-foreground: var(--fg-3);
+  --accent: var(--fill-2);
+  --border: var(--line);
+  --input: var(--line-2);
+  --ring: var(--primary);
+  --radius: 14px;
+
+  /* type */
+  --font-display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --font-ui: "Geist", "Noto Sans Devanagari", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-hi: "Noto Sans Devanagari", "Geist", system-ui, sans-serif;
+  --fs-caption2: 11px; --fs-caption: 12px; --fs-footnote: 13px; --fs-subhead: 14px;
+  --fs-body: 15px; --fs-callout: 16px; --fs-headline: 17px; --fs-title3: 20px;
+  --fs-title2: 24px; --fs-title1: 30px; --fs-large: 36px;
+  --fs-num-s: 32px; --fs-num-m: 48px; --fs-num-l: 72px; --fs-num-xl: 112px;
+
+  /* shape and space (4 pt grid) */
+  --r-xs: 6px; --r-sm: 10px; --r-md: 14px; --r-lg: 20px; --r-xl: 28px; --r-full: 999px;
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 20px; --sp-6: 24px; --sp-7: 32px; --sp-8: 40px; --sp-9: 56px; --sp-10: 72px;
+  --hair: 1px;
+  --tabbar-h: 64px;
+  --navbar-h: 56px;
+  --sidebar-w: 256px;
+  --inspector-w: 360px;
+
+  /* motion */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45);
+  --ease-spring: linear(0, 0.009, 0.035 2.1%, 0.141 4.4%, 0.723 12.9%, 0.938 16.7%, 1.017 19.4%, 1.067, 1.099 24.3%, 1.108 26%, 1.1, 1.074 31.1%, 1.008 38.1%, 0.983 42.5%, 0.979 45.6%, 0.985 50%, 1.001 59.9%, 1.002 70.2%, 1);
+  --t-fast: 160ms;
+  --t-base: 240ms;
+  --t-slow: 420ms;
+  --t-roll: 700ms;
+  --z-bar: 20; --z-sheet: 40; --z-toast: 60; --z-splash: 80;
+}
+
+@media (min-resolution: 2dppx) { :root { --hair: 0.5px; } }
+
+@property --aura-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }

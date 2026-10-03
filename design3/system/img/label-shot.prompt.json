@@ -1,0 +1,41 @@
+{
+  "name": "label-shot",
+  "model": "Qwen-Image-2.1 bf16 (local)",
+  "prompt": "A realistic smartphone photo of the side of a closed brown corrugated cardboard carton standing on a metal warehouse shelf, shot straight on, a plain blank white rectangular label sticker in the exact centre of the carton side covering about half of its width, nothing printed on the label, soft tube-light from above, slight shallow depth of field, other cartons blurred in the background, natural colours.",
+  "seed": 22800,
+  "size": 1024,
+  "aspect": "4:3",
+  "transparent": false,
+  "created": "2026-10-03T10:50:06Z",
+  "attempts": 1,
+  "source_px": [
+    1184,
+    896
+  ],
+  "webp_px": [
+    1100,
+    833
+  ],
+  "label_box": {
+    "note": "blank white label, measured by flood fill; use for the code text overlay",
+    "source_px": {
+      "x": 356,
+      "y": 290,
+      "w": 477,
+      "h": 348
+    },
+    "webp_px": {
+      "x": 330.7,
+      "y": 269.4,
+      "w": 443.2,
+      "h": 323.3
+    },
+    "fraction": {
+      "x": 0.3007,
+      "y": 0.3237,
+      "w": 0.4029,
+      "h": 0.3884
+    },
+    "corner_radius_source_px": 10
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "pack-chips",
+  "model": "Qwen-Image-2.1 bf16 (local)",
+  "prompt": "A crinkled snack pouch of masala potato chips standing upright, a vivid orange and red pouch with crimped top and bottom seals, the word \"MUNCHLY\" in bold letters across the front and \"Masala Chips\" below it, and exactly three loose golden potato chips dusted with red masala lying in a small group beside the pouch. Soft 3D render in a premium product-illustration style: matte clay-like materials with real surface detail, studio softbox lighting from the upper left, gentle ambient occlusion and a soft contact shadow, three-quarter view, centred with generous margin so nothing touches the frame edges, natural colours with fresh green accents, calm and modern like Apple or Monzo marketing art. Transparent background with no floor surface, only the soft contact shadow. No people, no hands. The only text in the image is \"MUNCHLY\" and \"Masala Chips\".",
+  "seed": 21201,
+  "size": 1024,
+  "transparent": true,
+  "created": "2026-10-03T10:06:49Z",
+  "attempts": 2,
+  "postprocess": "contact shadow: pale see-through pixels outside the object recoloured to #0b1510 at 62% of their alpha, so the shadow reads as shadow on light and dark grounds"
+}

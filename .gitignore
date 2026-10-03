@@ -11,3 +11,9 @@ video/clips/*.json
 
 # design v2 plates: 1024 px PNG originals stay local; the 512 px WebPs ship
 design2/system/img/*.png
+
+# design v3: generated PNG originals (WebP ships)
+design3/system/img/src/
+design3/system/media/src/
+# the v3 carton loop ships (small, H.264)
+!design3/system/media/carton-loop.mp4
