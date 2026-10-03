@@ -221,7 +221,7 @@
     const [err, setErr] = useState(false);
     const src = (window.SC3_IMG || "system/img/") + name + ".webp";
     if (err) return /* @__PURE__ */ React.createElement("span", { className: cx("icontile soft", className), style: { width: size, height: size, borderRadius: size * 0.28, ...style }, "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Icon, { name: "package", size: size * 0.38, stroke: 1.5 }));
-    return /* @__PURE__ */ React.createElement("img", { className, src, alt, width: size, height: size, loading: "lazy", decoding: "async", onError: () => setErr(true), style: { width: size, height: size, objectFit: "contain", animation: float ? "float-y 5s var(--ease) infinite" : void 0, ...style } });
+    return /* @__PURE__ */ React.createElement("img", { className, src, alt, width: size, height: size, loading: "lazy", decoding: "async", onError: () => setErr(true), style: { width: size, height: size, objectFit: "contain", animation: float ? "float-y 4.8s var(--ease)" : void 0, ...style } });
   }
   function useEscape(open, onClose) {
     useEffect(() => {

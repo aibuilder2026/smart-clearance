@@ -510,7 +510,7 @@ Components are HIG in behaviour and shadcn in anatomy: quiet at rest, decisive o
 - **States:** press scales to 0.97 (icon buttons 0.94) over 160ms; disabled 45% opacity; loading hides the label and centres a stepped spinner in the button's text colour; focus is the global 2px green ring at 2px offset.
 
 ### Badges, Chips and Gates
-- **Badge:** 24px pill (20px small), 12.5px/600, tone pairs soft ground with its text ink (green, amber, red, violet, blue, outline); solid variants for counts on colour; a live dot pings.
+- **Badge:** 24px pill (20px small), 12.5px/600, tone pairs soft ground with its text ink (green, amber, red, violet, blue, outline); solid variants for counts on colour; a live dot pings three times.
 - **Chip (filter):** 32px pill on surface with a strong hairline; pressed turns solid ink with ground-colour text.
 - **Gate chip:** 24px at 8px radius with a check or cross: pass is green-soft, fail is red-soft; one per quick-commerce app (Blinkit, Zepto, Instamart) with has/need days.
 
@@ -547,13 +547,13 @@ Components are HIG in behaviour and shadcn in anatomy: quiet at rest, decisive o
   - choices such as Light, Dark and Match device are `menuitemradio` items with `aria-checked`.
 
 ### The Tracker (signature)
-Nine stops (Connect, Detect, Verify, Value, Decide, Approve, Execute, Settle, Report) on a 3px rail that fills in green as stops complete (scaleX over 900ms). Stops are 21px dots: done is solid green, current is a green ring with a green core and a ping, a stop waiting on a person is the same in amber; labels 12px/600, times in 10.5px mono. On phone sheets it becomes a vertical tracker (26px dots, two-pixel spine, title, text and mono time per stop). On phone cards it folds to a compact tracker: nine 6px segments (the current one half-filled, amber when human), the stop name and the ETA, opening the full tracker in a sheet.
+Nine stops (Connect, Detect, Verify, Value, Decide, Approve, Execute, Settle, Report) on a 3px rail that fills in green as stops complete (scaleX over 900ms). Stops are 21px dots: done is solid green, current is a green ring with a green core and a ping that pulses twice when the stop is reached, a stop waiting on a person is the same in amber; labels 12px/600, times in 10.5px mono. On phone sheets it becomes a vertical tracker (26px dots, two-pixel spine, title, text and mono time per stop). On phone cards it folds to a compact tracker: nine 6px segments (the current one half-filled, amber when human), the stop name and the ETA, opening the full tracker in a sheet.
 
 ### Tracker Card, Batch Rows, Countdown
 The hero card: a product render, the days-left numeral, money at stake, the tracker, an ETA badge and one action. Batch rows in the watchlist are 78px list rows with name, mono id, a 6px countdown (green, amber when gated, red when at risk) and gate chips, which hide below 640px of list width.
 
 ### Agent Feed and the Aura
-A time-true feed: each event is a 34px agent tile (11px radius) or a portrait, who, a mono time, text and mono tool-call pills (26px, 8px radius, green when ok, red when bad); the gap between events is drawn to elapsed time. A working agent wears the aura: a two-pixel conic ring (mint, teal, sky, lime) turning every 3.2s over a blurred mint-to-sky glow breathing every 2.8s; it stops the moment the work stops. Typing dots show a pending reply.
+A time-true feed: each event is a 34px agent tile (11px radius) or a portrait, who, a mono time, text and mono tool-call pills (26px, 8px radius, green when ok, red when bad); the gap between events is drawn to elapsed time. A working agent wears the aura: a two-pixel conic ring (mint, teal, sky, lime) that turns once over 3.2s, around a blurred mint-to-sky glow that swells for 4.2s; ring and glow then hold, still, until the work stops. Typing dots beat four times for a pending reply, then rest.
 
 ### Rolling Numbers
 The odometer: each digit is a 0–9 strip that rolls to its place over 700ms with a 40ms stagger from the right, used whenever an agent changes a figure and for the swing in the approval moment. Screen readers hear the whole figure once, as visually hidden text ("₹21,770", "₹4.2 lakh"); the strips, rupee sign and paise are hidden from them.
@@ -577,7 +577,15 @@ Approve is amber; the tap shows a loading spinner for 650ms, then the tracker fi
 The mark is a green-gradient squircle with the route drawn as a white S from the godown dot to an amber pin; the splash draws it (spring scale, 750ms path draw, the pin drops and pings in amber) and lets the wordmark rise letter by letter. Device frames (a 390 × 844 phone with island, status bar and home bar; a window with traffic lights) exist for the demo stage only.
 
 ### Motion
-Ease `cubic-bezier(0.22, 1, 0.36, 1)`, ease-in `cubic-bezier(0.55, 0, 1, 0.45)`, and a `linear()` spring with one 10% overshoot for switch knobs. Durations: 160ms (press, hover, colour), 240ms (base state, interactive cards), 420ms (progress, numeral axes), 700ms (odometer roll). Sheets and banners on springs; screens cross-fade with a 6px rise over 180ms; renders float 6px on a 5s loop. Under `prefers-reduced-motion` every animation and transition collapses to an instant, the aura and pings stop, rolls show their final value and the splash holds 600ms. Any loop that runs beside content for more than five seconds carries a visible pause (WCAG 2.2.2). The sign-in hero's "Pause animation" button freezes its stage walk, the count, the floating renders and the ping, and the choice is remembered.
+Ease `cubic-bezier(0.22, 1, 0.36, 1)`, ease-in `cubic-bezier(0.55, 0, 1, 0.45)`, and a `linear()` spring with one 10% overshoot for switch knobs. Durations: 160ms (press, hover, colour), 240ms (base state, interactive cards), 420ms (progress, numeral axes), 700ms (odometer roll). Sheets and banners on springs; screens cross-fade with a 6px rise over 180ms; renders lift 6px and settle once over 4.8s. Under `prefers-reduced-motion` every animation and transition collapses to an instant, the aura and pings stop, rolls show their final value and the splash holds 600ms. Nothing loops (WCAG 2.2.2): every ambient animation stops within five seconds, and only loading indicators (spinner, skeleton) turn until the load ends.
+
+- Pings pulse two or three times and fade.
+- The aura turns once.
+- Typing dots beat four times.
+- The label scanline sweeps three times.
+- The demo's rings breathe one and a half times.
+
+The sign-in hero walks the nine stages once and holds on the result. Its button pauses the walk on the way (the choice is remembered), and Replay runs it again.
 
 ### Imagery
 
@@ -608,4 +616,5 @@ Every money figure on screen is computed by `design3/core/money.js` from the jou
 - **Don't** put a kicker, eyebrow or tracked uppercase label above a heading.
 - **Don't** invert light into dark or carry v2's label inks, Bungee or Anek into v3 surfaces.
 - **Don't** play the carton loop on a dark ground; show the poster still.
+- **Don't** loop an animation forever. Stop it within five seconds; loading indicators are the only exception.
 - **Don't** put more than four role destinations in the phone tab bar.

@@ -39,18 +39,20 @@
 
   function HeroStage() {
     const reduce = useReducedMotion();
-    // WCAG 2.2.2: the loop runs beside the sign-in buttons for good, so it can be paused (and stays paused on return)
+    // WCAG 2.2.2: the batch walks the nine stages once and holds on the result, so nothing loops beside the sign-in.
+    // The walk can be paused on the way (a paused hero stays paused on return), and replayed from the start.
     const [paused, setPaused] = useState(() => { try { return localStorage.getItem("sc3-hero-paused") === "1"; } catch (e) { return false; } });
     const [k, setK] = useState(() => (paused ? 9 : 0));
-    // the batch walks the nine stages, holds on the result, then starts again; Play moves on within a second
-    useEffect(() => { if (reduce) { setK(9); return; } if (paused) return; let t; const tick = (x, first) => { t = setTimeout(() => { const n = x >= 9 ? 0 : x + 1; setK(n); tick(n); }, x >= 9 && !first ? 5200 : 1000); }; tick(k, true); return () => clearTimeout(t); }, [reduce, paused]);
-    const toggle = () => { const next = !paused; setPaused(next); try { localStorage.setItem("sc3-hero-paused", next ? "1" : "0"); } catch (e) {} };
+    const done = k >= 9;
+    useEffect(() => { if (reduce) { setK(9); return; } if (paused || k >= 9) return; const t = setTimeout(() => setK(k + 1), 1000); return () => clearTimeout(t); }, [reduce, paused, k]);
+    const remember = v => { try { localStorage.setItem("sc3-hero-paused", v ? "1" : "0"); } catch (e) {} };
+    const control = () => { if (done) { setK(0); setPaused(false); remember(false); } else { setPaused(!paused); remember(!paused); } };
     const stages = D.STAGES.map(x => ({ id: x.id, title: x.title, human: x.human }));
     return <div className={cx("si-stage", paused && "paused")}>
       <div className="si-renders" aria-hidden="true"><Product name="pack-chips" size={176} float className="r1" /><Product name="carton-hero" size={208} float className="r2" /><Product name="pack-mango" size={150} float className="r3" /></div>
       <div className="si-figure"><span className="si-cap">Recovered from one batch of chips headed for the bin</span><Money value={k >= 9 ? D.ACTUAL.net : Math.round(D.ACTUAL.net * k / 9)} size="xl" roll style={{ color: "var(--primary-text)" }} /><span className="si-cap">instead of {fmt.inr(-D.PLAN.writeOff.total)} to destroy it</span></div>
       <div className="si-track" aria-hidden="true"><Tracker stages={stages} done={Math.min(k, 9)} current={k < 9 ? k : -1} /></div>
-      {!reduce && <div className="si-ctl"><button type="button" className="btn btn-ghost btn-sm" onClick={toggle}><Icon name={paused ? "play" : "pause"} size={15} />{paused ? "Play animation" : "Pause animation"}</button></div>}
+      {!reduce && <div className="si-ctl"><button type="button" className="btn btn-ghost btn-sm" onClick={control}><Icon name={done ? "rotate-ccw" : paused ? "play" : "pause"} size={15} />{done ? "Replay animation" : paused ? "Play animation" : "Pause animation"}</button></div>}
     </div>;
   }
 

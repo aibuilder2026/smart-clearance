@@ -145,7 +145,7 @@
             <Spec label="Material: a frosted tab bar over the aurora"><div className="glassdemo"><div className="bar">{[["layout-dashboard", "Today"], ["boxes", "Batches"], ["route", "Routes"], ["bell", "Inbox"]].map(([i, l]) => <span key={l} className="stack tight" style={{ justifyItems: "center", gap: 3 }}><Icon name={i} size={22} />{l}</span>)}</div></div></Spec>
           </Sec>
 
-          <Sec id="motion" title="Motion" intro="Exponential ease-out for state (160 to 320 ms), springs for sheets and presses, 700 ms rolls for numbers, one aura loop for working agents. Reduced motion arrives already in place.">
+          <Sec id="motion" title="Motion" intro="Exponential ease-out for state (160 to 320 ms), springs for sheets and presses, 700 ms rolls for numbers, one aura turn when an agent starts work. Nothing loops: motion stops within five seconds. Reduced motion arrives already in place.">
             <MotionSpecimen />
           </Sec>
 
@@ -157,7 +157,7 @@
             <div className="imggrid">{["carton-hero", "pack-chips", "pack-biscuits", "pack-chikki", "pack-poha", "pack-oats", "pack-mango", "pack-facewash", "pack-hairoil", "van", "kirana", "godown", "phone-scan", "documents", "sprout-box", "donation-crate", "marketplace-bag"].map(n => <figure key={n}><div><Product name={n} size={130} /></div><figcaption>{n}</figcaption></figure>)}</div>
             <div className="ds-two" style={{ marginBottom: 20 }}>
               <Spec label="Label shot · the label is set in type over the photo"><div style={{ borderRadius: 16, overflow: "hidden" }}>{React.createElement(window.SC3_SCREENS.LabelShot)}</div></Spec>
-              <Spec label="Carton loop · LTX, light ground only; dark mode shows the still"><video poster={(window.SC3_IMG || "img/").replace(/img\/$/, "media/") + "carton-loop-poster.webp"} muted loop playsInline autoPlay controls style={{ width: "100%", borderRadius: 16, display: "block" }}><source src={(window.SC3_IMG || "img/").replace(/img\/$/, "media/") + "carton-loop.webm"} type="video/webm" /><source src={(window.SC3_IMG || "img/").replace(/img\/$/, "media/") + "carton-loop.mp4"} type="video/mp4" /></video></Spec>
+              <Spec label="Carton loop · LTX, light ground only; dark mode shows the still"><video poster={(window.SC3_IMG || "img/").replace(/img\/$/, "media/") + "carton-loop-poster.webp"} muted playsInline autoPlay controls style={{ width: "100%", borderRadius: 16, display: "block" }}><source src={(window.SC3_IMG || "img/").replace(/img\/$/, "media/") + "carton-loop.webm"} type="video/webm" /><source src={(window.SC3_IMG || "img/").replace(/img\/$/, "media/") + "carton-loop.mp4"} type="video/mp4" /></video></Spec>
             </div>
             <div className="ds-row">{Object.values(D.PEOPLE).map(p => <span key={p.id} className="row tight"><Avatar person={p} size="lg" /><span className="stack tight" style={{ gap: 0 }}><b className="t-subhead">{p.short}</b><span className="t-caption subtle">{p.org}</span></span></span>)}</div>
           </Sec>

@@ -90,33 +90,34 @@
       }
     });
     const [k, setK] = useState(() => paused ? 9 : 0);
+    const done = k >= 9;
     useEffect(() => {
       if (reduce) {
         setK(9);
         return;
       }
-      if (paused) return;
-      let t;
-      const tick = (x, first) => {
-        t = setTimeout(() => {
-          const n = x >= 9 ? 0 : x + 1;
-          setK(n);
-          tick(n);
-        }, x >= 9 && !first ? 5200 : 1e3);
-      };
-      tick(k, true);
+      if (paused || k >= 9) return;
+      const t = setTimeout(() => setK(k + 1), 1e3);
       return () => clearTimeout(t);
-    }, [reduce, paused]);
-    const toggle = () => {
-      const next = !paused;
-      setPaused(next);
+    }, [reduce, paused, k]);
+    const remember = (v) => {
       try {
-        localStorage.setItem("sc3-hero-paused", next ? "1" : "0");
+        localStorage.setItem("sc3-hero-paused", v ? "1" : "0");
       } catch (e) {
       }
     };
+    const control = () => {
+      if (done) {
+        setK(0);
+        setPaused(false);
+        remember(false);
+      } else {
+        setPaused(!paused);
+        remember(!paused);
+      }
+    };
     const stages = D.STAGES.map((x) => ({ id: x.id, title: x.title, human: x.human }));
-    return /* @__PURE__ */ React.createElement("div", { className: cx("si-stage", paused && "paused") }, /* @__PURE__ */ React.createElement("div", { className: "si-renders", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Product, { name: "pack-chips", size: 176, float: true, className: "r1" }), /* @__PURE__ */ React.createElement(Product, { name: "carton-hero", size: 208, float: true, className: "r2" }), /* @__PURE__ */ React.createElement(Product, { name: "pack-mango", size: 150, float: true, className: "r3" })), /* @__PURE__ */ React.createElement("div", { className: "si-figure" }, /* @__PURE__ */ React.createElement("span", { className: "si-cap" }, "Recovered from one batch of chips headed for the bin"), /* @__PURE__ */ React.createElement(Money, { value: k >= 9 ? D.ACTUAL.net : Math.round(D.ACTUAL.net * k / 9), size: "xl", roll: true, style: { color: "var(--primary-text)" } }), /* @__PURE__ */ React.createElement("span", { className: "si-cap" }, "instead of ", fmt.inr(-D.PLAN.writeOff.total), " to destroy it")), /* @__PURE__ */ React.createElement("div", { className: "si-track", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Tracker, { stages, done: Math.min(k, 9), current: k < 9 ? k : -1 })), !reduce && /* @__PURE__ */ React.createElement("div", { className: "si-ctl" }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-ghost btn-sm", onClick: toggle }, /* @__PURE__ */ React.createElement(Icon, { name: paused ? "play" : "pause", size: 15 }), paused ? "Play animation" : "Pause animation")));
+    return /* @__PURE__ */ React.createElement("div", { className: cx("si-stage", paused && "paused") }, /* @__PURE__ */ React.createElement("div", { className: "si-renders", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Product, { name: "pack-chips", size: 176, float: true, className: "r1" }), /* @__PURE__ */ React.createElement(Product, { name: "carton-hero", size: 208, float: true, className: "r2" }), /* @__PURE__ */ React.createElement(Product, { name: "pack-mango", size: 150, float: true, className: "r3" })), /* @__PURE__ */ React.createElement("div", { className: "si-figure" }, /* @__PURE__ */ React.createElement("span", { className: "si-cap" }, "Recovered from one batch of chips headed for the bin"), /* @__PURE__ */ React.createElement(Money, { value: k >= 9 ? D.ACTUAL.net : Math.round(D.ACTUAL.net * k / 9), size: "xl", roll: true, style: { color: "var(--primary-text)" } }), /* @__PURE__ */ React.createElement("span", { className: "si-cap" }, "instead of ", fmt.inr(-D.PLAN.writeOff.total), " to destroy it")), /* @__PURE__ */ React.createElement("div", { className: "si-track", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Tracker, { stages, done: Math.min(k, 9), current: k < 9 ? k : -1 })), !reduce && /* @__PURE__ */ React.createElement("div", { className: "si-ctl" }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-ghost btn-sm", onClick: control }, /* @__PURE__ */ React.createElement(Icon, { name: done ? "rotate-ccw" : paused ? "play" : "pause", size: 15 }), done ? "Replay animation" : paused ? "Play animation" : "Pause animation")));
   }
   function SignIn({ onSignIn, install }) {
     const app = useApp();

@@ -134,7 +134,7 @@
           <circle className={cx("kirana", on && "on")} cx={p.x} cy={p.y} r={on ? 5.5 : 4} />
         </g>; })}
         <g transform={`translate(${g[0]} ${g[1]})`}>
-          {!reduce && <circle r="16" fill="var(--primary)" opacity="0.18"><animate attributeName="r" values="12;24;12" dur="2.6s" repeatCount="indefinite" /><animate attributeName="opacity" values="0.28;0;0.28" dur="2.6s" repeatCount="indefinite" /></circle>}
+          {!reduce && <circle r="16" fill="var(--primary)" opacity="0.18"><animate attributeName="r" values="12;24;12" dur="2.4s" repeatCount="2" fill="freeze" /><animate attributeName="opacity" values="0.28;0;0.28" dur="2.4s" repeatCount="2" fill="freeze" /></circle>}
           <rect x="-14" y="-14" width="28" height="28" rx="9" fill="var(--primary)" stroke="var(--surface)" strokeWidth="3" />
           <path d="M-7 5 V-1 L0 -6 L7 -1 V5 M-4 5 V1 H4 V5" fill="none" stroke="var(--primary-fg)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
         </g>

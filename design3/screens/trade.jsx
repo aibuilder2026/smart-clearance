@@ -63,7 +63,7 @@
           {!shot && !sent && <><div className="cam-frame" aria-hidden="true"><i /><i /><i /><i /></div><div className="cam-hint">Fit one carton label in the frame</div></>}
           {sent && <div className="cam-hint" style={{ background: "var(--green-700)" }}><Icon name={h.photo.status === "verified" ? "check" : "loader"} size={14} className={h.photo.status === "verified" ? "" : "spin"} /> {h.photo.status === "verified" ? "Verified · matches your records" : "Sent · Vision is reading the label"}</div>}
           <AnimatePresence>{flash && <motion.div key="f" className="cam-flash" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.12 }} />}</AnimatePresence>
-          {h.photo.status === "reading" && !reduce && <motion.div aria-hidden="true" className="cam-scan" animate={{ top: ["20%", "76%", "20%"] }} transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }} />}
+          {h.photo.status === "reading" && !reduce && <motion.div aria-hidden="true" className="cam-scan" animate={{ top: ["20%", "76%", "20%"] }} transition={{ duration: 1.6, repeat: 2, ease: "easeInOut" }} />}
         </div>
         {sent ? <Card className="stack snug">
           <div className="row" style={{ gap: 12 }}><Aura on={h.photo.status === "reading"} className="icontile" style={{ borderRadius: 12, width: 40, height: 40 }}><Icon name={h.photo.status === "verified" ? "badge-check" : "scan-line"} size={19} /></Aura><div className="grow"><b>{h.photo.status === "verified" ? "Done. Dhanyavaad, Rakesh bhai." : "Reading batch, dates and MRP"}</b><div className="t-footnote muted">{h.photo.status === "verified" ? "The plan for this batch will reach Priya in a few minutes." : "This takes a few seconds."}</div></div></div>

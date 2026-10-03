@@ -32,7 +32,7 @@ cd design3 && ./dist.sh             # bundle the hosted build into design3/dist/
 python3 -m http.server 8787 --directory design3   # serve the demo, app and design system locally
 
 cd design3/a11y && npm ci && npx playwright install chromium   # once
-npm test                            # WCAG 2.2 AA suite: 190 tests in five viewports, about 4 minutes
+npm test                            # WCAG 2.2 AA suite: 235 tests in five viewports, about 4 minutes
 npm run test:desktop                # light and dark at 1440 only, for a quicker loop
 npm run report                      # the Playwright HTML report
 ```
@@ -75,10 +75,10 @@ Local pages:
   - the sign-in tab order;
   - sheets taking, keeping and returning focus;
   - the menu-button pattern;
-  - the sign-in hero's pause.
+  - the sign-in hero's pause and replay.
 
   These criteria still need a manual pass: 2.4.11, 2.5.7, 3.2.6, 3.3.7 and 3.3.8.
-- Any animation that loops beside content for more than five seconds needs a visible pause (WCAG 2.2.2); loading indicators are exempt.
+- Nothing loops forever: every animation stops within five seconds (WCAG 2.2.2), and only loading indicators keep turning. `motion.a11y.spec.ts` fails on any endless animation.
 - Measure text contrast against the background it actually sits on, including fills, tinted chips and chat bubbles, after any opacity.
 
 **Data and assets**
@@ -176,4 +176,3 @@ From the Claude desktop app:
 - `.claude/jira-flow.json` names `.github/pull_request_template.md`, which is not in the repo, and there is no CI.
 - The `chrome-devtools` MCP server starts only in a new session, after a one-time approval.
 - The WCAG 2.2 criteria axe cannot check are untested.
-- Ambient loops outside the sign-in hero have no in-page way to stop them (WCAG 2.2.2): the tracker and live-badge pings, the agent aura, the map pin and the floating renders. SC-21 tracks them.
