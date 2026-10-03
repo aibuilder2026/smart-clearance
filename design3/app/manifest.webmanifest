@@ -1,0 +1,25 @@
+{
+  "name": "Smart-Clearance",
+  "short_name": "Clearance",
+  "description": "Routes near-expiry stock to the channel that recovers the most, with one human approval.",
+  "id": "./",
+  "start_url": "./Smart-Clearance%20app%20v3.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "any",
+  "background_color": "#f2f6f3",
+  "theme_color": "#167a52",
+  "lang": "en-IN",
+  "categories": ["business", "productivity"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "system/img/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Command Center", "short_name": "Today", "url": "./Smart-Clearance%20app%20v3.html#/command", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Inbox", "url": "./Smart-Clearance%20app%20v3.html#/inbox", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
