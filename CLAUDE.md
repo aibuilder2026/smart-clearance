@@ -53,7 +53,7 @@
   - Scroll regions are focusable.
   - Contrast is fixed in five places.
   - The hosted pages load its commit `fe559a7`, which is now part of `main`.
-- **SC-19** (branch `SC-19-hero-pause-menu-keys`, In Review):
+- **SC-19** (PR #12):
   - the sign-in hero has a remembered "Pause animation" control (WCAG 2.2.2);
   - every menu follows the WAI-ARIA menu-button pattern;
   - keyboard tests cover both.
