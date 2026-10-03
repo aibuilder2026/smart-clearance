@@ -1,372 +1,604 @@
 ---
 name: Smart-Clearance
-description: A shelf-life board and one-tap route room for near-expiry FMCG stock; paper-light ground, deep green for the agent, amber for the human moment.
+description: Every at-risk batch is a live order, tracked to its best exit; sage-tinted light and dark grounds, the v1 green as brand, amber only for the human yes.
 colors:
-  paper-ground: "#f3f6f2"
-  card-white: "#ffffff"
-  tint-panel: "#e9efe9"
-  tint-pressed: "#dfe7df"
-  ink: "#15201b"
-  ink-secondary: "#4e5c55"
-  ink-meta: "#6f7d76"
-  hairline: "#d5ded8"
-  hairline-strong: "#c3cfc7"
-  agent-green: "#176b4e"
-  agent-green-deep: "#0f4d37"
-  agent-green-soft: "#dcefe5"
-  scan-green: "#2fd27a"
-  gate-amber: "#e3b74d"
-  gate-amber-ink: "#5a3d03"
-  gate-amber-soft: "#fbefcf"
-  risk-red: "#b4232c"
-  risk-red-soft: "#fbe3e4"
-  expiresoon-purple: "#4c2a9c"
-  expiresoon-purple-soft: "#e9e2f7"
-  push-blue: "#2a5fa8"
-  push-blue-soft: "#e8f1fb"
-  kirana-orange: "#c56a1f"
-  kirana-orange-soft: "#fbe8d6"
-  foodbank-green: "#0f8a5f"
-  idle-grey: "#b9c6bf"
-  zone-safe: "#d9efe2"
-  zone-zepto: "#e9f0d9"
-  zone-blinkit: "#fbefcf"
-  zone-risk: "#fbe3e4"
-  zone-cleared: "#dcefe5"
-  chrome-dark: "#0f1a15"
-  stage-dark: "#0f1512"
+  ground: "#f2f6f3"
+  ground-dark: "#070b09"
+  aurora-mint: "#d9f0e3"
+  aurora-sky: "#e2eef7"
+  aurora-green-dark: "rgb(22 122 82 / 0.34)"
+  aurora-teal-dark: "rgb(16 112 150 / 0.22)"
+  aurora-gold-dark: "rgb(140 110 30 / 0.12)"
+  surface: "#ffffff"
+  surface-dark: "#101613"
+  surface-raised: "#f8faf9"
+  surface-raised-dark: "#141b17"
+  surface-sunken: "#eaf0ec"
+  surface-sunken-dark: "#0a0f0c"
+  elevated-dark: "#18201c"
+  ink: "#0d1c15"
+  ink-dark: "#ecf2ee"
+  ink-secondary: "#45554d"
+  ink-secondary-dark: "#a7b4ad"
+  ink-tertiary: "#5f6e67"
+  ink-tertiary-dark: "#82908a"
+  ink-quaternary: "#a1aca6"
+  ink-quaternary-dark: "#56625c"
+  fill: "rgb(17 41 30 / 0.045)"
+  fill-2: "rgb(17 41 30 / 0.075)"
+  fill-3: "rgb(17 41 30 / 0.12)"
+  fill-dark: "rgb(214 255 232 / 0.05)"
+  fill-2-dark: "rgb(214 255 232 / 0.08)"
+  fill-3-dark: "rgb(214 255 232 / 0.12)"
+  hairline: "rgb(17 41 30 / 0.1)"
+  hairline-strong: "rgb(17 41 30 / 0.17)"
+  hairline-dark: "rgb(214 255 232 / 0.085)"
+  hairline-strong-dark: "rgb(214 255 232 / 0.14)"
+  brand-green: "#167a52"
+  brand-green-hover: "#126a47"
+  brand-green-soft: "#e3f4ea"
+  brand-green-text: "#12704a"
+  brand-green-dark: "#3ccb8a"
+  brand-green-hover-dark: "#52d699"
+  brand-green-fg-dark: "#03170d"
+  brand-green-text-dark: "#5fdca2"
+  scan-glow: "#34d399"
+  scan-glow-dark: "#5eeab4"
+  yes-amber: "#f2b437"
+  yes-amber-hover: "#e8a722"
+  yes-amber-fg: "#2a1c00"
+  yes-amber-soft: "#fff3d4"
+  yes-amber-text: "#8a5a00"
+  yes-amber-dark: "#f7c04a"
+  yes-amber-text-dark: "#f5c76a"
+  risk-red: "#e5484d"
+  risk-red-text: "#c42a30"
+  risk-red-soft: "#fdebec"
+  destructive: "#c9363b"
+  risk-red-dark: "#ec5d5e"
+  risk-red-text-dark: "#ff8f8d"
+  destructive-dark: "#b92f35"
+  expiresoon-violet: "#6e56cf"
+  expiresoon-violet-hover: "#5f48bf"
+  expiresoon-violet-text: "#5b45b5"
+  expiresoon-violet-soft: "#f1edfd"
+  expiresoon-violet-dark: "#8b74f0"
+  expiresoon-violet-fg-dark: "#0b0b14"
+  expiresoon-violet-text-dark: "#b9a9ff"
+  push-blue: "#0a7ae0"
+  push-blue-text: "#0b66bc"
+  push-blue-soft: "#e6f1fc"
+  push-blue-dark: "#3b9eff"
+  push-blue-text-dark: "#7cc0ff"
+  channel-kirana: "#178a58"
+  channel-expiresoon: "#7c5cd6"
+  channel-staff: "#e08a0b"
+  channel-d2c: "#2a8fd8"
+  channel-foodbank: "#a3519a"
+  channel-writeoff: "#d23b3b"
+  channel-kirana-dark: "#24a068"
+  channel-expiresoon-dark: "#8a6ee8"
+  channel-staff-dark: "#c97b0c"
+  channel-d2c-dark: "#2f8bd4"
+  channel-foodbank-dark: "#b25aa8"
+  channel-writeoff-dark: "#d94643"
+  map-ground: "#e7efe9"
+  map-block: "#dde8e0"
+  map-water: "#cfe4ef"
+  map-ground-dark: "#0d1411"
+  map-block-dark: "#111a16"
+  map-road-dark: "#1d2823"
+  map-water-dark: "#0e2230"
+  paper: "#fffefb"
+  paper-ink: "#1b211e"
 typography:
-  display:
-    fontFamily: "Bricolage Grotesque, IBM Plex Sans, system-ui, sans-serif"
-    fontSize: "40px"
-    fontWeight: 800
-    lineHeight: 1
-    letterSpacing: "-0.02em"
-  headline:
-    fontFamily: "Bricolage Grotesque, IBM Plex Sans, system-ui, sans-serif"
-    fontSize: "28px"
-    fontWeight: 800
-    lineHeight: 1.15
-    letterSpacing: "-0.02em"
-  title:
-    fontFamily: "Bricolage Grotesque, IBM Plex Sans, system-ui, sans-serif"
-    fontSize: "18px"
+  large-title:
+    fontFamily: "Bricolage Grotesque, Geist, system-ui, sans-serif"
+    fontSize: "34px"
+    fontWeight: 750
+    lineHeight: 1.06
+    letterSpacing: "-0.028em"
+    fontVariation: "\"opsz\" 72"
+  title1:
+    fontFamily: "Bricolage Grotesque, Geist, system-ui, sans-serif"
+    fontSize: "30px"
     fontWeight: 700
-    lineHeight: 1.15
-    letterSpacing: "-0.02em"
+    lineHeight: 1.12
+    letterSpacing: "-0.022em"
+    fontVariation: "\"opsz\" 60"
+  title2:
+    fontFamily: "Bricolage Grotesque, Geist, system-ui, sans-serif"
+    fontSize: "24px"
+    fontWeight: 650
+    lineHeight: 1.18
+    letterSpacing: "-0.018em"
+    fontVariation: "\"opsz\" 48"
+  title3:
+    fontFamily: "Geist, Noto Sans Devanagari, -apple-system, system-ui, sans-serif"
+    fontSize: "20px"
+    fontWeight: 650
+    lineHeight: 1.25
+    letterSpacing: "-0.012em"
+  headline:
+    fontFamily: "Geist, Noto Sans Devanagari, -apple-system, system-ui, sans-serif"
+    fontSize: "17px"
+    fontWeight: 600
+    lineHeight: 1.3
+    letterSpacing: "-0.01em"
   body:
-    fontFamily: "IBM Plex Sans, system-ui, -apple-system, Segoe UI, sans-serif"
-    fontSize: "16px"
+    fontFamily: "Geist, Noto Sans Devanagari, -apple-system, system-ui, sans-serif"
+    fontSize: "15px"
     fontWeight: 400
     lineHeight: 1.5
     letterSpacing: "normal"
-  label:
-    fontFamily: "IBM Plex Sans, system-ui, -apple-system, Segoe UI, sans-serif"
-    fontSize: "13px"
-    fontWeight: 500
-    lineHeight: 1.5
-    letterSpacing: "normal"
-  data:
-    fontFamily: "IBM Plex Mono, ui-monospace, Menlo, monospace"
+    fontFeature: "\"ss01\" 1, \"cv11\" 1"
+  subhead:
+    fontFamily: "Geist, Noto Sans Devanagari, -apple-system, system-ui, sans-serif"
     fontSize: "14px"
-    fontWeight: 500
-    lineHeight: 1.5
-    letterSpacing: "normal"
-    fontVariation: "tabular-nums"
+    fontWeight: 400
+    lineHeight: 1.45
+  footnote:
+    fontFamily: "Geist, Noto Sans Devanagari, -apple-system, system-ui, sans-serif"
+    fontSize: "13px"
+    fontWeight: 400
+    lineHeight: 1.4
+  caption:
+    fontFamily: "Geist, Noto Sans Devanagari, -apple-system, system-ui, sans-serif"
+    fontSize: "12px"
+    fontWeight: 400
+    lineHeight: 1.35
+  caption2:
+    fontFamily: "Geist, Noto Sans Devanagari, -apple-system, system-ui, sans-serif"
+    fontSize: "11px"
+    fontWeight: 400
+    lineHeight: 1.3
+  numeral:
+    fontFamily: "Bricolage Grotesque, Geist, system-ui, sans-serif"
+    fontSize: "72px"
+    fontWeight: 800
+    lineHeight: 0.92
+    letterSpacing: "-0.04em"
+    fontFeature: "lnum"
+    fontVariation: "\"opsz\" 96, \"wdth\" 92"
+  mono:
+    fontFamily: "Geist Mono, ui-monospace, SFMono-Regular, Menlo, monospace"
+    fontSize: "12.5px"
+    fontWeight: 400
+    lineHeight: 1.6
+    letterSpacing: "0"
   hindi:
-    fontFamily: "Noto Sans Devanagari, IBM Plex Sans, system-ui, sans-serif"
-    fontSize: "16px"
-    fontWeight: 500
-    lineHeight: 1.5
-    letterSpacing: "normal"
+    fontFamily: "Noto Sans Devanagari, Geist, system-ui, sans-serif"
+    fontSize: "15px"
+    fontWeight: 400
+    lineHeight: 1.55
 rounded:
-  sm: "8px"
-  md: "12px"
-  lg: "16px"
-  xl: "22px"
-  pill: "999px"
+  xs: "6px"
+  sm: "10px"
+  md: "14px"
+  lg: "20px"
+  xl: "28px"
+  full: "999px"
 spacing:
-  xs: "4px"
-  sm: "8px"
-  md: "12px"
-  lg: "16px"
-  xl: "20px"
-  xxl: "28px"
+  "1": "4px"
+  "2": "8px"
+  "3": "12px"
+  "4": "16px"
+  "5": "20px"
+  "6": "24px"
+  "7": "32px"
+  "8": "40px"
+  "9": "56px"
+  "10": "72px"
 components:
   button-primary:
-    backgroundColor: "{colors.agent-green}"
-    textColor: "{colors.card-white}"
-    rounded: "{rounded.md}"
-    padding: "0 18px"
-    height: "44px"
+    backgroundColor: "{colors.brand-green}"
+    textColor: "{colors.surface}"
+    rounded: "12px"
+    padding: "0 16px"
+    height: "40px"
   button-primary-hover:
-    backgroundColor: "{colors.agent-green-deep}"
-  button-amber:
-    backgroundColor: "{colors.gate-amber}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.md}"
-    padding: "0 18px"
-    height: "44px"
+    backgroundColor: "{colors.brand-green-hover}"
+  button-approve:
+    backgroundColor: "{colors.yes-amber}"
+    textColor: "{colors.yes-amber-fg}"
+    rounded: "12px"
+    padding: "0 16px"
+    height: "40px"
+  button-approve-hover:
+    backgroundColor: "{colors.yes-amber-hover}"
   button-secondary:
-    backgroundColor: "{colors.card-white}"
+    backgroundColor: "{colors.fill-2}"
     textColor: "{colors.ink}"
-    rounded: "{rounded.md}"
-    padding: "0 18px"
-    height: "44px"
+    rounded: "12px"
+    padding: "0 16px"
+    height: "40px"
   button-secondary-hover:
-    backgroundColor: "{colors.tint-panel}"
-  button-ghost:
-    textColor: "{colors.agent-green}"
-    rounded: "{rounded.md}"
-    padding: "0 18px"
-    height: "44px"
-  button-ghost-hover:
-    backgroundColor: "{colors.agent-green-soft}"
-  button-danger:
-    backgroundColor: "{colors.risk-red-soft}"
-    textColor: "{colors.risk-red}"
-    rounded: "{rounded.md}"
-    padding: "0 18px"
-    height: "44px"
-  button-purple:
-    backgroundColor: "{colors.expiresoon-purple}"
-    textColor: "{colors.card-white}"
-    rounded: "{rounded.md}"
-    padding: "0 18px"
-    height: "44px"
-  button-lg:
-    rounded: "14px"
-    padding: "0 24px"
-    height: "52px"
-  chip:
-    backgroundColor: "{colors.tint-panel}"
-    textColor: "{colors.ink-secondary}"
-    typography: "{typography.label}"
-    rounded: "{rounded.pill}"
-    padding: "0 10px"
-    height: "28px"
-  chip-green:
-    backgroundColor: "{colors.agent-green-soft}"
-    textColor: "{colors.agent-green-deep}"
-  chip-amber:
-    backgroundColor: "{colors.gate-amber-soft}"
-    textColor: "{colors.gate-amber-ink}"
-  chip-red:
-    backgroundColor: "{colors.risk-red-soft}"
-    textColor: "{colors.risk-red}"
-  card:
-    backgroundColor: "{colors.card-white}"
+    backgroundColor: "{colors.fill-3}"
+  button-tinted:
+    backgroundColor: "{colors.brand-green-soft}"
+    textColor: "{colors.brand-green-text}"
+    rounded: "12px"
+    padding: "0 16px"
+    height: "40px"
+  button-outline:
+    backgroundColor: "{colors.surface}"
     textColor: "{colors.ink}"
-    rounded: "{rounded.lg}"
-    padding: "16px"
-  card-tint:
-    backgroundColor: "{colors.tint-panel}"
-    rounded: "{rounded.lg}"
-    padding: "16px"
+    rounded: "12px"
+    padding: "0 16px"
+    height: "40px"
+  button-ghost:
+    textColor: "{colors.ink-secondary}"
+    rounded: "12px"
+    padding: "0 16px"
+    height: "40px"
+  button-ghost-hover:
+    backgroundColor: "{colors.fill}"
+    textColor: "{colors.ink}"
+  button-destructive:
+    backgroundColor: "{colors.destructive}"
+    textColor: "{colors.surface}"
+    rounded: "12px"
+    padding: "0 16px"
+    height: "40px"
+  button-destructive-soft:
+    backgroundColor: "{colors.risk-red-soft}"
+    textColor: "{colors.risk-red-text}"
+    rounded: "12px"
+    padding: "0 16px"
+    height: "40px"
+  button-violet:
+    backgroundColor: "{colors.expiresoon-violet}"
+    textColor: "{colors.surface}"
+    rounded: "12px"
+    padding: "0 16px"
+    height: "40px"
+  button-violet-hover:
+    backgroundColor: "{colors.expiresoon-violet-hover}"
+  button-sm:
+    rounded: "{rounded.sm}"
+    padding: "0 12px"
+    height: "32px"
+  button-lg:
+    rounded: "{rounded.md}"
+    padding: "0 20px"
+    height: "48px"
+  button-xl:
+    rounded: "{rounded.full}"
+    padding: "0 26px"
+    height: "56px"
+  badge:
+    backgroundColor: "{colors.fill-2}"
+    textColor: "{colors.ink-secondary}"
+    rounded: "{rounded.full}"
+    padding: "0 9px"
+    height: "24px"
+  badge-green:
+    backgroundColor: "{colors.brand-green-soft}"
+    textColor: "{colors.brand-green-text}"
+  badge-amber:
+    backgroundColor: "{colors.yes-amber-soft}"
+    textColor: "{colors.yes-amber-text}"
+  badge-red:
+    backgroundColor: "{colors.risk-red-soft}"
+    textColor: "{colors.risk-red-text}"
+  badge-violet:
+    backgroundColor: "{colors.expiresoon-violet-soft}"
+    textColor: "{colors.expiresoon-violet-text}"
+  badge-blue:
+    backgroundColor: "{colors.push-blue-soft}"
+    textColor: "{colors.push-blue-text}"
+  chip:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink-secondary}"
+    rounded: "{rounded.full}"
+    padding: "0 12px"
+    height: "32px"
+  chip-selected:
+    backgroundColor: "{colors.ink}"
+    textColor: "{colors.ground}"
+  gate-pass:
+    backgroundColor: "{colors.brand-green-soft}"
+    textColor: "{colors.brand-green-text}"
+    rounded: "8px"
+    padding: "0 8px 0 6px"
+    height: "24px"
+  gate-fail:
+    backgroundColor: "{colors.risk-red-soft}"
+    textColor: "{colors.risk-red-text}"
+    rounded: "8px"
+    padding: "0 8px 0 6px"
+    height: "24px"
   input:
-    backgroundColor: "{colors.card-white}"
+    backgroundColor: "{colors.surface}"
     textColor: "{colors.ink}"
     typography: "{typography.body}"
-    rounded: "{rounded.md}"
+    rounded: "12px"
     padding: "0 14px"
-    height: "48px"
-  batch-card:
-    backgroundColor: "{colors.card-white}"
-    rounded: "14px"
-    padding: "12px"
-  push-card:
-    backgroundColor: "{colors.card-white}"
-    rounded: "18px"
+    height: "44px"
+  card:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.lg}"
+    padding: "20px"
+  card-dark:
+    backgroundColor: "{colors.surface-dark}"
+    textColor: "{colors.ink-dark}"
+  list-row:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    padding: "10px 16px"
+    height: "52px"
+  tile:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.lg}"
+    padding: "16px 18px"
+  tabbar-tab:
+    textColor: "{colors.ink-tertiary}"
+    rounded: "12px"
+    height: "44px"
+  tabbar-tab-active:
+    textColor: "{colors.brand-green-text}"
+  sidebar-item:
+    textColor: "{colors.ink-secondary}"
+    rounded: "{rounded.sm}"
+    padding: "0 10px"
+    height: "38px"
+  sidebar-item-active:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+  segmented:
+    backgroundColor: "{colors.fill-2}"
+    rounded: "{rounded.sm}"
+    padding: "2px"
+    height: "34px"
+  sheet-bottom:
+    backgroundColor: "{colors.surface}"
+    rounded: "24px 24px 0 0"
+  sheet-side:
+    backgroundColor: "{colors.surface}"
+    rounded: "24px"
+    width: "460px"
+  toolcall:
+    backgroundColor: "{colors.fill}"
+    textColor: "{colors.ink-secondary}"
+    typography: "{typography.mono}"
+    rounded: "8px"
+    padding: "0 9px"
+    height: "26px"
+  code-card:
+    backgroundColor: "{colors.surface-sunken}"
+    textColor: "{colors.ink-secondary}"
+    typography: "{typography.mono}"
+    rounded: "12px"
     padding: "12px 14px"
-  sc-mark:
-    backgroundColor: "{colors.agent-green}"
-    textColor: "{colors.card-white}"
-    rounded: "{rounded.md}"
-    size: "40px"
 ---
 
 # Design System: Smart-Clearance
 
+> Edition note: this file records design v3 (design3/), the product's current visual system. Design v2 (the Sivakasi label world, design2/) and design v1 (design/) remain in the repository as earlier editions for reference; their tokens are not part of this system.
+
 ## Overview
 
-**Creative North Star: "The Shelf-Life Board"**
+**Creative North Star: "The Live Order"**
 
-Time is the mechanism, so time is the layout. The whole system is built so that a batch of near-expiry stock can be read like a card on a sorting board: it sits in a zone by days left, the zone carries the colour, the card stays white and quiet, and the clock pushes it toward the red edge. Everything else (the Route Room with its six priced doors, the agent timeline, the retailer's one-tap Hindi scheme, the finance ledger) is a view of that one board, drawn in the same paper-light material.
+Every at-risk batch is a live order, tracked to its best exit the way India tracks a delivery: status in a giant numeral, an ETA, a nine-stop tracker that fills as each agent hands off, a schematic map with the godown pin and the van route, and one action per card. The grammar is Apple HIG behaviour in shadcn/ui anatomy: frosted bars and sidebar, large titles that collapse into the navigation bar, inset grouped lists, sheets with detents, a tab bar on phones. Token names follow shadcn theming (`--background`, `--primary`, `--muted`, `--ring`, `--radius`) so the values drop into shadcn-svelte.
 
-The material is paper: a cool, faintly green ground (#f3f6f2) with white cards sitting on it under a soft, low shadow. Colour is rationed by role, not by taste. Deep green belongs to the agent and to the primary action; amber is reserved for the moment a human is the gate (Approve, the current step, the focus ring); red is risk and the bin; purple marks the ExpireSoon marketplace channel; blue marks a push notification. The agent has a face (the SC mark: a green rounded square with an amber dot) and the people have portraits, so nothing on screen speaks without a face beside it.
+The material is a sage-tinted ground with white cards in light (#f2f6f3 under #ffffff) and a green-black ground with a faint aurora in dark (#070b09 under #101613). Light and dark are composed separately, never inverted. Colour appears only where something is live: the v1 green, modernised, is the brand and the agents' work; amber is the one human yes; red is risk and the bin; violet is ExpireSoon and nothing else. Agents carry a turning mint-to-sky aura only while they work, and numbers roll in place when an agent changes them.
 
-Density is working-tool density, not dashboard density: 16px body on phones, 44px hit targets, 48px inputs, one primary action per screen, and money never shown without its working. The build refuses the KPI-tiles-over-a-table dashboard this category usually ships; KPI tiles exist only on the finance ledger, where the numbers are the content.
+Density is operating-tool density: Geist at 15px for the interface, Bricolage Grotesque numerals at Monzo weight for the one figure that matters on each surface, Geist Mono for the ids, times and API cards that let a judge trust the run. The build refuses the KPI-tiles-over-a-table dashboard and the neon AI command centre; tiles exist, but the hero of a brand screen is the tracker card.
 
 **Key Characteristics:**
-- Zones carry colour; cards are white and quiet.
-- One accent (deep green) plus four reserved semantic hues (amber, red, purple, blue) and two split-bar hues (orange, food-bank green).
-- Four faces: Bricolage Grotesque for headings and big numerals, IBM Plex Sans for text, IBM Plex Mono with tabular numerals for ids and money, Noto Sans Devanagari for Hindi.
-- Soft, low, ink-tinted shadows; no hard offsets, no coloured left borders, no eyebrows.
-- Phone first, container-query driven: layouts switch on the app's own width at 760 and 1100.
-- Motion is one ease-out curve, springs for sheets and pushes, count-ups for money.
+- Live-tracking grammar: giant numeral, ETA, nine-stop tracker, map, one action.
+- Sage-tinted neutrals; light and dark both first-class and separately composed.
+- Green is the brand and the agent; amber, red and violet each carry exactly one meaning.
+- Urgency set in the numeral's own width and weight axes; rupee and paise set small.
+- Hairlines of one device pixel, soft layered offset shadows, squircle corners where supported.
+- Springs for sheets, 160 to 420 ms ease-out for state, 700 ms odometer rolls; all of it off under reduced motion.
+- Soft 3D renders on transparent grounds and one carton loop; label text is set in type, never baked into the photo.
 
 ## Colors
 
-A restrained, paper-and-ink palette: neutrals plus one accent, with four hues reserved for a single meaning each.
+A quiet sage palette with one brand green and three single-meaning signals, plus a validated six-hue categorical set for charts.
 
 ### Primary
-- **Agent Green** (`agent-green`): the agent's colour and the primary action. Primary buttons, the SC mark, verified chips, done steps on the timeline, selected door border, links, the active tab underline and active bottom-nav item. Hover darkens to **Agent Green Deep** (`agent-green-deep`), which is also the text ink on green-soft grounds.
-- **Agent Green Soft** (`agent-green-soft`): tinted ground for green chips, the selected door, the agent's chat bubble, the ghost-button hover, and the input focus ring. Text on it is always `agent-green-deep`, never grey.
-- **Scan Green** (`scan-green`): one use only, the viewfinder corners and scanline in the camera screen on black.
+- **Route Green** (`brand-green`, dark `brand-green-dark`): the brand, the primary button, the agents' completed work, tracker done stops and the filled rail, the van route on the map, active tab and sidebar icon, links, the focus ring (`--ring`), the switch on-state and progress fills. Hover darkens to `brand-green-hover` (dark: lightens to `brand-green-hover-dark`). On dark, text on green is `brand-green-fg-dark`, not white.
+- **Green Soft / Green Text** (`brand-green-soft`, `brand-green-text`): tinted grounds for green badges, passed gate chips, the tinted button and avatar initials; text on them always takes `brand-green-text`.
+- **Scan Glow** (`scan-glow`): the glowing camera scanline and the bright stop of the agent aura only.
 
 ### Secondary
-- **Gate Amber** (`gate-amber`): the human moment. The Approve button, the Open-batch button, the retailer's "ऑर्डर करें", the current step on the stepper and timeline, the `:focus-visible` ring (3px), the text selection highlight, and the inbox badge on the dark rail. Amber ink on amber-soft is **Gate Amber Ink** (`gate-amber-ink`); the soft tint (`gate-amber-soft`) is also the halo behind the current step and the Blinkit gate zone.
+- **Yes Amber** (`yes-amber`, dark `yes-amber-dark`): the human yes. The Approve button, a tracker stop that waits on a person (the dot, its ping and the compact segment), the "their move" ring on the demo device, and the amber pin in the mark. Text on amber is `yes-amber-fg`; amber badges use `yes-amber-soft` with `yes-amber-text`.
 
 ### Tertiary
-- **Risk Red** (`risk-red`): risk, losses, the bin, the hot card ring and the notification badge in the top bar. Soft tint (`risk-red-soft`) for red chips, the dashed bin door, the danger button and the at-risk zone.
-- **ExpireSoon Purple** (`expiresoon-purple`): the ExpireSoon marketplace channel wherever it is referenced: the buyer surface header and price, the bid button, the ExpireSoon door border, the Lister chip on the Execution screen, the buyer's chat bubble (`expiresoon-purple-soft`), and the online segment of the split bar.
-- **Push Blue** (`push-blue`): push notifications only: the blue chip on the Outreach card, the Hindi push preview ground (`push-blue-soft`), and the distributor's inline hero push card.
-- **Kirana Orange** (`kirana-orange`) and **Food-bank Green** (`foodbank-green`): split-bar segments for the kirana-shop and donation channels. **Idle Grey** (`idle-grey`): the "stays as is" segment of the same bar.
+- **Risk Red** (`risk-red`, `risk-red-text`, `risk-red-soft`): risk and the bin. At-risk countdown fills, failed gate chips, loss figures (`.neg`), invalid fields, notification counts, the write-off channel. `destructive` is the solid destructive button only.
+- **ExpireSoon Violet** (`expiresoon-violet` family): ExpireSoon, another company's marketplace. Inside the ExpireSoon scope it replaces the brand roles wholesale (primary, hover, text, soft and glow all become violet), so the buyer's screens carry their own look; outside it violet marks only ExpireSoon references (violet badges, the listing tool tile, the sign-in "ExpireSoon" button, `.m` keys in API cards).
+- **Push Blue** (`push-blue` family): push and information only: notification badges with a bell, info icon tiles, numbers in JSON cards.
+
+### Categorical (charts)
+- **Channel palette** (`channel-kirana`, `channel-expiresoon`, `channel-staff`, `channel-d2c`, `channel-foodbank`, `channel-writeoff`, each with a `-dark` twin): the six exits, always drawn in that fixed series order (kirana, ExpireSoon, staff, D2C, food bank, write-off) in split bars, channel bars, the mix bar, trend lines and table swatches. The set was validated for a shared lightness band, chroma, colour-vision-deficiency and normal-vision separation in each theme; change one hue and the whole set must be re-checked.
 
 ### Neutral
-- **Paper Ground** (`paper-ground`): the page behind everything inside the app; also the manifest background colour.
-- **Card White** (`card-white`): cards, batch cards, sheets, inputs, zone-strip pills, the nav bar on phones.
-- **Tint Panel** (`tint-panel`): flat tinted cards, hover tints on icon buttons, chip default ground, bar tracks, skeleton base, the user's own chat bubble. **Tint Pressed** (`tint-pressed`) is the darker step of the same family.
-- **Ink** (`ink`): text, the sum line in a ledger, the selected zone-strip border. **Ink Secondary** (`ink-secondary`) for secondary text and labels; **Ink Meta** (`ink-meta`) for timestamps, struck prices and todo timeline rows.
-- **Hairline** (`hairline`) for card borders, dividers, table rows, dashed ledger rows; **Hairline Strong** (`hairline-strong`) for input and secondary-button borders, the sheet grab handle and the scrollbar thumb.
-- **Zone tints** (`zone-safe`, `zone-zepto`, `zone-blinkit`, `zone-risk`, `zone-cleared`): the five board zones from green through olive and amber to red and back to cleared green. They are grounds for white cards, never text colours.
-- **Chrome Dark** (`chrome-dark`): the left rail on tablet and desktop, the agent's morning note, the sign-in screen and code blocks; **Stage Dark** (`stage-dark`) is the demo stage and scrim base behind the device frame. On dark chrome, text is `#c8d3cc` / `#a9b7ae`, active item ground `#1f3b2d`, hover `#1b2a22`, and the agent's timestamp ink `#8fb3a0`.
+- **Sage Ground** (`ground` / `ground-dark`): the app root behind everything, under the aurora (`aurora-mint`, `aurora-sky` in light; `aurora-green-dark`, `aurora-teal-dark`, `aurora-gold-dark` in dark, three blurred radial washes at the top of the ground, plus a 5% fractal-noise grain in dark).
+- **Surfaces** (`surface`, `surface-raised`, `surface-sunken`, dark twins, `elevated-dark`): cards and lists, table headers and window chrome, code cards and image wells, sheets and popovers.
+- **Ink ramp** (`ink`, `ink-secondary`, `ink-tertiary`, `ink-quaternary`, dark twins): text, secondary text, captions and labels, disabled glyphs and chevrons.
+- **Fills** (`fill`, `fill-2`, `fill-3`): translucent sage fills for hover, secondary buttons, segmented and tab tracks, countdown and progress tracks, skeletons.
+- **Hairlines** (`hairline`, `hairline-strong`): separators and card edges; strong for input and outline edges.
+- **Map** (`map-ground`, `map-block`, `map-water`, dark twins): the schematic Nagpur cluster map; roads are white in light and `map-road-dark` in dark.
+- **Paper** (`paper`, `paper-ink`): documents keep a white page with near-black ink in both themes, dimmed 7% in dark.
 
 ### Named Rules
-**The Zone, Not The Card Rule.** Colour on the board lives in the zone ground. A batch card is white with a hairline hover; its only colour is the countdown fill and, on the one hot card, a 2px red ring. Never paint a card or give it a coloured left border to signal state.
+**The Live Colour Rule.** Colour appears only where something is live or decided. Resting chrome is sage neutrals; green, amber, red and violet arrive with a state.
 
-**The Amber Gate Rule.** Amber appears exactly where a person is the gate: the one approve-class button on a screen, the current step, the focus ring. The agent's own work is green. A screen never carries both an amber and a green primary button.
+**The One Yes Rule.** Amber marks only the moment a person is the gate: the Approve action and the stop that waits on them. The agents' work is green. Amber is never a warning colour or a decoration.
 
-**The Reserved Hue Rule.** Purple means ExpireSoon, blue means a push notification, red means risk, orange and food-bank green appear only inside split bars and their legends. A hue used outside its meaning is a defect, not a variation.
+**The Single Meaning Rule.** Red is risk and the bin, violet is ExpireSoon, blue is push and information. A hue outside its meaning is a defect.
 
-**The Tint-From-The-Hue Rule.** Text on a coloured ground takes the ink of that hue (`gate-amber-ink` on amber-soft, `agent-green-deep` on green-soft, `risk-red` on red-soft), never grey.
+**The Fixed Series Rule.** Channels are drawn in the order kirana, ExpireSoon, staff, D2C, food bank, write-off, in their channel colours, everywhere a channel is charted.
+
+**The Composed-Not-Inverted Rule.** Dark mode is its own palette (green-black ground, lifted green, darker channel hues, black shadows with an inner highlight), never a filter over light.
 
 ## Typography
 
-**Display Font:** Bricolage Grotesque (with IBM Plex Sans, system-ui fallback), loaded at optical-size axis 12–96, weights 600/700/800
-**Body Font:** IBM Plex Sans (with system-ui, Segoe UI fallback), weights 400/500/600
-**Label/Mono Font:** IBM Plex Mono (with ui-monospace, Menlo fallback), weights 400/500, tabular numerals
-**Hindi Font:** Noto Sans Devanagari (with IBM Plex Sans fallback), weights 500/700
+**Display Font:** Bricolage Grotesque (optical size 12–96, width 75–100, weight 200–800), with Geist and system-ui fallback
+**Body Font:** Geist (300–800), with Noto Sans Devanagari, -apple-system, Segoe UI fallback; stylistic sets ss01 and cv11 on
+**Label/Mono Font:** Geist Mono (400–600)
+**Hindi Font:** Noto Sans Devanagari (400–800)
 
-**Character:** A warm, slightly characterful grotesque for the headings and the big rupee figures, over a workmanlike humanist sans for everything you read, with a mono for everything you count. Headings are tight (-0.02em) and balanced; body is loose (1.5) and pretty-wrapped. The mono is not decorative: it marks ids, times, money and codes so a number can be trusted at a glance.
+**Character:** A characterful variable grotesque carries the titles and the numbers, at Monzo weight, with the interface in a crisp neutral sans and a mono for anything a machine wrote. The numerals do the emotional work; the interface stays quiet.
 
 ### Hierarchy
-- **Display** (800, 40px, line-height 1, -0.02em): the one big number on a surface: the ExpireSoon price per packet. The offer card's headline figure uses the same face at 28px/1.1, and the sign-in h1 at 34px.
-- **Headline** (800, 28px, line-height 1.15, -0.02em): the page h1 ("Shelf-life board", "Execution · MF-2409-117", a person's name on the trade surfaces). Sheet titles are h2 at 20px.
-- **Title** (700, 22 / 18 / 16px, line-height 1.15): h2, h3 and h4. Card and section titles are h3 (18px); zone headers, document titles and "what happens when you tap" are 16px display.
-- **Body** (400, 16px phone body, 15px inside cards and chat bubbles, line-height 1.5): all reading text. 14px (`small`) for secondary rows, table cells and labels; 13px (`tiny`) for meta, legends and help text. Chat bubbles cap at 44ch.
-- **Label** (500, 12–13px): chips (13px), bottom-nav and rail items (12px), KPI captions (13px). Weight 600 is for emphasis inside body (field labels, batch names, step "now", ledger sum), never a separate face.
-- **Data** (IBM Plex Mono 500, 12–24px, tabular): ids at 12–13px, ledger and door values at 14–15px, approve-bar numbers 17px, KPI numbers 22px, door prices and stepper output 24px/18px. 400 for timestamps and codes.
-- **Hindi** (Noto Sans Devanagari 500/700, inherits size): any Hindi string, applied by the `hindi` class, including inside buttons.
+- **Large title** (750, 34px, 38px from 768px, 1.06, -0.028em, opsz 72): the page title under the navigation bar; it collapses into a 16px/600 centred bar title on scroll.
+- **Title 1 / Title 2** (Bricolage 700 30px / 650 24px): section heads, sheet heroes ("Plan placed"), offer titles.
+- **Title 3 / Headline** (Geist 650 20px / 600 17px): card and sheet titles (sheet header 17px/650), alert titles.
+- **Body** (Geist 400, 15px, 1.5): all reading text; callout 16px for sign-in and finale lines; subhead 14px for list subtitles and feed text; footnote 13px; caption 12px; caption 2 at 11px is the floor for functional text.
+- **Numeral** (Bricolage 800, 32 / 48 / 72 / 112px steps, 0.92, -0.04em, opsz 96, lining): the one figure on a surface (days left, money at stake, the swing). Urgency lives in the axes: days left run from `wdth` 76 / `wght` 620 when fresh to `wdth` 100 / `wght` 800 at the date, interpolated over the shelf life and eased over 420ms.
+- **Money**: the rupee sign at 0.5em, weight 700, raised 0.12em; paise at 0.5em, raised; a true minus sign; Indian grouping (en-IN).
+- **Mono** (Geist Mono 400–600, 11–12.5px): batch and document ids, tracker and feed timestamps, tool calls, JSON and API cards, keyboard keys, the label-shot print and the paper stamps.
+- **Hindi** (Noto Sans Devanagari, inherits size, line-height 1.5–1.55): every Hindi string, marked with `lang="hi"`.
 
 ### Named Rules
-**The Tabular Money Rule.** Every rupee, id, time and count is set in IBM Plex Mono with tabular numerals, right-aligned where it sits in a column, and money carries its working: a ledger row with a label, never a lone number.
+**The Urgent Numeral Rule.** Urgency is drawn in the numeral's own width and weight, never with a red badge beside a neutral number.
 
-**The No-Eyebrow Rule.** Headings carry their own weight. There is no kicker, eyebrow or uppercase tracked label above a title; the only uppercase mono in the app is the stamped heading inside a paper document preview, where it is the document's own convention.
+**The Small Rupee Rule.** Money is a heavy integer with the rupee and paise set at half size; never a full-size ₹ beside the figure.
+
+**The Machine Voice Rule.** Ids, times, tool calls and payloads are Geist Mono; people's words and the interface are Geist.
+
+**The Borrowed Voice Rule.** Inside the ExpireSoon scope, numerals and titles switch to Geist (680–750 weight, tight tracking, no variation axes): ExpireSoon is another company and does not speak in Smart-Clearance's numerals.
 
 ## Layout
 
-The app is a size container (`container-type: inline-size; container-name: app`), and every layout switches on the app's own width, not the window's: phone below 760px, tablet 760–1099px, desktop from 1100px. The three proof widths are 390, 820 and 1440.
+Every layout decision reads the app's own width through a size container (`container-name: app`), so a device frame on the demo stage renders exactly as the device would. Breakpoints: **phone** under 768px, **tablet** 768–1099px, **desktop** 1100px and up; proof widths 390, 820 and 1440.
 
-Phone is the default: a single column with 16px side padding and 24px bottom padding, a sticky top bar (12px 16px, frosted paper: 88% ground mixed with white and a 10px blur), and a 64px bottom nav of up to four items. On the board, the five zones collapse to a horizontal pill strip (44px pills, scroll-snap) and only the selected zone shows, with the at-risk zone first. Sheets rise from the bottom (92% max height, 22px top corners, grab handle); the primary action sits in the sheet footer or a sticky approve bar at thumb height.
-
-From 760px the bottom nav disappears and a 96px dark rail appears on the left (mark, nav items at 56px with 12px radius, inbox badge, portrait and sign-out at the foot). Page padding grows to 20px 28px, the top bar to 14px 28px. The board becomes two columns (content plus a 300px agent-note column, 320px at desktop); zones go to two columns on tablet with the risk zone spanning full width and first, and to five columns at desktop. The Route Room becomes content plus a 320px side column; doors go 2 → 3 → 6 across; the label card goes side-by-side with its read-out at 1.1fr/1fr. Execution is 1 → 2 → 3 columns; KPIs 2 → 4; documents auto-fill at 230px minimum. Sheets become a 520px side panel; toasts dock top-right at 380px.
-
-Spacing rhythm is tight and even: 4, 6, 8, 10, 12, 14, 16, 20, 28. Stacks are 8 (small), 12 (default) and 20 (large); rows gap 10; cards pad 16, batch cards and zones 12, KPIs 12 14; ledger rows 9px vertical on a dashed hairline. Hit targets are never below 44px; inputs are 48px; large buttons 52px. Text content is width-limited by component (offer and hero push 680px, sign-in roles 640px, chat bubbles 44ch, push cards 560px), not by a global container.
+- **Phone:** content scrolls under a frosted tab bar (64px plus the bottom safe area) of at most four role destinations (Today, Route, Live, Batches for the operator); setup and reports are hidden on phone. The inbox is the bell and the profile is the portrait in the navigation bar. Navigation bar 56px plus the top safe area; large-title padding 16px. Sheets rise from the bottom with medium (58%) and large (94%) detents.
+- **Tablet:** a 76px compact rail (icons only, mark at the head, portrait at the foot); sheets become a floating side panel.
+- **Desktop:** a 256px frosted sidebar with mark and wordmark, section labels, counts, and the person at the foot; content padding 28px; inspector width 360px. On the demo stage a 360px narration column sits beside the device frames (under the stage below 1100px).
+- **Safe areas:** `env(safe-area-inset-top/bottom)` feed the navigation bar, tab bar, sheets, splash and lock screen.
+- **Spacing:** a 4pt grid (4, 8, 12, 16, 20, 24, 32, 40, 56, 72). Stacks gap 16 (tight 8, snug 12, loose 24); rows gap 12; cards pad 20 (large 24); list rows 52px minimum at 10px 16px; inset separators start at 16px, 60px when rows lead with an icon tile.
+- **Targets:** tab-bar items and compact rail items are 44px; list rows 52px; large and extra-large buttons 48 and 56px. On touch screens (`pointer: coarse`) every default button grows to 44px and icon buttons to 44 by 44; small buttons, chips, segmented controls, tabs, round close buttons and "continue as" links keep their drawn size and take a 44px hit area from an invisible overlay; stepper buttons grow to 44px tall.
 
 ## Elevation & Depth
 
-Depth is tonal first and shadow second. The page is paper, cards are white on it with a hairline border, and tinted panels are the darker tone of the same paper. Shadows exist in three ink-tinted, soft, multi-layer steps and are reserved for things that float: cards get the lowest, floating bars and pushes the middle, sheets and the device frame the highest. There are no hard offset shadows, no coloured glows except the three state halos (primary-button lift, the hot card's red ring, the current-step amber halo), and the only blur is the sticky top bar's frosted paper, which is functional, not decorative.
+A hybrid: soft, layered, offset shadows lift cards and overlays off the sage ground, and one-device-pixel hairlines (`--hair`, 0.5px on 2x screens) draw every edge and separator. Shadows are ink-tinted in light and pure black with an inner top highlight in dark. Frosted glass (`saturate(180%) blur(20–22px)`) is reserved for bars, the sidebar, alerts, menus and banners; under reduced transparency it falls back to solid surfaces.
 
 ### Shadow Vocabulary
-- **Card** (`box-shadow: 0 1px 2px rgba(21,32,27,.06), 0 4px 14px rgba(21,32,27,.06)`): default cards, batch cards, document cards, offer cards, paper previews. Flat and tinted cards drop it.
-- **Float** (`box-shadow: 0 6px 18px rgba(21,32,27,.10), 0 18px 48px rgba(21,32,27,.12)`): the sticky approve bar, push cards, and the hot batch card (combined with its red ring).
-- **Sheet** (`box-shadow: 0 12px 30px rgba(21,32,27,.16), 0 40px 90px rgba(21,32,27,.22)`): bottom sheets, side panels and the device frame on the demo stage.
-- **Button lift** (`box-shadow: 0 6px 16px rgba(23,107,78,.28)` green; `0 6px 16px rgba(227,183,77,.3)` amber): a tinted lift under the one primary button on a screen, removed when disabled.
-- **Mark halo** (`box-shadow: 0 0 0 3px var(--green-soft)`): the SC mark's soft ring; 2px on the small mark.
-- **Hot ring** (`border: 2px solid var(--red)` at inset -2px, plus `0 0 0 4px rgba(180,35,44,.12)`): the single at-risk card that is breathing.
-- **Focus** (`outline: 3px solid var(--amber); outline-offset: 2px`): every focus-visible element; inputs instead shift their border to green with a 3px green-soft ring.
+- **shadow-1** (`0 1px 2px rgb(13 28 21 / 0.06), 0 1px 1px rgb(13 28 21 / 0.04)`): cards, lists, tiles and tables at rest, always paired with a hairline ring.
+- **shadow-2** (`0 6px 16px -6px rgb(13 28 21 / 0.12), 0 2px 5px -2px rgb(13 28 21 / 0.07)`): raised and hovered cards, selected document cards, the camera.
+- **shadow-3** (`0 22px 48px -16px rgb(13 28 21 / 0.26), 0 8px 18px -8px rgb(13 28 21 / 0.12)`): sheets, alerts, menus, banners, toasts, chart tips.
+- **shadow-float** (`0 30px 60px -20px rgb(13 28 21 / 0.3), 0 10px 22px -10px rgb(13 28 21 / 0.16)`): device frames on the demo stage.
+- **Button lift** (`inset 0 1px 0` highlight plus `0 8px 18px -10px` of the button's own colour at 80–85%): primary, approve and violet buttons; black in dark.
+- **Hairline ring** (`0 0 0 var(--hair) var(--line)`): the edge of every card, list, tile, table and overlay.
 
 ### Named Rules
-**The Quiet Card Rule.** Cards rest on the lowest shadow and a hairline; they never lift on hover. Hover is a border shift to the strong hairline. Only one card on a board may wear the hot ring at a time.
+**The Offset Shadow Rule.** Shadows fall downward with a negative spread; no zero-offset, blurred, coloured halo surrounds a card, button or figure. The two exceptions are light sources the world itself contains: the agent aura while an agent works and the camera scanline.
+
+**The One-Pixel Rule.** Edges and separators are one device pixel of `hairline`; no keylines, no heavy borders. State is drawn with a crisp 1.5–2px ring of the state colour (a selected document, a selected person, a live tile), never a thicker card border.
 
 ## Shapes
 
-Softly rounded, never pill-shaped except where the thing is a choice or a count. The radius scale is 8 / 12 / 16 / 22: 8px for small marks, paper previews, skeleton blocks and the legend swatch (3px); 12px for buttons, inputs, steppers, icon buttons, nav items, code blocks, the label photo and the SC mark; 16px for cards, zones, chat bubbles and the approve bar inner; 22px for the top corners of a bottom sheet. In-between values the build also uses: 10px for small buttons and the back button, 14px for large buttons, batch cards, document cards, doors, KPI tiles and the camera frame, 18px for the large mark, push cards, offer and hero-push cards. Pills (999px) are chips, zone-strip buttons and the role button; circles are avatars, step dots, timeline nodes, route stops and the shutter.
-
-Borders are 1px hairline on cards and 1.5px strong hairline on inputs, secondary buttons and doors. State is shown by changing the border colour (green selected, purple ExpireSoon, dashed red for the bin), never by thickness. Ledger and order rows separate with a 1px dashed hairline; the ledger sum closes with a 2px ink rule. The bottom sheet carries a 44 × 5px grab handle; the phone frame rounds its app to 36px.
+Soft, continuous corners on the 6 / 10 / 14 / 20 / 28 / 999 scale: 6px for keyboard keys, paper pages and ExpireSoon date tags; 10px for small buttons, segmented controls, sidebar items, steppers; 12px for buttons, inputs, icon buttons and code cards (between steps, as built); 14px for menus, toasts and large buttons; 20px for cards, lists, tiles, tables and the map; 24px for sheets; 28px for the camera and the bezel's inner card; 999px for badges, chips, the extra-large button, switches and avatars. Where the browser supports `corner-shape: squircle`, cards, bezels, sheets, lists and tiles become squircles and their radii grow (card 28px, bezel 40px, bezel card 36px) to keep the same optical curve. The mark is a squircle. Icon tiles are 32px at 9px.
 
 ## Components
 
-Components are tactile and plain: flat colour, 44px minimum height, a press that scales to .97, hover that shifts tone within the same hue.
+Components are HIG in behaviour and shadcn in anatomy: quiet at rest, decisive on press.
 
 ### Buttons
-- **Shape:** gently rounded (12px); 10px at the small size (36px tall), 14px at the large size (52px tall, 17px text, 24px side padding). 44px tall, 18px side padding, 15px/600 text, 8px icon gap by default.
-- **Primary:** agent green on white text with a green lift shadow; hover deep green. This is the agent's work.
-- **Amber:** gate amber with ink text and an amber lift; hover `#d9a93a`. This is the human's yes: Approve, Open the batch, Order.
-- **Secondary:** white with a 1.5px strong hairline, ink text; hover tint panel. The common second action and the "Open" on a push card.
-- **Ghost:** green text, no ground; hover green-soft. Sign out, back-style links, "Watch".
-- **Danger:** red-soft ground with red text; hover `#f6cfd1`.
-- **Purple:** ExpireSoon purple on white; hover `#3a1f7a`. Used only on the buyer surface (Place bid, Accept counter).
-- **States:** press scales to .97 over 120ms ease-out; disabled drops to 45% opacity and loses its shadow; loading replaces the icon with a 16px currentColor spinner; focus is the global amber outline.
+- **Shape:** gently rounded (12px); small 32px at 10px, large 48px at 14px, extra-large 56px pill. Default 40px tall, 16px side padding, 15px/600, 8px icon gap.
+- **Primary:** Route Green with white text (dark: green-black text) and a green lift. The agents' work and navigation forward ("Open Route Room", "Watch execution").
+- **Approve:** Yes Amber with amber-fg text and an amber lift. The one human yes on a surface ("Review and approve", "Approve · release the agents").
+- **Secondary / Tinted / Outline / Ghost:** sage fill; green-soft with green text; surface with a strong hairline ring and shadow-1; text only with a fill on hover.
+- **Destructive / Destructive soft / Violet / Link:** solid destructive; red-soft with red text; ExpireSoon violet (ExpireSoon actions only); green text with underline on hover.
+- **States:** press scales to 0.97 (icon buttons 0.94) over 160ms; disabled 45% opacity; loading hides the label and centres a stepped spinner in the button's text colour; focus is the global 2px green ring at 2px offset.
 
-### Chips
-- **Style:** pill (999px), 28px tall, 10px side padding, 13px/500; default is tint panel with secondary ink. Mono chips drop to 12.5px for ids.
-- **Tones:** green (soft/deep green) for verified and done; amber (soft/amber-ink) for pending and the gate; red (soft/red) for risk; purple for ExpireSoon statuses; blue for push; outline (transparent, strong hairline) for neutral facts.
+### Badges, Chips and Gates
+- **Badge:** 24px pill (20px small), 12.5px/600, tone pairs soft ground with its text ink (green, amber, red, violet, blue, outline); solid variants for counts on colour; a live dot pings.
+- **Chip (filter):** 32px pill on surface with a strong hairline; pressed turns solid ink with ground-colour text.
+- **Gate chip:** 24px at 8px radius with a check or cross: pass is green-soft, fail is red-soft; one per quick-commerce app (Blinkit, Zepto, Instamart) with has/need days.
 
 ### Cards / Containers
-- **Corner Style:** 16px (14px for batch, door, document and KPI cards; 18px for offer and push cards).
-- **Background:** white, 1px hairline, card shadow; `tint` variant is tint panel with no border or shadow; `flat` keeps the border and drops the shadow.
-- **Shadow Strategy:** card shadow at rest, never lifts on hover (see Elevation).
-- **Border:** 1px hairline; batch cards use a transparent 1.5px border that becomes strong hairline on hover.
-- **Internal Padding:** 16px; 12px in batch cards and zones; 12px 14px in KPI tiles and push cards.
+- **Corner Style:** 20px (squircle 28px where supported).
+- **Background:** surface on the sage ground.
+- **Shadow Strategy:** shadow-1 plus hairline ring at rest; raised cards take shadow-2; interactive cards lift 2px on hover.
+- **Border:** none; the hairline ring is the edge. Dark cards add the inner top highlight.
+- **Internal Padding:** 20px (24px large).
+- **Inset grouped list:** a card of 52px rows with inset one-pixel separators, an optional 32px colour icon tile, a right-aligned tabular value and a chevron; a 13px/600 head above and a 12.5px foot below.
+- **Tile:** label, a 34px rolling value, foot; a live tile carries a 1.5px green ring.
 
 ### Inputs / Fields
-- **Style:** white, 1.5px strong hairline, 12px radius, 48px tall, 14px side padding, 16px text. Field labels 14px/600 above; help text 13px secondary ink below; 6px gap.
-- **Focus:** border to agent green with a 3px green-soft ring (replaces the outline).
-- **Stepper:** 48px square buttons inside a 1.5px bordered 12px pill-less box; the output is 18px mono.
-- **Error / Disabled:** not built in the prototype.
+- **Style:** surface, 44px tall, 12px radius, inset 1px strong hairline, 15px text; label 13px/600 above, help 12.5px below.
+- **Focus:** inset 1.5px green plus a 4px green ring at 18%.
+- **Error / Disabled:** inset red with a 4px red ring at 15% and a red 12.5px message; disabled drops to a sage fill.
+- **Also:** search field (38px, fill, no ring), stepper (36px, fill, tabular value), OTP boxes (48 × 56px), HIG switch (51 × 31px, sprung knob), checkbox (22px at 7px), segmented control and pill tabs with a sliding surface thumb.
 
 ### Navigation
-- **Phone bottom nav:** white, hairline top, up to four 44px items of icon (22px) over a 12px/500 label in secondary ink; the current item turns agent green with a 28 × 3px green bar hanging from the top edge.
-- **Rail (760px+):** 96px dark chrome column; items are icon over label at 12px, 56px tall, 12px radius; hover `#1b2a22`, current `#1f3b2d` with white text; the inbox badge is amber with ink text. The portrait and sign-out sit at the foot.
-- **Top bar:** sticky frosted paper; portrait (36px circle) with 15px/600 name and 13px secondary sub-line, or a back button; a 44px bell with a red badge.
-- **Tabs:** 44px, 600 weight secondary ink, 3px bottom border that turns green when selected.
-- **Zone strip (phone):** white pills with a mono count badge; the selected pill takes an ink border.
+- **Navigation bar:** transparent over the large title; once the title scrolls away it frosts, shows a one-pixel bottom hairline and fades in the centred 16px/600 title. Back is green text with a chevron (label hidden on phone when scrolled). Actions on the right: the mode menu, the bell with a red count, the portrait.
+- **Tab bar (phone):** frosted, 64px plus safe area; icon (23px, stroke 2.1 when current) over an 11px/600 label; current turns green-text. The shell renders at most four role destinations, whatever the navigation data holds.
+- **Sidebar (desktop) / rail (tablet):** frosted; items 38px at 10px radius, the current item is a surface pill with shadow-1 and a green icon (a fill in dark); 44px icon-only items on the rail.
 
-### The Shelf-Life Board
-Five zones (`safe`, `zepto`, `blinkit`, `risk`, `cleared`) as 16px-radius tinted grounds with a 16px display header, a count and a mono gate label. Batch cards inside are white, 14px radius, 12px padding, with name (15px/600), mono id, meta row and a 6px countdown track whose fill colour follows days left (green ≥ 108, olive 90–107, amber 60–89, red below). The one hot card wears the red ring and the float shadow, and its loss line is red 14px/600.
+### Sheets, Alerts, Banners, Toasts
+- **Sheet:** bottom sheet with a 36 × 5px grabber, medium and large detents, drag to settle or dismiss, sprung in (stiffness 420, damping 40, mass 0.9) over a sage scrim; a floating side panel (460px, 12px inset, 24px radius) from tablet up; centred form sheet when asked. Header 17px/650 with a round close button; footer separated by a hairline.
+- **Alert:** 320px frosted, centred text, hairline-divided actions.
+- **Banner:** frosted push banner (22px radius) top of phone, docked top-right at 380px from tablet.
+- **Toast:** elevated card at 14px radius above the tab bar on phone, bottom-centre elsewhere.
 
-### The SC Mark
-A 40px agent-green square with 12px corners, "SC" in 15px/800 display white, a 10px amber dot sitting on the top edge, and a 3px green-soft halo. Small (28px, 8px radius, 2px halo) in push cards and chat; large (64px, 18px radius) on sign-in. This is the agent's face wherever the agent speaks.
+### The Tracker (signature)
+Nine stops (Connect, Detect, Verify, Value, Decide, Approve, Execute, Settle, Report) on a 3px rail that fills in green as stops complete (scaleX over 900ms). Stops are 21px dots: done is solid green, current is a green ring with a green core and a ping, a stop waiting on a person is the same in amber; labels 12px/600, times in 10.5px mono. On phone sheets it becomes a vertical tracker (26px dots, two-pixel spine, title, text and mono time per stop). On phone cards it folds to a compact tracker: nine 6px segments (the current one half-filled, amber when human), the stop name and the ETA, opening the full tracker in a sheet.
 
-### Push Card
-A floating white card (96% white, 18px radius, float shadow, 12px 14px padding) with the small SC mark on the left, a 15px/600 title with a mono "now" beside it, a 14px body (Hindi when the push is Hindi), and a secondary "Open" button or an X. One push at a time, springing in from above (stiffness 500, damping 34).
+### Tracker Card, Batch Rows, Countdown
+The hero card: a product render, the days-left numeral, money at stake, the tracker, an ETA badge and one action. Batch rows in the watchlist are 78px list rows with name, mono id, a 6px countdown (green, amber when gated, red when at risk) and gate chips, which hide below 640px of list width.
 
-### Doors
-Six priced exits per carton as 14px-radius white cards with a 1.5px hairline; name 14px/600, value 24px mono in green, reason 12.5px secondary. Selected: green border on green-soft; ExpireSoon: purple border and purple value; the bin: dashed red border on red-soft with a red value.
+### Agent Feed and the Aura
+A time-true feed: each event is a 34px agent tile (11px radius) or a portrait, who, a mono time, text and mono tool-call pills (26px, 8px radius, green when ok, red when bad); the gap between events is drawn to elapsed time. A working agent wears the aura: a two-pixel conic ring (mint, teal, sky, lime) turning every 3.2s over a blurred mint-to-sky glow breathing every 2.8s; it stops the moment the work stops. Typing dots show a pending reply.
 
-### Sheet
-Bottom sheet on phones (22px top corners, grab handle, 92% max height) and a 520px side panel elsewhere, under a 55% stage-dark scrim; sprung in (stiffness 420, damping 40). Header h2 at 20px with a 44px X; footer carries the action with a hairline top.
+### Rolling Numbers
+The odometer: each digit is a 0–9 strip that rolls to its place over 700ms with a 40ms stagger from the right, used whenever an agent changes a figure and for the swing in the approval moment.
+
+### Cluster Map
+A schematic map on the map palette: white roads, water, a godown pin, 38 kirana dots that turn green as they are reached, the van route drawn as a 3.5px green stroke over a 9px 18% shadow stroke, a pulsing pin and stroked pin labels.
+
+### API and JSON Cards
+Code cards on the sunken surface (12px radius, 12.5px mono, 1.6 leading): keys in ink, strings green, numbers blue, ExpireSoon methods violet, comments tertiary.
+
+### Paper Documents
+Credit notes, e-way bills and certificates keep a white page (#fffefb, 6px radius, a page shadow) in both themes, a display title, mono numbers, a rotated mono stamp (green when issued) and tabular right-aligned columns.
+
+### ExpireSoon Scope
+Wrapping a surface in the ExpireSoon scope re-points every brand role to violet and switches numerals and titles to Geist: a violet-tinted top bar with the hourglass logo, date tags in mono on everything, 18px-radius listing cards and a featured lot ringed in violet.
+
+### The Approve Moment (signature interaction)
+Approve is amber; the tap shows a loading spinner for 650ms, then the tracker fills to Execute, the van route draws across the map, the figures roll, and the sheet turns into "Plan placed": a green ring and tick draw in (600ms), the time of approval, and the ₹49,487 swing rolls up from zero. Under reduced motion every step lands in its final state at once.
+
+### Mark, Splash and Device Frames
+The mark is a green-gradient squircle with the route drawn as a white S from the godown dot to an amber pin; the splash draws it (spring scale, 750ms path draw, the pin drops and pings in amber) and lets the wordmark rise letter by letter. Device frames (a 390 × 844 phone with island, status bar and home bar; a window with traffic lights) exist for the demo stage only.
 
 ### Motion
-One ease-out curve, `cubic-bezier(.2,.8,.2,1)`. Buttons 120–150ms; fade-up entrances 320–350ms with 50ms stagger; sheets and pushes on springs (stiffness 380–500, damping 32–40); money counts up over 0.9s; the 38-shop grid lights over 300ms; skeleton shimmer 1.4s; typing dots 1s. Reduced motion collapses every animation and transition to near-zero and count-ups render their final value.
+Ease `cubic-bezier(0.22, 1, 0.36, 1)`, ease-in `cubic-bezier(0.55, 0, 1, 0.45)`, and a `linear()` spring with one 10% overshoot for switch knobs. Durations: 160ms (press, hover, colour), 240ms (base state, interactive cards), 420ms (progress, numeral axes), 700ms (odometer roll). Sheets and banners on springs; screens cross-fade with a 6px rise over 180ms; renders float 6px on a 5s loop. Under `prefers-reduced-motion` every animation and transition collapses to an instant, the aura and pings stop, rolls show their final value and the splash holds 600ms.
+
+### Imagery
+
+Soft 3D product, place and document renders (Qwen-Image 2.1, local) on transparent grounds, in a matte clay-like style with studio light from the upper left; contact shadows are recoloured to #0b1510 at 62% of their alpha so they read on both grounds. Every raster carries a `.prompt.json` sidecar (model, prompt, seed, attempts, post-process) indexed in `design3/system/img/manifest.json`. The label shot is an opaque photo of the carton whose label text is set in live type (mono details, a Bricolage expiry in brand green) positioned over the photo, never generated into it. The one motion asset is the LTX carton loop (5s, 24fps, first frame equals last, mint studio backdrop), which belongs on a light ground only; in dark the poster still stands in. People are the existing portraits.
+
+### Figures and Language
+
+Every money figure on screen is computed by `design3/core/money.js` from the journey map's rules and never typed twice. The quarter's totals are the walkthrough's; its weekly split, channel mix and BRSR split are labelled illustrative wherever they are drawn. ITC on donations, EPR and CO₂e carry "indicative". Kirana offers are Hindi first with a "Read in English" toggle.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** colour the zone, not the card; keep cards white with a hairline and the card shadow.
-- **Do** give each screen one primary action: amber when a person is the gate, green when it is the agent's work.
-- **Do** set every id, time and rupee in IBM Plex Mono with tabular numerals, and show money with its working as a ledger row.
-- **Do** put a face beside every voice: the SC mark for the agent, a portrait for a person.
-- **Do** take ink from the hue on a tinted ground (`gate-amber-ink` on amber-soft, `agent-green-deep` on green-soft).
-- **Do** keep hit targets at 44px, inputs at 48px and phone body at 16px; design phone first and let the container queries at 760 and 1100 widen the layout.
-- **Do** use the 1.75-stroke 24-grid inline SVG icon set, 22px in chrome and 18px inside buttons.
+- **Do** lead a brand surface with the tracker card: the numeral, the money at stake, the nine stops, the ETA and one action.
+- **Do** keep amber for the human yes alone, and green for the agents' work and the brand.
+- **Do** set urgency in the numeral's width and weight axes and set the rupee and paise at half size.
+- **Do** draw channels in the fixed series order with the validated channel hues, using the dark set in dark mode.
+- **Do** roll a figure in place when an agent changes it, and turn the aura only while an agent is working.
+- **Do** edge every card, list and overlay with a one-device-pixel hairline and a soft offset shadow.
+- **Do** compose light and dark separately and check both on every new surface.
+- **Do** compute every money figure in core/money.js and label illustrative splits as illustrative.
+- **Do** give every raster a prompt sidecar and recoloured contact shadow, and set label text in type over photos.
 
 ### Don't:
+- **Don't** use red, violet or blue outside risk, ExpireSoon, and push or information.
+- **Don't** put a blurred, zero-offset coloured halo around a card, button or figure; the aura and the camera scanline are the only glows.
+- **Don't** build a KPI-tiles-over-a-table dashboard or a neon AI command centre.
 - **Don't** put a kicker, eyebrow or tracked uppercase label above a heading.
-- **Don't** add coloured left borders or full tints to cards or alerts to signal state; use a chip, a border colour or the zone.
-- **Don't** use purple for anything but ExpireSoon, or blue for anything but a push notification.
-- **Don't** use grey text on a coloured ground.
-- **Don't** open a modal where an inline state or a sheet will do; sheets rise on phones and slide in from the right elsewhere.
-- **Don't** lift cards on hover or use hard offset shadows; the three soft ink shadows are the whole vocabulary.
+- **Don't** invert light into dark or carry v2's label inks, Bungee or Anek into v3 surfaces.
+- **Don't** play the carton loop on a dark ground; show the poster still.
+- **Don't** put more than four role destinations in the phone tab bar.

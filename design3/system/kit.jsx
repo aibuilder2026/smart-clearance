@@ -296,7 +296,7 @@
     const app = useApp();
     if (app.bp === "phone") return <div className="layer" style={{ position: "absolute", inset: 0 }}>
       <div className="scroll" style={{ position: "absolute", inset: 0, paddingBottom: "calc(var(--tabbar-h) + var(--safe-bottom))" }} id="main">{children}</div>
-      <nav className="tabbar" aria-label="Main">{nav.filter(n => !n.phoneHidden).slice(0, 5).map(n => <button key={n.id} type="button" className="tab" aria-current={current === n.id ? "page" : undefined} onClick={() => onNav(n.id)}><Icon name={n.icon} size={23} stroke={current === n.id ? 2.1 : 1.7} /><span>{n.short || n.label}</span>{n.badge ? <span className="badge-count">{n.badge}</span> : null}</button>)}</nav>
+      <nav className="tabbar" aria-label="Main">{nav.filter(n => !n.phoneHidden).slice(0, 4).map(n => <button key={n.id} type="button" className="tab" aria-current={current === n.id ? "page" : undefined} onClick={() => onNav(n.id)}><Icon name={n.icon} size={23} stroke={current === n.id ? 2.1 : 1.7} /><span>{n.short || n.label}</span>{n.badge ? <span className="badge-count">{n.badge}</span> : null}</button>)}</nav>
     </div>;
     if (app.bp === "tablet") return <div className="layer" style={{ position: "absolute", inset: 0, display: "grid", gridTemplateColumns: "76px minmax(0,1fr)" }}>
       <nav className="sidebar rail-compact" aria-label="Main" style={{ padding: "14px 10px" }}>

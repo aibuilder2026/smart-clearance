@@ -131,7 +131,7 @@ button.list-row:hover, a.list-row:hover { background: var(--fill); }
   height: calc(var(--tabbar-h) + var(--safe-bottom)); padding: 6px 6px calc(6px + var(--safe-bottom));
   background: var(--glass); -webkit-backdrop-filter: saturate(180%) blur(22px); backdrop-filter: saturate(180%) blur(22px); box-shadow: 0 calc(var(--hair) * -1) 0 var(--line);
 }
-.tabbar .tab { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border-radius: 12px; color: var(--fg-3); font-size: 10.5px; font-weight: 600; letter-spacing: 0.01em; min-height: 44px; transition: color var(--t-fast); }
+.tabbar .tab { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border-radius: 12px; color: var(--fg-3); font-size: 11px; font-weight: 600; letter-spacing: 0.01em; min-height: 44px; transition: color var(--t-fast); }
 .tabbar .tab[aria-current="page"] { color: var(--primary-text); }
 .tabbar .tab .badge-count { position: absolute; top: 2px; left: calc(50% + 6px); }
 .sidebar { position: relative; z-index: var(--z-bar); display: flex; flex-direction: column; gap: 4px; height: 100%; min-width: 0; padding: 14px 12px 12px; background: var(--glass); -webkit-backdrop-filter: saturate(180%) blur(22px); backdrop-filter: saturate(180%) blur(22px); box-shadow: var(--hair) 0 0 var(--line); overflow-x: hidden; overflow-y: auto; scrollbar-width: thin; }
@@ -292,7 +292,7 @@ button.list-row:hover, a.list-row:hover { background: var(--fill); }
 .tracker .st-label { font-size: 12px; font-weight: 600; color: var(--fg-3); line-height: 1.2; }
 .tracker .stop.done .st-label { color: var(--fg-2); }
 .tracker .stop.now .st-label { color: var(--fg); }
-.tracker .st-time { font-family: var(--font-mono); font-size: 10.5px; color: var(--fg-3); line-height: 1.2; }
+.tracker .st-time { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); line-height: 1.2; }
 /* vertical tracker (phone sheet, Swiggy style) */
 .vtracker { display: grid; }
 .vtracker .vstop { position: relative; display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 12px; padding-bottom: 18px; }
@@ -367,7 +367,7 @@ button.list-row:hover, a.list-row:hover { background: var(--fill); }
 .map .kirana { fill: var(--surface); stroke: var(--fg-4); stroke-width: 1.5; transition: fill var(--t-base), stroke var(--t-base), r var(--t-base); }
 .map .kirana.on { fill: var(--primary); stroke: var(--surface); stroke-width: 2; }
 .map .pulse { fill: var(--primary); opacity: 0.35; transform-box: fill-box; transform-origin: center; animation: ping 2s var(--ease) infinite; }
-.map .note { position: absolute; left: 10px; bottom: 8px; font-size: 10.5px; color: var(--fg-3); }
+.map .note { position: absolute; left: 10px; bottom: 8px; font-size: 11px; color: var(--fg-3); }
 
 /* devices for the demo stage */
 .device-phone { position: relative; flex: none; width: 414px; height: 868px; padding: 12px; border-radius: 60px; background: #0b0f0d; box-shadow: var(--shadow-float), inset 0 0 0 1.5px #2a312d, inset 0 0 0 6px #050706; }
@@ -430,3 +430,13 @@ button.list-row:hover, a.list-row:hover { background: var(--fill); }
 .tk-compact .tk-label b { font-size: 15px; }
 .tk-compact .tk-label span { font-size: 13px; color: var(--fg-3); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tk-compact > .ic, .tk-compact > svg { grid-area: chev; }
+
+/* touch: controls keep their drawn size; on coarse pointers the hit area grows to the 44 px minimum */
+@media (pointer: coarse) {
+  .btn, .chip, .segmented .seg, .tabs .tab-btn, .stepper button, .iconbtn, .tk-compact, .playas { position: relative; }
+  .btn::after, .chip::after, .segmented .seg::after, .tabs .tab-btn::after, .iconbtn::after, .playas::after { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, 44px); height: max(100%, 44px); transform: translate(-50%, -50%); }
+  .btn:not(.btn-sm) { min-height: 44px; }
+  .stepper button { height: 44px; } .stepper .val { line-height: 44px; }
+  .iconbtn { width: 44px; height: 44px; }
+  .iconbtn.round { width: 32px; height: 32px; }
+}
