@@ -351,19 +351,60 @@
       onClose && onClose();
     } }, a.label)))))));
   }
-  function Menu({ open, onClose, items, align = "right", width = 240, style }) {
+  function Menu({ open, onClose, items, align = "right", width = 240, style, label }) {
     const ref = useRef(null);
+    const close = useRef(onClose);
+    close.current = onClose;
+    const list = items.filter(Boolean);
+    const name = label || (list[0] && list[0].heading ? list[0].label : void 0);
     useEscape(open, onClose);
     useEffect(() => {
       if (!open) return;
-      const f = (e) => {
-        if (ref.current && !ref.current.contains(e.target)) onClose();
+      const opener = document.activeElement;
+      const trigger = opener && opener !== document.body ? opener : null;
+      const focusIn = () => {
+        const el = ref.current;
+        if (!el) return false;
+        const first = el.querySelector('[aria-checked="true"]') || el.querySelector('[role^="menuitem"]');
+        if (first) first.focus({ preventScroll: true });
+        return true;
       };
-      setTimeout(() => document.addEventListener("pointerdown", f), 0);
-      return () => document.removeEventListener("pointerdown", f);
+      const raf = focusIn() ? 0 : requestAnimationFrame(focusIn);
+      const away = (e) => {
+        if (ref.current && !ref.current.contains(e.target) && !(trigger && trigger.contains(e.target))) close.current();
+      };
+      const t = setTimeout(() => document.addEventListener("pointerdown", away), 0);
+      return () => {
+        cancelAnimationFrame(raf);
+        clearTimeout(t);
+        document.removeEventListener("pointerdown", away);
+        const at = document.activeElement;
+        if (trigger && trigger.isConnected && (!at || at === document.body || ref.current && ref.current.contains(at))) trigger.focus({ preventScroll: true });
+      };
     }, [open]);
-    return /* @__PURE__ */ React.createElement(AnimatePresence, null, open && /* @__PURE__ */ React.createElement(motion.div, { ref, role: "menu", className: "menu", style: { top: "calc(100% + 6px)", [align]: 0, width, ...style }, initial: { opacity: 0, scale: 0.96, y: -4 }, animate: { opacity: 1, scale: 1, y: 0 }, exit: { opacity: 0, scale: 0.97, y: -2 }, transition: { duration: 0.16, ease: [0.22, 1, 0.36, 1] } }, items.filter(Boolean).map((it, i) => it === "-" ? /* @__PURE__ */ React.createElement("div", { key: i, className: "msep" }) : it.label && it.heading ? /* @__PURE__ */ React.createElement("div", { key: i, className: "mlabel" }, it.label) : /* @__PURE__ */ React.createElement("button", { key: i, type: "button", role: "menuitem", className: cx("mi", it.danger && "danger"), onClick: () => {
-      onClose();
+    const onKey = (e) => {
+      if (e.key === "Tab") {
+        close.current();
+        return;
+      }
+      e.stopPropagation();
+      const items2 = [...ref.current.querySelectorAll('[role^="menuitem"]')];
+      const i = items2.indexOf(document.activeElement);
+      const go = (n) => {
+        e.preventDefault();
+        if (items2.length) items2[(n + items2.length) % items2.length].focus();
+      };
+      if (e.key === "ArrowDown") go(i + 1);
+      else if (e.key === "ArrowUp") go(i < 0 ? -1 : i - 1);
+      else if (e.key === "Home") go(0);
+      else if (e.key === "End") go(-1);
+      else if (e.key === "Escape") {
+        e.preventDefault();
+        close.current();
+      }
+    };
+    return /* @__PURE__ */ React.createElement(AnimatePresence, null, open && /* @__PURE__ */ React.createElement(motion.div, { ref, role: "menu", "aria-label": name, className: "menu", onKeyDown: onKey, style: { top: "calc(100% + 6px)", [align]: 0, width, ...style }, initial: { opacity: 0, scale: 0.96, y: -4 }, animate: { opacity: 1, scale: 1, y: 0 }, exit: { opacity: 0, scale: 0.97, y: -2 }, transition: { duration: 0.16, ease: [0.22, 1, 0.36, 1] } }, list.map((it, i) => it === "-" ? /* @__PURE__ */ React.createElement("div", { key: i, role: "separator", className: "msep" }) : it.heading ? /* @__PURE__ */ React.createElement("div", { key: i, className: "mlabel", "aria-hidden": "true" }, it.label) : /* @__PURE__ */ React.createElement("button", { key: i, type: "button", tabIndex: -1, role: it.checked === void 0 ? "menuitem" : "menuitemradio", "aria-checked": it.checked === void 0 ? void 0 : !!it.checked, className: cx("mi", it.danger && "danger"), onClick: () => {
+      close.current();
       it.onClick && it.onClick();
     } }, it.icon && /* @__PURE__ */ React.createElement(Icon, { name: it.icon, size: 17 }), /* @__PURE__ */ React.createElement("span", { className: "grow" }, it.label), it.right))));
   }
@@ -449,7 +490,7 @@
   function ModeMenuButton() {
     const { mode, resolved, setMode } = useTheme();
     const [open, setOpen] = useState(false);
-    return /* @__PURE__ */ React.createElement("span", { style: { position: "relative" } }, /* @__PURE__ */ React.createElement(IconButton, { icon: resolved === "dark" ? "moon" : "sun", label: "Appearance", onClick: () => setOpen((o) => !o) }), /* @__PURE__ */ React.createElement(Menu, { open, onClose: () => setOpen(false), width: 200, items: [{ label: "Appearance", heading: true }, { label: "Light", icon: "sun", right: mode === "light" && /* @__PURE__ */ React.createElement(Icon, { name: "check", size: 16 }), onClick: () => setMode("light") }, { label: "Dark", icon: "moon", right: mode === "dark" && /* @__PURE__ */ React.createElement(Icon, { name: "check", size: 16 }), onClick: () => setMode("dark") }, { label: "Match device", icon: "monitor", right: mode === "system" && /* @__PURE__ */ React.createElement(Icon, { name: "check", size: 16 }), onClick: () => setMode("system") }] }));
+    return /* @__PURE__ */ React.createElement("span", { style: { position: "relative" } }, /* @__PURE__ */ React.createElement(IconButton, { icon: resolved === "dark" ? "moon" : "sun", label: "Appearance", "aria-haspopup": "menu", "aria-expanded": open, onClick: () => setOpen((o) => !o) }), /* @__PURE__ */ React.createElement(Menu, { open, onClose: () => setOpen(false), width: 200, items: [{ label: "Appearance", heading: true }, { label: "Light", icon: "sun", checked: mode === "light", right: mode === "light" && /* @__PURE__ */ React.createElement(Icon, { name: "check", size: 16 }), onClick: () => setMode("light") }, { label: "Dark", icon: "moon", checked: mode === "dark", right: mode === "dark" && /* @__PURE__ */ React.createElement(Icon, { name: "check", size: 16 }), onClick: () => setMode("dark") }, { label: "Match device", icon: "monitor", checked: mode === "system", right: mode === "system" && /* @__PURE__ */ React.createElement(Icon, { name: "check", size: 16 }), onClick: () => setMode("system") }] }));
   }
   window.SC3 = Object.assign(window.SC3 || {}, {
     cx,

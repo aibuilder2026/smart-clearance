@@ -82,25 +82,41 @@
   const GoogleG = () => /* @__PURE__ */ React.createElement("svg", { width: "18", height: "18", viewBox: "0 0 48 48", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("path", { fill: "#FFC107", d: "M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" }), /* @__PURE__ */ React.createElement("path", { fill: "#FF3D00", d: "M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" }), /* @__PURE__ */ React.createElement("path", { fill: "#4CAF50", d: "M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z" }), /* @__PURE__ */ React.createElement("path", { fill: "#1976D2", d: "M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z" }));
   function HeroStage() {
     const reduce = useReducedMotion();
-    const [k, setK] = useState(0);
+    const [paused, setPaused] = useState(() => {
+      try {
+        return localStorage.getItem("sc3-hero-paused") === "1";
+      } catch (e) {
+        return false;
+      }
+    });
+    const [k, setK] = useState(() => paused ? 9 : 0);
     useEffect(() => {
       if (reduce) {
         setK(9);
         return;
       }
+      if (paused) return;
       let t;
-      const tick = (x) => {
+      const tick = (x, first) => {
         t = setTimeout(() => {
           const n = x >= 9 ? 0 : x + 1;
           setK(n);
           tick(n);
-        }, x >= 9 ? 5200 : 1e3);
+        }, x >= 9 && !first ? 5200 : 1e3);
       };
-      tick(0);
+      tick(k, true);
       return () => clearTimeout(t);
-    }, [reduce]);
+    }, [reduce, paused]);
+    const toggle = () => {
+      const next = !paused;
+      setPaused(next);
+      try {
+        localStorage.setItem("sc3-hero-paused", next ? "1" : "0");
+      } catch (e) {
+      }
+    };
     const stages = D.STAGES.map((x) => ({ id: x.id, title: x.title, human: x.human }));
-    return /* @__PURE__ */ React.createElement("div", { className: "si-stage" }, /* @__PURE__ */ React.createElement("div", { className: "si-renders", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Product, { name: "pack-chips", size: 176, float: true, className: "r1" }), /* @__PURE__ */ React.createElement(Product, { name: "carton-hero", size: 208, float: true, className: "r2" }), /* @__PURE__ */ React.createElement(Product, { name: "pack-mango", size: 150, float: true, className: "r3" })), /* @__PURE__ */ React.createElement("div", { className: "si-figure" }, /* @__PURE__ */ React.createElement("span", { className: "si-cap" }, "Recovered from one batch of chips headed for the bin"), /* @__PURE__ */ React.createElement(Money, { value: k >= 9 ? D.ACTUAL.net : Math.round(D.ACTUAL.net * k / 9), size: "xl", roll: true, style: { color: "var(--primary-text)" } }), /* @__PURE__ */ React.createElement("span", { className: "si-cap" }, "instead of ", fmt.inr(-D.PLAN.writeOff.total), " to destroy it")), /* @__PURE__ */ React.createElement("div", { className: "si-track", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Tracker, { stages, done: Math.min(k, 9), current: k < 9 ? k : -1 })));
+    return /* @__PURE__ */ React.createElement("div", { className: cx("si-stage", paused && "paused") }, /* @__PURE__ */ React.createElement("div", { className: "si-renders", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Product, { name: "pack-chips", size: 176, float: true, className: "r1" }), /* @__PURE__ */ React.createElement(Product, { name: "carton-hero", size: 208, float: true, className: "r2" }), /* @__PURE__ */ React.createElement(Product, { name: "pack-mango", size: 150, float: true, className: "r3" })), /* @__PURE__ */ React.createElement("div", { className: "si-figure" }, /* @__PURE__ */ React.createElement("span", { className: "si-cap" }, "Recovered from one batch of chips headed for the bin"), /* @__PURE__ */ React.createElement(Money, { value: k >= 9 ? D.ACTUAL.net : Math.round(D.ACTUAL.net * k / 9), size: "xl", roll: true, style: { color: "var(--primary-text)" } }), /* @__PURE__ */ React.createElement("span", { className: "si-cap" }, "instead of ", fmt.inr(-D.PLAN.writeOff.total), " to destroy it")), /* @__PURE__ */ React.createElement("div", { className: "si-track", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Tracker, { stages, done: Math.min(k, 9), current: k < 9 ? k : -1 })), !reduce && /* @__PURE__ */ React.createElement("div", { className: "si-ctl" }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-ghost btn-sm", onClick: toggle }, /* @__PURE__ */ React.createElement(Icon, { name: paused ? "play" : "pause", size: 15 }), paused ? "Play animation" : "Pause animation")));
   }
   function SignIn({ onSignIn, install }) {
     const app = useApp();

@@ -4,7 +4,13 @@ Automated WCAG checks for design v3 with [axe-core](https://github.com/dequelabs
 
 - `demo.a11y.spec.ts`: the guided demo, all nine stages, scanned where each stage opens and after every beat, then the finale.
 - `app.a11y.spec.ts`: every role's screens in a journey state with real content, the sign-in sheets, and the approve sheet through "Plan placed".
-- `keyboard.a11y.spec.ts`: sign-in tab order, and a sheet taking focus, keeping it, and giving it back.
+- `keyboard.a11y.spec.ts`: behaviour axe cannot see:
+  - the sign-in tab order;
+  - a sheet taking focus, keeping it and giving it back;
+  - a menu button's menu: focus in on open, the arrows, Home and End, then Escape and Tab out;
+  - the sign-in hero pausing and playing (WCAG 2.2.2).
+
+  The menu and hero tests also scan their open and paused states with axe.
 
 In the demo, the laptop and phone previews are drawn scaled down, so they are left out of the target-size rule there (every other rule still covers them); the app spec checks the same screens at full size.
 

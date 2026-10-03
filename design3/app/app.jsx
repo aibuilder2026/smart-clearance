@@ -38,14 +38,19 @@
   const GoogleG = () => <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" /><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" /><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z" /><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z" /></svg>;
 
   function HeroStage() {
-    const reduce = useReducedMotion(); const [k, setK] = useState(0);
-    // the batch walks the nine stages, holds on the result, then starts again
-    useEffect(() => { if (reduce) { setK(9); return; } let t; const tick = x => { t = setTimeout(() => { const n = x >= 9 ? 0 : x + 1; setK(n); tick(n); }, x >= 9 ? 5200 : 1000); }; tick(0); return () => clearTimeout(t); }, [reduce]);
+    const reduce = useReducedMotion();
+    // WCAG 2.2.2: the loop runs beside the sign-in buttons for good, so it can be paused (and stays paused on return)
+    const [paused, setPaused] = useState(() => { try { return localStorage.getItem("sc3-hero-paused") === "1"; } catch (e) { return false; } });
+    const [k, setK] = useState(() => (paused ? 9 : 0));
+    // the batch walks the nine stages, holds on the result, then starts again; Play moves on within a second
+    useEffect(() => { if (reduce) { setK(9); return; } if (paused) return; let t; const tick = (x, first) => { t = setTimeout(() => { const n = x >= 9 ? 0 : x + 1; setK(n); tick(n); }, x >= 9 && !first ? 5200 : 1000); }; tick(k, true); return () => clearTimeout(t); }, [reduce, paused]);
+    const toggle = () => { const next = !paused; setPaused(next); try { localStorage.setItem("sc3-hero-paused", next ? "1" : "0"); } catch (e) {} };
     const stages = D.STAGES.map(x => ({ id: x.id, title: x.title, human: x.human }));
-    return <div className="si-stage">
+    return <div className={cx("si-stage", paused && "paused")}>
       <div className="si-renders" aria-hidden="true"><Product name="pack-chips" size={176} float className="r1" /><Product name="carton-hero" size={208} float className="r2" /><Product name="pack-mango" size={150} float className="r3" /></div>
       <div className="si-figure"><span className="si-cap">Recovered from one batch of chips headed for the bin</span><Money value={k >= 9 ? D.ACTUAL.net : Math.round(D.ACTUAL.net * k / 9)} size="xl" roll style={{ color: "var(--primary-text)" }} /><span className="si-cap">instead of {fmt.inr(-D.PLAN.writeOff.total)} to destroy it</span></div>
       <div className="si-track" aria-hidden="true"><Tracker stages={stages} done={Math.min(k, 9)} current={k < 9 ? k : -1} /></div>
+      {!reduce && <div className="si-ctl"><button type="button" className="btn btn-ghost btn-sm" onClick={toggle}><Icon name={paused ? "play" : "pause"} size={15} />{paused ? "Play animation" : "Pause animation"}</button></div>}
     </div>;
   }
 

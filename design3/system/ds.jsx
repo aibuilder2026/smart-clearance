@@ -67,7 +67,7 @@
         <Button variant="approve" icon="check" onClick={() => setSheet("auto")}>Open the approve sheet</Button>
         <Button onClick={() => setSheet("center")}>Centred sheet</Button>
         <Button onClick={() => setAlert(true)}>Alert</Button>
-        <span style={{ position: "relative" }}><Button icon="ellipsis" onClick={() => setMenu(m => !m)}>Menu</Button><Menu open={menu} onClose={() => setMenu(false)} align="left" items={[{ label: "MF-2409-117", heading: true }, { label: "Open the batch", icon: "external-link" }, { label: "Ask for a label photo", icon: "camera" }, "-", { label: "Write off", icon: "trash-2", danger: true }]} /></span>
+        <span style={{ position: "relative" }}><Button icon="ellipsis" aria-haspopup="menu" aria-expanded={menu} onClick={() => setMenu(m => !m)}>Menu</Button><Menu open={menu} onClose={() => setMenu(false)} align="left" items={[{ label: "MF-2409-117", heading: true }, { label: "Open the batch", icon: "external-link" }, { label: "Ask for a label photo", icon: "camera" }, "-", { label: "Write off", icon: "trash-2", danger: true }]} /></span>
         <Button variant="primary" icon="bell" onClick={() => push({ ...D.PUSH.plan, onOpen: () => setSheet("auto") })}>Push a notification</Button>
         <Button onClick={() => push({ ...D.PUSH.offer, person: D.PEOPLE.rakesh, app: "Rakesh Traders" })}>Hindi push</Button>
         <Button onClick={() => toast({ text: "Approved · listing going up", tone: "ok" })}>Toast</Button>

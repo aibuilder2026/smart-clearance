@@ -53,6 +53,10 @@
   - Scroll regions are focusable.
   - Contrast is fixed in five places.
   - The hosted pages load its commit `fe559a7`, which is now part of `main`.
-- **SC-19** (To Do): the sign-in hero loops with no pause (WCAG 2.2.2), and the menus claim the ARIA menu pattern without arrow-key support.
+- **SC-19** (PR #12):
+  - the sign-in hero has a remembered "Pause animation" control (WCAG 2.2.2);
+  - every menu follows the WAI-ARIA menu-button pattern;
+  - keyboard tests cover both.
+- **SC-21** (To Do): the other ambient loops (pings, aura, map pin, floating renders) still have no in-page way to stop them.
 - **SC-20** (PR #11): this file and `AGENTS.md`.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

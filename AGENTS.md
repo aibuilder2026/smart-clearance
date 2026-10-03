@@ -71,7 +71,14 @@ Local pages:
 **Accessibility**
 
 - The target is WCAG 2.2 AA. UI changes must keep `npm test` in `design3/a11y` at zero violations.
-- The suite covers what axe-core can decide, plus two keyboard checks: the sign-in tab order, and sheets taking, keeping and returning focus. These criteria still need a manual pass: 2.4.11, 2.5.7, 3.2.6, 3.3.7 and 3.3.8.
+- The suite covers what axe-core can decide, plus keyboard checks for:
+  - the sign-in tab order;
+  - sheets taking, keeping and returning focus;
+  - the menu-button pattern;
+  - the sign-in hero's pause.
+
+  These criteria still need a manual pass: 2.4.11, 2.5.7, 3.2.6, 3.3.7 and 3.3.8.
+- Any animation that loops beside content for more than five seconds needs a visible pause (WCAG 2.2.2); loading indicators are exempt.
 - Measure text contrast against the background it actually sits on, including fills, tinted chips and chat bubbles, after any opacity.
 
 **Data and assets**
@@ -168,4 +175,5 @@ From the Claude desktop app:
 - The jira-flow gates point at `web/` and `agents/`, which do not exist yet, so nothing gates `design3/`. Run the accessibility suite yourself.
 - `.claude/jira-flow.json` names `.github/pull_request_template.md`, which is not in the repo, and there is no CI.
 - The `chrome-devtools` MCP server starts only in a new session, after a one-time approval.
-- The WCAG 2.2 criteria axe cannot check are untested. SC-19 tracks the looping sign-in hero and the menus' keyboard pattern.
+- The WCAG 2.2 criteria axe cannot check are untested.
+- Ambient loops outside the sign-in hero have no in-page way to stop them (WCAG 2.2.2): the tracker and live-badge pings, the agent aura, the map pin and the floating renders. SC-21 tracks them.
