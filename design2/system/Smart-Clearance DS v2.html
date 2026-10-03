@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Smart-Clearance design system v2 · foundations</title>
+<meta name="description" content="The label world: Sivakasi chromolithograph inks, Day and Night editions, Bungee and Anek, plate-registration motion.">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="components.css">
+<link rel="stylesheet" href="stage.css">
+<link rel="stylesheet" href="docs.css">
+<script>window.SC2_IMG = "img/";</script>
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/framer-motion@11.18.2/dist/framer-motion.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<style>
+  body { background: var(--stock); }
+  html[data-theme] { background: var(--stock); }
+</style>
+</head>
+<body class="grain">
+<div id="docroot"></div>
+<script type="text/babel" data-presets="react" src="kit.jsx"></script>
+<script type="text/babel" data-presets="react">
+(function () {
+  const { useState, useEffect, useRef } = React;
+  const K = window.SC2; const { Mark, Wordmark, Icon, Btn, Chip, Plate, ModeSwitch, useTheme, ThemeProvider, Splash, Ticks, Tape, LiveTile, Sun, Label, Emblem, Avatar, ICONS } = K;
+  const IMG = window.SC2_IMG;
+
+  function ApplyTheme() { const { resolved } = useTheme(); useEffect(() => { document.documentElement.setAttribute("data-theme", resolved); }, [resolved]); return null; }
+
+  const DAY = [
+    ["stock", "#f2eee4", "Label stock", "page ground"], ["stock-2", "#fffdf7", "Plate white", "the cartouche, every plate"], ["stock-3", "#e7e1d2", "Pressed tint", "hover, panels"], ["ink", "#16130f", "Ink", "text, keylines"], ["ink-2", "#4a443a", "Ink 2", "secondary text"], ["ink-3", "#655e52", "Ink 3", "meta"],
+    ["ultra-field", "#1b3fc4", "Ultramarine", "chrome, structure, push"], ["emerald-field", "#0e7a4a", "Emerald", "the agent, primary"], ["chrome-field", "#f6b400", "Chrome yellow", "the human yes"], ["vermilion-field", "#c92d18", "Vermilion", "risk, the bin"], ["violet-field", "#5a2fb7", "Violet", "ExpireSoon only"], ["kraft-field", "#c9924f", "Kraft", "the carton"],
+    ["ultra-soft", "#dde4fb", "Ultra soft", "tinted plate"], ["emerald-soft", "#d6efdf", "Emerald soft", "tinted plate"], ["chrome-soft", "#fff0bf", "Chrome soft", "tinted plate"], ["vermilion-soft", "#fbddd6", "Vermilion soft", "tinted plate"], ["violet-soft", "#e8dffa", "Violet soft", "tinted plate"], ["kraft-soft", "#f3e4cd", "Kraft soft", "tinted plate"],
+  ];
+  const NIGHT = [
+    ["stock", "#101433", "Night stock", "page ground"], ["stock-2", "#1a1f47", "Night plate", "every plate"], ["stock-3", "#252b5c", "Pressed tint", "hover, panels"], ["ink", "#f3eedd", "Ink", "text, keylines"], ["ink-2", "#c6c0ab", "Ink 2", "secondary text"], ["ink-3", "#a39d88", "Ink 3", "meta"],
+    ["ultra-field", "#2946cc", "Ultramarine", "fields; text uses #9bb0ff"], ["emerald-field", "#2fd27a", "Emerald", "dark text on it"], ["chrome-field", "#ffc21a", "Chrome yellow", "dark text on it"], ["vermilion-field", "#ff6a52", "Vermilion", "dark text on it"], ["violet-field", "#a98cff", "Violet", "dark text on it"], ["kraft-field", "#e5b47a", "Kraft", "dark text on it"],
+    ["ultra-soft", "#1d2a6e", "Ultra soft", "tinted plate"], ["emerald-soft", "#123f2d", "Emerald soft", "tinted plate"], ["chrome-soft", "#4a3a05", "Chrome soft", "tinted plate"], ["vermilion-soft", "#4d1a12", "Vermilion soft", "tinted plate"], ["violet-soft", "#2e2160", "Violet soft", "tinted plate"], ["kraft-soft", "#3d2c16", "Kraft soft", "tinted plate"],
+  ];
+  function Swatches({ list }) {
+    return <div className="swatches">{list.map(([t, hex, name, use]) => <div className="sw" key={t}><div className="swc" style={{ background: `var(--${t})`, color: t.startsWith("stock") || t.endsWith("soft") || t === "kraft-field" || t === "chrome-field" ? "var(--ink)" : "var(--on-ink)" }}>{hex}</div><div className="swl"><b>{name}</b>{use}<br /><span>--{t}</span></div></div>)}</div>;
+  }
+
+  function RegisterDemo() {
+    const [k, setK] = useState(0);
+    return <div className="demo">
+      <span className="lbl">plate registration · 240 ms · every arrival</span>
+      <div className="row wrap" key={k}>
+        <span className="register" style={{ animationDelay: "0ms" }}><Chip tone="emerald" solid icon="check">Verified</Chip></span>
+        <span className="register" style={{ animationDelay: "80ms" }}><Btn kind="yes">Approve the plan</Btn></span>
+        <span className="register" style={{ animationDelay: "160ms" }}><span className="big md" style={{ color: "var(--vermilion-text)" }}>47</span></span>
+        <span className="register" style={{ animationDelay: "240ms" }}><Plate tone="ultra" tight><b>Push card</b><div className="t-small">prints in, snaps into register</div></Plate></span>
+      </div>
+      <div><Btn size="sm" icon="refresh" onClick={() => setK(k + 1)}>Print again</Btn></div>
+    </div>;
+  }
+  function MarkDemo() {
+    const [k, setK] = useState(0);
+    return <div className="demo">
+      <span className="lbl">the mark prints itself: keyline, ultramarine plate, vermilion shade, chrome face, the sun</span>
+      <div className="sizes" key={k}>
+        <div><Mark size="xl" print /><span>xl 120</span></div>
+        <div><Mark size="lg" print /><span>lg 64</span></div>
+        <div><Mark print /><span>md 40</span></div>
+        <div><Mark size="sm" print sun={false} /><span>sm 28 · no sun</span></div>
+        <div style={{ alignSelf: "center" }}><Wordmark size={32} print /><span>wordmark · two inks</span></div>
+      </div>
+      <div><Btn size="sm" icon="refresh" onClick={() => setK(k + 1)}>Print again</Btn></div>
+    </div>;
+  }
+  function SplashDemo() {
+    const [on, setOn] = useState(false);
+    return <div className="stack">
+      <div className="splashdemo">
+        {on ? <Splash onDone={() => setOn(false)} hold={3200} /> : <div className="empty" style={{ height: "100%", alignContent: "center" }}><Mark size="lg" /><b>Splash</b><p className="t-small">Shown once per session, skippable by a tap. Reduced motion shows everything already in register.</p><Btn kind="primary" icon="play" onClick={() => setOn(true)}>Play the splash</Btn></div>}
+      </div>
+    </div>;
+  }
+  function TileDemo() {
+    const [n, setN] = useState(14);
+    useEffect(() => { const t = setInterval(() => setN(x => x >= 38 ? 14 : x + 1), 1400); return () => clearInterval(t); }, []);
+    return <div className="tilerow"><LiveTile value={n} label="shops ordered" tone="emerald" /><LiveTile value={K.inr(21770)} label="net, this batch" /><LiveTile value={47} label="days left" tone="vermilion" /></div>;
+  }
+
+  function Page() {
+    const batch = { id: "MF-2409-117", days: 47, cartons: 77, where: "Rakesh Traders · Nagpur", sell: 12, binCost: 27717, zone: "risk", bestBefore: "18 Nov 2026" };
+    const product = { name: "Munchly Masala Chips 150 g", brand: "MUNCHLY" };
+    return <ThemeProvider><ApplyTheme />
+      <div className="docs">
+        <header className="dochead"><Mark /><Wordmark size={18} /><nav><a href="Smart-Clearance DS v2.html" aria-current="page">Foundations</a><a href="components.html">Components</a><a href="readme.md">Readme</a></nav><div className="grow" /><ModeSwitch /></header>
+
+        <div className="hero">
+          <h1>The product prints.</h1>
+          <p>Smart-Clearance v2 is drawn like a Sivakasi matchbox label: flat chromolithograph inks, a black keyline around every plate, type with a second ink behind it. Every batch is a label on an uncut sheet, and every change of state arrives as a print plate: misregistered for a beat, then snapped into register. Two editions of stock, Day and Night, carry the same seven inks.</p>
+          <div className="heroplates">
+            <Label batch={batch} product={product} hot img={IMG + "hero-carton.webp"} action={<Btn kind="yes" size="sm">Open the batch</Btn>} />
+            <div className="stack">
+              <Plate tone="ultra" framed><div className="row"><span className="sunwrap"><Sun size={56} /><Mark sun={false} /></span><div><b>Watcher</b><div className="t-small" style={{ color: "var(--chrome-bar-fg-2)" }}>09:00 · 312 batches checked</div></div></div></Plate>
+              <Plate tone="chrome" framed><b>The human yes</b><div className="t-small">One chrome-yellow plate per screen. Nothing executes before it.</div></Plate>
+              <Plate tone="emerald" framed><b>The agent's work</b><div className="t-small">Emerald is what the agents do: listing, outreach, negotiation, paperwork.</div></Plate>
+            </div>
+          </div>
+        </div>
+
+        <section className="doc" id="world">
+          <h2>The world <small>direction record</small></h2>
+          <p>Thesis: time is the sheet's sort order and the label's biggest numeral. Refused: the KPI-tiles-over-a-table dashboard this category always ships, the neon AI command centre, and the literal shelf-life-zone board of v1.</p>
+          <div className="three">
+            <div className="spec"><span className="lbl">source</span><b>Matchbox and firecracker labels, Sivakasi, 1950s to 1980s</b><p className="t-small muted">Seven flat inks, thick keylines, halftone shading, a slightly misregistered second colour. Every kirana counter in the audience's world has one.</p></div>
+            <div className="spec"><span className="lbl">raised by</span><b>Six challengers from the roll</b><p className="t-small muted">Live tiles that flip in place (Metro). Colour quarantined inside plates and a running head of guide words (lexicon). A duration-true timeline (labanotation). One full-bleed snap card per trade moment (vertical feed). A capacity tape the doors cannot overflow (j-card). One live control that remaps every number (type specimen).</p></div>
+            <div className="spec"><span className="lbl">signature</span><b>Plate registration</b><p className="t-small muted">Pushes, chips, numerals and the mark print in with their inks offset and snap into register in 240 ms. Reduced motion arrives already registered.</p></div>
+          </div>
+          <div className="callout">This direction was dealt by the roll and built unattended. Say <b>re-roll</b> for another hand, <b>safer</b> for the familiar path, or <b>bolder</b> for foreign forms only.</div>
+        </section>
+
+        <section className="doc" id="mark">
+          <h2>Mark and splash <small>Mark · Wordmark · Splash</small></h2>
+          <p>An ultramarine plate with a 3 px keyline, "SC" set in Bungee with a vermilion Bungee Shade behind it, and a chrome-yellow sun at the corner where v1 kept an amber dot. The mark is the agent's face wherever the agent speaks; a person is always a portrait.</p>
+          <div className="two"><MarkDemo /><SplashDemo /></div>
+        </section>
+
+        <section className="doc" id="colour">
+          <h2>Colour <small>full palette, committed at region scale</small></h2>
+          <p>Seven inks with fixed jobs. Ultramarine owns the chrome (rail, top bar, push cards). Emerald is the agent and the primary action. Chrome yellow is the human yes. Vermilion is risk and the bin. Violet belongs only to ExpireSoon. Kraft is the carton. Ink draws every keyline. Colour lives inside bordered plates and chrome fields, never as a wash under text. Every text-on-ground pair here was checked at 4.5:1 or better in both editions.</p>
+          <div className="two">
+            <div className="edition" data-theme="day"><h3><Icon name="sun" /> Day edition</h3><Swatches list={DAY} /></div>
+            <div className="edition" data-theme="night"><h3><Icon name="moon" /> Night edition</h3><Swatches list={NIGHT} /></div>
+          </div>
+          <p>On Night stock the inks go bright and their text turns dark, the way a firecracker label prints on black. Tinted "soft" plates carry text of their own hue (<code>--chrome-text</code> on <code>--chrome-soft</code>), never grey. The Day and Night editions are composed separately; nothing is inverted.</p>
+        </section>
+
+        <section className="doc" id="type">
+          <h2>Type <small>Bungee · Anek Latin · Anek Devanagari · Azeret Mono</small></h2>
+          <p>Bungee, a signage face cut for layered lettering, is the display voice: the mark, label titles and the big numerals, with the second ink printed 3 px off behind the wordmark. Anek Latin and Anek Devanagari come from one Indian foundry, so English and Hindi sit on the same line in step; Anek's width axis lets an urgent numeral widen. Azeret Mono sets ids, times and tabular money.</p>
+          <div className="two">
+            <div className="spec"><span className="lbl">display · Bungee</span><div className="big xl" style={{ color: "var(--vermilion-text)" }}>47</div><div className="ink-layered" style={{ fontSize: 28 }}>SECOND CHANCE</div><div className="ink-layered ink" style={{ fontSize: 28 }}>DOBARA MAUKA</div><span className="lbl">one weight; the second ink prints 3 px off, in the shade ink or in chrome</span></div>
+            <div className="spec"><span className="lbl">body · Anek Latin, width axis</span><p>Priya ji, 57 cartons (1,360 packets) will not sell before 18 Nov. Blinkit, Zepto and Instamart have all stopped taking the batch.</p><p className="narrow">Narrow 85%: the same sentence in a tight column, still readable.</p><p className="urgent" style={{ fontSize: 22 }}>Urgent 125%, weight 800</p><span className="lbl">Hindi · Anek Devanagari</span><p className="hi" style={{ fontSize: 18 }}>आज का ऑफर: 10 पैकेट लो, 2 मुफ़्त. सिर्फ़ 48 घंटे.</p><span className="lbl">data · Azeret Mono</span><p className="mono">MF-2409-117 · 09:41 · ₹21,770 · HSN 2005</p></div>
+          </div>
+          <div className="scale">
+            {[["5xl 64", "big xl", "Display numeral"], ["4xl 48", "big lg", "Hero numeral"], ["3xl 36", "big md", "Label numeral"], ["2xl 28", "t-display", "Page title"], ["xl 22", "t-title", "Section title"], ["lg 18", "t-heading", "Plate heading"], ["md 16", "t-body", "Body, phone floor"], ["sm 14", "t-small", "Dense rows, help"], ["xs 13", "t-xs", "Chips, meta"]].map(([l, c, t]) => <div className="row" key={l}><span className="lbl">{l}</span><span className={c}>{t}</span></div>)}
+          </div>
+        </section>
+
+        <section className="doc" id="space">
+          <h2>Space, keyline, radius, depth <small>4 px scale</small></h2>
+          <p>Spacing on a 4 px scale: 4, 8, 12, 16, 20, 24, 32, 40, 56. Every plate is drawn with a 2 px keyline; chips, inputs and rules use 1.5 px. Four radii: 4, 8, 12, 20, and a pill. Depth is an ink shade, not a glow: primary buttons and the mark carry one 4 px offset second ink; floating plates use the three soft shadows, each with an offset and a blur.</p>
+          <div className="two">
+            <div className="spec"><span className="lbl">radius</span><div className="radii"><div style={{ borderRadius: 4 }}>4</div><div style={{ borderRadius: 8 }}>8</div><div style={{ borderRadius: 12 }}>12</div><div style={{ borderRadius: 20 }}>20</div><div style={{ borderRadius: 999 }}>pill</div></div></div>
+            <div className="spec"><span className="lbl">depth</span><div className="depths"><div className="plate shaded" style={{ padding: 0 }}>shade</div><div style={{ boxShadow: "var(--shadow-1)" }}>shadow-1</div><div style={{ boxShadow: "var(--shadow-2)" }}>shadow-2</div><div style={{ boxShadow: "var(--shadow-3)" }}>shadow-3</div></div></div>
+          </div>
+        </section>
+
+        <section className="doc" id="motion">
+          <h2>Motion <small>one grammar: registration</small></h2>
+          <p>Exponential ease-out everywhere (<code>cubic-bezier(.16, 1, .3, 1)</code>). Feedback 120 ms, registration 240 ms, sheets 420 ms on a spring, the splash 700 ms per plate. Live tiles flip in place when a number changes. Nothing loops except the sun behind the agent, and it stops under reduced motion.</p>
+          <RegisterDemo />
+          <TileDemo />
+          <table className="timing"><thead><tr><th>Token</th><th>Duration</th><th>Used for</th></tr></thead><tbody>
+            <tr><td><code>--t-feedback</code></td><td className="n">120 ms</td><td>press, hover, toggle</td></tr>
+            <tr><td><code>--t-register</code></td><td className="n">240 ms</td><td>a plate arriving: chips, pushes, numerals, cards</td></tr>
+            <tr><td><code>--t-sheet</code></td><td className="n">420 ms · spring 420/40</td><td>sheets, tapes filling, progress</td></tr>
+            <tr><td><code>--t-focal</code></td><td className="n">700 ms</td><td>the splash, the approve stamp</td></tr>
+          </tbody></table>
+        </section>
+
+        <section className="doc" id="icons">
+          <h2>Icons <small>24 grid · 1.75 stroke · round caps</small></h2>
+          <p>One authored set, drawn as paths, used at 22 px in chrome and 18 px inside buttons. Never emoji, never a mixed library.</p>
+          <div className="icons">{Object.keys(ICONS).map(n => <div key={n}><Icon name={n} /><span>{n}</span></div>)}</div>
+        </section>
+
+        <section className="doc" id="imagery">
+          <h2>Imagery <small>plates and emblems</small></h2>
+          <p>Illustration plates are generated in the label's own idiom (Qwen-Image, the exact prompt and seed saved beside each file) and sit on the stock with real transparency. The seven portraits from v1 stay: a label has always carried a photograph of its star. Each role gets an emblem the way a matchbox gets a brand: the rooster for the morning watch, the van, the shop, the ship, the ledger, the tree, the key.</p>
+          <div className="plates">
+            {[["hero-carton", "the carton"], ["plate-chips", "Masala Chips"], ["plate-mango", "Mango Drink"], ["emblem-rooster", "operator · the morning watch"], ["emblem-van", "distributor"], ["emblem-shop", "retailer"], ["emblem-ship", "buyer · ExpireSoon"], ["emblem-ledger", "finance"], ["emblem-tree", "sustainability"], ["emblem-key", "admin"], ["emblem-sun", "the agent"]].map(([f, c]) => <figure key={f}><div><img src={IMG + f + ".webp"} alt={c} loading="lazy" /></div><figcaption>{c}</figcaption></figure>)}
+          </div>
+        </section>
+
+        <section className="doc" id="editions">
+          <h2>Editions <small>Day · Night</small></h2>
+          <p>Put <code>data-theme="day"</code> or <code>data-theme="night"</code> on the app root; with neither, the edition follows the device. The switch lives at the right end of every top bar and remembers the choice per viewer. Pick the edition from the scene: Rakesh bhai in a godown under tube light at noon reads Day; Priya checking the push at 23:00 reads Night.</p>
+          <pre>{`<div class="app" data-theme="night">…</div>
+/* tokens.css defines both editions on :root/.app and on [data-theme] */`}</pre>
+        </section>
+
+        <section className="doc" id="rules">
+          <h2>Do and don't</h2>
+          <div className="dodont">
+            <ul>
+              <li><Icon name="check" className="ic" /> <span>Draw every container as a keylined plate; let the ink field or the header band carry state.</span></li>
+              <li><Icon name="check" className="ic" /> <span>One chrome-yellow action per screen: the human yes. Emerald for what the agent does.</span></li>
+              <li><Icon name="check" className="ic" /> <span>Set the biggest number in Bungee, ids and money in Azeret Mono with tabular figures, everything else in Anek.</span></li>
+              <li><Icon name="check" className="ic" /> <span>Let arrivals register: chips, pushes and numerals print in, 240 ms, once.</span></li>
+              <li><Icon name="check" className="ic" /> <span>Keep Hindi in Anek Devanagari at 15 px or larger; the trade reads it in sunlight.</span></li>
+            </ul>
+            <ul>
+              <li><Icon name="x" className="ic" /> <span>No kicker or eyebrow above a heading; the plate's header band is the only label.</span></li>
+              <li><Icon name="x" className="ic" /> <span>No black block shadows; the only offset is the named second ink on primaries and the mark.</span></li>
+              <li><Icon name="x" className="ic" /> <span>No violet outside ExpireSoon, no ultramarine field for anything but chrome and pushes.</span></li>
+              <li><Icon name="x" className="ic" /> <span>No grey text on a coloured plate; take the hue's own text ink.</span></li>
+              <li><Icon name="x" className="ic" /> <span>No loops but the sun; no entrance choreography on routine screens.</span></li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </ThemeProvider>;
+  }
+  ReactDOM.createRoot(document.getElementById("docroot")).render(<Page />);
+})();
+</script>
+</body>
+</html>

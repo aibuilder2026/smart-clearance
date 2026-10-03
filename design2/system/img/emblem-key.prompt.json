@@ -1,0 +1,9 @@
+{
+  "tool": "qwen-image-2.1 bf16 (local MCP)",
+  "prompt": "Vintage Indian matchbox label chromolithograph illustration of an ornate old brass skeleton key crossed with a small cog wheel, chrome yellow and ultramarine, drawn with thick black keylines, flat printed inks, visible halftone dot shading, slight colour misregistration like a 1960s Sivakasi label print, no text, no letters, no background, isolated object",
+  "seed": 307,
+  "size": 1024,
+  "steps": 40,
+  "transparent": true,
+  "generatedAt": "2026-10-03T01:12:06Z"
+}
