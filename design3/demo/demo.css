@@ -34,6 +34,7 @@ html, body { height: 100%; margin: 0; background: var(--bg); }
 /* narration */
 .narr { min-height: 0; overflow: hidden; display: grid; grid-template-rows: minmax(0, 1fr) auto; background: color-mix(in oklab, var(--surface) 62%, transparent); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); box-shadow: inset calc(var(--hair) * -1) 0 0 var(--line); }
 .narr-scroll { min-height: 0; overflow-y: auto; padding: 22px 20px 12px 22px; display: flex; flex-direction: column; gap: 16px; }
+.narr-scroll:focus-visible { outline-offset: -3px; border-radius: 14px; }
 .narr.compact { background: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
 .narr.compact .narr-scroll { padding: 0 0 12px; overflow: visible; }
 .narr-head { display: flex; align-items: center; gap: 14px; }

@@ -13,7 +13,13 @@ const FAIL_ON = (process.env.A11Y_FAIL_ON || 'critical,serious,moderate,minor').
 export type Finding = {
   rule: string; impact: string; help: string; helpUrl: string; wcag: string[];
   nodes: number; targets: string[]; state: string;
+  details: { target: string; html: string; why: string }[];
 };
+
+// In-app push banners and toasts float over the page for a few seconds and then leave. While one is up,
+// axe counts whatever it covers as an obscured target, so target size is judged on the page they leave
+// behind; the banners and toasts themselves are still checked by every other rule.
+const TRANSIENT = ['.banners', '.toasts'];
 
 // Scan the page as it stands and return its WCAG violations, tagged with the state they were seen in.
 // targetSizeExclude: selectors left out of the target-size rule only (the demo's scaled device previews,
@@ -22,14 +28,15 @@ export async function scan(page: Page, state: string, opts: { targetSizeExclude?
   await page.waitForTimeout(250);
   const present: string[] = [];
   for (const sel of opts.targetSizeExclude || []) if (await page.locator(sel).count()) present.push(sel);
-  const main = new AxeBuilder({ page }).withTags(WCAG_TAGS);
-  if (present.length) main.disableRules(['target-size']);
-  const results = [await main.analyze()];
-  if (present.length) {
-    const sized = new AxeBuilder({ page }).withRules(['target-size']);
-    for (const sel of present) sized.exclude(sel);
-    results.push(await sized.analyze());
-  }
+  const results = [await new AxeBuilder({ page }).withTags(WCAG_TAGS).disableRules(['target-size']).analyze()];
+  const sized = new AxeBuilder({ page }).withRules(['target-size']);
+  for (const sel of present) sized.exclude(sel);
+  await page.evaluate(sel => {
+    const s = document.createElement('style'); s.id = 'a11y-hide-transient';
+    s.textContent = `${sel} { visibility: hidden !important; }`; document.head.append(s);
+  }, TRANSIENT.join(', '));
+  try { results.push(await sized.analyze()); }
+  finally { await page.evaluate(() => document.getElementById('a11y-hide-transient')?.remove()); }
   return results.flatMap(r => r.violations).map(v => ({
     rule: v.id,
     impact: v.impact || 'unknown',
@@ -39,6 +46,12 @@ export async function scan(page: Page, state: string, opts: { targetSizeExclude?
     nodes: v.nodes.length,
     targets: v.nodes.slice(0, 4).map(n => n.target.map(String).join(' ')),
     state,
+    // the first lines of axe's own explanation: for contrast it carries the colours and the measured ratio
+    details: v.nodes.slice(0, 4).map(n => ({
+      target: n.target.map(String).join(' '),
+      html: n.html.replace(/\s+/g, ' ').slice(0, 160),
+      why: (n.failureSummary || '').split('\n').slice(1, 3).join(' ').trim().slice(0, 240),
+    })),
   }));
 }
 

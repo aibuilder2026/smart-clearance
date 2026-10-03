@@ -45,7 +45,7 @@
     return <div className="si-stage">
       <div className="si-renders" aria-hidden="true"><Product name="pack-chips" size={176} float className="r1" /><Product name="carton-hero" size={208} float className="r2" /><Product name="pack-mango" size={150} float className="r3" /></div>
       <div className="si-figure"><span className="si-cap">Recovered from one batch of chips headed for the bin</span><Money value={k >= 9 ? D.ACTUAL.net : Math.round(D.ACTUAL.net * k / 9)} size="xl" roll style={{ color: "var(--primary-text)" }} /><span className="si-cap">instead of {fmt.inr(-D.PLAN.writeOff.total)} to destroy it</span></div>
-      <div className="si-track"><Tracker stages={stages} done={Math.min(k, 9)} current={k < 9 ? k : -1} /></div>
+      <div className="si-track" aria-hidden="true"><Tracker stages={stages} done={Math.min(k, 9)} current={k < 9 ? k : -1} /></div>
     </div>;
   }
 

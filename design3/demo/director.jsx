@@ -88,7 +88,7 @@
       : <NoticeHost resetKey={spec.who}><S.RoleApp me={me} route={routeState} onGo={r => setRouteState({ name: r.name, params: r.params })} onBack={() => setRouteState({ name: S.HOME[me.role] })} /></NoticeHost>;
     const label = <div className={cx("dev-label", focus && "focus", focus && amber && "amber")}><Avatar person={me} size="sm" /><span><b>{DEVICE[spec.who] || me.short} {kind === "phone" ? "phone" : "laptop"}</b><span>{PLACE[spec.who] || me.org}</span></span></div>;
     if (kind === "phone") return <div className="dev" style={{ width: 414 * scale }}>{label}<div className={cx("dev-ring", focus && "on", amber && "amber")} style={{ width: 414 * scale, height: 868 * scale, borderRadius: 60 * scale }}><div ref={ref} style={{ width: 414, height: 868, transform: `scale(${scale})`, transformOrigin: "top left" }}><PhoneFrame time={time} dark={!!lock}>{app}</PhoneFrame></div></div></div>;
-    return <div className="dev" style={{ width: width * scale }}>{label}<div className={cx("dev-ring", focus && "on", amber && "amber")} style={{ width: width * scale, height: height * scale, borderRadius: 14 * scale }}><div ref={ref} style={{ width, height, transform: `scale(${scale})`, transformOrigin: "top left" }}><WindowFrame title={`Smart-Clearance · ${me.short || me.name}`} style={{ width, height }}><AppRoot style={{ position: "absolute", inset: 0 }}>{app}</AppRoot></WindowFrame></div></div></div>;
+    return <div className="dev" style={{ width: width * scale }}>{label}<div className={cx("dev-ring", focus && "on", amber && "amber")} style={{ width: width * scale, height: height * scale, borderRadius: 14 * scale }}><div ref={ref} style={{ width, height, transform: `scale(${scale})`, transformOrigin: "top left" }}><WindowFrame title={`Smart-Clearance · ${me.short || me.name}`} style={{ width, height }}><AppRoot embedded style={{ position: "absolute", inset: 0 }}>{app}</AppRoot></WindowFrame></div></div></div>;
   }
 
   /* ---------- narration ---------- */
@@ -98,7 +98,7 @@
   function Narration({ n, beatIdx, beatsDone, onNext, onBack, last, finale, compact }) {
     const st = D.STAGES[n], cfg = STAGES[n]; const beats = cfg.beats;
     const cur = beats[beatIdx];
-    return <aside className={cx("narr", compact && "compact")} aria-label="Narration"><div className="narr-scroll">
+    return <aside className={cx("narr", compact && "compact")} aria-label="Narration"><div className="narr-scroll" {...(compact ? {} : { tabIndex: 0, role: "region", "aria-label": "Stage notes" })}>
       <div className="narr-head"><span className="narr-n">{String(n + 1).padStart(2, "0")}</span><div className="stack tight" style={{ gap: 2 }}><h2 className="narr-title">{st.title}</h2><span className="t-footnote subtle">{st.when} · {st.screen}</span></div></div>
       <p className="narr-who">{st.who}</p>
       {!compact && <div className="narr-block"><b>What they see</b><p>{st.sees}</p></div>}
@@ -115,7 +115,7 @@
 
   /* ---------- the stage bar ---------- */
   function StageBar({ n, done, onJump }) {
-    return <nav className="stagebar" aria-label="Stages">{D.STAGES.map((st, i) => <button key={st.id} type="button" className={cx("sbtn", i < n && "done", i === n && "now", st.human && "human")} aria-current={i === n ? "step" : undefined} onClick={() => onJump(i)}><span className="sb-dot">{i < n ? <Icon name="check" size={12} stroke={3} /> : i + 1}</span><span className="sb-t">{st.title}</span></button>)}</nav>;
+    return <nav className="stagebar" aria-label="Stages">{D.STAGES.map((st, i) => <button key={st.id} type="button" className={cx("sbtn", i < n && "done", i === n && "now", st.human && "human")} aria-current={i === n ? "step" : undefined} aria-label={`${st.title}, stage ${i + 1}${i < n ? ", done" : ""}`} onClick={() => onJump(i)}><span className="sb-dot">{i < n ? <Icon name="check" size={12} stroke={3} /> : i + 1}</span><span className="sb-t">{st.title}</span></button>)}</nav>;
   }
 
   /* ---------- the finale ---------- */
@@ -189,7 +189,7 @@
       const spec = focus === "desk" ? deskSpec : phoneSpec; const me = user(spec.who); const lk = spec.lock && !ui[spec.lock.key] ? spec.lock : null;
       return <div className="demo-real">
         <div className="real-bar"><button type="button" className="iconbtn" aria-label="Back" onClick={back}><Icon name="chevron-left" size={22} /></button><button type="button" className="real-stage" onClick={() => setNotes(v => !v)}><span className="narr-n sm">{n + 1}</span><span className="stack tight" style={{ gap: 0 }}><b>{D.STAGES[n].title}</b><span>{(user(spec.who).short || "")} · {beat.text.slice(0, 46)}{beat.text.length > 46 ? "…" : ""}</span></span></button><button type="button" className={cx("iconbtn real-next", beat.human && "amber")} aria-label="Next" onClick={next}><Icon name="arrow-right" size={22} /></button></div>
-        <AppRoot className="real-app" style={{ "--safe-top": "calc(env(safe-area-inset-top, 0px) + 60px)" }}>{lk ? <LockScreen who={lk.who} push={lk.push} time={time} date={cfg.date} onOpen={() => setUi(u => Object.assign({}, u, { [lk.key]: true }))} /> : <S.RoleApp me={me} route={spec === deskSpec ? deskRoute : phoneRoute} onGo={r => (spec === deskSpec ? setDeskRoute : setPhoneRoute)({ name: r.name, params: r.params })} onBack={() => (spec === deskSpec ? setDeskRoute : setPhoneRoute)({ name: S.HOME[me.role] })} />}</AppRoot>
+        <AppRoot embedded className="real-app" style={{ "--safe-top": "calc(env(safe-area-inset-top, 0px) + 60px)" }}>{lk ? <LockScreen who={lk.who} push={lk.push} time={time} date={cfg.date} onOpen={() => setUi(u => Object.assign({}, u, { [lk.key]: true }))} /> : <S.RoleApp me={me} route={spec === deskSpec ? deskRoute : phoneRoute} onGo={r => (spec === deskSpec ? setDeskRoute : setPhoneRoute)({ name: r.name, params: r.params })} onBack={() => (spec === deskSpec ? setDeskRoute : setPhoneRoute)({ name: S.HOME[me.role] })} />}</AppRoot>
         <K.Sheet open={notes && !splash} onClose={() => setNotes(false)} title={`Stage ${n + 1} of 9`} detent="medium"><Narration n={n} beatIdx={Math.min(idx, cfg.beats.length - 1)} beatsDone={idx} onNext={() => { next(); }} onBack={back} last={n === 8} compact /></K.Sheet>
         <AnimatePresence>{finale && <Finale onRestart={() => enter(0)} onClose={() => setFinale(false)} />}</AnimatePresence>
         {splash && <Splash onDone={() => { setSplash(false); try { sessionStorage.setItem("sc3-demo-splash", "1"); } catch (e) {} }} />}

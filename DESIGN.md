@@ -535,7 +535,7 @@ Components are HIG in behaviour and shadcn in anatomy: quiet at rest, decisive o
 - **Sidebar (desktop) / rail (tablet):** frosted; items 38px at 10px radius, the current item is a surface pill with shadow-1 and a green icon (a fill in dark); 44px icon-only items on the rail.
 
 ### Sheets, Alerts, Banners, Toasts
-- **Sheet:** bottom sheet with a 36 × 5px grabber, medium and large detents, drag to settle or dismiss, sprung in (stiffness 420, damping 40, mass 0.9) over a sage scrim; a floating side panel (460px, 12px inset, 24px radius) from tablet up; centred form sheet when asked. Header 17px/650 with a round close button; footer separated by a hairline.
+- **Sheet:** bottom sheet with a 36 × 5px grabber, medium and large detents, drag to settle or dismiss, sprung in (stiffness 420, damping 40, mass 0.9) over a sage scrim; a floating side panel (460px, 12px inset, 24px radius) from tablet up; centred form sheet when asked. Header 17px/650 with a round close button; footer separated by a hairline. A sheet (and an alert) takes focus when it opens, keeps Tab inside, closes on Escape and gives focus back to whatever opened it; with one over another only the top one listens. Inside a device preview (the demo, the design system page) it stays non-modal, so focus and Tab remain with the page around the device.
 - **Alert:** 320px frosted, centred text, hairline-divided actions.
 - **Banner:** frosted push banner (22px radius) top of phone, docked top-right at 380px from tablet.
 - **Toast:** elevated card at 14px radius above the tab bar on phone, bottom-centre elsewhere.
@@ -550,13 +550,13 @@ The hero card: a product render, the days-left numeral, money at stake, the trac
 A time-true feed: each event is a 34px agent tile (11px radius) or a portrait, who, a mono time, text and mono tool-call pills (26px, 8px radius, green when ok, red when bad); the gap between events is drawn to elapsed time. A working agent wears the aura: a two-pixel conic ring (mint, teal, sky, lime) turning every 3.2s over a blurred mint-to-sky glow breathing every 2.8s; it stops the moment the work stops. Typing dots show a pending reply.
 
 ### Rolling Numbers
-The odometer: each digit is a 0–9 strip that rolls to its place over 700ms with a 40ms stagger from the right, used whenever an agent changes a figure and for the swing in the approval moment.
+The odometer: each digit is a 0–9 strip that rolls to its place over 700ms with a 40ms stagger from the right, used whenever an agent changes a figure and for the swing in the approval moment. Screen readers hear the whole figure once, as visually hidden text ("₹21,770", "₹4.2 lakh"); the strips, rupee sign and paise are hidden from them.
 
 ### Cluster Map
 A schematic map on the map palette: white roads, water, a godown pin, 38 kirana dots that turn green as they are reached, the van route drawn as a 3.5px green stroke over a 9px 18% shadow stroke, a pulsing pin and stroked pin labels.
 
 ### API and JSON Cards
-Code cards on the sunken surface (12px radius, 12.5px mono, 1.6 leading): keys in ink, strings green, numbers blue, ExpireSoon methods violet, comments tertiary.
+Code cards on the sunken surface (12px radius, 12.5px mono, 1.6 leading): keys in ink, strings green, numbers blue, ExpireSoon methods violet, comments tertiary. A code card, like every `.table-wrap`, is a named region with `tabindex="0"`, so a keyboard can scroll it sideways on a phone; its focus ring sits inside the rounded edge.
 
 ### Paper Documents
 Credit notes, e-way bills and certificates keep a white page (#fffefb, 6px radius, a page shadow) in both themes, a display title, mono numbers, a rotated mono stamp (green when issued) and tabular right-aligned columns.
@@ -591,6 +591,7 @@ Every money figure on screen is computed by `design3/core/money.js` from the jou
 - **Do** roll a figure in place when an agent changes it, and turn the aura only while an agent is working.
 - **Do** edge every card, list and overlay with a one-device-pixel hairline and a soft offset shadow.
 - **Do** compose light and dark separately and check both on every new surface.
+- **Do** measure text contrast (4.5:1) on the ground it actually sits on: fills, tinted chips and chat bubbles included, and after any opacity. Secondary text on a fill takes `ink-secondary`; `ink-tertiary` is for the plain surfaces. `design3/a11y` (`npm test`) checks every screen in both themes.
 - **Do** compute every money figure in core/money.js and label illustrative splits as illustrative.
 - **Do** give every raster a prompt sidecar and recoloured contact shadow, and set label text in type over photos.
 

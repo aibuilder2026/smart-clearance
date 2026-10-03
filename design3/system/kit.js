@@ -42,7 +42,7 @@
   const useTheme = () => useContext(ThemeCtx);
   const AppCtx = createContext({ w: 1440, h: 900, bp: "desktop", el: null });
   const bpOf = (w) => w < 768 ? "phone" : w < 1100 ? "tablet" : "desktop";
-  function AppRoot({ children, className, style, theme }) {
+  function AppRoot({ children, className, style, theme, embedded }) {
     const ref = useRef(null);
     const { resolved } = useTheme();
     const [size, setSize] = useState(() => ({ w: typeof window !== "undefined" ? window.innerWidth : 1440, h: typeof window !== "undefined" ? window.innerHeight : 900 }));
@@ -69,7 +69,7 @@
         if (ref.current && ref.current.__ro) ref.current.__ro.disconnect();
       };
     }, []);
-    const value = useMemo(() => ({ w: size.w, h: size.h, bp: bpOf(size.w), el }), [size.w, size.h, el]);
+    const value = useMemo(() => ({ w: size.w, h: size.h, bp: bpOf(size.w), el, embedded: !!embedded }), [size.w, size.h, el, embedded]);
     return /* @__PURE__ */ React.createElement("div", { ref, className: cx("app", className), "data-theme": theme || resolved, style }, /* @__PURE__ */ React.createElement("div", { className: "ground", "aria-hidden": "true" }), /* @__PURE__ */ React.createElement(AppCtx.Provider, { value }, children));
   }
   const useApp = () => useContext(AppCtx);
@@ -184,7 +184,7 @@
   function Check({ checked, onChange, children }) {
     return /* @__PURE__ */ React.createElement("label", { className: "check" }, /* @__PURE__ */ React.createElement("input", { type: "checkbox", checked: !!checked, onChange: (e) => onChange(e.target.checked) }), /* @__PURE__ */ React.createElement("span", null, children));
   }
-  function DataTable({ columns, rows, rowKey = "id", onRow, empty, initialSort, dense }) {
+  function DataTable({ columns, rows, rowKey = "id", onRow, empty, initialSort, dense, label = "Table" }) {
     const [sort, setSort] = useState(initialSort || null);
     const sorted = useMemo(() => {
       if (!sort) return rows;
@@ -197,7 +197,7 @@
       });
     }, [rows, sort, columns]);
     if (!rows.length) return /* @__PURE__ */ React.createElement(Card, null, empty || /* @__PURE__ */ React.createElement(Empty, { icon: "search", title: "Nothing here yet" }));
-    return /* @__PURE__ */ React.createElement("div", { className: "table-wrap" }, /* @__PURE__ */ React.createElement("table", { className: "table", style: dense ? { fontSize: 13.5 } : void 0 }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", null, columns.map((c) => /* @__PURE__ */ React.createElement("th", { key: c.key, className: cx(c.num && "n"), style: c.width ? { width: c.width } : void 0, "aria-sort": sort && sort[0] === c.key ? sort[1] === "asc" ? "ascending" : "descending" : void 0 }, c.sortable === false ? c.label : /* @__PURE__ */ React.createElement("button", { type: "button", onClick: () => setSort((s) => [c.key, s && s[0] === c.key && s[1] === "asc" ? "desc" : "asc"]) }, c.label, sort && sort[0] === c.key && /* @__PURE__ */ React.createElement(Icon, { name: sort[1] === "asc" ? "chevron-up" : "chevron-down", size: 13 })))))), /* @__PURE__ */ React.createElement("tbody", null, sorted.map((r) => /* @__PURE__ */ React.createElement("tr", { key: r[rowKey], className: cx(onRow && "clickable", r._dim && "dim"), onClick: onRow ? (e) => {
+    return /* @__PURE__ */ React.createElement("div", { className: "table-wrap", tabIndex: 0, role: "region", "aria-label": label }, /* @__PURE__ */ React.createElement("table", { className: "table", style: dense ? { fontSize: 13.5 } : void 0 }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", null, columns.map((c) => /* @__PURE__ */ React.createElement("th", { key: c.key, className: cx(c.num && "n"), style: c.width ? { width: c.width } : void 0, "aria-sort": sort && sort[0] === c.key ? sort[1] === "asc" ? "ascending" : "descending" : void 0 }, c.sortable === false ? c.label : /* @__PURE__ */ React.createElement("button", { type: "button", onClick: () => setSort((s) => [c.key, s && s[0] === c.key && s[1] === "asc" ? "desc" : "asc"]) }, c.label, sort && sort[0] === c.key && /* @__PURE__ */ React.createElement(Icon, { name: sort[1] === "asc" ? "chevron-up" : "chevron-down", size: 13 })))))), /* @__PURE__ */ React.createElement("tbody", null, sorted.map((r) => /* @__PURE__ */ React.createElement("tr", { key: r[rowKey], className: cx(onRow && "clickable", r._dim && "dim"), onClick: onRow ? (e) => {
       if (e.target.closest("button, a, input, select")) return;
       onRow(r);
     } : void 0 }, columns.map((c) => /* @__PURE__ */ React.createElement("td", { key: c.key, className: cx(c.num && "n") }, c.render ? c.render(r) : r[c.key])))))));
@@ -231,10 +231,68 @@
       return () => window.removeEventListener("keydown", f);
     }, [open, onClose]);
   }
+  const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  const modals = [];
+  function useModal(open, ref, onClose) {
+    const { embedded } = useApp();
+    const close = useRef(onClose);
+    close.current = onClose;
+    useEffect(() => {
+      if (!open) return;
+      if (embedded) {
+        const f = (e) => e.key === "Escape" && close.current && close.current();
+        window.addEventListener("keydown", f);
+        return () => window.removeEventListener("keydown", f);
+      }
+      const opener = document.activeElement;
+      const me = {};
+      modals.push(me);
+      const top = () => modals[modals.length - 1] === me;
+      const raf = requestAnimationFrame(() => {
+        const el = ref.current;
+        if (el && !el.contains(document.activeElement)) el.focus({ preventScroll: true });
+      });
+      const onKey = (e) => {
+        const el = ref.current;
+        if (!el || !top()) return;
+        if (e.key === "Escape") {
+          close.current && close.current();
+          return;
+        }
+        if (e.key !== "Tab") return;
+        const items = [...el.querySelectorAll(FOCUSABLE)].filter((n) => n.getClientRects().length);
+        const at = document.activeElement;
+        if (!items.length) {
+          e.preventDefault();
+          el.focus();
+          return;
+        }
+        const first = items[0], last = items[items.length - 1];
+        if (!el.contains(at)) {
+          e.preventDefault();
+          (e.shiftKey ? last : first).focus();
+        } else if (e.shiftKey && (at === first || at === el)) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && at === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      };
+      document.addEventListener("keydown", onKey);
+      return () => {
+        cancelAnimationFrame(raf);
+        document.removeEventListener("keydown", onKey);
+        modals.splice(modals.indexOf(me), 1);
+        if (opener && opener.isConnected && typeof opener.focus === "function") opener.focus({ preventScroll: true });
+      };
+    }, [open, embedded]);
+  }
   function Sheet({ open, onClose, title, children, footer, side, detent = "large", headerRight, className, labelledBy }) {
     const app = useApp();
     const reduce = useReducedMotion();
-    useEscape(open, onClose);
+    const panel = useRef(null);
+    useModal(open, panel, onClose);
     const mode = side || (app.bp === "phone" ? "bottom" : "side");
     const [cur, setCur] = useState(detent);
     useEffect(() => {
@@ -249,8 +307,10 @@
     return /* @__PURE__ */ React.createElement(Portal, null, /* @__PURE__ */ React.createElement(AnimatePresence, null, open && /* @__PURE__ */ React.createElement(Fragment, { key: "sheet" }, /* @__PURE__ */ React.createElement(motion.div, { className: "scrim", initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.2 }, onClick: onClose }), /* @__PURE__ */ React.createElement(
       motion.div,
       {
+        ref: panel,
+        tabIndex: -1,
         role: "dialog",
-        "aria-modal": "true",
+        "aria-modal": app.embedded ? void 0 : "true",
         "aria-label": typeof title === "string" ? title : void 0,
         className: cx("sheet", `sheet-${mode}`, className),
         style: mode === "bottom" ? { height: largeH } : void 0,
@@ -283,8 +343,10 @@
     ))));
   }
   function Alert({ open, title, message, actions = [], onClose }) {
-    useEscape(open, onClose);
-    return /* @__PURE__ */ React.createElement(Portal, null, /* @__PURE__ */ React.createElement(AnimatePresence, null, open && /* @__PURE__ */ React.createElement(Fragment, { key: "alert" }, /* @__PURE__ */ React.createElement(motion.div, { className: "scrim", initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, onClick: onClose }), /* @__PURE__ */ React.createElement(motion.div, { role: "alertdialog", "aria-modal": "true", "aria-label": title, className: "alert", initial: { opacity: 0, scale: 1.08, x: "-50%", y: "-50%" }, animate: { opacity: 1, scale: 1, x: "-50%", y: "-50%" }, exit: { opacity: 0, scale: 0.96, x: "-50%", y: "-50%" }, transition: { type: "spring", stiffness: 500, damping: 36 } }, /* @__PURE__ */ React.createElement("div", { className: "al-body" }, /* @__PURE__ */ React.createElement("h3", null, title), message && /* @__PURE__ */ React.createElement("p", null, message)), /* @__PURE__ */ React.createElement("div", { className: "al-actions", style: actions.length > 2 ? { gridAutoFlow: "row" } : void 0 }, actions.map((a) => /* @__PURE__ */ React.createElement("button", { key: a.label, type: "button", className: cx(a.strong && "strong", a.danger && "danger"), onClick: () => {
+    const app = useApp();
+    const panel = useRef(null);
+    useModal(open, panel, onClose);
+    return /* @__PURE__ */ React.createElement(Portal, null, /* @__PURE__ */ React.createElement(AnimatePresence, null, open && /* @__PURE__ */ React.createElement(Fragment, { key: "alert" }, /* @__PURE__ */ React.createElement(motion.div, { className: "scrim", initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, onClick: onClose }), /* @__PURE__ */ React.createElement(motion.div, { ref: panel, tabIndex: -1, role: "alertdialog", "aria-modal": app.embedded ? void 0 : "true", "aria-label": title, className: "alert", initial: { opacity: 0, scale: 1.08, x: "-50%", y: "-50%" }, animate: { opacity: 1, scale: 1, x: "-50%", y: "-50%" }, exit: { opacity: 0, scale: 0.96, x: "-50%", y: "-50%" }, transition: { type: "spring", stiffness: 500, damping: 36 } }, /* @__PURE__ */ React.createElement("div", { className: "al-body" }, /* @__PURE__ */ React.createElement("h3", null, title), message && /* @__PURE__ */ React.createElement("p", null, message)), /* @__PURE__ */ React.createElement("div", { className: "al-actions", style: actions.length > 2 ? { gridAutoFlow: "row" } : void 0 }, actions.map((a) => /* @__PURE__ */ React.createElement("button", { key: a.label, type: "button", className: cx(a.strong && "strong", a.danger && "danger"), onClick: () => {
       a.onClick && a.onClick();
       onClose && onClose();
     } }, a.label)))))));
@@ -353,7 +415,7 @@
     const reduce = useReducedMotion();
     const word = "Smart-Clearance";
     if (!play || reduce) return /* @__PURE__ */ React.createElement("span", { className: cx("wordmark", className), style: { fontSize: size } }, "Smart‑Clearance");
-    return /* @__PURE__ */ React.createElement("span", { className: cx("wordmark", className), style: { fontSize: size, display: "inline-flex", overflow: "hidden" }, "aria-label": word }, word.split("").map((ch, i) => /* @__PURE__ */ React.createElement(motion.span, { key: i, "aria-hidden": "true", initial: { y: "105%", opacity: 0 }, animate: { y: 0, opacity: 1 }, transition: { delay: 0.55 + i * 0.028, type: "spring", stiffness: 380, damping: 28 }, style: { display: "inline-block" } }, ch === "-" ? "‑" : ch)));
+    return /* @__PURE__ */ React.createElement("span", { className: cx("wordmark", className), style: { fontSize: size, display: "inline-flex", overflow: "hidden" }, role: "img", "aria-label": word }, word.split("").map((ch, i) => /* @__PURE__ */ React.createElement(motion.span, { key: i, "aria-hidden": "true", initial: { y: "105%", opacity: 0 }, animate: { y: 0, opacity: 1 }, transition: { delay: 0.55 + i * 0.028, type: "spring", stiffness: 380, damping: 28 }, style: { display: "inline-block" } }, ch === "-" ? "‑" : ch)));
   }
   function Splash({ onDone, hold = 2300 }) {
     const reduce = useReducedMotion();

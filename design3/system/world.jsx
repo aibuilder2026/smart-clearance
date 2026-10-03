@@ -8,13 +8,13 @@
 
   /* ---------- numerals ---------- */
   // odometer digits: every digit is a strip of 0-9 that rolls to its place when the value changes
-  function Roll({ value, format, from, className, stagger = 40 }) {
+  function Roll({ value, format, from, className, stagger = 40, hidden }) {
     const reduce = useReducedMotion();
     const text = (format || (v => Math.round(v).toLocaleString("en-IN")))(value);
     const [armed, setArmed] = useState(from == null || reduce);
     useEffect(() => { if (!armed) { const t = setTimeout(() => setArmed(true), 90); return () => clearTimeout(t); } }, []);
     const chars = text.split(""); const n = chars.length;
-    return <span className={cx("roll", className)} aria-label={text} role="text">{chars.map((ch, i) => {
+    return <span className={cx("roll", className)} aria-hidden={hidden ? "true" : undefined}>{!hidden && <span className="sr-only">{text}</span>}{chars.map((ch, i) => {
       const key = n - i;
       if (!/\d/.test(ch)) return <span key={"s" + key} aria-hidden="true">{ch}</span>;
       const d = armed ? +ch : 0;
@@ -24,9 +24,10 @@
   // Monzo-style money: the rupee sign and paise set small beside heavy numerals
   function Money({ value, size, roll, from, decimals, tone, className, style, showSign = true }) {
     const neg = value < 0; const abs = Math.abs(value); const int = decimals ? Math.floor(abs + 1e-9) : Math.round(abs); const paise = decimals ? Math.round((abs - Math.floor(abs + 1e-9)) * 100) : 0;
-    return <span className={cx("num money", size, tone, className)} style={style} aria-label={(neg ? "minus " : "") + "₹" + abs.toLocaleString("en-IN", { maximumFractionDigits: decimals ? 2 : 0 })}>
-      {neg && showSign && <span className="sign" aria-hidden="true">−</span>}<span className="cur" aria-hidden="true">₹</span>
-      {roll ? <Roll value={int} from={from} /> : <span aria-hidden="true">{int.toLocaleString("en-IN")}</span>}
+    const spoken = (neg ? "minus " : "") + "₹" + abs.toLocaleString("en-IN", { maximumFractionDigits: decimals ? 2 : 0 });
+    return <span className={cx("num money", size, tone, className)} style={style}>
+      <span className="sr-only">{spoken}</span>{neg && showSign && <span className="sign" aria-hidden="true">−</span>}<span className="cur" aria-hidden="true">₹</span>
+      {roll ? <Roll value={int} from={from} hidden /> : <span aria-hidden="true">{int.toLocaleString("en-IN")}</span>}
       {decimals ? <span className="dec" aria-hidden="true">.{String(paise).padStart(2, "0")}</span> : null}
     </span>;
   }
@@ -38,7 +39,7 @@
 
   /* ---------- small pieces ---------- */
   function GateChips({ gates, size }) {
-    return <span className="row tight wrap">{gates.map(g => <span key={g.id} className={cx("gate", g.pass ? "pass" : "fail")} title={`${g.app}: ${g.rule}, has ${g.has}`}><Icon name={g.pass ? "check" : "x"} size={13} stroke={2.6} />{g.app}{size !== "sm" && <span style={{ fontWeight: 500, opacity: 0.8 }}>{g.has}/{g.need}</span>}</span>)}</span>;
+    return <span className="row tight wrap">{gates.map(g => <span key={g.id} className={cx("gate", g.pass ? "pass" : "fail")} title={`${g.app}: ${g.rule}, has ${g.has}`}><Icon name={g.pass ? "check" : "x"} size={13} stroke={2.6} />{g.app}{size !== "sm" && <span style={{ fontWeight: 500 }}>{g.has}/{g.need}</span>}</span>)}</span>;
   }
   function Countdown({ days, life, status, label }) {
     const p = Math.max(0.025, Math.min(1, days / life));
@@ -56,11 +57,11 @@
     const n = stages.length; const pos = current >= 0 ? current : Math.max(0, done - 1);
     return <div className="tracker" style={{ "--stops": n }} role="list" aria-label={label}>
       <div className="rail" aria-hidden="true"><i style={{ "--p": n > 1 ? pos / (n - 1) : 0 }} /></div>
-      {stages.map((s, i) => { const st = i < done ? "done" : i === current ? "now" : ""; return <button key={s.id} type="button" role="listitem" className={cx("stop", st, s.human && "human")} aria-current={i === current ? "step" : undefined} onClick={onStop ? () => onStop(i) : undefined} style={{ cursor: onStop ? "pointer" : "default" }}>
+      {stages.map((s, i) => { const st = i < done ? "done" : i === current ? "now" : ""; const body = <Fragment>
         <span className="dot">{st === "done" && <Icon name="check" size={12} stroke={3.2} />}</span>
         <span className="st-label">{s.title}</span>
         {times[s.id] && <span className="st-time">{times[s.id]}</span>}
-      </button>; })}
+      </Fragment>; return <div key={s.id} role="listitem" className={cx("stop", st, s.human && "human")} aria-current={i === current ? "step" : undefined}>{onStop ? <button type="button" className="stop-btn" onClick={() => onStop(i)}>{body}</button> : body}</div>; })}
     </div>;
   }
   function VTracker({ items, current = -1, done = 0 }) {
@@ -81,7 +82,7 @@
         {person ? <span className="ag person"><img src={person.img} alt="" /></span> : <Aura on={isLive} className="ag" style={{ borderRadius: 11 }}><Icon name={e.icon || "bot"} size={18} /></Aura>}
         <div style={{ minWidth: 0 }}>
           <div className="ev-head"><span className="ev-who">{person ? person.short : e.agent}</span>{e.human || person ? <Badge size="sm" tone="amber">person</Badge> : <Badge size="sm">agent</Badge>}<span className="ev-time">{e.at}</span></div>
-          {isLive && typing ? <div className="ev-text"><span className="typing" aria-label="Working"><i /><i /><i /></span></div> : <div className="ev-text">{e.text}</div>}
+          {isLive && typing ? <div className="ev-text"><span className="typing" role="img" aria-label="Working"><i /><i /><i /></span></div> : <div className="ev-text">{e.text}</div>}
           {e.calls && !(isLive && typing) && <div className="ev-calls">{e.calls.map(([fn, res, tone], j) => <span key={j} className={cx("toolcall", tone)} title={`${fn} → ${res}`}><Icon name="zap" />{fn}<span style={{ opacity: 0.6 }}>→</span>{res}</span>)}</div>}
         </div>
       </motion.div>;
@@ -232,13 +233,14 @@
   }
 
   /* ---------- JSON card ---------- */
-  function CodeBlock({ code, className }) {
+  function CodeBlock({ code, className, label }) {
     const html = useMemo(() => code.replace(/&/g, "&amp;").replace(/</g, "&lt;")
       .replace(/^(POST|GET|PUT|PATCH|DELETE|HTTP\/\d\.\d|\d{3})\b[^\n]*/gm, m => `<span class="m">${m}</span>`)
       .replace(/("[^"\n]*")(\s*:)/g, '<span class="k">$1</span>$2')
       .replace(/:\s*("[^"\n]*")/g, (m, s) => m.replace(s, `<span class="s">${s}</span>`))
       .replace(/(:\s*)(-?\d+(?:\.\d+)?)/g, '$1<span class="n">$2</span>'), [code]);
-    return <pre className={cx("code", className)} dangerouslySetInnerHTML={{ __html: html }} />;
+    const first = code.split("\n")[0].trim();
+    return <pre className={cx("code", className)} tabIndex={0} role="region" aria-label={label || (/\w/.test(first) ? first : "Code")} dangerouslySetInnerHTML={{ __html: html }} />;
   }
 
   /* ---------- device frames for the demo stage ---------- */
@@ -248,7 +250,7 @@
   function PhoneFrame({ children, time, scale = 1, style, dark }) {
     return <div className="device-phone" style={{ transform: scale !== 1 ? `scale(${scale})` : undefined, transformOrigin: "top left", ...style }}>
       <div className="screen">
-        <AppRoot style={{ "--safe-top": "50px", "--safe-bottom": "22px" }}>
+        <AppRoot embedded style={{ "--safe-top": "50px", "--safe-bottom": "22px" }}>
           <StatusBar time={time} dark={dark} />
           {children}
           <div className={cx("homebar", dark && "on-dark")} aria-hidden="true" />
