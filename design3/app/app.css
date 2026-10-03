@@ -34,6 +34,11 @@ html, body { height: 100%; margin: 0; background: var(--bg); overscroll-behavior
 .si-figure .num.xl { font-size: clamp(72px, 8cqi, 120px); letter-spacing: -0.045em; }
 .si-cap { font-size: 16px; color: var(--fg-2); max-width: 36ch; }
 .si-track { max-width: 760px; }
+/* the hero's pause: every animation inside it holds where it is, and the current stop's ping goes quiet */
+.si-ctl { display: flex; margin-top: -14px; }
+.si-ctl .btn { margin-left: -12px; color: var(--fg-2); }
+.si-stage.paused *, .si-stage.paused *::before, .si-stage.paused *::after { animation-play-state: paused !important; }
+.si-stage.paused .stop.now .dot::after { animation: none; opacity: 0; }
 
 /* people to explore as */
 .si-people { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); }

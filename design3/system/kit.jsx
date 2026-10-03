@@ -254,12 +254,40 @@
       </motion.div>
     </Fragment>}</AnimatePresence></Portal>;
   }
-  function Menu({ open, onClose, items, align = "right", width = 240, style }) {
-    const ref = useRef(null);
+  // a menu button's menu (WAI-ARIA APG): opening moves focus to the checked or the first item; the arrows, Home and
+  // End move between items; Escape closes it and gives focus back to its button; Tab closes it and moves on.
+  // An item with `checked` is a radio choice. A leading heading names the menu; its trigger carries
+  // aria-haspopup="menu" and aria-expanded.
+  function Menu({ open, onClose, items, align = "right", width = 240, style, label }) {
+    const ref = useRef(null); const close = useRef(onClose); close.current = onClose;
+    const list = items.filter(Boolean); const name = label || (list[0] && list[0].heading ? list[0].label : undefined);
     useEscape(open, onClose);
-    useEffect(() => { if (!open) return; const f = e => { if (ref.current && !ref.current.contains(e.target)) onClose(); }; setTimeout(() => document.addEventListener("pointerdown", f), 0); return () => document.removeEventListener("pointerdown", f); }, [open]);
-    return <AnimatePresence>{open && <motion.div ref={ref} role="menu" className="menu" style={{ top: "calc(100% + 6px)", [align]: 0, width, ...style }} initial={{ opacity: 0, scale: 0.96, y: -4 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.97, y: -2 }} transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}>
-      {items.filter(Boolean).map((it, i) => it === "-" ? <div key={i} className="msep" /> : it.label && it.heading ? <div key={i} className="mlabel">{it.label}</div> : <button key={i} type="button" role="menuitem" className={cx("mi", it.danger && "danger")} onClick={() => { onClose(); it.onClick && it.onClick(); }}>{it.icon && <Icon name={it.icon} size={17} />}<span className="grow">{it.label}</span>{it.right}</button>)}
+    useEffect(() => {
+      if (!open) return;
+      const opener = document.activeElement; const trigger = opener && opener !== document.body ? opener : null;
+      const focusIn = () => { const el = ref.current; if (!el) return false; const first = el.querySelector('[aria-checked="true"]') || el.querySelector('[role^="menuitem"]'); if (first) first.focus({ preventScroll: true }); return true; };
+      const raf = focusIn() ? 0 : requestAnimationFrame(focusIn); // at once, so a quick next key lands in the menu
+      const away = e => { if (ref.current && !ref.current.contains(e.target) && !(trigger && trigger.contains(e.target))) close.current(); };
+      const t = setTimeout(() => document.addEventListener("pointerdown", away), 0);
+      return () => {
+        cancelAnimationFrame(raf); clearTimeout(t); document.removeEventListener("pointerdown", away);
+        const at = document.activeElement;
+        if (trigger && trigger.isConnected && (!at || at === document.body || (ref.current && ref.current.contains(at)))) trigger.focus({ preventScroll: true });
+      };
+    }, [open]);
+    const onKey = e => {
+      if (e.key === "Tab") { close.current(); return; }
+      e.stopPropagation(); // page shortcuts (the demo's arrows and digits) wait while the menu has focus
+      const items = [...ref.current.querySelectorAll('[role^="menuitem"]')]; const i = items.indexOf(document.activeElement);
+      const go = n => { e.preventDefault(); if (items.length) items[(n + items.length) % items.length].focus(); };
+      if (e.key === "ArrowDown") go(i + 1);
+      else if (e.key === "ArrowUp") go(i < 0 ? -1 : i - 1);
+      else if (e.key === "Home") go(0);
+      else if (e.key === "End") go(-1);
+      else if (e.key === "Escape") { e.preventDefault(); close.current(); }
+    };
+    return <AnimatePresence>{open && <motion.div ref={ref} role="menu" aria-label={name} className="menu" onKeyDown={onKey} style={{ top: "calc(100% + 6px)", [align]: 0, width, ...style }} initial={{ opacity: 0, scale: 0.96, y: -4 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.97, y: -2 }} transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}>
+      {list.map((it, i) => it === "-" ? <div key={i} role="separator" className="msep" /> : it.heading ? <div key={i} className="mlabel" aria-hidden="true">{it.label}</div> : <button key={i} type="button" tabIndex={-1} role={it.checked === undefined ? "menuitem" : "menuitemradio"} aria-checked={it.checked === undefined ? undefined : !!it.checked} className={cx("mi", it.danger && "danger")} onClick={() => { close.current(); it.onClick && it.onClick(); }}>{it.icon && <Icon name={it.icon} size={17} />}<span className="grow">{it.label}</span>{it.right}</button>)}
     </motion.div>}</AnimatePresence>;
   }
 
@@ -369,8 +397,8 @@
 
   function ModeMenuButton() {
     const { mode, resolved, setMode } = useTheme(); const [open, setOpen] = useState(false);
-    return <span style={{ position: "relative" }}><IconButton icon={resolved === "dark" ? "moon" : "sun"} label="Appearance" onClick={() => setOpen(o => !o)} />
-      <Menu open={open} onClose={() => setOpen(false)} width={200} items={[{ label: "Appearance", heading: true }, { label: "Light", icon: "sun", right: mode === "light" && <Icon name="check" size={16} />, onClick: () => setMode("light") }, { label: "Dark", icon: "moon", right: mode === "dark" && <Icon name="check" size={16} />, onClick: () => setMode("dark") }, { label: "Match device", icon: "monitor", right: mode === "system" && <Icon name="check" size={16} />, onClick: () => setMode("system") }]} />
+    return <span style={{ position: "relative" }}><IconButton icon={resolved === "dark" ? "moon" : "sun"} label="Appearance" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(o => !o)} />
+      <Menu open={open} onClose={() => setOpen(false)} width={200} items={[{ label: "Appearance", heading: true }, { label: "Light", icon: "sun", checked: mode === "light", right: mode === "light" && <Icon name="check" size={16} />, onClick: () => setMode("light") }, { label: "Dark", icon: "moon", checked: mode === "dark", right: mode === "dark" && <Icon name="check" size={16} />, onClick: () => setMode("dark") }, { label: "Match device", icon: "monitor", checked: mode === "system", right: mode === "system" && <Icon name="check" size={16} />, onClick: () => setMode("system") }]} />
     </span>;
   }
 

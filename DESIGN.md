@@ -539,6 +539,12 @@ Components are HIG in behaviour and shadcn in anatomy: quiet at rest, decisive o
 - **Alert:** 320px frosted, centred text, hairline-divided actions.
 - **Banner:** frosted push banner (22px radius) top of phone, docked top-right at 380px from tablet.
 - **Toast:** elevated card at 14px radius above the tab bar on phone, bottom-centre elsewhere.
+- **Menu:** a frosted list at 14px radius under its button, with an optional leading heading that also names it, hairline separators and a check on the chosen item. It follows the WAI-ARIA menu-button pattern:
+  - the button carries `aria-haspopup="menu"` and `aria-expanded`;
+  - opening moves focus to the checked or the first item;
+  - the arrow keys (wrapping), Home and End move between items;
+  - Escape closes it and returns focus to the button, and Tab closes it and moves on;
+  - choices such as Light, Dark and Match device are `menuitemradio` items with `aria-checked`.
 
 ### The Tracker (signature)
 Nine stops (Connect, Detect, Verify, Value, Decide, Approve, Execute, Settle, Report) on a 3px rail that fills in green as stops complete (scaleX over 900ms). Stops are 21px dots: done is solid green, current is a green ring with a green core and a ping, a stop waiting on a person is the same in amber; labels 12px/600, times in 10.5px mono. On phone sheets it becomes a vertical tracker (26px dots, two-pixel spine, title, text and mono time per stop). On phone cards it folds to a compact tracker: nine 6px segments (the current one half-filled, amber when human), the stop name and the ETA, opening the full tracker in a sheet.
@@ -571,7 +577,7 @@ Approve is amber; the tap shows a loading spinner for 650ms, then the tracker fi
 The mark is a green-gradient squircle with the route drawn as a white S from the godown dot to an amber pin; the splash draws it (spring scale, 750ms path draw, the pin drops and pings in amber) and lets the wordmark rise letter by letter. Device frames (a 390 × 844 phone with island, status bar and home bar; a window with traffic lights) exist for the demo stage only.
 
 ### Motion
-Ease `cubic-bezier(0.22, 1, 0.36, 1)`, ease-in `cubic-bezier(0.55, 0, 1, 0.45)`, and a `linear()` spring with one 10% overshoot for switch knobs. Durations: 160ms (press, hover, colour), 240ms (base state, interactive cards), 420ms (progress, numeral axes), 700ms (odometer roll). Sheets and banners on springs; screens cross-fade with a 6px rise over 180ms; renders float 6px on a 5s loop. Under `prefers-reduced-motion` every animation and transition collapses to an instant, the aura and pings stop, rolls show their final value and the splash holds 600ms.
+Ease `cubic-bezier(0.22, 1, 0.36, 1)`, ease-in `cubic-bezier(0.55, 0, 1, 0.45)`, and a `linear()` spring with one 10% overshoot for switch knobs. Durations: 160ms (press, hover, colour), 240ms (base state, interactive cards), 420ms (progress, numeral axes), 700ms (odometer roll). Sheets and banners on springs; screens cross-fade with a 6px rise over 180ms; renders float 6px on a 5s loop. Under `prefers-reduced-motion` every animation and transition collapses to an instant, the aura and pings stop, rolls show their final value and the splash holds 600ms. Any loop that runs beside content for more than five seconds carries a visible pause (WCAG 2.2.2). The sign-in hero's "Pause animation" button freezes its stage walk, the count, the floating renders and the ping, and the choice is remembered.
 
 ### Imagery
 
