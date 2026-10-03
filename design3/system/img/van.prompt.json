@@ -1,0 +1,11 @@
+{
+  "name": "van",
+  "model": "Qwen-Image-2.1 bf16 (local)",
+  "prompt": "A small Indian light commercial mini truck, the compact open-deck kind used for local deliveries, with a rounded white cab and a short open cargo deck carrying a few stacked kraft cardboard cartons, toy-like proportions with chunky wheels, plain unmarked panels and a blank number plate. Soft 3D render in a premium product-illustration style: matte clay-like materials with real surface detail, studio softbox lighting from the upper left, gentle ambient occlusion and a soft contact shadow, three-quarter view, centred with generous margin so nothing touches the frame edges, natural colours with fresh green accents, calm and modern like Apple or Monzo marketing art. Transparent background with no floor surface, only the soft contact shadow. No people, no hands, no driver. No text, letters or logos anywhere.",
+  "seed": 22000,
+  "size": 1024,
+  "transparent": true,
+  "created": "2026-10-03T10:31:56Z",
+  "attempts": 1,
+  "postprocess": "contact shadow: pale see-through pixels outside the object recoloured to #0b1510 at 62% of their alpha, so the shadow reads as shadow on light and dark grounds"
+}

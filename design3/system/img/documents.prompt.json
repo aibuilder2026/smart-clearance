@@ -1,0 +1,10 @@
+{
+  "name": "documents",
+  "model": "Qwen-Image-2.1 bf16 (local)",
+  "prompt": "A neat fanned stack of three business papers lying flat and spread slightly apart like a hand of cards, an invoice sheet with a smaller receipt slip on top, printed only with simple grey placeholder lines and small table blocks instead of words, and one single round green seal disc with a clean white check mark resting on top of the papers, the papers filling about two thirds of the frame width. Soft 3D render in a premium product-illustration style: matte clay-like materials with real surface detail, studio softbox lighting from the upper left, gentle ambient occlusion and a soft contact shadow, three-quarter view, centred with generous margin so nothing touches the frame edges, natural colours with fresh green accents, calm and modern like Apple or Monzo marketing art. Transparent background with no floor surface, only the soft contact shadow. No people, no hands. No text, letters, numbers or logos anywhere.",
+  "seed": 22402,
+  "size": 1024,
+  "transparent": true,
+  "created": "2026-10-03T10:43:33Z",
+  "attempts": 3
+}
