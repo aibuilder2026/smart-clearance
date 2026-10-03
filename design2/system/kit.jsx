@@ -214,7 +214,7 @@
     const refs = useRef([]);
     const digits = Array.from({ length }, (_, i) => value[i] || "");
     function set(i, ch) { const d = digits.slice(); d[i] = ch; onChange(d.join("")); if (ch && refs.current[i + 1]) refs.current[i + 1].focus(); }
-    return <div className="otp">{digits.map((d, i) => <input key={i} ref={el => refs.current[i] = el} inputMode="numeric" pattern="[0-9]*" maxLength={1} value={d} aria-label={`Digit ${i + 1}`} onChange={e => set(i, e.target.value.replace(/\D/g, "").slice(-1))} onKeyDown={e => { if (e.key === "Backspace" && !d && refs.current[i - 1]) refs.current[i - 1].focus(); }} />)}</div>;
+    return <div className="otp">{digits.map((d, i) => <input key={i} ref={el => refs.current[i] = el} autoFocus={i === 0} inputMode="numeric" pattern="[0-9]*" maxLength={1} value={d} aria-label={`Digit ${i + 1}`} onChange={e => set(i, e.target.value.replace(/\D/g, "").slice(-1))} onKeyDown={e => { if (e.key === "Backspace" && !d && refs.current[i - 1]) refs.current[i - 1].focus(); }} />)}</div>;
   }
   function Segmented({ options, value, onChange, label }) {
     return <div className="segmented" role="group" aria-label={label}>{options.map(o => <button type="button" key={o.id} aria-pressed={value === o.id} onClick={() => onChange(o.id)}>{o.icon && <Icon name={o.icon} size={16} />}{o.label}</button>)}</div>;

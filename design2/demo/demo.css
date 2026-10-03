@@ -1,7 +1,8 @@
 /* Smart-Clearance demo v2 · screen layouts on top of the system (no new tokens) */
 
 /* sign in: the label sheet of people */
-.signin { position: absolute; inset: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(--stock); color: var(--ink); overflow: auto; }
+.signin { position: absolute; inset: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(--stock); color: var(--ink); overflow: auto; overflow-x: hidden; }
+@container app (max-width: 759px) { .signin .sihead .chip { display: none; } .signin .sihero .meta { white-space: normal; } }
 .signin .sihead { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: var(--kl) solid var(--keyline); }
 .signin .sihero { padding: 28px 20px 10px; display: grid; gap: 14px; justify-items: start; }
 .signin .sihero h1 { font-size: var(--fs-3xl); }
