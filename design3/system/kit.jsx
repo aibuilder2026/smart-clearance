@@ -181,7 +181,7 @@
     const [err, setErr] = useState(false);
     const src = (window.SC3_IMG || "system/img/") + name + ".webp";
     if (err) return <span className={cx("icontile soft", className)} style={{ width: size, height: size, borderRadius: size * 0.28, ...style }} aria-hidden="true"><Icon name="package" size={size * 0.38} stroke={1.5} /></span>;
-    return <img className={className} src={src} alt={alt} width={size} height={size} loading="lazy" decoding="async" onError={() => setErr(true)} style={{ width: size, height: size, objectFit: "contain", animation: float ? "float-y 5s var(--ease) infinite" : undefined, ...style }} />;
+    return <img className={className} src={src} alt={alt} width={size} height={size} loading="lazy" decoding="async" onError={() => setErr(true)} style={{ width: size, height: size, objectFit: "contain", animation: float ? "float-y 4.8s var(--ease)" : undefined, ...style }} />;
   }
 
   /* ---------- overlays ---------- */

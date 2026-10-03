@@ -5,7 +5,7 @@ import { scan, report, skipSplash, type Finding } from './helpers';
 // - tab order on sign-in;
 // - a sheet taking focus on open, keeping it while open, and handing it back on close (WCAG 2.1.2, 2.4.3; ARIA dialog);
 // - a menu button's menu: focus in on open, the arrows, Home and End, Escape and Tab out (ARIA menu button);
-// - the sign-in hero's loop can be paused and played again (WCAG 2.2.2).
+// - the sign-in hero plays once and holds, and can be paused and replayed (WCAG 2.2.2).
 // One desktop run is enough: the behaviour does not change with theme.
 test.beforeEach(async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-light', 'keyboard checks run once, on desktop-light');
@@ -94,7 +94,7 @@ test('keyboard · a menu opens on its button, moves with the arrows, and gives f
 test.describe('the sign-in hero, with motion on', () => {
   test.use({ contextOptions: { reducedMotion: 'no-preference' } });
 
-  test('keyboard · the sign-in hero pauses and plays (WCAG 2.2.2)', async ({ page }, testInfo) => {
+  test('keyboard · the sign-in hero plays once, pauses and replays (WCAG 2.2.2)', async ({ page }, testInfo) => {
     const done = () => page.locator('.si-track .stop.done').count();
     const pause = page.getByRole('button', { name: 'Pause animation' });
     await expect(pause).toBeVisible();
@@ -113,12 +113,17 @@ test.describe('the sign-in hero, with motion on', () => {
 
     await page.reload();
     await page.waitForSelector('.signin');
-    await expect(play, 'the choice survives a reload').toBeVisible();
+    const replay = page.getByRole('button', { name: 'Replay animation' });
+    await expect(replay, 'a paused hero stays paused on return, on its final frame').toBeVisible();
 
-    await play.click();
+    await replay.click();
     await expect(pause).toBeVisible();
-    const resumed = await done();
-    await expect.poll(done, { message: 'the hero moves again after Play', timeout: 4000 }).not.toBe(resumed);
+    const restarted = await done();
+    await expect.poll(done, { message: 'Replay walks the stages again', timeout: 4000 }).not.toBe(restarted);
+    await expect(replay, 'the walk ends on its own').toBeVisible({ timeout: 12000 });
+    const final = await done();
+    await page.waitForTimeout(2000);
+    expect.soft(await done(), 'and holds on the result instead of looping').toBe(final);
     await report(testInfo, findings);
   });
 });

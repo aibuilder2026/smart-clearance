@@ -11,6 +11,7 @@ Automated WCAG checks for design v3 with [axe-core](https://github.com/dequelabs
   - the sign-in hero pausing and playing (WCAG 2.2.2).
 
   The menu and hero tests also scan their open and paused states with axe.
+- `motion.a11y.spec.ts`: with motion on, walks the busiest states of the app, the demo and the design system and fails on any animation set to repeat forever (WCAG 2.2.2). Loading indicators are exempt.
 
 In the demo, the laptop and phone previews are drawn scaled down, so they are left out of the target-size rule there (every other rule still covers them); the app spec checks the same screens at full size.
 
