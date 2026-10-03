@@ -8,6 +8,8 @@ Automated WCAG checks for design v3 with [axe-core](https://github.com/dequelabs
 
 In the demo, the laptop and phone previews are drawn scaled down, so they are left out of the target-size rule there (every other rule still covers them); the app spec checks the same screens at full size.
 
+Target size is judged with the in-app push banners and toasts hidden. They float over the page for a few seconds and then leave, and while one is up axe counts whatever it covers as an obscured target; every other rule still checks the banners and toasts themselves.
+
 Each test runs in five projects: desktop light and dark (1440), tablet light (820), and phone light and dark (390, touch). Animations are reduced so contrast is measured on settled colours.
 
 ## Run
@@ -27,6 +29,7 @@ A static server for `design3/` starts on port 8790; the pages load React from un
 
 - The terminal ends with a table of failing rules.
 - `results/a11y-report.md`: every failing rule with its WCAG criteria, element count, the states it was seen in, and an example element.
+- `results/<project>/<test>.json`: each test's findings, with axe's own explanation for the first few elements (for contrast, the two colours and the measured ratio).
 - `npm run report`: the Playwright HTML report; each test carries its findings as `wcag-findings.json`.
 
 axe-core decides only part of WCAG. Alt-text quality, reading order, screen-reader announcements and cognitive load still need a manual pass; the `accessibility-tester` agent covers that half.

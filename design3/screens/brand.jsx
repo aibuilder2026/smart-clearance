@@ -19,7 +19,7 @@
       <div className="stack" style={{ gap: 20 }}>
         <Card className="stack snug">
           <div className="card-head"><span className="row tight"><span className="icontile"><Icon name="file-spreadsheet" size={17} stroke={2} /></span><span className="stack tight" style={{ gap: 0 }}><b>dms_export_2026-10-01.csv</b><span className="t-footnote subtle">Bizom-style DMS export · 312 batches · 4 distributors</span></span></span>{done ? <Badge tone="green" icon="check">Loaded into BigQuery</Badge> : <Badge tone="amber" dot>Mapping</Badge>}</div>
-          <div className="table-wrap" style={{ boxShadow: "none" }}><table className="table"><thead><tr><th>Smart-Clearance field</th><th>Column in your file</th><th>Status</th></tr></thead><tbody>
+          <div className="table-wrap" style={{ boxShadow: "none" }} tabIndex={0} role="region" aria-label="Field mapping"><table className="table"><thead><tr><th>Smart-Clearance field</th><th>Column in your file</th><th>Status</th></tr></thead><tbody>
             {D.SETUP.dms.columns.map(([f, c]) => <tr key={f}><td className="strong">{f.replace("_", " ")}</td><td className="mono">{c}</td><td><Badge size="sm" tone="green" icon="check">mapped</Badge></td></tr>)}
           </tbody></table></div>
           <div className="row tight t-footnote muted"><Aura on={!done} className="icontile soft" style={{ width: 26, height: 26, borderRadius: 8 }}><Icon name="database" size={14} /></Aura>Data Agent mapped 8 of 8 columns and back-filled 90 days of sell-through by pincode.</div>
@@ -38,7 +38,7 @@
           <div className="stack" style={{ gap: 20 }}>
             <Card className="stack snug">
               <span className="card-title">Channel allow-list</span>
-              <div className="table-wrap" style={{ boxShadow: "none" }}><table className="table"><thead><tr><th>Category</th>{chans.map(c => <th key={c} style={{ textAlign: "center" }}>{CH_NAMES[c]}</th>)}</tr></thead><tbody>
+              <div className="table-wrap" style={{ boxShadow: "none" }} tabIndex={0} role="region" aria-label="Channel rules by category"><table className="table"><thead><tr><th>Category</th>{chans.map(c => <th key={c} style={{ textAlign: "center" }}>{CH_NAMES[c]}</th>)}</tr></thead><tbody>
                 {D.SETUP.allowList.map(([cat, ok]) => <tr key={cat}><td className="strong" style={{ textTransform: "capitalize" }}>{cat.replace("-", " ")}</td>{chans.map(c => <td key={c} style={{ textAlign: "center" }}>{ok.includes(c) ? <Icon name="circle-check" size={18} style={{ color: "var(--primary-text)", margin: "0 auto" }} /> : <Icon name="circle-x" size={18} style={{ color: "var(--fg-4)", margin: "0 auto" }} />}</td>)}</tr>)}
               </tbody></table></div>
             </Card>
@@ -190,7 +190,7 @@
   function Chat({ chat, typing, me }) {
     return <div className="stack snug">{chat.map((m, i) => { const mine = m.from === "buyer"; return <motion.div key={i} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="row end" style={{ justifyContent: mine ? "flex-end" : "flex-start", gap: 8 }}>
       {!mine && <K.Mark size={28} />}
-      <div style={{ maxWidth: "82%", padding: "10px 13px", borderRadius: 18, borderBottomLeftRadius: mine ? 18 : 6, borderBottomRightRadius: mine ? 6 : 18, background: mine ? "var(--violet)" : "var(--fill-2)", color: mine ? "var(--violet-fg)" : "var(--fg)", fontSize: 14.5, lineHeight: 1.4 }}>{m.text}<div style={{ fontSize: 11.5, opacity: 0.75, marginTop: 3 }}>{mine ? "Sri Venkateswara Traders" : "Rakesh Traders · Negotiator agent"} · {m.at}</div></div>
+      <div style={{ maxWidth: "82%", padding: "10px 13px", borderRadius: 18, borderBottomLeftRadius: mine ? 18 : 6, borderBottomRightRadius: mine ? 6 : 18, background: mine ? "var(--violet)" : "var(--fill-2)", color: mine ? "var(--violet-fg)" : "var(--fg)", fontSize: 14.5, lineHeight: 1.4 }}>{m.text}<div style={{ fontSize: 11.5, opacity: 0.9, marginTop: 3 }}>{mine ? "Sri Venkateswara Traders" : "Rakesh Traders · Negotiator agent"} · {m.at}</div></div>
       {mine && <Avatar person={D.PEOPLE.venkat} size="sm" />}
     </motion.div>; })}{typing && <div className="row" style={{ gap: 8 }}><K.Mark size={28} /><div style={{ padding: "12px 14px", borderRadius: 18, background: "var(--fill-2)" }}><span className="typing"><i /><i /><i /></span></div></div>}</div>;
   }
@@ -207,7 +207,7 @@
         main={<div style={{ display: "grid", gap: 20, gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 340px), 1fr))", alignItems: "start" }}>
           <Card className="stack snug">
             <div className="card-head"><span className="row tight"><Aura on={!h.listing} className="icontile violet" style={{ borderRadius: 9 }}><Icon name="shopping-bag" size={17} stroke={2} /></Aura><span className="card-title">Lister · ExpireSoon</span></span>{h.listing ? <Badge tone={h.listing.status === "awarded" ? "green" : "violet"} dot live={h.listing.status === "live"}>{h.listing.status}</Badge> : <Badge>queued</Badge>}</div>
-            <CodeBlock code={req} />{h.listing && <CodeBlock code={res} />}
+            <CodeBlock code={req} label="ExpireSoon request" />{h.listing && <CodeBlock code={res} label="ExpireSoon response" />}
             <span className="t-footnote subtle">The marketplace is mocked; the request and response are what a partner API returns.</span>
             {h.listing && <Button variant="outline" icon="external-link" onClick={() => (onOpenListing ? onOpenListing() : setSheet(true))}>Open on ExpireSoon</Button>}
           </Card>
@@ -248,7 +248,7 @@
     const sel = open && views.find(v => v.id === open);
     return <Screen me={me} title="Batches" sub="Every lot the Watcher sees, from the DMS export">
       {app.bp === "phone" ? <div className="list">{views.map(v => <BatchRow key={v.id} view={v} compact onOpen={() => (v.hero ? go("route") : setOpen(v.id))} />)}</div> :
-      <DataTable rows={views.map(v => ({ ...v, name: v.skuObj.name }))} onRow={v => (v.hero ? go("route") : setOpen(v.id))} initialSort={["daysLeft", "asc"]} columns={[
+      <DataTable label="Batches" rows={views.map(v => ({ ...v, name: v.skuObj.name }))} onRow={v => (v.hero ? go("route") : setOpen(v.id))} initialSort={["daysLeft", "asc"]} columns={[
         { key: "name", label: "Product", render: v => <span className="row tight"><Product name={v.skuObj.img} size={36} /><span className="stack tight" style={{ gap: 0 }}><b>{v.skuObj.name}</b><span className="mono subtle t-caption">{v.id}</span></span></span> },
         { key: "dist", label: "Distributor", sortValue: v => v.dist.name, render: v => <span>{v.dist.name}<div className="t-caption subtle">{v.dist.city}</div></span> },
         { key: "daysLeft", label: "Days left", num: true }, { key: "units", label: "Units", num: true, render: v => fmt.num(v.units) },

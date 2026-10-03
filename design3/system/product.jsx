@@ -85,7 +85,7 @@
   // the Valuer's table (S2): ineligible channels greyed with the reason; a table view of the chart
   function ChannelTable({ rows, chosen = [] }) {
     const ordered = K.CH_ORDER.map(id => rows.find(r => r.id === id)).filter(Boolean);
-    return <div className="table-wrap"><table className="table">
+    return <div className="table-wrap" tabIndex={0} role="region" aria-label="Channels compared"><table className="table">
       <thead><tr><th>Channel</th><th>Needs</th><th className="n">Price</th><th className="n">Net a unit</th><th className="n">Capacity</th><th>Clears in</th><th>GST credit</th></tr></thead>
       <tbody>{ordered.map(r => <tr key={r.id} className={cx(!r.eligible && "dim")}>
         <td><span className="row tight"><span style={{ width: 10, height: 10, borderRadius: 3, background: `var(--ch-${r.id})`, opacity: r.eligible ? 1 : 0.35 }} /><b style={{ fontWeight: chosen.includes(r.id) ? 650 : 500 }}>{r.name}</b>{chosen.includes(r.id) && <Badge size="sm" tone="green">in plan</Badge>}</span>{!r.eligible && <div className="t-caption neg" style={{ marginTop: 2 }}>{r.reason}</div>}</td>

@@ -27,7 +27,8 @@
   /* ---------- the app root: measures its own width so device frames render true ---------- */
   const AppCtx = createContext({ w: 1440, h: 900, bp: "desktop", el: null });
   const bpOf = w => (w < 768 ? "phone" : w < 1100 ? "tablet" : "desktop");
-  function AppRoot({ children, className, style, theme }) {
+  // embedded: an app drawn inside a device preview (the demo, the design system page), not the page itself
+  function AppRoot({ children, className, style, theme, embedded }) {
     const ref = useRef(null);
     const { resolved } = useTheme();
     const [size, setSize] = useState(() => ({ w: typeof window !== "undefined" ? window.innerWidth : 1440, h: typeof window !== "undefined" ? window.innerHeight : 900 }));
@@ -43,7 +44,7 @@
       attach();
       return () => { cancelAnimationFrame(raf); if (ref.current && ref.current.__ro) ref.current.__ro.disconnect(); };
     }, []);
-    const value = useMemo(() => ({ w: size.w, h: size.h, bp: bpOf(size.w), el }), [size.w, size.h, el]);
+    const value = useMemo(() => ({ w: size.w, h: size.h, bp: bpOf(size.w), el, embedded: !!embedded }), [size.w, size.h, el, embedded]);
     return <div ref={ref} className={cx("app", className)} data-theme={theme || resolved} style={style}>
       <div className="ground" aria-hidden="true" />
       <AppCtx.Provider value={value}>{children}</AppCtx.Provider>
@@ -153,11 +154,11 @@
   function Check({ checked, onChange, children }) { return <label className="check"><input type="checkbox" checked={!!checked} onChange={e => onChange(e.target.checked)} /><span>{children}</span></label>; }
 
   /* ---------- table ---------- */
-  function DataTable({ columns, rows, rowKey = "id", onRow, empty, initialSort, dense }) {
+  function DataTable({ columns, rows, rowKey = "id", onRow, empty, initialSort, dense, label = "Table" }) {
     const [sort, setSort] = useState(initialSort || null);
     const sorted = useMemo(() => { if (!sort) return rows; const [k, dir] = sort; const col = columns.find(c => c.key === k); const get = r => (col && col.sortValue ? col.sortValue(r) : r[k]); return rows.slice().sort((a, b) => { const x = get(a), y = get(b); return (x > y ? 1 : x < y ? -1 : 0) * (dir === "desc" ? -1 : 1); }); }, [rows, sort, columns]);
     if (!rows.length) return <Card>{empty || <Empty icon="search" title="Nothing here yet" />}</Card>;
-    return <div className="table-wrap"><table className="table" style={dense ? { fontSize: 13.5 } : undefined}>
+    return <div className="table-wrap" tabIndex={0} role="region" aria-label={label}><table className="table" style={dense ? { fontSize: 13.5 } : undefined}>
       <thead><tr>{columns.map(c => <th key={c.key} className={cx(c.num && "n")} style={c.width ? { width: c.width } : undefined} aria-sort={sort && sort[0] === c.key ? (sort[1] === "asc" ? "ascending" : "descending") : undefined}>{c.sortable === false ? c.label : <button type="button" onClick={() => setSort(s => [c.key, s && s[0] === c.key && s[1] === "asc" ? "desc" : "asc"])}>{c.label}{sort && sort[0] === c.key && <Icon name={sort[1] === "asc" ? "chevron-up" : "chevron-down"} size={13} />}</button>}</th>)}</tr></thead>
       <tbody>{sorted.map(r => <tr key={r[rowKey]} className={cx(onRow && "clickable", r._dim && "dim")} onClick={onRow ? e => { if (e.target.closest("button, a, input, select")) return; onRow(r); } : undefined}>{columns.map(c => <td key={c.key} className={cx(c.num && "n")}>{c.render ? c.render(r) : r[c.key]}</td>)}</tr>)}</tbody>
     </table></div>;
@@ -185,10 +186,43 @@
 
   /* ---------- overlays ---------- */
   function useEscape(open, onClose) { useEffect(() => { if (!open) return; const f = e => e.key === "Escape" && onClose && onClose(); window.addEventListener("keydown", f); return () => window.removeEventListener("keydown", f); }, [open, onClose]); }
+  // a modal takes focus when it opens, keeps Tab inside, closes on Escape and hands focus back to whatever
+  // opened it; with one modal over another, only the top one listens. Inside a device preview a sheet is part
+  // of the picture: Escape still closes it, but focus and Tab stay with the page around the device.
+  const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  const modals = [];
+  function useModal(open, ref, onClose) {
+    const { embedded } = useApp();
+    const close = useRef(onClose); close.current = onClose;
+    useEffect(() => {
+      if (!open) return;
+      if (embedded) { const f = e => e.key === "Escape" && close.current && close.current(); window.addEventListener("keydown", f); return () => window.removeEventListener("keydown", f); }
+      const opener = document.activeElement; const me = {}; modals.push(me);
+      const top = () => modals[modals.length - 1] === me;
+      const raf = requestAnimationFrame(() => { const el = ref.current; if (el && !el.contains(document.activeElement)) el.focus({ preventScroll: true }); });
+      const onKey = e => {
+        const el = ref.current; if (!el || !top()) return;
+        if (e.key === "Escape") { close.current && close.current(); return; }
+        if (e.key !== "Tab") return;
+        const items = [...el.querySelectorAll(FOCUSABLE)].filter(n => n.getClientRects().length);
+        const at = document.activeElement;
+        if (!items.length) { e.preventDefault(); el.focus(); return; }
+        const first = items[0], last = items[items.length - 1];
+        if (!el.contains(at)) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
+        else if (e.shiftKey && (at === first || at === el)) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && at === last) { e.preventDefault(); first.focus(); }
+      };
+      document.addEventListener("keydown", onKey);
+      return () => {
+        cancelAnimationFrame(raf); document.removeEventListener("keydown", onKey); modals.splice(modals.indexOf(me), 1);
+        if (opener && opener.isConnected && typeof opener.focus === "function") opener.focus({ preventScroll: true });
+      };
+    }, [open, embedded]);
+  }
   // a sheet: bottom with detents on phones, a floating side panel or a centred form sheet elsewhere
   function Sheet({ open, onClose, title, children, footer, side, detent = "large", headerRight, className, labelledBy }) {
-    const app = useApp(); const reduce = useReducedMotion();
-    useEscape(open, onClose);
+    const app = useApp(); const reduce = useReducedMotion(); const panel = useRef(null);
+    useModal(open, panel, onClose);
     const mode = side || (app.bp === "phone" ? "bottom" : "side");
     const [cur, setCur] = useState(detent);
     useEffect(() => { if (open) setCur(detent); }, [open, detent]);
@@ -198,7 +232,7 @@
     const variants = mode === "bottom" ? { initial: { y: largeH }, animate: { y: offset }, exit: { y: largeH } } : mode === "center" ? { initial: { opacity: 0, scale: 0.96, x: "-50%", y: "-48%" }, animate: { opacity: 1, scale: 1, x: "-50%", y: "-50%" }, exit: { opacity: 0, scale: 0.97, x: "-50%", y: "-48%" } } : { initial: { x: "105%" }, animate: { x: 0 }, exit: { x: "105%" } };
     return <Portal><AnimatePresence>{open && <Fragment key="sheet">
       <motion.div className="scrim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} onClick={onClose} />
-      <motion.div role="dialog" aria-modal="true" aria-label={typeof title === "string" ? title : undefined} className={cx("sheet", `sheet-${mode}`, className)} style={mode === "bottom" ? { height: largeH } : undefined}
+      <motion.div ref={panel} tabIndex={-1} role="dialog" aria-modal={app.embedded ? undefined : "true"} aria-label={typeof title === "string" ? title : undefined} className={cx("sheet", `sheet-${mode}`, className)} style={mode === "bottom" ? { height: largeH } : undefined}
         initial={variants.initial} animate={variants.animate} exit={variants.exit} transition={spring}
         drag={mode === "bottom" ? "y" : false} dragConstraints={{ top: 0, bottom: largeH }} dragElastic={{ top: 0.04, bottom: 0.6 }} dragMomentum={false}
         onDragEnd={(e, info) => { if (mode !== "bottom") return; const y = offset + info.offset.y; const v = info.velocity.y; if (v > 700 || y > largeH - mediumH * 0.45) { onClose && onClose(); return; } if (y > (largeH - mediumH) / 2 || v > 300) setCur("medium"); else setCur("large"); }}>
@@ -210,10 +244,11 @@
     </Fragment>}</AnimatePresence></Portal>;
   }
   function Alert({ open, title, message, actions = [], onClose }) {
-    useEscape(open, onClose);
+    const app = useApp(); const panel = useRef(null);
+    useModal(open, panel, onClose);
     return <Portal><AnimatePresence>{open && <Fragment key="alert">
       <motion.div className="scrim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} />
-      <motion.div role="alertdialog" aria-modal="true" aria-label={title} className="alert" initial={{ opacity: 0, scale: 1.08, x: "-50%", y: "-50%" }} animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }} exit={{ opacity: 0, scale: 0.96, x: "-50%", y: "-50%" }} transition={{ type: "spring", stiffness: 500, damping: 36 }}>
+      <motion.div ref={panel} tabIndex={-1} role="alertdialog" aria-modal={app.embedded ? undefined : "true"} aria-label={title} className="alert" initial={{ opacity: 0, scale: 1.08, x: "-50%", y: "-50%" }} animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }} exit={{ opacity: 0, scale: 0.96, x: "-50%", y: "-50%" }} transition={{ type: "spring", stiffness: 500, damping: 36 }}>
         <div className="al-body"><h3>{title}</h3>{message && <p>{message}</p>}</div>
         <div className="al-actions" style={actions.length > 2 ? { gridAutoFlow: "row" } : undefined}>{actions.map(a => <button key={a.label} type="button" className={cx(a.strong && "strong", a.danger && "danger")} onClick={() => { a.onClick && a.onClick(); onClose && onClose(); }}>{a.label}</button>)}</div>
       </motion.div>
@@ -271,7 +306,7 @@
   function Wordmark({ size = 20, className, play }) {
     const reduce = useReducedMotion(); const word = "Smart-Clearance";
     if (!play || reduce) return <span className={cx("wordmark", className)} style={{ fontSize: size }}>Smart‑Clearance</span>;
-    return <span className={cx("wordmark", className)} style={{ fontSize: size, display: "inline-flex", overflow: "hidden" }} aria-label={word}>{word.split("").map((ch, i) => <motion.span key={i} aria-hidden="true" initial={{ y: "105%", opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.55 + i * 0.028, type: "spring", stiffness: 380, damping: 28 }} style={{ display: "inline-block" }}>{ch === "-" ? "‑" : ch}</motion.span>)}</span>;
+    return <span className={cx("wordmark", className)} style={{ fontSize: size, display: "inline-flex", overflow: "hidden" }} role="img" aria-label={word}>{word.split("").map((ch, i) => <motion.span key={i} aria-hidden="true" initial={{ y: "105%", opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.55 + i * 0.028, type: "spring", stiffness: 380, damping: 28 }} style={{ display: "inline-block" }}>{ch === "-" ? "‑" : ch}</motion.span>)}</span>;
   }
   function Splash({ onDone, hold = 2300 }) {
     const reduce = useReducedMotion();

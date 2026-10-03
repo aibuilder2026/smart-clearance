@@ -198,7 +198,9 @@ button.list-row:hover, a.list-row:hover { background: var(--fill); }
 .check input:checked { background: var(--primary); box-shadow: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: center; }
 
 /* ---------- table ---------- */
+.sheet:focus, .alert:focus { outline: none; }
 .table-wrap { overflow: auto; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+.table-wrap:focus-visible, .code:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
 [data-theme="dark"] .table-wrap { box-shadow: var(--highlight), 0 0 0 var(--hair) var(--line); }
 .table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14px; }
 .table th { position: sticky; top: 0; z-index: 1; text-align: left; font-size: 12.5px; font-weight: 500; color: var(--fg-3); padding: 10px 16px; background: var(--surface-2); box-shadow: inset 0 calc(var(--hair) * -1) 0 var(--line); white-space: nowrap; }
@@ -281,6 +283,7 @@ button.list-row:hover, a.list-row:hover { background: var(--fill); }
 .tracker .rail { position: absolute; top: 9px; left: calc(50% / var(--stops, 9)); right: calc(50% / var(--stops, 9)); height: 3px; border-radius: 3px; background: var(--fill-3); overflow: hidden; }
 .tracker .rail > i { position: absolute; inset: 0; background: var(--primary); transform-origin: left center; transform: scaleX(var(--p, 0)); transition: transform 900ms var(--ease); }
 .tracker .stop { position: relative; display: grid; justify-items: center; gap: 6px; text-align: center; min-width: 0; padding: 0 2px; }
+.tracker .stop-btn { display: grid; justify-items: center; gap: 6px; width: 100%; min-width: 0; color: inherit; font: inherit; text-align: center; cursor: pointer; border-radius: 10px; }
 .tracker .dot { position: relative; display: grid; place-items: center; width: 21px; height: 21px; border-radius: 50%; background: var(--surface); box-shadow: inset 0 0 0 2px var(--line-2); color: var(--primary-fg); transition: background-color var(--t-base), box-shadow var(--t-base); }
 .tracker .stop.done .dot { background: var(--primary); box-shadow: 0 0 0 3px var(--surface); }
 .tracker .stop.now .dot { background: var(--surface); box-shadow: inset 0 0 0 2.5px var(--primary), 0 0 0 3px var(--surface); }
