@@ -1,0 +1,9 @@
+{
+ "tool": "qwen-image-2.1 bf16 (local MCP)",
+ "prompt": "Vintage Indian matchbox label chromolithograph illustration of a small Indian kirana corner shop front seen straight on, a striped vermilion and white awning across the top, a string of small sachets hanging from the front edge of the awning, shelves of tins and jars visible inside the open front, an ultramarine counter, the shop front alone as a cut-out sticker with nothing around it, no paper, no ground, no frame, drawn with thick black keylines, flat printed inks, visible halftone dot shading, slight colour misregistration like a 1960s Sivakasi label print, no text, no letters, no background, isolated object",
+ "seed": 323,
+ "size": 1024,
+ "steps": 40,
+ "transparent": true,
+ "generatedAt": "2026-10-03T01:19:03Z"
+}

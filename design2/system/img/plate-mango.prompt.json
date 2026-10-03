@@ -1,0 +1,9 @@
+{
+  "tool": "qwen-image-2.1 bf16 (local MCP)",
+  "prompt": "Vintage Indian matchbox label chromolithograph illustration of a single small orange tetra-pack style mango drink carton with a straw, upright, bright orange with a painted ripe mango on the front, drawn with thick black keylines, flat printed inks, visible halftone dot shading, slight colour misregistration like a 1960s Sivakasi label print, no text, no letters, no background, isolated object",
+  "seed": 202,
+  "size": 1024,
+  "steps": 40,
+  "transparent": true,
+  "generatedAt": "2026-10-03T01:02:02Z"
+}

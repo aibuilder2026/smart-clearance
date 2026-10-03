@@ -1,0 +1,80 @@
+/* Smart-Clearance design system v2 · base
+   Reset, type roles, browser surfaces (selection, caret, scrollbar, focus), the label-stock grain, utilities.
+   Loads after tokens.css. */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body { background: var(--stock); color: var(--ink); font-family: var(--font-ui); font-size: var(--fs-md); line-height: var(--lh-body); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+.app { background: var(--stock); color: var(--ink); font-family: var(--font-ui); font-size: var(--fs-md); line-height: var(--lh-body); }
+button, input, select, textarea { font: inherit; color: inherit; letter-spacing: inherit; }
+button { cursor: pointer; border: 0; background: none; padding: 0; touch-action: manipulation; }
+img, svg, video { display: block; max-width: 100%; }
+a { color: var(--ultra-text); text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; text-decoration-color: color-mix(in oklab, currentColor 55%, transparent); }
+a:hover { text-decoration-color: currentColor; }
+p { margin: 0; text-wrap: pretty; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+hr { border: 0; border-top: var(--kl-thin) solid var(--line); margin: var(--sp-4) 0; }
+strong, b { font-weight: 700; }
+small { font-size: var(--fs-xs); }
+::selection { background: var(--selection-bg); color: var(--selection-fg); }
+::placeholder { color: var(--ink-3); opacity: 1; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: var(--r-xs); }
+input, textarea { caret-color: var(--ultra-text); accent-color: var(--emerald-field); }
+input[type="checkbox"], input[type="radio"] { accent-color: var(--emerald-field); }
+
+/* scrollbars from the palette */
+.scroll, .app, body { scrollbar-width: thin; scrollbar-color: var(--line-2) transparent; }
+.scroll::-webkit-scrollbar, .app ::-webkit-scrollbar { width: 10px; height: 10px; }
+.scroll::-webkit-scrollbar-thumb, .app ::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 8px; border: 3px solid transparent; background-clip: content-box; }
+.scroll::-webkit-scrollbar-thumb:hover, .app ::-webkit-scrollbar-thumb:hover { background-color: var(--ultra-text); }
+
+/* ---------- type roles ---------- */
+h1, h2, h3, h4 { margin: 0; text-wrap: balance; }
+.t-display, h1 { font-family: var(--font-display); font-weight: 400; font-size: var(--fs-2xl); line-height: var(--lh-tight); letter-spacing: 0; text-transform: none; }
+h2, .t-title { font-family: var(--font-ui); font-weight: 700; font-size: var(--fs-xl); line-height: var(--lh-snug); letter-spacing: -0.01em; }
+h3, .t-heading { font-family: var(--font-ui); font-weight: 700; font-size: var(--fs-lg); line-height: var(--lh-snug); }
+h4, .t-sub { font-family: var(--font-ui); font-weight: 600; font-size: var(--fs-md); line-height: var(--lh-snug); }
+.t-body { font-size: var(--fs-md); } .t-small { font-size: var(--fs-sm); } .t-xs { font-size: var(--fs-xs); }
+.t-label { font-size: var(--fs-sm); font-weight: 600; }
+.muted { color: var(--ink-2); } .meta { color: var(--ink-3); font-size: var(--fs-sm); }
+.num, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.hi { font-family: var(--font-hi); }
+.nowrap { white-space: nowrap; }
+.prose { max-width: 68ch; }
+.prose p + p { margin-top: 1em; }
+
+/* display numerals set in Bungee, layered with their shade (see .ink-layered) */
+.big { font-family: var(--font-display); font-weight: 400; line-height: 1; letter-spacing: 0; font-variant-numeric: tabular-nums; }
+.big.xl { font-size: var(--fs-5xl); } .big.lg { font-size: var(--fs-4xl); } .big.md { font-size: var(--fs-3xl); } .big.sm { font-size: var(--fs-2xl); }
+.urgent { font-stretch: var(--wdth-urgent); font-weight: 800; }
+.narrow { font-stretch: var(--wdth-narrow); }
+
+/* two-ink lettering: the face in chrome yellow with a keyline, the second ink printed 3 px off; .print slides it into register */
+.ink-layered { display: inline-block; font-family: var(--font-display); line-height: 1; white-space: nowrap; color: var(--chrome-field); -webkit-text-stroke: 0.02em var(--ink-black); paint-order: stroke fill; text-shadow: 0.1em 0.1em 0 var(--shade-ink); }
+.ink-layered.ink { color: var(--ink); -webkit-text-stroke: 0; text-shadow: 0.1em 0.1em 0 var(--chrome-field); }
+.ink-layered.print { animation: ink-register 420ms var(--ease-out) both; }
+@keyframes ink-register { from { text-shadow: -0.22em 0.06em 0 var(--shade-ink); opacity: 0; } 40% { opacity: 1; } to { text-shadow: 0.1em 0.1em 0 var(--shade-ink); opacity: 1; } }
+
+/* ---------- the stock's grain ---------- */
+.grain { position: relative; }
+.grain::before { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background-image: radial-gradient(var(--grain) .6px, transparent .8px); background-size: 4px 4px; mix-blend-mode: multiply; }
+[data-theme="night"] .grain::before { mix-blend-mode: screen; }
+@media (prefers-color-scheme: dark) { :not([data-theme="day"]) .grain::before { mix-blend-mode: screen; } }
+.grain > * { position: relative; z-index: 1; }
+
+/* ---------- layout utilities ---------- */
+.stack { display: grid; gap: var(--sp-3); align-content: start; }
+.stack-sm { display: grid; gap: var(--sp-2); align-content: start; }
+.stack-lg { display: grid; gap: var(--sp-5); align-content: start; }
+.row { display: flex; align-items: center; gap: var(--sp-3); }
+.row.wrap { flex-wrap: wrap; } .row.between { justify-content: space-between; } .row.top { align-items: flex-start; } .row.end { justify-content: flex-end; }
+.grow { flex: 1; min-width: 0; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.center { text-align: center; }
+.right { text-align: right; }
+
+/* ---------- reduced motion: everything arrives already in register ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}

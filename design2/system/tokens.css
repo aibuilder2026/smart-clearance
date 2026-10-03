@@ -1,0 +1,126 @@
+/* Smart-Clearance design system v2 · tokens
+   The label world in two editions: Day (warm white label stock) and Night (indigo-black stock, the same inks at full chroma).
+   Set data-theme="day" or "night" on the .app root (or <html>); without it the edition follows prefers-color-scheme.
+   Every colour, font, size, radius, depth and motion value lives here; components never carry a raw hex. */
+
+@import url("https://fonts.googleapis.com/css2?family=Bungee&family=Bungee+Shade&family=Anek+Latin:wdth,wght@75..125,400..800&family=Anek+Devanagari:wdth,wght@75..125,400..800&family=Azeret+Mono:wght@400;500;700&display=swap");
+
+:root, .app {
+  /* ---- type ---- */
+  --font-display: "Bungee", "Anek Latin", system-ui, sans-serif;
+  --font-shade: "Bungee Shade", "Bungee", system-ui, sans-serif;
+  --font-ui: "Anek Latin", "Anek Devanagari", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-hi: "Anek Devanagari", "Anek Latin", system-ui, sans-serif;
+  --font-mono: "Azeret Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --fs-xs: 13px; --fs-sm: 14px; --fs-md: 16px; --fs-lg: 18px; --fs-xl: 22px; --fs-2xl: 28px; --fs-3xl: 36px; --fs-4xl: 48px; --fs-5xl: 64px;
+  --lh-tight: 1.1; --lh-snug: 1.25; --lh-body: 1.5;
+  --wdth-narrow: 85%; --wdth-normal: 100%; --wdth-urgent: 125%;
+
+  /* ---- space, radius, keyline ---- */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 20px; --sp-6: 24px; --sp-7: 32px; --sp-8: 40px; --sp-9: 56px;
+  --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 20px; --r-pill: 999px;
+  --kl: 2px;            /* the keyline every plate is drawn with */
+  --kl-thin: 1.5px;     /* chips, inputs, rules */
+  --shade-x: 4px; --shade-y: 4px;   /* the offset second ink on the mark and the primary buttons */
+  --rail-w: 104px; --bnav-h: 66px; --topbar-h: 60px;
+
+  /* ---- motion ---- */
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --ease-in-out: cubic-bezier(.65, 0, .35, 1);
+  --t-feedback: 120ms; --t-register: 240ms; --t-sheet: 420ms; --t-focal: 700ms;
+
+  /* ---- the seven inks (identical in both editions where the ink prints on its own plate) ---- */
+  --ultra: #1b3fc4;   --ultra-deep: #122a86;  --ultra-bright: #5b7cff;
+  --emerald: #0e7a4a; --emerald-deep: #0a5a36; --emerald-bright: #2fd27a;
+  --chrome: #f6b400;  --chrome-deep: #c48d00;  --chrome-ink: #3d2b00;
+  --vermilion: #c92d18; --vermilion-deep: #8e1d0e; --vermilion-bright: #ff6a52;
+  --violet: #5a2fb7;  --violet-deep: #3f1f85;   --violet-bright: #a98cff;
+  --kraft: #c9924f;   --kraft-deep: #8a5a26;    --kraft-bright: #e5b47a;
+  --ink-black: #16130f; --stock-white: #fffdf7;
+}
+
+/* =========================== DAY EDITION =========================== */
+:root, .app, [data-theme="day"] {
+  color-scheme: light;
+  --stock: #f2eee4;          /* page ground: label stock */
+  --stock-2: #fffdf7;        /* plate white: the cartouche */
+  --stock-3: #e7e1d2;        /* pressed, tinted panels */
+  --stock-4: #d9d2bf;        /* deeper tint, skeleton */
+  --ink: #16130f; --ink-2: #4a443a; --ink-3: #655e52;
+  --line: #d6cfbd; --line-2: #b9b09a;
+  --keyline: #16130f;
+  --on-ink: #fffdf7;         /* text on an ink field */
+  --chrome-field-fg: #3d2b00;
+  --ultra-field: #1b3fc4;  --ultra-field-fg: #fffdf7;   --ultra-soft: #dde4fb;  --ultra-text: #1b3fc4;
+  --emerald-field: #0e7a4a; --emerald-field-fg: #fffdf7; --emerald-soft: #d6efdf; --emerald-text: #0a5a36;
+  --chrome-field: #f6b400;  --chrome-soft: #fff0bf;  --chrome-text: #7a5600;
+  --vermilion-field: #c92d18; --vermilion-field-fg: #fffdf7; --vermilion-soft: #fbddd6; --vermilion-text: #a12210;
+  --violet-field: #5a2fb7;  --violet-field-fg: #fffdf7; --violet-soft: #e8dffa; --violet-text: #4a2697;
+  --kraft-field: #c9924f;   --kraft-soft: #f3e4cd;   --kraft-text: #7a4e1e;
+  --shade-ink: #1b3fc4;      /* the offset second ink */
+  --chrome-bar: #1b3fc4;     /* rail, top bar, structure */
+  --chrome-bar-2: #152fa0;   /* pressed/current on the chrome */
+  --chrome-bar-fg: #fffdf7;  --chrome-bar-fg-2: #c9d3ff;
+  --scrim: rgba(22, 19, 15, .55);
+  --grain: rgba(22, 19, 15, .055);
+  --shadow-1: 0 1px 0 rgba(22,19,15,.08), 0 4px 12px rgba(22,19,15,.08);
+  --shadow-2: 0 2px 0 rgba(22,19,15,.10), 0 12px 32px rgba(22,19,15,.14);
+  --shadow-3: 0 4px 0 rgba(22,19,15,.12), 0 28px 70px rgba(22,19,15,.22);
+  --focus: #f6b400;
+  --selection-bg: #f6b400; --selection-fg: #16130f;
+  --stage: #1a1814;          /* the demo stage behind device frames */
+}
+
+/* =========================== NIGHT EDITION =========================== */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="day"]), .app:not([data-theme="day"]) {
+    color-scheme: dark;
+    --stock: #101433; --stock-2: #1a1f47; --stock-3: #252b5c; --stock-4: #313870;
+    --ink: #f3eedd; --ink-2: #c6c0ab; --ink-3: #a39d88;
+    --line: #2f3666; --line-2: #434b84;
+    --keyline: #f3eedd;
+    --on-ink: #101433;
+    --chrome-field-fg: #3d2b00;
+    --ultra-field: #2946cc;  --ultra-field-fg: #fffdf7;  --ultra-soft: #1d2a6e; --ultra-text: #9bb0ff;
+    --emerald-field: #2fd27a; --emerald-field-fg: #07251a; --emerald-soft: #123f2d; --emerald-text: #5fe8a0;
+    --chrome-field: #ffc21a;  --chrome-soft: #4a3a05;  --chrome-text: #ffd45c;
+    --vermilion-field: #ff6a52; --vermilion-field-fg: #2a0a05; --vermilion-soft: #4d1a12; --vermilion-text: #ff9a88;
+    --violet-field: #a98cff;  --violet-field-fg: #1d0f45; --violet-soft: #2e2160; --violet-text: #c9b8ff;
+    --kraft-field: #e5b47a;   --kraft-soft: #3d2c16;   --kraft-text: #f1cf9c;
+    --shade-ink: #ff6a52;
+    --chrome-bar: #0b0e26; --chrome-bar-2: #1d2a6e; --chrome-bar-fg: #f3eedd; --chrome-bar-fg-2: #a9b4ea;
+    --scrim: rgba(3, 4, 14, .66);
+    --grain: rgba(243, 238, 221, .045);
+    --shadow-1: 0 1px 0 rgba(0,0,0,.35), 0 4px 14px rgba(0,0,0,.35);
+    --shadow-2: 0 2px 0 rgba(0,0,0,.4), 0 14px 36px rgba(0,0,0,.5);
+    --shadow-3: 0 4px 0 rgba(0,0,0,.45), 0 30px 80px rgba(0,0,0,.6);
+    --focus: #ffc21a;
+    --selection-bg: #ffc21a; --selection-fg: #16130f;
+    --stage: #07091c;
+  }
+}
+[data-theme="night"] {
+  color-scheme: dark;
+  --stock: #101433; --stock-2: #1a1f47; --stock-3: #252b5c; --stock-4: #313870;
+  --ink: #f3eedd; --ink-2: #c6c0ab; --ink-3: #a39d88;
+  --line: #2f3666; --line-2: #434b84;
+  --keyline: #f3eedd;
+  --on-ink: #101433;
+  --chrome-field-fg: #3d2b00;
+  --ultra-field: #2946cc;  --ultra-field-fg: #fffdf7;  --ultra-soft: #1d2a6e; --ultra-text: #9bb0ff;
+  --emerald-field: #2fd27a; --emerald-field-fg: #07251a; --emerald-soft: #123f2d; --emerald-text: #5fe8a0;
+  --chrome-field: #ffc21a;  --chrome-soft: #4a3a05;  --chrome-text: #ffd45c;
+  --vermilion-field: #ff6a52; --vermilion-field-fg: #2a0a05; --vermilion-soft: #4d1a12; --vermilion-text: #ff9a88;
+  --violet-field: #a98cff;  --violet-field-fg: #1d0f45; --violet-soft: #2e2160; --violet-text: #c9b8ff;
+  --kraft-field: #e5b47a;   --kraft-soft: #3d2c16;   --kraft-text: #f1cf9c;
+  --shade-ink: #ff6a52;
+  --chrome-bar: #0b0e26; --chrome-bar-2: #1d2a6e; --chrome-bar-fg: #f3eedd; --chrome-bar-fg-2: #a9b4ea;
+  --scrim: rgba(3, 4, 14, .66);
+  --grain: rgba(243, 238, 221, .045);
+  --shadow-1: 0 1px 0 rgba(0,0,0,.35), 0 4px 14px rgba(0,0,0,.35);
+  --shadow-2: 0 2px 0 rgba(0,0,0,.4), 0 14px 36px rgba(0,0,0,.5);
+  --shadow-3: 0 4px 0 rgba(0,0,0,.45), 0 30px 80px rgba(0,0,0,.6);
+  --focus: #ffc21a;
+  --selection-bg: #ffc21a; --selection-fg: #16130f;
+  --stage: #07091c;
+}

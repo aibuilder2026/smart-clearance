@@ -1,0 +1,55 @@
+/* Smart-Clearance design system v2 · stage
+   The demo stage around the app: a slim bar and device frames (Fit / Phone / Tablet / Desktop), plus the splash overlay. Shared by both prototypes. */
+#root { height: 100%; }
+html, body { height: 100%; }
+#stage { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(--stage); color: #eef0ff; font-family: var(--font-ui); }
+.demobar { display: flex; align-items: center; gap: 12px; padding: 8px 14px; border-bottom: 2px solid #000; flex-wrap: wrap; background: var(--stage); }
+.demobar .brand { display: flex; align-items: center; gap: 10px; margin-right: 6px; }
+.demobar .lbl { font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: #8e94b8; margin-right: 2px; }
+.demobar .group { display: flex; align-items: center; gap: 6px; }
+.demobar .spacer { flex: 1; }
+.seg { display: inline-flex; background: #0d1020; border: 1.5px solid #2a3058; border-radius: 10px; padding: 3px; gap: 2px; }
+.seg button { min-height: 34px; padding: 0 11px; border-radius: 7px; color: #b6bbdc; font-size: 13.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+.seg button[aria-pressed="true"] { background: #f6b400; color: #16130f; }
+.seg button:hover:not([aria-pressed="true"]) { color: #fff; background: #1a1f3d; }
+.rolebtn { display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 2px 12px 2px 4px; border-radius: 999px; border: 1.5px solid #2a3058; color: #dfe2f5; font-size: 13.5px; font-weight: 600; background: #0d1020; }
+.rolebtn img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1.5px solid #000; }
+.rolebtn[aria-pressed="true"] { border-color: #f6b400; background: #2a2416; color: #fff; }
+.rolebtn:hover { background: #1a1f3d; }
+.guide { display: flex; align-items: center; gap: 10px; min-width: 0; flex-wrap: wrap; }
+.guide .step { font-family: var(--font-mono); font-size: 12px; color: #8e94b8; white-space: nowrap; }
+.guide .ttl { font-size: 13.5px; font-weight: 700; max-width: min(46ch, 100%); line-height: 1.25; }
+@media (max-width: 760px) {
+  .demobar { gap: 8px; padding: 8px 10px; }
+  .demobar .group.device, .demobar .lbl { display: none; }
+  .rolebtn { padding: 2px 4px; gap: 0; } .rolebtn .nm { display: none; }
+  .guide .ttl { font-size: 12.5px; }
+}
+.guide .ttl small { display: block; font-weight: 400; color: #b6bbdc; font-size: 12.5px; }
+.dbtn { min-height: 38px; padding: 0 14px; border-radius: 8px; background: #f6b400; color: #16130f; font-weight: 800; font-size: 13.5px; display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid #000; box-shadow: 3px 3px 0 0 #1b3fc4; }
+.dbtn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 0 #1b3fc4; }
+.dbtn.ghost { background: transparent; color: #dfe2f5; border-color: #2a3058; box-shadow: none; }
+.dbtn.ghost:active { transform: none; }
+#viewport { position: relative; overflow: auto; display: grid; place-items: center; padding: 18px; }
+#viewport.fit { padding: 0; place-items: stretch; }
+.device { position: relative; background: #05060f; transform-origin: top center; }
+.device.phone { border-radius: 46px; padding: 12px; box-shadow: 0 30px 80px rgba(0,0,0,.6), 0 0 0 2px #000; }
+.device.phone .app { border-radius: 36px; }
+.device.phone::before { content: ""; position: absolute; left: 50%; top: 20px; width: 110px; height: 28px; margin-left: -55px; background: #05060f; border-radius: 16px; z-index: 50; }
+.device.phone .app { padding-top: 0; }
+.device.phone .shell, .device.phone .snap, .device.phone .signin, .device.phone .cam, .device.phone .splash { top: 34px; }
+.device.phone .toasts { top: 48px; }
+.device.tablet { border-radius: 26px; padding: 14px; box-shadow: 0 30px 80px rgba(0,0,0,.6), 0 0 0 2px #000; }
+.device.tablet .app { border-radius: 14px; }
+.device.desktop { border-radius: 14px; padding: 0; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.6), 0 0 0 2px #000; }
+.device.desktop::before { content: ""; display: block; height: 34px; background: #0d1020; background-image: radial-gradient(circle at 18px 17px, #ff5f57 6px, transparent 7px), radial-gradient(circle at 40px 17px, #febc2e 6px, transparent 7px), radial-gradient(circle at 62px 17px, #28c840 6px, transparent 7px); }
+
+/* the splash over the app */
+.splash { position: absolute; inset: 0; z-index: 70; background: var(--stock); color: var(--ink); display: grid; place-items: center; cursor: pointer; transition: opacity 320ms var(--ease-out), transform 320ms var(--ease-out); }
+.splash.out { opacity: 0; transform: scale(1.02); pointer-events: none; }
+.splashin { display: grid; justify-items: center; gap: 18px; text-align: center; padding: 24px; }
+.splash .tag { font-size: var(--fs-lg); color: var(--ink-2); max-width: 32ch; text-wrap: balance; }
+.splash .tag.hi { font-family: var(--font-hi); color: var(--ink); font-weight: 600; }
+.splash .skip { position: absolute; right: 16px; bottom: 16px; }
+.splash .ink-layered .shade { color: var(--ultra); }
+[data-theme="night"] .splash .ink-layered .shade { color: var(--vermilion-bright); }

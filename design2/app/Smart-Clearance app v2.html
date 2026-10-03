@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Smart-Clearance app v2</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%223%22 y=%223%22 width=%2258%22 height=%2258%22 rx=%2214%22 fill=%22%231b3fc4%22 stroke=%22%2316130f%22 stroke-width=%224%22/%3E%3Cg stroke=%22%2316130f%22 stroke-width=%223%22 stroke-linecap=%22round%22%3E%3Cline x1=%2232%22 y1=%228%22 x2=%2232%22 y2=%2213%22 transform=%22rotate(0 32 32)%22/%3E%3Cline x1=%2232%22 y1=%228%22 x2=%2232%22 y2=%2213%22 transform=%22rotate(45 32 32)%22/%3E%3Cline x1=%2232%22 y1=%228%22 x2=%2232%22 y2=%2213%22 transform=%22rotate(90 32 32)%22/%3E%3Cline x1=%2232%22 y1=%228%22 x2=%2232%22 y2=%2213%22 transform=%22rotate(135 32 32)%22/%3E%3Cline x1=%2232%22 y1=%228%22 x2=%2232%22 y2=%2213%22 transform=%22rotate(180 32 32)%22/%3E%3Cline x1=%2232%22 y1=%228%22 x2=%2232%22 y2=%2213%22 transform=%22rotate(225 32 32)%22/%3E%3Cline x1=%2232%22 y1=%228%22 x2=%2232%22 y2=%2213%22 transform=%22rotate(270 32 32)%22/%3E%3Cline x1=%2232%22 y1=%228%22 x2=%2232%22 y2=%2213%22 transform=%22rotate(315 32 32)%22/%3E%3C/g%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%2213%22 fill=%22%23f6b400%22 stroke=%22%2316130f%22 stroke-width=%223%22/%3E%3C/svg%3E">
+<meta name="description" content="The Smart-Clearance web application as it will ship: sign-in, every role's working screens, admin, on a mock backend.">
+<link rel="stylesheet" href="system/tokens.css">
+<link rel="stylesheet" href="system/base.css">
+<link rel="stylesheet" href="system/components.css">
+<link rel="stylesheet" href="system/stage.css">
+<link rel="stylesheet" href="app.css">
+<script>
+  window.SC2_IMG = /claudeusercontent\.com$/.test(location.hostname) ? "https://raw.githubusercontent.com/aibuilder2026/smart-clearance/6f80c26a50e85473e126a34279ef3ceb39c058e6/design2/system/img/" : "system/img/";
+</script>
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/framer-motion@11.18.2/dist/framer-motion.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script src="db.js"></script>
+<script src="auth.js"></script>
+<script src="bus.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react" src="system/kit.jsx"></script>
+<script type="text/babel" data-presets="react" src="app-kit.jsx"></script>
+<script type="text/babel" data-presets="react" src="screens-auth.jsx"></script>
+<script type="text/babel" data-presets="react" src="screens-ops.jsx"></script>
+<script type="text/babel" data-presets="react" src="screens-trade.jsx"></script>
+<script type="text/babel" data-presets="react" src="screens-finance.jsx"></script>
+<script type="text/babel" data-presets="react" src="screens-admin.jsx"></script>
+<script type="text/babel" data-presets="react" src="app.jsx"></script>
+</body>
+</html>

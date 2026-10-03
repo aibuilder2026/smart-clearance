@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Smart-Clearance design system v2 · components</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%223%22 y=%223%22 width=%2258%22 height=%2258%22 rx=%2214%22 fill=%22%231b3fc4%22 stroke=%22%2316130f%22 stroke-width=%224%22/%3E%3Cg stroke=%22%2316130f%22 stroke-width=%223%22 stroke-linecap=%22round%22%3E%3Cline x1=%2232%22 y1=%228%22 x2=%2232%22 y2=%2213%22 transform=%22rotate(0 32 32)%22/%3E%3Cline x1=%2232%22 y1=%228%22 x2=%2232%22 y2=%2213%22 transform=%22rotate(45 32 32)%22/%3E%3Cline x1=%2232%22 y1=%228%22 x2=%2232%22 y2=%2213%22 transform=%22rotate(90 32 32)%22/%3E%3Cline x1=%2232%22 y1=%228%22 x2=%2232%22 y2=%2213%22 transform=%22rotate(135 32 32)%22/%3E%3Cline x1=%2232%22 y1=%228%22 x2=%2232%22 y2=%2213%22 transform=%22rotate(180 32 32)%22/%3E%3Cline x1=%2232%22 y1=%228%22 x2=%2232%22 y2=%2213%22 transform=%22rotate(225 32 32)%22/%3E%3Cline x1=%2232%22 y1=%228%22 x2=%2232%22 y2=%2213%22 transform=%22rotate(270 32 32)%22/%3E%3Cline x1=%2232%22 y1=%228%22 x2=%2232%22 y2=%2213%22 transform=%22rotate(315 32 32)%22/%3E%3C/g%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%2213%22 fill=%22%23f6b400%22 stroke=%22%2316130f%22 stroke-width=%223%22/%3E%3C/svg%3E">
+<meta name="description" content="Every component of the label world, in every state, in both editions.">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="components.css">
+<link rel="stylesheet" href="stage.css">
+<link rel="stylesheet" href="docs.css">
+<script>window.SC2_IMG = "img/";</script>
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/framer-motion@11.18.2/dist/framer-motion.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<style> body { background: var(--stock); } </style>
+</head>
+<body class="grain">
+<div id="docroot"></div>
+<script type="text/babel" data-presets="react" src="kit.jsx"></script>
+<script type="text/babel" data-presets="react">
+(function () {
+  const { useState, useEffect, useRef } = React;
+  const K = window.SC2; const { Mark, Wordmark, Icon, Btn, Chip, Plate, ModeSwitch, useTheme, ThemeProvider, Ticks, Tape, LiveTile, Sun, Label, Emblem, Avatar, Field, Input, Select, Toggle, Stepper, OTP, Segmented, Tabs, Menu, Sheet, ToastHost, useToasts, Shell, TopBar, RunHead, Timeline, Stages, Door, Notice, Gate, Empty, Skeleton, Spinner, CountUp, VWProvider, Register, Stagger } = K;
+  const IMG = window.SC2_IMG; const PORTRAITS = "https://raw.githubusercontent.com/aibuilder2026/smart-clearance/main/docs/story-img/";
+  const priya = { id: "priya", name: "Priya Deshmukh", short: "Priya", role: "Supply chain · Munchly Foods", img: PORTRAITS + "p-priya.jpg" };
+  const rakesh = { id: "rakesh", name: "Rakesh Sharma", short: "Rakesh bhai", role: "Rakesh Traders · distributor", img: PORTRAITS + "p-rakesh.jpg" };
+  function ApplyTheme() { const { resolved } = useTheme(); useEffect(() => { document.documentElement.setAttribute("data-theme", resolved); }, [resolved]); return null; }
+  function Item({ title, code, note, children }) { return <div className="item"><h3>{title}<code>{code}</code></h3>{note && <p className="note">{note}</p>}{children}</div>; }
+
+  function Buttons() {
+    const [busy, setBusy] = useState(false);
+    return <Item title="Buttons" code=".btn .primary .yes .secondary .ghost .danger .market .onchrome · .sm .lg .full .sq" note="Printed and keylined. The human yes (chrome yellow) and the agent's primary (emerald) carry the offset second ink; pressing pushes the plate into its shade. One yes per screen.">
+      <div className="statebar"><Btn kind="yes" icon="check">Approve the plan</Btn><Btn kind="primary" icon="send">Send the photo request</Btn><Btn>Secondary</Btn><Btn kind="ghost">Ghost</Btn><Btn kind="danger" icon="trash">Deactivate</Btn><Btn kind="market">Place bid</Btn></div>
+      <div className="statebar"><Btn size="sm">Small</Btn><Btn size="lg" kind="yes">Large yes</Btn><Btn kind="primary" loading={busy} onClick={() => { setBusy(true); setTimeout(() => setBusy(false), 1600); }}>{busy ? "Working" : "Loading state"}</Btn><Btn disabled>Disabled</Btn><Btn className="sq" aria-label="More"><Icon name="more" /></Btn><Btn kind="primary" className="pill" icon="plus">Pill</Btn></div>
+      <Plate tone="ultra" tight><div className="statebar"><Btn kind="onchrome">On chrome</Btn><Btn kind="onchrome" size="sm">Open</Btn></div></Plate>
+    </Item>;
+  }
+  function Chips() {
+    return <Item title="Chips and badges" code=".chip .ultra .emerald .chrome .vermilion .violet .kraft · .solid .mono .lg · .badge" note="Lozenges for status and facts. Soft chips take their hue's text ink; solid chips are the ink itself. Mono chips carry ids and rates.">
+      <div className="statebar"><Chip tone="emerald" icon="check">Verified</Chip><Chip tone="chrome" icon="clock">Awaiting approval</Chip><Chip tone="vermilion" dot>At risk</Chip><Chip tone="ultra" icon="bell">Pushed</Chip><Chip tone="violet">ExpireSoon</Chip><Chip tone="kraft">Kalamna godown</Chip><Chip>Neutral</Chip><Chip mono>MF-2409-117</Chip></div>
+      <div className="statebar"><Chip tone="emerald" solid icon="check">Listed · 201</Chip><Chip tone="chrome" solid>Gate</Chip><Chip tone="vermilion" solid>Closed</Chip><Chip tone="ultra" solid>Push</Chip><Chip tone="violet" solid>Bid</Chip><Chip tone="emerald" lg icon="check">Large</Chip><span className="badge">3</span><span className="badge chrome">14</span></div>
+    </Item>;
+  }
+  function Plates() {
+    return <Item title="Plates" code=".plate · .ultra .emerald .chrome .vermilion .violet .kraft · .*-soft · .framed .reg .shaded .lift .tight .flush" note="The only container. A 2 px keyline, a 12 px corner, plate white. Ink plates carry their own text ink; framed plates add the double rule; reg plates print registration marks in two corners.">
+      <div className="three">
+        <Plate><b>Plate white</b><p className="t-small muted">The cartouche. Quiet by default.</p></Plate>
+        <Plate reg><b>Registered</b><p className="t-small muted">Marks in the corners for sheets and notices.</p></Plate>
+        <Plate shaded><b>Shaded</b><p className="t-small muted">The second ink offset 4 px.</p></Plate>
+        <Plate tone="ultra" framed><b>Ultramarine, framed</b><p className="t-small">Chrome, structure, pushes.</p></Plate>
+        <Plate tone="chrome" framed><b>Chrome yellow, framed</b><p className="t-small">The human moment.</p></Plate>
+        <Plate tone="emerald" framed><b>Emerald, framed</b><p className="t-small">The agent at work.</p></Plate>
+        <Plate tone="vermilion"><b>Vermilion</b><p className="t-small">Risk, the bin, losses.</p></Plate>
+        <Plate tone="violet"><b>Violet</b><p className="t-small">ExpireSoon only.</p></Plate>
+        <Plate tone="kraft"><b>Kraft</b><p className="t-small">The carton, the godown.</p></Plate>
+        <Plate tone="chrome-soft"><b style={{ color: "var(--chrome-text)" }}>Chrome soft</b><p className="t-small">Text in the hue's own ink.</p></Plate>
+        <Plate tone="vermilion-soft"><b style={{ color: "var(--vermilion-text)" }}>Vermilion soft</b><p className="t-small">Never grey on colour.</p></Plate>
+        <Plate tone="emerald-soft"><b style={{ color: "var(--emerald-text)" }}>Emerald soft</b><p className="t-small">Verified, done.</p></Plate>
+      </div>
+    </Item>;
+  }
+  function People() {
+    return <Item title="People, the mark, emblems, the sun" code=".avatar .sm .md .lg .xl · .mark · .emblem · .sun .sunwrap" note="A person is a portrait with a keyline. The agent is the mark, with the sun turning behind it when it is at work. A role is an emblem, the way a matchbox is a brand.">
+      <div className="statebar"><Avatar person={priya} size="sm" /><Avatar person={priya} size="md" /><Avatar person={rakesh} size="lg" /><Avatar person={rakesh} size="xl" /><Mark size="sm" sun={false} /><Mark /><Mark size="lg" /><span className="sunwrap"><Sun /><Mark /></span><span className="sunwrap"><Sun tone="vermilion" /><Mark sun={false} /></span></div>
+      <div className="statebar"><Emblem src={IMG + "emblem-rooster.webp"} name="Operator" size="sm" /><Emblem src={IMG + "emblem-van.webp"} name="Distributor" tone="chrome" /><Emblem src={IMG + "emblem-shop.webp"} name="Retailer" size="lg" /><Emblem src={IMG + "emblem-ship.webp"} name="Buyer" tone="violet" size="lg" /><Emblem src={IMG + "emblem-ledger.webp"} name="Finance" /><Emblem src={IMG + "emblem-tree.webp"} name="Sustainability" tone="emerald" /><Emblem src={IMG + "emblem-key.webp"} name="Admin" tone="ultra" /></div>
+    </Item>;
+  }
+  function Forms() {
+    const [on, setOn] = useState(true); const [q, setQ] = useState(10); const [otp, setOtp] = useState(""); const [seg, setSeg] = useState("day"); const [tab, setTab] = useState("over"); const [menu, setMenu] = useState(false);
+    return <Item title="Forms and controls" code=".field .input .select .textarea .toggle .stepper .otp .segmented .tabs .menu .check" note="48 px inputs with a 1.5 px keyline; focus is an ultramarine ring. Errors name the problem and the recovery. Every control has hover, focus, disabled and invalid states.">
+      <div className="two">
+        <div className="stack">
+          <Field label="Phone number" help="We send a 6-digit code by SMS." id="ph"><Input id="ph" icon="phone" mono placeholder="+91 98XXX XXXXX" defaultValue="+91 98230 44118" /></Field>
+          <Field label="One-time code"><OTP value={otp} onChange={setOtp} /></Field>
+          <Field label="Floor price per packet" error="Below cost: the floor cannot be under ₹14." id="fl"><Input id="fl" mono defaultValue="₹13.00" aria-invalid="true" /></Field>
+          <Field label="Search batches" id="s"><Input id="s" icon="search" placeholder="Batch, product, godown" /></Field>
+          <Field label="Disabled" id="d"><Input id="d" disabled value="Not editable" readOnly /></Field>
+        </div>
+        <div className="stack">
+          <Field label="Channel" id="ch"><Select id="ch" defaultValue="shops"><option value="shops">Local kirana shops</option><option value="online">ExpireSoon</option><option value="bank">Food bank</option></Select></Field>
+          <Field label="Note to the distributor" id="n"><textarea id="n" className="textarea" placeholder="Hindi or English" /></Field>
+          <div className="row between"><span className="t-label">Daily 09:00 watch</span><Toggle on={on} onChange={setOn} label="Daily watch" /></div>
+          <div className="row between"><span className="t-label">Packets</span><Stepper value={q} onChange={setQ} min={0} max={120} step={10} /></div>
+          <label className="check"><input type="checkbox" defaultChecked /> <span>Also push to WhatsApp (future)</span></label>
+          <div className="row wrap"><Segmented options={[{ id: "day", label: "Day", icon: "sun" }, { id: "night", label: "Night", icon: "moon" }, { id: "auto", label: "Auto" }]} value={seg} onChange={setSeg} label="Edition" /><div style={{ position: "relative" }}><Btn icon="more" onClick={() => setMenu(!menu)}>Actions</Btn><Menu open={menu} onClose={() => setMenu(false)}><div className="mh">MF-2409-117</div><button type="button"><Icon name="eye" size={18} />Open the batch</button><button type="button"><Icon name="camera" size={18} />Request a photo</button><div className="sep" /><button type="button" className="danger"><Icon name="trash" size={18} />Write off</button></Menu></div></div>
+          <Tabs tabs={[{ id: "over", label: "Overview" }, { id: "plan", label: "Plan", badge: 1 }, { id: "exec", label: "Execution" }, { id: "docs", label: "Papers" }]} value={tab} onChange={setTab} />
+        </div>
+      </div>
+    </Item>;
+  }
+  function Data() {
+    const [n, setN] = useState(14);
+    return <Item title="Data: ticks, tape, tiles, ledger, table" code=".ticks .tape .tile .ledger .kv .table .bar .stat .progress" note="The best-before strip consumes one tick per unit of time. The tape is a fixed capacity the doors fill and cannot overflow. A live tile flips in place when its number changes. The ledger rules are the bahi-khata's: blue rows, a red double rule under the total.">
+      <div className="two">
+        <div className="stack">
+          <div className="stack-sm"><span className="t-label">Ticks: 47 of 180 days</span><Ticks total={12} remaining={3} tone="risk" tall /><Ticks total={12} remaining={7} tone="gated" /><Ticks total={12} remaining={11} tone="safe" /></div>
+          <div className="stack-sm"><span className="t-label">Tape: 1,360 packets at risk</span><Tape total={1360} capLabel="pkts" segments={[{ id: "shops", label: "shops 588", value: 588 }, { id: "online", label: "online 772", value: 772 }]} /><Tape total={1360} capLabel="pkts" segments={[{ id: "shops", label: "shops 588", value: 588 }, { id: "online", label: "online 900", value: 900 }]} /></div>
+          <div className="tilerow"><LiveTile value={n} label="shops ordered" tone="emerald" /><LiveTile value={K.inr(21770)} label="net" /><LiveTile value={47} label="days left" tone="vermilion" /></div>
+          <div><Btn size="sm" icon="plus" onClick={() => setN(n + 1)}>One more order</Btn></div>
+          <div className="row wrap"><div className="stat"><b><CountUp value={21770} /></b><span>recovered</span></div><div className="stat"><b className="num">217.6 kg</b><span>kept out of landfill</span></div></div>
+        </div>
+        <div className="stack">
+          <Plate><div className="ledger">
+            <div className="lrow"><span>588 packets to 14 shops at ₹18<small>buy 10 get 2 · 98 free packets</small></span><span className="v">₹10,584</span></div>
+            <div className="lrow"><span>772 packets on ExpireSoon at ₹15<small>floor ₹14</small></span><span className="v">₹11,580</span></div>
+            <div className="lrow neg"><span>Van, courier, listing fee</span><span className="v">− ₹394</span></div>
+            <div className="lrow sum"><span>Net to Munchly</span><span className="v">₹21,770</span></div>
+            <div className="lrow pos"><span>Better than the bin by</span><span className="v">₹49,487</span></div>
+          </div></Plate>
+          <div className="tablewrap"><table className="table"><thead><tr><th>Batch</th><th>Product</th><th className="n">Days</th><th className="n">Cartons</th><th>State</th></tr></thead><tbody>
+            <tr className="sel"><td className="w"><button type="button" className="rowbtn mono">MF-2409-117</button></td><td>Masala Chips 150 g</td><td className="n">47</td><td className="n">77</td><td><Chip tone="vermilion" dot>At risk</Chip></td></tr>
+            <tr><td className="w"><button type="button" className="rowbtn mono">MF-2410-118</button></td><td>Mango Drink 200 ml</td><td className="n">22</td><td className="n">74</td><td><Chip tone="ultra">Cleared</Chip></td></tr>
+            <tr><td className="w"><button type="button" className="rowbtn mono">MF-2408-209</button></td><td>Masala Chips 150 g</td><td className="n">74</td><td className="n">43</td><td><Chip tone="chrome">Gated</Chip></td></tr>
+          </tbody></table></div>
+          <div className="stack-sm"><div className="bar tall"><i className="c-shops" style={{ width: "43%" }}>shops</i><i className="c-online" style={{ width: "57%" }}>online</i></div><div className="legend"><span><b className="c-shops" />Shops</span><span><b className="c-online" />ExpireSoon</span><span><b className="c-donate" />Food bank</span><span><b className="c-risk" />Bin</span></div><div className="progress"><i style={{ width: "62%" }} /></div></div>
+        </div>
+      </div>
+    </Item>;
+  }
+  function Labels() {
+    const products = { chips: { name: "Munchly Masala Chips 150 g" }, mango: { name: "Munchly Mango Drink 200 ml" }, poha: { name: "Munchly Instant Poha 250 g" }, biscuit: { name: "Munchly Choco Cream Biscuits 200 g" } };
+    const batches = [
+      { id: "MF-2409-117", sku: "chips", cartons: 77, days: 47, where: "Rakesh Traders · Nagpur", sell: 12, binCost: 27717, zone: "risk", bestBefore: "18 Nov 2026" },
+      { id: "MF-2410-118", sku: "mango", cartons: 74, days: 22, where: "Lakshmi Agencies · Hyderabad", sell: 40, zone: "cleared", bestBefore: "24 Oct 2026" },
+      { id: "MF-2408-209", sku: "chips", cartons: 43, days: 74, where: "Sri Sai · Indore", sell: 22, zone: "blinkit", bestBefore: "15 Dec 2026" },
+      { id: "MF-2409-301", sku: "poha", cartons: 60, days: 96, where: "Lakshmi Agencies · Hyderabad", sell: 30, zone: "zepto", bestBefore: "6 Jan 2027" },
+      { id: "MF-2410-022", sku: "biscuit", cartons: 140, days: 131, where: "Rakesh Traders · Nagpur", sell: 90, zone: "safe", bestBefore: "10 Feb 2027" },
+    ];
+    return <Item title="The label and the sheet" code=".label .safe .gated .risk .cleared .hot · .sheetgrid · .door · .notice .gate" note="A batch is a label: a header band in the state's ink, the product, the days numeral in Bungee, the tick strip, the carton count and the godown, best-before in the footer. The hot label spans two cells, carries the carton plate and the loss, and breathes a vermilion ring. Doors are six small labels with the price as the brand.">
+      <div className="sheetgrid">{batches.map(b => <Label key={b.id} batch={b} product={products[b.sku]} hot={b.zone === "risk"} img={b.zone === "risk" ? IMG + "hero-carton.webp" : undefined} action={b.zone === "risk" ? <Btn kind="yes" size="sm">Open the batch</Btn> : undefined} />)}</div>
+      <div className="doors">
+        <Door door={{ id: "shops", short: "SHOPS", name: "Local kirana shops", net: 420, rule: "₹18 a packet, less ₹12 van", cls: "sel" }} selected />
+        <Door door={{ id: "online", short: "EXPIRESOON", name: "ExpireSoon marketplace", net: 360, rule: "₹15 a packet, no cap", cls: "es" }} selected />
+        <Door door={{ id: "d2c", short: "D2C", name: "Brand's own site", net: 288, rule: "₹15, less ₹72 courier" }} />
+        <Door door={{ id: "staff", short: "STAFF", name: "Staff sale", net: 288, rule: "₹12 a packet" }} />
+        <Door door={{ id: "bank", short: "FOOD BANK", name: "Feeding India", net: -12, rule: "freight only · meals", cls: "fb" }} />
+        <Door door={{ id: "bin", short: "THE BIN", name: "Write off", net: -489, rule: "stock + ITC + disposal + EPR", cls: "bin" }} />
+      </div>
+      <div className="two">
+        <Notice who="Watcher" when="Day 0 · 09:00"><p className="t-small">312 batches checked against app gates and sell-through. MF-2409-117 fails both.</p><div><Gate app="Blinkit" rule="needs 90 days" ok={false} /><Gate app="Zepto" rule="needs 108 days" ok={false} /><Gate app="Instamart" rule="needs 108 days" ok={false} /></div></Notice>
+        <Plate><h3>Stages and timeline</h3><Stages steps={["Detect", "Verify", "Value", "Approve", "Execute", "Settle"]} now={3} /><div className="rule thin" /><Timeline items={[
+          { id: 1, who: "Watcher", text: "312 batches checked; MF-2409-117 fails both gates", at: "09:00", state: "done", minutes: 0 },
+          { id: 2, who: "Vision", text: "label photo read: batch, dates, MRP match", at: "09:20", state: "done", minutes: 20 },
+          { id: 3, who: "Router", text: "shops to cap (588), remainder online (772)", at: "09:22", state: "done", minutes: 2 },
+          { id: 4, who: "Priya", text: "approved from her phone", at: "09:40", state: "done", human: true, minutes: 18 },
+          { id: 5, who: "Negotiator", text: "bid ₹13 countered at ₹14.20; accepted", at: "11:09", state: "now", minutes: 89 },
+          { id: 6, who: "Rakesh bhai", text: "Tuesday round: 14 drops", at: "Day 1", state: "todo", human: true, minutes: 1440 },
+        ]} /></Plate>
+      </div>
+    </Item>;
+  }
+  function Overlays() {
+    const [open, setOpen] = useState(false); const [side, setSide] = useState(false); const { push, toast } = useToasts();
+    return <Item title="Sheets, pushes, toasts" code=".sheet .sheet-bottom .sheet-side .scrim · .push .toast · .toasts" note="A bottom sheet on phones, a side panel elsewhere, keylined and sprung. A push is an ultramarine plate that prints in and snaps into register; one at a time. Toasts are ink on stock.">
+      <div className="statebar"><Btn kind="yes" onClick={() => setOpen(true)}>Open the approve sheet</Btn><Btn onClick={() => setSide(true)}>Open a side panel</Btn><Btn kind="primary" icon="bell" onClick={() => push({ title: "Plan ready for MF-2409-117", body: "24½ cartons to Nagpur shops at ₹18, 32 online at ₹15. You get ₹21,770 instead of losing ₹27,717.", at: "09:23", go: () => {} })}>Push a notification</Btn><Btn onClick={() => push({ title: "आज का ऑफर", body: "Munchly Masala Chips 150 g, 10 पैकेट लो, 2 मुफ़्त. सिर्फ़ 48 घंटे.", hindi: true, at: "09:41", go: () => {} })}>Hindi push</Btn><Btn onClick={() => toast({ title: "Approved · 09:40", body: "listing going up", tone: "ok", icon: "check" })}>Toast</Btn></div>
+      <div className="phoneframe app" data-theme-inherit>
+        <VWProviderFrame>
+          <div className="page" style={{ paddingTop: 16 }}><Plate><b>Inside a 390 px frame</b><p className="t-small muted">Sheets rise from the bottom here.</p></Plate></div>
+          <Sheet open={open} onClose={() => setOpen(false)} title="Approve the plan" footer={<Btn kind="yes" full icon="check" onClick={() => setOpen(false)}>Approve · ₹21,770</Btn>}>
+            <div className="stack"><p className="t-small muted">Nothing is listed, messaged or shipped before this tap.</p><div className="ledger"><div className="lrow"><span>Shops, 588 packets</span><span className="v">₹10,584</span></div><div className="lrow"><span>ExpireSoon, 772 packets</span><span className="v">₹11,580</span></div><div className="lrow sum"><span>Net</span><span className="v">₹21,770</span></div></div></div>
+          </Sheet>
+          <Sheet open={side} onClose={() => setSide(false)} title="Batch MF-2409-117" side="side"><p className="t-small">A side panel forced in a phone frame, for the record.</p></Sheet>
+        </VWProviderFrame>
+      </div>
+    </Item>;
+  }
+  function VWProviderFrame({ children }) { const ref = useRef(); return <div ref={ref} style={{ position: "absolute", inset: 0 }}><K.VWProvider targetRef={ref}>{children}</K.VWProvider></div>; }
+  function ChromeDemo() {
+    const [cur, setCur] = useState("sheet"); const ref = useRef();
+    const nav = [{ id: "sheet", label: "Sheet", icon: "sheet" }, { id: "inbox", label: "Inbox", icon: "bell", badge: 2 }, { id: "papers", label: "Papers", icon: "file" }, { id: "ledger", label: "Ledger", icon: "chart" }];
+    return <Item title="Chrome: rail, top bar, running head, bottom nav" code=".shell .rail .topbar .runhead .bnav .modeswitch .iconbtn .backbtn" note="Ultramarine chrome. The current section is a label stuck on the chrome. The running head names the span in view the way a lexicon's guide words do. The edition switch sits at the right end of every top bar.">
+      <div className="two">
+        <div className="phoneframe app" style={{ height: 420 }}><div ref={ref} style={{ position: "absolute", inset: 0 }}><K.VWProvider targetRef={ref}><Shell nav={nav} current={cur} onNav={setCur} who={priya}><TopBar who={priya} unread={2} onBell={() => {}} /><div className="page"><Plate><b>Phone</b><p className="t-small muted">Bottom nav, four label tabs.</p></Plate></div></Shell></K.VWProvider></div></div>
+        <div className="app" style={{ position: "relative", height: 420, border: "var(--kl) solid var(--keyline)", borderRadius: 14, overflow: "hidden" }}><DesktopFrame nav={nav} cur={cur} setCur={setCur} /></div>
+      </div>
+    </Item>;
+  }
+  function DesktopFrame({ nav, cur, setCur }) { const ref = useRef(); return <div ref={ref} style={{ position: "absolute", inset: 0 }}><K.VWProvider targetRef={ref}><Shell nav={nav} current={cur} onNav={setCur} who={priya}><TopBar title="Today" runhead={<RunHead parts={[{ b: "Today" }, { b: "7", t: "batches" }, { b: "1", t: "at risk", hot: true }, { b: "₹27,717", t: "at stake", hot: true }]} />} unread={2} onBell={() => {}} /><div className="page"><Plate><b>Tablet and desktop</b><p className="t-small muted">The rail replaces the bottom nav from 760 px.</p></Plate></div></Shell></K.VWProvider></div>; }
+  function States() {
+    return <Item title="Empty, loading, errors" code=".empty .skeleton .spinner .regspin" note="Empty states teach the next action. Skeletons shimmer in the stock's tints. The registration spinner is the printer's crosshair.">
+      <div className="three">
+        <Plate><Empty emblem={IMG + "emblem-van.webp"} title="No rounds planned" body="A van round appears here when a plan is approved and shops order." action={<Btn kind="primary" size="sm" icon="truck">Plan a round</Btn>} /></Plate>
+        <Plate><div className="stack-sm"><Skeleton h={18} w="60%" /><Skeleton /><Skeleton w="85%" /><Skeleton h={44} /></div></Plate>
+        <Plate><div className="stack"><div className="row"><Spinner /><span>Reading the label photo</span></div><div className="row"><Spinner reg /><span>Printing the pack</span></div><Plate tone="vermilion-soft" tight><b style={{ color: "var(--vermilion-text)" }}>The photo could not be read</b><p className="t-small">The batch code is out of frame. Ask for one more photo with the label flat.</p><div className="row" style={{ marginTop: 8 }}><Btn size="sm" kind="primary">Ask again</Btn><Btn size="sm" kind="ghost">Enter by hand</Btn></div></Plate></div></Plate>
+      </div>
+    </Item>;
+  }
+  function Motion() {
+    const [k, setK] = useState(0);
+    return <Item title="Motion helpers" code=".register .register-x .stamp .fadeup .stagger" note="Arrivals register; the approve stamp lands; lists stagger once. Replay below.">
+      <div className="statebar" key={k}><Register><Chip tone="emerald" solid icon="check">registered</Chip></Register><span className="stamp"><Chip tone="chrome" solid lg>APPROVED 09:40</Chip></span><Stagger className="row"><Chip>one</Chip><Chip>two</Chip><Chip>three</Chip><Chip>four</Chip></Stagger><Btn size="sm" icon="refresh" onClick={() => setK(k + 1)}>Replay</Btn></div>
+    </Item>;
+  }
+
+  function Page() {
+    return <ThemeProvider><ApplyTheme /><ToastHost>
+      <div className="docs">
+        <header className="dochead"><Mark /><Wordmark size={18} /><nav><a href="Smart-Clearance DS v2.html">Foundations</a><a href="components.html" aria-current="page">Components</a><a href="readme.md">Readme</a></nav><div className="grow" /><ModeSwitch /></header>
+        <div className="hero" style={{ paddingBottom: 24 }}><h1>Components</h1><p>Every piece of the label world, live, in both editions. Flip the switch at the top right; everything below is the same markup the prototypes use.</p></div>
+        <div className="gallery"><Buttons /><Chips /><Plates /><People /><Forms /><Data /><Labels /><Overlays /><ChromeDemo /><States /><Motion /></div>
+      </div>
+    </ToastHost></ThemeProvider>;
+  }
+  ReactDOM.createRoot(document.getElementById("docroot")).render(<Page />);
+})();
+</script>
+</body>
+</html>

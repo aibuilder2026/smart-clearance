@@ -1,0 +1,9 @@
+{
+  "tool": "qwen-image-2.1 bf16 (local MCP)",
+  "prompt": "Vintage Indian matchbox label chromolithograph illustration of a single leafy tree with a chrome yellow sun behind it, emerald canopy, kraft brown trunk, drawn with thick black keylines, flat printed inks, visible halftone dot shading, slight colour misregistration like a 1960s Sivakasi label print, no text, no letters, no background, isolated object",
+  "seed": 306,
+  "size": 1024,
+  "steps": 40,
+  "transparent": true,
+  "generatedAt": "2026-10-03T01:10:44Z"
+}
