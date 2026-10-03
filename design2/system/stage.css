@@ -16,9 +16,15 @@ html, body { height: 100%; }
 .rolebtn img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1.5px solid #000; }
 .rolebtn[aria-pressed="true"] { border-color: #f6b400; background: #2a2416; color: #fff; }
 .rolebtn:hover { background: #1a1f3d; }
-.guide { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.guide { display: flex; align-items: center; gap: 10px; min-width: 0; flex-wrap: wrap; }
 .guide .step { font-family: var(--font-mono); font-size: 12px; color: #8e94b8; white-space: nowrap; }
-.guide .ttl { font-size: 13.5px; font-weight: 700; max-width: 46ch; line-height: 1.25; }
+.guide .ttl { font-size: 13.5px; font-weight: 700; max-width: min(46ch, 100%); line-height: 1.25; }
+@media (max-width: 760px) {
+  .demobar { gap: 8px; padding: 8px 10px; }
+  .demobar .group.device, .demobar .lbl { display: none; }
+  .rolebtn { padding: 2px 4px; gap: 0; } .rolebtn .nm { display: none; }
+  .guide .ttl { font-size: 12.5px; }
+}
 .guide .ttl small { display: block; font-weight: 400; color: #b6bbdc; font-size: 12.5px; }
 .dbtn { min-height: 38px; padding: 0 14px; border-radius: 8px; background: #f6b400; color: #16130f; font-weight: 800; font-size: 13.5px; display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid #000; box-shadow: 3px 3px 0 0 #1b3fc4; }
 .dbtn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 0 #1b3fc4; }

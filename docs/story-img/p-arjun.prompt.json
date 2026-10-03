@@ -1,0 +1,10 @@
+{
+ "tool": "qwen-image-2.1 bf16 (local MCP)",
+ "prompt": "Flat vector illustration portrait of an Indian man in his mid-thirties, a platform administrator at a food company, short neat black hair, trimmed beard, rectangular glasses, navy blue polo shirt with a lanyard and ID card, friendly slight smile, bust framing facing the viewer, plain warm cream background, one soft diagonal drop shadow behind him, clean minimal corporate illustration style with smooth flat colours and no outlines, no text",
+ "seed": 404,
+ "size": 1024,
+ "steps": 40,
+ "transparent": false,
+ "generatedAt": "2026-10-03T07:00:45Z",
+ "person": "Arjun Nair, platform admin (fictional)"
+}

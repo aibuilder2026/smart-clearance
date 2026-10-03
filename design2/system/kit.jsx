@@ -36,10 +36,12 @@
 
   /* ---------- container width (the .app is the container, not the window) ---------- */
   const VWCtx = createContext(1440);
+  const AppElCtx = createContext(null);
   function VWProvider({ children, targetRef }) {
-    const [w, setW] = useState(1440);
-    useLayoutEffect(() => { const el = targetRef.current; if (!el) return; const ro = new ResizeObserver(e => setW(e[0].contentRect.width)); ro.observe(el); setW(el.getBoundingClientRect().width); return () => ro.disconnect(); }, [targetRef]);
-    return <VWCtx.Provider value={w}>{children}</VWCtx.Provider>;
+    const [w, setW] = useState(() => (targetRef.current ? targetRef.current.getBoundingClientRect().width : window.innerWidth));
+    // the measured element is usually an ancestor of this provider, so its ref attaches after our layout effect: measure in a passive effect and retry briefly
+    useEffect(() => { let ro, raf, tries = 0; const attach = () => { const el = targetRef.current; if (!el) { if (tries++ < 20) raf = requestAnimationFrame(attach); return; } ro = new ResizeObserver(e => setW(e[0].contentRect.width)); ro.observe(el); setW(el.getBoundingClientRect().width); }; attach(); return () => { if (ro) ro.disconnect(); if (raf) cancelAnimationFrame(raf); }; }, [targetRef]);
+    return <VWCtx.Provider value={w}><AppElCtx.Provider value={targetRef}>{children}</AppElCtx.Provider></VWCtx.Provider>;
   }
   const useVW = () => useContext(VWCtx);
   const usePhone = () => useVW() < 760;
@@ -233,7 +235,8 @@
     const reduce = useReducedMotion();
     const spring = reduce ? { duration: 0.01 } : { type: "spring", stiffness: 420, damping: 40 };
     useEffect(() => { if (!open) return; const k = e => e.key === "Escape" && onClose(); document.addEventListener("keydown", k); return () => document.removeEventListener("keydown", k); }, [open]);
-    return <AnimatePresence>{open && <React.Fragment key="sheet">
+    const appRef = useContext(AppElCtx); const host = appRef && appRef.current;
+    const body = <AnimatePresence>{open && <React.Fragment key="sheet">
       <motion.div key="scrim" className="scrim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduce ? 0.01 : 0.2 }} onClick={onClose} />
       <motion.div key="panel" role="dialog" aria-modal="true" aria-label={title} className={cx("sheet", bottom ? "sheet-bottom" : "sheet-side")} initial={bottom ? { y: "100%" } : { x: "100%" }} animate={{ x: 0, y: 0 }} exit={bottom ? { y: "100%" } : { x: "100%" }} transition={spring}>
         <div className="sh"><h2>{title}</h2><button type="button" className="iconbtn" aria-label="Close" onClick={onClose}><Icon name="x" /></button></div>
@@ -241,6 +244,7 @@
         {footer && <div className="sf">{footer}</div>}
       </motion.div>
     </React.Fragment>}</AnimatePresence>;
+    return host ? ReactDOM.createPortal(body, host) : body;
   }
   const ToastCtx = createContext({ push: () => {}, toast: () => {} });
   function ToastHost({ children, resetKey }) {
@@ -332,7 +336,8 @@
   function Label({ batch, product, hot, onOpen, img, action, children, state }) {
     const st = state || batch.zone;
     const ticksTotal = 12, rem = Math.max(0, Math.min(12, Math.round((batch.days / 180) * 12)));
-    return <button type="button" className={cx("label", st === "zepto" || st === "blinkit" ? "gated" : st, hot && "hot")} onClick={onOpen} aria-label={`${product.name}, ${batch.days} days left, ${batch.cartons} cartons at ${batch.where}`}>
+    const open = e => { if (!onOpen) return; if (e.target.closest && e.target.closest("button, a") && e.target.closest("button, a") !== e.currentTarget) return; onOpen(e); };
+    return <div role={onOpen ? "button" : undefined} tabIndex={onOpen ? 0 : undefined} className={cx("label", st === "zepto" || st === "blinkit" ? "gated" : st, hot && "hot", onOpen && "clickable")} onClick={open} onKeyDown={e => { if (onOpen && (e.key === "Enter" || e.key === " ") && e.target === e.currentTarget) { e.preventDefault(); onOpen(e); } }} aria-label={`${product.name}, ${batch.days} days left, ${batch.cartons} cartons at ${batch.where}`}>
       {hot && <span className="ring" aria-hidden="true" />}
       <div className="lh"><span>{product.brand || "MUNCHLY"}</span><span className="id">{batch.id}</span></div>
       <div className="lb">
@@ -345,7 +350,7 @@
         {img && <img className="plateimg" src={img} alt="" />}
       </div>
       <div className="lf"><span>Best before {batch.bestBefore}</span>{action || <span className="chip mono">{batch.sell} /day</span>}</div>
-    </button>;
+    </div>;
   }
   function Notice({ who = "Watcher", when, children, tone }) {
     return <Plate className="notice" reg>

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Smart-Clearance demo v2</title>
+<meta name="description" content="Nine moments, six people, one batch: the guided Smart-Clearance walkthrough on the label world, in Day and Night.">
+<link rel="stylesheet" href="system/tokens.css">
+<link rel="stylesheet" href="system/base.css">
+<link rel="stylesheet" href="system/components.css">
+<link rel="stylesheet" href="system/stage.css">
+<link rel="stylesheet" href="demo.css">
+<script>
+  // plates ship from the repo, pinned to a commit; locally they come from the system folder
+  window.SC2_IMG = /claudeusercontent\.com$/.test(location.hostname) ? "https://raw.githubusercontent.com/aibuilder2026/smart-clearance/6f80c26a50e85473e126a34279ef3ceb39c058e6/design2/system/img/" : "system/img/";
+</script>
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/framer-motion@11.18.2/dist/framer-motion.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script src="data.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react" src="system/kit.jsx"></script>
+<script type="text/babel" data-presets="react" src="screens-brand.jsx"></script>
+<script type="text/babel" data-presets="react" src="screens-trade.jsx"></script>
+<script type="text/babel" data-presets="react" src="app.jsx"></script>
+</body>
+</html>
