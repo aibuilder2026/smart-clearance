@@ -1,0 +1,25 @@
+/* Smart-Clearance prototype · adjustments from the review rounds (folded into styles.css at the finish) */
+.page, .stack, .stack-lg, .stack-sm, .case, .exec, .board, .main-col { align-content: start; }
+.card { color: var(--ink); }
+.labelcard > .stack-sm { align-content: start; }
+.labelcard .btn { justify-self: start; }
+.door .dn { padding-right: 24px; }
+.offer, .hero-push { max-width: 680px; }
+.signin .roles { max-width: 640px; }
+.device.phone .app { padding-top: 0; }
+.device.phone .shell, .device.phone .signin, .device.phone .cam { top: 34px; }
+/* finish review: cards go quiet, the hot card breathes */
+.bcard { padding-left: 12px; } .bcard .sw { display: none; }
+.bcard .ring { position: absolute; inset: -2px; border-radius: 16px; border: 2px solid var(--red); pointer-events: none; }
+/* finish review: push cards carry the sender in the mark, the time beside the title */
+.push .ph { display: none; } .push .pt { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; } .push .pwhen { font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); font-weight: 400; white-space: nowrap; }
+.paper .stamp { display: none; }
+@container app (max-width: 759px) {
+  .push { grid-template-columns: 36px minmax(0, 1fr); }
+  .push .pa { grid-column: 2; justify-self: start; }
+  .toasts { top: 8px; }
+}
+/* verdict pass: pushes sit below the top bar so the bell, its badge and the aside heading stay readable */
+@container app (min-width: 760px) { .toasts { left: auto; right: 332px; top: 72px; width: min(380px, 50%); z-index: 29; } }
+@container app (min-width: 1100px) { .toasts { right: 352px; } }
+@container app (min-width: 760px) and (max-width: 1099px) { .zone.risk { grid-column: 1 / -1; order: -1; } }
