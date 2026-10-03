@@ -318,6 +318,7 @@
 .tile { display: grid; gap: 4px; padding: 12px 14px; border: var(--kl) solid var(--keyline); border-radius: var(--r-md); background: var(--stock-2); min-width: 120px; perspective: 600px; }
 .tile .tv { font-family: var(--font-display); font-size: var(--fs-3xl); line-height: 1; font-variant-numeric: tabular-nums; transform-style: preserve-3d; }
 .tile .tl { font-size: var(--fs-xs); font-weight: 700; color: var(--ink-2); }
+.tile.long .tv { font-size: var(--fs-2xl); }
 .tile.ultra { background: var(--ultra-field); color: var(--ultra-field-fg); } .tile.ultra .tl { color: var(--chrome-bar-fg-2); }
 .tile.emerald { background: var(--emerald-field); color: var(--emerald-field-fg); } .tile.emerald .tl { color: inherit; opacity: .85; }
 .tile.chrome { background: var(--chrome-field); color: var(--chrome-field-fg); } .tile.chrome .tl { color: inherit; opacity: .85; }

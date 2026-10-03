@@ -311,7 +311,8 @@
   }
   function LiveTile({ value, label, tone, format = x => x, className }) {
     const reduce = useReducedMotion();
-    return <div className={cx("tile", tone, className)}>
+    const shown = format(value); const long = String(shown).replace(/\s/g, "").length > 6;
+    return <div className={cx("tile", tone, long && "long", className)}>
       <div className="tv" aria-live="polite"><AnimatePresence mode="popLayout" initial={false}>
         <motion.span key={String(value)} style={{ display: "inline-block" }} initial={reduce ? { opacity: 0 } : { rotateX: 90, opacity: 0, y: -10 }} animate={{ rotateX: 0, opacity: 1, y: 0 }} exit={reduce ? { opacity: 0 } : { rotateX: -90, opacity: 0, y: 10 }} transition={{ duration: reduce ? 0.01 : 0.32, ease: [0.16, 1, 0.3, 1] }}>{format(value)}</motion.span>
       </AnimatePresence></div>

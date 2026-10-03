@@ -2,7 +2,7 @@
 // Collections are plain arrays of documents with string ids. Every write bumps a version and notifies subscribers.
 (function () {
   const KEY = "sc2-app-db", VERSION = 3;
-  const PORTRAITS = "https://raw.githubusercontent.com/aibuilder2026/smart-clearance/main/docs/story-img/";
+  const PORTRAITS = "https://raw.githubusercontent.com/aibuilder2026/smart-clearance/30718043164e40de483d12b6df2f154939c39d6d/docs/story-img/";
   const IMG = window.SC2_IMG || "system/img/";
   const now = () => new Date().toISOString();
   const daysAgo = n => new Date(Date.now() - n * 864e5).toISOString();
