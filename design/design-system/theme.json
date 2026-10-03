@@ -1,0 +1,29 @@
+{
+  "name": "Smart-Clearance",
+  "version": "1.0.0",
+  "color": {
+    "bg": "#f3f6f2", "surface": "#ffffff", "surface-2": "#e9efe9", "surface-3": "#dfe7df",
+    "ink": "#15201b", "ink-2": "#4e5c55", "ink-3": "#6f7d76", "line": "#d5ded8", "line-2": "#c3cfc7",
+    "green": "#176b4e", "green-700": "#0f4d37", "green-soft": "#dcefe5", "green-2": "#2fd27a",
+    "amber": "#e3b74d", "amber-ink": "#5a3d03", "amber-soft": "#fbefcf",
+    "red": "#b4232c", "red-soft": "#fbe3e4", "purple": "#4c2a9c", "purple-soft": "#e9e2f7", "blue": "#2a5fa8", "blue-soft": "#e8f1fb",
+    "orange": "#c56a1f", "orange-soft": "#fbe8d6", "donate": "#0f8a5f", "idle": "#b9c6bf",
+    "zone": { "safe": "#d9efe2", "zepto": "#e9f0d9", "blinkit": "#fbefcf", "risk": "#fbe3e4", "cleared": "#dcefe5" },
+    "chrome": { "stage": "#0f1512", "rail": "#0f1a15", "note": "#0f1a15" }
+  },
+  "font": {
+    "display": "Bricolage Grotesque", "body": "IBM Plex Sans", "mono": "IBM Plex Mono", "hindi": "Noto Sans Devanagari",
+    "scale": { "h1": 28, "h2": 22, "h3": 18, "h4": 16, "body": 16, "card": 15, "small": 14, "tiny": 13, "numeral": 40 },
+    "lineHeight": 1.5, "displayTracking": "-0.02em"
+  },
+  "space": [4, 8, 10, 12, 14, 16, 20, 28],
+  "radius": { "sm": 8, "md": 12, "lg": 16, "xl": 22, "sheet": 22, "phone": 36, "pill": 999 },
+  "shadow": {
+    "1": "0 1px 2px rgba(21,32,27,.06), 0 4px 14px rgba(21,32,27,.06)",
+    "2": "0 6px 18px rgba(21,32,27,.10), 0 18px 48px rgba(21,32,27,.12)",
+    "3": "0 12px 30px rgba(21,32,27,.16), 0 40px 90px rgba(21,32,27,.22)"
+  },
+  "motion": { "easeOut": "cubic-bezier(.2,.8,.2,1)", "state": "150-350ms", "spring": { "stiffness": "380-500", "damping": "32-40" }, "countUp": "0.9s", "stagger": "50-80ms" },
+  "breakpoints": { "container": true, "tablet": 760, "desktop": 1100 },
+  "targets": { "minHit": 44, "input": 48 }
+}

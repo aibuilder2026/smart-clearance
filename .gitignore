@@ -7,3 +7,4 @@ video/my-voice/
 .impeccable/
 docs/story-img/*.png
 video/clips/*.json
+.playwright-mcp/
