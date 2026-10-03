@@ -169,9 +169,6 @@ p { margin: 0; text-wrap: pretty; }
 .stepper { display: inline-flex; align-items: center; border: 1.5px solid var(--line-2); border-radius: 12px; overflow: hidden; }
 .stepper button { width: 48px; height: 48px; display: grid; place-items: center; font-size: 20px; } .stepper button:hover { background: var(--surface-2); }
 .stepper output { min-width: 60px; text-align: center; font-family: var(--mono); font-size: 18px; font-weight: 500; }
-.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; }
-.tabs button { min-height: 44px; padding: 0 14px; font-weight: 600; color: var(--ink-2); border-bottom: 3px solid transparent; margin-bottom: -1px; white-space: nowrap; }
-.tabs button[aria-selected="true"] { color: var(--green); border-bottom-color: var(--green); }
 .empty { padding: 36px 16px; text-align: center; color: var(--ink-2); }
 .skeleton { background: linear-gradient(90deg, var(--surface-2) 25%, #f4f7f4 50%, var(--surface-2) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 8px; }
 @keyframes shimmer { to { background-position: -200% 0; } }

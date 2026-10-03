@@ -20,5 +20,6 @@
   .toasts { top: 8px; }
 }
 /* verdict pass: pushes sit below the top bar so the bell, its badge and the aside heading stay readable */
-@container app (min-width: 760px) { .toasts { left: auto; right: 20px; top: 72px; width: min(380px, 60%); } }
+@container app (min-width: 760px) { .toasts { left: auto; right: 332px; top: 72px; width: min(380px, 50%); z-index: 29; } }
+@container app (min-width: 1100px) { .toasts { right: 352px; } }
 @container app (min-width: 760px) and (max-width: 1099px) { .zone.risk { grid-column: 1 / -1; order: -1; } }
