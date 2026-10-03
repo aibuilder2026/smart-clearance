@@ -47,12 +47,12 @@
 - **Design v3** (SC-12 to SC-15, PR #7): the design system, the guided demo and the app prototype, published to Claude Design and pinned to commits.
 - **SC-16** (PR #8): the demo's top bar now sits above the device frames, so the Appearance menu opens over them.
 - **SC-17** (PR #9): accessibility tooling from aitmpl (the auditor agent, three skills and the Chrome DevTools MCP), plus the `design3/a11y` suite.
-- **SC-18** (branch `SC-18-wcag-fixes`, In Review, not merged): every axe WCAG 2.2 AA failure is fixed, and the suite passes with zero violations.
+- **SC-18** (PR #10): every axe WCAG 2.2 AA failure is fixed, and the suite passes with zero violations.
   - Sheets and alerts take focus, trap it and return it; inside device previews they stay non-modal.
   - Numerals are read out from visually hidden text.
   - Scroll regions are focusable.
   - Contrast is fixed in five places.
-  - The hosted pages already load its commit `fe559a7`.
+  - The hosted pages load its commit `fe559a7`, which is now part of `main`.
 - **SC-19** (To Do): the sign-in hero loops with no pause (WCAG 2.2.2), and the menus claim the ARIA menu pattern without arrow-key support.
-- **SC-20:** this file and `AGENTS.md`.
+- **SC-20** (PR #11): this file and `AGENTS.md`.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
