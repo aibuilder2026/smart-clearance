@@ -10,7 +10,7 @@ web
 
 ## Stack
 
-Installable PWA: SvelteKit 3 + Svelte 5 (adapter-static) on Firebase Hosting, Firebase Auth (Google for brand staff, phone OTP for distributors and retailers, demo "Sign in as" accounts for judges), FCM web push with an in-app inbox, Tailwind 4 and shadcn-svelte; agents on Google Cloud Run (Google ADK, Gemini on Vertex AI). The design prototype in Claude Design is React + framer-motion *(inferred: the user asked for framer animations in the prototype)*.
+Installable PWA: SvelteKit 3 + Svelte 5 (adapter-static) on Firebase Hosting, Firebase Auth (Google for brand staff, phone OTP for distributors and retailers, demo "Sign in as" accounts for judges: the six role people plus the admin), FCM web push with an in-app inbox, Tailwind 4 and shadcn-svelte; agents on Google Cloud Run (Google ADK, Gemini on Vertex AI). The design prototype in Claude Design is React + framer-motion *(inferred: the user asked for framer animations in the prototype)*.
 
 ## Users
 
@@ -20,6 +20,7 @@ Installable PWA: SvelteKit 3 + Svelte 5 (adapter-static) on Firebase Hosting, Fi
 - **Venkat**, Sri Venkateswara Traders, Hyderabad (ExpireSoon buyer). Job: see dates and the label photo, bid, get a fair counter, pay a token. *(ExpireSoon is a mocked marketplace.)*
 - **Anita Rao**, finance and GST at Munchly. Job: the invoice, credit note, e-way bill check and ITC memo without chasing.
 - **Vikram Sethi**, sustainability at Munchly. Job: a BRSR waste line with evidence an auditor can follow.
+- **Arjun Nair**, platform admin at Munchly. Job: invite and deactivate people, set the rules the agents run by (app gates, floor price, caps, approval policy), watch the integrations and the audit log. The seventh demo account.
 - **Hackathon judges**: sign in as any role in demo mode and follow one batch end to end in about six minutes.
 
 ## Product Purpose
@@ -41,7 +42,8 @@ The only tool that combines the quick-commerce shelf-life gates (Blinkit 90+ day
 
 ## Capabilities and Constraints
 
-- Screens named in the plan: Sign in, Command Center (at-risk batches, gates, countdowns), Route Room (label card, channel table and chart, split and money panel, approve sheet), Execution (API call card, retailer orders, negotiation chat), ExpireSoon listing (buyer view), Paperwork (document pack with status and preview), Finance & ESG dashboard (ledger, BRSR export), notification inbox with unread badge; distributor photo capture; retailer offer and order.
+- Screens in design v2 (design2/): the sheet (Today) with the Watcher's notice, batch detail with verification, plan, execution, documents and timeline tabs, Approvals, Orders, Partners, Reports; Documents, Ledger and GST for finance; Impact, BRSR and Evidence for sustainability; Users, Rules, Systems and Audit for the admin; distributor home, label photos, van rounds, orders and stock; retailer offers, orders and shop; buyer listings, bids and orders; food-bank pickups; profile and settings; a notifications sheet. The guided demo keeps the nine moments as one batch across six people.
+- Screens named in the original plan (v1 names): Sign in, Command Center (at-risk batches, gates, countdowns), Route Room (label card, channel table and chart, split and money panel, approve sheet), Execution (API call card, retailer orders, negotiation chat), ExpireSoon listing (buyer view), Paperwork (document pack with status and preview), Finance & ESG dashboard (ledger, BRSR export), notification inbox with unread badge; distributor photo capture; retailer offer and order.
 - Money shown before any yes; nothing is listed, messaged or shipped before the approval tap. ITC treatment is labelled indicative.
 - Medicines are out of scope. ExpireSoon and the food-bank partner are mocked in the prototype.
 - Mobile hit targets never below 44 px; works at 390, 820 and 1440 px; installable PWA.
@@ -49,7 +51,13 @@ The only tool that combines the quick-commerce shelf-life gates (Blinkit 90+ day
 
 ## Brand Commitments
 
-Name: Smart-Clearance. Tagline: "Every carton gets a second chance, chosen by AI." Hindi line: हर कार्टन को दूसरा मौका. Established identity across the journey map, tech-stack document, story and video: deep green #176b4e with amber #e3b74d, red for risk, purple for the ExpireSoon marketplace, blue for push notifications; Bricolage Grotesque for display, IBM Plex Sans for text, IBM Plex Mono for data, Noto Sans Devanagari for Hindi. The agent's mark is a green rounded square with "SC" and an amber dot. Portraits of the seven people exist in docs/story-img/p-*.jpg. Internal name of the routing engine: Short-Date Router.
+Name: Smart-Clearance. Tagline: "Every carton gets a second chance, chosen by AI." Hindi line: हर कार्टन को दूसरा मौका. Internal name of the routing engine: Short-Date Router.
+
+Identity v2 (design2, SC-7, 3 Oct 2026), carried by the design system, the guided demo and the application: "the product prints". Sivakasi matchbox and firecracker label chromolithography as a working system, in two editions of label stock, Day #f2eee4 and Night #101433. Seven inks with fixed jobs: ultramarine #1b3fc4 for the chrome and structure, emerald #0e7a4a for the agent and the primary action, chrome yellow #f6b400 for the human yes, vermilion #c92d18 for risk and the bin, violet #5a2fb7 only for ExpireSoon, kraft #c9924f for the carton, ink black #16130f for every keyline. Colour lives inside bordered plates and chrome fields, never as tints washed over text. Type: Bungee with Bungee Shade as the second ink for the mark, label titles and display numerals; Anek Latin and Anek Devanagari for every operational word, Latin and Hindi in step; Azeret Mono for ids, times and tabular money. The mark is an ultramarine plate with "SC" printed in vermilion and chrome yellow in register and a sun at its corner; the splash prints it ink by ink, and every change of state arrives as a plate snapping into register. Tokens, components and plates live in design2/system; DESIGN.md records the system.
+
+The v1 identity (deep green #176b4e with amber #e3b74d, red for risk, purple for ExpireSoon, blue for push; Bricolage Grotesque, IBM Plex Sans, IBM Plex Mono, Noto Sans Devanagari; the green rounded-square mark) remains in the earlier documents (journey map, tech-stack document, story, video) and the v1 prototype under design/.
+
+Portraits of the six people and the admin exist in docs/story-img/p-*.jpg; label plates and role emblems in design2/system/img/ (WebP, each with a .prompt.json provenance sidecar).
 
 ## Evidence on Hand
 
