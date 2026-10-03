@@ -57,7 +57,7 @@
   - the sign-in hero has a remembered "Pause animation" control (WCAG 2.2.2);
   - every menu follows the WAI-ARIA menu-button pattern;
   - keyboard tests cover both.
-- **SC-21** (branch `SC-21-finite-loops`, In Review): every loop stops within five seconds (WCAG 2.2.2).
+- **SC-21** (PR #13): every loop stops within five seconds (WCAG 2.2.2).
   - Pings, aura, typing dots, renders, scanline, map pin and the demo rings all stop.
   - The sign-in hero plays once and offers Replay.
   - `motion.a11y.spec.ts` fails on any endless animation.
