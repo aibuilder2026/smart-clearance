@@ -8,7 +8,6 @@
 	// the splash: shown once a session, tap to skip; reduced motion arrives already drawn (the kit's Splash)
 	type Props = { ondone?: () => void; hold?: number; workspace?: Workspace & { name: string } };
 	let { ondone, hold = 2300, workspace }: Props = $props();
-	// svelte-ignore state_referenced_locally
 	const reduce = prefersReducedMotion.current;
 	let leaving = $state(false);
 	onMount(() => {
@@ -29,7 +28,7 @@
 </script>
 
 {#if !leaving}
-	<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions (tapping anywhere skips; it ends by itself) -->
+	<!-- tapping anywhere skips it; it ends by itself, so it needs no key of its own -->
 	<div class="splash" role="presentation" onclick={() => (leaving = true)} out:away onoutroend={() => ondone?.()}>
 		<div class="ground" aria-hidden="true"></div>
 		<div class="sp-inner">
