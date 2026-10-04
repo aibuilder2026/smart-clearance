@@ -1,0 +1,13 @@
+{
+  "name": "approve-night",
+  "model": "Qwen-Image-2.1 bf16 (local), edit_image",
+  "prompt": "Change the time of day to a clear night and keep everything else exactly: the same camera, framing, composition, buildings, shops, vehicles, carts, trees and tiny people in the same places and the same sizes. Deep navy-blue night sky with a few small faint stars where sky is visible, and distant hills as dark silhouettes. Warm yellow light glowing from shop windows and a few small street lamps. Any glowing green path stays and glows brighter against the dark ground. The ground and buildings are dark and moody, lit only by the shop windows, street lamps and the green path. Every shop signboard is a plain dark board with no letters, numbers or symbols on it. Tilt-shift miniature diorama photograph style, no text. The giant amber push-button glows softly from within, warm amber, the brightest thing in the square, lighting the woman beside it. This square has no green path, so add no green light or glow anywhere on the ground. Seen from above, the town fills the frame right up to the top edge exactly as in the original, with no band of sky added; nothing moves or changes size.",
+  "reference": "design3/site/assets/plates/src/approve.png, the approved day plate 'approve'",
+  "seed": 3422,
+  "size": 2048,
+  "output": "2432x1728",
+  "attempts": 2,
+  "created": "2026-10-04",
+  "postprocess": "WebP q82; the PNG original stays local in src/",
+  "use": "the 'Nine stops' square in dark mode"
+}

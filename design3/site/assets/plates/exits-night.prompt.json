@@ -1,0 +1,13 @@
+{
+  "name": "exits-night",
+  "model": "Qwen-Image-2.1 bf16 (local), edit_image",
+  "prompt": "Change the time of day to a clear night and keep everything else exactly: the same camera, framing, composition, buildings, shops, vehicles, carts, trees and tiny people in the same places and the same sizes. Deep navy-blue night sky with a few small faint stars where sky is visible, and distant hills as dark silhouettes. Warm yellow light glowing from shop windows and a few small street lamps. Any glowing green path stays and glows brighter against the dark ground. The ground and buildings are dark and moody, lit only by the shop windows, street lamps and the green path. Every shop signboard is a plain dark board with no letters, numbers or symbols on it. Tilt-shift miniature diorama photograph style, no text. The rubbish heap at the right end still smoulders, its thin smoke faintly lit by a street lamp.",
+  "reference": "design3/site/assets/plates/src/exits.png, the approved day plate 'exits'",
+  "seed": 3321,
+  "size": 2048,
+  "output": "4256x992",
+  "attempts": 1,
+  "created": "2026-10-04",
+  "postprocess": "WebP q82; the PNG original stays local in src/",
+  "use": "the 'Five exits, one batch' street in dark mode"
+}
