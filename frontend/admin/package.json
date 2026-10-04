@@ -14,7 +14,7 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
 		"test": "vitest run",
 		"test:e2e": "PUBLIC_DEV_ROUTES=1 vite build && playwright test",
-		"test:parity": "playwright test -c playwright.parity.config.ts"
+		"test:parity": "PUBLIC_DEV_ROUTES=1 vite build && playwright test -c playwright.parity.config.ts"
 	},
 	"dependencies": {
 		"@smart-clearance/core": "workspace:*",
@@ -30,6 +30,7 @@
 		"@tailwindcss/vite": "^4.3.3",
 		"@testing-library/svelte": "catalog:",
 		"@types/node": "catalog:",
+		"@types/pngjs": "^6.0.5",
 		"jsdom": "catalog:",
 		"pixelmatch": "^7.2.0",
 		"pngjs": "^7.0.0",
