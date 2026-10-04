@@ -187,6 +187,22 @@
   @media (max-width: 700px) { .stage .split2 { grid-template-columns: minmax(0, 1fr); } }
   .stage .split2 > div { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px; min-width: 0; }
   .stage .stampover { position: relative; }
+  /* old and new side by side: the story's v5 illustration beside the v3 product design */
+  .pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px 24px; align-items: center; width: 100%; }
+  @media (max-width: 820px) { .pair { grid-template-columns: minmax(0, 1fr); } }
+  .epi .pair { grid-template-columns: minmax(0, 1fr); }
+  .then, .now { margin: 0; display: grid; gap: 8px; min-width: 0; }
+  .then img { display: block; width: 100%; max-width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; border: 1px solid var(--line); background: var(--surface-2); }
+  .then figcaption, .now .tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); justify-self: start; }
+  .then figcaption { order: -1; }
+  .now { justify-items: stretch; align-self: stretch; align-content: center; }
+  .now .row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px 18px; width: 100%; }
+  .pair .r { width: clamp(120px, 13vw, 170px); }
+  .pair .r.sm { width: clamp(100px, 11vw, 140px); }
+  .pair .photo { width: min(300px, 100%); }
+  .pair .push, .pair .appcard, .pair .esm { width: min(320px, 100%); }
+  .pair .doors { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width: 560px) { .pair .doors { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   .stage .stampover .stamp { position: absolute; left: 50%; top: 44%; transform: translate(-50%, -50%) rotate(-8deg); border: 3px solid var(--urgent); color: var(--urgent); background: var(--glass); font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: 0.06em; padding: 5px 10px; border-radius: 6px; white-space: nowrap; }
 
   /* phone UI vignettes, drawn in the app's own look */
@@ -628,13 +644,19 @@
     <div class="top"><span class="n">2</span><span class="t">The warning</span><span class="st">Stage 2 · Detect</span><span class="w">Day 0 · Friday 2 Oct, 09:00 · Priya's desk, Pune</span></div>
     <div class="hook">Priya's chai is still hot when her phone buzzes. Fifty-seven cartons, 700 kilometres away, have just run out of time.</div>
     <div class="stage">
+        <div class="pair">
+          <figure class="then"><img src="img/scenes/03-priya.jpg" alt="Priya at her desk looking at a push notification on her phone" width="1376" height="768" loading="lazy"><figcaption>Story illustration, v5</figcaption></figure>
+          <div class="now"><span class="tag">Product design, v3</span><div class="row">
       <img class="r" src="img/v3/pack-chips.webp" alt="A packet of Munchly Masala Chips" width="768" height="768">
       <div class="push">
         <div class="ph"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#mk"/></svg><span>Smart-Clearance</span><span class="when">09:00</span></div>
         <b>1,360 units will not sell in time</b>
         <span>Priya ji, Nagpur godown mein Masala Chips 150g (batch MF-2409-117) ki 1,360 units 18 Nov se pehle nahi bikengi. Q-commerce block hai. Route dekhne ke liye tap karein.</span>
       </div>
-    </div>
+    
+          </div></div>
+        </div>
+      </div>
     <div class="body2">
       <div>
         <p class="cap">Every morning the Watcher runs each distributor's batches through the three quick-commerce gates and projects sales to the best-before date. Shops will not take stock in its last week, so the projection stops seven days early. Today batch MF-2409-117 fails all three gates, which means Rakesh can no longer ship it to the Nagpur warehouses at all. Only his kiranas are left, and at 12 packets a day for 40 usable days they will sell 480 of the 1,840.</p>
@@ -663,9 +685,15 @@
     <div class="top"><span class="n">3</span><span class="t">The photo</span><span class="st">Stage 3 · Verify</span><span class="w">09:05 to 09:20 · Rakesh Traders' godown, Kalamna Market, Nagpur</span></div>
     <div class="hook">Before a single rupee is quoted, the agent wants to see the carton. Rakesh bhai's phone is its eyes.</div>
     <div class="stage">
+        <div class="pair">
+          <figure class="then"><img src="img/scenes/04-rakesh.jpg" alt="Rakesh bhai photographing a carton label with his phone in the godown" width="1376" height="768" loading="lazy"><figcaption>Story illustration, v5</figcaption></figure>
+          <div class="now"><span class="tag">Product design, v3</span><div class="row">
       <img class="r" src="img/v3/phone-scan.webp" alt="A phone camera framing a carton label" width="768" height="768">
       <div class="photo-wrap"><img class="photo" src="img/v3/label-photo.webp" alt="Rakesh's photo of an open Munchly carton of chips on shelf B4" width="1100" height="614"><span class="ok">verified · 0.97</span></div>
-    </div>
+    
+          </div></div>
+        </div>
+      </div>
     <div class="body2">
       <div>
         <p class="cap">Distributor stock data in India is often a week out of date, so the agent asks for the truth from the godown floor. Rakesh bhai taps the notification, the app's camera opens, and he photographs one carton on shelf B4. Gemini reads the batch number, dates and MRP and checks them against the stock export. Had they differed, the agent would have rerun the risk on the photo's date and flagged the record. The photo becomes the listing image and the audit evidence for the BRSR line.</p>
@@ -694,6 +722,9 @@
     <div class="top"><span class="n">4</span><span class="t">Five doors</span><span class="st">Stage 4 · Value</span><span class="w">09:21 · inside the Valuer</span></div>
     <div class="hook">Every packet has five ways out of the godown. Three of them pay. The last two cost money, and the bin costs the most.</div>
     <div class="stage">
+        <div class="pair">
+          <figure class="then"><img src="img/scenes/05-doors-v6.jpg" alt="Five doors in a row with price tags; a small green agent holds a carton in front of them" width="1151" height="768" loading="lazy"><figcaption>Story illustration, v5</figcaption></figure>
+          <div class="now"><span class="tag">Product design, v3</span><div class="row">
       <div class="doors">
         <div class="door"><img src="img/v3/kirana.webp" alt="" width="768" height="768"><b>Kirana scheme</b><span>₹18 effective · 20+ days · up to 588</span><span class="net">+₹17.50</span></div>
         <div class="door es"><img src="img/v3/marketplace-bag.webp" alt="" width="768" height="768"><b>ExpireSoon</b><span>₹15 · 30+ days · no limit</span><span class="net">+₹15.00</span></div>
@@ -701,7 +732,10 @@
         <div class="door meh"><img src="img/v3/donation-crate.webp" alt="" width="768" height="768"><b>Food bank</b><span>₹0 · 15+ days · credit reversed</span><span class="net">−₹1.40</span></div>
         <div class="door bad"><div class="bin"><svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true"><path d="M14 18 H50 M24 18 V12 H40 V18 M18 18 L21 54 H43 L46 18" fill="none" stroke="var(--urgent)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M28 27 V46 M36 27 V46" stroke="var(--urgent)" stroke-width="3" stroke-linecap="round"/></svg></div><b>Write-off</b><span>destroy · last resort</span><span class="net">−₹19.36</span></div>
       </div>
-    </div>
+    
+          </div></div>
+        </div>
+      </div>
     <div class="body2">
       <div>
         <p class="cap">For the 1,360 packets at risk, the Valuer builds one table: what each door pays, how many days it needs, how many packets it can take, what it costs to use, and whether Munchly's GST credit survives. A sale keeps the credit. A donation or a write-off reverses it. Munchly's own discount site is not a door this time, because this stock belongs to Rakesh and those partners are in Pune and Mumbai. The staff sale happens at Rakesh's godown with Rakesh as the seller, capped at 50 packets so it never becomes the default.</p>
@@ -776,16 +810,21 @@
     <div class="top"><span class="n">6</span><span class="t">Selling, two ways at once</span><span class="st">Stage 7 · Execute</span><span class="w">09:41 to about 11:45 · Nagpur kiranas and a buyer in Raipur</span></div>
     <div class="hook">In Nagpur, 38 shopkeepers get a scheme in Hindi. In Raipur, a wholesaler tries his luck with a low bid. In Hyderabad, nobody sees the listing at all.</div>
     <div class="stage">
-      <div class="split2">
-        <div>
+      <div class="pair">
+        <figure class="then"><img src="img/scenes/06-kirana.jpg" alt="Ganesh ji at his kirana counter reading the offer on his phone" width="1376" height="768" loading="lazy"><figcaption>Story illustration, v5</figcaption></figure>
+        <div class="now"><span class="tag">Product design, v3</span><div class="row">
           <img class="r sm" src="img/v3/kirana.webp" alt="Shree Ganesh Kirana, a corner shop with a green awning" width="768" height="768">
           <div class="push">
             <div class="ph"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#mk"/></svg><span>Smart-Clearance · Rakesh Traders</span><span class="when">09:41</span></div>
             <b class="hindi">आज का खास ऑफर</b>
             <span class="hindi" lang="hi">नमस्ते Shree Ganesh Kirana! Munchly Masala Chips 150g पर आज खास ऑफर: 10 पैकेट लो, 2 मुफ़्त. Best before 18 Nov 2026. सिर्फ़ 48 घंटे. ऑर्डर के लिए टैप करें · Rakesh Traders</span>
           </div>
-        </div>
-        <div>
+        
+        </div></div>
+      </div>
+      <div class="pair">
+        <figure class="then"><img src="img/scenes/07-marketplace-v6.jpg" alt="Agrawal ji at a laptop looking at the ExpireSoon listing" width="1376" height="768" loading="lazy"><figcaption>Story illustration, v5</figcaption></figure>
+        <div class="now"><span class="tag">Product design, v3</span><div class="row">
           <img class="r sm" src="img/v3/marketplace-bag.webp" alt="A purple ExpireSoon shopping bag with a date tag" width="768" height="768">
           <div class="esm">
             <div class="bar">ExpireSoon<span>near-expiry B2B · dates visible</span></div>
@@ -795,7 +834,8 @@
               <dl><dt>Best before</dt><dd>18 Nov 2026 · 47 days</dd><dt>Seller</dt><dd>Rakesh Traders, Nagpur · verified</dd><dt>Visible to</dt><dd>buyers outside Munchly's distributor territories</dd><dt>Dispatch</dt><dd>24 h after balance · buyer pays freight</dd></dl>
             </div>
           </div>
-        </div>
+        
+        </div></div>
       </div>
     </div>
     <div class="body2">
@@ -832,6 +872,9 @@
     <div class="top"><span class="n">7</span><span class="t">On the road, and back again</span><span class="st">Stage 7 · Execute</span><span class="w">Day 2 to day 7 · Nagpur rounds and the road to Raipur</span></div>
     <div class="hook">Tuesday is van day. Rakesh bhai drops a carton at Shree Ganesh Kirana and moves on to the next thirty shops.</div>
     <div class="stage">
+        <div class="pair">
+          <figure class="then"><img src="img/scenes/08-van.jpg" alt="Rakesh bhai handing a carton to Ganesh ji outside his shop, the delivery van parked at the kerb" width="1376" height="768" loading="lazy"><figcaption>Story illustration, v5</figcaption></figure>
+          <div class="now"><span class="tag">Product design, v3</span><div class="row">
       <img class="r" src="img/v3/van.webp" alt="Rakesh's delivery van loaded with cartons" width="768" height="768">
       <div class="appcard">
         <span class="k">Day 7 · shelf check · Friday 9 Oct</span>
@@ -841,7 +884,10 @@
         <div class="doc"><span>Leave the ones it can sell in time</span><span class="pill g">6 packs</span></div>
         <span style="color:var(--ink-2)">Returns go to the Nagpur staff sale or to Feeding India.</span>
       </div>
-    </div>
+    
+          </div></div>
+        </div>
+      </div>
     <div class="body2">
       <div>
         <p class="cap">Rakesh bhai's van does its normal Tuesday round on 6 October with 588 packets for 31 shops, at ₹0.50 a packet that Munchly repays. Once Agrawal Wholesale's balance lands, the buyer's own transporter collects the 772 packets within 24 hours; Rakesh's staff load the truck as part of their normal godown work. On day 7, Rakesh's salesman counts the scheme packs left on each shelf and enters them in his order app. Where a shop is selling too slowly, the agent recommends bringing packs back on the next round, with no extra trip, while they still have 20 or more days on them.</p>
@@ -870,6 +916,9 @@
     <div class="top"><span class="n">8</span><span class="t">The paperwork</span><span class="st">Stage 8 · Settle</span><span class="w">Day 3 to day 7 · Rakesh's Tally and Anita's desk, Pune</span></div>
     <div class="hook">For the first time this year, a cleared batch reaches Anita as finished documents instead of a question.</div>
     <div class="stage">
+        <div class="pair">
+          <figure class="then"><img src="img/scenes/09-finance.jpg" alt="Anita at her desk with four documents and a green stamp" width="1376" height="768" loading="lazy"><figcaption>Story illustration, v5</figcaption></figure>
+          <div class="now"><span class="tag">Product design, v3</span><div class="row">
       <img class="r" src="img/v3/documents.webp" alt="A stack of documents with a green tick" width="768" height="768">
       <div class="appcard">
         <span class="k">Paperwork · MF-2409-117</span>
@@ -879,7 +928,10 @@
         <div class="doc"><span>GST input-credit memo</span><span class="pill g">generated</span></div>
         <div class="doc"><span>FSSAI checklist, destruction certificate</span><span class="pill n">not required</span></div>
       </div>
-    </div>
+    
+          </div></div>
+        </div>
+      </div>
     <div class="body2">
       <div>
         <p class="cap">Rakesh owns the stock, so the sale is his. The Paperwork agent drafts his tax invoice to Agrawal Wholesale for him to issue from Tally: IGST, because the goods cross from Maharashtra to Chhattisgarh, at 5%, since chips moved from 12% to 5% under GST 2.0 on 22 September 2025. The MRP stays ₹30 on the pack; selling at a discount is fine, printing a second MRP is not. Munchly then pays Rakesh a price-support credit note, a financial note with no GST adjustment, so he ends whole at the ₹22 he paid. And because the goods were sold under tax invoices, Munchly keeps its GST credit on them.</p>
@@ -910,6 +962,9 @@
     <div class="top"><span class="n">9</span><span class="t">The report</span><span class="st">Stage 9 · Report</span><span class="w">After 29 Oct, then quarter end · Pune</span></div>
     <div class="hook">Three months later the same 57 cartons appear again, this time as 217.6 kilos on a page the auditor will sign.</div>
     <div class="stage">
+        <div class="pair">
+          <figure class="then"><img src="img/scenes/10-boardroom.jpg" alt="Vikram presenting a bar chart in a boardroom while Anita takes notes" width="1376" height="768" loading="lazy"><figcaption>Story illustration, v5</figcaption></figure>
+          <div class="now"><span class="tag">Product design, v3</span><div class="row">
       <img class="r" src="img/v3/sprout-box.webp" alt="An open carton with a green sprout growing from soil inside" width="768" height="768">
       <div class="appcard">
         <span class="k">BRSR Core · Principle 6 · this batch</span>
@@ -918,7 +973,10 @@
         <div class="doc"><span>Meals served</span><span class="pill n">0</span></div>
         <div class="doc"><span>Evidence</span><span class="pill n">invoice · listing · orders</span></div>
       </div>
-    </div>
+    
+          </div></div>
+        </div>
+      </div>
     <div class="body2">
       <div>
         <p class="cap">When the return window closes on 29 October, any packs that came back go to the Nagpur staff sale or Feeding India, and the price support and the ledger are corrected. Then the batch lands in one ledger with two readings. Finance reads rupees recovered, the swing against a write-off and the GST credit protected. Sustainability reads kilos diverted, CO₂e and meals. Munchly is among India's top 1,000 listed companies, so its waste goes into the BRSR report, and every line here links to its evidence: the invoice, the listing ID, the in-app orders.</p>
@@ -948,8 +1006,14 @@
       <div class="top"><span class="n">+</span><span class="t">And the Mango Drink?</span><span class="w">another batch · 22 days left · Hyderabad</span></div>
       <div class="hook">When the clock is tighter, the doors change. This time the last door before the bin is a food bank.</div>
       <div class="stage">
+        <div class="pair">
+          <figure class="then"><img src="img/scenes/11-foodbank.jpg" alt="Volunteers unloading crates of mango drink from a van" width="1376" height="768" loading="lazy"><figcaption>Story illustration, v5</figcaption></figure>
+          <div class="now"><span class="tag">Product design, v3</span><div class="row">
         <img class="r sm" src="img/v3/pack-mango.webp" alt="A Munchly Mango Drink tetra pack" width="768" height="768">
         <img class="r sm" src="img/v3/donation-crate.webp" alt="A wooden crate of mango drink packs" width="768" height="768">
+      
+          </div></div>
+        </div>
       </div>
       <div class="body2">
         <div>
@@ -974,7 +1038,13 @@
       <div class="top"><span class="n">−</span><span class="t">The old ending</span><span class="w">the same 77 cartons, without Smart-Clearance</span></div>
       <div class="hook">The same cartons, the same November. A different last week.</div>
       <div class="stage">
+        <div class="pair">
+          <figure class="then"><img src="img/scenes/12-bin.jpg" alt="A torn carton of chips thrown into a dumpster" width="1376" height="768" loading="lazy"><figcaption>Story illustration, v5</figcaption></figure>
+          <div class="now"><span class="tag">Product design, v3</span><div class="row">
         <div class="stampover"><img class="r" src="img/v3/carton-hero.webp" alt="A closed Munchly carton" width="768" height="768"><span class="stamp">EXPIRED · RETURNED · DESTROYED</span></div>
+      
+          </div></div>
+        </div>
       </div>
       <div class="body2">
         <div>
@@ -1116,7 +1186,7 @@
     <span>All names, products and prices come from the demo data set; Munchly Foods, Glowra, ExpireSoon and the people are fictional. Carton sizes, GST rules, the quick-commerce date rules and the food-bank intake rules follow real Indian practice.</span>
     <span>Cards headed Smart-Clearance are push notifications from the app; the actions happen inside the app. WhatsApp integration is future scope.</span>
     <span>Scenes map to prototype screens: 1 Setup · 2 Command Center · 3 to 5 Route Room · 6 and 7 Execution and the ExpireSoon marketplace · 8 Paperwork · 9 Finance and ESG dashboard.</span>
-    <span>Pictures are the design v3 renders and portraits, made locally with Qwen-Image 2.1, and the carton clip, made locally with LTX 2.5. Agrawal ji's portrait was made for this version.</span>
+    <span>Each scene pairs its story v5 illustration with the design v3 renders and app cards, all made locally with Qwen-Image 2.1; the carton clip was made locally with LTX 2.5. Two v5 illustrations were adjusted to match v4.1: one door was cut from the doors picture, and the buyer at the laptop was redrawn as Agrawal ji. His portrait was made for this version.</span>
   </footer>
 </div>
 
