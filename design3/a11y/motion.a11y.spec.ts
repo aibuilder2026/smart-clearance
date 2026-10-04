@@ -46,7 +46,8 @@ const STATES: [string, string, ((page) => Promise<void>)?][] = [
   ['app · Command Center, waiting on approval', APP + '#/command', async p => { await signedIn('priya')(p); await world(5)(p); }],
   ['app · Execution, agents at work', APP + '#/execution', async p => { await signedIn('priya')(p); await world(6, [...EXEC, ['order', 'k0'], ['bid', 13]])(p); }],
   ['app · van route', APP + '#/van', async p => { await signedIn('rakesh')(p); await world(7)(p); }],
-  ['app · ExpireSoon market', APP + '#/market', async p => { await signedIn('venkat')(p); await world(6, EXEC)(p); }],
+  ['app · ExpireSoon market', APP + '#/market', async p => { await signedIn('agrawal')(p); await world(6, EXEC)(p); }],
+  ['app · workspace', APP + '#/workspace', async p => { await signedIn('arjun')(p); await world(1)(p); }],
   ['demo · stage 7, live', '/demo/Smart-Clearance%20demo%20v3.html?stage=7#stage=7'],
   ['design system', '/system/Smart-Clearance%20DS%20v3.html'],
 ];

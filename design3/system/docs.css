@@ -56,3 +56,6 @@ section.ds-sec > header p { margin-top: 8px; font-size: 16px; color: var(--fg-2)
 .rule-list > div { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 14px; padding: 16px 0; box-shadow: 0 var(--hair) 0 var(--line); }
 .rule-list b { display: block; font-size: 16px; font-weight: 650; }
 .rule-list p { font-size: 14.5px; color: var(--fg-2); }
+/* the client workspace specimen: a slice of the desktop sidebar */
+.ds-sbdemo { display: grid; gap: 4px; max-width: 256px; padding: 14px 12px; border-radius: 20px; background: var(--glass); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+.ds-sbdemo .sb-ws { margin-top: 0; }

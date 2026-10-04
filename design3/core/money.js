@@ -1,5 +1,5 @@
 /* Smart-Clearance v3 · money: every figure on screen is computed here from the journey map's rules
-   (docs/dobara-journey-map.html, "Channels" and "Money and tax, worked through"). Nothing is typed twice. */
+   (docs/dobara-journey-map.html v4.1, "Channels" and "Money and tax, worked through"). Nothing is typed twice. */
 (function () {
   const RULES = {
     projectionStopDays: 7,            // retailers will not take stock in the last week
@@ -7,54 +7,61 @@
     disposalPerUnit: 1.5,             // indicative, editable in setup
     eprPerKg: 6,                      // indicative, editable in setup
     co2PerKg: 2.5,                    // indicative
-    vanPerUnit: 0.5,                  // kirana delivery
-    listingFee: 100,                  // ExpireSoon, after the first five free listings
-    courierPerUnit: 3,                // D2C
-    foodbankFreightPerUnit: 0.5,
+    vanPerUnit: 0.5,                  // kirana delivery; a planning assumption, editable in setup
+    listingFee: 100,                  // ExpireSoon, after the first five free listings (Rakesh has used his)
+    foodbankHandlingPerUnit: 0.5,
     tokenPct: 0.15,                   // ExpireSoon bid token
-    kiranaWindowDays: 14, kiranaUplift: 3.5,
-    d2cCapPct: 0.08, staffCap: 150,
+    kiranaWindowDays: 14, kiranaUplift: 3.5, shopCapTimes: 4, // scheme volume on top of normal sales; no shop over 4× its own 14-day sales
+    scheme: { buy: 10, free: 2 },     // a kirana pays the pack price for 10 and gets 2 free
+    staffCap: 50,                     // a staff sale at the distributor's godown, unless the godown sets its own cap
+    returnWindowDays: 20,             // scheme packs can go back to the distributor until 20 days before best-before
     floors: { snacks: 0.35, biscuits: 0.35, staples: 0.40, beverages: 0.30, "personal-care": 0.40 },
     ewayThreshold: 50000,
     negotiation: { reservePerUnit: 13.5, counterPctOfAsk: 0.95 },
   };
+  // the exits for a distributor's stock. Discount D2C is only for a manufacturer's own warehouse stock, so it is not here.
   const CHANNELS = [
-    { id: "expiresoon", name: "ExpireSoon listing", short: "ExpireSoon", minDays: 30, pricePct: 0.5, unlimited: true, clears: "5–9 days", icon: "shopping-bag" },
-    { id: "kirana", name: "Kirana cluster push", short: "Kirana cluster", minDays: 20, pricePct: 0.6, clears: "10–14 days", icon: "store" },
-    { id: "d2c", name: "Discount D2C", short: "Brand site", minDays: 25, pricePct: 0.5, clears: "7–12 days", icon: "globe" },
-    { id: "staff", name: "Staff sale", short: "Staff sale", minDays: 0, pricePct: 0.4, clears: "2–3 days", icon: "users" },
-    { id: "foodbank", name: "Food bank donation", short: "Food bank", minDays: 15, pricePct: 0, unlimited: true, clears: "1–2 days", icon: "heart-handshake", foodOnly: true },
-    { id: "writeoff", name: "Write-off (destroy)", short: "Write-off", minDays: 0, pricePct: 0, unlimited: true, clears: "—", icon: "trash-2", baseline: true },
+    { id: "expiresoon", name: "ExpireSoon listing", short: "ExpireSoon", minDays: 30, need: "30+ days", pricePct: 0.5, unlimited: true, clears: "5–9 days", icon: "shopping-bag" },
+    { id: "kirana", name: "Kirana cluster push", short: "Kirana cluster", minDays: 20, need: "20+ days", pricePct: 0.6, clears: "10–14 days", icon: "store" },
+    { id: "staff", name: "Staff sale", short: "Staff sale", minDays: 0, need: "until best-before", pricePct: 0.4, clears: "2–3 days", icon: "users" },
+    { id: "foodbank", name: "Food bank donation", short: "Food bank", minDays: 15, need: "15+ days, food", pricePct: 0, unlimited: true, clears: "1–2 days", icon: "heart-handshake", foodOnly: true },
+    { id: "writeoff", name: "Write-off (destroy)", short: "Write-off", minDays: 0, need: "—", pricePct: 0, unlimited: true, clears: "—", icon: "trash-2", baseline: true },
   ];
 
   const r2 = n => Math.round(n * 100) / 100;
-  const lifeOf = sku => sku.lifeDays;
+  const DAY = 86400000;
+  // a batch's own shelf life, from the dates on its label when it has them
+  const lifeOf = (batch, sku) => (batch && batch.mfg && batch.bestBefore ? Math.round((Date.parse(batch.bestBefore) - Date.parse(batch.mfg)) / DAY) : sku.lifeDays);
+  // input GST in each pack, from the cost sheet; reversed if the pack is destroyed or given away
+  const itcOf = sku => (sku.itcPerUnit != null ? sku.itcPerUnit : r2(sku.cost * sku.gst));
 
   function gates(batch, sku) {
+    const life = lifeOf(batch, sku);
     return Object.entries(RULES.gates).map(([id, g]) => {
-      const need = g.minDays != null ? g.minDays : Math.round(lifeOf(sku) * g.pctLife);
-      return { id, app: g.label, need, has: batch.daysLeft, pass: batch.daysLeft >= need, rule: g.minDays != null ? `needs ${g.minDays}+ days` : `needs ${Math.round(g.pctLife * 100)}% of life (${need} days)` };
+      const need = g.minDays != null ? g.minDays : Math.round(life * g.pctLife);
+      return { id, app: g.label, need, has: batch.daysLeft, pass: batch.daysLeft >= need, rule: g.minDays != null ? `needs ${g.minDays}+ days` : `needs ${Math.round(g.pctLife * 100)}% of a ${life}-day life (${need} days)` };
     });
   }
 
   function assess(batch, sku) {
-    const g = gates(batch, sku);
+    const g = gates(batch, sku); const life = lifeOf(batch, sku);
     const usableDays = Math.max(0, batch.daysLeft - RULES.projectionStopDays);
     const willSell = Math.min(batch.units, batch.sellPerDay * usableDays);
     const atRisk = batch.units - willSell;
     const blocked = g.every(x => !x.pass);
     const status = atRisk > 0 && blocked ? "at-risk" : g.some(x => !x.pass) ? "gated" : "safe";
-    return { gates: g, usableDays, willSell, atRisk, atRiskMRP: atRisk * sku.mrp, blocked, status, lifeUsedPct: Math.round((1 - batch.daysLeft / lifeOf(sku)) * 100), urgency: Math.max(0, Math.min(1, 1 - batch.daysLeft / lifeOf(sku))) };
+    return { gates: g, life, usableDays, willSell, atRisk, atRiskMRP: atRisk * sku.mrp, blocked, status, lifeUsedPct: Math.round((1 - batch.daysLeft / life) * 100), urgency: Math.max(0, Math.min(1, 1 - batch.daysLeft / life)) };
   }
 
+  // what destroying costs, per the journey map: stock at cost + input credit reversed + disposal + EPR on the kilos
   function writeOff(units, sku) {
     const stock = units * sku.cost;
-    const itc = stock * sku.gst;
+    const itc = r2(units * itcOf(sku));
     const disposal = units * RULES.disposalPerUnit;
     const kg = r2(units * sku.kgPerUnit);
-    const epr = kg * RULES.eprPerKg;
-    const total = stock + itc + disposal + epr;
-    return { units, stock, itc: r2(itc), disposal, kg, epr: r2(epr), total: r2(total), perUnit: r2(total / units) };
+    const epr = r2(kg * RULES.eprPerKg);
+    const total = r2(stock + itc + disposal + epr);
+    return { units, stock, itc, itcPerUnit: itcOf(sku), disposal, kg, epr, total, perUnit: r2(total / units) };
   }
 
   function channelTable(batch, sku, units) {
@@ -62,21 +69,20 @@
     const sell = batch.sellPerDay;
     return CHANNELS.map(c => {
       const price = r2(sku.mrp * c.pricePct);
-      let costPerUnit = 0, capacity = Infinity, reason = "";
-      if (c.id === "kirana") { costPerUnit = RULES.vanPerUnit; capacity = Math.round(sell * RULES.kiranaWindowDays * RULES.kiranaUplift); }
-      if (c.id === "d2c") { costPerUnit = RULES.courierPerUnit; capacity = Math.floor(batch.units * RULES.d2cCapPct); }
-      if (c.id === "staff") capacity = RULES.staffCap;
-      if (c.id === "foodbank") costPerUnit = RULES.foodbankFreightPerUnit;
-      const net = c.baseline ? -wo.perUnit : r2(price - costPerUnit);
+      let costPerUnit = 0, itcLoss = 0, capacity = Infinity, reason = "", name = c.name, packPrice = null;
+      if (c.id === "kirana") { costPerUnit = RULES.vanPerUnit; capacity = Math.round(sell * RULES.kiranaWindowDays * RULES.kiranaUplift); packPrice = r2(price * (RULES.scheme.buy + RULES.scheme.free) / RULES.scheme.buy); }
+      if (c.id === "staff") { capacity = batch.staffCap || RULES.staffCap; if (batch.city) name = `${batch.city} staff sale`; }
+      // a donation is a gift: handling, and the input credit on it is reversed (s.17(5)(h), and 17(5)(fa) for CSR)
+      if (c.id === "foodbank") { costPerUnit = RULES.foodbankHandlingPerUnit; itcLoss = itcOf(sku); }
+      const net = c.baseline ? -wo.perUnit : r2(price - costPerUnit - itcLoss);
       let eligible = true;
       if (!c.baseline && batch.daysLeft < c.minDays) { eligible = false; reason = `needs ${c.minDays}+ days, has ${batch.daysLeft}`; }
       if (c.foodOnly && sku.category === "personal-care") { eligible = false; reason = "personal care never goes to food banks"; }
       const floor = RULES.floors[sku.category] || 0.35;
       if (!c.baseline && c.id !== "foodbank" && c.pricePct < floor) { eligible = false; reason = `below the ${Math.round(floor * 100)}% floor`; }
       return {
-        ...c, price, pricePctLabel: c.pricePct ? `${Math.round(c.pricePct * 100)}%` : "—", costPerUnit, net, capacity, eligible, reason,
-        itc: c.id === "foodbank" || c.baseline ? "reversed" : "retained", indicative: c.id === "foodbank",
-        need: c.baseline ? "—" : c.minDays ? `${c.minDays}+ days` : c.foodOnly ? "food only" : "any",
+        ...c, name, price, packPrice, pricePctLabel: c.pricePct ? `${Math.round(c.pricePct * 100)}%` : "—", costPerUnit, itcLoss, net, capacity, eligible, reason,
+        itc: c.id === "foodbank" || c.baseline ? "reversed" : "retained",
       };
     });
   }
@@ -100,21 +106,30 @@
       const gross = r.baseline ? 0 : r2(x.units * r.price);
       let cost = r2(x.units * r.costPerUnit);
       if (r.id === "expiresoon") cost = r2(cost + RULES.listingFee);
-      return { id: r.id, name: r.name, short: r.short, units: x.units, price: r.price, gross, cost, net: r2(gross - cost), cartons: x.units / sku.perCarton };
+      const itcLoss = r.baseline ? 0 : r2(x.units * r.itcLoss);
+      // the scheme: kiranas are charged for 10 of every 12 packets at the pack price
+      const charged = r.packPrice ? Math.round(x.units * RULES.scheme.buy / (RULES.scheme.buy + RULES.scheme.free)) : x.units;
+      return { id: r.id, name: r.name, short: r.short, units: x.units, price: r.price, packPrice: r.packPrice, charged, gross, cost, itcLoss, net: r2(gross - cost - itcLoss), cartons: x.units / sku.perCarton };
     });
-    const gross = r2(lines.reduce((t, l) => t + l.gross, 0));
-    const costs = r2(lines.reduce((t, l) => t + l.cost, 0));
-    const net = r2(gross - costs);
+    const sum = k => r2(lines.reduce((t, l) => t + l[k], 0));
+    const gross = sum("gross"), costs = sum("cost"), itcLoss = sum("itcLoss");
+    const net = r2(gross - costs - itcLoss);
     const wo = writeOff(units, sku);
+    const leftover = lines.filter(l => l.id === "writeoff").reduce((t, l) => t + l.units, 0);
     const soldUnits = lines.filter(l => l.id !== "foodbank" && l.id !== "writeoff").reduce((t, l) => t + l.units, 0);
     const donated = lines.filter(l => l.id === "foodbank").reduce((t, l) => t + l.units, 0);
+    // the P&L reading: the stock leaves the books at cost either way, so it is counted once on each side
+    const bookCost = r2(units * sku.cost);
+    const leftoverCost = leftover ? r2(leftover * (wo.perUnit - sku.cost)) : 0;
+    const pnl = r2(net - bookCost - leftoverCost);
     const best = rows.filter(r => r.eligible && r.unlimited && !r.baseline && r.id !== "foodbank").sort((a, b) => b.net - a.net)[0];
-    const alt = best ? { id: best.id, label: `all ${units.toLocaleString("en-IN")} to ${best.short}`, net: r2(units * best.price - units * best.costPerUnit - (best.id === "expiresoon" ? RULES.listingFee : 0)) } : null;
-    const kg = r2((units - lines.filter(l => l.id === "writeoff").reduce((t, l) => t + l.units, 0)) * sku.kgPerUnit);
+    const alt = best ? { id: best.id, short: best.short, label: `all ${units.toLocaleString("en-IN")} to ${best.short}`, net: r2(units * best.price - units * best.costPerUnit - (best.id === "expiresoon" ? RULES.listingFee : 0)) } : null;
+    const kg = r2((units - leftover) * sku.kgPerUnit);
     return {
-      batch: batch.id, units, rows, lines, gross, costs, net, pctMRP: Math.round((gross / (units * sku.mrp)) * 100),
-      writeOff: wo, swing: r2(net + wo.total), itcRetained: r2(soldUnits * sku.cost * sku.gst), itcReversedIndicative: r2(donated * sku.cost * sku.gst),
-      disposalAvoided: r2(wo.disposal + wo.epr), alt, kg, co2: r2(kg * RULES.co2PerKg), meals: donated, soldUnits, donated,
+      batch: batch.id, units, rows, lines, gross, costs, itcLoss, net, pctMRP: Math.round((net / (units * sku.mrp)) * 100),
+      writeOff: wo, bookCost, pnl, swing: r2(pnl + wo.total), cashAvoided: r2(wo.total - wo.stock),
+      itcRetained: r2(soldUnits * itcOf(sku)), itcReversed: r2((donated + leftover) * itcOf(sku)),
+      disposalAvoided: r2(wo.disposal + wo.epr), alt, kg, co2: r2(kg * RULES.co2PerKg), meals: donated, soldUnits, donated, leftover,
     };
   }
 
@@ -128,24 +143,44 @@
   function award(units, price) { const gross = r2(units * price); const token = Math.round(gross * RULES.tokenPct); return { units, price, gross, token, balance: r2(gross - token) }; }
   function actualNet(p, awardPrice) {
     const es = p.lines.find(l => l.id === "expiresoon");
-    if (!es) return { net: p.net, delta: 0 };
+    if (!es) return { net: p.net, delta: 0, swing: p.swing };
     const delta = r2(es.units * (es.price - awardPrice));
-    return { net: r2(p.net - delta), delta, esPlanned: es.gross, esActual: r2(es.units * awardPrice) };
+    return { net: r2(p.net - delta), delta, swing: r2(p.swing - delta), pnl: r2(p.pnl - delta), esPlanned: es.gross, esActual: r2(es.units * awardPrice) };
   }
 
-  function documents(p, sku, aw, seller, buyer) {
-    const es = p.lines.find(l => l.id === "expiresoon"); const k = p.lines.find(l => l.id === "kirana");
+  // Munchly's price-support credit note to the distributor who owns the stock: the gap between what he paid and what
+  // each channel fetched, plus the van and listing fee he paid, so he ends whole. A financial note, no GST adjustment.
+  function priceSupport(p, sku, awardPrice) {
+    const rows = p.lines.filter(l => l.id !== "writeoff").map(l => {
+      const price = l.id === "expiresoon" && awardPrice != null ? awardPrice : l.price;
+      return { id: l.id, short: l.short, units: l.units, price, gap: r2(sku.dp - price), amount: r2(l.units * (sku.dp - price)) };
+    });
+    const gap = r2(rows.reduce((t, r) => t + r.amount, 0));
+    const paid = p.lines.filter(l => l.id === "kirana" || l.id === "expiresoon");
+    const van = r2(paid.filter(l => l.id === "kirana").reduce((t, l) => t + l.cost, 0));
+    const fee = paid.some(l => l.id === "expiresoon") ? RULES.listingFee : 0;
+    return { rows, gap, van, fee, total: r2(gap + van + fee) };
+  }
+  // what the distributor would claim at expiry, and what destroying it then costs Munchly on top
+  function expiryClaim(units, sku) {
+    const wo = writeOff(units, sku); const credit = r2(units * sku.dp);
+    return { units, credit, disposal: wo.disposal, epr: wo.epr, itc: wo.itc, total: r2(credit + wo.disposal + wo.epr + wo.itc) };
+  }
+
+  function documents(p, sku, aw, support, parties) {
+    const es = p.lines.find(l => l.id === "expiresoon");
     const docs = [];
     if (es && aw) {
-      const taxable = r2(aw.units * aw.price), igst = r2(taxable * sku.gst), total = r2(taxable + igst);
-      docs.push({ id: "invoice", type: "Tax invoice", no: "INV/26-27/0931", status: "generated", amount: total, lines: [[`${aw.units} × ${sku.name} at ₹${aw.price.toFixed(2)}`, taxable], [`IGST ${Math.round(sku.gst * 100)}% (inter-state)`, igst]], taxable, igst, total, from: seller, to: buyer, hsn: sku.hsn });
-      docs.push({ id: "eway", type: "E-way bill check", no: p.batch, status: total < RULES.ewayThreshold ? "not required" : "generated", amount: total, note: `Consignment ₹${total.toLocaleString("en-IN", { minimumFractionDigits: 2 })} incl. GST is below the ₹50,000 threshold.` });
+      // tax is rounded to the rupee (CGST s.170); the invoice total takes a round-off line
+      const taxable = r2(aw.units * aw.price), igst = Math.round(taxable * sku.gst), exact = r2(taxable + igst), total = Math.round(exact);
+      docs.push({ id: "invoice", type: "Tax invoice", owner: parties.seller.name, no: "INV/26-27/0931", status: "drafted", amount: total, taxable, igst, roundOff: r2(total - exact), total, units: aw.units, price: aw.price, from: parties.seller, to: parties.buyer, hsn: sku.hsn, gstPct: Math.round(sku.gst * 100), note: `Drafted for ${parties.seller.short || parties.seller.name} to issue from Tally.` });
+      docs.push({ id: "eway", type: "E-way bill check", owner: parties.seller.name, no: p.batch, status: total < RULES.ewayThreshold ? "not required" : "generated", amount: total, note: `The consignment is ₹${total.toLocaleString("en-IN")} with GST, under the ₹${RULES.ewayThreshold.toLocaleString("en-IN")} threshold. Checked again if the dispatch is split.` });
     }
-    if (k) { const free = Math.floor(k.units / 12) * 2; docs.push({ id: "credit", type: "Credit note", no: "CN/0117", status: "generated", amount: free * sku.cost, free, note: `Buy 10 get 2 scheme: ${free} free units at cost ₹${sku.cost}.` }); }
-    docs.push({ id: "itc", type: "GST ITC memo", no: "s.17(5)(h) · indicative", status: "generated", amount: p.itcRetained, note: "Goods supplied under tax invoices, so the Section 17(5)(h) reversal does not apply." });
-    docs.push({ id: "fssai", type: "FSSAI surplus-food checklist", no: p.donated ? `${p.donated} units` : "no donation", status: p.donated ? "generated" : "not required", amount: 0 });
-    const left = (p.lines.find(l => l.id === "writeoff") || {}).units || 0;
-    docs.push({ id: "destruction", type: "Destruction certificate", no: left ? `${left} units` : "0 units left", status: left ? "generated" : "not required", amount: 0 });
+    const exact = support.total, total = Math.round(exact);
+    docs.push({ id: "support", type: "Price-support credit note", owner: parties.client.short, no: "CN/0117", status: "generated", amount: total, exact, roundOff: r2(total - exact), rows: support.rows, van: support.van, fee: support.fee, note: `${parties.client.short} to ${parties.seller.name}: a financial credit note, no GST adjustment.` });
+    docs.push({ id: "itc", type: "GST ITC memo", owner: parties.client.short, no: "s.17(5)(h)", status: "generated", amount: p.itcRetained, note: "Goods supplied under tax invoices, so the Section 17(5)(h) reversal does not apply." });
+    docs.push({ id: "fssai", type: "FSSAI surplus-food checklist", owner: parties.client.short, no: p.donated ? `${p.donated} units` : "no donation", status: p.donated ? "generated" : "not required", amount: 0 });
+    docs.push({ id: "destruction", type: "Destruction certificate", owner: parties.client.short, no: p.leftover ? `${p.leftover} units` : "0 units left", status: p.leftover ? "generated" : "not required", amount: 0 });
     return docs;
   }
 
@@ -154,11 +189,14 @@
     num: n => Math.round(n).toLocaleString("en-IN"),
     inr: n => (n < 0 ? "−₹" : "₹") + Math.round(Math.abs(n)).toLocaleString("en-IN"),
     inr2: n => (n < 0 ? "−₹" : "₹") + Math.abs(n).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+    signed: n => (n < 0 ? "−₹" : "+₹") + Math.round(Math.abs(n)).toLocaleString("en-IN"),
+    rate: n => "₹" + n.toFixed(2),
     lakh: n => "₹" + (n / 100000).toLocaleString("en-IN", { maximumFractionDigits: 1 }) + " L",
     kg: n => (n >= 1000 ? (n / 1000).toLocaleString("en-IN", { maximumFractionDigits: 2 }) + " t" : n.toLocaleString("en-IN", { maximumFractionDigits: 1 }) + " kg"),
     pct: n => Math.round(n * 100) + "%",
     date: iso => new Date(iso + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }),
+    day: iso => new Date(iso + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" }),
   };
 
-  window.SC3_MONEY = { RULES, CHANNELS, gates, assess, writeOff, channelTable, allocate, plan, counter, award, actualNet, documents, fmt };
+  window.SC3_MONEY = { RULES, CHANNELS, lifeOf, itcOf, gates, assess, writeOff, channelTable, allocate, plan, counter, award, actualNet, priceSupport, expiryClaim, documents, fmt };
 })();

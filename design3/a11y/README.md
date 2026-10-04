@@ -3,9 +3,13 @@
 Automated WCAG checks for design v3 with [axe-core](https://github.com/dequelabs/axe-core) through Playwright (`@axe-core/playwright`), plus keyboard checks axe cannot make.
 
 - `demo.a11y.spec.ts`: the guided demo, all nine stages, scanned where each stage opens and after every beat, then the finale.
-- `app.a11y.spec.ts`: every role's screens in a journey state with real content, the sign-in sheets, and the approve sheet through "Plan placed".
+- `app.a11y.spec.ts`: every role's screens in a journey state with real content, the approve sheet through "Plan placed", and the workspace sign-in at munchly.smartclearance.com:
+  - the one-time-code, Google Workspace and join sheets;
+  - an address outside the workspace, and "Find your workspace";
+  - the people sheet;
+  - the workspace sheet inside the app.
 - `keyboard.a11y.spec.ts`: behaviour axe cannot see:
-  - the sign-in tab order;
+  - the sign-in tab order, from the email-or-phone field to "Find yours";
   - a sheet taking focus, keeping it and giving it back;
   - a menu button's menu: focus in on open, the arrows, Home and End, then Escape and Tab out;
   - the sign-in hero pausing and playing (WCAG 2.2.2).

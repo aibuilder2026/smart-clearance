@@ -68,5 +68,10 @@
   - Both documents carry a detailed supply-chain diagram.
   - The story works through every v4.1 calculation.
   - The repo copy of the Journey Map is now v4.1.
-- **SC-23** (To Do): move the v3 prototype's money model and demo data to v4.1.
+- **SC-23 and SC-24** (branch `SC-24-munchly-workspace`, In Review): the demo and the app are now Munchly Foods' workspace on Smart-Clearance, on Journey Map v4.1.
+  - SC-23: the money model and the demo data follow v4.1 and story v6: five channels, the price-support credit note, Agrawal Wholesale in Raipur, 31 kiranas, the day-7 shelf check.
+  - SC-24 branding, picked by the maintainer from mockups: product first. The Smart-Clearance mark leads; Munchly's workspace sits under it; Munchly leads its own sign-in page with "Powered by Smart-Clearance".
+  - SC-24 sign-in, also picked from mockups: email or phone first, at munchly.smartclearance.com.
+  - Also new: Rakesh's one-time permission, an admin Workspace screen, and the demo's stage 1, which now opens with both sign-ins.
+- **SC-25** (To Do): the smartclearance.com landing page and the super-admin console, when the maintainer asks for it.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

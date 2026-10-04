@@ -41,8 +41,8 @@
       eta = h.photo.status === "reading" ? "Reading the label" : "Plan ready in about 20 min";
       agentLive = h.photo.status === "reading" ? "Vision is reading the label" : h.photo.status === "requested" ? "Vision is waiting for the label photo" : "Vision is asking for a label photo";
     } else if (h.phase === "verified") {
-      eta = "Pricing six channels";
-      agentLive = "Valuer is pricing six channels";
+      eta = "Pricing five channels";
+      agentLive = "Valuer is pricing five channels";
     } else if (h.phase === "valued") {
       eta = "Splitting the batch";
       agentLive = "Router is splitting the batch";
@@ -69,11 +69,15 @@
     const { go } = useRoute();
     const app = useApp();
     const n = unreadFor(s, me);
-    return /* @__PURE__ */ React.createElement(Fragment, null, extra, /* @__PURE__ */ React.createElement(ModeMenuButton, null), /* @__PURE__ */ React.createElement(IconButton, { icon: "bell", label: n ? `${n} unread notifications` : "Notifications", badge: n || void 0, onClick: () => go("inbox") }), me && /* @__PURE__ */ React.createElement("button", { type: "button", className: "iconbtn", style: { width: 40 }, "aria-label": "Profile and settings", onClick: () => go("profile") }, /* @__PURE__ */ React.createElement(Avatar, { person: me, size: "sm" })));
+    return /* @__PURE__ */ React.createElement(Fragment, null, extra, app.bp !== "phone" && /* @__PURE__ */ React.createElement(ModeMenuButton, null), /* @__PURE__ */ React.createElement(IconButton, { icon: "bell", label: n ? `${n} unread notifications` : "Notifications", badge: n || void 0, onClick: () => go("inbox") }), me && /* @__PURE__ */ React.createElement("button", { type: "button", className: "iconbtn", style: { width: 40 }, "aria-label": "Profile and settings", onClick: () => go("profile") }, /* @__PURE__ */ React.createElement(Avatar, { person: me, size: "sm" })));
   }
+  const WorkspaceCtx = createContext(null);
   function Screen({ me, title, sub, back, children, actions, wide, hideLarge }) {
     const { back: goBack } = useRoute();
-    return /* @__PURE__ */ React.createElement(Page, { title, sub, back, onBack: goBack, actions: /* @__PURE__ */ React.createElement(TopActions, { me, extra: actions }), wide, hideLarge }, children);
+    const app = useApp();
+    const ws = useContext(WorkspaceCtx);
+    const lead = app.bp === "phone" && ws ? /* @__PURE__ */ React.createElement("button", { type: "button", className: "ws-lead", onClick: ws.open, "aria-label": `${ws.name} workspace, on Smart-Clearance` }, /* @__PURE__ */ React.createElement(K.Mark, { size: 24, still: true }), /* @__PURE__ */ React.createElement("span", { className: "ws-sep", "aria-hidden": "true" }), /* @__PURE__ */ React.createElement(K.WorkspaceMark, { ws: D.WORKSPACE, size: 26 })) : null;
+    return /* @__PURE__ */ React.createElement(Page, { title, sub, back, onBack: goBack, lead, actions: /* @__PURE__ */ React.createElement(TopActions, { me, extra: actions }), wide, hideLarge }, children);
   }
   function Columns({ main, side, sideWidth = 360, gap = 20 }) {
     const app = useApp();
@@ -120,8 +124,8 @@
     return /* @__PURE__ */ React.createElement("div", { className: "lock", onClick: push ? onOpen : void 0 }, /* @__PURE__ */ React.createElement("div", { className: "lock-top" }, /* @__PURE__ */ React.createElement(Icon, { name: "lock", size: 16, stroke: 2.4 }), /* @__PURE__ */ React.createElement("div", { className: "lock-date" }, date), /* @__PURE__ */ React.createElement("div", { className: "lock-time" }, time)), /* @__PURE__ */ React.createElement(AnimatePresence, null, push && /* @__PURE__ */ React.createElement(motion.button, { type: "button", key: push.title, className: "lock-note", onClick: (e) => {
       e.stopPropagation();
       onOpen();
-    }, initial: reduce ? false : { opacity: 0, y: -26, scale: 0.94 }, animate: { opacity: 1, y: 0, scale: 1 }, transition: { type: "spring", stiffness: 420, damping: 32 } }, /* @__PURE__ */ React.createElement("span", { className: "ln-head" }, /* @__PURE__ */ React.createElement(K.Mark, { size: 22, still: true }), /* @__PURE__ */ React.createElement("span", null, "Smart-Clearance"), /* @__PURE__ */ React.createElement("span", { className: "ln-now" }, "now")), /* @__PURE__ */ React.createElement("b", null, push.title), /* @__PURE__ */ React.createElement("span", { className: cx("ln-body", hindi && "hi"), lang: hindi ? "hi" : void 0 }, push.body))), /* @__PURE__ */ React.createElement("div", { className: "lock-foot" }, push ? "Tap the notification to open" : `${p.short || p.name}'s phone`));
+    }, initial: reduce ? false : { opacity: 0, y: -26, scale: 0.94 }, animate: { opacity: 1, y: 0, scale: 1 }, transition: { type: "spring", stiffness: 420, damping: 32 } }, /* @__PURE__ */ React.createElement("span", { className: "ln-head" }, push.app ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", { className: "ln-app", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Icon, { name: push.icon || "message-circle", size: 14, stroke: 2.2 })), /* @__PURE__ */ React.createElement("span", null, push.app)) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(K.Mark, { size: 22, still: true }), /* @__PURE__ */ React.createElement("span", null, "Smart-Clearance")), /* @__PURE__ */ React.createElement("span", { className: "ln-now" }, "now")), /* @__PURE__ */ React.createElement("b", null, push.title), /* @__PURE__ */ React.createElement("span", { className: cx("ln-body", hindi && "hi"), lang: hindi ? "hi" : void 0 }, push.body))), /* @__PURE__ */ React.createElement("div", { className: "lock-foot" }, push ? "Tap the notification to open" : `${p.short || p.name}'s phone`));
   }
   const PEOPLE_BY_ID = (id) => D.PEOPLE[id] || (Store.get().users.find((u) => u.id === id) || { name: id });
-  window.SC3_SCREENS = Object.assign(window.SC3_SCREENS || {}, { LockScreen, AccountCtx, PlayAs, PushBanners, useStore, Router, useRoute, heroModel, unreadFor, TopActions, Screen, Columns, SectionTitle, Locked, PEOPLE_BY_ID, PHASE_STATUS });
+  window.SC3_SCREENS = Object.assign(window.SC3_SCREENS || {}, { LockScreen, AccountCtx, WorkspaceCtx, PlayAs, PushBanners, useStore, Router, useRoute, heroModel, unreadFor, TopActions, Screen, Columns, SectionTitle, Locked, PEOPLE_BY_ID, PHASE_STATUS });
 })();

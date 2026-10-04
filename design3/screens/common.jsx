@@ -28,7 +28,7 @@
     let eta = "", etaTone = "green", agentLive = "";
     if (h.phase === "watching") { eta = "Watcher runs daily at 09:00"; etaTone = undefined; }
     else if (h.phase === "at-risk") { eta = h.photo.status === "reading" ? "Reading the label" : "Plan ready in about 20 min"; agentLive = h.photo.status === "reading" ? "Vision is reading the label" : h.photo.status === "requested" ? "Vision is waiting for the label photo" : "Vision is asking for a label photo"; }
-    else if (h.phase === "verified") { eta = "Pricing six channels"; agentLive = "Valuer is pricing six channels"; }
+    else if (h.phase === "verified") { eta = "Pricing five channels"; agentLive = "Valuer is pricing five channels"; }
     else if (h.phase === "valued") { eta = "Splitting the batch"; agentLive = "Router is splitting the batch"; }
     else if (h.phase === "planned") { eta = "Waiting for your approval"; etaTone = "amber"; }
     else if (h.phase === "approved" || h.phase === "executing") { eta = h.award ? `Awarded at ₹${D.COUNTER.price.toFixed(2)} · ${ordered} of ${D.KIRANAS.length} kiranas ordered` : `Listing live · ${ordered} of ${D.KIRANAS.length} kiranas ordered`; agentLive = h.award && ordered === D.KIRANAS.length ? "" : "Lister, Outreach and Negotiator at work"; }
@@ -43,11 +43,14 @@
   function TopActions({ me, extra }) {
     const s = useStore(); const { go } = useRoute(); const app = useApp();
     const n = unreadFor(s, me);
-    return <Fragment>{extra}<ModeMenuButton /><IconButton icon="bell" label={n ? `${n} unread notifications` : "Notifications"} badge={n || undefined} onClick={() => go("inbox")} />{me && <button type="button" className="iconbtn" style={{ width: 40 }} aria-label="Profile and settings" onClick={() => go("profile")}><Avatar person={me} size="sm" /></button>}</Fragment>;
+    return <Fragment>{extra}{app.bp !== "phone" && <ModeMenuButton />}<IconButton icon="bell" label={n ? `${n} unread notifications` : "Notifications"} badge={n || undefined} onClick={() => go("inbox")} />{me && <button type="button" className="iconbtn" style={{ width: 40 }} aria-label="Profile and settings" onClick={() => go("profile")}><Avatar person={me} size="sm" /></button>}</Fragment>;
   }
+  // the client workspace the person is in; RoleApp provides it, and on a phone it sits at the left of the bar
+  const WorkspaceCtx = createContext(null);
   function Screen({ me, title, sub, back, children, actions, wide, hideLarge }) {
-    const { back: goBack } = useRoute();
-    return <Page title={title} sub={sub} back={back} onBack={goBack} actions={<TopActions me={me} extra={actions} />} wide={wide} hideLarge={hideLarge}>{children}</Page>;
+    const { back: goBack } = useRoute(); const app = useApp(); const ws = useContext(WorkspaceCtx);
+    const lead = app.bp === "phone" && ws ? <button type="button" className="ws-lead" onClick={ws.open} aria-label={`${ws.name} workspace, on Smart-Clearance`}><K.Mark size={24} still /><span className="ws-sep" aria-hidden="true" /><K.WorkspaceMark ws={D.WORKSPACE} size={26} /></button> : null;
+    return <Page title={title} sub={sub} back={back} onBack={goBack} lead={lead} actions={<TopActions me={me} extra={actions} />} wide={wide} hideLarge={hideLarge}>{children}</Page>;
   }
   // two columns on desktop, one on phones and tablets
   function Columns({ main, side, sideWidth = 360, gap = 20 }) {
@@ -84,7 +87,7 @@
     return <div className="lock" onClick={push ? onOpen : undefined}>
       <div className="lock-top"><Icon name="lock" size={16} stroke={2.4} /><div className="lock-date">{date}</div><div className="lock-time">{time}</div></div>
       <AnimatePresence>{push && <motion.button type="button" key={push.title} className="lock-note" onClick={e => { e.stopPropagation(); onOpen(); }} initial={reduce ? false : { opacity: 0, y: -26, scale: 0.94 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ type: "spring", stiffness: 420, damping: 32 }}>
-        <span className="ln-head"><K.Mark size={22} still /><span>Smart-Clearance</span><span className="ln-now">now</span></span>
+        <span className="ln-head">{push.app ? <><span className="ln-app" aria-hidden="true"><Icon name={push.icon || "message-circle"} size={14} stroke={2.2} /></span><span>{push.app}</span></> : <><K.Mark size={22} still /><span>Smart-Clearance</span></>}<span className="ln-now">now</span></span>
         <b>{push.title}</b><span className={cx("ln-body", hindi && "hi")} lang={hindi ? "hi" : undefined}>{push.body}</span>
       </motion.button>}</AnimatePresence>
       <div className="lock-foot">{push ? "Tap the notification to open" : `${p.short || p.name}'s phone`}</div>
@@ -93,5 +96,5 @@
 
   const PEOPLE_BY_ID = id => D.PEOPLE[id] || (Store.get().users.find(u => u.id === id) || { name: id });
 
-  window.SC3_SCREENS = Object.assign(window.SC3_SCREENS || {}, { LockScreen, AccountCtx, PlayAs, PushBanners, useStore, Router, useRoute, heroModel, unreadFor, TopActions, Screen, Columns, SectionTitle, Locked, PEOPLE_BY_ID, PHASE_STATUS });
+  window.SC3_SCREENS = Object.assign(window.SC3_SCREENS || {}, { LockScreen, AccountCtx, WorkspaceCtx, PlayAs, PushBanners, useStore, Router, useRoute, heroModel, unreadFor, TopActions, Screen, Columns, SectionTitle, Locked, PEOPLE_BY_ID, PHASE_STATUS });
 })();

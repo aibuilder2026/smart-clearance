@@ -5,9 +5,9 @@
   const K = window.SC3; const D = window.SC3_DATA; const M = window.SC3_MONEY; const fmt = M.fmt;
   const { cx, ThemeProvider, useTheme, AppRoot, useApp, Icon, Button, IconButton, Badge, Chip, Kbd, Card, List, ListRow, Segmented, Switch, Field, Input, SearchField, Select, Textarea, Stepper, OTP, Tabs, Check,
     DataTable, Skeleton, Progress, Empty, Avatar, Product, Sheet, Alert, Menu, NoticeHost, useNotice, Mark, Wordmark, Splash, Page, Roll, Money, DaysNum, GateChips, Countdown, Tile, Aura, Tracker, VTracker, AgentFeed,
-    ClusterMap, HaulLine, ChannelBars, TrendChart, MixBar, CodeBlock, PhoneFrame, TrackerCard, BatchRow, ChannelTable, SplitBar, MoneyPanel, DocCard, Spinner } = K;
+    ClusterMap, HaulLine, ChannelBars, TrendChart, MixBar, CodeBlock, PhoneFrame, WindowFrame, TrackerCard, BatchRow, ChannelTable, SplitBar, MoneyPanel, DocCard, Spinner, WorkspaceMark, PoweredBy } = K;
 
-  const TOC = [["Foundations", null], ["The world", "world"], ["Mark and splash", "mark"], ["Colour", "colour"], ["Type and numerals", "type"], ["Shape, depth, materials", "shape"], ["Motion", "motion"], ["Icons", "icons"], ["Imagery", "imagery"],
+  const TOC = [["Foundations", null], ["The world", "world"], ["Mark and splash", "mark"], ["Client workspace", "workspace"], ["Colour", "colour"], ["Type and numerals", "type"], ["Shape, depth, materials", "shape"], ["Motion", "motion"], ["Icons", "icons"], ["Imagery", "imagery"],
     ["Components", null], ["Buttons and badges", "buttons"], ["Cards and lists", "cards"], ["Navigation", "nav"], ["Controls", "controls"], ["Data and tables", "data"], ["Sheets, alerts, pushes", "overlays"], ["The tracker", "tracker"], ["Agents at work", "agents"], ["Map and charts", "charts"], ["Feedback", "feedback"], ["Screen patterns", "patterns"]];
 
   function Sec({ id, title, intro, children }) { return <section className="ds-sec" id={id}><header><h2>{title}</h2>{intro && <p>{intro}</p>}</header>{children}</section>; }
@@ -38,7 +38,7 @@
     </Spec>;
   }
   function RollSpecimen() {
-    const [v, setV] = useState(21770); const vals = [21770, 21152, 49487, 630000];
+    const vals = [D.PLAN.net, D.ACTUAL.net, D.PLAN.swing, D.QUARTER.recovered].map(Math.round); const [v, setV] = useState(vals[0]);
     return <Spec label="Numbers roll in place when an agent changes them">
       <Money value={v} size="l" roll from={0} key={0} />
       <div className="ds-row">{vals.map(x => <Chip key={x} pressed={v === x} onClick={() => setV(x)}>{fmt.inr(x)}</Chip>)}</div>
@@ -79,7 +79,7 @@
           <p className="t-footnote muted">Nothing is listed, messaged or shipped before this tap. Drag the grabber to change the sheet's height on a phone.</p>
         </div>
       </Sheet>
-      <Alert open={alert} onClose={() => setAlert(false)} title="Write off MF-2409-117?" message="1,360 units go to disposal and the ₹2,611 GST input credit is reversed. This costs ₹27,717." actions={[{ label: "Cancel", strong: true }, { label: "Write off", danger: true }]} />
+      <Alert open={alert} onClose={() => setAlert(false)} title="Write off MF-2409-117?" message={`${fmt.num(D.PLAN.units)} units go to disposal and the ${fmt.inr(D.PLAN.writeOff.itc)} GST input credit is reversed. This costs Munchly ${fmt.inr(D.PLAN.writeOff.total)}.`} actions={[{ label: "Cancel", strong: true }, { label: "Write off", danger: true }]} />
     </Spec>;
   }
 
@@ -120,6 +120,21 @@
             </div>
           </Sec>
 
+          <Sec id="workspace" title="Client workspace" intro="Smart-Clearance is sold to manufacturers, one workspace each, set up for that manufacturer's supply chain. The product's mark and theming lead every screen and the client's workspace sits under the mark; the client's own colours stay inside its mark. On its sign-in page the client leads and Smart-Clearance signs off.">
+            <div className="ds-two">
+              <Spec label="The workspace mark: the client's colours stay inside the tile; Powered by is the product's sign-off">
+                <div className="ds-row" style={{ alignItems: "flex-end", gap: 18 }}>{[72, 56, 40, 30, 22].map(n => <WorkspaceMark key={n} ws={D.WORKSPACE} size={n} />)}</div>
+                <div className="ds-row" style={{ gap: 24 }}><PoweredBy /><PoweredBy size="sm" /></div>
+              </Spec>
+              <Spec label="Desktop sidebar: the product's mark first, the workspace under it">
+                <div className="ds-sbdemo"><div className="sb-brand"><Mark size={32} /><Wordmark size={18} /></div><div className="sb-ws"><WorkspaceMark ws={D.WORKSPACE} size={30} /><span className="who"><span className="ws-name"><b>{D.WORKSPACE.name}</b><Icon name="chevron-down" size={15} className="subtle" /></span><span className="ws-dom">{D.WORKSPACE.domain}</span></span></div><div className="sb-item" aria-current="page"><Icon name="layout-dashboard" size={19} /><span>Command Center</span></div><div className="sb-item"><Icon name="route" size={19} /><span>Route Room</span></div></div>
+              </Spec>
+            </div>
+            <Spec label="The browser shows the client's own address; on a phone the workspace sits at the left of the bar">
+              <WindowFrame url={"https://" + D.WORKSPACE.domain + "/command"} style={{ height: 112 }}><div className="row" style={{ height: 72, padding: "0 18px", gap: 10 }}><span className="ws-lead" aria-hidden="true"><WorkspaceMark ws={D.WORKSPACE} size={30} /></span><b className="t-headline">Command Center</b></div></WindowFrame>
+            </Spec>
+          </Sec>
+
           <Sec id="colour" title="Colour" intro="A sage-tinted neutral ground with white cards in light; a deep green-black with a faint aurora in dark. Every text pair is at least 4.5:1 in both modes. Fields keep their hue's own text colour, never grey.">
             <div className="ds-two"><Edition theme="light" list={LIGHT} /><Edition theme="dark" list={DARK} /></div>
             <Spec label="Channel colours, in fixed series order; validated for colour-blind and normal-vision separation in both modes">
@@ -130,10 +145,10 @@
           <Sec id="type" title="Type and numerals" intro="Bricolage Grotesque carries the numbers and titles, heavy and tight like Monzo's; Geist sets every operational word; Geist Mono sets ids, times and JSON; Noto Sans Devanagari keeps Hindi in step.">
             <div className="ds-two"><UrgencySpecimen /><RollSpecimen /></div>
             <Spec label="Money: the rupee sign and paise set small">
-              <div className="ds-row" style={{ gap: 28, alignItems: "flex-end" }}><Money value={21770} size="xl" style={{ color: "var(--primary-text)" }} /><Money value={-27716.8} size="m" decimals style={{ color: "var(--red-text)" }} /><Money value={14.2} size="m" decimals /></div>
+              <div className="ds-row" style={{ gap: 28, alignItems: "flex-end" }}><Money value={21770} size="xl" style={{ color: "var(--primary-text)" }} /><Money value={-D.PLAN.writeOff.total} size="m" decimals style={{ color: "var(--red-text)" }} /><Money value={14.2} size="m" decimals /></div>
             </Spec>
             <Spec label="Roles">
-              {[["Large title · 36", "t-large", "Command Center"], ["Title 1 · 30", "t-title1", "Route Room"], ["Title 2 · 24", "t-title2", "Six channels, priced"], ["Title 3 · 20", "t-title3", "Recommended split"], ["Headline · 17", "t-headline", "Masala Chips 150 g"], ["Body · 15", "t-body", "Nothing is listed, messaged or shipped before your tap."], ["Subhead · 14", "t-subhead muted", "Rakesh Traders · Kalamna Market godown, Nagpur"], ["Footnote · 13", "t-footnote subtle", "Synthetic demo data · ITC on donations is indicative"], ["Mono · ids and JSON", "mono", "MF-2409-117 · POST /v1/listings · 201"], ["Devanagari", "hi t-callout", "आज का खास ऑफर: 10 पैकेट लो, 2 मुफ़्त"]].map(([k, c, t]) => <div key={k} className="typerow"><span className="ds-code">{k}</span><span className={c}>{t}</span></div>)}
+              {[["Large title · 36", "t-large", "Command Center"], ["Title 1 · 30", "t-title1", "Route Room"], ["Title 2 · 24", "t-title2", "Five channels, priced"], ["Title 3 · 20", "t-title3", "Recommended split"], ["Headline · 17", "t-headline", "Masala Chips 150 g"], ["Body · 15", "t-body", "Nothing is listed, messaged or shipped before your tap."], ["Subhead · 14", "t-subhead muted", "Rakesh Traders · Kalamna Market godown, Nagpur"], ["Footnote · 13", "t-footnote subtle", "Synthetic demo data · disposal, EPR and CO₂e are indicative"], ["Mono · ids and JSON", "mono", "MF-2409-117 · POST /v1/listings · 201"], ["Devanagari", "hi t-callout", "आज का खास ऑफर: 10 पैकेट लो, 2 मुफ़्त"]].map(([k, c, t]) => <div key={k} className="typerow"><span className="ds-code">{k}</span><span className={c}>{t}</span></div>)}
             </Spec>
           </Sec>
 

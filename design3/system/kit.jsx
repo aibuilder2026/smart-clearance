@@ -221,24 +221,29 @@
   }
   // a sheet: bottom with detents on phones, a floating side panel or a centred form sheet elsewhere
   function Sheet({ open, onClose, title, children, footer, side, detent = "large", headerRight, className, labelledBy }) {
-    const app = useApp(); const reduce = useReducedMotion(); const panel = useRef(null);
+    const app = useApp(); const reduce = useReducedMotion(); const panel = useRef(null); const body = useRef(null);
     useModal(open, panel, onClose);
+    // when the content runs longer than the sheet, the body scrolls, so a keyboard can reach it (WCAG 2.1.1)
+    const [scrolls, setScrolls] = useState(false);
+    useEffect(() => { if (!open) return; let ro; const raf = requestAnimationFrame(() => { const el = body.current; if (!el) return; const check = () => setScrolls(el.scrollHeight > el.clientHeight + 1); ro = new ResizeObserver(check); ro.observe(el); Array.from(el.children).forEach(c => ro.observe(c)); check(); }); return () => { cancelAnimationFrame(raf); if (ro) ro.disconnect(); }; }, [open, children]);
     const mode = side || (app.bp === "phone" ? "bottom" : "side");
     const [cur, setCur] = useState(detent);
     useEffect(() => { if (open) setCur(detent); }, [open, detent]);
+    // a bottom sheet is always full height and slides down to show its medium detent; its padding lifts the footer
+    // by the same distance, so the footer sits at the bottom of the screen at either detent
     const H = app.h || 800; const largeH = H * 0.94; const mediumH = Math.min(largeH, H * 0.58);
     const offset = mode === "bottom" ? (cur === "medium" ? largeH - mediumH : 0) : 0;
     const spring = reduce ? { duration: 0.01 } : { type: "spring", stiffness: 420, damping: 40, mass: 0.9 };
     const variants = mode === "bottom" ? { initial: { y: largeH }, animate: { y: offset }, exit: { y: largeH } } : mode === "center" ? { initial: { opacity: 0, scale: 0.96, x: "-50%", y: "-48%" }, animate: { opacity: 1, scale: 1, x: "-50%", y: "-50%" }, exit: { opacity: 0, scale: 0.97, x: "-50%", y: "-48%" } } : { initial: { x: "105%" }, animate: { x: 0 }, exit: { x: "105%" } };
     return <Portal><AnimatePresence>{open && <Fragment key="sheet">
       <motion.div className="scrim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} onClick={onClose} />
-      <motion.div ref={panel} tabIndex={-1} role="dialog" aria-modal={app.embedded ? undefined : "true"} aria-label={typeof title === "string" ? title : undefined} className={cx("sheet", `sheet-${mode}`, className)} style={mode === "bottom" ? { height: largeH } : undefined}
+      <motion.div ref={panel} tabIndex={-1} role="dialog" aria-modal={app.embedded ? undefined : "true"} aria-label={typeof title === "string" ? title : undefined} className={cx("sheet", `sheet-${mode}`, className)} style={mode === "bottom" ? { height: largeH, paddingBottom: `calc(var(--safe-bottom) + ${offset}px)` } : undefined}
         initial={variants.initial} animate={variants.animate} exit={variants.exit} transition={spring}
         drag={mode === "bottom" ? "y" : false} dragConstraints={{ top: 0, bottom: largeH }} dragElastic={{ top: 0.04, bottom: 0.6 }} dragMomentum={false}
         onDragEnd={(e, info) => { if (mode !== "bottom") return; const y = offset + info.offset.y; const v = info.velocity.y; if (v > 700 || y > largeH - mediumH * 0.45) { onClose && onClose(); return; } if (y > (largeH - mediumH) / 2 || v > 300) setCur("medium"); else setCur("large"); }}>
         {mode === "bottom" && <div className="grabber" aria-hidden="true" />}
         <div className="sheet-head">{typeof title === "string" ? <h2>{title}</h2> : title}{headerRight}<IconButton icon="x" label="Close" round onClick={onClose} /></div>
-        <div className="sheet-body" onPointerDownCapture={e => { if (mode === "bottom" && e.currentTarget.scrollTop > 0) e.stopPropagation(); }}>{children}</div>
+        <div ref={body} className="sheet-body" tabIndex={scrolls ? 0 : undefined} role={scrolls ? "region" : undefined} aria-label={scrolls && typeof title === "string" ? title : undefined} onPointerDownCapture={e => { if (mode === "bottom" && e.currentTarget.scrollTop > 0) e.stopPropagation(); }}>{children}</div>
         {footer && <div className="sheet-foot">{footer}</div>}
       </motion.div>
     </Fragment>}</AnimatePresence></Portal>;
@@ -331,12 +336,35 @@
       <motion.circle cx="20.5" cy="47" r="5.2" fill="#f7c04a" stroke="#fff" strokeWidth="2.2" initial={animate ? { y: -16, opacity: 0, scale: 0.6 } : false} animate={{ y: 0, opacity: 1, scale: 1 }} transition={{ delay: 0.95, type: "spring", stiffness: 520, damping: 14 }} style={{ transformOrigin: "20.5px 47px" }} />
     </svg>;
   }
+  /* ---------- the client's workspace: its mark, and the product it runs on ---------- */
+  // a workspace's mark keeps the client's own colours inside the tile and nowhere else in the interface. Munchly's
+  // is its m with a bite taken out of the corner; a workspace without artwork gets its initial on its colour.
+  function WorkspaceMark({ ws, size = 32, className, label }) {
+    const w = ws || (window.SC3_DATA && window.SC3_DATA.WORKSPACE) || { name: "?" };
+    const c = w.mark || { from: "#5f6e67", to: "#45554d", ink: "#ffffff" };
+    const gid = useMemo(() => "wm" + Math.random().toString(36).slice(2, 7), []);
+    const munchly = w.id === "munchly";
+    return <svg className={cx("wsmark", className)} width={size} height={size} viewBox="0 0 64 64" role={label ? "img" : undefined} aria-label={label || undefined} aria-hidden={label ? undefined : "true"}>
+      <defs>
+        <linearGradient id={gid + "g"} x1="6" y1="2" x2="58" y2="62" gradientUnits="userSpaceOnUse"><stop offset="0" stopColor={c.from} /><stop offset="1" stopColor={c.to} /></linearGradient>
+        {munchly && <mask id={gid + "m"}><rect width="64" height="64" fill="#fff" /><circle cx="59" cy="5" r="9" fill="#000" /><circle cx="47" cy="2.5" r="5.5" fill="#000" /><circle cx="61.5" cy="17" r="5.5" fill="#000" /></mask>}
+      </defs>
+      <path d="M32 2C9.5 2 2 9.5 2 32s7.5 30 30 30 30-7.5 30-30S54.5 2 32 2Z" fill={`url(#${gid}g)`} mask={munchly ? `url(#${gid}m)` : undefined} />
+      {munchly ? <path d="M18 45V33.5a7 7 0 0 1 14 0V45M32 33.5a7 7 0 0 1 14 0V45" fill="none" stroke={c.ink} strokeWidth="6.6" strokeLinecap="round" strokeLinejoin="round" />
+        : <text x="32" y="43" textAnchor="middle" fill={c.ink} style={{ font: "700 30px var(--font-ui)" }}>{(w.name || "?").slice(0, 1)}</text>}
+    </svg>;
+  }
+  // the platform's sign-off on a client's surfaces
+  function PoweredBy({ size = "md", className }) {
+    return <span className={cx("poweredby", size, className)}><span className="pb-t">Powered by</span><Mark size={size === "sm" ? 16 : 20} still /><Wordmark size={size === "sm" ? 13 : 15} /></span>;
+  }
+
   function Wordmark({ size = 20, className, play }) {
     const reduce = useReducedMotion(); const word = "Smart-Clearance";
     if (!play || reduce) return <span className={cx("wordmark", className)} style={{ fontSize: size }}>Smart‑Clearance</span>;
     return <span className={cx("wordmark", className)} style={{ fontSize: size, display: "inline-flex", overflow: "hidden" }} role="img" aria-label={word}>{word.split("").map((ch, i) => <motion.span key={i} aria-hidden="true" initial={{ y: "105%", opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.55 + i * 0.028, type: "spring", stiffness: 380, damping: 28 }} style={{ display: "inline-block" }}>{ch === "-" ? "‑" : ch}</motion.span>)}</span>;
   }
-  function Splash({ onDone, hold = 2300 }) {
+  function Splash({ onDone, hold = 2300, workspace }) {
     const reduce = useReducedMotion();
     const [leaving, setLeaving] = useState(false);
     useEffect(() => { const t = setTimeout(() => setLeaving(true), reduce ? 600 : hold); return () => clearTimeout(t); }, []);
@@ -349,13 +377,16 @@
           <span className="sp-tag">Every near-expiry carton gets a second chance, chosen by AI.</span>
           <span className="sp-hi">हर कार्टन को दूसरा मौका</span>
         </motion.div>
+        {workspace && <motion.div className="sp-ws" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: reduce ? 0 : 1.45, duration: 0.5 }}><WorkspaceMark ws={workspace} size={26} /><span><b>{workspace.name}</b> workspace</span></motion.div>}
       </div>
       <span className="sp-skip">Tap to skip</span>
     </motion.div>}</AnimatePresence>;
   }
 
-  /* ---------- the shell: tab bar on phones, a floating tab bar on tablets, a sidebar on desktops ---------- */
-  function Shell({ nav, current, onNav, user, onUser, footer, brandRight, brand, brandMark, children }) {
+  /* ---------- the shell: tab bar on phones, a compact rail on tablets, a sidebar on desktops ---------- */
+  // ws: the client workspace the person is in. The product's mark leads the sidebar and the workspace sits under it;
+  // on a phone the workspace is the button at the left of each page's navigation bar (see Page's lead).
+  function Shell({ nav, current, onNav, user, onUser, footer, brandRight, brand, brandMark, ws, onWorkspace, children }) {
     const app = useApp();
     if (app.bp === "phone") return <div className="layer" style={{ position: "absolute", inset: 0 }}>
       <div className="scroll" style={{ position: "absolute", inset: 0, paddingBottom: "calc(var(--tabbar-h) + var(--safe-bottom))" }} id="main">{children}</div>
@@ -363,7 +394,8 @@
     </div>;
     if (app.bp === "tablet") return <div className="layer" style={{ position: "absolute", inset: 0, display: "grid", gridTemplateColumns: "76px minmax(0,1fr)" }}>
       <nav className="sidebar rail-compact" aria-label="Main" style={{ padding: "14px 10px" }}>
-        <div className="sb-brand" style={{ justifyContent: "center", padding: "2px 0 12px" }}>{brandMark || <Mark size={36} />}</div>
+        <div className="sb-brand" style={{ justifyContent: "center", padding: "2px 0 8px" }}>{brandMark || <Mark size={36} />}</div>
+        {ws && <button type="button" className="sb-ws-rail" onClick={onWorkspace} aria-label={`${ws.name} workspace`} title={`${ws.name} · ${ws.domain}`}><WorkspaceMark ws={ws} size={30} /></button>}
         {nav.map(n => <button key={n.id} type="button" className="sb-item" title={n.label} aria-label={n.label} aria-current={current === n.id ? "page" : undefined} onClick={() => onNav(n.id)} style={{ position: "relative" }}><Icon name={n.icon} size={21} />{n.badge ? <span className="badge-count" style={{ position: "absolute", top: 3, right: 6 }}>{n.badge}</span> : null}</button>)}
         <div className="sb-foot">{user && <button type="button" className="sb-user" style={{ justifyContent: "center", padding: 6 }} onClick={onUser} aria-label={user.name}><Avatar person={user} size="sm" /></button>}</div>
       </nav>
@@ -372,6 +404,7 @@
     return <div className="layer" style={{ position: "absolute", inset: 0, display: "grid", gridTemplateColumns: "var(--sidebar-w) minmax(0,1fr)" }}>
       <nav className="sidebar" aria-label="Main">
         <div className="sb-brand">{brand || <><Mark size={32} /><Wordmark size={18} /></>}{brandRight}</div>
+        {ws && <button type="button" className="sb-ws" onClick={onWorkspace} aria-label={`${ws.name} workspace, ${ws.domain}`}><WorkspaceMark ws={ws} size={30} /><span className="who"><span className="ws-name"><b>{ws.name}</b><Icon name="chevron-down" size={15} className="subtle" /></span><span className="ws-dom">{ws.domain}</span></span></button>}
         {nav.map((n, i) => <Fragment key={n.id}>{n.section && <div className="sb-label">{n.section}</div>}<button type="button" className="sb-item" aria-current={current === n.id ? "page" : undefined} onClick={() => onNav(n.id)}><Icon name={n.icon} size={19} /><span>{n.label}</span>{n.badge ? <span className="badge-count">{n.badge}</span> : n.count != null ? <span className="sb-n">{n.count}</span> : null}</button></Fragment>)}
         <div className="sb-foot">{footer}{user && <button type="button" className="sb-user" onClick={onUser} title={`${user.name} · ${user.role}${user.org ? " · " + user.org : ""}`}><Avatar person={user} size="sm" /><span className="who"><b>{user.name}</b><span>{user.role}{user.org ? " · " + user.org : ""}</span></span><Icon name="ellipsis" size={18} className="subtle" /></button>}</div>
       </nav>
@@ -380,12 +413,13 @@
   }
 
   /* ---------- page: a navigation bar whose large title collapses into the bar on scroll ---------- */
-  function Page({ title, sub, back, onBack, actions, children, wide, pad = true, hideLarge }) {
+  // lead: what sits at the left of the bar when there is no back button (on a phone, the workspace)
+  function Page({ title, sub, back, onBack, actions, lead, children, wide, pad = true, hideLarge }) {
     const sentinel = useRef(null); const [scrolled, setScrolled] = useState(false);
     useEffect(() => { const s = sentinel.current; if (!s) return; let root = s.parentElement; while (root && !(root.classList && root.classList.contains("scroll"))) root = root.parentElement; const io = new IntersectionObserver(([e]) => setScrolled(!e.isIntersecting), { root: root || null, threshold: 0 }); io.observe(s); return () => io.disconnect(); }, []);
     return <div className="layer">
       <header className={cx("navbar", scrolled && "scrolled")}>
-        {back ? <button type="button" className="nb-back" onClick={onBack} aria-label={"Back to " + back}><Icon name="chevron-left" size={22} stroke={2.2} /><span className="nb-back-t">{back}</span></button> : null}
+        {back ? <button type="button" className="nb-back" onClick={onBack} aria-label={"Back to " + back}><Icon name="chevron-left" size={22} stroke={2.2} /><span className="nb-back-t">{back}</span></button> : lead || null}
         <span className="nb-title">{title}</span>
         <div className="nb-actions">{actions}</div>
       </header>
@@ -405,6 +439,6 @@
   window.SC3 = Object.assign(window.SC3 || {}, {
     cx, ThemeProvider, useTheme, AppRoot, useApp, Portal, Icon, Spinner, Button, IconButton, Badge, Chip, Kbd, Card, List, ListRow,
     Segmented, Switch, Field, Input, SearchField, Select, Textarea, Stepper, OTP, Tabs, Check, DataTable, Skeleton, Progress, Empty, Avatar, Product,
-    Sheet, Alert, Menu, NoticeHost, useNotice, Mark, Wordmark, Splash, Shell, Page, ModeMenuButton,
+    Sheet, Alert, Menu, NoticeHost, useNotice, Mark, Wordmark, WorkspaceMark, PoweredBy, Splash, Shell, Page, ModeMenuButton,
   });
 })();

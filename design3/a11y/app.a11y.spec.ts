@@ -11,23 +11,28 @@ const SCENARIOS: Scenario[] = [
   { who: 'priya', route: 'command', stage: 5 },
   { who: 'priya', route: 'route', stage: 5 },
   { who: 'priya', route: 'execution', stage: 6, run: [...EXEC, ['order', 'k0'], ['order', 'k1'], ['bid', 13], ['counter']] },
+  { who: 'priya', route: 'execution', stage: 8 },
   { who: 'priya', route: 'batches', stage: 2 },
   { who: 'priya', route: 'report', stage: 9 },
   { who: 'priya', route: 'inbox', stage: 6, run: EXEC },
   { who: 'priya', route: 'profile', stage: 1 },
+  { who: 'rakesh', route: 'home', stage: 0 },
   { who: 'rakesh', route: 'home', stage: 2, run: [['requestPhoto']] },
+  { who: 'rakesh', route: 'home', stage: 8 },
   { who: 'rakesh', route: 'photo', stage: 2, run: [['requestPhoto']] },
-  { who: 'rakesh', route: 'van', stage: 7 },
+  { who: 'rakesh', route: 'van', stage: 8 },
   { who: 'rakesh', route: 'orders', stage: 7 },
   { who: 'ganesh', route: 'home', stage: 6, run: EXEC },
   { who: 'ganesh', route: 'offer', stage: 6, run: EXEC },
   { who: 'ganesh', route: 'orders', stage: 7 },
-  { who: 'venkat', route: 'market', stage: 6, run: EXEC },
-  { who: 'venkat', route: 'listing', stage: 6, run: [...EXEC, ['bid', 13], ['counter']] },
-  { who: 'venkat', route: 'bids', stage: 7 },
+  { who: 'agrawal', route: 'market', stage: 6, run: EXEC },
+  { who: 'agrawal', route: 'listing', stage: 6, run: [...EXEC, ['bid', 13], ['counter']] },
+  { who: 'agrawal', route: 'listing', stage: 7 },
+  { who: 'agrawal', route: 'bids', stage: 7 },
   { who: 'anita', route: 'paperwork', stage: 8 },
   { who: 'vikram', route: 'report', stage: 9 },
   { who: 'meera', route: 'pickups', stage: 6, run: EXEC },
+  { who: 'arjun', route: 'workspace', stage: 1 },
   { who: 'arjun', route: 'users', stage: 1 },
   { who: 'arjun', route: 'rules', stage: 1 },
   { who: 'arjun', route: 'integrations', stage: 1 },
@@ -59,25 +64,60 @@ async function setWorld(page, stage: number, run: [string, unknown?][] = []) {
 }
 
 for (const s of SCENARIOS) {
-  test(`app · ${s.who} · ${s.route}`, async ({ page }, testInfo) => {
+  test(`app · ${s.who} · ${s.route} · stage ${s.stage}`, async ({ page }, testInfo) => {
     await signIn(page, s.who, s.route);
     await setWorld(page, s.stage, s.run);
-    await report(testInfo, await scan(page, `${s.who} ${s.route}`));
+    await report(testInfo, await scan(page, `${s.who} ${s.route} at stage ${s.stage}`));
   });
 }
 
 test('app · sign-in and its sheets', async ({ page }, testInfo) => {
   await signIn(page, null);
   const findings: Finding[] = [...await scan(page, 'sign-in')];
+  const id = page.getByLabel('Work email or mobile number');
+  const close = async () => { await page.keyboard.press('Escape'); await page.waitForTimeout(500); };
+  // a mobile number gets a one-time code
+  await id.fill('98230 44118');
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.waitForTimeout(1100);
+  findings.push(...await scan(page, 'sign-in · code sheet'));
+  await close();
+  // a munchly.in address goes to Google Workspace
+  await id.fill('priya.deshmukh@munchly.in');
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.waitForTimeout(1000);
+  findings.push(...await scan(page, 'sign-in · Google sheet'));
+  await close();
+  // anyone else is told so, and offered the way to their own workspace
+  await id.fill('someone@elsewhere.in');
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.waitForTimeout(500);
+  findings.push(...await scan(page, 'sign-in · not in this workspace'));
+  await page.getByRole('button', { name: 'Find your workspace' }).first().click();
+  await page.waitForTimeout(700);
+  findings.push(...await scan(page, 'sign-in · find your workspace'));
+  await close();
+  // an invited number joins the workspace on first sign-in
+  await id.fill('98230 60013');
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.waitForTimeout(1100);
+  await page.locator('.otp input').first().fill('2');
+  await page.keyboard.type('46810');
+  await page.waitForTimeout(1300);
+  findings.push(...await scan(page, 'sign-in · join the workspace'));
+  await close();
   await page.getByRole('button', { name: /Explore as someone in the story/ }).click();
   await page.waitForTimeout(700);
   findings.push(...await scan(page, 'sign-in · people sheet'));
-  await page.keyboard.press('Escape');
-  await page.waitForTimeout(500);
-  await page.getByRole('button', { name: /Continue with phone number/ }).click();
-  await page.waitForTimeout(700);
-  findings.push(...await scan(page, 'sign-in · phone sheet'));
   await report(testInfo, findings);
+});
+
+test('app · the workspace sheet', async ({ page }, testInfo) => {
+  await signIn(page, 'rakesh', 'home');
+  await setWorld(page, 1);
+  await page.getByRole('button', { name: /Munchly Foods workspace/ }).first().click();
+  await page.waitForTimeout(800);
+  await report(testInfo, await scan(page, 'workspace sheet'));
 });
 
 test('app · approve sheet and plan placed', async ({ page }, testInfo) => {

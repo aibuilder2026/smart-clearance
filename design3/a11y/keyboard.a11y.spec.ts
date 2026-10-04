@@ -18,13 +18,14 @@ test.beforeEach(async ({ page }, testInfo) => {
 
 const focusedName = page => page.evaluate(() => {
   const el = document.activeElement as HTMLElement | null;
-  return el ? (el.getAttribute('aria-label') || el.innerText || el.tagName).replace(/\s+/g, ' ').trim().slice(0, 60) : '';
+  const label = el && (el as HTMLInputElement).labels && (el as HTMLInputElement).labels![0];
+  return el ? (el.getAttribute('aria-label') || (label && label.innerText) || el.innerText || el.tagName).replace(/\s+/g, ' ').trim().slice(0, 60) : '';
 });
 
 test('keyboard · sign-in options follow the visual order', async ({ page }) => {
   const seen: string[] = [];
   for (let i = 0; i < 8; i++) { await page.keyboard.press('Tab'); seen.push(await focusedName(page)); }
-  expect(seen.join(' | ')).toMatch(/Continue with Google.*Continue with phone number.*Sign in with ExpireSoon.*Explore as someone in the story/);
+  expect(seen.join(' | ')).toMatch(/Work email or mobile number.*Continue.*Priya.*Explore as someone in the story.*Find yours/);
 });
 
 test('keyboard · a sheet takes focus, keeps it, and gives it back', async ({ page }) => {
