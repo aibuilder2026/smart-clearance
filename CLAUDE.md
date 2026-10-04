@@ -41,7 +41,7 @@
 
 - Project agents, skills and `.mcp.json` servers load at session start. After changing them, start a new session.
 - The built-in browser was refused claude.ai pages; Claude in Chrome reaches them.
-- The full accessibility suite takes about 4 minutes, so give it a long timeout. While iterating, use `npm run test:desktop`.
+- The full accessibility suite takes about 6 minutes, so give it a long timeout. While iterating, use `npm run test:desktop`.
 
 ## Recent changes (4 Oct 2026)
 

@@ -34,7 +34,7 @@ cd design3 && ./dist.sh             # bundle the hosted build into design3/dist/
 python3 -m http.server 8787 --directory design3   # serve the demo, app and design system locally
 
 cd design3/a11y && npm ci && npx playwright install chromium   # once
-npm test                            # WCAG 2.2 AA suite: 270 tests in five viewports, about 5 minutes
+npm test                            # WCAG 2.2 AA suite: 380 tests in five viewports, about 6 minutes
 npm run test:desktop                # light and dark at 1440 only, for a quicker loop
 npm run report                      # the Playwright HTML report
 ```

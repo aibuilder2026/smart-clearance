@@ -121,12 +121,19 @@
     return <div className="ex-track" ref={track}><div className="ex-stick" style={{ top }}>{children({ x, jump })}</div></div>;
   }
   function Exits() {
-    const app = useApp(); const reduce = useReducedMotion(); const site = React.useContext(ScrollCtx); const swipe = app.bp !== "desktop"; const panned = !swipe && !reduce && !!site;
-    const [active, setActive] = useState(0);
+    const app = useApp(); const reduce = useReducedMotion(); const night = useTheme().resolved === "dark"; const site = React.useContext(ScrollCtx); const swipe = app.bp !== "desktop"; const panned = !swipe && !reduce && !!site;
+    const [active, setActive] = useState(0); const pan = useRef(null); const placed = useRef(false);
+    // on tablets and phones the strip opens on the first exit and slides to whichever exit is tapped
+    useEffect(() => {
+      const el = pan.current; if (!swipe || !el) return;
+      const li = el.querySelectorAll(".ex-chips > li")[active]; const fig = el.querySelector(".ex-pano"); if (!li || !fig) return;
+      const left = fig.offsetLeft + li.offsetLeft - el.clientWidth / 2;
+      el.scrollTo({ left: Math.max(0, left), behavior: placed.current && !reduce ? "smooth" : "auto" }); placed.current = true;
+    }, [active, swipe]);
     const stage = ({ x, jump } = {}) => <>
-      <div className={cx("ex-pan", panned && "panned")} {...(swipe ? { tabIndex: 0, role: "region", "aria-label": "The street from the godown to the bin; scroll sideways" } : {})}>
+      <div ref={pan} className={cx("ex-pan", panned && "panned")} {...(swipe ? { tabIndex: 0, role: "region", "aria-label": "The street from the godown to the bin; scroll sideways" } : {})}>
         <motion.figure className="ex-pano" style={{ "--ar": EX_AR, x: panned ? x : undefined }}>
-          <img src={IMG + "exits.webp"} alt="One miniature street from end to end: the distributor's godown, two kirana shops hung with snack packets, a general store, more small shops, a van, and a smouldering rubbish heap at the far end." />
+          <img src={IMG + (night ? "exits-night.webp" : "exits.webp")} alt={`One miniature street from end to end${night ? " at night" : ""}: the distributor's godown, two kirana shops hung with snack packets, a general store, more small shops, a van, and a smouldering rubbish heap at the far end.`} />
           <ul className="ex-chips">{EXITS.map((e, i) => <li key={e.id} style={{ "--x": e.x }}>
             <button type="button" className={cx("ex-chip", e.taken && "taken", e.bin && "bin", i === active && "on")} aria-pressed={i === active} onClick={() => panned ? jump(i) : setActive(i)} onFocus={() => { if (panned && i !== active) jump(i); }}>
               <span className="ex-name"><i className={"ex-dot " + e.id} aria-hidden="true" />{e.name}{e.taken && <Icon name="check" size={14} stroke={2.6} className="ex-took" />}</span>
@@ -137,10 +144,11 @@
       </div>
       <p className="ex-cap" aria-live="polite"><i className={"ex-dot " + EXITS[active].id} aria-hidden="true" /><span><b>{EXITS[active].name}.</b> {EXITS[active].detail}</span></p>
     </>;
-    const figs = [
-      { n: <Money value={D.ACTUAL.net} className="fig-n" />, l: "recovered", d: `${fmt.inr(KL.net)} from ${SHOPS} kiranas and ${fmt.inr(ES_NET)} from a buyer in Raipur, after the van and the listing fee.` },
-      { n: <Money value={D.ACTUAL.swing} className="fig-n" />, l: "better than the bin", d: `Munchly's books show ${fmt.inr(D.ACTUAL.pnl)} with the plan, price support included, against ${fmt.inr(-BIN)} to destroy the batch.` },
-      { n: <span className="num fig-n">0</span>, l: "cartons destroyed", d: `All ${fmt.num(D.PLAN.soldUnits)} packs sold on tax invoices, so the ${fmt.inr(D.PLAN.itcRetained)} GST credit stays.` },
+    // the batch's ledger: each result with the arithmetic that makes it
+    const ledger = [
+      { d: <>{fmt.inr(KL.net)} from {SHOPS} kiranas, after the van, <span className="lg-op">+</span> {fmt.inr(ES_NET)} from a buyer in Raipur, after the listing fee</>, n: <Money value={D.ACTUAL.net} className="lg-n" />, l: "recovered" },
+      { d: <>{fmt.inr(D.ACTUAL.pnl)} on Munchly's books with the plan, price support included, against {fmt.inr(-BIN)} to destroy the batch</>, n: <Money value={D.ACTUAL.swing} className="lg-n" />, l: "better than the bin" },
+      { d: <>{fmt.num(D.PLAN.soldUnits)} packs sold on tax invoices, so the {fmt.inr(D.PLAN.itcRetained)} GST credit stays</>, n: <span className="num lg-n">0</span>, l: "cartons destroyed" },
     ];
     return <section id="how" className="sec sec-exits" aria-labelledby="exits-h">
       <div className="wrap">
@@ -148,19 +156,23 @@
           <p className="sec-sub"><span className="mono">{BATCH.id}</span>: {fmt.num(D.RISK.atRisk)} packs of masala chips that won't sell in the {BATCH.daysLeft} days they have left. The agents priced every exit; two of them took the batch.</p></header>
       </div>
       <div className="ex-body">{panned ? <ExitsPanned active={active} setActive={setActive}>{stage}</ExitsPanned> : stage()}</div>
-      <div className="wrap"><ul className="ex-figs">{figs.map(f => <li key={f.l} className="ex-fig">{f.n}<b className="fig-l">{f.l}</b><span className="fig-d">{f.d}</span></li>)}</ul></div>
+      <div className="wrap"><div className="ledger" role="group" aria-label={`${BATCH.id}, the batch's ledger`}>
+        <span className="lg-head"><span className="mono">{BATCH.id}</span><span>{fmt.num(D.RISK.atRisk)} packs, five exits priced, one plan approved</span></span>
+        <dl className="lg-rows">{ledger.map(r => <div key={r.l} className="lg-row"><dt>{r.d}</dt><dd><span className="lg-eq" aria-hidden="true">=</span>{r.n}<span className="lg-l">{r.l}</span></dd></div>)}</dl>
+      </div></div>
     </section>;
   }
 
   /* ---------- 3. nine stops, ten agents, one yes ---------- */
   const STOP_LINES = { connect: "the distributor's stock export and one permission", detect: "shelf life checked against every gate at 09:00", verify: "the label photo read and matched", value: "five exits priced, the bin included", decide: "the batch split, with the reasons", approve: "one tap, with the money on screen", execute: "listing, offers in Hindi, bids answered, pick-up", settle: "invoice, e-way bill, credit note, GST memo", report: "a BRSR line after the return window" };
   function Stops() {
+    const night = useTheme().resolved === "dark";
     const byStage = {}; P.AGENTS.forEach(a => { if (!a.gate) (byStage[a.stage] = byStage[a.stage] || []).push(a.name); });
     return <section id="agents" className="sec sec-stops" aria-labelledby="stops-h">
       <div className="wrap">
         <header className="sec-head"><h2 id="stops-h" className="sec-h">Nine stops. Ten agents. One yes.</h2><p className="sec-sub">The agents do the running around. A person approves once, with the money on screen.</p></header>
         <div className="stops-grid">
-          <figure className="plate-frame stops-plate"><img src={IMG + "approve.webp"} alt="A miniature town square seen from above: a giant amber push-button on a stone plinth, a woman in a sari beside it with her phone, vans and a handcart around the square." loading="lazy" /></figure>
+          <figure className="plate-frame stops-plate"><img src={IMG + (night ? "approve-night.webp" : "approve.webp")} alt={`A miniature town square seen from above${night ? " at night" : ""}: a giant amber push-button on a stone plinth, a woman in a sari beside it with her phone, vans and a handcart around the square.`} loading="lazy" /></figure>
           <ol className="stops" aria-label="The nine stops">{D.STAGES.map(s => <li key={s.id} className={cx("stop", s.human && "human")}>
             <span className="st-dot" aria-hidden="true">{s.human && <Icon name="hand" size={14} stroke={2.4} />}</span>
             <span className="st-main"><b>{s.title}</b><span className="st-text">{STOP_LINES[s.id]}</span>
@@ -198,14 +210,14 @@
             </div>
             <div className="story-ctas"><a className="btn btn-primary" {...linkProps(LINKS.demo)}>Watch Munchly's batch, stage by stage</a><a className="btn btn-secondary btn-white" {...linkProps(LINKS.app)}>Visit {ws.domain}</a></div>
           </div>
-          <div className="story-card" role="group" aria-label={`Batch ${BATCH.id}, cleared`}>
+          <div className="story-card" role="group" aria-label={`Batch ${BATCH.id}: eight of nine stops done`}>
             <div className="sc-top">
               <span className="sc-id"><span className="mono">{BATCH.id}</span><span>{SKU.brand} {SKU.name} · {DIST.name}, {DIST.city}</span></span>
               <Product name={SKU.img} size={76} className="sc-pack" />
             </div>
-            <span className="sc-dots" aria-hidden="true">{Array.from({ length: 9 }).map((_, i) => <i key={i} />)}</span>
+            <span className="sc-dots" aria-hidden="true">{Array.from({ length: 9 }).map((_, i) => <i key={i} className={cx(i === 8 && "next")} />)}</span>
             <Money value={D.ACTUAL.net} className="sc-money" />
-            <span className="sc-cap">recovered, nine stops of nine</span>
+            <span className="sc-cap">recovered, eight stops of nine; the BRSR line follows after {fmt.date(D.RETURN_BY).replace(/ \d{4}$/, "")}</span>
             <dl className="sc-rows">{rows.map(([k, v]) => <div key={k} className="sc-row"><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
           </div>
         </div>
@@ -226,27 +238,24 @@
     { id: "next", x: 0.8, y: 0.61, ly: 0.87, packs: ["sprout-box"], url: "your-brand.smartclearance.com", flip: true },
   ];
   const HUB = { x: 0.425, y: 0.69 }, ISL_AR = 3776 / 1120;
-  const TEAMS = [
-    { id: "supply", icon: "route", title: "Supply chain", line: "One tap to approve a plan, with the money on screen.", tag: <Badge size="sm" tone="amber">one tap</Badge> },
-    { id: "finance", icon: "file-text", title: "Finance", line: "The invoice, the credit note and the GST memo, drafted.", tag: <Badge size="sm">s.17(5)(h) memo</Badge> },
-    { id: "esg", icon: "leaf", title: "Sustainability", line: "A BRSR line an auditor can follow back to the batch.", tag: <Badge size="sm">{fmt.num(D.PLAN.kg)} kg kept</Badge> },
-    { id: "dist", icon: "warehouse", title: "Distributors", line: "Nothing listed in their name without their permission.", tag: <Badge size="sm" icon="check">one-time permission</Badge> },
-  ];
   function Workspace() {
-    const app = useApp(); const swipe = app.bp !== "desktop";
+    const app = useApp(); const { resolved } = useTheme(); const swipe = app.bp === "phone";
+    const urls = cls => <ul className={cx("isl-urls", cls)} aria-label="Workspace addresses">{ISLANDS.map(i => <li key={i.id} className={cx("isl-url", i.live && "live")} style={{ "--x": i.x, "--y": i.ly }}><i aria-hidden="true" />{i.url}{i.live && <span className="isl-live"> · live</span>}</li>)}</ul>;
     return <section id="workspace" className="sec sec-ws" aria-labelledby="ws-h">
       <div className="wrap"><header className="sec-head"><h2 id="ws-h" className="sec-h ws-h"><span>Your own workspace,</span> <span>set up for your supply chain.</span></h2><p className="sec-sub">Each manufacturer gets its own address, configured for how its stock really moves.</p></header></div>
       <div className="isl-pan" {...(swipe ? { tabIndex: 0, role: "region", "aria-label": "Workspaces, one island each; scroll sideways" } : {})}>
         <figure className="islands" style={{ "--ar": ISL_AR }}>
-          <img className="isl-plate" src={IMG + "islands.webp"} alt="" loading="lazy" />
+          <img className="isl-plate" src={IMG + (resolved === "dark" ? "islands-night.webp" : "islands.webp")} alt="" loading="lazy" />
           {ISLANDS.map(i => <span key={i.id} className={cx("isl-packs", "isl-" + i.id)} style={{ "--x": i.x, "--y": i.y }} aria-hidden="true">{i.packs.map(n => <Product key={n} name={n} size={160} className={cx("isl-pack", i.flip && "flip")} />)}</span>)}
           <span className="isl-hub" style={{ "--x": HUB.x, "--y": HUB.y }} aria-hidden="true"><Mark size={52} /></span>
-          <ul className="isl-urls" aria-label="Workspace addresses">{ISLANDS.map(i => <li key={i.id} className={cx("isl-url", i.live && "live")} style={{ "--x": i.x, "--y": i.ly }}><i aria-hidden="true" />{i.url}{i.live && <span className="isl-live"> · live</span>}</li>)}</ul>
+          {urls("on-plate")}
           <figcaption className="sr-only">Three islands over a miniature town, joined to Smart-Clearance by green paths: Munchly Foods' workspace, live with its packs, and two waiting for the next manufacturers.</figcaption>
         </figure>
       </div>
       <div className="wrap">
-        <ul className="teams">{TEAMS.map(t => <li key={t.id}><span className="tm-head"><Icon name={t.icon} size={20} className="tm-icon" /><b>{t.title}</b></span><span className="tm-line">{t.line}</span>{t.tag}</li>)}</ul>
+        {urls("below")}
+        {/* inside a workspace, each team gets its own part of the same batch */}
+        <p className="isl-cap"><b>Inside Munchly's workspace,</b> supply chain approves a plan with one tap, the money on screen. Finance gets the invoice, the credit note and the GST memo, drafted. Sustainability gets a BRSR line an auditor can follow back to the batch. And nothing is listed in a distributor's name without their one-time permission.</p>
         <div className="conn"><span className="conn-h">Works with</span><ul className="conn-list">{P.CONNECTORS.map(c => <li key={c.id} className="chip">{c.name}{c.status === "soon" && <span className="subtle"> · soon</span>}</li>)}</ul></div>
       </div>
     </section>;
@@ -266,12 +275,13 @@
     </section>;
   }
   function Close({ onDemo }) {
+    // the copy sits in the dusk sky, extended above the picture, which fades up into it
     return <section className="close" aria-labelledby="close-h">
-      <img className="close-plate" src={IMG + "dusk.webp"} alt="" loading="lazy" />
       <div className="close-copy">
         <h2 id="close-h" className="close-h">Give your next batch a second chance.</h2>
         <div className="close-ctas"><Button variant="primary" onClick={() => onDemo()}>Book a demo</Button><a className="btn btn-secondary" {...linkProps(LINKS.demo)}>Watch the 6-minute demo</a></div>
       </div>
+      <img className="close-plate" src={IMG + "dusk.webp"} width="4128" height="1024" alt="" loading="lazy" />
     </section>;
   }
   function Footer({ onFind }) {
