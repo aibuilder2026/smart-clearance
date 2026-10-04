@@ -36,6 +36,32 @@
 | B. Explained like a platform | The references' structure: how it works, proof, teams, questions | Three product moments, each the card a team actually sees: the Watcher's alert, the Valuer's priced exits, the plan waiting for one yes. Then a questions section | Each card's rows rise and its figures roll; tapping Approve wakes the agents |
 | C. The town at work | The diorama world in motion | Short clips of the miniature town: the town comes alive in the hero, and the square's amber button is pressed as the nine stops fill | Two LTX clips that play once and hold; the street's exits are priced one after another |
 
+## In this folder
+
+- `board.html`: the review board. Open it through the 8787 server.
+- `current/`: the page as it is today, full length, in light and dark at 1440 and 390.
+- `option-a/`, `option-b/`, `option-c/`. Each holds:
+  - `mockup.html`, the option with its motion in framer-motion 11.18.2;
+  - the comps, full length, in light and dark at 1440 (scaled to 1080) and 390, with every motion in its final state;
+  - `motion.mp4`, the motion recorded from the mockup, with its last frame as `motion.webp`.
+- `sc28.css`, `sc28.js`: shared by the three mockups. After the pick, the chosen option's rules move into `site/site.css`.
+- `img/`: five Qwen-Image renders without any brand, each with its prompt sidecar:
+  - three products for the islands: a snack pouch, a juice carton, an oil bottle;
+  - the godown and the kirana, with blank signboards.
+- `media/`: option C's two LTX clips, in H.264 and VP9, with their first and last frames and their sidecars.
+
+Every mockup was scanned with axe (the suite's WCAG 2.2 AA tags and the target-size pass) in light and dark at 1440 and 390, after its motion had played: zero violations.
+
+## Known defects in the review assets
+
+- **Option C's clips are drafts.** They are recorded in their sidecars.
+  - LTX moved the camera in both, though asked for a locked-off shot.
+  - The phone tap in the square doesn't read.
+  - Both were cropped back to their plates' shape, which removed LTX's pad strips.
+
+  If C is picked, the clips are made again with the last frame pinned to the plate, which holds the camera, along with night versions.
+- **The kirana render** keeps a tiny, illegible card on the display stand at its right. It came from the source render.
+
 ## The pick
 
 Pending.

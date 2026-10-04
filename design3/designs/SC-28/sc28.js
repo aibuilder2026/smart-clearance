@@ -172,6 +172,12 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   document.querySelectorAll('video[data-once]').forEach(playOnce);
 
+  /* the islands strip scrolls on phones: there it takes focus, as the site's does, so it can be scrolled by keyboard */
+  document.querySelectorAll('.isl-pan').forEach(function (pan) {
+    if (pan.scrollWidth <= pan.clientWidth) return;
+    pan.tabIndex = 0; pan.setAttribute('role', 'region'); pan.setAttribute('aria-label', 'Workspaces, one island each; scroll sideways');
+  });
+
   /* the street as a swipe strip (phones and tablets): open on the taken exit, as the site does */
   document.querySelectorAll('.ex-pan').forEach(function (pan) {
     var on = pan.querySelector('.ex-chip.on');
