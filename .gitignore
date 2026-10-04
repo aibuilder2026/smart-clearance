@@ -17,3 +17,6 @@ design3/system/img/src/
 design3/system/media/src/
 # the v3 carton loop ships (small, H.264)
 !design3/system/media/carton-loop.mp4
+
+# design3 platform pages: generated PNG originals stay local (WebP ships)
+design3/site/assets/plates/src/
