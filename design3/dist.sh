@@ -13,4 +13,7 @@ for f in system/tokens.css system/base.css system/components.css screens/screens
 js system/ds.js > dist/ds.js; css system/docs.css > dist/docs.css
 js demo/director.js > dist/director.js; css demo/demo.css > dist/demo.css
 js app/app.js > dist/app.js; css app/app.css > dist/app.css
+# the platform pages: the console carries its own mock backend; the site is the product's landing page
+{ js core/platform.js; echo; js console/console.js; } > dist/console.js; css console/console.css > dist/console.css
+{ js core/platform.js; echo; js site/site.js; } > dist/site.js; css site/site.css > dist/site.css
 wc -c dist/* | tail -1

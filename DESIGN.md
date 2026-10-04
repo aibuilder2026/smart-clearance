@@ -91,6 +91,13 @@ colors:
   map-water-dark: "#0e2230"
   paper: "#fffefb"
   paper-ink: "#1b211e"
+  on-plate: "#0d1c15"
+  on-plate-night: "#ecf2ee"
+  on-dusk: "#f7f4ec"
+  dusk-sky-top: "#1f262e"
+  dusk-sky-left: "#39434f"
+  dusk-sky-mid: "#434b55"
+  dusk-sky-right: "#95887e"
 typography:
   large-title:
     fontFamily: "Bricolage Grotesque, Geist, system-ui, sans-serif"
@@ -152,6 +159,16 @@ typography:
     fontSize: "11px"
     fontWeight: 400
     lineHeight: 1.3
+  callout:
+    fontFamily: "Geist, Noto Sans Devanagari, -apple-system, system-ui, sans-serif"
+    fontSize: "16px"
+    fontWeight: 400
+    lineHeight: 1.45
+  lead:
+    fontFamily: "Geist, Noto Sans Devanagari, -apple-system, system-ui, sans-serif"
+    fontSize: "17px"
+    fontWeight: 400
+    lineHeight: 1.5
   numeral:
     fontFamily: "Bricolage Grotesque, Geist, system-ui, sans-serif"
     fontSize: "72px"
@@ -159,6 +176,42 @@ typography:
     lineHeight: 0.92
     letterSpacing: "-0.04em"
     fontFeature: "lnum"
+    fontVariation: "\"opsz\" 96, \"wdth\" 92"
+  site-hero:
+    fontFamily: "Bricolage Grotesque, Geist, system-ui, sans-serif"
+    fontSize: "clamp(36px, 10.4cqw, 62px)"
+    fontWeight: 780
+    lineHeight: 1.02
+    letterSpacing: "-0.03em"
+    fontVariation: "\"opsz\" 96, \"wdth\" 82"
+  site-section:
+    fontFamily: "Bricolage Grotesque, Geist, system-ui, sans-serif"
+    fontSize: "clamp(42px, 3.6cqw, 56px)"
+    fontWeight: 720
+    lineHeight: 1.04
+    letterSpacing: "-0.022em"
+    fontVariation: "\"opsz\" 96, \"wdth\" 82"
+  site-story:
+    fontFamily: "Bricolage Grotesque, Geist, system-ui, sans-serif"
+    fontSize: "clamp(52px, 4.6cqw, 68px)"
+    fontWeight: 720
+    lineHeight: 1.04
+    letterSpacing: "-0.022em"
+    fontVariation: "\"opsz\" 96, \"wdth\" 82"
+  site-close:
+    fontFamily: "Bricolage Grotesque, Geist, system-ui, sans-serif"
+    fontSize: "clamp(34px, 2.8cqw, 44px)"
+    fontWeight: 720
+    lineHeight: 1.06
+    letterSpacing: "-0.02em"
+    fontVariation: "\"opsz\" 96, \"wdth\" 82"
+  site-numeral:
+    fontFamily: "Bricolage Grotesque, Geist, system-ui, sans-serif"
+    fontSize: "clamp(46px, 3.9cqw, 58px)"
+    fontWeight: 760
+    lineHeight: 1
+    letterSpacing: "-0.03em"
+    fontFeature: "tnum"
     fontVariation: "\"opsz\" 96, \"wdth\" 92"
   mono:
     fontFamily: "Geist Mono, ui-monospace, SFMono-Regular, Menlo, monospace"
@@ -380,11 +433,46 @@ components:
     typography: "{typography.mono}"
     rounded: "12px"
     padding: "12px 14px"
+  site-ledger:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.lg}"
+    padding: "22px 28px 10px"
+  site-exit-chip:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.md}"
+    padding: "8px 12px 9px"
+    height: "44px"
+  site-plate-frame:
+    backgroundColor: "{colors.surface-sunken}"
+    rounded: "{rounded.lg}"
+  site-story-card:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.xl}"
+    padding: "28px"
+  site-plan:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.lg}"
+    padding: "24px"
+  site-address:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.full}"
+    padding: "7px 12px"
+  button-on-dusk:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.on-plate}"
+    rounded: "12px"
+    padding: "0 16px"
+    height: "44px"
 ---
 
 # Design System: Smart-Clearance
 
-> Edition note: this file records design v3 (design3/), the product's current visual system. Design v2 (the Sivakasi label world, design2/) and design v1 (design/) remain in the repository as earlier editions for reference; their tokens are not part of this system.
+> Edition note: this file records design v3 (design3/), the product's current visual system. Design v2 (the Sivakasi label world, design2/) and design v1 (design/) remain in the repository as earlier editions for reference; their tokens are not part of this system. The product's own landing page (design3/site, smartclearance.com) is a v3 surface: it adds one material, the diorama plates, and the display steps, plate inks and idioms recorded below under "Landing page".
 
 ## Overview
 
@@ -404,6 +492,7 @@ Density is operating-tool density: Geist at 15px for the interface, Bricolage Gr
 - Hairlines of one device pixel, soft layered offset shadows, squircle corners where supported.
 - Springs for sheets, 160 to 420 ms ease-out for state, 700 ms odometer rolls; all of it off under reduced motion.
 - Soft 3D renders on transparent grounds and one carton loop; label text is set in type, never baked into the photo.
+- On the landing page only: tilt-shift diorama plates of a miniature Indian town, composed by day and by night, with the carton the one giant thing.
 
 ## Colors
 
@@ -434,6 +523,11 @@ A quiet sage palette with one brand green and three single-meaning signals, plus
 - **Map** (`map-ground`, `map-block`, `map-water`, dark twins): the schematic Nagpur cluster map; roads are white in light and `map-road-dark` in dark.
 - **Paper** (`paper`, `paper-ink`): documents keep a white page with near-black ink in both themes, dimmed 7% in dark.
 
+### Plate Inks (landing page)
+- **Plate Ink** (`on-plate` by day, `on-plate-night` at night): text set directly on a diorama plate (the desktop hero's headline and subhead) takes the plate's ink, chosen by which plate is showing, not by the theme's foreground. The values match `ink` and `ink-dark` today because the plates swap on the resolved theme; the role is the plate's.
+- **Dusk Ink** (`on-dusk`): the closing band's headline. The band shows the dusk plate in both themes, so its ink never changes with the theme.
+- **Dusk Sky** (`dusk-sky-top`, `dusk-sky-left`, `dusk-sky-mid`, `dusk-sky-right`): the closing band's sky above the plate, two gradients that continue the dusk plate's own colours upward (top shade fading out by 75%; left to right from slate to the warm haze at the plate's right edge). They belong to that plate; they are not a palette for other grounds. Its secondary button is a white surface with `on-plate` text (hover #eef3ef); its primary keeps Route Green with a black lift.
+
 ### Named Rules
 **The Live Colour Rule.** Colour appears only where something is live or decided. Resting chrome is sage neutrals; green, amber, red and violet arrive with a state.
 
@@ -444,6 +538,8 @@ A quiet sage palette with one brand green and three single-meaning signals, plus
 **The Fixed Series Rule.** Channels are drawn in the order kirana, ExpireSoon, staff, D2C, food bank, write-off, in their channel colours, everywhere a channel is charted. A chart of a distributor's stock has no D2C series; the other five keep their order and hues.
 
 **The Composed-Not-Inverted Rule.** Dark mode is its own palette (green-black ground, lifted green, darker channel hues, black shadows with an inner highlight), never a filter over light.
+
+**The Plate's Ink Rule.** Text that sits on a plate takes that plate's ink (`on-plate`, `on-plate-night`, `on-dusk`), never the theme's; a plate that does not change with the theme keeps its ink in both themes.
 
 ## Typography
 
@@ -463,6 +559,16 @@ A quiet sage palette with one brand green and three single-meaning signals, plus
 - **Money**: the rupee sign at 0.5em, weight 700, raised 0.12em; paise at 0.5em, raised; a true minus sign; Indian grouping (en-IN).
 - **Mono** (Geist Mono 400–600, 11–12.5px): batch and document ids, tracker and feed timestamps, tool calls, JSON and API cards, keyboard keys, the label-shot print and the paper stamps.
 - **Hindi** (Noto Sans Devanagari, inherits size, line-height 1.5–1.55): every Hindi string, marked with `lang="hi"`.
+- **Lead** (Geist 400, 17px, 18px from 1024px, 1.5, `ink-secondary`, 62ch): a landing section's one-line sub under its heading; the landing hero's subhead is 17px/450 in `ink`.
+
+**Landing page display steps.** The landing page persuades, so it climbs above the app's ramp. All are Bricolage at `opsz` 96, `wdth` 79–82, tight tracking, `text-wrap: balance`, and live only on the landing page:
+- **Hero** (`site-hero`): 780 at clamp(36px, 10.4cqw, 62px) on phones and tablets; on desktops the comp's frame sets it at 4.53cqw (58px at 1280), 720, line-height 1, -0.018em, `wdth` 79, in plate ink, centred in the sky.
+- **Section heading** (`site-section`): 720 at 34px, 42px from 600px, clamp(42px, 3.6cqw, 56px) from 1024px.
+- **Story headline** (`site-story`): the same voice at 38px, 48px from 600px, clamp(52px, 4.6cqw, 68px) from 1024px; each sentence on its own line.
+- **Closing headline** (`site-close`): 32px, 38px from 600px, clamp(34px, 2.8cqw, 44px) from 1024px, in `on-dusk`.
+- **Landing numerals** (`site-numeral`, 760, `wdth` 92, tabular, lining, `primary-text`): the ledger's results at 40px, clamp(46px, 3.9cqw, 58px) from 1024px; the story card's recovered figure at 54px, 64px from 1024px; the hero tracker card's figure at 27px, 3.09cqw on desktops. A large `=` in Bricolage 500 at 26px in `ink-quaternary` leads each ledger result.
+- **Text beside them:** plan names Bricolage 700 25px (`opsz` 48); the story quote 20 / 22 / 24px at 1.4 (34ch); captions under plates 16–18px (`callout` and up) at 1.45–1.6.
+
 
 ### Named Rules
 **The Urgent Numeral Rule.** Urgency is drawn in the numeral's own width and weight, never with a red badge beside a neutral number.
@@ -472,6 +578,8 @@ A quiet sage palette with one brand green and three single-meaning signals, plus
 **The Machine Voice Rule.** Ids, times, tool calls and payloads are Geist Mono; people's words and the interface are Geist.
 
 **The Borrowed Voice Rule.** Inside the ExpireSoon scope, numerals and titles switch to Geist (680–750 weight, tight tracking, no variation axes): ExpireSoon is another company and does not speak in Smart-Clearance's numerals.
+
+**The Persuasion Steps Rule.** The landing display steps and numerals are for the product's own persuasion surfaces; the app, demo and console keep the large title and numeral steps above.
 
 ## Layout
 
@@ -483,6 +591,12 @@ Every layout decision reads the app's own width through a size container (`conta
 - **Safe areas:** `env(safe-area-inset-top/bottom)` feed the navigation bar, tab bar, sheets, splash and lock screen.
 - **Spacing:** a 4pt grid (4, 8, 12, 16, 20, 24, 32, 40, 56, 72). Stacks gap 16 (tight 8, snug 12, loose 24); rows gap 12; cards pad 20 (large 24); list rows 52px minimum at 10px 16px; inset separators start at 16px, 60px when rows lead with an icon tile.
 - **Targets:** tab-bar items and compact rail items are 44px; list rows 52px; large and extra-large buttons 48 and 56px. On touch screens (`pointer: coarse`) every default button grows to 44px and icon buttons to 44 by 44; small buttons, chips, segmented controls, tabs, round close buttons and "continue as" links keep their drawn size and take a 44px hit area from an invisible overlay; stepper buttons grow to 44px tall.
+
+**Landing page.** The landing page reads the same `app` container with its own steps: phone under 600px, tablet 600–1023px, desktop from 1024px (and 1100px for the panned street and the on-plate islands).
+- **First viewport:** on desktops it is the approved comp's frame (1280 × 800) box for box, every box measured from the comp and scaled in container units (1px of the comp = 0.078125cqw): the frosted 60px bar overlays a full-bleed plate that fades out over its last 16%. Tablets and phones read the same parts top to bottom (headline, sub, buttons, the plate in a 20px-radius frame at 16:10 or 3:4, the tracker card pinned at its top right, then the exits).
+- **Sections:** a 1248px wrap; section padding 56px 16px, 76px 32px from 600px, 96px 48px from 1024px; heads gap 10px with 28px (36px) below.
+- **Plates run wider than the wrap:** the street and the islands break out to the section edge; below desktop the street is a sideways-scrolling strip (290px tall, 340px from 600px) that snaps to each exit and is a focusable region.
+- **The pinned panorama (desktop, motion allowed):** a 250vh track holds the street sticky in the middle of the window, zoomed 1.8×, and pans it in nine equal steps, hold and move, so the scroll rests on each of the five exits. Under reduced motion it is the whole street, still.
 
 ## Elevation & Depth
 
@@ -501,9 +615,15 @@ A hybrid: soft, layered, offset shadows lift cards and overlays off the sage gro
 
 **The One-Pixel Rule.** Edges and separators are one device pixel of `hairline`; no keylines, no heavy borders. State is drawn with a crisp 1.5–2px ring of the state colour (a selected document, a selected person, a live tile), never a thicker card border.
 
+**Landing page.** Plates sit in a frame with shadow-2 and the hairline ring, or bleed and fade through an alpha mask (the hero's last 16%, the islands top and bottom, the dusk plate's top 26%); a mask is never a hard edge. What floats over a plate is frosted (the hero tracker card at 86% surface with `blur(14px) saturate(140%)`, exit chips and workspace addresses on `--glass-strong` with `blur(10px)`), with shadow-2 and the hairline ring. Cut-out packs and the hub on the islands take an offset drop shadow (`0 10px 14px` ink at 22%, the hub 28%).
+
+**The Painted Light Rule.** The glowing green route painted into a diorama plate is a light the world itself contains, like the aura and the scanline; it lives in the raster only and is never drawn in CSS around a card, button or figure.
+
 ## Shapes
 
 Soft, continuous corners on the 6 / 10 / 14 / 20 / 28 / 999 scale: 6px for keyboard keys, paper pages and ExpireSoon date tags; 10px for small buttons, segmented controls, sidebar items, steppers; 12px for buttons, inputs, icon buttons and code cards (between steps, as built); 14px for menus, toasts and large buttons; 20px for cards, lists, tiles, tables and the map; 24px for sheets; 28px for the camera and the bezel's inner card; 999px for badges, chips, the extra-large button, switches and avatars. Where the browser supports `corner-shape: squircle`, cards, bezels, sheets, lists and tiles become squircles and their radii grow (card 28px, bezel 40px, bezel card 36px) to keep the same optical curve. The mark is a squircle. Icon tiles are 32px at 9px.
+
+The landing page uses the same scale: 10px for nav focus and links, 14px for exit chips and the hero tracker card below desktop, 20px for plate frames, the ledger, plans and the cast list, 28px for the story card and the sent state, 999px for workspace addresses and connector pills. The one exception is the desktop first viewport, whose radii are measured from the comp in container units (buttons 0.7cqw, Book a demo 0.86cqw, the tracker card 0.94cqw, about 9, 11 and 12px at 1280); they hold only inside the comp's frame.
 
 ## Components
 
@@ -613,6 +733,22 @@ Soft 3D product, place and document renders (Qwen-Image 2.1, local) on transpare
 
 Every money figure on screen is computed by `design3/core/money.js` from the journey map's rules and never typed twice. The quarter's totals are the walkthrough's; its weekly split, channel mix and BRSR split are labelled illustrative wherever they are drawn. ITC on donations, EPR and CO₂e carry "indicative". Kirana offers are Hindi first with a "Read in English" toggle.
 
+### Landing page
+
+The product's own page (smartclearance.com, `design3/site`) speaks in the same components and adds the plates and four idioms. It is independent of any client: Munchly appears only as the customer story.
+
+- **Diorama plates (material):** tilt-shift photographs of a miniature Indian town (Qwen-Image 2.1, local), shallow depth of field, soft natural light, the carton the only giant thing, no lettering on signs. Each plate is composed twice, by day and by night, never inverted or filtered, and the page swaps them on the resolved theme (`scene`, `exits`, `approve`, `islands`, each with `-night`). The dusk plate closes the page in both themes. Every plate ships as WebP (q82) in `design3/site/assets/plates/` with a `.prompt.json` sidecar (model, reference, seed, size, attempts, post-process, use); the PNG original stays local in `src/`.
+- **Plate captions:** a plate carries the explanation in place of a feature-card grid: anchored chips on the plate, or one caption under it (16–18px, `ink-secondary` with the key words in `ink` 650). Captions never repeat the plate's alt text.
+- **Hero tracker card:** the tracker card reduced to the batch id in mono, nine 7px dots that fill once on arrival, the recovered figure and its caption; pinned beside the carton.
+- **Street of exits:** one street plate read from the godown to the bin, with an exit chip anchored at each exit (a 44px frosted chip at 14px radius: a 8px channel dot, the exit's name 14px/650 with a green check when it took stock, and a 13.5px tabular line). The chosen chip takes a 2px ring of Route Green, or of the bin red on the bin. Dots keep their reserved meanings: kirana and staff in their channel hues, ExpireSoon violet, the bin red, and its line in `risk-red-text`. A live caption under the street names the chosen exit and its arithmetic. On desktops the street is the pinned panorama (see Layout); a focused or pressed chip scrolls the page to its hold.
+- **The batch's ledger:** a 20px card under the street in the tracker card's idiom: the batch id and a one-line head, then rows that set each result beside the arithmetic that makes it (the sum in 15px `ink-secondary` with tertiary operators, then `=`, the landing numeral and a 16px/650 label), separated by hairlines; two columns from 1024px.
+- **Stops beside a plate:** the amber button square plate in a frame beside a vertical list of the nine stops (28px dots ringed in green on a 2px green spine at 40%; the human stop filled amber) with each stop's agents.
+- **Story card and cast:** a 28px card on shadow-3 with the batch, its pack render, nine 11px dots, the recovered numeral and hairline rows of results (the bin's row in `risk-red-text`); under it the cast as a hairline-gridded list of people (1, 2 then 4 columns).
+- **Workspace islands:** an islands plate with the live workspace's packs standing on it and each workspace's address as a frosted pill under its island (green dot when live); below 1100px the addresses sit under the plate. Connectors are surface pills on shadow-1.
+- **Plans:** three 20px cards (24px padding) with a Bricolage name, a checked scope list and a hairline foot; no prices.
+- **Closing band:** the dusk plate under its own sky (see Plate Inks), the headline in `on-dusk`, and the buttons above the plate.
+- **Bar and footer:** a sticky frosted bar (60px, `saturate(170%) blur(18px)`, a hairline foot) with the mark, the section links, Sign in and a green Book a demo; a footer of 44px links on phones (32px from 600px) and a hairline base. Focus on the page is a 3px ring at 2px offset (inset on scroll regions).
+
 ## Do's and Don'ts
 
 ### Do:
@@ -627,6 +763,9 @@ Every money figure on screen is computed by `design3/core/money.js` from the jou
 - **Do** compute every money figure in core/money.js and label illustrative splits as illustrative.
 - **Do** lead every screen of a client's workspace with the Smart-Clearance mark and theming, with the client's workspace under it; keep the client's colours inside its mark.
 - **Do** give every raster a prompt sidecar and recoloured contact shadow, and set label text in type over photos.
+- **Do** compose every landing plate twice, by day and by night, swap them on the resolved theme, and ship each as WebP with its `.prompt.json` sidecar.
+- **Do** set text that sits on a plate in that plate's ink.
+- **Do** explain with a captioned plate and anchored chips rather than a grid of feature cards, and set results beside the arithmetic that makes them.
 
 ### Don't:
 - **Don't** use red, violet or blue outside risk, ExpireSoon, and push or information.
@@ -638,3 +777,5 @@ Every money figure on screen is computed by `design3/core/money.js` from the jou
 - **Don't** loop an animation forever. Stop it within five seconds; loading indicators are the only exception.
 - **Don't** put more than four role destinations in the phone tab bar.
 - **Don't** carry a client's brand colours into buttons, fills, grounds or charts; they live only inside its mark.
+- **Don't** darken, invert or filter a day plate into night, or let lettering into a plate; set words in type beside it.
+- **Don't** draw the plate's glowing route in CSS, or use the landing display steps on app, demo or console screens.

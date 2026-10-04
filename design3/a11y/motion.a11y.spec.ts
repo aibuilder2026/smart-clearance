@@ -40,6 +40,12 @@ const world = (stage: number, run: [string, unknown?][] = []) => async page => {
   }, [stage, run] as const);
 };
 const APP = '/app/Smart-Clearance%20app%20v3.html';
+const CONSOLE = '/console/Smart-Clearance%20console%20v3.html';
+const consoleIn = async page => {
+  await page.evaluate(() => { localStorage.setItem('sc3-console-session', JSON.stringify({ uid: 'neha', at: 1 })); });
+  await page.reload();
+  await page.waitForFunction(() => (window as any).SC3_PLATFORM && document.querySelector('#root')?.childElementCount);
+};
 const EXEC: [string, unknown?][] = [['list'], ['outreach'], ['donate']];
 const STATES: [string, string, ((page) => Promise<void>)?][] = [
   ['app · sign-in', APP],
@@ -50,6 +56,12 @@ const STATES: [string, string, ((page) => Promise<void>)?][] = [
   ['app · workspace', APP + '#/workspace', async p => { await signedIn('arjun')(p); await world(1)(p); }],
   ['demo · stage 7, live', '/demo/Smart-Clearance%20demo%20v3.html?stage=7#stage=7'],
   ['design system', '/system/Smart-Clearance%20DS%20v3.html'],
+  ['console · overview', CONSOLE + '#/overview', consoleIn],
+  ['console · Munchly agents', CONSOLE + '#/clients/munchly/agents', consoleIn],
+  ['site · first viewport', '/site/Smart-Clearance%20site%20v3.html'],
+  ['site · the street of exits, mid-pan', '/site/Smart-Clearance%20site%20v3.html', async p => {
+    await p.evaluate(() => { const s = document.querySelector('.site'), t = document.querySelector('#how'); if (s && t) s.scrollTop = (t as HTMLElement).offsetTop + 900; });
+  }],
 ];
 
 for (const [name, url, setup] of STATES) {

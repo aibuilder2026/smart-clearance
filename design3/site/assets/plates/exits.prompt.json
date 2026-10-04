@@ -1,0 +1,13 @@
+{
+  "name": "exits",
+  "model": "Qwen-Image-2.1 bf16 (local), edit_image",
+  "prompt": "Use the provided crop as the approved visual reference and recreate it as a clean production asset at the same aspect ratio. This is a designed illustration plate: a tilt-shift miniature diorama photograph of an Indian town, shallow depth of field, soft natural light. Keep the same style, lighting, palette, materials, perspective and composition. Remove every piece of UI text, label, caption, button and interface chrome that is not part of the artwork. Remove borders, card corners and drop shadows. Do not add any text, logos or lettering on signs. Do not restyle. The artwork fills the whole frame edge to edge. Region: a long street panorama in soft morning light, read from left to right: a godown with an open shutter and stacked cartons at the far left, a handcart, two kirana shops hung with strips of snack packets, a general store, more small shops, a white van on the road, tiny people walking, and a thin glowing green path running along the street from the godown towards the van. At the far right end of the same street sits a smouldering rubbish heap with a thin plume of grey smoke. Continue the street smoothly into the rubbish heap: no panel edge, seam or lighter box around it. Remove the five white label cards along the top and the red sign on the rubbish heap. Paint out every letter on the buildings: the general store's cream fascia and the next shop's signboard are plain painted boards with no writing at all.",
+  "reference": ".impeccable/build/plates-work/sections/exits-crop.png: the exits region of the design-board mock-up .impeccable/mocks/design/landing-02-exits.png",
+  "seed": 3221,
+  "size": 2048,
+  "output": "4256x992",
+  "attempts": 2,
+  "created": "2026-10-04",
+  "postprocess": "WebP q82; the PNG original stays local in src/",
+  "use": "the 'Five exits, one batch' panorama"
+}

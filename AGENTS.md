@@ -18,7 +18,7 @@ The production services planned in `PLAN.md` (`web/`, `agents/`, `infra/`) do no
 
 | Path | What it is |
 | --- | --- |
-| `design3/` | The current design: design system, guided demo, app prototype (Munchly Foods' workspace, an installable PWA) and the accessibility suite. Start with `design3/README.md`. |
+| `design3/` | The current design: design system, guided demo, app prototype (Munchly Foods' workspace, an installable PWA), the platform's landing page and console, and the accessibility suite. Start with `design3/README.md`. |
 | `design2/`, `design/` | Earlier rounds, superseded by v3. Reference only. |
 | `docs/` | Story pages: `dobara-journey-map.html` (Journey Map v4.1, the source of every figure), the story, the tech stack and the walkthrough. |
 | `video/` | The narrated walkthrough. `build.py` builds the page and `record.mjs` records it with Playwright; `recorder/` is a local voice-recording page. |
@@ -34,7 +34,7 @@ cd design3 && ./dist.sh             # bundle the hosted build into design3/dist/
 python3 -m http.server 8787 --directory design3   # serve the demo, app and design system locally
 
 cd design3/a11y && npm ci && npx playwright install chromium   # once
-npm test                            # WCAG 2.2 AA suite: 270 tests in five viewports, about 5 minutes
+npm test                            # WCAG 2.2 AA suite: 380 tests in five viewports, about 6 minutes
 npm run test:desktop                # light and dark at 1440 only, for a quicker loop
 npm run report                      # the Playwright HTML report
 ```
@@ -44,6 +44,8 @@ Local pages:
 - `/demo/Smart-Clearance%20demo%20v3.html`
 - `/app/Smart-Clearance%20app%20v3.html`
 - `/system/Smart-Clearance%20DS%20v3.html`
+- `/site/Smart-Clearance%20site%20v3.html`
+- `/console/Smart-Clearance%20console%20v3.html`
 
 ## Rules
 
@@ -163,6 +165,8 @@ From the Claude desktop app:
   - [design system](https://claude.ai/design/p/909d23bb-bd3c-466b-abf8-4eccc7c5881e?file=Smart-Clearance+DS+v3.html)
   - [guided demo](https://claude.ai/design/p/8294ec70-3e6b-4359-8de6-2a3fd056c3b2?file=Smart-Clearance+demo+v3.html)
   - [app](https://claude.ai/design/p/78962e0f-7300-46e4-8be7-ee1cbd101839?file=Smart-Clearance+app+v3.html)
+  - [landing page](https://claude.ai/design/p/976c5462-c3c3-4621-80b5-29b3cdda8326?file=Smart-Clearance+site+v3.html)
+  - [console](https://claude.ai/design/p/976c5462-c3c3-4621-80b5-29b3cdda8326?file=Smart-Clearance+console+v3.html)
 - **Pinned claude.ai artifacts:**
   - [Story](https://claude.ai/artifact/CkH7tpXgYLhs2hBmfhf9SZ)
   - [Journey Map](https://claude.ai/artifact/MacqAdWi87YYY4ADpRyJSh)
@@ -178,5 +182,6 @@ From the Claude desktop app:
 - `.claude/jira-flow.json` names `.github/pull_request_template.md`, which is not in the repo, and there is no CI.
 - The `chrome-devtools` MCP server starts only in a new session, after a one-time approval.
 - The WCAG 2.2 criteria axe cannot check are untested.
-- The smartclearance.com landing page and the super-admin console for client workspaces and their users don't exist yet. SC-25 tracks them; the workspace sign-in's "Find your workspace" is the only platform-level screen so far.
-- Only Munchly Foods is set up as a workspace. Its supply-chain profile is data in `design3/core/data.js` (`WORKSPACE`), not yet something an admin can edit.
+- The console edits its own browser store (`core/platform.js`, seeded from the app's data). The app's workspace doesn't read the console's changes yet.
+- The landing page's Book a demo saves its request in the browser store, where the console lists it; nothing is sent anywhere.
+- `npm test` in `design3/a11y` covers the landing page and the console too (`site.a11y.spec.ts`, `console.a11y.spec.ts`).
