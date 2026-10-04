@@ -1,0 +1,12 @@
+{
+  "name": "console-07-new-client",
+  "model": "Qwen-Image-2.1 bf16 (local), edit_image",
+  "prompt": "Turn this into a different screen of the same console, edge to edge with no browser window. Keep exactly: the left sidebar (with \"Clients\" selected) and the visual system. Replace the whole main area, top to bottom: no Munchly header, no tabs, no agent list and no side panel remain. Main area, a step-by-step setup flow: 1) A large title \"New client\" and the grey line \"Step 3 of 7 · Supply chain\". 2) A narrow vertical step list on the left of the main area: \"Company\" and \"Workspace\" with green ticks, \"Supply chain\" highlighted as current, then \"Exits\", \"Agents\", \"People\", \"Review\" in grey. 3) In the middle, three questions, each as a row of selectable white option cards with a thin hairline edge, the chosen card with a green border and a green tick: \"Route to market\": \"Through distributors\" (chosen), \"Direct to modern trade\", \"Own warehouses and D2C\"; \"Who owns short-dated stock\": \"The distributor\" (chosen), \"The manufacturer\"; \"Expiry policy\": \"Full credit at expiry\" (chosen), \"Price support only\", \"No returns\". 4) On the right, a white summary card \"What this profile sets up\" with four short lines, each with a small green icon: \"Agents list, offer and invoice in the distributor's name, after his one-time permission\", \"Price support is offered before stock expires\", \"Exits: marketplace, kiranas, staff sale, food bank\", \"D2C stays off: it is only for your own stock\". Under it a grey line \"Every plan still waits for one person's approval.\" 5) At the bottom right, a white button \"Back\" and a dark green button \"Continue\". Crisp flat interface; all text legible.",
+  "seed": 2547,
+  "size": 1024,
+  "reference": ".impeccable/mocks/decision/console-pipeline.png",
+  "source": ".impeccable/mocks/design/console-07-new-client.webp (local, gitignored)",
+  "created": "2026-10-04",
+  "postprocess": "WebP; the PNG original stays local in .impeccable/mocks/",
+  "use": "SC-25 design board: New client setup, step 3 of 7: questions for route to market, who owns short-dated stock and expiry policy as option cards, with a summary card listing what the profile sets up."
+}

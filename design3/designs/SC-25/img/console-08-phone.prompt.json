@@ -1,0 +1,12 @@
+{
+  "name": "console-08-phone",
+  "model": "Qwen-Image-2.1 bf16 (local), edit_image",
+  "prompt": "Turn this phone screen into the phone version of the \"Smart-Clearance Console\" showing one client's agents, edge to edge with no phone frame. Keep the reference's visual system: pale sage-white ground, white cards with thin hairline edges, the deep green brand colour, the amber accent, the heavy grotesque title type and the clean sans text. Replace all of its content: no people, no portraits and no list of users anywhere on the screen. From top to bottom, filling the whole screen: a top bar with a back chevron and \"Clients\" on the left and the green S logo on the right; a large title \"Munchly Foods\" with a small orange rounded tile with a white m beside it, and the grey line \"munchly.smartclearance.com · Live\"; a row of pill tabs, \"Agents\" selected, then \"Supply chain\", \"Channels\"; then one tall vertical tracker list running down the screen: a thin green line on the left joining eleven stops, and beside each stop a white row with a bold name, a grey detail and the autonomy on the right: \"Data · daily 08:30 · Act\", \"Watcher · daily 09:00 · Act\", \"Vision · confidence 0.90 · Ask\", \"Valuer · 5 exits · Act\", \"Router · splits the batch · Ask\", an amber-outlined row \"Priya approves · one tap, always\" with a small lock icon, \"Lister · ExpireSoon · Act\", \"Outreach · Hindi first · Act\", \"Negotiator · floor ₹13.50 · Ask\" highlighted as selected with a green outline, \"Paperwork · drafts only · Ask\", \"Impact · BRSR ledger · Act\". Over the bottom quarter of the screen, a white bottom sheet with a grab handle, titled \"Negotiator\", with rows \"Floor ₹13.50\", \"Counter up to 2 times\", \"Token 15%\", a three-part control \"Suggest | Ask | Act\" with \"Ask\" selected, and a full-width dark green \"Save\" button. All text legible.",
+  "seed": 2549,
+  "size": 1024,
+  "reference": ".impeccable/mocks/refs/app-phone-users.png",
+  "source": ".impeccable/mocks/design/console-08-phone.webp (local, gitignored)",
+  "created": "2026-10-04",
+  "postprocess": "WebP; the PNG original stays local in .impeccable/mocks/",
+  "use": "SC-25 design board: Console on a phone: Munchly Foods with the Agents tab, the agents as one tall tracker with the amber gate locked, and a bottom sheet for the Negotiator with Suggest, Ask, Act and a Save button."
+}

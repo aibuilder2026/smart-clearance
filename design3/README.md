@@ -9,6 +9,7 @@ One visual system, built from the same code into the product's pages:
 | `app/` | App prototype: Munchly's workspace at munchly.smartclearance.com, with its sign-in, every role, live agents on a mock backend; an installable PWA | `app/Smart-Clearance app v3.html` |
 | `console/` | The console at console.smartclearance.com, where Smart-Clearance staff set up each client's workspace: its agents, supply chain, channels, rules, people, integrations and plan. Seeded with Munchly Foods; its own mock backend is `core/platform.js` | `console/Smart-Clearance console v3.html` |
 | `site/` | The product's landing page at smartclearance.com: a miniature Indian town by day and by night, one batch's five exits, the nine stops, Munchly's story, the workspace and the plans. Its illustrations ship in `site/assets/plates/` | `site/Smart-Clearance site v3.html` |
+| `designs/` | Every design review, one folder per issue: the options, comps and mock-ups, the review board and the pick. This is the source of truth for designs (SC-26); see `designs/README.md` | `designs/SC-<n>/board.html` |
 
 Shared code lives in `core/` (money computed from the journey map's rules, the fictional dataset, the store, the journey as actions with an agent reconciler) and `screens/` (every role's screens and the workspace sign-in, used by both the demo and the app). `demo/`, `app/`, `console/` and `site/` reach them through symlinks.
 

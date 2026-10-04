@@ -1,0 +1,12 @@
+{
+  "name": "opt-landing-empire",
+  "model": "Qwen-Image-2.1 bf16 (local), edit_image",
+  "prompt": "Turn this into a completely new desktop landing page for \"Smart-Clearance\", shown as the full web page edge to edge with no browser window. Keep only the reference's visual system: the pale sage-white background, the deep green brand colour, the amber accent, the heavy rounded grotesque display type, the clean sans interface text, white cards with thin hairline edges and soft shadows, and the nine-dot tracker. Remove the left sidebar, its menu and all of the reference's text and layout. New layout, top to bottom: 1) A thin top navigation bar across the full width: the green rounded-square S logo and the word \"Smart-Clearance\" at the left; the links \"How it works\", \"Agents\", \"Customers\", \"Pricing\" in the middle; a text link \"Sign in\" and a dark green pill button \"Book a demo\" at the right. 2) The hero is a surreal painting in the manner of René Magritte's \"The Empire of Light\", split by a horizon: the upper part is a bright daylight sky, soft blue with white clouds, and among the clouds float brown cardboard cartons and snack packets drifting calmly like clouds. The large dark headline \"Every near-expiry carton gets a second chance.\" sits in the sky with a short line beneath, \"AI agents find the best exit for short-dated stock. You say yes once.\", and two buttons: green \"Watch the 6-minute demo\" and white \"Find your workspace\". 3) The lower part of the hero is a quiet Indian street at night under that daylight sky: a row of kirana shops with half-open shutters glowing with warm lamplight, one street lamp lit, dark trees. A small white tracker card stands where the sky meets the street: \"MF-2409-117\", a row of nine small dots with six filled green, and \"₹21,152 recovered\" in big green numerals. 4) Along the bottom edge the next section begins on the sage-white ground with the heading \"How a batch finds its exit\". Painted surreal scene for the sky and street; crisp flat interface for the navigation, text, buttons and card; all text legible.\n",
+  "seed": 2512,
+  "size": 1024,
+  "reference": ".impeccable/mocks/refs/ds-hero.png",
+  "source": ".impeccable/mocks/decision/landing-empire.webp (local, gitignored)",
+  "created": "2026-10-04",
+  "postprocess": "WebP; the PNG original stays local in .impeccable/mocks/",
+  "use": "SC-25 design board: Option: Day above, night below, a daylight sky of floating cartons over a kirana street at night."
+}

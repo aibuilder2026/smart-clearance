@@ -1,0 +1,12 @@
+{
+  "name": "console-02-overview",
+  "model": "Qwen-Image-2.1 bf16 (local), edit_image",
+  "prompt": "Turn this into a different screen of the same console, edge to edge with no browser window. Keep exactly: the left sidebar (the S logo, \"Smart-Clearance\", \"Console\", the navigation list and Neha Kulkarni at the bottom) and the visual system. In the sidebar, \"Overview\" is now the selected item. Replace the whole main area, top to bottom: no client header, no tabs, no agent list and no side panel remain. Main area: 1) A large title \"Overview\" and the grey line \"Saturday 4 October · 1 client live · 10 agents on\". 2) A section \"Batches on the move\" with two wide white tracker rows with thin hairline edges: the first row shows an orange rounded tile with a white m, \"MF-2409-117 · Masala Chips 150 g · Rakesh Traders, Nagpur\", a horizontal nine-stop tracker with eight green stops filled and the ninth empty, and on the right \"₹21,152 recovered\" in green; the second row shows the same orange tile, \"MF-2410-118 · Mango Drink 200 ml · Lakshmi Agencies, Hyderabad\", a nine-stop tracker with seven green stops filled, and on the right \"1,372 to kiranas · 150 staff sale · 58 food bank\". 3) Below, two white cards side by side. Left card \"Needs attention\" with two rows, each with a small amber dot: \"Patil Distributors · one-time permission not given yet\" and \"Gupta & Sons · stock export arrived 2 h late\"; right card \"Agent runs today\" with five rows in small monospace times: \"09:00 Watcher · 2 batches at risk\", \"09:14 Vision · label read, 0.97\", \"09:21 Valuer · 5 exits priced\", \"09:22 Router · plan sent to Priya\", \"10:05 Negotiator · countered ₹14.20\". Crisp flat interface; all text legible.",
+  "seed": 2542,
+  "size": 1024,
+  "reference": ".impeccable/mocks/decision/console-pipeline.png",
+  "source": ".impeccable/mocks/design/console-02-overview.webp (local, gitignored)",
+  "created": "2026-10-04",
+  "postprocess": "WebP; the PNG original stays local in .impeccable/mocks/",
+  "use": "SC-25 design board: Console overview: two batch tracker rows (MF-2409-117 with ₹21,152 recovered, MF-2410-118 split across kiranas, staff sale and food bank), a 'Needs attention' card with two amber items and an 'Agent runs today' list."
+}

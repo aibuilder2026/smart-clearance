@@ -1,0 +1,12 @@
+{
+  "name": "console-01-signin",
+  "model": "Qwen-Image-2.1 bf16 (local), edit_image",
+  "prompt": "Turn this sign-in page into the sign-in page of the \"Smart-Clearance Console\", the staff-only console at console.smartclearance.com, edge to edge with no browser window. Keep the reference's visual system and two-column layout: pale sage-white ground, the deep green brand colour, the heavy rounded grotesque headline type, the clean sans text, the white sign-in card with thin hairline edge and soft shadow on the right. Replace all of its content; nothing of Munchly appears on this page. Left column: the green rounded-square S logo and \"Smart-Clearance\"; a large dark heading \"Console\" and the line \"Set up and run every client's workspace: its agents, its supply chain, its people.\"; under it a small tilt-shift miniature diorama photograph in a rounded frame showing a tiny Indian town with one giant brown cardboard carton standing in it at dawn. Right column, the white card: the green S logo at the top; \"Smart-Clearance staff\"; the address \"console.smartclearance.com\" in a small grey pill with a lock icon; a large heading \"Sign in\"; the line \"Use your smartclearance.com Google account, then your passkey.\"; a full-width white button with the Google G logo \"Continue with Google\"; a full-width dark green button \"Use a passkey\"; a thin divider; a small grey note \"Client teams sign in at their own workspace address, such as munchly.smartclearance.com.\" with a green link \"Find a workspace\"; at the bottom in small grey text \"Prototype · every person and number is fictional\". Crisp flat interface; all text legible.",
+  "seed": 2541,
+  "size": 1024,
+  "reference": "scratchpad hosted/shots2/app.png (the hosted Munchly sign-in at 1440x900, re-pinned 58c6874)",
+  "source": ".impeccable/mocks/design/console-01-signin.webp (local, gitignored)",
+  "created": "2026-10-04",
+  "postprocess": "WebP; the PNG original stays local in .impeccable/mocks/",
+  "use": "SC-25 design board: Console sign-in: on the left the Smart-Clearance mark, the heading 'Console' and a small diorama of the carton at dawn; on the right a card titled 'Sign in' with 'Continue with Google' and 'Use a passkey', and a note pointing client teams to their own workspace address."
+}

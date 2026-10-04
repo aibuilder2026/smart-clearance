@@ -1,0 +1,12 @@
+{
+  "name": "landing-05-workspace",
+  "model": "Qwen-Image-2.1 bf16 (local), edit_image",
+  "prompt": "Show another screen of this same landing page further down. Keep the identical thin top navigation bar (the S logo and \"Smart-Clearance\", the links, \"Sign in\" and the green \"Book a demo\" button) and the same visual system, fonts and miniature-diorama photography. Replace everything below the navigation; the hero, its headline, the big town and the giant carton must not appear. Below the navigation, on the pale sage-white ground: 1) A left-aligned heading in the heavy dark display type, \"Your own workspace, set up for your supply chain.\", with one line beneath: \"Each manufacturer gets its own address, configured for how its stock really moves.\" 2) Across the middle, a surreal tilt-shift miniature scene: three small floating islands of Indian town, each carrying a different giant product package (a carton of snacks, a juice carton, a bottle of hair oil), joined by thin glowing green lines to one small green rounded-square S logo hovering in the centre. Under the first island a small white label \"munchly.smartclearance.com · live\" with a green dot; under the second and third, grey labels \"your-company.smartclearance.com\". 3) Under the scene, four white cards in a row with a small green icon, a bold title and one grey line: \"Supply chain · one tap to approve a plan\", \"Finance · invoice, credit note and GST memo drafted\", \"Sustainability · a BRSR line an auditor can follow\", \"Distributors · nothing in their name without permission\". 4) At the bottom, a row of small grey pill chips: \"Distributor stock exports\", \"Tally\", \"BigQuery\", \"Google Workspace\", \"ExpireSoon\", \"GST e-invoice\", \"WhatsApp, soon\". Miniature diorama photography for the islands; crisp flat interface for the navigation, text, cards and chips; all text legible.",
+  "seed": 2536,
+  "size": 1024,
+  "reference": ".impeccable/mocks/decision/landing-diorama.png",
+  "source": ".impeccable/mocks/design/landing-05-workspace.webp (local, gitignored)",
+  "created": "2026-10-04",
+  "postprocess": "WebP; the PNG original stays local in .impeccable/mocks/",
+  "use": "SC-25 design board: Section 'Your own workspace, set up for your supply chain': three floating islands of miniature town, each holding a giant product, tied by green lines to the Smart-Clearance mark; four cards for supply chain, finance, sustainability and distributors; a row of integration chips."
+}

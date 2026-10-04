@@ -1,0 +1,12 @@
+{
+  "name": "console-05-supply",
+  "model": "Qwen-Image-2.1 bf16 (local), edit_image",
+  "prompt": "Turn this into another tab of the same client screen in the console, edge to edge with no browser window. Keep exactly: the left sidebar, the client header (the orange rounded tile with a white m, \"Munchly Foods\", \"munchly.smartclearance.com\", the green \"Live\" pill) and the tab row, but now the \"Supply chain\" tab is selected instead of \"Agents\". Replace everything under the tabs: no agent list and no Negotiator panel remain. Under the tabs: 1) A wide white card across the top showing the chain as a left-to-right diagram with small green icons and arrows: \"Munchly Foods · plant, Pune\" → \"4 distributors · own the stock they buy\" → two stacked end points \"195 kiranas · on the salesmen's beats\" and \"Quick-commerce warehouses · Blinkit, Zepto, Instamart\". 2) Bottom left, a white card \"Profile\" with six rows, each a bold label and a grey value on the right with a small \"Edit\" link: \"Route to market · through 4 distributors\", \"Who owns short-dated stock · the distributor, bought at ₹22.00\", \"Expiry policy · full credit at expiry, so Munchly pays price support first\", \"Quick-commerce gates · Blinkit 90+ days; Zepto and Instamart 60% of life\", \"Territory guard · lots hidden inside Munchly's territories\", \"Return window · 20 days\". 3) Bottom right, a white card \"Distributors\" with a table: columns \"Distributor\", \"City\", \"Kiranas\", \"Staff sale cap\", \"Permission\"; rows \"Rakesh Traders · Nagpur · 38 · 50 · given\" (green pill), \"Patil Distributors · Pune · 52 · none · not yet\" (amber pill), \"Gupta & Sons · Indore · 47 · none · not yet\" (amber pill), \"Lakshmi Agencies · Hyderabad · 58 · 150 · given\" (green pill); a small link \"Invite a distributor\". Crisp flat interface; all text legible.",
+  "seed": 2545,
+  "size": 1024,
+  "reference": ".impeccable/mocks/decision/console-pipeline.png",
+  "source": ".impeccable/mocks/design/console-05-supply.webp (local, gitignored)",
+  "created": "2026-10-04",
+  "postprocess": "WebP; the PNG original stays local in .impeccable/mocks/",
+  "use": "SC-25 design board: Munchly Foods, Supply chain tab: a chain diagram from the Pune plant to 4 distributors to 195 kiranas and quick-commerce warehouses; a profile card with six editable rows; a distributors table with permission given for Rakesh Traders and Lakshmi Agencies and not yet for Patil Distributors and Gupta &amp; Sons."
+}

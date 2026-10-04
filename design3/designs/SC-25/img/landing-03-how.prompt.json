@@ -1,0 +1,12 @@
+{
+  "name": "landing-03-how",
+  "model": "Qwen-Image-2.1 bf16 (local), edit_image",
+  "prompt": "Show another screen of this same landing page further down. Keep the identical thin top navigation bar (the S logo and \"Smart-Clearance\", the links, \"Sign in\" and the green \"Book a demo\" button) and the same visual system, fonts and miniature-diorama photography. Replace everything below the navigation; the hero, its headline and the giant carton must not appear. Below the navigation, on the pale sage-white ground: 1) A left-aligned heading in the same heavy dark display type, \"Nine stops. Ten agents. One yes.\", with one line beneath: \"The agents do the running around. A person approves once, with the money on screen.\" 2) The left half is one large rounded image: a tilt-shift miniature diorama of a small Indian town square at golden hour where one giant round amber push button, as big as a house, sits on the ground; a tiny woman in a sari stands beside it holding a phone; tiny trucks and a van wait at the edges of the square with their engines off. 3) The right half is a vertical tracker list: nine small circles joined by a thin vertical line, each with a bold stop name and a short grey line: \"Connect · the distributor's stock export and one permission\", \"Detect · the Watcher checks shelf life at 09:00\", \"Verify · Vision reads the label photo\", \"Value · five exits priced, the bin included\", \"Decide · the Router splits the batch\", \"Approve · one tap, with the money on screen\", \"Execute · listing, offers in Hindi, negotiation, pickup\", \"Settle · invoice, e-way bill, credit note, GST memo\", \"Report · a BRSR line after the return window\". The circles are green, except the \"Approve\" circle, which is amber and slightly larger. Miniature diorama photography for the town square; crisp flat interface for the navigation, text and tracker; all text legible.",
+  "seed": 2533,
+  "size": 1024,
+  "reference": ".impeccable/mocks/decision/landing-diorama.png",
+  "source": ".impeccable/mocks/design/landing-03-how.webp (local, gitignored)",
+  "created": "2026-10-04",
+  "postprocess": "WebP; the PNG original stays local in .impeccable/mocks/",
+  "use": "SC-25 design board: Section 'Nine stops. Ten agents. One yes.': a giant amber push button in a miniature town square with a woman in a sari beside it, next to a vertical list of the nine stops, with Approve marked in amber."
+}
