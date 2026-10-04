@@ -8,6 +8,8 @@ Automated WCAG checks for design v3 with [axe-core](https://github.com/dequelabs
   - an address outside the workspace, and "Find your workspace";
   - the people sheet;
   - the workspace sheet inside the app.
+- `site.a11y.spec.ts`: the smartclearance.com landing page from the first viewport to the footer, then its sign-in menu, the phone menu, "Find your workspace" and Book a demo (empty, with its errors, and sent).
+- `console.a11y.spec.ts`: every console screen with Munchly seeded, the staff sign-in and its sheets, an agent's settings and the new-client steps.
 - `keyboard.a11y.spec.ts`: behaviour axe cannot see:
   - the sign-in tab order, from the email-or-phone field to "Find yours";
   - a sheet taking focus, keeping it and giving it back;
@@ -15,7 +17,7 @@ Automated WCAG checks for design v3 with [axe-core](https://github.com/dequelabs
   - the sign-in hero pausing and playing (WCAG 2.2.2).
 
   The menu and hero tests also scan their open and paused states with axe.
-- `motion.a11y.spec.ts`: with motion on, walks the busiest states of the app, the demo and the design system and fails on any animation set to repeat forever (WCAG 2.2.2). Loading indicators are exempt.
+- `motion.a11y.spec.ts`: with motion on, walks the busiest states of the app, the demo, the design system, the console and the landing page (its street of exits mid-pan) and fails on any animation set to repeat forever (WCAG 2.2.2). Loading indicators are exempt.
 
 In the demo, the laptop and phone previews are drawn scaled down, so they are left out of the target-size rule there (every other rule still covers them); the app spec checks the same screens at full size.
 

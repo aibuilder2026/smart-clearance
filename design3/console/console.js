@@ -128,6 +128,14 @@
     });
     if (s.clients.some((c) => c.id === "munchly")) attention.push({ id: "gupta-export", c: s.clients.find((c) => c.id === "munchly"), icon: "file-spreadsheet", tone: "blue", title: "Gupta & Sons", text: "stock export arrived 2 h late today", act: "Open", run: () => go("clients", "munchly", "supply") });
     const tracks = s.tracks.filter((t) => s.clients.some((c) => c.id === t.client));
+    const startFrom = (r) => {
+      const plan = (P.PLANS.find((p) => p.name === r.plan) || P.PLANS[0]).id;
+      const domain = (r.email.split("@")[1] || "").toLowerCase();
+      P.update((d) => {
+        d.draft = { name: r.company, industry: INDUSTRIES.includes(r.makes) ? r.makes : INDUSTRIES[0], emailDomain: domain, adminName: r.name, adminEmail: r.email, plan, request: r.id };
+      });
+      go("new-client");
+    };
     return /* @__PURE__ */ React.createElement(Screen, { title: "Overview", sub: `${date} · ${live.length} client${live.length === 1 ? "" : "s"} live · ${on} agents on` }, /* @__PURE__ */ React.createElement(
       Columns,
       {
@@ -142,7 +150,17 @@
           const c = s.clients.find((x) => x.id === r.client);
           return /* @__PURE__ */ React.createElement(ListRow, { key: i, leading: /* @__PURE__ */ React.createElement("span", { className: "mono t-footnote cs-time" }, r.at), icon: a.icon, iconTone: a.gate ? "amber" : "soft", title: `${a.name} · ${c ? c.name : r.client}`, sub: r.text });
         }))),
-        side: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(SectionTitle, { sub: "Waiting on a person, or on a file" }, "Needs attention"), attention.length ? /* @__PURE__ */ React.createElement(List, null, attention.map((x) => /* @__PURE__ */ React.createElement(ListRow, { key: x.id, leading: /* @__PURE__ */ React.createElement("span", { className: cx("cs-att", x.tone), "aria-hidden": "true" }), title: x.title, sub: `${x.c.name} · ${x.text}`, value: /* @__PURE__ */ React.createElement(Button, { size: "sm", variant: "secondary", onClick: x.run }, x.act) }))) : /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement(Empty, { icon: "circle-check", title: "Nothing is waiting", body: "Every client's partners have given their permissions." })), app.bp === "phone" && /* @__PURE__ */ React.createElement(List, { head: "Platform" }, NAV.filter((n) => n.phoneHidden).map((n) => /* @__PURE__ */ React.createElement(ListRow, { key: n.id, icon: n.icon, iconTone: "soft", title: n.label, chevron: true, onClick: () => go(n.id) }))))
+        side: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(SectionTitle, { sub: "Waiting on a person, or on a file" }, "Needs attention"), attention.length ? /* @__PURE__ */ React.createElement(List, null, attention.map((x) => /* @__PURE__ */ React.createElement(ListRow, { key: x.id, leading: /* @__PURE__ */ React.createElement("span", { className: cx("cs-att", x.tone), "aria-hidden": "true" }), title: x.title, sub: `${x.c.name} · ${x.text}`, value: /* @__PURE__ */ React.createElement(Button, { size: "sm", variant: "secondary", onClick: x.run }, x.act) }))) : /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement(Empty, { icon: "circle-check", title: "Nothing is waiting", body: "Every client's partners have given their permissions." })), /* @__PURE__ */ React.createElement(SectionTitle, { sub: "From Book a demo on smartclearance.com" }, "Demo requests"), (s.requests || []).length ? /* @__PURE__ */ React.createElement(List, null, s.requests.map((r) => /* @__PURE__ */ React.createElement(
+          ListRow,
+          {
+            key: r.id,
+            icon: "mail",
+            iconTone: "soft",
+            title: r.company,
+            sub: [r.name, r.email, r.makes, r.plan && `${r.plan} plan`, r.at].filter(Boolean).join(" · "),
+            value: r.status === "set up" ? /* @__PURE__ */ React.createElement(Badge, { size: "sm", tone: "green", icon: "check" }, "set up") : /* @__PURE__ */ React.createElement(Button, { size: "sm", variant: "secondary", onClick: () => startFrom(r) }, "Set up")
+          }
+        ))) : /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement(Empty, { icon: "mail", title: "No requests yet", body: "When someone books a demo on smartclearance.com, the request lands here, ready to become a client." })), app.bp === "phone" && /* @__PURE__ */ React.createElement(List, { head: "Platform" }, NAV.filter((n) => n.phoneHidden).map((n) => /* @__PURE__ */ React.createElement(ListRow, { key: n.id, icon: n.icon, iconTone: "soft", title: n.label, chevron: true, onClick: () => go(n.id) }))))
       }
     ));
   }
@@ -536,7 +554,12 @@
     const { toast } = useNotice();
     const top = useRef(null);
     const [step, setStep] = useState(0);
-    const [f, setF] = useState({ name: "", city: "", industry: INDUSTRIES[0], colour: COLOURS[0][0], slug: "", slugTouched: false, emailDomain: "", signGoogle: true, signPhone: true, route: "distributors", owner: "distributor", expiry: "full-credit", exitOff: {}, preset: "standard", adminName: "", adminEmail: "", plan: "pilot" });
+    const [f, setF] = useState(() => Object.assign({ name: "", city: "", industry: INDUSTRIES[0], colour: COLOURS[0][0], slug: "", slugTouched: false, emailDomain: "", signGoogle: true, signPhone: true, route: "distributors", owner: "distributor", expiry: "full-credit", exitOff: {}, preset: "standard", adminName: "", adminEmail: "", plan: "pilot", request: null }, s.draft || {}));
+    useEffect(() => {
+      if (s.draft) P.update((d) => {
+        delete d.draft;
+      });
+    }, []);
     const set = (patch) => setF((x) => ({ ...x, ...patch }));
     const slug = f.slugTouched ? f.slug : P.slug(f.name);
     const profile = { route: f.route, owner: f.owner, expiry: f.expiry };
@@ -584,6 +607,7 @@
       client.exits = exits;
       P.update((d) => {
         d.clients.push(client);
+        if (f.request) d.requests = (d.requests || []).map((r) => r.id === f.request ? Object.assign({}, r, { status: "set up", client: slug }) : r);
       }, { who: me.name, client: slug, text: `Set up ${client.name} from its supply-chain profile: ${P.optLabel("route", f.route).toLowerCase()}, ${P.optLabel("owner", f.owner).toLowerCase()} owns the stock, ${P.optLabel("expiry", f.expiry).toLowerCase()}; invited ${client.people[0].name} as admin` });
       toast({ text: `${client.name}'s workspace is set up`, tone: "ok" });
       go("clients", slug, "agents", true);

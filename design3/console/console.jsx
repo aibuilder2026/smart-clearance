@@ -106,6 +106,11 @@
     });
     if (s.clients.some(c => c.id === "munchly")) attention.push({ id: "gupta-export", c: s.clients.find(c => c.id === "munchly"), icon: "file-spreadsheet", tone: "blue", title: "Gupta & Sons", text: "stock export arrived 2 h late today", act: "Open", run: () => go("clients", "munchly", "supply") });
     const tracks = s.tracks.filter(t => s.clients.some(c => c.id === t.client));
+    const startFrom = r => {
+      const plan = (P.PLANS.find(p => p.name === r.plan) || P.PLANS[0]).id; const domain = (r.email.split("@")[1] || "").toLowerCase();
+      P.update(d => { d.draft = { name: r.company, industry: INDUSTRIES.includes(r.makes) ? r.makes : INDUSTRIES[0], emailDomain: domain, adminName: r.name, adminEmail: r.email, plan, request: r.id }; });
+      go("new-client");
+    };
     return <Screen title="Overview" sub={`${date} · ${live.length} client${live.length === 1 ? "" : "s"} live · ${on} agents on`}>
       <Columns sideWidth={380}
         main={<>
@@ -125,6 +130,10 @@
         side={<>
           <SectionTitle sub="Waiting on a person, or on a file">Needs attention</SectionTitle>
           {attention.length ? <List>{attention.map(x => <ListRow key={x.id} leading={<span className={cx("cs-att", x.tone)} aria-hidden="true" />} title={x.title} sub={`${x.c.name} · ${x.text}`} value={<Button size="sm" variant="secondary" onClick={x.run}>{x.act}</Button>} />)}</List> : <Card><Empty icon="circle-check" title="Nothing is waiting" body="Every client's partners have given their permissions." /></Card>}
+          <SectionTitle sub="From Book a demo on smartclearance.com">Demo requests</SectionTitle>
+          {(s.requests || []).length ? <List>{s.requests.map(r => <ListRow key={r.id} icon="mail" iconTone="soft" title={r.company} sub={[r.name, r.email, r.makes, r.plan && `${r.plan} plan`, r.at].filter(Boolean).join(" · ")}
+            value={r.status === "set up" ? <Badge size="sm" tone="green" icon="check">set up</Badge> : <Button size="sm" variant="secondary" onClick={() => startFrom(r)}>Set up</Button>} />)}</List>
+            : <Card><Empty icon="mail" title="No requests yet" body="When someone books a demo on smartclearance.com, the request lands here, ready to become a client." /></Card>}
           {app.bp === "phone" && <List head="Platform">{NAV.filter(n => n.phoneHidden).map(n => <ListRow key={n.id} icon={n.icon} iconTone="soft" title={n.label} chevron onClick={() => go(n.id)} />)}</List>}
         </>} />
     </Screen>;
@@ -463,7 +472,9 @@
   function NewClient({ go, me }) {
     const s = usePlatform(); const app = useApp(); const { toast } = useNotice(); const top = useRef(null);
     const [step, setStep] = useState(0);
-    const [f, setF] = useState({ name: "", city: "", industry: INDUSTRIES[0], colour: COLOURS[0][0], slug: "", slugTouched: false, emailDomain: "", signGoogle: true, signPhone: true, route: "distributors", owner: "distributor", expiry: "full-credit", exitOff: {}, preset: "standard", adminName: "", adminEmail: "", plan: "pilot" });
+    // a demo request from smartclearance.com can start the setup: its company, contact and plan come along
+    const [f, setF] = useState(() => Object.assign({ name: "", city: "", industry: INDUSTRIES[0], colour: COLOURS[0][0], slug: "", slugTouched: false, emailDomain: "", signGoogle: true, signPhone: true, route: "distributors", owner: "distributor", expiry: "full-credit", exitOff: {}, preset: "standard", adminName: "", adminEmail: "", plan: "pilot", request: null }, s.draft || {}));
+    useEffect(() => { if (s.draft) P.update(d => { delete d.draft; }); }, []);
     const set = patch => setF(x => ({ ...x, ...patch }));
     const slug = f.slugTouched ? f.slug : P.slug(f.name);
     const profile = { route: f.route, owner: f.owner, expiry: f.expiry };
@@ -487,7 +498,7 @@
     const create = () => {
       const client = P.buildClient({ name: f.name.trim(), city: f.city.trim(), industry: f.industry, colour: f.colour, emailDomain: f.emailDomain.trim().toLowerCase(), signGoogle: f.signGoogle, signPhone: f.signPhone, route: f.route, owner: f.owner, expiry: f.expiry, preset: f.preset, adminName: f.adminName.trim(), adminEmail: f.adminEmail.trim().toLowerCase(), plan: f.plan });
       client.id = slug; client.domain = slug + ".smartclearance.com"; client.exits = exits;
-      P.update(d => { d.clients.push(client); }, { who: me.name, client: slug, text: `Set up ${client.name} from its supply-chain profile: ${P.optLabel("route", f.route).toLowerCase()}, ${P.optLabel("owner", f.owner).toLowerCase()} owns the stock, ${P.optLabel("expiry", f.expiry).toLowerCase()}; invited ${client.people[0].name} as admin` });
+      P.update(d => { d.clients.push(client); if (f.request) d.requests = (d.requests || []).map(r => r.id === f.request ? Object.assign({}, r, { status: "set up", client: slug }) : r); }, { who: me.name, client: slug, text: `Set up ${client.name} from its supply-chain profile: ${P.optLabel("route", f.route).toLowerCase()}, ${P.optLabel("owner", f.owner).toLowerCase()} owns the stock, ${P.optLabel("expiry", f.expiry).toLowerCase()}; invited ${client.people[0].name} as admin` });
       toast({ text: `${client.name}'s workspace is set up`, tone: "ok" }); go("clients", slug, "agents", true);
     };
     const preview = { id: slug || "new", name: f.name || "?", mark: { from: f.colour, to: f.colour, ink: "#ffffff" } };

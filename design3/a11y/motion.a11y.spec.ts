@@ -58,6 +58,10 @@ const STATES: [string, string, ((page) => Promise<void>)?][] = [
   ['design system', '/system/Smart-Clearance%20DS%20v3.html'],
   ['console · overview', CONSOLE + '#/overview', consoleIn],
   ['console · Munchly agents', CONSOLE + '#/clients/munchly/agents', consoleIn],
+  ['site · first viewport', '/site/Smart-Clearance%20site%20v3.html'],
+  ['site · the street of exits, mid-pan', '/site/Smart-Clearance%20site%20v3.html', async p => {
+    await p.evaluate(() => { const s = document.querySelector('.site'), t = document.querySelector('#how'); if (s && t) s.scrollTop = (t as HTMLElement).offsetTop + 900; });
+  }],
 ];
 
 for (const [name, url, setup] of STATES) {
