@@ -1,0 +1,10 @@
+{
+ "tool": "qwen-image-2.1 bf16 (local MCP)",
+ "prompt": "Flat vector illustration portrait of an Indian man in his late fifties, a Marwari kirana wholesaler from Raipur, round face, neatly combed grey hair, grey moustache, thin gold-rimmed spectacles, cream kurta with a dark maroon Nehru waistcoat, warm confident half smile, bust framing facing the viewer, plain warm cream background, one soft diagonal drop shadow behind him, clean minimal corporate illustration style with smooth flat colours and no outlines, no text",
+ "seed": 506,
+ "size": 1024,
+ "steps": 40,
+ "transparent": false,
+ "generatedAt": "2026-10-04T06:41:00Z",
+ "person": "Agrawal ji, owner of Agrawal Wholesale, Raipur: the ExpireSoon buyer in Journey Map v4.1 (fictional)"
+}
