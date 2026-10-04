@@ -69,7 +69,7 @@
       id: "kirana",
       name: "Kiranas",
       line: `${fmt.num(KL.units)} packs · ${SHOPS} shops`,
-      x: 0.33,
+      x: 0.35,
       taken: true,
       detail: `${fmt.num(KL.units)} packs to ${SHOPS} kiranas at ${fmt.inr(KL.price)} a pack, 2 free with every 10: ${fmt.inr(KL.net)} after the van.`
     },
@@ -77,7 +77,7 @@
       id: "expiresoon",
       name: "ExpireSoon",
       line: `${fmt.num(AW.units)} packs · ${rate(AW.price)}`,
-      x: 0.5,
+      x: 0.515,
       taken: true,
       detail: `${fmt.num(AW.units)} packs to ${D.BUYER.name} in ${D.BUYER.city} at ${rate(AW.price)}, countered from ${rate(ESL.price)}: ${fmt.inr(ES_NET)} after the listing fee.`
     },
@@ -85,26 +85,26 @@
       id: "staff",
       name: "Staff sale",
       line: "priced, not needed",
-      x: 0.665,
+      x: 0.65,
       detail: `${rate(row("staff").net)} a pack for up to ${row("staff").capacity} packs at the ${DIST.city} godown. Not needed this time.`
     },
     {
       id: "foodbank",
       name: "Food bank",
       line: "priced, not needed",
-      x: 0.8,
+      x: 0.785,
       detail: `${rate(row("foodbank").net)} a pack, because a donation reverses the GST credit. Kept for food that can't sell.`
     },
     {
       id: "bin",
       name: "The bin",
       line: `${fmt.inr(-BIN)} · not taken`,
-      x: 0.935,
+      x: 0.93,
       bin: true,
       detail: `${rate(-D.PLAN.writeOff.perUnit)} a pack: the stock, the GST credit, disposal and EPR, ${fmt.inr(-BIN)} for the batch. Not taken.`
     }
   ];
-  const EX_AR = 4.34, EX_ZOOM = 1.8;
+  const EX_AR = 4256 / 992, EX_ZOOM = 1.8;
   const holdShift = (x) => Math.max(1 / EX_ZOOM - 1, Math.min(0, 0.5 / EX_ZOOM - x));
   const EX_P = [], EX_X = [];
   EXITS.forEach((e, i) => {
@@ -140,7 +140,9 @@
     const swipe = app.bp !== "desktop";
     const panned = !swipe && !reduce && !!site;
     const [active, setActive] = useState(0);
-    const stage = ({ x, jump } = {}) => /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: cx("ex-pan", panned && "panned"), ...swipe ? { tabIndex: 0, role: "region", "aria-label": "The street from the godown to the bin; scroll sideways" } : {} }, /* @__PURE__ */ React.createElement(motion.figure, { className: "ex-pano", style: { "--ar": EX_AR, x: panned ? x : void 0 } }, /* @__PURE__ */ React.createElement("img", { src: IMG + "exits.webp", alt: "One miniature street from end to end: the distributor's godown, two kirana shops hung with snack packets, a general store, more small shops, a van, and a smouldering rubbish heap at the far end." }), /* @__PURE__ */ React.createElement("ul", { className: "ex-chips" }, EXITS.map((e, i) => /* @__PURE__ */ React.createElement("li", { key: e.id, style: { "--x": e.x } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: cx("ex-chip", e.taken && "taken", e.bin && "bin", i === active && "on"), "aria-pressed": i === active, onClick: () => panned ? jump(i) : setActive(i) }, /* @__PURE__ */ React.createElement("span", { className: "ex-name" }, /* @__PURE__ */ React.createElement("i", { className: "ex-dot " + e.id, "aria-hidden": "true" }), e.name, e.taken && /* @__PURE__ */ React.createElement(Icon, { name: "check", size: 14, stroke: 2.6, className: "ex-took" })), /* @__PURE__ */ React.createElement("span", { className: "ex-line" }, e.line))))))), /* @__PURE__ */ React.createElement("p", { className: "ex-cap", "aria-live": "polite" }, /* @__PURE__ */ React.createElement("i", { className: "ex-dot " + EXITS[active].id, "aria-hidden": "true" }), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("b", null, EXITS[active].name, "."), " ", EXITS[active].detail)));
+    const stage = ({ x, jump } = {}) => /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: cx("ex-pan", panned && "panned"), ...swipe ? { tabIndex: 0, role: "region", "aria-label": "The street from the godown to the bin; scroll sideways" } : {} }, /* @__PURE__ */ React.createElement(motion.figure, { className: "ex-pano", style: { "--ar": EX_AR, x: panned ? x : void 0 } }, /* @__PURE__ */ React.createElement("img", { src: IMG + "exits.webp", alt: "One miniature street from end to end: the distributor's godown, two kirana shops hung with snack packets, a general store, more small shops, a van, and a smouldering rubbish heap at the far end." }), /* @__PURE__ */ React.createElement("ul", { className: "ex-chips" }, EXITS.map((e, i) => /* @__PURE__ */ React.createElement("li", { key: e.id, style: { "--x": e.x } }, /* @__PURE__ */ React.createElement("button", { type: "button", className: cx("ex-chip", e.taken && "taken", e.bin && "bin", i === active && "on"), "aria-pressed": i === active, onClick: () => panned ? jump(i) : setActive(i), onFocus: () => {
+      if (panned && i !== active) jump(i);
+    } }, /* @__PURE__ */ React.createElement("span", { className: "ex-name" }, /* @__PURE__ */ React.createElement("i", { className: "ex-dot " + e.id, "aria-hidden": "true" }), e.name, e.taken && /* @__PURE__ */ React.createElement(Icon, { name: "check", size: 14, stroke: 2.6, className: "ex-took" })), /* @__PURE__ */ React.createElement("span", { className: "ex-line" }, e.line))))))), /* @__PURE__ */ React.createElement("p", { className: "ex-cap", "aria-live": "polite" }, /* @__PURE__ */ React.createElement("i", { className: "ex-dot " + EXITS[active].id, "aria-hidden": "true" }), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("b", null, EXITS[active].name, "."), " ", EXITS[active].detail)));
     const figs = [
       { n: /* @__PURE__ */ React.createElement(Money, { value: D.ACTUAL.net, className: "fig-n" }), l: "recovered", d: `${fmt.inr(KL.net)} from ${SHOPS} kiranas and ${fmt.inr(ES_NET)} from a buyer in Raipur, after the van and the listing fee.` },
       { n: /* @__PURE__ */ React.createElement(Money, { value: D.ACTUAL.swing, className: "fig-n" }), l: "better than the bin", d: `Munchly's books show ${fmt.inr(D.ACTUAL.pnl)} with the plan, price support included, against ${fmt.inr(-BIN)} to destroy the batch.` },

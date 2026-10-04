@@ -296,7 +296,8 @@
   /* the signature move: the street pans as the page scrolls, holding on each exit (motion allowed, desktops only) */
   .ex-track { height: 250vh; }
   .ex-stick { position: sticky; }
-  .ex-pan.panned { --zoom: 1.8; position: relative; max-width: 1248px; margin: 0 auto; overflow: hidden; border-radius: 20px; box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+  /* clip, not hidden: a focused chip must never scroll the stage under the pan */
+  .ex-pan.panned { --zoom: 1.8; position: relative; max-width: 1248px; margin: 0 auto; overflow: hidden; overflow: clip; border-radius: 20px; box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
   .ex-pan.panned .ex-pano { width: calc(var(--zoom) * 100%); max-width: none; margin: 0; border-radius: 0; box-shadow: none; }
   .ex-cap { font-size: 17px; }
 }

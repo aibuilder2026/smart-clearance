@@ -87,18 +87,18 @@
   // x: where each exit stands along the panorama, as a share of its width
   const row = id => D.PLAN.rows.find(r => r.id === id);
   const EXITS = [
-    { id: "kirana", name: "Kiranas", line: `${fmt.num(KL.units)} packs · ${SHOPS} shops`, x: 0.33, taken: true,
+    { id: "kirana", name: "Kiranas", line: `${fmt.num(KL.units)} packs · ${SHOPS} shops`, x: 0.35, taken: true,
       detail: `${fmt.num(KL.units)} packs to ${SHOPS} kiranas at ${fmt.inr(KL.price)} a pack, 2 free with every 10: ${fmt.inr(KL.net)} after the van.` },
-    { id: "expiresoon", name: "ExpireSoon", line: `${fmt.num(AW.units)} packs · ${rate(AW.price)}`, x: 0.5, taken: true,
+    { id: "expiresoon", name: "ExpireSoon", line: `${fmt.num(AW.units)} packs · ${rate(AW.price)}`, x: 0.515, taken: true,
       detail: `${fmt.num(AW.units)} packs to ${D.BUYER.name} in ${D.BUYER.city} at ${rate(AW.price)}, countered from ${rate(ESL.price)}: ${fmt.inr(ES_NET)} after the listing fee.` },
-    { id: "staff", name: "Staff sale", line: "priced, not needed", x: 0.665,
+    { id: "staff", name: "Staff sale", line: "priced, not needed", x: 0.65,
       detail: `${rate(row("staff").net)} a pack for up to ${row("staff").capacity} packs at the ${DIST.city} godown. Not needed this time.` },
-    { id: "foodbank", name: "Food bank", line: "priced, not needed", x: 0.8,
+    { id: "foodbank", name: "Food bank", line: "priced, not needed", x: 0.785,
       detail: `${rate(row("foodbank").net)} a pack, because a donation reverses the GST credit. Kept for food that can't sell.` },
-    { id: "bin", name: "The bin", line: `${fmt.inr(-BIN)} · not taken`, x: 0.935, bin: true,
+    { id: "bin", name: "The bin", line: `${fmt.inr(-BIN)} · not taken`, x: 0.93, bin: true,
       detail: `${rate(-D.PLAN.writeOff.perUnit)} a pack: the stock, the GST credit, disposal and EPR, ${fmt.inr(-BIN)} for the batch. Not taken.` },
   ];
-  const EX_AR = 4.34, EX_ZOOM = 1.8;
+  const EX_AR = 4256 / 992, EX_ZOOM = 1.8;
   // the street pans as the page scrolls and holds on each exit: hold, move, hold … over nine equal steps
   const holdShift = x => Math.max(1 / EX_ZOOM - 1, Math.min(0, 0.5 / EX_ZOOM - x));
   const EX_P = [], EX_X = [];
@@ -128,7 +128,7 @@
         <motion.figure className="ex-pano" style={{ "--ar": EX_AR, x: panned ? x : undefined }}>
           <img src={IMG + "exits.webp"} alt="One miniature street from end to end: the distributor's godown, two kirana shops hung with snack packets, a general store, more small shops, a van, and a smouldering rubbish heap at the far end." />
           <ul className="ex-chips">{EXITS.map((e, i) => <li key={e.id} style={{ "--x": e.x }}>
-            <button type="button" className={cx("ex-chip", e.taken && "taken", e.bin && "bin", i === active && "on")} aria-pressed={i === active} onClick={() => panned ? jump(i) : setActive(i)}>
+            <button type="button" className={cx("ex-chip", e.taken && "taken", e.bin && "bin", i === active && "on")} aria-pressed={i === active} onClick={() => panned ? jump(i) : setActive(i)} onFocus={() => { if (panned && i !== active) jump(i); }}>
               <span className="ex-name"><i className={"ex-dot " + e.id} aria-hidden="true" />{e.name}{e.taken && <Icon name="check" size={14} stroke={2.6} className="ex-took" />}</span>
               <span className="ex-line">{e.line}</span>
             </button>
