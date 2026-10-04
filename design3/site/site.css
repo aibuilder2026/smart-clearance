@@ -152,7 +152,7 @@
 .story { display: grid; gap: 36px; align-items: center; }
 .story-copy { display: grid; gap: 22px; justify-items: start; min-width: 0; }
 .story-h { font-size: 38px; }
-.story-h > span { display: block; }
+.story-h > span, .ws-h > span { display: block; }
 .story-quote { margin: 0; }
 .story-quote p { margin: 0; font-size: 20px; line-height: 1.4; color: var(--fg); max-width: 34ch; text-wrap: pretty; }
 .story-who { display: flex; align-items: center; gap: 14px; }

@@ -221,11 +221,11 @@
   /* ---------- 5. a workspace per manufacturer ---------- */
   // x and y: where each island's flat top sits on the plate, as a share of its width and height; ly: its address label
   const ISLANDS = [
-    { id: "munchly", x: 0.233, y: 0.6, ly: 0.8, packs: ["pack-chips", "pack-mango"], url: "munchly.smartclearance.com", live: true },
-    { id: "you", x: 0.574, y: 0.6, ly: 0.8, packs: ["sprout-box"], url: "your-company.smartclearance.com" },
-    { id: "next", x: 0.805, y: 0.6, ly: 0.8, packs: ["sprout-box"], url: "your-brand.smartclearance.com", flip: true },
+    { id: "munchly", x: 0.22, y: 0.6, ly: 0.86, packs: ["pack-chips", "pack-mango"], url: "munchly.smartclearance.com", live: true },
+    { id: "you", x: 0.575, y: 0.59, ly: 0.84, packs: ["sprout-box"], url: "your-company.smartclearance.com" },
+    { id: "next", x: 0.8, y: 0.61, ly: 0.87, packs: ["sprout-box"], url: "your-brand.smartclearance.com", flip: true },
   ];
-  const HUB = { x: 0.424, y: 0.78 }, ISL_AR = 3.4;
+  const HUB = { x: 0.425, y: 0.69 }, ISL_AR = 3776 / 1120;
   const TEAMS = [
     { id: "supply", icon: "route", title: "Supply chain", line: "One tap to approve a plan, with the money on screen.", tag: <Badge size="sm" tone="amber">one tap</Badge> },
     { id: "finance", icon: "file-text", title: "Finance", line: "The invoice, the credit note and the GST memo, drafted.", tag: <Badge size="sm">s.17(5)(h) memo</Badge> },
@@ -235,7 +235,7 @@
   function Workspace() {
     const app = useApp(); const swipe = app.bp !== "desktop";
     return <section id="workspace" className="sec sec-ws" aria-labelledby="ws-h">
-      <div className="wrap"><header className="sec-head"><h2 id="ws-h" className="sec-h">Your own workspace, set up for your supply chain.</h2><p className="sec-sub">Each manufacturer gets its own address, configured for how its stock really moves.</p></header></div>
+      <div className="wrap"><header className="sec-head"><h2 id="ws-h" className="sec-h ws-h"><span>Your own workspace,</span> <span>set up for your supply chain.</span></h2><p className="sec-sub">Each manufacturer gets its own address, configured for how its stock really moves.</p></header></div>
       <div className="isl-pan" {...(swipe ? { tabIndex: 0, role: "region", "aria-label": "Workspaces, one island each; scroll sideways" } : {})}>
         <figure className="islands" style={{ "--ar": ISL_AR }}>
           <img className="isl-plate" src={IMG + "islands.webp"} alt="" loading="lazy" />
