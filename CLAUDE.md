@@ -19,6 +19,7 @@
   - DS v3: `909d23bb-bd3c-466b-abf8-4eccc7c5881e`
   - demo v3: `8294ec70-3e6b-4359-8de6-2a3fd056c3b2`
   - app v3: `78962e0f-7300-46e4-8be7-ee1cbd101839` (the page, `manifest.webmanifest` and `sw.js`)
+  - platform v3: `976c5462-c3c3-4621-80b5-29b3cdda8326` (the console page; the landing page joins it, and the two link to each other)
 - To write:
   1. Call `finalize_plan` for the paths.
   2. Call `write_files` with each file's `if_match` etag.
@@ -74,5 +75,8 @@
   - SC-24 sign-in, also picked from mockups: email or phone first, at munchly.smartclearance.com.
   - Also new: Rakesh's one-time permission, an admin Workspace screen, and the demo's stage 1, which now opens with both sign-ins.
   - Fixed on the way: tracker labels share one line and stop times wrap only at a space; the design-system page hides its contents list below 1100px as intended, with the mark in its top bar and the compact tracker on phones.
-- **SC-25** (In Progress, design only): the smartclearance.com landing page ("Miniature India") and the staff console ("Agent pipeline"), picked from mocked options. The sixteen screens are on the [design board](https://claude.ai/artifact/QNUcNjbENRZJYWBmFd2BrA); the build waits for the maintainer's go-ahead. Branch `SC-25-platform-site`.
+- **SC-25** (In Progress, branch `SC-25-platform-site`): the smartclearance.com landing page ("Miniature India") and the staff console ("Agent pipeline"), picked from mocked options; the sixteen screens are on the [design board](https://claude.ai/artifact/QNUcNjbENRZJYWBmFd2BrA).
+  - The console is built (`design3/console`, `core/platform.js`) and hosted in the platform v3 project.
+  - The landing page is comp-led: its hero image (`design3/site/assets/plates/scene.webp`) waits for the maintainer's plan and asset review before any page code.
+  - The design skill's build state lives in `.impeccable/build/`; it expects a copy of the plate at the repo root (`assets/plates/scene.png`, excluded from git locally).
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

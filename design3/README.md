@@ -1,14 +1,16 @@
 # Smart-Clearance design v3
 
-One visual system, built three ways from the same code:
+One visual system, built from the same code into the product's pages:
 
 | Folder | What it is | Entry page |
 | --- | --- | --- |
 | `system/` | Design system: tokens, the HIG/shadcn kit, the live-tracking world, imagery | `system/Smart-Clearance DS v3.html` |
 | `demo/` | Guided demo: the nine journey stages as beats in Munchly's workspace, on a laptop and a phone running the real screens | `demo/Smart-Clearance demo v3.html` |
 | `app/` | App prototype: Munchly's workspace at munchly.smartclearance.com, with its sign-in, every role, live agents on a mock backend; an installable PWA | `app/Smart-Clearance app v3.html` |
+| `console/` | The console at console.smartclearance.com, where Smart-Clearance staff set up each client's workspace: its agents, supply chain, channels, rules, people, integrations and plan. Seeded with Munchly Foods; its own mock backend is `core/platform.js` | `console/Smart-Clearance console v3.html` |
+| `site/` | The product's landing page at smartclearance.com (SC-25, in progress). Its hero image ships in `site/assets/plates/` | `site/Smart-Clearance site v3.html` |
 
-Shared code lives in `core/` (money computed from the journey map's rules, the fictional dataset, the store, the journey as actions with an agent reconciler) and `screens/` (every role's screens and the workspace sign-in, used by both the demo and the app). `demo/`, `app/` and `system/` reach them through symlinks.
+Shared code lives in `core/` (money computed from the journey map's rules, the fictional dataset, the store, the journey as actions with an agent reconciler) and `screens/` (every role's screens and the workspace sign-in, used by both the demo and the app). `demo/`, `app/`, `console/` and `site/` reach them through symlinks.
 
 ## One workspace per manufacturer
 
@@ -24,7 +26,16 @@ Smart-Clearance is sold to manufacturers as software as a service: each one gets
   - "Explore as someone in the story" skips straight to a person.
 - **The admin's Workspace screen** shows the sign-in methods, the supply-chain profile as set up for Munchly, the distributors and the branding.
 
-The smartclearance.com landing page and the super-admin console that manages client workspaces are not built yet (SC-25).
+## The console (SC-25)
+
+The console is the platform's own surface, separate from every client workspace.
+
+- **Sign-in.** Staff only: a smartclearance.com Google account, then a passkey. Try "Use a passkey" as Neha Kulkarni.
+- **A client's agents** are laid out as the stops they work, from Data to Impact. Each one is Suggest, Ask or Act, with its limits, schedule and last run in an inspector. The human approval between Router and Lister is a locked amber gate for every client.
+- **A new client** is set up in seven steps from its supply-chain profile (route to market, who owns the stock, expiry policy). The profile decides its exits, and a preset decides how far its agents go at first.
+- **Every change** persists in the browser (`sc3-platform`) and writes an audit line. "Reset prototype data" in the account sheet goes back to the seed. The console keeps its own copy of Munchly's setup; the app does not read it yet.
+
+The smartclearance.com landing page is in progress.
 
 ## Run it locally
 
@@ -32,7 +43,7 @@ The smartclearance.com landing page and the super-admin console that manages cli
 python3 -m http.server 8787 --directory design3
 ```
 
-Then open `http://127.0.0.1:8787/demo/Smart-Clearance%20demo%20v3.html`, `/app/Smart-Clearance%20app%20v3.html` or `/system/Smart-Clearance%20DS%20v3.html`. Images load from `system/img/` locally.
+Then open `http://127.0.0.1:8787/demo/Smart-Clearance%20demo%20v3.html`, `/app/Smart-Clearance%20app%20v3.html`, `/console/Smart-Clearance%20console%20v3.html` or `/system/Smart-Clearance%20DS%20v3.html`. Images load from `system/img/` locally.
 
 ## Build
 
@@ -41,7 +52,7 @@ Then open `http://127.0.0.1:8787/demo/Smart-Clearance%20demo%20v3.html`, `/app/S
 
 ## Hosted copies
 
-The Claude Design projects hold the three pages. Each page loads `dist/` from jsDelivr and images from GitHub raw, both pinned to the commit the page names, so a hosted page always matches a pushed commit. To publish a new version: run `./dist.sh`, commit and push, then point the pages at the new commit.
+The Claude Design projects hold the pages: one each for the design system, the demo and the app, and one for the platform pages (the console, with the landing page to join it). Each page loads `dist/` from jsDelivr and images from GitHub raw, both pinned to the commit the page names, so a hosted page always matches a pushed commit. To publish a new version: run `./dist.sh`, commit and push, then point the pages at the new commit.
 
 ## Demo controls
 
