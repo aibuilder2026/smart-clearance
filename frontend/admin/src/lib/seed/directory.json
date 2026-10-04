@@ -1,0 +1,155 @@
+{
+	"workspaces": [
+		{
+			"id": "munchly",
+			"name": "Munchly Foods",
+			"short": "Munchly",
+			"domain": "munchly.smartclearance.com",
+			"emailDomain": "munchly.in",
+			"mark": {
+				"from": "#f68d3e",
+				"to": "#d6461e",
+				"ink": "#ffffff"
+			}
+		}
+	],
+	"roles": {
+		"operator": "Supply-chain operator",
+		"distributor": "Distributor",
+		"retailer": "Kirana retailer",
+		"buyer": "Marketplace buyer",
+		"finance": "Finance & GST",
+		"sustainability": "Sustainability & BRSR",
+		"foodbank": "Food-bank partner",
+		"admin": "Workspace admin"
+	},
+	"members": [
+		{
+			"workspace": "munchly",
+			"id": "priya",
+			"email": "priya.deshmukh@munchly.in",
+			"role": "operator",
+			"status": "active",
+			"kind": "staff"
+		},
+		{
+			"workspace": "munchly",
+			"id": "rakesh",
+			"phone": "+91 98230 44118",
+			"role": "distributor",
+			"status": "active",
+			"kind": "partner"
+		},
+		{
+			"workspace": "munchly",
+			"id": "ganesh",
+			"phone": "+91 98230 55120",
+			"role": "retailer",
+			"status": "active",
+			"kind": "partner"
+		},
+		{
+			"workspace": "munchly",
+			"id": "agrawal",
+			"email": "orders@agrawalwholesale.example",
+			"role": "buyer",
+			"status": "active",
+			"kind": "external"
+		},
+		{
+			"workspace": "munchly",
+			"id": "anita",
+			"email": "anita.rao@munchly.in",
+			"role": "finance",
+			"status": "active",
+			"kind": "staff"
+		},
+		{
+			"workspace": "munchly",
+			"id": "vikram",
+			"email": "vikram.sethi@munchly.in",
+			"role": "sustainability",
+			"status": "active",
+			"kind": "staff"
+		},
+		{
+			"workspace": "munchly",
+			"id": "meera",
+			"email": "meera@feedingindia.example",
+			"role": "foodbank",
+			"status": "active",
+			"kind": "partner"
+		},
+		{
+			"workspace": "munchly",
+			"id": "arjun",
+			"email": "arjun.nair@munchly.in",
+			"role": "admin",
+			"status": "active",
+			"kind": "staff"
+		},
+		{
+			"workspace": "munchly",
+			"id": "patil-owner",
+			"email": "",
+			"phone": "+91 98220 10431",
+			"role": "distributor",
+			"status": "active",
+			"kind": "partner"
+		},
+		{
+			"workspace": "munchly",
+			"id": "gupta-owner",
+			"email": "",
+			"phone": "+91 98260 22118",
+			"role": "distributor",
+			"status": "active",
+			"kind": "partner"
+		},
+		{
+			"workspace": "munchly",
+			"id": "lakshmi-owner",
+			"email": "",
+			"phone": "+91 98480 10550",
+			"role": "distributor",
+			"status": "active",
+			"kind": "partner"
+		},
+		{
+			"workspace": "munchly",
+			"id": "jaidurga",
+			"email": "",
+			"phone": "+91 98230 60011",
+			"role": "retailer",
+			"status": "active",
+			"kind": "partner"
+		},
+		{
+			"workspace": "munchly",
+			"id": "krishna",
+			"email": "",
+			"phone": "+91 98230 60012",
+			"role": "retailer",
+			"status": "deactivated",
+			"kind": "partner"
+		},
+		{
+			"workspace": "munchly",
+			"id": "shreesai",
+			"email": "",
+			"phone": "+91 98230 60013",
+			"role": "retailer",
+			"status": "invited",
+			"kind": "partner"
+		},
+		{
+			"workspace": "munchly",
+			"id": "ifbn",
+			"email": "partners@ifbn.example",
+			"phone": "",
+			"role": "foodbank",
+			"status": "invited",
+			"kind": "partner"
+		}
+	]
+}

@@ -1,0 +1,53 @@
+<script lang="ts">
+	import { cx } from '../cx';
+
+	// the mark: an S drawn as a route, from the godown dot to the amber pin (the kit's Mark, at rest)
+	let { size = 40, class: className }: { size?: number; class?: string } = $props();
+	const uid = $props.id();
+	const gid = 'mk' + uid;
+	const S = 'M43.5 19 H27 a7 7 0 0 0 0 14 h10 a7 7 0 0 1 0 14 H20.5';
+</script>
+
+<svg class={cx('mark', className)} width={size} height={size} viewBox="0 0 64 64" aria-hidden="true"
+	><defs
+		><linearGradient id="{gid}g" x1="8" y1="4" x2="58" y2="62" gradientUnits="userSpaceOnUse"
+			><stop offset="0" stop-color="#2fbf7f" /><stop offset="0.55" stop-color="#178258" /><stop
+				offset="1"
+				stop-color="#0d5a3e"
+			/></linearGradient
+		><linearGradient id="{gid}h" x1="32" y1="2" x2="32" y2="34" gradientUnits="userSpaceOnUse"
+			><stop offset="0" stop-color="#fff" stop-opacity="0.28" /><stop
+				offset="1"
+				stop-color="#fff"
+				stop-opacity="0"
+			/></linearGradient
+		></defs
+	><path
+		d="M32 2C9.5 2 2 9.5 2 32s7.5 30 30 30 30-7.5 30-30S54.5 2 32 2Z"
+		fill="url(#{gid}g)"
+		style="transform-origin: 32px 32px"
+	/><path d="M32 3C10.5 3 3 10.5 3 31.5 10 22 22 18 32 18s22 4 29 13.5C61 10.5 53.5 3 32 3Z" fill="url(#{gid}h)" /><path
+		d={S}
+		fill="none"
+		stroke="#fff"
+		stroke-width="6"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+	/><circle
+		cx="43.5"
+		cy="19"
+		r="3.4"
+		fill="#0d5a3e"
+		stroke="#fff"
+		stroke-width="2.6"
+		style="transform-origin: 43.5px 19px"
+	/><circle
+		cx="20.5"
+		cy="47"
+		r="5.2"
+		fill="#f7c04a"
+		stroke="#fff"
+		stroke-width="2.2"
+		style="transform-origin: 20.5px 47px"
+	/></svg
+>

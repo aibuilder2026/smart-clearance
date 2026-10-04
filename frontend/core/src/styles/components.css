@@ -469,3 +469,16 @@ button.list-row:hover, a.list-row:hover { background: var(--fill); }
   .iconbtn { width: 44px; height: 44px; }
   .iconbtn.round { width: 32px; height: 32px; }
 }
+
+/* @port adapters: what the SvelteKit build needs beyond the prototype's CSS (frontend/core/README.md, "Ported CSS").
+   .app-window: a root that grows with its page, so the window scrolls (the prototype's pages scroll inside a fixed .app).
+   .app-overlays: the fixed layer such a page's sheets and alerts portal into; .app's layout containment would otherwise
+   pin them to the top of the page. It is a query container named "app" too, so overlay rules read the same widths.
+   .when-light / .when-dark: one icon for each appearance, chosen by <html data-theme> before the page hydrates. */
+.app.app-window { height: auto; min-height: 100vh; min-height: 100dvh; overflow: visible; }
+.app.app-overlays { position: fixed; inset: 0; z-index: var(--z-sheet); height: auto; min-height: 0; background: none; overflow: hidden; pointer-events: none; }
+.app.app-overlays > * { pointer-events: auto; }
+[data-theme="dark"] .when-light, :root:not([data-theme="dark"]) .when-dark { display: none; }
+/* a menu item that is a link (another site, in a new tab) looks like the menu's buttons */
+.menu a.mi { text-decoration: none; }
+/* @port-end */

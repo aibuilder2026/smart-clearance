@@ -1,7 +1,9 @@
+import { catalogQuery, showcaseQuery } from '#lib/api/queries.ts';
+
+// the landing page is prerendered with its data, so the static HTML carries every figure
 export const prerender = true;
-export const ssr = true;
 
 export const load = async ({ parent }) => {
 	const { queryClient } = await parent();
-	await queryClient.prefetchQuery({ queryKey: ['spike'], queryFn: async () => ({ net: 21152, shops: 31 }) });
+	await Promise.all([queryClient.prefetchQuery(showcaseQuery()), queryClient.prefetchQuery(catalogQuery())]);
 };

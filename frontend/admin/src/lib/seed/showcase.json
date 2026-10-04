@@ -1,0 +1,229 @@
+{
+	"platform": {
+		"name": "Smart-Clearance",
+		"domain": "smartclearance.com"
+	},
+	"workspace": {
+		"id": "munchly",
+		"name": "Munchly Foods",
+		"short": "Munchly",
+		"domain": "munchly.smartclearance.com",
+		"emailDomain": "munchly.in",
+		"mark": {
+			"from": "#f68d3e",
+			"to": "#d6461e",
+			"ink": "#ffffff"
+		}
+	},
+	"client": {
+		"name": "Munchly Foods Ltd",
+		"short": "Munchly Foods",
+		"city": "Pune"
+	},
+	"batch": {
+		"id": "MF-2409-117",
+		"units": 1840,
+		"daysLeft": 47,
+		"bestBefore": "2026-11-18",
+		"sku": {
+			"id": "chips",
+			"brand": "Munchly",
+			"name": "Masala Chips 150 g",
+			"img": "pack-chips",
+			"mrp": 30,
+			"dp": 22,
+			"cost": 16
+		},
+		"distributor": {
+			"id": "rakesh",
+			"name": "Rakesh Traders",
+			"city": "Nagpur"
+		}
+	},
+	"risk": {
+		"atRisk": 1360
+	},
+	"plan": {
+		"units": 1360,
+		"soldUnits": 1360,
+		"itcRetained": 1224,
+		"kg": 217.6,
+		"writeOff": {
+			"total": 26329.6,
+			"perUnit": 19.36
+		},
+		"lines": [
+			{
+				"id": "kirana",
+				"short": "Kirana cluster",
+				"units": 588,
+				"price": 18,
+				"packPrice": 21.6,
+				"gross": 10584,
+				"cost": 294,
+				"net": 10290
+			},
+			{
+				"id": "expiresoon",
+				"short": "ExpireSoon",
+				"units": 772,
+				"price": 15,
+				"packPrice": null,
+				"gross": 11580,
+				"cost": 100,
+				"net": 11480
+			}
+		],
+		"rows": [
+			{
+				"id": "expiresoon",
+				"short": "ExpireSoon",
+				"net": 15,
+				"eligible": true,
+				"capacity": null
+			},
+			{
+				"id": "kirana",
+				"short": "Kirana cluster",
+				"net": 17.5,
+				"eligible": true,
+				"capacity": 588
+			},
+			{
+				"id": "staff",
+				"short": "Staff sale",
+				"net": 12,
+				"eligible": true,
+				"capacity": 50
+			},
+			{
+				"id": "foodbank",
+				"short": "Food bank",
+				"net": -1.4,
+				"eligible": true,
+				"capacity": null
+			},
+			{
+				"id": "writeoff",
+				"short": "Write-off",
+				"net": -19.36,
+				"eligible": true,
+				"capacity": null
+			}
+		]
+	},
+	"award": {
+		"units": 772,
+		"price": 14.2,
+		"gross": 10962.4
+	},
+	"actual": {
+		"net": 21152.4,
+		"pnl": -607.6,
+		"swing": 25722
+	},
+	"support": {
+		"total": 8767.6
+	},
+	"buyer": {
+		"id": "agrawal",
+		"name": "Agrawal Wholesale",
+		"city": "Raipur"
+	},
+	"shops": 31,
+	"returnBy": "2026-10-29",
+	"stages": [
+		{
+			"id": "connect",
+			"title": "Connect",
+			"human": false
+		},
+		{
+			"id": "detect",
+			"title": "Detect",
+			"human": false
+		},
+		{
+			"id": "verify",
+			"title": "Verify",
+			"human": false
+		},
+		{
+			"id": "value",
+			"title": "Value",
+			"human": false
+		},
+		{
+			"id": "decide",
+			"title": "Decide",
+			"human": false
+		},
+		{
+			"id": "approve",
+			"title": "Approve",
+			"human": true
+		},
+		{
+			"id": "execute",
+			"title": "Execute",
+			"human": false
+		},
+		{
+			"id": "settle",
+			"title": "Settle",
+			"human": false
+		},
+		{
+			"id": "report",
+			"title": "Report",
+			"human": false
+		}
+	],
+	"people": {
+		"priya": {
+			"id": "priya",
+			"name": "Priya Deshmukh",
+			"short": "Priya",
+			"role": "Regional Supply-Chain Manager",
+			"org": "Munchly Foods",
+			"city": "Pune",
+			"img": "sc3img:/people/p-priya.webp"
+		},
+		"rakesh": {
+			"id": "rakesh",
+			"name": "Rakesh bhai",
+			"short": "Rakesh bhai",
+			"role": "Owner, distributor",
+			"org": "Rakesh Traders",
+			"city": "Nagpur",
+			"img": "sc3img:/people/p-rakesh.webp"
+		},
+		"ganesh": {
+			"id": "ganesh",
+			"name": "Ganesh ji",
+			"short": "Ganesh ji",
+			"role": "Owner, kirana",
+			"org": "Shree Ganesh Kirana",
+			"city": "Itwari, Nagpur",
+			"img": "sc3img:/people/p-ganesh.webp"
+		},
+		"anita": {
+			"id": "anita",
+			"name": "Anita Rao",
+			"short": "Anita",
+			"role": "Finance & GST",
+			"org": "Munchly Foods",
+			"city": "Pune",
+			"img": "sc3img:/people/p-anita.webp"
+		},
+		"vikram": {
+			"id": "vikram",
+			"name": "Vikram Sethi",
+			"short": "Vikram",
+			"role": "Sustainability & BRSR",
+			"org": "Munchly Foods",
+			"city": "Pune",
+			"img": "sc3img:/people/p-vikram.webp"
+		}
+	}
+}
