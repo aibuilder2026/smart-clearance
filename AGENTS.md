@@ -65,7 +65,7 @@ Local pages:
 **Design**
 
 - A UI or UX change is designed before it is built, following the `design-first` skill (`.claude/skills/design-first/`):
-  1. Design it with impeccable, ui-ux-pro-max, the taste skills, and Qwen-Image or LTX where needed.
+  1. Design it with impeccable, ui-ux-pro-max, the taste skills, Framer Motion for motion, and Qwen-Image or LTX where needed.
   2. Publish a review board to the Claude Design project for the surface: app, demo, platform (landing page and console) or design system.
   3. Write the code only after the maintainer confirms in the current request.
 - Small fixes that change no design skip this.
@@ -113,7 +113,7 @@ Local pages:
 | Skill | `accessibility` | `.claude/skills/` | WCAG guidance, with `references/WCAG.md`. |
 | Skill | `web-quality-audit` | `.claude/skills/` | Page quality audit. `scripts/analyze.sh` works on single HTML files only. |
 | Skill | `web-design-guidelines` | `.claude/skills/` | Reviews UI against Vercel's Web Interface Guidelines. |
-| Skill | `design-first` | `.claude/skills/` | Design before code: which design tool leads for each surface, the review board on the surface's Claude Design project, and building only after the maintainer's yes (SC-26). |
+| Skill | `design-first` | `.claude/skills/` | Design before code: which design tool leads for each surface (motion prototyped in Framer Motion, the library the build uses), the review board on the surface's Claude Design project, and building only after the maintainer's yes (SC-26). |
 | Config | jira-flow | `.claude/jira-flow.json`, `.claude/jira/taxonomy.md` | Jira project SC: site, issue types, transition ids, branch, commit and PR patterns, and ship rules. |
 | Config | Preview servers | `.claude/launch.json` | `voice-recorder`: runs `video/recorder/server.py` on port 8765. |
 | Tests | Accessibility suite | `design3/a11y/` | Playwright 1.63 with @axe-core/playwright 4.13. |

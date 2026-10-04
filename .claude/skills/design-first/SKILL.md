@@ -1,6 +1,6 @@
 ---
 name: design-first
-description: Design before code for any Smart-Clearance UI or UX change. Use whenever the maintainer asks for a design change to the app, the guided demo, the landing page, the console or the design system, such as a new screen, a redesign, or a change to layout, flow, visuals, copy hierarchy or motion. Designs it with impeccable, ui-ux-pro-max, the taste skills, Qwen-Image and LTX, publishes the designs to the matching Claude Design project for review, and starts the code only after the maintainer confirms.
+description: Design before code for any Smart-Clearance UI or UX change. Use whenever the maintainer asks for a design change to the app, the guided demo, the landing page, the console or the design system, such as a new screen, a redesign, or a change to layout, flow, visuals, copy hierarchy or motion. Designs it with impeccable, ui-ux-pro-max, the taste skills, Framer Motion for motion, Qwen-Image and LTX, publishes the designs to the matching Claude Design project for review, and starts the code only after the maintainer confirms.
 ---
 
 # Design first
@@ -30,6 +30,7 @@ Small fixes that change no design skip this: a typo, a broken link, or a bug wit
 | Landing page (`design3/site`) | `impeccable`, Persuade mode | `design-taste-frontend` and `high-end-visual-design`; `qwengen-bf16` for plates and comps; `ltx-clip` for motion |
 | App, demo and console screens (`design3/app`, `design3/demo`, `design3/console`, `design3/screens`) | `impeccable`, Operate mode (`shape`, `layout`, `critique`) | `ui-ux-pro-max` for UX rules (`python3 ~/.claude/skills/ui-ux-pro-max/scripts/search.py "<outcome>" --domain ux`); `redesign-existing-projects` to audit a screen that exists; `qwengen-bf16` only when the design calls for imagery |
 | Design system (`design3/system`, `DESIGN.md`) | `impeccable` (`extract`, `document`) | `ui-ux-pro-max --design-system`, as a reference only |
+| Motion, on any surface | Framer Motion: `framer-motion` 11.18.2, the `Motion` global the design system already loads, prototyped in the HTML mockups | `impeccable animate` for the motion grammar; `ltx-clip` only for a video asset such as the carton loop, never for interface motion |
 | Charts | `dataviz` | Validate palettes with its script |
 
 The taste skills say they are for landing pages, portfolios and redesigns, not dashboards or multi-step product UI. Keep them off the app, demo and console screens.
@@ -47,7 +48,13 @@ The taste skills say they are for landing pages, portfolios and redesigns, not d
 - **Visible.** Every option is something the maintainer can look at:
   - **a comp:** a Qwen-Image render of the screen, from a screenshot of the current screen as reference or generated from scratch. Save it under `.impeccable/mocks/design/SC-<n>/` with its prompt sidecar;
   - **an HTML mockup:** built from the real tokens and components (`design3/system/*.css` and the kit). Keep it static, or clickable where the flow is the point;
-  - **motion:** a CSS prototype in the mockup, or an LTX clip. Either way it is finite; nothing loops forever.
+  - **motion:** a Framer Motion prototype in the HTML mockup, so the motion reviewed is the motion the build will ship. Load React 18.3.1 and framer-motion 11.18.2 as the hosted pages do.
+    - Use the build's own patterns: `motion.*`, `AnimatePresence`, `useReducedMotion`, and `useScroll` / `useTransform` for scroll-linked motion.
+    - Use the motion tokens in `DESIGN.md`: ease `cubic-bezier(0.22, 1, 0.36, 1)`, 160 / 240 / 420 / 700 ms, springs for sheets.
+    - Animate transform and opacity first.
+    - Nothing loops forever.
+    - Under reduced motion every step lands in its final state at once.
+    - An LTX clip is only for a video asset.
 - **Project rules hold in the designs:**
   - WCAG 2.2 AA: contrast measured on the real background, 44 px targets, visible focus;
   - every figure from `core/money.js`;

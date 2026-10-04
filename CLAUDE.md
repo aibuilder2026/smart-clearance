@@ -7,7 +7,7 @@
 **Which tool for what**
 
 - **UI or design work:** follow the `design-first` skill.
-  1. Design with `impeccable`, plus `ui-ux-pro-max` for product screens and the taste skills for the landing page. Use Qwen and LTX for imagery and motion.
+  1. Design with `impeccable`, plus `ui-ux-pro-max` for product screens and the taste skills for the landing page. Prototype interface motion in Framer Motion, the library the build uses. Use Qwen for imagery and LTX for video assets.
   2. Publish a review board to the surface's Claude Design project.
   3. Write code only after the maintainer confirms.
 
