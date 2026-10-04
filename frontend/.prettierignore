@@ -1,0 +1,13 @@
+# generated, vendored or ported verbatim from design3 (the drift tests keep those identical to the source)
+**/.svelte-kit/
+**/build/
+**/test-results/
+**/playwright-report/
+**/tests/parity/out/
+pnpm-lock.yaml
+admin/src/lib/seed/
+core/src/lib/icons/registry.ts
+core/src/styles/tokens.css
+core/src/styles/base.css
+core/src/styles/components.css
+admin/src/lib/landing/site.css

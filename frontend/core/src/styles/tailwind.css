@@ -1,0 +1,108 @@
+/* Smart-Clearance design system v3 · Tailwind 4 over the design tokens. Utilities read the tokens directly
+   (@theme inline), so a utility and a component always agree, in both themes. Token names that fall in a Tailwind
+   namespace (--font-*, --shadow-*, --ease-*) are not restated in @theme, where they would point at themselves; they
+   get explicit utilities instead. Dark mode is the token switch on [data-theme="dark"], never the media query.
+   Breakpoints are the app's container widths (.app is the container "app"), not the window's. */
+@theme inline {
+	--color-bg: var(--bg);
+	--color-surface: var(--surface);
+	--color-surface-2: var(--surface-2);
+	--color-surface-sunken: var(--surface-sunken);
+	--color-elevated: var(--elevated);
+	--color-glass: var(--glass);
+	--color-fg: var(--fg);
+	--color-fg-2: var(--fg-2);
+	--color-fg-3: var(--fg-3);
+	--color-fg-4: var(--fg-4);
+	--color-fill: var(--fill);
+	--color-fill-2: var(--fill-2);
+	--color-fill-3: var(--fill-3);
+	--color-line: var(--line);
+	--color-line-2: var(--line-2);
+	--color-primary: var(--primary);
+	--color-primary-hover: var(--primary-hover);
+	--color-primary-fg: var(--primary-fg);
+	--color-primary-soft: var(--primary-soft);
+	--color-primary-text: var(--primary-text);
+	--color-amber: var(--amber);
+	--color-amber-fg: var(--amber-fg);
+	--color-amber-soft: var(--amber-soft);
+	--color-amber-text: var(--amber-text);
+	--color-red: var(--red);
+	--color-red-soft: var(--red-soft);
+	--color-red-text: var(--red-text);
+	--color-violet: var(--violet);
+	--color-violet-soft: var(--violet-soft);
+	--color-violet-text: var(--violet-text);
+	--color-blue: var(--blue);
+	--color-blue-soft: var(--blue-soft);
+	--color-blue-text: var(--blue-text);
+	--color-ch-kirana: var(--ch-kirana);
+	--color-ch-expiresoon: var(--ch-expiresoon);
+	--color-ch-staff: var(--ch-staff);
+	--color-ch-d2c: var(--ch-d2c);
+	--color-ch-foodbank: var(--ch-foodbank);
+	--color-ch-writeoff: var(--ch-writeoff);
+
+	--radius-xs: var(--r-xs);
+	--radius-sm: var(--r-sm);
+	--radius-md: var(--r-md);
+	--radius-lg: var(--r-lg);
+	--radius-xl: var(--r-xl);
+	--radius-full: var(--r-full);
+
+	--text-caption2: var(--fs-caption2);
+	--text-caption: var(--fs-caption);
+	--text-footnote: var(--fs-footnote);
+	--text-subhead: var(--fs-subhead);
+	--text-body: var(--fs-body);
+	--text-callout: var(--fs-callout);
+	--text-headline: var(--fs-headline);
+	--text-title3: var(--fs-title3);
+	--text-title2: var(--fs-title2);
+	--text-title1: var(--fs-title1);
+	--text-large: var(--fs-large);
+}
+
+@utility font-display {
+	font-family: var(--font-display);
+}
+@utility font-ui {
+	font-family: var(--font-ui);
+}
+@utility font-hi {
+	font-family: var(--font-hi);
+}
+@utility shadow-1 {
+	box-shadow: var(--shadow-1);
+}
+@utility shadow-2 {
+	box-shadow: var(--shadow-2);
+}
+@utility shadow-3 {
+	box-shadow: var(--shadow-3);
+}
+@utility shadow-float {
+	box-shadow: var(--shadow-float);
+}
+@utility ease-ds {
+	transition-timing-function: var(--ease);
+}
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+/* phone < 768, tablet 768-1099, desktop >= 1100, as base.css's .not-phone and .desk-only */
+@custom-variant phone {
+	@container app (max-width: 767px) {
+		@slot;
+	}
+}
+@custom-variant tablet-up {
+	@container app (min-width: 768px) {
+		@slot;
+	}
+}
+@custom-variant desktop {
+	@container app (min-width: 1100px) {
+		@slot;
+	}
+}
