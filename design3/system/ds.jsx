@@ -5,7 +5,7 @@
   const K = window.SC3; const D = window.SC3_DATA; const M = window.SC3_MONEY; const fmt = M.fmt;
   const { cx, ThemeProvider, useTheme, AppRoot, useApp, Icon, Button, IconButton, Badge, Chip, Kbd, Card, List, ListRow, Segmented, Switch, Field, Input, SearchField, Select, Textarea, Stepper, OTP, Tabs, Check,
     DataTable, Skeleton, Progress, Empty, Avatar, Product, Sheet, Alert, Menu, NoticeHost, useNotice, Mark, Wordmark, Splash, Page, Roll, Money, DaysNum, GateChips, Countdown, Tile, Aura, Tracker, VTracker, AgentFeed,
-    ClusterMap, HaulLine, ChannelBars, TrendChart, MixBar, CodeBlock, PhoneFrame, WindowFrame, TrackerCard, BatchRow, ChannelTable, SplitBar, MoneyPanel, DocCard, Spinner, WorkspaceMark, PoweredBy } = K;
+    ClusterMap, HaulLine, ChannelBars, TrendChart, MixBar, CodeBlock, PhoneFrame, WindowFrame, TrackerCard, TrackerCompact, BatchRow, ChannelTable, SplitBar, MoneyPanel, DocCard, Spinner, WorkspaceMark, PoweredBy } = K;
 
   const TOC = [["Foundations", null], ["The world", "world"], ["Mark and splash", "mark"], ["Client workspace", "workspace"], ["Colour", "colour"], ["Type and numerals", "type"], ["Shape, depth, materials", "shape"], ["Motion", "motion"], ["Icons", "icons"], ["Imagery", "imagery"],
     ["Components", null], ["Buttons and badges", "buttons"], ["Cards and lists", "cards"], ["Navigation", "nav"], ["Controls", "controls"], ["Data and tables", "data"], ["Sheets, alerts, pushes", "overlays"], ["The tracker", "tracker"], ["Agents at work", "agents"], ["Map and charts", "charts"], ["Feedback", "feedback"], ["Screen patterns", "patterns"]];
@@ -45,11 +45,11 @@
     </Spec>;
   }
   function MotionSpecimen() {
-    const [step, setStep] = useState(2); const [live, setLive] = useState(true);
+    const [step, setStep] = useState(2); const [live, setLive] = useState(true); const app = useApp();
     const stages = D.STAGES.map(s => ({ id: s.id, title: s.title, human: s.human }));
     return <div className="ds-two">
       <Spec label="The tracker fills as each agent hands off">
-        <Tracker stages={stages} done={step} current={step < 9 ? step : -1} times={K.STAGE_TIMES} />
+        {app.bp === "phone" ? <TrackerCompact done={step} current={step < 9 ? step : -1} /> : <Tracker stages={stages} done={step} current={step < 9 ? step : -1} times={K.STAGE_TIMES} />}
         <div className="ds-row"><Button size="sm" icon="chevron-left" onClick={() => setStep(s => Math.max(0, s - 1))}>Back</Button><Button size="sm" variant="primary" iconRight="chevron-right" onClick={() => setStep(s => Math.min(9, s + 1))}>Next stop</Button><span className="t-footnote subtle">{step} of 9 done</span></div>
       </Spec>
       <Spec label="Agents carry an aura while they work; it stops when the work stops">
@@ -84,7 +84,7 @@
   }
 
   function Page_() {
-    const { mode, setMode } = useTheme(); const [splash, setSplash] = useState(false); const [on, setOn] = useState("world");
+    const { mode, setMode } = useTheme(); const app = useApp(); const [splash, setSplash] = useState(false); const [on, setOn] = useState("world");
     const mainRef = useRef(null);
     useEffect(() => { const root = mainRef.current; if (!root) return; const io = new IntersectionObserver(es => { es.forEach(e => { if (e.isIntersecting) setOn(e.target.id); }); }, { root, rootMargin: "-20% 0px -70% 0px" }); root.querySelectorAll("section.ds-sec").forEach(s => io.observe(s)); return () => io.disconnect(); }, []);
     const [seg, setSeg] = useState("day"); const [sw, setSw] = useState(true); const [qty, setQty] = useState(24); const [otp, setOtp] = useState(""); const [tab, setTab] = useState("plan"); const [chk, setChk] = useState(true); const [q, setQ] = useState(""); const [loading, setLoading] = useState(false);
@@ -92,7 +92,7 @@
     return <div className="ds">
       <nav className="ds-toc" aria-label="Sections"><div className="row tight" style={{ padding: "4px 8px 12px" }}><Mark size={30} /><Wordmark size={17} /></div>{TOC.map(([t, id]) => id ? <a key={id} href={"#" + id} className={cx(on === id && "on")}>{t}</a> : <div key={t} className="grp">{t}</div>)}</nav>
       <main className="ds-main" ref={mainRef}>
-        <div className="ds-top"><span className="phone-only"><Mark size={28} /></span><b className="t-headline">Design system v3</b><span className="grow" /><Segmented options={[{ id: "light", label: "Light", icon: "sun" }, { id: "dark", label: "Dark", icon: "moon" }, { id: "system", label: "Auto" }]} value={mode} onChange={setMode} label="Appearance" /></div>
+        <div className="ds-top"><span className="ds-brand"><Mark size={28} /></span><b className="t-headline">Design system v3</b><span className="grow" /><Segmented options={[{ id: "light", label: "Light", icon: "sun" }, { id: "dark", label: "Dark", icon: "moon" }, { id: "system", label: "Auto" }]} value={mode} onChange={setMode} label="Appearance" /></div>
         <div className="ds-inner">
           <div className="ds-hero">
             <div>
@@ -237,7 +237,7 @@
 
           <Sec id="tracker" title="The tracker" intro="Horizontal on wide screens, vertical in a sheet on phones, the way delivery apps show an order's stops. The human stop pulses amber when it waits for you.">
             <div className="ds-two">
-              <Spec label="Horizontal"><Tracker stages={D.STAGES.map(s => ({ id: s.id, title: s.title, human: s.human }))} done={5} current={5} times={K.STAGE_TIMES} /></Spec>
+              {app.bp === "phone" ? <Spec label="Compact, on phones (tap for every stop)"><TrackerCompact done={5} current={5} /></Spec> : <Spec label="Horizontal"><Tracker stages={D.STAGES.map(s => ({ id: s.id, title: s.title, human: s.human }))} done={5} current={5} times={K.STAGE_TIMES} /></Spec>}
               <Spec label="Vertical"><VTracker items={D.STAGES.slice(3, 8).map(s => ({ id: s.id, title: s.title, text: s.money, time: K.STAGE_TIMES[s.id], human: s.human }))} done={2} current={2} /></Spec>
             </div>
           </Sec>

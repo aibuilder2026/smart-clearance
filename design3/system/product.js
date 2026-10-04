@@ -6,7 +6,7 @@
   const M = window.SC3_MONEY;
   const fmt = M.fmt;
   const D = () => window.SC3_DATA;
-  const STAGE_TIMES = { connect: "once", detect: "09:00", verify: "09:20", value: "09:21", decide: "09:22", approve: "09:40", execute: "day 0–14", settle: "day 3–7", report: "after 29 Oct" };
+  const STAGE_TIMES = { connect: "once", detect: "09:00", verify: "09:20", value: "09:21", decide: "09:22", approve: "09:40", execute: "day 0⁠–⁠14", settle: "day 3⁠–⁠7", report: "after 29 Oct" };
   const STATUS = {
     "at-risk": { tone: "red", label: "At risk" },
     gated: { tone: "amber", label: "Gated · selling through" },
