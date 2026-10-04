@@ -1,0 +1,12 @@
+{
+  "name": "landing-07-phone",
+  "model": "Qwen-Image-2.1 bf16 (local), edit_image",
+  "prompt": "Turn this phone screen into the mobile landing page of \"Smart-Clearance\", edge to edge with no phone frame or browser bar. Keep the reference's visual system: the pale sage-white ground, the deep green brand colour, the heavy rounded grotesque display type, the clean sans text, white cards with thin hairline edges. Replace all of its content. From top to bottom: a compact top bar with the green rounded-square S logo and \"Smart-Clearance\" on the left and a three-line menu icon on the right; the large dark headline \"Every near-expiry carton gets a second chance.\" across the full width over four lines; the line \"AI agents find the best exit for short-dated stock. You say yes once.\"; a full-width green button \"Watch the 6-minute demo\" and under it a full-width white button \"Find your workspace\"; then, filling the lower half of the screen edge to edge, a tilt-shift photograph of a miniature Indian town diorama in soft morning light with tiny kirana shops, a tiny white van and tiny people, and in the middle one giant brown corrugated cardboard carton as tall as a building, with a thin glowing green path at its foot; a small white tracker card overlapping the town's top edge on the right: \"MF-2409-117\", nine small dots with six filled green, and \"₹21,152 recovered\" in big green numerals. All text legible.",
+  "seed": 2539,
+  "size": 1024,
+  "reference": ".impeccable/mocks/refs/ds-phone.png",
+  "source": ".impeccable/mocks/design/landing-07-phone.webp (local, gitignored)",
+  "created": "2026-10-04",
+  "postprocess": "WebP; the PNG original stays local in .impeccable/mocks/",
+  "use": "SC-25 design board: Phone version of the hero: the headline over four lines, two full-width buttons, the miniature town with the giant carton below, and the tracker card."
+}

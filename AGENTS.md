@@ -18,7 +18,8 @@ The production services planned in `PLAN.md` (`web/`, `agents/`, `infra/`) do no
 
 | Path | What it is |
 | --- | --- |
-| `design3/` | The current design: design system, guided demo, app prototype (Munchly Foods' workspace, an installable PWA), the platform's landing page and console, and the accessibility suite. Start with `design3/README.md`. |
+| `design3/` | The current design and the source of truth for designs:
+<ul><li>design system, guided demo, app prototype (Munchly Foods' workspace, an installable PWA), the platform's landing page and console;</li><li>every design review in `designs/`, one folder per issue;</li><li>the accessibility suite.</li></ul>Start with `design3/README.md`. |
 | `design2/`, `design/` | Earlier rounds, superseded by v3. Reference only. |
 | `docs/` | Story pages: `dobara-journey-map.html` (Journey Map v4.1, the source of every figure), the story, the tech stack and the walkthrough. |
 | `video/` | The narrated walkthrough. `build.py` builds the page and `record.mjs` records it with Playwright; `recorder/` is a local voice-recording page. |
@@ -64,11 +65,22 @@ Local pages:
 
 **Design**
 
-- A UI or UX change is designed before it is built, following the `design-first` skill (`.claude/skills/design-first/`):
-  1. Design it with impeccable, ui-ux-pro-max, the taste skills, Framer Motion for motion, and Qwen-Image or LTX where needed.
-  2. Publish a review board to the Claude Design project for the surface: app, demo, platform (landing page and console) or design system.
-  3. Write the code only after the maintainer confirms in the current request.
+- `design3` is the source of truth for designs. Every design created or edited is saved under `design3/designs/SC-<n>/` and committed on that issue's branch:
+  - options, comps, mock-ups and motion prototypes;
+  - the review board, and the record of the pick.
+
+  PNG originals stay local in `src/`; only WebP ships. Claude Design and claude.ai artifacts hold published copies, never the only copy.
+- Every new UI or UX change goes the Claude Design route first, following the `design-first` skill (`.claude/skills/design-first/`):
+  1. Design 2 or 3 options:
+     - impeccable;
+     - ui-ux-pro-max for product screens, or the taste skills for the landing page;
+     - Framer Motion for motion;
+     - Qwen-Image or LTX for imagery.
+  2. Save them in `design3/designs/SC-<n>/`.
+  3. Publish one review board to the Claude Design project for the surface: app, demo, platform (landing page and console) or design system.
+  4. The maintainer picks one option in the current request. Only the picked option is built.
 - Small fixes that change no design skip this.
+- A project hook, `.claude/hooks/design-first-reminder.sh`, repeats the rule whenever a request reads like a UI or UX change.
 
 **Code and builds**
 
@@ -114,6 +126,7 @@ Local pages:
 | Skill | `web-quality-audit` | `.claude/skills/` | Page quality audit. `scripts/analyze.sh` works on single HTML files only. |
 | Skill | `web-design-guidelines` | `.claude/skills/` | Reviews UI against Vercel's Web Interface Guidelines. |
 | Skill | `design-first` | `.claude/skills/` | Design before code: which design tool leads for each surface (motion prototyped in Framer Motion, the library the build uses), the review board on the surface's Claude Design project, and building only after the maintainer's yes (SC-26). |
+| Hook | `design-first-reminder` | `.claude/hooks/`, registered in `.claude/settings.json` | A `UserPromptSubmit` hook. When a request reads like a UI or UX change, it adds the design-first rule to the agent's context; otherwise it stays silent. Needs `jq` (SC-26). |
 | Config | jira-flow | `.claude/jira-flow.json`, `.claude/jira/taxonomy.md` | Jira project SC: site, issue types, transition ids, branch, commit and PR patterns, and ship rules. |
 | Config | Preview servers | `.claude/launch.json` | `voice-recorder`: runs `video/recorder/server.py` on port 8765. |
 | Tests | Accessibility suite | `design3/a11y/` | Playwright 1.63 with @axe-core/playwright 4.13. |

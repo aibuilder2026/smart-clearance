@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart-Clearance Platform Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<style>
+/* Layout: a review board in design system v3. Each surface is a chapter; each screen sits large with its notes beside it (stacked on phones). */
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber: #f2b437; --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --red-text: #c42a30;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px rgb(17 41 30 / 0.07);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #8b9993;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber: #f7c04a; --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --red-text: #ff8f8d;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px rgb(0 0 0 / 0.35);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #8b9993;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber: #f7c04a; --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --red-text: #ff8f8d;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px rgb(0 0 0 / 0.35);
+  color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); margin: 0; padding-inline: 16px; -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+a:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 4px; }
+.wrap { max-width: 1240px; margin-inline: auto; }
+
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; margin-inline: -16px; padding: 10px 16px; background: color-mix(in srgb, var(--ground) 84%, transparent); -webkit-backdrop-filter: saturate(180%) blur(18px); backdrop-filter: saturate(180%) blur(18px); box-shadow: 0 1px 0 var(--line); }
+.top .wrap { display: flex; align-items: center; gap: 12px 20px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; font: 700 16px/1 var(--display); letter-spacing: -0.01em; color: var(--ink); text-decoration: none; }
+.brand svg { width: 28px; height: 28px; flex: none; }
+.top nav { display: flex; gap: 4px 16px; flex-wrap: wrap; margin-left: auto; font-size: 14px; }
+.top nav a { color: var(--ink-2); text-decoration: none; padding: 6px 2px; }
+.top nav a:hover { color: var(--ink); }
+
+header.intro { padding-block: 56px 28px; display: grid; gap: 18px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: clamp(36px, 6vw, 64px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 92; }
+.lede { font-size: 18px; color: var(--ink-2); max-width: 64ch; margin: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; background: var(--surface); box-shadow: 0 0 0 1px var(--line); font-size: 13px; color: var(--ink-2); }
+.chip b { color: var(--ink); font-weight: 600; }
+.chip.yes { background: var(--amber-soft); box-shadow: 0 0 0 1px color-mix(in srgb, var(--amber) 45%, transparent); color: var(--amber-text); }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+
+section.chapter { padding-block: 48px 24px; border-top: 1px solid var(--line); display: grid; gap: 28px; }
+.chapter-head { display: grid; gap: 10px; max-width: 72ch; }
+h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 750; line-height: 1.06; letter-spacing: -0.025em; font-variation-settings: "opsz" 72; }
+.chapter-head p { margin: 0; color: var(--ink-2); font-size: 16px; }
+.mono { font-family: var(--mono); font-size: 0.92em; }
+
+.frame { display: grid; gap: 18px; align-items: start; }
+@media (min-width: 1000px) { .frame { grid-template-columns: minmax(0, 1fr) 320px; gap: 28px; } .frame.phone { grid-template-columns: 360px minmax(0, 1fr); } }
+.frame figure { margin: 0; min-width: 0; }
+.frame img { display: block; width: 100%; height: auto; border-radius: 14px; box-shadow: 0 0 0 1px var(--line-2), var(--shadow); background: var(--sunken); }
+.frame.phone figure { max-width: 360px; }
+.notes { display: grid; gap: 10px; min-width: 0; }
+h3 { font-size: 22px; font-weight: 700; line-height: 1.15; letter-spacing: -0.015em; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+h3 .n { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--ink-3); letter-spacing: 0; }
+.tag { font: 600 12px/1 var(--ui); padding: 5px 9px; border-radius: 999px; background: var(--green-soft); color: var(--green-text); letter-spacing: 0; }
+.notes p { margin: 0; color: var(--ink-2); }
+.notes dl { margin: 0; display: grid; gap: 8px; }
+.notes dt { font-size: 12.5px; font-weight: 600; color: var(--ink); }
+.notes dd { margin: 0; color: var(--ink-2); font-size: 14px; }
+.slip { font-size: 13px; color: var(--ink-3); padding: 9px 11px; border-radius: 10px; background: var(--sunken); box-shadow: inset 0 0 0 1px var(--line); }
+.slip b { color: var(--ink-2); font-weight: 600; }
+
+.map { margin: 0; display: grid; gap: 12px; }
+.map .scroll { overflow-x: auto; border-radius: 16px; background: var(--surface); box-shadow: 0 0 0 1px var(--line), var(--shadow); padding: 18px; }
+.map svg { display: block; width: 100%; min-width: 760px; height: auto; color: var(--ink); }
+.map figcaption { color: var(--ink-2); font-size: 14px; max-width: 72ch; }
+.map .box { fill: var(--surface); stroke: var(--line-2); stroke-width: 1.5; }
+.map .box.new { stroke: var(--green); stroke-width: 2; }
+.map .box.old { stroke-dasharray: 5 4; }
+.map .t { fill: var(--ink); font: 650 13.5px var(--ui); }
+.map .s { fill: var(--ink-2); font: 400 11.5px var(--ui); }
+.map .k { fill: var(--ink-3); font: 600 11px var(--ui); letter-spacing: 0.04em; }
+.map .edge { fill: none; stroke: var(--ink-3); stroke-width: 1.5; }
+.map .lbl { fill: var(--ink-2); font: 500 11.5px var(--ui); }
+.map .arrow { fill: var(--ink-3); }
+
+.tablewrap { overflow-x: auto; border-radius: 16px; background: var(--surface); box-shadow: 0 0 0 1px var(--line), var(--shadow); }
+table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 14px; }
+th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12.5px; font-weight: 600; color: var(--ink-3); background: var(--sunken); }
+tr:last-child td { border-bottom: 0; }
+td:first-child { font-weight: 600; white-space: nowrap; }
+td.auto { white-space: nowrap; }
+.pill { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12.5px; font-weight: 600; background: var(--green-soft); color: var(--green-text); }
+.pill.ask { background: var(--sunken); color: var(--ink-2); box-shadow: inset 0 0 0 1px var(--line-2); }
+.pill.lock { background: var(--amber-soft); color: var(--amber-text); }
+tr.gate td { background: color-mix(in srgb, var(--amber-soft) 60%, transparent); }
+.defs { display: grid; gap: 8px; color: var(--ink-2); max-width: 80ch; margin: 0; padding: 0; list-style: none; }
+.defs b { color: var(--ink); }
+
+.seed { display: grid; gap: 16px; }
+@media (min-width: 760px) { .seed { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.card { background: var(--surface); border-radius: 16px; box-shadow: 0 0 0 1px var(--line), var(--shadow); padding: 18px 20px; display: grid; gap: 10px; min-width: 0; }
+.card h4 { margin: 0; font: 650 15px/1.3 var(--ui); }
+.card ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; color: var(--ink-2); font-size: 14px; }
+.card .num { font-variant-numeric: tabular-nums; }
+
+.options { display: grid; gap: 22px; }
+.optrow { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.opt { margin: 0; display: grid; gap: 8px; }
+.opt img { width: 100%; height: auto; border-radius: 10px; box-shadow: 0 0 0 1px var(--line-2); display: block; }
+.opt figcaption { font-size: 14px; color: var(--ink-2); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.opt figcaption b { color: var(--ink); font-weight: 600; }
+.opt.chosen img { box-shadow: 0 0 0 2px var(--green); }
+
+.next ul { margin: 0; padding-left: 20px; display: grid; gap: 10px; color: var(--ink-2); max-width: 78ch; }
+.next b { color: var(--ink); }
+footer { padding-block: 40px 56px; color: var(--ink-3); font-size: 13px; border-top: 1px solid var(--line); margin-top: 32px; }
+@media (max-width: 640px) {
+  table, thead, tbody, tr, td { display: block; } thead { display: none; } table { min-width: 0; }
+  tbody tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+  tbody tr:last-child { border-bottom: 0; }
+  td { padding: 0; border: 0; } td:first-child { grid-column: 1; grid-row: 1; } td.auto { grid-column: 2; grid-row: 1; }
+  td:nth-child(2), td:nth-child(3) { grid-column: 1 / -1; } td:nth-child(3) { color: var(--ink-3); font-size: 13px; }
+}
+.map .scroll:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+</style>
+
+<div class="top"><div class="wrap">
+  <a class="brand" href="#top" aria-label="Smart-Clearance platform design, back to top">
+    <svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="scg" x1="8" y1="4" x2="58" y2="62" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#2fbf7f"/><stop offset=".55" stop-color="#178258"/><stop offset="1" stop-color="#0d5a3e"/></linearGradient></defs><path d="M32 2C9.5 2 2 9.5 2 32s7.5 30 30 30 30-7.5 30-30S54.5 2 32 2Z" fill="url(#scg)"/><path d="M43.5 19H27a7 7 0 0 0 0 14h10a7 7 0 0 1 0 14H20.5" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="43.5" cy="19" r="3.4" fill="#0d5a3e" stroke="#fff" stroke-width="2.6"/><circle cx="20.5" cy="47" r="5.2" fill="#f7c04a" stroke="#fff" stroke-width="2.2"/></svg>
+    Smart-Clearance
+  </a>
+  <nav aria-label="Sections"><a href="#map">Site map</a><a href="#landing">Landing page</a><a href="#console">Console</a><a href="#agents">Agents</a><a href="#seed">Seed data</a><a href="#options">Options</a><a href="#next">Next</a></nav>
+</div></div>
+
+<main class="wrap" id="top">
+  <header class="intro">
+    <h1>Smart-Clearance platform design</h1>
+    <p class="lede">The design for SC-25: the product's own landing page at <span class="mono">smartclearance.com</span>, and the console where Smart-Clearance staff set up each client's workspace. Sixteen screens in design system v3, seeded with Munchly Foods. Nothing is built yet; this is what the build will follow once you say go.</p>
+    <div class="chips">
+      <span class="chip"><span class="dot" aria-hidden="true"></span><b>Landing page</b> Miniature India · comp-led</span>
+      <span class="chip"><span class="dot" aria-hidden="true"></span><b>Console</b> Agent pipeline · code-led</span>
+      <span class="chip"><b>Design only</b> 4 Oct 2026</span>
+      <span class="chip"><a href="https://duttaarun2015.atlassian.net/browse/SC-25">SC-25 in Jira</a></span>
+    </div>
+  </header>
+
+  <section class="chapter" id="map" aria-labelledby="map-h">
+    <div class="chapter-head">
+      <h2 id="map-h">How the pages connect</h2>
+      <p>Two new pages join the guided demo and Munchly's workspace, which already exist. The landing page sends each visitor to one of four places; the console's sidebar holds everything a super admin does.</p>
+    </div>
+    <figure class="map">
+      <div class="scroll" tabindex="0" role="region" aria-label="Site map, scrolls sideways on narrow screens">
+        <svg viewBox="0 0 1000 470" role="img" aria-label="Site map. The landing page at smartclearance.com links to the guided demo, to Munchly's workspace through Find your workspace and Sign in, to a Book a demo form, and to the staff console. After sign-in the console opens on Overview; its sidebar also holds Clients, where Munchly Foods opens on its tabs and New client starts a seven-step setup, and the platform pages: Agents, Connectors, Plans, Staff and Audit log.">
+          <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="arrow" d="M0 0 10 5 0 10z"/></marker></defs>
+          <text class="k" x="16" y="168">LANDING PAGE</text>
+          <text class="k" x="400" y="16">WHERE IT LEADS</text>
+          <text class="k" x="706" y="16">CONSOLE SIDEBAR</text>
+
+          <rect class="box new" x="16" y="180" width="210" height="96" rx="14"/>
+          <text class="t" x="34" y="212">smartclearance.com</text>
+          <text class="s" x="34" y="234">Miniature India</text>
+          <text class="s" x="34" y="254">new</text>
+
+          <path class="edge" d="M226 228 H 250 M250 56 V 366"/>
+          <path class="edge" d="M250 56 H 396" marker-end="url(#ah)"/>
+          <path class="edge" d="M250 158 H 396" marker-end="url(#ah)"/>
+          <path class="edge" d="M250 262 H 396" marker-end="url(#ah)"/>
+          <path class="edge" d="M250 366 H 396" marker-end="url(#ah)"/>
+          <text class="lbl" x="262" y="49">Watch the demo</text>
+          <text class="lbl" x="262" y="151">Find your workspace</text>
+          <text class="lbl" x="262" y="255">Book a demo</text>
+          <text class="lbl" x="262" y="359">Staff console</text>
+
+          <rect class="box old" x="400" y="26" width="250" height="60" rx="12"/>
+          <text class="t" x="418" y="51">Guided demo</text><text class="s" x="418" y="71">demo v3 · exists</text>
+          <rect class="box old" x="400" y="118" width="250" height="80" rx="12"/>
+          <text class="t" x="418" y="144">munchly.smartclearance.com</text><text class="s" x="418" y="164">Munchly's workspace (app v3)</text><text class="s" x="418" y="182">exists</text>
+          <rect class="box new" x="400" y="232" width="250" height="60" rx="12"/>
+          <text class="t" x="418" y="257">Book a demo</text><text class="s" x="418" y="277">a request form on the page · new</text>
+          <rect class="box new" x="400" y="326" width="250" height="80" rx="12"/>
+          <text class="t" x="418" y="352">console.smartclearance.com</text><text class="s" x="418" y="372">staff sign-in: Google, then a passkey</text><text class="s" x="418" y="390">new</text>
+
+          <path class="edge" d="M650 366 H 678 V 55 H 702" marker-end="url(#ah)"/>
+          <text class="lbl" x="671" y="210" text-anchor="middle" transform="rotate(-90 671 210)">after sign-in</text>
+
+          <rect class="box new" x="706" y="26" width="288" height="58" rx="12"/>
+          <text class="t" x="724" y="51">Overview</text><text class="s" x="724" y="70">batches on the move, what needs a person</text>
+          <rect class="box new" x="706" y="100" width="288" height="58" rx="12"/>
+          <text class="t" x="724" y="125">Clients</text><text class="s" x="724" y="144">Munchly Foods, the only client so far</text>
+          <path class="edge" d="M724 158 V 307 M724 218 H 742" marker-end="url(#ah)"/>
+          <path class="edge" d="M724 307 H 742" marker-end="url(#ah)"/>
+          <rect class="box new" x="746" y="176" width="248" height="84" rx="12"/>
+          <text class="t" x="762" y="200">Munchly Foods</text><text class="s" x="762" y="220">Agents · Supply chain · Channels &amp; rules</text><text class="s" x="762" y="238">People · Integrations · Plan · Audit</text>
+          <rect class="box new" x="746" y="278" width="248" height="58" rx="12"/>
+          <text class="t" x="762" y="303">New client</text><text class="s" x="762" y="322">seven steps from a supply-chain profile</text>
+          <rect class="box new" x="706" y="356" width="288" height="76" rx="12"/>
+          <text class="t" x="724" y="381">Platform pages</text><text class="s" x="724" y="400">Agents · Connectors · Plans</text><text class="s" x="724" y="418">Staff · Audit log</text>
+
+          <rect class="box new" x="16" y="430" width="22" height="14" rx="4"/><text class="s" x="46" y="441">new in SC-25</text>
+          <rect class="box old" x="150" y="430" width="22" height="14" rx="4"/><text class="s" x="180" y="441">exists in design v3</text>
+        </svg>
+      </div>
+      <figcaption>Sign in on the landing page opens a menu with three ways in: Find your workspace, Munchly Foods directly, and Smart-Clearance staff. Client teams never see the console; staff never sign in through a client's workspace.</figcaption>
+    </figure>
+  </section>
+
+  <section class="chapter" id="landing" aria-labelledby="landing-h">
+    <div class="chapter-head">
+      <h2 id="landing-h">smartclearance.com</h2>
+      <p>One near-expiry carton grown to the size of a godown, parked in a miniature Indian town, and the page follows where its packs go. It belongs to no single client; Munchly Foods appears as the customer story. Every figure comes from the Journey Map v4.1 through the app's money model.</p>
+    </div>
+
+    <article class="frame">
+      <figure><img src="img/landing-01-hero.webp" width="1280" height="800" alt="Landing page hero: a giant cardboard carton stands in a miniature Indian town with kiranas, a van and a handcart; the headline 'Every near-expiry carton gets a second chance' sits in the sky above it with two buttons, and a tracker card beside the carton reads ₹21,152 recovered."></figure>
+      <div class="notes">
+        <h3><span class="n">L1</span> Hero <span class="tag">Approved</span></h3>
+        <p>The headline, one line of what it does, and two ways in: watch the demo, or find your workspace. The tracker card pins the outcome to the carton.</p>
+        <dl>
+          <dt>Interaction</dt><dd>On arrival the card fills its nine stops and rolls to ₹21,152 once, in under five seconds, then stops. Sign in opens a menu: Find your workspace, Munchly Foods, Smart-Clearance staff.</dd>
+          <dt>In the build</dt><dd>This image is the measured spec. The town is regenerated at full resolution; every word, button and card is real HTML.</dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="frame">
+      <figure><img src="img/landing-02-exits.webp" width="1280" height="800" loading="lazy" alt="Section 'Five exits, one batch': a miniature panorama from the godown to kiranas, a parcel hub, a staff canteen and a food-bank van, with a grey smoking rubbish dump set apart at the end; three cards below read ₹21,152 recovered, ₹25,722 better than the bin, 0 cartons destroyed."></figure>
+      <div class="notes">
+        <h3><span class="n">L2</span> Five exits, one batch</h3>
+        <p>The mechanism in one strip: every exit priced, two chosen, the bin left grey.</p>
+        <dl>
+          <dt>Interaction</dt><dd>The panorama slides sideways as you scroll and settles on each exit with its figures.</dd>
+          <dt>Figures</dt><dd>588 packs to 31 kiranas; 772 on ExpireSoon at ₹14.20; the staff sale and food bank priced, not needed; the bin −₹26,330, not taken.</dd>
+        </dl>
+        <p class="slip"><b>Mock-up slip:</b> one label reads "ExpireSoun".</p>
+      </div>
+    </article>
+
+    <article class="frame">
+      <figure><img src="img/landing-03-how.webp" width="1280" height="800" loading="lazy" alt="Section 'Nine stops. Ten agents. One yes.': a giant amber push button in a miniature town square with a woman in a sari beside it, next to a vertical list of the nine stops, with Approve marked in amber."></figure>
+      <div class="notes">
+        <h3><span class="n">L3</span> Nine stops. Ten agents. One yes.</h3>
+        <p>How it works, told through the one moment a person matters: a single amber button, big as a house, with the nine stops beside it.</p>
+        <dl>
+          <dt>Interaction</dt><dd>The stops fill as you read down. Approve stays amber, the only amber on the page, as in the product.</dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="frame">
+      <figure><img src="img/landing-04-munchly.webp" width="1280" height="800" loading="lazy" alt="Customer story for Munchly Foods: the headline 'One plan approved. Not one carton destroyed.', a quote from Priya Deshmukh with her portrait, a tracker card for batch MF-2409-117 showing ₹21,152 recovered, and four small cards for Rakesh bhai, Ganesh ji, Anita Rao and Vikram Sethi."></figure>
+      <div class="notes">
+        <h3><span class="n">L4</span> Munchly Foods</h3>
+        <p>The customer story, with the batch's result and the four people around it.</p>
+        <dl>
+          <dt>Figures</dt><dd>₹21,152 recovered; −₹26,330 if destroyed; ₹1,224 GST credit kept; 31 kiranas restocked; 0 cartons destroyed.</dd>
+          <dt>Links</dt><dd>The guided demo, and Munchly's workspace at <span class="mono">munchly.smartclearance.com</span>.</dd>
+        </dl>
+        <p class="slip"><b>Note:</b> the quote and every person are fictional. The portraits are the repo's own, placed onto the mock-up.</p>
+      </div>
+    </article>
+
+    <article class="frame">
+      <figure><img src="img/landing-05-workspace.webp" width="1280" height="800" loading="lazy" alt="Section 'Your own workspace, set up for your supply chain': three floating islands of miniature town, each holding a giant product, tied by green lines to the Smart-Clearance mark; four cards for supply chain, finance, sustainability and distributors; a row of integration chips."></figure>
+      <div class="notes">
+        <h3><span class="n">L5</span> Your own workspace</h3>
+        <p>The software-as-a-service model: one island per manufacturer, each at its own address, all tied to one product. Then what each team gets, and what it connects to.</p>
+        <dl>
+          <dt>In the build</dt><dd>The islands carry the v3 product renders (chips, mango drink, hair oil). Other islands stay "your-company", never an invented customer. WhatsApp is marked "soon", as in PRODUCT.md.</dd>
+        </dl>
+        <p class="slip"><b>Mock-up slips:</b> garbled pack labels, and "Distributur".</p>
+      </div>
+    </article>
+
+    <article class="frame">
+      <figure><img src="img/landing-06-close.webp" width="1280" height="800" loading="lazy" alt="Closing screen: three plan cards (Pilot, Growth, Enterprise) each marked 'Prices on request', a wide band of the miniature town at dusk with the carton standing empty and the heading 'Give your next batch a second chance', and the footer."></figure>
+      <div class="notes">
+        <h3><span class="n">L6</span> Plans, close and footer</h3>
+        <p>Three plans described by scope, then the ending: the same town at dusk, the carton standing empty because the job is done.</p>
+        <dl>
+          <dt>Rules</dt><dd>No prices are invented: every plan says "Prices on request". The footer carries the staff console link and the fictional-data line.</dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="frame phone">
+      <figure><img src="img/landing-07-phone.webp" width="704" height="1504" loading="lazy" alt="Phone version of the hero: the headline over four lines, two full-width buttons, the miniature town with the giant carton below, and the tracker card."></figure>
+      <div class="notes">
+        <h3><span class="n">L7</span> On a phone</h3>
+        <p>At 390 px the headline runs over four lines, the buttons go full width, and the town crops around the carton with the card overlapping its top edge.</p>
+      </div>
+    </article>
+
+    <article class="frame">
+      <figure><img src="img/landing-08-dark.webp" width="1280" height="800" loading="lazy" alt="The hero in dark mode: the miniature town at night with lit shop windows, the carton lit from below by the green path, light headline text and mint-green buttons."></figure>
+      <div class="notes">
+        <h3><span class="n">L8</span> In dark mode</h3>
+        <p>Composed for the dark theme rather than inverted: the town at night, the carton lit from below by the green path.</p>
+        <p class="slip"><b>In the build:</b> no glow around the buttons. v3 rules out halos.</p>
+      </div>
+    </article>
+  </section>
+
+  <section class="chapter" id="console" aria-labelledby="console-h">
+    <div class="chapter-head">
+      <h2 id="console-h">console.smartclearance.com</h2>
+      <p>Where Smart-Clearance staff set up and run each client's workspace. A client's agents are laid out as the stops they work, with the human approval as a locked amber gate. Setting up a client means deciding how far each agent may go before a person says yes.</p>
+    </div>
+
+    <article class="frame">
+      <figure><img src="img/console-01-signin.webp" width="1280" height="800" loading="lazy" alt="Console sign-in: on the left the Smart-Clearance mark, the heading 'Console' and a small diorama of the carton at dawn; on the right a card titled 'Sign in' with 'Continue with Google' and 'Use a passkey', and a note pointing client teams to their own workspace address."></figure>
+      <div class="notes">
+        <h3><span class="n">C1</span> Staff sign-in</h3>
+        <p>A Google account at smartclearance.com, then a passkey. Client teams are pointed to their own workspace address.</p>
+        <dl><dt>Rule</dt><dd>Platform sign-in is separate from every client workspace, and carries no client's branding.</dd></dl>
+      </div>
+    </article>
+
+    <article class="frame">
+      <figure><img src="img/console-02-overview.webp" width="1280" height="800" loading="lazy" alt="Console overview: two batch tracker rows (MF-2409-117 with ₹21,152 recovered, MF-2410-118 split across kiranas, staff sale and food bank), a 'Needs attention' card with two amber items and an 'Agent runs today' list."></figure>
+      <div class="notes">
+        <h3><span class="n">C2</span> Overview</h3>
+        <p>Batches on the move as trackers rather than KPI tiles, what is waiting for a person (amber), and today's agent runs.</p>
+        <p class="slip"><b>Mock-up slips:</b> the sidebar should mark Overview, and the date should read Sunday 4 October.</p>
+      </div>
+    </article>
+
+    <article class="frame">
+      <figure><img src="img/console-03-clients.webp" width="1280" height="800" loading="lazy" alt="Console clients list: one row for Munchly Foods, Pune, at munchly.smartclearance.com, Pilot, Live, 4 distributors, 8 SKUs, 10 of 10 agents on, ₹21,152 recovered; below, an empty state with a small floating island and a New client button."></figure>
+      <div class="notes">
+        <h3><span class="n">C3</span> Clients</h3>
+        <p>Munchly is the only client: domain, plan, status, distributors, SKUs, agents and money recovered. The empty state below starts the next one.</p>
+      </div>
+    </article>
+
+    <article class="frame">
+      <figure><img src="img/console-04-agents.webp" width="1280" height="800" loading="lazy" alt="Munchly Foods, Agents tab: a vertical tracker of eleven rows from Data to Impact, each with a Suggest, Ask, Act control, an amber row 'Priya approves, one tap, always' between Router and Lister, and a side panel for the Negotiator with floor ₹13.50, counter up to 2 times, token 15% and a Save button."></figure>
+      <div class="notes">
+        <h3><span class="n">C4</span> Munchly › Agents <span class="tag">Chosen</span></h3>
+        <p>The heart of the console. Each agent's job, schedule and autonomy, in the order they work; the approval gate between deciding and doing.</p>
+        <dl>
+          <dt>Interaction</dt><dd>Changing an agent's autonomy re-tints its stop and writes an audit line. The panel holds the selected agent's limits and last run.</dd>
+          <dt>Rule</dt><dd>The gate can't be switched off for any client. The build removes the control the mock-up drew on it.</dd>
+        </dl>
+      </div>
+    </article>
+
+    <article class="frame">
+      <figure><img src="img/console-05-supply.webp" width="1280" height="800" loading="lazy" alt="Munchly Foods, Supply chain tab: a chain diagram from the Pune plant to 4 distributors to 195 kiranas and quick-commerce warehouses; a profile card with six editable rows; a distributors table with permission given for Rakesh Traders and Lakshmi Agencies and not yet for Patil Distributors and Gupta &amp; Sons."></figure>
+      <div class="notes">
+        <h3><span class="n">C5</span> Supply chain</h3>
+        <p>How Munchly's stock moves, as set up: the chain, the six profile answers, and each distributor with its one-time permission.</p>
+        <p class="slip"><b>Mock-up slip:</b> the tab underline should sit on Supply chain.</p>
+      </div>
+    </article>
+
+    <article class="frame">
+      <figure><img src="img/console-06-people.webp" width="1280" height="800" loading="lazy" alt="Munchly Foods, People tab: a table of nine people with role, sign-in method, access and status, including two invited partners, beside an 'Invite a person' panel with the sign-in rule."></figure>
+      <div class="notes">
+        <h3><span class="n">C6</span> People</h3>
+        <p>Everyone in Munchly's workspace with their role, sign-in method, access and status; invited partners in grey; an invite panel that states the sign-in rule.</p>
+        <p class="slip"><b>Mock-up slip:</b> the first tab label repeats "People".</p>
+      </div>
+    </article>
+
+    <article class="frame">
+      <figure><img src="img/console-07-new-client.webp" width="1280" height="800" loading="lazy" alt="New client setup, step 3 of 7: questions for route to market, who owns short-dated stock and expiry policy as option cards, with a summary card listing what the profile sets up."></figure>
+      <div class="notes">
+        <h3><span class="n">C7</span> New client</h3>
+        <p>Seven steps: company, workspace, supply chain, exits, agents, people, review. The supply-chain answers decide which exits and agents switch on, and the summary says so in plain words.</p>
+        <dl><dt>Rule</dt><dd>Every new workspace starts with the approval gate on.</dd></dl>
+      </div>
+    </article>
+
+    <article class="frame phone">
+      <figure><img src="img/console-08-phone.webp" width="704" height="1504" loading="lazy" alt="Console on a phone: Munchly Foods with the Agents tab, the agents as one tall tracker with the amber gate locked, and a bottom sheet for the Negotiator with Suggest, Ask, Act and a Save button."></figure>
+      <div class="notes">
+        <h3><span class="n">C8</span> On a phone</h3>
+        <p>The tracker runs full width; the selected agent's limits rise in a bottom sheet.</p>
+      </div>
+    </article>
+  </section>
+
+  <section class="chapter" id="agents" aria-labelledby="agents-h">
+    <div class="chapter-head">
+      <h2 id="agents-h">The agents, as set for Munchly</h2>
+      <p>The console's Agents tab sets these for each client. Munchly's settings are the seed. The limits are prototype values; the prices, gates and windows come from the Journey Map.</p>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th scope="col">Agent</th><th scope="col">Its job</th><th scope="col">Munchly's setting</th><th scope="col">Autonomy</th></tr></thead>
+        <tbody>
+          <tr><td>Data</td><td>Loads each distributor's stock export and maps its columns</td><td>daily 08:30</td><td class="auto"><span class="pill">Act</span></td></tr>
+          <tr><td>Watcher</td><td>Flags batches that won't sell in time, against the quick-commerce gates</td><td>daily 09:00; Blinkit 90+ days, Zepto and Instamart 60% of life</td><td class="auto"><span class="pill">Act</span></td></tr>
+          <tr><td>Vision</td><td>Reads the label photo from the godown</td><td>asks for another photo below 0.90 confidence</td><td class="auto"><span class="pill ask">Ask</span></td></tr>
+          <tr><td>Valuer</td><td>Prices five exits, the bin included</td><td>GST credit, disposal and EPR (indicative)</td><td class="auto"><span class="pill">Act</span></td></tr>
+          <tr><td>Router</td><td>Splits the batch under each exit's caps</td><td>its plan always stops at the gate</td><td class="auto"><span class="pill">Act</span></td></tr>
+          <tr class="gate"><td>Approval</td><td>A person approves every plan, with the money on screen</td><td>Priya Deshmukh</td><td class="auto"><span class="pill lock">Always on</span></td></tr>
+          <tr><td>Lister</td><td>Lists on ExpireSoon in the distributor's name</td><td>reserve ₹13.50; hidden inside Munchly's territories</td><td class="auto"><span class="pill">Act</span></td></tr>
+          <tr><td>Outreach</td><td>Sends kirana offers</td><td>Hindi first; 2 free with every 10</td><td class="auto"><span class="pill">Act</span></td></tr>
+          <tr><td>Negotiator</td><td>Answers bids</td><td>floor ₹13.50; up to 2 counters; 15% token</td><td class="auto"><span class="pill ask">Ask</span></td></tr>
+          <tr><td>Paperwork</td><td>Drafts the invoice, e-way bill check, credit note, GST memo and FSSAI checklist</td><td>drafts only; people send them</td><td class="auto"><span class="pill ask">Ask</span></td></tr>
+          <tr><td>Impact</td><td>Posts the ledger and the BRSR rows</td><td>after the 20-day return window</td><td class="auto"><span class="pill">Act</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="defs">
+      <li><b>Suggest:</b> the agent says what it would do, and does nothing.</li>
+      <li><b>Ask:</b> it waits for a person's yes before each action.</li>
+      <li><b>Act:</b> it acts within its limits and reports what it did.</li>
+      <li><b>Always on:</b> whatever the agents' settings, every plan waits for one person's approval, for every client.</li>
+    </ul>
+  </section>
+
+  <section class="chapter" id="seed" aria-labelledby="seed-h">
+    <div class="chapter-head">
+      <h2 id="seed-h">Seed data</h2>
+      <p>Munchly Foods is the only client, seeded from the same data as the app, so the console and the workspace tell one story. Every company and person is fictional.</p>
+    </div>
+    <div class="seed">
+      <div class="card"><h4>Munchly Foods</h4><ul>
+        <li><span class="mono">munchly.smartclearance.com</span>, staff on munchly.in</li>
+        <li>Pilot, live since 1 Oct 2026, India (Mumbai region)</li>
+        <li>8 SKUs: six snacks and drinks, and the Glowra personal-care line</li>
+        <li class="num">9 batches; 2 on the move (MF-2409-117 and MF-2410-118)</li>
+      </ul></div>
+      <div class="card"><h4>Distributors</h4><ul>
+        <li>Rakesh Traders, Nagpur: 38 kiranas, staff sale cap 50, permission given</li>
+        <li>Patil Distributors, Pune: 52 kiranas, permission not yet given</li>
+        <li>Gupta &amp; Sons, Indore: 47 kiranas, permission not yet given</li>
+        <li>Lakshmi Agencies, Hyderabad: 58 kiranas, staff sale cap 150, permission given</li>
+      </ul></div>
+      <div class="card"><h4>People in Munchly's workspace</h4><ul>
+        <li>Staff (Google, munchly.in): Priya Deshmukh, Anita Rao, Vikram Sethi; Arjun Nair is the workspace admin</li>
+        <li>Partners: Rakesh bhai and Ganesh ji (phone and code), Meera of Feeding India (Google, invited)</li>
+        <li>Invited: Shree Sai Kirana, India FoodBanking Network</li>
+        <li>Agrawal ji buys on ExpireSoon and is never a member</li>
+      </ul></div>
+      <div class="card"><h4>Smart-Clearance staff</h4><ul>
+        <li>Neha Kulkarni, super admin (customer success)</li>
+        <li>Sameer Rao, platform engineer</li>
+        <li>Both sign in with smartclearance.com Google accounts and a passkey</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section class="chapter" id="options" aria-labelledby="options-h">
+    <div class="chapter-head">
+      <h2 id="options-h">The options these came from</h2>
+      <p>Three layouts each, all in design system v3, shown on 4 October. The green outline marks your pick.</p>
+    </div>
+    <div class="options">
+      <div class="optrow" role="list" aria-label="Landing page options">
+        <figure class="opt chosen" role="listitem"><img src="img/landing-01-hero.webp" width="1280" height="800" loading="lazy" alt="Option: Miniature India."><figcaption><b>Miniature India</b><span class="tag">Chosen</span></figcaption></figure>
+        <figure class="opt" role="listitem"><img src="img/opt-landing-empire.webp" width="1280" height="800" loading="lazy" alt="Option: Day above, night below, a daylight sky of floating cartons over a kirana street at night."><figcaption><b>Day above, night below</b></figcaption></figure>
+        <figure class="opt" role="listitem"><img src="img/opt-landing-nine-stops.webp" width="1280" height="800" loading="lazy" alt="Option: Nine stops, one carton, a floating carton beside the headline with a nine-stop rail down the page."><figcaption><b>Nine stops, one carton</b></figcaption></figure>
+      </div>
+      <div class="optrow" role="list" aria-label="Console options">
+        <figure class="opt" role="listitem"><img src="img/opt-console-ops-tables.webp" width="1280" height="800" loading="lazy" alt="Option: Operations tables, clients and agent runs in dense tables with a command palette."><figcaption><b>Operations tables</b></figcaption></figure>
+        <figure class="opt chosen" role="listitem"><img src="img/console-04-agents.webp" width="1280" height="800" loading="lazy" alt="Option: Agent pipeline."><figcaption><b>Agent pipeline</b><span class="tag">Chosen</span></figcaption></figure>
+        <figure class="opt" role="listitem"><img src="img/opt-console-preview.webp" width="1280" height="800" loading="lazy" alt="Option: Settings beside the workspace, with a live preview of the client's sign-in page."><figcaption><b>Settings beside the workspace</b></figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter next" id="next" aria-labelledby="next-h">
+    <div class="chapter-head"><h2 id="next-h">When you say go</h2></div>
+    <ul>
+      <li><b>Landing page, matched to the mock-ups.</b> The approved hero becomes a measured spec; the town is regenerated at full resolution, and the first screen is checked against the mock-up before the other sections, the motion and the phone and dark versions follow.</li>
+      <li><b>Console, built from the v3 components.</b> Munchly is seeded from the app's own data; every change is saved in the browser and writes an audit line.</li>
+      <li><b>Both pages</b> join the accessibility suite at zero WCAG 2.2 AA violations in five viewports, and are published to Claude Design and pinned to a commit, like the demo and the app.</li>
+    </ul>
+  </section>
+</main>
+
+<footer><div class="wrap">Prototype design for SC-25. Munchly Foods, Glowra, ExpireSoon, Agrawal Wholesale and every person shown are fictional. The mock-ups were generated locally with Qwen-Image from the v3 screens, and each carries its prompt.</div></footer>

@@ -20,3 +20,6 @@ design3/system/media/src/
 
 # design3 platform pages: generated PNG originals stay local (WebP ships)
 design3/site/assets/plates/src/
+
+# design reviews: PNG originals stay local, only WebP ships (SC-26)
+design3/designs/*/src/

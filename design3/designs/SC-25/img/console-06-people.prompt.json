@@ -1,0 +1,12 @@
+{
+  "name": "console-06-people",
+  "model": "Qwen-Image-2.1 bf16 (local), edit_image",
+  "prompt": "Turn this into another tab of the same client screen in the console, edge to edge with no browser window. Keep exactly: the left sidebar, the client header (the orange rounded tile with a white m, \"Munchly Foods\", \"munchly.smartclearance.com\", the green \"Live\" pill) and the tab row, but now the \"People\" tab is selected and underlined instead of \"Agents\". Replace everything under the tabs: no agent list remains. Under the tabs: 1) Left two thirds: a search field \"Search people\" and a filter \"Everyone ▾\", then a white card with a table: columns \"Person\", \"Role\", \"Signs in with\", \"Access\", \"Status\". Rows, each with a small round portrait or initials: \"Priya Deshmukh · Regional Supply-Chain Manager · Google · Approver · Active\", \"Anita Rao · Finance & GST · Google · Member · Active\", \"Vikram Sethi · Sustainability & BRSR · Google · Member · Active\", \"Arjun Nair · Workspace admin · Google · Admin · Active\", \"Rakesh bhai · Rakesh Traders · Phone and code · Partner · Active\", \"Ganesh ji · Shree Ganesh Kirana · Phone and code · Partner · Active\", \"Meera · Feeding India · Google, invited · Partner · Active\", \"Shree Sai Kirana · invited by Rakesh Traders · Phone and code · Partner · Invited\" (grey pill), \"India FoodBanking Network · invited by Munchly · Google, invited · Partner · Invited\" (grey pill). Status \"Active\" as small green pills. 2) Right third: a white side panel \"Invite a person\" with fields \"Name\", \"Work email or mobile number\", a select \"Access: Member\", a select \"Organisation: Munchly Foods\", the grey note \"Munchly staff need a munchly.in address; partners sign in with a code or by invitation.\", and a dark green button \"Send invitation\". Crisp flat interface; all text legible.",
+  "seed": 2546,
+  "size": 1024,
+  "reference": ".impeccable/mocks/decision/console-pipeline.png",
+  "source": ".impeccable/mocks/design/console-06-people.webp (local, gitignored)",
+  "created": "2026-10-04",
+  "postprocess": "WebP; the PNG original stays local in .impeccable/mocks/",
+  "use": "SC-25 design board: Munchly Foods, People tab: a table of nine people with role, sign-in method, access and status, including two invited partners, beside an 'Invite a person' panel with the sign-in rule."
+}

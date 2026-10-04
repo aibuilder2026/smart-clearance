@@ -1,0 +1,12 @@
+{
+  "name": "landing-01-hero",
+  "model": "Qwen-Image-2.1 bf16 (local), edit_image",
+  "prompt": "Turn this into a completely new desktop landing page for \"Smart-Clearance\", shown as the full web page edge to edge with no browser window. Keep only the reference's visual system: the pale sage-white background, the deep green brand colour, the amber accent, the heavy rounded grotesque display type, the clean sans interface text, white cards with thin hairline edges and soft shadows, and the nine-dot tracker. Remove the left sidebar, its menu and all of the reference's text and layout. New layout, top to bottom: 1) A thin top navigation bar across the full width: the green rounded-square S logo and the word \"Smart-Clearance\" at the left; the links \"How it works\", \"Agents\", \"Customers\", \"Pricing\" in the middle; a text link \"Sign in\" and a dark green pill button \"Book a demo\" at the right. 2) The hero fills the rest of the screen: a full-bleed tilt-shift photograph of a miniature Indian town diorama in soft morning light, seen from above at an angle: tiny kirana shops with rolling shutters and hanging snack strips, a tiny white delivery van, a tiny food-bank handcart, tiny people and trees. In the middle stands ONE giant brown corrugated cardboard carton, as tall as a building, towering over the little town, with a thin glowing green path leading from it to the shops. The pale sky across the top third holds the large dark headline \"Every near-expiry carton gets a second chance.\" with a short line beneath, \"AI agents find the best exit for short-dated stock. You say yes once.\", and two buttons: green \"Watch the 6-minute demo\" and white \"Find your workspace\". 3) A small white tracker card pinned beside the giant carton: \"MF-2409-117\", a row of nine small dots with six filled green, and \"₹21,152 recovered\" in big green numerals. 4) Along the bottom edge the next section begins on the sage-white ground: four labelled stops in a row, \"Kiranas\", \"Marketplace\", \"Staff sale\", \"Food bank\". Miniature diorama photography for the town; crisp flat interface for the navigation, text, buttons and card; all text legible.\n",
+  "seed": 2511,
+  "size": 1024,
+  "reference": ".impeccable/mocks/refs/ds-hero.png",
+  "source": ".impeccable/mocks/decision/landing-diorama.webp (local, gitignored)",
+  "created": "2026-10-04",
+  "postprocess": "WebP; the PNG original stays local in .impeccable/mocks/",
+  "use": "SC-25 design board: Option: Miniature India."
+}

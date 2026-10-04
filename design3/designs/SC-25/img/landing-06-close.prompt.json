@@ -1,0 +1,12 @@
+{
+  "name": "landing-06-close",
+  "model": "Qwen-Image-2.1 bf16 (local), edit_image",
+  "prompt": "Show the last screen of this same landing page, at the bottom of the page. Keep the identical thin top navigation bar (the S logo and \"Smart-Clearance\", the links, \"Sign in\" and the green \"Book a demo\" button) and the same visual system, fonts and miniature-diorama photography. Replace everything below the navigation. Below the navigation: 1) On the pale sage-white ground, a left-aligned heading in the heavy dark display type, \"Start with one distributor.\", and three white plan cards in a row with thin hairline edges: \"Pilot\" with the lines \"One distributor\", \"Up to 10 SKUs\", \"90 days\"; \"Growth\" with \"Every distributor in a region\", \"All ten agents\", \"Your sign-in\"; \"Enterprise\" with \"Every region\", \"Your SSO and data residency\", \"A named team\". Each card ends with the grey line \"Prices on request\". 2) Under the cards, a wide rounded closing band filled edge to edge with a tilt-shift miniature diorama of the same Indian town at dusk, warm lights in the shops, and in the middle the giant cardboard carton now standing empty with its flaps open, a few tiny people waving beside it. Over the darker sky part of the band, the large white heading \"Give your next batch a second chance.\" and two buttons, green \"Book a demo\" and white \"Watch the 6-minute demo\". 3) A footer on the sage-white ground: the S logo and \"Smart-Clearance\" on the left with the line \"Every near-expiry carton gets a second chance.\"; three small link columns, \"Product: How it works, Agents, Pricing\", \"Customers: Munchly Foods\", \"Sign in: Find your workspace, Staff console\"; and a bottom line in small grey text, \"Prototype · every company, person and number is fictional · Google AI Hackathon 2026\". Miniature diorama photography for the closing band; crisp flat interface for everything else; all text legible.",
+  "seed": 2537,
+  "size": 1024,
+  "reference": ".impeccable/mocks/decision/landing-diorama.png",
+  "source": ".impeccable/mocks/design/landing-06-close.webp (local, gitignored)",
+  "created": "2026-10-04",
+  "postprocess": "WebP; the PNG original stays local in .impeccable/mocks/",
+  "use": "SC-25 design board: Closing screen: three plan cards (Pilot, Growth, Enterprise) each marked 'Prices on request', a wide band of the miniature town at dusk with the carton standing empty and the heading 'Give your next batch a second chance', and the footer."
+}

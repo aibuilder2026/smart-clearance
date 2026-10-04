@@ -6,10 +6,11 @@
 
 **Which tool for what**
 
-- **UI or design work:** follow the `design-first` skill.
-  1. Design with `impeccable`, plus `ui-ux-pro-max` for product screens and the taste skills for the landing page. Prototype interface motion in Framer Motion, the library the build uses. Use Qwen for imagery and LTX for video assets.
-  2. Publish a review board to the surface's Claude Design project.
-  3. Write code only after the maintainer confirms.
+- **UI or design work:** every new UI or UX change goes the Claude Design route first (the `design-first` skill):
+  1. Design 2 or 3 options with `impeccable`, plus `ui-ux-pro-max` for product screens or the taste skills for the landing page. Prototype motion in Framer Motion; use Qwen for imagery and LTX for video assets.
+  2. Save them in `design3/designs/SC-<n>/`. `design3` is the source of truth for designs.
+  3. Publish one review board to the surface's Claude Design project.
+  4. Build only the option the maintainer picks.
 
   `PRODUCT.md` and `DESIGN.md` are the context. For a finished build, hand off to `impeccable-finish-reviewer`. To record the design system, use `impeccable-documenter`.
 - **Accessibility:** run the suite first. For a manual WCAG audit, use the `accessibility-tester` agent with the `accessibility` and `web-design-guidelines` skills.

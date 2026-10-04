@@ -1,0 +1,12 @@
+{
+  "name": "console-03-clients",
+  "model": "Qwen-Image-2.1 bf16 (local), edit_image",
+  "prompt": "Turn this into a different screen of the same console, edge to edge with no browser window. Keep exactly: the left sidebar (the S logo, \"Smart-Clearance\", \"Console\", the navigation list with \"Clients\" selected, and Neha Kulkarni at the bottom) and the visual system. Replace the whole main area, top to bottom: no client header, no tabs, no agent list and no side panel remain. Main area: 1) A large title \"Clients\", a search field \"Search clients, addresses, people\" and a dark green button \"New client\" on the right. 2) A white card holding a table with sortable column headers \"Client\", \"Workspace\", \"Plan\", \"Status\", \"Distributors\", \"SKUs\", \"Agents\", \"Recovered\". One row: an orange rounded tile with a white letter m and \"Munchly Foods · Pune\", \"munchly.smartclearance.com\" in small monospace, \"Pilot\", a small green \"Live\" pill, \"4\", \"8\", \"10 of 10 on\", \"₹21,152\". 3) Below it, a large calm empty-state card filling the rest of the page: on the left a small tilt-shift miniature diorama photograph of a tiny empty floating island of Indian town with a small folded flat cardboard carton on it, waiting; on the right the heading \"Only Munchly is set up so far.\" and the line \"Set up the next manufacturer from its supply-chain profile: route to market, who owns the stock, expiry policy, exits.\" and a dark green button \"New client\". Crisp flat interface with one small diorama photo; all text legible.",
+  "seed": 2543,
+  "size": 1024,
+  "reference": ".impeccable/mocks/decision/console-pipeline.png",
+  "source": ".impeccable/mocks/design/console-03-clients.webp (local, gitignored)",
+  "created": "2026-10-04",
+  "postprocess": "WebP; the PNG original stays local in .impeccable/mocks/",
+  "use": "SC-25 design board: Console clients list: one row for Munchly Foods, Pune, at munchly.smartclearance.com, Pilot, Live, 4 distributors, 8 SKUs, 10 of 10 agents on, ₹21,152 recovered; below, an empty state with a small floating island and a New client button."
+}

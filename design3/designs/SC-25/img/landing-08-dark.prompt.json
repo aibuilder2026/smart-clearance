@@ -1,0 +1,12 @@
+{
+  "name": "landing-08-dark",
+  "model": "Qwen-Image-2.1 bf16 (local), edit_image",
+  "prompt": "Show this exact landing page in dark mode at night. Keep the identical layout, every text and its position, the navigation, the buttons, the tracker card and the stops along the bottom. Change only the lighting and colours: the navigation bar and page ground become a deep green-black with a faint green glow; the headline and text become light off-white; the \"Book a demo\" and \"Watch the 6-minute demo\" buttons become a brighter mint green with dark text; the \"Find your workspace\" button becomes dark with a light outline. The miniature Indian town is now at night: dark blue sky with a few stars, warm yellow lamplight in every kirana shop and window, small street lamps lit, the giant cardboard carton lit softly from below by the glowing green path at its foot. The tracker card becomes a dark card with light text and a bright mint-green \"₹21,152 recovered\". All text legible.",
+  "seed": 2540,
+  "size": 1024,
+  "reference": ".impeccable/mocks/decision/landing-diorama.png",
+  "source": ".impeccable/mocks/design/landing-08-dark.webp (local, gitignored)",
+  "created": "2026-10-04",
+  "postprocess": "WebP; the PNG original stays local in .impeccable/mocks/",
+  "use": "SC-25 design board: The hero in dark mode: the miniature town at night with lit shop windows, the carton lit from below by the green path, light headline text and mint-green buttons."
+}
