@@ -6,7 +6,12 @@
 
 **Which tool for what**
 
-- **UI or design work:** the `impeccable` skill; `PRODUCT.md` and `DESIGN.md` are its context. For a finished build, hand off to `impeccable-finish-reviewer`. To record the design system, use `impeccable-documenter`.
+- **UI or design work:** follow the `design-first` skill.
+  1. Design with `impeccable`, plus `ui-ux-pro-max` for product screens and the taste skills for the landing page. Use Qwen and LTX for imagery and motion.
+  2. Publish a review board to the surface's Claude Design project.
+  3. Write code only after the maintainer confirms.
+
+  `PRODUCT.md` and `DESIGN.md` are the context. For a finished build, hand off to `impeccable-finish-reviewer`. To record the design system, use `impeccable-documenter`.
 - **Accessibility:** run the suite first. For a manual WCAG audit, use the `accessibility-tester` agent with the `accessibility` and `web-design-guidelines` skills.
 - **Charts:** the `dataviz` skill. Validate palettes with its script; don't eyeball them.
 - **Images and motion:** `qwengen-bf16` for images (Qwen-Image) and `ltx-clip` for clips (LTX). Write the `.prompt.json` sidecar beside each asset.

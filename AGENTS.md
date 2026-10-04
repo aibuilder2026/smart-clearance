@@ -62,6 +62,14 @@ Local pages:
 - Commit with the repo's configured git identity, the maintainer's GitHub noreply address. Never override `user.email`.
 - No AI attribution lines in commit messages or PR descriptions.
 
+**Design**
+
+- A UI or UX change is designed before it is built, following the `design-first` skill (`.claude/skills/design-first/`):
+  1. Design it with impeccable, ui-ux-pro-max, the taste skills, and Qwen-Image or LTX where needed.
+  2. Publish a review board to the Claude Design project for the surface: app, demo, platform (landing page and console) or design system.
+  3. Write the code only after the maintainer confirms in the current request.
+- Small fixes that change no design skip this.
+
 **Code and builds**
 
 - In `design3/`, edit the `.jsx`. The `.js` beside it and everything in `dist/` are generated.
@@ -105,6 +113,7 @@ Local pages:
 | Skill | `accessibility` | `.claude/skills/` | WCAG guidance, with `references/WCAG.md`. |
 | Skill | `web-quality-audit` | `.claude/skills/` | Page quality audit. `scripts/analyze.sh` works on single HTML files only. |
 | Skill | `web-design-guidelines` | `.claude/skills/` | Reviews UI against Vercel's Web Interface Guidelines. |
+| Skill | `design-first` | `.claude/skills/` | Design before code: which design tool leads for each surface, the review board on the surface's Claude Design project, and building only after the maintainer's yes (SC-26). |
 | Config | jira-flow | `.claude/jira-flow.json`, `.claude/jira/taxonomy.md` | Jira project SC: site, issue types, transition ids, branch, commit and PR patterns, and ship rules. |
 | Config | Preview servers | `.claude/launch.json` | `voice-recorder`: runs `video/recorder/server.py` on port 8765. |
 | Tests | Accessibility suite | `design3/a11y/` | Playwright 1.63 with @axe-core/playwright 4.13. |
@@ -139,6 +148,8 @@ These are not in the repo; install your own to match.
 | --- | --- | --- |
 | `aitmpl` | User skill | Searches the aitmpl.com catalog when a skill, agent, MCP server or hook is missing. Read-only; it prints install lines but never runs them. |
 | `dataviz` | Bundled with Claude Code | Chart method and colour-palette validation. |
+| `ui-ux-pro-max` | User skill, with its companions `design`, `design-system`, `ui-styling`, `brand`, `banner-design`, `slides` | UX rules by priority (accessibility, touch, layout, forms) and a search script for them (`scripts/search.py --domain ux`). Leads with impeccable on app, demo and console screens. |
+| `design-taste-frontend` | User skill, with `high-end-visual-design`, `minimalist-ui`, `redesign-existing-projects`, `industrial-brutalist-ui`, `full-output-enforcement` | Guards against templated landing pages. By its own note, for landing pages and redesigns, not product screens; `redesign-existing-projects` audits a screen that exists. |
 
 **MCP servers**
 
