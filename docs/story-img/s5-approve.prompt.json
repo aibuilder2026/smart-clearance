@@ -1,0 +1,20 @@
+{
+ "tool": "qwen-image-2.1 bf16 (local MCP)",
+ "scene": "Story v6, scene 5, The plan, and one tap",
+ "aspect": "16:9",
+ "size": 1024,
+ "steps": 40,
+ "generate": {
+  "seed": 1005,
+  "prompt": "Flat vector editorial illustration with soft gradients and gentle shading, warm muted palette of cream, ochre, sage green, terracotta, clean shapes with no outlines, wide composition. An Indian woman in her early thirties, Priya, with long dark wavy hair, small gold earrings and a dark green kurta, stands by a sunny office window holding a glass of chai in one hand and her phone in the other, smiling as her thumb taps a glowing amber button on the phone screen. Behind her a wooden desk with a laptop, a notebook and a potted plant. Warm, decisive mood, no text, no logos, no letters on any screen."
+ },
+ "edits": [
+  {
+   "seed": 1006,
+   "prompt": "Remove the glass of chai floating in front of her and continue her green kurta where the glass was. Keep the woman, her face and hair, both hands, the phone, the glowing amber button, the desk, the laptop, the plant, the window and the illustration style exactly the same.",
+   "why": "the glass floated with no hand holding it"
+  }
+ ],
+ "people": "Priya Deshmukh, matching the cast portrait (fictional)",
+ "madeAt": "2026-10-04"
+}

@@ -1,0 +1,10 @@
+{
+ "tool": "qwen-image-2.1 bf16 (local MCP), edit_image",
+ "source": "07-marketplace.png (story v5 illustration)",
+ "prompt": "Change the man sitting at the laptop into an Indian man in his late fifties with neatly combed grey hair, a grey moustache, thin gold-rimmed spectacles, a cream kurta and a dark maroon Nehru waistcoat. Keep his pose and the camera angle, the desk, the laptop showing the purple marketplace listing, the room, the cartons, the window, the lighting and the flat illustration style exactly the same.",
+ "seed": 707,
+ "size": 1024,
+ "steps": 40,
+ "why": "Journey Map v4.1 moves the ExpireSoon buyer to Agrawal Wholesale, Raipur (territory guard)",
+ "madeAt": "2026-10-04"
+}

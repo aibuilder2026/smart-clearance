@@ -18,7 +18,7 @@ The production services planned in `PLAN.md` (`web/`, `agents/`, `infra/`) do no
 | --- | --- |
 | `design3/` | The current design: design system, guided demo, app prototype (an installable PWA) and the accessibility suite. Start with `design3/README.md`. |
 | `design2/`, `design/` | Earlier rounds, superseded by v3. Reference only. |
-| `docs/` | Story pages: `dobara-journey-map.html` (the source of every figure), the story, the tech stack and the walkthrough. |
+| `docs/` | Story pages: `dobara-journey-map.html` (Journey Map v4.1, the source of every figure), the story, the tech stack and the walkthrough. |
 | `video/` | The narrated walkthrough. `build.py` builds the page and `record.mjs` records it with Playwright; `recorder/` is a local voice-recording page. |
 | `PRODUCT.md`, `DESIGN.md` | Product context, and the design system of record. |
 | `PLAN.md` | The product plan (2 Oct 2026). |
@@ -176,3 +176,9 @@ From the Claude desktop app:
 - `.claude/jira-flow.json` names `.github/pull_request_template.md`, which is not in the repo, and there is no CI.
 - The `chrome-devtools` MCP server starts only in a new session, after a one-time approval.
 - The WCAG 2.2 criteria axe cannot check are untested.
+- The design v3 prototype still uses the Journey Map v4 figures, while the story and the Journey Map follow v4.1. SC-23 tracks the update. The v4 figures include:
+  - a −₹27,717 write-off;
+  - ₹2,611 of ITC;
+  - 12% GST;
+  - a buyer in Hyderabad;
+  - the D2C channel.

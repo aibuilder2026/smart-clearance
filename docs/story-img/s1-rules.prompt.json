@@ -1,0 +1,25 @@
+{
+ "tool": "qwen-image-2.1 bf16 (local MCP)",
+ "scene": "Story v6, scene 1, The rules, set once",
+ "aspect": "16:9",
+ "size": 1024,
+ "steps": 40,
+ "generate": {
+  "seed": 1001,
+  "prompt": "Flat vector editorial illustration with soft gradients and gentle shading, warm muted palette of cream, ochre, sage green, terracotta and plum, clean shapes with no outlines, wide composition. A bright meeting room in a Pune office: two Indian women sit side by side at a wooden table in front of an open laptop. On the left Priya, early thirties, long dark wavy hair, small gold earrings, dark green kurta, looking at the screen. On the right Anita, mid-forties, short dark bob, round black glasses, plum blouse, pointing at the laptop with a pen. On the wall behind them hangs a large simple map of India with four green pins. A notebook and two cups of chai on the table, a potted plant, warm morning light from a window. Calm, focused mood, no text, no logos, no letters on the screen."
+ },
+ "edits": [
+  {
+   "seed": 1002,
+   "prompt": "Move the green pins on the wall map so there are exactly four, all in central India: one in the centre of the country for Nagpur, one to its west for Pune, one to its north-west for Indore and one to its south-east for Hyderabad. Remove the pin in the north-east and the pin in the far south. Keep the two women, the laptop, the table, the room, the colours and the illustration style exactly the same.",
+   "why": "the first draw put pins in the far south and the north-east"
+  },
+  {
+   "seed": 1003,
+   "prompt": "Move the two upper green pins on the wall map down into the middle of India, so that all four pins form a small, tight cluster around the centre of the country, roughly level with the widest part of the map. Nothing in the north of the map. Keep the two women, the laptop, the table, the room, the colours and the illustration style exactly the same.",
+   "why": "two pins were still in north India; the four distributors are all in central India"
+  }
+ ],
+ "people": "Priya Deshmukh and Anita Rao, matching the cast portraits (fictional)",
+ "madeAt": "2026-10-04"
+}

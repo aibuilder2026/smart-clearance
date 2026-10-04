@@ -94,7 +94,45 @@
   .flow .node.money { border-color: var(--money); background: var(--money-soft); }
   .flow .arrow { align-self: center; color: var(--ink-3); font-size: 18px; flex: 0 0 auto; }
   .channels-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-top: 10px; }
-  .channels-row .node { padding: 10px 12px; }
+  .channels-row .node { padding: 10px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; min-width: 0; }
+  .channels-row .node b { font-family: var(--display); font-size: 15px; display: block; }
+  .channels-row .node span { font-size: 12.5px; color: var(--ink-2); }
+  .channels-row .node.es { border-color: var(--es); background: var(--es-soft); }
+
+  /* supply-chain diagram */
+  .scd { margin: 16px 0 0; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+  .scd-scroll { overflow-x: auto; padding: 14px 10px 4px; }
+  .scd-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; border-radius: 14px; }
+  .scd svg { display: block; width: 100%; min-width: 860px; height: auto; }
+  .scd figcaption { border-top: 1px solid var(--line); padding: 12px 18px 14px; font-size: 14px; color: var(--ink-2); }
+  .scd figcaption b { color: var(--ink); }
+  .scd .hint { display: none; font-family: var(--mono); font-size: 11px; color: var(--ink-2); padding: 0 12px 8px; }
+  @media (max-width: 1160px) { .scd .hint { display: block; } }
+  .scd .bx { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+  .scd .bx.key { stroke: var(--ink); stroke-width: 2; }
+  .scd .bx.sc { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+  .scd .bx.qc { fill: var(--surface-2); stroke: var(--urgent); stroke-dasharray: 6 5; }
+  .scd .bx.es { fill: var(--es-soft); stroke: var(--es); stroke-width: 1.75; }
+  .scd .bx.tagr { fill: var(--urgent-soft); stroke: var(--urgent); stroke-width: 1.25; }
+  .scd .t { font-family: var(--display); font-weight: 800; font-size: 15.5px; fill: var(--ink); }
+  .scd .s { font-family: var(--body); font-size: 12.5px; fill: var(--ink-2); }
+  .scd .s.red, .scd .m.red { fill: var(--urgent); }
+  .scd .s.grn { fill: var(--accent); }
+  .scd .s.amb, .scd .m.amb { fill: var(--money); }
+  .scd .m { font-family: var(--mono); font-size: 11.5px; fill: var(--ink-2); }
+  .scd .m.es { fill: var(--es); }
+  .scd .m.grn { fill: var(--accent); }
+  .scd .lane { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; fill: var(--ink-2); }
+  .scd .lane.red { fill: var(--urgent); }
+  .scd .ln { fill: none; stroke: var(--ink-2); stroke-width: 1.75; }
+  .scd .ln.grn { stroke: var(--accent); stroke-width: 2; }
+  .scd .ln.grn.dash { stroke-dasharray: 7 5; }
+  .scd .ln.amb { stroke: var(--money); stroke-width: 2; stroke-dasharray: 6 5; }
+  .scd .ln.red { stroke: var(--urgent); stroke-width: 1.75; stroke-dasharray: 6 5; }
+  .scd .gate { stroke: var(--urgent); stroke-width: 5; stroke-linecap: round; }
+  .scd .x { fill: var(--urgent); }
+  .scd .xg { fill: none; stroke: var(--surface); stroke-width: 2.4; stroke-linecap: round; }
+  .scd .ah.ink { fill: var(--ink-2); } .scd .ah.grn { fill: var(--accent); } .scd .ah.amb { fill: var(--money); } .scd .ah.red { fill: var(--urgent); }
 
   /* swimlane map */
   .mapwrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); margin-top: 16px; }
@@ -239,10 +277,11 @@
 <div class="wrap">
   <nav class="rail" aria-label="Sections">
     <div class="brand">Smart-Clearance</div>
-    <div class="kicker">Solution doc · v4</div>
+    <div class="kicker">Solution doc · v4.1</div>
     <ol>
       <li><a href="#name">Name & pitch</a></li>
       <li><a href="#client">The client</a></li>
+      <li><a href="#supply">Supply chain</a></li>
       <li><a href="#picture">One picture</a></li>
       <li><a href="#map">Journey map</a></li>
       <li><a href="#stages">Stage by stage</a></li>
@@ -258,7 +297,7 @@
 
   <main>
     <header id="name">
-      <div class="kicker">AI Hackathon · Retail & Commerce / Manufacturing track · Signed-off solution v4 · 2 Oct 2026</div>
+      <div class="kicker">AI Hackathon · Retail & Commerce / Manufacturing track · Signed-off solution v4 · 2 Oct 2026 · v4.1 adds the supply-chain view (quick commerce through distributors), logistics, the expiry policy and the territory guard; money rechecked for GST 2.0; consistency review 4 Oct</div>
       <h1>Smart-Clearance<span class="hi">हर कार्टन को दूसरा मौका</span></h1>
       <p class="tagline">Every near-expiry carton gets a second chance, chosen by AI. An agent that decides, batch by batch, where short-dated stock earns the most in the days it has left, then goes and does it.</p>
       <div class="meta">
@@ -291,20 +330,139 @@
       <p class="lede">One fictional B2B client, built in enough detail that every number in the demo has a source. Munchly Foods is a mid-size listed snacks company, so GST, BRSR and FSSAI all apply to it.</p>
       <div class="tablewrap">
         <table class="grid">
-          <tr><th style="width:200px">Munchly Foods Pvt Ltd</th><td>Pune. Listed on NSE (so BRSR Core applies). GSTIN 27AABCM1234F1Z5. FSSAI licence 10019022001234. ₹640 crore revenue, 8 demo SKUs: Masala Chips, Choco Cream Biscuits, Peanut Chikki, Instant Poha, Masala Oats, Mango Drink, plus a personal-care line (Glowra Face Wash, Coconut Hair Oil).</td></tr>
-          <tr><th>Distributor network</th><td>4 super-stockists in the demo: Rakesh Traders (Nagpur), Patil Distributors (Pune), Gupta &amp; Sons (Indore), Lakshmi Agencies (Hyderabad). 195 kiranas in their clusters. Stock data comes from a Bizom-style DMS export plus label photos taken in the Smart-Clearance app.</td></tr>
-          <tr><th>The problem, in numbers</th><td>Quick-commerce apps reject stock below their shelf-life gate (Blinkit 90+ days; Zepto and Instamart 60% of life). Munchly gets about ₹18 lakh of short-dated stock pushed back per quarter. Today 70% of it is destroyed, which also reverses the GST input credit on it.</td></tr>
+          <tr><th style="width:200px">Munchly Foods Ltd</th><td>Pune. Listed on NSE and among the top 1,000 listed companies by market cap, so BRSR applies. GSTIN 27AABCM1234F1Z5. FSSAI licence 10019022001234. ₹640 crore revenue, 8 demo SKUs: Masala Chips, Choco Cream Biscuits, Peanut Chikki, Instant Poha, Masala Oats, Mango Drink, plus a personal-care line (Glowra Face Wash, Coconut Hair Oil).</td></tr>
+          <tr><th>Distributor network</th><td>4 super-stockists in the demo: Rakesh Traders (Nagpur), Patil Distributors (Pune), Gupta &amp; Sons (Indore), Lakshmi Agencies (Hyderabad). 195 kiranas in their clusters. Each distributor also supplies the Blinkit, Zepto and Instamart warehouses in his city. Stock data comes from a Bizom-style DMS export plus label photos taken in the Smart-Clearance app.</td></tr>
+          <tr><th>Expiry policy</th><td>Distributors buy this pack from Munchly at ₹22. Munchly takes back expired stock at full credit and destroys it, so a distributor's short-dated stock ends up as Munchly's loss. Left alone, a distributor waits for the claim instead of selling at a loss, which is why Munchly, not the distributor, runs Smart-Clearance. The distributor still says yes: he gets his money within days instead of a claim settled weeks after expiry, with no claim paperwork.</td></tr>
+          <tr><th>The problem, in numbers</th><td>Quick-commerce apps reject stock below their shelf-life gate (Blinkit 90+ days; Zepto and Instamart 60% of life). Because Munchly's distributors supply those warehouses, short-dated stock stays in the distributor's godown. Munchly's distributors are left holding about ₹18 lakh of short-dated stock per quarter, which comes back to Munchly as expiry claims. Today 70% of it is destroyed, which also reverses the GST input credit on it.</td></tr>
         </table>
       </div>
       <div class="people">
         <div class="person"><div class="who">Priya Deshmukh</div><div class="role">Regional Supply-Chain Manager, Munchly · primary user</div><div class="want">Wants <b>one decision per batch</b> she can approve from her phone, with the money shown before she says yes.</div></div>
-        <div class="person"><div class="who">Rakesh bhai</div><div class="role">Owner, Rakesh Traders, Nagpur · distributor</div><div class="want">Runs on Tally and his phone. Signs in with his phone number. Wants <b>stock out of the godown</b> with as few taps as possible.</div></div>
-        <div class="person"><div class="who">Anita Rao</div><div class="role">Finance &amp; GST, Munchly</div><div class="want">Wants to <b>stop reversing ITC</b> on destroyed goods and get the invoice, credit note and e-way bill without chasing.</div></div>
+        <div class="person"><div class="who">Rakesh bhai</div><div class="role">Owner, Rakesh Traders, Nagpur · distributor to kiranas and to the Blinkit, Zepto and Instamart warehouses</div><div class="want">Runs on Tally and his phone. Signs in with his phone number. Wants <b>stock out of the godown</b> with as few taps as possible, and to end whole on the ₹22 he paid.</div></div>
+        <div class="person"><div class="who">Anita Rao</div><div class="role">Finance &amp; GST, Munchly</div><div class="want">Wants to <b>stop reversing ITC</b> on destroyed goods and get Munchly's credit note and ITC memo without chasing, with the distributor's invoice attached as evidence.</div></div>
         <div class="person"><div class="who">Vikram Sethi</div><div class="role">Sustainability &amp; BRSR, Munchly</div><div class="want">Wants a <b>waste-diverted number with evidence</b> for the BRSR Core Principle 6 table.</div></div>
-        <div class="person ext"><div class="who">Sri Venkateswara Traders</div><div class="role">Kirana wholesaler, Hyderabad · ExpireSoon buyer</div><div class="want">Wants <b>visible dates, a fair price and 24-hour dispatch</b>. Bids with a 15% token.</div></div>
+        <div class="person ext"><div class="who">Agrawal Wholesale</div><div class="role">Kirana wholesaler, Raipur · ExpireSoon buyer · outside Munchly's distributor territories</div><div class="want">Wants <b>visible dates, a fair price and 24-hour dispatch</b>. Bids with a 15% token.</div></div>
         <div class="person ext"><div class="who">38 kirana owners</div><div class="role">Nagpur, Wardha, Kamptee cluster</div><div class="want">Want a <b>scheme in Hindi as a notification</b> they can accept with one tap in the app.</div></div>
         <div class="person ext"><div class="who">Feeding India &amp; IFBN coordinators</div><div class="role">Surplus-food organisations (both supported)</div><div class="want">Want <b>packaged food with 15–21+ days left</b>, an FSSAI checklist and a pickup slot.</div></div>
       </div>
+    </section>
+
+    <section id="supply">
+      <h2>How Munchly's stock reaches the shelf</h2>
+      <p class="lede">Munchly sells only to its distributors. Each distributor supplies two kinds of customer: the kiranas in his beat, and the Blinkit, Zepto and Instamart warehouses in his city. Quick commerce turns away short-dated stock at inbound, so a batch that misses the gate stays in the distributor's godown.</p>
+      <figure class="scd">
+        <div class="scd-scroll" tabindex="0" role="region" aria-label="Supply-chain diagram, scrolls sideways on narrow screens">
+          <svg viewBox="0 0 1100 680" role="img" aria-labelledby="scd-cap">
+            <defs>
+              <marker id="ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="ah ink"/></marker>
+              <marker id="ah-grn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="ah grn"/></marker>
+              <marker id="ah-amb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="ah amb"/></marker>
+              <marker id="ah-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="ah red"/></marker>
+            </defs>
+
+            <text class="lane" x="640" y="44">GENERAL TRADE · OPEN, BUT TOO SLOW FOR THIS BATCH</text>
+            <text class="lane red" x="640" y="410">QUICK COMMERCE · CLOSED TO THIS BATCH</text>
+
+            <rect class="bx" x="20" y="230" width="200" height="140" rx="12"/>
+            <text class="t" x="36" y="258">Munchly Foods</text>
+            <text class="s" x="36" y="279">Pune plant</text>
+            <text class="s" x="36" y="298">makes and packs</text>
+            <text class="s" x="36" y="317">₹16 a packet to make</text>
+            <text class="s" x="36" y="336">sells only to its</text>
+            <text class="s" x="36" y="355">four distributors</text>
+
+            <path class="ln" d="M220 280 H316" marker-end="url(#ah-ink)"/>
+            <text class="m" x="228" y="270">₹22 + GST</text>
+            <path class="ln amb" d="M220 330 H316" marker-end="url(#ah-amb)"/>
+            <text class="m amb" x="226" y="349" style="font-size:11px">price support</text>
+
+            <rect class="bx sc" x="320" y="54" width="230" height="112" rx="12"/>
+            <text class="t" x="336" y="80">Smart-Clearance</text>
+            <text class="s grn" x="336" y="100">run by Munchly, acts here</text>
+            <text class="s" x="336" y="119">routes the 1,360 at risk to</text>
+            <text class="s" x="336" y="138">kiranas, ExpireSoon, staff</text>
+            <text class="s" x="336" y="157">sale, food bank, write-off</text>
+            <path class="ln grn" d="M435 166 V222" marker-end="url(#ah-grn)"/>
+            <text class="m grn" x="443" y="199">photo · plan</text>
+
+            <rect class="bx key" x="320" y="225" width="230" height="150" rx="12"/>
+            <text class="t" x="336" y="252">Rakesh Traders' godown</text>
+            <text class="s" x="336" y="272">Nagpur · one of 4 distributors</text>
+            <text class="s" x="336" y="291">buys at ₹22 + 5% GST</text>
+            <rect class="bx tagr" x="332" y="303" width="206" height="58" rx="8"/>
+            <text class="m red" x="344" y="326">MF-2409-117 · 1,840 packets</text>
+            <text class="m red" x="344" y="346">47 days to best-before</text>
+
+            <path class="ln grn dash" d="M550 96 H636" marker-end="url(#ah-grn)"/>
+            <text class="m grn" x="554" y="86" style="font-size:11px">scheme offer</text>
+            <path class="ln" d="M550 252 H585 V130 H636" marker-end="url(#ah-ink)"/>
+            <text class="m" x="592" y="200">weekly beat</text>
+
+            <rect class="bx" x="640" y="62" width="230" height="104" rx="12"/>
+            <text class="t" x="656" y="88">195 kiranas</text>
+            <text class="s" x="656" y="108">salesman's weekly beat</text>
+            <text class="s" x="656" y="127">Rakesh's van delivers</text>
+            <text class="s" x="656" y="146">this SKU: 12 packets a day</text>
+
+            <path class="ln" d="M870 114 H896" marker-end="url(#ah-ink)"/>
+            <rect class="bx" x="900" y="78" width="180" height="72" rx="12"/>
+            <text class="t" x="916" y="106">Shoppers</text>
+            <text class="s" x="916" y="127">pay up to MRP ₹30</text>
+
+            <path class="ln grn" d="M550 300 H896" marker-end="url(#ah-grn)"/>
+            <text class="m grn" x="566" y="292">772 packets · on the buyer's own truck</text>
+            <text class="m grn" x="566" y="319">listing hidden in Munchly's territories</text>
+            <rect class="bx es" x="900" y="248" width="180" height="104" rx="12"/>
+            <text class="t" x="916" y="274">ExpireSoon buyer</text>
+            <text class="s" x="916" y="294">Agrawal Wholesale,</text>
+            <text class="s" x="916" y="313">Raipur: outside every</text>
+            <text class="s" x="916" y="332">Munchly territory</text>
+
+            <path class="ln" d="M550 345 H585 V484 H626" marker-end="url(#ah-ink)"/>
+            <text class="m" x="592" y="380">purchase orders</text>
+            <rect class="bx qc" x="640" y="420" width="230" height="128" rx="12"/>
+            <line class="gate" x1="640" y1="430" x2="640" y2="538"/>
+            <circle class="x" cx="640" cy="484" r="11"/>
+            <path class="xg" d="M635 479 L645 489 M645 479 L635 489"/>
+            <text class="t" x="660" y="446">Q-commerce warehouses</text>
+            <text class="s" x="660" y="466">Blinkit, Zepto, Instamart</text>
+            <text class="s" x="660" y="485">ship against purchase orders</text>
+            <text class="s red" x="660" y="507">inbound check: Blinkit 90+ d,</text>
+            <text class="s red" x="660" y="526">Zepto and Instamart 110+ d</text>
+
+            <path class="ln" d="M870 450 H896" marker-end="url(#ah-ink)"/>
+            <rect class="bx" x="900" y="420" width="180" height="60" rx="12"/>
+            <text class="t" x="916" y="445">Dark stores</text>
+            <text class="s" x="916" y="465">pack the app orders</text>
+            <path class="ln" d="M990 480 V494" marker-end="url(#ah-ink)"/>
+            <rect class="bx" x="900" y="496" width="180" height="60" rx="12"/>
+            <text class="t" x="916" y="521">App customers</text>
+            <text class="s" x="916" y="541">10-minute delivery</text>
+
+            <path class="ln red" d="M640 548 C640 612 520 612 520 381" marker-end="url(#ah-red)"/>
+            <text class="m red" x="662" y="582">47 days left: turned back at inbound</text>
+
+            <path class="ln red" d="M370 377 V640 H120 V374" marker-end="url(#ah-red)"/>
+            <text class="m red" x="132" y="664">unsold at expiry: returned to Munchly for ₹22 credit</text>
+            <text class="s red" x="140" y="556">Munchly destroys it and</text>
+            <text class="s red" x="140" y="575">pays the expiry claim:</text>
+            <text class="t" x="140" y="600" style="fill: var(--urgent)">₹34,490</text>
+            <text class="s red" x="212" y="600">on 1,360 packets</text>
+
+            <line class="ln" x1="640" y1="628" x2="676" y2="628"/>
+            <text class="m" x="686" y="632">goods move</text>
+            <line class="ln grn" x1="790" y1="628" x2="826" y2="628"/>
+            <text class="m" x="836" y="632">Smart-Clearance routes</text>
+            <line class="ln amb" x1="640" y1="656" x2="676" y2="656"/>
+            <text class="m" x="686" y="660">money</text>
+            <line class="ln red" x1="790" y1="656" x2="826" y2="656"/>
+            <text class="m" x="836" y="660">stuck, returned, destroyed</text>
+          </svg>
+        </div>
+        <div class="hint">Scroll sideways to see the whole chain.</div>
+        <figcaption id="scd-cap"><b>One batch, two lanes, one gate.</b> Goods move from Munchly through Rakesh Traders' godown to the kiranas and to the Blinkit, Zepto and Instamart warehouses. Red dashed lines are what happens today: the shelf-life check turns the batch back at inbound, and whatever is unsold at expiry returns to Munchly for full credit and is destroyed. Green lines are Smart-Clearance's routes from the godown; amber is the price support Munchly pays Rakesh instead of the claim.</figcaption>
+      </figure>
+      <p class="note"><b>Why the batch is stuck.</b> Rakesh Traders normally sends part of every batch to the Blinkit, Zepto and Instamart warehouses in Nagpur, and anything they reject at inbound comes back to his godown. With 47 days left this batch cannot go there at all, and his kiranas sell only 12 units a day. Smart-Clearance steps in at the godown and routes the 1,360 units that will not sell in time. Blinkit, Zepto and Instamart are never a destination in the plan.</p>
     </section>
 
     <section id="picture">
@@ -317,19 +475,21 @@
         <div class="arrow">→</div>
         <div class="node agent"><b>Label verified</b><span>Vision Agent reads the carton photo taken in the app</span></div>
         <div class="arrow">→</div>
-        <div class="node agent"><b>Router compares channels</b><span>₹ recovered vs days left, with the GST-aware write-off as the baseline</span></div>
+        <div class="node agent"><b>Valuer + Router compare channels</b><span>₹ recovered vs days left, with the GST-aware write-off as the baseline</span></div>
+        <div class="arrow">→</div>
+        <div class="node"><b>Priya approves</b><span>One tap. Nothing goes out before it.</span></div>
       </div>
       <div class="channels-row">
         <div class="node es"><b>ExpireSoon</b><span>Online B2B listing, bids, chat</span></div>
         <div class="node"><b>Kirana cluster</b><span>Push offer in the app, van delivery</span></div>
-        <div class="node"><b>Discount D2C / Staff</b><span>Brand clearance page, HR notice</span></div>
+        <div class="node"><b>Nagpur staff sale</b><span>UPI QR at Rakesh's godown</span></div>
         <div class="node"><b>Food bank</b><span>Feeding India or IFBN, FSSAI checklist</span></div>
-        <div class="node" style="border-style:dashed"><b>Write-off</b><span>Last resort, with ITC reversal booked</span></div>
+        <div class="node" style="border-style:dashed;border-color:var(--urgent)"><b>Write-off</b><span>Last resort, with ITC reversal booked</span></div>
       </div>
       <div class="flow">
         <div class="node agent"><b>Agents execute</b><span>Lister, Outreach, Negotiator, Donation agents post, message and close deals</span></div>
         <div class="arrow">→</div>
-        <div class="node money"><b>Settle &amp; paper</b><span>Invoice, e-way bill check, credit note, ITC memo, FSSAI checklist</span></div>
+        <div class="node money"><b>Settle &amp; paper</b><span>Rakesh's invoice, e-way bill check, price-support credit note, ITC memo</span></div>
         <div class="arrow">→</div>
         <div class="node money"><b>Finance &amp; ESG dashboard</b><span>₹ recovered, ITC protected, BRSR waste line, meals</span></div>
       </div>
@@ -349,46 +509,46 @@
               <th><span class="n">STAGE 4</span>Value<span class="t">day 0 · 09:21</span></th>
               <th><span class="n">STAGE 5</span>Decide<span class="t">day 0 · 09:22</span></th>
               <th><span class="n">STAGE 6</span>Approve<span class="t">day 0 · 09:40</span></th>
-              <th><span class="n">STAGE 7</span>Execute<span class="t">day 0–3</span></th>
-              <th><span class="n">STAGE 8</span>Settle<span class="t">day 3–7</span></th>
+              <th><span class="n">STAGE 7</span>Execute<span class="t">day 0–14</span></th>
+              <th><span class="n">STAGE 8</span>Settle<span class="t">day 3–7 · true-up 29 Oct</span></th>
               <th><span class="n">STAGE 9</span>Report<span class="t">monthly · quarterly</span></th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td class="lane">Who acts<small>people</small></td>
-              <td>Priya, Anita (guardrails)</td>
+              <td>Priya, Anita (guardrails), Rakesh bhai (one-time permission)</td>
               <td>Nobody. The Watcher runs.</td>
               <td>Rakesh bhai (one photo)</td>
               <td>Nobody. Valuer runs.</td>
               <td>Router proposes</td>
               <td>Priya (one tap)</td>
-              <td>Buyers, kiranas, food bank respond</td>
-              <td>Anita reviews, Rakesh bhai dispatches</td>
+              <td>ExpireSoon buyer and kiranas respond; Rakesh gets a push when the buyer wins</td>
+              <td>Rakesh issues his invoice and dispatches; Anita reviews Munchly's credit note</td>
               <td>Vikram, Anita, CFO</td>
             </tr>
             <tr>
               <td class="lane">User sees / does<small>front stage</small></td>
-              <td>Connects DMS export, sets channel allow-list, floor price per category (e.g. 35% of MRP), donation partners, brand-safety rules.</td>
+              <td>Connects DMS export, sets channel allow-list, floor price per category (e.g. 35% of MRP), donation partners, territory guard, return window, approval policy, brand-safety rules. Rakesh gives his one-time permission in the app.</td>
               <td>Push notification + dashboard alert: "MF-2409-117 Masala Chips: blocked from q-commerce, 1,360 units will not sell by 18 Nov."</td>
               <td>Rakesh bhai gets a Hindi push: "carton ka photo bhejo". He taps it, the camera opens, one picture.</td>
               <td>Channel table appears: price, days to clear, net ₹ per channel, with ineligible channels greyed and the reason shown.</td>
               <td>A recommended split with plain-language reasoning and one alternative ("all to ExpireSoon") side by side.</td>
               <td>Taps <b>Approve</b> in the app, from the push or the dashboard. Nothing is published before this.</td>
               <td>Watches the agent timeline: listing live, kirana orders ticking up, bid countered, award.</td>
-              <td>Document pack ready: invoice, e-way bill check, credit note, ITC memo. Dispatch calendar updated.</td>
+              <td>Document pack ready: Rakesh's invoice (drafted for him to issue), e-way bill check, price-support credit note, ITC memo. Dispatch calendar updated.</td>
               <td>Finance &amp; ESG dashboard; one click exports the BRSR waste table and the GST memo.</td>
             </tr>
             <tr>
               <td class="lane">Agents do<small>back stage</small></td>
-              <td>Data Agent maps DMS columns, loads BigQuery, back-fills 90 days of sell-through by pincode.</td>
+              <td>Data Agent maps DMS columns, loads BigQuery, back-fills 90 days of sell-through by pincode and by shop.</td>
               <td>Watcher checks each q-commerce gate, projects sell-through to expiry, raises <code>batch.at_risk</code>.</td>
               <td>Vision Agent (Gemini) reads batch no., MFG, best-before, MRP from the photo; reconciles with the DMS record.</td>
-              <td>Valuer prices 6 channels against days left, capacities and floor; computes the GST-aware write-off baseline.</td>
+              <td>Valuer prices 5 channels against days left, capacities and floor; computes the GST-aware write-off baseline.</td>
               <td>Router allocates units greedily by net ₹/unit under capacity and time limits; writes the explanation.</td>
               <td>Waits. Logs the approval with who, when, channel.</td>
-              <td>Lister posts to ExpireSoon; Outreach pushes a Hindi offer to 38 kiranas' phones; Negotiator handles bids and chat; Donation Agent books pickup.</td>
-              <td>Paperwork Agent drafts invoice, checks e-way bill threshold, issues credit note, writes ITC memo and FSSAI checklist.</td>
+              <td>Lister posts to ExpireSoon; Outreach pushes a Hindi offer to 38 kiranas' phones, then on day 7 reads the salesman's shelf counts and recommends pick-ups; Negotiator handles bids and chat; Donation Agent idle for this batch (books Feeding India for the Mango Drink example).</td>
+              <td>Paperwork Agent drafts Rakesh's invoice, checks e-way bill threshold, issues the price-support credit note, writes ITC memo and FSSAI checklist.</td>
               <td>Impact Agent posts the ledger: ₹ recovered, ITC retained, kg diverted, CO₂e, meals; builds BRSR rows.</td>
             </tr>
             <tr>
@@ -399,15 +559,15 @@
               <td>Dashboard</td>
               <td>Dashboard, push summary</td>
               <td>Push → approve sheet, dashboard button</td>
-              <td>ExpireSoon (web), push + in-app offer page for kiranas, HR channel, food-bank partner</td>
-              <td>Dashboard documents, email to finance</td>
+              <td>ExpireSoon (web), push + in-app offer page for kiranas, push to Rakesh at award, food-bank partner (Mango Drink example)</td>
+              <td>Dashboard documents, invoice draft to Rakesh's app, email to finance</td>
               <td>Dashboard, CSV/PDF export</td>
             </tr>
             <tr>
               <td class="lane">Data &amp; tools<small>mocked in prototype</small></td>
               <td>BigQuery (synthetic 8 SKUs, 4 distributors), Pub/Sub</td>
               <td>Gate rules table, sell-through model</td>
-              <td>Gemini vision (mocked response with confidence)</td>
+              <td>Gemini vision (live call, recorded fallback)</td>
               <td>Price history by category and days-left, GST rates per HSN, EPR factors</td>
               <td>Allocation solver, guardrails</td>
               <td>Approval log</td>
@@ -418,21 +578,21 @@
             <tr class="money">
               <td class="lane">Money &amp; tax moment<small>highlighted on screen</small></td>
               <td>Floor price and "true cost of write-off" formula shown during setup.</td>
-              <td><b>₹40,800</b> at MRP at risk; write-off would cost <b>−₹27,717</b> incl. ITC reversal.</td>
+              <td><b>₹40,800</b> at MRP at risk; destroying it would hit P&amp;L by <b>−₹26,330</b> incl. ITC reversal.</td>
               <td>MRP ₹30 confirmed from the pack: prices anchor to a verified number.</td>
-              <td>Per channel: <b>net ₹/unit</b> and whether ITC is retained (sale) or reversed (destroy, donation-indicative).</td>
-              <td><b>₹21,770</b> net recovered vs <b>−₹27,717</b> write-off: swing <b>₹49,487</b>. 54% of MRP.</td>
-              <td>Approval screen repeats the swing and the ITC retained (<b>₹2,611</b>).</td>
+              <td>Per channel: <b>net ₹/unit</b> and whether ITC is retained (sale) or reversed (destroy, donate).</td>
+              <td><b>₹21,770</b> net recovered (53% of MRP). P&amp;L <b>+₹10</b> vs <b>−₹26,330</b> if destroyed: swing <b>₹26,340</b>.</td>
+              <td>Approval screen repeats net recovered, the swing and the ITC retained (<b>₹1,224</b>).</td>
               <td>Negotiator shows planned vs actual as bids land (₹15 → ₹14.2/unit).</td>
-              <td>ITC memo: "no reversal u/s 17(5)(h), goods supplied under invoice". E-way bill: not required (&lt; ₹50,000).</td>
+              <td>ITC memo: "no reversal u/s 17(5)(h), goods supplied under invoice". E-way bill: not required (&lt; ₹50,000). Price support to Rakesh: ₹8,768, including the ₹394 van and listing fee.</td>
               <td>Month: ₹ recovered, ITC protected, disposal avoided, EPR avoided; BRSR Principle 6 line with evidence.</td>
             </tr>
             <tr>
               <td class="lane">Pain → relief<small>emotion</small></td>
               <td><span class="pain">"Another tool to feed"</span> → <span class="relief">15-minute setup from an export</span></td>
-              <td><span class="pain">"We find out when it's already expired"</span> → <span class="relief">47 days of warning</span></td>
+              <td><span class="pain">"We find out when it's already expired"</span> → <span class="relief">47 days of warning on the first run, more once it runs daily</span></td>
               <td><span class="pain">"DMS data is wrong half the time"</span> → <span class="relief">the photo is the truth</span></td>
-              <td><span class="pain">"We just dump it to whoever answers"</span> → <span class="relief">six options, priced</span></td>
+              <td><span class="pain">"We just dump it to whoever answers"</span> → <span class="relief">five options, priced</span></td>
               <td><span class="pain">"Who decides?"</span> → <span class="relief">a recommendation with reasons</span></td>
               <td><span class="pain">"I don't trust a bot to sell my brand"</span> → <span class="relief">nothing goes out without a tap</span></td>
               <td><span class="pain">"Listing and chasing takes days"</span> → <span class="relief">live in minutes, agent chases</span></td>
@@ -459,7 +619,7 @@
 
     <section id="stages">
       <h2>Stage by stage, with the demo batch</h2>
-      <p class="lede">The demo follows one batch end to end: <span class="mono">MF-2409-117</span>, Munchly Masala Chips 150 g, 1,840 units at Rakesh Traders' godown in Nagpur, best-before in 47 days, MRP ₹30, selling 12 units a day in that cluster.</p>
+      <p class="lede">The demo follows one batch end to end: <span class="mono">MF-2409-117</span>, Munchly Masala Chips 150 g, 1,840 units at Rakesh Traders' godown in Nagpur, best-before in 47 days, MRP ₹30, selling 12 units a day in that cluster. Day 0 is 2 Oct 2026, the Watcher's first run after Munchly onboards.</p>
       <div class="stages">
 
         <div class="stage">
@@ -472,6 +632,10 @@
               <li>Channel allow-list per category (personal care never goes to food banks; premium gift packs never to staff sale).</li>
               <li>Floor price: never below 35% of MRP for snacks and biscuits, 40% for staples, 30% for beverages.</li>
               <li>Donation partners: Feeding India and India FoodBanking Network, both with their intake rules.</li>
+              <li>Territory guard: ExpireSoon listings are hidden from buyers inside Munchly's distributor territories, matched by pincode (Nagpur with Wardha and Kamptee, Pune, Indore, Hyderabad), so clearance stock never undercuts Munchly's own distributors.</li>
+              <li>Distributor permission: Rakesh Traders gives a one-time permission in the app. Within Munchly's price floors, Smart-Clearance may, in his name, list his Munchly stock on ExpireSoon, send scheme offers to his kiranas, draft his invoices and book dispatch slots in his calendar. Everything shows in his app, he can pause any of it, and he gets a push at approval and when a buyer wins.</li>
+              <li>Return window for scheme stock: kiranas can return unsold scheme packs to the distributor's salesman until 20 days before best-before. Returns reach the godown with at least 20 days left, in time for the Nagpur staff sale or Feeding India (15+ days), never as dead stock. IFBN needs 21+ days, so it does not take returns.</li>
+              <li>Planning assumptions, editable: the 3.5× scheme uplift and the ₹0.50 van rate.</li>
               <li>Approval policy: first 10 routes per channel need a tap; after that the agent runs within guardrails and reports.</li>
             </ul>
           </div>
@@ -488,15 +652,15 @@
             <div class="who">Watcher Agent · day 0, 09:00 · Pub/Sub <span class="mono">batch.at_risk</span></div>
             <p>Every morning the Watcher runs every batch through the three quick-commerce gates and projects sell-through to the best-before date. Retailers will not take stock in the last week, so the projection stops seven days before expiry.</p>
             <ul>
-              <li>Blinkit needs 90+ days: batch has 47. Blocked.</li>
-              <li>Zepto and Instamart need 60% of a 365-day life (219 days). Blocked.</li>
-              <li>Sell-through 12 a day × 40 usable days = 480 units will sell. <b>1,360 units at risk</b>, ₹40,800 at MRP.</li>
+              <li>Blinkit needs 90+ days: batch has 47. Rakesh can no longer ship it to the Blinkit warehouse in Nagpur.</li>
+              <li>Zepto and Instamart need 60% of a 184-day life (110 days). Blocked there too.</li>
+              <li>Only his kiranas are left: 12 a day × 40 usable days = 480 units will sell. <b>1,360 units at risk</b>, ₹40,800 at MRP.</li>
             </ul>
             <div class="bubble">Priya ji, Nagpur godown mein Masala Chips 150g (batch MF-2409-117) ki 1,360 units 18 Nov se pehle nahi bikengi. Q-commerce block hai. Route dekhne ke liye tap karein.<small>Push notification · Smart-Clearance → Priya · 09:00</small></div>
           </div>
           <div class="side">
             <div class="callout urgent"><span class="lbl">Countdown</span>47 days left · 1,360 of 1,840 units at risk</div>
-            <div class="callout money"><span class="lbl">If destroyed</span><span class="v">−₹27,717</span>₹21,760 inventory + ₹2,611 ITC reversal + ₹2,040 disposal + ₹1,306 EPR</div>
+            <div class="callout money"><span class="lbl">If destroyed</span><span class="v">−₹26,330</span>₹21,760 inventory + ₹1,224 ITC reversal + ₹2,040 disposal + ₹1,306 EPR</div>
             <div class="callout screen"><span class="lbl">Prototype</span>S1 Command Center: KPI tiles, at-risk list with countdown bars and gate chips.</div>
           </div>
         </div>
@@ -506,7 +670,7 @@
           <div>
             <h3>Rakesh bhai sends one photo; Gemini reads the carton</h3>
             <div class="who">Vision Agent · Rakesh bhai · day 0, 09:20</div>
-            <p>Distributor stock data in India is often stale, so before any money is quoted the agent asks for the truth from the godown floor. Rakesh bhai taps the notification and photographs the carton label with the app's camera. Gemini extracts batch number, MFG date, best-before and MRP, with a confidence score, and reconciles it with the DMS record.</p>
+            <p>Distributor stock data in India is often stale, so before any price is set the agent asks for the truth from the godown floor. Rakesh bhai taps the notification and photographs the carton label with the app's camera. Gemini extracts batch number, MFG date, best-before and MRP, with a confidence score, and reconciles it with the DMS record.</p>
             <ul>
               <li>Batch MF-2409-117 · MFG 18 May 2026 · Best before 18 Nov 2026 · MRP ₹30.00 · confidence 0.97. Matches.</li>
               <li>If it did not match, the agent would re-run the risk on the photo's date and flag the DMS row for correction.</li>
@@ -523,7 +687,7 @@
         <div class="stage">
           <div class="num">4<small>VALUE</small></div>
           <div>
-            <h3>The Valuer prices six channels against the clock</h3>
+            <h3>The Valuer prices five channels against the clock</h3>
             <div class="who">Valuer Agent · day 0, 09:21 · BigQuery price history + GST and EPR factors</div>
             <p>For the 1,360 at-risk units the Valuer builds one table: what each channel pays, how long it takes, how many units it can absorb, what it costs to use, and whether the GST input credit survives. The write-off is not "zero"; it is a negative number.</p>
             <div class="tablewrap">
@@ -531,15 +695,14 @@
                 <tr><th>Channel</th><th>Needs</th><th class="num">Price</th><th class="num">Net ₹/unit</th><th class="num">Capacity</th><th>Clears in</th><th>ITC</th></tr>
                 <tr><td>ExpireSoon listing</td><td>30+ days left</td><td class="num">₹15.00 (50%)</td><td class="num">15.00</td><td class="num">unlimited</td><td>5–9 days</td><td><span class="tag ok">retained</span></td></tr>
                 <tr><td>Kirana cluster push</td><td>20+ days</td><td class="num">₹18.00 (60%)</td><td class="num">17.50</td><td class="num">588</td><td>10–14 days</td><td><span class="tag ok">retained</span></td></tr>
-                <tr><td>Discount D2C</td><td>25+ days</td><td class="num">₹15.00 (50%)</td><td class="num">12.00</td><td class="num">147</td><td>7–12 days</td><td><span class="tag ok">retained</span></td></tr>
-                <tr><td>Staff sale</td><td>any</td><td class="num">₹12.00 (40%)</td><td class="num">12.00</td><td class="num">150</td><td>2–3 days</td><td><span class="tag ok">retained</span></td></tr>
-                <tr><td>Food bank donation</td><td>15+ days, food</td><td class="num">₹0</td><td class="num">−0.50</td><td class="num">unlimited</td><td>1–2 days</td><td><span class="tag">reversed · indicative</span></td></tr>
-                <tr class="neg"><td>Write-off (destroy)</td><td>—</td><td class="num">₹0</td><td class="num">−20.38</td><td class="num">—</td><td>—</td><td><span class="tag no">reversed</span></td></tr>
+                <tr><td>Nagpur staff sale</td><td>until best-before</td><td class="num">₹12.00 (40%)</td><td class="num">12.00</td><td class="num">50</td><td>2–3 days</td><td><span class="tag ok">retained</span></td></tr>
+                <tr><td>Food bank donation</td><td>15+ days, food</td><td class="num">₹0</td><td class="num">−1.40</td><td class="num">unlimited</td><td>1–2 days</td><td><span class="tag no">reversed</span></td></tr>
+                <tr class="neg"><td>Write-off (destroy)</td><td>—</td><td class="num">₹0</td><td class="num">−19.36</td><td class="num">—</td><td>—</td><td><span class="tag no">reversed</span></td></tr>
               </table>
             </div>
           </div>
           <div class="side">
-            <div class="callout money"><span class="lbl">The number nobody shows today</span><span class="v">−₹20.38</span>per unit destroyed: ₹16 cost + ₹1.92 ITC reversal + ₹1.50 disposal + ₹0.96 EPR</div>
+            <div class="callout money"><span class="lbl">The number nobody shows today</span><span class="v">−₹19.36</span>per unit destroyed: ₹16 cost + ₹0.90 ITC reversal + ₹1.50 disposal + ₹0.96 EPR</div>
             <div class="callout screen"><span class="lbl">Prototype</span>S2 Route Room: channel table with eligibility reasons, bar chart of net ₹ per channel with the write-off bar below zero. Table view toggle for accessibility.</div>
           </div>
         </div>
@@ -551,15 +714,15 @@
             <div class="who">Router Agent · day 0, 09:22</div>
             <p>The Router fills the best-paying channel to its capacity, then the next, until the at-risk units are placed. Anything that cannot be placed before expiry goes to a food bank; only after that, write-off. It writes its reasoning in plain language and shows one alternative so Priya can disagree with something concrete.</p>
             <ul>
-              <li><b>588 units → kirana cluster</b> at ₹18: the best price, and it keeps stock inside Munchly's own trade. Capped by what 38 kiranas can move in 14 days with a buy-10-get-2 scheme.</li>
+              <li><b>588 units → kirana cluster</b> at ₹18 effective (₹21.60 a pack, 2 free with every 10): the best price, and it keeps stock inside Munchly's own trade. Capped by what 38 kiranas can move in 14 days with a buy-10-get-2 scheme, as extra sales on top of their normal 12 a day (already counted in the 480).</li>
               <li><b>772 units → ExpireSoon</b> at ₹15 (reserve ₹13.50): unlimited depth, 5–9 days, buyer pays freight.</li>
-              <li>D2C and staff sale are eligible but pay less per unit than ExpireSoon, so they get nothing this time.</li>
+              <li>The Nagpur staff sale is eligible but pays less per unit than ExpireSoon, so it gets nothing this time.</li>
               <li>Alternative shown: all 1,360 to ExpireSoon, net ₹20,300. ₹1,470 less, and nothing stays in own trade.</li>
             </ul>
           </div>
           <div class="side">
-            <div class="callout money"><span class="lbl">Recommended plan</span><span class="v">₹21,770 net</span>₹22,164 gross, 54% of MRP, vs −₹27,717 if destroyed</div>
-            <div class="callout money"><span class="lbl">Swing</span><span class="v">₹49,487</span>on one batch of chips</div>
+            <div class="callout money"><span class="lbl">Recommended plan</span><span class="v">₹21,770 net</span>53% of MRP (₹22,164 gross). P&amp;L +₹10 vs −₹26,330 if destroyed</div>
+            <div class="callout money"><span class="lbl">Swing</span><span class="v">₹26,340</span>better than destroying, on one batch of chips</div>
             <div class="callout screen"><span class="lbl">Prototype</span>S2: stacked split bar, "why" text, alternative card, money panel.</div>
           </div>
         </div>
@@ -569,11 +732,11 @@
           <div>
             <h3>Priya approves with one tap</h3>
             <div class="who">Priya · day 0, 09:40 · push or dashboard</div>
-            <p>Nothing is listed, messaged or shipped before this tap. The approval screen repeats the three numbers that matter (net recovered, swing, ITC retained) and the two actions about to happen (list on ExpireSoon, message 38 kiranas). After ten approved routes per channel, Priya can let the agent run inside the guardrails and only see the summary.</p>
-            <div class="bubble">Plan for MF-2409-117: 588 units kirana (₹18), 772 units ExpireSoon (₹15). Net ₹21,770, vs −₹27,717 write-off. GST ITC ₹2,611 safe. Tap to review and approve.<small>Push · Smart-Clearance → Priya · 09:23 · Priya taps Approve at 09:40</small></div>
+            <p>Nothing is listed, messaged or shipped before this tap. The approval screen repeats the three numbers that matter (net recovered, swing, ITC retained) and the two actions about to happen (list on ExpireSoon, message 38 kiranas). Rakesh gets the same plan in his app and can pause it. After ten approved routes per channel, Priya can let the agent run inside the guardrails and only see the summary.</p>
+            <div class="bubble">Plan for MF-2409-117: 588 units kirana (₹18), 772 units ExpireSoon (₹15). Net ₹21,770, ₹26,340 better than write-off. GST ITC ₹1,224 safe. Tap to review and approve.<small>Push · Smart-Clearance → Priya · 09:23 · Priya taps Approve at 09:40</small></div>
           </div>
           <div class="side">
-            <div class="callout money"><span class="lbl">Repeated on the approval screen</span>Net ₹21,770 · Swing ₹49,487 · ITC retained ₹2,611</div>
+            <div class="callout money"><span class="lbl">Repeated on the approval screen</span>Net ₹21,770 · Swing ₹26,340 · ITC retained ₹1,224</div>
             <div class="callout screen"><span class="lbl">Prototype</span>S2: Approve sheet opened from the push, with the phone showing the notification.</div>
           </div>
         </div>
@@ -582,17 +745,18 @@
           <div class="num">7<small>EXECUTE</small></div>
           <div>
             <h3>Four agents go to work, in parallel</h3>
-            <div class="who">Lister · Outreach · Negotiator · Donation · day 0 to day 3</div>
+            <div class="who">Lister · Outreach · Negotiator · Donation · day 0 to 14 (shelf check on day 7)</div>
             <ul>
-              <li><b>Lister</b> builds the ExpireSoon listing (title, batch, best-before, MRP ₹30, offer ₹15, 772 units, Nagpur, ambient storage, the label photo, invoice available) and calls <span class="mono">POST /v1/listings</span>. In the prototype that call is mocked; the response is a listing ID and a URL that opens the ExpireSoon page.</li>
-              <li><b>Outreach</b> picks the 38 kiranas with the best 30-day sell-through for this SKU and sends a Hindi push notification with the scheme that opens an in-app offer page with a quantity stepper. Orders flow to Rakesh bhai's van route. 14 kiranas order 588 units within about two hours.</li>
-              <li><b>Negotiator</b> watches the listing. Sri Venkateswara Traders bids ₹13.00 for all 772 (below the ₹13.50 reserve). The agent counters at ₹14.20 with a 24-hour dispatch promise taken from Rakesh bhai's calendar. Buyer accepts, pays the 15% token (₹1,644), balance due in 48 hours.</li>
-              <li><b>Donation</b> is idle for this batch. For the Mango Drink batch (22 days left) it books Feeding India in Hyderabad, because IFBN needs 21+ days and 100+ units and that batch's donation remainder is 58 units.</li>
+              <li><b>Lister</b> builds the ExpireSoon listing (title, batch, best-before, MRP ₹30, offer ₹15, 772 units, Nagpur, ambient storage, the label photo, invoice available) under Rakesh Traders' seller account, using his one-time permission and visible only to buyers outside Munchly's distributor territories, and calls <span class="mono">POST /v1/listings</span>. The listing also shows in Rakesh's app. In the prototype that call is mocked; the response is a listing ID and a URL that opens the ExpireSoon page.</li>
+              <li><b>Outreach</b> picks the 38 kiranas with the best 30-day sell-through for this SKU and sends a Hindi push notification with the scheme that opens an in-app offer page with a quantity stepper. Each shop's order is capped at 4× its own 14-day sales, a ceiling a little above the 3.5× plan, so no single kirana is overloaded. Orders flow to Rakesh bhai's van route. 31 of the 38 kiranas order 588 units between them, each under its cap, in about two hours.</li>
+              <li><b>Outreach, day 7: shelf check.</b> On his beat, Rakesh's salesman counts the scheme packs left at each kirana and enters the count in his order app. The agent compares each shop's pace with the days left. Where a shop is not selling, it recommends bringing the packs back to Rakesh's godown on the salesman's next round, with no extra trip, for the Nagpur staff sale or a Feeding India donation (pooled at the godown to the 50-unit pickup minimum). Example: a Kamptee shop took 24 packs and still has 18, so it is selling one a day; the agent recommends picking up 12 on Thursday's round and leaving the 6 it can sell in time.</li>
+              <li><b>Negotiator</b> watches the listing. Agrawal Wholesale in Raipur bids ₹13.00 for all 772 (below the ₹13.50 reserve). The agent counters at ₹14.20 with a 24-hour dispatch promise taken from Rakesh bhai's calendar. Buyer accepts, pays the 15% token (₹1,644), balance due in 48 hours. Rakesh gets a push that the buyer has won.</li>
+              <li><b>Donation</b> is idle for this batch. For the Mango Drink batch, the demo's donation example (22 days left), it books Feeding India in Hyderabad, because that batch's donation remainder is 58 units, below IFBN's 100-unit minimum.</li>
             </ul>
             <div class="bubble">नमस्ते Shree Ganesh Kirana! Munchly Masala Chips 150g पर आज खास ऑफर: 10 पैकेट लो, 2 मुफ़्त. Best before 18 Nov 2026. सिर्फ़ 48 घंटे. ऑर्डर के लिए टैप करें — Rakesh Traders<small>Push · Outreach Agent → 38 kiranas · 09:41</small></div>
           </div>
           <div class="side">
-            <div class="callout money"><span class="lbl">Planned → actual</span>ExpireSoon ₹11,580 → ₹10,962 after negotiation. Kirana ₹10,584 as planned. Net ₹21,222.</div>
+            <div class="callout money"><span class="lbl">Planned → actual</span>ExpireSoon ₹11,580 → ₹10,962 after negotiation. Kirana ₹10,584 as planned, final once the return window closes. Net ₹21,152, swing ₹25,722.</div>
             <div class="callout screen"><span class="lbl">Prototype</span>S3 Execution: API call card (request and response JSON), retailer orders ticking up as the push is answered, negotiation chat. S4 ExpireSoon: the listing as a buyer sees it.</div>
           </div>
         </div>
@@ -603,16 +767,17 @@
             <h3>The Paperwork Agent closes the loop for finance</h3>
             <div class="who">Paperwork Agent · Anita · Rakesh bhai · day 3 to 7</div>
             <ul>
-              <li><b>Tax invoice</b> from Rakesh Traders to the Hyderabad buyer: 772 × ₹14.20 = ₹10,962 taxable, IGST 12% (Maharashtra → Telangana). MRP stays ₹30 on the pack; a discounted sale is fine, a second MRP is not (Legal Metrology rules).</li>
-              <li><b>E-way bill check</b>: consignment ₹12,278 incl. GST is below the ₹50,000 threshold, so none is needed. The agent re-checks if dispatch is split.</li>
-              <li><b>Credit note</b> from Munchly to Rakesh Traders for the buy-10-get-2 scheme: 98 free units at cost, ₹1,568.</li>
-              <li><b>GST ITC memo</b>: goods were supplied under tax invoices, so Section 17(5)(h) reversal does not apply. ₹2,611 of input credit stays. Any donated units are shown as reversed, labelled indicative.</li>
-              <li><b>FSSAI surplus-food checklist</b> and partner receipt for any donated units (Mango Drink batch).</li>
+              <li><b>Tax invoice</b> from Rakesh Traders to the Raipur buyer, drafted for him to issue from Tally: 772 × ₹14.20 = ₹10,962 taxable, IGST 5% = ₹548 (Maharashtra → Chhattisgarh; chips moved from 12% to 5% under GST 2.0 on 22 Sep 2025). MRP stays ₹30 on the pack; a discounted sale is fine, a second MRP is not (Legal Metrology rules).</li>
+              <li><b>E-way bill check</b>: consignment ₹11,510 incl. GST is below the ₹50,000 threshold, so none is needed. The agent re-checks if dispatch is split.</li>
+              <li><b>Price-support credit note</b> (financial, no GST adjustment) from Munchly to Rakesh Traders: the gap between his ₹22 purchase price and what each channel fetched (₹7.80 a unit on the 772 sold on ExpireSoon, ₹4 on the 588 sold to kiranas, ₹8,374), plus the ₹294 van and ₹100 listing fee he paid, ₹8,768 in all. This also covers the buy-10-get-2 scheme: kiranas pay ₹21.60 a pack and get 2 free with every 10, so ₹18 is already the effective price and no separate scheme credit note is needed. Rakesh ends whole, and Munchly avoids an expiry claim of ₹34,490 (₹29,920 credit for 1,360 × ₹22, plus disposal, EPR and ITC reversal).</li>
+              <li><b>GST ITC memo</b>: goods were supplied under tax invoices, so Section 17(5)(h) reversal does not apply. ₹1,224 of Munchly's input credit stays (₹0.90 of input GST in each pack, from the cost sheet). It would be reversed only if the stock came back under the expiry claim and Munchly destroyed it. ITC on any donated units is reversed: s.17(5)(h) blocks credit on gifts, and since 1 Oct 2023 s.17(5)(fa) blocks it for CSR donations too. Reported in GSTR-3B Table 4(B)(1).</li>
+              <li><b>FSSAI surplus-food checklist</b> and partner receipt: not required for this batch; generated for the Mango Drink donation example.</li>
+              <li><b>True-up after 29 Oct</b>: when the return window closes, returned packs go to the Nagpur staff sale or Feeding India, and the price support and the ledger are corrected.</li>
               <li><b>Destruction certificate</b> only if units remain, with the ITC reversal entry pre-filled so finance is never surprised.</li>
             </ul>
           </div>
           <div class="side">
-            <div class="callout money"><span class="lbl">ITC retained</span><span class="v">₹2,611</span>not reversed, with the memo to prove it</div>
+            <div class="callout money"><span class="lbl">ITC retained</span><span class="v">₹1,224</span>not reversed, with the memo to prove it</div>
             <div class="callout screen"><span class="lbl">Prototype</span>S5 Paperwork: document list with status (generated / not required) and a preview for each.</div>
           </div>
         </div>
@@ -624,10 +789,10 @@
             <div class="who">Impact Agent · Vikram · Anita · CFO · monthly and quarterly</div>
             <p>Every routed batch lands in one ledger with both readings of the same event: the money reading (₹ recovered, write-off avoided, ITC protected, disposal and EPR avoided) and the circularity reading (kg diverted, CO₂e, meals). The BRSR Core Principle 6 table exports with the evidence links: invoices, listing IDs, in-app order logs, food-bank receipts.</p>
             <ul>
-              <li>Headline tiles: ₹ recovered this month, swing vs write-off, ITC protected, kg diverted, meals.</li>
+              <li>Headline tiles: ₹ recovered this month, swing vs write-off, ITC protected, kg diverted, CO₂e, meals.</li>
               <li>Trend: weekly recovered vs would-be write-off, one axis, two series.</li>
               <li>Channel mix: where the units went, so Priya can see if one channel is being over-used.</li>
-              <li>"How the tax maths works" panel: the Section 17(5)(h) rule in one paragraph, with the indicative flags.</li>
+              <li>"How the tax maths works" panel: the Section 17(5)(h) and 17(5)(fa) rules in one paragraph, with the indicative flags.</li>
             </ul>
           </div>
           <div class="side">
@@ -640,20 +805,21 @@
 
     <section id="agents">
       <h2>The agents</h2>
-      <p class="lede">One orchestrator and ten specialists on Google ADK, deployed on Vertex AI Agent Engine. In the prototype each agent's reasoning and tool calls are streamed to the screen so judges can see the hand-offs.</p>
+      <p class="lede">One orchestrator and eleven specialists on Google ADK, deployed on Vertex AI Agent Engine. In the prototype each agent's reasoning and tool calls are streamed to the screen so judges can see the hand-offs.</p>
       <div class="tablewrap">
         <table class="grid">
           <tr><th>Agent</th><th>Job</th><th>Reads</th><th>Tools (prototype → production)</th><th>Writes</th><th>Human checkpoint</th></tr>
-          <tr><td><b>Data</b></td><td>Onboard the client's stock and sales data</td><td>DMS export, secondary sales</td><td>Column mapper → BigQuery load jobs</td><td>Batches, sell-through by pincode</td><td>Priya confirms mapping once</td></tr>
+          <tr><td><b>Orchestrator</b></td><td>Run each route and hand work between agents</td><td>Events, run state</td><td>ADK orchestrator on Vertex AI Agent Engine</td><td>Hand-offs, approval gate state</td><td>Holds the approval gate</td></tr>
+          <tr><td><b>Data</b></td><td>Onboard the client's stock and sales data</td><td>DMS export, secondary sales</td><td>Column mapper → BigQuery load jobs</td><td>Batches, sell-through by pincode and by shop</td><td>Priya confirms mapping once</td></tr>
           <tr><td><b>Watcher</b></td><td>Find batches that will not sell in time</td><td>Batches, gates, sell-through</td><td>Gate rules, projection → Pub/Sub</td><td><span class="mono">batch.at_risk</span> events, alerts</td><td>None</td></tr>
-          <tr><td><b>Vision</b></td><td>Verify the batch from a label photo</td><td>Photo from the app camera (Cloud Storage)</td><td>Mocked extraction → Gemini vision</td><td>Verified fields, confidence, evidence</td><td>Rakesh bhai sends the photo</td></tr>
+          <tr><td><b>Vision</b></td><td>Verify the batch from a label photo</td><td>Photo from the app camera (Cloud Storage)</td><td>Gemini vision (recorded fallback on stage)</td><td>Verified fields, confidence, evidence</td><td>Rakesh bhai sends the photo</td></tr>
           <tr><td><b>Valuer</b></td><td>Price every channel against time</td><td>Price history, GST, EPR, capacities</td><td>Pricing model → BigQuery ML</td><td>Channel table, write-off baseline</td><td>None</td></tr>
           <tr><td><b>Router</b></td><td>Split the batch to maximise net ₹ under constraints</td><td>Channel table, guardrails</td><td>Allocation solver</td><td>Plan, alternative, explanation</td><td><b>Priya approves</b></td></tr>
-          <tr><td><b>Lister</b></td><td>Create the ExpireSoon listing</td><td>Plan, verified fields, photo</td><td><span class="tag mock">mock POST /v1/listings</span> → partner API or Gemini computer-use on the marketplace form</td><td>Listing ID, URL, reserve price</td><td>Pause before Publish (first 10)</td></tr>
-          <tr><td><b>Outreach</b></td><td>Sell to the kirana cluster</td><td>Kirana sell-through, language</td><td>Firebase Cloud Messaging push + in-app offer page (WhatsApp Business API: future scope)</td><td>Broadcast, orders, van route</td><td>None after approval</td></tr>
+          <tr><td><b>Lister</b></td><td>Create the ExpireSoon listing</td><td>Plan, verified fields, photo</td><td><span class="tag mock">mock POST /v1/listings</span> → partner API or Gemini computer-use on the marketplace form</td><td>Listing ID, URL, reserve price</td><td>Pause before Publish (first 10); Rakesh's one-time permission and pause button</td></tr>
+          <tr><td><b>Outreach</b></td><td>Sell to the kirana cluster</td><td>Kirana sell-through, language</td><td>Firebase Cloud Messaging push + in-app offer page (WhatsApp Business API: future scope)</td><td>Broadcast, orders, van route, day-7 shelf check</td><td>Rakesh's one-time permission</td></tr>
           <tr><td><b>Negotiator</b></td><td>Handle bids and chat on the listing</td><td>Bids, reserve, buyer history, dispatch calendar</td><td>Counter/accept rules → marketplace chat</td><td>Award, token receipt</td><td>Exceptions only (below reserve twice)</td></tr>
           <tr><td><b>Donation</b></td><td>Place what cannot be sold</td><td>Food-bank intake rules, hubs</td><td><span class="tag mock">mock partner API</span></td><td>Pickup slot, FSSAI checklist</td><td>None after approval</td></tr>
-          <tr><td><b>Paperwork</b></td><td>Produce the documents</td><td>Awards, orders, GST rules</td><td>Templates, e-way bill rule, Legal Metrology check</td><td>Invoice, EWB check, credit note, ITC memo, FSSAI, destruction</td><td>Anita reviews before filing</td></tr>
+          <tr><td><b>Paperwork</b></td><td>Produce the documents</td><td>Awards, orders, GST rules</td><td>Templates, e-way bill rule, Legal Metrology check</td><td>Rakesh's invoice draft, EWB check, price-support credit note, ITC memo, FSSAI, destruction</td><td>Rakesh issues his invoice from Tally; Anita reviews Munchly's credit note and ITC memo</td></tr>
           <tr><td><b>Impact</b></td><td>Keep the ledger and BRSR rows</td><td>All of the above</td><td>Ledger → Looker</td><td>Dashboard, CSV export</td><td>Vikram signs off quarterly</td></tr>
         </table>
       </div>
@@ -661,7 +827,7 @@
 
     <section id="channels">
       <h2>Channels</h2>
-      <p class="lede">Five places a carton can go, plus the baseline it is measured against. The rules below are the ones the Valuer uses in the prototype.</p>
+      <p class="lede">Four places a carton can go, plus the baseline it is measured against. The rules below are the ones the Valuer uses in the prototype.</p>
       <div class="cards">
         <div class="card es">
           <h3>ExpireSoon <span class="chip es">Indian B2B near-expiry marketplace</span></h3>
@@ -669,32 +835,26 @@
           <ul>
             <li>Seller flow: business account → product, batch, labelled date, location → quantity and offer → publish for buyer review.</li>
             <li>Buyers bid; a bid carries a 15% token, balance within 48 hours; in-app chat with the seller.</li>
-            <li>First 5 listings free, then ₹100 each. Buyer pays freight.</li>
+            <li>First 5 listings free, then ₹100 each (Rakesh has used his free ones). Buyer pays freight.</li>
+            <li>The seller is the distributor who owns the stock; Smart-Clearance lists in his name under his one-time permission. Listings are hidden from buyers inside Munchly's distributor territories.</li>
             <li>Prototype: our own marketplace UI and a mocked <span class="mono">POST /v1/listings</span>. Production: a partner API with a real marketplace, or a Gemini computer-use agent on its web form.</li>
           </ul>
         </div>
         <div class="card">
           <h3>Kirana cluster push</h3>
-          <div class="rule">20+ days · 60% of MRP · 10–14 days · capacity = cluster sell-through × 14 days × 3.5 (scheme uplift)</div>
+          <div class="rule">20+ days · 60% of MRP · 10–14 days · capacity = cluster sell-through × 14 days × 3.5 (extra sales on top of normal)</div>
           <ul>
             <li>The distributor's own kiranas, ranked by 30-day sell-through for the SKU.</li>
+            <li>Each shop's order is capped at 4× its own 14-day sales.</li>
             <li>Hindi / Marathi / Telugu push notification with a scheme (buy 10 get 2), a 48-hour window and an in-app order page.</li>
-            <li>Van delivery ₹0.50 per unit. Brand issues a credit note for the free goods.</li>
+            <li>Kiranas pay ₹21.60 a pack and get 2 free with every 10, so ₹18 effective. Van delivery ₹0.50 per unit. Munchly's price-support credit note covers the free goods.</li>
           </ul>
         </div>
         <div class="card">
-          <h3>Discount D2C</h3>
-          <div class="rule">25+ days · 50% of MRP · 7–12 days · capacity 8% of batch</div>
+          <h3>Nagpur staff sale</h3>
+          <div class="rule">until best-before · 40% of MRP · 2–3 days · cap 50 units</div>
           <ul>
-            <li>Clearance page on the brand's site plus GoFig-style partners (Pune, Mumbai).</li>
-            <li>Courier ₹3 per unit, so it rarely wins on net ₹; included so the Router can show why not.</li>
-          </ul>
-        </div>
-        <div class="card">
-          <h3>Staff sale</h3>
-          <div class="rule">any days · 40% of MRP · 2–3 days · cap 150 units</div>
-          <ul>
-            <li>HR notice with a UPI QR at the Pune plant and the Nagpur godown.</li>
+            <li>At Rakesh Traders' godown, for his staff and Munchly's Nagpur sales team. Rakesh is the seller: buyers pay to his UPI QR and collect from the godown.</li>
             <li>Fast and cheap; capped so it never becomes the default.</li>
           </ul>
         </div>
@@ -712,15 +872,15 @@
           </div>
           <ul style="margin-top:8px">
             <li>The Donation Agent picks the partner whose rules the batch meets and whose hub is nearest; large lots can be split across both.</li>
-            <li>ITC on donated units is shown as reversed and labelled <b>indicative</b> (team decision).</li>
+            <li>ITC on donated units is <b>reversed</b>: s.17(5)(h) blocks credit on gifts, and since 1 Oct 2023 s.17(5)(fa) blocks it for CSR donations too. Net −₹1.40 a unit: ₹0.50 handling + ₹0.90 ITC reversal.</li>
           </ul>
         </div>
         <div class="card base">
           <h3>Write-off <span class="chip urgent">baseline</span></h3>
           <div class="rule">−(cost + ITC reversal + disposal + EPR) per unit</div>
           <ul>
-            <li>CGST s.17(5)(h) blocks input credit on goods destroyed, written off or given as gifts; CBIC Circular 72/46/2018 covers time-expired goods.</li>
-            <li>Disposal ₹1.50 per unit and EPR ₹6 per kg of packaging are indicative factors; both are visible and editable in setup.</li>
+            <li>CGST s.17(5)(h) blocks input credit on goods destroyed, written off or given as gifts; CBIC Circular 72/46/2018 covers time-expired medicines; the same logic applies here by analogy.</li>
+            <li>Disposal ₹1.50 per unit and EPR / waste liability ₹6 per kg disposed (160 g a unit, product and pack) are indicative factors; both are visible and editable in setup.</li>
           </ul>
         </div>
       </div>
@@ -728,49 +888,66 @@
 
     <section id="money">
       <h2>Money and tax, worked through</h2>
-      <p class="lede">The same batch, set out the way a challan would be. Left: what destroying 1,360 units really costs. Right: what the recommended split recovers. The swing is the number for the CFO slide.</p>
+      <p class="lede">The same batch, set out the way a challan would be. Left: what destroying 1,360 units does to the P&amp;L. Right: what the recommended split recovers, and its P&amp;L effect. The ₹16 book cost of the stock appears once on each side, so the swing does not count it twice. The swing is the number for the CFO slide.</p>
       <div class="ledger">
-        <div class="head"><b>MF-2409-117 · Munchly Masala Chips 150 g</b><span>1,360 units at risk · MRP ₹30 · cost ₹16 · GST 12% · 47 days left</span></div>
+        <div class="head"><b>MF-2409-117 · Munchly Masala Chips 150 g</b><span>1,360 units at risk · MRP ₹30 · cost ₹16 · GST 5% · 47 days left</span></div>
         <div class="cols">
           <div class="col">
             <h4>If destroyed (do nothing)</h4>
             <div class="row neg"><span>Inventory written off at cost (1,360 × ₹16)</span><span class="v">−₹21,760</span></div>
-            <div class="row neg"><span>GST input credit reversed u/s 17(5)(h) (12% of cost)</span><span class="v">−₹2,611</span></div>
+            <div class="row neg"><span>GST input credit reversed u/s 17(5)(h) (₹0.90 input GST per unit, from the cost sheet)</span><span class="v">−₹1,224</span></div>
             <div class="row neg"><span>Disposal and transport (₹1.50 / unit)</span><span class="v">−₹2,040</span></div>
             <div class="row neg"><span>EPR / waste liability (217.6 kg × ₹6)</span><span class="v">−₹1,306</span></div>
-            <div class="row sum neg"><span>Cost of the write-off</span><span class="v">−₹27,717</span></div>
+            <div class="row sum neg"><span>P&amp;L effect of destroying</span><span class="v">−₹26,330</span></div>
           </div>
           <div class="col">
             <h4>If routed (recommended split)</h4>
-            <div class="row pos"><span>588 units → kirana cluster at ₹18</span><span class="v">₹10,584</span></div>
+            <div class="row pos"><span>588 units → kirana cluster at ₹18 effective (490 charged at ₹21.60)</span><span class="v">₹10,584</span></div>
             <div class="row pos"><span>772 units → ExpireSoon at ₹15</span><span class="v">₹11,580</span></div>
             <div class="row neg"><span>Van delivery (588 × ₹0.50) and listing fee</span><span class="v">−₹394</span></div>
-            <div class="row sum pos"><span>Net recovered (54% of MRP)</span><span class="v">₹21,770</span></div>
-            <div class="row"><span>Input credit retained, not reversed</span><span class="v">₹2,611</span></div>
-            <div class="row"><span>Disposal and EPR avoided</span><span class="v">₹3,346</span></div>
+            <div class="row sum pos"><span>Net recovered (53% of MRP)</span><span class="v">₹21,770</span></div>
+            <div class="row neg"><span>Book cost of the stock sold (1,360 × ₹16)</span><span class="v">−₹21,760</span></div>
+            <div class="row sum pos"><span>P&amp;L effect of routing</span><span class="v">+₹10</span></div>
           </div>
         </div>
-        <div class="swing"><span class="v">₹49,487</span><span>swing on one batch: ₹21,770 recovered instead of ₹27,717 lost</span><span>After negotiation the actual is ₹21,222 net (buyer paid ₹14.20, not ₹15).</span></div>
+        <div class="swing"><span class="v">₹26,340</span><span>swing on one batch: +₹10 instead of −₹26,330. As cash: ₹21,770 recovered plus ₹4,570 of ITC reversal, disposal and EPR not spent.</span><span>After negotiation the actual is ₹21,152 net, a swing of ₹25,722 (buyer paid ₹14.20, not ₹15).</span></div>
       </div>
       <div class="tiles">
-        <div class="tile"><div class="lbl">Recovered</div><div class="v money">54%</div><small>of MRP on at-risk units</small></div>
-        <div class="tile"><div class="lbl">GST ITC protected</div><div class="v money">₹2,611</div><small>s.17(5)(h) not triggered</small></div>
+        <div class="tile"><div class="lbl">Recovered</div><div class="v money">53%</div><small>of MRP on at-risk units</small></div>
+        <div class="tile"><div class="lbl">GST ITC protected</div><div class="v money">₹1,224</div><small>s.17(5)(h) not triggered</small></div>
         <div class="tile"><div class="lbl">Waste diverted</div><div class="v accent">217.6 kg</div><small>BRSR Principle 6</small></div>
         <div class="tile"><div class="lbl">CO₂e avoided</div><div class="v accent">544 kg</div><small>indicative, 2.5 kg/kg</small></div>
         <div class="tile"><div class="lbl">Per quarter, client-wide</div><div class="v money">₹18 lakh</div><small>short-dated stock in play</small></div>
       </div>
-      <p class="note"><b>Indicative labels.</b> Three figures are indicative, and the prototype says so on screen: the ITC treatment of donated units (s.17(5)(h) blocks credit on gifts; a CSR-route donation may differ), the EPR rupee factor, and the CO₂e factor. Every other number is either a published rule (q-commerce gates, GST rates, e-way bill threshold, Legal Metrology) or the client's own data.</p>
-      <p class="note"><b>Why finance cares more than supply chain.</b> Supply chain sees ₹40,800 of chips. Finance sees ₹27,717 of cash and credit leaving the business, which the write-off hides as a stock adjustment. Smart-Clearance puts both on the same screen.</p>
+
+      <h3 style="margin-top:28px">Logistics for moving short-dated stock</h3>
+      <p style="margin:0;font-size:14px;color:var(--ink-2)">Every route starts at Rakesh Traders' godown in Nagpur. The rates below are the ones already inside the money above.</p>
+      <div class="tablewrap">
+        <table class="grid">
+          <tr><th>Route</th><th>How the goods move</th><th>Rate</th><th>Paid by</th><th class="num">This batch</th></tr>
+          <tr><td>Kirana cluster</td><td>Rakesh's van from his godown to the 31 kiranas that ordered</td><td>₹0.50 a unit</td><td>Munchly, via the credit note</td><td class="num">₹294</td></tr>
+          <tr><td>ExpireSoon</td><td>Buyer's own transporter, Nagpur to Raipur</td><td>buyer's cost</td><td>Buyer, priced into his bid</td><td class="num">₹0</td></tr>
+          <tr><td>Loading at the godown</td><td>Rakesh's staff load the van and the buyer's truck</td><td>his normal godown work</td><td>Distributor</td><td class="num">₹0</td></tr>
+          <tr><td>Nagpur staff sale</td><td>Collected by staff at Rakesh's godown</td><td>—</td><td>Staff</td><td class="num">₹0, not used</td></tr>
+          <tr><td>Food bank</td><td>Feeding India volunteer pickup, or drop at an IFBN warehouse</td><td>₹0.50 a unit handling</td><td>Munchly</td><td class="num">₹0, nothing donated</td></tr>
+          <tr class="total"><td>Logistics in the recommended plan</td><td></td><td></td><td></td><td class="num">₹294</td></tr>
+          <tr class="neg"><td>Write-off instead</td><td>Truck to the disposal site, then destruction</td><td>₹1.50 a unit</td><td>Munchly</td><td class="num">₹2,040</td></tr>
+        </table>
+      </div>
+      <p class="note"><b>Clearing costs less to move than destroying.</b> Sending 588 units to kiranas costs ₹294 in van trips and the ExpireSoon buyer pays his own freight. Trucking all 1,360 units to be destroyed would cost ₹2,040. Both figures are already in the ledger: the van in the ₹394 cost line, the disposal truck in the ₹2,040 disposal line.</p>
+      <p class="note"><b>Indicative labels.</b> Three figures are indicative, and the prototype says so on screen: the disposal rate, the EPR rupee factor and the CO₂e factor. The 3.5× scheme uplift and the ₹0.50 van rate are planning assumptions, editable in setup. Every other number is either a published rule (q-commerce gates, GST rates, ITC reversal on destroyed and donated goods, e-way bill threshold, Legal Metrology) or the client's own data (cost sheet, sell-through).</p>
+      <p class="note"><b>Why finance cares more than supply chain.</b> Supply chain sees ₹40,800 of chips. Finance sees a ₹26,330 hit to the P&amp;L, ₹4,570 of it in cash and credit, which the write-off hides as a stock adjustment. Smart-Clearance puts both on the same screen.</p>
+      <p class="note"><b>Who keeps what.</b> Rakesh Traders owns the stock and collects the sale proceeds from the buyers. Munchly pays him a price-support credit note so he ends whole at his ₹22 purchase price: ₹8,150 at plan prices (₹7,756 price gap + ₹394 van and listing fee), ₹8,768 after negotiation. <b>Munchly's own view:</b> it pays ₹8,150 instead of an expiry claim of ₹34,490 (₹29,920 credit + ₹2,040 disposal + ₹1,306 EPR + ₹1,224 ITC reversal), the same ₹26,340 swing as the ledger above, which shows the batch as one system at Munchly's ₹16 cost.</p>
     </section>
 
     <section id="prototype">
       <h2>Prototype scope</h2>
-      <p class="lede">Seven screens, one demo batch, synthetic data. ExpireSoon is a marketplace of our own, presented as a generic Indian B2B near-expiry marketplace, so the judges see the listing exactly as a buyer would; the API call is mocked but visible.</p>
+      <p class="lede">Seven screens, one demo batch plus the Mango Drink batch as the donation example, synthetic data. ExpireSoon is a marketplace of our own, presented as a generic Indian B2B near-expiry marketplace, so the judges see the listing exactly as a buyer would; the API call is mocked but visible.</p>
       <div class="screens">
-        <div class="screen"><div class="k">S0</div><h3>Setup</h3><ul><li>Rules pre-filled: allow-list, floors, donation partners, approval policy.</li><li>The write-off formula shown in plain language.</li></ul></div>
+        <div class="screen"><div class="k">S0</div><h3>Setup</h3><ul><li>Rules pre-filled: allow-list, floors, donation partners, territory guard, Rakesh's permission, return window, approval policy.</li><li>The write-off formula shown in plain language.</li></ul></div>
         <div class="screen"><div class="k">S1</div><h3>Command Center</h3><ul><li>Tiles: <span class="hl">₹ at risk</span>, <span class="hl">₹ recovered MTD</span>, <span class="hl">ITC protected</span>, kg diverted, meals.</li><li>At-risk batches with countdown bars, gate chips (Blinkit / Zepto / Instamart), risk level, "Route" button.</li></ul></div>
         <div class="screen"><div class="k">S2</div><h3>Route Room</h3><ul><li>Batch card with the verified label.</li><li>Live agent timeline: thinking, tool calls, results, hand-offs.</li><li>Channel chart and table; split bar; <span class="hl">money panel with write-off vs recovered, swing, ITC</span>.</li><li>Approve sheet opened from a push notification.</li></ul></div>
-        <div class="screen"><div class="k">S3</div><h3>Execution</h3><ul><li>API call card: request and response JSON of the mocked ExpireSoon call, with "Open on ExpireSoon".</li><li>Retailer offer push with orders ticking up.</li><li>Negotiation chat: bid, counter, accept, token paid. <span class="hl">Planned vs actual ₹</span>.</li></ul></div>
+        <div class="screen"><div class="k">S3</div><h3>Execution</h3><ul><li>API call card: request and response JSON of the mocked ExpireSoon call, with "Open on ExpireSoon".</li><li>Retailer offer push with orders ticking up.</li><li>Day-7 shelf-check card: the salesman's counts by shop and the agent's pick-up suggestion.</li><li>Negotiation chat: bid, counter, accept, token paid. <span class="hl">Planned vs actual ₹</span>.</li></ul></div>
         <div class="screen">
           <div class="k">S4</div><h3>ExpireSoon marketplace</h3>
           <ul><li>Separate look and feel (purple, "dates visible" badges) so it reads as another company's site.</li><li>Listing page, bid panel with 15% token, seller chat answered by the Negotiator.</li><li>Marketplace home with a few other sellers' listings for realism.</li></ul>
@@ -784,27 +961,28 @@
                   <dt>Best before</dt><dd>18 Nov 2026 · 47 days</dd>
                   <dt>Batch</dt><dd>MF-2409-117</dd>
                   <dt>Seller</dt><dd>Rakesh Traders, Nagpur · verified</dd>
+                  <dt>Visible to</dt><dd>Buyers outside Munchly's distributor territories</dd>
                   <dt>Dispatch</dt><dd>24 h after balance · buyer pays freight</dd>
                 </dl>
               </div>
               <div class="bid"><div class="btn">Place bid</div><small>15% token on your bid · balance in 48 h</small><small>Min order 100 units</small></div>
               <div class="chat">
-                <div>Can you do ₹13 for all 772? <small>Sri Venkateswara Traders · 11:02</small></div>
+                <div>Can you do ₹13 for all 772? <small>Agrawal Wholesale, Raipur · 11:02</small></div>
                 <div class="me">₹14.20 for 772, Nagpur stock, dispatch within 24 h of balance. <small>Rakesh Traders (Negotiator Agent) · 11:03</small></div>
-                <div>Ok, ₹14.20. Token paid. <small>Sri Venkateswara Traders · 11:09</small></div>
+                <div>Ok, ₹14.20. Token paid. <small>Agrawal Wholesale, Raipur · 11:09</small></div>
               </div>
             </div>
           </div>
         </div>
-        <div class="screen"><div class="k">S5</div><h3>Paperwork</h3><ul><li>Document list with status: generated / not required.</li><li>Previews: invoice, e-way bill check, credit note, <span class="hl">ITC memo</span>, FSSAI checklist, destruction certificate.</li></ul></div>
-        <div class="screen"><div class="k">S6</div><h3>Finance &amp; ESG dashboard</h3><ul><li>Hero tiles: <span class="hl">₹ recovered</span>, <span class="hl">swing</span>, <span class="hl">ITC protected</span>, kg diverted, CO₂e, meals.</li><li>Weekly trend, channel mix, <span class="hl">BRSR Principle 6 table with Export CSV</span>.</li><li>"How the tax maths works" panel with the indicative flags.</li></ul></div>
+        <div class="screen"><div class="k">S5</div><h3>Paperwork</h3><ul><li>Document list with status: generated / not required.</li><li>Previews: Rakesh's invoice draft, e-way bill check, price-support credit note, <span class="hl">ITC memo</span>, FSSAI checklist, destruction certificate.</li></ul></div>
+        <div class="screen"><div class="k">S6</div><h3>Finance &amp; ESG dashboard</h3><ul><li>Hero tiles: <span class="hl">₹ recovered</span>, <span class="hl">swing</span>, <span class="hl">ITC protected</span>, kg diverted, CO₂e, meals.</li><li>Weekly trend, channel mix, <span class="hl">BRSR Principle 6 table with Export CSV</span>.</li><li>"How the tax maths works" panel with the indicative flags; export the ITC memo.</li></ul></div>
       </div>
       <div class="tablewrap">
         <table class="grid">
           <tr><th>Real in the prototype</th><th>Mocked in the prototype</th><th>Google Cloud, when built for real</th></tr>
           <tr>
-            <td>Gate rules, at-risk projection, channel economics, GST-aware baseline, allocation, documents, ledger and BRSR export, the agent orchestration shape (events, hand-offs, approval gate).</td>
-            <td>ExpireSoon API and marketplace, retailer replies, food-bank booking, buyer bids. Gemini label extraction and push notifications are real. All deterministic so the demo never fails on stage.</td>
+            <td>Gate rules, at-risk projection, channel economics, GST-aware baseline, allocation, documents, ledger and BRSR export, the agent orchestration shape (events, hand-offs, approval gate). Gemini label extraction and push notifications are real.</td>
+            <td>ExpireSoon API and marketplace, retailer replies, food-bank booking, buyer bids. All mocks are deterministic, and the Gemini call has a recorded fallback, so the demo never fails on stage.</td>
             <td>BigQuery (batches, sell-through, price history) · Pub/Sub (<span class="mono">batch.at_risk</span>, <span class="mono">offer.received</span>) · ADK multi-agent on Vertex AI Agent Engine · Gemini Pro for routing, Flash for chat volume, vision for labels · Firebase Cloud Messaging for push, Firebase Authentication for sign-in, Firebase Hosting CDN for the PWA · Looker for the dashboard · Gemini computer-use for marketplaces without an API.</td>
           </tr>
         </table>
@@ -812,18 +990,25 @@
     </section>
 
     <section id="decisions">
-      <h2>Decisions taken, 2 Oct 2026</h2>
+      <h2>Decisions taken, 2–4 Oct 2026</h2>
       <div class="decisions">
         <div class="dec"><div class="ok">✓</div><div><b>Name: Smart-Clearance.</b> UI, repo and Slack channel to be renamed. Dobara, Mauka and Nikaasi dropped.</div></div>
         <div class="dec"><div class="ok">✓</div><div><b>Full nine-stage demo, about six minutes.</b> Built end to end. A shorter cut (stages 2, 5, 7, 9) can be made by hand later if the slot demands it.</div></div>
         <div class="dec"><div class="ok">✓</div><div><b>Food-bank rules are used as written.</b> Feeding India (15+ days, 50 units, volunteer pickup) and India FoodBanking Network (21+ days, 100 units, warehouse drop) are both supported; the Donation Agent chooses per batch. No "modelled" label anywhere in the prototype.</div></div>
         <div class="dec"><div class="ok">✓</div><div><b>ExpireSoon presents as a generic Indian B2B near-expiry marketplace.</b> No reference to any real marketplace on stage. Our own marketplace UI, mocked API, visible request and response.</div></div>
-        <div class="dec"><div class="ok">✓</div><div><b>ITC on donations is labelled indicative.</b> Section 17(5)(h) blocks credit on gifts; a CSR-route donation may differ. The prototype shows the reversal and the label.</div></div>
-        <div class="dec"><div class="ok">✓</div><div><b>One fictional client.</b> Munchly Foods Pvt Ltd, Pune, listed, four distributors, eight SKUs.</div></div>
+        <div class="dec"><div class="ok">✓</div><div><b>ITC on donations is reversed (v4.1).</b> Section 17(5)(h) blocks credit on gifts, and since 1 October 2023 section 17(5)(fa) blocks it for CSR donations too, so no donation route keeps it. The prototype shows the reversal as a rule, not an indicative figure.</div></div>
+        <div class="dec"><div class="ok">✓</div><div><b>One fictional client.</b> Munchly Foods Ltd, Pune, listed (top 1,000 by market cap), four distributors, eight SKUs.</div></div>
         <div class="dec"><div class="ok">✓</div><div><b>Money, GST and BRSR are first-class on screen.</b> Every stage has a highlighted money moment; the dashboard exports the BRSR line and the ITC memo.</div></div>
         <div class="dec"><div class="ok">✓</div><div><b>Medicines out of scope.</b> Packaged food and personal care only.</div></div>
         <div class="dec"><div class="ok">✓</div><div><b>In-app push instead of WhatsApp (v4).</b> The PWA with Firebase Cloud Messaging carries every nudge to Priya, Rakesh bhai and the kiranas, with an in-app inbox as the fallback. WhatsApp Business integration is future scope, behind the same Notifier interface.</div></div>
-        <div class="dec"><div class="ok">✓</div><div><b>Firebase Authentication and Firebase Hosting (v4).</b> Google sign-in for brand staff, phone OTP for distributors and retailers; the PWA is served from Firebase Hosting's CDN; the agents API runs on Cloud Run.</div></div>
+        <div class="dec"><div class="ok">✓</div><div><b>Firebase Authentication and Firebase Hosting (v4).</b> Google sign-in for brand staff, phone OTP for distributors and retailers; the PWA is served from Firebase Hosting's CDN; the API front door runs on Cloud Run and the agents run on Vertex AI Agent Engine.</div></div>
+        <div class="dec"><div class="ok">✓</div><div><b>Quick commerce goes through the distributors (v4.1).</b> For the hackathon, Munchly sells only to its distributors, and each distributor supplies the Blinkit, Zepto and Instamart warehouses in his city as well as his kiranas. A batch that misses the shelf-life gate stays in the distributor's godown.</div></div>
+        <div class="dec"><div class="ok">✓</div><div><b>Expiry policy and price support (v4.1).</b> Munchly takes back expired stock at full credit, so it acts before expiry. Rakesh owns and sells the stock; Munchly finds the buyers and pays a price-support credit note so he ends whole.</div></div>
+        <div class="dec"><div class="ok">✓</div><div><b>Rakesh's listing permission and the territory guard (v4.1).</b> Rakesh gives Smart-Clearance a one-time permission to act in his name within the price floors: list his Munchly stock, send scheme offers to his kiranas, draft his invoices and book dispatch slots. Everything shows in his app, and he gets a push at approval and award. Listings are hidden from buyers in Munchly's distributor territories, so the demo buyer is Agrawal Wholesale in Raipur, not a buyer in Lakshmi Agencies' Hyderabad.</div></div>
+        <div class="dec"><div class="ok">✓</div><div><b>Money rechecked (v4.1).</b> Chips at 5% GST after GST 2.0 (22 Sep 2025). ITC reversal uses the input GST in the cost sheet, ₹0.90 a unit. The ₹16 stock cost is counted once, so the swing is ₹26,340, not ₹49,487. The buy-10-get-2 scheme sits inside the ₹18 effective price and the price support, not in a separate credit note.</div></div>
+        <div class="dec"><div class="ok">✓</div><div><b>Channels trimmed for distributor stock (v4.1).</b> Discount D2C is removed: Munchly does not own this stock and the D2C partners are in Pune and Mumbai. The staff sale becomes a Nagpur staff sale at Rakesh's godown, with Rakesh as the seller, capped at 50 units.</div></div>
+        <div class="dec"><div class="ok">✓</div><div><b>Munchly's own warehouse stock uses the same flow (v4.1).</b> Munchly is the seller, no listing permission or price support is needed, the Watcher reads Munchly's own stock system instead of the DMS export, and Discount D2C and the Pune plant staff sale become eligible. Not part of the demo.</div></div>
+        <div class="dec"><div class="ok">✓</div><div><b>Consistency review (v4.1, 4 Oct).</b> Price support also repays the van and listing fee (₹8,768 actual). The 3.5× scheme uplift is extra volume on top of normal sales, with a 4× cap per shop. Gemini label reading is live with a recorded fallback. Returns are trued up after 29 Oct. Rakesh issues his own invoice; Anita reviews Munchly's documents. The Mango Drink batch stays as the donation example.</div></div>
         <div class="dec"><div class="ok">✓</div><div><b>Build order approved.</b> Six steps, below.</div></div>
       </div>
     </section>
@@ -834,15 +1019,15 @@
       <div class="tablewrap">
         <table class="grid">
           <tr><th style="width:40px">#</th><th>Step</th><th>What gets built</th><th>Done when</th><th>Screens</th></tr>
-          <tr><td class="num">1</td><td>Synthetic data and money maths</td><td>Client, distributors, 8 SKUs, 8 batches, sell-through by pincode; quick-commerce gates; channel economics; GST-aware write-off; allocation solver</td><td>Demo batch returns the 588 / 772 split, net ₹21,770, write-off −₹27,717</td><td>—</td></tr>
+          <tr><td class="num">1</td><td>Synthetic data and money maths</td><td>Client, distributors, 8 SKUs, 8 batches, sell-through by pincode and by shop; quick-commerce gates; channel economics; GST-aware write-off; allocation solver</td><td>Demo batch returns the 588 / 772 split, net ₹21,770, P&amp;L −₹26,330 if destroyed, swing ₹26,340</td><td>—</td></tr>
           <tr><td class="num">2</td><td>Agent event stream</td><td>Watcher → Vision → Valuer → Router pipeline streaming thinking, tool calls and results; approval gate; executors; Paperwork; Impact</td><td>A route run plays end to end in the API</td><td>—</td></tr>
-          <tr><td class="num">3</td><td>Command Center and Route Room</td><td>KPI tiles, at-risk list with countdowns and gate chips; live agent timeline, channel chart and table, split bar, money panel, approve sheet from a push</td><td>Priya can route and approve the demo batch</td><td>S1, S2</td></tr>
+          <tr><td class="num">3</td><td>Setup, Command Center and Route Room</td><td>Static setup page with the rules pre-filled; KPI tiles, at-risk list with countdowns and gate chips; live agent timeline, channel chart and table, split bar, money panel, approve sheet from a push</td><td>Priya can route and approve the demo batch</td><td>S0, S1, S2</td></tr>
           <tr><td class="num">4</td><td>Execution and ExpireSoon</td><td>API call card, retailer offer push and orders, negotiation chat; ExpireSoon marketplace home and listing page with bid panel and chat</td><td>Listing opens as a buyer sees it; bid countered and awarded</td><td>S3, S4</td></tr>
           <tr><td class="num">5</td><td>Paperwork and Finance &amp; ESG</td><td>Document list and previews; dashboard tiles, trend, channel mix, BRSR table and CSV export, tax-maths panel</td><td>ITC memo and BRSR line generated for the demo batch</td><td>S5, S6</td></tr>
           <tr><td class="num">6</td><td>Demo script</td><td>Nine-stage script with timings, the Mango Drink batch as the donation case, a reset button for a clean run</td><td>Two clean six-minute run-throughs</td><td>all</td></tr>
         </table>
       </div>
-      <p class="note"><b>Still to confirm while building:</b> who reviews the Hindi and Marathi push copy so it reads like a distributor, not a bank.</p>
+      <p class="note"><b>Still to confirm while building:</b> who reviews the Hindi, Marathi and Telugu push copy so it reads like a distributor, not a bank.</p>
     </section>
 
     <section id="sources">
@@ -851,14 +1036,16 @@
         <div><a href="https://www.spoileralert.com/iq">Spoiler Alert iQ</a> · <a href="https://www.spoileralert.com/enterprise/">Spoiler Alert enterprise workflow</a> (the US model)</div>
         <div><a href="https://nearxpiry.com/sell/">NearXpiry sell page</a> · <a href="https://nearxpiry.com/demo/">NearXpiry demo (bids, 15% token, chat)</a> · <a href="https://nearxpiry.com/blog/sell-near-expiry-stock/">NearXpiry seller guide</a></div>
         <div><a href="https://confetti.design/blog/quick-commerce-brand-eligibility-india">Quick-commerce shelf-life gates</a> · <a href="https://unicommerce.com/blog/how-to-sell-on-blinkit-seller-onboarding-guide-2026/">Blinkit seller onboarding 2026</a></div>
-        <div><a href="https://www.taxmann.com/post/blog/analysis-itc-reversal-for-time-expired-goods-under-the-cgst-act">ITC reversal for time-expired goods, s.17(5)(h), Circular 72/46/2018</a></div>
+        <div><a href="https://www.taxmann.com/post/blog/analysis-itc-reversal-for-time-expired-goods-under-the-cgst-act">ITC reversal for time-expired goods, s.17(5)(h), Circular 72/46/2018 (medicines, used by analogy)</a> · <a href="https://taxguru.in/goods-and-service-tax/prospective-amendment-itc-csr-expenditure-gst.html">ITC on CSR blocked, s.17(5)(fa), from 1 Oct 2023</a></div>
         <div><a href="https://www.fssai.gov.in/upload/uploadfiles/files/Press_Release_Gazette_Notification_Surplus_Food_06_08_2019.pdf">FSSAI surplus food regulations 2019</a> · <a href="https://foodbanking.org/?p=2144">GFN partners in India (Feeding India, IFBN, No Food Waste)</a></div>
         <div><a href="https://greensutra.in/news/brsr-all-you-need-to-know/">BRSR Core 2026 overview</a> · <a href="https://assets.kpmg.com/content/dam/kpmgsites/in/pdf/2026/02/chapter-1-emerging-trends-in-brsr-reporting-by-listed-companies.pdf.coredownload.pdf">KPMG BRSR trends 2026</a></div>
         <div><a href="https://ssrana.in/articles/importance-of-writing-best-before-and-manufacturing-date-on-labels/">Legal Metrology: best-before and MRP rules</a></div>
         <div><a href="https://blog.massistcrm.com/the-dms-revolution-in-fmcg-whats-changing-across-indias-supply-chains">DMS and the secondary-sales gap in India</a> · <a href="https://richautomate.in/blog/whatsapp-b2b-fmcg-distribution-india-2026">WhatsApp-run distribution 2026</a></div>
+        <div><a href="https://gstcouncil.gov.in/sites/default/files/2025-09/press_release_press_information_bureau.pdf">GST Council, 56th meeting: namkeens 12% → 5% from 22 Sep 2025</a> · <a href="https://cleartax.in/s/gst-on-namkeen-savouries">GST on namkeen and chips, HSN 2106 90</a></div>
         <div><a href="https://blog.google/technology/google-deepmind/gemini-computer-use-model/">Gemini 2.5 Computer Use</a></div>
-        <div><a href="https://gofig.in/">GoFig</a> · <a href="https://thebetterindia.com/315182/kolkata-milind-shah-started-gauraa-to-prevents-fmcg-products-from-going-to-landfills/">Gauraa</a> · <a href="https://yourstory.com/2020/12/startup-ahmedabad-eol-stocks-b2b-marketplace">EOL Stocks</a> · <a href="https://kirana.club/">Kirana Club</a></div>
+        <div><a href="https://thebetterindia.com/315182/kolkata-milind-shah-started-gauraa-to-prevents-fmcg-products-from-going-to-landfills/">Gauraa</a> · <a href="https://yourstory.com/2020/12/startup-ahmedabad-eol-stocks-b2b-marketplace">EOL Stocks</a> · <a href="https://kirana.club/">Kirana Club</a></div>
       </div>
     </section>
   </main>
 </div>
+
