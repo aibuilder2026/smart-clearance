@@ -1,0 +1,21 @@
+{
+  "name": "kirana-plain",
+  "model": "Qwen-Image-2.1 bf16 (local)",
+  "mode": "edit",
+  "source": "design3/system/img/kirana.webp",
+  "prompt": "Remove the words \"Shree Ganesh Kirana\" from the green-framed shop signboard above the shutter so the board is completely blank: a plain cream panel inside its green frame with no letters, words or marks at all. On the small wooden display stand at the right of the shopfront, make its little card blank, keeping the stand itself, its size and the packs on it. Make the packs on the shelves plain, with no lettering or logos. Change nothing else. Keep the shop building, the rolled-up shutter, the shelves and their colourful goods, the counter with its glass jars of sweets and the grey base exactly as they are, with the same colours, materials, soft studio lighting from the upper left, camera angle and framing. Keep the transparent background, and keep the soft contact shadow exactly as in the original: faint and dark, with no new floor, slab or shadow shapes.",
+  "seed": 28013,
+  "size": 1024,
+  "transparent": true,
+  "created": "2026-10-04T22:44:38Z",
+  "attempts": 2,
+  "postprocess": "contact shadow: pale see-through pixels outside the object recoloured to #0b1510 at 62% of their alpha, so the shadow reads as shadow on light and dark grounds (0 px matched: this render's shadow is already dark); then a 768x768 WebP, cwebp -q 85 -alpha_q 100 -resize 768 768; the PNG original stays local in src/",
+  "rejected_attempts": [
+    {
+      "attempt": 1,
+      "seed": 28011,
+      "prompt": "Remove the words \"Shree Ganesh Kirana\" from the green-framed shop signboard above the shutter so the board is completely blank: a plain cream panel inside its green frame with no letters, words or marks at all. Also make the small notice board at the right of the shopfront completely blank, and make every pack, packet and jar on the shelves plain, in simple colours with no lettering, logos or printed labels. Keep everything else exactly as it is: the shop building, the rolled-up shutter, the wooden shelves and their colourful goods, the counter with its glass jars of sweets, the grey base, the colours and materials, the soft studio lighting from the upper left, the camera angle and framing, the transparent background and the soft neutral grey contact shadow.",
+      "reason": "sign blanked, but the small display stand at the right became a large blank A-frame board, and the contact shadow became an opaque grey slab at the lower right that shows as a light blob on the dark ground"
+    }
+  ]
+}
