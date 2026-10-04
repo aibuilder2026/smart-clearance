@@ -40,7 +40,7 @@ The console is the platform's own surface, separate from every client workspace.
 
 smartclearance.com sells Smart-Clearance itself, independent of any client. Munchly Foods is its one customer story.
 
-- **The first viewport** follows the approved comp box for box at 1280 × 800, scaled with the page in container units. The town is composed twice: by day, and at night in dark mode. The tracker card fills its nine stops once.
+- **The first viewport** follows the approved comp box for box at 1280 × 800, scaled with the page in container units. The town is composed twice: by day, and at night in dark mode; the Appearance button in the top bar (and the footer's switch) picks light, dark or the device's setting. The tracker card fills its stops once.
 - **Five exits, one batch.** On desktops the street pans as the page scrolls and holds on each exit with its figures. On tablets and phones you swipe along it and tap an exit. With reduced motion it stays still.
 - **Book a demo**, and each plan's "Talk to us", saves a request in the browser store (`sc3-platform`); the console lists it. Nothing is sent anywhere.
 - **Every figure** comes from `core/money.js` through `core/data.js`. The illustrations carry `.prompt.json` sidecars; their PNG originals stay local in `site/assets/plates/src/`.

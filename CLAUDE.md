@@ -76,7 +76,7 @@
   - Also new: Rakesh's one-time permission, an admin Workspace screen, and the demo's stage 1, which now opens with both sign-ins.
   - Fixed on the way: tracker labels share one line and stop times wrap only at a space; the design-system page hides its contents list below 1100px as intended, with the mark in its top bar and the compact tracker on phones.
 - **SC-25** (In Review, branch `SC-25-platform-site`): the smartclearance.com landing page ("Miniature India") and the staff console ("Agent pipeline"), picked from mocked options; the sixteen screens are on the [design board](https://claude.ai/artifact/QNUcNjbENRZJYWBmFd2BrA).
-  - Both are built and hosted in the platform v3 project; the hosted pages load commit `1c9631a`.
+  - Both are built and hosted in the platform v3 project; the hosted pages load commit `65220bd`.
   - The console is `design3/console` with its own mock backend, `core/platform.js`.
   - The landing page is comp-led on the approved diorama comp. Its first viewport was accepted in review and passed the hero gate on the maintainer's answer "The comp can differ". Dark mode is the town at night (board L8), which the maintainer asked for.
   - Book a demo on the landing page saves a request that the console lists in Overview; "Set up" starts a new client from it.
