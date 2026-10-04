@@ -89,4 +89,11 @@
   - The finish review's disposition is ship. One known flaw: `approve-night.webp` has a few faint green light pools near the button.
   - `impeccable build-phase finish` cannot be recorded: the responsive gate keeps its input fingerprint only on an unforced pass, and it is forced on the same waived lettering regions. The disposition is a note in the build state.
   - The design skill's build state lives in `.impeccable/build/`; it expects a copy of the plate at the repo root (`assets/plates/scene.png`, excluded from git locally).
+- **SC-26** (PR #17): design first. Every new UI or UX change goes the Claude Design route.
+  1. Design 2 or 3 options.
+  2. Save them in `design3/designs/SC-<n>/`; `design3` is the source of truth for designs.
+  3. Publish one review board to the surface's Claude Design project.
+  4. Build only the option the maintainer picks.
+
+  The `design-first` skill and a `UserPromptSubmit` hook (`.claude/hooks/design-first-reminder.sh`) carry the rule. SC-25's board, comps and decision are in `design3/designs/SC-25/`.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
