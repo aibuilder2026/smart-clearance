@@ -79,6 +79,9 @@
 	}
 	const scrim = (_node: Element) => ({ duration: motionMs(DURATION.scrim), css: (t: number) => `opacity: ${t}` });
 
+	// an h2 is a heading already: drop the role and level bits-ui gives its div title
+	const asHeading = ({ role: _role, 'aria-level': _level, ...rest }: Record<string, unknown>) => rest;
+
 	// the panel takes focus when it opens (not its first field), so a screen reader names the dialog first
 	let panelEl: HTMLElement | null = $state(null);
 	const focusPanel = (e: Event) => {
@@ -172,7 +175,11 @@
 					>
 						{#if mode === 'bottom'}<div class="grabber" aria-hidden="true"></div>{/if}
 						<div class="sheet-head">
-							{#if typeof title === 'string'}<Dialog.Title level={2}>{title}</Dialog.Title
+							<!-- a real h2, as the kit's sheet head has (bits-ui's own Title is a div with role heading) -->
+							{#if typeof title === 'string'}<Dialog.Title
+									>{#snippet child({ props: titleProps })}<h2 {...asHeading(titleProps)}>
+											{title}
+										</h2>{/snippet}</Dialog.Title
 								>{:else}{@render title()}{/if}{@render headerRight?.()}<IconButton
 								icon="x"
 								label="Close"

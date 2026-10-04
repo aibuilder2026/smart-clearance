@@ -25,7 +25,12 @@
 	let host: HTMLDivElement | undefined = $state();
 
 	onMount(() => {
-		// the app's own size: the root's, or for a window-scrolling page the window's, read from the fixed overlay host
+		app.mounted = true;
+	});
+
+	// the app's own size: the root's, or for a window-scrolling page the window's, read from the fixed overlay host.
+	// bind:this lands after mount, so this waits for the element rather than reading it in onMount
+	$effect(() => {
 		const measured = scroll === 'window' ? host : root;
 		if (!measured) return;
 		app.overlays = scroll === 'window' ? (host ?? null) : (root ?? null);
@@ -35,7 +40,6 @@
 			if (Math.abs(app.h - r.height) >= 1) app.h = r.height;
 		});
 		ro.observe(measured);
-		app.mounted = true;
 		return () => ro.disconnect();
 	});
 </script>

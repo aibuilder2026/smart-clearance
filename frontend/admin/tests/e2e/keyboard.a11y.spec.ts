@@ -210,6 +210,35 @@ test('keyboard · a saved appearance applies before the first paint', async ({ b
 test.describe('the street of exits, with motion on', () => {
 	test.use({ contextOptions: { reducedMotion: 'no-preference' } });
 
+	test('motion · the street holds on each exit as the page scrolls past it', async ({ page }) => {
+		const holds = await page.evaluate(async () => {
+			const frames = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+			const track = document.querySelector('.ex-track') as HTMLElement;
+			const top = parseFloat((document.querySelector('.ex-stick') as HTMLElement).style.top);
+			const at = track.getBoundingClientRect().top + window.scrollY;
+			const from = at - top;
+			const to = at + track.offsetHeight - document.documentElement.clientHeight;
+			const out: [string, string][] = [];
+			for (let i = 0; i < 5; i++) {
+				window.scrollTo({ top: from + ((to - from) * (2 * i + 0.5)) / 9, behavior: 'instant' });
+				await frames();
+				await frames();
+				out.push([
+					(document.querySelector('.ex-chip.on .ex-name') as HTMLElement).textContent!,
+					(document.querySelector('.ex-pano') as HTMLElement).style.transform
+				]);
+			}
+			return out;
+		});
+		expect(holds).toEqual([
+			['Kiranas', 'translateX(0%)'],
+			['ExpireSoon', 'translateX(-23.72%)'],
+			['Staff sale', 'translateX(-37.22%)'],
+			['Food bank', 'translateX(-44.44%)'],
+			['The bin', 'translateX(-44.44%)']
+		]);
+	});
+
 	test('keyboard · focusing an exit pans the street to it and says it', async ({ page }) => {
 		const chip = (name: string) => page.locator('.ex-chip', { hasText: name });
 		await chip('Kiranas').scrollIntoViewIfNeeded();
