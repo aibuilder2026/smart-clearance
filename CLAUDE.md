@@ -42,7 +42,7 @@
 - The built-in browser was refused claude.ai pages; Claude in Chrome reaches them.
 - The full accessibility suite takes about 4 minutes, so give it a long timeout. While iterating, use `npm run test:desktop`.
 
-## Recent changes (3 Oct 2026)
+## Recent changes (4 Oct 2026)
 
 - **Design v3** (SC-12 to SC-15, PR #7): the design system, the guided demo and the app prototype, published to Claude Design and pinned to commits.
 - **SC-16** (PR #8): the demo's top bar now sits above the device frames, so the Appearance menu opens over them.
@@ -62,8 +62,9 @@
   - The sign-in hero plays once and offers Replay.
   - `motion.a11y.spec.ts` fails on any endless animation.
 - **SC-20** (PR #11): this file and `AGENTS.md`.
-- **SC-22** (branch `SC-22-story-v6`, In Review): the story (v6) and the Journey Map now follow v4.1.
+- **SC-22** (PR #14): the story (v6) and the Journey Map now follow v4.1.
   - The story is told with the v3 renders and portraits, plus a new portrait for the Raipur buyer.
+  - Every scene pairs a story illustration with the v3 design. Two of the v5 drawings are adjusted to v4.1, and scenes 1 and 5 are newly drawn in the same style.
   - Both documents carry a detailed supply-chain diagram.
   - The story works through every v4.1 calculation.
   - The repo copy of the Journey Map is now v4.1.
