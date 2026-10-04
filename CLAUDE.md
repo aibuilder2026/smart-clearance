@@ -77,6 +77,7 @@
   - Fixed on the way: tracker labels share one line and stop times wrap only at a space; the design-system page hides its contents list below 1100px as intended, with the mark in its top bar and the compact tracker on phones.
 - **SC-25** (In Progress, branch `SC-25-platform-site`): the smartclearance.com landing page ("Miniature India") and the staff console ("Agent pipeline"), picked from mocked options; the sixteen screens are on the [design board](https://claude.ai/artifact/QNUcNjbENRZJYWBmFd2BrA).
   - The console is built (`design3/console`, `core/platform.js`) and hosted in the platform v3 project.
-  - The landing page is comp-led: its hero image (`design3/site/assets/plates/scene.webp`) waits for the maintainer's plan and asset review before any page code.
+  - The landing page is comp-led on the approved diorama comp. Its first viewport was accepted in review and passed the hero gate on the maintainer's answer "The comp can differ". Dark mode is the town at night (board L8), which the maintainer asked for.
+  - Book a demo on the landing page saves a request that the console lists in Overview; "Set up" starts a new client from it.
   - The design skill's build state lives in `.impeccable/build/`; it expects a copy of the plate at the repo root (`assets/plates/scene.png`, excluded from git locally).
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

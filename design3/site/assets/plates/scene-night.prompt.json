@@ -1,0 +1,13 @@
+{
+  "name": "scene-night",
+  "model": "Qwen-Image-2.1 bf16 (local), edit_image",
+  "prompt": "Change the time of day to a clear night and keep everything else exactly: the same camera, composition, giant brown corrugated carton, buildings, shops, trees, van, handcart and tiny people in the same places. Deep navy-blue night sky with a few small faint stars and the distant hills as dark silhouettes. Warm yellow light glowing from shop windows and a few small street lamps. The glowing green path at the carton's foot is brighter and lights the lower part of the carton's front face from below with a soft green glow. The ground and buildings are dark and moody, lit only by the shop windows, street lamps and the green path. Every shop signboard is a plain dark board with no letters, numbers or symbols on it. Tilt-shift miniature diorama photograph style, no text.",
+  "reference": "design3/site/assets/plates/src/scene.png, the approved day plate 'scene'",
+  "seed": 3225,
+  "size": 2048,
+  "output": "2784x1504",
+  "attempts": 2,
+  "created": "2026-10-04",
+  "postprocess": "WebP q82; the PNG original stays local in src/",
+  "use": "smartclearance.com hero in dark mode"
+}

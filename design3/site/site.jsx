@@ -296,11 +296,13 @@
   /* ---------- book a demo: the request lands in the console ---------- */
   function DemoSheet({ open: isOpen, plan, onClose }) {
     const app = useApp(); const blank = { name: "", company: "", email: "", makes: "Snacks and drinks", note: "" };
-    const [f, setF] = useState(blank); const [err, setErr] = useState(""); const [sent, setSent] = useState(null);
-    useEffect(() => { if (isOpen) { setSent(null); setErr(""); } }, [isOpen]);
+    const [f, setF] = useState(blank); const [err, setErr] = useState({}); const [sent, setSent] = useState(null);
+    useEffect(() => { if (isOpen) { setSent(null); setErr({}); } }, [isOpen]);
+    // each problem is said under its own field
+    const edit = k => e => { setF({ ...f, [k]: e.target.value }); if (err[k]) setErr({ ...err, [k]: null }); };
     const send = () => {
-      if (!f.name.trim() || !f.company.trim()) { setErr("Enter your name and your company."); return; }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.trim())) { setErr("Enter a work email address."); return; }
+      const e = { name: !f.name.trim() && "Enter your name.", company: !f.company.trim() && "Enter your company's name.", email: !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.trim()) && "Enter a work email address, like name@company.in." };
+      if (e.name || e.company || e.email) { setErr(e); return; }
       const req = { id: "rq-" + Date.now().toString(36), at: new Date().toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }), name: f.name.trim(), company: f.company.trim(), email: f.email.trim().toLowerCase(), makes: f.makes, plan: plan || null, note: f.note.trim(), status: "new" };
       if (P) P.update(d => { d.requests = [req].concat(d.requests || []); });
       setSent(req); setF(blank);
@@ -314,9 +316,9 @@
         <button type="button" className="btn btn-link" onClick={() => open(LINKS.console)}>Open the console</button>
       </div> : <form className="stack" style={{ gap: 12 }} onSubmit={e => { e.preventDefault(); send(); }} noValidate>
         <p className="t-subhead muted" style={{ margin: 0 }}>Thirty minutes on your own stock: we price one batch that's headed for the bin and show you the plan.</p>
-        <Field label="Your name" htmlFor="bd-name"><Input id="bd-name" value={f.name} onChange={e => { setF({ ...f, name: e.target.value }); setErr(""); }} autoComplete="name" /></Field>
-        <Field label="Company" htmlFor="bd-company"><Input id="bd-company" value={f.company} onChange={e => { setF({ ...f, company: e.target.value }); setErr(""); }} autoComplete="organization" /></Field>
-        <Field label="Work email" htmlFor="bd-email" error={err || null}><Input id="bd-email" type="email" value={f.email} onChange={e => { setF({ ...f, email: e.target.value }); setErr(""); }} autoComplete="email" spellCheck={false} autoCapitalize="none" /></Field>
+        <Field label="Your name" htmlFor="bd-name" error={err.name || null}><Input id="bd-name" value={f.name} onChange={edit("name")} autoComplete="name" /></Field>
+        <Field label="Company" htmlFor="bd-company" error={err.company || null}><Input id="bd-company" value={f.company} onChange={edit("company")} autoComplete="organization" /></Field>
+        <Field label="Work email" htmlFor="bd-email" error={err.email || null}><Input id="bd-email" type="email" value={f.email} onChange={edit("email")} autoComplete="email" spellCheck={false} autoCapitalize="none" /></Field>
         <Field label="What you make" htmlFor="bd-makes"><Select id="bd-makes" value={f.makes} onChange={e => setF({ ...f, makes: e.target.value })}>{["Snacks and drinks", "Personal care", "Dairy", "Staples", "Home care"].map(x => <option key={x}>{x}</option>)}</Select></Field>
         <Field label="Anything we should know (optional)" htmlFor="bd-note"><Textarea id="bd-note" rows={3} value={f.note} onChange={e => setF({ ...f, note: e.target.value })} /></Field>
         <p className="t-footnote subtle" style={{ margin: 0 }}>Prototype: nothing is sent anywhere; the request stays in this browser.</p>
