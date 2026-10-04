@@ -5,9 +5,9 @@
   const K = window.SC3; const D = window.SC3_DATA; const M = window.SC3_MONEY; const fmt = M.fmt;
   const { cx, ThemeProvider, useTheme, AppRoot, useApp, Icon, Button, IconButton, Badge, Chip, Kbd, Card, List, ListRow, Segmented, Switch, Field, Input, SearchField, Select, Textarea, Stepper, OTP, Tabs, Check,
     DataTable, Skeleton, Progress, Empty, Avatar, Product, Sheet, Alert, Menu, NoticeHost, useNotice, Mark, Wordmark, Splash, Page, Roll, Money, DaysNum, GateChips, Countdown, Tile, Aura, Tracker, VTracker, AgentFeed,
-    ClusterMap, HaulLine, ChannelBars, TrendChart, MixBar, CodeBlock, PhoneFrame, TrackerCard, BatchRow, ChannelTable, SplitBar, MoneyPanel, DocCard, Spinner } = K;
+    ClusterMap, HaulLine, ChannelBars, TrendChart, MixBar, CodeBlock, PhoneFrame, WindowFrame, TrackerCard, TrackerCompact, BatchRow, ChannelTable, SplitBar, MoneyPanel, DocCard, Spinner, WorkspaceMark, PoweredBy } = K;
 
-  const TOC = [["Foundations", null], ["The world", "world"], ["Mark and splash", "mark"], ["Colour", "colour"], ["Type and numerals", "type"], ["Shape, depth, materials", "shape"], ["Motion", "motion"], ["Icons", "icons"], ["Imagery", "imagery"],
+  const TOC = [["Foundations", null], ["The world", "world"], ["Mark and splash", "mark"], ["Client workspace", "workspace"], ["Colour", "colour"], ["Type and numerals", "type"], ["Shape, depth, materials", "shape"], ["Motion", "motion"], ["Icons", "icons"], ["Imagery", "imagery"],
     ["Components", null], ["Buttons and badges", "buttons"], ["Cards and lists", "cards"], ["Navigation", "nav"], ["Controls", "controls"], ["Data and tables", "data"], ["Sheets, alerts, pushes", "overlays"], ["The tracker", "tracker"], ["Agents at work", "agents"], ["Map and charts", "charts"], ["Feedback", "feedback"], ["Screen patterns", "patterns"]];
 
   function Sec({ id, title, intro, children }) { return <section className="ds-sec" id={id}><header><h2>{title}</h2>{intro && <p>{intro}</p>}</header>{children}</section>; }
@@ -38,18 +38,18 @@
     </Spec>;
   }
   function RollSpecimen() {
-    const [v, setV] = useState(21770); const vals = [21770, 21152, 49487, 630000];
+    const vals = [D.PLAN.net, D.ACTUAL.net, D.PLAN.swing, D.QUARTER.recovered].map(Math.round); const [v, setV] = useState(vals[0]);
     return <Spec label="Numbers roll in place when an agent changes them">
       <Money value={v} size="l" roll from={0} key={0} />
       <div className="ds-row">{vals.map(x => <Chip key={x} pressed={v === x} onClick={() => setV(x)}>{fmt.inr(x)}</Chip>)}</div>
     </Spec>;
   }
   function MotionSpecimen() {
-    const [step, setStep] = useState(2); const [live, setLive] = useState(true);
+    const [step, setStep] = useState(2); const [live, setLive] = useState(true); const app = useApp();
     const stages = D.STAGES.map(s => ({ id: s.id, title: s.title, human: s.human }));
     return <div className="ds-two">
       <Spec label="The tracker fills as each agent hands off">
-        <Tracker stages={stages} done={step} current={step < 9 ? step : -1} times={K.STAGE_TIMES} />
+        {app.bp === "phone" ? <TrackerCompact done={step} current={step < 9 ? step : -1} /> : <Tracker stages={stages} done={step} current={step < 9 ? step : -1} times={K.STAGE_TIMES} />}
         <div className="ds-row"><Button size="sm" icon="chevron-left" onClick={() => setStep(s => Math.max(0, s - 1))}>Back</Button><Button size="sm" variant="primary" iconRight="chevron-right" onClick={() => setStep(s => Math.min(9, s + 1))}>Next stop</Button><span className="t-footnote subtle">{step} of 9 done</span></div>
       </Spec>
       <Spec label="Agents carry an aura while they work; it stops when the work stops">
@@ -79,12 +79,12 @@
           <p className="t-footnote muted">Nothing is listed, messaged or shipped before this tap. Drag the grabber to change the sheet's height on a phone.</p>
         </div>
       </Sheet>
-      <Alert open={alert} onClose={() => setAlert(false)} title="Write off MF-2409-117?" message="1,360 units go to disposal and the ₹2,611 GST input credit is reversed. This costs ₹27,717." actions={[{ label: "Cancel", strong: true }, { label: "Write off", danger: true }]} />
+      <Alert open={alert} onClose={() => setAlert(false)} title="Write off MF-2409-117?" message={`${fmt.num(D.PLAN.units)} units go to disposal and the ${fmt.inr(D.PLAN.writeOff.itc)} GST input credit is reversed. This costs Munchly ${fmt.inr(D.PLAN.writeOff.total)}.`} actions={[{ label: "Cancel", strong: true }, { label: "Write off", danger: true }]} />
     </Spec>;
   }
 
   function Page_() {
-    const { mode, setMode } = useTheme(); const [splash, setSplash] = useState(false); const [on, setOn] = useState("world");
+    const { mode, setMode } = useTheme(); const app = useApp(); const [splash, setSplash] = useState(false); const [on, setOn] = useState("world");
     const mainRef = useRef(null);
     useEffect(() => { const root = mainRef.current; if (!root) return; const io = new IntersectionObserver(es => { es.forEach(e => { if (e.isIntersecting) setOn(e.target.id); }); }, { root, rootMargin: "-20% 0px -70% 0px" }); root.querySelectorAll("section.ds-sec").forEach(s => io.observe(s)); return () => io.disconnect(); }, []);
     const [seg, setSeg] = useState("day"); const [sw, setSw] = useState(true); const [qty, setQty] = useState(24); const [otp, setOtp] = useState(""); const [tab, setTab] = useState("plan"); const [chk, setChk] = useState(true); const [q, setQ] = useState(""); const [loading, setLoading] = useState(false);
@@ -92,7 +92,7 @@
     return <div className="ds">
       <nav className="ds-toc" aria-label="Sections"><div className="row tight" style={{ padding: "4px 8px 12px" }}><Mark size={30} /><Wordmark size={17} /></div>{TOC.map(([t, id]) => id ? <a key={id} href={"#" + id} className={cx(on === id && "on")}>{t}</a> : <div key={t} className="grp">{t}</div>)}</nav>
       <main className="ds-main" ref={mainRef}>
-        <div className="ds-top"><span className="phone-only"><Mark size={28} /></span><b className="t-headline">Design system v3</b><span className="grow" /><Segmented options={[{ id: "light", label: "Light", icon: "sun" }, { id: "dark", label: "Dark", icon: "moon" }, { id: "system", label: "Auto" }]} value={mode} onChange={setMode} label="Appearance" /></div>
+        <div className="ds-top"><span className="ds-brand"><Mark size={28} /></span><b className="t-headline">Design system v3</b><span className="grow" /><Segmented options={[{ id: "light", label: "Light", icon: "sun" }, { id: "dark", label: "Dark", icon: "moon" }, { id: "system", label: "Auto" }]} value={mode} onChange={setMode} label="Appearance" /></div>
         <div className="ds-inner">
           <div className="ds-hero">
             <div>
@@ -120,6 +120,21 @@
             </div>
           </Sec>
 
+          <Sec id="workspace" title="Client workspace" intro="Smart-Clearance is sold to manufacturers, one workspace each, set up for that manufacturer's supply chain. The product's mark and theming lead every screen and the client's workspace sits under the mark; the client's own colours stay inside its mark. On its sign-in page the client leads and Smart-Clearance signs off.">
+            <div className="ds-two">
+              <Spec label="The workspace mark: the client's colours stay inside the tile; Powered by is the product's sign-off">
+                <div className="ds-row" style={{ alignItems: "flex-end", gap: 18 }}>{[72, 56, 40, 30, 22].map(n => <WorkspaceMark key={n} ws={D.WORKSPACE} size={n} />)}</div>
+                <div className="ds-row" style={{ gap: 24 }}><PoweredBy /><PoweredBy size="sm" /></div>
+              </Spec>
+              <Spec label="Desktop sidebar: the product's mark first, the workspace under it">
+                <div className="ds-sbdemo"><div className="sb-brand"><Mark size={32} /><Wordmark size={18} /></div><div className="sb-ws"><WorkspaceMark ws={D.WORKSPACE} size={30} /><span className="who"><span className="ws-name"><b>{D.WORKSPACE.name}</b><Icon name="chevron-down" size={15} className="subtle" /></span><span className="ws-dom">{D.WORKSPACE.domain}</span></span></div><div className="sb-item" aria-current="page"><Icon name="layout-dashboard" size={19} /><span>Command Center</span></div><div className="sb-item"><Icon name="route" size={19} /><span>Route Room</span></div></div>
+              </Spec>
+            </div>
+            <Spec label="The browser shows the client's own address; on a phone the workspace sits at the left of the bar">
+              <WindowFrame url={"https://" + D.WORKSPACE.domain + "/command"} style={{ height: 112 }}><div className="row" style={{ height: 72, padding: "0 18px", gap: 10 }}><span className="ws-lead" aria-hidden="true"><WorkspaceMark ws={D.WORKSPACE} size={30} /></span><b className="t-headline">Command Center</b></div></WindowFrame>
+            </Spec>
+          </Sec>
+
           <Sec id="colour" title="Colour" intro="A sage-tinted neutral ground with white cards in light; a deep green-black with a faint aurora in dark. Every text pair is at least 4.5:1 in both modes. Fields keep their hue's own text colour, never grey.">
             <div className="ds-two"><Edition theme="light" list={LIGHT} /><Edition theme="dark" list={DARK} /></div>
             <Spec label="Channel colours, in fixed series order; validated for colour-blind and normal-vision separation in both modes">
@@ -130,10 +145,10 @@
           <Sec id="type" title="Type and numerals" intro="Bricolage Grotesque carries the numbers and titles, heavy and tight like Monzo's; Geist sets every operational word; Geist Mono sets ids, times and JSON; Noto Sans Devanagari keeps Hindi in step.">
             <div className="ds-two"><UrgencySpecimen /><RollSpecimen /></div>
             <Spec label="Money: the rupee sign and paise set small">
-              <div className="ds-row" style={{ gap: 28, alignItems: "flex-end" }}><Money value={21770} size="xl" style={{ color: "var(--primary-text)" }} /><Money value={-27716.8} size="m" decimals style={{ color: "var(--red-text)" }} /><Money value={14.2} size="m" decimals /></div>
+              <div className="ds-row" style={{ gap: 28, alignItems: "flex-end" }}><Money value={21770} size="xl" style={{ color: "var(--primary-text)" }} /><Money value={-D.PLAN.writeOff.total} size="m" decimals style={{ color: "var(--red-text)" }} /><Money value={14.2} size="m" decimals /></div>
             </Spec>
             <Spec label="Roles">
-              {[["Large title · 36", "t-large", "Command Center"], ["Title 1 · 30", "t-title1", "Route Room"], ["Title 2 · 24", "t-title2", "Six channels, priced"], ["Title 3 · 20", "t-title3", "Recommended split"], ["Headline · 17", "t-headline", "Masala Chips 150 g"], ["Body · 15", "t-body", "Nothing is listed, messaged or shipped before your tap."], ["Subhead · 14", "t-subhead muted", "Rakesh Traders · Kalamna Market godown, Nagpur"], ["Footnote · 13", "t-footnote subtle", "Synthetic demo data · ITC on donations is indicative"], ["Mono · ids and JSON", "mono", "MF-2409-117 · POST /v1/listings · 201"], ["Devanagari", "hi t-callout", "आज का खास ऑफर: 10 पैकेट लो, 2 मुफ़्त"]].map(([k, c, t]) => <div key={k} className="typerow"><span className="ds-code">{k}</span><span className={c}>{t}</span></div>)}
+              {[["Large title · 36", "t-large", "Command Center"], ["Title 1 · 30", "t-title1", "Route Room"], ["Title 2 · 24", "t-title2", "Five channels, priced"], ["Title 3 · 20", "t-title3", "Recommended split"], ["Headline · 17", "t-headline", "Masala Chips 150 g"], ["Body · 15", "t-body", "Nothing is listed, messaged or shipped before your tap."], ["Subhead · 14", "t-subhead muted", "Rakesh Traders · Kalamna Market godown, Nagpur"], ["Footnote · 13", "t-footnote subtle", "Synthetic demo data · disposal, EPR and CO₂e are indicative"], ["Mono · ids and JSON", "mono", "MF-2409-117 · POST /v1/listings · 201"], ["Devanagari", "hi t-callout", "आज का खास ऑफर: 10 पैकेट लो, 2 मुफ़्त"]].map(([k, c, t]) => <div key={k} className="typerow"><span className="ds-code">{k}</span><span className={c}>{t}</span></div>)}
             </Spec>
           </Sec>
 
@@ -222,7 +237,7 @@
 
           <Sec id="tracker" title="The tracker" intro="Horizontal on wide screens, vertical in a sheet on phones, the way delivery apps show an order's stops. The human stop pulses amber when it waits for you.">
             <div className="ds-two">
-              <Spec label="Horizontal"><Tracker stages={D.STAGES.map(s => ({ id: s.id, title: s.title, human: s.human }))} done={5} current={5} times={K.STAGE_TIMES} /></Spec>
+              {app.bp === "phone" ? <Spec label="Compact, on phones (tap for every stop)"><TrackerCompact done={5} current={5} /></Spec> : <Spec label="Horizontal"><Tracker stages={D.STAGES.map(s => ({ id: s.id, title: s.title, human: s.human }))} done={5} current={5} times={K.STAGE_TIMES} /></Spec>}
               <Spec label="Vertical"><VTracker items={D.STAGES.slice(3, 8).map(s => ({ id: s.id, title: s.title, text: s.money, time: K.STAGE_TIMES[s.id], human: s.human }))} done={2} current={2} /></Spec>
             </div>
           </Sec>

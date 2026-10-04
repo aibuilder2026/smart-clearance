@@ -1,6 +1,6 @@
 /* documentation layout for the design-system page (not part of the product system) */
 .ds { position: absolute; inset: 0; display: grid; grid-template-columns: 248px minmax(0, 1fr); }
-@container app (max-width: 1099px) { .ds { grid-template-columns: minmax(0, 1fr); } .ds-toc { display: none; } }
+@container app (max-width: 1099px) { .ds { grid-template-columns: minmax(0, 1fr); } .ds > .ds-toc { display: none; } }
 .ds-toc { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 2px; padding: 18px 12px; overflow: auto; background: var(--glass); -webkit-backdrop-filter: saturate(180%) blur(22px); backdrop-filter: saturate(180%) blur(22px); box-shadow: var(--hair) 0 0 var(--line); }
 .ds-toc a { display: flex; align-items: center; gap: 10px; height: 34px; padding: 0 10px; border-radius: 9px; color: var(--fg-2); font-size: 14px; font-weight: 500; text-decoration: none; }
 .ds-toc a:hover { background: var(--fill); color: var(--fg); }
@@ -12,6 +12,9 @@
 @container app (min-width: 768px) { .ds-inner { padding: 0 40px 120px; } }
 .ds-top { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 12px; height: 60px; padding: 0 20px; background: var(--glass); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); box-shadow: 0 var(--hair) 0 var(--line); }
 @container app (min-width: 768px) { .ds-top { padding: 0 40px; } }
+/* the contents list carries the wordmark; where it hides, the top bar carries the mark */
+.ds-top .ds-brand { display: none; }
+@container app (max-width: 1099px) { .ds-top .ds-brand { display: inline-flex; } }
 .ds-hero { display: grid; gap: 28px; padding: 40px 0 56px; align-items: center; }
 @container app (min-width: 1100px) { .ds-hero { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 48px; padding: 64px 0 72px; } }
 .ds-hero h1 { font-family: var(--font-display); font-weight: 780; font-size: clamp(40px, 6.4cqi, 72px); line-height: 1; letter-spacing: -0.03em; word-spacing: 0.04em; font-variation-settings: "opsz" 96, "wdth" 94; }
@@ -56,3 +59,6 @@ section.ds-sec > header p { margin-top: 8px; font-size: 16px; color: var(--fg-2)
 .rule-list > div { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 14px; padding: 16px 0; box-shadow: 0 var(--hair) 0 var(--line); }
 .rule-list b { display: block; font-size: 16px; font-weight: 650; }
 .rule-list p { font-size: 14.5px; color: var(--fg-2); }
+/* the client workspace specimen: a slice of the desktop sidebar */
+.ds-sbdemo { display: grid; gap: 4px; max-width: 256px; padding: 14px 12px; border-radius: 20px; background: var(--glass); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+.ds-sbdemo .sb-ws { margin-top: 0; }

@@ -1,9 +1,9 @@
 /* Smart-Clearance v3 · offline shell. Pages and our own scripts: network first, cache as fallback.
    Pinned CDN libraries, fonts and images: cache first. Bump VERSION to retire old caches. */
-const VERSION = "sc3-v1";
+const VERSION = "sc3-v2";
 const SHELL = ["./", "./Smart-Clearance%20app%20v3.html", "./app.css", "./app.js", "./manifest.webmanifest",
   "./system/tokens.css", "./system/base.css", "./system/components.css", "./system/icons.js", "./system/kit.js", "./system/world.js", "./system/product.js", "./system/img/icon.svg",
-  "./screens/screens.css", "./screens/common.js", "./screens/brand.js", "./screens/trade.js", "./screens/finance.js", "./screens/admin.js", "./screens/roles.js",
+  "./screens/screens.css", "./screens/common.js", "./screens/brand.js", "./screens/trade.js", "./screens/finance.js", "./screens/admin.js", "./screens/auth.js", "./screens/roles.js",
   "./core/money.js", "./core/data.js", "./core/store.js", "./core/flow.js", "./icons/icon-192.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(VERSION).then(c => Promise.all(SHELL.map(u => c.add(u).catch(() => null)))).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim())); });

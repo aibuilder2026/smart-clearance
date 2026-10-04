@@ -347,6 +347,14 @@ components:
   sidebar-item-active:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.ink}"
+  workspace-pill:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.md}"
+    padding: "8px 10px 8px 8px"
+  workspace-pill-dark:
+    backgroundColor: "{colors.fill-2-dark}"
+    textColor: "{colors.ink-dark}"
   segmented:
     backgroundColor: "{colors.fill-2}"
     rounded: "{rounded.sm}"
@@ -407,7 +415,7 @@ A quiet sage palette with one brand green and three single-meaning signals, plus
 - **Scan Glow** (`scan-glow`): the glowing camera scanline and the bright stop of the agent aura only.
 
 ### Secondary
-- **Yes Amber** (`yes-amber`, dark `yes-amber-dark`): the human yes. The Approve button, a tracker stop that waits on a person (the dot, its ping and the compact segment), the "their move" ring on the demo device, and the amber pin in the mark. Text on amber is `yes-amber-fg`; amber badges use `yes-amber-soft` with `yes-amber-text`.
+- **Yes Amber** (`yes-amber`, dark `yes-amber-dark`): the human yes. The Approve button, the distributor's one-time permission ("Allow") and the status tile of a paused permission, a tracker stop that waits on a person (the dot, its ping and the compact segment), the "their move" ring on the demo device, and the amber pin in the mark. Text on amber is `yes-amber-fg`; amber badges use `yes-amber-soft` with `yes-amber-text`.
 
 ### Tertiary
 - **Risk Red** (`risk-red`, `risk-red-text`, `risk-red-soft`): risk and the bin. At-risk countdown fills, failed gate chips, loss figures (`.neg`), invalid fields, notification counts, the write-off channel. `destructive` is the solid destructive button only.
@@ -415,7 +423,7 @@ A quiet sage palette with one brand green and three single-meaning signals, plus
 - **Push Blue** (`push-blue` family): push and information only: notification badges with a bell, info icon tiles, numbers in JSON cards.
 
 ### Categorical (charts)
-- **Channel palette** (`channel-kirana`, `channel-expiresoon`, `channel-staff`, `channel-d2c`, `channel-foodbank`, `channel-writeoff`, each with a `-dark` twin): the six exits, always drawn in that fixed series order (kirana, ExpireSoon, staff, D2C, food bank, write-off) in split bars, channel bars, the mix bar, trend lines and table swatches. The set was validated for a shared lightness band, chroma, colour-vision-deficiency and normal-vision separation in each theme; change one hue and the whole set must be re-checked.
+- **Channel palette** (`channel-kirana`, `channel-expiresoon`, `channel-staff`, `channel-d2c`, `channel-foodbank`, `channel-writeoff`, each with a `-dark` twin): the six exits, always drawn in that fixed series order (kirana, ExpireSoon, staff, D2C, food bank, write-off) in split bars, channel bars, the mix bar, trend lines and table swatches. A distributor's stock has five exits, the four channels (ExpireSoon, kirana, staff sale, food bank) plus the bin; discount D2C applies only to a manufacturer's own warehouse stock, so it appears only where that stock is charted. The palette keeps its D2C hue for those charts. The set was validated for a shared lightness band, chroma, colour-vision-deficiency and normal-vision separation in each theme; change one hue and the whole set must be re-checked.
 
 ### Neutral
 - **Sage Ground** (`ground` / `ground-dark`): the app root behind everything, under the aurora (`aurora-mint`, `aurora-sky` in light; `aurora-green-dark`, `aurora-teal-dark`, `aurora-gold-dark` in dark, three blurred radial washes at the top of the ground, plus a 5% fractal-noise grain in dark).
@@ -429,11 +437,11 @@ A quiet sage palette with one brand green and three single-meaning signals, plus
 ### Named Rules
 **The Live Colour Rule.** Colour appears only where something is live or decided. Resting chrome is sage neutrals; green, amber, red and violet arrive with a state.
 
-**The One Yes Rule.** Amber marks only the moment a person is the gate: the Approve action and the stop that waits on them. The agents' work is green. Amber is never a warning colour or a decoration.
+**The One Yes Rule.** Amber marks only the moment a person is the gate: the Approve action, the distributor's one-time Allow (and that permission's status while he has paused it), and the stop that waits on them. The agents' work is green. Amber is never a warning colour or a decoration.
 
 **The Single Meaning Rule.** Red is risk and the bin, violet is ExpireSoon, blue is push and information. A hue outside its meaning is a defect.
 
-**The Fixed Series Rule.** Channels are drawn in the order kirana, ExpireSoon, staff, D2C, food bank, write-off, in their channel colours, everywhere a channel is charted.
+**The Fixed Series Rule.** Channels are drawn in the order kirana, ExpireSoon, staff, D2C, food bank, write-off, in their channel colours, everywhere a channel is charted. A chart of a distributor's stock has no D2C series; the other five keep their order and hues.
 
 **The Composed-Not-Inverted Rule.** Dark mode is its own palette (green-black ground, lifted green, darker channel hues, black shadows with an inner highlight), never a filter over light.
 
@@ -469,9 +477,9 @@ A quiet sage palette with one brand green and three single-meaning signals, plus
 
 Every layout decision reads the app's own width through a size container (`container-name: app`), so a device frame on the demo stage renders exactly as the device would. Breakpoints: **phone** under 768px, **tablet** 768–1099px, **desktop** 1100px and up; proof widths 390, 820 and 1440.
 
-- **Phone:** content scrolls under a frosted tab bar (64px plus the bottom safe area) of at most four role destinations (Today, Route, Live, Batches for the operator); setup and reports are hidden on phone. The inbox is the bell and the profile is the portrait in the navigation bar. Navigation bar 56px plus the top safe area; large-title padding 16px. Sheets rise from the bottom with medium (58%) and large (94%) detents.
-- **Tablet:** a 76px compact rail (icons only, mark at the head, portrait at the foot); sheets become a floating side panel.
-- **Desktop:** a 256px frosted sidebar with mark and wordmark, section labels, counts, and the person at the foot; content padding 28px; inspector width 360px. On the demo stage a 360px narration column sits beside the device frames (under the stage below 1100px).
+- **Phone:** content scrolls under a frosted tab bar (64px plus the bottom safe area) of at most four role destinations (Today, Route, Live, Batches for the operator); setup and reports are hidden on phone. The inbox is the bell and the profile is the portrait in the navigation bar; the client's workspace is the button at its left, and the theme is chosen in Profile. Navigation bar 56px plus the top safe area; large-title padding 16px. Sheets rise from the bottom with medium (58%) and large (94%) detents.
+- **Tablet:** a 76px compact rail (icons only, the product mark at the head with the client's mark under it, portrait at the foot); sheets become a floating side panel.
+- **Desktop:** a 256px frosted sidebar with mark and wordmark, the client's workspace pill under them, section labels, counts, and the person at the foot; content padding 28px; inspector width 360px. On the demo stage a 360px narration column sits beside the device frames (under the stage below 1100px).
 - **Safe areas:** `env(safe-area-inset-top/bottom)` feed the navigation bar, tab bar, sheets, splash and lock screen.
 - **Spacing:** a 4pt grid (4, 8, 12, 16, 20, 24, 32, 40, 56, 72). Stacks gap 16 (tight 8, snug 12, loose 24); rows gap 12; cards pad 20 (large 24); list rows 52px minimum at 10px 16px; inset separators start at 16px, 60px when rows lead with an icon tile.
 - **Targets:** tab-bar items and compact rail items are 44px; list rows 52px; large and extra-large buttons 48 and 56px. On touch screens (`pointer: coarse`) every default button grows to 44px and icon buttons to 44 by 44; small buttons, chips, segmented controls, tabs, round close buttons and "continue as" links keep their drawn size and take a 44px hit area from an invisible overlay; stepper buttons grow to 44px tall.
@@ -530,12 +538,12 @@ Components are HIG in behaviour and shadcn in anatomy: quiet at rest, decisive o
 - **Also:** search field (38px, fill, no ring), stepper (36px, fill, tabular value), OTP boxes (48 × 56px), HIG switch (51 × 31px, sprung knob), checkbox (22px at 7px), segmented control and pill tabs with a sliding surface thumb.
 
 ### Navigation
-- **Navigation bar:** transparent over the large title; once the title scrolls away it frosts, shows a one-pixel bottom hairline and fades in the centred 16px/600 title. Back is green text with a chevron (label hidden on phone when scrolled). Actions on the right: the mode menu, the bell with a red count, the portrait.
+- **Navigation bar:** transparent over the large title; once the title scrolls away it frosts, shows a one-pixel bottom hairline and fades in the centred 16px/600 title. Back is green text with a chevron (label hidden on phone when scrolled). Actions on the right: the Appearance menu (tablet and desktop only; on phones the theme lives in Profile), the bell with a red count, the portrait. With no back button, a phone's bar leads with the workspace button (see Client Workspace).
 - **Tab bar (phone):** frosted, 64px plus safe area; icon (23px, stroke 2.1 when current) over an 11px/600 label; current turns green-text. The shell renders at most four role destinations, whatever the navigation data holds.
-- **Sidebar (desktop) / rail (tablet):** frosted; items 38px at 10px radius, the current item is a surface pill with shadow-1 and a green icon (a fill in dark); 44px icon-only items on the rail.
+- **Sidebar (desktop) / rail (tablet):** frosted; items 38px at 10px radius, the current item is a surface pill with shadow-1 and a green icon (a fill in dark); 44px icon-only items on the rail. The product's mark leads both; the client's workspace sits under it.
 
 ### Sheets, Alerts, Banners, Toasts
-- **Sheet:** bottom sheet with a 36 × 5px grabber, medium and large detents, drag to settle or dismiss, sprung in (stiffness 420, damping 40, mass 0.9) over a sage scrim; a floating side panel (460px, 12px inset, 24px radius) from tablet up; centred form sheet when asked. Header 17px/650 with a round close button; footer separated by a hairline. A sheet (and an alert) takes focus when it opens, keeps Tab inside, closes on Escape and gives focus back to whatever opened it; with one over another only the top one listens. Inside a device preview (the demo, the design system page) it stays non-modal, so focus and Tab remain with the page around the device.
+- **Sheet:** bottom sheet with a 36 × 5px grabber, medium and large detents, drag to settle or dismiss, sprung in (stiffness 420, damping 40, mass 0.9) over a sage scrim; a floating side panel (460px, 12px inset, 24px radius) from tablet up; centred form sheet when asked. Header 17px/650 with a round close button; footer separated by a hairline. A bottom sheet is always full height and slides down to show its medium detent; its bottom padding grows by the same distance, so the footer sits at the bottom of the screen at either detent. When the content overflows, the body becomes a focusable region (`tabindex="0"`) named by the sheet's title, with the 2px focus ring drawn inside its edge, so a keyboard can scroll it. A sheet (and an alert) takes focus when it opens, keeps Tab inside, closes on Escape and gives focus back to whatever opened it; with one over another only the top one listens. Inside a device preview (the demo, the design system page) it stays non-modal, so focus and Tab remain with the page around the device.
 - **Alert:** 320px frosted, centred text, hairline-divided actions.
 - **Banner:** frosted push banner (22px radius) top of phone, docked top-right at 380px from tablet.
 - **Toast:** elevated card at 14px radius above the tab bar on phone, bottom-centre elsewhere.
@@ -571,10 +579,20 @@ Credit notes, e-way bills and certificates keep a white page (#fffefb, 6px radiu
 Wrapping a surface in the ExpireSoon scope re-points every brand role to violet and switches numerals and titles to Geist: a violet-tinted top bar with the hourglass logo, date tags in mono on everything, 18px-radius listing cards and a featured lot ringed in violet.
 
 ### The Approve Moment (signature interaction)
-Approve is amber; the tap shows a loading spinner for 650ms, then the tracker fills to Execute, the van route draws across the map, the figures roll, and the sheet turns into "Plan placed": a green ring and tick draw in (600ms), the time of approval, and the ₹49,487 swing rolls up from zero. Under reduced motion every step lands in its final state at once.
+Approve is amber; the tap shows a loading spinner for 650ms, then the tracker fills to Execute, the van route draws across the map, the figures roll, and the sheet turns into "Plan placed": a green ring and tick draw in (600ms), the time of approval, and the ₹26,340 swing rolls up from zero. Under reduced motion every step lands in its final state at once.
+
+### Client Workspace
+Each client runs in its own workspace (Munchly's is `munchly.smartclearance.com`). The rule is product first: the Smart-Clearance mark and theming lead every screen of a client's workspace, and the client's workspace sits under it.
+- **Desktop:** a surface pill under the sidebar lockup (14px radius, shadow-1 and a hairline ring, shadow-2 on hover; a fill with no shadow in dark): the client's 30px mark, its name (14px/650) and a chevron on one line, its address (11.5px, tertiary) on the next.
+- **Tablet rail:** the client's 30px mark under the product mark, in a 48px button.
+- **Phone:** one 40px button at the left of the navigation bar: the product mark, a one-device-pixel hairline and the client's mark. It opens the workspace sheet (the client's mark, name and address chip; who you are and how you signed in; your workspaces; "Powered by Smart-Clearance" at the foot).
+- **The client's mark:** the client's own colours stay inside its mark and nowhere else in the interface. Munchly's mark is an orange gradient squircle tile (#f68d3e to #d6461e) with a bite out of the top-right corner and a white m. A client without artwork gets its initial in white on its colour.
+- **Powered by:** "Powered by Smart-Clearance" (12.5px tertiary, the still mark and the wordmark in secondary ink) is the product's sign-off on a client's surfaces: the sign-in foot, the workspace sheet, the workspace settings card.
+- **Sign-in:** the client leads its own sign-in page: its mark, its name (22px/700) and its address chip (a 26px mono pill with a lock). The product signs off at the foot, and on desktop the product's lockup and tagline lead the hero beside the form. The sign-in is email or phone first, one field: a munchly.in address opens the Google Workspace account sheet, an invited number opens the one-time-code sheet, a first invitation opens the join sheet, and "Find your workspace" is the one platform-level sheet, led by the product's lockup.
+- **In the guided demo:** the browser chrome shows the client's address (a lock, the host, then the path in tertiary) instead of a title, and the sign-in hides any result the story hasn't reached yet (the recovered figure, the tracker and the routed chip).
 
 ### Mark, Splash and Device Frames
-The mark is a green-gradient squircle with the route drawn as a white S from the godown dot to an amber pin; the splash draws it (spring scale, 750ms path draw, the pin drops and pings in amber) and lets the wordmark rise letter by letter. Device frames (a 390 × 844 phone with island, status bar and home bar; a window with traffic lights) exist for the demo stage only.
+The mark is a green-gradient squircle with the route drawn as a white S from the godown dot to an amber pin; the splash draws it (spring scale, 750ms path draw, the pin drops and pings in amber) and lets the wordmark rise letter by letter; in the app the client's workspace (its mark and "Munchly Foods workspace") fades in under the tagline. Device frames (a 390 × 844 phone with island, status bar and home bar; a window with traffic lights) exist for the demo stage only.
 
 ### Motion
 Ease `cubic-bezier(0.22, 1, 0.36, 1)`, ease-in `cubic-bezier(0.55, 0, 1, 0.45)`, and a `linear()` spring with one 10% overshoot for switch knobs. Durations: 160ms (press, hover, colour), 240ms (base state, interactive cards), 420ms (progress, numeral axes), 700ms (odometer roll). Sheets and banners on springs; screens cross-fade with a 6px rise over 180ms; renders lift 6px and settle once over 4.8s. Under `prefers-reduced-motion` every animation and transition collapses to an instant, the aura and pings stop, rolls show their final value and the splash holds 600ms. Nothing loops (WCAG 2.2.2): every ambient animation stops within five seconds, and only loading indicators (spinner, skeleton) turn until the load ends.
@@ -607,6 +625,7 @@ Every money figure on screen is computed by `design3/core/money.js` from the jou
 - **Do** compose light and dark separately and check both on every new surface.
 - **Do** measure text contrast (4.5:1) on the ground it actually sits on: fills, tinted chips and chat bubbles included, and after any opacity. Secondary text on a fill takes `ink-secondary`; `ink-tertiary` is for the plain surfaces. `design3/a11y` (`npm test`) checks every screen in both themes.
 - **Do** compute every money figure in core/money.js and label illustrative splits as illustrative.
+- **Do** lead every screen of a client's workspace with the Smart-Clearance mark and theming, with the client's workspace under it; keep the client's colours inside its mark.
 - **Do** give every raster a prompt sidecar and recoloured contact shadow, and set label text in type over photos.
 
 ### Don't:
@@ -618,3 +637,4 @@ Every money figure on screen is computed by `design3/core/money.js` from the jou
 - **Don't** play the carton loop on a dark ground; show the poster still.
 - **Don't** loop an animation forever. Stop it within five seconds; loading indicators are the only exception.
 - **Don't** put more than four role destinations in the phone tab bar.
+- **Don't** carry a client's brand colours into buttons, fills, grounds or charts; they live only inside its mark.

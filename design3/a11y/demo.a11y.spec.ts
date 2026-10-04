@@ -8,7 +8,7 @@ const scan = (page, state: string) => scanPage(page, state, { targetSizeExclude:
 // The guided demo, stage by stage: scan where each stage opens, then after every beat (the → key
 // completes the next beat, exactly as a presenter would), and the finale after stage 9.
 // Beats per stage, mirrored from demo/director.jsx; the desktop run checks the count against the page.
-const BEATS = [1, 2, 4, 1, 2, 2, 10, 4, 2];
+const BEATS = [4, 2, 4, 1, 2, 2, 10, 5, 2];
 const TITLES = ['Connect', 'Detect', 'Verify', 'Value', 'Decide', 'Approve', 'Execute', 'Settle', 'Report'];
 
 for (let n = 1; n <= 9; n++) {

@@ -2,48 +2,57 @@
    The demo steps through stages (and can fast-forward to any stage); the app lets the agents run live. */
 (function () {
   const D = window.SC3_DATA, Store = window.SC3_STORE, M = window.SC3_MONEY; const fmt = M.fmt;
-  const E = D.EVENTS; const PLAN = D.PLAN;
-  const CONNECT_EV = { stage: "connect", agent: "Data", icon: "database", at: "Setup", min: 0, text: "Mapped 8 DMS columns, loaded 312 batches from 4 distributors and back-filled 90 days of sell-through by pincode into BigQuery.", calls: [["bigquery.load", "312 batches", "ok"], ["sellthrough.backfill", "90 days · by pincode", "ok"]] };
+  const E = D.EV; const PLAN = D.PLAN;
+  const CONNECT_EV = { stage: "connect", agent: "Data", icon: "database", at: "Thu 16:30", min: 0, text: "Mapped 8 DMS columns, loaded 312 batches from 4 distributors and back-filled 90 days of sell-through by pincode and by shop into BigQuery.", calls: [["bigquery.load", "312 batches", "ok"], ["sellthrough.backfill", "90 days · by pincode, by shop", "ok"]] };
   let nid = 0; const id = p => p + "-" + Date.now().toString(36) + "-" + (++nid);
   const feed = (s, ev) => { s.feed.push(Object.assign({ id: id("ev") }, ev)); };
   const notify = (s, to, n) => { s.notifications.unshift(Object.assign({ id: id("n"), to, read: false }, n)); };
   const audit = (s, who, what, target, at) => { s.audit.unshift({ id: id("a"), who, what, target, at: at || "now" }); };
+  const all = s => s.hero.orders.length === D.KIRANAS.length;
 
   // each action mutates a draft of the store; names follow the journey map
   const A = {
-    connect: s => { s.setup.confirmed = true; s.setup.mapped = 8; feed(s, CONNECT_EV); audit(s, "priya", "confirmed DMS mapping and guardrails", "Setup", "Setup"); },
-    detect: s => { s.hero.phase = "at-risk"; feed(s, E[0]); notify(s, "priya", Object.assign({ link: "command" }, D.PUSH.detect)); },
-    requestPhoto: s => { s.hero.photo = { status: "requested", at: "09:05" }; feed(s, E[1]); notify(s, "rakesh", Object.assign({ link: "photo", hindi: false }, D.PUSH.verify)); },
-    sendPhoto: s => { s.hero.photo = { status: "reading", at: "09:19" }; feed(s, E[2]); audit(s, "rakesh", "sent the label photo", "MF-2409-117", "09:19"); },
-    verify: s => { s.hero.photo = { status: "verified", at: "09:20", confidence: 0.97 }; s.hero.phase = "verified"; feed(s, E[3]); },
-    value: s => { s.hero.phase = "valued"; feed(s, E[4]); },
-    decide: s => { s.hero.phase = "planned"; s.hero.plan = { status: "proposed", at: "09:22" }; feed(s, E[5]); feed(s, E[6]); notify(s, "priya", Object.assign({ link: "route" }, D.PUSH.plan)); },
-    approve: (s, by) => { s.hero.phase = "approved"; s.hero.plan = { status: "approved", at: "09:40", by: by || "priya", device: "phone" }; feed(s, E[7]); audit(s, by || "priya", "approved the plan", "MF-2409-117 · net " + fmt.inr(PLAN.net), "09:40"); },
-    list: s => { s.hero.phase = "executing"; s.hero.listing = { id: "ES-24117", status: "live", units: 772, price: 15, reserve: 13.5, at: "09:41" }; feed(s, E[8]); },
-    outreach: s => { s.hero.offer = { status: "sent", at: "09:41", shops: 38 }; feed(s, E[9]); notify(s, "ganesh", Object.assign({ link: "offer" }, D.PUSH.offer)); notify(s, "rakesh", { title: "Van route updated", body: "Orders from the Masala Chips scheme will join your next round. The ExpireSoon lot ships to Hyderabad once the balance lands.", at: "09:41", link: "route" }); },
-    order: (s, kid) => { const k = D.KIRANAS.find(x => x.id === kid) || D.KIRANAS[s.hero.orders.length]; if (!k || s.hero.orders.some(o => o.id === k.id)) return; s.hero.orders.push({ id: k.id, units: k.units, at: k.at }); if (k.id === "k0") audit(s, "ganesh", "ordered " + k.units + " units", "Masala Chips scheme", k.at); if (s.hero.orders.length === D.KIRANAS.length) feed(s, E[12]); },
+    connect: s => { s.setup.confirmed = true; s.setup.mapped = 8; feed(s, CONNECT_EV); audit(s, "priya", "confirmed DMS mapping and guardrails", "Setup", "Thu 16:41"); },
+    // Rakesh Traders lets the agent act in his name, inside Munchly's floors; he can pause it at any time
+    permit: s => { if (s.setup.permission) return; s.setup.permission = { by: "rakesh", at: "Thu 16:52", paused: false }; feed(s, E("permit")); audit(s, "rakesh", "gave the one-time permission to act in his name", "Rakesh Traders · inside Munchly's floors", "Thu 16:52"); notify(s, "priya", { title: "Rakesh Traders is set up", body: "Rakesh bhai signed in and allowed listings, scheme offers, invoice drafts and dispatch slots in his name, inside your floors.", at: "Thu 16:52", link: "setup" }); },
+    pause: (s, on) => { const p = s.setup.permission; if (!p) return; p.paused = !!on; audit(s, "rakesh", on ? "paused the agent" : "resumed the agent", "Rakesh Traders · one-time permission"); notify(s, "priya", on ? { title: "Rakesh Traders paused the agent", body: "Nothing more is listed, offered or invoiced in his name until he resumes.", at: "now", link: "command" } : { title: "Rakesh Traders resumed the agent", body: "The agents pick up where they stopped.", at: "now", link: "command" }); },
+    join: (s, uid) => { const u = s.users.find(x => x.id === uid); if (!u || u.status !== "invited") return; u.status = "active"; audit(s, uid, "joined Munchly Foods' workspace", u.invitedBy ? "invited by " + u.invitedBy : D.WORKSPACE.domain); },
+    detect: s => { s.hero.phase = "at-risk"; feed(s, E("watch")); notify(s, "priya", Object.assign({ link: "command" }, D.PUSH.detect)); },
+    requestPhoto: s => { s.hero.photo = { status: "requested", at: "09:05" }; feed(s, E("ask")); notify(s, "rakesh", Object.assign({ link: "photo", hindi: false }, D.PUSH.verify)); },
+    sendPhoto: s => { s.hero.photo = { status: "reading", at: "09:19" }; feed(s, E("photo")); audit(s, "rakesh", "sent the label photo", "MF-2409-117", "09:19"); },
+    verify: s => { s.hero.photo = { status: "verified", at: "09:20", confidence: 0.97 }; s.hero.phase = "verified"; feed(s, E("read")); },
+    value: s => { s.hero.phase = "valued"; feed(s, E("value")); },
+    decide: s => { s.hero.phase = "planned"; s.hero.plan = { status: "proposed", at: "09:22" }; feed(s, E("route")); feed(s, E("notify")); notify(s, "priya", Object.assign({ link: "route" }, D.PUSH.plan)); },
+    approve: (s, by) => { s.hero.phase = "approved"; s.hero.plan = { status: "approved", at: "09:40", by: by || "priya", device: "phone" }; feed(s, E("approved")); audit(s, by || "priya", "approved the plan", "MF-2409-117 · net " + fmt.inr(PLAN.net), "09:40"); notify(s, "rakesh", Object.assign({ link: "home" }, D.PUSH.approved)); },
+    list: s => { s.hero.phase = "executing"; s.hero.listing = { id: "ES-24117", status: "live", units: 772, price: 15, reserve: 13.5, at: "09:41" }; feed(s, E("list")); },
+    outreach: s => { s.hero.offer = { status: "sent", at: "09:41", shops: D.OFFERED }; feed(s, E("outreach")); notify(s, "ganesh", Object.assign({ link: "offer" }, D.PUSH.offer)); },
+    order: (s, kid) => { const k = D.KIRANAS.find(x => x.id === kid) || D.KIRANAS[s.hero.orders.length]; if (!k || s.hero.orders.some(o => o.id === k.id)) return; s.hero.orders.push({ id: k.id, units: k.units, at: k.at }); if (k.id === "k0") audit(s, "ganesh", "ordered " + k.units + " packets", "Masala Chips scheme", k.at); if (all(s)) feed(s, E("orders")); },
     allOrders: s => { D.KIRANAS.forEach(k => A.order(s, k.id)); },
-    bid: (s, price) => { const p = price || 13; if (s.hero.bids.some(b => b.status === "placed" || b.status === "countered")) return; s.hero.bids.push({ id: "b" + (s.hero.bids.length + 1), price: p, at: "11:02", by: "venkat", status: "placed" }); s.hero.chat.push(Object.assign({}, D.CHAT[0], { text: `Can you do ₹${p % 1 ? p.toFixed(2) : p} for all 772?` })); audit(s, "venkat", "bid ₹" + p.toFixed(2), "ES-24117", "11:02"); },
-    counter: s => { const b = s.hero.bids[s.hero.bids.length - 1]; if (b) { b.status = "countered"; b.counter = D.COUNTER.price; } s.hero.chat.push(D.CHAT[1]); feed(s, E[10]); },
-    accept: s => { const b = s.hero.bids[s.hero.bids.length - 1]; if (b) b.status = "accepted"; s.hero.chat.push(D.CHAT[2]); s.hero.award = Object.assign({ at: "11:09", buyer: D.BUYER.name, status: "token paid" }, D.AWARD); s.hero.listing.status = "awarded"; feed(s, E[11]); notify(s, "priya", Object.assign({ link: "execution" }, D.PUSH.award)); },
-    donate: s => { s.mango.donation = "booked"; feed(s, E[13]); notify(s, "meera", { title: "Pickup request · Mango Drink", body: "58 packs of Mango Drink, 22 days left, with the FSSAI checklist. Pickup from Begum Bazaar?", at: "Day 0", link: "pickups" }); },
-    vanRound: s => { s.hero.van = { status: "done", done: D.KIRANAS.length }; feed(s, E[14]); },
-    dispatch: s => { s.hero.truck = { status: "dispatched", at: "Day 3" }; if (s.hero.award) s.hero.award.status = "paid"; s.hero.phase = "dispatched"; audit(s, "rakesh", "dispatched the Hyderabad lot", "ES-24117", "Day 3"); },
-    settle: s => { s.hero.phase = "settled"; s.hero.docs = D.DOCS.map(d => ({ id: d.id, status: d.status })); feed(s, E[15]); notify(s, "anita", Object.assign({ link: "paperwork" }, D.PUSH.papers)); notify(s, "vikram", Object.assign({ link: "report" }, D.PUSH.report)); },
-    confirmPickup: s => { s.mango.donation = "confirmed"; audit(s, "meera", "confirmed the pickup, Tuesday 10:00", "MF-2410-118 · 58 packs", "Day 1"); notify(s, "priya", { title: "Feeding India confirmed", body: "58 packs of Mango Drink, pickup Tuesday 10:00 from Begum Bazaar. Served at the Charminar hunger spot.", at: "Day 1", link: "execution" }); },
-    collect: s => { s.mango.donation = "collected"; audit(s, "meera", "collected 58 packs and issued the receipt", "MF-2410-118", "Day 4"); },
-    review: s => { s.hero.reviewed = true; audit(s, "anita", "reviewed the document pack", "MF-2409-117", "Day 3"); },
-    report: s => { s.hero.phase = "cleared"; s.hero.posted = true; feed(s, E[16]); notify(s, "priya", { title: "Batch closed · 0 cartons destroyed", body: `${fmt.inr(D.ACTUAL.net)} recovered, ${fmt.inr(PLAN.itcRetained)} GST credit kept, ${fmt.kg(PLAN.kg)} kept out of landfill.`, at: "Day 3", link: "command" }); audit(s, "vikram", "wrote the BRSR row", "MF-2409-117", "Day 3"); },
+    bid: (s, price) => { const p = price || 13; if (s.hero.bids.some(b => b.status === "placed" || b.status === "countered")) return; s.hero.bids.push({ id: "b" + (s.hero.bids.length + 1), price: p, at: "11:02", by: "agrawal", status: "placed" }); s.hero.chat.push(Object.assign({}, D.CHAT[0], { text: `Can you do ₹${p % 1 ? p.toFixed(2) : p} for all 772?` })); audit(s, "agrawal", "bid ₹" + p.toFixed(2), "ES-24117", "11:02"); },
+    counter: s => { const b = s.hero.bids[s.hero.bids.length - 1]; if (b) { b.status = "countered"; b.counter = D.COUNTER.price; } s.hero.chat.push(D.CHAT[1]); feed(s, E("counter")); },
+    accept: s => { const b = s.hero.bids[s.hero.bids.length - 1]; if (b) b.status = "accepted"; s.hero.chat.push(D.CHAT[2]); s.hero.award = Object.assign({ at: "11:09", buyer: D.BUYER.name, status: "token paid" }, D.AWARD); s.hero.listing.status = "awarded"; feed(s, E("accepted")); notify(s, "priya", Object.assign({ link: "execution" }, D.PUSH.award)); notify(s, "rakesh", Object.assign({ link: "orders" }, D.PUSH.won)); },
+    donate: s => { s.mango.donation = "booked"; feed(s, E("donate")); notify(s, "meera", { title: "Pickup request · Mango Drink", body: `${D.MANGO_FB} packs of Mango Drink, 22 days left, with the FSSAI checklist. Pickup from Begum Bazaar?`, at: "Day 0", link: "pickups" }); },
+    confirmPickup: s => { if (s.mango.donation !== "booked") return; s.mango.donation = "confirmed"; audit(s, "meera", "confirmed the pickup, Tuesday 10:00", `MF-2410-118 · ${D.MANGO_FB} packs`, "Day 1"); notify(s, "priya", { title: "Feeding India confirmed", body: `${D.MANGO_FB} packs of Mango Drink, pickup Tuesday 10:00 from Begum Bazaar. Served at the Charminar hunger spot.`, at: "Day 1", link: "execution" }); },
+    collect: s => { s.mango.donation = "collected"; audit(s, "meera", `collected ${D.MANGO_FB} packs and issued the receipt`, "MF-2410-118", "Day 4"); },
+    // Monday: the buyer's balance lands and his own transporter collects the lot from the godown
+    dispatch: s => { s.hero.truck = { status: "dispatched", at: "Mon 5 Oct" }; if (s.hero.award) s.hero.award.status = "paid"; s.hero.phase = "dispatched"; feed(s, E("dispatch")); audit(s, "rakesh", `loaded ${D.BUYER.name}'s truck`, `ES-24117 · ${D.BUYER.city}`, "Mon 5 Oct"); },
+    settle: s => { s.hero.phase = "settled"; s.hero.docs = D.DOCS.map(d => ({ id: d.id, status: d.status })); feed(s, E("papers")); notify(s, "anita", Object.assign({ link: "paperwork" }, D.PUSH.papers)); notify(s, "rakesh", Object.assign({ link: "orders" }, D.PUSH.invoice)); notify(s, "rakesh", Object.assign({ link: "van" }, D.PUSH.van)); },
+    issueInvoice: s => { s.hero.invoiceIssued = true; audit(s, "rakesh", "issued the invoice from Tally", D.INVOICE.no + " · " + D.BUYER.name, "Mon 5 Oct"); },
+    review: s => { s.hero.reviewed = true; audit(s, "anita", "reviewed Munchly's credit note and GST memo", "MF-2409-117", "Mon 5 Oct"); },
+    vanRound: s => { s.hero.van = { status: "done", done: D.KIRANAS.length }; feed(s, E("van")); audit(s, "rakesh", `ran the Tuesday round: ${D.KIRANAS.length} drops`, "Nagpur cluster", "Tue 6 Oct"); },
+    shelfCheck: s => { s.hero.shelf = Object.assign({ at: D.SHELF.date }, D.SHELF); feed(s, E("shelf")); notify(s, "rakesh", Object.assign({ link: "van" }, D.PUSH.shelf)); },
+    report: s => { s.hero.phase = "cleared"; s.hero.posted = true; feed(s, E("ledger")); notify(s, "priya", Object.assign({ link: "command" }, D.PUSH.closed)); notify(s, "vikram", Object.assign({ link: "report" }, D.PUSH.report)); audit(s, "vikram", "signed off the BRSR row", "MF-2409-117", "30 Oct"); },
   };
 
   // the order in which the journey happens, grouped by the stage each step belongs to
   const SCRIPT = [
-    ["connect", "connect"], ["detect", "detect"],
+    ["connect", "connect"], ["connect", "permit", { human: "rakesh" }],
+    ["detect", "detect"],
     ["verify", "requestPhoto"], ["verify", "sendPhoto", { human: "rakesh" }], ["verify", "verify"],
     ["value", "value"], ["decide", "decide"], ["approve", "approve", { human: "priya" }],
-    ["execute", "list"], ["execute", "outreach"], ["execute", "order", { arg: "k0", human: "ganesh" }], ["execute", "allOrders"], ["execute", "bid", { arg: 13, human: "venkat" }], ["execute", "counter"], ["execute", "accept", { human: "venkat" }], ["execute", "donate"],
-    ["settle", "vanRound"], ["settle", "dispatch", { human: "rakesh" }], ["settle", "settle"],
-    ["report", "report", { human: "vikram" }],
+    ["execute", "list"], ["execute", "outreach"], ["execute", "donate"], ["execute", "order", { arg: "k0", human: "ganesh" }], ["execute", "allOrders"], ["execute", "bid", { arg: 13, human: "agrawal" }], ["execute", "counter"], ["execute", "accept", { human: "agrawal" }], ["execute", "confirmPickup", { human: "meera" }],
+    ["settle", "dispatch", { human: "rakesh" }], ["settle", "settle"], ["settle", "review", { human: "anita" }], ["settle", "vanRound", { human: "rakesh" }], ["settle", "shelfCheck"],
+    ["report", "report"],
   ];
   const STAGE_IDS = D.STAGES.map(s => s.id);
   const run = (name, arg) => Store.update(s => A[name](s, arg));
@@ -52,16 +61,16 @@
   // which stage is active (0-8), or 9 when the batch is cleared
   function stageOf(state) {
     const h = state.hero;
-    if (!state.setup.confirmed) return 0;
+    if (!state.setup.confirmed || !state.setup.permission) return 0;
     if (h.phase === "watching") return 1;
     if (h.photo.status !== "verified") return 2;
     if (h.phase === "verified") return 3;
     if (h.phase === "valued") return 4;
     if (h.phase === "planned") return 5;
     if (h.phase === "approved") return 6;
-    if (h.phase === "executing") return h.award && h.orders.length === D.KIRANAS.length ? 7 : 6;
+    if (h.phase === "executing") return h.award && all(state) ? 7 : 6;
     if (h.phase === "dispatched") return 7;
-    if (h.phase === "settled") return 8;
+    if (h.phase === "settled") return h.van.status === "done" && h.shelf ? 8 : 7;
     return 9;
   }
 
@@ -81,10 +90,11 @@
     return free[0] || left[0];
   }
   function nextStep(s) {
-    const h = s.hero, auto = Agents.auto;
+    const h = s.hero, auto = Agents.auto, perm = s.setup.permission;
     if (!s.setup.confirmed) return null;
+    if (perm && perm.paused) return null; // Rakesh bhai paused the agent: nothing more happens in his name
     switch (h.phase) {
-      case "watching": return { name: "detect", delay: 2400 };
+      case "watching": return !perm ? (auto ? { name: "permit", delay: 6000, partner: "rakesh" } : null) : { name: "detect", delay: 2400 };
       case "at-risk": return h.photo.status === "none" ? { name: "requestPhoto", delay: 1800 } : h.photo.status === "requested" ? (auto ? { name: "sendPhoto", delay: 20000, partner: "rakesh" } : null) : h.photo.status === "reading" ? { name: "verify", delay: 1900 } : null;
       case "verified": return { name: "value", delay: 1500 };
       case "valued": return { name: "decide", delay: 1600 };
@@ -95,16 +105,19 @@
         const last = h.bids[h.bids.length - 1];
         if (last && last.status === "placed") return { name: "counter", delay: 1900 };
         const k = nextKirana(s, auto);
-        if (k) return { name: "order", arg: k.id, delay: !h.orders.length ? 6000 : k.id === "k0" ? 12000 : 450 + Math.random() * 400, partner: shopUser(s, k) };
-        if (auto && !h.bids.length) return { name: "bid", arg: 13, delay: 10000, partner: "venkat" };
-        if (auto && last && last.status === "countered") return { name: "accept", delay: 8000, partner: "venkat" };
+        if (k) return { name: "order", arg: k.id, delay: !h.orders.length ? 6000 : k.id === "k0" ? 12000 : 260 + Math.random() * 260, partner: shopUser(s, k) };
+        if (auto && !h.bids.length) return { name: "bid", arg: 13, delay: 10000, partner: "agrawal" };
+        if (auto && last && last.status === "countered") return { name: "accept", delay: 8000, partner: "agrawal" };
         if (auto && s.mango.donation === "booked") return { name: "confirmPickup", delay: 10000, partner: "meera" };
-        if (h.award && h.orders.length === D.KIRANAS.length && h.van.status !== "done") return { name: "vanRound", delay: 3500 };
-        if (auto && h.award && h.van.status === "done") return { name: "dispatch", delay: 10000, partner: "rakesh" };
+        if (auto && h.award && all(s) && h.truck.status !== "dispatched") return { name: "dispatch", delay: 10000, partner: "rakesh" };
         return null;
       }
       case "dispatched": return { name: "settle", delay: 1800 };
-      case "settled": return { name: "report", delay: 3500 };
+      case "settled": {
+        if (h.van.status !== "done") return auto ? { name: "vanRound", delay: 9000, partner: "rakesh" } : null;
+        if (!h.shelf) return { name: "shelfCheck", delay: 2600 };
+        return { name: "report", delay: 3500 };
+      }
       default: return null;
     }
   }

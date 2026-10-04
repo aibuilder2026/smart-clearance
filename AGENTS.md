@@ -10,13 +10,15 @@ Smart-Clearance (working title Short-Date Router) is an agentic near-expiry stoc
 - the story documents;
 - a narrated walkthrough video.
 
+Smart-Clearance is meant to be sold to manufacturers as software as a service, one workspace each at `<client>.smartclearance.com`, set up for that client's supply chain. The prototypes are Munchly Foods' workspace at munchly.smartclearance.com.
+
 The production services planned in `PLAN.md` (`web/`, `agents/`, `infra/`) do not exist yet.
 
 ## Layout
 
 | Path | What it is |
 | --- | --- |
-| `design3/` | The current design: design system, guided demo, app prototype (an installable PWA) and the accessibility suite. Start with `design3/README.md`. |
+| `design3/` | The current design: design system, guided demo, app prototype (Munchly Foods' workspace, an installable PWA) and the accessibility suite. Start with `design3/README.md`. |
 | `design2/`, `design/` | Earlier rounds, superseded by v3. Reference only. |
 | `docs/` | Story pages: `dobara-journey-map.html` (Journey Map v4.1, the source of every figure), the story, the tech stack and the walkthrough. |
 | `video/` | The narrated walkthrough. `build.py` builds the page and `record.mjs` records it with Playwright; `recorder/` is a local voice-recording page. |
@@ -32,7 +34,7 @@ cd design3 && ./dist.sh             # bundle the hosted build into design3/dist/
 python3 -m http.server 8787 --directory design3   # serve the demo, app and design system locally
 
 cd design3/a11y && npm ci && npx playwright install chromium   # once
-npm test                            # WCAG 2.2 AA suite: 235 tests in five viewports, about 4 minutes
+npm test                            # WCAG 2.2 AA suite: 270 tests in five viewports, about 5 minutes
 npm run test:desktop                # light and dark at 1440 only, for a quicker loop
 npm run report                      # the Playwright HTML report
 ```
@@ -176,9 +178,5 @@ From the Claude desktop app:
 - `.claude/jira-flow.json` names `.github/pull_request_template.md`, which is not in the repo, and there is no CI.
 - The `chrome-devtools` MCP server starts only in a new session, after a one-time approval.
 - The WCAG 2.2 criteria axe cannot check are untested.
-- The design v3 prototype still uses the Journey Map v4 figures, while the story and the Journey Map follow v4.1. SC-23 tracks the update. The v4 figures include:
-  - a −₹27,717 write-off;
-  - ₹2,611 of ITC;
-  - 12% GST;
-  - a buyer in Hyderabad;
-  - the D2C channel.
+- The smartclearance.com landing page and the super-admin console for client workspaces and their users don't exist yet. SC-25 tracks them; the workspace sign-in's "Find your workspace" is the only platform-level screen so far.
+- Only Munchly Foods is set up as a workspace. Its supply-chain profile is data in `design3/core/data.js` (`WORKSPACE`), not yet something an admin can edit.

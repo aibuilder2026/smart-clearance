@@ -1,23 +1,67 @@
-// Smart-Clearance v3 · the trade: Rakesh bhai (distributor), Ganesh ji (kirana), Venkat on ExpireSoon (buyer), Meera (food bank)
+// Smart-Clearance v3 · the trade: Rakesh bhai (distributor), Ganesh ji (kirana), Agrawal ji on ExpireSoon (buyer), Meera (food bank)
 (function () {
   const { useState, useEffect, useRef, useMemo, Fragment } = React;
   const { motion, AnimatePresence, useReducedMotion } = Motion;
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, Store = window.SC3_STORE, Flow = window.SC3_FLOW, S = window.SC3_SCREENS; const fmt = M.fmt;
-  const { cx, Icon, IconButton, Avatar, Badge, Button, Card, List, ListRow, Segmented, Switch, Stepper, Sheet, Product, Empty, Money, Roll, DaysNum, GateChips, Tile, Aura, AgentFeed, ClusterMap, HaulLine, StatusBadge, BatchRow, useApp, useNotice, Mark } = K;
+  const { cx, Icon, IconButton, Avatar, Badge, Button, Card, List, ListRow, Segmented, Switch, Stepper, Sheet, Product, Empty, Money, Roll, DaysNum, GateChips, Tile, Aura, AgentFeed, ClusterMap, HaulLine, StatusBadge, BatchRow, useApp, useNotice, Mark, WorkspaceMark } = K;
   const { useStore, useRoute, heroModel, Screen, Columns, SectionTitle, Locked } = S;
   const IMG = () => window.SC3_IMG || "system/img/";
   const distOf = me => Object.values(D.DISTRIBUTORS).find(d => d.name === (me && me.org)) || D.DISTRIBUTORS.rakesh;
   const kOf = me => D.KIRANAS.find(k => k.name === (me && me.org)) || D.KIRANAS[0];
   const cartons = u => { const c = Math.floor(u / 24), r = u % 24; return r === 12 ? `${c}½ cartons` : r ? `${c} cartons + ${r}` : `${c} carton${c === 1 ? "" : "s"}`; };
+  const ES = D.PLAN.lines.find(l => l.id === "expiresoon"), KL = D.PLAN.lines.find(l => l.id === "kirana");
+  const SHOPS = D.KIRANAS.length, CHIPS = D.SKUS.chips;
+  const all = h => h.orders.length === SHOPS;
 
   /* ======================= Rakesh bhai · distributor ======================= */
+  // the one-time permission: the agent may act in his name, inside Munchly's floors, and he can pause it
+  function PermissionCard() {
+    const [busy, setBusy] = useState(false); const [later, setLater] = useState(false); const { toast } = useNotice();
+    const allow = () => { setBusy(true); setTimeout(() => { setBusy(false); Flow.act("permit"); toast({ text: "Allowed · you can pause it any time", tone: "ok" }); }, 600); };
+    if (later) return <Card className="row wrap" style={{ gap: 14 }}><WorkspaceMark ws={D.WORKSPACE} size={36} /><div className="grow"><b>Munchly is waiting for your permission</b><div className="t-footnote muted">Nothing is listed or offered in your name until you allow it.</div></div><Button variant="secondary" onClick={() => setLater(false)}>Review</Button></Card>;
+    return <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bezel"><div className="card raised stack snug" style={{ padding: 20 }}>
+      <div className="row tight"><WorkspaceMark ws={D.WORKSPACE} size={30} /><span className="t-footnote subtle strong">{D.WORKSPACE.name} · Thu 16:50</span></div>
+      <div className="t-title3">Let Smart-Clearance act for Rakesh Traders</div>
+      <div className="stack tight">{D.SETUP.acts.map(t => <div key={t} className="row top t-subhead" style={{ gap: 10 }}><Icon name="check" size={17} stroke={2.4} style={{ color: "var(--primary-text)", marginTop: 2, flex: "none" }} /><span>{t}</span></div>)}</div>
+      <p className="t-footnote muted" style={{ margin: 0 }}>Always within Munchly's price floors. Every action shows here, and you can pause any of it. Munchly pays you the gap to the ₹{CHIPS.dp} you paid, so you end whole.</p>
+      <div className="row wrap" style={{ gap: 10 }}><Button variant="approve" size="lg" icon="check" loading={busy} onClick={allow}>Allow</Button><Button variant="ghost" size="lg" onClick={() => setLater(true)}>Not now</Button></div>
+    </div></motion.div>;
+  }
+  function ActingFor({ p }) {
+    const { toast } = useNotice();
+    const flip = () => { Flow.act("pause", !p.paused); toast({ text: p.paused ? "Resumed · the agents carry on" : "Paused · nothing more happens in your name", tone: "ok" }); };
+    return <Card className="row wrap" style={{ gap: 12 }}><span className={cx("icontile", p.paused ? "amber" : "")} style={{ width: 40, height: 40, borderRadius: 12 }}><Icon name={p.paused ? "circle-pause" : "handshake"} size={19} /></span><div className="grow" style={{ minWidth: 0 }}><b>{p.paused ? "Paused: nothing happens in your name" : "Smart-Clearance acts for you"}</b><div className="t-footnote muted">{p.paused ? "Listings, offers and invoice drafts wait until you resume." : `Inside Munchly's floors · since ${p.at} · listings, scheme offers, invoice drafts, dispatch slots`}</div></div><Button variant={p.paused ? "primary" : "secondary"} size="sm" icon={p.paused ? "play" : "pause"} onClick={flip}>{p.paused ? "Resume" : "Pause"}</Button></Card>;
+  }
+  // what he receives and what he paid: the price support makes the two equal
+  function EndWhole({ settled }) {
+    const recv = KL.gross + D.AWARD.gross + D.SUPPORT.total; const paid = D.PLAN.units * CHIPS.dp + D.SUPPORT.van + D.SUPPORT.fee;
+    return <Card className="stack snug">
+      <div className="card-head"><span className="card-title">You end whole</span><Badge tone={settled ? "green" : undefined} icon={settled ? "check" : "clock"}>{settled ? "credit note issued" : "on the plan"}</Badge></div>
+      <div className="stack tight t-subhead">
+        {[[`From ${SHOPS} kiranas (${KL.units} packets)`, KL.gross], [`From ${D.BUYER.name} (${ES.units} packets)`, D.AWARD.gross], ["Price-support credit note from Munchly", D.SUPPORT.total]].map(([k, v]) => <div key={k} className="row between"><span>{k}</span><span className="tnum">{fmt.inr(v)}</span></div>)}
+        <div className="hairline" style={{ margin: "4px 0" }} />
+        <div className="row between"><b>What you receive</b><span className="tnum strong">{fmt.inr(recv)}</span></div>
+        <div className="row between"><span>What you paid: {fmt.num(D.PLAN.units)} × ₹{CHIPS.dp}, the van and the listing fee</span><span className="tnum">{fmt.inr(-paid)}</span></div>
+        <div className="row between"><b>Your gain or loss</b><span className="tnum strong">{fmt.inr(Math.round(recv - paid))}</span></div>
+      </div>
+      <span className="t-caption subtle">Instead of waiting weeks for an expiry claim, with no claim paperwork.</span>
+    </Card>;
+  }
+  function InvoiceDraft({ h }) {
+    const inv = D.INVOICE; const { toast } = useNotice();
+    return <Card className="row wrap" style={{ gap: 14 }}><span className="icontile"><Icon name="receipt" size={17} stroke={2} /></span><div className="grow" style={{ minWidth: 0 }}><b>Invoice {inv.no} to {D.BUYER.name}</b><div className="t-footnote muted">{ES.units} × ₹{D.COUNTER.price.toFixed(2)} + IGST {inv.gstPct}% · {fmt.inr(inv.total)} · drafted by the Paperwork agent for you</div></div>{h.invoiceIssued ? <Badge tone="green" icon="check">issued from Tally</Badge> : <Button variant="primary" size="sm" icon="check" onClick={() => { Flow.act("issueInvoice"); toast({ text: "Marked issued from Tally", tone: "ok" }); }}>Issue from Tally</Button>}</Card>;
+  }
   function DistHome({ me }) {
     const s = useStore(); const h = s.hero; const { go } = useRoute(); const app = useApp();
-    const dist = distOf(me); const hero = dist.id === "rakesh";
+    const dist = distOf(me); const hero = dist.id === "rakesh"; const perm = s.setup.permission;
     const mine = D.BATCHES.filter(b => b.distributor === dist.id).map(b => { const v = D.batchView(b); if (b.hero) v.phase = heroModel(s).view.phase; if (b.second) v.phase = "executing"; return v; });
     const units = h.orders.reduce((t, o) => t + o.units, 0);
+    const approved = ["approved", "executing", "dispatched", "settled", "cleared"].includes(h.phase);
+    const settled = ["settled", "cleared"].includes(h.phase);
     return <Screen me={me} title="Today" sub={`${dist.name} · ${dist.godown}, ${dist.city}`}>
       <div className="stack" style={{ gap: 16 }}>
+        {hero && !perm && <PermissionCard />}
+        {hero && perm && <ActingFor p={perm} />}
         {!hero && <Card className="row wrap" style={{ gap: 14 }}><Product name="godown" size={72} /><div className="grow"><b>Nothing to do today</b><div className="t-footnote muted">No photo requests, scheme orders or marketplace lots for {dist.name} right now. The Watcher checks your stock every morning at 09:00.</div></div></Card>}
         {hero && h.photo.status === "requested" && <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bezel"><div className="card raised stack snug" style={{ padding: 20 }}>
           <div className="row tight"><Mark size={30} /><span className="t-footnote subtle strong">Smart-Clearance · {D.PUSH.verify.at}</span></div>
@@ -26,19 +70,28 @@
           <div className="row" style={{ gap: 12 }}><Product name="phone-scan" size={72} /><span className="t-footnote muted">Shelf B4 · one carton of Masala Chips 150 g · batch MF-2409-117</span></div>
           <Button variant="primary" size="lg" icon="camera" block onClick={() => go("photo")}>Open camera</Button>
         </div></motion.div>}
-        {hero && ["reading", "verified"].includes(h.photo.status) && <Card className="row" style={{ gap: 14 }}><Aura on={h.photo.status === "reading"} className="icontile" style={{ borderRadius: 12, width: 40, height: 40 }}><Icon name={h.photo.status === "verified" ? "check" : "scan-line"} size={19} stroke={2.2} /></Aura><div className="grow"><b>{h.photo.status === "verified" ? "Label verified · thank you" : "Photo sent · reading the label"}</b><div className="t-footnote muted">{h.photo.status === "verified" ? "Batch, dates and MRP match your DMS record." : "Sent at 09:19. Nothing else needed from you."}</div></div></Card>}
-        {hero && <div style={{ display: "grid", gap: 16, gridTemplateColumns: app.bp === "phone" ? "minmax(0,1fr)" : "repeat(2, minmax(0,1fr))" }}>
-          <Card interactive className="stack snug" onClick={() => go("van")} role="button" tabIndex={0}>
+        {hero && ["reading", "verified"].includes(h.photo.status) && !approved && <Card className="row" style={{ gap: 14 }}><Aura on={h.photo.status === "reading"} className="icontile" style={{ borderRadius: 12, width: 40, height: 40 }}><Icon name={h.photo.status === "verified" ? "check" : "scan-line"} size={19} stroke={2.2} /></Aura><div className="grow"><b>{h.photo.status === "verified" ? "Label verified · thank you" : "Photo sent · reading the label"}</b><div className="t-footnote muted">{h.photo.status === "verified" ? "Batch, dates and MRP match your DMS record. Munchly gets a plan in a few minutes." : "Sent at 09:19. Nothing else needed from you."}</div></div></Card>}
+        {hero && approved && !settled && <Card className="stack snug">
+          <div className="card-head"><span className="card-title">Munchly's plan for your Masala Chips</span><Badge tone="green" icon="check">approved 09:40</Badge></div>
+          <div className="stack tight t-subhead">
+            <div className="row top" style={{ gap: 10 }}><span className="dotmark" style={{ background: "var(--ch-kirana)" }} /><span><b>{KL.units} packets to your kiranas</b> on the scheme: ₹{KL.packPrice.toFixed(2)} a pack, 2 free with every 10, delivered on your Tuesday round.</span></div>
+            <div className="row top" style={{ gap: 10 }}><span className="dotmark" style={{ background: "var(--ch-expiresoon)" }} /><span><b>{ES.units} on ExpireSoon in your name</b> at ₹15, hidden from buyers in Munchly's territories. The buyer collects with his own truck.</span></div>
+          </div>
+        </Card>}
+        {hero && approved && <div style={{ display: "grid", gap: 16, gridTemplateColumns: app.bp === "phone" ? "minmax(0,1fr)" : "repeat(2, minmax(0,1fr))" }}>
+          <Card interactive className="stack snug" onClick={() => go("van")} role="button" tabIndex={0} onKeyDown={e => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), go("van"))}>
             <div className="card-head"><span className="row tight"><span className="icontile"><Icon name="truck" size={17} stroke={2} /></span><span className="card-title">Tuesday van round</span></span><Icon name="chevron-right" size={18} className="subtle" /></div>
             <div className="row base" style={{ gap: 8 }}><span className="num m"><Roll value={h.orders.length} /></span><span className="muted">shops · {cartons(units)}</span></div>
-            <span className="t-footnote subtle">{h.van.status === "done" ? "Delivered · all 14 shops" : h.orders.length ? "Orders from the Masala Chips scheme join this round" : "Scheme orders will appear here"}</span>
+            <span className="t-footnote subtle">{h.van.status === "done" ? `Delivered · all ${SHOPS} shops` : h.orders.length ? "Orders from the Masala Chips scheme join this round" : "Scheme orders will appear here"}</span>
           </Card>
-          <Card interactive className="stack snug" onClick={() => go("van")} role="button" tabIndex={0}>
-            <div className="card-head"><span className="row tight"><span className="icontile violet"><Icon name="package" size={17} stroke={2} /></span><span className="card-title">Hyderabad lot · ExpireSoon</span></span><Icon name="chevron-right" size={18} className="subtle" /></div>
-            <div className="row base" style={{ gap: 8 }}><span className="num m">772</span><span className="muted">units · 32 cartons + 4</span></div>
-            <span className="t-footnote subtle">{h.truck.status === "dispatched" ? "Dispatched · on NH 44" : h.award ? `Sold at ₹${D.COUNTER.price.toFixed(2)} · token ${fmt.inr(D.AWARD.token)} paid` : h.listing ? "Listed at ₹15 · waiting for a buyer" : "Not listed"}</span>
+          <Card interactive className="stack snug" onClick={() => go("van")} role="button" tabIndex={0} onKeyDown={e => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), go("van"))}>
+            <div className="card-head"><span className="row tight"><span className="icontile violet"><Icon name="package" size={17} stroke={2} /></span><span className="card-title">{D.BUYER.city} lot · ExpireSoon</span></span><Icon name="chevron-right" size={18} className="subtle" /></div>
+            <div className="row base" style={{ gap: 8 }}><span className="num m">{ES.units}</span><span className="muted">units · {cartons(ES.units)}</span></div>
+            <span className="t-footnote subtle">{h.truck.status === "dispatched" ? `Collected by ${D.BUYER.name}'s truck` : h.award ? `Sold at ₹${D.COUNTER.price.toFixed(2)} · token ${fmt.inr(D.AWARD.token)} paid` : h.listing ? "Listed at ₹15 in your name · waiting for a buyer" : "Not listed"}</span>
           </Card>
         </div>}
+        {hero && settled && <InvoiceDraft h={h} />}
+        {hero && approved && <EndWhole settled={settled} />}
         <SectionTitle sub="From your nightly DMS export">Your stock</SectionTitle>
         <div className="list">{mine.map(v => <BatchRow key={v.id} view={v} compact={app.bp === "phone"} onOpen={() => {}} />)}</div>
       </div>
@@ -82,11 +135,11 @@
   }
   function VanInner({ me }) {
     const s = useStore(); const h = s.hero; const app = useApp(); const reduce = useReducedMotion(); const { toast } = useNotice();
-    const units = h.orders.reduce((t, o) => t + o.units, 0); const all = h.orders.length === D.KIRANAS.length;
+    const units = h.orders.reduce((t, o) => t + o.units, 0); const full = all(h);
     const [p, setP] = useState(h.van.status === "done" ? 1 : 0); const [running, setRunning] = useState(false);
     useEffect(() => { if (h.van.status === "done" && !running) setP(1); }, [h.van.status]);
-    const start = () => { setRunning(true); const t0 = performance.now(), dur = reduce ? 10 : 3600; const step = now => { const k = Math.min(1, (now - t0) / dur); setP(k); if (k < 1) requestAnimationFrame(step); else { setRunning(false); Flow.act("vanRound"); toast({ text: "Round done · 14 shops, 24½ cartons", tone: "ok" }); } }; requestAnimationFrame(step); };
-    const dispatch = () => { Flow.act("dispatch"); toast({ text: "Hyderabad lot dispatched · invoice on its way", tone: "ok" }); };
+    const start = () => { setRunning(true); const t0 = performance.now(), dur = reduce ? 10 : 3600; const step = now => { const k = Math.min(1, (now - t0) / dur); setP(k); if (k < 1) requestAnimationFrame(step); else { setRunning(false); Flow.act("vanRound"); toast({ text: `Round done · ${SHOPS} shops, ${cartons(units)}`, tone: "ok" }); } }; requestAnimationFrame(step); };
+    const dispatch = () => { Flow.act("dispatch"); toast({ text: `${D.BUYER.city} lot on the buyer's truck · invoice draft next`, tone: "ok" }); };
     const stops = D.KIRANAS.map(k => ({ ...k, ordered: h.orders.find(o => o.id === k.id) }));
     return <Screen me={me} title="Van route" sub="Kalamna godown · Nagpur, Wardha and Kamptee" back="Today">
       <Columns sideWidth={380}
@@ -94,23 +147,28 @@
           <Card pad={false} style={{ overflow: "hidden" }}><ClusterMap kiranas={D.KIRANAS} orderedCount={h.orders.length} route={h.orders.length > 0} vanProgress={p} height={app.bp === "phone" ? 260 : 380} /></Card>
           <Card className="stack snug">
             <div className="card-head"><span className="card-title">Tuesday round</span><Badge tone={h.van.status === "done" ? "green" : undefined} icon={h.van.status === "done" ? "check" : "calendar"}>{h.van.status === "done" ? "delivered" : "Tue 6 Oct · from 07:00"}</Badge></div>
-            <div className="row wrap" style={{ gap: 20 }}><div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={h.orders.length} /><span className="subtle" style={{ fontSize: "0.45em" }}> / 14</span></span><span className="t-footnote subtle">shops on the round</span></div><div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={units} /></span><span className="t-footnote subtle">packets · {cartons(units)}</span></div></div>
-            {h.van.status !== "done" && <Button variant="primary" size="lg" icon="navigation" loading={running} disabled={!all || running} onClick={start}>{all ? "Start the round" : `Waiting for orders · ${h.orders.length} of 14`}</Button>}
+            <div className="row wrap" style={{ gap: 20 }}><div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={h.orders.length} /><span className="subtle" style={{ fontSize: "0.45em" }}> / {SHOPS}</span></span><span className="t-footnote subtle">shops on the round</span></div><div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={units} /></span><span className="t-footnote subtle">packets · {cartons(units)}</span></div></div>
+            {h.van.status !== "done" && <Button variant="primary" size="lg" icon="navigation" loading={running} disabled={!full || running} onClick={start}>{full ? "Start the round" : `Waiting for orders · ${h.orders.length} of ${SHOPS}`}</Button>}
+            <span className="t-caption subtle">₹{M.RULES.vanPerUnit.toFixed(2)} a packet for the van, repaid by Munchly in the price support.</span>
             <div className="feed" style={{ gap: 10 }}>
-              <div className="row top" style={{ gap: 10 }}><Mark size={28} /><div className="t-subhead" style={{ padding: "9px 12px", borderRadius: 16, borderTopLeftRadius: 6, background: "var(--fill-2)" }}>Van route updated: 14 shops, 24½ cartons on the Tuesday round. The ExpireSoon lot goes to Hyderabad once the balance lands.<div className="t-caption muted">Outreach agent · Mon 18:02</div></div></div>
+              <div className="row top" style={{ gap: 10 }}><Mark size={28} /><div className="t-subhead" style={{ padding: "9px 12px", borderRadius: 16, borderTopLeftRadius: 6, background: "var(--fill-2)" }}>{D.PUSH.van.body}<div className="t-caption muted">Outreach agent · Mon 18:00</div></div></div>
               <div className="row top" style={{ gap: 10, justifyContent: "flex-end" }}><div className="t-subhead" style={{ padding: "9px 12px", borderRadius: 16, borderTopRightRadius: 6, background: "var(--primary)", color: "var(--primary-fg)" }}>Theek hai. Mangalvaar subah nikal jaunga.<div className="t-caption" style={{ opacity: 0.9 }}>Rakesh bhai · Mon 18:04</div></div><Avatar person={D.PEOPLE.rakesh} size="sm" /></div>
             </div>
           </Card>
+          <div data-anchor="shelf" />
+          {(h.van.status === "done" || h.shelf) && <S.ShelfCheck shelf={h.shelf} />}
         </>}
         side={<>
+          <div data-anchor="lot" />
           <Card className="stack snug">
-            <div className="card-head"><span className="row tight"><span className="icontile violet"><Icon name="package" size={17} stroke={2} /></span><span className="card-title">Hyderabad lot</span></span><Badge tone={h.truck.status === "dispatched" ? "blue" : h.award ? "green" : "violet"}>{h.truck.status === "dispatched" ? "dispatched" : h.award ? "sold" : h.listing ? "listed" : "not listed"}</Badge></div>
+            <div className="card-head"><span className="row tight"><span className="icontile violet"><Icon name="package" size={17} stroke={2} /></span><span className="card-title">{D.BUYER.city} lot</span></span><Badge tone={h.truck.status === "dispatched" ? "blue" : h.award ? "green" : "violet"}>{h.truck.status === "dispatched" ? "collected" : h.award ? "sold" : h.listing ? "listed" : "not listed"}</Badge></div>
             <HaulLine progress={h.truck.status === "dispatched" ? (h.phase === "cleared" || h.phase === "settled" ? 1 : 0.55) : 0} />
-            <List>{[["Buyer", h.award ? D.BUYER.name : "—"], ["Units", "772 · 32 cartons + 4"], ["Price", h.award ? `₹${D.COUNTER.price.toFixed(2)} a packet` : "₹15.00 asked"], ["Token", h.award ? fmt.inr(D.AWARD.token) + " received" : "—"], ["Freight", "paid by the buyer"]].map(([k, v]) => <ListRow key={k} title={k} value={v} />)}</List>
-            {h.truck.status !== "dispatched" && <Button variant="primary" size="lg" icon="truck" disabled={!h.award} onClick={dispatch}>{h.award ? "Dispatch to Hyderabad" : "Dispatch after the award"}</Button>}
+            <List>{[["Buyer", h.award ? `${D.BUYER.name}, ${D.BUYER.city}` : "—"], ["Units", `${ES.units} · ${cartons(ES.units)}`], ["Price", h.award ? `₹${D.COUNTER.price.toFixed(2)} a packet` : "₹15.00 asked"], ["Token", h.award ? fmt.inr(D.AWARD.token) + " received" : "—"], ["Freight", "the buyer's own truck"]].map(([k, v]) => <ListRow key={k} title={k} value={v} />)}</List>
+            {h.truck.status !== "dispatched" && <Button variant="primary" size="lg" icon="truck" disabled={!h.award} onClick={dispatch}>{h.award ? "Load the buyer's truck" : "Load after the award"}</Button>}
+            <span className="t-caption subtle">Your staff load it as normal godown work, once the balance lands.</span>
           </Card>
           <div className="stack snug"><SectionTitle sub="In the order they were placed">Stops</SectionTitle>
-            <div className="list">{stops.map((k, i) => <div key={k.id} className="list-row" style={{ gridTemplateColumns: "28px minmax(0,1fr) auto" }}><span className="center t-caption strong" style={{ width: 24, height: 24, borderRadius: 99, background: k.ordered ? "var(--primary)" : "var(--fill-2)", color: k.ordered ? "var(--primary-fg)" : "var(--fg-3)" }}>{i + 1}</span><span className="stack tight" style={{ gap: 0 }}><b className="t-subhead">{k.name}</b><span className="t-caption subtle">{k.area}{k.ordered ? ` · ordered ${k.ordered.at}` : " · not yet"}</span></span><span className="tnum strong t-subhead">{k.ordered ? k.units : "—"}</span></div>)}</div>
+            <div className="list">{stops.map((k, i) => <div key={k.id} className="list-row" style={{ gridTemplateColumns: "28px minmax(0,1fr) auto" }}><span className="center t-caption strong" style={{ width: 24, height: 24, borderRadius: 99, background: k.ordered ? "var(--primary)" : "var(--fill-2)", color: k.ordered ? "var(--primary-fg)" : "var(--fg-2)" }}>{i + 1}</span><span className="stack tight" style={{ gap: 0 }}><b className="t-subhead">{k.name}</b><span className="t-caption subtle">{k.area}{k.ordered ? ` · ordered ${k.ordered.at}` : " · not yet"}</span></span><span className="tnum strong t-subhead">{k.ordered ? k.units : "—"}</span></div>)}</div>
           </div>
         </>} />
     </Screen>;
@@ -122,22 +180,24 @@
     const rows = h.orders.slice().reverse().map(o => ({ ...o, k: D.KIRANAS.find(k => k.id === o.id) }));
     return <Screen me={me} title="Orders" sub="Scheme orders and marketplace sales">
       <div className="stack" style={{ gap: 16 }}>
-        {h.award && <Card className="row wrap" style={{ gap: 14 }}><span className="icontile violet"><Icon name="shopping-bag" size={17} stroke={2} /></span><div className="grow"><b>{D.BUYER.name} · ExpireSoon</b><div className="t-footnote muted">772 × ₹{D.COUNTER.price.toFixed(2)} · token {fmt.inr(D.AWARD.token)} · balance {fmt.inr(D.AWARD.balance)}</div></div><Money value={D.AWARD.gross} size="s" decimals /></Card>}
+        {h.award && <Card className="row wrap" style={{ gap: 14 }}><span className="icontile violet"><Icon name="shopping-bag" size={17} stroke={2} /></span><div className="grow"><b>{D.BUYER.name}, {D.BUYER.city} · ExpireSoon</b><div className="t-footnote muted">{ES.units} × ₹{D.COUNTER.price.toFixed(2)} · token {fmt.inr(D.AWARD.token)} · balance {fmt.inr(D.AWARD.balance)}, plus {fmt.inr(D.INVOICE.igst)} IGST on your invoice</div></div><Money value={D.AWARD.gross} size="s" decimals /></Card>}
+        {h.docs && <InvoiceDraft h={h} />}
         {rows.length ? <div className="list">{rows.map(o => <div key={o.id} className="list-row" style={{ gridTemplateColumns: "minmax(0,1fr) auto" }}><span className="stack tight" style={{ gap: 0 }}><b className="t-subhead">{o.k.name}</b><span className="t-caption subtle">{o.k.area} · {o.at} · buy 10 get 2</span></span><span className="stack tight" style={{ gap: 0, justifyItems: "end" }}><span className="tnum strong">{o.units} packets</span><span className="t-caption subtle">{cartons(o.units)}</span></span></div>)}</div> : <Card><Empty img="van" title="No scheme orders yet" body="When a kirana taps the offer, the order lands here and joins your next van round." /></Card>}
       </div>
     </Screen>;
   }
 
   /* ======================= Ganesh ji · kirana ======================= */
-  const offerMath = n => { const free = Math.floor(n / 12) * 2, paid = n - free; return { n, free, paid, pay: paid * 18, sell: n * 30, margin: n * 30 - paid * 18, usual: n * 3.75 }; };
+  // the scheme: pay the pack price for 10 of every 12, sell all 12 at MRP
+  const offerMath = n => { const free = Math.floor(n / 12) * 2, paid = n - free, pack = KL.packPrice; return { n, free, paid, pack, pay: paid * pack, sell: n * CHIPS.mrp, margin: n * CHIPS.mrp - paid * pack }; };
   function OfferCard({ onOpen, compact, shop }) {
     const [en, setEn] = useState(false); const p0 = D.PUSH.offer; const name = shop || "Shree Ganesh Kirana";
     const p = Object.assign({}, p0, { body: p0.body.replace("Shree Ganesh Kirana", name) });
     return <div className="bezel"><div className="card raised" style={{ padding: compact ? 16 : 22, display: "grid", gap: 14 }}>
-      <div className="row between"><span className="row tight"><Mark size={28} /><span className="t-footnote subtle strong">Rakesh Traders · {p.at}</span></span><button type="button" className="btn btn-ghost btn-sm" onClick={() => setEn(!en)} aria-pressed={en}>{en ? "हिन्दी में पढ़ें" : "Read in English"}</button></div>
-      <div className="row" style={{ gap: 14, alignItems: "center" }}><Product name="pack-chips" size={compact ? 76 : 96} float /><div className="stack tight" style={{ gap: 4 }}><div className={cx("t-title2", !en && "hi")} lang={en ? "en" : "hi"}>{en ? "Today's special offer" : p.title}</div><div className="row base" style={{ gap: 8 }}><span className="num m">₹18</span><span className="subtle t-subhead">a packet · MRP ₹30</span></div><span className="row tight wrap"><Badge tone="green" icon="gift">{en ? "Buy 10, get 2 free" : "10 लो, 2 मुफ़्त"}</Badge><Badge icon="clock">{en ? "48 hours" : "सिर्फ़ 48 घंटे"}</Badge></span></div></div>
+      <div className="row between"><span className="row tight"><Mark size={28} /><span className="t-footnote subtle strong">Rakesh Traders · {p.at}</span></span><button type="button" className="btn btn-ghost btn-sm" onClick={() => setEn(!en)} aria-pressed={en}>{en ? <span lang="hi">हिन्दी में पढ़ें</span> : "Read in English"}</button></div>
+      <div className="row" style={{ gap: 14, alignItems: "center" }}><Product name="pack-chips" size={compact ? 76 : 96} float /><div className="stack tight" style={{ gap: 4 }}><div className={cx("t-title2", !en && "hi")} lang={en ? "en" : "hi"}>{en ? "Today's special offer" : p.title}</div><div className="row base" style={{ gap: 8 }}><span className="num m">₹{KL.packPrice.toFixed(2)}</span><span className="subtle t-subhead">a packet · MRP ₹{CHIPS.mrp}</span></div><span className="row tight wrap"><Badge tone="green" icon="gift">{en ? "Buy 10, get 2 free" : <span lang="hi">10 लो, 2 मुफ़्त</span>}</Badge><Badge icon="clock">{en ? "48 hours" : <span lang="hi">सिर्फ़ 48 घंटे</span>}</Badge></span></div></div>
       <p className={cx("t-body", !en && "hi")} lang={en ? "en" : "hi"} style={{ margin: 0, lineHeight: 1.55 }}>{en ? p.en : p.body}</p>
-      {onOpen && <Button variant="primary" size="lg" block iconRight="arrow-right" onClick={onOpen}>{en ? "See the offer" : "ऑफर देखें"}</Button>}
+      {onOpen && <Button variant="primary" size="lg" block iconRight="arrow-right" onClick={onOpen}>{en ? "See the offer" : <span lang="hi">ऑफर देखें</span>}</Button>}
     </div></div>;
   }
   function RetailHome({ me }) {
@@ -147,7 +207,7 @@
         {h.offer ? (mine ? <Card className="stack snug"><div className="row" style={{ gap: 14 }}><Product name="pack-chips" size={64} /><div className="grow"><b>Ordered · {mine.units} packets</b><div className="t-footnote muted">Masala Chips 150 g · placed {mine.at} · comes on Tuesday's van</div></div><Badge tone="green" icon="check">confirmed</Badge></div></Card> : <OfferCard shop={k.name} onOpen={() => go("offer")} />)
           : <Card><Empty img="kirana" title="No offers today" body="Rakesh Traders' schemes arrive here as a notification, in Hindi, ready to order in one tap." /></Card>}
         <SectionTitle>Your shop</SectionTitle>
-        <List>{[["Distributor", "Rakesh Traders, Nagpur"], ["Van day", "Tuesday"], ["Language", "हिन्दी · English"]].map(([k, v]) => <ListRow key={k} title={k} value={v} />)}</List>
+        <List>{[["Distributor", "Rakesh Traders, Nagpur"], ["Van day", "Tuesday"], ["Unsold scheme packs", `back to the salesman until ${fmt.day(D.RETURN_BY)}`], ["Language", "हिन्दी · English"]].map(([k, v]) => <ListRow key={k} title={k} value={k === "Language" ? <span lang="hi">{v}</span> : v} />)}</List>
       </div>
     </Screen>;
   }
@@ -166,10 +226,10 @@
           <Button variant="secondary" onClick={() => go("home")}>Done</Button>
         </motion.div> : <Card className="stack" style={{ gap: 16 }}>
           <div className="row between"><div className="stack tight" style={{ gap: 0 }}><b>How many packets?</b><span className="t-footnote subtle">In twelves · your share is up to {k.units}</span></div><Stepper value={n} onChange={setN} min={12} max={k.units} step={12} label="Packets" /></div>
-          <div className="stack tight">{[["You pay", `${m.paid} × ₹18`, fmt.inr(m.pay)], ["Free packets", `buy 10 get 2`, `${m.free}`], ["You sell at MRP", `${n} × ₹30`, fmt.inr(m.sell)]].map(([k, sub, v]) => <div key={k} className="row between t-subhead"><span>{k} <span className="subtle t-footnote">{sub}</span></span><span className="tnum strong">{v}</span></div>)}</div>
-          <div className="row between" style={{ padding: "12px 14px", borderRadius: 14, background: "var(--primary-soft)" }}><span className="stack tight" style={{ gap: 0 }}><b>Margin today</b><span className="t-footnote muted">usually {fmt.inr(m.usual)} on {n} packets</span></span><Money value={m.margin} size="s" roll style={{ color: "var(--primary-text)" }} /></div>
+          <div className="stack tight">{[["You pay", `${m.paid} × ₹${m.pack.toFixed(2)}`, fmt.inr(m.pay)], ["Free packets", "2 with every 10", `${m.free}`], ["You sell at MRP", `${n} × ₹${CHIPS.mrp}`, fmt.inr(m.sell)]].map(([k, sub, v]) => <div key={k} className="row between t-subhead"><span>{k} <span className="subtle t-footnote">{sub}</span></span><span className="tnum strong">{v}</span></div>)}</div>
+          <div className="row between" style={{ padding: "12px 14px", borderRadius: 14, background: "var(--primary-soft)" }}><span className="stack tight" style={{ gap: 0 }}><b>Margin today</b><span className="t-footnote muted">₹{(m.pay / n).toFixed(2)} a packet in effect, sold at ₹{CHIPS.mrp}</span></span><Money value={m.margin} size="s" roll style={{ color: "var(--primary-text)" }} /></div>
           <Button variant="primary" size="xl" block loading={busy} onClick={order}><span className="hi" lang="hi">ऑर्डर करें</span> · {n} packets</Button>
-          <span className="t-caption subtle" style={{ textAlign: "center" }}>Best before 18 Nov 2026 · 47 days on every packet</span>
+          <span className="t-caption subtle" style={{ textAlign: "center" }}>Best before 18 Nov 2026 · 47 days on every packet · unsold packs go back to the salesman until {fmt.day(D.RETURN_BY)}</span>
         </Card>}
       </div>
     </Screen>;
@@ -181,15 +241,14 @@
     </Screen>;
   }
 
-  /* ======================= Venkat · ExpireSoon (another company's marketplace) ======================= */
+  /* ======================= Agrawal ji · ExpireSoon (another company's marketplace) ======================= */
   const OTHER_LISTINGS = [
-    { id: "ES-23988", name: "Cream biscuits 75 g", icon: "cookie", units: 2400, price: 6, mrp: 10, days: 88, seller: "FMCG distributor, Secunderabad" },
-    { id: "ES-24031", name: "Instant noodles 70 g", icon: "soup", units: 1800, price: 8, mrp: 14, days: 41, seller: "Wholesaler, Vijayawada" },
-    { id: "ES-24076", name: "UHT toned milk 1 L", icon: "milk", units: 600, price: 38, mrp: 72, days: 34, seller: "Dairy distributor, Warangal" },
-    { id: "ES-24102", name: "Whole-wheat atta 5 kg", icon: "wheat", units: 240, price: 160, mrp: 285, days: 52, seller: "Mill outlet, Nizamabad" },
+    { id: "ES-23988", name: "Cream biscuits 75 g", icon: "cookie", units: 2400, price: 6, mrp: 10, days: 88, seller: "FMCG distributor, Bilaspur" },
+    { id: "ES-24031", name: "Instant noodles 70 g", icon: "soup", units: 1800, price: 8, mrp: 14, days: 41, seller: "Wholesaler, Durg" },
+    { id: "ES-24076", name: "UHT toned milk 1 L", icon: "milk", units: 600, price: 38, mrp: 72, days: 34, seller: "Dairy distributor, Bhilai" },
+    { id: "ES-24102", name: "Whole-wheat atta 5 kg", icon: "wheat", units: 240, price: 160, mrp: 285, days: 52, seller: "Mill outlet, Rajnandgaon" },
   ];
   function EsBar({ me, title }) {
-    const { go } = useRoute();
     return <div className="es-top"><span className="row tight"><span className="es-logo" aria-hidden="true"><Icon name="hourglass" size={16} stroke={2.2} /></span><span className="es-word">ExpireSoon</span></span><span className="t-caption subtle es-tag">Near-expiry B2B marketplace · dates visible</span><span className="grow" />{title}</div>;
   }
   function EsDate({ days, date }) { return <span className="es-date">{date ? date + " · " : ""}{days} days</span>; }
@@ -206,15 +265,15 @@
   }
   function Market({ me }) {
     const s = useStore(); const h = s.hero; const { go } = useRoute(); const app = useApp(); const [q, setQ] = useState(""); const [cat, setCat] = useState("all");
-    const hero = h.listing && { id: "ES-24117", name: "Munchly Masala Chips 150 g", units: 772, price: 15, mrp: 30, days: 47, seller: "Rakesh Traders, Nagpur" };
+    const hero = h.listing && { id: "ES-24117", name: "Munchly Masala Chips 150 g", units: ES.units, price: 15, mrp: 30, days: 47, seller: "Rakesh Traders, Nagpur" };
     const list = [hero, ...OTHER_LISTINGS].filter(Boolean).filter(l => (!q || l.name.toLowerCase().includes(q.toLowerCase())) && (cat === "all" || (cat === "snacks" ? /chips|biscuit|noodle/i.test(l.name) : cat === "staples" ? /atta|milk/i.test(l.name) : true)));
-    return <div className="esw"><Screen me={me} title="Marketplace" sub="Lots near Hyderabad · every listing shows its dates" hideLarge={false}>
+    return <div className="esw"><Screen me={me} title="Marketplace" sub={`Lots for ${D.BUYER.city} · every listing shows its dates`} hideLarge={false}>
       <div className="stack" style={{ gap: 16 }}>
         <EsBar />
         <div className="row wrap" style={{ gap: 10 }}><div className="grow" style={{ minWidth: 200 }}><K.SearchField value={q} onChange={setQ} placeholder="Search lots" /></div><K.Segmented options={[{ id: "all", label: "All" }, { id: "snacks", label: "Snacks" }, { id: "staples", label: "Staples" }]} value={cat} onChange={setCat} label="Category" /></div>
         {hero && <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="es-feature" onClick={() => go("listing")}>
           <Product name="pack-chips" size={app.bp === "phone" ? 96 : 132} float />
-          <div className="stack tight grow" style={{ gap: 6 }}><span className="row tight wrap"><Badge tone="violet" solid size="sm">new · {h.listing.at}</Badge><Badge size="sm" tone="violet" icon="badge-check">label photo verified</Badge></span><div className="t-title2">Munchly Masala Chips 150 g · 772 units</div><span className="row base wrap" style={{ gap: 8 }}><span className="es-price lg">₹15</span><span className="muted">MRP ₹30 · 50% off</span><EsDate days={47} date="Best before 18 Nov 2026" /></span><span className="t-footnote subtle">Rakesh Traders, Nagpur · verified seller · dispatch 24 h after balance</span></div>
+          <div className="stack tight grow" style={{ gap: 6 }}><span className="row tight wrap"><Badge tone="violet" solid size="sm">new · {h.listing.at}</Badge><Badge size="sm" tone="violet" icon="badge-check">label photo verified</Badge></span><div className="t-title2">Munchly Masala Chips 150 g · {ES.units} units</div><span className="row base wrap" style={{ gap: 8 }}><span className="es-price lg">₹15</span><span className="muted">MRP ₹30 · 50% off</span><EsDate days={47} date="Best before 18 Nov 2026" /></span><span className="t-footnote subtle">Rakesh Traders, Nagpur · verified seller · dispatch 24 h after balance</span></div>
           <Button variant="violet" iconRight="arrow-right">View lot</Button>
         </motion.div>}
         <div className="es-grid">{list.filter(l => l !== hero).map(l => <ListingCard key={l.id} l={l} onOpen={() => {}} />)}</div>
@@ -225,24 +284,23 @@
   function ListingView({ readOnly, me }) {
     const s = useStore(); const h = s.hero; const app = useApp(); const [price, setPrice] = useState(13); const [msg, setMsg] = useState("");
     const last = h.bids[h.bids.length - 1]; const open = !last || last.status === "declined";
-    const token = Math.round(price * 772 * 0.15 * 100) / 100;
+    const token = Math.round(price * ES.units * M.RULES.tokenPct * 100) / 100; const inv = D.INVOICE;
     const place = () => Flow.act("bid", price);
     const accept = () => Flow.act("accept");
-    const hasListing = !!h.listing;
-    if (!hasListing) return <Card><Empty icon="hourglass" title="Not listed yet" body="The Lister posts this lot the moment the plan is approved." /></Card>;
+    if (!h.listing) return <Card><Empty icon="hourglass" title="Not listed yet" body="The Lister posts this lot the moment the plan is approved." /></Card>;
     return <div style={{ display: "grid", gap: 16, gridTemplateColumns: app.bp === "desktop" && !readOnly ? "minmax(0, 1.2fr) minmax(0, 1fr)" : "minmax(0,1fr)", alignItems: "start" }}>
       <div className="stack" style={{ gap: 16 }}>
         <div className="es-gallery"><div className="es-thumb big"><Product name="pack-chips" size={app.bp === "phone" ? 150 : 190} float /></div><div className="es-thumb big" style={{ padding: 0, overflow: "hidden", containerType: "inline-size" }}><S.LabelPhoto status="verified" /></div></div>
-        <div className="stack tight"><div className="t-title2">Munchly Masala Chips 150 g · 772 units</div><span className="row base wrap" style={{ gap: 8 }}><span className="es-price lg">₹15</span><span className="muted">a packet · MRP ₹30 · 50% off</span></span><span className="row tight wrap"><EsDate days={47} date="Best before 18 Nov 2026" /><Badge size="sm" tone="violet" icon="badge-check">label photo verified</Badge></span></div>
-        <List>{[["Seller", "Rakesh Traders, Nagpur · verified"], ["Dispatch", "24 h after the balance · buyer pays freight"], ["Lot", "32 cartons + 4 · 24 × 150 g a carton"], ["Minimum order", "100 units"], ["Listing", h.listing.id]].map(([k, v]) => <ListRow key={k} title={k} value={v} />)}</List>
+        <div className="stack tight"><div className="t-title2">Munchly Masala Chips 150 g · {ES.units} units</div><span className="row base wrap" style={{ gap: 8 }}><span className="es-price lg">₹15</span><span className="muted">a packet · MRP ₹30 · 50% off</span></span><span className="row tight wrap"><EsDate days={47} date="Best before 18 Nov 2026" /><Badge size="sm" tone="violet" icon="badge-check">label photo verified</Badge></span></div>
+        <List>{[["Seller", "Rakesh Traders, Nagpur · verified"], ["Visible to", "buyers outside Munchly's distributor territories"], ["Dispatch", "24 h after the balance · buyer pays freight"], ["Lot", `${cartons(ES.units)} · 24 × 150 g a carton`], ["Minimum order", "100 units"], ["Listing", h.listing.id]].map(([k, v]) => <ListRow key={k} title={k} value={v} />)}</List>
       </div>
       <div className="stack" style={{ gap: 16 }}>
-        {!readOnly && (h.award ? <Card className="stack snug"><div className="row" style={{ gap: 12 }}><span className="icontile violet" style={{ width: 44, height: 44, borderRadius: 14 }}><Icon name="badge-check" size={22} /></span><div className="grow"><b>Lot won at ₹{D.COUNTER.price.toFixed(2)}</b><div className="t-footnote muted">Token {fmt.inr(D.AWARD.token)} paid · balance {fmt.inr(D.AWARD.balance)} due in 48 h</div></div></div><List>{[["772 × ₹14.20", fmt.inr2(D.AWARD.gross)], ["IGST 12%", fmt.inr2(1315.49)], ["Invoice total", fmt.inr2(12277.89)]].map(([k, v]) => <ListRow key={k} title={k} value={<span className="tnum strong">{v}</span>} />)}</List></Card>
+        {!readOnly && (h.award ? <Card className="stack snug"><div className="row" style={{ gap: 12 }}><span className="icontile violet" style={{ width: 44, height: 44, borderRadius: 14 }}><Icon name="badge-check" size={22} /></span><div className="grow"><b>Lot won at ₹{D.COUNTER.price.toFixed(2)}</b><div className="t-footnote muted">Token {fmt.inr(D.AWARD.token)} paid · {fmt.inr(D.AWARD.balance)} of the bid and {fmt.inr(inv.igst)} IGST due in 48 h</div></div></div><List>{[[`${ES.units} × ₹${D.COUNTER.price.toFixed(2)}`, fmt.inr2(inv.taxable)], [`IGST ${inv.gstPct}%, Maharashtra to Chhattisgarh`, fmt.inr2(inv.igst)], ["Round off", fmt.inr2(inv.roundOff)], ["Invoice total", fmt.inr2(inv.total)]].map(([k, v]) => <ListRow key={k} title={k} value={<span className="tnum strong">{v}</span>} />)}</List><span className="t-caption subtle">Rakesh Traders issues the invoice from its own Tally.</span></Card>
           : open ? <Card className="stack snug">
             <div className="card-head"><span className="card-title">Place a bid</span><span className="t-caption subtle">ask ₹15.00</span></div>
-            <div className="row between"><span className="stack tight" style={{ gap: 0 }}><b>Your price a packet</b><span className="t-footnote subtle">for all 772 units</span></span><Stepper value={price} onChange={setPrice} min={10} max={14} step={0.5} label="Bid price" format={v => "₹" + v.toFixed(2)} /></div>
+            <div className="row between"><span className="stack tight" style={{ gap: 0 }}><b>Your price a packet</b><span className="t-footnote subtle">for all {ES.units} units</span></span><Stepper value={price} onChange={setPrice} min={10} max={14} step={0.5} label="Bid price" format={v => "₹" + v.toFixed(2)} /></div>
             <div className="row between t-subhead"><span>15% token on your bid</span><span className="tnum strong">{fmt.inr2(token)}</span></div>
-            <Button variant="violet" size="lg" block icon="gavel" onClick={place}>Bid ₹{price.toFixed(2)} for 772</Button>
+            <Button variant="violet" size="lg" block icon="gavel" onClick={place}>Bid ₹{price.toFixed(2)} for {ES.units}</Button>
             <span className="t-caption subtle">Balance in 48 h. The seller's agent replies in about a minute.</span>
           </Card> : <Card className="stack snug"><div className="card-head"><span className="card-title">Your bid</span><Badge tone={last.status === "countered" ? "violet" : undefined} dot live={last.status === "placed"}>{last.status === "placed" ? "waiting for the seller" : last.status}</Badge></div>
             <div className="row base" style={{ gap: 8 }}><span className="es-price lg">₹{last.price.toFixed(2)}</span><span className="muted">→ counter ₹{(last.counter || D.COUNTER.price).toFixed(2)}</span></div>
@@ -258,36 +316,37 @@
   function Listing({ me }) { return <div className="esw"><Screen me={me} title="Lot ES-24117" sub="Munchly Masala Chips 150 g · Rakesh Traders, Nagpur" back="Marketplace"><div className="stack" style={{ gap: 16 }}><EsBar /><ListingView me={me} /></div></Screen></div>; }
   function MyBids({ me }) {
     const s = useStore(); const h = s.hero; const { go } = useRoute();
-    return <div className="esw"><Screen me={me} title="My bids" sub="Sri Venkateswara Traders · Hyderabad"><div className="stack" style={{ gap: 16 }}><EsBar />
-      {h.bids.length ? <div className="list" data-x="bids">{h.bids.map(b => <button type="button" key={b.id} className="list-row" onClick={() => go("listing")} style={{ gridTemplateColumns: "48px minmax(0,1fr) auto", textAlign: "left", width: "100%" }}><Product name="pack-chips" size={44} /><span className="stack tight" style={{ gap: 0 }}><b className="t-subhead">ES-24117 · Masala Chips 150 g · 772 units</b><span className="t-caption subtle">bid ₹{b.price.toFixed(2)} · {b.at}{b.counter ? ` · counter ₹${b.counter.toFixed(2)}` : ""}</span></span><Badge size="sm" tone={b.status === "accepted" ? "green" : "violet"}>{b.status === "accepted" ? "won" : b.status}</Badge></button>)}</div> : <Card><Empty img="marketplace-bag" title="No bids yet" body="Bids you place show here with the seller's reply." /></Card>}
+    return <div className="esw"><Screen me={me} title="My bids" sub={`${D.BUYER.name} · ${D.BUYER.city}`}><div className="stack" style={{ gap: 16 }}><EsBar />
+      {h.bids.length ? <div className="list" data-x="bids">{h.bids.map(b => <button type="button" key={b.id} className="list-row" onClick={() => go("listing")} style={{ gridTemplateColumns: "48px minmax(0,1fr) auto", textAlign: "left", width: "100%" }}><Product name="pack-chips" size={44} /><span className="stack tight" style={{ gap: 0 }}><b className="t-subhead">ES-24117 · Masala Chips 150 g · {ES.units} units</b><span className="t-caption subtle">bid ₹{b.price.toFixed(2)} · {b.at}{b.counter ? ` · counter ₹${b.counter.toFixed(2)}` : ""}</span></span><Badge size="sm" tone={b.status === "accepted" ? "green" : "violet"}>{b.status === "accepted" ? "won" : b.status}</Badge></button>)}</div> : <Card><Empty img="marketplace-bag" title="No bids yet" body="Bids you place show here with the seller's reply." /></Card>}
     </div></Screen></div>;
   }
 
   /* ======================= Meera · Feeding India ======================= */
   function Pickups({ me }) {
-    const s = useStore(); const d = s.mango.donation; const app = useApp(); const [later, setLater] = useState(false); const { toast } = useNotice();
+    const s = useStore(); const d = s.mango.donation; const app = useApp(); const [later, setLater] = useState(false); const { toast } = useNotice(); const n = D.MANGO_FB;
+    const bb = fmt.date(D.BATCHES[1].bestBefore);
     return <Screen me={me} title="Pickups" sub="Feeding India · Hyderabad">
       {!d ? <Card style={{ maxWidth: 640 }}><Empty img="donation-crate" title="No pickup requests" body="Brands' donation agents send surplus food here when it fits your intake rules: 15+ days left, 50+ units." /></Card> :
       <Columns sideWidth={340}
         main={<>
           <div className="bezel"><div className="card raised stack" style={{ padding: 22, gap: 16 }}>
             <div className="row tight"><Mark size={28} /><span className="t-footnote subtle strong">Donation agent · Munchly Foods · Day 0</span></div>
-            <div className="row" style={{ gap: 16 }}><Product name="pack-mango" size={app.bp === "phone" ? 80 : 104} float /><div className="stack tight" style={{ gap: 4 }}><div className="t-title2">58 packs of Mango Drink</div><span className="row tight wrap"><Badge icon="calendar">22 days left</Badge><Badge icon="map-pin">Begum Bazaar</Badge><Badge tone="green" icon="clipboard-check">FSSAI checklist</Badge></span></div></div>
-            <p className="t-body" style={{ margin: 0 }}>58 packs of Mango Drink, 22 days left, with the FSSAI checklist. Pickup Tuesday 10 am from Begum Bazaar?</p>
+            <div className="row" style={{ gap: 16 }}><Product name="pack-mango" size={app.bp === "phone" ? 80 : 104} float /><div className="stack tight" style={{ gap: 4 }}><div className="t-title2">{n} packs of Mango Drink</div><span className="row tight wrap"><Badge icon="calendar">22 days left</Badge><Badge icon="map-pin">Begum Bazaar</Badge><Badge tone="green" icon="clipboard-check">FSSAI checklist</Badge></span></div></div>
+            <p className="t-body" style={{ margin: 0 }}>{n} packs of Mango Drink, 22 days left, with the FSSAI checklist. Pickup Tuesday 10 am from Begum Bazaar?</p>
             {d === "booked" ? <div className="row wrap" style={{ gap: 10 }}><Button variant="primary" size="lg" icon="check" onClick={() => Flow.act("confirmPickup")}>Confirm Tuesday 10:00</Button><Button variant="secondary" size="lg" onClick={() => setLater(true)}>Suggest another time</Button></div>
               : <div className="row top" style={{ gap: 10, justifyContent: "flex-end" }}><div className="t-subhead" style={{ padding: "9px 12px", borderRadius: 16, borderTopRightRadius: 6, background: "var(--primary)", color: "var(--primary-fg)", maxWidth: "85%" }}>Tuesday works. We'll serve them at the Charminar hunger spot this week.<div className="t-caption" style={{ opacity: 0.9 }}>Meera · Day 1</div></div><Avatar person={D.PEOPLE.meera} size="sm" /></div>}
           </div></div>
           {d !== "booked" && <Card className="stack snug"><div className="card-head"><span className="card-title">Pickup</span><Badge tone="green" icon={d === "collected" ? "check" : "calendar"}>{d === "collected" ? "collected" : "Tue 6 Oct · 10:00"}</Badge></div>
             <K.VTracker items={[{ id: "req", title: "Requested by the donation agent", time: "Day 0" }, { id: "conf", title: "Confirmed by Meera", time: "Day 1" }, { id: "col", title: "Collected from Begum Bazaar", time: d === "collected" ? "Day 4" : "Tue 10:00" }, { id: "serve", title: "Served at the Charminar hunger spot", time: "this week" }]} done={d === "collected" ? 3 : 2} current={d === "collected" ? 3 : 2} />
-            {d === "confirmed" && <Button variant="primary" size="lg" icon="package-check" onClick={() => { Flow.act("collect"); toast({ text: "Receipt issued · 58 drinks", tone: "ok" }); }}>Mark collected</Button>}
-            {d === "collected" && <div className="row" style={{ gap: 12, padding: "12px 14px", borderRadius: 14, background: "var(--primary-soft)" }}><Icon name="receipt" size={20} /><span className="grow"><b>In-app receipt issued</b><div className="t-footnote muted">58 drinks served · shared with Munchly for its BRSR table</div></span></div>}
+            {d === "confirmed" && <Button variant="primary" size="lg" icon="package-check" onClick={() => { Flow.act("collect"); toast({ text: `Receipt issued · ${n} drinks`, tone: "ok" }); }}>Mark collected</Button>}
+            {d === "collected" && <div className="row" style={{ gap: 12, padding: "12px 14px", borderRadius: 14, background: "var(--primary-soft)" }}><Icon name="receipt" size={20} /><span className="grow"><b>In-app receipt issued</b><div className="t-footnote muted">{n} drinks served · shared with Munchly for its BRSR table</div></span></div>}
           </Card>}
         </>}
-        side={<><SectionTitle>FSSAI surplus-food checklist</SectionTitle><Card className="paper stack tight" style={{ padding: 18 }}>{["Sealed, undamaged packs", "Best before 24 Oct 2026, 22 days left", "Ambient storage, away from sunlight", "Batch MF-2410-118 on every carton", "Donor: Munchly Foods via Lakshmi Agencies"].map(t => <div key={t} className="row top" style={{ gap: 8 }}><Icon name="square-check" size={17} style={{ color: "#167a52", marginTop: 1 }} /><span className="t-subhead">{t}</span></div>)}</Card>
+        side={<><SectionTitle>FSSAI surplus-food checklist</SectionTitle><Card className="paper stack tight" style={{ padding: 18 }}>{["Sealed, undamaged packs", `Best before ${bb}, 22 days left`, "Ambient storage, away from sunlight", "Batch MF-2410-118 on every carton", "Donor: Munchly Foods via Lakshmi Agencies"].map(t => <div key={t} className="row top" style={{ gap: 8 }}><Icon name="square-check" size={17} style={{ color: "#167a52", marginTop: 1 }} /><span className="t-subhead">{t}</span></div>)}</Card>
           <List head="Your intake rules"><ListRow title="Days left" value="15 or more" /><ListRow title="Minimum lot" value="50 units" /><ListRow title="Logistics" value="volunteer pickup in 48 h" /></List></>} />}
       <Sheet open={later} onClose={() => setLater(false)} title="Suggest another time" detent="medium" footer={<Button variant="primary" block onClick={() => { setLater(false); toast({ text: "Sent · the agent will confirm with Lakshmi Agencies" }); }}>Send</Button>}><div className="stack snug">{["Wednesday 10:00", "Wednesday 16:00", "Thursday 11:00"].map(t => <label key={t} className="list-row" style={{ gridTemplateColumns: "auto 1fr", cursor: "pointer" }}><input type="radio" name="slot" defaultChecked={t.startsWith("Wednesday 10")} /> {t}</label>)}</div></Sheet>
     </Screen>;
   }
 
-  Object.assign(window.SC3_SCREENS, { distOf, kOf, DistHome, CameraScreen, VanRoute, DistOrders, OfferCard, RetailHome, OfferDetail, RetailOrders, Market, Listing, ListingView, MyBids, Pickups, EsBar, offerMath, cartons });
+  Object.assign(window.SC3_SCREENS, { distOf, kOf, DistHome, CameraScreen, VanRoute, DistOrders, OfferCard, RetailHome, OfferDetail, RetailOrders, Market, Listing, ListingView, MyBids, Pickups, EsBar, offerMath, cartons, PermissionCard });
 })();

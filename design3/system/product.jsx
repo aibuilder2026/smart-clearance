@@ -7,7 +7,8 @@
   const M = window.SC3_MONEY; const fmt = M.fmt;
   const D = () => window.SC3_DATA;
 
-  const STAGE_TIMES = { connect: "once", detect: "09:00", verify: "09:20", value: "09:21", decide: "09:22", approve: "09:40", execute: "day 0–3", settle: "day 3–7", report: "quarterly" };
+  // word joiners keep a range whole and a no-break space keeps the date whole, so a narrow stop wraps only at the first space
+  const STAGE_TIMES = { connect: "once", detect: "09:00", verify: "09:20", value: "09:21", decide: "09:22", approve: "09:40", execute: "day 0⁠–⁠14", settle: "day 3⁠–⁠7", report: "after 29 Oct" };
   const STATUS = {
     "at-risk": { tone: "red", label: "At risk" }, gated: { tone: "amber", label: "Gated · selling through" }, safe: { tone: "green", label: "Safe" },
     executing: { tone: "green", label: "In motion" }, routed: { tone: "green", label: "Routed" }, settled: { tone: "blue", label: "Settled" }, cleared: { tone: "green", label: "Cleared" },
@@ -109,36 +110,49 @@
     </div>;
   }
 
-  // the money panel: what destroying costs, what the plan recovers, the swing
+  // the money panel, set out the way a challan would be: what destroying does to the P&L, what the split recovers
+  // and its P&L effect. The book cost of the stock appears once on each side, so the swing does not count it twice.
+  // actual: the result after negotiation ({ net, swing, pnl }), when there is one
   function MoneyPanel({ plan, actual, compact }) {
-    const wo = plan.writeOff;
-    return <div style={{ display: "grid", gap: 12, gridTemplateColumns: compact ? "minmax(0,1fr)" : "repeat(auto-fit, minmax(280px, 1fr))" }}>
+    const wo = plan.writeOff; const sku = window.SC3_DATA.SKUS.chips;
+    const net = actual ? actual.net : plan.net, pnl = actual ? actual.pnl : plan.pnl, swing = actual ? actual.swing : plan.swing;
+    const row = (k, n, v, tone) => <div key={k} className="row between"><span><span>{k}</span> <span className="subtle t-caption">{n}</span></span><span className={cx("tnum", tone)}>{fmt.inr(v)}</span></div>;
+    return <div className="stack" style={{ gap: 12 }}><div style={{ display: "grid", gap: 12, gridTemplateColumns: compact ? "minmax(0,1fr)" : "repeat(auto-fit, minmax(280px, 1fr))" }}>
       <div className="card pad stack snug">
         <div className="card-head"><span className="card-title">If destroyed</span><Badge tone="red" icon="trash-2">write-off</Badge></div>
         <div className="stack tight t-subhead">
-          {[["Stock at cost", `${fmt.num(plan.units)} × ₹${window.SC3_DATA.SKUS.chips.cost}`, -wo.stock], ["GST credit reversed", "s.17(5)(h)", -wo.itc], ["Disposal and transport", "₹1.50 a unit", -wo.disposal], ["EPR on packaging", `${fmt.kg(wo.kg)} × ₹6, indicative`, -wo.epr]].map(([k, n, v]) => <div key={k} className="row between"><span><span>{k}</span> <span className="subtle t-caption">{n}</span></span><span className="tnum neg">{fmt.inr(v)}</span></div>)}
+          {row("Stock at cost", `${fmt.num(plan.units)} × ₹${sku.cost}`, -wo.stock, "neg")}
+          {row("GST credit reversed", `s.17(5)(h) · ₹${wo.itcPerUnit.toFixed(2)} a unit`, -wo.itc, "neg")}
+          {row("Disposal and transport", "₹1.50 a unit, indicative", -wo.disposal, "neg")}
+          {row("EPR and waste liability", `${fmt.kg(wo.kg)} × ₹6, indicative`, -wo.epr, "neg")}
           <div className="hairline" style={{ margin: "4px 0" }} />
-          <div className="row between"><b>Cost of the write-off</b><Money value={-wo.total} size="s" style={{ color: "var(--red-text)" }} /></div>
+          <div className="row between"><b>Effect on the P&amp;L</b><Money value={-wo.total} size="s" style={{ color: "var(--red-text)" }} /></div>
         </div>
       </div>
       <div className="card pad stack snug">
         <div className="card-head"><span className="card-title">If routed</span><Badge tone="green" icon="route">recommended</Badge></div>
         <div className="stack tight t-subhead">
-          {plan.lines.map(l => <div key={l.id} className="row between"><span>{fmt.num(l.units)} → {l.short} <span className="subtle t-caption">at ₹{l.price}</span></span><span className="tnum pos">{fmt.inr(l.gross)}</span></div>)}
-          <div className="row between"><span>Van delivery and listing fee</span><span className="tnum neg">{fmt.inr(-plan.costs)}</span></div>
+          {plan.lines.map(l => row(`${fmt.num(l.units)} → ${l.short}`, l.packPrice ? `at ₹${l.price} effective, ${fmt.num(l.charged)} charged at ₹${l.packPrice.toFixed(2)}` : `at ₹${l.price}${actual && l.id === "expiresoon" ? `, sold at ₹${(actual.esActual / l.units).toFixed(2)}` : ""}`, actual && l.id === "expiresoon" ? actual.esActual : l.gross, "pos"))}
+          {row("Van delivery and listing fee", "", -plan.costs, "neg")}
+          <div className="row between"><b>Net recovered <span className="subtle t-caption" style={{ fontWeight: 500 }}>{Math.round(net / (plan.units * sku.mrp) * 100)}% of MRP</span></b><Money value={net} size="s" style={{ color: "var(--primary-text)" }} /></div>
+          {row("Book cost of the stock sold", `${fmt.num(plan.units)} × ₹${sku.cost}`, -plan.bookCost, "neg")}
           <div className="hairline" style={{ margin: "4px 0" }} />
-          <div className="row between"><b>Net recovered <span className="subtle t-caption" style={{ fontWeight: 500 }}>{plan.pctMRP}% of MRP</span></b><Money value={actual != null ? actual : plan.net} size="s" style={{ color: "var(--primary-text)" }} /></div>
+          <div className="row between"><b>Effect on the P&amp;L</b><span className={cx("tnum strong", pnl < 0 ? "neg" : "pos")}>{fmt.signed(pnl)}</span></div>
         </div>
       </div>
+    </div>
+      <div className="card row wrap" style={{ padding: "14px 18px", gap: 12 }}><Money value={swing} size="s" style={{ color: "var(--primary-text)" }} /><span className="grow t-subhead muted" style={{ minWidth: 220 }}><b style={{ color: "var(--fg)" }}>better than destroying it{actual ? ", after the haggle" : ""}:</b> {fmt.signed(pnl)} instead of {fmt.inr(-wo.total)}. In cash, the {fmt.inr(net)} recovered plus {fmt.inr(plan.cashAvoided)} of credit reversal, disposal and EPR never spent.</span></div>
     </div>;
   }
 
+  // a document in the pack: generated by Munchly, drafted for the distributor to issue, or not required
   function DocCard({ doc, onOpen }) {
-    const ready = doc.status === "generated";
+    const ready = doc.status === "generated" || doc.status === "drafted";
+    const icon = { invoice: "receipt", eway: "truck", support: "hand-coins", itc: "badge-check", fssai: "clipboard-check" }[doc.id] || "file-check";
     return <button type="button" className="card interactive" onClick={onOpen} style={{ padding: 18, textAlign: "left", display: "grid", gap: 10 }}>
-      <div className="row between"><span className={cx("icontile", ready ? "" : "soft")}><Icon name={doc.id === "invoice" ? "receipt" : doc.id === "eway" ? "truck" : doc.id === "credit" ? "file-text" : doc.id === "itc" ? "badge-check" : doc.id === "fssai" ? "clipboard-check" : "file-check"} size={17} stroke={2} /></span><Badge size="sm" tone={ready ? "green" : undefined}>{doc.status}</Badge></div>
-      <div><div className="strong">{doc.type}</div><div className="mono subtle t-caption">{doc.no}</div></div>
-      {doc.amount ? <Money value={doc.amount} size="s" decimals={doc.id === "invoice"} /> : <span className="t-footnote muted">{doc.note || (ready ? "Attached" : "Nothing to file")}</span>}
+      <div className="row between"><span className={cx("icontile", ready ? "" : "soft")}><Icon name={icon} size={17} stroke={2} /></span><Badge size="sm" tone={doc.status === "generated" ? "green" : undefined}>{doc.status}</Badge></div>
+      <div><div className="strong">{doc.type}</div><div className="mono subtle t-caption">{doc.no}{doc.owner ? " · " + doc.owner : ""}</div></div>
+      {doc.amount ? <Money value={doc.amount} size="s" /> : <span className="t-footnote muted">{doc.note || (ready ? "Attached" : "Nothing to file")}</span>}
     </button>;
   }
 

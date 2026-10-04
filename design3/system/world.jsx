@@ -148,8 +148,8 @@
       <span className="note">Schematic map · not to scale</span>
     </div>;
   }
-  // the long haul: Nagpur to Hyderabad for the ExpireSoon lot
-  function HaulLine({ progress = 0, from = "Nagpur", to = "Hyderabad", label = "NH 44 · about 500 km" }) {
+  // the long haul: Nagpur to Raipur for the ExpireSoon lot, in the buyer's own truck
+  function HaulLine({ progress = 0, from = "Nagpur", to = "Raipur", label = "NH 53 · about 290 km" }) {
     return <div className="map" style={{ height: 96 }} role="img" aria-label={`${from} to ${to}, ${label}`}>
       <svg viewBox="0 0 640 96" preserveAspectRatio="none">
         <rect width="640" height="96" fill="var(--map-ground)" />
@@ -259,8 +259,12 @@
       </div>
     </div>;
   }
-  function WindowFrame({ title, children, style }) {
-    return <div className="device-window" style={style}><div className="chrome"><span className="lights" aria-hidden="true"><i /><i /><i /></span><span className="wtitle">{title}</span></div><div style={{ position: "relative", minHeight: 0 }}>{children}</div></div>;
+  // a browser window; with a url, its chrome shows the address field instead of a title
+  function WindowFrame({ title, url, children, style }) {
+    const u = url ? url.replace(/^https?:\/\//, "") : ""; const cut = u.indexOf("/");
+    return <div className="device-window" style={style}><div className="chrome"><span className="lights" aria-hidden="true"><i /><i /><i /></span>
+      {u ? <span className="addr"><Icon name="lock" size={12} stroke={2.2} /><span className="host">{cut < 0 ? u : u.slice(0, cut)}</span>{cut >= 0 && <span className="path">{u.slice(cut)}</span>}</span> : <span className="wtitle">{title}</span>}
+    </div><div style={{ position: "relative", minHeight: 0 }}>{children}</div></div>;
   }
 
   Object.assign(window.SC3, { Roll, Money, DaysNum, GateChips, Countdown, Tile, Aura, Tracker, VTracker, AgentFeed, ClusterMap, HaulLine, ChannelBars, TrendChart, MixBar, CodeBlock, StatusBar, PhoneFrame, WindowFrame, CH_ORDER });

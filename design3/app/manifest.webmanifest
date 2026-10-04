@@ -1,7 +1,7 @@
 {
-  "name": "Smart-Clearance",
+  "name": "Munchly Foods · Smart-Clearance",
   "short_name": "Clearance",
-  "description": "Routes near-expiry stock to the channel that recovers the most, with one human approval.",
+  "description": "Munchly Foods' workspace on Smart-Clearance: near-expiry stock routed to the channel that recovers the most, with one human approval.",
   "id": "./",
   "start_url": "./Smart-Clearance%20app%20v3.html",
   "scope": "./",
