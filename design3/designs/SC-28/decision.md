@@ -52,6 +52,17 @@
 
 Every mockup was scanned with axe (the suite's WCAG 2.2 AA tags and the target-size pass) in light and dark at 1440 and 390, after its motion had played: zero violations.
 
+## Published for review
+
+On the platform v3 Claude Design project, with assets pinned to commit `83635d5`:
+
+- [the review board](https://claude.ai/design/p/976c5462-c3c3-4621-80b5-29b3cdda8326?file=SC-28+design+review.html)
+- [option A](https://claude.ai/design/p/976c5462-c3c3-4621-80b5-29b3cdda8326?file=SC-28+option+A.html)
+- [option B](https://claude.ai/design/p/976c5462-c3c3-4621-80b5-29b3cdda8326?file=SC-28+option+B.html)
+- [option C](https://claude.ai/design/p/976c5462-c3c3-4621-80b5-29b3cdda8326?file=SC-28+option+C.html)
+
+Each hosted page was checked against its local copy, line by line, and loaded in Chromium. Scripts mount, every image and clip loads, and every motion plays through to its end state. There were no console errors.
+
 ## Known defects in the review assets
 
 - **Option C's clips are drafts.** They are recorded in their sidecars.
