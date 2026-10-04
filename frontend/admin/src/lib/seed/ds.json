@@ -85,6 +85,32 @@
 			"ink": "#ffffff"
 		}
 	},
+	"gates": [
+		{
+			"id": "blinkit",
+			"app": "Blinkit",
+			"need": 90,
+			"has": 47,
+			"pass": false,
+			"rule": "needs 90+ days"
+		},
+		{
+			"id": "zepto",
+			"app": "Zepto",
+			"need": 110,
+			"has": 47,
+			"pass": false,
+			"rule": "needs 60% of a 184-day life (110 days)"
+		},
+		{
+			"id": "instamart",
+			"app": "Instamart",
+			"need": 110,
+			"has": 47,
+			"pass": false,
+			"rule": "needs 60% of a 184-day life (110 days)"
+		}
+	],
 	"figures": {
 		"planNet": 21770,
 		"actualNet": 21152.4,

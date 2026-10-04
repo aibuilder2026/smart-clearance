@@ -1,0 +1,5 @@
+# generated, or ported verbatim from design3 (the drift tests keep those identical); see ../.prettierignore
+src/lib/icons/registry.ts
+src/styles/tokens.css
+src/styles/base.css
+src/styles/components.css

@@ -7,7 +7,6 @@ const built: Coverage = { status: 'built' };
 const later = (with_: string): Coverage => ({ status: 'planned', with: with_ });
 const console_ = later('the console port');
 const app = later('the workspace app port');
-const step8 = later('SC-27, once the landing page is in');
 
 export const COVERAGE: Record<string, Coverage> = {
 	// foundations
@@ -42,20 +41,20 @@ export const COVERAGE: Record<string, Coverage> = {
 	Wordmark: built,
 	WorkspaceMark: built,
 	// the rest of their design-system sections
-	Chip: step8,
-	Kbd: step8,
-	GateChips: step8,
-	Switch: step8,
-	Stepper: step8,
-	OTP: step8,
-	Tabs: step8,
-	Check: step8,
-	SearchField: step8,
-	DaysNum: step8,
-	Splash: step8,
-	PoweredBy: step8,
-	WindowFrame: step8,
-	Aura: step8,
+	Chip: built,
+	Kbd: built,
+	GateChips: built,
+	Switch: built,
+	Stepper: built,
+	OTP: built,
+	Tabs: built,
+	Check: built,
+	SearchField: built,
+	DaysNum: built,
+	Splash: built,
+	PoweredBy: built,
+	WindowFrame: built,
+	Aura: built,
 	// later, with the screens that use them
 	DataTable: console_,
 	Skeleton: console_,

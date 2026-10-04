@@ -1,0 +1,8 @@
+# generated, or ported verbatim from design3 (the drift tests keep those identical); see ../.prettierignore
+.svelte-kit/
+build/
+test-results/
+playwright-report/
+src/lib/seed/
+src/lib/landing/site.css
+src/lib/ds/docs.css

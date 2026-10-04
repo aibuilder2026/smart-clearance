@@ -36,3 +36,9 @@ describe('site.css matches design3/site/site.css', () => {
 		expect(norm(strip(read('../../src/lib/landing/site.css')))).toBe(norm(source));
 	});
 });
+
+describe('docs.css matches design3/system/docs.css', () => {
+	it('unchanged', () => {
+		expect(norm(read('../../src/lib/ds/docs.css'))).toBe(norm(read('../../../../design3/system/docs.css')));
+	});
+});

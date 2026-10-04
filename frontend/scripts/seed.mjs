@@ -101,6 +101,7 @@ const directory = {
 const ds = {
 	people: Object.values(D.PEOPLE).map(person),
 	workspace,
+	gates: D.RISK.gates,
 	figures: {
 		planNet: D.PLAN.net,
 		actualNet: D.ACTUAL.net,
