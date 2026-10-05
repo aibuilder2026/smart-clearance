@@ -70,9 +70,8 @@ const STATES: [string, string, ((page) => Promise<void>)?][] = [
     await p.waitForTimeout(4500);
     await p.evaluate(() => { const s = document.querySelector('.site'), t = document.querySelector('.split'); if (s && t) s.scrollTop += t.getBoundingClientRect().top - 120; });
   }],
-  ['site · the nine stops, running', '/site/Smart-Clearance%20site%20v3.html', async p => {
-    await p.evaluate(() => { const s = document.querySelector('.site'), t = document.querySelector('#agents'); if (s && t) s.scrollTop = (t as HTMLElement).offsetTop; });
-    await p.waitForTimeout(1200);
+  ['site · the crew at work, at the person\'s yes', '/site/Smart-Clearance%20site%20v3.html', async p => {
+    await p.waitForFunction(() => /Approve/.test(document.querySelector('.hero-caption')?.textContent || ''));
   }],
 ];
 

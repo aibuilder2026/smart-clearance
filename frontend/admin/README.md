@@ -18,9 +18,9 @@ root layout cannot.
 ## The landing page
 
 `src/lib/landing/` has one component per section of the prototype, with its classes, ids and accessible names:
-`Nav`, `Hero` (with `HeroCard`), `How` (how it works, three moments), `Exits` (the packs taking the street, the batch
-split by exit, and the results), `Stops` (the nine stops, played as a pipeline), `Workspace`, `Plans`, `Close`,
-`Footer`, and the `DemoSheet`; `Site` puts them together.
+`Nav`, `Hero` (with `Crew`, the agents working the batch on its plate: the nine stops, SC-30), `How` (how it works,
+three moments), `Exits` (the packs taking the street, the batch split by exit, and the results), `Workspace`, `Plans`,
+`Close`, `Footer`, and the `DemoSheet`; `Site` puts them together.
 `figures.ts` works out every figure and line of copy from the API's showcase and catalog, as `site.jsx` does from the
 prototype's globals. The page names no client: the batch it follows is an illustrative one (SC-28).
 
@@ -45,7 +45,10 @@ night source the browser picks before the page hydrates. Once hydrated, the read
   transitions set inline only while the section plays;
 - the street plays once nearly all of it is in view, and the split once its packs have arrived; one Replay runs both;
 - below 1100 px the street is a strip that follows the packs;
-- the hero card walks its stops once, in about 2.5 s, and holds.
+- the hero's crew walks the nine stops once the plate has loaded: `Crew` measures the plate's cover fit and lays a
+  layer over it, `motion`'s `animate()` turns the ring and rolls the money, 4.69 s in all, then it holds with Replay.
+  The server sends it before it sets off (the ring needs the measured plate, so it is drawn in the browser); under
+  reduced motion it is at its result at once.
 
 **Fixed from the prototype,** none of it visible:
 

@@ -10,7 +10,6 @@ const SECTIONS: [string, number][] = [
 	['.hero', 0.002],
 	['#how', 0.002],
 	['#exits', 0.002],
-	['#agents', 0.002],
 	['#teams', 0.002],
 	['#pricing', 0.002],
 	['.close', 0.002],

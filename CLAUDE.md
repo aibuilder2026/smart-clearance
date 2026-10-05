@@ -125,4 +125,16 @@
     - **Found on the way:** option 1's mockup never played on phones, where under a third of the street strip is ever in view (the build watches the strip); the split's ribbons could size their own row from a stale measurement (`contain: size` stops it).
   - **Motion:** every motion plays once as its section comes into view, under five seconds, then holds.
   - **Hosting:** the hosted landing page and console load commit `ad7540f`.
+- **SC-30** (In Review, branch `SC-30-hero-agents`): the agents work the batch in the hero, and "Nine stops. Ten agents. One yes." merges into it.
+  - **Design first:** three options on one board in platform v3, `SC-30 design review.html`: the agents' constellation, through the gateway, the carton's crew. The maintainer picked option 3, the carton's crew. Designs, comps, motion recordings and the decision are in `design3/designs/SC-30/`.
+  - **ThreeUI:** the maintainer asked for ThreeUI's MCP server and connector. Claude Code's auto mode refused to add an MCP server to the user settings, and ThreeUI's MCP is Pro-only. The maintainer chose its free MIT Community components, which options 1 and 2 adapted (`THIRD_PARTY_NOTICES.md` there). The picked option uses no ThreeUI code.
+  - **The crew:** the ten agents and the person ride a tilted ring round the carton, passing behind it. As the plate loads, the batch walks its nine stops:
+    - each stop's agent turns to the front, wearing the aura, and the caption under the carton says what it did;
+    - threads draw from each agent to the next;
+    - 430 ms a stop, 980 ms on the yes, and 700 ms on the report while the money rolls in: 4.69 s in all.
+
+    It holds on the result with Replay; under reduced motion the result shows at once. The hero card goes, and `#agents` is the hero.
+  - **Contrast on a plate:** text drawn over a plate is measured against the pixels behind it. Names not reached yet take the secondary ink, never opacity: a chip at 62% opacity fell under 4.5:1 on the darker parts of the town.
+  - **The port:** `Crew.svelte` in `Hero`; `HeroCard` and `Stops` are gone; `figures.ts` carries the crew; `plates.ts` bundles only the plates the page shows. The server sends the crew before it sets off; the ring is drawn in the browser, from the plate's measured fit.
+  - **Hosting:** the hosted landing page and console load commit `ae62513`.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

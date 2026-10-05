@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { fmt } from '@smart-clearance/core';
 import catalog from '#lib/seed/catalog.json';
 import showcase from '#lib/seed/showcase.json';
 import type { Catalog, Showcase } from '#lib/api/types.ts';
@@ -102,6 +103,24 @@ describe('the landing page figures', () => {
 			],
 			[0, 'cartons destroyed', '1,360 packs sold on tax invoices, so the ₹1,224 GST credit stays']
 		]);
+	});
+	it('rides the crew round the carton in the order it works, the person at the approval (SC-30)', () => {
+		expect(f.crew.map((c) => `${c.name}@${c.stop}:${c.icon}`)).toEqual([
+			'Data@0:database',
+			'Watcher@1:eye',
+			'Vision@2:scan-line',
+			'Valuer@3:scale',
+			'Router@4:route',
+			'a person@5:hand',
+			'Lister@6:store',
+			'Outreach@6:send',
+			'Negotiator@6:gavel',
+			'Paperwork@7:file-text',
+			'Impact@8:leaf'
+		]);
+		expect(f.crew.filter((c) => c.human).map((c) => c.name)).toEqual(['a person']);
+		// the caption's figures, as the page formats them
+		expect([fmt.inr(-f.bin), fmt.num(f.kg), fmt.inr(f.actual.net)]).toEqual(['−₹26,330', '218', '₹21,152']);
 	});
 	it('puts the agents at their stops, a person at the approval, and says what each stop did', () => {
 		expect(f.stops.map((s) => s.who.join('+'))).toEqual([

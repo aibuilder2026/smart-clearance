@@ -54,9 +54,9 @@ const STATES: [string, (page: Page) => Promise<void>][] = [
 		}
 	],
 	[
-		'site · the nine stops, running',
+		"site · the crew at work, at the person's yes",
 		async (p) => {
-			await p.evaluate(() => window.scrollTo(0, (document.querySelector('#agents') as HTMLElement).offsetTop));
+			await p.waitForFunction(() => /Approve/.test(document.querySelector('.hero-caption')?.textContent || ''));
 		}
 	],
 	[

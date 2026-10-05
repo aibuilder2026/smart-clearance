@@ -1,7 +1,7 @@
 // Smart-Clearance v3 · smartclearance.com: the product's own landing page, independent of any client. One carton
 // the size of a godown, parked in a miniature Indian town, and the page follows where its packs go.
 (function () {
-  const { useState, useEffect, useRef } = React;
+  const { useState, useEffect, useLayoutEffect, useRef } = React;
   const { useReducedMotion, motion } = Motion;
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, S = window.SC3_SCREENS, P = window.SC3_PLATFORM; const fmt = M.fmt;
   const { cx, Icon, IconButton, Button, Badge, Sheet, Field, Input, Select, Textarea, Menu, Mark, Wordmark, Money, Roll, GateChips, Product, Segmented, ModeMenuButton, ThemeProvider, AppRoot, NoticeHost, useApp, useTheme } = K;
@@ -48,23 +48,139 @@
     </header>;
   }
 
-  /* ---------- the first viewport ---------- */
-  function HeroCard() {
-    const reduce = useReducedMotion();
-    const [k, setK] = useState(reduce ? 8 : 0);
-    // the batch walks its stops once, about two and a half seconds, and holds on the result (WCAG 2.2.2)
-    useEffect(() => { if (reduce) { setK(8); return; } if (k >= 8) return; const t = setTimeout(() => setK(k + 1), k === 0 ? 500 : 260); return () => clearTimeout(t); }, [k, reduce]);
-    return <div className="hero-card" role="group" aria-label={`One batch: eight of nine stops done, ${fmt.inr(D.ACTUAL.net)} recovered`}>
-      <span className="hc-id mono">{fmt.num(D.RISK.atRisk)} packs</span>
-      <span className="hc-dots" aria-hidden="true">{Array.from({ length: 9 }).map((_, i) => <i key={i} className={cx(i < k && "on")} />)}</span>
-      <Money value={k >= 8 ? D.ACTUAL.net : Math.round(D.ACTUAL.net * k / 8)} roll={!reduce} from={0} className="hc-money" />
-      <span className="hc-cap">recovered</span>
+  /* ---------- the first viewport: the carton's crew (SC-30) ---------- */
+  // The ten agents and the person ride a ring around the giant carton, passing behind it. The batch walks its nine
+  // stops once, as soon as the plate has loaded, since the hero is the first viewport. The ring turns each stop's agent
+  // to the front, where it wears the aura while it works and the caption under the carton says what it did; a thread
+  // draws from each agent to the next. 430 ms a stop, 980 ms on the person's yes and 700 ms on the report while the
+  // money rolls in: 4.69 s in all, so every motion is over within five seconds (WCAG 2.2.2). It holds on the result and
+  // offers Replay; under reduced motion it is at its result from the start.
+  // what each stop did for this batch
+  const STOP_DONE = {
+    connect: "stock export mapped · permission given",
+    detect: `${fmt.num(D.RISK.atRisk)} packs won't sell in the ${BATCH.daysLeft} days left`,
+    verify: "label read · the date matches",
+    value: `five exits priced · the bin costs ${fmt.inr(BIN)}`,
+    decide: `${fmt.num(KL.units)} packs to ${SHOPS} kiranas · ${fmt.num(AW.units)} to one buyer`,
+    approve: `approved in one tap · ${fmt.inr(D.PLAN.net)} on screen`,
+    execute: `listed · offers sent · a bid countered to ${rate(AW.price)}`,
+    settle: "invoice, credit note and GST memo drafted",
+    report: `${fmt.inr(D.ACTUAL.net)} recovered · ${fmt.num(D.PLAN.kg)} kg kept out of landfill`,
+  };
+  const NS = D.STAGES.length, STAGE_AT = Object.fromEntries(D.STAGES.map((s, i) => [s.id, i]));
+  // the crew, in the order they work: every agent, and the person who says yes
+  const CREW = P.AGENTS.map(a => ({ name: a.gate ? "a person" : a.name, icon: a.icon, stop: STAGE_AT[a.stage], human: !!a.gate })).sort((a, b) => a.stop - b.stop);
+  const WHO = D.STAGES.map((s, i) => CREW.filter(c => c.stop === i).map(c => c.name).join(" · "));
+  // the carton's outline on the plate, as fractions of it (the day and night plates are composed alike)
+  const CARTON = [[0.393, 0.334], [0.466, 0.316], [0.65, 0.346], [0.651, 0.75], [0.525, 0.805], [0.393, 0.746]];
+  const STEP = 430, YES = 980, LAST = 700;
+  const stays = k => D.STAGES[k].human ? YES : k === NS - 1 ? LAST : STEP;
+  // The plate is cover-fitted in its box at its own object-position (50% 50% on desktops, 50% 64% below), so a point of
+  // the plate lands where at(p) says, in the layer's pixels. The layer is laid exactly over the plate's box and measured
+  // again as the page resizes or the night plate comes in.
+  function usePlate(layer) {
+    const [g, setG] = useState(null); const [ready, setReady] = useState(false);
+    useLayoutEffect(() => {
+      const el = layer.current; if (!el) return;
+      const hero = el.closest(".hero"), img = hero.querySelector(".hero-scene img");
+      const measure = () => {
+        const host = el.offsetParent; if (!host) return;
+        const r = img.getBoundingClientRect(), p = host.getBoundingClientRect();
+        const nw = img.naturalWidth || +img.getAttribute("width"), nh = img.naturalHeight || +img.getAttribute("height");
+        const [px, py] = (getComputedStyle(img).objectPosition || "50% 50%").split(" ").map(v => parseFloat(v) / 100);
+        const s = Math.max(r.width / nw, r.height / nh);
+        setG({ left: r.left - p.left, top: r.top - p.top, w: r.width, h: r.height, s, ox: (r.width - nw * s) * px, oy: (r.height - nh * s) * py, nw, nh });
+      };
+      const loaded = () => { measure(); setReady(true); };
+      measure(); if (img.complete && img.naturalWidth) setReady(true);
+      img.addEventListener("load", loaded);
+      const ro = new ResizeObserver(measure); ro.observe(img); ro.observe(hero);
+      return () => { ro.disconnect(); img.removeEventListener("load", loaded); };
+    }, []);
+    const at = p => g ? [g.ox + p[0] * g.nw * g.s, g.oy + p[1] * g.nh * g.s] : [0, 0];
+    // wide: the desktop frame, where the plate is the hero's whole picture and the copy sits in its sky
+    return { g, at, ready, wide: !!g && g.w >= 900 };
+  }
+  const poly = (at, pts) => pts.map(p => at(p).map(v => v.toFixed(1)).join(" ")).join(" L");
+  // where the batch is: -1 before it sets off, 0 to 8 at a stop, 9 when it is done (how it rests, and how it is from the
+  // start under reduced motion). It sets off half a second after the plate has loaded, so it never plays over an empty frame.
+  function useWalk(ready) {
+    const reduce = !!useReducedMotion();
+    const [k, setK] = useState(reduce ? NS : -1); const [run, setRun] = useState(0);
+    useEffect(() => { if (reduce) { setK(NS); return; } if (!ready) return; setK(-1); const t = setTimeout(() => setK(0), 500); return () => clearTimeout(t); }, [ready, run, reduce]);
+    useEffect(() => { if (reduce || k < 0 || k >= NS) return; const t = setTimeout(() => setK(k + 1), stays(k)); return () => clearTimeout(t); }, [k, reduce]);
+    return { k, reduce, playing: k >= 0 && k < NS, done: k >= NS, replay: () => setRun(r => r + 1) };
+  }
+  // the money, rolled in once over the report stop (the system's roll, 700 ms); at its value under reduced motion
+  function useCount(on, to, reduce) {
+    const [v, setV] = useState(on || reduce ? to : 0);
+    useEffect(() => {
+      if (reduce) { setV(to); return; } if (!on) { setV(0); return; }
+      const c = Motion.animate(0, to, { duration: LAST / 1000, ease: [0.22, 1, 0.36, 1], onUpdate: setV }); return () => c.stop();
+    }, [on, reduce]);
+    return v;
+  }
+  // what the batch is doing, under the carton: before it sets off, at each stop, and when it is done. The picture is
+  // hidden from screen readers, which get the nine stops and the result as text instead.
+  function Caption({ w, money }) {
+    const s = w.playing ? D.STAGES[w.k] : null;
+    return <div className={cx("hero-caption", s && s.human && "human")} aria-hidden="true">
+      {w.k < 0 ? <><b>{fmt.num(D.RISK.atRisk)} packs, {BATCH.daysLeft} days left.</b><span>Ten agents and one person take it from here.</span></>
+        : s ? <><span className="n">{w.k + 1} of {NS}</span><b>{s.title}</b><span>{WHO[w.k]}</span><span className="did">{s.id === "report" ? `${fmt.inr(money)} recovered · ${fmt.num(D.PLAN.kg)} kg kept out of landfill` : STOP_DONE[s.id]}</span></>
+        : <><span className="n">{NS} of {NS}</span><b>Sold, not binned.</b><span className="did">{fmt.inr(D.ACTUAL.net)} recovered, instead of {fmt.inr(-BIN)} to destroy it</span></>}
     </div>;
+  }
+  const T = 2 * Math.PI / CREW.length;
+  // the ring's turn that brings stop k's agent to the front (the middle one, where a stop has three): before the walk,
+  // between the last agent and the first; at rest, the last
+  const frontOf = k => { if (k < 0) return -1.5; if (k >= NS) return CREW.length - 1; const at = CREW.map((c, j) => c.stop === k ? j : -1).filter(j => j >= 0); return at[Math.floor(at.length / 2)]; };
+  function Crew() {
+    const layer = useRef(null); const plate = usePlate(layer); const w = useWalk(plate.ready);
+    const [rot, setRot] = useState(frontOf(w.k) * T); const rotNow = useRef(rot);
+    useEffect(() => {
+      const to = frontOf(w.k) * T; if (w.reduce) { rotNow.current = to; setRot(to); return; }
+      const c = Motion.animate(rotNow.current, to, { duration: w.k < 0 ? 0.5 : 0.42, ease: [0.45, 0, 0.4, 1], onUpdate: v => { rotNow.current = v; setRot(v); } });
+      return () => c.stop();
+    }, [w.k, w.reduce]);
+    const money = useCount(w.k >= NS - 1, D.ACTUAL.net, w.reduce);
+    const g = plate.g, wide = plate.wide;
+    // the ring sits round the carton's middle, tilted as if seen from above; on narrow plates it pulls in to stay on the plate
+    const ring = g && (() => { const [x, y] = plate.at(wide ? [0.522, 0.565] : [0.512, 0.565]); return { x, y, rx: (wide ? 0.245 : 0.178) * g.nw * g.s, ry: (wide ? 0.13 : 0.12) * g.nh * g.s }; })();
+    const tiles = g ? CREW.map((c, j) => {
+      const a = j * T - rot, d = Math.cos(a), x = ring.x + ring.rx * Math.sin(a), y = ring.y + ring.ry * d;
+      const done = c.stop < w.k || w.done, now = c.stop === w.k && w.playing;
+      return { ...c, j, x, y, d, done, now, scale: (0.8 + 0.2 * (d + 1) / 2) * (now ? 1.14 : 1) };
+    }) : [];
+    // the carton cut out of the layer: what rides behind it (the back of the ring, its tiles and threads) is hidden by it
+    const outline = g ? "M0 0 H" + g.w + " V" + g.h + " H0 Z M" + poly(plate.at, CARTON) + " Z" : "";
+    // the handoff threads: from each agent that has worked to the next one in the crew
+    const reached = tiles.filter(t => t.done || t.now).length;
+    const threads = tiles.slice(1, Math.max(1, reached)).map((t, i) => [tiles[i], t]);
+    // on a phone each tile is its icon, except the agent at work (and, at rest, the last)
+    const Tile = t => <span key={t.name} className={cx("crew-tile", t.human && "human", t.done && "on", w.playing && !t.done && !t.now && "later", !wide && !t.now && !(w.done && t.j === CREW.length - 1) && "icon")}
+      style={{ transform: `translate(${t.x.toFixed(1)}px, ${t.y.toFixed(1)}px) translate(-50%, -50%) scale(${t.scale.toFixed(3)})`, zIndex: Math.round((t.d + 1) * 50) + (t.now ? 200 : 0) }}>
+      <span className={cx(t.now && "aura")}><i><Icon name={t.icon} size={13} stroke={2.2} /></i>{t.name}</span></span>;
+    return <>
+      <div className="crew-layer" ref={layer} style={g ? { left: g.left, top: g.top, width: g.w, height: g.h } : { visibility: "hidden" }} aria-hidden="true">
+        {g && <svg>
+          <defs><clipPath id="crew-behind"><path clipRule="evenodd" d={outline} /></clipPath></defs>
+          <ellipse className="crew-ring" cx={ring.x} cy={ring.y} rx={ring.rx} ry={ring.ry} clipPath="url(#crew-behind)" />
+          <path className="crew-ring" d={`M${ring.x - ring.rx} ${ring.y} A${ring.rx} ${ring.ry} 0 0 0 ${ring.x + ring.rx} ${ring.y}`} />
+        </svg>}
+        {g && <svg>{threads.map(([a, b]) => <line key={a.name + b.name} className={cx("crew-thread", (a.human || b.human) && "human")} x1={a.x} y1={a.y} x2={b.x} y2={b.y} clipPath={a.d < 0 || b.d < 0 ? "url(#crew-behind)" : undefined} />)}</svg>}
+        {g && <div className="crew-back" style={{ clipPath: `path(evenodd, '${outline}')` }}>{tiles.filter(t => t.d < 0).map(Tile)}</div>}
+        {g && <div className="crew-front">{tiles.filter(t => t.d >= 0).map(Tile)}</div>}
+      </div>
+      <ol className="sr-only" aria-label="The nine stops">{D.STAGES.map((s, i) => <li key={s.id}>{s.title}, {WHO[i]}: {STOP_DONE[s.id]}.</li>)}</ol>
+      <p className="sr-only">Sold, not binned: {fmt.inr(D.ACTUAL.net)} recovered, instead of {fmt.inr(-BIN)} to destroy it.</p>
+      <Caption w={w} money={money} />
+      <div className="hero-replay">{!w.reduce && <button type="button" className="replay" onClick={w.replay}><Icon name="rotate-ccw" size={16} stroke={2} />Replay the batch</button>}</div>
+    </>;
   }
   function Hero({ onFind }) {
     const { resolved } = useTheme(); const night = resolved === "dark";
     const stops = [["kiranas", "Kiranas"], ["market", "Marketplace"], ["staff", "Staff sale"], ["foodbank", "Food bank"]];
-    return <section className="hero" aria-labelledby="hero-h">
+    return <section className="hero" id="agents" aria-labelledby="hero-h">
       <div className="hero-frame">
         <div className="hero-copy">
           <h1 id="hero-h" className="hero-h">Every near-expiry carton gets a second chance.</h1>
@@ -76,7 +192,7 @@
           <picture className="hero-scene"><img src={IMG + (night ? "scene-night.webp" : "scene.webp")} width="2752" height="1504" alt={night
             ? "A miniature Indian town at night: one giant cardboard carton stands among tiny kirana shops with lit windows, a van and a handcart, lit from below by a glowing green path that runs from it to the shops."
             : "A miniature Indian town in the morning: one giant cardboard carton stands among tiny kirana shops, a van and a handcart, with a green path running from it to the shops."} /></picture>
-          <HeroCard />
+          <Crew />
           <ol className="hero-stops" aria-label="Where its packs can go">{stops.map(([id, t]) => <li key={id} className={"st-" + id}>{t}</li>)}</ol>
           <span className="hero-line l1" aria-hidden="true" /><span className="hero-line l2" aria-hidden="true" /><span className="hero-line l3" aria-hidden="true" />
         </div>
@@ -351,56 +467,7 @@
     </section>;
   }
 
-  /* ---------- 4. nine stops, ten agents, one yes: the batch walks the rail, and each agent says what it did (SC-28) ---------- */
-  const STOP_LINES = { connect: "the distributor's stock export and one permission", detect: "shelf life checked against every gate at 09:00", verify: "the label photo read and matched", value: "five exits priced, the bin included", decide: "the batch split, with the reasons", approve: "one tap, with the money on screen", execute: "listing, offers in Hindi, bids answered, pick-up", settle: "invoice, e-way bill, credit note, GST memo", report: "a BRSR line after the return window" };
-  // what each stop did for this batch
-  const STOP_DONE = {
-    connect: "stock export mapped · permission given",
-    detect: `${fmt.num(D.RISK.atRisk)} packs won't sell in the ${BATCH.daysLeft} days left`,
-    verify: "label read · the date matches",
-    value: `five exits priced · the bin costs ${fmt.inr(BIN)}`,
-    decide: `${fmt.num(KL.units)} packs to ${SHOPS} kiranas · ${fmt.num(AW.units)} to one buyer`,
-    approve: `approved in one tap · ${fmt.inr(D.PLAN.net)} on screen`,
-    execute: `listed · offers sent · a bid countered to ${rate(AW.price)}`,
-    settle: "invoice, credit note and GST memo drafted",
-    report: `${fmt.inr(D.ACTUAL.net)} recovered · ${fmt.num(D.PLAN.kg)} kg kept out of landfill`,
-  };
-  function Stops() {
-    const night = useTheme().resolved === "dark"; const reduce = useReducedMotion();
-    const byStage = {}; P.AGENTS.forEach(a => { if (!a.gate) (byStage[a.stage] = byStage[a.stage] || []).push(a.name); });
-    const box = useRef(null); const inView = Motion.useInView(box, { once: true, amount: 0.4 });
-    const N = D.STAGES.length; const [k, setK] = useState(reduce ? N : -1);
-    useEffect(() => { if (reduce) { setK(N); return; } if (inView) setK(0); }, [inView, reduce]);
-    // it plays once when it comes into view, under five seconds: 470 ms a stop and a beat on the human yes; then it holds
-    useEffect(() => {
-      if (reduce || k < 0 || k >= N) return;
-      const t = setTimeout(() => setK(k + 1), D.STAGES[k].human ? 980 : 470); return () => clearTimeout(t);
-    }, [k, reduce]);
-    const playing = k >= 0 && k < N;
-    const replay = () => { if (reduce) return; setK(-1); setTimeout(() => setK(0), 30); };
-    return <section id="agents" className="sec sec-stops" aria-labelledby="stops-h">
-      <div className="wrap">
-        <header className="sec-head"><h2 id="stops-h" className="sec-h">Nine stops. Ten agents. One yes.</h2><p className="sec-sub">The agents do the running around. A person approves once, with the money on screen.</p></header>
-        <div className="stops-grid">
-          <figure className="plate-frame stops-plate"><img src={IMG + (night ? "approve-night.webp" : "approve.webp")} alt={`A miniature town square seen from above${night ? " at night" : ""}: a giant amber push-button on a stone plinth, a woman in a sari beside it with her phone, vans and a handcart around the square.`} loading="lazy" /></figure>
-          <div className="stops-box" ref={box}>
-            {/* --fill: how far the rail has filled; site.css draws it under the dots and eases it */}
-            <ol className={cx("stops live", playing && "playing")} style={{ "--fill": k < 0 ? 0 : Math.min(1, k / (N - 1)) }} aria-label="The nine stops">
-              {D.STAGES.map((s, i) => { const done = i < k || k >= N, now = i === k && playing; return <li key={s.id} className={cx("stop", s.human && "human", done && "on", now && "now")}>
-                <span className="st-dot" aria-hidden="true">{s.human ? <Icon name="hand" size={14} stroke={2.4} /> : done && <Icon name="check" size={13} stroke={3} />}</span>
-                <span className="st-main"><b>{s.title}</b><span className="st-text">{STOP_LINES[s.id]}</span>
-                  <span className="st-who">{(s.human ? ["a person"] : byStage[s.id] || []).map(w => <span key={w} className={cx("chip-agent", s.human && "person", (done || now) && "on")}><i aria-hidden="true" />{w}</span>)}</span>
-                  <Motion.AnimatePresence initial={false}>{(done || now) && <motion.span key="done" className="st-live" initial={reduce ? false : { opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.24, ease: EASE }}>{STOP_DONE[s.id]}</motion.span>}</Motion.AnimatePresence></span>
-              </li>; })}
-            </ol>
-            {!reduce && <button type="button" className="replay" onClick={replay}><Icon name="rotate-ccw" size={16} />{k >= N ? "Run the batch again" : "Run the batch"}</button>}
-          </div>
-        </div>
-      </div>
-    </section>;
-  }
-
-  /* ---------- 5. a workspace per manufacturer: the board's comp L5 (SC-28) ---------- */
+  /* ---------- 4. a workspace per manufacturer: the board's comp L5 (SC-28) ---------- */
   // x and y: where each island's flat top sits on the plate, as a share of its width and height; ly: its address label.
   // One product a manufacturer, none of them a client's.
   const ISLANDS = [
@@ -439,7 +506,7 @@
     </section>;
   }
 
-  /* ---------- 6. plans, without prices, and the close: the board's comp L6 (SC-28) ---------- */
+  /* ---------- 5. plans, without prices, and the close: the board's comp L6 (SC-28) ---------- */
   function Plans({ onDemo }) {
     return <section id="pricing" className="sec sec-plans" aria-labelledby="plans-h">
       <div className="wrap">
@@ -523,7 +590,6 @@
         <Hero onFind={() => setFind(true)} />
         <How />
         <Exits />
-        <Stops />
         <Workspace />
         <Plans onDemo={onDemo} />
         <Close onDemo={onDemo} />
