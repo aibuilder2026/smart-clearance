@@ -140,6 +140,7 @@ Local pages:
   These criteria still need a manual pass: 2.4.11, 2.5.7, 3.2.6, 3.3.7 and 3.3.8.
 - Nothing loops forever: every animation stops within five seconds (WCAG 2.2.2), and only loading indicators keep turning. `motion.a11y.spec.ts` fails on any endless animation.
   - The one longer motion is the landing page's hero tour (SC-34, 16.9 s). It plays once, and carries Pause and Play. It also holds while the visitor has the camera or the hero is out of view.
+  - The landing page's loader (SC-35) is a loading indicator: it moves only while the page, or a new theme's plates, load.
 - Measure text contrast against the background it actually sits on, including fills, tinted chips and chat bubbles, after any opacity.
 
 **Data and assets**
@@ -250,6 +251,7 @@ From the Claude desktop app:
 - The frontend's Book a demo keeps its requests in that browser (`sc-demo-requests`) until `backend-api` takes them; the hosted console does not see them.
 - The landing page ships about 139 kB of JavaScript, gzipped (`frontend/README.md`, Known gaps).
 - The landing page's hero draws its town in WebGL2; where WebGL2 is missing it draws the plate flat, without depth.
+- In design3 the loader's styles come with the page's stylesheets, so on a slow connection its first paint waits for them (the Google Fonts import included). The SvelteKit build puts the loader first in the prerendered page.
 - `.claude/jira-flow.json` names `.github/pull_request_template.md`, which is not in the repo, and there is no CI.
 - The `chrome-devtools` MCP server starts only in a new session, after a one-time approval.
 - The WCAG 2.2 criteria axe cannot check are untested.

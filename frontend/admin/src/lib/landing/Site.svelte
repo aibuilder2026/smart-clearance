@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { FindWorkspace } from '@smart-clearance/core';
+	import { FindWorkspace, useTheme } from '@smart-clearance/core';
+	import { animate } from 'motion';
+	import { onMount } from 'svelte';
 	import { api } from '#lib/api/client.ts';
 	import type { Catalog, Showcase } from '#lib/api/types.ts';
 	import Close from './Close.svelte';
@@ -10,6 +12,7 @@
 	import Hero from './Hero.svelte';
 	import How from './How.svelte';
 	import { LINKS, openLink } from './links';
+	import { PLATES } from './plates';
 	import Nav from './Nav.svelte';
 	import Plans from './Plans.svelte';
 	import Workspace from './Workspace.svelte';
@@ -23,6 +26,29 @@
 	let find = $state(false);
 	let demo = $state(false);
 	let demoPlan: string | null = $state(null);
+	// The page's loader (design3/site/loader.js, SC-35; hooks.server.ts puts it first in <body>): it runs its exits on
+	// motion's animate(), finds the plates by their hashed names, covers each change of theme, and hears that the page
+	// is up. Every load plays the route; every change of theme plays dusk or dawn.
+	const theme = useTheme();
+	const PLATE_BY_NAME: Record<string, string> = {
+		'business.webp': PLATES.town.day,
+		'business-night.webp': PLATES.town.night,
+		'exits.webp': PLATES.exits.day,
+		'exits-night.webp': PLATES.exits.night,
+		'islands.webp': PLATES.islands.day,
+		'islands-night.webp': PLATES.islands.night
+	};
+	onMount(() => {
+		const loader = window.SC3_LOADER;
+		if (!loader) return;
+		loader.animate = animate as NonNullable<typeof loader.animate>;
+		window.SC3_PLATE_URL = (name) => PLATE_BY_NAME[name];
+		theme.gate = loader.switchTheme;
+		loader.mark('app');
+		return () => {
+			if (theme.gate === loader.switchTheme) theme.gate = null;
+		};
+	});
 	const onfind = () => (find = true);
 	const ondemo = (plan?: string) => {
 		demoPlan = typeof plan === 'string' ? plan : null;

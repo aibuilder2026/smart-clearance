@@ -16,4 +16,6 @@ js app/app.js > dist/app.js; css app/app.css > dist/app.css
 # the platform pages: the console carries its own mock backend; the site is the product's landing page
 { js core/platform.js; echo; js console/console.js; } > dist/console.js; css console/console.css > dist/console.css
 { js core/platform.js; echo; js site/town.js; echo; js site/site.js; } > dist/site.js; css site/site.css > dist/site.css
+# the landing page's loader (SC-35) loads on its own, first in <body>, before React
+js site/loader.js > dist/loader.js
 wc -c dist/* | tail -1

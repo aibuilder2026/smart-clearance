@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { report, scan, type Finding } from './helpers';
 import { isPhone, openSite } from './site';
 
@@ -69,5 +69,48 @@ test('site · sign-in menu, Find your workspace and Book a demo', async ({ page 
 	await page.getByRole('button', { name: 'Send request' }).click();
 	await page.waitForTimeout(400);
 	findings.push(...(await scan(page, 'site · Book a demo, sent')));
+	await report(testInfo, findings);
+});
+
+// the loader (SC-35), as design3/a11y's site spec: while the page loads it says so once, the page under it is busy, and
+// it lifts once the town is in; a change of theme plays under it and focus stays where the visitor left it
+test('site · the loader, on a load and on a change of theme', async ({ page }, testInfo) => {
+	test.skip(
+		testInfo.project.name !== 'desktop-light' && testInfo.project.name !== 'phone-dark',
+		'the loader is checked once in each theme'
+	);
+	const state = () =>
+		page.evaluate(() => {
+			const loader = (window as unknown as { SC3_LOADER?: { lifted: boolean; busy: boolean } }).SC3_LOADER;
+			return { lifted: !!loader?.lifted, busy: !!loader?.busy };
+		});
+	// the town's plate held back, so the loader is still up to be scanned
+	let release: () => void = () => {};
+	const held = new Promise<void>((r) => (release = r));
+	await page.route(/business(-night)?\.[\w-]+\.webp$|business(-night)?\.webp$/, async (route) => {
+		await held;
+		await route.continue();
+	});
+	await page.goto('/', { waitUntil: 'domcontentloaded' });
+	await expect(page.locator('.loader [role="status"]')).toHaveText('Loading Smart-Clearance');
+	await expect(page.locator('[aria-busy="true"]')).toHaveCount(1);
+	const findings: Finding[] = await scan(page, 'site · the loader, on a load');
+	release();
+	await expect.poll(async () => (await state()).lifted, { timeout: 15_000 }).toBe(true);
+	await expect(page.locator('.loader')).toHaveCount(0);
+	await expect(page.locator('[aria-busy="true"]')).toHaveCount(0);
+
+	// Dark or Light chosen from the keyboard: the page turns under the loader, and focus is back on Appearance
+	const before = await page.evaluate(() => document.documentElement.dataset.theme);
+	const to = before === 'dark' ? 'Light' : 'Dark';
+	await page.getByRole('button', { name: 'Appearance' }).focus();
+	await page.keyboard.press('Enter');
+	await page.getByRole('menuitemradio', { name: to }).focus();
+	await page.keyboard.press('Enter');
+	await expect.poll(async () => (await state()).busy, { timeout: 15_000 }).toBe(false);
+	await expect(page.locator('html')).toHaveAttribute('data-theme', to.toLowerCase());
+	await expect(page.locator('.loader')).toHaveCount(0);
+	await expect(page.getByRole('button', { name: 'Appearance' })).toBeFocused();
+	findings.push(...(await scan(page, 'site · after a change of theme')));
 	await report(testInfo, findings);
 });

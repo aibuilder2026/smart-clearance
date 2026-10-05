@@ -3,7 +3,15 @@
 export { cx, type ClassValue } from './cx';
 export { fmt, rate } from './format';
 export { bpOf, PHONE_MAX, DESKTOP_MIN, type Breakpoint } from './bp';
-export { Theme, useTheme, provideTheme, THEME_KEY, type ThemeMode, type ResolvedTheme } from './theme.svelte';
+export {
+	Theme,
+	useTheme,
+	provideTheme,
+	THEME_KEY,
+	type ThemeMode,
+	type ResolvedTheme,
+	type ThemeGate
+} from './theme.svelte';
 export { AppState, useApp, provideApp } from './app.svelte';
 export { imgUrl, ICON_SVG } from './assets';
 export { isEmail, digits, phoneOf } from './identity';

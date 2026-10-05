@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { scan, report, type Finding } from './helpers';
 
 // smartclearance.com, the product's own landing page: every section from the first viewport to the footer, the town in
@@ -9,6 +9,8 @@ async function open(page) {
   await page.addInitScript(() => { try { localStorage.removeItem('sc3-platform'); } catch (e) { /* storage blocked */ } });
   await page.goto(SITE);
   await page.waitForFunction(() => (window as any).SC3_PLATFORM && document.querySelector('.site .hero'));
+  // the loader (SC-35) lifts once the town is drawn; the page is scanned as the visitor then sees it
+  await page.waitForFunction(() => (window as any).SC3_LOADER?.lifted, null, { timeout: 15000 });
   await page.waitForTimeout(900);
 }
 
@@ -74,5 +76,37 @@ test('site · sign-in menu, Find your workspace and Book a demo', async ({ page 
   await page.getByRole('button', { name: 'Send request' }).click();
   await page.waitForTimeout(400);
   findings.push(...await scan(page, 'site · Book a demo, sent'));
+  await report(testInfo, findings);
+});
+
+// the loader (SC-35): while the page loads it says so once, the page under it is busy, and it lifts once the town is in;
+// a change of theme plays under it and focus stays where the visitor left it
+test('site · the loader, on a load and on a change of theme', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-light' && testInfo.project.name !== 'phone-dark', 'the loader is checked once in each theme');
+  // the town's plate held back, so the loader is still up to be scanned
+  let release: () => void = () => {};
+  const held = new Promise<void>(r => { release = r; });
+  await page.route(/\/business(-night)?\.webp$/, async route => { await held; await route.continue(); });
+  await page.goto(SITE, { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('.loader [role="status"]')).toHaveText('Loading Smart-Clearance');
+  await expect(page.locator('[aria-busy="true"]')).toHaveCount(1);
+  const findings: Finding[] = await scan(page, 'site · the loader, on a load');
+  release();
+  await page.waitForFunction(() => (window as any).SC3_LOADER?.lifted, null, { timeout: 15000 });
+  await expect(page.locator('.loader')).toHaveCount(0);
+  await expect(page.locator('[aria-busy="true"]')).toHaveCount(0);
+
+  // Dark or Light chosen from the keyboard: the page turns under the loader, and focus is back on Appearance
+  const before = await page.evaluate(() => document.documentElement.dataset.theme);
+  const to = before === 'dark' ? 'Light' : 'Dark';
+  await page.getByRole('button', { name: 'Appearance' }).focus();
+  await page.keyboard.press('Enter');
+  await page.getByRole('menuitemradio', { name: to }).focus();
+  await page.keyboard.press('Enter');
+  await page.waitForFunction(() => !(window as any).SC3_LOADER?.busy, null, { timeout: 15000 });
+  await expect(page.locator('html')).toHaveAttribute('data-theme', to.toLowerCase());
+  await expect(page.locator('.loader')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Appearance' })).toBeFocused();
+  findings.push(...await scan(page, 'site · after a change of theme'));
   await report(testInfo, findings);
 });

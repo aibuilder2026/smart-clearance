@@ -448,7 +448,7 @@
 
   function Site() {
     const [find, setFind] = useState(false); const [demo, setDemo] = useState(null);
-    useEffect(() => { document.title = "Smart-Clearance"; }, []);
+    useEffect(() => { document.title = "Smart-Clearance"; if (window.SC3_LOADER) window.SC3_LOADER.mark("app"); }, []);
     const onDemo = plan => setDemo({ plan: typeof plan === "string" ? plan : null });
     return <div className="site" id="top">
       <Nav onFind={() => setFind(true)} onDemo={onDemo} />
@@ -465,6 +465,8 @@
       <DemoSheet open={!!demo} plan={demo && demo.plan} onClose={() => setDemo(null)} />
     </div>;
   }
-  function Root() { return <ThemeProvider><AppRoot className="site-root" style={{ position: "fixed", inset: 0 }}><NoticeHost><Site /></NoticeHost></AppRoot></ThemeProvider>; }
+  // the loader (loader.js, SC-35) covers each change of theme: the plates swap under dusk or dawn, never in sight
+  const gate = window.SC3_LOADER && window.SC3_LOADER.switchTheme;
+  function Root() { return <ThemeProvider gate={gate}><AppRoot className="site-root" style={{ position: "fixed", inset: 0 }}><NoticeHost><Site /></NoticeHost></AppRoot></ThemeProvider>; }
   ReactDOM.createRoot(document.getElementById("root")).render(<Root />);
 })();

@@ -413,6 +413,7 @@
     const [demo, setDemo] = useState(null);
     useEffect(() => {
       document.title = "Smart-Clearance";
+      if (window.SC3_LOADER) window.SC3_LOADER.mark("app");
     }, []);
     const onDemo = (plan) => setDemo({ plan: typeof plan === "string" ? plan : null });
     return /* @__PURE__ */ React.createElement("div", { className: "site", id: "top" }, /* @__PURE__ */ React.createElement(Nav, { onFind: () => setFind(true), onDemo }), /* @__PURE__ */ React.createElement("main", null, /* @__PURE__ */ React.createElement(Hero, { onFind: () => setFind(true) }), /* @__PURE__ */ React.createElement(How, null), /* @__PURE__ */ React.createElement(Exits, null), /* @__PURE__ */ React.createElement(Workspace, null), /* @__PURE__ */ React.createElement(Plans, { onDemo }), /* @__PURE__ */ React.createElement(Close, { onDemo })), /* @__PURE__ */ React.createElement(Footer, { onFind: () => setFind(true) }), /* @__PURE__ */ React.createElement(S.FindWorkspace, { open: find, onClose: () => setFind(false), onUse: () => {
@@ -420,8 +421,9 @@
       open(LINKS.app);
     }, note: "One manufacturer's workspace is set up in this prototype." }), /* @__PURE__ */ React.createElement(DemoSheet, { open: !!demo, plan: demo && demo.plan, onClose: () => setDemo(null) }));
   }
+  const gate = window.SC3_LOADER && window.SC3_LOADER.switchTheme;
   function Root() {
-    return /* @__PURE__ */ React.createElement(ThemeProvider, null, /* @__PURE__ */ React.createElement(AppRoot, { className: "site-root", style: { position: "fixed", inset: 0 } }, /* @__PURE__ */ React.createElement(NoticeHost, null, /* @__PURE__ */ React.createElement(Site, null))));
+    return /* @__PURE__ */ React.createElement(ThemeProvider, { gate }, /* @__PURE__ */ React.createElement(AppRoot, { className: "site-root", style: { position: "fixed", inset: 0 } }, /* @__PURE__ */ React.createElement(NoticeHost, null, /* @__PURE__ */ React.createElement(Site, null))));
   }
   ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(Root, null));
 })();
