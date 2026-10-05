@@ -268,7 +268,7 @@
     - the console's e2e: 96 pass, Firefox not run (it cannot start in the sandbox);
     - the console's parity: 80 pass, at most 0.27% apart;
     - admin unchanged: e2e 51, parity 29.
-- **SC-39** (In Review, branch `SC-39-infra-firebase-hosting`, no PR yet): `infra/`, Terraform for the GCP project `aibuilder-510213`, and Firebase Hosting for the two apps, each on its own site.
+- **SC-39** (PR #29, merged): `infra/`, Terraform for the GCP project `aibuilder-510213`, and Firebase Hosting for the two apps, each on its own site.
   - **Applied, each plan saved, read in full, then applied as that file:**
     - `infra/bootstrap`: the state bucket, `gs://aibuilder-510213-tfstate`, holding its own state;
     - `infra/prod`: the billing link (adopted by import), the Firebase Management and Hosting APIs, Firebase on the project, and the sites `smartclearance` and `smartclearance-console`.
