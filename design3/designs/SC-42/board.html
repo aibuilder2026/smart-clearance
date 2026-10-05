@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-42 Hero Sky</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<style>
+/* SC-42's board, round 2: the hero on every screen, two options for its sky. */
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber: #f2b437; --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --red-text: #c42a30;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px rgb(17 41 30 / 0.07);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #8b9993;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber: #f7c04a; --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --red-text: #ff8f8d;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px rgb(0 0 0 / 0.35);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #8b9993;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber: #f7c04a; --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --red-text: #ff8f8d;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px rgb(0 0 0 / 0.35);
+  color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); margin: 0; padding-inline: 16px; -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+a:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
+::selection { background: color-mix(in oklab, var(--green) 24%, transparent); }
+.wrap { max-width: 1240px; margin-inline: auto; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+p { margin: 0; text-wrap: pretty; }
+
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; margin-inline: -16px; padding: 10px 16px; background: color-mix(in srgb, var(--ground) 84%, transparent);
+  -webkit-backdrop-filter: saturate(180%) blur(18px); backdrop-filter: saturate(180%) blur(18px); box-shadow: 0 1px 0 var(--line); }
+.top .wrap { display: flex; align-items: center; gap: 8px 20px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; font: 700 16px/1 var(--display); color: var(--ink); text-decoration: none; }
+.brand svg { width: 28px; height: 28px; flex: none; }
+.top nav { display: flex; gap: 4px 16px; flex-wrap: wrap; margin-left: auto; font-size: 14px; }
+.top nav a { color: var(--ink-2); text-decoration: none; padding: 6px 2px; }
+.top nav a:hover { color: var(--ink); }
+
+header.intro { padding-block: 56px 28px; display: grid; gap: 18px; }
+h1 { font-size: clamp(36px, 6vw, 60px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+.lede { font-size: 18px; color: var(--ink-2); max-width: 66ch; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-size: 13.5px; font-weight: 600; background: var(--surface); box-shadow: 0 0 0 1px var(--line); color: var(--ink-2); }
+.chip.rec { background: var(--green-soft); color: var(--green-text); box-shadow: none; }
+
+section.part { padding-block: 40px; display: grid; gap: 20px; scroll-margin-top: 64px; }
+section.part > h2 { font-size: clamp(26px, 3.4vw, 36px); font-weight: 720; letter-spacing: -0.02em; line-height: 1.08; font-variation-settings: "opsz" 72, "wdth" 92; }
+.card { background: var(--surface); border-radius: 20px; box-shadow: var(--shadow), 0 0 0 1px var(--line); padding: 22px; }
+blockquote { margin: 0; padding: 4px 0 4px 16px; box-shadow: inset 2px 0 0 var(--line-2); color: var(--ink); font-size: 16px; }
+blockquote + blockquote { margin-top: 10px; }
+.cols { display: grid; gap: 16px; }
+@media (min-width: 900px) { .cols.two { grid-template-columns: 1fr 1fr; } .cols.three { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+ul.tight { margin: 0; padding-left: 18px; display: grid; gap: 6px; color: var(--ink-2); }
+ul.tight b { color: var(--ink); }
+
+.option { display: grid; gap: 18px; padding: 26px 22px; border-radius: 26px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.option.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.option-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.option-head h3 { font-size: 26px; font-weight: 720; letter-spacing: -0.02em; font-variation-settings: "opsz" 48, "wdth" 92; }
+.tag { font-size: 13px; font-weight: 650; color: var(--green-text); background: var(--green-soft); padding: 4px 10px; border-radius: 999px; }
+.option .idea { display: grid; gap: 8px; font-size: 16.5px; color: var(--ink-2); max-width: 74ch; }
+.leaves { display: grid; gap: 8px; color: var(--ink-2); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); }
+.btn.primary { background: var(--green); color: #fff; }
+:root[data-theme="dark"] .btn.primary { color: #03170d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #03170d; } }
+
+.comps { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .comps { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 210px 210px; align-items: start; } }
+figure { margin: 0; display: grid; gap: 8px; }
+figcaption { font-size: 13px; color: var(--ink-3); }
+.frame { max-height: 640px; overflow: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); overscroll-behavior: contain; }
+.frame img { display: block; width: 100%; height: auto; }
+.frame.phone { max-height: 640px; }
+video.motion { width: 100%; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); display: block; }
+.motion-row { display: grid; gap: 14px; }
+@media (min-width: 900px) { .motion-row { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: start; } }
+.facts { display: grid; gap: 10px; }
+.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); text-transform: none; }
+.facts dd { margin: 2px 0 0; color: var(--ink-2); }
+.decide { display: grid; gap: 12px; }
+footer { padding-block: 36px 60px; color: var(--ink-3); font-size: 13px; }
+code { font: 500 0.92em/1 var(--mono); }
+.note { color: var(--ink-2); }
+.pair { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 210px 210px; align-items: start; } }
+.journey { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .journey { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: start; } }
+.strip { overflow-x: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+.strip img { display: block; height: 384px; width: auto; max-width: none; }
+.option h4 { margin: 4px 0 0; font: 650 15px/1.3 var(--ui); color: var(--ink); }
+
+body { margin: 0; background: var(--ground); color: var(--ink); font: 15px/1.55 var(--ui); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 16px; padding-block: 40px 72px; }
+h1 { margin: 0 0 6px; font: 760 clamp(30px, 4vw, 44px)/1.05 var(--display); font-variation-settings: "wdth" 82; letter-spacing: -0.02em; text-wrap: balance; }
+h2 { margin: 44px 0 12px; font: 720 24px/1.15 var(--display); font-variation-settings: "wdth" 86; letter-spacing: -0.01em; }
+h3 { margin: 0; font: 700 18px/1.25 var(--ui); }
+p { margin: 0 0 10px; max-width: 70ch; color: var(--ink-2); }
+.kicker { font: 500 12px/1.4 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+blockquote { margin: 14px 0; padding: 12px 16px; border-left: 0; border-radius: 12px; background: var(--sunken); color: var(--ink); white-space: pre-line; max-width: 70ch; }
+.grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
+figure { margin: 0; min-width: 0; }
+figure img { display: block; width: 100%; height: auto; border-radius: 12px; box-shadow: var(--shadow); background: var(--sunken); }
+figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+.opt { margin-top: 18px; padding: 18px; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.opt.picked { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.opt header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-bottom: 8px; }
+.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 600 12.5px/1 var(--ui); color: var(--green-text); background: var(--green-soft); }
+.shots { display: grid; gap: 12px; grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); margin-top: 12px; }
+@media (max-width: 700px) { .shots { grid-template-columns: 1fr; } }
+a { color: var(--green-text); }
+ul { margin: 0 0 10px; padding-left: 20px; color: var(--ink-2); max-width: 72ch; }
+</style>
+<body>
+<main class="wrap">
+<p class="kicker">SC-42 · smartclearance.com · the hero · round 2</p>
+<h1>The hero on every screen: a sky, and the town under it</h1>
+<p>Round 1 built option A, card first with a zoom on dwell (decision.md). Looking at the build, the maintainer wrote, 6 Oct 2026:</p>
+<blockquote>The text is not looking good, too much clutter</blockquote>
+<blockquote>Make the hero visually appealing on desktop, laptop and mobile screens as much as possible with the given direction and camera zoom as selected. On mobile, tablets and ipads, I want similar background of the hero merging in the sky experience too.. Think hard and come up with best solution</blockquote>
+
+<h2>Already fixed: the heading squeezed together</h2>
+<p>Round 1 capped the hero at the window's height, so the caption stays in view on short screens, but the heading, its line and its buttons still took their size from the window's width. On a short window the three ran into each other, as in the maintainer's screenshot. They are now sized by the frame as drawn (<code>--hu</code>), so a short window draws them as a narrower one would, with the approved spacing. This changes no design, so it is built already, in design3 and the port.</p>
+<div class="grid"><figure><img src="round-2/fixed/heading-light-1440x700.webp" alt="The hero at 1440 by 700 in light with the fix: the heading, its line and the buttons spaced as approved." loading="lazy" width="1440" height="700"><figcaption>1440 × 700, light, fixed</figcaption></figure></div>
+
+<h2>The hero as it is</h2>
+<p>Desktops draw the town full-bleed, its hazy sky running up behind the heading into the page. Phones and tablets put the heading on the plain page, and the town in a card under it.</p>
+<div class="shots"><figure><img src="round-2/current/laptop-light.webp" alt="The hero now on a 1440 by 800 laptop in light." loading="lazy" width="1440" height="800"><figcaption>laptop, 1440 × 800, light</figcaption></figure><figure><img src="round-2/current/phone-light.webp" alt="The hero now on a phone in light: the heading on the plain page, the town in a card." loading="lazy" width="585" height="1266"><figcaption>phone, 390 × 844, light</figcaption></figure></div>
+<div class="shots"><figure><img src="round-2/current/laptop-dark.webp" alt="The hero now on a laptop in dark." loading="lazy" width="1440" height="800"><figcaption>laptop, dark</figcaption></figure><figure><img src="round-2/current/ipad-light.webp" alt="The hero now on an iPad in light: the town in a card under the heading." loading="lazy" width="820" height="1180"><figcaption>iPad, 820 × 1180, light</figcaption></figure></div>
+
+<h2>What both options share</h2>
+<ul>
+<li><b>One picture on every screen.</b> Phones and tablets lose the card: the hero is full-bleed, the nav glass over it, and the town's sky runs up into the page as it does on desktops.</li>
+<li><b>The sky is the plates' own.</b> By day the plate's warm haze (#f3efeb), by night its navy (#000c26), deepening from the page's ground. Nothing is painted over the town and nothing moves.</li>
+<li><b>The copy centred on phones too</b>, on the on-plate inks, over the sky.</li>
+<li><b>The caption docked on the town's foot</b> in glass, with the zoom controls under it, all within the first screen at 390 × 844 and 820 × 1180.</li>
+<li><b>Round 1 unchanged:</b> a card at once on pointing, the zoom about the node after 0.6 s, a click to keep the card, the camera back on looking away; the tour, its pace, Pause and Play.</li>
+</ul>
+
+<h2>Two options</h2>
+<section class="opt picked" aria-labelledby="o-a">
+<header><h3 id="o-a">A · The horizon</h3><span class="tag">Recommended</span></header>
+<p>The town sits lower, under an open sky. The heading, its line and the buttons stand on clear sky; the plate's top fades into it, so the town rises from a hazy horizon just below the buttons. On phones and tablets the same picture stands upright: sky above, the town filling the rest of the screen, the caption on its foot.</p>
+<ul>
+<li><b>Why:</b> the copy always has a calm ground, by day and by night, with no blur needed. Every place and every agent stays in view at rest, and a phone shows as much of the town across as the card did (about 56% of its width; B shows 37%).</li>
+<li><b>Trade-offs:</b> on desktops the town gives up about a tenth of the frame's height to the sky, so the caption sits over the kiranas' foreground rather than the road.</li>
+<li><b>The build would touch:</b> <code>site/site.css</code> (the hero's sky and frame at every width, the caption docked) and its port in <code>frontend/admin</code>; <code>town.jsx</code> and <code>Town.svelte</code> only for the haze band, which now sits at the stage's top edge.</li>
+</ul>
+<p class="links"><a class="btn primary" href="round-2/option-a/mockup.html">Open option A</a></p>
+<div class="shots"><figure><img src="round-2/option-a/desktop-light.webp" alt="Option A, the horizon, on a 1440 by 900 desktop in light, at the result." loading="lazy" width="1440" height="900"><figcaption>desktop, 1440 × 900, light</figcaption></figure><figure><img src="round-2/option-a/phone-light.webp" alt="Option A on a phone in light, at the result." loading="lazy" width="585" height="1266"><figcaption>phone, 390 × 844, light</figcaption></figure></div>
+<div class="shots"><figure><img src="round-2/option-a/laptop-light.webp" alt="Option A on a 1440 by 800 laptop in light, at the result." loading="lazy" width="1440" height="800"><figcaption>laptop, 1440 × 800, light</figcaption></figure><figure><img src="round-2/option-a/ipad-light.webp" alt="Option A on an iPad in portrait, light, at the result." loading="lazy" width="820" height="1180"><figcaption>iPad, 820 × 1180, light</figcaption></figure></div>
+<div class="shots"><figure><img src="round-2/option-a/desktop-dark.webp" alt="Option A, the horizon, on a 1440 by 900 desktop in dark, at the result." loading="lazy" width="1440" height="900"><figcaption>desktop, 1440 × 900, dark</figcaption></figure><figure><img src="round-2/option-a/phone-dark.webp" alt="Option A on a phone in dark, at the result." loading="lazy" width="585" height="1266"><figcaption>phone, 390 × 844, dark</figcaption></figure></div>
+<div class="shots"><figure><img src="round-2/option-a/laptop-dark.webp" alt="Option A on a 1440 by 800 laptop in dark, at the result." loading="lazy" width="1440" height="800"><figcaption>laptop, 1440 × 800, dark</figcaption></figure><figure><img src="round-2/option-a/ipad-dark.webp" alt="Option A on an iPad in portrait, dark, at the result." loading="lazy" width="820" height="1180"><figcaption>iPad, 820 × 1180, dark</figcaption></figure></div>
+</section>
+
+<section class="opt" aria-labelledby="o-b">
+<header><h3 id="o-b">B · The haze</h3></header>
+<p>The town stays big and behind the copy, as the desktop is today, and the depth renderer's tilt-shift haze, which round 1 used only once the camera neared, now holds at rest: the top of the town goes soft and pale behind the heading, and comes into focus from the buttons down. On phones and tablets the town rises from behind the buttons.</p>
+<ul>
+<li><b>Why:</b> the town is larger in every frame, and on desktops the picture barely changes from what was approved; only the haze is new.</li>
+<li><b>Trade-offs:</b> what stands in the haze steps out of view at rest: the Landfill and the Lister on desktops, until the camera moves. The ground behind the copy is a blur of the town rather than open sky. On phones the town is cropped closer (about 37% of its width shows).</li>
+<li><b>The build would touch:</b> <code>town.jsx</code> and <code>Town.svelte</code> (the haze at rest on every screen, its band measured from the buttons), <code>site.css</code> and its port (the full-bleed frame on phones and tablets).</li>
+</ul>
+<p class="links"><a class="btn" href="round-2/option-b/mockup.html">Open option B</a></p>
+<div class="shots"><figure><img src="round-2/option-b/desktop-light.webp" alt="Option B, the haze, on a 1440 by 900 desktop in light, at the result." loading="lazy" width="1440" height="900"><figcaption>desktop, 1440 × 900, light</figcaption></figure><figure><img src="round-2/option-b/phone-light.webp" alt="Option B on a phone in light, at the result." loading="lazy" width="585" height="1266"><figcaption>phone, 390 × 844, light</figcaption></figure></div>
+<div class="shots"><figure><img src="round-2/option-b/laptop-light.webp" alt="Option B on a 1440 by 800 laptop in light, at the result." loading="lazy" width="1440" height="800"><figcaption>laptop, 1440 × 800, light</figcaption></figure><figure><img src="round-2/option-b/ipad-light.webp" alt="Option B on an iPad in portrait, light, at the result." loading="lazy" width="820" height="1180"><figcaption>iPad, 820 × 1180, light</figcaption></figure></div>
+<div class="shots"><figure><img src="round-2/option-b/desktop-dark.webp" alt="Option B, the haze, on a 1440 by 900 desktop in dark, at the result." loading="lazy" width="1440" height="900"><figcaption>desktop, 1440 × 900, dark</figcaption></figure><figure><img src="round-2/option-b/phone-dark.webp" alt="Option B on a phone in dark, at the result." loading="lazy" width="585" height="1266"><figcaption>phone, 390 × 844, dark</figcaption></figure></div>
+<div class="shots"><figure><img src="round-2/option-b/laptop-dark.webp" alt="Option B on a 1440 by 800 laptop in dark, at the result." loading="lazy" width="1440" height="800"><figcaption>laptop, 1440 × 800, dark</figcaption></figure><figure><img src="round-2/option-b/ipad-dark.webp" alt="Option B on an iPad in portrait, dark, at the result." loading="lazy" width="820" height="1180"><figcaption>iPad, 820 × 1180, dark</figcaption></figure></div>
+</section>
+
+<p><b>Recommended: A, the horizon.</b> It answers both messages at once: the text gets a clean ground, and phones and tablets get the same sky-merged picture as desktops, with the whole town and every agent in view. B keeps the town bigger, at the cost of a blurred ground and two agents hidden at rest.</p>
+
+<h2>Open question</h2>
+<ul><li>The sky is plain, the plates' own colour. Should it be painted instead, with thin clouds by day and still stars at night? That would add two images (about 250 kB) and more texture behind the heading.</li></ul>
+
+<h2>Round 1</h2>
+<p>Hovering a place or an agent: A, card first, zoom on dwell (picked, built); B, zoom on hover; C, the loupe. See decision.md.</p>
+<footer>Every frame is the real landing page with only the option's stylesheet and town script loaded (round-2/sc42.css, round-2/sc42-town.js), at the result, under reduced motion.</footer>
+</main>
+</body>
+</html>

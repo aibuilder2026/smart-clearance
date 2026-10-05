@@ -1,0 +1,48 @@
+/* SC-42 round 2: the hero on every screen, two options over the real landing page. Each option is scoped by
+   html[data-sc42]; nothing here changes the page without it.
+   The sky continues the plates' own: by day their warm haze, by night their navy, deepening from the page's ground. */
+.hero { --sky-1: #f3efeb; --sky-2: #ece8e4; }
+[data-theme="dark"] .hero { --sky-1: #000c26; --sky-2: #011634; }
+
+/* ---------- A · the horizon: the town sits lower, under the sky, on every screen ---------- */
+@container app (min-width: 1024px) {
+  [data-sc42="a"] .hero-frame { background: linear-gradient(to bottom, var(--bg) 0, var(--sky-1) 11%, var(--sky-2) 30%, var(--sky-2) 72%, var(--bg) 100%); }
+  [data-sc42="a"] .hero-scene { top: 21%; height: 79%;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 13%, #000 86%, transparent 100%); mask-image: linear-gradient(to bottom, transparent 0, #000 13%, #000 86%, transparent 100%); }
+}
+@container app (max-width: 1023px) {
+  [data-sc42] .site-nav { margin-bottom: calc(-60px - var(--safe-top)); }
+  [data-sc42] .hero-copy { justify-items: center; text-align: center; }
+  [data-sc42] .hero-h { color: var(--on-plate); }
+  [data-sc42] .hero-sub { color: var(--on-plate); }
+
+  [data-sc42="a"] .hero-frame { min-height: max(640px, 100svh); grid-template-rows: auto 1fr; gap: 0; padding: calc(60px + var(--safe-top) + 26px) 16px 12px;
+    background: linear-gradient(to bottom, var(--bg) 0, var(--sky-1) 14%, var(--sky-2) 40%, var(--sky-2) 76%, var(--bg) 100%); }
+  [data-sc42="a"] .hero-stage { margin: -20px -16px 0; grid-template-rows: 1fr auto auto; gap: 10px; }
+  [data-sc42="a"] .hero-scene { aspect-ratio: auto; height: 100%; min-height: max(330px, 46svh); border-radius: 0; box-shadow: none;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 16%, #000 84%, transparent 100%); mask-image: linear-gradient(to bottom, transparent 0, #000 16%, #000 84%, transparent 100%); }
+  [data-sc42] .town-caption { margin: -58px 12px 0; background: var(--glass-strong); -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%);
+    box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+  [data-sc42] .town-ctl { margin: 0 16px; }
+
+  /* ---------- B · the haze: the town fills the hero; the lens keeps the top of it in haze behind the copy ---------- */
+  [data-sc42="b"] .hero-frame { position: relative; min-height: max(640px, 100svh); display: flex; flex-direction: column; gap: 0; padding: calc(60px + var(--safe-top) + 26px) 16px 12px;
+    background: linear-gradient(to bottom, var(--bg) 0, var(--sky-1) 14%, var(--sky-2) 34%); }
+  [data-sc42="b"] .hero-copy { position: relative; z-index: 1; }
+  [data-sc42="b"] .hero-stage { position: static; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; min-height: max(300px, 40svh); }
+  [data-sc42="b"] .hero-scene { position: absolute; inset: 30% 0 0; z-index: 0; aspect-ratio: auto; border-radius: 0; box-shadow: none;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 8%, #000 84%, transparent 100%); mask-image: linear-gradient(to bottom, transparent 0, #000 8%, #000 84%, transparent 100%); }
+  [data-sc42="b"] .town-caption { margin: 0 -4px; }
+  [data-sc42="b"] .town-ctl { margin: 0 -4px; }
+}
+@container app (min-width: 600px) and (max-width: 1023px) {
+  [data-sc42] .hero-frame { padding-top: calc(60px + var(--safe-top) + 40px); }
+  [data-sc42="a"] .hero-stage { margin: -80px -32px 0; }
+  [data-sc42] .town-ctl { margin-inline: 32px; }
+  [data-sc42="b"] .hero-scene { top: 26%; }
+  [data-sc42] .town-caption { margin-inline: auto; width: min(100% - 48px, 46rem); }
+}
+.mock-bar { position: fixed; z-index: 60; right: 12px; bottom: 12px; display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 14px; border-radius: 999px; font: 600 13px/1.2 var(--font-ui);
+  color: var(--fg); background: var(--glass-strong); -webkit-backdrop-filter: blur(12px) saturate(140%); backdrop-filter: blur(12px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.mock-bar a { display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px; border-radius: 999px; color: var(--fg); background: var(--fill-2); text-decoration: none; }
+.mock-bar a:hover { background: color-mix(in oklab, var(--fg) 12%, transparent); }
