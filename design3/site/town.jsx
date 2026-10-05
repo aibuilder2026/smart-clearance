@@ -7,7 +7,9 @@
 // pauses the tour, and leaving the hero brings the whole town back. Drawn in WebGL2 from the plate and its depth map, so
 // it parallaxes as the camera travels, tilts under the pointer and keeps its focus on what the camera looks at; without
 // WebGL2 the plate is drawn flat. Under reduced motion the batch is at its result from the start and the camera jumps.
-// Every figure comes from core/money.js through the data; no client is named.
+// Every figure comes from core/money.js through the data; no client is named. The page's loader (loader.js, SC-35)
+// hears from the town when its depth map is in and when it has drawn the plate for a theme, and the tour sets off once
+// the loader has lifted.
 (function () {
   const { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } = React;
   const { useReducedMotion, motion, AnimatePresence } = Motion;
@@ -227,10 +229,17 @@
   // sets off half a second after the town has loaded, so it never plays over an empty frame. It holds while paused, and
   // while the hero is out of view (it carries on when it is back); stepping by hand stops the clock, and Play restarts it
   // from where it is.
+  // the loader, told what the town has done (on the next frame, once it is drawn), and whether it has lifted yet
+  const loaderSays = (fn, arg) => { const L = window.SC3_LOADER; if (L && L[fn]) requestAnimationFrame(() => L[fn](arg)); };
+  function useLifted() {
+    const [v, setV] = useState(() => !window.SC3_LOADER || window.SC3_LOADER.lifted);
+    useEffect(() => { if (v) return; const f = () => setV(true); window.addEventListener("sc3:loader-lifted", f); return () => window.removeEventListener("sc3:loader-lifted", f); }, [v]);
+    return v;
+  }
   function useJourney(ready, inView) {
-    const reduce = !!useReducedMotion();
+    const reduce = !!useReducedMotion(), lifted = useLifted();
     const [s, setS] = useState(reduce ? NS : -1); const [run, setRun] = useState(0); const [manual, setManual] = useState(false); const [paused, setPaused] = useState(false);
-    useEffect(() => { if (reduce) { setS(NS); return; } if (!ready) return; setS(-1); setPaused(false); const t = setTimeout(() => setS(0), 500); return () => clearTimeout(t); }, [ready, run, reduce]);
+    useEffect(() => { if (reduce) { setS(NS); return; } if (!ready || !lifted) return; setS(-1); setPaused(false); const t = setTimeout(() => setS(0), 500); return () => clearTimeout(t); }, [ready, lifted, run, reduce]);
     const hold = paused || manual || !inView;
     useEffect(() => { if (reduce || hold || s < 0 || s >= NS) return; const t = setTimeout(() => setS(s + 1), STOPS[s].ms); return () => clearTimeout(t); }, [s, reduce, hold]);
     const stop = s >= 0 && s < NS ? STOPS[s] : null, k = s < 0 ? -1 : stop ? stop.beat : NB;
@@ -295,7 +304,7 @@ void main() {
       if (!on) return;
       const W = 256, H = Math.round(256 * GEO.nh / GEO.nw), c = document.createElement("canvas"); c.width = W; c.height = H; const x = c.getContext("2d", { willReadFrequently: true });
       const im = new Image(); im.crossOrigin = "anonymous";
-      im.onload = () => { x.drawImage(im, 0, 0, W, H); const d = x.getImageData(0, 0, W, H).data; setM({ canvas: c, at: p => d[(clamp(Math.round(p[1] * (H - 1)), 0, H - 1) * W + clamp(Math.round(p[0] * (W - 1)), 0, W - 1)) * 4] / 255 }); };
+      im.onload = () => { x.drawImage(im, 0, 0, W, H); const d = x.getImageData(0, 0, W, H).data; setM({ canvas: c, at: p => d[(clamp(Math.round(p[1] * (H - 1)), 0, H - 1) * W + clamp(Math.round(p[0] * (W - 1)), 0, W - 1)) * 4] / 255 }); loaderSays("depthIn"); };
       im.src = IMG + "business-depth.webp";
     }, [on]);
     return m;
@@ -351,11 +360,11 @@ void main() {
     const kick = () => { if (!st.current.raf) st.current.raf = requestAnimationFrame(loop); };
     useEffect(() => () => cancelAnimationFrame(st.current.raf), []);
     // the depth map, once read; the town is ready once both the plate and its depth are in
-    useEffect(() => { if (map0 && gl.current) { upload(1, map0.canvas, false); st.current.depth = true; if (st.current.ready) P2.current.onReady(); draw(); kick(); } }, [map0]);
+    useEffect(() => { if (map0 && gl.current) { upload(1, map0.canvas, false); st.current.depth = true; if (st.current.ready) { P2.current.onReady(); loaderSays("plateDrawn", P2.current.dark); } draw(); kick(); } }, [map0]);
     // the plate for the theme
     useEffect(() => {
       let alive = true; const im = new Image(); im.decoding = "async"; im.crossOrigin = "anonymous";
-      im.onload = () => { if (!alive) return; upload(0, im, true); st.current.ready = true; if (st.current.depth) P2.current.onReady(); draw(); kick(); };
+      im.onload = () => { if (!alive) return; upload(0, im, true); st.current.ready = true; if (st.current.depth) { P2.current.onReady(); loaderSays("plateDrawn", dark); } draw(); kick(); };
       im.onerror = () => P2.current.onFail(); im.src = IMG + (dark ? "business-night.webp" : "business.webp");
       return () => { alive = false; };
     }, [dark]);
@@ -684,7 +693,7 @@ void main() {
       <div className={cx("hero-scene town-stage", gl && "is-gl", ready && "ready")} ref={stageRef}>
         {gl && g && <DepthPlate g={g} api={api} dark={dark} reduce={j.reduce} map={map} stageRef={stageRef} view={view} onReady={() => setReady(true)} onFail={() => setGl(false)} />}
         <div className="town-world" ref={plateWorld} style={g ? { left: g.ox, top: g.oy, width: g.w, height: g.h } : { visibility: "hidden" }}>
-          {!gl && <img src={IMG + (dark ? "business-night.webp" : "business.webp")} width={GEO.nw} height={GEO.nh} draggable="false" onLoad={() => setReady(true)} alt="" />}
+          {!gl && <img src={IMG + (dark ? "business-night.webp" : "business.webp")} width={GEO.nw} height={GEO.nh} draggable="false" onLoad={() => { setReady(true); loaderSays("plateDrawn", dark); }} alt="" />}
         </div>
         {!gl && g && g.wide && <div className="town-haze" ref={hazeRef} aria-hidden="true" />}
         {g && <Graph g={g} api={api} j={j} dark={dark} focus={focus} project={project} holes={holes} />}

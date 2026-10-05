@@ -42,6 +42,14 @@ so the server renders every width.
 plate and its depth map (`business-depth.webp`), or flat where WebGL2 is missing. The reader's own choice of theme then
 picks every plate.
 
+**The loader** (SC-35) is design3's `site/loader.js`, as it is.
+
+- `hooks.server.ts` puts it first in the prerendered page's `<body>`, so it is on screen from the first paint, and its styles are the loader's part of `site.css`.
+- Every load of the page plays the route: the mark draws its S as the page loads, the pin lands, and the mark opens into a window onto the page.
+- Every change of theme plays dusk or dawn over a paper skyline of the town. The theme changes underneath.
+- `Site` hands it `motion`'s `animate()`, the plates' hashed names (`SC3_PLATE_URL`) and the theme's gate (`theme.gate` on core's `Theme`).
+- `Town` tells it when its depth map is in and when it has drawn a plate, and the tour sets off once it has lifted.
+
 **Motion,** with the prototype's numbers:
 
 - `rise.ts` raises each of How it works' cards as it comes into view, its rows following in turn;

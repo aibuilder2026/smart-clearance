@@ -18,6 +18,15 @@ export async function open(page: Page, url: string, { windowScroll = false } = {
 		}
 	});
 	await page.goto(url, { waitUntil: 'networkidle' });
+	// the landing page's loader (SC-35), on both sides, has lifted
+	await page.waitForFunction(
+		() => {
+			const loader = (window as unknown as { SC3_LOADER?: { lifted: boolean } }).SC3_LOADER;
+			return !loader || loader.lifted;
+		},
+		null,
+		{ timeout: 15_000 }
+	);
 	if (windowScroll)
 		await page.addStyleTag({
 			content:

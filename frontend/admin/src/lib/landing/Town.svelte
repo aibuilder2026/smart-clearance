@@ -43,6 +43,11 @@
 	const beatOf = (id: string) => T.beats.findIndex((b) => b.id === id);
 	const names = (who: string[]) => who.map((w) => agentOf(w).name).join(' · ');
 	const dark = $derived(app.mounted && theme.resolved === 'dark');
+	// the page's loader, told what the town has done on the next frame, once it is drawn
+	const loaderSays = (say: (L: NonNullable<Window['SC3_LOADER']>) => void) => {
+		const L = window.SC3_LOADER;
+		if (L) requestAnimationFrame(() => say(L));
+	};
 	const reduce = $derived(prefersReducedMotion.current);
 
 	/* ---------- the stage, the camera and the town's layers ---------- */
@@ -90,7 +95,11 @@
 		if (!c || !app.mounted) return;
 		let r: DepthRenderer;
 		try {
-			r = new DepthRenderer(c, camera, () => (ready = true));
+			// ready once the plate and its depth are in; the page's loader hears of each plate drawn (SC-35)
+			r = new DepthRenderer(c, camera, () => {
+				ready = true;
+				loaderSays((L) => L.plateDrawn(dark));
+			});
 		} catch {
 			gl = false;
 			return;
@@ -100,6 +109,7 @@
 			(m) => {
 				map = m;
 				r.setDepth(m);
+				loaderSays((L) => L.depthIn());
 			},
 			() => (gl = false)
 		);
@@ -157,6 +167,16 @@
 	// it from where it is.
 	let s = $state(-1);
 	let run = $state(0);
+	// the tour sets off once the page's loader has lifted (SC-35), so its first stop is never spent under it
+	let lifted = $state(true);
+	$effect(() => {
+		const L = window.SC3_LOADER;
+		if (!L || L.lifted) return;
+		lifted = false;
+		const up = () => (lifted = true);
+		window.addEventListener('sc3:loader-lifted', up);
+		return () => window.removeEventListener('sc3:loader-lifted', up);
+	});
 	let manual = $state(false);
 	let paused = $state(false);
 	let inView = $state(true);
@@ -174,7 +194,7 @@
 			s = NS;
 			return;
 		}
-		if (!ready) return;
+		if (!ready || !lifted) return;
 		s = -1;
 		paused = false;
 		const t = setTimeout(() => (s = 0), 500);
@@ -540,7 +560,10 @@
 				width={GEO.nw}
 				height={GEO.nh}
 				draggable="false"
-				onload={() => (ready = true)}
+				onload={() => {
+					ready = true;
+					loaderSays((L) => L.plateDrawn(dark));
+				}}
 				alt=""
 			/>{/if}
 	</div>

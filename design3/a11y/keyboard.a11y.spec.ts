@@ -139,6 +139,8 @@ test.describe('the landing page\'s town, with motion on', () => {
   test('keyboard · the town\'s tour pauses and plays, and focus leaving the hero brings the whole town back', async ({ page }, testInfo) => {
     await page.goto('/site/Smart-Clearance%20site%20v3.html');
     await page.waitForSelector('.town-stage.ready');
+    // the tour sets off once the page's loader (SC-35) has lifted
+    await page.waitForFunction(() => (window as any).SC3_LOADER?.lifted, null, { timeout: 15000 });
     const tip = () => page.evaluate(() => document.querySelector('.town-tip b')?.textContent || '');
     const zoom = () => page.evaluate(() => +(((document.querySelector('.town-top') as HTMLElement).style.transform.match(/scale\(([\d.]+)\)/) || [0, '1'])[1]));
     await expect.poll(tip, { message: 'a card opens beside each agent as the tour reaches it', timeout: 8000 }).not.toBe('');

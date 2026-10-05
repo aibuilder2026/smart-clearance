@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-35 Landing Loader</title>
+<meta name="description" content="Three loaders for the Smart-Clearance landing page, on first load and on choosing day or night: the route, dusk and dawn, the lens.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Noto+Sans+Devanagari:wght@600&display=swap">
+<style>
+/* SC-35's review board: the request, the page as it is, three loaders, and the pick. */
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px -6px rgb(17 41 30 / 0.1);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark }
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
+::selection { background: color-mix(in oklab, var(--green) 24%, transparent); }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 48px 16px 72px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+h2 { margin: 56px 0 14px; font-size: clamp(25px, 3vw, 32px); font-weight: 720; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 72, "wdth" 88; }
+h3 { font-size: 24px; font-weight: 720; letter-spacing: -0.018em; font-variation-settings: "opsz" 48, "wdth" 90; }
+p { margin: 0 0 12px; max-width: 72ch; color: var(--ink-2); text-wrap: pretty; }
+p b, li b { color: var(--ink); font-weight: 600; }
+.lede { font-size: 18px; margin-top: 14px; }
+blockquote { margin: 16px 0; padding: 14px 18px; border-radius: 14px; background: var(--sunken); color: var(--ink); font-size: 16.5px; max-width: 70ch; }
+ul { margin: 0 0 12px; padding-left: 20px; color: var(--ink-2); max-width: 76ch; display: grid; gap: 6px; }
+code { font: 500 0.9em/1 var(--mono); }
+
+.grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.pair { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.frames { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+@media (min-width: 900px) { .frames { grid-template-columns: minmax(0, 2.6fr) minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); align-items: start; } }
+figure { margin: 0; min-width: 0; }
+figure img, figure video { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+
+.card { padding: 22px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.shared { display: grid; gap: 18px; }
+@media (min-width: 900px) { .shared { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.shared h3 { font: 650 16px/1.35 var(--ui); letter-spacing: 0; margin-bottom: 6px; }
+.shared p, .shared li { font-size: 14.5px; }
+
+.opt { margin-top: 22px; display: grid; gap: 18px; padding: 24px 22px; border-radius: 28px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); scroll-margin-top: 20px; }
+.opt.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.opt header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.opt header p { margin: 0; flex-basis: 100%; font-size: 17px; color: var(--ink); max-width: 70ch; }
+.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 600 12.5px/1 var(--ui); color: var(--green-text); background: var(--green-soft); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+.btn.primary { background: var(--green); color: #fff; box-shadow: none; }
+:root[data-theme="dark"] .btn.primary { color: #03170d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #03170d; } }
+.motion-row { display: grid; gap: 18px; }
+@media (min-width: 900px) { .motion-row { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: start; } }
+dl.facts { margin: 0; display: grid; gap: 12px; }
+dl.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); }
+dl.facts dd { margin: 2px 0 0; color: var(--ink-2); font-size: 14.5px; }
+dl.facts dd ul { margin-top: 4px; font-size: 14.5px; }
+.timing { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13.5px; color: var(--ink-3); }
+.timing b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.rec-box { padding: 22px; border-radius: 20px; background: var(--green-soft); }
+.rec-box p { color: var(--ink); }
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
+</style>
+<body>
+<main class="wrap">
+<h1>A loader for the landing page, on first load and on day or night</h1>
+<p class="lede">SC-35 · smartclearance.com · three options, each built on the real landing page and recorded from it. Nothing outside the loader changes.</p>
+<p>The maintainer's words, 5 Oct 2026:</p>
+<blockquote>I want a add a loader to the main landing page, which will show up when the page is loaded or day/night mode is selected. Think of a real aesthetically pleasing loader which would eye catchy</blockquote>
+
+<h2>What the page does now</h2>
+<p>A loader has real work to do here. The town in the hero is a 350 KB plate drawn in depth, and every plate on the page is composed twice, once for day and once for night.</p>
+<div class="pair">
+  <figure><img src="current/loading-1440.webp" width="1440" height="900" loading="lazy" alt="The landing page before its town has loaded: the agents' pins and place names float over an empty sage ground, and the tour's caption has already begun."><figcaption><b>First load.</b> Until the plate arrives, the pins, the place names and the tour's caption sit on an empty ground.</figcaption></figure>
+  <figure><img src="current/switch-1440.webp" width="1440" height="900" loading="lazy" alt="Dark chosen from the Appearance menu: the bar and buttons are dark, but the day town is still showing, and the headline in its night ink is almost invisible against the day sky."><figcaption><b>Dark chosen.</b> The chrome turns at once, but the day plate stays until the night one arrives. Meanwhile the headline, now in the night ink, almost disappears against the day sky.</figcaption></figure>
+</div>
+
+<h2>What every option shares</h2>
+<div class="shared">
+  <div class="card"><h3>When it shows</h3>
+    <ul><li><b>First load:</b> from the first paint until the fonts, the town's plate and its depth map are in.</li>
+    <li><b>A new theme:</b> when Light, Dark or Match device changes the theme (or the device turns to night while the page follows it), until the new plates in view are drawn. The theme changes underneath, never in sight.</li>
+    <li>Match device on a device already in that theme changes nothing, so nothing plays.</li></ul></div>
+  <div class="card"><h3>Real progress</h3>
+    <ul><li>It follows the page's own loading: each script as it arrives, the fonts, the first render, the depth map, and the plate once the town has drawn it.</li>
+    <li>It never goes backwards. Between milestones it creeps, but never reaches the next one.</li>
+    <li>It shows long enough for its motion to read (about a second on a first load, half that on a later visit in the same session). After 8 s, or 4 s on a switch, the page shows anyway.</li>
+    <li>The town's tour sets off once the loader has lifted.</li></ul></div>
+  <div class="card"><h3>Access and build</h3>
+    <ul><li>Screen readers hear "Loading Smart-Clearance" once, and the page is marked busy until the loader lifts. Nothing takes focus; after a switch, focus is where the visitor left it.</li>
+    <li>It moves only while the page loads, which WCAG 2.2.2 allows for a loading indicator. Under reduced motion each option shows a still frame, and the page appears as soon as it is ready.</li>
+    <li>It is HTML first: its markup comes before React or Svelte, and Framer Motion runs its exit and the switch (<code>motion</code> in the build). In these mockups the design system's styles load first, so a slow connection shows a blank half second. In the build the loader's styles are inline.</li></ul></div>
+</div>
+
+<h2>Three loaders</h2>
+<p>Each mockup is the real landing page with the loader added. To play the loader again, use <b>Replay the load</b> or <b>As on a slow connection</b> (simulated) in its label. To try a switch, use the Appearance menu or the footer. The recordings are from the mockups on a slowed connection (about 6 Mbps): the first load, then Dark, then Light. The switch times are measured on a local server, from the choice to the loader gone.</p>
+
+<section class="opt rec" id="a" aria-labelledby="a-h">
+  <header><h3 id="a-h">A · The route</h3><span class="tag">Picked for page loads</span><p>The mark draws its S, from the godown dot towards the pin, as the page loads. When the town is in, the amber pin lands and the mark opens into a window onto the page.</p></header>
+  <div class="links"><a class="btn primary" href="option-a/mockup.html">Open the mockup</a><a class="btn" href="option-a/mockup.html?theme=dark">In dark</a></div>
+  <div class="motion-row">
+    <figure><video src="option-a/motion.mp4" poster="option-a/motion.webp" controls muted playsinline preload="metadata" aria-label="Option A's recording: the mark draws its route as the page loads, the pin lands, and the squircle opens into a window onto the town; then Dark pours out of the Appearance button as a squircle, the mark draws, and the window opens on the town at night; then Light the same way."></video><figcaption>Recorded from the mockup. The still is the mark opening into a window.</figcaption></figure>
+    <dl class="facts">
+      <div><dt>First load</dt><dd>The page's own ground and aurora. The squircle springs in, and the route draws with the load, holding its last stretch for the town. Then the pin lands and pings once, and the squircle grows from the mark until it is the whole window.</dd></div>
+      <div><dt>A new theme</dt><dd>The new theme's ground pours out of the control you pressed, in the same squircle. The mark draws while the new plates arrive, then the window opens on the new town.</dd></div>
+      <div><dt>Why it works</dt><dd>The product's sign is a route that ends in the human yes, and here that route is the progress bar. The reveal is the moment people remember: the logo becomes the window onto the town. It is the lightest to build: an SVG mark and one clip-path.</dd></div>
+      <div><dt>Trade-off</dt><dd>While the page loads it is the app's splash in a new place, and the brand mark plays on every theme switch.</dd></div>
+      <div><dt>Timing</dt><dd class="timing"><span>a switch <b>about 1.8 s</b></span><span>cover <b>0.42 s</b></span><span>window <b>0.74 s</b>, <b>0.58 s</b> on a switch</span></dd></div>
+    </dl>
+  </div>
+  <div class="frames">
+    <figure><img src="option-a/light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A loading in light at 1440: the green mark half drawn, the wordmark and the Hindi line under it, on the sage ground."><figcaption>Loading, 1440, light</figcaption></figure>
+    <figure><img src="option-a/dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option A loading in dark at 1440, on the green-black ground with its aurora."><figcaption>Loading, 1440, dark</figcaption></figure>
+    <figure><img src="option-a/light-390.webp" width="780" height="1688" loading="lazy" alt="Option A loading on a phone in light."><figcaption>390, light</figcaption></figure>
+    <figure><img src="option-a/dark-390.webp" width="780" height="1688" loading="lazy" alt="Option A loading on a phone in dark."><figcaption>390, dark</figcaption></figure>
+  </div>
+  <figure><img src="option-a/switch-1440.webp" width="1440" height="900" loading="lazy" alt="Option A switching to dark: the night ground pours out of the Appearance button as a squircle over the day page."><figcaption>Dark chosen: the night ground pours out of the Appearance button as the mark's own squircle.</figcaption></figure>
+</section>
+
+<section class="opt rec" id="b" aria-labelledby="b-h">
+  <header><h3 id="b-h">B · Dusk and dawn</h3><span class="tag">Picked for day and night</span><p>The town's skyline, cut from paper in three layers, under a sky that turns with the load. A light page loads as dawn and a dark one as nightfall. Choosing Dark plays dusk, and choosing Light plays dawn.</p></header>
+  <div class="links"><a class="btn primary" href="option-b/mockup.html">Open the mockup</a><a class="btn" href="option-b/mockup.html?theme=dark">In dark</a></div>
+  <div class="motion-row">
+    <figure><video src="option-b/motion.mp4" poster="option-b/motion.webp" controls muted playsinline preload="metadata" aria-label="Option B's recording: dawn breaks over a paper skyline of the town as the page loads, then the scene dissolves into the page; Dark plays dusk, with the sun setting, the moon rising and the windows lighting; Light plays dawn."></video><figcaption>Recorded from the mockup. The still is dusk on the way to Dark.</figcaption></figure>
+    <dl class="facts">
+      <div><dt>The skyline</dt><dd>It shows the business in the hero: the maker's office, two chimneys and the sawtooth hall, the godown, the food bank, the kirana lane with packets hung in the shops, an auto-rickshaw, the water tank, and the buyer's shed on the far hill.</dd></div>
+      <div><dt>Progress is the hour</dt><dd>Sun and moon climb with the load. At night the windows light one by one, and at dawn they go out. Once the page is in, the layers part as the camera moves into the town, and the sky clears to the page.</dd></div>
+      <div><dt>Why it works</dt><dd>It turns the switch into what it means: night falling on the town. It is the most memorable of the three, and the only one that tells the difference between day and night.</dd></div>
+      <div><dt>Trade-off</dt><dd>It is the slowest switch. It also adds a drawn layer to a page whose material is photographs, so it would need its own entry in DESIGN.md and both compositions kept in step with the plates. Warm skies sit near amber's territory, so they stay muted.</dd></div>
+      <div><dt>Timing</dt><dd class="timing"><span>a switch <b>about 2.3 s</b></span><span>into the town <b>0.78 s</b></span><span>layers rise on a new spring: <b>stiffness 220, damping 26, mass 1</b></span></dd></div>
+    </dl>
+  </div>
+  <div class="frames">
+    <figure><img src="option-b/light-1440.webp" width="1440" height="900" loading="lazy" alt="Option B loading in light at 1440: sunrise over a sage paper skyline, the frosted Smart-Clearance pill in the sky, a few windows still lit."><figcaption>Loading, 1440, light (sunrise)</figcaption></figure>
+    <figure><img src="option-b/dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option B loading in dark at 1440: night falling, a crescent moon, stars, the godown doors and the kirana shops lit."><figcaption>Loading, 1440, dark (nightfall)</figcaption></figure>
+    <figure><img src="option-b/light-390.webp" width="780" height="1688" loading="lazy" alt="Option B loading on a phone in light, the skyline cropped to the godown and the water tank."><figcaption>390, light</figcaption></figure>
+    <figure><img src="option-b/dark-390.webp" width="780" height="1688" loading="lazy" alt="Option B loading on a phone in dark."><figcaption>390, dark</figcaption></figure>
+  </div>
+  <figure><img src="option-b/switch-1440.webp" width="1440" height="900" loading="lazy" alt="Option B switching to dark: dusk, the moon rising on the left, the windows lighting, a warm band at the horizon."><figcaption>Dark chosen: dusk, the moon rising and the windows lighting while the night plates load.</figcaption></figure>
+</section>
+
+<section class="opt" id="c" aria-labelledby="c-h">
+  <header><h3 id="c-h">C · The lens</h3><span class="tag">Recommended</span><p>A camera's iris over the page. It opens as the page loads, with the page out of focus behind it. When the town is in, the focus point locks, the blades sweep away, and the town comes into focus.</p></header>
+  <div class="links"><a class="btn primary" href="option-c/mockup.html">Open the mockup</a><a class="btn" href="option-c/mockup.html?theme=dark">In dark</a></div>
+  <div class="motion-row">
+    <figure><video src="option-c/motion.mp4" poster="option-c/motion.webp" controls muted playsinline preload="metadata" aria-label="Option C's recording: a seven-bladed iris opens as the page loads, the town out of focus in the aperture; the focus locks, the blades sweep away and the town sharpens; then Dark closes the iris, it turns dark while shut and opens on the town at night; then Light the same way."></video><figcaption>Recorded from the mockup. The still is the town arriving out of focus.</figcaption></figure>
+    <dl class="facts">
+      <div><dt>First load</dt><dd>Seven blades in the page's own surfaces: white and sage by day, green-black by night, with hairline edges and a soft shade inside the aperture. While it loads, the focus point hunts. Through the aperture you see the real page arriving, out of focus. When the town is drawn, the point locks in Route Green and the blades sweep past the rim. The page comes into focus as they go.</dd></div>
+      <div><dt>A new theme</dt><dd>The shutter closes over the page in the old theme and turns to the new one while shut. It stays shut while the new plates load, then opens on the new town, coming into focus.</dd></div>
+      <div><dt>Why we recommend it</dt><dd>Every plate on this page is a tilt-shift photograph of a miniature, and the hero already keeps its focus on what the camera looks at. The lens carries that language into the loader. It is the quickest switch. On a first load it shows the real page, not a stand-in. It adds no new illustration style.</dd></div>
+      <div><dt>Trade-off</dt><dd>A camera iris is a known gesture; it earns its place here through the focus pull. The blur is on the whole window for about 0.7 s, so it needs a check on a low-end phone.</dd></div>
+      <div><dt>Timing</dt><dd class="timing"><span>a switch <b>about 1.5 s</b></span><span>shutter <b>0.38 s</b></span><span>open and focus <b>0.68 s</b>, <b>0.58 s</b> on a switch</span></dd></div>
+    </dl>
+  </div>
+  <div class="frames">
+    <figure><img src="option-c/light-1440.webp" width="1440" height="900" loading="lazy" alt="Option C loading in light at 1440: a white seven-bladed iris half open over the page, the town out of focus in the heptagon aperture, focus brackets in the centre."><figcaption>Loading, 1440, light</figcaption></figure>
+    <figure><img src="option-c/dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option C loading in dark at 1440: a green-black iris over the night page, out of focus."><figcaption>Loading, 1440, dark</figcaption></figure>
+    <figure><img src="option-c/light-390.webp" width="780" height="1688" loading="lazy" alt="Option C loading on a phone in light."><figcaption>390, light</figcaption></figure>
+    <figure><img src="option-c/dark-390.webp" width="780" height="1688" loading="lazy" alt="Option C loading on a phone in dark."><figcaption>390, dark</figcaption></figure>
+  </div>
+  <figure><img src="option-c/switch-1440.webp" width="1440" height="900" loading="lazy" alt="Option C switching to dark: the iris, now green-black, opening on the night town, which is still out of focus."><figcaption>Dark chosen: shut in day, turned to night, opening on the night town.</figcaption></figure>
+</section>
+
+<h2>The pick</h2>
+<div class="rec-box">
+  <p>The maintainer, 5 Oct 2026: <b>"I want to implement option A for page loads and re-loads and Option B for day/night switch".</b></p>
+  <p>The build plays A's route on every load of the page, reloads included, and B's dusk or dawn whenever the theme changes. Both read the same progress and keep the behaviour all three options share.</p>
+</div>
+
+<h2>The recommendation</h2>
+<div class="rec-box">
+  <p><b>C, the lens.</b> It suits the page's material (photographs of a miniature, with a focus that already follows the camera in the hero). It is the quickest on a theme switch, and it shows the real page as it arrives. <b>B</b> is the one to pick if the switch should feel like nightfall; it costs about half a second more on every switch and a drawn skyline to maintain. <b>A</b> is the simplest to build and keeps the brand mark in front.</p>
+</div>
+
+<h2>What the build would touch</h2>
+<ul>
+  <li><b>design3:</b>
+    <ul>
+      <li>the loader as a plain script and its styles in <code>site/</code>, at the top of the site page, before React;</li>
+      <li>a gate in the kit's <code>ThemeProvider</code>, so a theme change can wait for a cover;</li>
+      <li>a handshake in <code>site/town.jsx</code> (its depth map in, its plate drawn, the tour waiting for the lift);</li>
+      <li>the accessibility suite (the loader's status, a switch by keyboard, reduced motion); <code>motion.a11y.spec.ts</code> already allows loading indicators;</li>
+      <li><code>./dist.sh</code> and the hosted pages re-pinned.</li>
+    </ul></li>
+  <li><b>frontend:</b> the loader's markup and styles in the prerendered page and <code>app.html</code>; the same gate in <code>core/src/lib/theme.svelte.ts</code>; the handshake in <code>Town.svelte</code>; the e2e and parity suites.</li>
+  <li><b>DESIGN.md:</b> the loader recorded under the landing page; B would also add its skyline and sky colours.</li>
+</ul>
+
+<h2>Open questions</h2>
+<ul>
+  <li>Should it play on every visit? The mockups play a shorter version on later visits in the same session.</li>
+  <li>Should a click or a key skip the rest of a switch once the new plates are in?</li>
+  <li>The loader plays when the device turns to night while the page follows it. Should that be quieter?</li>
+</ul>
+
+<footer>SC-35 · <a href="decision.md">the decision record</a> · the mockups and recordings are in <code>design3/designs/SC-35/</code>.</footer>
+</main>
+</body>
+</html>

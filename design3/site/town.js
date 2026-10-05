@@ -333,8 +333,22 @@
       };
     }, [api]);
   }
+  const loaderSays = (fn, arg) => {
+    const L = window.SC3_LOADER;
+    if (L && L[fn]) requestAnimationFrame(() => L[fn](arg));
+  };
+  function useLifted() {
+    const [v, setV] = useState(() => !window.SC3_LOADER || window.SC3_LOADER.lifted);
+    useEffect(() => {
+      if (v) return;
+      const f = () => setV(true);
+      window.addEventListener("sc3:loader-lifted", f);
+      return () => window.removeEventListener("sc3:loader-lifted", f);
+    }, [v]);
+    return v;
+  }
   function useJourney(ready, inView) {
-    const reduce = !!useReducedMotion();
+    const reduce = !!useReducedMotion(), lifted = useLifted();
     const [s, setS] = useState(reduce ? NS : -1);
     const [run, setRun] = useState(0);
     const [manual, setManual] = useState(false);
@@ -344,12 +358,12 @@
         setS(NS);
         return;
       }
-      if (!ready) return;
+      if (!ready || !lifted) return;
       setS(-1);
       setPaused(false);
       const t = setTimeout(() => setS(0), 500);
       return () => clearTimeout(t);
-    }, [ready, run, reduce]);
+    }, [ready, lifted, run, reduce]);
     const hold = paused || manual || !inView;
     useEffect(() => {
       if (reduce || hold || s < 0 || s >= NS) return;
@@ -456,6 +470,7 @@ void main() {
         x.drawImage(im, 0, 0, W, H);
         const d = x.getImageData(0, 0, W, H).data;
         setM({ canvas: c, at: (p) => d[(clamp(Math.round(p[1] * (H - 1)), 0, H - 1) * W + clamp(Math.round(p[0] * (W - 1)), 0, W - 1)) * 4] / 255 });
+        loaderSays("depthIn");
       };
       im.src = IMG + "business-depth.webp";
     }, [on]);
@@ -558,7 +573,10 @@ void main() {
       if (map0 && gl.current) {
         upload(1, map0.canvas, false);
         st.current.depth = true;
-        if (st.current.ready) P2.current.onReady();
+        if (st.current.ready) {
+          P2.current.onReady();
+          loaderSays("plateDrawn", P2.current.dark);
+        }
         draw();
         kick();
       }
@@ -572,7 +590,10 @@ void main() {
         if (!alive) return;
         upload(0, im, true);
         st.current.ready = true;
-        if (st.current.depth) P2.current.onReady();
+        if (st.current.depth) {
+          P2.current.onReady();
+          loaderSays("plateDrawn", dark);
+        }
         draw();
         kick();
       };
@@ -1067,7 +1088,10 @@ void main() {
     }, [g, api, holes, j.s, j.done, sel, hov, follow]);
     const named = g && g.wide && (j.done || j.k < 0);
     const hint = g && (g.wide ? "Drag to look round · click a place or an agent" : "Swipe to look round · tap a place");
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: cx("hero-scene town-stage", gl && "is-gl", ready && "ready"), ref: stageRef }, gl && g && /* @__PURE__ */ React.createElement(DepthPlate, { g, api, dark, reduce: j.reduce, map, stageRef, view, onReady: () => setReady(true), onFail: () => setGl(false) }), /* @__PURE__ */ React.createElement("div", { className: "town-world", ref: plateWorld, style: g ? { left: g.ox, top: g.oy, width: g.w, height: g.h } : { visibility: "hidden" } }, !gl && /* @__PURE__ */ React.createElement("img", { src: IMG + (dark ? "business-night.webp" : "business.webp"), width: GEO.nw, height: GEO.nh, draggable: "false", onLoad: () => setReady(true), alt: "" })), !gl && g && g.wide && /* @__PURE__ */ React.createElement("div", { className: "town-haze", ref: hazeRef, "aria-hidden": "true" }), g && /* @__PURE__ */ React.createElement(Graph, { g, api, j, dark, focus, project, holes }), /* @__PURE__ */ React.createElement("div", { className: "town-world town-top", ref: topWorld, style: g ? { left: g.ox, top: g.oy, width: g.w, height: g.h } : { visibility: "hidden" } }, g && PLACES.map((p) => /* @__PURE__ */ React.createElement("span", { key: p.id, "data-at": JSON.stringify(placeAt(g, p.id)), className: "town-shift" }, /* @__PURE__ */ React.createElement(Pin, { p, g, j, sel, onOpen: open, hover: setHov }))), g && AGENTS.map((a) => /* @__PURE__ */ React.createElement("span", { key: a.id, "data-at": JSON.stringify(GEO.posts[a.id]), className: "town-shift" }, /* @__PURE__ */ React.createElement(Node, { a, g, j, sel, onOpen: open, hover: setHov, named: named && (!focus || focus.has(a.id)), tipped: tour === a.id }))), g && /* @__PURE__ */ React.createElement(Batch, { g, j })), g && /* @__PURE__ */ React.createElement(Tip, { g, j: { ...j, agent: tour }, api, project }), /* @__PURE__ */ React.createElement("p", { className: "sr-only" }, dark ? "The whole business as a miniature town at night: the snack maker's factory and office, the distributor's godown, a lane of kirana shops, a highway to a buyer's warehouse, a food bank, and a fenced landfill, dark." : "The whole business as a miniature town in the morning: on the left the snack maker's factory and office, in the middle the distributor's godown full of cartons, on the right a lane of kirana shops hung with snack packets; behind them a highway to a buyer's warehouse in the next town, a food bank, and a fenced landfill, empty.")), /* @__PURE__ */ React.createElement(SrJourney, { j }), /* @__PURE__ */ React.createElement(Caption, { j, money, hint: j.done && !sel ? hint : null }), /* @__PURE__ */ React.createElement(AnimatePresence, null, sel && /* @__PURE__ */ React.createElement(Panel, { key: "panel", sel, j, onOpen: open, onClose: () => setSel(null) })), g && /* @__PURE__ */ React.createElement(Controls, { j, api, g, zoom, onWhole: whole, onReplay: replay, onPlay: play, onTake: take }));
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: cx("hero-scene town-stage", gl && "is-gl", ready && "ready"), ref: stageRef }, gl && g && /* @__PURE__ */ React.createElement(DepthPlate, { g, api, dark, reduce: j.reduce, map, stageRef, view, onReady: () => setReady(true), onFail: () => setGl(false) }), /* @__PURE__ */ React.createElement("div", { className: "town-world", ref: plateWorld, style: g ? { left: g.ox, top: g.oy, width: g.w, height: g.h } : { visibility: "hidden" } }, !gl && /* @__PURE__ */ React.createElement("img", { src: IMG + (dark ? "business-night.webp" : "business.webp"), width: GEO.nw, height: GEO.nh, draggable: "false", onLoad: () => {
+      setReady(true);
+      loaderSays("plateDrawn", dark);
+    }, alt: "" })), !gl && g && g.wide && /* @__PURE__ */ React.createElement("div", { className: "town-haze", ref: hazeRef, "aria-hidden": "true" }), g && /* @__PURE__ */ React.createElement(Graph, { g, api, j, dark, focus, project, holes }), /* @__PURE__ */ React.createElement("div", { className: "town-world town-top", ref: topWorld, style: g ? { left: g.ox, top: g.oy, width: g.w, height: g.h } : { visibility: "hidden" } }, g && PLACES.map((p) => /* @__PURE__ */ React.createElement("span", { key: p.id, "data-at": JSON.stringify(placeAt(g, p.id)), className: "town-shift" }, /* @__PURE__ */ React.createElement(Pin, { p, g, j, sel, onOpen: open, hover: setHov }))), g && AGENTS.map((a) => /* @__PURE__ */ React.createElement("span", { key: a.id, "data-at": JSON.stringify(GEO.posts[a.id]), className: "town-shift" }, /* @__PURE__ */ React.createElement(Node, { a, g, j, sel, onOpen: open, hover: setHov, named: named && (!focus || focus.has(a.id)), tipped: tour === a.id }))), g && /* @__PURE__ */ React.createElement(Batch, { g, j })), g && /* @__PURE__ */ React.createElement(Tip, { g, j: { ...j, agent: tour }, api, project }), /* @__PURE__ */ React.createElement("p", { className: "sr-only" }, dark ? "The whole business as a miniature town at night: the snack maker's factory and office, the distributor's godown, a lane of kirana shops, a highway to a buyer's warehouse, a food bank, and a fenced landfill, dark." : "The whole business as a miniature town in the morning: on the left the snack maker's factory and office, in the middle the distributor's godown full of cartons, on the right a lane of kirana shops hung with snack packets; behind them a highway to a buyer's warehouse in the next town, a food bank, and a fenced landfill, empty.")), /* @__PURE__ */ React.createElement(SrJourney, { j }), /* @__PURE__ */ React.createElement(Caption, { j, money, hint: j.done && !sel ? hint : null }), /* @__PURE__ */ React.createElement(AnimatePresence, null, sel && /* @__PURE__ */ React.createElement(Panel, { key: "panel", sel, j, onOpen: open, onClose: () => setSel(null) })), g && /* @__PURE__ */ React.createElement(Controls, { j, api, g, zoom, onWhole: whole, onReplay: replay, onPlay: play, onTake: take }));
   }
   window.SC3_TOWN = { Town };
 })();

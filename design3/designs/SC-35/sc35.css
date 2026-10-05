@@ -1,0 +1,108 @@
+/* SC-35 · the landing page's loader: three options over the real page (design3/site). The loader is drawn from the
+   first paint by sc35-loader.js, follows the page's real loading, and lifts once the town is drawn; choosing Light,
+   Dark or Match device plays it again over the plate swap. A: the route. B: dusk and dawn. C: the lens. */
+
+.sc35 { position: fixed; inset: 0; z-index: 90; overflow: hidden; color: var(--fg); contain: strict; -webkit-tap-highlight-color: transparent; }
+.sc35 .sr-only { position: absolute; }
+html.sc35-busy, html.sc35-busy body { overflow: hidden; }
+
+/* ---------- A · the route: the mark draws its S from the godown dot as the page loads; the pin lands; the mark opens
+   into a window onto the town ---------- */
+.sc35-a .a-cover { position: absolute; inset: 0; }
+.sc35-a .a-cover .ground { position: absolute; inset: 0; }
+.sc35-a .a-lock { position: absolute; left: 50%; top: 50%; translate: -50% -50%; display: grid; justify-items: center; gap: 18px; text-align: center; }
+.sc35-a .mk { width: 112px; height: 112px; overflow: visible; display: block; will-change: transform; }
+.sc35 .mk { flex: none; }
+.sc35 .mk .mk-sq, .sc35 .mk circle { transform-box: fill-box; transform-origin: center; }
+.sc35 .mk .mk-route { stroke-dasharray: 1 1; stroke-dashoffset: 1; opacity: 0; }
+/* entrances fill backwards only, so once they end Framer Motion's exit owns the same properties */
+.sc35-a .mk .mk-sq { animation: sc35-pop 560ms var(--ease-spring) backwards; }
+.sc35-a .mk .mk-dot { animation: sc35-pop 420ms var(--ease-spring) 180ms backwards; }
+.sc35-a .a-word { display: inline-flex; overflow: hidden; padding-block: 2px; font-size: 34px; line-height: 1.1; }
+.sc35-a .a-word > span { display: inline-block; }
+.sc35-a .a-hi { font: 600 17px/1.5 var(--font-hi); color: var(--fg); margin-top: -6px; }
+/* the words rise once their faces are in (sc35-loader.js adds .go), so they never swap fonts mid-motion */
+.sc35-a .a-lock:not(.go) .a-word > span, .sc35-a .a-lock:not(.go) .a-hi { opacity: 0; }
+.sc35-a .a-lock.go .a-word > span { animation: sc35-rise 620ms var(--ease) backwards; animation-delay: calc(120ms + var(--i) * 28ms); }
+.sc35-a .a-lock.go .a-hi { animation: sc35-fade 520ms var(--ease) 620ms backwards; }
+.sc35-a.is-switch .a-lock { opacity: 0; }
+.sc35-a.is-switch .mk .mk-sq, .sc35-a.is-switch .mk .mk-dot { animation: none; }
+@keyframes sc35-pop { from { opacity: 0; transform: scale(0.55); } to { opacity: 1; transform: none; } }
+@keyframes sc35-rise { from { opacity: 0; transform: translateY(105%); } to { opacity: 1; transform: none; } }
+@keyframes sc35-fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (max-width: 599px) { .sc35-a .mk { width: 84px; height: 84px; } .sc35-a .a-word { font-size: 30px; } .sc35-a .a-hi { font-size: 15px; } }
+
+/* ---------- B · dusk and dawn: the town's skyline in three paper layers under a sky that turns with the load; the sun
+   or the moon climbs, and at night the windows light one by one ---------- */
+.sc35-b { --lit: #f4e8c8; }
+.sc35-b .b-sky { position: absolute; inset: 0; background: linear-gradient(to bottom, var(--sky-0, #0b1210) 0%, var(--sky-1, #1d2a26) 52%, var(--sky-2, #3a4a44) 100%); }
+.sc35-b .b-stars { position: absolute; inset: 0 0 35% 0; width: 100%; height: 65%; opacity: var(--stars, 0); }
+.sc35-b .b-stars circle { fill: #ecf2ee; }
+.sc35-b .b-sun, .sc35-b .b-moon { position: absolute; left: 0; top: 0; border-radius: 50%; will-change: transform; pointer-events: none; }
+.sc35-b .b-sun { width: 68px; height: 68px; margin: -34px 0 0 -34px; background: radial-gradient(circle at 42% 38%, #fffdf6, #f8ecd0 72%); }
+.sc35-b .b-moon { width: 46px; height: 46px; margin: -23px 0 0 -23px; background: transparent; box-shadow: inset -13px 5px 0 0 #e7eee9; }
+.sc35-b .b-orbs { position: absolute; inset: 0; }
+.sc35-b .b-land { position: absolute; left: 50%; bottom: 0; height: max(34vh, calc(100vw * 300 / 1600)); aspect-ratio: 1600 / 300; translate: -50% 0; }
+.sc35-b .b-layer { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; transform-origin: 50% 100%; will-change: transform; }
+.sc35-b .b-back { fill: var(--l-0); }
+.sc35-b .b-mid { fill: var(--l-1); filter: drop-shadow(0 -3px 6px rgb(0 0 0 / 0.10)); }
+.sc35-b .b-front { fill: var(--l-2); filter: drop-shadow(0 -3px 7px rgb(0 0 0 / 0.14)); }
+.sc35-b .b-mid .w { fill: var(--w-1); }
+.sc35-b .b-front .w { fill: var(--w-2); }
+.sc35-b .b-back .w { fill: var(--w-0); }
+.sc35-b .w { transition: fill 360ms var(--ease); }
+.sc35-b .w.on { fill: var(--lit); }
+.sc35-b .b-lock { position: absolute; left: 50%; top: 24%; translate: -50% 0; width: max-content; display: inline-flex; align-items: center; gap: 10px; padding: 8px 18px 8px 9px; border-radius: 999px;
+  background: var(--glass-strong); -webkit-backdrop-filter: blur(14px) saturate(140%); backdrop-filter: blur(14px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.sc35-b .b-lock:not(.go) { visibility: hidden; }
+.sc35-b .b-lock.go { animation: sc35-fade 520ms var(--ease) backwards; }
+.sc35-b .b-lock .mk { width: 36px; height: 36px; }
+.sc35-b .b-lock .mk .mk-route { stroke-dashoffset: 0; opacity: 1; }
+.sc35-b .b-lock .wordmark { font-size: 20px; }
+.sc35-b.is-load .b-layer { animation: sc35-up 820ms var(--ease) backwards; }
+/* a switch starts from the page it covers: the sky clear, the town below the window, until the cover plays */
+.sc35-b.is-switch .b-sky, .sc35-b.is-switch .b-stars, .sc35-b.is-switch .b-orbs { opacity: 0; }
+.sc35-b.is-switch .b-layer { transform: translateY(100%); }
+.sc35-b.is-still .b-sky, .sc35-b.is-still .b-stars, .sc35-b.is-still .b-orbs { opacity: 1; }
+.sc35-b.is-still .b-layer { transform: none; }
+.sc35-b.is-load .b-back { animation-delay: 40ms; }
+.sc35-b.is-load .b-mid { animation-delay: 110ms; }
+.sc35-b.is-load .b-front { animation-delay: 180ms; }
+@keyframes sc35-up { from { transform: translateY(70%); } to { transform: none; } }
+@media (max-width: 599px) { .sc35-b .b-sun { width: 52px; height: 52px; margin: -26px 0 0 -26px; } .sc35-b .b-moon { width: 38px; height: 38px; margin: -19px 0 0 -19px; box-shadow: inset -11px 4px 0 0 #e7eee9; } .sc35-b .b-lock { top: 22%; } }
+
+/* ---------- C · the lens: a camera's iris over the page, opening as the page loads; the focus locks on the town, the
+   blades sweep away and the town comes into focus ---------- */
+.sc35-c { --blade-0: #ffffff; --blade-1: #d8e2dc; --blade-edge: rgb(17 41 30 / 0.2); --blade-sh: rgb(13 28 21 / 0.22); --af: rgb(13 28 21 / 0.82); --af-on: #167a52; }
+.sc35-c[data-theme="dark"] { --blade-0: #1b2420; --blade-1: #080c0a; --blade-edge: rgb(214 255 232 / 0.12); --blade-sh: rgb(0 0 0 / 0.55); --af: rgb(236 242 238 / 0.86); --af-on: #3ccb8a; }
+.sc35-c .c-iris { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.sc35-c .c-iris stop { transition: stop-color 260ms var(--ease); }
+.sc35-c .c-iris .bl { fill: url(#sc35-blade); stroke: var(--blade-edge); stroke-width: 1; stroke-linejoin: round; }
+.sc35-c .c-iris .bl:nth-child(even) { fill: url(#sc35-blade-b); }
+.sc35-c .c-iris .sh { fill: none; stroke: var(--blade-sh); stroke-linejoin: round; }
+.sc35-c .c-af { position: absolute; left: 50%; top: 50%; width: 68px; height: 48px; margin: -24px 0 0 -34px; color: var(--af); pointer-events: none; }
+.sc35-c .c-af i { position: absolute; width: 13px; height: 13px; border: 0 solid currentColor; transition: color 160ms var(--ease); }
+.sc35-c .c-af i:nth-child(1) { left: 0; top: 0; border-width: 2px 0 0 2px; border-top-left-radius: 3px; }
+.sc35-c .c-af i:nth-child(2) { right: 0; top: 0; border-width: 2px 2px 0 0; border-top-right-radius: 3px; }
+.sc35-c .c-af i:nth-child(3) { left: 0; bottom: 0; border-width: 0 0 2px 2px; border-bottom-left-radius: 3px; }
+.sc35-c .c-af i:nth-child(4) { right: 0; bottom: 0; border-width: 0 2px 2px 0; border-bottom-right-radius: 3px; }
+/* the focus hunting while the page loads: a loading indicator, so it turns only while the load lasts */
+.sc35-c .c-af.is-hunting { animation: sc35-hunt 900ms ease-in-out infinite alternate; }
+.sc35-c .c-af.is-locked { color: var(--af-on); }
+@keyframes sc35-hunt { from { transform: scale(1); } to { transform: scale(1.09); } }
+/* the page behind the lens, out of focus until the focus locks (the app root is itself fixed to the window, so a
+   filter on it keeps every fixed child where it was) */
+html.sc35-focus .site-root { filter: blur(var(--sc35-blur, 14px)); transform: scale(var(--sc35-zoom, 1.03)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sc35 *, .sc35 *::before, .sc35 *::after { animation: none !important; transition: none !important; }
+  html.sc35-focus .site-root { filter: none; transform: none; }
+}
+
+/* the mockups' label: which option this is, its replays, and back to the board */
+.mock-bar { position: fixed; z-index: 95; right: 12px; bottom: 12px; display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 6px 8px; max-width: calc(100vw - 24px); padding: 6px 6px 6px 14px; border-radius: 20px; font: 600 13px/1.2 var(--font-ui);
+  color: var(--fg); background: var(--glass-strong); -webkit-backdrop-filter: blur(12px) saturate(140%); backdrop-filter: blur(12px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.mock-bar a, .mock-bar button { display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px; border: 0; border-radius: 999px; font: inherit; color: var(--fg); background: var(--fill-2); text-decoration: none; cursor: pointer; }
+.mock-bar a:hover, .mock-bar button:hover { background: color-mix(in oklab, var(--fg) 12%, transparent); }
+.mock-bar :focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+@media (pointer: coarse) { .mock-bar a, .mock-bar button { min-height: 44px; } }

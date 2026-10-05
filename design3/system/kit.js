@@ -6,7 +6,8 @@
   const ThemeCtx = createContext({ mode: "system", resolved: "light", setMode: () => {
   } });
   const TKEY = "sc3-theme";
-  function ThemeProvider({ children, initial }) {
+  const resolvedOf = (m, dark) => m === "system" ? dark ? "dark" : "light" : m;
+  function ThemeProvider({ children, initial, gate }) {
     const [mode, setModeState] = useState(() => {
       try {
         return localStorage.getItem(TKEY) || initial || "system";
@@ -16,22 +17,44 @@
     });
     const mq = typeof matchMedia === "function" ? matchMedia("(prefers-color-scheme: dark)") : null;
     const [sysDark, setSysDark] = useState(mq ? mq.matches : false);
+    const live = useRef(null), turning = useRef(false), next = useRef(null);
+    const through = (to, apply) => {
+      turning.current = true;
+      Promise.resolve(live.current.gate({ to, apply })).then(() => {
+        turning.current = false;
+        const n = next.current;
+        next.current = null;
+        if (n != null) live.current.setMode(n);
+      });
+    };
+    const setMode = (m) => {
+      try {
+        localStorage.setItem(TKEY, m);
+      } catch (e) {
+      }
+      const L = live.current;
+      if (turning.current) {
+        next.current = m;
+        return;
+      }
+      const to = resolvedOf(m, L.sysDark);
+      if (!L.gate || to === resolvedOf(L.mode, L.sysDark)) setModeState(m);
+      else through(to, () => setModeState(m));
+    };
+    live.current = { mode, sysDark, gate, setMode };
     useEffect(() => {
       if (!mq) return;
-      const f = (e) => setSysDark(e.matches);
+      const f = (e) => {
+        const L = live.current;
+        if (L.gate && L.mode === "system" && !turning.current) through(e.matches ? "dark" : "light", () => setSysDark(e.matches));
+        else setSysDark(e.matches);
+      };
       mq.addEventListener ? mq.addEventListener("change", f) : mq.addListener(f);
       return () => {
         mq.removeEventListener ? mq.removeEventListener("change", f) : mq.removeListener(f);
       };
     }, []);
-    const resolved = mode === "system" ? sysDark ? "dark" : "light" : mode;
-    const setMode = (m) => {
-      setModeState(m);
-      try {
-        localStorage.setItem(TKEY, m);
-      } catch (e) {
-      }
-    };
+    const resolved = resolvedOf(mode, sysDark);
     useEffect(() => {
       document.documentElement.setAttribute("data-theme", resolved);
       const meta = document.querySelector('meta[name="theme-color"]:not([media])');
