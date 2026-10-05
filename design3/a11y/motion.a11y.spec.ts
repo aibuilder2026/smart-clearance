@@ -73,6 +73,9 @@ const STATES: [string, string, ((page) => Promise<void>)?][] = [
   ['site · the town, at the person\'s yes', '/site/Smart-Clearance%20site%20v3.html', async p => {
     await p.waitForFunction(() => /One yes/.test(document.querySelector('.town-caption')?.textContent || ''));
   }],
+  ['site · the town, a card beside an agent', '/site/Smart-Clearance%20site%20v3.html', async p => {
+    await p.waitForFunction(() => !!document.querySelector('.town-tip b'));
+  }],
   ['site · the town, a place opened', '/site/Smart-Clearance%20site%20v3.html', async p => {
     await p.waitForFunction(() => /Sold, not binned/.test(document.querySelector('.town-caption')?.textContent || ''));
     await p.locator('.town-pin', { hasText: 'Distributor' }).click();

@@ -1,11 +1,13 @@
 // Smart-Clearance v3 · smartclearance.com's first viewport (SC-32): the whole business as one miniature town, in depth.
 // The maker's factory and office, the distributor's godown, the kirana lane, a buyer in the next town, a food bank and
-// the landfill. Every agent works at a post in the town, and the handoffs between them are the agent graph. A camera
-// follows one batch through it, once (4.7 s, WCAG 2.2.2), then the town is the visitor's: drag or swipe to look round,
-// pinch or Ctrl-scroll to zoom, double-click to go nearer, and open a place or an agent for what it did. Drawn in WebGL2
-// from the plate and its depth map, so it parallaxes as the camera travels, tilts under the pointer and keeps its focus
-// on what the camera looks at; without WebGL2 the plate is drawn flat. Under reduced motion the batch is at its result
-// from the start and the camera jumps. Every figure comes from core/money.js through the data; no client is named.
+// the landfill. Every agent works at a post in the town, and the handoffs between them are the agent graph. The batch
+// tours it once, over the whole town (SC-34): a stop for each agent in the order they work, its card opening beside its
+// pin, about 17 s, with Pause and Play (WCAG 2.2.2). Then the town is the visitor's: drag or swipe to look round, pinch
+// or Ctrl-scroll to zoom, double-click to go nearer, and open a place or an agent for what it did; taking the camera
+// pauses the tour, and leaving the hero brings the whole town back. Drawn in WebGL2 from the plate and its depth map, so
+// it parallaxes as the camera travels, tilts under the pointer and keeps its focus on what the camera looks at; without
+// WebGL2 the plate is drawn flat. Under reduced motion the batch is at its result from the start and the camera jumps.
+// Every figure comes from core/money.js through the data; no client is named.
 (function () {
   const { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } = React;
   const { useReducedMotion, motion, AnimatePresence } = Motion;
@@ -66,7 +68,14 @@
   const beatOf = id => BEATS.findIndex(b => b.id === id);
   const names = b => b.who.map(w => AGENT[w].name).join(" · ");
   AGENTS.forEach(a => { a.beat = BEATS.findIndex(b => b.who.includes(a.id)); });
-  const agentState = (a, j) => ({ done: a.beat < j.k || j.done, now: a.beat === j.k && j.playing });
+  // The tour (SC-34): a beat without agents is one stop; a beat with agents is a stop for each, in the order they work,
+  // while its card opens beside its pin. How long each stop holds (ms): the person's yes longest. 16.9 s in all.
+  const PACE = { beat: 1100, agent: 1300, you: 1700 };
+  const STOPS = [];
+  BEATS.forEach((b, i) => { if (!b.who.length) STOPS.push({ beat: i, agent: null, ms: PACE.beat }); else b.who.forEach(w => STOPS.push({ beat: i, agent: w, ms: w === "you" ? PACE.you : PACE.agent })); });
+  const NS = STOPS.length;
+  AGENTS.forEach(a => { a.stop = STOPS.findIndex(s => s.agent === a.id); });
+  const agentState = (a, j) => ({ done: a.stop < j.s || j.done, now: a.stop === j.s && !j.done });
 
   /* ---------- the town's geography: fractions of the plate (business.webp, its night and its depth, composed alike) ---------- */
   // Pins sit on their places' roofs; each agent's post is where it works, its name to the side the label says; the
@@ -86,12 +95,10 @@
       buyer: [[0.5, 0.762], [0.58, 0.78], [0.727, 0.814], [0.836, 0.833], [0.86, 0.8], [0.85, 0.68], [0.815, 0.51], [0.735, 0.38], [0.69, 0.31], [0.75, 0.31], [0.84, 0.335]],
     },
     batch: { maker: [0.31, 0.655], godown: [0.5, 0.665] },
-    // the camera, per beat and per place: the plate point it centres and how near; desktops and phones apart
+    // the camera: the whole business, and each place: the plate point it centres and how near; desktops and phones apart
     shots: {
-      wide: { rest: [0.5, 0.5, 1], make: [0.22, 0.58, 1.65], stock: [0.5, 0.56, 1.55], risk: [0.5, 0.55, 1.7], route: [0.56, 0.52, 1.3], yes: [0.17, 0.58, 1.7], sell: [0.8, 0.53, 1.3], report: [0.2, 0.47, 1.4],
-        maker: [0.18, 0.58, 1.8], godown: [0.5, 0.6, 1.8], kiranas: [0.8, 0.62, 1.8], buyer: [0.8, 0.3, 2], foodbank: [0.52, 0.4, 2], landfill: [0.17, 0.32, 2] },
-      phone: { rest: [0.5, 0.55, 1], make: [0.22, 0.6, 1.3], stock: [0.5, 0.62, 1.3], risk: [0.5, 0.6, 1.45], route: [0.55, 0.55, 1.1], yes: [0.15, 0.6, 1.4], sell: [0.8, 0.6, 1.15], report: [0.17, 0.5, 1.2],
-        maker: [0.18, 0.58, 1.4], godown: [0.5, 0.6, 1.4], kiranas: [0.8, 0.62, 1.4], buyer: [0.8, 0.32, 1.6], foodbank: [0.52, 0.4, 1.6], landfill: [0.17, 0.32, 1.6] },
+      wide: { rest: [0.5, 0.5, 1], maker: [0.18, 0.58, 1.8], godown: [0.5, 0.6, 1.8], kiranas: [0.8, 0.62, 1.8], buyer: [0.8, 0.3, 2], foodbank: [0.52, 0.4, 2], landfill: [0.17, 0.32, 2] },
+      phone: { rest: [0.5, 0.55, 1], maker: [0.18, 0.58, 1.4], godown: [0.5, 0.6, 1.4], kiranas: [0.8, 0.62, 1.4], buyer: [0.8, 0.32, 1.6], foodbank: [0.52, 0.4, 1.6], landfill: [0.17, 0.32, 1.6] },
     },
     // the band behind the heading on desktops, as fractions of the stage: solid haze, then clear
     haze: [0.3, 0.42],
@@ -216,16 +223,22 @@
   }
 
   /* ---------- the journey ---------- */
-  // -1 before it sets off, 0 to 6 at a beat, 7 when it is done. It sets off half a second after the town has loaded, so
-  // it never plays over an empty frame. Stepping by hand stops the clock.
-  function useJourney(ready) {
+  // s: -1 before it sets off, 0 to NS - 1 at a stop, NS when it is done; k is the stop's beat (-1 before, NB after). It
+  // sets off half a second after the town has loaded, so it never plays over an empty frame. It holds while paused, and
+  // while the hero is out of view (it carries on when it is back); stepping by hand stops the clock, and Play restarts it
+  // from where it is.
+  function useJourney(ready, inView) {
     const reduce = !!useReducedMotion();
-    const [k, setK] = useState(reduce ? NB : -1); const [run, setRun] = useState(0); const [manual, setManual] = useState(false);
-    useEffect(() => { if (reduce) { setK(NB); return; } if (!ready) return; setK(-1); const t = setTimeout(() => setK(0), 500); return () => clearTimeout(t); }, [ready, run, reduce]);
-    useEffect(() => { if (reduce || manual || k < 0 || k >= NB) return; const t = setTimeout(() => setK(k + 1), BEATS[k].ms); return () => clearTimeout(t); }, [k, reduce, manual]);
-    const j = { k, reduce, run, playing: k >= 0 && k < NB && !manual, manual, done: k >= NB, beat: k >= 0 && k < NB ? BEATS[k] : null };
-    j.replay = () => { setManual(false); setRun(r => r + 1); if (reduce) setK(NB); };
-    j.step = d => { setManual(true); setK(v => clamp((v < 0 ? 0 : v) + d, 0, NB)); };
+    const [s, setS] = useState(reduce ? NS : -1); const [run, setRun] = useState(0); const [manual, setManual] = useState(false); const [paused, setPaused] = useState(false);
+    useEffect(() => { if (reduce) { setS(NS); return; } if (!ready) return; setS(-1); setPaused(false); const t = setTimeout(() => setS(0), 500); return () => clearTimeout(t); }, [ready, run, reduce]);
+    const hold = paused || manual || !inView;
+    useEffect(() => { if (reduce || hold || s < 0 || s >= NS) return; const t = setTimeout(() => setS(s + 1), STOPS[s].ms); return () => clearTimeout(t); }, [s, reduce, hold]);
+    const stop = s >= 0 && s < NS ? STOPS[s] : null, k = s < 0 ? -1 : stop ? stop.beat : NB;
+    const j = { s, k, reduce, run, manual, paused, stop, ms: stop ? stop.ms : 0, held: hold, playing: s < NS && !manual && !paused, touring: !!stop && !manual, done: s >= NS, beat: stop ? BEATS[stop.beat] : null, agent: stop ? stop.agent : null };
+    j.replay = () => { setManual(false); setPaused(false); setRun(r => r + 1); if (reduce) setS(NS); };
+    j.step = d => { setManual(true); setPaused(false); setS(v => clamp((v < 0 ? 0 : v) + d, 0, NS)); };
+    j.pause = () => setPaused(true);
+    j.play = () => { setManual(false); setPaused(false); setS(v => (v >= NS ? v : Math.max(0, v))); };
     return j;
   }
   // the money, rolled in once over the settling beat (the system's roll, 700 ms); at its value under reduced motion
@@ -394,7 +407,7 @@ void main() {
         const p = prog.current[a + b] || 0; if (p <= 0) return;
         const A = Pt(a), B = Pt(b), d = Math.hypot(B[0] - A[0], B[1] - A[1]), mx = (A[0] + B[0]) / 2, far = AGENT[a].at !== AGENT[b].at;
         const my = (A[1] + B[1]) / 2 + (far ? Math.min(110, d * 0.2) : -Math.min(70, d * 0.22));
-        const loud = s.focus ? s.focus.has(a) && s.focus.has(b) : AGENT[b].beat === k && !s.j.done;
+        const loud = s.focus ? s.focus.has(a) && s.focus.has(b) : AGENT[b].stop === s.j.s && !s.j.done;
         const hue = AGENT[a].human || AGENT[b].human ? amber : lit, n = 36, m = Math.max(1, Math.round(n * p));
         const path = () => { ctx.beginPath(); ctx.moveTo(A[0], A[1]); for (let i = 1; i <= m; i++) { const t = i / n, u = 1 - t; ctx.lineTo(u * u * A[0] + 2 * u * t * mx + t * t * B[0], u * u * A[1] + 2 * u * t * my + t * t * B[1]); } };
         ctx.lineCap = "round"; ctx.lineJoin = "round";
@@ -419,8 +432,8 @@ void main() {
     }, [api]);
     // draw each handoff in as the journey reaches it
     useEffect(() => {
-      const k = j.done ? NB : j.k, want = {};
-      EDGES.forEach(([a, b]) => { want[a + b] = AGENT[b].beat >= 0 && (AGENT[b].beat < k || (AGENT[b].beat === k && (j.playing || j.manual))) ? 1 : 0; });
+      const n = j.done ? NS : j.s, want = {};
+      EDGES.forEach(([a, b]) => { want[a + b] = AGENT[b].stop >= 0 && (AGENT[b].stop < n || (AGENT[b].stop === n && (j.touring || j.manual))) ? 1 : 0; });
       if (j.reduce) { prog.current = want; draw(); return; }
       let alive = true; const t0 = performance.now(), from = { ...prog.current };
       const tick = () => {
@@ -428,13 +441,14 @@ void main() {
         Object.keys(want).forEach(key => { const f = from[key] || 0; prog.current[key] = f + (want[key] - f) * (want[key] > f ? u : 1); });
         draw(); if (u < 1 || packs.current) raf.current = requestAnimationFrame(tick);
       };
-      if (BEATS[j.k] && BEATS[j.k].id === "sell" && j.playing) {
+      // the packs run out as the sale's first agent starts work
+      if (j.stop && BEATS[j.stop.beat].id === "sell" && j.stop.agent === BEATS[j.stop.beat].who[0] && j.playing) {
         const list = []; for (let i = 0; i < 26; i++) list.push({ to: i % 13 < 6 ? "kiranas" : "buyer", delay: (i / 26) * 0.45 });
-        packs.current = { t0: performance.now(), dur: 650, list };
+        packs.current = { t0: performance.now(), dur: 900, list };
       }
       cancelAnimationFrame(raf.current); raf.current = requestAnimationFrame(tick);
       return () => { alive = false; cancelAnimationFrame(raf.current); };
-    }, [j.k, j.done, j.reduce, j.run]);
+    }, [j.s, j.done, j.reduce, j.run]);
     useEffect(() => { const a = api.listen(() => draw()), b = api.listenView(() => draw()); return () => { a(); b(); }; }, [api, draw]);
     useEffect(() => { draw(); }, [dark, focus, g]);
     return <canvas ref={cv} className="town-graph" aria-hidden="true" />;
@@ -453,9 +467,9 @@ void main() {
   // an agent at its post: its icon, and its name beside it (on desktops at rest and while it works; on phones when open,
   // or for the person); lit once it has worked, the aura while it works, amber for the person. The places' panels list
   // every agent for the keyboard, so the posts are for the pointer.
-  const Node = ({ a, g, j, sel, onOpen, hover, named }) => {
+  const Node = ({ a, g, j, sel, onOpen, hover, named, tipped }) => {
     const at = wpx(g, GEO.posts[a.id]), { done, now } = agentState(a, j), open = sel && sel.kind === "agent" && sel.id === a.id;
-    const side = GEO.labels[a.id] || "right", show = named || open || (now && (g.wide || a.human));
+    const side = GEO.labels[a.id] || "right", show = !tipped && (named || open || (now && (g.wide || a.human)));
     return <span className="town-at" style={{ left: at[0], top: at[1] }}>
       <button type="button" tabIndex={-1} aria-hidden="true" className={cx("town-node", "side-" + side, a.human && "human", done && "on", now && "now", !done && !now && j.k >= 0 && "later", open && "open", show && "named")}
         onClick={() => onOpen({ kind: "agent", id: a.id })} onPointerEnter={() => hover({ kind: "agent", id: a.id })} onPointerLeave={() => hover(null)}>
@@ -512,13 +526,37 @@ void main() {
     </motion.div>;
   }
 
+  /* ---------- the tour's card, beside the agent at work ---------- */
+  // Over the whole town, where the renderer shows the agent's post: above its pin when there is room, else below, always
+  // inside the stage, on a stem to the pin. A line along its foot fills while the stop holds, and stops when the tour
+  // does. It names the agent, so the pin's own name stands down meanwhile; a screen reader has the journey's list.
+  function Tip({ g, j, api, project }) {
+    const ref = useRef(null), id = j.agent, a = id ? AGENT[id] : null;
+    useLayoutEffect(() => {
+      const el = ref.current; if (!el || !a || !g) return;
+      const put = () => {
+        const p = project ? project(GEO.posts[id], id) : api.toStage(GEO.posts[id]), w = el.offsetWidth, h = el.offsetHeight, up = p[1] - 28 - h > 8;
+        const x = clamp(p[0] - w / 2, 8, g.W - w - 8);
+        el.style.left = x.toFixed(1) + "px"; el.style.top = (up ? p[1] - 28 - h : p[1] + 28).toFixed(1) + "px";
+        el.style.setProperty("--caret", clamp(p[0] - x, 14, w - 14).toFixed(1) + "px"); el.classList.toggle("below", !up);
+      };
+      put(); const u1 = api.listen(put), u2 = api.listenView(put); return () => { u1(); u2(); };
+    }, [id, g, project]);
+    return <AnimatePresence>{a && <motion.div key={id} ref={ref} className={cx("town-tip", a.human && "human")} aria-hidden="true"
+      initial={j.reduce ? false : { opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, transition: { duration: 0.14 } }} transition={{ duration: 0.22, ease: EASE }}>
+      <header><i><Icon name={a.icon} size={13} stroke={2.2} /></i><b>{a.name}</b><span>at the {PLACE[a.at].short.toLowerCase()}</span></header>
+      <p>{a.did}</p>
+      {!j.reduce && <span key={j.s} className="town-tip-time" style={{ animationDuration: j.ms + "ms", animationPlayState: j.held ? "paused" : "running" }} />}
+    </motion.div>}</AnimatePresence>;
+  }
+
   /* ---------- the caption with its steps, what a screen reader hears, and the controls ---------- */
   function Caption({ j, money, hint }) {
     const b = j.beat;
     return <div className={cx("town-caption", b && b.human && "human")}>
-      <button type="button" className="town-step" aria-label="The step before" disabled={j.k <= 0} onClick={() => j.step(-1)}><Icon name="chevron-left" size={16} stroke={2} /></button>
+      <button type="button" className="town-step" aria-label="The step before" disabled={j.s <= 0} onClick={() => j.step(-1)}><Icon name="chevron-left" size={16} stroke={2} /></button>
       <span className="town-caption-text" aria-hidden="true">
-        {j.k < 0 ? <><b>{fmt.num(BATCH.units)} packs leave the factory.</b><span>Follow them through the business.</span></>
+        {j.s < 0 ? <><b>{fmt.num(BATCH.units)} packs leave the factory.</b><span>Follow them through the business.</span></>
           : b ? <><span className="n">{j.k + 1} of {NB}</span><b>{b.t}</b>{b.who.length > 0 && <span className="who">{names(b)}</span>}<span className="did">{b.id === "report" ? `${fmt.inr(money)} recovered · ${fmt.num(D.PLAN.kg)} kg kept out of landfill` : b.did}</span></>
             : <><span className="n">{NB} of {NB}</span><b>Sold, not binned.</b><span className="did">{RESULT}</span>{hint && <span className="hint">{hint}</span>}</>}
       </span>
@@ -529,15 +567,20 @@ void main() {
   const SrJourney = ({ j }) => <>
     <ol className="sr-only" aria-label="One batch's journey through the business">{BEATS.map(b => <li key={b.id}>{b.t}{b.who.length ? `, ${names(b)}` : ""}: {said(b)}.</li>)}</ol>
     <p className="sr-only">Sold, not binned: {RESULT}.</p>
-    <p className="sr-only" aria-live="polite">{j.manual ? (j.beat ? `${j.k + 1} of ${NB}, ${j.beat.t}: ${said(j.beat)}.` : `Sold, not binned: ${RESULT}.`) : ""}</p>
+    <p className="sr-only" aria-live="polite">{j.manual ? (j.beat ? `${j.k + 1} of ${NB}, ${j.beat.t}${j.agent ? `, ${AGENT[j.agent].name}: ${AGENT[j.agent].did}` : `: ${said(j.beat)}`}.` : `Sold, not binned: ${RESULT}.`) : ""}</p>
   </>;
-  function Controls({ j, api, g, zoom, onWhole, onReplay }) {
+  // Pause while the journey plays, Play while it is held (paused, stepped by hand, or handed to the visitor), Replay
+  // once it is done; none under reduced motion, where the result is there from the start.
+  function Controls({ j, api, g, zoom, onWhole, onReplay, onPlay, onTake }) {
     const c = () => [g.W / 2, g.H * (g.wide ? 0.64 : 0.5)];
+    const zoomBy = f => { onTake(); api.zoomAt(f, ...c(), true); };
     return <div className="town-ctl">
-      {!j.reduce && <button type="button" className="replay" onClick={onReplay}><Icon name="rotate-ccw" size={16} stroke={2} />Replay</button>}
+      {!j.reduce && (j.done ? <button type="button" className="replay" onClick={onReplay}><Icon name="rotate-ccw" size={16} stroke={2} />Replay</button>
+        : j.playing ? <button type="button" className="replay" onClick={j.pause}><Icon name="pause" size={16} stroke={2} />Pause</button>
+          : <button type="button" className="replay" onClick={onPlay}><Icon name="play" size={16} stroke={2} />Play</button>)}
       <span className="town-zoom" role="group" aria-label="Zoom">
-        <button type="button" aria-label="Zoom out" disabled={zoom <= 1} onClick={() => api.zoomAt(1 / 1.45, ...c(), true)}><Icon name="minus" size={16} stroke={2} /></button>
-        <button type="button" aria-label="Zoom in" disabled={zoom >= ZMAX} onClick={() => api.zoomAt(1.45, ...c(), true)}><Icon name="plus" size={16} stroke={2} /></button>
+        <button type="button" aria-label="Zoom out" disabled={zoom <= 1} onClick={() => zoomBy(1 / 1.45)}><Icon name="minus" size={16} stroke={2} /></button>
+        <button type="button" aria-label="Zoom in" disabled={zoom >= ZMAX} onClick={() => zoomBy(1.45)}><Icon name="plus" size={16} stroke={2} /></button>
         <button type="button" aria-label="The whole business" disabled={zoom <= 1} onClick={onWhole}><Icon name="minimize-2" size={16} stroke={2} /></button>
       </span>
     </div>;
@@ -547,24 +590,55 @@ void main() {
   function Town() {
     const stageRef = useRef(null), plateWorld = useRef(null), topWorld = useRef(null), hazeRef = useRef(null), view = useRef(null);
     const g = useStage(stageRef), { resolved } = useTheme(), dark = resolved === "dark";
-    const [ready, setReady] = useState(false), [gl, setGl] = useState(true);
-    const j = useJourney(ready);
+    const [ready, setReady] = useState(false), [gl, setGl] = useState(true), [inView, setInView] = useState(true);
+    const j = useJourney(ready, inView);
     const worlds = useMemo(() => ({ get current() { return [plateWorld.current, topWorld.current].filter(Boolean); } }), []);
     const { api, zoom } = useCamera(g, worlds, gl ? { current: null } : hazeRef, j.reduce);
     const depth = useDepthMap(true), map = gl ? depth : null;
     const [follow, setFollow] = useState(true), [sel, setSel] = useState(null), [hov, setHov] = useState(null);
     const money = useCount(j.k >= beatOf("report"), D.ACTUAL.net, j.reduce);
-    useGestures(stageRef, api, () => setFollow(false));
-    // the camera follows the journey until the visitor takes it: the whole business first, then in to the factory
-    useEffect(() => { if (!g || !follow) return; const id = j.done || j.k < 0 ? "rest" : BEATS[j.k].id; api.to(shotOf(g, id), j.k < 0 ? 0 : 0.6); }, [j.k, j.done, follow, g && g.wide, g && g.W]);
+    // the visitor takes the camera (a drag, a pinch, a zoom, a card opened): the journey holds until they press Play
+    const take = () => { setFollow(false); if (!j.done && j.playing) j.pause(); };
+    useGestures(stageRef, api, take);
+    // The tour keeps the whole business in view: while it has the camera, the camera rests on the whole town (and goes
+    // back to it when Play or Replay hands the camera back). Where the stage crops the town's sides (phones, tablets), it
+    // slides along at the same size to keep the agent at work, or the beat's place, in view.
+    useEffect(() => {
+      if (!g || !follow) return;
+      const rest = shotOf(g, "rest"), at = g.w > g.W + 1 && !j.done && j.s >= 0 ? (j.agent ? GEO.posts[j.agent] : placeAt(g, j.beat.at[0])) : null;
+      api.to(at ? [at[0], rest[1], rest[2]] : rest, j.s < 0 ? 0 : 0.9);
+    }, [follow, g && g.wide, g && g.W, j.run, j.s]);
     const open = s => {
-      setFollow(false); setSel(s);
+      take(); setSel(s);
       const place = s.kind === "place" ? s.id : AGENT[s.id].at, shot = shotOf(g, place);
       api.to(s.kind === "agent" ? [GEO.posts[s.id][0], GEO.posts[s.id][1] + (g.wide ? 0.06 : 0.04), shot[2]] : shot, 0.7);
     };
     const whole = () => { setSel(null); api.to(shotOf(g, "rest"), 0.7); };
     const replay = () => { setSel(null); setFollow(true); j.replay(); };
+    const play = () => { setSel(null); setFollow(true); j.play(); };
     useEffect(() => { const k = e => { if (e.key === "Escape" && sel) setSel(null); }; window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k); }, [sel]);
+    // Leaving the hero brings the town back to the whole business: the pointer leaves it (after a moment, in case it
+    // only slipped out), focus moves out of it, a tap or click lands outside it, or it scrolls out of view. Any card the
+    // visitor opened closes. A journey that is playing on its own keeps its camera, and holds while it is out of view.
+    const live = useRef(null); live.current = { j, follow, g };
+    useEffect(() => {
+      const st = stageRef.current, hero = st && st.closest(".hero"); if (!hero) return;
+      let t = 0;
+      const back = () => {
+        clearTimeout(t); const L = live.current; setSel(null); setHov(null);
+        if (L.g && !(L.follow && L.j.playing)) api.to(shotOf(L.g, "rest"), L.j.reduce ? 0 : 0.7);
+      };
+      const enter = e => { if (e.pointerType === "mouse") clearTimeout(t); };
+      const leave = e => { if (e.pointerType !== "mouse") return; clearTimeout(t); t = setTimeout(back, 300); };
+      const out = e => { if (e.relatedTarget && !hero.contains(e.relatedTarget)) back(); };
+      const down = e => { if (!hero.contains(e.target)) back(); };
+      hero.addEventListener("pointerenter", enter); hero.addEventListener("pointerleave", leave); hero.addEventListener("focusout", out); document.addEventListener("pointerdown", down, true);
+      const io = new IntersectionObserver(([e]) => { const v = e.intersectionRatio >= 0.3; setInView(v); if (!v) back(); }, { threshold: [0, 0.3, 0.6] });
+      io.observe(st);
+      return () => { clearTimeout(t); hero.removeEventListener("pointerenter", enter); hero.removeEventListener("pointerleave", leave); hero.removeEventListener("focusout", out); document.removeEventListener("pointerdown", down, true); io.disconnect(); };
+    }, [api]);
+    // the tour's card, while the tour has the camera and no card of the visitor's is open
+    const tour = follow && !sel && j.touring && j.agent ? j.agent : null;
     // what the graph lifts: an agent, or a place's team, and its neighbours in the graph
     const focus = useMemo(() => {
       const s = hov || sel; if (!s) return null;
@@ -580,11 +654,11 @@ void main() {
       const place = () => { const v = view.current; if (!v) return; items.forEach(n => { const p = JSON.parse(n.dataset.at), q = shifted(p, map.at(p) + 0.04, v); n.style.translate = `${((q[0] - p[0]) * g.w).toFixed(2)}px ${((q[1] - p[1]) * g.h).toFixed(2)}px`; }); };
       place(); const a = api.listen(place), b = api.listenView(place); return () => { a(); b(); };
     }, [gl, map, g, api]);
-    // Nothing on the town sits under the heading's text or buttons, the caption, the controls or the panel, or half off
-    // the stage; once the camera is nearer, nothing it carries into the haze either. The graph is clipped round the
+    // Nothing on the town sits under the heading's text or buttons, the caption, the controls or a card, or half
+    // off the stage; once the camera is nearer, nothing it carries into the haze either. The graph is clipped round the
     // heading's boxes.
-    const boxes = (sels, pad) => {
-      const s = stageRef.current, hero = s && s.closest(".hero"); if (!s || !g || !g.wide) return [];
+    const boxes = (sels, pad, any) => {
+      const s = stageRef.current, hero = s && s.closest(".hero"); if (!s || !g || (!g.wide && !any)) return [];
       const o = s.getBoundingClientRect();
       return [...hero.querySelectorAll(sels)].map(e => { const r = e.getBoundingClientRect(); return [r.left - o.left - pad, r.top - o.top - pad, r.right - o.left + pad, r.bottom - o.top + pad]; });
     };
@@ -592,16 +666,17 @@ void main() {
     useEffect(() => {
       const el = topWorld.current, s = stageRef.current; if (!el || !g) return;
       const check = () => {
-        const o = s.getBoundingClientRect(), hs = holes().concat(boxes(".town-caption, .town-ctl > *, .town-panel", 6)), near = g.wide && api.t().z > 1.02, haze = GEO.haze[0] * g.H;
+        const o = s.getBoundingClientRect(), hs = holes().concat(boxes(".town-caption, .town-ctl > *, .town-panel", 6), boxes(".town-tip", 4, true)), near = g.wide && api.t().z > 1.02, haze = GEO.haze[0] * g.H;
         [...el.querySelectorAll("[data-at], .town-batch")].forEach(n => {
           const b = (n.querySelector(".town-pin-body, .town-node, .town-batch-card") || n).getBoundingClientRect(), x0 = b.left - o.left, y0 = b.top - o.top, x1 = b.right - o.left, y1 = b.bottom - o.top;
           const out = x1 < 4 || x0 > g.W - 4 || y1 < 4 || y0 > g.H - 4 || (b.width > 0 && (x0 < -6 || x1 > g.W + 6));
-          const under = hs.some(h => x0 < h[2] && x1 > h[0] && y0 < h[3] && y1 > h[1]);
+          const now = n.querySelector(".town-node.now");
+          const under = !now && hs.some(h => x0 < h[2] && x1 > h[0] && y0 < h[3] && y1 > h[1]);
           n.classList.toggle("off", out || under || (near && (y0 + y1) / 2 < haze));
         });
       };
-      check(); const a = api.listen(check), b = api.listenView(check); return () => { a(); b(); };
-    }, [g, api, holes, j.k, j.done, sel, hov]);
+      check(); const a = api.listen(check), b = api.listenView(check), t = setTimeout(check, 260); return () => { a(); b(); clearTimeout(t); };
+    }, [g, api, holes, j.s, j.done, sel, hov, follow]);
     const named = g && g.wide && (j.done || j.k < 0);
     const hint = g && (g.wide ? "Drag to look round · click a place or an agent" : "Swipe to look round · tap a place");
     return <>
@@ -614,9 +689,10 @@ void main() {
         {g && <Graph g={g} api={api} j={j} dark={dark} focus={focus} project={project} holes={holes} />}
         <div className="town-world town-top" ref={topWorld} style={g ? { left: g.ox, top: g.oy, width: g.w, height: g.h } : { visibility: "hidden" }}>
           {g && PLACES.map(p => <span key={p.id} data-at={JSON.stringify(placeAt(g, p.id))} className="town-shift"><Pin p={p} g={g} j={j} sel={sel} onOpen={open} hover={setHov} /></span>)}
-          {g && AGENTS.map(a => <span key={a.id} data-at={JSON.stringify(GEO.posts[a.id])} className="town-shift"><Node a={a} g={g} j={j} sel={sel} onOpen={open} hover={setHov} named={named && (!focus || focus.has(a.id))} /></span>)}
+          {g && AGENTS.map(a => <span key={a.id} data-at={JSON.stringify(GEO.posts[a.id])} className="town-shift"><Node a={a} g={g} j={j} sel={sel} onOpen={open} hover={setHov} named={named && (!focus || focus.has(a.id))} tipped={tour === a.id} /></span>)}
           {g && <Batch g={g} j={j} />}
         </div>
+        {g && <Tip g={g} j={{ ...j, agent: tour }} api={api} project={project} />}
         <p className="sr-only">{dark
           ? "The whole business as a miniature town at night: the snack maker's factory and office, the distributor's godown, a lane of kirana shops, a highway to a buyer's warehouse, a food bank, and a fenced landfill, dark."
           : "The whole business as a miniature town in the morning: on the left the snack maker's factory and office, in the middle the distributor's godown full of cartons, on the right a lane of kirana shops hung with snack packets; behind them a highway to a buyer's warehouse in the next town, a food bank, and a fenced landfill, empty."}</p>
@@ -624,7 +700,7 @@ void main() {
       <SrJourney j={j} />
       <Caption j={j} money={money} hint={j.done && !sel ? hint : null} />
       <AnimatePresence>{sel && <Panel key="panel" sel={sel} j={j} onOpen={open} onClose={() => setSel(null)} />}</AnimatePresence>
-      {g && <Controls j={j} api={api} g={g} zoom={zoom} onWhole={whole} onReplay={replay} />}
+      {g && <Controls j={j} api={api} g={g} zoom={zoom} onWhole={whole} onReplay={replay} onPlay={play} onTake={take} />}
     </>;
   }
 

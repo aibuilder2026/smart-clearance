@@ -74,7 +74,17 @@
   AGENTS.forEach((a) => {
     a.beat = BEATS.findIndex((b) => b.who.includes(a.id));
   });
-  const agentState = (a, j) => ({ done: a.beat < j.k || j.done, now: a.beat === j.k && j.playing });
+  const PACE = { beat: 1100, agent: 1300, you: 1700 };
+  const STOPS = [];
+  BEATS.forEach((b, i) => {
+    if (!b.who.length) STOPS.push({ beat: i, agent: null, ms: PACE.beat });
+    else b.who.forEach((w) => STOPS.push({ beat: i, agent: w, ms: w === "you" ? PACE.you : PACE.agent }));
+  });
+  const NS = STOPS.length;
+  AGENTS.forEach((a) => {
+    a.stop = STOPS.findIndex((s) => s.agent === a.id);
+  });
+  const agentState = (a, j) => ({ done: a.stop < j.s || j.done, now: a.stop === j.s && !j.done });
   const GEO = {
     nw: 2752,
     nh: 1536,
@@ -101,40 +111,10 @@
       buyer: [[0.5, 0.762], [0.58, 0.78], [0.727, 0.814], [0.836, 0.833], [0.86, 0.8], [0.85, 0.68], [0.815, 0.51], [0.735, 0.38], [0.69, 0.31], [0.75, 0.31], [0.84, 0.335]]
     },
     batch: { maker: [0.31, 0.655], godown: [0.5, 0.665] },
-    // the camera, per beat and per place: the plate point it centres and how near; desktops and phones apart
+    // the camera: the whole business, and each place: the plate point it centres and how near; desktops and phones apart
     shots: {
-      wide: {
-        rest: [0.5, 0.5, 1],
-        make: [0.22, 0.58, 1.65],
-        stock: [0.5, 0.56, 1.55],
-        risk: [0.5, 0.55, 1.7],
-        route: [0.56, 0.52, 1.3],
-        yes: [0.17, 0.58, 1.7],
-        sell: [0.8, 0.53, 1.3],
-        report: [0.2, 0.47, 1.4],
-        maker: [0.18, 0.58, 1.8],
-        godown: [0.5, 0.6, 1.8],
-        kiranas: [0.8, 0.62, 1.8],
-        buyer: [0.8, 0.3, 2],
-        foodbank: [0.52, 0.4, 2],
-        landfill: [0.17, 0.32, 2]
-      },
-      phone: {
-        rest: [0.5, 0.55, 1],
-        make: [0.22, 0.6, 1.3],
-        stock: [0.5, 0.62, 1.3],
-        risk: [0.5, 0.6, 1.45],
-        route: [0.55, 0.55, 1.1],
-        yes: [0.15, 0.6, 1.4],
-        sell: [0.8, 0.6, 1.15],
-        report: [0.17, 0.5, 1.2],
-        maker: [0.18, 0.58, 1.4],
-        godown: [0.5, 0.6, 1.4],
-        kiranas: [0.8, 0.62, 1.4],
-        buyer: [0.8, 0.32, 1.6],
-        foodbank: [0.52, 0.4, 1.6],
-        landfill: [0.17, 0.32, 1.6]
-      }
+      wide: { rest: [0.5, 0.5, 1], maker: [0.18, 0.58, 1.8], godown: [0.5, 0.6, 1.8], kiranas: [0.8, 0.62, 1.8], buyer: [0.8, 0.3, 2], foodbank: [0.52, 0.4, 2], landfill: [0.17, 0.32, 2] },
+      phone: { rest: [0.5, 0.55, 1], maker: [0.18, 0.58, 1.4], godown: [0.5, 0.6, 1.4], kiranas: [0.8, 0.62, 1.4], buyer: [0.8, 0.32, 1.6], foodbank: [0.52, 0.4, 1.6], landfill: [0.17, 0.32, 1.6] }
     },
     // the band behind the heading on desktops, as fractions of the stage: solid haze, then clear
     haze: [0.3, 0.42]
@@ -353,35 +333,47 @@
       };
     }, [api]);
   }
-  function useJourney(ready) {
+  function useJourney(ready, inView) {
     const reduce = !!useReducedMotion();
-    const [k, setK] = useState(reduce ? NB : -1);
+    const [s, setS] = useState(reduce ? NS : -1);
     const [run, setRun] = useState(0);
     const [manual, setManual] = useState(false);
+    const [paused, setPaused] = useState(false);
     useEffect(() => {
       if (reduce) {
-        setK(NB);
+        setS(NS);
         return;
       }
       if (!ready) return;
-      setK(-1);
-      const t = setTimeout(() => setK(0), 500);
+      setS(-1);
+      setPaused(false);
+      const t = setTimeout(() => setS(0), 500);
       return () => clearTimeout(t);
     }, [ready, run, reduce]);
+    const hold = paused || manual || !inView;
     useEffect(() => {
-      if (reduce || manual || k < 0 || k >= NB) return;
-      const t = setTimeout(() => setK(k + 1), BEATS[k].ms);
+      if (reduce || hold || s < 0 || s >= NS) return;
+      const t = setTimeout(() => setS(s + 1), STOPS[s].ms);
       return () => clearTimeout(t);
-    }, [k, reduce, manual]);
-    const j = { k, reduce, run, playing: k >= 0 && k < NB && !manual, manual, done: k >= NB, beat: k >= 0 && k < NB ? BEATS[k] : null };
+    }, [s, reduce, hold]);
+    const stop = s >= 0 && s < NS ? STOPS[s] : null, k = s < 0 ? -1 : stop ? stop.beat : NB;
+    const j = { s, k, reduce, run, manual, paused, stop, ms: stop ? stop.ms : 0, held: hold, playing: s < NS && !manual && !paused, touring: !!stop && !manual, done: s >= NS, beat: stop ? BEATS[stop.beat] : null, agent: stop ? stop.agent : null };
     j.replay = () => {
       setManual(false);
+      setPaused(false);
       setRun((r) => r + 1);
-      if (reduce) setK(NB);
+      if (reduce) setS(NS);
     };
     j.step = (d) => {
       setManual(true);
-      setK((v) => clamp((v < 0 ? 0 : v) + d, 0, NB));
+      setPaused(false);
+      setS((v) => clamp((v < 0 ? 0 : v) + d, 0, NS));
+    };
+    j.pause = () => setPaused(true);
+    j.play = () => {
+      setManual(false);
+      setPaused(false);
+      setS((v) => v >= NS ? v : Math.max(0, v));
     };
     return j;
   }
@@ -660,7 +652,7 @@ void main() {
         if (p <= 0) return;
         const A = Pt(a), B = Pt(b), d = Math.hypot(B[0] - A[0], B[1] - A[1]), mx = (A[0] + B[0]) / 2, far = AGENT[a].at !== AGENT[b].at;
         const my = (A[1] + B[1]) / 2 + (far ? Math.min(110, d * 0.2) : -Math.min(70, d * 0.22));
-        const loud = s.focus ? s.focus.has(a) && s.focus.has(b) : AGENT[b].beat === k && !s.j.done;
+        const loud = s.focus ? s.focus.has(a) && s.focus.has(b) : AGENT[b].stop === s.j.s && !s.j.done;
         const hue = AGENT[a].human || AGENT[b].human ? amber : lit, n = 36, m = Math.max(1, Math.round(n * p));
         const path = () => {
           ctx.beginPath();
@@ -712,9 +704,9 @@ void main() {
       ctx.restore();
     }, [api]);
     useEffect(() => {
-      const k = j.done ? NB : j.k, want = {};
+      const n = j.done ? NS : j.s, want = {};
       EDGES.forEach(([a, b]) => {
-        want[a + b] = AGENT[b].beat >= 0 && (AGENT[b].beat < k || AGENT[b].beat === k && (j.playing || j.manual)) ? 1 : 0;
+        want[a + b] = AGENT[b].stop >= 0 && (AGENT[b].stop < n || AGENT[b].stop === n && (j.touring || j.manual)) ? 1 : 0;
       });
       if (j.reduce) {
         prog.current = want;
@@ -733,10 +725,10 @@ void main() {
         draw();
         if (u < 1 || packs.current) raf.current = requestAnimationFrame(tick);
       };
-      if (BEATS[j.k] && BEATS[j.k].id === "sell" && j.playing) {
+      if (j.stop && BEATS[j.stop.beat].id === "sell" && j.stop.agent === BEATS[j.stop.beat].who[0] && j.playing) {
         const list = [];
         for (let i = 0; i < 26; i++) list.push({ to: i % 13 < 6 ? "kiranas" : "buyer", delay: i / 26 * 0.45 });
-        packs.current = { t0: performance.now(), dur: 650, list };
+        packs.current = { t0: performance.now(), dur: 900, list };
       }
       cancelAnimationFrame(raf.current);
       raf.current = requestAnimationFrame(tick);
@@ -744,7 +736,7 @@ void main() {
         alive = false;
         cancelAnimationFrame(raf.current);
       };
-    }, [j.k, j.done, j.reduce, j.run]);
+    }, [j.s, j.done, j.reduce, j.run]);
     useEffect(() => {
       const a = api.listen(() => draw()), b = api.listenView(() => draw());
       return () => {
@@ -775,9 +767,9 @@ void main() {
       /* @__PURE__ */ React.createElement("span", { className: "town-pin-stem" })
     ));
   };
-  const Node = ({ a, g, j, sel, onOpen, hover, named }) => {
+  const Node = ({ a, g, j, sel, onOpen, hover, named, tipped }) => {
     const at = wpx(g, GEO.posts[a.id]), { done, now } = agentState(a, j), open = sel && sel.kind === "agent" && sel.id === a.id;
-    const side = GEO.labels[a.id] || "right", show = named || open || now && (g.wide || a.human);
+    const side = GEO.labels[a.id] || "right", show = !tipped && (named || open || now && (g.wide || a.human));
     return /* @__PURE__ */ React.createElement("span", { className: "town-at", style: { left: at[0], top: at[1] } }, /* @__PURE__ */ React.createElement(
       "button",
       {
@@ -859,21 +851,62 @@ void main() {
       /* @__PURE__ */ React.createElement("button", { type: "button", className: "town-panel-x", "aria-label": "Close", onClick: onClose }, /* @__PURE__ */ React.createElement(Icon, { name: "x", size: 16, stroke: 2 }))
     );
   }
+  function Tip({ g, j, api, project }) {
+    const ref = useRef(null), id = j.agent, a = id ? AGENT[id] : null;
+    useLayoutEffect(() => {
+      const el = ref.current;
+      if (!el || !a || !g) return;
+      const put = () => {
+        const p = project ? project(GEO.posts[id], id) : api.toStage(GEO.posts[id]), w = el.offsetWidth, h = el.offsetHeight, up = p[1] - 28 - h > 8;
+        const x = clamp(p[0] - w / 2, 8, g.W - w - 8);
+        el.style.left = x.toFixed(1) + "px";
+        el.style.top = (up ? p[1] - 28 - h : p[1] + 28).toFixed(1) + "px";
+        el.style.setProperty("--caret", clamp(p[0] - x, 14, w - 14).toFixed(1) + "px");
+        el.classList.toggle("below", !up);
+      };
+      put();
+      const u1 = api.listen(put), u2 = api.listenView(put);
+      return () => {
+        u1();
+        u2();
+      };
+    }, [id, g, project]);
+    return /* @__PURE__ */ React.createElement(AnimatePresence, null, a && /* @__PURE__ */ React.createElement(
+      motion.div,
+      {
+        key: id,
+        ref,
+        className: cx("town-tip", a.human && "human"),
+        "aria-hidden": "true",
+        initial: j.reduce ? false : { opacity: 0, scale: 0.94 },
+        animate: { opacity: 1, scale: 1 },
+        exit: { opacity: 0, transition: { duration: 0.14 } },
+        transition: { duration: 0.22, ease: EASE }
+      },
+      /* @__PURE__ */ React.createElement("header", null, /* @__PURE__ */ React.createElement("i", null, /* @__PURE__ */ React.createElement(Icon, { name: a.icon, size: 13, stroke: 2.2 })), /* @__PURE__ */ React.createElement("b", null, a.name), /* @__PURE__ */ React.createElement("span", null, "at the ", PLACE[a.at].short.toLowerCase())),
+      /* @__PURE__ */ React.createElement("p", null, a.did),
+      !j.reduce && /* @__PURE__ */ React.createElement("span", { key: j.s, className: "town-tip-time", style: { animationDuration: j.ms + "ms", animationPlayState: j.held ? "paused" : "running" } })
+    ));
+  }
   function Caption({ j, money, hint }) {
     const b = j.beat;
-    return /* @__PURE__ */ React.createElement("div", { className: cx("town-caption", b && b.human && "human") }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "town-step", "aria-label": "The step before", disabled: j.k <= 0, onClick: () => j.step(-1) }, /* @__PURE__ */ React.createElement(Icon, { name: "chevron-left", size: 16, stroke: 2 })), /* @__PURE__ */ React.createElement("span", { className: "town-caption-text", "aria-hidden": "true" }, j.k < 0 ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("b", null, fmt.num(BATCH.units), " packs leave the factory."), /* @__PURE__ */ React.createElement("span", null, "Follow them through the business.")) : b ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", { className: "n" }, j.k + 1, " of ", NB), /* @__PURE__ */ React.createElement("b", null, b.t), b.who.length > 0 && /* @__PURE__ */ React.createElement("span", { className: "who" }, names(b)), /* @__PURE__ */ React.createElement("span", { className: "did" }, b.id === "report" ? `${fmt.inr(money)} recovered · ${fmt.num(D.PLAN.kg)} kg kept out of landfill` : b.did)) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", { className: "n" }, NB, " of ", NB), /* @__PURE__ */ React.createElement("b", null, "Sold, not binned."), /* @__PURE__ */ React.createElement("span", { className: "did" }, RESULT), hint && /* @__PURE__ */ React.createElement("span", { className: "hint" }, hint))), /* @__PURE__ */ React.createElement("button", { type: "button", className: "town-step", "aria-label": "The next step", disabled: j.done, onClick: () => j.step(1) }, /* @__PURE__ */ React.createElement(Icon, { name: "chevron-right", size: 16, stroke: 2 })));
+    return /* @__PURE__ */ React.createElement("div", { className: cx("town-caption", b && b.human && "human") }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "town-step", "aria-label": "The step before", disabled: j.s <= 0, onClick: () => j.step(-1) }, /* @__PURE__ */ React.createElement(Icon, { name: "chevron-left", size: 16, stroke: 2 })), /* @__PURE__ */ React.createElement("span", { className: "town-caption-text", "aria-hidden": "true" }, j.s < 0 ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("b", null, fmt.num(BATCH.units), " packs leave the factory."), /* @__PURE__ */ React.createElement("span", null, "Follow them through the business.")) : b ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", { className: "n" }, j.k + 1, " of ", NB), /* @__PURE__ */ React.createElement("b", null, b.t), b.who.length > 0 && /* @__PURE__ */ React.createElement("span", { className: "who" }, names(b)), /* @__PURE__ */ React.createElement("span", { className: "did" }, b.id === "report" ? `${fmt.inr(money)} recovered · ${fmt.num(D.PLAN.kg)} kg kept out of landfill` : b.did)) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", { className: "n" }, NB, " of ", NB), /* @__PURE__ */ React.createElement("b", null, "Sold, not binned."), /* @__PURE__ */ React.createElement("span", { className: "did" }, RESULT), hint && /* @__PURE__ */ React.createElement("span", { className: "hint" }, hint))), /* @__PURE__ */ React.createElement("button", { type: "button", className: "town-step", "aria-label": "The next step", disabled: j.done, onClick: () => j.step(1) }, /* @__PURE__ */ React.createElement(Icon, { name: "chevron-right", size: 16, stroke: 2 })));
   }
   const said = (b) => b.id === "report" ? `${fmt.inr(D.ACTUAL.net)} recovered, ${fmt.num(D.PLAN.kg)} kg kept out of landfill` : b.did;
-  const SrJourney = ({ j }) => /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("ol", { className: "sr-only", "aria-label": "One batch's journey through the business" }, BEATS.map((b) => /* @__PURE__ */ React.createElement("li", { key: b.id }, b.t, b.who.length ? `, ${names(b)}` : "", ": ", said(b), "."))), /* @__PURE__ */ React.createElement("p", { className: "sr-only" }, "Sold, not binned: ", RESULT, "."), /* @__PURE__ */ React.createElement("p", { className: "sr-only", "aria-live": "polite" }, j.manual ? j.beat ? `${j.k + 1} of ${NB}, ${j.beat.t}: ${said(j.beat)}.` : `Sold, not binned: ${RESULT}.` : ""));
-  function Controls({ j, api, g, zoom, onWhole, onReplay }) {
+  const SrJourney = ({ j }) => /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("ol", { className: "sr-only", "aria-label": "One batch's journey through the business" }, BEATS.map((b) => /* @__PURE__ */ React.createElement("li", { key: b.id }, b.t, b.who.length ? `, ${names(b)}` : "", ": ", said(b), "."))), /* @__PURE__ */ React.createElement("p", { className: "sr-only" }, "Sold, not binned: ", RESULT, "."), /* @__PURE__ */ React.createElement("p", { className: "sr-only", "aria-live": "polite" }, j.manual ? j.beat ? `${j.k + 1} of ${NB}, ${j.beat.t}${j.agent ? `, ${AGENT[j.agent].name}: ${AGENT[j.agent].did}` : `: ${said(j.beat)}`}.` : `Sold, not binned: ${RESULT}.` : ""));
+  function Controls({ j, api, g, zoom, onWhole, onReplay, onPlay, onTake }) {
     const c = () => [g.W / 2, g.H * (g.wide ? 0.64 : 0.5)];
-    return /* @__PURE__ */ React.createElement("div", { className: "town-ctl" }, !j.reduce && /* @__PURE__ */ React.createElement("button", { type: "button", className: "replay", onClick: onReplay }, /* @__PURE__ */ React.createElement(Icon, { name: "rotate-ccw", size: 16, stroke: 2 }), "Replay"), /* @__PURE__ */ React.createElement("span", { className: "town-zoom", role: "group", "aria-label": "Zoom" }, /* @__PURE__ */ React.createElement("button", { type: "button", "aria-label": "Zoom out", disabled: zoom <= 1, onClick: () => api.zoomAt(1 / 1.45, ...c(), true) }, /* @__PURE__ */ React.createElement(Icon, { name: "minus", size: 16, stroke: 2 })), /* @__PURE__ */ React.createElement("button", { type: "button", "aria-label": "Zoom in", disabled: zoom >= ZMAX, onClick: () => api.zoomAt(1.45, ...c(), true) }, /* @__PURE__ */ React.createElement(Icon, { name: "plus", size: 16, stroke: 2 })), /* @__PURE__ */ React.createElement("button", { type: "button", "aria-label": "The whole business", disabled: zoom <= 1, onClick: onWhole }, /* @__PURE__ */ React.createElement(Icon, { name: "minimize-2", size: 16, stroke: 2 }))));
+    const zoomBy = (f) => {
+      onTake();
+      api.zoomAt(f, ...c(), true);
+    };
+    return /* @__PURE__ */ React.createElement("div", { className: "town-ctl" }, !j.reduce && (j.done ? /* @__PURE__ */ React.createElement("button", { type: "button", className: "replay", onClick: onReplay }, /* @__PURE__ */ React.createElement(Icon, { name: "rotate-ccw", size: 16, stroke: 2 }), "Replay") : j.playing ? /* @__PURE__ */ React.createElement("button", { type: "button", className: "replay", onClick: j.pause }, /* @__PURE__ */ React.createElement(Icon, { name: "pause", size: 16, stroke: 2 }), "Pause") : /* @__PURE__ */ React.createElement("button", { type: "button", className: "replay", onClick: onPlay }, /* @__PURE__ */ React.createElement(Icon, { name: "play", size: 16, stroke: 2 }), "Play")), /* @__PURE__ */ React.createElement("span", { className: "town-zoom", role: "group", "aria-label": "Zoom" }, /* @__PURE__ */ React.createElement("button", { type: "button", "aria-label": "Zoom out", disabled: zoom <= 1, onClick: () => zoomBy(1 / 1.45) }, /* @__PURE__ */ React.createElement(Icon, { name: "minus", size: 16, stroke: 2 })), /* @__PURE__ */ React.createElement("button", { type: "button", "aria-label": "Zoom in", disabled: zoom >= ZMAX, onClick: () => zoomBy(1.45) }, /* @__PURE__ */ React.createElement(Icon, { name: "plus", size: 16, stroke: 2 })), /* @__PURE__ */ React.createElement("button", { type: "button", "aria-label": "The whole business", disabled: zoom <= 1, onClick: onWhole }, /* @__PURE__ */ React.createElement(Icon, { name: "minimize-2", size: 16, stroke: 2 }))));
   }
   function Town() {
     const stageRef = useRef(null), plateWorld = useRef(null), topWorld = useRef(null), hazeRef = useRef(null), view = useRef(null);
     const g = useStage(stageRef), { resolved } = useTheme(), dark = resolved === "dark";
-    const [ready, setReady] = useState(false), [gl, setGl] = useState(true);
-    const j = useJourney(ready);
+    const [ready, setReady] = useState(false), [gl, setGl] = useState(true), [inView, setInView] = useState(true);
+    const j = useJourney(ready, inView);
     const worlds = useMemo(() => ({ get current() {
       return [plateWorld.current, topWorld.current].filter(Boolean);
     } }), []);
@@ -881,14 +914,18 @@ void main() {
     const depth = useDepthMap(true), map = gl ? depth : null;
     const [follow, setFollow] = useState(true), [sel, setSel] = useState(null), [hov, setHov] = useState(null);
     const money = useCount(j.k >= beatOf("report"), D.ACTUAL.net, j.reduce);
-    useGestures(stageRef, api, () => setFollow(false));
+    const take = () => {
+      setFollow(false);
+      if (!j.done && j.playing) j.pause();
+    };
+    useGestures(stageRef, api, take);
     useEffect(() => {
       if (!g || !follow) return;
-      const id = j.done || j.k < 0 ? "rest" : BEATS[j.k].id;
-      api.to(shotOf(g, id), j.k < 0 ? 0 : 0.6);
-    }, [j.k, j.done, follow, g && g.wide, g && g.W]);
+      const rest = shotOf(g, "rest"), at = g.w > g.W + 1 && !j.done && j.s >= 0 ? j.agent ? GEO.posts[j.agent] : placeAt(g, j.beat.at[0]) : null;
+      api.to(at ? [at[0], rest[1], rest[2]] : rest, j.s < 0 ? 0 : 0.9);
+    }, [follow, g && g.wide, g && g.W, j.run, j.s]);
     const open = (s) => {
-      setFollow(false);
+      take();
       setSel(s);
       const place = s.kind === "place" ? s.id : AGENT[s.id].at, shot = shotOf(g, place);
       api.to(s.kind === "agent" ? [GEO.posts[s.id][0], GEO.posts[s.id][1] + (g.wide ? 0.06 : 0.04), shot[2]] : shot, 0.7);
@@ -902,6 +939,11 @@ void main() {
       setFollow(true);
       j.replay();
     };
+    const play = () => {
+      setSel(null);
+      setFollow(true);
+      j.play();
+    };
     useEffect(() => {
       const k = (e) => {
         if (e.key === "Escape" && sel) setSel(null);
@@ -909,6 +951,53 @@ void main() {
       window.addEventListener("keydown", k);
       return () => window.removeEventListener("keydown", k);
     }, [sel]);
+    const live = useRef(null);
+    live.current = { j, follow, g };
+    useEffect(() => {
+      const st = stageRef.current, hero = st && st.closest(".hero");
+      if (!hero) return;
+      let t = 0;
+      const back = () => {
+        clearTimeout(t);
+        const L = live.current;
+        setSel(null);
+        setHov(null);
+        if (L.g && !(L.follow && L.j.playing)) api.to(shotOf(L.g, "rest"), L.j.reduce ? 0 : 0.7);
+      };
+      const enter = (e) => {
+        if (e.pointerType === "mouse") clearTimeout(t);
+      };
+      const leave = (e) => {
+        if (e.pointerType !== "mouse") return;
+        clearTimeout(t);
+        t = setTimeout(back, 300);
+      };
+      const out = (e) => {
+        if (e.relatedTarget && !hero.contains(e.relatedTarget)) back();
+      };
+      const down = (e) => {
+        if (!hero.contains(e.target)) back();
+      };
+      hero.addEventListener("pointerenter", enter);
+      hero.addEventListener("pointerleave", leave);
+      hero.addEventListener("focusout", out);
+      document.addEventListener("pointerdown", down, true);
+      const io = new IntersectionObserver(([e]) => {
+        const v = e.intersectionRatio >= 0.3;
+        setInView(v);
+        if (!v) back();
+      }, { threshold: [0, 0.3, 0.6] });
+      io.observe(st);
+      return () => {
+        clearTimeout(t);
+        hero.removeEventListener("pointerenter", enter);
+        hero.removeEventListener("pointerleave", leave);
+        hero.removeEventListener("focusout", out);
+        document.removeEventListener("pointerdown", down, true);
+        io.disconnect();
+      };
+    }, [api]);
+    const tour = follow && !sel && j.touring && j.agent ? j.agent : null;
     const focus = useMemo(() => {
       const s = hov || sel;
       if (!s) return null;
@@ -944,9 +1033,9 @@ void main() {
         b();
       };
     }, [gl, map, g, api]);
-    const boxes = (sels, pad) => {
+    const boxes = (sels, pad, any) => {
       const s = stageRef.current, hero = s && s.closest(".hero");
-      if (!s || !g || !g.wide) return [];
+      if (!s || !g || !g.wide && !any) return [];
       const o = s.getBoundingClientRect();
       return [...hero.querySelectorAll(sels)].map((e) => {
         const r = e.getBoundingClientRect();
@@ -958,24 +1047,26 @@ void main() {
       const el = topWorld.current, s = stageRef.current;
       if (!el || !g) return;
       const check = () => {
-        const o = s.getBoundingClientRect(), hs = holes().concat(boxes(".town-caption, .town-ctl > *, .town-panel", 6)), near = g.wide && api.t().z > 1.02, haze = GEO.haze[0] * g.H;
+        const o = s.getBoundingClientRect(), hs = holes().concat(boxes(".town-caption, .town-ctl > *, .town-panel", 6), boxes(".town-tip", 4, true)), near = g.wide && api.t().z > 1.02, haze = GEO.haze[0] * g.H;
         [...el.querySelectorAll("[data-at], .town-batch")].forEach((n) => {
           const b2 = (n.querySelector(".town-pin-body, .town-node, .town-batch-card") || n).getBoundingClientRect(), x0 = b2.left - o.left, y0 = b2.top - o.top, x1 = b2.right - o.left, y1 = b2.bottom - o.top;
           const out = x1 < 4 || x0 > g.W - 4 || y1 < 4 || y0 > g.H - 4 || b2.width > 0 && (x0 < -6 || x1 > g.W + 6);
-          const under = hs.some((h) => x0 < h[2] && x1 > h[0] && y0 < h[3] && y1 > h[1]);
+          const now = n.querySelector(".town-node.now");
+          const under = !now && hs.some((h) => x0 < h[2] && x1 > h[0] && y0 < h[3] && y1 > h[1]);
           n.classList.toggle("off", out || under || near && (y0 + y1) / 2 < haze);
         });
       };
       check();
-      const a = api.listen(check), b = api.listenView(check);
+      const a = api.listen(check), b = api.listenView(check), t = setTimeout(check, 260);
       return () => {
         a();
         b();
+        clearTimeout(t);
       };
-    }, [g, api, holes, j.k, j.done, sel, hov]);
+    }, [g, api, holes, j.s, j.done, sel, hov, follow]);
     const named = g && g.wide && (j.done || j.k < 0);
     const hint = g && (g.wide ? "Drag to look round · click a place or an agent" : "Swipe to look round · tap a place");
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: cx("hero-scene town-stage", gl && "is-gl", ready && "ready"), ref: stageRef }, gl && g && /* @__PURE__ */ React.createElement(DepthPlate, { g, api, dark, reduce: j.reduce, map, stageRef, view, onReady: () => setReady(true), onFail: () => setGl(false) }), /* @__PURE__ */ React.createElement("div", { className: "town-world", ref: plateWorld, style: g ? { left: g.ox, top: g.oy, width: g.w, height: g.h } : { visibility: "hidden" } }, !gl && /* @__PURE__ */ React.createElement("img", { src: IMG + (dark ? "business-night.webp" : "business.webp"), width: GEO.nw, height: GEO.nh, draggable: "false", onLoad: () => setReady(true), alt: "" })), !gl && g && g.wide && /* @__PURE__ */ React.createElement("div", { className: "town-haze", ref: hazeRef, "aria-hidden": "true" }), g && /* @__PURE__ */ React.createElement(Graph, { g, api, j, dark, focus, project, holes }), /* @__PURE__ */ React.createElement("div", { className: "town-world town-top", ref: topWorld, style: g ? { left: g.ox, top: g.oy, width: g.w, height: g.h } : { visibility: "hidden" } }, g && PLACES.map((p) => /* @__PURE__ */ React.createElement("span", { key: p.id, "data-at": JSON.stringify(placeAt(g, p.id)), className: "town-shift" }, /* @__PURE__ */ React.createElement(Pin, { p, g, j, sel, onOpen: open, hover: setHov }))), g && AGENTS.map((a) => /* @__PURE__ */ React.createElement("span", { key: a.id, "data-at": JSON.stringify(GEO.posts[a.id]), className: "town-shift" }, /* @__PURE__ */ React.createElement(Node, { a, g, j, sel, onOpen: open, hover: setHov, named: named && (!focus || focus.has(a.id)) }))), g && /* @__PURE__ */ React.createElement(Batch, { g, j })), /* @__PURE__ */ React.createElement("p", { className: "sr-only" }, dark ? "The whole business as a miniature town at night: the snack maker's factory and office, the distributor's godown, a lane of kirana shops, a highway to a buyer's warehouse, a food bank, and a fenced landfill, dark." : "The whole business as a miniature town in the morning: on the left the snack maker's factory and office, in the middle the distributor's godown full of cartons, on the right a lane of kirana shops hung with snack packets; behind them a highway to a buyer's warehouse in the next town, a food bank, and a fenced landfill, empty.")), /* @__PURE__ */ React.createElement(SrJourney, { j }), /* @__PURE__ */ React.createElement(Caption, { j, money, hint: j.done && !sel ? hint : null }), /* @__PURE__ */ React.createElement(AnimatePresence, null, sel && /* @__PURE__ */ React.createElement(Panel, { key: "panel", sel, j, onOpen: open, onClose: () => setSel(null) })), g && /* @__PURE__ */ React.createElement(Controls, { j, api, g, zoom, onWhole: whole, onReplay: replay }));
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: cx("hero-scene town-stage", gl && "is-gl", ready && "ready"), ref: stageRef }, gl && g && /* @__PURE__ */ React.createElement(DepthPlate, { g, api, dark, reduce: j.reduce, map, stageRef, view, onReady: () => setReady(true), onFail: () => setGl(false) }), /* @__PURE__ */ React.createElement("div", { className: "town-world", ref: plateWorld, style: g ? { left: g.ox, top: g.oy, width: g.w, height: g.h } : { visibility: "hidden" } }, !gl && /* @__PURE__ */ React.createElement("img", { src: IMG + (dark ? "business-night.webp" : "business.webp"), width: GEO.nw, height: GEO.nh, draggable: "false", onLoad: () => setReady(true), alt: "" })), !gl && g && g.wide && /* @__PURE__ */ React.createElement("div", { className: "town-haze", ref: hazeRef, "aria-hidden": "true" }), g && /* @__PURE__ */ React.createElement(Graph, { g, api, j, dark, focus, project, holes }), /* @__PURE__ */ React.createElement("div", { className: "town-world town-top", ref: topWorld, style: g ? { left: g.ox, top: g.oy, width: g.w, height: g.h } : { visibility: "hidden" } }, g && PLACES.map((p) => /* @__PURE__ */ React.createElement("span", { key: p.id, "data-at": JSON.stringify(placeAt(g, p.id)), className: "town-shift" }, /* @__PURE__ */ React.createElement(Pin, { p, g, j, sel, onOpen: open, hover: setHov }))), g && AGENTS.map((a) => /* @__PURE__ */ React.createElement("span", { key: a.id, "data-at": JSON.stringify(GEO.posts[a.id]), className: "town-shift" }, /* @__PURE__ */ React.createElement(Node, { a, g, j, sel, onOpen: open, hover: setHov, named: named && (!focus || focus.has(a.id)), tipped: tour === a.id }))), g && /* @__PURE__ */ React.createElement(Batch, { g, j })), g && /* @__PURE__ */ React.createElement(Tip, { g, j: { ...j, agent: tour }, api, project }), /* @__PURE__ */ React.createElement("p", { className: "sr-only" }, dark ? "The whole business as a miniature town at night: the snack maker's factory and office, the distributor's godown, a lane of kirana shops, a highway to a buyer's warehouse, a food bank, and a fenced landfill, dark." : "The whole business as a miniature town in the morning: on the left the snack maker's factory and office, in the middle the distributor's godown full of cartons, on the right a lane of kirana shops hung with snack packets; behind them a highway to a buyer's warehouse in the next town, a food bank, and a fenced landfill, empty.")), /* @__PURE__ */ React.createElement(SrJourney, { j }), /* @__PURE__ */ React.createElement(Caption, { j, money, hint: j.done && !sel ? hint : null }), /* @__PURE__ */ React.createElement(AnimatePresence, null, sel && /* @__PURE__ */ React.createElement(Panel, { key: "panel", sel, j, onOpen: open, onClose: () => setSel(null) })), g && /* @__PURE__ */ React.createElement(Controls, { j, api, g, zoom, onWhole: whole, onReplay: replay, onPlay: play, onTake: take }));
   }
   window.SC3_TOWN = { Town };
 })();
