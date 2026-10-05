@@ -98,3 +98,27 @@ On the platform v3 Claude Design project, with assets pinned to commit `a562b6b`
 ## The pick
 
 **Option 3, the carton's crew**, picked by the maintainer on 5 Oct 2026 (AskUserQuestion, answer "3"). It is built in `design3/site`, then the SvelteKit port.
+
+## The build
+
+On branch `SC-30-hero-agents`, commit `ae62513`:
+
+- **`design3/site`:**
+  - `Crew` in `site.jsx` replaces the hero card;
+  - the nine stops section is gone, and `#agents` is the hero;
+  - `site.css` has the crew's rules and drops the card's and the section's;
+  - `dist/` is rebuilt.
+- **The SvelteKit port:**
+  - `Crew.svelte` in `Hero`; `HeroCard` and `Stops` are removed;
+  - `figures.ts` carries the crew;
+  - `site.css` is re-ported (the drift test is clean);
+  - `plates.ts` bundles only the plates the page shows.
+- **Hosting:** the hosted landing page and console load `ae62513`.
+
+**Checks:**
+
+- `design3/a11y`: 319 passed, 0 failing rules. The motion spec checks the crew at the person's yes.
+- The frontend's gate: lint, type check, and 50 unit tests, including the drift, seed and icon checks.
+- e2e: zero axe violations in five projects, plus WebKit smoke. The new crew motion and Replay keyboard specs pass. Firefox can't start in the agent's sandbox.
+- Parity against design3: the hero differs by 0.02%. One run flaked on "How it works" in desktop dark; two reruns passed at 0.00–0.04%.
+- JavaScript: the page's gzipped JavaScript grew by under 1 kB (154.5 to 155.4 kB, every chunk `index.html` loads).
