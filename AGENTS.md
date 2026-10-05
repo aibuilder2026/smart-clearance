@@ -255,6 +255,7 @@ From the Claude desktop app:
 - **Jira:** project SC on [duttaarun2015.atlassian.net](https://duttaarun2015.atlassian.net). Issue links take the form `/browse/SC-<n>`.
 - **Slack:** #smart-clearance (private), channel id `C0C675VAFFY`.
 - **Google Cloud:** project `aibuilder-510213` (AIBuilder), on billing account `012B20-D65DBD-FBAC0E`, with Terraform's state in `gs://aibuilder-510213-tfstate` (SC-39).
+- **The live apps (Firebase Hosting, SC-39):** the landing page at [smartclearance.web.app](https://smartclearance.web.app), the staff console at [smartclearance-console.web.app](https://smartclearance-console.web.app).
 - **Hosted pages (Claude Design):**
   - [design system](https://claude.ai/design/p/909d23bb-bd3c-466b-abf8-4eccc7c5881e?file=Smart-Clearance+DS+v3.html)
   - [guided demo](https://claude.ai/design/p/8294ec70-3e6b-4359-8de6-2a3fd056c3b2?file=Smart-Clearance+demo+v3.html)
@@ -275,7 +276,7 @@ From the Claude desktop app:
 - The jira-flow gates cover `frontend/` (lint, type check, unit tests) and `infra/` (`terraform fmt` and `validate`, the scripts' syntax; no plan, since that needs credentials). The Python gates wait for `backend-api/` and `agents/` to have code. Nothing gates `design3/`, or the frontend's e2e and parity suites: run them yourself.
 - The frontend's Firefox smoke run could not be started in the agent's sandboxed shell; run `corepack pnpm test:e2e` on a normal machine to cover it.
 - The frontend's Book a demo keeps its requests in that browser (`sc-demo-requests`) until `backend-api` takes them; neither the hosted console nor `frontend/console` sees them.
-- `frontend/console` runs on its in-browser mock: sign-in is a stand-in for Google and a passkey, changes stay in that browser (`sc-console`), and two fictional demo requests stand in for the landing page's. Neither app has been deployed.
+- `frontend/console` runs on its in-browser mock: sign-in is a stand-in for Google and a passkey, changes stay in that browser (`sc-console`), and two fictional demo requests stand in for the landing page's. Both apps are live on Firebase Hosting's own addresses (SC-39), with no custom domain yet.
 - The landing page ships about 139 kB of JavaScript, gzipped (`frontend/README.md`, Known gaps).
 - The landing page's hero draws its town in WebGL2; where WebGL2 is missing it draws the plate flat, without depth.
 - In design3 the loader's styles come with the page's stylesheets, so on a slow connection its first paint waits for them (the Google Fonts import included). The SvelteKit build puts the loader first in the prerendered page.

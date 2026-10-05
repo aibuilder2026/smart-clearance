@@ -268,10 +268,21 @@
     - the console's e2e: 96 pass, Firefox not run (it cannot start in the sandbox);
     - the console's parity: 80 pass, at most 0.27% apart;
     - admin unchanged: e2e 51, parity 29.
-- **SC-39** (In Progress, branch `SC-39-infra-firebase-hosting`): `infra/`, Terraform for the GCP project `aibuilder-510213`, and Firebase Hosting for the two apps, each on its own site.
-  - **Applied:**
+- **SC-39** (In Review, branch `SC-39-infra-firebase-hosting`, no PR yet): `infra/`, Terraform for the GCP project `aibuilder-510213`, and Firebase Hosting for the two apps, each on its own site.
+  - **Applied, each plan saved, read in full, then applied as that file:**
     - `infra/bootstrap`: the state bucket, `gs://aibuilder-510213-tfstate`, holding its own state;
-    - `infra/prod`: the billing link adopted by import, and the Firebase Management and Hosting APIs.
-  - **Blocked:** adding Firebase to the project answers 403 until the gcloud account (gilchristfan@gmail.com) accepts the Firebase Terms. After that: apply again (the two sites, `smartclearance` and `smartclearance-console`), then `deploy.sh`, which needs `gcloud auth application-default login`.
-  - **Found on the way:** firebase-tools cannot take a gcloud token, only application-default credentials; and the provider's Hosting resources carry configuration only, so releases go through firebase-tools.
+    - `infra/prod`: the billing link (adopted by import), the Firebase Management and Hosting APIs, Firebase on the project, and the sites `smartclearance` and `smartclearance-console`.
+
+    A fresh plan on both roots shows no changes.
+  - **Live**, released by `infra/scripts/deploy.sh` from commit `82c5fd7`:
+    - the landing page at https://smartclearance.web.app;
+    - the console at https://smartclearance-console.web.app, with `noindex`, `X-Frame-Options: DENY` and the referrer policy on every path.
+
+    Both rewrite unknown paths to the app, and cache `/_app/immutable/` for a year.
+  - **Found on the way:**
+    - adding Firebase answered 403 until the account (gilchristfan@gmail.com) accepted the Firebase Terms;
+    - accepting them through the console's "Create a project" made a separate project, `smart-clearance-be74c` (Spark, with its own default site). The maintainer kept AIBuilder, and that project is unused;
+    - firebase-tools takes only application-default credentials, not a gcloud token;
+    - the provider's Hosting resources carry configuration only, so releases go through firebase-tools;
+    - `init -backend=false` still opens a configured GCS backend, so `check.sh` uses its own data directory and needs no credentials.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
