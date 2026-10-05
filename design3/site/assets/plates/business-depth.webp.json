@@ -1,0 +1,4 @@
+{
+  "prompt": "[qwen-image-2.1 bf16 edit_image, seed 3426, size 1024, ref design3/designs/SC-32/round-2/src/business-day-3401.png; post-process: grayscale, levels curved d ** 2.2, WebP q90 (design3/site/assets/plates/business-depth.prompt.json); the depth map the WebGL2 renderer shifts the town by] Convert this photograph into a depth map: a smooth grayscale image of the same scene and composition, where the nearest surfaces are bright white and the farthest are black, with soft gradients, no texture, no colour, no lettering.",
+  "createdAt": "2026-10-05T15:37:22.586Z"
+}
