@@ -135,3 +135,4 @@ Round 2 uses no third-party code. The depth renderer is written for it; round 1'
 - **The SvelteKit port** is `frontend/admin/src/lib/landing/Town.svelte`, with `town/` (the camera, the gestures, the depth renderer and the graph).
   - It is held to design3 by the drift and parity suites.
   - The showcase API carries the batch's sales a day and the food bank's minimum days.
+- **Hosting:** the hosted landing page and console in platform v3 load commit `4f2bc65`.
