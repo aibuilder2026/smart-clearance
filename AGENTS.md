@@ -247,7 +247,8 @@ From the Claude desktop app:
 - The jira-flow gate covers `frontend/`: lint, type check, unit tests. The Python gates wait for `backend-api/` and `agents/` to have code. Nothing gates `design3/`, or the frontend's e2e and parity suites: run them yourself.
 - The frontend's Firefox smoke run could not be started in the agent's sandboxed shell; run `corepack pnpm test:e2e` on a normal machine to cover it.
 - The frontend's Book a demo keeps its requests in that browser (`sc-demo-requests`) until `backend-api` takes them; the hosted console does not see them.
-- The landing page ships about 128 kB of JavaScript, gzipped (`frontend/README.md`, Known gaps).
+- The landing page ships about 139 kB of JavaScript, gzipped (`frontend/README.md`, Known gaps).
+- The landing page's hero draws its town in WebGL2; where WebGL2 is missing it draws the plate flat, without depth.
 - `.claude/jira-flow.json` names `.github/pull_request_template.md`, which is not in the repo, and there is no CI.
 - The `chrome-devtools` MCP server starts only in a new session, after a one-time approval.
 - The WCAG 2.2 criteria axe cannot check are untested.

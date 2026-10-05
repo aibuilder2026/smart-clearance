@@ -54,9 +54,18 @@ const STATES: [string, (page: Page) => Promise<void>][] = [
 		}
 	],
 	[
-		"site · the crew at work, at the person's yes",
+		"site · the town, at the person's yes",
 		async (p) => {
-			await p.waitForFunction(() => /Approve/.test(document.querySelector('.hero-caption')?.textContent || ''));
+			await p.waitForFunction(() => /One yes/.test(document.querySelector('.town-caption')?.textContent || ''));
+		}
+	],
+	[
+		'site · the town, a place opened',
+		async (p) => {
+			await p.waitForFunction(() =>
+				/Sold, not binned/.test(document.querySelector('.town-caption')?.textContent || '')
+			);
+			await p.locator('.town-pin', { hasText: 'Distributor' }).click();
 		}
 	],
 	[

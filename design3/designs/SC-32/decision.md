@@ -122,4 +122,16 @@ Round 2 uses no third-party code. The depth renderer is written for it; round 1'
 
 ## The pick
 
-Round 1: none; option 3 is the base for round 2 (above). Round 2: pending.
+- **Round 1:** none. Option 3 is the base for round 2 (above).
+- **Round 2, 5 Oct 2026:** the maintainer picked **option 2, In depth**.
+
+## The build
+
+- **`design3/site/town.jsx`** (`window.SC3_TOWN`) replaces the SC-30 crew in the hero.
+  - Its figures come from the data, through `core/money.js`.
+  - Its styles are in `site.css` (`town-*`).
+  - Its plates are `site/assets/plates/business.webp`, `business-night.webp` and `business-depth.webp`, with their sidecars.
+- **One change from the mockup:** on phones the food bank's pin moves to the kitchen's right, clear of the distributor's (the suite caught the overlap).
+- **The SvelteKit port** is `frontend/admin/src/lib/landing/Town.svelte`, with `town/` (the camera, the gestures, the depth renderer and the graph).
+  - It is held to design3 by the drift and parity suites.
+  - The showcase API carries the batch's sales a day and the food bank's minimum days.

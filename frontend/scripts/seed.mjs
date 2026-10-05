@@ -49,12 +49,21 @@ const dist = D.DISTRIBUTORS[hero.distributor];
 const showcase = {
 	platform: D.PLATFORM,
 	// the pack's own name: the brand is a field of its own, and the platform's page leaves it out
-	batch: { daysLeft: hero.daysLeft, distributorCity: dist.city, units: hero.units, product: D.SKUS[hero.sku].name },
+	batch: {
+		daysLeft: hero.daysLeft,
+		distributorCity: dist.city,
+		units: hero.units,
+		sellPerDay: hero.sellPerDay,
+		product: D.SKUS[hero.sku].name
+	},
 	risk: {
 		atRisk: D.RISK.atRisk,
 		gates: D.RISK.gates.map((g) => pick(g, ['id', 'app', 'rule', 'has', 'need', 'pass']))
 	},
-	rules: pick(window.SC3_MONEY.RULES, ['kiranaWindowDays', 'scheme']),
+	rules: {
+		...pick(window.SC3_MONEY.RULES, ['kiranaWindowDays', 'scheme']),
+		foodbankMinDays: window.SC3_MONEY.CHANNELS.find((c) => c.id === 'foodbank').minDays
+	},
 	plan: {
 		net: D.PLAN.net,
 		soldUnits: D.PLAN.soldUnits,

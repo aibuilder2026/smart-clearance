@@ -209,29 +209,53 @@ test('keyboard · a saved appearance applies before the first paint', async ({ b
 	await context.close();
 });
 
-test.describe('the crew in the hero, with motion on (SC-30)', () => {
+test.describe('the town in the hero, with motion on (SC-32)', () => {
 	test.use({ contextOptions: { reducedMotion: 'no-preference' } });
 
-	const caption = (page: Page) => page.locator('.hero-caption');
-	test('motion · the crew walks the nine stops once, under five seconds, and holds on the result', async ({ page }) => {
+	const caption = (page: Page) => page.locator('.town-caption');
+	test('motion · the batch takes the town once, under five seconds, and holds on the result', async ({ page }) => {
 		await openSite(page);
-		await expect(caption(page)).toContainText('Approve', { timeout: 6000 });
-		await expect(page.locator('.crew-tile.human > .aura')).toHaveCount(1);
+		await expect(caption(page)).toContainText('One yes', { timeout: 6000 });
+		await expect(page.locator('.town-node.human .aura')).toHaveCount(1);
 		await expect(caption(page)).toContainText('Sold, not binned.', { timeout: 6000 });
 		await expect(caption(page)).toContainText('₹21,152 recovered, instead of −₹26,330 to destroy it');
-		await expect(page.locator('.crew-tile.on')).toHaveCount(11);
+		await expect(page.locator('.town-node.on')).toHaveCount(11);
 	});
 
-	test('keyboard · Replay walks the batch through its stops again', async ({ page }) => {
+	test('keyboard · Replay takes the batch through the town again', async ({ page }) => {
 		await openSite(page);
 		await expect(caption(page)).toContainText('Sold, not binned.', { timeout: 8000 });
-		const replay = page.locator('.hero').getByRole('button', { name: 'Replay the batch' });
+		const replay = page.locator('.hero').getByRole('button', { name: 'Replay' });
 		await replay.focus();
 		await page.keyboard.press('Enter');
-		await expect(caption(page)).toContainText('1,360 packs, 47 days left.');
-		await expect(caption(page)).toContainText('1 of 9', { timeout: 2000 });
+		await expect(caption(page)).toContainText('1 of 7', { timeout: 2000 });
 		await expect(caption(page)).toContainText('Sold, not binned.', { timeout: 8000 });
 		await expect(replay).toBeFocused();
+	});
+
+	test('keyboard · a place opens its panel, its agents open theirs, and Escape closes it', async ({ page }) => {
+		await openSite(page);
+		await expect(caption(page)).toContainText('Sold, not binned.', { timeout: 8000 });
+		const pin = page.locator('.hero').getByRole('button', { name: 'Distributor · stockist: what happens here' });
+		await pin.focus();
+		await page.keyboard.press('Enter');
+		const panel = page.locator('#town-panel');
+		await expect(panel).toBeFocused();
+		await expect(pin).toHaveAttribute('aria-expanded', 'true');
+		await expect(panel).toContainText("1,360 won't sell in the 47 days left");
+		await panel.getByRole('button', { name: 'Watcher' }).focus();
+		await page.keyboard.press('Enter');
+		await expect(panel).toContainText("Flags batches that won't sell in time");
+		await page.keyboard.press('Escape');
+		await expect(panel).toHaveCount(0);
+	});
+
+	test('keyboard · the steps walk the journey by hand, and say each step', async ({ page }) => {
+		await openSite(page);
+		await expect(caption(page)).toContainText('Sold, not binned.', { timeout: 8000 });
+		await page.locator('.hero').getByRole('button', { name: 'The step before' }).click();
+		await expect(caption(page)).toContainText('7 of 7Settled');
+		await expect(page.locator('.hero [aria-live="polite"]')).toContainText('7 of 7, Settled');
 	});
 });
 

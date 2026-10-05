@@ -100,6 +100,6 @@ Never edit the generated files (`admin/src/lib/seed/*`, `core/src/lib/icons/regi
 ## Known gaps
 
 - The Firefox smoke run could not be run in the agent's sandboxed shell (Firefox cannot start there); WebKit and Chromium were. Run `corepack pnpm test:e2e` on a normal machine to cover it.
-- The landing page ships about 128 kB of JavaScript (gzip). bits-ui and its floating-ui layer are about 30 kB of that and the icon registry about 9 kB. A leaner menu and sheet, or a per-route icon registry, would cut it.
+- The landing page ships about 139 kB of JavaScript (gzip): about 128 kB before SC-32, and the hero's town adds about 11 kB net (its WebGL2 renderer, camera, gestures and graph). bits-ui and its floating-ui layer are about 30 kB of it and the icon registry about 9 kB. A leaner menu and sheet, or a per-route icon registry, would cut it.
 - Demo requests stay in the browser (`localStorage`, `sc-demo-requests`) until `backend-api` takes them; the hosted console does not see them.
 - The console and the client workspace app are not ported yet. `core/src/lib/coverage.ts` lists the design-system pieces waiting for them.

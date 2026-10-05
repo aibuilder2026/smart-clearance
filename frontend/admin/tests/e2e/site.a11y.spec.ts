@@ -9,6 +9,18 @@ test('site · the whole page', async ({ page }, testInfo) => {
 	await report(testInfo, await scan(page, 'site'));
 });
 
+test('site · the town: a place, then an agent, opened', async ({ page }, testInfo) => {
+	await openSite(page);
+	const findings: Finding[] = [];
+	await page.locator('.hero').getByRole('button', { name: 'Distributor · stockist: what happens here' }).click();
+	await page.waitForTimeout(900);
+	findings.push(...(await scan(page, 'site · the town, the godown opened')));
+	await page.locator('.town-panel').getByRole('button', { name: 'Watcher' }).click();
+	await page.waitForTimeout(900);
+	findings.push(...(await scan(page, 'site · the town, the Watcher opened')));
+	await report(testInfo, findings);
+});
+
 test('site · sign-in menu, Find your workspace and Book a demo', async ({ page }, testInfo) => {
 	await openSite(page);
 	const findings: Finding[] = [];
