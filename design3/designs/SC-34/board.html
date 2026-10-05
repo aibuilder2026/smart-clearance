@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-34 Hero Tour</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<style>
+/* SC-34's record: the request, the hero as it was, three options for its tour, and the pick (option C). */
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber: #f2b437; --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --red-text: #c42a30;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px rgb(17 41 30 / 0.07);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #8b9993;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber: #f7c04a; --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --red-text: #ff8f8d;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px rgb(0 0 0 / 0.35);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #8b9993;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber: #f7c04a; --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --red-text: #ff8f8d;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px rgb(0 0 0 / 0.35);
+  color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); margin: 0; padding-inline: 16px; -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+a:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
+::selection { background: color-mix(in oklab, var(--green) 24%, transparent); }
+.wrap { max-width: 1240px; margin-inline: auto; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+p { margin: 0; text-wrap: pretty; }
+
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; margin-inline: -16px; padding: 10px 16px; background: color-mix(in srgb, var(--ground) 84%, transparent);
+  -webkit-backdrop-filter: saturate(180%) blur(18px); backdrop-filter: saturate(180%) blur(18px); box-shadow: 0 1px 0 var(--line); }
+.top .wrap { display: flex; align-items: center; gap: 8px 20px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; font: 700 16px/1 var(--display); color: var(--ink); text-decoration: none; }
+.brand svg { width: 28px; height: 28px; flex: none; }
+.top nav { display: flex; gap: 4px 16px; flex-wrap: wrap; margin-left: auto; font-size: 14px; }
+.top nav a { color: var(--ink-2); text-decoration: none; padding: 6px 2px; }
+.top nav a:hover { color: var(--ink); }
+
+header.intro { padding-block: 56px 28px; display: grid; gap: 18px; }
+h1 { font-size: clamp(36px, 6vw, 60px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+.lede { font-size: 18px; color: var(--ink-2); max-width: 66ch; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-size: 13.5px; font-weight: 600; background: var(--surface); box-shadow: 0 0 0 1px var(--line); color: var(--ink-2); }
+.chip.rec { background: var(--green-soft); color: var(--green-text); box-shadow: none; }
+
+section.part { padding-block: 40px; display: grid; gap: 20px; scroll-margin-top: 64px; }
+section.part > h2 { font-size: clamp(26px, 3.4vw, 36px); font-weight: 720; letter-spacing: -0.02em; line-height: 1.08; font-variation-settings: "opsz" 72, "wdth" 92; }
+.card { background: var(--surface); border-radius: 20px; box-shadow: var(--shadow), 0 0 0 1px var(--line); padding: 22px; }
+blockquote { margin: 0; padding: 4px 0 4px 16px; box-shadow: inset 2px 0 0 var(--line-2); color: var(--ink); font-size: 16px; }
+blockquote + blockquote { margin-top: 10px; }
+.cols { display: grid; gap: 16px; }
+@media (min-width: 900px) { .cols.two { grid-template-columns: 1fr 1fr; } .cols.three { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+ul.tight { margin: 0; padding-left: 18px; display: grid; gap: 6px; color: var(--ink-2); }
+ul.tight b { color: var(--ink); }
+
+.option { display: grid; gap: 18px; padding: 26px 22px; border-radius: 26px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.option.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.option-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.option-head h3 { font-size: 26px; font-weight: 720; letter-spacing: -0.02em; font-variation-settings: "opsz" 48, "wdth" 92; }
+.tag { font-size: 13px; font-weight: 650; color: var(--green-text); background: var(--green-soft); padding: 4px 10px; border-radius: 999px; }
+.option .idea { display: grid; gap: 8px; font-size: 16.5px; color: var(--ink-2); max-width: 74ch; }
+.leaves { display: grid; gap: 8px; color: var(--ink-2); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); }
+.btn.primary { background: var(--green); color: #fff; }
+:root[data-theme="dark"] .btn.primary { color: #03170d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #03170d; } }
+
+.comps { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .comps { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 210px 210px; align-items: start; } }
+figure { margin: 0; display: grid; gap: 8px; }
+figcaption { font-size: 13px; color: var(--ink-3); }
+.frame { max-height: 640px; overflow: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); overscroll-behavior: contain; }
+.frame img { display: block; width: 100%; height: auto; }
+.frame.phone { max-height: 640px; }
+video.motion { width: 100%; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); display: block; }
+.motion-row { display: grid; gap: 14px; }
+@media (min-width: 900px) { .motion-row { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: start; } }
+.facts { display: grid; gap: 10px; }
+.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); text-transform: none; }
+.facts dd { margin: 2px 0 0; color: var(--ink-2); }
+.decide { display: grid; gap: 12px; }
+footer { padding-block: 36px 60px; color: var(--ink-3); font-size: 13px; }
+code { font: 500 0.92em/1 var(--mono); }
+.note { color: var(--ink-2); }
+.pair { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 210px 210px; align-items: start; } }
+.journey { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .journey { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: start; } }
+.strip { overflow-x: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+.strip img { display: block; height: 384px; width: auto; max-width: none; }
+.option h4 { margin: 4px 0 0; font: 650 15px/1.3 var(--ui); color: var(--ink); }
+
+body { margin: 0; background: var(--ground); color: var(--ink); font: 15px/1.55 var(--ui); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 16px; padding-block: 40px 72px; }
+h1 { margin: 0 0 6px; font: 760 clamp(30px, 4vw, 44px)/1.05 var(--display); font-variation-settings: "wdth" 82; letter-spacing: -0.02em; text-wrap: balance; }
+h2 { margin: 44px 0 12px; font: 720 24px/1.15 var(--display); font-variation-settings: "wdth" 86; letter-spacing: -0.01em; }
+h3 { margin: 0; font: 700 18px/1.25 var(--ui); }
+p { margin: 0 0 10px; max-width: 70ch; color: var(--ink-2); }
+.kicker { font: 500 12px/1.4 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+blockquote { margin: 14px 0; padding: 12px 16px; border-left: 0; border-radius: 12px; background: var(--sunken); color: var(--ink); white-space: pre-line; max-width: 70ch; }
+.grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
+figure { margin: 0; min-width: 0; }
+figure img { display: block; width: 100%; height: auto; border-radius: 12px; box-shadow: var(--shadow); background: var(--sunken); }
+figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+.opt { margin-top: 18px; padding: 18px; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.opt.picked { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.opt header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-bottom: 8px; }
+.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 600 12.5px/1 var(--ui); color: var(--green-text); background: var(--green-soft); }
+.shots { display: grid; gap: 12px; grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); margin-top: 12px; }
+@media (max-width: 700px) { .shots { grid-template-columns: 1fr; } }
+a { color: var(--green-text); }
+ul { margin: 0 0 10px; padding-left: 20px; color: var(--ink-2); max-width: 72ch; }
+</style>
+<body>
+<main class="wrap">
+<p class="kicker">SC-34 · smartclearance.com · the hero</p>
+<h1>The hero's tour, slower, with a card for each agent</h1>
+<p>The maintainer's words, 5 Oct 2026:</p>
+<blockquote>on the hero, small changes need,
+When I focus out of the hero, it should return back to original size so that I can see the full picture.
+Also the playing time is too fast it should a bit slower
+during the play these. popups should auto appear one by one when the related nodes are focussed</blockquote>
+
+<h2>What every option shares</h2>
+<ul>
+<li>Leaving the hero brings the whole town back: the pointer leaving it, focus moving out, a tap outside, or scrolling it away. A card the visitor opened closes.</li>
+<li>The tour runs longer than five seconds, so it carries Pause and Play in Replay's place (WCAG 2.2.2); the caption's steps stop it too.</li>
+<li>Taking the camera (a drag, a zoom, a card opened) holds the tour; Play hands it back. Out of view it holds, and carries on when it is back.</li>
+<li>Under reduced motion the result is there at once.</li>
+</ul>
+
+<h2>The hero as it was</h2>
+<div class="shots"><figure><img src="current/light-1440.webp" alt="The town hero at 1440, light, at rest after its 4.7-second journey." loading="lazy" width="1440" height="900"><figcaption>1440, light</figcaption></figure>
+<figure><img src="current/light-390.webp" alt="The town hero on a phone, light, at rest." loading="lazy" width="390" height="844"><figcaption>390, light</figcaption></figure></div>
+
+<h2>Three options, each at the Router's stop</h2>
+<section class="opt" aria-labelledby="o-a">
+<header><h3 id="o-a">A · Beat by beat</h3><a href="option-a/mockup.html">Open the mockup</a> · <a href="option-a/mockup.html?theme=dark">in dark</a></header>
+<p>The camera keeps the seven beats' shots. In each beat its agents' cards open one after another, docked where a visitor's card opens (bottom left); on phones a compact card over the foot of the town.</p><p>1.4 s an agent, 1.9 s the yes, 1.2 s a beat without agents: about 18 s.</p>
+<div class="shots"><figure><img src="option-a/light-1440.webp" alt="Option A at 1440 in light, at the Router's stop." loading="lazy" width="1440" height="900"><figcaption>1440, light</figcaption></figure>
+<figure><img src="option-a/light-390.webp" alt="Option A on a phone in light, at the Router's stop." loading="lazy" width="390" height="844"><figcaption>390, light</figcaption></figure></div>
+<div class="shots"><figure><img src="option-a/dark-1440.webp" alt="Option A at 1440 in dark." loading="lazy" width="1440" height="900"><figcaption>1440, dark</figcaption></figure>
+<figure><img src="option-a/dark-390.webp" alt="Option A on a phone in dark." loading="lazy" width="390" height="844"><figcaption>390, dark</figcaption></figure></div>
+</section>
+<section class="opt" aria-labelledby="o-b">
+<header><h3 id="o-b">B · Agent by agent</h3><a href="option-b/mockup.html">Open the mockup</a> · <a href="option-b/mockup.html?theme=dark">in dark</a></header>
+<p>The camera flies close to each agent in turn as its card opens, docked as in A. The most cinematic, and the longest.</p><p>1.8 s an agent, 2.3 s the yes, 1.4 s a beat without agents: about 23 s.</p>
+<div class="shots"><figure><img src="option-b/light-1440.webp" alt="Option B at 1440 in light, at the Router's stop." loading="lazy" width="1440" height="900"><figcaption>1440, light</figcaption></figure>
+<figure><img src="option-b/light-390.webp" alt="Option B on a phone in light, at the Router's stop." loading="lazy" width="390" height="844"><figcaption>390, light</figcaption></figure></div>
+<div class="shots"><figure><img src="option-b/dark-1440.webp" alt="Option B at 1440 in dark." loading="lazy" width="1440" height="900"><figcaption>1440, dark</figcaption></figure>
+<figure><img src="option-b/dark-390.webp" alt="Option B on a phone in dark." loading="lazy" width="390" height="844"><figcaption>390, dark</figcaption></figure></div>
+</section>
+<section class="opt picked" aria-labelledby="o-c">
+<header><h3 id="o-c">C · The whole picture</h3><span class="tag">Picked</span><a href="option-c/mockup.html">Open the mockup</a> · <a href="option-c/mockup.html?theme=dark">in dark</a></header>
+<p>The camera stays on the whole town. A small card opens beside each agent's pin as it works: its name, its post, what it did for this batch.</p><p>1.3 s an agent, 1.7 s the yes, 1.1 s a beat without agents: about 17 s.</p>
+<div class="shots"><figure><img src="option-c/light-1440.webp" alt="Option C at 1440 in light, at the Router's stop." loading="lazy" width="1440" height="900"><figcaption>1440, light</figcaption></figure>
+<figure><img src="option-c/light-390.webp" alt="Option C on a phone in light, at the Router's stop." loading="lazy" width="390" height="844"><figcaption>390, light</figcaption></figure></div>
+<div class="shots"><figure><img src="option-c/dark-1440.webp" alt="Option C at 1440 in dark." loading="lazy" width="1440" height="900"><figcaption>1440, dark</figcaption></figure>
+<figure><img src="option-c/dark-390.webp" alt="Option C on a phone in dark." loading="lazy" width="390" height="844"><figcaption>390, dark</figcaption></figure></div>
+</section>
+
+<h2>The pick</h2>
+<p><strong>Option C, the whole picture</strong>: "lets go for option C" (5 Oct 2026), given in the same request after the options were described. The build adds a stem from the card to its pin, lets the pin's own name stand down while the card names the agent, and on phones and tablets, where the stage crops the town's sides, slides the camera along at the same size to keep the agent at work in view.</p>
+<div class="grid">
+<figure><img src="option-c/built-negotiator-light-390.webp" alt="The build on a phone: the Negotiator's card over its pin at the town's right edge." loading="lazy" width="390" height="844"><figcaption>The build, 390: the camera slid right for the Negotiator</figcaption></figure>
+<figure><img src="option-c/built-you-light-390.webp" alt="The build on a phone: the amber card for You over the factory office." loading="lazy" width="390" height="844"><figcaption>The build, 390: and left for the yes</figcaption></figure>
+<figure><img src="option-c/built-negotiator-light-820.webp" alt="The build on a tablet: the Negotiator's card by the highway." loading="lazy" width="820" height="1180"><figcaption>The build, 820</figcaption></figure>
+</div>
+<p>The decision record: <a href="decision.md">decision.md</a>.</p>
+</main>
+</body>
+</html>

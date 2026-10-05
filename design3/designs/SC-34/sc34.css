@@ -1,0 +1,36 @@
+/* SC-34 options: what the tour adds to the SC-32 town (design3/site/site.css). Its card's time line, the compact card
+   over the foot of the town on phones and tablets, option C's card beside the agent's pin, and the mockups' label. */
+
+/* the stop's time: a hairline along the card's foot that fills while the stop holds, and stops when the tour holds */
+.town-panel-time { position: absolute; left: 16px; right: 16px; bottom: 7px; height: 2px; border-radius: 2px; overflow: hidden; pointer-events: none;
+  background: color-mix(in oklab, var(--primary) 20%, transparent); }
+.town-panel-time::after { content: ""; position: absolute; inset: 0; background: var(--primary); transform: scaleX(0); transform-origin: 0 50%;
+  animation-name: sc34-time; animation-timing-function: linear; animation-fill-mode: forwards; animation-duration: inherit; animation-play-state: inherit; }
+@keyframes sc34-time { to { transform: scaleX(1); } }
+
+/* phones and tablets: the tour's card sits over the foot of the town (the page below never moves), with the agent, its
+   post and what it did for this batch; a card the visitor opens stays under the town, as before */
+.town-panel.compact { position: absolute; left: 8px; right: 8px; max-width: 25rem; translate: 0 -100%; gap: 4px; padding: 10px 12px 15px; border-radius: 14px; font-size: 13.5px; }
+.town-panel.compact header { gap: 8px; }
+.town-panel.compact header i { width: 26px; height: 26px; }
+.town-panel.compact h3 { font-size: 15px; }
+.town-panel.compact .town-panel-x { right: 4px; top: 4px; }
+.town-panel.compact .town-panel-time { left: 12px; right: 12px; bottom: 6px; }
+
+/* option C: the card beside the agent at work, over the whole town */
+.town-tip { position: absolute; z-index: 3; left: 0; top: 0; width: max-content; max-width: min(17rem, calc(100% - 16px)); padding: 8px 12px 13px; border-radius: 12px;
+  font-size: 13px; line-height: 1.4; color: var(--fg-2); background: var(--glass-strong); -webkit-backdrop-filter: blur(12px) saturate(140%); backdrop-filter: blur(12px) saturate(140%);
+  box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); pointer-events: none; }
+.town-tip header { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 7px; margin-bottom: 3px; }
+.town-tip header i { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; color: var(--primary-fg); background: var(--primary); }
+.town-tip.human header i { color: var(--amber-fg); background: var(--amber); }
+.town-tip b { font-weight: 700; color: var(--fg); }
+.town-tip header span { font-size: 12.5px; color: var(--fg-2); }
+.town-tip p { margin: 0; color: var(--fg); }
+.town-tip .town-panel-time { left: 12px; right: 12px; bottom: 5px; }
+
+/* the mockups' label: which option this is, and back to the board */
+.mock-bar { position: fixed; z-index: 60; right: 12px; bottom: 12px; display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 14px; border-radius: 999px; font: 600 13px/1.2 var(--font-ui);
+  color: var(--fg); background: var(--glass-strong); -webkit-backdrop-filter: blur(12px) saturate(140%); backdrop-filter: blur(12px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.mock-bar a { display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px; border-radius: 999px; color: var(--fg); background: var(--fill-2); text-decoration: none; }
+.mock-bar a:hover { background: color-mix(in oklab, var(--fg) 12%, transparent); }
