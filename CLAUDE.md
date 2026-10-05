@@ -54,7 +54,7 @@
 - The full accessibility suite takes about 6 minutes, so give it a long timeout. While iterating, use `npm run test:desktop`.
 - In the frontend the e2e suite takes about 30 seconds and the parity suite about 40, after a build. In the agent's sandboxed shell Firefox cannot start; Chromium and WebKit can.
 
-## Recent changes (4 Oct 2026)
+## Recent changes (5 Oct 2026)
 
 - **Design v3** (SC-12 to SC-15, PR #7): the design system, the guided demo and the app prototype, published to Claude Design and pinned to commits.
 - **SC-16** (PR #8): the demo's top bar now sits above the device frames, so the Appearance menu opens over them.
@@ -101,7 +101,7 @@
   4. Build only the option the maintainer picks.
 
   The `design-first` skill and a `UserPromptSubmit` hook (`.claude/hooks/design-first-reminder.sh`) carry the rule. SC-25's board, comps and decision are in `design3/designs/SC-25/`.
-- **SC-27** (In Review, branch `SC-27-frontend-landing`): the first production code, `frontend/`, a SvelteKit 3 pnpm workspace (TypeScript 6, Vite 8, Tailwind 4 over the tokens, bits-ui, TanStack Query, `motion`).
+- **SC-27** (PR #18): the first production code, `frontend/`, a SvelteKit 3 pnpm workspace (TypeScript 6, Vite 8, Tailwind 4 over the tokens, bits-ui, TanStack Query, `motion`).
   - `core`: design system v3 in Svelte, with the CSS ported verbatim and kept so by drift tests. It has every component the landing page and the DS page's built sections use; `coverage.ts` lists the rest, with the port that brings each.
   - `admin`: the landing page ported 1:1 from `design3/site`, with no design round (the maintainer's call: a faithful port). It is prerendered with its data, seeded from `design3/core` through a typed API that flips to `backend-api` with `PUBLIC_API_BASE`. `/ds` is the design-system page, a dev route.
   - Checked against the prototype:
@@ -110,7 +110,7 @@
     - keyboard and motion specs as design3's.
   - The prototype's quirks are fixed: window scrolling, real links, no theme flash, the demo form.
   - `backend-api/` and `agents/` are READMEs for now. The jira-flow gate moved from `web/` to `frontend/`.
-- **SC-28** (In Review, branch `SC-28-landing-refine`, stacked on SC-27): the landing page refined to the SC-25 board, in two design rounds on one review board in platform v3, `SC-28 design review.html`. The designs, comps, motion recordings and decisions are in `design3/designs/SC-28/`.
+- **SC-28** (PR #19): the landing page refined to the SC-25 board, in two design rounds on one review board in platform v3, `SC-28 design review.html`. The designs, comps, motion recordings and decisions are in `design3/designs/SC-28/`.
   - **Round 1:** three options; the maintainer picked option A. What it changed:
     - **No client on the page:** no name, product, person, workspace address or batch id. The batch is an illustrative one, and the showcase API carries no client details (AGENTS.md, Data and assets).
     - **Sections:** the street's three result cards; the nine stops as a live pipeline, with a beat on the human yes and Replay; "Your own workspace" as comp L5 (one unbranded product on each island, team cards, integration chips); plans and the close as comp L6.
