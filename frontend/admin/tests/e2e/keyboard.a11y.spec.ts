@@ -209,6 +209,32 @@ test('keyboard · a saved appearance applies before the first paint', async ({ b
 	await context.close();
 });
 
+test.describe('the crew in the hero, with motion on (SC-30)', () => {
+	test.use({ contextOptions: { reducedMotion: 'no-preference' } });
+
+	const caption = (page: Page) => page.locator('.hero-caption');
+	test('motion · the crew walks the nine stops once, under five seconds, and holds on the result', async ({ page }) => {
+		await openSite(page);
+		await expect(caption(page)).toContainText('Approve', { timeout: 6000 });
+		await expect(page.locator('.crew-tile.human > .aura')).toHaveCount(1);
+		await expect(caption(page)).toContainText('Sold, not binned.', { timeout: 6000 });
+		await expect(caption(page)).toContainText('₹21,152 recovered, instead of −₹26,330 to destroy it');
+		await expect(page.locator('.crew-tile.on')).toHaveCount(11);
+	});
+
+	test('keyboard · Replay walks the batch through its stops again', async ({ page }) => {
+		await openSite(page);
+		await expect(caption(page)).toContainText('Sold, not binned.', { timeout: 8000 });
+		const replay = page.locator('.hero').getByRole('button', { name: 'Replay the batch' });
+		await replay.focus();
+		await page.keyboard.press('Enter');
+		await expect(caption(page)).toContainText('1,360 packs, 47 days left.');
+		await expect(caption(page)).toContainText('1 of 9', { timeout: 2000 });
+		await expect(caption(page)).toContainText('Sold, not binned.', { timeout: 8000 });
+		await expect(replay).toBeFocused();
+	});
+});
+
 test.describe('the street of exits, with motion on', () => {
 	test.use({ contextOptions: { reducedMotion: 'no-preference' } });
 

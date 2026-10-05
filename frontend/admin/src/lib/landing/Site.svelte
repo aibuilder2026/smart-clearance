@@ -12,7 +12,6 @@
 	import { LINKS, openLink } from './links';
 	import Nav from './Nav.svelte';
 	import Plans from './Plans.svelte';
-	import Stops from './Stops.svelte';
 	import Workspace from './Workspace.svelte';
 
 	// smartclearance.com: the product's own landing page, independent of any client. One carton the size of a godown,
@@ -34,10 +33,9 @@
 <div class="site" id="top">
 	<Nav {onfind} {ondemo} />
 	<main>
-		<Hero packs={f.atRisk} net={f.actual.net} {onfind} />
+		<Hero {f} {onfind} />
 		<How {f} />
 		<Exits {f} />
-		<Stops {f} />
 		<Workspace {f} />
 		<Plans {f} {ondemo} />
 		<Close {ondemo} />

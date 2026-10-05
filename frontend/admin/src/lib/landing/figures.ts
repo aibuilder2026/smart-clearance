@@ -183,18 +183,8 @@ export function figures(s: Showcase, c: Catalog) {
 		}
 	];
 
-	// 4 · the nine stops: what each one does, the agents at it, and what it did for this batch
-	const STOP_LINES: Record<string, string> = {
-		connect: "the distributor's stock export and one permission",
-		detect: 'shelf life checked against every gate at 09:00',
-		verify: 'the label photo read and matched',
-		value: 'five exits priced, the bin included',
-		decide: 'the batch split, with the reasons',
-		approve: 'one tap, with the money on screen',
-		execute: 'listing, offers in Hindi, bids answered, pick-up',
-		settle: 'invoice, e-way bill, credit note, GST memo',
-		report: 'a BRSR line after the return window'
-	};
+	// 1 · the hero's crew (SC-30): the nine stops, the agents at each and what each did for this batch; and the crew,
+	// every agent and the person who says yes, in the order they work
 	const STOP_DONE: Record<string, string> = {
 		connect: 'stock export mapped · permission given',
 		detect: `${fmt.num(s.risk.atRisk)} packs won't sell in the ${s.batch.daysLeft} days left`,
@@ -208,12 +198,15 @@ export function figures(s: Showcase, c: Catalog) {
 	};
 	const stops = s.stages.map((st) => ({
 		...st,
-		text: STOP_LINES[st.id],
 		done: STOP_DONE[st.id],
 		who: st.human ? ['a person'] : (byStage[st.id] ?? [])
 	}));
+	const stageAt = Object.fromEntries(s.stages.map((st, i) => [st.id, i]));
+	const crew = c.agents
+		.map((a) => ({ name: a.gate ? 'a person' : a.name, icon: a.icon, stop: stageAt[a.stage], human: !!a.gate }))
+		.sort((a, b) => a.stop - b.stop);
 
-	// 5 · the workspace (comp L5): the connectors the comp shows, in its order
+	// 4 · the workspace (comp L5): the connectors the comp shows, in its order
 	const connectors = ['dms', 'tally', 'bq', 'sso', 'expiresoon', 'irp', 'whatsapp']
 		.map((id) => c.connectors.find((x) => x.id === id))
 		.filter((x) => x !== undefined);
@@ -223,10 +216,13 @@ export function figures(s: Showcase, c: Catalog) {
 		atRisk: s.risk.atRisk,
 		daysLeft: s.batch.daysLeft,
 		actual: s.actual,
+		bin: BIN,
+		kg: s.plan.kg,
 		how,
 		street,
 		results,
 		stops,
+		crew,
 		plans: c.plans.map((p) => ({ ...p, scope: p.scope.map((x) => x.replace(/^The client's /, 'Your ')) })),
 		connectors
 	};

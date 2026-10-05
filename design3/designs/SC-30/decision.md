@@ -97,4 +97,4 @@ On the platform v3 Claude Design project, with assets pinned to commit `a562b6b`
 
 ## The pick
 
-Pending.
+**Option 3, the carton's crew**, picked by the maintainer on 5 Oct 2026 (AskUserQuestion, answer "3"). It is built in `design3/site`, then the SvelteKit port.

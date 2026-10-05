@@ -37,14 +37,38 @@
 .hero-stage { position: relative; display: grid; gap: 14px; }
 .hero-scene { position: relative; display: block; border-radius: 20px; overflow: hidden; aspect-ratio: 3 / 4; box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
 .hero-scene img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 64%; }
-.hero-card { position: absolute; right: 10px; top: 10px; display: grid; justify-items: start; gap: 3px; padding: 10px 12px 9px; border-radius: 14px; background: var(--surface); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
-.hc-id { font-size: 11.5px; color: var(--fg-3); }
-.hc-dots { display: flex; gap: 5px; padding: 3px 0 4px; }
-.hc-dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--fill-3); transition: background-color 220ms var(--ease); }
-.hc-dots i.on { background: var(--primary); }
-.hc-money { font-family: var(--font-display); font-size: 27px; line-height: 1; font-weight: 760; letter-spacing: -0.03em; color: var(--primary-text); font-variation-settings: "opsz" 72; }
-.hc-money .cur { font-size: 0.62em; vertical-align: 0.42em; margin-right: 1px; }
-.hc-cap { font-size: 13px; color: var(--fg-2); }
+/* the carton's crew (SC-30): the ten agents and the person on a ring around the carton, on a layer laid exactly over
+   the plate (measured from the plate's own fit). The ring and the threads are the plate's light, white by day and pale
+   green by night; what rides behind the carton is cut away by its outline. */
+.crew-layer { position: absolute; z-index: 1; pointer-events: none; overflow: hidden; border-radius: 20px; }
+.crew-layer > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.crew-back, .crew-front { position: absolute; inset: 0; }
+.crew-ring { fill: none; stroke: rgb(255 255 255 / 0.62); stroke-width: 1.5; }
+[data-theme="dark"] .crew-ring { stroke: rgb(214 255 232 / 0.38); }
+.crew-thread { stroke: rgb(255 255 255 / 0.7); stroke-width: 1.25; }
+.crew-thread.human { stroke: var(--amber); }
+[data-theme="dark"] .crew-thread:not(.human) { stroke: rgb(214 255 232 / 0.55); }
+/* an agent: its icon and name on a frosted pill, lit once it has worked, wearing the aura while it works. One not
+   reached yet steps back to the secondary ink, its icon faded; the pill stays opaque, so the name keeps 4.5:1 wherever
+   on the plate it sits. On a phone each tile is its icon, the agent at work named. */
+.crew-tile { position: absolute; left: 0; top: 0; will-change: transform; }
+.crew-tile > span { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 13px 0 5px; border-radius: 999px; white-space: nowrap; font-size: 13px; font-weight: 650; color: var(--fg);
+  background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); transition: color 240ms var(--ease); }
+.crew-tile i { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: var(--fg-3); background: var(--fill-2); transition: background-color 240ms var(--ease), color 240ms var(--ease), opacity 240ms var(--ease); }
+.crew-tile.on i { color: var(--primary-fg); background: var(--primary); }
+.crew-tile.human i { color: var(--amber-fg); background: var(--amber); }
+.crew-tile.later > span { color: var(--fg-2); }
+.crew-tile.later i { opacity: 0.55; }
+.crew-tile.icon > span { gap: 0; padding: 0 5px; font-size: 0; }
+/* what the batch is doing, under the carton, and Replay */
+.hero-caption { position: relative; z-index: 2; display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 8px; max-width: 46rem; margin-top: 2px; padding: 10px 14px; border-radius: 14px; font-size: 14.5px; line-height: 1.4; color: var(--fg-2);
+  background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.hero-caption .n { font-family: var(--font-mono); font-size: 12px; color: var(--fg-3); }
+.hero-caption b { font-weight: 650; color: var(--fg); }
+.hero-caption .did { color: var(--primary-text); font-variant-numeric: tabular-nums; }
+.hero-caption.human .did { color: var(--amber-text); }
+.hero-replay { display: flex; justify-content: flex-end; }
+.hero-replay:empty { display: none; }
 .hero-stops { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 22px; margin: 0; padding: 0 0 6px; list-style: none; font-size: 15px; font-weight: 500; color: var(--fg-2); }
 .hero-line { display: none; }
 
@@ -54,7 +78,6 @@
   .hero-ctas { display: flex; justify-content: center; }
   .hero-ctas .btn { height: 44px; }
   .hero-scene { aspect-ratio: 16 / 10; }
-  .hero-card { right: 18px; top: 18px; }
 }
 
 /* desktops: the comp's frame, box for box */
@@ -74,21 +97,19 @@
   .hero-scene { position: absolute; z-index: 0; left: 0; top: 7.5%; width: 100%; height: 88%; border-radius: 0; box-shadow: none; aspect-ratio: auto;
     -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 84%, transparent 100%); mask-image: linear-gradient(to bottom, #000 0, #000 84%, transparent 100%); }
   .hero-scene img { object-position: 50% 50%; }
-  .hero-h, .hero-sub, .hero-ctas, .hero-card, .hero-stops, .hero-line { z-index: 1; }
+  .hero-h, .hero-sub, .hero-ctas, .hero-stops, .hero-line { z-index: 1; }
   .hero-h { position: absolute; left: 0; right: 0; top: 13.1%; text-align: center; font-size: 4.53cqw; line-height: 1; font-weight: 720; letter-spacing: -0.018em; font-variation-settings: "opsz" 96, "wdth" 79; color: var(--on-plate); }
   .hero-sub { position: absolute; left: 0; right: 0; top: 21.8%; text-align: center; margin: 0 auto; max-width: none; font-size: 1.52cqw; font-weight: 500; color: var(--on-plate); }
   .hero-ctas { position: absolute; left: 0; right: 0; top: 27.87%; display: flex; justify-content: center; gap: 1.17cqw; }
   .hero-ctas .btn { height: 3.125cqw; min-height: 34px; padding: 0; justify-content: center; font-size: max(12.5px, 1cqw); font-weight: 500; border-radius: 0.7cqw; }
   .hero-ctas .btn-primary { width: 15.16cqw; } .hero-ctas .btn-secondary { width: 12.66cqw; }
   .hero-ctas .btn-secondary { background: var(--surface); color: var(--fg); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line-2); }
-  .hero-card { left: 66.8%; top: 51.12%; right: auto; width: 14.53%; height: 18%; gap: 0; align-content: start; padding: 1.48cqw 1.17cqw; border-radius: 0.94cqw;
-    background: color-mix(in oklab, var(--surface) 86%, transparent); -webkit-backdrop-filter: blur(14px) saturate(140%); backdrop-filter: blur(14px) saturate(140%); }
-  .hc-id { font-size: 1.05cqw; line-height: 1.15; }
-  .hc-dots { gap: 0.57cqw; padding: 0.39cqw 0 0; }
-  .hc-dots i { width: 0.86cqw; height: 0.86cqw; }
-  .hc-money { margin-top: 1.2cqw; font-size: 3.09cqw; font-variation-settings: "opsz" 72, "wdth" 100; }
-  .hc-money .cur { font-size: 0.74em; vertical-align: 0.2em; margin-right: 0.15em; }
-  .hc-cap { margin-top: 0.25cqw; font-size: 1.24cqw; line-height: 1.2; color: var(--fg-2); }
+  .crew-layer { border-radius: 0; }
+  .crew-tile > span { height: max(28px, 2.65cqw); font-size: max(11.5px, 1.02cqw); gap: 0.55cqw; padding: 0 1cqw 0 0.4cqw; }
+  .crew-tile i { width: max(20px, 1.88cqw); height: max(20px, 1.88cqw); }
+  .hero-caption { position: absolute; left: 50%; top: 86.4%; translate: -50% 0; width: max-content; max-width: 56%; margin: 0; padding: 0.7cqw 1.1cqw; border-radius: 1.1cqw; font-size: max(12px, 1.09cqw); }
+  .hero-caption .n { font-size: max(10.5px, 0.9cqw); }
+  .hero-replay { position: absolute; z-index: 2; right: 2.2%; top: 86.6%; }
   .hero-stops { position: absolute; left: 0; right: 0; top: 95.5%; height: 3.25%; display: block; padding: 0; font-size: 1.17cqw; font-weight: 500; letter-spacing: -0.005em; color: var(--fg); }
   .hero-stops li { position: absolute; top: 50%; translate: 0 -50%; white-space: nowrap; }
   .hero-stops .st-kiranas { left: 27.58%; } .hero-stops .st-market { left: 42.27%; } .hero-stops .st-staff { left: 58.05%; } .hero-stops .st-foodbank { left: 70%; }
@@ -103,7 +124,7 @@
 .sec-h { margin: 0; font-family: var(--font-display); font-weight: 720; font-size: 34px; line-height: 1.04; letter-spacing: -0.022em; color: var(--fg);
   font-variation-settings: "opsz" 96, "wdth" 82; text-wrap: balance; }
 .sec-sub { margin: 0; font-size: 17px; line-height: 1.5; color: var(--fg-2); max-width: 62ch; text-wrap: pretty; }
-/* the board's second heading voice (SC-28): the story sections (the street, the nine stops) keep the condensed display
+/* the board's second heading voice (SC-28): the story section (the street) keeps the condensed display
    step; the sections that sell the product (how it works, teams, plans) are set at normal width, on one line at desktop */
 .sec-h.plain { font-variation-settings: "opsz" 48, "wdth" 100; font-weight: 680; letter-spacing: -0.022em; font-size: 30px; line-height: 1.12; }
 .sec-head:has(> .sec-h.plain) { max-width: 64rem; }
@@ -259,41 +280,12 @@
 .r-w { margin-top: 4px; font-size: 13.5px; line-height: 1.45; color: var(--fg-3); max-width: 36ch; text-wrap: pretty; }
 .results-note { margin: 14px 0 0; font-size: 13px; line-height: 1.45; color: var(--fg-3); text-align: center; }
 
-/* 4 · nine stops, ten agents, one yes: the batch walks the rail and each agent lights as it works (SC-28) */
-.stops-grid { display: grid; gap: 28px; align-items: center; }
-.plate-frame { margin: 0; border-radius: 20px; overflow: hidden; background: var(--surface-sunken); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
-.plate-frame img { display: block; width: 100%; height: auto; aspect-ratio: 1.41; object-fit: cover; }
-.stops { position: relative; display: grid; margin: 0; padding: 0; list-style: none; }
-.stops::before { content: ""; position: absolute; left: 13px; top: 24px; bottom: 24px; width: 2px; border-radius: 999px; background: color-mix(in oklab, var(--primary) 40%, transparent); }
-.stop { position: relative; display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 14px; align-items: center; padding: 8px 0; }
-.st-dot { position: relative; z-index: 1; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--bg); box-shadow: inset 0 0 0 2.5px var(--primary); color: var(--amber-fg); }
-.stop.human .st-dot { background: var(--amber); box-shadow: none; }
-.st-main { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; row-gap: 2px; min-width: 0; }
-.st-main b { font-size: 17px; font-weight: 650; color: var(--fg); }
-.st-text { font-size: 15px; color: var(--fg-2); }
-.st-who { display: inline-flex; flex-wrap: wrap; gap: 5px; }
-.stops-box { display: grid; align-content: center; justify-items: start; }
-.stops.live .stop { transition: opacity 260ms var(--ease); }
-.stops.live.playing .stop:not(.on):not(.now) { opacity: 0.42; }
-.stops.live .st-dot { transition: background-color 260ms var(--ease), box-shadow 260ms var(--ease), color 260ms var(--ease); }
-.stops.live .stop.on .st-dot { background: var(--primary); box-shadow: none; color: var(--primary-fg); }
-.stops.live .stop.human.on .st-dot { background: var(--amber); color: var(--amber-fg); }
-/* the stop at work: the design system's tracker idiom, an inner dot and one finite ping */
-.stops.live .stop.now .st-dot { background: var(--bg); box-shadow: inset 0 0 0 2.5px var(--primary); }
-.stops.live .stop.now .st-dot::before { content: ""; position: absolute; inset: 7px; border-radius: 50%; background: var(--primary); }
-.stops.live .stop.now .st-dot::after { content: ""; position: absolute; inset: -3px; border-radius: 50%; border: 2px solid var(--primary); animation: ping 1.2s var(--ease) 1 forwards; }
-.stops.live .stop.human.now .st-dot { background: var(--amber); box-shadow: none; }
-.stops.live .stop.human.now .st-dot::before { display: none; }
-.stops.live .stop.human.now .st-dot::after { border-color: var(--amber); }
-.st-live { flex-basis: 100%; min-height: 1.4em; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.4; color: var(--primary-text); }
-.stop.human .st-live { color: var(--amber-text); }
-.stops.live::after { content: ""; position: absolute; left: 13px; top: 24px; bottom: 24px; width: 2px; border-radius: 999px; background: var(--primary);
-  transform: scaleY(var(--fill, 1)); transform-origin: top center; transition: transform 450ms var(--ease); }
+/* Replay: the hero's and the street's */
 .replay { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; margin-top: 6px; padding: 0 4px; border: 0; background: none; cursor: pointer;
   font: 600 14px/1 var(--font-ui); color: var(--primary-text); border-radius: 10px; }
 .replay:hover { text-decoration: underline; text-underline-offset: 3px; }
 
-/* 5 · a workspace per manufacturer: the islands, one product on each, then what each team gets (comp L5) */
+/* 4 · a workspace per manufacturer: the islands, one product on each, then what each team gets (comp L5) */
 .isl-pan { margin: 0 -16px; padding: 0 16px; overflow-x: auto; overscroll-behavior-x: contain; }
 .islands { position: relative; margin: 0 auto; height: 270px; width: calc(270px * var(--ar)); }
 .isl-plate { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
@@ -324,7 +316,7 @@
 /* on the filled chip, fg-3 falls short of 4.5:1; fg-2 holds it in both themes */
 .conn-list .soon { color: var(--fg-2); }
 
-/* 6 · plans, the closing band, the footer */
+/* 5 · plans, the closing band, the footer */
 .plans { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
 .plan { display: grid; grid-template-rows: auto 1fr auto; gap: 12px; padding: 22px 24px 16px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
 .plan-name { font-size: 19px; font-weight: 650; letter-spacing: -0.01em; color: var(--fg); }
@@ -389,7 +381,6 @@
   .sec-head { margin-bottom: 36px; }
   .sec-h.plain { font-size: clamp(34px, 2.6cqw, 40px); }
   .r-n { font-size: clamp(46px, 3.7cqw, 56px); }
-  .stops-grid { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 56px; }
   .teams { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 34px; }
   .close-plate { height: auto; aspect-ratio: 4128 / 1024; }
   .foot { padding: 56px 48px 32px; }
