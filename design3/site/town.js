@@ -60,13 +60,13 @@
     ["paperwork", "impact"]
   ];
   const BEATS = [
-    { id: "make", at: ["maker"], t: "Made", did: `${fmt.num(BATCH.units)} packs leave the factory for the distributor`, who: [], ms: 600, batch: "maker" },
-    { id: "stock", at: ["godown"], t: "Stocked", did: `${fmt.num(BATCH.units)} packs in the distributor's godown, selling ${BATCH.sellPerDay} a day`, who: [], ms: 500, batch: "godown" },
-    { id: "risk", at: ["godown"], t: "At risk", did: `${fmt.num(D.RISK.atRisk)} packs won't sell in the ${BATCH.daysLeft} days left`, who: ["data", "watcher", "vision"], ms: 700, batch: "godown" },
-    { id: "route", at: ["godown"], t: "Priced and split", did: `Five exits priced · ${fmt.num(KL.units)} to ${SHOPS} kiranas, ${fmt.num(AW.units)} to one buyer`, who: ["valuer", "router"], ms: 600, batch: "godown" },
-    { id: "yes", at: ["maker"], t: "One yes", did: `You approve in one tap · ${fmt.inr(D.PLAN.net)} on screen`, who: ["you"], human: true, ms: 900, batch: "godown" },
-    { id: "sell", at: ["kiranas", "buyer"], t: "Sold", did: `${fmt.num(KL.units)} packs to ${SHOPS} kiranas · ${fmt.num(AW.units)} to a buyer, countered to ${rate(AW.price)}`, who: ["outreach", "lister", "negotiator"], ms: 700, batch: "sold" },
-    { id: "report", at: ["maker", "landfill"], t: "Settled", did: "", who: ["paperwork", "impact"], ms: 700, batch: null }
+    { id: "make", at: ["maker"], t: "Made", did: `${fmt.num(BATCH.units)} packs leave the factory for the distributor`, who: [], batch: "maker" },
+    { id: "stock", at: ["godown"], t: "Stocked", did: `${fmt.num(BATCH.units)} packs in the distributor's godown, selling ${BATCH.sellPerDay} a day`, who: [], batch: "godown" },
+    { id: "risk", at: ["godown"], t: "At risk", did: `${fmt.num(D.RISK.atRisk)} packs won't sell in the ${BATCH.daysLeft} days left`, who: ["data", "watcher", "vision"], batch: "godown" },
+    { id: "route", at: ["godown"], t: "Priced and split", did: `Five exits priced · ${fmt.num(KL.units)} to ${SHOPS} kiranas, ${fmt.num(AW.units)} to one buyer`, who: ["valuer", "router"], batch: "godown" },
+    { id: "yes", at: ["maker"], t: "One yes", did: `You approve in one tap · ${fmt.inr(D.PLAN.net)} on screen`, who: ["you"], human: true, batch: "godown" },
+    { id: "sell", at: ["kiranas", "buyer"], t: "Sold", did: `${fmt.num(KL.units)} packs to ${SHOPS} kiranas · ${fmt.num(AW.units)} to a buyer, countered to ${rate(AW.price)}`, who: ["outreach", "lister", "negotiator"], batch: "sold" },
+    { id: "report", at: ["maker", "landfill"], t: "Settled", did: "", who: ["paperwork", "impact"], batch: null }
   ];
   const NB = BEATS.length;
   const beatOf = (id) => BEATS.findIndex((b) => b.id === id);
@@ -919,11 +919,12 @@ void main() {
       if (!j.done && j.playing) j.pause();
     };
     useGestures(stageRef, api, take);
+    const keep = g && g.w > g.W + 1 && !j.done && j.s >= 0 ? j.agent ? GEO.posts[j.agent] : placeAt(g, j.beat.at[0]) : null;
     useEffect(() => {
       if (!g || !follow) return;
-      const rest = shotOf(g, "rest"), at = g.w > g.W + 1 && !j.done && j.s >= 0 ? j.agent ? GEO.posts[j.agent] : placeAt(g, j.beat.at[0]) : null;
-      api.to(at ? [at[0], rest[1], rest[2]] : rest, j.s < 0 ? 0 : 0.9);
-    }, [follow, g && g.wide, g && g.W, j.run, j.s]);
+      const rest = shotOf(g, "rest");
+      api.to(keep ? [keep[0], rest[1], rest[2]] : rest, j.s < 0 ? 0 : 0.9);
+    }, [follow, g && g.wide, g && g.W, j.run, keep]);
     const open = (s) => {
       take();
       setSel(s);
