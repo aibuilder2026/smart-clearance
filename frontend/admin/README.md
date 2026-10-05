@@ -18,15 +18,18 @@ root layout cannot.
 ## The landing page
 
 `src/lib/landing/` has one component per section of the prototype, with its classes, ids and accessible names:
-`Nav`, `Hero` (with `HeroCard`), `Exits` (the street and the ledger), `Stops`, `Story`, `Workspace`, `Plans`, `Close`,
-`Footer`, and the `DemoSheet`; `Site` puts them together. `figures.ts` works out every figure and line of copy from the
-API's showcase and catalog, as `site.jsx` does from the prototype's globals.
+`Nav`, `Hero` (with `HeroCard`), `How` (how it works, three moments), `Exits` (the packs taking the street, the batch
+split by exit, and the results), `Stops` (the nine stops, played as a pipeline), `Workspace`, `Plans`, `Close`,
+`Footer`, and the `DemoSheet`; `Site` puts them together.
+`figures.ts` works out every figure and line of copy from the API's showcase and catalog, as `site.jsx` does from the
+prototype's globals. The page names no client: the batch it follows is an illustrative one (SC-28).
 
-**`site.css`** is design3's, unscoped and verbatim, apart from two marked changes:
+The motion plays once as a section comes into view, under five seconds, and then holds. The server sends each section
+at rest, so the prerendered page is complete without JavaScript. A section already on screen when the page starts
+stays at rest, and so does every section when the reader asks for less motion.
 
-1. **The window scrolls,** not `.site`: the address bar, find-in-page, `#top` and the section links behave as on any site.
-2. **The street's pan is gated by CSS,** not by script, on desktops with motion allowed. The prerendered page already has
-   the desktop layout, and the page's height never changes as it hydrates.
+**`site.css`** is design3's, unscoped and verbatim, apart from one marked change: **the window scrolls,** not `.site`, so
+the address bar, find-in-page, `#top` and the section links behave as on any site.
 
 The bar's desktop, tablet and phone parts are all rendered and shown by CSS (`.desk-only`, `.not-phone`, `.phone-only`),
 so the server renders every width.
@@ -36,9 +39,12 @@ night source the browser picks before the page hydrates. Once hydrated, the read
 
 **Motion,** with the prototype's numbers:
 
-- `pan.ts` holds the street's keyframes (a hold and a move per exit over nine steps, zoom 1.8) and `motion`'s `scroll()` drives them;
-- a chip's focus pans to its exit;
-- below 1100 px the street is a strip that slides to the chip tapped;
+- `rise.ts` raises each of How it works' cards as it comes into view, its rows following in turn;
+- `street.ts` holds the street in the plate's own coordinates (the road, each exit's way in, the dots of about 50 packs),
+  and `motion`'s `animate()` moves each dot along its way; the road draws, and the split's parts ease in, by CSS
+  transitions set inline only while the section plays;
+- the street plays once nearly all of it is in view, and the split once its packs have arrived; one Replay runs both;
+- below 1100 px the street is a strip that follows the packs;
 - the hero card walks its stops once, in about 2.5 s, and holds.
 
 **Fixed from the prototype,** none of it visible:
@@ -58,12 +64,12 @@ night source the browser picks before the page hydrates. Once hydrated, the read
 
 The UI reads one typed API (`src/lib/api/`):
 
-| Call                      | Endpoint                     | Mock                                                                     |
-| ------------------------- | ---------------------------- | ------------------------------------------------------------------------ |
-| `showcase()`              | `GET /v1/site/showcase`      | `seed/showcase.json`: Munchly's batch, every figure computed by money.js |
-| `catalog()`               | `GET /v1/platform/catalog`   | `seed/catalog.json`: the agents, connectors and plans                    |
-| `lookupWorkspaces(query)` | `POST /v1/workspaces/lookup` | the prototype's rules over `seed/directory.json`                         |
-| `requestDemo(input)`      | `POST /v1/demo-requests`     | the prototype's validation; kept in `localStorage` (`sc-demo-requests`)  |
+| Call                      | Endpoint                     | Mock                                                                                |
+| ------------------------- | ---------------------------- | ----------------------------------------------------------------------------------- |
+| `showcase()`              | `GET /v1/site/showcase`      | `seed/showcase.json`: one batch, every figure computed by money.js, no client named |
+| `catalog()`               | `GET /v1/platform/catalog`   | `seed/catalog.json`: the agents, connectors and plans                               |
+| `lookupWorkspaces(query)` | `POST /v1/workspaces/lookup` | the prototype's rules over `seed/directory.json`                                    |
+| `requestDemo(input)`      | `POST /v1/demo-requests`     | the prototype's validation; kept in `localStorage` (`sc-demo-requests`)             |
 
 - **The contract:** `types.ts` holds it until backend-api publishes its OpenAPI schema.
 - **Which API:** `client.ts` picks HTTP when `PUBLIC_API_BASE` is set, and the mock otherwise.
@@ -85,11 +91,11 @@ Declared in `src/env.ts` (SvelteKit 3's `defineEnvVars`), public and inlined at 
 
 ## Tests
 
-| Suite                   | Command                     | What                                                                                                                                                                                                                                                               |
-| ----------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Unit (Vitest)           | `corepack pnpm test`        | figures (golden strings), the pan's keyframes, the mock's lookup and demo rules, CSS drift                                                                                                                                                                         |
-| End to end (Playwright) | `corepack pnpm test:e2e`    | axe-core WCAG 2.2 AA in five projects (1440 light and dark, 820, 390 light and dark) for the page, its menus and sheets and `/ds`; keyboard (menus, sheets, the form, links, no theme flash, the pan's holds); motion (nothing loops); smoke in Firefox and WebKit |
-| Parity                  | `corepack pnpm test:parity` | the build against design3 pixel by pixel: every section and overlay in five projects, `/ds` against the DS v3 page                                                                                                                                                 |
+| Suite                   | Command                     | What                                                                                                                                                                                                                                                                             |
+| ----------------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Unit (Vitest)           | `corepack pnpm test`        | figures (golden strings), the street's geometry, the mock's lookup and demo rules, CSS drift                                                                                                                                                                                     |
+| End to end (Playwright) | `corepack pnpm test:e2e`    | axe-core WCAG 2.2 AA in five projects (1440 light and dark, 820, 390 light and dark) for the page, its menus and sheets and `/ds`; keyboard (menus, sheets, the form, links, no theme flash, the street playing and Replay); motion (nothing loops); smoke in Firefox and WebKit |
+| Parity                  | `corepack pnpm test:parity` | the build against design3 pixel by pixel: every section and overlay in five projects, `/ds` against the DS v3 page                                                                                                                                                               |
 
 The axe scan and report helpers are design3/a11y's, ported verbatim (`tests/e2e/helpers.ts`), so both suites hold the
 port to the same rules. Findings are written to `test-results/a11y/`.

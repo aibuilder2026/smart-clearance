@@ -32,9 +32,31 @@ const endless = (page: Page) =>
 const STATES: [string, (page: Page) => Promise<void>][] = [
 	['site · first viewport', async () => {}],
 	[
-		'site · the street of exits, mid-pan',
+		'site · how it works, its cards rising',
 		async (p) => {
-			await p.evaluate(() => window.scrollTo(0, (document.querySelector('#how') as HTMLElement).offsetTop + 900));
+			await p.evaluate(() => window.scrollTo(0, (document.querySelector('#how') as HTMLElement).offsetTop));
+		}
+	],
+	[
+		'site · the packs taking the street',
+		async (p) => {
+			await p.evaluate(() => window.scrollTo(0, (document.querySelector('#exits') as HTMLElement).offsetTop));
+		}
+	],
+	[
+		'site · the batch split by exit',
+		async (p) => {
+			await p.evaluate(() => window.scrollTo(0, (document.querySelector('#exits') as HTMLElement).offsetTop));
+			await p.waitForTimeout(4500);
+			await p.evaluate(() =>
+				window.scrollBy(0, (document.querySelector('.split') as HTMLElement).getBoundingClientRect().top - 120)
+			);
+		}
+	],
+	[
+		'site · the nine stops, running',
+		async (p) => {
+			await p.evaluate(() => window.scrollTo(0, (document.querySelector('#agents') as HTMLElement).offsetTop));
 		}
 	],
 	[

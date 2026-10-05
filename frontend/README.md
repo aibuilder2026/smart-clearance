@@ -77,7 +77,7 @@ A page's own stylesheet (the landing page's `site.css`) loads after these, unlay
 | What                                                          | Check                                                                                                                       |
 | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | `core/src/styles/{tokens,base,components}.css`                | equal to `design3/system/*.css` outside marked `/* @port … @port-end */` blocks (`core/tests/drift.test.ts`)                |
-| `admin/src/lib/landing/site.css`, `admin/src/lib/ds/docs.css` | equal to `design3/site/site.css` (two marked changes) and `design3/system/docs.css` (`admin/tests/unit/drift.test.ts`)      |
+| `admin/src/lib/landing/site.css`, `admin/src/lib/ds/docs.css` | equal to `design3/site/site.css` (one marked change) and `design3/system/docs.css` (`admin/tests/unit/drift.test.ts`)       |
 | Every figure                                                  | the seed runs `design3/core/money.js`; `seed:check` fails when design3 changes and the seed was not regenerated             |
 | `fmt`                                                         | identical strings to `money.js`'s `fmt` (`core/tests/format.test.ts`)                                                       |
 | Icons                                                         | every name in `design3/system/icons.js`, in its order (`icons:check`, `core/tests/icons.test.ts`)                           |

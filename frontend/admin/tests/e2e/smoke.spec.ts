@@ -9,7 +9,7 @@ test('smoke · the landing page works', async ({ page }) => {
 	page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
 	await openSite(page);
 	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Every near-expiry carton gets a second chance.');
-	await expect(page.locator('.ledger')).toContainText('₹21,152');
+	await expect(page.locator('.results')).toContainText('₹21,152');
 	await page.locator('.site-nav').getByRole('button', { name: 'Sign in' }).click();
 	await expect(page.getByRole('menu', { name: 'Sign in to' })).toBeVisible();
 	await page.keyboard.press('Escape');

@@ -9,9 +9,9 @@ const SECTIONS: [string, number][] = [
 	['.site-nav', 0.006],
 	['.hero', 0.002],
 	['#how', 0.002],
+	['#exits', 0.002],
 	['#agents', 0.002],
-	['#customers', 0.002],
-	['#workspace', 0.002],
+	['#teams', 0.002],
 	['#pricing', 0.002],
 	['.close', 0.002],
 	['.foot', 0.002]

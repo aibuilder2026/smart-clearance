@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Money, cx, fmt, prefersReducedMotion } from '@smart-clearance/core';
 
-	let { id, net }: { id: string; net: number } = $props();
+	let { packs, net }: { packs: number; net: number } = $props();
 
 	// the batch walks its stops once, about two and a half seconds, and holds on the result (WCAG 2.2.2)
 	let k = $state(prefersReducedMotion.current ? 8 : 0);
@@ -16,8 +16,8 @@
 	});
 </script>
 
-<div class="hero-card" role="group" aria-label="Batch {id}: eight of nine stops done, {fmt.inr(net)} recovered">
-	<span class="hc-id mono">{id}</span>
+<div class="hero-card" role="group" aria-label="One batch: eight of nine stops done, {fmt.inr(net)} recovered">
+	<span class="hc-id mono">{fmt.num(packs)} packs</span>
 	<span class="hc-dots" aria-hidden="true"
 		>{#each { length: 9 } as _, i (i)}<i class={cx(i < k && 'on')}></i>{/each}</span
 	>

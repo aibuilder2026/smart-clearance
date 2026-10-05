@@ -1,0 +1,108 @@
+{
+  "name": "clip-town",
+  "model": "LTX 2.5 Fast (local, LTX Desktop 1.2.7)",
+  "prompt": "Exactly as in the image, a tilt-shift miniature Indian town in morning light with one giant closed kraft cardboard carton standing among tiny kirana shops. The carton, the buildings and the trees keep their exact shape and position. Tiny people stroll between the shops, the small white van drives slowly along the street toward the right, a handcart is pushed a short way, and the glowing green path at the carton's foot brightens softly and seems to flow toward the shops. Locked-off camera, no zoom, soft morning light, gentle tilt-shift blur at the top and bottom of the frame, calm and premium. No text.",
+  "seed": 28101,
+  "created": "2026-10-04T22:55:40Z",
+  "attempts": 2,
+  "settings": {
+    "mode": "image-to-video, first frame only (no last frame)",
+    "aspect": "16:9",
+    "resolution": "540p",
+    "native_output_px": [
+      1024,
+      576
+    ],
+    "duration_s": 5,
+    "actual_duration_s": 5.04,
+    "fps": 24,
+    "frames": 121,
+    "camera": "static",
+    "fit": "pad",
+    "audio": false,
+    "loras": []
+  },
+  "first_frame": {
+    "file": "design3/site/assets/plates/scene.webp",
+    "px": [
+      2752,
+      1504
+    ],
+    "framing": "generate_clip fit pad: 2752x1504 -> 2048x1152; the thin top and bottom margins (about 8 px each at 1024 wide) are filled with a blurred copy of the plate"
+  },
+  "last_frame": {
+    "note": "none given, so the clip ends wherever the model takes it"
+  },
+  "rejected_attempts": [
+    {
+      "attempt": 2,
+      "seed": 28103,
+      "prompt": "Exactly as in the image: a wide high-angle tilt-shift photograph of a miniature Indian town in soft morning light, with one giant closed kraft-brown corrugated cardboard carton standing in the middle of a pale grey square, low flat-roofed buildings and tiny kirana shops with striped awnings on both sides, a few small green trees, hazy hills and a pale sky at the top, and a thin glowing green line running from the carton's foot down to the bottom of the frame. The carton, every building, shop and tree, and the hills stay exactly where they are, with the same shape and size, for the whole clip; nothing is added and nothing is removed. Only tiny things move: the small white van beside the carton rolls slowly a short way to the right across the square, a few tiny people walk a few steps between the shops, a small handcart is pushed a little way, and the glowing green line pulses softly brighter. Locked-off tripod shot from one fixed point: the camera does not move, pan, tilt, rise or zoom, and the framing stays identical to the first frame from start to end. Soft even morning light, and the tilt-shift blur at the top and bottom of the frame stays the same. Calm, quiet and premium. No text, no signs, no letters.",
+      "reason": "the camera craned up into a near top-down aerial view over the clip, and the square, the shops and the hills were all recomposed; it drifted further than attempt 1, which is kept"
+    }
+  ],
+  "prompt_change_note": "Attempt 1 used the brief's prompt. For the single retry the prompt restated the scene, pinned every building, listed only small motions and spelled out a fixed camera, with seed 28103 (28102 was assigned to clip-approve). The LTX skill notes that the camera drifts even with camera static and that an end frame is what holds it; the brief's retry did not use one.",
+  "encodes": [
+    {
+      "file": "clip-town.mp4",
+      "codec": "H.264 High (libx264), re-encoded after the crop",
+      "px": [
+        1024,
+        560
+      ],
+      "pix_fmt": "yuv420p",
+      "audio": false,
+      "args": "-an -vf crop=1024:560:0:8 -c:v libx264 -preset slow -crf 20 -pix_fmt yuv420p -movflags +faststart",
+      "bytes": 1146437
+    },
+    {
+      "file": "clip-town.webm",
+      "codec": "VP9 (libvpx-vp9, two-pass constant quality)",
+      "px": [
+        1024,
+        560
+      ],
+      "pix_fmt": "yuv420p",
+      "audio": false,
+      "args": "-an -vf crop=1024:560:0:8 -c:v libvpx-vp9 -crf 36 -b:v 0 -pix_fmt yuv420p -row-mt 1 -deadline good -cpu-used 1 (pass 1 + pass 2)",
+      "bytes": 516366
+    },
+    {
+      "file": "clip-town-poster.webp",
+      "px": [
+        1024,
+        560
+      ],
+      "source": "decoded frame 120, the last frame, of the cropped clip-town.mp4",
+      "args": "cwebp -q 82",
+      "bytes": 38690,
+      "use": "shown after the clip has played once"
+    },
+    {
+      "file": "clip-town-first.webp",
+      "px": [
+        1024,
+        560
+      ],
+      "source": "decoded frame 0 of the cropped clip-town.mp4",
+      "args": "cwebp -q 82",
+      "bytes": 45370
+    }
+  ],
+  "known_defects": [
+    "The camera is not locked: from about 1 s the view slowly rises and tilts, bringing the hills and more rooftops into frame, so by 5 s the framing differs clearly from the plate.",
+    "The right-hand side recomposes from about 3 s: the green-awning kirana right of the carton leaves the frame, other buildings take its place, and a new block enters the bottom-right foreground.",
+    "The glowing path changes its route (from running down to the bottom edge to curving off to the left) instead of brightening in place.",
+    "The van drifts left to the carton's foot, partly behind a tree, instead of driving right.",
+    "The last frame, which the page shows after one play, therefore does not match the static plate."
+  ],
+  "crop": {
+    "what": "the ~8 px pad strips at top and bottom (scene.webp is 1.83:1) cropped away, back to the plate's shape",
+    "ffmpeg_filter": "crop=1024:560:0:8",
+    "px": [
+      1024,
+      560
+    ],
+    "source": "the delivered H.264 (LTX's own encode, audio dropped), re-encoded once after the crop"
+  }
+}

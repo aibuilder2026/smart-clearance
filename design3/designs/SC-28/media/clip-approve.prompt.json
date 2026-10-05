@@ -1,0 +1,106 @@
+{
+  "name": "clip-approve",
+  "model": "LTX 2.5 Fast (local, LTX Desktop 1.2.7)",
+  "prompt": "Exactly as in the image: a high-angle tilt-shift photograph of a miniature Indian town square in warm afternoon light, with a giant round amber push-button on a two-step grey stone plinth in the middle of the square, a woman in a patterned sari standing beside it holding a phone, a small handcart of goods on the left, two small white vans parked at the right of the square, tiny people standing about, and low shops with striped awnings around the edges. Every shop, tree and the stone plinth stay exactly where they are, with the same shape and size. In order: the woman taps her phone once with her thumb; the amber button presses down a little into its plinth and glows with a soft warm light for a moment, then the glow fades; then both white vans start to drive forward and roll slowly down across the square toward the bottom of the frame, while a few tiny people turn their heads to watch them go. Locked-off tripod shot from one fixed high point: the camera does not move, pan, tilt or zoom, and the square stays the same size in the frame from start to end. Soft warm light with no lens flare, tilt-shift blur at the top and bottom of the frame. No text.",
+  "seed": 28104,
+  "created": "2026-10-04T23:24:01Z",
+  "attempts": 2,
+  "settings": {
+    "mode": "image-to-video, first frame only (no last frame)",
+    "aspect": "16:9",
+    "resolution": "540p",
+    "native_output_px": [
+      1024,
+      576
+    ],
+    "duration_s": 5,
+    "actual_duration_s": 5.04,
+    "fps": 24,
+    "frames": 121,
+    "camera": "static",
+    "fit": "pad",
+    "audio": false,
+    "loras": []
+  },
+  "first_frame": {
+    "file": "design3/site/assets/plates/approve.webp",
+    "px": [
+      2432,
+      1728
+    ],
+    "framing": "generate_clip fit pad: 2432x1728 -> 2048x1152; the left and right margins (about 107 px each at 1024 wide) are filled with a blurred copy of the plate"
+  },
+  "last_frame": {
+    "note": "none given, so the clip ends wherever the model takes it"
+  },
+  "rejected_attempts": [
+    {
+      "attempt": 1,
+      "seed": 28102,
+      "prompt": "Exactly as in the image, a tilt-shift miniature Indian town square seen from above, with a giant amber push-button on a round stone plinth and a woman in a sari standing beside it holding her phone. She taps her phone once; the giant amber button sinks down and glows warmly for a moment; then the two small white vans start to roll out of the square along the street, and tiny people turn to watch. The buildings and the button keep their exact shape and position. Locked-off camera, no zoom, warm afternoon light, tilt-shift blur at the edges. No text.",
+      "reason": "the button glowed strongly (a warm bloom over the whole square at about 2.5-3.6 s) and the camera pushed in by roughly 15-25%, but the two vans stayed parked and the woman only shifted her pose; it is the steadier take but misses the vans, so attempt 2 is kept"
+    }
+  ],
+  "prompt_change_note": "Attempt 1 used the brief's prompt. For the single retry (seed 28104) the prompt restated the scene, put the three beats in order (the tap, the button pressing down and glowing, the vans driving off), asked for no lens flare and spelled out a fixed camera. The vans now drive off and the glow is softer, but the camera pulls back.",
+  "encodes": [
+    {
+      "file": "clip-approve.mp4",
+      "codec": "H.264 High (libx264), re-encoded after the crop",
+      "px": [
+        810,
+        576
+      ],
+      "pix_fmt": "yuv420p",
+      "audio": false,
+      "args": "-an -vf crop=810:576:107:0 -c:v libx264 -preset slow -crf 20 -pix_fmt yuv420p -movflags +faststart",
+      "bytes": 1006370
+    },
+    {
+      "file": "clip-approve.webm",
+      "codec": "VP9 (libvpx-vp9, two-pass constant quality)",
+      "px": [
+        810,
+        576
+      ],
+      "pix_fmt": "yuv420p",
+      "audio": false,
+      "args": "-an -vf crop=810:576:107:0 -c:v libvpx-vp9 -crf 36 -b:v 0 -pix_fmt yuv420p -row-mt 1 -deadline good -cpu-used 1 (pass 1 + pass 2)",
+      "bytes": 518873
+    },
+    {
+      "file": "clip-approve-poster.webp",
+      "px": [
+        810,
+        576
+      ],
+      "source": "decoded frame 120, the last frame, of the cropped clip-approve.mp4",
+      "args": "cwebp -q 82",
+      "bytes": 49504,
+      "use": "shown after the clip has played once"
+    },
+    {
+      "file": "clip-approve-first.webp",
+      "px": [
+        810,
+        576
+      ],
+      "source": "decoded frame 0 of the cropped clip-approve.mp4",
+      "args": "cwebp -q 82",
+      "bytes": 53630
+    }
+  ],
+  "known_defects": [
+    "The camera is not locked: from about 2.3 s the view pulls back and rises; by 5 s the button is roughly 0.6 of its starting width and a new row of rooftops has entered along the bottom edge, so the last frame (the poster) is framed wider than the plate.",
+    "The woman holds her phone up throughout; a distinct tap does not read. The button's press is not clearly visible either; the visible beat is the glow, which peaks at about 1.5-2 s.",
+    "The nearer van drives down-left across the square and the farther van moves up to where it stood; both keep their shape."
+  ],
+  "crop": {
+    "what": "the ~107 px pad strips at left and right (approve.webp is 1.41:1) cropped away, back to the plate's shape",
+    "ffmpeg_filter": "crop=810:576:107:0",
+    "px": [
+      810,
+      576
+    ],
+    "source": "the delivered H.264 (LTX's own encode, audio dropped), re-encoded once after the crop"
+  }
+}

@@ -141,6 +141,9 @@ Local pages:
   - Figures come from `docs/dobara-journey-map.html`.
   - Every money figure is computed in `design3/core/money.js`.
   - Illustrative splits are labelled as illustrative.
+- The platform's own landing page names no client: no name, product, person, workspace address or batch id (SC-28).
+  - Munchly Foods is a client; its details belong in its workspace, the demo and the console.
+  - The landing page tells one illustrative batch, and its showcase API carries no client details.
 - Every generated image or clip ships with a `.prompt.json` sidecar recording its model, seed, prompt and post-processing. PNG originals stay local in `src/` folders; only the WebP ships.
 - Third-party Claude Code components are recorded in `.claude/third-party.md`. Read a component before using it; installing one needs the maintainer's yes.
 

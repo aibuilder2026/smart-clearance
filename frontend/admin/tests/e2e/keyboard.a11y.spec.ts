@@ -82,7 +82,9 @@ test('keyboard · the sign-in menu: its links open another tab, Tab moves on, Es
 	await page.keyboard.press('ArrowDown');
 	await expect(menu).toBeVisible();
 	await expect(menu.getByRole('menuitem', { name: 'Find your workspace' })).toBeFocused();
-	for (const name of ['Munchly Foods', 'Smart-Clearance staff']) {
+	// the menu names no client: a manufacturer finds its own workspace (SC-28)
+	await expect(menu.getByRole('menuitem')).toHaveCount(2);
+	for (const name of ['Smart-Clearance staff']) {
 		const link = menu.getByRole('menuitem', { name: new RegExp(name) });
 		await expect(link).toHaveAttribute('target', '_blank');
 		await expect(link).toHaveAttribute('rel', 'noopener');
@@ -210,42 +212,46 @@ test('keyboard · a saved appearance applies before the first paint', async ({ b
 test.describe('the street of exits, with motion on', () => {
 	test.use({ contextOptions: { reducedMotion: 'no-preference' } });
 
-	test('motion · the street holds on each exit as the page scrolls past it', async ({ page }) => {
-		const holds = await page.evaluate(async () => {
-			const frames = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-			const track = document.querySelector('.ex-track') as HTMLElement;
-			const top = parseFloat((document.querySelector('.ex-stick') as HTMLElement).style.top);
-			const at = track.getBoundingClientRect().top + window.scrollY;
-			const from = at - top;
-			const to = at + track.offsetHeight - document.documentElement.clientHeight;
-			const out: [string, string][] = [];
-			for (let i = 0; i < 5; i++) {
-				window.scrollTo({ top: from + ((to - from) * (2 * i + 0.5)) / 9, behavior: 'instant' });
-				await frames();
-				await frames();
-				out.push([
-					(document.querySelector('.ex-chip.on .ex-name') as HTMLElement).textContent!,
-					(document.querySelector('.ex-pano') as HTMLElement).style.transform
-				]);
-			}
-			return out;
-		});
-		expect(holds).toEqual([
-			['Kiranas', 'translateX(0%)'],
-			['ExpireSoon', 'translateX(-23.72%)'],
-			['Staff sale', 'translateX(-37.22%)'],
-			['Food bank', 'translateX(-44.44%)'],
-			['The bin', 'translateX(-44.44%)']
-		]);
+	const stage = (page: Page) => page.locator('.flow-layer').evaluate((el) => el.className.split(' ')[1]);
+	// scroll down to the street as a reader would, a step at a time, until its packs set off
+	async function reach(page: Page) {
+		for (let i = 0; i < 120 && (await stage(page)) === 'wait'; i++) {
+			await page.evaluate(() => window.scrollBy({ top: 120, behavior: 'instant' }));
+			await page.waitForTimeout(50);
+		}
+	}
+
+	test('motion · the packs take the street as it comes into view, then the batch is split by exit', async ({
+		page
+	}) => {
+		expect(await stage(page), 'the street waits for the reader').toBe('wait');
+		await expect(page.locator('.fl-tag')).toHaveText('1,360 packs at the godown');
+		await reach(page);
+		expect(await stage(page)).toBe('play');
+		const box = (await page.locator('.ex-pan').boundingBox())!;
+		const vh = page.viewportSize()!.height;
+		expect(box.y + box.height, 'nearly all of the street, its road included, is in view').toBeLessThanOrEqual(
+			vh + box.height * 0.1 + 2
+		);
+		await expect(page.locator('.flow-layer')).toHaveClass(/done/, { timeout: 6000 });
+		await expect(page.locator('.fl-tag')).toHaveText('0 packs left at the godown');
+		await expect(page.locator('.ex-chip.kirana .ex-line [aria-hidden]')).toHaveText('588 packs · 31 shops');
+		await expect(page.locator('.ex-chip.expiresoon .ex-line [aria-hidden]')).toHaveText('772 packs · ₹14.20');
+		await expect(page.locator('.ex-chip.in')).toHaveCount(2);
+		// the split is drawn once the packs have arrived
+		await page.locator('.split').scrollIntoViewIfNeeded();
+		await expect(page.locator('.split-row.kirana .sr-v')).toHaveCSS('opacity', '1', { timeout: 4000 });
+		await expect(page.locator('.split-row.expiresoon .sr-v')).toHaveCSS('opacity', '1', { timeout: 4000 });
 	});
 
-	test('keyboard · focusing an exit pans the street to it and says it', async ({ page }) => {
-		const chip = (name: string) => page.locator('.ex-chip', { hasText: name });
-		await chip('Kiranas').scrollIntoViewIfNeeded();
-		await chip('Staff sale').focus();
-		await expect(chip('Staff sale')).toHaveAttribute('aria-pressed', 'true', { timeout: 5000 });
-		await expect(page.locator('.ex-cap b')).toHaveText('Staff sale.');
-		const x = await page.locator('.ex-pano').evaluate((el) => getComputedStyle(el).transform);
-		expect(x, 'the panorama has moved along the street').not.toBe('none');
+	test('keyboard · Replay sends the batch down the street again', async ({ page }) => {
+		await reach(page);
+		await expect(page.locator('.flow-layer')).toHaveClass(/done/, { timeout: 6000 });
+		const replay = page.getByRole('button', { name: 'Send the batch again' });
+		await replay.focus();
+		await page.keyboard.press('Enter');
+		await expect(page.locator('.flow-layer')).toHaveClass(/play/);
+		await expect(page.locator('.flow-layer')).toHaveClass(/done/, { timeout: 6000 });
+		await expect(page.locator('.ex-chip.kirana .ex-line [aria-hidden]')).toHaveText('588 packs · 31 shops');
 	});
 });

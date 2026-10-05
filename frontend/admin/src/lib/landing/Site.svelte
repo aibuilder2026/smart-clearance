@@ -8,15 +8,16 @@
 	import { figures } from './figures';
 	import Footer from './Footer.svelte';
 	import Hero from './Hero.svelte';
+	import How from './How.svelte';
 	import { LINKS, openLink } from './links';
 	import Nav from './Nav.svelte';
 	import Plans from './Plans.svelte';
 	import Stops from './Stops.svelte';
-	import Story from './Story.svelte';
 	import Workspace from './Workspace.svelte';
 
 	// smartclearance.com: the product's own landing page, independent of any client. One carton the size of a godown,
-	// parked in a miniature Indian town, and the page follows where its packs go (design3/site, SC-25).
+	// parked in a miniature Indian town, and the page follows where its packs go (design3/site, SC-25). It names no
+	// client: the batch it follows is an illustrative one (SC-28).
 	let { showcase, catalog }: { showcase: Showcase; catalog: Catalog } = $props();
 	const f = $derived(figures(showcase, catalog));
 
@@ -33,10 +34,10 @@
 <div class="site" id="top">
 	<Nav {onfind} {ondemo} />
 	<main>
-		<Hero batchId={f.batchId} net={f.actual.net} {onfind} />
+		<Hero packs={f.atRisk} net={f.actual.net} {onfind} />
+		<How {f} />
 		<Exits {f} />
 		<Stops {f} />
-		<Story s={showcase} {f} />
 		<Workspace {f} />
 		<Plans {f} {ondemo} />
 		<Close {ondemo} />
@@ -50,7 +51,7 @@
 			openLink(LINKS.app);
 		}}
 		domain={showcase.platform.domain}
-		note="Only {showcase.workspace.name} is set up in this prototype."
+		note="One manufacturer's workspace is set up in this prototype."
 	/>
 	<DemoSheet bind:open={demo} plan={demoPlan} />
 </div>

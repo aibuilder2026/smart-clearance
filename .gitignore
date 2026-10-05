@@ -23,6 +23,10 @@ design3/site/assets/plates/src/
 
 # design reviews: PNG originals stay local, only WebP ships (SC-26)
 design3/designs/*/src/
+# their motion previews and short clips ship (small, H.264), as the carton loop does
+!design3/designs/*/option-*/motion.mp4
+!design3/designs/*/round-*/option-*/motion.mp4
+!design3/designs/*/media/*.mp4
 
 # frontend (SC-27): build output, test reports and local env files
 frontend/**/.svelte-kit/
