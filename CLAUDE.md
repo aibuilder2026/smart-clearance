@@ -110,24 +110,19 @@
     - keyboard and motion specs as design3's.
   - The prototype's quirks are fixed: window scrolling, real links, no theme flash, the demo form.
   - `backend-api/` and `agents/` are READMEs for now. The jira-flow gate moved from `web/` to `frontend/`.
-- **SC-28** (In Review, branch `SC-28-landing-refine`, stacked on SC-27): the landing page refined to the SC-25 board. The design followed the design-first route:
-  - three options went on a review board in platform v3, `SC-28 design review.html`;
-  - the maintainer picked option A;
-  - the designs, comps, motion recordings and the decision are in `design3/designs/SC-28/`.
-
-  What the build changed:
-  - **No client on the page:** no name, product, person, workspace address or batch id. The batch is an illustrative one, and the showcase API no longer carries client details (AGENTS.md, Data and assets).
-  - **Sections:**
-    - "From at risk to sold, in three steps", whose agents light in turn;
-    - the street's three result cards;
-    - the nine stops as a live pipeline, with a beat on the human yes and Replay;
-    - "Your own workspace" as comp L5: one unbranded product on each island, team cards, integration chips;
-    - plans and the close as comp L6.
-  - **Motion:** every motion plays once as its section comes into view, then holds.
-  - **Renders:** four unbranded Qwen renders in `design3/system/img`.
-  - **Find your workspace** takes a `note` prop, so the landing page's sheet names no client.
-  - **Found on the way:**
-    - Svelte 5 trims the space at the start of an element's text. The port had lost it in "· live" and in the plans' hidden "about …"; it keeps it now.
-    - "· soon" on the filled chip now meets 4.5:1.
-  - **Hosting:** the hosted landing page and console load commit `20c09ac`.
+- **SC-28** (In Review, branch `SC-28-landing-refine`, stacked on SC-27): the landing page refined to the SC-25 board, in two design rounds on one review board in platform v3, `SC-28 design review.html`. The designs, comps, motion recordings and decisions are in `design3/designs/SC-28/`.
+  - **Round 1:** three options; the maintainer picked option A. What it changed:
+    - **No client on the page:** no name, product, person, workspace address or batch id. The batch is an illustrative one, and the showcase API carries no client details (AGENTS.md, Data and assets).
+    - **Sections:** the street's three result cards; the nine stops as a live pipeline, with a beat on the human yes and Replay; "Your own workspace" as comp L5 (one unbranded product on each island, team cards, integration chips); plans and the close as comp L6.
+    - **Renders:** four unbranded Qwen renders in `design3/system/img`.
+    - **Find your workspace** takes a `note` prop, so the landing page's sheet names no client.
+    - **Found on the way:** Svelte 5 trims the space at the start of an element's text, which the port had lost in "· live" and the plans' hidden "about …"; "· soon" on the filled chip now meets 4.5:1.
+  - **Round 2:** the maintainer asked for "a customized approach between A and B": A's agents section, B's "How it works", and a rethink of "Five exits, one batch". Three ways to show the packs being diverted went on the board; the pick was "1 and 2 combined". What it changed:
+    - **How it works** is option B's three moments: the Watcher's alert, the Valuer's prices with the Router's split, and the plan waiting for one yes, each card rising into place.
+    - **Five exits, one batch:** as the street comes into view, the batch leaves the godown as dots of about 50 packs for the kiranas and a marketplace buyer, and the chips count them in; under it, the batch is split by exit, drawn once the packs have arrived. One Replay runs both. The desktop scroll-pan and the chip caption are gone.
+    - **Renders:** the godown and the bin join `design3/system/img`.
+    - **The port:** `How.svelte`, and `Exits.svelte` over `street.ts` and `rise.ts`. The showcase API carries the batch's product and units, the gates and the pricing rules. `site.css` keeps one marked change, window scrolling.
+    - **Found on the way:** option 1's mockup never played on phones, where under a third of the street strip is ever in view (the build watches the strip); the split's ribbons could size their own row from a stale measurement (`contain: size` stops it).
+  - **Motion:** every motion plays once as its section comes into view, under five seconds, then holds.
+  - **Hosting:** the hosted landing page and console load commit `ad7540f`.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
