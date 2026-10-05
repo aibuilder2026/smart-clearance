@@ -60,13 +60,13 @@
     ["paperwork", "impact"]
   ];
   const BEATS = [
-    { id: "make", at: ["maker"], t: "Made", did: `${fmt.num(BATCH.units)} packs leave the factory for the distributor`, who: [], batch: "maker" },
-    { id: "stock", at: ["godown"], t: "Stocked", did: `${fmt.num(BATCH.units)} packs in the distributor's godown, selling ${BATCH.sellPerDay} a day`, who: [], batch: "godown" },
-    { id: "risk", at: ["godown"], t: "At risk", did: `${fmt.num(D.RISK.atRisk)} packs won't sell in the ${BATCH.daysLeft} days left`, who: ["data", "watcher", "vision"], batch: "godown" },
-    { id: "route", at: ["godown"], t: "Priced and split", did: `Five exits priced · ${fmt.num(KL.units)} to ${SHOPS} kiranas, ${fmt.num(AW.units)} to one buyer`, who: ["valuer", "router"], batch: "godown" },
-    { id: "yes", at: ["maker"], t: "One yes", did: `You approve in one tap · ${fmt.inr(D.PLAN.net)} on screen`, who: ["you"], human: true, batch: "godown" },
-    { id: "sell", at: ["kiranas", "buyer"], t: "Sold", did: `${fmt.num(KL.units)} packs to ${SHOPS} kiranas · ${fmt.num(AW.units)} to a buyer, countered to ${rate(AW.price)}`, who: ["outreach", "lister", "negotiator"], batch: "sold" },
-    { id: "report", at: ["maker", "landfill"], t: "Settled", did: "", who: ["paperwork", "impact"], batch: null }
+    { id: "make", at: ["maker"], t: "Made", did: `${fmt.num(BATCH.units)} packs leave the factory for the distributor`, who: [], ms: 600, batch: "maker" },
+    { id: "stock", at: ["godown"], t: "Stocked", did: `${fmt.num(BATCH.units)} packs in the distributor's godown, selling ${BATCH.sellPerDay} a day`, who: [], ms: 500, batch: "godown" },
+    { id: "risk", at: ["godown"], t: "At risk", did: `${fmt.num(D.RISK.atRisk)} packs won't sell in the ${BATCH.daysLeft} days left`, who: ["data", "watcher", "vision"], ms: 700, batch: "godown" },
+    { id: "route", at: ["godown"], t: "Priced and split", did: `Five exits priced · ${fmt.num(KL.units)} to ${SHOPS} kiranas, ${fmt.num(AW.units)} to one buyer`, who: ["valuer", "router"], ms: 600, batch: "godown" },
+    { id: "yes", at: ["maker"], t: "One yes", did: `You approve in one tap · ${fmt.inr(D.PLAN.net)} on screen`, who: ["you"], human: true, ms: 900, batch: "godown" },
+    { id: "sell", at: ["kiranas", "buyer"], t: "Sold", did: `${fmt.num(KL.units)} packs to ${SHOPS} kiranas · ${fmt.num(AW.units)} to a buyer, countered to ${rate(AW.price)}`, who: ["outreach", "lister", "negotiator"], ms: 700, batch: "sold" },
+    { id: "report", at: ["maker", "landfill"], t: "Settled", did: "", who: ["paperwork", "impact"], ms: 700, batch: null }
   ];
   const NB = BEATS.length;
   const beatOf = (id) => BEATS.findIndex((b) => b.id === id);
@@ -74,7 +74,8 @@
   AGENTS.forEach((a) => {
     a.beat = BEATS.findIndex((b) => b.who.includes(a.id));
   });
-  const PACE = { beat: 1100, agent: 1300, you: 1700 };
+  const OPT = String(window.SC34_OPTION || "a").toLowerCase();
+  const PACE = { a: { beat: 1200, agent: 1400, you: 1900, fly: 0.9 }, b: { beat: 1400, agent: 1800, you: 2300, fly: 0.85 }, c: { beat: 1100, agent: 1300, you: 1700, fly: 0.9 } }[OPT] || { beat: 1200, agent: 1400, you: 1900, fly: 0.9 };
   const STOPS = [];
   BEATS.forEach((b, i) => {
     if (!b.who.length) STOPS.push({ beat: i, agent: null, ms: PACE.beat });
@@ -111,10 +112,40 @@
       buyer: [[0.5, 0.762], [0.58, 0.78], [0.727, 0.814], [0.836, 0.833], [0.86, 0.8], [0.85, 0.68], [0.815, 0.51], [0.735, 0.38], [0.69, 0.31], [0.75, 0.31], [0.84, 0.335]]
     },
     batch: { maker: [0.31, 0.655], godown: [0.5, 0.665] },
-    // the camera: the whole business, and each place: the plate point it centres and how near; desktops and phones apart
+    // the camera, per beat and per place: the plate point it centres and how near; desktops and phones apart
     shots: {
-      wide: { rest: [0.5, 0.5, 1], maker: [0.18, 0.58, 1.8], godown: [0.5, 0.6, 1.8], kiranas: [0.8, 0.62, 1.8], buyer: [0.8, 0.3, 2], foodbank: [0.52, 0.4, 2], landfill: [0.17, 0.32, 2] },
-      phone: { rest: [0.5, 0.55, 1], maker: [0.18, 0.58, 1.4], godown: [0.5, 0.6, 1.4], kiranas: [0.8, 0.62, 1.4], buyer: [0.8, 0.32, 1.6], foodbank: [0.52, 0.4, 1.6], landfill: [0.17, 0.32, 1.6] }
+      wide: {
+        rest: [0.5, 0.5, 1],
+        make: [0.22, 0.58, 1.65],
+        stock: [0.5, 0.56, 1.55],
+        risk: [0.5, 0.55, 1.7],
+        route: [0.56, 0.52, 1.3],
+        yes: [0.17, 0.58, 1.7],
+        sell: [0.8, 0.53, 1.3],
+        report: [0.2, 0.47, 1.4],
+        maker: [0.18, 0.58, 1.8],
+        godown: [0.5, 0.6, 1.8],
+        kiranas: [0.8, 0.62, 1.8],
+        buyer: [0.8, 0.3, 2],
+        foodbank: [0.52, 0.4, 2],
+        landfill: [0.17, 0.32, 2]
+      },
+      phone: {
+        rest: [0.5, 0.55, 1],
+        make: [0.22, 0.6, 1.3],
+        stock: [0.5, 0.62, 1.3],
+        risk: [0.5, 0.6, 1.45],
+        route: [0.55, 0.55, 1.1],
+        yes: [0.15, 0.6, 1.4],
+        sell: [0.8, 0.6, 1.15],
+        report: [0.17, 0.5, 1.2],
+        maker: [0.18, 0.58, 1.4],
+        godown: [0.5, 0.6, 1.4],
+        kiranas: [0.8, 0.62, 1.4],
+        buyer: [0.8, 0.32, 1.6],
+        foodbank: [0.52, 0.4, 1.6],
+        landfill: [0.17, 0.32, 1.6]
+      }
     },
     // the band behind the heading on desktops, as fractions of the stage: solid haze, then clear
     haze: [0.3, 0.42]
@@ -767,9 +798,9 @@ void main() {
       /* @__PURE__ */ React.createElement("span", { className: "town-pin-stem" })
     ));
   };
-  const Node = ({ a, g, j, sel, onOpen, hover, named, tipped }) => {
+  const Node = ({ a, g, j, sel, onOpen, hover, named }) => {
     const at = wpx(g, GEO.posts[a.id]), { done, now } = agentState(a, j), open = sel && sel.kind === "agent" && sel.id === a.id;
-    const side = GEO.labels[a.id] || "right", show = !tipped && (named || open || now && (g.wide || a.human));
+    const side = GEO.labels[a.id] || "right", show = named || open || now && (g.wide || a.human);
     return /* @__PURE__ */ React.createElement("span", { className: "town-at", style: { left: at[0], top: at[1] } }, /* @__PURE__ */ React.createElement(
       "button",
       {
@@ -809,12 +840,13 @@ void main() {
     const text = b && b.id === "sell" ? `${fmt.num(KL.units)} + ${fmt.num(AW.units)} sold` : j.k >= beatOf("risk") ? `${fmt.num(D.RISK.atRisk)} at risk` : `${fmt.num(BATCH.units)} packs`;
     return /* @__PURE__ */ React.createElement("span", { className: "town-at town-batch", ref, "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("span", { className: cx("town-batch-card", risk && "risk") }, /* @__PURE__ */ React.createElement("i", null, /* @__PURE__ */ React.createElement(Icon, { name: "package", size: 14, stroke: 2 })), /* @__PURE__ */ React.createElement("b", null, text)));
   }
-  function Panel({ sel, j, onOpen, onClose }) {
+  function Panel({ sel, j, g, auto, onOpen, onClose }) {
     const ref = useRef(null);
     useEffect(() => {
-      if (sel && ref.current) ref.current.focus({ preventScroll: true });
-    }, [sel && sel.kind, sel && sel.id]);
+      if (sel && !auto && ref.current) ref.current.focus({ preventScroll: true });
+    }, [sel && sel.kind, sel && sel.id, auto]);
     if (!sel) return null;
+    const compact = auto && g && !g.wide;
     const chips = (ids) => /* @__PURE__ */ React.createElement("span", { className: "town-panel-chips" }, ids.map((id) => {
       const a = AGENT[id], { done } = agentState(a, j);
       return /* @__PURE__ */ React.createElement("button", { key: id, type: "button", className: cx("town-chip", a.human && "human", done && "on"), onClick: () => onOpen({ kind: "agent", id }) }, /* @__PURE__ */ React.createElement("i", null, /* @__PURE__ */ React.createElement(Icon, { name: a.icon, size: 13, stroke: 2.2 })), a.name);
@@ -825,20 +857,23 @@ void main() {
       body = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("header", null, /* @__PURE__ */ React.createElement("i", null, /* @__PURE__ */ React.createElement(Icon, { name: p.icon, size: 16, stroke: 2 })), /* @__PURE__ */ React.createElement("h3", { id: "town-panel-h" }, p.t)), /* @__PURE__ */ React.createElement("p", null, p.line), team.length > 0 ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", { className: "town-panel-k" }, "Who works here"), chips(team)) : /* @__PURE__ */ React.createElement("span", { className: "town-panel-k" }, "The Valuer prices it on every plan"));
     } else {
       const a = AGENT[sel.id], from = EDGES.filter((e) => e[1] === a.id).map((e) => e[0]), to = EDGES.filter((e) => e[0] === a.id).map((e) => e[1]);
-      body = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("header", null, /* @__PURE__ */ React.createElement("i", { className: cx(a.human && "human") }, /* @__PURE__ */ React.createElement(Icon, { name: a.icon, size: 16, stroke: 2 })), /* @__PURE__ */ React.createElement("h3", { id: "town-panel-h" }, a.name), /* @__PURE__ */ React.createElement("button", { type: "button", className: "town-panel-at", onClick: () => onOpen({ kind: "place", id: a.at }) }, "at the ", PLACE[a.at].short.toLowerCase())), /* @__PURE__ */ React.createElement("p", null, a.job, "."), /* @__PURE__ */ React.createElement("p", { className: "town-panel-did" }, /* @__PURE__ */ React.createElement("span", { className: "town-panel-k" }, "This batch"), a.did), (from.length > 0 || to.length > 0) && /* @__PURE__ */ React.createElement("div", { className: "town-panel-flow" }, from.length > 0 && /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("span", { className: "town-panel-k" }, "From"), chips(from)), to.length > 0 && /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("span", { className: "town-panel-k" }, "Hands to"), chips(to))));
+      body = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("header", null, /* @__PURE__ */ React.createElement("i", { className: cx(a.human && "human") }, /* @__PURE__ */ React.createElement(Icon, { name: a.icon, size: 16, stroke: 2 })), /* @__PURE__ */ React.createElement("h3", { id: "town-panel-h" }, a.name), /* @__PURE__ */ React.createElement("button", { type: "button", className: "town-panel-at", onClick: () => onOpen({ kind: "place", id: a.at }) }, "at the ", PLACE[a.at].short.toLowerCase())), !compact && /* @__PURE__ */ React.createElement("p", null, a.job, "."), /* @__PURE__ */ React.createElement("p", { className: "town-panel-did" }, /* @__PURE__ */ React.createElement("span", { className: "town-panel-k" }, "This batch"), a.did), !compact && (from.length > 0 || to.length > 0) && /* @__PURE__ */ React.createElement("div", { className: "town-panel-flow" }, from.length > 0 && /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("span", { className: "town-panel-k" }, "From"), chips(from)), to.length > 0 && /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("span", { className: "town-panel-k" }, "Hands to"), chips(to))));
     }
+    const place = compact ? { top: g.H - 8 } : void 0;
     return /* @__PURE__ */ React.createElement(
       motion.div,
       {
         key: sel.kind + sel.id,
         id: "town-panel",
-        className: "town-panel",
+        className: cx("town-panel", auto && "auto", compact && "compact"),
         role: "region",
         "aria-labelledby": "town-panel-h",
-        tabIndex: -1,
+        tabIndex: auto ? void 0 : -1,
         ref,
+        style: place,
         initial: j.reduce ? false : { opacity: 0, y: 8 },
         animate: { opacity: 1, y: 0 },
+        exit: { opacity: 0, transition: { duration: 0.16 } },
         transition: { duration: 0.24, ease: EASE },
         onKeyDown: (e) => {
           if (e.key === "Escape") {
@@ -848,7 +883,8 @@ void main() {
         }
       },
       body,
-      /* @__PURE__ */ React.createElement("button", { type: "button", className: "town-panel-x", "aria-label": "Close", onClick: onClose }, /* @__PURE__ */ React.createElement(Icon, { name: "x", size: 16, stroke: 2 }))
+      /* @__PURE__ */ React.createElement("button", { type: "button", className: "town-panel-x", "aria-label": auto ? "Close, and pause the journey" : "Close", onClick: onClose }, /* @__PURE__ */ React.createElement(Icon, { name: "x", size: 16, stroke: 2 })),
+      auto && !j.reduce && /* @__PURE__ */ React.createElement("span", { key: j.s, className: "town-panel-time", "aria-hidden": "true", style: { animationDuration: j.ms + "ms", animationPlayState: j.held ? "paused" : "running" } })
     );
   }
   function Tip({ g, j, api, project }) {
@@ -857,11 +893,9 @@ void main() {
       const el = ref.current;
       if (!el || !a || !g) return;
       const put = () => {
-        const p = project ? project(GEO.posts[id], id) : api.toStage(GEO.posts[id]), w = el.offsetWidth, h = el.offsetHeight, up = p[1] - 28 - h > 8;
-        const x = clamp(p[0] - w / 2, 8, g.W - w - 8);
-        el.style.left = x.toFixed(1) + "px";
-        el.style.top = (up ? p[1] - 28 - h : p[1] + 28).toFixed(1) + "px";
-        el.style.setProperty("--caret", clamp(p[0] - x, 14, w - 14).toFixed(1) + "px");
+        const p = project ? project(GEO.posts[id], id) : api.toStage(GEO.posts[id]), w = el.offsetWidth, h = el.offsetHeight, up = p[1] - 22 - h > 8;
+        el.style.left = clamp(p[0] - w / 2, 8, g.W - w - 8).toFixed(1) + "px";
+        el.style.top = (up ? p[1] - 22 - h : p[1] + 22).toFixed(1) + "px";
         el.classList.toggle("below", !up);
       };
       put();
@@ -885,7 +919,7 @@ void main() {
       },
       /* @__PURE__ */ React.createElement("header", null, /* @__PURE__ */ React.createElement("i", null, /* @__PURE__ */ React.createElement(Icon, { name: a.icon, size: 13, stroke: 2.2 })), /* @__PURE__ */ React.createElement("b", null, a.name), /* @__PURE__ */ React.createElement("span", null, "at the ", PLACE[a.at].short.toLowerCase())),
       /* @__PURE__ */ React.createElement("p", null, a.did),
-      !j.reduce && /* @__PURE__ */ React.createElement("span", { key: j.s, className: "town-tip-time", style: { animationDuration: j.ms + "ms", animationPlayState: j.held ? "paused" : "running" } })
+      !j.reduce && /* @__PURE__ */ React.createElement("span", { key: j.s, className: "town-panel-time", style: { animationDuration: j.ms + "ms", animationPlayState: j.held ? "paused" : "running" } })
     ));
   }
   function Caption({ j, money, hint }) {
@@ -919,12 +953,20 @@ void main() {
       if (!j.done && j.playing) j.pause();
     };
     useGestures(stageRef, api, take);
-    const keep = g && g.w > g.W + 1 && !j.done && j.s >= 0 ? j.agent ? GEO.posts[j.agent] : placeAt(g, j.beat.at[0]) : null;
+    const camKey = OPT === "b" ? j.s : j.k;
     useEffect(() => {
       if (!g || !follow) return;
-      const rest = shotOf(g, "rest");
-      api.to(keep ? [keep[0], rest[1], rest[2]] : rest, j.s < 0 ? 0 : 0.9);
-    }, [follow, g && g.wide, g && g.W, j.run, keep]);
+      let shot;
+      if (j.done || j.s < 0 || OPT === "c") shot = shotOf(g, "rest");
+      else if (OPT === "b" && j.agent) {
+        const p = GEO.posts[j.agent];
+        shot = [p[0], p[1] + (g.wide ? 0.06 : 0.1), shotOf(g, AGENT[j.agent].at)[2]];
+      } else {
+        shot = shotOf(g, BEATS[j.k].id);
+        if (!g.wide && BEATS[j.k].who.length) shot = [shot[0], shot[1] + 0.07, shot[2]];
+      }
+      api.to(shot, j.s < 0 ? 0 : PACE.fly);
+    }, [camKey, j.done, follow, g && g.wide, g && g.W]);
     const open = (s) => {
       take();
       setSel(s);
@@ -998,7 +1040,8 @@ void main() {
         io.disconnect();
       };
     }, [api]);
-    const tour = follow && !sel && j.touring && j.agent ? j.agent : null;
+    const tour = follow && !sel && j.touring && j.agent ? { kind: "agent", id: j.agent } : null;
+    const shown = sel || (OPT !== "c" ? tour : null);
     const focus = useMemo(() => {
       const s = hov || sel;
       if (!s) return null;
@@ -1048,7 +1091,7 @@ void main() {
       const el = topWorld.current, s = stageRef.current;
       if (!el || !g) return;
       const check = () => {
-        const o = s.getBoundingClientRect(), hs = holes().concat(boxes(".town-caption, .town-ctl > *, .town-panel", 6), boxes(".town-tip", 4, true)), near = g.wide && api.t().z > 1.02, haze = GEO.haze[0] * g.H;
+        const o = s.getBoundingClientRect(), hs = holes().concat(boxes(".town-caption, .town-ctl > *, .town-panel", 6), boxes(".town-panel.compact, .town-tip", 4, true)), near = g.wide && api.t().z > 1.02, haze = GEO.haze[0] * g.H;
         [...el.querySelectorAll("[data-at], .town-batch")].forEach((n) => {
           const b2 = (n.querySelector(".town-pin-body, .town-node, .town-batch-card") || n).getBoundingClientRect(), x0 = b2.left - o.left, y0 = b2.top - o.top, x1 = b2.right - o.left, y1 = b2.bottom - o.top;
           const out = x1 < 4 || x0 > g.W - 4 || y1 < 4 || y0 > g.H - 4 || b2.width > 0 && (x0 < -6 || x1 > g.W + 6);
@@ -1067,7 +1110,7 @@ void main() {
     }, [g, api, holes, j.s, j.done, sel, hov, follow]);
     const named = g && g.wide && (j.done || j.k < 0);
     const hint = g && (g.wide ? "Drag to look round · click a place or an agent" : "Swipe to look round · tap a place");
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: cx("hero-scene town-stage", gl && "is-gl", ready && "ready"), ref: stageRef }, gl && g && /* @__PURE__ */ React.createElement(DepthPlate, { g, api, dark, reduce: j.reduce, map, stageRef, view, onReady: () => setReady(true), onFail: () => setGl(false) }), /* @__PURE__ */ React.createElement("div", { className: "town-world", ref: plateWorld, style: g ? { left: g.ox, top: g.oy, width: g.w, height: g.h } : { visibility: "hidden" } }, !gl && /* @__PURE__ */ React.createElement("img", { src: IMG + (dark ? "business-night.webp" : "business.webp"), width: GEO.nw, height: GEO.nh, draggable: "false", onLoad: () => setReady(true), alt: "" })), !gl && g && g.wide && /* @__PURE__ */ React.createElement("div", { className: "town-haze", ref: hazeRef, "aria-hidden": "true" }), g && /* @__PURE__ */ React.createElement(Graph, { g, api, j, dark, focus, project, holes }), /* @__PURE__ */ React.createElement("div", { className: "town-world town-top", ref: topWorld, style: g ? { left: g.ox, top: g.oy, width: g.w, height: g.h } : { visibility: "hidden" } }, g && PLACES.map((p) => /* @__PURE__ */ React.createElement("span", { key: p.id, "data-at": JSON.stringify(placeAt(g, p.id)), className: "town-shift" }, /* @__PURE__ */ React.createElement(Pin, { p, g, j, sel, onOpen: open, hover: setHov }))), g && AGENTS.map((a) => /* @__PURE__ */ React.createElement("span", { key: a.id, "data-at": JSON.stringify(GEO.posts[a.id]), className: "town-shift" }, /* @__PURE__ */ React.createElement(Node, { a, g, j, sel, onOpen: open, hover: setHov, named: named && (!focus || focus.has(a.id)), tipped: tour === a.id }))), g && /* @__PURE__ */ React.createElement(Batch, { g, j })), g && /* @__PURE__ */ React.createElement(Tip, { g, j: { ...j, agent: tour }, api, project }), /* @__PURE__ */ React.createElement("p", { className: "sr-only" }, dark ? "The whole business as a miniature town at night: the snack maker's factory and office, the distributor's godown, a lane of kirana shops, a highway to a buyer's warehouse, a food bank, and a fenced landfill, dark." : "The whole business as a miniature town in the morning: on the left the snack maker's factory and office, in the middle the distributor's godown full of cartons, on the right a lane of kirana shops hung with snack packets; behind them a highway to a buyer's warehouse in the next town, a food bank, and a fenced landfill, empty.")), /* @__PURE__ */ React.createElement(SrJourney, { j }), /* @__PURE__ */ React.createElement(Caption, { j, money, hint: j.done && !sel ? hint : null }), /* @__PURE__ */ React.createElement(AnimatePresence, null, sel && /* @__PURE__ */ React.createElement(Panel, { key: "panel", sel, j, onOpen: open, onClose: () => setSel(null) })), g && /* @__PURE__ */ React.createElement(Controls, { j, api, g, zoom, onWhole: whole, onReplay: replay, onPlay: play, onTake: take }));
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: cx("hero-scene town-stage", gl && "is-gl", ready && "ready", "sc34-" + OPT), ref: stageRef }, gl && g && /* @__PURE__ */ React.createElement(DepthPlate, { g, api, dark, reduce: j.reduce, map, stageRef, view, onReady: () => setReady(true), onFail: () => setGl(false) }), /* @__PURE__ */ React.createElement("div", { className: "town-world", ref: plateWorld, style: g ? { left: g.ox, top: g.oy, width: g.w, height: g.h } : { visibility: "hidden" } }, !gl && /* @__PURE__ */ React.createElement("img", { src: IMG + (dark ? "business-night.webp" : "business.webp"), width: GEO.nw, height: GEO.nh, draggable: "false", onLoad: () => setReady(true), alt: "" })), !gl && g && g.wide && /* @__PURE__ */ React.createElement("div", { className: "town-haze", ref: hazeRef, "aria-hidden": "true" }), g && /* @__PURE__ */ React.createElement(Graph, { g, api, j, dark, focus, project, holes }), /* @__PURE__ */ React.createElement("div", { className: "town-world town-top", ref: topWorld, style: g ? { left: g.ox, top: g.oy, width: g.w, height: g.h } : { visibility: "hidden" } }, g && PLACES.map((p) => /* @__PURE__ */ React.createElement("span", { key: p.id, "data-at": JSON.stringify(placeAt(g, p.id)), className: "town-shift" }, /* @__PURE__ */ React.createElement(Pin, { p, g, j, sel, onOpen: open, hover: setHov }))), g && AGENTS.map((a) => /* @__PURE__ */ React.createElement("span", { key: a.id, "data-at": JSON.stringify(GEO.posts[a.id]), className: "town-shift" }, /* @__PURE__ */ React.createElement(Node, { a, g, j, sel, onOpen: open, hover: setHov, named: named && (!focus || focus.has(a.id)) }))), g && /* @__PURE__ */ React.createElement(Batch, { g, j })), g && OPT === "c" && /* @__PURE__ */ React.createElement(Tip, { g, j: { ...j, agent: tour ? tour.id : null }, api, project }), /* @__PURE__ */ React.createElement("p", { className: "sr-only" }, dark ? "The whole business as a miniature town at night: the snack maker's factory and office, the distributor's godown, a lane of kirana shops, a highway to a buyer's warehouse, a food bank, and a fenced landfill, dark." : "The whole business as a miniature town in the morning: on the left the snack maker's factory and office, in the middle the distributor's godown full of cartons, on the right a lane of kirana shops hung with snack packets; behind them a highway to a buyer's warehouse in the next town, a food bank, and a fenced landfill, empty.")), /* @__PURE__ */ React.createElement(SrJourney, { j }), /* @__PURE__ */ React.createElement(Caption, { j, money, hint: j.done && !sel ? hint : null }), /* @__PURE__ */ React.createElement(AnimatePresence, null, shown && /* @__PURE__ */ React.createElement(Panel, { key: "panel", sel: shown, auto: !sel, g, j, onOpen: open, onClose: () => sel ? setSel(null) : take() })), g && /* @__PURE__ */ React.createElement(Controls, { j, api, g, zoom, onWhole: whole, onReplay: replay, onPlay: play, onTake: take }));
   }
   window.SC3_TOWN = { Town };
 })();

@@ -65,17 +65,10 @@ export const GEO = {
 		]
 	} as Record<string, Pt[]>,
 	batch: { maker: [0.31, 0.655], godown: [0.5, 0.665] } as Record<string, Pt>,
-	// the camera, per beat and per place: the plate point it centres and how near; desktops and phones apart
+	// the camera: the whole business, and each place: the plate point it centres and how near; desktops and phones apart
 	shots: {
 		wide: {
 			rest: [0.5, 0.5, 1],
-			make: [0.22, 0.58, 1.65],
-			stock: [0.5, 0.56, 1.55],
-			risk: [0.5, 0.55, 1.7],
-			route: [0.56, 0.52, 1.3],
-			yes: [0.17, 0.58, 1.7],
-			sell: [0.8, 0.53, 1.3],
-			report: [0.2, 0.47, 1.4],
 			maker: [0.18, 0.58, 1.8],
 			godown: [0.5, 0.6, 1.8],
 			kiranas: [0.8, 0.62, 1.8],
@@ -85,13 +78,6 @@ export const GEO = {
 		},
 		phone: {
 			rest: [0.5, 0.55, 1],
-			make: [0.22, 0.6, 1.3],
-			stock: [0.5, 0.62, 1.3],
-			risk: [0.5, 0.6, 1.45],
-			route: [0.55, 0.55, 1.1],
-			yes: [0.15, 0.6, 1.4],
-			sell: [0.8, 0.6, 1.15],
-			report: [0.17, 0.5, 1.2],
 			maker: [0.18, 0.58, 1.4],
 			godown: [0.5, 0.6, 1.4],
 			kiranas: [0.8, 0.62, 1.4],

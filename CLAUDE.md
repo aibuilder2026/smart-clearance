@@ -149,7 +149,7 @@
   - **The data:** a copy of ThreeUI's public MIT repository in `~/threeui-community`, pinned to `68802d5` (package 1.2.0, as on npm): 104 records (43 items and 61 variant records) and 177 source files. Some records also name the original exports they came from; those are provenance, not files.
   - **Installed** at user scope; Claude Code connects to its server (`claude mcp list`). The tools come with a new session.
   - **Referenced here:** AGENTS.md (design rules and tooling), the design-first skill and `.claude/third-party.md`.
-- **SC-32** (In Review, branch `SC-32-hero-journey`): the hero is the whole business as one miniature town, in depth.
+- **SC-32** (PR #23, merged): the hero is the whole business as one miniature town, in depth.
   - **Design first, in two rounds** on one board in platform v3, `SC-32 design review.html`:
     - round 1 put three heroes on a plate of the chain (manufacturer, distributor, retailers). The maintainer asked to build on the third, Follow the batch;
     - round 2 drew one picture of the whole business, put every agent at a post in it, and made the picture and the agent graph interactive. Its options were Take the wheel, In depth and Your yes. The pick: In depth.
@@ -165,7 +165,7 @@
       - Impact at the landfill.
 
       The agent graph is their handoffs.
-    - **The tour:** the camera follows the batch once, in 4.7 s, then holds. Visitors can then drag or swipe, pinch or Ctrl-scroll, and double-click. Places and agents open panels, by pointer or keyboard; the steps and Replay walk the tour again.
+    - **The tour:** the camera follows the batch once, in 4.7 s, then holds (SC-34 made it slower, with a card for each agent). Visitors can then drag or swipe, pinch or Ctrl-scroll, and double-click. Places and agents open panels, by pointer or keyboard; the steps and Replay walk the tour again.
     - **Depth:** WebGL2 draws the town from the plate and its depth map, with parallax as the camera travels, a tilt under the pointer, and a focus that follows the camera. Without WebGL2 it is drawn flat; under reduced motion it rests on its result.
     - **The heading's ground:** as the camera nears, the top of the frame goes out of focus into the plate's haze, so the heading keeps a calm ground.
   - **Found on the way:**
@@ -184,4 +184,40 @@
     - e2e: 42 pass, and only Firefox fails, because it cannot start in the sandbox;
     - parity: 29 pass.
   - **Hosting:** the hosted landing page and console load commit `4f2bc65`.
+- **SC-34** (In Review, branch `SC-34-hero-tour`): the hero's tour, slower, with a card for each agent, and the whole town back on leaving.
+  - **The request:** the maintainer asked for three changes to the town:
+    - when focus leaves the hero, it returns to the whole picture;
+    - the play runs a bit slower;
+    - the agents' cards appear one by one as the play reaches each agent.
+  - **Design first:** three options, each built as the real landing page with only the town changed:
+    - A, beat by beat (about 18 s);
+    - B, agent by agent, close up (about 23 s);
+    - C, the whole picture (about 17 s).
+
+    The maintainer picked C ("lets go for option C") in the same request, before a board was published. `design3/designs/SC-34/` holds the options, frames, the build's recording, `board.html` and `decision.md`.
+  - **The tour:** a stop for each agent, in the order they work.
+    - A small card opens beside the agent's pin, on a stem: its name, its post, and what it did for this batch. A line along its foot fills while the stop holds, and the pin's own name stands down meanwhile.
+    - Pace: 1.3 s an agent, 1.7 s on the yes and 1.1 s on the two beats without agents: 16.9 s, where it was 4.7 s.
+    - The camera stays on the whole town. On phones and tablets, whose stage crops the town's sides, it slides along at the same size to keep the agent in view.
+  - **WCAG 2.2.2:** the tour now runs longer than five seconds, so it has controls:
+    - Pause and Play take Replay's place while it runs, as one button, so focus stays on it; the caption's steps stop it too;
+    - a drag, pinch, zoom or opened card holds it, and Play hands the camera back;
+    - out of view, it holds;
+    - under reduced motion, the result shows at once.
+  - **Leaving the hero** brings the whole town back and closes the visitor's card. Leaving means any of: the pointer leaving the hero (after 300 ms), focus moving out, a tap or click outside, or scrolling it away.
+  - **Checks:**
+    - the card's text, measured on the pixels behind it: 6.69:1 at the lowest;
+    - design3's suite: 332 pass, with 0 failing WCAG rules. It gains an axe scan paused at a card, a motion state with a card showing, and a keyboard test (Pause, Play, a place opened, focus leaving the hero);
+    - the frontend's gate passes;
+    - e2e: 49 pass, with the same checks; only Firefox cannot start in the sandbox;
+    - parity: 29 pass.
+  - **The port:** `Town.svelte`, `figures.ts` (the stops), `town/graph.ts` (handoffs per stop), `town/geo.ts` (the beats' shots gone), and `site.css` (drift clean).
+  - **Hosting:** the hosted landing page and console load commit `79b074d`.
+- **SC-33** (In Progress, branch `SC-33-landing-finish`): the landing page's finish after SC-32.
+  - **Done:** impeccable's provenance for the town plates.
+  - **To do, from the finish review (disposition fix):**
+    - the minus sign kept with its figure (`fmt.inr`);
+    - the 4 px side stripe on two split rows, which changes an approved design and needs the maintainer's pick;
+    - DESIGN.md brought up to SC-28, SC-32 and SC-34 by the documenter.
+  - **Blocked:** the impeccable comp build's record. Its responsive gate compares the page with the SC-25 diorama comp, whose hero SC-32 replaced (55% on 5 Oct), so `build-phase finish --disposition ship` is refused.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

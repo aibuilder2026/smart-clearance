@@ -139,6 +139,7 @@ Local pages:
 
   These criteria still need a manual pass: 2.4.11, 2.5.7, 3.2.6, 3.3.7 and 3.3.8.
 - Nothing loops forever: every animation stops within five seconds (WCAG 2.2.2), and only loading indicators keep turning. `motion.a11y.spec.ts` fails on any endless animation.
+  - The one longer motion is the landing page's hero tour (SC-34, 16.9 s). It plays once, and carries Pause and Play. It also holds while the visitor has the camera or the hero is out of view.
 - Measure text contrast against the background it actually sits on, including fills, tinted chips and chat bubbles, after any opacity.
 
 **Data and assets**

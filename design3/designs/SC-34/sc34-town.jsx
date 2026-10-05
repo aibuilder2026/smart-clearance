@@ -1,13 +1,11 @@
-// Smart-Clearance v3 · smartclearance.com's first viewport (SC-32): the whole business as one miniature town, in depth.
-// The maker's factory and office, the distributor's godown, the kirana lane, a buyer in the next town, a food bank and
-// the landfill. Every agent works at a post in the town, and the handoffs between them are the agent graph. The batch
-// tours it once, over the whole town (SC-34): a stop for each agent in the order they work, its card opening beside its
-// pin, about 17 s, with Pause and Play (WCAG 2.2.2). Then the town is the visitor's: drag or swipe to look round, pinch
-// or Ctrl-scroll to zoom, double-click to go nearer, and open a place or an agent for what it did; taking the camera
-// pauses the tour, and leaving the hero brings the whole town back. Drawn in WebGL2 from the plate and its depth map, so
-// it parallaxes as the camera travels, tilts under the pointer and keeps its focus on what the camera looks at; without
-// WebGL2 the plate is drawn flat. Under reduced motion the batch is at its result from the start and the camera jumps.
-// Every figure comes from core/money.js through the data; no client is named.
+// SC-34 design round: the SC-32 town (design3/site/town.jsx) with the maintainer's three changes, in three options.
+//   Every option: leaving the hero (the pointer leaves it, focus moves out of it, it scrolls out of view, or a tap lands
+//   outside it) brings the town back to the whole business and closes the card; the journey is slower, so it carries a
+//   Pause / Play button (WCAG 2.2.2); a visitor who takes the camera or opens a card pauses it, and Play hands it back.
+//   A · beat by beat: the camera keeps the seven beats; in each, its agents' cards open one after another (about 18 s).
+//   B · agent by agent: the camera flies close to each agent in turn as its card opens (about 23 s).
+//   C · the whole picture: the camera stays on the whole town; a small card opens beside each agent's pin (about 17 s).
+// The option comes from window.SC34_OPTION ("a", "b" or "c"). Everything else is the shipped town.
 (function () {
   const { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } = React;
   const { useReducedMotion, motion, AnimatePresence } = Motion;
@@ -54,23 +52,24 @@
   // the handoffs, in the order they happen: the agent graph
   const EDGES = [["data", "watcher"], ["watcher", "vision"], ["vision", "valuer"], ["valuer", "router"], ["router", "you"], ["you", "outreach"], ["you", "lister"],
     ["lister", "negotiator"], ["outreach", "paperwork"], ["negotiator", "paperwork"], ["paperwork", "impact"]];
-  // the journey, beat by beat: where it happens, who works, what it did, and where the batch is
+  // the journey, beat by beat: where it happens, who works, what it did, how long it holds (ms), and where the batch is
   const BEATS = [
-    { id: "make", at: ["maker"], t: "Made", did: `${fmt.num(BATCH.units)} packs leave the factory for the distributor`, who: [], batch: "maker" },
-    { id: "stock", at: ["godown"], t: "Stocked", did: `${fmt.num(BATCH.units)} packs in the distributor's godown, selling ${BATCH.sellPerDay} a day`, who: [], batch: "godown" },
-    { id: "risk", at: ["godown"], t: "At risk", did: `${fmt.num(D.RISK.atRisk)} packs won't sell in the ${BATCH.daysLeft} days left`, who: ["data", "watcher", "vision"], batch: "godown" },
-    { id: "route", at: ["godown"], t: "Priced and split", did: `Five exits priced · ${fmt.num(KL.units)} to ${SHOPS} kiranas, ${fmt.num(AW.units)} to one buyer`, who: ["valuer", "router"], batch: "godown" },
-    { id: "yes", at: ["maker"], t: "One yes", did: `You approve in one tap · ${fmt.inr(D.PLAN.net)} on screen`, who: ["you"], human: true, batch: "godown" },
-    { id: "sell", at: ["kiranas", "buyer"], t: "Sold", did: `${fmt.num(KL.units)} packs to ${SHOPS} kiranas · ${fmt.num(AW.units)} to a buyer, countered to ${rate(AW.price)}`, who: ["outreach", "lister", "negotiator"], batch: "sold" },
-    { id: "report", at: ["maker", "landfill"], t: "Settled", did: "", who: ["paperwork", "impact"], batch: null },
+    { id: "make", at: ["maker"], t: "Made", did: `${fmt.num(BATCH.units)} packs leave the factory for the distributor`, who: [], ms: 600, batch: "maker" },
+    { id: "stock", at: ["godown"], t: "Stocked", did: `${fmt.num(BATCH.units)} packs in the distributor's godown, selling ${BATCH.sellPerDay} a day`, who: [], ms: 500, batch: "godown" },
+    { id: "risk", at: ["godown"], t: "At risk", did: `${fmt.num(D.RISK.atRisk)} packs won't sell in the ${BATCH.daysLeft} days left`, who: ["data", "watcher", "vision"], ms: 700, batch: "godown" },
+    { id: "route", at: ["godown"], t: "Priced and split", did: `Five exits priced · ${fmt.num(KL.units)} to ${SHOPS} kiranas, ${fmt.num(AW.units)} to one buyer`, who: ["valuer", "router"], ms: 600, batch: "godown" },
+    { id: "yes", at: ["maker"], t: "One yes", did: `You approve in one tap · ${fmt.inr(D.PLAN.net)} on screen`, who: ["you"], human: true, ms: 900, batch: "godown" },
+    { id: "sell", at: ["kiranas", "buyer"], t: "Sold", did: `${fmt.num(KL.units)} packs to ${SHOPS} kiranas · ${fmt.num(AW.units)} to a buyer, countered to ${rate(AW.price)}`, who: ["outreach", "lister", "negotiator"], ms: 700, batch: "sold" },
+    { id: "report", at: ["maker", "landfill"], t: "Settled", did: "", who: ["paperwork", "impact"], ms: 700, batch: null },
   ];
   const NB = BEATS.length;
   const beatOf = id => BEATS.findIndex(b => b.id === id);
   const names = b => b.who.map(w => AGENT[w].name).join(" · ");
   AGENTS.forEach(a => { a.beat = BEATS.findIndex(b => b.who.includes(a.id)); });
-  // The tour (SC-34): a beat without agents is one stop; a beat with agents is a stop for each, in the order they work,
-  // while its card opens beside its pin. How long each stop holds (ms): the person's yes longest. 16.9 s in all.
-  const PACE = { beat: 1100, agent: 1300, you: 1700 };
+  // The tour: a beat without agents is one stop; a beat with agents is a stop for each, in the order they work. How
+  // long each stop holds (ms) is the option's pace; the person's yes holds longest.
+  const OPT = String(window.SC34_OPTION || "a").toLowerCase();
+  const PACE = { a: { beat: 1200, agent: 1400, you: 1900, fly: 0.9 }, b: { beat: 1400, agent: 1800, you: 2300, fly: 0.85 }, c: { beat: 1100, agent: 1300, you: 1700, fly: 0.9 } }[OPT] || { beat: 1200, agent: 1400, you: 1900, fly: 0.9 };
   const STOPS = [];
   BEATS.forEach((b, i) => { if (!b.who.length) STOPS.push({ beat: i, agent: null, ms: PACE.beat }); else b.who.forEach(w => STOPS.push({ beat: i, agent: w, ms: w === "you" ? PACE.you : PACE.agent })); });
   const NS = STOPS.length;
@@ -95,10 +94,12 @@
       buyer: [[0.5, 0.762], [0.58, 0.78], [0.727, 0.814], [0.836, 0.833], [0.86, 0.8], [0.85, 0.68], [0.815, 0.51], [0.735, 0.38], [0.69, 0.31], [0.75, 0.31], [0.84, 0.335]],
     },
     batch: { maker: [0.31, 0.655], godown: [0.5, 0.665] },
-    // the camera: the whole business, and each place: the plate point it centres and how near; desktops and phones apart
+    // the camera, per beat and per place: the plate point it centres and how near; desktops and phones apart
     shots: {
-      wide: { rest: [0.5, 0.5, 1], maker: [0.18, 0.58, 1.8], godown: [0.5, 0.6, 1.8], kiranas: [0.8, 0.62, 1.8], buyer: [0.8, 0.3, 2], foodbank: [0.52, 0.4, 2], landfill: [0.17, 0.32, 2] },
-      phone: { rest: [0.5, 0.55, 1], maker: [0.18, 0.58, 1.4], godown: [0.5, 0.6, 1.4], kiranas: [0.8, 0.62, 1.4], buyer: [0.8, 0.32, 1.6], foodbank: [0.52, 0.4, 1.6], landfill: [0.17, 0.32, 1.6] },
+      wide: { rest: [0.5, 0.5, 1], make: [0.22, 0.58, 1.65], stock: [0.5, 0.56, 1.55], risk: [0.5, 0.55, 1.7], route: [0.56, 0.52, 1.3], yes: [0.17, 0.58, 1.7], sell: [0.8, 0.53, 1.3], report: [0.2, 0.47, 1.4],
+        maker: [0.18, 0.58, 1.8], godown: [0.5, 0.6, 1.8], kiranas: [0.8, 0.62, 1.8], buyer: [0.8, 0.3, 2], foodbank: [0.52, 0.4, 2], landfill: [0.17, 0.32, 2] },
+      phone: { rest: [0.5, 0.55, 1], make: [0.22, 0.6, 1.3], stock: [0.5, 0.62, 1.3], risk: [0.5, 0.6, 1.45], route: [0.55, 0.55, 1.1], yes: [0.15, 0.6, 1.4], sell: [0.8, 0.6, 1.15], report: [0.17, 0.5, 1.2],
+        maker: [0.18, 0.58, 1.4], godown: [0.5, 0.6, 1.4], kiranas: [0.8, 0.62, 1.4], buyer: [0.8, 0.32, 1.6], foodbank: [0.52, 0.4, 1.6], landfill: [0.17, 0.32, 1.6] },
     },
     // the band behind the heading on desktops, as fractions of the stage: solid haze, then clear
     haze: [0.3, 0.42],
@@ -467,9 +468,9 @@ void main() {
   // an agent at its post: its icon, and its name beside it (on desktops at rest and while it works; on phones when open,
   // or for the person); lit once it has worked, the aura while it works, amber for the person. The places' panels list
   // every agent for the keyboard, so the posts are for the pointer.
-  const Node = ({ a, g, j, sel, onOpen, hover, named, tipped }) => {
+  const Node = ({ a, g, j, sel, onOpen, hover, named }) => {
     const at = wpx(g, GEO.posts[a.id]), { done, now } = agentState(a, j), open = sel && sel.kind === "agent" && sel.id === a.id;
-    const side = GEO.labels[a.id] || "right", show = !tipped && (named || open || (now && (g.wide || a.human)));
+    const side = GEO.labels[a.id] || "right", show = named || open || (now && (g.wide || a.human));
     return <span className="town-at" style={{ left: at[0], top: at[1] }}>
       <button type="button" tabIndex={-1} aria-hidden="true" className={cx("town-node", "side-" + side, a.human && "human", done && "on", now && "now", !done && !now && j.k >= 0 && "later", open && "open", show && "named")}
         onClick={() => onOpen({ kind: "agent", id: a.id })} onPointerEnter={() => hover({ kind: "agent", id: a.id })} onPointerLeave={() => hover(null)}>
@@ -493,11 +494,14 @@ void main() {
     return <span className="town-at town-batch" ref={ref} aria-hidden="true"><span className={cx("town-batch-card", risk && "risk")}><i><Icon name="package" size={14} stroke={2} /></i><b>{text}</b></span></span>;
   }
 
-  /* ---------- the panel: a place or an agent, opened ---------- */
-  function Panel({ sel, j, onOpen, onClose }) {
+  /* ---------- the panel: a place or an agent, opened; or, on the tour, the agent at work ---------- */
+  // A tour card (auto) never takes focus, carries a thin line that fills over the stop's time (it stops while the tour
+  // holds), and on phones sits over the foot of the town, with the agent's name, post and what it did for this batch.
+  function Panel({ sel, j, g, auto, onOpen, onClose }) {
     const ref = useRef(null);
-    useEffect(() => { if (sel && ref.current) ref.current.focus({ preventScroll: true }); }, [sel && sel.kind, sel && sel.id]);
+    useEffect(() => { if (sel && !auto && ref.current) ref.current.focus({ preventScroll: true }); }, [sel && sel.kind, sel && sel.id, auto]);
     if (!sel) return null;
+    const compact = auto && g && !g.wide;
     const chips = ids => <span className="town-panel-chips">{ids.map(id => { const a = AGENT[id], { done } = agentState(a, j);
       return <button key={id} type="button" className={cx("town-chip", a.human && "human", done && "on")} onClick={() => onOpen({ kind: "agent", id })}><i><Icon name={a.icon} size={13} stroke={2.2} /></i>{a.name}</button>; })}</span>;
     let body;
@@ -513,32 +517,32 @@ void main() {
       body = <>
         <header><i className={cx(a.human && "human")}><Icon name={a.icon} size={16} stroke={2} /></i><h3 id="town-panel-h">{a.name}</h3>
           <button type="button" className="town-panel-at" onClick={() => onOpen({ kind: "place", id: a.at })}>at the {PLACE[a.at].short.toLowerCase()}</button></header>
-        <p>{a.job}.</p>
+        {!compact && <p>{a.job}.</p>}
         <p className="town-panel-did"><span className="town-panel-k">This batch</span>{a.did}</p>
-        {(from.length > 0 || to.length > 0) && <div className="town-panel-flow">{from.length > 0 && <span><span className="town-panel-k">From</span>{chips(from)}</span>}{to.length > 0 && <span><span className="town-panel-k">Hands to</span>{chips(to)}</span>}</div>}
+        {!compact && (from.length > 0 || to.length > 0) && <div className="town-panel-flow">{from.length > 0 && <span><span className="town-panel-k">From</span>{chips(from)}</span>}{to.length > 0 && <span><span className="town-panel-k">Hands to</span>{chips(to)}</span>}</div>}
       </>;
     }
-    return <motion.div key={sel.kind + sel.id} id="town-panel" className="town-panel" role="region" aria-labelledby="town-panel-h" tabIndex={-1} ref={ref}
-      initial={j.reduce ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.24, ease: EASE }}
+    const place = compact ? { top: g.H - 8 } : undefined;
+    return <motion.div key={sel.kind + sel.id} id="town-panel" className={cx("town-panel", auto && "auto", compact && "compact")} role="region" aria-labelledby="town-panel-h" tabIndex={auto ? undefined : -1} ref={ref} style={place}
+      initial={j.reduce ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, transition: { duration: 0.16 } }} transition={{ duration: 0.24, ease: EASE }}
       onKeyDown={e => { if (e.key === "Escape") { e.stopPropagation(); onClose(); } }}>
       {body}
-      <button type="button" className="town-panel-x" aria-label="Close" onClick={onClose}><Icon name="x" size={16} stroke={2} /></button>
+      <button type="button" className="town-panel-x" aria-label={auto ? "Close, and pause the journey" : "Close"} onClick={onClose}><Icon name="x" size={16} stroke={2} /></button>
+      {auto && !j.reduce && <span key={j.s} className="town-panel-time" aria-hidden="true" style={{ animationDuration: j.ms + "ms", animationPlayState: j.held ? "paused" : "running" }} />}
     </motion.div>;
   }
 
-  /* ---------- the tour's card, beside the agent at work ---------- */
-  // Over the whole town, where the renderer shows the agent's post: above its pin when there is room, else below, always
-  // inside the stage, on a stem to the pin. A line along its foot fills while the stop holds, and stops when the tour
-  // does. It names the agent, so the pin's own name stands down meanwhile; a screen reader has the journey's list.
+  /* ---------- option C: the card beside the agent at work ---------- */
+  // Over the whole town, where the renderer shows the agent's post: above its pin when there is room, else below, and
+  // always inside the stage.
   function Tip({ g, j, api, project }) {
     const ref = useRef(null), id = j.agent, a = id ? AGENT[id] : null;
     useLayoutEffect(() => {
       const el = ref.current; if (!el || !a || !g) return;
       const put = () => {
-        const p = project ? project(GEO.posts[id], id) : api.toStage(GEO.posts[id]), w = el.offsetWidth, h = el.offsetHeight, up = p[1] - 28 - h > 8;
-        const x = clamp(p[0] - w / 2, 8, g.W - w - 8);
-        el.style.left = x.toFixed(1) + "px"; el.style.top = (up ? p[1] - 28 - h : p[1] + 28).toFixed(1) + "px";
-        el.style.setProperty("--caret", clamp(p[0] - x, 14, w - 14).toFixed(1) + "px"); el.classList.toggle("below", !up);
+        const p = project ? project(GEO.posts[id], id) : api.toStage(GEO.posts[id]), w = el.offsetWidth, h = el.offsetHeight, up = p[1] - 22 - h > 8;
+        el.style.left = clamp(p[0] - w / 2, 8, g.W - w - 8).toFixed(1) + "px"; el.style.top = (up ? p[1] - 22 - h : p[1] + 22).toFixed(1) + "px";
+        el.classList.toggle("below", !up);
       };
       put(); const u1 = api.listen(put), u2 = api.listenView(put); return () => { u1(); u2(); };
     }, [id, g, project]);
@@ -546,7 +550,7 @@ void main() {
       initial={j.reduce ? false : { opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, transition: { duration: 0.14 } }} transition={{ duration: 0.22, ease: EASE }}>
       <header><i><Icon name={a.icon} size={13} stroke={2.2} /></i><b>{a.name}</b><span>at the {PLACE[a.at].short.toLowerCase()}</span></header>
       <p>{a.did}</p>
-      {!j.reduce && <span key={j.s} className="town-tip-time" style={{ animationDuration: j.ms + "ms", animationPlayState: j.held ? "paused" : "running" }} />}
+      {!j.reduce && <span key={j.s} className="town-panel-time" style={{ animationDuration: j.ms + "ms", animationPlayState: j.held ? "paused" : "running" }} />}
     </motion.div>}</AnimatePresence>;
   }
 
@@ -600,15 +604,18 @@ void main() {
     // the visitor takes the camera (a drag, a pinch, a zoom, a card opened): the journey holds until they press Play
     const take = () => { setFollow(false); if (!j.done && j.playing) j.pause(); };
     useGestures(stageRef, api, take);
-    // The tour keeps the whole business in view: while it has the camera, the camera rests on the whole town (and goes
-    // back to it when Play or Replay hands the camera back). Where the stage crops the town's sides (phones, tablets), it
-    // slides along at the same size to keep the agent at work, or the beat's place, in view.
-    const keep = g && g.w > g.W + 1 && !j.done && j.s >= 0 ? (j.agent ? GEO.posts[j.agent] : placeAt(g, j.beat.at[0])) : null;
+    // The camera follows the journey until the visitor takes it. A: the beat's shot. B: close to the agent at work (the
+    // beat's shot between agents). C: the whole business throughout. On phones the tour's card sits over the foot of the
+    // town, so the camera looks a little lower and what works stays above it.
+    const camKey = OPT === "b" ? j.s : j.k;
     useEffect(() => {
       if (!g || !follow) return;
-      const rest = shotOf(g, "rest");
-      api.to(keep ? [keep[0], rest[1], rest[2]] : rest, j.s < 0 ? 0 : 0.9);
-    }, [follow, g && g.wide, g && g.W, j.run, keep]);
+      let shot;
+      if (j.done || j.s < 0 || OPT === "c") shot = shotOf(g, "rest");
+      else if (OPT === "b" && j.agent) { const p = GEO.posts[j.agent]; shot = [p[0], p[1] + (g.wide ? 0.06 : 0.1), shotOf(g, AGENT[j.agent].at)[2]]; }
+      else { shot = shotOf(g, BEATS[j.k].id); if (!g.wide && BEATS[j.k].who.length) shot = [shot[0], shot[1] + 0.07, shot[2]]; }
+      api.to(shot, j.s < 0 ? 0 : PACE.fly);
+    }, [camKey, j.done, follow, g && g.wide, g && g.W]);
     const open = s => {
       take(); setSel(s);
       const place = s.kind === "place" ? s.id : AGENT[s.id].at, shot = shotOf(g, place);
@@ -638,8 +645,9 @@ void main() {
       io.observe(st);
       return () => { clearTimeout(t); hero.removeEventListener("pointerenter", enter); hero.removeEventListener("pointerleave", leave); hero.removeEventListener("focusout", out); document.removeEventListener("pointerdown", down, true); io.disconnect(); };
     }, [api]);
-    // the tour's card, while the tour has the camera and no card of the visitor's is open
-    const tour = follow && !sel && j.touring && j.agent ? j.agent : null;
+    // the tour's card: A and B dock it where a visitor's card opens; C sets it beside the agent's pin
+    const tour = follow && !sel && j.touring && j.agent ? { kind: "agent", id: j.agent } : null;
+    const shown = sel || (OPT !== "c" ? tour : null);
     // what the graph lifts: an agent, or a place's team, and its neighbours in the graph
     const focus = useMemo(() => {
       const s = hov || sel; if (!s) return null;
@@ -655,7 +663,7 @@ void main() {
       const place = () => { const v = view.current; if (!v) return; items.forEach(n => { const p = JSON.parse(n.dataset.at), q = shifted(p, map.at(p) + 0.04, v); n.style.translate = `${((q[0] - p[0]) * g.w).toFixed(2)}px ${((q[1] - p[1]) * g.h).toFixed(2)}px`; }); };
       place(); const a = api.listen(place), b = api.listenView(place); return () => { a(); b(); };
     }, [gl, map, g, api]);
-    // Nothing on the town sits under the heading's text or buttons, the caption, the controls or a card, or half
+    // Nothing on the town sits under the heading's text or buttons, the caption, the controls, a card or a tip, or half
     // off the stage; once the camera is nearer, nothing it carries into the haze either. The graph is clipped round the
     // heading's boxes.
     const boxes = (sels, pad, any) => {
@@ -667,7 +675,7 @@ void main() {
     useEffect(() => {
       const el = topWorld.current, s = stageRef.current; if (!el || !g) return;
       const check = () => {
-        const o = s.getBoundingClientRect(), hs = holes().concat(boxes(".town-caption, .town-ctl > *, .town-panel", 6), boxes(".town-tip", 4, true)), near = g.wide && api.t().z > 1.02, haze = GEO.haze[0] * g.H;
+        const o = s.getBoundingClientRect(), hs = holes().concat(boxes(".town-caption, .town-ctl > *, .town-panel", 6), boxes(".town-panel.compact, .town-tip", 4, true)), near = g.wide && api.t().z > 1.02, haze = GEO.haze[0] * g.H;
         [...el.querySelectorAll("[data-at], .town-batch")].forEach(n => {
           const b = (n.querySelector(".town-pin-body, .town-node, .town-batch-card") || n).getBoundingClientRect(), x0 = b.left - o.left, y0 = b.top - o.top, x1 = b.right - o.left, y1 = b.bottom - o.top;
           const out = x1 < 4 || x0 > g.W - 4 || y1 < 4 || y0 > g.H - 4 || (b.width > 0 && (x0 < -6 || x1 > g.W + 6));
@@ -681,7 +689,7 @@ void main() {
     const named = g && g.wide && (j.done || j.k < 0);
     const hint = g && (g.wide ? "Drag to look round · click a place or an agent" : "Swipe to look round · tap a place");
     return <>
-      <div className={cx("hero-scene town-stage", gl && "is-gl", ready && "ready")} ref={stageRef}>
+      <div className={cx("hero-scene town-stage", gl && "is-gl", ready && "ready", "sc34-" + OPT)} ref={stageRef}>
         {gl && g && <DepthPlate g={g} api={api} dark={dark} reduce={j.reduce} map={map} stageRef={stageRef} view={view} onReady={() => setReady(true)} onFail={() => setGl(false)} />}
         <div className="town-world" ref={plateWorld} style={g ? { left: g.ox, top: g.oy, width: g.w, height: g.h } : { visibility: "hidden" }}>
           {!gl && <img src={IMG + (dark ? "business-night.webp" : "business.webp")} width={GEO.nw} height={GEO.nh} draggable="false" onLoad={() => setReady(true)} alt="" />}
@@ -690,17 +698,17 @@ void main() {
         {g && <Graph g={g} api={api} j={j} dark={dark} focus={focus} project={project} holes={holes} />}
         <div className="town-world town-top" ref={topWorld} style={g ? { left: g.ox, top: g.oy, width: g.w, height: g.h } : { visibility: "hidden" }}>
           {g && PLACES.map(p => <span key={p.id} data-at={JSON.stringify(placeAt(g, p.id))} className="town-shift"><Pin p={p} g={g} j={j} sel={sel} onOpen={open} hover={setHov} /></span>)}
-          {g && AGENTS.map(a => <span key={a.id} data-at={JSON.stringify(GEO.posts[a.id])} className="town-shift"><Node a={a} g={g} j={j} sel={sel} onOpen={open} hover={setHov} named={named && (!focus || focus.has(a.id))} tipped={tour === a.id} /></span>)}
+          {g && AGENTS.map(a => <span key={a.id} data-at={JSON.stringify(GEO.posts[a.id])} className="town-shift"><Node a={a} g={g} j={j} sel={sel} onOpen={open} hover={setHov} named={named && (!focus || focus.has(a.id))} /></span>)}
           {g && <Batch g={g} j={j} />}
         </div>
-        {g && <Tip g={g} j={{ ...j, agent: tour }} api={api} project={project} />}
+        {g && OPT === "c" && <Tip g={g} j={{ ...j, agent: tour ? tour.id : null }} api={api} project={project} />}
         <p className="sr-only">{dark
           ? "The whole business as a miniature town at night: the snack maker's factory and office, the distributor's godown, a lane of kirana shops, a highway to a buyer's warehouse, a food bank, and a fenced landfill, dark."
           : "The whole business as a miniature town in the morning: on the left the snack maker's factory and office, in the middle the distributor's godown full of cartons, on the right a lane of kirana shops hung with snack packets; behind them a highway to a buyer's warehouse in the next town, a food bank, and a fenced landfill, empty."}</p>
       </div>
       <SrJourney j={j} />
       <Caption j={j} money={money} hint={j.done && !sel ? hint : null} />
-      <AnimatePresence>{sel && <Panel key="panel" sel={sel} j={j} onOpen={open} onClose={() => setSel(null)} />}</AnimatePresence>
+      <AnimatePresence>{shown && <Panel key="panel" sel={shown} auto={!sel} g={g} j={j} onOpen={open} onClose={() => (sel ? setSel(null) : take())} />}</AnimatePresence>
       {g && <Controls j={j} api={api} g={g} zoom={zoom} onWhole={whole} onReplay={replay} onPlay={play} onTake={take} />}
     </>;
   }

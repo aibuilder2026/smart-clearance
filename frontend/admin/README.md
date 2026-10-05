@@ -18,13 +18,13 @@ root layout cannot.
 ## The landing page
 
 `src/lib/landing/` has one component per section of the prototype, with its classes, ids and accessible names:
-`Nav`, `Hero` (with `Town`, the whole business as one miniature town in depth, the batch's journey and the agent graph, SC-32), `How` (how it works,
+`Nav`, `Hero` (with `Town`, the whole business as one miniature town in depth, the batch's tour and the agent graph, SC-32 and SC-34), `How` (how it works,
 three moments), `Exits` (the packs taking the street, the batch split by exit, and the results), `Workspace`, `Plans`,
 `Close`, `Footer`, and the `DemoSheet`; `Site` puts them together.
 `figures.ts` works out every figure and line of copy from the API's showcase and catalog, as `site.jsx` does from the
 prototype's globals. The page names no client: the batch it follows is an illustrative one (SC-28).
 
-The motion plays once as a section comes into view, under five seconds, and then holds. The server sends each section
+The motion plays once as a section comes into view, under five seconds, and then holds; the hero's tour is longer, with Pause and Play (below). The server sends each section
 at rest, so the prerendered page is complete without JavaScript. A section already on screen when the page starts
 stays at rest, and so does every section when the reader asks for less motion.
 
@@ -51,8 +51,16 @@ picks every plate.
 - the street plays once nearly all of it is in view, and the split once its packs have arrived; one Replay runs both;
 - below 1100 px the street is a strip that follows the packs;
 - the hero's town (`Town`, with `town/`):
-  - **the camera** (`camera.ts`) follows the batch through the town once its plate and depth have loaded, seven beats in
-    4.7 s; `motion`'s `animate()` flies it and rolls the money; then it holds with Replay;
+  - **the tour** (SC-34): once the plate and its depth have loaded, the batch tours the town.
+    - It makes a stop for each agent, in the order they work (`figures.ts` works out the stops): 1.3 s an agent, 1.7 s
+      on the yes, 1.1 s on the two beats without agents, 16.9 s in all.
+    - A card opens beside the agent's pin, on a stem, and the pin's name stands down meanwhile.
+    - **The camera** (`camera.ts`) rests on the whole town. On phones and tablets it slides along at the same size to
+      keep the agent in view. `motion`'s `animate()` flies it and rolls the money.
+    - **Control (WCAG 2.2.2):** Pause and Play are one button with Replay. Taking the camera holds the tour, and so
+      does the hero going out of view.
+    - **Leaving the hero** (the pointer, focus, a tap outside, or scrolling away) brings the whole town back and closes
+      the visitor's card;
   - **the depth renderer** (`depth.ts`, WebGL2) shifts each pixel by its depth: parallax as the camera travels, a tilt
     under the pointer, a sway under a swipe, and a focus that follows the camera;
   - **the agent graph** (`graph.ts`) is drawn on a canvas over the town, and the packs run out when the batch sells;

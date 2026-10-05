@@ -12,7 +12,7 @@
 	} from '@smart-clearance/core';
 	import { animate } from 'motion';
 	import { untrack } from 'svelte';
-	import { fly } from 'svelte/transition';
+	import { fade, fly, scale } from 'svelte/transition';
 	import type { Figures } from './figures';
 	import Plate from './Plate.svelte';
 	import { PLATES } from './plates';
@@ -24,17 +24,20 @@
 
 	// The whole business as one miniature town (design3/site/town.jsx, SC-32): the maker's factory and office, the
 	// distributor's godown, the kirana lane, a buyer in the next town, a food bank and the landfill. Every agent works
-	// at a post in the town, and the handoffs between them are the agent graph. A camera follows one batch through it,
-	// once (4.7 s, WCAG 2.2.2), then the town is the visitor's: drag or swipe to look round, pinch or Ctrl-scroll to
-	// zoom, double-click to go nearer, and open a place or an agent for what it did. Drawn in WebGL2 from the plate and
-	// its depth map, so it parallaxes as the camera travels, tilts under the pointer and keeps its focus on what the
-	// camera looks at; without WebGL2 the plate is drawn flat. Under reduced motion the batch is at its result from the
-	// start and the camera jumps. The server sends the plate at rest; the rest is drawn in the browser.
+	// at a post in the town, and the handoffs between them are the agent graph. The batch tours it once, over the whole
+	// town (SC-34): a stop for each agent in the order they work, its card opening beside its pin, about 17 s, with Pause
+	// and Play (WCAG 2.2.2). Then the town is the visitor's: drag or swipe to look round, pinch or Ctrl-scroll to zoom,
+	// double-click to go nearer, and open a place or an agent for what it did; taking the camera pauses the tour, and
+	// leaving the hero brings the whole town back. Drawn in WebGL2 from the plate and its depth map, so it parallaxes as
+	// the camera travels, tilts under the pointer and keeps its focus on what the camera looks at; without WebGL2 the
+	// plate is drawn flat. Under reduced motion the batch is at its result from the start and the camera jumps. The
+	// server sends the plate at rest; the rest is drawn in the browser.
 	let { f }: { f: Figures } = $props();
 	const app = useApp();
 	const theme = useTheme();
 	const T = $derived(f.town);
 	const NB = $derived(T.beats.length);
+	const NS = $derived(T.stops.length);
 	const agentOf = (id: string) => T.agents.find((a) => a.id === id)!;
 	const placeOf = (id: string) => T.places.find((p) => p.id === id)!;
 	const beatOf = (id: string) => T.beats.findIndex((b) => b.id === id);
@@ -148,33 +151,44 @@
 	});
 
 	/* ---------- the journey ---------- */
-	// -1 before it sets off, 0 to 6 at a beat, 7 when it is done. It sets off half a second after the town has loaded,
-	// so it never plays over an empty frame. Stepping by hand stops the clock.
-	let k = $state(-1);
+	// s: -1 before it sets off, 0 to NS - 1 at a stop, NS when it is done; k is the stop's beat (-1 before, NB after). It
+	// sets off half a second after the town has loaded, so it never plays over an empty frame. It holds while paused, and
+	// while the hero is out of view (it carries on when it is back); stepping by hand stops the clock, and Play restarts
+	// it from where it is.
+	let s = $state(-1);
 	let run = $state(0);
 	let manual = $state(false);
-	const playing = $derived(k >= 0 && k < NB && !manual);
-	const done = $derived(k >= NB);
-	const beat = $derived(k >= 0 && k < NB ? T.beats[k] : null);
+	let paused = $state(false);
+	let inView = $state(true);
+	const stop = $derived(s >= 0 && s < NS ? T.stops[s] : null);
+	const k = $derived(s < 0 ? -1 : stop ? stop.beat : NB);
+	const held = $derived(paused || manual || !inView);
+	const playing = $derived(s < NS && !manual && !paused);
+	const touring = $derived(!!stop && !manual);
+	const done = $derived(s >= NS);
+	const beat = $derived(stop ? T.beats[stop.beat] : null);
+	const agentNow = $derived(stop ? stop.agent : null);
 	$effect(() => {
 		void run;
 		if (reduce) {
-			k = NB;
+			s = NS;
 			return;
 		}
 		if (!ready) return;
-		k = -1;
-		const t = setTimeout(() => (k = 0), 500);
+		s = -1;
+		paused = false;
+		const t = setTimeout(() => (s = 0), 500);
 		return () => clearTimeout(t);
 	});
 	$effect(() => {
-		if (reduce || manual || k < 0 || k >= NB) return;
-		const t = setTimeout(() => (k += 1), T.beats[k].ms);
+		if (reduce || held || s < 0 || s >= NS) return;
+		const t = setTimeout(() => (s += 1), T.stops[s].ms);
 		return () => clearTimeout(t);
 	});
 	const step = (d: number) => {
 		manual = true;
-		k = Math.min(NB, Math.max(0, (k < 0 ? 0 : k) + d));
+		paused = false;
+		s = Math.min(NS, Math.max(0, (s < 0 ? 0 : s) + d));
 	};
 	// the money, rolled in once over the settling beat (the system's roll, 700 ms); at its value under reduced motion
 	let money = $state(0);
@@ -193,27 +207,43 @@
 		return () => c.stop();
 	});
 
-	/* ---------- the camera follows the journey until the visitor takes it ---------- */
+	/* ---------- the camera: the tour's until the visitor takes it ---------- */
 	let following = $state(true);
 	let sel = $state<{ kind: 'place' | 'agent'; id: string } | null>(null);
 	let hov = $state<{ kind: 'place' | 'agent'; id: string } | null>(null);
-	$effect(() => {
-		if (!g || !following) return;
-		const id = done || k < 0 ? 'rest' : T.beats[k].id;
-		camera.to(shotOf(g, id), k < 0 ? 0 : 0.6);
+	// The tour keeps the whole business in view: while it has the camera, the camera rests on the whole town (and goes
+	// back to it when Play or Replay hands the camera back). Where the stage crops the town's sides (phones, tablets),
+	// it slides along at the same size to keep the agent at work, or the beat's place, in view.
+	const keep = $derived.by(() => {
+		const G = g;
+		if (!G || G.w <= G.W + 1 || done || s < 0) return null;
+		return agentNow ? GEO.posts[agentNow] : beat ? placeAt(G, beat.at[0]) : null;
 	});
+	$effect(() => {
+		const G = g,
+			at = keep;
+		void run;
+		if (!G || !following) return;
+		const rest = shotOf(G, 'rest');
+		camera.to(at ? [at[0], rest[1], rest[2]] : rest, untrack(() => s) < 0 ? 0 : 0.9);
+	});
+	// the visitor takes the camera (a drag, a pinch, a zoom, a card opened): the tour holds until they press Play
+	const take = () => {
+		following = false;
+		if (!done && playing) paused = true;
+	};
 	$effect(() => {
 		const el = stage;
 		if (!el || !app.mounted) return;
-		return gestures(el, camera, () => (following = false));
+		return gestures(el, camera, take);
 	});
-	const open = (s: { kind: 'place' | 'agent'; id: string }) => {
-		following = false;
-		sel = s;
-		const place = s.kind === 'place' ? s.id : agentOf(s.id).at,
+	const open = (sl: { kind: 'place' | 'agent'; id: string }) => {
+		take();
+		sel = sl;
+		const place = sl.kind === 'place' ? sl.id : agentOf(sl.id).at,
 			shot = shotOf(g, place);
 		camera.to(
-			s.kind === 'agent' ? [GEO.posts[s.id][0], GEO.posts[s.id][1] + (g?.wide ? 0.06 : 0.04), shot[2]] : shot,
+			sl.kind === 'agent' ? [GEO.posts[sl.id][0], GEO.posts[sl.id][1] + (g?.wide ? 0.06 : 0.04), shot[2]] : shot,
 			0.7
 		);
 	};
@@ -225,30 +255,89 @@
 		sel = null;
 		following = true;
 		manual = false;
+		paused = false;
 		run += 1;
 	};
+	const play = () => {
+		sel = null;
+		following = true;
+		manual = false;
+		paused = false;
+		if (s < 0) s = 0;
+	};
+	// Leaving the hero brings the town back to the whole business: the pointer leaves it (after a moment, in case it
+	// only slipped out), focus moves out of it, a tap or click lands outside it, or it scrolls out of view. Any card the
+	// visitor opened closes. A tour that is playing on its own keeps its camera, and holds while it is out of view.
+	$effect(() => {
+		const st = stage,
+			hero = st?.closest<HTMLElement>('.hero');
+		if (!st || !hero || !app.mounted) return;
+		let t: ReturnType<typeof setTimeout> | undefined;
+		const back = () => {
+			clearTimeout(t);
+			sel = null;
+			hov = null;
+			const G = untrack(() => g);
+			if (G && !untrack(() => following && playing)) camera.to(shotOf(G, 'rest'), untrack(() => reduce) ? 0 : 0.7);
+		};
+		const enter = (e: PointerEvent) => {
+			if (e.pointerType === 'mouse') clearTimeout(t);
+		};
+		const leave = (e: PointerEvent) => {
+			if (e.pointerType !== 'mouse') return;
+			clearTimeout(t);
+			t = setTimeout(back, 300);
+		};
+		const out = (e: FocusEvent) => {
+			if (e.relatedTarget instanceof Node && !hero.contains(e.relatedTarget)) back();
+		};
+		const down = (e: PointerEvent) => {
+			if (e.target instanceof Node && !hero.contains(e.target)) back();
+		};
+		hero.addEventListener('pointerenter', enter);
+		hero.addEventListener('pointerleave', leave);
+		hero.addEventListener('focusout', out);
+		document.addEventListener('pointerdown', down, true);
+		const io = new IntersectionObserver(
+			([e]) => {
+				const v = e.intersectionRatio >= 0.3;
+				inView = v;
+				if (!v) back();
+			},
+			{ threshold: [0, 0.3, 0.6] }
+		);
+		io.observe(st);
+		return () => {
+			clearTimeout(t);
+			hero.removeEventListener('pointerenter', enter);
+			hero.removeEventListener('pointerleave', leave);
+			hero.removeEventListener('focusout', out);
+			document.removeEventListener('pointerdown', down, true);
+			io.disconnect();
+		};
+	});
 	// Escape closes an open panel, wherever the focus is
 	const onkey = (e: KeyboardEvent) => {
 		if (e.key === 'Escape' && sel) sel = null;
 	};
 	// what the graph lifts: an agent, or a place's team, and its neighbours in the graph
 	const focus = $derived.by(() => {
-		const s = hov ?? sel;
-		if (!s) return null;
-		const core = s.kind === 'agent' ? [s.id] : T.agents.filter((a) => a.at === s.id).map((a) => a.id);
+		const x = hov ?? sel;
+		if (!x) return null;
+		const core = x.kind === 'agent' ? [x.id] : T.agents.filter((a) => a.at === x.id).map((a) => a.id);
 		const near = T.edges.flatMap(([a, b]) => (core.includes(a) ? [b] : core.includes(b) ? [a] : []));
 		return new Set([...core, ...near]) as ReadonlySet<string>;
 	});
 
 	/* ---------- what stands on the town, kept clear of the heading and the controls ---------- */
-	// Nothing on the town sits under the heading's text or buttons, the caption, the controls or the panel, or half off
+	// Nothing on the town sits under the heading's text or buttons, the caption, the controls or a card, or half off
 	// the stage; once the camera is nearer, nothing it carries into the haze either. The graph is clipped round the
 	// heading's boxes.
-	const boxes = (sels: string, pad: number): [number, number, number, number][] => {
-		const s = stage,
-			hero = s?.closest('.hero');
-		if (!s || !hero || !g || !g.wide) return [];
-		const o = s.getBoundingClientRect();
+	const boxes = (sels: string, pad: number, any = false): [number, number, number, number][] => {
+		const st = stage,
+			hero = st?.closest('.hero');
+		if (!st || !hero || !g || (!g.wide && !any)) return [];
+		const o = st.getBoundingClientRect();
 		return [...hero.querySelectorAll(sels)].map((e) => {
 			const r = e.getBoundingClientRect();
 			return [r.left - o.left - pad, r.top - o.top - pad, r.right - o.left + pad, r.bottom - o.top + pad];
@@ -257,16 +346,17 @@
 	const holes = () => boxes('.hero-h, .hero-sub, .hero-ctas > *', 8);
 	$effect(() => {
 		const el = topWorld,
-			s = stage,
+			st = stage,
 			G = g;
-		void k;
+		void s;
 		void done;
 		void sel;
 		void hov;
-		if (!el || !s || !G) return;
+		void following;
+		if (!el || !st || !G) return;
 		const check = () => {
-			const o = s.getBoundingClientRect(),
-				hs = holes().concat(boxes('.town-caption, .town-ctl > *, .town-panel', 6)),
+			const o = st.getBoundingClientRect(),
+				hs = holes().concat(boxes('.town-caption, .town-ctl > *, .town-panel', 6), boxes('.town-tip', 4, true)),
 				near = G.wide && camera.t().z > 1.02,
 				haze = GEO.haze[0] * G.H;
 			for (const n of el.querySelectorAll<HTMLElement>('[data-at], .town-batch')) {
@@ -276,16 +366,19 @@
 					x1 = b.right - o.left,
 					y1 = b.bottom - o.top;
 				const out = x1 < 4 || x0 > G.W - 4 || y1 < 4 || y0 > G.H - 4 || (b.width > 0 && (x0 < -6 || x1 > G.W + 6));
-				const under = hs.some((h) => x0 < h[2] && x1 > h[0] && y0 < h[3] && y1 > h[1]);
+				const under =
+					!n.querySelector('.town-node.now') && hs.some((h) => x0 < h[2] && x1 > h[0] && y0 < h[3] && y1 > h[1]);
 				n.classList.toggle('off', out || under || (near && (y0 + y1) / 2 < haze));
 			}
 		};
 		check();
 		const a = camera.listen(check),
-			b = camera.listenView(check);
+			b = camera.listenView(check),
+			t = setTimeout(check, 260);
 		return () => {
 			a();
 			b();
+			clearTimeout(t);
 		};
 	});
 	// in depth, the pins and the agents ride the renderer's shift
@@ -318,7 +411,7 @@
 	$effect(() => {
 		const c = graphCanvas;
 		if (!c) return;
-		const gr = new Graph(c, camera, T.agents, T.edges, NB);
+		const gr = new Graph(c, camera, T.agents, T.edges, NS);
 		graph = gr;
 		const a = camera.listen(gr.draw),
 			b = camera.listenView(gr.draw);
@@ -332,18 +425,18 @@
 	$effect(() => {
 		const gr = graph;
 		if (!gr || !g) return;
-		gr.state = { g, k, done, playing, manual, reduce, dark, focus, project, holes };
+		gr.state = { g, s, done, playing, touring, manual, reduce, dark, focus, project, holes };
 		gr.draw();
 	});
+	// draw each handoff in as the tour reaches it; the packs run out as the sale's first agent starts work
 	$effect(() => {
 		void run;
 		const gr = graph,
-			id = beat?.id ?? null;
-		void k;
+			sale = !!stop && T.beats[stop.beat].id === 'sell' && stop.agent === T.beats[stop.beat].who[0];
 		void done;
 		if (!gr || !gr.state) return;
-		gr.state = { ...gr.state, k, done, playing, manual, reduce };
-		gr.step(id);
+		gr.state = { ...gr.state, s, done, reduce, ...untrack(() => ({ playing, touring, manual })) };
+		gr.step(sale);
 	});
 
 	/* ---------- the batch, travelling the route ---------- */
@@ -382,7 +475,34 @@
 		void sel?.id;
 		if (sel && panel) panel.focus({ preventScroll: true });
 	});
-	const agentState = (a: (typeof T.agents)[number]) => ({ done: a.beat < k || done, now: a.beat === k && playing });
+	const agentState = (a: (typeof T.agents)[number]) => ({ done: a.stop < s || done, now: a.stop === s && !done });
+	// The tour's card, beside the agent at work, while the tour has the camera and no card of the visitor's is open: over
+	// the whole town where the renderer shows the agent's post, above its pin when there is room, else below, always
+	// inside the stage, on a stem to the pin. It names the agent, so the pin's own name stands down meanwhile.
+	const tour = $derived(following && !sel && touring && agentNow ? agentNow : null);
+	const placeTip = (id: string) => (el: HTMLElement) => {
+		const G = g,
+			proj = project;
+		if (!G) return;
+		const put = () => {
+			const p = proj ? proj(GEO.posts[id], id) : camera.toStage(GEO.posts[id]),
+				w = el.offsetWidth,
+				h = el.offsetHeight,
+				up = p[1] - 28 - h > 8,
+				x = Math.min(G.W - w - 8, Math.max(8, p[0] - w / 2));
+			el.style.left = `${x.toFixed(1)}px`;
+			el.style.top = `${(up ? p[1] - 28 - h : p[1] + 28).toFixed(1)}px`;
+			el.style.setProperty('--caret', `${Math.min(w - 14, Math.max(14, p[0] - x)).toFixed(1)}px`);
+			el.classList.toggle('below', !up);
+		};
+		put();
+		const a = camera.listen(put),
+			b = camera.listenView(put);
+		return () => {
+			a();
+			b();
+		};
+	};
 	const named = $derived(!!g && g.wide && (done || k < 0));
 	const hint = $derived(
 		g?.wide ? 'Drag to look round · click a place or an agent' : 'Swipe to look round · tap a place'
@@ -458,7 +578,7 @@
 				>{/each}
 			{#each T.agents as a (a.id)}{@const at = wpx(g, GEO.posts[a.id])}{@const st = agentState(a)}{@const isOpen =
 					sel?.kind === 'agent' && sel.id === a.id}{@const show =
-					(named && (!focus || focus.has(a.id))) || isOpen || (st.now && (g.wide || a.human))}<span
+					tour !== a.id && ((named && (!focus || focus.has(a.id))) || isOpen || (st.now && (g.wide || a.human)))}<span
 					class="town-shift"
 					data-at={JSON.stringify(GEO.posts[a.id])}
 					><span class="town-at" style:left="{at[0]}px" style:top="{at[1]}px"
@@ -492,6 +612,25 @@
 				>{/if}
 		{/if}
 	</div>
+	{#if tour}{@const a = agentOf(tour)}{#key tour}<div
+				class={cx('town-tip', a.human && 'human')}
+				aria-hidden="true"
+				{@attach placeTip(tour)}
+				in:scale={{ start: 0.94, duration: motionMs(220), easing: ease }}
+				out:fade={{ duration: motionMs(140) }}
+			>
+				<header>
+					<i><Icon name={a.icon as IconName} size={13} stroke={2.2} /></i><b>{a.name}</b><span
+						>at the {placeOf(a.at).short.toLowerCase()}</span
+					>
+				</header>
+				<p>{a.did}</p>
+				{#if !reduce}<span
+						class="town-tip-time"
+						style:animation-duration="{stop?.ms ?? 0}ms"
+						style:animation-play-state={held ? 'paused' : 'running'}
+					></span>{/if}
+			</div>{/key}{/if}
 	<p class="sr-only">
 		{dark
 			? "The whole business as a miniature town at night: the snack maker's factory and office, the distributor's godown, a lane of kirana shops, a highway to a buyer's warehouse, a food bank, and a fenced landfill, dark."
@@ -504,15 +643,19 @@
 </ol>
 <p class="sr-only">Sold, not binned: {T.result}.</p>
 <p class="sr-only" aria-live="polite">
-	{manual ? (beat ? `${k + 1} of ${NB}, ${beat.t}: ${said(beat)}.` : `Sold, not binned: ${T.result}.`) : ''}
+	{manual
+		? beat
+			? `${k + 1} of ${NB}, ${beat.t}${agentNow ? `, ${agentOf(agentNow).name}: ${agentOf(agentNow).did}` : `: ${said(beat)}`}.`
+			: `Sold, not binned: ${T.result}.`
+		: ''}
 </p>
 <!-- what the batch is doing, with the steps that walk it by hand -->
 <div class={cx('town-caption', beat?.human && 'human')}>
-	<button type="button" class="town-step" aria-label="The step before" disabled={k <= 0} onclick={() => step(-1)}
+	<button type="button" class="town-step" aria-label="The step before" disabled={s <= 0} onclick={() => step(-1)}
 		><Icon name="chevron-left" size={16} stroke={2} /></button
 	>
 	<span class="town-caption-text" aria-hidden="true"
-		>{#if k < 0}<b>{fmt.num(T.batch.units)} packs leave the factory.</b><span>Follow them through the business.</span
+		>{#if s < 0}<b>{fmt.num(T.batch.units)} packs leave the factory.</b><span>Follow them through the business.</span
 			>{:else if beat}<span class="n">{k + 1} of {NB}</span><b>{beat.t}</b>{#if beat.who.length}<span class="who"
 					>{names(beat.who)}</span
 				>{/if}<span class="did"
@@ -527,7 +670,7 @@
 	>
 </div>
 <!-- a place or an agent, opened -->
-{#if sel}{@const s = sel}
+{#if sel}{@const sl = sel}
 	<div
 		id="town-panel"
 		class="town-panel"
@@ -537,7 +680,7 @@
 		bind:this={panel}
 		in:fly={{ y: 8, duration: motionMs(240), easing: ease }}
 	>
-		{#if s.kind === 'place'}{@const p = placeOf(s.id)}{@const team = T.agents
+		{#if sl.kind === 'place'}{@const p = placeOf(sl.id)}{@const team = T.agents
 				.filter((a) => a.at === p.id)
 				.map((a) => a.id)}
 			<header>
@@ -548,7 +691,7 @@
 			{#if team.length}<span class="town-panel-k">Who works here</span>{@render chips(team)}{:else}<span
 					class="town-panel-k">The Valuer prices it on every plan</span
 				>{/if}
-		{:else}{@const a = agentOf(s.id)}{@const from = T.edges.filter((e) => e[1] === a.id).map((e) => e[0])}{@const to =
+		{:else}{@const a = agentOf(sl.id)}{@const from = T.edges.filter((e) => e[1] === a.id).map((e) => e[0])}{@const to =
 				T.edges.filter((e) => e[0] === a.id).map((e) => e[1])}
 			<header>
 				<i class={cx(a.human && 'human')}><Icon name={a.icon as IconName} size={16} stroke={2} /></i>
@@ -568,22 +711,34 @@
 			><Icon name="x" size={16} stroke={2} /></button
 		>
 	</div>{/if}
-<!-- Replay, and the zoom; drawn once the page is live -->
+<!-- Pause while the tour plays, Play while it is held (paused, stepped by hand, or handed to the visitor), Replay once it
+is done, none under reduced motion: one button, so focus stays on it as it changes; and the zoom. Drawn once the page is
+live -->
 {#if g && app.mounted}<div class="town-ctl">
-		{#if !reduce}<button type="button" class="replay" onclick={replay}
-				><Icon name="rotate-ccw" size={16} stroke={2} />Replay</button
+		{#if !reduce}<button type="button" class="replay" onclick={done ? replay : playing ? () => (paused = true) : play}
+				><Icon name={done ? 'rotate-ccw' : playing ? 'pause' : 'play'} size={16} stroke={2} />{done
+					? 'Replay'
+					: playing
+						? 'Pause'
+						: 'Play'}</button
 			>{/if}
 		<span class="town-zoom" role="group" aria-label="Zoom">
 			<button
 				type="button"
 				aria-label="Zoom out"
 				disabled={zoom <= 1}
-				onclick={() => camera.zoomAt(1 / 1.45, ...center(), true)}><Icon name="minus" size={16} stroke={2} /></button
+				onclick={() => {
+					take();
+					camera.zoomAt(1 / 1.45, ...center(), true);
+				}}><Icon name="minus" size={16} stroke={2} /></button
 			><button
 				type="button"
 				aria-label="Zoom in"
 				disabled={zoom >= ZMAX}
-				onclick={() => camera.zoomAt(1.45, ...center(), true)}><Icon name="plus" size={16} stroke={2} /></button
+				onclick={() => {
+					take();
+					camera.zoomAt(1.45, ...center(), true);
+				}}><Icon name="plus" size={16} stroke={2} /></button
 			><button type="button" aria-label="The whole business" disabled={zoom <= 1} onclick={whole}
 				><Icon name="minimize-2" size={16} stroke={2} /></button
 			>

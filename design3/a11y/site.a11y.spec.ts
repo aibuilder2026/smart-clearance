@@ -2,8 +2,8 @@ import { test } from '@playwright/test';
 import { scan, report, type Finding } from './helpers';
 
 // smartclearance.com, the product's own landing page: every section from the first viewport to the footer, the town in
-// the first viewport with a place and an agent opened, plus the sign-in menu, Find your workspace, the phone menu and
-// Book a demo (empty, with its errors, and sent).
+// the first viewport with a place and an agent opened and with its tour paused at an agent's card, plus the sign-in
+// menu, Find your workspace, the phone menu and Book a demo (empty, with its errors, and sent).
 const SITE = '/site/Smart-Clearance%20site%20v3.html';
 async function open(page) {
   await page.addInitScript(() => { try { localStorage.removeItem('sc3-platform'); } catch (e) { /* storage blocked */ } });
@@ -27,6 +27,19 @@ test('site · the town: a place, then an agent, opened', async ({ page }, testIn
   await page.waitForTimeout(900);
   findings.push(...await scan(page, 'site · the town, the Watcher opened'));
   await report(testInfo, findings);
+});
+
+// the tour plays only with motion on; it is paused at a card before the scan, so every colour is at rest
+test.describe('the town\'s tour, with motion on', () => {
+  test.use({ contextOptions: { reducedMotion: 'no-preference' } });
+
+  test('site · the town\'s tour: a card beside the agent at work, paused', async ({ page }, testInfo) => {
+    await open(page);
+    await page.waitForFunction(() => !!document.querySelector('.town-tip b'), null, { timeout: 15000 });
+    await page.locator('.town-ctl').getByRole('button', { name: 'Pause' }).click();
+    await page.waitForTimeout(400);
+    await report(testInfo, await scan(page, 'site · the town\'s tour, paused at a card'));
+  });
 });
 
 test('site · sign-in menu, Find your workspace and Book a demo', async ({ page }, testInfo) => {

@@ -1,17 +1,20 @@
 // The agent graph, the packs and the route, drawn over the town (design3/site/town.jsx Graph). Each handoff draws in
-// (320 ms) as its agent starts work: a bow between the posts, up within a place, dipping between places as if it
+// (320 ms) as the tour reaches its agent: a bow between the posts, up within a place, dipping between places as if it
 // travelled the road; amber where the person is in it. It rests quiet, thin and faint; the handoff happening now, or
-// those of what is hovered or open, stand out on a thin casing of the plate's light. When the batch sells, its packs
-// run out to the kiranas (green) and up the highway to the buyer (violet), and settle.
+// those of what is hovered or open, stand out on a thin casing of the plate's light. As the sale's first agent starts
+// work, the batch's packs run out to the kiranas (green) and up the highway to the buyer (violet), and settle.
 import type { Camera } from './camera';
 import { along, clamp, GEO, type Fit, type Pt } from './geo';
 
-export type GraphAgent = { id: string; at: string; human: boolean; beat: number };
+export type GraphAgent = { id: string; at: string; human: boolean; stop: number };
 export type GraphState = {
 	g: Fit;
-	k: number;
+	/** the tour's stop: -1 before it sets off, the number of stops once it is done */
+	s: number;
 	done: boolean;
 	playing: boolean;
+	/** at a stop, and not stepped by hand (playing or paused) */
+	touring: boolean;
 	manual: boolean;
 	reduce: boolean;
 	dark: boolean;
@@ -49,7 +52,7 @@ export class Graph {
 		private cam: Camera,
 		agents: GraphAgent[],
 		private edges: [string, string][],
-		private nb: number
+		private ns: number
 	) {
 		this.agent = Object.fromEntries(agents.map((a) => [a.id, a]));
 	}
@@ -72,7 +75,6 @@ export class Graph {
 		const lit = s.dark ? '#3ccb8a' : '#167a52',
 			amber = s.dark ? '#f7c04a' : '#e8a722',
 			casing = s.dark ? 'rgba(8,14,11,0.6)' : 'rgba(255,255,255,0.75)';
-		const k = s.done ? this.nb : s.k;
 		for (const [a, b] of this.edges) {
 			const p = this.prog[a + b] || 0;
 			if (p <= 0) continue;
@@ -82,7 +84,7 @@ export class Graph {
 				mx = (A[0] + B[0]) / 2;
 			const far = this.agent[a].at !== this.agent[b].at;
 			const my = (A[1] + B[1]) / 2 + (far ? Math.min(110, d * 0.2) : -Math.min(70, d * 0.22));
-			const loud = s.focus ? s.focus.has(a) && s.focus.has(b) : this.agent[b].beat === k && !s.done;
+			const loud = s.focus ? s.focus.has(a) && s.focus.has(b) : this.agent[b].stop === s.s && !s.done;
 			const hue = this.agent[a].human || this.agent[b].human ? amber : lit,
 				n = 36,
 				m = Math.max(1, Math.round(n * p));
@@ -139,25 +141,25 @@ export class Graph {
 		ctx.restore();
 	};
 
-	/** the journey moved: draw each handoff in as it is reached, and send the packs out when the batch sells */
-	step(beatId: string | null) {
+	/** the tour moved: draw each handoff in as it is reached, and send the packs out as the sale starts */
+	step(saleStarts: boolean) {
 		const s = this.state;
 		if (!s) return;
-		const k = s.done ? this.nb : s.k,
+		const n = s.done ? this.ns : s.s,
 			want: Record<string, number> = {};
 		for (const [a, b] of this.edges) {
-			const beat = this.agent[b].beat;
-			want[a + b] = beat >= 0 && (beat < k || (beat === k && (s.playing || s.manual))) ? 1 : 0;
+			const stop = this.agent[b].stop;
+			want[a + b] = stop >= 0 && (stop < n || (stop === n && (s.touring || s.manual))) ? 1 : 0;
 		}
 		cancelAnimationFrame(this.raf);
 		if (s.reduce) {
 			this.prog = want;
 			return this.draw();
 		}
-		if (beatId === 'sell' && s.playing) {
+		if (saleStarts && s.playing) {
 			const list = [];
 			for (let i = 0; i < 26; i++) list.push({ to: i % 13 < 6 ? 'kiranas' : 'buyer', delay: (i / 26) * 0.45 });
-			this.packs = { t0: performance.now(), dur: 650, list };
+			this.packs = { t0: performance.now(), dur: 900, list };
 		}
 		const t0 = performance.now(),
 			from = { ...this.prog };

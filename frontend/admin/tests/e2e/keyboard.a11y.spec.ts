@@ -209,33 +209,35 @@ test('keyboard · a saved appearance applies before the first paint', async ({ b
 	await context.close();
 });
 
-test.describe('the town in the hero, with motion on (SC-32)', () => {
+test.describe('the town in the hero, with motion on (SC-32, SC-34)', () => {
 	test.use({ contextOptions: { reducedMotion: 'no-preference' } });
 
 	const caption = (page: Page) => page.locator('.town-caption');
-	test('motion · the batch takes the town once, under five seconds, and holds on the result', async ({ page }) => {
+	test('motion · the batch tours the town once, agent by agent, and holds on the result', async ({ page }) => {
 		await openSite(page);
-		await expect(caption(page)).toContainText('One yes', { timeout: 6000 });
+		await expect(caption(page)).toContainText('One yes', { timeout: 14000 });
 		await expect(page.locator('.town-node.human .aura')).toHaveCount(1);
-		await expect(caption(page)).toContainText('Sold, not binned.', { timeout: 6000 });
+		// the card hands over with a short crossfade, so the one coming in is the one to find
+		await expect(page.locator('.town-tip').filter({ hasText: 'at the maker' })).toBeVisible();
+		await expect(caption(page)).toContainText('Sold, not binned.', { timeout: 14000 });
 		await expect(caption(page)).toContainText('₹21,152 recovered, instead of −₹26,330 to destroy it');
 		await expect(page.locator('.town-node.on')).toHaveCount(11);
 	});
 
 	test('keyboard · Replay takes the batch through the town again', async ({ page }) => {
 		await openSite(page);
-		await expect(caption(page)).toContainText('Sold, not binned.', { timeout: 8000 });
+		await expect(caption(page)).toContainText('Sold, not binned.', { timeout: 22000 });
 		const replay = page.locator('.hero').getByRole('button', { name: 'Replay' });
 		await replay.focus();
 		await page.keyboard.press('Enter');
 		await expect(caption(page)).toContainText('1 of 7', { timeout: 2000 });
-		await expect(caption(page)).toContainText('Sold, not binned.', { timeout: 8000 });
+		await expect(caption(page)).toContainText('Sold, not binned.', { timeout: 22000 });
 		await expect(replay).toBeFocused();
 	});
 
 	test('keyboard · a place opens its panel, its agents open theirs, and Escape closes it', async ({ page }) => {
 		await openSite(page);
-		await expect(caption(page)).toContainText('Sold, not binned.', { timeout: 8000 });
+		await expect(caption(page)).toContainText('Sold, not binned.', { timeout: 22000 });
 		const pin = page.locator('.hero').getByRole('button', { name: 'Distributor · stockist: what happens here' });
 		await pin.focus();
 		await page.keyboard.press('Enter');
@@ -250,9 +252,44 @@ test.describe('the town in the hero, with motion on (SC-32)', () => {
 		await expect(panel).toHaveCount(0);
 	});
 
+	test('keyboard · the tour pauses and plays, a place opened holds it, and focus leaving the hero brings the whole town back', async ({
+		page
+	}) => {
+		await openSite(page);
+		const tip = () => page.evaluate(() => document.querySelector('.town-tip b')?.textContent || '');
+		const zoom = () =>
+			page.evaluate(
+				() =>
+					+(document.querySelector<HTMLElement>('.town-top')!.style.transform.match(/scale\(([\d.]+)\)/) || [0, '1'])[1]
+			);
+		await expect
+			.poll(tip, { message: 'a card opens beside each agent as the tour reaches it', timeout: 8000 })
+			.not.toBe('');
+		const ctl = page.locator('.town-ctl');
+		await ctl.getByRole('button', { name: 'Pause' }).focus();
+		await page.keyboard.press('Enter');
+		await expect(ctl.getByRole('button', { name: 'Play' }), 'one button, so focus stays on it').toBeFocused();
+		const held = await tip();
+		await page.waitForTimeout(2600);
+		expect.soft(await tip(), 'the tour holds while paused').toBe(held);
+		await page.keyboard.press('Enter');
+		await expect(ctl.getByRole('button', { name: 'Pause' })).toBeFocused();
+		await expect.poll(tip, { message: 'Play carries the tour on', timeout: 4000 }).not.toBe(held);
+
+		await page.locator('.hero').getByRole('button', { name: 'A buyer elsewhere: what happens here' }).focus();
+		await page.keyboard.press('Enter');
+		await expect(page.locator('#town-panel')).toBeFocused();
+		await expect(ctl.getByRole('button', { name: 'Play' }), 'opening a place holds the tour').toBeVisible();
+		await expect.poll(zoom, { timeout: 3000 }).toBeGreaterThan(1.2);
+
+		await page.locator('.site-nav').getByRole('link', { name: 'How it works' }).focus();
+		await expect(page.locator('#town-panel')).toHaveCount(0);
+		await expect.poll(zoom, { message: 'the camera returns to the whole business', timeout: 3000 }).toBeLessThan(1.01);
+	});
+
 	test('keyboard · the steps walk the journey by hand, and say each step', async ({ page }) => {
 		await openSite(page);
-		await expect(caption(page)).toContainText('Sold, not binned.', { timeout: 8000 });
+		await expect(caption(page)).toContainText('Sold, not binned.', { timeout: 22000 });
 		await page.locator('.hero').getByRole('button', { name: 'The step before' }).click();
 		await expect(caption(page)).toContainText('7 of 7Settled');
 		await expect(page.locator('.hero [aria-live="polite"]')).toContainText('7 of 7, Settled');
