@@ -1,0 +1,13 @@
+{
+  "name": "journey-night",
+  "model": "Qwen-Image-2.1 bf16 (local), edit_image",
+  "prompt": "Change the time of day to a clear night and keep everything else exactly: the same camera and composition, the factory with its two brick chimneys and its loading bay, the workers, the cartons and the blue truck, the godown with its open shutters and stacks of cartons, the forklift and the handcart, the lane of kirana shops with their hanging snack packets, the white van, the auto-rickshaws and the tiny people, all in the same places. Deep navy-blue night sky with a few small faint stars, the distant hills as dark silhouettes. Warm yellow light glowing from the factory's loading bay, the godown's open doors, the shop fronts and a few small street lamps. The thin green path glows softly along the ground from the factory to the godown and on to the shops. The shop signboards stay plain painted panels with no letters. No lettering anywhere.",
+  "reference": "design3/designs/SC-32/src/journey-day.png, the day plate after its sign edit",
+  "seed": 3325,
+  "size": 2048,
+  "output": "2752x1536",
+  "attempts": 1,
+  "created": "2026-10-05",
+  "postprocess": "WebP q82; the PNG original stays local in src/",
+  "use": "smartclearance.com hero in dark mode, SC-32's options"
+}

@@ -1,0 +1,144 @@
+/* SC-32: the hero rethought as the supply chain's journey, three ways. Loads after site.css, SC-28's sc28.css and round
+   2's r2.css (the rest of the page as built). Nothing here is built yet: the picked option's rules move into
+   design3/site/site.css (and the SvelteKit port) after the pick. Desktop sizes are in container units, as the hero's own
+   (1px of the 1280-wide comp = 0.078125cqw), so what sits on the plate scales with it. */
+
+/* the hero-stops row and its lines belong to the hero as built; the journey replaces them */
+.hero32 .hero-stops, .hero32 .hero-line { display: none !important; }
+[data-hero32] { display: contents; }
+
+/* a layer laid exactly over the plate (measured from the plate's own fit), for what happens on it */
+.h32-layer { position: absolute; z-index: 1; pointer-events: none; overflow: hidden; border-radius: 20px; }
+@container app (min-width: 1024px) { .h32-layer { border-radius: 0; } }
+.h32-layer > svg, .h32-canvas { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+/* a stage's pin: a frosted label on a short stem over its place on the plate; green while the batch is there */
+.h32-pin { position: absolute; display: grid; justify-items: center; translate: -50% -100%; }
+/* near the plate's edge a pin's label hangs inward from its stem */
+.h32-pin.edge-start { justify-items: start; translate: -12px -100%; }
+.h32-pin.edge-start .h32-pin-stem { margin-left: 11px; }
+.h32-pin.edge-end { justify-items: end; translate: calc(-100% + 12px) -100%; }
+.h32-pin.edge-end .h32-pin-stem { margin-right: 11px; }
+.h32-pin-body { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 12px 0 4px; border-radius: 999px; white-space: nowrap;
+  font-size: 13px; color: var(--fg); background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%);
+  box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); transition: background-color 240ms var(--ease), color 240ms var(--ease); }
+.h32-pin-body b { font-weight: 650; }
+.h32-pin-body i { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: var(--fg-2); background: var(--fill-2); transition: background-color 240ms var(--ease), color 240ms var(--ease); }
+.h32-pin.here .h32-pin-body i { color: var(--primary-fg); background: var(--primary); }
+.h32-pin-stem { width: 2px; height: 14px; border-radius: 1px; background: color-mix(in oklab, var(--fg) 34%, transparent); }
+.h32-pin.compact .h32-pin-body { height: 26px; gap: 5px; padding: 0 9px 0 3px; font-size: 11.5px; }
+.h32-pin.compact .h32-pin-body i { width: 20px; height: 20px; }
+.h32-pin.compact .h32-pin-stem { height: 8px; }
+
+/* an agent: its icon and name on a frosted pill; lit once it has worked, the aura while it works, amber for the person.
+   Not reached yet: the name takes the secondary ink and its icon fades (the pill stays opaque, so the name keeps 4.5:1) */
+.h32-agent > span { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 12px 0 4px; border-radius: 999px; white-space: nowrap; font-size: 13px; font-weight: 650; color: var(--fg);
+  background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); transition: color 240ms var(--ease); }
+.h32-agent i { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: var(--fg-3); background: var(--fill-2); transition: background-color 240ms var(--ease), color 240ms var(--ease), opacity 240ms var(--ease); }
+.h32-agent.on i { color: var(--primary-fg); background: var(--primary); }
+.h32-agent.human i { color: var(--amber-fg); background: var(--amber); }
+.h32-agent.later > span { color: var(--fg-2); }
+.h32-agent.later i { opacity: 0.55; }
+.h32-agent.icon > span { gap: 0; padding: 0 4px; font-size: 0; }
+
+/* the batch's chips on the plate: at risk in red, cleared in green, the buyer elsewhere in violet */
+.h32-flag { position: absolute; display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px 5px 8px; border-radius: 10px; white-space: nowrap; font-size: 12.5px; font-weight: 600;
+  color: var(--fg); background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.h32-flag i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.h32-flag.risk i { background: var(--red); }
+.h32-flag.risk span { color: var(--red-text); }
+.h32-flag.clear i { background: var(--primary); }
+.h32-flag.clear span { color: var(--primary-text); }
+.h32-flag.buyer i { background: var(--ch-expiresoon); }
+
+/* what the batch is doing, under the plate */
+.h32-caption { position: relative; z-index: 2; display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 8px; max-width: 46rem; margin-top: 2px; padding: 10px 14px; border-radius: 14px; font-size: 14.5px; line-height: 1.4; color: var(--fg-2);
+  background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.h32-caption .n { font-family: var(--font-mono); font-size: 12px; color: var(--fg-3); }
+.h32-caption b { font-weight: 650; color: var(--fg); }
+.h32-caption .did { color: var(--primary-text); font-variant-numeric: tabular-nums; }
+.h32-caption.human .did { color: var(--amber-text); }
+.h32-ctl { display: flex; justify-content: flex-end; }
+.h32-ctl:empty { display: none; }
+
+@container app (min-width: 1024px) {
+  .h32-pin-body { height: max(28px, 2.5cqw); gap: 0.55cqw; padding: 0 0.95cqw 0 0.32cqw; font-size: max(11.5px, 1.02cqw); }
+  .h32-pin-body i { width: max(20px, 1.88cqw); height: max(20px, 1.88cqw); }
+  .h32-pin-stem { height: 1.1cqw; }
+  .h32-agent > span { height: max(28px, 2.5cqw); font-size: max(11.5px, 1.02cqw); gap: 0.55cqw; padding: 0 0.95cqw 0 0.32cqw; }
+  .h32-agent i { width: max(20px, 1.88cqw); height: max(20px, 1.88cqw); }
+  .h32-flag { font-size: max(11px, 0.98cqw); padding: 0.4cqw 0.8cqw 0.4cqw 0.62cqw; border-radius: 0.8cqw; }
+  .h32-caption { position: absolute; left: 50%; top: 88.6%; translate: -50% 0; width: max-content; max-width: 60%; margin: 0; padding: 0.7cqw 1.1cqw; border-radius: 1.1cqw; font-size: max(12px, 1.09cqw); }
+  .h32-caption .n { font-size: max(10.5px, 0.9cqw); }
+  .h32-ctl { position: absolute; z-index: 2; right: 2.2%; top: 88.8%; }
+  /* over the plate, Replay wears the caption's glass, so its green holds 4.5:1 on any part of the field */
+  .h32-ctl .replay { margin: 0; padding: 0 14px 0 12px; border-radius: 999px; background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%);
+    box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+}
+
+/* ---------- option 1: the chain and its constellation ---------- */
+/* a named star: a node in the sky over its stage, ringed in white so it reads on the plate; green once its agent has
+   worked, amber for you */
+.h32-star { position: absolute; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: rgb(13 28 21 / 0.35); box-shadow: 0 0 0 2px #ffffff, 0 2px 6px rgb(0 0 0 / 0.28);
+  transition: background-color 240ms var(--ease), scale 240ms var(--ease); }
+[data-theme="dark"] .h32-star { background: rgb(236 242 238 / 0.5); }
+.h32-star.on, .h32-star.now { background: var(--primary); }
+.h32-star.human.on, .h32-star.human.now { background: var(--amber); }
+.h32-star.now { scale: 1.4; }
+.h32-label { position: absolute; }
+
+/* ---------- option 2: the journey ring ---------- */
+/* the ring stands under the heading on the page's own ground; its panels are the plate's views, bent round a cylinder */
+.h32-o-ring .hero-scene { visibility: hidden; }
+@container app (max-width: 1023px) { .h32-o-ring .hero-scene { display: none; } }
+/* the ring stands on a soft contact shadow, so it sits in space rather than floating */
+.h32-ring-stage::after { content: ""; position: absolute; left: 50%; bottom: 4%; width: 46%; height: 9%; translate: -50% 0; border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(13 28 21 / 0.16), transparent); pointer-events: none; }
+[data-theme="dark"] .h32-ring-stage::after { background: radial-gradient(closest-side, rgb(0 0 0 / 0.5), transparent); }
+.h32-ring-stage { position: relative; z-index: 1; display: grid; place-items: center; height: 300px; perspective: 1400px; perspective-origin: 50% 40%; }
+.h32-ring-stage > .h32-ring { position: relative; transform-style: preserve-3d; }
+.h32-slice { position: absolute; left: 50%; top: 0; margin-left: calc(var(--sw, 0px) / -2); background-repeat: no-repeat; backface-visibility: hidden; transform-origin: 50% 50%;
+  box-shadow: 0 0 0 0.5px rgb(13 28 21 / 0.08); }
+.h32-ring-front { position: absolute; left: 50%; top: 50%; translate: -50% -50%; display: grid; align-content: space-between; padding: 12px; pointer-events: none; }
+/* the chapter's title never wraps; on a narrow panel its flag drops to the next line */
+.h32-chapter { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; justify-self: start; }
+.h32-chapter > b { flex: none; white-space: nowrap; }
+.h32-chapter > b { display: inline-flex; align-items: center; height: 32px; padding: 0 12px; border-radius: 999px; font-size: 14px; font-weight: 700; color: var(--fg);
+  background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.h32-flag.inline { position: static; }
+.h32-ring-crew { display: flex; flex-wrap: wrap; gap: 6px; justify-self: start; }
+.h32-steps { position: relative; z-index: 2; display: flex; justify-content: center; flex-wrap: wrap; gap: 4px 6px; margin: 0; padding: 0; list-style: none; }
+.h32-steps button { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 12px 0 6px; border: 0; border-radius: 999px; background: none; cursor: pointer; font: 600 13.5px/1 var(--font-ui); color: var(--fg-2); }
+.h32-steps button i { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; color: var(--fg-3); background: var(--fill-2); transition: background-color 240ms var(--ease), color 240ms var(--ease); }
+.h32-steps button.past i { color: var(--primary-text); background: var(--primary-soft); }
+.h32-steps button.on { color: var(--fg); background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+.h32-steps button.on i { color: var(--primary-fg); background: var(--primary); }
+.h32-steps button:disabled { cursor: default; }
+.h32-steps button:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+@container app (min-width: 1024px) {
+  .h32-ring-stage { position: absolute; left: 0; right: 0; top: 35.5%; height: 49%; }
+  .h32-steps { position: absolute; left: 0; right: 0; top: 85.2%; }
+  .h32-o-ring .h32-caption { top: 92.2%; }
+  .h32-o-ring .h32-ctl { top: 92.4%; }
+}
+
+/* ---------- option 3: follow the batch ---------- */
+/* the camera: the plate and the layer move together, about the plate's own top-left corner */
+.h32-o-follow .hero-scene img { transform: var(--cam, none); transform-origin: 0 0; will-change: transform; }
+.h32-cam { transform: none; }
+.h32-cam-inner { position: absolute; inset: 0; transform: var(--cam, none); transform-origin: 0 0; }
+.h32-batch { position: absolute; left: 0; top: 0; z-index: 3; transform-origin: 0 0; }
+.h32-batch-card { position: absolute; left: 0; top: 0; translate: -50% -50%; display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 11px 0 4px; border-radius: 10px; white-space: nowrap;
+  font-size: 12.5px; color: var(--fg); background: var(--surface); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.h32-batch-card i { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; color: var(--primary-fg); background: var(--primary); }
+.h32-batch-card b { font-weight: 650; font-variant-numeric: tabular-nums; }
+.h32-ride { position: absolute; left: 0; top: 0; transition: opacity 160ms var(--ease); }
+/* what sits on the plate keeps its size as the camera moves in: scaled back about its own anchor */
+.h32-cam-inner .h32-pin { transform-origin: 50% 100%; scale: calc(1 / var(--z, 1)); }
+.h32-cam-inner .h32-star { scale: calc(1 / var(--z, 1)); }
+
+/* below desktops the journey plate keeps most of the chain in view: 3:2, a little of each end cropped */
+@container app (max-width: 1023px) {
+  .hero32 .hero-scene { aspect-ratio: 3 / 2; }
+  .hero32 .hero-scene img { object-position: 50% 58%; }
+}
