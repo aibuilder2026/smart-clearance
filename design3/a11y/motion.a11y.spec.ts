@@ -70,8 +70,12 @@ const STATES: [string, string, ((page) => Promise<void>)?][] = [
     await p.waitForTimeout(4500);
     await p.evaluate(() => { const s = document.querySelector('.site'), t = document.querySelector('.split'); if (s && t) s.scrollTop += t.getBoundingClientRect().top - 120; });
   }],
-  ['site · the crew at work, at the person\'s yes', '/site/Smart-Clearance%20site%20v3.html', async p => {
-    await p.waitForFunction(() => /Approve/.test(document.querySelector('.hero-caption')?.textContent || ''));
+  ['site · the town, at the person\'s yes', '/site/Smart-Clearance%20site%20v3.html', async p => {
+    await p.waitForFunction(() => /One yes/.test(document.querySelector('.town-caption')?.textContent || ''));
+  }],
+  ['site · the town, a place opened', '/site/Smart-Clearance%20site%20v3.html', async p => {
+    await p.waitForFunction(() => /Sold, not binned/.test(document.querySelector('.town-caption')?.textContent || ''));
+    await p.locator('.town-pin', { hasText: 'Distributor' }).click();
   }],
 ];
 

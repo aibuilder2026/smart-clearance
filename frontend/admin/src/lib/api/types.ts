@@ -32,10 +32,11 @@ export type Gate = { id: string; app: string; rule: string; has: number; need: n
 export type Showcase = {
 	platform: { name: string; domain: string };
 	/** product: the pack's own name, without its brand */
-	batch: { daysLeft: number; distributorCity: string; units: number; product: string };
+	batch: { daysLeft: number; distributorCity: string; units: number; sellPerDay: number; product: string };
 	risk: { atRisk: number; gates: Gate[] };
-	/** the pricing rules the Valuer works to: a kirana takes up to 14 days' scheme volume, 2 free with every 10 */
-	rules: { kiranaWindowDays: number; scheme: { buy: number; free: number } };
+	/** the pricing rules the Valuer works to: a kirana takes up to 14 days' scheme volume, 2 free with every 10; a food
+	 *  bank takes food with 15 or more days left */
+	rules: { kiranaWindowDays: number; scheme: { buy: number; free: number }; foodbankMinDays: number };
 	plan: {
 		net: number;
 		soldUnits: number;

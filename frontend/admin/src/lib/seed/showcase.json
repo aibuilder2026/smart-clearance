@@ -7,6 +7,7 @@
 		"daysLeft": 47,
 		"distributorCity": "Nagpur",
 		"units": 1840,
+		"sellPerDay": 12,
 		"product": "Masala Chips 150 g"
 	},
 	"risk": {
@@ -43,7 +44,8 @@
 		"scheme": {
 			"buy": 10,
 			"free": 2
-		}
+		},
+		"foodbankMinDays": 15
 	},
 	"plan": {
 		"net": 21770,

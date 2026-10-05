@@ -25,8 +25,20 @@ test('parity · every section of the landing page', async ({ browser }, testInfo
 		const context = await browser.newContext(testInfo.project.use);
 		const page = await context.newPage();
 		await open(page, url, { windowScroll: side === 'prototype' });
-		for (const [sel] of SECTIONS)
-			shots[side][sel] = await page.locator(sel).first().screenshot({ animations: 'disabled' });
+		for (const [sel] of SECTIONS) {
+			// a section's lazy images load only as they near the window: load them all now, and wait (a while) for them
+			const el = page.locator(sel).first();
+			await el.scrollIntoViewIfNeeded();
+			await el.evaluate((n) =>
+				Promise.all(
+					[...n.querySelectorAll('img')].map((i) => {
+						i.loading = 'eager';
+						return Promise.race([i.decode().catch(() => undefined), new Promise((r) => setTimeout(r, 3000))]);
+					})
+				)
+			);
+			shots[side][sel] = await el.screenshot({ animations: 'disabled' });
+		}
 		await context.close();
 	}
 	for (const [sel, max] of SECTIONS) await compare(testInfo, sel, shots.prototype[sel], shots.port[sel], max);

@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { fmt } from '@smart-clearance/core';
 import catalog from '#lib/seed/catalog.json';
 import showcase from '#lib/seed/showcase.json';
 import type { Catalog, Showcase } from '#lib/api/types.ts';
@@ -104,47 +103,52 @@ describe('the landing page figures', () => {
 			[0, 'cartons destroyed', '1,360 packs sold on tax invoices, so the ₹1,224 GST credit stays']
 		]);
 	});
-	it('rides the crew round the carton in the order it works, the person at the approval (SC-30)', () => {
-		expect(f.crew.map((c) => `${c.name}@${c.stop}:${c.icon}`)).toEqual([
-			'Data@0:database',
-			'Watcher@1:eye',
-			'Vision@2:scan-line',
-			'Valuer@3:scale',
-			'Router@4:route',
-			'a person@5:hand',
-			'Lister@6:store',
-			'Outreach@6:send',
-			'Negotiator@6:gavel',
-			'Paperwork@7:file-text',
-			'Impact@8:leaf'
+	it('puts every agent at its post in the town, the person at the maker (SC-32)', () => {
+		expect(f.town.agents.map((a) => `${a.name}@${a.at}:${a.icon}`)).toEqual([
+			'Data@godown:database',
+			'Watcher@godown:eye',
+			'Vision@godown:scan-line',
+			'Valuer@godown:scale',
+			'Router@godown:route',
+			'You@maker:hand',
+			'Lister@buyer:store',
+			'Outreach@kiranas:send',
+			'Negotiator@buyer:gavel',
+			'Paperwork@maker:file-text',
+			'Impact@landfill:leaf'
 		]);
-		expect(f.crew.filter((c) => c.human).map((c) => c.name)).toEqual(['a person']);
-		// the caption's figures, as the page formats them
-		expect([fmt.inr(-f.bin), fmt.num(f.kg), fmt.inr(f.actual.net)]).toEqual(['−₹26,330', '218', '₹21,152']);
+		expect(f.town.agents.filter((a) => a.human).map((a) => a.name)).toEqual(['You']);
+		// the places, and every agent in the graph handing on to the next
+		expect(f.town.places.map((p) => p.id)).toEqual(['maker', 'godown', 'kiranas', 'buyer', 'foodbank', 'landfill']);
+		const ids = new Set(f.town.agents.map((a) => a.id));
+		expect(f.town.edges.every(([a, b]) => ids.has(a) && ids.has(b))).toBe(true);
+		expect(f.town.edges).toHaveLength(11);
 	});
-	it('puts the agents at their stops, a person at the approval, and says what each stop did', () => {
-		expect(f.stops.map((s) => s.who.join('+'))).toEqual([
-			'Data',
-			'Watcher',
-			'Vision',
-			'Valuer',
-			'Router',
-			'a person',
-			'Lister+Outreach+Negotiator',
-			'Paperwork',
-			'Impact'
+	it('plays the journey in seven beats, under five seconds, and says what each did', () => {
+		expect(f.town.beats.map((b) => `${b.id}:${b.who.join('+')}`)).toEqual([
+			'make:',
+			'stock:',
+			'risk:data+watcher+vision',
+			'route:valuer+router',
+			'yes:you',
+			'sell:outreach+lister+negotiator',
+			'report:paperwork+impact'
 		]);
-		expect(f.stops.map((s) => s.done)).toEqual([
-			'stock export mapped · permission given',
+		expect(f.town.beats.reduce((t, b) => t + b.ms, 0)).toBe(4700);
+		expect(f.town.beats.map((b) => b.did)).toEqual([
+			'1,840 packs leave the factory for the distributor',
+			"1,840 packs in the distributor's godown, selling 12 a day",
 			"1,360 packs won't sell in the 47 days left",
-			'label read · the date matches',
-			'five exits priced · the bin costs ₹26,330',
-			'588 packs to 31 kiranas · 772 to one buyer',
-			'approved in one tap · ₹21,770 on screen',
-			'listed · offers sent · a bid countered to ₹14.20',
-			'invoice, credit note and GST memo drafted',
-			'₹21,152 recovered · 218 kg kept out of landfill'
+			'Five exits priced · 588 to 31 kiranas, 772 to one buyer',
+			'You approve in one tap · ₹21,770 on screen',
+			'588 packs to 31 kiranas · 772 to a buyer, countered to ₹14.20',
+			'₹21,152 recovered, 218 kg kept out of landfill'
 		]);
+		expect(f.town.result).toBe('₹21,152 recovered, instead of −₹26,330 to destroy it');
+		expect(f.town.places.find((p) => p.id === 'foodbank')!.line).toBe(
+			'Takes food with 15 or more days left, as a donation. This batch sold before it was needed.'
+		);
+		expect(f.town.agents.find((a) => a.id === 'negotiator')!.did).toBe('Countered a bid to ₹14.20 a pack');
 	});
 	it('lists what it works with, as the board shows them', () => {
 		expect(f.connectors.map((c) => c.name + (c.status === 'soon' ? ' · soon' : ''))).toEqual([

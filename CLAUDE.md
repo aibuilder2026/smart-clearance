@@ -128,7 +128,7 @@
     - **Found on the way:** option 1's mockup never played on phones, where under a third of the street strip is ever in view (the build watches the strip); the split's ribbons could size their own row from a stale measurement (`contain: size` stops it).
   - **Motion:** every motion plays once as its section comes into view, under five seconds, then holds.
   - **Hosting:** the hosted landing page and console load commit `ad7540f`.
-- **SC-30** (In Review, branch `SC-30-hero-agents`): the agents work the batch in the hero, and "Nine stops. Ten agents. One yes." merges into it.
+- **SC-30** (PR #21, merged): the agents work the batch in the hero, and "Nine stops. Ten agents. One yes." merges into it.
   - **Design first:** three options on one board in platform v3, `SC-30 design review.html`: the agents' constellation, through the gateway, the carton's crew. The maintainer picked option 3, the carton's crew. Designs, comps, motion recordings and the decision are in `design3/designs/SC-30/`.
   - **ThreeUI:** the maintainer asked for ThreeUI's MCP server and connector. Claude Code's auto mode refused to add an MCP server to the user settings, and ThreeUI's MCP is Pro-only. The maintainer chose its free MIT Community components, which options 1 and 2 adapted (`THIRD_PARTY_NOTICES.md` there). The picked option uses no ThreeUI code.
   - **The crew:** the ten agents and the person ride a tilted ring round the carton, passing behind it. As the plate loads, the batch walks its nine stops:
@@ -140,7 +140,7 @@
   - **Contrast on a plate:** text drawn over a plate is measured against the pixels behind it. Names not reached yet take the secondary ink, never opacity: a chip at 62% opacity fell under 4.5:1 on the darker parts of the town.
   - **The port:** `Crew.svelte` in `Hero`; `HeroCard` and `Stops` are gone; `figures.ts` carries the crew; `plates.ts` bundles only the plates the page shows. The server sends the crew before it sets off; the ring is drawn in the browser, from the plate's measured fit.
   - **Hosting:** the hosted landing page and console load commit `ae62513`.
-- **SC-31** (In Review, branch `SC-31-threeui-community`, stacked on SC-30): ThreeUI Community as a local Claude Code plugin, asked for by the maintainer.
+- **SC-31** (PR #22, merged): ThreeUI Community as a local Claude Code plugin, asked for by the maintainer.
   - **The plugin:** `~/projects/threeui-community-plugin`, a local marketplace (`threeui-community-local`) with the `threeui-community` plugin, laid out like the Qwen plugin's. It holds:
     - a dependency-free MCP server, `threeui`, with `search_catalog`, `get_catalog_item`, `get_item_source` and `get_license`;
     - the `/threeui` skill;
@@ -149,4 +149,39 @@
   - **The data:** a copy of ThreeUI's public MIT repository in `~/threeui-community`, pinned to `68802d5` (package 1.2.0, as on npm): 104 records (43 items and 61 variant records) and 177 source files. Some records also name the original exports they came from; those are provenance, not files.
   - **Installed** at user scope; Claude Code connects to its server (`claude mcp list`). The tools come with a new session.
   - **Referenced here:** AGENTS.md (design rules and tooling), the design-first skill and `.claude/third-party.md`.
+- **SC-32** (In Review, branch `SC-32-hero-journey`): the hero is the whole business as one miniature town, in depth.
+  - **Design first, in two rounds** on one board in platform v3, `SC-32 design review.html`:
+    - round 1 put three heroes on a plate of the chain (manufacturer, distributor, retailers). The maintainer asked to build on the third, Follow the batch;
+    - round 2 drew one picture of the whole business, put every agent at a post in it, and made the picture and the agent graph interactive. Its options were Take the wheel, In depth and Your yes. The pick: In depth.
+
+    Designs, comps, recordings and the decision are in `design3/designs/SC-32/`.
+  - **The town:** `design3/site/town.jsx` (`window.SC3_TOWN`), on the plates `business.webp`, `business-night.webp` and `business-depth.webp`.
+    - **The places:** the maker's factory and office, the distributor's godown, the kirana lane, a buyer in the next town, a food bank and the landfill.
+    - **Each agent at its post:**
+      - You and Paperwork in the office;
+      - Data, the Watcher, Vision, the Valuer and the Router round the godown;
+      - Outreach at the kiranas;
+      - the Lister and the Negotiator by the buyer's highway;
+      - Impact at the landfill.
+
+      The agent graph is their handoffs.
+    - **The tour:** the camera follows the batch once, in 4.7 s, then holds. Visitors can then drag or swipe, pinch or Ctrl-scroll, and double-click. Places and agents open panels, by pointer or keyboard; the steps and Replay walk the tour again.
+    - **Depth:** WebGL2 draws the town from the plate and its depth map, with parallax as the camera travels, a tilt under the pointer, and a focus that follows the camera. Without WebGL2 it is drawn flat; under reduced motion it rests on its result.
+    - **The heading's ground:** as the camera nears, the top of the frame goes out of focus into the plate's haze, so the heading keeps a calm ground.
+  - **Found on the way:**
+    - the generated green route began at the landfill's gate, so that road was repainted on both plates;
+    - on phones the food bank's pin covered the distributor's, so it moves on phones;
+    - the parity harness now waits for a section's lazy images, which was the `#how` flake.
+  - **The port:**
+    - `Town.svelte`, with `town/`: the camera, the gestures, the depth renderer and the graph;
+    - `figures.ts` carries the town;
+    - the showcase API adds the batch's sales a day and the food bank's minimum days;
+    - `site.css` keeps two marked changes;
+    - `Crew.svelte` is gone.
+  - **Checks:**
+    - design3's suite: 0 failing WCAG rules;
+    - the frontend's gate passes;
+    - e2e: 42 pass, and only Firefox fails, because it cannot start in the sandbox;
+    - parity: 29 pass.
+  - **Hosting:** the hosted landing page and console load commit `4f2bc65`.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

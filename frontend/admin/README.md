@@ -18,7 +18,7 @@ root layout cannot.
 ## The landing page
 
 `src/lib/landing/` has one component per section of the prototype, with its classes, ids and accessible names:
-`Nav`, `Hero` (with `Crew`, the agents working the batch on its plate: the nine stops, SC-30), `How` (how it works,
+`Nav`, `Hero` (with `Town`, the whole business as one miniature town in depth, the batch's journey and the agent graph, SC-32), `How` (how it works,
 three moments), `Exits` (the packs taking the street, the batch split by exit, and the results), `Workspace`, `Plans`,
 `Close`, `Footer`, and the `DemoSheet`; `Site` puts them together.
 `figures.ts` works out every figure and line of copy from the API's showcase and catalog, as `site.jsx` does from the
@@ -28,14 +28,19 @@ The motion plays once as a section comes into view, under five seconds, and then
 at rest, so the prerendered page is complete without JavaScript. A section already on screen when the page starts
 stays at rest, and so does every section when the reader asks for less motion.
 
-**`site.css`** is design3's, unscoped and verbatim, apart from one marked change: **the window scrolls,** not `.site`, so
-the address bar, find-in-page, `#top` and the section links behave as on any site.
+**`site.css`** is design3's, unscoped and verbatim, apart from two marked changes:
+
+- **the window scrolls,** not `.site`, so the address bar, find-in-page, `#top` and the section links behave as on any
+  site;
+- **the town's first paint:** the server sends the hero's plate at rest (`.town-pre`), under the stage's own drawing.
 
 The bar's desktop, tablet and phone parts are all rendered and shown by CSS (`.desk-only`, `.not-phone`, `.phone-only`),
 so the server renders every width.
 
-**Plates** come from `design3/site/assets/plates` through `$design3` (a Vite alias). The hero is a `<picture>` whose
-night source the browser picks before the page hydrates. Once hydrated, the reader's own choice of theme picks every plate.
+**Plates** come from `design3/site/assets/plates` through `$design3` (a Vite alias). The hero's town is sent as a
+`<picture>` whose night source the browser picks before the page hydrates; once hydrated, it is drawn in WebGL2 from the
+plate and its depth map (`business-depth.webp`), or flat where WebGL2 is missing. The reader's own choice of theme then
+picks every plate.
 
 **Motion,** with the prototype's numbers:
 
@@ -45,10 +50,15 @@ night source the browser picks before the page hydrates. Once hydrated, the read
   transitions set inline only while the section plays;
 - the street plays once nearly all of it is in view, and the split once its packs have arrived; one Replay runs both;
 - below 1100 px the street is a strip that follows the packs;
-- the hero's crew walks the nine stops once the plate has loaded: `Crew` measures the plate's cover fit and lays a
-  layer over it, `motion`'s `animate()` turns the ring and rolls the money, 4.69 s in all, then it holds with Replay.
-  The server sends it before it sets off (the ring needs the measured plate, so it is drawn in the browser); under
-  reduced motion it is at its result at once.
+- the hero's town (`Town`, with `town/`):
+  - **the camera** (`camera.ts`) follows the batch through the town once its plate and depth have loaded, seven beats in
+    4.7 s; `motion`'s `animate()` flies it and rolls the money; then it holds with Replay;
+  - **the depth renderer** (`depth.ts`, WebGL2) shifts each pixel by its depth: parallax as the camera travels, a tilt
+    under the pointer, a sway under a swipe, and a focus that follows the camera;
+  - **the agent graph** (`graph.ts`) is drawn on a canvas over the town, and the packs run out when the batch sells;
+  - **the gestures** (`gestures.ts`): drag or swipe, pinch, Ctrl-scroll and double-click; places open panels by
+    keyboard, and the steps walk the tour by hand;
+  - **reduced motion:** the batch is at its result at once, and the camera jumps.
 
 **Fixed from the prototype,** none of it visible:
 

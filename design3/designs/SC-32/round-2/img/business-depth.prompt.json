@@ -1,0 +1,13 @@
+{
+  "name": "business-depth",
+  "model": "Qwen-Image-2.1 bf16 (local), edit_image",
+  "prompt": "Convert this photograph into a depth map: a smooth grayscale image of the same scene and composition, where the nearest surfaces are bright white and the farthest are black, with soft gradients, no texture, no colour, no lettering.",
+  "reference": "design3/designs/SC-32/round-2/src/business-day-3401.png",
+  "seed": 3426,
+  "size": 1024,
+  "output": "1376x768",
+  "attempts": 1,
+  "created": "2026-10-05",
+  "postprocess": "grayscale, its levels curved (d ** 2.2) so the near half, which used only 205-250, spreads out; WebP q90",
+  "use": "SC-32 round 2, option 2: the depth the WebGL renderer shifts the plate by"
+}

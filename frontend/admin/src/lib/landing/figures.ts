@@ -183,28 +183,194 @@ export function figures(s: Showcase, c: Catalog) {
 		}
 	];
 
-	// 1 · the hero's crew (SC-30): the nine stops, the agents at each and what each did for this batch; and the crew,
-	// every agent and the person who says yes, in the order they work
-	const STOP_DONE: Record<string, string> = {
-		connect: 'stock export mapped · permission given',
-		detect: `${fmt.num(s.risk.atRisk)} packs won't sell in the ${s.batch.daysLeft} days left`,
-		verify: 'label read · the date matches',
-		value: `five exits priced · the bin costs ${fmt.inr(BIN)}`,
-		decide: `${fmt.num(KL.units)} packs to ${SHOPS} kiranas · ${fmt.num(AW.units)} to one buyer`,
-		approve: `approved in one tap · ${fmt.inr(s.plan.net)} on screen`,
-		execute: `listed · offers sent · a bid countered to ${rate(AW.price)}`,
-		settle: 'invoice, credit note and GST memo drafted',
-		report: `${fmt.inr(s.actual.net)} recovered · ${fmt.num(s.plan.kg)} kg kept out of landfill`
+	// 1 · the hero's town (SC-32): every place in the business and what it is to this batch; the agents and the person
+	// who says yes, each at its post, with its job (as the catalog gives it) and what it did; the handoffs between them,
+	// the agent graph; and the journey, beat by beat. As design3/site/town.jsx works them out
+	const foodbank = s.rules.foodbankMinDays;
+	const RESULT = `${fmt.inr(s.actual.net)} recovered, instead of ${fmt.inr(-BIN)} to destroy it`;
+	const places = [
+		{
+			id: 'maker',
+			t: 'Manufacturer',
+			short: 'Maker',
+			icon: 'factory',
+			line: `Makes the batch. You approve each plan here, and the money comes back here: ${fmt.inr(s.actual.net)}.`
+		},
+		{
+			id: 'godown',
+			t: 'Distributor · stockist',
+			short: 'Distributor',
+			icon: 'warehouse',
+			line: `${fmt.num(s.batch.units)} packs of the batch, selling ${s.batch.sellPerDay} a day: ${fmt.num(s.risk.atRisk)} won't sell in the ${s.batch.daysLeft} days left.`
+		},
+		{
+			id: 'kiranas',
+			t: 'Retailers',
+			short: 'Kiranas',
+			icon: 'store',
+			line: `${SHOPS} kiranas take ${fmt.num(KL.units)} packs, buy ${buy} get ${free} free.`
+		},
+		{
+			id: 'buyer',
+			t: 'A buyer elsewhere',
+			short: 'Buyer',
+			icon: 'shopping-bag',
+			line: `${fmt.num(AW.units)} packs through an ExpireSoon listing, at ${rate(AW.price)} a pack.`
+		},
+		{
+			id: 'foodbank',
+			t: 'Food bank',
+			short: 'Food bank',
+			icon: 'heart-handshake',
+			line: `Takes food with ${foodbank} or more days left, as a donation. This batch sold before it was needed.`
+		},
+		{
+			id: 'landfill',
+			t: 'Landfill',
+			short: 'Landfill',
+			icon: 'trash-2',
+			line: `Destroying the ${fmt.num(s.risk.atRisk)} packs would cost ${fmt.inr(-BIN)}. This batch sends none here.`
+		}
+	] as const;
+	const POST: Record<string, (typeof places)[number]['id']> = {
+		data: 'godown',
+		watcher: 'godown',
+		vision: 'godown',
+		valuer: 'godown',
+		router: 'godown',
+		gate: 'maker',
+		lister: 'buyer',
+		outreach: 'kiranas',
+		negotiator: 'buyer',
+		paperwork: 'maker',
+		impact: 'landfill'
 	};
-	const stops = s.stages.map((st) => ({
-		...st,
-		done: STOP_DONE[st.id],
-		who: st.human ? ['a person'] : (byStage[st.id] ?? [])
+	const DID: Record<string, string> = {
+		data: `${fmt.num(s.batch.units)} packs in stock, selling ${s.batch.sellPerDay} a day`,
+		watcher: `${fmt.num(s.risk.atRisk)} packs won't sell in the ${s.batch.daysLeft} days left`,
+		vision: 'Read the label: the date matches',
+		valuer: `Five exits priced; the bin would cost ${fmt.inr(-BIN)}`,
+		router: `${fmt.num(KL.units)} to ${SHOPS} kiranas, ${fmt.num(AW.units)} to one buyer`,
+		gate: `Approved in one tap, ${fmt.inr(s.plan.net)} on screen`,
+		outreach: `${fmt.num(KL.units)} packs to ${SHOPS} kiranas, buy ${buy} get ${free} free`,
+		lister: `${fmt.num(AW.units)} packs listed`,
+		negotiator: `Countered a bid to ${rate(AW.price)} a pack`,
+		paperwork: 'The invoice, credit note and GST memo, drafted',
+		impact: `${fmt.num(s.plan.kg)} kg kept out of landfill`
+	};
+	const beats = [
+		{
+			id: 'make',
+			at: ['maker'],
+			t: 'Made',
+			did: `${fmt.num(s.batch.units)} packs leave the factory for the distributor`,
+			who: [],
+			ms: 600,
+			batch: 'maker'
+		},
+		{
+			id: 'stock',
+			at: ['godown'],
+			t: 'Stocked',
+			did: `${fmt.num(s.batch.units)} packs in the distributor's godown, selling ${s.batch.sellPerDay} a day`,
+			who: [],
+			ms: 500,
+			batch: 'godown'
+		},
+		{
+			id: 'risk',
+			at: ['godown'],
+			t: 'At risk',
+			did: `${fmt.num(s.risk.atRisk)} packs won't sell in the ${s.batch.daysLeft} days left`,
+			who: ['data', 'watcher', 'vision'],
+			ms: 700,
+			batch: 'godown'
+		},
+		{
+			id: 'route',
+			at: ['godown'],
+			t: 'Priced and split',
+			did: `Five exits priced · ${fmt.num(KL.units)} to ${SHOPS} kiranas, ${fmt.num(AW.units)} to one buyer`,
+			who: ['valuer', 'router'],
+			ms: 600,
+			batch: 'godown'
+		},
+		{
+			id: 'yes',
+			at: ['maker'],
+			t: 'One yes',
+			did: `You approve in one tap · ${fmt.inr(s.plan.net)} on screen`,
+			who: ['you'],
+			human: true,
+			ms: 900,
+			batch: 'godown'
+		},
+		{
+			id: 'sell',
+			at: ['kiranas', 'buyer'],
+			t: 'Sold',
+			did: `${fmt.num(KL.units)} packs to ${SHOPS} kiranas · ${fmt.num(AW.units)} to a buyer, countered to ${rate(AW.price)}`,
+			who: ['outreach', 'lister', 'negotiator'],
+			ms: 700,
+			batch: 'sold'
+		},
+		{
+			id: 'report',
+			at: ['maker', 'landfill'],
+			t: 'Settled',
+			did: `${fmt.inr(s.actual.net)} recovered, ${fmt.num(s.plan.kg)} kg kept out of landfill`,
+			who: ['paperwork', 'impact'],
+			ms: 700,
+			batch: null
+		}
+	] as {
+		id: string;
+		at: string[];
+		t: string;
+		did: string;
+		who: string[];
+		human?: boolean;
+		ms: number;
+		batch: string | null;
+	}[];
+	const agents = c.agents.map((a) => ({
+		id: a.gate ? 'you' : a.id,
+		name: a.gate ? 'You' : a.name,
+		icon: a.icon,
+		human: !!a.gate,
+		at: POST[a.id],
+		job: a.gate ? 'You approve every plan, with the money on screen' : a.job,
+		did: DID[a.id],
+		beat: beats.findIndex((b) => b.who.includes(a.gate ? 'you' : a.id))
 	}));
-	const stageAt = Object.fromEntries(s.stages.map((st, i) => [st.id, i]));
-	const crew = c.agents
-		.map((a) => ({ name: a.gate ? 'a person' : a.name, icon: a.icon, stop: stageAt[a.stage], human: !!a.gate }))
-		.sort((a, b) => a.stop - b.stop);
+	const town = {
+		places,
+		agents,
+		// the handoffs, in the order they happen: the agent graph
+		edges: [
+			['data', 'watcher'],
+			['watcher', 'vision'],
+			['vision', 'valuer'],
+			['valuer', 'router'],
+			['router', 'you'],
+			['you', 'outreach'],
+			['you', 'lister'],
+			['lister', 'negotiator'],
+			['outreach', 'paperwork'],
+			['negotiator', 'paperwork'],
+			['paperwork', 'impact']
+		] as [string, string][],
+		beats,
+		result: RESULT,
+		batch: {
+			units: s.batch.units,
+			atRisk: s.risk.atRisk,
+			kiranas: KL.units,
+			buyer: AW.units,
+			net: s.actual.net,
+			kg: s.plan.kg
+		}
+	};
 
 	// 4 · the workspace (comp L5): the connectors the comp shows, in its order
 	const connectors = ['dms', 'tally', 'bq', 'sso', 'expiresoon', 'irp', 'whatsapp']
@@ -221,8 +387,7 @@ export function figures(s: Showcase, c: Catalog) {
 		how,
 		street,
 		results,
-		stops,
-		crew,
+		town,
 		plans: c.plans.map((p) => ({ ...p, scope: p.scope.map((x) => x.replace(/^The client's /, 'Your ')) })),
 		connectors
 	};

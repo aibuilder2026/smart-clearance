@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-32 Hero Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<style>
+/* A review board in design system v3: the request, the new picture, three options with their motion, comps and
+   journeys, round 1 as it was reviewed, and the decision. */
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber: #f2b437; --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --red-text: #c42a30;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px rgb(17 41 30 / 0.07);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #8b9993;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber: #f7c04a; --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --red-text: #ff8f8d;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px rgb(0 0 0 / 0.35);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #8b9993;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber: #f7c04a; --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --red-text: #ff8f8d;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px rgb(0 0 0 / 0.35);
+  color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); margin: 0; padding-inline: 16px; -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+a:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
+::selection { background: color-mix(in oklab, var(--green) 24%, transparent); }
+.wrap { max-width: 1240px; margin-inline: auto; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+p { margin: 0; text-wrap: pretty; }
+
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; margin-inline: -16px; padding: 10px 16px; background: color-mix(in srgb, var(--ground) 84%, transparent);
+  -webkit-backdrop-filter: saturate(180%) blur(18px); backdrop-filter: saturate(180%) blur(18px); box-shadow: 0 1px 0 var(--line); }
+.top .wrap { display: flex; align-items: center; gap: 8px 20px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; font: 700 16px/1 var(--display); color: var(--ink); text-decoration: none; }
+.brand svg { width: 28px; height: 28px; flex: none; }
+.top nav { display: flex; gap: 4px 16px; flex-wrap: wrap; margin-left: auto; font-size: 14px; }
+.top nav a { color: var(--ink-2); text-decoration: none; padding: 6px 2px; }
+.top nav a:hover { color: var(--ink); }
+
+header.intro { padding-block: 56px 28px; display: grid; gap: 18px; }
+h1 { font-size: clamp(36px, 6vw, 60px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+.lede { font-size: 18px; color: var(--ink-2); max-width: 66ch; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-size: 13.5px; font-weight: 600; background: var(--surface); box-shadow: 0 0 0 1px var(--line); color: var(--ink-2); }
+.chip.rec { background: var(--green-soft); color: var(--green-text); box-shadow: none; }
+
+section.part { padding-block: 40px; display: grid; gap: 20px; scroll-margin-top: 64px; }
+section.part > h2 { font-size: clamp(26px, 3.4vw, 36px); font-weight: 720; letter-spacing: -0.02em; line-height: 1.08; font-variation-settings: "opsz" 72, "wdth" 92; }
+.card { background: var(--surface); border-radius: 20px; box-shadow: var(--shadow), 0 0 0 1px var(--line); padding: 22px; }
+blockquote { margin: 0; padding: 4px 0 4px 16px; box-shadow: inset 2px 0 0 var(--line-2); color: var(--ink); font-size: 16px; }
+blockquote + blockquote { margin-top: 10px; }
+.cols { display: grid; gap: 16px; }
+@media (min-width: 900px) { .cols.two { grid-template-columns: 1fr 1fr; } .cols.three { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+ul.tight { margin: 0; padding-left: 18px; display: grid; gap: 6px; color: var(--ink-2); }
+ul.tight b { color: var(--ink); }
+
+.option { display: grid; gap: 18px; padding: 26px 22px; border-radius: 26px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.option.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.option-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.option-head h3 { font-size: 26px; font-weight: 720; letter-spacing: -0.02em; font-variation-settings: "opsz" 48, "wdth" 92; }
+.tag { font-size: 13px; font-weight: 650; color: var(--green-text); background: var(--green-soft); padding: 4px 10px; border-radius: 999px; }
+.option .idea { display: grid; gap: 8px; font-size: 16.5px; color: var(--ink-2); max-width: 74ch; }
+.leaves { display: grid; gap: 8px; color: var(--ink-2); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); }
+.btn.primary { background: var(--green); color: #fff; }
+:root[data-theme="dark"] .btn.primary { color: #03170d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #03170d; } }
+
+.comps { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .comps { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 210px 210px; align-items: start; } }
+figure { margin: 0; display: grid; gap: 8px; }
+figcaption { font-size: 13px; color: var(--ink-3); }
+.frame { max-height: 640px; overflow: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); overscroll-behavior: contain; }
+.frame img { display: block; width: 100%; height: auto; }
+.frame.phone { max-height: 640px; }
+video.motion { width: 100%; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); display: block; }
+.motion-row { display: grid; gap: 14px; }
+@media (min-width: 900px) { .motion-row { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: start; } }
+.facts { display: grid; gap: 10px; }
+.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); text-transform: none; }
+.facts dd { margin: 2px 0 0; color: var(--ink-2); }
+.decide { display: grid; gap: 12px; }
+footer { padding-block: 36px 60px; color: var(--ink-3); font-size: 13px; }
+code { font: 500 0.92em/1 var(--mono); }
+.note { color: var(--ink-2); }
+.pair { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 210px 210px; align-items: start; } }
+.journey { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .journey { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: start; } }
+.strip { overflow-x: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+.strip img { display: block; height: 384px; width: auto; max-width: none; }
+.option h4 { margin: 4px 0 0; font: 650 15px/1.3 var(--ui); color: var(--ink); }
+</style>
+<body>
+<div class="top"><div class="wrap">
+  <a class="brand" href="#top"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="bg" x1="8" y1="4" x2="58" y2="62" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#2fbf7f"/><stop offset="0.55" stop-color="#178258"/><stop offset="1" stop-color="#0d5a3e"/></linearGradient></defs><path d="M32 2C9.5 2 2 9.5 2 32s7.5 30 30 30 30-7.5 30-30S54.5 2 32 2Z" fill="url(#bg)"/><path d="M43.5 19 H27 a7 7 0 0 0 0 14 h10 a7 7 0 0 1 0 14 H20.5" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="43.5" cy="19" r="3.4" fill="#0d5a3e" stroke="#fff" stroke-width="2.6"/><circle cx="20.5" cy="47" r="5.2" fill="#f7c04a" stroke="#fff" stroke-width="2.2"/></svg>SC-32 review</a>
+  <nav aria-label="Board"><a href="#request">Request</a><a href="#picture">The picture</a><a href="#o1">Option 1</a><a href="#o2">Option 2</a><a href="#o3">Option 3</a><a href="#round-1">Round 1</a><a href="#decide">Decide</a></nav>
+</div></div>
+
+<main class="wrap" id="top">
+<header class="intro">
+  <h1>The whole business, in the hero</h1>
+  <p class="lede">Round 2 builds on round 1's option 3, Follow the batch, as you asked. The hero is now one picture of the whole business: the maker's factory and office, the distributor's godown, the kirana lane, a buyer in the next town, a food bank, and the landfill the batch never reaches. Every agent works at its own place in that picture, Paperwork and Impact included. The picture and the agent graph answer touch, pointer and keyboard on desktops and phones.</p>
+  <div class="chips"><span class="chip rec">Recommended: option 2, In depth</span><span class="chip">One picture of the whole business</span><span class="chip">Every agent at its post</span><span class="chip">Drag, pinch, tap, open</span><span class="chip">Light, dark, 1440 and 390</span></div>
+</header>
+
+<section class="part" id="request" aria-labelledby="request-h">
+  <h2 id="request-h">The request</h2>
+  <div class="card">
+    <blockquote>"I really like option 3, can we build upon it more --> the paperwork and impact agent does not go well with the picture. Also the agent graph and the picture should be interactive for desktop and mobile screens. The idea is really good, build upon it and show me a few more options. It needs to be eye catchy and have the wow factor. Pictorial representation of the entire business"</blockquote>
+    <p class="note" style="margin-top: 12px">Round 1's request, for context: "totally rethink the hero design, the background image of hero should tell the story of supply chain starting from manufacture to Distributor/Stockists to retailer … Design aesthetics is primary, user should be able to understand the journey". Round 1 is at the end of this board.</p>
+  </div>
+  <div class="cols two">
+    <div class="card"><h3 style="font-size: 19px; margin-bottom: 10px">In every option</h3>
+      <ul class="tight">
+        <li><b>The tour plays once (4.7 s):</b> the whole business first, then the camera follows the batch.
+          <ul class="tight">
+            <li>In to the factory as 1,840 packs leave it.</li>
+            <li>The godown, where Data, the Watcher and Vision flag 1,360 packs at risk.</li>
+            <li>Wider, as the Valuer and the Router price the exits.</li>
+            <li>The maker's office for your yes.</li>
+            <li>The kiranas and the buyer as the packs sell.</li>
+            <li>The office and the landfill as Paperwork and Impact settle.</li>
+            <li>Then the whole business again, every agent named.</li>
+          </ul></li>
+        <li><b>Then it is the visitor's:</b> drag or swipe to look round; pinch or Ctrl-scroll to zoom; double-click to go nearer.
+          <ul class="tight">
+            <li>Tap a place for what happened there and who works there.</li>
+            <li>Tap an agent for what it did, who handed it the batch, and who it handed on to.</li>
+            <li>Its handoffs light up across the picture.</li>
+          </ul></li>
+        <li><b>The steps:</b> ‹ and › walk the tour by hand. Replay plays it again. Under reduced motion it rests on its result and the camera jumps.</li>
+        <li><b>The heading keeps a calm ground:</b> as the camera nears, the top of the frame goes out of focus into the plate's own haze, as a tilt-shift lens's does.</li>
+      </ul></div>
+    <div class="card"><h3 style="font-size: 19px; margin-bottom: 10px">Where each agent works</h3>
+      <ul class="tight">
+        <li><b>The maker's office:</b> You, who approve, and Paperwork, which drafts the invoices and the price-support credit note.</li>
+        <li><b>The distributor's godown:</b> Data, the Watcher, Vision, the Valuer and the Router, round the building.</li>
+        <li><b>The kirana lane:</b> Outreach, with the offers to 31 kiranas.</li>
+        <li><b>The buyer, by the highway:</b> the Lister and the Negotiator, who counter to ₹14.20.</li>
+        <li><b>The landfill:</b> Impact, which counts the 218 kg kept out of it.</li>
+        <li><b>The food bank:</b> an exit the Valuer prices on every plan. This batch sold before it was needed.</li>
+      </ul>
+      <p class="note" style="margin-top: 10px">The agent graph is the handoffs between these posts. It rests quiet, as thin lines; the handoff happening now, or those of whatever you hover or open, stand out.</p></div>
+  </div>
+  <div class="card"><p class="note"><b>Checks.</b> All three options pass axe (WCAG 2.2 AA, the suite's tags and its target-size pass) with 0 violations: light and dark, at 1440 and 390, mid-tour, at rest and with a place open, 36 scans. Text contrast was measured on the pixels behind each run at every beat of the tour, at rest and opened: 1,186 runs, the heading over the haze included, none below 4.5:1. The tour takes 4.7 seconds, once.</p></div>
+</section>
+
+<section class="part" id="picture" aria-labelledby="picture-h">
+  <h2 id="picture-h">The picture: the whole business</h2>
+  <div class="cols three">
+    <figure><div class="frame"><img src="round-2/img/business.webp" alt="The whole business as a miniature town by day: on the left the snack maker's factory with its chimneys and office, in the middle the distributor's godown full of cartons, on the right a lane of kirana shops hung with snack packets; behind them a highway to a buyer's warehouse, a community kitchen, and a fenced landfill." loading="lazy"></div><figcaption>By day (Qwen-Image; its prompt sidecar beside it)</figcaption></figure>
+    <figure><div class="frame"><img src="round-2/img/business-night.webp" alt="The same town at night: lit windows and doors, street lamps, the green route glowing, the landfill dark." loading="lazy"></div><figcaption>By night: composed again, not filtered</figcaption></figure>
+    <figure><div class="frame"><img src="round-2/img/business-depth.webp" alt="The picture's depth map: the sky black, the back row grey, the buildings and the near ground white." loading="lazy"></div><figcaption>Its depth map, for option 2 (white near, black far)</figcaption></figure>
+  </div>
+  <p class="note">One fix by hand: the generated green route began at the landfill's gate, as if the batch came from the dump. That stretch of road was repainted on both plates, so the route now begins at the maker's loading bay.</p>
+</section>
+
+<section class="part" id="o1" aria-labelledby="o1-h">
+  <h2 id="o1-h">Option 1 · Take the wheel</h2>
+  <article class="option">
+    <div class="option-head"><h3>The tour plays, then the picture is the visitor's to drag, pinch and open</h3></div>
+    <div class="idea"><p>The camera follows the batch through the whole business, then hands the picture over:</p><ul class="tight"><li>drag or swipe to look round, pinch or Ctrl-scroll to zoom;</li><li>tap any place or agent for what happened there and what it did;</li><li>"The whole business" takes the camera back out.</li></ul></div>
+    <div class="links"><a class="btn primary" href="round-2/option-1/mockup.html">Open the mockup</a><a class="btn" href="round-2/option-1/mockup.html?theme=dark">In dark</a></div>
+    <div class="motion-row">
+      <figure><video class="motion" src="round-2/option-1/motion.mp4" controls muted playsinline preload="metadata" poster="round-2/option-1/motion.webp" aria-label="Option 1's recording: the tour from the whole business into the factory, the godown, the office, the kiranas and the buyer, then the visitor opens the godown, drags the picture and goes back to the whole business."></video><figcaption>Recorded from the mockup: the 4.7-second tour, then the visitor's part (the ring is the recording's pointer). The still is the yes.</figcaption></figure>
+      <dl class="facts">
+        <div><dt>Why it works</dt><dd>The plainest way to give you all four asks: one picture of the business, every agent at its post, the tour, and a picture you can explore on any screen. It is light: an image and a few hundred lines of interface.</dd></div>
+        <div><dt>Trade-off</dt><dd>Its depth is the plate's own. Next to option 2 it can feel flat when the camera dives.</dd></div>
+        <div><dt>The build would touch</dt><dd><ul class="tight"><li><code>design3/site</code>: the hero's picture becomes a stage with a camera; the places, the agents' posts, the graph and the panel lie on it; the new plates go in;</li><li>the SvelteKit port, the same, with <code>motion</code> for the camera.</li></ul></dd></div>
+      </dl>
+    </div>
+    <h4>The tour, beat by beat (1440, light)</h4>
+    <div class="journey">
+      <figure><div class="frame" tabindex="0" role="region" aria-label="Option 1, the tour at 1440"><img src="round-2/option-1/journey.webp" alt="Option 1 at eight moments of the tour at 1440 wide: made, stocked, at risk, priced and split, the yes, sold, settled, and the whole business at rest." loading="lazy"></div><figcaption>Made, Stocked, At risk, Priced and split, One yes, Sold, Settled, at rest</figcaption></figure>
+      <div style="display: grid; gap: 14px">
+        <figure><div class="frame" tabindex="0" role="region" aria-label="Option 1, a place opened at 1440"><img src="round-2/option-1/open-1440.webp" alt="Option 1 at 1440 with a place opened: the camera on it, its team and their handoffs lit, and its panel." loading="lazy"></div><figcaption>A place opened: the camera goes to it, its team's handoffs light, its panel opens</figcaption></figure>
+        
+      </div>
+    </div>
+    <h4>On a phone (390, light): the tour</h4>
+    <div class="strip" tabindex="0" role="region" aria-label="Option 1, the tour on a phone"><img src="round-2/option-1/phone-journey.webp" alt="Option 1 on a phone at eight moments of the tour, the picture as a square card above the caption." loading="lazy"></div>
+    <h4>At rest, and opened</h4>
+    <div class="comps">
+      <figure><div class="frame" tabindex="0" role="region" aria-label="Option 1, light, 1440"><img src="round-2/option-1/light-1440.webp" alt="Option 1 in light at 1440 wide, at rest: the whole business, every place pinned and every agent named." loading="lazy"></div><figcaption>At rest: light, 1440</figcaption></figure>
+      <figure><div class="frame" tabindex="0" role="region" aria-label="Option 1, dark, 1440"><img src="round-2/option-1/dark-1440.webp" alt="Option 1 in dark at 1440 wide: the town at night." loading="lazy"></div><figcaption>Dark, 1440</figcaption></figure>
+      <figure><div class="frame phone" tabindex="0" role="region" aria-label="Option 1, light, 390"><img src="round-2/option-1/light-390.webp" alt="Option 1 in light on a phone." loading="lazy"></div><figcaption>Light, 390</figcaption></figure>
+      <figure><div class="frame phone" tabindex="0" role="region" aria-label="Option 1, a place opened on a phone"><img src="round-2/option-1/open-390.webp" alt="Option 1 on a phone with a place opened, its panel under the picture." loading="lazy"></div><figcaption>Opened, 390</figcaption></figure>
+    </div>
+  </article>
+</section>
+
+<section class="part" id="o2" aria-labelledby="o2-h">
+  <h2 id="o2-h">Option 2 · In depth</h2>
+  <article class="option rec">
+    <div class="option-head"><h3>The same, with the picture given depth: it parallaxes, tilts and focuses like a camera in a model</h3><span class="tag">Recommended</span></div>
+    <div class="idea"><p>Option 1, drawn in WebGL2 with the plate's depth map:</p><ul class="tight"><li>as the camera travels, near things move more than far ones, and they grow faster as it nears;</li><li>the pointer tilts the model a little, and a swipe sways it on phones;</li><li>the focus follows the camera: what is nearer or farther than the place goes soft, like a tilt-shift lens racking focus;</li><li>the agents and the pins ride the same depth, so they stay on their places.</li></ul></div>
+    <div class="links"><a class="btn primary" href="round-2/option-2/mockup.html">Open the mockup</a><a class="btn" href="round-2/option-2/mockup.html?theme=dark">In dark</a></div>
+    <div class="motion-row">
+      <figure><video class="motion" src="round-2/option-2/motion.mp4" controls muted playsinline preload="metadata" poster="round-2/option-2/motion.webp" aria-label="Option 2's recording: the tour in depth, then the pointer tilts the picture left and right, opens the godown, drags to the shops, and goes back to the whole business."></video><figcaption>Recorded from the mockup: the 4.7-second tour, then the visitor's part (the ring is the recording's pointer). The still is the yes.</figcaption></figure>
+      <dl class="facts">
+        <div><dt>Why recommended</dt><dd>It is the wow you asked for. The whole business reads as a real miniature you are moving through, not a photo being zoomed, and it keeps every bit of option 1's interaction.</dd></div>
+        <div><dt>Trade-off</dt><dd>It is the heaviest of the three: a small WebGL2 renderer (about 150 lines) and a 20 kB depth map. Where WebGL2 is missing it falls back to option 1. It draws only while something moves, and under reduced motion there is no tilt or sway.</dd></div>
+        <div><dt>The build would touch</dt><dd><ul class="tight"><li><code>design3/site</code>: option 1's stage, plus the depth renderer and the depth map;</li><li>the SvelteKit port, the same, with a WebGL2 canvas behind the stage's layers.</li></ul></dd></div>
+      </dl>
+    </div>
+    <h4>The tour, beat by beat (1440, light)</h4>
+    <div class="journey">
+      <figure><div class="frame" tabindex="0" role="region" aria-label="Option 2, the tour at 1440"><img src="round-2/option-2/journey.webp" alt="Option 2 at eight moments of the tour at 1440 wide: made, stocked, at risk, priced and split, the yes, sold, settled, and the whole business at rest." loading="lazy"></div><figcaption>Made, Stocked, At risk, Priced and split, One yes, Sold, Settled, at rest</figcaption></figure>
+      <div style="display: grid; gap: 14px">
+        <figure><div class="frame" tabindex="0" role="region" aria-label="Option 2, a place opened at 1440"><img src="round-2/option-2/open-1440.webp" alt="Option 2 at 1440 with a place opened: the camera on it, its team and their handoffs lit, and its panel." loading="lazy"></div><figcaption>A place opened: the camera goes to it, its team's handoffs light, its panel opens</figcaption></figure>
+        <figure><div class="frame" tabindex="0" role="region" aria-label="Option 2, the picture tilted by the pointer"><img src="round-2/option-2/depth.webp" alt="Option 2 zoomed on the godown, twice: with the pointer at the left, then at the right; the godown shifts against the buildings behind it and the near ground, and what is far from the focus is soft." loading="lazy"></div><figcaption>In depth: the pointer at the left, then at the right. The godown shifts against what is behind it, and the focus is on the godown</figcaption></figure>
+      </div>
+    </div>
+    <h4>On a phone (390, light): the tour</h4>
+    <div class="strip" tabindex="0" role="region" aria-label="Option 2, the tour on a phone"><img src="round-2/option-2/phone-journey.webp" alt="Option 2 on a phone at eight moments of the tour, the picture as a square card above the caption." loading="lazy"></div>
+    <h4>At rest, and opened</h4>
+    <div class="comps">
+      <figure><div class="frame" tabindex="0" role="region" aria-label="Option 2, light, 1440"><img src="round-2/option-2/light-1440.webp" alt="Option 2 in light at 1440 wide, at rest: the whole business, every place pinned and every agent named." loading="lazy"></div><figcaption>At rest: light, 1440</figcaption></figure>
+      <figure><div class="frame" tabindex="0" role="region" aria-label="Option 2, dark, 1440"><img src="round-2/option-2/dark-1440.webp" alt="Option 2 in dark at 1440 wide: the town at night." loading="lazy"></div><figcaption>Dark, 1440</figcaption></figure>
+      <figure><div class="frame phone" tabindex="0" role="region" aria-label="Option 2, light, 390"><img src="round-2/option-2/light-390.webp" alt="Option 2 in light on a phone." loading="lazy"></div><figcaption>Light, 390</figcaption></figure>
+      <figure><div class="frame phone" tabindex="0" role="region" aria-label="Option 2, a place opened on a phone"><img src="round-2/option-2/open-390.webp" alt="Option 2 on a phone with a place opened, its panel under the picture." loading="lazy"></div><figcaption>Opened, 390</figcaption></figure>
+    </div>
+  </article>
+</section>
+
+<section class="part" id="o3" aria-labelledby="o3-h">
+  <h2 id="o3-h">Option 3 · Your yes</h2>
+  <article class="option">
+    <div class="option-head"><h3>The tour stops at the plan and waits for the visitor's own yes before the batch sells</h3></div>
+    <div class="idea"><p>The camera follows the batch to the maker's office and stops there:</p><ul class="tight"><li>the plan is on screen: 588 packs to 31 kiranas, 772 to one buyer, ₹21,770 back instead of −₹26,330;</li><li>"Approve the plan" waits, amber, at the office;</li><li>the visitor's yes sends the batch out to the kiranas and up the highway, and the money comes back;</li><li>then the picture is theirs to explore, as in option 1.</li></ul></div>
+    <div class="links"><a class="btn primary" href="round-2/option-3/mockup.html">Open the mockup</a><a class="btn" href="round-2/option-3/mockup.html?theme=dark">In dark</a></div>
+    <div class="motion-row">
+      <figure><video class="motion" src="round-2/option-3/motion.mp4" controls muted playsinline preload="metadata" poster="round-2/option-3/motion.webp" aria-label="Option 3's recording: the tour to the maker's office, where the plan waits; the visitor approves it; the batch sells, settles, and the landfill is opened."></video><figcaption>Recorded from the mockup: the 4.7-second tour, then the visitor's part (the ring is the recording's pointer). The still is the yes.</figcaption></figure>
+      <dl class="facts">
+        <div><dt>Why it works</dt><dd>"You say yes once" becomes something the visitor does, and that sticks.</dd></div>
+        <div><dt>Trade-off</dt><dd>Visitors who never press it don't see the sale play out. The caption tells them the result anyway, and the steps go past it.</dd></div>
+        <div><dt>The build would touch</dt><dd><ul class="tight"><li><code>design3/site</code>: option 1's stage, plus the yes at the office;</li><li>the SvelteKit port, the same.</li></ul></dd></div>
+      </dl>
+    </div>
+    <h4>The tour, beat by beat (1440, light)</h4>
+    <div class="journey">
+      <figure><div class="frame" tabindex="0" role="region" aria-label="Option 3, the tour at 1440"><img src="round-2/option-3/journey.webp" alt="Option 3 at eight moments of the tour at 1440 wide: made, stocked, at risk, priced and split, the yes, sold, settled, and the whole business at rest." loading="lazy"></div><figcaption>Made, Stocked, At risk, Priced and split, One yes, Sold, Settled, at rest</figcaption></figure>
+      <div style="display: grid; gap: 14px">
+        <figure><div class="frame" tabindex="0" role="region" aria-label="Option 3, a place opened at 1440"><img src="round-2/option-3/open-1440.webp" alt="Option 3 at 1440 with a place opened: the camera on it, its team and their handoffs lit, and its panel." loading="lazy"></div><figcaption>A place opened: the camera goes to it, its team's handoffs light, its panel opens</figcaption></figure>
+        
+      </div>
+    </div>
+    <h4>On a phone (390, light): the tour</h4>
+    <div class="strip" tabindex="0" role="region" aria-label="Option 3, the tour on a phone"><img src="round-2/option-3/phone-journey.webp" alt="Option 3 on a phone at eight moments of the tour, the picture as a square card above the caption." loading="lazy"></div>
+    <h4>At rest, and opened</h4>
+    <div class="comps">
+      <figure><div class="frame" tabindex="0" role="region" aria-label="Option 3, light, 1440"><img src="round-2/option-3/light-1440.webp" alt="Option 3 in light at 1440 wide, at the plan waiting for the yes." loading="lazy"></div><figcaption>At the yes: light, 1440</figcaption></figure>
+      <figure><div class="frame" tabindex="0" role="region" aria-label="Option 3, dark, 1440"><img src="round-2/option-3/dark-1440.webp" alt="Option 3 in dark at 1440 wide: the town at night." loading="lazy"></div><figcaption>Dark, 1440</figcaption></figure>
+      <figure><div class="frame phone" tabindex="0" role="region" aria-label="Option 3, light, 390"><img src="round-2/option-3/light-390.webp" alt="Option 3 in light on a phone." loading="lazy"></div><figcaption>Light, 390</figcaption></figure>
+      <figure><div class="frame phone" tabindex="0" role="region" aria-label="Option 3, a place opened on a phone"><img src="round-2/option-3/open-390.webp" alt="Option 3 on a phone with a place opened, its panel under the picture." loading="lazy"></div><figcaption>Opened, 390</figcaption></figure>
+    </div>
+  </article>
+</section>
+
+<section class="part" id="round-1" aria-labelledby="r1-h">
+  <h2 id="r1-h">Round 1, as you saw it</h2>
+  <div class="card"><p>Three heroes on a picture of the chain alone: the constellation over the chain, the journey ring, and Follow the batch. You picked none to build and asked for round 2 on option 3. The comps and the journey moments are kept in <code>design3/designs/SC-32/option-1</code> to <code>option-3</code>.</p></div>
+  <div class="cols three">
+    <figure><div class="frame"><img src="option-1/light-1440.webp" alt="Round 1, option 1: the chain and its constellation, at rest." loading="lazy"></div><figcaption>Round 1 · 1. The chain and its constellation</figcaption></figure>
+    <figure><div class="frame"><img src="option-2/light-1440.webp" alt="Round 1, option 2: the journey ring, at rest." loading="lazy"></div><figcaption>Round 1 · 2. The journey ring</figcaption></figure>
+    <figure><div class="frame"><img src="option-3/journey.webp" alt="Round 1, option 3: four moments of following the batch." loading="lazy"></div><figcaption>Round 1 · 3. Follow the batch (the base for round 2)</figcaption></figure>
+  </div>
+</section>
+
+<section class="part" id="decide" aria-labelledby="decide-h">
+  <h2 id="decide-h">Decide</h2>
+  <div class="card decide">
+    <p>Pick one option for the hero, or ask for another round. Parts can move between options before the build: option 3's yes inside option 2's picture in depth, for example.</p>
+    <p class="note">The pick is built as SC-30's was: first the prototype in <code>design3/site</code>, then the SvelteKit port. The plates move into <code>design3/site/assets/plates</code> with their sidecars. Option 2's renderer falls back to option 1's flat picture where WebGL2 isn't there, and draws only while something moves.</p>
+  </div>
+</section>
+
+</main>
+<footer class="wrap">SC-32 · design-first (SC-26) · every company, person and figure is fictional · the figures are an illustrative batch worked out from the journey map · round 1 adapts ThreeUI Community work under the MIT licence</footer>
+</body>
+</html>

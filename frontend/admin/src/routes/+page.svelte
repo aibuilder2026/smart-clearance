@@ -23,7 +23,7 @@
 	<meta property="og:title" content="Smart-Clearance · every near-expiry carton gets a second chance" />
 	<meta property="og:description" content={description} />
 	<meta property="og:url" content="{SITE}/" />
-	<meta property="og:image" content="{SITE}{PLATES.scene.day}" />
+	<meta property="og:image" content="{SITE}{PLATES.town.day}" />
 	<meta name="twitter:card" content="summary_large_image" />
 </svelte:head>
 

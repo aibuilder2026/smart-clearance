@@ -1,0 +1,17 @@
+{
+  "name": "journey",
+  "model": "Qwen-Image-2.1 bf16 (local), generate_image, then edit_image on a crop of the shop signs",
+  "prompt": "Tilt-shift photograph of a handmade miniature diorama of an Indian snack supply chain, one continuous landscape read from left to right, soft morning light, shallow depth of field, warm sand, terracotta and sage palette. Left: a snack factory, a pale production hall with a sawtooth roof and two tall brick chimneys, tiny workers loading brown cartons from its loading bay onto a small blue truck. Middle: a distributor's godown, a larger corrugated warehouse with its shutters rolled up, filled with stacks of brown cartons, more cartons on its forecourt, a handcart and a tiny yellow forklift. Right: a narrow lane of colourful kirana shops with rows of snack packets hanging at their fronts, a white delivery van and a green auto-rickshaw outside, tiny shoppers. One thin softly glowing green path runs along the road from the factory's loading bay to the godown's door and on into the lane of kirana shops. The top third of the frame is open, pale hazy sky above faint distant hills. The foreground is a soft blurred field. No lettering, no words or numbers on any sign, no logos.",
+  "seed": 3302,
+  "size": 2048,
+  "aspect": "16:9",
+  "output": "2752x1536",
+  "attempts": "two candidates at 2048 (seeds 3302 and 3303), after two at 1024 (3301, 3302); seed 3302 picked for its left-to-right chain and the route joining all three places",
+  "edit": {
+    "why": "the generated shop signboards carried made-up lettering, which a plate may not",
+    "how": "the region x 1500-2752, y 560-1080 was cut out and repainted with edit_image (seed 3304, size 1280): 'Repaint every shop signboard as a plain, flat, slightly weathered painted panel in its own colour, with no letters, words, numbers, symbols or pictures on any signboard. Keep everything else exactly the same.' It was blended back where it changed, with the far blurred signs taken whole"
+  },
+  "created": "2026-10-05",
+  "postprocess": "WebP q82; the PNG originals stay local in src/",
+  "use": "smartclearance.com hero, SC-32's options (the supply chain from the manufacturer to the distributor to the retailers)"
+}
