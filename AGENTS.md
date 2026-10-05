@@ -95,6 +95,12 @@ Local pages:
   4. The maintainer picks one option in the current request. Only the picked option is built.
 - Small fixes that change no design skip this.
 - A project hook, `.claude/hooks/design-first-reminder.sh`, repeats the rule whenever a request reads like a UI or UX change.
+- ThreeUI Community components (MIT), through the `threeui-community` plugin (see Tooling), are effects to adapt, never to drop in as they are:
+  - restyle them to design system v3: the system's inks, and no soft halos or glows beyond the aura and the camera scanline;
+  - their motion stops within five seconds, and lands on a still frame under reduced motion (WCAG 2.2.2);
+  - a decorative canvas is `aria-hidden`, and text drawn over it is measured against the pixels behind it;
+  - a `THIRD_PARTY_NOTICES.md` beside the adapted code keeps the MIT notice and names the component and the catalog commit;
+  - ThreeUI's Pro and Beta components are not used.
 
 **Code and builds**
 
@@ -179,6 +185,7 @@ These are not in the repo; install your own to match.
 | jira-flow | 0.1.1 | `duttaarun/jira-flow-plugin` | <ul><li>Skills: `init`, `plan`, `work`, `track`, `bug`, `status`, `pr`, `ship`.</li><li>The hooks listed below.</li></ul> | Every SC ticket. |
 | qwen-image-bf16 | 0.2.0 | A local marketplace | Qwen-Image 2.1 (bf16) image generation and editing, run locally; skill `qwengen-bf16`. | The 3D renders in `design3/system/img/`. |
 | ltx-video | 0.2.0 | `duttaarun/ltx-video-plugin` | LTX 2.5 Fast video clips through LTX Desktop, run locally; skills `ltx-clip`, `ltx-init`. | The carton loop in `design3/system/media/`. |
+| threeui-community | 0.1.0 | A local marketplace, `~/projects/threeui-community-plugin` (`threeui-community-local`) | <ul><li>The `threeui` MCP server: `search_catalog`, `get_catalog_item`, `get_item_source`, `get_license`.</li><li>It reads a copy of ThreeUI's free Community catalog (MIT, github.com/MengTo/threeui), pinned in `~/threeui-community` by the plugin's `scripts/setup.sh`.</li><li>Skill `threeui`.</li></ul> | Canvas, WebGL and Three.js effects to adapt in design work (SC-30's options 1 and 2 adapted two). No account is needed; ThreeUI's own MCP server is for Pro members only (SC-31). |
 
 **Hooks** (all from jira-flow)
 
@@ -207,6 +214,7 @@ These are not in the repo; install your own to match.
 | `playwright` | `npx @playwright/mcp` | Driving and screenshotting pages during design work. |
 | `github` | Remote (GitHub) | Configured, but failing to authenticate. The `gh` CLI is the working route. |
 | `gcloud` | `npx @google-cloud/gcloud-mcp` | Google Cloud for the planned build. Unused so far. |
+| `threeui` | stdio, from the `threeui-community` plugin | The ThreeUI Community catalog: read-only, from the local copy. |
 
 From the Claude desktop app:
 

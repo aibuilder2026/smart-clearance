@@ -16,6 +16,9 @@
 - **Accessibility:** run the suite first. For a manual WCAG audit, use the `accessibility-tester` agent with the `accessibility` and `web-design-guidelines` skills.
 - **Charts:** the `dataviz` skill. Validate palettes with its script; don't eyeball them.
 - **Images and motion:** `qwengen-bf16` for images (Qwen-Image) and `ltx-clip` for clips (LTX). Write the `.prompt.json` sidecar beside each asset.
+- **Canvas, WebGL and Three.js effects:** the `threeui-community` plugin (user scope). `/threeui <what you need>`, or its `threeui` MCP tools, search ThreeUI's free Community catalog and return the source.
+  - Adapt what it returns by AGENTS.md's design rules, with the MIT notice beside the adapted code.
+  - ThreeUI's own MCP server is for Pro members only, and is not set up.
 - **The frontend (`frontend/`):** a change to a surface already ported goes into design3 first, then into the Svelte port. In the browser pane:
   - preview with the `frontend-admin` (dev, :5173) and `frontend-preview` (build, :4173) launch configs;
   - restart `frontend-preview` after a rebuild, since it reads the build's file list once and 404s new chunks;
@@ -137,4 +140,13 @@
   - **Contrast on a plate:** text drawn over a plate is measured against the pixels behind it. Names not reached yet take the secondary ink, never opacity: a chip at 62% opacity fell under 4.5:1 on the darker parts of the town.
   - **The port:** `Crew.svelte` in `Hero`; `HeroCard` and `Stops` are gone; `figures.ts` carries the crew; `plates.ts` bundles only the plates the page shows. The server sends the crew before it sets off; the ring is drawn in the browser, from the plate's measured fit.
   - **Hosting:** the hosted landing page and console load commit `ae62513`.
+- **SC-31** (In Review, branch `SC-31-threeui-community`, stacked on SC-30): ThreeUI Community as a local Claude Code plugin, asked for by the maintainer.
+  - **The plugin:** `~/projects/threeui-community-plugin`, a local marketplace (`threeui-community-local`) with the `threeui-community` plugin, laid out like the Qwen plugin's. It holds:
+    - a dependency-free MCP server, `threeui`, with `search_catalog`, `get_catalog_item`, `get_item_source` and `get_license`;
+    - the `/threeui` skill;
+    - `scripts/setup.sh`;
+    - a stdio smoke test.
+  - **The data:** a copy of ThreeUI's public MIT repository in `~/threeui-community`, pinned to `68802d5` (package 1.2.0, as on npm): 104 records (43 items and 61 variant records) and 177 source files. Some records also name the original exports they came from; those are provenance, not files.
+  - **Installed** at user scope; Claude Code connects to its server (`claude mcp list`). The tools come with a new session.
+  - **Referenced here:** AGENTS.md (design rules and tooling), the design-first skill and `.claude/third-party.md`.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

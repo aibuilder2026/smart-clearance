@@ -11,3 +11,9 @@ Installed for SC-17 from the [aitmpl.com](https://www.aitmpl.com) catalog (Claud
 | MCP server `chrome-devtools` | `.mcp.json` | mcps/devtools/chrome-devtools | Google's `chrome-devtools-mcp`: `lighthouse_audit` (accessibility), accessibility-tree `take_snapshot`, `emulate`, `get_css_styles`. Changed from the catalog entry: pinned to 1.10.1 instead of `@latest`, and `--no-usage-statistics` added (usage statistics go to Google by default) |
 
 Claude Code asks once before it starts a project MCP server from `.mcp.json`. Agents and skills load at the next session start.
+
+## ThreeUI Community (SC-30, SC-31)
+
+ThreeUI's free Community catalog (github.com/MengTo/threeui, MIT, Copyright (c) 2026 Meng To) reaches Claude Code through the maintainer's own `threeui-community` plugin. It is installed at user scope from `~/projects/threeui-community-plugin`, and serves a copy pinned to `68802d5` from `~/threeui-community`. Nothing from it is installed in this repo.
+
+Code adapted from it keeps the MIT notice beside it. The first is `design3/designs/SC-30/THIRD_PARTY_NOTICES.md`, for SC-30's options 1 and 2; those are designs only, and the built hero uses no ThreeUI code.

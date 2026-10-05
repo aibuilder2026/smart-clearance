@@ -35,6 +35,7 @@ Small fixes that change no design skip this: a typo, a broken link, or a bug wit
 | Design system (`design3/system`, `DESIGN.md`) | `impeccable` (`extract`, `document`) | `ui-ux-pro-max --design-system`, as a reference only |
 | Motion, on any surface | Framer Motion: `framer-motion` 11.18.2, the `Motion` global the design system already loads, prototyped in the HTML mockups. The SvelteKit build (`frontend/`) ships the same motion with `motion` (motion.dev) and Svelte transitions, from the same springs, eases and durations (`frontend/core/src/lib/motion`) | `impeccable animate` for the motion grammar; `ltx-clip` only for a video asset such as the carton loop, never for interface motion |
 | Charts | `dataviz` | Validate palettes with its script |
+| Canvas, WebGL and Three.js effects, on any surface | The `threeui-community` plugin: `/threeui <effect>` finds a ThreeUI Community component (MIT) and returns its source | Adapt it, never drop it in: design system v3's inks, motion that stops within five seconds, reduced motion, and the MIT notice beside the adapted code (AGENTS.md, Design) |
 
 The taste skills say they are for landing pages, portfolios and redesigns, not dashboards or multi-step product UI. Keep them off the app, demo and console screens.
 
