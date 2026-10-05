@@ -107,18 +107,132 @@ footer { padding-block: 36px 60px; color: var(--ink-3); font-size: 13px; }
 <body>
 <div class="top"><div class="wrap">
   <a class="brand" href="#top"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="bg" x1="8" y1="4" x2="58" y2="62" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#2fbf7f"/><stop offset="0.55" stop-color="#178258"/><stop offset="1" stop-color="#0d5a3e"/></linearGradient></defs><path d="M32 2C9.5 2 2 9.5 2 32s7.5 30 30 30 30-7.5 30-30S54.5 2 32 2Z" fill="url(#bg)"/><path d="M43.5 19 H27 a7 7 0 0 0 0 14 h10 a7 7 0 0 1 0 14 H20.5" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="43.5" cy="19" r="3.4" fill="#0d5a3e" stroke="#fff" stroke-width="2.6"/><circle cx="20.5" cy="47" r="5.2" fill="#f7c04a" stroke="#fff" stroke-width="2.2"/></svg>SC-28 review</a>
-  <nav aria-label="Board"><a href="#request">Request</a><a href="#now">Now</a><a href="#a">Option A</a><a href="#b">Option B</a><a href="#c">Option C</a><a href="#decide">Decide</a></nav>
+  <nav aria-label="Board"><a href="#r2">Round 2</a><a href="#o1">Option 1</a><a href="#o2">Option 2</a><a href="#o3">Option 3</a><a href="#decide">Decide</a><a href="#r1">Round 1</a></nav>
 </div></div>
 
 <main class="wrap" id="top">
 <header class="intro">
   <h1>The landing page, refined</h1>
-  <p class="lede">Three ways to bring smartclearance.com to the SC-25 board's sections and fonts, without any client on the page, and to show what Smart-Clearance does with motion: the agents at work, the money on screen, the one yes.</p>
-  <div class="chips"><span class="chip rec">Recommended: option A</span><span class="chip">No client details</span><span class="chip">The board's fonts</span><span class="chip">Motion that plays once</span><span class="chip">Light, dark, 1440 and 390</span></div>
+  <p class="lede">Round 2 puts option B's "How Smart-Clearance works" together with option A's live nine stops. It offers three new ways to show where the batch's packs go, each on or under the street picture. Round 1, and the page built from its pick, are further down.</p>
+  <div class="chips"><span class="chip rec">Recommended: option 1</span><span class="chip">B's How it works</span><span class="chip">A's nine stops</span><span class="chip">The exits in motion</span><span class="chip">Light, dark, 1440 and 390</span></div>
 </header>
 
+<section class="part" id="r2" aria-labelledby="r2-h">
+  <h2 id="r2-h">Round 2 · the request</h2>
+  <div class="card">
+    <blockquote>"I would like to have a customized approach between A and B.....<br><br>From A--&gt; The Agents section looks good<br>From B--&gt;  How Smart‑Clearance works really well.<br><br>I need you to rethink ---<br>&nbsp;&nbsp;&nbsp;i. Five exits, one batch. -- think of something more animated and engaging . The picture is fine, But somehow show a pictorial workflow how goods are diverted --- use motion animations if needed"</blockquote>
+  </div>
+  <div class="cols two">
+    <div class="card"><h3 style="font-size: 19px; margin-bottom: 10px">The page in every round-2 option</h3>
+      <ul class="tight">
+        <li><b>From option B,</b> "How Smart-Clearance works": the Watcher's alert, the Valuer's prices for every exit with the Router's split, and the plan waiting for one yes.</li>
+        <li><b>From option A,</b> the nine stops as a live pipeline: each agent says what it did, with a beat on the person's yes.</li>
+        <li><b>The rest as built from round 1:</b> the hero, the result cards, "Your own workspace" (comp L5), plans and the close (comp L6), and no client named.</li>
+        <li>Option B's questions section is left out, since you didn't ask for it. Say if you want it back.</li>
+      </ul></div>
+    <div class="card"><h3 style="font-size: 19px; margin-bottom: 10px">Five exits, one batch: what changes</h3>
+      <ul class="tight">
+        <li><b>The street picture stays,</b> with its five exits named over it.</li>
+        <li><b>Each option shows the packs being diverted:</b> 588 to 31 kiranas, 772 to one buyer on ExpireSoon, none to the staff sale, the food bank or the bin.</li>
+        <li><b>Motion</b> plays once as the section comes into view, under five seconds, holds on the result and offers Replay. Under reduced motion it shows the result from the start.</li>
+        <li><b>The renders</b> are the unbranded ones, plus one new: the bin, made with Qwen-Image with its prompt sidecar.</li>
+      </ul></div>
+  </div>
+</section>
+
+<section class="part" id="o1" aria-labelledby="o1-h">
+  <h2 id="o1-h">Option 1 · The packs take the street</h2>
+  <article class="option rec">
+    <div class="option-head"><h3>The picture becomes the workflow: the batch leaves the godown and takes the road</h3><span class="tag">Recommended</span></div>
+    <div class="idea"><p>When the street comes into view, the batch leaves the godown as dots of about 50 packs and travels along the road:</p><ul class="tight"><li>588 turn into the kiranas and 772 go to the buyer on ExpireSoon;</li><li>the godown's count drains while each exit's count fills;</li><li>the staff sale and the food bank stay dashed, priced and not needed;</li><li>the road to the bin ends in a red cross.</li></ul></div>
+    <div class="links"><a class="btn primary" href="round-2/option-1/mockup.html">Open the mockup</a><a class="btn" href="round-2/option-1/mockup.html?theme=dark">In dark</a></div>
+    <div class="motion-row">
+      <figure><video class="motion" src="round-2/option-1/motion.mp4" controls muted playsinline preload="metadata" poster="round-2/option-1/motion.webp" aria-label="Option 1's motion: dots leave the godown along the street; 588 packs turn into the kiranas and 772 go to the buyer, while the counts change."></video><figcaption>The motion, recorded from the mockup: about four seconds, once; "Send the batch again" replays it</figcaption></figure>
+      <dl class="facts">
+        <div><dt>Why recommended</dt><dd>It answers your note on the picture you like: the goods are seen leaving the godown and turning into their exits, with the counts moving as they go. It adds no new block to the page, and it doesn't repeat the Router's split that "How it works" already shows.</dd></div>
+        <div><dt>Trade-off</dt><dd>The whole street has to be in view, so on desktop it replaces the street's scroll-pan. The dots are small on a phone, where the strip follows them along.</dd></div>
+        <div><dt>The build would touch</dt><dd><ul class="tight">
+          <li><code>design3/site</code>: the flow over the street plate, the dots and the chips' counters, its key and Replay; the desktop pan retired; "How it works" from option B; the pipeline as built;</li>
+          <li>the SvelteKit port, the same, in <code>motion</code>.</li>
+        </ul></dd></div>
+      </dl>
+    </div>
+    <div class="comps">
+      <figure><div class="frame" tabindex="0" role="region" aria-label="Round 2 option 1, light, 1440"><img src="round-2/option-1/light-1440.webp" alt="Option 1 in light at 1440 wide, top to bottom." loading="lazy"></div><figcaption>Light, 1440</figcaption></figure>
+      <figure><div class="frame" tabindex="0" role="region" aria-label="Round 2 option 1, dark, 1440"><img src="round-2/option-1/dark-1440.webp" alt="Option 1 in dark at 1440 wide." loading="lazy"></div><figcaption>Dark, 1440</figcaption></figure>
+      <figure><div class="frame phone" tabindex="0" role="region" aria-label="Round 2 option 1, light, 390"><img src="round-2/option-1/light-390.webp" alt="Option 1 in light on a phone." loading="lazy"></div><figcaption>Light, 390</figcaption></figure>
+      <figure><div class="frame phone" tabindex="0" role="region" aria-label="Round 2 option 1, dark, 390"><img src="round-2/option-1/dark-390.webp" alt="Option 1 in dark on a phone." loading="lazy"></div><figcaption>Dark, 390</figcaption></figure>
+    </div>
+  </article>
+</section>
+
+<section class="part" id="o2" aria-labelledby="o2-h">
+  <h2 id="o2-h">Option 2 · The batch, split</h2>
+  <article class="option">
+    <div class="option-head"><h3>A flow diagram under the picture: the batch splits as wide as the packs each exit took</h3></div>
+    <div class="idea"><p>The picture stays as it is. Under it, the batch is drawn as a flow:</p><ul class="tight"><li>1,360 packs split into ribbons as wide as the packs each exit took: 588 to the kiranas, 772 to the buyer;</li><li>thin dashed threads lead to the three exits that took none;</li><li>each exit has its render, its price a pack and what it came to;</li><li>on a phone, a bar of each exit's share stands in for the ribbons.</li></ul></div>
+    <div class="links"><a class="btn primary" href="round-2/option-2/mockup.html">Open the mockup</a><a class="btn" href="round-2/option-2/mockup.html?theme=dark">In dark</a></div>
+    <div class="motion-row">
+      <figure><video class="motion" src="round-2/option-2/motion.mp4" controls muted playsinline preload="metadata" poster="round-2/option-2/motion.webp" aria-label="Option 2's motion: ribbons wipe in from the batch to the five exits, and each exit's result appears."></video><figcaption>The motion: the ribbons wipe in and each result appears, about two seconds; "Split the batch again" replays it</figcaption></figure>
+      <dl class="facts">
+        <div><dt>Strength</dt><dd>The clearest numbers: every exit's price a pack and its result, read in one glance.</dd></div>
+        <div><dt>Trade-off</dt><dd>It's a diagram under the picture rather than the picture itself. It also repeats the Router's split that "How it works" shows just above it.</dd></div>
+        <div><dt>The build would touch</dt><dd><ul class="tight">
+          <li><code>design3/site</code>: a split diagram, its ribbons measured to the rows, with share bars on phones; one new render (the bin); "How it works" from option B;</li>
+          <li>the port, the same.</li>
+        </ul></dd></div>
+      </dl>
+    </div>
+    <div class="comps">
+      <figure><div class="frame" tabindex="0" role="region" aria-label="Round 2 option 2, light, 1440"><img src="round-2/option-2/light-1440.webp" alt="Option 2 in light at 1440 wide, top to bottom." loading="lazy"></div><figcaption>Light, 1440</figcaption></figure>
+      <figure><div class="frame" tabindex="0" role="region" aria-label="Round 2 option 2, dark, 1440"><img src="round-2/option-2/dark-1440.webp" alt="Option 2 in dark at 1440 wide." loading="lazy"></div><figcaption>Dark, 1440</figcaption></figure>
+      <figure><div class="frame phone" tabindex="0" role="region" aria-label="Round 2 option 2, light, 390"><img src="round-2/option-2/light-390.webp" alt="Option 2 in light on a phone." loading="lazy"></div><figcaption>Light, 390</figcaption></figure>
+      <figure><div class="frame phone" tabindex="0" role="region" aria-label="Round 2 option 2, dark, 390"><img src="round-2/option-2/dark-390.webp" alt="Option 2 in dark on a phone." loading="lazy"></div><figcaption>Dark, 390</figcaption></figure>
+    </div>
+  </article>
+</section>
+
+<section class="part" id="o3" aria-labelledby="o3-h">
+  <h2 id="o3-h">Option 3 · Sorted at five doors</h2>
+  <article class="option">
+    <div class="option-head"><h3>The batch visits each exit in turn and is sorted at its door</h3></div>
+    <div class="idea"><p>Under the picture, the five exits stand as doors, each with its render and its price a pack. The batch travels along them:</p><ul class="tight"><li>at the kiranas' door it leaves 588 packs, at ExpireSoon's 772;</li><li>it reaches the staff sale, the food bank and the bin with nothing left;</li><li>each door stamps its decision: the packs and what they came to, "priced, not needed" or "not taken".</li></ul></div>
+    <div class="links"><a class="btn primary" href="round-2/option-3/mockup.html">Open the mockup</a><a class="btn" href="round-2/option-3/mockup.html?theme=dark">In dark</a></div>
+    <div class="motion-row">
+      <figure><video class="motion" src="round-2/option-3/motion.mp4" controls muted playsinline preload="metadata" poster="round-2/option-3/motion.webp" aria-label="Option 3's motion: the batch token travels along five exit doors; its count drops from 1,360 to 772 to 0 as each door stamps its decision."></video><figcaption>The motion: the batch visits each door, under five seconds; "Sort the batch again" replays it</figcaption></figure>
+      <dl class="facts">
+        <div><dt>Strength</dt><dd>It tells the Router's decision as a sequence, one exit at a time, with the count dropping as the packs are placed.</dd></div>
+        <div><dt>Trade-off</dt><dd>It reads as a sorting sequence more than a street. On a phone the doors are a strip that follows the batch along.</dd></div>
+        <div><dt>The build would touch</dt><dd><ul class="tight">
+          <li><code>design3/site</code>: a doors rail and the batch token; one new render (the bin); "How it works" from option B;</li>
+          <li>the port, the same.</li>
+        </ul></dd></div>
+      </dl>
+    </div>
+    <div class="comps">
+      <figure><div class="frame" tabindex="0" role="region" aria-label="Round 2 option 3, light, 1440"><img src="round-2/option-3/light-1440.webp" alt="Option 3 in light at 1440 wide, top to bottom." loading="lazy"></div><figcaption>Light, 1440</figcaption></figure>
+      <figure><div class="frame" tabindex="0" role="region" aria-label="Round 2 option 3, dark, 1440"><img src="round-2/option-3/dark-1440.webp" alt="Option 3 in dark at 1440 wide." loading="lazy"></div><figcaption>Dark, 1440</figcaption></figure>
+      <figure><div class="frame phone" tabindex="0" role="region" aria-label="Round 2 option 3, light, 390"><img src="round-2/option-3/light-390.webp" alt="Option 3 in light on a phone." loading="lazy"></div><figcaption>Light, 390</figcaption></figure>
+      <figure><div class="frame phone" tabindex="0" role="region" aria-label="Round 2 option 3, dark, 390"><img src="round-2/option-3/dark-390.webp" alt="Option 3 in dark on a phone." loading="lazy"></div><figcaption>Dark, 390</figcaption></figure>
+    </div>
+  </article>
+</section>
+
+<section class="part" id="decide" aria-labelledby="decide-h">
+  <h2 id="decide-h">Decide</h2>
+  <div class="card decide">
+    <p>Pick one option for "Five exits, one batch", or ask for another round. Parts can move between options before the build: option 2's diagram under option 1's street, say.</p>
+    <p style="color: var(--ink-2)">The pick is built in two places, as round 1 was. First the prototype in <code>design3/site</code>, then the SvelteKit port. The port is held to the prototype by the drift, parity and accessibility suites.</p>
+  </div>
+</section>
+
+<section class="part" id="r1" aria-labelledby="r1-h">
+  <h2 id="r1-h">Round 1</h2>
+  <div class="card"><p style="color: var(--ink-2)">You picked option A on 5 Oct 2026, and it is built: in <code>design3/site</code>, in the SvelteKit port, and on the hosted landing page. Round 2 builds on that page. Round 1's request, the page before it, and its three options follow.</p></div>
+</section>
+
 <section class="part" id="request" aria-labelledby="request-h">
-  <h2 id="request-h">The request</h2>
+  <h2 id="request-h">Round 1 · the request</h2>
   <div class="card">
     <blockquote>"I want platform landing page section designs to match this [the SC-25 board], including the fonts.... The screenshot I pasted looks better for the "Your own workspace section". Dont inlude details of Munchly on landing page as they are our client, See landing page of https://www.spoileralert.com and https://nearxpiry.com. Rest all look fine. Design has to be professinal and engaging. Can we refine the design a bit more please"</blockquote>
     <blockquote>[Of "Five exits, one batch":] "This looks good, the picture, but may be also so something more engaging so that users understands what smart clearance is about"</blockquote>
@@ -151,7 +265,7 @@ footer { padding-block: 36px 60px; color: var(--ink-3); font-size: 13px; }
 </section>
 
 <section class="part" id="now" aria-labelledby="now-h">
-  <h2 id="now-h">The page now</h2>
+  <h2 id="now-h">Round 1 · the page before</h2>
   <div class="comps">
     <figure><div class="frame" tabindex="0" role="region" aria-label="The page now, light, 1440"><img src="current/light-1440.webp" alt="The landing page today in light at 1440 wide, top to bottom." loading="lazy"></div><figcaption>Light, 1440</figcaption></figure>
     <figure><div class="frame" tabindex="0" role="region" aria-label="The page now, dark, 1440"><img src="current/dark-1440.webp" alt="The landing page today in dark at 1440 wide." loading="lazy"></div><figcaption>Dark, 1440</figcaption></figure>
@@ -169,9 +283,9 @@ footer { padding-block: 36px 60px; color: var(--ink-3); font-size: 13px; }
 </section>
 
 <section class="part" id="a" aria-labelledby="a-h">
-  <h2 id="a-h">Option A · The board, explained and moving</h2>
+  <h2 id="a-h">Round 1 · option A · The board, explained and moving</h2>
   <article class="option rec">
-    <div class="option-head"><h3>The board's page, with one new section and the agents at work</h3><span class="tag">Recommended</span></div>
+    <div class="option-head"><h3>The board's page, with one new section and the agents at work</h3><span class="tag">Picked and built</span></div>
     <div class="idea"><p>The board's sections in the board's fonts, plus one short new section under the hero, "From at risk to sold, in three steps", that says what Smart-Clearance does before the street shows it. The nine stops become a live pipeline: the batch walks the rail, each agent lights up and says what it did, and the flow pauses on the human yes in amber.</p></div>
     <div class="links"><a class="btn primary" href="option-a/mockup.html">Open the mockup</a><a class="btn" href="option-a/mockup.html?theme=dark">In dark</a></div>
     <div class="motion-row">
@@ -196,7 +310,7 @@ footer { padding-block: 36px 60px; color: var(--ink-3); font-size: 13px; }
 </section>
 
 <section class="part" id="b" aria-labelledby="b-h">
-  <h2 id="b-h">Option B · Explained like a platform</h2>
+  <h2 id="b-h">Round 1 · option B · Explained like a platform</h2>
   <article class="option">
     <div class="option-head"><h3>The references' order: how it works, the proof, the teams, the questions</h3></div>
     <div class="idea"><p>"How Smart-Clearance works" is told in three product moments, each the card a team actually sees:</p>
@@ -228,7 +342,7 @@ footer { padding-block: 36px 60px; color: var(--ink-3); font-size: 13px; }
 </section>
 
 <section class="part" id="c" aria-labelledby="c-h">
-  <h2 id="c-h">Option C · The town at work</h2>
+  <h2 id="c-h">Round 1 · option C · The town at work</h2>
   <article class="option">
     <div class="option-head"><h3>The miniature world in motion: short clips, played once</h3></div>
     <div class="idea"><p>The diorama tells the story:</p>
@@ -260,13 +374,6 @@ footer { padding-block: 36px 60px; color: var(--ink-3); font-size: 13px; }
   </article>
 </section>
 
-<section class="part" id="decide" aria-labelledby="decide-h">
-  <h2 id="decide-h">Decide</h2>
-  <div class="card decide">
-    <p>Pick one option, or ask for another round. Parts can move between options before the build: option C's town clip in option A's hero, say, or option B's questions under option A.</p>
-    <p style="color: var(--ink-2)">Once you pick, the build happens in two places. First the prototype in <code>design3/site</code>, which is the source of truth, re-pinned on Claude Design. Then the SvelteKit port, held to it by the drift, parity and accessibility suites.</p>
-  </div>
-</section>
 </main>
 <footer class="wrap">SC-28 · design-first (SC-26) · every company, person and figure is fictional · the figures are an illustrative batch worked out from the journey map</footer>
 </body>

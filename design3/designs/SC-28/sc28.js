@@ -64,9 +64,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }, [k, reduce]);
     var playing = k >= 0 && k < 9;
     return h('div', { className: 'stops-box', ref: ref },
-      h('ol', { className: 'stops live' + (playing ? ' playing' : ''), 'aria-label': 'The nine stops' },
-        h(M.motion.span, { className: 'stops-fill', 'aria-hidden': 'true', style: { height: 'calc(100% - 48px)' },
-          initial: false, animate: { scaleY: k < 0 ? 0 : Math.min(1, k / 8) }, transition: { duration: reduce ? 0 : 0.45, ease: EASE } }),
+      // --fill: how far the rail has filled; site.css draws it as the list's ::after and eases it (as the build does)
+      h('ol', { className: 'stops live' + (playing ? ' playing' : ''), style: { '--fill': k < 0 ? 0 : Math.min(1, k / 8) }, 'aria-label': 'The nine stops' },
         STOPS.map(function (s, i) {
           var done = i < k || k >= 9, now = i === k && playing;
           return h('li', { key: s.id, className: 'stop' + (s.human ? ' human' : '') + (done ? ' on' : '') + (now ? ' now' : '') },
@@ -81,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
               h(M.AnimatePresence, { initial: false }, (done || now) && h(M.motion.span, { key: 'live', className: 'st-live',
                 initial: reduce ? false : { opacity: 0, y: 4 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.24, ease: EASE } }, s.live))));
         })),
-      props.replay !== false && h('div', null, h('button', { type: 'button', className: 'replay', onClick: function () { setK(-1); setRun(run + 1); setTimeout(function () { setK(0); }, 30); } },
+      !reduce && props.replay !== false && h('div', null, h('button', { type: 'button', className: 'replay', onClick: function () { setK(-1); setRun(run + 1); setTimeout(function () { setK(0); }, 30); } },
         h('span', { dangerouslySetInnerHTML: { __html: '<svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + (window.SC3_ICONS['rotate-ccw'] || '') + '</svg>' } }),
         k >= 9 ? 'Run the batch again' : 'Run the batch')));
   }

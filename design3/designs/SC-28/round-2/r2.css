@@ -1,0 +1,103 @@
+/* SC-28 round 2: "Five exits, one batch" three ways (loads after site.css and ../sc28.css). Nothing here is built yet:
+   the picked option's rules move into site/site.css (and the SvelteKit port) after the pick. */
+
+/* ---------- option 1: the packs take the street, on the picture itself ---------- */
+.flow-layer { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.flow-layer svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.ex-chips { z-index: 2; }
+/* the road the packs take: a light line with a soft green glow, so it reads on the day plate and the night one */
+.fl-glow { fill: none; stroke: var(--ch-kirana); stroke-width: 34; stroke-linecap: round; opacity: 0.45; filter: url(#fl-glow); }
+.fl-trunk { fill: none; stroke: #f6fff9; stroke-width: 10; stroke-linecap: round; }
+.fl-spur { fill: none; stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; }
+.fl-spur.kirana { stroke: var(--ch-kirana); }
+.fl-spur.expiresoon { stroke: var(--ch-expiresoon); }
+.fl-spur.none { stroke: rgb(246 255 249 / 0.85); stroke-width: 7; stroke-dasharray: 16 18; }
+.fl-spur.none.bin { stroke: var(--ch-writeoff); }
+.fl-drop { stroke: #f6fff9; stroke-width: 7; fill: rgb(16 22 19 / 0.35); }
+.fl-drop.taken.kirana { fill: var(--ch-kirana); }
+.fl-drop.taken.expiresoon { fill: var(--ch-expiresoon); }
+.fl-drop.bin { stroke: var(--ch-writeoff); fill: rgb(255 255 255 / 0.9); }
+.fl-x { fill: none; stroke: var(--ch-writeoff); stroke-width: 7; stroke-linecap: round; }
+/* a dot is about 50 packs: the channel's colour, ringed in white so it reads on the busy plate */
+.fl-dot { stroke: #ffffff; stroke-width: 7; filter: drop-shadow(0 6px 10px rgb(0 0 0 / 0.35)); }
+.fl-dot.kirana { fill: var(--ch-kirana); }
+.fl-dot.expiresoon { fill: var(--ch-expiresoon); }
+/* the godown's count, on the plate above its door */
+.fl-tag { position: absolute; top: 22%; translate: -50% -100%; display: inline-flex; align-items: baseline; gap: 4px; padding: 7px 12px; border-radius: 999px; white-space: nowrap;
+  font-size: 13px; color: var(--fg-2); background: var(--glass-strong); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.fl-tag b { font-family: var(--font-display); font-size: 17px; font-weight: 720; letter-spacing: -0.01em; color: var(--fg); font-variant-numeric: tabular-nums; }
+.flow-layer.done .fl-tag b { color: var(--primary-text); }
+/* under the picture: what a dot means, and Replay */
+.flow-key { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; max-width: 1248px; margin: 6px auto 0; font-size: 14px; line-height: 1.45; color: var(--fg-2); }
+.flow-key p { flex: 1 1 32ch; margin: 0; text-wrap: pretty; }
+.fk-dots { display: inline-flex; gap: 4px; }
+.fk-dots i { width: 12px; height: 12px; border-radius: 50%; box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--line-2); }
+.fk-dots .kirana { background: var(--ch-kirana); }
+.fk-dots .expiresoon { background: var(--ch-expiresoon); }
+
+/* ---------- option 2: the batch, split: a flow diagram under the picture ---------- */
+.split { position: relative; display: grid; gap: 16px; margin-top: 22px; padding: 20px; border-radius: 22px; background: var(--surface); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.split-src { display: grid; justify-items: start; align-content: center; gap: 4px; }
+.split-src img { width: 72px; height: 72px; object-fit: contain; margin: -4px 0 2px -6px; }
+.split-n { font-family: var(--font-display); font-weight: 760; font-size: 40px; line-height: 1; letter-spacing: -0.03em; color: var(--fg); font-variation-settings: "opsz" 96, "wdth" 92; font-variant-numeric: tabular-nums; }
+.split-cap { font-size: 14px; line-height: 1.4; color: var(--fg-2); max-width: 22ch; }
+.split-svg { display: none; }
+.sp-band { opacity: 0.88; }
+.sp-band.kirana { fill: var(--ch-kirana); }
+.sp-band.expiresoon { fill: var(--ch-expiresoon); }
+.sp-src.kirana { fill: var(--ch-kirana); }
+.sp-src.expiresoon { fill: var(--ch-expiresoon); }
+.sp-none { fill: none; stroke: var(--fg-4); stroke-width: 2; stroke-dasharray: 6 6; }
+.sp-none.bin { stroke: var(--ch-writeoff); }
+.split-rows { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.split-row { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; align-items: center; column-gap: 12px; min-height: 64px; padding: 6px 14px 6px 6px; border-radius: 16px; background: var(--surface-2);
+  box-shadow: 0 0 0 var(--hair) var(--line); }
+.split-row.taken.kirana { box-shadow: inset 4px 0 0 var(--ch-kirana), 0 0 0 var(--hair) var(--line); }
+.split-row.taken.expiresoon { box-shadow: inset 4px 0 0 var(--ch-expiresoon), 0 0 0 var(--hair) var(--line); }
+.sr-art { width: 52px; height: 52px; object-fit: contain; }
+.sr-main { display: grid; gap: 1px; min-width: 0; }
+.sr-main b { font-size: 15.5px; font-weight: 650; color: var(--fg); }
+.sr-main > span { font-size: 13px; line-height: 1.4; color: var(--fg-2); }
+.split-row.none .sr-main > span { color: var(--fg-3); }
+.sr-v { display: grid; justify-items: end; font-family: var(--font-display); font-size: 22px; font-weight: 720; letter-spacing: -0.02em; color: var(--primary-text); font-variant-numeric: tabular-nums; font-variation-settings: "opsz" 48; }
+.sr-no { font-family: var(--font-ui); font-size: 13px; font-weight: 600; letter-spacing: 0; color: var(--fg-3); }
+.sr-cost { font-family: var(--font-ui); font-size: 13px; font-weight: 600; letter-spacing: 0; color: var(--red-text); }
+/* on a phone, a bar of each exit's share stands in for the ribbons */
+.sr-share { display: block; height: 6px; margin-top: 5px; border-radius: 999px; background: var(--fill-2); overflow: hidden; }
+.sr-share i { display: block; height: 100%; border-radius: inherit; transform-origin: left center; }
+.split-row.kirana .sr-share i { background: var(--ch-kirana); }
+.split-row.expiresoon .sr-share i { background: var(--ch-expiresoon); }
+.split-foot, .doors-foot { display: flex; justify-content: flex-end; }
+@container app (min-width: 768px) {
+  .split { grid-template-columns: 170px minmax(120px, 1fr) minmax(0, 1.55fr); align-items: stretch; gap: 0 4px; padding: 26px 28px 18px; }
+  .split-rows { margin-left: 12px; }
+  .split-svg { display: block; width: 100%; height: 100%; overflow: visible; }
+  .sr-share { display: none; }
+  .split-foot { grid-column: 1 / -1; padding-top: 6px; }
+}
+
+/* ---------- option 3: sorted at five doors: the batch visits each exit in turn ---------- */
+.doors { margin: 22px -16px 0; padding: 0 16px 6px; overflow-x: auto; overscroll-behavior-x: contain; }
+.doors:focus-visible { outline: 3px solid var(--ring); outline-offset: -3px; border-radius: 14px; }
+.doors-inner { position: relative; min-width: 760px; padding-top: 64px; }
+.doors-track { position: absolute; left: 4%; right: 4%; top: 30px; height: 2px; border-radius: 999px; background: color-mix(in oklab, var(--fg) 14%, transparent); }
+.batch-token { position: absolute; z-index: 1; left: 0; top: 10px; translate: -50% 0; display: inline-flex; align-items: center; gap: 6px; height: 42px; padding: 0 14px 0 6px; border-radius: 999px; white-space: nowrap;
+  font-size: 13.5px; color: var(--fg-2); background: var(--surface); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.batch-token img { width: 32px; height: 32px; object-fit: contain; }
+.batch-token b { font-family: var(--font-display); font-size: 18px; font-weight: 720; color: var(--fg); font-variant-numeric: tabular-nums; }
+.batch-token.empty b { color: var(--primary-text); }
+.door-list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+.door { position: relative; display: grid; justify-items: center; align-content: start; gap: 4px; padding: 14px 12px 14px; border-radius: 18px; text-align: center;
+  background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); transition: box-shadow 260ms var(--ease), opacity 260ms var(--ease); }
+.door img { width: 84px; height: 84px; object-fit: contain; }
+.door b { font-size: 15.5px; font-weight: 650; color: var(--fg); }
+.door .per { min-height: 3.9em; font-size: 12.5px; line-height: 1.3; color: var(--fg-3); }
+.door.at { box-shadow: var(--shadow-2), 0 0 0 2px var(--fg-4); }
+.door.took.kirana { box-shadow: var(--shadow-2), 0 0 0 2px var(--ch-kirana); }
+.door.took.expiresoon { box-shadow: var(--shadow-2), 0 0 0 2px var(--ch-expiresoon); }
+.door-stamp { display: grid; place-items: center; min-height: 28px; }
+.stamp { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 10px; border-radius: 999px; font-size: 12.5px; font-weight: 650; white-space: nowrap; color: var(--fg-2); background: var(--fill-2); }
+.door.took.kirana .stamp { color: var(--primary-text); background: var(--primary-soft); }
+.door.took.expiresoon .stamp { color: var(--violet-text); background: var(--violet-soft); }
+.door.bin.no .stamp { color: var(--red-text); background: color-mix(in oklab, var(--red) 12%, transparent); }
+@container app (min-width: 900px) { .doors { margin: 22px 0 0; padding: 0; overflow: visible; } .doors-inner { min-width: 0; } }

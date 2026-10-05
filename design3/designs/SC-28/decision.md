@@ -86,3 +86,24 @@ The four renders it uses were copied into `design3/system/img`:
 - the PNG originals, kept local in `src/`.
 
 This folder keeps its own copies for the review.
+
+## Round 2
+
+**The request** (5 Oct 2026, the maintainer's words):
+
+> I would like to have a customized approach between A and B.....
+>
+> From A--> The Agents section looks good
+> From B-->  How Smart‑Clearance works really well.
+>
+> I need you to rethink ---
+>    i. Five exits, one batch. -- think of something more animated and engaging . The picture is fine, But somehow show a pictorial workflow how goods are diverted --- use motion animations if needed
+
+**The page** in every round-2 option:
+- B's "How Smart-Clearance works", its three product moments;
+- A's nine stops, the live pipeline;
+- everything else as option A was built.
+
+**The options** are for "Five exits, one batch" only. Each keeps the street picture and shows, in motion, how the batch's packs are diverted. They are in `round-2/`.
+
+The pick: pending.

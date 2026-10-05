@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SC-28 round 2 · option 2 · The batch, split</title>
+<link rel="stylesheet" href="../../../../system/tokens.css">
+<link rel="stylesheet" href="../../../../system/base.css">
+<link rel="stylesheet" href="../../../../system/components.css">
+<link rel="stylesheet" href="../../../../site/site.css">
+<link rel="stylesheet" href="../../sc28.css">
+<link rel="stylesheet" href="../r2.css">
+<script src="../../sc28.js"></script>
+</head>
+<body>
+<div class="app sc28">
+<div class="ground" aria-hidden="true"></div>
+<div class="site" id="top">
+
+<header class="site-nav">
+  <a class="nav-brand" href="#top" aria-label="Smart-Clearance, back to the top"><span class="nav-mark"><span data-mark="36"></span></span><span class="wordmark" style="font-size: 15px">Smart‑Clearance</span></a>
+  <nav class="nav-links desk-only" aria-label="Sections"><a href="#how">How it works</a><a href="#agents">Agents</a><a href="#teams">For teams</a><a href="#pricing">Pricing</a></nav>
+  <span class="grow"></span>
+  <span class="nav-mode"><button type="button" class="iconbtn" aria-label="Appearance" title="Appearance" onclick="sc28Theme()"><span class="when-light"><span data-icon="sun"></span></span><span class="when-dark"><span data-icon="moon"></span></span></button></span>
+  <span class="nav-signin"><button type="button" class="nav-text" aria-haspopup="menu" aria-expanded="false">Sign in</button></span>
+  <button type="button" class="btn btn-primary btn-pill nav-demo not-phone">Book a demo</button><button type="button" class="iconbtn phone-only" aria-label="Menu" title="Menu"><span data-icon="menu"></span></button>
+</header>
+
+<main>
+  <section class="hero" aria-labelledby="hero-h">
+    <div class="hero-frame">
+      <div class="hero-copy">
+        <h1 id="hero-h" class="hero-h">Every near-expiry carton gets a second chance.</h1>
+        <p class="hero-sub">AI agents find the best exit for short-dated stock. You say yes once.</p>
+        <div class="hero-ctas"><a class="btn btn-primary" href="#">Watch the 6-minute demo</a><button type="button" class="btn btn-secondary">Find your workspace</button></div>
+      </div>
+      <div class="hero-stage">
+        <picture class="hero-scene"><img class="when-light" src="../../../../site/assets/plates/scene.webp" width="2752" height="1504" alt="A miniature Indian town in the morning: one giant cardboard carton stands among tiny kirana shops, a van and a handcart, with a green path running from it to the shops."><img class="when-dark" src="../../../../site/assets/plates/scene-night.webp" width="2752" height="1504" alt="The same miniature town at night, the carton lit from below by a glowing green path that runs to the shops."></picture>
+        <div class="hero-card" role="group" aria-label="One batch: eight of nine stops done, ₹21,152 recovered">
+          <span class="hc-id mono">1,360 packs</span>
+          <span class="hc-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+          <span class="num money hc-money"><span class="sr-only">₹21,152</span><span class="cur" aria-hidden="true">₹</span><span aria-hidden="true">21,152</span></span>
+          <span class="hc-cap">recovered</span>
+        </div>
+        <ol class="hero-stops" aria-label="Where its packs can go"><li class="st-kiranas">Kiranas</li><li class="st-market">Marketplace</li><li class="st-staff">Staff sale</li><li class="st-foodbank">Food bank</li></ol>
+        <span class="hero-line l1" aria-hidden="true"></span><span class="hero-line l2" aria-hidden="true"></span><span class="hero-line l3" aria-hidden="true"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- from option B: how it works, as the moments each team actually sees; each card rises in turn and its figures roll once -->
+  <section id="how" class="sec sec-how" aria-labelledby="how-h">
+    <div class="wrap">
+      <header class="sec-head"><h2 id="how-h" class="sec-h plain">How Smart‑Clearance works</h2>
+        <p class="sec-sub">It watches the stock in your distributors' godowns. When a batch won't sell before its date, its agents find the exit that recovers the most and do the work, once a person says yes.</p></header>
+      <ol class="moments">
+        <li class="moment">
+          <div class="m-copy"><span class="row tight"><span class="st-n step-n" aria-hidden="true">1</span><h3>Spot it while there is time to sell</h3></span>
+            <p>Every morning at 09:00 the Watcher checks each batch against its date and the quick-commerce shelf-life rules, and flags the stock that won't sell in time. Vision reads the label photo from the godown to be sure.</p>
+            <span class="agents"><span class="chip-agent on"><i></i>Data</span><span class="chip-agent on"><i></i>Watcher</span><span class="chip-agent on"><i></i>Vision</span></span></div>
+          <div class="m-stage"><img class="m-art" src="../../img/godown-plain.webp" alt="">
+            <div class="m-card" data-reveal role="group" aria-label="The Watcher's alert">
+              <div class="m-head" data-rise><span class="chip-agent on"><i></i>Watcher · 09:00</span><span class="badge badge-red"><i class="dot"></i>At risk</span></div>
+              <div class="m-batch" data-rise><img src="../../img/pack-snack-plain.webp" alt=""><span><b>Masala chips, 150 g</b><span>1,840 packs in a distributor's godown, Nagpur</span></span></div>
+              <div class="m-gates" data-rise><span class="gate fail"><span data-icon="x" data-size="13" data-stroke="2.6"></span>Blinkit<span style="font-weight: 500">47/90</span></span><span class="gate fail"><span data-icon="x" data-size="13" data-stroke="2.6"></span>Zepto<span style="font-weight: 500">47/110</span></span><span class="gate fail"><span data-icon="x" data-size="13" data-stroke="2.6"></span>Instamart<span style="font-weight: 500">47/110</span></span></div>
+              <div class="m-big" data-rise><span class="num" data-count="1360">1,360</span><span>packs won't sell in the 47 days they have left</span></div>
+            </div></div>
+        </li>
+        <li class="moment flip">
+          <div class="m-copy"><span class="row tight"><span class="st-n step-n" aria-hidden="true">2</span><h3>Price every exit, the bin included</h3></span>
+            <p>Kiranas on a 2-free-with-10 scheme, a clearance marketplace, a staff sale at the godown, a food bank: the Valuer prices each exit against the true cost of destroying the stock, and the Router splits the batch within each exit's limits.</p>
+            <span class="agents"><span class="chip-agent on"><i></i>Valuer</span><span class="chip-agent on"><i></i>Router</span></span></div>
+          <div class="m-stage"><img class="m-art" src="../../img/kirana-plain.webp" alt="">
+            <div class="m-card" data-reveal role="group" aria-label="The Valuer's prices, net a pack">
+              <div class="m-head" data-rise><span class="chip-agent on"><i></i>Valuer</span><span class="t-footnote subtle">net a pack, after costs</span></div>
+              <div class="m-row" data-rise><span class="k"><i class="ex-dot kirana" aria-hidden="true"></i>Kiranas</span><span class="v">₹17.50</span><span class="s">up to 588 packs in 14 days</span></div>
+              <div class="m-row" data-rise><span class="k"><i class="ex-dot expiresoon" aria-hidden="true"></i>ExpireSoon</span><span class="v">₹15.00</span><span class="s">no limit; listed in the distributor's name</span></div>
+              <div class="m-row off" data-rise><span class="k"><i class="ex-dot staff" aria-hidden="true"></i>Staff sale</span><span class="v">₹12.00</span><span class="s">up to 50 packs at the godown</span></div>
+              <div class="m-row off" data-rise><span class="k"><i class="ex-dot foodbank" aria-hidden="true"></i>Food bank</span><span class="v">−₹1.40</span><span class="s">a donation reverses the GST credit</span></div>
+              <div class="m-row bin" data-rise><span class="k"><i class="ex-dot bin" aria-hidden="true"></i>The bin</span><span class="v">−₹19.36</span><span class="s">stock, GST credit, disposal and EPR</span></div>
+              <div data-rise><div class="m-split-cap"><span>The Router's split</span><span>1,360 packs</span></div><div class="m-split" aria-hidden="true"><span class="k"></span><span class="e"></span></div><div class="m-split-legend"><span><i class="ex-dot kirana" aria-hidden="true"></i>588 to 31 kiranas</span><span><i class="ex-dot expiresoon" aria-hidden="true"></i>772 on ExpireSoon</span></div></div>
+            </div></div>
+        </li>
+        <li class="moment">
+          <div class="m-copy"><span class="row tight"><span class="st-n step-n yes" aria-hidden="true">3</span><h3>Say yes once. The agents do the rest.</h3></span>
+            <p>A person approves the plan with the money on screen; nothing is listed, messaged or shipped before that tap. Then the agents list the lot, send kirana offers in Hindi, answer bids, draft the invoice, credit note and GST memo, and post the impact.</p>
+            <span class="agents"><span class="chip-agent person on"><i></i>a person</span><span class="chip-agent on"><i></i>Lister</span><span class="chip-agent on"><i></i>Outreach</span><span class="chip-agent on"><i></i>Negotiator</span><span class="chip-agent on"><i></i>Paperwork</span><span class="chip-agent on"><i></i>Impact</span></span></div>
+          <div class="m-stage"><img class="m-art" src="../../../../system/img/documents.webp" alt="">
+            <div class="m-card yes" data-reveal role="group" aria-label="The plan, waiting for one yes">
+              <div class="m-head" data-rise><b>Approve the plan</b><span class="badge badge-amber"><i class="dot"></i>Waiting for you</span></div>
+              <div class="m-big" data-rise style="box-shadow: none; padding-top: 0"><span class="num money"><span class="cur">₹</span><span data-count="21770">21,770</span></span><span>recovered, against −₹26,330 to destroy it</span></div>
+              <div class="m-row" data-rise><span class="k"><i class="ex-dot kirana" aria-hidden="true"></i>588 packs to 31 kiranas</span><span class="v">₹10,290</span></div>
+              <div class="m-row" data-rise><span class="k"><i class="ex-dot expiresoon" aria-hidden="true"></i>772 packs on ExpireSoon</span><span class="v">₹11,480</span></div>
+              <div class="m-go" data-rise><button type="button" class="btn btn-approve btn-lg"><span data-icon="check" data-size="18"></span>Approve · release the agents</button></div>
+              <div class="m-after" data-rise><span class="chip-agent" data-light><i></i>Lister</span><span class="chip-agent" data-light><i></i>Outreach</span><span class="chip-agent" data-light><i></i>Negotiator</span><span class="chip-agent" data-light><i></i>Paperwork</span><span class="chip-agent" data-light><i></i>Impact</span></div>
+            </div></div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="exits" class="sec sec-exits" aria-labelledby="exits-h">
+    <div class="wrap">
+      <header class="sec-head"><h2 id="exits-h" class="sec-h">Five exits, one batch</h2>
+        <p class="sec-sub">One batch: 1,360 packs of masala chips that won't sell in the 47 days they have left. The agents priced every exit, the bin included, and sent the packs where they recover the most.</p></header>
+    </div>
+    <div class="ex-body">
+      <div class="ex-pan" tabindex="0" role="region" aria-label="The street from the godown to the bin">
+        <figure class="ex-pano" style="--ar: 4.290322580645161">
+          <img class="when-light" src="../../../../site/assets/plates/exits.webp" alt="One miniature street from end to end: the distributor's godown, kirana shops hung with snack packets, a general store, a van, and a smouldering rubbish heap at the far end."><img class="when-dark" src="../../../../site/assets/plates/exits-night.webp" alt="The same street at night.">
+          <ul class="ex-chips">
+            <li data-exit="kirana" style="--x: 0.35"><button type="button" class="ex-chip taken on" aria-pressed="true"><span class="ex-name"><i class="ex-dot kirana" aria-hidden="true"></i>Kiranas<span data-icon="check" data-size="14" data-stroke="2.6"></span></span><span class="ex-line">588 packs · 31 shops</span></button></li>
+            <li data-exit="expiresoon" style="--x: 0.515"><button type="button" class="ex-chip taken" aria-pressed="false"><span class="ex-name"><i class="ex-dot expiresoon" aria-hidden="true"></i>ExpireSoon<span data-icon="check" data-size="14" data-stroke="2.6"></span></span><span class="ex-line">772 packs · ₹14.20</span></button></li>
+            <li data-exit="staff" style="--x: 0.65"><button type="button" class="ex-chip" aria-pressed="false"><span class="ex-name"><i class="ex-dot staff" aria-hidden="true"></i>Staff sale</span><span class="ex-line">priced, not needed</span></button></li>
+            <li data-exit="foodbank" style="--x: 0.785"><button type="button" class="ex-chip" aria-pressed="false"><span class="ex-name"><i class="ex-dot foodbank" aria-hidden="true"></i>Food bank</span><span class="ex-line">priced, not needed</span></button></li>
+            <li data-exit="bin" style="--x: 0.93"><button type="button" class="ex-chip bin" aria-pressed="false"><span class="ex-name"><i class="ex-dot bin" aria-hidden="true"></i>The bin</span><span class="ex-line">−₹26,330 · not taken</span></button></li>
+          </ul>
+        </figure>
+      </div>
+      <p class="ex-cap" aria-live="polite"><i class="ex-dot kirana" aria-hidden="true"></i><span><b>Kiranas.</b> 588 packs to 31 kiranas at ₹18 a pack, 2 free with every 10: ₹10,290 after the van.</span></p>
+    </div>
+    <div class="wrap">
+      <!-- option 2: the batch, split: ribbons as wide as the packs each exit took; plays once in view -->
+      <div data-split data-exits='[{"id":"batch","art":"../../../../system/img/pack-snack-plain.webp"},{"id":"kirana","art":"../../../../system/img/kirana-plain.webp"},{"id":"expiresoon","art":"../../../../system/img/marketplace-bag.webp"},{"id":"staff","art":"../../img/godown-plain.webp"},{"id":"foodbank","art":"../../../../system/img/donation-crate.webp"},{"id":"bin","art":"../../img/bin-plain.webp"}]'></div>
+    </div>
+    <div class="wrap">
+      <!-- the board's three cards (L2), each keeping the arithmetic behind it -->
+      <div class="results" role="group" aria-label="What the batch came to">
+        <div class="result"><span class="r-n"><span class="cur">₹</span>21,152</span><span class="r-l">recovered</span><span class="r-w">₹10,290 from 31 kiranas, after the van, and ₹10,862 from a marketplace buyer, after the listing fee</span></div>
+        <div class="result"><span class="r-n"><span class="cur">₹</span>25,722</span><span class="r-l">better than the bin</span><span class="r-w">−₹608 on the brand's books with the plan, price support included, against −₹26,330 to destroy it</span></div>
+        <div class="result"><span class="r-n">0</span><span class="r-l">cartons destroyed</span><span class="r-w">1,360 packs sold on tax invoices, so the ₹1,224 GST credit stays</span></div>
+      </div>
+      <p class="results-note">An illustrative batch. Every figure is worked out from the journey map.</p>
+    </div>
+  </section>
+
+  <section id="agents" class="sec sec-stops" aria-labelledby="stops-h">
+    <div class="wrap">
+      <header class="sec-head"><h2 id="stops-h" class="sec-h">Nine stops. Ten agents. One yes.</h2><p class="sec-sub">The agents do the running around. A person approves once, with the money on screen.</p></header>
+      <div class="stops-grid">
+        <figure class="plate-frame stops-plate"><img class="when-light" src="../../../../site/assets/plates/approve.webp" alt="A miniature town square seen from above: a giant amber push-button on a stone plinth, a woman in a sari beside it with her phone, vans and a handcart around the square." loading="lazy"><img class="when-dark" src="../../../../site/assets/plates/approve-night.webp" alt="The same square at night." loading="lazy"></figure>
+        <!-- from option A: the nine stops, live: plays once when it comes into view, holds on the result, Replay to run again -->
+        <div data-pipeline></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- the board's comp L5 -->
+  <section id="teams" class="sec sec-ws" aria-labelledby="ws-h">
+    <div class="wrap"><header class="sec-head"><h2 id="ws-h" class="sec-h plain">Your own workspace, set up for your supply chain.</h2><p class="sec-sub">Each manufacturer gets its own address, configured for how its stock really moves.</p></header></div>
+    <div class="isl-pan">
+      <figure class="islands" style="--ar: 3.3714285714285714">
+        <img class="isl-plate when-light" src="../../../../site/assets/plates/islands.webp" alt="" loading="lazy"><img class="isl-plate when-dark" src="../../../../site/assets/plates/islands-night.webp" alt="" loading="lazy">
+        <span class="isl-packs" style="--x: 0.22; --y: 0.6" aria-hidden="true"><img class="isl-pack plain" src="../../img/pack-snack-plain.webp" alt="" width="160" height="160"></span>
+        <span class="isl-packs" style="--x: 0.575; --y: 0.59" aria-hidden="true"><img class="isl-pack plain" src="../../img/pack-carton-plain.webp" alt="" width="160" height="160"></span>
+        <span class="isl-packs" style="--x: 0.8; --y: 0.61" aria-hidden="true"><img class="isl-pack plain" src="../../img/bottle-oil-plain.webp" alt="" width="160" height="160"></span>
+        <span class="isl-hub" style="--x: 0.425; --y: 0.69" aria-hidden="true"><span data-mark="52"></span></span>
+        <ul class="isl-urls on-plate" aria-label="Workspace addresses">
+          <li class="isl-url live" style="--x: 0.22; --y: 0.86"><i aria-hidden="true"></i>your-brand.smartclearance.com<span class="isl-live"> · live</span></li>
+          <li class="isl-url" style="--x: 0.575; --y: 0.84"><i aria-hidden="true"></i>your-company.smartclearance.com</li>
+          <li class="isl-url" style="--x: 0.8; --y: 0.87"><i aria-hidden="true"></i>your-group.smartclearance.com</li>
+        </ul>
+        <figcaption class="sr-only">Three islands over a miniature town, each a manufacturer's workspace with its own products, joined to Smart-Clearance by green paths.</figcaption>
+      </figure>
+    </div>
+    <div class="wrap">
+      <ul class="isl-urls below" aria-label="Workspace addresses"><li class="isl-url live"><i aria-hidden="true"></i>your-brand.smartclearance.com<span class="isl-live"> · live</span></li><li class="isl-url"><i aria-hidden="true"></i>your-company.smartclearance.com</li><li class="isl-url"><i aria-hidden="true"></i>your-group.smartclearance.com</li></ul>
+      <ul class="teams" aria-label="What each team gets">
+        <li class="team"><span data-icon="route" data-size="26"></span><b>Supply chain</b><p>One tap to approve a plan, with the money on screen.</p></li>
+        <li class="team"><span data-icon="receipt" data-size="26"></span><b>Finance</b><p>The invoice, credit note and GST memo, drafted.</p></li>
+        <li class="team"><span data-icon="leaf" data-size="26"></span><b>Sustainability</b><p>A BRSR line an auditor can follow back to the batch.</p></li>
+        <li class="team"><span data-icon="handshake" data-size="26"></span><b>Distributors</b><p>Nothing listed in their name without their permission.</p></li>
+      </ul>
+      <div class="conn tight"><ul class="conn-list" aria-label="Works with"><li>Distributor stock exports</li><li>Tally</li><li>BigQuery</li><li>Google Workspace</li><li>ExpireSoon</li><li>GST e-invoice</li><li class="soon">WhatsApp, soon</li></ul></div>
+    </div>
+  </section>
+
+
+  <section id="pricing" class="sec sec-plans" aria-labelledby="plans-h">
+    <div class="wrap">
+      <header class="sec-head"><h2 id="plans-h" class="sec-h plain">Start with one distributor.</h2><p class="sec-sub">A pilot runs on one distributor's stock for 90 days. Prices are set with each manufacturer.</p></header>
+      <ul class="plans board">
+        <li class="plan"><b class="plan-name">Pilot</b><ul class="plan-scope"><li>One distributor</li><li>Up to 10 SKUs</li><li>90 days</li></ul><span class="plan-foot"><span>Prices on request</span><button type="button" class="btn btn-link">Talk to us<span class="sr-only"> about Pilot</span></button></span></li>
+        <li class="plan"><b class="plan-name">Growth</b><ul class="plan-scope"><li>Every distributor in a region</li><li>All ten agents</li><li>Your own sign-in</li></ul><span class="plan-foot"><span>Prices on request</span><button type="button" class="btn btn-link">Talk to us<span class="sr-only"> about Growth</span></button></span></li>
+        <li class="plan"><b class="plan-name">Enterprise</b><ul class="plan-scope"><li>Every region</li><li>Your SSO and data residency</li><li>A named team</li></ul><span class="plan-foot"><span>Prices on request</span><button type="button" class="btn btn-link">Talk to us<span class="sr-only"> about Enterprise</span></button></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="close board" aria-labelledby="close-h">
+    <div class="close-copy">
+      <h2 id="close-h" class="close-h">Give your next batch a second chance.</h2>
+      <div class="close-ctas"><button type="button" class="btn btn-primary">Book a demo</button><a class="btn btn-secondary" href="#">Watch the 6-minute demo</a></div>
+    </div>
+    <img class="close-plate" src="../../../../site/assets/plates/dusk.webp" width="4128" height="1024" alt="" loading="lazy">
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-grid">
+    <div class="foot-brand"><span data-mark="40"></span><span><span class="wordmark" style="font-size: 17px">Smart‑Clearance</span><span class="foot-tag">Every near-expiry carton gets a second chance.</span></span></div>
+    <nav class="foot-cols" aria-label="Footer">
+      <div class="foot-col"><b>Product</b><a href="#how">How it works</a><a href="#agents">Agents</a><a href="#teams">For teams</a><a href="#pricing">Pricing</a></div>
+      <div class="foot-col"><b>Sign in</b><button type="button" class="foot-link">Find your workspace</button><a href="#">Staff console</a></div>
+    </nav>
+  </div>
+  <div class="wrap foot-base">
+    <p>Prototype · every company, person and number is fictional · Google AI Hackathon 2026</p>
+  </div>
+</footer>
+
+</div>
+</div>
+<div class="mock-bar" role="note"><span><b>SC-28 round 2 · option 2</b> · the batch, split</span><button type="button" onclick="sc28Theme()">Light / dark</button></div>
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/framer-motion@11.18.2/dist/framer-motion.js"></script>
+<script src="../../../../system/icons.js"></script>
+<script src="../r2.js"></script>
+</body>
+</html>
