@@ -23,3 +23,20 @@ design3/site/assets/plates/src/
 
 # design reviews: PNG originals stay local, only WebP ships (SC-26)
 design3/designs/*/src/
+
+# frontend (SC-27): build output, test reports and local env files
+frontend/**/.svelte-kit/
+frontend/**/build/
+frontend/**/test-results/
+frontend/**/playwright-report/
+frontend/**/blob-report/
+frontend/**/tests/parity/out/
+frontend/**/.env
+frontend/**/.env.*
+!frontend/**/.env.example
+*.tsbuildinfo
+
+# the Python services (backend-api, agents)
+__pycache__/
+.pytest_cache/
+.ruff_cache/

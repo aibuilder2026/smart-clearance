@@ -16,6 +16,10 @@
 - **Accessibility:** run the suite first. For a manual WCAG audit, use the `accessibility-tester` agent with the `accessibility` and `web-design-guidelines` skills.
 - **Charts:** the `dataviz` skill. Validate palettes with its script; don't eyeball them.
 - **Images and motion:** `qwengen-bf16` for images (Qwen-Image) and `ltx-clip` for clips (LTX). Write the `.prompt.json` sidecar beside each asset.
+- **The frontend (`frontend/`):** a change to a surface already ported goes into design3 first, then into the Svelte port. In the browser pane:
+  - preview with the `frontend-admin` (dev, :5173) and `frontend-preview` (build, :4173) launch configs;
+  - restart `frontend-preview` after a rebuild, since it reads the build's file list once and 404s new chunks;
+  - compare against the `design3` config (:8787).
 - **Tickets:** the jira-flow skills: `/jira-flow:work`, `:status`, `:pr`, `:ship`.
 - **A missing capability:** the `aitmpl` skill. Reading a component is fine; installing one needs a yes.
 
@@ -48,6 +52,7 @@
 - Project agents, skills and `.mcp.json` servers load at session start. After changing them, start a new session.
 - The built-in browser was refused claude.ai pages; Claude in Chrome reaches them.
 - The full accessibility suite takes about 6 minutes, so give it a long timeout. While iterating, use `npm run test:desktop`.
+- In the frontend the e2e suite takes about 30 seconds and the parity suite about 40, after a build. In the agent's sandboxed shell Firefox cannot start; Chromium and WebKit can.
 
 ## Recent changes (4 Oct 2026)
 
@@ -96,4 +101,13 @@
   4. Build only the option the maintainer picks.
 
   The `design-first` skill and a `UserPromptSubmit` hook (`.claude/hooks/design-first-reminder.sh`) carry the rule. SC-25's board, comps and decision are in `design3/designs/SC-25/`.
+- **SC-27** (In Review, branch `SC-27-frontend-landing`): the first production code, `frontend/`, a SvelteKit 3 pnpm workspace (TypeScript 6, Vite 8, Tailwind 4 over the tokens, bits-ui, TanStack Query, `motion`).
+  - `core`: design system v3 in Svelte, with the CSS ported verbatim and kept so by drift tests. It has every component the landing page and the DS page's built sections use; `coverage.ts` lists the rest, with the port that brings each.
+  - `admin`: the landing page ported 1:1 from `design3/site`, with no design round (the maintainer's call: a faithful port). It is prerendered with its data, seeded from `design3/core` through a typed API that flips to `backend-api` with `PUBLIC_API_BASE`. `/ds` is the design-system page, a dev route.
+  - Checked against the prototype:
+    - parity within 0.2–1.5% in five projects;
+    - zero axe violations in five projects;
+    - keyboard and motion specs as design3's.
+  - The prototype's quirks are fixed: window scrolling, real links, no theme flash, the demo form.
+  - `backend-api/` and `agents/` are READMEs for now. The jira-flow gate moved from `web/` to `frontend/`.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

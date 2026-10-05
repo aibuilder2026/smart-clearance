@@ -6,6 +6,24 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["video/recorder/server.py"],
       "port": 8765
+    },
+    {
+      "name": "frontend-admin",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "cd frontend && exec corepack pnpm --filter @smart-clearance/admin dev"],
+      "port": 5173
+    },
+    {
+      "name": "frontend-preview",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "cd frontend && exec corepack pnpm --filter @smart-clearance/admin preview"],
+      "port": 4173
+    },
+    {
+      "name": "design3",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8787", "--directory", "design3"],
+      "port": 8787
     }
   ]
 }

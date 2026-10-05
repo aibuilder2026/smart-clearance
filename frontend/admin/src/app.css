@@ -1,0 +1,16 @@
+/* The cascade, in one place. Tailwind contributes its theme and utilities, never its preflight: design system v3
+   (base.css) is the reset. tokens.css and components.css stay unlayered, exactly as the prototype loads them, so a
+   page's own sheet (the landing page's site.css) relates to them as it does in design3. base.css sits in a layer so its
+   element resets never beat a utility. fonts.css restates the type tokens with the self-hosted names, so it follows
+   tokens.css. */
+@layer theme, base, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import '@smart-clearance/core/styles/tokens.css';
+@import '@smart-clearance/core/styles/fonts.css';
+@import '@smart-clearance/core/styles/base.css' layer(base);
+@import '@smart-clearance/core/styles/components.css';
+@import 'tailwindcss/utilities.css' layer(utilities);
+@import '@smart-clearance/core/styles/tailwind.css';
+
+@source '../../core/src';

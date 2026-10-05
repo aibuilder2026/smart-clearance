@@ -1,0 +1,124 @@
+{
+	"people": [
+		{
+			"id": "priya",
+			"name": "Priya Deshmukh",
+			"short": "Priya",
+			"role": "Regional Supply-Chain Manager",
+			"org": "Munchly Foods",
+			"city": "Pune",
+			"img": "sc3img:/people/p-priya.webp"
+		},
+		{
+			"id": "rakesh",
+			"name": "Rakesh bhai",
+			"short": "Rakesh bhai",
+			"role": "Owner, distributor",
+			"org": "Rakesh Traders",
+			"city": "Nagpur",
+			"img": "sc3img:/people/p-rakesh.webp"
+		},
+		{
+			"id": "ganesh",
+			"name": "Ganesh ji",
+			"short": "Ganesh ji",
+			"role": "Owner, kirana",
+			"org": "Shree Ganesh Kirana",
+			"city": "Itwari, Nagpur",
+			"img": "sc3img:/people/p-ganesh.webp"
+		},
+		{
+			"id": "agrawal",
+			"name": "Agrawal ji",
+			"short": "Agrawal ji",
+			"role": "Buyer",
+			"org": "Agrawal Wholesale",
+			"city": "Raipur",
+			"img": "sc3img:/people/p-agrawal.webp"
+		},
+		{
+			"id": "anita",
+			"name": "Anita Rao",
+			"short": "Anita",
+			"role": "Finance & GST",
+			"org": "Munchly Foods",
+			"city": "Pune",
+			"img": "sc3img:/people/p-anita.webp"
+		},
+		{
+			"id": "vikram",
+			"name": "Vikram Sethi",
+			"short": "Vikram",
+			"role": "Sustainability & BRSR",
+			"org": "Munchly Foods",
+			"city": "Pune",
+			"img": "sc3img:/people/p-vikram.webp"
+		},
+		{
+			"id": "meera",
+			"name": "Meera",
+			"short": "Meera",
+			"role": "City lead",
+			"org": "Feeding India",
+			"city": "Hyderabad",
+			"img": "sc3img:/people/p-meera.webp"
+		},
+		{
+			"id": "arjun",
+			"name": "Arjun Nair",
+			"short": "Arjun",
+			"role": "Workspace admin",
+			"org": "Munchly Foods",
+			"city": "Pune",
+			"img": "sc3img:/people/p-arjun.webp"
+		}
+	],
+	"workspace": {
+		"id": "munchly",
+		"name": "Munchly Foods",
+		"short": "Munchly",
+		"domain": "munchly.smartclearance.com",
+		"emailDomain": "munchly.in",
+		"mark": {
+			"from": "#f68d3e",
+			"to": "#d6461e",
+			"ink": "#ffffff"
+		}
+	},
+	"gates": [
+		{
+			"id": "blinkit",
+			"app": "Blinkit",
+			"need": 90,
+			"has": 47,
+			"pass": false,
+			"rule": "needs 90+ days"
+		},
+		{
+			"id": "zepto",
+			"app": "Zepto",
+			"need": 110,
+			"has": 47,
+			"pass": false,
+			"rule": "needs 60% of a 184-day life (110 days)"
+		},
+		{
+			"id": "instamart",
+			"app": "Instamart",
+			"need": 110,
+			"has": 47,
+			"pass": false,
+			"rule": "needs 60% of a 184-day life (110 days)"
+		}
+	],
+	"figures": {
+		"planNet": 21770,
+		"actualNet": 21152.4,
+		"planSwing": 26339.6,
+		"quarterRecovered": 630000,
+		"writeOffTotal": 26329.6,
+		"itcRetained": 1224,
+		"writeOffItc": 1224,
+		"units": 1360
+	}
+}

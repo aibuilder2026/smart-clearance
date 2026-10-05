@@ -33,7 +33,7 @@ Small fixes that change no design skip this: a typo, a broken link, or a bug wit
 | Landing page (`design3/site`) | `impeccable`, Persuade mode | `design-taste-frontend` and `high-end-visual-design`; `qwengen-bf16` for plates and comps |
 | App, demo and console screens (`design3/app`, `design3/demo`, `design3/console`, `design3/screens`) | `impeccable`, Operate mode (`shape`, `layout`, `critique`) | `ui-ux-pro-max` for UX rules (`python3 ~/.claude/skills/ui-ux-pro-max/scripts/search.py "<outcome>" --domain ux`); `redesign-existing-projects` to audit a screen that exists; `qwengen-bf16` only when the design calls for imagery |
 | Design system (`design3/system`, `DESIGN.md`) | `impeccable` (`extract`, `document`) | `ui-ux-pro-max --design-system`, as a reference only |
-| Motion, on any surface | Framer Motion: `framer-motion` 11.18.2, the `Motion` global the design system already loads, prototyped in the HTML mockups | `impeccable animate` for the motion grammar; `ltx-clip` only for a video asset such as the carton loop, never for interface motion |
+| Motion, on any surface | Framer Motion: `framer-motion` 11.18.2, the `Motion` global the design system already loads, prototyped in the HTML mockups. The SvelteKit build (`frontend/`) ships the same motion with `motion` (motion.dev) and Svelte transitions, from the same springs, eases and durations (`frontend/core/src/lib/motion`) | `impeccable animate` for the motion grammar; `ltx-clip` only for a video asset such as the carton loop, never for interface motion |
 | Charts | `dataviz` | Validate palettes with its script |
 
 The taste skills say they are for landing pages, portfolios and redesigns, not dashboards or multi-step product UI. Keep them off the app, demo and console screens.
@@ -58,6 +58,7 @@ The taste skills say they are for landing pages, portfolios and redesigns, not d
   - **motion:** a Framer Motion prototype in the HTML mockup, so the motion reviewed is the motion the build will ship. Load React 18.3.1 and framer-motion 11.18.2 as the hosted pages do.
     - Use the build's own patterns: `motion.*`, `AnimatePresence`, `useReducedMotion`, and `useScroll` / `useTransform` for scroll-linked motion.
     - Use the motion tokens in `DESIGN.md`: ease `cubic-bezier(0.22, 1, 0.36, 1)`, 160 / 240 / 420 / 700 ms, springs for sheets.
+    - Name any new spring by its stiffness, damping and mass, so the Svelte build can carry it over exactly (`SPRINGS` in `frontend/core/src/lib/motion`).
     - Animate transform and opacity first.
     - Nothing loops forever.
     - Under reduced motion every step lands in its final state at once.
@@ -128,6 +129,7 @@ Shared screens (`design3/screens`, `design3/core`) go to the app project. Name t
   2. Run `./build.sh`.
   3. Run the accessibility suite.
   4. Run `./dist.sh`, then re-pin the hosted pages.
-  5. Move the issue to In Review, with the evidence.
-  6. Ask once about the PR, the merge and closing the issue.
+  5. Where the surface is already in the SvelteKit build (the landing page and the design system, in `frontend/`), port the change there too, after design3: update the ported CSS (its drift tests name what moved), the components and the seed, and run `corepack pnpm lint && corepack pnpm check && corepack pnpm test`, the e2e suite and the parity suite in `frontend/`.
+  6. Move the issue to In Review, with the evidence.
+  7. Ask once about the PR, the merge and closing the issue.
 - **Afterwards.** The designs stay in `design3/designs/`. Whether the published board stays in Claude Design is the maintainer's call.

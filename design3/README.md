@@ -13,6 +13,8 @@ One visual system, built from the same code into the product's pages:
 
 Shared code lives in `core/` (money computed from the journey map's rules, the fictional dataset, the store, the journey as actions with an agent reconciler) and `screens/` (every role's screens and the workspace sign-in, used by both the demo and the app). `demo/`, `app/`, `console/` and `site/` reach them through symlinks.
 
+The production frontend, `frontend/` at the repo root, implements this design in SvelteKit (SC-27). The design system and the landing page are ported so far. design3 stays the source of truth: a design changes here first, and the port follows. Tests there hold its CSS, figures and icons to this folder, and compare its pages with these pixel by pixel (`frontend/README.md`).
+
 ## One workspace per manufacturer
 
 Smart-Clearance is sold to manufacturers as software as a service: each one gets a workspace at its own address, set up for its supply chain. This prototype is Munchly Foods' workspace at `munchly.smartclearance.com`, set up in `core/data.js` (`WORKSPACE`): who owns short-dated stock, the expiry policy, the exits, the territory guard and how people sign in.

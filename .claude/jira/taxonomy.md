@@ -23,8 +23,10 @@ Where a change goes, by path (fill this in as the repo's shape settles):
 
 | Path | Epic |
 | --- | --- |
-| `web/**` | |
+| `frontend/**` (the SvelteKit workspace: `core`, the design system; `admin`, the platform site) | |
+| `backend-api/**` | |
 | `agents/**` | |
+| `design3/**` (the designs: the source of truth) | |
 | `infra/**` | |
 | `video/**`, `docs/**` | |
 | `.github/**`, `.claude/**`, repo docs | |

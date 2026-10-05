@@ -43,11 +43,20 @@
   },
   "gates": [
     {
-      "name": "web",
-      "cwd": "web",
-      "run": "pnpm lint && pnpm check && pnpm test",
+      "name": "frontend",
+      "cwd": "frontend",
+      "run": "corepack pnpm lint && corepack pnpm check && corepack pnpm test",
       "paths": [
-        "web/**"
+        "frontend/**"
+      ]
+    },
+    {
+      "name": "backend-api",
+      "cwd": "backend-api",
+      "run": "uv run ruff check . && uv run pytest",
+      "paths": [
+        "backend-api/**/*.py",
+        "backend-api/pyproject.toml"
       ]
     },
     {
@@ -55,7 +64,8 @@
       "cwd": "agents",
       "run": "uv run ruff check . && uv run pytest",
       "paths": [
-        "agents/**"
+        "agents/**/*.py",
+        "agents/pyproject.toml"
       ]
     }
   ],

@@ -1,0 +1,20 @@
+/* Smart-Clearance design system v3 · fonts, self-hosted. The prototype loads the four families from Google Fonts;
+   the build serves the same variable fonts from Fontsource, with every axis the design sets:
+   Bricolage Grotesque opsz 12-96, wdth 75-100, wght 200-800 ("standard"); Geist, Geist Mono and Noto Sans Devanagari wght.
+   ₹ (U+20B9) is in each family's latin-ext subset and − (U+2212) in latin, so a figure loads both. */
+@import '@fontsource-variable/bricolage-grotesque/standard.css';
+@import '@fontsource-variable/geist/index.css';
+@import '@fontsource-variable/geist-mono/index.css';
+@import '@fontsource-variable/noto-sans-devanagari/wght.css';
+
+/* Fontsource names each family "<name> Variable". The type tokens (tokens.css) are restated here with those names
+   first, so this file must load after tokens.css. */
+:root {
+	--font-display:
+		'Bricolage Grotesque Variable', 'Bricolage Grotesque', 'Geist Variable', 'Geist', system-ui, sans-serif;
+	--font-ui:
+		'Geist Variable', 'Geist', 'Noto Sans Devanagari Variable', 'Noto Sans Devanagari', -apple-system,
+		BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+	--font-mono: 'Geist Mono Variable', 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+	--font-hi: 'Noto Sans Devanagari Variable', 'Noto Sans Devanagari', 'Geist Variable', 'Geist', system-ui, sans-serif;
+}

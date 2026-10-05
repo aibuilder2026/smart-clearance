@@ -1,0 +1,19 @@
+packages:
+  - core
+  - admin
+
+# one version of each shared dependency across the workspace; packages refer to these as "catalog:"
+catalog:
+  svelte: ^5.57.1
+  typescript: ~6.0.3
+  vite: ^8.3.2
+  vitest: ^5.0.3
+  svelte-check: ^4.7.6
+  '@sveltejs/vite-plugin-svelte': ^7.3.1
+  '@testing-library/svelte': ^5.4.2
+  jsdom: ^30.1.1
+  bits-ui: ^2.19.5
+  '@internationalized/date': ^3.12.4
+  '@lucide/svelte': ^1.51.0
+  motion: ^14.0.0
+  '@types/node': ^24.0.0

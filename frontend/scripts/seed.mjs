@@ -1,0 +1,143 @@
+// Seeds the admin app's mock API from the prototype's own data. design3/core (money.js, data.js, store.js, platform.js)
+// is run as the browser runs it, so every figure is computed by money.js exactly as on the hosted pages, and the parts
+// the frontend shows are written to admin/src/lib/seed/ as JSON. Never edit those files; run this instead.
+//   node scripts/seed.mjs           write the seed files
+//   node scripts/seed.mjs --check   fail if a seed file is out of date with design3 (run by `pnpm test`)
+import { createHash } from 'node:crypto';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import vm from 'node:vm';
+
+const root = dirname(dirname(fileURLToPath(import.meta.url)));
+const design3 = join(root, '../design3');
+const outDir = join(root, 'admin/src/lib/seed');
+const SOURCES = ['core/money.js', 'core/data.js', 'core/store.js', 'core/platform.js', 'screens/admin.jsx'];
+
+const read = (p) => readFileSync(join(design3, p), 'utf8');
+const sha = (s) => createHash('sha256').update(s).digest('hex');
+
+// the browser page: one window, scripts in order. Images are referenced as "sc3img:/<path under system/img>", which
+// core's imgUrl() resolves to the hashed file.
+const window = { SC3_IMG: 'sc3img:/' };
+const store = new Map();
+const localStorage = {
+	getItem: (k) => store.get(k) ?? null,
+	setItem: (k, v) => store.set(k, String(v)),
+	removeItem: (k) => store.delete(k)
+};
+const sandbox = vm.createContext({ window, localStorage, console, Date, Intl, Math, JSON, structuredClone });
+for (const p of SOURCES.slice(0, 4)) vm.runInContext(read(p), sandbox, { filename: p });
+const D = window.SC3_DATA,
+	Store = window.SC3_STORE,
+	P = window.SC3_PLATFORM;
+
+// the workspace role names, from the workspace admin screen (a JSX file, so only its ROLES literal is read)
+const rolesLiteral = read('screens/admin.jsx').match(/const ROLES = (\{[^}]*\});/);
+if (!rolesLiteral) throw new Error('seed: ROLES not found in screens/admin.jsx');
+const ROLES = vm.runInNewContext(`(${rolesLiteral[1]})`);
+
+const pick = (o, keys) => Object.fromEntries(keys.filter((k) => o[k] !== undefined).map((k) => [k, o[k]]));
+const person = (p) => pick(p, ['id', 'name', 'short', 'role', 'org', 'city', 'img']);
+const workspace = pick(D.WORKSPACE, ['id', 'name', 'short', 'domain', 'emailDomain', 'mark']);
+const hero = D.BATCHES.find((b) => b.hero);
+const sku = D.SKUS[hero.sku];
+const dist = D.DISTRIBUTORS[hero.distributor];
+
+/** GET /v1/site/showcase: Munchly's hero batch, as the landing page tells it */
+const showcase = {
+	platform: D.PLATFORM,
+	workspace,
+	client: pick(D.CLIENT, ['name', 'short', 'city']),
+	batch: {
+		id: hero.id,
+		units: hero.units,
+		daysLeft: hero.daysLeft,
+		bestBefore: hero.bestBefore,
+		sku: pick(sku, ['id', 'brand', 'name', 'img', 'mrp', 'dp', 'cost']),
+		distributor: pick(dist, ['id', 'name', 'city'])
+	},
+	risk: { atRisk: D.RISK.atRisk },
+	plan: {
+		units: D.PLAN.units,
+		soldUnits: D.PLAN.soldUnits,
+		itcRetained: D.PLAN.itcRetained,
+		kg: D.PLAN.kg,
+		writeOff: { total: D.PLAN.writeOff.total, perUnit: D.PLAN.writeOff.perUnit },
+		lines: D.PLAN.lines.map((l) => pick(l, ['id', 'short', 'units', 'price', 'packPrice', 'gross', 'cost', 'net'])),
+		rows: D.PLAN.rows.map((r) => ({
+			...pick(r, ['id', 'short', 'net', 'eligible']),
+			capacity: r.capacity === Infinity ? null : r.capacity
+		}))
+	},
+	award: pick(D.AWARD, ['units', 'price', 'gross']),
+	actual: pick(D.ACTUAL, ['net', 'pnl', 'swing']),
+	support: { total: D.SUPPORT.total },
+	buyer: pick(D.BUYER, ['id', 'name', 'city']),
+	shops: D.KIRANAS.length,
+	returnBy: D.RETURN_BY,
+	stages: D.STAGES.map((s) => ({ id: s.id, title: s.title, human: !!s.human })),
+	people: Object.fromEntries(['priya', 'rakesh', 'ganesh', 'anita', 'vikram'].map((id) => [id, person(D.PEOPLE[id])]))
+};
+
+/** GET /v1/platform/catalog: what the platform offers every client */
+const catalog = {
+	agents: P.AGENTS.map((a) => ({ ...pick(a, ['id', 'name', 'stage', 'icon', 'model', 'job']), gate: !!a.gate })),
+	connectors: P.CONNECTORS.map((c) => pick(c, ['id', 'name', 'kind', 'icon', 'note', 'status'])),
+	plans: P.PLANS.map((p) => pick(p, ['id', 'name', 'scope']))
+};
+
+/** the mock's directory for POST /v1/workspaces/lookup: who belongs to which workspace (a real API never sends this) */
+const directory = {
+	workspaces: [workspace],
+	roles: ROLES,
+	members: Store.seed().users.map((u) => ({
+		workspace: workspace.id,
+		...pick(u, ['id', 'email', 'phone', 'role', 'status', 'kind'])
+	}))
+};
+
+/** what the design-system page shows: the people, and the figures its specimens quote */
+const ds = {
+	people: Object.values(D.PEOPLE).map(person),
+	workspace,
+	gates: D.RISK.gates,
+	figures: {
+		planNet: D.PLAN.net,
+		actualNet: D.ACTUAL.net,
+		planSwing: D.PLAN.swing,
+		quarterRecovered: D.QUARTER.recovered,
+		writeOffTotal: D.PLAN.writeOff.total,
+		itcRetained: D.PLAN.itcRetained,
+		writeOffItc: D.PLAN.writeOff.itc,
+		units: D.PLAN.units
+	}
+};
+
+const json = (o) => JSON.stringify(o, null, '\t') + '\n';
+const files = {
+	'showcase.json': json(showcase),
+	'catalog.json': json(catalog),
+	'directory.json': json(directory),
+	'ds.json': json(ds)
+};
+files['manifest.json'] = json({
+	note: 'Generated by frontend/scripts/seed.mjs from design3. Do not edit; run `corepack pnpm seed`.',
+	sources: Object.fromEntries(SOURCES.map((p) => ['design3/' + p, sha(read(p)).slice(0, 16)])),
+	files: Object.fromEntries(Object.entries(files).map(([f, s]) => [f, sha(s).slice(0, 16)]))
+});
+
+if (process.argv.includes('--check')) {
+	const stale = Object.entries(files).filter(
+		([f, s]) => !existsSync(join(outDir, f)) || readFileSync(join(outDir, f), 'utf8') !== s
+	);
+	if (stale.length) {
+		console.error(`seed: out of date with design3: ${stale.map(([f]) => f).join(', ')}. Run \`corepack pnpm seed\`.`);
+		process.exit(1);
+	}
+	console.log(`seed: ${Object.keys(files).length} files, up to date with design3`);
+} else {
+	mkdirSync(outDir, { recursive: true });
+	for (const [f, s] of Object.entries(files)) writeFileSync(join(outDir, f), s);
+	console.log(`seed: wrote ${Object.keys(files).join(', ')}`);
+}
