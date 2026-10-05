@@ -109,7 +109,7 @@ export class Graph {
 				ctx.strokeStyle = hue;
 				ctx.stroke();
 			} else {
-				ctx.globalAlpha = s.focus ? 0.22 : 0.5;
+				ctx.globalAlpha = s.focus ? 0.16 : 0.32;
 				path();
 				ctx.lineWidth = 1.5;
 				ctx.strokeStyle = hue;

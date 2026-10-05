@@ -7,7 +7,7 @@ import { clamp, type Fit, type Shot } from './geo';
 
 export const ZMAX = 2.6;
 export type View = { tx: number; ty: number; z: number };
-type Focus = { x: number; y: number; z: number };
+export type Focus = { x: number; y: number; z: number };
 const FLY: [number, number, number, number] = [0.65, 0, 0.35, 1];
 
 export class Camera {

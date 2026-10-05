@@ -89,8 +89,8 @@
     // on phones the food bank's pin moves to the kitchen's right, clear of the distributor's
     phonePlaces: { foodbank: [0.6, 0.36] },
     posts: { data: [0.355, 0.6], watcher: [0.395, 0.475], vision: [0.585, 0.455], valuer: [0.645, 0.545], router: [0.6, 0.705], you: [0.15, 0.585], paperwork: [0.085, 0.64],
-      outreach: [0.875, 0.5], lister: [0.885, 0.415], negotiator: [0.955, 0.47], impact: [0.27, 0.315] },
-    labels: { data: "left", watcher: "left", negotiator: "left", lister: "left", outreach: "left" },
+      outreach: [0.875, 0.5], lister: [0.72, 0.235], negotiator: [0.9, 0.265], impact: [0.27, 0.315] },
+    labels: { data: "left", watcher: "left", lister: "left", outreach: "left" },
     routes: {
       out: [[0.312, 0.66], [0.335, 0.72], [0.38, 0.748], [0.436, 0.756], [0.5, 0.762]],
       kiranas: [[0.5, 0.762], [0.58, 0.78], [0.65, 0.795], [0.727, 0.814], [0.8, 0.83]],
@@ -131,6 +131,8 @@
   // town always fills the stage. It writes the world's transform itself, frame by frame, and tells whoever listens (the
   // graph, the depth renderer); React hears only when the zoom passes a step.
   const ZMAX = 2.6;
+  // looking at a node (SC-42): how long the pointer rests before the town zooms in about it, and how near
+  const DWELL = 600, PEEK_Z = 1.8;
   function useCamera(g, worlds, haze, reduce) {
     const cam = useRef({ x: 0.5, y: 0.5, z: 1 }), live = useRef(null), subs = useRef(new Set()), views = useRef(new Set()), gRef = useRef(g), fly = useRef(null);
     const [zoom, setZoom] = useState(1);
@@ -236,11 +238,11 @@
     useEffect(() => { if (v) return; const f = () => setV(true); window.addEventListener("sc3:loader-lifted", f); return () => window.removeEventListener("sc3:loader-lifted", f); }, [v]);
     return v;
   }
-  function useJourney(ready, inView) {
+  function useJourney(ready, inView, looking) {
     const reduce = !!useReducedMotion(), lifted = useLifted();
     const [s, setS] = useState(reduce ? NS : -1); const [run, setRun] = useState(0); const [manual, setManual] = useState(false); const [paused, setPaused] = useState(false);
     useEffect(() => { if (reduce) { setS(NS); return; } if (!ready || !lifted) return; setS(-1); setPaused(false); const t = setTimeout(() => setS(0), 500); return () => clearTimeout(t); }, [ready, lifted, run, reduce]);
-    const hold = paused || manual || !inView;
+    const hold = paused || manual || !inView || !!looking;
     useEffect(() => { if (reduce || hold || s < 0 || s >= NS) return; const t = setTimeout(() => setS(s + 1), STOPS[s].ms); return () => clearTimeout(t); }, [s, reduce, hold]);
     const stop = s >= 0 && s < NS ? STOPS[s] : null, k = s < 0 ? -1 : stop ? stop.beat : NB;
     const j = { s, k, reduce, run, manual, paused, stop, ms: stop ? stop.ms : 0, held: hold, playing: s < NS && !manual && !paused, touring: !!stop && !manual, done: s >= NS, beat: stop ? BEATS[stop.beat] : null, agent: stop ? stop.agent : null };
@@ -421,7 +423,7 @@ void main() {
         const path = () => { ctx.beginPath(); ctx.moveTo(A[0], A[1]); for (let i = 1; i <= m; i++) { const t = i / n, u = 1 - t; ctx.lineTo(u * u * A[0] + 2 * u * t * mx + t * t * B[0], u * u * A[1] + 2 * u * t * my + t * t * B[1]); } };
         ctx.lineCap = "round"; ctx.lineJoin = "round";
         if (loud) { path(); ctx.lineWidth = 6; ctx.strokeStyle = casing; ctx.stroke(); path(); ctx.lineWidth = 3; ctx.strokeStyle = hue; ctx.stroke(); }
-        else { ctx.globalAlpha = s.focus ? 0.22 : 0.5; path(); ctx.lineWidth = 1.5; ctx.strokeStyle = hue; ctx.stroke(); ctx.globalAlpha = 1; }
+        else { ctx.globalAlpha = s.focus ? 0.16 : 0.32; path(); ctx.lineWidth = 1.5; ctx.strokeStyle = hue; ctx.stroke(); ctx.globalAlpha = 1; }
       });
       const pk = packs.current;
       if (pk) {
@@ -465,23 +467,27 @@ void main() {
 
   /* ---------- what stands on the town ---------- */
   // a place's pin: its icon and name on a short stem, lit while the batch is there; a button that opens the place
-  const Pin = ({ p, g, j, sel, onOpen, hover }) => {
-    const at = wpx(g, placeAt(g, p.id)), here = j.beat && j.beat.at.includes(p.id), open = sel && sel.kind === "place" && sel.id === p.id;
+  const Pin = ({ p, g, j, sel, onOpen, hover, peek }) => {
+    const at = wpx(g, placeAt(g, p.id)), here = j.beat && j.beat.at.includes(p.id), open = sel && sel.kind === "place" && sel.id === p.id, me = { kind: "place", id: p.id };
+    const looked = peek && same(peek.s, me);
     return <span className="town-at" style={{ left: at[0], top: at[1] }}>
-      <button type="button" className={cx("town-pin", here && "here", open && "open")} aria-expanded={open} aria-controls={open ? "town-panel" : undefined}
-        aria-label={`${p.t}: what happens here`} onClick={() => onOpen({ kind: "place", id: p.id })} onPointerEnter={() => hover({ kind: "place", id: p.id })} onPointerLeave={() => hover(null)}>
+      <button type="button" className={cx("town-pin", here && "here", (open || looked) && "open", looked && peek.ring && "ring")} aria-expanded={open} aria-controls={open ? "town-panel" : undefined}
+        aria-describedby={looked && !peek.pinned ? "town-peek" : undefined}
+        aria-label={`${p.t}: what happens here`} onClick={e => onOpen(me, e)} onPointerEnter={e => e.pointerType === "mouse" && hover(me)} onPointerLeave={e => e.pointerType === "mouse" && hover(null)}
+        onFocus={e => e.target.matches(":focus-visible") && hover(me)} onBlur={e => hover(null, e.relatedTarget)}>
         <span className="town-pin-body"><i><Icon name={p.icon} size={14} stroke={2} /></i><b>{g.wide ? p.t : p.short}</b></span><span className="town-pin-stem" />
       </button></span>;
   };
   // an agent at its post: its icon, and its name beside it (on desktops at rest and while it works; on phones when open,
   // or for the person); lit once it has worked, the aura while it works, amber for the person. The places' panels list
   // every agent for the keyboard, so the posts are for the pointer.
-  const Node = ({ a, g, j, sel, onOpen, hover, named, tipped }) => {
-    const at = wpx(g, GEO.posts[a.id]), { done, now } = agentState(a, j), open = sel && sel.kind === "agent" && sel.id === a.id;
+  const Node = ({ a, g, j, sel, onOpen, hover, named, tipped, peek }) => {
+    const me = { kind: "agent", id: a.id }, looked = peek && same(peek.s, me);
+    const at = wpx(g, GEO.posts[a.id]), { done, now } = agentState(a, j), open = (sel && sel.kind === "agent" && sel.id === a.id) || looked;
     const side = GEO.labels[a.id] || "right", show = !tipped && (named || open || (now && (g.wide || a.human)));
     return <span className="town-at" style={{ left: at[0], top: at[1] }}>
-      <button type="button" tabIndex={-1} aria-hidden="true" className={cx("town-node", "side-" + side, a.human && "human", done && "on", now && "now", !done && !now && j.k >= 0 && "later", open && "open", show && "named")}
-        onClick={() => onOpen({ kind: "agent", id: a.id })} onPointerEnter={() => hover({ kind: "agent", id: a.id })} onPointerLeave={() => hover(null)}>
+      <button type="button" tabIndex={-1} aria-hidden="true" className={cx("town-node", "side-" + side, a.human && "human", done && "on", now && "now", !done && !now && j.k >= 0 && "later", open && "open", show && "named", looked && peek.ring && "ring")}
+        onClick={e => onOpen(me, e)} onPointerEnter={e => e.pointerType === "mouse" && hover(me)} onPointerLeave={e => e.pointerType === "mouse" && hover(null)}>
         <span className={cx("town-node-dot", now && "aura")}><Icon name={a.icon} size={14} stroke={2.1} /></span><span className="town-node-name">{a.name}</span>
       </button></span>;
   };
@@ -502,37 +508,75 @@ void main() {
     return <span className="town-at town-batch" ref={ref} aria-hidden="true"><span className={cx("town-batch-card", risk && "risk")}><i><Icon name="package" size={14} stroke={2} /></i><b>{text}</b></span></span>;
   }
 
-  /* ---------- the panel: a place or an agent, opened ---------- */
-  function Panel({ sel, j, onOpen, onClose }) {
-    const ref = useRef(null);
-    useEffect(() => { if (sel && ref.current) ref.current.focus({ preventScroll: true }); }, [sel && sel.kind, sel && sel.id]);
-    if (!sel) return null;
-    const chips = ids => <span className="town-panel-chips">{ids.map(id => { const a = AGENT[id], { done } = agentState(a, j);
-      return <button key={id} type="button" className={cx("town-chip", a.human && "human", done && "on")} onClick={() => onOpen({ kind: "agent", id })}><i><Icon name={a.icon} size={13} stroke={2.2} /></i>{a.name}</button>; })}</span>;
-    let body;
+  /* ---------- what a place or an agent is to this batch: the panel's body, and the card's beside its node ---------- */
+  const same = (a, b) => !!a && !!b && a.kind === b.kind && a.id === b.id;
+  function CardBody({ sel, j, onOpen, live = true }) {
+    const chips = ids => <span className="town-panel-chips">{ids.map(id => { const a = AGENT[id], { done } = agentState(a, j), c = cx("town-chip", a.human && "human", done && "on");
+      const inner = <><i><Icon name={a.icon} size={13} stroke={2.2} /></i>{a.name}</>;
+      return live ? <button key={id} type="button" className={c} onClick={() => onOpen({ kind: "agent", id })}>{inner}</button> : <span key={id} className={c}>{inner}</span>; })}</span>;
     if (sel.kind === "place") {
       const p = PLACE[sel.id], team = AGENTS.filter(a => a.at === p.id).map(a => a.id);
-      body = <>
+      return <>
         <header><i><Icon name={p.icon} size={16} stroke={2} /></i><h3 id="town-panel-h">{p.t}</h3></header>
         <p>{p.line}</p>
         {team.length > 0 ? <><span className="town-panel-k">Who works here</span>{chips(team)}</> : <span className="town-panel-k">The Valuer prices it on every plan</span>}
       </>;
-    } else {
-      const a = AGENT[sel.id], from = EDGES.filter(e => e[1] === a.id).map(e => e[0]), to = EDGES.filter(e => e[0] === a.id).map(e => e[1]);
-      body = <>
-        <header><i className={cx(a.human && "human")}><Icon name={a.icon} size={16} stroke={2} /></i><h3 id="town-panel-h">{a.name}</h3>
-          <button type="button" className="town-panel-at" onClick={() => onOpen({ kind: "place", id: a.at })}>at the {PLACE[a.at].short.toLowerCase()}</button></header>
-        <p>{a.job}.</p>
-        <p className="town-panel-did"><span className="town-panel-k">This batch</span>{a.did}</p>
-        {(from.length > 0 || to.length > 0) && <div className="town-panel-flow">{from.length > 0 && <span><span className="town-panel-k">From</span>{chips(from)}</span>}{to.length > 0 && <span><span className="town-panel-k">Hands to</span>{chips(to)}</span>}</div>}
-      </>;
     }
+    const a = AGENT[sel.id], from = EDGES.filter(e => e[1] === a.id).map(e => e[0]), to = EDGES.filter(e => e[0] === a.id).map(e => e[1]);
+    return <>
+      <header><i className={cx(a.human && "human")}><Icon name={a.icon} size={16} stroke={2} /></i><h3 id="town-panel-h">{a.name}</h3>
+        {live ? <button type="button" className="town-panel-at" onClick={() => onOpen({ kind: "place", id: a.at })}>at the {PLACE[a.at].short.toLowerCase()}</button>
+          : <span className="town-panel-at plain">at the {PLACE[a.at].short.toLowerCase()}</span>}</header>
+      <p>{a.job}.</p>
+      <p className="town-panel-did"><span className="town-panel-k">This batch</span>{a.did}</p>
+      {(from.length > 0 || to.length > 0) && <div className="town-panel-flow">{from.length > 0 && <span><span className="town-panel-k">From</span>{chips(from)}</span>}{to.length > 0 && <span><span className="town-panel-k">Hands to</span>{chips(to)}</span>}</div>}
+    </>;
+  }
+
+  /* ---------- the panel: a place or an agent, opened from the keyboard or by touch ---------- */
+  function Panel({ sel, j, onOpen, onClose }) {
+    const ref = useRef(null);
+    useEffect(() => { if (sel && ref.current) ref.current.focus({ preventScroll: true }); }, [sel && sel.kind, sel && sel.id]);
+    if (!sel) return null;
     return <motion.div key={sel.kind + sel.id} id="town-panel" className="town-panel" role="region" aria-labelledby="town-panel-h" tabIndex={-1} ref={ref}
       initial={j.reduce ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.24, ease: EASE }}
       onKeyDown={e => { if (e.key === "Escape") { e.stopPropagation(); onClose(); } }}>
-      {body}
+      <CardBody sel={sel} j={j} onOpen={onOpen} />
       <button type="button" className="town-panel-x" aria-label="Close" onClick={onClose}><Icon name="x" size={16} stroke={2} /></button>
     </motion.div>;
+  }
+
+  /* ---------- the card beside a node the visitor points at (SC-42) ---------- */
+  // On desktops, pointing at a place or an agent (or focusing a place) opens its card beside it at once; resting there
+  // for DWELL ms zooms the town in about it, so it stays where the pointer is. The card can be pointed at too (WCAG
+  // 1.4.13). Until a click keeps it, it is the node's description and holds no buttons; kept, its chips open what they
+  // name. Above the node when there is room, else below, inside the stage, on a stem to the node.
+  // It stays in the clear part of the stage (below the heading's buttons, above the caption): above the node if it
+  // fits there, else below it, else beside it.
+  function Peek({ g, pk, j, api, project, room, onOpen, onEnter, onLeave, onClose }) {
+    const ref = useRef(null), s = pk && pk.s;
+    useLayoutEffect(() => {
+      const el = ref.current; if (!el || !s || !g) return;
+      const pos = s.kind === "place" ? placeAt(g, s.id) : GEO.posts[s.id], lift = s.kind === "place" ? 54 : 24, drop = s.kind === "place" ? 12 : 24;
+      const put = () => {
+        const p = project ? project(pos, s.id) : api.toStage(pos), w = el.offsetWidth, h = el.offsetHeight, R = room ? room() : { top: 8, bottom: g.H - 8 };
+        let x, y, side;
+        if (p[1] - lift - h >= R.top) { side = "above"; y = p[1] - lift - h; x = clamp(p[0] - w / 2, 8, g.W - w - 8); }
+        else if (p[1] + drop + h <= R.bottom) { side = "below"; y = p[1] + drop; x = clamp(p[0] - w / 2, 8, g.W - w - 8); }
+        else { side = p[0] + 30 + w <= g.W - 8 ? "right" : "left"; x = side === "right" ? p[0] + 30 : p[0] - 30 - w; y = clamp(p[1] - h / 2, R.top, Math.max(R.top, R.bottom - h)); }
+        el.style.left = x.toFixed(1) + "px"; el.style.top = y.toFixed(1) + "px";
+        el.style.setProperty("--caret", clamp(p[0] - x, 14, w - 14).toFixed(1) + "px"); el.style.setProperty("--caret-y", clamp(p[1] - y, 14, h - 14).toFixed(1) + "px");
+        el.dataset.side = side;
+      };
+      put(); const u1 = api.listen(put), u2 = api.listenView(put); return () => { u1(); u2(); };
+    }, [s && s.kind, s && s.id, pk && pk.pinned, g, project]);
+    const human = s && s.kind === "agent" && AGENT[s.id].human;
+    return <AnimatePresence>{s && <motion.div key={s.kind + s.id} ref={ref} id="town-peek" className={cx("town-peek", human && "human", pk.pinned && "kept")}
+      role={pk.pinned ? "region" : "tooltip"} aria-labelledby={pk.pinned ? "town-panel-h" : undefined} onPointerEnter={onEnter} onPointerLeave={onLeave}
+      initial={j.reduce ? false : { opacity: 0, scale: 0.96, y: 4 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, transition: { duration: 0.12 } }} transition={{ duration: 0.2, ease: EASE }}>
+      <CardBody sel={s} j={j} onOpen={onOpen} live={pk.pinned} />
+      {pk.pinned && <button type="button" className="town-panel-x" aria-label="Close" onClick={onClose}><Icon name="x" size={16} stroke={2} /></button>}
+    </motion.div>}</AnimatePresence>;
   }
 
   /* ---------- the tour's card, beside the agent at work ---------- */
@@ -600,7 +644,11 @@ void main() {
     const stageRef = useRef(null), plateWorld = useRef(null), topWorld = useRef(null), hazeRef = useRef(null), view = useRef(null);
     const g = useStage(stageRef), { resolved } = useTheme(), dark = resolved === "dark";
     const [ready, setReady] = useState(false), [gl, setGl] = useState(true), [inView, setInView] = useState(true);
-    const j = useJourney(ready, inView);
+    // what the visitor is looking at (SC-42): { s, ring, zoomed, pinned }; the journey holds meanwhile
+    const [peek, setPeekState] = useState(null), peekNow = useRef(null); peekNow.current = peek;
+    // the look is known at once (a click can follow the pointer in within the same frame), and drawn on the next render
+    const setPeek = v => { const next = typeof v === "function" ? v(peekNow.current) : v; peekNow.current = next; setPeekState(next); };
+    const j = useJourney(ready, inView, peek);
     const worlds = useMemo(() => ({ get current() { return [plateWorld.current, topWorld.current].filter(Boolean); } }), []);
     const { api, zoom } = useCamera(g, worlds, gl ? { current: null } : hazeRef, j.reduce);
     const depth = useDepthMap(true), map = gl ? depth : null;
@@ -618,7 +666,47 @@ void main() {
       const rest = shotOf(g, "rest");
       api.to(keep ? [keep[0], rest[1], rest[2]] : rest, j.s < 0 ? 0 : 0.9);
     }, [follow, g && g.wide, g && g.W, j.run, keep]);
-    const open = s => {
+    // Looking (SC-42), on desktops: pointing at a place or an agent, or focusing a place, opens its card at once and
+    // lights its handoffs; after DWELL ms the town zooms in about it, so it stays under the pointer. Looking away (the
+    // pointer off the node and its card for 250 ms, or focus moving on) closes the card and puts the camera back where
+    // it was. A click keeps the card; Escape, its close button, or leaving the hero closes it. The journey holds while
+    // the visitor looks, and carries on after.
+    const T = useRef({ dwell: 0, leave: 0, before: null });
+    const outOfView = p => { const R = room(); return p[0] < 80 || p[0] > g.W - 80 || p[1] < R.top + 40 || p[1] > R.bottom - 40; };
+    const zoomOn = sv => {
+      const pk = peekNow.current; if (!g || !pk || !same(pk.s, sv)) return;
+      const pos = sv.kind === "place" ? placeAt(g, sv.id) : GEO.posts[sv.id], p = project ? project(pos, sv.id) : api.toStage(pos), z = api.t().z;
+      if (!T.current.before) T.current.before = { ...api.get() };
+      if (z < PEEK_Z - 0.05) api.zoomAt(PEEK_Z / z, p[0], p[1], true);
+      else if (outOfView(p)) api.to([pos[0], pos[1], z], j.reduce ? 0 : 0.6); // a chip named something out of view: bring it in
+      setPeek(v => (v && same(v.s, sv) ? { ...v, ring: false, zoomed: true } : v));
+    };
+    const unlook = force => {
+      const t = T.current; clearTimeout(t.dwell); clearTimeout(t.leave);
+      const pk = peekNow.current; if (!pk || (pk.pinned && !force)) return;
+      setPeek(null); setHov(null);
+      if (t.before) { const b = t.before; t.before = null; api.to([b.x, b.y, b.z], j.reduce ? 0 : 0.6); }
+    };
+    const look = (sv, to) => {
+      const t = T.current;
+      if (!sv) {
+        clearTimeout(t.dwell);
+        // focus moving into the kept card, or onto the card, is still looking
+        if (to && to.closest && to.closest(".town-peek")) return;
+        clearTimeout(t.leave); t.leave = setTimeout(() => unlook(false), 250); return;
+      }
+      setHov(sv); clearTimeout(t.leave);
+      if (!g || !g.wide || sel) return;
+      const pk = peekNow.current; if (pk && pk.pinned) return;
+      if (!pk || !same(pk.s, sv)) setPeek({ s: sv, ring: !j.reduce, zoomed: !!(pk && pk.zoomed), pinned: false });
+      clearTimeout(t.dwell); t.dwell = setTimeout(() => zoomOn(sv), DWELL);
+    };
+    const pinCard = sv => { const t = T.current; clearTimeout(t.leave); clearTimeout(t.dwell); const was = peekNow.current; setPeek({ s: sv, ring: false, zoomed: true, pinned: true }); if (!was || !was.zoomed || !same(was.s, sv)) setTimeout(() => zoomOn(sv), 0); };
+    const open = (s, e) => {
+      // a click on what the pointer is looking at keeps its card there; the keyboard (Enter) and touch open the panel
+      const pk = peekNow.current;
+      if (g && g.wide && e && e.detail > 0 && pk && (same(pk.s, s) || pk.pinned)) { pinCard(s); return; }
+      unlook(true);
       take(); setSel(s);
       const place = s.kind === "place" ? s.id : AGENT[s.id].at, shot = shotOf(g, place);
       api.to(s.kind === "agent" ? [GEO.posts[s.id][0], GEO.posts[s.id][1] + (g.wide ? 0.06 : 0.04), shot[2]] : shot, 0.7);
@@ -626,7 +714,8 @@ void main() {
     const whole = () => { setSel(null); api.to(shotOf(g, "rest"), 0.7); };
     const replay = () => { setSel(null); setFollow(true); j.replay(); };
     const play = () => { setSel(null); setFollow(true); j.play(); };
-    useEffect(() => { const k = e => { if (e.key === "Escape" && sel) setSel(null); }; window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k); }, [sel]);
+    useEffect(() => { const k = e => { if (e.key !== "Escape") return; if (peekNow.current) unlook(true); else if (sel) setSel(null); }; window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k); }, [sel]);
+    const unlookRef = useRef(unlook); unlookRef.current = unlook;
     // Leaving the hero brings the town back to the whole business: the pointer leaves it (after a moment, in case it
     // only slipped out), focus moves out of it, a tap or click lands outside it, or it scrolls out of view. Any card the
     // visitor opened closes. A journey that is playing on its own keeps its camera, and holds while it is out of view.
@@ -635,7 +724,7 @@ void main() {
       const st = stageRef.current, hero = st && st.closest(".hero"); if (!hero) return;
       let t = 0;
       const back = () => {
-        clearTimeout(t); const L = live.current; setSel(null); setHov(null);
+        clearTimeout(t); const L = live.current; unlookRef.current(true); setSel(null); setHov(null);
         if (L.g && !(L.follow && L.j.playing)) api.to(shotOf(L.g, "rest"), L.j.reduce ? 0 : 0.7);
       };
       const enter = e => { if (e.pointerType === "mouse") clearTimeout(t); };
@@ -648,7 +737,7 @@ void main() {
       return () => { clearTimeout(t); hero.removeEventListener("pointerenter", enter); hero.removeEventListener("pointerleave", leave); hero.removeEventListener("focusout", out); document.removeEventListener("pointerdown", down, true); io.disconnect(); };
     }, [api]);
     // the tour's card, while the tour has the camera and no card of the visitor's is open
-    const tour = follow && !sel && j.touring && j.agent ? j.agent : null;
+    const tour = follow && !sel && !peek && j.touring && j.agent ? j.agent : null;
     // what the graph lifts: an agent, or a place's team, and its neighbours in the graph
     const focus = useMemo(() => {
       const s = hov || sel; if (!s) return null;
@@ -673,22 +762,31 @@ void main() {
       return [...hero.querySelectorAll(sels)].map(e => { const r = e.getBoundingClientRect(); return [r.left - o.left - pad, r.top - o.top - pad, r.right - o.left + pad, r.bottom - o.top + pad]; });
     };
     const holes = useCallback(() => boxes(".hero-h, .hero-sub, .hero-ctas > *", 8), [g]);
+    // the clear part of the stage for a card: below the heading's buttons and above the caption
+    const room = useCallback(() => {
+      const st = stageRef.current, hero = st && st.closest(".hero"); if (!st || !g) return { top: 8, bottom: 0 };
+      const o = st.getBoundingClientRect(); let top = 8;
+      hero.querySelectorAll(".hero-h, .hero-sub, .hero-ctas > *").forEach(e => { top = Math.max(top, e.getBoundingClientRect().bottom - o.top + 10); });
+      const cap = hero.querySelector(".town-caption"), bottom = Math.min(g.H - 8, cap ? cap.getBoundingClientRect().top - o.top - 10 : g.H - 8);
+      return { top, bottom };
+    }, [g]);
     useEffect(() => {
       const el = topWorld.current, s = stageRef.current; if (!el || !g) return;
       const check = () => {
-        const o = s.getBoundingClientRect(), hs = holes().concat(boxes(".town-caption, .town-ctl > *, .town-panel", 6), boxes(".town-tip", 4, true)), near = g.wide && api.t().z > 1.02, haze = GEO.haze[0] * g.H;
+        const o = s.getBoundingClientRect(), hs = holes().concat(boxes(".town-caption, .town-ctl > *, .town-panel", 6), boxes(".town-tip, .town-peek", 4, true)), near = g.wide && api.t().z > 1.02, haze = GEO.haze[0] * g.H;
         [...el.querySelectorAll("[data-at], .town-batch")].forEach(n => {
           const b = (n.querySelector(".town-pin-body, .town-node, .town-batch-card") || n).getBoundingClientRect(), x0 = b.left - o.left, y0 = b.top - o.top, x1 = b.right - o.left, y1 = b.bottom - o.top;
           const out = x1 < 4 || x0 > g.W - 4 || y1 < 4 || y0 > g.H - 4 || (b.width > 0 && (x0 < -6 || x1 > g.W + 6));
-          const now = n.querySelector(".town-node.now");
-          const under = !now && hs.some(h => x0 < h[2] && x1 > h[0] && y0 < h[3] && y1 > h[1]);
-          n.classList.toggle("off", out || under || (near && (y0 + y1) / 2 < haze));
+          // the agent at work, and whatever the visitor is looking at or has open, always stay
+          const kept = n.querySelector(".town-node.now, .town-node.open, .town-pin.open");
+          const under = !kept && hs.some(h => x0 < h[2] && x1 > h[0] && y0 < h[3] && y1 > h[1]);
+          n.classList.toggle("off", !kept && (out || under || (near && (y0 + y1) / 2 < haze)));
         });
       };
       check(); const a = api.listen(check), b = api.listenView(check), t = setTimeout(check, 260); return () => { a(); b(); clearTimeout(t); };
-    }, [g, api, holes, j.s, j.done, sel, hov, follow]);
+    }, [g, api, holes, j.s, j.done, sel, hov, follow, peek]);
     const named = g && g.wide && (j.done || j.k < 0);
-    const hint = g && (g.wide ? "Drag to look round · click a place or an agent" : "Swipe to look round · tap a place");
+    const hint = g && (g.wide ? "Point at a place or an agent · drag to look round" : "Swipe to look round · tap a place");
     return <>
       <div className={cx("hero-scene town-stage", gl && "is-gl", ready && "ready")} ref={stageRef}>
         {gl && g && <DepthPlate g={g} api={api} dark={dark} reduce={j.reduce} map={map} stageRef={stageRef} view={view} onReady={() => setReady(true)} onFail={() => setGl(false)} />}
@@ -698,17 +796,19 @@ void main() {
         {!gl && g && g.wide && <div className="town-haze" ref={hazeRef} aria-hidden="true" />}
         {g && <Graph g={g} api={api} j={j} dark={dark} focus={focus} project={project} holes={holes} />}
         <div className="town-world town-top" ref={topWorld} style={g ? { left: g.ox, top: g.oy, width: g.w, height: g.h } : { visibility: "hidden" }}>
-          {g && PLACES.map(p => <span key={p.id} data-at={JSON.stringify(placeAt(g, p.id))} className="town-shift"><Pin p={p} g={g} j={j} sel={sel} onOpen={open} hover={setHov} /></span>)}
-          {g && AGENTS.map(a => <span key={a.id} data-at={JSON.stringify(GEO.posts[a.id])} className="town-shift"><Node a={a} g={g} j={j} sel={sel} onOpen={open} hover={setHov} named={named && (!focus || focus.has(a.id))} tipped={tour === a.id} /></span>)}
+          {g && PLACES.map(p => <span key={p.id} data-at={JSON.stringify(placeAt(g, p.id))} className="town-shift"><Pin p={p} g={g} j={j} sel={sel} onOpen={open} hover={look} peek={peek} /></span>)}
+          {g && AGENTS.map(a => <span key={a.id} data-at={JSON.stringify(GEO.posts[a.id])} className="town-shift"><Node a={a} g={g} j={j} sel={sel} onOpen={open} hover={look} peek={peek} named={named && (!focus || focus.has(a.id))} tipped={tour === a.id} /></span>)}
           {g && <Batch g={g} j={j} />}
         </div>
         {g && <Tip g={g} j={{ ...j, agent: tour }} api={api} project={project} />}
+        {g && <Peek g={g} pk={peek} j={j} api={api} project={project} room={room} onOpen={s => open(s, { detail: 1 })} onClose={() => unlook(true)}
+          onEnter={() => clearTimeout(T.current.leave)} onLeave={() => { if (!peekNow.current || !peekNow.current.pinned) { clearTimeout(T.current.leave); T.current.leave = setTimeout(() => unlook(false), 250); } }} />}
         <p className="sr-only">{dark
           ? "The whole business as a miniature town at night: the snack maker's factory and office, the distributor's godown, a lane of kirana shops, a highway to a buyer's warehouse, a food bank, and a fenced landfill, dark."
           : "The whole business as a miniature town in the morning: on the left the snack maker's factory and office, in the middle the distributor's godown full of cartons, on the right a lane of kirana shops hung with snack packets; behind them a highway to a buyer's warehouse in the next town, a food bank, and a fenced landfill, empty."}</p>
       </div>
       <SrJourney j={j} />
-      <Caption j={j} money={money} hint={j.done && !sel ? hint : null} />
+      <Caption j={j} money={money} hint={j.done && !sel && !peek ? hint : null} />
       <AnimatePresence>{sel && <Panel key="panel" sel={sel} j={j} onOpen={open} onClose={() => setSel(null)} />}</AnimatePresence>
       {g && <Controls j={j} api={api} g={g} zoom={zoom} onWhole={whole} onReplay={replay} onPlay={play} onTake={take} />}
     </>;

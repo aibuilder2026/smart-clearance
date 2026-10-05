@@ -27,14 +27,11 @@ export const GEO = {
 		you: [0.15, 0.585],
 		paperwork: [0.085, 0.64],
 		outreach: [0.875, 0.5],
-		lister: [0.885, 0.415],
-		negotiator: [0.955, 0.47],
+		lister: [0.72, 0.235],
+		negotiator: [0.9, 0.265],
 		impact: [0.27, 0.315]
 	} as Record<string, Pt>,
-	labels: { data: 'left', watcher: 'left', negotiator: 'left', lister: 'left', outreach: 'left' } as Record<
-		string,
-		'left' | 'right'
-	>,
+	labels: { data: 'left', watcher: 'left', lister: 'left', outreach: 'left' } as Record<string, 'left' | 'right'>,
 	routes: {
 		out: [
 			[0.312, 0.66],
