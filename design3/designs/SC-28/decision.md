@@ -106,4 +106,14 @@ This folder keeps its own copies for the review.
 
 **The options** are for "Five exits, one batch" only. Each keeps the street picture and shows, in motion, how the batch's packs are diverted. They are in `round-2/`.
 
-The pick: pending.
+1. **The packs take the street** (recommended): on the picture itself, the batch leaves the godown as dots of about 50 packs and takes the road into its exits; the godown's count drains as each exit's fills.
+2. **The batch, split**: a flow diagram under the picture, ribbons as wide as the packs each exit took, with each exit's price a pack and result.
+3. **Sorted at five doors**: the batch visits each exit's door in turn, and each door stamps its decision.
+
+**The pick** (5 Oct 2026, the maintainer's words): "I want 1 and 2 combined". It is built as the board's Decide section offered it: option 2's diagram under option 1's street.
+
+- The packs take the street, on the picture (option 1). The whole street is in view on desktops, so the scroll-pan is retired; on phones the strip follows the packs.
+- Under it, the batch split by exit (option 2), drawn once the packs have arrived, so the two motions run one after the other. One Replay, "Send the batch again", runs both.
+- The caption that described the pressed chip goes: the split's rows say what each exit was offered and took. The chips over the street become labels that count the packs in, and ring in their stream's colour once packs arrive.
+- How it works is option B's three moments; the nine stops are option A's live pipeline, as built in round 1.
+- The godown and the bin renders join the design system's renders (`system/img`), with their sidecars.

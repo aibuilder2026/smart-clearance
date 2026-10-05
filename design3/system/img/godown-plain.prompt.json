@@ -1,0 +1,21 @@
+{
+  "name": "godown-plain",
+  "model": "Qwen-Image-2.1 bf16 (local)",
+  "mode": "edit",
+  "source": "design3/system/img/godown.webp",
+  "prompt": "Remove the words \"Rakesh Traders\" from the green-framed signboard above the shutter so the board is completely blank: a plain cream panel inside its green frame with no letters, words or marks at all. Change nothing else. Keep the warehouse building, the half-raised roller shutter, the stacked kraft cartons, the wooden pallet and the grey base exactly as they are, with the same colours, materials, soft studio lighting from the upper left, camera angle and framing. Keep the transparent background, and keep the soft contact shadow exactly as in the original: faint, neutral dark grey, with no blue tint and no new shadow shapes.",
+  "seed": 28012,
+  "size": 1024,
+  "transparent": true,
+  "created": "2026-10-04T22:42:20Z",
+  "attempts": 2,
+  "postprocess": "contact shadow: pale see-through pixels outside the object recoloured to #0b1510 at 62% of their alpha, so the shadow reads as shadow on light and dark grounds (2387 px at 1024); then a 768x768 WebP, cwebp -q 85 -alpha_q 100 -resize 768 768; the PNG original stays local in src/",
+  "rejected_attempts": [
+    {
+      "attempt": 1,
+      "seed": 28010,
+      "prompt": "Remove the words \"Rakesh Traders\" from the green-framed signboard above the shutter so the board is completely blank: a plain cream panel inside its green frame with no letters, words or marks at all. Keep everything else exactly as it is: the warehouse building, the half-raised roller shutter, the stacked kraft cartons and the wooden pallet, the grey base, the colours and materials, the soft studio lighting from the upper left, the camera angle and framing, the transparent background and the soft contact shadow.",
+      "reason": "sign blanked and the building unchanged, but the contact shadow turned blue (mean shadow RGB 28,43,90 against the source's 26,29,35) and stronger, a lavender rim under the base on the light ground"
+    }
+  ]
+}

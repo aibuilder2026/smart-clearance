@@ -8,10 +8,10 @@
 	import { figures } from './figures';
 	import Footer from './Footer.svelte';
 	import Hero from './Hero.svelte';
+	import How from './How.svelte';
 	import { LINKS, openLink } from './links';
 	import Nav from './Nav.svelte';
 	import Plans from './Plans.svelte';
-	import Steps from './Steps.svelte';
 	import Stops from './Stops.svelte';
 	import Workspace from './Workspace.svelte';
 
@@ -35,7 +35,7 @@
 	<Nav {onfind} {ondemo} />
 	<main>
 		<Hero packs={f.atRisk} net={f.actual.net} {onfind} />
-		<Steps {f} />
+		<How {f} />
 		<Exits {f} />
 		<Stops {f} />
 		<Workspace {f} />

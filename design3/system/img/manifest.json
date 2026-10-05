@@ -435,6 +435,43 @@
       "postprocess": "contact shadow: pale see-through pixels outside the object recoloured to #0b1510 at 62% of their alpha, so the shadow reads as shadow on light and dark grounds (0 px matched: this render's shadow is already dark)",
       "issue": "SC-28",
       "mode": "edit"
+    },
+    {
+      "name": "godown-plain",
+      "kind": "still",
+      "file": "godown-plain.webp",
+      "width": 768,
+      "height": 768,
+      "bytes": 29314,
+      "seed": 28012,
+      "transparent": true,
+      "attempts": 2,
+      "prompt_json": "godown-plain.prompt.json",
+      "src": "src/godown-plain.png",
+      "src_width": 1024,
+      "src_height": 1024,
+      "src_bytes": 938836,
+      "postprocess": "contact shadow: pale see-through pixels outside the object recoloured to #0b1510 at 62% of their alpha, so the shadow reads as shadow on light and dark grounds (2387 px at 1024)",
+      "issue": "SC-28",
+      "mode": "edit"
+    },
+    {
+      "name": "bin-plain",
+      "kind": "still",
+      "file": "bin-plain.webp",
+      "width": 768,
+      "height": 768,
+      "bytes": 33584,
+      "seed": 28201,
+      "transparent": true,
+      "attempts": 1,
+      "prompt_json": "bin-plain.prompt.json",
+      "src": "src/bin-plain.png",
+      "src_width": 1024,
+      "src_height": 1024,
+      "src_bytes": 771785,
+      "postprocess": "contact shadow: pale see-through pixels outside the object recoloured to #0b1510 at 62% of their alpha, so the shadow reads as shadow on light and dark grounds",
+      "issue": "SC-28"
     }
   ],
   "not_from_this_run": {

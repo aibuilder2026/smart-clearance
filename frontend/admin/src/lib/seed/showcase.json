@@ -5,10 +5,45 @@
 	},
 	"batch": {
 		"daysLeft": 47,
-		"distributorCity": "Nagpur"
+		"distributorCity": "Nagpur",
+		"units": 1840,
+		"product": "Masala Chips 150 g"
 	},
 	"risk": {
-		"atRisk": 1360
+		"atRisk": 1360,
+		"gates": [
+			{
+				"id": "blinkit",
+				"app": "Blinkit",
+				"rule": "needs 90+ days",
+				"has": 47,
+				"need": 90,
+				"pass": false
+			},
+			{
+				"id": "zepto",
+				"app": "Zepto",
+				"rule": "needs 60% of a 184-day life (110 days)",
+				"has": 47,
+				"need": 110,
+				"pass": false
+			},
+			{
+				"id": "instamart",
+				"app": "Instamart",
+				"rule": "needs 60% of a 184-day life (110 days)",
+				"has": 47,
+				"need": 110,
+				"pass": false
+			}
+		]
+	},
+	"rules": {
+		"kiranaWindowDays": 14,
+		"scheme": {
+			"buy": 10,
+			"free": 2
+		}
 	},
 	"plan": {
 		"net": 21770,

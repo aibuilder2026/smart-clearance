@@ -24,13 +24,18 @@ export type PlanLine = {
 };
 export type ChannelRow = { id: string; short: string; net: number; eligible: boolean; capacity: number | null };
 export type Stage = { id: string; title: string; human: boolean };
+/** a quick-commerce shelf-life gate and whether the batch passes it (money.js gates()) */
+export type Gate = { id: string; app: string; rule: string; has: number; need: number; pass: boolean };
 
 /** GET /v1/site/showcase: one batch with every figure worked out, as the landing page tells it. It names no client, no
  *  person and no partner: the platform's own page tells it as an illustrative batch (SC-28) */
 export type Showcase = {
 	platform: { name: string; domain: string };
-	batch: { daysLeft: number; distributorCity: string };
-	risk: { atRisk: number };
+	/** product: the pack's own name, without its brand */
+	batch: { daysLeft: number; distributorCity: string; units: number; product: string };
+	risk: { atRisk: number; gates: Gate[] };
+	/** the pricing rules the Valuer works to: a kirana takes up to 14 days' scheme volume, 2 free with every 10 */
+	rules: { kiranaWindowDays: number; scheme: { buy: number; free: number } };
 	plan: {
 		net: number;
 		soldUnits: number;

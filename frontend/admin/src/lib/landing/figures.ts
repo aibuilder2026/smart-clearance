@@ -3,21 +3,30 @@
 // a client: the platform's own page tells the batch as an illustrative one (SC-28).
 import { fmt, rate } from '@smart-clearance/core';
 import type { Catalog, PlanLine, Showcase } from '#lib/api/types.ts';
-import { EXIT_X } from './pan';
+import { EXIT_X, dots } from './street';
 
 export type Exit = {
 	id: string;
 	name: string;
-	line: string;
 	x: number;
+	/** the packs it took: none for the exits that were priced and not needed */
+	packs: number;
 	taken?: boolean;
 	bin?: boolean;
-	detail: string;
+	/** its render, in the split under the street */
+	art: string;
+	/** its price a pack, and what it came to (what it would have cost, for the bin) */
+	per: string;
+	total?: number;
+	note?: string;
+	/** its chip over the street: a taken exit counts its packs in as they arrive; the others say why they took none */
+	line: (n: number) => string;
 };
 
 export function figures(s: Showcase, c: Catalog) {
 	const line = (id: string) => s.plan.lines.find((l) => l.id === id) as PlanLine;
 	const row = (id: string) => s.plan.rows.find((r) => r.id === id)!;
+	const planned = (id: string) => s.plan.lines.some((l) => l.id === id);
 	const KL = line('kirana');
 	const ESL = line('expiresoon');
 	const AW = s.award;
@@ -30,70 +39,131 @@ export function figures(s: Showcase, c: Catalog) {
 	for (const a of c.agents) if (!a.gate) (byStage[a.stage] ??= []).push(a.name);
 	const agentsAt = (...stages: string[]) => stages.flatMap((st) => byStage[st] ?? []);
 
-	// 2 · how it works: three steps, the agents named under each, the human yes first in the third
-	const steps = [
-		{
-			t: 'Spot it in time',
-			art: 'phone-scan',
-			who: agentsAt('connect', 'detect', 'verify'),
-			text: "Every morning the Watcher checks each batch against its date and the quick-commerce shelf-life rules, and flags the stock that won't sell. Vision reads the label photo to be sure."
+	// 2 · how it works: the moments each team actually sees, the agents named beside each (option B). The third card's
+	// agents are the ones its yes releases
+	const released = agentsAt('execute', 'settle', 'report');
+	const { buy, free } = s.rules.scheme;
+	const how = {
+		moments: [
+			{
+				t: 'Spot it while there is time to sell',
+				art: 'godown-plain',
+				who: agentsAt('connect', 'detect', 'verify'),
+				text: "Every morning at 09:00 the Watcher checks each batch against its date and the quick-commerce shelf-life rules, and flags the stock that won't sell in time. Vision reads the label photo from the godown to be sure."
+			},
+			{
+				t: 'Price every exit, the bin included',
+				art: 'kirana-plain',
+				who: agentsAt('value', 'decide'),
+				text: `Kiranas on a ${free}-free-with-${buy} scheme, a clearance marketplace, a staff sale at the godown, a food bank: the Valuer prices each exit against the true cost of destroying the stock, and the Router splits the batch within each exit's limits.`
+			},
+			{
+				t: 'Say yes once. The agents do the rest.',
+				art: 'documents',
+				yes: true,
+				who: ['a person', ...released],
+				text: 'A person approves the plan with the money on screen; nothing is listed, messaged or shipped before that tap. Then the agents list the lot, send kirana offers in Hindi, answer bids, draft the invoice, credit note and GST memo, and post the impact.'
+			}
+		],
+		// 1 · the Watcher's alert
+		alert: {
+			product: s.batch.product,
+			where: `${fmt.num(s.batch.units)} packs in a distributor's godown, ${s.batch.distributorCity}`,
+			gates: s.risk.gates,
+			atRisk: s.risk.atRisk,
+			daysLeft: s.batch.daysLeft
 		},
-		{
-			t: 'Price every exit',
-			art: 'kirana-plain',
-			who: agentsAt('value', 'decide'),
-			text: 'Kiranas, a clearance marketplace, a staff sale, a food bank: the Valuer prices each exit against the true cost of the bin, and the Router splits the batch.'
-		},
-		{
-			t: 'Say yes once',
-			art: 'van',
-			yes: true,
-			who: ['a person', ...agentsAt('execute', 'settle', 'report')],
-			text: 'A person approves the plan with the money on screen. Then the agents list it, send offers in Hindi, answer bids, draft the invoices and report the impact.'
+		// 2 · the Valuer's price for every exit, net a pack, and the Router's split
+		prices: [
+			{
+				id: 'kirana',
+				name: 'Kiranas',
+				s: `up to ${fmt.num(row('kirana').capacity!)} packs in ${s.rules.kiranaWindowDays} days`
+			},
+			{ id: 'expiresoon', name: 'ExpireSoon', s: "no limit; listed in the distributor's name" },
+			{ id: 'staff', name: 'Staff sale', s: `up to ${fmt.num(row('staff').capacity!)} packs at the godown` },
+			{ id: 'foodbank', name: 'Food bank', s: 'a donation reverses the GST credit' },
+			{ id: 'writeoff', dot: 'bin', name: 'The bin', s: 'stock, GST credit, disposal and EPR' }
+		].map((p) => ({
+			...p,
+			dot: p.dot ?? p.id,
+			v: fmt.inr2(row(p.id).net),
+			bin: p.id === 'writeoff',
+			off: p.id !== 'writeoff' && !planned(p.id)
+		})),
+		split: { kiranas: KL.units, expiresoon: ESL.units, shops: SHOPS, total: s.risk.atRisk },
+		// 3 · the plan, waiting for one yes
+		plan: {
+			net: s.plan.net,
+			bin: BIN,
+			lines: [
+				{ id: 'kirana', label: `${fmt.num(KL.units)} packs to ${SHOPS} kiranas`, net: KL.net },
+				{ id: 'expiresoon', label: `${fmt.num(ESL.units)} packs on ExpireSoon`, net: ESL.net }
+			],
+			released
 		}
-	];
+	};
 
-	// 3 · five exits, one batch
+	// 3 · five exits, one batch: the packs take the street, then the batch is split by exit (options 1 and 2)
 	const exits: Exit[] = [
 		{
 			id: 'kirana',
 			name: 'Kiranas',
-			line: `${fmt.num(KL.units)} packs · ${SHOPS} shops`,
 			x: EXIT_X[0],
+			packs: KL.units,
 			taken: true,
-			detail: `${fmt.num(KL.units)} packs to ${SHOPS} kiranas at ${fmt.inr(KL.price)} a pack, 2 free with every 10: ${fmt.inr(KL.net)} after the van.`
+			art: 'kirana-plain',
+			total: KL.net,
+			per: `${rate(row('kirana').net)} a pack, after the van`,
+			line: (n) => `${fmt.num(n)} packs · ${SHOPS} shops`
 		},
 		{
 			id: 'expiresoon',
 			name: 'ExpireSoon',
-			line: `${fmt.num(AW.units)} packs · ${rate(AW.price)}`,
 			x: EXIT_X[1],
+			packs: AW.units,
 			taken: true,
-			detail: `${fmt.num(AW.units)} packs to one buyer on ExpireSoon at ${rate(AW.price)}, countered from ${rate(ESL.price)}: ${fmt.inr(ES_NET)} after the listing fee.`
+			art: 'marketplace-bag',
+			total: ES_NET,
+			per: `${rate(AW.price)} a pack, countered from ${rate(ESL.price)}`,
+			line: (n) => `${fmt.num(n)} packs · ${rate(AW.price)}`
 		},
 		{
 			id: 'staff',
 			name: 'Staff sale',
-			line: 'priced, not needed',
 			x: EXIT_X[2],
-			detail: `${rate(row('staff').net)} a pack for up to ${row('staff').capacity} packs at the ${s.batch.distributorCity} godown. Not needed this time.`
+			packs: 0,
+			art: 'godown-plain',
+			note: 'priced, not needed',
+			per: `${rate(row('staff').net)} a pack, up to ${row('staff').capacity} packs`,
+			line: () => 'priced, not needed'
 		},
 		{
 			id: 'foodbank',
 			name: 'Food bank',
-			line: 'priced, not needed',
 			x: EXIT_X[3],
-			detail: `${rate(row('foodbank').net)} a pack, because a donation reverses the GST credit. Kept for food that can't sell.`
+			packs: 0,
+			art: 'donation-crate',
+			note: 'priced, not needed',
+			per: `${rate(row('foodbank').net)} a pack: a donation reverses the GST credit`,
+			line: () => 'priced, not needed'
 		},
 		{
 			id: 'bin',
 			name: 'The bin',
-			line: `${fmt.inr(-BIN)} · not taken`,
 			x: EXIT_X[4],
+			packs: 0,
 			bin: true,
-			detail: `${rate(-s.plan.writeOff.perUnit)} a pack: the stock, the GST credit, disposal and EPR, ${fmt.inr(-BIN)} for the batch. Not taken.`
+			art: 'bin-plain',
+			total: -BIN,
+			note: 'not taken',
+			per: `${rate(-s.plan.writeOff.perUnit)} a pack`,
+			line: () => `${fmt.inr(-BIN)} · not taken`
 		}
 	];
+	const taken = exits.filter((e) => e.taken);
+	// the dots the batch leaves the godown as, about 50 packs each, each naming its exit
+	const street = { exits, taken, dots: dots(taken[0], taken[1]) };
 	// what the batch came to: the board's three cards (L2), each with the arithmetic that makes it
 	const results = [
 		{
@@ -153,8 +223,8 @@ export function figures(s: Showcase, c: Catalog) {
 		atRisk: s.risk.atRisk,
 		daysLeft: s.batch.daysLeft,
 		actual: s.actual,
-		steps,
-		exits,
+		how,
+		street,
 		results,
 		stops,
 		plans: c.plans.map((p) => ({ ...p, scope: p.scope.map((x) => x.replace(/^The client's /, 'Your ')) })),
