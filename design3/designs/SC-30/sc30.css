@@ -1,0 +1,92 @@
+/* SC-30: the hero, with the nine stops merged into it, three ways. Loads after site.css, SC-28's sc28.css and round 2's
+   r2.css (the rest of the page as built). Nothing here is built yet: the picked option's rules move into site/site.css
+   (and the SvelteKit port) after the pick. Sizes on desktops are in container units, as the hero's own (1px of the
+   1280-wide comp = 0.078125cqw), so what sits on the plate scales with it. */
+
+/* the mount is not a box: what each option renders sits in the hero as if it were the hero's own */
+[data-hero] { display: contents; }
+
+/* a layer laid exactly over the plate (measured from the plate's own fit), for what the agents do on it */
+.h30-layer { position: absolute; z-index: 1; pointer-events: none; overflow: hidden; border-radius: 20px; }
+@container app (min-width: 1024px) { .h30-layer { border-radius: 0; } }
+.h30-layer > svg, .h30-canvas { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+/* an agent, named: its icon and name on a frosted pill; lit once it has worked, the aura while it works */
+.h30-agent > span, .h30-tile > span { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 13px 0 5px; border-radius: 999px; white-space: nowrap; font-size: 13px; font-weight: 650; color: var(--fg);
+  background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line);
+  transition: opacity 240ms var(--ease); }
+.h30-agent i, .h30-tile i { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: var(--fg-3); background: var(--fill-2); transition: background-color 240ms var(--ease), color 240ms var(--ease); }
+.h30-agent.on i, .h30-tile.on i { color: var(--primary-fg); background: var(--primary); }
+.h30-agent.human i, .h30-tile.human i { color: var(--amber-fg); background: var(--amber); }
+/* not reached yet: the name steps back to the secondary ink and its icon fades; the chip stays opaque, so the name keeps
+   4.5:1 wherever on the plate it sits */
+.h30-agent.later > span, .h30-tile.later > span { color: var(--fg-2); }
+.h30-agent.later i, .h30-tile.later i { opacity: 0.55; }
+
+/* what the batch is doing, under the carton */
+.h30-caption { position: relative; z-index: 2; display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 8px; max-width: 46rem; padding: 10px 14px; border-radius: 14px; font-size: 14.5px; line-height: 1.4; color: var(--fg-2);
+  background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.h30-caption .n { font-family: var(--font-mono); font-size: 12px; color: var(--fg-3); }
+.h30-caption b { font-weight: 650; color: var(--fg); }
+.h30-caption .did { color: var(--primary-text); font-variant-numeric: tabular-nums; }
+.h30-caption.human .did { color: var(--amber-text); }
+.h30-ctl { display: flex; justify-content: flex-end; }
+.h30-ctl:empty { display: none; }
+@container app (min-width: 1024px) {
+  .h30-agent > span, .h30-tile > span { height: max(28px, 2.65cqw); font-size: max(11.5px, 1.02cqw); gap: 0.55cqw; padding: 0 1cqw 0 0.4cqw; }
+  .h30-agent i, .h30-tile i { width: max(20px, 1.88cqw); height: max(20px, 1.88cqw); }
+  .h30-caption { position: absolute; left: 50%; top: 86.4%; translate: -50% 0; width: max-content; max-width: 56%; padding: 0.7cqw 1.1cqw; border-radius: 1.1cqw; font-size: max(12px, 1.09cqw); }
+  .h30-caption .n { font-size: max(10.5px, 0.9cqw); }
+  .h30-ctl { position: absolute; z-index: 2; right: 2.2%; top: 86.6%; }
+}
+
+/* ---------- option 1: the agents' constellation ---------- */
+/* a named star: a node on the arc, ringed in white so it reads on the busy plate; green once its agent has worked */
+.h30-star { position: absolute; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: rgb(13 28 21 / 0.35); box-shadow: 0 0 0 2px #ffffff, 0 2px 6px rgb(0 0 0 / 0.28);
+  transition: background-color 240ms var(--ease), scale 240ms var(--ease); }
+[data-theme="dark"] .h30-star { background: rgb(236 242 238 / 0.5); }
+.h30-star.on { background: var(--primary); }
+.h30-star.human.on, .h30-star.human.now { background: var(--amber); }
+.h30-star.now { scale: 1.4; background: var(--primary); }
+.h30-label { position: absolute; }
+
+/* ---------- option 2: through the gateway ---------- */
+/* the gate: where the agents work in turn and the packs wait for the person's yes */
+.h30-gate { position: absolute; display: grid; justify-items: center; gap: 6px; translate: -50% -50%; }
+.h30-gate > span { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; color: var(--fg-2); background: var(--glass-strong);
+  -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); transition: background-color 240ms var(--ease), color 240ms var(--ease); }
+.h30-gate.human > span { color: var(--amber-fg); background: var(--amber); }
+.h30-gate.open > span { color: var(--primary-fg); background: var(--primary); }
+.h30-gate-who { position: absolute; top: calc(100% + 6px); padding: 3px 9px; border-radius: 999px; white-space: nowrap; font-size: 12.5px; font-weight: 650; color: var(--fg); background: var(--glass-strong);
+  box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+/* an exit: where the paths end, counting its packs in */
+.h30-exit { display: inline-flex; align-items: center; gap: 7px; padding: 6px 11px 6px 9px; border-radius: 12px; white-space: nowrap; font-size: 13px; color: var(--fg-2); background: var(--glass-strong);
+  -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); font-variant-numeric: tabular-nums; }
+.h30-exit i { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+.h30-exit b { font-weight: 650; color: var(--fg); }
+.h30-exit.bin span { color: var(--red-text); }
+.h30-exit.taken span { color: var(--primary-text); font-weight: 600; }
+.h30-layer .h30-exit { position: absolute; translate: 0 -50%; }
+.h30-exits { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 0; padding: 0; list-style: none; }
+@container app (min-width: 1024px) {
+  .h30-gate > span { width: max(40px, 3.75cqw); height: max(40px, 3.75cqw); }
+  .h30-gate-who { font-size: max(11px, 0.98cqw); }
+  .h30-exit { font-size: max(11px, 1.02cqw); gap: 0.55cqw; padding: 0.45cqw 0.86cqw 0.45cqw 0.7cqw; border-radius: 0.94cqw; }
+}
+
+/* ---------- option 3: the carton's crew, a ring of agents around it ---------- */
+.h30-ring { fill: none; stroke: rgb(255 255 255 / 0.62); stroke-width: 1.5; }
+[data-theme="dark"] .h30-ring { stroke: rgb(214 255 232 / 0.38); }
+.h30-back, .h30-front { position: absolute; inset: 0; }
+.h30-tile { position: absolute; left: 0; top: 0; will-change: transform; }
+/* on a phone the ring's tiles are their icons; the agent at work is named */
+.h30-tile.icon > span { gap: 0; padding: 0 5px; font-size: 0; }
+/* the handoff threads across the ring: one thin line from each agent to the next (ThreeUI's interface lines) */
+.h30-thread { stroke: rgb(255 255 255 / 0.7); stroke-width: 1.25; }
+.h30-thread.human { stroke: var(--amber); }
+[data-theme="dark"] .h30-thread { stroke: rgb(214 255 232 / 0.55); }
+
+/* below desktops, what does not fit on the plate sits under it */
+@container app (max-width: 1023px) {
+  .h30-caption, .h30-exits { margin-top: 2px; }
+}
