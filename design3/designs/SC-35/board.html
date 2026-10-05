@@ -127,8 +127,8 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
 <h2>Three loaders</h2>
 <p>Each mockup is the real landing page with the loader added. To play the loader again, use <b>Replay the load</b> or <b>As on a slow connection</b> (simulated) in its label. To try a switch, use the Appearance menu or the footer. The recordings are from the mockups on a slowed connection (about 6 Mbps): the first load, then Dark, then Light. The switch times are measured on a local server, from the choice to the loader gone.</p>
 
-<section class="opt" id="a" aria-labelledby="a-h">
-  <header><h3 id="a-h">A · The route</h3><p>The mark draws its S, from the godown dot towards the pin, as the page loads. When the town is in, the amber pin lands and the mark opens into a window onto the page.</p></header>
+<section class="opt rec" id="a" aria-labelledby="a-h">
+  <header><h3 id="a-h">A · The route</h3><span class="tag">Picked for page loads</span><p>The mark draws its S, from the godown dot towards the pin, as the page loads. When the town is in, the amber pin lands and the mark opens into a window onto the page.</p></header>
   <div class="links"><a class="btn primary" href="option-a/mockup.html">Open the mockup</a><a class="btn" href="option-a/mockup.html?theme=dark">In dark</a></div>
   <div class="motion-row">
     <figure><video src="option-a/motion.mp4" poster="option-a/motion.webp" controls muted playsinline preload="metadata" aria-label="Option A's recording: the mark draws its route as the page loads, the pin lands, and the squircle opens into a window onto the town; then Dark pours out of the Appearance button as a squircle, the mark draws, and the window opens on the town at night; then Light the same way."></video><figcaption>Recorded from the mockup. The still is the mark opening into a window.</figcaption></figure>
@@ -149,8 +149,8 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
   <figure><img src="option-a/switch-1440.webp" width="1440" height="900" loading="lazy" alt="Option A switching to dark: the night ground pours out of the Appearance button as a squircle over the day page."><figcaption>Dark chosen: the night ground pours out of the Appearance button as the mark's own squircle.</figcaption></figure>
 </section>
 
-<section class="opt" id="b" aria-labelledby="b-h">
-  <header><h3 id="b-h">B · Dusk and dawn</h3><p>The town's skyline, cut from paper in three layers, under a sky that turns with the load. A light page loads as dawn and a dark one as nightfall. Choosing Dark plays dusk, and choosing Light plays dawn.</p></header>
+<section class="opt rec" id="b" aria-labelledby="b-h">
+  <header><h3 id="b-h">B · Dusk and dawn</h3><span class="tag">Picked for day and night</span><p>The town's skyline, cut from paper in three layers, under a sky that turns with the load. A light page loads as dawn and a dark one as nightfall. Choosing Dark plays dusk, and choosing Light plays dawn.</p></header>
   <div class="links"><a class="btn primary" href="option-b/mockup.html">Open the mockup</a><a class="btn" href="option-b/mockup.html?theme=dark">In dark</a></div>
   <div class="motion-row">
     <figure><video src="option-b/motion.mp4" poster="option-b/motion.webp" controls muted playsinline preload="metadata" aria-label="Option B's recording: dawn breaks over a paper skyline of the town as the page loads, then the scene dissolves into the page; Dark plays dusk, with the sun setting, the moon rising and the windows lighting; Light plays dawn."></video><figcaption>Recorded from the mockup. The still is dusk on the way to Dark.</figcaption></figure>
@@ -171,7 +171,7 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
   <figure><img src="option-b/switch-1440.webp" width="1440" height="900" loading="lazy" alt="Option B switching to dark: dusk, the moon rising on the left, the windows lighting, a warm band at the horizon."><figcaption>Dark chosen: dusk, the moon rising and the windows lighting while the night plates load.</figcaption></figure>
 </section>
 
-<section class="opt rec" id="c" aria-labelledby="c-h">
+<section class="opt" id="c" aria-labelledby="c-h">
   <header><h3 id="c-h">C · The lens</h3><span class="tag">Recommended</span><p>A camera's iris over the page. It opens as the page loads, with the page out of focus behind it. When the town is in, the focus point locks, the blades sweep away, and the town comes into focus.</p></header>
   <div class="links"><a class="btn primary" href="option-c/mockup.html">Open the mockup</a><a class="btn" href="option-c/mockup.html?theme=dark">In dark</a></div>
   <div class="motion-row">
@@ -192,6 +192,12 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
   </div>
   <figure><img src="option-c/switch-1440.webp" width="1440" height="900" loading="lazy" alt="Option C switching to dark: the iris, now green-black, opening on the night town, which is still out of focus."><figcaption>Dark chosen: shut in day, turned to night, opening on the night town.</figcaption></figure>
 </section>
+
+<h2>The pick</h2>
+<div class="rec-box">
+  <p>The maintainer, 5 Oct 2026: <b>"I want to implement option A for page loads and re-loads and Option B for day/night switch".</b></p>
+  <p>The build plays A's route on every load of the page, reloads included, and B's dusk or dawn whenever the theme changes. Both read the same progress and keep the behaviour all three options share.</p>
+</div>
 
 <h2>The recommendation</h2>
 <div class="rec-box">

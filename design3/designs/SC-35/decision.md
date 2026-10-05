@@ -60,4 +60,12 @@ B is the most memorable switch, and the only one that tells day from night, but 
 
 ## The pick
 
-Waiting for the maintainer. The review board is `board.html`, published to the platform v3 Claude Design project as `SC-35 design review.html`.
+**A for page loads, B for the day and night switch.** The maintainer, 5 Oct 2026, after the three mockups had been built and published:
+
+> I want to implement option A for page loads and re-loads and Option B for day/night switch
+
+- **Every load of the page, reloads included:** A's route. A later load in the same session plays its shorter version.
+- **Light, Dark or Match device, or the device turning to night while the page follows it:** B's dusk or dawn.
+- Both read the same progress, and both keep what every option shares (above). C, the recommendation, is not built.
+
+The review board is `board.html`, published to the platform v3 Claude Design project as `SC-35 design review.html`, with the pick recorded on it.
