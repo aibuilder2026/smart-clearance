@@ -124,7 +124,7 @@ describe('the landing page figures', () => {
 		expect(f.town.edges.every(([a, b]) => ids.has(a) && ids.has(b))).toBe(true);
 		expect(f.town.edges).toHaveLength(11);
 	});
-	it('plays the journey in seven beats, under five seconds, and says what each did', () => {
+	it('tells the journey in seven beats, and says what each did', () => {
 		expect(f.town.beats.map((b) => `${b.id}:${b.who.join('+')}`)).toEqual([
 			'make:',
 			'stock:',
@@ -134,7 +134,6 @@ describe('the landing page figures', () => {
 			'sell:outreach+lister+negotiator',
 			'report:paperwork+impact'
 		]);
-		expect(f.town.beats.reduce((t, b) => t + b.ms, 0)).toBe(4700);
 		expect(f.town.beats.map((b) => b.did)).toEqual([
 			'1,840 packs leave the factory for the distributor',
 			"1,840 packs in the distributor's godown, selling 12 a day",
@@ -149,6 +148,29 @@ describe('the landing page figures', () => {
 			'Takes food with 15 or more days left, as a donation. This batch sold before it was needed.'
 		);
 		expect(f.town.agents.find((a) => a.id === 'negotiator')!.did).toBe('Countered a bid to ₹14.20 a pack');
+	});
+	it('tours it agent by agent, in about 17 seconds, so it carries Pause and Play (SC-34)', () => {
+		// a stop for each beat without agents, and one for each agent in the order they work
+		expect(f.town.stops.map((x) => x.agent ?? f.town.beats[x.beat].id)).toEqual([
+			'make',
+			'stock',
+			'data',
+			'watcher',
+			'vision',
+			'valuer',
+			'router',
+			'you',
+			'outreach',
+			'lister',
+			'negotiator',
+			'paperwork',
+			'impact'
+		]);
+		// 1.1 s a beat without agents, 1.3 s an agent, 1.7 s on the person's yes
+		expect(f.town.stops.find((x) => x.agent === 'you')!.ms).toBe(1700);
+		expect(f.town.stops.reduce((t, x) => t + x.ms, 0)).toBe(16900);
+		// every agent knows its stop, in the graph's order
+		expect(f.town.agents.every((a) => f.town.stops[a.stop].agent === a.id)).toBe(true);
 	});
 	it('lists what it works with, as the board shows them', () => {
 		expect(f.connectors.map((c) => c.name + (c.status === 'soon' ? ' · soon' : ''))).toEqual([

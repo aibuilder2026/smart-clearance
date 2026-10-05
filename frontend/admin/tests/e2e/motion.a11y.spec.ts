@@ -60,6 +60,12 @@ const STATES: [string, (page: Page) => Promise<void>][] = [
 		}
 	],
 	[
+		'site · the town, a card beside an agent',
+		async (p) => {
+			await p.waitForFunction(() => !!document.querySelector('.town-tip b'));
+		}
+	],
+	[
 		'site · the town, a place opened',
 		async (p) => {
 			await p.waitForFunction(() =>

@@ -21,6 +21,19 @@ test('site · the town: a place, then an agent, opened', async ({ page }, testIn
 	await report(testInfo, findings);
 });
 
+// the tour plays only with motion on; it is paused at a card before the scan, so every colour is at rest
+test.describe("the town's tour, with motion on", () => {
+	test.use({ contextOptions: { reducedMotion: 'no-preference' } });
+
+	test("site · the town's tour: a card beside the agent at work, paused", async ({ page }, testInfo) => {
+		await openSite(page);
+		await page.waitForFunction(() => !!document.querySelector('.town-tip b'), null, { timeout: 15000 });
+		await page.locator('.town-ctl').getByRole('button', { name: 'Pause' }).click();
+		await page.waitForTimeout(400);
+		await report(testInfo, await scan(page, "site · the town's tour, paused at a card"));
+	});
+});
+
 test('site · sign-in menu, Find your workspace and Book a demo', async ({ page }, testInfo) => {
 	await openSite(page);
 	const findings: Finding[] = [];

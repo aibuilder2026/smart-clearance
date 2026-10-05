@@ -146,6 +146,22 @@
 .town-pre, .town-pre img { position: absolute; inset: 0; width: 100%; height: 100%; }
 .hero-scene.town-stage .town-pre img { object-fit: cover; object-position: 50% 50%; }
 /* @port-end */
+/* the tour's card (SC-34), beside the agent at work over the whole town, on a stem as the places' pins are; a line along
+   its foot fills while the stop holds, and stops when the tour does */
+.town-tip { position: absolute; z-index: 3; left: 0; top: 0; width: max-content; max-width: min(17rem, calc(100% - 16px)); padding: 8px 12px 13px; border-radius: 12px; font-size: 13px; line-height: 1.4;
+  color: var(--fg-2); background: var(--glass-strong); -webkit-backdrop-filter: blur(12px) saturate(140%); backdrop-filter: blur(12px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); pointer-events: none; }
+.town-tip::after { content: ""; position: absolute; left: var(--caret, 50%); top: 100%; width: 2px; height: 14px; margin-left: -1px; border-radius: 1px; background: color-mix(in oklab, var(--fg) 34%, transparent); }
+.town-tip.below::after { top: auto; bottom: 100%; }
+.town-tip header { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 7px; margin-bottom: 3px; }
+.town-tip header i { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; color: var(--primary-fg); background: var(--primary); }
+.town-tip.human header i { color: var(--amber-fg); background: var(--amber); }
+.town-tip b { font-weight: 700; color: var(--fg); }
+.town-tip header span { font-size: 12.5px; color: var(--fg-2); }
+.town-tip p { margin: 0; color: var(--fg); }
+.town-tip-time { position: absolute; left: 12px; right: 12px; bottom: 5px; height: 2px; border-radius: 2px; overflow: hidden; background: color-mix(in oklab, var(--primary) 20%, transparent); }
+.town-tip-time::after { content: ""; position: absolute; inset: 0; background: var(--primary); transform: scaleX(0); transform-origin: 0 50%;
+  animation-name: town-tip-time; animation-timing-function: linear; animation-fill-mode: forwards; animation-duration: inherit; animation-play-state: inherit; }
+@keyframes town-tip-time { to { transform: scaleX(1); } }
 
 @container app (min-width: 600px) and (max-width: 1023px) {
   .hero-frame { padding: 34px 32px 6px; gap: 26px; }

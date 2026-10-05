@@ -185,7 +185,8 @@ export function figures(s: Showcase, c: Catalog) {
 
 	// 1 · the hero's town (SC-32): every place in the business and what it is to this batch; the agents and the person
 	// who says yes, each at its post, with its job (as the catalog gives it) and what it did; the handoffs between them,
-	// the agent graph; and the journey, beat by beat. As design3/site/town.jsx works them out
+	// the agent graph; the journey, beat by beat; and its tour (SC-34), a stop for each agent. As design3/site/town.jsx
+	// works them out
 	const foodbank = s.rules.foodbankMinDays;
 	const RESULT = `${fmt.inr(s.actual.net)} recovered, instead of ${fmt.inr(-BIN)} to destroy it`;
 	const places = [
@@ -265,7 +266,6 @@ export function figures(s: Showcase, c: Catalog) {
 			t: 'Made',
 			did: `${fmt.num(s.batch.units)} packs leave the factory for the distributor`,
 			who: [],
-			ms: 600,
 			batch: 'maker'
 		},
 		{
@@ -274,7 +274,6 @@ export function figures(s: Showcase, c: Catalog) {
 			t: 'Stocked',
 			did: `${fmt.num(s.batch.units)} packs in the distributor's godown, selling ${s.batch.sellPerDay} a day`,
 			who: [],
-			ms: 500,
 			batch: 'godown'
 		},
 		{
@@ -283,7 +282,6 @@ export function figures(s: Showcase, c: Catalog) {
 			t: 'At risk',
 			did: `${fmt.num(s.risk.atRisk)} packs won't sell in the ${s.batch.daysLeft} days left`,
 			who: ['data', 'watcher', 'vision'],
-			ms: 700,
 			batch: 'godown'
 		},
 		{
@@ -292,7 +290,6 @@ export function figures(s: Showcase, c: Catalog) {
 			t: 'Priced and split',
 			did: `Five exits priced · ${fmt.num(KL.units)} to ${SHOPS} kiranas, ${fmt.num(AW.units)} to one buyer`,
 			who: ['valuer', 'router'],
-			ms: 600,
 			batch: 'godown'
 		},
 		{
@@ -302,7 +299,6 @@ export function figures(s: Showcase, c: Catalog) {
 			did: `You approve in one tap · ${fmt.inr(s.plan.net)} on screen`,
 			who: ['you'],
 			human: true,
-			ms: 900,
 			batch: 'godown'
 		},
 		{
@@ -311,7 +307,6 @@ export function figures(s: Showcase, c: Catalog) {
 			t: 'Sold',
 			did: `${fmt.num(KL.units)} packs to ${SHOPS} kiranas · ${fmt.num(AW.units)} to a buyer, countered to ${rate(AW.price)}`,
 			who: ['outreach', 'lister', 'negotiator'],
-			ms: 700,
 			batch: 'sold'
 		},
 		{
@@ -320,7 +315,6 @@ export function figures(s: Showcase, c: Catalog) {
 			t: 'Settled',
 			did: `${fmt.inr(s.actual.net)} recovered, ${fmt.num(s.plan.kg)} kg kept out of landfill`,
 			who: ['paperwork', 'impact'],
-			ms: 700,
 			batch: null
 		}
 	] as {
@@ -330,9 +324,16 @@ export function figures(s: Showcase, c: Catalog) {
 		did: string;
 		who: string[];
 		human?: boolean;
-		ms: number;
 		batch: string | null;
 	}[];
+	// The tour (SC-34): a beat without agents is one stop; a beat with agents is a stop for each, in the order they work,
+	// while its card opens beside its pin. How long each stop holds (ms): the person's yes longest. 16.9 s in all.
+	const PACE = { beat: 1100, agent: 1300, you: 1700 };
+	const stops = beats.flatMap((b, i) =>
+		b.who.length
+			? b.who.map((w) => ({ beat: i, agent: w as string | null, ms: w === 'you' ? PACE.you : PACE.agent }))
+			: [{ beat: i, agent: null as string | null, ms: PACE.beat }]
+	);
 	const agents = c.agents.map((a) => ({
 		id: a.gate ? 'you' : a.id,
 		name: a.gate ? 'You' : a.name,
@@ -341,7 +342,8 @@ export function figures(s: Showcase, c: Catalog) {
 		at: POST[a.id],
 		job: a.gate ? 'You approve every plan, with the money on screen' : a.job,
 		did: DID[a.id],
-		beat: beats.findIndex((b) => b.who.includes(a.gate ? 'you' : a.id))
+		beat: beats.findIndex((b) => b.who.includes(a.gate ? 'you' : a.id)),
+		stop: stops.findIndex((x) => x.agent === (a.gate ? 'you' : a.id))
 	}));
 	const town = {
 		places,
@@ -361,6 +363,7 @@ export function figures(s: Showcase, c: Catalog) {
 			['paperwork', 'impact']
 		] as [string, string][],
 		beats,
+		stops,
 		result: RESULT,
 		batch: {
 			units: s.batch.units,
