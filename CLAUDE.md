@@ -293,4 +293,24 @@
     - the GitHub environment `prod`, deployable from `main` only, with its variables `GCP_WORKLOAD_IDENTITY_PROVIDER`, `GCP_SERVICE_ACCOUNT` and `HOSTING_SITES`, through the `integrations/github` provider. The scripts give it `gh auth token`.
   - **Pinned:** every action to a commit SHA; the workflow token is read-only, and only the deploy job gets `id-token: write`.
   - **First runs:** PR #30's checks ran the gates and the build; the merge to `main` ran the first deploy from CI.
+- **SC-42** (In Review, branch `SC-42-town-hover-zoom`): the town hero, easier to explore, and under a sky on every screen.
+  - **Round 1, described options:** pointing at a place or an agent. The maintainer picked A, card first, zoom on dwell (B zoomed on hover, C was a loupe).
+    - The card opens at once, with the node's handoffs lit. After 0.6 s a ring fills round the pin, and the town zooms to 1.8× about it.
+    - Looking away for 250 ms closes the card and puts the camera back. A click keeps the card; Escape, its close button or leaving the hero shuts it. The chips in a kept card move it on, and bring what they name into view.
+    - The keyboard: a focused pin describes itself with the card (`aria-describedby`), and Enter opens the panel. The tour holds while the visitor looks.
+    - The Lister moves to the buyer's loading bays and the Negotiator to its truck; the graph rests fainter.
+    - The desktop hero is no taller than the window, so the caption stays in view at 1366 × 768. The heading group is sized by the frame as drawn (`--hu`), so a short window no longer squeezes it.
+    - The heading's boxes hug their text, and the buttons' row lets the pointer through, so every node under them can be pointed at.
+  - **Round 2, on one board in platform v3,** `SC-42 design review.html`: the maintainer found the text cluttered, and asked for the desktop's sky-merged picture on phones and tablets too. The options were A, the horizon, and B, the haze (the renderer's tilt-shift haze held at rest). The pick: A. Designs, frames and the decision are in `design3/designs/SC-42/`.
+    - **The sky:** the plates' own colours continued upward (`--sky-1`, `--sky-2`), warm haze by day and navy by night, deepening from the page's ground.
+    - **Desktops:** the town starts at 21% of the frame, its top fading into the sky, so the copy stands on clear sky. The lens's haze band moves to the stage's top edge (`GEO.haze`).
+    - **Phones and tablets:** the card goes. The hero is full-bleed under the nav's glass and as tall as the screen, with the copy centred on the sky, the town filling the rest, and the caption docked on its foot in glass.
+  - **Checks:**
+    - design3's suite: 334 pass, with 0 failing WCAG rules. Its first run failed four phone and tablet tests. On tablets the town's faded top took clicks meant for the bottom of "Find your workspace", so the copy now stands above the town. The town test expected the desktop's kept card on touch screens, so that step is now desktop-only. The site, keyboard and motion specs were rerun: 44 pass;
+    - the frontend's gate passes;
+    - e2e: 51 pass, and only Firefox fails, because it cannot start in the sandbox;
+    - parity: 29 pass;
+    - scripted on both builds: the card at once, the zoom after the dwell, the camera back on looking away, a click keeping the card, a chip moving it and bringing a far agent into view, Escape, a focused pin's card and Enter's panel. At 1366 × 768 the caption ends at 709 px.
+  - **The port:** `site.css` (verbatim), `Town.svelte`, `town/geo.ts`, `town/graph.ts`, `town/camera.ts`. Its frames match design3's within 0.15% at 390, 820 and 1440 wide.
+  - **Hosting:** @HOSTING@
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

@@ -83,8 +83,9 @@ export const GEO = {
 			landfill: [0.17, 0.32, 1.6]
 		}
 	} as Record<'wide' | 'phone', Record<string, Shot>>,
-	// the band behind the heading on desktops, as fractions of the stage: solid haze, then clear
-	haze: [0.3, 0.42] as Pt
+	// the band behind the buttons on desktops, as fractions of the stage: solid haze, then clear. The stage starts under
+	// the heading (SC-42), so only its top edge sits behind the buttons
+	haze: [0.06, 0.16] as Pt
 };
 
 /** the stage's box, and the plate cover-fitted in it: the world at rest */

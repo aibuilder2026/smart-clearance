@@ -102,8 +102,9 @@
       wide: { rest: [0.5, 0.5, 1], maker: [0.18, 0.58, 1.8], godown: [0.5, 0.6, 1.8], kiranas: [0.8, 0.62, 1.8], buyer: [0.8, 0.3, 2], foodbank: [0.52, 0.4, 2], landfill: [0.17, 0.32, 2] },
       phone: { rest: [0.5, 0.55, 1], maker: [0.18, 0.58, 1.4], godown: [0.5, 0.6, 1.4], kiranas: [0.8, 0.62, 1.4], buyer: [0.8, 0.32, 1.6], foodbank: [0.52, 0.4, 1.6], landfill: [0.17, 0.32, 1.6] },
     },
-    // the band behind the heading on desktops, as fractions of the stage: solid haze, then clear
-    haze: [0.3, 0.42],
+    // the band behind the buttons on desktops, as fractions of the stage: solid haze, then clear. The stage starts under
+    // the heading (SC-42), so only its top edge sits behind the buttons
+    haze: [0.06, 0.16],
   };
   const shotOf = (g, id) => { const S = GEO.shots[g && g.wide ? "wide" : "phone"]; return S[id] || S.rest; };
   const placeAt = (g, id) => (!g.wide && GEO.phonePlaces[id]) || GEO.places[id];

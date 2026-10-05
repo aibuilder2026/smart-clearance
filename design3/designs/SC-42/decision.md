@@ -76,4 +76,6 @@ window squeezed it. It is now sized by the frame as drawn (`--hu`), keeping the 
 | A | The horizon (recommended) | The town sits lower under an open sky, the plates' own colour continued upward. The copy stands on clear sky; phones and tablets get the same picture, full-bleed, with the caption docked on the town's foot. |
 | B | The haze | The town stays big behind the copy; the renderer's tilt-shift haze holds at rest behind it. Phones and tablets get the town from behind the buttons down. What stands in the haze (the Landfill and the Lister on desktops) is hidden at rest. |
 
-**The pick:** waiting for the maintainer.
+**The pick: A, the horizon.** The maintainer picked it on 6 Oct 2026 ("A · The horizon (Recommended)"), from the
+board published to platform v3 as `SC-42 design review.html`. The open question (a painted sky) was not taken up, so the
+sky stays the plates' own colour.
