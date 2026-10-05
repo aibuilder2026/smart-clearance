@@ -184,7 +184,7 @@
     - e2e: 42 pass, and only Firefox fails, because it cannot start in the sandbox;
     - parity: 29 pass.
   - **Hosting:** the hosted landing page and console load commit `4f2bc65`.
-- **SC-34** (In Review, branch `SC-34-hero-tour`): the hero's tour, slower, with a card for each agent, and the whole town back on leaving.
+- **SC-34** (PR #24, merged): the hero's tour, slower, with a card for each agent, and the whole town back on leaving.
   - **The request:** the maintainer asked for three changes to the town:
     - when focus leaves the hero, it returns to the whole picture;
     - the play runs a bit slower;
@@ -220,7 +220,7 @@
     - the 4 px side stripe on two split rows, which changes an approved design and needs the maintainer's pick;
     - DESIGN.md brought up to SC-28, SC-32 and SC-34 by the documenter.
   - **Blocked:** the impeccable comp build's record. Its responsive gate compares the page with the SC-25 diorama comp, whose hero SC-32 replaced (55% on 5 Oct), so `build-phase finish --disposition ship` is refused.
-- **SC-35** (In Review, branch `SC-35-landing-loader`): a loader for the landing page, on every load and on every change of theme.
+- **SC-35** (PR #25, merged): a loader for the landing page, on every load and on every change of theme.
   - **Design first:** three options on one board in platform v3, `SC-35 design review.html`:
     - A, the route;
     - B, dusk and dawn;
