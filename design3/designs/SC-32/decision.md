@@ -64,13 +64,60 @@ So round 1 picked no option to build. Option 3, Follow the batch, is the base fo
 
 Round 1 is kept here as it was reviewed.
 
+## Round 2: the whole business (5 Oct 2026)
+
+**One new picture, the whole business:** `round-2/img/business.webp`, composed by day and by night, with prompt sidecars.
+- It shows the maker's factory and its office, the distributor's godown, the kirana lane, a buyer's warehouse in the next town, a food bank, and the landfill.
+- Its depth map, `business-depth.webp`, is for option 2.
+- One fix by hand: the generated green route began at the landfill's gate. That stretch of road was repainted on both plates, so the route begins at the maker's loading bay.
+
+**Every agent works at a post in the picture:**
+
+| Place | Agents |
+| --- | --- |
+| The maker's office | You (the yes), Paperwork (the invoices and the price-support credit note) |
+| The distributor's godown | Data, the Watcher, Vision, the Valuer, the Router |
+| The kirana lane | Outreach |
+| The buyer, by the highway | the Lister, the Negotiator |
+| The landfill | Impact (218 kg kept out of it) |
+| The food bank | none; an exit the Valuer prices on every plan |
+
+The agent graph is the handoffs between the posts. It rests quiet. The handoff happening now, or those of whatever is hovered or open, stand out.
+
+**What every option does:**
+- **The tour plays once, in 4.7 seconds:** the whole business first, then the camera follows the batch to the factory, the godown, the office for the yes, the kiranas and the buyer, and the office and the landfill. Then it holds on the whole business.
+- **Then the picture is the visitor's:**
+  - drag or swipe, pinch or Ctrl-scroll, double-click;
+  - tap a place or an agent for a panel, and its handoffs light up;
+  - the steps walk the tour by hand, and Replay plays it again.
+- **Under reduced motion,** it rests on the result and the camera jumps.
+- **As the camera nears,** the top of the frame goes out of focus into the plate's own haze, so the heading keeps a calm ground.
+
+**Options:**
+
+| Option | Idea |
+| --- | --- |
+| 1. Take the wheel | The tour, then the picture to explore. |
+| 2. In depth (recommended) | Option 1, drawn in WebGL2 with the depth map. It parallaxes as the camera travels, tilts under the pointer (sways under a swipe), and its focus follows the camera. It falls back to option 1 without WebGL2. |
+| 3. Your yes | The tour stops at the plan and waits for the visitor's yes before the batch sells. |
+
+**Checks:**
+- axe, WCAG 2.2 AA: 0 violations in 36 scans (the three options, light and dark, 1440 and 390, mid-tour, at rest and opened).
+- Contrast, measured on the real pixels at every beat: 1,186 text runs, none below 4.5:1. The lowest is 4.79.
+
+Round 2 uses no third-party code. The depth renderer is written for it; round 1's ThreeUI notice stays.
+
 ## In this folder
 
-- `board.html`: the review board.
+- `board.html`: the review board, both rounds.
 - `current/`: the hero as it is now.
 - `img/`: the new plate, by day and by night, with sidecars.
 - `option-1/`, `option-2/`, `option-3/`: round 1. Each holds its mockup, comps (`light-1440.webp` and the rest), `journey.webp` (four moments at 1440) and `phone-journey.webp` (six moments at 390).
-- `sc32-core.jsx` and `sc32-options.jsx`, compiled to `sc32.js`, and `sc32.css`.
+- `sc32-core.jsx` and `sc32-options.jsx`, compiled to `sc32.js`, and `sc32.css`: round 1's mockup code.
+- `round-2/`: round 2.
+  - `img/`: the plates and the depth map, with their sidecars.
+  - `option-1/` to `option-3/`: each holds its mockup, comps (including `open-*` with a place opened), `journey.webp`, `phone-journey.webp` and `motion.mp4`; option 2 also has `depth.webp`.
+  - `r2-geo.js`, `r2-core.jsx` and `r2-options.jsx`, compiled to `r2.js`, and `r2.css`.
 - `THIRD_PARTY_NOTICES.md`.
 
 ## The pick

@@ -1,0 +1,160 @@
+/* SC-32 round 2: the hero as the whole business, three ways (r2-options.jsx). Loads after site.css, SC-28's sheets and
+   round 1's sc32.css (the rest of the page as built). Nothing here is built yet: the picked option's rules move into
+   design3/site/site.css (and the SvelteKit port) after the pick. */
+
+/* the hero-stops row and its lines belong to the hero as built; the journey replaces them */
+.hero32r2 .hero-stops, .hero32r2 .hero-line { display: none !important; }
+[data-r2] { display: contents; }
+
+/* ---------- the stage: the picture, its camera and what sits on it ---------- */
+/* Phones show the picture as a tall card, swiped sideways and pinched; vertical swipes stay the page's. Desktops lay it
+   behind the heading, as the hero as built does. */
+.r2-stage { overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; cursor: grab; }
+.r2-stage.dragging { cursor: grabbing; }
+.r2-world, .r2-sky { position: absolute; transform-origin: 0 0; }
+.r2-world { will-change: transform; }
+.hero-scene.r2-stage .r2-world img, .hero-scene.r2-stage .r2-sky img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; pointer-events: none; -webkit-user-drag: none; }
+.r2-gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.r2-graph { position: absolute; left: 0; top: 0; z-index: 1; pointer-events: none; }
+.r2-top { z-index: 2; pointer-events: none; }
+.r2-top button { pointer-events: auto; }
+/* the band behind the heading (desktops): as the camera nears, the top of the frame goes out of focus, as a tilt-shift
+   lens's does, into a haze of the plate's own sky; the heading keeps a calm ground and nothing shows twice */
+.r2-sky { left: 0; top: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--r2-sky) 72%, transparent) 0, color-mix(in srgb, var(--r2-sky) 58%, transparent) 30%, transparent 42%);
+  -webkit-backdrop-filter: blur(14px) saturate(105%); backdrop-filter: blur(14px) saturate(105%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 30%, transparent 42%); mask-image: linear-gradient(to bottom, #000 0, #000 30%, transparent 42%); }
+.hero32r2 { --r2-sky: #ece7e4; }
+[data-theme="dark"] .hero32r2 { --r2-sky: #031330; }
+@container app (max-width: 599px) { .hero32r2 .hero-scene.r2-stage { aspect-ratio: 1 / 1; } }
+
+/* a point on the picture: everything on it keeps its own size as the camera nears */
+.r2-shift { position: absolute; left: 0; top: 0; transition: opacity 160ms var(--ease), visibility 0s linear 0s; }
+.r2-shift.off, .r2-batch.off { opacity: 0; visibility: hidden; transition: opacity 160ms var(--ease), visibility 0s linear 160ms; }
+.r2-batch { transition: opacity 160ms var(--ease), visibility 0s linear 0s; }
+.r2-at { position: absolute; width: 0; height: 0; scale: var(--iz, 1); transform-origin: 0 0; }
+/* a plain button, at no specificity, so each part's own rules decide */
+:where(.r2-stage) :where(button) { font: inherit; color: inherit; margin: 0; border: 0; padding: 0; background: none; cursor: pointer; }
+:where(.r2-stage) :where(button):focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; border-radius: 999px; }
+
+/* a place's pin: a frosted label on a short stem; green while the batch is there, ringed while it is open */
+.r2-pin { position: absolute; left: 0; top: 0; display: grid; justify-items: center; translate: -50% -100%; }
+.r2-pin.edge-start { justify-items: start; translate: -14px -100%; }
+.r2-pin.edge-start .r2-pin-stem { margin-left: 13px; }
+.r2-pin.edge-end { justify-items: end; translate: calc(-100% + 14px) -100%; }
+.r2-pin.edge-end .r2-pin-stem { margin-right: 13px; }
+.r2-pin-body { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 12px 0 4px; border-radius: 999px; white-space: nowrap; font-size: 13px; color: var(--fg);
+  background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line);
+  transition: box-shadow 160ms var(--ease); }
+.r2-pin-body b { font-weight: 650; }
+.r2-pin-body i { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: var(--fg-2); background: var(--fill-2); transition: background-color 240ms var(--ease), color 240ms var(--ease); }
+.r2-pin.here .r2-pin-body i { color: var(--primary-fg); background: var(--primary); }
+.r2-pin:hover .r2-pin-body, .r2-pin.open .r2-pin-body { box-shadow: var(--shadow-2), 0 0 0 2px var(--primary); }
+.r2-pin-stem { width: 2px; height: 14px; border-radius: 1px; background: color-mix(in oklab, var(--fg) 34%, transparent); }
+.r2-pin:focus-visible { outline: none; }
+.r2-pin:focus-visible .r2-pin-body { outline: 3px solid var(--ring); outline-offset: 2px; }
+
+/* an agent at its post: a frosted dot with its icon, and its name beside it when named; lit once it has worked, the aura
+   while it works, amber for the person; ringed while it is open */
+.r2-node { position: absolute; left: 0; top: 0; display: inline-flex; align-items: center; gap: 0; height: 30px; padding: 0 3px; border-radius: 999px; white-space: nowrap; translate: -15px -50%;
+  font-size: 12.5px; font-weight: 650; color: var(--fg); background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%);
+  box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); transition: box-shadow 160ms var(--ease), color 240ms var(--ease); }
+.r2-node.side-left { flex-direction: row-reverse; translate: calc(-100% + 15px) -50%; }
+.r2-node-dot { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: var(--fg-3); background: var(--fill-2); transition: background-color 240ms var(--ease), color 240ms var(--ease), opacity 240ms var(--ease); }
+.r2-node-name { display: none; padding: 0 9px 0 7px; }
+.r2-node.side-left .r2-node-name { padding: 0 7px 0 9px; }
+.r2-node.named .r2-node-name { display: inline; }
+.r2-node.on .r2-node-dot { color: var(--primary-fg); background: var(--primary); }
+.r2-node.human .r2-node-dot { color: var(--amber-fg); background: var(--amber); }
+.r2-node.later { color: var(--fg-2); }
+.r2-node.later .r2-node-dot { opacity: 0.55; }
+.r2-node:hover, .r2-node.open { box-shadow: var(--shadow-2), 0 0 0 2px var(--primary); }
+.r2-node.human:hover, .r2-node.human.open { box-shadow: var(--shadow-2), 0 0 0 2px var(--amber); }
+
+/* the batch, travelling the route */
+.r2-batch { z-index: 3; }
+.r2-batch-card { position: absolute; left: 0; top: 0; translate: -50% -50%; display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 11px 0 4px; border-radius: 10px; white-space: nowrap;
+  font-size: 12.5px; color: var(--fg); background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.r2-batch-card i { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; color: var(--primary-fg); background: var(--primary); }
+.r2-batch-card.risk i { color: #ffffff; background: var(--red); }
+.r2-batch-card b { font-weight: 650; font-variant-numeric: tabular-nums; }
+
+/* option 3: the plan waits for the visitor's own yes, at the maker's office */
+.r2-yes { position: absolute; left: 0; top: 0; translate: -50% calc(-100% - 20px); display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 8px 18px 8px 8px; border-radius: 16px;
+  text-align: left; white-space: nowrap; color: var(--amber-fg); background: var(--amber); box-shadow: var(--shadow-2), 0 0 0 var(--hair) rgb(0 0 0 / 0.08);
+  transition: background-color 160ms var(--ease), translate 160ms var(--ease); }
+.r2-yes:hover { background: var(--amber-hover); }
+.r2-yes:focus-visible { outline: 3px solid var(--ring); outline-offset: 3px; border-radius: 16px; }
+.r2-yes i { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px; background: rgb(255 255 255 / 0.55); }
+.r2-yes > span { display: grid; line-height: 1.25; }
+.r2-yes b { font-size: 15px; font-weight: 700; }
+.r2-yes > span > span { font-size: 12.5px; font-weight: 550; font-variant-numeric: tabular-nums; }
+
+/* ---------- under the picture: the caption with its steps, the panel, the controls ---------- */
+.r2-caption { position: relative; z-index: 2; display: flex; align-items: center; gap: 6px; max-width: 46rem; padding: 6px; border-radius: 14px; font-size: 14.5px; line-height: 1.4; color: var(--fg-2);
+  background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.r2-caption-text { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 8px; flex: 1; min-width: 0; padding: 4px 6px; }
+.r2-caption .n { font-family: var(--font-mono); font-size: 12px; color: var(--fg-3); }
+.r2-caption b { font-weight: 650; color: var(--fg); }
+.r2-caption .did { color: var(--primary-text); font-variant-numeric: tabular-nums; }
+.r2-caption.human .did { color: var(--amber-text); }
+.r2-caption .hint { color: var(--fg-2); }
+.r2-step { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 10px; color: var(--fg); background: var(--fill-2); cursor: pointer; }
+.r2-step:hover:not(:disabled) { background: color-mix(in oklab, var(--fg) 12%, transparent); }
+.r2-step:disabled { opacity: 0.4; cursor: default; }
+.r2-step:focus-visible, .r2-ctl button:focus-visible, .r2-panel button:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+
+.r2-ctl { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.r2-ctl .replay { margin: 0; }
+.r2-zoom { display: inline-flex; gap: 2px; padding: 3px; border-radius: 12px; background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%);
+  box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.r2-zoom button { display: grid; place-items: center; width: 38px; height: 38px; border: 0; border-radius: 9px; color: var(--fg); background: none; cursor: pointer; }
+.r2-zoom button:hover:not(:disabled) { background: var(--fill-2); }
+.r2-zoom button:disabled { opacity: 0.38; cursor: default; }
+
+/* the panel: a place or an agent, opened. Under the picture on phones; over its lower left on desktops */
+.r2-panel { position: relative; z-index: 3; display: grid; gap: 8px; padding: 14px 16px 16px; border-radius: 16px; font-size: 14px; line-height: 1.45; color: var(--fg-2);
+  background: var(--glass-strong); -webkit-backdrop-filter: blur(12px) saturate(140%); backdrop-filter: blur(12px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); outline: none; }
+.r2-panel header { display: flex; align-items: center; gap: 9px; padding-right: 36px; flex-wrap: wrap; }
+.r2-panel header i { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; color: var(--primary-fg); background: var(--primary); }
+.r2-panel header i.human { color: var(--amber-fg); background: var(--amber); }
+.r2-panel h3 { margin: 0; font-size: 16px; font-weight: 700; color: var(--fg); letter-spacing: -0.005em; }
+.r2-panel p { margin: 0; }
+.r2-panel-at { border: 0; padding: 2px 0; background: none; font: inherit; font-size: 13.5px; color: var(--primary-text); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.r2-panel-k { display: block; margin-bottom: 2px; font-size: 12.5px; font-weight: 600; color: var(--fg-2); }
+.r2-panel-did { color: var(--fg); }
+.r2-panel-flow { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.r2-panel-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.r2-chip { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 11px 0 4px; border: 0; border-radius: 999px; font: inherit; font-size: 13px; font-weight: 650; color: var(--fg);
+  background: var(--fill-2); cursor: pointer; }
+.r2-chip i { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: var(--fg-2); background: var(--surface); }
+.r2-chip.on i { color: var(--primary-fg); background: var(--primary); }
+.r2-chip.human i { color: var(--amber-fg); background: var(--amber); }
+.r2-chip:hover { background: color-mix(in oklab, var(--fg) 12%, transparent); }
+.r2-panel-x { position: absolute; right: 8px; top: 8px; display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 10px; color: var(--fg); background: none; cursor: pointer; }
+.r2-panel-x:hover { background: var(--fill-2); }
+
+/* phones and tablets: the picture, then the caption, the panel and the controls, in that order */
+@container app (max-width: 1023px) {
+  .hero32r2 .r2-caption { order: 2; }
+  .hero32r2 .r2-panel { order: 3; }
+  .hero32r2 .r2-ctl { order: 4; }
+  .r2-pin-body { height: 28px; gap: 5px; padding: 0 10px 0 3px; font-size: 12px; }
+  .r2-pin-body i { width: 22px; height: 22px; }
+  .r2-pin-stem { height: 9px; }
+}
+
+/* desktops: over the picture, in the comp's frame */
+@container app (min-width: 1024px) {
+  .r2-pin-body { height: max(28px, 2.5cqw); gap: 0.55cqw; padding: 0 0.95cqw 0 0.32cqw; font-size: max(11.5px, 1.02cqw); }
+  .r2-pin-body i { width: max(20px, 1.88cqw); height: max(20px, 1.88cqw); }
+  .r2-pin-stem { height: 1.1cqw; }
+  .r2-caption { position: absolute; left: 50%; top: 86.9%; translate: -50% 0; width: max-content; max-width: 58%; padding: 0.4cqw; border-radius: 1.1cqw; font-size: max(12px, 1.06cqw); }
+  .r2-caption .n { font-size: max(10.5px, 0.9cqw); }
+  .r2-step { width: max(32px, 2.6cqw); height: max(32px, 2.6cqw); border-radius: 0.8cqw; }
+  .r2-ctl { position: absolute; z-index: 3; right: 2.2%; top: 86.9%; gap: 0.8cqw; }
+  .r2-ctl .replay { min-height: max(36px, 2.9cqw); padding: 0 14px 0 12px; border-radius: 999px; background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%);
+    box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+  .r2-zoom button { width: max(32px, 2.6cqw); height: max(32px, 2.6cqw); }
+  .r2-panel { position: absolute; left: 2.2%; bottom: 15.5%; width: min(25rem, 30%); }
+}

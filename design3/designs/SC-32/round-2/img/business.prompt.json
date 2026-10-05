@@ -1,0 +1,18 @@
+{
+  "name": "business",
+  "model": "Qwen-Image-2.1 bf16 (local), generate_image, then edit_image on a crop of the side road",
+  "prompt": "Tilt-shift photograph of a handmade miniature diorama of a whole Indian snack business, seen from above at a gentle three-quarter angle like an architect's model town on a table, soft morning light, shallow depth of field, warm sand, terracotta and sage palette. The top third of the frame is open, pale hazy sky above low distant hills. Below it, laid out along one winding road from left to right: on the left in front, a pale snack factory hall with a sawtooth roof and two tall brick chimneys, with a small two-storey office beside it with a balcony and a lit window showing a desk and files, and tiny workers loading brown cartons onto a small blue truck at its loading bay. In the middle, a distributor's godown, a larger corrugated warehouse with its shutters rolled up, full of stacked brown cartons, a tiny yellow forklift and a handcart on its forecourt, and a few people at a small table by its gate. On the right in front, a lane of colourful kirana shops with rows of snack packets hanging at their fronts, a green auto-rickshaw and tiny shoppers. Behind the lane, a highway climbs to a small modern wholesale warehouse in the next town on a low hill at the back right, with a white delivery van on the highway. At the back in the middle, a small community kitchen with a blue awning where volunteers hand out food to a short queue. In the back left corner, far from the road, a small fenced municipal dump yard, empty and quiet, with its gate closed. One thin softly glowing green painted path runs along the road from the factory's loading bay to the godown and on into the kirana lane, with a branch up the highway to the warehouse on the hill. No lettering, no words or numbers on any sign, no logos.",
+  "seed": 3401,
+  "size": 2048,
+  "aspect": "16:9",
+  "output": "2752x1536",
+  "attempts": "two candidates at 2048 (seeds 3401 and 3402); 3401 picked: all six places read and stand apart, the dump yard reads as a dump yard, and all four shops are in frame with plain boards",
+  "edit": {
+    "why": "the generated green path began just below the dump yard's gate, so the route seemed to come from the landfill; it must begin at the maker's loading bay",
+    "how": "the side road (x 0.235-0.405, y 0.33-0.655 of the plate) was cut out and repainted with edit_image at size 1024: 'Remove the glowing green line painted along this road, and its green glow ...'; the repaint was blended back only along the road, through a soft corridor mask that fades out at the crop's lower edge, where the route now begins beside the truck",
+    "seed": 3427
+  },
+  "created": "2026-10-05",
+  "postprocess": "WebP q82; the PNG originals stay local in src/",
+  "use": "smartclearance.com hero, SC-32 round 2 (the whole business: the maker's factory and office, the distributor's godown, the kirana lane, a buyer's warehouse in the next town, a food bank, and the landfill)"
+}
