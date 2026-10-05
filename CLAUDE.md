@@ -110,4 +110,24 @@
     - keyboard and motion specs as design3's.
   - The prototype's quirks are fixed: window scrolling, real links, no theme flash, the demo form.
   - `backend-api/` and `agents/` are READMEs for now. The jira-flow gate moved from `web/` to `frontend/`.
+- **SC-28** (In Review, branch `SC-28-landing-refine`, stacked on SC-27): the landing page refined to the SC-25 board. The design followed the design-first route:
+  - three options went on a review board in platform v3, `SC-28 design review.html`;
+  - the maintainer picked option A;
+  - the designs, comps, motion recordings and the decision are in `design3/designs/SC-28/`.
+
+  What the build changed:
+  - **No client on the page:** no name, product, person, workspace address or batch id. The batch is an illustrative one, and the showcase API no longer carries client details (AGENTS.md, Data and assets).
+  - **Sections:**
+    - "From at risk to sold, in three steps", whose agents light in turn;
+    - the street's three result cards;
+    - the nine stops as a live pipeline, with a beat on the human yes and Replay;
+    - "Your own workspace" as comp L5: one unbranded product on each island, team cards, integration chips;
+    - plans and the close as comp L6.
+  - **Motion:** every motion plays once as its section comes into view, then holds.
+  - **Renders:** four unbranded Qwen renders in `design3/system/img`.
+  - **Find your workspace** takes a `note` prop, so the landing page's sheet names no client.
+  - **Found on the way:**
+    - Svelte 5 trims the space at the start of an element's text. The port had lost it in "· live" and in the plans' hidden "about …"; it keeps it now.
+    - "· soon" on the filled chip now meets 4.5:1.
+  - **Hosting:** the hosted landing page and console load commit `20c09ac`.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
