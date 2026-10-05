@@ -220,4 +220,36 @@
     - the 4 px side stripe on two split rows, which changes an approved design and needs the maintainer's pick;
     - DESIGN.md brought up to SC-28, SC-32 and SC-34 by the documenter.
   - **Blocked:** the impeccable comp build's record. Its responsive gate compares the page with the SC-25 diorama comp, whose hero SC-32 replaced (55% on 5 Oct), so `build-phase finish --disposition ship` is refused.
+- **SC-35** (In Review, branch `SC-35-landing-loader`): a loader for the landing page, on every load and on every change of theme.
+  - **Design first:** three options on one board in platform v3, `SC-35 design review.html`:
+    - A, the route;
+    - B, dusk and dawn;
+    - C, the lens (recommended).
+
+    The maintainer picked a mix: "option A for page loads and re-loads and Option B for day/night switch". Designs, mockups, recordings and the decision are in `design3/designs/SC-35/`.
+  - **Every load, the route:**
+    - the mark draws its S from the godown dot as the page loads;
+    - once the town is drawn, the amber pin lands and the mark opens into a window onto the page.
+  - **Every change of theme, dusk or dawn:**
+    - the town's skyline in paper layers, under a sky that turns with the new plates' load;
+    - the theme changes underneath, so a day plate never shows under night chrome.
+  - **Real progress:** scripts, fonts, the first render, the town's depth map and plate.
+    - It never goes backwards.
+    - At least 1.25 s on a load (half that on a later load in the session), at most 8 s (4 s on a switch).
+  - **Access:**
+    - "Loading Smart-Clearance" said once, and the page aria-busy until the loader lifts;
+    - focus stays put on a switch;
+    - a still frame under reduced motion;
+    - the tour sets off once the loader has lifted.
+  - **The build:**
+    - `design3/site/loader.js` (plain, first in `<body>`), with its styles in `site.css`;
+    - a `gate` on the kit's `ThemeProvider`;
+    - the town's handshake.
+  - **The port:** `hooks.server.ts` inlines design3's `loader.js` into the prerendered page; core's `Theme` takes the same gate.
+  - **Checks:**
+    - design3's suite: 334 pass, with 0 failing WCAG rules, plus a new test (the loader up, then a switch by keyboard);
+    - the frontend's gate passes;
+    - e2e: 51 pass, and only Firefox fails, because it cannot start in the sandbox;
+    - parity: 29 pass.
+  - **Hosting:** the hosted landing page and console load commit `2fe8134`, with `dist/loader.js` first in the landing page's `<body>`.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
