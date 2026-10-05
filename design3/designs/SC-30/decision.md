@@ -86,6 +86,15 @@ Asked how the options should use ThreeUI, the maintainer chose **"Free component
 - **Layout.** Every chip and label stays on the plate at 1024, 1280, 1440 and 1728.
 - **Errors.** No console or network errors.
 
+## Published for review
+
+On the platform v3 Claude Design project, with assets pinned to commit `a562b6b`:
+
+- [the review board](https://claude.ai/design/p/976c5462-c3c3-4621-80b5-29b3cdda8326?file=SC-30+design+review.html)
+- [option 1](https://claude.ai/design/p/976c5462-c3c3-4621-80b5-29b3cdda8326?file=SC-30+option+1.html)
+- [option 2](https://claude.ai/design/p/976c5462-c3c3-4621-80b5-29b3cdda8326?file=SC-30+option+2.html)
+- [option 3](https://claude.ai/design/p/976c5462-c3c3-4621-80b5-29b3cdda8326?file=SC-30+option+3.html)
+
 ## The pick
 
 Pending.
