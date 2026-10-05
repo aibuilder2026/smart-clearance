@@ -4,7 +4,7 @@
   const { useState, useEffect, useRef } = React;
   const { useReducedMotion, motion } = Motion;
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, S = window.SC3_SCREENS, P = window.SC3_PLATFORM; const fmt = M.fmt;
-  const { cx, Icon, IconButton, Button, Badge, Sheet, Field, Input, Select, Textarea, Menu, Mark, Wordmark, WorkspaceMark, Money, Avatar, Product, Segmented, ModeMenuButton, ThemeProvider, AppRoot, NoticeHost, useApp, useTheme } = K;
+  const { cx, Icon, IconButton, Button, Sheet, Field, Input, Select, Textarea, Menu, Mark, Wordmark, Money, Product, Segmented, ModeMenuButton, ThemeProvider, AppRoot, NoticeHost, useApp, useTheme } = K;
   const IMG = window.SC3_SITE_IMG || "assets/plates/";
   // where the other pages live: relative next to each other here, the claude.ai/design links on the hosted pages
   const LINKS = Object.assign({ demo: "../demo/Smart-Clearance%20demo%20v3.html", app: "../app/Smart-Clearance%20app%20v3.html", console: "../console/Smart-Clearance%20console%20v3.html" }, window.SC3_LINKS || {});
@@ -16,19 +16,19 @@
   /* ---------- the figures every section quotes, all of them computed in core/money.js ---------- */
   const lineOf = id => D.PLAN.lines.find(l => l.id === id);
   const KL = lineOf("kirana"), ESL = lineOf("expiresoon"), AW = D.AWARD;
-  const BATCH = D.BATCHES.find(b => b.hero), SKU = D.SKUS[BATCH.sku], DIST = D.DISTRIBUTORS[BATCH.distributor];
+  const BATCH = D.BATCHES.find(b => b.hero), DIST = D.DISTRIBUTORS[BATCH.distributor];
   const SHOPS = D.KIRANAS.length, BIN = D.PLAN.writeOff.total, ES_NET = AW.gross - ESL.cost;
   const rate = v => Math.abs(v % 1) < 1e-9 ? fmt.inr(v) : fmt.inr2(v); // ₹12 a pack, ₹14.20 a pack
 
   /* ---------- the bar: the product, its sections, the ways in ---------- */
-  const SECTIONS = [["how", "How it works"], ["agents", "Agents"], ["customers", "Customers"], ["pricing", "Pricing"]];
+  // no client is named on this page: a manufacturer finds its own workspace (SC-28)
+  const SECTIONS = [["how", "How it works"], ["agents", "Agents"], ["teams", "For teams"], ["pricing", "Pricing"]];
   const goTo = id => { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); };
   function Nav({ onFind, onDemo }) {
     const app = useApp(); const [menu, setMenu] = useState(false); const [sheet, setSheet] = useState(false);
     const signInItems = [
       { label: "Sign in to", heading: true },
       { label: "Find your workspace", icon: "search", onClick: onFind },
-      { label: "Munchly Foods", icon: "building-2", right: <span className="t-caption subtle mono">munchly</span>, onClick: () => open(LINKS.app) },
       "-",
       { label: "Smart-Clearance staff", icon: "shield", onClick: () => open(LINKS.console) },
     ];
@@ -54,8 +54,8 @@
     const [k, setK] = useState(reduce ? 8 : 0);
     // the batch walks its stops once, about two and a half seconds, and holds on the result (WCAG 2.2.2)
     useEffect(() => { if (reduce) { setK(8); return; } if (k >= 8) return; const t = setTimeout(() => setK(k + 1), k === 0 ? 500 : 260); return () => clearTimeout(t); }, [k, reduce]);
-    return <div className="hero-card" role="group" aria-label={`Batch ${BATCH.id}: eight of nine stops done, ${fmt.inr(D.ACTUAL.net)} recovered`}>
-      <span className="hc-id mono">{BATCH.id}</span>
+    return <div className="hero-card" role="group" aria-label={`One batch: eight of nine stops done, ${fmt.inr(D.ACTUAL.net)} recovered`}>
+      <span className="hc-id mono">{fmt.num(D.RISK.atRisk)} packs</span>
       <span className="hc-dots" aria-hidden="true">{Array.from({ length: 9 }).map((_, i) => <i key={i} className={cx(i < k && "on")} />)}</span>
       <Money value={k >= 8 ? D.ACTUAL.net : Math.round(D.ACTUAL.net * k / 8)} roll={!reduce} from={0} className="hc-money" />
       <span className="hc-cap">recovered</span>
@@ -84,14 +84,52 @@
     </section>;
   }
 
-  /* ---------- 2. one batch, five exits: the street the packs went down ---------- */
+  /* ---------- 2. how it works: three steps, the agents named under each, the human yes in amber (SC-28) ---------- */
+  const agentsAt = (...stages) => P.AGENTS.filter(a => !a.gate && stages.includes(a.stage)).map(a => a.name);
+  const STEPS = [
+    { t: "Spot it in time", art: "phone-scan", who: agentsAt("connect", "detect", "verify"),
+      text: "Every morning the Watcher checks each batch against its date and the quick-commerce shelf-life rules, and flags the stock that won't sell. Vision reads the label photo to be sure." },
+    { t: "Price every exit", art: "kirana-plain", who: agentsAt("value", "decide"),
+      text: "Kiranas, a clearance marketplace, a staff sale, a food bank: the Valuer prices each exit against the true cost of the bin, and the Router splits the batch." },
+    { t: "Say yes once", art: "van", yes: true, who: ["a person"].concat(agentsAt("execute", "settle", "report")),
+      text: "A person approves the plan with the money on screen. Then the agents list it, send offers in Hindi, answer bids, draft the invoices and report the impact." },
+  ];
+  const EASE = [0.22, 1, 0.36, 1];
+  function Steps() {
+    const ref = useRef(null); const reduce = useReducedMotion();
+    const inView = Motion.useInView(ref, { once: true, amount: 0.35 }); const shown = reduce || inView;
+    // the steps rise in turn, then their agents start work one by one, about three seconds in all, and hold
+    const total = STEPS.reduce((t, s) => t + s.who.length, 0);
+    const [lit, setLit] = useState(reduce ? total : 0);
+    useEffect(() => {
+      if (reduce) { setLit(total); return; }
+      if (!shown || lit >= total) return;
+      const t = setTimeout(() => setLit(lit + 1), lit === 0 ? 620 : 230); return () => clearTimeout(t);
+    }, [shown, lit, reduce]);
+    let n = 0;
+    return <section id="how" className="sec sec-how" aria-labelledby="how-h">
+      <div className="wrap">
+        <header className="sec-head"><h2 id="how-h" className="sec-h plain">From at risk to sold, in three steps.</h2>
+          <p className="sec-sub">Smart‑Clearance watches the stock in your distributors' godowns. When a batch won't sell before its date, its agents find the exit that recovers the most, and do the work once a person says yes.</p></header>
+        <ol className="steps3" ref={ref}>{STEPS.map((s, i) => <motion.li key={s.t} className={cx("step3", s.yes && "yes")}
+          initial={reduce ? false : { opacity: 0, y: 14 }} animate={shown ? { opacity: 1, y: 0 } : undefined} transition={{ duration: 0.42, delay: reduce ? 0 : i * 0.18, ease: EASE }}>
+          <Product name={s.art} size={128} className="art" />
+          <span className="row tight"><span className="st-n" aria-hidden="true">{i + 1}</span><h3>{s.t}</h3></span>
+          <p>{s.text}</p>
+          <span className="agents">{s.who.map((w, j) => <span key={w} className={cx("chip-agent", s.yes && j === 0 && "person", n++ < lit && "on")}><i aria-hidden="true" />{w}</span>)}</span>
+        </motion.li>)}</ol>
+      </div>
+    </section>;
+  }
+
+  /* ---------- 3. one batch, five exits: the street the packs went down ---------- */
   // x: where each exit stands along the panorama, as a share of its width
   const row = id => D.PLAN.rows.find(r => r.id === id);
   const EXITS = [
     { id: "kirana", name: "Kiranas", line: `${fmt.num(KL.units)} packs · ${SHOPS} shops`, x: 0.35, taken: true,
       detail: `${fmt.num(KL.units)} packs to ${SHOPS} kiranas at ${fmt.inr(KL.price)} a pack, 2 free with every 10: ${fmt.inr(KL.net)} after the van.` },
     { id: "expiresoon", name: "ExpireSoon", line: `${fmt.num(AW.units)} packs · ${rate(AW.price)}`, x: 0.515, taken: true,
-      detail: `${fmt.num(AW.units)} packs to ${D.BUYER.name} in ${D.BUYER.city} at ${rate(AW.price)}, countered from ${rate(ESL.price)}: ${fmt.inr(ES_NET)} after the listing fee.` },
+      detail: `${fmt.num(AW.units)} packs to one buyer on ExpireSoon at ${rate(AW.price)}, countered from ${rate(ESL.price)}: ${fmt.inr(ES_NET)} after the listing fee.` },
     { id: "staff", name: "Staff sale", line: "priced, not needed", x: 0.65,
       detail: `${rate(row("staff").net)} a pack for up to ${row("staff").capacity} packs at the ${DIST.city} godown. Not needed this time.` },
     { id: "foodbank", name: "Food bank", line: "priced, not needed", x: 0.785,
@@ -145,138 +183,128 @@
       </div>
       <p className="ex-cap" aria-live="polite"><i className={"ex-dot " + EXITS[active].id} aria-hidden="true" /><span><b>{EXITS[active].name}.</b> {EXITS[active].detail}</span></p>
     </>;
-    // the batch's ledger: each result with the arithmetic that makes it
-    const ledger = [
-      { d: <>{fmt.inr(KL.net)} from {SHOPS} kiranas, after the van, <span className="lg-op">+</span> {fmt.inr(ES_NET)} from a buyer in Raipur, after the listing fee</>, n: <Money value={D.ACTUAL.net} className="lg-n" />, l: "recovered" },
-      { d: <>{fmt.inr(D.ACTUAL.pnl)} on Munchly's books with the plan, price support included, against {fmt.inr(-BIN)} to destroy the batch</>, n: <Money value={D.ACTUAL.swing} className="lg-n" />, l: "better than the bin" },
-      { d: <>{fmt.num(D.PLAN.soldUnits)} packs sold on tax invoices, so the {fmt.inr(D.PLAN.itcRetained)} GST credit stays</>, n: <span className="num lg-n">0</span>, l: "cartons destroyed" },
+    // what the batch came to: the board's three cards (L2), each with the arithmetic that makes it
+    const results = [
+      { n: <Money value={D.ACTUAL.net} className="r-n" />, l: "recovered", w: `${fmt.inr(KL.net)} from ${SHOPS} kiranas, after the van, and ${fmt.inr(ES_NET)} from a marketplace buyer, after the listing fee` },
+      { n: <Money value={D.ACTUAL.swing} className="r-n" />, l: "better than the bin", w: `${fmt.inr(D.ACTUAL.pnl)} on the brand's books with the plan, price support included, against ${fmt.inr(-BIN)} to destroy it` },
+      { n: <span className="num r-n">0</span>, l: "cartons destroyed", w: `${fmt.num(D.PLAN.soldUnits)} packs sold on tax invoices, so the ${fmt.inr(D.PLAN.itcRetained)} GST credit stays` },
     ];
-    return <section id="how" className="sec sec-exits" aria-labelledby="exits-h">
+    return <section id="exits" className="sec sec-exits" aria-labelledby="exits-h">
       <div className="wrap">
         <header className="sec-head"><h2 id="exits-h" className="sec-h">Five exits, one batch</h2>
-          <p className="sec-sub"><span className="mono">{BATCH.id}</span>: {fmt.num(D.RISK.atRisk)} packs of masala chips that won't sell in the {BATCH.daysLeft} days they have left. The agents priced every exit; two of them took the batch.</p></header>
+          <p className="sec-sub">One batch: {fmt.num(D.RISK.atRisk)} packs of masala chips that won't sell in the {BATCH.daysLeft} days they have left. The agents priced every exit, the bin included; two of them took the batch.</p></header>
       </div>
       <div className="ex-body">{panned ? <ExitsPanned active={active} setActive={setActive}>{stage}</ExitsPanned> : stage()}</div>
-      <div className="wrap"><div className="ledger" role="group" aria-label={`${BATCH.id}, the batch's ledger`}>
-        <span className="lg-head"><span className="mono">{BATCH.id}</span><span>{fmt.num(D.RISK.atRisk)} packs, five exits priced, one plan approved</span></span>
-        <dl className="lg-rows">{ledger.map(r => <div key={r.l} className="lg-row"><dt>{r.d}</dt><dd><span className="lg-eq" aria-hidden="true">=</span>{r.n}<span className="lg-l">{r.l}</span></dd></div>)}</dl>
-      </div></div>
+      <div className="wrap">
+        <div className="results" role="group" aria-label="What the batch came to">{results.map(r => <div key={r.l} className="result">{r.n}<span className="r-l">{r.l}</span><span className="r-w">{r.w}</span></div>)}</div>
+        <p className="results-note">An illustrative batch. Every figure is worked out from the journey map.</p>
+      </div>
     </section>;
   }
 
-  /* ---------- 3. nine stops, ten agents, one yes ---------- */
+  /* ---------- 4. nine stops, ten agents, one yes: the batch walks the rail, and each agent says what it did (SC-28) ---------- */
   const STOP_LINES = { connect: "the distributor's stock export and one permission", detect: "shelf life checked against every gate at 09:00", verify: "the label photo read and matched", value: "five exits priced, the bin included", decide: "the batch split, with the reasons", approve: "one tap, with the money on screen", execute: "listing, offers in Hindi, bids answered, pick-up", settle: "invoice, e-way bill, credit note, GST memo", report: "a BRSR line after the return window" };
+  // what each stop did for this batch
+  const STOP_DONE = {
+    connect: "stock export mapped · permission given",
+    detect: `${fmt.num(D.RISK.atRisk)} packs won't sell in the ${BATCH.daysLeft} days left`,
+    verify: "label read · the date matches",
+    value: `five exits priced · the bin costs ${fmt.inr(BIN)}`,
+    decide: `${fmt.num(KL.units)} packs to ${SHOPS} kiranas · ${fmt.num(AW.units)} to one buyer`,
+    approve: `approved in one tap · ${fmt.inr(D.PLAN.net)} on screen`,
+    execute: `listed · offers sent · a bid countered to ${rate(AW.price)}`,
+    settle: "invoice, credit note and GST memo drafted",
+    report: `${fmt.inr(D.ACTUAL.net)} recovered · ${fmt.num(D.PLAN.kg)} kg kept out of landfill`,
+  };
   function Stops() {
-    const night = useTheme().resolved === "dark";
+    const night = useTheme().resolved === "dark"; const reduce = useReducedMotion();
     const byStage = {}; P.AGENTS.forEach(a => { if (!a.gate) (byStage[a.stage] = byStage[a.stage] || []).push(a.name); });
+    const box = useRef(null); const inView = Motion.useInView(box, { once: true, amount: 0.4 });
+    const N = D.STAGES.length; const [k, setK] = useState(reduce ? N : -1);
+    useEffect(() => { if (reduce) { setK(N); return; } if (inView) setK(0); }, [inView, reduce]);
+    // it plays once when it comes into view, under five seconds: 470 ms a stop and a beat on the human yes; then it holds
+    useEffect(() => {
+      if (reduce || k < 0 || k >= N) return;
+      const t = setTimeout(() => setK(k + 1), D.STAGES[k].human ? 980 : 470); return () => clearTimeout(t);
+    }, [k, reduce]);
+    const playing = k >= 0 && k < N;
+    const replay = () => { if (reduce) return; setK(-1); setTimeout(() => setK(0), 30); };
     return <section id="agents" className="sec sec-stops" aria-labelledby="stops-h">
       <div className="wrap">
         <header className="sec-head"><h2 id="stops-h" className="sec-h">Nine stops. Ten agents. One yes.</h2><p className="sec-sub">The agents do the running around. A person approves once, with the money on screen.</p></header>
         <div className="stops-grid">
           <figure className="plate-frame stops-plate"><img src={IMG + (night ? "approve-night.webp" : "approve.webp")} alt={`A miniature town square seen from above${night ? " at night" : ""}: a giant amber push-button on a stone plinth, a woman in a sari beside it with her phone, vans and a handcart around the square.`} loading="lazy" /></figure>
-          <ol className="stops" aria-label="The nine stops">{D.STAGES.map(s => <li key={s.id} className={cx("stop", s.human && "human")}>
-            <span className="st-dot" aria-hidden="true">{s.human && <Icon name="hand" size={14} stroke={2.4} />}</span>
-            <span className="st-main"><b>{s.title}</b><span className="st-text">{STOP_LINES[s.id]}</span>
-              <span className="st-who">{s.human ? <Badge size="sm" tone="amber">a person</Badge> : (byStage[s.id] || []).map(n => <Badge key={n} size="sm">{n}</Badge>)}</span></span>
-          </li>)}</ol>
+          <div className="stops-box" ref={box}>
+            {/* --fill: how far the rail has filled; site.css draws it under the dots and eases it */}
+            <ol className={cx("stops live", playing && "playing")} style={{ "--fill": k < 0 ? 0 : Math.min(1, k / (N - 1)) }} aria-label="The nine stops">
+              {D.STAGES.map((s, i) => { const done = i < k || k >= N, now = i === k && playing; return <li key={s.id} className={cx("stop", s.human && "human", done && "on", now && "now")}>
+                <span className="st-dot" aria-hidden="true">{s.human ? <Icon name="hand" size={14} stroke={2.4} /> : done && <Icon name="check" size={13} stroke={3} />}</span>
+                <span className="st-main"><b>{s.title}</b><span className="st-text">{STOP_LINES[s.id]}</span>
+                  <span className="st-who">{(s.human ? ["a person"] : byStage[s.id] || []).map(w => <span key={w} className={cx("chip-agent", s.human && "person", (done || now) && "on")}><i aria-hidden="true" />{w}</span>)}</span>
+                  <Motion.AnimatePresence initial={false}>{(done || now) && <motion.span key="done" className="st-live" initial={reduce ? false : { opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.24, ease: EASE }}>{STOP_DONE[s.id]}</motion.span>}</Motion.AnimatePresence></span>
+              </li>; })}
+            </ol>
+            {!reduce && <button type="button" className="replay" onClick={replay}><Icon name="rotate-ccw" size={16} />{k >= N ? "Run the batch again" : "Run the batch"}</button>}
+          </div>
         </div>
       </div>
     </section>;
   }
 
-  /* ---------- 4. Munchly's batch, told by the people in it ---------- */
-  const CAST = [
-    { id: "rakesh", role: `Distributor, ${DIST.city}`, did: `Made whole by a ${fmt.inr(D.SUPPORT.total)} credit note` },
-    { id: "ganesh", role: "Kirana, Itwari", did: "2 free with every 10" },
-    { id: "anita", role: "Finance, Munchly", did: "Credit note and GST memo drafted" },
-    { id: "vikram", role: "Sustainability, Munchly", did: `${fmt.num(D.PLAN.kg)} kg kept out of landfill` },
-  ];
-  function Story() {
-    const priya = D.PEOPLE.priya, ws = D.WORKSPACE;
-    const rows = [
-      ["If destroyed", <Money value={-BIN} className="sc-bin" />],
-      ["GST credit kept", <Money value={D.PLAN.itcRetained} />],
-      ["Kiranas restocked", <span className="num">{SHOPS}</span>],
-      ["Cartons destroyed", <span className="num">0</span>],
-    ];
-    return <section id="customers" className="sec sec-story" aria-labelledby="story-h">
-      <div className="wrap">
-        <div className="story">
-          <div className="story-copy">
-            <h2 id="story-h" className="sec-h story-h"><span>One plan approved.</span> <span>Not one carton destroyed.</span></h2>
-            <blockquote className="story-quote"><p>“I approved one plan with the money on screen. The agents did the running around.”</p></blockquote>
-            <div className="story-who">
-              <Avatar person={priya} size="xl" />
-              <span className="sw-text"><b>{priya.name}</b><span>{priya.role}</span><span className="sw-org"><WorkspaceMark ws={ws} size={20} />{ws.name} · snacks and drinks, {D.CLIENT.city}</span></span>
-            </div>
-            <div className="story-ctas"><a className="btn btn-primary" {...linkProps(LINKS.demo)}>Watch Munchly's batch, stage by stage</a><a className="btn btn-secondary btn-white" {...linkProps(LINKS.app)}>Visit {ws.domain}</a></div>
-          </div>
-          <div className="story-card" role="group" aria-label={`Batch ${BATCH.id}: eight of nine stops done`}>
-            <div className="sc-top">
-              <span className="sc-id"><span className="mono">{BATCH.id}</span><span>{SKU.brand} {SKU.name} · {DIST.name}, {DIST.city}</span></span>
-              <Product name={SKU.img} size={76} className="sc-pack" />
-            </div>
-            <span className="sc-dots" aria-hidden="true">{Array.from({ length: 9 }).map((_, i) => <i key={i} className={cx(i === 8 && "next")} />)}</span>
-            <Money value={D.ACTUAL.net} className="sc-money" />
-            <span className="sc-cap">recovered, eight stops of nine; the BRSR line follows after {fmt.date(D.RETURN_BY).replace(/ \d{4}$/, "")}</span>
-            <dl className="sc-rows">{rows.map(([k, v]) => <div key={k} className="sc-row"><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
-          </div>
-        </div>
-        <ul className="cast" aria-label="The people in Munchly's batch">{CAST.map(c => { const p = D.PEOPLE[c.id]; return <li key={c.id}>
-          <Avatar person={p} size="lg" />
-          <span className="cast-text"><b>{p.name}</b><span>{c.role}</span><span className="cast-did">{c.did}</span></span>
-        </li>; })}</ul>
-        <p className="fine">Munchly Foods, its partners and its people are fictional. Every figure is worked out from the journey map.</p>
-      </div>
-    </section>;
-  }
-
-  /* ---------- 5. a workspace per manufacturer ---------- */
-  // x and y: where each island's flat top sits on the plate, as a share of its width and height; ly: its address label
+  /* ---------- 5. a workspace per manufacturer: the board's comp L5 (SC-28) ---------- */
+  // x and y: where each island's flat top sits on the plate, as a share of its width and height; ly: its address label.
+  // One product a manufacturer, none of them a client's.
   const ISLANDS = [
-    { id: "munchly", x: 0.22, y: 0.6, ly: 0.86, packs: ["pack-chips", "pack-mango"], url: "munchly.smartclearance.com", live: true },
-    { id: "you", x: 0.575, y: 0.59, ly: 0.84, packs: ["sprout-box"], url: "your-company.smartclearance.com" },
-    { id: "next", x: 0.8, y: 0.61, ly: 0.87, packs: ["sprout-box"], url: "your-brand.smartclearance.com", flip: true },
+    { id: "brand", x: 0.22, y: 0.6, ly: 0.86, product: "pack-snack-plain", url: "your-brand.smartclearance.com", live: true },
+    { id: "company", x: 0.575, y: 0.59, ly: 0.84, product: "pack-carton-plain", url: "your-company.smartclearance.com" },
+    { id: "group", x: 0.8, y: 0.61, ly: 0.87, product: "bottle-oil-plain", url: "your-group.smartclearance.com" },
   ];
   const HUB = { x: 0.425, y: 0.69 }, ISL_AR = 3776 / 1120;
+  // inside a workspace, each team gets its own part of the same batch
+  const TEAMS = [
+    { icon: "route", t: "Supply chain", d: "One tap to approve a plan, with the money on screen." },
+    { icon: "receipt", t: "Finance", d: "The invoice, credit note and GST memo, drafted." },
+    { icon: "leaf", t: "Sustainability", d: "A BRSR line an auditor can follow back to the batch." },
+    { icon: "handshake", t: "Distributors", d: "Nothing listed in their name without their permission." },
+  ];
+  const CONN = ["dms", "tally", "bq", "sso", "expiresoon", "irp", "whatsapp"].map(id => P.CONNECTORS.find(c => c.id === id)).filter(Boolean);
   function Workspace() {
     const app = useApp(); const { resolved } = useTheme(); const swipe = app.bp === "phone";
     const urls = cls => <ul className={cx("isl-urls", cls)} aria-label="Workspace addresses">{ISLANDS.map(i => <li key={i.id} className={cx("isl-url", i.live && "live")} style={{ "--x": i.x, "--y": i.ly }}><i aria-hidden="true" />{i.url}{i.live && <span className="isl-live"> · live</span>}</li>)}</ul>;
-    return <section id="workspace" className="sec sec-ws" aria-labelledby="ws-h">
-      <div className="wrap"><header className="sec-head"><h2 id="ws-h" className="sec-h ws-h"><span>Your own workspace,</span> <span>set up for your supply chain.</span></h2><p className="sec-sub">Each manufacturer gets its own address, configured for how its stock really moves.</p></header></div>
+    return <section id="teams" className="sec sec-ws" aria-labelledby="ws-h">
+      <div className="wrap"><header className="sec-head"><h2 id="ws-h" className="sec-h plain">Your own workspace, set up for your supply chain.</h2><p className="sec-sub">Each manufacturer gets its own address, configured for how its stock really moves.</p></header></div>
       <div className="isl-pan" {...(swipe ? { tabIndex: 0, role: "region", "aria-label": "Workspaces, one island each; scroll sideways" } : {})}>
         <figure className="islands" style={{ "--ar": ISL_AR }}>
           <img className="isl-plate" src={IMG + (resolved === "dark" ? "islands-night.webp" : "islands.webp")} alt="" loading="lazy" />
-          {ISLANDS.map(i => <span key={i.id} className={cx("isl-packs", "isl-" + i.id)} style={{ "--x": i.x, "--y": i.y }} aria-hidden="true">{i.packs.map(n => <Product key={n} name={n} size={160} className={cx("isl-pack", i.flip && "flip")} />)}</span>)}
+          {ISLANDS.map(i => <span key={i.id} className="isl-packs" style={{ "--x": i.x, "--y": i.y }} aria-hidden="true"><Product name={i.product} size={160} className="isl-pack" /></span>)}
           <span className="isl-hub" style={{ "--x": HUB.x, "--y": HUB.y }} aria-hidden="true"><Mark size={52} /></span>
           {urls("on-plate")}
-          <figcaption className="sr-only">Three islands over a miniature town, joined to Smart-Clearance by green paths: Munchly Foods' workspace, live with its packs, and two waiting for the next manufacturers.</figcaption>
+          <figcaption className="sr-only">Three islands over a miniature town, each a manufacturer's workspace with its own products, joined to Smart-Clearance by green paths.</figcaption>
         </figure>
       </div>
       <div className="wrap">
         {urls("below")}
-        {/* inside a workspace, each team gets its own part of the same batch */}
-        <p className="isl-cap"><b>Inside Munchly's workspace,</b> supply chain approves a plan with one tap, the money on screen. Finance gets the invoice, the credit note and the GST memo, drafted. Sustainability gets a BRSR line an auditor can follow back to the batch. And nothing is listed in a distributor's name without their one-time permission.</p>
-        <div className="conn"><span className="conn-h">Works with</span><ul className="conn-list">{P.CONNECTORS.map(c => <li key={c.id} className="chip">{c.name}{c.status === "soon" && <span className="subtle"> · soon</span>}</li>)}</ul></div>
+        <ul className="teams" aria-label="What each team gets">{TEAMS.map(t => <li key={t.t} className="team"><Icon name={t.icon} size={26} /><b>{t.t}</b><p>{t.d}</p></li>)}</ul>
+        <div className="conn"><ul className="conn-list" aria-label="Works with">{CONN.map(c => <li key={c.id}>{c.name}{c.status === "soon" && <span className="soon"> · soon</span>}</li>)}</ul></div>
       </div>
     </section>;
   }
 
-  /* ---------- 6. plans, without prices ---------- */
+  /* ---------- 6. plans, without prices, and the close: the board's comp L6 (SC-28) ---------- */
   function Plans({ onDemo }) {
     return <section id="pricing" className="sec sec-plans" aria-labelledby="plans-h">
       <div className="wrap">
-        <header className="sec-head"><h2 id="plans-h" className="sec-h">Start with one distributor.</h2><p className="sec-sub">A pilot runs on one distributor's stock for 90 days. Prices are set with each manufacturer.</p></header>
+        <header className="sec-head"><h2 id="plans-h" className="sec-h plain">Start with one distributor.</h2><p className="sec-sub">A pilot runs on one distributor's stock for 90 days. Prices are set with each manufacturer.</p></header>
         <ul className="plans">{P.PLANS.map(p => <li key={p.id} className="plan">
           <b className="plan-name">{p.name}</b>
-          <ul className="plan-scope">{p.scope.map(s => <li key={s}><Icon name="check" size={16} stroke={2.4} />{s.replace(/^The client's /, "Your ")}</li>)}</ul>
+          <ul className="plan-scope">{p.scope.map(s => <li key={s}>{s.replace(/^The client's /, "Your ")}</li>)}</ul>
           <span className="plan-foot"><span>Prices on request</span><button type="button" className="btn btn-link" onClick={() => onDemo(p.name)}>Talk to us<span className="sr-only"> about {p.name}</span></button></span>
         </li>)}</ul>
       </div>
     </section>;
   }
   function Close({ onDemo }) {
-    // the copy sits in the dusk sky, extended above the picture, which fades up into it
+    // the heading and the buttons sit in the dusk plate's own sky
     return <section className="close" aria-labelledby="close-h">
       <div className="close-copy">
         <h2 id="close-h" className="close-h">Give your next batch a second chance.</h2>
@@ -288,8 +316,7 @@
   function Footer({ onFind }) {
     const { mode, setMode } = useTheme();
     const cols = [
-      ["Product", SECTIONS.filter(([id]) => id !== "customers").map(([id, t]) => <a key={id} href={"#" + id}>{t}</a>)],
-      ["Customers", [<a key="munchly" href="#customers">Munchly Foods</a>]],
+      ["Product", SECTIONS.map(([id, t]) => <a key={id} href={"#" + id}>{t}</a>)],
       ["Sign in", [<button key="find" type="button" className="foot-link" onClick={onFind}>Find your workspace</button>, <a key="staff" {...linkProps(LINKS.console)}>Staff console</a>]],
     ];
     return <footer className="foot">
@@ -347,15 +374,15 @@
       <Nav onFind={() => setFind(true)} onDemo={onDemo} />
       <main>
         <Hero onFind={() => setFind(true)} />
+        <Steps />
         <Exits />
         <Stops />
-        <Story />
         <Workspace />
         <Plans onDemo={onDemo} />
         <Close onDemo={onDemo} />
       </main>
       <Footer onFind={() => setFind(true)} />
-      <S.FindWorkspace open={find} onClose={() => setFind(false)} onUse={() => { setFind(false); open(LINKS.app); }} />
+      <S.FindWorkspace open={find} onClose={() => setFind(false)} onUse={() => { setFind(false); open(LINKS.app); }} note="One manufacturer's workspace is set up in this prototype." />
       <DemoSheet open={!!demo} plan={demo && demo.plan} onClose={() => setDemo(null)} />
     </div></ScrollCtx.Provider>;
   }

@@ -82,7 +82,9 @@ test('keyboard · the sign-in menu: its links open another tab, Tab moves on, Es
 	await page.keyboard.press('ArrowDown');
 	await expect(menu).toBeVisible();
 	await expect(menu.getByRole('menuitem', { name: 'Find your workspace' })).toBeFocused();
-	for (const name of ['Munchly Foods', 'Smart-Clearance staff']) {
+	// the menu names no client: a manufacturer finds its own workspace (SC-28)
+	await expect(menu.getByRole('menuitem')).toHaveCount(2);
+	for (const name of ['Smart-Clearance staff']) {
 		const link = menu.getByRole('menuitem', { name: new RegExp(name) });
 		await expect(link).toHaveAttribute('target', '_blank');
 		await expect(link).toHaveAttribute('rel', 'noopener');

@@ -27,7 +27,7 @@ The shapes are `frontend/admin/src/lib/api/types.ts`. The mock (`mock.ts` there)
 
 | Endpoint | Returns | Notes |
 | --- | --- | --- |
-| `GET /v1/site/showcase` | `Showcase` | the customer story on the landing page: one batch, its plan and every figure. Public, cacheable. |
+| `GET /v1/site/showcase` | `Showcase` | the landing page's illustrative batch: its plan and every figure, with no client, person or partner named (SC-28). Public, cacheable. |
 | `GET /v1/platform/catalog` | `Catalog` | the agents, connectors and plans the platform offers. Public, cacheable. |
 | `POST /v1/workspaces/lookup` `{ query }` | `WorkspaceMatch[]` | "Find your workspace": an email or an Indian mobile number (10 digits, with or without +91). A member, an invitee and a deactivated account each name their workspace and how they belong; an address at a client's email domain names that client's workspace; a marketplace buyer finds nothing. 422 for anything else. A POST, so the identifier never lands in a URL or a log line. Rate-limit it: it reveals whether an address belongs to a workspace. |
 | `POST /v1/demo-requests` `DemoRequestInput` | `DemoRequest` | Book a demo. 422 with `{ message, fields: { name?, company?, email? } }` naming each field's problem in the frontend's words. Stores the request for the console's Overview. |

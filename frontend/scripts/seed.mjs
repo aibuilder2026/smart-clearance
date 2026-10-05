@@ -41,25 +41,17 @@ const pick = (o, keys) => Object.fromEntries(keys.filter((k) => o[k] !== undefin
 const person = (p) => pick(p, ['id', 'name', 'short', 'role', 'org', 'city', 'img']);
 const workspace = pick(D.WORKSPACE, ['id', 'name', 'short', 'domain', 'emailDomain', 'mark']);
 const hero = D.BATCHES.find((b) => b.hero);
-const sku = D.SKUS[hero.sku];
 const dist = D.DISTRIBUTORS[hero.distributor];
 
-/** GET /v1/site/showcase: Munchly's hero batch, as the landing page tells it */
+/** GET /v1/site/showcase: one batch, as the landing page tells it. It is the prototype's hero batch with every figure
+ *  worked out, but nothing in it names the client, its people or its partners: the platform's own page tells it as an
+ *  illustrative batch (SC-28) */
 const showcase = {
 	platform: D.PLATFORM,
-	workspace,
-	client: pick(D.CLIENT, ['name', 'short', 'city']),
-	batch: {
-		id: hero.id,
-		units: hero.units,
-		daysLeft: hero.daysLeft,
-		bestBefore: hero.bestBefore,
-		sku: pick(sku, ['id', 'brand', 'name', 'img', 'mrp', 'dp', 'cost']),
-		distributor: pick(dist, ['id', 'name', 'city'])
-	},
+	batch: { daysLeft: hero.daysLeft, distributorCity: dist.city },
 	risk: { atRisk: D.RISK.atRisk },
 	plan: {
-		units: D.PLAN.units,
+		net: D.PLAN.net,
 		soldUnits: D.PLAN.soldUnits,
 		itcRetained: D.PLAN.itcRetained,
 		kg: D.PLAN.kg,
@@ -72,12 +64,8 @@ const showcase = {
 	},
 	award: pick(D.AWARD, ['units', 'price', 'gross']),
 	actual: pick(D.ACTUAL, ['net', 'pnl', 'swing']),
-	support: { total: D.SUPPORT.total },
-	buyer: pick(D.BUYER, ['id', 'name', 'city']),
 	shops: D.KIRANAS.length,
-	returnBy: D.RETURN_BY,
-	stages: D.STAGES.map((s) => ({ id: s.id, title: s.title, human: !!s.human })),
-	people: Object.fromEntries(['priya', 'rakesh', 'ganesh', 'anita', 'vikram'].map((id) => [id, person(D.PEOPLE[id])]))
+	stages: D.STAGES.map((s) => ({ id: s.id, title: s.title, human: !!s.human }))
 };
 
 /** GET /v1/platform/catalog: what the platform offers every client */

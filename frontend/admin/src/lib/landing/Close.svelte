@@ -6,7 +6,7 @@
 	let { ondemo }: { ondemo: () => void } = $props();
 </script>
 
-<!-- the closing band: the copy sits in the dusk sky, extended above the picture, which fades up into it -->
+<!-- the closing band: the heading and the buttons sit in the dusk plate's own sky (the board's comp L6) -->
 <section class="close" aria-labelledby="close-h">
 	<div class="close-copy">
 		<h2 id="close-h" class="close-h">Give your next batch a second chance.</h2>

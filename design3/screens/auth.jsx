@@ -53,7 +53,8 @@
   }
 
   /* ---------- find your workspace: one Smart-Clearance step above every client ---------- */
-  function FindWorkspace({ open, onClose, onUse, initial }) {
+  // note: the line under the results; the platform's own landing page says it without naming a client (SC-28)
+  function FindWorkspace({ open, onClose, onUse, initial, note }) {
     const app = useApp(); const [v, setV] = useState(""); const [res, setRes] = useState(null); const [err, setErr] = useState("");
     useEffect(() => { if (open) { setV(initial || ""); setRes(null); setErr(""); } }, [open]);
     const find = () => {
@@ -76,7 +77,7 @@
         {res && (res.length ? <div className="stack tight"><span className="t-caption subtle strong">{res.length === 1 ? "1 workspace" : res.length + " workspaces"}</span>
           {res.map(r => <div key={r.value} className="card row" style={{ gap: 12, padding: "12px 14px" }}><WorkspaceMark ws={WS} size={40} /><span className="stack tight grow" style={{ gap: 1, minWidth: 0 }}><b>{WS.name}</b><span className="t-caption subtle mono" style={{ overflowWrap: "anywhere" }}>{WS.domain}</span><span className="t-footnote muted">{r.as}</span></span><Button variant="secondary" size="sm" onClick={() => onUse(r.value)}>Open</Button></div>)}</div>
           : <div className="card stack tight" style={{ padding: "14px 16px" }}><b>No workspace uses that yet</b><span className="t-footnote muted">Ask your company's admin to invite you. If your company is setting up Smart-Clearance, its workspace appears here once it is live.</span></div>)}
-        <p className="t-caption subtle" style={{ margin: 0 }}>Only {WS.name} is set up in this prototype.</p>
+        <p className="t-caption subtle" style={{ margin: 0 }}>{note || `Only ${WS.name} is set up in this prototype.`}</p>
       </div>
     </Sheet>;
   }

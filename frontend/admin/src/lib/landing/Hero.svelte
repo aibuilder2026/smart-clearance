@@ -4,7 +4,7 @@
 	import Plate from './Plate.svelte';
 	import { PLATES } from './plates';
 
-	let { batchId, net, onfind }: { batchId: string; net: number; onfind: () => void } = $props();
+	let { packs, net, onfind }: { packs: number; net: number; onfind: () => void } = $props();
 	const stops = [
 		['kiranas', 'Kiranas'],
 		['market', 'Marketplace'],
@@ -37,7 +37,7 @@
 				alt="A miniature Indian town in the morning: one giant cardboard carton stands among tiny kirana shops, a van and a handcart, with a green path running from it to the shops."
 				nightAlt="A miniature Indian town at night: one giant cardboard carton stands among tiny kirana shops with lit windows, a van and a handcart, lit from below by a glowing green path that runs from it to the shops."
 			/>
-			<HeroCard id={batchId} {net} />
+			<HeroCard {packs} {net} />
 			<ol class="hero-stops" aria-label="Where its packs can go">
 				{#each stops as [id, t] (id)}<li class="st-{id}">{t}</li>{/each}
 			</ol>

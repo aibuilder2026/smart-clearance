@@ -12,11 +12,11 @@ export const linkProps = (href: string) => (external(href) ? { href, target: '_b
 export const openLink = (href: string) =>
 	external(href) ? window.open(href, '_blank', 'noopener') : location.assign(href);
 
-/** the bar's sections */
+/** the bar's sections. No client is named on this page: a manufacturer finds its own workspace (SC-28) */
 export const SECTIONS = [
 	['how', 'How it works'],
 	['agents', 'Agents'],
-	['customers', 'Customers'],
+	['teams', 'For teams'],
 	['pricing', 'Pricing']
 ] as const;
 

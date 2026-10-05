@@ -11,15 +11,6 @@ export type WorkspaceSummary = {
 	emailDomain: string;
 	mark: Mark;
 };
-export type PersonCard = {
-	id: string;
-	name: string;
-	short?: string;
-	role: string;
-	org?: string;
-	city?: string;
-	img?: string;
-};
 
 export type PlanLine = {
 	id: string;
@@ -34,22 +25,14 @@ export type PlanLine = {
 export type ChannelRow = { id: string; short: string; net: number; eligible: boolean; capacity: number | null };
 export type Stage = { id: string; title: string; human: boolean };
 
-/** GET /v1/site/showcase: the customer story the landing page tells, one batch with every figure worked out */
+/** GET /v1/site/showcase: one batch with every figure worked out, as the landing page tells it. It names no client, no
+ *  person and no partner: the platform's own page tells it as an illustrative batch (SC-28) */
 export type Showcase = {
 	platform: { name: string; domain: string };
-	workspace: WorkspaceSummary;
-	client: { name: string; short: string; city: string };
-	batch: {
-		id: string;
-		units: number;
-		daysLeft: number;
-		bestBefore: string;
-		sku: { id: string; brand: string; name: string; img: string; mrp: number; dp: number; cost: number };
-		distributor: { id: string; name: string; city: string };
-	};
+	batch: { daysLeft: number; distributorCity: string };
 	risk: { atRisk: number };
 	plan: {
-		units: number;
+		net: number;
 		soldUnits: number;
 		itcRetained: number;
 		kg: number;
@@ -59,12 +42,8 @@ export type Showcase = {
 	};
 	award: { units: number; price: number; gross: number };
 	actual: { net: number; pnl: number; swing: number };
-	support: { total: number };
-	buyer: { id: string; name: string; city: string };
 	shops: number;
-	returnBy: string;
 	stages: Stage[];
-	people: Record<'priya' | 'rakesh' | 'ganesh' | 'anita' | 'vikram', PersonCard>;
 };
 
 export type Agent = {

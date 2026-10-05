@@ -34,7 +34,13 @@ const STATES: [string, (page: Page) => Promise<void>][] = [
 	[
 		'site · the street of exits, mid-pan',
 		async (p) => {
-			await p.evaluate(() => window.scrollTo(0, (document.querySelector('#how') as HTMLElement).offsetTop + 900));
+			await p.evaluate(() => window.scrollTo(0, (document.querySelector('#exits') as HTMLElement).offsetTop + 900));
+		}
+	],
+	[
+		'site · the nine stops, running',
+		async (p) => {
+			await p.evaluate(() => window.scrollTo(0, (document.querySelector('#agents') as HTMLElement).offsetTop));
 		}
 	],
 	[

@@ -18,9 +18,14 @@ root layout cannot.
 ## The landing page
 
 `src/lib/landing/` has one component per section of the prototype, with its classes, ids and accessible names:
-`Nav`, `Hero` (with `HeroCard`), `Exits` (the street and the ledger), `Stops`, `Story`, `Workspace`, `Plans`, `Close`,
-`Footer`, and the `DemoSheet`; `Site` puts them together. `figures.ts` works out every figure and line of copy from the
-API's showcase and catalog, as `site.jsx` does from the prototype's globals.
+`Nav`, `Hero` (with `HeroCard`), `Steps` (how it works), `Exits` (the street and its results), `Stops` (the nine stops,
+played as a pipeline), `Workspace`, `Plans`, `Close`, `Footer`, and the `DemoSheet`; `Site` puts them together.
+`figures.ts` works out every figure and line of copy from the API's showcase and catalog, as `site.jsx` does from the
+prototype's globals. The page names no client: the batch it follows is an illustrative one (SC-28).
+
+The motion plays once as a section comes into view, under five seconds, and then holds. The server sends each section
+at rest, so the prerendered page is complete without JavaScript. A section already on screen when the page starts
+stays at rest, and so does every section when the reader asks for less motion.
 
 **`site.css`** is design3's, unscoped and verbatim, apart from two marked changes:
 
@@ -58,12 +63,12 @@ night source the browser picks before the page hydrates. Once hydrated, the read
 
 The UI reads one typed API (`src/lib/api/`):
 
-| Call                      | Endpoint                     | Mock                                                                     |
-| ------------------------- | ---------------------------- | ------------------------------------------------------------------------ |
-| `showcase()`              | `GET /v1/site/showcase`      | `seed/showcase.json`: Munchly's batch, every figure computed by money.js |
-| `catalog()`               | `GET /v1/platform/catalog`   | `seed/catalog.json`: the agents, connectors and plans                    |
-| `lookupWorkspaces(query)` | `POST /v1/workspaces/lookup` | the prototype's rules over `seed/directory.json`                         |
-| `requestDemo(input)`      | `POST /v1/demo-requests`     | the prototype's validation; kept in `localStorage` (`sc-demo-requests`)  |
+| Call                      | Endpoint                     | Mock                                                                                |
+| ------------------------- | ---------------------------- | ----------------------------------------------------------------------------------- |
+| `showcase()`              | `GET /v1/site/showcase`      | `seed/showcase.json`: one batch, every figure computed by money.js, no client named |
+| `catalog()`               | `GET /v1/platform/catalog`   | `seed/catalog.json`: the agents, connectors and plans                               |
+| `lookupWorkspaces(query)` | `POST /v1/workspaces/lookup` | the prototype's rules over `seed/directory.json`                                    |
+| `requestDemo(input)`      | `POST /v1/demo-requests`     | the prototype's validation; kept in `localStorage` (`sc-demo-requests`)             |
 
 - **The contract:** `types.ts` holds it until backend-api publishes its OpenAPI schema.
 - **Which API:** `client.ts` picks HTTP when `PUBLIC_API_BASE` is set, and the mock otherwise.

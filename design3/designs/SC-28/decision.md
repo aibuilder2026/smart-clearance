@@ -75,4 +75,14 @@ Each hosted page was checked against its local copy, line by line, and loaded in
 
 ## The pick
 
-Pending.
+**Option A, the board explained and moving** (5 Oct 2026), picked by the maintainer from the review board, as recommended.
+
+The build follows the mockup:
+1. `design3/site` first: the steps section, the result cards, the live pipeline, workspace L5, plans and close L6, and every client detail removed.
+2. Then the SvelteKit port in `frontend/admin`.
+
+The four renders it uses were copied into `design3/system/img`:
+- the files themselves, with their sidecars and manifest entries;
+- the PNG originals, kept local in `src/`.
+
+This folder keeps its own copies for the review.

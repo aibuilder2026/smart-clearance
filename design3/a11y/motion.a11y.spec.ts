@@ -60,7 +60,11 @@ const STATES: [string, string, ((page) => Promise<void>)?][] = [
   ['console · Munchly agents', CONSOLE + '#/clients/munchly/agents', consoleIn],
   ['site · first viewport', '/site/Smart-Clearance%20site%20v3.html'],
   ['site · the street of exits, mid-pan', '/site/Smart-Clearance%20site%20v3.html', async p => {
-    await p.evaluate(() => { const s = document.querySelector('.site'), t = document.querySelector('#how'); if (s && t) s.scrollTop = (t as HTMLElement).offsetTop + 900; });
+    await p.evaluate(() => { const s = document.querySelector('.site'), t = document.querySelector('#exits'); if (s && t) s.scrollTop = (t as HTMLElement).offsetTop + 900; });
+  }],
+  ['site · the nine stops, running', '/site/Smart-Clearance%20site%20v3.html', async p => {
+    await p.evaluate(() => { const s = document.querySelector('.site'), t = document.querySelector('#agents'); if (s && t) s.scrollTop = (t as HTMLElement).offsetTop; });
+    await p.waitForTimeout(1200);
   }],
 ];
 

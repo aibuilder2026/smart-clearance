@@ -3,48 +3,15 @@
 		"name": "Smart-Clearance",
 		"domain": "smartclearance.com"
 	},
-	"workspace": {
-		"id": "munchly",
-		"name": "Munchly Foods",
-		"short": "Munchly",
-		"domain": "munchly.smartclearance.com",
-		"emailDomain": "munchly.in",
-		"mark": {
-			"from": "#f68d3e",
-			"to": "#d6461e",
-			"ink": "#ffffff"
-		}
-	},
-	"client": {
-		"name": "Munchly Foods Ltd",
-		"short": "Munchly Foods",
-		"city": "Pune"
-	},
 	"batch": {
-		"id": "MF-2409-117",
-		"units": 1840,
 		"daysLeft": 47,
-		"bestBefore": "2026-11-18",
-		"sku": {
-			"id": "chips",
-			"brand": "Munchly",
-			"name": "Masala Chips 150 g",
-			"img": "pack-chips",
-			"mrp": 30,
-			"dp": 22,
-			"cost": 16
-		},
-		"distributor": {
-			"id": "rakesh",
-			"name": "Rakesh Traders",
-			"city": "Nagpur"
-		}
+		"distributorCity": "Nagpur"
 	},
 	"risk": {
 		"atRisk": 1360
 	},
 	"plan": {
-		"units": 1360,
+		"net": 21770,
 		"soldUnits": 1360,
 		"itcRetained": 1224,
 		"kg": 217.6,
@@ -122,16 +89,7 @@
 		"pnl": -607.6,
 		"swing": 25722
 	},
-	"support": {
-		"total": 8767.6
-	},
-	"buyer": {
-		"id": "agrawal",
-		"name": "Agrawal Wholesale",
-		"city": "Raipur"
-	},
 	"shops": 31,
-	"returnBy": "2026-10-29",
 	"stages": [
 		{
 			"id": "connect",
@@ -178,52 +136,5 @@
 			"title": "Report",
 			"human": false
 		}
-	],
-	"people": {
-		"priya": {
-			"id": "priya",
-			"name": "Priya Deshmukh",
-			"short": "Priya",
-			"role": "Regional Supply-Chain Manager",
-			"org": "Munchly Foods",
-			"city": "Pune",
-			"img": "sc3img:/people/p-priya.webp"
-		},
-		"rakesh": {
-			"id": "rakesh",
-			"name": "Rakesh bhai",
-			"short": "Rakesh bhai",
-			"role": "Owner, distributor",
-			"org": "Rakesh Traders",
-			"city": "Nagpur",
-			"img": "sc3img:/people/p-rakesh.webp"
-		},
-		"ganesh": {
-			"id": "ganesh",
-			"name": "Ganesh ji",
-			"short": "Ganesh ji",
-			"role": "Owner, kirana",
-			"org": "Shree Ganesh Kirana",
-			"city": "Itwari, Nagpur",
-			"img": "sc3img:/people/p-ganesh.webp"
-		},
-		"anita": {
-			"id": "anita",
-			"name": "Anita Rao",
-			"short": "Anita",
-			"role": "Finance & GST",
-			"org": "Munchly Foods",
-			"city": "Pune",
-			"img": "sc3img:/people/p-anita.webp"
-		},
-		"vikram": {
-			"id": "vikram",
-			"name": "Vikram Sethi",
-			"short": "Vikram",
-			"role": "Sustainability & BRSR",
-			"org": "Munchly Foods",
-			"city": "Pune",
-			"img": "sc3img:/people/p-vikram.webp"
-		}
-	}
+	]
 }

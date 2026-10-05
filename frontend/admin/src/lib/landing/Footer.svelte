@@ -20,10 +20,8 @@
 		</div>
 		<nav class="foot-cols" aria-label="Footer">
 			<div class="foot-col">
-				<b>Product</b>{#each SECTIONS.filter(([id]) => id !== 'customers') as [id, t] (id)}<a href="#{id}">{t}</a
-					>{/each}
+				<b>Product</b>{#each SECTIONS as [id, t] (id)}<a href="#{id}">{t}</a>{/each}
 			</div>
-			<div class="foot-col"><b>Customers</b><a href="#customers">Munchly Foods</a></div>
 			<div class="foot-col">
 				<b>Sign in</b><button type="button" class="foot-link" onclick={onfind}>Find your workspace</button><a
 					{...linkProps(LINKS.console)}>Staff console</a

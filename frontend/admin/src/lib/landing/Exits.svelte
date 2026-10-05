@@ -59,14 +59,14 @@
 	});
 </script>
 
-<!-- 2 · one batch, five exits: the street the packs went down, from the godown to the bin -->
-<section id="how" class="sec sec-exits" aria-labelledby="exits-h">
+<!-- 3 · one batch, five exits: the street the packs went down, from the godown to the bin -->
+<section id="exits" class="sec sec-exits" aria-labelledby="exits-h">
 	<div class="wrap">
 		<header class="sec-head">
 			<h2 id="exits-h" class="sec-h">Five exits, one batch</h2>
 			<p class="sec-sub">
-				<span class="mono">{f.batchId}</span>: {fmt.num(f.atRisk)} packs of masala chips that won't sell in the {f.daysLeft}
-				days they have left. The agents priced every exit; two of them took the batch.
+				One batch: {fmt.num(f.atRisk)} packs of masala chips that won't sell in the {f.daysLeft} days they have left. The
+				agents priced every exit, the bin included; two of them took the batch.
 			</p>
 		</header>
 	</div>
@@ -117,48 +117,15 @@
 			</div>
 		</div>
 	</div>
-	<!-- the batch's ledger: each result beside the arithmetic that makes it -->
+	<!-- what the batch came to: the board's three cards (L2), each with the arithmetic that makes it -->
 	<div class="wrap">
-		<div class="ledger" role="group" aria-label="{f.batchId}, the batch's ledger">
-			<span class="lg-head"
-				><span class="mono">{f.batchId}</span><span
-					>{fmt.num(f.atRisk)} packs, five exits priced, one plan approved</span
-				></span
-			>
-			<dl class="lg-rows">
-				<div class="lg-row">
-					<dt>
-						{fmt.inr(f.kl.net)} from {f.shops} kiranas, after the van, <span class="lg-op">+</span>
-						{fmt.inr(f.esNet)} from a buyer in Raipur, after the listing fee
-					</dt>
-					<dd>
-						<span class="lg-eq" aria-hidden="true">=</span><Money value={f.actual.net} class="lg-n" /><span class="lg-l"
-							>recovered</span
-						>
-					</dd>
-				</div>
-				<div class="lg-row">
-					<dt>
-						{fmt.inr(f.actual.pnl)} on Munchly's books with the plan, price support included, against {fmt.inr(-f.bin)} to
-						destroy the batch
-					</dt>
-					<dd>
-						<span class="lg-eq" aria-hidden="true">=</span><Money value={f.actual.swing} class="lg-n" /><span
-							class="lg-l">better than the bin</span
-						>
-					</dd>
-				</div>
-				<div class="lg-row">
-					<dt>
-						{fmt.num(f.plan.soldUnits)} packs sold on tax invoices, so the {fmt.inr(f.plan.itcRetained)} GST credit stays
-					</dt>
-					<dd>
-						<span class="lg-eq" aria-hidden="true">=</span><span class="num lg-n">0</span><span class="lg-l"
-							>cartons destroyed</span
-						>
-					</dd>
-				</div>
-			</dl>
+		<div class="results" role="group" aria-label="What the batch came to">
+			{#each f.results as r (r.l)}<div class="result">
+					{#if r.n}<Money value={r.n} class="r-n" />{:else}<span class="num r-n">0</span>{/if}<span class="r-l"
+						>{r.l}</span
+					><span class="r-w">{r.w}</span>
+				</div>{/each}
 		</div>
+		<p class="results-note">An illustrative batch. Every figure is worked out from the journey map.</p>
 	</div>
 </section>

@@ -7,8 +7,6 @@
 	let sheet = $state(false);
 </script>
 
-{#snippet staffMark()}<span class="t-caption subtle mono">munchly</span>{/snippet}
-
 <!-- the bar: the product, its sections, the ways in. The sections show on desktops and Book a demo beside them; a phone
      gets a menu button instead (base.css's .desk-only, .not-phone and .phone-only, so the server renders every width) -->
 <header class="site-nav">
@@ -28,7 +26,6 @@
 			items={[
 				{ label: 'Sign in to', heading: true },
 				{ label: 'Find your workspace', icon: 'search', onclick: onfind },
-				{ label: 'Munchly Foods', icon: 'building-2', right: staffMark, href: LINKS.app },
 				'-',
 				{ label: 'Smart-Clearance staff', icon: 'shield', href: LINKS.console }
 			]}
