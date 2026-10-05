@@ -96,23 +96,16 @@ Declared in `src/env.ts`, public and inlined at build time. Copy `.env.example` 
 
 The build is plain static files: `console/build/`. `../firebase.json` gives Firebase Hosting two targets, `site` (the
 landing page, `admin/build`) and `console` (this app, every path rewritten to `index.html`, `noindex`, immutable
-caching for `/_app/immutable/`). Once, in the Firebase project:
+caching for `/_app/immutable/`). Terraform in `../../infra` makes the console's own Hosting site,
+`smartclearance-console` (SC-39). From the repository root, each deploy is:
 
 ```sh
-firebase hosting:sites:create smart-clearance-console
-firebase target:apply hosting console smart-clearance-console
+infra/scripts/deploy.sh console     # builds the console, then releases it to its site
 ```
 
-then add `console.smartclearance.com` as the site's custom domain (Hosting → the site → Add custom domain). Each
-deploy:
-
-```sh
-corepack pnpm build:console
-firebase deploy --only hosting:console
-```
-
-Copy `../.firebaserc.example` to `../.firebaserc` with the project's id. Any static host works the same way, as long as
-it rewrites unknown paths to `/index.html`. None of this has been deployed yet.
+For `console.smartclearance.com`, set the site's `custom_domain` in `infra/prod/terraform.tfvars` and apply. Then
+add the DNS records Terraform outputs (`../../infra/README.md`, Custom domains). Any static host works the same way, as
+long as it rewrites unknown paths to `/index.html`.
 
 ## Size
 

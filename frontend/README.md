@@ -79,9 +79,10 @@ choice) two targets:
 | `console` | `console/build` | console.smartclearance.com | `/index.html` |
 
 Both cache `/_app/immutable/` for a year and everything else with `no-cache`; the console's pages also carry
-`noindex`. Bind each target to its own Hosting site once (`firebase target:apply hosting console <site-id>`), copy
-`.firebaserc.example` to `.firebaserc`, then `firebase deploy --only hosting:console` (or `hosting:site`) after its
-build. `console/README.md` has the steps. Nothing has been deployed yet.
+`noindex`. Terraform in `../infra` makes a Hosting site for each target (SC-39). From the repository root,
+`infra/scripts/deploy.sh` builds both apps and releases them (`deploy.sh site` or `deploy.sh console` for one). It
+writes `.firebaserc` from Terraform's outputs on each run, so that file is not committed. `../infra/README.md` has
+the sites, their addresses and the prerequisites.
 
 ## The cascade
 

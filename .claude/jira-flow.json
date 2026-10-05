@@ -51,6 +51,14 @@
       ]
     },
     {
+      "name": "infra",
+      "cwd": "infra",
+      "run": "./scripts/check.sh",
+      "paths": [
+        "infra/**"
+      ]
+    },
+    {
       "name": "backend-api",
       "cwd": "backend-api",
       "run": "uv run ruff check . && uv run pytest",
