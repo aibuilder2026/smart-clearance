@@ -1,15 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { DEMO_REQUESTS_KEY, mockApi } from '#lib/api/mock.ts';
-import { ApiError } from '#lib/api/types.ts';
+import { ApiError } from '../src/index';
+import { DEMO_REQUESTS_KEY, siteMock } from '../src/site';
+import { memory } from './memory';
 
-const memory = () => {
-	const m = new Map<string, string>();
-	return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => void m.set(k, v) } as Storage;
-};
-
-describe('the mock API', () => {
+describe("the landing page's mock API", () => {
 	const store = memory();
-	const api = mockApi({ storage: () => store });
+	const api = siteMock({ storage: () => store });
 	const as = async (q: string) => (await api.lookupWorkspaces(q)).map((m) => `${m.workspace.id}: ${m.as}`);
 
 	it('finds a member by email, in any case', async () => {

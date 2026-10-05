@@ -2,7 +2,7 @@
 // design3/core/money.js) and catalog, exactly as design3/site/site.jsx does from window.SC3_DATA. Nothing here names
 // a client: the platform's own page tells the batch as an illustrative one (SC-28).
 import { fmt, rate } from '@smart-clearance/core';
-import type { Catalog, PlanLine, Showcase } from '#lib/api/types.ts';
+import type { Catalog, PlanLine, Showcase } from '@smart-clearance/api/site';
 import { EXIT_X, dots } from './street';
 
 export type Exit = {

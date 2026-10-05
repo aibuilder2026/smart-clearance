@@ -481,4 +481,8 @@ button.list-row:hover, a.list-row:hover { background: var(--fill); }
 [data-theme="dark"] .when-light, :root:not([data-theme="dark"]) .when-dark { display: none; }
 /* a menu item that is a link (another site, in a new tab) looks like the menu's buttons */
 .menu a.mi { text-decoration: none; }
+/* the shell's sidebar, rail and tab bar items are links (each a real address), drawn as the prototype's buttons */
+a.sb-item, .tabbar a.tab { text-decoration: none; }
+/* a table row that opens something is reached by keyboard too; its ring sits inside the table's rounded frame */
+.table tbody tr.clickable:focus-visible { outline-offset: -2px; }
 /* @port-end */

@@ -1,5 +1,5 @@
 import { test } from '@playwright/test';
-import { report, scan, type Finding } from './helpers';
+import { report, scan, type Finding } from '@smart-clearance/testing/a11y';
 
 // the design system page (/ds, a dev route the e2e build turns on): every component core has built, in both themes and
 // at every width, plus its open sheet and menu

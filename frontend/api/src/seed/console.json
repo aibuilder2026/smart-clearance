@@ -1,0 +1,1088 @@
+{
+	"config": {
+		"autonomy": [
+			{
+				"id": "suggest",
+				"label": "Suggest",
+				"text": "Says what it would do, and does nothing"
+			},
+			{
+				"id": "ask",
+				"label": "Ask",
+				"text": "Waits for a person's yes before each action"
+			},
+			{
+				"id": "act",
+				"label": "Act",
+				"text": "Acts within its limits and reports what it did"
+			}
+		],
+		"stageNames": {
+			"connect": "Connect",
+			"detect": "Detect",
+			"verify": "Verify",
+			"value": "Value",
+			"decide": "Decide",
+			"approve": "Approve",
+			"execute": "Execute",
+			"settle": "Settle",
+			"report": "Report"
+		},
+		"fields": {
+			"data": [
+				{
+					"key": "time",
+					"label": "Runs daily at",
+					"short": "daily run",
+					"type": "time"
+				},
+				{
+					"key": "backfillDays",
+					"label": "History to load",
+					"short": "history",
+					"type": "number",
+					"unit": "days",
+					"min": 30,
+					"max": 365,
+					"step": 30
+				}
+			],
+			"watcher": [
+				{
+					"key": "time",
+					"label": "Runs daily at",
+					"short": "daily run",
+					"type": "time"
+				},
+				{
+					"key": "blinkitDays",
+					"label": "Blinkit takes stock with at least",
+					"short": "Blinkit gate",
+					"type": "number",
+					"unit": "days left",
+					"min": 30,
+					"max": 180,
+					"step": 5
+				},
+				{
+					"key": "qcomPct",
+					"label": "Zepto and Instamart take at least",
+					"short": "Zepto and Instamart gate",
+					"type": "number",
+					"unit": "% of life left",
+					"min": 30,
+					"max": 90,
+					"step": 5
+				}
+			],
+			"vision": [
+				{
+					"key": "confidence",
+					"label": "Asks for another photo below",
+					"short": "confidence threshold",
+					"type": "number",
+					"unit": "confidence",
+					"min": 0.5,
+					"max": 0.99,
+					"step": 0.01
+				}
+			],
+			"valuer": [
+				{
+					"key": "indicative",
+					"label": "Mark EPR, disposal and CO₂e as indicative",
+					"type": "switch",
+					"locked": "The factors are estimates, so they are always labelled"
+				}
+			],
+			"router": [
+				{
+					"key": "objective",
+					"label": "Aims for",
+					"short": "aim",
+					"type": "select",
+					"options": [
+						"Most money recovered",
+						"Fastest clearance"
+					]
+				}
+			],
+			"gate": [
+				{
+					"key": "approver",
+					"label": "Approver",
+					"type": "approver"
+				}
+			],
+			"lister": [
+				{
+					"key": "reserve",
+					"label": "Reserve price, per pack",
+					"short": "reserve",
+					"type": "money",
+					"min": 1,
+					"max": 100,
+					"step": 0.5
+				},
+				{
+					"key": "territoryGuard",
+					"label": "Hide lots from buyers inside the client's territories",
+					"short": "territory guard",
+					"type": "switch"
+				}
+			],
+			"outreach": [
+				{
+					"key": "language",
+					"label": "Offers go out in",
+					"short": "language",
+					"type": "select",
+					"options": [
+						"Hindi first",
+						"Marathi first",
+						"English first"
+					]
+				},
+				{
+					"key": "scheme",
+					"label": "Kirana scheme",
+					"short": "scheme",
+					"type": "select",
+					"options": [
+						"2 free with every 10",
+						"1 free with every 10",
+						"No scheme"
+					]
+				}
+			],
+			"negotiator": [
+				{
+					"key": "floor",
+					"label": "Never accepts below, per pack",
+					"short": "floor",
+					"type": "money",
+					"min": 1,
+					"max": 100,
+					"step": 0.5
+				},
+				{
+					"key": "counters",
+					"label": "Counter offers",
+					"short": "counter offers",
+					"type": "stepper",
+					"min": 0,
+					"max": 3
+				},
+				{
+					"key": "tokenPct",
+					"label": "Token on award",
+					"short": "token",
+					"type": "number",
+					"unit": "%",
+					"min": 5,
+					"max": 30,
+					"step": 1
+				}
+			],
+			"paperwork": [
+				{
+					"key": "draftsOnly",
+					"label": "Drafts only; people send them",
+					"type": "switch",
+					"locked": "Invoices and credit notes always go out from a person"
+				}
+			],
+			"impact": [
+				{
+					"key": "returnWindowDays",
+					"label": "Posts after a return window of",
+					"short": "return window",
+					"type": "number",
+					"unit": "days",
+					"min": 7,
+					"max": 45,
+					"step": 1
+				}
+			]
+		},
+		"exits": [
+			{
+				"id": "expiresoon",
+				"name": "ExpireSoon marketplace",
+				"icon": "store"
+			},
+			{
+				"id": "kirana",
+				"name": "Kirana scheme",
+				"icon": "shopping-basket"
+			},
+			{
+				"id": "staff",
+				"name": "Staff sale",
+				"icon": "users"
+			},
+			{
+				"id": "foodbank",
+				"name": "Food bank",
+				"icon": "heart-handshake"
+			},
+			{
+				"id": "d2c",
+				"name": "Discount D2C",
+				"icon": "globe"
+			}
+		],
+		"profile": {
+			"route": {
+				"label": "Route to market",
+				"options": [
+					{
+						"id": "distributors",
+						"label": "Through distributors"
+					},
+					{
+						"id": "modern-trade",
+						"label": "Direct to modern trade"
+					},
+					{
+						"id": "own",
+						"label": "Own warehouses and D2C"
+					}
+				]
+			},
+			"owner": {
+				"label": "Who owns short-dated stock",
+				"options": [
+					{
+						"id": "distributor",
+						"label": "The distributor"
+					},
+					{
+						"id": "manufacturer",
+						"label": "The manufacturer"
+					}
+				]
+			},
+			"expiry": {
+				"label": "Expiry policy",
+				"options": [
+					{
+						"id": "full-credit",
+						"label": "Full credit at expiry"
+					},
+					{
+						"id": "price-support",
+						"label": "Price support only"
+					},
+					{
+						"id": "none",
+						"label": "No returns"
+					}
+				]
+			}
+		},
+		"presets": [
+			{
+				"id": "cautious",
+				"label": "Cautious",
+				"text": "Agents suggest; people do everything"
+			},
+			{
+				"id": "standard",
+				"label": "Standard",
+				"text": "Agents act on data and pricing; they ask before bids and paperwork"
+			},
+			{
+				"id": "trusted",
+				"label": "Trusted",
+				"text": "Agents act within their limits; they ask only on bids"
+			}
+		],
+		"stages": [
+			{
+				"id": "connect",
+				"title": "Connect",
+				"human": false,
+				"time": "once",
+				"who": "Priya and Anita set the guardrails; Rakesh bhai gives a one-time permission"
+			},
+			{
+				"id": "detect",
+				"title": "Detect",
+				"human": false,
+				"time": "09:00",
+				"who": "Nobody. The Watcher runs"
+			},
+			{
+				"id": "verify",
+				"title": "Verify",
+				"human": false,
+				"time": "09:20",
+				"who": "Rakesh bhai sends one photo"
+			},
+			{
+				"id": "value",
+				"title": "Value",
+				"human": false,
+				"time": "09:21",
+				"who": "Nobody. The Valuer runs"
+			},
+			{
+				"id": "decide",
+				"title": "Decide",
+				"human": false,
+				"time": "09:22",
+				"who": "The Router proposes"
+			},
+			{
+				"id": "approve",
+				"title": "Approve",
+				"human": true,
+				"time": "09:40",
+				"who": "Priya, one tap"
+			},
+			{
+				"id": "execute",
+				"title": "Execute",
+				"human": false,
+				"time": "day 0⁠–⁠14",
+				"who": "Kiranas and a buyer in Raipur respond"
+			},
+			{
+				"id": "settle",
+				"title": "Settle",
+				"human": false,
+				"time": "day 3⁠–⁠7",
+				"who": "Rakesh bhai issues his invoice and dispatches; Anita reviews Munchly's papers"
+			},
+			{
+				"id": "report",
+				"title": "Report",
+				"human": false,
+				"time": "after 29 Oct",
+				"who": "Vikram, Anita and the CFO"
+			}
+		],
+		"defaults": {
+			"gates": {
+				"blinkitDays": 90,
+				"qcomPct": 60
+			},
+			"returnWindowDays": 20,
+			"reserve": 13.5,
+			"staffCap": 50,
+			"tokenPct": 15,
+			"scheme": "2 free with every 10",
+			"offerWindowHours": 48
+		}
+	},
+	"state": {
+		"clients": [
+			{
+				"id": "munchly",
+				"name": "Munchly Foods",
+				"legal": "Munchly Foods Ltd",
+				"city": "Pune",
+				"industry": "Snacks, drinks and personal care",
+				"domain": "munchly.smartclearance.com",
+				"emailDomain": "munchly.in",
+				"mark": {
+					"from": "#f68d3e",
+					"to": "#d6461e",
+					"ink": "#ffffff"
+				},
+				"plan": "pilot",
+				"status": "live",
+				"since": "1 Oct 2026",
+				"region": "India, Mumbai region",
+				"profile": {
+					"route": "distributors",
+					"owner": "distributor",
+					"expiry": "full-credit"
+				},
+				"gates": {
+					"blinkitDays": 90,
+					"qcomPct": 60
+				},
+				"territoryGuard": true,
+				"returnWindowDays": 20,
+				"exits": {
+					"expiresoon": {
+						"on": true
+					},
+					"kirana": {
+						"on": true
+					},
+					"staff": {
+						"on": true,
+						"cap": 50
+					},
+					"foodbank": {
+						"on": true
+					},
+					"d2c": {
+						"on": false,
+						"locked": "Only for the manufacturer's own stock"
+					}
+				},
+				"rules": {
+					"reserve": 13.5,
+					"scheme": "2 free with every 10",
+					"staffCap": 50,
+					"tokenPct": 15,
+					"offerWindowHours": 48,
+					"hindiOffers": true,
+					"requirePhoto": true
+				},
+				"signIn": [
+					{
+						"id": "google",
+						"title": "Google Workspace",
+						"who": "Munchly staff",
+						"rule": "munchly.in accounts only",
+						"on": true
+					},
+					{
+						"id": "phone",
+						"title": "Mobile number and a one-time code",
+						"who": "Distributors and kirana owners",
+						"rule": "Numbers Munchly or their distributor invited",
+						"on": true
+					},
+					{
+						"id": "partner",
+						"title": "Google, by invitation",
+						"who": "Partners such as food banks",
+						"rule": "Addresses Munchly invited",
+						"on": true
+					}
+				],
+				"distributors": [
+					{
+						"id": "rakesh",
+						"name": "Rakesh Traders",
+						"city": "Nagpur",
+						"state": "Maharashtra",
+						"kiranas": 38,
+						"staffCap": 50,
+						"permission": "given"
+					},
+					{
+						"id": "patil",
+						"name": "Patil Distributors",
+						"city": "Pune",
+						"state": "Maharashtra",
+						"kiranas": 52,
+						"staffCap": null,
+						"permission": "not-yet"
+					},
+					{
+						"id": "gupta",
+						"name": "Gupta & Sons",
+						"city": "Indore",
+						"state": "Madhya Pradesh",
+						"kiranas": 47,
+						"staffCap": null,
+						"permission": "not-yet"
+					},
+					{
+						"id": "lakshmi",
+						"name": "Lakshmi Agencies",
+						"city": "Hyderabad",
+						"state": "Telangana",
+						"kiranas": 58,
+						"staffCap": 150,
+						"permission": "given"
+					}
+				],
+				"skus": [
+					{
+						"id": "chips",
+						"code": "MF-MC-150",
+						"brand": "Munchly",
+						"name": "Masala Chips 150 g",
+						"mrp": 30,
+						"gst": 0.05,
+						"lifeDays": 180
+					},
+					{
+						"id": "biscuits",
+						"code": "MF-CC-200",
+						"brand": "Munchly",
+						"name": "Choco Cream Biscuits 200 g",
+						"mrp": 40,
+						"gst": 0.05,
+						"lifeDays": 270
+					},
+					{
+						"id": "chikki",
+						"code": "MF-PC-100",
+						"brand": "Munchly",
+						"name": "Peanut Chikki 100 g",
+						"mrp": 25,
+						"gst": 0.05,
+						"lifeDays": 180
+					},
+					{
+						"id": "poha",
+						"code": "MF-IP-250",
+						"brand": "Munchly",
+						"name": "Instant Poha 250 g",
+						"mrp": 55,
+						"gst": 0.05,
+						"lifeDays": 270
+					},
+					{
+						"id": "oats",
+						"code": "MF-MO-200",
+						"brand": "Munchly",
+						"name": "Masala Oats 200 g",
+						"mrp": 65,
+						"gst": 0.05,
+						"lifeDays": 270
+					},
+					{
+						"id": "mango",
+						"code": "MF-MD-200",
+						"brand": "Munchly",
+						"name": "Mango Drink 200 ml",
+						"mrp": 20,
+						"gst": 0.05,
+						"lifeDays": 180
+					},
+					{
+						"id": "facewash",
+						"code": "GL-AF-100",
+						"brand": "Glowra",
+						"name": "Aloe Face Wash 100 ml",
+						"mrp": 120,
+						"gst": 0.18,
+						"lifeDays": 730
+					},
+					{
+						"id": "hairoil",
+						"code": "GL-CO-200",
+						"brand": "Glowra",
+						"name": "Coconut Hair Oil 200 ml",
+						"mrp": 150,
+						"gst": 0.05,
+						"lifeDays": 730
+					}
+				],
+				"people": [
+					{
+						"id": "priya",
+						"name": "Priya Deshmukh",
+						"org": "Munchly Foods",
+						"role": "Regional Supply-Chain Manager",
+						"kind": "Supply chain",
+						"access": "Approver",
+						"provider": "Google",
+						"status": "active",
+						"img": "sc3img:/people/p-priya.webp",
+						"email": "priya.deshmukh@munchly.in",
+						"phone": ""
+					},
+					{
+						"id": "rakesh",
+						"name": "Rakesh bhai",
+						"org": "Rakesh Traders",
+						"role": "Rakesh Traders",
+						"kind": "Distributor",
+						"access": "Partner",
+						"provider": "Phone and code",
+						"status": "active",
+						"img": "sc3img:/people/p-rakesh.webp",
+						"email": "",
+						"phone": "+91 98230 44118"
+					},
+					{
+						"id": "ganesh",
+						"name": "Ganesh ji",
+						"org": "Shree Ganesh Kirana",
+						"role": "Shree Ganesh Kirana",
+						"kind": "Kirana",
+						"access": "Partner",
+						"provider": "Phone and code",
+						"status": "active",
+						"img": "sc3img:/people/p-ganesh.webp",
+						"email": "",
+						"phone": "+91 98230 55120"
+					},
+					{
+						"id": "anita",
+						"name": "Anita Rao",
+						"org": "Munchly Foods",
+						"role": "Finance & GST",
+						"kind": "Finance & GST",
+						"access": "Member",
+						"provider": "Google",
+						"status": "active",
+						"img": "sc3img:/people/p-anita.webp",
+						"email": "anita.rao@munchly.in",
+						"phone": ""
+					},
+					{
+						"id": "vikram",
+						"name": "Vikram Sethi",
+						"org": "Munchly Foods",
+						"role": "Sustainability & BRSR",
+						"kind": "Sustainability & BRSR",
+						"access": "Member",
+						"provider": "Google",
+						"status": "active",
+						"img": "sc3img:/people/p-vikram.webp",
+						"email": "vikram.sethi@munchly.in",
+						"phone": ""
+					},
+					{
+						"id": "meera",
+						"name": "Meera",
+						"org": "Feeding India",
+						"role": "Feeding India",
+						"kind": "Food bank",
+						"access": "Partner",
+						"provider": "Google, invited",
+						"status": "active",
+						"img": "sc3img:/people/p-meera.webp",
+						"email": "meera@feedingindia.example",
+						"phone": ""
+					},
+					{
+						"id": "arjun",
+						"name": "Arjun Nair",
+						"org": "Munchly Foods",
+						"role": "Workspace admin",
+						"kind": "Workspace admin",
+						"access": "Admin",
+						"provider": "Google",
+						"status": "active",
+						"img": "sc3img:/people/p-arjun.webp",
+						"email": "arjun.nair@munchly.in",
+						"phone": ""
+					},
+					{
+						"id": "patil-owner",
+						"name": "Patil Distributors",
+						"org": "Patil Distributors",
+						"role": "Distributor",
+						"kind": "Distributor",
+						"access": "Partner",
+						"provider": "Phone and code",
+						"status": "active",
+						"img": null,
+						"email": "",
+						"phone": "+91 98220 10431"
+					},
+					{
+						"id": "gupta-owner",
+						"name": "Gupta & Sons",
+						"org": "Gupta & Sons",
+						"role": "Distributor",
+						"kind": "Distributor",
+						"access": "Partner",
+						"provider": "Phone and code",
+						"status": "active",
+						"img": null,
+						"email": "",
+						"phone": "+91 98260 22118"
+					},
+					{
+						"id": "lakshmi-owner",
+						"name": "Lakshmi Agencies",
+						"org": "Lakshmi Agencies",
+						"role": "Distributor",
+						"kind": "Distributor",
+						"access": "Partner",
+						"provider": "Phone and code",
+						"status": "active",
+						"img": null,
+						"email": "",
+						"phone": "+91 98480 10550"
+					},
+					{
+						"id": "jaidurga",
+						"name": "Jai Durga Stores",
+						"org": "Jai Durga Stores",
+						"role": "Kirana",
+						"kind": "Kirana",
+						"access": "Partner",
+						"provider": "Phone and code",
+						"status": "active",
+						"img": null,
+						"email": "",
+						"phone": "+91 98230 60011"
+					},
+					{
+						"id": "krishna",
+						"name": "Krishna Kirana Bhandar",
+						"org": "Krishna Kirana Bhandar",
+						"role": "Kirana",
+						"kind": "Kirana",
+						"access": "Partner",
+						"provider": "Phone and code",
+						"status": "deactivated",
+						"img": null,
+						"email": "",
+						"phone": "+91 98230 60012"
+					},
+					{
+						"id": "shreesai",
+						"name": "Shree Sai Kirana",
+						"org": "Shree Sai Kirana",
+						"role": "invited by Rakesh Traders",
+						"kind": "Kirana",
+						"access": "Partner",
+						"provider": "Phone and code",
+						"status": "invited",
+						"img": null,
+						"email": "",
+						"phone": "+91 98230 60013"
+					},
+					{
+						"id": "ifbn",
+						"name": "India FoodBanking Network",
+						"org": "India FoodBanking Network",
+						"role": "invited by Munchly Foods",
+						"kind": "Food bank",
+						"access": "Partner",
+						"provider": "Google, invited",
+						"status": "invited",
+						"img": null,
+						"email": "partners@ifbn.example",
+						"phone": ""
+					}
+				],
+				"integrations": [
+					{
+						"id": "sso",
+						"name": "Google Workspace SSO",
+						"kind": "Identity",
+						"status": "ok",
+						"note": "Munchly staff sign in with munchly.in accounts only"
+					},
+					{
+						"id": "auth",
+						"name": "Firebase Authentication",
+						"kind": "Identity",
+						"status": "ok",
+						"note": "Phone one-time codes for distributors and kiranas, by invitation"
+					},
+					{
+						"id": "fcm",
+						"name": "Firebase Cloud Messaging",
+						"kind": "Push",
+						"status": "ok",
+						"note": "Web push to every role, in-app inbox as fallback"
+					},
+					{
+						"id": "bq",
+						"name": "BigQuery",
+						"kind": "Data",
+						"status": "ok",
+						"note": "Batches, sell-through by pincode and by shop, price history"
+					},
+					{
+						"id": "pubsub",
+						"name": "Cloud Pub/Sub",
+						"kind": "Events",
+						"status": "ok",
+						"note": "batch.at_risk, offer.received, deal.closed"
+					},
+					{
+						"id": "gemini",
+						"name": "Gemini on Vertex AI",
+						"kind": "Agents",
+						"status": "ok",
+						"note": "Vision for labels, Pro for routing, Flash for chat"
+					},
+					{
+						"id": "dms",
+						"name": "DMS export (Bizom-style)",
+						"kind": "Inventory",
+						"status": "ok",
+						"note": "Nightly CSV, 312 batches across 4 distributors"
+					},
+					{
+						"id": "tally",
+						"name": "Tally invoice drafts",
+						"kind": "Accounting",
+						"status": "mock",
+						"note": "Distributors issue the drafted invoices from their own Tally"
+					},
+					{
+						"id": "expiresoon",
+						"name": "ExpireSoon API",
+						"kind": "Marketplace",
+						"status": "mock",
+						"note": "Mocked POST /v1/listings; partner API in talks"
+					},
+					{
+						"id": "foodbank",
+						"name": "Food-bank partners",
+						"kind": "Donation",
+						"status": "mock",
+						"note": "Feeding India and IFBN intake rules"
+					}
+				],
+				"recovered": 21152.4,
+				"batches": 9,
+				"approver": "priya",
+				"agents": {
+					"data": {
+						"on": true,
+						"autonomy": "act",
+						"settings": {
+							"time": "08:30",
+							"backfillDays": 90
+						},
+						"last": "08:30 today · 4 exports, 312 batches",
+						"next": "tomorrow 08:30"
+					},
+					"watcher": {
+						"on": true,
+						"autonomy": "act",
+						"settings": {
+							"time": "09:00",
+							"blinkitDays": 90,
+							"qcomPct": 60
+						},
+						"last": "09:00 today · MF-2410-118 at risk, 22 days left",
+						"next": "tomorrow 09:00"
+					},
+					"vision": {
+						"on": true,
+						"autonomy": "ask",
+						"settings": {
+							"confidence": 0.9
+						},
+						"last": "09:14 today · label read, 0.96",
+						"next": "on the next label"
+					},
+					"valuer": {
+						"on": true,
+						"autonomy": "act",
+						"settings": {
+							"indicative": true
+						},
+						"last": "09:21 today · exits priced; ExpireSoon needs 30+ days",
+						"next": "on the next batch"
+					},
+					"router": {
+						"on": true,
+						"autonomy": "act",
+						"settings": {
+							"objective": "Most money recovered"
+						},
+						"last": "09:22 today · plan sent to Priya",
+						"next": "on the next batch"
+					},
+					"gate": {
+						"on": true,
+						"autonomy": "gate",
+						"settings": {
+							"approver": "priya"
+						},
+						"last": "09:40 today · Priya approved MF-2410-118",
+						"next": "on the next plan"
+					},
+					"lister": {
+						"on": true,
+						"autonomy": "act",
+						"settings": {
+							"reserve": 13.5,
+							"territoryGuard": true
+						},
+						"last": "1 Oct · ES-24117 listed in Rakesh Traders' name",
+						"next": "on the next plan"
+					},
+					"outreach": {
+						"on": true,
+						"autonomy": "act",
+						"settings": {
+							"language": "Hindi first",
+							"scheme": "2 free with every 10"
+						},
+						"last": "09:42 today · offers to Lakshmi Agencies' kiranas",
+						"next": "on the next plan"
+					},
+					"negotiator": {
+						"on": true,
+						"autonomy": "ask",
+						"settings": {
+							"floor": 13.5,
+							"counters": 2,
+							"tokenPct": 15
+						},
+						"last": "1 Oct · countered ₹14.20 on ES-24117",
+						"next": "on the next bid"
+					},
+					"paperwork": {
+						"on": true,
+						"autonomy": "ask",
+						"settings": {
+							"draftsOnly": true
+						},
+						"last": "11:05 today · FSSAI checklist for Feeding India",
+						"next": "on the next sale"
+					},
+					"impact": {
+						"on": true,
+						"autonomy": "act",
+						"settings": {
+							"returnWindowDays": 20
+						},
+						"last": "waits for the return window to close on 29 Oct",
+						"next": "30 Oct"
+					}
+				}
+			}
+		],
+		"staff": [
+			{
+				"status": "active",
+				"id": "neha",
+				"name": "Neha Kulkarni",
+				"short": "Neha",
+				"role": "Super admin",
+				"team": "Customer success",
+				"email": "neha.kulkarni@smartclearance.com",
+				"passkey": "MacBook Pro · Touch ID"
+			},
+			{
+				"status": "active",
+				"id": "sameer",
+				"name": "Sameer Rao",
+				"short": "Sameer",
+				"role": "Platform engineer",
+				"team": "Platform",
+				"email": "sameer.rao@smartclearance.com",
+				"passkey": "YubiKey 5C"
+			}
+		],
+		"runs": [
+			{
+				"at": "08:30",
+				"agent": "data",
+				"client": "munchly",
+				"text": "4 stock exports loaded, 312 batches"
+			},
+			{
+				"at": "09:00",
+				"agent": "watcher",
+				"client": "munchly",
+				"text": "MF-2410-118 at risk, 22 days left"
+			},
+			{
+				"at": "09:14",
+				"agent": "vision",
+				"client": "munchly",
+				"text": "label read, confidence 0.96"
+			},
+			{
+				"at": "09:21",
+				"agent": "valuer",
+				"client": "munchly",
+				"text": "exits priced; ExpireSoon needs 30+ days"
+			},
+			{
+				"at": "09:22",
+				"agent": "router",
+				"client": "munchly",
+				"text": "plan sent to Priya"
+			},
+			{
+				"at": "09:40",
+				"agent": "gate",
+				"client": "munchly",
+				"text": "Priya approved MF-2410-118"
+			},
+			{
+				"at": "09:42",
+				"agent": "outreach",
+				"client": "munchly",
+				"text": "offers to Lakshmi Agencies' kiranas"
+			},
+			{
+				"at": "11:05",
+				"agent": "paperwork",
+				"client": "munchly",
+				"text": "FSSAI checklist for Feeding India"
+			}
+		],
+		"tracks": [
+			{
+				"client": "munchly",
+				"batch": "MF-2409-117",
+				"product": "Masala Chips 150 g",
+				"distributor": "Rakesh Traders",
+				"city": "Nagpur",
+				"done": 8,
+				"current": 8,
+				"note": "Report waits for the return window",
+				"money": 21152.4
+			},
+			{
+				"client": "munchly",
+				"batch": "MF-2410-118",
+				"product": "Mango Drink 200 ml",
+				"distributor": "Lakshmi Agencies",
+				"city": "Hyderabad",
+				"done": 6,
+				"current": 6,
+				"split": "1,372 to kiranas · 150 staff sale · 58 food bank"
+			}
+		],
+		"audit": [
+			{
+				"id": "a1",
+				"at": "30 Sep, 17:05",
+				"who": "Neha Kulkarni",
+				"client": "munchly",
+				"text": "Set up Munchly Foods from its supply-chain profile: through 4 distributors, the distributor owns the stock, full credit at expiry"
+			},
+			{
+				"id": "a2",
+				"at": "30 Sep, 17:12",
+				"who": "Sameer Rao",
+				"client": "munchly",
+				"text": "Connected the distributors' stock exports, nightly CSV"
+			},
+			{
+				"id": "a3",
+				"at": "1 Oct, 09:00",
+				"who": "Neha Kulkarni",
+				"client": "munchly",
+				"text": "Moved Munchly Foods to Live on the Pilot plan"
+			},
+			{
+				"id": "a4",
+				"at": "1 Oct, 09:15",
+				"who": "Arjun Nair",
+				"client": "munchly",
+				"text": "Invited Rakesh bhai, Ganesh ji and Meera"
+			},
+			{
+				"id": "a5",
+				"at": "1 Oct, 16:50",
+				"who": "Rakesh bhai",
+				"client": "munchly",
+				"text": "Gave the agents his one-time permission for Rakesh Traders"
+			},
+			{
+				"id": "a6",
+				"at": "2 Oct, 11:20",
+				"who": "Neha Kulkarni",
+				"client": "munchly",
+				"text": "Set the Negotiator to Ask for Munchly Foods"
+			},
+			{
+				"id": "a7",
+				"at": "3 Oct, 18:02",
+				"who": "Arjun Nair",
+				"client": "munchly",
+				"text": "Deactivated Krishna Kirana Bhandar"
+			}
+		]
+	}
+}

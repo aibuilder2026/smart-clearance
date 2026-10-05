@@ -6,9 +6,12 @@
 **/tests/parity/out/
 pnpm-lock.yaml
 admin/src/lib/seed/
+api/src/seed/
 core/src/lib/icons/registry.ts
 core/src/styles/tokens.css
 core/src/styles/base.css
 core/src/styles/components.css
+core/src/styles/screens.css
 admin/src/lib/landing/site.css
 admin/src/lib/ds/docs.css
+console/src/lib/console.css

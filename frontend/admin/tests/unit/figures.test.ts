@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import catalog from '#lib/seed/catalog.json';
-import showcase from '#lib/seed/showcase.json';
-import type { Catalog, Showcase } from '#lib/api/types.ts';
+import catalog from '@smart-clearance/api/seed/catalog.json';
+import showcase from '@smart-clearance/api/seed/showcase.json';
+import type { Catalog, Showcase } from '@smart-clearance/api/site';
 import { figures } from '#lib/landing/figures.ts';
 
 // the landing page's copy, as the prototype says it (design3/site/site.jsx over design3/core): golden strings

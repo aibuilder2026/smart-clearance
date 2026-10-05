@@ -9,11 +9,12 @@ Smart-Clearance (working title Short-Date Router) is an agentic near-expiry stoc
 - three rounds of clickable prototypes;
 - the story documents;
 - a narrated walkthrough video;
-- the first production code: the SvelteKit frontend (SC-27).
+- the first production code: the SvelteKit frontend (SC-27), with the landing page and the staff console as two apps
+  (SC-37).
 
 Smart-Clearance is meant to be sold to manufacturers as software as a service, one workspace each at `<client>.smartclearance.com`, set up for that client's supply chain. The prototypes are Munchly Foods' workspace at munchly.smartclearance.com.
 
-The production code starts in `frontend/` (SC-27): design system v3 in Svelte, and the platform's landing page. The Python services, `backend-api/` and `agents/`, are planned; their folders hold the contract the frontend already speaks. `infra/` is not started.
+The production code starts in `frontend/` (SC-27): design system v3 in Svelte, the platform's landing page, and the staff console (SC-37), each app built and deployed on its own. The Python services, `backend-api/` and `agents/`, are planned; their folders hold the contract the frontend already speaks, and the console runs on an in-browser mock of it. `infra/` is not started.
 
 ## Layout
 
@@ -21,7 +22,7 @@ The production code starts in `frontend/` (SC-27): design system v3 in Svelte, a
 | --- | --- |
 | `design3/` | The current design and the source of truth for designs:
 <ul><li>design system, guided demo, app prototype (Munchly Foods' workspace, an installable PWA), the platform's landing page and console;</li><li>every design review in `designs/`, one folder per issue;</li><li>the accessibility suite.</li></ul>Start with `design3/README.md`. |
-| `frontend/` | The SvelteKit 3 frontend, a pnpm workspace that implements design3:<ul><li>`core`, design system v3 in Svelte;</li><li>`admin`, the platform's own site (the landing page today, the console later).</li></ul>Start with `frontend/README.md`. |
+| `frontend/` | The SvelteKit 3 frontend, a pnpm workspace that implements design3. Two apps, each deployed on its own:<ul><li>`admin`, the platform's own site: the landing page (smartclearance.com);</li><li>`console`, the staff console (console.smartclearance.com).</li></ul>Three shared packages:<ul><li>`core`, design system v3 in Svelte;</li><li>`api`, the contract with backend-api and an in-browser mock of it;</li><li>`testing`, what the apps' test suites share.</li></ul>Start with `frontend/README.md`. |
 | `backend-api/`, `agents/` | The Python services, planned: the API the frontend calls, and the AI agents. READMEs only for now. |
 | `design2/`, `design/` | Earlier rounds, superseded by v3. Reference only. |
 | `docs/` | Story pages: `dobara-journey-map.html` (Journey Map v4.1, the source of every figure), the story, the tech stack and the walkthrough. |
@@ -48,9 +49,11 @@ The frontend (from `frontend/`; pnpm comes through corepack, nothing is installe
 ```sh
 corepack pnpm install                     # once
 corepack pnpm dev                         # the landing page on :5173, and /ds
+corepack pnpm dev:console                 # the console on :5174 (sign in as Neha Kulkarni or Sameer Rao)
+corepack pnpm build                       # both apps, into admin/build and console/build (build:admin, build:console)
 corepack pnpm lint && corepack pnpm check && corepack pnpm test   # the gate jira-flow runs
-corepack pnpm test:e2e                    # WCAG 2.2 AA in five projects, keyboard, motion, Firefox and WebKit smoke
-corepack pnpm test:parity                 # the build against design3, pixel by pixel
+corepack pnpm test:e2e                    # both apps: WCAG 2.2 AA in five projects, keyboard, motion, flows, Firefox and WebKit smoke
+corepack pnpm test:parity                 # both apps' builds against design3, pixel by pixel
 corepack pnpm seed && corepack pnpm icons # regenerate from design3 after it changes
 ```
 
@@ -117,11 +120,13 @@ Local pages:
 - `frontend/` implements design3. A design change is made in design3 first (the design-first skill), then ported.
 - Ported CSS stays verbatim outside marked `/* @port … @port-end */` blocks; the drift tests fail otherwise.
 - Never hand-edit the generated files:
-  - `frontend/admin/src/lib/seed/`, written from `design3/core` by `corepack pnpm seed`;
+  - `frontend/api/src/seed/` and `frontend/admin/src/lib/seed/`, written from `design3/core` by `corepack pnpm seed`;
   - `frontend/core/src/lib/icons/registry.ts`, from `design3/system/icons.js` by `corepack pnpm icons`.
 
   `seed:check` and `icons:check` run in the gate.
 - Reference design3's images in place; the build hashes them. Never copy them.
+- What the apps share lives in a shared package, never in a copy: components and CSS in `core`, the contract and mocks in `api`, test helpers in `testing`. Each app's `src/app.html` is the same file, and a test keeps it so.
+- Each app deploys on its own: `frontend/firebase.json` has a Hosting target for each (`site` and `console`).
 - SvelteKit 3 differs from 2:
   - its config is in `vite.config.ts`;
   - imports use `#lib/…` with the `.ts` extension written out;
@@ -169,9 +174,9 @@ Local pages:
 | Skill | `design-first` | `.claude/skills/` | Design before code: which design tool leads for each surface (motion prototyped in Framer Motion; the Svelte build ships it with `motion` and the same springs), the review board on the surface's Claude Design project, building only after the maintainer's yes (SC-26), and porting into `frontend/` (SC-27). |
 | Hook | `design-first-reminder` | `.claude/hooks/`, registered in `.claude/settings.json` | A `UserPromptSubmit` hook. When a request reads like a UI or UX change, it adds the design-first rule to the agent's context; otherwise it stays silent. Needs `jq` (SC-26). |
 | Config | jira-flow | `.claude/jira-flow.json`, `.claude/jira/taxonomy.md` | Jira project SC: site, issue types, transition ids, branch, commit and PR patterns, and ship rules. |
-| Config | Preview servers | `.claude/launch.json` | <ul><li>`voice-recorder`: `video/recorder/server.py` on 8765;</li><li>`frontend-admin`: the frontend's dev server on 5173;</li><li>`frontend-preview`: its build on 4173 (restart it after a rebuild: its file list is read at start);</li><li>`design3`: design3 on 8787.</li></ul> |
+| Config | Preview servers | `.claude/launch.json` | <ul><li>`voice-recorder`: `video/recorder/server.py` on 8765;</li><li>`frontend-admin`: the frontend's dev server on 5173;</li><li>`frontend-preview`: its build on 4173 (restart it after a rebuild: its file list is read at start);</li><li>`frontend-console`: the console's dev server on 5174;</li><li>`frontend-console-preview`: its build on 4176 (restart it after a rebuild);</li><li>`design3`: design3 on 8787.</li></ul> |
 | Tests | Accessibility suite | `design3/a11y/` | Playwright 1.63 with @axe-core/playwright 4.13. |
-| Tests | Frontend suites | `frontend/` | Vitest 5 (unit, drift, seed and coverage); Playwright 1.63 with @axe-core/playwright 4.13 (e2e); pixelmatch (parity with design3). |
+| Tests | Frontend suites | `frontend/` | Vitest 5 (unit, drift, seed and coverage, the console's rules against `platform.js`); Playwright 1.63 with @axe-core/playwright 4.13 (e2e, each app); pixelmatch (parity with design3, each app). |
 
 The agent, the three skills and the MCP entry came from the [aitmpl.com](https://www.aitmpl.com) catalog (SC-17).
 
@@ -248,7 +253,8 @@ From the Claude desktop app:
 
 - The jira-flow gate covers `frontend/`: lint, type check, unit tests. The Python gates wait for `backend-api/` and `agents/` to have code. Nothing gates `design3/`, or the frontend's e2e and parity suites: run them yourself.
 - The frontend's Firefox smoke run could not be started in the agent's sandboxed shell; run `corepack pnpm test:e2e` on a normal machine to cover it.
-- The frontend's Book a demo keeps its requests in that browser (`sc-demo-requests`) until `backend-api` takes them; the hosted console does not see them.
+- The frontend's Book a demo keeps its requests in that browser (`sc-demo-requests`) until `backend-api` takes them; neither the hosted console nor `frontend/console` sees them.
+- `frontend/console` runs on its in-browser mock: sign-in is a stand-in for Google and a passkey, changes stay in that browser (`sc-console`), and two fictional demo requests stand in for the landing page's. Neither app has been deployed.
 - The landing page ships about 139 kB of JavaScript, gzipped (`frontend/README.md`, Known gaps).
 - The landing page's hero draws its town in WebGL2; where WebGL2 is missing it draws the plate flat, without depth.
 - In design3 the loader's styles come with the page's stylesheets, so on a slow connection its first paint waits for them (the Google Fonts import included). The SvelteKit build puts the loader first in the prerendered page.

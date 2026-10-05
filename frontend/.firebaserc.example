@@ -1,0 +1,11 @@
+{
+	"projects": { "default": "YOUR-FIREBASE-PROJECT" },
+	"targets": {
+		"YOUR-FIREBASE-PROJECT": {
+			"hosting": {
+				"site": ["YOUR-SITE-ID"],
+				"console": ["YOUR-CONSOLE-SITE-ID"]
+			}
+		}
+	}
+}

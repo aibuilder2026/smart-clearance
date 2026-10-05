@@ -12,7 +12,8 @@ export default ts.config(
 			'**/test-results/',
 			'**/playwright-report/',
 			'**/tests/parity/out/',
-			'admin/src/lib/seed/'
+			'admin/src/lib/seed/',
+			'api/src/seed/'
 		]
 	},
 	js.configs.recommended,

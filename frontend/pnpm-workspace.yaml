@@ -1,6 +1,9 @@
 packages:
   - core
+  - api
   - admin
+  - console
+  - testing
 
 # one version of each shared dependency across the workspace; packages refer to these as "catalog:"
 catalog:

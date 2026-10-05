@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { report, scan, type Finding } from './helpers';
+import { report, scan, type Finding } from '@smart-clearance/testing/a11y';
 import { isPhone, openSite } from './site';
 
 // smartclearance.com, the landing page: every section from the first viewport to the footer, plus the sign-in menu,

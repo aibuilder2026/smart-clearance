@@ -1,0 +1,34 @@
+{
+	"name": "@smart-clearance/api",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"sideEffects": false,
+	"exports": {
+		".": {
+			"types": "./src/index.ts",
+			"default": "./src/index.ts"
+		},
+		"./site": {
+			"types": "./src/site.ts",
+			"default": "./src/site.ts"
+		},
+		"./console": {
+			"types": "./src/console/index.ts",
+			"default": "./src/console/index.ts"
+		},
+		"./seed/*": "./src/seed/*"
+	},
+	"scripts": {
+		"check": "tsc -p tsconfig.json",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"@smart-clearance/core": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	}
+}

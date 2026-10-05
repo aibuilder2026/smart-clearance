@@ -17,6 +17,7 @@
 		"test:parity": "PUBLIC_DEV_ROUTES=1 vite build && playwright test -c playwright.parity.config.ts"
 	},
 	"dependencies": {
+		"@smart-clearance/api": "workspace:*",
 		"@smart-clearance/core": "workspace:*",
 		"@tanstack/svelte-query": "^6.3.1",
 		"motion": "catalog:"
@@ -24,6 +25,7 @@
 	"devDependencies": {
 		"@axe-core/playwright": "^4.13.0",
 		"@playwright/test": "^1.63.0",
+		"@smart-clearance/testing": "workspace:*",
 		"@sveltejs/adapter-static": "^4.0.0",
 		"@sveltejs/kit": "^3.0.0",
 		"@sveltejs/vite-plugin-svelte": "catalog:",
