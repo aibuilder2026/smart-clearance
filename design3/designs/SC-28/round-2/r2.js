@@ -61,8 +61,12 @@ document.addEventListener('DOMContentLoaded', function () {
   var DOTS_TO = function (e) { return DOTS.filter(function (d) { return d === e; }).length; };
 
   function StreetFlow() {
-    var layer = useRef(null), dots = useRef([]), routes = useRef({});
-    var p = usePlay(layer, 0.45);
+    var layer = useRef(null), dots = useRef([]), routes = useRef({}), watch = useRef(null);
+    // on a phone the street is a strip about three screens wide, so under a third of it is ever in view: the flow
+    // watches the strip, its window onto the street, and plays once nearly all of it is in view, since the road the
+    // packs take runs along its foot
+    useLayoutEffect(function () { var l = layer.current; watch.current = (l && l.closest('.ex-pan')) || l; }, []);
+    var p = usePlay(watch, 0.9);
     // packs still at the godown, and packs arrived at each taken exit: before it plays, the batch is all at the godown
     var _l = useState(p.reduce ? 0 : BATCH), left = _l[0], setLeft = _l[1];
     var _a = useState(p.reduce ? { kirana: 588, expiresoon: 772 } : { kirana: 0, expiresoon: 0 }), got = _a[0], setGot = _a[1];
