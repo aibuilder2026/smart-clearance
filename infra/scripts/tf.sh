@@ -5,6 +5,7 @@
 #   infra/scripts/tf.sh output hosting_sites
 # Any terraform subcommand and flags pass through. Run infra/scripts/bootstrap.sh once before the first plan.
 
+# shellcheck source=lib.sh
 source "$(dirname "$0")/lib.sh"
 use_terraform_credentials
 

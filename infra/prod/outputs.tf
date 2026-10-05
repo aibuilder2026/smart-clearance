@@ -3,13 +3,26 @@ output "project_id" {
   value       = var.project_id
 }
 
-output "hosting_sites" {
-  description = "Each app's Hosting site, keyed by its frontend/firebase.json target. infra/scripts/deploy.sh reads this."
-  value = {
+locals {
+  hosting_sites = {
     for target, site in google_firebase_hosting_site.this : target => {
       site_id = site.site_id
       url     = site.default_url
     }
+  }
+}
+
+output "hosting_sites" {
+  description = "Each app's Hosting site, keyed by its frontend/firebase.json target. infra/scripts/deploy.sh reads this (in CI, from the HOSTING_SITES variable)."
+  value       = local.hosting_sites
+}
+
+output "github_deployer" {
+  description = "What the deploy job signs in with; also set as variables on the GitHub environment."
+  value = {
+    workload_identity_provider = google_iam_workload_identity_pool_provider.github.name
+    service_account            = google_service_account.deployer.email
+    environment                = github_repository_environment.prod.environment
   }
 }
 

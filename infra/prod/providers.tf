@@ -14,3 +14,8 @@ provider "google-beta" {
   user_project_override = true
   billing_project       = var.project_id
 }
+
+# Signs in with GITHUB_TOKEN, which infra/scripts sets from `gh auth token` (the repo scope is enough).
+provider "github" {
+  owner = local.github_owner
+}

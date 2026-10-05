@@ -2,6 +2,7 @@
 # The infra gate, which jira-flow runs for changes under infra/: formatting, validation and the scripts' syntax.
 # It needs no credentials and never touches state.
 
+# shellcheck source=lib.sh
 source "$(dirname "$0")/lib.sh"
 
 terraform -chdir="$INFRA_DIR" fmt -check -recursive -diff
