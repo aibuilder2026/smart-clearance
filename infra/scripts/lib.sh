@@ -1,4 +1,6 @@
-# Shared by the infra scripts (sourced, not run): paths, the project, and Google credentials.
+# shellcheck shell=bash
+# shellcheck disable=SC2034 # the paths and names here are for the scripts that source this file
+# Shared by the infra scripts (sourced, not run): paths, the project, and Google and GitHub credentials.
 # Written for the bash 3.2 that macOS ships, as well as newer ones.
 
 set -euo pipefail
@@ -32,6 +34,11 @@ use_terraform_credentials() {
 		GOOGLE_OAUTH_ACCESS_TOKEN="$(gcloud auth print-access-token)" ||
 			die "gcloud has no signed-in account: run 'gcloud auth login'"
 		export GOOGLE_OAUTH_ACCESS_TOKEN
+	fi
+	# infra/prod also holds the repository's prod environment (github.tf); the GitHub provider reads GITHUB_TOKEN
+	if [[ -z ${GITHUB_TOKEN:-} ]] && command -v gh >/dev/null; then
+		GITHUB_TOKEN="$(gh auth token)" || die "gh has no signed-in account: run 'gh auth login'"
+		export GITHUB_TOKEN
 	fi
 }
 

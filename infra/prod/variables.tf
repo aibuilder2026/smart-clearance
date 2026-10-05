@@ -18,6 +18,16 @@ variable "billing_account" {
   }
 }
 
+variable "github_repository" {
+  description = "The GitHub repository whose Actions deploy, as owner/name. The owner must be an organization."
+  type        = string
+
+  validation {
+    condition     = can(regex("^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$", var.github_repository))
+    error_message = "github_repository is owner/name."
+  }
+}
+
 variable "hosting_sites" {
   description = <<-EOT
     One Firebase Hosting site per app, keyed by the app's target in frontend/firebase.json (site, console).

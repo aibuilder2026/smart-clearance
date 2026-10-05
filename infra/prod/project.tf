@@ -18,6 +18,9 @@ locals {
   services = toset([
     "firebase.googleapis.com",        # Firebase Management: adding Firebase to the project
     "firebasehosting.googleapis.com", # Hosting sites, versions and releases
+    "iam.googleapis.com",             # the Workload Identity pool and the deployer service account
+    "iamcredentials.googleapis.com",  # GitHub's jobs acting as the deployer
+    "sts.googleapis.com",             # exchanging GitHub's OIDC token for a Google one
   ])
 }
 

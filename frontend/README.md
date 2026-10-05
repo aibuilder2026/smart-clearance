@@ -80,7 +80,8 @@ choice) two targets:
 
 Both cache `/_app/immutable/` for a year and everything else with `no-cache`; the console's pages also carry
 `noindex`. Terraform in `../infra` makes a Hosting site for each target (SC-39). From the repository root,
-`infra/scripts/deploy.sh` builds both apps and releases them (`deploy.sh site` or `deploy.sh console` for one). It
+`infra/scripts/deploy.sh` builds both apps and releases them (`deploy.sh site` or `deploy.sh console` for one). CI
+does the same on every merge to `main` that touches the frontend (`.github/workflows/ci.yml`, SC-40). It
 writes `.firebaserc` from Terraform's outputs on each run, so that file is not committed. `../infra/README.md` has
 the sites, their addresses and the prerequisites.
 

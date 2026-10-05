@@ -11,6 +11,11 @@ terraform {
       source  = "hashicorp/google-beta"
       version = "~> 8.5"
     }
+    # The repository's prod environment and the variables its deploy job reads (github.tf).
+    github = {
+      source  = "integrations/github"
+      version = "~> 6.13"
+    }
   }
 
   # The bucket infra/bootstrap creates ("<project_id>-tfstate"); a backend block cannot read variables.

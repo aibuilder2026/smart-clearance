@@ -4,9 +4,11 @@
 #   infra/scripts/deploy.sh console       one app, by its frontend/firebase.json target: site (the landing page) or console
 #   SKIP_BUILD=1 infra/scripts/deploy.sh  release the builds already on disk
 #
-# The sites come from Terraform's hosting_sites output, so run infra/scripts/tf.sh apply first. firebase-tools signs in
-# with application-default credentials: run `gcloud auth application-default login` once.
+# The sites come from Terraform's hosting_sites output, or from HOSTING_SITES, which carries the same JSON (in CI, the
+# prod environment's variable of that name). firebase-tools signs in with application-default credentials: on a
+# workstation, run `gcloud auth application-default login` once; in CI, google-github-actions/auth provides them.
 
+# shellcheck source=lib.sh
 source "$(dirname "$0")/lib.sh"
 
 FIREBASE_TOOLS="firebase-tools@15.32.1"
@@ -16,7 +18,8 @@ has_adc || die "firebase-tools needs application-default credentials: run 'gclou
 export GOOGLE_CLOUD_QUOTA_PROJECT="$PROJECT_ID"
 
 targets="${*:-site console}"
-sites="$(tf prod output -json hosting_sites)"
+sites="${HOSTING_SITES:-}"
+[[ -n $sites ]] || sites="$(tf prod output -json hosting_sites)"
 
 builds=""
 for target in $targets; do

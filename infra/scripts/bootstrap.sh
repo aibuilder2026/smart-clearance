@@ -5,6 +5,7 @@
 # On the first run there is no bucket to keep state in: it applies on local state, then migrates that state into the
 # bucket it has just made. Later runs use the bucket like any other root.
 
+# shellcheck source=lib.sh
 source "$(dirname "$0")/lib.sh"
 use_terraform_credentials
 

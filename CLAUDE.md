@@ -285,4 +285,12 @@
     - firebase-tools takes only application-default credentials, not a gcloud token;
     - the provider's Hosting resources carry configuration only, so releases go through firebase-tools;
     - `init -backend=false` still opens a configured GCS backend, so `check.sh` uses its own data directory and needs no credentials.
+- **SC-40** (PR #30, merged): GitHub Actions lint, type-check, test and build the frontend, check `infra/`, and deploy both apps from `main`. `prod` is the only environment.
+  - **The workflow:** `.github/workflows/ci.yml`, with `.github/actions/setup-frontend`. On pull requests and pushes to `main` touching the frontend, design3 (not `designs/` or `a11y/`), `infra/` or the workflow, it runs three jobs: the frontend gate, the infra gate (`check.sh`, with shellcheck on the runner) and one build, kept as an artifact. On `main` the deploy job releases that artifact with `deploy.sh` (`SKIP_BUILD=1`, `HOSTING_SITES` from the environment).
+  - **Keyless, applied by Terraform** (plan saved, read in full, then applied: 14 added):
+    - the Workload Identity pool `github`, whose provider accepts only repository id `1402270649` under owner id `336086407`;
+    - the service account `github-deployer` (Hosting Admin and Service Usage Consumer only), which only `prod` environment jobs may act as;
+    - the GitHub environment `prod`, deployable from `main` only, with its variables `GCP_WORKLOAD_IDENTITY_PROVIDER`, `GCP_SERVICE_ACCOUNT` and `HOSTING_SITES`, through the `integrations/github` provider. The scripts give it `gh auth token`.
+  - **Pinned:** every action to a commit SHA; the workflow token is read-only, and only the deploy job gets `id-token: write`.
+  - **First runs:** PR #30's checks ran the gates and the build; the merge to `main` ran the first deploy from CI.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
