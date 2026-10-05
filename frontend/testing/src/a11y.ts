@@ -1,10 +1,10 @@
-// Ported from design3/a11y/helpers.ts (the prototype's WCAG suite), so the port is held to the same scan: the same
-// rule tags, the same target-size pass, the same report. Only the results folder moved.
+// Ported from design3/a11y/helpers.ts (the prototype's WCAG suite), so every app of the frontend is held to the same
+// scan: the same rule tags, the same target-size pass, the same report. Only the results folder moved: each app's own
+// test-results/a11y/<project>.
 import { AxeBuilder } from '@axe-core/playwright';
 import { expect, type Page, type TestInfo } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 
 // WCAG 2.0, 2.1 and 2.2 at levels A and AA: the rules axe-core can decide automatically.
 export const WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
@@ -73,7 +73,7 @@ export async function scan(page: Page, state: string, opts: { targetSizeExclude?
 
 // Save the findings for the summary, attach them to the HTML report, and fail on the chosen impacts.
 export async function report(testInfo: TestInfo, findings: Finding[]) {
-	const dir = join(dirname(fileURLToPath(import.meta.url)), '../../test-results/a11y', testInfo.project.name);
+	const dir = join(process.cwd(), 'test-results/a11y', testInfo.project.name);
 	mkdirSync(dir, { recursive: true });
 	const slug = testInfo.title
 		.replace(/[^a-z0-9]+/gi, '-')

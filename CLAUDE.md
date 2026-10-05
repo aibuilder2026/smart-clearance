@@ -20,8 +20,8 @@
   - Adapt what it returns by AGENTS.md's design rules, with the MIT notice beside the adapted code.
   - ThreeUI's own MCP server is for Pro members only, and is not set up.
 - **The frontend (`frontend/`):** a change to a surface already ported goes into design3 first, then into the Svelte port. In the browser pane:
-  - preview with the `frontend-admin` (dev, :5173) and `frontend-preview` (build, :4173) launch configs;
-  - restart `frontend-preview` after a rebuild, since it reads the build's file list once and 404s new chunks;
+  - preview the landing page with the `frontend-admin` (dev, :5173) and `frontend-preview` (build, :4173) launch configs, and the console with `frontend-console` (dev, :5174) and `frontend-console-preview` (build, :4176);
+  - restart a preview server after a rebuild, since it reads the build's file list once and 404s new chunks;
   - compare against the `design3` config (:8787).
 - **Tickets:** the jira-flow skills: `/jira-flow:work`, `:status`, `:pr`, `:ship`.
 - **A missing capability:** the `aitmpl` skill. Reading a component is fine; installing one needs a yes.
@@ -252,4 +252,19 @@
     - e2e: 51 pass, and only Firefox fails, because it cannot start in the sandbox;
     - parity: 29 pass.
   - **Hosting:** the hosted landing page and console load commit `2fe8134`, with `dist/loader.js` first in the landing page's `<body>`.
+- **SC-37** (In Review, branch `SC-37-console-app`): the staff console as its own SvelteKit app, `frontend/console`, deployable on its own subdomain (console.smartclearance.com).
+  - **A faithful port** of `design3/console` (SC-25's approved design), so no design round: the sign-in, Overview, Clients, a client's seven tabs, the New client flow, Agents, Connectors, Plans, Staff, Audit log and the account sheet.
+  - **No backend:** a typed `ConsoleApi` over an in-browser mock of `design3/core/platform.js`, which writes every audit line in the signed-in staff member's name. `PUBLIC_API_BASE` switches it to HTTP. The mock starts with two fictional demo requests.
+  - **Shared, not copied:**
+    - core gains Shell, Page, DataTable, Empty, Progress, Alert, NoticeHost, Tracker, VTracker, TrackerCompact, the Columns and SectionTitle patterns, and `screens.css`;
+    - `@smart-clearance/api` (new) holds the contract, HTTP transport, both apps' mocks and the seed. Admin moved onto it, and only bundles its own entry;
+    - `@smart-clearance/testing` (new) holds the axe scan and the parity compare;
+    - both apps' `app.html` is one file, held so by a test, as is the console's cascade.
+  - **What changed from the prototype, none of it visible:** real paths instead of the hash, links in the sidebar, table rows that open by keyboard, number settings clamped once entered.
+  - **Deploying:** `frontend/firebase.json` has a Hosting target per app (`site`, `console`); nothing is deployed yet.
+  - **Checks:**
+    - the gate passes;
+    - the console's e2e: 96 pass, Firefox not run (it cannot start in the sandbox);
+    - the console's parity: 80 pass, at most 0.27% apart;
+    - admin unchanged: e2e 51, parity 29.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

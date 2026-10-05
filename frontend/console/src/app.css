@@ -1,0 +1,15 @@
+/* The cascade, in one place, as the landing page's (admin/src/app.css): Tailwind's theme and utilities, never its
+   preflight; design system v3's tokens and components unlayered, as the prototype loads them; base.css in a layer. The
+   console adds the screens' shared stylesheet, as design3/console loads it, and its own (console.css) after these. */
+@layer theme, base, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import '@smart-clearance/core/styles/tokens.css';
+@import '@smart-clearance/core/styles/fonts.css';
+@import '@smart-clearance/core/styles/base.css' layer(base);
+@import '@smart-clearance/core/styles/components.css';
+@import '@smart-clearance/core/styles/screens.css';
+@import 'tailwindcss/utilities.css' layer(utilities);
+@import '@smart-clearance/core/styles/tailwind.css';
+
+@source '../../core/src';

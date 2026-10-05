@@ -25,9 +25,11 @@ Import the styles once, in the app's stylesheet, in the order `frontend/README.m
 | Path                                                  | What                                                                                                                                                               |
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `src/styles/tokens.css`, `base.css`, `components.css` | design3/system's CSS, verbatim apart from marked `@port` blocks                                                                                                    |
+| `src/styles/screens.css`                              | design3/screens' CSS, verbatim: the screens the apps share (the sign-in, the supply-chain strip …). The console loads it; the workspace app will                   |
 | `src/styles/fonts.css`                                | the four families from Fontsource, and the type tokens with their names                                                                                            |
 | `src/styles/tailwind.css`                             | Tailwind 4 over the tokens: colours, radii and type sizes as utilities, `dark:` on `[data-theme="dark"]`, `phone:`, `tablet-up:` and `desktop:` on the app's width |
-| `src/lib/`                                            | the components, `fmt`, the theme and app state, motion, icons, images                                                                                              |
+| `src/lib/`                                            | the components, the patterns from design3/screens, `fmt`, the theme and app state, notices, motion, icons, images                                                  |
+| `./identity`, `./format`                              | `isEmail`, `digits` and `fmt` on their own, for code that is not a component (`@smart-clearance/api`'s mocks)                                                      |
 | `src/lib/coverage.ts`                                 | every piece of the prototype's kit, built here or planned with the port that brings it                                                                             |
 
 ## From the kit (React) to Svelte
@@ -42,6 +44,9 @@ Import the styles once, in the app's stylesheet, in the order `frontend/README.m
 | `onClick`                                        | `onclick`                                                                                          |
 | `useTheme()`                                     | `useTheme()`: a `Theme` with `mode`, `resolved` and `setMode`                                      |
 | `useApp()`                                       | `useApp()`: an `AppState` with `w`, `h`, `bp`, `overlays`, `mounted`, `embedded`                   |
+| `useNotice()`                                    | `useNotice()`: the `Notices` of the nearest `NoticeHost`, with `toast()` and `push()`              |
+| a `DataTable` column's `render`                  | its `cell`, a snippet of the row: `{ key, label, cell }`                                           |
+| `Shell`'s `onNav`                                | a `NavItem` with `href` is a link; without, `onnav` is called                                      |
 | `Menu open onClose items` beside its own trigger | `Menu bind:open items` with a `trigger` snippet that spreads the props it is given onto the button |
 | `Icon name="search"`                             | the same; names are typed (`IconName`)                                                             |
 
@@ -52,11 +57,15 @@ A `MenuItem` can carry an `href`: it renders as a link, in a new tab for another
 **Built:** `AppRoot`, `ThemeProvider`, `Icon`, `Spinner`, `Button` (with `href` it is a link), `IconButton`, `Badge`, `Chip`,
 `Kbd`, `Card`, `List`, `ListRow`, `Field`, `Input`, `Select`, `Textarea`, `SearchField`, `Segmented`, `Tabs`, `Switch`,
 `Stepper`, `OTP`, `Check`, `Sheet`, `Menu`, `ModeMenuButton`, `Money`, `Roll`, `DaysNum`, `GateChips`, `Aura`, `Avatar`,
-`Product`, `Mark`, `Wordmark`, `WorkspaceMark`, `PoweredBy`, `WindowFrame`, `Splash`, and the `FindWorkspace` pattern.
+`Product`, `Mark`, `Wordmark`, `WorkspaceMark`, `PoweredBy`, `WindowFrame`, `Splash`; with the console (SC-37): `Shell`,
+`Page`, `DataTable`, `Empty`, `Progress`, `Alert`, `NoticeHost` and `useNotice`, `Tracker`, `VTracker`, `TrackerCompact`.
 
-**Planned** (`coverage.ts` says with which port): tables, tiles and feedback states, alerts and pushes, the shell and
-page, and code blocks with the console; the tracker family, the agent feed, the maps, the charts (on LayerChart) and the
-money panels with the workspace app; the device frames with the guided demo.
+**Patterns** (pieces of design3/screens the apps share): `FindWorkspace` (`screens/auth.jsx`), `Columns` and
+`SectionTitle` (`screens/common.jsx`).
+
+**Planned** (`coverage.ts` says with which port): skeletons, tiles, the countdown, the tracker card, the agent feed, the
+maps, the charts (on LayerChart), code blocks and the money panels with the workspace app; the device frames with the
+guided demo. The stages' times (`STAGE_TIMES`) are data, served with the console's config.
 
 ## Behaviour the kit defines, and how it is kept
 
@@ -64,9 +73,17 @@ money panels with the workspace app; the device frames with the guided demo.
   Escape, Close or the scrim closes it and focus returns to what opened it. A bottom sheet has medium and large detents
   and follows a drag, closing when flung or pulled most of the way down. A body that scrolls becomes a focusable region.
   Spring 420/40/0.9 in and out; the scrim fades over 200 ms.
+- **Alert** (bits-ui AlertDialog): the same as a sheet for focus, Escape and the scrim; each action closes it after its
+  own `onclick`. Spring 500/36, from 1.08 in.
 - **Menu** (bits-ui DropdownMenu, the WAI-ARIA menu-button pattern): focus goes to the checked item or the first; the
   arrows wrap, with Home and End; Escape closes and returns focus to the button; Tab closes and moves on from the button.
   It is drawn under its button by the kit's `.menu` CSS, not positioned by script.
+- **NoticeHost:** up to two banners and three toasts, announced politely, each leaving after a few seconds (6.2 s and
+  3.2 s); a banner swiped up goes.
+- **DataTable:** a column header sorts, and says so in `aria-sort`; the table is a focusable region, so it scrolls by
+  keyboard; with `onrow`, a row opens on a click (not one on a control inside it) or on Enter when it has focus.
+- **Shell:** a sidebar on desktops, an icon rail on tablets, a tab bar of four on phones; the page scrolls in `#main`.
+- **Page:** the large title collapses into the bar once the page scrolls, watched within its scroll container.
 - **Field** wires `aria-describedby` to its error or help and `aria-invalid` when it has an error; `Input`, `Select` and
   `Textarea` read it.
 - **Money** says the figure once, in hidden text, and draws the rupee sign, digits and paise silently.
@@ -83,13 +100,16 @@ money panels with the workspace app; the device frames with the guided demo.
 
 ## Ported CSS
 
-The three stylesheets equal design3's, checked by `tests/drift.test.ts`, except inside `/* @port … @port-end */` blocks:
+The stylesheets equal design3's, checked by `tests/drift.test.ts`, except inside `/* @port … @port-end */` blocks
+(`screens.css` has none):
 
 - `tokens.css`: the Google Fonts `@import` is gone; `fonts.css` serves the same families.
 - `components.css`, the adapters at the end:
   - `.app-window` and `.app-overlays` for window-scrolling pages;
   - `.when-light` and `.when-dark`, an icon for each appearance;
-  - `.menu a.mi`, for a menu item that is a link.
+  - `.menu a.mi`, for a menu item that is a link;
+  - `a.sb-item` and `.tabbar a.tab`, for the shell's places, which are links;
+  - `.table tbody tr.clickable:focus-visible`, the ring of a row that opens by keyboard.
 
 To take a change from design3: copy the file over, put the marked blocks back, and run the tests.
 

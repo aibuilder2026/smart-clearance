@@ -2,8 +2,7 @@
 	import { Button, Field, Icon, Input, Select, Sheet, Textarea, useApp } from '@smart-clearance/core';
 	import { createMutation } from '@tanstack/svelte-query';
 	import { api, usingMock } from '#lib/api/client.ts';
-	import { demoRequestErrors } from '#lib/api/mock.ts';
-	import { ApiError, type DemoRequest, type DemoRequestInput } from '#lib/api/types.ts';
+	import { ApiError, demoRequestErrors, type DemoRequest, type DemoRequestInput } from '@smart-clearance/api/site';
 	import { LINKS, linkProps } from './links';
 
 	let { open = $bindable(false), plan = null }: { open?: boolean; plan?: string | null } = $props();

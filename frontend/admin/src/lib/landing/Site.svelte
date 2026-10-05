@@ -3,7 +3,7 @@
 	import { animate } from 'motion';
 	import { onMount } from 'svelte';
 	import { api } from '#lib/api/client.ts';
-	import type { Catalog, Showcase } from '#lib/api/types.ts';
+	import type { Catalog, Showcase } from '@smart-clearance/api/site';
 	import Close from './Close.svelte';
 	import DemoSheet from './DemoSheet.svelte';
 	import Exits from './Exits.svelte';

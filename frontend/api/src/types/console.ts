@@ -1,0 +1,269 @@
+// The staff console's part of the contract (console.smartclearance.com): the platform's own staff, every client
+// workspace (its supply chain, agents, exits and rules, people, integrations and plan), and the audit log. The shapes
+// are design3/core/platform.js's, the console prototype's mock backend. Shared shapes are in shared.ts.
+import type { Catalog, DemoRequest, Mark, WorkspaceMatch } from './shared';
+
+/** how far an agent may go before a person says yes */
+export type Autonomy = 'suggest' | 'ask' | 'act';
+export type AutonomyLevel = { id: Autonomy; label: string; text: string };
+
+export type SettingValue = string | number | boolean | null;
+export type AgentSettings = Record<string, SettingValue>;
+/** one of an agent's settings, as the console edits it */
+export type SettingField = {
+	key: string;
+	label: string;
+	/** how the audit log names it ("floor", "daily run") */
+	short?: string;
+	type: 'time' | 'number' | 'money' | 'switch' | 'select' | 'stepper' | 'approver';
+	unit?: string;
+	min?: number;
+	max?: number;
+	step?: number;
+	options?: string[];
+	/** a switch that can't be changed, and why */
+	locked?: string;
+};
+/** an agent as one client runs it; the approval gate's autonomy is always "gate" */
+export type AgentConfig = {
+	on: boolean;
+	autonomy: Autonomy | 'gate';
+	settings: AgentSettings;
+	last: string | null;
+	next: string | null;
+};
+
+export type ExitId = 'expiresoon' | 'kirana' | 'staff' | 'foodbank' | 'd2c';
+export type ExitDef = { id: ExitId; name: string; icon: string };
+/** an exit for one client: on or off, or locked off with the reason */
+export type ExitState = { on: boolean; locked?: string | null; cap?: number };
+export type Exits = Record<ExitId, ExitState>;
+
+/** the supply-chain profile a client answers at onboarding; its exits and agents follow from it */
+export type Profile = {
+	route: 'distributors' | 'modern-trade' | 'own';
+	owner: 'distributor' | 'manufacturer';
+	expiry: 'full-credit' | 'price-support' | 'none';
+};
+export type ProfileQuestion = keyof Profile;
+export type ProfileQuestionDef = { label: string; options: { id: string; label: string }[] };
+
+export type PresetId = 'cautious' | 'standard' | 'trusted';
+/** how far a new client's agents go at first */
+export type Preset = { id: PresetId; label: string; text: string };
+
+export type Rules = {
+	reserve: number;
+	scheme: string;
+	staffCap: number;
+	tokenPct: number;
+	offerWindowHours: number;
+	hindiOffers: boolean;
+	requirePhoto: boolean;
+};
+/** the quick-commerce shelf-life gates: Blinkit's days left, Zepto's and Instamart's share of life left */
+export type Gates = { blinkitDays: number; qcomPct: number };
+
+export type Access = 'Approver' | 'Admin' | 'Member' | 'Partner';
+export type PersonStatus = 'active' | 'invited' | 'deactivated';
+export type ClientPerson = {
+	id: string;
+	name: string;
+	org: string;
+	role: string;
+	kind: string;
+	access: Access;
+	/** how they sign in: "Google", "Phone and code", "Google, invited" */
+	provider: string;
+	status: PersonStatus;
+	img: string | null;
+	email: string;
+	phone: string;
+};
+export type Distributor = {
+	id: string;
+	name: string;
+	city: string;
+	state?: string;
+	kiranas: number;
+	staffCap: number | null;
+	/** the one-time permission that lets the agents act in the distributor's name */
+	permission: 'given' | 'not-yet';
+};
+export type Sku = { id: string; code: string; brand: string; name: string; mrp: number; gst: number; lifeDays: number };
+export type Integration = {
+	id: string;
+	name: string;
+	kind: string;
+	status: 'ok' | 'mock' | 'soon' | 'waiting';
+	note: string;
+};
+export type SignInMethod = { id: string; title: string; who: string; rule: string; on: boolean };
+
+/** one manufacturer's workspace on Smart-Clearance */
+export type Client = {
+	id: string;
+	name: string;
+	legal: string;
+	city: string;
+	industry: string;
+	domain: string;
+	emailDomain: string;
+	mark: Mark;
+	plan: string;
+	status: 'live' | 'setting-up';
+	since: string | null;
+	region: string;
+	profile: Profile;
+	gates: Gates;
+	territoryGuard: boolean;
+	returnWindowDays: number;
+	exits: Exits;
+	rules: Rules;
+	signIn: SignInMethod[];
+	distributors: Distributor[];
+	skus: Sku[];
+	people: ClientPerson[];
+	integrations: Integration[];
+	recovered: number;
+	batches: number;
+	approver: string | null;
+	agents: Record<string, AgentConfig>;
+};
+
+export type StaffRole = 'Super admin' | 'Platform engineer' | 'Support';
+/** one of Smart-Clearance's own people, who sign in to the console */
+export type Staff = {
+	id: string;
+	name: string;
+	short: string;
+	role: StaffRole;
+	team: string;
+	email: string;
+	/** the device their passkey lives on */
+	passkey: string;
+	status: 'active' | 'invited';
+};
+
+/** one of the nine stages a batch passes, with when it happens and who acts */
+export type TrackStage = { id: string; title: string; human: boolean; time: string; who: string };
+/** a batch on the move, for a client */
+export type Track = {
+	client: string;
+	batch: string;
+	product: string;
+	distributor: string;
+	city: string;
+	done: number;
+	current: number;
+	note?: string;
+	/** recovered so far */
+	money?: number;
+	/** how the batch is split, while it moves */
+	split?: string;
+};
+export type Run = { at: string; agent: string; client: string; text: string };
+export type AuditEntry = { id: string; at: string; who: string; client: string | null; text: string };
+export type ClientTab = 'agents' | 'supply' | 'rules' | 'people' | 'integrations' | 'plan' | 'audit';
+/** something waiting on a person, or on a file */
+export type Attention = {
+	id: string;
+	client: string;
+	icon: string;
+	tone: 'amber' | 'blue';
+	title: string;
+	text: string;
+	action: { kind: 'remind'; distributor: string; label: string } | { kind: 'open'; tab: ClientTab; label: string };
+};
+/** GET /v1/console/overview: the day across every client */
+export type Overview = { tracks: Track[]; runs: Run[]; attention: Attention[] };
+
+/** what a new client starts from: money.js's rules */
+export type ConsoleDefaults = {
+	gates: Gates;
+	returnWindowDays: number;
+	reserve: number;
+	staffCap: number;
+	tokenPct: number;
+	scheme: string;
+	offerWindowHours: number;
+};
+/** GET /v1/console/config: how the console describes agents, exits, the supply-chain profile and the presets */
+export type ConsoleConfig = {
+	autonomy: AutonomyLevel[];
+	stageNames: Record<string, string>;
+	fields: Record<string, SettingField[]>;
+	exits: ExitDef[];
+	profile: Record<ProfileQuestion, ProfileQuestionDef>;
+	presets: Preset[];
+	stages: TrackStage[];
+	defaults: ConsoleDefaults;
+};
+
+export type AgentPatch = { on?: boolean; autonomy?: Autonomy; settings?: AgentSettings };
+export type ProfileInput = { profile: Profile; gates: Gates; returnWindowDays: number };
+export type RulesInput = { rules: Rules; exits: Exits };
+export type InviteInput = { name: string; contact: string; access: Access };
+export type PersonPatch = { access?: Access; status?: 'active' | 'deactivated' };
+export type StaffInviteInput = { name: string; email: string; role: StaffRole };
+/** the setup flow's answers; `request` is the demo request it started from */
+export type NewClientInput = {
+	name: string;
+	city: string;
+	industry: string;
+	colour: string;
+	slug: string;
+	emailDomain: string;
+	signGoogle: boolean;
+	signPhone: boolean;
+	profile: Profile;
+	exits: Exits;
+	preset: PresetId;
+	adminName: string;
+	adminEmail: string;
+	plan: string;
+	request: string | null;
+};
+/** an account the sign-in sheets offer */
+export type StaffAccount = Pick<Staff, 'id' | 'name' | 'email' | 'passkey'>;
+
+/** what the console calls. Every change is written to the audit log by the server, in the staff member's name */
+export interface ConsoleApi {
+	catalog(): Promise<Catalog>;
+	config(): Promise<ConsoleConfig>;
+	lookupWorkspaces(query: string): Promise<WorkspaceMatch[]>;
+
+	/** the accounts the sign-in sheets list. The mock lists the platform's active staff, standing in for Google's account
+	 *  chooser; backend-api signs in with Google Identity Services, then a WebAuthn passkey */
+	signInAccounts(): Promise<StaffAccount[]>;
+	signIn(staffId: string): Promise<Staff>;
+	signOut(): Promise<void>;
+	/** who is signed in, or null */
+	me(): Promise<Staff | null>;
+
+	overview(): Promise<Overview>;
+	clients(): Promise<Client[]>;
+	/** a client by id, or null when there is none */
+	client(id: string): Promise<Client | null>;
+	staff(): Promise<Staff[]>;
+	/** newest first; every client's, or one client's */
+	audit(client?: string | null): Promise<AuditEntry[]>;
+	demoRequests(): Promise<DemoRequest[]>;
+
+	updateAgent(client: string, agent: string, patch: AgentPatch): Promise<Client>;
+	runAgent(client: string, agent: string): Promise<Client>;
+	setAllAgents(client: string, on: boolean): Promise<Client>;
+	goLive(client: string): Promise<Client>;
+	setPlan(client: string, plan: string): Promise<Client>;
+	saveProfile(client: string, input: ProfileInput): Promise<Client>;
+	saveRules(client: string, input: RulesInput): Promise<Client>;
+	remindDistributor(client: string, distributor: string): Promise<void>;
+	requestFirstExport(client: string): Promise<Client>;
+	invitePerson(client: string, input: InviteInput): Promise<Client>;
+	updatePerson(client: string, person: string, patch: PersonPatch): Promise<Client>;
+	resendInvite(client: string, person: string): Promise<void>;
+	createClient(input: NewClientInput): Promise<Client>;
+	inviteStaff(input: StaffInviteInput): Promise<Staff>;
+	/** the prototype's "Reset prototype data": back to the seed. Only the mock has it */
+	reset?(): Promise<void>;
+}

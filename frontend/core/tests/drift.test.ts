@@ -25,3 +25,9 @@ describe('the ported stylesheets match design3/system', () => {
 		expect(port('components.css')).toContain('/* @port adapters');
 	});
 });
+
+describe("the screens' shared stylesheet matches design3/screens", () => {
+	it('screens.css is unchanged', () => {
+		expect(norm(strip(port('screens.css')))).toBe(norm(read('screens/screens.css')));
+	});
+});

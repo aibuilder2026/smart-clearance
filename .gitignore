@@ -38,6 +38,8 @@ frontend/**/blob-report/
 frontend/**/tests/parity/out/
 frontend/**/.env
 frontend/**/.env.*
+# Firebase CLI's deploy cache
+frontend/.firebase/
 !frontend/**/.env.example
 *.tsbuildinfo
 

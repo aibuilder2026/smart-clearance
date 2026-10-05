@@ -1,11 +1,19 @@
 # frontend
 
-Smart-Clearance's web frontend, in SvelteKit. It is a pnpm workspace with two packages:
+Smart-Clearance's web frontend, in SvelteKit. It is a pnpm workspace: two apps, each built and deployed on its own,
+over three shared packages.
 
-| Package                                                | What it is                                                                                                                                             |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [`core/`](core/README.md) (`@smart-clearance/core`)    | Design system v3 in Svelte 5: the tokens and component CSS ported from `design3/system`, and the components. Every UI piece the apps share lives here. |
-| [`admin/`](admin/README.md) (`@smart-clearance/admin`) | The platform's own site, a SvelteKit app. It serves the smartclearance.com landing page today; the staff console joins it later.                       |
+| Package                                                      | What it is                                                                                                                                                                  |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`admin/`](admin/README.md) (`@smart-clearance/admin`)       | The platform's own site: the smartclearance.com landing page, prerendered, and `/ds`.                                                                                       |
+| [`console/`](console/README.md) (`@smart-clearance/console`) | The staff console, console.smartclearance.com: a client-side app behind a staff sign-in, where each manufacturer's workspace is set up and run (SC-37).                     |
+| [`core/`](core/README.md) (`@smart-clearance/core`)          | Design system v3 in Svelte 5: the tokens, component and screen CSS ported from design3, and the components. Every UI piece the apps share lives here.                       |
+| [`api/`](api/README.md) (`@smart-clearance/api`)             | The frontend's side of backend-api: the contract, the HTTP transport, and an in-browser mock of each app's calls, seeded from design3. Each app imports only its own entry. |
+| [`testing/`](testing/README.md) (`@smart-clearance/testing`) | What the apps' Playwright suites share: design3/a11y's axe scan and report, and the pixel compare of the parity suites.                                                     |
+
+What the two apps share is shared, not copied: components and CSS through `core`, the contract and mocks through `api`,
+test helpers through `testing`. The one file each app must keep for itself, `src/app.html`, is the same file in both,
+and a test holds it so (`console/tests/unit/shared.test.ts`), as it holds the console's cascade to admin's.
 
 The Python services are beside it: [`../backend-api/`](../backend-api/README.md) and [`../agents/`](../agents/README.md).
 
@@ -34,7 +42,8 @@ pnpm comes through corepack, which Node ships; nothing is installed globally.
 ```sh
 cd frontend
 corepack pnpm install
-corepack pnpm dev                 # the admin app on http://localhost:5173 (/ and /ds)
+corepack pnpm dev                 # the landing page on http://localhost:5173 (/ and /ds)
+corepack pnpm dev:console         # the console on http://localhost:5174
 ```
 
 The first `corepack pnpm` call downloads the pinned pnpm (`packageManager` in `package.json`). pnpm 12 refuses a package published in the last day; let it pick the version before.
@@ -43,21 +52,36 @@ The first `corepack pnpm` call downloads the pinned pnpm (`packageManager` in `p
 
 Run them from `frontend/`.
 
-| Command                     | What it does                                                                                                                                    |
-| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `corepack pnpm dev`         | The admin app's dev server, :5173                                                                                                               |
-| `corepack pnpm build`       | The static site, into `admin/build/`                                                                                                            |
-| `corepack pnpm preview`     | Serves the build, :4173                                                                                                                         |
-| `corepack pnpm lint`        | ESLint and Prettier                                                                                                                             |
-| `corepack pnpm check`       | svelte-check in both packages, warnings fail                                                                                                    |
-| `corepack pnpm test`        | The seed and icon checks, then both packages' unit tests                                                                                        |
-| `corepack pnpm test:e2e`    | Builds with the dev routes on, then the Playwright suite: WCAG 2.2 AA in five projects, keyboard, motion, and the Firefox and WebKit smoke runs |
-| `corepack pnpm test:parity` | Builds, then compares the build with the prototype pixel by pixel; serves design3 on :8790                                                      |
-| `corepack pnpm seed`        | Regenerates `admin/src/lib/seed/` from `design3/core`                                                                                           |
-| `corepack pnpm icons`       | Regenerates `core/src/lib/icons/registry.ts` from `design3/system/icons.js`                                                                     |
-| `corepack pnpm format`      | Prettier, writing                                                                                                                               |
+| Command                     | What it does                                                                                                                                                                                        |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `corepack pnpm dev`         | The landing page's dev server, :5173 (`dev:console`: the console's, :5174)                                                                                                                          |
+| `corepack pnpm build`       | Both static apps, into `admin/build/` and `console/build/` (`build:admin`, `build:console`: one of them)                                                                                            |
+| `corepack pnpm preview`     | Serves the landing page's build, :4173 (`preview:console`: the console's, :4176)                                                                                                                    |
+| `corepack pnpm lint`        | ESLint and Prettier                                                                                                                                                                                 |
+| `corepack pnpm check`       | svelte-check or tsc in every package, warnings fail                                                                                                                                                 |
+| `corepack pnpm test`        | The seed and icon checks, then every package's unit tests                                                                                                                                           |
+| `corepack pnpm test:e2e`    | Each app's build, then its Playwright suite: WCAG 2.2 AA in five projects, keyboard, motion, the console's flows, the Firefox and WebKit smoke runs (`test:e2e:admin`, `test:e2e:console`: one app) |
+| `corepack pnpm test:parity` | Each app's build compared with its prototype pixel by pixel; serves design3 on :8790 (`test:parity:admin`, `test:parity:console`)                                                                   |
+| `corepack pnpm seed`        | Regenerates `api/src/seed/` and `admin/src/lib/seed/` from `design3/core`                                                                                                                           |
+| `corepack pnpm icons`       | Regenerates `core/src/lib/icons/registry.ts` from `design3/system/icons.js`                                                                                                                         |
+| `corepack pnpm format`      | Prettier, writing                                                                                                                                                                                   |
 
-The gate jira-flow runs for a change under `frontend/` is `corepack pnpm lint && corepack pnpm check && corepack pnpm test`. The e2e and parity suites need browsers (`corepack pnpm --filter @smart-clearance/admin exec playwright install chromium firefox webkit`) and run on their own.
+The gate jira-flow runs for a change under `frontend/` is `corepack pnpm lint && corepack pnpm check && corepack pnpm test`. The e2e and parity suites need browsers (`corepack pnpm --filter @smart-clearance/admin exec playwright install chromium firefox webkit`, once for both apps) and run on their own.
+
+## Deploying
+
+Each app is a static build, deployed on its own host name. `firebase.json` gives Firebase Hosting (the Tech Stack's
+choice) two targets:
+
+| Target    | Build           | Host name                  | Unknown paths |
+| --------- | --------------- | -------------------------- | ------------- |
+| `site`    | `admin/build`   | smartclearance.com         | `/200.html`   |
+| `console` | `console/build` | console.smartclearance.com | `/index.html` |
+
+Both cache `/_app/immutable/` for a year and everything else with `no-cache`; the console's pages also carry
+`noindex`. Bind each target to its own Hosting site once (`firebase target:apply hosting console <site-id>`), copy
+`.firebaserc.example` to `.firebaserc`, then `firebase deploy --only hosting:console` (or `hosting:site`) after its
+build. `console/README.md` has the steps. Nothing has been deployed yet.
 
 ## The cascade
 
@@ -70,27 +94,32 @@ The gate jira-flow runs for a change under `frontend/` is `corepack pnpm lint &&
 5. `components.css`, unlayered, as in the prototype.
 6. Tailwind's utilities (`@layer utilities`) and core's `tailwind.css` (the token mapping).
 
-A page's own stylesheet (the landing page's `site.css`) loads after these, unlayered. So the prototype's specificity between `components.css` and `site.css` holds exactly. A Tailwind utility cannot override a design-system class (unlayered beats layered); use `!` (`h-12!`) where one must.
+A page's own stylesheet (the landing page's `site.css`) loads after these, unlayered. The console's `app.css` is the same
+cascade with core's `screens.css` after `components.css`, and its own `console.css` loads after it all, as design3/console
+loads them. So the prototype's specificity between `components.css` and `site.css` holds exactly. A Tailwind utility cannot override a design-system class (unlayered beats layered); use `!` (`h-12!`) where one must.
 
 ## Kept in step with design3
 
 | What                                                          | Check                                                                                                                       |
 | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | `core/src/styles/{tokens,base,components}.css`                | equal to `design3/system/*.css` outside marked `/* @port … @port-end */` blocks (`core/tests/drift.test.ts`)                |
+| `core/src/styles/screens.css`                                 | equal to `design3/screens/screens.css` (`core/tests/drift.test.ts`)                                                         |
 | `admin/src/lib/landing/site.css`, `admin/src/lib/ds/docs.css` | equal to `design3/site/site.css` (one marked change) and `design3/system/docs.css` (`admin/tests/unit/drift.test.ts`)       |
+| `console/src/lib/console.css`                                 | equal to `design3/console/console.css` (`console/tests/unit/shared.test.ts`)                                                |
 | Every figure                                                  | the seed runs `design3/core/money.js`; `seed:check` fails when design3 changes and the seed was not regenerated             |
+| The console's rules                                           | `api/src/console/platform.ts` gives `design3/core/platform.js`'s answers, run side by side (`api/tests/platform.test.ts`)   |
 | `fmt`                                                         | identical strings to `money.js`'s `fmt` (`core/tests/format.test.ts`)                                                       |
 | Icons                                                         | every name in `design3/system/icons.js`, in its order (`icons:check`, `core/tests/icons.test.ts`)                           |
 | Components                                                    | every export of the prototype's kit is built in core or planned (`core/src/lib/coverage.ts`, `core/tests/coverage.test.ts`) |
-| The pages                                                     | the parity suite compares them with the prototype pixel by pixel                                                            |
+| The pages                                                     | each app's parity suite compares it with its prototype pixel by pixel                                                       |
 
-Never edit the generated files (`admin/src/lib/seed/*`, `core/src/lib/icons/registry.ts`) or the verbatim ones; regenerate or re-port them. Images are referenced in place in design3 and hashed into the build, never copied.
+Never edit the generated files (`api/src/seed/*`, `admin/src/lib/seed/*`, `core/src/lib/icons/registry.ts`) or the verbatim ones; regenerate or re-port them. Images are referenced in place in design3 and hashed into the build, never copied.
 
 ## Where this departs from the Tech Stack doc
 
 `docs/smart-clearance-tech-stack.html` plans the web app as `web/`. Here:
 
-- **`frontend/`, not `web/`,** with the design system as its own package (`core`) and the platform site as `admin`. The client workspace app will be a third package.
+- **`frontend/`, not `web/`,** with the design system as its own package (`core`), the platform site as `admin` and the staff console as `console`, each its own app. The client workspace app will be a third app.
 - **`200.html`, not `index.html`, as the fallback.** The prerendered landing page is `index.html`. Firebase Hosting rewrites unknown paths to `/200.html`.
 - **bits-ui directly, without the shadcn-svelte CLI.** Its components are styled by design system v3's CSS, not shadcn's.
 - **TanStack Query** carries the data, so the prerendered page and the client share one cache, and the mock can become HTTP without touching a component.
@@ -101,5 +130,6 @@ Never edit the generated files (`admin/src/lib/seed/*`, `core/src/lib/icons/regi
 
 - The Firefox smoke run could not be run in the agent's sandboxed shell (Firefox cannot start there); WebKit and Chromium were. Run `corepack pnpm test:e2e` on a normal machine to cover it.
 - The landing page ships about 139 kB of JavaScript (gzip): about 128 kB before SC-32, and the hero's town adds about 11 kB net (its WebGL2 renderer, camera, gestures and graph). bits-ui and its floating-ui layer are about 30 kB of it and the icon registry about 9 kB. A leaner menu and sheet, or a per-route icon registry, would cut it.
-- Demo requests stay in the browser (`localStorage`, `sc-demo-requests`) until `backend-api` takes them; the hosted console does not see them.
-- The console and the client workspace app are not ported yet. `core/src/lib/coverage.ts` lists the design-system pieces waiting for them.
+- Demo requests stay in the browser (`localStorage`, `sc-demo-requests`) until `backend-api` takes them; neither the hosted console nor `console/` sees them.
+- The client workspace app is not ported yet. `core/src/lib/coverage.ts` lists the design-system pieces waiting for it.
+- The console runs on its mock: signing in is a stand-in for Google and a passkey, and its changes stay in the browser (`sc-console`). The landing page's demo requests do not reach it (two fictional ones stand in) until backend-api takes both.

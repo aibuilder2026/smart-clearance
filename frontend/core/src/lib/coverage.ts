@@ -1,11 +1,10 @@
 // Where each piece of design system v3 stands in core. Every export of the prototype's window.SC3 (design3/system
 // kit.jsx, world.jsx, product.jsx) is listed exactly once, and a test keeps it that way: a new piece in design3 fails the
 // test until it is either built here or planned.
-export type Coverage = { status: 'built' } | { status: 'planned'; with: string };
+export type Coverage = { status: 'built' } | { status: 'planned'; with: string } | { status: 'api'; as: string };
 
 const built: Coverage = { status: 'built' };
 const later = (with_: string): Coverage => ({ status: 'planned', with: with_ });
-const console_ = later('the console port');
 const app = later('the workspace app port');
 
 export const COVERAGE: Record<string, Coverage> = {
@@ -55,23 +54,25 @@ export const COVERAGE: Record<string, Coverage> = {
 	PoweredBy: built,
 	WindowFrame: built,
 	Aura: built,
+	// the console's (SC-37)
+	DataTable: built,
+	Progress: built,
+	Empty: built,
+	Alert: built,
+	NoticeHost: built,
+	useNotice: built,
+	Shell: built,
+	Page: built,
+	Tracker: built,
+	VTracker: built,
+	TrackerCompact: built,
+	// data, not a component: each stage's time comes with the console's config
+	STAGE_TIMES: { status: 'api', as: 'GET /v1/console/config, stages[].time' },
 	// later, with the screens that use them
-	DataTable: console_,
-	Skeleton: console_,
-	Progress: console_,
-	Empty: console_,
-	Alert: console_,
-	NoticeHost: console_,
-	useNotice: console_,
-	Shell: console_,
-	Page: console_,
-	Tile: console_,
+	Skeleton: app,
+	Tile: app,
 	Countdown: app,
-	Tracker: app,
-	VTracker: app,
-	TrackerCompact: app,
 	TrackerCard: app,
-	STAGE_TIMES: app,
 	StatusBadge: app,
 	BatchRow: app,
 	AgentFeed: app,
@@ -85,7 +86,7 @@ export const COVERAGE: Record<string, Coverage> = {
 	SplitBar: app,
 	MoneyPanel: app,
 	DocCard: app,
-	CodeBlock: console_,
+	CodeBlock: app,
 	StatusBar: later('the guided demo port'),
 	PhoneFrame: later('the guided demo port')
 };
