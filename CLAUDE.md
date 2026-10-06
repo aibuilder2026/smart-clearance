@@ -387,7 +387,7 @@
     - backend-api: 152 pass;
     - design3's suite: 334 pass, with 0 failing WCAG rules.
   - **Hosting:** the hosted landing page and console load commit `d08a08a`. The app and demo stay on `58c6874`, so their Find your workspace still shows the role line.
-- **SC-47** (In Review, branch `SC-47-sku-batch-gates`): quick-commerce gates per SKU, with a per-batch override, for the agents to read.
+- **SC-47** (PR #35, merged): quick-commerce gates per SKU, with a per-batch override, for the agents to read.
   - **The request:** Blinkit and Zepto/Instamart settings at SKU and batch level. The maintainer's answers: per SKU with a per-batch override; the client's values stay as the default for new SKUs.
   - **Design first:** three options on one board in platform v3, `SC-47 design review.html`:
     - A, on each SKU;
@@ -419,7 +419,7 @@
     - design3's suite: 339 pass, with 0 failing WCAG rules.
   - **Hosting:** the hosted landing page and console load commit `80014aa`. jsDelivr first answered its `console.js` with a cached 403 ("Package size exceeded"); purging that URL fixed it.
   - **Known gap:** the workspace app still judges by the client-wide gates in `money.js`.
-- **SC-48** (In Review, branch `SC-48-overview-dashboard`, stacked on SC-47): the console's Overview as a live dashboard, database-driven.
+- **SC-48** (In Review, branch `SC-48-overview-dashboard`): the console's Overview as a live dashboard, database-driven.
   - **The request:** dashboards and live charts, proper pagination of the live batches, an engaging experience; nothing hard-coded or stubbed in the UI.
   - **Design first:** three options on one board in platform v3, `SC-48 design review.html`:
     - A, the command centre;
