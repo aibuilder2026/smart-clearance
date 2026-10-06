@@ -6,7 +6,7 @@ seeded from design3. The landing page (`../admin`) and the console (`../console`
 
 | Entry                          | What                                                                                                                                                                                |
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@smart-clearance/api`         | the shared types, `ApiError`, and `transport()`: JSON over HTTP, a bearer token when one is given                                                                                   |
+| `@smart-clearance/api`         | the shared types, `ApiError`, and `transport()`: JSON over HTTP, a bearer token when one is given, a `traceparent` on every call (SC-57)                                            |
 | `@smart-clearance/api/site`    | the landing page's `SiteApi`: `siteHttp(base)`, `siteMock()`, `demoRequestErrors()`                                                                                                 |
 | `@smart-clearance/api/console` | the console's `ConsoleApi`: `consoleHttp(base)`, `consoleMock()`, and the platform's rules (`exitsFor`, `profileLines`, `summary`, `agentDefaults`, `inviteError`, `setupErrors` …) |
 | `@smart-clearance/api/seed/*`  | the generated seed, for tests                                                                                                                                                       |

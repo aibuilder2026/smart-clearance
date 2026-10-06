@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncEngine
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from sc_api import errors, logs
+from sc_api import errors, logs, tracing
 from sc_api.db import dispose, make_engine, sessions
 from sc_api.domain.clock import Clock, Ids
 from sc_api.identity import IdentityProvider, provider
@@ -25,6 +25,7 @@ def create_app(
 ) -> FastAPI:
     settings = settings or get_settings()
     logs.configure(settings)
+    tracer_provider = tracing.setup(settings)
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
@@ -36,6 +37,7 @@ def create_app(
         finally:
             if own:
                 await dispose(app.state.engine)
+            tracing.flush()
 
     app = FastAPI(
         title="Smart-Clearance platform API",
@@ -64,12 +66,14 @@ def create_app(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
         allow_methods=["GET", "POST", "PATCH", "PUT", "DELETE"],
-        allow_headers=["authorization", "content-type", "accept"],
+        # traceparent: the apps start each call's trace (SC-57)
+        allow_headers=["authorization", "content-type", "accept", "traceparent"],
         allow_credentials=False,
         max_age=600,
     )
     app.include_router(public.router)
     app.include_router(console.router)
+    tracing.instrument_app(app, tracer_provider)
     return app
 
 

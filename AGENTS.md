@@ -75,7 +75,7 @@ The backend (from the repository root; `backend-api/README.md` has the prerequis
 ```sh
 backend-api/scripts/bootstrap.sh            # once per project: secrets, database and logins, schema, reference data, synthetic world
 backend-api/scripts/dev.sh                  # the API on :8000, as sc-api-local (or the backend-api preview config)
-backend-api/scripts/test.sh                 # pytest against smart_clearance_test: 152 tests, a few seconds
+backend-api/scripts/test.sh                 # pytest against smart_clearance_test: 214 tests, a few seconds
 backend-api/scripts/hydrate.sh --reset      # rebuild the synthetic world (Firebase accounts are kept)
 backend-api/scripts/hydrate.sh --tick       # today's agent runs, and a few batches moved on a stop (the console's day is today)
 backend-api/scripts/default-password.sh --copy   # the password every account starts on
@@ -187,6 +187,7 @@ Local pages:
 - No email is ever sent: accounts start on the default password, which an operator hands over.
 - The contract is `frontend/api/src/types/*.ts`. A change to it changes both sides, and `contracts.sh` re-exports the OpenAPI.
 - Reference data comes from design3 through `frontend/scripts/seed.mjs` (into `backend-api/src/sc_api/reference/`). Never hand-edit it; `rbac.json` is the exception.
+- Every request is traced (SC-57, `backend-api/src/sc_api/tracing.py`): the apps send a `traceparent` on every call, and the API's log lines, spans and audit rows carry the trace. Log through `logging`, so a line keeps its trace; instrument any new outbound client there, so its time shows in the request's trace. Spans go to Cloud Trace through the Telemetry API, sampled.
 
 **Accessibility**
 

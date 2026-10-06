@@ -14,9 +14,21 @@ Tech Stack doc (`docs/smart-clearance-tech-stack.html`) describe what it will do
 | Events | Cloud Pub/Sub (`batch.at_risk`, `offer.received`, `deal.closed`); runs resume from Postgres |
 | To the apps | server-sent events for the live agent feed, with polling as the fallback; push through Firebase Cloud Messaging |
 | Hosting | Cloud Run |
+| Tracing | OpenTelemetry, set up as backend-api's `tracing.py` (SC-57): OTLP to the Telemetry API, read in Cloud Trace |
 
 When the service exists, its gate runs on any `*.py` or `pyproject.toml` change here: `uv run ruff check . && uv run pytest`
 (`.claude/jira-flow.json`).
+
+## Tracing
+
+backend-api already ties each request's log lines, spans and audit rows to one trace (SC-57,
+`backend-api/src/sc_api/tracing.py`). The agents carry it on:
+
+- A Pub/Sub message carries the trace it was published in, as a `traceparent` attribute (OpenTelemetry's propagator
+  injects it); the subscriber continues that trace, so "batch at risk" leads from the Watcher's run to the Router's.
+- Each agent run records its trace id beside what it did, as the API's audit rows do in `details`.
+- Gemini calls, label reads and outbound offers are spans in the run's trace, and log lines carry it the way
+  backend-api's `logs.py` writes them.
 
 ## The agents
 
