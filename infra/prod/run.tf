@@ -5,6 +5,8 @@
 # - Ingress is public and Cloud Run's own IAM check is off: the API checks Firebase ID tokens itself, and its public
 #   routes (the landing page's) need no token.
 # - The hydrate job builds the synthetic world through the services, as sc-api (the maintainer's call for prod, SC-50).
+# - The API sends a share of its requests' spans to Cloud Trace through the Telemetry API (SC-57,
+#   backend-api/src/sc_api/tracing.py); every request's log lines carry its trace either way.
 # - Terraform creates them on var.backend_image (a placeholder); Cloud Build deploys every image after that
 #   (backend-api/cloudbuild.yaml), so each one ignores its image here.
 
@@ -51,6 +53,7 @@ resource "google_project_iam_member" "api" {
     google_project_iam_custom_role.auth_users.id, # Firebase users
     "roles/cloudsql.client",                      # connect through the connector
     "roles/cloudsql.instanceUser",                # sign in to Postgres as its IAM user
+    "roles/telemetry.tracesWriter",               # send spans to Cloud Trace (SC-57)
   ]) : toset([])
 
   project = var.project_id
@@ -106,7 +109,11 @@ resource "google_cloud_run_v2_service" "api" {
       }
 
       dynamic "env" {
-        for_each = merge(local.api_env, { CORS_ORIGINS = jsonencode(local.api_origins) })
+        for_each = merge(local.api_env, {
+          CORS_ORIGINS      = jsonencode(local.api_origins)
+          TRACE_EXPORT      = "otlp" # spans to Cloud Trace (SC-57)
+          TRACE_SAMPLE_RATE = tostring(var.trace_sample_rate)
+        })
         content {
           name  = env.key
           value = env.value

@@ -23,6 +23,7 @@ It is a working prototype, with nothing stubbed:
 | Secrets | Google Secret Manager only, read at runtime by reference; nothing secret is in a file, a command line or git |
 | Identity | Locally, the developer's own gcloud credentials, impersonating `sc-api-local` in code; on Cloud Run, `sc-api`. No key exists. |
 | Hosting | A container (`Dockerfile`) on Cloud Run in `asia-south1` (SC-50), built and deployed by Cloud Build (`cloudbuild.yaml`), logging JSON lines for Cloud Logging (`LOG_FORMAT=json`, `logs.py`) |
+| Tracing | OpenTelemetry 1.45 (SC-57, `tracing.py`): spans for each route, SQL statement and sign-in check (with Firebase's HTTP calls), sent over OTLP to the Telemetry API, read in Cloud Trace. Log lines and audit rows carry the request's trace id. |
 
 `docs/smart-clearance-tech-stack.html` planned Python 3.12 and PostgreSQL 16. 3.12 has had only security fixes since
 April 2025; 3.14 is current. PostgreSQL 18 is GA on Cloud SQL and is what the local container runs.
@@ -213,12 +214,29 @@ resources and their costs, about GBP 9 a month).
   ```
 - **Logs and alerts.** Cloud Logging keeps 30 days; Error Reporting groups the API's stack traces. The uptime check,
   the alerts (emailed to the operator) and the dashboard "Smart-Clearance backend-api" are in Cloud Monitoring.
+- **Following a request** (SC-57). The console and the landing page start a trace for every API call (a W3C
+  `traceparent`; a failed call's `ApiError` carries its `trace`). Cloud Run keeps that trace id, and the API continues
+  it:
+  - **Logs.** Every line the API writes during a request carries the trace and span, so Logs Explorer shows it under
+    Cloud Run's request line ("Show entries for this trace"), or filter on
+    `trace="projects/aibuilder-510213/traces/<trace id>"`.
+  - **Audit rows.** Each row keeps its request's trace id in `details`, so a change leads to its request:
+
+    ```sql
+    SELECT at, actor_name, text, details->>'trace' AS trace FROM sc.audit_log ORDER BY id DESC LIMIT 10;
+    ```
+  - **Spans.** Cloud Trace shows a sampled request's route, its sign-in check with Firebase's calls under it, and each
+    SQL statement. A request Cloud Run sampled (at most one every ten seconds an instance) is always kept, and a
+    quarter of the rest (`trace_sample_rate` in `infra/prod`). Unsampled requests still have their trace id in the logs
+    and audit rows.
+  - **Locally,** spans are made but not sent. `TRACE_EXPORT=otlp` sends them to Cloud Trace as `sc-api-local`, which
+    holds `roles/telemetry.tracesWriter` as `sc-api` does.
 - **Accounts.** Production shares the Firebase user pool with local development, so the same accounts sign in to both,
   on the default password (`scripts/default-password.sh`).
 
 ## Tests
 
-`scripts/test.sh` (198 tests, a few seconds) runs against a real PostgreSQL. It migrates `smart_clearance_test` from
+`scripts/test.sh` (214 tests, a few seconds) runs against a real PostgreSQL. It migrates `smart_clearance_test` from
 scratch and imports Munchly through the services. Each test runs in a transaction that is rolled back, as `sc_api`,
 with a fake Firebase that never reaches Google. The suite covers:
 
@@ -230,7 +248,9 @@ with a fake Firebase that never reaches Google. The suite covers:
 - the audit log refusing UPDATE, DELETE and TRUNCATE;
 - the API unable to write the reference data;
 - the synthetic world;
-- the published OpenAPI.
+- the published OpenAPI;
+- the tracing: a request continuing its caller's trace, with its sign-in check and SQL statements under it, its log
+  lines and audit rows carrying the trace, the sampling, and CORS letting the apps send `traceparent`.
 
 CI runs the same suite on a `postgres:18` service container, with a secret scan (gitleaks) on every pull request.
 
@@ -246,3 +266,5 @@ CI runs the same suite on a `postgres:18` service container, with a secret scan 
 - Cloud Run scales to zero, so the first request after a quiet spell waits for a cold start (a few seconds).
 - `db-f1-micro` is a shared core with 0.6 GB of memory and no SLA: enough for the prototype, not for real load.
 - The rate limiter keeps its counts per instance.
+- The apps start a trace per API call, not per click, so a screen that reads three things leaves three traces. The
+  hydrate and migrate jobs are not traced.

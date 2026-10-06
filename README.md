@@ -592,7 +592,20 @@ gcloud beta run services logs tail backend-api --region=asia-south1
 ```
 
 In the Cloud console: Cloud Run, the `backend-api` service, Logs and Metrics; Cloud Monitoring, the dashboard
-"Smart-Clearance backend-api"; Error Reporting for grouped exceptions; Cloud SQL, `sc-main`, Query Insights.
+"Smart-Clearance backend-api"; Error Reporting for grouped exceptions; Cloud Trace for sampled requests' spans; Cloud
+SQL, `sc-main`, Query Insights.
+
+One request, followed (SC-57). The apps start a trace on every API call, and the API's log lines, spans and audit rows
+all carry its id: a failed call's `ApiError` has it in the browser, and an audit row keeps it in `details->>'trace'`.
+Every line from one request:
+
+```bash
+gcloud logging read 'trace="projects/aibuilder-510213/traces/TRACE_ID"' --limit=100
+```
+
+Its spans, if it was sampled (Cloud Run's own samples, and a quarter of the rest): Cloud Trace, Trace explorer, search
+by the trace id. The spans show the route, the sign-in check with Firebase's calls under it, and each SQL statement.
+`backend-api/README.md` (In the cloud) has more.
 
 The alert policies email the operator (`alert_email` in `terraform.tfvars`) when: `/readyz` fails from two or more
 regions for 10 minutes; more than five 5xx responses in five minutes; the 95th percentile latency is over 5 s for 15

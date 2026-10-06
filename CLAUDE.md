@@ -544,7 +544,25 @@
   - **The `browser-suites` skill** (`.claude/skills/browser-suites/`) loads when a suite is asked for: what counts as an explicit ask, what each suite needs first (a build, `PUBLIC_API_BASE` empty, Firefox's sandbox limit), the commands, and how to report the counts.
   - **The `ask-before-suites` hook** (`.claude/hooks/ask-before-suites.sh`), a `PreToolUse` hook on Bash in `.claude/settings.json`, turns any command that would run a suite into a permission prompt; every other command passes. Tested on ten commands. It takes effect in a new session.
   - **Hosting:** unchanged.
-- **SC-58** (In Review, branch `SC-58-frontend-a11y`): the a11y suite runs on the frontend's real UI, and design3's is gone.
+- **SC-57** (PR #45, merged): request tracing for backend-api. One trace ties a request's log lines, spans and audit rows together.
+  - **The gaps it closes:** app logs carried no trace; there were no spans inside the backend; an audit row did not lead to its request; the apps sent no trace header.
+  - **The apps:** `transport()` in `@smart-clearance/api` sends a W3C `traceparent` with every call, a new trace each, flags left to Cloud Run and the API; a failed call's `ApiError` carries its `trace`. Checked on the live API: Cloud Run keeps a client's trace id.
+  - **backend-api** (`tracing.py`): OpenTelemetry 1.45 with spans for each route (not the health checks), each SQL statement (an `EngineTracer` per engine) and the sign-in check ("verify ID token"), with Firebase's HTTP calls under it (requests, not httpx: firebase-admin's auth uses requests).
+    - **Logs:** a JSON line written during a request carries `logging.googleapis.com/trace`, `spanId` and `trace_sampled`, the crash handler's line included.
+    - **Audit rows:** `details.trace`, beside what the change records.
+    - **Sampling:** a request Cloud Run sampled is always kept; of the rest, `TRACE_SAMPLE_RATE` (0.25 on Cloud Run, `trace_sample_rate` in `infra/prod`).
+    - **Export:** `TRACE_EXPORT=otlp` sends spans over OTLP to the Telemetry API (`telemetry.googleapis.com`), read in Cloud Trace. Google's Python Cloud Trace exporter is deprecated, so it is not used. A test trace exported from a workstation was read back from Cloud Trace with its three spans nested.
+  - **Terraform** (`infra/prod`): the Telemetry and Cloud Trace APIs (both already on; adopted), `roles/telemetry.tracesWriter` for `sc-api` and `sc-api-local`, and `TRACE_EXPORT` and `TRACE_SAMPLE_RATE` on the service. Applied on the maintainer's yes (plan read in full: 4 added, 1 changed, 0 destroyed).
+  - **Cost:** Cloud Trace ingests 2.5 million spans a month free, then 0.20 USD a million; the prototype's traffic stays well under.
+  - **The agents:** `agents/README.md` sets the convention: the trace in each Pub/Sub message's attributes, and each agent run recording its trace id.
+  - **Checks:**
+    - backend-api 214 pass (9 new); the frontend gate passes; infra `check.sh` passes; ARCHITECTURE.md's 15 diagrams parse with Mermaid 11;
+    - live: 6 pass, the console's calls carrying `traceparent` through CORS, and each audit row they wrote keeping its own trace id;
+    - e2e: landing page 51, console 110 pass; only Firefox fails, as it can't start in the sandbox;
+    - parity: landing page 29, console 80 pass;
+    - design3's suite: 349 pass, with 0 failing WCAG rules.
+  - **Hosting:** unchanged.
+- **SC-58** (PR #46): the a11y suite runs on the frontend's real UI, and design3's is gone.
   - **The request:** the maintainer found the a11y suite running on design3's prototypes, and asked for it on the actual UI components under `frontend/`. The decisions: remove design3's suite; scan every component the apps use, not `/ds`.
   - **`corepack pnpm test:a11y`** (`:admin`, `:console`): each app's production build, the axe WCAG 2.2 AA scans with the keyboard and motion specs in five projects, then the coverage check. `test:e2e` keeps the console's flows and the Firefox and WebKit smoke runs. The `/ds` scan is gone; `/ds` stays a dev route that parity compares.
   - **Coverage:** each scan records the core components on screen (`COMPONENTS` in `frontend/testing/src/a11y.ts`, with `data-product` on Product, which had no class of its own), and `testing/src/a11y-coverage.ts` fails the run when an app uses a component no scan reached. Its first run found two in the console: the toast (`NoticeHost`) and the checkboxes (`Check`); the console's spec now scans the toast after Pause every agent, and the New client flow's sign-in step.
@@ -554,7 +572,7 @@
     - a11y: landing page 44 pass, 0 WCAG findings, 22 of 22 components it uses on screen; console 94 pass and 5 fail (SC-59's contrast, in each project, before its fix), 36 of 36 components on screen;
     - the frontend gate passes.
   - **Hosting:** see SC-59.
-- **SC-59** (on SC-58's branch): a switched-off agent's name takes the secondary ink instead of the card text's 60% opacity, as AGENTS.md's contrast rule asks; the Off badge and the grey node still mark it.
+- **SC-59** (in PR #46): a switched-off agent's name takes the secondary ink instead of the card text's 60% opacity, as AGENTS.md's contrast rule asks; the Off badge and the grey node still mark it.
   - **Where:** `design3/console/console.css`, its dist, and the verbatim port in `frontend/console/src/lib/console.css` (the drift test holds them together).
   - **Measured** on design3's console with every agent paused: the name 7.90:1, the stage and summary 5.37:1 in light; 8.53:1 and 5.50:1 in dark (they were 2.43:1 and 2.75:1).
   - **Checks:** the frontend gate passes. The a11y suite was not re-run after the fix.

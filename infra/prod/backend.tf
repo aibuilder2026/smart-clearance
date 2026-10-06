@@ -31,6 +31,13 @@ resource "google_project_iam_member" "api_local_auth" {
   member  = google_service_account.api_local.member
 }
 
+# A local backend may send its spans to Cloud Trace too (TRACE_EXPORT=otlp, SC-57), as the cloud service does.
+resource "google_project_iam_member" "api_local_traces" {
+  project = var.project_id
+  role    = "roles/telemetry.tracesWriter"
+  member  = google_service_account.api_local.member
+}
+
 resource "google_secret_manager_secret_iam_member" "api_local" {
   for_each = { for id, s in local.secrets : id => s if contains(s.readers, "local") }
 

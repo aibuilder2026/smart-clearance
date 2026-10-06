@@ -49,7 +49,7 @@ flowchart LR
     sql[("Cloud SQL<br/>PostgreSQL 18<br/>smart_clearance")]
     auth["Firebase Authentication<br/>email + password"]
     secrets["Secret Manager"]
-    mon["Cloud Logging<br/>Monitoring, Error Reporting"]
+    mon["Cloud Logging, Cloud Trace<br/>Monitoring, Error Reporting"]
   end
 
   subgraph delivery["Delivery"]
@@ -141,9 +141,10 @@ Versions are those pinned in the lockfiles on 6 October 2026.
 | Identity | `firebase-admin` 7.7 verifies ID tokens and makes accounts; `google-auth` for the service's own credentials and local impersonation |
 | Secrets | `google-cloud-secret-manager` 2.31, read by reference at runtime |
 | Synthetic data | Faker 40 (`en_IN`), seeded |
-| Logging | one JSON object a line when `LOG_FORMAT=json` (`logs.py`), for Cloud Logging and Error Reporting |
+| Logging | one JSON object a line when `LOG_FORMAT=json` (`logs.py`), for Cloud Logging and Error Reporting; a line written during a request carries its trace and span |
+| Tracing | OpenTelemetry SDK 1.45 (`tracing.py`, SC-57), instrumenting FastAPI, SQLAlchemy and requests (0.66b1); the OTLP gRPC exporter to the Telemetry API (`telemetry.googleapis.com`), read in Cloud Trace |
 | Container | `python:3.14-slim`, two-stage build with uv, runs as an unprivileged user on port 8080 |
-| Tests | pytest 9 with pytest-asyncio and httpx, on a real PostgreSQL (`smart_clearance_test`), 205 tests |
+| Tests | pytest 9 with pytest-asyncio and httpx, on a real PostgreSQL (`smart_clearance_test`), 214 tests |
 
 ### Data
 
@@ -163,7 +164,7 @@ Versions are those pinned in the lockfiles on 6 October 2026.
 | Service identity | service accounts without keys: `sc-api`, `sc-migrator`, `sc-api-local` (impersonated in code from a developer's credentials), `sc-builder`, `github-deployer`, `github-backend`; a custom role `scAuthUsers` for user management only |
 | Compute | Cloud Run (service and two jobs), scaling to zero; Cloud Build; Artifact Registry |
 | Hosting | Firebase Hosting, one site per app, with rewrites and headers from `frontend/firebase.json` |
-| Observability | Cloud Logging (30 days), Error Reporting, Cloud Monitoring (an uptime check, seven alert policies, a dashboard), Cloud SQL Query Insights, a billing budget |
+| Observability | Cloud Logging (30 days), Error Reporting, Cloud Trace (sampled spans over OTLP, SC-57), Cloud Monitoring (an uptime check, seven alert policies, a dashboard), Cloud SQL Query Insights, a billing budget |
 | Infrastructure as code | Terraform 1.9 or later with `hashicorp/google` and `google-beta` 8.5 and `integrations/github` 6.13; state in GCS; deletion protection on what would hurt to lose |
 
 ### Delivery and quality
@@ -577,6 +578,29 @@ sequenceDiagram
   A-->>C: the request, with "Set up" to start a new client from it
 ```
 
+### One request, one trace
+
+Every API call the apps make starts a trace (SC-57). Cloud Run keeps its id, and backend-api continues it, so the
+call's log lines, spans and audit rows can be found from any one of them.
+
+```mermaid
+flowchart LR
+  c["Console or landing page<br/>transport(): traceparent,<br/>a new trace id a call"] --> cr["Cloud Run<br/>keeps the trace id;<br/>samples up to 1 every 10 s"]
+  cr --> api["backend-api<br/>server span for the route"]
+  api --> v["verify ID token<br/>Firebase's HTTP calls"]
+  api --> q["one span a SQL statement"]
+  api --> l["log lines<br/>logging.googleapis.com/trace"]
+  api --> a["audit row<br/>details.trace"]
+  v --> t["Cloud Trace<br/>sampled spans"]
+  q --> t
+  l --> lx["Logs Explorer<br/>grouped under the request"]
+  a --> pg[("sc.audit_log")]
+```
+
+A request Cloud Run sampled is always traced, so the API's spans join Cloud Run's own; of the rest, a quarter
+(`trace_sample_rate`). An unsampled request still has its trace id in its log lines and audit rows. A failed call's
+`ApiError` carries the trace id in the browser.
+
 ## 10. The cloud
 
 Everything is Terraform in `infra/`, in two roots: `bootstrap/` (the state bucket, holding its own state) and
@@ -591,7 +615,7 @@ flowchart TB
       idp["Firebase Authentication<br/>Identity Platform config, console web app,<br/>restricted browser key"]
     end
     subgraph run["Cloud Run"]
-      svc["service backend-api<br/>sc-api, 1 CPU, 512 Mi, 0 to 2, 60 s,<br/>/healthz probes, JSON logs"]
+      svc["service backend-api<br/>sc-api, 1 CPU, 512 Mi, 0 to 2, 60 s,<br/>/healthz probes, JSON logs, spans"]
       mig["job backend-api-migrate<br/>sc-migrator, sc-admin migrate, 600 s"]
       hyd["job backend-api-hydrate<br/>sc-api, sc-hydrate --allow-env prod, 1 Gi, 1800 s"]
     end
@@ -606,6 +630,7 @@ flowchart TB
     end
     subgraph ops["Operations"]
       log["Cloud Logging, 30 days<br/>Error Reporting"]
+      trace["Cloud Trace<br/>through the Telemetry API (OTLP)<br/>Cloud Run's samples + 25% of the rest"]
       mon["Cloud Monitoring<br/>uptime on /readyz from 3 regions<br/>7 alert policies, a dashboard"]
       budget["Budget GBP 20<br/>50%, 90%, 100%, forecast"]
       wif["Workload Identity pool github<br/>provider: this repository's ids only"]
@@ -624,6 +649,7 @@ flowchart TB
   cb --> hyd
   cb --> svc
   svc --> log
+  svc --> trace
   mig --> log
   hyd --> log
   log --> mon
@@ -765,6 +791,7 @@ flowchart LR
 | Events | Cloud Pub/Sub (`batch.at_risk`, `offer.received`, `deal.closed`); runs resume from PostgreSQL |
 | To the apps | server-sent events for the live agent feed, polling as the fallback; push through Firebase Cloud Messaging |
 | Money | never a model's guess: the Valuer and Router apply Journey Map v4.1's rules as `money.js` implements them, which the port brings |
+| Tracing | the same OpenTelemetry setup as backend-api's `tracing.py`: each Pub/Sub message carries the trace it was published in (a `traceparent` attribute), each agent run records its trace id, and Gemini calls are spans in it (SC-57) |
 
 ## 15. Decisions and their reasons
 
@@ -783,6 +810,7 @@ flowchart LR
 | Production starts with the synthetic world | the live console shows a working platform; hydrate builds it through the services, never by hand (SC-50) |
 | Cloud Build releases the backend; firebase-tools releases the frontend; Terraform owns neither's content | the Hosting provider cannot upload files, and Cloud Build owns the image; Terraform ignores it (SC-39, SC-50) |
 | Every plan saved, read in full, then applied | nothing in the cloud changes unread (SC-39) |
+| OpenTelemetry over OTLP to the Telemetry API, sampled in the API | Google's recommended route into Cloud Trace (its Python Cloud Trace exporter is deprecated); keeping Cloud Run's sampled requests joins its spans to the API's; logs and audit rows carry every request's trace, sampled or not (SC-57) |
 | WCAG 2.2 AA with zero axe violations and every motion under five seconds | held by suites on the prototypes and the apps, not by review alone (SC-18, SC-21) |
 
 ## 16. Known gaps
@@ -800,4 +828,6 @@ flowchart LR
   Firefox cannot start in a sandboxed shell.
 - The hosted design pages on Claude Design run on their mocks; the deployed apps read backend-api.
 - The landing page ships about 139 kB of JavaScript, gzipped; bits-ui and the icon registry are a third of it.
+- The apps start a trace per API call, not per click, so a screen that reads three things leaves three traces. The
+  hydrate and migrate jobs are not traced.
 - The WCAG 2.2 criteria axe cannot check (2.4.11, 2.5.7, 3.2.6, 3.3.7, 3.3.8) await a manual pass.

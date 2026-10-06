@@ -51,12 +51,14 @@ export type DemoRequestInput = {
 /** a demo request as the console lists it: new, or set up as a client (named by `client`) */
 export type DemoRequest = DemoRequestInput & { id: string; at: string; status: 'new' | 'set up'; client?: string };
 
-/** an API answer that isn't a success; `fields` names the inputs a 422 rejected, with the message for each */
+/** an API answer that isn't a success; `fields` names the inputs a 422 rejected, with the message for each. `trace` is
+ *  the call's trace id over HTTP (SC-57): its log lines, spans and audit rows in Google Cloud carry the same one. */
 export class ApiError extends Error {
 	constructor(
 		readonly status: number,
 		message: string,
-		readonly fields: Record<string, string> = {}
+		readonly fields: Record<string, string> = {},
+		readonly trace?: string
 	) {
 		super(message);
 	}

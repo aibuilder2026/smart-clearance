@@ -3,7 +3,8 @@ ids, Firebase, and who is asking.
 
 - Public routes (the landing page's, and the console's config and catalog) ignore any token they are sent.
 - Console routes need a Firebase ID token of an active staff member; otherwise 401, which the console reads as
-  signed out.
+  signed out. The token check is a span of its own in the request's trace (SC-57): once a minute per account it
+  reaches Firebase.
 """
 
 import time
@@ -14,7 +15,9 @@ from typing import Annotated
 from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
+from sc_api import tracing
 from sc_api.errors import ApiError
+from sc_api.identity import Verified
 from sc_api.services import reference, staff
 from sc_api.services.context import Actor, Ctx
 
@@ -64,11 +67,16 @@ def _token(credentials: HTTPAuthorizationCredentials | None) -> str:
     return credentials.credentials
 
 
+async def _verified(request: Request, credentials: HTTPAuthorizationCredentials | None) -> Verified:
+    token = _token(credentials)
+    with tracing.tracer.start_as_current_span("verify ID token"):
+        return await request.app.state.identity.verify(token)
+
+
 async def staff_ctx(
     request: Request, credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)]
 ) -> AsyncIterator[Ctx]:
-    token = _token(credentials)
-    verified = await request.app.state.identity.verify(token)
+    verified = await _verified(request, credentials)
     async with _ctx(request, VISITOR) as ctx:
         signed_in = await staff.by_uid(ctx, verified.uid)
         request.state.staff = signed_in.staff
@@ -79,8 +87,7 @@ async def signing_in_ctx(
     request: Request, credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)]
 ) -> AsyncIterator[tuple[Ctx, staff.SignedIn]]:
     """POST /v1/console/session: the first sign-in of an invited staff member makes them active"""
-    token = _token(credentials)
-    verified = await request.app.state.identity.verify(token)
+    verified = await _verified(request, credentials)
     async with _ctx(request, VISITOR) as ctx:
         signed_in = await staff.by_uid(ctx, verified.uid, activate=True)
         await ctx.session.commit()

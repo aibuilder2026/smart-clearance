@@ -24,6 +24,8 @@ locals {
     "identitytoolkit.googleapis.com", # Firebase Authentication (Identity Platform)
     "apikeys.googleapis.com",         # the console's restricted browser key
     "secretmanager.googleapis.com",   # backend-api's secrets
+    "telemetry.googleapis.com",       # the OTLP endpoint backend-api sends its spans to (SC-57)
+    "cloudtrace.googleapis.com",      # Cloud Trace, where those spans are read (on by default; adopted here)
     ], var.backend_runtime ? [
     "sqladmin.googleapis.com",         # Cloud SQL
     "run.googleapis.com",              # Cloud Run

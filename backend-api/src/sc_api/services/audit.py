@@ -1,5 +1,8 @@
 """The audit log: one line for every change, in the acting person's name and in the words the prototype writes
-(frontend/api/src/console/mock.ts). Lines are written in the same transaction as the change they describe."""
+(frontend/api/src/console/mock.ts). Lines are written in the same transaction as the change they describe.
+
+A line written during a request keeps the request's trace id in its details (SC-57), which finds the request's log
+lines in Logs Explorer (trace="projects/<project>/traces/<id>") and, if it was sampled, its spans in Cloud Trace."""
 
 from datetime import datetime
 from typing import Any
@@ -7,6 +10,7 @@ from typing import Any
 from sqlalchemy import select
 
 from sc_api import models as m
+from sc_api import tracing
 from sc_api.domain.display import audit_at
 from sc_api.schemas import AuditEntry
 from sc_api.services.context import Actor, Ctx
@@ -23,6 +27,9 @@ async def record(
     actor: Actor | None = None,
 ) -> None:
     who = actor or ctx.actor
+    details = dict(details or {})
+    if here := tracing.current():
+        details["trace"] = here.trace_id
     ctx.session.add(
         m.AuditEntry(
             at=at or ctx.clock.now(),
@@ -31,7 +38,7 @@ async def record(
             client_id=client_id,
             action=action,
             text=text,
-            details=details or {},
+            details=details,
         )
     )
     await ctx.session.flush()
