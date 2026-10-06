@@ -360,7 +360,7 @@
     - the frontend gate passes;
     - gitleaks: no leaks in the tree or the history.
   - **CI:** a backend gate and a secret scan.
-- **SC-46** (In Review, branch `SC-46-console-sign-in`): the platform on the real API, locally.
+- **SC-46** (PR #34, merged): the platform on the real API, locally.
   - **Design first:** two options on one board in platform v3, `SC-46 design review.html`:
     - A, one step in the card;
     - B, email first, then the password.
@@ -387,4 +387,36 @@
     - backend-api: 152 pass;
     - design3's suite: 334 pass, with 0 failing WCAG rules.
   - **Hosting:** the hosted landing page and console load commit `d08a08a`. The app and demo stay on `58c6874`, so their Find your workspace still shows the role line.
+- **SC-47** (In Review, branch `SC-47-sku-batch-gates`): quick-commerce gates per SKU, with a per-batch override, for the agents to read.
+  - **The request:** Blinkit and Zepto/Instamart settings at SKU and batch level. The maintainer's answers: per SKU with a per-batch override; the client's values stay as the default for new SKUs.
+  - **Design first:** three options on one board in platform v3, `SC-47 design review.html`:
+    - A, on each SKU;
+    - B, a gates matrix;
+    - C, batch first.
+
+    The maintainer picked **A**. Designs, frames and the decision are in `design3/designs/SC-47/`.
+  - **The rule:** a batch's gates are its override, else its SKU's, else the client's default, value by value.
+    - Blinkit wants days left; Zepto and Instamart a share of life, passed when days x 100 >= share x life.
+    - An SKU keeps the profile's bounds; an override may go down to 7 days and 5%, needs a reason, and holds until its batch closes.
+    - The rule is in `platform.js`, `platform.ts` and `domain/gates.py`, held together by fixtures from `platform.js`.
+  - **The console:**
+    - the SKU table shows each SKU's two gates ("this SKU" or "default") and its open batches with their overrides;
+    - a row opens the SKU sheet: the client's default or its own gates, and each open batch with pass or fail, its override, Change and Remove;
+    - the profile's gates are "by default", with how many SKUs differ;
+    - every change writes its audit line.
+  - **The data:**
+    - migration 0002 adds the SKU and batch gate columns, `best_before` and `judged_*`;
+    - `sc.batch_gates` is the agents' view;
+    - Munchly's nine story batches replace the seven placeholders, and three SKUs and one batch carry their own gates;
+    - hydrate gives SKUs gates by shelf life, and records some overrides with reasons.
+  - **The contract:** `Sku.gates`, `clientBatches`, `saveSkuGates`, `overrideBatch` and `clearBatchOverride`, over four new routes.
+  - **Checks:**
+    - backend-api: 190 pass, the view and the API agreeing;
+    - the frontend gate passes;
+    - e2e: console 103 pass; only Firefox fails, as it can't start in the sandbox;
+    - parity: 80 pass;
+    - live: 4 pass, the SKU flow on the real API and Firebase;
+    - design3's suite: 339 pass, with 0 failing WCAG rules.
+  - **Hosting:** the hosted landing page and console load commit `80014aa`. jsDelivr first answered its `console.js` with a cached 403 ("Package size exceeded"); purging that URL fixed it.
+  - **Known gap:** the workspace app still judges by the client-wide gates in `money.js`.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
