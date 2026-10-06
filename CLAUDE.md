@@ -419,4 +419,32 @@
     - design3's suite: 339 pass, with 0 failing WCAG rules.
   - **Hosting:** the hosted landing page and console load commit `80014aa`. jsDelivr first answered its `console.js` with a cached 403 ("Package size exceeded"); purging that URL fixed it.
   - **Known gap:** the workspace app still judges by the client-wide gates in `money.js`.
+- **SC-48** (In Review, branch `SC-48-overview-dashboard`, stacked on SC-47): the console's Overview as a live dashboard, database-driven.
+  - **The request:** dashboards and live charts, proper pagination of the live batches, an engaging experience; nothing hard-coded or stubbed in the UI.
+  - **Design first:** three options on one board in platform v3, `SC-48 design review.html`:
+    - A, the command centre;
+    - B, the nine stops;
+    - C, clients at a glance.
+
+    The maintainer picked **A**. Designs, frames and the decision are in `design3/designs/SC-48/`.
+  - **The page:**
+    - four figures with their range lines: recovered (with the change on the range before), in flight, waiting for a yes (with the oldest), runs today;
+    - recovered by day for 7, 30 or 90 days, with a crosshair tooltip and "Show as a table";
+    - batches in flight at each stop, Approve in amber; a stop filters the table;
+    - every client's batches a page at a time (8, 16 or 32), by status, client, stop and search, sorted on the server; the view lives in the address;
+    - Needs attention, Demo requests and Agent runs.
+  - **Live, and still:** the figures are read again every 30 s and on focus. Pause is remembered per browser (WCAG 2.2.2), and nothing moves on its own.
+  - **The data:**
+    - `GET /v1/console/dashboard` and `GET /v1/console/batches` (`services/dashboard.py`), aggregates over batches, runs and clients;
+    - `platform.js`, `platform.ts` and the API give the same answers, held by fixtures;
+    - hydrate builds 35 days: none to three batches a day per live client, each closing a few days later or still in flight.
+  - **Checks:**
+    - backend-api: 198 pass;
+    - the frontend gate passes;
+    - e2e: console 109 pass; only Firefox fails, as it can't start in the sandbox;
+    - parity: 80 pass;
+    - live: 5 pass, the Overview on the 35-day world;
+    - design3's suite: 344 pass, with 0 failing WCAG rules;
+    - the landing page is unchanged: e2e 51, parity 29.
+  - **Hosting:** the hosted landing page and console load commit `6a70275`; every pinned file was checked on jsDelivr first.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
