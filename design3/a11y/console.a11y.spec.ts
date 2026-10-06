@@ -71,3 +71,25 @@ test('console · an agent, and a new client step by step', async ({ page }, test
   findings.push(...await scan(page, 'new client · review'));
   await report(testInfo, findings);
 });
+
+// SC-47: an SKU's own quick-commerce gates, and a batch's override, in the SKU sheet
+test('console · an SKU\'s gates and a batch override', async ({ page }, testInfo) => {
+  await open(page, 'clients/munchly/supply');
+  const findings: Finding[] = [];
+  // desktops open the SKU from its name in the table; phones from its row in the list
+  const sku = page.getByRole('button', { name: /^Choco Cream Biscuits 200 g/ }).first();
+  await sku.scrollIntoViewIfNeeded();
+  await sku.click();
+  await page.getByRole('dialog').waitFor();
+  await page.waitForTimeout(600);
+  findings.push(...await scan(page, 'console · an SKU on the default, with an overridden batch'));
+  await page.getByRole('button', { name: 'Change' }).click();
+  await page.waitForTimeout(300);
+  findings.push(...await scan(page, 'console · changing a batch override'));
+  await page.getByRole('button', { name: 'Its own' }).click();
+  await page.getByLabel('Blinkit takes at least', { exact: true }).fill('10');
+  await page.getByRole('button', { name: 'Save gates' }).click();
+  await page.getByRole('alert').first().waitFor();
+  findings.push(...await scan(page, 'console · an SKU with its own gates, out of bounds'));
+  await report(testInfo, findings);
+});

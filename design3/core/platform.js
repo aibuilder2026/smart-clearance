@@ -5,7 +5,7 @@
 (function () {
   const D = window.SC3_DATA, M = window.SC3_MONEY, AppStore = window.SC3_STORE;
   const R = M.RULES;
-  const KEY = "sc3-platform", VERSION = 1;
+  const KEY = "sc3-platform", VERSION = 2;
 
   /* ---------- Smart-Clearance's own people (fictional) ---------- */
   const STAFF = [
@@ -58,7 +58,7 @@
   function summary(agentId, s, client) {
     switch (agentId) {
       case "data": return `daily ${s.time} · ${s.backfillDays} days of history`;
-      case "watcher": return `daily ${s.time} · Blinkit ${s.blinkitDays}+ days, Zepto and Instamart ${s.qcomPct}% of life`;
+      case "watcher": return `daily ${s.time} · Blinkit ${s.blinkitDays}+ days, Zepto and Instamart ${s.qcomPct}% of life, unless an SKU has its own`;
       case "vision": return `asks again below ${Number(s.confidence).toFixed(2)} confidence`;
       case "valuer": return `${Object.values(client.exits).filter(x => x.on).length} exits on, and the bin`;
       case "router": return s.objective.toLowerCase();
@@ -124,6 +124,52 @@
     return lines;
   }
 
+  /* ---------- quick-commerce gates per SKU, with a per-batch override (SC-47) ---------- */
+  // the console's day (the story's 6 Oct), which every batch's days left counts from
+  const TODAY = D.addDays(D.DAY0, 4);
+  // an SKU's own gates keep the profile's bounds; a batch's override records a deal a warehouse agreed to, so it may go lower
+  const GATE_BOUNDS = { sku: { blinkitDays: [30, 180], qcomPct: [30, 90] }, override: { blinkitDays: [7, 180], qcomPct: [5, 90] } };
+  const daysBetween = (from, to) => Math.round((Date.parse(to + "T00:00:00Z") - Date.parse(from + "T00:00:00Z")) / 86400000);
+  // a batch's gates as the agents read them: its override, else its SKU's own, else the client's default, value by value.
+  // Blinkit wants days left; Zepto and Instamart a share of the SKU's life left: a batch passes when days x 100 >= share x life
+  function batchGates(client, batch, today) {
+    const sku = client.skus.find(x => x.id === batch.sku), own = (sku && sku.gates) || {}, o = batch.override || {};
+    const pick = k => (o[k] != null ? [o[k], "override"] : own[k] != null ? [own[k], "sku"] : [client.gates[k], "default"]);
+    const [bl, blFrom] = pick("blinkitDays"), [qc, qcFrom] = pick("qcomPct");
+    const life = sku.lifeDays, days = daysBetween(today || TODAY, batch.bestBefore), pct = Math.floor((days * 100) / life), qcPass = days * 100 >= qc * life;
+    return { blinkitDays: bl, qcomPct: qc, daysLeft: days, lifeDays: life, checks: [
+      { app: "blinkit", need: bl, has: days, pass: days >= bl, source: blFrom },
+      { app: "zepto", need: qc, has: pct, pass: qcPass, source: qcFrom },
+      { app: "instamart", need: qc, has: pct, pass: qcPass, source: qcFrom },
+    ] };
+  }
+  const gateText = g => [g.blinkitDays != null && `Blinkit ${g.blinkitDays}+ days`, g.qcomPct != null && `Zepto and Instamart ${g.qcomPct}% of life`].filter(Boolean).join(", ");
+  const isInt = v => typeof v === "number" && Number.isInteger(v);
+  // what an SKU's own gates must be, or the problem with them (null puts it back on the client's default)
+  function skuGatesError(g) {
+    if (g == null) return null;
+    const [b, q] = [GATE_BOUNDS.sku.blinkitDays, GATE_BOUNDS.sku.qcomPct];
+    if (g.blinkitDays == null && g.qcomPct == null) return "Give the SKU at least one gate of its own, or put it back on the default.";
+    if (g.blinkitDays != null && (!isInt(g.blinkitDays) || g.blinkitDays < b[0] || g.blinkitDays > b[1])) return `Blinkit takes ${b[0]} to ${b[1]} days.`;
+    if (g.qcomPct != null && (!isInt(g.qcomPct) || g.qcomPct < q[0] || g.qcomPct > q[1])) return `Zepto and Instamart take ${q[0]}% to ${q[1]}% of life.`;
+    return null;
+  }
+  // what a batch's override must carry, or the problem with it
+  function overrideError(o) {
+    const [b, q] = [GATE_BOUNDS.override.blinkitDays, GATE_BOUNDS.override.qcomPct];
+    if (o.blinkitDays == null && o.qcomPct == null) return "Override at least one gate.";
+    if (o.blinkitDays != null && (!isInt(o.blinkitDays) || o.blinkitDays < b[0] || o.blinkitDays > b[1])) return `A batch's Blinkit gate is ${b[0]} to ${b[1]} days.`;
+    if (o.qcomPct != null && (!isInt(o.qcomPct) || o.qcomPct < q[0] || o.qcomPct > q[1])) return `A batch's Zepto and Instamart gate is ${q[0]}% to ${q[1]}% of life.`;
+    const why = (o.reason || "").trim();
+    if (!why) return "Say why this batch is different.";
+    if (why.length > 200) return "Keep the reason to 200 characters.";
+    return null;
+  }
+  const poss = n => n + (/s$/i.test(n) ? "'" : "'s");
+  const skuGatesLine = (client, sku, g) => (g ? `Set ${sku.name}'s quick-commerce gates: ${gateText(g)}` : `Put ${sku.name} back on ${poss(client.name)} default quick-commerce gates`);
+  const overrideLine = (ref, o) => `Overrode ${ref}'s quick-commerce gates: ${gateText(o)} (${o.reason.trim()})`;
+  const clearOverrideLine = ref => `Removed ${ref}'s quick-commerce gate override`;
+
   /* ---------- agent presets for a new client; the approval gate is always on ---------- */
   const PRESETS = [
     { id: "cautious", label: "Cautious", text: "Agents suggest; people do everything" },
@@ -157,7 +203,9 @@
     });
     const permission = { rakesh: "given", lakshmi: "given", patil: "not-yet", gupta: "not-yet" };
     const distributors = Object.values(D.DISTRIBUTORS).map(d => ({ id: d.id, name: d.name, city: d.city, state: d.state, kiranas: d.kiranas, staffCap: d.staffCap || null, permission: permission[d.id] || "not-yet" }));
-    const skus = Object.values(D.SKUS).map(s => ({ id: s.id, code: s.code, brand: s.brand, name: s.name, mrp: s.mrp, gst: s.gst, lifeDays: s.lifeDays }));
+    // three SKUs keep gates of their own: the drink's shorter shelf, and the two 730-day Glowra packs (illustrative)
+    const OWN_GATES = { mango: { blinkitDays: 45, qcomPct: 50 }, facewash: { blinkitDays: 180 }, hairoil: { blinkitDays: 180 } };
+    const skus = Object.values(D.SKUS).map(s => ({ id: s.id, code: s.code, brand: s.brand, name: s.name, mrp: s.mrp, gst: s.gst, lifeDays: s.lifeDays, gates: OWN_GATES[s.id] || {} }));
     const profile = { route: "distributors", owner: "distributor", expiry: "full-credit" };
     const client = {
       id: W.id, name: W.name, legal: D.CLIENT && D.CLIENT.name || "Munchly Foods Ltd", city: "Pune", industry: "Snacks, drinks and personal care", domain: W.domain, emailDomain: W.emailDomain, mark: W.mark,
@@ -180,6 +228,13 @@
     { client: "munchly", batch: "MF-2409-117", sku: "chips", distributor: "rakesh", done: 8, current: 8, note: "Report waits for the return window", money: D.ACTUAL.net },
     { client: "munchly", batch: "MF-2410-118", sku: "mango", distributor: "lakshmi", done: 6, current: 6, split: "1,372 to kiranas · 150 staff sale · 58 food bank" },
   ];
+  // Munchly's batches the Watcher sees, from the app's own seed: the two on the move (TRACKS), the rest at Detect. One
+  // carries a gate override, the deal Zepto's Pune warehouse agreed to (illustrative)
+  const BATCHES = D.BATCHES.map(b => {
+    const t = TRACKS.find(x => x.batch === b.id);
+    return { client: "munchly", ref: b.id, sku: b.sku, distributor: b.distributor, units: b.units, bestBefore: b.bestBefore, done: t ? t.done : 1, current: t ? t.current : 1 };
+  });
+  BATCHES.find(b => b.ref === "MF-2409-204").override = { qcomPct: 30, reason: "Zepto's Pune warehouse agreed to take this lot at 30% of its life", by: "Neha Kulkarni", at: "4 Oct, 16:20" };
   const RUNS = [
     { at: "08:30", agent: "data", client: "munchly", text: "4 stock exports loaded, 312 batches" },
     { at: "09:00", agent: "watcher", client: "munchly", text: "MF-2410-118 at risk, 22 days left" },
@@ -198,10 +253,11 @@
     { id: "a5", at: "1 Oct, 16:50", who: "Rakesh bhai", client: "munchly", text: "Gave the agents his one-time permission for Rakesh Traders" },
     { id: "a6", at: "2 Oct, 11:20", who: "Neha Kulkarni", client: "munchly", text: "Set the Negotiator to Ask for Munchly Foods" },
     { id: "a7", at: "3 Oct, 18:02", who: "Arjun Nair", client: "munchly", text: "Deactivated Krishna Kirana Bhandar" },
+    { id: "a8", at: "4 Oct, 16:20", who: "Neha Kulkarni", client: "munchly", text: "Overrode MF-2409-204's quick-commerce gates: Zepto and Instamart 30% of life (Zepto's Pune warehouse agreed to take this lot at 30% of its life)" },
   ];
 
   function seed() {
-    return { v: VERSION, clients: [seedMunchly()], staff: STAFF.map(s => Object.assign({ status: "active" }, s)), runs: RUNS.slice(), tracks: TRACKS.slice(), audit: AUDIT.slice(), requests: [], seq: 1, nextAudit: 100 };
+    return { v: VERSION, clients: [seedMunchly()], staff: STAFF.map(s => Object.assign({ status: "active" }, s)), runs: RUNS.slice(), tracks: TRACKS.slice(), batches: BATCHES.map(b => Object.assign({}, b, b.override ? { override: Object.assign({}, b.override) } : {})), audit: AUDIT.slice(), requests: [], seq: 1, nextAudit: 100 };
   }
 
   /* ---------- the store ---------- */
@@ -241,6 +297,7 @@
     usePersistence() { persist = true; try { const raw = localStorage.getItem(KEY); if (raw) { const d = JSON.parse(raw); if (d && d.v === VERSION) state = d; } } catch (e) {} },
     client: id => state.clients.find(c => c.id === id),
     buildClient, slug, summary, fieldLabel, showValue, money, exitsFor, profileLines, optLabel, agentDefaults,
+    TODAY, GATE_BOUNDS, batchGates, gateText, skuGatesError, overrideError, skuGatesLine, overrideLine, clearOverrideLine,
     STAFF, AUTONOMY, AGENTS, STAGE_NAME, FIELDS, PLANS, CONNECTORS, EXITS, PROFILE, PRESETS, seed,
   };
   window.SC3_PLATFORM = Platform;

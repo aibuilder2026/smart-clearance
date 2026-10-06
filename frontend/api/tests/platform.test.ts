@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
 	agentDefaults,
+	batchGates,
+	clearOverrideLine,
 	exitsFor,
+	overrideError,
+	overrideLine,
+	skuGatesError,
+	skuGatesLine,
 	profileLines,
 	showValue,
 	slug,
@@ -66,5 +72,53 @@ describe("the platform's rules match platform.js", () => {
 			expect(agentDefaults(preset, catalog.agents, R, 'admin-x')).toEqual(
 				P.agentDefaults(preset, { approver: 'admin-x' })
 			);
+	});
+});
+
+describe('quick-commerce gates per SKU, with a per-batch override (SC-47), match platform.js', () => {
+	const state = P.seed();
+	const c = state.clients[0];
+	it("gives every batch the gates platform.js gives it, on the console's day and at the edges", () => {
+		for (const b of state.batches)
+			for (const today of [seed.today, '2026-11-18', '2026-11-25', '2026-08-20', '2026-12-08'])
+				expect(
+					batchGates(
+						c,
+						c.skus.find((x: { id: string }) => x.id === b.sku),
+						b,
+						today
+					)
+				).toEqual(P.batchGates(c, b, today));
+	});
+	it('checks gates and overrides in the same words', () => {
+		for (const g of [
+			null,
+			{},
+			{ blinkitDays: 45, qcomPct: 50 },
+			{ blinkitDays: 29 },
+			{ qcomPct: 91 },
+			{ blinkitDays: 45.5 }
+		])
+			expect(skuGatesError(g)).toBe(P.skuGatesError(g));
+		for (const o of [
+			{ reason: 'x' },
+			{ blinkitDays: 6, reason: 'x' },
+			{ qcomPct: 4, reason: 'x' },
+			{ qcomPct: 30, reason: '  ' },
+			{ qcomPct: 30, reason: 'y'.repeat(201) },
+			{ qcomPct: 30, blinkitDays: 60, reason: 'A deal' }
+		])
+			expect(overrideError(o)).toBe(P.overrideError(o));
+	});
+	it('writes the audit lines platform.js writes', () => {
+		const sku = c.skus[5];
+		expect(skuGatesLine(c, sku, { blinkitDays: 45, qcomPct: 50 })).toBe(
+			P.skuGatesLine(c, sku, { blinkitDays: 45, qcomPct: 50 })
+		);
+		expect(skuGatesLine(c, sku, null)).toBe(P.skuGatesLine(c, sku, null));
+		expect(overrideLine('MF-2409-204', { qcomPct: 30, reason: ' A deal ' })).toBe(
+			P.overrideLine('MF-2409-204', { qcomPct: 30, reason: ' A deal ' })
+		);
+		expect(clearOverrideLine('MF-2409-204')).toBe(P.clearOverrideLine('MF-2409-204'));
 	});
 });

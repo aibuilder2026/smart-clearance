@@ -231,3 +231,70 @@ describe('staff and the stored state', () => {
 		expect((await again.me())?.id).toBe('neha');
 	});
 });
+
+describe('quick-commerce gates per SKU, with a per-batch override (SC-47)', () => {
+	it("lists a client's open batches with their gates, one SKU's when asked", async () => {
+		const all = await api.clientBatches('munchly');
+		expect(all).toHaveLength(9);
+		const b = all.find((x) => x.ref === 'MF-2409-204')!;
+		expect(b.override).toEqual({
+			qcomPct: 30,
+			reason: "Zepto's Pune warehouse agreed to take this lot at 30% of its life",
+			by: 'Neha Kulkarni',
+			at: '4 Oct, 16:20'
+		});
+		expect(b.checks.map((c) => [c.app, c.has, c.need, c.pass, c.source])).toEqual([
+			['blinkit', 92, 90, true, 'default'],
+			['zepto', 34, 30, true, 'override'],
+			['instamart', 34, 30, true, 'override']
+		]);
+		expect((await api.clientBatches('munchly', 'mango')).map((x) => x.ref)).toEqual(['MF-2410-118']);
+	});
+	it("sets an SKU's own gates, writes nothing when unchanged, and puts it back on the default", async () => {
+		const c = await api.saveSkuGates('munchly', 'chips', { blinkitDays: 75, qcomPct: 60 });
+		expect(c.skus.find((x) => x.id === 'chips')!.gates).toEqual({ blinkitDays: 75, qcomPct: 60 });
+		expect((await lastAudit()).text).toBe(
+			"Set Masala Chips 150 g's quick-commerce gates: Blinkit 75+ days, Zepto and Instamart 60% of life"
+		);
+		const n = (await api.audit()).length;
+		await api.saveSkuGates('munchly', 'chips', { blinkitDays: 75, qcomPct: 60 });
+		expect(await api.audit()).toHaveLength(n);
+		const back = await api.saveSkuGates('munchly', 'chips', null);
+		expect(back.skus.find((x) => x.id === 'chips')!.gates).toEqual({});
+		expect((await lastAudit()).text).toBe("Put Masala Chips 150 g back on Munchly Foods' default quick-commerce gates");
+	});
+	it("refuses an SKU's gates out of bounds, and an SKU that is not there", async () => {
+		await expect(api.saveSkuGates('munchly', 'chips', { blinkitDays: 20 })).rejects.toMatchObject({
+			status: 422,
+			message: 'Blinkit takes 30 to 180 days.'
+		});
+		await expect(api.saveSkuGates('munchly', 'nope', null)).rejects.toMatchObject({ status: 404 });
+	});
+	it("overrides one batch's gates with why, and removes it", async () => {
+		await api.overrideBatch('munchly', 'MF-2408-209', { qcomPct: 35, reason: '  Instamart Indore clears this lot  ' });
+		expect((await lastAudit()).text).toBe(
+			"Overrode MF-2408-209's quick-commerce gates: Zepto and Instamart 35% of life (Instamart Indore clears this lot)"
+		);
+		const row = (await api.clientBatches('munchly', 'chips')).find((x) => x.ref === 'MF-2408-209')!;
+		expect(row.override).toMatchObject({
+			qcomPct: 35,
+			reason: 'Instamart Indore clears this lot',
+			by: 'Neha Kulkarni'
+		});
+		expect(row.checks[1]).toEqual({ app: 'zepto', need: 35, has: 38, pass: true, source: 'override' });
+		await api.clearBatchOverride('munchly', 'MF-2408-209');
+		expect((await lastAudit()).text).toBe("Removed MF-2408-209's quick-commerce gate override");
+		const n = (await api.audit()).length;
+		await api.clearBatchOverride('munchly', 'MF-2408-209');
+		expect(await api.audit()).toHaveLength(n);
+	});
+	it('needs a reason for an override, and a batch that is there', async () => {
+		await expect(api.overrideBatch('munchly', 'MF-2408-209', { qcomPct: 35, reason: ' ' })).rejects.toMatchObject({
+			status: 422,
+			message: 'Say why this batch is different.'
+		});
+		await expect(api.overrideBatch('munchly', 'NOPE', { qcomPct: 35, reason: 'x' })).rejects.toMatchObject({
+			status: 404
+		});
+	});
+});

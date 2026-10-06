@@ -74,8 +74,9 @@ One database, `smart_clearance`, schema `sc` (`src/sc_api/models.py`, `migration
 | --- | --- |
 | Reference, loaded at migrate time from `src/sc_api/reference/` | `plans`, `agents`, `connectors`, `exits`, `roles`, `permissions`, `role_permissions`, `documents` (the console's config, the showcase) |
 | People | `users` (one per person: Firebase uid, email, phone), `staff_members`, `client_members`, `invitations` |
-| Clients | `clients` (typed columns for the profile, gates, rules), `client_exits`, `client_agents`, `distributors`, `skus`, `client_integrations` |
-| Activity | `demo_requests`, `agent_runs`, `batches`, `audit_log` |
+| Clients | `clients` (typed columns for the profile, gates, rules), `client_exits`, `client_agents`, `distributors`, `skus` (with their own quick-commerce gates), `client_integrations` |
+| Activity | `demo_requests`, `agent_runs`, `batches` (with best-before dates and gate overrides), `audit_log` |
+| For the agents | the view `batch_gates`: every open batch's quick-commerce gates, where each came from, and pass or fail |
 
 - **Who may do what.** `sc_owner` owns everything, and migrations run as it. `sc_app` (the API's logins) may read and
   write the data and only read the reference data. On `audit_log` it may only insert and read; triggers refuse
@@ -83,6 +84,16 @@ One database, `smart_clearance`, schema `sc` (`src/sc_api/models.py`, `migration
 - **Each fact once.** A client's gates, return window, territory guard, approver and staff-sale cap are its own
   columns. The JSON shows them inside the agents' settings too (`domain/mirrors.py`). The reserve, token and scheme are
   the Lister's, the Negotiator's and Outreach's settings, and the client's `rules` show them.
+- **Quick-commerce gates per SKU, with a per-batch override** (SC-47, migration 0002):
+  - a client's `gate_blinkit_days` and `gate_qcom_pct` are the default for new SKUs;
+  - an SKU's own values (`skus.gate_*`, empty for the default) keep the same bounds, 30 to 180 days and 30 to 90%;
+  - a batch's override (`batches.gate_*`) may go down to 7 days and 5%, as it records a deal a warehouse agreed to.
+    It needs a reason, and keeps who set it and when;
+  - a batch's gates are its override, else its SKU's, else the client's default, value by value. Blinkit wants days
+    of shelf life left; Zepto and Instamart a share of the SKU's life, passed when days x 100 >= share x life;
+  - `sc.batch_gates` applies that rule in SQL for the agents, counting days from India's date. `domain/gates.py`
+    applies it for the API, and a test holds the two together;
+  - a closed batch keeps the gates it was judged by (`judged_*`).
 - **The reference data** is design3's: `frontend/scripts/seed.mjs` writes `src/sc_api/reference/` alongside the
   frontend's seed, and `seed:check` fails if it drifts. `rbac.json` (roles and permissions) is written by hand.
 
@@ -126,6 +137,9 @@ The routes and shapes are `frontend/api/src/types/*.ts`, field for field:
 | `GET /v1/console/config` | anyone | the console's config, plus `staffEmailDomain`. Nothing lists staff before sign-in. |
 | `POST`, `GET`, `DELETE /v1/console/session` | staff | sign in (activates an invite), who is signed in, sign out (204) |
 | everything else under `/v1/console`, and `GET /v1/demo-requests` | staff, by role | as `frontend/api/src/console/http.ts` |
+| `GET /v1/console/clients/{id}/batches[?sku=]` | staff | a client's open batches and their gates, as the agents read them (SC-47) |
+| `PUT /v1/console/clients/{id}/skus/{sku}/gates` `{ gates }` | staff, `clients.configure` | an SKU's own gates, or `null` for the client's default |
+| `PUT`, `DELETE /v1/console/clients/{id}/batches/{ref}/override` | staff, `clients.configure` | one open batch's gates with its reason, or back on its SKU's |
 
 The server also enforces what the prototype's mock did not:
 - the approval step is always on and has no autonomy;
@@ -147,6 +161,8 @@ The server also enforces what the prototype's mock did not:
 3. **Generated clients** (Faker `en_IN`, seeded), each going the way a real one does: a demo request, then the New
    client flow, its supply chain, invitations, people joining, distributors' permissions, the approver taking over,
    going live, daily exports, runs and batches. History is spread over the last `--days`, on a simulated clock.
+   SKUs whose shelf life makes the default wrong get gates of their own; every batch has a best-before date, and some
+   carry an override that a staff member recorded, with the reason.
 4. **Accounts:** every person with an email address gets a Firebase account on the default password, with a
    deterministic uid (`syn-…`).
 
@@ -164,7 +180,7 @@ Nothing in this folder names a project. With the runtime on, the `backend-api-mi
 
 ## Tests
 
-`scripts/test.sh` (152 tests, a few seconds) runs against a real PostgreSQL. It migrates `smart_clearance_test` from
+`scripts/test.sh` (190 tests, a few seconds) runs against a real PostgreSQL. It migrates `smart_clearance_test` from
 scratch and imports Munchly through the services. Each test runs in a transaction that is rolled back, as `sc_api`,
 with a fake Firebase that never reaches Google. The suite covers:
 
@@ -181,6 +197,9 @@ with a fake Firebase that never reaches Google. The suite covers:
 CI runs the same suite on a `postgres:18` service container, with a secret scan (gitleaks) on every pull request.
 
 ## Known gaps
+
+- The workspace app (`design3/app`, `core/money.js`) still judges batches by the client-wide gates. It moves to the per-SKU
+  gates with the agents, which read `sc.batch_gates`.
 
 - Phone sign-in, and the workspace app's own sign-in for a client's people, come later; until then `people.accept`
   is called only by hydrate.

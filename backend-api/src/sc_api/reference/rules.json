@@ -1271,6 +1271,809 @@
 			"text": "365 days"
 		}
 	],
+	"batchGates": [
+		{
+			"client": {
+				"gates": {
+					"blinkitDays": 90,
+					"qcomPct": 60
+				}
+			},
+			"sku": {
+				"id": "chips",
+				"code": "MF-MC-150",
+				"brand": "Munchly",
+				"name": "Masala Chips 150 g",
+				"mrp": 30,
+				"gst": 0.05,
+				"lifeDays": 180,
+				"gates": {}
+			},
+			"batch": {
+				"sku": "chips",
+				"bestBefore": "2026-11-18"
+			},
+			"today": "2026-10-06",
+			"gates": {
+				"blinkitDays": 90,
+				"qcomPct": 60,
+				"daysLeft": 43,
+				"lifeDays": 180,
+				"checks": [
+					{
+						"app": "blinkit",
+						"need": 90,
+						"has": 43,
+						"pass": false,
+						"source": "default"
+					},
+					{
+						"app": "zepto",
+						"need": 60,
+						"has": 23,
+						"pass": false,
+						"source": "default"
+					},
+					{
+						"app": "instamart",
+						"need": 60,
+						"has": 23,
+						"pass": false,
+						"source": "default"
+					}
+				]
+			}
+		},
+		{
+			"client": {
+				"gates": {
+					"blinkitDays": 90,
+					"qcomPct": 60
+				}
+			},
+			"sku": {
+				"id": "mango",
+				"code": "MF-MD-200",
+				"brand": "Munchly",
+				"name": "Mango Drink 200 ml",
+				"mrp": 20,
+				"gst": 0.05,
+				"lifeDays": 180,
+				"gates": {
+					"blinkitDays": 45,
+					"qcomPct": 50
+				}
+			},
+			"batch": {
+				"sku": "mango",
+				"bestBefore": "2026-10-24"
+			},
+			"today": "2026-10-06",
+			"gates": {
+				"blinkitDays": 45,
+				"qcomPct": 50,
+				"daysLeft": 18,
+				"lifeDays": 180,
+				"checks": [
+					{
+						"app": "blinkit",
+						"need": 45,
+						"has": 18,
+						"pass": false,
+						"source": "sku"
+					},
+					{
+						"app": "zepto",
+						"need": 50,
+						"has": 10,
+						"pass": false,
+						"source": "sku"
+					},
+					{
+						"app": "instamart",
+						"need": 50,
+						"has": 10,
+						"pass": false,
+						"source": "sku"
+					}
+				]
+			}
+		},
+		{
+			"client": {
+				"gates": {
+					"blinkitDays": 90,
+					"qcomPct": 60
+				}
+			},
+			"sku": {
+				"id": "chips",
+				"code": "MF-MC-150",
+				"brand": "Munchly",
+				"name": "Masala Chips 150 g",
+				"mrp": 30,
+				"gst": 0.05,
+				"lifeDays": 180,
+				"gates": {}
+			},
+			"batch": {
+				"sku": "chips",
+				"bestBefore": "2026-12-15"
+			},
+			"today": "2026-10-06",
+			"gates": {
+				"blinkitDays": 90,
+				"qcomPct": 60,
+				"daysLeft": 70,
+				"lifeDays": 180,
+				"checks": [
+					{
+						"app": "blinkit",
+						"need": 90,
+						"has": 70,
+						"pass": false,
+						"source": "default"
+					},
+					{
+						"app": "zepto",
+						"need": 60,
+						"has": 38,
+						"pass": false,
+						"source": "default"
+					},
+					{
+						"app": "instamart",
+						"need": 60,
+						"has": 38,
+						"pass": false,
+						"source": "default"
+					}
+				]
+			}
+		},
+		{
+			"client": {
+				"gates": {
+					"blinkitDays": 90,
+					"qcomPct": 60
+				}
+			},
+			"sku": {
+				"id": "chikki",
+				"code": "MF-PC-100",
+				"brand": "Munchly",
+				"name": "Peanut Chikki 100 g",
+				"mrp": 25,
+				"gst": 0.05,
+				"lifeDays": 180,
+				"gates": {}
+			},
+			"batch": {
+				"sku": "chikki",
+				"bestBefore": "2026-12-02"
+			},
+			"today": "2026-10-06",
+			"gates": {
+				"blinkitDays": 90,
+				"qcomPct": 60,
+				"daysLeft": 57,
+				"lifeDays": 180,
+				"checks": [
+					{
+						"app": "blinkit",
+						"need": 90,
+						"has": 57,
+						"pass": false,
+						"source": "default"
+					},
+					{
+						"app": "zepto",
+						"need": 60,
+						"has": 31,
+						"pass": false,
+						"source": "default"
+					},
+					{
+						"app": "instamart",
+						"need": 60,
+						"has": 31,
+						"pass": false,
+						"source": "default"
+					}
+				]
+			}
+		},
+		{
+			"client": {
+				"gates": {
+					"blinkitDays": 90,
+					"qcomPct": 60
+				}
+			},
+			"sku": {
+				"id": "oats",
+				"code": "MF-MO-200",
+				"brand": "Munchly",
+				"name": "Masala Oats 200 g",
+				"mrp": 65,
+				"gst": 0.05,
+				"lifeDays": 270,
+				"gates": {}
+			},
+			"batch": {
+				"sku": "oats",
+				"bestBefore": "2026-12-16"
+			},
+			"today": "2026-10-06",
+			"gates": {
+				"blinkitDays": 90,
+				"qcomPct": 60,
+				"daysLeft": 71,
+				"lifeDays": 270,
+				"checks": [
+					{
+						"app": "blinkit",
+						"need": 90,
+						"has": 71,
+						"pass": false,
+						"source": "default"
+					},
+					{
+						"app": "zepto",
+						"need": 60,
+						"has": 26,
+						"pass": false,
+						"source": "default"
+					},
+					{
+						"app": "instamart",
+						"need": 60,
+						"has": 26,
+						"pass": false,
+						"source": "default"
+					}
+				]
+			}
+		},
+		{
+			"client": {
+				"gates": {
+					"blinkitDays": 90,
+					"qcomPct": 60
+				}
+			},
+			"sku": {
+				"id": "biscuits",
+				"code": "MF-CC-200",
+				"brand": "Munchly",
+				"name": "Choco Cream Biscuits 200 g",
+				"mrp": 40,
+				"gst": 0.05,
+				"lifeDays": 270,
+				"gates": {}
+			},
+			"batch": {
+				"sku": "biscuits",
+				"bestBefore": "2027-01-06",
+				"override": {
+					"qcomPct": 30,
+					"reason": "Zepto's Pune warehouse agreed to take this lot at 30% of its life",
+					"by": "Neha Kulkarni",
+					"at": "4 Oct, 16:20"
+				}
+			},
+			"today": "2026-10-06",
+			"gates": {
+				"blinkitDays": 90,
+				"qcomPct": 30,
+				"daysLeft": 92,
+				"lifeDays": 270,
+				"checks": [
+					{
+						"app": "blinkit",
+						"need": 90,
+						"has": 92,
+						"pass": true,
+						"source": "default"
+					},
+					{
+						"app": "zepto",
+						"need": 30,
+						"has": 34,
+						"pass": true,
+						"source": "override"
+					},
+					{
+						"app": "instamart",
+						"need": 30,
+						"has": 34,
+						"pass": true,
+						"source": "override"
+					}
+				]
+			}
+		},
+		{
+			"client": {
+				"gates": {
+					"blinkitDays": 90,
+					"qcomPct": 60
+				}
+			},
+			"sku": {
+				"id": "poha",
+				"code": "MF-IP-250",
+				"brand": "Munchly",
+				"name": "Instant Poha 250 g",
+				"mrp": 55,
+				"gst": 0.05,
+				"lifeDays": 270,
+				"gates": {}
+			},
+			"batch": {
+				"sku": "poha",
+				"bestBefore": "2027-04-20"
+			},
+			"today": "2026-10-06",
+			"gates": {
+				"blinkitDays": 90,
+				"qcomPct": 60,
+				"daysLeft": 196,
+				"lifeDays": 270,
+				"checks": [
+					{
+						"app": "blinkit",
+						"need": 90,
+						"has": 196,
+						"pass": true,
+						"source": "default"
+					},
+					{
+						"app": "zepto",
+						"need": 60,
+						"has": 72,
+						"pass": true,
+						"source": "default"
+					},
+					{
+						"app": "instamart",
+						"need": 60,
+						"has": 72,
+						"pass": true,
+						"source": "default"
+					}
+				]
+			}
+		},
+		{
+			"client": {
+				"gates": {
+					"blinkitDays": 90,
+					"qcomPct": 60
+				}
+			},
+			"sku": {
+				"id": "facewash",
+				"code": "GL-AF-100",
+				"brand": "Glowra",
+				"name": "Aloe Face Wash 100 ml",
+				"mrp": 120,
+				"gst": 0.18,
+				"lifeDays": 730,
+				"gates": {
+					"blinkitDays": 180
+				}
+			},
+			"batch": {
+				"sku": "facewash",
+				"bestBefore": "2028-01-05"
+			},
+			"today": "2026-10-06",
+			"gates": {
+				"blinkitDays": 180,
+				"qcomPct": 60,
+				"daysLeft": 456,
+				"lifeDays": 730,
+				"checks": [
+					{
+						"app": "blinkit",
+						"need": 180,
+						"has": 456,
+						"pass": true,
+						"source": "sku"
+					},
+					{
+						"app": "zepto",
+						"need": 60,
+						"has": 62,
+						"pass": true,
+						"source": "default"
+					},
+					{
+						"app": "instamart",
+						"need": 60,
+						"has": 62,
+						"pass": true,
+						"source": "default"
+					}
+				]
+			}
+		},
+		{
+			"client": {
+				"gates": {
+					"blinkitDays": 90,
+					"qcomPct": 60
+				}
+			},
+			"sku": {
+				"id": "hairoil",
+				"code": "GL-CO-200",
+				"brand": "Glowra",
+				"name": "Coconut Hair Oil 200 ml",
+				"mrp": 150,
+				"gst": 0.05,
+				"lifeDays": 730,
+				"gates": {
+					"blinkitDays": 180
+				}
+			},
+			"batch": {
+				"sku": "hairoil",
+				"bestBefore": "2028-02-14"
+			},
+			"today": "2026-10-06",
+			"gates": {
+				"blinkitDays": 180,
+				"qcomPct": 60,
+				"daysLeft": 496,
+				"lifeDays": 730,
+				"checks": [
+					{
+						"app": "blinkit",
+						"need": 180,
+						"has": 496,
+						"pass": true,
+						"source": "sku"
+					},
+					{
+						"app": "zepto",
+						"need": 60,
+						"has": 67,
+						"pass": true,
+						"source": "default"
+					},
+					{
+						"app": "instamart",
+						"need": 60,
+						"has": 67,
+						"pass": true,
+						"source": "default"
+					}
+				]
+			}
+		},
+		{
+			"client": {
+				"gates": {
+					"blinkitDays": 90,
+					"qcomPct": 60
+				}
+			},
+			"sku": {
+				"id": "chips",
+				"code": "MF-MC-150",
+				"brand": "Munchly",
+				"name": "Masala Chips 150 g",
+				"mrp": 30,
+				"gst": 0.05,
+				"lifeDays": 180,
+				"gates": {}
+			},
+			"batch": {
+				"sku": "chips",
+				"bestBefore": "2026-11-18"
+			},
+			"today": "2026-11-18",
+			"gates": {
+				"blinkitDays": 90,
+				"qcomPct": 60,
+				"daysLeft": 0,
+				"lifeDays": 180,
+				"checks": [
+					{
+						"app": "blinkit",
+						"need": 90,
+						"has": 0,
+						"pass": false,
+						"source": "default"
+					},
+					{
+						"app": "zepto",
+						"need": 60,
+						"has": 0,
+						"pass": false,
+						"source": "default"
+					},
+					{
+						"app": "instamart",
+						"need": 60,
+						"has": 0,
+						"pass": false,
+						"source": "default"
+					}
+				]
+			}
+		},
+		{
+			"client": {
+				"gates": {
+					"blinkitDays": 90,
+					"qcomPct": 60
+				}
+			},
+			"sku": {
+				"id": "chips",
+				"code": "MF-MC-150",
+				"brand": "Munchly",
+				"name": "Masala Chips 150 g",
+				"mrp": 30,
+				"gst": 0.05,
+				"lifeDays": 180,
+				"gates": {}
+			},
+			"batch": {
+				"sku": "chips",
+				"bestBefore": "2026-11-18"
+			},
+			"today": "2026-11-25",
+			"gates": {
+				"blinkitDays": 90,
+				"qcomPct": 60,
+				"daysLeft": -7,
+				"lifeDays": 180,
+				"checks": [
+					{
+						"app": "blinkit",
+						"need": 90,
+						"has": -7,
+						"pass": false,
+						"source": "default"
+					},
+					{
+						"app": "zepto",
+						"need": 60,
+						"has": -4,
+						"pass": false,
+						"source": "default"
+					},
+					{
+						"app": "instamart",
+						"need": 60,
+						"has": -4,
+						"pass": false,
+						"source": "default"
+					}
+				]
+			}
+		},
+		{
+			"client": {
+				"gates": {
+					"blinkitDays": 90,
+					"qcomPct": 60
+				}
+			},
+			"sku": {
+				"id": "chips",
+				"code": "MF-MC-150",
+				"brand": "Munchly",
+				"name": "Masala Chips 150 g",
+				"mrp": 30,
+				"gst": 0.05,
+				"lifeDays": 180,
+				"gates": {}
+			},
+			"batch": {
+				"sku": "chips",
+				"bestBefore": "2026-11-18"
+			},
+			"today": "2026-08-20",
+			"gates": {
+				"blinkitDays": 90,
+				"qcomPct": 60,
+				"daysLeft": 90,
+				"lifeDays": 180,
+				"checks": [
+					{
+						"app": "blinkit",
+						"need": 90,
+						"has": 90,
+						"pass": true,
+						"source": "default"
+					},
+					{
+						"app": "zepto",
+						"need": 60,
+						"has": 50,
+						"pass": false,
+						"source": "default"
+					},
+					{
+						"app": "instamart",
+						"need": 60,
+						"has": 50,
+						"pass": false,
+						"source": "default"
+					}
+				]
+			}
+		},
+		{
+			"client": {
+				"gates": {
+					"blinkitDays": 90,
+					"qcomPct": 60
+				}
+			},
+			"sku": {
+				"id": "poha",
+				"code": "MF-IP-250",
+				"brand": "Munchly",
+				"name": "Instant Poha 250 g",
+				"mrp": 55,
+				"gst": 0.05,
+				"lifeDays": 270,
+				"gates": {}
+			},
+			"batch": {
+				"sku": "poha",
+				"bestBefore": "2027-04-20"
+			},
+			"today": "2026-12-08",
+			"gates": {
+				"blinkitDays": 90,
+				"qcomPct": 60,
+				"daysLeft": 133,
+				"lifeDays": 270,
+				"checks": [
+					{
+						"app": "blinkit",
+						"need": 90,
+						"has": 133,
+						"pass": true,
+						"source": "default"
+					},
+					{
+						"app": "zepto",
+						"need": 60,
+						"has": 49,
+						"pass": false,
+						"source": "default"
+					},
+					{
+						"app": "instamart",
+						"need": 60,
+						"has": 49,
+						"pass": false,
+						"source": "default"
+					}
+				]
+			}
+		}
+	],
+	"skuGatesError": [
+		{
+			"gates": null,
+			"error": null
+		},
+		{
+			"gates": {},
+			"error": "Give the SKU at least one gate of its own, or put it back on the default."
+		},
+		{
+			"gates": {
+				"blinkitDays": 45,
+				"qcomPct": 50
+			},
+			"error": null
+		},
+		{
+			"gates": {
+				"blinkitDays": 29
+			},
+			"error": "Blinkit takes 30 to 180 days."
+		},
+		{
+			"gates": {
+				"blinkitDays": 181
+			},
+			"error": "Blinkit takes 30 to 180 days."
+		},
+		{
+			"gates": {
+				"qcomPct": 91
+			},
+			"error": "Zepto and Instamart take 30% to 90% of life."
+		},
+		{
+			"gates": {
+				"qcomPct": 30
+			},
+			"error": null
+		},
+		{
+			"gates": {
+				"blinkitDays": 45.5
+			},
+			"error": "Blinkit takes 30 to 180 days."
+		}
+	],
+	"overrideError": [
+		{
+			"input": {
+				"reason": "x"
+			},
+			"error": "Override at least one gate."
+		},
+		{
+			"input": {
+				"blinkitDays": 6,
+				"reason": "x"
+			},
+			"error": "A batch's Blinkit gate is 7 to 180 days."
+		},
+		{
+			"input": {
+				"blinkitDays": 7,
+				"reason": "x"
+			},
+			"error": null
+		},
+		{
+			"input": {
+				"qcomPct": 4,
+				"reason": "x"
+			},
+			"error": "A batch's Zepto and Instamart gate is 5% to 90% of life."
+		},
+		{
+			"input": {
+				"qcomPct": 91,
+				"reason": "x"
+			},
+			"error": "A batch's Zepto and Instamart gate is 5% to 90% of life."
+		},
+		{
+			"input": {
+				"qcomPct": 30,
+				"reason": "   "
+			},
+			"error": "Say why this batch is different."
+		},
+		{
+			"input": {
+				"qcomPct": 30,
+				"reason": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+			},
+			"error": "Keep the reason to 200 characters."
+		},
+		{
+			"input": {
+				"qcomPct": 30,
+				"blinkitDays": 60,
+				"reason": "A deal"
+			},
+			"error": null
+		}
+	],
+	"gateLines": {
+		"sku": "Set Mango Drink 200 ml's quick-commerce gates: Blinkit 45+ days, Zepto and Instamart 50% of life",
+		"skuOne": "Set Aloe Face Wash 100 ml's quick-commerce gates: Blinkit 180+ days",
+		"skuDefault": "Put Mango Drink 200 ml back on Munchly Foods' default quick-commerce gates",
+		"override": "Overrode MF-2409-204's quick-commerce gates: Zepto and Instamart 30% of life (A deal)",
+		"clear": "Removed MF-2409-204's quick-commerce gate override"
+	},
 	"slug": [
 		{
 			"name": "Kesari Foods",

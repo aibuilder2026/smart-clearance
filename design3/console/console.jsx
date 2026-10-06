@@ -270,7 +270,9 @@
 
   /* ---------- supply chain ---------- */
   function SupplyTab({ c, me }) {
-    const app = useApp(); const { toast } = useNotice(); const [edit, setEdit] = useState(false); const [menu, setMenu] = useState(null);
+    const s = usePlatform(); const app = useApp(); const { toast } = useNotice(); const [edit, setEdit] = useState(false); const [menu, setMenu] = useState(null); const [skuId, setSkuId] = useState(null);
+    const differ = c.skus.filter(x => x.gates && (x.gates.blinkitDays != null || x.gates.qcomPct != null)).length;
+    const open = (s.batches || []).filter(b => b.client === c.id && b.done < 9);
     const kiranas = c.distributors.reduce((t, d) => t + d.kiranas, 0);
     const Step = ({ icon, t, sub }) => <div className="wschain-step"><span className="icontile"><Icon name={icon} size={17} stroke={2} /></span><b className="t-subhead">{t}</b><span className="t-caption subtle">{sub}</span></div>;
     const lister = c.agents.lister.settings;
@@ -278,7 +280,7 @@
       ["route", "factory", "Route to market", P.optLabel("route", c.profile.route) + (c.distributors.length ? `, ${c.distributors.length} distributors` : "")],
       ["owner", "warehouse", "Who owns short-dated stock", P.optLabel("owner", c.profile.owner)],
       ["expiry", "undo-2", "Expiry policy", P.optLabel("expiry", c.profile.expiry)],
-      ["gates", "shield", "Quick-commerce gates", `Blinkit ${c.gates.blinkitDays}+ days; Zepto and Instamart ${c.gates.qcomPct}% of life`],
+      ["gates", "shield", "Quick-commerce gates, by default", `New SKUs start at Blinkit ${c.gates.blinkitDays}+ days, Zepto and Instamart ${c.gates.qcomPct}% of life` + (differ ? ` · ${differ} of ${c.skus.length} SKUs differ` : "")],
       ["guard", "map", "Territory guard", lister.territoryGuard ? "Lots hidden from buyers inside the client's territories" : "Off: lots visible everywhere"],
       ["window", "calendar-clock", "Return window", `${c.returnWindowDays} days`],
     ];
@@ -304,17 +306,92 @@
             value={<span className="row tight">{d.permission === "given" ? <Badge size="sm" tone="green">given</Badge> : <Badge size="sm" tone="amber">not yet</Badge>}{d.permission !== "given" && <span style={{ position: "relative" }}><IconButton icon="ellipsis" label={`Actions for ${d.name}`} aria-haspopup="menu" aria-expanded={menu === d.id} onClick={() => setMenu(menu === d.id ? null : d.id)} /><Menu open={menu === d.id} onClose={() => setMenu(null)} width={240} label={`Actions for ${d.name}`} items={[{ label: "Ask for the permission again", icon: "send", onClick: () => ask(d) }]} /></span>}</span>} />)}</List>
             : <Card><Empty icon="warehouse" title="No distributors yet" body="They arrive with the first stock export, and each is invited to give the agents its one-time permission." /></Card>}
         </>} />
-      <SectionTitle sub={c.skus.length ? "From the latest stock export" : null}>SKUs</SectionTitle>
-      {c.skus.length ? <DataTable label={`${c.name} SKUs`} rows={c.skus} initialSort={["name", "asc"]} columns={[
+      <SectionTitle sub={c.skus.length ? "From the latest stock export · each SKU's quick-commerce gates, and its batches' overrides" : null}>SKUs</SectionTitle>
+      {!c.skus.length ? <Card><Empty icon="package" title="No SKUs yet" body="SKUs arrive with the first stock export." /></Card>
+        : app.bp === "phone" ? <List>{c.skus.slice().sort((a, b) => a.name.localeCompare(b.name)).map(x => { const own = hasOwn(x), n = open.filter(b => b.sku === x.id && b.override).length;
+          return <ListRow key={x.id} title={x.name} chevron onClick={() => setSkuId(x.id)} sub={<span className="stack tight" style={{ gap: 4 }}><span><span className="mono">{x.code}</span> · {fmt.inr(x.mrp)} · {x.lifeDays} days</span><span className={cx("cs-gline", own && "own")}>Blinkit {gateOf(c, x, "blinkitDays")}+ days · Zepto and Instamart {gateOf(c, x, "qcomPct")}%{own ? "" : " · the default"}{n ? <> · <span className="cs-gsrc ovr">{n} batch override{n === 1 ? "" : "s"}</span></> : null}</span></span>} />; })}</List>
+        : <DataTable label={`${c.name} SKUs`} rows={c.skus} initialSort={["name", "asc"]} onRow={x => setSkuId(x.id)} columns={[
         { key: "code", label: "Code", render: x => <span className="mono t-footnote">{x.code}</span> },
-        { key: "name", label: "Product", render: x => <b>{x.name}</b> },
+        { key: "name", label: "Product", render: x => <button type="button" className="cs-cellbtn" onClick={() => setSkuId(x.id)}>{x.name}</button> },
         { key: "brand", label: "Brand" },
         { key: "mrp", label: "MRP", num: true, render: x => fmt.inr(x.mrp) },
         { key: "gst", label: "GST", num: true, render: x => fmt.pct(x.gst) },
         { key: "lifeDays", label: "Shelf life", num: true, render: x => `${x.lifeDays} days` },
-      ]} /> : <Card><Empty icon="package" title="No SKUs yet" body="SKUs arrive with the first stock export." /></Card>}
+        { key: "blinkit", label: "Blinkit takes", num: true, sortValue: x => gateOf(c, x, "blinkitDays"), render: x => <GateValue value={`${gateOf(c, x, "blinkitDays")}+ days`} own={x.gates && x.gates.blinkitDays != null} /> },
+        { key: "qcom", label: "Zepto, Instamart take", num: true, sortValue: x => gateOf(c, x, "qcomPct"), render: x => <GateValue value={`${gateOf(c, x, "qcomPct")}% of life`} own={x.gates && x.gates.qcomPct != null} /> },
+        { key: "open", label: "Open batches", num: true, sortValue: x => open.filter(b => b.sku === x.id).length, render: x => { const mine = open.filter(b => b.sku === x.id), n = mine.filter(b => b.override).length; return <span className="stack tight" style={{ gap: 2, justifyItems: "end" }}><span>{mine.length}</span>{n ? <span className="cs-gsrc ovr">{n} override{n === 1 ? "" : "s"}</span> : null}</span>; } },
+      ]} />}
       <ProfileSheet open={edit} onClose={() => setEdit(false)} c={c} me={me} />
+      <SkuSheet open={!!skuId} onClose={() => setSkuId(null)} c={c} sku={c.skus.find(x => x.id === skuId)} batches={open.filter(b => b.sku === skuId)} me={me} />
     </div>;
+  }
+  /* ---------- an SKU's quick-commerce gates, and each of its batches' override (SC-47) ---------- */
+  const poss = n => n + (/s$/i.test(n) ? "'" : "'s");
+  const hasOwn = x => !!x.gates && (x.gates.blinkitDays != null || x.gates.qcomPct != null);
+  const gateOf = (c, x, k) => (x.gates && x.gates[k] != null ? x.gates[k] : c.gates[k]);
+  const GATE_APP = { blinkit: "Blinkit", zepto: "Zepto", instamart: "Instamart" };
+  // custom values read in the primary ink, defaults in the secondary ink, each with its word under it, never colour alone
+  function GateValue({ value, own }) { return <span className={cx("cs-gval", own ? "own" : "def")}><b>{value}</b><span className="d">{own ? "this SKU" : "default"}</span></span>; }
+  function GateChecks({ checks, full }) {
+    return <span className="cs-gchips">{checks.map(g => { const unit = g.app === "blinkit" ? " days" : "%"; return <span key={g.app} className={cx("gate", g.pass ? "pass" : "fail")} title={`${GATE_APP[g.app]}: needs ${g.need}${unit}, has ${g.has}${unit}`}><Icon name={g.pass ? "check" : "x"} size={13} stroke={2.6} />{GATE_APP[g.app]}{full && <span className="cs-gneed">{g.has}{unit}/{g.need}{unit}</span>}</span>; })}</span>;
+  }
+  const num = v => (v === "" || v == null ? null : Number(v));
+  function SkuSheet({ open, onClose, c, sku, batches, me }) {
+    const app = useApp(); const { toast } = useNotice();
+    const [f, setF] = useState(null); const [err, setErr] = useState(null); const [ovr, setOvr] = useState(null);
+    useEffect(() => { if (open && sku) { setF({ own: hasOwn(sku), bl: String(gateOf(c, sku, "blinkitDays")), qc: String(gateOf(c, sku, "qcomPct")) }); setErr(null); setOvr(null); } }, [open, sku && sku.id]);
+    if (!sku || !f) return null;
+    const preview = { blinkitDays: f.own ? num(f.bl) : c.gates.blinkitDays, qcomPct: f.own ? num(f.qc) : c.gates.qcomPct };
+    const save = () => {
+      const g = f.own ? { blinkitDays: num(f.bl), qcomPct: num(f.qc) } : null; const e = P.skuGatesError(g); if (e) return setErr(e);
+      const was = hasOwn(sku) ? sku.gates : null;
+      if (JSON.stringify(was) !== JSON.stringify(g)) P.update(d => { d.clients.find(x => x.id === c.id).skus.find(x => x.id === sku.id).gates = g || {}; }, { who: me.name, client: c.id, text: P.skuGatesLine(c, sku, g) });
+      toast({ text: `${sku.name}'s gates saved`, tone: "ok" }); onClose();
+    };
+    const saveOverride = b => {
+      const o = { blinkitDays: num(ovr.bl), qcomPct: num(ovr.qc), reason: ovr.reason }; const e = P.overrideError(o); if (e) return setOvr({ ...ovr, err: e });
+      const clean = { reason: o.reason.trim() }; if (o.blinkitDays != null) clean.blinkitDays = o.blinkitDays; if (o.qcomPct != null) clean.qcomPct = o.qcomPct;
+      P.update(d => { d.batches.find(x => x.client === c.id && x.ref === b.ref).override = Object.assign(clean, { by: me.name, at: "Today, " + hhmm() }); }, { who: me.name, client: c.id, text: P.overrideLine(b.ref, clean) });
+      toast({ text: `${b.ref}'s override saved`, tone: "ok" }); setOvr(null);
+    };
+    const removeOverride = b => { P.update(d => { delete d.batches.find(x => x.client === c.id && x.ref === b.ref).override; }, { who: me.name, client: c.id, text: P.clearOverrideLine(b.ref) }); toast({ text: `${b.ref} is back on its SKU's gates`, tone: "ok" }); };
+    const dist = id => (c.distributors.find(x => x.id === id) || { name: id, city: "" });
+    return <Sheet open={open} onClose={onClose} title={sku.name} side={app.bp === "phone" ? "bottom" : "side"} detent="large" footer={<Button variant="primary" size="lg" block onClick={save}>Save gates</Button>}>
+      <div className="stack" style={{ gap: 18 }}>
+        <div className="cs-gfacts"><span className="mono">{sku.code}</span><span>{sku.brand}</span><span><b>{fmt.inr(sku.mrp)}</b> MRP</span><span><b>{sku.lifeDays}</b>-day shelf life</span></div>
+        <fieldset className="cs-gset"><legend>Quick-commerce gates for this SKU</legend>
+          <Segmented label="Whose gates" value={f.own ? "own" : "default"} onChange={v => { setErr(null); setF({ ...f, own: v === "own" }); }} options={[{ id: "default", label: `${poss(c.name)} default` }, { id: "own", label: "Its own" }]} />
+          <div className="cs-gtwo">
+            <Field label="Blinkit takes at least" htmlFor="sk-bl" help={f.own ? `Default: ${c.gates.blinkitDays} days` : `${poss(c.name)} default`}><span className="cs-gin"><Input id="sk-bl" type="number" inputMode="numeric" min={P.GATE_BOUNDS.sku.blinkitDays[0]} max={P.GATE_BOUNDS.sku.blinkitDays[1]} disabled={!f.own} value={f.own ? f.bl : c.gates.blinkitDays} onChange={e => { setErr(null); setF({ ...f, bl: e.target.value }); }} /><span className="u">days</span></span></Field>
+            <Field label="Zepto, Instamart take at least" htmlFor="sk-qc" help={f.own ? `Default: ${c.gates.qcomPct}%` : `${poss(c.name)} default`}><span className="cs-gin"><Input id="sk-qc" type="number" inputMode="numeric" min={P.GATE_BOUNDS.sku.qcomPct[0]} max={P.GATE_BOUNDS.sku.qcomPct[1]} disabled={!f.own} value={f.own ? f.qc : c.gates.qcomPct} onChange={e => { setErr(null); setF({ ...f, qc: e.target.value }); }} /><span className="u">% of life</span></span></Field>
+          </div>
+          {err ? <div className="cs-si-error" role="alert"><Icon name="circle-alert" size={18} /><span>{err}</span></div>
+            : preview.blinkitDays != null && preview.qcomPct != null && <p className="cs-gmean"><Icon name="info" size={16} /><span>On its {sku.lifeDays}-day life, a batch needs <b>{preview.blinkitDays} days</b> left for Blinkit and <b>{Math.ceil((preview.qcomPct * sku.lifeDays) / 100)} days</b> left for Zepto and Instamart.</span></p>}
+        </fieldset>
+        <SectionTitle sub={batches.length ? `${batches.length} open · an override holds for that batch until it closes` : null}>Its batches</SectionTitle>
+        {batches.length ? batches.map(b => { const g = P.batchGates(c, b), d = dist(b.distributor), editing = ovr && ovr.ref === b.ref;
+          return <div key={b.ref} className="cs-gbatch">
+            <div className="cs-gtop"><span><b className="mono">{b.ref}</b> <span className="t-footnote subtle">{d.name}{d.city ? `, ${d.city}` : ""}</span></span><span className="t-footnote"><b className="tnum">{g.daysLeft}</b> days left of {g.lifeDays}</span></div>
+            <GateChecks checks={g.checks} full />
+            {editing ? <div className="cs-govr">
+              <div className="cs-gtwo">
+                <Field label="Blinkit, for this batch" htmlFor={"ob-bl-" + b.ref} help={`Days left; empty keeps the SKU's ${gateOf(c, sku, "blinkitDays")}`}><span className="cs-gin"><Input id={"ob-bl-" + b.ref} type="number" inputMode="numeric" placeholder={String(gateOf(c, sku, "blinkitDays"))} value={ovr.bl} onChange={e => setOvr({ ...ovr, bl: e.target.value, err: null })} /><span className="u">days</span></span></Field>
+                <Field label="Zepto, Instamart, for this batch" htmlFor={"ob-qc-" + b.ref} help={`% of life; empty keeps the SKU's ${gateOf(c, sku, "qcomPct")}%`}><span className="cs-gin"><Input id={"ob-qc-" + b.ref} type="number" inputMode="numeric" placeholder={String(gateOf(c, sku, "qcomPct"))} value={ovr.qc} onChange={e => setOvr({ ...ovr, qc: e.target.value, err: null })} /><span className="u">% of life</span></span></Field>
+              </div>
+              <Field label="Why" htmlFor={"ob-why-" + b.ref} help="The agents and the audit log show it with the override"><textarea id={"ob-why-" + b.ref} className="input textarea" rows={2} maxLength={200} value={ovr.reason} onChange={e => setOvr({ ...ovr, reason: e.target.value, err: null })} /></Field>
+              {ovr.err && <div className="cs-si-error" role="alert"><Icon name="circle-alert" size={18} /><span>{ovr.err}</span></div>}
+              <div className="row tight"><Button size="sm" variant="primary" onClick={() => saveOverride(b)}>Save the override</Button><Button size="sm" variant="ghost" onClick={() => setOvr(null)}>Cancel</Button></div>
+            </div>
+            : b.override ? <div className="cs-govr">
+              <div className="cs-govr-h"><span>Overridden for this batch: {P.gateText(b.override)}</span><span className="row tight"><Button size="sm" variant="secondary" onClick={() => setOvr({ ref: b.ref, bl: b.override.blinkitDays != null ? String(b.override.blinkitDays) : "", qc: b.override.qcomPct != null ? String(b.override.qcomPct) : "", reason: b.override.reason })}>Change</Button><Button size="sm" variant="ghost" onClick={() => removeOverride(b)}>Remove</Button></span></div>
+              <p>{b.override.reason}</p><span className="cs-gwho">{b.override.by}, {b.override.at}</span>
+            </div>
+            : <Button size="sm" icon="sliders-horizontal" onClick={() => setOvr({ ref: b.ref, bl: "", qc: "", reason: "" })} style={{ justifySelf: "start" }}>Override for this batch</Button>}
+          </div>; })
+          : <Card><Empty icon="package" title="No open batches" body="Its batches show here once the Watcher flags them, with their gates." /></Card>}
+        <p className="t-footnote subtle" style={{ margin: 0 }}>Closed batches keep the gates they were judged by. Every change writes its line in the audit log.</p>
+      </div>
+    </Sheet>;
   }
   function ProfileSheet({ open, onClose, c, me }) {
     const app = useApp(); const { toast } = useNotice();
@@ -329,8 +406,8 @@
     return <Sheet open={open} onClose={onClose} title="Supply-chain profile" side={app.bp === "phone" ? "bottom" : "side"} detent="large" footer={<Button variant="primary" size="lg" block onClick={save}>Save profile</Button>}>
       <div className="stack" style={{ gap: 18 }}>
         {Object.keys(P.PROFILE).map(q => <Choice key={q} name={"pf-" + q} label={P.PROFILE[q].label} options={P.PROFILE[q].options} value={f[q]} onChange={v => setF({ ...f, [q]: v })} />)}
-        <Field label="Blinkit takes stock with at least" htmlFor="pf-bl" help="days of shelf life left"><Input id="pf-bl" type="number" min={30} max={180} value={f.blinkitDays} onChange={e => setF({ ...f, blinkitDays: Number(e.target.value) || 30 })} /></Field>
-        <Field label="Zepto and Instamart take at least" htmlFor="pf-qc" help="% of shelf life left"><Input id="pf-qc" type="number" min={30} max={90} step={5} value={f.qcomPct} onChange={e => setF({ ...f, qcomPct: Number(e.target.value) || 30 })} /></Field>
+        <Field label="New SKUs: Blinkit takes stock with at least" htmlFor="pf-bl" help="days of shelf life left · SKUs with gates of their own keep them"><Input id="pf-bl" type="number" min={30} max={180} value={f.blinkitDays} onChange={e => setF({ ...f, blinkitDays: Number(e.target.value) || 30 })} /></Field>
+        <Field label="New SKUs: Zepto and Instamart take at least" htmlFor="pf-qc" help="% of shelf life left"><Input id="pf-qc" type="number" min={30} max={90} step={5} value={f.qcomPct} onChange={e => setF({ ...f, qcomPct: Number(e.target.value) || 30 })} /></Field>
         <div className="row between" style={{ gap: 12 }}><span className="t-subhead">Return window, days</span><Stepper value={f.returnWindowDays} min={7} max={45} onChange={v => setF({ ...f, returnWindowDays: v })} label="return window days" /></div>
         <ProfileSummary profile={f} />
       </div>

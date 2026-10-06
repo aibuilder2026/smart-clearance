@@ -1,17 +1,23 @@
-"""A client's supply chain: its distributors (and their one-time permission), its SKUs, its integrations and stock
-exports, and the batches the agents work.
+"""A client's supply chain: its distributors (and their one-time permission), its SKUs and their quick-commerce
+gates, its integrations and stock exports, and the batches the agents work, with any batch's gate override.
 
-The console reminds distributors and asks for the first export. The rest is what the Data agent and the connectors
-will record. Until they run, the hydrate CLI records it through these same functions.
+The console reminds distributors, asks for the first export, sets an SKU's gates and overrides a batch's. The rest is
+what the Data agent and the connectors will record. Until they run, the hydrate CLI records it through these same
+functions.
 """
 
+from collections.abc import Mapping
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
+from typing import Any
 
 from sqlalchemy import select
 
 from sc_api import models as m
+from sc_api.domain import gates as rule
+from sc_api.domain.display import audit_at
 from sc_api.errors import ApiError, not_found
+from sc_api.schemas import BatchGates, BatchOverride, GateCheck, OverrideInput, SkuGates
 from sc_api.services import audit
 from sc_api.services.context import Actor, Ctx
 from sc_api.services.presenter import lock_client
@@ -89,12 +95,153 @@ async def remind(ctx: Ctx, client_id: str, distributor_id: str) -> None:
 
 
 async def add_sku(
-    ctx: Ctx, client_id: str, *, id: str, code: str, brand: str, name: str, mrp: float, gst: float, life_days: int
+    ctx: Ctx,
+    client_id: str,
+    *,
+    id: str,
+    code: str,
+    brand: str,
+    name: str,
+    mrp: float,
+    gst: float,
+    life_days: int,
+    gates: Mapping[str, int] | None = None,
 ) -> None:
+    """an SKU from a stock export; gates of its own come from the export's category, or later from the console"""
+    g = gates or {}
+    if (problem := rule.sku_gates_error(g or None)) is not None:
+        raise ApiError(422, problem)
     ctx.session.add(
-        m.Sku(client_id=client_id, id=id, code=code, brand=brand, name=name, mrp=mrp, gst=gst, life_days=life_days)
+        m.Sku(
+            client_id=client_id,
+            id=id,
+            code=code,
+            brand=brand,
+            name=name,
+            mrp=mrp,
+            gst=gst,
+            life_days=life_days,
+            gate_blinkit_days=g.get("blinkitDays"),
+            gate_qcom_pct=g.get("qcomPct"),
+        )
     )
     await ctx.session.flush()
+
+
+def _own(x: m.Sku) -> dict[str, int]:
+    return {k: v for k, v in (("blinkitDays", x.gate_blinkit_days), ("qcomPct", x.gate_qcom_pct)) if v is not None}
+
+
+def _override(b: m.Batch) -> dict[str, Any]:
+    return {k: v for k, v in (("blinkitDays", b.gate_blinkit_days), ("qcomPct", b.gate_qcom_pct)) if v is not None}
+
+
+async def set_sku_gates(ctx: Ctx, client_id: str, sku_id: str, gates: SkuGates | None) -> None:
+    """an SKU's own quick-commerce gates, or None to put it back on the client's default. Nothing changed writes no
+    line"""
+    ctx.require("clients.configure", "Your role can't change an SKU's quick-commerce gates.")
+    c = await lock_client(ctx, client_id)
+    x = await ctx.session.get(m.Sku, (client_id, sku_id), with_for_update=True)
+    if x is None:
+        raise not_found("SKU")
+    g = gates.model_dump(by_alias=True) if gates is not None else None
+    if (problem := rule.sku_gates_error(g)) is not None:
+        raise ApiError(422, problem, {"gates": problem})
+    want = g or {}
+    if want == _own(x):
+        return
+    x.gate_blinkit_days, x.gate_qcom_pct = want.get("blinkitDays"), want.get("qcomPct")
+    await audit.record(ctx, c.id, "sku.gates", rule.sku_gates_line(c.name, x.name, g), {"sku": x.id, "gates": g})
+
+
+async def _open_batch_row(ctx: Ctx, client_id: str, ref: str) -> m.Batch:
+    b = await ctx.session.get(m.Batch, (client_id, ref), with_for_update=True)
+    if b is None:
+        raise not_found("batch")
+    if b.closed_at is not None:
+        raise ApiError(422, f"{ref} is closed; it keeps the gates it was judged by.")
+    return b
+
+
+async def override_batch(ctx: Ctx, client_id: str, ref: str, data: OverrideInput) -> None:
+    """one batch's own gates, with the reason a person gives, until it closes"""
+    ctx.require("clients.configure", "Your role can't override a batch's quick-commerce gates.")
+    c = await lock_client(ctx, client_id)
+    b = await _open_batch_row(ctx, client_id, ref)
+    o = {"blinkitDays": data.blinkit_days, "qcomPct": data.qcom_pct, "reason": data.reason}
+    if (problem := rule.override_error(o)) is not None:
+        raise ApiError(422, problem)
+    reason = data.reason.strip()
+    if (b.gate_blinkit_days, b.gate_qcom_pct, b.gate_reason) == (data.blinkit_days, data.qcom_pct, reason):
+        return
+    b.gate_blinkit_days, b.gate_qcom_pct, b.gate_reason = data.blinkit_days, data.qcom_pct, reason
+    b.gate_by_user_id, b.gate_by_name, b.gate_at = ctx.actor.user_id, ctx.actor.name, ctx.clock.now()
+    clean = {**_override(b), "reason": reason}
+    await audit.record(ctx, c.id, "batch.override", rule.override_line(ref, clean), {"batch": ref, "override": clean})
+
+
+async def clear_override(ctx: Ctx, client_id: str, ref: str) -> None:
+    ctx.require("clients.configure", "Your role can't override a batch's quick-commerce gates.")
+    c = await lock_client(ctx, client_id)
+    b = await _open_batch_row(ctx, client_id, ref)
+    if b.gate_reason is None:
+        return
+    b.gate_blinkit_days = b.gate_qcom_pct = b.gate_reason = b.gate_by_name = None
+    b.gate_by_user_id = b.gate_at = None
+    await audit.record(ctx, c.id, "batch.override.clear", rule.clear_override_line(ref), {"batch": ref})
+
+
+async def client_batches(ctx: Ctx, client_id: str, sku_id: str | None = None) -> list[BatchGates]:
+    """a client's open batches with their gates as the agents read them (the same rule as sc.batch_gates), oldest
+    first; one SKU's when it is given"""
+    c = await ctx.session.get(m.Client, client_id)
+    if c is None:
+        raise not_found("client")
+    q = (
+        select(m.Batch, m.Sku)
+        .join(m.Sku, (m.Sku.client_id == m.Batch.client_id) & (m.Sku.id == m.Batch.sku_id))
+        .where(m.Batch.client_id == client_id, m.Batch.closed_at.is_(None), m.Batch.best_before.is_not(None))
+        .order_by(m.Batch.seq)
+    )
+    if sku_id is not None:
+        q = q.where(m.Batch.sku_id == sku_id)
+    today = ctx.clock.today()
+    default = {"blinkitDays": c.gate_blinkit_days, "qcomPct": c.gate_qcom_pct}
+    out = []
+    for b, x in (await ctx.session.execute(q)).all():
+        assert b.best_before is not None
+        e = rule.effective(default, _own(x), _override(b))
+        days = (b.best_before - today).days
+        override: Any = (
+            BatchOverride(
+                **_override_fields(b),
+                reason=b.gate_reason,
+                by=b.gate_by_name or "",
+                at=audit_at(b.gate_at, today) if b.gate_at else "",
+            )
+            if b.gate_reason
+            else None
+        )
+        out.append(
+            BatchGates(
+                ref=b.ref,
+                sku=b.sku_id,
+                distributor=b.distributor_id,
+                units=b.units,
+                best_before=b.best_before.isoformat(),
+                days_left=days,
+                life_days=x.life_days,
+                blinkit_days=e.blinkit_days,
+                qcom_pct=e.qcom_pct,
+                checks=[GateCheck.model_validate(k) for k in rule.checks(e, days_left=days, life_days=x.life_days)],
+                **({"override": override} if override is not None else {}),
+            )
+        )
+    return out
+
+
+def _override_fields(b: m.Batch) -> dict[str, int]:
+    return {k: v for k, v in (("blinkit_days", b.gate_blinkit_days), ("qcom_pct", b.gate_qcom_pct)) if v is not None}
 
 
 async def add_integration(ctx: Ctx, client_id: str, *, id: str, name: str, kind: str, status: str, note: str) -> None:
@@ -138,8 +285,11 @@ async def open_batch(
     money: float | None = None,
     split: str | None = None,
     at: datetime | None = None,
+    best_before: date,
+    override: Mapping[str, Any] | None = None,
 ) -> None:
-    """a batch the Watcher flagged, and how far along the nine stages it is"""
+    """a batch the Watcher sees, its best-before date, and how far along the nine stages it is. An imported history
+    may bring its gate override, written by whoever set it"""
     exists = await ctx.session.execute(select(m.Batch.ref).where(m.Batch.client_id == client_id, m.Batch.ref == ref))
     if exists.first():
         raise ApiError(422, f"Batch {ref} is already open.")
@@ -157,15 +307,30 @@ async def open_batch(
             split=split,
             recovered=money or 0,
             opened_at=at or ctx.clock.now(),
+            best_before=best_before,
         )
     )
     await ctx.session.flush()
+    if override:  # an imported history's override, whose own audit line says so
+        b = await ctx.session.get(m.Batch, (client_id, ref))
+        assert b is not None
+        who: Actor = override.get("by") or ctx.actor
+        b.gate_blinkit_days, b.gate_qcom_pct = override.get("blinkitDays"), override.get("qcomPct")
+        b.gate_reason, b.gate_by_user_id, b.gate_by_name = override["reason"].strip(), who.user_id, who.name
+        b.gate_at = override.get("at") or ctx.clock.now()
+        await ctx.session.flush()
 
 
 async def close_batch(ctx: Ctx, client_id: str, ref: str, *, recovered: float, outcome: str) -> None:
     b = await ctx.session.get(m.Batch, (client_id, ref), with_for_update=True)
     if b is None:
         raise not_found("batch")
+    # the gates it was judged by stay with it: its SKU's may change later
+    x = await ctx.session.get(m.Sku, (client_id, b.sku_id))
+    c = await ctx.session.get(m.Client, client_id)
+    assert x is not None and c is not None
+    e = rule.effective({"blinkitDays": c.gate_blinkit_days, "qcomPct": c.gate_qcom_pct}, _own(x), _override(b))
+    b.judged_blinkit_days, b.judged_qcom_pct = e.blinkit_days, e.qcom_pct
     b.stage_done = b.stage_current = 9
     b.recovered, b.outcome, b.closed_at = recovered, outcome, ctx.clock.now()
     await ctx.session.flush()

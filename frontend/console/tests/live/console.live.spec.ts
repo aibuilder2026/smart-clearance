@@ -113,3 +113,43 @@ test('live · Support may not change a plan', async ({ page }) => {
 	await expect(page.locator('.toast').last()).toHaveText("Only a Super admin can change a client's plan.");
 	await signOut(page);
 });
+
+test("live · an SKU's own gates and a batch override, in the database the agents read (SC-47)", async ({ page }) => {
+	await signIn(page, SUPER_ADMIN);
+	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Overview');
+	await page.goto(CONSOLE + '/clients/munchly/supply');
+	await expect(page.getByText('3 of 8 SKUs differ')).toBeVisible();
+	const chips = page.getByRole('row', { name: /Masala Chips 150 g/ });
+	const sheet = page.getByRole('dialog', { name: 'Masala Chips 150 g' });
+	await chips.click();
+	await sheet.getByRole('button', { name: 'Its own' }).click();
+	await sheet.getByLabel('Blinkit takes at least', { exact: true }).fill('75');
+	await sheet.getByRole('button', { name: 'Save gates' }).click();
+	await expect(page.locator('.toast').last()).toHaveText("Masala Chips 150 g's gates saved");
+	await expect(page.getByText('4 of 8 SKUs differ')).toBeVisible();
+
+	await chips.click();
+	await sheet.getByRole('button', { name: 'Override for this batch' }).first().click();
+	await sheet.getByLabel('Zepto, Instamart, for this batch').fill('25');
+	await sheet.getByLabel('Why').fill('Instamart Nagpur clears this lot this week');
+	await sheet.getByRole('button', { name: 'Save the override' }).click();
+	await expect(sheet.locator('.cs-govr-h').first()).toContainText('Zepto and Instamart 25% of life');
+	await expect(sheet.locator('.cs-gwho').first()).toContainText('Neha Kulkarni, Today,');
+	await sheet.getByRole('button', { name: 'Remove' }).click();
+	await expect(sheet.locator('.cs-govr-h')).toHaveCount(0);
+	await sheet.getByRole('button', { name: "Munchly Foods' default" }).click();
+	await sheet.getByRole('button', { name: 'Save gates' }).click();
+	await expect(page.getByText('3 of 8 SKUs differ')).toBeVisible();
+
+	await page.goto(CONSOLE + '/clients/munchly/audit');
+	const log = page.locator('.list-row');
+	await expect(log.nth(0)).toContainText("Put Masala Chips 150 g back on Munchly Foods' default quick-commerce gates");
+	await expect(log.nth(1)).toContainText("Removed MF-2409-117's quick-commerce gate override");
+	await expect(log.nth(2)).toContainText(
+		"Overrode MF-2409-117's quick-commerce gates: Zepto and Instamart 25% of life (Instamart Nagpur clears this lot this week)"
+	);
+	await expect(log.nth(3)).toContainText(
+		"Set Masala Chips 150 g's quick-commerce gates: Blinkit 75+ days, Zepto and Instamart 60% of life"
+	);
+	await signOut(page);
+});

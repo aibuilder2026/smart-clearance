@@ -51,7 +51,10 @@
 					value={f[q]}
 					onchange={(v) => (f = { ...f!, [q]: v })}
 				/>{/each}
-			<Field label="Blinkit takes stock with at least" htmlFor="pf-bl" help="days of shelf life left"
+			<Field
+				label="New SKUs: Blinkit takes stock with at least"
+				htmlFor="pf-bl"
+				help="days of shelf life left · SKUs with gates of their own keep them"
 				><Input
 					id="pf-bl"
 					type="number"
@@ -61,7 +64,7 @@
 					oninput={(e) => (f = { ...f!, blinkitDays: Number(e.currentTarget.value) || 30 })}
 				/></Field
 			>
-			<Field label="Zepto and Instamart take at least" htmlFor="pf-qc" help="% of shelf life left"
+			<Field label="New SKUs: Zepto and Instamart take at least" htmlFor="pf-qc" help="% of shelf life left"
 				><Input
 					id="pf-qc"
 					type="number"

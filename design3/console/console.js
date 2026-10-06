@@ -294,17 +294,21 @@
     }
     if (f.type === "select") return /* @__PURE__ */ React.createElement(Field, { label: f.label, htmlFor: id }, /* @__PURE__ */ React.createElement(Select, { id, value, onChange: (e) => onChange(e.target.value) }, f.options.map((o) => /* @__PURE__ */ React.createElement("option", { key: o }, o))));
     if (f.type === "time") return /* @__PURE__ */ React.createElement(Field, { label: f.label, htmlFor: id }, /* @__PURE__ */ React.createElement(Input, { id, type: "time", value, onChange: (e) => onChange(e.target.value) }));
-    const num = /* @__PURE__ */ React.createElement(Input, { id, type: "number", inputMode: "decimal", min: f.min, max: f.max, step: f.step || 1, value, onChange: (e) => {
+    const num2 = /* @__PURE__ */ React.createElement(Input, { id, type: "number", inputMode: "decimal", min: f.min, max: f.max, step: f.step || 1, value, onChange: (e) => {
       const v = e.target.value === "" ? f.min : Number(e.target.value);
       onChange(Math.max(f.min, Math.min(f.max, v)));
     }, icon: f.type === "money" ? "indian-rupee" : void 0 });
-    return /* @__PURE__ */ React.createElement(Field, { label: f.label, htmlFor: id, help: f.unit && f.type !== "money" ? f.unit : void 0 }, num);
+    return /* @__PURE__ */ React.createElement(Field, { label: f.label, htmlFor: id, help: f.unit && f.type !== "money" ? f.unit : void 0 }, num2);
   }
   function SupplyTab({ c, me }) {
+    const s = usePlatform();
     const app = useApp();
     const { toast } = useNotice();
     const [edit, setEdit] = useState(false);
     const [menu, setMenu] = useState(null);
+    const [skuId, setSkuId] = useState(null);
+    const differ = c.skus.filter((x) => x.gates && (x.gates.blinkitDays != null || x.gates.qcomPct != null)).length;
+    const open = (s.batches || []).filter((b) => b.client === c.id && b.done < 9);
     const kiranas = c.distributors.reduce((t, d) => t + d.kiranas, 0);
     const Step = ({ icon, t, sub }) => /* @__PURE__ */ React.createElement("div", { className: "wschain-step" }, /* @__PURE__ */ React.createElement("span", { className: "icontile" }, /* @__PURE__ */ React.createElement(Icon, { name: icon, size: 17, stroke: 2 })), /* @__PURE__ */ React.createElement("b", { className: "t-subhead" }, t), /* @__PURE__ */ React.createElement("span", { className: "t-caption subtle" }, sub));
     const lister = c.agents.lister.settings;
@@ -312,7 +316,7 @@
       ["route", "factory", "Route to market", P.optLabel("route", c.profile.route) + (c.distributors.length ? `, ${c.distributors.length} distributors` : "")],
       ["owner", "warehouse", "Who owns short-dated stock", P.optLabel("owner", c.profile.owner)],
       ["expiry", "undo-2", "Expiry policy", P.optLabel("expiry", c.profile.expiry)],
-      ["gates", "shield", "Quick-commerce gates", `Blinkit ${c.gates.blinkitDays}+ days; Zepto and Instamart ${c.gates.qcomPct}% of life`],
+      ["gates", "shield", "Quick-commerce gates, by default", `New SKUs start at Blinkit ${c.gates.blinkitDays}+ days, Zepto and Instamart ${c.gates.qcomPct}% of life` + (differ ? ` · ${differ} of ${c.skus.length} SKUs differ` : "")],
       ["guard", "map", "Territory guard", lister.territoryGuard ? "Lots hidden from buyers inside the client's territories" : "Off: lots visible everywhere"],
       ["window", "calendar-clock", "Return window", `${c.returnWindowDays} days`]
     ];
@@ -338,14 +342,97 @@
           }
         ))) : /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement(Empty, { icon: "warehouse", title: "No distributors yet", body: "They arrive with the first stock export, and each is invited to give the agents its one-time permission." })))
       }
-    ), /* @__PURE__ */ React.createElement(SectionTitle, { sub: c.skus.length ? "From the latest stock export" : null }, "SKUs"), c.skus.length ? /* @__PURE__ */ React.createElement(DataTable, { label: `${c.name} SKUs`, rows: c.skus, initialSort: ["name", "asc"], columns: [
+    ), /* @__PURE__ */ React.createElement(SectionTitle, { sub: c.skus.length ? "From the latest stock export · each SKU's quick-commerce gates, and its batches' overrides" : null }, "SKUs"), !c.skus.length ? /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement(Empty, { icon: "package", title: "No SKUs yet", body: "SKUs arrive with the first stock export." })) : app.bp === "phone" ? /* @__PURE__ */ React.createElement(List, null, c.skus.slice().sort((a, b) => a.name.localeCompare(b.name)).map((x) => {
+      const own = hasOwn(x), n = open.filter((b) => b.sku === x.id && b.override).length;
+      return /* @__PURE__ */ React.createElement(ListRow, { key: x.id, title: x.name, chevron: true, onClick: () => setSkuId(x.id), sub: /* @__PURE__ */ React.createElement("span", { className: "stack tight", style: { gap: 4 } }, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("span", { className: "mono" }, x.code), " · ", fmt.inr(x.mrp), " · ", x.lifeDays, " days"), /* @__PURE__ */ React.createElement("span", { className: cx("cs-gline", own && "own") }, "Blinkit ", gateOf(c, x, "blinkitDays"), "+ days · Zepto and Instamart ", gateOf(c, x, "qcomPct"), "%", own ? "" : " · the default", n ? /* @__PURE__ */ React.createElement(React.Fragment, null, " · ", /* @__PURE__ */ React.createElement("span", { className: "cs-gsrc ovr" }, n, " batch override", n === 1 ? "" : "s")) : null)) });
+    })) : /* @__PURE__ */ React.createElement(DataTable, { label: `${c.name} SKUs`, rows: c.skus, initialSort: ["name", "asc"], onRow: (x) => setSkuId(x.id), columns: [
       { key: "code", label: "Code", render: (x) => /* @__PURE__ */ React.createElement("span", { className: "mono t-footnote" }, x.code) },
-      { key: "name", label: "Product", render: (x) => /* @__PURE__ */ React.createElement("b", null, x.name) },
+      { key: "name", label: "Product", render: (x) => /* @__PURE__ */ React.createElement("button", { type: "button", className: "cs-cellbtn", onClick: () => setSkuId(x.id) }, x.name) },
       { key: "brand", label: "Brand" },
       { key: "mrp", label: "MRP", num: true, render: (x) => fmt.inr(x.mrp) },
       { key: "gst", label: "GST", num: true, render: (x) => fmt.pct(x.gst) },
-      { key: "lifeDays", label: "Shelf life", num: true, render: (x) => `${x.lifeDays} days` }
-    ] }) : /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement(Empty, { icon: "package", title: "No SKUs yet", body: "SKUs arrive with the first stock export." })), /* @__PURE__ */ React.createElement(ProfileSheet, { open: edit, onClose: () => setEdit(false), c, me }));
+      { key: "lifeDays", label: "Shelf life", num: true, render: (x) => `${x.lifeDays} days` },
+      { key: "blinkit", label: "Blinkit takes", num: true, sortValue: (x) => gateOf(c, x, "blinkitDays"), render: (x) => /* @__PURE__ */ React.createElement(GateValue, { value: `${gateOf(c, x, "blinkitDays")}+ days`, own: x.gates && x.gates.blinkitDays != null }) },
+      { key: "qcom", label: "Zepto, Instamart take", num: true, sortValue: (x) => gateOf(c, x, "qcomPct"), render: (x) => /* @__PURE__ */ React.createElement(GateValue, { value: `${gateOf(c, x, "qcomPct")}% of life`, own: x.gates && x.gates.qcomPct != null }) },
+      { key: "open", label: "Open batches", num: true, sortValue: (x) => open.filter((b) => b.sku === x.id).length, render: (x) => {
+        const mine = open.filter((b) => b.sku === x.id), n = mine.filter((b) => b.override).length;
+        return /* @__PURE__ */ React.createElement("span", { className: "stack tight", style: { gap: 2, justifyItems: "end" } }, /* @__PURE__ */ React.createElement("span", null, mine.length), n ? /* @__PURE__ */ React.createElement("span", { className: "cs-gsrc ovr" }, n, " override", n === 1 ? "" : "s") : null);
+      } }
+    ] }), /* @__PURE__ */ React.createElement(ProfileSheet, { open: edit, onClose: () => setEdit(false), c, me }), /* @__PURE__ */ React.createElement(SkuSheet, { open: !!skuId, onClose: () => setSkuId(null), c, sku: c.skus.find((x) => x.id === skuId), batches: open.filter((b) => b.sku === skuId), me }));
+  }
+  const poss = (n) => n + (/s$/i.test(n) ? "'" : "'s");
+  const hasOwn = (x) => !!x.gates && (x.gates.blinkitDays != null || x.gates.qcomPct != null);
+  const gateOf = (c, x, k) => x.gates && x.gates[k] != null ? x.gates[k] : c.gates[k];
+  const GATE_APP = { blinkit: "Blinkit", zepto: "Zepto", instamart: "Instamart" };
+  function GateValue({ value, own }) {
+    return /* @__PURE__ */ React.createElement("span", { className: cx("cs-gval", own ? "own" : "def") }, /* @__PURE__ */ React.createElement("b", null, value), /* @__PURE__ */ React.createElement("span", { className: "d" }, own ? "this SKU" : "default"));
+  }
+  function GateChecks({ checks, full }) {
+    return /* @__PURE__ */ React.createElement("span", { className: "cs-gchips" }, checks.map((g) => {
+      const unit = g.app === "blinkit" ? " days" : "%";
+      return /* @__PURE__ */ React.createElement("span", { key: g.app, className: cx("gate", g.pass ? "pass" : "fail"), title: `${GATE_APP[g.app]}: needs ${g.need}${unit}, has ${g.has}${unit}` }, /* @__PURE__ */ React.createElement(Icon, { name: g.pass ? "check" : "x", size: 13, stroke: 2.6 }), GATE_APP[g.app], full && /* @__PURE__ */ React.createElement("span", { className: "cs-gneed" }, g.has, unit, "/", g.need, unit));
+    }));
+  }
+  const num = (v) => v === "" || v == null ? null : Number(v);
+  function SkuSheet({ open, onClose, c, sku, batches, me }) {
+    const app = useApp();
+    const { toast } = useNotice();
+    const [f, setF] = useState(null);
+    const [err, setErr] = useState(null);
+    const [ovr, setOvr] = useState(null);
+    useEffect(() => {
+      if (open && sku) {
+        setF({ own: hasOwn(sku), bl: String(gateOf(c, sku, "blinkitDays")), qc: String(gateOf(c, sku, "qcomPct")) });
+        setErr(null);
+        setOvr(null);
+      }
+    }, [open, sku && sku.id]);
+    if (!sku || !f) return null;
+    const preview = { blinkitDays: f.own ? num(f.bl) : c.gates.blinkitDays, qcomPct: f.own ? num(f.qc) : c.gates.qcomPct };
+    const save = () => {
+      const g = f.own ? { blinkitDays: num(f.bl), qcomPct: num(f.qc) } : null;
+      const e = P.skuGatesError(g);
+      if (e) return setErr(e);
+      const was = hasOwn(sku) ? sku.gates : null;
+      if (JSON.stringify(was) !== JSON.stringify(g)) P.update((d) => {
+        d.clients.find((x) => x.id === c.id).skus.find((x) => x.id === sku.id).gates = g || {};
+      }, { who: me.name, client: c.id, text: P.skuGatesLine(c, sku, g) });
+      toast({ text: `${sku.name}'s gates saved`, tone: "ok" });
+      onClose();
+    };
+    const saveOverride = (b) => {
+      const o = { blinkitDays: num(ovr.bl), qcomPct: num(ovr.qc), reason: ovr.reason };
+      const e = P.overrideError(o);
+      if (e) return setOvr({ ...ovr, err: e });
+      const clean = { reason: o.reason.trim() };
+      if (o.blinkitDays != null) clean.blinkitDays = o.blinkitDays;
+      if (o.qcomPct != null) clean.qcomPct = o.qcomPct;
+      P.update((d) => {
+        d.batches.find((x) => x.client === c.id && x.ref === b.ref).override = Object.assign(clean, { by: me.name, at: "Today, " + hhmm() });
+      }, { who: me.name, client: c.id, text: P.overrideLine(b.ref, clean) });
+      toast({ text: `${b.ref}'s override saved`, tone: "ok" });
+      setOvr(null);
+    };
+    const removeOverride = (b) => {
+      P.update((d) => {
+        delete d.batches.find((x) => x.client === c.id && x.ref === b.ref).override;
+      }, { who: me.name, client: c.id, text: P.clearOverrideLine(b.ref) });
+      toast({ text: `${b.ref} is back on its SKU's gates`, tone: "ok" });
+    };
+    const dist = (id) => c.distributors.find((x) => x.id === id) || { name: id, city: "" };
+    return /* @__PURE__ */ React.createElement(Sheet, { open, onClose, title: sku.name, side: app.bp === "phone" ? "bottom" : "side", detent: "large", footer: /* @__PURE__ */ React.createElement(Button, { variant: "primary", size: "lg", block: true, onClick: save }, "Save gates") }, /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 18 } }, /* @__PURE__ */ React.createElement("div", { className: "cs-gfacts" }, /* @__PURE__ */ React.createElement("span", { className: "mono" }, sku.code), /* @__PURE__ */ React.createElement("span", null, sku.brand), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("b", null, fmt.inr(sku.mrp)), " MRP"), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("b", null, sku.lifeDays), "-day shelf life")), /* @__PURE__ */ React.createElement("fieldset", { className: "cs-gset" }, /* @__PURE__ */ React.createElement("legend", null, "Quick-commerce gates for this SKU"), /* @__PURE__ */ React.createElement(Segmented, { label: "Whose gates", value: f.own ? "own" : "default", onChange: (v) => {
+      setErr(null);
+      setF({ ...f, own: v === "own" });
+    }, options: [{ id: "default", label: `${poss(c.name)} default` }, { id: "own", label: "Its own" }] }), /* @__PURE__ */ React.createElement("div", { className: "cs-gtwo" }, /* @__PURE__ */ React.createElement(Field, { label: "Blinkit takes at least", htmlFor: "sk-bl", help: f.own ? `Default: ${c.gates.blinkitDays} days` : `${poss(c.name)} default` }, /* @__PURE__ */ React.createElement("span", { className: "cs-gin" }, /* @__PURE__ */ React.createElement(Input, { id: "sk-bl", type: "number", inputMode: "numeric", min: P.GATE_BOUNDS.sku.blinkitDays[0], max: P.GATE_BOUNDS.sku.blinkitDays[1], disabled: !f.own, value: f.own ? f.bl : c.gates.blinkitDays, onChange: (e) => {
+      setErr(null);
+      setF({ ...f, bl: e.target.value });
+    } }), /* @__PURE__ */ React.createElement("span", { className: "u" }, "days"))), /* @__PURE__ */ React.createElement(Field, { label: "Zepto, Instamart take at least", htmlFor: "sk-qc", help: f.own ? `Default: ${c.gates.qcomPct}%` : `${poss(c.name)} default` }, /* @__PURE__ */ React.createElement("span", { className: "cs-gin" }, /* @__PURE__ */ React.createElement(Input, { id: "sk-qc", type: "number", inputMode: "numeric", min: P.GATE_BOUNDS.sku.qcomPct[0], max: P.GATE_BOUNDS.sku.qcomPct[1], disabled: !f.own, value: f.own ? f.qc : c.gates.qcomPct, onChange: (e) => {
+      setErr(null);
+      setF({ ...f, qc: e.target.value });
+    } }), /* @__PURE__ */ React.createElement("span", { className: "u" }, "% of life")))), err ? /* @__PURE__ */ React.createElement("div", { className: "cs-si-error", role: "alert" }, /* @__PURE__ */ React.createElement(Icon, { name: "circle-alert", size: 18 }), /* @__PURE__ */ React.createElement("span", null, err)) : preview.blinkitDays != null && preview.qcomPct != null && /* @__PURE__ */ React.createElement("p", { className: "cs-gmean" }, /* @__PURE__ */ React.createElement(Icon, { name: "info", size: 16 }), /* @__PURE__ */ React.createElement("span", null, "On its ", sku.lifeDays, "-day life, a batch needs ", /* @__PURE__ */ React.createElement("b", null, preview.blinkitDays, " days"), " left for Blinkit and ", /* @__PURE__ */ React.createElement("b", null, Math.ceil(preview.qcomPct * sku.lifeDays / 100), " days"), " left for Zepto and Instamart."))), /* @__PURE__ */ React.createElement(SectionTitle, { sub: batches.length ? `${batches.length} open · an override holds for that batch until it closes` : null }, "Its batches"), batches.length ? batches.map((b) => {
+      const g = P.batchGates(c, b), d = dist(b.distributor), editing = ovr && ovr.ref === b.ref;
+      return /* @__PURE__ */ React.createElement("div", { key: b.ref, className: "cs-gbatch" }, /* @__PURE__ */ React.createElement("div", { className: "cs-gtop" }, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("b", { className: "mono" }, b.ref), " ", /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, d.name, d.city ? `, ${d.city}` : "")), /* @__PURE__ */ React.createElement("span", { className: "t-footnote" }, /* @__PURE__ */ React.createElement("b", { className: "tnum" }, g.daysLeft), " days left of ", g.lifeDays)), /* @__PURE__ */ React.createElement(GateChecks, { checks: g.checks, full: true }), editing ? /* @__PURE__ */ React.createElement("div", { className: "cs-govr" }, /* @__PURE__ */ React.createElement("div", { className: "cs-gtwo" }, /* @__PURE__ */ React.createElement(Field, { label: "Blinkit, for this batch", htmlFor: "ob-bl-" + b.ref, help: `Days left; empty keeps the SKU's ${gateOf(c, sku, "blinkitDays")}` }, /* @__PURE__ */ React.createElement("span", { className: "cs-gin" }, /* @__PURE__ */ React.createElement(Input, { id: "ob-bl-" + b.ref, type: "number", inputMode: "numeric", placeholder: String(gateOf(c, sku, "blinkitDays")), value: ovr.bl, onChange: (e) => setOvr({ ...ovr, bl: e.target.value, err: null }) }), /* @__PURE__ */ React.createElement("span", { className: "u" }, "days"))), /* @__PURE__ */ React.createElement(Field, { label: "Zepto, Instamart, for this batch", htmlFor: "ob-qc-" + b.ref, help: `% of life; empty keeps the SKU's ${gateOf(c, sku, "qcomPct")}%` }, /* @__PURE__ */ React.createElement("span", { className: "cs-gin" }, /* @__PURE__ */ React.createElement(Input, { id: "ob-qc-" + b.ref, type: "number", inputMode: "numeric", placeholder: String(gateOf(c, sku, "qcomPct")), value: ovr.qc, onChange: (e) => setOvr({ ...ovr, qc: e.target.value, err: null }) }), /* @__PURE__ */ React.createElement("span", { className: "u" }, "% of life")))), /* @__PURE__ */ React.createElement(Field, { label: "Why", htmlFor: "ob-why-" + b.ref, help: "The agents and the audit log show it with the override" }, /* @__PURE__ */ React.createElement("textarea", { id: "ob-why-" + b.ref, className: "input textarea", rows: 2, maxLength: 200, value: ovr.reason, onChange: (e) => setOvr({ ...ovr, reason: e.target.value, err: null }) })), ovr.err && /* @__PURE__ */ React.createElement("div", { className: "cs-si-error", role: "alert" }, /* @__PURE__ */ React.createElement(Icon, { name: "circle-alert", size: 18 }), /* @__PURE__ */ React.createElement("span", null, ovr.err)), /* @__PURE__ */ React.createElement("div", { className: "row tight" }, /* @__PURE__ */ React.createElement(Button, { size: "sm", variant: "primary", onClick: () => saveOverride(b) }, "Save the override"), /* @__PURE__ */ React.createElement(Button, { size: "sm", variant: "ghost", onClick: () => setOvr(null) }, "Cancel"))) : b.override ? /* @__PURE__ */ React.createElement("div", { className: "cs-govr" }, /* @__PURE__ */ React.createElement("div", { className: "cs-govr-h" }, /* @__PURE__ */ React.createElement("span", null, "Overridden for this batch: ", P.gateText(b.override)), /* @__PURE__ */ React.createElement("span", { className: "row tight" }, /* @__PURE__ */ React.createElement(Button, { size: "sm", variant: "secondary", onClick: () => setOvr({ ref: b.ref, bl: b.override.blinkitDays != null ? String(b.override.blinkitDays) : "", qc: b.override.qcomPct != null ? String(b.override.qcomPct) : "", reason: b.override.reason }) }, "Change"), /* @__PURE__ */ React.createElement(Button, { size: "sm", variant: "ghost", onClick: () => removeOverride(b) }, "Remove"))), /* @__PURE__ */ React.createElement("p", null, b.override.reason), /* @__PURE__ */ React.createElement("span", { className: "cs-gwho" }, b.override.by, ", ", b.override.at)) : /* @__PURE__ */ React.createElement(Button, { size: "sm", icon: "sliders-horizontal", onClick: () => setOvr({ ref: b.ref, bl: "", qc: "", reason: "" }), style: { justifySelf: "start" } }, "Override for this batch"));
+    }) : /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement(Empty, { icon: "package", title: "No open batches", body: "Its batches show here once the Watcher flags them, with their gates." })), /* @__PURE__ */ React.createElement("p", { className: "t-footnote subtle", style: { margin: 0 } }, "Closed batches keep the gates they were judged by. Every change writes its line in the audit log.")));
   }
   function ProfileSheet({ open, onClose, c, me }) {
     const app = useApp();
@@ -377,7 +464,7 @@
       toast({ text: `${c.name}'s profile saved`, tone: "ok" });
       onClose();
     };
-    return /* @__PURE__ */ React.createElement(Sheet, { open, onClose, title: "Supply-chain profile", side: app.bp === "phone" ? "bottom" : "side", detent: "large", footer: /* @__PURE__ */ React.createElement(Button, { variant: "primary", size: "lg", block: true, onClick: save }, "Save profile") }, /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 18 } }, Object.keys(P.PROFILE).map((q) => /* @__PURE__ */ React.createElement(Choice, { key: q, name: "pf-" + q, label: P.PROFILE[q].label, options: P.PROFILE[q].options, value: f[q], onChange: (v) => setF({ ...f, [q]: v }) })), /* @__PURE__ */ React.createElement(Field, { label: "Blinkit takes stock with at least", htmlFor: "pf-bl", help: "days of shelf life left" }, /* @__PURE__ */ React.createElement(Input, { id: "pf-bl", type: "number", min: 30, max: 180, value: f.blinkitDays, onChange: (e) => setF({ ...f, blinkitDays: Number(e.target.value) || 30 }) })), /* @__PURE__ */ React.createElement(Field, { label: "Zepto and Instamart take at least", htmlFor: "pf-qc", help: "% of shelf life left" }, /* @__PURE__ */ React.createElement(Input, { id: "pf-qc", type: "number", min: 30, max: 90, step: 5, value: f.qcomPct, onChange: (e) => setF({ ...f, qcomPct: Number(e.target.value) || 30 }) })), /* @__PURE__ */ React.createElement("div", { className: "row between", style: { gap: 12 } }, /* @__PURE__ */ React.createElement("span", { className: "t-subhead" }, "Return window, days"), /* @__PURE__ */ React.createElement(Stepper, { value: f.returnWindowDays, min: 7, max: 45, onChange: (v) => setF({ ...f, returnWindowDays: v }), label: "return window days" })), /* @__PURE__ */ React.createElement(ProfileSummary, { profile: f })));
+    return /* @__PURE__ */ React.createElement(Sheet, { open, onClose, title: "Supply-chain profile", side: app.bp === "phone" ? "bottom" : "side", detent: "large", footer: /* @__PURE__ */ React.createElement(Button, { variant: "primary", size: "lg", block: true, onClick: save }, "Save profile") }, /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 18 } }, Object.keys(P.PROFILE).map((q) => /* @__PURE__ */ React.createElement(Choice, { key: q, name: "pf-" + q, label: P.PROFILE[q].label, options: P.PROFILE[q].options, value: f[q], onChange: (v) => setF({ ...f, [q]: v }) })), /* @__PURE__ */ React.createElement(Field, { label: "New SKUs: Blinkit takes stock with at least", htmlFor: "pf-bl", help: "days of shelf life left · SKUs with gates of their own keep them" }, /* @__PURE__ */ React.createElement(Input, { id: "pf-bl", type: "number", min: 30, max: 180, value: f.blinkitDays, onChange: (e) => setF({ ...f, blinkitDays: Number(e.target.value) || 30 }) })), /* @__PURE__ */ React.createElement(Field, { label: "New SKUs: Zepto and Instamart take at least", htmlFor: "pf-qc", help: "% of shelf life left" }, /* @__PURE__ */ React.createElement(Input, { id: "pf-qc", type: "number", min: 30, max: 90, step: 5, value: f.qcomPct, onChange: (e) => setF({ ...f, qcomPct: Number(e.target.value) || 30 }) })), /* @__PURE__ */ React.createElement("div", { className: "row between", style: { gap: 12 } }, /* @__PURE__ */ React.createElement("span", { className: "t-subhead" }, "Return window, days"), /* @__PURE__ */ React.createElement(Stepper, { value: f.returnWindowDays, min: 7, max: 45, onChange: (v) => setF({ ...f, returnWindowDays: v }), label: "return window days" })), /* @__PURE__ */ React.createElement(ProfileSummary, { profile: f })));
   }
   function ProfileSummary({ profile }) {
     return /* @__PURE__ */ React.createElement(Card, { className: "cs-summary" }, /* @__PURE__ */ React.createElement("b", { className: "t-subhead" }, "What this profile sets up"), /* @__PURE__ */ React.createElement("ul", null, P.profileLines(profile).map((l, i) => /* @__PURE__ */ React.createElement("li", { key: i }, /* @__PURE__ */ React.createElement(Icon, { name: l.icon, size: 16, stroke: 2 }), /* @__PURE__ */ React.createElement("span", null, l.text)))), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, "Every plan still waits for one person's approval."));

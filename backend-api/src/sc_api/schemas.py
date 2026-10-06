@@ -170,6 +170,13 @@ class DistributorOut(Shape):
     permission: Literal["given", "not-yet"]
 
 
+class SkuGates(Shape):
+    """an SKU's own quick-commerce gates (SC-47): each value the SKU's, or absent for the client's default"""
+
+    blinkit_days: int | MISSING = MISSING
+    qcom_pct: int | MISSING = MISSING
+
+
 class SkuOut(Shape):
     id: str
     code: str
@@ -178,6 +185,46 @@ class SkuOut(Shape):
     mrp: float
     gst: float
     life_days: int
+    gates: SkuGates
+
+
+GateApp = Literal["blinkit", "zepto", "instamart"]
+GateSource = Literal["default", "sku", "override"]
+
+
+class GateCheck(Shape):
+    """a gate as the agents read it: what the app needs and what the batch has (days for Blinkit, % of life for the
+    others)"""
+
+    app: GateApp
+    need: int
+    has: int
+    pass_: bool = Field(alias="pass")
+    source: GateSource
+
+
+class BatchOverride(Shape):
+    blinkit_days: int | MISSING = MISSING
+    qcom_pct: int | MISSING = MISSING
+    reason: str
+    by: str
+    at: str
+
+
+class BatchGates(Shape):
+    """an open batch, and its quick-commerce gates as the agents read them"""
+
+    ref: str
+    sku: str
+    distributor: str
+    units: int
+    best_before: str
+    days_left: int
+    life_days: int
+    blinkit_days: int
+    qcom_pct: int
+    checks: list[GateCheck]
+    override: BatchOverride | MISSING = MISSING
 
 
 class Integration(Shape):
@@ -308,6 +355,18 @@ class ProfileInput(Shape):
     profile: Profile
     gates: Gates
     return_window_days: int
+
+
+class SkuGatesInput(Shape):
+    """an SKU's own gates, or null to put it back on the client's default"""
+
+    gates: SkuGates | None
+
+
+class OverrideInput(Shape):
+    blinkit_days: int | None = None
+    qcom_pct: int | None = None
+    reason: str = Field(max_length=2000)
 
 
 class RulesInput(Shape):

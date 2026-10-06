@@ -300,6 +300,105 @@
         "title": "AuditEntry",
         "type": "object"
       },
+      "BatchGates": {
+        "additionalProperties": false,
+        "description": "an open batch, and its quick-commerce gates as the agents read them",
+        "properties": {
+          "bestBefore": {
+            "title": "Bestbefore",
+            "type": "string"
+          },
+          "blinkitDays": {
+            "title": "Blinkitdays",
+            "type": "integer"
+          },
+          "checks": {
+            "items": {
+              "$ref": "#/components/schemas/GateCheck"
+            },
+            "title": "Checks",
+            "type": "array"
+          },
+          "daysLeft": {
+            "title": "Daysleft",
+            "type": "integer"
+          },
+          "distributor": {
+            "title": "Distributor",
+            "type": "string"
+          },
+          "lifeDays": {
+            "title": "Lifedays",
+            "type": "integer"
+          },
+          "override": {
+            "$ref": "#/components/schemas/BatchOverride",
+            "title": "Override"
+          },
+          "qcomPct": {
+            "title": "Qcompct",
+            "type": "integer"
+          },
+          "ref": {
+            "title": "Ref",
+            "type": "string"
+          },
+          "sku": {
+            "title": "Sku",
+            "type": "string"
+          },
+          "units": {
+            "title": "Units",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "ref",
+          "sku",
+          "distributor",
+          "units",
+          "bestBefore",
+          "daysLeft",
+          "lifeDays",
+          "blinkitDays",
+          "qcomPct",
+          "checks"
+        ],
+        "title": "BatchGates",
+        "type": "object"
+      },
+      "BatchOverride": {
+        "additionalProperties": false,
+        "properties": {
+          "at": {
+            "title": "At",
+            "type": "string"
+          },
+          "blinkitDays": {
+            "title": "Blinkitdays",
+            "type": "integer"
+          },
+          "by": {
+            "title": "By",
+            "type": "string"
+          },
+          "qcomPct": {
+            "title": "Qcompct",
+            "type": "integer"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason",
+          "by",
+          "at"
+        ],
+        "title": "BatchOverride",
+        "type": "object"
+      },
       "Catalog": {
         "additionalProperties": false,
         "properties": {
@@ -865,6 +964,51 @@
         "title": "ExitState",
         "type": "object"
       },
+      "GateCheck": {
+        "additionalProperties": false,
+        "description": "a gate as the agents read it: what the app needs and what the batch has (days for Blinkit, % of life for the\nothers)",
+        "properties": {
+          "app": {
+            "enum": [
+              "blinkit",
+              "zepto",
+              "instamart"
+            ],
+            "title": "App",
+            "type": "string"
+          },
+          "has": {
+            "title": "Has",
+            "type": "integer"
+          },
+          "need": {
+            "title": "Need",
+            "type": "integer"
+          },
+          "pass": {
+            "title": "Pass",
+            "type": "boolean"
+          },
+          "source": {
+            "enum": [
+              "default",
+              "sku",
+              "override"
+            ],
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "app",
+          "need",
+          "has",
+          "pass",
+          "source"
+        ],
+        "title": "GateCheck",
+        "type": "object"
+      },
       "Gates": {
         "additionalProperties": false,
         "properties": {
@@ -1120,6 +1264,43 @@
           "plan"
         ],
         "title": "NewClientInput",
+        "type": "object"
+      },
+      "OverrideInput": {
+        "additionalProperties": false,
+        "properties": {
+          "blinkitDays": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Blinkitdays"
+          },
+          "qcomPct": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Qcompct"
+          },
+          "reason": {
+            "maxLength": 2000,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "OverrideInput",
         "type": "object"
       },
       "Overview": {
@@ -1432,6 +1613,43 @@
         "title": "SignInMethod",
         "type": "object"
       },
+      "SkuGates": {
+        "additionalProperties": false,
+        "description": "an SKU's own quick-commerce gates (SC-47): each value the SKU's, or absent for the client's default",
+        "properties": {
+          "blinkitDays": {
+            "title": "Blinkitdays",
+            "type": "integer"
+          },
+          "qcomPct": {
+            "title": "Qcompct",
+            "type": "integer"
+          }
+        },
+        "title": "SkuGates",
+        "type": "object"
+      },
+      "SkuGatesInput": {
+        "additionalProperties": false,
+        "description": "an SKU's own gates, or null to put it back on the client's default",
+        "properties": {
+          "gates": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SkuGates"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "gates"
+        ],
+        "title": "SkuGatesInput",
+        "type": "object"
+      },
       "SkuOut": {
         "additionalProperties": false,
         "properties": {
@@ -1442,6 +1660,9 @@
           "code": {
             "title": "Code",
             "type": "string"
+          },
+          "gates": {
+            "$ref": "#/components/schemas/SkuGates"
           },
           "gst": {
             "title": "Gst",
@@ -1471,7 +1692,8 @@
           "name",
           "mrp",
           "gst",
-          "lifeDays"
+          "lifeDays",
+          "gates"
         ],
         "title": "SkuOut",
         "type": "object"
@@ -2183,6 +2405,193 @@
         ]
       }
     },
+    "/v1/console/clients/{client_id}/batches": {
+      "get": {
+        "operationId": "client_batches_v1_console_clients__client_id__batches_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sku",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sku"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BatchGates"
+                  },
+                  "title": "Response Client Batches V1 Console Clients  Client Id  Batches Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "A client's open batches and their gates",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}/batches/{ref}/override": {
+      "delete": {
+        "operationId": "clear_override_v1_console_clients__client_id__batches__ref__override_delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Put a batch back on its SKU's gates",
+        "tags": [
+          "console"
+        ]
+      },
+      "put": {
+        "operationId": "override_batch_v1_console_clients__client_id__batches__ref__override_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OverrideInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Override a batch's gates, with why",
+        "tags": [
+          "console"
+        ]
+      }
+    },
     "/v1/console/clients/{client_id}/distributors/{distributor_id}/reminders": {
       "post": {
         "operationId": "remind_v1_console_clients__client_id__distributors__distributor_id__reminders_post",
@@ -2607,6 +3016,72 @@
           }
         ],
         "summary": "Save Rules",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}/skus/{sku_id}/gates": {
+      "put": {
+        "operationId": "save_sku_gates_v1_console_clients__client_id__skus__sku_id__gates_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "sku_id",
+            "required": true,
+            "schema": {
+              "title": "Sku Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SkuGatesInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "An SKU's own gates, or null for the default",
         "tags": [
           "console"
         ]

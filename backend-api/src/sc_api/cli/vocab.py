@@ -123,3 +123,20 @@ MEMBER_ROLES = [
     ("Finance & GST", "Finance & GST"),
     ("Sustainability & BRSR", "Sustainability & BRSR"),
 ]
+
+# SC-47: why a person overrode one batch's quick-commerce gate: the gate, and the deal a warehouse agreed to
+OVERRIDE_REASONS = [
+    ("qcomPct", "Zepto's {city} warehouse agreed to take this lot at {v}% of its life"),
+    ("qcomPct", "Instamart {city} takes this lot at {v}% for its clearance week"),
+    ("blinkitDays", "Blinkit's {city} dark stores take this lot with {v} days left for a festive sale"),
+]
+
+
+def own_gates(life_days: int) -> dict[str, int] | None:
+    """an SKU's own quick-commerce gates, where its shelf life makes the client's default wrong for it: long-life packs
+    need more days for Blinkit, short-life snacks fewer (dairy stays on the default, which it never passes)"""
+    if life_days >= 540:
+        return {"blinkitDays": 180}
+    if 90 <= life_days <= 150:
+        return {"blinkitDays": 45, "qcomPct": 50}
+    return None

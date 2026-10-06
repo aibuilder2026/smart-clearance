@@ -78,3 +78,27 @@ describe('siteHttp', () => {
 		);
 	});
 });
+
+describe('consoleHttp: quick-commerce gates (SC-47)', () => {
+	it('reads and changes gates on their backend-api routes', async () => {
+		const auth = fakeAuth();
+		await auth.signIn('neha@x.example', 'right');
+		const fetcher = vi.fn(async () => reply(200, []));
+		const api = consoleHttp('http://api', { auth, fetcher: fetcher as unknown as typeof fetch });
+		await api.clientBatches('munchly', 'mango');
+		await api.saveSkuGates('munchly', 'chips', null);
+		await api.overrideBatch('munchly', 'MF-2408-209', { qcomPct: 35, reason: 'x' });
+		await api.clearBatchOverride('munchly', 'MF-2408-209');
+		const calls = (fetcher.mock.calls as unknown as [string, RequestInit][]).map(([url, init]) => [
+			init?.method,
+			url,
+			init?.body ?? null
+		]);
+		expect(calls).toEqual([
+			['GET', 'http://api/v1/console/clients/munchly/batches?sku=mango', null],
+			['PUT', 'http://api/v1/console/clients/munchly/skus/chips/gates', '{"gates":null}'],
+			['PUT', 'http://api/v1/console/clients/munchly/batches/MF-2408-209/override', '{"qcomPct":35,"reason":"x"}'],
+			['DELETE', 'http://api/v1/console/clients/munchly/batches/MF-2408-209/override', null]
+		]);
+	});
+});

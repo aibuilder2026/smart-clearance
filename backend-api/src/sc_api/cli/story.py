@@ -21,7 +21,6 @@ from sc_api.services.reference import load
 STORY_TODAY = date(2026, 10, 6)
 STORY_YEAR = 2026
 DOMAINS = {"munchly.in": "munchly.example"}  # also in text: "munchly.in accounts only"
-CLOSED_BATCHES = 7  # the client's nine batches: two still moving (Overview's tracks), seven sold through
 
 
 def rewrite(value: Any, staff_domain: str) -> Any:
@@ -225,6 +224,7 @@ class Story:
                 mrp=s["mrp"],
                 gst=s["gst"],
                 life_days=s["lifeDays"],
+                gates=s.get("gates") or None,
             )
         for i in c["integrations"]:
             await supply.add_integration(
@@ -233,31 +233,31 @@ class Story:
 
     async def history(self) -> None:
         ctx, c = self.ctx, self.client
-        skus = {s["name"]: s["id"] for s in c["skus"]}
-        dists = {d["name"]: d["id"] for d in c["distributors"]}
-        # the seven batches that sold through, before the two still moving
-        sku_ids, dist_ids = list(skus.values()), list(dists.values())
-        for n in range(CLOSED_BATCHES):
-            ctx.clock.set(self.when("1 Oct, 10:00") + timedelta(hours=n))  # type: ignore[attr-defined]
-            ref = f"MF-24{9 + n // 4:02d}-{101 + n}"
-            await supply.open_batch(
-                ctx, c["id"], ref=ref, sku=sku_ids[n % len(sku_ids)], distributor=dist_ids[n % len(dist_ids)], units=0
-            )
-            await supply.close_batch(ctx, c["id"], ref, recovered=0, outcome="sold through")
-        for t in self.state["tracks"]:
-            ctx.clock.set(self.when("2 Oct, 09:00"))  # type: ignore[attr-defined]
+        # the batches the Watcher sees, with their best-before dates moved to the import's day: the two on the move
+        # (Overview's tracks) with their notes, the rest at Detect, and one with the gate override Neha set
+        tracks = {t["batch"]: t for t in self.state["tracks"]}
+        ctx.clock.set(self.when("2 Oct, 09:00"))  # type: ignore[attr-defined]
+        for b in self.state["batches"]:
+            if b["client"] != c["id"]:
+                continue
+            t = tracks.get(b["ref"], {})
+            o = b.get("override")
             await supply.open_batch(
                 ctx,
                 c["id"],
-                ref=t["batch"],
-                sku=skus[t["product"]],
-                distributor=dists[t["distributor"]],
-                units=0,
-                done=t["done"],
-                current=t["current"],
+                ref=b["ref"],
+                sku=b["sku"],
+                distributor=b["distributor"],
+                units=b["units"],
+                done=b["done"],
+                current=b["current"],
                 note=t.get("note"),
                 money=t.get("money"),
                 split=t.get("split"),
+                best_before=date.fromisoformat(b["bestBefore"]) + self.shift,
+                override={**o, "by": self.actors.get(o["by"]) or Actor(name=o["by"]), "at": self.when(o["at"])}
+                if o
+                else None,
             )
         for line in self.state["audit"]:
             who = self.actors.get(line["who"]) or Actor(name=line["who"])

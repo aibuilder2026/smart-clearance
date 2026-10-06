@@ -40,25 +40,28 @@ these files re-export them. The shapes are the prototype's (`design3/core`).
 **The console** (`types/console.ts`): every change is written to the audit log by the server, in the signed-in staff
 member's name.
 
-| Call                                             | Endpoint                                                               |
-| ------------------------------------------------ | ---------------------------------------------------------------------- |
-| `config()`                                       | `GET /v1/console/config`                                               |
-| `signInAccounts()`, `signIn(id)`                 | `GET /v1/console/session/accounts`, `POST /v1/console/session`         |
-| `me()`, `signOut()`                              | `GET`, `DELETE /v1/console/session`                                    |
-| `overview()`                                     | `GET /v1/console/overview`                                             |
-| `clients()`, `client(id)`                        | `GET /v1/console/clients`, `GET /v1/console/clients/{id}`              |
-| `createClient(input)`                            | `POST /v1/console/clients`                                             |
-| `updateAgent(id, agent, patch)`                  | `PATCH /v1/console/clients/{id}/agents/{agent}`                        |
-| `runAgent(id, agent)`                            | `POST …/agents/{agent}/runs`                                           |
-| `setAllAgents(id, on)`                           | `POST …/agents/pause`, `POST …/agents/resume`                          |
-| `goLive(id)`, `setPlan(id, plan)`                | `POST …/go-live`, `PATCH /v1/console/clients/{id}`                     |
-| `saveProfile(id, input)`, `saveRules(id, input)` | `PUT …/profile`, `PUT …/rules`                                         |
-| `remindDistributor(id, d)`                       | `POST …/distributors/{d}/reminders`                                    |
-| `requestFirstExport(id)`                         | `POST …/integrations/dms/requests`                                     |
-| `invitePerson`, `updatePerson`, `resendInvite`   | `POST …/people`, `PATCH …/people/{p}`, `POST …/people/{p}/invitations` |
-| `staff()`, `inviteStaff(input)`                  | `GET`, `POST /v1/console/staff`                                        |
-| `audit(client?)`                                 | `GET /v1/console/audit?client=`                                        |
-| `demoRequests()`                                 | `GET /v1/demo-requests`                                                |
+| Call                                                           | Endpoint                                                               |
+| -------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `config()`                                                     | `GET /v1/console/config`                                               |
+| `signIn(input)`                                                | Firebase, then `POST /v1/console/session`                              |
+| `me()`, `signOut()`                                            | `GET`, `DELETE /v1/console/session`                                    |
+| `overview()`                                                   | `GET /v1/console/overview`                                             |
+| `clients()`, `client(id)`                                      | `GET /v1/console/clients`, `GET /v1/console/clients/{id}`              |
+| `createClient(input)`                                          | `POST /v1/console/clients`                                             |
+| `updateAgent(id, agent, patch)`                                | `PATCH /v1/console/clients/{id}/agents/{agent}`                        |
+| `runAgent(id, agent)`                                          | `POST …/agents/{agent}/runs`                                           |
+| `setAllAgents(id, on)`                                         | `POST …/agents/pause`, `POST …/agents/resume`                          |
+| `goLive(id)`, `setPlan(id, plan)`                              | `POST …/go-live`, `PATCH /v1/console/clients/{id}`                     |
+| `saveProfile(id, input)`, `saveRules(id, input)`               | `PUT …/profile`, `PUT …/rules`                                         |
+| `clientBatches(id, sku?)`                                      | `GET …/batches?sku=`                                                   |
+| `saveSkuGates(id, sku, gates)`                                 | `PUT …/skus/{sku}/gates`                                               |
+| `overrideBatch(id, ref, input)`, `clearBatchOverride(id, ref)` | `PUT`, `DELETE …/batches/{ref}/override`                               |
+| `remindDistributor(id, d)`                                     | `POST …/distributors/{d}/reminders`                                    |
+| `requestFirstExport(id)`                                       | `POST …/integrations/dms/requests`                                     |
+| `invitePerson`, `updatePerson`, `resendInvite`                 | `POST …/people`, `PATCH …/people/{p}`, `POST …/people/{p}/invitations` |
+| `staff()`, `inviteStaff(input)`                                | `GET`, `POST /v1/console/staff`                                        |
+| `audit(client?)`                                               | `GET /v1/console/audit?client=`                                        |
+| `demoRequests()`                                               | `GET /v1/demo-requests`                                                |
 
 A 422 carries the message and, where it names an input, `fields`. `client(id)` and `me()` answer `null` for a 404 and a 401. backend-api serves these routes (SC-45; `backend-api/README.md`, `backend-api/contracts/openapi.json`).
 
@@ -67,6 +70,11 @@ A 422 carries the message and, where it names an input, `fields`. `client(id)` a
 answers the staff member the account belongs to; every call carries the Firebase ID token. The mock lets any active
 staff member's address in with any password. A wrong sign-in is a 401 with `SIGN_IN_FAILED`, one message whichever part
 was wrong. Find your workspace (`WorkspaceMatch`) names the workspace only, never the person's role.
+
+**Quick-commerce gates** (SC-47): an SKU's own gates (`Sku.gates`, each value absent for the client's default), and a
+batch's override with its reason. `clientBatches` answers a client's open batches with their gates as the agents read
+them: each gate's source (`default`, `sku` or `override`) and pass or fail. `platform.ts` has the rule (`batchGates`),
+the checks (`skuGatesError`, `overrideError`) and the audit lines, as `platform.js` has them.
 
 ## The mocks
 

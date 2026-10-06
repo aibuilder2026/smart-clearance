@@ -8,29 +8,38 @@ import type {
 	AgentPatch,
 	Attention,
 	AuditEntry,
+	BatchGates,
+	BatchOverride,
 	Client,
 	ConsoleApi,
 	ConsoleConfig,
 	NewClientInput,
 	Run,
+	SkuGates,
 	Staff,
 	Track
 } from '../types/console';
 import {
 	agentDefaults,
+	batchGates,
+	clearOverrideLine,
 	exitsFor,
 	inviteError,
 	optLabel,
+	overrideError,
+	overrideLine,
 	setupErrors,
 	showValue,
 	SIGN_IN_FAILED,
+	skuGatesError,
+	skuGatesLine,
 	staffInviteError
 } from './platform';
 
 /** where the mock keeps the platform's state, and who is signed in */
 export const CONSOLE_KEY = 'sc-console';
 export const SESSION_KEY = 'sc-console-session';
-const VERSION = 1;
+const VERSION = 2;
 
 type State = {
 	v: number;
@@ -38,12 +47,28 @@ type State = {
 	staff: Staff[];
 	runs: Run[];
 	tracks: Track[];
+	/** the batches the Watcher sees, with their best-before dates and any gate override (SC-47) */
+	batches: Batch[];
 	audit: AuditEntry[];
 	requests: DemoRequest[];
 	nextAudit: number;
 };
 
+type Batch = {
+	client: string;
+	ref: string;
+	sku: string;
+	distributor: string;
+	units: number;
+	bestBefore: string;
+	done: number;
+	current: number;
+	override?: BatchOverride;
+};
+
 const config = seed.config as ConsoleConfig;
+/** the console's day (the story's 6 Oct), which every batch's days left counts from, as the prototype counts */
+const TODAY = seed.today;
 const AGENTS = catalog().agents;
 
 // The console prototype opens with no demo requests: the landing page in the same browser fills them. On its own
@@ -132,6 +157,12 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 		const c = state.clients.find((x) => x.id === id);
 		if (!c) throw new ApiError(404, 'No such client.');
 		return c;
+	};
+	const openBatch = (client: string, ref: string) => {
+		const b = state.batches.find((x) => x.client === client && x.ref === ref);
+		if (!b) throw new ApiError(404, 'No such batch.');
+		if (b.done >= 9) throw new ApiError(422, `${ref} is closed; it keeps the gates it was judged by.`);
+		return b;
 	};
 	const agentOf = (id: string): Agent => {
 		const a = AGENTS.find((x) => x.id === id);
@@ -476,6 +507,75 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 				`Changed ${c.name}'s channels and rules: ${changed.join('; ')}`
 			);
 		},
+		async clientBatches(id, sku) {
+			await wait();
+			const c = clientOf(id);
+			return out(
+				state.batches
+					.filter((b) => b.client === id && b.done < 9 && (!sku || b.sku === sku))
+					.map((b): BatchGates => {
+						const g = batchGates(
+							c,
+							c.skus.find((x) => x.id === b.sku)!,
+							b,
+							TODAY
+						);
+						return {
+							ref: b.ref,
+							sku: b.sku,
+							distributor: b.distributor,
+							units: b.units,
+							bestBefore: b.bestBefore,
+							...g,
+							...(b.override ? { override: b.override } : {})
+						};
+					})
+			);
+		},
+		async saveSkuGates(id, skuId, sent) {
+			await wait();
+			const g = wire(sent) as SkuGates | null;
+			const c = clientOf(id);
+			const sku = c.skus.find((x) => x.id === skuId);
+			if (!sku) throw new ApiError(404, 'No such SKU.');
+			const problem = skuGatesError(g);
+			if (problem) throw new ApiError(422, problem, { gates: problem });
+			const want: SkuGates = {};
+			if (g?.blinkitDays != null) want.blinkitDays = g.blinkitDays;
+			if (g?.qcomPct != null) want.qcomPct = g.qcomPct;
+			if (JSON.stringify(want) === JSON.stringify(sku.gates ?? {})) return out(c);
+			return change(id, (x) => (x.skus.find((y) => y.id === skuId)!.gates = want), skuGatesLine(c, sku, g));
+		},
+		async overrideBatch(id, ref, sent) {
+			await wait();
+			const o = wire(sent);
+			clientOf(id);
+			const b = openBatch(id, ref);
+			const problem = overrideError(o);
+			if (problem) throw new ApiError(422, problem);
+			const next: BatchOverride = { reason: o.reason.trim(), by: who(), at: `Today, ${hhmm()}` };
+			if (o.blinkitDays != null) next.blinkitDays = o.blinkitDays;
+			if (o.qcomPct != null) next.qcomPct = o.qcomPct;
+			const was = b.override;
+			if (was && was.blinkitDays === next.blinkitDays && was.qcomPct === next.qcomPct && was.reason === next.reason)
+				return out(clientOf(id));
+			return change(
+				id,
+				(_, d) => (d.batches.find((x) => x.client === id && x.ref === ref)!.override = next),
+				overrideLine(ref, next)
+			);
+		},
+		async clearBatchOverride(id, ref) {
+			await wait();
+			clientOf(id);
+			if (!openBatch(id, ref).override) return out(clientOf(id));
+			return change(
+				id,
+				(_, d) => delete d.batches.find((x) => x.client === id && x.ref === ref)!.override,
+				clearOverrideLine(ref)
+			);
+		},
+
 		async remindDistributor(id, distributor) {
 			await wait();
 			const c = clientOf(id);
