@@ -2,14 +2,15 @@
 
 Terraform for Smart-Clearance's Google Cloud project, `aibuilder-510213`, and the scripts that run it (SC-39). For
 now it hosts the two frontend apps on Firebase Hosting, each on its own site, and lets GitHub Actions deploy them from
-`main` without a key (SC-40). `backend-api` and `agents` join here when they have code.
+`main` without a key (SC-40). It also holds `backend-api`'s Firebase Authentication, secrets and identity (SC-44), with
+its cloud runtime (Cloud SQL, Cloud Run) written but switched off until it is asked for.
 
 ## What it manages
 
 | Root         | State                                     | What it holds                                                                                                                                                                                                                                                                                             |
 | ------------ | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `bootstrap/` | `gs://aibuilder-510213-tfstate/bootstrap` | <ul><li>The state bucket: in `asia-south1`, versioned (the last 20 versions of each file, for 90 days at most), with uniform access and public access prevented.</li><li>The APIs Terraform itself calls: Service Usage, Resource Manager, Cloud Billing, Storage.</li></ul>                                  |
-| `prod/`      | `gs://aibuilder-510213-tfstate/prod`      | <ul><li>The project's link to billing account `012B20-D65DBD-FBAC0E`, adopted by an `import` block (it was linked before Terraform).</li><li>The Firebase Management and Hosting APIs.</li><li>Firebase on the project.</li><li>One Hosting site per app, and a custom domain for each if one is set.</li><li>For CI (SC-40): a Workload Identity pool for GitHub Actions, the `github-deployer` service account, and the repository's `prod` environment with its variables, through the GitHub provider.</li></ul> |
+| `prod/`      | `gs://aibuilder-510213-tfstate/prod`      | <ul><li>The project's link to billing account `012B20-D65DBD-FBAC0E`, adopted by an `import` block (it was linked before Terraform).</li><li>The Firebase Management and Hosting APIs.</li><li>Firebase on the project.</li><li>One Hosting site per app, and a custom domain for each if one is set.</li><li>For CI (SC-40): a Workload Identity pool for GitHub Actions, the `github-deployer` service account, and the repository's `prod` environment with its variables, through the GitHub provider.</li><li>For backend-api (SC-44): Firebase Authentication, the console's web app and browser key, Secret Manager's containers, and the <code>sc-api-local</code> service account. Its runtime is behind <code>backend_runtime</code>, off.</li></ul> |
 
 Both roots use `hashicorp/google` 8.5, and `prod` also uses `google-beta` 8.5 (Firebase's resources are beta-only) and
 `integrations/github` 6.13. They're locked in `.terraform.lock.hcl` for macOS and Linux on arm64 and amd64.
@@ -50,6 +51,7 @@ infra/scripts/deploy.sh                      # build both apps and release them
 infra/scripts/deploy.sh console              # one app, by its target: site or console
 SKIP_BUILD=1 infra/scripts/deploy.sh         # release the builds already on disk
 
+infra/scripts/auth-policy.sh                 # after an apply: the password policy and email enumeration protection
 infra/scripts/check.sh                       # the gate: terraform fmt and validate, and the scripts' syntax
 ```
 
@@ -102,6 +104,50 @@ is a secret. A site added in `prod/terraform.tfvars` reaches CI with the next ap
 
 Terraform itself still runs from a workstation, as a person.
 
+## Firebase Authentication, secrets and backend-api's identity (SC-44)
+
+Applied, and free:
+
+| File | What |
+| --- | --- |
+| `auth.tf` | <ul><li>Identity Platform's config: **email and password only**, a password required, and **sign-up disabled**. Only backend-api creates accounts (with the Admin SDK), each onboarded with the default password; no email is ever sent.</li><li>Authorized domains: `localhost`, the project's own, both Hosting sites', any custom domains and `extra_auth_domains`.</li><li>The console's Firebase web app, bound to its own browser key (`console-browser`), which may only call the Identity Toolkit and Secure Token APIs, and only from the console's origins and its local dev and preview servers (`console_dev_origins`).</li></ul> |
+| `secrets.tf` | Secret Manager **containers**, replicated in the project's region: `sc-default-user-password`, `sc-local-db-app-password`, `sc-local-db-migrator-password`. Terraform never holds a value: `backend-api/scripts/secrets.sh` generates each and pipes it to `gcloud` on stdin. |
+| `backend.tf` | <ul><li>A custom role, `scAuthUsers`: create, read, update and delete Firebase users, nothing else. `roles/firebaseauth.admin` would also allow changing the auth config and reading its password-hash parameters.</li><li>`sc-api-local`, the service account a local backend-api runs as. It holds that role and may read the three secrets. It has no key: the backend impersonates it in code, from the developer's own credentials.</li><li>Each of `operators` (in `terraform.tfvars`) may impersonate it.</li></ul> |
+
+Two settings have no Terraform block: the **password policy** (at least 12 characters, with upper and lower case and a
+digit) and **email enumeration protection**. `scripts/auth-policy.sh` sets both through the Identity Toolkit API, and
+prints what the project has; run it after an apply that creates the config (`--check` only prints).
+
+The console's Firebase config (`console_firebase_config`) is public by design: it ships in the console's JavaScript,
+and its key is restricted. It is still never committed: `backend-api/scripts/console-env.sh` (SC-45) writes it into the
+console's git-ignored `.env.local`.
+
+## backend-api's runtime (written, off)
+
+`backend_runtime = false` keeps everything that costs money out of the plan. Set it (with `backend_image`) to add:
+
+| File | What |
+| --- | --- |
+| `registry.tf` | Artifact Registry `sc` for backend-api's images, keeping the last 10 |
+| `sql.tf` | Cloud SQL for PostgreSQL 18, Enterprise edition, `db-f1-micro`, zonal: IAM database authentication only, through Cloud SQL connectors only, over TLS, with no authorised network; daily backups and point-in-time recovery; deletion protection. The `smart_clearance` database, and IAM users for `sc-api` and `sc-migrator` (only the migrator holds `cloudsqlsuperuser`). No database password exists. |
+| `run.tf` | `sc-api` and `sc-migrator`; the `backend-api` Cloud Run service (public ingress, the API checks Firebase tokens itself) and the `backend-api-migrate` job |
+| `budget.tf` | A monthly budget on the project (`budget_amount`, in the billing account's currency), alerting at 50%, 90% and 100%, and on a forecast over 100% |
+| `github.tf` | `PUBLIC_API_BASE` and `PUBLIC_FIREBASE_*` on the `prod` environment, for the console's build |
+
+A plan with `-var backend_runtime=true -var backend_image=…` was read on 6 Oct 2026 (25 to add) and not applied.
+
+## Moving it to another project
+
+Everything is keyed on `project_id` and `region`; nothing else names the project.
+
+1. Set `project_id`, `region`, `billing_account`, `github_repository`, `hosting_sites` (site ids are global) and
+   `operators` in `prod/terraform.tfvars`, `project_id` and `region` in `bootstrap/terraform.tfvars`, and the backend
+   bucket (`<project_id>-tfstate`) in both roots' `versions.tf`. `check.sh` checks that they agree.
+2. Accept the Firebase Terms with the account that will apply, then run `scripts/bootstrap.sh`.
+3. `scripts/tf.sh plan -out=prod.tfplan`, read it, `scripts/tf.sh apply prod.tfplan`, then `scripts/auth-policy.sh`.
+4. `backend-api/scripts/bootstrap.sh` (SC-45): the secrets, the database, its migrations and the synthetic data.
+5. `scripts/deploy.sh` for the frontend.
+
 ## Custom domains
 
 Set `custom_domain` on a site in `prod/terraform.tfvars` (`smartclearance.com`, `console.smartclearance.com`), plan
@@ -129,5 +175,8 @@ state prefix and tfvars.
 - Terraform plans and applies run from a workstation, as a person. CI checks the configuration but never plans: a
   plan needs credentials to the state and to GitHub.
 - CI doesn't run the e2e or parity suites, which need browsers. Run them yourself (`AGENTS.md`, Commands).
-- No custom domain is set, and `smartclearance.com` is not registered in the project.
-- No budget alert is set on the billing account.
+- No custom domain is set, and `smartclearance.com` is not registered in the project. Until it is, console staff use
+  `staff_email_domain` (`smartclearance.example`): a password reset goes to whoever receives a domain's mail.
+- The budget alert comes with the runtime (`budget.tf`); until then none is set.
+- Local development and prod share one Firebase user pool. backend-api's hydrate upserts users and never deletes them,
+  and every synthetic address is on a reserved `.example` domain.

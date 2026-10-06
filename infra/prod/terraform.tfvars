@@ -15,3 +15,6 @@ hosting_sites = {
     site_id = "smartclearance-console"
   }
 }
+
+# Who may run backend-api locally as its service account, sc-api-local (backend.tf): the account Terraform runs as.
+operators = ["user:gilchristfan@gmail.com"]
