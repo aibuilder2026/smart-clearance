@@ -532,5 +532,5 @@
     - e2e: 110 pass, with the suites waiting for the splash to lift; only Firefox fails, as it cannot start in the sandbox;
     - parity: 80 pass;
     - the e2e and parity suites must run with `PUBLIC_API_BASE=` empty while `.env.local` points at the API.
-  - **Hosting:** the hosted landing page and console load commit `HOSTED_SHA`; the console page loads `dist/console-splash.js` first in `<body>`.
+  - **Hosting:** the hosted landing page and console load commit `b7f143d`; the console page loads `dist/console-splash.js` first in `<body>`.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
