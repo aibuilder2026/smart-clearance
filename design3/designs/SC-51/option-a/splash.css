@@ -1,0 +1,39 @@
+/* SC-51 · option A · the shift */
+.sc51a-stage { position: absolute; inset: 0; }
+.sc51a-behind { position: absolute; inset: 0; transform-origin: 50% 40%; transition: transform 740ms cubic-bezier(0.7, 0, 0.2, 1), filter 740ms cubic-bezier(0.7, 0, 0.2, 1); }
+.sc51a-stage.covered .sc51a-behind { transform: scale(0.985); filter: blur(6px); }
+.sc51a-stage.receding .sc51a-behind { transition-duration: 320ms, 320ms; }
+.sc51a-layer { position: absolute; inset: 0; z-index: var(--z-splash, 60); }
+.sc51a { position: absolute; inset: 0; display: grid; place-items: center; overflow: hidden; }
+.sc51a-cover { position: absolute; inset: 0; background: var(--bg); }
+.sc51a-lock { position: relative; z-index: 1; display: grid; justify-items: center; gap: 26px; width: min(560px, calc(100% - 40px)); text-align: center; }
+.sc51a-mk { display: grid; will-change: transform, opacity; }
+.sc51a-mk .sc51-mark .pin { opacity: 0; transform: translateY(-16px) scale(0.6); transform-origin: 20.5px 47px; }
+.sc51a-mk .sc51-mark .pin.on { opacity: 1; transform: none; transition: opacity 120ms linear, transform 520ms linear(0, 0.26 7.4%, 0.63 15.4%, 0.93 24%, 1.08 33%, 1.1 40%, 1.04 52%, 0.99 64%, 1); }
+.sc51a-mk .sc51-mark .ping { transform-origin: 20.5px 47px; animation: sc51a-ping 900ms ease-out 120ms both; }
+@keyframes sc51a-ping { from { opacity: 0.9; transform: scale(0.6); } to { opacity: 0; transform: scale(2.2); } }
+.sc51a-words { display: grid; justify-items: center; gap: 8px; }
+.sc51a-brand { display: inline-flex; align-items: baseline; gap: 10px; color: var(--fg-2); }
+.sc51a-console { font: 600 13px/1 var(--font-ui); letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-3); padding: 5px 8px 4px; border-radius: 999px; background: var(--fill-2); }
+.sc51a-title { margin: 4px 0 0; font-family: var(--font-display); font-weight: 760; font-size: clamp(30px, 4.2cqi, 44px); line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96; color: var(--fg); text-wrap: balance; }
+.sc51a-sub { margin: 0; font-size: 15.5px; color: var(--fg-2); text-wrap: balance; }
+.sc51a-tracker { width: 100%; max-width: 520px; margin-top: 6px; }
+.sc51a-tracker .st-label { color: var(--fg-3); }
+.sc51a-tracker .stop.done .st-label { color: var(--fg); }
+.sc51a-tracker .stop.now .st-label { color: var(--fg-2); }
+.sc51a-tracker .stop.done .dot { color: var(--primary-fg); }
+.sc51a-tracker .stop.done .dot svg { animation: sc51a-tick 280ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes sc51a-tick { from { transform: scale(0.4); opacity: 0; } }
+.sc51a-tracker .stop.now .dot::after { animation-iteration-count: 1; }
+.sc51a.phone .sc51a-lock { gap: 20px; }
+.sc51a.phone .sc51a-tracker .st-time { display: none; }
+.sc51a.phone .sc51a-tracker .st-label { font-size: 11px; }
+/* a word arrives after the mark: the words rise, the tracker follows */
+.sc51a-words { animation: sc51a-rise 420ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both; }
+.sc51a-tracker { animation: sc51a-rise 420ms cubic-bezier(0.22, 1, 0.36, 1) 220ms both; }
+@keyframes sc51a-rise { from { opacity: 0; transform: translateY(10px); } }
+@media (prefers-reduced-motion: reduce) {
+  .sc51a-words, .sc51a-tracker, .sc51a-mk .sc51-mark .ping, .sc51a-tracker .stop.done .dot svg { animation: none; }
+  .sc51a-behind, .sc51a-mk .sc51-mark .pin { transition: none; }
+  .sc51a-stage.covered .sc51a-behind { transform: none; filter: none; }
+}

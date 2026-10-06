@@ -1,0 +1,41 @@
+/* SC-51 · option C · the roll-call */
+.sc51c-stage { position: absolute; inset: 0; }
+.sc51c-behind { position: absolute; inset: 0; transform-origin: 50% 45%; transition: transform 700ms cubic-bezier(0.7, 0, 0.2, 1), filter 700ms cubic-bezier(0.7, 0, 0.2, 1); }
+.sc51c-stage.covered .sc51c-behind { transform: scale(0.985); filter: blur(6px); }
+.sc51c-stage.receding .sc51c-behind { transition-duration: 320ms, 320ms; }
+.sc51c-layer { position: absolute; inset: 0; z-index: var(--z-splash, 60); }
+.sc51c { position: absolute; inset: 0; display: grid; place-items: center; overflow: hidden; }
+.sc51c-cover { position: absolute; inset: 0; background: var(--bg); }
+.sc51c-lock { position: relative; z-index: 1; display: grid; justify-items: center; gap: 18px; width: min(600px, calc(100% - 32px)); text-align: center; }
+.sc51c-ring { position: relative; will-change: transform, opacity; }
+.sc51c-lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.sc51c-lines line { stroke: var(--line-2); stroke-width: 1.5; stroke-dasharray: 1; stroke-dashoffset: 0; }
+.sc51c-lines line.on { stroke: var(--primary); stroke-width: 2; animation: sc51c-draw 420ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes sc51c-draw { from { stroke-dashoffset: 1; } }
+.sc51c-node { position: absolute; display: grid; place-items: center; border-radius: 50%; background: var(--surface); color: var(--fg-3); box-shadow: 0 0 0 var(--hair) var(--line-2), var(--shadow-1); transition: background-color 240ms var(--ease), color 240ms var(--ease), box-shadow 240ms var(--ease); }
+.sc51c-node.on { background: var(--primary); color: var(--primary-fg); box-shadow: 0 0 0 3px var(--surface), 0 0 0 4.5px var(--primary); animation: sc51c-wake 520ms linear(0, 0.26 7.4%, 0.63 15.4%, 0.93 24%, 1.08 33%, 1.1 40%, 1.04 52%, 0.99 64%, 1) both; }
+.sc51c-node.on::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--primary); animation: ping 1.8s var(--ease) 1 forwards; }
+.sc51c-node.gate.on { background: var(--amber); color: var(--amber-fg, #1a1200); box-shadow: 0 0 0 3px var(--surface), 0 0 0 4.5px var(--amber); }
+.sc51c-node.gate.on::after { border-color: var(--amber); }
+.sc51c-node.rest { animation: none; } .sc51c-node.rest::after { display: none; }
+@keyframes sc51c-wake { from { transform: scale(0.72); } }
+.sc51c-name { position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); font-size: 11.5px; font-weight: 600; color: var(--fg-3); white-space: nowrap; }
+.sc51c-node.on .sc51c-name { color: var(--fg); }
+.sc51c.phone .sc51c-name { font-size: 10px; top: calc(100% + 4px); }
+.sc51c-centre { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: grid; }
+.sc51c-centre .sc51-mark .pin { opacity: 0; transform: translateY(-16px) scale(0.6); transform-origin: 20.5px 47px; }
+.sc51c-centre .sc51-mark .pin.on { opacity: 1; transform: none; transition: opacity 120ms linear, transform 520ms linear(0, 0.26 7.4%, 0.63 15.4%, 0.93 24%, 1.08 33%, 1.1 40%, 1.04 52%, 0.99 64%, 1); }
+.sc51c-centre .sc51-mark .ping { transform-origin: 20.5px 47px; animation: sc51c-ping 900ms ease-out 120ms both; }
+@keyframes sc51c-ping { from { opacity: 0.9; transform: scale(0.6); } to { opacity: 0; transform: scale(2.2); } }
+.sc51c-words { display: grid; justify-items: center; gap: 8px; margin-top: 8px; animation: sc51c-rise 420ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both; }
+@keyframes sc51c-rise { from { opacity: 0; transform: translateY(10px); } }
+.sc51c-brand { display: inline-flex; align-items: baseline; gap: 10px; color: var(--fg-2); }
+.sc51c-console { font: 600 13px/1 var(--font-ui); letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-3); padding: 5px 8px 4px; border-radius: 999px; background: var(--fill-2); }
+.sc51c-title { margin: 2px 0 0; font-family: var(--font-display); font-weight: 760; font-size: clamp(28px, 4cqi, 40px); line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96; color: var(--fg); text-wrap: balance; }
+.sc51c-cap { margin: 0; display: grid; min-height: 24px; font-size: 15.5px; color: var(--fg-2); text-wrap: balance; }
+.sc51c-cap > span { grid-area: 1 / 1; }
+@media (prefers-reduced-motion: reduce) {
+  .sc51c-words, .sc51c-node.on, .sc51c-node.on::after, .sc51c-lines line.on, .sc51c-centre .sc51-mark .ping { animation: none; }
+  .sc51c-behind, .sc51c-node, .sc51c-centre .sc51-mark .pin { transition: none; }
+  .sc51c-stage.covered .sc51c-behind { transform: none; filter: none; }
+}

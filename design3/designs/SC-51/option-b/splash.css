@@ -1,0 +1,67 @@
+/* SC-51 · option B · the handover */
+.sc51b-stage { position: absolute; inset: 0; }
+.sc51b-console, .sc51b-signin { position: absolute; inset: 0; }
+.sc51b-signin { z-index: 0; } .sc51b-console { z-index: 1; }
+/* the sidebar slides in and its items arrive one by one; on phones the tab bar rises */
+.sc51b-stage.assembling .sidebar { animation: sc51b-slide-in 640ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.sc51b-stage.assembling .tabbar { animation: sc51b-rise-in 560ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both; }
+.sc51b-stage.assembling .sb-item, .sc51b-stage.assembling .sb-foot, .sc51b-stage.assembling .tab { animation: sc51b-arrive 420ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.sc51b-stage.assembling .sb-item:nth-child(2) { animation-delay: 260ms; } .sc51b-stage.assembling .sb-item:nth-child(3) { animation-delay: 320ms; } .sc51b-stage.assembling .sb-item:nth-child(4) { animation-delay: 380ms; }
+.sc51b-stage.assembling .sb-item:nth-child(5) { animation-delay: 440ms; } .sc51b-stage.assembling .sb-item:nth-child(6) { animation-delay: 500ms; } .sc51b-stage.assembling .sb-item:nth-child(7) { animation-delay: 560ms; } .sc51b-stage.assembling .sb-item:nth-child(8) { animation-delay: 620ms; }
+.sc51b-stage.assembling .sb-foot { animation-delay: 720ms; }
+.sc51b-stage.assembling .tab:nth-child(2) { animation-delay: 200ms; } .sc51b-stage.assembling .tab:nth-child(3) { animation-delay: 260ms; } .sc51b-stage.assembling .tab:nth-child(4) { animation-delay: 320ms; }
+@keyframes sc51b-slide-in { from { transform: translateX(-100%); } }
+@keyframes sc51b-rise-in { from { transform: translateY(100%); } }
+@keyframes sc51b-arrive { from { opacity: 0; transform: translateX(-8px); } }
+.sc51b-stage.withdrawing .sidebar { animation: sc51b-slide-out 460ms cubic-bezier(0.55, 0, 1, 0.45) both; }
+.sc51b-stage.withdrawing .tabbar { animation: sc51b-sink 400ms cubic-bezier(0.55, 0, 1, 0.45) both; }
+.sc51b-stage.withdrawing .sc51b-console .scroll { animation: sc51b-fade 360ms linear both; }
+@keyframes sc51b-slide-out { to { transform: translateX(-100%); } }
+@keyframes sc51b-sink { to { transform: translateY(100%); } }
+@keyframes sc51b-fade { to { opacity: 0; } }
+/* the mark travels as a copy; the one it stands for is hidden meanwhile */
+.sc51b-console.mark-hidden .sb-brand .mark, .sc51b-signin.mark-hidden .si-ws .mark { opacity: 0; }
+.sc51b-flyer { position: absolute; z-index: 90; pointer-events: none; transform-origin: 50% 50%; will-change: transform; }
+.sc51b-flyer .sc51-mark { display: block; width: 100%; height: 100%; }
+.sc51b-flyer .sc51-mark .pin { opacity: 1; }
+/* the sign-in folds as the console takes over, and arrives again on signing out */
+.sc51b-signin.folding .si-card > :not(.si-ws), .sc51b-signin.folding .cs-si-stage, .sc51b-signin.folding .si-ws > :not(.mark) { animation: sc51b-fold 240ms cubic-bezier(0.55, 0, 1, 0.45) both; }
+.sc51b-signin.folding .si-card { animation: sc51b-card-fold 420ms cubic-bezier(0.55, 0, 1, 0.45) 120ms both; }
+@keyframes sc51b-fold { to { opacity: 0; } }
+@keyframes sc51b-card-fold { to { opacity: 0; transform: scale(0.96); } }
+.sc51b-signin.arriving .si-card, .sc51b-signin.arriving .cs-si-stage { animation: sc51b-arrive-card 520ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both; }
+.sc51b-signin.arriving .cs-si-stage { animation-delay: 220ms; }
+@keyframes sc51b-arrive-card { from { opacity: 0; transform: translateY(10px); } }
+/* the page as its shape while its reads land */
+.sc51b-veil { position: absolute; z-index: 30; overflow: hidden; background: var(--bg); }
+.sc51b-veil .sc51b-route { top: 0; }
+.sc51b-page { padding: 26px 28px 0; }
+.sc51b-stage.phone .sc51b-page { padding: 18px 16px 0; }
+.sc51b-title { font-family: var(--font-display); font-weight: 720; font-size: 30px; line-height: 1.1; letter-spacing: -0.022em; color: var(--fg); margin-bottom: 18px; }
+.sc51b-veil .cs-ph-blk { transition: box-shadow 240ms var(--ease); }
+.sc51b-veil .cs-ph-blk.in .b { animation: none; background: var(--fill-2); }
+.sc51b-veil .cs-ph-blk.in.k-tile .b.big, .sc51b-veil .cs-ph-blk.in.k-card .b.w30 { background: color-mix(in oklab, var(--primary) 22%, var(--fill-2)); }
+.sc51b-head { position: absolute; left: 16px; top: 13px; font-size: 13px; font-weight: 600; color: var(--fg-2); animation: sc51b-arrive 320ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.sc51b-veil .cs-ph-blk.in.k-tile > .b:first-of-type, .sc51b-veil .cs-ph-blk.in.k-card > .b:first-of-type { opacity: 0; }
+/* everything in: the blocks lift away, the last first, and the page is under them */
+.sc51b-veil.lift { background: transparent; pointer-events: none; }
+.sc51b-veil.lift .sc51b-title, .sc51b-veil.lift .sc51b-route { animation: sc51b-fade 200ms linear both; }
+.sc51b-veil.lift .cs-ph-row { animation: sc51b-lift 420ms cubic-bezier(0.55, 0, 1, 0.45) both; animation-delay: calc(40ms * (7 - var(--r))); }
+@keyframes sc51b-lift { to { opacity: 0; transform: translateY(-10px); } }
+/* leaving: the blocks come back over the page, the first first */
+.sc51b-veil.leaving { background: transparent; }
+.sc51b-veil.leaving .cs-ph-row { animation: sc51b-settle 360ms cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: calc(50ms * var(--r)); }
+.sc51b-veil.leaving .sc51b-page { background: var(--bg); min-height: 100%; animation: sc51b-ground 200ms linear both; }
+@keyframes sc51b-settle { from { opacity: 0; transform: translateY(8px); } }
+@keyframes sc51b-ground { from { background: transparent; } }
+/* signed out, the first load: the form as bones under the route until the platform answers */
+.sc51b-stage.bones .si-form, .sc51b-stage.bones .si-foot { visibility: hidden; }
+.sc51b-formveil { position: absolute; inset: 0; pointer-events: none; }
+.sc51b-formveil .sc51b-route { position: fixed; top: 0; left: 0; right: 0; }
+.sc51b-stage.bones .si-card { position: relative; }
+.sc51b-stage.bones .si-card::after { content: ""; position: absolute; left: 34px; right: 34px; bottom: 104px; height: 200px; border-radius: 12px;
+  background: linear-gradient(100deg, var(--fill-2) 35%, color-mix(in oklab, var(--primary) 20%, var(--fill-2)) 50%, var(--fill-2) 65%) var(--fill-2); background-size: 260% 100%; background-position: 130% 0; animation: cs-wash 1.15s var(--ease) infinite;
+  mask: linear-gradient(#000, #000) 0 0 / 100% 14px no-repeat, linear-gradient(#000, #000) 0 24px / 100% 44px no-repeat, linear-gradient(#000, #000) 0 86px / 100% 14px no-repeat, linear-gradient(#000, #000) 0 110px / 100% 44px no-repeat, linear-gradient(#000, #000) 0 170px / 100% 30px no-repeat; }
+@media (prefers-reduced-motion: reduce) {
+  .sc51b-stage .sidebar, .sc51b-stage .tabbar, .sc51b-stage .sb-item, .sc51b-stage .sb-foot, .sc51b-stage .tab, .sc51b-signin .si-card, .sc51b-signin .cs-si-stage, .sc51b-signin .si-card > *, .sc51b-signin .si-ws > *, .sc51b-veil *, .sc51b-stage.bones .si-card::after { animation: none !important; }
+}

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SC-51 Option C · the roll-call</title>
+<meta name="description" content="The console's splash, option C: The ten agents wake one by one as the reads land, each saying what came in, and stand down again on signing out. Every company, person and figure is fictional and illustrative.">
+<meta name="robots" content="noindex">
+<script>
+  // every load starts from the seed, signed out unless ?signed=1 (?moment=enter|leave|console sign Neha in); ?theme= from the board
+  (function () {
+    var p = new URLSearchParams(location.search), q = p.get("theme"), m = p.get("moment");
+    try {
+      localStorage.removeItem("sc3-platform");
+      if (p.get("signed") === "1" || m === "enter" || m === "leave" || m === "console") localStorage.setItem("sc3-console-session", JSON.stringify({ uid: "neha", at: Date.now() }));
+      else localStorage.removeItem("sc3-console-session");
+      localStorage.removeItem("sc3-console-live");
+      if (q === "dark" || q === "light") localStorage.setItem("sc3-theme", q);
+    } catch (e) {}
+    var mode = q; try { mode = localStorage.getItem("sc3-theme") || q; } catch (e) {}
+    var dark = mode === "dark" || (mode !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+  })();
+  window.SC3_IMG = "../../../system/img/"; window.SC3_SITE_IMG = "../../../site/assets/plates/";
+  window.SC3_LINKS = { site: "../../../site/Smart-Clearance%20site%20v3.html", app: "../../../app/Smart-Clearance%20app%20v3.html", demo: "../../../demo/Smart-Clearance%20demo%20v3.html" };
+</script>
+<link rel="icon" href="../../../system/img/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../../system/tokens.css">
+<link rel="stylesheet" href="../../../system/base.css">
+<link rel="stylesheet" href="../../../system/components.css">
+<link rel="stylesheet" href="../../../screens/screens.css">
+<link rel="stylesheet" href="../../../console/console.css">
+<link rel="stylesheet" href="splash.css">
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/framer-motion@11.18.2/dist/framer-motion.js"></script>
+<script src="../../../system/icons.js"></script>
+<script src="../../../core/money.js"></script>
+<script src="../../../core/data.js"></script>
+<script src="../../../core/store.js"></script>
+<script src="../../../core/flow.js"></script>
+<script src="../../../core/platform.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<noscript>This mockup needs JavaScript to run.</noscript>
+<script src="../../../system/kit.js"></script>
+<script src="../../../system/world.js"></script>
+<script src="../../../system/product.js"></script>
+<script src="../../../screens/common.js"></script>
+<script src="../../../screens/brand.js"></script>
+<script src="../../../screens/trade.js"></script>
+<script src="../../../screens/finance.js"></script>
+<script src="../../../screens/admin.js"></script>
+<script src="../../../screens/auth.js"></script>
+<script src="../../../screens/roles.js"></script>
+<script src="../sc51-shared.js"></script>
+<script src="splash.js"></script>
+<script src="../console51.js"></script>
+</body>
+</html>
