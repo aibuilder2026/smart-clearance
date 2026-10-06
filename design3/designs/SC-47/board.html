@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-47 SKU Batch Gates</title>
+<meta name="description" content="Three ways to set the quick-commerce gates per SKU, with a per-batch override, on a client&#x27;s Supply chain tab.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Noto+Sans+Devanagari:wght@600&display=swap">
+
+<style>
+/* the review board: the request, the screen as it is, the options, and the pick. */
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px -6px rgb(17 41 30 / 0.1);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark }
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
+::selection { background: color-mix(in oklab, var(--green) 24%, transparent); }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 48px 16px 72px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+h2 { margin: 56px 0 14px; font-size: clamp(25px, 3vw, 32px); font-weight: 720; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 72, "wdth" 88; }
+h3 { font-size: 24px; font-weight: 720; letter-spacing: -0.018em; font-variation-settings: "opsz" 48, "wdth" 90; }
+p { margin: 0 0 12px; max-width: 72ch; color: var(--ink-2); text-wrap: pretty; }
+p b, li b { color: var(--ink); font-weight: 600; }
+.lede { font-size: 18px; margin-top: 14px; }
+blockquote { margin: 16px 0; padding: 14px 18px; border-radius: 14px; background: var(--sunken); color: var(--ink); font-size: 16.5px; max-width: 70ch; }
+ul { margin: 0 0 12px; padding-left: 20px; color: var(--ink-2); max-width: 76ch; display: grid; gap: 6px; }
+code { font: 500 0.9em/1 var(--mono); }
+
+.grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.pair { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.frames { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+@media (min-width: 900px) { .frames { grid-template-columns: minmax(0, 2.6fr) minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); align-items: start; } }
+figure { margin: 0; min-width: 0; }
+figure img, figure video { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+
+.card { padding: 22px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.shared { display: grid; gap: 18px; }
+@media (min-width: 900px) { .shared { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.shared h3 { font: 650 16px/1.35 var(--ui); letter-spacing: 0; margin-bottom: 6px; }
+.shared p, .shared li { font-size: 14.5px; }
+
+.opt { margin-top: 22px; display: grid; gap: 18px; padding: 24px 22px; border-radius: 28px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); scroll-margin-top: 20px; }
+.opt.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.opt header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.opt header p { margin: 0; flex-basis: 100%; font-size: 17px; color: var(--ink); max-width: 70ch; }
+.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 600 12.5px/1 var(--ui); color: var(--green-text); background: var(--green-soft); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+.btn.primary { background: var(--green); color: #fff; box-shadow: none; }
+:root[data-theme="dark"] .btn.primary { color: #03170d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #03170d; } }
+.motion-row { display: grid; gap: 18px; }
+@media (min-width: 900px) { .motion-row { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: start; } }
+dl.facts { margin: 0; display: grid; gap: 12px; }
+dl.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); }
+dl.facts dd { margin: 2px 0 0; color: var(--ink-2); font-size: 14.5px; }
+dl.facts dd ul { margin-top: 4px; font-size: 14.5px; }
+.timing { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13.5px; color: var(--ink-3); }
+.timing b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.rec-box { padding: 22px; border-radius: 20px; background: var(--green-soft); }
+.rec-box p { color: var(--ink); }
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
+.wide { margin-top: 4px; }
+.wide img { max-height: none; }
+.frames.three { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+@media (min-width: 900px) { .frames.three { grid-template-columns: minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); } }
+.state { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .state { grid-template-columns: minmax(0, 2.6fr) minmax(0, 0.95fr); align-items: start; } }
+.tall { max-height: 980px; overflow: hidden; border-radius: 14px; box-shadow: 0 0 0 1px var(--line); }
+.tall img { box-shadow: none; border-radius: 0; }
+table.facts-t { border-collapse: collapse; font-size: 14.5px; color: var(--ink-2); margin: 6px 0 12px; }
+table.facts-t th, table.facts-t td { text-align: left; padding: 6px 14px 6px 0; vertical-align: top; border-bottom: 1px solid var(--line); }
+table.facts-t th { color: var(--ink); font-weight: 600; }
+</style>
+
+<body>
+<main class="wrap">
+<h1>Quick-commerce gates per SKU, with a per-batch override</h1>
+<p class="lede">SC-47 · a client's Supply chain tab in the console · three options, built on the console's own shell, components and stylesheets, on Munchly Foods' SKUs and batches.</p>
+<p>The maintainer's words, 6 Oct 2026:</p>
+<blockquote>Blinkit and Zepto/Instamart configurations should be at the SKU and batch level. This will later be used by the agents when they run for clients.</blockquote>
+<p>And the two answers that shaped it: <b>per SKU, with a per-batch override</b>, and the client's own values <b>kept as the default for new SKUs</b>.</p>
+<p>Today a client has one pair of gates for everything it makes: Blinkit takes stock with at least 90 days of shelf life left, and Zepto and Instamart with at least 60% of it. A 180-day mango drink and a 730-day face wash are judged alike, and a lot a warehouse agreed to take on different terms can't say so.</p>
+<h2>The Supply chain tab now</h2>
+<div class="frames"><figure><img src="current/light-1440.webp" width="1440" height="900" loading="lazy" alt="Munchly Foods&#x27; Supply chain tab at 1440, light: the chain from Munchly through 4 distributors to kiranas and the quick-commerce warehouses, then Profile, whose Quick-commerce gates row reads Blinkit 90+ days; Zepto and Instamart 60% of life."><figcaption>Desktop, light</figcaption></figure><figure><img src="current/dark-1440.webp" width="1440" height="900" loading="lazy" alt="The same tab in dark."><figcaption>Desktop, dark</figcaption></figure><figure><img src="current/light-390.webp" width="780" height="1688" loading="lazy" alt="The Supply chain tab on a phone, light."><figcaption>Phone, light</figcaption></figure><figure><img src="current/dark-390.webp" width="780" height="1688" loading="lazy" alt="The Supply chain tab on a phone, dark."><figcaption>Phone, dark</figcaption></figure></div><div class="frames" style="margin-top:12px"><figure><img src="current/profile-light-1440.webp" width="1440" height="900" loading="lazy" alt="The Supply-chain profile sheet open at 1440, light: the route, owner and expiry choices, then Blinkit takes stock with at least 90 days, and Zepto and Instamart take at least 60% of shelf life, for the whole client."><figcaption>The profile sheet, desktop, light</figcaption></figure><figure><img src="current/profile-dark-1440.webp" width="1440" height="900" loading="lazy" alt="The same sheet in dark."><figcaption>Desktop, dark</figcaption></figure><figure><img src="current/profile-light-390.webp" width="780" height="1688" loading="lazy" alt="The profile sheet on a phone, light."><figcaption>Phone, light</figcaption></figure><figure><img src="current/profile-dark-390.webp" width="780" height="1688" loading="lazy" alt="The profile sheet on a phone, dark."><figcaption>Phone, dark</figcaption></figure></div>
+<h2>What every option shares</h2>
+<div class="shared"><div class="card"><h3>One rule for the agents</h3><ul><li><b>A batch's gates are its override, else its SKU's, else the client's default</b>, each of the two values on its own.</li>
+<li>In the database: nullable <code>gate_blinkit_days</code> and <code>gate_qcom_pct</code> on <code>skus</code> (empty means the default) and on <code>batches</code> (the override), with its reason, who set it and when. Batches gain <code>best_before</code>, so days left is a fact rather than a note.</li>
+<li>A view, <code>sc.batch_gates</code>, gives the agents each open batch's gates, where each came from, and pass or fail at Blinkit, Zepto and Instamart. The Watcher reads it.</li></ul></div><div class="card"><h3>The client's values become the default</h3><ul><li>The profile row reads <i>Quick-commerce gates, by default</i>: "New SKUs start at Blinkit 90+ days, Zepto and Instamart 60% of life · 3 of 8 SKUs differ".</li>
+<li>In the profile sheet the two fields say they are for new SKUs. Changing them moves every SKU still on the default, and none with its own.</li>
+<li>An SKU's values keep the profile's bounds (Blinkit 30 to 180 days, Zepto and Instamart 30 to 90%). An override may go down to 7 days and 5%, since it records a deal a warehouse agreed to, and it needs a reason.</li></ul></div><div class="card"><h3>Every change on the record</h3><ul><li>Audit lines in the signed-in person's name: "Set Mango Drink 200 ml's quick-commerce gates: Blinkit 45+ days, Zepto and Instamart 50% of life", "Overrode MF-2409-204's quick-commerce gates: Zepto and Instamart 35% (Zepto's Pune warehouse agreed…)", "Removed MF-2409-204's gate override".</li>
+<li>An override holds until its batch closes, and a closed batch keeps the gates it was judged by.</li>
+<li>Pass and fail always carry a tick or a cross and the figures, never colour alone.</li></ul></div></div>
+
+<section class="opt rec" id="option-a">
+  <header><h3>A · On each SKU</h3><span class="tag">Recommended</span>
+  <p>The SKU table gains each SKU's two gates, whether they are its own or the default, and its open batches. A row opens the SKU: its gates, and its batches with their pass or fail and any override.</p></header>
+  <figure class="wide"><img src="option-a/light-1440.webp" width="1440" height="1672" loading="lazy" alt="Option A at 1440, light. The Supply chain tab as now, with the profile row reading Quick-commerce gates, by default. The SKU table gains Blinkit takes, Zepto and Instamart take, and Open batches: custom values in bold with &#x27;this SKU&#x27; under them in green, defaults in grey with &#x27;default&#x27; under them, and Choco Cream Biscuits showing a violet &#x27;1 override&#x27; tag."><figcaption>Desktop, light: the whole tab</figcaption></figure>
+  <div class="frames three"><figure><div class="tall"><img src="option-a/dark-1440.webp" width="1440" height="1672" loading="lazy" alt="Option A at 1440, dark."></div><figcaption>Desktop, dark</figcaption></figure><figure><div class="tall"><img src="option-a/light-390.webp" width="780" height="3400" loading="lazy" alt="Option A on a phone, light: the SKUs as rows, each with its gates under its name and &#x27;the default&#x27; where it has none of its own."></div><figcaption>Phone, light</figcaption></figure><figure><div class="tall"><img src="option-a/dark-390.webp" width="780" height="3400" loading="lazy" alt="Option A on a phone, dark."></div><figcaption>Phone, dark</figcaption></figure></div>
+  <div class="state"><figure><img src="option-a/sheet-light-1440.webp" width="1440" height="900" loading="lazy" alt="Choco Cream Biscuits opened: a side sheet with its code, MRP and 270-day life; a Quick-commerce gates box set to The client&#x27;s default, its two fields showing 90 days and 60%, and a line saying a batch needs 90 days for Blinkit and 162 for Zepto and Instamart; then its batch MF-2409-204 with three green gate chips and a violet box: Overridden for this batch, Zepto and Instamart 35%, with the reason, Change and Remove."><figcaption>An SKU opened, desktop</figcaption></figure><figure><img src="option-a/sheet-dark-390.webp" width="780" height="1688" loading="lazy" alt="Mango Drink opened on a phone, dark: set to Its own, Blinkit 45 days and Zepto and Instamart 50%, and its batch MF-2410-118 failing all three gates."><figcaption>An SKU with its own gates, phone</figcaption></figure></div>
+  <dl class="facts"><dt>Why</dt><dd>The gates sit where the SKUs already are, and a batch's override sits with the other batches of that SKU, so the whole story of one product is on one sheet. No new tab, and the sheet is the one the console already uses.</dd><dt>Trade-off</dt><dd>Changing many SKUs at once means opening each. Batches show only inside their SKU, so the tab has no list of every override.</dd><dt>What the build touches</dt><dd><ul><li>backend-api: migration 0002 (SKU and batch gate columns, <code>best_before</code>, the view), the SKU and override routes, audit lines, hydrate and the Munchly import, tests.</li><li>design3: <code>console.jsx</code>'s SupplyTab, an SkuSheet, ProfileSheet's labels, <code>platform.js</code>.</li><li>frontend: <code>@smart-clearance/api</code> (types, HTTP, mock), the console's Supply chain tab and a new SkuSheet.</li></ul></dd></dl>
+  <div class="links"><a class="btn primary" href="option-a/mockup.html">Open option A</a><a class="btn" href="option-a/mockup.html?state=sheet">An SKU opened</a></div>
+</section>
+<section class="opt" id="option-b">
+  <header><h3>B · A gates matrix</h3>
+  <p>A section of its own: the default and every SKU in one table you edit in place, saved together; under it, every batch override, and a sheet to add one.</p></header>
+  <figure class="wide"><img src="option-b/light-1440.webp" width="1440" height="2340" loading="lazy" alt="Option B at 1440, light. Under Profile and Distributors, a Quick-commerce gates section: a table whose first row is New SKUs with 90 days and 60%, then every SKU with two number fields, custom values in bold and a Default button beside them. Under it, Batch overrides lists MF-2409-204 with its reason and gate chips, and Override a batch. The SKU table follows, unchanged."><figcaption>Desktop, light: the whole tab</figcaption></figure>
+  <div class="frames three"><figure><div class="tall"><img src="option-b/dark-1440.webp" width="1440" height="1800" loading="lazy" alt="Option B at 1440, dark."></div><figcaption>Desktop, dark</figcaption></figure><figure><div class="tall"><img src="option-b/light-390.webp" width="780" height="3400" loading="lazy" alt="Option B on a phone, light: the matrix as rows, the default first."></div><figcaption>Phone, light</figcaption></figure><figure><div class="tall"><img src="option-b/dark-390.webp" width="780" height="3400" loading="lazy" alt="Option B on a phone, dark."></div><figcaption>Phone, dark</figcaption></figure></div>
+  <div class="state"><figure><div class="tall"><img src="option-b/edit-light-1440.webp" width="1440" height="2410" loading="lazy" alt="Option B with two edits: Masala Chips&#x27; Blinkit field at 75 and Masala Oats&#x27; Zepto and Instamart field at 50 are ringed in green, and a bar says 2 changes not saved, with Discard and Save gates."></div><figcaption>Two changes waiting to be saved</figcaption></figure><figure><img src="option-b/sheet-dark-390.webp" width="780" height="1688" loading="lazy" alt="Override a batch on a phone, dark: the batch picker on MF-2410-118 Mango Drink, its gates as its SKU sets them, the two fields, and a Why box."><figcaption>Overriding a batch, phone</figcaption></figure></div>
+  <dl class="facts"><dt>Why</dt><dd>The fastest way to set up a new client's range: every SKU on one screen, typed straight in, saved once. Every override in the workspace is listed in one place.</dd><dt>Trade-off</dt><dd>A second table of the same SKUs beside the SKU table, and edit-in-place needs a save bar and leave-without-saving care. The batch picker grows long for a large range.</dd><dt>What the build touches</dt><dd>As A, with a GatesMatrix (inline fields and a save bar) and an OverrideSheet in place of the SkuSheet.</dd></dl>
+  <div class="links"><a class="btn primary" href="option-b/mockup.html">Open option B</a><a class="btn" href="option-b/mockup.html?state=edit">Two changes waiting</a><a class="btn" href="option-b/mockup.html?state=sheet">Overriding a batch</a></div>
+</section>
+<section class="opt" id="option-c">
+  <header><h3>C · Batch first</h3>
+  <p>A Batches tab shows every open batch against the gates the Watcher reads: days left, Blinkit, and Zepto and Instamart, each with where the value came from. A batch opens to its gates and its override.</p></header>
+  <figure class="wide"><img src="option-c/light-1440.webp" width="1440" height="1102" loading="lazy" alt="Option C at 1440, light. A new Batches tab between Supply chain and Channels &amp; rules: chips for All 9, Pass every gate 4, Gated 5 and Overridden 1, then a table of batches by days left, each with a shelf-life bar, a Blinkit chip and a Zepto and Instamart chip showing has and needs, with a SKU, default or override tag; the overridden batch has a violet edge."><figcaption>Desktop, light: the Batches tab</figcaption></figure>
+  <div class="frames three"><figure><div class="tall"><img src="option-c/dark-1440.webp" width="1440" height="1102" loading="lazy" alt="Option C at 1440, dark."></div><figcaption>Desktop, dark</figcaption></figure><figure><div class="tall"><img src="option-c/light-390.webp" width="780" height="3400" loading="lazy" alt="Option C on a phone, light: batches as rows with their three gate chips."></div><figcaption>Phone, light</figcaption></figure><figure><div class="tall"><img src="option-c/dark-390.webp" width="780" height="3400" loading="lazy" alt="Option C on a phone, dark."></div><figcaption>Phone, dark</figcaption></figure></div>
+  <div class="state"><figure><img src="option-c/sheet-light-1440.webp" width="1440" height="900" loading="lazy" alt="MF-2409-204 opened: Blinkit needs 90 days, Munchly&#x27;s default, has 96; Zepto and Instamart need 35%, overridden for this batch, its SKU&#x27;s is 60%, has 36%; then the override box set to Its own with the 35 and its reason."><figcaption>A batch opened, desktop</figcaption></figure><figure><img src="option-c/sheet-dark-390.webp" width="780" height="1688" loading="lazy" alt="The same batch on a phone, dark."><figcaption>A batch opened, phone</figcaption></figure></div>
+  <dl class="facts"><dt>Why</dt><dd>It shows exactly what the agents will see: every batch, pass or fail, and why. Staff can spot a lot that a gate is blocking and override it where they see it.</dd><dt>Trade-off</dt><dd>A new tab, and gates are edited in two places: an SKU's on Supply chain, a batch's here. The tab duplicates part of the workspace's own Batches screen.</dd><dt>What the build touches</dt><dd>As A, plus a client batches route and a Batches tab with its BatchSheet; the SKU table gains the two columns, edited in a small sheet.</dd></dl>
+  <div class="links"><a class="btn primary" href="option-c/mockup.html">Open option C</a><a class="btn" href="option-c/mockup.html?state=sheet">A batch opened</a></div>
+</section>
+<div class="rec-box" style="margin-top:28px"><p><b>Recommended: A.</b> Gates belong to products, and A keeps them on the SKU, with each batch's exception beside its siblings. It adds no tab and reuses the sheet staff already know. B is the better tool for loading a large range in one sitting, and its matrix could come later as a bulk edit. C's view of every batch is what the agents' own screens will show, so it is better built with them than here.</p></div>
+<footer>SC-47 · Smart-Clearance · every person and number is fictional · designs in <code>design3/designs/SC-47/</code></footer>
+</main>
+<script>
+  (function () {
+    var q = new URLSearchParams(location.search).get("theme");
+    if (q === "dark" || q === "light") document.documentElement.setAttribute("data-theme", q);
+  })();
+</script>
+</body>
+</html>

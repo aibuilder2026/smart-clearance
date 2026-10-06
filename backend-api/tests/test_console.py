@@ -129,11 +129,13 @@ async def test_the_audit_log_newest_first(api, neha):
     log = (await api.get("/v1/console/audit?client=munchly", headers=neha)).json()
     assert log[0] == {
         "id": log[0]["id"],
-        "at": "3 Oct, 18:02",
-        "who": "Arjun Nair",
+        "at": "4 Oct, 16:20",
+        "who": "Neha Kulkarni",
         "client": "munchly",
-        "text": "Deactivated Krishna Kirana Bhandar",
+        "text": "Overrode MF-2409-204's quick-commerce gates: Zepto and Instamart 30% of life (Zepto's Pune warehouse "
+        "agreed to take this lot at 30% of its life)",
     }
+    assert log[1]["text"] == "Deactivated Krishna Kirana Bhandar"
     assert log[-1]["text"].startswith("Set up Munchly Foods")
 
 

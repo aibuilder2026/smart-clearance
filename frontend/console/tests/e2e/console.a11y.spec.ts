@@ -90,3 +90,26 @@ test('console · an agent, a menu and an alert, and a new client step by step', 
 	findings.push(...(await scan(page, 'new client · review')));
 	await report(testInfo, findings);
 });
+
+// SC-47: an SKU's own gates and a batch override, in the SKU sheet
+test("a11y · an SKU's gates and a batch override", async ({ page, isMobile }, testInfo) => {
+	await openConsole(page, '/clients/munchly/supply');
+	const findings: Finding[] = [];
+	await (
+		isMobile
+			? page.getByRole('button', { name: /^Choco Cream Biscuits 200 g/ })
+			: page.getByRole('row', { name: /Choco Cream Biscuits 200 g/ })
+	).click();
+	await page.getByRole('dialog').waitFor();
+	await page.waitForTimeout(500);
+	findings.push(...(await scan(page, 'console · an SKU on the default, with an overridden batch')));
+	await page.getByRole('button', { name: 'Change' }).click();
+	await page.waitForTimeout(200);
+	findings.push(...(await scan(page, 'console · changing a batch override')));
+	await page.getByRole('button', { name: 'Its own' }).click();
+	await page.getByLabel('Blinkit takes at least', { exact: true }).fill('10');
+	await page.getByRole('button', { name: 'Save gates' }).click();
+	await page.getByRole('alert').first().waitFor();
+	findings.push(...(await scan(page, 'console · an SKU with its own gates, out of bounds')));
+	await report(testInfo, findings);
+});

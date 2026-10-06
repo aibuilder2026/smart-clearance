@@ -309,11 +309,15 @@ class Distributor(Base):
 
 
 class Sku(Base):
+    """a product a client makes. Its quick-commerce gates are its own when set, else the client's default (SC-47)"""
+
     __tablename__ = "skus"
     __table_args__ = (
         CheckConstraint("mrp > 0", name="mrp"),
         CheckConstraint("gst >= 0 and gst < 1", name="gst"),
         CheckConstraint("life_days > 0", name="life_days"),
+        CheckConstraint("gate_blinkit_days between 30 and 180", name="gate_blinkit_days"),
+        CheckConstraint("gate_qcom_pct between 30 and 90", name="gate_qcom_pct"),
     )
     client_id: Mapped[str] = mapped_column(ForeignKey("clients.id"), primary_key=True)
     id: Mapped[str] = mapped_column(Text, primary_key=True)
@@ -323,6 +327,8 @@ class Sku(Base):
     mrp: Mapped[float] = mapped_column(MONEY)
     gst: Mapped[float] = mapped_column(Numeric(5, 4, asdecimal=False))
     life_days: Mapped[int] = mapped_column(Integer)
+    gate_blinkit_days: Mapped[int | None] = mapped_column(Integer)
+    gate_qcom_pct: Mapped[int | None] = mapped_column(Integer)
     seq: Mapped[int] = seq()
 
 
@@ -370,11 +376,21 @@ class AgentRun(Base):
 
 
 class Batch(Base):
-    """a batch the agents work: open while it moves through the nine stages, closed with what it recovered"""
+    """a batch the agents work: open while it moves through the nine stages, closed with what it recovered.
+
+    Its quick-commerce gates may be overridden for it alone, with the reason, who and when (SC-47); empty values keep
+    its SKU's. When it closes, the gates it was judged by are kept (judged_*). Agents read every open batch's gates
+    from the view sc.batch_gates.
+    """
 
     __tablename__ = "batches"
     __table_args__ = (
         CheckConstraint("stage_done between 0 and 9 and stage_current between 0 and 9", name="stages"),
+        CheckConstraint("gate_blinkit_days between 7 and 180", name="gate_blinkit_days"),
+        CheckConstraint("gate_qcom_pct between 5 and 90", name="gate_qcom_pct"),
+        CheckConstraint(
+            "(gate_blinkit_days is null and gate_qcom_pct is null) = (gate_reason is null)", name="gate_reason"
+        ),
         ForeignKeyConstraint(["client_id", "sku_id"], ["skus.client_id", "skus.id"]),
         ForeignKeyConstraint(["client_id", "distributor_id"], ["distributors.client_id", "distributors.id"]),
     )
@@ -392,6 +408,15 @@ class Batch(Base):
     opened_at: Mapped[datetime] = mapped_column(TS)
     closed_at: Mapped[datetime | None] = mapped_column(TS)
     outcome: Mapped[str | None] = mapped_column(Text)
+    best_before: Mapped[date | None] = mapped_column(Date)
+    gate_blinkit_days: Mapped[int | None] = mapped_column(Integer)
+    gate_qcom_pct: Mapped[int | None] = mapped_column(Integer)
+    gate_reason: Mapped[str | None] = mapped_column(Text)
+    gate_by_user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"))
+    gate_by_name: Mapped[str | None] = mapped_column(Text)
+    gate_at: Mapped[datetime | None] = mapped_column(TS)
+    judged_blinkit_days: Mapped[int | None] = mapped_column(Integer)
+    judged_qcom_pct: Mapped[int | None] = mapped_column(Integer)
     seq: Mapped[int] = seq()
 
 

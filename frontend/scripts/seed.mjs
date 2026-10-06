@@ -164,8 +164,12 @@ const consoleSeed = {
 			city: D.DISTRIBUTORS[t.distributor].city,
 			...pick(t, ['done', 'current', 'note', 'money', 'split'])
 		})),
+		// the batches the Watcher sees, with their best-before dates and any gate override (SC-47)
+		batches: platform.batches,
 		audit: platform.audit
-	}
+	},
+	// the day the console opens on, which every batch's days left counts from
+	today: P.TODAY
 };
 
 /** backend-api's tests: what platform.js itself answers, so the Python ports of its rules can be checked against it */
@@ -198,6 +202,54 @@ const ruleFixtures = {
 			}))
 		)
 	),
+	// SC-47: a batch's quick-commerce gates (its override, else its SKU's, else the client's default), and what an
+	// SKU's gates or a batch's override must be
+	batchGates: (() => {
+		const c = platform.clients[0];
+		const cases = platform.batches.map((b) => ({ batch: b, today: P.TODAY }));
+		// the edges: a batch on its last day, one past its date, and one exactly at each gate
+		const at = (ref, today) => ({ batch: platform.batches.find((b) => b.ref === ref), today });
+		cases.push(
+			at('MF-2409-117', '2026-11-18'),
+			at('MF-2409-117', '2026-11-25'),
+			at('MF-2409-117', '2026-08-20'),
+			at('MF-2410-402', '2026-12-08')
+		);
+		return cases.map(({ batch, today }) => ({
+			client: { gates: c.gates },
+			sku: c.skus.find((s) => s.id === batch.sku),
+			batch: pick(batch, ['sku', 'bestBefore', 'override']),
+			today,
+			gates: P.batchGates(c, batch, today)
+		}));
+	})(),
+	skuGatesError: [
+		null,
+		{},
+		{ blinkitDays: 45, qcomPct: 50 },
+		{ blinkitDays: 29 },
+		{ blinkitDays: 181 },
+		{ qcomPct: 91 },
+		{ qcomPct: 30 },
+		{ blinkitDays: 45.5 }
+	].map((gates) => ({ gates, error: P.skuGatesError(gates) })),
+	overrideError: [
+		{ reason: 'x' },
+		{ blinkitDays: 6, reason: 'x' },
+		{ blinkitDays: 7, reason: 'x' },
+		{ qcomPct: 4, reason: 'x' },
+		{ qcomPct: 91, reason: 'x' },
+		{ qcomPct: 30, reason: '   ' },
+		{ qcomPct: 30, reason: 'y'.repeat(201) },
+		{ qcomPct: 30, blinkitDays: 60, reason: 'A deal' }
+	].map((input) => ({ input, error: P.overrideError(input) })),
+	gateLines: {
+		sku: P.skuGatesLine(platform.clients[0], platform.clients[0].skus[5], { blinkitDays: 45, qcomPct: 50 }),
+		skuOne: P.skuGatesLine(platform.clients[0], platform.clients[0].skus[6], { blinkitDays: 180 }),
+		skuDefault: P.skuGatesLine(platform.clients[0], platform.clients[0].skus[5], null),
+		override: P.overrideLine('MF-2409-204', { qcomPct: 30, reason: ' A deal ' }),
+		clear: P.clearOverrideLine('MF-2409-204')
+	},
 	slug: [
 		'Kesari Foods',
 		'Amrit Dairy Pvt',

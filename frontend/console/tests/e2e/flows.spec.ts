@@ -93,3 +93,46 @@ test('flows · an unknown client, and an unknown page', async ({ page }) => {
 	await page.goto('/nowhere');
 	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Not found');
 });
+
+test("flows · an SKU's own gates, and a batch override, saved and logged (SC-47)", async ({ page, isMobile }) => {
+	await openConsole(page, '/clients/munchly/supply');
+	await expect(page.getByText('3 of 8 SKUs differ')).toBeVisible();
+	// desktops open the SKU from its row in the table, phones from its row in the list
+	const chips = isMobile
+		? page.getByRole('button', { name: /^Masala Chips 150 g/ })
+		: page.getByRole('row', { name: /Masala Chips 150 g/ });
+	await chips.click();
+	const sheet = page.getByRole('dialog', { name: 'Masala Chips 150 g' });
+	await expect(sheet.getByText('2 open · an override holds for that batch until it closes')).toBeVisible();
+	await sheet.getByRole('button', { name: 'Its own' }).click();
+	await sheet.getByLabel('Blinkit takes at least', { exact: true }).fill('20');
+	await sheet.getByRole('button', { name: 'Save gates' }).click();
+	await expect(sheet.getByRole('alert'), 'checked before it is sent').toHaveText('Blinkit takes 30 to 180 days.');
+	await sheet.getByLabel('Blinkit takes at least', { exact: true }).fill('75');
+	await sheet.getByRole('button', { name: 'Save gates' }).click();
+	await expect(page.locator('.toast').last()).toHaveText("Masala Chips 150 g's gates saved");
+
+	await chips.click();
+	await sheet.getByRole('button', { name: 'Override for this batch' }).first().click();
+	await sheet.getByLabel('Zepto, Instamart, for this batch').fill('25');
+	await sheet.getByRole('button', { name: 'Save the override' }).click();
+	await expect(sheet.getByRole('alert')).toHaveText('Say why this batch is different.');
+	await sheet.getByLabel('Why').fill('Instamart Nagpur clears this lot this week');
+	await sheet.getByRole('button', { name: 'Save the override' }).click();
+	await expect(sheet.locator('.cs-govr-h').first()).toContainText(
+		'Overridden for this batch: Zepto and Instamart 25% of life'
+	);
+	await sheet.getByRole('button', { name: 'Remove' }).click();
+	await expect(sheet.locator('.cs-govr-h')).toHaveCount(0);
+	await page.keyboard.press('Escape');
+
+	await page.getByRole('tab', { name: 'Audit' }).click();
+	const rows = page.locator('.list-row');
+	await expect(rows.nth(0)).toContainText("Removed MF-2409-117's quick-commerce gate override");
+	await expect(rows.nth(1)).toContainText(
+		"Overrode MF-2409-117's quick-commerce gates: Zepto and Instamart 25% of life (Instamart Nagpur clears this lot this week)"
+	);
+	await expect(rows.nth(2)).toContainText(
+		"Set Masala Chips 150 g's quick-commerce gates: Blinkit 75+ days, Zepto and Instamart 60% of life"
+	);
+});

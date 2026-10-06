@@ -7,16 +7,19 @@ from sc_api.deps import Public, SigningIn, StaffCtx
 from sc_api.schemas import (
     AgentPatch,
     AuditEntry,
+    BatchGates,
     ClientOut,
     ConsoleConfig,
     DemoRequest,
     InviteInput,
     NewClientInput,
+    OverrideInput,
     Overview,
     PersonPatch,
     PlanPatch,
     ProfileInput,
     RulesInput,
+    SkuGatesInput,
     Staff,
     StaffInviteInput,
 )
@@ -163,6 +166,33 @@ async def remind(client_id: str, distributor_id: str, ctx: StaffCtx) -> Response
     await supply.remind(ctx, client_id, distributor_id)
     await ctx.session.commit()
     return Response(status_code=204)
+
+
+# --- quick-commerce gates per SKU, with a per-batch override (SC-47) ----------------------------------------------
+
+
+@router.get(C + "/batches", response_model=list[BatchGates], summary="A client's open batches and their gates")
+async def client_batches(client_id: str, ctx: StaffCtx, sku: str | None = None) -> list[BatchGates]:
+    _read(ctx)
+    return await supply.client_batches(ctx, client_id, sku)
+
+
+@router.put(C + "/skus/{sku_id}/gates", response_model=ClientOut, summary="An SKU's own gates, or null for the default")
+async def save_sku_gates(client_id: str, sku_id: str, data: SkuGatesInput, ctx: StaffCtx) -> ClientOut:
+    await supply.set_sku_gates(ctx, client_id, sku_id, data.gates)
+    return await _changed(ctx, client_id)
+
+
+@router.put(C + "/batches/{ref}/override", response_model=ClientOut, summary="Override a batch's gates, with why")
+async def override_batch(client_id: str, ref: str, data: OverrideInput, ctx: StaffCtx) -> ClientOut:
+    await supply.override_batch(ctx, client_id, ref, data)
+    return await _changed(ctx, client_id)
+
+
+@router.delete(C + "/batches/{ref}/override", response_model=ClientOut, summary="Put a batch back on its SKU's gates")
+async def clear_override(client_id: str, ref: str, ctx: StaffCtx) -> ClientOut:
+    await supply.clear_override(ctx, client_id, ref)
+    return await _changed(ctx, client_id)
 
 
 @router.post(C + "/integrations/dms/requests", response_model=ClientOut)

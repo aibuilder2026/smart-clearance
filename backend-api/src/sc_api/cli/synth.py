@@ -23,6 +23,7 @@ from sc_api.schemas import (
     ExitState,
     InviteInput,
     NewClientInput,
+    OverrideInput,
     Profile,
     StaffInviteInput,
 )
@@ -229,6 +230,7 @@ class World:
                 mrp=float(self.rng.randint(lo, hi)),
                 gst=gst,
                 life_days=life,
+                gates=vocab.own_gates(life),
             )
         await ctx.session.commit()
 
@@ -326,9 +328,18 @@ class World:
                 days_left = max(3, int(life * self.rng.uniform(0.08, 0.3)))
                 await agents.record_run(ctx, s, "watcher", f"{ref} at risk, {days_left} days left")
                 units = self.rng.randint(200, 2400)
+                best_before = self.clock.at.astimezone(IST).date() + timedelta(days=days_left)
                 if day >= 2:
                     await supply.open_batch(
-                        ctx, s, ref=ref, sku=sku_id, distributor=d_id, units=units, done=1, current=2
+                        ctx,
+                        s,
+                        ref=ref,
+                        sku=sku_id,
+                        distributor=d_id,
+                        units=units,
+                        done=1,
+                        current=2,
+                        best_before=best_before,
                     )
                     self.at(self.clock.at + timedelta(minutes=40))
                     await agents.record_run(ctx, s, "gate", f"{approver_first} approved {ref}")
@@ -347,7 +358,12 @@ class World:
                         current=done,
                         split=_split(units) if done >= 6 else None,
                         note="Waiting for the approver" if done == 5 else None,
+                        best_before=best_before,
                     )
+                    if self.rng.random() < 0.3:
+                        # a warehouse agreed to take this lot on its own terms, and staff record the deal
+                        self.at(self.clock.at + timedelta(minutes=12))
+                        await self._override(s, ref, life, days_left, d_city)
                     self.at(self.clock.at + timedelta(minutes=20))
                     await agents.record_run(ctx, s, "router", f"plan sent to {approver_first}")
             else:
@@ -363,6 +379,21 @@ class World:
             )
             await supply.record_export(ctx, s, d_id, expected=expected, arrived=arrived)
         await ctx.session.commit()
+
+    async def _override(self, client_id: str, ref: str, life: int, days_left: int, city: str) -> None:
+        key, text = self.rng.choice(vocab.OVERRIDE_REASONS)
+        if key == "qcomPct":
+            v = max(5, min(90, (days_left * 100) // life - self.rng.randint(0, 3)))
+        else:
+            v = max(7, min(180, days_left - self.rng.randint(0, 5)))
+        await supply.override_batch(
+            self.by(self.pick_staff("Platform engineer", "Support")),
+            client_id,
+            ref,
+            OverrideInput(
+                **{"blinkit_days" if key == "blinkitDays" else "qcom_pct": v}, reason=text.format(city=city, v=v)
+            ),
+        )
 
     async def new_requests(self, n: int) -> None:
         """demo requests that came in over the last two days, not set up yet: the console's inbox"""

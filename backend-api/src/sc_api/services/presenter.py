@@ -31,6 +31,7 @@ from sc_api.schemas import (
     Rules,
     Run,
     SignInMethod,
+    SkuGates,
     SkuOut,
     Track,
 )
@@ -102,6 +103,12 @@ def person_out(cm: m.ClientMember, u: m.User) -> ClientPerson:
         email=u.email or "",
         phone=phone_display(u.phone_e164),
     )
+
+
+def sku_gates(x: m.Sku) -> SkuGates:
+    """an SKU's own gates: each value it has, the rest left out for the client's default"""
+    own = (("blinkit_days", x.gate_blinkit_days), ("qcom_pct", x.gate_qcom_pct))
+    return SkuGates(**{k: v for k, v in own if v is not None})
 
 
 async def client_out(ctx: Ctx, client_id: str) -> ClientOut:
@@ -189,7 +196,16 @@ async def client_out(ctx: Ctx, client_id: str) -> ClientOut:
             for x in distributors
         ],
         skus=[
-            SkuOut(id=x.id, code=x.code, brand=x.brand, name=x.name, mrp=x.mrp, gst=x.gst, life_days=x.life_days)
+            SkuOut(
+                id=x.id,
+                code=x.code,
+                brand=x.brand,
+                name=x.name,
+                mrp=x.mrp,
+                gst=x.gst,
+                life_days=x.life_days,
+                gates=sku_gates(x),
+            )
             for x in skus
         ],
         people=[person_out(cm, u) for cm, u in await people(ctx, client_id)],
@@ -229,7 +245,8 @@ async def overview(ctx: Ctx) -> Overview:
                     m.Distributor,
                     (m.Distributor.client_id == m.Batch.client_id) & (m.Distributor.id == m.Batch.distributor_id),
                 )
-                .where(m.Batch.closed_at.is_(None))
+                # on the move: past the Watcher's Detect, where every batch it sees starts
+                .where(m.Batch.closed_at.is_(None), m.Batch.stage_current >= 2)
                 .order_by(m.Batch.seq)
             )
         ).all()

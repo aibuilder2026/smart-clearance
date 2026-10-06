@@ -7,6 +7,11 @@ import { isEmail } from '@smart-clearance/core/identity';
 import type { Agent } from '../types/shared';
 import type {
 	AgentConfig,
+	BatchOverride,
+	GateCheck,
+	Gates,
+	OverrideInput,
+	SkuGates,
 	AgentSettings,
 	Client,
 	ConsoleConfig,
@@ -27,6 +32,88 @@ import type {
 export const SIGN_IN_FAILED =
 	"That email and password don't match. Check both, or ask a Super admin to put your account back on its first password.";
 
+/** quick-commerce gates per SKU, with a per-batch override (SC-47). An SKU's own gates keep the profile's bounds; a
+ *  batch's override records a deal a warehouse agreed to, so it may go lower */
+export const GATE_BOUNDS = {
+	sku: { blinkitDays: [30, 180], qcomPct: [30, 90] },
+	override: { blinkitDays: [7, 180], qcomPct: [5, 90] }
+} as const;
+const DAY = 86_400_000;
+const daysBetween = (from: string, to: string) =>
+	Math.round((Date.parse(to + 'T00:00:00Z') - Date.parse(from + 'T00:00:00Z')) / DAY);
+
+/** a batch's gates as the agents read them: its override, else its SKU's own, else the client's default, value by
+ *  value. Blinkit wants days left; Zepto and Instamart a share of the SKU's life left: a batch passes when
+ *  days x 100 >= share x life */
+export function batchGates(
+	client: { gates: Gates },
+	sku: { lifeDays: number; gates?: SkuGates },
+	batch: { bestBefore: string; override?: Partial<BatchOverride> | null },
+	today: string
+): { blinkitDays: number; qcomPct: number; daysLeft: number; lifeDays: number; checks: GateCheck[] } {
+	const own = sku.gates ?? {},
+		o = batch.override ?? {};
+	const pick = (k: 'blinkitDays' | 'qcomPct'): [number, GateCheck['source']] =>
+		o[k] != null ? [o[k], 'override'] : own[k] != null ? [own[k], 'sku'] : [client.gates[k], 'default'];
+	const [bl, blFrom] = pick('blinkitDays'),
+		[qc, qcFrom] = pick('qcomPct');
+	const life = sku.lifeDays,
+		days = daysBetween(today, batch.bestBefore),
+		pct = Math.floor((days * 100) / life),
+		qcPass = days * 100 >= qc * life;
+	return {
+		blinkitDays: bl,
+		qcomPct: qc,
+		daysLeft: days,
+		lifeDays: life,
+		checks: [
+			{ app: 'blinkit', need: bl, has: days, pass: days >= bl, source: blFrom },
+			{ app: 'zepto', need: qc, has: pct, pass: qcPass, source: qcFrom },
+			{ app: 'instamart', need: qc, has: pct, pass: qcPass, source: qcFrom }
+		]
+	};
+}
+export const gateText = (g: { blinkitDays?: number | null; qcomPct?: number | null }) =>
+	[
+		g.blinkitDays != null && `Blinkit ${g.blinkitDays}+ days`,
+		g.qcomPct != null && `Zepto and Instamart ${g.qcomPct}% of life`
+	]
+		.filter(Boolean)
+		.join(', ');
+const bad = (v: unknown, [lo, hi]: readonly [number, number]) =>
+	typeof v !== 'number' || !Number.isInteger(v) || v < lo || v > hi;
+/** what an SKU's own gates must be, or the problem with them (null puts it back on the client's default) */
+export function skuGatesError(g: SkuGates | null): string | null {
+	if (g == null) return null;
+	const { blinkitDays: b, qcomPct: q } = GATE_BOUNDS.sku;
+	if (g.blinkitDays == null && g.qcomPct == null)
+		return 'Give the SKU at least one gate of its own, or put it back on the default.';
+	if (g.blinkitDays != null && bad(g.blinkitDays, b)) return `Blinkit takes ${b[0]} to ${b[1]} days.`;
+	if (g.qcomPct != null && bad(g.qcomPct, q)) return `Zepto and Instamart take ${q[0]}% to ${q[1]}% of life.`;
+	return null;
+}
+/** what a batch's override must carry, or the problem with it */
+export function overrideError(o: OverrideInput): string | null {
+	const { blinkitDays: b, qcomPct: q } = GATE_BOUNDS.override;
+	if (o.blinkitDays == null && o.qcomPct == null) return 'Override at least one gate.';
+	if (o.blinkitDays != null && bad(o.blinkitDays, b)) return `A batch's Blinkit gate is ${b[0]} to ${b[1]} days.`;
+	if (o.qcomPct != null && bad(o.qcomPct, q))
+		return `A batch's Zepto and Instamart gate is ${q[0]}% to ${q[1]}% of life.`;
+	const why = (o.reason || '').trim();
+	if (!why) return 'Say why this batch is different.';
+	if (why.length > 200) return 'Keep the reason to 200 characters.';
+	return null;
+}
+/** "Munchly Foods'", "Kesari's" */
+export const possessive = (name: string) => name + (/s$/i.test(name) ? "'" : "'s");
+export const skuGatesLine = (client: { name: string }, sku: { name: string }, g: SkuGates | null) =>
+	g
+		? `Set ${sku.name}'s quick-commerce gates: ${gateText(g)}`
+		: `Put ${sku.name} back on ${possessive(client.name)} default quick-commerce gates`;
+export const overrideLine = (ref: string, o: OverrideInput) =>
+	`Overrode ${ref}'s quick-commerce gates: ${gateText(o)} (${o.reason.trim()})`;
+export const clearOverrideLine = (ref: string) => `Removed ${ref}'s quick-commerce gate override`;
+
 /** a per-pack price: "₹13.50" */
 export const money = (v: SettingValue) => '₹' + Number(v).toFixed(2);
 
@@ -44,7 +131,7 @@ export function summary(agentId: string, s: AgentSettings, client: Pick<Client, 
 		case 'data':
 			return `daily ${s.time} · ${s.backfillDays} days of history`;
 		case 'watcher':
-			return `daily ${s.time} · Blinkit ${s.blinkitDays}+ days, Zepto and Instamart ${s.qcomPct}% of life`;
+			return `daily ${s.time} · Blinkit ${s.blinkitDays}+ days, Zepto and Instamart ${s.qcomPct}% of life, unless an SKU has its own`;
 		case 'vision':
 			return `asks again below ${Number(s.confidence).toFixed(2)} confidence`;
 		case 'valuer':

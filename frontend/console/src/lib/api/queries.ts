@@ -23,6 +23,9 @@ export const clientsQuery = () =>
 	queryOptions({ queryKey: ['console', 'clients'] as const, queryFn: () => api.clients() });
 export const clientQuery = (id: string) =>
 	queryOptions({ queryKey: ['console', 'client', id] as const, queryFn: () => api.client(id) });
+/** a client's open batches with their quick-commerce gates (SC-47) */
+export const clientBatchesQuery = (id: string) =>
+	queryOptions({ queryKey: ['console', 'client-batches', id] as const, queryFn: () => api.clientBatches(id) });
 export const staffQuery = () => queryOptions({ queryKey: ['console', 'staff'] as const, queryFn: () => api.staff() });
 export const auditQuery = (client: string | null = null) =>
 	queryOptions({ queryKey: ['console', 'audit', client] as const, queryFn: () => api.audit(client) });

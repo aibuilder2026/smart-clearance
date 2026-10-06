@@ -90,7 +90,42 @@ export type Distributor = {
 	/** the one-time permission that lets the agents act in the distributor's name */
 	permission: 'given' | 'not-yet';
 };
-export type Sku = { id: string; code: string; brand: string; name: string; mrp: number; gst: number; lifeDays: number };
+/** an SKU's own quick-commerce gates (SC-47): each value is the SKU's, absent for the client's default */
+export type SkuGates = { blinkitDays?: number; qcomPct?: number };
+export type Sku = {
+	id: string;
+	code: string;
+	brand: string;
+	name: string;
+	mrp: number;
+	gst: number;
+	lifeDays: number;
+	gates: SkuGates;
+};
+export type GateApp = 'blinkit' | 'zepto' | 'instamart';
+/** where a batch's gate comes from: its own override, its SKU's own gates, or the client's default */
+export type GateSource = 'default' | 'sku' | 'override';
+/** a gate as the agents read it: what the app needs and what the batch has, in days left for Blinkit and in % of the
+ *  SKU's life left for Zepto and Instamart */
+export type GateCheck = { app: GateApp; need: number; has: number; pass: boolean; source: GateSource };
+/** one batch's own gates, with why, who set them and when ("4 Oct, 16:20", "Today, 09:40") */
+export type BatchOverride = { blinkitDays?: number; qcomPct?: number; reason: string; by: string; at: string };
+/** an open batch and its quick-commerce gates as the agents read them (GET …/clients/:id/batches) */
+export type BatchGates = {
+	ref: string;
+	sku: string;
+	distributor: string;
+	units: number;
+	/** ISO date: 2026-11-18 */
+	bestBefore: string;
+	daysLeft: number;
+	lifeDays: number;
+	blinkitDays: number;
+	qcomPct: number;
+	checks: GateCheck[];
+	override?: BatchOverride;
+};
+export type OverrideInput = { blinkitDays?: number; qcomPct?: number; reason: string };
 export type Integration = {
 	id: string;
 	name: string;
@@ -264,6 +299,14 @@ export interface ConsoleApi {
 	setPlan(client: string, plan: string): Promise<Client>;
 	saveProfile(client: string, input: ProfileInput): Promise<Client>;
 	saveRules(client: string, input: RulesInput): Promise<Client>;
+	/** a client's open batches with their quick-commerce gates as the agents read them; one SKU's when it is given */
+	clientBatches(client: string, sku?: string): Promise<BatchGates[]>;
+	/** an SKU's own quick-commerce gates, or null to put it back on the client's default */
+	saveSkuGates(client: string, sku: string, gates: SkuGates | null): Promise<Client>;
+	/** one batch's own gates, with why, until it closes */
+	overrideBatch(client: string, ref: string, input: OverrideInput): Promise<Client>;
+	/** a batch back on its SKU's gates */
+	clearBatchOverride(client: string, ref: string): Promise<Client>;
 	remindDistributor(client: string, distributor: string): Promise<void>;
 	requestFirstExport(client: string): Promise<Client>;
 	invitePerson(client: string, input: InviteInput): Promise<Client>;
