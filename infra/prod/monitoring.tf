@@ -2,7 +2,8 @@
 # - Logs: Cloud Run, Cloud SQL and Cloud Build write to Cloud Logging's _Default bucket (30 days, inside the free
 #   50 GiB a month). backend-api logs one JSON object a line (LOG_FORMAT=json, run.tf), so each line keeps its
 #   severity, and Error Reporting groups its stack traces.
-# - An uptime check on /healthz every 5 minutes, from three regions.
+# - An uptime check on /readyz every 5 minutes, from three regions: the API answers and reaches the database. (Cloud Run
+#   reserves /healthz on the public address; the container's own probes still use it, inside.)
 # - Alerts, emailed to var.alert_email: the API down, server errors, slow responses, errors in the logs, and the
 #   database's CPU, memory and disk.
 # - A dashboard: requests by status, latency, instances, and the database.
@@ -28,13 +29,13 @@ resource "google_monitoring_notification_channel" "email" {
 resource "google_monitoring_uptime_check_config" "api" {
   count = local.runtime
 
-  display_name     = "backend-api /healthz"
+  display_name     = "backend-api /readyz"
   timeout          = "10s"
   period           = "300s"
   selected_regions = ["ASIA_PACIFIC", "EUROPE", "USA_VIRGINIA"]
 
   http_check {
-    path         = "/healthz"
+    path         = "/readyz"
     port         = 443
     use_ssl      = true
     validate_ssl = true
@@ -59,7 +60,7 @@ resource "google_monitoring_alert_policy" "api_down" {
   notification_channels = local.channels
 
   conditions {
-    display_name = "/healthz fails from two or more regions for 10 minutes"
+    display_name = "/readyz fails from two or more regions for 10 minutes"
     condition_threshold {
       filter          = "metric.type=\"monitoring.googleapis.com/uptime_check/check_passed\" AND resource.type=\"uptime_url\" AND metric.label.check_id=\"${google_monitoring_uptime_check_config.api[0].uptime_check_id}\""
       comparison      = "COMPARISON_GT"
@@ -79,7 +80,7 @@ resource "google_monitoring_alert_policy" "api_down" {
 
   documentation {
     mime_type = "text/markdown"
-    content   = "The API's health check is failing. Look at the backend-api service's logs in Cloud Run, and its latest revision."
+    content   = "The API's readiness check (it reaches the database) is failing. Look at the backend-api service's logs in Cloud Run, its latest revision, and Cloud SQL sc-main."
   }
 }
 
@@ -218,29 +219,30 @@ resource "google_monitoring_dashboard" "backend" {
         { title = "Database memory", filter = "metric.type=\"cloudsql.googleapis.com/database/memory/utilization\" AND ${local.database}", aligner = "ALIGN_MEAN", reducer = "REDUCE_NONE", by = [] },
         { title = "Database connections", filter = "metric.type=\"cloudsql.googleapis.com/database/postgresql/num_backends\" AND ${local.database}", aligner = "ALIGN_MEAN", reducer = "REDUCE_SUM", by = [] },
         { title = "Database disk", filter = "metric.type=\"cloudsql.googleapis.com/database/disk/utilization\" AND ${local.database}", aligner = "ALIGN_MEAN", reducer = "REDUCE_NONE", by = [] },
-        ] : {
-        xPos   = (i % 2) * 6
-        yPos   = floor(i / 2) * 4
-        width  = 6
-        height = 4
-        widget = {
-          title = t.title
-          xyChart = {
-            dataSets = [{
-              plotType = "LINE"
-              timeSeriesQuery = {
-                timeSeriesFilter = {
-                  filter = t.filter
-                  aggregation = merge(
-                    { alignmentPeriod = "60s", perSeriesAligner = t.aligner, crossSeriesReducer = t.reducer },
-                    length(t.by) > 0 ? { groupByFields = t.by } : {},
-                  )
+        # as Cloud Monitoring stores it (zero positions left out, the axis named), so a plan shows no drift
+        ] : merge(i % 2 == 0 ? {} : { xPos = 6 }, i < 2 ? {} : { yPos = floor(i / 2) * 4 }, {
+          width                            = 6
+          height                           = 4
+          widget = {
+            title = t.title
+            xyChart = {
+              dataSets = [{
+                plotType   = "LINE"
+                targetAxis = "Y1"
+                timeSeriesQuery = {
+                  timeSeriesFilter = {
+                    filter = t.filter
+                    aggregation = merge(
+                      { alignmentPeriod = "60s", perSeriesAligner = t.aligner },
+                      t.reducer == "REDUCE_NONE" ? {} : { crossSeriesReducer = t.reducer },
+                      length(t.by) > 0 ? { groupByFields = t.by } : {},
+                    )
+                  }
                 }
-              }
-            }]
+              }]
+            }
           }
-        }
-      }]
+      })]
     }
   })
 

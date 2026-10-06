@@ -18,11 +18,11 @@ It is a working prototype, with nothing stubbed:
 | --- | --- |
 | Runtime | Python 3.14 (uv-managed; `uv.lock` committed), ruff |
 | API | FastAPI 0.142 on Uvicorn, Pydantic 2.13 |
-| Data | PostgreSQL 18. Locally, the Docker Postgres you already run; in the cloud, Cloud SQL (written, not applied: `infra/prod/sql.tf`). SQLAlchemy 2.1 (async, asyncpg), Alembic. |
+| Data | PostgreSQL 18. Locally, the Docker Postgres you already run; in the cloud, Cloud SQL (`infra/prod/sql.tf`, SC-50). SQLAlchemy 2.1 (async, asyncpg), Alembic. |
 | Sign-in | Firebase Authentication (Identity Platform), email and password. ID tokens arrive in `Authorization: Bearer`. |
 | Secrets | Google Secret Manager only, read at runtime by reference; nothing secret is in a file, a command line or git |
 | Identity | Locally, the developer's own gcloud credentials, impersonating `sc-api-local` in code; on Cloud Run, `sc-api`. No key exists. |
-| Hosting | A container (`Dockerfile`) for Cloud Run, behind `backend_runtime` in `infra/prod` |
+| Hosting | A container (`Dockerfile`) on Cloud Run in `asia-south1` (SC-50), built and deployed by Cloud Build (`cloudbuild.yaml`), logging JSON lines for Cloud Logging (`LOG_FORMAT=json`, `logs.py`) |
 
 `docs/smart-clearance-tech-stack.html` planned Python 3.12 and PostgreSQL 16. 3.12 has had only security fixes since
 April 2025; 3.14 is current. PostgreSQL 18 is GA on Cloud SQL and is what the local container runs.
@@ -191,6 +191,31 @@ To move to another GCP project:
 Nothing in this folder names a project. With the runtime on, the `backend-api-migrate` Cloud Run job runs
 `sc-admin migrate` against Cloud SQL as `sc-migrator`'s IAM user, and no database password exists at all.
 
+## In the cloud
+
+backend-api runs on Cloud Run in `asia-south1`, on Cloud SQL for PostgreSQL 18 (SC-50; `infra/README.md` has the
+resources and their costs, about GBP 9 a month).
+
+- **Releases.** A merge to `main` touching `backend-api/` runs CI's backend job, which starts `cloudbuild.yaml` on
+  Cloud Build as `sc-builder`: build and push the image (tagged with the commit), run `backend-api-migrate` on it, move
+  `backend-api-hydrate` onto it, deploy `backend-api`, and check `/readyz`. By hand, from the repository's root:
+
+  ```sh
+  gcloud builds submit backend-api --config=backend-api/cloudbuild.yaml \
+    --service-account="projects/aibuilder-510213/serviceAccounts/sc-builder@aibuilder-510213.iam.gserviceaccount.com" \
+    --gcs-source-staging-dir=gs://aibuilder-510213-builds/source --substitutions=_TAG="$(git rev-parse --short=12 HEAD)"
+  ```
+- **The synthetic world.** Production was hydrated once (the maintainer's call). To move some batches on, as
+  `hydrate.sh --tick` does locally:
+
+  ```sh
+  gcloud run jobs execute backend-api-hydrate --region=asia-south1 --args=--allow-env,prod,--tick --wait
+  ```
+- **Logs and alerts.** Cloud Logging keeps 30 days; Error Reporting groups the API's stack traces. The uptime check,
+  the alerts (emailed to the operator) and the dashboard "Smart-Clearance backend-api" are in Cloud Monitoring.
+- **Accounts.** Production shares the Firebase user pool with local development, so the same accounts sign in to both,
+  on the default password (`scripts/default-password.sh`).
+
 ## Tests
 
 `scripts/test.sh` (198 tests, a few seconds) runs against a real PostgreSQL. It migrates `smart_clearance_test` from
@@ -218,6 +243,6 @@ CI runs the same suite on a `postgres:18` service container, with a secret scan 
   is called only by hydrate.
 - `money.js` is not ported yet: the showcase is design3's computed figures, loaded as content. The port comes with the
   agents.
-- The runtime (Cloud SQL, Cloud Run) is written and planned, not applied. The landing page's build prerenders from the
-  API only when `PUBLIC_API_BASE` is set.
+- Cloud Run scales to zero, so the first request after a quiet spell waits for a cold start (a few seconds).
+- `db-f1-micro` is a shared core with 0.6 GB of memory and no SLA: enough for the prototype, not for real load.
 - The rate limiter keeps its counts per instance.
