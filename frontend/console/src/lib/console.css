@@ -164,8 +164,8 @@
    rounded data ends; a recessive grid; text in text inks. Nothing moves on its own: the figures are read again every
    30 s, and Pause stops that (WCAG 2.2.2). */
 .cs-ov { display: grid; gap: 20px; }
-.cs-ov-two, .cs-ov-three { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); align-items: start; }
-@container app (min-width: 1100px) { .cs-ov-two { grid-template-columns: minmax(0, 1fr) 420px; } .cs-ov-three { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.cs-ov-three { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@container app (min-width: 1100px) { .cs-ov-three { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .cs-ov-live { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; font-size: 13px; color: var(--fg-3); }
 .cs-ov-kpis { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @container app (min-width: 1100px) { .cs-ov-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
@@ -179,6 +179,7 @@
 .cs-ov-kpi .k-foot .up, .cs-ov-kpi .k-foot .warn { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; font-weight: 600; vertical-align: bottom; }
 .cs-ov-kpi .k-foot .up { color: var(--primary-text); }
 .cs-ov-kpi .k-foot .warn { color: var(--amber-text); }
+.cs-ov-sparkbox { width: 100%; }
 .cs-ov-spark { display: block; width: 100%; height: 36px; margin-top: 4px; overflow: visible; }
 @container app (max-width: 767px) { .cs-ov-kpi { padding: 14px 14px 12px; } .cs-ov-kpi .k-value { font-size: 25px; } .cs-ov-spark { height: 28px; } }
 .cs-ov-in { font: 500 13px var(--font-ui); letter-spacing: 0; color: var(--fg-3); }
@@ -197,19 +198,6 @@
 .cs-ov-chart .tip .tr span:last-child { color: var(--fg); font-weight: 600; }
 .cs-ov-daytable { margin-top: 10px; max-height: 260px; overflow: auto; }
 .cs-ov-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; font-size: 12.5px; color: var(--fg-3); }
-.cs-ov-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--fg-2); }
-.cs-ov-legend i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 3px; vertical-align: -1px; }
-.cs-ov-stops { display: grid; gap: 2px; }
-.cs-ov-stop { display: grid; grid-template-columns: 74px minmax(0, 1fr) 28px; align-items: center; gap: 10px; width: 100%; min-height: 32px; padding: 0 4px; border-radius: 8px; font-size: 13px; color: var(--fg-2); text-align: left; cursor: pointer; }
-.cs-ov-stop:hover { background: var(--fill); }
-.cs-ov-stop[aria-pressed="true"] { background: var(--primary-soft); box-shadow: inset 0 0 0 1.5px var(--primary); color: var(--fg); }
-.cs-ov-stop.human[aria-pressed="true"] { background: var(--amber-soft); box-shadow: inset 0 0 0 1.5px var(--amber); }
-.cs-ov-stop:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
-.cs-ov-stop .bar { height: 14px; min-width: 2px; border-radius: 0 4px 4px 0; background: var(--primary); }
-.cs-ov-stop.human .bar { background: var(--amber); }
-.cs-ov-stop.zero .bar { background: var(--fill-3); }
-.cs-ov-stop .n { text-align: right; font-weight: 600; color: var(--fg); font-variant-numeric: tabular-nums; }
-.cs-ov-stop.zero .n { font-weight: 500; color: var(--fg-3); }
 .cs-ov-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .cs-ov-search { position: relative; flex: 1 1 200px; max-width: 300px; }
 .cs-ov-search .ic { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--fg-3); }
@@ -248,3 +236,101 @@
 .cs-ov-rows .r2 { font-size: 12.5px; color: var(--fg-3); }
 .cs-ov-rows .r2 b { color: var(--fg-2); }
 .cs-ov-rows .cs-ov-seg { grid-template-columns: repeat(9, minmax(0, 1fr)); margin-top: 4px; }
+
+/* ---------- SC-49 (option A, the route): loading, Sign in and Agents at work ---------- */
+/* loading: the route along the top of what is loading, landing its amber pin */
+.cs-loading { position: relative; }
+.cs-route { position: absolute; z-index: 40; top: 0; left: 0; right: 0; height: 4px; pointer-events: none; }
+.cs-route .line { position: relative; display: block; height: 2px; border-radius: 0 2px 2px 0; background: var(--primary); }
+.cs-route .pin { position: absolute; right: -5px; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 0 2px var(--surface); }
+/* the screen's shape, waiting; one green wash crosses it while the read is out */
+.cs-load { --wash: color-mix(in oklab, var(--primary) 20%, var(--fill-2)); padding-top: 6px; }
+.cs-ph { display: grid; gap: 12px; }
+.cs-ph-row { display: grid; gap: 12px; }
+.cs-ph-row.k-row + .cs-ph-row.k-row { margin-top: -10px; }
+.cs-ph-blk { position: relative; display: flex; flex-direction: column; gap: 9px; overflow: hidden; padding: 14px 16px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+.cs-ph-blk.k-bar { padding: 0; background: none; box-shadow: none; }
+.cs-ph-blk.k-row, .cs-ph-blk.k-head { flex-direction: row; align-items: center; gap: 12px; border-radius: 12px; }
+.cs-ph-blk .b { display: block; flex: none; height: 10px; border-radius: 6px; background: linear-gradient(100deg, var(--fill-2) 35%, var(--wash) 50%, var(--fill-2) 65%) var(--fill-2); background-size: 260% 100%; background-position: 130% 0; animation: cs-wash 1.15s var(--ease) infinite; animation-delay: calc(var(--i) * 70ms); }
+.cs-ph-blk .b.fill { height: 100%; }
+.cs-ph-blk .b.big { height: 26px; }
+.cs-ph-blk .b.thin { height: 8px; }
+.cs-ph-blk .b.spark { height: 22px; margin-top: auto; }
+.cs-ph-blk .b.area { flex: 1; border-radius: 10px; }
+.cs-ph-blk .b.mark { width: 60px; height: 60px; border-radius: 16px; }
+.cs-ph-blk .b.dot { width: 32px; height: 32px; border-radius: 10px; }
+.cs-ph-blk .b.input { height: 40px; border-radius: 10px; }
+.cs-ph-blk .col { display: grid; flex: 1; gap: 7px; }
+.cs-ph-blk .w10 { width: 10%; } .cs-ph-blk .w20 { width: 20%; } .cs-ph-blk .w30 { width: 30%; } .cs-ph-blk .w40 { width: 40%; } .cs-ph-blk .w50 { width: 50%; } .cs-ph-blk .w60 { width: 60%; }
+@keyframes cs-wash { from { background-position: 130% 0; } to { background-position: -130% 0; } }
+/* the content rises into the places its shape held, a block at a time */
+.cs-in[data-kind="screen"] .pagebody > * > *, .cs-in[data-kind="tab"] > * > * { animation: cs-rise 420ms var(--ease) backwards; }
+.cs-in[data-kind="screen"] .pagebody > * > :nth-child(2), .cs-in[data-kind="tab"] > * > :nth-child(2) { animation-delay: 50ms; }
+.cs-in[data-kind="screen"] .pagebody > * > :nth-child(3), .cs-in[data-kind="tab"] > * > :nth-child(3) { animation-delay: 100ms; }
+.cs-in[data-kind="screen"] .pagebody > * > :nth-child(4), .cs-in[data-kind="tab"] > * > :nth-child(4) { animation-delay: 150ms; }
+.cs-in[data-kind="screen"] .pagebody > * > :nth-child(5), .cs-in[data-kind="tab"] > * > :nth-child(5) { animation-delay: 200ms; }
+.cs-in[data-kind="screen"] .pagebody > * > :nth-child(n + 6), .cs-in[data-kind="tab"] > * > :nth-child(n + 6) { animation-delay: 250ms; }
+.cs-in[data-kind="screen"] .lt-sub, .cs-in[data-kind="screen"] .nb-actions { animation: cs-fade 240ms var(--ease) backwards; }
+@keyframes cs-rise { from { opacity: 0; transform: translateY(8px); } }
+@keyframes cs-fade { from { opacity: 0; } }
+
+/* Sign in keeps its label; the S draws in the icon's place and a line runs along the foot */
+.cs-si-btn { position: relative; overflow: hidden; gap: 10px; }
+.cs-si-btn.on { pointer-events: none; }
+.cs-si-ic { display: inline-grid; flex: none; place-items: center; width: 20px; height: 20px; }
+.cs-si-lbl { display: inline-grid; overflow: hidden; }
+.cs-si-lbl > span { grid-area: 1 / 1; white-space: nowrap; }
+.cs-si-prog { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; transform-origin: left center; background: color-mix(in oklab, var(--primary-fg) 72%, transparent); }
+
+/* recovered by day: what the last reading added, beside today's dot */
+.cs-ov-chart .cs-ov-gain { position: absolute; z-index: 4; padding: 3px 8px; border-radius: var(--r-full); background: var(--primary-soft); color: var(--primary-text); font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap; pointer-events: none; }
+
+/* Agents at work: the nine stops as a route, and Closed today at its end */
+.cs-aw .cs-ov-head { margin-bottom: 6px; }
+.cs-aw-state { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--fg-3); }
+.cs-aw-state::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--primary); }
+.cs-aw-state.paused::before { background: var(--fg-3); }
+.cs-aw-track { position: relative; display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; }
+.cs-aw-rail { position: absolute; left: 5%; right: 5%; top: 127px; height: 2px; border-radius: 1px; background: var(--line-2); }
+.cs-aw-stop { position: relative; display: grid; grid-template-rows: 96px 36px auto auto; justify-items: center; align-content: start; gap: 6px; min-width: 0; padding: 8px 2px 10px; border-radius: 12px; color: var(--fg-2); text-align: center; transition: background-color var(--t-fast); }
+button.cs-aw-stop:hover { background: var(--fill); }
+.cs-aw-stop[aria-pressed="true"] { background: var(--primary-soft); box-shadow: inset 0 0 0 1.5px var(--primary); }
+.cs-aw-stop.human[aria-pressed="true"] { background: var(--amber-soft); box-shadow: inset 0 0 0 1.5px var(--amber); }
+.cs-aw-stop:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+.cs-aw-stop .toks { display: flex; flex-direction: column-reverse; align-items: center; gap: 4px; height: 96px; }
+.cs-aw-tok { display: grid; line-height: 0; border-radius: 8px; box-shadow: 0 0 0 2px var(--surface); }
+.cs-aw-tok.moved { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--primary); }
+.cs-aw-stop .more { font-size: 11.5px; font-weight: 650; color: var(--fg-3); font-variant-numeric: tabular-nums; }
+.cs-aw-stop .node { position: relative; z-index: 1; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--surface); color: var(--primary-text); box-shadow: inset 0 0 0 2px var(--primary); transition: background-color var(--t-slow) var(--ease), color var(--t-slow) var(--ease); }
+.cs-aw-stop.human .node { background: var(--amber-soft); color: var(--amber-text); box-shadow: inset 0 0 0 2px var(--amber); }
+.cs-aw-stop.zero .node { color: var(--fg-3); box-shadow: inset 0 0 0 1.5px var(--line-2); }
+.cs-aw-stop.lit .node { background: var(--primary); color: var(--primary-fg); }
+.cs-aw-stop.human.lit .node { background: var(--amber); color: var(--amber-fg); }
+.cs-aw-stop.end .node { background: var(--primary-soft); box-shadow: none; }
+.cs-aw-stop .ping { position: absolute; inset: 0; border: 2px solid var(--primary); border-radius: 50%; }
+.cs-aw-stop .lbl { display: grid; gap: 1px; max-width: 100%; min-width: 0; font-size: 12px; line-height: 1.3; }
+.cs-aw-stop .lbl b { font-size: 12.5px; font-weight: 600; color: var(--fg); }
+.cs-aw-stop .lbl span { overflow: hidden; color: var(--fg-3); white-space: nowrap; text-overflow: ellipsis; }
+/* on a pressed or hovered stop the quieter inks move up a step, to keep 4.5:1 on its tint */
+.cs-aw-stop[aria-pressed="true"] .lbl span, .cs-aw-stop[aria-pressed="true"] .more, button.cs-aw-stop:hover .lbl span, button.cs-aw-stop:hover .more { color: var(--fg-2); }
+.cs-aw-stop .n { font: 700 18px/1 var(--font-display); color: var(--fg); font-variant-numeric: tabular-nums; }
+.cs-aw-stop.zero .n { font-weight: 500; color: var(--fg-3); }
+.cs-aw-ticker { display: grid; overflow: hidden; min-height: 42px; margin-top: 8px; padding: 0 12px; border-radius: 12px; background: var(--fill); }
+.cs-aw-ticker p { display: flex; grid-area: 1 / 1; align-items: center; gap: 8px; min-width: 0; margin: 0; font-size: 13px; color: var(--fg-2); white-space: nowrap; }
+.cs-aw-ticker b { color: var(--fg); font-weight: 600; }
+.cs-aw-ticker .who { color: var(--fg-3); }
+.cs-aw-ticker .txt { overflow: hidden; text-overflow: ellipsis; }
+@container app (max-width: 767px) {
+  .cs-aw-track { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .cs-aw-rail { left: 25px; right: auto; top: 22px; bottom: 22px; width: 2px; height: auto; }
+  .cs-aw-stop { grid-template-columns: 36px minmax(0, 1fr) auto 26px; grid-template-rows: none; grid-template-areas: "node lbl toks n"; align-items: center; justify-items: start; gap: 10px; padding: 6px 8px; text-align: left; }
+  .cs-aw-stop .node { grid-area: node; }
+  .cs-aw-stop .lbl { grid-area: lbl; }
+  .cs-aw-stop .toks { grid-area: toks; flex-direction: row; height: auto; }
+  .cs-aw-stop .n { grid-area: n; justify-self: end; }
+  .cs-aw-ticker p .who { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cs-ph-blk .b { animation: none; }
+  .cs-in[data-kind="screen"] .pagebody > * > *, .cs-in[data-kind="tab"] > * > *, .cs-in[data-kind="screen"] .lt-sub, .cs-in[data-kind="screen"] .nb-actions { animation: none; }
+}

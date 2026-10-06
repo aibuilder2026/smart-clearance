@@ -309,6 +309,13 @@ describe("the Overview's dashboard (SC-48)", () => {
 		expect([p.total, p.rows.length, p.rows[0].ref]).toEqual([9, 8, 'MF-2410-118']);
 		expect((await api.batches({ page: 2 })).rows.map((r) => r.ref)).toEqual(['GL-2410-012']);
 	});
+	it("gives Agents at work the latest arrivals at each stop, and today's closed batches (SC-49)", async () => {
+		const d = await api.dashboard(7);
+		expect(d.atStop.map((x) => x.length)).toEqual([0, 3, 0, 0, 0, 0, 1, 0, 1]);
+		expect(d.atStop[6]).toEqual([{ client: 'munchly', ref: 'MF-2410-118', at: '2026-10-06T09:40:00+05:30' }]);
+		expect(d.atStop[8]).toEqual([{ client: 'munchly', ref: 'MF-2409-117', at: '2026-10-05T18:10:00+05:30' }]);
+		expect(d.closedToday).toEqual({ count: 0, recovered: 0, batches: [] });
+	});
 	it("refuses a range or a page size it doesn't offer", async () => {
 		await expect(api.dashboard(10)).rejects.toMatchObject({ status: 422, message: 'Show 7, 30 or 90 days.' });
 		await expect(api.batches({ size: 10 })).rejects.toMatchObject({ status: 422 });

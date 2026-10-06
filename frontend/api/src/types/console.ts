@@ -297,7 +297,14 @@ export type Dashboard = {
 	runsToday: number;
 	/** batches in flight at each of the nine stops */
 	byStop: number[];
+	/** the latest three batches to arrive at each of the nine stops (SC-49) */
+	atStop: BatchMark[][];
+	/** the batches closed today: how many, what they recovered, and the latest three */
+	closedToday: { count: number; recovered: number; batches: BatchMark[] };
 };
+/** a batch as Agents at work draws it: its client's mark, keyed by the batch, and when it reached its stop (or closed),
+ *  so a reading can tell what arrived since the last */
+export type BatchMark = { client: string; ref: string; at: string };
 export type BatchStatus = 'in-flight' | 'waiting' | 'closed';
 export type BatchSort = 'priority' | 'stop' | 'days' | 'units' | 'value' | 'updated';
 export type BatchQuery = {

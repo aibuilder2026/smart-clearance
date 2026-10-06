@@ -3,9 +3,9 @@
 // gate; setting up a client means deciding how far each agent may go before a person says yes.
 (function () {
   const { useState, useEffect, useLayoutEffect, useMemo, useCallback, useRef, Fragment, useSyncExternalStore } = React;
-  const { motion, AnimatePresence, useReducedMotion } = Motion;
+  const { motion, AnimatePresence, useReducedMotion, LayoutGroup } = Motion;
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, P = window.SC3_PLATFORM, S = window.SC3_SCREENS; const fmt = M.fmt;
-  const { cx, Icon, IconButton, Avatar, Badge, Button, Card, List, ListRow, Segmented, Switch, Stepper, Sheet, Alert, Field, Input, Select, Menu, Tabs, Check, DataTable, Empty, Mark, Wordmark, WorkspaceMark, Page, Shell, Tracker, TrackerCompact, Product, ThemeProvider, AppRoot, NoticeHost, useApp, useNotice, ModeMenuButton } = K;
+  const { cx, Icon, IconButton, Avatar, Badge, Button, Card, List, ListRow, Segmented, Switch, Stepper, Sheet, Alert, Field, Input, Select, Menu, Tabs, Check, DataTable, Empty, Mark, Wordmark, WorkspaceMark, Page, Shell, Tracker, TrackerCompact, Product, ThemeProvider, AppRoot, NoticeHost, useApp, useNotice, ModeMenuButton, Roll } = K;
   const { Columns, SectionTitle } = S;
 
   P.usePersistence();
@@ -49,18 +49,89 @@
   const planName = id => (P.PLANS.find(p => p.id === id) || { name: id }).name;
   const agentsOn = c => P.AGENTS.filter(a => !a.gate && c.agents[a.id].on).length;
 
+  /* ---------- loading: the route and its pin over the screen's shape (SC-49, option A) ---------- */
+  // While a screen or tab is read, a green route draws along its top and lands its amber pin, as the landing page's
+  // loader does, over placeholders in the shape of what is coming; one green wash crosses them while they wait, then
+  // the content rises into their places. The prototype's data is in the browser, so a read is simulated (READ_MS); the
+  // build waits on backend-api (?read= lengthens it, for review and tests). A screen's first tab arrives with it; a later
+  // tab loads on its own
+  const READ_MS = Number(new URLSearchParams(location.search).get("read")) || 450, EASE = [0.22, 1, 0.36, 1];
+  // each placeholder row: [kind, height, columns, width or column weights]
+  const SHAPES = {
+    dashboard: [["bar", 28, 1, 0.38], ["tile", 132, 4], ["card", 300, 1], ["card", 300, 1], ["bar", 40, 1, 0.3], ["row", 58, 1], ["row", 58, 1], ["row", 58, 1]],
+    table: [["bar", 40, 1, 0.4], ["row", 56, 1], ["row", 56, 1], ["row", 56, 1], ["row", 56, 1], ["row", 56, 1], ["row", 56, 1]],
+    list: [["bar", 32, 1, 0.3], ["row", 60, 1], ["row", 60, 1], ["row", 60, 1], ["row", 60, 1], ["row", 60, 1]],
+    cards: [["bar", 32, 1, 0.3], ["card", 170, 3], ["card", 170, 3]],
+    pipeline: [["card", 520, 2, [1.6, 1]]],
+    form: [["bar", 32, 1, 0.3], ["field", 64, 2], ["field", 64, 2], ["field", 64, 1], ["card", 140, 1]],
+    client: [["head", 92, 1], ["bar", 44, 1, 0.62], ["card", 460, 2, [1.6, 1]]],
+  };
+  const SCREEN_SHAPE = { overview: "dashboard", clients: "table", "new-client": "form", agents: "cards", connectors: "cards", plans: "cards", staff: "table", audit: "list" };
+  const TAB_SHAPE = { agents: "pipeline", supply: "table", rules: "form", people: "list", integrations: "list", plan: "cards", audit: "list" };
+  let screenAt = 0;
+  function useRead(k, kind) {
+    const [ready, setReady] = useState(() => kind === "tab" && Date.now() - screenAt < 200);
+    const last = useRef(ready ? k : null);
+    useEffect(() => {
+      if (last.current === k) return;
+      last.current = k; setReady(false);
+      const t = setTimeout(() => { if (kind === "screen") screenAt = Date.now(); setReady(true); }, READ_MS);
+      return () => clearTimeout(t);
+    }, [k]);
+    return ready;
+  }
+  // the route: it eases most of the way and waits there, then completes and lands its pin when the read is in
+  function RouteBar({ done }) {
+    const reduce = useReducedMotion(); const [gone, setGone] = useState(false);
+    useEffect(() => { if (!done) return; const t = setTimeout(() => setGone(true), reduce ? 0 : 760); return () => clearTimeout(t); }, [done]);
+    if (gone) return null;
+    return <motion.div className="cs-route" aria-hidden="true" animate={{ opacity: done ? 0 : 1 }} transition={{ duration: 0.24, delay: done && !reduce ? 0.5 : 0 }}>
+      <motion.i className="line" initial={{ width: reduce ? "88%" : "0%" }} animate={{ width: done ? "100%" : "88%" }} transition={done ? { duration: reduce ? 0 : 0.16, ease: EASE } : { duration: reduce ? 0 : 1.2, ease: [0.3, 0.7, 0.4, 1] }}>
+        <motion.b className="pin" initial={false} animate={done ? { scale: [0, 1.35, 1] } : { scale: 0.6 }} transition={{ duration: reduce ? 0 : 0.42, ease: EASE, delay: done && !reduce ? 0.12 : 0 }} />
+      </motion.i>
+    </motion.div>;
+  }
+  function Bones({ kind }) {
+    if (kind === "tile") return <><i className="b w40" /><i className="b big w60" /><i className="b spark" /></>;
+    if (kind === "card") return <><i className="b w30" /><i className="b w20 thin" /><i className="b area" /></>;
+    if (kind === "row") return <><i className="b dot" /><span className="col"><i className="b w50" /><i className="b w30 thin" /></span><i className="b w10" /></>;
+    if (kind === "head") return <><i className="b mark" /><span className="col"><i className="b w30" /><i className="b w50 thin" /></span></>;
+    if (kind === "field") return <><i className="b w30 thin" /><i className="b input" /></>;
+    return <i className="b fill" />;
+  }
+  function Placeholder({ shape }) {
+    const app = useApp(); const phone = app.bp === "phone"; let n = 0;
+    return <div className="cs-ph">{(SHAPES[shape] || SHAPES.list).map(([kind, h, cols, w], row) => {
+      const many = phone ? Math.min(cols, kind === "tile" ? 2 : 1) : cols, weights = Array.isArray(w) && !phone ? w : null;
+      return <div key={row} className={cx("cs-ph-row", "k-" + kind)} style={{ gridTemplateColumns: weights ? weights.map(x => x + "fr").join(" ") : `repeat(${many}, minmax(0, 1fr))`, width: typeof w === "number" ? w * 100 + "%" : undefined }}>
+        {Array.from({ length: many }, () => n++).map(i => <div key={i} className={cx("cs-ph-blk", "k-" + kind)} style={{ height: phone && kind === "card" ? Math.min(h, 220) : h, "--i": i }}><Bones kind={kind} /></div>)}
+      </div>;
+    })}</div>;
+  }
+  function Loading({ k, shape, kind, title, children }) {
+    const ready = useRead(k, kind);
+    const ph = <div className="cs-load" role="status" aria-busy="true"><span className="sr-only">Loading {kind === "tab" ? "the tab" : title}</span><Placeholder shape={shape} /></div>;
+    return <div className="cs-loading">
+      <RouteBar key={k} done={ready} />
+      {ready ? <div className="cs-in" data-kind={kind}>{children}</div> : kind === "screen" ? <Page title={title}>{ph}</Page> : ph}
+    </div>;
+  }
+
   /* ---------- sign-in: platform staff only, a work email and a password (SC-46) ---------- */
   // One message for any wrong sign-in: the real console (Firebase Authentication, with email enumeration protection)
   // never says whether an address has an account. Nothing is mailed, so there is no "forgot password": a Super admin
   // puts an account back on its first password. In the prototype any password lets an active staff member in.
   const WRONG = "That email and password don't match. Check both, or ask a Super admin to put your account back on its first password.";
   function SignIn({ onIn }) {
-    const app = useApp(); const s = usePlatform(); const [email, setEmail] = useState(""); const [pw, setPw] = useState(""); const [show, setShow] = useState(false); const [err, setErr] = useState(""); const [busy, setBusy] = useState(false); const [find, setFind] = useState(false);
+    const app = useApp(); const s = usePlatform(); const [email, setEmail] = useState(""); const [pw, setPw] = useState(""); const [show, setShow] = useState(false); const [err, setErr] = useState(""); const [phase, setPhase] = useState("idle"); const [first, setFirst] = useState(""); const [find, setFind] = useState(false); const reduce = useReducedMotion();
     const submit = e => {
       e.preventDefault(); setErr("");
       const who = s.staff.find(x => x.status === "active" && x.email.toLowerCase() === email.trim().toLowerCase());
-      if (!who || !pw) { setErr(WRONG); return; }
-      setBusy(true); setTimeout(() => { setBusy(false); onIn(who.id); }, 600);
+      // a wrong sign-in shakes the button, then says so; a right one checks, says who is in, then opens the console
+      if (!who || !pw) { setPhase("error"); setTimeout(() => { setPhase("idle"); setErr(WRONG); }, reduce ? 0 : 360); return; }
+      setPhase("busy"); setFirst(who.name.split(" ")[0]);
+      // the welcome holds for a moment under reduced motion too: it is a state, not a movement
+      setTimeout(() => { setPhase("done"); setTimeout(() => { setPhase("idle"); onIn(who.id); }, 720); }, Math.max(1100, READ_MS));
     };
     const edit = set => e => { set(e.target.value); setErr(""); };
     return <div className="signin cs-signin">
@@ -77,7 +148,7 @@
           <Field label="Work email" htmlFor="si-email"><Input id="si-email" icon="mail" type="email" value={email} onChange={edit(setEmail)} autoComplete="username" spellCheck={false} autoCapitalize="none" placeholder="name@smartclearance.com" /></Field>
           <Field label="Password" htmlFor="si-pw"><span className="input-wrap cs-si-pw"><Icon name="lock" size={17} /><input id="si-pw" className="input" type={show ? "text" : "password"} value={pw} onChange={edit(setPw)} autoComplete="current-password" /><button type="button" className="cs-si-eye" aria-label={show ? "Hide password" : "Show password"} aria-pressed={show} onClick={() => setShow(!show)}><Icon name={show ? "eye-off" : "eye"} size={20} /></button></span></Field>
           {err && <div className="cs-si-error" role="alert"><Icon name="circle-alert" size={18} /><span>{err}</span></div>}
-          <Button type="submit" variant="primary" size="lg" block icon="log-in" loading={busy}>Sign in</Button>
+          <SignInButton phase={phase} name={first} />
           <p className="t-footnote muted cs-si-hint">New to the console? The platform team gives you your first password. Nothing is sent by email.</p>
         </form>
         <div className="si-foot">
@@ -90,6 +161,26 @@
     </div>;
   }
 
+  // Sign in keeps its label (SC-49): "Signing in…" while it checks, with the mark's S drawing in the icon's place and a
+  // line along the foot; then a welcome and a tick. Screen readers hear each phase once
+  const S_PATH = "M43.5 19 H27 a7 7 0 0 0 0 14 h10 a7 7 0 0 1 0 14 H20.5";
+  function SignInButton({ phase, name }) {
+    const reduce = useReducedMotion();
+    const busy = phase === "busy", done = phase === "done", err = phase === "error";
+    const label = done ? `Welcome, ${name}` : busy ? "Signing in…" : "Sign in";
+    return <motion.button type="submit" className={cx("btn btn-primary btn-lg btn-block cs-si-btn", (busy || done) && "on")} aria-disabled={busy || done || undefined}
+      animate={err && !reduce ? { x: [0, -8, 8, -5, 5, -2, 0] } : { x: 0 }} transition={{ duration: 0.36, ease: "easeOut" }}>
+      <span className="cs-si-ic" aria-hidden="true">{done ? <motion.svg width="20" height="20" viewBox="0 0 24 24" initial={reduce ? false : { scale: 0.4 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 520, damping: 22 }}>
+          <motion.path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: reduce ? 1 : 0 }} animate={{ pathLength: 1 }} transition={{ duration: reduce ? 0 : 0.28, ease: EASE }} /></motion.svg>
+        : busy ? <svg width="20" height="20" viewBox="12 12 40 40"><circle cx="43.5" cy="19" r="4" fill="currentColor" />
+          <motion.path d={S_PATH} fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: reduce ? 1 : 0 }} animate={{ pathLength: 1 }} transition={{ duration: reduce ? 0 : 1.1, ease: [0.65, 0, 0.35, 1] }} /></svg>
+        : <Icon name="log-in" size={18} />}</span>
+      <span className="cs-si-lbl"><AnimatePresence initial={false}><motion.span key={label} initial={reduce ? false : { y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={reduce ? { opacity: 0, transition: { duration: 0 } } : { y: -12, opacity: 0 }} transition={{ duration: 0.24, ease: EASE }}>{label}</motion.span></AnimatePresence></span>
+      {(busy || done) && <motion.i className="cs-si-prog" aria-hidden="true" initial={{ scaleX: reduce ? 0.9 : 0 }} animate={{ scaleX: done ? 1 : 0.9 }} transition={{ duration: reduce ? 0 : done ? 0.16 : 1.1, ease: done ? EASE : [0.3, 0.7, 0.4, 1] }} />}
+      <span className="sr-only" role="status">{busy ? "Signing in" : done ? `Signed in. Welcome, ${name}.` : ""}</span>
+    </motion.button>;
+  }
+
   /* ---------- overview: batches on the move, what is waiting for a person, today's runs ---------- */
   /* ---------- Overview: the platform as a live dashboard (SC-48, option A, the command centre) ---------- */
   // Every figure is P.dashboard and P.batchPage over the store, as backend-api answers them from its database. The
@@ -99,22 +190,32 @@
   const two = n => String(n).padStart(2, "0");
   const lakh = v => "₹" + (v / 100000).toFixed(1) + " lakh";
   const kAxis = v => (v >= 100000 ? "₹" + (v / 100000).toFixed(v % 100000 ? 1 : 0) + "L" : v ? "₹" + Math.round(v / 1000) + "k" : "0");
-  function MoneyFig({ value }) { return <><span className="cur" aria-hidden="true">₹</span><span aria-hidden="true">{Math.round(value).toLocaleString("en-IN")}</span><span className="sr-only">{fmt.inr(value)}</span></>; }
-  // a sparkline: one series, a 10% wash under a 2 px line
+  // the figures roll to their values, and roll again when a reading changes them (SC-49)
+  function MoneyFig({ value }) { return <><span className="cur" aria-hidden="true">₹</span><Roll value={Math.round(value)} from={0} hidden /><span className="sr-only">{fmt.inr(value)}</span></>; }
+  const useWidth = (ref, initial) => { const [w, setW] = useState(initial); useLayoutEffect(() => { if (!ref.current) return; const ro = new ResizeObserver(([e]) => setW(Math.max(120, Math.round(e.contentRect.width)))); ro.observe(ref.current); return () => ro.disconnect(); }, []); return w; };
+  // a sparkline: one series, a 10% wash under a 2 px line. The line draws itself once (700 ms) and the wash follows; a
+  // reading moves both (420 ms)
   function Sparkline({ values, tone }) {
-    const W = 160, H = 36, max = Math.max(1, ...values), n = values.length;
+    const box = useRef(null); const W = useWidth(box, 220); const reduce = useReducedMotion();
+    const H = 36, max = Math.max(1, ...values), n = values.length;
     const X = i => (n > 1 ? (i / (n - 1)) * W : W / 2), Y = v => H - 3 - (v / max) * (H - 8);
-    const line = values.map((v, i) => `${i ? "L" : "M"}${X(i).toFixed(1)} ${Y(v).toFixed(1)}`).join(" ");
-    const col = tone === "amber" ? "var(--amber)" : "var(--primary)";
-    return <svg className="cs-ov-spark" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden="true"><path d={`${line} L${W} ${H} L0 ${H} Z`} fill={col} opacity="0.1" /><path d={line} fill="none" stroke={col} strokeWidth="2" vectorEffect="non-scaling-stroke" strokeLinejoin="round" strokeLinecap="round" /></svg>;
+    const line = values.map((v, i) => `${i ? "L" : "M"}${X(i).toFixed(1)} ${Y(v).toFixed(1)}`).join(" "), area = `${line} L${W} ${H} L0 ${H} Z`;
+    const col = tone === "amber" ? "var(--amber)" : "var(--primary)", move = { duration: reduce ? 0 : 0.42, ease: EASE };
+    return <div ref={box} className="cs-ov-sparkbox"><svg className="cs-ov-spark" viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+      <motion.path key={"a" + n} fill={col} initial={{ opacity: 0, d: area }} animate={{ opacity: 0.1, d: area }} transition={{ opacity: { duration: reduce ? 0 : 0.42, delay: reduce ? 0 : 0.45 }, d: move }} />
+      <motion.path key={"l" + n} fill="none" stroke={col} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" initial={{ pathLength: reduce ? 1 : 0, d: line }} animate={{ pathLength: 1, d: line }} transition={{ pathLength: { duration: reduce ? 0 : 0.7, ease: EASE, delay: reduce ? 0 : 0.15 }, d: move }} />
+    </svg></div>;
   }
   function Kpi({ label, icon, children, foot, spark, tone }) {
-    return <div className={cx("cs-ov-kpi", tone)}><span className="k-label"><Icon name={icon} size={15} />{label}</span><span className="k-value">{children}</span><span className="k-foot">{foot}</span>{spark && <Sparkline values={spark} tone={tone} />}</div>;
+    return <div className={cx("cs-ov-kpi", tone)}><span className="k-label"><Icon name={icon} size={15} />{label}</span><span className="k-value">{typeof children === "number" ? <Roll value={children} from={0} /> : children}</span><span className="k-foot">{foot}</span>{spark && <Sparkline values={spark} tone={tone} />}</div>;
   }
-  // recovered a day: an area chart, one series, with a crosshair and a tooltip on hover, and a table to read it as
+  // recovered a day: an area chart, one series, with a crosshair and a tooltip on hover, and a table to read it as. The
+  // line draws itself once (900 ms), the wash follows and today's dot lands; a reading moves the line (420 ms), and when
+  // today gains, what it gained shows beside its dot for a moment (SC-49)
   function RecoveredChart({ byDay, height }) {
-    const box = useRef(null); const [w, setW] = useState(640); const [hover, setHover] = useState(null);
-    useLayoutEffect(() => { if (!box.current) return; const ro = new ResizeObserver(([e]) => setW(Math.max(280, Math.round(e.contentRect.width)))); ro.observe(box.current); return () => ro.disconnect(); }, []);
+    const box = useRef(null); const w = useWidth(box, 640); const [hover, setHover] = useState(null); const reduce = useReducedMotion();
+    const today = byDay[byDay.length - 1], was = useRef(today ? today.recovered : 0); const [gain, setGain] = useState(null);
+    useEffect(() => { const v = today ? today.recovered : 0, before = was.current; was.current = v; if (v > before) { setGain({ v: v - before, at: Date.now() }); const t = setTimeout(() => setGain(null), 2600); return () => clearTimeout(t); } }, [today && today.recovered]);
     const H = height, pl = 46, pr = 8, pt = 10, pb = 24, n = byDay.length;
     const peak = Math.max(0, ...byDay.map(d => d.recovered));
     const step = peak <= 0 ? 25000 : Math.pow(10, Math.floor(Math.log10(peak / 4))) * ([1, 2, 2.5, 5, 10].find(m => (peak / 4) / Math.pow(10, Math.floor(Math.log10(peak / 4))) <= m) || 10);
@@ -126,15 +227,21 @@
     const best = byDay.reduce((a, d) => (d.recovered > a.recovered ? d : a), byDay[0] || { recovered: 0 });
     const onMove = e => { const r = e.currentTarget.getBoundingClientRect(); const px = ((e.clientX - r.left) / r.width) * w; setHover(Math.max(0, Math.min(n - 1, Math.round(((px - pl) / (w - pl - pr)) * (n - 1))))); };
     const total = byDay.reduce((t, d) => t + d.recovered, 0);
+    const area = `${line} L${X(n - 1)} ${Y(0)} L${X(0)} ${Y(0)} Z`, move = { duration: reduce ? 0 : 0.42, ease: EASE }, tx = X(n - 1), ty = Y(today ? today.recovered : 0);
     return <div className="cs-ov-chart" ref={box} onMouseLeave={() => setHover(null)}>
       <svg viewBox={`0 0 ${w} ${H}`} height={H} onMouseMove={onMove} role="img" aria-label={`Recovered a day, the last ${n} days: ${fmt.inr(total)} in all${best.recovered ? `, highest ${fmt.inr(best.recovered)} on ${best.label}` : ""}`}>
         {ticks.map(t => <line key={t} className={t ? "gl" : "base"} x1={pl} x2={w - pr} y1={Y(t)} y2={Y(t)} />)}
         {ticks.map(t => <text key={"t" + t} className="ax" x={pl - 8} y={Y(t) + 4} textAnchor="end">{kAxis(t)}</text>)}
         {byDay.map((d, i) => (i % every === 0 && i < n - Math.ceil(every / 2)) || i === n - 1 ? <text key={d.date} className="ax" x={X(i)} y={H - 6} textAnchor={i === n - 1 ? "end" : "middle"}>{i === n - 1 ? "Today" : d.label}</text> : null)}
-        <path d={`${line} L${X(n - 1)} ${Y(0)} L${X(0)} ${Y(0)} Z`} fill="var(--primary)" opacity="0.1" />
-        <path d={line} fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+        <motion.path key={"a" + n} fill="var(--primary)" initial={{ opacity: 0, d: area }} animate={{ opacity: 0.1, d: area }} transition={{ opacity: { duration: reduce ? 0 : 0.42, delay: reduce ? 0 : 0.7 }, d: move }} />
+        <motion.path key={"l" + n} fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" initial={{ pathLength: reduce ? 1 : 0, d: line }} animate={{ pathLength: 1, d: line }} transition={{ pathLength: { duration: reduce ? 0 : 0.9, ease: [0.45, 0, 0.25, 1] }, d: move }} />
+        <motion.g key={"t" + n} initial={reduce ? false : { scale: 0, opacity: 0, x: tx, y: ty }} animate={{ scale: 1, opacity: 1, x: tx, y: ty }} transition={{ scale: { delay: reduce ? 0 : 0.9, type: "spring", stiffness: 420, damping: 20 }, opacity: { delay: reduce ? 0 : 0.9, duration: 0.16 }, x: move, y: move }}>
+          {gain && !reduce && <motion.circle key={gain.at} r="5" fill="none" stroke="var(--primary)" strokeWidth="2" initial={{ scale: 1, opacity: 0.7 }} animate={{ scale: 3, opacity: 0 }} transition={{ duration: 1.2, ease: "easeOut" }} />}
+          <circle r="4.5" fill="var(--primary)" stroke="var(--surface)" strokeWidth="2" />
+        </motion.g>
         {hover != null && <g><line x1={X(hover)} x2={X(hover)} y1={pt} y2={H - pb} stroke="var(--line-2)" /><circle cx={X(hover)} cy={Y(byDay[hover].recovered)} r="5" fill="var(--primary)" stroke="var(--surface)" strokeWidth="2" /></g>}
       </svg>
+      <AnimatePresence>{gain && <motion.span key={gain.at} className="cs-ov-gain" style={{ left: `${(tx / w) * 100}%`, top: ty - 36, x: "-100%" }} initial={reduce ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: reduce ? 0 : -6 }} transition={{ duration: 0.24, ease: EASE }}>+{fmt.inr(gain.v)}</motion.span>}</AnimatePresence>
       {hover != null && <div className="tip" style={{ left: hover > n / 2 ? `calc(${(X(hover) / w) * 100}% - 184px)` : `calc(${(X(hover) / w) * 100}% + 12px)`, top: 8 }}>
         <b>{hover === n - 1 ? "Today" : byDay[hover].label}</b>
         <div className="tr"><span>Recovered</span><span>{fmt.inr(byDay[hover].recovered)}</span></div>
@@ -144,11 +251,56 @@
       </div>}
     </div>;
   }
-  // the batches in flight at each stop: a bar each, Approve in amber; choosing one lists them in the table
-  function StopBars({ byStop, value, onPick }) {
-    const max = Math.max(1, ...byStop);
-    return <div className="cs-ov-stops" role="group" aria-label="Batches in flight by stop">{STOP_TITLES.map((t, i) => <button key={t} type="button" className={cx("cs-ov-stop", i === 5 && "human", !byStop[i] && "zero")} aria-pressed={value === i} aria-label={`${t}: ${byStop[i]} batch${byStop[i] === 1 ? "" : "es"}. ${value === i ? "Shown in the table" : "Show them in the table"}`} onClick={() => onPick(value === i ? null : i)}>
-      <span>{t}</span><span className="bar" style={{ width: (byStop[i] / max) * 100 + "%" }} /><span className="n">{byStop[i]}</span></button>)}</div>;
+  // Agents at work (SC-49): the nine stops as a route, each with its agent and count, and the latest batches to arrive
+  // there as their clients' marks (three, then a count); Closed today at the end, and the latest run under it. When a
+  // reading moves a batch, its mark travels to its new stop (spring 170/24/1), and the marks that arrived since the last
+  // reading are ringed while their stops light for 1.6 s. Choosing a stop lists its batches in the table
+  const STOP_AGENTS = D.STAGES.map(x => P.AGENTS.filter(a => a.stage === x.id));
+  const markKey = b => b.client + "/" + b.ref;
+  function AgentsAtWork({ d, run, paused, client, value, onPick }) {
+    const reduce = useReducedMotion();
+    // what arrived since the last reading: every mark says when it reached its stop
+    const stops = useMemo(() => d.atStop.concat([d.closedToday.batches]), [d]);
+    const latest = useMemo(() => Math.max(0, ...stops.flat().map(b => Date.parse(b.at))), [stops]);
+    const was = useRef(null); const [moved, setMoved] = useState({ keys: {}, stops: {} });
+    useEffect(() => {
+      const before = was.current; was.current = latest;
+      if (before == null || latest <= before) return;
+      const keys = {}, lit = {};
+      stops.forEach((list, i) => list.forEach(b => { if (Date.parse(b.at) > before) { keys[markKey(b)] = true; lit[i] = true; } }));
+      setMoved({ keys, stops: lit }); const t = setTimeout(() => setMoved({ keys: {}, stops: {} }), 1600); return () => clearTimeout(t);
+    }, [latest]);
+    const ra = run && AGENT(run.agent), rc = run && client(run.client);
+    const token = b => { const c = client(b.client); return <motion.span key={markKey(b)} layoutId={"aw-" + markKey(b)} layout={reduce ? false : "position"} className={cx("cs-aw-tok", moved.keys[markKey(b)] && "moved")} transition={{ layout: { type: "spring", stiffness: 170, damping: 24, mass: 1 } }}><WorkspaceMark ws={c} size={22} /></motion.span>; };
+    const stop = (i, inner, n, more) => <>
+      <span className="toks" aria-hidden="true">{inner}{more > 0 && <span className="more">+{more}</span>}</span>
+      <span className="node" aria-hidden="true">{moved.stops[i] && !reduce && <motion.i className="ping" initial={{ scale: 1, opacity: 0.55 }} animate={{ scale: 2.1, opacity: 0 }} transition={{ duration: 1.2, ease: "easeOut" }} />}<Icon name={i === 9 ? "indian-rupee" : i === 5 ? "hand" : (STOP_AGENTS[i][0] || {}).icon || "bot"} size={16} /></span>
+    </>;
+    return <section className="cs-ov-card cs-aw" aria-labelledby="cs-aw-t">
+      <div className="cs-ov-head"><div><div className="t" id="cs-aw-t">Agents at work</div><div className="s">{d.inFlight} batch{d.inFlight === 1 ? "" : "es"} on the route · each mark is a client's batch, moving as the agents finish · choose a stop to list them</div></div>
+        <span className={cx("cs-aw-state", paused && "paused")}>{paused ? "Paused" : "Moving as readings arrive"}</span></div>
+      <LayoutGroup id="cs-aw">
+        <div className="cs-aw-track" role="group" aria-label="Batches in flight by stop">
+          <i className="cs-aw-rail" aria-hidden="true" />
+          {STOP_TITLES.map((t, i) => { const n = d.byStop[i], list = d.atStop[i], ag = STOP_AGENTS[i], human = i === 5;
+            const who = human ? "You" : ag.length > 1 ? `${ag[0].name} +${ag.length - 1}` : ag[0] ? ag[0].name : "";
+            return <button key={t} type="button" className={cx("cs-aw-stop", human && "human", !n && "zero", moved.stops[i] && "lit")} aria-pressed={value === i}
+              aria-label={`${t}: ${n} batch${n === 1 ? "" : "es"}, ${human ? "waiting for a person" : "with the " + (ag.length > 1 ? ag.map(a => a.name).join(", ") : who)}. ${value === i ? "Shown in the table" : "Show them in the table"}`} onClick={() => onPick(value === i ? null : i)}>
+              {stop(i, list.map(token), n, n - list.length)}
+              <span className="lbl" aria-hidden="true"><b>{t}</b><span>{who}</span></span>
+              <span className="n" aria-hidden="true"><Roll value={n} /></span>
+            </button>; })}
+          <div className={cx("cs-aw-stop end", moved.stops[9] && "lit")} role="img" aria-label={`Closed today: ${d.closedToday.count} batch${d.closedToday.count === 1 ? "" : "es"}, ${fmt.inr(d.closedToday.recovered)} recovered`}>
+            {stop(9, d.closedToday.batches.map(token), d.closedToday.count, d.closedToday.count - d.closedToday.batches.length)}
+            <span className="lbl" aria-hidden="true"><b>Closed today</b><span><Roll value={Math.round(d.closedToday.recovered)} format={v => "₹" + Math.round(v).toLocaleString("en-IN")} /></span></span>
+            <span className="n" aria-hidden="true"><Roll value={d.closedToday.count} /></span>
+          </div>
+        </div>
+      </LayoutGroup>
+      <div className="cs-aw-ticker" aria-live="polite">{run ? <AnimatePresence initial={false}><motion.p key={run.at + run.agent + run.text} initial={reduce ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={reduce ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, y: -10 }} transition={{ duration: 0.24, ease: EASE }}>
+          <span className="mono t-footnote">{run.at}</span><b>{ra ? ra.name : run.agent}</b><span className="who">{rc ? rc.name : run.client}</span><span className="txt">{run.text}</span></motion.p></AnimatePresence>
+        : <p>No runs yet today</p>}</div>
+    </section>;
   }
   function StopSeg({ stage }) { return <span className="cs-ov-seg" aria-hidden="true">{STOP_TITLES.map((_, i) => <i key={i} className={cx(i < stage && "done", i === stage && "now", i === stage && i === 5 && "human")} />)}</span>; }
   const stopText = r => (r.closed ? (r.outcome ? r.outcome[0].toUpperCase() + r.outcome.slice(1) : "Closed") : r.stage === 5 ? "Waiting for a yes" : STOP_TITLES[r.stage]);
@@ -208,11 +360,7 @@
         : <RecoveredChart byDay={d.byDay} height={phone ? 180 : 210} />}
       <div className="cs-ov-foot"><span>{best && best.recovered ? `Highest ${fmt.inr(best.recovered)} on ${best.label}` : "Nothing recovered yet in this range"}{d.recoveredBefore ? ` · ${lakh(d.recoveredBefore)} the ${days} days before` : ""}</span><Button size="sm" variant="link" icon={asTable ? "chart-line" : "file-spreadsheet"} onClick={() => setAsTable(!asTable)}>{asTable ? "Show as a chart" : "Show as a table"}</Button></div>
     </section>;
-    const stops = <section className="cs-ov-card">
-      <div className="cs-ov-head"><div><div className="t">In flight, by stop</div><div className="s">{d.inFlight} batch{d.inFlight === 1 ? "" : "es"} · choose a stop to list them</div></div></div>
-      <StopBars byStop={d.byStop} value={q.status === "in-flight" ? q.stop : null} onPick={i => set({ status: "in-flight", stop: i })} />
-      <div className="cs-ov-foot"><span className="cs-ov-legend"><span><i style={{ background: "var(--primary)" }} />Agents at work</span><span><i style={{ background: "var(--amber)" }} />Waiting for a person</span></span></div>
-    </section>;
+    const agents = <AgentsAtWork d={d} run={s.runs[0]} paused={paused} client={client} value={q.status === "in-flight" ? q.stop : null} onPick={i => set({ status: "in-flight", stop: i })} />;
     const STATUS = [{ id: "in-flight", label: "In flight", n: page.counts.inFlight }, { id: "waiting", label: "Waiting for a yes", n: page.counts.waiting }, { id: "closed", label: "Closed", n: page.counts.closed }];
     const tableTitle = q.stop != null && q.status === "in-flight" ? `At ${STOP_TITLES[q.stop]}` : q.status === "waiting" ? "Waiting for a yes" : q.status === "closed" ? "Closed batches" : "Live batches";
     const tableSub = q.stop != null && q.status === "in-flight" ? `${page.total} batch${page.total === 1 ? "" : "es"} at this stop` : q.status === "closed" ? "What each batch recovered, the newest first" : "Every client's batches in flight, the ones waiting for a yes first";
@@ -259,7 +407,7 @@
     return <Screen title="Overview" sub={`${date} · ${live.length} client${live.length === 1 ? "" : "s"} live${setup ? `, ${setup} setting up` : ""} · ${on} agents on`}>
       <div className="cs-ov">
         {liveBar}{kpis}
-        <div className="cs-ov-two">{trend}{stops}</div>
+        {agents}{trend}
         {batches}
         <div className="cs-ov-three">{lists}</div>
         {phone && <List head="Platform">{NAV.filter(n => n.phoneHidden).map(n => <ListRow key={n.id} icon={n.icon} iconTone="soft" title={n.label} chevron onClick={() => go(n.id)} />)}</List>}
@@ -323,6 +471,7 @@
           </div>
         </div>
         <div className="cs-tabs"><Tabs id="client-tabs" tabs={TABS} value={t} onChange={v => go("clients", c.id, v, true)} /></div>
+        <Loading k={c.id + "/" + t} shape={TAB_SHAPE[t] || "list"} kind="tab">
         {t === "agents" && <AgentsTab c={c} me={me} />}
         {t === "supply" && <SupplyTab c={c} me={me} />}
         {t === "rules" && <RulesTab c={c} me={me} />}
@@ -330,6 +479,7 @@
         {t === "integrations" && <IntegrationsTab c={c} me={me} />}
         {t === "plan" && <PlanTab c={c} me={me} onLive={goLive} />}
         {t === "audit" && <AuditList filter={c.id} />}
+        </Loading>
       </div>
       <Alert open={pause} onClose={() => setPause(false)} title={`Pause every agent for ${c.name}?`} message="Nothing new is detected, priced, listed or sent until you resume. Plans already approved stay where they are." actions={[{ label: "Cancel" }, { label: "Pause", danger: true, strong: true, onClick: () => setAll(false) }]} />
     </Screen>;
@@ -844,7 +994,7 @@
   const TITLES = { overview: "Overview", clients: "Clients", "new-client": "New client", agents: "Agents", connectors: "Connectors", plans: "Plans", staff: "Staff", audit: "Audit log" };
   function App() {
     const [session, setSession] = useState(readSession); const [route, go] = useHashRoute(); const s = usePlatform();
-    const [acct, setAcct] = useState(false); const reduce = useReducedMotion(); const top = useRef(null);
+    const [acct, setAcct] = useState(false); const top = useRef(null);
     const me = session && s.staff.find(x => x.id === session.uid && x.status === "active");
     const client = route.name === "clients" && route.id ? s.clients.find(c => c.id === route.id) : null;
     useEffect(() => { document.title = me ? `${client ? client.name : TITLES[route.name] || "Overview"} · Smart-Clearance Console` : "Sign in · Smart-Clearance Console"; }, [me && me.id, route.name, client && client.name]);
@@ -858,8 +1008,8 @@
     return <>
       <Shell nav={nav} current={name === "new-client" ? "clients" : name} onNav={id => go(id)} user={{ name: me.name, role: me.role, org: "Smart-Clearance" }} onUser={() => setAcct(true)}
         brand={<><Mark size={32} /><span className="cs-brand"><Wordmark size={17} /><span className="cs-brand-sub">Console</span></span></>}>
-        {/* each route fades in; there is no exit animation, so a route change can never wait on the old screen */}
-        <motion.div key={name + (route.id || "")} ref={top} initial={reduce ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}>{screen}</motion.div>
+        {/* each screen loads under the route (SC-49); there is no exit animation, so a route change never waits on the old screen */}
+        <div ref={top}><Loading k={name + (route.id || "")} shape={client ? "client" : SCREEN_SHAPE[name] || "list"} kind="screen" title={client ? client.name : TITLES[name]}>{screen}</Loading></div>
       </Shell>
       <AccountSheet open={acct} onClose={() => setAcct(false)} me={me} onOut={() => { setAcct(false); writeSession(null); setSession(null); history.replaceState(null, "", location.pathname + location.search); }} />
     </>;

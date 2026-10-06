@@ -1,11 +1,11 @@
-import { test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { scan, report, type Finding } from './helpers';
 
 // The console at console.smartclearance.com: the staff sign-in and every screen, seeded with Munchly Foods,
 // plus the states a super admin opens most: an agent's settings and the new-client steps.
 const CONSOLE = '/console/Smart-Clearance%20console%20v3.html';
 
-async function open(page, route: string | null) {
+async function open(page, route: string | null, query = '') {
   await page.addInitScript(([signed]) => {
     try {
       if (!sessionStorage.getItem('sc3-a11y-console')) { localStorage.removeItem('sc3-platform'); sessionStorage.setItem('sc3-a11y-console', '1'); }
@@ -13,9 +13,11 @@ async function open(page, route: string | null) {
       else localStorage.removeItem('sc3-console-session');
     } catch (e) { /* storage blocked */ }
   }, [route !== null]);
-  await page.goto(CONSOLE + (route ? '#/' + route : ''));
+  await page.goto(CONSOLE + query + (route ? '#/' + route : ''));
   await page.waitForFunction(() => (window as any).SC3_PLATFORM && document.querySelector('#root')?.childElementCount);
-  await page.waitForTimeout(700);
+  // each screen is read first (SC-49): wait for its placeholders to give way, and for the content to rise into place
+  await page.waitForFunction(() => !document.querySelector('.cs-load'));
+  await page.waitForTimeout(900);
 }
 
 const ROUTES = ['overview', 'clients', 'clients/munchly/agents', 'clients/munchly/supply', 'clients/munchly/rules', 'clients/munchly/people',
@@ -91,6 +93,25 @@ test('console · an SKU\'s gates and a batch override', async ({ page }, testInf
   await page.getByRole('button', { name: 'Save gates' }).click();
   await page.getByRole('alert').first().waitFor();
   findings.push(...await scan(page, 'console · an SKU with its own gates, out of bounds'));
+  await report(testInfo, findings);
+});
+
+// SC-49: Sign in keeps its label while it checks, then welcomes; a tab loads under the route, over its placeholders
+test('console · Sign in while it checks, and a tab loading', async ({ page }, testInfo) => {
+  await open(page, null, '?read=4000');
+  await page.getByLabel('Work email').fill('neha.kulkarni@smartclearance.com');
+  await page.getByLabel('Password', { exact: true }).fill('anything');
+  await page.getByRole('button', { name: 'Sign in' }).click();
+  await expect(page.locator('.cs-si-btn')).toContainText('Signing in…');
+  const findings: Finding[] = [...await scan(page, 'console sign-in · signing in')];
+  await page.locator('.cs-si-btn', { hasText: 'Welcome, Neha' }).waitFor({ state: 'attached' });
+  await expect(page.getByRole('status').filter({ hasText: 'Loading Overview' })).toBeAttached();
+  findings.push(...await scan(page, 'console · the Overview loading'));
+  await page.getByRole('heading', { level: 1, name: 'Overview' }).waitFor({ timeout: 8000 });
+  await page.evaluate(() => { location.hash = '#/clients/munchly/agents'; });
+  await page.getByRole('tab', { name: 'Supply chain' }).click({ timeout: 8000 });
+  await expect(page.getByRole('status').filter({ hasText: 'Loading the tab' })).toBeAttached();
+  findings.push(...await scan(page, 'console · a tab loading'));
   await report(testInfo, findings);
 });
 

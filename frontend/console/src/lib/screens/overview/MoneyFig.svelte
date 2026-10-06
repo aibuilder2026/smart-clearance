@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { fmt } from '@smart-clearance/core';
-	// a big rupee figure: the symbol set small and high, the digits read out once
+	import { fmt, Roll } from '@smart-clearance/core';
+	// a big rupee figure: the symbol set small and high, the digits rolling to their value (SC-49), read out once
 	let { value }: { value: number } = $props();
 </script>
 
-<span class="cur" aria-hidden="true">₹</span><span aria-hidden="true">{Math.round(value).toLocaleString('en-IN')}</span
-><span class="sr-only">{fmt.inr(value)}</span>
+<span class="cur" aria-hidden="true">₹</span><Roll value={Math.round(value)} from={0} hidden /><span class="sr-only"
+	>{fmt.inr(value)}</span
+>

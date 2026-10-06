@@ -380,7 +380,7 @@ class Batch(Base):
 
     Its quick-commerce gates may be overridden for it alone, with the reason, who and when (SC-47); empty values keep
     its SKU's. When it closes, the gates it was judged by are kept (judged_*). Agents read every open batch's gates
-    from the view sc.batch_gates.
+    from the view sc.batch_gates. stage_at is when it reached the stop it is at (SC-49).
     """
 
     __tablename__ = "batches"
@@ -393,6 +393,12 @@ class Batch(Base):
         ),
         ForeignKeyConstraint(["client_id", "sku_id"], ["skus.client_id", "skus.id"]),
         ForeignKeyConstraint(["client_id", "distributor_id"], ["distributors.client_id", "distributors.id"]),
+        Index(
+            "ix_batches_open_stage_at",
+            "stage_current",
+            sql("stage_at DESC"),
+            postgresql_where=sql("closed_at IS NULL"),
+        ),
     )
     client_id: Mapped[str] = mapped_column(ForeignKey("clients.id"), primary_key=True)
     ref: Mapped[str] = mapped_column(Text, primary_key=True)
@@ -406,6 +412,8 @@ class Batch(Base):
     split: Mapped[str | None] = mapped_column(Text)
     recovered: Mapped[float] = mapped_column(MONEY, server_default="0")
     opened_at: Mapped[datetime] = mapped_column(TS)
+    # when it reached the stop it is at (SC-49): stamped as it opens, moves on and closes
+    stage_at: Mapped[datetime] = mapped_column(TS)
     closed_at: Mapped[datetime | None] = mapped_column(TS)
     outcome: Mapped[str | None] = mapped_column(Text)
     best_before: Mapped[date | None] = mapped_column(Date)

@@ -38,4 +38,21 @@ and a client page.
 
 ## The pick
 
-Pending: asked on the board, `SC-49 design review.html` in platform v3.
+**A · The route**, picked by the maintainer on 6 Oct 2026 from the board (`SC-49 design review.html` in platform v3).
+
+What the build carries:
+
+- **Loading:** the route and its pin along the top of each screen and tab as it loads, over placeholders in the shape
+  of what is coming, with one green wash crossing them; the content rises into place. In the build the loader starts
+  from SvelteKit's `navigating`, so a click is answered at once.
+- **Sign in:** keeps its label. "Signing in…" while it checks, with the mark's S drawing in the icon's place and a
+  line along the foot; then "Welcome, <first name>" with a tick. A wrong sign-in shakes the button (360 ms) before the
+  message.
+- **Overview:** the figures roll; the sparklines and the recovered-by-day chart draw once, and a reading moves them and
+  marks what today gained. **Agents at work** takes the place of "In flight, by stop": the nine stops on a route, each
+  batch its client's mark (three at most, then a count), travelling as the agents finish, with Closed today at the end
+  and the latest run underneath. Choosing a stop still lists its batches in the table.
+- **Data:** `batches.stage_at` records when a batch last moved; the dashboard sends each stop's latest batches and
+  today's closed ones.
+
+The open question on the board (reading more often than every 30 s) was not answered, so the build keeps 30 s.

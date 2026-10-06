@@ -5,7 +5,7 @@
 (function () {
   const D = window.SC3_DATA, M = window.SC3_MONEY, AppStore = window.SC3_STORE;
   const R = M.RULES;
-  const KEY = "sc3-platform", VERSION = 2;
+  const KEY = "sc3-platform", VERSION = 3;
 
   /* ---------- Smart-Clearance's own people (fictional) ---------- */
   const STAFF = [
@@ -196,6 +196,11 @@
     const runsToday = s.runs.filter(r => !client || r.client === client).length;
     const open = bs.filter(b => !b.closedAt);
     const byStop = Array(9).fill(0); open.forEach(b => { byStop[Math.min(b.current, 8)] += 1; });
+    // the batches at each stop, the latest to arrive first (three a stop), and the ones closed today (SC-49)
+    const seqOf = new Map(bs.map((b, i) => [b, i])), mark = b => ({ client: b.client, ref: b.ref, at: b.closedAt || b.stageAt || b.openedAt });
+    const latest = at => (x, y) => Date.parse(at(y)) - Date.parse(at(x)) || seqOf.get(x) - seqOf.get(y);
+    const atStop = byStop.map((_, i) => open.filter(b => Math.min(b.current, 8) === i).sort(latest(b => b.stageAt || b.openedAt)).slice(0, 3).map(mark));
+    const shut = bs.filter(b => b.closedAt && istDay(b.closedAt) === today).sort(latest(b => b.closedAt));
     const waiting = open.filter(b => b.current === APPROVE).sort((a, b) => Date.parse(a.openedAt) - Date.parse(b.openedAt));
     const r2 = v => Math.round(v * 100) / 100;
     const t = new Date(now + IST_MS);
@@ -205,7 +210,8 @@
       byDay: range.map(d => ({ date: d, label: dayLabel(d), recovered: r2(rec[d] || 0), closed: (closed[d] || [0])[0], units: (closed[d] || [0, 0])[1], runs: d === today ? runsToday : 0 })),
       inFlight: open.length, inFlightClients: new Set(open.map(b => b.client)).size,
       inFlightSeries: range.map(d => { const cut = d < today ? dayEnd(d) : Math.min(now, dayEnd(d)); return bs.filter(b => Date.parse(b.openedAt) <= cut && (!b.closedAt || Date.parse(b.closedAt) > cut)).length; }),
-      waiting: waiting.length, runsToday, byStop,
+      waiting: waiting.length, runsToday, byStop, atStop,
+      closedToday: { count: shut.length, recovered: r2(shut.reduce((t, b) => t + b.recovered, 0)), batches: shut.slice(0, 3).map(mark) },
     };
     if (waiting.length) { const w = waiting[0], c = s.clients.find(x => x.id === w.client); out.oldestWaiting = { hours: Math.floor((now - Date.parse(w.openedAt)) / 3600000), client: c ? c.name : w.client }; }
     return out;
@@ -297,15 +303,16 @@
 
   /* ---------- the day the console opens on (synthetic, consistent with the story) ---------- */
   const TRACKS = [
-    { client: "munchly", batch: "MF-2409-117", sku: "chips", distributor: "rakesh", done: 8, current: 8, note: "Report waits for the return window", money: D.ACTUAL.net },
-    { client: "munchly", batch: "MF-2410-118", sku: "mango", distributor: "lakshmi", done: 6, current: 6, split: "1,372 to kiranas · 150 staff sale · 58 food bank" },
+    { client: "munchly", batch: "MF-2409-117", sku: "chips", distributor: "rakesh", done: 8, current: 8, note: "Report waits for the return window", money: D.ACTUAL.net, stageAt: "2026-10-05T18:10:00+05:30" },
+    { client: "munchly", batch: "MF-2410-118", sku: "mango", distributor: "lakshmi", done: 6, current: 6, split: "1,372 to kiranas · 150 staff sale · 58 food bank", stageAt: "2026-10-06T09:40:00+05:30" },
   ];
   // Munchly's batches the Watcher sees, from the app's own seed: the two on the move (TRACKS), the rest at Detect. One
-  // carries a gate override, the deal Zepto's Pune warehouse agreed to (illustrative)
+  // carries a gate override, the deal Zepto's Pune warehouse agreed to (illustrative). stageAt is when a batch reached
+  // the stop it is at (SC-49): Overview's agents show the latest arrivals at each stop first
   const BATCHES = D.BATCHES.map(b => {
-    const t = TRACKS.find(x => x.batch === b.id);
+    const t = TRACKS.find(x => x.batch === b.id), openedAt = "2026-10-02T09:00:00+05:30";
     return { client: "munchly", ref: b.id, sku: b.sku, distributor: b.distributor, units: b.units, bestBefore: b.bestBefore, done: t ? t.done : 1, current: t ? t.current : 1,
-      openedAt: "2026-10-02T09:00:00+05:30", recovered: t && t.money ? t.money : 0 };
+      openedAt, stageAt: t && t.stageAt ? t.stageAt : openedAt, recovered: t && t.money ? t.money : 0 };
   });
   BATCHES.find(b => b.ref === "MF-2409-204").override = { qcomPct: 30, reason: "Zepto's Pune warehouse agreed to take this lot at 30% of its life", by: "Neha Kulkarni", at: "4 Oct, 16:20", setAt: "2026-10-04T16:20:00+05:30" };
   const RUNS = [

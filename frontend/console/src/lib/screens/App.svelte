@@ -1,29 +1,34 @@
 <script lang="ts">
 	import type { Catalog, ConsoleConfig, SignInInput, Staff } from '@smart-clearance/api/console';
-	import { Mark, Shell, Wordmark, ease, motionMs, useNotice } from '@smart-clearance/core';
+	import { Mark, Shell, Wordmark, useNotice } from '@smart-clearance/core';
 	import { createQuery } from '@tanstack/svelte-query';
 	import type { Snippet } from 'svelte';
-	import { afterNavigate, refreshAll } from '$app/navigation';
-	import { page } from '$app/state';
+	import { afterNavigate, beforeNavigate, refreshAll } from '$app/navigation';
+	import { navigating, page } from '$app/state';
 	import { api } from '#lib/api/client.ts';
 	import { clientsQuery, meQuery, queryClient } from '#lib/api/queries.ts';
 	import { Console, provideConsole } from '#lib/console.svelte.ts';
 	import type { RouteName } from '#lib/links.ts';
 	import { NAV, TITLES } from '#lib/nav.ts';
 	import AccountSheet from './AccountSheet.svelte';
+	import Screen from './Screen.svelte';
 	import SignIn from './SignIn.svelte';
+	import Placeholder from './loading/Placeholder.svelte';
+	import RouteBar from './loading/RouteBar.svelte';
+	import { SCREEN_SHAPE, SLOW_MS, type Shape } from './loading/shapes.ts';
 
 	// the console: the sign-in until a staff member is in, then the shell with the screen the address names. Each screen
-	// fades in as it opens, and starts at its top
+	// starts at its top, and loads under the route (SC-49): the route draws along the top as soon as a link is followed,
+	// the screen's shape shows if its read takes a moment, and the content rises into place
 	type Props = { me: Staff | null; config: ConsoleConfig; catalog: Catalog; children: Snippet };
 	let { me, config, catalog, children }: Props = $props();
 
 	// svelte-ignore state_referenced_locally (the platform's description is read once a session)
 	provideConsole(new Console(config, catalog, useNotice(), () => me!));
 
-	const name = $derived<RouteName | null>(
-		page.route.id === '/' ? 'overview' : ((page.route.id?.split('/')[1] as RouteName | undefined) ?? null)
-	);
+	const nameOf = (route: string | null | undefined): RouteName | null =>
+		route === '/' ? 'overview' : ((route?.split('/')[1] as RouteName | undefined) ?? null);
+	const name = $derived(nameOf(page.route.id));
 	const id = $derived(name === 'clients' ? (page.params.id ?? null) : null);
 	const clients = createQuery(() => ({ ...clientsQuery(), enabled: !!me }));
 	const client = $derived(id ? clients.data?.find((c) => c.id === id) : undefined);
@@ -40,14 +45,39 @@
 		const key = (r: typeof to) => (r ? `${r.route.id}|${r.params?.id ?? ''}` : '');
 		if (from && key(from) !== key(to)) document.getElementById('main')?.scrollTo(0, 0);
 	});
-	const enter = (_: Element) => ({
-		duration: motionMs(180),
-		easing: ease,
-		css: (t: number) => `opacity: ${t}; transform: translateY(${(1 - t) * 6}px)`
+	// a new screen is being read: the route starts at once (a new one each time), the shape after SLOW_MS
+	let run = $state(1);
+	let reading = $state<{ title: string; shape: Shape } | null>(null);
+	let slow = $state(false);
+	let timer: ReturnType<typeof setTimeout> | undefined;
+	beforeNavigate(({ to, willUnload }) => {
+		const next = nameOf(to?.route.id);
+		if (willUnload || !next) return;
+		const nextId = next === 'clients' ? (to?.params?.id ?? null) : null;
+		if (next === name && nextId === id) return; // the same screen: a tab or a filter, which the screen handles
+		const c = nextId ? clients.data?.find((x) => x.id === nextId) : undefined;
+		reading = {
+			title: c ? c.name : TITLES[next],
+			shape: nextId ? 'client' : (SCREEN_SHAPE[next] ?? 'list')
+		};
+		run += 1;
+		slow = false;
+		clearTimeout(timer);
+		timer = setTimeout(() => (slow = true), SLOW_MS);
+	});
+	const settle = () => {
+		reading = null;
+		slow = false;
+		clearTimeout(timer);
+	};
+	afterNavigate(settle);
+	$effect(() => {
+		if (!navigating.to && reading) settle(); // a navigation that was cancelled or went nowhere
 	});
 
-	async function signIn(input: SignInInput) {
-		const staff = await api.signIn(input);
+	// signing in: the check, then, once Sign in has said who is in, the console
+	const check = (input: SignInInput) => api.signIn(input);
+	async function enter(staff: Staff) {
 		queryClient.setQueryData(meQuery().queryKey, staff);
 		await refreshAll();
 	}
@@ -68,7 +98,7 @@
 <svelte:head><title>{title}</title></svelte:head>
 
 {#if !me}
-	<SignIn onin={signIn} />
+	<SignIn {check} {enter} />
 {:else}
 	{#snippet brand()}<Mark size={32} /><span class="cs-brand"
 			><Wordmark size={17} /><span class="cs-brand-sub">Console</span></span
@@ -80,7 +110,12 @@
 		onuser={() => (account = true)}
 		{brand}
 	>
-		{#key `${name}|${id ?? ''}`}<div in:enter>{@render children()}</div>{/key}
+		<div class="cs-loading">
+			{#key run}<RouteBar done={!reading} />{/key}
+			{#if reading && slow}<Screen title={reading.title}
+					><Placeholder shape={reading.shape} label={reading.title} /></Screen
+				>{:else}{#key `${name}|${id ?? ''}`}<div class="cs-in" data-kind="screen">{@render children()}</div>{/key}{/if}
+		</div>
 	</Shell>
 	<AccountSheet bind:open={account} onout={signOut} />
 {/if}

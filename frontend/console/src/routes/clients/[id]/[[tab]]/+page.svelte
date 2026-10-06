@@ -2,8 +2,8 @@
 	import type { ClientTab } from '@smart-clearance/api/console';
 	import { Alert, Badge, Button, Card, Empty, Icon, Tabs, useApp, WorkspaceMark } from '@smart-clearance/core';
 	import { createQuery } from '@tanstack/svelte-query';
-	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
+	import { afterNavigate, beforeNavigate, goto } from '$app/navigation';
+	import { navigating, page } from '$app/state';
 	import { api } from '#lib/api/client.ts';
 	import { clientQuery } from '#lib/api/queries.ts';
 	import { useConsole } from '#lib/console.svelte.ts';
@@ -16,6 +16,9 @@
 	import RulesTab from '#lib/screens/client/RulesTab.svelte';
 	import SupplyTab from '#lib/screens/client/SupplyTab.svelte';
 	import ClientStatus from '#lib/screens/ClientStatus.svelte';
+	import Placeholder from '#lib/screens/loading/Placeholder.svelte';
+	import RouteBar from '#lib/screens/loading/RouteBar.svelte';
+	import { SLOW_MS, TAB_SHAPE } from '#lib/screens/loading/shapes.ts';
 	import MoreMenu from '#lib/screens/MoreMenu.svelte';
 	import Screen from '#lib/screens/Screen.svelte';
 
@@ -37,6 +40,32 @@
 	const tab = $derived<ClientTab>(TABS.find((t) => t.id === page.params.tab)?.id ?? 'agents');
 	const allOff = $derived(c ? k.agentsOn(c) === 0 : false);
 	let pause = $state(false);
+
+	// another tab is being read (SC-49): the route runs under the tabs at once, the tab's shape after SLOW_MS. The first
+	// tab arrives with the page, under the screen's own route
+	let run = $state(0);
+	let next = $state<ClientTab | null>(null);
+	let slow = $state(false);
+	let timer: ReturnType<typeof setTimeout> | undefined;
+	beforeNavigate(({ to }) => {
+		if (to?.route.id !== page.route.id || to.params?.id !== id) return;
+		const t = TABS.find((x) => x.id === to.params?.tab)?.id ?? 'agents';
+		if (t === tab) return;
+		next = t;
+		run += 1;
+		slow = false;
+		clearTimeout(timer);
+		timer = setTimeout(() => (slow = true), SLOW_MS);
+	});
+	const settle = () => {
+		next = null;
+		slow = false;
+		clearTimeout(timer);
+	};
+	afterNavigate(settle);
+	$effect(() => {
+		if (!navigating.to && next) settle();
+	});
 
 	const back = () => goto(href('clients'));
 	const show = (t: ClientTab) => goto(href('clients', id, t), { replace: true, reset: false });
@@ -91,13 +120,19 @@
 				</div>
 			</div>
 			<div class="cs-tabs"><Tabs tabs={TABS} value={tab} onchange={show} /></div>
-			{#if tab === 'agents'}<AgentsTab {c} />
-			{:else if tab === 'supply'}<SupplyTab {c} />
-			{:else if tab === 'rules'}<RulesTab {c} />
-			{:else if tab === 'people'}<PeopleTab {c} />
-			{:else if tab === 'integrations'}<IntegrationsTab {c} />
-			{:else if tab === 'plan'}<PlanTab {c} onlive={goLive} />
-			{:else}<AuditList filter={c.id} />{/if}
+			<div class="cs-loading">
+				{#if run}{#key run}<RouteBar done={!next} />{/key}{/if}
+				{#if next && slow}<Placeholder shape={TAB_SHAPE[next]} label="the tab" />
+				{:else}{#key tab}<div class="cs-in" data-kind="tab">
+							{#if tab === 'agents'}<AgentsTab {c} />
+							{:else if tab === 'supply'}<SupplyTab {c} />
+							{:else if tab === 'rules'}<RulesTab {c} />
+							{:else if tab === 'people'}<PeopleTab {c} />
+							{:else if tab === 'integrations'}<IntegrationsTab {c} />
+							{:else if tab === 'plan'}<PlanTab {c} onlive={goLive} />
+							{:else}<AuditList filter={c.id} />{/if}
+						</div>{/key}{/if}
+			</div>
 		</div>
 		<Alert
 			bind:open={pause}

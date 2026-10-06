@@ -124,3 +124,63 @@ async def test_the_api_answers_what_platform_js_answers(api, neha):
     for case in fixtures["batchPages"]:
         got = (await api.get(B, params=case["query"], headers=neha)).json()
         assert got == case["page"], case["query"]
+
+
+async def test_agents_at_work_shows_the_latest_arrivals_at_each_stop(api, neha):
+    """SC-49: the latest three batches to arrive at each stop, and today's closed ones (none yet on the story's day)"""
+    d = (await api.get(f"{D}?days=7", headers=neha)).json()
+    assert [len(x) for x in d["atStop"]] == [0, 3, 0, 0, 0, 0, 1, 0, 1]
+    assert d["atStop"][6] == [{"client": "munchly", "ref": "MF-2410-118", "at": "2026-10-06T09:40:00+05:30"}]
+    assert d["atStop"][8] == [{"client": "munchly", "ref": "MF-2409-117", "at": "2026-10-05T18:10:00+05:30"}]
+    assert {x["at"] for x in d["atStop"][1]} == {"2026-10-02T09:00:00+05:30"}, "the rest wait where they were flagged"
+    assert d["closedToday"] == {"count": 0, "recovered": 0, "batches": []}
+
+
+async def test_an_agent_moves_a_batch_on_and_it_arrives_first(api, neha, ctx, clock):
+    from sqlalchemy import select
+
+    from sc_api import models as m
+
+    clock.advance(minutes=5)
+    assert await supply.advance_batch(ctx, "munchly", "MF-2409-415", "MF-2409-415: label photo asked for") == 2
+    b = await ctx.session.get(m.Batch, ("munchly", "MF-2409-415"))
+    assert (b.stage_current, b.stage_done, b.stage_at) == (2, 2, clock.now())
+    run = (await ctx.session.execute(select(m.AgentRun).order_by(m.AgentRun.id.desc()).limit(1))).scalar_one()
+    assert (run.agent_id, run.text, run.ran_at) == ("watcher", "MF-2409-415: label photo asked for", clock.now())
+    clock.advance(minutes=5)
+    await supply.advance_batch(ctx, "munchly", "MF-2408-209", "MF-2408-209: label photo asked for")
+    d = (await api.get(f"{D}?days=7", headers=neha)).json()
+    assert d["byStop"][:3] == [0, 5, 2]
+    assert [x["ref"] for x in d["atStop"][2]] == ["MF-2408-209", "MF-2409-415"], "the latest to arrive first"
+
+
+async def test_a_batch_waits_at_approve_and_closes_from_report(ctx):
+    import pytest
+
+    from sc_api.errors import ApiError
+
+    await supply.open_batch(
+        ctx,
+        "munchly",
+        ref="MF-2410-500",
+        sku="poha",
+        distributor="patil",
+        units=300,
+        done=5,
+        current=5,
+        best_before=ctx.clock.today(),
+    )
+    with pytest.raises(ApiError, match="waits for a person's yes"):
+        await supply.advance_batch(ctx, "munchly", "MF-2410-500", "moved")
+    with pytest.raises(ApiError, match="closes with what it recovered"):
+        await supply.advance_batch(ctx, "munchly", "MF-2409-117", "moved")
+
+
+async def test_closed_today_counts_what_closed_today(api, neha, ctx, clock):
+    await supply.close_batch(ctx, "munchly", "MF-2410-402", recovered=31_500, outcome="cleared")
+    clock.advance(minutes=10)
+    await supply.close_batch(ctx, "munchly", "MF-2409-117", recovered=21_152.4, outcome="cleared")
+    d = (await api.get(f"{D}?days=7", headers=neha)).json()
+    assert d["closedToday"]["count"] == 2 and d["closedToday"]["recovered"] == 52_652.4
+    assert [x["ref"] for x in d["closedToday"]["batches"]] == ["MF-2409-117", "MF-2410-402"], "the latest first"
+    assert d["atStop"][8] == []

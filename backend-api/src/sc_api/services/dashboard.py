@@ -5,6 +5,7 @@ Every figure is an aggregate over batches, agent_runs and clients at the moment 
 
 - A batch's recovery counts on the day it closed, or, while it is still open past Settle, on the day it was flagged.
 - A batch is in flight from the moment it is flagged until it closes; it waits for a yes at Approve, the sixth stop.
+- Agents at work (SC-49) draws the latest three batches to arrive at each stop (by stage_at), and today's closed ones.
 - Days are India's days, from the clock (the hydrate CLI's and the tests' clocks are simulated).
 """
 
@@ -17,17 +18,33 @@ from sc_api import models as m
 from sc_api.domain.clock import IST
 from sc_api.domain.display import day_month, hhmm
 from sc_api.errors import ApiError
-from sc_api.schemas import BatchCounts, BatchPage, BatchQuery, BatchRow, Dashboard, DayFigures, Waiting
+from sc_api.schemas import (
+    BatchCounts,
+    BatchMark,
+    BatchPage,
+    BatchQuery,
+    BatchRow,
+    ClosedToday,
+    Dashboard,
+    DayFigures,
+    Waiting,
+)
 from sc_api.services.context import Ctx
 
 APPROVE = 5  # the stop where a person says yes (0-based, as stage_current)
 STOPS = 9
+SHOWN = 3  # the batches Agents at work draws at each stop, the latest to arrive first (SC-49)
 RANGES = (7, 30, 90)
 SIZES = (8, 16, 32)
 
 
 def _start(d: date) -> datetime:
     return datetime.combine(d, time(0), IST)
+
+
+# a moment as India's ISO time, as design3's mock writes it: "2026-10-02T09:00:00+05:30"
+def _iso(at: datetime) -> str:
+    return at.astimezone(IST).isoformat()
 
 
 # India's date of a timestamp; the zone is a literal, so a GROUP BY sees the same expression as the SELECT
@@ -104,12 +121,27 @@ async def dashboard(ctx: Ctx, days: int, client: str | None = None) -> Dashboard
         in_flight_series.append(sum(1 for o, c in spans if o <= cut and (c is None or c > cut)))
 
     open_rows = (
-        await s.execute(select(B.client_id, B.stage_current, B.opened_at).where(B.closed_at.is_(None), *mine))
+        await s.execute(
+            select(B.client_id, B.stage_current, B.opened_at, B.ref, B.stage_at)
+            .where(B.closed_at.is_(None), *mine)
+            .order_by(B.stage_at.desc(), B.seq)
+        )
     ).all()
     by_stop = [0] * STOPS
-    for _, stage, _ in open_rows:
-        by_stop[min(stage, STOPS - 1)] += 1
-    waiting = sorted((o, c) for c, stage, o in open_rows if stage == APPROVE)
+    at_stop: list[list[BatchMark]] = [[] for _ in range(STOPS)]
+    for cid, stage, _, ref, arrived in open_rows:
+        i = min(stage, STOPS - 1)
+        by_stop[i] += 1
+        if len(at_stop[i]) < SHOWN:
+            at_stop[i].append(BatchMark(client=cid, ref=ref, at=_iso(arrived)))
+    shut = (
+        await s.execute(
+            select(B.client_id, B.ref, B.recovered, B.closed_at)
+            .where(B.closed_at >= _start(today), B.closed_at < end, *mine)
+            .order_by(B.closed_at.desc(), B.seq)
+        )
+    ).all()
+    waiting = sorted((o, c) for c, stage, o, _, _ in open_rows if stage == APPROVE)
     oldest = None
     if waiting:
         at, cid = waiting[0]
@@ -133,12 +165,18 @@ async def dashboard(ctx: Ctx, days: int, client: str | None = None) -> Dashboard
             for d in range_days
         ],
         in_flight=len(open_rows),
-        in_flight_clients=len({c for c, _, _ in open_rows}),
+        in_flight_clients=len({c for c, *_ in open_rows}),
         in_flight_series=in_flight_series,
         waiting=len(waiting),
         **({"oldest_waiting": oldest} if oldest else {}),
         runs_today=runs.get(today, 0),
         by_stop=by_stop,
+        at_stop=at_stop,
+        closed_today=ClosedToday(
+            count=len(shut),
+            recovered=round(sum(float(r) for _, _, r, _ in shut), 2),
+            batches=[BatchMark(client=c, ref=ref, at=_iso(at)) for c, ref, _, at in shut[:SHOWN]],
+        ),
     )
 
 

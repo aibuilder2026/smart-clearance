@@ -53,7 +53,7 @@ bash 3.2 and shellcheck-clean.
 | `secrets.sh [--rotate]` | Generates each secret (24 letters and digits, to the password policy) straight into Secret Manager on stdin. `--rotate` makes new versions, re-applies the database passwords and puts every account still on the default password onto the new one. |
 | `db-init.sh [--container NAME] [--db NAME]` | Makes the database, the roles `sc_owner` and `sc_app`, and the logins `sc_migrator` and `sc_api`. It runs as the superuser over the container's own socket; the logins' passwords go in on stdin from Secret Manager. Safe to re-run. |
 | `migrate.sh [alembic args]` | Alembic as `sc_migrator`, then the reference data (`sc-admin migrate`) |
-| `hydrate.sh [--reset] [--tick] [--seed N] [--clients N] [--staff N] [--days N] [--no-demo-story]` | The synthetic world (below), 35 days of it by default. `--reset` drops the schema and rebuilds; `--tick` adds today's agent runs. |
+| `hydrate.sh [--reset] [--tick] [--seed N] [--clients N] [--staff N] [--days N] [--no-demo-story]` | The synthetic world (below), 35 days of it by default. `--reset` drops the schema and rebuilds; `--tick` adds today's agent runs and moves two to four open batches on a stop, as their agents would (SC-49), so the Overview's Agents at work has something to show. |
 | `default-password.sh [--copy]` | The default password, in your terminal or on the clipboard |
 | `dev.sh` | The API with reload, as `sc-api-local` |
 | `up.sh [--with-db]` | The API in its container (`compose.yaml`). `--with-db` also starts a Postgres 18 of its own for a machine without one. |
@@ -100,6 +100,9 @@ One database, `smart_clearance`, schema `sc` (`src/sc_api/models.py`, `migration
   - A batch is in flight from being flagged until it closes, and waits for a yes at Approve.
   - In flight is valued at MRP (units x MRP); past Settle, by what it recovered.
   - `rules.json` carries design3's answers on Munchly's day, and a test holds the API to them.
+  - Agents at work (SC-49) reads `batches.stage_at`, when each batch reached the stop it is at. The services stamp it
+    as a batch opens, moves on (`supply.advance_batch`, which records the agent's run) and closes. A batch at Approve
+    waits for a person; one at Report closes with what it recovered.
 - **The reference data** is design3's: `frontend/scripts/seed.mjs` writes `src/sc_api/reference/` alongside the
   frontend's seed, and `seed:check` fails if it drifts. `rbac.json` (roles and permissions) is written by hand.
 
@@ -146,7 +149,7 @@ The routes and shapes are `frontend/api/src/types/*.ts`, field for field:
 | `GET /v1/console/clients/{id}/batches[?sku=]` | staff | a client's open batches and their gates, as the agents read them (SC-47) |
 | `PUT /v1/console/clients/{id}/skus/{sku}/gates` `{ gates }` | staff, `clients.configure` | an SKU's own gates, or `null` for the client's default |
 | `PUT`, `DELETE /v1/console/clients/{id}/batches/{ref}/override` | staff, `clients.configure` | one open batch's gates with its reason, or back on its SKU's |
-| `GET /v1/console/dashboard?days=7\|30\|90[&client=]` | staff | the Overview's figures over a range (SC-48): recovered by day and the range before, batches in flight (and at the end of each day), at each stop, waiting for a yes (and the oldest), runs |
+| `GET /v1/console/dashboard?days=7\|30\|90[&client=]` | staff | the Overview's figures over a range (SC-48): recovered by day and the range before, batches in flight (and at the end of each day), at each stop, waiting for a yes (and the oldest), runs; and for Agents at work (SC-49), the latest three batches to arrive at each stop and today's closed batches, each with when it arrived |
 | `GET /v1/console/batches?status&client&stop&q&sort&dir&page&size` | staff | every client's batches a page at a time (8, 16 or 32), with the counts for in flight, waiting and closed |
 
 The server also enforces what the prototype's mock did not:

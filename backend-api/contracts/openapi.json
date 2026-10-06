@@ -391,6 +391,31 @@
         "title": "BatchGates",
         "type": "object"
       },
+      "BatchMark": {
+        "additionalProperties": false,
+        "description": "a batch as Agents at work draws it: its client's mark, keyed by the batch, and when it reached its stop (or\nclosed) in India's time, so a reading can tell what arrived since the last (SC-49)",
+        "properties": {
+          "at": {
+            "title": "At",
+            "type": "string"
+          },
+          "client": {
+            "title": "Client",
+            "type": "string"
+          },
+          "ref": {
+            "title": "Ref",
+            "type": "string"
+          }
+        },
+        "required": [
+          "client",
+          "ref",
+          "at"
+        ],
+        "title": "BatchMark",
+        "type": "object"
+      },
       "BatchOverride": {
         "additionalProperties": false,
         "properties": {
@@ -844,6 +869,34 @@
         "title": "ClientPerson",
         "type": "object"
       },
+      "ClosedToday": {
+        "additionalProperties": false,
+        "description": "the batches closed today (India's day): how many, what they recovered, and the latest three",
+        "properties": {
+          "batches": {
+            "items": {
+              "$ref": "#/components/schemas/BatchMark"
+            },
+            "title": "Batches",
+            "type": "array"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "recovered": {
+            "title": "Recovered",
+            "type": "number"
+          }
+        },
+        "required": [
+          "count",
+          "recovered",
+          "batches"
+        ],
+        "title": "ClosedToday",
+        "type": "object"
+      },
       "ConnectorDef": {
         "additionalProperties": false,
         "properties": {
@@ -907,6 +960,16 @@
         "additionalProperties": false,
         "description": "the platform's figures over a range of days (SC-48): every one an aggregate over the database when read",
         "properties": {
+          "atStop": {
+            "items": {
+              "items": {
+                "$ref": "#/components/schemas/BatchMark"
+              },
+              "type": "array"
+            },
+            "title": "Atstop",
+            "type": "array"
+          },
           "byDay": {
             "items": {
               "$ref": "#/components/schemas/DayFigures"
@@ -920,6 +983,9 @@
             },
             "title": "Bystop",
             "type": "array"
+          },
+          "closedToday": {
+            "$ref": "#/components/schemas/ClosedToday"
           },
           "days": {
             "title": "Days",
@@ -976,7 +1042,9 @@
           "inFlightSeries",
           "waiting",
           "runsToday",
-          "byStop"
+          "byStop",
+          "atStop",
+          "closedToday"
         ],
         "title": "Dashboard",
         "type": "object"

@@ -347,6 +347,23 @@ class Waiting(Shape):
     client: str
 
 
+class BatchMark(Shape):
+    """a batch as Agents at work draws it: its client's mark, keyed by the batch, and when it reached its stop (or
+    closed) in India's time, so a reading can tell what arrived since the last (SC-49)"""
+
+    client: str
+    ref: str
+    at: str
+
+
+class ClosedToday(Shape):
+    """the batches closed today (India's day): how many, what they recovered, and the latest three"""
+
+    count: int
+    recovered: float
+    batches: list[BatchMark]
+
+
 class Dashboard(Shape):
     """the platform's figures over a range of days (SC-48): every one an aggregate over the database when read"""
 
@@ -362,6 +379,9 @@ class Dashboard(Shape):
     oldest_waiting: Waiting | MISSING = MISSING
     runs_today: int
     by_stop: list[int]
+    # the latest three batches to arrive at each of the nine stops, and today's closed batches (SC-49)
+    at_stop: list[list[BatchMark]]
+    closed_today: ClosedToday
 
 
 BatchStatus = Literal["in-flight", "waiting", "closed"]

@@ -255,6 +255,7 @@ class Story:
                 money=t.get("money"),
                 split=t.get("split"),
                 best_before=date.fromisoformat(b["bestBefore"]) + self.shift,
+                stage_at=datetime.fromisoformat(b["stageAt"]) + self.shift if b.get("stageAt") else None,
                 override={**o, "by": self.actors.get(o["by"]) or Actor(name=o["by"]), "at": self.when(o["at"])}
                 if o
                 else None,
