@@ -6,7 +6,9 @@ export const ssr = false;
 
 // who is signed in, and how the platform describes itself, before anything draws. On the first load each answer is
 // a stop on the splash (SC-51): the splash covers the page from its first paint and follows them as they land
-const landed = (id: string) => <T>(v: T) => (window.SC3_SPLASH?.mark(id), v);
+const landed =
+	(id: string) =>
+	<T>(v: T) => (window.SC3_SPLASH?.mark(id), v);
 export const load = async () => {
 	const [me, config, catalog] = await Promise.all([
 		queryClient.ensureQueryData(meQuery()).then(landed('session')),
