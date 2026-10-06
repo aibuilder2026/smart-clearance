@@ -106,7 +106,7 @@ const directory = {
 	roles: ROLES,
 	members: Store.seed().users.map((u) => ({
 		workspace: workspace.id,
-		...pick(u, ['id', 'email', 'phone', 'role', 'status', 'kind'])
+		...pick(u, ['id', 'name', 'email', 'phone', 'role', 'status', 'kind'])
 	}))
 };
 
@@ -168,6 +168,47 @@ const consoleSeed = {
 	}
 };
 
+/** backend-api's tests: what platform.js itself answers, so the Python ports of its rules can be checked against it */
+const PROFILES = [];
+for (const route of ['distributors', 'modern-trade', 'own'])
+	for (const owner of ['distributor', 'manufacturer'])
+		for (const expiry of ['full-credit', 'price-support', 'none']) PROFILES.push({ route, owner, expiry });
+const SAMPLES = {
+	time: ['08:30', '21:05'],
+	number: [0.5, 0.9, 0.955, 14, 30, 90, 365],
+	money: [1, 13.5, 14, 0.125, 1.005, 99.995],
+	stepper: [0, 1, 3],
+	switch: [true, false],
+	approver: ['priya', 'admin-x']
+};
+const ruleFixtures = {
+	exitsFor: PROFILES.map((profile) => ({ profile, exits: P.exitsFor(profile) })),
+	agentDefaults: ['cautious', 'standard', 'trusted'].map((preset) => ({
+		preset,
+		approver: 'admin-x',
+		agents: P.agentDefaults(preset, { approver: 'admin-x' })
+	})),
+	showValue: Object.entries(P.FIELDS).flatMap(([agent, fields]) =>
+		fields.flatMap((f) =>
+			(f.type === 'select' ? f.options : SAMPLES[f.type]).map((value) => ({
+				agent,
+				key: f.key,
+				value,
+				text: P.showValue(f, value)
+			}))
+		)
+	),
+	slug: [
+		'Kesari Foods',
+		'Amrit Dairy Pvt',
+		'Café Coffee Day Ltd',
+		'  Shree Ram & Sons India ',
+		'',
+		'X',
+		'A'.repeat(40)
+	].map((name) => ({ name, slug: P.slug(name) }))
+};
+
 const json = (o) => JSON.stringify(o, null, '\t') + '\n';
 // each folder of generated files, with a manifest of where they came from
 const outputs = {
@@ -177,7 +218,16 @@ const outputs = {
 		'directory.json': json(directory),
 		'console.json': json(consoleSeed)
 	},
-	'admin/src/lib/seed': { 'ds.json': json(ds) }
+	'admin/src/lib/seed': { 'ds.json': json(ds) },
+	// backend-api loads the same reference data into its database at migrate time, and imports the console's day
+	// (Munchly Foods) through its own services when it hydrates; its image builds from backend-api/ alone
+	'../backend-api/src/sc_api/reference': {
+		'showcase.json': json(showcase),
+		'catalog.json': json(catalog),
+		'directory.json': json(directory),
+		'console.json': json(consoleSeed),
+		'rules.json': json(ruleFixtures)
+	}
 };
 for (const files of Object.values(outputs))
 	files['manifest.json'] = json({

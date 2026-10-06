@@ -1,0 +1,221 @@
+{
+	"agents": [
+		{
+			"id": "data",
+			"name": "Data",
+			"stage": "connect",
+			"icon": "database",
+			"model": "Gemini Flash",
+			"job": "Loads each distributor's stock export and maps its columns",
+			"gate": false
+		},
+		{
+			"id": "watcher",
+			"name": "Watcher",
+			"stage": "detect",
+			"icon": "eye",
+			"model": "Gemini Flash",
+			"job": "Flags batches that won't sell in time, against the quick-commerce gates",
+			"gate": false
+		},
+		{
+			"id": "vision",
+			"name": "Vision",
+			"stage": "verify",
+			"icon": "scan-line",
+			"model": "Gemini Pro",
+			"job": "Reads the label photo from the godown",
+			"gate": false
+		},
+		{
+			"id": "valuer",
+			"name": "Valuer",
+			"stage": "value",
+			"icon": "scale",
+			"model": "Gemini Pro",
+			"job": "Prices every exit, the bin included",
+			"gate": false
+		},
+		{
+			"id": "router",
+			"name": "Router",
+			"stage": "decide",
+			"icon": "route",
+			"model": "Gemini Pro",
+			"job": "Splits the batch under each exit's caps",
+			"gate": false
+		},
+		{
+			"id": "gate",
+			"name": "Approval",
+			"stage": "approve",
+			"icon": "hand",
+			"job": "A person approves every plan, with the money on screen",
+			"gate": true
+		},
+		{
+			"id": "lister",
+			"name": "Lister",
+			"stage": "execute",
+			"icon": "store",
+			"model": "Gemini Flash",
+			"job": "Lists on ExpireSoon in the distributor's name",
+			"gate": false
+		},
+		{
+			"id": "outreach",
+			"name": "Outreach",
+			"stage": "execute",
+			"icon": "send",
+			"model": "Gemini Flash",
+			"job": "Sends kirana offers",
+			"gate": false
+		},
+		{
+			"id": "negotiator",
+			"name": "Negotiator",
+			"stage": "execute",
+			"icon": "gavel",
+			"model": "Gemini Pro",
+			"job": "Answers bids",
+			"gate": false
+		},
+		{
+			"id": "paperwork",
+			"name": "Paperwork",
+			"stage": "settle",
+			"icon": "file-text",
+			"model": "Gemini Flash",
+			"job": "Drafts the invoice, e-way bill check, credit note, GST memo and FSSAI checklist",
+			"gate": false
+		},
+		{
+			"id": "impact",
+			"name": "Impact",
+			"stage": "report",
+			"icon": "leaf",
+			"model": "Gemini Flash",
+			"job": "Posts the ledger and the BRSR rows",
+			"gate": false
+		}
+	],
+	"connectors": [
+		{
+			"id": "dms",
+			"name": "Distributor stock exports",
+			"kind": "Inventory",
+			"icon": "file-spreadsheet",
+			"note": "DMS exports as CSV, nightly",
+			"status": "ok"
+		},
+		{
+			"id": "bq",
+			"name": "BigQuery",
+			"kind": "Data",
+			"icon": "database",
+			"note": "Batches and sell-through by pincode and by shop",
+			"status": "ok"
+		},
+		{
+			"id": "gemini",
+			"name": "Gemini on Vertex AI",
+			"kind": "Agents",
+			"icon": "sparkles",
+			"note": "Flash for drafts and chat, Pro for labels and routing",
+			"status": "ok"
+		},
+		{
+			"id": "sso",
+			"name": "Google Workspace",
+			"kind": "Identity",
+			"icon": "google",
+			"note": "Client staff sign in with their company accounts",
+			"status": "ok"
+		},
+		{
+			"id": "auth",
+			"name": "Firebase Authentication",
+			"kind": "Identity",
+			"icon": "key-round",
+			"note": "One-time codes for invited distributors and kiranas",
+			"status": "ok"
+		},
+		{
+			"id": "fcm",
+			"name": "Firebase Cloud Messaging",
+			"kind": "Push",
+			"icon": "bell",
+			"note": "Web push to every role, with an in-app inbox",
+			"status": "ok"
+		},
+		{
+			"id": "expiresoon",
+			"name": "ExpireSoon",
+			"kind": "Marketplace",
+			"icon": "store",
+			"note": "Listings in the distributor's name",
+			"status": "mock"
+		},
+		{
+			"id": "tally",
+			"name": "Tally",
+			"kind": "Accounting",
+			"icon": "receipt",
+			"note": "Invoice drafts the distributor issues",
+			"status": "mock"
+		},
+		{
+			"id": "irp",
+			"name": "GST e-invoice",
+			"kind": "Tax",
+			"icon": "stamp",
+			"note": "Invoice reference numbers where the law asks for them",
+			"status": "mock"
+		},
+		{
+			"id": "foodbank",
+			"name": "Food-bank partners",
+			"kind": "Donation",
+			"icon": "heart-handshake",
+			"note": "Feeding India and IFBN intake rules",
+			"status": "mock"
+		},
+		{
+			"id": "whatsapp",
+			"name": "WhatsApp Business",
+			"kind": "Messaging",
+			"icon": "message-circle",
+			"note": "Kirana offers on WhatsApp",
+			"status": "soon"
+		}
+	],
+	"plans": [
+		{
+			"id": "pilot",
+			"name": "Pilot",
+			"scope": [
+				"One distributor",
+				"Up to 10 SKUs",
+				"90 days"
+			]
+		},
+		{
+			"id": "growth",
+			"name": "Growth",
+			"scope": [
+				"Every distributor in a region",
+				"All ten agents",
+				"The client's own sign-in"
+			]
+		},
+		{
+			"id": "enterprise",
+			"name": "Enterprise",
+			"scope": [
+				"Every region",
+				"The client's SSO and data residency",
+				"A named team"
+			]
+		}
+	]
+}

@@ -36,6 +36,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8787", "--directory", "design3"],
       "port": 8787
+    },
+    {
+      "name": "backend-api",
+      "runtimeExecutable": "backend-api/scripts/dev.sh",
+      "runtimeArgs": [],
+      "port": 8000
     }
   ]
 }

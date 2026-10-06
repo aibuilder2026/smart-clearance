@@ -47,6 +47,10 @@ frontend/.firebase/
 __pycache__/
 .pytest_cache/
 .ruff_cache/
+# backend-api (SC-45): local overrides only; every secret lives in Secret Manager, never in a file
+backend-api/.env
+backend-api/.env.*
+!backend-api/.env.example
 
 # infra (SC-39): Terraform's working files. State lives in the GCS bucket; .terraform.lock.hcl is committed
 infra/**/.terraform/

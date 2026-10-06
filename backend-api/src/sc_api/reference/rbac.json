@@ -1,0 +1,66 @@
+{
+	"note": "The platform's roles and what each may do. Written by hand (not generated); loaded at migrate time into roles, permissions and role_permissions.",
+	"permissions": [
+		{ "id": "console.read", "description": "See the console: the overview, clients, staff, demo requests and the audit log" },
+		{ "id": "clients.create", "description": "Set up a new client" },
+		{ "id": "clients.configure", "description": "Configure a client's agents, supply-chain profile, channels and rules" },
+		{ "id": "clients.supply", "description": "Remind distributors and ask for stock exports" },
+		{ "id": "clients.people", "description": "Invite a client's people, renew invitations, change their access, deactivate them" },
+		{ "id": "clients.commercial", "description": "Change a client's plan and take it live" },
+		{ "id": "staff.invite", "description": "Invite colleagues to the console" }
+	],
+	"roles": [
+		{
+			"id": "super-admin",
+			"scope": "platform",
+			"name": "Super admin",
+			"team": "Platform",
+			"description": "Everything, including plans, going live and the platform's own staff",
+			"permissions": ["console.read", "clients.create", "clients.configure", "clients.supply", "clients.people", "clients.commercial", "staff.invite"]
+		},
+		{
+			"id": "platform-engineer",
+			"scope": "platform",
+			"name": "Platform engineer",
+			"team": "Platform",
+			"description": "Sets clients up and configures them; not plans, going live or staff",
+			"permissions": ["console.read", "clients.create", "clients.configure", "clients.supply", "clients.people"]
+		},
+		{
+			"id": "support",
+			"scope": "platform",
+			"name": "Support",
+			"team": "Customer success",
+			"description": "Helps clients day to day: their setup, people and distributors; not plans, going live or staff",
+			"permissions": ["console.read", "clients.create", "clients.configure", "clients.supply", "clients.people"]
+		},
+		{
+			"id": "approver",
+			"scope": "workspace",
+			"name": "Approver",
+			"description": "Approves the plans the agents make, with the money on screen",
+			"permissions": []
+		},
+		{
+			"id": "admin",
+			"scope": "workspace",
+			"name": "Admin",
+			"description": "Runs the workspace: sign-in, people, guardrails, integrations, the audit log",
+			"permissions": []
+		},
+		{
+			"id": "member",
+			"scope": "workspace",
+			"name": "Member",
+			"description": "The client's own staff: sees the batches, the money and the reports",
+			"permissions": []
+		},
+		{
+			"id": "partner",
+			"scope": "workspace",
+			"name": "Partner",
+			"description": "Distributors, kiranas and food banks the client invites",
+			"permissions": []
+		}
+	]
+}

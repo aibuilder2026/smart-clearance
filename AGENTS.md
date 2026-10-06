@@ -14,7 +14,7 @@ Smart-Clearance (working title Short-Date Router) is an agentic near-expiry stoc
 
 Smart-Clearance is meant to be sold to manufacturers as software as a service, one workspace each at `<client>.smartclearance.com`, set up for that client's supply chain. The prototypes are Munchly Foods' workspace at munchly.smartclearance.com.
 
-The production code starts in `frontend/` (SC-27): design system v3 in Svelte, the platform's landing page, and the staff console (SC-37), each app built and deployed on its own. The Python services, `backend-api/` and `agents/`, are planned; their folders hold the contract the frontend already speaks, and the console runs on an in-browser mock of it. `infra/` (SC-39) is Terraform for the Google Cloud project, `aibuilder-510213`: Firebase Hosting, one site per app, released by its deploy script.
+The production code starts in `frontend/` (SC-27): design system v3 in Svelte, the platform's landing page, and the staff console (SC-37), each app built and deployed on its own. `backend-api/` (SC-45) is the platform's API: FastAPI on PostgreSQL 18, Firebase Authentication with email and password, and every secret in Google Secret Manager. It serves the frontend's contract and runs locally against the developer's Docker Postgres; its cloud runtime is written but not applied. The frontend still runs on its in-browser mocks until SC-46 wires the console's sign-in. `agents/` is planned. `infra/` (SC-39) is Terraform for the Google Cloud project, `aibuilder-510213`: Firebase Hosting, one site per app, released by its deploy script.
 
 ## Layout
 
@@ -23,7 +23,8 @@ The production code starts in `frontend/` (SC-27): design system v3 in Svelte, t
 | `design3/` | The current design and the source of truth for designs:
 <ul><li>design system, guided demo, app prototype (Munchly Foods' workspace, an installable PWA), the platform's landing page and console;</li><li>every design review in `designs/`, one folder per issue;</li><li>the accessibility suite.</li></ul>Start with `design3/README.md`. |
 | `frontend/` | The SvelteKit 3 frontend, a pnpm workspace that implements design3. Two apps, each deployed on its own:<ul><li>`admin`, the platform's own site: the landing page (smartclearance.com);</li><li>`console`, the staff console (console.smartclearance.com).</li></ul>Three shared packages:<ul><li>`core`, design system v3 in Svelte;</li><li>`api`, the contract with backend-api and an in-browser mock of it;</li><li>`testing`, what the apps' test suites share.</li></ul>Start with `frontend/README.md`. |
-| `backend-api/`, `agents/` | The Python services, planned: the API the frontend calls, and the AI agents. READMEs only for now. |
+| `backend-api/` | The platform's API (SC-45): FastAPI, PostgreSQL (one database, `smart_clearance`), Firebase Auth, Secret Manager.<ul><li>`src/sc_api/`: routes, services (the only writers; every change writes its audit line), models, the ported rules;</li><li>`migrations/` (Alembic), `db/` (roles);</li><li>`scripts/`: doctor, secrets, db-init, migrate, hydrate, dev, up, test, bootstrap;</li><li>`tests/` (pytest on a real Postgres), `contracts/openapi.json`.</li></ul>Start with `backend-api/README.md`. |
+| `agents/` | The AI agents, planned. README only for now. |
 | `infra/` | Terraform for the Google Cloud project, and the scripts that run it:<ul><li>`bootstrap/`, the state bucket;</li><li>`prod/`, the billing link, Firebase, a Hosting site per app, and CI's keyless deployer with the repository's `prod` environment;</li><li>`scripts/`, bootstrap, the Terraform wrapper, the deploy and the gate.</li></ul>Start with `infra/README.md`. |
 | `.github/` | GitHub Actions (SC-40): `workflows/ci.yml` lints, type-checks, tests and builds the frontend and checks `infra/` on every pull request, then deploys both apps from `main`. `actions/setup-frontend` is the shared Node, pnpm and cache setup. |
 | `design2/`, `design/` | Earlier rounds, superseded by v3. Reference only. |
@@ -67,6 +68,19 @@ infra/scripts/tf.sh plan -out=prod.tfplan   # read the whole plan, then:
 infra/scripts/tf.sh apply prod.tfplan
 infra/scripts/deploy.sh                     # build both apps and release them to Firebase Hosting (or: deploy.sh site | console)
 infra/scripts/check.sh                      # the gate jira-flow runs: terraform fmt and validate, and the scripts' syntax
+```
+
+The backend (from the repository root; `backend-api/README.md` has the prerequisites):
+
+```sh
+backend-api/scripts/bootstrap.sh            # once per project: secrets, database and logins, schema, reference data, synthetic world
+backend-api/scripts/dev.sh                  # the API on :8000, as sc-api-local (or the backend-api preview config)
+backend-api/scripts/test.sh                 # pytest against smart_clearance_test: 152 tests, a few seconds
+backend-api/scripts/hydrate.sh --reset      # rebuild the synthetic world (Firebase accounts are kept)
+backend-api/scripts/hydrate.sh --tick       # today's agent runs, so the console's day is today
+backend-api/scripts/default-password.sh --copy   # the password every account starts on
+backend-api/scripts/console-env.sh          # point the frontend's .env.local at the local API
+cd backend-api && uv run ruff check . && scripts/test.sh   # the gate jira-flow runs
 ```
 
 Local pages:
@@ -156,6 +170,17 @@ Local pages:
 - CI signs in to Google through Workload Identity Federation, as `github-deployer`, which may only deploy Hosting. Never create a service account key, or store a Google credential as a GitHub secret.
 - In workflows, pin every action to a commit SHA, with its version in a comment. Keep the workflow token read-only, and grant `id-token: write` only to the job that deploys.
 
+**The backend and secrets**
+
+- Every secret lives in Google Secret Manager, and only there. Scripts generate a secret and pipe it to `gcloud` on stdin. The API reads it by reference at runtime. No secret goes in a file, a command line, a log, Terraform state or git. Terraform makes the secret containers only. CI's secret scan (gitleaks) runs on every pull request.
+- No key exists for any service account. A local backend impersonates `sc-api-local` in code from the developer's own credentials. Never use `gcloud auth application-default login --impersonate-service-account`: Terraform would run as it.
+- Only `backend-api`'s services write data, each change in one transaction with its audit line, in the acting person's name and the prototype's words (`frontend/api/src/console/mock.ts`). The audit log is append-only.
+- The API's login (`sc_app`) never changes the schema or the reference data. Migrations run as `sc_owner`.
+- Synthetic data goes through the services (`hydrate.sh`), never as hand-written rows. Every synthetic address is on a reserved `.example` domain.
+- No email is ever sent: accounts start on the default password, which an operator hands over.
+- The contract is `frontend/api/src/types/*.ts`. A change to it changes both sides, and `contracts.sh` re-exports the OpenAPI.
+- Reference data comes from design3 through `frontend/scripts/seed.mjs` (into `backend-api/src/sc_api/reference/`). Never hand-edit it; `rbac.json` is the exception.
+
 **Accessibility**
 
 - The target is WCAG 2.2 AA. UI changes must keep `npm test` in `design3/a11y` at zero violations, and the frontend's `corepack pnpm test:e2e` too (the same axe helpers and five projects).
@@ -197,10 +222,11 @@ Local pages:
 | Skill | `design-first` | `.claude/skills/` | Design before code: which design tool leads for each surface (motion prototyped in Framer Motion; the Svelte build ships it with `motion` and the same springs), the review board on the surface's Claude Design project, building only after the maintainer's yes (SC-26), and porting into `frontend/` (SC-27). |
 | Hook | `design-first-reminder` | `.claude/hooks/`, registered in `.claude/settings.json` | A `UserPromptSubmit` hook. When a request reads like a UI or UX change, it adds the design-first rule to the agent's context; otherwise it stays silent. Needs `jq` (SC-26). |
 | Config | jira-flow | `.claude/jira-flow.json`, `.claude/jira/taxonomy.md` | Jira project SC: site, issue types, transition ids, branch, commit and PR patterns, and ship rules. |
-| Config | Preview servers | `.claude/launch.json` | <ul><li>`voice-recorder`: `video/recorder/server.py` on 8765;</li><li>`frontend-admin`: the frontend's dev server on 5173;</li><li>`frontend-preview`: its build on 4173 (restart it after a rebuild: its file list is read at start);</li><li>`frontend-console`: the console's dev server on 5174;</li><li>`frontend-console-preview`: its build on 4176 (restart it after a rebuild);</li><li>`design3`: design3 on 8787.</li></ul> |
+| Config | Preview servers | `.claude/launch.json` | <ul><li>`voice-recorder`: `video/recorder/server.py` on 8765;</li><li>`frontend-admin`: the frontend's dev server on 5173;</li><li>`frontend-preview`: its build on 4173 (restart it after a rebuild: its file list is read at start);</li><li>`frontend-console`: the console's dev server on 5174;</li><li>`frontend-console-preview`: its build on 4176 (restart it after a rebuild);</li><li>`design3`: design3 on 8787;</li><li>`backend-api`: the API on 8000 (`backend-api/scripts/dev.sh`).</li></ul> |
 | Tests | Accessibility suite | `design3/a11y/` | Playwright 1.63 with @axe-core/playwright 4.13. |
 | CI | GitHub Actions | `.github/workflows/ci.yml` | The frontend gate, the infra gate and the build on every pull request; the deploy from `main` through the `prod` environment and Workload Identity Federation (SC-40). |
 | Config | Terraform | `infra/` | Terraform 1.9 or later with `hashicorp/google` and `google-beta` 8.5, and `integrations/github` 6.13, locked for macOS and Linux. State in GCS; credentials from application-default credentials, or a token borrowed from `gcloud`. firebase-tools 15.32.1 for releases, through `npx`. |
+| Tests | Backend suite | `backend-api/tests/` | pytest 9 with httpx against a real PostgreSQL 18 (`smart_clearance_test`; a `postgres:18` service in CI): the frontend's contract tests ported, the rules against `platform.js`'s fixtures, roles, the append-only audit log, the synthetic world. |
 | Tests | Frontend suites | `frontend/` | Vitest 5 (unit, drift, seed and coverage, the console's rules against `platform.js`); Playwright 1.63 with @axe-core/playwright 4.13 (e2e, each app); pixelmatch (parity with design3, each app). |
 
 The agent, the three skills and the MCP entry came from the [aitmpl.com](https://www.aitmpl.com) catalog (SC-17).
@@ -278,9 +304,10 @@ From the Claude desktop app:
 
 ## Known gaps
 
-- The jira-flow gates cover `frontend/` (lint, type check, unit tests) and `infra/` (`terraform fmt` and `validate`, the scripts' syntax; no plan, since that needs credentials), and CI runs both on every pull request. The Python gates wait for `backend-api/` and `agents/` to have code. Nothing gates `design3/`, or the frontend's e2e and parity suites: run them yourself.
+- The jira-flow gates cover `frontend/` (lint, type check, unit tests) and `infra/` (`terraform fmt` and `validate`, the scripts' syntax; no plan, since that needs credentials), and `backend-api/` (ruff, and pytest on a real Postgres), and CI runs all three on every pull request with a secret scan. The `agents/` gate waits for code. Nothing gates `design3/`, or the frontend's e2e and parity suites: run them yourself.
 - The frontend's Firefox smoke run could not be started in the agent's sandboxed shell; run `corepack pnpm test:e2e` on a normal machine to cover it.
-- The frontend's Book a demo keeps its requests in that browser (`sc-demo-requests`) until `backend-api` takes them; neither the hosted console nor `frontend/console` sees them.
+- The frontend's Book a demo keeps its requests in that browser (`sc-demo-requests`) until the landing page is pointed at `backend-api` (`PUBLIC_API_BASE`), which stores them for the console. The hosted pages still run on the mocks.
+- `backend-api` runs locally only: its Cloud SQL and Cloud Run are written behind `backend_runtime` and not applied (SC-44). Local development and prod share one Firebase user pool.
 - `frontend/console` runs on its in-browser mock: sign-in is a stand-in for Google and a passkey, changes stay in that browser (`sc-console`), and two fictional demo requests stand in for the landing page's. Both apps are live on Firebase Hosting's own addresses (SC-39), with no custom domain yet.
 - The landing page ships about 139 kB of JavaScript, gzipped (`frontend/README.md`, Known gaps).
 - The landing page's hero draws its town in WebGL2; where WebGL2 is missing it draws the plate flat, without depth.

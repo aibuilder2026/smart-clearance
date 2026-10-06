@@ -61,10 +61,9 @@
     {
       "name": "backend-api",
       "cwd": "backend-api",
-      "run": "uv run ruff check . && uv run pytest",
+      "run": "uv run ruff check . && uv run ruff format --check . && scripts/test.sh -q",
       "paths": [
-        "backend-api/**/*.py",
-        "backend-api/pyproject.toml"
+        "backend-api/**"
       ]
     },
     {
