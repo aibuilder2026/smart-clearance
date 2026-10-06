@@ -18,4 +18,10 @@ database keeps nullable gate columns on `skus` and `batches` (with the override'
 `best_before` on batches; `sc.batch_gates` gives the agents each open batch's gates, their source and pass or fail; every
 change writes its audit line.
 
-**The pick:** waiting for the maintainer.
+**The pick:** **A, on each SKU**, picked by the maintainer on 6 Oct 2026, the recommended option. The board was
+published to platform v3 as `SC-47 design review.html`, with `SC-47 option A.html`, `SC-47 option B.html` and
+`SC-47 option C.html`.
+
+The build: backend-api first (migration 0002, the SKU gates and batch override routes, `sc.batch_gates`, hydrate and
+the Munchly import), then design3's console (`console/console.jsx`: the SKU table's gate columns, an SKU sheet, the
+profile's labels; `core/platform.js`), then the SvelteKit console and `@smart-clearance/api`.
