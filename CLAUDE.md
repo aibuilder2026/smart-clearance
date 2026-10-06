@@ -548,10 +548,15 @@
   - **The request:** the maintainer found the a11y suite running on design3's prototypes, and asked for it on the actual UI components under `frontend/`. The decisions: remove design3's suite; scan every component the apps use, not `/ds`.
   - **`corepack pnpm test:a11y`** (`:admin`, `:console`): each app's production build, the axe WCAG 2.2 AA scans with the keyboard and motion specs in five projects, then the coverage check. `test:e2e` keeps the console's flows and the Firefox and WebKit smoke runs. The `/ds` scan is gone; `/ds` stays a dev route that parity compares.
   - **Coverage:** each scan records the core components on screen (`COMPONENTS` in `frontend/testing/src/a11y.ts`, with `data-product` on Product, which had no class of its own), and `testing/src/a11y-coverage.ts` fails the run when an app uses a component no scan reached. Its first run found two in the console: the toast (`NoticeHost`) and the checkboxes (`Check`); the console's spec now scans the toast after Pause every agent, and the New client flow's sign-in step.
-  - **Found on the way:** the paused state had never been scanned. A switched-off agent's summary fails contrast (2.4:1 light, 2.75:1 dark), faded by `.cs-stop.off .cs-card .cs-text { opacity: 0.6 }` in design3's and the port's `console.css`: SC-59.
+  - **Found on the way:** the paused state had never been scanned. A switched-off agent's summary failed contrast (2.4:1 light, 2.75:1 dark), faded by `.cs-stop.off .cs-card .cs-text { opacity: 0.6 }` in design3's and the port's `console.css`: SC-59, fixed on this branch (below).
   - **design3/a11y removed;** its static server moved to `frontend/testing/design3-server.py` for the parity runs. The `browser-suites` skill, the `ask-before-suites` hook (now asking on `test:a11y`), CI's paths and the docs follow.
   - **Checks:**
-    - a11y: landing page 44 pass, 0 WCAG findings, 22 of 22 components it uses on screen; console 94 pass and 5 fail (SC-59's contrast, in each project), 36 of 36 components on screen;
+    - a11y: landing page 44 pass, 0 WCAG findings, 22 of 22 components it uses on screen; console 94 pass and 5 fail (SC-59's contrast, in each project, before its fix), 36 of 36 components on screen;
     - the frontend gate passes.
-  - **Hosting:** unchanged.
+  - **Hosting:** see SC-59.
+- **SC-59** (on SC-58's branch): a switched-off agent's name takes the secondary ink instead of the card text's 60% opacity, as AGENTS.md's contrast rule asks; the Off badge and the grey node still mark it.
+  - **Where:** `design3/console/console.css`, its dist, and the verbatim port in `frontend/console/src/lib/console.css` (the drift test holds them together).
+  - **Measured** on design3's console with every agent paused: the name 7.90:1, the stage and summary 5.37:1 in light; 8.53:1 and 5.50:1 in dark (they were 2.43:1 and 2.75:1).
+  - **Checks:** the frontend gate passes. The a11y suite was not re-run after the fix.
+  - **Hosting:** the hosted landing page and console load commit `0384e24`; every pinned file was checked on jsDelivr first, and both pages render.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
