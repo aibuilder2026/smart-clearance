@@ -538,4 +538,11 @@
   - **ARCHITECTURE.md** names every technology by layer, with the versions in the lockfiles, and shows the solution in 14 Mermaid diagrams: the system, design3's structure, the frontend workspace and data flow, the API's layers, the data model, identity and secrets, three request paths, the cloud, the delivery pipeline, local development and the agents' nine stops. It closes with the decisions and their reasons, and the known gaps.
   - **Checks:** all 14 diagrams rendered with Mermaid 11 without parse errors; every anchor and relative link resolves. CI does not run on root files.
   - **Hosting:** unchanged.
+- **SC-54** (PR #42, merged): CLAUDE.md records SC-53 as merged.
+- **SC-55** (PR #43, merged): the e2e, parity and a11y suites run only when the maintainer asks.
+  - **The rule:** the frontend's e2e and parity suites, design3's a11y suite and `backend-api/scripts/e2e.sh` run only when the maintainer explicitly asks for them in the current request, never as a routine step of a design, a UX change, a port or a ticket. The jira-flow gates stay automatic. It is written in AGENTS.md (Accessibility) and in this file's "Which tool for what".
+  - **The design-first skill's** build step runs the gate and offers the suites instead of running them.
+  - **The `browser-suites` skill** (`.claude/skills/browser-suites/`) loads when a suite is asked for: what counts as an explicit ask, what each suite needs first (a build, `PUBLIC_API_BASE` empty, Firefox's sandbox limit), the commands, and how to report the counts.
+  - **The `ask-before-suites` hook** (`.claude/hooks/ask-before-suites.sh`), a `PreToolUse` hook on Bash in `.claude/settings.json`, turns any command that would run a suite into a permission prompt; every other command passes. Tested on ten commands. It takes effect in a new session.
+  - **Hosting:** unchanged.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
