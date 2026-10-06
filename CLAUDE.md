@@ -384,5 +384,7 @@
     - the frontend gate passes;
     - e2e: landing page 51, console 97; only Firefox fails, as it can't start in the sandbox;
     - parity: landing page 29, console 80, the new sign-in included;
-    - backend-api: 152 pass.
+    - backend-api: 152 pass;
+    - design3's suite: 334 pass, with 0 failing WCAG rules.
+  - **Hosting:** the hosted landing page and console load commit `d08a08a`. The app and demo stay on `58c6874`, so their Find your workspace still shows the role line.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
