@@ -19,4 +19,10 @@ every figure a SQL aggregate; hydrate writes 30 days of history; the figures are
 updates (WCAG 2.2.2) and nothing moves on its own; charts by the dataviz rules, each with a tooltip and a table view;
 filters and the page kept in the address.
 
-**The pick:** waiting for the maintainer.
+**The pick:** **A, command centre**, picked by the maintainer on 6 Oct 2026, the recommended option. The board was
+published to platform v3 as `SC-48 design review.html`, with `SC-48 option A.html`, `SC-48 option B.html` and
+`SC-48 option C.html`.
+
+The build: backend-api first (`GET /v1/console/dashboard`, `GET /v1/console/batches` paginated on the server, hydrate's
+30 days of history), then design3's console Overview (`console/console.jsx`, `console.css`, the mock's aggregates in
+`core/platform.js`), then `@smart-clearance/core`'s chart parts and the SvelteKit console's Overview.
