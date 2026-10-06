@@ -1,4 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
 // End to end on this machine: the landing page and the console against backend-api, signing in with Firebase
 // Authentication. backend-api/scripts/e2e.sh sets these from Secret Manager and the database; the tests skip without them.
@@ -6,6 +8,7 @@ const PASSWORD = process.env.SC_LIVE_PASSWORD ?? '';
 const SUPER_ADMIN = process.env.SC_LIVE_SUPER_ADMIN ?? '';
 const SUPPORT = process.env.SC_LIVE_SUPPORT ?? '';
 const CONSOLE = 'http://localhost:5174';
+const HYDRATE = fileURLToPath(new URL('../../../../backend-api/scripts/hydrate.sh', import.meta.url));
 const SITE = 'http://localhost:5173';
 
 test.skip(!PASSWORD || !SUPER_ADMIN, 'run through backend-api/scripts/e2e.sh');
@@ -173,5 +176,26 @@ test('live · the Overview reads its figures and pages from the database (SC-48)
 	await page.getByRole('button', { name: /^Closed \d+/ }).click();
 	await expect(page.locator('.cs-ov-table tbody tr').first()).toContainText('recovered');
 	await page.screenshot({ path: test.info().outputPath('overview-closed.png') });
+	await signOut(page);
+});
+
+test('live · Agents at work draws the batches at each stop, and moves them as the agents do (SC-49)', async ({
+	page
+}) => {
+	await page.setViewportSize({ width: 1440, height: 1200 });
+	await signIn(page, SUPER_ADMIN);
+	await page.locator('.cs-si-btn', { hasText: /^Welcome, / }).waitFor({ state: 'attached' });
+	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Overview');
+	const stops = page.getByRole('group', { name: 'Batches in flight by stop' });
+	await expect(stops.getByRole('button')).toHaveCount(9);
+	await expect(page.locator('.cs-aw-tok').first()).toBeVisible();
+	await expect(page.getByRole('img', { name: /^Closed today: \d+ batch/ })).toBeVisible();
+	// the agents move a few batches on (hydrate --tick), and the next reading lights the stops they reached
+	execFileSync(HYDRATE, ['--tick'], { stdio: 'ignore' });
+	await page.getByRole('button', { name: 'Pause updates' }).click();
+	await page.getByRole('button', { name: 'Resume updates' }).click();
+	await page.locator('.cs-aw-stop.lit').first().waitFor({ state: 'attached', timeout: 15_000 });
+	await expect(page.locator('.cs-aw-tok.moved').first()).toBeAttached();
+	await page.screenshot({ path: test.info().outputPath('agents-at-work.png') });
 	await signOut(page);
 });

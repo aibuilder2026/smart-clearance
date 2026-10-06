@@ -18,7 +18,7 @@ from sc_api.domain import gates as rule
 from sc_api.domain.display import audit_at
 from sc_api.errors import ApiError, not_found
 from sc_api.schemas import BatchGates, BatchOverride, GateCheck, OverrideInput, SkuGates
-from sc_api.services import audit
+from sc_api.services import agents, audit
 from sc_api.services.context import Actor, Ctx
 from sc_api.services.presenter import lock_client
 
@@ -285,11 +285,12 @@ async def open_batch(
     money: float | None = None,
     split: str | None = None,
     at: datetime | None = None,
+    stage_at: datetime | None = None,
     best_before: date,
     override: Mapping[str, Any] | None = None,
 ) -> None:
     """a batch the Watcher sees, its best-before date, and how far along the nine stages it is. An imported history
-    may bring its gate override, written by whoever set it"""
+    may bring its gate override, written by whoever set it, and when it reached its stop (else when it was opened)"""
     exists = await ctx.session.execute(select(m.Batch.ref).where(m.Batch.client_id == client_id, m.Batch.ref == ref))
     if exists.first():
         raise ApiError(422, f"Batch {ref} is already open.")
@@ -307,6 +308,7 @@ async def open_batch(
             split=split,
             recovered=money or 0,
             opened_at=at or ctx.clock.now(),
+            stage_at=stage_at or at or ctx.clock.now(),
             best_before=best_before,
         )
     )
@@ -333,7 +335,32 @@ async def close_batch(ctx: Ctx, client_id: str, ref: str, *, recovered: float, o
     b.judged_blinkit_days, b.judged_qcom_pct = e.blinkit_days, e.qcom_pct
     b.stage_done = b.stage_current = 9
     b.recovered, b.outcome, b.closed_at = recovered, outcome, ctx.clock.now()
+    b.stage_at = b.closed_at
     await ctx.session.flush()
+
+
+# the agent that works each stop, as the run that moves a batch on from it is recorded (0-based, as stage_current)
+STOP_AGENT = ("data", "watcher", "vision", "valuer", "router", "gate", "lister", "paperwork", "impact")
+APPROVE = 5
+
+
+async def advance_batch(ctx: Ctx, client_id: str, ref: str, text: str) -> int:
+    """an agent finishes its stop for a batch: the batch moves on to the next stop, stamped with when it got there
+    (SC-49), and the run is recorded in the agent's name. A batch at Approve waits for a person's yes, and one at Report
+    closes through close_batch, with what it recovered; neither moves here. Returns the stop it reached"""
+    b = await ctx.session.get(m.Batch, (client_id, ref), with_for_update=True)
+    if b is None:
+        raise not_found("batch")
+    if b.closed_at is not None or b.stage_current >= 8:
+        raise ApiError(422, f"Batch {ref} has no stop left to move to; it closes with what it recovered.")
+    if b.stage_current == APPROVE:
+        raise ApiError(422, f"Batch {ref} waits for a person's yes.")
+    agent = STOP_AGENT[b.stage_current]
+    b.stage_current += 1
+    b.stage_done = max(b.stage_done, b.stage_current)
+    b.stage_at = ctx.clock.now()
+    await agents.record_run(ctx, client_id, agent, text, at=b.stage_at)
+    return b.stage_current
 
 
 async def set_integration(ctx: Ctx, client_id: str, integration_id: str, *, status: str, note: str) -> None:

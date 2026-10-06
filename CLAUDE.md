@@ -419,7 +419,7 @@
     - design3's suite: 339 pass, with 0 failing WCAG rules.
   - **Hosting:** the hosted landing page and console load commit `80014aa`. jsDelivr first answered its `console.js` with a cached 403 ("Package size exceeded"); purging that URL fixed it.
   - **Known gap:** the workspace app still judges by the client-wide gates in `money.js`.
-- **SC-48** (In Review, branch `SC-48-overview-dashboard`): the console's Overview as a live dashboard, database-driven.
+- **SC-48** (PR #36, merged): the console's Overview as a live dashboard, database-driven.
   - **The request:** dashboards and live charts, proper pagination of the live batches, an engaging experience; nothing hard-coded or stubbed in the UI.
   - **Design first:** three options on one board in platform v3, `SC-48 design review.html`:
     - A, the command centre;
@@ -447,4 +447,43 @@
     - design3's suite: 344 pass, with 0 failing WCAG rules;
     - the landing page is unchanged: e2e 51, parity 29.
   - **Hosting:** the hosted landing page and console load commit `6a70275`; every pinned file was checked on jsDelivr first.
+- **SC-49** (In Review, branch `SC-49-console-motion`): the console in motion. Loaders when screens and tabs change, a Sign in that keeps its label, and the Overview's agents at work.
+  - **The request:** loader effects ("like the hydrating effect when I am changing tabs"); a more engaging Sign in, since clicking it removed its text; livelier Overview charts and a view of the agents working batches.
+  - **Design first:** three options on one board in platform v3, `SC-49 design review.html`:
+    - A, the route;
+    - B, the fill;
+    - C, quiet and quick.
+
+    Each was built on the console itself, with its motion recorded. The maintainer picked **A**. Designs, recordings and the decision are in `design3/designs/SC-49/`.
+  - **Loading:**
+    - a green route draws along the top of each screen and tab as it loads, and lands its amber pin (the landing page's loader, SC-35);
+    - placeholders in the shape of what is coming (dashboard, table, list, cards, pipeline, form, client page) show if the read takes over 120 ms, with one green wash crossing them;
+    - the content rises into place, block by block.
+
+    In the build it starts from SvelteKit's navigation. design3 simulates a 450 ms read (`?read=` lengthens it).
+  - **Sign in** keeps its label:
+    - "Signing in…" with the mark's S drawing in the icon's place and a line along the foot;
+    - then "Welcome, <first name>" with a tick, for 720 ms, before the console opens;
+    - a wrong sign-in shakes the button (360 ms) before SC-46's message.
+  - **The Overview:**
+    - the figures roll (the kit's `Roll`), and the sparklines and recovered-by-day chart draw themselves;
+    - a reading moves the line and marks what today gained;
+    - **Agents at work** replaces "In flight, by stop": the nine stops on a route, each with its agent and count, and the latest three batches to arrive as their clients' marks;
+    - Closed today sits at the end, and the latest run under the route;
+    - marks travel between stops (spring 170/24/1), and arrivals since the last reading are ringed while their stops light;
+    - a stop still filters the table.
+  - **The data:**
+    - migration `0003`, `batches.stage_at`, stamped as a batch opens, moves on (`supply.advance_batch`, with the agent's run) and closes;
+    - the dashboard's `atStop` and `closedToday`, each mark with when it arrived;
+    - `hydrate.sh --tick` moves two to four batches on a stop, so the route can be watched locally.
+  - **Motion rules:** the loader moves only while something is read, Pause stops the readings, and under reduced motion every step lands at once; the springs are in core's `SPRINGS` (`tick`, `dot`, `token`).
+  - **Checks:**
+    - backend-api: 202 pass, the API still matching design3's answers (`rules.json`);
+    - the frontend gate passes;
+    - e2e: console 110 pass, with the new flow; only Firefox fails, as it can't start in the sandbox;
+    - parity: console 80 pass;
+    - live: 6 pass, including Agents at work moving after `hydrate.sh --tick`;
+    - design3's suite: 349 pass, with 0 failing WCAG rules, and a new test (Sign in while it checks, the Overview and a tab loading);
+    - the landing page is unchanged: e2e 51.
+  - **Hosting:** the hosted landing page and console load commit `e0386f5`; every pinned file was checked on jsDelivr first (one cached 403 purged).
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

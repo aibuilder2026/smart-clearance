@@ -11,7 +11,11 @@ export const SPRINGS = {
 	segmented: { stiffness: 520, damping: 40 },
 	tabs: { stiffness: 500, damping: 40 },
 	alert: { stiffness: 500, damping: 36 },
-	notice: { stiffness: 420, damping: 34 }
+	notice: { stiffness: 420, damping: 34 },
+	/** the console (SC-49): Sign in's tick, the chart's today dot, and a batch's mark travelling between stops */
+	tick: { stiffness: 520, damping: 22 },
+	dot: { stiffness: 420, damping: 20 },
+	token: { stiffness: 170, damping: 24, mass: 1 }
 } as const satisfies Record<string, SpringOptions>;
 
 /** --ease in tokens.css, as a function of time (cubic-bezier(0.22, 1, 0.36, 1)) */

@@ -18,14 +18,15 @@ export const catalogQuery = () =>
 export const meQuery = () => queryOptions({ queryKey: ['session', 'me'] as const, queryFn: () => api.me() });
 
 // the platform's state; a change refreshes everything under 'console'
-export const overviewQuery = () =>
-	queryOptions({ queryKey: ['console', 'overview'] as const, queryFn: () => api.overview() });
-/** the Overview's figures and its page of batches (SC-48): read again every 30 s and on focus, unless paused */
+/** the Overview's figures and its page of batches (SC-48), and its runs (SC-49, Agents at work's latest): read again
+ *  every 30 s and on focus, unless paused */
 const live = (paused: boolean) => ({
 	refetchInterval: paused ? (false as const) : 30_000,
 	refetchOnWindowFocus: !paused,
 	staleTime: 10_000
 });
+export const overviewQuery = (paused = false) =>
+	queryOptions({ queryKey: ['console', 'overview'] as const, queryFn: () => api.overview(), ...live(paused) });
 export const dashboardQuery = (days: number, paused = false) =>
 	queryOptions({
 		queryKey: ['console', 'dashboard', days] as const,

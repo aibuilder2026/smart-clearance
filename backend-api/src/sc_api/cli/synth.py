@@ -428,7 +428,10 @@ class World:
         await self.ctx.session.commit()
 
     async def tick(self) -> int:
-        """today's agent runs for every live client, so Overview's day is today (hydrate.sh --tick)"""
+        """today's agent runs for every live client, so Overview's day is today, and a few batches moved on a stop by
+        their agents, the ones waiting longest at their stop first, so Agents at work has something to show (SC-49).
+        Batches at Approve wait for a person; those at Report close with what they recovered, which the agents' epic
+        brings (hydrate.sh --tick)"""
         from sqlalchemy import select
 
         from sc_api import models as m
@@ -447,8 +450,33 @@ class World:
             )
             self.at(self.today_at(0.2))
             await agents.record_run(ctx, cid, "watcher", "nothing new at risk")
+        B = m.Batch
+        waiting = (
+            await ctx.session.execute(
+                select(B.client_id, B.ref, B.stage_current)
+                .where(B.client_id.in_(live), B.closed_at.is_(None), B.stage_current.in_(MOVABLE))
+                .order_by(B.stage_at, B.seq)
+                .limit(self.rng.randint(2, 4))
+            )
+        ).all()
+        self.at(self.now_real())  # the moves are the latest thing to happen
+        for cid, ref, stage in waiting:
+            await supply.advance_batch(ctx, cid, ref, MOVED[stage].format(ref=ref))
         await ctx.session.commit()
         return len(live)
+
+
+# the stops an agent moves a batch on from (not Approve, where a person says yes; not Report, which closes it), and the
+# run each agent records as it does
+MOVABLE = (1, 2, 3, 4, 6, 7)
+MOVED = {
+    1: "{ref}: label photo asked for",
+    2: "{ref}: label read, confidence 0.94",
+    3: "{ref}: every exit priced",
+    4: "{ref}: plan sent for a yes",
+    6: "{ref}: listed and offered",
+    7: "{ref}: invoice and credit note drafted",
+}
 
 
 def _split(units: int) -> str:

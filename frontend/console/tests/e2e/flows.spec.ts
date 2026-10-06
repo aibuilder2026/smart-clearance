@@ -167,3 +167,23 @@ test('flows · the Overview: a stop chosen, a page, the chart as a table, and up
 	await page.getByRole('button', { name: 'Resume updates' }).click();
 	await expect(page.locator('.cs-ov-live')).toContainText('every 30 s');
 });
+
+test('flows · Sign in keeps its label and welcomes; Agents at work; a tab change draws the route (SC-49)', async ({
+	page
+}) => {
+	await openConsole(page, '/', { signedIn: false });
+	await page.getByLabel('Work email').fill('sameer.rao@smartclearance.com');
+	await page.getByLabel('Password', { exact: true }).fill('anything');
+	await page.getByRole('button', { name: 'Sign in' }).click();
+	await page.locator('.cs-si-btn', { hasText: 'Welcome, Sameer' }).waitFor({ state: 'attached' });
+	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Overview');
+	const stops = page.getByRole('group', { name: 'Batches in flight by stop' });
+	await expect(stops.getByRole('button')).toHaveCount(9);
+	await expect(stops.getByRole('button', { name: /^Approve: 0 batches, waiting for a person/ })).toBeVisible();
+	await expect(page.getByRole('img', { name: 'Closed today: 0 batches, ₹0 recovered' })).toBeVisible();
+	await expect(page.locator('.cs-aw-tok')).toHaveCount(5);
+	await page.goto('/clients/munchly/agents');
+	await page.getByRole('tab', { name: 'Supply chain' }).click();
+	await expect(page.locator('.cs-route')).toBeAttached();
+	await expect(page.locator('.cs-in[data-kind="tab"]')).toBeVisible();
+});

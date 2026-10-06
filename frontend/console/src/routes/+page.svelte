@@ -12,6 +12,7 @@
 		Icon,
 		List,
 		ListRow,
+		Roll,
 		SectionTitle,
 		Segmented,
 		useApp,
@@ -30,14 +31,14 @@
 	import Kpi from '#lib/screens/overview/Kpi.svelte';
 	import MoneyFig from '#lib/screens/overview/MoneyFig.svelte';
 	import Pager from '#lib/screens/overview/Pager.svelte';
+	import AgentsAtWork from '#lib/screens/overview/AgentsAtWork.svelte';
 	import RecoveredChart from '#lib/screens/overview/RecoveredChart.svelte';
-	import StopBars from '#lib/screens/overview/StopBars.svelte';
 	import StopSeg from '#lib/screens/overview/StopSeg.svelte';
 	import Screen from '#lib/screens/Screen.svelte';
 
 	// Overview, the platform as a live dashboard (SC-48, option A, the command centre): four figures with their lines,
-	// recovered by day beside the batches in flight at each stop, every client's batches a page at a time, and what
-	// waits on a person. Every figure comes from backend-api (or the mock); the range, filters and page live in the
+	// the agents at work along the nine stops (SC-49), recovered by day, every client's batches a page at a time, and
+	// what waits on a person. The figures roll, the charts draw themselves, and a reading moves what it changed. Every figure comes from backend-api (or the mock); the range, filters and page live in the
 	// address. The figures are read again every 30 s, with Pause; nothing on the page moves on its own (WCAG 2.2.2)
 	const app = useApp();
 	const k = useConsole();
@@ -47,7 +48,7 @@
 	const query = $derived(apiQuery(view));
 	const dash = createQuery(() => dashboardQuery(view.days, paused));
 	const batches = createQuery(() => batchesQuery(query, paused));
-	const overview = createQuery(() => overviewQuery());
+	const overview = createQuery(() => overviewQuery(paused));
 	const clients = createQuery(() => clientsQuery());
 	const requests = createQuery(() => requestsQuery());
 
@@ -82,7 +83,7 @@
 	function togglePause() {
 		paused = !paused;
 		writePaused(paused);
-		if (!paused) void Promise.all([dash.refetch(), batches.refetch()]);
+		if (!paused) void Promise.all([dash.refetch(), batches.refetch(), overview.refetch()]);
 	}
 	const sortBy = (key: NonNullable<BatchQuery['sort']>) =>
 		set({ sort: key, dir: view.query.sort === key && view.query.dir === 'asc' ? 'desc' : 'asc' });
@@ -166,84 +167,70 @@
 					label="Batches in flight"
 					icon="boxes"
 					spark={d.inFlightSeries}
-					foot="across {d.inFlightClients} client{d.inFlightClients === 1 ? '' : 's'}">{d.inFlight}</Kpi
+					foot="across {d.inFlightClients} client{d.inFlightClients === 1 ? '' : 's'}"
+					><Roll value={d.inFlight} from={0} /></Kpi
 				>
 				{#snippet waitFoot()}{#if d.oldestWaiting}<span class="warn">oldest {d.oldestWaiting.hours} h</span> · {d
 							.oldestWaiting.client}{:else}nothing waiting{/if}{/snippet}
 				<Kpi label="Waiting for a yes" icon="hand" tone={d.waiting ? 'amber' : undefined} foot={waitFoot}
-					>{d.waiting}</Kpi
+					><Roll value={d.waiting} from={0} /></Kpi
 				>
 				<Kpi label="Agent runs today" icon="bot" spark={d.byDay.map((x) => x.runs)} foot="{on} agents on"
-					>{d.runsToday}</Kpi
+					><Roll value={d.runsToday} from={0} /></Kpi
 				>
 			</div>
-			<div class="cs-ov-two">
-				<section class="cs-ov-card">
-					<div class="cs-ov-head">
-						<div>
-							<div class="t">Recovered, by day</div>
-							<div class="s">Every client · what closed batches recovered</div>
-						</div>
-						<Segmented
-							label="Range"
-							value={String(view.days)}
-							onchange={(v) => setView({ ...view, days: Number(v) })}
-							options={RANGES.map((n) => ({ id: String(n), label: `${n} days` }))}
-						/>
+			<AgentsAtWork
+				{d}
+				run={overview.data?.runs[0]}
+				{paused}
+				{client}
+				value={q.status === 'in-flight' ? (q.stop ?? null) : null}
+				onpick={(i) => set({ status: 'in-flight', stop: i })}
+			/>
+			<section class="cs-ov-card">
+				<div class="cs-ov-head">
+					<div>
+						<div class="t">Recovered, by day</div>
+						<div class="s">Every client · what closed batches recovered</div>
 					</div>
-					<div class="cs-ov-big"><MoneyFig value={d.recovered} /> <span class="cs-ov-in">in {d.days} days</span></div>
-					{#if asTable}<div class="cs-ov-daytable">
-							<DataTable
-								label="Recovered, by day"
-								rows={d.byDay.slice().reverse()}
-								rowKey="date"
-								dense
-								columns={[
-									{ key: 'label', label: 'Day', cell: dayLabel },
-									{ key: 'recovered', label: 'Recovered', num: true, cell: dayRecovered },
-									{ key: 'closed', label: 'Closed', num: true },
-									{ key: 'units', label: 'Packs', num: true, cell: dayUnits },
-									{ key: 'runs', label: 'Runs', num: true }
-								] satisfies Column<(typeof d.byDay)[number]>[]}
-							/>
-						</div>{:else}<RecoveredChart byDay={d.byDay} height={phone ? 180 : 210} />{/if}
-					<div class="cs-ov-foot">
-						<span
-							>{best && best.recovered
-								? `Highest ${fmt.inr(best.recovered)} on ${best.label}`
-								: 'Nothing recovered yet in this range'}{d.recoveredBefore
-								? ` · ${lakh(d.recoveredBefore)} the ${d.days} days before`
-								: ''}</span
-						><Button
-							size="sm"
-							variant="link"
-							icon={asTable ? 'chart-line' : 'file-spreadsheet'}
-							onclick={() => (asTable = !asTable)}>{asTable ? 'Show as a chart' : 'Show as a table'}</Button
-						>
-					</div>
-				</section>
-				<section class="cs-ov-card">
-					<div class="cs-ov-head">
-						<div>
-							<div class="t">In flight, by stop</div>
-							<div class="s">{d.inFlight} batch{d.inFlight === 1 ? '' : 'es'} · choose a stop to list them</div>
-						</div>
-					</div>
-					<StopBars
-						{titles}
-						byStop={d.byStop}
-						value={q.status === 'in-flight' ? (q.stop ?? null) : null}
-						onpick={(i) => set({ status: 'in-flight', stop: i })}
+					<Segmented
+						label="Range"
+						value={String(view.days)}
+						onchange={(v) => setView({ ...view, days: Number(v) })}
+						options={RANGES.map((n) => ({ id: String(n), label: `${n} days` }))}
 					/>
-					<div class="cs-ov-foot">
-						<span class="cs-ov-legend"
-							><span><i style="background: var(--primary)"></i>Agents at work</span><span
-								><i style="background: var(--amber)"></i>Waiting for a person</span
-							></span
-						>
-					</div>
-				</section>
-			</div>
+				</div>
+				<div class="cs-ov-big"><MoneyFig value={d.recovered} /> <span class="cs-ov-in">in {d.days} days</span></div>
+				{#if asTable}<div class="cs-ov-daytable">
+						<DataTable
+							label="Recovered, by day"
+							rows={d.byDay.slice().reverse()}
+							rowKey="date"
+							dense
+							columns={[
+								{ key: 'label', label: 'Day', cell: dayLabel },
+								{ key: 'recovered', label: 'Recovered', num: true, cell: dayRecovered },
+								{ key: 'closed', label: 'Closed', num: true },
+								{ key: 'units', label: 'Packs', num: true, cell: dayUnits },
+								{ key: 'runs', label: 'Runs', num: true }
+							] satisfies Column<(typeof d.byDay)[number]>[]}
+						/>
+					</div>{:else}<RecoveredChart byDay={d.byDay} height={phone ? 180 : 210} />{/if}
+				<div class="cs-ov-foot">
+					<span
+						>{best && best.recovered
+							? `Highest ${fmt.inr(best.recovered)} on ${best.label}`
+							: 'Nothing recovered yet in this range'}{d.recoveredBefore
+							? ` · ${lakh(d.recoveredBefore)} the ${d.days} days before`
+							: ''}</span
+					><Button
+						size="sm"
+						variant="link"
+						icon={asTable ? 'chart-line' : 'file-spreadsheet'}
+						onclick={() => (asTable = !asTable)}>{asTable ? 'Show as a chart' : 'Show as a table'}</Button
+					>
+				</div>
+			</section>
 		{/if}
 		<div class="stack" style="gap: 12px">
 			{#snippet everyStop()}{#if q.stop != null && q.status === 'in-flight'}<Button

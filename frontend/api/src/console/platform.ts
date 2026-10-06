@@ -11,6 +11,7 @@ import type {
 	BatchPage,
 	BatchQuery,
 	BatchRow,
+	BatchMark,
 	Dashboard,
 	GateCheck,
 	Gates,
@@ -131,6 +132,8 @@ export type BatchRecord = {
 	done: number;
 	current: number;
 	openedAt: string;
+	/** when it reached the stop it is at (SC-49) */
+	stageAt?: string;
 	closedAt?: string;
 	recovered: number;
 	outcome?: string;
@@ -198,6 +201,23 @@ export function dashboard(
 	const open = bs.filter((b) => !b.closedAt);
 	const byStop = Array<number>(9).fill(0);
 	for (const b of open) byStop[Math.min(b.current, 8)] += 1;
+	// the batches at each stop, the latest to arrive first (three a stop), and the ones closed today (SC-49)
+	const seqOf = new Map(bs.map((b, i) => [b, i]));
+	const mark = (b: BatchRecord): BatchMark => ({
+		client: b.client,
+		ref: b.ref,
+		at: b.closedAt || b.stageAt || b.openedAt
+	});
+	const latest = (at: (b: BatchRecord) => string) => (x: BatchRecord, y: BatchRecord) =>
+		Date.parse(at(y)) - Date.parse(at(x)) || seqOf.get(x)! - seqOf.get(y)!;
+	const atStop = byStop.map((_, i) =>
+		open
+			.filter((b) => Math.min(b.current, 8) === i)
+			.sort(latest((b) => b.stageAt || b.openedAt))
+			.slice(0, 3)
+			.map(mark)
+	);
+	const shut = bs.filter((b) => b.closedAt && istDay(b.closedAt) === today).sort(latest((b) => b.closedAt!));
 	const waiting = open
 		.filter((b) => b.current === APPROVE)
 		.sort((a, b) => Date.parse(a.openedAt) - Date.parse(b.openedAt));
@@ -223,7 +243,13 @@ export function dashboard(
 		}),
 		waiting: waiting.length,
 		runsToday,
-		byStop
+		byStop,
+		atStop,
+		closedToday: {
+			count: shut.length,
+			recovered: r2(shut.reduce((t, b) => t + b.recovered, 0)),
+			batches: shut.slice(0, 3).map(mark)
+		}
 	};
 	if (waiting.length) {
 		const w = waiting[0],

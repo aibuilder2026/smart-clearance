@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-49 Console Motion</title>
+<meta name="description" content="Three ways to give the console loaders that hydrate into the screen, a Sign in that keeps its label, and an Overview whose charts and agents move as the readings arrive.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Noto+Sans+Devanagari:wght@600&display=swap">
+
+<style>
+/* the review board: the request, the screen as it is, the options, and the pick. */
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px -6px rgb(17 41 30 / 0.1);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark }
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
+::selection { background: color-mix(in oklab, var(--green) 24%, transparent); }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 48px 16px 72px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+h2 { margin: 56px 0 14px; font-size: clamp(25px, 3vw, 32px); font-weight: 720; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 72, "wdth" 88; }
+h3 { font-size: 24px; font-weight: 720; letter-spacing: -0.018em; font-variation-settings: "opsz" 48, "wdth" 90; }
+p { margin: 0 0 12px; max-width: 72ch; color: var(--ink-2); text-wrap: pretty; }
+p b, li b { color: var(--ink); font-weight: 600; }
+.lede { font-size: 18px; margin-top: 14px; }
+blockquote { margin: 16px 0; padding: 14px 18px; border-radius: 14px; background: var(--sunken); color: var(--ink); font-size: 16.5px; max-width: 70ch; }
+ul { margin: 0 0 12px; padding-left: 20px; color: var(--ink-2); max-width: 76ch; display: grid; gap: 6px; }
+code { font: 500 0.9em/1 var(--mono); }
+
+.grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.pair { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.frames { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+@media (min-width: 900px) { .frames { grid-template-columns: minmax(0, 2.6fr) minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); align-items: start; } }
+figure { margin: 0; min-width: 0; }
+figure img, figure video { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+
+.card { padding: 22px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.shared { display: grid; gap: 18px; }
+@media (min-width: 900px) { .shared { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.shared h3 { font: 650 16px/1.35 var(--ui); letter-spacing: 0; margin-bottom: 6px; }
+.shared p, .shared li { font-size: 14.5px; }
+
+.opt { margin-top: 22px; display: grid; gap: 18px; padding: 24px 22px; border-radius: 28px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); scroll-margin-top: 20px; }
+.opt.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.opt header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.opt header p { margin: 0; flex-basis: 100%; font-size: 17px; color: var(--ink); max-width: 70ch; }
+.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 600 12.5px/1 var(--ui); color: var(--green-text); background: var(--green-soft); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+.btn.primary { background: var(--green); color: #fff; box-shadow: none; }
+:root[data-theme="dark"] .btn.primary { color: #03170d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #03170d; } }
+.motion-row { display: grid; gap: 18px; }
+@media (min-width: 900px) { .motion-row { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: start; } }
+dl.facts { margin: 0; display: grid; gap: 12px; }
+dl.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); }
+dl.facts dd { margin: 2px 0 0; color: var(--ink-2); font-size: 14.5px; }
+dl.facts dd ul { margin-top: 4px; font-size: 14.5px; }
+.timing { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13.5px; color: var(--ink-3); }
+.timing b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.rec-box { padding: 22px; border-radius: 20px; background: var(--green-soft); }
+.rec-box p { color: var(--ink); }
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
+.wide { margin-top: 4px; }
+.wide img { max-height: none; }
+.frames.three { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+@media (min-width: 900px) { .frames.three { grid-template-columns: minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); } }
+.state { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .state { grid-template-columns: minmax(0, 2.6fr) minmax(0, 0.95fr); align-items: start; } }
+.tall { max-height: 980px; overflow: hidden; border-radius: 14px; box-shadow: 0 0 0 1px var(--line); }
+.tall img { box-shadow: none; border-radius: 0; }
+table.facts-t { border-collapse: collapse; font-size: 14.5px; color: var(--ink-2); margin: 6px 0 12px; }
+table.facts-t th, table.facts-t td { text-align: left; padding: 6px 14px 6px 0; vertical-align: top; border-bottom: 1px solid var(--line); }
+table.facts-t th { color: var(--ink); font-weight: 600; }
+
+.vid { display: grid; gap: 18px; }
+@media (min-width: 900px) { .vid { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); align-items: start; } }
+.four { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+@media (min-width: 900px) { .four { grid-template-columns: minmax(0, 2.6fr) minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); align-items: start; } }
+.states { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+@media (min-width: 900px) { .states { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.q { padding: 18px 22px; border-radius: 20px; background: var(--amber-soft); }
+.q p { color: var(--ink); margin: 0; }
+</style>
+
+<body>
+<main class="wrap">
+<h1>The console, in motion</h1>
+<p class="lede">SC-49 · console.smartclearance.com · three options, built on the console itself (its shell, components and stylesheets) with the motion each would ship. Every company, person and figure on them is fictional.</p>
+<p>The maintainer's words, 6 Oct 2026:</p>
+<blockquote>On the console, I want some cool loader effects, like a hydrating effect when I change tabs. Pressing the Sign in button should be more engaging: at the moment, clicking Sign in removes the text. Make the console more engaging, especially the Overview's graphs and charts, and the way the agents are running in batches.</blockquote>
+
+<h2>The console now</h2>
+<div class="vid"><figure><video src="current/motion.mp4" poster="current/motion.webp" controls muted playsinline preload="metadata" aria-label="The console as it is: Sign in pressed, and the button goes blank while it checks; then the Overview appears; then a client's tabs, each appearing at once."></video><figcaption>Recorded from design3's console: Sign in, then the Overview, then a client's tabs.</figcaption></figure>
+<dl class="facts"><dt>Sign in</dt><dd>The button's <code>loading</code> state makes its label and icon transparent and puts a spinner in their place, so for over a second it's an empty green bar.</dd>
+<dt>Changing screens and tabs</dt><dd>In design3 the next screen fades in over 180 ms. In the build each screen's load waits for its reads from backend-api (<code>prefetch</code>), and meanwhile the old screen stays put, with nothing to show the click was heard.</dd>
+<dt>The Overview</dt><dd>The figures and charts are drawn once. Each reading (every 30 s) swaps them in place, and the agents' work appears only as counts by stop and a list of runs.</dd></dl></div>
+<div class="four" style="margin-top:14px"><figure><img src="current/overview-light-1440.webp" width="1440" height="900" loading="lazy" alt="The console's Overview today, light: four figures, recovered by day beside the bars of batches in flight by stop."><figcaption>Overview, light</figcaption></figure><figure><img src="current/signin-dark-1440.webp" width="1440" height="900" loading="lazy" alt="The console's sign-in today, dark: the plate on the left, the card on the right."><figcaption>Sign in, dark</figcaption></figure><figure><img src="current/overview-light-390.webp" width="780" height="1688" loading="lazy" alt="The Overview on a phone, light."><figcaption>Phone, light</figcaption></figure><figure><img src="current/signin-dark-390.webp" width="780" height="1688" loading="lazy" alt="Sign in on a phone, dark."><figcaption>Phone, dark</figcaption></figure></div>
+
+<h2>What every option shares</h2>
+<div class="shared"><div class="card"><h3>A loader in the screen's shape</h3><ul><li>Placeholders take the shape of the screen on its way: the dashboard, a table, a list, cards, the agents' pipeline, a form, or a client page with its header and tabs.</li>
+<li>The loader starts the moment a link or tab is pressed. In the build that's SvelteKit's <code>navigating</code>, so the old screen never sits there unchanged.</li>
+<li>A screen's first tab arrives with it; a later tab loads on its own. Screen readers hear "Loading Overview" once.</li></ul></div>
+<div class="card"><h3>Sign in keeps its label</h3><ul><li>"Signing in…" while it checks, then a confirmation before the console opens. The button can't be pressed twice.</li>
+<li>Screen readers hear "Signing in", then "Signed in".</li>
+<li>A wrong sign-in still shows SC-46's one message.</li></ul></div>
+<div class="card"><h3>Live, pausable, still when asked</h3><ul><li>Each reading of the Overview (every 30 s in the build; every 6 s in the mockups so you can see it) moves only what it changed.</li>
+<li><b>Pause updates</b> stops all of it (WCAG 2.2.2). Nothing loops: only a loader moves, and only while something loads.</li>
+<li>Under reduced motion every step lands at once. Every figure still comes from backend-api's dashboard and batches.</li></ul></div></div>
+
+<section class="opt rec" id="option-a">
+  <header><h3>A · The route</h3><span class="tag">Recommended</span>
+  <p>The landing page's loader, carried into the console. A green route draws along the top of whatever is loading and lands its amber pin, while the screen's shape waits underneath and hydrates in a green wash. Sign in draws the mark's S. On the Overview the figures roll and the charts draw themselves, and <b>Agents at work</b> shows every batch as its client's mark, travelling the nine stops as the agents finish.</p></header>
+  <div class="vid"><figure><video src="option-a/motion.mp4" poster="option-a/motion.webp" controls muted playsinline preload="metadata" aria-label="Option A's recording: a sign-in with no password shakes and shows the message; with one, the S draws in the button and it reads Welcome, Neha. The Overview's route draws along the top, its placeholders hydrate in a green wash, and the content rises in; the figures roll and the chart draws. The clients' marks then move along the nine stops as readings arrive, and a closed batch adds to Closed today. Then the Clients screen and a client's tabs, each loading under the route."></video><figcaption>Recorded from the mockup (1440 wide, light): a wrong sign-in, a right one, the Overview over three readings, then a client's tabs.</figcaption></figure>
+  <dl class="facts"><dt>Motion</dt><dd><ul><li><b>Route</b>: eases to 88% (about 1.5 s at most), then waits; when the data arrives it completes in 160 ms and the pin lands (420 ms).</li><li><b>Wash</b>: one pass, 1.15 s, block after block (70 ms apart), only while loading. The content then rises 8 px into place, 50 ms apart.</li><li><b>Sign in</b>: the S draws in 1.1 s, with a line along the foot. Then "Welcome, Neha" and a tick (spring 520/22/1). A wrong sign-in shakes for 360 ms.</li><li><b>Overview</b>: figures roll (the kit's <code>Roll</code>, 700 ms); the line draws in 900 ms; a reading moves it in 420 ms and marks today's gain. Tokens travel on a spring (170/24/1), and the stop they reach lights for 1.6 s.</li></ul></dd></dl></div>
+  <div class="four"><figure><img src="option-a/overview-live-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A's Overview, light: four figures, then Agents at work: the nine stops on a line, each with the agent's icon, its name and count, and up to three client marks stacked above it, Approve in amber, and Closed today at the end with what was recovered; under it, the latest run."><figcaption>Overview, light, after two readings</figcaption></figure><figure><img src="option-a/overview-dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option A's Overview in dark."><figcaption>Overview, dark</figcaption></figure><figure><img src="option-a/overview-live-light-390.webp" width="780" height="1688" loading="lazy" alt="Option A on a phone, light: the stops run down the screen, each a row with its icon, name, the clients' marks and the count."><figcaption>Phone, light</figcaption></figure><figure><img src="option-a/overview-dark-390.webp" width="780" height="1688" loading="lazy" alt="Option A on a phone, dark."><figcaption>Phone, dark</figcaption></figure></div>
+  <div class="states"><figure><img src="option-a/loading-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A loading the Overview: the green route part-way along the top, and the dashboard's shape in placeholders with a green wash crossing them."><figcaption>Overview loading</figcaption></figure><figure><img src="option-a/tab-loading-dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option A loading a client's Supply chain tab in dark: the route runs under the tabs, over the tab's placeholders."><figcaption>A tab loading, dark</figcaption></figure><figure><img src="option-a/signin-busy-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A's Sign in while checking: the S drawn in the icon's place beside Signing in…, and a line along the button's foot."><figcaption>Signing in</figcaption></figure><figure><img src="option-a/signin-done-dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option A signed in, dark: a tick beside Welcome, Neha."><figcaption>Signed in, dark</figcaption></figure></div>
+  <dl class="facts"><dt>Why</dt><dd>It is Smart-Clearance's own motion: the loader's route and pin, now in the console's working rhythm. Agents at work answers "what are the agents doing?" at a glance, because each client's batches are seen moving stop to stop, and it carries the counts and the pick that "In flight, by stop" carried, so it takes that card's place.</dd>
+  <dt>Trade-off</dt><dd>The most to build. The route needs to know which batches sit at each stop and when each last moved, which the dashboard doesn't send yet. With many batches at one stop, only three marks show, plus a count.</dd>
+  <dt>What the build touches</dt><dd><ul><li><b>backend-api</b>: a migration adding <code>batches.stage_at</code>, written by the services when a batch moves; the dashboard gains each stop's latest three batches and today's closed batches; the contract, the mock and OpenAPI follow.</li><li><b>core</b>: <code>RouteBar</code>, <code>Hydrate</code> (the shapes) and <code>Roll</code>, with the springs added to <code>SPRINGS</code>.</li><li><b>console</b>: the loader around each screen and tab from <code>navigating</code>; the Sign in button; <code>Kpi</code>, <code>Sparkline</code> and <code>RecoveredChart</code>; a new <code>AgentsRoute</code> in place of <code>StopBars</code>.</li><li><b>design3</b>: <code>console.jsx</code> and <code>console.css</code> first.</li></ul></dd></dl>
+  <div class="links"><a class="btn primary" href="option-a/mockup.html">Open option A</a><a class="btn" href="option-a/mockup.html?signed=1">Straight to the Overview</a><a class="btn" href="option-a/mockup.html?signed=1&amp;latency=2500#/clients/munchly/agents">A slow connection</a></div>
+</section>
+
+<section class="opt" id="option-b">
+  <header><h3>B · The fill</h3>
+  <p>"Hydrating", taken literally. The screen's shape fills with green ink while it loads, and the content surfaces as it drains. Sign in fills as it checks, then floods the page green and clears onto the console. The figures count up, the charts fill from the baseline, and <b>The flow</b> shows each stop as a vessel: a drop falls to the next one as an agent finishes, and the levels settle.</p></header>
+  <div class="vid"><figure><video src="option-b/motion.mp4" poster="option-b/motion.webp" controls muted playsinline preload="metadata" aria-label="Option B's recording: a wrong sign-in tilts the button; a right one fills it with darker green, then green floods the page and clears onto the Overview. The placeholders fill with ink and the content surfaces; the figures count up and the charts fill. In The flow, coloured drops arc from one stop's vessel to the next as readings arrive, and the levels settle. Then a client's tabs, each filling as it loads."></video><figcaption>Recorded from the mockup (1440 wide, light), the same path as A.</figcaption></figure>
+  <dl class="facts"><dt>Motion</dt><dd><ul><li><b>Fill</b>: each placeholder fills to 86% (about 1.5 s at most, 40 ms apart). When the data arrives it tops up, the content surfaces (320 ms) and the ink drains.</li><li><b>Sign in</b>: ink fills the button in 1.3 s. Signed in, a circle of deep green floods the page from the button (1.2 s, over in 0.5 s) and clears onto the console. A wrong sign-in tilts the button for 420 ms.</li><li><b>Overview</b>: figures count up (700 ms); areas fill from the baseline (1 s); a reading drops into today with a splash. Vessels settle on a spring with a little slosh (140/14/1), and drops arc in 800 ms.</li></ul></dd></dl></div>
+  <div class="four"><figure><img src="option-b/overview-live-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option B's Overview, light: four figures, then The flow: ten vessels in a row, one for each of the nine stops and one for Closed today, each filled to its share with green (Approve in amber) and its count on top."><figcaption>Overview, light, after two readings</figcaption></figure><figure><img src="option-b/overview-dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option B's Overview in dark."><figcaption>Overview, dark</figcaption></figure><figure><img src="option-b/overview-live-light-390.webp" width="780" height="1688" loading="lazy" alt="Option B on a phone: the ten vessels fit the width, with icons for names."><figcaption>Phone, light</figcaption></figure><figure><img src="option-b/overview-dark-390.webp" width="780" height="1688" loading="lazy" alt="Option B on a phone, dark."><figcaption>Phone, dark</figcaption></figure></div>
+  <div class="states"><figure><img src="option-b/loading-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option B loading the Overview: the dashboard's shape as vessels nearly full of pale green ink."><figcaption>Overview loading</figcaption></figure><figure><img src="option-b/tab-loading-dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option B loading a client's tab in dark: the rows fill with green."><figcaption>A tab loading, dark</figcaption></figure><figure><img src="option-b/signin-busy-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option B's Sign in while checking: darker green fills the button from the left behind Signing in…"><figcaption>Signing in</figcaption></figure><figure><img src="option-b/signin-done-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option B signed in: the page flooded deep green on its way to the console."><figcaption>The flood</figcaption></figure></div>
+  <dl class="facts"><dt>Why</dt><dd>It is the most literal answer to "hydrating", and the most playful. The vessels read as how full each stop is, which suits a queue.</dd>
+  <dt>Trade-off</dt><dd>The flood is a full-screen change of colour on every sign-in, which wears with daily use. Liquid isn't part of the design system's world (the route, the godown, the miniature town). The vessels show how many batches, not whose.</dd>
+  <dt>What the build touches</dt><dd>As A, without the migration: the counts the dashboard sends already fill the vessels, and a drop follows each change in the counts; today's closed batches are added. <code>Hydrate</code> becomes <code>Fill</code>, the flood is a new overlay in <code>App</code>, and a new <code>AgentsFlow</code> takes the place of <code>StopBars</code>.</dd></dl>
+  <div class="links"><a class="btn primary" href="option-b/mockup.html">Open option B</a><a class="btn" href="option-b/mockup.html?signed=1">Straight to the Overview</a><a class="btn" href="option-b/mockup.html?signed=1&amp;latency=2500#/clients/munchly/agents">A slow connection</a></div>
+</section>
+
+<section class="opt" id="option-c">
+  <header><h3>C · Quiet and quick</h3>
+  <p>Motion only where it tells you something. A thin progress line and the kit's placeholders while a screen loads, then the content at once. Sign in turns its icon into a spinner beside its label. The charts sit still until a reading changes them; then that change moves and is marked for a moment. <b>Live activity</b> lists the agents' runs as they land and the batches they moved, beside the existing bars by stop.</p></header>
+  <div class="vid"><figure><video src="option-c/motion.mp4" poster="option-c/motion.webp" controls muted playsinline preload="metadata" aria-label="Option C's recording: a wrong sign-in shows the message; a right one shows a spinner beside Signing in…, then Signed in. The Overview loads under a thin line and grey placeholders and appears at once. As readings arrive, the changed figures are marked with a green ground and an arrow, new runs slide into Live activity, and the batches that moved fill their stop bars. Then a client's tabs, each with the line and placeholders."></video><figcaption>Recorded from the mockup (1440 wide, light), the same path as A.</figcaption></figure>
+  <dl class="facts"><dt>Motion</dt><dd><ul><li><b>Loading</b>: the line eases to 80% and completes; the kit's shimmer runs only while loading; the content fades in over 160 ms.</li><li><b>Sign in</b>: the kit's spinner in the icon's place, then "Signed in" for 320 ms.</li><li><b>Overview</b>: a changed figure is marked for 1.8 s (a green ground and an arrow); lines and bars ease to new values in 420 ms; new runs slide in (240 ms) and are marked for 2.4 s; a moved batch fills its stop segments (420 ms).</li></ul></dd></dl></div>
+  <div class="four"><figure><img src="option-c/overview-live-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option C's Overview, light: the four figures with two marked by arrows, then Live activity: agent runs on the left with the newest highlighted, and batches that moved on the right, each with its stop bar."><figcaption>Overview, light, after two readings</figcaption></figure><figure><img src="option-c/overview-dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option C's Overview in dark, before any batch has moved."><figcaption>Overview, dark</figcaption></figure><figure><img src="option-c/overview-live-light-390.webp" width="780" height="1688" loading="lazy" alt="Option C on a phone, light."><figcaption>Phone, light</figcaption></figure><figure><img src="option-c/overview-dark-390.webp" width="780" height="1688" loading="lazy" alt="Option C on a phone, dark."><figcaption>Phone, dark</figcaption></figure></div>
+  <div class="states"><figure><img src="option-c/loading-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option C loading the Overview: the line at the top and the kit's grey placeholders."><figcaption>Overview loading</figcaption></figure><figure><img src="option-c/tab-loading-dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option C loading a client's tab in dark."><figcaption>A tab loading, dark</figcaption></figure><figure><img src="option-c/signin-busy-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option C's Sign in while checking: a spinner beside Signing in…"><figcaption>Signing in</figcaption></figure><figure><img src="option-c/signin-done-dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option C signed in, dark: a tick beside Signed in."><figcaption>Signed in, dark</figcaption></figure></div>
+  <dl class="facts"><dt>Why</dt><dd>The calmest and the fastest to read: nothing moves unless something changed, which suits a screen staff keep open all day. It fixes Sign in with the smallest change.</dd>
+  <dt>Trade-off</dt><dd>It answers "more engaging" the least. There's no hydrating effect, just the kit's shimmer, and the agents appear as a feed, not as work moving through the stops.</dd>
+  <dt>What the build touches</dt><dd>The least in the interface. Core gains a <code>Progress</code> line; the console gets the button's label and spinner, the marks on changed figures, and a <code>LiveActivity</code> card. The feed reads today's runs as it does now. To list the batches that moved, the dashboard needs to know when each batch last moved, which is the same <code>batches.stage_at</code> migration as A's.</dd></dl>
+  <div class="links"><a class="btn primary" href="option-c/mockup.html">Open option C</a><a class="btn" href="option-c/mockup.html?signed=1">Straight to the Overview</a><a class="btn" href="option-c/mockup.html?signed=1&amp;latency=2500#/clients/munchly/agents">A slow connection</a></div>
+</section>
+
+<div class="rec-box" style="margin-top:28px"><p><b>Recommended: A.</b> It gives the console the hydrating loader that was asked for in Smart-Clearance's own language (the route and its pin, as on the landing page), fixes Sign in without losing its label, and turns the Overview's agents from counts into work you can watch. B is more playful, but its flood and liquid sit outside the design system's world. C is the safe floor, and its marks on changed figures could join A.</p></div>
+<div class="q" style="margin-top:14px"><p><b>Open question.</b> The mockups read every 6 seconds so the motion can be seen; the build reads every 30. With the changes now easy to follow, should the Overview read more often, say every 10 seconds?</p></div>
+<footer>SC-49 · Smart-Clearance · every company, person and figure is fictional · designs in <code>design3/designs/SC-49/</code></footer>
+</main>
+<script>
+  (function () {
+    var q = new URLSearchParams(location.search).get("theme");
+    if (q === "dark" || q === "light") document.documentElement.setAttribute("data-theme", q);
+  })();
+</script>
+</body>
+</html>

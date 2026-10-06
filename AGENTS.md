@@ -77,7 +77,7 @@ backend-api/scripts/bootstrap.sh            # once per project: secrets, databas
 backend-api/scripts/dev.sh                  # the API on :8000, as sc-api-local (or the backend-api preview config)
 backend-api/scripts/test.sh                 # pytest against smart_clearance_test: 152 tests, a few seconds
 backend-api/scripts/hydrate.sh --reset      # rebuild the synthetic world (Firebase accounts are kept)
-backend-api/scripts/hydrate.sh --tick       # today's agent runs, so the console's day is today
+backend-api/scripts/hydrate.sh --tick       # today's agent runs, and a few batches moved on a stop (the console's day is today)
 backend-api/scripts/default-password.sh --copy   # the password every account starts on
 backend-api/scripts/console-env.sh          # point the frontend's .env.local at the local API (restart its dev servers)
 backend-api/scripts/e2e.sh                  # the landing page and the console end to end on the local API and Firebase Auth
@@ -195,6 +195,7 @@ Local pages:
 - Nothing loops forever: every animation stops within five seconds (WCAG 2.2.2), and only loading indicators keep turning. `motion.a11y.spec.ts` fails on any endless animation.
   - The one longer motion is the landing page's hero tour (SC-34, 16.9 s). It plays once, and carries Pause and Play. It also holds while the visitor has the camera or the hero is out of view.
   - The landing page's loader (SC-35) is a loading indicator: it moves only while the page, or a new theme's plates, load.
+  - The console's loader (SC-49), the route and its placeholders' green wash, is a loading indicator too: it moves only while a screen or tab is read. The Overview moves only when a reading changes something, and Pause updates stops the readings.
 - Measure text contrast against the background it actually sits on, including fills, tinted chips and chat bubbles, after any opacity.
 
 **Data and assets**
