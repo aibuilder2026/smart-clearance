@@ -13,7 +13,7 @@
   4. Build only the option the maintainer picks.
 
   `PRODUCT.md` and `DESIGN.md` are the context. For a finished build, hand off to `impeccable-finish-reviewer`. To record the design system, use `impeccable-documenter`.
-- **Accessibility:** run the suite first. For a manual WCAG audit, use the `accessibility-tester` agent with the `accessibility` and `web-design-guidelines` skills.
+- **Accessibility:** the a11y, e2e and parity suites run only when the maintainer asks for them in the current request (the `browser-suites` skill, SC-55); never as a step of a design or UX change. For a manual WCAG audit, use the `accessibility-tester` agent with the `accessibility` and `web-design-guidelines` skills.
 - **Charts:** the `dataviz` skill. Validate palettes with its script; don't eyeball them.
 - **Images and motion:** `qwengen-bf16` for images (Qwen-Image) and `ltx-clip` for clips (LTX). Write the `.prompt.json` sidecar beside each asset.
 - **Canvas, WebGL and Three.js effects:** the `threeui-community` plugin (user scope). `/threeui <what you need>`, or its `threeui` MCP tools, search ThreeUI's free Community catalog and return the source.
@@ -55,7 +55,7 @@
 
 - Project agents, skills and `.mcp.json` servers load at session start. After changing them, start a new session.
 - The built-in browser was refused claude.ai pages; Claude in Chrome reaches them.
-- The full accessibility suite takes about 6 minutes, so give it a long timeout. While iterating, use `npm run test:desktop`.
+- When asked to run it, the full accessibility suite takes about 6 minutes, so give it a long timeout. While iterating, use `npm run test:desktop`.
 - In the frontend the e2e suite takes about 30 seconds and the parity suite about 40, after a build. In the agent's sandboxed shell Firefox cannot start; Chromium and WebKit can.
 
 ## Recent changes (5 Oct 2026)
