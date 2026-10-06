@@ -190,7 +190,8 @@ Local pages:
 
 **Accessibility**
 
-- The target is WCAG 2.2 AA. UI changes must keep `npm test` in `design3/a11y` at zero violations, and the frontend's `corepack pnpm test:e2e` too (the same axe helpers and five projects).
+- The target is WCAG 2.2 AA, measured by `npm test` in `design3/a11y` and the frontend's `corepack pnpm test:e2e` (the same axe helpers and five projects): zero violations when they run.
+- **The browser suites run on request only** (SC-55). The frontend's e2e and parity suites, design3's a11y suite and `backend-api/scripts/e2e.sh` take minutes and browsers, and they are not gates. They run only when the maintainer explicitly asks for them in the current request, never as a routine step of a design, a UX change, a port or a ticket. Do the work, say which suite would answer the question and how long it takes, and offer to run it. When asked, follow the `browser-suites` skill (`.claude/skills/browser-suites/`). The `ask-before-suites` hook turns any attempt into a permission prompt, as a backstop.
 - The suite covers what axe-core can decide, plus keyboard checks for:
   - the sign-in tab order;
   - sheets taking, keeping and returning focus;
@@ -230,6 +231,8 @@ Local pages:
 | Skill | `web-design-guidelines` | `.claude/skills/` | Reviews UI against Vercel's Web Interface Guidelines. |
 | Skill | `design-first` | `.claude/skills/` | Design before code: which design tool leads for each surface (motion prototyped in Framer Motion; the Svelte build ships it with `motion` and the same springs), the review board on the surface's Claude Design project, building only after the maintainer's yes (SC-26), and porting into `frontend/` (SC-27). |
 | Hook | `design-first-reminder` | `.claude/hooks/`, registered in `.claude/settings.json` | A `UserPromptSubmit` hook. When a request reads like a UI or UX change, it adds the design-first rule to the agent's context; otherwise it stays silent. Needs `jq` (SC-26). |
+| Skill | `browser-suites` | `.claude/skills/` | The e2e, parity and a11y suites, which run only when the maintainer explicitly asks (SC-55): what counts as an ask, what each suite needs first, the commands, and how to report. |
+| Hook | `ask-before-suites` | `.claude/hooks/`, registered in `.claude/settings.json` | A `PreToolUse` hook on Bash. A command that would run the e2e, parity or a11y suite, Playwright, or the live e2e script becomes a permission prompt; every other command passes. Needs `jq` (SC-55). |
 | Config | jira-flow | `.claude/jira-flow.json`, `.claude/jira/taxonomy.md` | Jira project SC: site, issue types, transition ids, branch, commit and PR patterns, and ship rules. |
 | Config | Preview servers | `.claude/launch.json` | <ul><li>`voice-recorder`: `video/recorder/server.py` on 8765;</li><li>`frontend-admin`: the frontend's dev server on 5173;</li><li>`frontend-preview`: its build on 4173 (restart it after a rebuild: its file list is read at start);</li><li>`frontend-console`: the console's dev server on 5174;</li><li>`frontend-console-preview`: its build on 4176 (restart it after a rebuild);</li><li>`design3`: design3 on 8787;</li><li>`backend-api`: the API on 8000 (`backend-api/scripts/dev.sh`).</li></ul> |
 | Tests | Accessibility suite | `design3/a11y/` | Playwright 1.63 with @axe-core/playwright 4.13. |
@@ -313,8 +316,8 @@ From the Claude desktop app:
 
 ## Known gaps
 
-- The jira-flow gates cover `frontend/` (lint, type check, unit tests) and `infra/` (`terraform fmt` and `validate`, the scripts' syntax; no plan, since that needs credentials), and `backend-api/` (ruff, and pytest on a real Postgres), and CI runs all three on every pull request with a secret scan. The `agents/` gate waits for code. Nothing gates `design3/`, or the frontend's e2e and parity suites: run them yourself.
-- The frontend's Firefox smoke run could not be started in the agent's sandboxed shell; run `corepack pnpm test:e2e` on a normal machine to cover it.
+- The jira-flow gates cover `frontend/` (lint, type check, unit tests) and `infra/` (`terraform fmt` and `validate`, the scripts' syntax; no plan, since that needs credentials), and `backend-api/` (ruff, and pytest on a real Postgres), and CI runs all three on every pull request with a secret scan. The `agents/` gate waits for code. Nothing gates `design3/`, or the frontend's e2e and parity suites: they run only when the maintainer asks (the `browser-suites` skill).
+- The frontend's Firefox smoke run could not be started in the agent's sandboxed shell; when the e2e suite is asked for, run it on a normal machine to cover Firefox.
 - The hosted pages on Claude Design still run on the mocks; the deployed apps read backend-api on Cloud Run from their first deploy after SC-50. Locally, `backend-api/scripts/console-env.sh` points both apps at the local API.
 - Local development and prod share one Firebase user pool, so the same accounts sign in to both.
 - Cloud Run scales to zero: the first request after a quiet spell waits a few seconds. Cloud SQL is `db-f1-micro`, a shared core without an SLA.

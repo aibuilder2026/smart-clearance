@@ -128,9 +128,9 @@ Shared screens (`design3/screens`, `design3/core`) go to the app project. Name t
 - **How.** On the same branch, the usual flow:
   1. Build with impeccable, comp-led when the pick includes an approved comp.
   2. Run `./build.sh`.
-  3. Run the accessibility suite.
-  4. Run `./dist.sh`, then re-pin the hosted pages.
-  5. Where the surface is already in the SvelteKit build (the landing page and the design system, in `frontend/`), port the change there too, after design3: update the ported CSS (its drift tests name what moved), the components and the seed, and run `corepack pnpm lint && corepack pnpm check && corepack pnpm test`, the e2e suite and the parity suite in `frontend/`.
-  6. Move the issue to In Review, with the evidence.
+  3. Run `./dist.sh`, then re-pin the hosted pages.
+  4. Where the surface is already in the SvelteKit build (the landing page and the design system, in `frontend/`), port the change there too, after design3: update the ported CSS (its drift tests name what moved), the components and the seed, and run the gate, `corepack pnpm lint && corepack pnpm check && corepack pnpm test`, in `frontend/`.
+  5. **Do not run the a11y, e2e or parity suites on your own** (SC-55, the `browser-suites` skill). They run only when the maintainer explicitly asks in the current request. Say which suite would check the change and how long it takes, and offer to run it.
+  6. Move the issue to In Review, with the evidence: the gate's result, and the suites' counts only if they were asked for.
   7. Ask once about the PR, the merge and closing the issue.
 - **Afterwards.** The designs stay in `design3/designs/`. Whether the published board stays in Claude Design is the maintainer's call.

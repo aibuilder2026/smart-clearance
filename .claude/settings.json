@@ -10,6 +10,18 @@
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/ask-before-suites.sh",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   }
 }
