@@ -300,6 +300,30 @@
         "title": "AuditEntry",
         "type": "object"
       },
+      "BatchCounts": {
+        "additionalProperties": false,
+        "properties": {
+          "closed": {
+            "title": "Closed",
+            "type": "integer"
+          },
+          "inFlight": {
+            "title": "Inflight",
+            "type": "integer"
+          },
+          "waiting": {
+            "title": "Waiting",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "inFlight",
+          "waiting",
+          "closed"
+        ],
+        "title": "BatchCounts",
+        "type": "object"
+      },
       "BatchGates": {
         "additionalProperties": false,
         "description": "an open batch, and its quick-commerce gates as the agents read them",
@@ -397,6 +421,124 @@
           "at"
         ],
         "title": "BatchOverride",
+        "type": "object"
+      },
+      "BatchPage": {
+        "additionalProperties": false,
+        "properties": {
+          "counts": {
+            "$ref": "#/components/schemas/BatchCounts"
+          },
+          "page": {
+            "title": "Page",
+            "type": "integer"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/BatchRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "size": {
+            "title": "Size",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "rows",
+          "total",
+          "page",
+          "size",
+          "counts"
+        ],
+        "title": "BatchPage",
+        "type": "object"
+      },
+      "BatchRow": {
+        "additionalProperties": false,
+        "description": "a batch in the Overview's table: what it is, where it stands, and its value (at MRP while in flight, what it\nrecovered once past Settle)",
+        "properties": {
+          "city": {
+            "title": "City",
+            "type": "string"
+          },
+          "client": {
+            "title": "Client",
+            "type": "string"
+          },
+          "closed": {
+            "title": "Closed",
+            "type": "boolean"
+          },
+          "daysLeft": {
+            "title": "Daysleft",
+            "type": "integer"
+          },
+          "distributor": {
+            "title": "Distributor",
+            "type": "string"
+          },
+          "done": {
+            "title": "Done",
+            "type": "integer"
+          },
+          "outcome": {
+            "title": "Outcome",
+            "type": "string"
+          },
+          "product": {
+            "title": "Product",
+            "type": "string"
+          },
+          "ref": {
+            "title": "Ref",
+            "type": "string"
+          },
+          "stage": {
+            "title": "Stage",
+            "type": "integer"
+          },
+          "units": {
+            "title": "Units",
+            "type": "integer"
+          },
+          "updated": {
+            "title": "Updated",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          },
+          "valueKind": {
+            "enum": [
+              "mrp",
+              "recovered"
+            ],
+            "title": "Valuekind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "client",
+          "ref",
+          "product",
+          "distributor",
+          "city",
+          "stage",
+          "done",
+          "units",
+          "value",
+          "valueKind",
+          "updated",
+          "closed"
+        ],
+        "title": "BatchRow",
         "type": "object"
       },
       "Catalog": {
@@ -759,6 +901,124 @@
           "staffEmailDomain"
         ],
         "title": "ConsoleConfig",
+        "type": "object"
+      },
+      "Dashboard": {
+        "additionalProperties": false,
+        "description": "the platform's figures over a range of days (SC-48): every one an aggregate over the database when read",
+        "properties": {
+          "byDay": {
+            "items": {
+              "$ref": "#/components/schemas/DayFigures"
+            },
+            "title": "Byday",
+            "type": "array"
+          },
+          "byStop": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Bystop",
+            "type": "array"
+          },
+          "days": {
+            "title": "Days",
+            "type": "integer"
+          },
+          "inFlight": {
+            "title": "Inflight",
+            "type": "integer"
+          },
+          "inFlightClients": {
+            "title": "Inflightclients",
+            "type": "integer"
+          },
+          "inFlightSeries": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Inflightseries",
+            "type": "array"
+          },
+          "oldestWaiting": {
+            "$ref": "#/components/schemas/Waiting",
+            "title": "Oldestwaiting"
+          },
+          "readAt": {
+            "title": "Readat",
+            "type": "string"
+          },
+          "recovered": {
+            "title": "Recovered",
+            "type": "number"
+          },
+          "recoveredBefore": {
+            "title": "Recoveredbefore",
+            "type": "number"
+          },
+          "runsToday": {
+            "title": "Runstoday",
+            "type": "integer"
+          },
+          "waiting": {
+            "title": "Waiting",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "readAt",
+          "days",
+          "recovered",
+          "recoveredBefore",
+          "byDay",
+          "inFlight",
+          "inFlightClients",
+          "inFlightSeries",
+          "waiting",
+          "runsToday",
+          "byStop"
+        ],
+        "title": "Dashboard",
+        "type": "object"
+      },
+      "DayFigures": {
+        "additionalProperties": false,
+        "description": "one day of the dashboard's range",
+        "properties": {
+          "closed": {
+            "title": "Closed",
+            "type": "integer"
+          },
+          "date": {
+            "title": "Date",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "recovered": {
+            "title": "Recovered",
+            "type": "number"
+          },
+          "runs": {
+            "title": "Runs",
+            "type": "integer"
+          },
+          "units": {
+            "title": "Units",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "date",
+          "label",
+          "recovered",
+          "closed",
+          "units",
+          "runs"
+        ],
+        "title": "DayFigures",
         "type": "object"
       },
       "DemoRequest": {
@@ -1883,6 +2143,26 @@
         "title": "ValidationError",
         "type": "object"
       },
+      "Waiting": {
+        "additionalProperties": false,
+        "description": "the batch waiting longest for a person's yes",
+        "properties": {
+          "client": {
+            "title": "Client",
+            "type": "string"
+          },
+          "hours": {
+            "title": "Hours",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "hours",
+          "client"
+        ],
+        "title": "Waiting",
+        "type": "object"
+      },
       "WorkspaceMatch": {
         "additionalProperties": false,
         "description": "a workspace an email address or mobile number belongs to. It names the workspace only: never the person's role\nor whether they were deactivated (SC-43)",
@@ -2008,6 +2288,164 @@
           }
         ],
         "summary": "The audit log, newest first",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/batches": {
+      "get": {
+        "operationId": "batch_page_v1_console_batches_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "default": "in-flight",
+              "enum": [
+                "in-flight",
+                "waiting",
+                "closed"
+              ],
+              "title": "Status",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "client",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Client"
+            }
+          },
+          {
+            "in": "query",
+            "name": "stop",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 8,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Stop"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 80,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "default": "priority",
+              "enum": [
+                "priority",
+                "stop",
+                "days",
+                "units",
+                "value",
+                "updated"
+              ],
+              "title": "Sort",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "dir",
+            "required": false,
+            "schema": {
+              "default": "asc",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "title": "Dir",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "maximum": 10000,
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "default": 8,
+              "title": "Size",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Every client's batches, a page at a time",
         "tags": [
           "console"
         ]
@@ -3103,6 +3541,70 @@
           }
         },
         "summary": "How the console describes the platform",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/dashboard": {
+      "get": {
+        "operationId": "overview_dashboard_v1_console_dashboard_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "days",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "title": "Days",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "client",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Client"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Dashboard"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The platform's figures over a range of days",
         "tags": [
           "console"
         ]

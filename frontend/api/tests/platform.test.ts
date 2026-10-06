@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import {
 	agentDefaults,
 	batchGates,
+	batchPage,
+	dashboard,
+	type BatchQuery,
 	clearOverrideLine,
 	exitsFor,
 	overrideError,
@@ -120,5 +123,49 @@ describe('quick-commerce gates per SKU, with a per-batch override (SC-47), match
 			P.overrideLine('MF-2409-204', { qcomPct: 30, reason: ' A deal ' })
 		);
 		expect(clearOverrideLine('MF-2409-204')).toBe(P.clearOverrideLine('MF-2409-204'));
+	});
+});
+
+describe("the Overview's dashboard (SC-48) matches platform.js", () => {
+	const noon = Date.parse(seed.today + 'T12:00:00+05:30');
+	// the seed, then a world where two batches have closed and one waits for a yes
+	const worlds = () => {
+		const a = P.seed();
+		const b = P.seed();
+		b.batches[2].closedAt = '2026-10-05T15:00:00+05:30';
+		b.batches[2].recovered = 25000;
+		b.batches[2].outcome = 'cleared';
+		b.batches[3].closedAt = '2026-09-10T11:00:00+05:30';
+		b.batches[3].recovered = 9000;
+		b.batches[4].current = b.batches[4].done = 5;
+		b.batches[4].openedAt = '2026-10-06T06:00:00+05:30';
+		return [a, b];
+	};
+	it('gives the same figures over 7, 30 and 90 days, every client or one', () => {
+		for (const w of worlds())
+			for (const days of [7, 30, 90])
+				for (const client of [null, 'munchly', 'nobody'])
+					expect(dashboard(w, { days, client, today: seed.today, now: noon })).toEqual(
+						P.dashboard(w, { days, client, now: noon })
+					);
+	});
+	it('gives the same pages, filtered, searched and sorted', () => {
+		const queries: BatchQuery[] = [
+			{},
+			{ page: 2 },
+			{ q: 'chips' },
+			{ stop: 1 },
+			{ status: 'waiting' },
+			{ status: 'closed' },
+			{ sort: 'value', dir: 'desc' },
+			{ sort: 'updated', dir: 'desc' },
+			{ sort: 'days', size: 16 },
+			{ client: 'munchly', sort: 'stop' }
+		];
+		for (const w of worlds()) for (const q of queries) expect(batchPage(w, q, seed.today)).toEqual(P.batchPage(w, q));
+	});
+	it('refuses a range or a page size it does not offer', () => {
+		expect(() => dashboard(P.seed(), { days: 10, today: seed.today })).toThrow('Show 7, 30 or 90 days.');
+		expect(() => batchPage(P.seed(), { size: 10 }, seed.today)).toThrow('Show 8, 16 or 32 rows a page.');
 	});
 });

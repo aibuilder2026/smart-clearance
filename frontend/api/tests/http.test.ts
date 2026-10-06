@@ -102,3 +102,31 @@ describe('consoleHttp: quick-commerce gates (SC-47)', () => {
 		]);
 	});
 });
+
+describe('consoleHttp: the dashboard (SC-48)', () => {
+	it('asks for the figures and a page of batches on their routes, leaving out what is not set', async () => {
+		const auth = fakeAuth();
+		await auth.signIn('neha@x.example', 'right');
+		const fetcher = vi.fn(async () => reply(200, {}));
+		const api = consoleHttp('http://api', { auth, fetcher: fetcher as unknown as typeof fetch });
+		await api.dashboard(30);
+		await api.dashboard(7, 'munchly');
+		await api.batches();
+		await api.batches({
+			status: 'waiting',
+			client: null,
+			stop: 5,
+			q: '',
+			sort: 'days',
+			dir: 'desc',
+			page: 2,
+			size: 16
+		});
+		expect((fetcher.mock.calls as unknown as [string][]).map(([url]) => url)).toEqual([
+			'http://api/v1/console/dashboard?days=30',
+			'http://api/v1/console/dashboard?days=7&client=munchly',
+			'http://api/v1/console/batches',
+			'http://api/v1/console/batches?status=waiting&stop=5&sort=days&dir=desc&page=2&size=16'
+		]);
+	});
+});

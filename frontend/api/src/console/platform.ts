@@ -8,6 +8,10 @@ import type { Agent } from '../types/shared';
 import type {
 	AgentConfig,
 	BatchOverride,
+	BatchPage,
+	BatchQuery,
+	BatchRow,
+	Dashboard,
 	GateCheck,
 	Gates,
 	OverrideInput,
@@ -22,6 +26,7 @@ import type {
 	PresetId,
 	Profile,
 	ProfileQuestion,
+	Run,
 	SettingField,
 	SettingValue,
 	StaffInviteInput
@@ -113,6 +118,204 @@ export const skuGatesLine = (client: { name: string }, sku: { name: string }, g:
 export const overrideLine = (ref: string, o: OverrideInput) =>
 	`Overrode ${ref}'s quick-commerce gates: ${gateText(o)} (${o.reason.trim()})`;
 export const clearOverrideLine = (ref: string) => `Removed ${ref}'s quick-commerce gate override`;
+
+/** a batch as the mock keeps it (design3/core/platform.js): when the Watcher flagged it, where it stands, what it
+ *  recovered, and any gate override (with when it was set) */
+export type BatchRecord = {
+	client: string;
+	ref: string;
+	sku: string;
+	distributor: string;
+	units: number;
+	bestBefore: string;
+	done: number;
+	current: number;
+	openedAt: string;
+	closedAt?: string;
+	recovered: number;
+	outcome?: string;
+	override?: BatchOverride & { setAt?: string };
+};
+
+/** the Overview's dashboard (SC-48). A batch's recovery counts on the day it closed, or, while it is still open past
+ *  Settle, the day it was flagged. It is in flight from being flagged until it closes, and waits for a yes at Approve
+ *  (the sixth stop). Days are India's */
+export const APPROVE = 5;
+export const RANGES = [7, 30, 90] as const;
+export const SIZES = [8, 16, 32] as const;
+const IST_MS = 19_800_000;
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const addDays = (iso: string, n: number) => {
+	const d = new Date(iso + 'T00:00:00Z');
+	d.setUTCDate(d.getUTCDate() + n);
+	return d.toISOString().slice(0, 10);
+};
+const istDay = (at: string) => new Date(Date.parse(at) + IST_MS).toISOString().slice(0, 10);
+/** "2 Oct" */
+export const dayLabel = (iso: string) => `${Number(iso.slice(8, 10))} ${MONTHS[Number(iso.slice(5, 7)) - 1]}`;
+const dayEnd = (iso: string) => Date.parse(addDays(iso, 1) + 'T00:00:00+05:30');
+const pad2 = (n: number) => String(n).padStart(2, '0');
+const r2 = (v: number) => Math.round(v * 100) / 100;
+type Platform = {
+	clients: Pick<Client, 'id' | 'name' | 'skus' | 'distributors'>[];
+	batches: BatchRecord[];
+	runs: Run[];
+};
+
+/** the figures over the last `days` days, ending `today`; `now` is when they are read */
+export function dashboard(
+	s: Platform,
+	{
+		days = 30,
+		client = null,
+		today,
+		now = Date.now()
+	}: { days?: number; client?: string | null; today: string; now?: number }
+): Dashboard {
+	if (!(RANGES as readonly number[]).includes(days)) throw new Error('Show 7, 30 or 90 days.');
+	const bs = s.batches.filter((b) => !client || b.client === client);
+	const first = addDays(today, -(days - 1)),
+		before = addDays(first, -days);
+	const range = Array.from({ length: days }, (_, i) => addDays(first, i));
+	const rec: Record<string, number> = {},
+		closed: Record<string, [number, number]> = {};
+	let recoveredBefore = 0;
+	for (const b of bs) {
+		const d = istDay(b.closedAt || b.openedAt);
+		if (b.recovered > 0) {
+			if (d >= first && d <= today) rec[d] = (rec[d] || 0) + b.recovered;
+			else if (d >= before && d < first) recoveredBefore += b.recovered;
+		}
+		if (b.closedAt) {
+			const c = istDay(b.closedAt);
+			closed[c] ??= [0, 0];
+			closed[c][0] += 1;
+			closed[c][1] += b.units;
+		}
+	}
+	// the runs the mock keeps are today's
+	const runsToday = s.runs.filter((r) => !client || r.client === client).length;
+	const open = bs.filter((b) => !b.closedAt);
+	const byStop = Array<number>(9).fill(0);
+	for (const b of open) byStop[Math.min(b.current, 8)] += 1;
+	const waiting = open
+		.filter((b) => b.current === APPROVE)
+		.sort((a, b) => Date.parse(a.openedAt) - Date.parse(b.openedAt));
+	const t = new Date(now + IST_MS);
+	const out: Dashboard = {
+		readAt: `${pad2(t.getUTCHours())}:${pad2(t.getUTCMinutes())}:${pad2(t.getUTCSeconds())}`,
+		days,
+		recovered: r2(range.reduce((sum, d) => sum + (rec[d] || 0), 0)),
+		recoveredBefore: r2(recoveredBefore),
+		byDay: range.map((d) => ({
+			date: d,
+			label: dayLabel(d),
+			recovered: r2(rec[d] || 0),
+			closed: (closed[d] || [0])[0],
+			units: (closed[d] || [0, 0])[1],
+			runs: d === today ? runsToday : 0
+		})),
+		inFlight: open.length,
+		inFlightClients: new Set(open.map((b) => b.client)).size,
+		inFlightSeries: range.map((d) => {
+			const cut = d < today ? dayEnd(d) : Math.min(now, dayEnd(d));
+			return bs.filter((b) => Date.parse(b.openedAt) <= cut && (!b.closedAt || Date.parse(b.closedAt) > cut)).length;
+		}),
+		waiting: waiting.length,
+		runsToday,
+		byStop
+	};
+	if (waiting.length) {
+		const w = waiting[0],
+			c = s.clients.find((x) => x.id === w.client);
+		out.oldestWaiting = {
+			hours: Math.floor((now - Date.parse(w.openedAt)) / 3_600_000),
+			client: c ? c.name : w.client
+		};
+	}
+	return out;
+}
+
+/** every client's batches, a page at a time: in flight (the ones waiting for a yes first, then the fewest days left),
+ *  waiting for a yes, or closed; by client, stop and a search over the batch, its product and its distributor */
+export function batchPage(s: Platform, q: BatchQuery, today: string): BatchPage {
+	const { status = 'in-flight', client = null, stop = null, sort = 'priority', dir = 'asc', page = 1, size = 8 } = q;
+	if (!(SIZES as readonly number[]).includes(size)) throw new Error('Show 8, 16 or 32 rows a page.');
+	const text = (q.q || '').trim().toLowerCase();
+	const rows = s.batches
+		.map((b, seq) => {
+			const c = s.clients.find((x) => x.id === b.client);
+			const sku = c?.skus.find((x) => x.id === b.sku) ?? { name: b.sku, mrp: 0 };
+			const d = c?.distributors.find((x) => x.id === b.distributor) ?? { name: b.distributor, city: '' };
+			const at = Math.max(
+				...[b.openedAt, b.override?.setAt, b.closedAt].filter((x): x is string => !!x).map(Date.parse)
+			);
+			const local = istDay(new Date(at).toISOString());
+			const t = new Date(at + IST_MS);
+			const row: BatchRow = {
+				client: b.client,
+				ref: b.ref,
+				product: sku.name,
+				distributor: d.name,
+				city: d.city,
+				stage: b.closedAt ? 9 : b.current,
+				done: b.closedAt ? 9 : b.done,
+				units: b.units,
+				value: r2(b.recovered > 0 ? b.recovered : b.units * sku.mrp),
+				valueKind: b.recovered > 0 || b.closedAt ? 'recovered' : 'mrp',
+				updated: local === today ? `${pad2(t.getUTCHours())}:${pad2(t.getUTCMinutes())}` : dayLabel(local),
+				closed: !!b.closedAt
+			};
+			if (b.bestBefore) row.daysLeft = daysBetween(today, b.bestBefore);
+			if (b.outcome) row.outcome = b.outcome;
+			return { row, seq, b, at };
+		})
+		.filter(
+			(x) =>
+				(!client || x.b.client === client) &&
+				(!text || [x.b.ref, x.row.product, x.row.distributor, x.row.city].some((v) => v.toLowerCase().includes(text)))
+		);
+	type X = (typeof rows)[number];
+	const is: Record<string, (x: X) => boolean> = {
+		'in-flight': (x) => !x.b.closedAt,
+		waiting: (x) => !x.b.closedAt && x.b.current === APPROVE,
+		closed: (x) => !!x.b.closedAt
+	};
+	const counts = {
+		inFlight: rows.filter(is['in-flight']).length,
+		waiting: rows.filter(is.waiting).length,
+		closed: rows.filter(is.closed).length
+	};
+	const picked = rows.filter(is[status]).filter((x) => stop == null || status === 'closed' || x.b.current === stop);
+	const nullsLast = (a: unknown, b: unknown) => (a == null ? (b == null ? 0 : 1) : b == null ? -1 : 0);
+	const KEY: Record<string, (x: X) => number | undefined> = {
+		stop: (x) => x.b.current,
+		days: (x) => x.row.daysLeft,
+		units: (x) => x.row.units,
+		value: (x) => x.row.value,
+		updated: (x) => x.at
+	};
+	picked.sort((x, y) => {
+		if (sort === 'priority' || !KEY[sort])
+			return (
+				Number(y.b.current === APPROVE) - Number(x.b.current === APPROVE) ||
+				nullsLast(x.row.daysLeft, y.row.daysLeft) ||
+				(x.row.daysLeft || 0) - (y.row.daysLeft || 0) ||
+				x.seq - y.seq
+			);
+		const a = KEY[sort](x),
+			b = KEY[sort](y);
+		return nullsLast(a, b) || (a! > b! ? 1 : a! < b! ? -1 : 0) * (dir === 'desc' ? -1 : 1) || x.seq - y.seq;
+	});
+	const p = Math.max(1, page);
+	return {
+		rows: picked.slice((p - 1) * size, p * size).map((x) => x.row),
+		total: picked.length,
+		page: p,
+		size,
+		counts
+	};
+}
 
 /** a per-pack price: "₹13.50" */
 export const money = (v: SettingValue) => '₹' + Number(v).toFixed(2);

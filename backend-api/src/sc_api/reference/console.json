@@ -1057,7 +1057,9 @@
 				"units": 1840,
 				"bestBefore": "2026-11-18",
 				"done": 8,
-				"current": 8
+				"current": 8,
+				"openedAt": "2026-10-02T09:00:00+05:30",
+				"recovered": 21152.4
 			},
 			{
 				"client": "munchly",
@@ -1067,7 +1069,9 @@
 				"units": 2000,
 				"bestBefore": "2026-10-24",
 				"done": 6,
-				"current": 6
+				"current": 6,
+				"openedAt": "2026-10-02T09:00:00+05:30",
+				"recovered": 0
 			},
 			{
 				"client": "munchly",
@@ -1077,7 +1081,9 @@
 				"units": 1032,
 				"bestBefore": "2026-12-15",
 				"done": 1,
-				"current": 1
+				"current": 1,
+				"openedAt": "2026-10-02T09:00:00+05:30",
+				"recovered": 0
 			},
 			{
 				"client": "munchly",
@@ -1087,7 +1093,9 @@
 				"units": 960,
 				"bestBefore": "2026-12-02",
 				"done": 1,
-				"current": 1
+				"current": 1,
+				"openedAt": "2026-10-02T09:00:00+05:30",
+				"recovered": 0
 			},
 			{
 				"client": "munchly",
@@ -1097,7 +1105,9 @@
 				"units": 900,
 				"bestBefore": "2026-12-16",
 				"done": 1,
-				"current": 1
+				"current": 1,
+				"openedAt": "2026-10-02T09:00:00+05:30",
+				"recovered": 0
 			},
 			{
 				"client": "munchly",
@@ -1108,11 +1118,14 @@
 				"bestBefore": "2027-01-06",
 				"done": 1,
 				"current": 1,
+				"openedAt": "2026-10-02T09:00:00+05:30",
+				"recovered": 0,
 				"override": {
 					"qcomPct": 30,
 					"reason": "Zepto's Pune warehouse agreed to take this lot at 30% of its life",
 					"by": "Neha Kulkarni",
-					"at": "4 Oct, 16:20"
+					"at": "4 Oct, 16:20",
+					"setAt": "2026-10-04T16:20:00+05:30"
 				}
 			},
 			{
@@ -1123,7 +1136,9 @@
 				"units": 1200,
 				"bestBefore": "2027-04-20",
 				"done": 1,
-				"current": 1
+				"current": 1,
+				"openedAt": "2026-10-02T09:00:00+05:30",
+				"recovered": 0
 			},
 			{
 				"client": "munchly",
@@ -1133,7 +1148,9 @@
 				"units": 360,
 				"bestBefore": "2028-01-05",
 				"done": 1,
-				"current": 1
+				"current": 1,
+				"openedAt": "2026-10-02T09:00:00+05:30",
+				"recovered": 0
 			},
 			{
 				"client": "munchly",
@@ -1143,7 +1160,9 @@
 				"units": 216,
 				"bestBefore": "2028-02-14",
 				"done": 1,
-				"current": 1
+				"current": 1,
+				"openedAt": "2026-10-02T09:00:00+05:30",
+				"recovered": 0
 			}
 		],
 		"audit": [

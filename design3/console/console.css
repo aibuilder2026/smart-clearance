@@ -158,3 +158,93 @@
 .cs-gwho { font-size: 12px; color: var(--fg-2); }
 /* help text sits on the tinted box, so it takes the secondary ink to keep 4.5:1 there */
 .cs-gset .field .help, .cs-govr .field .help { color: var(--fg-2); }
+
+/* SC-48: the Overview as a live dashboard (option A, the command centre). The dataviz rules: one series in the primary
+   green, amber only for "waiting for a person" and always with its words; 2 px lines; bars 24 px or thinner with 4 px
+   rounded data ends; a recessive grid; text in text inks. Nothing moves on its own: the figures are read again every
+   30 s, and Pause stops that (WCAG 2.2.2). */
+.cs-ov { display: grid; gap: 20px; }
+.cs-ov-two, .cs-ov-three { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@container app (min-width: 1100px) { .cs-ov-two { grid-template-columns: minmax(0, 1fr) 420px; } .cs-ov-three { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.cs-ov-live { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; font-size: 13px; color: var(--fg-3); }
+.cs-ov-kpis { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@container app (min-width: 1100px) { .cs-ov-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.cs-ov-kpi { display: grid; gap: 4px; align-content: start; padding: 16px 18px 14px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); min-width: 0; }
+.cs-ov-kpi .k-label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--fg-3); }
+.cs-ov-kpi .k-value, .cs-ov-big { font: 700 30px/1.1 var(--font-display); letter-spacing: -0.02em; color: var(--fg); font-variant-numeric: tabular-nums; font-variation-settings: "opsz" 48, "wdth" 88; }
+.cs-ov-big { font-size: 26px; }
+.cs-ov-kpi .k-value .cur, .cs-ov-big .cur { font-size: 0.62em; vertical-align: 0.42em; margin-right: 1px; }
+.cs-ov-kpi.amber .k-value { color: var(--amber-text); }
+.cs-ov-kpi .k-foot { display: block; min-height: 18px; font-size: 12.5px; line-height: 1.4; color: var(--fg-3); }
+.cs-ov-kpi .k-foot .up, .cs-ov-kpi .k-foot .warn { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; font-weight: 600; vertical-align: bottom; }
+.cs-ov-kpi .k-foot .up { color: var(--primary-text); }
+.cs-ov-kpi .k-foot .warn { color: var(--amber-text); }
+.cs-ov-spark { display: block; width: 100%; height: 36px; margin-top: 4px; overflow: visible; }
+@container app (max-width: 767px) { .cs-ov-kpi { padding: 14px 14px 12px; } .cs-ov-kpi .k-value { font-size: 25px; } .cs-ov-spark { height: 28px; } }
+.cs-ov-in { font: 500 13px var(--font-ui); letter-spacing: 0; color: var(--fg-3); }
+.cs-ov-card { padding: 18px 18px 14px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); min-width: 0; }
+.cs-ov-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 10px 14px; margin-bottom: 12px; }
+.cs-ov-head .t { font-size: 16px; font-weight: 650; letter-spacing: -0.01em; }
+.cs-ov-head .s { margin-top: 2px; font-size: 13px; color: var(--fg-3); }
+.cs-ov-chart { position: relative; margin-top: 10px; }
+.cs-ov-chart svg { display: block; width: 100%; overflow: visible; }
+.cs-ov-chart .ax { font-size: 11px; fill: var(--fg-3); font-variant-numeric: tabular-nums; }
+.cs-ov-chart .gl { stroke: var(--line); stroke-width: 1; }
+.cs-ov-chart .base { stroke: var(--line-2); stroke-width: 1; }
+.cs-ov-chart .tip { position: absolute; z-index: 5; pointer-events: none; min-width: 172px; padding: 10px 12px; border-radius: 12px; background: var(--elevated); box-shadow: var(--shadow-3), 0 0 0 var(--hair) var(--line); font-size: 12.5px; }
+.cs-ov-chart .tip b { display: block; margin-bottom: 4px; font-size: 13px; }
+.cs-ov-chart .tip .tr { display: flex; justify-content: space-between; gap: 14px; color: var(--fg-2); font-variant-numeric: tabular-nums; }
+.cs-ov-chart .tip .tr span:last-child { color: var(--fg); font-weight: 600; }
+.cs-ov-daytable { margin-top: 10px; max-height: 260px; overflow: auto; }
+.cs-ov-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; font-size: 12.5px; color: var(--fg-3); }
+.cs-ov-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--fg-2); }
+.cs-ov-legend i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 3px; vertical-align: -1px; }
+.cs-ov-stops { display: grid; gap: 2px; }
+.cs-ov-stop { display: grid; grid-template-columns: 74px minmax(0, 1fr) 28px; align-items: center; gap: 10px; width: 100%; min-height: 32px; padding: 0 4px; border-radius: 8px; font-size: 13px; color: var(--fg-2); text-align: left; cursor: pointer; }
+.cs-ov-stop:hover { background: var(--fill); }
+.cs-ov-stop[aria-pressed="true"] { background: var(--primary-soft); box-shadow: inset 0 0 0 1.5px var(--primary); color: var(--fg); }
+.cs-ov-stop.human[aria-pressed="true"] { background: var(--amber-soft); box-shadow: inset 0 0 0 1.5px var(--amber); }
+.cs-ov-stop:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+.cs-ov-stop .bar { height: 14px; min-width: 2px; border-radius: 0 4px 4px 0; background: var(--primary); }
+.cs-ov-stop.human .bar { background: var(--amber); }
+.cs-ov-stop.zero .bar { background: var(--fill-3); }
+.cs-ov-stop .n { text-align: right; font-weight: 600; color: var(--fg); font-variant-numeric: tabular-nums; }
+.cs-ov-stop.zero .n { font-weight: 500; color: var(--fg-3); }
+.cs-ov-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.cs-ov-search { position: relative; flex: 1 1 200px; max-width: 300px; }
+.cs-ov-search .ic { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--fg-3); }
+.cs-ov-search input { width: 100%; height: 36px; padding: 0 12px 0 34px; border: 0; border-radius: 10px; background: var(--fill-2); color: var(--fg); font: inherit; font-size: 13.5px; }
+.cs-ov-search input::placeholder { color: var(--fg-3); }
+.cs-ov-sel { height: 36px; padding: 0 34px 0 12px; border: 0; border-radius: 10px; background-color: var(--fill-2); color: var(--fg); font: inherit; font-size: 13.5px; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2382908a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+.cs-ov-search input:focus-visible, .cs-ov-sel:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+.cs-ov-tablecard { overflow: hidden; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+.cs-ov-tablecard .table-wrap { border-radius: 0; box-shadow: none; }
+.cs-ov-table td { padding-top: 10px; padding-bottom: 10px; }
+.cs-ov-bt { display: grid; gap: 1px; min-width: 0; }
+.cs-ov-bt .cs-cellbtn { white-space: nowrap; }
+.cs-ov-bt .t-caption { overflow: hidden; max-width: 300px; white-space: nowrap; text-overflow: ellipsis; }
+.cs-ov-who { display: flex; align-items: center; gap: 8px; min-width: 0; white-space: nowrap; }
+.cs-ov-stage { display: grid; gap: 5px; }
+.cs-ov-stage > span:last-child { font-size: 12.5px; color: var(--fg-2); white-space: nowrap; }
+.cs-ov-seg { display: grid; grid-template-columns: repeat(9, 10px); gap: 3px; }
+.cs-ov-seg i { height: 6px; border-radius: 3px; background: var(--fill-3); }
+.cs-ov-seg i.done { background: var(--primary); }
+.cs-ov-seg i.now { background: linear-gradient(90deg, var(--primary) 50%, var(--fill-3) 50%); }
+.cs-ov-seg i.now.human { background: linear-gradient(90deg, var(--amber) 50%, var(--fill-3) 50%); }
+.cs-ov-human { color: var(--amber-text) !important; font-weight: 600; }
+.cs-ov-low { color: var(--red-text); font-weight: 600; }
+.cs-ov-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 16px; box-shadow: inset 0 var(--hair) 0 var(--line); font-size: 13px; color: var(--fg-3); }
+.cs-ov-pager .pg { display: flex; align-items: center; gap: 4px; }
+.cs-ov-pager .pg button { display: inline-grid; place-items: center; min-width: 36px; height: 36px; padding: 0 8px; border-radius: 10px; color: var(--fg-2); font-weight: 600; font-variant-numeric: tabular-nums; }
+.cs-ov-pager .pg button:hover:not(:disabled) { background: var(--fill-2); }
+.cs-ov-pager .pg button[aria-current="page"] { background: var(--fg); color: var(--bg); }
+.cs-ov-pager .pg button:disabled { color: var(--fg-4); }
+.cs-ov-pager .pg button:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+.cs-ov-pager .cs-ov-sel { height: 32px; }
+.cs-ov-rows .list-row { align-items: flex-start; gap: 12px; padding: 12px 14px; }
+.cs-ov-rows .lr-main { display: grid; gap: 4px; }
+.cs-ov-rows .r1 { display: flex; justify-content: space-between; gap: 8px; }
+.cs-ov-rows .r1 b { overflow: hidden; min-width: 0; font-size: 14.5px; font-weight: 600; white-space: nowrap; text-overflow: ellipsis; }
+.cs-ov-rows .r2 { font-size: 12.5px; color: var(--fg-3); }
+.cs-ov-rows .r2 b { color: var(--fg-2); }
+.cs-ov-rows .cs-ov-seg { grid-template-columns: repeat(9, minmax(0, 1fr)); margin-top: 4px; }

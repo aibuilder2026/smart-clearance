@@ -1,4 +1,5 @@
-import { QueryClient, queryOptions } from '@tanstack/svelte-query';
+import { keepPreviousData, QueryClient, queryOptions } from '@tanstack/svelte-query';
+import type { BatchQuery } from '@smart-clearance/api/console';
 import { api } from './client';
 
 /** The console's one cache. The console renders only in the browser (no SSR, no prerendering), so a single client
@@ -19,6 +20,25 @@ export const meQuery = () => queryOptions({ queryKey: ['session', 'me'] as const
 // the platform's state; a change refreshes everything under 'console'
 export const overviewQuery = () =>
 	queryOptions({ queryKey: ['console', 'overview'] as const, queryFn: () => api.overview() });
+/** the Overview's figures and its page of batches (SC-48): read again every 30 s and on focus, unless paused */
+const live = (paused: boolean) => ({
+	refetchInterval: paused ? (false as const) : 30_000,
+	refetchOnWindowFocus: !paused,
+	staleTime: 10_000
+});
+export const dashboardQuery = (days: number, paused = false) =>
+	queryOptions({
+		queryKey: ['console', 'dashboard', days] as const,
+		queryFn: () => api.dashboard(days),
+		...live(paused)
+	});
+export const batchesQuery = (query: BatchQuery, paused = false) =>
+	queryOptions({
+		queryKey: ['console', 'batches', query] as const,
+		queryFn: () => api.batches(query),
+		placeholderData: keepPreviousData,
+		...live(paused)
+	});
 export const clientsQuery = () =>
 	queryOptions({ queryKey: ['console', 'clients'] as const, queryFn: () => api.clients() });
 export const clientQuery = (id: string) =>

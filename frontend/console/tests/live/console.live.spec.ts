@@ -39,7 +39,7 @@ test('live · a wrong password, then a Super admin signs in to the real data', a
 	await page.getByLabel('Password', { exact: true }).fill(PASSWORD);
 	await page.getByRole('button', { name: 'Sign in' }).click();
 	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Overview');
-	await expect(page.locator('.cs-track').first()).toBeVisible();
+	await expect(page.locator('.cs-ov-tablecard')).toBeVisible();
 	await page.goto(CONSOLE + '/clients');
 	await expect(page.getByRole('row', { name: /Munchly Foods/ })).toBeVisible();
 	await signOut(page);
@@ -151,5 +151,27 @@ test("live · an SKU's own gates and a batch override, in the database the agent
 	await expect(log.nth(3)).toContainText(
 		"Set Masala Chips 150 g's quick-commerce gates: Blinkit 75+ days, Zepto and Instamart 60% of life"
 	);
+	await signOut(page);
+});
+
+test('live · the Overview reads its figures and pages from the database (SC-48)', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 2200 });
+	await signIn(page, SUPER_ADMIN);
+	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Overview');
+	await expect(page.locator('.cs-ov-kpi')).toHaveCount(4);
+	await expect(page.locator('.cs-ov-live')).toContainText('Live');
+	const pager = page.locator('.cs-ov-pager');
+	await expect(pager).toContainText(/^1–8 of \d+/);
+	await page.screenshot({ path: test.info().outputPath('overview.png') });
+	// a stop, then the next page, each read from backend-api and kept in the address
+	await page.getByRole('button', { name: /^Approve: \d+ batch/ }).click();
+	await expect(page).toHaveURL(/\?stop=5$/);
+	await expect(page.locator('.cs-ov-table tbody tr').first()).toContainText('Waiting for a yes');
+	await page.getByRole('button', { name: 'Every stop' }).click();
+	await page.getByRole('button', { name: 'Next page' }).click();
+	await expect(pager).toContainText(/^9–16 of \d+/);
+	await page.getByRole('button', { name: /^Closed \d+/ }).click();
+	await expect(page.locator('.cs-ov-table tbody tr').first()).toContainText('recovered');
+	await page.screenshot({ path: test.info().outputPath('overview-closed.png') });
 	await signOut(page);
 });

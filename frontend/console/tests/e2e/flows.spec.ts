@@ -136,3 +136,34 @@ test("flows · an SKU's own gates, and a batch override, saved and logged (SC-47
 		"Set Masala Chips 150 g's quick-commerce gates: Blinkit 75+ days, Zepto and Instamart 60% of life"
 	);
 });
+
+test('flows · the Overview: a stop chosen, a page, the chart as a table, and updates paused (SC-48)', async ({
+	page,
+	isMobile
+}) => {
+	await openConsole(page, '/');
+	await expect(page.locator('.cs-ov-kpi').first()).toContainText('₹21,152');
+	await page.getByRole('button', { name: /^Detect: 7 batches/ }).click();
+	await expect(page, 'the view is in the address').toHaveURL(/\?stop=1$/);
+	await expect(
+		page.getByRole('heading', { name: 'At Detect' }).or(page.getByText('At Detect', { exact: true }))
+	).toBeVisible();
+	await expect(page.locator('.cs-ov-pager')).toContainText('1–7 of 7');
+	await page.getByRole('button', { name: 'Every stop' }).click();
+	await expect(page).toHaveURL(/\/$/);
+	await page.getByRole('button', { name: 'Next page' }).click();
+	await expect(page).toHaveURL(/\?page=2$/);
+	await expect(page.locator('.cs-ov-pager')).toContainText('9–9 of 9');
+	await page.reload();
+	await expect(page.locator('.cs-ov-pager'), 'a reload keeps the page').toContainText('9–9 of 9');
+	if (!isMobile) {
+		await page.getByRole('button', { name: 'Show as a table' }).click();
+		await expect(page.getByRole('region', { name: 'Recovered, by day' })).toContainText('₹21,152');
+	}
+	await page.getByRole('button', { name: 'Pause updates' }).click();
+	await expect(page.locator('.cs-ov-live')).toContainText('Paused');
+	await page.reload();
+	await expect(page.locator('.cs-ov-live'), 'the choice is remembered').toContainText('Paused');
+	await page.getByRole('button', { name: 'Resume updates' }).click();
+	await expect(page.locator('.cs-ov-live')).toContainText('every 30 s');
+});

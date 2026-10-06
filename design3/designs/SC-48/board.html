@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-48 Console Overview</title>
+<meta name="description" content="Three ways to make the console&#x27;s Overview a live dashboard: charts, figures and a paginated table of every client&#x27;s batches, all read from the database.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Noto+Sans+Devanagari:wght@600&display=swap">
+
+<style>
+/* the review board: the request, the screen as it is, the options, and the pick. */
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px -6px rgb(17 41 30 / 0.1);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark }
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
+::selection { background: color-mix(in oklab, var(--green) 24%, transparent); }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 48px 16px 72px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+h2 { margin: 56px 0 14px; font-size: clamp(25px, 3vw, 32px); font-weight: 720; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 72, "wdth" 88; }
+h3 { font-size: 24px; font-weight: 720; letter-spacing: -0.018em; font-variation-settings: "opsz" 48, "wdth" 90; }
+p { margin: 0 0 12px; max-width: 72ch; color: var(--ink-2); text-wrap: pretty; }
+p b, li b { color: var(--ink); font-weight: 600; }
+.lede { font-size: 18px; margin-top: 14px; }
+blockquote { margin: 16px 0; padding: 14px 18px; border-radius: 14px; background: var(--sunken); color: var(--ink); font-size: 16.5px; max-width: 70ch; }
+ul { margin: 0 0 12px; padding-left: 20px; color: var(--ink-2); max-width: 76ch; display: grid; gap: 6px; }
+code { font: 500 0.9em/1 var(--mono); }
+
+.grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.pair { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.frames { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+@media (min-width: 900px) { .frames { grid-template-columns: minmax(0, 2.6fr) minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); align-items: start; } }
+figure { margin: 0; min-width: 0; }
+figure img, figure video { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+
+.card { padding: 22px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.shared { display: grid; gap: 18px; }
+@media (min-width: 900px) { .shared { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.shared h3 { font: 650 16px/1.35 var(--ui); letter-spacing: 0; margin-bottom: 6px; }
+.shared p, .shared li { font-size: 14.5px; }
+
+.opt { margin-top: 22px; display: grid; gap: 18px; padding: 24px 22px; border-radius: 28px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); scroll-margin-top: 20px; }
+.opt.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.opt header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.opt header p { margin: 0; flex-basis: 100%; font-size: 17px; color: var(--ink); max-width: 70ch; }
+.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 600 12.5px/1 var(--ui); color: var(--green-text); background: var(--green-soft); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+.btn.primary { background: var(--green); color: #fff; box-shadow: none; }
+:root[data-theme="dark"] .btn.primary { color: #03170d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #03170d; } }
+.motion-row { display: grid; gap: 18px; }
+@media (min-width: 900px) { .motion-row { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: start; } }
+dl.facts { margin: 0; display: grid; gap: 12px; }
+dl.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); }
+dl.facts dd { margin: 2px 0 0; color: var(--ink-2); font-size: 14.5px; }
+dl.facts dd ul { margin-top: 4px; font-size: 14.5px; }
+.timing { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13.5px; color: var(--ink-3); }
+.timing b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.rec-box { padding: 22px; border-radius: 20px; background: var(--green-soft); }
+.rec-box p { color: var(--ink); }
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
+.wide { margin-top: 4px; }
+.wide img { max-height: none; }
+.frames.three { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+@media (min-width: 900px) { .frames.three { grid-template-columns: minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); } }
+.state { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .state { grid-template-columns: minmax(0, 2.6fr) minmax(0, 0.95fr); align-items: start; } }
+.tall { max-height: 980px; overflow: hidden; border-radius: 14px; box-shadow: 0 0 0 1px var(--line); }
+.tall img { box-shadow: none; border-radius: 0; }
+table.facts-t { border-collapse: collapse; font-size: 14.5px; color: var(--ink-2); margin: 6px 0 12px; }
+table.facts-t th, table.facts-t td { text-align: left; padding: 6px 14px 6px 0; vertical-align: top; border-bottom: 1px solid var(--line); }
+table.facts-t th { color: var(--ink); font-weight: 600; }
+</style>
+
+<body>
+<main class="wrap">
+<h1>The console's Overview as a live dashboard</h1>
+<p class="lede">SC-48 · console.smartclearance.com · three options, built on the console's own shell, components and stylesheets. Every figure on them is illustrative; the build reads each one from backend-api.</p>
+<p>The maintainer's words, 6 Oct 2026:</p>
+<blockquote>The overview page for the console can be made more intuitive with dashboards and live charts, and proper pagination of the live batches running. Think of a proper, engaging dashboard experience, then implement it. Make it dynamic and database-driven: no hard-coding or stubbing in the UI.</blockquote>
+<p>Overview today is a list of tracker cards, one per batch, with no totals, no trend and no paging. With backend-api (SC-45) and its synthetic world it shows 9 clients and 31 batches, and a real workspace would bring hundreds.</p>
+<h2>The Overview now</h2>
+<div class="frames"><figure><img src="current/light-1440.webp" width="1440" height="900" loading="lazy" alt="The console&#x27;s Overview at 1440 wide, light: two tracker cards under Batches on the move, Agent runs today below them, and Needs attention and Demo requests on the right."><figcaption>Desktop, light</figcaption></figure><figure><img src="current/dark-1440.webp" width="1440" height="900" loading="lazy" alt="The same Overview in dark."><figcaption>Desktop, dark</figcaption></figure><figure><img src="current/light-390.webp" width="780" height="1688" loading="lazy" alt="The Overview on a phone, light: the tracker cards stacked, each with a compact nine-segment bar."><figcaption>Phone, light</figcaption></figure><figure><img src="current/dark-390.webp" width="780" height="1688" loading="lazy" alt="The Overview on a phone, dark."><figcaption>Phone, dark</figcaption></figure></div>
+<h2>What every option shares</h2>
+<div class="shared"><div class="card"><h3>Read from the database</h3><ul><li><b>Two new routes</b> in backend-api: <code>GET /v1/console/dashboard</code> (the figures, the series, the stops, Needs attention) and <code>GET /v1/console/batches</code>, paginated on the server, with <code>status</code>, <code>client</code>, <code>stop</code>, <code>q</code>, <code>sort</code>, <code>page</code> and <code>size</code>.</li>
+<li>Every figure is a SQL aggregate over <code>batches</code>, <code>agent_runs</code> and <code>clients</code>; nothing is written into the page.</li>
+<li>The in-browser mock answers the same shapes from <code>platform.js</code>, and hydrate writes 30 days of history (opened and closed batches, units, what each recovered) so the charts have a past.</li></ul></div><div class="card"><h3>Live, and still</h3><ul><li>The figures are read again every 30 seconds, and when the window comes back into focus. The page says when it last read them.</li>
+<li><b>Pause updates</b> stops the reading (WCAG 2.2.2 covers auto-updating content), and the choice is remembered.</li>
+<li>Nothing moves on its own: no rolling numbers or pulsing dots. A new reading swaps the figures in place.</li></ul></div><div class="card"><h3>Charts and the table</h3><ul><li>The dataviz rules: one series in the primary green, with amber kept for <i>waiting for a person</i>, which always carries its label. Lines are 2 px; bars are 24 px or thinner, with 4 px rounded ends.</li>
+<li>Every chart has a hover tooltip, a one-line summary for screen readers, and <b>Show as a table</b>.</li>
+<li>The batch table has filters in one row (search, client, stop, status) and 8, 16 or 32 rows a page. Desktops page by number; phones page with previous and next. The page and the filters live in the address, so a refresh or a shared link keeps them.</li></ul></div></div>
+
+<section class="opt rec" id="option-a">
+  <header><h3>A · Command centre</h3><span class="tag">Recommended</span>
+  <p>Four figures with their 30-day lines, then recovered by day beside the batches in flight at each stop. Choosing a stop filters the live table below it; the lists sit at the foot.</p></header>
+  <figure class="wide"><img src="option-a/light-1440.webp" width="1440" height="1950" loading="lazy" alt="Option A at 1440, light. Four tiles: recovered in 30 days with a sparkline, batches in flight, waiting for a yes in amber, and agent runs today. Under them, an area chart of recovered by day with a 7, 30 or 90 days switch, and a bar list of batches in flight at each of the nine stops, Approve in amber. Then the Live batches table with search, client and stop filters and an In flight, Waiting for a yes, Closed switch; rows show the product, batch and distributor, the client&#x27;s mark, a nine-segment stop bar, days left, units and the amount recovering, with page numbers at the foot. Needs attention, Demo requests and Agent runs sit in a row at the bottom."><figcaption>Desktop, light: the whole page</figcaption></figure>
+  <div class="frames three"><figure><div class="tall"><img src="option-a/dark-1440.webp" width="1440" height="1800" loading="lazy" alt="Option A at 1440, dark."></div><figcaption>Desktop, dark</figcaption></figure><figure><div class="tall"><img src="option-a/light-390.webp" width="780" height="3400" loading="lazy" alt="Option A on a phone, light: the tiles two by two, the chart and the stops full width, and the batches as rows with a compact stop bar."></div><figcaption>Phone, light</figcaption></figure><figure><div class="tall"><img src="option-a/dark-390.webp" width="780" height="3400" loading="lazy" alt="Option A on a phone, dark."></div><figcaption>Phone, dark</figcaption></figure></div>
+  <div class="state"><figure><img src="option-a/hover-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A with the pointer on the chart: a crosshair on 4 Oct and a tooltip with what was recovered, the batches closed and the packs diverted that day."><figcaption>Hovering the chart</figcaption></figure><figure><div class="tall"><img src="option-a/stop-light-1440.webp" width="1440" height="1717" loading="lazy" alt="Option A with Approve chosen: the table is titled At Approve, lists the four batches waiting for a yes, and offers Every stop to clear it."></div><figcaption>Approve chosen: the table follows</figcaption></figure></div>
+  <dl class="facts"><dt>Why</dt><dd>The question "how are we doing?" is answered in the first screen: money, volume, the queue waiting on people, and the agents' pace, each with its trend. The stops chart is both a picture and a filter, so the table is one click from any count.</dd><dt>Trade-off</dt><dd>The most to build: four series, two charts and the table, each with its tests. On a laptop the table starts below the fold.</dd><dt>What the build touches</dt><dd><ul><li>backend-api: the two routes, their SQL, hydrate's history, contract tests.</li><li>design3: <code>console/console.jsx</code>'s Overview, <code>console.css</code>, and the mock's aggregates in <code>core/platform.js</code>.</li><li>frontend: <code>@smart-clearance/api</code> (types, HTTP, mock); <code>core</code> gains Sparkline, AreaChart, StopBars and Pager; the console's Overview screen, with TanStack Query refetching.</li></ul></dd></dl>
+  <div class="links"><a class="btn primary" href="option-a/mockup.html">Open option A</a><a class="btn" href="option-a/mockup.html?state=hover">Hovering the chart</a><a class="btn" href="option-a/mockup.html?state=stop">Approve chosen</a></div>
+</section>
+<section class="opt" id="option-b">
+  <header><h3>B · The nine stops</h3>
+  <p>The pipeline leads: every stop with its count and its agents, Approve in amber. Choosing a stop lists its batches underneath; the charts and the lists come after.</p></header>
+  <figure class="wide"><img src="option-b/light-1440.webp" width="1440" height="1538" loading="lazy" alt="Option B at 1440, light. Four plain tiles, then The nine stops as one band of nine cells, each with its number, name, count, agent and a meter; Execute is chosen. Under it, At Execute lists five batches with the same filters and pager. At the foot, recovered by day, recovered by client as bars, and Needs attention."><figcaption>Desktop, light: the whole page</figcaption></figure>
+  <div class="frames three"><figure><div class="tall"><img src="option-b/dark-1440.webp" width="1440" height="1538" loading="lazy" alt="Option B at 1440, dark."></div><figcaption>Desktop, dark</figcaption></figure><figure><div class="tall"><img src="option-b/light-390.webp" width="780" height="3400" loading="lazy" alt="Option B on a phone, light: the stops three by three, then the chosen stop&#x27;s batches as rows."></div><figcaption>Phone, light</figcaption></figure><figure><div class="tall"><img src="option-b/dark-390.webp" width="780" height="3400" loading="lazy" alt="Option B on a phone, dark."></div><figcaption>Phone, dark</figcaption></figure></div>
+  <div class="state"><figure><div class="tall"><img src="option-b/stop-light-1440.webp" width="1440" height="1480" loading="lazy" alt="Option B with Approve chosen: the amber cell is pressed and the table lists the batches waiting for a yes."></div><figcaption>Approve chosen</figcaption></figure></div>
+  <dl class="facts"><dt>Why</dt><dd>It teaches the product: the nine stops are the story every client is sold, and the band shows where each batch stands and which agent has it.</dd><dt>Trade-off</dt><dd>The trend comes last, and a stop is always chosen, so the table never lists every batch at once without a click. The band needs its own keyboard and phone layouts.</dd><dt>What the build touches</dt><dd>As A, with a StopBand in place of the stops chart and one trend chart fewer at the top.</dd></dl>
+  <div class="links"><a class="btn primary" href="option-b/mockup.html">Open option B</a><a class="btn" href="option-b/mockup.html?state=stop">Approve chosen</a></div>
+</section>
+<section class="opt" id="option-c">
+  <header><h3>C · Clients at a glance</h3>
+  <p>A card per client: what it recovered in 30 days with its line, its batches at each stop, and what waits on it. Choosing a card lists that client's batches.</p></header>
+  <figure class="wide"><img src="option-c/light-1440.webp" width="1440" height="1933" loading="lazy" alt="Option C at 1440, light. Four tiles, then a grid of client cards: each live client shows its mark, Live badge, recovered in 30 days with a sparkline, small bars of its batches at each stop, and how many are in flight or waiting for a yes; the two clients setting up show what they wait for. Under them the Live batches table, then Needs attention and Demo requests."><figcaption>Desktop, light: the whole page</figcaption></figure>
+  <div class="frames three"><figure><div class="tall"><img src="option-c/dark-1440.webp" width="1440" height="1800" loading="lazy" alt="Option C at 1440, dark."></div><figcaption>Desktop, dark</figcaption></figure><figure><div class="tall"><img src="option-c/light-390.webp" width="780" height="3400" loading="lazy" alt="Option C on a phone, light: the client cards one under another."></div><figcaption>Phone, light</figcaption></figure><figure><div class="tall"><img src="option-c/dark-390.webp" width="780" height="3400" loading="lazy" alt="Option C on a phone, dark."></div><figcaption>Phone, dark</figcaption></figure></div>
+  <div class="state"><figure><div class="tall"><img src="option-c/client-light-1440.webp" width="1440" height="1817" loading="lazy" alt="Option C with Godavari Staples chosen: its card is ringed and the table lists its seven batches."></div><figcaption>A client chosen</figcaption></figure></div>
+  <dl class="facts"><dt>Why</dt><dd>Staff work client by client: who is doing well, who is stuck setting up, whose batches wait on a person. It scales to a few dozen clients before it needs a search.</dd><dt>Trade-off</dt><dd>Platform-wide totals get one row of tiles and no chart of their own, and with many clients the cards push the table far down.</dd><dt>What the build touches</dt><dd>As A, with per-client series in the dashboard route, and a ClientCard in place of the two charts.</dd></dl>
+  <div class="links"><a class="btn primary" href="option-c/mockup.html">Open option C</a><a class="btn" href="option-c/mockup.html?state=client">A client chosen</a></div>
+</section>
+<div class="rec-box" style="margin-top:28px"><p><b>Recommended: A.</b> It answers how the platform is doing before anything is clicked, keeps every batch one filter away, and its stops chart doubles as the way into the table. B's band is a good teaching picture, but it makes staff choose a stop before they see a list. C is the right shape once there are many clients, and its card could later sit on the Clients page.</p></div>
+<footer>SC-48 · Smart-Clearance · every person and number is fictional · designs in <code>design3/designs/SC-48/</code></footer>
+</main>
+<script>
+  (function () {
+    var q = new URLSearchParams(location.search).get("theme");
+    if (q === "dark" || q === "light") document.documentElement.setAttribute("data-theme", q);
+  })();
+</script>
+</body>
+</html>

@@ -12,7 +12,7 @@ test('smoke · the console works', async ({ page }) => {
 	await page.getByLabel('Password', { exact: true }).fill('anything');
 	await page.getByRole('button', { name: 'Sign in' }).click();
 	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Overview');
-	await expect(page.locator('.cs-track').first()).toContainText('MF-2409-117');
+	await expect(page.locator('.cs-ov-tablecard')).toContainText('MF-2409-117');
 	await page.goto('/clients/munchly/plan');
 	await page.getByRole('group', { name: 'Plan' }).getByRole('button', { name: 'Growth' }).click();
 	await expect(page.locator('.toast')).toHaveText('Munchly Foods on Growth');

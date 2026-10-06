@@ -113,3 +113,20 @@ test("a11y · an SKU's gates and a batch override", async ({ page, isMobile }, t
 	findings.push(...(await scan(page, 'console · an SKU with its own gates, out of bounds')));
 	await report(testInfo, findings);
 });
+
+// SC-48: the Overview as a live dashboard: a stop chosen, the chart as a table, the closed batches, updates paused
+test('a11y · the Overview dashboard, its table and its filters', async ({ page }, testInfo) => {
+	await openConsole(page, '/');
+	const findings: Finding[] = [];
+	await page.getByRole('button', { name: /^Detect: 7 batches/ }).click();
+	await page.waitForTimeout(300);
+	findings.push(...(await scan(page, 'console · Overview, a stop chosen')));
+	await page.getByRole('button', { name: 'Show as a table' }).click();
+	await page.getByRole('button', { name: 'Pause updates' }).click();
+	await page.waitForTimeout(300);
+	findings.push(...(await scan(page, 'console · Overview, the chart as a table, updates paused')));
+	await page.getByRole('button', { name: /^Closed \d/ }).click();
+	await page.waitForTimeout(300);
+	findings.push(...(await scan(page, 'console · Overview, no closed batches')));
+	await report(testInfo, findings);
+});
