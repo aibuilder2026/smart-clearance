@@ -533,4 +533,9 @@
     - parity: 80 pass;
     - the e2e and parity suites must run with `PUBLIC_API_BASE=` empty while `.env.local` points at the API.
   - **Hosting:** the hosted landing page and console load commit `b7f143d`; the console page loads `dist/console-splash.js` first in `<body>`.
+- **SC-53** (PR #41, merged): the root `README.md` and a new `ARCHITECTURE.md`, documentation only.
+  - **README.md** is the practical guide: what is in the repository; prerequisites with versions; running everything locally in six steps (design3, the frontend on its mocks, backend-api on the local Docker Postgres through `bootstrap.sh` and each step it runs, the frontend on the real API, every port); tests and gates; the operator's work on Google Cloud (the project's resources, access, Terraform, secrets, releasing backend-api through Cloud Build by CI or by hand, the migrate and hydrate jobs with `--allow-env,prod`, accounts and passwords on the shared pool, logs and alerts, the Hosting deploys and rollbacks, costs, moving to another project); how work is done; a documentation map.
+  - **ARCHITECTURE.md** names every technology by layer, with the versions in the lockfiles, and shows the solution in 14 Mermaid diagrams: the system, design3's structure, the frontend workspace and data flow, the API's layers, the data model, identity and secrets, three request paths, the cloud, the delivery pipeline, local development and the agents' nine stops. It closes with the decisions and their reasons, and the known gaps.
+  - **Checks:** all 14 diagrams rendered with Mermaid 11 without parse errors; every anchor and relative link resolves. CI does not run on root files.
+  - **Hosting:** unchanged.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
