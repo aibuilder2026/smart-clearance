@@ -79,6 +79,8 @@ async function open(browser: Browser, testInfo: TestInfo, url: string, signedIn:
 	}, signedIn);
 	await page.goto(url, { waitUntil: 'networkidle' });
 	await page.waitForSelector(signedIn ? '.largetitle h1' : '.si-title');
+	// both load under the console's splash (SC-51); the screens are compared once it has lifted
+	await page.waitForFunction(() => !document.querySelector('.cs-splash'), null, { timeout: 15000 });
 	await page.evaluate((requests) => {
 		const P = (window as unknown as { SC3_PLATFORM?: { update: (fn: (d: { requests: unknown[] }) => void) => void } })
 			.SC3_PLATFORM;

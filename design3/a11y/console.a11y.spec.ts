@@ -15,7 +15,9 @@ async function open(page, route: string | null, query = '') {
   }, [route !== null]);
   await page.goto(CONSOLE + query + (route ? '#/' + route : ''));
   await page.waitForFunction(() => (window as any).SC3_PLATFORM && document.querySelector('#root')?.childElementCount);
-  // each screen is read first (SC-49): wait for its placeholders to give way, and for the content to rise into place
+  // the splash covers the first load (SC-51), then each screen is read (SC-49): wait for the splash to lift, for the
+  // placeholders to give way, and for the content to rise into place
+  await page.waitForFunction(() => !document.querySelector('.cs-splash'), null, { timeout: 15000 });
   await page.waitForFunction(() => !document.querySelector('.cs-load'));
   await page.waitForTimeout(900);
 }
@@ -105,6 +107,10 @@ test('console · Sign in while it checks, and a tab loading', async ({ page }, t
   await expect(page.locator('.cs-si-btn')).toContainText('Signing in…');
   const findings: Finding[] = [...await scan(page, 'console sign-in · signing in')];
   await page.locator('.cs-si-btn', { hasText: 'Welcome, Neha' }).waitFor({ state: 'attached' });
+  // the splash takes over from the welcome (SC-51): the page behind it is inert until it opens onto the Overview
+  await page.locator('.cs-splash.enter.in').waitFor({ state: 'attached', timeout: 8000 });
+  findings.push(...await scan(page, 'console · the splash, signing in'));
+  await page.waitForFunction(() => !document.querySelector('.cs-splash'), null, { timeout: 15000 });
   await expect(page.getByRole('status').filter({ hasText: 'Loading Overview' })).toBeAttached();
   findings.push(...await scan(page, 'console · the Overview loading'));
   await page.getByRole('heading', { level: 1, name: 'Overview' }).waitFor({ timeout: 8000 });

@@ -24,6 +24,8 @@ export async function openConsole(page: Page, path = '/', { signedIn = true } = 
 	);
 	await page.goto(path);
 	await page.waitForSelector(signedIn ? '.app[data-mounted] .largetitle h1' : '.app[data-mounted] .si-title');
+	// the splash covers the first load (SC-51) until the page behind it is drawn and it has shown for 1.25 s
+	await page.waitForFunction(() => !document.querySelector('.cs-splash'), null, { timeout: 15000 });
 	await page.evaluate(() => document.fonts.ready);
 	await page.waitForTimeout(300);
 }

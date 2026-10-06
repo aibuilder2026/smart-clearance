@@ -334,3 +334,58 @@ button.cs-aw-stop:hover { background: var(--fill); }
   .cs-ph-blk .b { animation: none; }
   .cs-in[data-kind="screen"] .pagebody > * > *, .cs-in[data-kind="tab"] > * > *, .cs-in[data-kind="screen"] .lt-sub, .cs-in[data-kind="screen"] .nb-actions { animation: none; }
 }
+
+/* @splash · the console's splash (SC-51, option A, the shift): one surface for the first load, signing in and signing
+   out, drawn by splash.js before React. The page behind it recedes and goes out of focus, and comes forward as the
+   mark opens into a window onto it. The SvelteKit build inlines this block with the script */
+.cs-splash { position: fixed; inset: 0; z-index: var(--z-splash); display: grid; place-items: center; overflow: hidden; color: var(--fg); opacity: 0; transition: opacity 320ms linear; }
+.cs-splash.in, .cs-splash.still { opacity: 1; }
+.cs-splash.still { transition: none; }
+.cs-splash .sr-only { position: absolute; }
+.cs-sp-cover, .cs-sp-cover .ground { position: absolute; inset: 0; }
+.cs-sp-cover { background: var(--bg); }
+.cs-sp-lock { position: relative; z-index: 1; display: grid; justify-items: center; gap: 26px; width: min(560px, calc(100% - 40px)); text-align: center; }
+.cs-sp-mkbox { display: grid; will-change: transform, opacity; }
+.cs-sp-mk { display: block; width: 112px; height: 112px; overflow: visible; }
+.cs-sp-mk .sq, .cs-sp-mk circle { transform-box: fill-box; transform-origin: center; }
+.cs-sp-mk .route { stroke-dasharray: 1 1; stroke-dashoffset: 1; opacity: 0; }
+.cs-sp-mk .pin { opacity: 0; transform: translateY(-16px) scale(0.6); }
+.cs-splash.landed .cs-sp-mk .pin { opacity: 1; transform: none; transition: opacity 120ms linear, transform 520ms var(--ease-spring); }
+.cs-sp-mk .ping { opacity: 0; }
+.cs-splash.landed .cs-sp-mk .ping { animation: cs-sp-ping 900ms ease-out 120ms both; }
+@keyframes cs-sp-ping { from { opacity: 0.9; transform: scale(0.6); } to { opacity: 0; transform: scale(2.2); } }
+.cs-sp-words { display: grid; justify-items: center; gap: 8px; }
+.cs-sp-brand { display: inline-flex; align-items: baseline; gap: 10px; color: var(--fg-2); }
+.cs-sp-brand .wordmark { font-size: 24px; }
+.cs-sp-console { font: 600 13px/1 var(--font-ui); letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-2); padding: 5px 8px 4px; border-radius: 999px; background: var(--fill-2); }
+.cs-sp-title { margin: 4px 0 0; font-family: var(--font-display); font-weight: 760; font-size: clamp(30px, 4.2vw, 44px); line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96; color: var(--fg); text-wrap: balance; }
+.cs-sp-sub { margin: 0; font-size: 15.5px; color: var(--fg-2); text-wrap: balance; }
+.cs-sp-tracker { width: 100%; max-width: 520px; margin-top: 6px; }
+.cs-sp-tracker .rail > i { transition: none; }
+.cs-sp-tracker .st-label { color: var(--fg-3); }
+.cs-sp-tracker .stop.done .st-label { color: var(--fg); }
+.cs-sp-tracker .stop.now .st-label { color: var(--fg-2); }
+.cs-sp-tracker .stop.done .dot { color: var(--primary-fg); }
+.cs-sp-tracker .stop.done .dot svg { animation: cs-sp-tick 280ms var(--ease) both; }
+@keyframes cs-sp-tick { from { transform: scale(0.4); opacity: 0; } }
+.cs-sp-tracker .stop.now .dot::after { animation-iteration-count: 1; }
+/* the words and the tracker rise once the title's face is in; the mark springs in on a first load */
+.cs-splash:not(.go) .cs-sp-words, .cs-splash:not(.go) .cs-sp-tracker { opacity: 0; }
+.cs-splash.go .cs-sp-words { animation: cs-sp-rise 420ms var(--ease) backwards; }
+.cs-splash.go .cs-sp-tracker { animation: cs-sp-rise 420ms var(--ease) 100ms backwards; }
+.cs-splash.boot .cs-sp-mk .sq { animation: cs-sp-pop 560ms var(--ease-spring) backwards; }
+@keyframes cs-sp-rise { from { opacity: 0; transform: translateY(10px); } }
+@keyframes cs-sp-pop { from { opacity: 0; transform: scale(0.55); } }
+.cs-sp-retry { margin-top: 10px; }
+.cs-splash.failed .cs-sp-tracker { display: none; }
+/* the page behind: a touch smaller and out of focus while covered, forward as the window opens */
+.app-root { transform-origin: 50% 40%; transition: transform 740ms cubic-bezier(0.7, 0, 0.2, 1), filter 740ms cubic-bezier(0.7, 0, 0.2, 1); }
+.cs-covered .app-root { transform: scale(0.985); filter: blur(6px); transition-duration: 320ms, 320ms; }
+@media (max-width: 599px) { .cs-sp-mk { width: 84px; height: 84px; } .cs-sp-brand .wordmark { font-size: 20px; } .cs-sp-lock { gap: 20px; } .cs-sp-tracker .st-time { display: none; } .cs-sp-tracker .st-label { font-size: 11px; } }
+@media (prefers-reduced-motion: reduce) {
+  .cs-splash .cs-sp-words, .cs-splash .cs-sp-tracker, .cs-sp-mk .sq, .cs-sp-mk .ping, .cs-sp-tracker .stop.done .dot svg { animation: none; }
+  .cs-splash:not(.go) .cs-sp-words, .cs-splash:not(.go) .cs-sp-tracker { opacity: 1; }
+  .app-root, .cs-sp-mk .pin { transition: none; }
+  .cs-covered .app-root { transform: none; filter: none; }
+}
+/* @splash-end */

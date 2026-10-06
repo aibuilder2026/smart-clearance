@@ -40,3 +40,4 @@ Open any of these through the local server: `python3 -m http.server 8787 --direc
 | Issue | What | Picked |
 | --- | --- | --- |
 | [SC-25](SC-25/decision.md) | The smartclearance.com landing page and the staff console | Miniature India (comp-led) and Agent pipeline (code-led) |
+| [SC-51](SC-51/decision.md) | The console's splash for signing in and signing out, over the API's waits | A, the shift |

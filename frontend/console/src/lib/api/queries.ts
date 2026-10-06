@@ -56,9 +56,35 @@ export const requestsQuery = () =>
 /** after a change: everything the console shows is read again */
 export const refresh = () => queryClient.invalidateQueries({ queryKey: ['console'] });
 
-/** a page's data, before it draws (in its load function); nothing while no one is signed in */
+/** what the splash calls each read while the console opens after a sign-in (SC-51), in the order it names them */
+const READ_LABELS: Record<string, string> = {
+	clients: 'Your clients',
+	dashboard: 'Today',
+	batches: 'The batches',
+	overview: 'The agents',
+	requests: 'Demo requests',
+	client: 'The client',
+	'client-batches': 'Its batches',
+	staff: 'The staff',
+	audit: 'The audit log'
+};
+const READ_ORDER = Object.keys(READ_LABELS);
+
+/** a page's data, before it draws (in its load function); nothing while no one is signed in. While the sign-in's
+ *  splash is up, the page's reads are its stops, landing one by one */
 export async function prefetch(...queries: { queryKey: readonly unknown[]; queryFn?: unknown }[]) {
 	if (!(await queryClient.ensureQueryData(meQuery()))) return;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- each is a queryOptions(); ensureQueryData keeps its type
-	await Promise.all(queries.map((q) => queryClient.ensureQueryData(q as any)));
+	const splash = typeof window !== 'undefined' ? window.SC3_SPLASH : undefined;
+	const named = splash?.active === 'enter';
+	if (named) {
+		const ids = [...new Set(queries.map((q) => String(q.queryKey[1])))].filter((id) => id in READ_LABELS);
+		ids.sort((a, b) => READ_ORDER.indexOf(a) - READ_ORDER.indexOf(b));
+		splash.reads(ids.map((id) => ({ id, label: READ_LABELS[id] })));
+	}
+	await Promise.all(
+		queries.map((q) =>
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- each is a queryOptions(); ensureQueryData keeps its type
+			queryClient.ensureQueryData(q as any).then((v) => (named && splash.mark(String(q.queryKey[1])), v))
+		)
+	);
 }
