@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { openSite } from './site';
 
-// WCAG 2.2.2 Pause, Stop, Hide, as design3/a11y/motion.a11y.spec.ts: with motion on, nothing may repeat forever; only
+// WCAG 2.2.2 Pause, Stop, Hide: with motion on, nothing may repeat forever; only
 // loading indicators turn until the load ends. One desktop run is enough.
 test.use({ contextOptions: { reducedMotion: 'no-preference' } });
 // eslint-disable-next-line no-empty-pattern -- Playwright needs the fixtures argument destructured

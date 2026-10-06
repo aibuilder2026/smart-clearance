@@ -1,6 +1,6 @@
 import { defineConfig } from '@playwright/test';
 
-// Pixel parity with the prototype: the same parts of design3's pages (served by design3/a11y/serve.py on :8790) and of
+// Pixel parity with the prototype: the same parts of design3's pages (served by testing/design3-server.py on :8790) and of
 // this build (vite preview on :4175), screenshotted side by side and compared with pixelmatch. The report holds each
 // pair and its diff. The prototype's pages load React from unpkg and fonts from Google, so the run needs the network.
 export default defineConfig({
@@ -14,8 +14,7 @@ export default defineConfig({
 	use: { contextOptions: { reducedMotion: 'reduce' }, trace: 'off' },
 	webServer: [
 		{
-			command: 'python3 serve.py 8790',
-			cwd: '../../design3/a11y',
+			command: 'python3 ../testing/design3-server.py 8790',
 			url: 'http://127.0.0.1:8790/site/Smart-Clearance%20site%20v3.html',
 			reuseExistingServer: true,
 			stdout: 'ignore',

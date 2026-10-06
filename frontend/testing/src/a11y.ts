@@ -1,8 +1,9 @@
-// Ported from design3/a11y/helpers.ts (the prototype's WCAG suite), so every app of the frontend is held to the same
-// scan: the same rule tags, the same target-size pass, the same report. Only the results folder moved: each app's own
-// test-results/a11y/<project>.
+// The frontend's WCAG suite (SC-58: `corepack pnpm test:a11y`), on each app's production build: the same rule tags, the
+// same target-size pass and the same report for every app, into its own test-results/a11y/<project>. Each scan also
+// records which core components were on screen, and a11y-coverage.ts fails the run when an app uses a component no scan
+// reached.
 import { AxeBuilder } from '@axe-core/playwright';
-import { expect, type Page, type TestInfo } from '@playwright/test';
+import { expect, test, type Page, type TestInfo } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -25,6 +26,64 @@ export type Finding = {
 	details: { target: string; html: string; why: string }[];
 };
 
+// Where each core component shows on a page: the element it renders (and, for a pattern built on another component,
+// the text that tells it apart). Columns and ThemeProvider render no element of their own (STRUCTURAL).
+export const COMPONENTS: Record<string, { sel: string; text?: string }> = {
+	Alert: { sel: '[role="alertdialog"]' },
+	AppRoot: { sel: '.app' },
+	Avatar: { sel: '.avatar' },
+	Badge: { sel: '.badge' },
+	Button: { sel: '.btn' },
+	Card: { sel: '.card' },
+	Check: { sel: 'label.check' },
+	DataTable: { sel: '.table-wrap > table.table' },
+	Empty: { sel: '.empty' },
+	Field: { sel: '.field' },
+	FindWorkspace: { sel: '.sheet', text: 'Find your workspace' },
+	GateChips: { sel: 'span.gate.pass, span.gate.fail' },
+	IconButton: { sel: '.iconbtn' },
+	Input: { sel: 'input.input:not(.search)' },
+	List: { sel: '.list' },
+	ListRow: { sel: '.list-row' },
+	Mark: { sel: 'svg.mark' },
+	Menu: { sel: '[role="menu"]' },
+	ModeMenuButton: { sel: 'button.iconbtn[aria-label="Appearance"]' },
+	Money: { sel: '.money' },
+	NoticeHost: { sel: '.banners .banner, .toasts .toast' },
+	Page: { sel: 'header.navbar' },
+	Product: { sel: '[data-product]' },
+	Progress: { sel: '.progress[role="progressbar"]' },
+	Roll: { sel: '.roll' },
+	SearchField: { sel: 'input.input.search' },
+	SectionTitle: { sel: '.row.between.wrap .t-title3' },
+	Segmented: { sel: '.segmented' },
+	Select: { sel: 'select.select' },
+	Sheet: { sel: '.sheet' },
+	Shell: { sel: 'nav.sidebar, nav.tabbar' },
+	Spinner: { sel: 'svg.spinner' },
+	Stepper: { sel: '.stepper' },
+	Switch: { sel: 'button.switch' },
+	Tabs: { sel: '.tabs[role="tablist"]' },
+	Textarea: { sel: 'textarea.textarea' },
+	Wordmark: { sel: '.wordmark' },
+	WorkspaceMark: { sel: 'svg.wsmark' }
+};
+export const STRUCTURAL = ['Columns', 'ThemeProvider'];
+
+// the components each test's scans saw, by test, for report()
+const seen = new Map<string, Set<string>>();
+
+async function onScreen(page: Page): Promise<string[]> {
+	return page.evaluate((map) => {
+		const shown = (el: Element) => el.checkVisibility({ visibilityProperty: true });
+		return Object.entries(map)
+			.filter(([, m]) =>
+				[...document.querySelectorAll(m.sel)].some((el) => shown(el) && (!m.text || el.textContent?.includes(m.text)))
+			)
+			.map(([name]) => name);
+	}, COMPONENTS);
+}
+
 // In-app push banners and toasts float over the page for a few seconds and then leave. While one is up,
 // axe counts whatever it covers as an obscured target, so target size is judged on the page they leave
 // behind; the banners and toasts themselves are still checked by every other rule.
@@ -35,6 +94,8 @@ const TRANSIENT = ['.banners', '.toasts'];
 // whose screens the app spec checks at full size); every other rule still covers them.
 export async function scan(page: Page, state: string, opts: { targetSizeExclude?: string[] } = {}): Promise<Finding[]> {
 	await page.waitForTimeout(250);
+	const id = test.info().testId;
+	seen.set(id, new Set([...(seen.get(id) ?? []), ...(await onScreen(page))]));
 	const present: string[] = [];
 	for (const sel of opts.targetSizeExclude || []) if (await page.locator(sel).count()) present.push(sel);
 	const results = [await new AxeBuilder({ page }).withTags(WCAG_TAGS).disableRules(['target-size']).analyze()];
@@ -81,8 +142,18 @@ export async function report(testInfo: TestInfo, findings: Finding[]) {
 		.toLowerCase();
 	writeFileSync(
 		join(dir, `${slug}.json`),
-		JSON.stringify({ test: testInfo.title, project: testInfo.project.name, findings }, null, 2)
+		JSON.stringify(
+			{
+				test: testInfo.title,
+				project: testInfo.project.name,
+				findings,
+				components: [...(seen.get(testInfo.testId) ?? [])].sort()
+			},
+			null,
+			2
+		)
 	);
+	seen.delete(testInfo.testId);
 	await testInfo.attach('wcag-findings.json', {
 		body: JSON.stringify(findings, null, 2),
 		contentType: 'application/json'

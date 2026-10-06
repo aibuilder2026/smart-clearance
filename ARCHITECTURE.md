@@ -263,7 +263,7 @@ flowchart TB
 | `api` | `@smart-clearance/api` (types, `ApiError`, `transport()`), `/site` (`SiteApi`), `/console` (`ConsoleApi` and the platform's rules), `/seed/*` |
 | `admin` | `src/lib/landing/`: `Nav`, `Hero` with `Town` (`town/camera.ts`, `depth.ts`, `geo.ts`, `gestures.ts`, `graph.ts`), `How`, `Exits`, `Workspace`, `Plans`, `Close`, `Footer`, `DemoSheet`; `figures.ts` derives every figure and line of copy from the API; `hooks.server.ts` inlines design3's `loader.js` |
 | `console` | `src/routes/` one per screen; `src/lib/screens/` (overview, client, loading placeholders); `src/lib/api/` with `firebase.ts`; `hooks.server.ts` inlines design3's `splash.js` and its CSS |
-| `testing` | `a11y.ts` (design3's axe scan and report), `parity.ts` (pixelmatch against the prototype) |
+| `testing` | `a11y.ts` (the axe scan and report, and the components each scan had on screen), `a11y-coverage.ts` (every core component an app uses, scanned), `parity.ts` (pixelmatch against the prototype), `design3-server.py` (design3 for parity) |
 
 ### Rendering and data
 
@@ -677,7 +677,7 @@ flowchart LR
   `id-token: write`.
 - Cloud Build owns the Cloud Run image; Terraform ignores it. Terraform itself runs from a workstation, as a person:
   CI checks the configuration but never plans or applies.
-- The e2e, parity and a11y suites need browsers and run on a developer's machine, not in CI.
+- The a11y, e2e and parity suites need browsers and run on a developer's machine, not in CI.
 
 ## 12. Local development
 
@@ -685,7 +685,7 @@ flowchart LR
 flowchart LR
   subgraph machine["The developer's machine"]
     d3["design3<br/>python3 -m http.server :8787"]
-    a11y["design3/a11y<br/>Playwright on :8790"]
+    suites["frontend test:a11y, test:e2e, test:parity<br/>Playwright on the builds :4174, :4177;<br/>design3 for parity on :8790"]
     admin["frontend/admin dev :5173<br/>preview :4173"]
     console["frontend/console dev :5174<br/>preview :4176"]
     api["backend-api<br/>scripts/dev.sh :8000<br/>uvicorn --reload"]
@@ -710,7 +710,8 @@ flowchart LR
   sa --> sm
   sa --> fa
   gc --> api
-  d3 --> a11y
+  suites -- "scan, compare" --> admin
+  suites --> console
 ```
 
 - The frontend runs in full without Google on its mocks; the mocks are seeded from design3 and keep state in the
@@ -723,12 +724,12 @@ flowchart LR
 
 ## 13. Accessibility and motion
 
-The target is WCAG 2.2 AA, held by tests on both the prototypes and the production apps.
+The target is WCAG 2.2 AA, held by the frontend's a11y suite on the production apps (SC-58). design3's prototypes are no longer scanned.
 
 | Concern | How it is held |
 | --- | --- |
-| axe violations | zero, in design3's suite (349 tests in five viewport and theme projects) and in each app's e2e suite |
-| Keyboard | specs for the sign-in tab order, sheets taking and returning focus, the menu-button pattern, the hero's pause and replay, the town's cards and panels |
+| axe violations | zero, in `corepack pnpm test:a11y`: each app's build in five viewport and theme projects, never the `/ds` dev route; a coverage check fails the run if an app uses a core component no scan had on screen |
+| Keyboard | specs for the console's sign-in, sheets and alerts taking and returning focus, the menu-button pattern, Book a demo's and the New client flow's errors, the town's tour, cards and panels |
 | Motion (2.2.2) | every animation stops within five seconds; `motion.a11y.spec.ts` fails on an endless one. The exceptions are loading indicators (the landing page's loader, the console's loader, splash and placeholders) and the hero's 16.9 s tour, which plays once with Pause and Play and holds when the visitor has the camera or the hero is out of view |
 | Reduced motion | every motion lands on its still frame at once |
 | Contrast | measured against the pixels text actually sits on, including fills, tinted chips and plates, after any opacity |
@@ -794,7 +795,8 @@ flowchart LR
   seconds); Cloud SQL is a shared core without an SLA; the rate limiter counts per instance.
 - No custom domain: the apps live on Firebase's own addresses, and the staff email domain is
   `smartclearance.example`.
-- Terraform runs from a workstation; CI checks it but never plans. The e2e, parity and a11y suites are not in CI.
+- Terraform runs from a workstation; CI checks it but never plans. The a11y, e2e and parity suites are not in CI.
+- The a11y suite covers what is built: the landing page and the console. The guided demo and the workspace app are prototypes only, and unscanned since SC-58.
   Firefox cannot start in a sandboxed shell.
 - The hosted design pages on Claude Design run on their mocks; the deployed apps read backend-api.
 - The landing page ships about 139 kB of JavaScript, gzipped; bits-ui and the icon registry are a third of it.

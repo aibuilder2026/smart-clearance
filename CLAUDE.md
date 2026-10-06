@@ -13,7 +13,7 @@
   4. Build only the option the maintainer picks.
 
   `PRODUCT.md` and `DESIGN.md` are the context. For a finished build, hand off to `impeccable-finish-reviewer`. To record the design system, use `impeccable-documenter`.
-- **Accessibility:** the a11y, e2e and parity suites run only when the maintainer asks for them in the current request (the `browser-suites` skill, SC-55); never as a step of a design or UX change. For a manual WCAG audit, use the `accessibility-tester` agent with the `accessibility` and `web-design-guidelines` skills.
+- **Accessibility:** the a11y suite is the frontend's, `corepack pnpm test:a11y`: each app's real UI (never `/ds`), every core component it uses on screen in some scan (SC-58). The a11y, e2e and parity suites run only when the maintainer asks for them in the current request (the `browser-suites` skill, SC-55); never as a step of a design or UX change. For a manual WCAG audit, use the `accessibility-tester` agent with the `accessibility` and `web-design-guidelines` skills.
 - **Charts:** the `dataviz` skill. Validate palettes with its script; don't eyeball them.
 - **Images and motion:** `qwengen-bf16` for images (Qwen-Image) and `ltx-clip` for clips (LTX). Write the `.prompt.json` sidecar beside each asset.
 - **Canvas, WebGL and Three.js effects:** the `threeui-community` plugin (user scope). `/threeui <what you need>`, or its `threeui` MCP tools, search ThreeUI's free Community catalog and return the source.
@@ -55,8 +55,7 @@
 
 - Project agents, skills and `.mcp.json` servers load at session start. After changing them, start a new session.
 - The built-in browser was refused claude.ai pages; Claude in Chrome reaches them.
-- When asked to run it, the full accessibility suite takes about 6 minutes, so give it a long timeout. While iterating, use `npm run test:desktop`.
-- In the frontend the e2e suite takes about 30 seconds and the parity suite about 40, after a build. In the agent's sandboxed shell Firefox cannot start; Chromium and WebKit can.
+- When asked to run them, the a11y suite takes about 2 minutes an app with its build (give both apps a 10-minute timeout), the e2e suite under a minute an app, and the parity suite about 40 seconds an app after a build. Run them with `PUBLIC_API_BASE=` empty. In the agent's sandboxed shell Firefox cannot start; Chromium and WebKit can.
 
 ## Recent changes (5 Oct 2026)
 
@@ -544,5 +543,15 @@
   - **The design-first skill's** build step runs the gate and offers the suites instead of running them.
   - **The `browser-suites` skill** (`.claude/skills/browser-suites/`) loads when a suite is asked for: what counts as an explicit ask, what each suite needs first (a build, `PUBLIC_API_BASE` empty, Firefox's sandbox limit), the commands, and how to report the counts.
   - **The `ask-before-suites` hook** (`.claude/hooks/ask-before-suites.sh`), a `PreToolUse` hook on Bash in `.claude/settings.json`, turns any command that would run a suite into a permission prompt; every other command passes. Tested on ten commands. It takes effect in a new session.
+  - **Hosting:** unchanged.
+- **SC-58** (In Review, branch `SC-58-frontend-a11y`): the a11y suite runs on the frontend's real UI, and design3's is gone.
+  - **The request:** the maintainer found the a11y suite running on design3's prototypes, and asked for it on the actual UI components under `frontend/`. The decisions: remove design3's suite; scan every component the apps use, not `/ds`.
+  - **`corepack pnpm test:a11y`** (`:admin`, `:console`): each app's production build, the axe WCAG 2.2 AA scans with the keyboard and motion specs in five projects, then the coverage check. `test:e2e` keeps the console's flows and the Firefox and WebKit smoke runs. The `/ds` scan is gone; `/ds` stays a dev route that parity compares.
+  - **Coverage:** each scan records the core components on screen (`COMPONENTS` in `frontend/testing/src/a11y.ts`, with `data-product` on Product, which had no class of its own), and `testing/src/a11y-coverage.ts` fails the run when an app uses a component no scan reached. Its first run found two in the console: the toast (`NoticeHost`) and the checkboxes (`Check`); the console's spec now scans the toast after Pause every agent, and the New client flow's sign-in step.
+  - **Found on the way:** the paused state had never been scanned. A switched-off agent's summary fails contrast (2.4:1 light, 2.75:1 dark), faded by `.cs-stop.off .cs-card .cs-text { opacity: 0.6 }` in design3's and the port's `console.css`: SC-59.
+  - **design3/a11y removed;** its static server moved to `frontend/testing/design3-server.py` for the parity runs. The `browser-suites` skill, the `ask-before-suites` hook (now asking on `test:a11y`), CI's paths and the docs follow.
+  - **Checks:**
+    - a11y: landing page 44 pass, 0 WCAG findings, 22 of 22 components it uses on screen; console 94 pass and 5 fail (SC-59's contrast, in each project), 36 of 36 components on screen;
+    - the frontend gate passes.
   - **Hosting:** unchanged.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

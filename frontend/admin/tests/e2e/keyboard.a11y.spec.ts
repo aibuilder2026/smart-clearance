@@ -2,8 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { report, scan, type Finding } from '@smart-clearance/testing/a11y';
 import { openSite } from './site';
 
-// Behaviour axe-core cannot see, as design3/a11y/keyboard.a11y.spec.ts checks it on the prototype, plus what the port
-// fixes: menu buttons (APG), sheets taking, keeping and returning focus, the demo form, links and the theme on load.
+// Behaviour axe-core cannot see, including what the port fixed in the prototype: menu buttons (APG), sheets taking, keeping and returning focus, the demo form, links and the theme on load.
 // One desktop run is enough: the behaviour does not change with theme.
 test.beforeEach(async ({ page }, testInfo) => {
 	test.skip(testInfo.project.name !== 'desktop-light', 'keyboard checks run once, on desktop-light');

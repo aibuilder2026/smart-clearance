@@ -2,8 +2,9 @@ import { expect, test } from '@playwright/test';
 import { report, scan, type Finding } from '@smart-clearance/testing/a11y';
 import { isDesktop, openConsole } from './console';
 
-// design3/a11y/console.a11y.spec.ts, on the port: the staff sign-in and every screen, seeded with Munchly Foods, plus
-// the states a super admin opens most: an agent's settings and the new-client steps
+// The console's build: the staff sign-in and every screen, seeded with Munchly Foods, plus the states a super admin
+// opens most: an agent's settings, a menu, an alert and its toast, and every new-client step (SC-58: every core
+// component the console uses is on screen in one of these scans)
 const ROUTES = [
 	'/',
 	'/clients',
@@ -46,7 +47,9 @@ test('console · sign-in, a wrong sign-in, and Find a workspace', async ({ page 
 	await report(testInfo, findings);
 });
 
-test('console · an agent, a menu and an alert, and a new client step by step', async ({ page }, testInfo) => {
+test('console · an agent, a menu, an alert and its toast, and a new client step by step', async ({
+	page
+}, testInfo) => {
 	await openConsole(page, '/clients/munchly/agents');
 	const findings: Finding[] = [];
 	// the inspector sits beside the pipeline on desktop and opens as a sheet on tablets and phones
@@ -64,7 +67,9 @@ test('console · an agent, a menu and an alert, and a new client step by step', 
 	await expect(page.getByRole('alertdialog')).toBeVisible();
 	await page.waitForTimeout(500);
 	findings.push(...(await scan(page, 'console · pause alert')));
-	await page.getByRole('button', { name: 'Cancel' }).click();
+	await page.getByRole('button', { name: 'Pause', exact: true }).click();
+	await expect(page.locator('.toast')).toHaveText('Every agent paused for Munchly Foods');
+	findings.push(...(await scan(page, 'console · a toast')));
 
 	await page.goto('/new-client');
 	await page.waitForSelector('.cs-step');
@@ -77,6 +82,7 @@ test('console · an agent, a menu and an alert, and a new client step by step', 
 	findings.push(...(await scan(page, 'new client · company')));
 	await next();
 	await page.getByLabel('Staff email domain').fill('kesari.in');
+	findings.push(...(await scan(page, 'new client · workspace and sign-in')));
 	await next();
 	await page.getByRole('radio', { name: 'The manufacturer' }).check();
 	findings.push(...(await scan(page, 'new client · supply chain')));

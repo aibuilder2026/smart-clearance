@@ -69,7 +69,7 @@ Everything runs on macOS or Linux. Nothing is installed globally except the tool
 | Tool | Version | Needed for | Install |
 | --- | --- | --- | --- |
 | Git | any recent | everything | |
-| Node.js | 22.17 or later (CI uses 24) | design3's build and a11y suite, the frontend, the Hosting deploy | [nodejs.org](https://nodejs.org) or `brew install node` |
+| Node.js | 22.17 or later (CI uses 24) | design3's build, the frontend, the Hosting deploy | [nodejs.org](https://nodejs.org) or `brew install node` |
 | corepack | ships with Node | pnpm, pinned by `frontend/package.json`; nothing to install | `corepack enable` once if `corepack` is not on your PATH |
 | Python 3 | 3.9 or later | serving design3 locally (`http.server`), `video/` | ships with macOS; `brew install python` |
 | Python 3.14 and uv | uv 0.12 or later | backend-api (uv downloads 3.14 itself) | `brew install uv` or [docs.astral.sh/uv](https://docs.astral.sh/uv/) |
@@ -121,15 +121,8 @@ cd design3 && ./build.sh
 `./dist.sh` bundles the hosted build into `design3/dist/`, which the Claude Design pages load from jsDelivr pinned
 to a commit. Publishing a new version is described in AGENTS.md (Code and builds).
 
-The accessibility suite (Playwright, axe-core) runs the demo, every role in the app, the landing page and the console
-in five viewports:
-
-```bash
-cd design3/a11y && npm ci && npx playwright install chromium
-npm test                 # WCAG 2.2 AA, about 6 minutes
-npm run test:desktop     # light and dark at 1440 only, for a quicker loop
-npm run report           # the HTML report
-```
+The accessibility suite runs on the frontend's real UI, not on these prototypes: `corepack pnpm test:a11y` in
+`frontend/` (SC-58; see [3. The frontend on its mocks](#3-the-frontend-on-its-mocks)).
 
 ### 3. The frontend on its mocks
 
@@ -157,6 +150,14 @@ corepack pnpm preview:console  # the console's build on http://localhost:4176
 ```
 
 A preview server reads the build's file list once: restart it after a rebuild.
+
+The accessibility suite (SC-58) scans each app's production build, never the `/ds` dev route: axe-core WCAG 2.2 AA
+in five viewport and theme projects, the keyboard and motion specs, then a coverage check that fails if an app uses a
+core component no scan had on screen. It builds first, and runs on the mocks:
+
+```bash
+PUBLIC_API_BASE= corepack pnpm test:a11y     # both apps, about 2 minutes each (test:a11y:admin, test:a11y:console)
+```
 
 Regenerate what the frontend derives from design3 whenever design3 changes (the gate fails otherwise):
 
@@ -287,7 +288,7 @@ backend-api/scripts/e2e.sh
 ```
 
 To go back to the mocks, delete the two `.env.local` files, or set `PUBLIC_API_BASE=` empty in the environment. The
-e2e and parity suites below must run with it empty.
+a11y, e2e and parity suites must run with it empty.
 
 ### 6. Everything at once
 
@@ -314,13 +315,13 @@ The gates are what jira-flow runs before a change ships and what CI runs on ever
 
 | Area | The gate | Also run yourself |
 | --- | --- | --- |
-| `frontend/` | `corepack pnpm lint && corepack pnpm check && corepack pnpm test` (ESLint and Prettier, svelte-check, Vitest, the seed and icons checks) | `corepack pnpm test:e2e` (WCAG 2.2 AA in five viewports, keyboard, motion, flows, Firefox and WebKit smoke; needs a build) and `corepack pnpm test:parity` (each app's build against design3, pixel by pixel) |
+| `frontend/` | `corepack pnpm lint && corepack pnpm check && corepack pnpm test` (ESLint and Prettier, svelte-check, Vitest, the seed and icons checks) | `corepack pnpm test:a11y` (WCAG 2.2 AA in five viewports, keyboard, motion and component coverage), `corepack pnpm test:e2e` (the console's flows, Firefox and WebKit smoke) and `corepack pnpm test:parity` (each app's build against design3, pixel by pixel) |
 | `backend-api/` | `cd backend-api && uv run ruff check . && uv run ruff format --check . && scripts/test.sh -q` (pytest on a real PostgreSQL) | `scripts/e2e.sh` on the live API |
 | `infra/` | `infra/scripts/check.sh` (`terraform fmt` and `validate`, the scripts' syntax, shellcheck; no credentials) | a plan, read in full |
-| `design3/` | nothing gates it | `cd design3/a11y && npm test` |
+| `design3/` | nothing gates it | `./build.sh`, and the frontend's parity suite against it |
 
 CI (`.github/workflows/ci.yml`) runs the three gates, a gitleaks secret scan and one build of both apps on every pull
-request to `main`. The e2e, parity and a11y suites need browsers and are not in CI. In a sandboxed shell Firefox
+request to `main`. The a11y, e2e and parity suites need browsers and are not in CI. In a sandboxed shell Firefox
 cannot start; run the e2e suite on a normal machine to cover it.
 
 ## Working on Google Cloud
@@ -655,7 +656,7 @@ The rules are in [AGENTS.md](AGENTS.md). The short version:
   and then ported to `frontend/`.
 - The frontend implements design3 and tests hold it there: ported CSS stays verbatim outside marked blocks, generated
   files (`seed`, `icons`) are regenerated and never edited, images are referenced in place.
-- WCAG 2.2 AA throughout, with zero axe violations in design3's suite and the frontend's e2e suite, and every
+- WCAG 2.2 AA throughout, with zero axe violations in the frontend's a11y suite on every component the apps use, and every
   animation stopping within five seconds.
 - Only backend-api's services write data, each change in one transaction with its audit line. Synthetic data goes
   through them too. The contract is `frontend/api/src/types/*.ts`; a change to it changes both sides.
