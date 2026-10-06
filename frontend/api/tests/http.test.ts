@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { consoleHttp, type ConsoleAuth } from '../src/console/index';
 import { siteHttp } from '../src/site';
+import type { ApiError } from '../src/types/shared';
 
 // the HTTP clients against a fake backend-api: the Firebase ID token on every console call, sign-in through the app's
 // Firebase, and the error shape
@@ -65,6 +66,28 @@ describe('consoleHttp', () => {
 			status: 422,
 			fields: { contact: 'Enter a name.' }
 		});
+	});
+});
+
+describe('transport: tracing (SC-57)', () => {
+	it('starts a new trace on every call, and names it on a failure', async () => {
+		const fetcher = vi.fn(async () => reply(500, { message: 'Something went wrong on our side. Try again.' }));
+		const api = siteHttp('http://api', { fetcher: fetcher as unknown as typeof fetch });
+		const failures = await Promise.all(
+			['a@b.example', 'c@d.example'].map((q) =>
+				api.lookupWorkspaces(q).then(
+					() => null,
+					(e: ApiError) => e
+				)
+			)
+		);
+		const sent = (fetcher.mock.calls as unknown as [string, RequestInit][]).map(
+			([, init]) => new Headers(init.headers).get('traceparent') ?? ''
+		);
+		for (const header of sent) expect(header).toMatch(/^00-[0-9a-f]{32}-[0-9a-f]{16}-00$/);
+		expect(new Set(sent.map((h) => h.split('-')[1])).size).toBe(2);
+		expect(failures.map((e) => e?.trace)).toEqual(sent.map((h) => h.split('-')[1]));
+		expect(failures[0]).toMatchObject({ status: 500, message: 'Something went wrong on our side. Try again.' });
 	});
 });
 

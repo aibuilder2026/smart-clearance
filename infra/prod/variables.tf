@@ -114,3 +114,14 @@ variable "budget_amount" {
   type        = number
   default     = 20
 }
+
+variable "trace_sample_rate" {
+  description = "The share of backend-api's requests whose spans go to Cloud Trace, beyond those Cloud Run samples itself (at most one every ten seconds an instance), which are always kept (SC-57). Cloud Trace ingests 2.5 million spans a month free, then 0.20 USD a million."
+  type        = number
+  default     = 0.25
+
+  validation {
+    condition     = var.trace_sample_rate >= 0 && var.trace_sample_rate <= 1
+    error_message = "trace_sample_rate is a share: between 0 and 1."
+  }
+}

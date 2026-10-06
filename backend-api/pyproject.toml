@@ -18,6 +18,11 @@ dependencies = [
     "cloud-sql-python-connector[asyncpg]>=1.22,<1.23",
     "slowapi>=0.1.10,<0.2",
     "faker>=40.41,<41",
+    "opentelemetry-sdk>=1.45.1,<1.46",
+    "opentelemetry-exporter-otlp-proto-grpc>=1.45.1,<1.46",
+    "opentelemetry-instrumentation-fastapi>=0.66b1,<0.67",
+    "opentelemetry-instrumentation-sqlalchemy>=0.66b1,<0.67",
+    "opentelemetry-instrumentation-requests>=0.66b1,<0.67",
 ]
 
 [project.scripts]

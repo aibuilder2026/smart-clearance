@@ -3,6 +3,8 @@
 - Locally: a DSN to the Docker Postgres, as the login sc_api (or sc_migrator for migrations). The password comes
   from Secret Manager, or DB_PASSWORD for a throwaway database.
 - On Cloud Run: the Cloud SQL Python Connector with IAM database authentication; no password exists.
+
+Every engine traces its SQL statements (tracing.py): each one is a span in the request's trace.
 """
 
 from collections.abc import AsyncIterator
@@ -11,6 +13,7 @@ from contextlib import asynccontextmanager
 from sqlalchemy import URL
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 
+from sc_api import tracing
 from sc_api.settings import Settings, get_settings
 
 SCHEMA = "sc"
@@ -52,6 +55,7 @@ async def make_engine(settings: Settings | None = None, *, user: str | None = No
 
         engine = create_async_engine("postgresql+asyncpg://", async_creator=creator, pool_size=s.db_pool_size)
         _connectors[id(engine)] = connector
+        tracing.instrument_engine(engine)
         return engine
     url = URL.create(
         "postgresql+asyncpg",
@@ -61,7 +65,9 @@ async def make_engine(settings: Settings | None = None, *, user: str | None = No
         port=s.db_port,
         database=s.db_name,
     )
-    return create_async_engine(url, pool_size=s.db_pool_size, pool_pre_ping=True, connect_args=connect_args)
+    engine = create_async_engine(url, pool_size=s.db_pool_size, pool_pre_ping=True, connect_args=connect_args)
+    tracing.instrument_engine(engine)
+    return engine
 
 
 async def dispose(engine: AsyncEngine) -> None:
