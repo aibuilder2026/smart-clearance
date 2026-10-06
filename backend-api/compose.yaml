@@ -1,0 +1,45 @@
+# The API in its container, as Cloud Run runs it (scripts/up.sh), against the developer's Docker Postgres on the
+# host. It acts as sc-api-local from the developer's own gcloud credentials, mounted read-only: no key file exists.
+# Machines without a Postgres of their own start one with the db profile: docker compose --profile db up -d db
+# (then scripts/db-init.sh --container sc-postgres).
+name: smart-clearance
+
+services:
+  api:
+    build: .
+    image: smart-clearance/backend-api:local
+    ports:
+      - "127.0.0.1:${PORT:-8000}:8080"
+    environment:
+      SC_ENV: local
+      GOOGLE_CLOUD_PROJECT: ${GOOGLE_CLOUD_PROJECT:?run through scripts/up.sh}
+      SC_IMPERSONATE_SA: ${SC_IMPERSONATE_SA:?run through scripts/up.sh}
+      DEFAULT_PASSWORD_SECRET: ${DEFAULT_PASSWORD_SECRET:?run through scripts/up.sh}
+      DB_HOST: ${DB_CONTAINER_HOST:-host.docker.internal}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-smart_clearance}
+      DB_USER: sc_api
+      DB_PASSWORD_SECRET: ${DB_PASSWORD_SECRET:?run through scripts/up.sh}
+      CLOUDSDK_CONFIG: /gcloud
+    volumes:
+      - ${CLOUDSDK_CONFIG:-~/.config/gcloud}:/gcloud:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  db:
+    profiles: [db]
+    image: postgres:18
+    container_name: sc-postgres
+    environment:
+      # the superuser is only ever used over the container's own socket (db-init.sh). Its password is a throwaway
+      # scripts/up.sh generates when the container is first made, and nobody keeps: it grants nothing that access
+      # to Docker doesn't already.
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_PASSWORD: ${PG_THROWAWAY_PASSWORD:-}
+    ports:
+      - "127.0.0.1:${DB_PORT:-5432}:5432"
+    volumes:
+      - sc-pgdata:/var/lib/postgresql
+
+volumes:
+  sc-pgdata:

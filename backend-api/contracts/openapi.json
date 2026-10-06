@@ -1,0 +1,3011 @@
+{
+  "components": {
+    "schemas": {
+      "AgentConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "autonomy": {
+            "enum": [
+              "suggest",
+              "ask",
+              "act",
+              "gate"
+            ],
+            "title": "Autonomy",
+            "type": "string"
+          },
+          "last": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last"
+          },
+          "next": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next"
+          },
+          "on": {
+            "title": "On",
+            "type": "boolean"
+          },
+          "settings": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Settings",
+            "type": "object"
+          }
+        },
+        "required": [
+          "on",
+          "autonomy",
+          "settings",
+          "last",
+          "next"
+        ],
+        "title": "AgentConfig",
+        "type": "object"
+      },
+      "AgentDef": {
+        "additionalProperties": false,
+        "properties": {
+          "gate": {
+            "title": "Gate",
+            "type": "boolean"
+          },
+          "icon": {
+            "title": "Icon",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "job": {
+            "title": "Job",
+            "type": "string"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "stage": {
+            "title": "Stage",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "stage",
+          "icon",
+          "job",
+          "gate"
+        ],
+        "title": "AgentDef",
+        "type": "object"
+      },
+      "AgentPatch": {
+        "additionalProperties": false,
+        "properties": {
+          "autonomy": {
+            "anyOf": [
+              {
+                "enum": [
+                  "suggest",
+                  "ask",
+                  "act"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Autonomy"
+          },
+          "on": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "On"
+          },
+          "settings": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Settings"
+          }
+        },
+        "title": "AgentPatch",
+        "type": "object"
+      },
+      "Attention": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/AttentionAction"
+          },
+          "client": {
+            "title": "Client",
+            "type": "string"
+          },
+          "icon": {
+            "title": "Icon",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "tone": {
+            "enum": [
+              "amber",
+              "blue"
+            ],
+            "title": "Tone",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "client",
+          "icon",
+          "tone",
+          "title",
+          "text",
+          "action"
+        ],
+        "title": "Attention",
+        "type": "object"
+      },
+      "AttentionAction": {
+        "additionalProperties": false,
+        "properties": {
+          "distributor": {
+            "title": "Distributor",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "remind",
+              "open"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "tab": {
+            "title": "Tab",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "label"
+        ],
+        "title": "AttentionAction",
+        "type": "object"
+      },
+      "AuditEntry": {
+        "additionalProperties": false,
+        "properties": {
+          "at": {
+            "title": "At",
+            "type": "string"
+          },
+          "client": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "who": {
+            "title": "Who",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "at",
+          "who",
+          "client",
+          "text"
+        ],
+        "title": "AuditEntry",
+        "type": "object"
+      },
+      "Catalog": {
+        "additionalProperties": false,
+        "properties": {
+          "agents": {
+            "items": {
+              "$ref": "#/components/schemas/AgentDef"
+            },
+            "title": "Agents",
+            "type": "array"
+          },
+          "connectors": {
+            "items": {
+              "$ref": "#/components/schemas/ConnectorDef"
+            },
+            "title": "Connectors",
+            "type": "array"
+          },
+          "plans": {
+            "items": {
+              "$ref": "#/components/schemas/PlanTier"
+            },
+            "title": "Plans",
+            "type": "array"
+          }
+        },
+        "required": [
+          "agents",
+          "connectors",
+          "plans"
+        ],
+        "title": "Catalog",
+        "type": "object"
+      },
+      "ClientOut": {
+        "additionalProperties": false,
+        "properties": {
+          "agents": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/AgentConfig"
+            },
+            "title": "Agents",
+            "type": "object"
+          },
+          "approver": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approver"
+          },
+          "batches": {
+            "title": "Batches",
+            "type": "integer"
+          },
+          "city": {
+            "title": "City",
+            "type": "string"
+          },
+          "distributors": {
+            "items": {
+              "$ref": "#/components/schemas/DistributorOut"
+            },
+            "title": "Distributors",
+            "type": "array"
+          },
+          "domain": {
+            "title": "Domain",
+            "type": "string"
+          },
+          "emailDomain": {
+            "title": "Emaildomain",
+            "type": "string"
+          },
+          "exits": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ExitState"
+            },
+            "propertyNames": {
+              "enum": [
+                "expiresoon",
+                "kirana",
+                "staff",
+                "foodbank",
+                "d2c"
+              ]
+            },
+            "title": "Exits",
+            "type": "object"
+          },
+          "gates": {
+            "$ref": "#/components/schemas/Gates"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "industry": {
+            "title": "Industry",
+            "type": "string"
+          },
+          "integrations": {
+            "items": {
+              "$ref": "#/components/schemas/Integration"
+            },
+            "title": "Integrations",
+            "type": "array"
+          },
+          "legal": {
+            "title": "Legal",
+            "type": "string"
+          },
+          "mark": {
+            "$ref": "#/components/schemas/Mark"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "people": {
+            "items": {
+              "$ref": "#/components/schemas/ClientPerson"
+            },
+            "title": "People",
+            "type": "array"
+          },
+          "plan": {
+            "title": "Plan",
+            "type": "string"
+          },
+          "profile": {
+            "$ref": "#/components/schemas/Profile"
+          },
+          "recovered": {
+            "title": "Recovered",
+            "type": "number"
+          },
+          "region": {
+            "title": "Region",
+            "type": "string"
+          },
+          "returnWindowDays": {
+            "title": "Returnwindowdays",
+            "type": "integer"
+          },
+          "rules": {
+            "$ref": "#/components/schemas/Rules"
+          },
+          "signIn": {
+            "items": {
+              "$ref": "#/components/schemas/SignInMethod"
+            },
+            "title": "Signin",
+            "type": "array"
+          },
+          "since": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Since"
+          },
+          "skus": {
+            "items": {
+              "$ref": "#/components/schemas/SkuOut"
+            },
+            "title": "Skus",
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "live",
+              "setting-up"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "territoryGuard": {
+            "title": "Territoryguard",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "legal",
+          "city",
+          "industry",
+          "domain",
+          "emailDomain",
+          "mark",
+          "plan",
+          "status",
+          "since",
+          "region",
+          "profile",
+          "gates",
+          "territoryGuard",
+          "returnWindowDays",
+          "exits",
+          "rules",
+          "signIn",
+          "distributors",
+          "skus",
+          "people",
+          "integrations",
+          "recovered",
+          "batches",
+          "approver",
+          "agents"
+        ],
+        "title": "ClientOut",
+        "type": "object"
+      },
+      "ClientPerson": {
+        "additionalProperties": false,
+        "properties": {
+          "access": {
+            "enum": [
+              "Approver",
+              "Admin",
+              "Member",
+              "Partner"
+            ],
+            "title": "Access",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "img": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Img"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "org": {
+            "title": "Org",
+            "type": "string"
+          },
+          "phone": {
+            "title": "Phone",
+            "type": "string"
+          },
+          "provider": {
+            "title": "Provider",
+            "type": "string"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "active",
+              "invited",
+              "deactivated"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "org",
+          "role",
+          "kind",
+          "access",
+          "provider",
+          "status",
+          "img",
+          "email",
+          "phone"
+        ],
+        "title": "ClientPerson",
+        "type": "object"
+      },
+      "ConnectorDef": {
+        "additionalProperties": false,
+        "properties": {
+          "icon": {
+            "title": "Icon",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "ok",
+              "mock",
+              "soon"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "icon",
+          "note",
+          "status"
+        ],
+        "title": "ConnectorDef",
+        "type": "object"
+      },
+      "ConsoleConfig": {
+        "additionalProperties": true,
+        "description": "the console's config document as design3 describes it, and the staff domain this environment uses",
+        "properties": {
+          "staffEmailDomain": {
+            "title": "Staffemaildomain",
+            "type": "string"
+          }
+        },
+        "required": [
+          "staffEmailDomain"
+        ],
+        "title": "ConsoleConfig",
+        "type": "object"
+      },
+      "DemoRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "at": {
+            "title": "At",
+            "type": "string"
+          },
+          "client": {
+            "title": "Client",
+            "type": "string"
+          },
+          "company": {
+            "title": "Company",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "makes": {
+            "title": "Makes",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "plan": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan"
+          },
+          "status": {
+            "enum": [
+              "new",
+              "set up"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "at",
+          "name",
+          "company",
+          "email",
+          "makes",
+          "plan",
+          "note",
+          "status"
+        ],
+        "title": "DemoRequest",
+        "type": "object"
+      },
+      "DemoRequestInput": {
+        "additionalProperties": false,
+        "properties": {
+          "company": {
+            "maxLength": 160,
+            "title": "Company",
+            "type": "string"
+          },
+          "email": {
+            "maxLength": 200,
+            "title": "Email",
+            "type": "string"
+          },
+          "makes": {
+            "maxLength": 80,
+            "title": "Makes",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 120,
+            "title": "Name",
+            "type": "string"
+          },
+          "note": {
+            "default": "",
+            "maxLength": 2000,
+            "title": "Note",
+            "type": "string"
+          },
+          "plan": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan"
+          }
+        },
+        "required": [
+          "name",
+          "company",
+          "email",
+          "makes"
+        ],
+        "title": "DemoRequestInput",
+        "type": "object"
+      },
+      "DistributorOut": {
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "title": "City",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kiranas": {
+            "title": "Kiranas",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "permission": {
+            "enum": [
+              "given",
+              "not-yet"
+            ],
+            "title": "Permission",
+            "type": "string"
+          },
+          "staffCap": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Staffcap"
+          },
+          "state": {
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "city",
+          "kiranas",
+          "staffCap",
+          "permission"
+        ],
+        "title": "DistributorOut",
+        "type": "object"
+      },
+      "ExitState": {
+        "additionalProperties": false,
+        "properties": {
+          "cap": {
+            "title": "Cap",
+            "type": "integer"
+          },
+          "locked": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Locked"
+          },
+          "on": {
+            "title": "On",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "on"
+        ],
+        "title": "ExitState",
+        "type": "object"
+      },
+      "Gates": {
+        "additionalProperties": false,
+        "properties": {
+          "blinkitDays": {
+            "title": "Blinkitdays",
+            "type": "integer"
+          },
+          "qcomPct": {
+            "title": "Qcompct",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "blinkitDays",
+          "qcomPct"
+        ],
+        "title": "Gates",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "Integration": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "ok",
+              "mock",
+              "soon",
+              "waiting"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "status",
+          "note"
+        ],
+        "title": "Integration",
+        "type": "object"
+      },
+      "InviteInput": {
+        "additionalProperties": false,
+        "properties": {
+          "access": {
+            "enum": [
+              "Approver",
+              "Admin",
+              "Member",
+              "Partner"
+            ],
+            "title": "Access",
+            "type": "string"
+          },
+          "contact": {
+            "maxLength": 200,
+            "title": "Contact",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 120,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "contact",
+          "access"
+        ],
+        "title": "InviteInput",
+        "type": "object"
+      },
+      "LookupInput": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "maxLength": 200,
+            "title": "Query",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "LookupInput",
+        "type": "object"
+      },
+      "Mark": {
+        "additionalProperties": false,
+        "properties": {
+          "from": {
+            "title": "From",
+            "type": "string"
+          },
+          "ink": {
+            "title": "Ink",
+            "type": "string"
+          },
+          "to": {
+            "title": "To",
+            "type": "string"
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "ink"
+        ],
+        "title": "Mark",
+        "type": "object"
+      },
+      "NewClientInput": {
+        "additionalProperties": false,
+        "properties": {
+          "adminEmail": {
+            "maxLength": 200,
+            "title": "Adminemail",
+            "type": "string"
+          },
+          "adminName": {
+            "maxLength": 120,
+            "title": "Adminname",
+            "type": "string"
+          },
+          "city": {
+            "maxLength": 80,
+            "title": "City",
+            "type": "string"
+          },
+          "colour": {
+            "pattern": "^#[0-9a-fA-F]{6}$",
+            "title": "Colour",
+            "type": "string"
+          },
+          "emailDomain": {
+            "maxLength": 120,
+            "title": "Emaildomain",
+            "type": "string"
+          },
+          "exits": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ExitState"
+            },
+            "propertyNames": {
+              "enum": [
+                "expiresoon",
+                "kirana",
+                "staff",
+                "foodbank",
+                "d2c"
+              ]
+            },
+            "title": "Exits",
+            "type": "object"
+          },
+          "industry": {
+            "maxLength": 80,
+            "title": "Industry",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 120,
+            "title": "Name",
+            "type": "string"
+          },
+          "plan": {
+            "title": "Plan",
+            "type": "string"
+          },
+          "preset": {
+            "enum": [
+              "cautious",
+              "standard",
+              "trusted"
+            ],
+            "title": "Preset",
+            "type": "string"
+          },
+          "profile": {
+            "$ref": "#/components/schemas/Profile"
+          },
+          "request": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request"
+          },
+          "signGoogle": {
+            "title": "Signgoogle",
+            "type": "boolean"
+          },
+          "signPhone": {
+            "title": "Signphone",
+            "type": "boolean"
+          },
+          "slug": {
+            "maxLength": 40,
+            "title": "Slug",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "city",
+          "industry",
+          "colour",
+          "slug",
+          "emailDomain",
+          "signGoogle",
+          "signPhone",
+          "profile",
+          "exits",
+          "preset",
+          "adminName",
+          "adminEmail",
+          "plan"
+        ],
+        "title": "NewClientInput",
+        "type": "object"
+      },
+      "Overview": {
+        "additionalProperties": false,
+        "properties": {
+          "attention": {
+            "items": {
+              "$ref": "#/components/schemas/Attention"
+            },
+            "title": "Attention",
+            "type": "array"
+          },
+          "runs": {
+            "items": {
+              "$ref": "#/components/schemas/Run"
+            },
+            "title": "Runs",
+            "type": "array"
+          },
+          "tracks": {
+            "items": {
+              "$ref": "#/components/schemas/Track"
+            },
+            "title": "Tracks",
+            "type": "array"
+          }
+        },
+        "required": [
+          "tracks",
+          "runs",
+          "attention"
+        ],
+        "title": "Overview",
+        "type": "object"
+      },
+      "PersonPatch": {
+        "additionalProperties": false,
+        "properties": {
+          "access": {
+            "anyOf": [
+              {
+                "enum": [
+                  "Approver",
+                  "Admin",
+                  "Member",
+                  "Partner"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "active",
+                  "deactivated"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          }
+        },
+        "title": "PersonPatch",
+        "type": "object"
+      },
+      "PlanPatch": {
+        "additionalProperties": false,
+        "properties": {
+          "plan": {
+            "title": "Plan",
+            "type": "string"
+          }
+        },
+        "required": [
+          "plan"
+        ],
+        "title": "PlanPatch",
+        "type": "object"
+      },
+      "PlanTier": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "scope": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scope",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "scope"
+        ],
+        "title": "PlanTier",
+        "type": "object"
+      },
+      "Profile": {
+        "additionalProperties": false,
+        "properties": {
+          "expiry": {
+            "enum": [
+              "full-credit",
+              "price-support",
+              "none"
+            ],
+            "title": "Expiry",
+            "type": "string"
+          },
+          "owner": {
+            "enum": [
+              "distributor",
+              "manufacturer"
+            ],
+            "title": "Owner",
+            "type": "string"
+          },
+          "route": {
+            "enum": [
+              "distributors",
+              "modern-trade",
+              "own"
+            ],
+            "title": "Route",
+            "type": "string"
+          }
+        },
+        "required": [
+          "route",
+          "owner",
+          "expiry"
+        ],
+        "title": "Profile",
+        "type": "object"
+      },
+      "ProfileInput": {
+        "additionalProperties": false,
+        "properties": {
+          "gates": {
+            "$ref": "#/components/schemas/Gates"
+          },
+          "profile": {
+            "$ref": "#/components/schemas/Profile"
+          },
+          "returnWindowDays": {
+            "title": "Returnwindowdays",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "profile",
+          "gates",
+          "returnWindowDays"
+        ],
+        "title": "ProfileInput",
+        "type": "object"
+      },
+      "Rules": {
+        "additionalProperties": false,
+        "properties": {
+          "hindiOffers": {
+            "title": "Hindioffers",
+            "type": "boolean"
+          },
+          "offerWindowHours": {
+            "title": "Offerwindowhours",
+            "type": "integer"
+          },
+          "requirePhoto": {
+            "title": "Requirephoto",
+            "type": "boolean"
+          },
+          "reserve": {
+            "title": "Reserve",
+            "type": "number"
+          },
+          "scheme": {
+            "title": "Scheme",
+            "type": "string"
+          },
+          "staffCap": {
+            "title": "Staffcap",
+            "type": "integer"
+          },
+          "tokenPct": {
+            "title": "Tokenpct",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "reserve",
+          "scheme",
+          "staffCap",
+          "tokenPct",
+          "offerWindowHours",
+          "hindiOffers",
+          "requirePhoto"
+        ],
+        "title": "Rules",
+        "type": "object"
+      },
+      "RulesInput": {
+        "additionalProperties": false,
+        "properties": {
+          "exits": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ExitState"
+            },
+            "propertyNames": {
+              "enum": [
+                "expiresoon",
+                "kirana",
+                "staff",
+                "foodbank",
+                "d2c"
+              ]
+            },
+            "title": "Exits",
+            "type": "object"
+          },
+          "rules": {
+            "$ref": "#/components/schemas/Rules"
+          }
+        },
+        "required": [
+          "rules",
+          "exits"
+        ],
+        "title": "RulesInput",
+        "type": "object"
+      },
+      "Run": {
+        "additionalProperties": false,
+        "properties": {
+          "agent": {
+            "title": "Agent",
+            "type": "string"
+          },
+          "at": {
+            "title": "At",
+            "type": "string"
+          },
+          "client": {
+            "title": "Client",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "at",
+          "agent",
+          "client",
+          "text"
+        ],
+        "title": "Run",
+        "type": "object"
+      },
+      "SignInMethod": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "on": {
+            "title": "On",
+            "type": "boolean"
+          },
+          "rule": {
+            "title": "Rule",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "who": {
+            "title": "Who",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "who",
+          "rule",
+          "on"
+        ],
+        "title": "SignInMethod",
+        "type": "object"
+      },
+      "SkuOut": {
+        "additionalProperties": false,
+        "properties": {
+          "brand": {
+            "title": "Brand",
+            "type": "string"
+          },
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "gst": {
+            "title": "Gst",
+            "type": "number"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "lifeDays": {
+            "title": "Lifedays",
+            "type": "integer"
+          },
+          "mrp": {
+            "title": "Mrp",
+            "type": "number"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "brand",
+          "name",
+          "mrp",
+          "gst",
+          "lifeDays"
+        ],
+        "title": "SkuOut",
+        "type": "object"
+      },
+      "Staff": {
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "passkey": {
+            "title": "Passkey",
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "Super admin",
+              "Platform engineer",
+              "Support"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "short": {
+            "title": "Short",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "active",
+              "invited"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "team": {
+            "title": "Team",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "short",
+          "role",
+          "team",
+          "email",
+          "passkey",
+          "status"
+        ],
+        "title": "Staff",
+        "type": "object"
+      },
+      "StaffAccount": {
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "passkey": {
+            "title": "Passkey",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "email",
+          "passkey"
+        ],
+        "title": "StaffAccount",
+        "type": "object"
+      },
+      "StaffInviteInput": {
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "maxLength": 200,
+            "title": "Email",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 120,
+            "title": "Name",
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "Super admin",
+              "Platform engineer",
+              "Support"
+            ],
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "role"
+        ],
+        "title": "StaffInviteInput",
+        "type": "object"
+      },
+      "Track": {
+        "additionalProperties": false,
+        "properties": {
+          "batch": {
+            "title": "Batch",
+            "type": "string"
+          },
+          "city": {
+            "title": "City",
+            "type": "string"
+          },
+          "client": {
+            "title": "Client",
+            "type": "string"
+          },
+          "current": {
+            "title": "Current",
+            "type": "integer"
+          },
+          "distributor": {
+            "title": "Distributor",
+            "type": "string"
+          },
+          "done": {
+            "title": "Done",
+            "type": "integer"
+          },
+          "money": {
+            "title": "Money",
+            "type": "number"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "product": {
+            "title": "Product",
+            "type": "string"
+          },
+          "split": {
+            "title": "Split",
+            "type": "string"
+          }
+        },
+        "required": [
+          "client",
+          "batch",
+          "product",
+          "distributor",
+          "city",
+          "done",
+          "current"
+        ],
+        "title": "Track",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "WorkspaceMatch": {
+        "additionalProperties": false,
+        "description": "a workspace an email address or mobile number belongs to. It names the workspace only: never the person's role\nor whether they were deactivated (SC-43)",
+        "properties": {
+          "value": {
+            "title": "Value",
+            "type": "string"
+          },
+          "workspace": {
+            "$ref": "#/components/schemas/WorkspaceSummary"
+          }
+        },
+        "required": [
+          "workspace",
+          "value"
+        ],
+        "title": "WorkspaceMatch",
+        "type": "object"
+      },
+      "WorkspaceSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "domain": {
+            "title": "Domain",
+            "type": "string"
+          },
+          "emailDomain": {
+            "title": "Emaildomain",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "mark": {
+            "$ref": "#/components/schemas/Mark"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "short": {
+            "title": "Short",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "short",
+          "domain",
+          "emailDomain",
+          "mark"
+        ],
+        "title": "WorkspaceSummary",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "summary": "The landing page's and the staff console's backend (frontend/api is its contract)",
+    "title": "Smart-Clearance platform API",
+    "version": "1.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/v1/console/audit": {
+      "get": {
+        "operationId": "audit_log_v1_console_audit_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "client",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Client"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AuditEntry"
+                  },
+                  "title": "Response Audit Log V1 Console Audit Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The audit log, newest first",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients": {
+      "get": {
+        "operationId": "list_clients_v1_console_clients_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ClientOut"
+                  },
+                  "title": "Response List Clients V1 Console Clients Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Clients",
+        "tags": [
+          "console"
+        ]
+      },
+      "post": {
+        "operationId": "create_client_v1_console_clients_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewClientInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create Client",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}": {
+      "get": {
+        "operationId": "get_client_v1_console_clients__client_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Client",
+        "tags": [
+          "console"
+        ]
+      },
+      "patch": {
+        "operationId": "set_plan_v1_console_clients__client_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanPatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Change the plan",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}/agents/pause": {
+      "post": {
+        "operationId": "pause_v1_console_clients__client_id__agents_pause_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Pause",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}/agents/resume": {
+      "post": {
+        "operationId": "resume_v1_console_clients__client_id__agents_resume_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Resume",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}/agents/{agent_id}": {
+      "patch": {
+        "operationId": "update_agent_v1_console_clients__client_id__agents__agent_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "agent_id",
+            "required": true,
+            "schema": {
+              "title": "Agent Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentPatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Update Agent",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}/agents/{agent_id}/runs": {
+      "post": {
+        "operationId": "run_agent_v1_console_clients__client_id__agents__agent_id__runs_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "agent_id",
+            "required": true,
+            "schema": {
+              "title": "Agent Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Run Agent",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}/distributors/{distributor_id}/reminders": {
+      "post": {
+        "operationId": "remind_v1_console_clients__client_id__distributors__distributor_id__reminders_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "distributor_id",
+            "required": true,
+            "schema": {
+              "title": "Distributor Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Remind",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}/go-live": {
+      "post": {
+        "operationId": "go_live_v1_console_clients__client_id__go_live_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Go Live",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}/integrations/dms/requests": {
+      "post": {
+        "operationId": "first_export_v1_console_clients__client_id__integrations_dms_requests_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "First Export",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}/people": {
+      "post": {
+        "operationId": "invite_person_v1_console_clients__client_id__people_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Invite Person",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}/people/{person}": {
+      "patch": {
+        "operationId": "update_person_v1_console_clients__client_id__people__person__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "person",
+            "required": true,
+            "schema": {
+              "title": "Person",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PersonPatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Update Person",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}/people/{person}/invitations": {
+      "post": {
+        "operationId": "resend_invite_v1_console_clients__client_id__people__person__invitations_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "person",
+            "required": true,
+            "schema": {
+              "title": "Person",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Resend Invite",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}/profile": {
+      "put": {
+        "operationId": "save_profile_v1_console_clients__client_id__profile_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Save Profile",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}/rules": {
+      "put": {
+        "operationId": "save_rules_v1_console_clients__client_id__rules_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RulesInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Save Rules",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/config": {
+      "get": {
+        "operationId": "config_v1_console_config_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsoleConfig"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "How the console describes the platform",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/overview": {
+      "get": {
+        "operationId": "overview_v1_console_overview_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Overview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Overview",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/session": {
+      "delete": {
+        "operationId": "sign_out_v1_console_session_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Sign out (the browser signs out of Firebase)",
+        "tags": [
+          "console"
+        ]
+      },
+      "get": {
+        "operationId": "me_v1_console_session_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Staff"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Who is signed in (401 when nobody is)",
+        "tags": [
+          "console"
+        ]
+      },
+      "post": {
+        "operationId": "sign_in_v1_console_session_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Staff"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Sign in: the bearer token's staff member",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/session/accounts": {
+      "get": {
+        "operationId": "accounts_v1_console_session_accounts_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/StaffAccount"
+                  },
+                  "title": "Response Accounts V1 Console Session Accounts Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Empty over HTTP: staff sign in with Firebase, and the console never lists them before sign-in",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/staff": {
+      "get": {
+        "operationId": "list_staff_v1_console_staff_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Staff"
+                  },
+                  "title": "Response List Staff V1 Console Staff Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Staff",
+        "tags": [
+          "console"
+        ]
+      },
+      "post": {
+        "operationId": "invite_staff_v1_console_staff_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffInviteInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Staff"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Invite Staff",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/demo-requests": {
+      "get": {
+        "operationId": "demo_requests_v1_demo_requests_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DemoRequest"
+                  },
+                  "title": "Response Demo Requests V1 Demo Requests Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Book a demo's requests, newest first",
+        "tags": [
+          "console"
+        ]
+      },
+      "post": {
+        "operationId": "request_demo_v1_demo_requests_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DemoRequestInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoRequest"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Book a demo",
+        "tags": [
+          "site"
+        ]
+      }
+    },
+    "/v1/platform/catalog": {
+      "get": {
+        "operationId": "catalog_v1_platform_catalog_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Catalog"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "What the platform offers",
+        "tags": [
+          "site"
+        ]
+      }
+    },
+    "/v1/site/showcase": {
+      "get": {
+        "operationId": "showcase_v1_site_showcase_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Showcase V1 Site Showcase Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "One illustrative batch, every figure worked out",
+        "tags": [
+          "site"
+        ]
+      }
+    },
+    "/v1/workspaces/lookup": {
+      "post": {
+        "operationId": "lookup_v1_workspaces_lookup_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LookupInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/WorkspaceMatch"
+                  },
+                  "title": "Response Lookup V1 Workspaces Lookup Post",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Find your workspace, by email or mobile number (a POST, so the identifier never reaches a URL or log)",
+        "tags": [
+          "site"
+        ]
+      }
+    }
+  }
+}

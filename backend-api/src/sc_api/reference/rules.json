@@ -1,0 +1,1304 @@
+{
+	"exitsFor": [
+		{
+			"profile": {
+				"route": "distributors",
+				"owner": "distributor",
+				"expiry": "full-credit"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": true
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": false,
+					"locked": "Only for the manufacturer's own stock"
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "distributors",
+				"owner": "distributor",
+				"expiry": "price-support"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": true
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": false,
+					"locked": "Only for the manufacturer's own stock"
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "distributors",
+				"owner": "distributor",
+				"expiry": "none"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": true
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": false,
+					"locked": "Only for the manufacturer's own stock"
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "distributors",
+				"owner": "manufacturer",
+				"expiry": "full-credit"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": true
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": true,
+					"locked": null
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "distributors",
+				"owner": "manufacturer",
+				"expiry": "price-support"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": true
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": true,
+					"locked": null
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "distributors",
+				"owner": "manufacturer",
+				"expiry": "none"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": true
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": true,
+					"locked": null
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "modern-trade",
+				"owner": "distributor",
+				"expiry": "full-credit"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": false
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": false,
+					"locked": "Only for the manufacturer's own stock"
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "modern-trade",
+				"owner": "distributor",
+				"expiry": "price-support"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": false
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": false,
+					"locked": "Only for the manufacturer's own stock"
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "modern-trade",
+				"owner": "distributor",
+				"expiry": "none"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": false
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": false,
+					"locked": "Only for the manufacturer's own stock"
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "modern-trade",
+				"owner": "manufacturer",
+				"expiry": "full-credit"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": false
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": true,
+					"locked": null
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "modern-trade",
+				"owner": "manufacturer",
+				"expiry": "price-support"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": false
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": true,
+					"locked": null
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "modern-trade",
+				"owner": "manufacturer",
+				"expiry": "none"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": false
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": true,
+					"locked": null
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "own",
+				"owner": "distributor",
+				"expiry": "full-credit"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": true
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": true,
+					"locked": null
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "own",
+				"owner": "distributor",
+				"expiry": "price-support"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": true
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": true,
+					"locked": null
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "own",
+				"owner": "distributor",
+				"expiry": "none"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": true
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": true,
+					"locked": null
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "own",
+				"owner": "manufacturer",
+				"expiry": "full-credit"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": true
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": true,
+					"locked": null
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "own",
+				"owner": "manufacturer",
+				"expiry": "price-support"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": true
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": true,
+					"locked": null
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "own",
+				"owner": "manufacturer",
+				"expiry": "none"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": true
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": true,
+					"locked": null
+				}
+			}
+		}
+	],
+	"agentDefaults": [
+		{
+			"preset": "cautious",
+			"approver": "admin-x",
+			"agents": {
+				"data": {
+					"on": true,
+					"autonomy": "act",
+					"settings": {
+						"time": "08:30",
+						"backfillDays": 90
+					},
+					"last": null,
+					"next": null
+				},
+				"watcher": {
+					"on": true,
+					"autonomy": "act",
+					"settings": {
+						"time": "09:00",
+						"blinkitDays": 90,
+						"qcomPct": 60
+					},
+					"last": null,
+					"next": null
+				},
+				"vision": {
+					"on": true,
+					"autonomy": "suggest",
+					"settings": {
+						"confidence": 0.9
+					},
+					"last": null,
+					"next": null
+				},
+				"valuer": {
+					"on": true,
+					"autonomy": "suggest",
+					"settings": {
+						"indicative": true
+					},
+					"last": null,
+					"next": null
+				},
+				"router": {
+					"on": true,
+					"autonomy": "suggest",
+					"settings": {
+						"objective": "Most money recovered"
+					},
+					"last": null,
+					"next": null
+				},
+				"gate": {
+					"on": true,
+					"autonomy": "gate",
+					"settings": {
+						"approver": "admin-x"
+					},
+					"last": null,
+					"next": null
+				},
+				"lister": {
+					"on": true,
+					"autonomy": "suggest",
+					"settings": {
+						"reserve": 13.5,
+						"territoryGuard": true
+					},
+					"last": null,
+					"next": null
+				},
+				"outreach": {
+					"on": true,
+					"autonomy": "suggest",
+					"settings": {
+						"language": "Hindi first",
+						"scheme": "2 free with every 10"
+					},
+					"last": null,
+					"next": null
+				},
+				"negotiator": {
+					"on": true,
+					"autonomy": "suggest",
+					"settings": {
+						"floor": 13.5,
+						"counters": 2,
+						"tokenPct": 15
+					},
+					"last": null,
+					"next": null
+				},
+				"paperwork": {
+					"on": true,
+					"autonomy": "suggest",
+					"settings": {
+						"draftsOnly": true
+					},
+					"last": null,
+					"next": null
+				},
+				"impact": {
+					"on": true,
+					"autonomy": "suggest",
+					"settings": {
+						"returnWindowDays": 20
+					},
+					"last": null,
+					"next": null
+				}
+			}
+		},
+		{
+			"preset": "standard",
+			"approver": "admin-x",
+			"agents": {
+				"data": {
+					"on": true,
+					"autonomy": "act",
+					"settings": {
+						"time": "08:30",
+						"backfillDays": 90
+					},
+					"last": null,
+					"next": null
+				},
+				"watcher": {
+					"on": true,
+					"autonomy": "act",
+					"settings": {
+						"time": "09:00",
+						"blinkitDays": 90,
+						"qcomPct": 60
+					},
+					"last": null,
+					"next": null
+				},
+				"vision": {
+					"on": true,
+					"autonomy": "ask",
+					"settings": {
+						"confidence": 0.9
+					},
+					"last": null,
+					"next": null
+				},
+				"valuer": {
+					"on": true,
+					"autonomy": "act",
+					"settings": {
+						"indicative": true
+					},
+					"last": null,
+					"next": null
+				},
+				"router": {
+					"on": true,
+					"autonomy": "act",
+					"settings": {
+						"objective": "Most money recovered"
+					},
+					"last": null,
+					"next": null
+				},
+				"gate": {
+					"on": true,
+					"autonomy": "gate",
+					"settings": {
+						"approver": "admin-x"
+					},
+					"last": null,
+					"next": null
+				},
+				"lister": {
+					"on": true,
+					"autonomy": "act",
+					"settings": {
+						"reserve": 13.5,
+						"territoryGuard": true
+					},
+					"last": null,
+					"next": null
+				},
+				"outreach": {
+					"on": true,
+					"autonomy": "act",
+					"settings": {
+						"language": "Hindi first",
+						"scheme": "2 free with every 10"
+					},
+					"last": null,
+					"next": null
+				},
+				"negotiator": {
+					"on": true,
+					"autonomy": "ask",
+					"settings": {
+						"floor": 13.5,
+						"counters": 2,
+						"tokenPct": 15
+					},
+					"last": null,
+					"next": null
+				},
+				"paperwork": {
+					"on": true,
+					"autonomy": "ask",
+					"settings": {
+						"draftsOnly": true
+					},
+					"last": null,
+					"next": null
+				},
+				"impact": {
+					"on": true,
+					"autonomy": "act",
+					"settings": {
+						"returnWindowDays": 20
+					},
+					"last": null,
+					"next": null
+				}
+			}
+		},
+		{
+			"preset": "trusted",
+			"approver": "admin-x",
+			"agents": {
+				"data": {
+					"on": true,
+					"autonomy": "act",
+					"settings": {
+						"time": "08:30",
+						"backfillDays": 90
+					},
+					"last": null,
+					"next": null
+				},
+				"watcher": {
+					"on": true,
+					"autonomy": "act",
+					"settings": {
+						"time": "09:00",
+						"blinkitDays": 90,
+						"qcomPct": 60
+					},
+					"last": null,
+					"next": null
+				},
+				"vision": {
+					"on": true,
+					"autonomy": "act",
+					"settings": {
+						"confidence": 0.9
+					},
+					"last": null,
+					"next": null
+				},
+				"valuer": {
+					"on": true,
+					"autonomy": "act",
+					"settings": {
+						"indicative": true
+					},
+					"last": null,
+					"next": null
+				},
+				"router": {
+					"on": true,
+					"autonomy": "act",
+					"settings": {
+						"objective": "Most money recovered"
+					},
+					"last": null,
+					"next": null
+				},
+				"gate": {
+					"on": true,
+					"autonomy": "gate",
+					"settings": {
+						"approver": "admin-x"
+					},
+					"last": null,
+					"next": null
+				},
+				"lister": {
+					"on": true,
+					"autonomy": "act",
+					"settings": {
+						"reserve": 13.5,
+						"territoryGuard": true
+					},
+					"last": null,
+					"next": null
+				},
+				"outreach": {
+					"on": true,
+					"autonomy": "act",
+					"settings": {
+						"language": "Hindi first",
+						"scheme": "2 free with every 10"
+					},
+					"last": null,
+					"next": null
+				},
+				"negotiator": {
+					"on": true,
+					"autonomy": "ask",
+					"settings": {
+						"floor": 13.5,
+						"counters": 2,
+						"tokenPct": 15
+					},
+					"last": null,
+					"next": null
+				},
+				"paperwork": {
+					"on": true,
+					"autonomy": "ask",
+					"settings": {
+						"draftsOnly": true
+					},
+					"last": null,
+					"next": null
+				},
+				"impact": {
+					"on": true,
+					"autonomy": "act",
+					"settings": {
+						"returnWindowDays": 20
+					},
+					"last": null,
+					"next": null
+				}
+			}
+		}
+	],
+	"showValue": [
+		{
+			"agent": "data",
+			"key": "time",
+			"value": "08:30",
+			"text": "08:30"
+		},
+		{
+			"agent": "data",
+			"key": "time",
+			"value": "21:05",
+			"text": "21:05"
+		},
+		{
+			"agent": "data",
+			"key": "backfillDays",
+			"value": 0.5,
+			"text": "0.5 days"
+		},
+		{
+			"agent": "data",
+			"key": "backfillDays",
+			"value": 0.9,
+			"text": "0.9 days"
+		},
+		{
+			"agent": "data",
+			"key": "backfillDays",
+			"value": 0.955,
+			"text": "0.955 days"
+		},
+		{
+			"agent": "data",
+			"key": "backfillDays",
+			"value": 14,
+			"text": "14 days"
+		},
+		{
+			"agent": "data",
+			"key": "backfillDays",
+			"value": 30,
+			"text": "30 days"
+		},
+		{
+			"agent": "data",
+			"key": "backfillDays",
+			"value": 90,
+			"text": "90 days"
+		},
+		{
+			"agent": "data",
+			"key": "backfillDays",
+			"value": 365,
+			"text": "365 days"
+		},
+		{
+			"agent": "watcher",
+			"key": "time",
+			"value": "08:30",
+			"text": "08:30"
+		},
+		{
+			"agent": "watcher",
+			"key": "time",
+			"value": "21:05",
+			"text": "21:05"
+		},
+		{
+			"agent": "watcher",
+			"key": "blinkitDays",
+			"value": 0.5,
+			"text": "0.5 days left"
+		},
+		{
+			"agent": "watcher",
+			"key": "blinkitDays",
+			"value": 0.9,
+			"text": "0.9 days left"
+		},
+		{
+			"agent": "watcher",
+			"key": "blinkitDays",
+			"value": 0.955,
+			"text": "0.955 days left"
+		},
+		{
+			"agent": "watcher",
+			"key": "blinkitDays",
+			"value": 14,
+			"text": "14 days left"
+		},
+		{
+			"agent": "watcher",
+			"key": "blinkitDays",
+			"value": 30,
+			"text": "30 days left"
+		},
+		{
+			"agent": "watcher",
+			"key": "blinkitDays",
+			"value": 90,
+			"text": "90 days left"
+		},
+		{
+			"agent": "watcher",
+			"key": "blinkitDays",
+			"value": 365,
+			"text": "365 days left"
+		},
+		{
+			"agent": "watcher",
+			"key": "qcomPct",
+			"value": 0.5,
+			"text": "0.5 % of life left"
+		},
+		{
+			"agent": "watcher",
+			"key": "qcomPct",
+			"value": 0.9,
+			"text": "0.9 % of life left"
+		},
+		{
+			"agent": "watcher",
+			"key": "qcomPct",
+			"value": 0.955,
+			"text": "0.955 % of life left"
+		},
+		{
+			"agent": "watcher",
+			"key": "qcomPct",
+			"value": 14,
+			"text": "14 % of life left"
+		},
+		{
+			"agent": "watcher",
+			"key": "qcomPct",
+			"value": 30,
+			"text": "30 % of life left"
+		},
+		{
+			"agent": "watcher",
+			"key": "qcomPct",
+			"value": 90,
+			"text": "90 % of life left"
+		},
+		{
+			"agent": "watcher",
+			"key": "qcomPct",
+			"value": 365,
+			"text": "365 % of life left"
+		},
+		{
+			"agent": "vision",
+			"key": "confidence",
+			"value": 0.5,
+			"text": "0.50"
+		},
+		{
+			"agent": "vision",
+			"key": "confidence",
+			"value": 0.9,
+			"text": "0.90"
+		},
+		{
+			"agent": "vision",
+			"key": "confidence",
+			"value": 0.955,
+			"text": "0.95"
+		},
+		{
+			"agent": "vision",
+			"key": "confidence",
+			"value": 14,
+			"text": "14.00"
+		},
+		{
+			"agent": "vision",
+			"key": "confidence",
+			"value": 30,
+			"text": "30.00"
+		},
+		{
+			"agent": "vision",
+			"key": "confidence",
+			"value": 90,
+			"text": "90.00"
+		},
+		{
+			"agent": "vision",
+			"key": "confidence",
+			"value": 365,
+			"text": "365.00"
+		},
+		{
+			"agent": "valuer",
+			"key": "indicative",
+			"value": true,
+			"text": "on"
+		},
+		{
+			"agent": "valuer",
+			"key": "indicative",
+			"value": false,
+			"text": "off"
+		},
+		{
+			"agent": "router",
+			"key": "objective",
+			"value": "Most money recovered",
+			"text": "Most money recovered"
+		},
+		{
+			"agent": "router",
+			"key": "objective",
+			"value": "Fastest clearance",
+			"text": "Fastest clearance"
+		},
+		{
+			"agent": "gate",
+			"key": "approver",
+			"value": "priya",
+			"text": "priya"
+		},
+		{
+			"agent": "gate",
+			"key": "approver",
+			"value": "admin-x",
+			"text": "admin-x"
+		},
+		{
+			"agent": "lister",
+			"key": "reserve",
+			"value": 1,
+			"text": "₹1.00"
+		},
+		{
+			"agent": "lister",
+			"key": "reserve",
+			"value": 13.5,
+			"text": "₹13.50"
+		},
+		{
+			"agent": "lister",
+			"key": "reserve",
+			"value": 14,
+			"text": "₹14.00"
+		},
+		{
+			"agent": "lister",
+			"key": "reserve",
+			"value": 0.125,
+			"text": "₹0.13"
+		},
+		{
+			"agent": "lister",
+			"key": "reserve",
+			"value": 1.005,
+			"text": "₹1.00"
+		},
+		{
+			"agent": "lister",
+			"key": "reserve",
+			"value": 99.995,
+			"text": "₹100.00"
+		},
+		{
+			"agent": "lister",
+			"key": "territoryGuard",
+			"value": true,
+			"text": "on"
+		},
+		{
+			"agent": "lister",
+			"key": "territoryGuard",
+			"value": false,
+			"text": "off"
+		},
+		{
+			"agent": "outreach",
+			"key": "language",
+			"value": "Hindi first",
+			"text": "Hindi first"
+		},
+		{
+			"agent": "outreach",
+			"key": "language",
+			"value": "Marathi first",
+			"text": "Marathi first"
+		},
+		{
+			"agent": "outreach",
+			"key": "language",
+			"value": "English first",
+			"text": "English first"
+		},
+		{
+			"agent": "outreach",
+			"key": "scheme",
+			"value": "2 free with every 10",
+			"text": "2 free with every 10"
+		},
+		{
+			"agent": "outreach",
+			"key": "scheme",
+			"value": "1 free with every 10",
+			"text": "1 free with every 10"
+		},
+		{
+			"agent": "outreach",
+			"key": "scheme",
+			"value": "No scheme",
+			"text": "No scheme"
+		},
+		{
+			"agent": "negotiator",
+			"key": "floor",
+			"value": 1,
+			"text": "₹1.00"
+		},
+		{
+			"agent": "negotiator",
+			"key": "floor",
+			"value": 13.5,
+			"text": "₹13.50"
+		},
+		{
+			"agent": "negotiator",
+			"key": "floor",
+			"value": 14,
+			"text": "₹14.00"
+		},
+		{
+			"agent": "negotiator",
+			"key": "floor",
+			"value": 0.125,
+			"text": "₹0.13"
+		},
+		{
+			"agent": "negotiator",
+			"key": "floor",
+			"value": 1.005,
+			"text": "₹1.00"
+		},
+		{
+			"agent": "negotiator",
+			"key": "floor",
+			"value": 99.995,
+			"text": "₹100.00"
+		},
+		{
+			"agent": "negotiator",
+			"key": "counters",
+			"value": 0,
+			"text": "0"
+		},
+		{
+			"agent": "negotiator",
+			"key": "counters",
+			"value": 1,
+			"text": "1"
+		},
+		{
+			"agent": "negotiator",
+			"key": "counters",
+			"value": 3,
+			"text": "3"
+		},
+		{
+			"agent": "negotiator",
+			"key": "tokenPct",
+			"value": 0.5,
+			"text": "0.5 %"
+		},
+		{
+			"agent": "negotiator",
+			"key": "tokenPct",
+			"value": 0.9,
+			"text": "0.9 %"
+		},
+		{
+			"agent": "negotiator",
+			"key": "tokenPct",
+			"value": 0.955,
+			"text": "0.955 %"
+		},
+		{
+			"agent": "negotiator",
+			"key": "tokenPct",
+			"value": 14,
+			"text": "14 %"
+		},
+		{
+			"agent": "negotiator",
+			"key": "tokenPct",
+			"value": 30,
+			"text": "30 %"
+		},
+		{
+			"agent": "negotiator",
+			"key": "tokenPct",
+			"value": 90,
+			"text": "90 %"
+		},
+		{
+			"agent": "negotiator",
+			"key": "tokenPct",
+			"value": 365,
+			"text": "365 %"
+		},
+		{
+			"agent": "paperwork",
+			"key": "draftsOnly",
+			"value": true,
+			"text": "on"
+		},
+		{
+			"agent": "paperwork",
+			"key": "draftsOnly",
+			"value": false,
+			"text": "off"
+		},
+		{
+			"agent": "impact",
+			"key": "returnWindowDays",
+			"value": 0.5,
+			"text": "0.5 days"
+		},
+		{
+			"agent": "impact",
+			"key": "returnWindowDays",
+			"value": 0.9,
+			"text": "0.9 days"
+		},
+		{
+			"agent": "impact",
+			"key": "returnWindowDays",
+			"value": 0.955,
+			"text": "0.955 days"
+		},
+		{
+			"agent": "impact",
+			"key": "returnWindowDays",
+			"value": 14,
+			"text": "14 days"
+		},
+		{
+			"agent": "impact",
+			"key": "returnWindowDays",
+			"value": 30,
+			"text": "30 days"
+		},
+		{
+			"agent": "impact",
+			"key": "returnWindowDays",
+			"value": 90,
+			"text": "90 days"
+		},
+		{
+			"agent": "impact",
+			"key": "returnWindowDays",
+			"value": 365,
+			"text": "365 days"
+		}
+	],
+	"slug": [
+		{
+			"name": "Kesari Foods",
+			"slug": "kesari"
+		},
+		{
+			"name": "Amrit Dairy Pvt",
+			"slug": "amrit-dairy"
+		},
+		{
+			"name": "Café Coffee Day Ltd",
+			"slug": "cafe-coffee-day"
+		},
+		{
+			"name": "  Shree Ram & Sons India ",
+			"slug": "shree-ram-sons"
+		},
+		{
+			"name": "",
+			"slug": "client"
+		},
+		{
+			"name": "X",
+			"slug": "x"
+		},
+		{
+			"name": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+			"slug": "aaaaaaaaaaaaaaaaaaaaaaaa"
+		}
+	]
+}

@@ -1,0 +1,177 @@
+{
+	"platform": {
+		"name": "Smart-Clearance",
+		"domain": "smartclearance.com"
+	},
+	"batch": {
+		"daysLeft": 47,
+		"distributorCity": "Nagpur",
+		"units": 1840,
+		"sellPerDay": 12,
+		"product": "Masala Chips 150 g"
+	},
+	"risk": {
+		"atRisk": 1360,
+		"gates": [
+			{
+				"id": "blinkit",
+				"app": "Blinkit",
+				"rule": "needs 90+ days",
+				"has": 47,
+				"need": 90,
+				"pass": false
+			},
+			{
+				"id": "zepto",
+				"app": "Zepto",
+				"rule": "needs 60% of a 184-day life (110 days)",
+				"has": 47,
+				"need": 110,
+				"pass": false
+			},
+			{
+				"id": "instamart",
+				"app": "Instamart",
+				"rule": "needs 60% of a 184-day life (110 days)",
+				"has": 47,
+				"need": 110,
+				"pass": false
+			}
+		]
+	},
+	"rules": {
+		"kiranaWindowDays": 14,
+		"scheme": {
+			"buy": 10,
+			"free": 2
+		},
+		"foodbankMinDays": 15
+	},
+	"plan": {
+		"net": 21770,
+		"soldUnits": 1360,
+		"itcRetained": 1224,
+		"kg": 217.6,
+		"writeOff": {
+			"total": 26329.6,
+			"perUnit": 19.36
+		},
+		"lines": [
+			{
+				"id": "kirana",
+				"short": "Kirana cluster",
+				"units": 588,
+				"price": 18,
+				"packPrice": 21.6,
+				"gross": 10584,
+				"cost": 294,
+				"net": 10290
+			},
+			{
+				"id": "expiresoon",
+				"short": "ExpireSoon",
+				"units": 772,
+				"price": 15,
+				"packPrice": null,
+				"gross": 11580,
+				"cost": 100,
+				"net": 11480
+			}
+		],
+		"rows": [
+			{
+				"id": "expiresoon",
+				"short": "ExpireSoon",
+				"net": 15,
+				"eligible": true,
+				"capacity": null
+			},
+			{
+				"id": "kirana",
+				"short": "Kirana cluster",
+				"net": 17.5,
+				"eligible": true,
+				"capacity": 588
+			},
+			{
+				"id": "staff",
+				"short": "Staff sale",
+				"net": 12,
+				"eligible": true,
+				"capacity": 50
+			},
+			{
+				"id": "foodbank",
+				"short": "Food bank",
+				"net": -1.4,
+				"eligible": true,
+				"capacity": null
+			},
+			{
+				"id": "writeoff",
+				"short": "Write-off",
+				"net": -19.36,
+				"eligible": true,
+				"capacity": null
+			}
+		]
+	},
+	"award": {
+		"units": 772,
+		"price": 14.2,
+		"gross": 10962.4
+	},
+	"actual": {
+		"net": 21152.4,
+		"pnl": -607.6,
+		"swing": 25722
+	},
+	"shops": 31,
+	"stages": [
+		{
+			"id": "connect",
+			"title": "Connect",
+			"human": false
+		},
+		{
+			"id": "detect",
+			"title": "Detect",
+			"human": false
+		},
+		{
+			"id": "verify",
+			"title": "Verify",
+			"human": false
+		},
+		{
+			"id": "value",
+			"title": "Value",
+			"human": false
+		},
+		{
+			"id": "decide",
+			"title": "Decide",
+			"human": false
+		},
+		{
+			"id": "approve",
+			"title": "Approve",
+			"human": true
+		},
+		{
+			"id": "execute",
+			"title": "Execute",
+			"human": false
+		},
+		{
+			"id": "settle",
+			"title": "Settle",
+			"human": false
+		},
+		{
+			"id": "report",
+			"title": "Report",
+			"human": false
+		}
+	]
+}

@@ -60,11 +60,13 @@ member's name.
 | `audit(client?)`                                 | `GET /v1/console/audit?client=`                                        |
 | `demoRequests()`                                 | `GET /v1/demo-requests`                                                |
 
-A 422 carries the message and, where it names an input, `fields`. `client(id)` and `me()` answer `null` for a 404 and a 401. The routes are a proposal for backend-api to confirm.
+A 422 carries the message and, where it names an input, `fields`. `client(id)` and `me()` answer `null` for a 404 and a 401. backend-api serves these routes (SC-45; `backend-api/README.md`, `backend-api/contracts/openapi.json`).
 
-**Signing in:** the mock lists the platform's active staff for the sign-in sheets, standing in for Google's account
-chooser and the device's passkey prompt. backend-api is to sign staff in with Google Identity Services on
-smartclearance.com accounts, then a WebAuthn passkey, and `transport()` carries the token it issues.
+**Signing in:** the mock lists the platform's active staff for the sign-in sheets. backend-api signs staff in with
+Firebase Authentication, email and password: `transport()`'s `token()` carries the Firebase ID token, and
+`POST /v1/console/session` answers the staff member it belongs to (`session/accounts` is empty over HTTP). The console's
+sign-in screen moves to email and password in SC-46, design first. Over HTTP, Find your workspace answers the workspace
+only, without the `as` line, which SC-46 takes out of the contract.
 
 ## The mocks
 

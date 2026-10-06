@@ -319,4 +319,46 @@
     - scripted on both builds: the card at once, the zoom after the dwell, the camera back on looking away, a click keeping the card, a chip moving it and bringing a far agent into view, Escape, a focused pin's card and Enter's panel. At 1366 × 768 the caption ends at 709 px.
   - **The port:** `site.css` (verbatim), `Town.svelte`, `town/geo.ts`, `town/graph.ts`, `town/camera.ts`. Its frames match design3's within 0.15% at 390, 820 and 1440 wide.
   - **Hosting:** the hosted landing page and console load commit `0ea344d`.
+- **SC-43** (epic, In Progress): Backend v1, the platform API for the landing page and the console. The maintainer's decisions (6 Oct):
+  - reuse the local Docker Postgres 18;
+  - real Firebase Auth locally, in one shared user pool;
+  - email and password for everyone, every user onboarded with the default password, and no email ever sent;
+  - the staff email domain set per environment (`smartclearance.example` until `smartclearance.com` is owned);
+  - Find your workspace names the workspace only;
+  - Cloud SQL and Cloud Run written but not applied;
+  - Munchly rebuilt by hydrate;
+  - the showcase loaded as content (money.js ported with the agents);
+  - three stories.
+- **SC-44** (In Review, branch `SC-44-infra-auth-secrets`): Terraform for backend-api.
+  - **Applied** (plan read in full, 16 added):
+    - Identity Platform, email and password only, sign-up disabled;
+    - the console's Firebase web app on a restricted browser key;
+    - three Secret Manager containers, empty in Terraform;
+    - the `scAuthUsers` custom role;
+    - `sc-api-local`, which operators may impersonate.
+  - `infra/scripts/auth-policy.sh` sets the password policy (12+ characters, mixed case, a digit) and email enumeration protection.
+  - **Written, not applied** (`backend_runtime = false`; a plan with it on reads 25 to add):
+    - Cloud SQL Postgres 18 (Enterprise, db-f1-micro, IAM auth only);
+    - the Cloud Run service and migrate job;
+    - Artifact Registry;
+    - a budget;
+    - the console's build variables.
+- **SC-45** (In Progress, branch `SC-45-backend-api-core`): `backend-api/`, FastAPI on Postgres for every route in `frontend/api`.
+  - **The database:** one database, `smart_clearance`, schema `sc`:
+    - `sc_owner` owns it; `sc_app` gets DML only;
+    - the audit log is append-only, by grants and triggers;
+    - reference data is loaded at migrate time from `src/sc_api/reference/`, which `seed.mjs` writes from design3.
+  - **Auth and roles:**
+    - Firebase ID tokens identify active staff;
+    - roles are enforced from `reference/rbac.json`;
+    - invitations make Firebase accounts on the default password from Secret Manager.
+  - **The scripts:** doctor, secrets, db-init, migrate, hydrate, default-password, dev, up, console-env, test, contracts, bootstrap.
+  - **Hydrate** builds Munchly and a seeded synthetic world through the services: 7 clients, 61 people, 38 Firebase accounts, 89 audit lines.
+  - **Checks:**
+    - 152 tests, on the local Postgres and on a fresh `postgres:18` the way CI runs them;
+    - signed in through Firebase's REST API, Neha drove the API end to end; Support got the 403, and a client's person the 401;
+    - the frontend gate passes;
+    - gitleaks: no leaks in the tree or the history.
+  - **CI:** a backend gate and a secret scan.
+- **SC-46** (To Do): the console's email and password sign-in and a Find your workspace that answers less, design first, then wired to the API.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
