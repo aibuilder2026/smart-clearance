@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-46 Console Sign-in</title>
+<meta name="description" content="Two ways for staff to sign in to the console with a work email and a password, and Find your workspace without the role line.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Noto+Sans+Devanagari:wght@600&display=swap">
+<style>
+/* SC-46's review board: the request, the sign-in as it is, two options, and the pick. */
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px -6px rgb(17 41 30 / 0.1);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark }
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
+::selection { background: color-mix(in oklab, var(--green) 24%, transparent); }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 48px 16px 72px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+h2 { margin: 56px 0 14px; font-size: clamp(25px, 3vw, 32px); font-weight: 720; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 72, "wdth" 88; }
+h3 { font-size: 24px; font-weight: 720; letter-spacing: -0.018em; font-variation-settings: "opsz" 48, "wdth" 90; }
+p { margin: 0 0 12px; max-width: 72ch; color: var(--ink-2); text-wrap: pretty; }
+p b, li b { color: var(--ink); font-weight: 600; }
+.lede { font-size: 18px; margin-top: 14px; }
+blockquote { margin: 16px 0; padding: 14px 18px; border-radius: 14px; background: var(--sunken); color: var(--ink); font-size: 16.5px; max-width: 70ch; }
+ul { margin: 0 0 12px; padding-left: 20px; color: var(--ink-2); max-width: 76ch; display: grid; gap: 6px; }
+code { font: 500 0.9em/1 var(--mono); }
+
+.grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.pair { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.frames { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+@media (min-width: 900px) { .frames { grid-template-columns: minmax(0, 2.6fr) minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); align-items: start; } }
+figure { margin: 0; min-width: 0; }
+figure img, figure video { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+
+.card { padding: 22px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.shared { display: grid; gap: 18px; }
+@media (min-width: 900px) { .shared { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.shared h3 { font: 650 16px/1.35 var(--ui); letter-spacing: 0; margin-bottom: 6px; }
+.shared p, .shared li { font-size: 14.5px; }
+
+.opt { margin-top: 22px; display: grid; gap: 18px; padding: 24px 22px; border-radius: 28px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); scroll-margin-top: 20px; }
+.opt.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.opt header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.opt header p { margin: 0; flex-basis: 100%; font-size: 17px; color: var(--ink); max-width: 70ch; }
+.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 600 12.5px/1 var(--ui); color: var(--green-text); background: var(--green-soft); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+.btn.primary { background: var(--green); color: #fff; box-shadow: none; }
+:root[data-theme="dark"] .btn.primary { color: #03170d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #03170d; } }
+.motion-row { display: grid; gap: 18px; }
+@media (min-width: 900px) { .motion-row { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: start; } }
+dl.facts { margin: 0; display: grid; gap: 12px; }
+dl.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); }
+dl.facts dd { margin: 2px 0 0; color: var(--ink-2); font-size: 14.5px; }
+dl.facts dd ul { margin-top: 4px; font-size: 14.5px; }
+.timing { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13.5px; color: var(--ink-3); }
+.timing b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.rec-box { padding: 22px; border-radius: 20px; background: var(--green-soft); }
+.rec-box p { color: var(--ink); }
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
+</style>
+<body>
+<main class="wrap">
+<h1>Signing in to the console with an email and a password</h1>
+<p class="lede">SC-46 · console.smartclearance.com · two options, built on the console's own sign-in card and stylesheets. Find your workspace changes the same way in both.</p>
+<p>The maintainer's words, 6 Oct 2026:</p>
+<blockquote>Email and password for everyone. I want all users to be onboarded with a default password; don't send any emails, as they are fake email accounts. [Find your workspace:] answer less. I need this to be stitched with the local UI and to run end to end locally.</blockquote>
+<p>backend-api (SC-45) now signs staff in with Firebase Authentication: a work email and a password. Accounts start on a default password that an operator hands over. Nobody can sign themselves up, and no email is ever sent. The console's sign-in still shows the prototype's Google and passkey, so it can't reach the real API.</p>
+
+<h2>The sign-in now</h2>
+<div class="frames">
+  <figure><img src="current/light-1440.webp" width="1440" height="900" loading="lazy" alt="The console's sign-in at 1440 wide, light: the Console title and the town plate on the left, and on the right a card with the Smart-Clearance staff mark, Sign in, and buttons for Continue with Google and Use a passkey."><figcaption>Desktop, light</figcaption></figure>
+  <figure><img src="current/dark-1440.webp" width="1440" height="900" loading="lazy" alt="The same sign-in in dark."><figcaption>Desktop, dark</figcaption></figure>
+  <figure><img src="current/light-390.webp" width="390" height="844" loading="lazy" alt="The sign-in on a phone, light: the card alone, with the two buttons."><figcaption>Phone, light</figcaption></figure>
+  <figure><img src="current/dark-390.webp" width="390" height="844" loading="lazy" alt="The sign-in on a phone, dark."><figcaption>Phone, dark</figcaption></figure>
+</div>
+
+<h2>What both options share</h2>
+<div class="shared">
+  <div class="card"><h3>The same page around the card</h3>
+    <ul><li>The stage, its plate, the staff mark and address, and the card's footer stay as they are.</li>
+    <li>The staff email domain is this environment's (<code>smartclearance.example</code> locally until smartclearance.com is owned). The screens say smartclearance.com, as the product will.</li></ul></div>
+  <div class="card"><h3>A wrong password</h3>
+    <ul><li>One message for a wrong password and an unknown address alike. Email enumeration protection is on, so the page never says which.</li>
+    <li>No "Forgot password": nothing is mailed. A Super admin puts the account back on its first password (Resend invitation, or <code>sc-admin reset-passwords</code>).</li>
+    <li>The message sits above the button, in red on its soft red, and is read out (<code>role="alert"</code>).</li></ul></div>
+  <div class="card"><h3>Access</h3>
+    <ul><li>Real labels, <code>autocomplete="username"</code> and <code>current-password</code>, so password managers fill them.</li>
+    <li>Show or hide the password with a 44 × 40 button whose label and pressed state say which.</li>
+    <li>Every field and button is 44 px or taller; focus is the system's ring.</li></ul></div>
+</div>
+
+<section class="opt rec" id="option-a">
+  <header><h3>A · One step, in the card</h3><span class="tag">Recommended</span>
+  <p>The two buttons become the form: work email, password, Sign in. The fastest way in, and the least change to an approved screen.</p></header>
+  <div class="frames">
+    <figure><img src="option-a/light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A at 1440, light: the card's two buttons replaced by Work email and Password fields with icons, a show-password eye, a green Sign in button, and a line saying the platform team gives you your first password."><figcaption>Desktop, light</figcaption></figure>
+    <figure><img src="option-a/dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option A at 1440, dark."><figcaption>Desktop, dark</figcaption></figure>
+    <figure><img src="option-a/light-390.webp" width="390" height="844" loading="lazy" alt="Option A on a phone, light."><figcaption>Phone, light</figcaption></figure>
+    <figure><img src="option-a/dark-390.webp" width="390" height="844" loading="lazy" alt="Option A on a phone, dark."><figcaption>Phone, dark</figcaption></figure>
+  </div>
+  <div class="pair">
+    <figure><img src="option-a/error-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A after a wrong password: a soft red message above Sign in saying the email and password don't match, and to ask a Super admin to put the account back on its first password."><figcaption>A wrong password, desktop</figcaption></figure>
+    <figure><img src="option-a/error-dark-390.webp" width="390" height="844" loading="lazy" alt="The same message on a phone, dark."><figcaption>A wrong password, phone, dark</figcaption></figure>
+  </div>
+  <dl class="facts">
+    <dt>Why</dt><dd>One screen, and one press of Return. Password managers fill both fields at once. The card keeps its height on a laptop (1366 × 768).</dd>
+    <dt>Trade-off</dt><dd>When the workspace sign-in adds Google for a client's own domain, this card would need a second path beside the form.</dd>
+    <dt>What the build touches</dt><dd><ul><li>design3: <code>console/console.jsx</code>'s SignIn, two classes in <code>console.css</code>.</li><li>frontend: <code>console/src/lib/screens/SignIn.svelte</code>, the session in <code>App.svelte</code>, Firebase in the console's API client, <code>@smart-clearance/api</code>'s <code>signIn</code>.</li></ul></dd>
+  </dl>
+  <div class="links"><a class="btn primary" href="option-a/mockup.html">Open option A</a><a class="btn" href="option-a/mockup.html?state=error">A wrong password</a></div>
+</section>
+
+<section class="opt" id="option-b">
+  <header><h3>B · Email first, then the password</h3>
+  <p>Two steps, as the workspace sign-in (SC-24) asks for an email or a mobile number first: the work email, Continue, then the password beside the account it is for.</p></header>
+  <div class="frames">
+    <figure><img src="option-b/step1-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option B's first step at 1440, light: Sign in, Start with your smartclearance.com email address, a Work email field and Continue."><figcaption>Step 1, desktop, light</figcaption></figure>
+    <figure><img src="option-b/step2-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option B's second step: Your password, the account as a pill with initials NK, the address and Change, then the password field and Sign in."><figcaption>Step 2, desktop, light</figcaption></figure>
+    <figure><img src="option-b/step1-dark-390.webp" width="390" height="844" loading="lazy" alt="Option B's first step on a phone, dark."><figcaption>Step 1, phone, dark</figcaption></figure>
+    <figure><img src="option-b/step2-dark-390.webp" width="390" height="844" loading="lazy" alt="Option B's second step on a phone, dark."><figcaption>Step 2, phone, dark</figcaption></figure>
+  </div>
+  <div class="pair">
+    <figure><img src="option-b/step2-error-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option B's password step after a wrong password, with the soft red message above Sign in."><figcaption>A wrong password, desktop</figcaption></figure>
+    <figure><img src="option-b/step2-light-390.webp" width="390" height="844" loading="lazy" alt="Option B's second step on a phone, light."><figcaption>Step 2, phone, light</figcaption></figure>
+  </div>
+  <dl class="facts">
+    <dt>Why</dt><dd>One question at a time, and the same rhythm as the workspace sign-in. It leaves room to send a domain with its own sign-in (Google, SSO) elsewhere after step 1.</dd>
+    <dt>Trade-off</dt><dd>A second screen for every sign-in. With enumeration protection on, step 1 can't say whether the address has an account, so it only checks the address's shape.</dd>
+    <dt>What the build touches</dt><dd>As A, plus the step state and the account pill (with Change) in SignIn.</dd>
+  </dl>
+  <div class="links"><a class="btn primary" href="option-b/mockup.html">Open option B</a><a class="btn" href="option-b/mockup.html?step=2&amp;state=error">Step 2, a wrong password</a></div>
+</section>
+
+<h2>Find your workspace, in both</h2>
+<p>backend-api names the workspace only (SC-43), so the result loses its third line: no "supply-chain operator", no "deactivated by the admin". The landing page and the console's footer link use the same sheet.</p>
+<div class="pair">
+  <figure><img src="shared/find-light-390.webp" width="390" height="900" loading="lazy" alt="Find your workspace results, now and after: now each result card names the person's role or 'deactivated by the admin' under the workspace; after, the card shows only Munchly Foods, its address and Open."><figcaption>Now and after, light</figcaption></figure>
+  <figure><img src="shared/find-dark-390.webp" width="390" height="900" loading="lazy" alt="The same comparison in dark."><figcaption>Now and after, dark</figcaption></figure>
+</div>
+
+<div class="rec-box" style="margin-top:28px"><p><b>Recommended: A.</b> Staff sign in many times a day. A is one screen, fills from a password manager in one go, and changes the approved sign-in the least. B earns its extra step only once a domain has its own sign-in, which the console's staff don't.</p></div>
+
+<footer>SC-46 · Smart-Clearance · every person and number is fictional · designs in <code>design3/designs/SC-46/</code></footer>
+</main>
+<script>
+  (function () {
+    var q = new URLSearchParams(location.search).get("theme");
+    if (q === "dark" || q === "light") document.documentElement.setAttribute("data-theme", q);
+  })();
+</script>
+</body>
+</html>
