@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Catalog, ConsoleConfig, Staff } from '@smart-clearance/api/console';
+	import type { Catalog, ConsoleConfig, SignInInput, Staff } from '@smart-clearance/api/console';
 	import { Mark, Shell, Wordmark, ease, motionMs, useNotice } from '@smart-clearance/core';
 	import { createQuery } from '@tanstack/svelte-query';
 	import type { Snippet } from 'svelte';
@@ -46,8 +46,8 @@
 		css: (t: number) => `opacity: ${t}; transform: translateY(${(1 - t) * 6}px)`
 	});
 
-	async function signIn(staffId: string) {
-		const staff = await api.signIn(staffId);
+	async function signIn(input: SignInInput) {
+		const staff = await api.signIn(input);
 		queryClient.setQueryData(meQuery().queryKey, staff);
 		await refreshAll();
 	}

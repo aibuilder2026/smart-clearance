@@ -1,63 +1,38 @@
 <script lang="ts">
-	import type { StaffAccount } from '@smart-clearance/api/console';
 	import plate from '$design3/site/assets/plates/scene.webp';
-	import { Avatar, Button, FindWorkspace, Icon, Mark, Sheet, useApp, Wordmark } from '@smart-clearance/core';
-	import { createQuery } from '@tanstack/svelte-query';
+	import { Button, Field, FindWorkspace, Icon, Input, Mark, useApp, Wordmark } from '@smart-clearance/core';
+	import { ApiError, SIGN_IN_FAILED, type SignInInput } from '@smart-clearance/api/console';
 	import { api, usingMock } from '#lib/api/client.ts';
-	import { accountsQuery } from '#lib/api/queries.ts';
 	import { LINKS } from '#lib/links.ts';
-	import GoogleG from './GoogleG.svelte';
 
-	// sign-in: platform staff only, Google then a passkey. In the mock, the sheets list the platform's staff, standing in
-	// for Google's account chooser and the device's passkey prompt
-	let { onin }: { onin: (staffId: string) => Promise<void> } = $props();
+	// sign-in: platform staff only, a work email and a password, in the card (SC-46, option A). One message for any wrong
+	// sign-in: Firebase's email enumeration protection never says which part was wrong. Nothing is mailed, so there is
+	// no "forgot password": a Super admin puts an account back on its first password. The mock lets any active staff
+	// member in with any password
+	let { onin }: { onin: (input: SignInInput) => Promise<void> } = $props();
 	const app = useApp();
-	const accounts = createQuery(() => accountsQuery());
-	let sheet: 'google' | 'passkey-pick' | 'passkey' | null = $state(null);
-	let who: StaffAccount | null = $state(null);
+	let email = $state('');
+	let password = $state('');
+	let show = $state(false);
+	let error = $state('');
 	let busy = $state(false);
 	let find = $state(false);
-	const side = $derived(app.bp === 'phone' ? 'bottom' : 'center');
 
-	async function confirm() {
-		if (!who) return;
+	async function submit(e: SubmitEvent) {
+		e.preventDefault();
+		error = '';
+		if (!email.trim() || !password) return void (error = SIGN_IN_FAILED);
 		busy = true;
 		try {
-			// the prototype's passkey takes a moment; a real one takes as long as the reader's touch
-			await Promise.all([onin(who.id), usingMock ? new Promise((r) => setTimeout(r, 900)) : null]);
+			await onin({ email, password });
+		} catch (err) {
+			error = err instanceof ApiError || err instanceof Error ? err.message : SIGN_IN_FAILED;
 		} finally {
 			busy = false;
 		}
 	}
-	const close = () => (sheet = null);
+	const edit = () => (error = '');
 </script>
-
-{#snippet list(path: 'google' | 'passkey')}
-	<div class="stack">
-		<div class="row tight">
-			{#if path === 'google'}<GoogleG size={20} />{:else}<Icon name="fingerprint" size={20} />{/if}<span
-				class="t-subhead"
-				><b>Choose an account</b> to continue to <span class="mono">console.smartclearance.com</span></span
-			>
-		</div>
-		{#each accounts.data ?? [] as st (st.id)}<button
-				type="button"
-				class="list-row si-acct"
-				onclick={() => {
-					who = st;
-					sheet = 'passkey';
-				}}
-				><Avatar person={st} size="sm" /><span class="stack tight" style="gap: 0; min-width: 0"
-					><b class="t-subhead">{st.name}</b><span class="t-caption subtle" style="overflow-wrap: anywhere"
-						>{st.email}</span
-					></span
-				><Icon name="chevron-right" size={18} class="subtle" /></button
-			>{/each}
-		<p class="t-footnote muted" style="margin: 0">
-			The console lets in only smartclearance.com accounts. Client teams never sign in here.
-		</p>
-	</div>
-{/snippet}
 
 <div class="signin cs-signin">
 	<div class="ground" aria-hidden="true"></div>
@@ -78,16 +53,48 @@
 			</div>
 			<div class="stack tight" style="gap: 6px">
 				<h1 class="si-title">Sign in</h1>
-				<p class="si-sub">Use your smartclearance.com Google account, then your passkey.</p>
+				<p class="si-sub">Your smartclearance.com email address and your password.</p>
 			</div>
-			<div class="stack" style="width: 100%; gap: 10px">
-				<button type="button" class="btn btn-secondary btn-lg btn-block" onclick={() => (sheet = 'google')}
-					><GoogleG />Continue with Google</button
+			<form class="si-form" novalidate onsubmit={submit}>
+				<Field label="Work email" htmlFor="si-email"
+					><Input
+						id="si-email"
+						icon="mail"
+						type="email"
+						bind:value={email}
+						oninput={edit}
+						autocomplete="username"
+						spellcheck={false}
+						autocapitalize="none"
+						placeholder="name@smartclearance.com"
+					/></Field
 				>
-				<Button variant="primary" size="lg" block icon="fingerprint" onclick={() => (sheet = 'passkey-pick')}
-					>Use a passkey</Button
+				<Field label="Password" htmlFor="si-pw"
+					><span class="input-wrap cs-si-pw"
+						><Icon name="lock" size={17} /><input
+							id="si-pw"
+							class="input"
+							type={show ? 'text' : 'password'}
+							bind:value={password}
+							oninput={edit}
+							autocomplete="current-password"
+						/><button
+							type="button"
+							class="cs-si-eye"
+							aria-label={show ? 'Hide password' : 'Show password'}
+							aria-pressed={show}
+							onclick={() => (show = !show)}><Icon name={show ? 'eye-off' : 'eye'} size={20} /></button
+						></span
+					></Field
 				>
-			</div>
+				{#if error}<div class="cs-si-error" role="alert">
+						<Icon name="circle-alert" size={18} /><span>{error}</span>
+					</div>{/if}
+				<Button type="submit" variant="primary" size="lg" block icon="log-in" loading={busy}>Sign in</Button>
+				<p class="t-footnote muted cs-si-hint">
+					New to the console? The platform team gives you your first password. Nothing is sent by email.
+				</p>
+			</form>
 			<div class="si-foot">
 				<span class="t-footnote muted" style="max-width: 36ch"
 					>Client teams sign in at their own workspace address, such as munchly.smartclearance.com.</span
@@ -102,26 +109,6 @@
 			</div>
 		</div>
 	</div>
-	<Sheet open={sheet === 'google'} onclose={close} title="Sign in with Google" {side} detent="medium"
-		>{@render list('google')}</Sheet
-	>
-	<Sheet open={sheet === 'passkey-pick'} onclose={close} title="Use a passkey" {side} detent="medium"
-		>{@render list('passkey')}</Sheet
-	>
-	<Sheet open={sheet === 'passkey'} onclose={close} title="Confirm it's you" {side} detent="medium">
-		{#snippet footer()}<Button variant="primary" size="lg" block icon="fingerprint" loading={busy} onclick={confirm}
-				>Use passkey</Button
-			>{/snippet}
-		{#if who}<div class="stack" style="justify-items: center; text-align: center">
-				<span class="cs-passkey" aria-hidden="true"><Icon name="fingerprint" size={38} stroke={1.6} /></span>
-				<div class="stack tight" style="gap: 2px">
-					<b class="t-headline">{who.name}</b><span class="t-footnote subtle">{who.email}</span>
-				</div>
-				<p class="t-subhead muted" style="margin: 0; max-width: 38ch">
-					Your passkey on {who.passkey} confirms it's you. The console asks for it every time, even after Google.
-				</p>
-			</div>{/if}
-	</Sheet>
 	<FindWorkspace
 		bind:open={find}
 		find={(q) => api.lookupWorkspaces(q)}

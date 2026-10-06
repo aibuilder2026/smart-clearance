@@ -11,6 +11,7 @@ export default ts.config(
 			'**/build/',
 			'**/test-results/',
 			'**/playwright-report/',
+			'**/playwright-report-live/',
 			'**/tests/parity/out/',
 			'admin/src/lib/seed/',
 			'api/src/seed/'

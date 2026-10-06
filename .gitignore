@@ -34,6 +34,7 @@ frontend/**/.svelte-kit/
 frontend/**/build/
 frontend/**/test-results/
 frontend/**/playwright-report/
+frontend/**/playwright-report-live/
 frontend/**/blob-report/
 frontend/**/tests/parity/out/
 frontend/**/.env

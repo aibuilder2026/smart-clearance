@@ -237,13 +237,6 @@ class Staff(Shape):
     status: Literal["active", "invited"]
 
 
-class StaffAccount(Shape):
-    id: str
-    name: str
-    email: str
-    passkey: str
-
-
 class Track(Shape):
     client: str
     batch: str

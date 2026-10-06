@@ -6,21 +6,26 @@ import { memory } from './memory';
 describe("the landing page's mock API", () => {
 	const store = memory();
 	const api = siteMock({ storage: () => store });
-	const as = async (q: string) => (await api.lookupWorkspaces(q)).map((m) => `${m.workspace.id}: ${m.as}`);
+	// the workspace only: never the person's role, or whether they were deactivated (SC-43)
+	const as = async (q: string) => {
+		const found = await api.lookupWorkspaces(q);
+		for (const m of found) expect(Object.keys(m).sort()).toEqual(['value', 'workspace']);
+		return found.map((m) => m.workspace.id);
+	};
 
 	it('finds a member by email, in any case', async () => {
-		expect(await as('Priya.Deshmukh@munchly.in')).toEqual(['munchly: supply-chain operator']);
+		expect(await as('Priya.Deshmukh@munchly.in')).toEqual(['munchly']);
 	});
 	it('finds a member by mobile number, with or without +91', async () => {
-		expect(await as('98230 44118')).toEqual(['munchly: distributor']);
-		expect(await as('+91 9823044118')).toEqual(['munchly: distributor']);
+		expect(await as('98230 44118')).toEqual(['munchly']);
+		expect(await as('+91 9823044118')).toEqual(['munchly']);
 	});
-	it('says how an invitee and a deactivated account belong', async () => {
-		expect(await as('98230 60013')).toEqual(['munchly: invited as kirana retailer']);
-		expect(await as('9823060012')).toEqual(['munchly: deactivated by the admin']);
+	it('finds the workspace of an invitee and of a deactivated account, and says no more', async () => {
+		expect(await as('98230 60013')).toEqual(['munchly']);
+		expect(await as('9823060012')).toEqual(['munchly']);
 	});
 	it("points a colleague at their company's workspace", async () => {
-		expect(await as('new.joiner@munchly.in')).toEqual(["munchly: your company's workspace · ask its admin for access"]);
+		expect(await as('new.joiner@munchly.in')).toEqual(['munchly']);
 	});
 	it('never shows a marketplace buyer a workspace', async () => {
 		expect(await as('orders@agrawalwholesale.example')).toEqual([]);

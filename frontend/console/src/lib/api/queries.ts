@@ -13,10 +13,8 @@ export const configQuery = () =>
 export const catalogQuery = () =>
 	queryOptions({ queryKey: ['platform', 'catalog'] as const, queryFn: () => api.catalog(), staleTime: Infinity });
 
-// who is signed in, and the accounts the sign-in sheets list
+// who is signed in
 export const meQuery = () => queryOptions({ queryKey: ['session', 'me'] as const, queryFn: () => api.me() });
-export const accountsQuery = () =>
-	queryOptions({ queryKey: ['session', 'accounts'] as const, queryFn: () => api.signInAccounts() });
 
 // the platform's state; a change refreshes everything under 'console'
 export const overviewQuery = () =>

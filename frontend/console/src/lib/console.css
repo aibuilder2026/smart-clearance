@@ -9,7 +9,15 @@
 .cs-si-title { margin: 0; font-family: var(--font-display); font-weight: 760; font-size: clamp(44px, 5cqi, 64px); line-height: 1; letter-spacing: -0.035em; font-variation-settings: "opsz" 96; }
 .cs-si-lede { margin: 0; font-size: 17px; color: var(--fg-2); max-width: 40ch; }
 .cs-si-plate { width: 100%; max-width: 640px; height: auto; aspect-ratio: 1376 / 752; object-fit: cover; border-radius: 22px; box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
-.cs-passkey { display: grid; place-items: center; width: 76px; height: 76px; border-radius: 24px; background: var(--primary-soft); color: var(--primary-text); }
+/* a work email and a password, in the card (SC-46, option A): one message for any wrong sign-in, and a show-password
+   button inside the field */
+.cs-si-pw .input { padding-right: 48px; }
+.cs-si-eye { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 44px; height: 40px; border: 0; border-radius: 10px; background: transparent; color: var(--fg-3); cursor: pointer; }
+.cs-si-eye:hover { color: var(--fg); background: var(--fill-2); }
+.cs-si-eye:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.cs-si-error { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; padding: 11px 13px; border-radius: 12px; background: var(--red-soft); color: var(--red-text); font-size: 13.5px; line-height: 1.4; text-align: left; }
+.cs-si-error .ic { margin-top: 1px; }
+.cs-si-hint { margin: 0; text-align: center; text-wrap: balance; }
 
 /* overview */
 .cs-track { display: grid; gap: 16px; }

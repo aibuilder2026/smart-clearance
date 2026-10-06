@@ -42,7 +42,7 @@ def kesari(**patch) -> dict:
 
 
 async def test_lets_in_active_staff_only(api, neha):
-    assert (await api.get("/v1/console/session/accounts")).json() == []
+    assert (await api.get("/v1/console/session/accounts")).status_code == 404  # never lists staff before sign-in
     r = await api.post("/v1/console/session", headers=neha)
     assert r.status_code == 200, r.text
     assert r.json() == {

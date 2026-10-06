@@ -18,7 +18,6 @@ from sc_api.schemas import (
     ProfileInput,
     RulesInput,
     Staff,
-    StaffAccount,
     StaffInviteInput,
 )
 from sc_api.services import agents, audit, clients, people, presenter, site, staff, supply
@@ -43,15 +42,6 @@ def _read(ctx: Ctx) -> None:
 @router.get("/console/config", response_model=ConsoleConfig, summary="How the console describes the platform")
 async def config(ctx: Public) -> ConsoleConfig:
     return ConsoleConfig(**ctx.ref.config, staff_email_domain=ctx.settings.staff_email_domain)
-
-
-@router.get(
-    "/console/session/accounts",
-    response_model=list[StaffAccount],
-    summary="Empty over HTTP: staff sign in with Firebase, and the console never lists them before sign-in",
-)
-async def accounts() -> list[StaffAccount]:
-    return []
 
 
 # --- the session -----------------------------------------------------------------------------------------------

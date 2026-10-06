@@ -16,7 +16,16 @@ import type {
 	Staff,
 	Track
 } from '../types/console';
-import { agentDefaults, exitsFor, inviteError, optLabel, setupErrors, showValue, staffInviteError } from './platform';
+import {
+	agentDefaults,
+	exitsFor,
+	inviteError,
+	optLabel,
+	setupErrors,
+	showValue,
+	SIGN_IN_FAILED,
+	staffInviteError
+} from './platform';
 
 /** where the mock keeps the platform's state, and who is signed in */
 export const CONSOLE_KEY = 'sc-console';
@@ -293,16 +302,11 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 			return lookupWorkspaces(query);
 		},
 
-		async signInAccounts() {
+		// the prototype has no passwords: any active staff member's address, with any password, signs in
+		async signIn({ email, password }) {
 			await wait();
-			return state.staff
-				.filter((s) => s.status === 'active')
-				.map(({ id, name, email, passkey }) => ({ id, name, email, passkey }));
-		},
-		async signIn(staffId) {
-			await wait();
-			const s = state.staff.find((x) => x.id === staffId && x.status === 'active');
-			if (!s) throw new ApiError(401, 'This account cannot sign in to the console.');
+			const s = state.staff.find((x) => x.status === 'active' && x.email.toLowerCase() === email.trim().toLowerCase());
+			if (!s || !password) throw new ApiError(401, SIGN_IN_FAILED);
 			write(SESSION_KEY, { uid: s.id, at: Date.now() });
 			return out(s);
 		},

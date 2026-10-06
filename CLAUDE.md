@@ -319,7 +319,7 @@
     - scripted on both builds: the card at once, the zoom after the dwell, the camera back on looking away, a click keeping the card, a chip moving it and bringing a far agent into view, Escape, a focused pin's card and Enter's panel. At 1366 × 768 the caption ends at 709 px.
   - **The port:** `site.css` (verbatim), `Town.svelte`, `town/geo.ts`, `town/graph.ts`, `town/camera.ts`. Its frames match design3's within 0.15% at 390, 820 and 1440 wide.
   - **Hosting:** the hosted landing page and console load commit `0ea344d`.
-- **SC-43** (epic, In Progress): Backend v1, the platform API for the landing page and the console. The maintainer's decisions (6 Oct):
+- **SC-43** (epic): Backend v1, the platform API for the landing page and the console. The maintainer's decisions (6 Oct):
   - reuse the local Docker Postgres 18;
   - real Firebase Auth locally, in one shared user pool;
   - email and password for everyone, every user onboarded with the default password, and no email ever sent;
@@ -329,7 +329,7 @@
   - Munchly rebuilt by hydrate;
   - the showcase loaded as content (money.js ported with the agents);
   - three stories.
-- **SC-44** (In Review, branch `SC-44-infra-auth-secrets`): Terraform for backend-api.
+- **SC-44** (PR #32, merged): Terraform for backend-api.
   - **Applied** (plan read in full, 16 added):
     - Identity Platform, email and password only, sign-up disabled;
     - the console's Firebase web app on a restricted browser key;
@@ -343,7 +343,7 @@
     - Artifact Registry;
     - a budget;
     - the console's build variables.
-- **SC-45** (In Progress, branch `SC-45-backend-api-core`): `backend-api/`, FastAPI on Postgres for every route in `frontend/api`.
+- **SC-45** (PR #33, merged): `backend-api/`, FastAPI on Postgres for every route in `frontend/api`.
   - **The database:** one database, `smart_clearance`, schema `sc`:
     - `sc_owner` owns it; `sc_app` gets DML only;
     - the audit log is append-only, by grants and triggers;
@@ -360,5 +360,31 @@
     - the frontend gate passes;
     - gitleaks: no leaks in the tree or the history.
   - **CI:** a backend gate and a secret scan.
-- **SC-46** (To Do): the console's email and password sign-in and a Find your workspace that answers less, design first, then wired to the API.
+- **SC-46** (In Review, branch `SC-46-console-sign-in`): the platform on the real API, locally.
+  - **Design first:** two options on one board in platform v3, `SC-46 design review.html`:
+    - A, one step in the card;
+    - B, email first, then the password.
+
+    The maintainer picked **A**. Designs, frames and the decision are in `design3/designs/SC-46/`.
+  - **The sign-in:**
+    - work email, password (show or hide), Sign in;
+    - one message for any wrong sign-in (email enumeration protection);
+    - no forgot-password, since nothing is mailed.
+  - **Find your workspace** names the workspace only, with no role line. This is in design3, core and the contract.
+  - **The contract:**
+    - `signIn({ email, password })`; `consoleHttp(base, { auth })` takes the app's Firebase `ConsoleAuth`;
+    - `signInAccounts` is gone, and so is backend-api's `/v1/console/session/accounts`;
+    - `WorkspaceMatch` loses `as`.
+  - **The console:**
+    - `firebase/auth` (12.19.0) loads only when `PUBLIC_API_BASE` is set;
+    - `PUBLIC_FIREBASE_*` are written by `backend-api/scripts/console-env.sh` from Terraform's output into a git-ignored `.env.local`.
+  - **Live end to end:** `backend-api/scripts/e2e.sh` (`frontend/console/tests/live`). It covers Book a demo on the landing page, a wrong then a right Firebase sign-in, the New client flow from that request, an agent, an invitation, the plan, the audit log in the signed-in name, and Support refused a plan change.
+  - **Checks:**
+    - live: 3 pass;
+    - the frontend gate passes;
+    - e2e: landing page 51, console 97; only Firefox fails, as it can't start in the sandbox;
+    - parity: landing page 29, console 80, the new sign-in included;
+    - backend-api: 152 pass;
+    - design3's suite: 334 pass, with 0 failing WCAG rules.
+  - **Hosting:** the hosted landing page and console load commit `d08a08a`. The app and demo stay on `58c6874`, so their Find your workspace still shows the role line.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

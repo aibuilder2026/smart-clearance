@@ -12,12 +12,35 @@ test.beforeEach(async ({}, testInfo) => {
 const inDialog = (page: Page) =>
 	page.evaluate(() => !!document.activeElement?.closest('[role="dialog"], [role="alertdialog"]'));
 
-test('keyboard · a sign-in sheet takes focus, keeps Tab inside, and gives focus back on Escape', async ({ page }) => {
+test('keyboard · the sign-in: email, password, show, Sign in, and Enter signs in', async ({ page }) => {
 	await openConsole(page, '/', { signedIn: false });
-	const google = page.getByRole('button', { name: 'Continue with Google' });
-	await google.focus();
+	const email = page.getByLabel('Work email');
+	await email.focus();
+	await page.keyboard.type('neha.kulkarni@smartclearance.com');
+	await page.keyboard.press('Tab');
+	await expect(page.getByLabel('Password', { exact: true })).toBeFocused();
+	await page.keyboard.type('anything');
+	await page.keyboard.press('Tab');
+	const show = page.getByRole('button', { name: 'Show password' });
+	await expect(show).toBeFocused();
 	await page.keyboard.press('Enter');
-	const sheet = page.getByRole('dialog', { name: 'Sign in with Google' });
+	await expect(page.getByRole('button', { name: 'Hide password' }), 'the toggle says what it does').toHaveAttribute(
+		'aria-pressed',
+		'true'
+	);
+	await expect(page.getByLabel('Password', { exact: true })).toHaveAttribute('type', 'text');
+	await page.keyboard.press('Tab');
+	await expect(page.getByRole('button', { name: 'Sign in' })).toBeFocused();
+	await page.keyboard.press('Enter');
+	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Overview');
+});
+
+test('keyboard · Find a workspace takes focus, keeps Tab inside, and gives focus back on Escape', async ({ page }) => {
+	await openConsole(page, '/', { signedIn: false });
+	const opener = page.getByRole('button', { name: 'Find a workspace' });
+	await opener.focus();
+	await page.keyboard.press('Enter');
+	const sheet = page.getByRole('dialog', { name: 'Find your workspace' });
 	await expect(sheet).toBeVisible();
 	await expect(sheet, 'the sheet itself takes focus, so it is named first').toBeFocused();
 	for (let i = 0; i < 6; i++) {
@@ -26,7 +49,7 @@ test('keyboard · a sign-in sheet takes focus, keeps Tab inside, and gives focus
 	}
 	await page.keyboard.press('Escape');
 	await expect(sheet).toHaveCount(0);
-	await expect(google, 'focus returns to what opened it').toBeFocused();
+	await expect(opener, 'focus returns to what opened it').toBeFocused();
 });
 
 test('keyboard · the client actions menu (APG), and its alert takes focus and gives it back', async ({ page }) => {

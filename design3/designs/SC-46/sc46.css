@@ -1,0 +1,16 @@
+/* SC-46's mockups: what the email and password sign-in adds to design system v3, on the console's own sign-in card. */
+@container app (max-width: 1099px) { .cs-si-stage { display: none; } }
+.sc46-pw .input { padding-right: 48px; }
+.sc46-eye { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 44px; height: 40px; border: 0; border-radius: 10px; background: transparent; color: var(--fg-3); cursor: pointer; }
+.sc46-eye:hover { color: var(--fg); background: var(--fill-2); }
+.sc46-eye:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.sc46-error { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; padding: 11px 13px; border-radius: 12px; background: var(--red-soft); color: var(--red-text); font-size: 13.5px; line-height: 1.4; text-align: left; }
+.sc46-error[hidden] { display: none; }
+.sc46-error .ic { margin-top: 1px; }
+.sc46-hint { margin: 0; text-align: center; text-wrap: balance; }
+.sc46-account { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; width: 100%; min-height: 52px; padding: 6px 8px 6px 6px; border-radius: 99px; background: var(--fill-2); text-align: left; }
+.sc46-account .av { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--primary-soft); color: var(--primary-text); font-weight: 700; font-size: 14px; }
+.sc46-account .who { min-width: 0; overflow-wrap: anywhere; font-size: 14px; color: var(--fg); }
+.sc46-step[hidden] { display: none; }
+.sc46-step { display: grid; gap: 18px; justify-items: center; width: 100%; }
+.sc46-find { display: grid; gap: 10px; width: min(440px, 100%); margin: 0 auto; }

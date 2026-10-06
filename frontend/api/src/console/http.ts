@@ -1,24 +1,42 @@
-// The console's API over HTTP: the same contract as consoleMock, on backend-api's /v1/console routes
+// The console's API over HTTP: the same contract as consoleMock, on backend-api's /v1/console routes. Staff sign in
+// with Firebase Authentication (the app's ConsoleAuth); every call carries the Firebase ID token.
 import { transport, type TransportOptions } from '../http';
 import { ApiError } from '../types/shared';
-import type { Client, ConsoleApi, Staff } from '../types/console';
+import type { Client, ConsoleApi, ConsoleAuth, Staff } from '../types/console';
 
-export function consoleHttp(base: string, options?: TransportOptions): ConsoleApi {
-	const call = transport(base, options);
+export function consoleHttp(
+	base: string,
+	{ auth, ...options }: Omit<TransportOptions, 'token'> & { auth: ConsoleAuth }
+): ConsoleApi {
+	const call = transport(base, { ...options, token: () => auth.token() });
 	const c = (id: string) => `/v1/console/clients/${encodeURIComponent(id)}`;
 	return {
 		catalog: () => call('GET', '/v1/platform/catalog'),
 		config: () => call('GET', '/v1/console/config'),
 		lookupWorkspaces: (query) => call('POST', '/v1/workspaces/lookup', { query }),
 
-		signInAccounts: () => call('GET', '/v1/console/session/accounts'),
-		signIn: (staffId) => call('POST', '/v1/console/session', { staffId }),
-		signOut: () => call('DELETE', '/v1/console/session'),
-		me: () =>
-			call<Staff | null>('GET', '/v1/console/session').catch((e) => {
+		// Firebase checks the email and password; backend-api answers the staff member the account belongs to (and makes an
+		// invited one active). A Firebase account that isn't active staff is signed out again
+		async signIn({ email, password }) {
+			await auth.signIn(email.trim(), password);
+			try {
+				return await call<Staff>('POST', '/v1/console/session');
+			} catch (e) {
+				await auth.signOut();
+				throw e;
+			}
+		},
+		async signOut() {
+			await call('DELETE', '/v1/console/session').catch(() => undefined);
+			await auth.signOut();
+		},
+		async me() {
+			if (!(await auth.token())) return null;
+			return call<Staff | null>('GET', '/v1/console/session').catch((e) => {
 				if (e instanceof ApiError && e.status === 401) return null;
 				throw e;
-			}),
+			});
+		},
 
 		overview: () => call('GET', '/v1/console/overview'),
 		clients: () => call('GET', '/v1/console/clients'),

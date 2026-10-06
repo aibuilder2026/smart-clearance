@@ -16,6 +16,33 @@ export const variables = defineEnvVars({
 		description:
 			'The backend API, e.g. https://api.smartclearance.com. Unset, the console reads and changes the prototype data in the in-browser mock.'
 	},
+	// Firebase Authentication, which staff sign in with when the console talks to backend-api (SC-46). The web app's
+	// config is public by design (it ships in this JavaScript); it comes from Terraform's console_firebase_config output
+	// (backend-api/scripts/console-env.sh writes .env.local), never from the repository.
+	PUBLIC_FIREBASE_API_KEY: {
+		public: true,
+		static: true,
+		schema: (value) => value || undefined,
+		description: "The console's Firebase web app's browser key (restricted to Firebase Auth and the console's origins)."
+	},
+	PUBLIC_FIREBASE_AUTH_DOMAIN: {
+		public: true,
+		static: true,
+		schema: (value) => value || undefined,
+		description: 'Firebase Auth domain, e.g. <project>.firebaseapp.com.'
+	},
+	PUBLIC_FIREBASE_PROJECT_ID: {
+		public: true,
+		static: true,
+		schema: (value) => value || undefined,
+		description: 'The Google Cloud and Firebase project.'
+	},
+	PUBLIC_FIREBASE_APP_ID: {
+		public: true,
+		static: true,
+		schema: (value) => value || undefined,
+		description: "The console's Firebase web app id."
+	},
 	PUBLIC_MOCK_LATENCY_MS: {
 		public: true,
 		static: true,

@@ -36,6 +36,7 @@ backend-api/scripts/bootstrap.sh        # secrets → database and logins → sc
 backend-api/scripts/dev.sh              # the API on http://localhost:8000 (or the backend-api preview config); docs at /docs
 backend-api/scripts/console-env.sh      # point frontend/console and frontend/admin's .env.local at it
 backend-api/scripts/default-password.sh --copy   # the password every account starts on
+backend-api/scripts/e2e.sh              # the landing page and the console end to end, on the real API and Firebase
 ```
 
 Sign in to the console as any active staff member, for example `neha.kulkarni@smartclearance.example`, with the
@@ -58,6 +59,7 @@ bash 3.2 and shellcheck-clean.
 | `up.sh [--with-db]` | The API in its container (`compose.yaml`). `--with-db` also starts a Postgres 18 of its own for a machine without one. |
 | `console-env.sh [API base]` | Writes the frontend's git-ignored `.env.local` files: the API base and the console's Firebase web config (public, from Terraform's output) |
 | `test.sh [pytest args]` | The suite, against `smart_clearance_test` |
+| `e2e.sh [playwright args]` | The landing page and the console end to end against the running API and Firebase Auth (`frontend/console/tests/live`). It covers Book a demo, a wrong then a right sign-in, the New client flow, an agent, an invitation, the plan, the audit log, and Support refused a plan change. The default password reaches the test process in its environment only. |
 | `contracts.sh` | Exports `contracts/openapi.json` (a test fails when it is stale) |
 | `bootstrap.sh [hydrate args]` | The lift-and-shift path: all of the above, in order |
 
@@ -121,7 +123,7 @@ The routes and shapes are `frontend/api/src/types/*.ts`, field for field:
 | `GET /v1/site/showcase`, `GET /v1/platform/catalog` | anyone | cacheable |
 | `POST /v1/workspaces/lookup` `{ query }` | anyone | **Names the workspace only**, never the person's role or whether they were deactivated (SC-43). Rate-limited (10 a minute per address). A POST, so the identifier never reaches a URL or a log line. |
 | `POST /v1/demo-requests` | anyone | rate-limited; 422 names each field's problem |
-| `GET /v1/console/config`, `GET /v1/console/session/accounts` | anyone | the config adds `staffEmailDomain`; accounts is `[]` (the console never lists staff before sign-in) |
+| `GET /v1/console/config` | anyone | the console's config, plus `staffEmailDomain`. Nothing lists staff before sign-in. |
 | `POST`, `GET`, `DELETE /v1/console/session` | staff | sign in (activates an invite), who is signed in, sign out (204) |
 | everything else under `/v1/console`, and `GET /v1/demo-requests` | staff, by role | as `frontend/api/src/console/http.ts` |
 

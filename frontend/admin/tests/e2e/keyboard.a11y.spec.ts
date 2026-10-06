@@ -125,7 +125,9 @@ test('keyboard · Find your workspace, from the menu: the sheet takes focus, kee
 	await expect(trigger, 'focus returns to the button that opened the menu').toBeFocused();
 });
 
-test('keyboard · Find your workspace finds members, invitees and nobody', async ({ page }) => {
+test('keyboard · Find your workspace finds members, invitees and nobody, and names the workspace only', async ({
+	page
+}) => {
 	await page.locator('.hero').getByRole('button', { name: 'Find your workspace' }).click();
 	const field = page.getByLabel('Email or mobile number');
 	const results = async (value: string) => {
@@ -134,13 +136,13 @@ test('keyboard · Find your workspace finds members, invitees and nobody', async
 		await page.waitForTimeout(150);
 		return (await page.locator('[role="dialog"] .card').allInnerTexts()).join(' / ').replace(/\s+/g, ' ');
 	};
-	expect(await results('priya.deshmukh@munchly.in')).toMatch(
-		/Munchly Foods munchly\.smartclearance\.com supply-chain operator Open/
-	);
-	expect(await results('98230 44118')).toMatch(/distributor/);
-	expect(await results('+91 98230 60013')).toMatch(/invited as kirana retailer/);
-	expect(await results('9823060012')).toMatch(/deactivated by the admin/);
-	expect(await results('someone.new@munchly.in')).toMatch(/your company's workspace/);
+	// the workspace only: never the person's role, or whether they were deactivated (SC-43)
+	const workspace = /^Munchly Foods munchly\.smartclearance\.com Open$/;
+	expect(await results('priya.deshmukh@munchly.in')).toMatch(workspace);
+	expect(await results('98230 44118')).toMatch(workspace);
+	expect(await results('+91 98230 60013')).toMatch(workspace);
+	expect(await results('9823060012')).toMatch(workspace);
+	expect(await results('someone.new@munchly.in')).toMatch(workspace);
 	expect(await results('orders@agrawalwholesale.example')).toMatch(/No workspace uses that yet/);
 	await field.fill('12345');
 	await field.press('Enter');

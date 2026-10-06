@@ -1534,35 +1534,6 @@
         "title": "Staff",
         "type": "object"
       },
-      "StaffAccount": {
-        "additionalProperties": false,
-        "properties": {
-          "email": {
-            "title": "Email",
-            "type": "string"
-          },
-          "id": {
-            "title": "Id",
-            "type": "string"
-          },
-          "name": {
-            "title": "Name",
-            "type": "string"
-          },
-          "passkey": {
-            "title": "Passkey",
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "email",
-          "passkey"
-        ],
-        "title": "StaffAccount",
-        "type": "object"
-      },
       "StaffInviteInput": {
         "additionalProperties": false,
         "properties": {
@@ -2745,31 +2716,6 @@
           }
         ],
         "summary": "Sign in: the bearer token's staff member",
-        "tags": [
-          "console"
-        ]
-      }
-    },
-    "/v1/console/session/accounts": {
-      "get": {
-        "operationId": "accounts_v1_console_session_accounts_get",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/StaffAccount"
-                  },
-                  "title": "Response Accounts V1 Console Session Accounts Get",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "Successful Response"
-          }
-        },
-        "summary": "Empty over HTTP: staff sign in with Firebase, and the console never lists them before sign-in",
         "tags": [
           "console"
         ]

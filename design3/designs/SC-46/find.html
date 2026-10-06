@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-46 Find your workspace</title>
+<meta name="description" content="Find your workspace answers the workspace only: the role line goes.">
+<script>
+  (function () {
+    var q = new URLSearchParams(location.search).get("theme"), mode = null;
+    try { if (q === "dark" || q === "light") localStorage.setItem("sc3-theme", q); mode = localStorage.getItem("sc3-theme"); } catch (e) { mode = q; }
+    var dark = mode === "dark" || (mode !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+  })();
+</script>
+<link rel="stylesheet" href="../../system/tokens.css">
+<link rel="stylesheet" href="../../system/base.css">
+<link rel="stylesheet" href="../../system/components.css">
+<link rel="stylesheet" href="sc46.css">
+<style>body { background: var(--bg); color: var(--fg); padding: 32px 16px; } .sc46-find h2 { margin: 18px 0 2px; font-size: 15px; }</style>
+</head>
+<body>
+<main class="sc46-find">
+  <div class="row tight"><svg class="mark" width="36" height="36" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="mk7c02eg" x1="8" y1="4" x2="58" y2="62" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#2fbf7f"></stop><stop offset="0.55" stop-color="#178258"></stop><stop offset="1" stop-color="#0d5a3e"></stop></linearGradient><linearGradient id="mk7c02eh" x1="32" y1="2" x2="32" y2="34" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity="0.28"></stop><stop offset="1" stop-color="#fff" stop-opacity="0"></stop></linearGradient></defs><path d="M32 2C9.5 2 2 9.5 2 32s7.5 30 30 30 30-7.5 30-30S54.5 2 32 2Z" fill="url(#mk7c02eg)" opacity="1" style="transform-origin: 32px 32px; transform: none;"></path><path d="M32 3C10.5 3 3 10.5 3 31.5 10 22 22 18 32 18s22 4 29 13.5C61 10.5 53.5 3 32 3Z" fill="url(#mk7c02eh)"></path><path d="M43.5 19 H27 a7 7 0 0 0 0 14 h10 a7 7 0 0 1 0 14 H20.5" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" pathLength="1" stroke-dashoffset="0px" stroke-dasharray="1px 1px"></path><circle cx="43.5" cy="19" r="3.4" fill="#0d5a3e" stroke="#fff" stroke-width="2.6" style="transform-origin: 43.5px 19px; transform: none;"></circle><circle cx="20.5" cy="47" r="5.2" fill="#f7c04a" stroke="#fff" stroke-width="2.2" opacity="1" style="transform-origin: 20.5px 47px; transform: none;"></circle></svg><b>Find your workspace</b></div>
+  <p class="t-subhead muted" style="margin:0">The same result for both options. It names the workspace only, never the person's role or whether an admin deactivated them, so the page tells a stranger no more than which company's workspace an address belongs to.</p>
+  <h2>Now</h2>
+  <span class="t-caption subtle strong">1 workspace</span>
+  <div class="card row" style="gap:12px;padding:12px 14px"><span aria-hidden="true" style="display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#f68d3e,#d6461e);color:#fff;font-weight:700">M</span><span class="stack tight grow" style="gap:1px;min-width:0"><b>Munchly Foods</b><span class="t-caption subtle mono" style="overflow-wrap:anywhere">munchly.smartclearance.com</span><span class="t-footnote muted">supply-chain operator</span></span><button type="button" class="btn btn-secondary btn-sm">Open</button></div>
+  <div class="card row" style="gap:12px;padding:12px 14px"><span aria-hidden="true" style="display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#f68d3e,#d6461e);color:#fff;font-weight:700">M</span><span class="stack tight grow" style="gap:1px;min-width:0"><b>Munchly Foods</b><span class="t-caption subtle mono" style="overflow-wrap:anywhere">munchly.smartclearance.com</span><span class="t-footnote muted">deactivated by the admin</span></span><button type="button" class="btn btn-secondary btn-sm">Open</button></div>
+  <h2>After SC-46</h2>
+  <span class="t-caption subtle strong">1 workspace</span>
+  <div class="card row" style="gap:12px;padding:12px 14px"><span aria-hidden="true" style="display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#f68d3e,#d6461e);color:#fff;font-weight:700">M</span><span class="stack tight grow" style="gap:1px;min-width:0"><b>Munchly Foods</b><span class="t-caption subtle mono" style="overflow-wrap:anywhere">munchly.smartclearance.com</span></span><button type="button" class="btn btn-secondary btn-sm">Open</button></div>
+  <p class="t-caption subtle" style="margin:0">The empty answer ("No workspace uses that yet") and the input stay as they are.</p>
+</main>
+</body>
+</html>

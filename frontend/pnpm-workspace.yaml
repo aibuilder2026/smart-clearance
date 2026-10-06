@@ -5,6 +5,13 @@ packages:
   - console
   - testing
 
+# install scripts this workspace never runs: firebase's (@firebase/util writes Firebase App Hosting's auto-init defaults;
+# the console passes its config explicitly) and protobufjs's (a check for its own CLI). Denied here, so CI's install,
+# which refuses any script nobody decided about, passes.
+allowBuilds:
+  '@firebase/util': false
+  protobufjs: false
+
 # one version of each shared dependency across the workspace; packages refer to these as "catalog:"
 catalog:
   svelte: ^5.57.1

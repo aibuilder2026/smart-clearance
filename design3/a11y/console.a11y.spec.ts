@@ -27,15 +27,19 @@ for (const r of ROUTES) {
   });
 }
 
-test('console · sign-in and its sheets', async ({ page }, testInfo) => {
+test('console · sign-in, a wrong sign-in, and Find a workspace', async ({ page }, testInfo) => {
   await open(page, null);
   const findings: Finding[] = [...await scan(page, 'console sign-in')];
-  await page.getByRole('button', { name: 'Continue with Google' }).click();
+  await page.getByLabel('Work email').fill('nobody@smartclearance.com');
+  await page.getByLabel('Password', { exact: true }).fill('anything');
+  await page.getByRole('button', { name: 'Sign in' }).click();
+  await page.getByRole('alert').waitFor();
+  findings.push(...await scan(page, 'console sign-in · a wrong sign-in'));
+  await page.getByRole('button', { name: 'Find a workspace' }).click();
+  await page.getByLabel('Email or mobile number').fill('priya.deshmukh@munchly.in');
+  await page.getByRole('button', { name: 'Find workspaces' }).click();
   await page.waitForTimeout(700);
-  findings.push(...await scan(page, 'console sign-in · Google accounts'));
-  await page.getByRole('button', { name: /Neha Kulkarni/ }).click();
-  await page.waitForTimeout(700);
-  findings.push(...await scan(page, 'console sign-in · passkey'));
+  findings.push(...await scan(page, 'console sign-in · Find your workspace'));
   await report(testInfo, findings);
 });
 

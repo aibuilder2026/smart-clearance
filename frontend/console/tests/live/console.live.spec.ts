@@ -1,0 +1,115 @@
+import { expect, test, type Page } from '@playwright/test';
+
+// End to end on this machine: the landing page and the console against backend-api, signing in with Firebase
+// Authentication. backend-api/scripts/e2e.sh sets these from Secret Manager and the database; the tests skip without them.
+const PASSWORD = process.env.SC_LIVE_PASSWORD ?? '';
+const SUPER_ADMIN = process.env.SC_LIVE_SUPER_ADMIN ?? '';
+const SUPPORT = process.env.SC_LIVE_SUPPORT ?? '';
+const CONSOLE = 'http://localhost:5174';
+const SITE = 'http://localhost:5173';
+
+test.skip(!PASSWORD || !SUPER_ADMIN, 'run through backend-api/scripts/e2e.sh');
+
+// a company no run has used: its slug is its workspace address
+const stamp = Date.now().toString(36).slice(-5);
+const company = `Livecheck ${stamp} Foods`;
+const slug = `livecheck-${stamp}`;
+const domain = `livecheck-${stamp}.example`;
+
+async function signIn(page: Page, email: string, password = PASSWORD) {
+	await page.goto(CONSOLE + '/');
+	await page.waitForSelector('.app[data-mounted] .si-title, .app[data-mounted] .largetitle h1');
+	if (await page.locator('.largetitle h1').count()) await signOut(page);
+	await page.getByLabel('Work email').fill(email);
+	await page.getByLabel('Password', { exact: true }).fill(password);
+	await page.getByRole('button', { name: 'Sign in' }).click();
+}
+
+async function signOut(page: Page) {
+	await page.locator('.sb-user:visible').first().click();
+	await page.getByRole('button', { name: 'Sign out' }).click();
+	await expect(page.locator('.si-title')).toHaveText('Sign in');
+}
+
+test('live · a wrong password, then a Super admin signs in to the real data', async ({ page }) => {
+	await signIn(page, SUPER_ADMIN, 'Not-the-password-1');
+	await expect(page.getByRole('alert')).toHaveText(
+		"That email and password don't match. Check both, or ask a Super admin to put your account back on its first password."
+	);
+	await page.getByLabel('Password', { exact: true }).fill(PASSWORD);
+	await page.getByRole('button', { name: 'Sign in' }).click();
+	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Overview');
+	await expect(page.locator('.cs-track').first()).toBeVisible();
+	await page.goto(CONSOLE + '/clients');
+	await expect(page.getByRole('row', { name: /Munchly Foods/ })).toBeVisible();
+	await signOut(page);
+});
+
+test('live · Book a demo on the landing page becomes a client in the console', async ({ page }) => {
+	// the landing page: Find your workspace names the workspace only, and Book a demo reaches backend-api
+	await page.goto(SITE + '/');
+	await page.locator('.hero').getByRole('button', { name: 'Find your workspace' }).click();
+	const find = page.getByRole('dialog', { name: 'Find your workspace' });
+	await find.getByLabel('Email or mobile number').fill('priya.deshmukh@munchly.example');
+	await find.getByRole('button', { name: 'Find workspaces' }).click();
+	await expect(find.locator('.card').first()).toHaveText(/^\s*Munchly Foods\s*munchly\.smartclearance\.com\s*Open\s*$/);
+	await page.keyboard.press('Escape');
+	await page.locator('.site-nav').getByRole('button', { name: 'Book a demo' }).click();
+	await page.getByLabel('Your name').fill('Ritu Malhotra');
+	await page.getByLabel('Company').fill(company);
+	await page.getByLabel('Work email').fill(`ritu@${domain}`);
+	await page.getByLabel('Work email').press('Enter');
+	await expect(page.getByText('Thanks, Ritu.')).toBeVisible();
+
+	// the console: the request is there, and the New client flow sets it up
+	await signIn(page, SUPER_ADMIN);
+	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Overview');
+	await page.locator('.list-row', { hasText: company }).getByRole('button', { name: 'Set up' }).click();
+	await expect(page).toHaveURL(/\/new-client\?request=rq-/);
+	await expect(page.getByLabel('Company name')).toHaveValue(company);
+	await page.getByLabel('Home city').fill('Indore');
+	const next = () => page.getByRole('button', { name: 'Continue' }).click();
+	await next();
+	await expect(page.getByLabel('Staff email domain')).toHaveValue(domain);
+	for (let i = 0; i < 4; i++) await next();
+	await expect(page.getByLabel("Admin's work email")).toHaveValue(`ritu@${domain}`);
+	await next();
+	await page.getByRole('button', { name: 'Create workspace' }).click();
+	await expect(page).toHaveURL(new RegExp(`/clients/${slug}/agents$`));
+	await expect(page.locator('.toast')).toHaveText(`${company}'s workspace is set up`);
+
+	// an agent, a person and the plan, each written to the audit log in the signed-in name
+	const negotiator = page.getByRole('group', { name: 'Negotiator: autonomy' }).first();
+	await negotiator.getByRole('button', { name: 'Act' }).click();
+	await expect(page.locator('.toast').last()).toHaveText(`Negotiator: Act, for ${company}`);
+	await page.goto(`${CONSOLE}/clients/${slug}/people`);
+	const form = page.locator('.cs-invite');
+	await form.getByLabel('Name').fill('Sunil Rao');
+	await form.getByLabel('Work email or mobile number').fill(`sunil.rao@${domain}`);
+	await form.getByRole('button', { name: 'Send invitation' }).click();
+	await expect(page.locator('.toast').last()).toHaveText('Invitation sent to Sunil Rao');
+	await page.goto(`${CONSOLE}/clients/${slug}/plan`);
+	await page.getByRole('group', { name: 'Plan' }).getByRole('button', { name: 'Growth' }).click();
+	await expect(page.locator('.toast').last()).toHaveText(`${company} on Growth`);
+	await page.goto(`${CONSOLE}/clients/${slug}/audit`);
+	const log = page.locator('.list-row');
+	await expect(log.first()).toContainText(`Moved ${company} from Pilot to Growth`);
+	for (const line of [
+		'Invited Sunil Rao as Member',
+		`Set the Negotiator agent to Act for ${company} (was Ask)`,
+		`Set up ${company} from its supply-chain profile`
+	])
+		await expect(log.filter({ hasText: line }), line).toHaveCount(1);
+	await expect(log.first(), 'in the signed-in name').toContainText('Neha Kulkarni');
+	await signOut(page);
+});
+
+test('live · Support may not change a plan', async ({ page }) => {
+	test.skip(!SUPPORT, 'no active Support member in the database');
+	await signIn(page, SUPPORT);
+	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Overview');
+	await page.goto(CONSOLE + '/clients/munchly/plan');
+	await page.getByRole('group', { name: 'Plan' }).getByRole('button', { name: 'Enterprise' }).click();
+	await expect(page.locator('.toast').last()).toHaveText("Only a Super admin can change a client's plan.");
+	await signOut(page);
+});

@@ -3,6 +3,7 @@
 **/build/
 **/test-results/
 **/playwright-report/
+**/playwright-report-live/
 **/tests/parity/out/
 pnpm-lock.yaml
 admin/src/lib/seed/
