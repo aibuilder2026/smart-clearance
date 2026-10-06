@@ -29,6 +29,9 @@ locals {
     "run.googleapis.com",              # Cloud Run
     "artifactregistry.googleapis.com", # backend-api's images
     "billingbudgets.googleapis.com",   # the project's budget alert
+    "cloudbuild.googleapis.com",       # backend-api's image builds and deploys (build.tf)
+    "monitoring.googleapis.com",       # the uptime check, the alerts and the dashboard (monitoring.tf)
+    "logging.googleapis.com",          # Cloud Run's, Cloud SQL's and Cloud Build's logs
   ] : []))
 }
 

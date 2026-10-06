@@ -14,7 +14,7 @@ Smart-Clearance (working title Short-Date Router) is an agentic near-expiry stoc
 
 Smart-Clearance is meant to be sold to manufacturers as software as a service, one workspace each at `<client>.smartclearance.com`, set up for that client's supply chain. The prototypes are Munchly Foods' workspace at munchly.smartclearance.com.
 
-The production code starts in `frontend/` (SC-27): design system v3 in Svelte, the platform's landing page, and the staff console (SC-37), each app built and deployed on its own. `backend-api/` (SC-45) is the platform's API: FastAPI on PostgreSQL 18, Firebase Authentication with email and password, and every secret in Google Secret Manager. It serves the frontend's contract and runs locally against the developer's Docker Postgres; its cloud runtime is written but not applied. Without `PUBLIC_API_BASE` the frontend runs on its in-browser mocks; with it, the console signs staff in with Firebase (email and password, SC-46) and both apps read and write the API. `agents/` is planned. `infra/` (SC-39) is Terraform for the Google Cloud project, `aibuilder-510213`: Firebase Hosting, one site per app, released by its deploy script.
+The production code starts in `frontend/` (SC-27): design system v3 in Svelte, the platform's landing page, and the staff console (SC-37), each app built and deployed on its own. `backend-api/` (SC-45) is the platform's API: FastAPI on PostgreSQL 18, Firebase Authentication with email and password, and every secret in Google Secret Manager. It serves the frontend's contract, runs locally against the developer's Docker Postgres, and in the cloud on Cloud Run with Cloud SQL (SC-50), built and deployed by Cloud Build. Without `PUBLIC_API_BASE` the frontend runs on its in-browser mocks; with it, the console signs staff in with Firebase (email and password, SC-46) and both apps read and write the API. `agents/` is planned. `infra/` (SC-39) is Terraform for the Google Cloud project, `aibuilder-510213`: Firebase Hosting, one site per app, released by its deploy script.
 
 ## Layout
 
@@ -168,7 +168,13 @@ Local pages:
 - What would hurt to lose carries a `deletion_policy`: `PREVENT` on the state bucket and the Hosting sites, `ABANDON` on the billing link.
 - Releases are not Terraform: the provider cannot upload Hosting files, so `infra/scripts/deploy.sh` releases them through firebase-tools (pinned).
 - A merge to `main` that touches the frontend, design3 or `infra/` deploys both apps (SC-40). CI's deploy job runs in the GitHub environment `prod`, the only environment, which only `main` may deploy to.
-- CI signs in to Google through Workload Identity Federation, as `github-deployer`, which may only deploy Hosting. Never create a service account key, or store a Google credential as a GitHub secret.
+- CI signs in to Google through Workload Identity Federation, from the `prod` environment only. It uses two accounts:
+  - `github-deployer`, which may only deploy Hosting;
+  - `github-backend` (SC-50), which may only start Cloud Build builds as `sc-builder`, the account that pushes backend-api's image, migrates the database and deploys Cloud Run.
+
+  Never create a service account key, or store a Google credential as a GitHub secret.
+- A merge to `main` touching `backend-api/` rebuilds and redeploys it through Cloud Build (`backend-api/cloudbuild.yaml`) before the apps are deployed. Cloud Build owns the Cloud Run image; Terraform ignores it.
+- The cloud runtime costs about GBP 9 a month, nearly all Cloud SQL; a GBP 20 budget alerts the operator. Ask before adding anything that costs money, with its price.
 - In workflows, pin every action to a commit SHA, with its version in a comment. Keep the workflow token read-only, and grant `id-token: write` only to the job that deploys.
 
 **The backend and secrets**
@@ -308,8 +314,9 @@ From the Claude desktop app:
 
 - The jira-flow gates cover `frontend/` (lint, type check, unit tests) and `infra/` (`terraform fmt` and `validate`, the scripts' syntax; no plan, since that needs credentials), and `backend-api/` (ruff, and pytest on a real Postgres), and CI runs all three on every pull request with a secret scan. The `agents/` gate waits for code. Nothing gates `design3/`, or the frontend's e2e and parity suites: run them yourself.
 - The frontend's Firefox smoke run could not be started in the agent's sandboxed shell; run `corepack pnpm test:e2e` on a normal machine to cover it.
-- The hosted pages and the deployed apps still run on the mocks: backend-api runs on a developer's machine only. Locally, `backend-api/scripts/console-env.sh` points both apps at it.
-- `backend-api` runs locally only: its Cloud SQL and Cloud Run are written behind `backend_runtime` and not applied (SC-44). Local development and prod share one Firebase user pool.
+- The hosted pages on Claude Design still run on the mocks; the deployed apps read backend-api on Cloud Run from their first deploy after SC-50. Locally, `backend-api/scripts/console-env.sh` points both apps at the local API.
+- Local development and prod share one Firebase user pool, so the same accounts sign in to both.
+- Cloud Run scales to zero: the first request after a quiet spell waits a few seconds. Cloud SQL is `db-f1-micro`, a shared core without an SLA.
 - `frontend/console` runs on its in-browser mock: sign-in is a stand-in for Google and a passkey, changes stay in that browser (`sc-console`), and two fictional demo requests stand in for the landing page's. Both apps are live on Firebase Hosting's own addresses (SC-39), with no custom domain yet.
 - The landing page ships about 139 kB of JavaScript, gzipped (`frontend/README.md`, Known gaps).
 - The landing page's hero draws its town in WebGL2; where WebGL2 is missing it draws the plate flat, without depth.

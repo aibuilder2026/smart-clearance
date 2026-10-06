@@ -4,6 +4,9 @@
 # - sc-migrator runs the migrate job: the schema's roles and grants, Alembic, and the reference data.
 # - Ingress is public and Cloud Run's own IAM check is off: the API checks Firebase ID tokens itself, and its public
 #   routes (the landing page's) need no token.
+# - The hydrate job builds the synthetic world through the services, as sc-api (the maintainer's call for prod, SC-50).
+# - Terraform creates them on var.backend_image (a placeholder); Cloud Build deploys every image after that
+#   (backend-api/cloudbuild.yaml), so each one ignores its image here.
 
 locals {
   api_origins = distinct(flatten([
@@ -13,6 +16,18 @@ locals {
     )
   ]))
   default_password_secret = "${google_secret_manager_secret.this["sc-default-user-password"].id}/versions/latest"
+  # what the API and the hydrate job both need: the project, the database as sc-api, and the default password
+  api_env = var.backend_runtime ? {
+    SC_ENV                  = "prod"
+    GOOGLE_CLOUD_PROJECT    = var.project_id
+    DB_MODE                 = "cloudsql"
+    DB_INSTANCE             = google_sql_database_instance.main[0].connection_name
+    DB_NAME                 = local.db_name
+    DB_USER                 = google_sql_user.api[0].name
+    STAFF_EMAIL_DOMAIN      = var.staff_email_domain
+    DEFAULT_PASSWORD_SECRET = local.default_password_secret
+    LOG_FORMAT              = "json" # one JSON object a line, so Cloud Logging reads each line's severity
+  } : {}
 }
 
 resource "google_service_account" "api" {
@@ -91,17 +106,7 @@ resource "google_cloud_run_v2_service" "api" {
       }
 
       dynamic "env" {
-        for_each = {
-          SC_ENV                  = "prod"
-          GOOGLE_CLOUD_PROJECT    = var.project_id
-          DB_MODE                 = "cloudsql"
-          DB_INSTANCE             = google_sql_database_instance.main[0].connection_name
-          DB_NAME                 = local.db_name
-          DB_USER                 = google_sql_user.api[0].name
-          STAFF_EMAIL_DOMAIN      = var.staff_email_domain
-          CORS_ORIGINS            = jsonencode(local.api_origins)
-          DEFAULT_PASSWORD_SECRET = local.default_password_secret
-        }
+        for_each = merge(local.api_env, { CORS_ORIGINS = jsonencode(local.api_origins) })
         content {
           name  = env.key
           value = env.value
@@ -119,6 +124,10 @@ resource "google_cloud_run_v2_service" "api" {
         }
       }
     }
+  }
+
+  lifecycle {
+    ignore_changes = [template[0].containers[0].image, client, client_version]
   }
 
   depends_on = [google_project_iam_member.api, google_secret_manager_secret_iam_member.api]
@@ -153,6 +162,7 @@ resource "google_cloud_run_v2_job" "migrate" {
             DB_NAME              = local.db_name
             DB_USER              = google_sql_user.migrator[0].name
             DB_APP_USER          = google_sql_user.api[0].name
+            LOG_FORMAT           = "json"
           }
           content {
             name  = env.key
@@ -163,5 +173,54 @@ resource "google_cloud_run_v2_job" "migrate" {
     }
   }
 
+  lifecycle {
+    ignore_changes = [template[0].template[0].containers[0].image, client, client_version]
+  }
+
   depends_on = [google_project_iam_member.migrator]
+}
+
+# The synthetic world (backend-api/src/sc_api/cli/synth.py), built through the services as sc-api: run once after the
+# first migrate, and again with --tick to move some batches on (gcloud run jobs execute backend-api-hydrate).
+resource "google_cloud_run_v2_job" "hydrate" {
+  count = local.runtime
+
+  name                = "backend-api-hydrate"
+  location            = var.region
+  deletion_protection = true
+  labels              = { app = "smart-clearance" }
+
+  template {
+    task_count = 1
+
+    template {
+      service_account = google_service_account.api[0].email
+      max_retries     = 0
+      timeout         = "1800s"
+
+      containers {
+        image   = var.backend_image
+        command = ["sc-hydrate"]
+        args    = ["--allow-env", "prod"]
+
+        resources {
+          limits = { cpu = "1", memory = "1Gi" }
+        }
+
+        dynamic "env" {
+          for_each = local.api_env
+          content {
+            name  = env.key
+            value = env.value
+          }
+        }
+      }
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [template[0].template[0].containers[0].image, client, client_version]
+  }
+
+  depends_on = [google_project_iam_member.api, google_secret_manager_secret_iam_member.api]
 }

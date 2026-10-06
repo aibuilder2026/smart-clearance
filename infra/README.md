@@ -3,14 +3,14 @@
 Terraform for Smart-Clearance's Google Cloud project, `aibuilder-510213`, and the scripts that run it (SC-39). For
 now it hosts the two frontend apps on Firebase Hosting, each on its own site, and lets GitHub Actions deploy them from
 `main` without a key (SC-40). It also holds `backend-api`'s Firebase Authentication, secrets and identity (SC-44), with
-its cloud runtime (Cloud SQL, Cloud Run) written but switched off until it is asked for.
+its cloud runtime (Cloud SQL, Cloud Run, Cloud Build, monitoring), on since SC-50.
 
 ## What it manages
 
 | Root         | State                                     | What it holds                                                                                                                                                                                                                                                                                             |
 | ------------ | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `bootstrap/` | `gs://aibuilder-510213-tfstate/bootstrap` | <ul><li>The state bucket: in `asia-south1`, versioned (the last 20 versions of each file, for 90 days at most), with uniform access and public access prevented.</li><li>The APIs Terraform itself calls: Service Usage, Resource Manager, Cloud Billing, Storage.</li></ul>                                  |
-| `prod/`      | `gs://aibuilder-510213-tfstate/prod`      | <ul><li>The project's link to billing account `012B20-D65DBD-FBAC0E`, adopted by an `import` block (it was linked before Terraform).</li><li>The Firebase Management and Hosting APIs.</li><li>Firebase on the project.</li><li>One Hosting site per app, and a custom domain for each if one is set.</li><li>For CI (SC-40): a Workload Identity pool for GitHub Actions, the `github-deployer` service account, and the repository's `prod` environment with its variables, through the GitHub provider.</li><li>For backend-api (SC-44): Firebase Authentication, the console's web app and browser key, Secret Manager's containers, and the <code>sc-api-local</code> service account. Its runtime is behind <code>backend_runtime</code>, off.</li></ul> |
+| `prod/`      | `gs://aibuilder-510213-tfstate/prod`      | <ul><li>The project's link to billing account `012B20-D65DBD-FBAC0E`, adopted by an `import` block (it was linked before Terraform).</li><li>The Firebase Management and Hosting APIs.</li><li>Firebase on the project.</li><li>One Hosting site per app, and a custom domain for each if one is set.</li><li>For CI (SC-40): a Workload Identity pool for GitHub Actions, the `github-deployer` service account, and the repository's `prod` environment with its variables, through the GitHub provider.</li><li>For backend-api (SC-44): Firebase Authentication, the console's web app and browser key, Secret Manager's containers, and the <code>sc-api-local</code> service account. Its runtime (SC-50) is behind <code>backend_runtime</code>, on: Cloud SQL, Cloud Run, Cloud Build, Artifact Registry, monitoring and a budget.</li></ul> |
 
 Both roots use `hashicorp/google` 8.5, and `prod` also uses `google-beta` 8.5 (Firebase's resources are beta-only) and
 `integrations/github` 6.13. They're locked in `.terraform.lock.hcl` for macOS and Linux on arm64 and amd64.
@@ -122,19 +122,25 @@ The console's Firebase config (`console_firebase_config`) is public by design: i
 and its key is restricted. It is still never committed: `backend-api/scripts/console-env.sh` (SC-45) writes it into the
 console's git-ignored `.env.local`.
 
-## backend-api's runtime (written, off)
+## backend-api's runtime (on since SC-50)
 
-`backend_runtime = false` keeps everything that costs money out of the plan. Set it (with `backend_image`) to add:
+`backend_runtime = true` (in `prod/terraform.tfvars`) runs backend-api in the cloud. Turned off, everything below
+leaves the plan. It costs about GBP 9 a month in `asia-south1`, nearly all Cloud SQL; the rest sits in free tiers at
+the prototype's traffic.
 
-| File | What |
-| --- | --- |
-| `registry.tf` | Artifact Registry `sc` for backend-api's images, keeping the last 10 |
-| `sql.tf` | Cloud SQL for PostgreSQL 18, Enterprise edition, `db-f1-micro`, zonal: IAM database authentication only, through Cloud SQL connectors only, over TLS, with no authorised network; daily backups and point-in-time recovery; deletion protection. The `smart_clearance` database, and IAM users for `sc-api` and `sc-migrator` (only the migrator holds `cloudsqlsuperuser`). No database password exists. |
-| `run.tf` | `sc-api` and `sc-migrator`; the `backend-api` Cloud Run service (public ingress, the API checks Firebase tokens itself) and the `backend-api-migrate` job |
-| `budget.tf` | A monthly budget on the project (`budget_amount`, in the billing account's currency), alerting at 50%, 90% and 100%, and on a forecast over 100% |
-| `github.tf` | `PUBLIC_API_BASE` and `PUBLIC_FIREBASE_*` on the `prod` environment, for the console's build |
+| File | What | About, a month |
+| --- | --- | --- |
+| `sql.tf` | Cloud SQL for PostgreSQL 18, Enterprise edition, `db-f1-micro`, zonal: IAM database authentication only, through Cloud SQL connectors only, over TLS, with no authorised network; daily backups (7 kept) and point-in-time recovery; deletion protection. The `smart_clearance` database, and IAM users for `sc-api` and `sc-migrator` (only the migrator holds `cloudsqlsuperuser`). No database password exists. | GBP 8.70 |
+| `run.tf` | `sc-api` and `sc-migrator`; the `backend-api` Cloud Run service (public ingress, the API checks Firebase tokens itself; 0 to 2 instances; JSON logs) and its jobs: `backend-api-migrate` (as `sc-migrator`) and `backend-api-hydrate` (the synthetic world, as `sc-api`). Created on `backend_image`, a placeholder; Cloud Build deploys every image after that, and Terraform ignores the image. | free tier |
+| `registry.tf` | Artifact Registry `sc` for backend-api's images, keeping the last 10 | under GBP 0.10 |
+| `build.tf` | Cloud Build: `sc-builder`, what builds run as (push the image, run the migrate job, deploy the service and jobs); a source bucket that empties after 7 days; `github-backend`, the keyless account GitHub Actions starts builds as, from the `prod` environment only | free tier |
+| `monitoring.tf` | An email channel (`alert_email`); an uptime check on `/readyz` (it reaches the database) from three regions every 5 minutes; alerts for the API down, 5xx, slow responses, errors in the logs, and the database's CPU, memory and disk; a dashboard. Logs stay in Cloud Logging's `_Default` bucket for 30 days. | free |
+| `budget.tf` | A monthly budget on the project (`budget_amount`, GBP 20), alerting the billing account's admins and `alert_email` at 50%, 90% and 100%, and on a forecast over 100% | free |
+| `github.tf` | On the `prod` environment: what the backend job starts Cloud Build with. Repository variables `PUBLIC_API_BASE` and `PUBLIC_FIREBASE_*`, which both apps' builds read (the build job runs outside the environment) | |
 
-A plan with `-var backend_runtime=true -var backend_image=…` was read on 6 Oct 2026 (25 to add) and not applied.
+**How a change reaches Cloud Run.** A merge to `main` touching `backend-api/` runs CI's backend job: it signs in as
+`github-backend` and starts `backend-api/cloudbuild.yaml` on Cloud Build, which builds the image, pushes it, runs the
+migrate job, moves the hydrate job onto it, deploys the service and checks `/readyz`. The Hosting deploy waits for it.
 
 ## Moving it to another project
 

@@ -447,7 +447,7 @@
     - design3's suite: 344 pass, with 0 failing WCAG rules;
     - the landing page is unchanged: e2e 51, parity 29.
   - **Hosting:** the hosted landing page and console load commit `6a70275`; every pinned file was checked on jsDelivr first.
-- **SC-49** (In Review, branch `SC-49-console-motion`): the console in motion. Loaders when screens and tabs change, a Sign in that keeps its label, and the Overview's agents at work.
+- **SC-49** (PR #37, merged): the console in motion. Loaders when screens and tabs change, a Sign in that keeps its label, and the Overview's agents at work.
   - **The request:** loader effects ("like the hydrating effect when I am changing tabs"); a more engaging Sign in, since clicking it removed its text; livelier Overview charts and a view of the agents working batches.
   - **Design first:** three options on one board in platform v3, `SC-49 design review.html`:
     - A, the route;
@@ -486,4 +486,31 @@
     - design3's suite: 349 pass, with 0 failing WCAG rules, and a new test (Sign in while it checks, the Overview and a tab loading);
     - the landing page is unchanged: e2e 51.
   - **Hosting:** the hosted landing page and console load commit `e0386f5`; every pinned file was checked on jsDelivr first (one cached 403 purged).
+- **SC-50** (In Review, branch `SC-50-backend-cloud-run`): backend-api in Google Cloud, and the apps on it.
+  - **The maintainer's decisions:**
+    - Cloud Run scales to zero;
+    - production starts with the synthetic world;
+    - GitHub Actions starts Cloud Build, and keeps building and deploying the apps to Firebase Hosting;
+    - alerts go to gilchristfan@gmail.com;
+    - every Terraform run waits for an approved, fully read plan.
+  - **Cost** (Google's catalog prices, GBP, `asia-south1`): about GBP 9 a month, nearly all Cloud SQL. Everything else sits in free tiers at the prototype's traffic. A GBP 20 budget emails at 50%, 90% and 100%, and on a forecast overrun.
+  - **Applied** (plan read in full, approved; 59 added, then the uptime fix, 2 changed; a fresh plan shows no changes):
+    - Cloud SQL `sc-main`: PostgreSQL 18, `db-f1-micro`, zonal, 10 GB SSD, backups and point-in-time recovery, IAM logins through the connector only;
+    - the Cloud Run service `backend-api` (0 to 2 instances), the jobs `backend-api-migrate` and `backend-api-hydrate`;
+    - Artifact Registry `sc`;
+    - Cloud Build's `sc-builder` and a source bucket;
+    - `github-backend`, keyless, which may only start builds;
+    - monitoring: an email channel, an uptime check on `/readyz`, 7 alerts and a dashboard;
+    - the budget;
+    - the GitHub variables: the backend job's on `prod`, and the apps' public build settings (`PUBLIC_API_BASE`, `PUBLIC_FIREBASE_*`) as repository variables.
+  - **Releases:** `backend-api/cloudbuild.yaml` builds and pushes the image, runs the migrate job, moves the hydrate job onto it, deploys the service and checks `/readyz`. CI's new backend job starts it, on a merge touching `backend-api/`, before the Hosting deploy. Cloud Build owns the image; Terraform ignores it.
+  - **Logs:** `LOG_FORMAT=json` (`sc_api/logs.py`), one JSON object a line with severity and source, so Error Reporting groups stack traces; uvicorn's access lines are dropped (Cloud Run logs requests itself).
+  - **Done in the cloud:**
+    - the first build (about 3 minutes);
+    - the migration;
+    - the synthetic world: 6 staff, 7 clients, 61 people, 150 batches, 393 runs, 98 audit lines.
+
+    Neha signed in through Firebase and read the session, dashboard, clients and batches from Cloud SQL. CORS allows only the Hosting sites.
+  - **Found on the way:** Cloud Run reserves `/healthz` on the public address (404), so the uptime check uses `/readyz`; the container's probes still use `/healthz` inside. The dashboard's JSON is written in the form Cloud Monitoring stores, so plans show no drift.
+  - **Checks:** backend-api 205 pass (JSON logging tests added); `check.sh` passes; the workflow validates.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

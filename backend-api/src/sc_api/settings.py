@@ -51,6 +51,8 @@ class Settings(BaseSettings):
     )
     lookup_rate: str = "10/minute"
     log_level: str = "INFO"
+    # json on Cloud Run (infra/prod/run.tf): one JSON object a line, for Cloud Logging (logs.py)
+    log_format: Literal["text", "json"] = "text"
 
     @field_validator("cors_origins", mode="before")
     @classmethod

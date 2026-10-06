@@ -76,20 +76,25 @@ variable "staff_email_domain" {
 }
 
 variable "backend_runtime" {
-  description = "Run backend-api in the cloud: Artifact Registry, Cloud SQL, Cloud Run and a budget alert. These cost money, so off until asked for."
+  description = "Run backend-api in the cloud: Artifact Registry, Cloud SQL, Cloud Run, Cloud Build, monitoring and a budget alert. These cost money, so off until asked for (SC-50 turned it on)."
   type        = bool
   default     = false
 }
 
 variable "backend_image" {
-  description = "backend-api's image (in the sc Artifact Registry repository), when backend_runtime is on."
+  description = <<-EOT
+    The image the API and its jobs are created with. Google's placeholder answers 200 on every path until Cloud Build
+    deploys backend-api's own image (backend-api/cloudbuild.yaml); from then on Cloud Build owns the image and Terraform
+    leaves it alone (lifecycle.ignore_changes in run.tf).
+  EOT
+  type        = string
+  default     = "us-docker.pkg.dev/cloudrun/container/hello"
+}
+
+variable "alert_email" {
+  description = "Where the runtime's alerts and the budget's warnings are emailed (monitoring.tf, budget.tf). Null sends none beyond the billing account's admins."
   type        = string
   default     = null
-
-  validation {
-    condition     = !var.backend_runtime || var.backend_image != null
-    error_message = "backend_runtime needs backend_image: build and push backend-api's image first."
-  }
 }
 
 variable "db_version" {
@@ -105,7 +110,7 @@ variable "db_tier" {
 }
 
 variable "budget_amount" {
-  description = "The project's monthly budget, in the billing account's currency, once the runtime is on."
+  description = "The project's monthly budget, in the billing account's currency (GBP), once the runtime is on. The runtime is expected to cost about 9 a month, nearly all Cloud SQL."
   type        = number
-  default     = 40
+  default     = 20
 }

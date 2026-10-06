@@ -66,6 +66,9 @@ output "backend" {
     api_url            = var.backend_runtime ? google_cloud_run_v2_service.api[0].uri : null
     db_instance        = var.backend_runtime ? google_sql_database_instance.main[0].connection_name : null
     migrate_job        = var.backend_runtime ? google_cloud_run_v2_job.migrate[0].name : null
+    hydrate_job        = var.backend_runtime ? google_cloud_run_v2_job.hydrate[0].name : null
     image_repository   = var.backend_runtime ? "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.sc[0].repository_id}" : null
+    builder            = var.backend_runtime ? google_service_account.builder[0].email : null
+    build_bucket       = var.backend_runtime ? google_storage_bucket.builds[0].name : null
   }
 }
