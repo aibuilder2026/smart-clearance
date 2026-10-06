@@ -17,7 +17,6 @@
   const AGENT = id => P.AGENTS.find(a => a.id === id);
   const LEVEL = id => P.AUTONOMY.find(x => x.id === id);
   const hhmm = () => { const d = new Date(); return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); };
-  const GoogleG = ({ size = 18 }) => <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" /><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" /><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z" /><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 38.2 44 33 44 24c0-1.3-.1-2.4-.4-3.5z" /></svg>;
 
   /* ---------- routes live in the hash ---------- */
   // #/overview · #/clients · #/clients/<id>/<tab> · #/new-client · #/agents · #/connectors · #/plans · #/staff · #/audit
@@ -50,15 +49,20 @@
   const planName = id => (P.PLANS.find(p => p.id === id) || { name: id }).name;
   const agentsOn = c => P.AGENTS.filter(a => !a.gate && c.agents[a.id].on).length;
 
-  /* ---------- sign-in: platform staff only, Google then a passkey ---------- */
+  /* ---------- sign-in: platform staff only, a work email and a password (SC-46) ---------- */
+  // One message for any wrong sign-in: the real console (Firebase Authentication, with email enumeration protection)
+  // never says whether an address has an account. Nothing is mailed, so there is no "forgot password": a Super admin
+  // puts an account back on its first password. In the prototype any password lets an active staff member in.
+  const WRONG = "That email and password don't match. Check both, or ask a Super admin to put your account back on its first password.";
   function SignIn({ onIn }) {
-    const app = useApp(); const s = usePlatform(); const [sheet, setSheet] = useState(null); const [who, setWho] = useState(null); const [busy, setBusy] = useState(false); const [find, setFind] = useState(false);
-    const confirm = () => { setBusy(true); setTimeout(() => { setBusy(false); onIn(who.id); }, 900); };
-    const accounts = path => <div className="stack">
-      <div className="row tight">{path === "google" ? <GoogleG size={20} /> : <Icon name="fingerprint" size={20} />}<span className="t-subhead"><b>Choose an account</b> to continue to <span className="mono">console.smartclearance.com</span></span></div>
-      {s.staff.filter(x => x.status === "active").map(st => <button type="button" key={st.id} className="list-row si-acct" onClick={() => { setWho(st); setSheet("passkey"); }}><Avatar person={st} size="sm" /><span className="stack tight" style={{ gap: 0, minWidth: 0 }}><b className="t-subhead">{st.name}</b><span className="t-caption subtle" style={{ overflowWrap: "anywhere" }}>{st.email}</span></span><Icon name="chevron-right" size={18} className="subtle" /></button>)}
-      <p className="t-footnote muted" style={{ margin: 0 }}>The console lets in only smartclearance.com accounts. Client teams never sign in here.</p>
-    </div>;
+    const app = useApp(); const s = usePlatform(); const [email, setEmail] = useState(""); const [pw, setPw] = useState(""); const [show, setShow] = useState(false); const [err, setErr] = useState(""); const [busy, setBusy] = useState(false); const [find, setFind] = useState(false);
+    const submit = e => {
+      e.preventDefault(); setErr("");
+      const who = s.staff.find(x => x.status === "active" && x.email.toLowerCase() === email.trim().toLowerCase());
+      if (!who || !pw) { setErr(WRONG); return; }
+      setBusy(true); setTimeout(() => { setBusy(false); onIn(who.id); }, 600);
+    };
+    const edit = set => e => { set(e.target.value); setErr(""); };
     return <div className="signin cs-signin">
       <div className="ground" aria-hidden="true" />
       {app.bp === "desktop" && <div className="cs-si-stage">
@@ -68,27 +72,20 @@
       </div>}
       <div className="si-panel"><div className="si-card">
         <div className="si-ws"><Mark size={app.bp === "phone" ? 52 : 60} /><div className="si-ws-name">Smart-Clearance staff</div><span className="si-url"><Icon name="lock" size={12} stroke={2.2} />console.smartclearance.com</span></div>
-        <div className="stack tight" style={{ gap: 6 }}><h1 className="si-title">Sign in</h1><p className="si-sub">Use your smartclearance.com Google account, then your passkey.</p></div>
-        <div className="stack" style={{ width: "100%", gap: 10 }}>
-          <button type="button" className="btn btn-secondary btn-lg btn-block" onClick={() => setSheet("google")}><GoogleG />Continue with Google</button>
-          <Button variant="primary" size="lg" block icon="fingerprint" onClick={() => setSheet("passkey-pick")}>Use a passkey</Button>
-        </div>
+        <div className="stack tight" style={{ gap: 6 }}><h1 className="si-title">Sign in</h1><p className="si-sub">Your smartclearance.com email address and your password.</p></div>
+        <form className="si-form" noValidate onSubmit={submit}>
+          <Field label="Work email" htmlFor="si-email"><Input id="si-email" icon="mail" type="email" value={email} onChange={edit(setEmail)} autoComplete="username" spellCheck={false} autoCapitalize="none" placeholder="name@smartclearance.com" /></Field>
+          <Field label="Password" htmlFor="si-pw"><span className="input-wrap cs-si-pw"><Icon name="lock" size={17} /><input id="si-pw" className="input" type={show ? "text" : "password"} value={pw} onChange={edit(setPw)} autoComplete="current-password" /><button type="button" className="cs-si-eye" aria-label={show ? "Hide password" : "Show password"} aria-pressed={show} onClick={() => setShow(!show)}><Icon name={show ? "eye-off" : "eye"} size={20} /></button></span></Field>
+          {err && <div className="cs-si-error" role="alert"><Icon name="circle-alert" size={18} /><span>{err}</span></div>}
+          <Button type="submit" variant="primary" size="lg" block icon="log-in" loading={busy}>Sign in</Button>
+          <p className="t-footnote muted cs-si-hint">New to the console? The platform team gives you your first password. Nothing is sent by email.</p>
+        </form>
         <div className="si-foot">
           <span className="t-footnote muted" style={{ maxWidth: "36ch" }}>Client teams sign in at their own workspace address, such as munchly.smartclearance.com.</span>
           <span className="si-foot-row"><button type="button" className="btn btn-link btn-sm" onClick={() => setFind(true)}>Find a workspace</button><a className="btn btn-link btn-sm" href={LINKS.site}>smartclearance.com</a></span>
           <span className="si-note">Prototype · every person and number is fictional</span>
         </div>
       </div></div>
-      <Sheet open={sheet === "google"} onClose={() => setSheet(null)} title="Sign in with Google" side={app.bp === "phone" ? "bottom" : "center"} detent="medium">{accounts("google")}</Sheet>
-      <Sheet open={sheet === "passkey-pick"} onClose={() => setSheet(null)} title="Use a passkey" side={app.bp === "phone" ? "bottom" : "center"} detent="medium">{accounts("passkey")}</Sheet>
-      <Sheet open={sheet === "passkey"} onClose={() => setSheet(null)} title="Confirm it's you" side={app.bp === "phone" ? "bottom" : "center"} detent="medium"
-        footer={<Button variant="primary" size="lg" block icon="fingerprint" loading={busy} onClick={confirm}>Use passkey</Button>}>
-        {who && <div className="stack" style={{ justifyItems: "center", textAlign: "center" }}>
-          <span className="cs-passkey" aria-hidden="true"><Icon name="fingerprint" size={38} stroke={1.6} /></span>
-          <div className="stack tight" style={{ gap: 2 }}><b className="t-headline">{who.name}</b><span className="t-footnote subtle">{who.email}</span></div>
-          <p className="t-subhead muted" style={{ margin: 0, maxWidth: "38ch" }}>Your passkey on {who.passkey} confirms it's you. The console asks for it every time, even after Google.</p>
-        </div>}
-      </Sheet>
       <S.FindWorkspace open={find} onClose={() => setFind(false)} onUse={() => { setFind(false); if (!window.open(LINKS.app, "_blank", "noopener")) location.href = LINKS.app; }} />
     </div>;
   }

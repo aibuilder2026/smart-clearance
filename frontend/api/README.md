@@ -62,11 +62,11 @@ member's name.
 
 A 422 carries the message and, where it names an input, `fields`. `client(id)` and `me()` answer `null` for a 404 and a 401. backend-api serves these routes (SC-45; `backend-api/README.md`, `backend-api/contracts/openapi.json`).
 
-**Signing in:** the mock lists the platform's active staff for the sign-in sheets. backend-api signs staff in with
-Firebase Authentication, email and password: `transport()`'s `token()` carries the Firebase ID token, and
-`POST /v1/console/session` answers the staff member it belongs to (`session/accounts` is empty over HTTP). The console's
-sign-in screen moves to email and password in SC-46, design first. Over HTTP, Find your workspace answers the workspace
-only, without the `as` line, which SC-46 takes out of the contract.
+**Signing in** (SC-46): `signIn({ email, password })`. Over HTTP, `consoleHttp(base, { auth })` takes the app's
+`ConsoleAuth` (Firebase Authentication in `frontend/console`): it signs in with Firebase, then `POST /v1/console/session`
+answers the staff member the account belongs to; every call carries the Firebase ID token. The mock lets any active
+staff member's address in with any password. A wrong sign-in is a 401 with `SIGN_IN_FAILED`, one message whichever part
+was wrong. Find your workspace (`WorkspaceMatch`) names the workspace only, never the person's role.
 
 ## The mocks
 

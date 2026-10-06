@@ -12,4 +12,9 @@ end to end from local".
 
 Both: Find your workspace names the workspace only, with no role line.
 
-**The pick:** _(pending)_
+**The pick:** **A, one step in the card**, picked by the maintainer on 6 Oct 2026, the recommended option. The board
+was published to platform v3 as `SC-46 design review.html`, with `SC-46 option A.html` and `SC-46 option B.html`.
+
+The build: design3's console sign-in first (`console/console.jsx`, `console/console.css`), and Find your workspace
+without the role line (`screens/auth.jsx`); then the SvelteKit console and `@smart-clearance/core`'s FindWorkspace,
+signing in through Firebase Authentication against backend-api.

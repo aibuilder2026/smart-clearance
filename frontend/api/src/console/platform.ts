@@ -22,6 +22,11 @@ import type {
 	StaffInviteInput
 } from '../types/console';
 
+/** the one message for any wrong sign-in (SC-46): Firebase's email enumeration protection never says which part was
+ *  wrong, and nothing is mailed, so a Super admin puts an account back on its first password */
+export const SIGN_IN_FAILED =
+	"That email and password don't match. Check both, or ask a Super admin to put your account back on its first password.";
+
 /** a per-pack price: "₹13.50" */
 export const money = (v: SettingValue) => '₹' + Number(v).toFixed(2);
 

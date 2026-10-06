@@ -3,12 +3,18 @@ import { openConsole } from './console';
 
 // The console's own work, against the mock API: each change lands, says so, and is logged in the staff member's name
 
-test('flows · signing in with Google and a passkey, then out', async ({ page }) => {
+test('flows · signing in with a work email and a password, then out', async ({ page }) => {
 	await openConsole(page, '/clients', { signedIn: false });
 	await expect(page).toHaveTitle('Sign in · Smart-Clearance Console');
-	await page.getByRole('button', { name: 'Continue with Google' }).click();
-	await page.getByRole('button', { name: /Neha Kulkarni/ }).click();
-	await page.getByRole('button', { name: 'Use passkey' }).click();
+	await page.getByLabel('Work email').fill('nobody@smartclearance.com');
+	await page.getByLabel('Password', { exact: true }).fill('anything');
+	await page.getByRole('button', { name: 'Sign in' }).click();
+	await expect(page.getByRole('alert'), 'one message for any wrong sign-in').toHaveText(
+		"That email and password don't match. Check both, or ask a Super admin to put your account back on its first password."
+	);
+	await page.getByLabel('Work email').fill('neha.kulkarni@smartclearance.com');
+	await expect(page.getByRole('alert'), 'editing clears it').toHaveCount(0);
+	await page.getByLabel('Password', { exact: true }).press('Enter');
 	await expect(page.getByRole('heading', { level: 1 }), 'the address is kept').toHaveText('Clients');
 	await page.getByRole('button', { name: /Neha Kulkarni/ }).click();
 	await page.getByRole('button', { name: 'Sign out' }).click();

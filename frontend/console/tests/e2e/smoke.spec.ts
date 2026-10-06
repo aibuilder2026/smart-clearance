@@ -8,9 +8,9 @@ test('smoke · the console works', async ({ page }) => {
 	page.on('pageerror', (e) => errors.push(e.message));
 	page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
 	await openConsole(page, '/', { signedIn: false });
-	await page.getByRole('button', { name: 'Use a passkey' }).click();
-	await page.getByRole('button', { name: /Sameer Rao/ }).click();
-	await page.getByRole('button', { name: 'Use passkey' }).click();
+	await page.getByLabel('Work email').fill('sameer.rao@smartclearance.com');
+	await page.getByLabel('Password', { exact: true }).fill('anything');
+	await page.getByRole('button', { name: 'Sign in' }).click();
 	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Overview');
 	await expect(page.locator('.cs-track').first()).toContainText('MF-2409-117');
 	await page.goto('/clients/munchly/plan');

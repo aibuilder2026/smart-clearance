@@ -35,8 +35,9 @@ export type PlanTier = { id: string; name: string; scope: string[] };
 /** GET /v1/platform/catalog: what Smart-Clearance offers every client */
 export type Catalog = { agents: Agent[]; connectors: Connector[]; plans: PlanTier[] };
 
-/** POST /v1/workspaces/lookup → the workspaces an email or mobile number belongs to */
-export type WorkspaceMatch = { workspace: WorkspaceSummary; as: string; value: string };
+/** POST /v1/workspaces/lookup → the workspaces an email or mobile number belongs to. It names the workspace only,
+ *  never the person's role or whether they were deactivated (SC-43) */
+export type WorkspaceMatch = { workspace: WorkspaceSummary; value: string };
 
 /** POST /v1/demo-requests, from Book a demo on the landing page */
 export type DemoRequestInput = {

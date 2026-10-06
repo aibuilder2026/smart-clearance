@@ -224,8 +224,15 @@ export type NewClientInput = {
 	plan: string;
 	request: string | null;
 };
-/** an account the sign-in sheets offer */
-export type StaffAccount = Pick<Staff, 'id' | 'name' | 'email' | 'passkey'>;
+/** what a staff member signs in with (SC-46) */
+export type SignInInput = { email: string; password: string };
+/** how the console signs in over HTTP: Firebase Authentication, which the app provides (frontend/console). The token is
+ *  the Firebase ID token every call to backend-api carries */
+export type ConsoleAuth = {
+	signIn(email: string, password: string): Promise<void>;
+	signOut(): Promise<void>;
+	token(): Promise<string | null>;
+};
 
 /** what the console calls. Every change is written to the audit log by the server, in the staff member's name */
 export interface ConsoleApi {
@@ -233,10 +240,10 @@ export interface ConsoleApi {
 	config(): Promise<ConsoleConfig>;
 	lookupWorkspaces(query: string): Promise<WorkspaceMatch[]>;
 
-	/** the accounts the sign-in sheets list. The mock lists the platform's active staff, standing in for Google's account
-	 *  chooser; backend-api signs in with Google Identity Services, then a WebAuthn passkey */
-	signInAccounts(): Promise<StaffAccount[]>;
-	signIn(staffId: string): Promise<Staff>;
+	/** a work email and a password. Over HTTP, Firebase Authentication checks them and backend-api answers the staff
+	 *  member the account belongs to; the mock lets any active staff member in with any password. A wrong sign-in is a
+	 *  401 with SIGN_IN_FAILED (platform.ts) */
+	signIn(input: SignInInput): Promise<Staff>;
 	signOut(): Promise<void>;
 	/** who is signed in, or null */
 	me(): Promise<Staff | null>;

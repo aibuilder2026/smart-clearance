@@ -1,6 +1,13 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ApiError } from '../src/index';
-import { consoleMock, exitsFor, SESSION_KEY, type ConsoleApi, type NewClientInput } from '../src/console/index';
+import {
+	consoleMock,
+	exitsFor,
+	SESSION_KEY,
+	SIGN_IN_FAILED,
+	type ConsoleApi,
+	type NewClientInput
+} from '../src/console/index';
 import { memory } from './memory';
 
 // the console's mock: the prototype's seed, the platform's rules, and an audit line for every change in the words
@@ -12,7 +19,7 @@ const lastAudit = async () => (await api.audit())[0];
 beforeEach(async () => {
 	store = memory();
 	api = consoleMock({ storage: () => store });
-	await api.signIn('neha');
+	await api.signIn({ email: 'neha.kulkarni@smartclearance.com', password: 'anything' });
 });
 
 const kesari = (patch: Partial<NewClientInput> = {}): NewClientInput => ({
@@ -35,11 +42,19 @@ const kesari = (patch: Partial<NewClientInput> = {}): NewClientInput => ({
 });
 
 describe('signing in', () => {
-	it('lets in active staff only, and remembers the session', async () => {
-		expect((await api.signInAccounts()).map((a) => a.id)).toEqual(['neha', 'sameer']);
+	it('lets in active staff by their email, and remembers the session', async () => {
 		expect((await api.me())?.name).toBe('Neha Kulkarni');
 		expect(JSON.parse(store.getItem(SESSION_KEY)!).uid).toBe('neha');
-		await expect(api.signIn('nobody')).rejects.toBeInstanceOf(ApiError);
+		await expect(api.signIn({ email: 'Sameer.Rao@smartclearance.com', password: 'x' })).resolves.toMatchObject({
+			id: 'sameer'
+		});
+	});
+	it('says the same thing for an unknown address and a missing password', async () => {
+		for (const input of [
+			{ email: 'nobody@smartclearance.com', password: 'x' },
+			{ email: 'neha.kulkarni@smartclearance.com', password: '' }
+		])
+			await expect(api.signIn(input)).rejects.toMatchObject({ status: 401, message: SIGN_IN_FAILED });
 	});
 	it('refuses changes once signed out', async () => {
 		await api.signOut();

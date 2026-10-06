@@ -14,7 +14,7 @@ Smart-Clearance (working title Short-Date Router) is an agentic near-expiry stoc
 
 Smart-Clearance is meant to be sold to manufacturers as software as a service, one workspace each at `<client>.smartclearance.com`, set up for that client's supply chain. The prototypes are Munchly Foods' workspace at munchly.smartclearance.com.
 
-The production code starts in `frontend/` (SC-27): design system v3 in Svelte, the platform's landing page, and the staff console (SC-37), each app built and deployed on its own. `backend-api/` (SC-45) is the platform's API: FastAPI on PostgreSQL 18, Firebase Authentication with email and password, and every secret in Google Secret Manager. It serves the frontend's contract and runs locally against the developer's Docker Postgres; its cloud runtime is written but not applied. The frontend still runs on its in-browser mocks until SC-46 wires the console's sign-in. `agents/` is planned. `infra/` (SC-39) is Terraform for the Google Cloud project, `aibuilder-510213`: Firebase Hosting, one site per app, released by its deploy script.
+The production code starts in `frontend/` (SC-27): design system v3 in Svelte, the platform's landing page, and the staff console (SC-37), each app built and deployed on its own. `backend-api/` (SC-45) is the platform's API: FastAPI on PostgreSQL 18, Firebase Authentication with email and password, and every secret in Google Secret Manager. It serves the frontend's contract and runs locally against the developer's Docker Postgres; its cloud runtime is written but not applied. Without `PUBLIC_API_BASE` the frontend runs on its in-browser mocks; with it, the console signs staff in with Firebase (email and password, SC-46) and both apps read and write the API. `agents/` is planned. `infra/` (SC-39) is Terraform for the Google Cloud project, `aibuilder-510213`: Firebase Hosting, one site per app, released by its deploy script.
 
 ## Layout
 
@@ -79,7 +79,8 @@ backend-api/scripts/test.sh                 # pytest against smart_clearance_tes
 backend-api/scripts/hydrate.sh --reset      # rebuild the synthetic world (Firebase accounts are kept)
 backend-api/scripts/hydrate.sh --tick       # today's agent runs, so the console's day is today
 backend-api/scripts/default-password.sh --copy   # the password every account starts on
-backend-api/scripts/console-env.sh          # point the frontend's .env.local at the local API
+backend-api/scripts/console-env.sh          # point the frontend's .env.local at the local API (restart its dev servers)
+backend-api/scripts/e2e.sh                  # the landing page and the console end to end on the local API and Firebase Auth
 cd backend-api && uv run ruff check . && scripts/test.sh   # the gate jira-flow runs
 ```
 
@@ -306,7 +307,7 @@ From the Claude desktop app:
 
 - The jira-flow gates cover `frontend/` (lint, type check, unit tests) and `infra/` (`terraform fmt` and `validate`, the scripts' syntax; no plan, since that needs credentials), and `backend-api/` (ruff, and pytest on a real Postgres), and CI runs all three on every pull request with a secret scan. The `agents/` gate waits for code. Nothing gates `design3/`, or the frontend's e2e and parity suites: run them yourself.
 - The frontend's Firefox smoke run could not be started in the agent's sandboxed shell; run `corepack pnpm test:e2e` on a normal machine to cover it.
-- The frontend's Book a demo keeps its requests in that browser (`sc-demo-requests`) until the landing page is pointed at `backend-api` (`PUBLIC_API_BASE`), which stores them for the console. The hosted pages still run on the mocks.
+- The hosted pages and the deployed apps still run on the mocks: backend-api runs on a developer's machine only. Locally, `backend-api/scripts/console-env.sh` points both apps at it.
 - `backend-api` runs locally only: its Cloud SQL and Cloud Run are written behind `backend_runtime` and not applied (SC-44). Local development and prod share one Firebase user pool.
 - `frontend/console` runs on its in-browser mock: sign-in is a stand-in for Google and a passkey, changes stay in that browser (`sc-console`), and two fictional demo requests stand in for the landing page's. Both apps are live on Firebase Hosting's own addresses (SC-39), with no custom domain yet.
 - The landing page ships about 139 kB of JavaScript, gzipped (`frontend/README.md`, Known gaps).

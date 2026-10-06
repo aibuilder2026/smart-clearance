@@ -1,8 +1,9 @@
 <script lang="ts" module>
 	import type { Workspace } from '../components/WorkspaceMark.svelte';
 
-	/** a workspace someone can sign in to, and how they belong to it ("operator", "invited as retailer" …) */
-	export type WorkspaceMatch = { workspace: Workspace & { domain: string }; as: string; value: string };
+	/** a workspace someone can sign in to. It names the workspace only, never the person's role or whether they were
+	 *  deactivated (SC-43) */
+	export type WorkspaceMatch = { workspace: Workspace & { domain: string }; value: string };
 </script>
 
 <script lang="ts">
@@ -56,6 +57,9 @@
 		busy = true;
 		try {
 			results = await find(t);
+		} catch (e) {
+			// the server's refusal (a 422, or too many tries), in its own words
+			error = e instanceof Error && e.message ? e.message : 'The search did not go through. Try again.';
 		} finally {
 			busy = false;
 		}
@@ -97,7 +101,7 @@
 							<WorkspaceMark ws={r.workspace} size={40} /><span class="stack tight grow" style="gap: 1px; min-width: 0"
 								><b>{r.workspace.name}</b><span class="t-caption subtle mono" style="overflow-wrap: anywhere"
 									>{r.workspace.domain}</span
-								><span class="t-footnote muted">{r.as}</span></span
+								></span
 							><Button variant="secondary" size="sm" onclick={() => onuse(r.value)}>Open</Button>
 						</div>
 					{/each}

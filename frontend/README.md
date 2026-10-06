@@ -21,19 +21,19 @@ The Python services are beside it: [`../backend-api/`](../backend-api/README.md)
 
 ## Stack
 
-| Area       | Choice                                                                                                         |
-| ---------- | -------------------------------------------------------------------------------------------------------------- |
-| Framework  | SvelteKit 3, Svelte 5 (runes), Vite 8                                                                          |
-| Language   | TypeScript 6.0, Node 22.17 or later                                                                            |
-| Output     | `adapter-static`: `/` is prerendered with its data; any other route is a client-side page served by `200.html` |
-| Styling    | design system v3's own CSS, with Tailwind 4's theme and utilities over its tokens (no Tailwind preflight)      |
-| Primitives | bits-ui 2 for the menu and the sheet (the headless layer under shadcn-svelte)                                  |
-| Icons      | Lucide, by the design system's own icon names                                                                  |
-| Data       | TanStack Query 6 over a typed API: an in-browser mock seeded from design3 now, `backend-api` later             |
-| Motion     | `motion` (motion.dev) and Svelte transitions, with the prototype's springs and eases                           |
-| Fonts      | Fontsource variable fonts: Bricolage Grotesque (opsz, wdth, wght), Geist, Geist Mono, Noto Sans Devanagari     |
-| Tests      | Vitest; Playwright with axe-core; pixelmatch for parity                                                        |
-| Lint       | ESLint 10, Prettier 3                                                                                          |
+| Area       | Choice                                                                                                                      |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Framework  | SvelteKit 3, Svelte 5 (runes), Vite 8                                                                                       |
+| Language   | TypeScript 6.0, Node 22.17 or later                                                                                         |
+| Output     | `adapter-static`: `/` is prerendered with its data; any other route is a client-side page served by `200.html`              |
+| Styling    | design system v3's own CSS, with Tailwind 4's theme and utilities over its tokens (no Tailwind preflight)                   |
+| Primitives | bits-ui 2 for the menu and the sheet (the headless layer under shadcn-svelte)                                               |
+| Icons      | Lucide, by the design system's own icon names                                                                               |
+| Data       | TanStack Query 6 over a typed API: `backend-api` when `PUBLIC_API_BASE` is set, else an in-browser mock seeded from design3 |
+| Motion     | `motion` (motion.dev) and Svelte transitions, with the prototype's springs and eases                                        |
+| Fonts      | Fontsource variable fonts: Bricolage Grotesque (opsz, wdth, wght), Geist, Geist Mono, Noto Sans Devanagari                  |
+| Tests      | Vitest; Playwright with axe-core; pixelmatch for parity                                                                     |
+| Lint       | ESLint 10, Prettier 3                                                                                                       |
 
 ## Setup
 
@@ -47,6 +47,24 @@ corepack pnpm dev:console         # the console on http://localhost:5174
 ```
 
 The first `corepack pnpm` call downloads the pinned pnpm (`packageManager` in `package.json`). pnpm 12 refuses a package published in the last day; let it pick the version before.
+
+### On the real API, locally (SC-46)
+
+Without `PUBLIC_API_BASE` both apps run on their in-browser mocks. To run them end to end against `backend-api` on this
+machine (its Postgres, and the project's Firebase Authentication):
+
+```sh
+backend-api/scripts/dev.sh                     # the API on :8000 (once backend-api/scripts/bootstrap.sh has run)
+backend-api/scripts/console-env.sh             # writes console/.env.local and admin/.env.local (git-ignored)
+corepack pnpm dev & corepack pnpm dev:console  # restart them after the .env.local changes
+backend-api/scripts/default-password.sh --copy # the password every account starts on
+backend-api/scripts/e2e.sh                     # the live suite: Book a demo → sign-in → a new client → the audit log
+```
+
+Staff sign in with their email and the default password (for example `neha.kulkarni@smartclearance.example`).
+`console/.env.local` also carries the console's Firebase web config (`PUBLIC_FIREBASE_*`, public by design, from
+Terraform's `console_firebase_config` output). The e2e and parity suites run on the mocks: run them with
+`PUBLIC_API_BASE=` set empty while an `.env.local` points at the API.
 
 ## Commands
 
@@ -132,6 +150,6 @@ Never edit the generated files (`api/src/seed/*`, `admin/src/lib/seed/*`, `core/
 
 - The Firefox smoke run could not be run in the agent's sandboxed shell (Firefox cannot start there); WebKit and Chromium were. Run `corepack pnpm test:e2e` on a normal machine to cover it.
 - The landing page ships about 139 kB of JavaScript (gzip): about 128 kB before SC-32, and the hero's town adds about 11 kB net (its WebGL2 renderer, camera, gestures and graph). bits-ui and its floating-ui layer are about 30 kB of it and the icon registry about 9 kB. A leaner menu and sheet, or a per-route icon registry, would cut it.
-- Demo requests stay in the browser (`localStorage`, `sc-demo-requests`) until `backend-api` takes them; neither the hosted console nor `console/` sees them.
+- On the mock, demo requests stay in the browser (`localStorage`, `sc-demo-requests`); with `PUBLIC_API_BASE` they go to `backend-api`, and the console lists them. The hosted pages still run on the mocks, until backend-api runs in the cloud.
 - The client workspace app is not ported yet. `core/src/lib/coverage.ts` lists the design-system pieces waiting for it.
-- The console runs on its mock: signing in is a stand-in for Google and a passkey, and its changes stay in the browser (`sc-console`). The landing page's demo requests do not reach it (two fictional ones stand in) until backend-api takes both.
+- On its mock the console lets any active staff member's address in with any password, and its changes stay in the browser (`sc-console`); two fictional demo requests stand in for the landing page's. With `PUBLIC_API_BASE` it signs in with Firebase Authentication and reads and writes `backend-api`.
