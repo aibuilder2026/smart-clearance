@@ -485,4 +485,5 @@
     - live: 6 pass, including Agents at work moving after `hydrate.sh --tick`;
     - design3's suite: 349 pass, with 0 failing WCAG rules, and a new test (Sign in while it checks, the Overview and a tab loading);
     - the landing page is unchanged: e2e 51.
+  - **Hosting:** the hosted landing page and console load commit `e0386f5`; every pinned file was checked on jsDelivr first (one cached 403 purged).
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
