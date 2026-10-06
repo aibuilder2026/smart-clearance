@@ -21,7 +21,7 @@ The production code starts in `frontend/` (SC-27): design system v3 in Svelte, t
 | Path | What it is |
 | --- | --- |
 | `design3/` | The current design and the source of truth for designs:
-<ul><li>design system, guided demo, app prototype (Munchly Foods' workspace, an installable PWA), the platform's landing page and console;</li><li>every design review in `designs/`, one folder per issue;</li><li>the accessibility suite.</li></ul>Start with `design3/README.md`. |
+<ul><li>design system, guided demo, app prototype (Munchly Foods' workspace, an installable PWA), the platform's landing page and console;</li><li>every design review in `designs/`, one folder per issue.</li></ul>Start with `design3/README.md`. |
 | `frontend/` | The SvelteKit 3 frontend, a pnpm workspace that implements design3. Two apps, each deployed on its own:<ul><li>`admin`, the platform's own site: the landing page (smartclearance.com);</li><li>`console`, the staff console (console.smartclearance.com).</li></ul>Three shared packages:<ul><li>`core`, design system v3 in Svelte;</li><li>`api`, the contract with backend-api and an in-browser mock of it;</li><li>`testing`, what the apps' test suites share.</li></ul>Start with `frontend/README.md`. |
 | `backend-api/` | The platform's API (SC-45): FastAPI, PostgreSQL (one database, `smart_clearance`), Firebase Auth, Secret Manager.<ul><li>`src/sc_api/`: routes, services (the only writers; every change writes its audit line), models, the ported rules;</li><li>`migrations/` (Alembic), `db/` (roles);</li><li>`scripts/`: doctor, secrets, db-init, migrate, hydrate, dev, up, test, bootstrap;</li><li>`tests/` (pytest on a real Postgres), `contracts/openapi.json`.</li></ul>Start with `backend-api/README.md`. |
 | `agents/` | The AI agents, planned. README only for now. |
@@ -40,11 +40,6 @@ The production code starts in `frontend/` (SC-27): design system v3 in Svelte, t
 cd design3 && ./build.sh            # compile every .jsx to the .js beside it (esbuild); run after any edit
 cd design3 && ./dist.sh             # bundle the hosted build into design3/dist/
 python3 -m http.server 8787 --directory design3   # serve the demo, app and design system locally
-
-cd design3/a11y && npm ci && npx playwright install chromium   # once
-npm test                            # WCAG 2.2 AA suite: 380 tests in five viewports, about 6 minutes
-npm run test:desktop                # light and dark at 1440 only, for a quicker loop
-npm run report                      # the Playwright HTML report
 ```
 
 The frontend (from `frontend/`; pnpm comes through corepack, nothing is installed globally):
@@ -55,7 +50,8 @@ corepack pnpm dev                         # the landing page on :5173, and /ds
 corepack pnpm dev:console                 # the console on :5174 (sign in as Neha Kulkarni or Sameer Rao)
 corepack pnpm build                       # both apps, into admin/build and console/build (build:admin, build:console)
 corepack pnpm lint && corepack pnpm check && corepack pnpm test   # the gate jira-flow runs
-corepack pnpm test:e2e                    # both apps: WCAG 2.2 AA in five projects, keyboard, motion, flows, Firefox and WebKit smoke
+corepack pnpm test:a11y                   # the a11y suite: both apps' builds, WCAG 2.2 AA in five projects, keyboard, motion, and component coverage
+corepack pnpm test:e2e                    # both apps: the console's flows, Firefox and WebKit smoke
 corepack pnpm test:parity                 # both apps' builds against design3, pixel by pixel
 corepack pnpm seed && corepack pnpm icons # regenerate from design3 after it changes
 ```
@@ -191,13 +187,15 @@ Local pages:
 
 **Accessibility**
 
-- The target is WCAG 2.2 AA, measured by `npm test` in `design3/a11y` and the frontend's `corepack pnpm test:e2e` (the same axe helpers and five projects): zero violations when they run.
-- **The browser suites run on request only** (SC-55). The frontend's e2e and parity suites, design3's a11y suite and `backend-api/scripts/e2e.sh` take minutes and browsers, and they are not gates. They run only when the maintainer explicitly asks for them in the current request, never as a routine step of a design, a UX change, a port or a ticket. Do the work, say which suite would answer the question and how long it takes, and offer to run it. When asked, follow the `browser-suites` skill (`.claude/skills/browser-suites/`). The `ask-before-suites` hook turns any attempt into a permission prompt, as a backstop.
+- The target is WCAG 2.2 AA, measured on the frontend's real UI by its a11y suite, `corepack pnpm test:a11y` (SC-58): each app's production build, in five viewport and theme projects, with zero violations when it runs. The design-system page `/ds` is a dev route and is not scanned. design3's own suite was removed in SC-58; the prototypes are not scanned.
+- **Every component the apps use is scanned.** Each scan records the core components on screen (`COMPONENTS` in `frontend/testing/src/a11y.ts`), and the run fails if an app uses a core component no scan reached. A new component needs its selector there, and a new screen or state needs a scan that reaches it.
+- **The browser suites run on request only** (SC-55). The frontend's a11y, e2e and parity suites and `backend-api/scripts/e2e.sh` take minutes and browsers, and they are not gates. They run only when the maintainer explicitly asks for them in the current request, never as a routine step of a design, a UX change, a port or a ticket. Do the work, say which suite would answer the question and how long it takes, and offer to run it. When asked, follow the `browser-suites` skill (`.claude/skills/browser-suites/`). The `ask-before-suites` hook turns any attempt into a permission prompt, as a backstop.
 - The suite covers what axe-core can decide, plus keyboard checks for:
-  - the sign-in tab order;
-  - sheets taking, keeping and returning focus;
-  - the menu-button pattern;
-  - the sign-in hero's pause and replay.
+  - the console's sign-in, and Enter signing in;
+  - sheets and alerts taking, keeping and returning focus (Find your workspace, Find a workspace, the client actions alert);
+  - the menu-button pattern (the appearance, sign-in and client actions menus);
+  - Book a demo's errors tied to their fields, and the New client flow saying what a step is missing;
+  - the landing page's town: its tour's Pause and Play, Replay, places and agents opened by keyboard, the steps.
 
   These criteria still need a manual pass: 2.4.11, 2.5.7, 3.2.6, 3.3.7 and 3.3.8.
 - Nothing loops forever: every animation stops within five seconds (WCAG 2.2.2), and only loading indicators keep turning. `motion.a11y.spec.ts` fails on any endless animation.
@@ -232,15 +230,14 @@ Local pages:
 | Skill | `web-design-guidelines` | `.claude/skills/` | Reviews UI against Vercel's Web Interface Guidelines. |
 | Skill | `design-first` | `.claude/skills/` | Design before code: which design tool leads for each surface (motion prototyped in Framer Motion; the Svelte build ships it with `motion` and the same springs), the review board on the surface's Claude Design project, building only after the maintainer's yes (SC-26), and porting into `frontend/` (SC-27). |
 | Hook | `design-first-reminder` | `.claude/hooks/`, registered in `.claude/settings.json` | A `UserPromptSubmit` hook. When a request reads like a UI or UX change, it adds the design-first rule to the agent's context; otherwise it stays silent. Needs `jq` (SC-26). |
-| Skill | `browser-suites` | `.claude/skills/` | The e2e, parity and a11y suites, which run only when the maintainer explicitly asks (SC-55): what counts as an ask, what each suite needs first, the commands, and how to report. |
+| Skill | `browser-suites` | `.claude/skills/` | The frontend's a11y, e2e and parity suites, which run only when the maintainer explicitly asks (SC-55): what counts as an ask, what each suite needs first, the commands, and how to report. |
 | Hook | `ask-before-suites` | `.claude/hooks/`, registered in `.claude/settings.json` | A `PreToolUse` hook on Bash. A command that would run the e2e, parity or a11y suite, Playwright, or the live e2e script becomes a permission prompt; every other command passes. Needs `jq` (SC-55). |
 | Config | jira-flow | `.claude/jira-flow.json`, `.claude/jira/taxonomy.md` | Jira project SC: site, issue types, transition ids, branch, commit and PR patterns, and ship rules. |
 | Config | Preview servers | `.claude/launch.json` | <ul><li>`voice-recorder`: `video/recorder/server.py` on 8765;</li><li>`frontend-admin`: the frontend's dev server on 5173;</li><li>`frontend-preview`: its build on 4173 (restart it after a rebuild: its file list is read at start);</li><li>`frontend-console`: the console's dev server on 5174;</li><li>`frontend-console-preview`: its build on 4176 (restart it after a rebuild);</li><li>`design3`: design3 on 8787;</li><li>`backend-api`: the API on 8000 (`backend-api/scripts/dev.sh`).</li></ul> |
-| Tests | Accessibility suite | `design3/a11y/` | Playwright 1.63 with @axe-core/playwright 4.13. |
 | CI | GitHub Actions | `.github/workflows/ci.yml` | The frontend gate, the infra gate and the build on every pull request; the deploy from `main` through the `prod` environment and Workload Identity Federation (SC-40). |
 | Config | Terraform | `infra/` | Terraform 1.9 or later with `hashicorp/google` and `google-beta` 8.5, and `integrations/github` 6.13, locked for macOS and Linux. State in GCS; credentials from application-default credentials, or a token borrowed from `gcloud`. firebase-tools 15.32.1 for releases, through `npx`. |
 | Tests | Backend suite | `backend-api/tests/` | pytest 9 with httpx against a real PostgreSQL 18 (`smart_clearance_test`; a `postgres:18` service in CI): the frontend's contract tests ported, the rules against `platform.js`'s fixtures, roles, the append-only audit log, the synthetic world. |
-| Tests | Frontend suites | `frontend/` | Vitest 5 (unit, drift, seed and coverage, the console's rules against `platform.js`); Playwright 1.63 with @axe-core/playwright 4.13 (e2e, each app); pixelmatch (parity with design3, each app). |
+| Tests | Frontend suites | `frontend/` | Vitest 5 (unit, drift, seed and coverage, the console's rules against `platform.js`); Playwright 1.63 with @axe-core/playwright 4.13 (the a11y suite, `test:a11y`, with its component coverage check; e2e; each app); pixelmatch (parity with design3, each app, design3 served by `frontend/testing/design3-server.py`). |
 
 The agent, the three skills and the MCP entry came from the [aitmpl.com](https://www.aitmpl.com) catalog (SC-17).
 
@@ -330,6 +327,7 @@ From the Claude desktop app:
 - Terraform runs from a workstation, as a person: CI checks the configuration but never plans or applies.
 - The `chrome-devtools` MCP server starts only in a new session, after a one-time approval.
 - The WCAG 2.2 criteria axe cannot check are untested.
+- The a11y suite scans only what the frontend has built: the landing page and the console. The guided demo and the workspace app exist only as design3's prototypes, which nothing scans since SC-58 removed design3's suite; they are scanned when they are ported.
+- A switched-off agent's summary in the console's agent pipeline fails contrast (2.4:1, faded with opacity; SC-59), found by the a11y suite's first scan of the paused state (SC-58).
 - The console edits its own browser store (`core/platform.js`, seeded from the app's data). The app's workspace doesn't read the console's changes yet.
 - The landing page's Book a demo saves its request in the browser store, where the console lists it; nothing is sent anywhere.
-- `npm test` in `design3/a11y` covers the landing page and the console too (`site.a11y.spec.ts`, `console.a11y.spec.ts`).

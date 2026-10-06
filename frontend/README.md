@@ -9,7 +9,7 @@ over three shared packages.
 | [`console/`](console/README.md) (`@smart-clearance/console`) | The staff console, console.smartclearance.com: a client-side app behind a staff sign-in, where each manufacturer's workspace is set up and run (SC-37).                     |
 | [`core/`](core/README.md) (`@smart-clearance/core`)          | Design system v3 in Svelte 5: the tokens, component and screen CSS ported from design3, and the components. Every UI piece the apps share lives here.                       |
 | [`api/`](api/README.md) (`@smart-clearance/api`)             | The frontend's side of backend-api: the contract, the HTTP transport, and an in-browser mock of each app's calls, seeded from design3. Each app imports only its own entry. |
-| [`testing/`](testing/README.md) (`@smart-clearance/testing`) | What the apps' Playwright suites share: design3/a11y's axe scan and report, and the pixel compare of the parity suites.                                                     |
+| [`testing/`](testing/README.md) (`@smart-clearance/testing`) | What the apps' Playwright suites share: the a11y suite's axe scan, report and component coverage, and the parity suites' pixel compare and design3 server.                  |
 
 What the two apps share is shared, not copied: components and CSS through `core`, the contract and mocks through `api`,
 test helpers through `testing`. The one file each app must keep for itself, `src/app.html`, is the same file in both,
@@ -70,21 +70,22 @@ Terraform's `console_firebase_config` output). The e2e and parity suites run on 
 
 Run them from `frontend/`.
 
-| Command                     | What it does                                                                                                                                                                                        |
-| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `corepack pnpm dev`         | The landing page's dev server, :5173 (`dev:console`: the console's, :5174)                                                                                                                          |
-| `corepack pnpm build`       | Both static apps, into `admin/build/` and `console/build/` (`build:admin`, `build:console`: one of them)                                                                                            |
-| `corepack pnpm preview`     | Serves the landing page's build, :4173 (`preview:console`: the console's, :4176)                                                                                                                    |
-| `corepack pnpm lint`        | ESLint and Prettier                                                                                                                                                                                 |
-| `corepack pnpm check`       | svelte-check or tsc in every package, warnings fail                                                                                                                                                 |
-| `corepack pnpm test`        | The seed and icon checks, then every package's unit tests                                                                                                                                           |
-| `corepack pnpm test:e2e`    | Each app's build, then its Playwright suite: WCAG 2.2 AA in five projects, keyboard, motion, the console's flows, the Firefox and WebKit smoke runs (`test:e2e:admin`, `test:e2e:console`: one app) |
-| `corepack pnpm test:parity` | Each app's build compared with its prototype pixel by pixel; serves design3 on :8790 (`test:parity:admin`, `test:parity:console`)                                                                   |
-| `corepack pnpm seed`        | Regenerates `api/src/seed/` and `admin/src/lib/seed/` from `design3/core`                                                                                                                           |
-| `corepack pnpm icons`       | Regenerates `core/src/lib/icons/registry.ts` from `design3/system/icons.js`                                                                                                                         |
-| `corepack pnpm format`      | Prettier, writing                                                                                                                                                                                   |
+| Command                     | What it does                                                                                                                                                                                                                                  |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `corepack pnpm dev`         | The landing page's dev server, :5173 (`dev:console`: the console's, :5174)                                                                                                                                                                    |
+| `corepack pnpm build`       | Both static apps, into `admin/build/` and `console/build/` (`build:admin`, `build:console`: one of them)                                                                                                                                      |
+| `corepack pnpm preview`     | Serves the landing page's build, :4173 (`preview:console`: the console's, :4176)                                                                                                                                                              |
+| `corepack pnpm lint`        | ESLint and Prettier                                                                                                                                                                                                                           |
+| `corepack pnpm check`       | svelte-check or tsc in every package, warnings fail                                                                                                                                                                                           |
+| `corepack pnpm test`        | The seed and icon checks, then every package's unit tests                                                                                                                                                                                     |
+| `corepack pnpm test:a11y`   | The a11y suite (SC-58): each app's build, WCAG 2.2 AA in five projects, keyboard and motion, then the coverage check: every core component the app uses on screen in some scan; `/ds` is not scanned (`test:a11y:admin`, `test:a11y:console`) |
+| `corepack pnpm test:e2e`    | Each app's build, then the console's flows and the Firefox and WebKit smoke runs (`test:e2e:admin`, `test:e2e:console`: one app)                                                                                                              |
+| `corepack pnpm test:parity` | Each app's build compared with its prototype pixel by pixel; serves design3 on :8790 with `testing/design3-server.py` (`test:parity:admin`, `test:parity:console`)                                                                            |
+| `corepack pnpm seed`        | Regenerates `api/src/seed/` and `admin/src/lib/seed/` from `design3/core`                                                                                                                                                                     |
+| `corepack pnpm icons`       | Regenerates `core/src/lib/icons/registry.ts` from `design3/system/icons.js`                                                                                                                                                                   |
+| `corepack pnpm format`      | Prettier, writing                                                                                                                                                                                                                             |
 
-The gate jira-flow runs for a change under `frontend/` is `corepack pnpm lint && corepack pnpm check && corepack pnpm test`. The e2e and parity suites need browsers (`corepack pnpm --filter @smart-clearance/admin exec playwright install chromium firefox webkit`, once for both apps) and run on their own.
+The gate jira-flow runs for a change under `frontend/` is `corepack pnpm lint && corepack pnpm check && corepack pnpm test`. The a11y, e2e and parity suites need browsers (`corepack pnpm --filter @smart-clearance/admin exec playwright install chromium firefox webkit`, once for both apps) and run on their own.
 
 ## Deploying
 

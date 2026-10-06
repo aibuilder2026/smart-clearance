@@ -1,6 +1,6 @@
 ---
 name: browser-suites
-description: The frontend's e2e and parity suites and design3's a11y suite run only when the maintainer explicitly asks for them in the current request, never as a routine step of a design, UX change, port or ticket. Use when the maintainer says to run the e2e suite, the parity suite, the a11y or accessibility suite, the Playwright tests, the WCAG checks, or "all the suites". Covers what each suite is, what it needs first (a build, PUBLIC_API_BASE empty, a serving design3), the exact commands, and how to report the result. Also use to decide whether a request is an explicit ask.
+description: The frontend's a11y, e2e and parity suites run only when the maintainer explicitly asks for them in the current request, never as a routine step of a design, UX change, port or ticket. Use when the maintainer says to run the a11y or accessibility suite, the e2e suite, the parity suite, the Playwright tests, the WCAG checks, or "all the suites". Covers what each suite is, what it needs first (a build, PUBLIC_API_BASE empty), the exact commands, and how to report the result. Also use to decide whether a request is an explicit ask.
 ---
 
 # The browser suites, on request only
@@ -28,24 +28,24 @@ When unsure, treat it as not asked: say what you would run and ask.
 
 | Suite | Where | What it does | Takes |
 | --- | --- | --- | --- |
-| a11y | `design3/a11y/` | axe WCAG 2.2 AA scans of the demo, every role in the app, the landing page and the console, in five viewport and theme projects, plus the keyboard and motion specs | about 6 minutes; `test:desktop` (light and dark at 1440) about 2 |
-| e2e | `frontend/admin/tests/`, `frontend/console/tests/` | the same axe scans in five projects, keyboard, motion, the console's flows, and Firefox and WebKit smoke, against each app's build | about 30 seconds an app, after a build |
-| parity | the same folders, the parity specs | each app's build against its design3 prototype, pixel by pixel | about 40 seconds an app, after a build |
+| a11y | `frontend/admin/tests/e2e/*.a11y.spec.ts`, `frontend/console/tests/e2e/*.a11y.spec.ts` | on each app's production build (the real UI, never the `/ds` dev route): axe WCAG 2.2 AA scans of every landing-page section and every console screen, tab, sheet, menu, alert and toast, in five viewport and theme projects, plus the keyboard and motion specs; then the coverage check, which fails if an app uses a core component no scan had on screen (SC-58) | about 2 minutes an app, with its build |
+| e2e | `frontend/console/tests/e2e/flows.spec.ts`, each app's `smoke.spec.ts` | the console's flows on the mock API, and the Firefox and WebKit smoke runs | under a minute an app, with its build |
+| parity | each app's `tests/parity/` | each app's build against its design3 prototype, pixel by pixel (design3 served by `frontend/testing/design3-server.py` on :8790) | about 40 seconds an app, after a build |
 
 The live e2e suite, `backend-api/scripts/e2e.sh` (the landing page and the console on the local API and Firebase),
 counts as a suite too: it runs on request only, and it adds a client to the local database.
 
 ## Before running
 
-- **A build first** for e2e and parity: `corepack pnpm build` (or `build:admin`, `build:console`). Each suite serves
-  its own build on a preview port (4174 and 4177), so the dev servers need not run.
-- **`PUBLIC_API_BASE` empty.** The e2e and parity suites run on the mocks, even while `.env.local` points at the local
-  API. Run them as `PUBLIC_API_BASE= corepack pnpm test:e2e`.
+- **A build:** `test:a11y`, `test:e2e` and `test:parity` each build their app first, and serve the build on a preview
+  port (4174 and 4177), so the dev servers need not run.
+- **`PUBLIC_API_BASE` empty.** The a11y, e2e and parity suites run on the mocks, even while `.env.local` points at the
+  local API. Run them as `PUBLIC_API_BASE= corepack pnpm test:a11y`.
 - **Browsers:** `npx playwright install chromium webkit firefox` once. In a sandboxed shell Firefox cannot start:
   expect the `firefox-desktop` project to fail there, and say so rather than treating it as a regression.
-- **design3's suite serves design3 itself** (`serve.py` on port 8790); nothing else need run. Run `./build.sh` in
-  `design3` first if a `.jsx` changed.
-- **A long timeout** for the a11y suite (10 minutes or more).
+- **Parity serves design3 itself** (`frontend/testing/design3-server.py` on port 8790). Run `./build.sh` in `design3`
+  first if a `.jsx` changed.
+- **A long timeout** (10 minutes) for `test:a11y` over both apps.
 
 ## Commands
 
@@ -53,30 +53,27 @@ From `frontend/`:
 
 ```sh
 corepack pnpm build
+PUBLIC_API_BASE= corepack pnpm test:a11y             # both apps; test:a11y:admin, test:a11y:console for one
 PUBLIC_API_BASE= corepack pnpm test:e2e              # both apps; test:e2e:admin, test:e2e:console for one
 PUBLIC_API_BASE= corepack pnpm test:parity           # both apps; test:parity:admin, test:parity:console for one
 ```
 
-From `design3/a11y`:
+Each app's findings land in `test-results/a11y/<project>/<test>.json`, with the components each test's scans had on
+screen; `node ../testing/src/a11y-coverage.ts`, from the app's folder, rereads them.
+
+One spec or project, when the maintainer names it, on an existing build (`corepack pnpm build:console`):
 
 ```sh
-npm test                                             # the whole suite
-npm run test:desktop                                 # light and dark at 1440 only
-npm run report                                       # the HTML report after a run
-```
-
-One spec or project, when the maintainer names it:
-
-```sh
-npx playwright test site.a11y.spec.ts --project=desktop-light      # in design3/a11y
-corepack pnpm --filter @smart-clearance/console exec playwright test tests/flows --project=flows   # in frontend/
+corepack pnpm --filter @smart-clearance/console exec playwright test console.a11y.spec.ts --project=desktop-light
+corepack pnpm --filter @smart-clearance/console exec playwright test --project=flows
 ```
 
 ## Reporting
 
 Report what ran and the counts, in the form CLAUDE.md's records use:
 
-- design3's suite: N pass, with 0 failing WCAG rules (or which rules failed, on which page and viewport);
+- a11y: N pass for each app, with 0 WCAG findings and every core component it uses on screen (the coverage line), or
+  which rules failed, on which screen and viewport, and which components no scan reached;
 - e2e: N pass, and which projects failed (Firefox in the sandbox is expected, and said so);
 - parity: N pass, and the largest difference as a percentage, with the page and viewport.
 
