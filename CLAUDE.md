@@ -293,7 +293,7 @@
     - the GitHub environment `prod`, deployable from `main` only, with its variables `GCP_WORKLOAD_IDENTITY_PROVIDER`, `GCP_SERVICE_ACCOUNT` and `HOSTING_SITES`, through the `integrations/github` provider. The scripts give it `gh auth token`.
   - **Pinned:** every action to a commit SHA; the workflow token is read-only, and only the deploy job gets `id-token: write`.
   - **First runs:** PR #30's checks ran the gates and the build; the merge to `main` ran the first deploy from CI.
-- **SC-42** (In Review, branch `SC-42-town-hover-zoom`): the town hero, easier to explore, and under a sky on every screen.
+- **SC-42** (PR #31, merged): the town hero, easier to explore, and under a sky on every screen.
   - **Round 1, described options:** pointing at a place or an agent. The maintainer picked A, card first, zoom on dwell (B zoomed on hover, C was a loupe).
     - The card opens at once, with the node's handoffs lit. After 0.6 s a ring fills round the pin, and the town zooms to 1.8× about it.
     - Looking away for 250 ms closes the card and puts the camera back. A click keeps the card; Escape, its close button or leaving the hero shuts it. The chips in a kept card move it on, and bring what they name into view.
@@ -486,7 +486,7 @@
     - design3's suite: 349 pass, with 0 failing WCAG rules, and a new test (Sign in while it checks, the Overview and a tab loading);
     - the landing page is unchanged: e2e 51.
   - **Hosting:** the hosted landing page and console load commit `e0386f5`; every pinned file was checked on jsDelivr first (one cached 403 purged).
-- **SC-50** (In Review, branch `SC-50-backend-cloud-run`): backend-api in Google Cloud, and the apps on it.
+- **SC-50** (PR #38, merged): backend-api in Google Cloud, and the apps on it.
   - **The maintainer's decisions:**
     - Cloud Run scales to zero;
     - production starts with the synthetic world;
@@ -513,7 +513,7 @@
     Neha signed in through Firebase and read the session, dashboard, clients and batches from Cloud SQL. CORS allows only the Hosting sites.
   - **Found on the way:** Cloud Run reserves `/healthz` on the public address (404), so the uptime check uses `/readyz`; the container's probes still use `/healthz` inside. The dashboard's JSON is written in the form Cloud Monitoring stores, so plans show no drift.
   - **Checks:** backend-api 205 pass (JSON logging tests added); `check.sh` passes; the workflow validates.
-- **SC-51** (In Review, branch `SC-51-console-splash`): the console's splash for the first load, signing in and signing out, masking backend-api's waits.
+- **SC-51** (PR #39, merged): the console's splash for the first load, signing in and signing out, masking backend-api's waits.
   - **The request:** "a splash screen for login and logout on console UI, to mask the API calls load delays", "something really awesome that goes with the console theme". Measured on the live console: blank for about 1.5 s on a warm API before anything draws (longer on a cold start, as Cloud Run scales to zero); "Welcome, Neha" then a frozen wait; the console still on screen while signing out.
   - **Design first:** three options on one board in platform v3, `SC-51 design review.html`, each built on a fork of the console with Framer Motion:
     - A, the shift (recommended): one surface for every wait, the mark drawing its route as the reads land, the reads as the stops of a short tracker, the mark opening into a window onto the page;
