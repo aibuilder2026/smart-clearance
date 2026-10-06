@@ -1,8 +1,8 @@
 // Smart-Clearance v3 · smartclearance.com's first viewport (SC-32): the whole business as one miniature town, in depth.
 // The maker's factory and office, the distributor's godown, the kirana lane, a buyer in the next town, a food bank and
 // the landfill. Every agent works at a post in the town, and the handoffs between them are the agent graph. The batch
-// tours it once, over the whole town (SC-34): a stop for each agent in the order they work, its card opening beside its
-// pin, about 17 s, with Pause and Play (WCAG 2.2.2). Then the town is the visitor's: drag or swipe to look round, pinch
+// tours it once (SC-34), the camera framing each beat's agents (SC-42): a stop for each agent in the order they work,
+// its card opening beside its pin, about 17 s, with Pause and Play (WCAG 2.2.2). Then the town is the visitor's: drag or swipe to look round, pinch
 // or Ctrl-scroll to zoom, double-click to go nearer, and open a place or an agent for what it did; taking the camera
 // pauses the tour, and leaving the hero brings the whole town back. Drawn in WebGL2 from the plate and its depth map, so
 // it parallaxes as the camera travels, tilts under the pointer and keeps its focus on what the camera looks at; without
@@ -154,6 +154,8 @@
     };
     const stop = () => { if (fly.current) { fly.current.stop(); fly.current = null; } };
     const api = useMemo(() => ({
+      // where a plate point would land on the stage under a shot, without moving the camera
+      at: (shot, p) => { const G = gRef.current, t = solve({ x: shot[0], y: shot[1], z: shot[2] }); return [G.ox + t.tx + p[0] * G.w * t.z, G.oy + t.ty + p[1] * G.h * t.z]; },
       get: () => cam.current, t: () => live.current || (gRef.current ? solve(cam.current) : { tx: 0, ty: 0, z: 1 }),
       // fly to a shot ([x, y, z]); jumps under reduced motion
       to: (shot, dur = 0.7) => {
@@ -581,17 +583,18 @@ void main() {
   }
 
   /* ---------- the tour's card, beside the agent at work ---------- */
-  // Over the whole town, where the renderer shows the agent's post: above its pin when there is room, else below, always
-  // inside the stage, on a stem to the pin. A line along its foot fills while the stop holds, and stops when the tour
+  // Where the renderer shows the agent's post, in the clear part of the stage (SC-42): above its pin when it fits under
+  // the heading's buttons, else below it above the caption, else where there is more room, on a stem to the pin. A line along its foot fills while the stop holds, and stops when the tour
   // does. It names the agent, so the pin's own name stands down meanwhile; a screen reader has the journey's list.
-  function Tip({ g, j, api, project }) {
+  function Tip({ g, j, api, project, room }) {
     const ref = useRef(null), id = j.agent, a = id ? AGENT[id] : null;
     useLayoutEffect(() => {
       const el = ref.current; if (!el || !a || !g) return;
       const put = () => {
-        const p = project ? project(GEO.posts[id], id) : api.toStage(GEO.posts[id]), w = el.offsetWidth, h = el.offsetHeight, up = p[1] - 28 - h > 8;
-        const x = clamp(p[0] - w / 2, 8, g.W - w - 8);
-        el.style.left = x.toFixed(1) + "px"; el.style.top = (up ? p[1] - 28 - h : p[1] + 28).toFixed(1) + "px";
+        const p = project ? project(GEO.posts[id], id) : api.toStage(GEO.posts[id]), w = el.offsetWidth, h = el.offsetHeight, R = room ? room() : { top: 8, bottom: g.H - 8 };
+        const fitsUp = p[1] - 28 - h >= R.top, fitsDown = p[1] + 28 + h <= R.bottom, up = fitsUp || (!fitsDown && p[1] - R.top > R.bottom - p[1]);
+        const x = clamp(p[0] - w / 2, 8, g.W - w - 8), y = clamp(up ? p[1] - 28 - h : p[1] + 28, R.top, Math.max(R.top, R.bottom - h));
+        el.style.left = x.toFixed(1) + "px"; el.style.top = y.toFixed(1) + "px";
         el.style.setProperty("--caret", clamp(p[0] - x, 14, w - 14).toFixed(1) + "px"); el.classList.toggle("below", !up);
       };
       put(); const u1 = api.listen(put), u2 = api.listenView(put); return () => { u1(); u2(); };
@@ -658,15 +661,26 @@ void main() {
     // the visitor takes the camera (a drag, a pinch, a zoom, a card opened): the journey holds until they press Play
     const take = () => { setFollow(false); if (!j.done && j.playing) j.pause(); };
     useGestures(stageRef, api, take);
-    // The tour keeps the whole business in view: while it has the camera, the camera rests on the whole town (and goes
-    // back to it when Play or Replay hands the camera back). Where the stage crops the town's sides (phones, tablets), it
-    // slides along at the same size to keep the agent at work, or the beat's place, in view.
-    const keep = g && g.w > g.W + 1 && !j.done && j.s >= 0 ? (j.agent ? GEO.posts[j.agent] : placeAt(g, j.beat.at[0])) : null;
+    // The tour frames each beat (SC-42): while it has the camera, the camera takes in the beat's agents together (or, for a
+    // beat without agents, its place) in the clear part of the stage, under the heading's buttons and over the caption,
+    // with room for a card above them, up to 1.7× near (1.5× on phones and tablets). It moves once a beat and rests while
+    // the beat's agents take their turns; before the tour, after it, and when Play or Replay hands the camera back, it
+    // rests on the whole town.
+    const frame = (pts, zmax) => {
+      const R = room(), [ax, ay] = g.wide ? [0.5, 0.64] : [0.5, 0.5], padX = g.wide ? 190 : 80, padT = g.wide ? 120 : 104, padB = 40, rh = Math.max(80, R.bottom - R.top);
+      const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+      const z = clamp(Math.min(g.W / ((x1 - x0) * g.w + 2 * padX), rh / ((y1 - y0) * g.h + padT + padB), zmax), 1, ZMAX);
+      const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2 - (padT - padB) / 2 / (g.h * z);
+      // the group's middle at the middle of the clear part: the plate point the camera holds at its anchor
+      return [cx + (ax * g.W - g.W / 2) / (g.w * z), cy + (ay * g.H - (R.top + R.bottom) / 2) / (g.h * z), z];
+    };
+    const beat = g && !j.done && j.s >= 0 && j.beat ? j.k : -1;
     useEffect(() => {
       if (!g || !follow) return;
-      const rest = shotOf(g, "rest");
-      api.to(keep ? [keep[0], rest[1], rest[2]] : rest, j.s < 0 ? 0 : 0.9);
-    }, [follow, g && g.wide, g && g.W, j.run, keep]);
+      if (beat < 0) { api.to(shotOf(g, "rest"), j.s < 0 ? 0 : 0.9); return; }
+      const b = BEATS[beat];
+      api.to(frame(b.who.length ? b.who.map(w => GEO.posts[w]) : b.at.map(id => placeAt(g, id)), g.wide ? 1.7 : 1.5), 0.9);
+    }, [follow, g && g.wide, g && g.W, g && g.H, j.run, beat]);
     // Looking (SC-42), on desktops: pointing at a place or an agent, or focusing a place, opens its card at once and
     // lights its handoffs; after DWELL ms the town zooms in about it, so it stays under the pointer. Looking away (the
     // pointer off the node and its card for 250 ms, or focus moving on) closes the card and puts the camera back where
@@ -801,7 +815,7 @@ void main() {
           {g && AGENTS.map(a => <span key={a.id} data-at={JSON.stringify(GEO.posts[a.id])} className="town-shift"><Node a={a} g={g} j={j} sel={sel} onOpen={open} hover={look} peek={peek} named={named && (!focus || focus.has(a.id))} tipped={tour === a.id} /></span>)}
           {g && <Batch g={g} j={j} />}
         </div>
-        {g && <Tip g={g} j={{ ...j, agent: tour }} api={api} project={project} />}
+        {g && <Tip g={g} j={{ ...j, agent: tour }} api={api} project={project} room={room} />}
         {g && <Peek g={g} pk={peek} j={j} api={api} project={project} room={room} onOpen={s => open(s, { detail: 1 })} onClose={() => unlook(true)}
           onEnter={() => clearTimeout(T.current.leave)} onLeave={() => { if (!peekNow.current || !peekNow.current.pinned) { clearTimeout(T.current.leave); T.current.leave = setTimeout(() => unlook(false), 250); } }} />}
         <p className="sr-only">{dark

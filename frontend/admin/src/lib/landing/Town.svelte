@@ -18,15 +18,15 @@
 	import { PLATES } from './plates';
 	import { Camera, ZMAX, type Focus } from './town/camera';
 	import { DepthRenderer, loadDepthMap, shifted, type DepthMap } from './town/depth';
-	import { GEO, along, fitOf, placeAt, shotOf, wpx, type Fit, type Pt } from './town/geo';
+	import { GEO, along, fitOf, placeAt, shotOf, wpx, type Fit, type Pt, type Shot } from './town/geo';
 	import { gestures } from './town/gestures';
 	import { Graph } from './town/graph';
 
 	// The whole business as one miniature town (design3/site/town.jsx, SC-32): the maker's factory and office, the
 	// distributor's godown, the kirana lane, a buyer in the next town, a food bank and the landfill. Every agent works
-	// at a post in the town, and the handoffs between them are the agent graph. The batch tours it once, over the whole
-	// town (SC-34): a stop for each agent in the order they work, its card opening beside its pin, about 17 s, with Pause
-	// and Play (WCAG 2.2.2). Then the town is the visitor's: drag or swipe to look round, pinch or Ctrl-scroll to zoom,
+	// at a post in the town, and the handoffs between them are the agent graph. The batch tours it once (SC-34), the
+	// camera framing each beat's agents (SC-42): a stop for each agent in the order they work, its card opening beside its
+	// pin, about 17 s, with Pause and Play (WCAG 2.2.2). Then the town is the visitor's: drag or swipe to look round, pinch or Ctrl-scroll to zoom,
 	// double-click to go nearer, and open a place or an agent for what it did; taking the camera pauses the tour, and
 	// leaving the hero brings the whole town back. Drawn in WebGL2 from the plate and its depth map, so it parallaxes as
 	// the camera travels, tilts under the pointer and keeps its focus on what the camera looks at; without WebGL2 the
@@ -235,21 +235,47 @@
 	let following = $state(true);
 	let sel = $state<{ kind: 'place' | 'agent'; id: string } | null>(null);
 	let hov = $state<{ kind: 'place' | 'agent'; id: string } | null>(null);
-	// The tour keeps the whole business in view: while it has the camera, the camera rests on the whole town (and goes
-	// back to it when Play or Replay hands the camera back). Where the stage crops the town's sides (phones, tablets),
-	// it slides along at the same size to keep the agent at work, or the beat's place, in view.
-	const keep = $derived.by(() => {
-		const G = g;
-		if (!G || G.w <= G.W + 1 || done || s < 0) return null;
-		return agentNow ? GEO.posts[agentNow] : beat ? placeAt(G, beat.at[0]) : null;
-	});
+	// The tour frames each beat (SC-42): while it has the camera, the camera takes in the beat's agents together (or, for
+	// a beat without agents, its place) in the clear part of the stage, under the heading's buttons and over the caption,
+	// with room for a card above them, up to 1.7× near (1.5× on phones and tablets). It moves once a beat and rests while
+	// the beat's agents take their turns; before the tour, after it, and when Play or Replay hands the camera back, it
+	// rests on the whole town.
+	const frame = (G: Fit, pts: Pt[], zmax: number): Shot => {
+		const R = room(),
+			[ax, ay] = G.wide ? [0.5, 0.64] : [0.5, 0.5],
+			padX = G.wide ? 190 : 80,
+			padT = G.wide ? 120 : 104,
+			padB = 40,
+			rh = Math.max(80, R.bottom - R.top);
+		const xs = pts.map((p) => p[0]),
+			ys = pts.map((p) => p[1]),
+			x0 = Math.min(...xs),
+			x1 = Math.max(...xs),
+			y0 = Math.min(...ys),
+			y1 = Math.max(...ys);
+		const z = Math.min(
+			ZMAX,
+			Math.max(1, Math.min(G.W / ((x1 - x0) * G.w + 2 * padX), rh / ((y1 - y0) * G.h + padT + padB), zmax))
+		);
+		const cx = (x0 + x1) / 2,
+			cy = (y0 + y1) / 2 - (padT - padB) / 2 / (G.h * z);
+		// the group's middle at the middle of the clear part: the plate point the camera holds at its anchor
+		return [cx + (ax * G.W - G.W / 2) / (G.w * z), cy + (ay * G.H - (R.top + R.bottom) / 2) / (G.h * z), z];
+	};
+	const framed = $derived(g && !done && s >= 0 && stop ? stop.beat : -1);
 	$effect(() => {
 		const G = g,
-			at = keep;
+			b = framed;
 		void run;
 		if (!G || !following) return;
-		const rest = shotOf(G, 'rest');
-		camera.to(at ? [at[0], rest[1], rest[2]] : rest, untrack(() => s) < 0 ? 0 : 0.9);
+		if (b < 0) return camera.to(shotOf(G, 'rest'), untrack(() => s) < 0 ? 0 : 0.9);
+		const B = T.beats[b];
+		camera.to(
+			untrack(() =>
+				frame(G, B.who.length ? B.who.map((w) => GEO.posts[w]) : B.at.map((id) => placeAt(G, id)), G.wide ? 1.7 : 1.5)
+			),
+			0.9
+		);
 	});
 	// the visitor takes the camera (a drag, a pinch, a zoom, a card opened): the tour holds until they press Play
 	const take = () => {
@@ -590,8 +616,8 @@
 	});
 	const agentState = (a: (typeof T.agents)[number]) => ({ done: a.stop < s || done, now: a.stop === s && !done });
 	// The tour's card, beside the agent at work, while the tour has the camera and no card of the visitor's is open: over
-	// the whole town where the renderer shows the agent's post, above its pin when there is room, else below, always
-	// inside the stage, on a stem to the pin. It names the agent, so the pin's own name stands down meanwhile.
+	// where the renderer shows the agent's post, in the clear part of the stage (SC-42): above its pin when it fits under
+	// the heading's buttons, else below it above the caption, else where there is more room, on a stem to the pin. It names the agent, so the pin's own name stands down meanwhile.
 	const tour = $derived(following && !sel && !peek && touring && agentNow ? agentNow : null);
 	// The card beside what the visitor looks at: in the clear part of the stage, above the node if it fits there, else
 	// below it, else beside it, on a stem to the node
@@ -643,10 +669,14 @@
 			const p = proj ? proj(GEO.posts[id], id) : camera.toStage(GEO.posts[id]),
 				w = el.offsetWidth,
 				h = el.offsetHeight,
-				up = p[1] - 28 - h > 8,
-				x = Math.min(G.W - w - 8, Math.max(8, p[0] - w / 2));
+				R = room(),
+				fitsUp = p[1] - 28 - h >= R.top,
+				fitsDown = p[1] + 28 + h <= R.bottom,
+				up = fitsUp || (!fitsDown && p[1] - R.top > R.bottom - p[1]),
+				x = Math.min(G.W - w - 8, Math.max(8, p[0] - w / 2)),
+				y = Math.min(Math.max(R.top, R.bottom - h), Math.max(R.top, up ? p[1] - 28 - h : p[1] + 28));
 			el.style.left = `${x.toFixed(1)}px`;
-			el.style.top = `${(up ? p[1] - 28 - h : p[1] + 28).toFixed(1)}px`;
+			el.style.top = `${y.toFixed(1)}px`;
 			el.style.setProperty('--caret', `${Math.min(w - 14, Math.max(14, p[0] - x)).toFixed(1)}px`);
 			el.classList.toggle('below', !up);
 		};

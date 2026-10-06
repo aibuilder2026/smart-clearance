@@ -102,4 +102,4 @@ clear view at all four sizes:
 | B | Only when hidden | The whole town; moves only when the agent or its card would be covered: a pan, else 1.35×. |
 | C | Each beat framed (recommended) | Frames each beat's agents together, up to 1.7× (1.5× on phones): 7 moves, one a beat. |
 
-**The pick:** waiting for the maintainer.
+**The pick: C, each beat framed.** The maintainer picked it on 6 Oct 2026 ("C · Each beat framed (Recommended)").

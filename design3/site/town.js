@@ -180,6 +180,11 @@
       }
     };
     const api = useMemo(() => ({
+      // where a plate point would land on the stage under a shot, without moving the camera
+      at: (shot, p) => {
+        const G = gRef.current, t = solve({ x: shot[0], y: shot[1], z: shot[2] });
+        return [G.ox + t.tx + p[0] * G.w * t.z, G.oy + t.ty + p[1] * G.h * t.z];
+      },
       get: () => cam.current,
       t: () => live.current || (gRef.current ? solve(cam.current) : { tx: 0, ty: 0, z: 1 }),
       // fly to a shot ([x, y, z]); jumps under reduced motion
@@ -937,16 +942,17 @@ void main() {
       pk.pinned && /* @__PURE__ */ React.createElement("button", { type: "button", className: "town-panel-x", "aria-label": "Close", onClick: onClose }, /* @__PURE__ */ React.createElement(Icon, { name: "x", size: 16, stroke: 2 }))
     ));
   }
-  function Tip({ g, j, api, project }) {
+  function Tip({ g, j, api, project, room }) {
     const ref = useRef(null), id = j.agent, a = id ? AGENT[id] : null;
     useLayoutEffect(() => {
       const el = ref.current;
       if (!el || !a || !g) return;
       const put = () => {
-        const p = project ? project(GEO.posts[id], id) : api.toStage(GEO.posts[id]), w = el.offsetWidth, h = el.offsetHeight, up = p[1] - 28 - h > 8;
-        const x = clamp(p[0] - w / 2, 8, g.W - w - 8);
+        const p = project ? project(GEO.posts[id], id) : api.toStage(GEO.posts[id]), w = el.offsetWidth, h = el.offsetHeight, R = room ? room() : { top: 8, bottom: g.H - 8 };
+        const fitsUp = p[1] - 28 - h >= R.top, fitsDown = p[1] + 28 + h <= R.bottom, up = fitsUp || !fitsDown && p[1] - R.top > R.bottom - p[1];
+        const x = clamp(p[0] - w / 2, 8, g.W - w - 8), y = clamp(up ? p[1] - 28 - h : p[1] + 28, R.top, Math.max(R.top, R.bottom - h));
         el.style.left = x.toFixed(1) + "px";
-        el.style.top = (up ? p[1] - 28 - h : p[1] + 28).toFixed(1) + "px";
+        el.style.top = y.toFixed(1) + "px";
         el.style.setProperty("--caret", clamp(p[0] - x, 14, w - 14).toFixed(1) + "px");
         el.classList.toggle("below", !up);
       };
@@ -1012,12 +1018,23 @@ void main() {
       if (!j.done && j.playing) j.pause();
     };
     useGestures(stageRef, api, take);
-    const keep = g && g.w > g.W + 1 && !j.done && j.s >= 0 ? j.agent ? GEO.posts[j.agent] : placeAt(g, j.beat.at[0]) : null;
+    const frame = (pts, zmax) => {
+      const R = room(), [ax, ay] = g.wide ? [0.5, 0.64] : [0.5, 0.5], padX = g.wide ? 190 : 80, padT = g.wide ? 120 : 104, padB = 40, rh = Math.max(80, R.bottom - R.top);
+      const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+      const z = clamp(Math.min(g.W / ((x1 - x0) * g.w + 2 * padX), rh / ((y1 - y0) * g.h + padT + padB), zmax), 1, ZMAX);
+      const cx2 = (x0 + x1) / 2, cy = (y0 + y1) / 2 - (padT - padB) / 2 / (g.h * z);
+      return [cx2 + (ax * g.W - g.W / 2) / (g.w * z), cy + (ay * g.H - (R.top + R.bottom) / 2) / (g.h * z), z];
+    };
+    const beat = g && !j.done && j.s >= 0 && j.beat ? j.k : -1;
     useEffect(() => {
       if (!g || !follow) return;
-      const rest = shotOf(g, "rest");
-      api.to(keep ? [keep[0], rest[1], rest[2]] : rest, j.s < 0 ? 0 : 0.9);
-    }, [follow, g && g.wide, g && g.W, j.run, keep]);
+      if (beat < 0) {
+        api.to(shotOf(g, "rest"), j.s < 0 ? 0 : 0.9);
+        return;
+      }
+      const b = BEATS[beat];
+      api.to(frame(b.who.length ? b.who.map((w) => GEO.posts[w]) : b.at.map((id) => placeAt(g, id)), g.wide ? 1.7 : 1.5), 0.9);
+    }, [follow, g && g.wide, g && g.W, g && g.H, j.run, beat]);
     const T = useRef({ dwell: 0, leave: 0, before: null });
     const outOfView = (p) => {
       const R = room();
@@ -1239,7 +1256,7 @@ void main() {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: cx("hero-scene town-stage", gl && "is-gl", ready && "ready"), ref: stageRef }, gl && g && /* @__PURE__ */ React.createElement(DepthPlate, { g, api, dark, reduce: j.reduce, map, stageRef, view, onReady: () => setReady(true), onFail: () => setGl(false) }), /* @__PURE__ */ React.createElement("div", { className: "town-world", ref: plateWorld, style: g ? { left: g.ox, top: g.oy, width: g.w, height: g.h } : { visibility: "hidden" } }, !gl && /* @__PURE__ */ React.createElement("img", { src: IMG + (dark ? "business-night.webp" : "business.webp"), width: GEO.nw, height: GEO.nh, draggable: "false", onLoad: () => {
       setReady(true);
       loaderSays("plateDrawn", dark);
-    }, alt: "" })), !gl && g && g.wide && /* @__PURE__ */ React.createElement("div", { className: "town-haze", ref: hazeRef, "aria-hidden": "true" }), g && /* @__PURE__ */ React.createElement(Graph, { g, api, j, dark, focus, project, holes }), /* @__PURE__ */ React.createElement("div", { className: "town-world town-top", ref: topWorld, style: g ? { left: g.ox, top: g.oy, width: g.w, height: g.h } : { visibility: "hidden" } }, g && PLACES.map((p) => /* @__PURE__ */ React.createElement("span", { key: p.id, "data-at": JSON.stringify(placeAt(g, p.id)), className: "town-shift" }, /* @__PURE__ */ React.createElement(Pin, { p, g, j, sel, onOpen: open, hover: look, peek }))), g && AGENTS.map((a) => /* @__PURE__ */ React.createElement("span", { key: a.id, "data-at": JSON.stringify(GEO.posts[a.id]), className: "town-shift" }, /* @__PURE__ */ React.createElement(Node, { a, g, j, sel, onOpen: open, hover: look, peek, named: named && (!focus || focus.has(a.id)), tipped: tour === a.id }))), g && /* @__PURE__ */ React.createElement(Batch, { g, j })), g && /* @__PURE__ */ React.createElement(Tip, { g, j: { ...j, agent: tour }, api, project }), g && /* @__PURE__ */ React.createElement(
+    }, alt: "" })), !gl && g && g.wide && /* @__PURE__ */ React.createElement("div", { className: "town-haze", ref: hazeRef, "aria-hidden": "true" }), g && /* @__PURE__ */ React.createElement(Graph, { g, api, j, dark, focus, project, holes }), /* @__PURE__ */ React.createElement("div", { className: "town-world town-top", ref: topWorld, style: g ? { left: g.ox, top: g.oy, width: g.w, height: g.h } : { visibility: "hidden" } }, g && PLACES.map((p) => /* @__PURE__ */ React.createElement("span", { key: p.id, "data-at": JSON.stringify(placeAt(g, p.id)), className: "town-shift" }, /* @__PURE__ */ React.createElement(Pin, { p, g, j, sel, onOpen: open, hover: look, peek }))), g && AGENTS.map((a) => /* @__PURE__ */ React.createElement("span", { key: a.id, "data-at": JSON.stringify(GEO.posts[a.id]), className: "town-shift" }, /* @__PURE__ */ React.createElement(Node, { a, g, j, sel, onOpen: open, hover: look, peek, named: named && (!focus || focus.has(a.id)), tipped: tour === a.id }))), g && /* @__PURE__ */ React.createElement(Batch, { g, j })), g && /* @__PURE__ */ React.createElement(Tip, { g, j: { ...j, agent: tour }, api, project, room }), g && /* @__PURE__ */ React.createElement(
       Peek,
       {
         g,
