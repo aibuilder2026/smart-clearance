@@ -1,0 +1,66 @@
+# backend-api's build and release on Cloud Build (SC-50), started by the backend job in .github/workflows/ci.yml (or
+# by hand: see README.md, "In the cloud"). It runs as sc-builder (infra/prod/build.tf):
+# 1. build the image from backend-api/, reusing the last one's layers, and push it to Artifact Registry;
+# 2. move the migrate job onto it and run it: the schema's roles and grants, Alembic, the reference data;
+# 3. move the hydrate job onto it, without running it;
+# 4. deploy it to the backend-api service, and check /readyz answers (the database reached).
+# _DEPLOY=false stops after the push.
+
+substitutions:
+  _REGION: asia-south1
+  _REPOSITORY: sc
+  _TAG: manual
+  _DEPLOY: 'true'
+
+steps:
+  - id: pull the last image, for its layers
+    name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    args: ['-c', 'docker pull ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/backend-api:latest || true']
+
+  - id: build
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --cache-from=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/backend-api:latest
+      - --tag=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/backend-api:${_TAG}
+      - --tag=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/backend-api:latest
+      - .
+
+  - id: push
+    name: gcr.io/cloud-builders/docker
+    args: [push, --all-tags, '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/backend-api']
+
+  - id: migrate
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -euc
+      - |
+        [ "${_DEPLOY}" = true ] || exit 0
+        image="${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/backend-api:${_TAG}"
+        gcloud run jobs update backend-api-migrate --region="${_REGION}" --image="$$image" --quiet
+        gcloud run jobs execute backend-api-migrate --region="${_REGION}" --wait --quiet
+        gcloud run jobs update backend-api-hydrate --region="${_REGION}" --image="$$image" --quiet
+
+  - id: deploy
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -euc
+      - |
+        [ "${_DEPLOY}" = true ] || exit 0
+        gcloud run services update backend-api --region="${_REGION}" --quiet \
+          --image="${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/backend-api:${_TAG}"
+        url="$$(gcloud run services describe backend-api --region="${_REGION}" --format='value(status.url)')"
+        for i in 1 2 3 4 5 6; do
+          curl -fsS --max-time 20 "$$url/readyz" && echo && exit 0
+          sleep 10
+        done
+        echo "backend-api: /readyz did not answer" >&2
+        exit 1
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: 1500s

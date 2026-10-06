@@ -1,6 +1,5 @@
 """backend-api: the landing page's and the staff console's API (uvicorn sc_api.main:app)."""
 
-import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -8,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncEngine
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from sc_api import errors
+from sc_api import errors, logs
 from sc_api.db import dispose, make_engine, sessions
 from sc_api.domain.clock import Clock, Ids
 from sc_api.identity import IdentityProvider, provider
@@ -25,7 +24,7 @@ def create_app(
     ids: Ids | None = None,
 ) -> FastAPI:
     settings = settings or get_settings()
-    logging.basicConfig(level=settings.log_level, format="%(levelname)s %(name)s %(message)s")
+    logs.configure(settings)
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):

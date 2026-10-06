@@ -1,0 +1,10 @@
+# What Cloud Build is not sent (gcloud builds submit backend-api): the image is built from the rest, as .dockerignore
+# trims it further.
+.gcloudignore
+.git
+.venv/
+.env*
+!.env.example
+**/__pycache__/
+.pytest_cache/
+.ruff_cache/

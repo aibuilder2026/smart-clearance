@@ -1,9 +1,11 @@
 name: CI
 
 # Lint, test and build the frontend, and lint and test backend-api against PostgreSQL 18 (SC-45), on every change
-# that can affect them, with a secret scan; deploy both apps to Firebase Hosting from main (SC-40). backend-api is not
-# deployed until its runtime is (infra/prod/run.tf, behind backend_runtime). prod is the only environment:
-# - its credentials come through Workload Identity Federation, so no key exists (infra/prod/deployer.tf);
+# that can affect them, with a secret scan. From main: backend-api is built, migrated and deployed to Cloud Run by
+# Cloud Build when it changed (SC-50, backend-api/cloudbuild.yaml), then both apps are deployed to Firebase Hosting
+# (SC-40). Once backend-api runs in the cloud, the apps are built against it (the PUBLIC_* repository variables).
+# prod is the only environment:
+# - its credentials come through Workload Identity Federation, so no key exists (infra/prod/deployer.tf, build.tf);
 # - only main may deploy to it, and its variables are Terraform's (infra/prod/github.tf).
 
 on:
@@ -140,6 +142,13 @@ jobs:
       - uses: ./.github/actions/setup-frontend
       - name: Build the landing page and the console
         working-directory: frontend
+        # empty until backend-api runs in the cloud: the apps then use their in-browser mock
+        env:
+          PUBLIC_API_BASE: ${{ vars.PUBLIC_API_BASE }}
+          PUBLIC_FIREBASE_API_KEY: ${{ vars.PUBLIC_FIREBASE_API_KEY }}
+          PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ vars.PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          PUBLIC_FIREBASE_PROJECT_ID: ${{ vars.PUBLIC_FIREBASE_PROJECT_ID }}
+          PUBLIC_FIREBASE_APP_ID: ${{ vars.PUBLIC_FIREBASE_APP_ID }}
         run: corepack pnpm build
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -151,9 +160,65 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+  backend:
+    name: Deploy backend-api to Cloud Run (prod)
+    needs: [infra-gate, backend-gate, secret-scan]
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: prod
+    concurrency:
+      group: deploy-backend-prod
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write # GitHub's OIDC token, exchanged for github-backend's Google credentials
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Did backend-api change? (always, when run by hand)
+        id: changed
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == workflow_dispatch ]] || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null ||
+            [[ -n "$(git diff --name-only "$BEFORE" "$GITHUB_SHA" -- backend-api)" ]]; then
+            echo "backend=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "backend=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        if: steps.changed.outputs.backend == 'true' && vars.GCP_BACKEND_SERVICE_ACCOUNT != ''
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_BACKEND_SERVICE_ACCOUNT }}
+      - name: Cloud Build builds, migrates and deploys it, as sc-builder
+        if: steps.changed.outputs.backend == 'true' && vars.GCP_BACKEND_SERVICE_ACCOUNT != ''
+        env:
+          PROJECT: ${{ vars.GCP_PROJECT_ID }}
+          BUILDER: ${{ vars.GCP_BUILDER_SERVICE_ACCOUNT }}
+          BUCKET: ${{ vars.GCP_BUILD_BUCKET }}
+          REGION: ${{ vars.GCP_REGION }}
+        run: |
+          id="$(gcloud builds submit backend-api --project="$PROJECT" --config=backend-api/cloudbuild.yaml --async --format='value(id)' \
+            --service-account="$BUILDER" --gcs-source-staging-dir="gs://$BUCKET/source" \
+            --substitutions="_REGION=$REGION,_TAG=${GITHUB_SHA::12}")"
+          echo "Cloud Build $id: https://console.cloud.google.com/cloud-build/builds/$id"
+          while :; do
+            status="$(gcloud builds describe "$id" --project="$PROJECT" --format='value(status)')"
+            case "$status" in
+              SUCCESS) echo "backend-api ${GITHUB_SHA::12} is deployed"; exit 0 ;;
+              FAILURE|INTERNAL_ERROR|TIMEOUT|CANCELLED|EXPIRED) echo "::error::Cloud Build $id: $status"; exit 1 ;;
+            esac
+            sleep 15
+          done
+
   deploy:
     name: Deploy to Firebase Hosting (prod)
-    needs: [frontend-gate, infra-gate, backend-gate, secret-scan, build]
+    needs: [frontend-gate, infra-gate, backend-gate, secret-scan, build, backend]
+    # after backend-api, so the apps never reach an API older than they are
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     timeout-minutes: 15
