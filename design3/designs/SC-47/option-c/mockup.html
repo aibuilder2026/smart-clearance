@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SC-47 Option C · batch first</title>
+<meta name="description" content="Quick-commerce gates per SKU, with a per-batch override, on Munchly Foods' Supply chain tab: option C.">
+<script>
+  // the reader's appearance (sc3-theme, as the console), or ?theme= from the board
+  (function () {
+    var p = new URLSearchParams(location.search), q = p.get("theme"), mode = null;
+    try { if (q === "dark" || q === "light") localStorage.setItem("sc3-theme", q); mode = localStorage.getItem("sc3-theme"); } catch (e) { mode = q; }
+    var dark = mode === "dark" || (mode !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+    window.SC47 = { dark: dark, option: "c" };
+  })();
+</script>
+<link rel="icon" href="../../../system/img/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../../system/tokens.css">
+<link rel="stylesheet" href="../../../system/base.css">
+<link rel="stylesheet" href="../../../system/components.css">
+<link rel="stylesheet" href="../../../screens/screens.css">
+<link rel="stylesheet" href="../../../console/console.css">
+<link rel="stylesheet" href="../sc47.css">
+</head>
+<body>
+<div id="root"></div>
+<script src="../../../system/icons.js"></script>
+<script src="../shell.js"></script>
+<script src="../sc47.js"></script>
+</body>
+</html>

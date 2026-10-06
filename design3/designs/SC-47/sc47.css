@@ -1,0 +1,59 @@
+/* SC-47's mockups: what quick-commerce gates per SKU, with a per-batch override, add to design system v3 on the client's
+   Supply chain tab. A custom value reads in the primary ink at 600; a value taken from the client's default reads in the
+   secondary ink with "default" under it, so the two never differ by colour alone. */
+.g-val { display: grid; gap: 0; justify-items: end; font-variant-numeric: tabular-nums; }
+.g-val b { font-weight: 600; color: var(--fg); }
+.g-val .d { font-size: 11.5px; color: var(--fg-3); }
+.g-val.def b { font-weight: 500; color: var(--fg-2); }
+.g-val.own .d { color: var(--primary-text); font-weight: 600; }
+.g-n { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.g-src { display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 6px; font-size: 11px; font-weight: 600; background: var(--fill-2); color: var(--fg-2); white-space: nowrap; }
+.g-src.ovr { background: var(--violet-soft); color: var(--violet-text); }
+.g-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.g-chips .gate .need { font-weight: 500; }
+
+/* the SKU's or the batch's gates, in a sheet */
+.g-facts { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13.5px; color: var(--fg-3); }
+.g-facts b { color: var(--fg); font-weight: 600; font-variant-numeric: tabular-nums; }
+.g-set { display: grid; gap: 14px; margin: 0; padding: 16px; border: 0; border-radius: 16px; background: var(--fill); min-width: 0; }
+.g-set legend { float: left; width: 100%; padding: 0; margin-bottom: 2px; font-size: 15px; font-weight: 650; }
+.g-set .segmented { justify-self: start; }
+.g-two { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.g-in { position: relative; display: block; }
+.g-in .input { padding-right: 58px; font-variant-numeric: tabular-nums; }
+.g-in .u { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 13.5px; color: var(--fg-3); pointer-events: none; }
+.g-in .input:disabled { color: var(--fg-2); background: var(--fill-2); box-shadow: none; }
+.g-mean { display: grid; gap: 4px; font-size: 13px; color: var(--fg-2); }
+.g-mean li { list-style: none; display: grid; grid-template-columns: 16px 1fr; gap: 8px; align-items: start; }
+.g-mean ul { margin: 0; padding: 0; display: grid; gap: 6px; }
+.g-batch { display: grid; gap: 10px; padding: 14px; border-radius: 16px; background: var(--surface); box-shadow: 0 0 0 var(--hair) var(--line-2); }
+.g-batch .top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 10px; }
+.g-batch .top b { font-size: 14.5px; }
+.g-ovr { display: grid; gap: 10px; padding: 12px 14px; border-radius: 12px; background: var(--violet-soft); color: var(--fg); }
+.g-ovr .h { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 10px; align-items: center; font-size: 13.5px; font-weight: 650; color: var(--violet-text); }
+.g-ovr p { margin: 0; font-size: 13.5px; color: var(--fg-2); }
+.g-ovr .who { font-size: 12px; color: var(--fg-3); }
+
+/* option B: the gates matrix and its save bar */
+.g-matrix .table td { padding-top: 8px; padding-bottom: 8px; }
+.g-matrix .g-in { width: 116px; margin-left: auto; }
+.g-matrix .g-in .input { height: 38px; font-size: 14px; padding-left: 12px; }
+.g-matrix tr.def td { background: var(--surface-2); }
+.g-matrix tr.def td:first-child b { font-weight: 650; }
+.g-matrix tr.changed td { background: color-mix(in oklab, var(--primary) 7%, var(--surface)); }
+.g-matrix .g-in.changed .input { box-shadow: inset 0 0 0 2px var(--primary); }
+.g-bar { position: sticky; bottom: 12px; z-index: 3; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px 10px 18px; border-radius: 16px; background: var(--elevated); box-shadow: var(--shadow-3), 0 0 0 var(--hair) var(--line-2); }
+.g-bar b { font-size: 14px; }
+
+/* option C: the batches tab */
+.g-sum { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.g-days { display: grid; gap: 4px; min-width: 88px; }
+.g-days .countdown { width: 88px; }
+.g-row-ovr td:first-child { box-shadow: inset 3px 0 0 var(--violet), inset 0 calc(var(--hair) * -1) 0 var(--line); }
+.g-gate-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; padding: 12px 0; }
+.g-gate-row + .g-gate-row { box-shadow: inset 0 var(--hair) 0 var(--line); }
+.g-gate-row .t { font-size: 14.5px; font-weight: 600; }
+.g-gate-row .s { font-size: 13px; color: var(--fg-3); }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+@container app (max-width: 767px) { .g-two { grid-template-columns: minmax(0, 1fr); } }
