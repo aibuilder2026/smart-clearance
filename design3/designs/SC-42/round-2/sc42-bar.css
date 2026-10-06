@@ -1,0 +1,4 @@
+.mock-bar { position: fixed; z-index: 60; right: 12px; bottom: 12px; display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 14px; border-radius: 999px; font: 600 13px/1.2 var(--font-ui);
+  color: var(--fg); background: var(--glass-strong); -webkit-backdrop-filter: blur(12px) saturate(140%); backdrop-filter: blur(12px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.mock-bar a { display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px; border-radius: 999px; color: var(--fg); background: var(--fill-2); text-decoration: none; }
+.mock-bar a:hover { background: color-mix(in oklab, var(--fg) 12%, transparent); }

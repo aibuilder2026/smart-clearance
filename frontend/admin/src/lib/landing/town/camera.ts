@@ -7,7 +7,7 @@ import { clamp, type Fit, type Shot } from './geo';
 
 export const ZMAX = 2.6;
 export type View = { tx: number; ty: number; z: number };
-type Focus = { x: number; y: number; z: number };
+export type Focus = { x: number; y: number; z: number };
 const FLY: [number, number, number, number] = [0.65, 0, 0.35, 1];
 
 export class Camera {
@@ -110,6 +110,12 @@ export class Camera {
 			this.stop();
 			this.write(c1);
 		}
+	}
+	/** where a plate point would land on the stage under a shot, without moving the camera */
+	at(shot: Shot, p: [number, number]): [number, number] {
+		const G = this.g!,
+			t = this.solve({ x: shot[0], y: shot[1], z: shot[2] });
+		return [G.ox + t.tx + p[0] * G.w * t.z, G.oy + t.ty + p[1] * G.h * t.z];
 	}
 	/** a plate point on the stage, now */
 	toStage(p: [number, number]): [number, number] {

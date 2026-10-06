@@ -12,7 +12,21 @@ test('site · the whole page', async ({ page }, testInfo) => {
 test('site · the town: a place, then an agent, opened', async ({ page }, testInfo) => {
 	await openSite(page);
 	const findings: Finding[] = [];
-	await page.locator('.hero').getByRole('button', { name: 'Distributor · stockist: what happens here' }).click();
+	// on desktops a click (SC-42) keeps the card beside the pin, and a chip in it moves the card on to what it names;
+	// a tap opens the panel, as the keyboard does
+	if ((page.viewportSize()?.width ?? 0) >= 900) {
+		await page.locator('.hero').getByRole('button', { name: 'Distributor · stockist: what happens here' }).click();
+		await page.waitForTimeout(900);
+		findings.push(...(await scan(page, 'site · the town, the godown kept')));
+		await page.locator('.town-peek').getByRole('button', { name: 'Watcher' }).click();
+		await page.waitForTimeout(900);
+		findings.push(...(await scan(page, 'site · the town, the Watcher kept')));
+		await page.keyboard.press('Escape');
+		await page.waitForTimeout(700);
+	}
+	// the keyboard opens the panel, on every screen
+	await page.locator('.hero').getByRole('button', { name: 'Distributor · stockist: what happens here' }).focus();
+	await page.keyboard.press('Enter');
 	await page.waitForTimeout(900);
 	findings.push(...(await scan(page, 'site · the town, the godown opened')));
 	await page.locator('.town-panel').getByRole('button', { name: 'Watcher' }).click();
