@@ -38,6 +38,7 @@ The console is the platform's own surface, separate from every client workspace.
 - **A new client** is set up in seven steps from its supply-chain profile (route to market, who owns the stock, expiry policy). The profile decides its exits, and a preset decides how far its agents go at first.
 - **Every change** persists in the browser (`sc3-platform`) and writes an audit line. "Reset prototype data" in the account sheet goes back to the seed. The console keeps its own copy of Munchly's setup; the app does not read it yet.
 - **Demo requests** from the landing page appear in Overview. "Set up" starts the new-client steps with the company, the contact and the plan filled in.
+- **The splash** (SC-51, `console/splash.js`, loaded first in `<body>` before React) covers the console's three waits: the first load, signing in and signing out. The mark draws its route as the reads land, the reads are the stops of a short tracker with the time each took, and when everything is in the mark flies to where the page keeps its mark and opens into a window onto the page. It shows for at least 1.25 s on a first load and 0.9 s otherwise, says what did not answer after 8 s, and is a still frame under reduced motion. The prototype simulates the reads (`?boot=`, `?enter=`, `?leave=`, in ms); the SvelteKit build follows backend-api's answers.
 
 ## The landing page (SC-25)
 

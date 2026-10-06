@@ -56,6 +56,23 @@ Until a staff member is signed in, every route shows the sign-in in place, and t
   invitation or the setup flow accepts) come from `@smart-clearance/api/console`, the same functions the mock applies.
   The setup flow previews with them; the server has the last word.
 
+### The splash (SC-51)
+
+The console's three waits go through design3's splash (`design3/console/splash.js`, option A of the SC-51 review), one
+surface that follows the reads as they land and opens onto the page from its mark:
+
+- **The first load.** `hooks.server.ts` puts the script and its block of `console.css` first in the page's `<body>`, so
+  the cover is up from the first paint, before the app's scripts; `+layout.ts` marks the session, the config and the
+  catalog as they answer, and `App.svelte` asks the splash to open onto whatever it has drawn.
+- **Signing in.** After "Welcome, <name>", `App.svelte` begins the splash from the card's mark, then refreshes; the
+  page's `prefetch` names its reads as the splash's stops and marks each as it lands; the splash opens from the
+  sidebar's mark.
+- **Signing out.** Two stops: backend-api closes the session, then Firebase signs out (`firebase.ts` marks both); the
+  sign-in takes the console's place and the splash opens onto it.
+
+Its motion runs on motion's `animate()`; under reduced motion it is a still frame. After 8 s without an answer it says
+so, with Try again.
+
 ### Shared, not copied
 
 | What                                                                                                                                 | Where                                                               |

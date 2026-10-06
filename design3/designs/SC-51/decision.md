@@ -51,4 +51,23 @@ answer?
 
 ## The pick
 
-Pending.
+**A · The shift**, picked by the maintainer on 6 Oct 2026 from the board (`SC-51 design review.html` in platform v3).
+The open question was answered **every load**: the first load's splash plays on every load of the console, at least
+1.25 s, as the landing page's loader does.
+
+What the build carries:
+
+- **One surface for the three waits.** The mark draws its route as the reads land, the reads are the stops of a short
+  tracker (one stop per read, each landing with the time it took, the current one ringed), and the words say what is
+  happening: "Opening the console", the hour's greeting by name when signing in, "Signing you out" then "Signed out".
+  "Waking the platform up…" takes over on a first load that runs past 2.6 s.
+- **Continuity.** Signing in, the card's mark grows into the splash's; opening, the splash's mark flies to where the
+  page keeps its mark (the sidebar's brand, or the sign-in card's) and its squircle opens into a window onto the page,
+  which comes into focus as it opens.
+- **Pace.** At least 1.25 s on a first load and 0.9 s otherwise; the progress never goes backwards; after 8 s it
+  proceeds, and the build says what did not answer, with Try again.
+- **Access.** One status line per phase for screen readers, the page `aria-busy` and inert behind the cover, and a still
+  frame under reduced motion that leaves when the reads are in.
+- **The build.** In design3, the console's flow and the splash in `console.jsx` and `console.css`; a first-load splash
+  in plain script before React, as the landing page's loader. In `frontend/console`, the same plain splash inlined into
+  the page, driven by the layout's loads, `refreshAll` and the sign-out.

@@ -54,8 +54,11 @@ export const firebaseAuth: ConsoleAuth = {
 		}
 	},
 	async signOut() {
+		// backend-api has closed the session by the time this runs (consoleHttp); Firebase's is the second stop
+		window.SC3_SPLASH?.mark('session-end');
 		const { auth, fb } = await load();
 		await fb.signOut(auth);
+		window.SC3_SPLASH?.mark('firebase');
 	},
 	async token() {
 		const { auth } = await load();

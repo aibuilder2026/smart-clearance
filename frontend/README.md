@@ -126,6 +126,7 @@ loads them. So the prototype's specificity between `components.css` and `site.cs
 | `core/src/styles/screens.css`                                 | equal to `design3/screens/screens.css` (`core/tests/drift.test.ts`)                                                         |
 | `admin/src/lib/landing/site.css`, `admin/src/lib/ds/docs.css` | equal to `design3/site/site.css` (one marked change) and `design3/system/docs.css` (`admin/tests/unit/drift.test.ts`)       |
 | `console/src/lib/console.css`                                 | equal to `design3/console/console.css` (`console/tests/unit/shared.test.ts`)                                                |
+| The console's splash                                          | `design3/console/splash.js`, inlined as it is into the console's page by `console/src/hooks.server.ts`, with its block of `console.css` (SC-51) |
 | Every figure                                                  | the seed runs `design3/core/money.js`; `seed:check` fails when design3 changes and the seed was not regenerated             |
 | The console's rules                                           | `api/src/console/platform.ts` gives `design3/core/platform.js`'s answers, run side by side (`api/tests/platform.test.ts`)   |
 | `fmt`                                                         | identical strings to `money.js`'s `fmt` (`core/tests/format.test.ts`)                                                       |

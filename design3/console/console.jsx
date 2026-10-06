@@ -55,7 +55,7 @@
   // the content rises into their places. The prototype's data is in the browser, so a read is simulated (READ_MS); the
   // build waits on backend-api (?read= lengthens it, for review and tests). A screen's first tab arrives with it; a later
   // tab loads on its own
-  const READ_MS = Number(new URLSearchParams(location.search).get("read")) || 450, EASE = [0.22, 1, 0.36, 1];
+  const Q = new URLSearchParams(location.search), READ_MS = Number(Q.get("read")) || 450, EASE = [0.22, 1, 0.36, 1];
   // each placeholder row: [kind, height, columns, width or column weights]
   const SHAPES = {
     dashboard: [["bar", 28, 1, 0.38], ["tile", 132, 4], ["card", 300, 1], ["card", 300, 1], ["bar", 40, 1, 0.3], ["row", 58, 1], ["row", 58, 1], ["row", 58, 1]],
@@ -992,6 +992,23 @@
     </Sheet>;
   }
   const TITLES = { overview: "Overview", clients: "Clients", "new-client": "New client", agents: "Agents", connectors: "Connectors", plans: "Plans", staff: "Staff", audit: "Audit log" };
+  /* ---------- the console's three waits, through the splash (SC-51, option A) ---------- */
+  // splash.js covers the first load from the first paint; the console marks its reads as they land (simulated here, as
+  // the prototype's data is in the browser: ?boot=, ?enter= and ?leave= set how long each wait takes) and, with the page
+  // behind it drawn, asks the splash to open onto it from the page's own mark
+  const SP = window.SC3_SPLASH;
+  const WAIT = { boot: Number(Q.get("boot")) || 1300, enter: Number(Q.get("enter")) || 1200, leave: Number(Q.get("leave")) || 800 };
+  const SPLASH_READS = { enter: [{ id: "clients", label: "Your clients" }, { id: "dashboard", label: "Today" }, { id: "batches", label: "The batches" }, { id: "runs", label: "The agents" }], leave: [{ id: "session-end", label: "Closing your session" }, { id: "firebase", label: "Signed out" }] };
+  // the reads land spread over the wait, the first early and the last at the end, a little unevenly, as real answers do
+  function simulateReads(kind, ids) {
+    const total = WAIT[kind];
+    return Promise.all(ids.map((id, i) => new Promise(res => {
+      const frac = ids.length === 1 ? 1 : 0.28 + 0.72 * (i / (ids.length - 1)), jitter = ((i * 7919) % 13) / 13 * 0.08 - 0.04;
+      setTimeout(() => { SP && SP.mark(id); res(); }, Math.round(total * Math.min(1, Math.max(0.1, frac + jitter))));
+    })));
+  }
+  const MARK_ANCHOR = { console: ".sidebar .mark, .rail-compact .mark", signin: ".si-ws .mark" };
+
   function App() {
     const [session, setSession] = useState(readSession); const [route, go] = useHashRoute(); const s = usePlatform();
     const [acct, setAcct] = useState(false); const top = useRef(null);
@@ -999,7 +1016,35 @@
     const client = route.name === "clients" && route.id ? s.clients.find(c => c.id === route.id) : null;
     useEffect(() => { document.title = me ? `${client ? client.name : TITLES[route.name] || "Overview"} · Smart-Clearance Console` : "Sign in · Smart-Clearance Console"; }, [me && me.id, route.name, client && client.name]);
     useLayoutEffect(() => { const el = top.current; const sc = el && el.closest(".scroll"); if (sc) sc.scrollTop = 0; }, [route.name, route.id]);
-    if (!me) return <SignIn onIn={uid => { const v = { uid, at: Date.now() }; writeSession(v); setSession(v); go(route.name && route.name !== "overview" ? route.name : "overview", route.id, route.tab, true); }} />;
+    // the first load: the splash is up from the first paint; the reads land, and it opens onto whatever is behind it
+    useEffect(() => {
+      if (!SP || SP.lifted) return;
+      SP.animate = Motion.animate;
+      simulateReads("boot", ["session", "config", "catalog"]).then(() => SP.open({ anchor: readSession() ? MARK_ANCHOR.console : MARK_ANCHOR.signin }));
+    }, []);
+    // signing in: after "Welcome", the card's mark grows into the splash; the console draws under the cover while its
+    // reads land, and the splash opens onto it from the sidebar's mark
+    const onIn = uid => {
+      const v = { uid, at: Date.now() };
+      const enter = () => { writeSession(v); setSession(v); go(route.name && route.name !== "overview" ? route.name : "overview", route.id, route.tab, true); };
+      if (!SP) { enter(); return; }
+      SP.animate = Motion.animate;
+      const who = (s.staff.find(x => x.id === uid) || { name: "" }).name.split(" ")[0];
+      const m = document.querySelector(".si-ws .mark");
+      SP.begin("enter", { who, from: m ? m.getBoundingClientRect() : null, reads: SPLASH_READS.enter }).then(enter);
+      simulateReads("enter", SPLASH_READS.enter.map(r => r.id)).then(() => SP.open({ anchor: MARK_ANCHOR.console }));
+    };
+    // signing out: the console recedes behind the splash while the session closes; the sign-in takes its place, and the
+    // splash opens onto it from the card's mark
+    const onOut = () => {
+      setAcct(false);
+      const leave = () => { writeSession(null); setSession(null); history.replaceState(null, "", location.pathname + location.search); };
+      if (!SP) { leave(); return; }
+      SP.animate = Motion.animate;
+      SP.begin("leave", { who: me ? me.name.split(" ")[0] : "", reads: SPLASH_READS.leave });
+      simulateReads("leave", SPLASH_READS.leave.map(r => r.id)).then(() => { leave(); SP.open({ anchor: MARK_ANCHOR.signin }); });
+    };
+    if (!me) return <SignIn onIn={onIn} />;
     const name = TITLES[route.name] ? route.name : "overview";
     const screen = name === "clients" && route.id ? <ClientPage id={route.id} tab={route.tab} go={go} me={me} />
       : name === "clients" ? <Clients go={go} /> : name === "new-client" ? <NewClient go={go} me={me} /> : name === "agents" ? <AgentsPage go={go} />
@@ -1011,7 +1056,7 @@
         {/* each screen loads under the route (SC-49); there is no exit animation, so a route change never waits on the old screen */}
         <div ref={top}><Loading k={name + (route.id || "")} shape={client ? "client" : SCREEN_SHAPE[name] || "list"} kind="screen" title={client ? client.name : TITLES[name]}>{screen}</Loading></div>
       </Shell>
-      <AccountSheet open={acct} onClose={() => setAcct(false)} me={me} onOut={() => { setAcct(false); writeSession(null); setSession(null); history.replaceState(null, "", location.pathname + location.search); }} />
+      <AccountSheet open={acct} onClose={() => setAcct(false)} me={me} onOut={onOut} />
     </>;
   }
 

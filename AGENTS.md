@@ -202,6 +202,7 @@ Local pages:
   - The one longer motion is the landing page's hero tour (SC-34, 16.9 s). It plays once, and carries Pause and Play. It also holds while the visitor has the camera or the hero is out of view.
   - The landing page's loader (SC-35) is a loading indicator: it moves only while the page, or a new theme's plates, load.
   - The console's loader (SC-49), the route and its placeholders' green wash, is a loading indicator too: it moves only while a screen or tab is read. The Overview moves only when a reading changes something, and Pause updates stops the readings.
+  - The console's splash (SC-51, `design3/console/splash.js`) is a loading indicator: it covers the first load, signing in and signing out only while their reads are out, and leaves once the page behind it is drawn.
 - Measure text contrast against the background it actually sits on, including fills, tinted chips and chat bubbles, after any opacity.
 
 **Data and assets**

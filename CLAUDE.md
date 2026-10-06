@@ -513,4 +513,24 @@
     Neha signed in through Firebase and read the session, dashboard, clients and batches from Cloud SQL. CORS allows only the Hosting sites.
   - **Found on the way:** Cloud Run reserves `/healthz` on the public address (404), so the uptime check uses `/readyz`; the container's probes still use `/healthz` inside. The dashboard's JSON is written in the form Cloud Monitoring stores, so plans show no drift.
   - **Checks:** backend-api 205 pass (JSON logging tests added); `check.sh` passes; the workflow validates.
+- **SC-51** (In Review, branch `SC-51-console-splash`): the console's splash for the first load, signing in and signing out, masking backend-api's waits.
+  - **The request:** "a splash screen for login and logout on console UI, to mask the API calls load delays", "something really awesome that goes with the console theme". Measured on the live console: blank for about 1.5 s on a warm API before anything draws (longer on a cold start, as Cloud Run scales to zero); "Welcome, Neha" then a frozen wait; the console still on screen while signing out.
+  - **Design first:** three options on one board in platform v3, `SC-51 design review.html`, each built on a fork of the console with Framer Motion:
+    - A, the shift (recommended): one surface for every wait, the mark drawing its route as the reads land, the reads as the stops of a short tracker, the mark opening into a window onto the page;
+    - B, the handover: no curtain, the console assembling as its reads land;
+    - C, the roll-call: the agents in a ring, waking one by one with real figures.
+
+    The maintainer picked **A**, and answered the board's question with **every load**. Designs, mockups, recordings, the build's recordings and the decision are in `design3/designs/SC-51/`.
+  - **The splash** (`design3/console/splash.js`, plain script loaded first in `<body>`, before React; its styles in `console.css` between `@splash` markers): the mark's S draws with the progress; one tracker stop per read, each landing with the time it took; "Opening the console", the hour's greeting by name on signing in, "Signing you out" then "Signed out". When everything is in, the mark flies to where the page keeps its mark (the sidebar's brand, or the sign-in card's) and its squircle opens into a window onto the page, which comes into focus as it opens.
+    - The progress follows the reads, creeps a little, never goes backwards; at least 1.25 s on a first load and 0.9 s otherwise; after 8 s, "The console did not answer" with Try again.
+    - One status line per phase for screen readers; the page behind is inert and `aria-busy` while covered; a still frame under reduced motion.
+    - design3 simulates the reads (`?boot=`, `?enter=`, `?leave=`).
+  - **The port:** `hooks.server.ts` inlines the script and its CSS block into the console's page, so a cold start is covered from the first paint; `+layout.ts` marks the session, config and catalog; `prefetch` names a page's reads as the splash's stops after a sign-in and marks each; `firebase.ts` marks the sign-out's two stops; `App.svelte` begins each wait and opens the window once the page is drawn. The splash's motion runs on motion's `animate()`.
+  - **Checks:**
+    - design3's suite: 349 pass, with 0 failing WCAG rules; the splash is scanned mid sign-in (one contrast fix on the way: the Console label);
+    - the frontend gate passes;
+    - e2e: 110 pass, with the suites waiting for the splash to lift; only Firefox fails, as it cannot start in the sandbox;
+    - parity: 80 pass;
+    - the e2e and parity suites must run with `PUBLIC_API_BASE=` empty while `.env.local` points at the API.
+  - **Hosting:** the hosted landing page and console load commit `HOSTED_SHA`; the console page loads `dist/console-splash.js` first in `<body>`.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

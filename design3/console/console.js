@@ -72,7 +72,7 @@
   const statusBadge = (c) => c.status === "live" ? /* @__PURE__ */ React.createElement(Badge, { size: "sm", tone: "green", dot: true }, "Live") : /* @__PURE__ */ React.createElement(Badge, { size: "sm", dot: true }, "Setting up");
   const planName = (id) => (P.PLANS.find((p) => p.id === id) || { name: id }).name;
   const agentsOn = (c) => P.AGENTS.filter((a) => !a.gate && c.agents[a.id].on).length;
-  const READ_MS = Number(new URLSearchParams(location.search).get("read")) || 450, EASE = [0.22, 1, 0.36, 1];
+  const Q = new URLSearchParams(location.search), READ_MS = Number(Q.get("read")) || 450, EASE = [0.22, 1, 0.36, 1];
   const SHAPES = {
     dashboard: [["bar", 28, 1, 0.38], ["tile", 132, 4], ["card", 300, 1], ["card", 300, 1], ["bar", 40, 1, 0.3], ["row", 58, 1], ["row", 58, 1], ["row", 58, 1]],
     table: [["bar", 40, 1, 0.4], ["row", 56, 1], ["row", 56, 1], ["row", 56, 1], ["row", 56, 1], ["row", 56, 1], ["row", 56, 1]],
@@ -1053,6 +1053,20 @@
     } }] })));
   }
   const TITLES = { overview: "Overview", clients: "Clients", "new-client": "New client", agents: "Agents", connectors: "Connectors", plans: "Plans", staff: "Staff", audit: "Audit log" };
+  const SP = window.SC3_SPLASH;
+  const WAIT = { boot: Number(Q.get("boot")) || 1300, enter: Number(Q.get("enter")) || 1200, leave: Number(Q.get("leave")) || 800 };
+  const SPLASH_READS = { enter: [{ id: "clients", label: "Your clients" }, { id: "dashboard", label: "Today" }, { id: "batches", label: "The batches" }, { id: "runs", label: "The agents" }], leave: [{ id: "session-end", label: "Closing your session" }, { id: "firebase", label: "Signed out" }] };
+  function simulateReads(kind, ids) {
+    const total = WAIT[kind];
+    return Promise.all(ids.map((id, i) => new Promise((res) => {
+      const frac = ids.length === 1 ? 1 : 0.28 + 0.72 * (i / (ids.length - 1)), jitter = i * 7919 % 13 / 13 * 0.08 - 0.04;
+      setTimeout(() => {
+        SP && SP.mark(id);
+        res();
+      }, Math.round(total * Math.min(1, Math.max(0.1, frac + jitter))));
+    })));
+  }
+  const MARK_ANCHOR = { console: ".sidebar .mark, .rail-compact .mark", signin: ".si-ws .mark" };
   function App() {
     const [session, setSession] = useState(readSession);
     const [route, go] = useHashRoute();
@@ -1069,12 +1083,47 @@
       const sc = el && el.closest(".scroll");
       if (sc) sc.scrollTop = 0;
     }, [route.name, route.id]);
-    if (!me) return /* @__PURE__ */ React.createElement(SignIn, { onIn: (uid) => {
+    useEffect(() => {
+      if (!SP || SP.lifted) return;
+      SP.animate = Motion.animate;
+      simulateReads("boot", ["session", "config", "catalog"]).then(() => SP.open({ anchor: readSession() ? MARK_ANCHOR.console : MARK_ANCHOR.signin }));
+    }, []);
+    const onIn = (uid) => {
       const v = { uid, at: Date.now() };
-      writeSession(v);
-      setSession(v);
-      go(route.name && route.name !== "overview" ? route.name : "overview", route.id, route.tab, true);
-    } });
+      const enter = () => {
+        writeSession(v);
+        setSession(v);
+        go(route.name && route.name !== "overview" ? route.name : "overview", route.id, route.tab, true);
+      };
+      if (!SP) {
+        enter();
+        return;
+      }
+      SP.animate = Motion.animate;
+      const who = (s.staff.find((x) => x.id === uid) || { name: "" }).name.split(" ")[0];
+      const m = document.querySelector(".si-ws .mark");
+      SP.begin("enter", { who, from: m ? m.getBoundingClientRect() : null, reads: SPLASH_READS.enter }).then(enter);
+      simulateReads("enter", SPLASH_READS.enter.map((r) => r.id)).then(() => SP.open({ anchor: MARK_ANCHOR.console }));
+    };
+    const onOut = () => {
+      setAcct(false);
+      const leave = () => {
+        writeSession(null);
+        setSession(null);
+        history.replaceState(null, "", location.pathname + location.search);
+      };
+      if (!SP) {
+        leave();
+        return;
+      }
+      SP.animate = Motion.animate;
+      SP.begin("leave", { who: me ? me.name.split(" ")[0] : "", reads: SPLASH_READS.leave });
+      simulateReads("leave", SPLASH_READS.leave.map((r) => r.id)).then(() => {
+        leave();
+        SP.open({ anchor: MARK_ANCHOR.signin });
+      });
+    };
+    if (!me) return /* @__PURE__ */ React.createElement(SignIn, { onIn });
     const name = TITLES[route.name] ? route.name : "overview";
     const screen = name === "clients" && route.id ? /* @__PURE__ */ React.createElement(ClientPage, { id: route.id, tab: route.tab, go, me }) : name === "clients" ? /* @__PURE__ */ React.createElement(Clients, { go }) : name === "new-client" ? /* @__PURE__ */ React.createElement(NewClient, { go, me }) : name === "agents" ? /* @__PURE__ */ React.createElement(AgentsPage, { go }) : name === "connectors" ? /* @__PURE__ */ React.createElement(ConnectorsPage, { go }) : name === "plans" ? /* @__PURE__ */ React.createElement(PlansPage, { go }) : name === "staff" ? /* @__PURE__ */ React.createElement(StaffPage, { me }) : name === "audit" ? /* @__PURE__ */ React.createElement(AuditPage, null) : /* @__PURE__ */ React.createElement(Overview, { go, me });
     const nav = NAV.map((n) => n.id === "clients" ? { ...n, count: s.clients.length } : n);
@@ -1089,12 +1138,7 @@
         brand: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Mark, { size: 32 }), /* @__PURE__ */ React.createElement("span", { className: "cs-brand" }, /* @__PURE__ */ React.createElement(Wordmark, { size: 17 }), /* @__PURE__ */ React.createElement("span", { className: "cs-brand-sub" }, "Console")))
       },
       /* @__PURE__ */ React.createElement("div", { ref: top }, /* @__PURE__ */ React.createElement(Loading, { k: name + (route.id || ""), shape: client ? "client" : SCREEN_SHAPE[name] || "list", kind: "screen", title: client ? client.name : TITLES[name] }, screen))
-    ), /* @__PURE__ */ React.createElement(AccountSheet, { open: acct, onClose: () => setAcct(false), me, onOut: () => {
-      setAcct(false);
-      writeSession(null);
-      setSession(null);
-      history.replaceState(null, "", location.pathname + location.search);
-    } }));
+    ), /* @__PURE__ */ React.createElement(AccountSheet, { open: acct, onClose: () => setAcct(false), me, onOut }));
   }
   function Root() {
     return /* @__PURE__ */ React.createElement(ThemeProvider, null, /* @__PURE__ */ React.createElement(AppRoot, { className: "app-root", style: { position: "fixed", inset: 0 } }, /* @__PURE__ */ React.createElement(NoticeHost, null, /* @__PURE__ */ React.createElement(App, null))));

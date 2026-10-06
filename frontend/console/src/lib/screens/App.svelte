@@ -3,6 +3,8 @@
 	import { Mark, Shell, Wordmark, useNotice } from '@smart-clearance/core';
 	import { createQuery } from '@tanstack/svelte-query';
 	import type { Snippet } from 'svelte';
+	import { onMount, tick } from 'svelte';
+	import { animate } from 'motion';
 	import { afterNavigate, beforeNavigate, refreshAll } from '$app/navigation';
 	import { navigating, page } from '$app/state';
 	import { api } from '#lib/api/client.ts';
@@ -75,18 +77,47 @@
 		if (!navigating.to && reading) settle(); // a navigation that was cancelled or went nowhere
 	});
 
-	// signing in: the check, then, once Sign in has said who is in, the console
+	// the console's three waits go through the splash (design3/console/splash.js, SC-51), which follows the reads as
+	// they land and opens onto the page from its mark. The first load's cover is up from the first paint: once this
+	// draws, the splash opens onto it. Its motion runs on motion's animate()
+	const MARK = { console: '.sb-brand .mark, .sidebar .mark', signin: '.si-ws .mark' };
+	const splash = () => {
+		const S = window.SC3_SPLASH;
+		if (S) S.animate = animate as NonNullable<typeof S.animate>;
+		return S;
+	};
+	onMount(() => {
+		const S = splash();
+		if (S && !S.lifted && S.active === 'boot') void S.open({ anchor: me ? MARK.console : MARK.signin });
+	});
+	// signing in: the check, then, once Sign in has said who is in, the card's mark grows into the splash, the console
+	// draws under its cover while its reads land (prefetch names them), and the splash opens onto it
 	const check = (input: SignInInput) => api.signIn(input);
 	async function enter(staff: Staff) {
+		const S = splash();
+		if (S) {
+			const from = document.querySelector(MARK.signin)?.getBoundingClientRect() ?? null;
+			await S.begin('enter', { who: staff.name.split(' ')[0], from });
+		}
 		queryClient.setQueryData(meQuery().queryKey, staff);
 		await refreshAll();
+		await tick();
+		if (S) await S.open({ anchor: MARK.console });
 	}
+	// signing out: the console recedes behind the splash while the session closes (two stops: the platform's, then
+	// Firebase's), the sign-in takes its place, and the splash opens onto it from the card's mark
 	async function signOut() {
 		account = false;
+		const S = splash();
+		if (S) void S.begin('leave', { who: me?.name.split(' ')[0] });
 		await api.signOut();
+		S?.mark('session-end');
+		S?.mark('firebase');
 		queryClient.setQueryData(meQuery().queryKey, null);
 		queryClient.removeQueries({ queryKey: ['console'] });
 		await refreshAll();
+		await tick();
+		if (S) await S.open({ anchor: MARK.signin });
 	}
 	// the session can end elsewhere (another tab signs out): the next read of who is in says so
 	const session = createQuery(() => meQuery());

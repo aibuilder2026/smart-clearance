@@ -45,6 +45,7 @@ const consoleIn = async page => {
   await page.evaluate(() => { localStorage.setItem('sc3-console-session', JSON.stringify({ uid: 'neha', at: 1 })); });
   await page.reload();
   await page.waitForFunction(() => (window as any).SC3_PLATFORM && document.querySelector('#root')?.childElementCount);
+  await page.waitForFunction(() => !document.querySelector('.cs-splash'), null, { timeout: 15000 });
 };
 const EXEC: [string, unknown?][] = [['list'], ['outreach'], ['donate']];
 const STATES: [string, string, ((page) => Promise<void>)?][] = [
