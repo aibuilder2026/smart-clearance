@@ -79,3 +79,27 @@ window squeezed it. It is now sized by the frame as drawn (`--hu`), keeping the 
 **The pick: A, the horizon.** The maintainer picked it on 6 Oct 2026 ("A · The horizon (Recommended)"), from the
 board published to platform v3 as `SC-42 design review.html`. The open question (a painted sky) was not taken up, so the
 sky stays the plates' own colour.
+
+## Round 3: the tour's camera (6 Oct 2026)
+
+On the build of round 2, the maintainer wrote:
+
+> needs more refining, when animation is playing and particular node is focussed, some of them cannot be seen like the
+> router nodes. They should be zoomed/panned in too. Please think and refine
+
+**Measured, stop by stop:** at 1440 × 800 and 1366 × 768 the Router sits under the caption; on the iPad Paperwork's card
+runs off the screen; on a phone the Negotiator's card lands on "Find your workspace". 1440 × 900 was clear.
+
+**Fixed, no design change:** on tablets the town's stage ran 16 px past both screen edges.
+
+**Options**, on the board, each the real page with `round-3/sc42-tour.js`, recorded at 1440 × 800 and 390 × 844. Every
+option keeps the tour's card in the clear part of the stage, and every one puts all eleven agents and their cards in
+clear view at all four sizes:
+
+| | Option | The camera at each stop |
+| --- | --- | --- |
+| A | Close on each agent | Flies in on each agent at 1.8× (1.5× on phones): 13 moves in 16.9 s. |
+| B | Only when hidden | The whole town; moves only when the agent or its card would be covered: a pan, else 1.35×. |
+| C | Each beat framed (recommended) | Frames each beat's agents together, up to 1.7× (1.5× on phones): 7 moves, one a beat. |
+
+**The pick:** waiting for the maintainer.

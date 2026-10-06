@@ -212,9 +212,9 @@
 }
 @container app (min-width: 600px) and (max-width: 1023px) {
   .hero-frame { padding-top: calc(60px + var(--safe-top) + 40px); }
-  .hero-stage { margin: -80px -32px 0; }
+  .hero-stage { margin: -80px -16px 0; }
   .town-caption { margin-inline: auto; width: min(100% - 48px, 46rem); }
-  .town-ctl { margin-inline: 32px; }
+  .town-ctl { margin-inline: 24px; }
 }
 
 /* desktops: the comp's frame, box for box */

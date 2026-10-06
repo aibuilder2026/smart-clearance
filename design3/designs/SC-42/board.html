@@ -2,12 +2,12 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SC-42 Hero Sky</title>
+<title>SC-42 Hero Town</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
 <style>
-/* SC-42's board, round 2: the hero on every screen, two options for its sky. */
+/* SC-42's board: round 3, the tour's camera; round 2, the sky on every screen; round 1, described in decision.md. */
 :root {
   --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
   --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67; --line: rgb(17 41 30 / 0.1);
@@ -50,26 +50,89 @@ a:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-r
 ul { margin: 0 0 10px; padding-left: 20px; color: var(--ink-2); max-width: 72ch; }
 ul b { color: var(--ink); }
 code { font: 500 0.92em/1 var(--mono); }
+figure video { display: block; width: 100%; height: auto; border-radius: 12px; box-shadow: var(--shadow); background: var(--sunken); }
+h3 { margin: 28px 0 10px; }
+.opt h3 { margin: 0; }
 footer { padding-block: 36px 0; color: var(--ink-3); font-size: 13px; }
 </style>
 <body>
 <main class="wrap">
-<p class="kicker">SC-42 · smartclearance.com · the hero · round 2</p>
-<h1>The hero on every screen: a sky, and the town under it</h1>
+<p class="kicker">SC-42 · smartclearance.com · the hero · round 3</p>
+<h1>The tour's camera: every agent in clear view</h1>
+<p>On the build of round 2, the maintainer wrote, 6 Oct 2026:</p>
+<blockquote>needs more refining, when animation is playing and particular node is focussed, some of them cannot be seen like the router nodes. They should be zoomed/panned in too. Please think and refine</blockquote>
+
+<h2>What hides, measured stop by stop</h2>
+<p>The tour (SC-34) keeps the camera on the whole town, and its card only kept off the stage's top edge. Played through at each size, the stop's agent and card were checked against the heading, the buttons, the caption and the screen:</p>
+<ul>
+<li><b>1440 × 800 and 1366 × 768:</b> the Router sits under the caption, so its stop shows nothing.</li>
+<li><b>820 × 1180 (iPad):</b> Paperwork's card runs off the screen's left edge.</li>
+<li><b>390 × 844:</b> the Negotiator's card lands on "Find your workspace".</li>
+<li><b>1440 × 900:</b> every stop clear.</li>
+</ul>
+
+<h2>What every option shares</h2>
+<ul>
+<li><b>The card keeps to the clear part of the stage:</b> above its pin when it fits under the buttons, else below it above the caption, never off the screen.</li>
+<li><b>Fixed already, no design change:</b> on tablets the town's stage ran 16 px past both screen edges; it now meets them.</li>
+<li>Played through again at all four sizes, every option puts each of the eleven agents, and its card, in clear view.</li>
+<li>Unchanged: the pace (16.9 s), Pause and Play, the hover cards and zoom, the whole town at the end and on leaving, and the result at once under reduced motion.</li>
+</ul>
+
+<h2>Three options</h2>
+<section class="opt" aria-labelledby="t-a">
+<header><h3 id="t-a">A · Close on each agent</h3></header>
+<p>Every stop flies in on its agent at 1.8×, as resting the pointer on one does (1.5× on phones), with its card beside it; the two beats without agents fly to their place. The whole town comes back when the tour ends.</p>
+<ul>
+<li><b>Why:</b> the clearest view of every agent, at the same nearness as pointing at one.</li>
+<li><b>Trade-offs:</b> 13 camera moves in 16.9 s, so the camera is moving most of the time (a 0.9 s flight in each 1.3 s stop), and the whole town shows only at the start and the end. It would want a slower pace, about 1.8 s a stop (22 s in all).</li>
+</ul>
+<p class="links"><a class="btn" href="round-3/option-a/mockup.html">Open option A</a></p>
+<div class="shots"><figure><video src="round-3/option-a/laptop.mp4" poster="round-3/option-a/laptop-light-router.webp" controls muted playsinline preload="none" aria-label="Option A: the whole tour on a laptop"></video><figcaption>the whole tour, laptop, 1440 × 800 (23 s)</figcaption></figure><figure><video src="round-3/option-a/phone.mp4" poster="round-3/option-a/phone-light-router.webp" controls muted playsinline preload="none" aria-label="Option A: the whole tour on a phone"></video><figcaption>the whole tour, phone (23 s)</figcaption></figure></div>
+<div class="shots"><figure><img src="round-3/option-a/laptop-light-router.webp" alt="Option A on a 1440 by 800 laptop in light, at the Router's stop." loading="lazy" width="1440" height="800"><figcaption>laptop, light, the Router's stop</figcaption></figure><figure><img src="round-3/option-a/phone-light-router.webp" alt="Option A on a phone in light, at the Router's stop." loading="lazy" width="585" height="1266"><figcaption>phone, light, the Router's stop</figcaption></figure></div><div class="shots"><figure><img src="round-3/option-a/laptop-dark-lister.webp" alt="Option A on a laptop in dark, at the Lister's stop." loading="lazy" width="1440" height="800"><figcaption>laptop, dark, the Lister's stop</figcaption></figure><figure><img src="round-3/option-a/phone-dark-lister.webp" alt="Option A on a phone in dark, at the Lister's stop." loading="lazy" width="585" height="1266"><figcaption>phone, dark, the Lister's stop</figcaption></figure></div>
+</section>
+
+<section class="opt" aria-labelledby="t-b">
+<header><h3 id="t-b">B · Only when hidden</h3></header>
+<p>The whole town, as SC-34 approved. The camera moves only when the agent at work, or its card, would sit under the heading, the buttons or the caption: a pan first, and a 1.35× zoom where a pan cannot reach. On laptops that is the Router; elsewhere almost nothing moves.</p>
+<ul>
+<li><b>Why:</b> the least motion, and the closest to the approved "whole picture" tour.</li>
+<li><b>Trade-offs:</b> the agents stay small, and the camera comes nearer only where it must.</li>
+</ul>
+<p class="links"><a class="btn" href="round-3/option-b/mockup.html">Open option B</a></p>
+<div class="shots"><figure><video src="round-3/option-b/laptop.mp4" poster="round-3/option-b/laptop-light-router.webp" controls muted playsinline preload="none" aria-label="Option B: the whole tour on a laptop"></video><figcaption>the whole tour, laptop, 1440 × 800 (23 s)</figcaption></figure><figure><video src="round-3/option-b/phone.mp4" poster="round-3/option-b/phone-light-router.webp" controls muted playsinline preload="none" aria-label="Option B: the whole tour on a phone"></video><figcaption>the whole tour, phone (23 s)</figcaption></figure></div>
+<div class="shots"><figure><img src="round-3/option-b/laptop-light-router.webp" alt="Option B on a 1440 by 800 laptop in light, at the Router's stop." loading="lazy" width="1440" height="800"><figcaption>laptop, light, the Router's stop</figcaption></figure><figure><img src="round-3/option-b/phone-light-router.webp" alt="Option B on a phone in light, at the Router's stop." loading="lazy" width="585" height="1266"><figcaption>phone, light, the Router's stop</figcaption></figure></div><div class="shots"><figure><img src="round-3/option-b/laptop-dark-lister.webp" alt="Option B on a laptop in dark, at the Lister's stop." loading="lazy" width="1440" height="800"><figcaption>laptop, dark, the Lister's stop</figcaption></figure><figure><img src="round-3/option-b/phone-dark-lister.webp" alt="Option B on a phone in dark, at the Lister's stop." loading="lazy" width="585" height="1266"><figcaption>phone, dark, the Lister's stop</figcaption></figure></div>
+</section>
+
+<section class="opt picked" aria-labelledby="t-c">
+<header><h3 id="t-c">C · Each beat framed</h3><span class="tag">Recommended</span></header>
+<p>Each beat's agents are framed together in the clear part of the stage, up to 1.7× (1.5× on phones): the godown's three for "At risk", the Valuer and the Router for "Priced and split", You at the office, the kiranas and the buyer for "Sold", the office and the landfill for "Settled". The camera moves once a beat, then rests while that beat's agents take their turns.</p>
+<ul>
+<li><b>Why:</b> every agent at work is clear and nearer, the handoffs inside a beat stay in one frame, and there are 7 camera moves rather than 13.</li>
+<li><b>Trade-offs:</b> the beats that span the town ("Sold", "Settled") come only a little nearer.</li>
+</ul>
+<p class="links"><a class="btn primary" href="round-3/option-c/mockup.html">Open option C</a></p>
+<div class="shots"><figure><video src="round-3/option-c/laptop.mp4" poster="round-3/option-c/laptop-light-router.webp" controls muted playsinline preload="none" aria-label="Option C: the whole tour on a laptop"></video><figcaption>the whole tour, laptop, 1440 × 800 (23 s)</figcaption></figure><figure><video src="round-3/option-c/phone.mp4" poster="round-3/option-c/phone-light-router.webp" controls muted playsinline preload="none" aria-label="Option C: the whole tour on a phone"></video><figcaption>the whole tour, phone (23 s)</figcaption></figure></div>
+<div class="shots"><figure><img src="round-3/option-c/laptop-light-router.webp" alt="Option C on a 1440 by 800 laptop in light, at the Router's stop." loading="lazy" width="1440" height="800"><figcaption>laptop, light, the Router's stop</figcaption></figure><figure><img src="round-3/option-c/phone-light-router.webp" alt="Option C on a phone in light, at the Router's stop." loading="lazy" width="585" height="1266"><figcaption>phone, light, the Router's stop</figcaption></figure></div><div class="shots"><figure><img src="round-3/option-c/laptop-dark-lister.webp" alt="Option C on a laptop in dark, at the Lister's stop." loading="lazy" width="1440" height="800"><figcaption>laptop, dark, the Lister's stop</figcaption></figure><figure><img src="round-3/option-c/phone-dark-lister.webp" alt="Option C on a phone in dark, at the Lister's stop." loading="lazy" width="585" height="1266"><figcaption>phone, dark, the Lister's stop</figcaption></figure></div>
+</section>
+
+<p><b>Recommended: C, each beat framed.</b> It brings every agent into a clear, nearer view, as asked, while the camera moves once a beat rather than at every agent, so the tour reads as seven scenes. A is the closest to the hover zoom but restless at this pace; B moves least but leaves the agents small.</p>
+
+<h2>Round 2: a sky, and the town under it</h2>
 <p>Round 1 built option A, card first with a zoom on dwell (decision.md). Looking at the build, the maintainer wrote, 6 Oct 2026:</p>
 <blockquote>The text is not looking good, too much clutter</blockquote>
 <blockquote>Make the hero visually appealing on desktop, laptop and mobile screens as much as possible with the given direction and camera zoom as selected. On mobile, tablets and ipads, I want similar background of the hero merging in the sky experience too.. Think hard and come up with best solution</blockquote>
 
-<h2>Already fixed: the heading squeezed together</h2>
+<h3>Already fixed: the heading squeezed together</h3>
 <p>Round 1 capped the hero at the window's height, so the caption stays in view on short screens, but the heading, its line and its buttons still took their size from the window's width. On a short window the three ran into each other, as in the maintainer's screenshot. They are now sized by the frame as drawn (<code>--hu</code>), so a short window draws them as a narrower one would, with the approved spacing. This changes no design, so it is built already, in design3 and the port.</p>
 <div class="grid"><figure><img src="round-2/fixed/heading-light-1440x700.webp" alt="The hero at 1440 by 700 in light with the fix: the heading, its line and the buttons spaced as approved." loading="lazy" width="1440" height="700"><figcaption>1440 × 700, light, fixed</figcaption></figure></div>
 
-<h2>The hero as it is</h2>
+<h3>The hero as it was</h3>
 <p>Desktops draw the town full-bleed, its hazy sky running up behind the heading into the page. Phones and tablets put the heading on the plain page, and the town in a card under it.</p>
 <div class="shots"><figure><img src="round-2/current/laptop-light.webp" alt="The hero now on a 1440 by 800 laptop in light." loading="lazy" width="1440" height="800"><figcaption>laptop, 1440 × 800, light</figcaption></figure><figure><img src="round-2/current/phone-light.webp" alt="The hero now on a phone in light: the heading on the plain page, the town in a card." loading="lazy" width="585" height="1266"><figcaption>phone, 390 × 844, light</figcaption></figure></div>
 <div class="shots"><figure><img src="round-2/current/laptop-dark.webp" alt="The hero now on a laptop in dark." loading="lazy" width="1440" height="800"><figcaption>laptop, dark</figcaption></figure><figure><img src="round-2/current/ipad-light.webp" alt="The hero now on an iPad in light: the town in a card under the heading." loading="lazy" width="820" height="1180"><figcaption>iPad, 820 × 1180, light</figcaption></figure></div>
 
-<h2>What both options share</h2>
+<h3>What both options shared</h3>
 <ul>
 <li><b>One picture on every screen.</b> Phones and tablets lose the card: the hero is full-bleed, the nav glass over it, and the town's sky runs up into the page as it does on desktops.</li>
 <li><b>The sky is the plates' own.</b> By day the plate's warm haze (#f3efeb), by night its navy (#000c26), deepening from the page's ground. Nothing is painted over the town and nothing moves.</li>
@@ -78,7 +141,7 @@ footer { padding-block: 36px 0; color: var(--ink-3); font-size: 13px; }
 <li><b>Round 1 unchanged:</b> a card at once on pointing, the zoom about the node after 0.6 s, a click to keep the card, the camera back on looking away; the tour, its pace, Pause and Play.</li>
 </ul>
 
-<h2>Two options</h2>
+<h3>Two options</h3>
 <section class="opt picked" aria-labelledby="o-a">
 <header><h3 id="o-a">A · The horizon</h3><span class="tag">Recommended</span><span class="tag">Picked, 6 Oct 2026</span></header>
 <p>The town sits lower, under an open sky. The heading, its line and the buttons stand on clear sky; the plate's top fades into it, so the town rises from a hazy horizon just below the buttons. On phones and tablets the same picture stands upright: sky above, the town filling the rest of the screen, the caption on its foot.</p>
@@ -111,7 +174,7 @@ footer { padding-block: 36px 0; color: var(--ink-3); font-size: 13px; }
 
 <p><b>Recommended: A, the horizon.</b> It answers both messages at once: the text gets a clean ground, and phones and tablets get the same sky-merged picture as desktops, with the whole town and every agent in view. B keeps the town bigger, at the cost of a blurred ground and two agents hidden at rest.</p>
 
-<h2>Open question</h2>
+<h3>Open question</h3>
 <ul><li>The sky is plain, the plates' own colour. Should it be painted instead, with thin clouds by day and still stars at night? That would add two images (about 250 kB) and more texture behind the heading.</li></ul>
 
 <h2>Round 1</h2>
