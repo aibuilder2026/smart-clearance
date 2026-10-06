@@ -1,0 +1,64 @@
+/* SC-49 option B · the fill: the loader, Sign in's ink and flood, and the flow's vessels. Tokens only; every motion
+   lands at once under reduced motion. */
+.b-stage { position: relative; }
+.b-over { position: absolute; z-index: 30; inset: 0; pointer-events: none; }
+.b-over .b-blk { box-shadow: none; }
+
+/* the screen's shape as vessels, filling with ink while the data loads */
+.b-load { --ink: color-mix(in oklab, var(--primary) 16%, var(--surface)); --crest: color-mix(in oklab, var(--primary) 34%, var(--surface)); padding-top: 6px; }
+.b-skel { display: grid; gap: 12px; }
+.b-row { display: grid; gap: 12px; }
+.b-row.k-row + .b-row.k-row { margin-top: -10px; }
+.b-blk { position: relative; overflow: hidden; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+.b-blk.k-bar { border-radius: 12px; background: var(--fill-2); box-shadow: none; }
+.b-blk.k-row { border-radius: 12px; }
+.b-ink { position: absolute; inset: 0; display: block; background: var(--ink); border-top: 2px solid var(--crest); }
+.b-blk.k-bar .b-ink { background: color-mix(in oklab, var(--primary) 22%, var(--fill-2)); border-top: 0; }
+
+/* Sign in fills from the left as it checks; the label stays on top */
+.b-signin { position: relative; overflow: hidden; isolation: isolate; }
+.b-signin.on { pointer-events: none; }
+.b-si-ink { position: absolute; z-index: -1; inset: 0 -10px 0 0; display: block; background: color-mix(in oklab, var(--primary) 78%, var(--fg)); }
+.b-si-ink .edge { position: absolute; top: 0; right: -9px; width: 10px; height: 100%; fill: color-mix(in oklab, var(--primary) 78%, var(--fg)); }
+.b-si-row { display: inline-flex; align-items: center; gap: 8px; }
+/* signed in, the green floods from the button over the page, then clears onto the console */
+.b-flood { position: fixed; z-index: 1000; inset: 0; pointer-events: none; background: var(--green-700); clip-path: circle(0 at var(--x) var(--y)); animation: b-flood 1.2s var(--ease) forwards; }
+@keyframes b-flood { 0% { clip-path: circle(0 at var(--x) var(--y)); opacity: 1; } 46% { clip-path: circle(150vmax at var(--x) var(--y)); opacity: 1; } 62% { opacity: 1; } 100% { clip-path: circle(150vmax at var(--x) var(--y)); opacity: 0; } }
+
+/* the charts: what today gained */
+.b-spark-box { width: 100%; }
+.b-chart .b-gain { position: absolute; z-index: 4; padding: 3px 8px; border-radius: var(--r-full); background: var(--primary-soft); color: var(--primary-text); font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap; pointer-events: none; }
+
+/* the flow: a vessel per stop, Closed today at the end */
+.b-work .cs-ov-head { margin-bottom: 8px; }
+.b-state { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--fg-3); }
+.b-state::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--primary); }
+.b-state.paused::before { background: var(--fg-3); }
+.b-flow { position: relative; display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 8px; align-items: end; }
+.b-cell { display: grid; grid-template-rows: auto 132px auto; justify-items: center; gap: 8px; min-width: 0; padding: 8px 4px 10px; border-radius: 12px; color: var(--fg-2); text-align: center; transition: background-color var(--t-fast); }
+button.b-cell:hover { background: var(--fill); }
+.b-cell[aria-pressed="true"] { background: var(--primary-soft); box-shadow: inset 0 0 0 1.5px var(--primary); }
+.b-cell.human[aria-pressed="true"] { background: var(--amber-soft); box-shadow: inset 0 0 0 1.5px var(--amber); }
+.b-cell:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+.b-cell .n { font: 700 20px/1 var(--font-display); color: var(--fg); }
+.b-cell.zero .n { font-weight: 500; color: var(--fg-3); }
+.b-cell .vessel { position: relative; display: block; overflow: hidden; width: min(44px, 100%); height: 132px; border-radius: 10px 10px 14px 14px; background: var(--fill-2); box-shadow: inset 0 0 0 1.5px var(--line-2); }
+.b-cell .liq { position: absolute; inset: 0; display: block; transform-origin: 50% 100%; background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 70%, var(--surface)) 0, var(--primary) 18px); }
+.b-cell.human .liq { background: linear-gradient(180deg, color-mix(in oklab, var(--amber) 70%, var(--surface)) 0, var(--amber) 18px); }
+.b-cell.end .vessel { width: min(64px, 100%); border-radius: 12px 12px 18px 18px; }
+.b-cell.end .liq { background: linear-gradient(180deg, color-mix(in oklab, var(--green-700) 70%, var(--surface)) 0, var(--green-700) 18px); }
+.b-cell .lbl { display: grid; gap: 1px; max-width: 100%; min-width: 0; font-size: 12px; line-height: 1.3; }
+.b-cell .lbl b { font-size: 12.5px; font-weight: 600; color: var(--fg); }
+.b-cell .lbl span { overflow: hidden; color: var(--fg-3); white-space: nowrap; text-overflow: ellipsis; }
+.b-drops { position: absolute; inset: 0; pointer-events: none; }
+.b-drop { position: absolute; left: 0; top: 0; width: 10px; height: 10px; border-radius: 50% 50% 50% 0; box-shadow: 0 0 0 2px var(--surface); }
+.b-last { overflow: hidden; margin: 8px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--fill); font-size: 13px; color: var(--fg-2); white-space: nowrap; text-overflow: ellipsis; }
+.b-last b { color: var(--fg); font-weight: 600; }
+@container app (max-width: 767px) {
+  .b-flow { gap: 3px; }
+  .b-cell { grid-template-rows: auto 96px auto; gap: 6px; padding: 6px 0 8px; }
+  .b-cell .vessel { width: min(26px, 100%); height: 96px; border-radius: 8px 8px 10px 10px; }
+  .b-cell.end .vessel { width: min(30px, 100%); }
+  .b-cell .n { font-size: 15px; }
+}
+@media (prefers-reduced-motion: reduce) { .b-flood { display: none; } }

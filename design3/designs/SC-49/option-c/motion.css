@@ -1,0 +1,50 @@
+/* SC-49 option C · quiet and quick: the progress line, the kit's placeholders, Sign in's spinner, the marks on what
+   changed and the live activity card. Tokens only; every motion lands at once under reduced motion. */
+.c-stage { position: relative; }
+.c-prog { position: absolute; z-index: 40; top: 0; left: 0; right: 0; display: block; height: 2px; transform-origin: left center; background: var(--primary); pointer-events: none; }
+.c-load { padding-top: 6px; }
+.c-skel { display: grid; gap: 12px; }
+.c-row { display: grid; gap: 12px; }
+.c-row.k-row + .c-row.k-row { margin-top: -10px; }
+.c-blk { border-radius: var(--r-lg); }
+.c-row.k-row .c-blk, .c-row.k-bar .c-blk { border-radius: 12px; }
+
+/* Sign in: the spinner takes the icon's place beside the label */
+.c-signin { gap: 10px; }
+.c-signin.on { pointer-events: none; }
+.c-si-ic { display: inline-grid; place-items: center; width: 18px; height: 18px; }
+.c-signin .spinner { --spin-color: var(--primary-fg); width: 18px; height: 18px; }
+
+/* a figure that changed: a soft green ground and an arrow for a moment */
+.c-num { display: inline-flex; align-items: center; gap: 4px; margin: 0 -4px; padding: 0 4px; border-radius: 6px; }
+.c-num.marked { animation: c-mark 1.8s var(--ease) both; }
+.c-num .c-arrow { color: var(--primary-text); }
+@keyframes c-mark { 0%, 55% { background: var(--primary-soft); } 100% { background: transparent; } }
+.c-spark-box { width: 100%; }
+.c-chart .c-ring { animation: c-fade 2.4s var(--ease) both; }
+.c-chart .c-gain { position: absolute; z-index: 4; padding: 3px 8px; border-radius: var(--r-full); background: var(--primary-soft); color: var(--primary-text); font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap; pointer-events: none; transform: translateX(-100%); animation: c-fade 2.4s var(--ease) both; }
+@keyframes c-fade { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
+.c-stops .cs-ov-stop .bar { transition: width var(--t-slow) var(--ease); }
+.c-stops .cs-ov-stop.c-lit { animation: c-mark 1.8s var(--ease) both; }
+
+/* live activity */
+.c-state { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--fg-3); }
+.c-state::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--primary); }
+.c-state.paused::before { background: var(--fg-3); }
+.c-cols { display: grid; gap: 16px 24px; grid-template-columns: minmax(0, 1fr); }
+@container app (min-width: 900px) { .c-cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.c-sub { margin-bottom: 6px; font-size: 12.5px; font-weight: 600; color: var(--fg-3); }
+.c-list { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.c-list li { display: flex; align-items: center; gap: 10px; min-width: 0; min-height: 44px; padding: 6px 10px; border-radius: 10px; }
+.c-list li.fresh { animation: c-mark 2.4s var(--ease) both; }
+.c-at { flex: none; width: 40px; color: var(--fg-3); }
+.c-ic { display: grid; flex: none; place-items: center; width: 26px; height: 26px; border-radius: 8px; background: var(--primary-soft); color: var(--primary-text); }
+.c-txt { display: grid; flex: 1; min-width: 0; font-size: 13px; color: var(--fg-2); }
+.c-txt b { color: var(--fg); font-weight: 600; }
+.c-txt > span { overflow: hidden; color: var(--fg-3); white-space: nowrap; text-overflow: ellipsis; }
+.c-txt > .l1 { color: var(--fg-2); }
+.c-seg { flex: none; }
+.c-seg i { position: relative; overflow: hidden; }
+.c-seg i b { position: absolute; inset: 0; display: block; transform-origin: left center; background: var(--primary); }
+.c-empty { margin: 0; padding: 12px 10px; font-size: 13px; color: var(--fg-3); }
+@container app (max-width: 767px) { .c-seg { display: none; } }
