@@ -91,48 +91,179 @@
   }
 
   /* ---------- overview: batches on the move, what is waiting for a person, today's runs ---------- */
+  /* ---------- Overview: the platform as a live dashboard (SC-48, option A, the command centre) ---------- */
+  // Every figure is P.dashboard and P.batchPage over the store, as backend-api answers them from its database. The
+  // figures are read again every 30 s (and on every change), with Pause; nothing on the page moves on its own (WCAG 2.2.2)
+  const LIVE_KEY = "sc3-console-live";
+  const STOP_TITLES = D.STAGES.map(x => x.title);
+  const two = n => String(n).padStart(2, "0");
+  const lakh = v => "₹" + (v / 100000).toFixed(1) + " lakh";
+  const kAxis = v => (v >= 100000 ? "₹" + (v / 100000).toFixed(v % 100000 ? 1 : 0) + "L" : v ? "₹" + Math.round(v / 1000) + "k" : "0");
+  function MoneyFig({ value }) { return <><span className="cur" aria-hidden="true">₹</span><span aria-hidden="true">{Math.round(value).toLocaleString("en-IN")}</span><span className="sr-only">{fmt.inr(value)}</span></>; }
+  // a sparkline: one series, a 10% wash under a 2 px line
+  function Sparkline({ values, tone }) {
+    const W = 160, H = 36, max = Math.max(1, ...values), n = values.length;
+    const X = i => (n > 1 ? (i / (n - 1)) * W : W / 2), Y = v => H - 3 - (v / max) * (H - 8);
+    const line = values.map((v, i) => `${i ? "L" : "M"}${X(i).toFixed(1)} ${Y(v).toFixed(1)}`).join(" ");
+    const col = tone === "amber" ? "var(--amber)" : "var(--primary)";
+    return <svg className="cs-ov-spark" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden="true"><path d={`${line} L${W} ${H} L0 ${H} Z`} fill={col} opacity="0.1" /><path d={line} fill="none" stroke={col} strokeWidth="2" vectorEffect="non-scaling-stroke" strokeLinejoin="round" strokeLinecap="round" /></svg>;
+  }
+  function Kpi({ label, icon, children, foot, spark, tone }) {
+    return <div className={cx("cs-ov-kpi", tone)}><span className="k-label"><Icon name={icon} size={15} />{label}</span><span className="k-value">{children}</span><span className="k-foot">{foot}</span>{spark && <Sparkline values={spark} tone={tone} />}</div>;
+  }
+  // recovered a day: an area chart, one series, with a crosshair and a tooltip on hover, and a table to read it as
+  function RecoveredChart({ byDay, height }) {
+    const box = useRef(null); const [w, setW] = useState(640); const [hover, setHover] = useState(null);
+    useLayoutEffect(() => { if (!box.current) return; const ro = new ResizeObserver(([e]) => setW(Math.max(280, Math.round(e.contentRect.width)))); ro.observe(box.current); return () => ro.disconnect(); }, []);
+    const H = height, pl = 46, pr = 8, pt = 10, pb = 24, n = byDay.length;
+    const peak = Math.max(0, ...byDay.map(d => d.recovered));
+    const step = peak <= 0 ? 25000 : Math.pow(10, Math.floor(Math.log10(peak / 4))) * ([1, 2, 2.5, 5, 10].find(m => (peak / 4) / Math.pow(10, Math.floor(Math.log10(peak / 4))) <= m) || 10);
+    const top = Math.max(step * 4, step * Math.ceil(peak / step));
+    const X = i => pl + (n > 1 ? (i / (n - 1)) * (w - pl - pr) : (w - pl - pr) / 2), Y = v => pt + (1 - v / top) * (H - pt - pb);
+    const line = byDay.map((d, i) => `${i ? "L" : "M"}${X(i).toFixed(1)} ${Y(d.recovered).toFixed(1)}`).join(" ");
+    const ticks = []; for (let t = 0; t <= top + 1; t += top / 4) ticks.push(t);
+    const every = n <= 7 ? 1 : n <= 30 ? 7 : 14;
+    const best = byDay.reduce((a, d) => (d.recovered > a.recovered ? d : a), byDay[0] || { recovered: 0 });
+    const onMove = e => { const r = e.currentTarget.getBoundingClientRect(); const px = ((e.clientX - r.left) / r.width) * w; setHover(Math.max(0, Math.min(n - 1, Math.round(((px - pl) / (w - pl - pr)) * (n - 1))))); };
+    const total = byDay.reduce((t, d) => t + d.recovered, 0);
+    return <div className="cs-ov-chart" ref={box} onMouseLeave={() => setHover(null)}>
+      <svg viewBox={`0 0 ${w} ${H}`} height={H} onMouseMove={onMove} role="img" aria-label={`Recovered a day, the last ${n} days: ${fmt.inr(total)} in all${best.recovered ? `, highest ${fmt.inr(best.recovered)} on ${best.label}` : ""}`}>
+        {ticks.map(t => <line key={t} className={t ? "gl" : "base"} x1={pl} x2={w - pr} y1={Y(t)} y2={Y(t)} />)}
+        {ticks.map(t => <text key={"t" + t} className="ax" x={pl - 8} y={Y(t) + 4} textAnchor="end">{kAxis(t)}</text>)}
+        {byDay.map((d, i) => (i % every === 0 && i < n - Math.ceil(every / 2)) || i === n - 1 ? <text key={d.date} className="ax" x={X(i)} y={H - 6} textAnchor={i === n - 1 ? "end" : "middle"}>{i === n - 1 ? "Today" : d.label}</text> : null)}
+        <path d={`${line} L${X(n - 1)} ${Y(0)} L${X(0)} ${Y(0)} Z`} fill="var(--primary)" opacity="0.1" />
+        <path d={line} fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+        {hover != null && <g><line x1={X(hover)} x2={X(hover)} y1={pt} y2={H - pb} stroke="var(--line-2)" /><circle cx={X(hover)} cy={Y(byDay[hover].recovered)} r="5" fill="var(--primary)" stroke="var(--surface)" strokeWidth="2" /></g>}
+      </svg>
+      {hover != null && <div className="tip" style={{ left: hover > n / 2 ? `calc(${(X(hover) / w) * 100}% - 184px)` : `calc(${(X(hover) / w) * 100}% + 12px)`, top: 8 }}>
+        <b>{hover === n - 1 ? "Today" : byDay[hover].label}</b>
+        <div className="tr"><span>Recovered</span><span>{fmt.inr(byDay[hover].recovered)}</span></div>
+        <div className="tr"><span>Batches closed</span><span>{byDay[hover].closed}</span></div>
+        <div className="tr"><span>Packs closed</span><span>{byDay[hover].units.toLocaleString("en-IN")}</span></div>
+        <div className="tr"><span>Agent runs</span><span>{byDay[hover].runs}</span></div>
+      </div>}
+    </div>;
+  }
+  // the batches in flight at each stop: a bar each, Approve in amber; choosing one lists them in the table
+  function StopBars({ byStop, value, onPick }) {
+    const max = Math.max(1, ...byStop);
+    return <div className="cs-ov-stops" role="group" aria-label="Batches in flight by stop">{STOP_TITLES.map((t, i) => <button key={t} type="button" className={cx("cs-ov-stop", i === 5 && "human", !byStop[i] && "zero")} aria-pressed={value === i} aria-label={`${t}: ${byStop[i]} batch${byStop[i] === 1 ? "" : "es"}. ${value === i ? "Shown in the table" : "Show them in the table"}`} onClick={() => onPick(value === i ? null : i)}>
+      <span>{t}</span><span className="bar" style={{ width: (byStop[i] / max) * 100 + "%" }} /><span className="n">{byStop[i]}</span></button>)}</div>;
+  }
+  function StopSeg({ stage }) { return <span className="cs-ov-seg" aria-hidden="true">{STOP_TITLES.map((_, i) => <i key={i} className={cx(i < stage && "done", i === stage && "now", i === stage && i === 5 && "human")} />)}</span>; }
+  const stopText = r => (r.closed ? (r.outcome ? r.outcome[0].toUpperCase() + r.outcome.slice(1) : "Closed") : r.stage === 5 ? "Waiting for a yes" : STOP_TITLES[r.stage]);
+  function Pager({ page, size, total, onPage, onSize, phone }) {
+    const pages = Math.max(1, Math.ceil(total / size)); const from = total ? (page - 1) * size + 1 : 0, to = Math.min(total, page * size);
+    const nums = []; for (let p = Math.max(1, Math.min(page - 2, pages - 4)); p <= Math.min(pages, Math.max(1, Math.min(page - 2, pages - 4)) + 4); p++) nums.push(p);
+    return <div className="cs-ov-pager"><span>{total ? `${from}–${to} of ${total}` : "None"}{!phone && <> · <label className="cs-ov-rows">Rows <select className="cs-ov-sel" value={size} onChange={e => onSize(Number(e.target.value))}>{P.SIZES.map(n => <option key={n} value={n}>{n}</option>)}</select></label></>}</span>
+      <nav className="pg" aria-label="Pages"><button type="button" aria-label="Previous page" disabled={page <= 1} onClick={() => onPage(page - 1)}><Icon name="chevron-left" size={16} /></button>
+        {!phone && nums.map(p => <button key={p} type="button" aria-current={p === page ? "page" : undefined} aria-label={`Page ${p}`} onClick={() => onPage(p)}>{p}</button>)}
+        <button type="button" aria-label="Next page" disabled={page >= pages} onClick={() => onPage(page + 1)}><Icon name="chevron-right" size={16} /></button></nav></div>;
+  }
   function Overview({ go, me }) {
-    const s = usePlatform(); const app = useApp(); const { toast } = useNotice();
-    const live = s.clients.filter(c => c.status === "live");
+    const s = usePlatform(); const app = useApp(); const { toast } = useNotice(); const phone = app.bp === "phone";
+    const [paused, setPaused] = useState(() => { try { return localStorage.getItem(LIVE_KEY) === "paused"; } catch (e) { return false; } });
+    const [now, setNow] = useState(() => Date.now());
+    useEffect(() => { if (paused) return; const t = setInterval(() => setNow(Date.now()), 30000); return () => clearInterval(t); }, [paused]);
+    useEffect(() => { if (!paused) setNow(Date.now()); }, [s.seq]);
+    const togglePause = () => { const next = !paused; setPaused(next); try { localStorage.setItem(LIVE_KEY, next ? "paused" : "live"); } catch (e) {} if (!next) setNow(Date.now()); };
+    const [days, setDays] = useState(30);
+    const [q, setQ] = useState({ status: "in-flight", client: null, stop: null, q: "", sort: "priority", dir: "asc", page: 1, size: 8 });
+    const set = patch => setQ(x => Object.assign({}, x, patch, "page" in patch ? {} : { page: 1 }));
+    const d = useMemo(() => P.dashboard(s, { days, now }), [s, days, now]);
+    const page = useMemo(() => P.batchPage(s, q), [s, q, now]);
+    const live = s.clients.filter(c => c.status === "live"), setup = s.clients.length - live.length;
     const on = live.reduce((t, c) => t + agentsOn(c), 0);
     const date = new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" });
+    const client = id => s.clients.find(c => c.id === id);
+    const change = d.recoveredBefore ? Math.round(((d.recovered - d.recoveredBefore) / d.recoveredBefore) * 100) : null;
+    // what is waiting on a person, or on a file (as before SC-48)
     const attention = [];
     s.clients.forEach(c => {
-      c.distributors.filter(d => d.permission !== "given").forEach(d => attention.push({ id: c.id + "-" + d.id, c, icon: "hand", tone: "amber", title: d.name, text: "one-time permission not given yet", act: "Ask again", run: () => { P.update(() => {}, { who: me.name, client: c.id, text: `Asked ${d.name} again for its one-time permission` }); toast({ text: `Reminder sent to ${d.name}`, tone: "ok" }); } }));
-      if (c.status !== "live") { const admin = c.people.find(p => p.access === "Admin"); attention.push({ id: c.id + "-invite", c, icon: "user-plus", tone: "amber", title: c.name, text: `waiting for ${admin ? admin.name : "its admin"} to accept the invitation`, act: "Open", run: () => go("clients", c.id, "people") }); }
+      c.distributors.filter(x => x.permission !== "given").forEach(x => attention.push({ id: c.id + "-" + x.id, c, tone: "amber", title: x.name, text: "one-time permission not given yet", act: "Ask again", run: () => { P.update(() => {}, { who: me.name, client: c.id, text: `Asked ${x.name} again for its one-time permission` }); toast({ text: `Reminder sent to ${x.name}`, tone: "ok" }); } }));
+      if (c.status !== "live") { const admin = c.people.find(p => p.access === "Admin"); attention.push({ id: c.id + "-invite", c, tone: "amber", title: c.name, text: `waiting for ${admin ? admin.name : "its admin"} to accept the invitation`, act: "Open", run: () => go("clients", c.id, "people") }); }
     });
-    if (s.clients.some(c => c.id === "munchly")) attention.push({ id: "gupta-export", c: s.clients.find(c => c.id === "munchly"), icon: "file-spreadsheet", tone: "blue", title: "Gupta & Sons", text: "stock export arrived 2 h late today", act: "Open", run: () => go("clients", "munchly", "supply") });
-    const tracks = s.tracks.filter(t => s.clients.some(c => c.id === t.client));
+    if (s.clients.some(c => c.id === "munchly")) attention.push({ id: "gupta-export", c: client("munchly"), tone: "blue", title: "Gupta & Sons", text: "stock export arrived 2 h late today", act: "Open", run: () => go("clients", "munchly", "supply") });
     const startFrom = r => {
       const plan = (P.PLANS.find(p => p.name === r.plan) || P.PLANS[0]).id; const domain = (r.email.split("@")[1] || "").toLowerCase();
-      P.update(d => { d.draft = { name: r.company, industry: INDUSTRIES.includes(r.makes) ? r.makes : INDUSTRIES[0], emailDomain: domain, adminName: r.name, adminEmail: r.email, plan, request: r.id }; });
+      P.update(x => { x.draft = { name: r.company, industry: INDUSTRIES.includes(r.makes) ? r.makes : INDUSTRIES[0], emailDomain: domain, adminName: r.name, adminEmail: r.email, plan, request: r.id }; });
       go("new-client");
     };
-    return <Screen title="Overview" sub={`${date} · ${live.length} client${live.length === 1 ? "" : "s"} live · ${on} agents on`}>
-      <Columns sideWidth={380}
-        main={<>
-          <SectionTitle sub="Every client's batches, by the stop they have reached">Batches on the move</SectionTitle>
-          <div className="stack" style={{ gap: 12 }}>{tracks.map(t => { const c = s.clients.find(x => x.id === t.client); const sku = D.SKUS[t.sku]; const dist = D.DISTRIBUTORS[t.distributor];
-            return <Card key={t.batch} className="cs-track">
-              <div className="row" style={{ gap: 12, alignItems: "flex-start" }}>
-                <WorkspaceMark ws={c} size={34} />
-                <div className="stack tight grow" style={{ gap: 2, minWidth: 0 }}><span className="mono t-footnote subtle">{t.batch}</span><b className="t-subhead">{sku.name} · {dist.name}, {dist.city}</b>{t.note && <span className="t-caption subtle">{t.note}</span>}</div>
-                <div className="cs-track-out">{t.money ? <><K.Money value={t.money} size="s" style={{ color: "var(--primary-text)" }} /><span className="t-caption subtle">recovered</span></> : <span className="t-footnote">{t.split}</span>}</div>
-              </div>
-              {app.bp === "phone" ? <TrackerCompact done={t.done} current={t.current} label={t.batch} /> : <Tracker stages={STAGES} done={t.done} current={t.current} label={t.batch + " stages"} />}
-            </Card>; })}</div>
-          <SectionTitle sub="What each client's agents did today">Agent runs today</SectionTitle>
-          <List>{s.runs.slice(0, 9).map((r, i) => { const a = AGENT(r.agent); const c = s.clients.find(x => x.id === r.client); return <ListRow key={i} leading={<span className="mono t-footnote cs-time">{r.at}</span>} icon={a.icon} iconTone={a.gate ? "amber" : "soft"} title={`${a.name} · ${c ? c.name : r.client}`} sub={r.text} />; })}</List>
-        </>}
-        side={<>
-          <SectionTitle sub="Waiting on a person, or on a file">Needs attention</SectionTitle>
-          {attention.length ? <List>{attention.map(x => <ListRow key={x.id} leading={<span className={cx("cs-att", x.tone)} aria-hidden="true" />} title={x.title} sub={`${x.c.name} · ${x.text}`} value={<Button size="sm" variant="secondary" onClick={x.run}>{x.act}</Button>} />)}</List> : <Card><Empty icon="circle-check" title="Nothing is waiting" body="Every client's partners have given their permissions." /></Card>}
-          <SectionTitle sub="From Book a demo on smartclearance.com">Demo requests</SectionTitle>
-          {(s.requests || []).length ? <List>{s.requests.map(r => <ListRow key={r.id} icon="mail" iconTone="soft" title={r.company} sub={[r.name, r.email, r.makes, r.plan && `${r.plan} plan`, r.at].filter(Boolean).join(" · ")}
-            value={r.status === "set up" ? <Badge size="sm" tone="green" icon="check">set up</Badge> : <Button size="sm" variant="secondary" onClick={() => startFrom(r)}>Set up</Button>} />)}</List>
-            : <Card><Empty icon="mail" title="No requests yet" body="When someone books a demo on smartclearance.com, the request lands here, ready to become a client." /></Card>}
-          {app.bp === "phone" && <List head="Platform">{NAV.filter(n => n.phoneHidden).map(n => <ListRow key={n.id} icon={n.icon} iconTone="soft" title={n.label} chevron onClick={() => go(n.id)} />)}</List>}
-        </>} />
+    const [asTable, setAsTable] = useState(false);
+    const header = (label, key, num = true) => <th className={num ? "n" : undefined} aria-sort={q.sort === key ? (q.dir === "asc" ? "ascending" : "descending") : undefined}><button type="button" onClick={() => set({ sort: key, dir: q.sort === key && q.dir === "asc" ? "desc" : "asc" })}>{label}{q.sort === key && <Icon name={q.dir === "asc" ? "chevron-up" : "chevron-down"} size={13} />}</button></th>;
+
+    const liveBar = <div className="cs-ov-live" role="status"><Badge size="sm" tone={paused ? undefined : "green"} dot>{paused ? "Paused" : "Live"}</Badge><span>Read at <span className="tnum">{d.readAt}</span>{paused ? "" : " · every 30 s"}</span><Button size="sm" variant="ghost" icon={paused ? "play" : "pause"} aria-pressed={paused} onClick={togglePause}>{paused ? "Resume updates" : "Pause updates"}</Button></div>;
+    const kpis = <div className="cs-ov-kpis">
+      <Kpi label={`Recovered, ${days} days`} icon="indian-rupee" spark={d.byDay.map(x => x.recovered)} foot={change == null ? `nothing in the ${days} days before` : <><span className={change >= 0 ? "up" : "warn"}><Icon name={change >= 0 ? "trending-up" : "trending-down"} size={14} />{change >= 1000 ? `${Math.round(d.recovered / d.recoveredBefore)}×` : `${Math.abs(change)}%`}</span> on the {days} days before</>}><MoneyFig value={d.recovered} /></Kpi>
+      <Kpi label="Batches in flight" icon="boxes" spark={d.inFlightSeries} foot={`across ${d.inFlightClients} client${d.inFlightClients === 1 ? "" : "s"}`}>{d.inFlight}</Kpi>
+      <Kpi label="Waiting for a yes" icon="hand" tone={d.waiting ? "amber" : undefined} foot={d.oldestWaiting ? <><span className="warn">oldest {d.oldestWaiting.hours} h</span> · {d.oldestWaiting.client}</> : "nothing waiting"}>{d.waiting}</Kpi>
+      <Kpi label="Agent runs today" icon="bot" spark={d.byDay.map(x => x.runs)} foot={`${on} agents on`}>{d.runsToday}</Kpi>
+    </div>;
+    const best = d.byDay.reduce((a, x) => (x.recovered > a.recovered ? x : a), d.byDay[0]);
+    const trend = <section className="cs-ov-card">
+      <div className="cs-ov-head"><div><div className="t">Recovered, by day</div><div className="s">Every client · what closed batches recovered</div></div>
+        <Segmented label="Range" value={String(days)} onChange={v => setDays(Number(v))} options={P.RANGES.map(n => ({ id: String(n), label: `${n} days` }))} /></div>
+      <div className="cs-ov-big"><MoneyFig value={d.recovered} /> <span className="cs-ov-in">in {days} days</span></div>
+      {asTable ? <div className="cs-ov-daytable"><DataTable label="Recovered, by day" rows={d.byDay.slice().reverse()} rowKey="date" dense columns={[{ key: "label", label: "Day" }, { key: "recovered", label: "Recovered", num: true, render: x => fmt.inr(x.recovered) }, { key: "closed", label: "Closed", num: true }, { key: "units", label: "Packs", num: true, render: x => x.units.toLocaleString("en-IN") }, { key: "runs", label: "Runs", num: true }]} /></div>
+        : <RecoveredChart byDay={d.byDay} height={phone ? 180 : 210} />}
+      <div className="cs-ov-foot"><span>{best && best.recovered ? `Highest ${fmt.inr(best.recovered)} on ${best.label}` : "Nothing recovered yet in this range"}{d.recoveredBefore ? ` · ${lakh(d.recoveredBefore)} the ${days} days before` : ""}</span><Button size="sm" variant="link" icon={asTable ? "chart-line" : "file-spreadsheet"} onClick={() => setAsTable(!asTable)}>{asTable ? "Show as a chart" : "Show as a table"}</Button></div>
+    </section>;
+    const stops = <section className="cs-ov-card">
+      <div className="cs-ov-head"><div><div className="t">In flight, by stop</div><div className="s">{d.inFlight} batch{d.inFlight === 1 ? "" : "es"} · choose a stop to list them</div></div></div>
+      <StopBars byStop={d.byStop} value={q.status === "in-flight" ? q.stop : null} onPick={i => set({ status: "in-flight", stop: i })} />
+      <div className="cs-ov-foot"><span className="cs-ov-legend"><span><i style={{ background: "var(--primary)" }} />Agents at work</span><span><i style={{ background: "var(--amber)" }} />Waiting for a person</span></span></div>
+    </section>;
+    const STATUS = [{ id: "in-flight", label: "In flight", n: page.counts.inFlight }, { id: "waiting", label: "Waiting for a yes", n: page.counts.waiting }, { id: "closed", label: "Closed", n: page.counts.closed }];
+    const tableTitle = q.stop != null && q.status === "in-flight" ? `At ${STOP_TITLES[q.stop]}` : q.status === "waiting" ? "Waiting for a yes" : q.status === "closed" ? "Closed batches" : "Live batches";
+    const tableSub = q.stop != null && q.status === "in-flight" ? `${page.total} batch${page.total === 1 ? "" : "es"} at this stop` : q.status === "closed" ? "What each batch recovered, the newest first" : "Every client's batches in flight, the ones waiting for a yes first";
+    const filters = <div className="cs-ov-filters">
+      <label className="cs-ov-search"><Icon name="search" size={16} /><span className="sr-only">Find a batch</span><input type="search" placeholder="Batch, product or distributor" value={q.q} onChange={e => set({ q: e.target.value })} /></label>
+      <select className="cs-ov-sel" aria-label="Client" value={q.client || ""} onChange={e => set({ client: e.target.value || null })}><option value="">All clients</option>{s.clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
+      {q.status !== "closed" && <select className="cs-ov-sel" aria-label="Stop" value={q.stop == null ? "" : String(q.stop)} onChange={e => set({ stop: e.target.value === "" ? null : Number(e.target.value) })}><option value="">All stops</option>{STOP_TITLES.map((t, i) => <option key={t} value={i}>{t}</option>)}</select>}
+      <Segmented label="Which batches" value={q.status} onChange={v => set({ status: v, stop: v === "in-flight" ? q.stop : null, sort: v === "closed" ? "updated" : "priority", dir: v === "closed" ? "desc" : "asc" })} options={STATUS.map(x => ({ id: x.id, label: `${x.label} ${x.n}` }))} />
+    </div>;
+    const rows = page.rows;
+    const table = !rows.length ? <Card><Empty icon="package" title={q.q || q.client || q.stop != null ? "No batches match" : q.status === "closed" ? "No closed batches yet" : "Nothing in flight"} body={q.q || q.client || q.stop != null ? "Try another search, client or stop." : "Batches show here once the Watcher flags them."} /></Card>
+      : phone ? <div className="cs-ov-tablecard"><div className="list cs-ov-rows">{rows.map(r => <button key={r.ref} type="button" className="list-row" onClick={() => go("clients", r.client, "supply")}>
+          <WorkspaceMark ws={client(r.client)} size={28} />
+          <span className="lr-main"><span className="r1"><b>{r.product}</b>{r.daysLeft != null && !r.closed && <span className={cx("t-footnote tnum", r.daysLeft < 20 && "cs-ov-low")}>{r.daysLeft < 0 ? "expired" : `${r.daysLeft} d`}</span>}</span>
+            <span className="r2"><span className="mono">{r.ref}</span> · {r.distributor}, {r.city}</span>
+            {!r.closed && <StopSeg stage={r.stage} />}
+            <span className="r2"><b className={cx(r.stage === 5 && !r.closed && "cs-ov-human")}>{stopText(r)}</b> · {fmt.inr(r.value)} {r.valueKind === "mrp" ? "at MRP" : "recovered"}</span></span></button>)}</div>
+          <Pager phone page={page.page} size={page.size} total={page.total} onPage={p => set({ page: p })} onSize={n => set({ size: n })} /></div>
+      : <div className="cs-ov-tablecard"><div className="table-wrap" tabIndex={0} role="region" aria-label={tableTitle}><table className="table cs-ov-table">
+          <thead><tr><th>Batch</th><th>Client</th>{header("Stop", "stop", false)}{header("Days left", "days")}{header("Units", "units")}{header(q.status === "closed" ? "Recovered" : "Value", "value")}{header("Updated", "updated")}</tr></thead>
+          <tbody>{rows.map(r => { const c = client(r.client); return <tr key={r.ref} className="clickable" onClick={e => { if (!e.target.closest("button, a")) go("clients", r.client, "supply"); }}>
+            <td><span className="cs-ov-bt"><button type="button" className="cs-cellbtn" onClick={() => go("clients", r.client, "supply")}>{r.product}</button><span className="t-caption subtle"><span className="mono">{r.ref}</span> · {r.distributor}, {r.city}</span></span></td>
+            <td><span className="cs-ov-who"><WorkspaceMark ws={c} size={22} />{c ? c.name : r.client}</span></td>
+            <td><span className="cs-ov-stage">{!r.closed && <StopSeg stage={r.stage} />}<span className={cx(r.stage === 5 && !r.closed && "cs-ov-human")}>{stopText(r)}</span></span></td>
+            <td className="n">{r.daysLeft == null || r.closed ? <span className="subtle">—</span> : <span className={cx(r.daysLeft < 20 && "cs-ov-low")}>{r.daysLeft < 0 ? "expired" : r.daysLeft}</span>}</td>
+            <td className="n">{r.units.toLocaleString("en-IN")}</td>
+            <td className="n">{fmt.inr(r.value)}<div className="t-caption subtle">{r.valueKind === "mrp" ? "at MRP" : "recovered"}</div></td>
+            <td className="n mono t-footnote subtle">{r.updated}</td></tr>; })}</tbody></table></div>
+          <Pager page={page.page} size={page.size} total={page.total} onPage={p => set({ page: p })} onSize={n => set({ size: n })} /></div>;
+    const batches = <div className="stack" style={{ gap: 12 }}>
+      <SectionTitle sub={tableSub} right={q.stop != null && q.status === "in-flight" ? <Button size="sm" icon="x" onClick={() => set({ stop: null })}>Every stop</Button> : null}>{tableTitle}</SectionTitle>
+      {filters}{table}</div>;
+    const lists = <>
+      <div className="stack" style={{ gap: 12 }}><SectionTitle sub="Waiting on a person, or on a file">Needs attention</SectionTitle>
+        {attention.length ? <List>{attention.map(x => <ListRow key={x.id} leading={<span className={cx("cs-att", x.tone)} aria-hidden="true" />} title={x.title} sub={`${x.c.name} · ${x.text}`} value={<Button size="sm" variant="secondary" onClick={x.run}>{x.act}</Button>} />)}</List> : <Card><Empty icon="circle-check" title="Nothing is waiting" body="Every client's partners have given their permissions." /></Card>}</div>
+      <div className="stack" style={{ gap: 12 }}><SectionTitle sub="From Book a demo on smartclearance.com">Demo requests</SectionTitle>
+        {(s.requests || []).length ? <List>{s.requests.map(r => <ListRow key={r.id} icon="mail" iconTone="soft" title={r.company} sub={[r.name, r.email, r.makes, r.plan && `${r.plan} plan`, r.at].filter(Boolean).join(" · ")}
+          value={r.status === "set up" ? <Badge size="sm" tone="green" icon="check">set up</Badge> : <Button size="sm" variant="secondary" onClick={() => startFrom(r)}>Set up</Button>} />)}</List>
+          : <Card><Empty icon="mail" title="No requests yet" body="When someone books a demo on smartclearance.com, the request lands here, ready to become a client." /></Card>}</div>
+      <div className="stack" style={{ gap: 12 }}><SectionTitle sub="The latest, as they land">Agent runs today</SectionTitle>
+        {s.runs.length ? <List>{s.runs.slice(0, 5).map((r, i) => { const a = AGENT(r.agent); const c = client(r.client); return <ListRow key={i} leading={<span className="mono t-footnote cs-time">{r.at}</span>} title={`${a.name} · ${c ? c.name : r.client}`} sub={r.text} />; })}</List>
+          : <Card><Empty icon="bot" title="No runs yet today" body="Each client's agents run on their own schedule." /></Card>}</div>
+    </>;
+    return <Screen title="Overview" sub={`${date} · ${live.length} client${live.length === 1 ? "" : "s"} live${setup ? `, ${setup} setting up` : ""} · ${on} agents on`}>
+      <div className="cs-ov">
+        {liveBar}{kpis}
+        <div className="cs-ov-two">{trend}{stops}</div>
+        {batches}
+        <div className="cs-ov-three">{lists}</div>
+        {phone && <List head="Platform">{NAV.filter(n => n.phoneHidden).map(n => <ListRow key={n.id} icon={n.icon} iconTone="soft" title={n.label} chevron onClick={() => go(n.id)} />)}</List>}
+      </div>
     </Screen>;
   }
 
@@ -351,7 +482,7 @@
     const saveOverride = b => {
       const o = { blinkitDays: num(ovr.bl), qcomPct: num(ovr.qc), reason: ovr.reason }; const e = P.overrideError(o); if (e) return setOvr({ ...ovr, err: e });
       const clean = { reason: o.reason.trim() }; if (o.blinkitDays != null) clean.blinkitDays = o.blinkitDays; if (o.qcomPct != null) clean.qcomPct = o.qcomPct;
-      P.update(d => { d.batches.find(x => x.client === c.id && x.ref === b.ref).override = Object.assign(clean, { by: me.name, at: "Today, " + hhmm() }); }, { who: me.name, client: c.id, text: P.overrideLine(b.ref, clean) });
+      P.update(d => { d.batches.find(x => x.client === c.id && x.ref === b.ref).override = Object.assign(clean, { by: me.name, at: "Today, " + hhmm(), setAt: new Date().toISOString() }); }, { who: me.name, client: c.id, text: P.overrideLine(b.ref, clean) });
       toast({ text: `${b.ref}'s override saved`, tone: "ok" }); setOvr(null);
     };
     const removeOverride = b => { P.update(d => { delete d.batches.find(x => x.client === c.id && x.ref === b.ref).override; }, { who: me.name, client: c.id, text: P.clearOverrideLine(b.ref) }); toast({ text: `${b.ref} is back on its SKU's gates`, tone: "ok" }); };

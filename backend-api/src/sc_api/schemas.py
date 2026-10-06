@@ -329,6 +329,90 @@ class Attention(Shape):
     action: AttentionAction
 
 
+class DayFigures(Shape):
+    """one day of the dashboard's range"""
+
+    date: str
+    label: str
+    recovered: float
+    closed: int
+    units: int
+    runs: int
+
+
+class Waiting(Shape):
+    """the batch waiting longest for a person's yes"""
+
+    hours: int
+    client: str
+
+
+class Dashboard(Shape):
+    """the platform's figures over a range of days (SC-48): every one an aggregate over the database when read"""
+
+    read_at: str
+    days: int
+    recovered: float
+    recovered_before: float
+    by_day: list[DayFigures]
+    in_flight: int
+    in_flight_clients: int
+    in_flight_series: list[int]
+    waiting: int
+    oldest_waiting: Waiting | MISSING = MISSING
+    runs_today: int
+    by_stop: list[int]
+
+
+BatchStatus = Literal["in-flight", "waiting", "closed"]
+BatchSort = Literal["priority", "stop", "days", "units", "value", "updated"]
+
+
+class BatchQuery(Shape):
+    status: BatchStatus = "in-flight"
+    client: str | None = None
+    stop: int | None = Field(default=None, ge=0, le=8)
+    q: str | None = Field(default=None, max_length=80)
+    sort: BatchSort = "priority"
+    dir: Literal["asc", "desc"] = "asc"
+    page: int = Field(default=1, ge=1, le=10_000)
+    size: int = 8
+
+
+class BatchRow(Shape):
+    """a batch in the Overview's table: what it is, where it stands, and its value (at MRP while in flight, what it
+    recovered once past Settle)"""
+
+    client: str
+    ref: str
+    product: str
+    distributor: str
+    city: str
+    stage: int
+    done: int
+    days_left: int | MISSING = MISSING
+    units: int
+    value: float
+    value_kind: Literal["mrp", "recovered"]
+    updated: str
+    closed: bool
+    outcome: str | MISSING = MISSING
+
+
+class BatchCounts(Shape):
+    in_flight: int
+    waiting: int
+    closed: int
+
+
+class BatchPage(Shape):
+    rows: list[BatchRow]
+    total: int
+    page: int
+    size: int
+    counts: BatchCounts
+
+
 class Overview(Shape):
     tracks: list[Track]
     runs: list[Run]

@@ -86,7 +86,7 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--seed", type=int, default=7)
     p.add_argument("--clients", type=int, default=6)
     p.add_argument("--staff", type=int, default=4, help="staff invited besides the founding Super admin")
-    p.add_argument("--days", type=int, default=14)
+    p.add_argument("--days", type=int, default=35)
     p.add_argument("--no-demo-story", action="store_true")
     p.add_argument("--tick", action="store_true")
     p.add_argument("--allow-env", help="hydrate an environment other than local (named, to be sure)")

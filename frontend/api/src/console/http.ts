@@ -39,6 +39,14 @@ export function consoleHttp(
 		},
 
 		overview: () => call('GET', '/v1/console/overview'),
+		dashboard: (days, client) =>
+			call('GET', `/v1/console/dashboard?days=${days}` + (client ? `&client=${encodeURIComponent(client)}` : '')),
+		batches: (query = {}) => {
+			const params = new URLSearchParams();
+			for (const [k, v] of Object.entries(query)) if (v != null && v !== '') params.set(k, String(v));
+			const qs = params.toString();
+			return call('GET', '/v1/console/batches' + (qs ? `?${qs}` : ''));
+		},
 		clients: () => call('GET', '/v1/console/clients'),
 		client: (id) =>
 			call<Client | null>('GET', c(id)).catch((e) => {

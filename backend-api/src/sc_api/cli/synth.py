@@ -320,7 +320,11 @@ class World:
                 last=f"{exports} exports loaded",
             )
             self.at(self.morning(day, 9, 0) if day else self.today_at(0.2))
-            if self.rng.random() < 0.6 or day == 0:
+            # the Watcher flags a few batches a day; each takes a few days to work through the nine stops
+            flagged = self.rng.choice([0, 1, 1, 1, 2, 2, 3]) if day else max(1, self.rng.choice([0, 1, 2]))
+            if not flagged:
+                await agents.record_run(ctx, s, "watcher", "nothing at risk today")
+            for _ in range(flagged):
                 batch_no += 1
                 sku_id, (product, pack, (lo, hi), _gst, life) = self.rng.choice(sku_rows)
                 d_id, d_name, d_city = self.rng.choice(dists)
@@ -329,7 +333,9 @@ class World:
                 await agents.record_run(ctx, s, "watcher", f"{ref} at risk, {days_left} days left")
                 units = self.rng.randint(200, 2400)
                 best_before = self.clock.at.astimezone(IST).date() + timedelta(days=days_left)
-                if day >= 2:
+                takes = self.rng.randint(1, 6)  # days from flagged to closed
+                if day - takes >= 1:
+                    flagged_at = self.clock.at
                     await supply.open_batch(
                         ctx,
                         s,
@@ -341,33 +347,33 @@ class World:
                         current=2,
                         best_before=best_before,
                     )
-                    self.at(self.clock.at + timedelta(minutes=40))
+                    self.at(self.morning(day - takes, self.rng.randint(11, 17), self.rng.randint(0, 59)))
                     await agents.record_run(ctx, s, "gate", f"{approver_first} approved {ref}")
                     price = self.rng.uniform(0.35, 0.7) * (lo + hi) / 2
                     await supply.close_batch(ctx, s, ref, recovered=round(units * price, 1), outcome="cleared")
-                else:
-                    done = self.rng.randint(3, 7)
-                    await supply.open_batch(
-                        ctx,
-                        s,
-                        ref=ref,
-                        sku=sku_id,
-                        distributor=d_id,
-                        units=units,
-                        done=done,
-                        current=done,
-                        split=_split(units) if done >= 6 else None,
-                        note="Waiting for the approver" if done == 5 else None,
-                        best_before=best_before,
-                    )
-                    if self.rng.random() < 0.3:
-                        # a warehouse agreed to take this lot on its own terms, and staff record the deal
-                        self.at(self.clock.at + timedelta(minutes=12))
-                        await self._override(s, ref, life, days_left, d_city)
-                    self.at(self.clock.at + timedelta(minutes=20))
-                    await agents.record_run(ctx, s, "router", f"plan sent to {approver_first}")
-            else:
-                await agents.record_run(ctx, s, "watcher", "nothing at risk today")
+                    self.at(flagged_at + timedelta(minutes=self.rng.randint(5, 30)))
+                    continue
+                # still in flight: as far along as the days since it was flagged allow, some waiting for a yes
+                done = 5 if self.rng.random() < 0.25 else max(1, min(8, 1 + round(7 * day / takes)))
+                await supply.open_batch(
+                    ctx,
+                    s,
+                    ref=ref,
+                    sku=sku_id,
+                    distributor=d_id,
+                    units=units,
+                    done=done,
+                    current=done,
+                    split=_split(units) if done >= 6 else None,
+                    note="Waiting for the approver" if done == 5 else None,
+                    best_before=best_before,
+                )
+                if self.rng.random() < 0.3:
+                    # a warehouse agreed to take this lot on its own terms, and staff record the deal
+                    self.at(self.clock.at + timedelta(minutes=12))
+                    await self._override(s, ref, life, days_left, d_city)
+                self.at(self.clock.at + timedelta(minutes=20))
+                await agents.record_run(ctx, s, "router", f"plan sent to {approver_first}")
         # this morning's exports, one of them late
         today = self.now_real().date()
         for k, (d_id, _, _) in enumerate(dists):

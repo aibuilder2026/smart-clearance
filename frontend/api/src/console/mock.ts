@@ -22,6 +22,9 @@ import type {
 import {
 	agentDefaults,
 	batchGates,
+	batchPage,
+	dashboard,
+	type BatchRecord,
 	clearOverrideLine,
 	exitsFor,
 	inviteError,
@@ -39,7 +42,7 @@ import {
 /** where the mock keeps the platform's state, and who is signed in */
 export const CONSOLE_KEY = 'sc-console';
 export const SESSION_KEY = 'sc-console-session';
-const VERSION = 2;
+const VERSION = 3;
 
 type State = {
 	v: number;
@@ -48,23 +51,14 @@ type State = {
 	runs: Run[];
 	tracks: Track[];
 	/** the batches the Watcher sees, with their best-before dates and any gate override (SC-47) */
-	batches: Batch[];
+	batches: BatchRecord[];
 	audit: AuditEntry[];
 	requests: DemoRequest[];
 	nextAudit: number;
 };
 
-type Batch = {
-	client: string;
-	ref: string;
-	sku: string;
-	distributor: string;
-	units: number;
-	bestBefore: string;
-	done: number;
-	current: number;
-	override?: BatchOverride;
-};
+// an override as the contract shows it: when it was set stays the mock's own, for the Overview's "Updated"
+const publicOverride = ({ setAt: _, ...o }: BatchOverride & { setAt?: string }): BatchOverride => o;
 
 const config = seed.config as ConsoleConfig;
 /** the console's day (the story's 6 Oct), which every batch's days left counts from, as the prototype counts */
@@ -359,6 +353,22 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 				attention: attention()
 			});
 		},
+		async dashboard(days, client) {
+			await wait();
+			try {
+				return out(dashboard(state, { days, client: client ?? null, today: TODAY }));
+			} catch (e) {
+				throw new ApiError(422, (e as Error).message);
+			}
+		},
+		async batches(query = {}) {
+			await wait();
+			try {
+				return out(batchPage(state, wire(query), TODAY));
+			} catch (e) {
+				throw new ApiError(422, (e as Error).message);
+			}
+		},
 		async clients() {
 			await wait();
 			return out(state.clients);
@@ -527,7 +537,7 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 							units: b.units,
 							bestBefore: b.bestBefore,
 							...g,
-							...(b.override ? { override: b.override } : {})
+							...(b.override ? { override: publicOverride(b.override) } : {})
 						};
 					})
 			);
@@ -553,7 +563,12 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 			const b = openBatch(id, ref);
 			const problem = overrideError(o);
 			if (problem) throw new ApiError(422, problem);
-			const next: BatchOverride = { reason: o.reason.trim(), by: who(), at: `Today, ${hhmm()}` };
+			const next: BatchOverride & { setAt: string } = {
+				reason: o.reason.trim(),
+				by: who(),
+				at: `Today, ${hhmm()}`,
+				setAt: new Date().toISOString()
+			};
 			if (o.blinkitDays != null) next.blinkitDays = o.blinkitDays;
 			if (o.qcomPct != null) next.qcomPct = o.qcomPct;
 			const was = b.override;

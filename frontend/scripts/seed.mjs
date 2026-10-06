@@ -243,6 +243,22 @@ const ruleFixtures = {
 		{ qcomPct: 30, reason: 'y'.repeat(201) },
 		{ qcomPct: 30, blinkitDays: 60, reason: 'A deal' }
 	].map((input) => ({ input, error: P.overrideError(input) })),
+	// SC-48: the Overview's figures and its pages of batches, on the console's day at noon in India
+	dashboard: [7, 30].map((days) => ({
+		days,
+		figures: P.dashboard(platform, { days, now: Date.parse(P.TODAY + 'T12:00:00+05:30') })
+	})),
+	batchPages: [
+		{},
+		{ page: 2 },
+		{ q: 'chips' },
+		{ q: 'Nagpur' },
+		{ stop: 1 },
+		{ sort: 'value', dir: 'desc' },
+		{ sort: 'days', dir: 'desc', size: 16 },
+		{ status: 'closed' },
+		{ client: 'nobody' }
+	].map((query) => ({ query, page: P.batchPage(platform, query) })),
 	gateLines: {
 		sku: P.skuGatesLine(platform.clients[0], platform.clients[0].skus[5], { blinkitDays: 45, qcomPct: 50 }),
 		skuOne: P.skuGatesLine(platform.clients[0], platform.clients[0].skus[6], { blinkitDays: 180 }),

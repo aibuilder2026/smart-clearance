@@ -1,15 +1,20 @@
 """The staff console's routes (frontend/api/src/console/http.ts). Every change commits with its audit line, then
 answers the client as it now stands."""
 
-from fastapi import APIRouter, Request, Response
+from typing import Annotated
+
+from fastapi import APIRouter, Query, Request, Response
 
 from sc_api.deps import Public, SigningIn, StaffCtx
 from sc_api.schemas import (
     AgentPatch,
     AuditEntry,
     BatchGates,
+    BatchPage,
+    BatchQuery,
     ClientOut,
     ConsoleConfig,
+    Dashboard,
     DemoRequest,
     InviteInput,
     NewClientInput,
@@ -23,7 +28,7 @@ from sc_api.schemas import (
     Staff,
     StaffInviteInput,
 )
-from sc_api.services import agents, audit, clients, people, presenter, site, staff, supply
+from sc_api.services import agents, audit, clients, dashboard, people, presenter, site, staff, supply
 from sc_api.services.context import Ctx
 
 router = APIRouter(prefix="/v1", tags=["console"])
@@ -73,6 +78,16 @@ async def sign_out() -> Response:
 async def overview(ctx: StaffCtx) -> Overview:
     _read(ctx)
     return await presenter.overview(ctx)
+
+
+@router.get("/console/dashboard", response_model=Dashboard, summary="The platform's figures over a range of days")
+async def overview_dashboard(ctx: StaffCtx, days: int = 30, client: str | None = None) -> Dashboard:
+    return await dashboard.dashboard(ctx, days, client)
+
+
+@router.get("/console/batches", response_model=BatchPage, summary="Every client's batches, a page at a time")
+async def batch_page(ctx: StaffCtx, query: Annotated[BatchQuery, Query()]) -> BatchPage:
+    return await dashboard.batches(ctx, query)
 
 
 @router.get("/console/clients", response_model=list[ClientOut])

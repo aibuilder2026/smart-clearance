@@ -170,6 +170,78 @@
   const overrideLine = (ref, o) => `Overrode ${ref}'s quick-commerce gates: ${gateText(o)} (${o.reason.trim()})`;
   const clearOverrideLine = ref => `Removed ${ref}'s quick-commerce gate override`;
 
+  /* ---------- the Overview's dashboard (SC-48): every figure an aggregate over the batches and the runs ---------- */
+  // a batch's recovery counts on the day it closed, or, while it is still open past Settle, the day it was flagged. It
+  // is in flight from being flagged until it closes, and waits for a yes at Approve (the sixth stop). Days are India's
+  const APPROVE = 5, RANGES = [7, 30, 90], SIZES = [8, 16, 32], IST_MS = 19800000;
+  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const istDay = at => new Date(Date.parse(at) + IST_MS).toISOString().slice(0, 10);
+  const dayLabel = iso => `${Number(iso.slice(8, 10))} ${MONTHS[Number(iso.slice(5, 7)) - 1]}`;
+  const dayEnd = iso => Date.parse(D.addDays(iso, 1) + "T00:00:00+05:30");
+  const updatedAt = b => Math.max(...[b.openedAt, b.override && b.override.setAt, b.closedAt].filter(Boolean).map(Date.parse));
+  const two = n => String(n).padStart(2, "0");
+  // the figures over the last `days` days, ending today (the console's day in the prototype); `now` is when they are read
+  function dashboard(s, { days = 30, client = null, today = TODAY, now = Date.now() } = {}) {
+    if (!RANGES.includes(days)) throw new Error("Show 7, 30 or 90 days.");
+    const bs = s.batches.filter(b => !client || b.client === client);
+    const first = D.addDays(today, -(days - 1)), before = D.addDays(first, -days);
+    const range = Array.from({ length: days }, (_, i) => D.addDays(first, i));
+    const rec = {}, closed = {}; let recoveredBefore = 0;
+    bs.forEach(b => {
+      const d = istDay(b.closedAt || b.openedAt);
+      if (b.recovered > 0) { if (d >= first && d <= today) rec[d] = (rec[d] || 0) + b.recovered; else if (d >= before && d < first) recoveredBefore += b.recovered; }
+      if (b.closedAt) { const c = istDay(b.closedAt); closed[c] = closed[c] || [0, 0]; closed[c][0] += 1; closed[c][1] += b.units; }
+    });
+    // the runs the prototype keeps are today's
+    const runsToday = s.runs.filter(r => !client || r.client === client).length;
+    const open = bs.filter(b => !b.closedAt);
+    const byStop = Array(9).fill(0); open.forEach(b => { byStop[Math.min(b.current, 8)] += 1; });
+    const waiting = open.filter(b => b.current === APPROVE).sort((a, b) => Date.parse(a.openedAt) - Date.parse(b.openedAt));
+    const r2 = v => Math.round(v * 100) / 100;
+    const t = new Date(now + IST_MS);
+    const out = {
+      readAt: `${two(t.getUTCHours())}:${two(t.getUTCMinutes())}:${two(t.getUTCSeconds())}`, days,
+      recovered: r2(range.reduce((sum, d) => sum + (rec[d] || 0), 0)), recoveredBefore: r2(recoveredBefore),
+      byDay: range.map(d => ({ date: d, label: dayLabel(d), recovered: r2(rec[d] || 0), closed: (closed[d] || [0])[0], units: (closed[d] || [0, 0])[1], runs: d === today ? runsToday : 0 })),
+      inFlight: open.length, inFlightClients: new Set(open.map(b => b.client)).size,
+      inFlightSeries: range.map(d => { const cut = d < today ? dayEnd(d) : Math.min(now, dayEnd(d)); return bs.filter(b => Date.parse(b.openedAt) <= cut && (!b.closedAt || Date.parse(b.closedAt) > cut)).length; }),
+      waiting: waiting.length, runsToday, byStop,
+    };
+    if (waiting.length) { const w = waiting[0], c = s.clients.find(x => x.id === w.client); out.oldestWaiting = { hours: Math.floor((now - Date.parse(w.openedAt)) / 3600000), client: c ? c.name : w.client }; }
+    return out;
+  }
+  // every client's batches, a page at a time: in flight (the ones waiting for a yes first, then the fewest days left),
+  // waiting for a yes, or closed; by client, stop and a search over the batch, its product and its distributor
+  function batchPage(s, q = {}, today = TODAY) {
+    const { status = "in-flight", client = null, stop = null, sort = "priority", dir = "asc", page = 1, size = 8 } = q;
+    if (!SIZES.includes(size)) throw new Error("Show 8, 16 or 32 rows a page.");
+    const text = (q.q || "").trim().toLowerCase();
+    const rows = s.batches.map((b, seq) => {
+      const c = s.clients.find(x => x.id === b.client) || { skus: [], distributors: [] };
+      const sku = c.skus.find(x => x.id === b.sku) || { name: b.sku, mrp: 0 }, d = c.distributors.find(x => x.id === b.distributor) || { name: b.distributor, city: "" };
+      const at = updatedAt(b), local = istDay(new Date(at).toISOString());
+      const t = new Date(at + IST_MS);
+      const row = { client: b.client, ref: b.ref, product: sku.name, distributor: d.name, city: d.city, stage: b.closedAt ? 9 : b.current, done: b.closedAt ? 9 : b.done,
+        units: b.units, value: Math.round((b.recovered > 0 ? b.recovered : b.units * sku.mrp) * 100) / 100, valueKind: b.recovered > 0 || b.closedAt ? "recovered" : "mrp",
+        updated: local === today ? `${two(t.getUTCHours())}:${two(t.getUTCMinutes())}` : dayLabel(local), closed: !!b.closedAt };
+      if (b.bestBefore) row.daysLeft = daysBetween(today, b.bestBefore);
+      if (b.outcome) row.outcome = b.outcome;
+      return { row, seq, b, at };
+    }).filter(x => (!client || x.b.client === client) && (!text || [x.b.ref, x.row.product, x.row.distributor, x.row.city].some(v => v.toLowerCase().includes(text))));
+    const is = { "in-flight": x => !x.b.closedAt, waiting: x => !x.b.closedAt && x.b.current === APPROVE, closed: x => !!x.b.closedAt };
+    const counts = { inFlight: rows.filter(is["in-flight"]).length, waiting: rows.filter(is.waiting).length, closed: rows.filter(is.closed).length };
+    const picked = rows.filter(is[status]).filter(x => stop == null || status === "closed" || x.b.current === stop);
+    const nullsLast = (a, b) => (a == null ? (b == null ? 0 : 1) : b == null ? -1 : 0);
+    const KEY = { stop: x => x.b.current, days: x => x.row.daysLeft, units: x => x.row.units, value: x => x.row.value, updated: x => x.at };
+    picked.sort((x, y) => {
+      if (sort === "priority" || !KEY[sort]) return (y.b.current === APPROVE) - (x.b.current === APPROVE) || nullsLast(x.row.daysLeft, y.row.daysLeft) || (x.row.daysLeft || 0) - (y.row.daysLeft || 0) || x.seq - y.seq;
+      const a = KEY[sort](x), b = KEY[sort](y);
+      return nullsLast(a, b) || (a > b ? 1 : a < b ? -1 : 0) * (dir === "desc" ? -1 : 1) || x.seq - y.seq;
+    });
+    const p = Math.max(1, page);
+    return { rows: picked.slice((p - 1) * size, p * size).map(x => x.row), total: picked.length, page: p, size, counts };
+  }
+
   /* ---------- agent presets for a new client; the approval gate is always on ---------- */
   const PRESETS = [
     { id: "cautious", label: "Cautious", text: "Agents suggest; people do everything" },
@@ -232,9 +304,10 @@
   // carries a gate override, the deal Zepto's Pune warehouse agreed to (illustrative)
   const BATCHES = D.BATCHES.map(b => {
     const t = TRACKS.find(x => x.batch === b.id);
-    return { client: "munchly", ref: b.id, sku: b.sku, distributor: b.distributor, units: b.units, bestBefore: b.bestBefore, done: t ? t.done : 1, current: t ? t.current : 1 };
+    return { client: "munchly", ref: b.id, sku: b.sku, distributor: b.distributor, units: b.units, bestBefore: b.bestBefore, done: t ? t.done : 1, current: t ? t.current : 1,
+      openedAt: "2026-10-02T09:00:00+05:30", recovered: t && t.money ? t.money : 0 };
   });
-  BATCHES.find(b => b.ref === "MF-2409-204").override = { qcomPct: 30, reason: "Zepto's Pune warehouse agreed to take this lot at 30% of its life", by: "Neha Kulkarni", at: "4 Oct, 16:20" };
+  BATCHES.find(b => b.ref === "MF-2409-204").override = { qcomPct: 30, reason: "Zepto's Pune warehouse agreed to take this lot at 30% of its life", by: "Neha Kulkarni", at: "4 Oct, 16:20", setAt: "2026-10-04T16:20:00+05:30" };
   const RUNS = [
     { at: "08:30", agent: "data", client: "munchly", text: "4 stock exports loaded, 312 batches" },
     { at: "09:00", agent: "watcher", client: "munchly", text: "MF-2410-118 at risk, 22 days left" },
@@ -297,6 +370,7 @@
     usePersistence() { persist = true; try { const raw = localStorage.getItem(KEY); if (raw) { const d = JSON.parse(raw); if (d && d.v === VERSION) state = d; } } catch (e) {} },
     client: id => state.clients.find(c => c.id === id),
     buildClient, slug, summary, fieldLabel, showValue, money, exitsFor, profileLines, optLabel, agentDefaults,
+    dashboard, batchPage, RANGES, SIZES,
     TODAY, GATE_BOUNDS, batchGates, gateText, skuGatesError, overrideError, skuGatesLine, overrideLine, clearOverrideLine,
     STAFF, AUTONOMY, AGENTS, STAGE_NAME, FIELDS, PLANS, CONNECTORS, EXITS, PROFILE, PRESETS, seed,
   };

@@ -53,7 +53,7 @@ bash 3.2 and shellcheck-clean.
 | `secrets.sh [--rotate]` | Generates each secret (24 letters and digits, to the password policy) straight into Secret Manager on stdin. `--rotate` makes new versions, re-applies the database passwords and puts every account still on the default password onto the new one. |
 | `db-init.sh [--container NAME] [--db NAME]` | Makes the database, the roles `sc_owner` and `sc_app`, and the logins `sc_migrator` and `sc_api`. It runs as the superuser over the container's own socket; the logins' passwords go in on stdin from Secret Manager. Safe to re-run. |
 | `migrate.sh [alembic args]` | Alembic as `sc_migrator`, then the reference data (`sc-admin migrate`) |
-| `hydrate.sh [--reset] [--tick] [--seed N] [--clients N] [--staff N] [--days N] [--no-demo-story]` | The synthetic world (below). `--reset` drops the schema and rebuilds; `--tick` adds today's agent runs. |
+| `hydrate.sh [--reset] [--tick] [--seed N] [--clients N] [--staff N] [--days N] [--no-demo-story]` | The synthetic world (below), 35 days of it by default. `--reset` drops the schema and rebuilds; `--tick` adds today's agent runs. |
 | `default-password.sh [--copy]` | The default password, in your terminal or on the clipboard |
 | `dev.sh` | The API with reload, as `sc-api-local` |
 | `up.sh [--with-db]` | The API in its container (`compose.yaml`). `--with-db` also starts a Postgres 18 of its own for a machine without one. |
@@ -94,6 +94,12 @@ One database, `smart_clearance`, schema `sc` (`src/sc_api/models.py`, `migration
   - `sc.batch_gates` applies that rule in SQL for the agents, counting days from India's date. `domain/gates.py`
     applies it for the API, and a test holds the two together;
   - a closed batch keeps the gates it was judged by (`judged_*`).
+- **The Overview's figures** (SC-48, `services/dashboard.py`) are aggregates over `batches`, `agent_runs` and
+  `clients` when they are read; nothing is stored for them.
+  - A batch's recovery counts on the day it closed, or, while it is still open past Settle, on the day it was flagged.
+  - A batch is in flight from being flagged until it closes, and waits for a yes at Approve.
+  - In flight is valued at MRP (units x MRP); past Settle, by what it recovered.
+  - `rules.json` carries design3's answers on Munchly's day, and a test holds the API to them.
 - **The reference data** is design3's: `frontend/scripts/seed.mjs` writes `src/sc_api/reference/` alongside the
   frontend's seed, and `seed:check` fails if it drifts. `rbac.json` (roles and permissions) is written by hand.
 
@@ -140,6 +146,8 @@ The routes and shapes are `frontend/api/src/types/*.ts`, field for field:
 | `GET /v1/console/clients/{id}/batches[?sku=]` | staff | a client's open batches and their gates, as the agents read them (SC-47) |
 | `PUT /v1/console/clients/{id}/skus/{sku}/gates` `{ gates }` | staff, `clients.configure` | an SKU's own gates, or `null` for the client's default |
 | `PUT`, `DELETE /v1/console/clients/{id}/batches/{ref}/override` | staff, `clients.configure` | one open batch's gates with its reason, or back on its SKU's |
+| `GET /v1/console/dashboard?days=7\|30\|90[&client=]` | staff | the Overview's figures over a range (SC-48): recovered by day and the range before, batches in flight (and at the end of each day), at each stop, waiting for a yes (and the oldest), runs |
+| `GET /v1/console/batches?status&client&stop&q&sort&dir&page&size` | staff | every client's batches a page at a time (8, 16 or 32), with the counts for in flight, waiting and closed |
 
 The server also enforces what the prototype's mock did not:
 - the approval step is always on and has no autonomy;
@@ -161,7 +169,9 @@ The server also enforces what the prototype's mock did not:
 3. **Generated clients** (Faker `en_IN`, seeded), each going the way a real one does: a demo request, then the New
    client flow, its supply chain, invitations, people joining, distributors' permissions, the approver taking over,
    going live, daily exports, runs and batches. History is spread over the last `--days`, on a simulated clock.
-   SKUs whose shelf life makes the default wrong get gates of their own; every batch has a best-before date, and some
+   Each live client's Watcher flags none to three batches a day over the last `--days` (35 by default); each closes
+   a few days later with what it recovered, or is still in flight, some waiting for a yes. SKUs whose shelf life makes
+   the default wrong get gates of their own; every batch has a best-before date, and some
    carry an override that a staff member recorded, with the reason.
 4. **Accounts:** every person with an email address gets a Firebase account on the default password, with a
    deterministic uid (`syn-…`).
@@ -180,7 +190,7 @@ Nothing in this folder names a project. With the runtime on, the `backend-api-mi
 
 ## Tests
 
-`scripts/test.sh` (190 tests, a few seconds) runs against a real PostgreSQL. It migrates `smart_clearance_test` from
+`scripts/test.sh` (198 tests, a few seconds) runs against a real PostgreSQL. It migrates `smart_clearance_test` from
 scratch and imports Munchly through the services. Each test runs in a transaction that is rolled back, as `sc_api`,
 with a fake Firebase that never reaches Google. The suite covers:
 

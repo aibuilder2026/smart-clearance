@@ -46,6 +46,7 @@ member's name.
 | `signIn(input)`                                                | Firebase, then `POST /v1/console/session`                              |
 | `me()`, `signOut()`                                            | `GET`, `DELETE /v1/console/session`                                    |
 | `overview()`                                                   | `GET /v1/console/overview`                                             |
+| `dashboard(days, client?)`, `batches(query?)`                  | `GET /v1/console/dashboard?days=`, `GET /v1/console/batches?…`         |
 | `clients()`, `client(id)`                                      | `GET /v1/console/clients`, `GET /v1/console/clients/{id}`              |
 | `createClient(input)`                                          | `POST /v1/console/clients`                                             |
 | `updateAgent(id, agent, patch)`                                | `PATCH /v1/console/clients/{id}/agents/{agent}`                        |
@@ -104,3 +105,8 @@ Never edit them; `seed:check` fails the gate when design3 changes and the seed w
 `corepack pnpm test`: the site mock's lookup and demo rules; the console mock's seed, attention list, every change and
 its audit line, validation and persistence; and the platform's rules against `design3/core/platform.js` itself, run in
 a sandbox (summaries, setting values, exits and profile lines for every profile, slugs, presets).
+
+**The Overview** (SC-48): `dashboard(days)` answers the platform's figures over 7, 30 or 90 days, and `batches(query)`
+a page of every client's batches (status, client, stop, search, sort, page and size), with the counts. `platform.ts`
+computes both for the mock (`dashboard`, `batchPage`) as `platform.js` does, and backend-api answers the same from its
+database.

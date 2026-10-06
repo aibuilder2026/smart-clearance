@@ -270,6 +270,72 @@ export type ConsoleAuth = {
 };
 
 /** what the console calls. Every change is written to the audit log by the server, in the staff member's name */
+/** one day of the Overview's range (SC-48) */
+export type DayFigures = {
+	/** ISO date: 2026-10-02 */
+	date: string;
+	/** "2 Oct" */
+	label: string;
+	recovered: number;
+	closed: number;
+	units: number;
+	runs: number;
+};
+/** the platform's figures over a range of days, every one an aggregate over the batches and runs when read */
+export type Dashboard = {
+	/** when they were read, in India's time: "09:41:20" */
+	readAt: string;
+	days: number;
+	recovered: number;
+	recoveredBefore: number;
+	byDay: DayFigures[];
+	inFlight: number;
+	inFlightClients: number;
+	inFlightSeries: number[];
+	waiting: number;
+	oldestWaiting?: { hours: number; client: string };
+	runsToday: number;
+	/** batches in flight at each of the nine stops */
+	byStop: number[];
+};
+export type BatchStatus = 'in-flight' | 'waiting' | 'closed';
+export type BatchSort = 'priority' | 'stop' | 'days' | 'units' | 'value' | 'updated';
+export type BatchQuery = {
+	status?: BatchStatus;
+	client?: string | null;
+	stop?: number | null;
+	q?: string;
+	sort?: BatchSort;
+	dir?: 'asc' | 'desc';
+	page?: number;
+	size?: number;
+};
+/** a batch in the Overview's table: its value is at MRP while in flight, and what it recovered once past Settle */
+export type BatchRow = {
+	client: string;
+	ref: string;
+	product: string;
+	distributor: string;
+	city: string;
+	stage: number;
+	done: number;
+	daysLeft?: number;
+	units: number;
+	value: number;
+	valueKind: 'mrp' | 'recovered';
+	/** "09:38" today, else "4 Oct" */
+	updated: string;
+	closed: boolean;
+	outcome?: string;
+};
+export type BatchPage = {
+	rows: BatchRow[];
+	total: number;
+	page: number;
+	size: number;
+	counts: { inFlight: number; waiting: number; closed: number };
+};
+
 export interface ConsoleApi {
 	catalog(): Promise<Catalog>;
 	config(): Promise<ConsoleConfig>;
@@ -284,6 +350,10 @@ export interface ConsoleApi {
 	me(): Promise<Staff | null>;
 
 	overview(): Promise<Overview>;
+	/** the platform's figures over the last 7, 30 or 90 days, every client's or one's (SC-48) */
+	dashboard(days: number, client?: string | null): Promise<Dashboard>;
+	/** every client's batches, a page at a time, filtered, sorted and counted on the server */
+	batches(query?: BatchQuery): Promise<BatchPage>;
 	clients(): Promise<Client[]>;
 	/** a client by id, or null when there is none */
 	client(id: string): Promise<Client | null>;

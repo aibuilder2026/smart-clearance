@@ -298,3 +298,24 @@ describe('quick-commerce gates per SKU, with a per-batch override (SC-47)', () =
 		});
 	});
 });
+
+describe("the Overview's dashboard (SC-48)", () => {
+	it('reads the figures over a range, and a page of batches', async () => {
+		const d = await api.dashboard(7);
+		expect(d.byDay.map((x) => x.label)).toEqual(['30 Sep', '1 Oct', '2 Oct', '3 Oct', '4 Oct', '5 Oct', '6 Oct']);
+		expect([d.recovered, d.inFlight, d.waiting, d.runsToday]).toEqual([21152.4, 9, 0, 8]);
+		expect(d.byStop).toEqual([0, 7, 0, 0, 0, 0, 1, 0, 1]);
+		const p = await api.batches();
+		expect([p.total, p.rows.length, p.rows[0].ref]).toEqual([9, 8, 'MF-2410-118']);
+		expect((await api.batches({ page: 2 })).rows.map((r) => r.ref)).toEqual(['GL-2410-012']);
+	});
+	it("refuses a range or a page size it doesn't offer", async () => {
+		await expect(api.dashboard(10)).rejects.toMatchObject({ status: 422, message: 'Show 7, 30 or 90 days.' });
+		await expect(api.batches({ size: 10 })).rejects.toMatchObject({ status: 422 });
+	});
+	it("counts an override's time as the batch's last change", async () => {
+		await api.overrideBatch('munchly', 'MF-2408-311', { qcomPct: 30, reason: 'A deal' });
+		const row = (await api.batches({ q: 'MF-2408-311' })).rows[0];
+		expect(row.updated).toMatch(/^\d\d:\d\d$|^\d+ \w{3}$/);
+	});
+});
