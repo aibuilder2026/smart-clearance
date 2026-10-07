@@ -1,0 +1,11 @@
+[
+  { "name": "client_id", "type": "STRING", "mode": "REQUIRED", "description": "The client (workspace)." },
+  { "name": "sku_id", "type": "STRING", "mode": "REQUIRED", "description": "The client's SKU id." },
+  { "name": "channel", "type": "STRING", "mode": "REQUIRED", "description": "The exit: expiresoon, kirana, staff, foodbank or writeoff." },
+  { "name": "batch_ref", "type": "STRING", "mode": "NULLABLE", "description": "The batch the price was paid for, when there is one." },
+  { "name": "priced_on", "type": "DATE", "mode": "REQUIRED", "description": "The day of the price (journey time)." },
+  { "name": "price_per_unit", "type": "NUMERIC", "mode": "REQUIRED", "description": "Rupees a pack." },
+  { "name": "pct_of_mrp", "type": "NUMERIC", "mode": "NULLABLE", "description": "The price as a share of MRP, 0 to 1." },
+  { "name": "source", "type": "STRING", "mode": "REQUIRED", "description": "history (the DMS export), award (a buyer's accepted price) or offer (a scheme's pack price)." },
+  { "name": "recorded_at", "type": "TIMESTAMP", "mode": "NULLABLE", "description": "When it was written." }
+]

@@ -55,6 +55,11 @@ resource "github_actions_variable" "app" {
     PUBLIC_FIREBASE_AUTH_DOMAIN = data.google_firebase_web_app_config.console.auth_domain
     PUBLIC_FIREBASE_PROJECT_ID  = var.project_id
     PUBLIC_FIREBASE_APP_ID      = google_firebase_web_app.console.app_id
+    # the workspace app has its own Firebase web app and key (auth.tf, SC-66); its build maps these onto PUBLIC_FIREBASE_*
+    WORKSPACE_FIREBASE_API_KEY             = data.google_firebase_web_app_config.workspace.api_key
+    WORKSPACE_FIREBASE_APP_ID              = google_firebase_web_app.workspace.app_id
+    WORKSPACE_FIREBASE_MESSAGING_SENDER_ID = data.google_firebase_web_app_config.workspace.messaging_sender_id
+    WORKSPACE_ID                           = var.workspace_client
   } : {}
 
   repository    = local.github_repo

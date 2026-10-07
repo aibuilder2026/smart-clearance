@@ -1,0 +1,16 @@
+[
+  { "name": "client_id", "type": "STRING", "mode": "REQUIRED", "description": "The client (workspace)." },
+  { "name": "journey_id", "type": "STRING", "mode": "REQUIRED", "description": "The journey the batch was cleared in." },
+  { "name": "batch_ref", "type": "STRING", "mode": "REQUIRED", "description": "The cleared batch." },
+  { "name": "sku_id", "type": "STRING", "mode": "REQUIRED", "description": "The client's SKU id." },
+  { "name": "channel", "type": "STRING", "mode": "REQUIRED", "description": "The exit this line went through." },
+  { "name": "units", "type": "INT64", "mode": "REQUIRED", "description": "Packs through the exit." },
+  { "name": "kg", "type": "NUMERIC", "mode": "NULLABLE", "description": "Their weight diverted from landfill." },
+  { "name": "co2e_kg", "type": "NUMERIC", "mode": "NULLABLE", "description": "CO2e avoided, indicative." },
+  { "name": "meals", "type": "INT64", "mode": "NULLABLE", "description": "Meals, for a food-bank exit." },
+  { "name": "recovered_inr", "type": "NUMERIC", "mode": "NULLABLE", "description": "Rupees recovered through the exit." },
+  { "name": "write_off_avoided_inr", "type": "NUMERIC", "mode": "NULLABLE", "description": "The write-off the exit avoided." },
+  { "name": "closed_on", "type": "DATE", "mode": "REQUIRED", "description": "The day the batch was reported (journey time)." },
+  { "name": "quarter", "type": "STRING", "mode": "NULLABLE", "description": "The fiscal quarter, e.g. FY27 Q3." },
+  { "name": "recorded_at", "type": "TIMESTAMP", "mode": "NULLABLE", "description": "When the Impact agent wrote it." }
+]

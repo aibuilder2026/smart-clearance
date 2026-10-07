@@ -1,0 +1,12 @@
+[
+  { "name": "client_id", "type": "STRING", "mode": "REQUIRED", "description": "The client (workspace)." },
+  { "name": "distributor_id", "type": "STRING", "mode": "REQUIRED", "description": "The distributor holding the stock." },
+  { "name": "sku_id", "type": "STRING", "mode": "REQUIRED", "description": "The client's SKU id." },
+  { "name": "batch_ref", "type": "STRING", "mode": "REQUIRED", "description": "The batch, e.g. MF-2409-117." },
+  { "name": "units_on_hand", "type": "INT64", "mode": "REQUIRED", "description": "Packs of the batch in the distributor's godown." },
+  { "name": "mfg", "type": "DATE", "mode": "NULLABLE", "description": "The batch's manufacturing date." },
+  { "name": "best_before", "type": "DATE", "mode": "NULLABLE", "description": "The batch's best-before date." },
+  { "name": "snapshot_date", "type": "DATE", "mode": "REQUIRED", "description": "The day of the stock count (journey time)." },
+  { "name": "source_file", "type": "STRING", "mode": "NULLABLE", "description": "The export it was loaded from." },
+  { "name": "loaded_at", "type": "TIMESTAMP", "mode": "NULLABLE", "description": "When the Data agent loaded it." }
+]

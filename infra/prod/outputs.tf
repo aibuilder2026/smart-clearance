@@ -72,3 +72,28 @@ output "backend" {
     build_bucket       = var.backend_runtime ? google_storage_bucket.builds[0].name : null
   }
 }
+
+output "workspace_firebase_config" {
+  description = "The workspace app's Firebase web config (SC-66). Public by design, never committed: backend-api/scripts/app-env.sh writes it into the workspace's git-ignored .env.local."
+  value = {
+    apiKey            = data.google_firebase_web_app_config.workspace.api_key
+    authDomain        = data.google_firebase_web_app_config.workspace.auth_domain
+    projectId         = var.project_id
+    appId             = google_firebase_web_app.workspace.app_id
+    messagingSenderId = data.google_firebase_web_app_config.workspace.messaging_sender_id
+  }
+}
+
+output "journey" {
+  description = "What backend-api's and the agents' scripts read for each environment (SC-66): Pub/Sub topics and pull subscriptions, the BigQuery dataset, the buckets, and the identities."
+  value = {
+    for env in local.event_envs : env => {
+      topics        = { for id, t in local.topics : t.name => google_pubsub_topic.this[id].name if t.env == env }
+      subscriptions = { for id, s in local.pull_subscriptions : id => google_pubsub_subscription.pull[id].name if s.env == env }
+      dataset       = google_bigquery_dataset.this[env].dataset_id
+      buckets       = { for id, b in local.buckets : b.kind => google_storage_bucket.app[id].name if b.env == env }
+      agents        = env == "prod" ? google_service_account.agents.email : google_service_account.agents_local.email
+      invoker       = google_service_account.invoker.email
+    }
+  }
+}

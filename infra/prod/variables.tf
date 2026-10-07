@@ -63,6 +63,18 @@ variable "console_dev_origins" {
   default     = ["http://localhost:5174", "http://127.0.0.1:5174", "http://localhost:4176", "http://127.0.0.1:4176"]
 }
 
+variable "workspace_dev_origins" {
+  description = "Local origins the workspace app runs on (its dev and preview servers): allowed to use its browser key and to upload to the local buckets (SC-66)."
+  type        = list(string)
+  default     = ["http://localhost:5175", "http://127.0.0.1:5175", "http://localhost:4177", "http://127.0.0.1:4177"]
+}
+
+variable "workspace_client" {
+  description = "The client whose workspace the workspace Hosting site serves (its id in backend-api), e.g. munchly."
+  type        = string
+  default     = "munchly"
+}
+
 variable "extra_auth_domains" {
   description = "Domains to authorise for Firebase Auth beyond localhost, the project's own and the Hosting sites'."
   type        = list(string)

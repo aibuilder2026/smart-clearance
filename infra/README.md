@@ -146,6 +146,30 @@ the prototype's traffic.
 `github-backend` and starts `backend-api/cloudbuild.yaml` on Cloud Build, which builds the image, pushes it, runs the
 migrate job, moves the hydrate job onto it, deploys the service and checks `/readyz`. The Hosting deploy waits for it.
 
+## The journey's agents and live workspace (SC-66)
+
+Munchly's workspace runs on backend-api and the ADK agents (`agents/`). Phase A (SC-70) adds what local development
+and the backend need. Each resource comes once per environment, `prod` and `local`, so a developer's backend and
+agents only ever touch the `local` set, through `sc-api-local` and `sc-agents-local`.
+
+Phase A costs under GBP 0.01 a month. Phase B (SC-74) adds the agents service on Cloud Run, the prod push
+subscriptions and Cloud Scheduler, behind `agents_runtime`.
+
+| File | What | About, a month |
+| --- | --- | --- |
+| `project.tf` | Enables Pub/Sub, Cloud Scheduler, BigQuery, Cloud Storage, Vertex AI, FCM, FCM registrations and Firebase installations. | free |
+| `agents.tf` | `sc-agents` (the agents service), `sc-agents-local` (a developer's agents, by impersonation) and `sc-invoker` (the OIDC identity of push subscriptions and Scheduler). The agents may call Gemini on Vertex AI, run BigQuery jobs and write traces. No key exists for any of them. | free |
+| `events.tf` | Topics `{env}.batch.at_risk`, `offer.received`, `deal.closed`, `journey.step`, `notify` and `dead-letter`. backend-api is the only publisher. `local` gets pull subscriptions for the agents and the Notifier, which never expire, retry with backoff and dead-letter after 5 attempts. A `{env}.dead-letter.hold` subscription keeps a week of failures. | free (under 10 GiB) |
+| `analytics.tf` | BigQuery datasets `smartclearance` (prod) and `smartclearance_local`, each with seven tables: `secondary_sales`, `stock_snapshots`, `shelf_counts`, `channel_prices`, `impact_ledger`, `agent_runs` (90 days) and `agent_evals`. Every table is partitioned and clustered, with schemas in `prod/bigquery/`. Prod's tables are protected from deletion. Each environment's agents may edit only their own dataset. | free (under 10 GiB, 1 TiB of queries) |
+| `storage.tf` | Buckets `<project>-sc-{photos,docs,exports}-{env}`: private, uniform access, emptied after 30 days. The photos and exports buckets take uploads from the workspace's origins through signed URLs. | under GBP 0.01 |
+| `auth.tf` | The workspace's Firebase web app and its `workspace-browser` key, which may call Firebase Auth and FCM registration only, from the workspace's origins. Push uses FCM's default VAPID key, since a custom pair can only be made by hand. | free |
+| `backend.tf` | `scMessagingSend` (send FCM messages, nothing else) for `sc-api` and `sc-api-local`. `sc-api` may sign as itself, for signed URLs. | free |
+| `github.tf` | Repository variables `WORKSPACE_FIREBASE_*` and `WORKSPACE_ID` for the workspace's build. | |
+
+`infra/scripts/tf.sh output journey` names every topic, subscription, dataset, bucket and identity per environment,
+and `output workspace_firebase_config` gives the workspace's web config. backend-api's and the agents' scripts read
+both.
+
 ## Moving it to another project
 
 Everything is keyed on `project_id` and `region`; nothing else names the project.
