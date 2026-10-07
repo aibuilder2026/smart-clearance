@@ -21,14 +21,19 @@
 			"types": "./src/workspace/index.ts",
 			"default": "./src/workspace/index.ts"
 		},
-		"./seed/*": "./src/seed/*"
+		"./seed/*": "./src/seed/*",
+		"./firebase": {
+			"types": "./src/firebase.ts",
+			"default": "./src/firebase.ts"
+		}
 	},
 	"scripts": {
 		"check": "tsc -p tsconfig.json",
 		"test": "vitest run"
 	},
 	"dependencies": {
-		"@smart-clearance/core": "workspace:*"
+		"@smart-clearance/core": "workspace:*",
+		"firebase": "12.19.0"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",

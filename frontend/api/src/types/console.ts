@@ -1,7 +1,7 @@
 // The staff console's part of the contract (console.smartclearance.com): the platform's own staff, every client
 // workspace (its supply chain, agents, exits and rules, people, integrations and plan), and the audit log. The shapes
 // are design3/core/platform.js's, the console prototype's mock backend. Shared shapes are in shared.ts.
-import type { Catalog, DemoRequest, Mark, WorkspaceMatch } from './shared';
+import type { Catalog, DemoRequest, Mark, PasswordAuth, WorkspaceMatch } from './shared';
 
 /** how far an agent may go before a person says yes */
 export type Autonomy = 'suggest' | 'ask' | 'act';
@@ -263,11 +263,7 @@ export type NewClientInput = {
 export type SignInInput = { email: string; password: string };
 /** how the console signs in over HTTP: Firebase Authentication, which the app provides (frontend/console). The token is
  *  the Firebase ID token every call to backend-api carries */
-export type ConsoleAuth = {
-	signIn(email: string, password: string): Promise<void>;
-	signOut(): Promise<void>;
-	token(): Promise<string | null>;
-};
+export type ConsoleAuth = PasswordAuth;
 
 /** what the console calls. Every change is written to the audit log by the server, in the staff member's name */
 /** one day of the Overview's range (SC-48) */

@@ -1,7 +1,7 @@
 import { ApiError } from './types/shared';
 
 export type Method = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
-export type Call = <T>(method: Method, path: string, body?: unknown) => Promise<T>;
+export type Call = <T>(method: Method, path: string, body?: unknown, headers?: Record<string, string>) => Promise<T>;
 
 export type TransportOptions = {
 	fetcher?: typeof fetch;
@@ -23,7 +23,12 @@ function startTrace(): { trace: string; traceparent: string } {
  *  and, for a 422, the fields it rejected; a 204 resolves to undefined. Every surface's client (site.ts,
  *  console/http.ts) is built on it. */
 export function transport(base: string, { fetcher = fetch, token }: TransportOptions = {}): Call {
-	return async function call<T>(method: Method, path: string, body?: unknown): Promise<T> {
+	return async function call<T>(
+		method: Method,
+		path: string,
+		body?: unknown,
+		headers: Record<string, string> = {}
+	): Promise<T> {
 		const bearer = token ? await token() : null;
 		const { trace, traceparent } = startTrace();
 		const res = await fetcher(base + path, {
@@ -32,7 +37,8 @@ export function transport(base: string, { fetcher = fetch, token }: TransportOpt
 				accept: 'application/json',
 				traceparent,
 				...(body === undefined ? {} : { 'content-type': 'application/json' }),
-				...(bearer ? { authorization: `Bearer ${bearer}` } : {})
+				...(bearer ? { authorization: `Bearer ${bearer}` } : {}),
+				...headers
 			},
 			body: body === undefined ? undefined : JSON.stringify(body)
 		});

@@ -317,6 +317,9 @@ importers:
       '@smart-clearance/core':
         specifier: workspace:*
         version: link:../core
+      firebase:
+        specifier: 12.19.0
+        version: 12.19.0
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
@@ -339,9 +342,6 @@ importers:
       '@tanstack/svelte-query':
         specifier: ^6.3.1
         version: 6.3.1(svelte@5.57.1(@typescript-eslint/types@8.71.0))
-      firebase:
-        specifier: 12.19.0
-        version: 12.19.0
       motion:
         specifier: 'catalog:'
         version: 14.0.0

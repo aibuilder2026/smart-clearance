@@ -63,3 +63,12 @@ export class ApiError extends Error {
 		super(message);
 	}
 }
+
+/** how an app signs a person in over HTTP: Firebase Authentication with an email and a password, which the app
+ *  provides (createFirebase in @smart-clearance/api/firebase). The token is the Firebase ID token every call to
+ *  backend-api carries; `fresh` forces a new one (after a 401) */
+export type PasswordAuth = {
+	signIn(email: string, password: string): Promise<void>;
+	signOut(): Promise<void>;
+	token(fresh?: boolean): Promise<string | null>;
+};
