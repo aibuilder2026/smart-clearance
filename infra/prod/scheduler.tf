@@ -4,7 +4,8 @@
 # cloudscheduler.serviceAgent allows it project-wide). Two jobs, inside the billing account's three free ones.
 # - sc-tick, every minute: the daily runs on journey time, the timers that are due, stalled journeys (their event sent
 #   again after ten minutes), then the outbox (backend-api/src/sc_api/services/journey/tick.py). The next minute is the
-#   retry, so a failed tick is not retried.
+#   retry, so a failed tick is not retried: Cloud Scheduler's default (no retry_config here, since the API returns no
+#   block that holds only defaults, and Terraform would add it again on every plan).
 # - sc-journey-reset, paused: the story from its start for the workspace's client (reset.py). Resumed, it runs every
 #   morning at 07:30 in India, before the Data agent's 08:30; run it once with `gcloud scheduler jobs run`.
 
@@ -17,10 +18,6 @@ resource "google_cloud_scheduler_job" "tick" {
   schedule         = "* * * * *"
   time_zone        = "Asia/Kolkata"
   attempt_deadline = "120s"
-
-  retry_config {
-    retry_count = 0
-  }
 
   http_target {
     http_method = "POST"
@@ -45,10 +42,6 @@ resource "google_cloud_scheduler_job" "journey_reset" {
   time_zone        = "Asia/Kolkata"
   attempt_deadline = "300s"
   paused           = true
-
-  retry_config {
-    retry_count = 0
-  }
 
   http_target {
     http_method = "POST"
