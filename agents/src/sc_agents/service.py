@@ -44,7 +44,9 @@ def create_app(deps: Deps | None = None) -> FastAPI:
 
     app = FastAPI(title="Smart-Clearance agents", lifespan=lifespan, docs_url=None, redoc_url=None)
     app.state.deps = deps
-    app.state.ready_at = 0.0
+    # no check has passed yet: a container (or a CI runner) started under ten minutes ago reads a monotonic clock under
+    # READY_FOR, so a cache starting at 0 would answer ready without checking the models (SC-76)
+    app.state.ready_at = float("-inf")
     if deps is None:  # the real service traces its routes; the tests' apps need not
         from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 
