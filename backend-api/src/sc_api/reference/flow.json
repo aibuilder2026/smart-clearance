@@ -1,0 +1,4234 @@
+{
+	"stages": [
+		"connect",
+		"detect",
+		"verify",
+		"value",
+		"decide",
+		"approve",
+		"execute",
+		"settle",
+		"report"
+	],
+	"steps": [
+		{
+			"stage": "connect",
+			"action": "connect",
+			"arg": null,
+			"human": null,
+			"stageOf": 0,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": null
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "watching",
+				"photo": {
+					"status": "none"
+				},
+				"plan": null,
+				"listing": null,
+				"offer": null,
+				"orders": [],
+				"bids": [],
+				"chat": [],
+				"award": null,
+				"van": {
+					"status": "idle",
+					"done": 0
+				},
+				"truck": {
+					"status": "idle"
+				},
+				"docs": null,
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": null
+			},
+			"feed": [
+				{
+					"stage": "connect",
+					"agent": "Data",
+					"icon": "database",
+					"at": "Thu 16:30",
+					"min": 0,
+					"text": "Mapped 8 DMS columns, loaded 312 batches from 4 distributors and back-filled 90 days of sell-through by pincode and by shop into BigQuery.",
+					"calls": [
+						[
+							"bigquery.load",
+							"312 batches",
+							"ok"
+						],
+						[
+							"sellthrough.backfill",
+							"90 days · by pincode, by shop",
+							"ok"
+						]
+					]
+				}
+			],
+			"notifications": [],
+			"audit": [
+				{
+					"who": "priya",
+					"what": "confirmed DMS mapping and guardrails",
+					"target": "Setup",
+					"at": "Thu 16:41"
+				}
+			]
+		},
+		{
+			"stage": "connect",
+			"action": "permit",
+			"arg": null,
+			"human": "rakesh",
+			"stageOf": 1,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "watching",
+				"photo": {
+					"status": "none"
+				},
+				"plan": null,
+				"listing": null,
+				"offer": null,
+				"orders": [],
+				"bids": [],
+				"chat": [],
+				"award": null,
+				"van": {
+					"status": "idle",
+					"done": 0
+				},
+				"truck": {
+					"status": "idle"
+				},
+				"docs": null,
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": null
+			},
+			"feed": [
+				{
+					"key": "permit",
+					"stage": "connect",
+					"person": "rakesh",
+					"at": "Thu 16:52",
+					"min": 0,
+					"text": "Gave Smart-Clearance a one-time permission to list his Munchly stock, offer schemes to his kiranas, draft his invoices and book dispatch slots, inside Munchly's floors."
+				}
+			],
+			"notifications": [
+				{
+					"to": "priya",
+					"read": false,
+					"title": "Rakesh Traders is set up",
+					"body": "Rakesh bhai signed in and allowed listings, scheme offers, invoice drafts and dispatch slots in his name, inside your floors.",
+					"at": "Thu 16:52",
+					"link": "setup"
+				}
+			],
+			"audit": [
+				{
+					"who": "rakesh",
+					"what": "gave the one-time permission to act in his name",
+					"target": "Rakesh Traders · inside Munchly's floors",
+					"at": "Thu 16:52"
+				}
+			]
+		},
+		{
+			"stage": "detect",
+			"action": "detect",
+			"arg": null,
+			"human": null,
+			"stageOf": 2,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "at-risk",
+				"photo": {
+					"status": "none"
+				},
+				"plan": null,
+				"listing": null,
+				"offer": null,
+				"orders": [],
+				"bids": [],
+				"chat": [],
+				"award": null,
+				"van": {
+					"status": "idle",
+					"done": 0
+				},
+				"truck": {
+					"status": "idle"
+				},
+				"docs": null,
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": null
+			},
+			"feed": [
+				{
+					"key": "watch",
+					"stage": "detect",
+					"agent": "Watcher",
+					"icon": "radar",
+					"at": "09:00",
+					"min": 0,
+					"text": "Checked 312 batches across 4 distributors. MF-2409-117 fails all three quick-commerce gates and will not sell through.",
+					"calls": [
+						[
+							"gates.check",
+							"Blinkit 47/90 · Zepto 47/110 · Instamart 47/110",
+							"bad"
+						],
+						[
+							"sellthrough.project",
+							"12/day × 40 days = 480 of 1,840",
+							""
+						],
+						[
+							"pubsub.publish",
+							"batch.at_risk",
+							"ok"
+						]
+					]
+				}
+			],
+			"notifications": [
+				{
+					"to": "priya",
+					"read": false,
+					"link": "command",
+					"at": "09:00",
+					"title": "Masala Chips 150 g · Nagpur",
+					"body": "Priya ji, Nagpur godown mein Masala Chips 150g (batch MF-2409-117) ki 1,360 units 18 Nov se pehle nahi bikengi. Q-commerce block hai. Route dekhne ke liye tap karein."
+				}
+			],
+			"audit": []
+		},
+		{
+			"stage": "verify",
+			"action": "requestPhoto",
+			"arg": null,
+			"human": null,
+			"stageOf": 2,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "at-risk",
+				"photo": {
+					"status": "requested",
+					"at": "09:05"
+				},
+				"plan": null,
+				"listing": null,
+				"offer": null,
+				"orders": [],
+				"bids": [],
+				"chat": [],
+				"award": null,
+				"van": {
+					"status": "idle",
+					"done": 0
+				},
+				"truck": {
+					"status": "idle"
+				},
+				"docs": null,
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": null
+			},
+			"feed": [
+				{
+					"key": "ask",
+					"stage": "verify",
+					"agent": "Vision",
+					"icon": "scan-line",
+					"at": "09:05",
+					"min": 5,
+					"text": "Asked Rakesh Traders for one label photo before quoting any price.",
+					"calls": [
+						[
+							"fcm.send",
+							"Rakesh bhai · Hindi",
+							"ok"
+						]
+					]
+				}
+			],
+			"notifications": [
+				{
+					"to": "rakesh",
+					"read": false,
+					"link": "photo",
+					"hindi": false,
+					"at": "09:05",
+					"title": "Ek photo chahiye",
+					"body": "Rakesh bhai, Masala Chips 150g ka ek carton ka label photo bhej dein (batch MF-2409-117). Bas ek photo, baaki hum kar lenge."
+				}
+			],
+			"audit": []
+		},
+		{
+			"stage": "verify",
+			"action": "sendPhoto",
+			"arg": null,
+			"human": "rakesh",
+			"stageOf": 2,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "at-risk",
+				"photo": {
+					"status": "reading",
+					"at": "09:19"
+				},
+				"plan": null,
+				"listing": null,
+				"offer": null,
+				"orders": [],
+				"bids": [],
+				"chat": [],
+				"award": null,
+				"van": {
+					"status": "idle",
+					"done": 0
+				},
+				"truck": {
+					"status": "idle"
+				},
+				"docs": null,
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": null
+			},
+			"feed": [
+				{
+					"key": "photo",
+					"stage": "verify",
+					"person": "rakesh",
+					"at": "09:19",
+					"min": 14,
+					"text": "Sent one photo of the carton label from shelf B4."
+				}
+			],
+			"notifications": [],
+			"audit": [
+				{
+					"who": "rakesh",
+					"what": "sent the label photo",
+					"target": "MF-2409-117",
+					"at": "09:19"
+				}
+			]
+		},
+		{
+			"stage": "verify",
+			"action": "verify",
+			"arg": null,
+			"human": null,
+			"stageOf": 3,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "verified",
+				"photo": {
+					"status": "verified",
+					"at": "09:20",
+					"confidence": 0.97
+				},
+				"plan": null,
+				"listing": null,
+				"offer": null,
+				"orders": [],
+				"bids": [],
+				"chat": [],
+				"award": null,
+				"van": {
+					"status": "idle",
+					"done": 0
+				},
+				"truck": {
+					"status": "idle"
+				},
+				"docs": null,
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": null
+			},
+			"feed": [
+				{
+					"key": "read",
+					"stage": "verify",
+					"agent": "Vision",
+					"icon": "scan-line",
+					"at": "09:20",
+					"min": 1,
+					"text": "Read the label: batch MF-2409-117, MFG 18 May 2026, best before 18 Nov 2026, MRP ₹30.00, confidence 0.97. Matches the DMS record.",
+					"calls": [
+						[
+							"gemini.vision.read_label",
+							"confidence 0.97",
+							"ok"
+						],
+						[
+							"dms.reconcile",
+							"match",
+							"ok"
+						]
+					]
+				}
+			],
+			"notifications": [],
+			"audit": []
+		},
+		{
+			"stage": "value",
+			"action": "value",
+			"arg": null,
+			"human": null,
+			"stageOf": 4,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "valued",
+				"photo": {
+					"status": "verified",
+					"at": "09:20",
+					"confidence": 0.97
+				},
+				"plan": null,
+				"listing": null,
+				"offer": null,
+				"orders": [],
+				"bids": [],
+				"chat": [],
+				"award": null,
+				"van": {
+					"status": "idle",
+					"done": 0
+				},
+				"truck": {
+					"status": "idle"
+				},
+				"docs": null,
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": null
+			},
+			"feed": [
+				{
+					"key": "value",
+					"stage": "value",
+					"agent": "Valuer",
+					"icon": "scale",
+					"at": "09:21",
+					"min": 1,
+					"text": "Priced five channels against 47 days left. Destroying costs −₹19.36 a unit, −₹26,330 for the batch.",
+					"calls": [
+						[
+							"bigquery.price_history",
+							"snacks · 47 days",
+							""
+						],
+						[
+							"gst.rate",
+							"HSN 2005 → 5%",
+							""
+						],
+						[
+							"cost_sheet.input_gst",
+							"₹0.90 a pack",
+							""
+						],
+						[
+							"epr.factor",
+							"₹6 / kg",
+							""
+						]
+					]
+				}
+			],
+			"notifications": [],
+			"audit": []
+		},
+		{
+			"stage": "decide",
+			"action": "decide",
+			"arg": null,
+			"human": null,
+			"stageOf": 5,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "planned",
+				"photo": {
+					"status": "verified",
+					"at": "09:20",
+					"confidence": 0.97
+				},
+				"plan": {
+					"status": "proposed",
+					"at": "09:22"
+				},
+				"listing": null,
+				"offer": null,
+				"orders": [],
+				"bids": [],
+				"chat": [],
+				"award": null,
+				"van": {
+					"status": "idle",
+					"done": 0
+				},
+				"truck": {
+					"status": "idle"
+				},
+				"docs": null,
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": null
+			},
+			"feed": [
+				{
+					"key": "route",
+					"stage": "decide",
+					"agent": "Router",
+					"icon": "split",
+					"at": "09:22",
+					"min": 1,
+					"text": "588 units to the kirana cluster at ₹18 effective, capped by what 38 kiranas can move in 14 days; 772 to ExpireSoon at ₹15. The Nagpur staff sale pays less a unit, so it gets nothing this time.",
+					"calls": [
+						[
+							"allocate.greedy",
+							"1,360 units → net ₹21,770",
+							"ok"
+						]
+					]
+				},
+				{
+					"key": "notify",
+					"stage": "approve",
+					"agent": "Notifier",
+					"icon": "bell",
+					"at": "09:23",
+					"min": 1,
+					"text": "Sent Priya the plan to review, and Rakesh bhai the same plan with a pause button."
+				}
+			],
+			"notifications": [
+				{
+					"to": "priya",
+					"read": false,
+					"link": "route",
+					"at": "09:23",
+					"title": "Plan ready · MF-2409-117",
+					"body": "Plan for MF-2409-117: 588 units kirana (₹18), 772 units ExpireSoon (₹15). Net ₹21,770, ₹26,340 better than write-off. GST ITC ₹1,224 safe. Tap to review and approve."
+				}
+			],
+			"audit": []
+		},
+		{
+			"stage": "approve",
+			"action": "approve",
+			"arg": null,
+			"human": "priya",
+			"stageOf": 6,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "approved",
+				"photo": {
+					"status": "verified",
+					"at": "09:20",
+					"confidence": 0.97
+				},
+				"plan": {
+					"status": "approved",
+					"at": "09:40",
+					"by": "priya",
+					"device": "phone"
+				},
+				"listing": null,
+				"offer": null,
+				"orders": [],
+				"bids": [],
+				"chat": [],
+				"award": null,
+				"van": {
+					"status": "idle",
+					"done": 0
+				},
+				"truck": {
+					"status": "idle"
+				},
+				"docs": null,
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": null
+			},
+			"feed": [
+				{
+					"key": "approved",
+					"stage": "approve",
+					"person": "priya",
+					"at": "09:40",
+					"min": 17,
+					"text": "Approved the plan from her phone.",
+					"human": true
+				}
+			],
+			"notifications": [
+				{
+					"to": "rakesh",
+					"read": false,
+					"link": "home",
+					"at": "09:40",
+					"title": "Plan approved · Masala Chips",
+					"body": "Rakesh bhai, Munchly ne MF-2409-117 ka plan approve kiya: 588 packets aapke kiranas ko scheme par, 772 aapke naam se ExpireSoon par. Kuch rokna ho to app mein Pause dabayein."
+				}
+			],
+			"audit": [
+				{
+					"who": "priya",
+					"what": "approved the plan",
+					"target": "MF-2409-117 · net ₹21,770",
+					"at": "09:40"
+				}
+			]
+		},
+		{
+			"stage": "execute",
+			"action": "list",
+			"arg": null,
+			"human": null,
+			"stageOf": 6,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "executing",
+				"photo": {
+					"status": "verified",
+					"at": "09:20",
+					"confidence": 0.97
+				},
+				"plan": {
+					"status": "approved",
+					"at": "09:40",
+					"by": "priya",
+					"device": "phone"
+				},
+				"listing": {
+					"id": "ES-24117",
+					"status": "live",
+					"units": 772,
+					"price": 15,
+					"reserve": 13.5,
+					"at": "09:41"
+				},
+				"offer": null,
+				"orders": [],
+				"bids": [],
+				"chat": [],
+				"award": null,
+				"van": {
+					"status": "idle",
+					"done": 0
+				},
+				"truck": {
+					"status": "idle"
+				},
+				"docs": null,
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": null
+			},
+			"feed": [
+				{
+					"key": "list",
+					"stage": "execute",
+					"agent": "Lister",
+					"icon": "shopping-bag",
+					"at": "09:41",
+					"min": 1,
+					"text": "Posted 772 units on ExpireSoon in Rakesh Traders' name at ₹15, with the label photo and dates. Reserve ₹13.50; hidden from buyers inside Munchly's territories.",
+					"calls": [
+						[
+							"POST /v1/listings",
+							"201 · ES-24117",
+							"ok"
+						]
+					]
+				}
+			],
+			"notifications": [],
+			"audit": []
+		},
+		{
+			"stage": "execute",
+			"action": "outreach",
+			"arg": null,
+			"human": null,
+			"stageOf": 6,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "executing",
+				"photo": {
+					"status": "verified",
+					"at": "09:20",
+					"confidence": 0.97
+				},
+				"plan": {
+					"status": "approved",
+					"at": "09:40",
+					"by": "priya",
+					"device": "phone"
+				},
+				"listing": {
+					"id": "ES-24117",
+					"status": "live",
+					"units": 772,
+					"price": 15,
+					"reserve": 13.5,
+					"at": "09:41"
+				},
+				"offer": {
+					"status": "sent",
+					"at": "09:41",
+					"shops": 38
+				},
+				"orders": [],
+				"bids": [],
+				"chat": [],
+				"award": null,
+				"van": {
+					"status": "idle",
+					"done": 0
+				},
+				"truck": {
+					"status": "idle"
+				},
+				"docs": null,
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": null
+			},
+			"feed": [
+				{
+					"key": "outreach",
+					"stage": "execute",
+					"agent": "Outreach",
+					"icon": "send",
+					"at": "09:41",
+					"min": 0,
+					"text": "Pushed the Hindi scheme to 38 kiranas in the Nagpur cluster: buy 10 get 2 for 48 hours, no shop over 4× its own 14-day sales.",
+					"calls": [
+						[
+							"fcm.send",
+							"38 kiranas · Hindi",
+							"ok"
+						]
+					]
+				}
+			],
+			"notifications": [
+				{
+					"to": "ganesh",
+					"read": false,
+					"link": "offer",
+					"at": "09:41",
+					"title": "आज का खास ऑफर",
+					"hindi": true,
+					"body": "नमस्ते Shree Ganesh Kirana! Munchly Masala Chips 150g पर आज खास ऑफर: 10 पैकेट लो, 2 मुफ़्त. Best before 18 Nov 2026. सिर्फ़ 48 घंटे. ऑर्डर के लिए टैप करें — Rakesh Traders",
+					"en": "Today's offer on Munchly Masala Chips 150 g: buy 10 packets, get 2 free. Best before 18 Nov 2026. 48 hours only. Tap to order. Rakesh Traders"
+				}
+			],
+			"audit": []
+		},
+		{
+			"stage": "execute",
+			"action": "donate",
+			"arg": null,
+			"human": null,
+			"stageOf": 6,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "executing",
+				"photo": {
+					"status": "verified",
+					"at": "09:20",
+					"confidence": 0.97
+				},
+				"plan": {
+					"status": "approved",
+					"at": "09:40",
+					"by": "priya",
+					"device": "phone"
+				},
+				"listing": {
+					"id": "ES-24117",
+					"status": "live",
+					"units": 772,
+					"price": 15,
+					"reserve": 13.5,
+					"at": "09:41"
+				},
+				"offer": {
+					"status": "sent",
+					"at": "09:41",
+					"shops": 38
+				},
+				"orders": [],
+				"bids": [],
+				"chat": [],
+				"award": null,
+				"van": {
+					"status": "idle",
+					"done": 0
+				},
+				"truck": {
+					"status": "idle"
+				},
+				"docs": null,
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": "booked"
+			},
+			"feed": [
+				{
+					"key": "donate",
+					"stage": "execute",
+					"agent": "Donation",
+					"icon": "heart-handshake",
+					"at": "Day 0",
+					"min": 60,
+					"text": "Mango Drink batch: booked Feeding India for 58 units. India FoodBanking Network needs 21+ days and 100+ units.",
+					"calls": [
+						[
+							"foodbank.match",
+							"Feeding India · 58 units",
+							"ok"
+						]
+					]
+				}
+			],
+			"notifications": [
+				{
+					"to": "meera",
+					"read": false,
+					"title": "Pickup request · Mango Drink",
+					"body": "58 packs of Mango Drink, 22 days left, with the FSSAI checklist. Pickup from Begum Bazaar?",
+					"at": "Day 0",
+					"link": "pickups"
+				}
+			],
+			"audit": []
+		},
+		{
+			"stage": "execute",
+			"action": "order",
+			"arg": "k0",
+			"human": "ganesh",
+			"stageOf": 6,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "executing",
+				"photo": {
+					"status": "verified",
+					"at": "09:20",
+					"confidence": 0.97
+				},
+				"plan": {
+					"status": "approved",
+					"at": "09:40",
+					"by": "priya",
+					"device": "phone"
+				},
+				"listing": {
+					"id": "ES-24117",
+					"status": "live",
+					"units": 772,
+					"price": 15,
+					"reserve": 13.5,
+					"at": "09:41"
+				},
+				"offer": {
+					"status": "sent",
+					"at": "09:41",
+					"shops": 38
+				},
+				"orders": [
+					{
+						"id": "k0",
+						"units": 24,
+						"at": "09:52"
+					}
+				],
+				"bids": [],
+				"chat": [],
+				"award": null,
+				"van": {
+					"status": "idle",
+					"done": 0
+				},
+				"truck": {
+					"status": "idle"
+				},
+				"docs": null,
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": "booked"
+			},
+			"feed": [],
+			"notifications": [],
+			"audit": [
+				{
+					"who": "ganesh",
+					"what": "ordered 24 packets",
+					"target": "Masala Chips scheme",
+					"at": "09:52"
+				}
+			]
+		},
+		{
+			"stage": "execute",
+			"action": "allOrders",
+			"arg": null,
+			"human": null,
+			"stageOf": 6,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "executing",
+				"photo": {
+					"status": "verified",
+					"at": "09:20",
+					"confidence": 0.97
+				},
+				"plan": {
+					"status": "approved",
+					"at": "09:40",
+					"by": "priya",
+					"device": "phone"
+				},
+				"listing": {
+					"id": "ES-24117",
+					"status": "live",
+					"units": 772,
+					"price": 15,
+					"reserve": 13.5,
+					"at": "09:41"
+				},
+				"offer": {
+					"status": "sent",
+					"at": "09:41",
+					"shops": 38
+				},
+				"orders": [
+					{
+						"id": "k0",
+						"units": 24,
+						"at": "09:52"
+					},
+					{
+						"id": "k1",
+						"units": 24,
+						"at": "09:58"
+					},
+					{
+						"id": "k2",
+						"units": 12,
+						"at": "10:01"
+					},
+					{
+						"id": "k3",
+						"units": 12,
+						"at": "10:04"
+					},
+					{
+						"id": "k4",
+						"units": 36,
+						"at": "10:08"
+					},
+					{
+						"id": "k5",
+						"units": 24,
+						"at": "10:11"
+					},
+					{
+						"id": "k6",
+						"units": 12,
+						"at": "10:15"
+					},
+					{
+						"id": "k7",
+						"units": 12,
+						"at": "10:19"
+					},
+					{
+						"id": "k8",
+						"units": 24,
+						"at": "10:22"
+					},
+					{
+						"id": "k9",
+						"units": 12,
+						"at": "10:26"
+					},
+					{
+						"id": "k10",
+						"units": 48,
+						"at": "10:30"
+					},
+					{
+						"id": "k11",
+						"units": 36,
+						"at": "10:33"
+					},
+					{
+						"id": "k12",
+						"units": 24,
+						"at": "10:37"
+					},
+					{
+						"id": "k13",
+						"units": 12,
+						"at": "10:41"
+					},
+					{
+						"id": "k14",
+						"units": 12,
+						"at": "10:44"
+					},
+					{
+						"id": "k15",
+						"units": 12,
+						"at": "10:48"
+					},
+					{
+						"id": "k16",
+						"units": 24,
+						"at": "10:52"
+					},
+					{
+						"id": "k17",
+						"units": 12,
+						"at": "10:55"
+					},
+					{
+						"id": "k18",
+						"units": 12,
+						"at": "10:59"
+					},
+					{
+						"id": "k19",
+						"units": 24,
+						"at": "11:02"
+					},
+					{
+						"id": "k20",
+						"units": 12,
+						"at": "11:06"
+					},
+					{
+						"id": "k21",
+						"units": 12,
+						"at": "11:10"
+					},
+					{
+						"id": "k22",
+						"units": 12,
+						"at": "11:14"
+					},
+					{
+						"id": "k23",
+						"units": 36,
+						"at": "11:17"
+					},
+					{
+						"id": "k24",
+						"units": 12,
+						"at": "11:21"
+					},
+					{
+						"id": "k25",
+						"units": 24,
+						"at": "11:24"
+					},
+					{
+						"id": "k26",
+						"units": 12,
+						"at": "11:27"
+					},
+					{
+						"id": "k27",
+						"units": 12,
+						"at": "11:31"
+					},
+					{
+						"id": "k28",
+						"units": 12,
+						"at": "11:34"
+					},
+					{
+						"id": "k29",
+						"units": 24,
+						"at": "11:38"
+					},
+					{
+						"id": "k30",
+						"units": 12,
+						"at": "11:41"
+					}
+				],
+				"bids": [],
+				"chat": [],
+				"award": null,
+				"van": {
+					"status": "idle",
+					"done": 0
+				},
+				"truck": {
+					"status": "idle"
+				},
+				"docs": null,
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": "booked"
+			},
+			"feed": [
+				{
+					"key": "orders",
+					"stage": "execute",
+					"agent": "Outreach",
+					"icon": "store",
+					"at": "11:41",
+					"min": 32,
+					"text": "31 of 38 kiranas ordered all 588 units in about two hours, each under its cap.",
+					"calls": [
+						[
+							"orders.sum",
+							"588 units · 31 shops",
+							"ok"
+						]
+					]
+				}
+			],
+			"notifications": [],
+			"audit": []
+		},
+		{
+			"stage": "execute",
+			"action": "bid",
+			"arg": 13,
+			"human": "agrawal",
+			"stageOf": 6,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "executing",
+				"photo": {
+					"status": "verified",
+					"at": "09:20",
+					"confidence": 0.97
+				},
+				"plan": {
+					"status": "approved",
+					"at": "09:40",
+					"by": "priya",
+					"device": "phone"
+				},
+				"listing": {
+					"id": "ES-24117",
+					"status": "live",
+					"units": 772,
+					"price": 15,
+					"reserve": 13.5,
+					"at": "09:41"
+				},
+				"offer": {
+					"status": "sent",
+					"at": "09:41",
+					"shops": 38
+				},
+				"orders": [
+					{
+						"id": "k0",
+						"units": 24,
+						"at": "09:52"
+					},
+					{
+						"id": "k1",
+						"units": 24,
+						"at": "09:58"
+					},
+					{
+						"id": "k2",
+						"units": 12,
+						"at": "10:01"
+					},
+					{
+						"id": "k3",
+						"units": 12,
+						"at": "10:04"
+					},
+					{
+						"id": "k4",
+						"units": 36,
+						"at": "10:08"
+					},
+					{
+						"id": "k5",
+						"units": 24,
+						"at": "10:11"
+					},
+					{
+						"id": "k6",
+						"units": 12,
+						"at": "10:15"
+					},
+					{
+						"id": "k7",
+						"units": 12,
+						"at": "10:19"
+					},
+					{
+						"id": "k8",
+						"units": 24,
+						"at": "10:22"
+					},
+					{
+						"id": "k9",
+						"units": 12,
+						"at": "10:26"
+					},
+					{
+						"id": "k10",
+						"units": 48,
+						"at": "10:30"
+					},
+					{
+						"id": "k11",
+						"units": 36,
+						"at": "10:33"
+					},
+					{
+						"id": "k12",
+						"units": 24,
+						"at": "10:37"
+					},
+					{
+						"id": "k13",
+						"units": 12,
+						"at": "10:41"
+					},
+					{
+						"id": "k14",
+						"units": 12,
+						"at": "10:44"
+					},
+					{
+						"id": "k15",
+						"units": 12,
+						"at": "10:48"
+					},
+					{
+						"id": "k16",
+						"units": 24,
+						"at": "10:52"
+					},
+					{
+						"id": "k17",
+						"units": 12,
+						"at": "10:55"
+					},
+					{
+						"id": "k18",
+						"units": 12,
+						"at": "10:59"
+					},
+					{
+						"id": "k19",
+						"units": 24,
+						"at": "11:02"
+					},
+					{
+						"id": "k20",
+						"units": 12,
+						"at": "11:06"
+					},
+					{
+						"id": "k21",
+						"units": 12,
+						"at": "11:10"
+					},
+					{
+						"id": "k22",
+						"units": 12,
+						"at": "11:14"
+					},
+					{
+						"id": "k23",
+						"units": 36,
+						"at": "11:17"
+					},
+					{
+						"id": "k24",
+						"units": 12,
+						"at": "11:21"
+					},
+					{
+						"id": "k25",
+						"units": 24,
+						"at": "11:24"
+					},
+					{
+						"id": "k26",
+						"units": 12,
+						"at": "11:27"
+					},
+					{
+						"id": "k27",
+						"units": 12,
+						"at": "11:31"
+					},
+					{
+						"id": "k28",
+						"units": 12,
+						"at": "11:34"
+					},
+					{
+						"id": "k29",
+						"units": 24,
+						"at": "11:38"
+					},
+					{
+						"id": "k30",
+						"units": 12,
+						"at": "11:41"
+					}
+				],
+				"bids": [
+					{
+						"id": "b1",
+						"price": 13,
+						"at": "11:02",
+						"by": "agrawal",
+						"status": "placed"
+					}
+				],
+				"chat": [
+					{
+						"from": "buyer",
+						"text": "Can you do ₹13 for all 772?",
+						"at": "11:02"
+					}
+				],
+				"award": null,
+				"van": {
+					"status": "idle",
+					"done": 0
+				},
+				"truck": {
+					"status": "idle"
+				},
+				"docs": null,
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": "booked"
+			},
+			"feed": [],
+			"notifications": [],
+			"audit": [
+				{
+					"who": "agrawal",
+					"what": "bid ₹13.00",
+					"target": "ES-24117",
+					"at": "11:02"
+				}
+			]
+		},
+		{
+			"stage": "execute",
+			"action": "counter",
+			"arg": null,
+			"human": null,
+			"stageOf": 6,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "executing",
+				"photo": {
+					"status": "verified",
+					"at": "09:20",
+					"confidence": 0.97
+				},
+				"plan": {
+					"status": "approved",
+					"at": "09:40",
+					"by": "priya",
+					"device": "phone"
+				},
+				"listing": {
+					"id": "ES-24117",
+					"status": "live",
+					"units": 772,
+					"price": 15,
+					"reserve": 13.5,
+					"at": "09:41"
+				},
+				"offer": {
+					"status": "sent",
+					"at": "09:41",
+					"shops": 38
+				},
+				"orders": [
+					{
+						"id": "k0",
+						"units": 24,
+						"at": "09:52"
+					},
+					{
+						"id": "k1",
+						"units": 24,
+						"at": "09:58"
+					},
+					{
+						"id": "k2",
+						"units": 12,
+						"at": "10:01"
+					},
+					{
+						"id": "k3",
+						"units": 12,
+						"at": "10:04"
+					},
+					{
+						"id": "k4",
+						"units": 36,
+						"at": "10:08"
+					},
+					{
+						"id": "k5",
+						"units": 24,
+						"at": "10:11"
+					},
+					{
+						"id": "k6",
+						"units": 12,
+						"at": "10:15"
+					},
+					{
+						"id": "k7",
+						"units": 12,
+						"at": "10:19"
+					},
+					{
+						"id": "k8",
+						"units": 24,
+						"at": "10:22"
+					},
+					{
+						"id": "k9",
+						"units": 12,
+						"at": "10:26"
+					},
+					{
+						"id": "k10",
+						"units": 48,
+						"at": "10:30"
+					},
+					{
+						"id": "k11",
+						"units": 36,
+						"at": "10:33"
+					},
+					{
+						"id": "k12",
+						"units": 24,
+						"at": "10:37"
+					},
+					{
+						"id": "k13",
+						"units": 12,
+						"at": "10:41"
+					},
+					{
+						"id": "k14",
+						"units": 12,
+						"at": "10:44"
+					},
+					{
+						"id": "k15",
+						"units": 12,
+						"at": "10:48"
+					},
+					{
+						"id": "k16",
+						"units": 24,
+						"at": "10:52"
+					},
+					{
+						"id": "k17",
+						"units": 12,
+						"at": "10:55"
+					},
+					{
+						"id": "k18",
+						"units": 12,
+						"at": "10:59"
+					},
+					{
+						"id": "k19",
+						"units": 24,
+						"at": "11:02"
+					},
+					{
+						"id": "k20",
+						"units": 12,
+						"at": "11:06"
+					},
+					{
+						"id": "k21",
+						"units": 12,
+						"at": "11:10"
+					},
+					{
+						"id": "k22",
+						"units": 12,
+						"at": "11:14"
+					},
+					{
+						"id": "k23",
+						"units": 36,
+						"at": "11:17"
+					},
+					{
+						"id": "k24",
+						"units": 12,
+						"at": "11:21"
+					},
+					{
+						"id": "k25",
+						"units": 24,
+						"at": "11:24"
+					},
+					{
+						"id": "k26",
+						"units": 12,
+						"at": "11:27"
+					},
+					{
+						"id": "k27",
+						"units": 12,
+						"at": "11:31"
+					},
+					{
+						"id": "k28",
+						"units": 12,
+						"at": "11:34"
+					},
+					{
+						"id": "k29",
+						"units": 24,
+						"at": "11:38"
+					},
+					{
+						"id": "k30",
+						"units": 12,
+						"at": "11:41"
+					}
+				],
+				"bids": [
+					{
+						"id": "b1",
+						"price": 13,
+						"at": "11:02",
+						"by": "agrawal",
+						"status": "countered",
+						"counter": 14.2
+					}
+				],
+				"chat": [
+					{
+						"from": "buyer",
+						"text": "Can you do ₹13 for all 772?",
+						"at": "11:02"
+					},
+					{
+						"from": "agent",
+						"text": "₹14.20 for 772, Nagpur stock, dispatch within 24 h of balance.",
+						"at": "11:03"
+					}
+				],
+				"award": null,
+				"van": {
+					"status": "idle",
+					"done": 0
+				},
+				"truck": {
+					"status": "idle"
+				},
+				"docs": null,
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": "booked"
+			},
+			"feed": [
+				{
+					"key": "counter",
+					"stage": "execute",
+					"agent": "Negotiator",
+					"icon": "messages-square",
+					"at": "11:03",
+					"min": 82,
+					"text": "Agrawal Wholesale bid ₹13 for all 772, below the reserve. Countered at ₹14.20 with 24-hour dispatch from Rakesh bhai's calendar.",
+					"calls": [
+						[
+							"listing.counter",
+							"₹13.00 → ₹14.20",
+							""
+						]
+					]
+				}
+			],
+			"notifications": [],
+			"audit": []
+		},
+		{
+			"stage": "execute",
+			"action": "accept",
+			"arg": null,
+			"human": "agrawal",
+			"stageOf": 7,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "executing",
+				"photo": {
+					"status": "verified",
+					"at": "09:20",
+					"confidence": 0.97
+				},
+				"plan": {
+					"status": "approved",
+					"at": "09:40",
+					"by": "priya",
+					"device": "phone"
+				},
+				"listing": {
+					"id": "ES-24117",
+					"status": "awarded",
+					"units": 772,
+					"price": 15,
+					"reserve": 13.5,
+					"at": "09:41"
+				},
+				"offer": {
+					"status": "sent",
+					"at": "09:41",
+					"shops": 38
+				},
+				"orders": [
+					{
+						"id": "k0",
+						"units": 24,
+						"at": "09:52"
+					},
+					{
+						"id": "k1",
+						"units": 24,
+						"at": "09:58"
+					},
+					{
+						"id": "k2",
+						"units": 12,
+						"at": "10:01"
+					},
+					{
+						"id": "k3",
+						"units": 12,
+						"at": "10:04"
+					},
+					{
+						"id": "k4",
+						"units": 36,
+						"at": "10:08"
+					},
+					{
+						"id": "k5",
+						"units": 24,
+						"at": "10:11"
+					},
+					{
+						"id": "k6",
+						"units": 12,
+						"at": "10:15"
+					},
+					{
+						"id": "k7",
+						"units": 12,
+						"at": "10:19"
+					},
+					{
+						"id": "k8",
+						"units": 24,
+						"at": "10:22"
+					},
+					{
+						"id": "k9",
+						"units": 12,
+						"at": "10:26"
+					},
+					{
+						"id": "k10",
+						"units": 48,
+						"at": "10:30"
+					},
+					{
+						"id": "k11",
+						"units": 36,
+						"at": "10:33"
+					},
+					{
+						"id": "k12",
+						"units": 24,
+						"at": "10:37"
+					},
+					{
+						"id": "k13",
+						"units": 12,
+						"at": "10:41"
+					},
+					{
+						"id": "k14",
+						"units": 12,
+						"at": "10:44"
+					},
+					{
+						"id": "k15",
+						"units": 12,
+						"at": "10:48"
+					},
+					{
+						"id": "k16",
+						"units": 24,
+						"at": "10:52"
+					},
+					{
+						"id": "k17",
+						"units": 12,
+						"at": "10:55"
+					},
+					{
+						"id": "k18",
+						"units": 12,
+						"at": "10:59"
+					},
+					{
+						"id": "k19",
+						"units": 24,
+						"at": "11:02"
+					},
+					{
+						"id": "k20",
+						"units": 12,
+						"at": "11:06"
+					},
+					{
+						"id": "k21",
+						"units": 12,
+						"at": "11:10"
+					},
+					{
+						"id": "k22",
+						"units": 12,
+						"at": "11:14"
+					},
+					{
+						"id": "k23",
+						"units": 36,
+						"at": "11:17"
+					},
+					{
+						"id": "k24",
+						"units": 12,
+						"at": "11:21"
+					},
+					{
+						"id": "k25",
+						"units": 24,
+						"at": "11:24"
+					},
+					{
+						"id": "k26",
+						"units": 12,
+						"at": "11:27"
+					},
+					{
+						"id": "k27",
+						"units": 12,
+						"at": "11:31"
+					},
+					{
+						"id": "k28",
+						"units": 12,
+						"at": "11:34"
+					},
+					{
+						"id": "k29",
+						"units": 24,
+						"at": "11:38"
+					},
+					{
+						"id": "k30",
+						"units": 12,
+						"at": "11:41"
+					}
+				],
+				"bids": [
+					{
+						"id": "b1",
+						"price": 13,
+						"at": "11:02",
+						"by": "agrawal",
+						"status": "accepted",
+						"counter": 14.2
+					}
+				],
+				"chat": [
+					{
+						"from": "buyer",
+						"text": "Can you do ₹13 for all 772?",
+						"at": "11:02"
+					},
+					{
+						"from": "agent",
+						"text": "₹14.20 for 772, Nagpur stock, dispatch within 24 h of balance.",
+						"at": "11:03"
+					},
+					{
+						"from": "buyer",
+						"text": "Ok, ₹14.20. Token paid.",
+						"at": "11:09"
+					}
+				],
+				"award": {
+					"at": "11:09",
+					"buyer": "Agrawal Wholesale",
+					"status": "token paid",
+					"units": 772,
+					"price": 14.2,
+					"gross": 10962.4,
+					"token": 1644,
+					"balance": 9318.4
+				},
+				"van": {
+					"status": "idle",
+					"done": 0
+				},
+				"truck": {
+					"status": "idle"
+				},
+				"docs": null,
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": "booked"
+			},
+			"feed": [
+				{
+					"key": "accepted",
+					"stage": "execute",
+					"person": "agrawal",
+					"at": "11:09",
+					"min": 6,
+					"text": "Accepted ₹14.20 and paid the ₹1,644 token."
+				}
+			],
+			"notifications": [
+				{
+					"to": "rakesh",
+					"read": false,
+					"link": "orders",
+					"at": "11:09",
+					"title": "Buyer mil gaya · ExpireSoon",
+					"body": "Rakesh bhai, Agrawal Wholesale (Raipur) ne 772 packets ₹14.20 par le liye. Token ₹1,644 aa gaya."
+				},
+				{
+					"to": "priya",
+					"read": false,
+					"link": "execution",
+					"at": "11:09",
+					"title": "Awarded on ExpireSoon",
+					"body": "772 units at ₹14.20 to Agrawal Wholesale, Raipur. Token ₹1,644 received; balance ₹9,318 due in 48 h."
+				}
+			],
+			"audit": []
+		},
+		{
+			"stage": "execute",
+			"action": "confirmPickup",
+			"arg": null,
+			"human": "meera",
+			"stageOf": 7,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "executing",
+				"photo": {
+					"status": "verified",
+					"at": "09:20",
+					"confidence": 0.97
+				},
+				"plan": {
+					"status": "approved",
+					"at": "09:40",
+					"by": "priya",
+					"device": "phone"
+				},
+				"listing": {
+					"id": "ES-24117",
+					"status": "awarded",
+					"units": 772,
+					"price": 15,
+					"reserve": 13.5,
+					"at": "09:41"
+				},
+				"offer": {
+					"status": "sent",
+					"at": "09:41",
+					"shops": 38
+				},
+				"orders": [
+					{
+						"id": "k0",
+						"units": 24,
+						"at": "09:52"
+					},
+					{
+						"id": "k1",
+						"units": 24,
+						"at": "09:58"
+					},
+					{
+						"id": "k2",
+						"units": 12,
+						"at": "10:01"
+					},
+					{
+						"id": "k3",
+						"units": 12,
+						"at": "10:04"
+					},
+					{
+						"id": "k4",
+						"units": 36,
+						"at": "10:08"
+					},
+					{
+						"id": "k5",
+						"units": 24,
+						"at": "10:11"
+					},
+					{
+						"id": "k6",
+						"units": 12,
+						"at": "10:15"
+					},
+					{
+						"id": "k7",
+						"units": 12,
+						"at": "10:19"
+					},
+					{
+						"id": "k8",
+						"units": 24,
+						"at": "10:22"
+					},
+					{
+						"id": "k9",
+						"units": 12,
+						"at": "10:26"
+					},
+					{
+						"id": "k10",
+						"units": 48,
+						"at": "10:30"
+					},
+					{
+						"id": "k11",
+						"units": 36,
+						"at": "10:33"
+					},
+					{
+						"id": "k12",
+						"units": 24,
+						"at": "10:37"
+					},
+					{
+						"id": "k13",
+						"units": 12,
+						"at": "10:41"
+					},
+					{
+						"id": "k14",
+						"units": 12,
+						"at": "10:44"
+					},
+					{
+						"id": "k15",
+						"units": 12,
+						"at": "10:48"
+					},
+					{
+						"id": "k16",
+						"units": 24,
+						"at": "10:52"
+					},
+					{
+						"id": "k17",
+						"units": 12,
+						"at": "10:55"
+					},
+					{
+						"id": "k18",
+						"units": 12,
+						"at": "10:59"
+					},
+					{
+						"id": "k19",
+						"units": 24,
+						"at": "11:02"
+					},
+					{
+						"id": "k20",
+						"units": 12,
+						"at": "11:06"
+					},
+					{
+						"id": "k21",
+						"units": 12,
+						"at": "11:10"
+					},
+					{
+						"id": "k22",
+						"units": 12,
+						"at": "11:14"
+					},
+					{
+						"id": "k23",
+						"units": 36,
+						"at": "11:17"
+					},
+					{
+						"id": "k24",
+						"units": 12,
+						"at": "11:21"
+					},
+					{
+						"id": "k25",
+						"units": 24,
+						"at": "11:24"
+					},
+					{
+						"id": "k26",
+						"units": 12,
+						"at": "11:27"
+					},
+					{
+						"id": "k27",
+						"units": 12,
+						"at": "11:31"
+					},
+					{
+						"id": "k28",
+						"units": 12,
+						"at": "11:34"
+					},
+					{
+						"id": "k29",
+						"units": 24,
+						"at": "11:38"
+					},
+					{
+						"id": "k30",
+						"units": 12,
+						"at": "11:41"
+					}
+				],
+				"bids": [
+					{
+						"id": "b1",
+						"price": 13,
+						"at": "11:02",
+						"by": "agrawal",
+						"status": "accepted",
+						"counter": 14.2
+					}
+				],
+				"chat": [
+					{
+						"from": "buyer",
+						"text": "Can you do ₹13 for all 772?",
+						"at": "11:02"
+					},
+					{
+						"from": "agent",
+						"text": "₹14.20 for 772, Nagpur stock, dispatch within 24 h of balance.",
+						"at": "11:03"
+					},
+					{
+						"from": "buyer",
+						"text": "Ok, ₹14.20. Token paid.",
+						"at": "11:09"
+					}
+				],
+				"award": {
+					"at": "11:09",
+					"buyer": "Agrawal Wholesale",
+					"status": "token paid",
+					"units": 772,
+					"price": 14.2,
+					"gross": 10962.4,
+					"token": 1644,
+					"balance": 9318.4
+				},
+				"van": {
+					"status": "idle",
+					"done": 0
+				},
+				"truck": {
+					"status": "idle"
+				},
+				"docs": null,
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": "confirmed"
+			},
+			"feed": [],
+			"notifications": [
+				{
+					"to": "priya",
+					"read": false,
+					"title": "Feeding India confirmed",
+					"body": "58 packs of Mango Drink, pickup Tuesday 10:00 from Begum Bazaar. Served at the Charminar hunger spot.",
+					"at": "Day 1",
+					"link": "execution"
+				}
+			],
+			"audit": [
+				{
+					"who": "meera",
+					"what": "confirmed the pickup, Tuesday 10:00",
+					"target": "MF-2410-118 · 58 packs",
+					"at": "Day 1"
+				}
+			]
+		},
+		{
+			"stage": "settle",
+			"action": "dispatch",
+			"arg": null,
+			"human": "rakesh",
+			"stageOf": 7,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "dispatched",
+				"photo": {
+					"status": "verified",
+					"at": "09:20",
+					"confidence": 0.97
+				},
+				"plan": {
+					"status": "approved",
+					"at": "09:40",
+					"by": "priya",
+					"device": "phone"
+				},
+				"listing": {
+					"id": "ES-24117",
+					"status": "awarded",
+					"units": 772,
+					"price": 15,
+					"reserve": 13.5,
+					"at": "09:41"
+				},
+				"offer": {
+					"status": "sent",
+					"at": "09:41",
+					"shops": 38
+				},
+				"orders": [
+					{
+						"id": "k0",
+						"units": 24,
+						"at": "09:52"
+					},
+					{
+						"id": "k1",
+						"units": 24,
+						"at": "09:58"
+					},
+					{
+						"id": "k2",
+						"units": 12,
+						"at": "10:01"
+					},
+					{
+						"id": "k3",
+						"units": 12,
+						"at": "10:04"
+					},
+					{
+						"id": "k4",
+						"units": 36,
+						"at": "10:08"
+					},
+					{
+						"id": "k5",
+						"units": 24,
+						"at": "10:11"
+					},
+					{
+						"id": "k6",
+						"units": 12,
+						"at": "10:15"
+					},
+					{
+						"id": "k7",
+						"units": 12,
+						"at": "10:19"
+					},
+					{
+						"id": "k8",
+						"units": 24,
+						"at": "10:22"
+					},
+					{
+						"id": "k9",
+						"units": 12,
+						"at": "10:26"
+					},
+					{
+						"id": "k10",
+						"units": 48,
+						"at": "10:30"
+					},
+					{
+						"id": "k11",
+						"units": 36,
+						"at": "10:33"
+					},
+					{
+						"id": "k12",
+						"units": 24,
+						"at": "10:37"
+					},
+					{
+						"id": "k13",
+						"units": 12,
+						"at": "10:41"
+					},
+					{
+						"id": "k14",
+						"units": 12,
+						"at": "10:44"
+					},
+					{
+						"id": "k15",
+						"units": 12,
+						"at": "10:48"
+					},
+					{
+						"id": "k16",
+						"units": 24,
+						"at": "10:52"
+					},
+					{
+						"id": "k17",
+						"units": 12,
+						"at": "10:55"
+					},
+					{
+						"id": "k18",
+						"units": 12,
+						"at": "10:59"
+					},
+					{
+						"id": "k19",
+						"units": 24,
+						"at": "11:02"
+					},
+					{
+						"id": "k20",
+						"units": 12,
+						"at": "11:06"
+					},
+					{
+						"id": "k21",
+						"units": 12,
+						"at": "11:10"
+					},
+					{
+						"id": "k22",
+						"units": 12,
+						"at": "11:14"
+					},
+					{
+						"id": "k23",
+						"units": 36,
+						"at": "11:17"
+					},
+					{
+						"id": "k24",
+						"units": 12,
+						"at": "11:21"
+					},
+					{
+						"id": "k25",
+						"units": 24,
+						"at": "11:24"
+					},
+					{
+						"id": "k26",
+						"units": 12,
+						"at": "11:27"
+					},
+					{
+						"id": "k27",
+						"units": 12,
+						"at": "11:31"
+					},
+					{
+						"id": "k28",
+						"units": 12,
+						"at": "11:34"
+					},
+					{
+						"id": "k29",
+						"units": 24,
+						"at": "11:38"
+					},
+					{
+						"id": "k30",
+						"units": 12,
+						"at": "11:41"
+					}
+				],
+				"bids": [
+					{
+						"id": "b1",
+						"price": 13,
+						"at": "11:02",
+						"by": "agrawal",
+						"status": "accepted",
+						"counter": 14.2
+					}
+				],
+				"chat": [
+					{
+						"from": "buyer",
+						"text": "Can you do ₹13 for all 772?",
+						"at": "11:02"
+					},
+					{
+						"from": "agent",
+						"text": "₹14.20 for 772, Nagpur stock, dispatch within 24 h of balance.",
+						"at": "11:03"
+					},
+					{
+						"from": "buyer",
+						"text": "Ok, ₹14.20. Token paid.",
+						"at": "11:09"
+					}
+				],
+				"award": {
+					"at": "11:09",
+					"buyer": "Agrawal Wholesale",
+					"status": "paid",
+					"units": 772,
+					"price": 14.2,
+					"gross": 10962.4,
+					"token": 1644,
+					"balance": 9318.4
+				},
+				"van": {
+					"status": "idle",
+					"done": 0
+				},
+				"truck": {
+					"status": "dispatched",
+					"at": "Mon 5 Oct"
+				},
+				"docs": null,
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": "confirmed"
+			},
+			"feed": [
+				{
+					"key": "dispatch",
+					"stage": "settle",
+					"person": "rakesh",
+					"at": "Mon 5 Oct",
+					"min": 4200,
+					"text": "Loaded Agrawal Wholesale's truck for Raipur once the balance landed."
+				}
+			],
+			"notifications": [],
+			"audit": [
+				{
+					"who": "rakesh",
+					"what": "loaded Agrawal Wholesale's truck",
+					"target": "ES-24117 · Raipur",
+					"at": "Mon 5 Oct"
+				}
+			]
+		},
+		{
+			"stage": "settle",
+			"action": "settle",
+			"arg": null,
+			"human": null,
+			"stageOf": 7,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "settled",
+				"photo": {
+					"status": "verified",
+					"at": "09:20",
+					"confidence": 0.97
+				},
+				"plan": {
+					"status": "approved",
+					"at": "09:40",
+					"by": "priya",
+					"device": "phone"
+				},
+				"listing": {
+					"id": "ES-24117",
+					"status": "awarded",
+					"units": 772,
+					"price": 15,
+					"reserve": 13.5,
+					"at": "09:41"
+				},
+				"offer": {
+					"status": "sent",
+					"at": "09:41",
+					"shops": 38
+				},
+				"orders": [
+					{
+						"id": "k0",
+						"units": 24,
+						"at": "09:52"
+					},
+					{
+						"id": "k1",
+						"units": 24,
+						"at": "09:58"
+					},
+					{
+						"id": "k2",
+						"units": 12,
+						"at": "10:01"
+					},
+					{
+						"id": "k3",
+						"units": 12,
+						"at": "10:04"
+					},
+					{
+						"id": "k4",
+						"units": 36,
+						"at": "10:08"
+					},
+					{
+						"id": "k5",
+						"units": 24,
+						"at": "10:11"
+					},
+					{
+						"id": "k6",
+						"units": 12,
+						"at": "10:15"
+					},
+					{
+						"id": "k7",
+						"units": 12,
+						"at": "10:19"
+					},
+					{
+						"id": "k8",
+						"units": 24,
+						"at": "10:22"
+					},
+					{
+						"id": "k9",
+						"units": 12,
+						"at": "10:26"
+					},
+					{
+						"id": "k10",
+						"units": 48,
+						"at": "10:30"
+					},
+					{
+						"id": "k11",
+						"units": 36,
+						"at": "10:33"
+					},
+					{
+						"id": "k12",
+						"units": 24,
+						"at": "10:37"
+					},
+					{
+						"id": "k13",
+						"units": 12,
+						"at": "10:41"
+					},
+					{
+						"id": "k14",
+						"units": 12,
+						"at": "10:44"
+					},
+					{
+						"id": "k15",
+						"units": 12,
+						"at": "10:48"
+					},
+					{
+						"id": "k16",
+						"units": 24,
+						"at": "10:52"
+					},
+					{
+						"id": "k17",
+						"units": 12,
+						"at": "10:55"
+					},
+					{
+						"id": "k18",
+						"units": 12,
+						"at": "10:59"
+					},
+					{
+						"id": "k19",
+						"units": 24,
+						"at": "11:02"
+					},
+					{
+						"id": "k20",
+						"units": 12,
+						"at": "11:06"
+					},
+					{
+						"id": "k21",
+						"units": 12,
+						"at": "11:10"
+					},
+					{
+						"id": "k22",
+						"units": 12,
+						"at": "11:14"
+					},
+					{
+						"id": "k23",
+						"units": 36,
+						"at": "11:17"
+					},
+					{
+						"id": "k24",
+						"units": 12,
+						"at": "11:21"
+					},
+					{
+						"id": "k25",
+						"units": 24,
+						"at": "11:24"
+					},
+					{
+						"id": "k26",
+						"units": 12,
+						"at": "11:27"
+					},
+					{
+						"id": "k27",
+						"units": 12,
+						"at": "11:31"
+					},
+					{
+						"id": "k28",
+						"units": 12,
+						"at": "11:34"
+					},
+					{
+						"id": "k29",
+						"units": 24,
+						"at": "11:38"
+					},
+					{
+						"id": "k30",
+						"units": 12,
+						"at": "11:41"
+					}
+				],
+				"bids": [
+					{
+						"id": "b1",
+						"price": 13,
+						"at": "11:02",
+						"by": "agrawal",
+						"status": "accepted",
+						"counter": 14.2
+					}
+				],
+				"chat": [
+					{
+						"from": "buyer",
+						"text": "Can you do ₹13 for all 772?",
+						"at": "11:02"
+					},
+					{
+						"from": "agent",
+						"text": "₹14.20 for 772, Nagpur stock, dispatch within 24 h of balance.",
+						"at": "11:03"
+					},
+					{
+						"from": "buyer",
+						"text": "Ok, ₹14.20. Token paid.",
+						"at": "11:09"
+					}
+				],
+				"award": {
+					"at": "11:09",
+					"buyer": "Agrawal Wholesale",
+					"status": "paid",
+					"units": 772,
+					"price": 14.2,
+					"gross": 10962.4,
+					"token": 1644,
+					"balance": 9318.4
+				},
+				"van": {
+					"status": "idle",
+					"done": 0
+				},
+				"truck": {
+					"status": "dispatched",
+					"at": "Mon 5 Oct"
+				},
+				"docs": [
+					{
+						"id": "invoice",
+						"status": "drafted"
+					},
+					{
+						"id": "eway",
+						"status": "not required"
+					},
+					{
+						"id": "support",
+						"status": "generated"
+					},
+					{
+						"id": "itc",
+						"status": "generated"
+					},
+					{
+						"id": "fssai",
+						"status": "not required"
+					},
+					{
+						"id": "destruction",
+						"status": "not required"
+					}
+				],
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": "confirmed"
+			},
+			"feed": [
+				{
+					"key": "papers",
+					"stage": "settle",
+					"agent": "Paperwork",
+					"icon": "file-check",
+					"at": "Mon 5 Oct",
+					"min": 20,
+					"text": "Drafted Rakesh's invoice INV/26-27/0931 for him to issue, checked the e-way bill rule, issued the price-support credit note CN/0117 and wrote the ITC memo.",
+					"calls": [
+						[
+							"docs.invoice",
+							"₹11,510 · draft",
+							"ok"
+						],
+						[
+							"eway.check",
+							"below ₹50,000",
+							""
+						],
+						[
+							"docs.credit_note",
+							"₹8,768",
+							"ok"
+						],
+						[
+							"itc.memo",
+							"₹1,224 retained",
+							"ok"
+						]
+					]
+				}
+			],
+			"notifications": [
+				{
+					"to": "rakesh",
+					"read": false,
+					"link": "van",
+					"at": "Mon 18:00",
+					"title": "Van route for Tuesday",
+					"body": "Van route for Tuesday updated: 31 kiranas, 588 packets. The Raipur lot (772) is collected by the buyer's truck once the balance lands."
+				},
+				{
+					"to": "rakesh",
+					"read": false,
+					"link": "orders",
+					"at": "Mon 5 Oct",
+					"title": "Invoice draft ready",
+					"body": "Invoice draft to Agrawal Wholesale, Raipur: 772 × ₹14.20, IGST 5%, ₹11,510. Issue it from Tally. Munchly's price support of ₹8,768 is on its way."
+				},
+				{
+					"to": "anita",
+					"read": false,
+					"link": "paperwork",
+					"at": "Mon 5 Oct",
+					"title": "Document pack ready · MF-2409-117",
+					"body": "Papers ready for MF-2409-117: Rakesh's invoice draft, e-way bill check, price-support credit note, GST memo. Nothing to chase."
+				}
+			],
+			"audit": []
+		},
+		{
+			"stage": "settle",
+			"action": "review",
+			"arg": null,
+			"human": "anita",
+			"stageOf": 7,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "settled",
+				"photo": {
+					"status": "verified",
+					"at": "09:20",
+					"confidence": 0.97
+				},
+				"plan": {
+					"status": "approved",
+					"at": "09:40",
+					"by": "priya",
+					"device": "phone"
+				},
+				"listing": {
+					"id": "ES-24117",
+					"status": "awarded",
+					"units": 772,
+					"price": 15,
+					"reserve": 13.5,
+					"at": "09:41"
+				},
+				"offer": {
+					"status": "sent",
+					"at": "09:41",
+					"shops": 38
+				},
+				"orders": [
+					{
+						"id": "k0",
+						"units": 24,
+						"at": "09:52"
+					},
+					{
+						"id": "k1",
+						"units": 24,
+						"at": "09:58"
+					},
+					{
+						"id": "k2",
+						"units": 12,
+						"at": "10:01"
+					},
+					{
+						"id": "k3",
+						"units": 12,
+						"at": "10:04"
+					},
+					{
+						"id": "k4",
+						"units": 36,
+						"at": "10:08"
+					},
+					{
+						"id": "k5",
+						"units": 24,
+						"at": "10:11"
+					},
+					{
+						"id": "k6",
+						"units": 12,
+						"at": "10:15"
+					},
+					{
+						"id": "k7",
+						"units": 12,
+						"at": "10:19"
+					},
+					{
+						"id": "k8",
+						"units": 24,
+						"at": "10:22"
+					},
+					{
+						"id": "k9",
+						"units": 12,
+						"at": "10:26"
+					},
+					{
+						"id": "k10",
+						"units": 48,
+						"at": "10:30"
+					},
+					{
+						"id": "k11",
+						"units": 36,
+						"at": "10:33"
+					},
+					{
+						"id": "k12",
+						"units": 24,
+						"at": "10:37"
+					},
+					{
+						"id": "k13",
+						"units": 12,
+						"at": "10:41"
+					},
+					{
+						"id": "k14",
+						"units": 12,
+						"at": "10:44"
+					},
+					{
+						"id": "k15",
+						"units": 12,
+						"at": "10:48"
+					},
+					{
+						"id": "k16",
+						"units": 24,
+						"at": "10:52"
+					},
+					{
+						"id": "k17",
+						"units": 12,
+						"at": "10:55"
+					},
+					{
+						"id": "k18",
+						"units": 12,
+						"at": "10:59"
+					},
+					{
+						"id": "k19",
+						"units": 24,
+						"at": "11:02"
+					},
+					{
+						"id": "k20",
+						"units": 12,
+						"at": "11:06"
+					},
+					{
+						"id": "k21",
+						"units": 12,
+						"at": "11:10"
+					},
+					{
+						"id": "k22",
+						"units": 12,
+						"at": "11:14"
+					},
+					{
+						"id": "k23",
+						"units": 36,
+						"at": "11:17"
+					},
+					{
+						"id": "k24",
+						"units": 12,
+						"at": "11:21"
+					},
+					{
+						"id": "k25",
+						"units": 24,
+						"at": "11:24"
+					},
+					{
+						"id": "k26",
+						"units": 12,
+						"at": "11:27"
+					},
+					{
+						"id": "k27",
+						"units": 12,
+						"at": "11:31"
+					},
+					{
+						"id": "k28",
+						"units": 12,
+						"at": "11:34"
+					},
+					{
+						"id": "k29",
+						"units": 24,
+						"at": "11:38"
+					},
+					{
+						"id": "k30",
+						"units": 12,
+						"at": "11:41"
+					}
+				],
+				"bids": [
+					{
+						"id": "b1",
+						"price": 13,
+						"at": "11:02",
+						"by": "agrawal",
+						"status": "accepted",
+						"counter": 14.2
+					}
+				],
+				"chat": [
+					{
+						"from": "buyer",
+						"text": "Can you do ₹13 for all 772?",
+						"at": "11:02"
+					},
+					{
+						"from": "agent",
+						"text": "₹14.20 for 772, Nagpur stock, dispatch within 24 h of balance.",
+						"at": "11:03"
+					},
+					{
+						"from": "buyer",
+						"text": "Ok, ₹14.20. Token paid.",
+						"at": "11:09"
+					}
+				],
+				"award": {
+					"at": "11:09",
+					"buyer": "Agrawal Wholesale",
+					"status": "paid",
+					"units": 772,
+					"price": 14.2,
+					"gross": 10962.4,
+					"token": 1644,
+					"balance": 9318.4
+				},
+				"van": {
+					"status": "idle",
+					"done": 0
+				},
+				"truck": {
+					"status": "dispatched",
+					"at": "Mon 5 Oct"
+				},
+				"docs": [
+					{
+						"id": "invoice",
+						"status": "drafted"
+					},
+					{
+						"id": "eway",
+						"status": "not required"
+					},
+					{
+						"id": "support",
+						"status": "generated"
+					},
+					{
+						"id": "itc",
+						"status": "generated"
+					},
+					{
+						"id": "fssai",
+						"status": "not required"
+					},
+					{
+						"id": "destruction",
+						"status": "not required"
+					}
+				],
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false,
+				"reviewed": true
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": "confirmed"
+			},
+			"feed": [],
+			"notifications": [],
+			"audit": [
+				{
+					"who": "anita",
+					"what": "reviewed Munchly's credit note and GST memo",
+					"target": "MF-2409-117",
+					"at": "Mon 5 Oct"
+				}
+			]
+		},
+		{
+			"stage": "settle",
+			"action": "vanRound",
+			"arg": null,
+			"human": "rakesh",
+			"stageOf": 7,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "settled",
+				"photo": {
+					"status": "verified",
+					"at": "09:20",
+					"confidence": 0.97
+				},
+				"plan": {
+					"status": "approved",
+					"at": "09:40",
+					"by": "priya",
+					"device": "phone"
+				},
+				"listing": {
+					"id": "ES-24117",
+					"status": "awarded",
+					"units": 772,
+					"price": 15,
+					"reserve": 13.5,
+					"at": "09:41"
+				},
+				"offer": {
+					"status": "sent",
+					"at": "09:41",
+					"shops": 38
+				},
+				"orders": [
+					{
+						"id": "k0",
+						"units": 24,
+						"at": "09:52"
+					},
+					{
+						"id": "k1",
+						"units": 24,
+						"at": "09:58"
+					},
+					{
+						"id": "k2",
+						"units": 12,
+						"at": "10:01"
+					},
+					{
+						"id": "k3",
+						"units": 12,
+						"at": "10:04"
+					},
+					{
+						"id": "k4",
+						"units": 36,
+						"at": "10:08"
+					},
+					{
+						"id": "k5",
+						"units": 24,
+						"at": "10:11"
+					},
+					{
+						"id": "k6",
+						"units": 12,
+						"at": "10:15"
+					},
+					{
+						"id": "k7",
+						"units": 12,
+						"at": "10:19"
+					},
+					{
+						"id": "k8",
+						"units": 24,
+						"at": "10:22"
+					},
+					{
+						"id": "k9",
+						"units": 12,
+						"at": "10:26"
+					},
+					{
+						"id": "k10",
+						"units": 48,
+						"at": "10:30"
+					},
+					{
+						"id": "k11",
+						"units": 36,
+						"at": "10:33"
+					},
+					{
+						"id": "k12",
+						"units": 24,
+						"at": "10:37"
+					},
+					{
+						"id": "k13",
+						"units": 12,
+						"at": "10:41"
+					},
+					{
+						"id": "k14",
+						"units": 12,
+						"at": "10:44"
+					},
+					{
+						"id": "k15",
+						"units": 12,
+						"at": "10:48"
+					},
+					{
+						"id": "k16",
+						"units": 24,
+						"at": "10:52"
+					},
+					{
+						"id": "k17",
+						"units": 12,
+						"at": "10:55"
+					},
+					{
+						"id": "k18",
+						"units": 12,
+						"at": "10:59"
+					},
+					{
+						"id": "k19",
+						"units": 24,
+						"at": "11:02"
+					},
+					{
+						"id": "k20",
+						"units": 12,
+						"at": "11:06"
+					},
+					{
+						"id": "k21",
+						"units": 12,
+						"at": "11:10"
+					},
+					{
+						"id": "k22",
+						"units": 12,
+						"at": "11:14"
+					},
+					{
+						"id": "k23",
+						"units": 36,
+						"at": "11:17"
+					},
+					{
+						"id": "k24",
+						"units": 12,
+						"at": "11:21"
+					},
+					{
+						"id": "k25",
+						"units": 24,
+						"at": "11:24"
+					},
+					{
+						"id": "k26",
+						"units": 12,
+						"at": "11:27"
+					},
+					{
+						"id": "k27",
+						"units": 12,
+						"at": "11:31"
+					},
+					{
+						"id": "k28",
+						"units": 12,
+						"at": "11:34"
+					},
+					{
+						"id": "k29",
+						"units": 24,
+						"at": "11:38"
+					},
+					{
+						"id": "k30",
+						"units": 12,
+						"at": "11:41"
+					}
+				],
+				"bids": [
+					{
+						"id": "b1",
+						"price": 13,
+						"at": "11:02",
+						"by": "agrawal",
+						"status": "accepted",
+						"counter": 14.2
+					}
+				],
+				"chat": [
+					{
+						"from": "buyer",
+						"text": "Can you do ₹13 for all 772?",
+						"at": "11:02"
+					},
+					{
+						"from": "agent",
+						"text": "₹14.20 for 772, Nagpur stock, dispatch within 24 h of balance.",
+						"at": "11:03"
+					},
+					{
+						"from": "buyer",
+						"text": "Ok, ₹14.20. Token paid.",
+						"at": "11:09"
+					}
+				],
+				"award": {
+					"at": "11:09",
+					"buyer": "Agrawal Wholesale",
+					"status": "paid",
+					"units": 772,
+					"price": 14.2,
+					"gross": 10962.4,
+					"token": 1644,
+					"balance": 9318.4
+				},
+				"van": {
+					"status": "done",
+					"done": 31
+				},
+				"truck": {
+					"status": "dispatched",
+					"at": "Mon 5 Oct"
+				},
+				"docs": [
+					{
+						"id": "invoice",
+						"status": "drafted"
+					},
+					{
+						"id": "eway",
+						"status": "not required"
+					},
+					{
+						"id": "support",
+						"status": "generated"
+					},
+					{
+						"id": "itc",
+						"status": "generated"
+					},
+					{
+						"id": "fssai",
+						"status": "not required"
+					},
+					{
+						"id": "destruction",
+						"status": "not required"
+					}
+				],
+				"invoiceIssued": false,
+				"shelf": null,
+				"posted": false,
+				"reviewed": true
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": "confirmed"
+			},
+			"feed": [
+				{
+					"key": "van",
+					"stage": "settle",
+					"person": "rakesh",
+					"at": "Tue 6 Oct",
+					"min": 1440,
+					"text": "Ran the Tuesday round: 31 drops, 588 packets."
+				}
+			],
+			"notifications": [],
+			"audit": [
+				{
+					"who": "rakesh",
+					"what": "ran the Tuesday round: 31 drops",
+					"target": "Nagpur cluster",
+					"at": "Tue 6 Oct"
+				}
+			]
+		},
+		{
+			"stage": "settle",
+			"action": "shelfCheck",
+			"arg": null,
+			"human": null,
+			"stageOf": 8,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "settled",
+				"photo": {
+					"status": "verified",
+					"at": "09:20",
+					"confidence": 0.97
+				},
+				"plan": {
+					"status": "approved",
+					"at": "09:40",
+					"by": "priya",
+					"device": "phone"
+				},
+				"listing": {
+					"id": "ES-24117",
+					"status": "awarded",
+					"units": 772,
+					"price": 15,
+					"reserve": 13.5,
+					"at": "09:41"
+				},
+				"offer": {
+					"status": "sent",
+					"at": "09:41",
+					"shops": 38
+				},
+				"orders": [
+					{
+						"id": "k0",
+						"units": 24,
+						"at": "09:52"
+					},
+					{
+						"id": "k1",
+						"units": 24,
+						"at": "09:58"
+					},
+					{
+						"id": "k2",
+						"units": 12,
+						"at": "10:01"
+					},
+					{
+						"id": "k3",
+						"units": 12,
+						"at": "10:04"
+					},
+					{
+						"id": "k4",
+						"units": 36,
+						"at": "10:08"
+					},
+					{
+						"id": "k5",
+						"units": 24,
+						"at": "10:11"
+					},
+					{
+						"id": "k6",
+						"units": 12,
+						"at": "10:15"
+					},
+					{
+						"id": "k7",
+						"units": 12,
+						"at": "10:19"
+					},
+					{
+						"id": "k8",
+						"units": 24,
+						"at": "10:22"
+					},
+					{
+						"id": "k9",
+						"units": 12,
+						"at": "10:26"
+					},
+					{
+						"id": "k10",
+						"units": 48,
+						"at": "10:30"
+					},
+					{
+						"id": "k11",
+						"units": 36,
+						"at": "10:33"
+					},
+					{
+						"id": "k12",
+						"units": 24,
+						"at": "10:37"
+					},
+					{
+						"id": "k13",
+						"units": 12,
+						"at": "10:41"
+					},
+					{
+						"id": "k14",
+						"units": 12,
+						"at": "10:44"
+					},
+					{
+						"id": "k15",
+						"units": 12,
+						"at": "10:48"
+					},
+					{
+						"id": "k16",
+						"units": 24,
+						"at": "10:52"
+					},
+					{
+						"id": "k17",
+						"units": 12,
+						"at": "10:55"
+					},
+					{
+						"id": "k18",
+						"units": 12,
+						"at": "10:59"
+					},
+					{
+						"id": "k19",
+						"units": 24,
+						"at": "11:02"
+					},
+					{
+						"id": "k20",
+						"units": 12,
+						"at": "11:06"
+					},
+					{
+						"id": "k21",
+						"units": 12,
+						"at": "11:10"
+					},
+					{
+						"id": "k22",
+						"units": 12,
+						"at": "11:14"
+					},
+					{
+						"id": "k23",
+						"units": 36,
+						"at": "11:17"
+					},
+					{
+						"id": "k24",
+						"units": 12,
+						"at": "11:21"
+					},
+					{
+						"id": "k25",
+						"units": 24,
+						"at": "11:24"
+					},
+					{
+						"id": "k26",
+						"units": 12,
+						"at": "11:27"
+					},
+					{
+						"id": "k27",
+						"units": 12,
+						"at": "11:31"
+					},
+					{
+						"id": "k28",
+						"units": 12,
+						"at": "11:34"
+					},
+					{
+						"id": "k29",
+						"units": 24,
+						"at": "11:38"
+					},
+					{
+						"id": "k30",
+						"units": 12,
+						"at": "11:41"
+					}
+				],
+				"bids": [
+					{
+						"id": "b1",
+						"price": 13,
+						"at": "11:02",
+						"by": "agrawal",
+						"status": "accepted",
+						"counter": 14.2
+					}
+				],
+				"chat": [
+					{
+						"from": "buyer",
+						"text": "Can you do ₹13 for all 772?",
+						"at": "11:02"
+					},
+					{
+						"from": "agent",
+						"text": "₹14.20 for 772, Nagpur stock, dispatch within 24 h of balance.",
+						"at": "11:03"
+					},
+					{
+						"from": "buyer",
+						"text": "Ok, ₹14.20. Token paid.",
+						"at": "11:09"
+					}
+				],
+				"award": {
+					"at": "11:09",
+					"buyer": "Agrawal Wholesale",
+					"status": "paid",
+					"units": 772,
+					"price": 14.2,
+					"gross": 10962.4,
+					"token": 1644,
+					"balance": 9318.4
+				},
+				"van": {
+					"status": "done",
+					"done": 31
+				},
+				"truck": {
+					"status": "dispatched",
+					"at": "Mon 5 Oct"
+				},
+				"docs": [
+					{
+						"id": "invoice",
+						"status": "drafted"
+					},
+					{
+						"id": "eway",
+						"status": "not required"
+					},
+					{
+						"id": "support",
+						"status": "generated"
+					},
+					{
+						"id": "itc",
+						"status": "generated"
+					},
+					{
+						"id": "fssai",
+						"status": "not required"
+					},
+					{
+						"id": "destruction",
+						"status": "not required"
+					}
+				],
+				"invoiceIssued": false,
+				"shelf": {
+					"at": "Friday 9 Oct",
+					"date": "Friday 9 Oct",
+					"counted": 31,
+					"shop": "Jai Durga Stores",
+					"area": "Kamptee",
+					"took": 24,
+					"left": 18,
+					"pickUp": 12,
+					"leave": 6,
+					"round": "Thursday's round",
+					"returnBy": "2026-10-29"
+				},
+				"posted": false,
+				"reviewed": true
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": "confirmed"
+			},
+			"feed": [
+				{
+					"key": "shelf",
+					"stage": "settle",
+					"agent": "Outreach",
+					"icon": "list-checks",
+					"at": "Fri 9 Oct",
+					"min": 4320,
+					"text": "Shelf check: the salesman counted the scheme packs at 31 shops. Jai Durga Stores, Kamptee, has 18 of 24 left: pick up 12 on Thursday's round and leave 6.",
+					"calls": [
+						[
+							"shelf.check",
+							"31 shops counted",
+							"ok"
+						]
+					]
+				}
+			],
+			"notifications": [
+				{
+					"to": "rakesh",
+					"read": false,
+					"link": "van",
+					"at": "Fri 9 Oct",
+					"title": "Shelf check · one pick-up",
+					"body": "Jai Durga Stores, Kamptee has 18 of 24 scheme packs left. Pick up 12 on Thursday's round; leave 6."
+				}
+			],
+			"audit": []
+		},
+		{
+			"stage": "report",
+			"action": "report",
+			"arg": null,
+			"human": null,
+			"stageOf": 9,
+			"setup": {
+				"confirmed": true,
+				"mapped": 8,
+				"permission": {
+					"by": "rakesh",
+					"at": "Thu 16:52",
+					"paused": false
+				}
+			},
+			"hero": {
+				"id": "MF-2409-117",
+				"phase": "cleared",
+				"photo": {
+					"status": "verified",
+					"at": "09:20",
+					"confidence": 0.97
+				},
+				"plan": {
+					"status": "approved",
+					"at": "09:40",
+					"by": "priya",
+					"device": "phone"
+				},
+				"listing": {
+					"id": "ES-24117",
+					"status": "awarded",
+					"units": 772,
+					"price": 15,
+					"reserve": 13.5,
+					"at": "09:41"
+				},
+				"offer": {
+					"status": "sent",
+					"at": "09:41",
+					"shops": 38
+				},
+				"orders": [
+					{
+						"id": "k0",
+						"units": 24,
+						"at": "09:52"
+					},
+					{
+						"id": "k1",
+						"units": 24,
+						"at": "09:58"
+					},
+					{
+						"id": "k2",
+						"units": 12,
+						"at": "10:01"
+					},
+					{
+						"id": "k3",
+						"units": 12,
+						"at": "10:04"
+					},
+					{
+						"id": "k4",
+						"units": 36,
+						"at": "10:08"
+					},
+					{
+						"id": "k5",
+						"units": 24,
+						"at": "10:11"
+					},
+					{
+						"id": "k6",
+						"units": 12,
+						"at": "10:15"
+					},
+					{
+						"id": "k7",
+						"units": 12,
+						"at": "10:19"
+					},
+					{
+						"id": "k8",
+						"units": 24,
+						"at": "10:22"
+					},
+					{
+						"id": "k9",
+						"units": 12,
+						"at": "10:26"
+					},
+					{
+						"id": "k10",
+						"units": 48,
+						"at": "10:30"
+					},
+					{
+						"id": "k11",
+						"units": 36,
+						"at": "10:33"
+					},
+					{
+						"id": "k12",
+						"units": 24,
+						"at": "10:37"
+					},
+					{
+						"id": "k13",
+						"units": 12,
+						"at": "10:41"
+					},
+					{
+						"id": "k14",
+						"units": 12,
+						"at": "10:44"
+					},
+					{
+						"id": "k15",
+						"units": 12,
+						"at": "10:48"
+					},
+					{
+						"id": "k16",
+						"units": 24,
+						"at": "10:52"
+					},
+					{
+						"id": "k17",
+						"units": 12,
+						"at": "10:55"
+					},
+					{
+						"id": "k18",
+						"units": 12,
+						"at": "10:59"
+					},
+					{
+						"id": "k19",
+						"units": 24,
+						"at": "11:02"
+					},
+					{
+						"id": "k20",
+						"units": 12,
+						"at": "11:06"
+					},
+					{
+						"id": "k21",
+						"units": 12,
+						"at": "11:10"
+					},
+					{
+						"id": "k22",
+						"units": 12,
+						"at": "11:14"
+					},
+					{
+						"id": "k23",
+						"units": 36,
+						"at": "11:17"
+					},
+					{
+						"id": "k24",
+						"units": 12,
+						"at": "11:21"
+					},
+					{
+						"id": "k25",
+						"units": 24,
+						"at": "11:24"
+					},
+					{
+						"id": "k26",
+						"units": 12,
+						"at": "11:27"
+					},
+					{
+						"id": "k27",
+						"units": 12,
+						"at": "11:31"
+					},
+					{
+						"id": "k28",
+						"units": 12,
+						"at": "11:34"
+					},
+					{
+						"id": "k29",
+						"units": 24,
+						"at": "11:38"
+					},
+					{
+						"id": "k30",
+						"units": 12,
+						"at": "11:41"
+					}
+				],
+				"bids": [
+					{
+						"id": "b1",
+						"price": 13,
+						"at": "11:02",
+						"by": "agrawal",
+						"status": "accepted",
+						"counter": 14.2
+					}
+				],
+				"chat": [
+					{
+						"from": "buyer",
+						"text": "Can you do ₹13 for all 772?",
+						"at": "11:02"
+					},
+					{
+						"from": "agent",
+						"text": "₹14.20 for 772, Nagpur stock, dispatch within 24 h of balance.",
+						"at": "11:03"
+					},
+					{
+						"from": "buyer",
+						"text": "Ok, ₹14.20. Token paid.",
+						"at": "11:09"
+					}
+				],
+				"award": {
+					"at": "11:09",
+					"buyer": "Agrawal Wholesale",
+					"status": "paid",
+					"units": 772,
+					"price": 14.2,
+					"gross": 10962.4,
+					"token": 1644,
+					"balance": 9318.4
+				},
+				"van": {
+					"status": "done",
+					"done": 31
+				},
+				"truck": {
+					"status": "dispatched",
+					"at": "Mon 5 Oct"
+				},
+				"docs": [
+					{
+						"id": "invoice",
+						"status": "drafted"
+					},
+					{
+						"id": "eway",
+						"status": "not required"
+					},
+					{
+						"id": "support",
+						"status": "generated"
+					},
+					{
+						"id": "itc",
+						"status": "generated"
+					},
+					{
+						"id": "fssai",
+						"status": "not required"
+					},
+					{
+						"id": "destruction",
+						"status": "not required"
+					}
+				],
+				"invoiceIssued": false,
+				"shelf": {
+					"at": "Friday 9 Oct",
+					"date": "Friday 9 Oct",
+					"counted": 31,
+					"shop": "Jai Durga Stores",
+					"area": "Kamptee",
+					"took": 24,
+					"left": 18,
+					"pickUp": 12,
+					"leave": 6,
+					"round": "Thursday's round",
+					"returnBy": "2026-10-29"
+				},
+				"posted": true,
+				"reviewed": true
+			},
+			"mango": {
+				"id": "MF-2410-118",
+				"phase": "executing",
+				"donation": "confirmed"
+			},
+			"feed": [
+				{
+					"key": "ledger",
+					"stage": "report",
+					"agent": "Impact",
+					"icon": "leaf",
+					"at": "30 Oct",
+					"min": 30000,
+					"text": "The return window closed on 29 Oct. Posted the ledger: 217.6 kg diverted, 544 kg CO₂e avoided (indicative), 0 meals. BRSR row written.",
+					"calls": [
+						[
+							"ledger.post",
+							"₹21,152",
+							"ok"
+						],
+						[
+							"brsr.rows",
+							"Principle 6",
+							"ok"
+						]
+					]
+				}
+			],
+			"notifications": [
+				{
+					"to": "vikram",
+					"read": false,
+					"link": "report",
+					"at": "30 Oct",
+					"title": "Ledger posted · MF-2409-117",
+					"body": "217.6 kg diverted from disposal with invoices behind every kilo. The BRSR row is ready."
+				},
+				{
+					"to": "priya",
+					"read": false,
+					"link": "command",
+					"at": "30 Oct",
+					"title": "Batch closed · 0 cartons destroyed",
+					"body": "₹21,152 recovered, ₹1,224 GST credit kept, 217.6 kg kept out of landfill."
+				}
+			],
+			"audit": [
+				{
+					"who": "vikram",
+					"what": "signed off the BRSR row",
+					"target": "MF-2409-117",
+					"at": "30 Oct"
+				}
+			]
+		}
+	]
+}
