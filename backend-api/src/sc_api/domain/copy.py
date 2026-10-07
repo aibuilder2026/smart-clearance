@@ -483,6 +483,16 @@ def push_pickup(*, sku_name: str, units: int, days_left: int, godown: str) -> di
     }
 
 
+def pickup_reply(*, day: str, spot: str) -> str:
+    """the food bank's answer as it confirms the pickup (design3 JOURNEY.donation.reply)"""
+    return f"{day} works. We'll serve them at {spot} this week."
+
+
+def serving_spot(*, partner: str, city: str, spots: dict[str, dict[str, str]]) -> str:
+    """where a food bank serves a donation: the one the data names for its city, else its own in that city"""
+    return (spots.get(partner) or {}).get(city) or f"{possessive(partner)} serving point in {city}"
+
+
 def push_pickup_confirmed(*, partner: str, units: int, sku_name: str, when: str, godown: str) -> dict[str, Any]:
     return {
         "title": f"{partner} confirmed",

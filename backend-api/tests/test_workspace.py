@@ -3,11 +3,15 @@ signed in with their own token (Munchly's people on munchly.example, everyone el
 reporting through /internal with a Google ID token's stand-in. The figures are the journey map's (reference/flow.json
 holds design3's own run of the same steps), and every role sees only its own cut."""
 
+from datetime import datetime, timedelta
+
 import pytest
 from sqlalchemy import select
 
 from sc_api import models as m
 from sc_api.cli import live
+from sc_api.domain import copy
+from sc_api.domain.clock import IST
 from sc_api.services.reference import load
 from tests.conftest import NEHA, token
 
@@ -201,8 +205,25 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
         "status": "live",
     }
     assert c["journey"]["offer"]["shops"] == 38
+    # the moments the screens state: the listing's address, and the van the morning after the scheme closes
+    moments = c["moments"]
+    assert moments["listingUrl"] == J["moments"]["listingUrl"].replace("{id}", "ES-24117")
+    closes = datetime.fromisoformat(c["journey"]["offer"]["closesAt"]).astimezone(IST)
+    leaves = datetime.fromisoformat(moments["van"]["leavesAt"]).astimezone(IST)
+    assert f"{leaves:%H:%M}" == J["moments"]["van"]["leaves"] and timedelta(0) < leaves - closes <= timedelta(days=1)
+    assert moments["van"]["depot"] == J["distributors"]["rakesh"]["godown"] and moments["planMinutes"] == 20
+    assert moments["permissionAskedAt"] is not None and moments["day0"] is not None
     mango = await case(api, MEERA, MANGO)
     assert mango["donation"]["partner"] == "Feeding India" and mango["donation"]["units"] == 58
+    # the Donation agent proposes the next day at the partner's hour, with the slots it may move to, and its spot
+    booked = datetime.fromisoformat(mango["donation"]["at"]).astimezone(IST)
+    pickup = datetime.fromisoformat(mango["donation"]["pickupAt"]).astimezone(IST)
+    assert pickup.date() == (booked + timedelta(days=1)).date()
+    assert f"{pickup:%H:%M}" == J["moments"]["donation"]["time"]
+    assert len(mango["donation"]["slots"]) == len(J["moments"]["donation"]["slots"])
+    assert mango["donation"]["spot"] == J["moments"]["donation"]["story"]["spot"]
+    summary = next(x for x in (await api.get(f"{WS}/snapshot", headers=MEERA)).json()["cases"] if x["ref"] == MANGO)
+    assert summary["donation"] == 58
 
     # the buyer never sees the reserve; a kirana sees only its own shop
     seen = await case(api, AGRAWAL)
@@ -236,8 +257,12 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     assert c["award"] == {"units": 772, "price": 14.2, "gross": 10962.4, "token": 1644, "balance": 9318.4}
     assert round(c["actual"]["net"]) == 21152
 
-    # the food bank's pickup
-    assert (await api.post(f"{WS}/cases/{MANGO}/donation/confirm", headers=MEERA)).status_code == 200
+    # the food bank's pickup: confirmed at the proposed time, with its answer
+    r = await api.post(f"{WS}/cases/{MANGO}/donation/confirm", headers=MEERA)
+    assert r.status_code == 200
+    done = r.json()["case"]["donation"]
+    assert done["pickupAt"] == mango["donation"]["pickupAt"] and done["confirmedAt"] is not None
+    assert done["reply"] == copy.pickup_reply(day=copy.weekday(pickup), spot=done["spot"])
     assert (await api.post(f"{WS}/cases/{MANGO}/donation/collect", headers=MEERA)).status_code == 200
 
     # settle: the truck, the papers, the invoice, the review, the van round, the shelf check
@@ -427,3 +452,38 @@ async def test_the_agents_see_the_figures_before_they_write(api, munchly, cloud)
     words = "588 to the kirana scheme and 772 to ExpireSoon: net ₹21,770, against a ₹26,330 write-off."
     await agent(api, f"/cases/{HERO}/plan", "router", "router", explanation=words)
     assert (await case(api, PRIYA))["plan"]["explanation"] == words
+
+
+# --- the snapshot's world, and a change made twice -----------------------------------------------------------------
+
+
+async def test_the_snapshot_carries_what_the_screens_state(api, munchly):
+    snap = (await api.get(f"{WS}/snapshot", headers=PRIYA)).json()
+    w = snap["workspace"]
+    assert w["emailDomain"] == "munchly.example" and w["hint"] == "name@munchly.example"
+    assert w["invite"]["contact"].endswith("@google.example")
+    assert snap["client"]["listed"] == J["client"]["listed"] and snap["client"]["skus"] == len(snap["skus"])
+    assert snap["market"]["minOrder"] == J["market"]["minOrder"] and len(snap["market"]["lots"]) == 4
+    assert snap["setup"]["channelNames"] == J["setup"]["channelNames"] and snap["setup"]["minutes"] == 15
+    assert snap["setup"]["dms"]["file"] == J["setup"]["dms"]["file"]
+    assert snap["stages"][0]["sees"] == J["stages"][0]["sees"]
+    priya = next(x for x in snap["members"] if x["id"] == "priya")
+    assert priya["title"] == J["people"]["priya"]["role"]
+
+
+async def test_a_change_retried_with_its_key_acts_once(api, munchly, cloud):
+    await to_plan(api, cloud)
+    assert (await api.post(f"{WS}/cases/{HERO}/approval", json={"device": "phone"}, headers=PRIYA)).status_code == 200
+    await agent(api, f"/cases/{HERO}/offer", "outreach", "outreach")
+    once = {**GANESH, "Idempotency-Key": "order-1"}
+    units = next(k["orders"] for k in J["kiranas"] if k["id"] == "k0")
+    first = await api.post(f"{WS}/cases/{HERO}/orders", json={"units": units}, headers=once)
+    again = await api.post(f"{WS}/cases/{HERO}/orders", json={"units": units}, headers=once)
+    assert first.status_code == again.status_code == 200, again.text
+    assert [o["units"] for o in again.json()["case"]["journey"]["orders"]] == [units]
+    # another member's key is their own; the same key on another change is refused
+    other = await api.post(f"{WS}/notifications/read", json={"all": True}, headers=once)
+    assert other.status_code == 422
+    mine = {**PRIYA, "Idempotency-Key": "order-1"}
+    fresh = await api.post(f"{WS}/notifications/read", json={"all": True}, headers=mine)
+    assert fresh.status_code == 200

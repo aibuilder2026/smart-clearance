@@ -93,6 +93,7 @@ def member_out(cm: m.ClientMember, u: m.User, *, me: m.ClientMember | None = Non
         "lang": cm.lang,
         "invitedBy": cm.invited_by_name,
         "orgRef": cm.org_ref,
+        "title": cm.role_label,
         "lastSeen": u.last_sign_in_at.isoformat() if u.last_sign_in_at else None,
     }
 
@@ -131,6 +132,9 @@ def _workspace(c: m.Client) -> dict[str, Any]:
         "signIn": doc.get("signIn", c.sign_in),
         "outside": doc.get("outside", ""),
         "profile": doc.get("profile", []),
+        "emailDomain": c.email_domain,
+        "hint": doc.get("hint", f"name@{c.email_domain}"),
+        "invite": doc.get("invite", {"name": "", "contact": ""}),
     }
 
 
@@ -228,6 +232,10 @@ async def snapshot(ctx: Ctx, client_id: str, cm: m.ClientMember) -> dict[str, An
                 "atRisk": int(case.assess.get("atRisk") or 0),
                 "net": float(case.plan["net"]) if case.plan and mine else None,
                 "updatedAt": _iso(case.updated_wall),
+                # the packs going to a food bank, for those who see the donation
+                "donation": int(case.donation["units"])
+                if case.donation and (mine or cm.workspace_role == "foodbank")
+                else None,
                 "open": case.status == "open",
             }
         )
@@ -276,7 +284,16 @@ async def snapshot(ctx: Ctx, client_id: str, cm: m.ClientMember) -> dict[str, An
             "city": c.city,
             "gstin": doc.get("gstin", ""),
             "fssai": doc.get("fssai", ""),
+            # the client as its profile states it; its SKUs and distributors as the workspace holds them
+            "listed": (doc.get("client") or {}).get("listed", ""),
+            "revenue": (doc.get("client") or {}).get("revenue", ""),
+            "shortDatedPerQuarter": (doc.get("client") or {}).get("shortDatedPerQuarter", 0),
+            "destroyedToday": (doc.get("client") or {}).get("destroyedToday", 0),
+            "skus": len(skus),
+            "distributors": len(dists),
+            "kiranas": (doc.get("client") or {}).get("kiranas", len(kiranas)),
         },
+        "market": doc.get("market", {"dispatchHours": 0, "balanceHours": 0, "minOrder": 0, "lots": []}),
         "roles": doc.get("roles", {}),
         "members": [member_out(p, u, me=cm) for p, u in people if mine or cm.workspace_role == "admin" or _peer(cm, p)],
         "skus": {k: world.sku_obj(x) for k, x in skus.items()},
@@ -330,8 +347,11 @@ def _batch_out(bo: dict[str, Any]) -> dict[str, Any]:
 def _setup(c: m.Client, doc: dict[str, Any]) -> dict[str, Any]:
     setup = doc.get("setup", {})
     return {
-        "dms": setup.get("dms", {"source": "", "columns": [], "salesDays": 90}),
+        "minutes": setup.get("minutes", 0),
+        "dms": {"source": "", "file": "", "rows": 0, "columns": [], "salesDays": 90} | setup.get("dms", {}),
         "channels": setup.get("channels", []),
+        "channelNames": setup.get("channelNames", {}),
+        "permissions": setup.get("permissions", {}),
         "allowList": setup.get("allowList", []),
         "brandSafety": setup.get("brandSafety", []),
         "partners": setup.get("partners", []),
@@ -644,14 +664,46 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
                 "partner": donation["partnerName"],
                 "units": donation["units"],
                 "pickupAt": donation.get("pickupAt"),
+                "slots": donation.get("slots", []),
+                "spot": donation.get("spot"),
                 "from": donation["from"],
                 "at": donation["at"],
+                "confirmedAt": donation.get("confirmedAt"),
+                "collectedAt": donation.get("collectedAt"),
+                "reply": donation.get("reply"),
             }
             if donation
             else None
         ),
         "returnBy": (b.best_before - timedelta(days=c.return_window_days)).isoformat() if b.best_before else None,
         "push": push,
+        "moments": _moments(c, case, d, listing),
+    }
+
+
+def _moments(c: m.Client, case: m.Case, d: m.Distributor, listing: dict[str, Any] | None) -> dict[str, Any]:
+    """the journey's moments its screens state, as facts on the journey clock: the case's day 0, how soon a plan follows
+    the label, when the distributor was asked for his permission, the listing's address, and the van round that
+    takes the scheme's orders (the morning after the offer closes)"""
+    rules = (c.workspace_doc or {}).get("moments") or {}
+    leaves = None
+    closes = (case.offer or {}).get("closesAt")
+    if closes:
+        h, mi = (int(x) for x in str((rules.get("van") or {}).get("leaves", "07:00")).split(":"))
+        at = datetime.fromisoformat(closes).astimezone(IST)
+        day = at if (at.hour, at.minute) < (h, mi) else at + timedelta(days=1)
+        leaves = day.replace(hour=h, minute=mi, second=0, microsecond=0).isoformat()
+    url = rules.get("listingUrl")
+    return {
+        "day0": _iso(case.opened_at),
+        "planMinutes": int(rules.get("planMinutes", 20)),
+        "permissionAskedAt": _iso(c.setup_confirmed_at),
+        "listingUrl": url.replace("{id}", listing["id"]) if url and listing and listing.get("id") else None,
+        "van": {
+            "leavesAt": leaves,
+            "depot": d.godown or d.city,
+            "doneAt": (case.van or {}).get("at"),
+        },
     }
 
 

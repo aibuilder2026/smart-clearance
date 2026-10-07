@@ -12,6 +12,7 @@
 - The stream: what each member's live view hears, in one per-client sequence (stream rows point at the feed entry or
   notification they carry). Postgres NOTIFY on `sc_stream` wakes the API's listeners when a change commits.
 - The outbox: each change's Pub/Sub messages, written in its transaction and published after it commits.
+- Idempotency keys: a member's change carries a key, so a retry after a lost answer never acts twice; kept a day.
 - Devices: members' FCM tokens. Agent runs gain the run's id, the event it answered, its trace, model and status.
 - Nothing in a journey is deleted: a reset closes a case and opens another. Only devices (a member unregistering) and
   published outbox rows may be.
@@ -357,6 +358,17 @@ def upgrade() -> None:
         schema=S,
     )
     op.create_index("ix_outbox_pending", "outbox", ["id"], schema=S, postgresql_where=sa.text("published_wall IS NULL"))
+    op.create_table(
+        "idempotency_keys",
+        sa.Column("client_id", sa.Text(), sa.ForeignKey("sc.clients.id"), primary_key=True),
+        sa.Column("member_ref", sa.Text(), primary_key=True),
+        sa.Column("key", sa.Text(), primary_key=True),
+        sa.Column("route", sa.Text(), nullable=False),
+        sa.Column("ref", sa.Text(), nullable=True),
+        sa.Column("created_wall", TS, nullable=False),
+        schema=S,
+    )
+    op.create_index("ix_idempotency_keys_created", "idempotency_keys", ["created_wall"], schema=S)
 
     for name, kind in (
         ("run_id", sa.Text()),
@@ -394,6 +406,7 @@ def downgrade() -> None:
     ):
         op.drop_column("agent_runs", name, schema=S)
     for t in (
+        "idempotency_keys",
         "outbox",
         "devices",
         "stream",

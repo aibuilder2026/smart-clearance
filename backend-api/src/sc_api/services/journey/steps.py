@@ -864,14 +864,20 @@ async def donation(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> None:
     if not fit:
         raise Noop()
     partner = fit[0]
+    at = ev.now(ctx, s.c)
+    pickup, slots = _pickup_times(s.c, at)
     s.case.donation = {
         "status": "booked",
         "partner": partner.id,
         "partnerName": partner.name,
         "units": fb["units"],
-        "pickupAt": None,
+        "pickupAt": pickup.isoformat(),
+        "slots": [x.isoformat() for x in slots],
+        "spot": copy.serving_spot(
+            partner=partner.name, city=s.dist.city, spots=(_moments(s.c).get("donation") or {}).get("spots") or {}
+        ),
         "from": s.dist.godown or s.dist.city,
-        "at": ev.now(ctx, s.c).isoformat(),
+        "at": at.isoformat(),
     }
     s.case.phase = "executing"
     others = [
@@ -1234,6 +1240,24 @@ async def accept(ctx: Ctx, client_id: str, ref: str, bid_id: str) -> None:
     await _save(ctx, s)
 
 
+def _moments(c: m.Client) -> dict[str, Any]:
+    """the journey's moments the client's workspace keeps (cli/live.py, from design3 JOURNEY)"""
+    return dict((c.workspace_doc or {}).get("moments") or {})
+
+
+def _at_hour(day: datetime, hhmm: str) -> datetime:
+    h, mi = (int(x) for x in hhmm.split(":"))
+    return day.astimezone(IST).replace(hour=h, minute=mi, second=0, microsecond=0)
+
+
+def _pickup_times(c: m.Client, at: datetime) -> tuple[datetime, list[datetime]]:
+    """the pickup the Donation agent proposes (the next day, at the partner's hour) and the slots it may move to"""
+    rules = _moments(c).get("donation") or {}
+    proposed = _at_hour(at + timedelta(days=1), rules.get("time", "10:00"))
+    slots = [_at_hour(proposed + timedelta(days=x["days"]), x["time"]) for x in rules.get("slots", [])]
+    return proposed, slots
+
+
 async def confirm_pickup(ctx: Ctx, client_id: str, ref: str) -> None:
     ctx.require("pickup.manage", "Only the food bank confirms a pickup.")
     s = await scene(ctx, client_id, ref)
@@ -1241,10 +1265,21 @@ async def confirm_pickup(ctx: Ctx, client_id: str, ref: str) -> None:
     me = await world.member(ctx, client_id, _member(ctx))
     if me.org_ref != s.case.donation.get("partner"):
         raise ApiError(403, "This donation is booked with another food bank.")
-    when_at = ev.now(ctx, s.c) + timedelta(days=1)
-    when_at = when_at.astimezone(IST).replace(hour=10, minute=0, second=0, microsecond=0)
-    s.case.donation = {**s.case.donation, "status": "confirmed", "pickupAt": when_at.isoformat()}
-    when = f"{copy.weekday(when_at)} 10:00"
+    now = ev.now(ctx, s.c)
+    proposed = s.case.donation.get("pickupAt")
+    when_at = datetime.fromisoformat(proposed) if proposed else _pickup_times(s.c, now)[0]
+    if when_at < now:  # the proposed time has gone by: the next of the same hour
+        when_at = _pickup_times(s.c, now)[0]
+    when = f"{copy.weekday(when_at)} {when_at.astimezone(IST):%H:%M}"
+    s.case.donation = {
+        **s.case.donation,
+        "status": "confirmed",
+        "pickupAt": when_at.isoformat(),
+        "confirmedAt": now.isoformat(),
+        "reply": copy.pickup_reply(
+            day=copy.weekday(when_at), spot=s.case.donation.get("spot") or f"{s.dist.city}'s serving point"
+        ),
+    }
     await audit.record(
         ctx,
         s.c.id,

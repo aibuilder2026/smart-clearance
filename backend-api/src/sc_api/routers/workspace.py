@@ -13,6 +13,7 @@ from typing import Any, Literal
 from fastapi import APIRouter, Query, Request, Response
 from fastapi.responses import StreamingResponse
 from pydantic import Field
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 from sc_api import models as m
 from sc_api.deps import MemberCtx, MemberSigningIn, Public
@@ -82,6 +83,37 @@ class DeviceInput(Shape):
 
 def _member(request: Request):
     return request.state.member
+
+
+IDEMPOTENCY_KEY_MAX = 100
+
+
+async def _replay(ctx: Ctx, request: Request, ws: str, ref: str | None = None) -> dict[str, Any] | None:
+    """a change whose Idempotency-Key this member has already used answers as it stands now, without acting again.
+    The key is written in the change's own transaction: a change that fails frees it for the retry, and a retry racing
+    the first waits on its row, then replays"""
+    key = request.headers.get("idempotency-key")
+    if not key:
+        return None
+    if len(key) > IDEMPOTENCY_KEY_MAX:
+        raise ApiError(422, "The Idempotency-Key is too long.", {"idempotencyKey": f"At most {IDEMPOTENCY_KEY_MAX}."})
+    row = {
+        "client_id": ws,
+        "member_ref": _member(request).ref,
+        "key": key,
+        "route": f"{request.method} {request.url.path}",
+        "ref": ref,
+        "created_wall": ctx.clock.now(),
+    }
+    done = await ctx.session.execute(
+        pg_insert(m.IdempotencyKey).values(**row).on_conflict_do_nothing().returning(m.IdempotencyKey.route)
+    )
+    if done.first() is not None:
+        return None
+    seen = await ctx.session.get(m.IdempotencyKey, (ws, row["member_ref"], key))
+    if seen is not None and seen.route != row["route"]:
+        raise ApiError(422, "This Idempotency-Key was used for another change.")
+    return await _done(ctx, request, ws, ref)
 
 
 async def _done(ctx: Ctx, request: Request, ws: str, ref: str | None = None) -> dict[str, Any]:
@@ -188,6 +220,8 @@ async def upload_export(ws: str, data: UploadInput, request: Request, ctx: Membe
 
 @router.post("/setup/exports/{export_id}", summary="The export has arrived: the Data agent maps and loads it")
 async def export_uploaded(ws: str, export_id: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws)) is not None:
+        return replay
     ctx.require("setup.upload", "Your role can't upload stock exports.")
     assert ctx.cloud is not None and ctx.settings.exports_bucket
     name = f"{ws}/uploads/{export_id}.csv"
@@ -204,18 +238,24 @@ async def export_uploaded(ws: str, export_id: str, request: Request, ctx: Member
 
 @router.post("/setup/confirm", summary="Confirm the Data agent's mapping and the guardrails (stage 1)")
 async def confirm_setup(ws: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws)) is not None:
+        return replay
     await steps.confirm_setup(ctx, ws)
     return await _done(ctx, request, ws)
 
 
 @router.post("/permission", summary="A distributor's one-time permission for the agents to act in its name")
 async def permit(ws: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws)) is not None:
+        return replay
     await steps.permit(ctx, ws)
     return await _done(ctx, request, ws)
 
 
 @router.patch("/permission", summary="Pause or resume the agents in the distributor's name")
 async def pause(ws: str, data: PauseInput, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws)) is not None:
+        return replay
     await steps.pause(ctx, ws, data.paused)
     return await _done(ctx, request, ws)
 
@@ -232,60 +272,80 @@ async def upload_photo(ws: str, ref: str, data: UploadInput, ctx: MemberCtx) -> 
 
 @router.post(CASE + "/photos/{photo_id}", summary="The label photo has been sent: Vision reads it")
 async def photo_sent(ws: str, ref: str, photo_id: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws, ref)) is not None:
+        return replay
     await steps.photo_sent(ctx, ws, ref, photo_id)
     return await _done(ctx, request, ws, ref)
 
 
 @router.post(CASE + "/approval", summary="Approve the plan: the one tap")
 async def approve(ws: str, ref: str, data: ApproveInput, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws, ref)) is not None:
+        return replay
     await steps.approve(ctx, ws, ref, data.device)
     return await _done(ctx, request, ws, ref)
 
 
 @router.post(CASE + "/orders", summary="A kirana orders under the scheme")
 async def order(ws: str, ref: str, data: OrderInput, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws, ref)) is not None:
+        return replay
     await steps.order(ctx, ws, ref, data.units)
     return await _done(ctx, request, ws, ref)
 
 
 @router.post(CASE + "/bids", summary="The buyer bids on the lot")
 async def bid(ws: str, ref: str, data: BidInput, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws, ref)) is not None:
+        return replay
     await steps.bid(ctx, ws, ref, data.price)
     return await _done(ctx, request, ws, ref)
 
 
 @router.post(CASE + "/messages", summary="The buyer writes to the seller (the Negotiator answers)")
 async def message(ws: str, ref: str, data: MessageInput, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws, ref)) is not None:
+        return replay
     await steps.message(ctx, ws, ref, data.text)
     return await _done(ctx, request, ws, ref)
 
 
 @router.post(CASE + "/bids/{bid_id}/accept", summary="The buyer takes the counter and pays the token")
 async def accept(ws: str, ref: str, bid_id: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws, ref)) is not None:
+        return replay
     await steps.accept(ctx, ws, ref, bid_id)
     return await _done(ctx, request, ws, ref)
 
 
 @router.post(CASE + "/donation/confirm", summary="The food bank confirms the pickup")
 async def confirm_pickup(ws: str, ref: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws, ref)) is not None:
+        return replay
     await steps.confirm_pickup(ctx, ws, ref)
     return await _done(ctx, request, ws, ref)
 
 
 @router.post(CASE + "/donation/collect", summary="The food bank collects")
 async def collect(ws: str, ref: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws, ref)) is not None:
+        return replay
     await steps.collect(ctx, ws, ref)
     return await _done(ctx, request, ws, ref)
 
 
 @router.post(CASE + "/dispatches", summary="The buyer's truck loaded, or the van round run")
 async def dispatch(ws: str, ref: str, data: DispatchInput, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws, ref)) is not None:
+        return replay
     await steps.dispatch(ctx, ws, ref, data.kind)
     return await _done(ctx, request, ws, ref)
 
 
 @router.post(CASE + "/documents/{doc}/issue", summary="The distributor issues his invoice from Tally")
 async def issue_invoice(ws: str, ref: str, doc: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws, ref)) is not None:
+        return replay
     if doc != "invoice":
         raise ApiError(422, "Only the invoice is issued by the distributor.")
     await steps.issue_invoice(ctx, ws, ref)
@@ -294,6 +354,8 @@ async def issue_invoice(ws: str, ref: str, doc: str, request: Request, ctx: Memb
 
 @router.post(CASE + "/review", summary="Finance has reviewed the papers")
 async def review(ws: str, ref: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws, ref)) is not None:
+        return replay
     await steps.review(ctx, ws, ref)
     return await _done(ctx, request, ws, ref)
 
@@ -303,24 +365,32 @@ async def review(ws: str, ref: str, request: Request, ctx: MemberCtx) -> dict[st
 
 @router.post("/notifications/read", summary="Mark notifications read: some, or all")
 async def mark_read(ws: str, data: ReadInput, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws)) is not None:
+        return replay
     await admin.mark_read(ctx, ws, None if data.all else (data.ids or []))
     return await _done(ctx, request, ws)
 
 
 @router.post("/members", summary="Invite a member (a Firebase account on the default password; nothing is mailed)")
 async def invite(ws: str, data: InviteInput, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws)) is not None:
+        return replay
     await admin.invite(ctx, ws, data.model_dump(by_alias=True))
     return await _done(ctx, request, ws)
 
 
 @router.patch("/members/{ref}", summary="Deactivate or reactivate a member, or change their role")
 async def update_member(ws: str, ref: str, data: MemberPatch, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws)) is not None:
+        return replay
     await admin.update(ctx, ws, ref, data.model_dump(exclude_none=True))
     return await _done(ctx, request, ws)
 
 
 @router.put("/rules", summary="The workspace's guardrails")
 async def save_rules(ws: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws)) is not None:
+        return replay
     body = await request.json()
     if not isinstance(body, dict):
         raise ApiError(422, "The guardrails, as an object.")
