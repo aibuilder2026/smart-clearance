@@ -101,7 +101,11 @@
 		inside ? { name: ws.data.workspace.name, domain: ws.data.workspace.domain, open: () => (wsOpen = true) } : null
 	);
 	// the batch the address names, when it names one; the source decides what is in focus
-	$effect(() => ws.setFocus(route?.params?.ref ?? null));
+	// (only when the address changes: a tab on the Command Center puts another batch in focus without changing it)
+	$effect(() => {
+		const ref = route?.params?.ref ?? null;
+		untrack(() => ws.setFocus(ref));
+	});
 
 	// a new screen starts at its top: the page scrolls inside #main
 	$effect.pre(() => {

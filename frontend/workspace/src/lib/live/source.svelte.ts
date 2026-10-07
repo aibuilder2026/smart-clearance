@@ -376,7 +376,8 @@ export class LiveSource implements WorkspaceSource {
 		if (!snap) return;
 		const focus = focusRef(snap, ref);
 		if (focus && focus !== this.#focus?.ref) {
-			this.#focus = focus === this.#second?.ref ? this.#second : null;
+			// the batch shown stays until the one asked for is read (the screens show it is coming: focus is asked for)
+			if (focus === this.#second?.ref) this.#focus = this.#second;
 			this.#want({ ref: focus });
 		}
 	};
@@ -587,8 +588,10 @@ export class LiveSource implements WorkspaceSource {
 			const after = structuredClone($state.snapshot(before)) as CaseDetail;
 			change(after);
 			this.#focus = after;
+			// the state holds its own proxy of the change, so that is what is compared when it is put back
+			const shown = this.#focus;
 			return () => {
-				if (this.#focus === after) this.#focus = before;
+				if (this.#focus === shown) this.#focus = before;
 			};
 		};
 	}

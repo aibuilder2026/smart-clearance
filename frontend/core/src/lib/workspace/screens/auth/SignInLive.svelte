@@ -93,7 +93,7 @@
 
 <div class="signin">
 	<div class="ground" aria-hidden="true"></div>
-	{#if app.bp === 'desktop'}<HeroStage guided={!ws.case} />{/if}
+	{#if app.bp === 'desktop'}<HeroStage guided />{/if}
 	<div class="si-panel">
 		<div class="si-card">
 			<div class="si-ws">

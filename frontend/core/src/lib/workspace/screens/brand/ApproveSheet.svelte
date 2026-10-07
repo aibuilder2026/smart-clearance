@@ -32,12 +32,13 @@
 	const es = $derived(c.lines.expiresoon);
 	const kl = $derived(c.lines.kirana);
 
-	// opening shows the plan as it stands; an approval made elsewhere while it is open places it
+	// opening shows the plan as it stands; an approval made elsewhere while it is open places it (not this sheet's own
+	// while it is on its way: the live workspace shows it at once, and puts it back if it is refused)
 	$effect(() => {
 		if (open) placed = untrack(() => approvedNow);
 	});
 	$effect(() => {
-		if (approvedNow && untrack(() => open)) placed = true;
+		if (approvedNow && untrack(() => open && !busy)) placed = true;
 	});
 
 	const close = () => {

@@ -114,7 +114,7 @@ export class LiveView {
 			const every = ((c?.dayMinutes ?? 1440) * 60_000) / 96;
 			const ran = c ? Math.max(0, this.#wall - c.read) : 0;
 			// wait for the next quarter hour of journey time
-			timer = setTimeout(step, Math.max(250, every - (ran % every)));
+			timer = setTimeout(step, Math.max(250, every - (ran % every) + 50));
 		};
 		step();
 		return () => {
