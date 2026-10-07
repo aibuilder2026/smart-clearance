@@ -68,7 +68,7 @@
 </script>
 
 {#snippet period()}<Segmented options={PERIODS} bind:value={view} label="Period" />{/snippet}
-{#snippet periodAction()}{#if app.bp !== 'phone'}{@render period()}{/if}{/snippet}
+{#snippet periodAction()}{#if app.bp !== 'phone' && ws.case}{@render period()}{/if}{/snippet}
 
 {#snippet cat(r: Row)}<span class="strong">{r.cat}</span>{/snippet}
 {#snippet diverted(r: Row)}{fmt.num(r.diverted)}{/snippet}
@@ -118,8 +118,8 @@
 
 <Screen {me} title="Finance & ESG" sub={`${Q.label} · ${Q.period} · one ledger, two readings`} actions={periodAction}>
 	<div class="stack" style="gap: 20px">
-		{#if app.bp === 'phone'}{@render period()}{/if}
-		{#if view === 'quarter'}
+		{#if app.bp === 'phone' && ws.case}{@render period()}{/if}
+		{#if view === 'quarter' || !ws.case}
 			{#if h.posted}<button
 					type="button"
 					in:rise={{ y: -6 }}

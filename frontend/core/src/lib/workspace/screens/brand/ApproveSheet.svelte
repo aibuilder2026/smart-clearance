@@ -10,12 +10,16 @@
 	import { prefersReducedMotion } from '../../../motion';
 	import { curveFrames } from '../../../motion/frames';
 	import { useRoute } from '../../context';
+	import { useLive } from '../../live.svelte';
 	import { castOf, fmt } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
+	import ApproveFailed from '../live/ApproveFailed.svelte';
+	import NeedsNet from '../live/NeedsNet.svelte';
 
 	// the one yes: what the plan recovers and what happens the moment it is tapped; then the tick, the swing rolling in
-	// and the agents released (screens/brand.jsx ApproveSheet)
+	// and the agents released (screens/brand.jsx ApproveSheet). On the live workspace (SC-73, SC-68 option B) an approval
+	// that does not go through is said here, in the backend's words, with an amber Retry; offline, it waits for a connection
 	type Props = { open?: boolean; onclose?: () => void; me?: User | null };
 	let { open = $bindable(false), onclose, me }: Props = $props();
 	const ws = useWorkspace();
@@ -28,23 +32,37 @@
 	const es = $derived(c.lines.expiresoon);
 	const kl = $derived(c.lines.kirana);
 
-	// opening shows the plan as it stands; an approval made elsewhere while it is open places it
+	// opening shows the plan as it stands; an approval made elsewhere while it is open places it (not this sheet's own
+	// while it is on its way: the live workspace shows it at once, and puts it back if it is refused)
 	$effect(() => {
 		if (open) placed = untrack(() => approvedNow);
 	});
 	$effect(() => {
-		if (approvedNow && untrack(() => open)) placed = true;
+		if (approvedNow && untrack(() => open && !busy)) placed = true;
 	});
 
 	const close = () => {
 		open = false;
 		onclose?.();
 	};
+	const live = useLive();
+	const offline = $derived(!!live?.on && live.offline);
+	const failed = $derived(ws.failed?.action === 'approve' ? ws.failed : null);
 	const approve = () => {
 		busy = true;
 		void ws.act('approve', me?.id, { feel: 650 }).then(() => {
 			busy = false;
-			placed = true;
+			// the live source says when it did not go through; then the plan still waits
+			if (ws.failed?.action !== 'approve') placed = true;
+		});
+	};
+	const retry = () => {
+		const f = failed;
+		if (!f) return approve();
+		busy = true;
+		void f.retry().then(() => {
+			busy = false;
+			if (ws.failed?.action !== 'approve') placed = true;
 		});
 	};
 
@@ -84,9 +102,24 @@
 				close();
 				router.go('execution');
 			}}>Watch execution</Button
-		>{:else}<Button variant="approve" size="lg" block icon="check" loading={busy} onclick={approve}
-			>Approve · release the agents</Button
-		><Button variant="ghost" block onclick={close}>Not now</Button>{/if}{/snippet}
+		>{:else}{#if failed && !busy}<ApproveFailed message={failed.message} />{/if}{#if offline}<Button
+				variant="approve"
+				size="lg"
+				block
+				icon="check"
+				aria-disabled="true"
+				aria-describedby="lv-sheet-net"
+				class="lv-blocked">Approve · release the agents</Button
+			><span style="justify-self: center"><NeedsNet id="lv-sheet-net" /></span>{:else if failed}<Button
+				variant="approve"
+				size="lg"
+				block
+				icon="refresh-cw"
+				loading={busy}
+				onclick={retry}>Retry · release the agents</Button
+			>{:else}<Button variant="approve" size="lg" block icon="check" loading={busy} onclick={approve}
+				>Approve · release the agents</Button
+			>{/if}<Button variant="ghost" block onclick={close}>Not now</Button>{/if}{/snippet}
 
 <Sheet bind:open {onclose} title={placed ? 'Plan placed' : 'Approve the plan'} {footer}>
 	{#if placed}

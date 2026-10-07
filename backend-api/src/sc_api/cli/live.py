@@ -30,7 +30,8 @@ async def build(ctx: Ctx, client_id: str = "munchly") -> dict[str, Any]:
         raise SystemExit(f"live: there is no client {client_id}; import the story first")
     w = j["workspace"]
     c.email_domain = j["domains"]["staff"]
-    c.sign_in = [{**s, "on": True} for s in w["signIn"]]
+    # the console's sign-in methods (SignInMethod); the workspace's own, with their icons, are in workspace_doc
+    c.sign_in = [{k: s[k] for k in ("id", "title", "who", "rule")} | {"on": True} for s in w["signIn"]]
     c.workspace_doc = {
         **(c.workspace_doc or {}),
         "platform": j["platform"],
@@ -40,14 +41,24 @@ async def build(ctx: Ctx, client_id: str = "munchly") -> dict[str, Any]:
         "since": w["since"],
         "plan": w["plan"],
         "shortName": "Clearance",
-        "setup": {k: j["setup"][k] for k in ("dms", "channels", "allowList", "brandSafety", "approval", "acts")}
+        "setup": {k: v for k, v in j["setup"].items() if k != "partners"}
         | {"partners": [{"id": _slug(p["name"]), **p} for p in j["setup"]["partners"]]},
         "roles": j["roles"],
-        "stages": [
-            {k: s[k] for k in ("id", "n", "title", "when", "who", "role", "view", "human", "time")} for s in j["stages"]
-        ],
+        "stages": j["stages"],
         "gstin": j["client"]["gstin"],
         "fssai": j["client"]["fssai"],
+        # what the workspace says about its client, beside what the console holds
+        "client": {k: j["client"][k] for k in ("listed", "revenue", "shortDatedPerQuarter", "destroyedToday")},
+        # what the sign-in and the invite form suggest typing: an address on each of the workspace's two domains
+        "hint": f"name@{j['domains']['staff']}",
+        "invite": {"name": w["invite"]["name"], "contact": f"{_slug(w['invite']['name'])}@{j['domains']['partners']}"},
+        "market": j["market"],
+        # a synthetic workspace offers the story's people on its sign-in (their address; the password is handed over)
+        "accounts": [
+            {"group": g["group"], "note": g["note"], "people": [{"id": i, "does": does} for i, does in g["ids"]]}
+            for g in j["explore"]
+        ],
+        "moments": {k: v for k, v in j["moments"].items()} | {"donation": _donation_rules(j["moments"]["donation"])},
         "quarter": j["quarter"],
         "synthetic": True,
         "heroRef": next(b["id"] for b in j["batches"] if b.get("hero")),
@@ -142,6 +153,11 @@ async def build(ctx: Ctx, client_id: str = "munchly") -> dict[str, Any]:
         (await ctx.session.execute(select(m.ClientMember).where(m.ClientMember.client_id == client_id))).scalars().all()
     )
     return {"members": len(members), "kiranas": len(j["kiranas"]), **started}
+
+
+def _donation_rules(d: dict[str, Any]) -> dict[str, Any]:
+    """the food bank's pickup: the hour the Donation agent proposes, the slots it may move to, and the story's spot"""
+    return {k: d[k] for k in ("time", "slots", "spots")}
 
 
 def _slug(name: str) -> str:

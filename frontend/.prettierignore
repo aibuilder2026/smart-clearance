@@ -18,3 +18,5 @@ admin/src/lib/landing/site.css
 admin/src/lib/ds/docs.css
 console/src/lib/console.css
 demo/src/lib/demo.css
+# what backend-api answered, written by backend-api/scripts/live-fixtures.sh
+workspace/tests/live/fixtures/

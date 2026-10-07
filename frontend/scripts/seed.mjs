@@ -333,6 +333,23 @@ const ruleFixtures = {
 		override: P.overrideLine('MF-2409-204', { qcomPct: 30, reason: ' A deal ' }),
 		clear: P.clearOverrideLine('MF-2409-204')
 	},
+	// SC-68: the length of a journey day, what it must be and the audit line that records a change of it
+	dayMinutes: {
+		errors: [0, 1, 5, 60, 1440, 1441, -5, 4.5, null, '5'].map((value) => ({ value, error: P.dayMinutesError(value) })),
+		lines: [
+			[5, 1440],
+			[1440, 5],
+			[1, 60],
+			[90, 1],
+			[120, 1439],
+			[59, 61]
+		].map(([to, was]) => ({
+			client: 'Munchly Foods',
+			to,
+			was,
+			text: P.dayMinutesLine({ name: 'Munchly Foods' }, to, was)
+		}))
+	},
 	slug: [
 		'Kesari Foods',
 		'Amrit Dairy Pvt',
@@ -353,6 +370,31 @@ const W = window.SC3_WORLD,
 	M = window.SC3_MONEY;
 
 /** the world backend-api's hydrate builds Munchly from, and the story's copy the backend renders with live figures */
+/** the story's moments (data.js JOURNEY) as rules backend-api times a live journey by: how soon a plan follows the
+ *  label, the listing's address, when the van leaves, and the food bank's pickup and the slots it may move to (days
+ *  after the proposed day, and the hour). The story's own spot is kept for its own partner and city. */
+function moments(J) {
+	const WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+	const day = WEEK.indexOf(J.donation.day);
+	if (day < 0 || !J.listing.url.includes(J.listing.id)) throw new Error('seed: JOURNEY has changed shape');
+	const second = D.BATCHES.find((b) => b.second);
+	return {
+		planMinutes: J.planMinutes,
+		listingUrl: J.listing.url.replace(J.listing.id, '{id}'),
+		van: { leaves: J.van.leaves },
+		donation: {
+			time: J.donation.time,
+			slots: J.donation.slots.map((s) => {
+				const [d, time] = s.split(' ');
+				return { days: (WEEK.indexOf(d) - day + 7) % 7, time };
+			}),
+			spots: { [J.donation.partner]: { [D.DISTRIBUTORS[second.distributor].city]: J.donation.spot } },
+			// the story's reply, for the template's test
+			story: { day: J.donation.day, spot: J.donation.spot, reply: J.donation.reply }
+		}
+	};
+}
+
 const journey = {
 	day0: D.DAY0,
 	platform: D.PLATFORM,
@@ -381,7 +423,11 @@ const journey = {
 	numbers: W.NUMBERS,
 	label: W.LABEL,
 	roles: ROLES,
-	copy: { push: D.PUSH, chat: D.CHAT, events: D.EVENTS, connectEvent: F.CONNECT_EV }
+	copy: { push: D.PUSH, chat: D.CHAT, events: D.EVENTS, connectEvent: F.CONNECT_EV },
+	moments: moments(D.JOURNEY),
+	market: D.MARKET,
+	// the people a judge may sign in as, by where they stand (data.js EXPLORE): the live sign-in's chips fill their address
+	explore: D.EXPLORE.groups
 };
 
 /** money.js's own answers, for backend-api's domain/money.py: every case carries its inputs */

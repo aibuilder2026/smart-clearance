@@ -95,7 +95,10 @@ class Storage(Protocol):
         """the object's size, or None when it is not there"""
         ...
 
-    async def write(self, bucket: str, name: str, data: bytes, content_type: str) -> None: ...
+    async def write(self, bucket: str, name: str, data: bytes, content_type: str) -> bool:
+        """write an object once: one of that name already there stays (the API may create objects, never replace or
+        delete them), and the answer says whether this call wrote it"""
+        ...
 
 
 class GoogleStorage:
@@ -148,11 +151,19 @@ class GoogleStorage:
 
         return await asyncio.to_thread(stat)
 
-    async def write(self, bucket: str, name: str, data: bytes, content_type: str) -> None:
-        def put() -> None:
-            self.client.bucket(bucket).blob(name).upload_from_string(data, content_type=content_type)
+    async def write(self, bucket: str, name: str, data: bytes, content_type: str) -> bool:
+        from google.api_core.exceptions import PreconditionFailed
 
-        await asyncio.to_thread(put)
+        def put() -> bool:
+            try:
+                self.client.bucket(bucket).blob(name).upload_from_string(
+                    data, content_type=content_type, if_generation_match=0
+                )
+            except PreconditionFailed:
+                return False
+            return True
+
+        return await asyncio.to_thread(put)
 
 
 @dataclass
@@ -169,8 +180,11 @@ class FakeStorage:
         data = self.objects.get((bucket, name))
         return None if data is None else len(data)
 
-    async def write(self, bucket: str, name: str, data: bytes, content_type: str) -> None:
+    async def write(self, bucket: str, name: str, data: bytes, content_type: str) -> bool:
+        if (bucket, name) in self.objects:
+            return False
         self.objects[(bucket, name)] = data
+        return True
 
 
 # --- Firebase Cloud Messaging ---------------------------------------------------------------------------------------

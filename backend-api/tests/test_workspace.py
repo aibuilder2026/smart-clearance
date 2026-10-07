@@ -3,11 +3,13 @@ signed in with their own token (Munchly's people on munchly.example, everyone el
 reporting through /internal with a Google ID token's stand-in. The figures are the journey map's (reference/flow.json
 holds design3's own run of the same steps), and every role sees only its own cut."""
 
-import pytest
+from datetime import datetime, timedelta
+
 from sqlalchemy import select
 
 from sc_api import models as m
-from sc_api.cli import live
+from sc_api.domain import copy
+from sc_api.domain.clock import IST
 from sc_api.services.reference import load
 from tests.conftest import NEHA, token
 
@@ -31,13 +33,6 @@ MEERA = token("feeding-india@google.example")
 
 def flow(action: str) -> dict:
     return next(s for s in FLOW["steps"] if s["action"] == action)
-
-
-@pytest.fixture
-async def munchly(ctx):
-    out = await live.build(ctx)
-    await ctx.session.commit()
-    return out
 
 
 async def agent(api, path: str, key: str, agent_id: str, **body) -> dict:
@@ -103,6 +98,15 @@ async def to_plan(api, cloud) -> None:
 
 
 # --- signing in -------------------------------------------------------------------------------------------------------
+
+
+async def test_the_console_still_reads_the_live_client(api, munchly, neha):
+    """the live build's sign-in methods are the console's shape too (a 500 on every console call for Munchly, else)"""
+    r = await api.get("/v1/console/clients/munchly", headers=neha)
+    assert r.status_code == 200, r.text
+    assert [x["id"] for x in r.json()["signIn"]] == [x["id"] for x in J["workspace"]["signIn"]]
+    r = await api.put("/v1/console/clients/munchly/clock", json={"dayMinutes": 5}, headers=neha)
+    assert r.status_code == 200, r.text
 
 
 async def test_the_workspace_signs_its_members_in(api, munchly):
@@ -201,8 +205,25 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
         "status": "live",
     }
     assert c["journey"]["offer"]["shops"] == 38
+    # the moments the screens state: the listing's address, and the van the morning after the scheme closes
+    moments = c["moments"]
+    assert moments["listingUrl"] == J["moments"]["listingUrl"].replace("{id}", "ES-24117")
+    closes = datetime.fromisoformat(c["journey"]["offer"]["closesAt"]).astimezone(IST)
+    leaves = datetime.fromisoformat(moments["van"]["leavesAt"]).astimezone(IST)
+    assert f"{leaves:%H:%M}" == J["moments"]["van"]["leaves"] and timedelta(0) < leaves - closes <= timedelta(days=1)
+    assert moments["van"]["depot"] == J["distributors"]["rakesh"]["godown"] and moments["planMinutes"] == 20
+    assert moments["permissionAskedAt"] is not None and moments["day0"] is not None
     mango = await case(api, MEERA, MANGO)
     assert mango["donation"]["partner"] == "Feeding India" and mango["donation"]["units"] == 58
+    # the Donation agent proposes the next day at the partner's hour, with the slots it may move to, and its spot
+    booked = datetime.fromisoformat(mango["donation"]["at"]).astimezone(IST)
+    pickup = datetime.fromisoformat(mango["donation"]["pickupAt"]).astimezone(IST)
+    assert pickup.date() == (booked + timedelta(days=1)).date()
+    assert f"{pickup:%H:%M}" == J["moments"]["donation"]["time"]
+    assert len(mango["donation"]["slots"]) == len(J["moments"]["donation"]["slots"])
+    assert mango["donation"]["spot"] == J["moments"]["donation"]["story"]["spot"]
+    summary = next(x for x in (await api.get(f"{WS}/snapshot", headers=MEERA)).json()["cases"] if x["ref"] == MANGO)
+    assert summary["donation"] == 58
 
     # the buyer never sees the reserve; a kirana sees only its own shop
     seen = await case(api, AGRAWAL)
@@ -236,9 +257,16 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     assert c["award"] == {"units": 772, "price": 14.2, "gross": 10962.4, "token": 1644, "balance": 9318.4}
     assert round(c["actual"]["net"]) == 21152
 
-    # the food bank's pickup
-    assert (await api.post(f"{WS}/cases/{MANGO}/donation/confirm", headers=MEERA)).status_code == 200
+    # the food bank's pickup: confirmed at the proposed time, with its answer
+    r = await api.post(f"{WS}/cases/{MANGO}/donation/confirm", headers=MEERA)
+    assert r.status_code == 200
+    done = r.json()["case"]["donation"]
+    assert done["pickupAt"] == mango["donation"]["pickupAt"] and done["confirmedAt"] is not None
+    assert done["reply"] == copy.pickup_reply(day=copy.weekday(pickup), spot=done["spot"])
     assert (await api.post(f"{WS}/cases/{MANGO}/donation/collect", headers=MEERA)).status_code == 200
+    # the donation's papers come first, with no credit note (no distributor's price to support): no number is spent
+    await agent(api, f"/cases/{MANGO}/documents", "paperwork-mango", "paperwork")
+    assert "support" not in [d["id"] for d in (await case(api, PRIYA, MANGO))["docs"]]
 
     # settle: the truck, the papers, the invoice, the review, the van round, the shelf check
     r = await api.post(f"{WS}/cases/{HERO}/dispatches", json={"kind": "truck"}, headers=RAKESH)
@@ -249,6 +277,8 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     assert docs["invoice"]["no"] == "INV/26-27/0931" and docs["invoice"]["total"] == 11510
     assert docs["support"]["no"] == "CN/0117" and docs["support"]["amount"] == 8768
     assert docs["eway"]["status"] == "not required"
+    today = (await api.get(f"{WS}/snapshot", headers=PRIYA)).json()["clock"]["now"]
+    assert docs["invoice"]["date"] == datetime.fromisoformat(today).astimezone(IST).date().isoformat()
     assert (await api.post(f"{WS}/cases/{HERO}/documents/invoice/issue", headers=RAKESH)).status_code == 200
     assert (await api.post(f"{WS}/cases/{HERO}/review", headers=ANITA)).status_code == 200
     assert (await api.post(f"{WS}/cases/{HERO}/dispatches", json={"kind": "van"}, headers=RAKESH)).status_code == 200
@@ -432,6 +462,69 @@ async def test_the_agents_see_the_figures_before_they_write(api, munchly, cloud)
     assert (await case(api, PRIYA))["plan"]["explanation"] == words
 
 
+# --- the snapshot's world, and a change made twice -----------------------------------------------------------------
+
+
+async def test_the_snapshot_carries_what_the_screens_state(api, munchly):
+    snap = (await api.get(f"{WS}/snapshot", headers=PRIYA)).json()
+    public = (await api.get(WS)).json()
+    assert public["emailDomain"] == "munchly.example" and public["hint"] == "name@munchly.example"
+    # the story's people on the sign-in, by address only
+    people = [p for g in public["accounts"] for p in g["people"]]
+    assert {"priya", "rakesh", "agrawal", "meera"} <= {p["id"] for p in people}
+    assert next(p for p in people if p["id"] == "priya")["email"] == "priya.deshmukh@munchly.example"
+    assert all("password" not in p for p in people)
+    assert public["accounts"][0]["note"] == "@munchly.example"
+    w = snap["workspace"]
+    assert w["emailDomain"] == "munchly.example" and w["hint"] == "name@munchly.example"
+    assert w["invite"]["contact"].endswith("@google.example")
+    assert snap["client"]["listed"] == J["client"]["listed"] and snap["client"]["skus"] == len(snap["skus"])
+    assert snap["market"]["minOrder"] == J["market"]["minOrder"] and len(snap["market"]["lots"]) == 4
+    assert snap["setup"]["channelNames"] == J["setup"]["channelNames"] and snap["setup"]["minutes"] == 15
+    assert snap["setup"]["dms"]["file"] == J["setup"]["dms"]["file"]
+    assert snap["stages"][0]["sees"] == J["stages"][0]["sees"]
+    priya = next(x for x in snap["members"] if x["id"] == "priya")
+    assert priya["title"] == J["people"]["priya"]["role"]
+
+
+async def test_a_change_retried_with_its_key_acts_once(api, munchly, cloud):
+    await to_plan(api, cloud)
+    assert (await api.post(f"{WS}/cases/{HERO}/approval", json={"device": "phone"}, headers=PRIYA)).status_code == 200
+    await agent(api, f"/cases/{HERO}/offer", "outreach", "outreach")
+    once = {**GANESH, "Idempotency-Key": "order-1"}
+    units = next(k["orders"] for k in J["kiranas"] if k["id"] == "k0")
+    first = await api.post(f"{WS}/cases/{HERO}/orders", json={"units": units}, headers=once)
+    again = await api.post(f"{WS}/cases/{HERO}/orders", json={"units": units}, headers=once)
+    assert first.status_code == again.status_code == 200, again.text
+    assert [o["units"] for o in again.json()["case"]["journey"]["orders"]] == [units]
+    # another member's key is their own; the same key on another change is refused
+    other = await api.post(f"{WS}/notifications/read", json={"all": True}, headers=once)
+    assert other.status_code == 422
+    mine = {**PRIYA, "Idempotency-Key": "order-1"}
+    fresh = await api.post(f"{WS}/notifications/read", json={"all": True}, headers=mine)
+    assert fresh.status_code == 200
+
+
+async def test_partners_see_their_beat_their_line_and_the_pushes_they_show(api, munchly, cloud):
+    await to_plan(api, cloud)
+    assert (await api.post(f"{WS}/cases/{HERO}/approval", json={"device": "phone"}, headers=PRIYA)).status_code == 200
+    await agent(api, f"/cases/{HERO}/listing", "lister", "lister")
+    await agent(api, f"/cases/{HERO}/offer", "outreach", "outreach")
+    # a distributor sees the kiranas on his beat; a kirana sees its distributor, and no other kirana
+    rakesh = {m["id"] for m in (await api.get(f"{WS}/snapshot", headers=RAKESH)).json()["members"]}
+    assert {"ganesh", "jaidurga"} <= rakesh and "patil-owner" not in rakesh
+    ganesh = {m["id"] for m in (await api.get(f"{WS}/snapshot", headers=GANESH)).json()["members"]}
+    assert "rakesh" in ganesh and "jaidurga" not in ganesh
+    # the split without Munchly's figures: all of it for the distributor, a kirana the scheme's line
+    seen = await case(api, RAKESH)
+    assert [x["id"] for x in seen["split"]] == ["kirana", "expiresoon"] and "net" not in seen["split"][0]
+    assert seen["push"]["offer"]["to"] != "rakesh"  # the offer his kiranas got
+    shop = await case(api, GANESH)
+    assert [x["id"] for x in shop["split"]] == ["kirana"] and shop["split"][0]["packPrice"] is not None
+    # staff see each push the journey sent
+    assert {"detect", "verify", "plan", "approved", "offer"} <= set((await case(api, PRIYA))["push"])
+
+
 async def test_the_data_agent_maps_exports_by_names_and_item_codes(api, munchly):
     """SC-72: the Data agent maps a DMS export's distributor names and item codes to their ids, and Outreach's offer
     says how long the scheme lasts"""
@@ -440,3 +533,10 @@ async def test_the_data_agent_maps_exports_by_names_and_item_codes(api, munchly)
     assert out["skus"]["chips"] == {"code": "MF-MC-150", "name": "Masala Chips 150 g"}
     agents = (await api.get("/internal/clients/munchly/agents", headers=AGENT)).json()
     assert agents["offerWindowHours"] == 48
+
+
+async def test_an_export_is_written_once(cloud):
+    """the API creates objects and never replaces them: a journey started again on the same day keeps its exports"""
+    assert await cloud.storage.write("exports-test", "munchly/day.csv", b"first", "text/csv") is True
+    assert await cloud.storage.write("exports-test", "munchly/day.csv", b"second", "text/csv") is False
+    assert cloud.storage.objects[("exports-test", "munchly/day.csv")] == b"first"

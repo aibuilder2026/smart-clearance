@@ -291,6 +291,45 @@ async def test_a_reminder_the_plan_and_going_live(api, neha):
     assert gone.status_code == 404 and gone.json() == {"message": "No such distributor."}
 
 
+async def test_the_length_of_a_journey_day_and_its_audit_line(api, neha, sameer):
+    """SC-68: the client answers its length of a journey day; a change writes the console prototype's line in the
+    staff member's name, and nothing when it is unchanged"""
+    assert (await api.get(f"{C}/munchly", headers=neha)).json()["dayMinutes"] == 1440
+    r = await api.put(f"{C}/munchly/clock", json={"dayMinutes": 5}, headers=neha)
+    assert r.status_code == 200, r.text
+    assert r.json()["dayMinutes"] == 5
+    assert (await api.get(f"{C}/munchly", headers=neha)).json()["dayMinutes"] == 5
+    line = await last_audit(api, neha)
+    assert (line["who"], line["client"], line["text"]) == (
+        "Neha Kulkarni",
+        "munchly",
+        "Set the length of a journey day for Munchly Foods to 5 minutes (was a day)",
+    )
+    n = len((await api.get("/v1/console/audit", headers=neha)).json())
+    assert (await api.put(f"{C}/munchly/clock", json={"dayMinutes": 5}, headers=neha)).status_code == 200
+    assert len((await api.get("/v1/console/audit", headers=neha)).json()) == n
+    await api.put(f"{C}/munchly/clock", json={"dayMinutes": 90}, headers=sameer)
+    line = await last_audit(api, neha)
+    assert (line["who"], line["text"]) == (
+        "Sameer Rao",
+        "Set the length of a journey day for Munchly Foods to 1 h 30 min (was 5 minutes)",
+    )
+    await api.put(f"{C}/munchly/clock", json={"dayMinutes": 1440}, headers=neha)
+    assert (await last_audit(api, neha))["text"] == (
+        "Set the length of a journey day for Munchly Foods to a day (was 1 h 30 min)"
+    )
+    for bad in (0, 1441, -5):
+        r = await api.put(f"{C}/munchly/clock", json={"dayMinutes": bad}, headers=neha)
+        assert r.status_code == 422
+        assert r.json() == {
+            "message": "Enter a whole number of minutes, from 1 to 1,440.",
+            "fields": {"dayMinutes": "Enter a whole number of minutes, from 1 to 1,440."},
+        }
+    assert (await api.put(f"{C}/munchly/clock", json={"dayMinutes": 4.5}, headers=neha)).status_code == 422
+    assert (await api.put(f"{C}/nope/clock", json={"dayMinutes": 5}, headers=neha)).status_code == 404
+    assert (await api.put(f"{C}/munchly/clock", json={"dayMinutes": 5})).status_code == 401
+
+
 # --- a new client ----------------------------------------------------------------------------------------------------
 
 
@@ -311,12 +350,13 @@ async def test_a_new_client_from_its_demo_request(api, neha):
     r = await api.post(C, json=kesari(request=req["id"]), headers=neha)
     assert r.status_code == 201, r.text
     c = r.json()
-    assert {k: c[k] for k in ("id", "domain", "status", "approver", "since")} == {
+    assert {k: c[k] for k in ("id", "domain", "status", "approver", "since", "dayMinutes")} == {
         "id": "kesari",
         "domain": "kesari.smartclearance.com",
         "status": "setting-up",
         "approver": "admin-kesari",
         "since": None,
+        "dayMinutes": 1440,
     }
     assert c["agents"]["negotiator"]["autonomy"] == "ask"
     assert c["agents"]["gate"]["settings"]["approver"] == "admin-kesari"

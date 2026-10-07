@@ -1,7 +1,7 @@
 // The staff console's part of the contract (console.smartclearance.com): the platform's own staff, every client
 // workspace (its supply chain, agents, exits and rules, people, integrations and plan), and the audit log. The shapes
 // are design3/core/platform.js's, the console prototype's mock backend. Shared shapes are in shared.ts.
-import type { Catalog, DemoRequest, Mark, WorkspaceMatch } from './shared';
+import type { Catalog, DemoRequest, Mark, PasswordAuth, WorkspaceMatch } from './shared';
 
 /** how far an agent may go before a person says yes */
 export type Autonomy = 'suggest' | 'ask' | 'act';
@@ -153,6 +153,9 @@ export type Client = {
 	gates: Gates;
 	territoryGuard: boolean;
 	returnWindowDays: number;
+	/** how many minutes of real time one day of the client's journey lasts, 1 to 1440; 1440 is real time (SC-68).
+	 *  backend-api's journey clock runs on it while a batch is at risk */
+	dayMinutes: number;
 	exits: Exits;
 	rules: Rules;
 	signIn: SignInMethod[];
@@ -238,6 +241,8 @@ export type ConsoleConfig = {
 export type AgentPatch = { on?: boolean; autonomy?: Autonomy; settings?: AgentSettings };
 export type ProfileInput = { profile: Profile; gates: Gates; returnWindowDays: number };
 export type RulesInput = { rules: Rules; exits: Exits };
+/** an invitation to a client's workspace: `contact` is an email address (SC-68); the person signs in with it and the
+ *  default password */
 export type InviteInput = { name: string; contact: string; access: Access };
 export type PersonPatch = { access?: Access; status?: 'active' | 'deactivated' };
 export type StaffInviteInput = { name: string; email: string; role: StaffRole };
@@ -263,11 +268,7 @@ export type NewClientInput = {
 export type SignInInput = { email: string; password: string };
 /** how the console signs in over HTTP: Firebase Authentication, which the app provides (frontend/console). The token is
  *  the Firebase ID token every call to backend-api carries */
-export type ConsoleAuth = {
-	signIn(email: string, password: string): Promise<void>;
-	signOut(): Promise<void>;
-	token(): Promise<string | null>;
-};
+export type ConsoleAuth = PasswordAuth;
 
 /** what the console calls. Every change is written to the audit log by the server, in the staff member's name */
 /** one day of the Overview's range (SC-48) */
@@ -376,6 +377,8 @@ export interface ConsoleApi {
 	setPlan(client: string, plan: string): Promise<Client>;
 	saveProfile(client: string, input: ProfileInput): Promise<Client>;
 	saveRules(client: string, input: RulesInput): Promise<Client>;
+	/** the length of the client's journey day, in whole minutes from 1 to 1440 (SC-68); nothing is written when unchanged */
+	setDayMinutes(client: string, minutes: number): Promise<Client>;
 	/** a client's open batches with their quick-commerce gates as the agents read them; one SKU's when it is given */
 	clientBatches(client: string, sku?: string): Promise<BatchGates[]>;
 	/** an SKU's own quick-commerce gates, or null to put it back on the client's default */

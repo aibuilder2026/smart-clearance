@@ -33,7 +33,10 @@ def next_day0(now: datetime) -> date:
 async def reset(ctx: Ctx, client_id: str) -> dict[str, Any]:
     c = await lock_client(ctx, client_id)
     j = load("journey.json")
-    day0 = next_day0(ev.now(ctx, c))
+    # a synthetic workspace replays the story on its own calendar, so the label photos, the papers and the copy all
+    # carry the story's dates; a real client's journey starts on its next morning
+    synthetic = bool((c.workspace_doc or {}).get("synthetic"))
+    day0 = date.fromisoformat(j["day0"]) if synthetic else next_day0(ev.now(ctx, c))
     for case in (
         await ctx.session.execute(
             select(m.Case).where(m.Case.client_id == client_id, m.Case.status == "open").with_for_update()
@@ -91,7 +94,9 @@ async def reset(ctx: Ctx, client_id: str) -> dict[str, Any]:
     doc["daily"] = {}
     doc["heroRef"] = hero_ref
     c.workspace_doc = doc
-    await ev.start_at(ctx, c, journey_morning(day0))
+    await ev.start_at(ctx, c, journey_morning(day0), replay=synthetic)
+    # the daily runs start over with the journey's days
+    c.workspace_doc = {k: v for k, v in (c.workspace_doc or {}).items() if k != "daily"}
     await ctx.session.flush()
 
     mango = await _second(ctx, c, j, day0)

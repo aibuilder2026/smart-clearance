@@ -12,6 +12,8 @@
   const PROVIDERS = { google: "Google", phone: "Phone code", expiresoon: "ExpireSoon sign-in" };
   const KINDS = { staff: "Munchly staff", partner: "Invited partner", external: "Outside the workspace" };
   const STATUS_TONE = { active: "green", invited: "blue", deactivated: undefined };
+  // the roles the client's own staff hold; the others are its partners' (the invitation's address rule)
+  const STAFF_ROLES = ["operator", "finance", "sustainability", "admin"];
   const audit = (who, what, target) => Store.update(s => { s.audit.unshift({ id: "a-" + Date.now().toString(36), who, what, target, at: "now" }); });
   const providerOf = u => u.provider === "google" ? (u.kind === "staff" ? "Google Workspace" : "Google, invited") : PROVIDERS[u.provider];
 
@@ -78,7 +80,18 @@
     const members = s.users.filter(u => u.kind !== "external");
     const rows = members.filter(u => !q || (u.name + " " + (u.org || "") + " " + (ROLES[u.role] || "")).toLowerCase().includes(q.toLowerCase()));
     const setStatus = (u, status) => { Store.update(st => { const x = st.users.find(y => y.id === u.id); if (x) x.status = status; }); audit(me.id, status === "deactivated" ? "deactivated" : "reactivated", u.name); toast({ text: `${u.short || u.name} ${status === "deactivated" ? "deactivated" : "reactivated"}`, tone: "ok" }); };
-    const send = () => { const phone = /^[+\d\s]+$/.test(form.contact); const staff = !phone && form.contact.toLowerCase().endsWith("@" + WS.emailDomain); const id = form.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + "-" + Date.now().toString(36).slice(-3); Store.update(st => { st.users.push({ id, name: form.name, short: form.name, org: staff ? D.CLIENT.short : form.name, role: form.role, provider: phone ? "phone" : "google", phone: phone ? form.contact : "", email: phone ? "" : form.contact, status: "invited", invitedBy: me.name, kind: staff ? "staff" : "partner", lastSeen: null, extra: true }); }); audit(me.id, "invited " + form.name + " as " + ROLES[form.role].toLowerCase(), form.contact); setInvite(false); setForm({ name: "", contact: "", role: "retailer" }); toast({ text: `Invite sent to ${form.contact}`, tone: "ok" }); };
+    // an invitation is an email address only, as the console's (SC-68): the workspace's staff on its own domain, partners
+    // on any address. They sign in with it and the default password, which the admin hands over; nothing is emailed
+    const [err, setErr] = useState("");
+    const send = () => {
+      const name = form.name.trim(), email = form.contact.trim().toLowerCase(); setErr("");
+      if (!name) return setErr("Enter a name.");
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return setErr(`Enter an email address, such as name@${WS.emailDomain}.`);
+      if (STAFF_ROLES.includes(form.role) && !email.endsWith("@" + WS.emailDomain)) return setErr(`${WS.short} staff need a ${WS.emailDomain} address. Partners can use any address.`);
+      const staff = email.endsWith("@" + WS.emailDomain); const id = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + "-" + Date.now().toString(36).slice(-3);
+      Store.update(st => { st.users.push({ id, name, short: name, org: staff ? D.CLIENT.short : name, role: form.role, provider: "google", phone: "", email, status: "invited", invitedBy: me.name, kind: staff ? "staff" : "partner", lastSeen: null, extra: true }); });
+      audit(me.id, "invited " + name + " as " + ROLES[form.role].toLowerCase(), email); setInvite(false); setForm({ name: "", contact: "", role: "retailer" }); toast({ text: `${name} can sign in with the default password`, tone: "ok" });
+    };
     const counts = Object.keys(STATUS_TONE).map(k => [k, members.filter(u => u.status === k).length]);
     return <Screen me={me} title="Users" sub={`People and partner organisations in ${WS.name}' workspace`} actions={app.bp !== "phone" && <Button variant="primary" size="sm" icon="user-plus" onClick={() => setInvite(true)}>Invite</Button>}>
       <div className="stack" style={{ gap: 16 }}>
@@ -94,11 +107,12 @@
         ]} />}
         <p className="t-footnote subtle" style={{ margin: 0 }}>{WS.outside}</p>
       </div>
-      <Sheet open={invite} onClose={() => setInvite(false)} title="Invite someone" side={app.bp === "phone" ? "bottom" : "center"} detent="medium" footer={<Button variant="primary" block icon="send" disabled={!form.name || !form.contact} onClick={send}>Send invite</Button>}>
+      <Sheet open={invite} onClose={() => { setInvite(false); setErr(""); }} title="Invite someone" side={app.bp === "phone" ? "bottom" : "center"} detent="medium" footer={<Button variant="primary" block icon="user-plus" onClick={send}>Invite</Button>}>
         <div className="stack">
-          <Field label="Name or organisation" htmlFor="inv-name"><Input id="inv-name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={WS.invite.name} /></Field>
-          <Field label="Email or mobile number" htmlFor="inv-contact" help={`Munchly staff sign in with their ${WS.emailDomain} Google account; the trade signs in with a one-time code at ${WS.domain}.`}><Input id="inv-contact" value={form.contact} onChange={e => setForm({ ...form, contact: e.target.value })} placeholder={WS.invite.contact} /></Field>
+          <Field label="Name or organisation" htmlFor="inv-name"><Input id="inv-name" value={form.name} onChange={e => { setForm({ ...form, name: e.target.value }); setErr(""); }} placeholder={WS.invite.name} /></Field>
+          <Field label="Email" htmlFor="inv-contact" error={err || null}><Input id="inv-contact" icon="mail" type="email" value={form.contact} onChange={e => { setForm({ ...form, contact: e.target.value }); setErr(""); }} autoComplete="off" spellCheck={false} autoCapitalize="none" placeholder={`name@${WS.emailDomain}`} /></Field>
           <Field label="Role" htmlFor="inv-role"><Select id="inv-role" value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>{Object.entries(ROLES).filter(([k]) => k !== "buyer").map(([k, v]) => <option key={k} value={k}>{v}</option>)}</Select></Field>
+          <p className="t-footnote subtle" style={{ margin: 0 }}>{WS.short} staff need a {WS.emailDomain} address; partners use any address. They sign in with it and the default password, which you hand over. Nothing is sent by email.</p>
         </div>
       </Sheet>
       <Sheet open={!!roleFor} onClose={() => setRoleFor(null)} title={roleFor ? "Role for " + (roleFor.short || roleFor.name) : ""} side={app.bp === "phone" ? "bottom" : "center"} detent="medium">

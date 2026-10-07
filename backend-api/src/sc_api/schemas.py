@@ -260,6 +260,7 @@ class ClientOut(Shape):
     gates: Gates
     territory_guard: bool
     return_window_days: int
+    day_minutes: int
     exits: dict[ExitId, ExitState]
     rules: Rules
     sign_in: list[SignInMethod]

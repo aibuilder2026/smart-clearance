@@ -317,6 +317,9 @@ importers:
       '@smart-clearance/core':
         specifier: workspace:*
         version: link:../core
+      firebase:
+        specifier: 12.19.0
+        version: 12.19.0
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
@@ -339,9 +342,6 @@ importers:
       '@tanstack/svelte-query':
         specifier: ^6.3.1
         version: 6.3.1(svelte@5.57.1(@typescript-eslint/types@8.71.0))
-      firebase:
-        specifier: 12.19.0
-        version: 12.19.0
       motion:
         specifier: 'catalog:'
         version: 14.0.0
@@ -535,9 +535,15 @@ importers:
 
   workspace:
     dependencies:
+      '@smart-clearance/api':
+        specifier: workspace:*
+        version: link:../api
       '@smart-clearance/core':
         specifier: workspace:*
         version: link:../core
+      firebase:
+        specifier: 12.19.0
+        version: 12.19.0
     devDependencies:
       '@playwright/test':
         specifier: ^1.63.0
@@ -557,12 +563,18 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.3.3
         version: 4.3.3(vite@8.3.2(@types/node@24.19.1)(jiti@2.7.0))
+      '@testing-library/svelte':
+        specifier: 'catalog:'
+        version: 5.4.2(svelte@5.57.1(@typescript-eslint/types@8.71.0))(vite@8.3.2(@types/node@24.19.1)(jiti@2.7.0))(vitest@5.0.3(@types/node@24.19.1)(jsdom@30.1.1)(vite@8.3.2(@types/node@24.19.1)(jiti@2.7.0)))
       '@types/node':
         specifier: 'catalog:'
         version: 24.19.1
       '@types/pngjs':
         specifier: ^6.0.5
         version: 6.0.5
+      jsdom:
+        specifier: 'catalog:'
+        version: 30.1.1
       pixelmatch:
         specifier: ^7.2.0
         version: 7.2.0

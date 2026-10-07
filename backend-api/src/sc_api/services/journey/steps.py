@@ -865,14 +865,20 @@ async def donation(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> None:
     if not fit:
         raise Noop()
     partner = fit[0]
+    at = ev.now(ctx, s.c)
+    pickup, slots = _pickup_times(s.c, at)
     s.case.donation = {
         "status": "booked",
         "partner": partner.id,
         "partnerName": partner.name,
         "units": fb["units"],
-        "pickupAt": None,
+        "pickupAt": pickup.isoformat(),
+        "slots": [x.isoformat() for x in slots],
+        "spot": copy.serving_spot(
+            partner=partner.name, city=s.dist.city, spots=(_moments(s.c).get("donation") or {}).get("spots") or {}
+        ),
         "from": s.dist.godown or s.dist.city,
-        "at": ev.now(ctx, s.c).isoformat(),
+        "at": at.isoformat(),
     }
     s.case.phase = "executing"
     others = [
@@ -1235,6 +1241,24 @@ async def accept(ctx: Ctx, client_id: str, ref: str, bid_id: str) -> None:
     await _save(ctx, s)
 
 
+def _moments(c: m.Client) -> dict[str, Any]:
+    """the journey's moments the client's workspace keeps (cli/live.py, from design3 JOURNEY)"""
+    return dict((c.workspace_doc or {}).get("moments") or {})
+
+
+def _at_hour(day: datetime, hhmm: str) -> datetime:
+    h, mi = (int(x) for x in hhmm.split(":"))
+    return day.astimezone(IST).replace(hour=h, minute=mi, second=0, microsecond=0)
+
+
+def _pickup_times(c: m.Client, at: datetime) -> tuple[datetime, list[datetime]]:
+    """the pickup the Donation agent proposes (the next day, at the partner's hour) and the slots it may move to"""
+    rules = _moments(c).get("donation") or {}
+    proposed = _at_hour(at + timedelta(days=1), rules.get("time", "10:00"))
+    slots = [_at_hour(proposed + timedelta(days=x["days"]), x["time"]) for x in rules.get("slots", [])]
+    return proposed, slots
+
+
 async def confirm_pickup(ctx: Ctx, client_id: str, ref: str) -> None:
     ctx.require("pickup.manage", "Only the food bank confirms a pickup.")
     s = await scene(ctx, client_id, ref)
@@ -1242,10 +1266,21 @@ async def confirm_pickup(ctx: Ctx, client_id: str, ref: str) -> None:
     me = await world.member(ctx, client_id, _member(ctx))
     if me.org_ref != s.case.donation.get("partner"):
         raise ApiError(403, "This donation is booked with another food bank.")
-    when_at = ev.now(ctx, s.c) + timedelta(days=1)
-    when_at = when_at.astimezone(IST).replace(hour=10, minute=0, second=0, microsecond=0)
-    s.case.donation = {**s.case.donation, "status": "confirmed", "pickupAt": when_at.isoformat()}
-    when = f"{copy.weekday(when_at)} 10:00"
+    now = ev.now(ctx, s.c)
+    proposed = s.case.donation.get("pickupAt")
+    when_at = datetime.fromisoformat(proposed) if proposed else _pickup_times(s.c, now)[0]
+    if when_at < now:  # the proposed time has gone by: the next of the same hour
+        when_at = _pickup_times(s.c, now)[0]
+    when = f"{copy.weekday(when_at)} {when_at.astimezone(IST):%H:%M}"
+    s.case.donation = {
+        **s.case.donation,
+        "status": "confirmed",
+        "pickupAt": when_at.isoformat(),
+        "confirmedAt": now.isoformat(),
+        "reply": copy.pickup_reply(
+            day=copy.weekday(when_at), spot=s.case.donation.get("spot") or f"{s.dist.city}'s serving point"
+        ),
+    }
     await audit.record(
         ctx,
         s.c.id,
@@ -1383,12 +1418,20 @@ async def documents(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> None
         "buyer": buyer or {"name": "", "short": "", "city": ""},
         "client": {"name": s.c.name, "short": s.c.short},
     }
-    numbers = {"support": await world.next_number(ctx, client_id, "support")}
-    numbers["invoice"] = await world.next_number(ctx, client_id, "invoice") if award and _line(s, "expiresoon") else ""
+    # without the distributor's own price (dp) there is no gap to support, so no credit note: a number is drawn only for
+    # a paper that is issued, so the sequence has no gaps
+    blank = {"support": "", "invoice": ""}
+    draft = money.documents(plan_, sku, awarded, support, parties, numbers=blank, rules=s.rules)
+    issues_support = any(d["id"] == "support" and money.jsonable(d.get("amount")) is not None for d in draft)
+    numbers = {
+        "support": await world.next_number(ctx, client_id, "support") if issues_support else "",
+        "invoice": await world.next_number(ctx, client_id, "invoice") if award and _line(s, "expiresoon") else "",
+    }
     docs = money.documents(plan_, sku, awarded, support, parties, numbers=numbers, rules=s.rules)
-    # without the distributor's own price (dp) there is no gap to support: no credit note
     docs = [d for d in docs if not (d["id"] == "support" and money.jsonable(d.get("amount")) is None)]
-    s.case.docs = money.jsonable([{**d, "pdf": None} for d in docs])
+    # the papers are dated the journey day the Paperwork agent drafts them
+    dated = _today(ctx, s.c).isoformat()
+    s.case.docs = money.jsonable([{**d, "pdf": None, "date": dated} for d in docs])
     s.case.phase = "settled"
     orders = (await ctx.session.execute(select(m.CaseOrder).where(m.CaseOrder.case_id == s.case.id))).scalars().all()
     if not orders:  # nothing went to the kiranas: no van round, no shelf to check; the report follows the window

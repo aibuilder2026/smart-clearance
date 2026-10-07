@@ -11,15 +11,18 @@
 	import Sheet from '../../../components/Sheet.svelte';
 	import Icon from '../../../icons/Icon.svelte';
 	import type { IconName } from '../../../icons/registry';
+	import { isEmail } from '../../../identity';
 	import { useNotice } from '../../../notice.svelte';
-	import { kinds, providerOf, STATUS_TONE } from '../../model';
+	import { kinds, PROVIDER_ICONS, providerOf, STATUS_TONE } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { RoleId, User, UserStatus } from '../../types';
 	import Screen from '../common/Screen.svelte';
 	import RowMenu from './RowMenu.svelte';
 
 	// users: the people and partner organisations in the workspace, how each signs in and their status; invite someone,
-	// change a role, deactivate or reactivate (screens/admin.jsx Users)
+	// change a role, deactivate or reactivate (screens/admin.jsx Users). An invitation is an email address only, as the
+	// console's (SC-68): the workspace's staff on its own domain, partners on any address; they sign in with it and the
+	// default password, which the admin hands over, and nothing is emailed
 	let { me }: { me: User } = $props();
 	const ws = useWorkspace();
 	const app = useApp();
@@ -46,20 +49,29 @@
 		void ws.setUserStatus(u.id, status);
 		toast({ text: `${u.short || u.name} ${status === 'deactivated' ? 'deactivated' : 'reactivated'}`, tone: 'ok' });
 	};
+	// the roles the client's own staff hold; the others are its partners'
+	const STAFF: RoleId[] = ['operator', 'finance', 'sustainability', 'admin'];
+	const domain = $derived(ws.data.workspace.emailDomain);
+	let err = $state('');
 	const send = () => {
-		const f = { ...form };
-		void ws.invite(f);
+		const name = form.name.trim();
+		const email = form.contact.trim().toLowerCase();
+		err = '';
+		if (!name) return void (err = 'Enter a name.');
+		if (!isEmail(email)) return void (err = `Enter an email address, such as name@${domain}.`);
+		if (STAFF.includes(form.role) && !email.endsWith('@' + domain))
+			return void (err = `${ws.data.workspace.short} staff need a ${domain} address. Partners can use any address.`);
+		void ws.invite({ name, contact: email, role: form.role });
 		invite = false;
 		form = { name: '', contact: '', role: 'retailer' };
-		toast({ text: `Invite sent to ${f.contact}`, tone: 'ok' });
+		toast({ text: `${name} can sign in with the default password`, tone: 'ok' });
 	};
 	const setRole = (u: User, k: RoleId) => {
 		void ws.setUserRole(u.id, k);
 		toast({ text: 'Role updated', tone: 'ok' });
 		roleFor = null;
 	};
-	const signInIcon = (u: User): IconName =>
-		u.provider === 'google' ? 'google' : u.provider === 'phone' ? 'smartphone' : 'hourglass';
+	const signInIcon = (u: User): IconName => PROVIDER_ICONS[u.provider];
 </script>
 
 {#snippet menu(u: User)}<RowMenu {u} {me} onrole={() => (roleFor = u)} onstatus={setStatus} />{/snippet}
@@ -87,9 +99,7 @@
 	<span style="position: relative; display: inline-block" onclick={(e) => e.stopPropagation()}>{@render menu(u)}</span>
 {/snippet}
 
-{#snippet sendInvite()}<Button variant="primary" block icon="send" disabled={!form.name || !form.contact} onclick={send}
-		>Send invite</Button
-	>{/snippet}
+{#snippet sendInvite()}<Button variant="primary" block icon="user-plus" onclick={send}>Invite</Button>{/snippet}
 
 <Screen
 	{me}
@@ -140,6 +150,7 @@
 	</div>
 	<Sheet
 		bind:open={invite}
+		onclose={() => (err = '')}
 		title="Invite someone"
 		side={app.bp === 'phone' ? 'bottom' : 'center'}
 		detent="medium"
@@ -147,19 +158,35 @@
 	>
 		<div class="stack">
 			<Field label="Name or organisation" htmlFor="inv-name"
-				><Input id="inv-name" bind:value={form.name} placeholder={ws.data.workspace.invite.name} /></Field
+				><Input
+					id="inv-name"
+					bind:value={form.name}
+					oninput={() => (err = '')}
+					placeholder={ws.data.workspace.invite.name}
+				/></Field
 			>
-			<Field
-				label="Email or mobile number"
-				htmlFor="inv-contact"
-				help={`${ws.data.workspace.short} staff sign in with their ${ws.data.workspace.emailDomain} Google account; the trade signs in with a one-time code at ${ws.data.workspace.domain}.`}
-				><Input id="inv-contact" bind:value={form.contact} placeholder={ws.data.workspace.invite.contact} /></Field
+			<Field label="Email" htmlFor="inv-contact" error={err || null}
+				><Input
+					id="inv-contact"
+					icon="mail"
+					type="email"
+					bind:value={form.contact}
+					oninput={() => (err = '')}
+					autocomplete="off"
+					spellcheck={false}
+					autocapitalize="none"
+					placeholder={`name@${domain}`}
+				/></Field
 			>
 			<Field label="Role" htmlFor="inv-role"
 				><Select id="inv-role" bind:value={form.role}
 					>{#each choices as [k, v] (k)}<option value={k}>{v}</option>{/each}</Select
 				></Field
 			>
+			<p class="t-footnote subtle" style="margin: 0">
+				{ws.data.workspace.short} staff need a {domain} address; partners use any address. They sign in with it and the default
+				password, which you hand over. Nothing is sent by email.
+			</p>
 		</div>
 	</Sheet>
 	<Sheet

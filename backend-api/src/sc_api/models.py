@@ -732,6 +732,18 @@ class Device(Base):
     last_seen_wall: Mapped[datetime] = mapped_column(TS)
 
 
+class IdempotencyKey(Base):
+    """a member's change, by the key its request carried: a retry with the same key answers without acting again"""
+
+    __tablename__ = "idempotency_keys"
+    client_id: Mapped[str] = mapped_column(ForeignKey("clients.id"), primary_key=True)
+    member_ref: Mapped[str] = mapped_column(Text, primary_key=True)
+    key: Mapped[str] = mapped_column(Text, primary_key=True)
+    route: Mapped[str] = mapped_column(Text)
+    ref: Mapped[str | None] = mapped_column(Text)
+    created_wall: Mapped[datetime] = mapped_column(TS)
+
+
 class Outbox(Base):
     """a Pub/Sub message, written with the change that caused it and published once that change has committed"""
 

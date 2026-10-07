@@ -15,7 +15,7 @@ from contextlib import suppress
 from datetime import time, timedelta
 from typing import Any
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 
 from sc_api import models as m
 from sc_api.domain import journey as J
@@ -39,6 +39,11 @@ async def run(ctx: Ctx) -> dict[str, Any]:
     for client_id in clients:
         done[client_id] = await _client(ctx, client_id)
         await ctx.session.commit()
+    # idempotency keys outlive any retry by far after a day
+    await ctx.session.execute(
+        delete(m.IdempotencyKey).where(m.IdempotencyKey.created_wall < ctx.clock.now() - timedelta(days=1))
+    )
+    await ctx.session.commit()
     return done
 
 

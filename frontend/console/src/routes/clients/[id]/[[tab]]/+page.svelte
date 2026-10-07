@@ -11,6 +11,8 @@
 	import AuditList from '#lib/screens/AuditList.svelte';
 	import AgentsTab from '#lib/screens/client/AgentsTab.svelte';
 	import IntegrationsTab from '#lib/screens/client/IntegrationsTab.svelte';
+	import JourneyBadge from '#lib/screens/client/JourneyBadge.svelte';
+	import JourneyDaySheet from '#lib/screens/client/JourneyDaySheet.svelte';
 	import PeopleTab from '#lib/screens/client/PeopleTab.svelte';
 	import PlanTab from '#lib/screens/client/PlanTab.svelte';
 	import RulesTab from '#lib/screens/client/RulesTab.svelte';
@@ -40,6 +42,7 @@
 	const tab = $derived<ClientTab>(TABS.find((t) => t.id === page.params.tab)?.id ?? 'agents');
 	const allOff = $derived(c ? k.agentsOn(c) === 0 : false);
 	let pause = $state(false);
+	let clock = $state(false);
 
 	// another tab is being read (SC-49): the route runs under the tabs at once, the tab's shape after SLOW_MS. The first
 	// tab arrives with the page, under the screen's own route
@@ -115,7 +118,10 @@
 					<span class="row tight wrap"
 						><ClientStatus client={c} /><Badge size="sm">{k.planName(c.plan)}</Badge><Badge size="sm" icon="map-pin"
 							>{c.city}{c.region && c.region !== 'India' ? ' · ' + c.region : ''}</Badge
-						><Badge size="sm" icon="bot">{k.agentsOn(c)} of {k.workers} agents on</Badge></span
+						><Badge size="sm" icon="bot">{k.agentsOn(c)} of {k.workers} agents on</Badge><JourneyBadge
+							{c}
+							onopen={() => (clock = true)}
+						/></span
 					>
 				</div>
 			</div>
@@ -134,6 +140,7 @@
 						</div>{/key}{/if}
 			</div>
 		</div>
+		<JourneyDaySheet bind:open={clock} {c} />
 		<Alert
 			bind:open={pause}
 			title="Pause every agent for {c.name}?"

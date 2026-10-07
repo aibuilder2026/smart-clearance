@@ -12,7 +12,8 @@
 	const ws = useWorkspace();
 	const c = $derived(ws.case!);
 	const S7 = $derived(c.shelf);
-	const staff = $derived(c.plan.rows.find((r) => r.id === 'staff')!);
+	// the staff sale, as the plan names it; a partner who does not see the plan reads the channel's name
+	const staff = $derived(c.plan.rows.find((r) => r.id === 'staff') ?? { name: ws.data.setup.channelNames.staff ?? '' });
 </script>
 
 <Card class="stack snug">

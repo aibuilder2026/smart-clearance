@@ -18,6 +18,7 @@ window.SC3_ICONS = {
 "user-cog": "<circle cx=\"18\" cy=\"15\" r=\"3\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <path d=\"M10 15H6a4 4 0 0 0-4 4v2\" /> <path d=\"m21.7 16.4-.9-.3\" /> <path d=\"m15.2 13.9-.9-.3\" /> <path d=\"m16.6 18.7.3-.9\" /> <path d=\"m19.1 12.2.3-.9\" /> <path d=\"m19.6 18.7-.4-1\" /> <path d=\"m16.8 12.3-.4-1\" /> <path d=\"m14.3 16.6 1-.4\" /> <path d=\"m20.7 13.8 1-.4\" />",
 "user-check": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <polyline points=\"16 11 18 13 22 9\" />",
 "skip-forward": "<polygon points=\"5 4 15 12 5 20 5 4\" /> <line x1=\"19\" x2=\"19\" y1=\"5\" y2=\"19\" />",
+"fast-forward": "<polygon points=\"13 19 22 12 13 5 13 19\" /> <polygon points=\"2 19 11 12 2 5 2 19\" />",
 "skip-back": "<polygon points=\"19 20 9 12 19 4 19 20\" /> <line x1=\"5\" x2=\"5\" y1=\"19\" y2=\"5\" />",
 "keyboard": "<path d=\"M10 8h.01\" /> <path d=\"M12 12h.01\" /> <path d=\"M14 8h.01\" /> <path d=\"M16 12h.01\" /> <path d=\"M18 8h.01\" /> <path d=\"M6 8h.01\" /> <path d=\"M7 16h10\" /> <path d=\"M8 12h.01\" /> <rect width=\"20\" height=\"16\" x=\"2\" y=\"4\" rx=\"2\" />",
 "presentation": "<path d=\"M2 3h20\" /> <path d=\"M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3\" /> <path d=\"m7 21 5-5 5 5\" />",
@@ -191,5 +192,9 @@ window.SC3_ICONS = {
 "maximize-2": "<polyline points=\"15 3 21 3 21 9\" /> <polyline points=\"9 21 3 21 3 15\" /> <line x1=\"21\" x2=\"14\" y1=\"3\" y2=\"10\" /> <line x1=\"3\" x2=\"10\" y1=\"21\" y2=\"14\" />",
 "minimize-2": "<polyline points=\"4 14 10 14 10 20\" /> <polyline points=\"20 10 14 10 14 4\" /> <line x1=\"14\" x2=\"21\" y1=\"10\" y2=\"3\" /> <line x1=\"3\" x2=\"10\" y1=\"21\" y2=\"14\" />",
 "grip-horizontal": "<circle cx=\"12\" cy=\"9\" r=\"1\" /> <circle cx=\"19\" cy=\"9\" r=\"1\" /> <circle cx=\"5\" cy=\"9\" r=\"1\" /> <circle cx=\"12\" cy=\"15\" r=\"1\" /> <circle cx=\"19\" cy=\"15\" r=\"1\" /> <circle cx=\"5\" cy=\"15\" r=\"1\" />",
+"bell-off": "<path d=\"M10.268 21a2 2 0 0 0 3.464 0\" /> <path d=\"M17 17H4a1 1 0 0 1-.74-1.673C4.59 13.956 6 12.499 6 8a6 6 0 0 1 .258-1.742\" /> <path d=\"m2 2 20 20\" /> <path d=\"M8.668 3.01A6 6 0 0 1 18 8c0 2.687.77 4.653 1.707 6.05\" />",
+"square-plus": "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" /> <path d=\"M8 12h8\" /> <path d=\"M12 8v8\" />",
+"share-ios": "<path d=\"M12 2v13\" /> <path d=\"m16 6-4-4-4 4\" /> <path d=\"M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8\" />",
+"book-open": "<path d=\"M12 7v14\" /> <path d=\"M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z\" />",
 "google": "<path d=\"M21.6 12.2c0-.7-.1-1.4-.2-2H12v3.8h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.3z\" fill=\"#4285F4\" stroke=\"none\"/><path d=\"M12 22c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1-2.6 0-4.8-1.8-5.6-4.1H3.1v2.6A10 10 0 0 0 12 22z\" fill=\"#34A853\" stroke=\"none\"/><path d=\"M6.4 14c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V7.4H3.1a10 10 0 0 0 0 9.2z\" fill=\"#FBBC05\" stroke=\"none\"/><path d=\"M12 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9A10 10 0 0 0 3.1 7.4L6.4 10C7.2 7.7 9.4 6 12 6z\" fill=\"#EA4335\" stroke=\"none\"/>"
 };

@@ -8,6 +8,7 @@
   const CH_NAMES = D.SETUP.channelNames;
   const ES = D.PLAN.lines.find(l => l.id === "expiresoon"), KL = D.PLAN.lines.find(l => l.id === "kirana");
   const SHOPS = D.KIRANAS.length;
+  const Pass = ({ children }) => children;
 
   /* ---------- S0 Setup ---------- */
   const FLOOR_ROWS = [["snacks", "Snacks", "chips"], ["biscuits", "Biscuits", "biscuits"], ["staples", "Staples", "poha"], ["beverages", "Beverages", "mango"], ["personal-care", "Personal care", "facewash"]];
@@ -23,10 +24,15 @@
     const done = s.setup.confirmed;
     const confirm = () => { setBusy(true); setTimeout(() => { setBusy(false); Flow.act("connect"); toast({ text: "Setup confirmed · the Watcher starts at 09:00", tone: "ok" }); onConfirm && onConfirm(); }, 900); };
     const chans = D.SETUP.channels; const wo = D.PLAN.writeOff; const chips = D.SKUS.chips;
+    // live (SC-73): a new stock export goes straight to the workspace's storage, its progress shown as it goes
+    const live = S.useLive(); const [exp, setExp] = useState({ name: D.SETUP.dms.file, size: 4.8e6 }); const fileRef = React.useRef(null);
+    const pick = e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; if (!f) return; setExp({ name: f.name, size: f.size }); live.uploadExport(() => toast({ text: "Export uploaded · the Data agent is mapping its columns", tone: "ok" })); };
+    const uploading = live && live.uploads.dms != null;
     return <Screen me={me} title="Setup" sub="Connect the stock data once and set the rules the agents must obey">
       <div className="stack" style={{ gap: 20 }}>
+        {uploading && <S.Live.ExportUpload name={exp.name} size={exp.size} p={live.uploads.dms} onCancel={() => live.cancelUpload("dms")} />}
         <Card className="stack snug">
-          <div className="card-head"><span className="row tight"><span className="icontile"><Icon name="file-spreadsheet" size={17} stroke={2} /></span><span className="stack tight" style={{ gap: 0 }}><b>{D.SETUP.dms.file}</b><span className="t-footnote subtle">Bizom-style DMS export · 312 batches · 4 distributors</span></span></span>{done ? <Badge tone="green" icon="check">Loaded into BigQuery</Badge> : <Badge dot>Mapped · confirm below</Badge>}</div>
+          <div className="card-head"><span className="row tight"><span className="icontile"><Icon name="file-spreadsheet" size={17} stroke={2} /></span><span className="stack tight" style={{ gap: 0 }}><b>{D.SETUP.dms.file}</b><span className="t-footnote subtle">Bizom-style DMS export · 312 batches · 4 distributors</span></span></span><span className="row tight wrap">{live && !uploading && <><Button size="sm" icon="upload" onClick={() => fileRef.current && fileRef.current.click()}>Upload an export</Button><input ref={fileRef} type="file" accept=".csv,text/csv" className="sr-only" tabIndex={-1} aria-hidden="true" onChange={pick} /></>}{done ? <Badge tone="green" icon="check">Loaded into BigQuery</Badge> : <Badge dot>Mapped · confirm below</Badge>}</span></div>
           <div className="table-wrap" style={{ boxShadow: "none" }} tabIndex={0} role="region" aria-label="Field mapping"><table className="table"><thead><tr><th>Smart-Clearance field</th><th>Column in your file</th><th>Status</th></tr></thead><tbody>
             {D.SETUP.dms.columns.map(([f, c]) => <tr key={f}><td className="strong">{f.replace("_", " ")}</td><td className="mono">{c}</td><td><Badge size="sm" tone="green" icon="check">mapped</Badge></td></tr>)}
           </tbody></table></div>
@@ -103,9 +109,29 @@
     </Card>;
     const feed = <div className="stack snug"><SectionTitle sub="Every hand-off, as it happens">Agent activity</SectionTitle><Card>{s.feed.length ? <AgentFeed events={s.feed} people={D.PEOPLE} live={hm.agentLive ? s.feed.length - 1 : -1} max={phone ? 3 : 6} /> : <span className="t-footnote muted">The agents report here once the Watcher runs.</span>}</Card></div>;
     const list = <div className="stack snug"><SectionTitle sub="Sorted by days to best-before; at-risk batches first">Watchlist</SectionTitle><div className="list">{watchlist.map(v => <BatchRow key={v.id} view={v} selected={sel === v.id} compact={phone} onOpen={() => { setSel(v.id); if (v.hero) openRoute(); }} />)}</div></div>;
+    const live = S.useLive();
+    if (live) return <LiveCommandCenter me={me} live={live} hm={hm} money={money} watchlist={watchlist} sel={sel} setSel={setSel} feed={feed} cluster={cluster} />;
     return <Screen me={me} title="Command Center" sub={flagged ? `${D.JOURNEY.today} · Watcher checked 312 batches at 09:00` : "Watcher runs daily at 09:00 across 312 batches"}>
       {app.bp === "desktop" ? <Columns sideWidth={340} main={<>{tracker}{cluster}{list}</>} side={feed} />
         : <div className="stack" style={{ gap: 20 }}>{tracker}{feed}{list}{cluster}</div>}
+    </Screen>;
+  }
+  // the Command Center on the live workspace (SC-73, SC-68 option B): the flagged batches as tabs over the tracker card,
+  // grey while updates are paused, and a quiet day when nothing is at risk. The date moves into the live line
+  function LiveCommandCenter({ me, live, hm, money, watchlist, sel, setSel, feed, cluster }) {
+    const s = useStore(); const { go } = useRoute(); const app = useApp(); const phone = app.bp === "phone"; const L = S.Live;
+    const dim = L.down(live.conn); const offline = live.conn === "offline"; const items = L.flaggedItems(s, live);
+    const watch = s.rules.watchTime; const rows = D.SETUP.dms.rows;
+    const openRoute = ref => go("route", { ref });
+    const primary = s.hero.phase === "planned" ? <Button variant="approve" icon="check" disabled={offline} onClick={() => openRoute(items[0].ref)}>Review and approve</Button> : ["approved", "executing"].includes(s.hero.phase) ? <Button variant="primary" iconRight="arrow-right" onClick={() => go("execution")}>Watch execution</Button> : <Button variant="primary" iconRight="arrow-right" onClick={() => openRoute(items[0].ref)}>Open Route Room</Button>;
+    const hero = <L.Dim on={dim}><TrackerCard view={hm.view} done={hm.done} current={hm.current} eta={dim ? L.pausedWords(live) : hm.eta} etaTone={dim ? "gray" : hm.etaTone} agentLive={dim ? "" : hm.agentLive} primary={primary} money={money} /></L.Dim>;
+    const top = live.quiet ? <L.Quiet /> : items.length > 1 ? <L.Flagged items={items}>{it => (it.hero ? hero : <L.MangoCard item={it} dim={dim} />)}</L.Flagged> : hero;
+    const list = <div className="stack snug"><SectionTitle sub={live.quiet ? "Every batch clears inside its date at today's sell-through" : "Flagged batches first, then by days to best-before"}>Watchlist</SectionTitle><div className="list">{watchlist.map(v => <BatchRow key={v.id} view={v} selected={sel === v.id} compact={phone} onOpen={() => { setSel(v.id); if (v.hero) openRoute(v.id); }} />)}</div></div>;
+    const side = <L.Dim on={dim}>{feed}</L.Dim>;
+    const map = !live.quiet && cluster;
+    return <Screen me={me} title="Command Center" sub={`Watcher checked ${rows} batches at ${watch} · ${live.quiet ? "nothing flagged" : items.length + " flagged"}`}>
+      {app.bp === "desktop" ? <Columns sideWidth={340} main={<>{top}{map}{list}</>} side={side} />
+        : <div className="stack" style={{ gap: 20 }}>{top}{side}{list}{map}</div>}
     </Screen>;
   }
 
@@ -132,8 +158,17 @@
     const s = S.useStore(); const approvedNow = !!(s.hero.plan && s.hero.plan.status === "approved");
     useEffect(() => { if (open) setPlaced(approvedNow); }, [open]);
     useEffect(() => { if (open && approvedNow) setPlaced(true); }, [approvedNow]);
-    const approve = () => { setBusy(true); setTimeout(() => { setBusy(false); Flow.act("approve", me ? me.id : "priya"); setPlaced(true); }, 650); };
-    return <Sheet open={open} onClose={onClose} title={placed ? "Plan placed" : "Approve the plan"} footer={placed ? <Button variant="primary" size="lg" block iconRight="arrow-right" onClick={() => { onClose(); go("execution"); }}>Watch execution</Button> : <><Button variant="approve" size="lg" block icon="check" loading={busy} onClick={approve}>Approve · release the agents</Button><Button variant="ghost" block onClick={onClose}>Not now</Button></>}>
+    // live (SC-73): the approval goes to the workspace's backend, which may not answer; the sheet says so and offers Retry.
+    // Offline, approving waits for a connection
+    const live = S.useLive(); const failed = live && live.failed && live.failed.action === "approve" ? live.failed : null; const offline = !!live && live.conn === "offline";
+    const approve = () => {
+      setBusy(true);
+      if (live) { live.act("approve", () => Flow.act("approve", me ? me.id : "priya")).then(ok => { setBusy(false); if (ok) setPlaced(true); }); return; }
+      setTimeout(() => { setBusy(false); Flow.act("approve", me ? me.id : "priya"); setPlaced(true); }, 650);
+    };
+    const yes = offline ? <><Button variant="approve" size="lg" block icon="check" aria-disabled="true" aria-describedby="lv-sheet-net" className="lv-blocked">Approve · release the agents</Button><span style={{ justifySelf: "center" }}><S.Live.NeedsNet id="lv-sheet-net" /></span></>
+      : <Button variant="approve" size="lg" block icon={failed ? "refresh-cw" : "check"} loading={busy} onClick={approve}>{failed ? "Retry · release the agents" : "Approve · release the agents"}</Button>;
+    return <Sheet open={open} onClose={onClose} title={placed ? "Plan placed" : "Approve the plan"} footer={placed ? <Button variant="primary" size="lg" block iconRight="arrow-right" onClick={() => { onClose(); go("execution"); }}>Watch execution</Button> : <>{failed && !busy && <S.Live.ApproveFailed message={failed.message} />}{yes}<Button variant="ghost" block onClick={onClose}>Not now</Button></>}>
       {placed ? <div className="stack" style={{ justifyItems: "center", textAlign: "center", padding: "12px 0 8px" }}>
         <svg width="96" height="96" viewBox="0 0 96 96" aria-hidden="true"><motion.circle cx="48" cy="48" r="42" fill="none" stroke="var(--primary)" strokeWidth="6" initial={reduce ? false : { pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.6, ease: [0.65, 0, 0.35, 1] }} /><motion.path d="M30 49 L43 62 L67 36" fill="none" stroke="var(--primary)" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" initial={reduce ? false : { pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.45, duration: 0.4 }} /></svg>
         <div className="t-title2">Approved · 09:40</div>
@@ -158,7 +193,15 @@
     const v = hm.view; const sku = v.skuObj;
     const staff = D.PLAN.rows.find(r => r.id === "staff");
     useEffect(() => { const f = () => setSheet(true); window.addEventListener("sc3:approve-open", f); return () => window.removeEventListener("sc3:approve-open", f); }, []);
-    return <Screen me={me} title="Route Room" sub={`${v.id} · ${sku.brand} ${sku.name} · ${v.dist.name}, ${v.dist.city}`} back="Command Center">
+    // live (SC-73): each flagged batch has its own Route Room (#/route/<batch>), with the batches as tabs under the
+    // title; updates paused grey the tracker, and offline the approval waits for a connection
+    const live = S.useLive(); const { route } = useRoute(); const L = S.Live;
+    const items = live ? L.flaggedItems(s, live) : null; const item = items && (items.find(i => i.ref === (route.params && route.params.ref)) || items[0]);
+    const below = items && items.length > 1 ? <L.Switcher items={items} current={item.ref} /> : null;
+    if (item && !item.hero) return <L.MangoRoom me={me} item={item} below={below} />;
+    const dim = !!live && L.down(live.conn); const offline = !!live && live.conn === "offline";
+    const Dim = live ? L.Dim : Pass;
+    return <Screen me={me} title="Route Room" sub={below ? null : `${v.id} · ${sku.brand} ${sku.name} · ${v.dist.name}, ${v.dist.city}`} back="Command Center" below={below}>
       <div className="stack" style={{ gap: 20, paddingBottom: h.phase === "planned" ? 96 : 0 }}>
         <Card className="stack" style={{ gap: 16 }}>
           <div className="row wrap" style={{ gap: 16 }}>
@@ -166,7 +209,7 @@
             <div className="grow"><div className="row base" style={{ gap: 10 }}><DaysNum days={v.daysLeft} life={sku.lifeDays} size="l" style={{ color: approved ? "var(--fg)" : "var(--red-text)" }} /><span className="stack tight" style={{ gap: 0 }}><b>days left</b><span className="t-footnote subtle">best before {fmt.date(v.bestBefore)}</span></span></div></div>
             <div className="stack tight" style={{ justifyItems: app.bp === "phone" ? "start" : "end" }}><GateChips gates={v.assess.gates} /><span className="t-footnote subtle">{fmt.num(v.assess.atRisk)} of {fmt.num(v.units)} units at risk · sells {v.sellPerDay} a day</span></div>
           </div>
-          {app.bp === "phone" ? <TrackerCompact done={hm.done} current={hm.current} /> : <Tracker stages={stages} done={hm.done} current={hm.current} times={K.STAGE_TIMES} />}
+          <Dim on={dim}>{app.bp === "phone" ? <TrackerCompact done={hm.done} current={hm.current} /> : <Tracker stages={stages} done={hm.done} current={hm.current} times={K.STAGE_TIMES} />}</Dim>
         </Card>
         <Columns sideWidth={340}
           main={<>
@@ -198,12 +241,13 @@
             </div> : <Locked icon="split" agent="Router Agent" live={h.phase === "valued"} text={h.phase === "valued" ? "Filling the best-paying channel to its cap, then the next." : "Proposes a split once the channels are priced."} />}
             {approved && <Card className="row wrap" style={{ gap: 14 }}><Avatar person={D.PEOPLE[(h.plan && h.plan.by) || "priya"]} size="lg" /><div className="grow"><b>Approved by {D.PEOPLE[(h.plan && h.plan.by) || "priya"].short} · 09:40 · phone</b><div className="t-footnote muted">Logged with who, when and device. The agents are executing; Rakesh bhai has the same plan in his app.</div></div><Button variant="primary" iconRight="arrow-right" onClick={() => go("execution")}>Watch execution</Button></Card>}
           </>}
-          side={<><SectionTitle sub="Gaps drawn to the clock">Agent timeline</SectionTitle><Card><AgentFeed events={s.feed.filter(e => e.stage !== "connect")} people={D.PEOPLE} live={hm.agentLive ? s.feed.filter(e => e.stage !== "connect").length - 1 : -1} /></Card></>} />
+          side={<><SectionTitle sub="Gaps drawn to the clock">Agent timeline</SectionTitle><Card><Dim on={dim}><AgentFeed events={s.feed.filter(e => e.stage !== "connect")} people={D.PEOPLE} live={hm.agentLive && !dim ? s.feed.filter(e => e.stage !== "connect").length - 1 : -1} /></Dim></Card></>} />
       </div>
       {h.phase === "planned" && <div style={{ position: "sticky", bottom: 0, zIndex: 5, padding: "12px 0 16px", background: "linear-gradient(180deg, transparent, var(--bg) 35%)" }}>
         <div className="card raised row wrap" style={{ padding: "14px 16px", gap: 14 }}>
           <div className="row wrap grow" style={{ gap: 18 }}>{[["You get", D.PLAN.net, "var(--primary-text)"], ["Instead of", -D.PLAN.writeOff.total, "var(--red-text)"], ["GST credit safe", D.PLAN.itcRetained, "var(--fg)"]].map(([k, val, c]) => <div key={k} className="stack tight" style={{ gap: 0 }}><span className="t-caption subtle strong">{k}</span><Money value={val} size="s" style={{ color: c, fontSize: 26 }} /></div>)}</div>
-          <Button variant="approve" size="lg" icon="check" onClick={() => setSheet(true)}>Review and approve</Button>
+          {offline ? <div className="stack tight" style={{ justifyItems: "end", gap: 6 }}><Button variant="approve" size="lg" icon="check" aria-disabled="true" aria-describedby="lv-needs-net" className="lv-blocked">Review and approve</Button><L.NeedsNet id="lv-needs-net" /></div>
+            : <Button variant="approve" size="lg" icon="check" onClick={() => setSheet(true)}>Review and approve</Button>}
         </div>
       </div>}
       <ApproveSheet open={sheet} onClose={() => setSheet(false)} me={me} />

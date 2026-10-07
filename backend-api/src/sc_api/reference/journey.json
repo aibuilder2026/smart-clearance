@@ -2787,5 +2787,138 @@
 				]
 			]
 		}
-	}
+	},
+	"moments": {
+		"planMinutes": 20,
+		"listingUrl": "https://expiresoon.example/l/{id}",
+		"van": {
+			"leaves": "07:00"
+		},
+		"donation": {
+			"time": "10:00",
+			"slots": [
+				{
+					"days": 1,
+					"time": "10:00"
+				},
+				{
+					"days": 1,
+					"time": "16:00"
+				},
+				{
+					"days": 2,
+					"time": "11:00"
+				}
+			],
+			"spots": {
+				"Feeding India": {
+					"Hyderabad": "the Charminar hunger spot"
+				}
+			},
+			"story": {
+				"day": "Tuesday",
+				"spot": "the Charminar hunger spot",
+				"reply": "Tuesday works. We'll serve them at the Charminar hunger spot this week."
+			}
+		}
+	},
+	"market": {
+		"dispatchHours": 24,
+		"balanceHours": 48,
+		"minOrder": 100,
+		"lots": [
+			{
+				"id": "ES-23988",
+				"name": "Cream biscuits 75 g",
+				"icon": "cookie",
+				"units": 2400,
+				"price": 6,
+				"mrp": 10,
+				"days": 88,
+				"seller": "FMCG distributor, Bilaspur"
+			},
+			{
+				"id": "ES-24031",
+				"name": "Instant noodles 70 g",
+				"icon": "soup",
+				"units": 1800,
+				"price": 8,
+				"mrp": 14,
+				"days": 41,
+				"seller": "Wholesaler, Durg"
+			},
+			{
+				"id": "ES-24076",
+				"name": "UHT toned milk 1 L",
+				"icon": "milk",
+				"units": 600,
+				"price": 38,
+				"mrp": 72,
+				"days": 34,
+				"seller": "Dairy distributor, Bhilai"
+			},
+			{
+				"id": "ES-24102",
+				"name": "Whole-wheat atta 5 kg",
+				"icon": "wheat",
+				"units": 240,
+				"price": 160,
+				"mrp": 285,
+				"days": 52,
+				"seller": "Mill outlet, Rajnandgaon"
+			}
+		]
+	},
+	"explore": [
+		{
+			"group": "Munchly Foods",
+			"note": "staff · Google Workspace",
+			"ids": [
+				[
+					"priya",
+					"Approve the plan for the chips batch"
+				],
+				[
+					"anita",
+					"Review Munchly's credit note and GST memo"
+				],
+				[
+					"vikram",
+					"Export the BRSR table"
+				],
+				[
+					"arjun",
+					"The workspace, its people and the guardrails"
+				]
+			]
+		},
+		{
+			"group": "Invited partners",
+			"note": "a one-time code or Google",
+			"ids": [
+				[
+					"rakesh",
+					"Give the permission, send the photo, run the van"
+				],
+				[
+					"ganesh",
+					"Order from the Hindi offer"
+				],
+				[
+					"meera",
+					"Confirm a food-bank pickup"
+				]
+			]
+		},
+		{
+			"group": "Outside the workspace",
+			"note": "ExpireSoon, another company's marketplace",
+			"ids": [
+				[
+					"agrawal",
+					"Bid on the lot from Raipur"
+				]
+			]
+		}
+	]
 }

@@ -1936,7 +1936,7 @@ exports[`the parts a tap opens > the approval, before and after 1`] = `
 ]
 `;
 
-exports[`the parts a tap opens > the invite sheet 1`] = `"Invite someone Name or organisation Email or mobile numberMunchly staff sign in with their munchly.in Google account; the trade signs in with a one-time code at munchly.smartclearance.com. RoleSupply-chain operatorDistributorKirana retailerFinance & GSTSustainability & BRSRFood-bank partnerWorkspace admin Send invite ⟨Close | Close | Shree Sai Kirana | +91 98230 60014⟩"`;
+exports[`the parts a tap opens > the invite sheet 1`] = `"Invite someone Name or organisation Email RoleSupply-chain operatorDistributorKirana retailerFinance & GSTSustainability & BRSRFood-bank partnerWorkspace admin Munchly staff need a munchly.in address; partners use any address. They sign in with it and the default password, which you hand over. Nothing is sent by email. Invite ⟨Close | Close | Shree Sai Kirana | name@munchly.in⟩"`;
 
 exports[`the parts a tap opens > the lot as the operator sees it 1`] = `
 [

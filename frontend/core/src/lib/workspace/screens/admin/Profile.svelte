@@ -13,7 +13,7 @@
 	import { useNotice } from '../../../notice.svelte';
 	import { useTheme } from '../../../theme.svelte';
 	import { useAccount, useRoute } from '../../context';
-	import { kinds, providerOf } from '../../model';
+	import { kinds, PROVIDER_ICONS, providerOf } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import Screen from '../common/Screen.svelte';
@@ -45,13 +45,20 @@
 		}
 	};
 	let push = $state(true);
+	// the live workspace's web push on this device (SC-73): what the browser allows, and whether this device takes it
+	let pushOff = $state(false);
+	$effect(() => void acc.push?.check());
+	const PUSH_SAYS: Record<string, string> = {
+		denied: 'Blocked in this browser: allow it in the site settings',
+		'install-first': 'On iPhone, add the app to your Home Screen first',
+		unsupported: 'This browser cannot take pushes'
+	};
+	const pushSub = $derived(acc.push ? PUSH_SAYS[acc.push.state] : undefined);
 	// svelte-ignore state_referenced_locally (the app keys the screens by person, so the default is read once)
 	let digest = $state(me.role === 'finance' || me.role === 'sustainability');
 	const perm = $derived(ws.state.setup.permission);
 	const inside = $derived(me.role !== 'buyer');
-	const signInIcon = $derived<IconName>(
-		me.provider === 'google' ? 'google' : me.provider === 'phone' ? 'smartphone' : 'hourglass'
-	);
+	const signInIcon = $derived<IconName>(PROVIDER_ICONS[me.provider]);
 </script>
 
 {#snippet wsMark()}<WorkspaceMark ws={ws.data.workspace} size={32} />{/snippet}
@@ -85,7 +92,15 @@
 		label="Notification language"
 		size="sm"
 	/>{/snippet}
-{#snippet pushSwitch()}<Switch bind:checked={push} label="Push notifications" />{/snippet}
+{#snippet pushSwitch()}{#if acc.push}{@const p = acc.push}<Switch
+			checked={p.state === 'granted' && !pushOff}
+			disabled={p.busy || (p.state !== 'granted' && p.state !== 'default')}
+			onchange={(v) => {
+				pushOff = !v;
+				void (v ? p.enable() : p.disable());
+			}}
+			label="Push notifications"
+		/>{:else}<Switch bind:checked={push} label="Push notifications" />{/if}{/snippet}
 {#snippet digestSwitch()}<Switch bind:checked={digest} label="Weekly digest" />{/snippet}
 {#snippet install()}{#if acc.install}<Button variant="secondary" size="sm" onclick={acc.install}>Install</Button
 		>{/if}{/snippet}
@@ -146,10 +161,11 @@
 			>{/if}
 		<List head="Appearance"><ListRow title="Theme" value={themeSwitch} /></List>
 		<List head="Notifications" foot="Offers to the trade go out in the language each person picks."
-			><ListRow title="Language" value={language} /><ListRow title="Push notifications" value={pushSwitch} /><ListRow
-				title="Weekly digest by email"
-				value={digestSwitch}
-			/></List
+			><ListRow title="Language" value={language} /><ListRow
+				title="Push notifications"
+				sub={pushSub}
+				value={pushSwitch}
+			/><ListRow title="Weekly digest by email" value={digestSwitch} /></List
 		>
 		{#if acc.install !== undefined}<List head="This device"
 				><ListRow

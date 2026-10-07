@@ -240,3 +240,20 @@ def test_the_fixtures_story_figures():
     assert PLAN["net"] == 21770 and round(PLAN["swing"]) == 26340
     assert AWARD["token"] == 1644 and INVOICE["total"] == 11510 and CREDIT["amount"] == 8768
     assert M["plans"][0]["plan"]["net"] == PLAN["net"]
+
+
+def test_the_food_banks_reply_is_designs():
+    story = J["moments"]["donation"]["story"]
+    assert copy.pickup_reply(day=story["day"], spot=story["spot"]) == story["reply"]
+    spots = J["moments"]["donation"]["spots"]
+    assert copy.serving_spot(partner="Feeding India", city="Hyderabad", spots=spots) == story["spot"]
+    elsewhere = copy.serving_spot(partner="Feeding India", city="Nagpur", spots=spots)
+    assert elsewhere == "Feeding India's serving point in Nagpur"
+
+
+def test_a_small_sum_of_money_is_a_figure():
+    # a counting word may stand; the same number as rupees must be a computed figure (SC-72's review)
+    assert copy.check_numbers("Two options, both within 3 days.", [14.2])
+    assert not copy.check_numbers("We can do ₹5 a packet.", [14.2])
+    assert not copy.check_numbers("We can do Rs 5 a packet.", [14.2])
+    assert copy.check_numbers("We can do ₹14.20 a packet.", [14.2])

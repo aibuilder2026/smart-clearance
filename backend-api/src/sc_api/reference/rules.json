@@ -3263,6 +3263,88 @@
 		"override": "Overrode MF-2409-204's quick-commerce gates: Zepto and Instamart 30% of life (A deal)",
 		"clear": "Removed MF-2409-204's quick-commerce gate override"
 	},
+	"dayMinutes": {
+		"errors": [
+			{
+				"value": 0,
+				"error": "Enter a whole number of minutes, from 1 to 1,440."
+			},
+			{
+				"value": 1,
+				"error": null
+			},
+			{
+				"value": 5,
+				"error": null
+			},
+			{
+				"value": 60,
+				"error": null
+			},
+			{
+				"value": 1440,
+				"error": null
+			},
+			{
+				"value": 1441,
+				"error": "Enter a whole number of minutes, from 1 to 1,440."
+			},
+			{
+				"value": -5,
+				"error": "Enter a whole number of minutes, from 1 to 1,440."
+			},
+			{
+				"value": 4.5,
+				"error": "Enter a whole number of minutes, from 1 to 1,440."
+			},
+			{
+				"value": null,
+				"error": "Enter a whole number of minutes, from 1 to 1,440."
+			},
+			{
+				"value": "5",
+				"error": "Enter a whole number of minutes, from 1 to 1,440."
+			}
+		],
+		"lines": [
+			{
+				"client": "Munchly Foods",
+				"to": 5,
+				"was": 1440,
+				"text": "Set the length of a journey day for Munchly Foods to 5 minutes (was a day)"
+			},
+			{
+				"client": "Munchly Foods",
+				"to": 1440,
+				"was": 5,
+				"text": "Set the length of a journey day for Munchly Foods to a day (was 5 minutes)"
+			},
+			{
+				"client": "Munchly Foods",
+				"to": 1,
+				"was": 60,
+				"text": "Set the length of a journey day for Munchly Foods to 1 minute (was 1 hour)"
+			},
+			{
+				"client": "Munchly Foods",
+				"to": 90,
+				"was": 1,
+				"text": "Set the length of a journey day for Munchly Foods to 1 h 30 min (was 1 minute)"
+			},
+			{
+				"client": "Munchly Foods",
+				"to": 120,
+				"was": 1439,
+				"text": "Set the length of a journey day for Munchly Foods to 2 hours (was 23 h 59 min)"
+			},
+			{
+				"client": "Munchly Foods",
+				"to": 59,
+				"was": 61,
+				"text": "Set the length of a journey day for Munchly Foods to 59 minutes (was 1 h 1 min)"
+			}
+		]
+	},
 	"slug": [
 		{
 			"name": "Kesari Foods",

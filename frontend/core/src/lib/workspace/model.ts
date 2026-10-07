@@ -3,6 +3,7 @@
 // share. Everything here takes its data as arguments: the screens read it from their source (source.ts), never from
 // the stub's seed, so this module works the same over the stub and over backend-api.
 import type { NavItem } from '../components/Shell.svelte';
+import type { IconName } from '../icons/registry';
 import { fmt } from '../format';
 import type {
 	Batch,
@@ -143,14 +144,15 @@ export const personById = (
 ): { id?: string; name: string; short?: string; img?: string } =>
 	data.people[id] || s.users.find((u) => u.id === id) || { name: id };
 
-/** a distributor's one-time permission: the one in focus as the state holds it, the others as the workspace's setup */
+/** a distributor's one-time permission: the one in focus as the state holds it, the others as the workspace's setup
+ *  (with no batch in focus, every one as the setup holds it) */
 export function permissionOf(
 	s: State,
 	id: string,
 	data: Pick<WorkspaceData, 'setup'>,
-	c: Pick<CaseData, 'dist'>
+	c: Pick<CaseData, 'dist'> | null
 ): { tone?: 'green' | 'amber'; label: string } {
-	if (id === c.dist.id) {
+	if (c && id === c.dist.id) {
 		const p = s.setup.permission;
 		return p
 			? p.paused
@@ -182,14 +184,28 @@ export const addDays = (iso: string, n: number) => {
 /** who plays each part in the batch's story, from the workspace's members: the operator who approves, the batch's
  *  distributor, the first kirana that orders, the buyer, the food bank that takes the donation, finance and
  *  sustainability */
-export function castOf(s: State, c: Pick<CaseData, 'dist' | 'kiranas' | 'buyer' | 'donation'>) {
-	const by = (r: RoleId, org?: string) => s.users.find((u) => u.role === r && (!org || u.org === org))!;
+/** someone the member cannot see, or nobody yet: an account with no name, so a screen still draws */
+const nobody = (role: RoleId): User => ({
+	id: '',
+	name: '',
+	short: '',
+	org: '',
+	role,
+	provider: 'password',
+	status: 'active',
+	kind: 'partner',
+	lastSeen: null
+});
+export function castOf(s: State, c: Pick<CaseData, 'dist' | 'kiranas' | 'buyer' | 'donation'> | null) {
+	const by = (r: RoleId, org?: string | null) =>
+		(org === null ? undefined : s.users.find((u) => u.role === r && (!org || u.org === org))) ?? nobody(r);
+	// with no batch in focus (the live workspace's quiet day), nobody stands for the batch's own partners
 	return {
 		operator: by('operator'),
-		distributor: by('distributor', c.dist.name),
-		kirana: by('retailer', c.kiranas[0].name),
-		buyer: by('buyer', c.buyer.name),
-		foodbank: by('foodbank', c.donation.partner.name),
+		distributor: by('distributor', c ? c.dist.name : null),
+		kirana: by('retailer', c?.kiranas[0]?.name ?? null),
+		buyer: by('buyer', c?.buyer.name || null),
+		foodbank: by('foodbank', c?.donation.partner?.name || null),
 		finance: by('finance'),
 		sustainability: by('sustainability')
 	};
@@ -232,7 +248,15 @@ export const offerMath = (n: number, c: Pick<CaseData, 'lines' | 'sku' | 'scheme
 export const PROVIDERS: Record<User['provider'], string> = {
 	google: 'Google',
 	phone: 'Phone code',
-	expiresoon: 'ExpireSoon sign-in'
+	expiresoon: 'ExpireSoon sign-in',
+	password: 'Email and password'
+};
+/** each way of signing in, as an icon */
+export const PROVIDER_ICONS: Record<User['provider'], IconName> = {
+	google: 'google',
+	phone: 'smartphone',
+	expiresoon: 'hourglass',
+	password: 'mail'
 };
 /** how each kind of member is described, in the workspace's own name */
 export const kinds = (ws: Pick<Workspace, 'short'>): Record<User['kind'], string> => ({

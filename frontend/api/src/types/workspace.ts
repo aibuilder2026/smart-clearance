@@ -41,6 +41,8 @@ export type Member = {
 	invitedBy: string | null;
 	/** what the member stands for: a distributor's, kirana's, buyer's or food bank's id; null for Munchly's people */
 	orgRef: string | null;
+	/** what they do: "Regional Supply-Chain Manager", "Owner, distributor" */
+	title: string;
 	/** wall time of the last sign-in */
 	lastSeen: string | null;
 };
@@ -51,8 +53,22 @@ export type WsMark = { from: string; to: string; ink: string };
 
 export type SignInOption = { id: string; icon: string; title: string; who: string; rule: string };
 
+/** someone a synthetic workspace offers on its sign-in: their address fills the form; the password is handed over */
+export type SignInAccount = {
+	id: string;
+	name: string;
+	role: WsRole;
+	title: string;
+	img: string | null;
+	email: string;
+	/** what they do in the story */
+	does: string;
+};
+
 /** GET /v1/workspaces/{ws}: what the sign-in page and the installed app show. No token needed */
 export type WorkspacePublic = {
+	/** the people to sign in as, by where they stand; empty for a real client's workspace */
+	accounts: { group: string; note: string; people: SignInAccount[] }[];
 	id: string;
 	name: string;
 	short: string;
@@ -60,6 +76,9 @@ export type WorkspacePublic = {
 	mark: WsMark;
 	platform: { name: string; domain: string };
 	signIn: SignInOption[];
+	/** the domain Munchly's people sign in on, and what the sign-in suggests typing */
+	emailDomain: string;
+	hint: string;
 	manifest: { name: string; shortName: string; description: string; themeColor: string; backgroundColor: string };
 };
 
@@ -193,10 +212,16 @@ export type WsStage = {
 	title: string;
 	when: string;
 	who: string;
+	screen: string;
 	role: string;
 	view: string;
 	human: boolean;
 	time: string;
+	sees: string;
+	agents: string;
+	money: string;
+	pain: string;
+	relief: string;
 };
 
 export type WsChannel = {
@@ -251,12 +276,25 @@ export type WsMoneyRules = {
 export type WsIntegration = { id: string; name: string; kind: string; status: 'ok' | 'mock' | 'waiting'; note: string };
 
 export type WsSetup = {
-	dms: { source: string; columns: [string, string][]; salesDays: number };
+	/** how long the setup takes, in minutes */
+	minutes: number;
+	dms: { source: string; file: string; rows: number; columns: [string, string][]; salesDays: number };
 	channels: string[];
+	channelNames: Record<string, string>;
 	allowList: [string, string[]][];
 	brandSafety: string[];
-	partners: { id: string; name: string; minDays: number; minUnits: number; logistics: string; paper: string }[];
+	partners: {
+		id: string;
+		name: string;
+		minDays: number;
+		minUnits: number;
+		logistics: string;
+		pickup?: string;
+		paper: string;
+	}[];
 	approval: string;
+	/** the distributors that have given the one-time permission, and when, as the setup states it */
+	permissions: Record<string, string>;
 	acts: string[];
 	/** whether Priya has confirmed the Data agent's mapping and the guardrails */
 	confirmed: boolean;
@@ -281,9 +319,43 @@ export type WsWorkspace = {
 	signIn: SignInOption[];
 	outside: string;
 	profile: { id: string; icon: string; title: string; value: string; text: string }[];
+	/** the domain Munchly's people sign in on */
+	emailDomain: string;
+	/** what the sign-in suggests typing */
+	hint: string;
+	/** what the invite form suggests typing */
+	invite: { name: string; contact: string };
 };
 
-export type WsClient = { name: string; short: string; city: string; gstin: string; fssai: string };
+export type WsClient = {
+	name: string;
+	short: string;
+	city: string;
+	gstin: string;
+	fssai: string;
+	listed: string;
+	revenue: string;
+	/** packs that go short-dated a quarter, and the share destroyed today */
+	shortDatedPerQuarter: number;
+	destroyedToday: number;
+	skus: number;
+	distributors: number;
+	kiranas: number;
+};
+
+/** another lot on the marketplace (illustrative) */
+export type WsMarketLot = {
+	id: string;
+	name: string;
+	icon?: string;
+	units: number;
+	price: number;
+	mrp: number;
+	days: number;
+	seller: string;
+};
+/** the marketplace the workspace lists on: its terms, and the other lots on it */
+export type WsMarket = { dispatchHours: number; balanceHours: number; minOrder: number; lots: WsMarketLot[] };
 
 /** a batch in a journey, for the lists: the Command Center, Batches, the inbox's links */
 export type CaseSummary = {
@@ -297,6 +369,8 @@ export type CaseSummary = {
 	atRisk: number;
 	/** the plan's net, once there is a plan (hidden from partners) */
 	net: number | null;
+	/** the packs going to a food bank, for those who see the donation */
+	donation: number | null;
 	updatedAt: string;
 };
 
@@ -336,6 +410,7 @@ export type WorkspaceSnapshot = {
 	moneyRules: WsMoneyRules;
 	integrations: WsIntegration[];
 	setup: WsSetup;
+	market: WsMarket;
 	watch: WatchRun | null;
 	batches: WsBatch[];
 	/** the batches in a journey, most urgent first */
@@ -542,6 +617,8 @@ export type WsDoc = {
 	price: number | null;
 	gstPct: number | null;
 	exact: number | null;
+	/** the journey day it is dated */
+	date: string | null;
 	/** whether a PDF can be downloaded (GET …/documents/{id}) */
 	pdf: boolean;
 };
@@ -574,9 +651,33 @@ export type Donation = {
 	status: 'booked' | 'confirmed' | 'collected';
 	partner: string;
 	units: number;
+	/** the pickup the Donation agent proposed, then the one the food bank confirmed */
 	pickupAt: string | null;
+	/** the other times it may move to */
+	slots: string[];
+	/** where the food bank serves it */
+	spot: string | null;
 	from: string;
+	/** when the Donation agent booked it, the food bank confirmed and collected */
 	at: string;
+	confirmedAt: string | null;
+	collectedAt: string | null;
+	/** the food bank's answer as it confirmed */
+	reply: string | null;
+};
+
+/** the moments of a batch's journey its screens state, as facts on the journey clock */
+export type CaseMoments = {
+	/** when the case opened: its day 0 */
+	day0: string;
+	/** how soon a plan follows a verified label, in minutes */
+	planMinutes: number;
+	/** when the distributor was asked for the one-time permission (the setup's confirmation) */
+	permissionAskedAt: string | null;
+	/** the lot's address on the marketplace, once listed */
+	listingUrl: string | null;
+	/** the distributor's van round that takes the scheme's orders: the morning after the offer closes */
+	van: { leavesAt: string | null; depot: string; doneAt: string | null };
 };
 
 /** a push the journey sent, as its recipient read it */
@@ -607,12 +708,25 @@ export type CaseDetail = {
 	returnBy: string | null;
 	/** the pushes this batch's journey sent the member, by key (detect, verify, plan, approved, offer …) */
 	push: Record<string, PushCopy>;
+	/** the plan's split without Munchly's figures, once approved: all of it for staff and the distributor, a partner's
+	 *  own line for the others */
+	split: WsSplitLine[] | null;
+	moments: CaseMoments;
 };
+
+export type WsSplitLine = Pick<
+	WsPlanLine,
+	'id' | 'name' | 'short' | 'units' | 'price' | 'packPrice' | 'charged' | 'cartons'
+>;
 
 /* ---------- the quarter and the audit log ---------- */
 
 export type WsQuarter = {
 	label: string;
+	/** the months it covers */
+	period: string;
+	/** each channel of the mix, by name */
+	mixNames: Record<string, string>;
 	recovered: number;
 	itc: number;
 	kg: number;
@@ -726,17 +840,7 @@ export interface WorkspaceApi {
 	registerDevice(input: DeviceInput): Promise<void>;
 	unregisterDevice(token: string): Promise<void>;
 
-	/** GET /events?after=&wait=: the polling fallback. The stream itself is GET /events/stream (SSE), read by
-	 *  workspaceEvents (SC-73) */
-	events(after: number): Promise<EventsPage>;
+	/** GET /events?after=&wait=: the polling fallback; `wait` (up to 25 s) holds the answer until something happens.
+	 *  The stream itself is GET /events/stream (SSE), read by workspaceEvents (SC-73) */
+	events(after: number, wait?: number): Promise<EventsPage>;
 }
-
-/** the API's refusals the workspace app handles by code */
-export const WS_ERRORS = {
-	signInFailed: 'SIGN_IN_FAILED',
-	notAMember: 'NOT_A_MEMBER',
-	forbidden: 'FORBIDDEN',
-	/** the step is no longer possible: the journey has moved on (read the case again) */
-	stale: 'STALE',
-	rateLimited: 'RATE_LIMITED'
-} as const;
