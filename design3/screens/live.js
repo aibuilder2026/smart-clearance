@@ -96,11 +96,11 @@
     const [cur, setCur] = useState(items[0].ref);
     const item = items.find((i) => i.ref === cur) || items[0];
     const human = items.filter((i) => i.human).length;
-    return /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 10 } }, /* @__PURE__ */ React.createElement("div", { className: "row between wrap lv-qhead" }, /* @__PURE__ */ React.createElement("b", { className: "t-subhead" }, "Flagged this morning"), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, items.length, " batches", human ? ` · ${human === 1 ? "one needs" : human + " need"} your yes` : "")), /* @__PURE__ */ React.createElement(BatchTabs, { items, current: item.ref, onPick: setCur, asTabs: true, label: "Batches flagged this morning" }), /* @__PURE__ */ React.createElement("div", { role: "tabpanel", id: "lv-flagged", "aria-labelledby": "lv-tab-" + item.ref }, children(item)));
+    return /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 10 } }, /* @__PURE__ */ React.createElement("div", { className: "row between wrap lv-qhead" }, /* @__PURE__ */ React.createElement("b", { className: "t-subhead" }, "Flagged batches"), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, items.length, " batches", human ? ` · ${human === 1 ? "one needs" : human + " need"} a yes` : "")), /* @__PURE__ */ React.createElement(BatchTabs, { items, current: item.ref, onPick: setCur, asTabs: true, label: "Flagged batches" }), /* @__PURE__ */ React.createElement("div", { role: "tabpanel", id: "lv-flagged", "aria-labelledby": "lv-tab-" + item.ref }, children(item)));
   }
   function Switcher({ items, current }) {
     const { go } = S.useRoute();
-    return /* @__PURE__ */ React.createElement("div", { className: "lv-tabs-row" }, /* @__PURE__ */ React.createElement(BatchTabs, { items, current, onPick: (ref) => go("route", { ref }), label: "Batches flagged this morning" }));
+    return /* @__PURE__ */ React.createElement("div", { className: "lv-tabs-row" }, /* @__PURE__ */ React.createElement(BatchTabs, { items, current, onPick: (ref) => go("route", { ref }), label: "Flagged batches" }));
   }
   function MangoCard({ item, dim }) {
     const { go } = S.useRoute();

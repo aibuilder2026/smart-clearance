@@ -231,10 +231,11 @@ class StubSource implements WorkspaceSource {
 		});
 		return Promise.resolve();
 	};
+	// an invitation is an email address only (SC-68), as the console's
 	invite = (i: InviteInput) => {
 		const me = this.me;
-		const phone = /^[+\d\s]+$/.test(i.contact);
-		const staff = !phone && i.contact.toLowerCase().endsWith('@' + data.workspace.emailDomain);
+		const email = i.contact.trim().toLowerCase();
+		const staff = email.endsWith('@' + data.workspace.emailDomain);
 		const id =
 			i.name
 				.toLowerCase()
@@ -249,9 +250,9 @@ class StubSource implements WorkspaceSource {
 				short: i.name,
 				org: staff ? data.client.short : i.name,
 				role: i.role,
-				provider: phone ? 'phone' : 'google',
-				phone: phone ? i.contact : '',
-				email: phone ? '' : i.contact,
+				provider: 'google',
+				phone: '',
+				email,
 				status: 'invited',
 				invitedBy: me?.name,
 				kind: staff ? 'staff' : 'partner',
@@ -259,7 +260,7 @@ class StubSource implements WorkspaceSource {
 				extra: true
 			});
 		});
-		audit(me?.id ?? '', 'invited ' + i.name + ' as ' + data.roles[i.role].toLowerCase(), i.contact);
+		audit(me?.id ?? '', 'invited ' + i.name + ' as ' + data.roles[i.role].toLowerCase(), email);
 		return Promise.resolve();
 	};
 	setUserStatus = (id: string, status: UserStatus) => {

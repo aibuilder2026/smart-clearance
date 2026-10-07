@@ -103,9 +103,17 @@ describe('the stub source', () => {
 		expect(ws.me?.id).toBe(me.id);
 		expect(store.state.users.find((u) => u.id === 'arjun')!.lastSeen).toBe('now');
 		const seq = store.state.seq;
-		await ws.invite({ name: 'Shree Balaji Kirana', contact: '+91 98230 60099', role: 'retailer' });
+		// an invitation is an email address only (SC-68)
+		await ws.invite({ name: 'Shree Balaji Kirana', contact: 'Shree.Balaji@google.example', role: 'retailer' });
 		const u = store.state.users.at(-1)!;
-		expect(u).toMatchObject({ name: 'Shree Balaji Kirana', provider: 'phone', status: 'invited', invitedBy: me.name });
+		expect(u).toMatchObject({
+			name: 'Shree Balaji Kirana',
+			email: 'shree.balaji@google.example',
+			phone: '',
+			kind: 'partner',
+			status: 'invited',
+			invitedBy: me.name
+		});
 		await ws.setUserRole(u.id, 'distributor');
 		await ws.setUserStatus(u.id, 'deactivated');
 		await ws.saveRules({ ...store.state.rules, approvalTaps: 5 });

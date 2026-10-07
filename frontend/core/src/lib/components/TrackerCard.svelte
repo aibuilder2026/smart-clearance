@@ -25,7 +25,8 @@
 		done?: number;
 		current?: number;
 		eta?: string;
-		etaTone?: 'green' | 'amber' | 'red' | 'blue' | 'violet';
+		/** neutral: the updates have paused (the live workspace), so the badge is grey */
+		etaTone?: 'green' | 'amber' | 'red' | 'blue' | 'violet' | 'neutral';
 		/** the card's own action, and one beside it */
 		primary?: Snippet;
 		secondary?: Snippet;
@@ -121,7 +122,7 @@
 		</div>
 		<div class="row between wrap" style="margin-top: {phone ? 16 : 20}px; gap: 10px">
 			<div class="row tight wrap">
-				{#if eta}<Badge tone={etaTone ?? 'green'} icon="clock">{eta}</Badge>{/if}
+				{#if eta}<Badge tone={etaTone === 'neutral' ? undefined : (etaTone ?? 'green')} icon="clock">{eta}</Badge>{/if}
 				{#if agentLive}<span class="row tight t-footnote muted"
 						><Aura on class="icontile soft" style="width: 24px; height: 24px; border-radius: 8px"
 							><Icon name="sparkles" size={13} /></Aura

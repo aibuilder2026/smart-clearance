@@ -83,7 +83,16 @@ function workspaceOf(w: WsWorkspace | ApiPublic): Workspace {
 	};
 }
 
-export const publicOf = (p: ApiPublic): WorkspacePublic => ({ workspace: workspaceOf(p), platform: p.platform });
+export const publicOf = (p: ApiPublic): WorkspacePublic => ({
+	workspace: workspaceOf(p),
+	platform: p.platform,
+	// the people a synthetic workspace offers on its sign-in, by address only (SC-68: a chip fills the email)
+	accounts: (p.accounts ?? []).map((g) => ({
+		group: g.group,
+		note: g.note,
+		people: g.people.map((x) => ({ ...x, img: opt(x.img) }))
+	}))
+});
 
 /* ---------- people ---------- */
 

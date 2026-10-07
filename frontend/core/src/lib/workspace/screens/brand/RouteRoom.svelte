@@ -23,16 +23,21 @@
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
 	import { useRoute } from '../../context';
+	import { useLive } from '../../live.svelte';
 	import { castOf, fmt, heroModel, isRouted, packSize, stageTimes, track, trackTimed } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { Phase, User } from '../../types';
 	import Locked from '../common/Locked.svelte';
 	import Screen from '../common/Screen.svelte';
+	import BatchTabs, { tabsOf } from '../live/BatchTabs.svelte';
+	import NeedsNet from '../live/NeedsNet.svelte';
 	import ApproveSheet from './ApproveSheet.svelte';
 	import LabelPhoto from './LabelPhoto.svelte';
 
 	// S2 Route Room: the batch, its label read from the shelf, five channels priced, the recommended split and the one
-	// yes (screens/brand.jsx RouteRoom)
+	// yes (screens/brand.jsx RouteRoom). On the live workspace (SC-73, SC-68 option B) each batch in a journey has its
+	// own Route Room (/route/<batch>), and the batches are tabs under the title; the tracker and the timeline go grey while
+	// updates are paused, and offline the approval waits for a connection
 	let { me }: { me: User } = $props();
 	const ws = useWorkspace();
 	const c = $derived(ws.case!);
@@ -72,6 +77,16 @@
 		['Instead of', -c.plan.writeOff.total, 'var(--red-text)'],
 		['GST credit safe', c.plan.itcRetained, 'var(--fg)']
 	]);
+
+	const live = useLive();
+	const on = $derived(!!live?.on);
+	const dim = $derived(on && !!live?.down);
+	const offline = $derived(on && !!live?.offline);
+	const tabs = $derived(on ? tabsOf(ws.cases ?? [], ws.data, 'Cleared') : []);
+	// the batch the address names, while it is read, and the one shown
+	const named = $derived(router.route.params?.ref);
+	const asked = $derived(named && tabs.some((t) => t.ref === named) ? named : c.batch.id);
+	const switching = $derived(asked !== c.batch.id);
 
 	// the demo opens the approval from its own controls
 	$effect(() => {
@@ -195,65 +210,90 @@
 		>{/if}
 {/snippet}
 {#snippet side()}<SectionTitle sub="Gaps drawn to the clock">Agent timeline</SectionTitle><Card
-		><AgentFeed events={timeline} people={ws.data.people} live={hm.agentLive ? timeline.length - 1 : -1} /></Card
+		>{#if on}<div class={dim ? 'lv-dim' : undefined}>{@render feed()}</div>{:else}{@render feed()}{/if}</Card
 	>{/snippet}
+
+{#snippet switcher()}<div class="lv-tabs-row">
+		<BatchTabs {tabs} current={asked} onpick={(ref) => router.go('route', { ref })} label="Flagged batches" />
+	</div>{/snippet}
+{#snippet trackers()}{#if app.bp === 'phone'}<TrackerCompact
+			stages={trackTimed(ws.data.stages)}
+			done={hm.done}
+			current={hm.current}
+		/>{:else}<Tracker
+			stages={track(ws.data.stages)}
+			done={hm.done}
+			current={hm.current}
+			times={stageTimes(ws.data.stages)}
+		/>{/if}{/snippet}
+{#snippet feed()}<AgentFeed
+		events={timeline}
+		people={ws.data.people}
+		live={hm.agentLive && !dim ? timeline.length - 1 : -1}
+	/>{/snippet}
 
 <Screen
 	{me}
 	title="Route Room"
-	sub={`${v.id} · ${sku.brand} ${sku.name} · ${v.dist.name}, ${v.dist.city}`}
+	sub={tabs.length > 1 ? null : `${v.id} · ${sku.brand} ${sku.name} · ${v.dist.name}, ${v.dist.city}`}
 	back="Command Center"
+	below={tabs.length > 1 ? switcher : undefined}
 >
-	<div class="stack" style="gap: 20px; padding-bottom: {h.phase === 'planned' ? 96 : 0}px">
-		<Card class="stack" style="gap: 16px">
-			<div class="row wrap" style="gap: 16px">
-				<Product name={sku.img} size={app.bp === 'phone' ? 64 : 84} />
-				<div class="grow">
-					<div class="row base" style="gap: 10px">
-						<DaysNum
-							days={v.daysLeft}
-							life={sku.lifeDays}
-							size="l"
-							style="color: {approved ? 'var(--fg)' : 'var(--red-text)'}"
-						/><span class="stack tight" style="gap: 0"
-							><b>days left</b><span class="t-footnote subtle">best before {fmt.date(v.bestBefore)}</span></span
+	{#if switching}<Card class="stack" style="gap: 14px" aria-busy="true"
+			>{#each [0, 1, 2, 3] as i (i)}<Skeleton h={i ? 18 : 84} r={i ? 6 : 14} />{/each}</Card
+		>{:else}
+		<div class="stack" style="gap: 20px; padding-bottom: {h.phase === 'planned' ? 96 : 0}px">
+			<Card class="stack" style="gap: 16px">
+				<div class="row wrap" style="gap: 16px">
+					<Product name={sku.img} size={app.bp === 'phone' ? 64 : 84} />
+					<div class="grow">
+						<div class="row base" style="gap: 10px">
+							<DaysNum
+								days={v.daysLeft}
+								life={sku.lifeDays}
+								size="l"
+								style="color: {approved ? 'var(--fg)' : 'var(--red-text)'}"
+							/><span class="stack tight" style="gap: 0"
+								><b>days left</b><span class="t-footnote subtle">best before {fmt.date(v.bestBefore)}</span></span
+							>
+						</div>
+					</div>
+					<div class="stack tight" style="justify-items: {app.bp === 'phone' ? 'start' : 'end'}">
+						<GateChips gates={v.assess.gates} /><span class="t-footnote subtle"
+							>{fmt.num(v.assess.atRisk)} of {fmt.num(v.units)} units at risk · sells {v.sellPerDay} a day</span
 						>
 					</div>
 				</div>
-				<div class="stack tight" style="justify-items: {app.bp === 'phone' ? 'start' : 'end'}">
-					<GateChips gates={v.assess.gates} /><span class="t-footnote subtle"
-						>{fmt.num(v.assess.atRisk)} of {fmt.num(v.units)} units at risk · sells {v.sellPerDay} a day</span
-					>
+				{#if on}<div class={dim ? 'lv-dim' : undefined}>{@render trackers()}</div>{:else}{@render trackers()}{/if}
+			</Card>
+			<Columns sideWidth={340} {main} {side} />
+		</div>
+		{#if h.phase === 'planned'}<div
+				style="position: sticky; bottom: 0; z-index: 5; padding: 12px 0 16px; background: linear-gradient(180deg, transparent, var(--bg) 35%)"
+			>
+				<div class="card raised row wrap" style="padding: 14px 16px; gap: 14px">
+					<div class="row wrap grow" style="gap: 18px">
+						{#each BAR as [k, val, c] (k)}<div class="stack tight" style="gap: 0">
+								<span class="t-caption subtle strong">{k}</span><Money
+									value={val}
+									size="s"
+									style="color: {c}; font-size: 26px"
+								/>
+							</div>{/each}
+					</div>
+					{#if offline}<div class="stack tight" style="justify-items: end; gap: 6px">
+							<Button
+								variant="approve"
+								size="lg"
+								icon="check"
+								aria-disabled="true"
+								aria-describedby="lv-needs-net"
+								class="lv-blocked">Review and approve</Button
+							><NeedsNet id="lv-needs-net" />
+						</div>{:else}<Button variant="approve" size="lg" icon="check" onclick={() => (sheet = true)}
+							>Review and approve</Button
+						>{/if}
 				</div>
-			</div>
-			{#if app.bp === 'phone'}<TrackerCompact
-					stages={trackTimed(ws.data.stages)}
-					done={hm.done}
-					current={hm.current}
-				/>{:else}<Tracker
-					stages={track(ws.data.stages)}
-					done={hm.done}
-					current={hm.current}
-					times={stageTimes(ws.data.stages)}
-				/>{/if}
-		</Card>
-		<Columns sideWidth={340} {main} {side} />
-	</div>
-	{#if h.phase === 'planned'}<div
-			style="position: sticky; bottom: 0; z-index: 5; padding: 12px 0 16px; background: linear-gradient(180deg, transparent, var(--bg) 35%)"
-		>
-			<div class="card raised row wrap" style="padding: 14px 16px; gap: 14px">
-				<div class="row wrap grow" style="gap: 18px">
-					{#each BAR as [k, val, c] (k)}<div class="stack tight" style="gap: 0">
-							<span class="t-caption subtle strong">{k}</span><Money
-								value={val}
-								size="s"
-								style="color: {c}; font-size: 26px"
-							/>
-						</div>{/each}
-				</div>
-				<Button variant="approve" size="lg" icon="check" onclick={() => (sheet = true)}>Review and approve</Button>
-			</div>
-		</div>{/if}
+			</div>{/if}{/if}
 	<ApproveSheet bind:open={sheet} {me} />
 </Screen>

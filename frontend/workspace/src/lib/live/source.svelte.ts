@@ -14,6 +14,8 @@ import {
 	type CaseDetail,
 	type EventsHandle,
 	type Member,
+	type ActionResult,
+	type UploadLink,
 	type WorkspaceApi,
 	type WorkspaceEvent,
 	type WorkspacePublic as ApiPublic,
@@ -25,9 +27,11 @@ import {
 import type {
 	ActionArg,
 	CaseData,
+	CaseTab,
 	Failure,
 	HumanAction,
 	InviteInput,
+	JourneyClock,
 	RoleId,
 	Rules,
 	SourceStatus,
@@ -85,6 +89,11 @@ export class LiveSource implements WorkspaceSource {
 	#outsider = $state<string | null>(null);
 	readonly #pending = new SvelteSet<string>();
 	readonly #uploads = new SvelteMap<string, number>();
+	/** how to stop each file on its way, by its key in uploads (bookkeeping, not state) */
+	// eslint-disable-next-line svelte/prefer-svelte-reactivity -- bookkeeping: nothing draws from it
+	readonly #aborts = new Map<string, AbortController>();
+	/** the wall time the member's snapshot was read, which the journey clock runs on from */
+	#readAt = $state(0);
 	#stream: EventsHandle | null = null;
 	#settle: ReturnType<typeof setTimeout> | null = null;
 	/** what to read next: the snapshot, the cases by ref, the quarter, the audit log (bookkeeping, not state) */
@@ -151,9 +160,22 @@ export class LiveSource implements WorkspaceSource {
 	get outsider(): string | null {
 		return this.#outsider;
 	}
-	/** the journey's clock, as the API states it */
-	get clock() {
-		return this.#snap?.clock ?? null;
+	/** the journey's clock, as the API stated it when the workspace was read, and when that was (SC-73) */
+	get clock(): JourneyClock | null {
+		const c = this.#snap?.clock;
+		return c
+			? { now: c.now, dayMinutes: c.dayMinutes, compressed: c.compressed, day: c.day, read: this.#readAt }
+			: null;
+	}
+	/** the batches in a journey a screen can put in focus, most urgent first: those not going to a food bank (for a food
+	 *  bank, its own) */
+	get cases(): readonly CaseTab[] {
+		const snap = this.#snap;
+		if (!snap) return [];
+		const own = snap.me.role === 'foodbank';
+		return snap.cases
+			.filter((c) => own || c.donation == null)
+			.map((c) => ({ ref: c.ref, sku: c.sku, stage: c.stage, phase: c.phase }));
 	}
 	/** whether the workspace and the member's data have loaded */
 	get ready(): boolean {
@@ -162,6 +184,11 @@ export class LiveSource implements WorkspaceSource {
 
 	dismissFailure = () => {
 		this.#failed = null;
+	};
+
+	/** try the live stream again now (the band's Try again) */
+	reconnect = () => {
+		this.#stream?.poke();
 	};
 
 	/* ---------- keeping it up to date ---------- */
@@ -294,6 +321,7 @@ export class LiveSource implements WorkspaceSource {
 
 	async #readSnapshot() {
 		const snap = await this.#api.snapshot();
+		this.#readAt = Date.now();
 		this.#snap = snap;
 		this.#member = snap.me;
 		// the batches the screens show: the one in focus, and the one going to a food bank
@@ -358,7 +386,11 @@ export class LiveSource implements WorkspaceSource {
 	signIn = async (i: { email: string; password: string } | { uid: string }): Promise<User> => {
 		if ('uid' in i) throw new ApiError(400, 'Sign in with your email and password.');
 		this.#outsider = null;
-		const me = await this.#api.signIn(i);
+		const me = await this.#api.signIn(i).catch((e) => {
+			// the password was right, but the account is not a member here: the sign-in says so (SC-68)
+			if (e instanceof NotAMember) this.#outsider = e.message;
+			throw e;
+		});
 		await this.#enter(me);
 		return this.#me!;
 	};
@@ -398,6 +430,8 @@ export class LiveSource implements WorkspaceSource {
 			this.#stream?.poke();
 		} catch (e) {
 			undo?.();
+			// a file the person stopped on its way is not a failure
+			if ((e as { name?: string })?.name === 'AbortError') return;
 			const stale = refusalOf(e) === 'stale';
 			if (stale) this.#want({ snapshot: true, all: true });
 			if (refusalOf(e) === 'signed-out') return this.#signedOut();
@@ -499,20 +533,49 @@ export class LiveSource implements WorkspaceSource {
 	/** the label photo: a signed link, the file straight to Cloud Storage with its progress, then Vision reads it */
 	async #upload(ref: string, file: Blob | undefined) {
 		if (!file) throw new ApiError(422, 'Choose a photo of the carton label first.');
-		const key = `photo:${ref}`;
+		return this.#put_(`photo:${ref}`, file, 'image/jpeg', {
+			link: (input) => this.#api.uploadPhoto(ref, input),
+			done: (id) => this.#api.photoSent(ref, id)
+		});
+	}
+
+	/** a file to a signed link with its progress under its key, then the backend told it arrived; stoppable */
+	async #put_(
+		key: string,
+		file: Blob,
+		type: string,
+		to: {
+			link: (i: { contentType: string; bytes: number; fileName?: string }) => Promise<UploadLink>;
+			done: (id: string) => Promise<ActionResult>;
+		}
+	) {
+		const stop = new AbortController();
+		this.#aborts.set(key, stop);
 		this.#uploads.set(key, 0);
 		try {
-			const link = await this.#api.uploadPhoto(ref, {
-				contentType: file.type || 'image/jpeg',
-				bytes: file.size,
-				fileName: (file as File).name
-			});
-			await putUpload(link, file, { onProgress: (f) => this.#uploads.set(key, f) });
-			return await this.#api.photoSent(ref, link.id);
+			const link = await to.link({ contentType: file.type || type, bytes: file.size, fileName: (file as File).name });
+			stop.signal.throwIfAborted();
+			await putUpload(link, file, { onProgress: (f) => this.#uploads.set(key, f), signal: stop.signal });
+			return await to.done(link.id);
 		} finally {
 			this.#uploads.delete(key);
+			this.#aborts.delete(key);
 		}
 	}
+
+	/** Setup's DMS export for the Data agent (SC-73): its progress in uploads, under 'export' */
+	uploadExport = (file: Blob) =>
+		this.#send('connect', () =>
+			this.#put_('export', file, 'text/csv', {
+				link: (input) => this.#api.uploadExport(input),
+				done: (id) => this.#api.exportUploaded(id)
+			})
+		);
+
+	/** stop a file on its way */
+	cancelUpload = (key: string) => {
+		this.#aborts.get(key)?.abort();
+	};
 
 	#now = () => this.#snap?.clock.now ?? '';
 

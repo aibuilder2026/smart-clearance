@@ -6,6 +6,7 @@ import { routesFor } from '@smart-clearance/core/workspace/app';
 import type {
 	CaseDetail,
 	EventsHandle,
+	EventsOptions,
 	WorkspaceApi,
 	WorkspacePublic,
 	WorkspaceSnapshot,
@@ -50,7 +51,11 @@ function fakeApi(m: Moment, who: string): WorkspaceApi {
 	});
 }
 
-const quiet = (): EventsHandle => ({ stop() {}, poke() {}, position: 0, status: 'live' });
+/** a stream that opens at once and says nothing more */
+const quiet = (o: EventsOptions): EventsHandle => {
+	o.onStatus?.('live');
+	return { stop() {}, poke() {}, position: 0, status: 'live' };
+};
 
 function source(m: Moment, who: string) {
 	return new LiveSource({
@@ -82,9 +87,47 @@ const CASES: [string, string[]][] = [
 	['cleared', ['priya', 'rakesh', 'anita', 'vikram', 'arjun', 'meera']]
 ];
 
+/** every screen a member has, drawn through the workspace app on one moment: each one's text, and any error */
+async function screensOf(name: string, who: string) {
+	const m = moment(name);
+	const errors: unknown[] = [];
+	vi.spyOn(console, 'error').mockImplementation((...a) => void errors.push(a));
+	const out: Record<string, string> = {};
+	for (const screen of routesFor(m.members[who].snapshot.me.role)) {
+		const s = source(m, who);
+		const r = render(LiveHost, { props: { source: s, screen } });
+		await until(() => s.status.phase === 'ready' && !!s.me);
+		flushSync();
+		out[screen] = norm(r.container.textContent);
+		r.unmount();
+	}
+	return { out, errors };
+}
+
 describe('every screen, on what backend-api answered', () => {
-	// before any batch is at risk the workspace has none in focus: that state is SC-68's design, built with its pick
-	it.todo('start: a day with no batch at risk (priya, rakesh, arjun)');
+	// before any batch is at risk the workspace has none in focus (SC-68's quiet day): the Command Center and the
+	// partner's day say nothing is at risk, every screen about a batch says what will appear there, and none breaks
+	describe('start: a day with no batch at risk', () => {
+		for (const who of ['priya', 'rakesh', 'arjun'])
+			it(who, async () => {
+				const { out, errors } = await screensOf('start', who);
+				expect(errors).toEqual([]);
+				for (const [screen, text] of Object.entries(out)) expect(text.length, screen).toBeGreaterThan(40);
+				const all = Object.values(out).join(' ');
+				expect(all).not.toContain('246810');
+				if (who === 'priya') {
+					expect(out.command).toContain('Nothing at risk today');
+					expect(out.command).toContain('nothing flagged');
+					expect(out.route).toContain('Nothing to route');
+				}
+				if (who === 'rakesh') {
+					expect(out.home).toContain('Nothing for you today');
+					expect(out.photo).toContain('No photo requests');
+				}
+				// the journey clock is under every title, and never the prototype's dates
+				expect(out[routesFor(moment('start').members[who].snapshot.me.role)[0]]).toContain('Live');
+			});
+	});
 	for (const [name, people] of CASES)
 		describe(name, () => {
 			for (const who of people)

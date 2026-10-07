@@ -6,9 +6,13 @@
 	import Icon from '../../../icons/Icon.svelte';
 	import { rise } from '../../../motion/transitions';
 	import { useWorkspace } from '../../source';
+	import type { Distributor } from '../../types';
 
+	// dist: whose permission it is, when there is no batch in focus (the live workspace's quiet day)
+	let { dist }: { dist?: Distributor } = $props();
 	const ws = useWorkspace();
-	const c = $derived(ws.case!);
+	const c = $derived(ws.case);
+	const who = $derived(dist ?? c!.dist);
 
 	// the one-time permission: the agent may act in his name, inside Munchly's floors, and he can pause it
 	let busy = $state(false);
@@ -37,10 +41,10 @@
 		<div class="card raised stack snug" style="padding: 20px">
 			<div class="row tight">
 				<WorkspaceMark ws={ws.data.workspace} size={30} /><span class="t-footnote subtle strong"
-					>{ws.data.workspace.name} · {c.permissionAsked}</span
+					>{ws.data.workspace.name}{#if c?.permissionAsked}{` · ${c.permissionAsked}`}{/if}</span
 				>
 			</div>
-			<div class="t-title3">Let Smart-Clearance act for {c.dist.name}</div>
+			<div class="t-title3">Let Smart-Clearance act for {who.name}</div>
 			<div class="stack tight">
 				{#each ws.data.setup.acts as t (t)}<div class="row top t-subhead" style="gap: 10px">
 						<Icon
@@ -53,7 +57,8 @@
 			</div>
 			<p class="t-footnote muted" style="margin: 0">
 				Always within {ws.data.workspace.short}'s price floors. Every action shows here, and you can pause any of it.
-				{ws.data.workspace.short} pays you the gap to the ₹{c.sku.dp} you paid, so you end whole.
+				{#if c}{ws.data.workspace.short} pays you the gap to the ₹{c.sku.dp} you paid, so you end whole.{:else}{ws.data
+						.workspace.short} pays you the gap to what you paid, so you end whole.{/if}
 			</p>
 			<div class="row wrap" style="gap: 10px">
 				<Button variant="approve" size="lg" icon="check" loading={busy} onclick={allow}>Allow</Button><Button

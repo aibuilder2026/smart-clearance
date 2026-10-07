@@ -86,13 +86,13 @@
     const [cur, setCur] = useState(items[0].ref); const item = items.find(i => i.ref === cur) || items[0];
     const human = items.filter(i => i.human).length;
     return <div className="stack" style={{ gap: 10 }}>
-      <div className="row between wrap lv-qhead"><b className="t-subhead">Flagged this morning</b><span className="t-footnote subtle">{items.length} batches{human ? ` · ${human === 1 ? "one needs" : human + " need"} your yes` : ""}</span></div>
-      <BatchTabs items={items} current={item.ref} onPick={setCur} asTabs label="Batches flagged this morning" />
+      <div className="row between wrap lv-qhead"><b className="t-subhead">Flagged batches</b><span className="t-footnote subtle">{items.length} batches{human ? ` · ${human === 1 ? "one needs" : human + " need"} a yes` : ""}</span></div>
+      <BatchTabs items={items} current={item.ref} onPick={setCur} asTabs label="Flagged batches" />
       <div role="tabpanel" id="lv-flagged" aria-labelledby={"lv-tab-" + item.ref}>{children(item)}</div>
     </div>;
   }
   // under the Route Room's title: each batch has its own Route Room, so the tabs go to it
-  function Switcher({ items, current }) { const { go } = S.useRoute(); return <div className="lv-tabs-row"><BatchTabs items={items} current={current} onPick={ref => go("route", { ref })} label="Batches flagged this morning" /></div>; }
+  function Switcher({ items, current }) { const { go } = S.useRoute(); return <div className="lv-tabs-row"><BatchTabs items={items} current={current} onPick={ref => go("route", { ref })} label="Flagged batches" /></div>; }
 
   // the Mango Drink batch's tracker card on the Command Center: what destroying it would cost, and where it waits
   function MangoCard({ item, dim }) {

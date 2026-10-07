@@ -7,6 +7,8 @@ import { createContext } from 'svelte';
 import type {
 	ActionArg,
 	CaseData,
+	CaseTab,
+	JourneyClock,
 	ExploreGroup,
 	HumanAction,
 	InviteInput,
@@ -45,6 +47,19 @@ export interface WorkspaceSource {
 	/** the live source only: the last step that did not go through, with what to tell the person and how to try again */
 	readonly failed?: Failure | null;
 	dismissFailure?(): void;
+	/** the live source only (SC-73): the journey clock, once the workspace has been read */
+	readonly clock?: JourneyClock | null;
+	/** the live source only: the batches in a journey that can be in focus, most urgent first (the tabs over the
+	 *  tracker card and under the Route Room's title) */
+	readonly cases?: readonly CaseTab[];
+	/** the live source only: an account that signed in but is not a member here, in the backend's words */
+	readonly outsider?: string | null;
+	/** the live source only: try the live stream again now */
+	reconnect?(): void;
+	/** the live source only: a DMS export for the Data agent, its progress in uploads ('export') */
+	uploadExport?(file: Blob): Promise<void>;
+	/** the live source only: stop a file on its way (its key in uploads) */
+	cancelUpload?(key: string): void;
 	/** the stub only: the people a visitor can step into */
 	readonly explore?: ExploreGroup[];
 	/** the stub only: whether this browser session has yet to see the splash, and the end of it */
