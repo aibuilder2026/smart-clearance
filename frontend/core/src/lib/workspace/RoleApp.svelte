@@ -3,10 +3,8 @@
 	import Icon from '../icons/Icon.svelte';
 	import { rise } from '../motion/transitions';
 	import { provideRoute, provideWorkspaceLead, type Route } from './context';
-	import { WS } from './data';
 	import { HOME, NAV, PARENT, routesFor } from './model';
-	import { ROLES } from './legacy';
-	import { store } from './store.svelte';
+	import { useWorkspace } from './source';
 	import type { Notification, User } from './types';
 	import WorkspaceSheet from './screens/auth/WorkspaceSheet.svelte';
 	import PushBanners from './screens/common/PushBanners.svelte';
@@ -55,7 +53,8 @@
 	const safe = $derived(allowed.includes(name) ? name : HOME[me.role]);
 	const current = $derived(PARENT[safe] || safe);
 	const inside = $derived(me.role !== 'buyer');
-	const display = $derived({ ...me, role: ROLES[me.role] });
+	const ws = useWorkspace();
+	const display = $derived({ ...me, role: ws.data.roles[me.role] });
 	let wsOpen = $state(false);
 
 	provideRoute({
@@ -66,7 +65,11 @@
 		back: () => onback()
 	});
 	// svelte-ignore state_referenced_locally (the app keys this component by person, so who it is never changes here)
-	provideWorkspaceLead(inside ? { name: WS.name, domain: WS.domain, open: () => (wsOpen = true) } : null);
+	provideWorkspaceLead(
+		inside ? { name: ws.data.workspace.name, domain: ws.data.workspace.domain, open: () => (wsOpen = true) } : null
+	);
+	// the batch the address names, when it names one; the source decides what is in focus
+	$effect(() => ws.setFocus(route?.params?.ref ?? null));
 
 	// a new screen starts at its top: the page scrolls inside #main
 	$effect.pre(() => {
@@ -75,10 +78,7 @@
 	});
 
 	function openNote(n: Notification) {
-		store.update((st) => {
-			const x = st.notifications.find((y) => y.id === n.id);
-			if (x) x.read = true;
-		});
+		void ws.markRead([n.id]);
 		if (n.link && allowed.includes(n.link)) ongo({ name: n.link });
 	}
 </script>
@@ -99,7 +99,7 @@
 		onnav={(id) => ongo({ name: id, replace: true })}
 		user={display}
 		onuser={() => ongo({ name: 'profile' })}
-		ws={inside ? WS : null}
+		ws={inside ? ws.data.workspace : null}
 		onworkspace={() => (wsOpen = true)}
 		brand={me.role === 'buyer' ? esBrand : undefined}
 		brandMark={me.role === 'buyer' ? esMark : undefined}
