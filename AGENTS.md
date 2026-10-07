@@ -200,7 +200,7 @@ Local pages:
 
   These criteria still need a manual pass: 2.4.11, 2.5.7, 3.2.6, 3.3.7 and 3.3.8.
 - Nothing loops forever: every animation stops within five seconds (WCAG 2.2.2), and only loading indicators keep turning. `motion.a11y.spec.ts` fails on any endless animation.
-  - The one longer motion is the landing page's hero tour (SC-34, 16.9 s). It plays once, and carries Pause and Play. It also holds while the visitor has the camera or the hero is out of view.
+  - The landing page's two longer motions (SC-60) are the hero's film (8 s by day, 6 s by night; Pause, Play and Replay) and the table's tour (15.8 s; Pause and Play, a rail to jump between the agents, Replay). Each plays once and holds; the tour also holds while the table is out of view.
   - The landing page's loader (SC-35) is a loading indicator: it moves only while the page, or a new theme's plates, load.
   - The console's loader (SC-49), the route and its placeholders' green wash, is a loading indicator too: it moves only while a screen or tab is read. The Overview moves only when a reading changes something, and Pause updates stops the readings.
   - The console's splash (SC-51, `design3/console/splash.js`) is a loading indicator: it covers the first load, signing in and signing out only while their reads are out, and leaves once the page behind it is drawn.
@@ -322,8 +322,7 @@ From the Claude desktop app:
 - Local development and prod share one Firebase user pool, so the same accounts sign in to both.
 - Cloud Run scales to zero: the first request after a quiet spell waits a few seconds. Cloud SQL is `db-f1-micro`, a shared core without an SLA.
 - `frontend/console` runs on its in-browser mock: sign-in is a stand-in for Google and a passkey, changes stay in that browser (`sc-console`), and two fictional demo requests stand in for the landing page's. Both apps are live on Firebase Hosting's own addresses (SC-39), with no custom domain yet.
-- The landing page ships about 139 kB of JavaScript, gzipped (`frontend/README.md`, Known gaps).
-- The landing page's hero draws its town in WebGL2; where WebGL2 is missing it draws the plate flat, without depth.
+- The landing page ships about 159 kB of JavaScript, gzipped (`frontend/README.md`, Known gaps).
 - In design3 the loader's styles come with the page's stylesheets, so on a slow connection its first paint waits for them (the Google Fonts import included). The SvelteKit build puts the loader first in the prerendered page.
 - `.claude/jira-flow.json` names `.github/pull_request_template.md`, which is not in the repo.
 - Terraform runs from a workstation, as a person: CI checks the configuration but never plans or applies.

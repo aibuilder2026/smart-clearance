@@ -2,49 +2,30 @@ import { expect, test } from '@playwright/test';
 import { report, scan, type Finding } from '@smart-clearance/testing/a11y';
 import { isPhone, openSite } from './site';
 
-// smartclearance.com, the landing page: every section from the first viewport to the footer, plus the sign-in menu,
-// Find your workspace, the phone menu and Book a demo (empty, with its errors, and sent). As design3/a11y's site spec.
+// smartclearance.com, the landing page: every section from the first viewport to the footer, the agents at work on
+// the table with the card in focus paused and then sold, plus the sign-in menu, Find your workspace, the phone menu and
+// Book a demo (empty, with its errors, and sent). As design3/a11y's site spec.
 test('site · the whole page', async ({ page }, testInfo) => {
 	await openSite(page);
 	await report(testInfo, await scan(page, 'site'));
 });
 
-test('site · the town: a place, then an agent, opened', async ({ page }, testInfo) => {
-	await openSite(page);
-	const findings: Finding[] = [];
-	// on desktops a click (SC-42) keeps the card beside the pin, and a chip in it moves the card on to what it names;
-	// a tap opens the panel, as the keyboard does
-	if ((page.viewportSize()?.width ?? 0) >= 900) {
-		await page.locator('.hero').getByRole('button', { name: 'Distributor · stockist: what happens here' }).click();
-		await page.waitForTimeout(900);
-		findings.push(...(await scan(page, 'site · the town, the godown kept')));
-		await page.locator('.town-peek').getByRole('button', { name: 'Watcher' }).click();
-		await page.waitForTimeout(900);
-		findings.push(...(await scan(page, 'site · the town, the Watcher kept')));
-		await page.keyboard.press('Escape');
-		await page.waitForTimeout(700);
-	}
-	// the keyboard opens the panel, on every screen
-	await page.locator('.hero').getByRole('button', { name: 'Distributor · stockist: what happens here' }).focus();
-	await page.keyboard.press('Enter');
-	await page.waitForTimeout(900);
-	findings.push(...(await scan(page, 'site · the town, the godown opened')));
-	await page.locator('.town-panel').getByRole('button', { name: 'Watcher' }).click();
-	await page.waitForTimeout(900);
-	findings.push(...(await scan(page, 'site · the town, the Watcher opened')));
-	await report(testInfo, findings);
-});
-
 // the tour plays only with motion on; it is paused at a card before the scan, so every colour is at rest
-test.describe("the town's tour, with motion on", () => {
+test.describe('the table, with motion on', () => {
 	test.use({ contextOptions: { reducedMotion: 'no-preference' } });
 
-	test("site · the town's tour: a card beside the agent at work, paused", async ({ page }, testInfo) => {
+	test('site · the agents at work: the card in focus, paused, then the result', async ({ page }, testInfo) => {
 		await openSite(page);
-		await page.waitForFunction(() => !!document.querySelector('.town-tip b'), null, { timeout: 15000 });
-		await page.locator('.town-ctl').getByRole('button', { name: 'Pause' }).click();
-		await page.waitForTimeout(400);
-		await report(testInfo, await scan(page, "site · the town's tour, paused at a card"));
+		await page.evaluate(() => document.querySelector('.tb-stage')!.scrollIntoView());
+		await page.waitForFunction(() => !!document.querySelector('.tb-focus h3'), null, { timeout: 15000 });
+		await page.locator('.tb-ctl').getByRole('button', { name: 'Pause' }).click();
+		await page.waitForTimeout(500);
+		const findings: Finding[] = await scan(page, 'site · the table, paused at a card');
+		await page.locator('.tb-ctl').getByRole('button', { name: 'Play' }).click();
+		await page.waitForSelector('.tb-result', { timeout: 20000 });
+		await page.waitForTimeout(500);
+		findings.push(...(await scan(page, 'site · the table, sold')));
+		await report(testInfo, findings);
 	});
 });
 
@@ -62,7 +43,7 @@ test('site · sign-in menu, Find your workspace and Book a demo', async ({ page 
 		await page.keyboard.press('Escape');
 		await page.waitForTimeout(400);
 	}
-	await page.locator('.hero').getByRole('button', { name: 'Find your workspace' }).click();
+	await page.locator('.foot').getByRole('button', { name: 'Find your workspace' }).click();
 	await page.waitForTimeout(600);
 	findings.push(...(await scan(page, 'site · Find your workspace')));
 	await page.getByLabel('Email or mobile number').fill('priya.deshmukh@munchly.in');
@@ -87,7 +68,7 @@ test('site · sign-in menu, Find your workspace and Book a demo', async ({ page 
 });
 
 // the loader (SC-35), as design3/a11y's site spec: while the page loads it says so once, the page under it is busy, and
-// it lifts once the town is in; a change of theme plays under it and focus stays where the visitor left it
+// it lifts once the film's poster is in; a change of theme plays under it and focus stays where the visitor left it
 test('site · the loader, on a load and on a change of theme', async ({ page }, testInfo) => {
 	test.skip(
 		testInfo.project.name !== 'desktop-light' && testInfo.project.name !== 'phone-dark',
@@ -98,7 +79,7 @@ test('site · the loader, on a load and on a change of theme', async ({ page }, 
 			const loader = (window as unknown as { SC3_LOADER?: { lifted: boolean; busy: boolean } }).SC3_LOADER;
 			return { lifted: !!loader?.lifted, busy: !!loader?.busy };
 		});
-	// the town's plate held back, so the loader is still up to be scanned
+	// the film's poster held back, so the loader is still up to be scanned
 	let release: () => void = () => {};
 	const held = new Promise<void>((r) => (release = r));
 	await page.route(/business(-night)?\.[\w-]+\.webp$|business(-night)?\.webp$/, async (route) => {

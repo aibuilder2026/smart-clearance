@@ -6,7 +6,7 @@ import { scan, report, skipSplash, type Finding } from './helpers';
 // - a sheet taking focus on open, keeping it while open, and handing it back on close (WCAG 2.1.2, 2.4.3; ARIA dialog);
 // - a menu button's menu: focus in on open, the arrows, Home and End, Escape and Tab out (ARIA menu button);
 // - the sign-in hero plays once and holds, and can be paused and replayed (WCAG 2.2.2);
-// - the landing page's town: its tour pauses and plays (WCAG 2.2.2), and focus leaving the hero brings the whole town back.
+// - the landing page's table: its tour pauses, plays and replays (WCAG 2.2.2).
 // One desktop run is enough: the behaviour does not change with theme.
 test.beforeEach(async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-light', 'keyboard checks run once, on desktop-light');
@@ -130,43 +130,39 @@ test.describe('the sign-in hero, with motion on', () => {
   });
 });
 
-// The landing page's town (SC-34): the tour opens a card beside each agent as it reaches it; Pause holds it and Play
-// carries it on, from the keyboard; a place opened holds it too; and focus leaving the hero closes the card and brings the
-// camera back to the whole business.
-test.describe('the landing page\'s town, with motion on', () => {
+// The landing page's table (SC-60): the agents work the batch one in focus at a time; Pause holds the card and Play
+// carries the tour on, from the keyboard; a step chosen in the rail jumps and holds; Replay runs it again.
+test.describe('the landing page\'s table, with motion on', () => {
   test.use({ contextOptions: { reducedMotion: 'no-preference' } });
 
-  test('keyboard · the town\'s tour pauses and plays, and focus leaving the hero brings the whole town back', async ({ page }, testInfo) => {
+  test('keyboard · the table\'s tour pauses and plays, a step in the rail jumps and holds, and Replay runs it again', async ({ page }, testInfo) => {
     await page.goto('/site/Smart-Clearance%20site%20v3.html');
-    await page.waitForSelector('.town-stage.ready');
-    // the tour sets off once the page's loader (SC-35) has lifted
     await page.waitForFunction(() => (window as any).SC3_LOADER?.lifted, null, { timeout: 15000 });
-    const tip = () => page.evaluate(() => document.querySelector('.town-tip b')?.textContent || '');
-    const zoom = () => page.evaluate(() => +(((document.querySelector('.town-top') as HTMLElement).style.transform.match(/scale\(([\d.]+)\)/) || [0, '1'])[1]));
-    await expect.poll(tip, { message: 'a card opens beside each agent as the tour reaches it', timeout: 8000 }).not.toBe('');
-    const ctl = page.locator('.town-ctl');
+    await page.evaluate(() => document.querySelector('.tb-stage')!.scrollIntoView());
+    const step = () => page.evaluate(() => document.querySelector('.tb-focus .n')?.textContent || '');
+    await expect.poll(step, { message: 'a card opens as the tour reaches each agent', timeout: 5000 }).not.toBe('');
+    const ctl = page.locator('.tb-ctl');
     await ctl.getByRole('button', { name: 'Pause' }).focus();
     await page.keyboard.press('Enter');
-    await expect(ctl.getByRole('button', { name: 'Play' })).toBeFocused();
-    const held = await tip();
+    await expect(ctl.getByRole('button', { name: 'Play' }), 'one button, so focus stays on it').toBeFocused();
+    const held = await step();
     await page.waitForTimeout(2600);
-    expect.soft(await tip(), 'the tour holds while paused').toBe(held);
-    const findings: Finding[] = await scan(page, 'site · the town\'s tour, paused');
+    expect.soft(await step(), 'the tour holds while paused').toBe(held);
+    const findings: Finding[] = await scan(page, 'site · the table\'s tour, paused');
     await page.keyboard.press('Enter');
     await expect(ctl.getByRole('button', { name: 'Pause' })).toBeFocused();
-    await expect.poll(tip, { message: 'Play carries the tour on', timeout: 4000 }).not.toBe(held);
+    await expect.poll(step, { message: 'Play carries the tour on', timeout: 4000 }).not.toBe(held);
 
-    // a place opened from the keyboard: the tour holds, the camera goes in, and focus moves into its card
-    await page.locator('.hero').getByRole('button', { name: 'A buyer elsewhere: what happens here' }).focus();
+    await page.locator('.tb-focus .rail').getByRole('button', { name: 'Negotiator' }).click();
+    await expect(page.locator('.tb-focus h3')).toHaveText('Negotiator');
+    await expect(ctl.getByRole('button', { name: 'Play' }), 'a step chosen by hand holds the tour').toBeVisible();
+    await ctl.getByRole('button', { name: 'Play' }).click();
+    const replay = page.locator('.tb-result').getByRole('button', { name: 'Replay' });
+    await expect(replay).toBeVisible({ timeout: 8000 });
+    await replay.focus();
     await page.keyboard.press('Enter');
-    await expect(page.locator('.town-panel')).toBeFocused();
-    await expect(ctl.getByRole('button', { name: 'Play' }), 'opening a place holds the tour').toBeVisible();
-    await expect.poll(zoom, { timeout: 3000 }).toBeGreaterThan(1.2);
-
-    // focus moves out of the hero: the card closes and the whole business is back
-    await page.locator('.site-nav').getByRole('link', { name: 'How it works' }).focus();
-    await expect(page.locator('.town-panel')).toHaveCount(0);
-    await expect.poll(zoom, { message: 'the camera returns to the whole business', timeout: 3000 }).toBeLessThan(1.01);
+    await expect(page.locator('.tb-focus .n')).toHaveText('1 of 11', { timeout: 2000 });
     await report(testInfo, findings);
   });
+});
 });

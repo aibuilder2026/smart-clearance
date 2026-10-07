@@ -60,26 +60,29 @@ const STATES: [string, string, ((page) => Promise<void>)?][] = [
   ['console · overview', CONSOLE + '#/overview', consoleIn],
   ['console · Munchly agents', CONSOLE + '#/clients/munchly/agents', consoleIn],
   ['site · first viewport', '/site/Smart-Clearance%20site%20v3.html'],
-  ['site · how it works, its cards rising', '/site/Smart-Clearance%20site%20v3.html', async p => {
-    await p.evaluate(() => { const s = document.querySelector('.site'), t = document.querySelector('#how'); if (s && t) s.scrollTop = (t as HTMLElement).offsetTop; });
+  ['site · the statement, half read', '/site/Smart-Clearance%20site%20v3.html', async p => {
+    await p.evaluate(() => document.querySelector('#how')!.scrollIntoView());
   }],
-  ['site · the packs taking the street', '/site/Smart-Clearance%20site%20v3.html', async p => {
-    await p.evaluate(() => { const s = document.querySelector('.site'), t = document.querySelector('#exits'); if (s && t) s.scrollTop = (t as HTMLElement).offsetTop; });
+  ['site · the table, at the person\'s yes', '/site/Smart-Clearance%20site%20v3.html', async p => {
+    await p.evaluate(() => document.querySelector('.tb-stage')!.scrollIntoView());
+    await p.waitForFunction(() => document.querySelector('.tb-focus h3')?.textContent === 'You', null, { timeout: 15000 });
   }],
-  ['site · the batch split by exit', '/site/Smart-Clearance%20site%20v3.html', async p => {
-    await p.evaluate(() => { const s = document.querySelector('.site'), t = document.querySelector('#exits'); if (s && t) s.scrollTop = (t as HTMLElement).offsetTop; });
-    await p.waitForTimeout(4500);
-    await p.evaluate(() => { const s = document.querySelector('.site'), t = document.querySelector('.split'); if (s && t) s.scrollTop += t.getBoundingClientRect().top - 120; });
+  ['site · the table, the packs flying', '/site/Smart-Clearance%20site%20v3.html', async p => {
+    await p.evaluate(() => document.querySelector('.tb-stage')!.scrollIntoView());
+    await p.waitForFunction(() => document.querySelector('.tb-focus h3')?.textContent === 'Outreach', null, { timeout: 15000 });
   }],
-  ['site · the town, at the person\'s yes', '/site/Smart-Clearance%20site%20v3.html', async p => {
-    await p.waitForFunction(() => /One yes/.test(document.querySelector('.town-caption')?.textContent || ''));
+  ['site · the table, sold', '/site/Smart-Clearance%20site%20v3.html', async p => {
+    await p.evaluate(() => document.querySelector('.tb-stage')!.scrollIntoView());
+    await p.waitForSelector('.tb-result', { timeout: 25000 });
   }],
-  ['site · the town, a card beside an agent', '/site/Smart-Clearance%20site%20v3.html', async p => {
-    await p.waitForFunction(() => !!document.querySelector('.town-tip b'));
+  ['site · the chapters, their cards rising', '/site/Smart-Clearance%20site%20v3.html', async p => {
+    await p.evaluate(() => document.querySelector('#watch')!.scrollIntoView());
   }],
-  ['site · the town, a place opened', '/site/Smart-Clearance%20site%20v3.html', async p => {
-    await p.waitForFunction(() => /Sold, not binned/.test(document.querySelector('.town-caption')?.textContent || ''));
-    await p.locator('.town-pin', { hasText: 'Distributor' }).click();
+  ['site · the agents at work after the yes', '/site/Smart-Clearance%20site%20v3.html', async p => {
+    await p.evaluate(() => document.querySelector('#work')!.scrollIntoView());
+  }],
+  ['site · the ledger', '/site/Smart-Clearance%20site%20v3.html', async p => {
+    await p.evaluate(() => document.querySelector('#ledger')!.scrollIntoView());
   }],
 ];
 
