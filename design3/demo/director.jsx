@@ -96,7 +96,7 @@
     const me = user(spec.who);
     const lock = spec.lock && !lockOpen ? spec.lock : null;
     // scroll to an anchor when the director asks for one
-    useEffect(() => { if (!spec.anchor || lock) return; const t = setTimeout(() => { const root = ref.current; if (!root) return; const el = root.querySelector(`[data-anchor="${spec.anchor}"]`); const sc = root.querySelector(".scroll"); if (el && sc) sc.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top - sc.getBoundingClientRect().top + sc.scrollTop - 64), behavior: "smooth" }); }, 420); return () => clearTimeout(t); }, [spec.anchor, spec.who, routeState && routeState.name, !!lock, s.hero.phase]);
+    useEffect(() => { if (!spec.anchor || lock) return; const t = setTimeout(() => { const root = ref.current; if (!root) return; const el = root.querySelector(`[data-anchor="${spec.anchor}"]`); const sc = root.querySelector(".scroll"); if (!el || !sc) return; const k = sc.getBoundingClientRect().height / (sc.clientHeight || 1) || 1; sc.scrollTo({ top: Math.max(0, (el.getBoundingClientRect().top - sc.getBoundingClientRect().top) / k + sc.scrollTop - 64), behavior: "smooth" }); }, 420); return () => clearTimeout(t); }, [spec.anchor, spec.who, routeState && routeState.name, !!lock, s.hero.phase]);
     const app = lock ? <LockScreen who={lock.who} push={lock.push} time={time} date={date} onOpen={onLockOpen} />
       : spec.signin ? <NoticeHost resetKey={"in-" + spec.who}><S.SignIn guided key={spec.signin} prefill={PREFILL[spec.signin]} onSignIn={onSignedIn} /></NoticeHost>
       : <NoticeHost resetKey={spec.who}><S.RoleApp me={me} route={routeState} onGo={r => setRouteState({ name: r.name, params: r.params })} onBack={() => setRouteState({ name: S.HOME[me.role] })} /></NoticeHost>;
@@ -162,7 +162,9 @@
     const canvas = useRef(null); const size = useSize(canvas);
     const real = typeof window !== "undefined" && window.innerWidth < 768;
     const cfg = STAGES[n];
-    const beatDone = (b, st) => (b.ui ? !!ui[b.ui] : b.done(st));
+    // a beat the visitor ticks by opening something (a push, the approval) is done too once a later beat of its stage is,
+    // so a move made inside a device moves the notes on (SC-65)
+    const beatDone = (b, st) => (b.ui ? !!ui[b.ui] || cfg.beats.slice(cfg.beats.indexOf(b) + 1).some(x => !x.ui && x.done(st)) : b.done(st));
     let idx = 0; while (idx < cfg.beats.length && beatDone(cfg.beats[idx], s)) idx++;
     const beat = cfg.beats[Math.min(idx, cfg.beats.length - 1)];
     const deskSpec = Object.assign({}, cfg.desk, beat.desk);

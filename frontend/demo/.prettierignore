@@ -1,4 +1,6 @@
 # generated, or ported verbatim from design3 (the drift test keeps it identical); see ../.prettierignore
 .svelte-kit/
 build/
+test-results/
+playwright-report/
 src/lib/demo.css

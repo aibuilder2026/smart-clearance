@@ -66,7 +66,37 @@ export const COMPONENTS: Record<string, { sel: string; text?: string }> = {
 	Tabs: { sel: '.tabs[role="tablist"]' },
 	Textarea: { sel: 'textarea.textarea' },
 	Wordmark: { sel: '.wordmark' },
-	WorkspaceMark: { sel: 'svg.wsmark' }
+	WorkspaceMark: { sel: 'svg.wsmark' },
+	// the workspace app's and the guided demo's (SC-62, SC-63; selectors added in SC-65)
+	AgentFeed: { sel: '.feed .ev' },
+	Aura: { sel: '.aura' },
+	BatchRow: { sel: 'button.batchrow' },
+	ChannelBars: { sel: '.chart svg[aria-label="Net rupees per unit by channel"]' },
+	ChannelTable: { sel: '.table-wrap[aria-label="Channels compared"]' },
+	ClusterMap: { sel: '.map svg[viewBox="0 0 640 400"]' },
+	CodeBlock: { sel: 'pre.code' },
+	Countdown: { sel: '.countdown' },
+	DaysNum: { sel: '.num[style*="--wdth"]' },
+	DocCard: { sel: '.docpick > button.card' },
+	HaulLine: { sel: '.map svg[viewBox="0 0 640 96"]' },
+	Kbd: { sel: 'kbd.kbd' },
+	MixBar: { sel: '.chart svg[aria-label="Channel mix"]' },
+	MoneyPanel: { sel: '.card-title', text: 'If destroyed' },
+	OTP: { sel: '.otp[role="group"]' },
+	PhoneFrame: { sel: '.device-phone' },
+	PoweredBy: { sel: '.poweredby' },
+	Skeleton: { sel: '.skeleton' },
+	Splash: { sel: '.splash' },
+	SplitBar: { sel: '.t-caption .tnum', text: 'units at risk' },
+	StatusBadge: { sel: '.badge[data-status]' },
+	StatusBar: { sel: '.statusbar' },
+	Tile: { sel: '.tile' },
+	Tracker: { sel: '.tracker[role="list"]' },
+	TrackerCard: { sel: '.bezel .t-headline' },
+	TrackerCompact: { sel: 'button.tk-compact' },
+	TrendChart: { sel: '.chart svg[aria-label="Weekly recovered against would-be write-off"]' },
+	VTracker: { sel: '.vtracker' },
+	WindowFrame: { sel: '.device-window' }
 };
 export const STRUCTURAL = ['Columns', 'ThemeProvider'];
 

@@ -65,15 +65,16 @@
   const useTheme = () => useContext(ThemeCtx);
   const AppCtx = createContext({ w: 1440, h: 900, bp: "desktop", el: null });
   const bpOf = (w) => w < 768 ? "phone" : w < 1100 ? "tablet" : "desktop";
-  function AppRoot({ children, className, style, theme, embedded }) {
+  function AppRoot({ children, className, style, theme, embedded, scroll = "app" }) {
     const ref = useRef(null);
+    const host = useRef(null);
     const { resolved } = useTheme();
     const [size, setSize] = useState(() => ({ w: typeof window !== "undefined" ? window.innerWidth : 1440, h: typeof window !== "undefined" ? window.innerHeight : 900 }));
     const [el, setEl] = useState(null);
     useEffect(() => {
       let raf = 0;
       const attach = () => {
-        const node = ref.current;
+        const node = scroll === "window" ? host.current : ref.current;
         if (!node) {
           raf = requestAnimationFrame(attach);
           return;
@@ -84,16 +85,17 @@
           setSize((s) => Math.abs(s.w - r.width) < 1 && Math.abs(s.h - r.height) < 1 ? s : { w: r.width, h: r.height });
         });
         ro.observe(node);
-        ref.current.__ro = ro;
+        node.__ro = ro;
       };
       attach();
       return () => {
         cancelAnimationFrame(raf);
-        if (ref.current && ref.current.__ro) ref.current.__ro.disconnect();
+        const node = scroll === "window" ? host.current : ref.current;
+        if (node && node.__ro) node.__ro.disconnect();
       };
     }, []);
     const value = useMemo(() => ({ w: size.w, h: size.h, bp: bpOf(size.w), el, embedded: !!embedded }), [size.w, size.h, el, embedded]);
-    return /* @__PURE__ */ React.createElement("div", { ref, className: cx("app", className), "data-theme": theme || resolved, style }, /* @__PURE__ */ React.createElement("div", { className: "ground", "aria-hidden": "true" }), /* @__PURE__ */ React.createElement(AppCtx.Provider, { value }, children));
+    return /* @__PURE__ */ React.createElement(Fragment, null, /* @__PURE__ */ React.createElement("div", { ref, className: cx("app", scroll === "window" && "app-window", className), "data-theme": theme || resolved, style }, /* @__PURE__ */ React.createElement("div", { className: "ground", "aria-hidden": "true" }), /* @__PURE__ */ React.createElement(AppCtx.Provider, { value }, children)), scroll === "window" && /* @__PURE__ */ React.createElement("div", { ref: host, className: "app app-overlays" }));
   }
   const useApp = () => useContext(AppCtx);
   const Portal = ({ children }) => {
@@ -164,6 +166,9 @@
     useEffect(() => {
       if (autoFocus && refs.current[0]) refs.current[0].focus();
     }, []);
+    useEffect(() => {
+      if (!value && refs.current[0] && refs.current.includes(document.activeElement)) refs.current[0].focus();
+    }, [value]);
     const set = (i, ch) => {
       const arr = (value || "").padEnd(length, " ").split("");
       arr[i] = ch || " ";

@@ -10,6 +10,10 @@
 	onMount(() => {
 		if (autofocus) refs[0]?.focus();
 	});
+	// a cleared code (a wrong one, wiped by its sign-in) starts again from the first box, if focus is in the boxes
+	$effect(() => {
+		if (!value && refs.includes(document.activeElement as HTMLInputElement)) refs[0]?.focus();
+	});
 	const commit = (v: string) => {
 		value = v;
 		onchange?.(v);

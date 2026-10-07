@@ -113,9 +113,9 @@ they leave the store the same at every stage.
 - **Money** says the figure once, in hidden text, and draws the rupee sign, digits and paise silently.
 - **Theme:** `ThemeProvider` keeps `<html data-theme>` in step with the reader's choice (`sc3-theme` in localStorage);
   the app's `app.html` sets it before the first paint.
-- **AppRoot** with `scroll="window"` lets the page scroll the window and adds a fixed overlay layer (`.app-overlays`),
-  which is also a query container named `app`. With the default `scroll="app"` the root fills its parent, as in the
-  prototype.
+- **AppRoot** with `scroll="window"` (design3's kit has it too since SC-65) lets the page scroll the window and adds a fixed overlay layer (`.app-overlays`),
+  which is also a query container named `app`; its sheets and alerts leave the page's scroll where it is, as the
+  prototype's do. With the default `scroll="app"` the root fills its parent, as in the prototype.
 - **Hydration:** anything that depends on the browser (the reader's theme, the width, reduced motion) either comes from
   CSS (`.desk-only`, `.when-dark`) or waits for `app.mounted`, so a prerendered page and its hydrated self agree.
 - **Motion:** `SPRINGS`, `DURATION` and `EASE` are the kit's; `springCurve()` samples motion's spring generator for
@@ -129,7 +129,6 @@ The stylesheets equal design3's, checked by `tests/drift.test.ts`, except inside
 
 - `tokens.css`: the Google Fonts `@import` is gone; `fonts.css` serves the same families.
 - `components.css`, the adapters at the end:
-  - `.app-window` and `.app-overlays` for window-scrolling pages;
   - `.when-light` and `.when-dark`, an icon for each appearance;
   - `.menu a.mi`, for a menu item that is a link;
   - `a.sb-item` and `.tabbar a.tab`, for the shell's places, which are links;

@@ -53,27 +53,30 @@
   const AppCtx = createContext({ w: 1440, h: 900, bp: "desktop", el: null });
   const bpOf = w => (w < 768 ? "phone" : w < 1100 ? "tablet" : "desktop");
   // embedded: an app drawn inside a device preview (the demo, the design system page), not the page itself
-  function AppRoot({ children, className, style, theme, embedded }) {
-    const ref = useRef(null);
+  // scroll: "app" (the default), the root fills its parent and the app scrolls inside it; "window", a long page that
+  // scrolls the window (the landing page), whose sheets and alerts go into a fixed layer over the window, since the
+  // root's containment would otherwise centre them on the whole page (SC-65)
+  function AppRoot({ children, className, style, theme, embedded, scroll = "app" }) {
+    const ref = useRef(null); const host = useRef(null);
     const { resolved } = useTheme();
     const [size, setSize] = useState(() => ({ w: typeof window !== "undefined" ? window.innerWidth : 1440, h: typeof window !== "undefined" ? window.innerHeight : 900 }));
     const [el, setEl] = useState(null);
     useEffect(() => {
       let raf = 0;
       const attach = () => {
-        const node = ref.current; if (!node) { raf = requestAnimationFrame(attach); return; }
+        const node = scroll === "window" ? host.current : ref.current; if (!node) { raf = requestAnimationFrame(attach); return; }
         setEl(node);
         const ro = new ResizeObserver(([e]) => { const r = e.contentRect; setSize(s => (Math.abs(s.w - r.width) < 1 && Math.abs(s.h - r.height) < 1 ? s : { w: r.width, h: r.height })); });
-        ro.observe(node); ref.current.__ro = ro;
+        ro.observe(node); node.__ro = ro;
       };
       attach();
-      return () => { cancelAnimationFrame(raf); if (ref.current && ref.current.__ro) ref.current.__ro.disconnect(); };
+      return () => { cancelAnimationFrame(raf); const node = scroll === "window" ? host.current : ref.current; if (node && node.__ro) node.__ro.disconnect(); };
     }, []);
     const value = useMemo(() => ({ w: size.w, h: size.h, bp: bpOf(size.w), el, embedded: !!embedded }), [size.w, size.h, el, embedded]);
-    return <div ref={ref} className={cx("app", className)} data-theme={theme || resolved} style={style}>
+    return <Fragment><div ref={ref} className={cx("app", scroll === "window" && "app-window", className)} data-theme={theme || resolved} style={style}>
       <div className="ground" aria-hidden="true" />
       <AppCtx.Provider value={value}>{children}</AppCtx.Provider>
-    </div>;
+    </div>{scroll === "window" && <div ref={host} className="app app-overlays" />}</Fragment>;
   }
   const useApp = () => useContext(AppCtx);
   const Portal = ({ children }) => { const { el } = useApp(); return el ? ReactDOM.createPortal(children, el) : null; };
@@ -163,6 +166,8 @@
     const refs = useRef([]);
     const digits = (value || "").padEnd(length, " ").slice(0, length).split("");
     useEffect(() => { if (autoFocus && refs.current[0]) refs.current[0].focus(); }, []);
+    // a cleared code (a wrong one, wiped by its sign-in) starts again from the first box, if focus is in the boxes (SC-65)
+    useEffect(() => { if (!value && refs.current[0] && refs.current.includes(document.activeElement)) refs.current[0].focus(); }, [value]);
     const set = (i, ch) => { const arr = (value || "").padEnd(length, " ").split(""); arr[i] = ch || " "; const v = arr.join("").replace(/\s+$/, ""); onChange(v.replace(/ /g, "")); };
     return <div className="otp" role="group" aria-label="One-time code">{digits.map((d, i) => <input key={i} ref={el => (refs.current[i] = el)} inputMode="numeric" autoComplete={i === 0 ? "one-time-code" : "off"} maxLength={1} aria-label={`Digit ${i + 1}`} value={d.trim()}
       onChange={e => { const ch = e.target.value.replace(/\D/g, "").slice(-1); set(i, ch); if (ch && refs.current[i + 1]) refs.current[i + 1].focus(); }}

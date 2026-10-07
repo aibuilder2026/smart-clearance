@@ -551,6 +551,6 @@
   // the loader (loader.js, SC-35) covers each change of theme: the plates swap under dusk or dawn, never in sight. The
   // page scrolls the window, as the SvelteKit build does, so its sticky bar and scroll-driven motion work the same way
   const gate = window.SC3_LOADER && window.SC3_LOADER.switchTheme;
-  function Root() { return <ThemeProvider gate={gate}><AppRoot className="site-root"><NoticeHost><Site /></NoticeHost></AppRoot></ThemeProvider>; }
+  function Root() { return <ThemeProvider gate={gate}><AppRoot className="site-root" scroll="window"><NoticeHost><Site /></NoticeHost></AppRoot></ThemeProvider>; }
   ReactDOM.createRoot(document.getElementById("root")).render(<Root />);
 })();

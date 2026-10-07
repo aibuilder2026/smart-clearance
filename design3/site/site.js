@@ -495,7 +495,7 @@
   }
   const gate = window.SC3_LOADER && window.SC3_LOADER.switchTheme;
   function Root() {
-    return /* @__PURE__ */ React.createElement(ThemeProvider, { gate }, /* @__PURE__ */ React.createElement(AppRoot, { className: "site-root" }, /* @__PURE__ */ React.createElement(NoticeHost, null, /* @__PURE__ */ React.createElement(Site, null))));
+    return /* @__PURE__ */ React.createElement(ThemeProvider, { gate }, /* @__PURE__ */ React.createElement(AppRoot, { className: "site-root", scroll: "window" }, /* @__PURE__ */ React.createElement(NoticeHost, null, /* @__PURE__ */ React.createElement(Site, null))));
   }
   ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(Root, null));
 })();

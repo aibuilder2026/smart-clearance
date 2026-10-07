@@ -28,9 +28,9 @@ When unsure, treat it as not asked: say what you would run and ask.
 
 | Suite | Where | What it does | Takes |
 | --- | --- | --- | --- |
-| a11y | `frontend/admin/tests/e2e/*.a11y.spec.ts`, `frontend/console/tests/e2e/*.a11y.spec.ts` | on each app's production build (the real UI, never the `/ds` dev route): axe WCAG 2.2 AA scans of every landing-page section and every console screen, tab, sheet, menu, alert and toast, in five viewport and theme projects, plus the keyboard and motion specs; then the coverage check, which fails if an app uses a core component no scan had on screen (SC-58) | about 2 minutes an app, with its build |
-| e2e | `frontend/console/tests/e2e/flows.spec.ts`, each app's `smoke.spec.ts` | the console's flows on the mock API, and the Firefox and WebKit smoke runs | under a minute an app, with its build |
-| parity | each app's `tests/parity/` | each app's build against its design3 prototype, pixel by pixel (design3 served by `frontend/testing/design3-server.py` on :8790) | about 40 seconds an app, after a build |
+| a11y | each app's `tests/e2e/*.a11y.spec.ts` (`admin`, `console`, `workspace`, `demo`) | on each app's production build (the real UI, never the `/ds` dev route): axe WCAG 2.2 AA scans of every landing-page section, every console screen, tab, sheet, menu, alert and toast, every role's screen in the workspace app, and every stage of the guided demo, in five viewport and theme projects, plus the keyboard and motion specs; then the coverage check, which fails if an app uses a core component no scan had on screen (SC-58; for the workspace app and the demo, every component the workspace screens in core use, SC-65) | about 2 minutes an app, with its build |
+| e2e | each app's `flows.spec.ts` (console, workspace, demo) and `smoke.spec.ts` | the console's flows on the mock API, the workspace app's journey and the demo's playthrough on their stub, and the Firefox and WebKit smoke runs | a minute or two an app, with its build |
+| parity | each app's `tests/parity/` | each app's build against its design3 prototype (site, console, app, demo), pixel by pixel (design3 served by `frontend/testing/design3-server.py` on :8790) | about 40 seconds an app, after a build |
 
 The live e2e suite, `backend-api/scripts/e2e.sh` (the landing page and the console on the local API and Firebase),
 counts as a suite too: it runs on request only, and it adds a client to the local database.
@@ -38,14 +38,15 @@ counts as a suite too: it runs on request only, and it adds a client to the loca
 ## Before running
 
 - **A build:** `test:a11y`, `test:e2e` and `test:parity` each build their app first, and serve the build on a preview
-  port (4174 and 4177), so the dev servers need not run.
+  port (a11y and e2e: admin 4174, console 4177, workspace 4181, demo 4183; parity: 4175, 4178, 4182, 4184), so the dev
+  servers need not run, but a preview server left on one of those ports stops the suite from starting.
 - **`PUBLIC_API_BASE` empty.** The a11y, e2e and parity suites run on the mocks, even while `.env.local` points at the
   local API. Run them as `PUBLIC_API_BASE= corepack pnpm test:a11y`.
 - **Browsers:** `npx playwright install chromium webkit firefox` once. In a sandboxed shell Firefox cannot start:
   expect the `firefox-desktop` project to fail there, and say so rather than treating it as a regression.
 - **Parity serves design3 itself** (`frontend/testing/design3-server.py` on port 8790). Run `./build.sh` in `design3`
   first if a `.jsx` changed.
-- **A long timeout** (10 minutes) for `test:a11y` over both apps.
+- **A long timeout** (10 minutes) for each app's `test:a11y`; run the apps one at a time over all four.
 
 ## Commands
 
@@ -53,9 +54,9 @@ From `frontend/`:
 
 ```sh
 corepack pnpm build
-PUBLIC_API_BASE= corepack pnpm test:a11y             # both apps; test:a11y:admin, test:a11y:console for one
-PUBLIC_API_BASE= corepack pnpm test:e2e              # both apps; test:e2e:admin, test:e2e:console for one
-PUBLIC_API_BASE= corepack pnpm test:parity           # both apps; test:parity:admin, test:parity:console for one
+PUBLIC_API_BASE= corepack pnpm test:a11y             # every app; test:a11y:admin, :console, :workspace, :demo for one
+PUBLIC_API_BASE= corepack pnpm test:e2e              # every app; test:e2e:admin, :console, :workspace, :demo for one
+PUBLIC_API_BASE= corepack pnpm test:parity           # every app; test:parity:admin, :console, :workspace, :demo for one
 ```
 
 Each app's findings land in `test-results/a11y/<project>/<test>.json`, with the components each test's scans had on

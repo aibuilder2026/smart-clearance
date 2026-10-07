@@ -81,7 +81,10 @@
 	const real = $derived(innerWidth < 768);
 	const cfg = $derived(STAGES[n]);
 	const s = $derived(store.state);
-	const beatDone = (b: Beat) => (b.ui ? !!ui[b.ui] : !!b.done?.(s));
+	// a beat the visitor ticks by opening something (a push, the approval) is done too once a later beat of its stage is,
+	// so a move made inside a device moves the notes on
+	const beatDone = (b: Beat) =>
+		b.ui ? !!ui[b.ui] || cfg.beats.slice(cfg.beats.indexOf(b) + 1).some((x) => !x.ui && !!x.done?.(s)) : !!b.done?.(s);
 	const idx = $derived.by(() => {
 		let i = 0;
 		while (i < cfg.beats.length && beatDone(cfg.beats[i])) i++;
@@ -205,6 +208,17 @@
 		}
 	};
 
+	// while the finale is up, what it covers is inert, so Tab goes into the finale and never to a control hidden behind
+	// it (WCAG 2.4.3, 2.4.11; SC-65's keyboard suite found the stage bar taking focus under it)
+	let shell: HTMLElement | undefined = $state();
+	$effect(() => {
+		const el = shell;
+		if (!el || !finale) return;
+		const behind = [...el.children].filter((c) => !c.classList.contains('finale'));
+		for (const c of behind) c.setAttribute('inert', '');
+		return () => behind.forEach((c) => c.removeAttribute('inert'));
+	});
+
 	// on a real phone: the person in focus, full screen
 	const realSpec = $derived(focus === 'desk' ? deskSpec : phoneSpec);
 	const realMe = $derived(user(realSpec.who ?? ''));
@@ -216,7 +230,7 @@
 <svelte:window bind:innerWidth {onkeydown} />
 
 {#if real}
-	<div class="demo-real">
+	<div class="demo-real" bind:this={shell}>
 		<div class="real-bar">
 			<button type="button" class="iconbtn" aria-label="Back" onclick={back}
 				><Icon name="chevron-left" size={22} /></button
@@ -263,7 +277,7 @@
 		{#if splash}<Splash workspace={WS} ondone={leaveSplash} />{/if}
 	</div>
 {:else}
-	<div class={cx('demo', !notes && 'no-notes')}>
+	<div class={cx('demo', !notes && 'no-notes')} bind:this={shell}>
 		<header class="demo-top">
 			<span class="row tight demo-brand"
 				><Mark size={30} /><Wordmark size={17} /><span class="demo-tag">Guided demo</span><span class="demo-ws"

@@ -146,9 +146,11 @@ Book a demo on the landing page saves a request the console lists on its Overvie
 The builds, and their previews:
 
 ```bash
-corepack pnpm build            # both apps: admin/build and console/build
-corepack pnpm preview          # the landing page's build on http://localhost:4173
-corepack pnpm preview:console  # the console's build on http://localhost:4176
+corepack pnpm build              # every app: admin/build, console/build, workspace/build and demo/build
+corepack pnpm preview            # the landing page's build on http://localhost:4173
+corepack pnpm preview:console    # the console's build on http://localhost:4176
+corepack pnpm preview:workspace  # the workspace app's build on http://localhost:4177
+corepack pnpm preview:demo       # the guided demo's build on http://localhost:4178
 ```
 
 A preview server reads the build's file list once: restart it after a rebuild.
@@ -158,7 +160,7 @@ in five viewport and theme projects, the keyboard and motion specs, then a cover
 core component no scan had on screen. It builds first, and runs on the mocks:
 
 ```bash
-PUBLIC_API_BASE= corepack pnpm test:a11y     # both apps, about 2 minutes each (test:a11y:admin, test:a11y:console)
+PUBLIC_API_BASE= corepack pnpm test:a11y     # every app, about 2 minutes each (test:a11y:admin, :console, :workspace, :demo)
 ```
 
 Regenerate what the frontend derives from design3 whenever design3 changes (the gate fails otherwise):

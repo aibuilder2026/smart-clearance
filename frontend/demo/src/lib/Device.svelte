@@ -54,22 +54,30 @@
 	const me = $derived((store.state.users.find((u) => u.id === spec.who) || D.people[spec.who ?? '']) as User);
 	const lock = $derived(spec.lock && !lockOpen ? spec.lock : null);
 	let screen: HTMLDivElement | undefined = $state();
+	// the spec is a new object each time the beat moves on, even when it says the same; what follows from it is keyed on
+	// its values, as the prototype's effects are (React compares them), so a new beat neither clears the device's
+	// banners (NoticeHost's resetKey) nor scrolls it to its anchor again (SC-65's parity suite found both)
+	const who = $derived(spec.who);
+	const anchorTo = $derived(spec.anchor);
+	const locked = $derived(!!lock);
 
 	// scroll to an anchor when the director asks for one, once the screen has drawn
-	const anchorKey = $derived(`${spec.anchor}|${spec.who}|${route?.name}|${!!lock}|${store.state.hero.phase}`);
+	const anchorKey = $derived(`${anchorTo}|${who}|${route?.name}|${locked}|${store.state.hero.phase}`);
 	$effect(() => {
 		void anchorKey;
-		const anchor = spec.anchor;
-		if (!anchor || lock) return;
+		const anchor = anchorTo;
+		if (!anchor || locked) return;
 		const t = setTimeout(() => {
 			const root = screen;
 			const el = root?.querySelector(`[data-anchor="${anchor}"]`);
 			const sc = root?.querySelector('.scroll');
-			if (el && sc)
-				sc.scrollTo({
-					top: Math.max(0, el.getBoundingClientRect().top - sc.getBoundingClientRect().top + sc.scrollTop - 64),
-					behavior: 'smooth'
-				});
+			if (!el || !sc) return;
+			// the device is scaled: measure in its own pixels
+			const k = sc.getBoundingClientRect().height / (sc.clientHeight || 1) || 1;
+			sc.scrollTo({
+				top: Math.max(0, (el.getBoundingClientRect().top - sc.getBoundingClientRect().top) / k + sc.scrollTop - 64),
+				behavior: 'smooth'
+			});
 		}, 420);
 		return () => clearTimeout(t);
 	});
@@ -83,10 +91,10 @@
 
 {#snippet app()}
 	{#if lock}<LockScreen who={lock.who} push={lock.push} {time} {date} onopen={onlockopen} />
-	{:else if spec.signin}<NoticeHost resetKey={'in-' + spec.who}
+	{:else if spec.signin}<NoticeHost resetKey={'in-' + who}
 			>{#key spec.signin}<SignIn guided prefill={PREFILL[spec.signin]} onsignin={onsignedin} />{/key}</NoticeHost
 		>
-	{:else}<NoticeHost resetKey={spec.who}
+	{:else}<NoticeHost resetKey={who}
 			>{#key me.id}<RoleApp
 					{me}
 					{route}

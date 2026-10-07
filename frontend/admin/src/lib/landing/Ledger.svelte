@@ -12,7 +12,14 @@
 	$effect(() => {
 		if (!ledger) return;
 		let t = 0;
-		const stop = riseInView(ledger, { show: () => (t = window.setTimeout(() => (rolled = true), 300)) });
+		let waits = false;
+		const stop = riseInView(ledger, {
+			arm: () => (waits = true),
+			show: () => (t = window.setTimeout(() => (rolled = true), 300))
+		});
+		// no rise to wait for (less motion asked for, or the ledger in view from the start): the figures are Rolls at once,
+		// as design3's are (still under reduced motion), so the rows keep the Roll's height
+		if (!waits) rolled = true;
 		return () => {
 			stop?.();
 			clearTimeout(t);
