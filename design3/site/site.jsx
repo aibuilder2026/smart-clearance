@@ -263,7 +263,7 @@
       <header><span className="n">{s + 1} of {NS}</span><h3>{a.name}</h3><span>{WHERE[agent]}</span></header>
       <p>{a.did}</p>
       <div className="frag"><Frag id={agent} /></div>
-      {desk && <div className="rail" role="list" aria-label="The agents, in order">{ORDER.map((id, i) => <button key={id} type="button" className={cx(i < s && "on", AGENT[id].human && "human")} aria-current={i === s ? "step" : undefined} onClick={() => go(i)}><i aria-hidden="true"><Icon name={AGENT[id].icon} size={10} stroke={2.4} /></i>{AGENT[id].name}</button>)}</div>}
+      {desk && <div className="rail" role="group" aria-label="The agents, in order">{ORDER.map((id, i) => <button key={id} type="button" className={cx(i < s && "on", AGENT[id].human && "human")} aria-current={i === s ? "step" : undefined} onClick={() => go(i)}><i aria-hidden="true"><Icon name={AGENT[id].icon} size={10} stroke={2.4} /></i>{AGENT[id].name}</button>)}</div>}
     </div>;
     return <section id="agents" className="sec-table" aria-labelledby="tb-h">
       <header className="tb-head"><h2 id="tb-h" className="sec-h plain">Five exits, one batch. Ten agents at work.</h2><p className="sec-sub">{fmt.num(N)} packs of masala chips that won't sell in the {BATCH.daysLeft} days they have left, on the table. The agents work the batch stop by stop; a person says yes once; the packs leave for the kiranas and a buyer, and nothing goes to the bin.</p></header>
