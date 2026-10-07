@@ -8,6 +8,7 @@
 pnpm-lock.yaml
 admin/src/lib/seed/
 api/src/seed/
+core/src/lib/workspace/seed/
 core/src/lib/icons/registry.ts
 core/src/styles/tokens.css
 core/src/styles/base.css

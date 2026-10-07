@@ -82,11 +82,12 @@
 	// an h2 is a heading already: drop the role and level bits-ui gives its div title
 	const asHeading = ({ role: _role, 'aria-level': _level, ...rest }: Record<string, unknown>) => rest;
 
-	// the panel takes focus when it opens (not its first field), so a screen reader names the dialog first
+	// the panel takes focus when it opens (not its first field), so a screen reader names the dialog first; a field that
+	// focused itself as the sheet opened (the one-time code's first box) keeps it, as the kit's useModal leaves it
 	let panelEl: HTMLElement | null = $state(null);
 	const focusPanel = (e: Event) => {
 		e.preventDefault();
-		panelEl?.focus({ preventScroll: true });
+		if (!panelEl?.contains(document.activeElement)) panelEl?.focus({ preventScroll: true });
 	};
 
 	// when the content runs longer than the sheet, the body scrolls, so a keyboard can reach it (WCAG 2.1.1)

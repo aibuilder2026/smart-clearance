@@ -1,0 +1,64 @@
+<script lang="ts">
+	import { useNotice } from '../../../notice.svelte';
+	import Button from '../../../components/Button.svelte';
+	import Card from '../../../components/Card.svelte';
+	import WorkspaceMark from '../../../components/WorkspaceMark.svelte';
+	import Icon from '../../../icons/Icon.svelte';
+	import { rise } from '../../../motion/transitions';
+	import { CHIPS, D, WS } from '../../data';
+	import { act } from '../../flow';
+
+	// the one-time permission: the agent may act in his name, inside Munchly's floors, and he can pause it
+	let busy = $state(false);
+	let later = $state(false);
+	const { toast } = useNotice();
+	const allow = () => {
+		busy = true;
+		setTimeout(() => {
+			busy = false;
+			act('permit');
+			toast({ text: 'Allowed · you can pause it any time', tone: 'ok' });
+		}, 600);
+	};
+</script>
+
+{#if later}
+	<Card class="row wrap" style="gap: 14px"
+		><WorkspaceMark ws={WS} size={36} />
+		<div class="grow">
+			<b>Munchly is waiting for your permission</b>
+			<div class="t-footnote muted">Nothing is listed or offered in your name until you allow it.</div>
+		</div>
+		<Button variant="secondary" onclick={() => (later = false)}>Review</Button></Card
+	>
+{:else}
+	<div class="bezel" in:rise|global={{ y: 8 }}>
+		<div class="card raised stack snug" style="padding: 20px">
+			<div class="row tight">
+				<WorkspaceMark ws={WS} size={30} /><span class="t-footnote subtle strong">{WS.name} · Thu 16:50</span>
+			</div>
+			<div class="t-title3">Let Smart-Clearance act for Rakesh Traders</div>
+			<div class="stack tight">
+				{#each D.setup.acts as t (t)}<div class="row top t-subhead" style="gap: 10px">
+						<Icon
+							name="check"
+							size={17}
+							stroke={2.4}
+							style="color: var(--primary-text); margin-top: 2px; flex: none"
+						/><span>{t}</span>
+					</div>{/each}
+			</div>
+			<p class="t-footnote muted" style="margin: 0">
+				Always within Munchly's price floors. Every action shows here, and you can pause any of it. Munchly pays you the
+				gap to the ₹{CHIPS.dp} you paid, so you end whole.
+			</p>
+			<div class="row wrap" style="gap: 10px">
+				<Button variant="approve" size="lg" icon="check" loading={busy} onclick={allow}>Allow</Button><Button
+					variant="ghost"
+					size="lg"
+					onclick={() => (later = true)}>Not now</Button
+				>
+			</div>
+		</div>
+	</div>
+{/if}

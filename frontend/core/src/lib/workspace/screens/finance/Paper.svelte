@@ -1,0 +1,145 @@
+<script lang="ts">
+	import { cx } from '../../../cx';
+	import { CHIPS, D, ES, INVOICE, PLAN, SHOPS } from '../../data';
+	import { cartons, fmt } from '../../model';
+
+	// a document of the pack, set on paper (screens/finance.jsx Paper): the invoice Rakesh Traders issues, the e-way bill
+	// check, Munchly's price-support credit note, the ITC memo, the FSSAI checklist and the destruction certificate
+	let { id }: { id: string } = $props();
+
+	const DOC = (x: string) => D.docs.find((d) => d.id === x);
+	const d = $derived(DOC(id));
+	const inv = INVOICE;
+	const R = D.distributors.rakesh;
+	const B = D.buyer;
+	const dp = CHIPS.dp!;
+	const sp = D.support;
+	const esRow = sp.rows.find((r) => r.id === 'expiresoon')!;
+	const kRow = sp.rows.find((r) => r.id === 'kirana')!;
+</script>
+
+{#snippet head(title: string, no: string, stamp: string, ok = false)}<div class="pp-head">
+		<div>
+			<div class="pp-title">{title}</div>
+			<div class="pp-no">{no}</div>
+		</div>
+		<span class={cx('pp-stamp', ok && 'ok')}>{stamp}</span>
+	</div>{/snippet}
+{#snippet line(key: string, v: string, strong = false, sub?: string)}<div class="pp-line">
+		<span
+			>{key}{#if sub}<em>{` ${sub}`}</em>{/if}</span
+		><span class={strong ? 'pp-strong' : ''}>{v}</span>
+	</div>{/snippet}
+
+{#if id === 'invoice'}
+	<div class="paper pp">
+		{@render head('Tax invoice', `${inv.no} · draft · 5 Oct 2026`, 'IGST')}
+		<div class="pp-parties">
+			<div>
+				<em>From</em><b>{R.name}</b><span>{R.address}</span><span class="pp-mono">GSTIN {R.gstin}</span>
+			</div>
+			<div>
+				<em>To</em><b>{B.name}</b><span>{B.address} · place of supply {B.stateCode}</span><span class="pp-mono"
+					>GSTIN {B.gstin}</span
+				>
+			</div>
+		</div>
+		<table class="pp-table">
+			<thead><tr><th>Item</th><th>HSN</th><th>Qty</th><th>Rate</th><th>Taxable</th></tr></thead>
+			<tbody
+				><tr
+					><td>Munchly Masala Chips 150 g<br /><em>Batch MF-2409-117 · best before 18 Nov 2026</em></td><td
+						>{CHIPS.hsn}</td
+					><td>{inv.units}</td><td>₹{inv.price!.toFixed(2)}</td><td>{fmt.inr2(inv.taxable!)}</td></tr
+				></tbody
+			>
+		</table>
+		{@render line('Taxable value', fmt.inr2(inv.taxable!))}{@render line(
+			`IGST ${inv.gstPct}%`,
+			fmt.inr2(inv.igst!),
+			false,
+			'Maharashtra → Chhattisgarh'
+		)}{@render line('Round off', fmt.inr2(inv.roundOff!))}{@render line('Invoice total', fmt.inr2(inv.total!), true)}
+		<p class="pp-note">
+			Drafted by the Paperwork agent for {R.name} to issue from Tally. Chips moved from 12% to 5% GST under GST 2.0 on 22
+			September 2025. The MRP of ₹30.00 stays printed on every pack: a discounted sale is fine, a second MRP is not (Legal
+			Metrology).
+		</p>
+	</div>
+{:else if id === 'eway'}
+	<div class="paper pp">
+		{@render head('E-way bill check', 'MF-2409-117 · ES-24117', 'NOT REQUIRED', true)}{@render line(
+			'Consignment value with GST',
+			fmt.inr2(inv.total!)
+		)}{@render line('Threshold, inter-state', '₹50,000.00')}{@render line('E-way bill', 'not required', true)}
+		<p class="pp-note">
+			{d?.note} A transporter note travels with the {cartons(ES.units)} on the buyer's truck instead.
+		</p>
+	</div>
+{:else if id === 'support'}
+	<div class="paper pp">
+		{@render head('Price-support credit note', `${d?.no} · ${D.client.short} → ${R.name}`, 'NO GST ADJ.', true)}
+		{@render line(
+			`${esRow.units} sold on ExpireSoon at ₹${esRow.price.toFixed(2)}`,
+			fmt.inr2(esRow.amount),
+			false,
+			`₹${dp} − ₹${esRow.price.toFixed(2)} = ₹${esRow.gap.toFixed(2)} a pack`
+		)}
+		{@render line(
+			`${kRow.units} sold to ${SHOPS} kiranas at ₹18 effective`,
+			fmt.inr2(kRow.amount),
+			false,
+			`₹${dp} − ₹18 = ₹${kRow.gap.toFixed(2)}, free packs included`
+		)}
+		{@render line(
+			'Van delivery',
+			fmt.inr2(sp.van),
+			false,
+			`${kRow.units} × ₹${D.rules.vanPerUnit.toFixed(2)}`
+		)}{@render line('ExpireSoon listing fee', fmt.inr2(sp.fee))}{@render line('Round off', fmt.inr2(d?.roundOff ?? 0))}
+		{@render line(`Credit to ${R.name}`, fmt.inr2(d?.amount ?? 0), true)}
+		<p class="pp-note">
+			A financial credit note, with no GST adjustment, so {R.name} ends whole at the ₹{dp} it paid. It covers the buy-10-get-2
+			scheme too, so no separate scheme note is needed. Munchly pays this instead of an expiry claim of {fmt.inr(
+				D.claim.total
+			)}. Trued up after the return window closes on {fmt.day(D.returnBy)}.
+		</p>
+	</div>
+{:else if id === 'itc'}
+	<div class="paper pp">
+		{@render head('GST ITC memo', `Section 17(5)(h) · ${D.client.short}`, 'ITC KEPT', true)}{@render line(
+			'Packets sold under tax invoices',
+			fmt.num(PLAN.soldUnits)
+		)}{@render line('Destroyed, gifted or lost', '0')}{@render line(
+			'Input GST on the stock',
+			fmt.inr2(d?.amount ?? 0),
+			true,
+			`₹${CHIPS.itcPerUnit!.toFixed(2)} a pack, from the cost sheet`
+		)}{@render line('Reversal in GSTR-3B, Table 4(B)(1)', 'none')}
+		<p class="pp-note">
+			Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. These packs were sold
+			under tax invoices, so it does not apply. The credit would be reversed only if the stock came back under the
+			expiry claim and Munchly destroyed it. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since
+			1 October 2023, 17(5)(fa) on CSR donations.
+		</p>
+	</div>
+{:else if id === 'fssai'}
+	<div class="paper pp">
+		{@render head('FSSAI surplus-food checklist', 'MF-2409-117', 'NOT REQUIRED')}
+		<p class="pp-note">
+			Nothing from this batch was donated. The Mango Drink batch MF-2410-118 has its own checklist: {D.mangoFb} packs to Feeding
+			India, Hyderabad.
+		</p>
+	</div>
+{:else}
+	<div class="paper pp">
+		{@render head('Destruction certificate', 'MF-2409-117', 'NOT REQUIRED')}{@render line(
+			'Units left to destroy',
+			'0',
+			true
+		)}
+		<p class="pp-note">
+			Issued only when units remain, with the ITC reversal entry pre-filled so finance is never surprised.
+		</p>
+	</div>
+{/if}
