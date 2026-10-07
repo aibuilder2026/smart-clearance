@@ -18,11 +18,14 @@
 	type Props = {
 		/** the screen the address names, or null at the root */
 		screen: string | null;
-		/** change the address: a screen, or null for the root; replace swaps the current history entry */
-		navigate: (name: string | null, opts?: { replace?: boolean }) => void;
+		/** the batch the address names after the screen, when it names one */
+		ref?: string | null;
+		/** change the address: a screen (and the batch it is about), or null for the root; replace swaps the current
+		 *  history entry */
+		navigate: (name: string | null, opts?: { replace?: boolean; ref?: string }) => void;
 		back: () => void;
 	};
-	let { screen, navigate, back }: Props = $props();
+	let { screen, ref = null, navigate, back }: Props = $props();
 
 	const app = useApp();
 	const ws = useWorkspace();
@@ -33,7 +36,7 @@
 
 	let chooser = $state(false);
 	const me = $derived(ws.me);
-	const route = $derived<Route | null>(screen ? { name: screen } : null);
+	const route = $derived<Route | null>(screen ? { name: screen, params: ref ? { ref } : undefined } : null);
 	const W = $derived(ws.publicInfo?.workspace ?? ws.data.workspace);
 
 	$effect(() => {
@@ -78,7 +81,7 @@
 			/>{:else}{#key me.id}<RoleApp
 					{me}
 					route={route ?? { name: HOME[me.role] }}
-					ongo={(r) => navigate(r.name, { replace: r.replace })}
+					ongo={(r) => navigate(r.name, { replace: r.replace, ref: r.params?.ref })}
 					onback={() => (history.length > 1 ? back() : navigate(HOME[me.role], { replace: true }))}
 					realCamera
 				/>{/key}{/if}{/if}

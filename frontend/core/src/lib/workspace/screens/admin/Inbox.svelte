@@ -19,7 +19,9 @@
 
 	const open = (n: Notification) => {
 		void ws.markRead([n.id]);
-		if (n.link && (!routes || routes.includes(n.link))) router.go(n.link);
+		// a notification about the batch opens its Route Room on it
+		if (n.link && (!routes || routes.includes(n.link)))
+			router.go(n.link, n.link === 'route' && ws.case ? { ref: ws.case.batch.id } : undefined);
 	};
 	const readAll = () => void ws.markRead(mine.map((n) => n.id));
 </script>

@@ -29,7 +29,7 @@
 	const rows = $derived<Row[]>(views.map((v) => ({ ...v, name: v.skuObj.name })));
 	const sel = $derived(openId ? views.find((v) => v.id === openId) : undefined);
 	const ML = (id: string) => c.donation.plan.lines.find((l) => l.id === id) || { units: 0 };
-	const openRow = (v: BatchView) => (v.hero ? router.go('route') : (openId = v.id));
+	const openRow = (v: BatchView) => (v.hero ? router.go('route', { ref: v.id }) : (openId = v.id));
 	const facts = (b: BatchView): [string, string][] => [
 		['Batch', b.id],
 		['Distributor', `${b.dist.name}, ${b.dist.city}`],

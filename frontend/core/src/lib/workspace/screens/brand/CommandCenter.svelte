@@ -37,7 +37,8 @@
 			.filter((v) => !(v.hero && s.hero.phase === 'watching'))
 			.sort((a, b) => atRisk(a) - atRisk(b) || a.daysLeft - b.daysLeft)
 	);
-	const openRoute = () => router.go('route');
+	// the Route Room, on the batch in focus
+	const openRoute = () => router.go('route', { ref: c.batch.id });
 	const flagged = $derived(s.hero.phase !== 'watching' && s.setup.confirmed);
 	const routed = $derived(isRouted(s.hero.phase));
 	const perm = $derived(s.setup.permission);

@@ -79,7 +79,9 @@
 
 	function openNote(n: Notification) {
 		void ws.markRead([n.id]);
-		if (n.link && allowed.includes(n.link)) ongo({ name: n.link });
+		// a push about the batch opens its Route Room on it
+		if (n.link && allowed.includes(n.link))
+			ongo({ name: n.link, params: n.link === 'route' && ws.case ? { ref: ws.case.batch.id } : undefined });
 	}
 </script>
 
