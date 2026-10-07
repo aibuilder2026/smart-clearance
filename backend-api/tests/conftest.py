@@ -25,6 +25,7 @@ os.environ.setdefault("IDENTITY", "fake")
 os.environ.setdefault("DB_NAME", "smart_clearance_test")
 os.environ.setdefault("STAFF_EMAIL_DOMAIN", "smartclearance.example")
 
+from sc_api.cloud import Cloud, FakeMessenger, FakePublisher, FakeStorage
 from sc_api.db import dispose, make_engine
 from sc_api.domain.clock import IST, FixedClock, Ids
 from sc_api.identity import FakeIdentity, synthetic_uid
@@ -40,7 +41,16 @@ SAMEER = f"sameer.rao@{STAFF_DOMAIN}"
 
 
 def settings(**overrides) -> Settings:
-    return Settings(sc_env="test", identity="fake", **overrides)
+    live = {
+        "cloud": "fake",
+        "events_env": "test",
+        "photos_bucket": "photos-test",
+        "docs_bucket": "docs-test",
+        "exports_bucket": "exports-test",
+        "stream_max_seconds": 1,
+        "stream_heartbeat_seconds": 1,
+    }
+    return Settings(sc_env="test", identity="fake", **{**live, **overrides})
 
 
 def migrator_settings() -> Settings:
@@ -132,7 +142,13 @@ def clock() -> FixedClock:
 
 
 @pytest.fixture
-async def ctx(conn: AsyncConnection, identity: FakeIdentity, clock: FixedClock) -> Ctx:
+def cloud() -> Cloud:
+    """Pub/Sub, Cloud Storage and FCM, in memory: what the suite's journey published, stored and pushed"""
+    return Cloud(FakePublisher(), FakeStorage(), FakeMessenger())
+
+
+@pytest.fixture
+async def ctx(conn: AsyncConnection, identity: FakeIdentity, clock: FixedClock, cloud: Cloud) -> Ctx:
     session = async_sessionmaker(bind=conn, expire_on_commit=False, join_transaction_mode="create_savepoint")()
     return Ctx(
         session=session,
@@ -142,12 +158,13 @@ async def ctx(conn: AsyncConnection, identity: FakeIdentity, clock: FixedClock) 
         identity=identity,
         settings=settings(),
         ref=await reference.read(session),
+        cloud=cloud,
     )
 
 
 @pytest.fixture
-async def api(conn: AsyncConnection, engine: AsyncEngine, identity: FakeIdentity, clock: FixedClock):
-    app = create_app(settings(), engine=engine, identity=identity, clock=clock)
+async def api(conn: AsyncConnection, engine: AsyncEngine, identity: FakeIdentity, clock: FixedClock, cloud: Cloud):
+    app = create_app(settings(), engine=engine, identity=identity, clock=clock, cloud_services=cloud)
     app.state.engine = engine
     app.state.sessions = async_sessionmaker(
         bind=conn, expire_on_commit=False, autoflush=False, join_transaction_mode="create_savepoint"

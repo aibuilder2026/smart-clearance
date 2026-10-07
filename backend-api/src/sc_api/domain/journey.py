@@ -9,7 +9,18 @@ The stages, 0-based as the console counts them (services/supply.py STOP_AGENT):
 from dataclasses import dataclass
 from typing import Any
 
-PHASES = ("watching", "at-risk", "verified", "valued", "planned", "approved", "executing", "dispatched", "settled", "cleared")
+PHASES = (
+    "watching",
+    "at-risk",
+    "verified",
+    "valued",
+    "planned",
+    "approved",
+    "executing",
+    "dispatched",
+    "settled",
+    "cleared",
+)
 STAGES = ("connect", "detect", "verify", "value", "decide", "approve", "execute", "settle", "report")
 
 # the Pub/Sub topics (each environment's names are prefixed: prod.batch.at_risk, local.batch.at_risk)

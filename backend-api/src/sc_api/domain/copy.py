@@ -91,10 +91,18 @@ def check_numbers(text: str, allowed: list[float]) -> bool:
     pool = {round(float(a), 2) for a in allowed}
     for raw in found:
         n = round(float(raw.replace(",", "")), 2)
-        if n in pool or n < 10 and float(n).is_integer():
+        if n in pool or (n < 10 and float(n).is_integer()):
             continue
         return False
     return True
+
+
+def reply_ok(text: str, *, decided: float, others: list[float], reserve: float) -> bool:
+    """a model's reply to a bid: it states the price money.py decided, quotes no figure but the lot's own, and never
+    gives the reserve away"""
+    states = f"{decided:.2f}" in text or (float(decided).is_integer() and f"₹{decided:.0f}" in text)
+    shows_reserve = reserve != decided and (f"{reserve:.2f}" in text or f"{reserve:g}" in re.findall(r"[\d.]+", text))
+    return states and not shows_reserve and check_numbers(text, [decided, *others])
 
 
 # --- the timeline (feed) ----------------------------------------------------------------------------------------------
@@ -123,8 +131,10 @@ def watch_event(
 ) -> dict[str, Any]:
     gates = assess["gates"]
     failing = [g for g in gates if not g["pass"]]
-    fails = "fails all three quick-commerce gates" if len(failing) == len(gates) else (
-        f"fails {len(failing)} of the quick-commerce gates"
+    fails = (
+        "fails all three quick-commerce gates"
+        if len(failing) == len(gates)
+        else (f"fails {len(failing)} of the quick-commerce gates")
     )
     return {
         "text": f"Checked {fmt.num(checked)} batches across {distributors} distributors. {ref} {fails} and will not "
@@ -177,8 +187,8 @@ def read_event(read: dict[str, Any], *, matches: bool, mismatches: list[str]) ->
 def value_event(*, days_left: int, write_off: dict[str, Any], sku: dict[str, Any], rules: dict[str, Any]) -> dict:
     channels = "five channels"
     return {
-        "text": f"Priced {channels} against {days_left} days left. Destroying costs {fmt.inr2(write_off['perUnit'])} a "
-        f"unit, {fmt.inr(write_off['total'])} for the batch.",
+        "text": f"Priced {channels} against {days_left} days left. Destroying costs "
+        f"{fmt.inr2(-write_off['perUnit'])} a unit, {fmt.inr(-write_off['total'])} for the batch.",
         "calls": [
             ["bigquery.price_history", f"{sku['category']} · {days_left} days", ""],
             ["gst.rate", f"HSN {sku['hsn']} → {round(sku['gst'] * 100)}%", ""],
@@ -290,17 +300,20 @@ def dispatch_event(*, buyer: str, city: str) -> str:
 
 
 def papers_event(
-    *, distributor_person: str, invoice: dict[str, Any] | None, support: dict[str, Any], itc: float
+    *, distributor_person: str, invoice: dict[str, Any] | None, support: dict[str, Any] | None, itc: float
 ) -> dict[str, Any]:
     who = first(distributor_person)
     calls: list[list[str]] = []
     said = []
     if invoice is not None:
-        said.append(f"Drafted {possessive(who)} invoice {invoice['no']} for {who} to issue, checked the e-way bill rule")
+        said.append(
+            f"Drafted {possessive(who)} invoice {invoice['no']} for {who} to issue, checked the e-way bill rule"
+        )
         calls.append(["docs.invoice", f"{fmt.inr(invoice['total'])} · draft", "ok"])
         calls.append(["eway.check", "below ₹50,000" if invoice["total"] < 50000 else "generated", ""])
-    said.append(f"issued the price-support credit note {support['no']}")
-    calls.append(["docs.credit_note", fmt.inr(support["amount"]), "ok"])
+    if support is not None:
+        said.append(f"issued the price-support credit note {support['no']}")
+        calls.append(["docs.credit_note", fmt.inr(support["amount"]), "ok"])
     said.append("wrote the ITC memo")
     calls.append(["itc.memo", f"{fmt.inr(itc)} retained", "ok"])
     text = ", ".join(said[:-1]) + " and " + said[-1] + "."
@@ -342,8 +355,8 @@ def push_detect(*, person: str, sku_name: str, city: str, ref: str, at_risk: int
 def push_verify(*, person: str, sku_name: str, ref: str) -> dict[str, Any]:
     return {
         "title": "Ek photo chahiye",
-        "body": f"{person}, {compact(sku_name)} ka ek carton ka label photo bhej dein (batch {ref}). Bas ek photo, baaki "
-        f"hum kar lenge.",
+        "body": f"{person}, {compact(sku_name)} ka ek carton ka label photo bhej dein (batch {ref}). Bas ek photo, "
+        f"baaki hum kar lenge.",
     }
 
 
@@ -378,8 +391,8 @@ def push_approved(plan: dict[str, Any], *, person: str, client: str, sku_name: s
     parts = [said[ln["id"]](ln["units"]) for ln in plan["lines"] if ln["id"] in said]
     return {
         "title": f"Plan approved · {base(sku_name)}",
-        "body": f"{person}, {client} ne {ref} ka plan approve kiya: {', '.join(parts)}. Kuch rokna ho to app mein Pause "
-        f"dabayein.",
+        "body": f"{person}, {client} ne {ref} ka plan approve kiya: {', '.join(parts)}. Kuch rokna ho to app mein "
+        f"Pause dabayein.",
     }
 
 
@@ -389,10 +402,10 @@ def push_offer(
     return {
         "title": "आज का खास ऑफर",
         "hindi": True,
-        "body": f"नमस्ते {shop}! {brand} {compact(sku_name)} पर आज खास ऑफर: {scheme['buy']} पैकेट लो, {scheme['free']} "
-        f"मुफ़्त. Best before {fmt.date(best_before)}. सिर्फ़ {hours} घंटे. ऑर्डर के लिए टैप करें — {distributor}",
-        "en": f"Today's offer on {brand} {sku_name}: buy {scheme['buy']} packets, get {scheme['free']} free. Best before "
-        f"{fmt.date(best_before)}. {hours} hours only. Tap to order. {distributor}",
+        "body": f"नमस्ते {shop}! {brand} {compact(sku_name)} पर आज खास ऑफर: {scheme['buy']} पैकेट लो, "
+        f"{scheme['free']} मुफ़्त. Best before {fmt.date(best_before)}. सिर्फ़ {hours} घंटे. ऑर्डर के लिए टैप करें — {distributor}",
+        "en": f"Today's offer on {brand} {sku_name}: buy {scheme['buy']} packets, get {scheme['free']} free. Best "
+        f"before {fmt.date(best_before)}. {hours} hours only. Tap to order. {distributor}",
     }
 
 
@@ -432,8 +445,9 @@ def push_invoice(
 ) -> dict[str, Any]:
     return {
         "title": "Invoice draft ready",
-        "body": f"Invoice draft to {buyer}, {city}: {fmt.num(units)} × ₹{price_:.2f}, IGST {gst_pct}%, {fmt.inr(total)}. "
-        f"Issue it from Tally. {possessive(client)} price support of {fmt.inr(support)} is on its way.",
+        "body": f"Invoice draft to {buyer}, {city}: {fmt.num(units)} × ₹{price_:.2f}, IGST {gst_pct}%, "
+        f"{fmt.inr(total)}. Issue it from Tally. {possessive(client)} price support of {fmt.inr(support)} is on "
+        f"its way.",
     }
 
 

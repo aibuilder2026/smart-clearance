@@ -181,6 +181,22 @@
         "title": "AgentPatch",
         "type": "object"
       },
+      "ApproveInput": {
+        "additionalProperties": false,
+        "properties": {
+          "device": {
+            "default": "desktop",
+            "enum": [
+              "phone",
+              "desktop"
+            ],
+            "title": "Device",
+            "type": "string"
+          }
+        },
+        "title": "ApproveInput",
+        "type": "object"
+      },
       "Attention": {
         "additionalProperties": false,
         "properties": {
@@ -564,6 +580,22 @@
           "closed"
         ],
         "title": "BatchRow",
+        "type": "object"
+      },
+      "BidInput": {
+        "additionalProperties": false,
+        "properties": {
+          "price": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 100000.0,
+            "title": "Price",
+            "type": "number"
+          }
+        },
+        "required": [
+          "price"
+        ],
+        "title": "BidInput",
         "type": "object"
       },
       "Catalog": {
@@ -1209,6 +1241,45 @@
         "title": "DemoRequestInput",
         "type": "object"
       },
+      "DeviceInput": {
+        "additionalProperties": false,
+        "properties": {
+          "token": {
+            "maxLength": 4096,
+            "title": "Token",
+            "type": "string"
+          },
+          "userAgent": {
+            "default": "",
+            "maxLength": 300,
+            "title": "Useragent",
+            "type": "string"
+          }
+        },
+        "required": [
+          "token"
+        ],
+        "title": "DeviceInput",
+        "type": "object"
+      },
+      "DispatchInput": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "truck",
+              "van"
+            ],
+            "title": "Kind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "title": "DispatchInput",
+        "type": "object"
+      },
       "DistributorOut": {
         "additionalProperties": false,
         "properties": {
@@ -1409,38 +1480,6 @@
         "title": "Integration",
         "type": "object"
       },
-      "InviteInput": {
-        "additionalProperties": false,
-        "properties": {
-          "access": {
-            "enum": [
-              "Approver",
-              "Admin",
-              "Member",
-              "Partner"
-            ],
-            "title": "Access",
-            "type": "string"
-          },
-          "contact": {
-            "maxLength": 200,
-            "title": "Contact",
-            "type": "string"
-          },
-          "name": {
-            "maxLength": 120,
-            "title": "Name",
-            "type": "string"
-          }
-        },
-        "required": [
-          "name",
-          "contact",
-          "access"
-        ],
-        "title": "InviteInput",
-        "type": "object"
-      },
       "LookupInput": {
         "additionalProperties": false,
         "properties": {
@@ -1478,6 +1517,55 @@
           "ink"
         ],
         "title": "Mark",
+        "type": "object"
+      },
+      "MemberPatch": {
+        "additionalProperties": false,
+        "properties": {
+          "role": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "active",
+                  "deactivated"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          }
+        },
+        "title": "MemberPatch",
+        "type": "object"
+      },
+      "MessageInput": {
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "maxLength": 500,
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "MessageInput",
         "type": "object"
       },
       "NewClientInput": {
@@ -1594,6 +1682,22 @@
         "title": "NewClientInput",
         "type": "object"
       },
+      "OrderInput": {
+        "additionalProperties": false,
+        "properties": {
+          "units": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 10000.0,
+            "title": "Units",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "units"
+        ],
+        "title": "OrderInput",
+        "type": "object"
+      },
       "OverrideInput": {
         "additionalProperties": false,
         "properties": {
@@ -1662,6 +1766,20 @@
           "attention"
         ],
         "title": "Overview",
+        "type": "object"
+      },
+      "PauseInput": {
+        "additionalProperties": false,
+        "properties": {
+          "paused": {
+            "title": "Paused",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "paused"
+        ],
+        "title": "PauseInput",
         "type": "object"
       },
       "PersonPatch": {
@@ -1802,6 +1920,32 @@
           "returnWindowDays"
         ],
         "title": "ProfileInput",
+        "type": "object"
+      },
+      "ReadInput": {
+        "additionalProperties": false,
+        "properties": {
+          "all": {
+            "default": false,
+            "title": "All",
+            "type": "boolean"
+          },
+          "ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ids"
+          }
+        },
+        "title": "ReadInput",
         "type": "object"
       },
       "Rules": {
@@ -2171,6 +2315,39 @@
         "title": "Track",
         "type": "object"
       },
+      "UploadInput": {
+        "additionalProperties": false,
+        "properties": {
+          "bytes": {
+            "exclusiveMinimum": 0.0,
+            "title": "Bytes",
+            "type": "integer"
+          },
+          "contentType": {
+            "maxLength": 100,
+            "title": "Contenttype",
+            "type": "string"
+          },
+          "fileName": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filename"
+          }
+        },
+        "required": [
+          "contentType",
+          "bytes"
+        ],
+        "title": "UploadInput",
+        "type": "object"
+      },
       "ValidationError": {
         "properties": {
           "ctx": {
@@ -2287,6 +2464,77 @@
         ],
         "title": "WorkspaceSummary",
         "type": "object"
+      },
+      "sc_api__routers__workspace__InviteInput": {
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "maxLength": 200,
+            "title": "Email",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 120,
+            "title": "Name",
+            "type": "string"
+          },
+          "org": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Org"
+          },
+          "role": {
+            "maxLength": 40,
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "role"
+        ],
+        "title": "InviteInput",
+        "type": "object"
+      },
+      "sc_api__schemas__InviteInput": {
+        "additionalProperties": false,
+        "properties": {
+          "access": {
+            "enum": [
+              "Approver",
+              "Admin",
+              "Member",
+              "Partner"
+            ],
+            "title": "Access",
+            "type": "string"
+          },
+          "contact": {
+            "maxLength": 200,
+            "title": "Contact",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 120,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "contact",
+          "access"
+        ],
+        "title": "InviteInput",
+        "type": "object"
       }
     },
     "securitySchemes": {
@@ -2297,7 +2545,7 @@
     }
   },
   "info": {
-    "summary": "The landing page's and the staff console's backend (frontend/api is its contract)",
+    "summary": "The landing page's, the staff console's and the workspaces' backend (frontend/api is its contract)",
     "title": "Smart-Clearance platform API",
     "version": "1.0.0"
   },
@@ -3259,7 +3507,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/InviteInput"
+                "$ref": "#/components/schemas/sc_api__schemas__InviteInput"
               }
             }
           },
@@ -3995,6 +4243,1969 @@
         "summary": "Find your workspace, by email or mobile number (a POST, so the identifier never reaches a URL or log)",
         "tags": [
           "site"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}": {
+      "get": {
+        "operationId": "workspace_v1_workspaces__ws__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Workspace V1 Workspaces  Ws  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "What the sign-in page and the installed app show (no sign-in needed)",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/audit": {
+      "get": {
+        "operationId": "audit_log_v1_workspaces__ws__audit_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "before",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Before"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Audit Log V1 Workspaces  Ws  Audit Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The workspace's audit log, newest first, a page at a time",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/cases/{ref}": {
+      "get": {
+        "operationId": "case_v1_workspaces__ws__cases__ref__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Case V1 Workspaces  Ws  Cases  Ref  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "One batch's journey, cut to the member's role",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/cases/{ref}/approval": {
+      "post": {
+        "operationId": "approve_v1_workspaces__ws__cases__ref__approval_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApproveInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Approve V1 Workspaces  Ws  Cases  Ref  Approval Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Approve the plan: the one tap",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/cases/{ref}/bids": {
+      "post": {
+        "operationId": "bid_v1_workspaces__ws__cases__ref__bids_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BidInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Bid V1 Workspaces  Ws  Cases  Ref  Bids Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The buyer bids on the lot",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/cases/{ref}/bids/{bid_id}/accept": {
+      "post": {
+        "operationId": "accept_v1_workspaces__ws__cases__ref__bids__bid_id__accept_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "bid_id",
+            "required": true,
+            "schema": {
+              "title": "Bid Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Accept V1 Workspaces  Ws  Cases  Ref  Bids  Bid Id  Accept Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The buyer takes the counter and pays the token",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/cases/{ref}/dispatches": {
+      "post": {
+        "operationId": "dispatch_v1_workspaces__ws__cases__ref__dispatches_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DispatchInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Dispatch V1 Workspaces  Ws  Cases  Ref  Dispatches Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The buyer's truck loaded, or the van round run",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/cases/{ref}/documents/{doc}/issue": {
+      "post": {
+        "operationId": "issue_invoice_v1_workspaces__ws__cases__ref__documents__doc__issue_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "doc",
+            "required": true,
+            "schema": {
+              "title": "Doc",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Issue Invoice V1 Workspaces  Ws  Cases  Ref  Documents  Doc  Issue Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The distributor issues his invoice from Tally",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/cases/{ref}/donation/collect": {
+      "post": {
+        "operationId": "collect_v1_workspaces__ws__cases__ref__donation_collect_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Collect V1 Workspaces  Ws  Cases  Ref  Donation Collect Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The food bank collects",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/cases/{ref}/donation/confirm": {
+      "post": {
+        "operationId": "confirm_pickup_v1_workspaces__ws__cases__ref__donation_confirm_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Confirm Pickup V1 Workspaces  Ws  Cases  Ref  Donation Confirm Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The food bank confirms the pickup",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/cases/{ref}/messages": {
+      "post": {
+        "operationId": "message_v1_workspaces__ws__cases__ref__messages_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Message V1 Workspaces  Ws  Cases  Ref  Messages Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The buyer writes to the seller (the Negotiator answers)",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/cases/{ref}/orders": {
+      "post": {
+        "operationId": "order_v1_workspaces__ws__cases__ref__orders_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Order V1 Workspaces  Ws  Cases  Ref  Orders Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "A kirana orders under the scheme",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/cases/{ref}/photos": {
+      "post": {
+        "operationId": "upload_photo_v1_workspaces__ws__cases__ref__photos_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Upload Photo V1 Workspaces  Ws  Cases  Ref  Photos Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "A signed link for the batch's label photo",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/cases/{ref}/photos/{photo_id}": {
+      "post": {
+        "operationId": "photo_sent_v1_workspaces__ws__cases__ref__photos__photo_id__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "photo_id",
+            "required": true,
+            "schema": {
+              "title": "Photo Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Photo Sent V1 Workspaces  Ws  Cases  Ref  Photos  Photo Id  Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The label photo has been sent: Vision reads it",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/cases/{ref}/review": {
+      "post": {
+        "operationId": "review_v1_workspaces__ws__cases__ref__review_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Review V1 Workspaces  Ws  Cases  Ref  Review Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Finance has reviewed the papers",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/devices": {
+      "post": {
+        "operationId": "register_device_v1_workspaces__ws__devices_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Register this browser for push (its FCM token)",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/devices/{token}": {
+      "delete": {
+        "operationId": "unregister_device_v1_workspaces__ws__devices__token__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "token",
+            "required": true,
+            "schema": {
+              "title": "Token",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Stop pushes to this browser",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/documents/{ref}/{doc}": {
+      "get": {
+        "operationId": "document_v1_workspaces__ws__documents__ref___doc__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "doc",
+            "required": true,
+            "schema": {
+              "title": "Doc",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Document V1 Workspaces  Ws  Documents  Ref   Doc  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "A 5-minute link to a document's PDF",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/events": {
+      "get": {
+        "operationId": "events_v1_workspaces__ws__events_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "After",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "wait",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "maximum": 25,
+              "minimum": 0,
+              "title": "Wait",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Events V1 Workspaces  Ws  Events Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The member's stream after a position: the polling fallback (waits up to `wait` s)",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/events/stream": {
+      "get": {
+        "operationId": "stream_v1_workspaces__ws__events_stream_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "After"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Server-sent events: the member's stream, live",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/members": {
+      "post": {
+        "operationId": "invite_v1_workspaces__ws__members_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/sc_api__routers__workspace__InviteInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Invite V1 Workspaces  Ws  Members Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Invite a member (a Firebase account on the default password; nothing is mailed)",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/members/{ref}": {
+      "patch": {
+        "operationId": "update_member_v1_workspaces__ws__members__ref__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MemberPatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Update Member V1 Workspaces  Ws  Members  Ref  Patch",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Deactivate or reactivate a member, or change their role",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/notifications/read": {
+      "post": {
+        "operationId": "mark_read_v1_workspaces__ws__notifications_read_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReadInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Mark Read V1 Workspaces  Ws  Notifications Read Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Mark notifications read: some, or all",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/permission": {
+      "patch": {
+        "operationId": "pause_v1_workspaces__ws__permission_patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PauseInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Pause V1 Workspaces  Ws  Permission Patch",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Pause or resume the agents in the distributor's name",
+        "tags": [
+          "workspace"
+        ]
+      },
+      "post": {
+        "operationId": "permit_v1_workspaces__ws__permission_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Permit V1 Workspaces  Ws  Permission Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "A distributor's one-time permission for the agents to act in its name",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/quarter": {
+      "get": {
+        "operationId": "quarter_v1_workspaces__ws__quarter_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Quarter V1 Workspaces  Ws  Quarter Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The Finance & ESG report",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/rules": {
+      "put": {
+        "operationId": "save_rules_v1_workspaces__ws__rules_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Save Rules V1 Workspaces  Ws  Rules Put",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The workspace's guardrails",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/session": {
+      "delete": {
+        "operationId": "sign_out_v1_workspaces__ws__session_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Sign out (the browser signs out of Firebase)",
+        "tags": [
+          "workspace"
+        ]
+      },
+      "get": {
+        "operationId": "me_v1_workspaces__ws__session_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Me V1 Workspaces  Ws  Session Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Who is signed in (401 when nobody is; 403 for someone not in this workspace)",
+        "tags": [
+          "workspace"
+        ]
+      },
+      "post": {
+        "operationId": "sign_in_v1_workspaces__ws__session_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Sign In V1 Workspaces  Ws  Session Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Sign in: the bearer token's member (an invited one becomes active)",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/setup/confirm": {
+      "post": {
+        "operationId": "confirm_setup_v1_workspaces__ws__setup_confirm_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Confirm Setup V1 Workspaces  Ws  Setup Confirm Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Confirm the Data agent's mapping and the guardrails (stage 1)",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/setup/exports": {
+      "post": {
+        "operationId": "upload_export_v1_workspaces__ws__setup_exports_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Upload Export V1 Workspaces  Ws  Setup Exports Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "A signed link to upload a stock export for the Data agent",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/setup/exports/{export_id}": {
+      "post": {
+        "operationId": "export_uploaded_v1_workspaces__ws__setup_exports__export_id__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "export_id",
+            "required": true,
+            "schema": {
+              "title": "Export Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Export Uploaded V1 Workspaces  Ws  Setup Exports  Export Id  Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The export has arrived: the Data agent maps and loads it",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/snapshot": {
+      "get": {
+        "operationId": "snapshot_v1_workspaces__ws__snapshot_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Snapshot V1 Workspaces  Ws  Snapshot Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Everything the member's screens need, cut to their role",
+        "tags": [
+          "workspace"
         ]
       }
     }
