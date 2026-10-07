@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="parties">
+  <div>
+    <div class="label">Seller</div>
+    <strong>{{ doc["from"].name }}</strong><br>
+    {{ doc["from"].address or doc["from"].city }}<br>
+    {% if doc["from"].gstin %}GSTIN {{ doc["from"].gstin }}{% endif %}
+  </div>
+  <div>
+    <div class="label">Buyer</div>
+    <strong>{{ doc.to.name }}</strong><br>
+    {{ doc.to.address or doc.to.city }}<br>
+    {% if doc.to.gstin %}GSTIN {{ doc.to.gstin }}{% endif %}
+  </div>
+</div>
+<table>
+  <thead>
+    <tr><th>Item</th><th>HSN</th><th class="n">Packs</th><th class="n">Rate</th><th class="n">Taxable value</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{{ case.sku.brand }} {{ case.sku.name }}, batch {{ case.ref }}</td>
+      <td>{{ doc.hsn }}</td>
+      <td class="n">{{ doc.units|num }}</td>
+      <td class="n">{{ doc.price|inr(true) }}</td>
+      <td class="n">{{ doc.taxable|inr(true) }}</td>
+    </tr>
+    <tr><td colspan="4">IGST at {{ doc.gstPct }}%</td><td class="n">{{ doc.igst|inr(true) }}</td></tr>
+    {% if doc.roundOff %}<tr><td colspan="4">Round-off</td><td class="n">{{ doc.roundOff|inr(true) }}</td></tr>{% endif %}
+    <tr class="total"><td colspan="4">Total</td><td class="n">{{ doc.total|inr(true) }}</td></tr>
+  </tbody>
+</table>
+{% if doc.note %}<div class="note">{{ doc.note }}</div>{% endif %}
+{% endblock %}

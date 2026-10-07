@@ -18,6 +18,10 @@ export type Workspace = {
 	region: string;
 	signIn: { id: string; icon: string; title: string; who: string; rule: string }[];
 	outside: string;
+	/** what the sign-in suggests typing */
+	hint: string;
+	/** what the invite form suggests typing */
+	invite: { name: string; contact: string };
 	profile: { id: string; icon: IconName; title: string; value: string; text: string }[];
 };
 
@@ -38,6 +42,8 @@ export type Sku = {
 	lifeDays: number;
 	kgPerUnit: number;
 	img: string;
+	/** the product's own tax history, as its invoice states it */
+	gstNote?: string;
 };
 
 export type Distributor = {
@@ -268,6 +274,8 @@ export type Doc = {
 	price?: number;
 	gstPct?: number;
 	exact?: number;
+	/** when the document is dated (the invoice) */
+	date?: string;
 };
 
 export type Shelf = {
@@ -285,6 +293,8 @@ export type Shelf = {
 
 export type Quarter = {
 	label: string;
+	/** the months it covers */
+	period: string;
 	recovered: number;
 	itc: number;
 	kg: number;
@@ -293,6 +303,8 @@ export type Quarter = {
 	/** [week, recovered, would-be write-off] */
 	weeks: [string, number, number][];
 	mix: [string, number][];
+	/** each channel of the mix, by name */
+	mixNames: Record<string, string>;
 	brsr: { cat: string; diverted: number; resold: number; donated: number; disposed: number; evidence: string }[];
 	writeOffAvoided: number;
 	co2: number;
@@ -329,6 +341,9 @@ export type MoneyRules = {
 	returnWindowDays: number;
 	gates: { blinkit: { minDays: number }; zepto: { pctLife: number }; instamart: { pctLife: number } };
 	negotiation: { reservePerUnit: number; counterPctOfAsk: number };
+	/** a kirana pays the pack price for `buy` packets and gets `free` more */
+	scheme: { buy: number; free: number };
+	ewayThreshold: number;
 };
 
 /* ---------- the store: one workspace's live state ---------- */
@@ -383,7 +398,8 @@ export type User = {
 	short: string;
 	org: string;
 	role: RoleId;
-	provider: 'google' | 'phone' | 'expiresoon';
+	/** how they sign in: the prototype's Google, phone code or ExpireSoon; the live workspace's email and password */
+	provider: 'google' | 'phone' | 'expiresoon' | 'password';
 	status: UserStatus;
 	kind: PersonKind;
 	img?: string;
@@ -466,11 +482,14 @@ export type WorkspaceSeed = {
 	events: FeedEvent[];
 	quarter: Quarter;
 	setup: {
-		dms: { source: string; rows: number; columns: [string, string][]; salesDays: number };
+		/** how long the setup takes, in minutes */
+		minutes: number;
+		dms: { source: string; file: string; rows: number; columns: [string, string][]; salesDays: number };
 		channels: string[];
+		channelNames: Record<string, string>;
 		allowList: [string, string[]][];
 		brandSafety: string[];
-		partners: { name: string; minDays: number; minUnits: number; logistics: string; paper: string }[];
+		partners: Partner[];
 		approval: string;
 		permissions: Record<string, string>;
 		acts: string[];
@@ -491,5 +510,180 @@ export type WorkspaceSeed = {
 	rules: MoneyRules;
 	roles: Record<RoleId, string>;
 	connectEvent: FeedEvent;
+	journey: Journey;
+	market: Market;
+	explore: Explore;
 	initial: State;
 };
+
+/** a food-bank partner and its intake rules */
+export type Partner = {
+	name: string;
+	minDays: number;
+	minUnits: number;
+	logistics: string;
+	/** how it collects, in short */
+	pickup?: string;
+	paper: string;
+};
+
+/** the moments of the batch's journey the screens state beyond its timeline */
+export type Journey = {
+	/** the day it starts, as the screens date it */
+	today: string;
+	/** how soon a plan follows a verified label, in minutes */
+	planMinutes: number;
+	/** when the distributor was asked for the one-time permission */
+	permissionAsked: string;
+	/** the lot's listing on the marketplace */
+	listing: { id: string; url: string };
+	/** the distributor's van round that takes the scheme orders, and his answer to it */
+	van: { day: string; date: string; leaves: string; depot: string; reply: string; replyAt: string };
+	/** the donation's partner, pickup and schedule */
+	donation: {
+		partner: string;
+		from: string;
+		spot: string;
+		day: string;
+		date: string;
+		time: string;
+		hour: string;
+		asked: string;
+		confirmed: string;
+		collected: string;
+		slots: string[];
+		reply: string;
+	};
+};
+
+/** a lot on the marketplace */
+export type MarketLot = {
+	id: string;
+	name: string;
+	icon?: IconName;
+	units: number;
+	price: number;
+	mrp: number;
+	days: number;
+	seller: string;
+};
+/** ExpireSoon, another company's marketplace: its terms, and its other lots (illustrative) */
+export type Market = { dispatchHours: number; balanceHours: number; minOrder: number; lots: MarketLot[] };
+
+/** the stub's people to step into, the code it sends and the accounts its sign-in suggests */
+export type Explore = { groups: ExploreGroup[]; code: string; accounts: [string, string][] };
+
+/* ---------- what the screens read from their source (source.ts, SC-67) ---------- */
+
+/** the workspace before anyone signs in: its name, mark and address, and the platform it runs on */
+export type WorkspacePublic = {
+	workspace: Workspace;
+	platform: WorkspaceSeed['platform'];
+	/** the stub's own sign-in: the one-time code it sends, and the accounts a visitor may try */
+	prototype?: { code: string; accounts: [string, string][] };
+};
+
+/** the workspace's own data: who it is, its people and supply chain, the rules it plans by, its batches and quarter */
+export type WorkspaceData = {
+	/** the day the workspace's story starts */
+	day0: string;
+	platform: WorkspaceSeed['platform'];
+	workspace: Workspace;
+	client: WorkspaceSeed['client'];
+	skus: Record<string, Sku>;
+	distributors: Record<string, Distributor>;
+	people: Record<string, StoryPerson>;
+	roles: Record<RoleId, string>;
+	rules: MoneyRules;
+	setup: WorkspaceSeed['setup'];
+	/** the nine stages, with when each happens and who acts */
+	stages: Stage[];
+	/** every batch the Watcher sees */
+	batches: Batch[];
+	quarter: Quarter;
+	/** the marketplace the workspace lists on */
+	market: Market;
+};
+
+/** the batch in focus, and everything its screens read about it: its product and distributor, the kiranas and the
+ *  buyer it goes to, the plan, the deal, the papers and the second batch the same agents donate */
+export type CaseData = {
+	batch: Batch;
+	sku: Sku;
+	dist: Distributor;
+	buyer: Buyer;
+	/** the kiranas that ordered, and how many were offered the scheme */
+	kiranas: Kirana[];
+	offered: number;
+	/** the scheme the kiranas are offered */
+	scheme: { buy: number; free: number };
+	risk: Assess;
+	plan: Plan;
+	/** the Router's two lines: the kirana scheme and the ExpireSoon lot */
+	lines: { kirana: PlanLine; expiresoon: PlanLine };
+	counter: WorkspaceSeed['counter'];
+	award: Award;
+	actual: Actual;
+	support: Support;
+	supportPlan: Support;
+	claim: WorkspaceSeed['claim'];
+	docs: Doc[];
+	/** the invoice the distributor issues to the buyer */
+	invoice: Doc;
+	shelf: Shelf;
+	/** scheme packs may come back until this day */
+	returnBy: string;
+	/** the pushes of the case, by moment */
+	push: Record<string, Push>;
+	/** the day the case starts, as the screens date it */
+	today: string;
+	/** how soon a plan follows a verified label, in minutes */
+	planMinutes: number;
+	/** when the distributor was asked for the one-time permission */
+	permissionAsked: string;
+	/** the lot's listing on the marketplace */
+	listing: Journey['listing'];
+	/** the distributor's van round that takes the scheme orders */
+	van: Journey['van'];
+	/** the batch the same agents donate: how many packs go to the food bank, which partner takes them, and when */
+	donation: { batch: Batch; sku: Sku; dist: Distributor; plan: Plan; units: number; partner: Partner } & Omit<
+		Journey['donation'],
+		'partner'
+	>;
+};
+
+/** the people a visitor can step into in the stub, by where they stand */
+export type ExploreGroup = { group: string; note: string; ids: [string, string][] };
+
+/** an invitation to the workspace: a person or a partner organisation, by email or mobile number */
+export type InviteInput = { name: string; contact: string; role: RoleId };
+
+/** the steps of the journey a person takes (the agents take the rest), and what each is told */
+export type ActionArgs = {
+	connect: undefined;
+	permit: undefined;
+	/** true pauses, false resumes */
+	pause: boolean;
+	/** the label photo: the live source uploads it; the stub only marks it sent */
+	sendPhoto: Blob | undefined;
+	/** who approves */
+	approve: string;
+	/** a kirana's order, and how many packets when it differs from its share */
+	order: { kirana: string; units?: number };
+	/** the bid, a packet */
+	bid: number;
+	accept: undefined;
+	confirmPickup: undefined;
+	collect: undefined;
+	dispatch: undefined;
+	issueInvoice: undefined;
+	review: undefined;
+	vanRound: undefined;
+	/** who joins */
+	join: string;
+};
+export type HumanAction = keyof ActionArgs;
+export type ActionArg<N extends HumanAction> = ActionArgs[N];
+
+export type Connection = 'local' | 'connecting' | 'live' | 'reconnecting' | 'polling' | 'paused' | 'offline';
+export type SourceStatus = { phase: 'loading' | 'ready' | 'error'; error?: unknown; connection: Connection };

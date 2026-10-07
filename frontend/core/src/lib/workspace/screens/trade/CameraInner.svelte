@@ -7,9 +7,10 @@
 	import Icon from '../../../icons/Icon.svelte';
 	import { prefersReducedMotion } from '../../../motion';
 	import { fade } from '../../../motion/transitions';
+	import { fmt } from '../../../format';
 	import { useRoute } from '../../context';
-	import { act } from '../../flow';
-	import { store } from '../../store.svelte';
+	import { castOf } from '../../model';
+	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import LabelShot from '../brand/LabelShot.svelte';
 	import Screen from '../common/Screen.svelte';
@@ -17,8 +18,10 @@
 	// the camera: frame one carton label, shoot (or pick from the gallery), send; then Vision reads batch, dates and MRP.
 	// With a real camera, the shutter opens the phone's own camera
 	let { me, realCamera }: { me: User; realCamera?: boolean } = $props();
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
 	const { go } = useRoute();
-	const h = $derived(store.state.hero);
+	const h = $derived(ws.state.hero);
 	const verified = $derived(h.photo.status === 'verified');
 	const sent = $derived(h.photo.status === 'reading' || verified);
 	let file: HTMLInputElement | null = $state(null);
@@ -46,10 +49,7 @@
 	};
 	const send = () => {
 		sending = true;
-		setTimeout(() => {
-			sending = false;
-			act('sendPhoto');
-		}, 700);
+		void ws.act('sendPhoto', undefined, { feel: 700 }).then(() => (sending = false));
 	};
 	// the scan line sweeps the label three times while Vision reads it, then rests
 	const scan = (el: HTMLElement) => {
@@ -59,14 +59,14 @@
 		);
 		return { destroy: () => a.cancel() };
 	};
-	const record: [string, string][] = [
-		['Batch', 'MF-2409-117'],
-		['Best before', '18 Nov 2026'],
-		['MRP', '₹30.00']
-	];
+	const record: [string, string][] = $derived([
+		['Batch', c.batch.id],
+		['Best before', fmt.date(c.batch.bestBefore)],
+		['MRP', fmt.rate(c.sku.mrp)]
+	]);
 </script>
 
-<Screen {me} title="Label photo" sub="Batch MF-2409-117 · shelf B4" back="Today">
+<Screen {me} title="Label photo" sub={`Batch ${c.batch.id} · shelf ${c.batch.shelf}`} back="Today">
 	<div class="stack" style="gap: 16px; max-width: 560px; margin: 0 auto; width: 100%">
 		<div class="cam">
 			{#if shot && shot !== 'demo'}
@@ -95,9 +95,11 @@
 						><Icon name={verified ? 'badge-check' : 'scan-line'} size={19} /></Aura
 					>
 					<div class="grow">
-						<b>{verified ? 'Done. Dhanyavaad, Rakesh bhai.' : 'Reading batch, dates and MRP'}</b>
+						<b>{verified ? `Done. Dhanyavaad, ${me.short}.` : 'Reading batch, dates and MRP'}</b>
 						<div class="t-footnote muted">
-							{verified ? 'The plan for this batch will reach Priya in a few minutes.' : 'This takes a few seconds.'}
+							{verified
+								? `The plan for this batch will reach ${castOf(ws.state, c).operator.short} in a few minutes.`
+								: 'This takes a few seconds.'}
 						</div>
 					</div>
 				</div>

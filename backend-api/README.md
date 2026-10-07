@@ -6,6 +6,8 @@ the landing page and the staff console the contract the frontend already speaks 
 - The landing page: the showcase, the catalog, Find your workspace and Book a demo.
 - The console: sign-in, clients and their setup, agents, supply-chain profile, channels and rules, people, staff and
   the audit log.
+- A client's workspace (SC-66): Munchly Foods' members sign in with email and password and work the journey live, with
+  the agents (`agents/`), over `/v1/workspaces/{ws}`; the agents report through `/internal`.
 
 It is a working prototype, with nothing stubbed:
 - one database holds the clients, users, roles and every mapping between them;
@@ -35,13 +37,16 @@ From the repository root, once `infra/prod` is applied and `infra/scripts/auth-p
 ```sh
 backend-api/scripts/bootstrap.sh        # secrets → database and logins → schema and reference data → checks → synthetic world
 backend-api/scripts/dev.sh              # the API on http://localhost:8000 (or the backend-api preview config); docs at /docs
-backend-api/scripts/console-env.sh      # point frontend/console and frontend/admin's .env.local at it
+backend-api/scripts/app-env.sh          # point the console's, the landing page's and the workspace app's .env.local at it
 backend-api/scripts/default-password.sh --copy   # the password every account starts on
 backend-api/scripts/e2e.sh              # the landing page and the console end to end, on the real API and Firebase
 ```
 
 Sign in to the console as any active staff member, for example `neha.kulkarni@smartclearance.example`, with the
-default password.
+default password. Sign in to Munchly's workspace as `priya.deshmukh@munchly.example` (the approver),
+`rakesh-traders@google.example` (the distributor), `shree-ganesh-kirana@google.example` (a kirana),
+`agrawal-wholesale@google.example` (the buyer) or `feeding-india@google.example` (the food bank), with the same
+password.
 
 ## Scripts
 
@@ -54,11 +59,11 @@ bash 3.2 and shellcheck-clean.
 | `secrets.sh [--rotate]` | Generates each secret (24 letters and digits, to the password policy) straight into Secret Manager on stdin. `--rotate` makes new versions, re-applies the database passwords and puts every account still on the default password onto the new one. |
 | `db-init.sh [--container NAME] [--db NAME]` | Makes the database, the roles `sc_owner` and `sc_app`, and the logins `sc_migrator` and `sc_api`. It runs as the superuser over the container's own socket; the logins' passwords go in on stdin from Secret Manager. Safe to re-run. |
 | `migrate.sh [alembic args]` | Alembic as `sc_migrator`, then the reference data (`sc-admin migrate`) |
-| `hydrate.sh [--reset] [--tick] [--seed N] [--clients N] [--staff N] [--days N] [--no-demo-story]` | The synthetic world (below), 35 days of it by default. `--reset` drops the schema and rebuilds; `--tick` adds today's agent runs and moves two to four open batches on a stop, as their agents would (SC-49), so the Overview's Agents at work has something to show. |
+| `hydrate.sh [--reset] [--tick] [--journey-reset CLIENT] [--no-live] [--seed N] [--clients N] [--staff N] [--days N] [--no-demo-story]` | The synthetic world (below), 35 days of it by default, with Munchly's live workspace (SC-66; `--no-live` leaves it out). `--reset` drops the schema and rebuilds; `--tick` adds today's agent runs and moves two to four open batches on a stop, as their agents would (SC-49), leaving batches in a live journey alone; `--journey-reset munchly` starts Munchly's journey again. |
 | `default-password.sh [--copy]` | The default password, in your terminal or on the clipboard |
 | `dev.sh` | The API with reload, as `sc-api-local` |
 | `up.sh [--with-db]` | The API in its container (`compose.yaml`). `--with-db` also starts a Postgres 18 of its own for a machine without one. |
-| `console-env.sh [API base]` | Writes the frontend's git-ignored `.env.local` files: the API base and the console's Firebase web config (public, from Terraform's output) |
+| `app-env.sh [API base]` | Writes the frontend's git-ignored `.env.local` files: the API base, and the console's and the workspace app's Firebase web configs (public, from Terraform's outputs). `console-env.sh` is its older name. |
 | `test.sh [pytest args]` | The suite, against `smart_clearance_test` |
 | `e2e.sh [playwright args]` | The landing page and the console end to end against the running API and Firebase Auth (`frontend/console/tests/live`). It covers Book a demo, a wrong then a right sign-in, the New client flow, an agent, an invitation, the plan, the audit log, and Support refused a plan change. The default password reaches the test process in its environment only. |
 | `contracts.sh` | Exports `contracts/openapi.json` (a test fails when it is stale) |
@@ -182,6 +187,43 @@ The server also enforces what the prototype's mock did not:
 
 The same seed builds the same world. `tests/test_hydrate.py` checks it, and that the API reads what it builds.
 
+## The live workspace (SC-66)
+
+Munchly Foods' workspace app runs on this API: its members sign in with email and password (Munchly's people on
+`munchly.example`, everyone outside Munchly on `google.example`), and the journey of Journey Map v4.1 runs live, worked
+by the agents in `agents/`. The contract is `frontend/api/src/types/workspace.ts`.
+
+- **A batch's case** (`services/journey/steps.py`): the Watcher flags a batch, Vision asks for and reads its label,
+  the Valuer and the Router price and split it, the approver says yes, the Lister, Outreach and Donation execute, the
+  kiranas order, the buyer bids and the Negotiator answers, the distributor dispatches, Paperwork drafts the papers,
+  the shelf is checked on day 7, and Impact posts the ledger. Every step is one change with its timeline entry, its
+  pushes, its audit line and the agents' next event; nothing here acts for a person.
+- **The money is money.js's** (`domain/money.py`); an agent brings only words (a reason, an offer, a reply), held to the
+  computed figures, and a template stands in for whatever it gets wrong (`domain/copy.py`).
+- **What a member sees** is cut to their role on the server (`services/journey/views.py`): the buyer never sees the
+  reserve, a kirana sees its own offer, partners never see Munchly's P&L.
+- **Live updates:** each client's stream is one sequence; a change NOTIFYs `sc_stream` as it commits, and members read
+  it as server-sent events (`GET …/events/stream`) or by polling (`GET …/events?after=`). One listener connection an
+  instance (`stream.py`).
+- **Pub/Sub:** each change writes its messages to the outbox in its transaction; they are published after the commit,
+  in order per batch, and the tick sends again whatever failed. Topics are per environment (`local.*` on a laptop,
+  `prod.*` on Cloud Run), from `infra/prod/events.tf`.
+- **Push:** the Notifier (`/internal/pubsub/notify`, or a laptop pulling `local.notify.api`) sends each notification
+  through FCM to the member's registered devices; the inbox row exists either way.
+- **The journey clock:** a client's `day_minutes` (the console's setting, 1 to 1,440) sets how long a journey day lasts
+  while a batch is at risk; real time runs between. The tick (every minute, `/internal/jobs/tick`) runs the Data agent
+  at 08:30 and the Watcher at 09:00 on journey time, fires due timers, and re-sends a stalled journey's event.
+- **Synthetic DMS exports** (`services/journey/dms.py`): no DMS is connected, so stock, secondary sales by pincode and
+  shelf counts are written as CSV into the exports bucket for the Data agent to load into BigQuery, calibrated to each
+  batch's sell-through.
+- **The agents' routes** (`/internal`): Google ID tokens minted for `INTERNAL_AUDIENCE` by `sc-agents`,
+  `sc-agents-local` or `sc-invoker`; each report names the event it answered, so a redelivered event does nothing.
+  The agents service is `agents/` (SC-72). `GET …/batches` names each distributor and each SKU's item code, which the
+  Data agent maps a DMS export's rows by; `GET …/agents` gives the offer window Outreach's offer states; and the
+  Router may quote how many kiranas the scheme goes to, as the template does.
+- **Locally, no emulator:** `dev.sh` uses the `local` topics and buckets, pulls `local.notify.api` and ticks every
+  `TICK_SECONDS` itself.
+
 ## Lift and shift
 
 To move to another GCP project:
@@ -236,13 +278,19 @@ resources and their costs, about GBP 9 a month).
 
 ## Tests
 
-`scripts/test.sh` (214 tests, a few seconds) runs against a real PostgreSQL. It migrates `smart_clearance_test` from
+`scripts/test.sh` (382 tests, a few seconds) runs against a real PostgreSQL. It migrates `smart_clearance_test` from
 scratch and imports Munchly through the services. Each test runs in a transaction that is rolled back, as `sc_api`,
 with a fake Firebase that never reaches Google. The suite covers:
 
 - every `frontend/api/tests/console.test.ts` and `site.test.ts` case, with exact audit lines;
 - Munchly as the API serves it equal to design3's seed;
 - the Python rules against fixtures from `platform.js` itself;
+- the money rules (`domain/money.py`, SC-71) against `money.js`'s own answers (`reference/money.json`): every plan,
+  write-off, counter, award, credit note, document and format, with no database needed;
+- the journey's sentences against design3's own (`test_copy.py`), and the live workspace end to end over HTTP
+  (`test_workspace.py`): the story's journey walked by its people and its agents to the same figures, each role's cut,
+  a redelivered event, a wrong label, the reserve kept, the stream, the Notifier and the tick, on in-memory Pub/Sub,
+  Cloud Storage and FCM (no emulator);
 - the server-only checks;
 - the roles;
 - the audit log refusing UPDATE, DELETE and TRUNCATE;
@@ -256,13 +304,14 @@ CI runs the same suite on a `postgres:18` service container, with a secret scan 
 
 ## Known gaps
 
-- The workspace app (`design3/app`, `core/money.js`) still judges batches by the client-wide gates. It moves to the per-SKU
-  gates with the agents, which read `sc.batch_gates`.
-
-- Phone sign-in, and the workspace app's own sign-in for a client's people, come later; until then `people.accept`
-  is called only by hydrate.
-- `money.js` is not ported yet: the showcase is design3's computed figures, loaded as content. The port comes with the
-  agents.
+- The workspace app's prototype (`design3/app`, `core/money.js`) judges batches by the client-wide gates; the live
+  journey uses the per-SKU gates (SC-47), as the console does.
+- The workspace's response bodies are typed in the contract (`frontend/api/src/types/workspace.ts`), not yet as
+  Pydantic models, so the OpenAPI describes them as objects.
+- When the kirana scheme closes short, the unordered packs move to the ExpireSoon lot while it is open; the plan's
+  figures are not worked out again.
+- The console invites partners by phone too; the workspace's sign-in is email only (its console change comes with the
+  design round, SC-68).
 - Cloud Run scales to zero, so the first request after a quiet spell waits for a cold start (a few seconds).
 - `db-f1-micro` is a shared core with 0.6 GB of memory and no SLA: enough for the prototype, not for real load.
 - The rate limiter keeps its counts per instance.

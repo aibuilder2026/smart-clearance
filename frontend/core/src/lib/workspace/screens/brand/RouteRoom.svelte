@@ -23,9 +23,8 @@
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
 	import { useRoute } from '../../context';
-	import { D, ES, KL, PLAN, STAGE_TIMES, TRACK, TRACK_TIMED } from '../../data';
-	import { fmt, heroModel, isRouted } from '../../model';
-	import { store } from '../../store.svelte';
+	import { castOf, fmt, heroModel, isRouted, packSize, stageTimes, track, trackTimed } from '../../model';
+	import { useWorkspace } from '../../source';
 	import type { Phase, User } from '../../types';
 	import Locked from '../common/Locked.svelte';
 	import Screen from '../common/Screen.svelte';
@@ -35,10 +34,12 @@
 	// S2 Route Room: the batch, its label read from the shelf, five channels priced, the recommended split and the one
 	// yes (screens/brand.jsx RouteRoom)
 	let { me }: { me: User } = $props();
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
 	const router = useRoute();
 	const app = useApp();
-	const s = $derived(store.state);
-	const hm = $derived(heroModel(s));
+	const s = $derived(ws.state);
+	const hm = $derived(heroModel(s, ws.data, c));
 	const h = $derived(s.hero);
 	let view = $state<'chart' | 'table'>('chart');
 	let sheet = $state(false);
@@ -50,24 +51,27 @@
 	const approved = $derived(isRouted(h.phase));
 	const v = $derived(hm.view);
 	const sku = $derived(v.skuObj);
-	const staff = PLAN.rows.find((r) => r.id === 'staff')!;
-	const foodbank = PLAN.rows.find((r) => r.id === 'foodbank')!;
-	const chosen = $derived(planned ? PLAN.lines.map((l) => l.id) : []);
-	const approver = $derived(D.people[(h.plan && h.plan.by) || 'priya']);
+	const staff = $derived(c.plan.rows.find((r) => r.id === 'staff')!);
+	const foodbank = $derived(c.plan.rows.find((r) => r.id === 'foodbank')!);
+	const chosen = $derived(planned ? c.plan.lines.map((l) => l.id) : []);
+	const cast = $derived(castOf(s, c));
+	const approver = $derived(ws.data.people[(h.plan && h.plan.by) || cast.operator.id]);
+	const times = $derived(stageTimes(ws.data.stages));
+	const W = $derived(ws.data.workspace);
 	const timeline = $derived(s.feed.filter((e) => e.stage !== 'connect'));
 	const LABEL: [string, string][] = $derived([
-		['Batch', 'MF-2409-117'],
-		['Manufactured', '18 May 2026'],
-		['Best before', '18 Nov 2026'],
+		['Batch', c.batch.id],
+		['Manufactured', fmt.date(c.batch.mfg)],
+		['Best before', fmt.date(c.batch.bestBefore)],
 		['Shelf life', `${v.assess.life} days · ${v.assess.lifeUsedPct}% used`],
-		['MRP', '₹30.00 · 24 × 150 g'],
+		['MRP', `${fmt.rate(c.sku.mrp)} · ${c.sku.perCarton} × ${packSize(c.sku)}`],
 		['Records', 'match']
 	]);
-	const BAR: [string, number, string][] = [
-		['You get', PLAN.net, 'var(--primary-text)'],
-		['Instead of', -PLAN.writeOff.total, 'var(--red-text)'],
-		['GST credit safe', PLAN.itcRetained, 'var(--fg)']
-	];
+	const BAR: [string, number, string][] = $derived([
+		['You get', c.plan.net, 'var(--primary-text)'],
+		['Instead of', -c.plan.writeOff.total, 'var(--red-text)'],
+		['GST credit safe', c.plan.itcRetained, 'var(--fg)']
+	]);
 
 	// the demo opens the approval from its own controls
 	$effect(() => {
@@ -89,7 +93,7 @@
 		/>{/if}{/snippet}
 {#snippet main()}
 	<div data-anchor="label"></div>
-	<SectionTitle sub="Vision · 09:20" right={matches}>Label, read from the shelf</SectionTitle>
+	<SectionTitle sub="Vision · {times.verify}" right={matches}>Label, read from the shelf</SectionTitle>
 	<Card class="stack" style="gap: 16px">
 		<div style="container-type: inline-size">
 			<div class="labelgrid">
@@ -110,15 +114,17 @@
 		</div>
 	</Card>
 	<div data-anchor="channels"></div>
-	<SectionTitle sub="Valuer · 09:21 · per unit, after costs" right={viewSwitch}>Five channels, priced</SectionTitle>
+	<SectionTitle sub="Valuer · {times.value} · per unit, after costs" right={viewSwitch}
+		>Five channels, priced</SectionTitle
+	>
 	{#if valued}{#if view === 'chart'}<Card
-				><ChannelBars rows={PLAN.rows} {chosen} />
+				><ChannelBars rows={c.plan.rows} {chosen} />
 				<p class="t-footnote subtle" style="margin-top: 6px">
 					Hover a bar for price, capacity, time to clear and what happens to the GST credit. Destroying costs {fmt.inr2(
-						-PLAN.writeOff.perUnit
+						-c.plan.writeOff.perUnit
 					)} a unit; a donation costs {fmt.inr2(-foodbank.net)}, because the credit on a gift is reversed.
 				</p></Card
-			>{:else}<ChannelTable rows={PLAN.rows} {chosen} />{/if}{:else}<Locked
+			>{:else}<ChannelTable rows={c.plan.rows} {chosen} />{/if}{:else}<Locked
 			icon="scale"
 			agent="Valuer Agent"
 			live={h.photo.status === 'verified'}
@@ -127,22 +133,26 @@
 				: 'Prices five channels once the label is verified.'}
 		/>{/if}
 	<div data-anchor="split"></div>
-	<SectionTitle sub="Router · 09:22">Recommended split</SectionTitle>
+	<SectionTitle sub="Router · {times.decide}">Recommended split</SectionTitle>
 	{#if planned}<div class="stack" style="gap: 16px">
 			<Card class="stack snug"
-				><SplitBar plan={PLAN} />
+				><SplitBar plan={c.plan} />
 				<div class="stack tight t-subhead" style="margin-top: 4px">
 					<div class="row top" style="gap: 10px">
 						<span class="dotmark" style="background: var(--ch-kirana)"></span><span
-							><b>{KL.units} units to the kirana cluster at ₹18 effective</b> (₹{KL.packPrice!.toFixed(2)} a pack, 2 free
-							with every 10). The best price, and it keeps stock inside Munchly's own trade. Capped by what {D.offered}
-							kiranas can move in 14 days with the scheme, on top of the {v.sellPerDay} a day they already sell.</span
+							><b>{c.lines.kirana.units} units to the kirana cluster at ₹{c.lines.kirana.price} effective</b>
+							({fmt.rate(c.lines.kirana.packPrice!)} a pack, {c.scheme.free} free with every {c.scheme.buy}). The best
+							price, and it keeps stock inside {W.short}'s own trade. Capped by what {c.offered}
+							kiranas can move in {ws.data.rules.kiranaWindowDays} days with the scheme, on top of the {v.sellPerDay} a day
+							they already sell.</span
 						>
 					</div>
 					<div class="row top" style="gap: 10px">
 						<span class="dotmark" style="background: var(--ch-expiresoon)"></span><span
-							><b>{ES.units} units to ExpireSoon at ₹15</b> (reserve ₹13.50), listed in Rakesh Traders' name and hidden from
-							buyers inside Munchly's territories: unlimited depth, 5 to 9 days, the buyer pays freight.</span
+							><b>{c.lines.expiresoon.units} units to ExpireSoon at ₹{c.lines.expiresoon.price}</b> (reserve {fmt.rate(
+								ws.data.rules.negotiation.reservePerUnit
+							)}), listed in {c.dist.name}' name and hidden from buyers inside {W.short}'s territories: unlimited depth,
+							5 to 9 days, the buyer pays freight.</span
 						>
 					</div>
 					<div class="row top muted" style="gap: 10px">
@@ -155,14 +165,15 @@
 			<Card class="row wrap" style="gap: 14px; background: var(--surface-2)"
 				><span class="icontile soft"><Icon name="git-branch" size={17} /></span>
 				<div class="grow">
-					<b>Alternative considered: {PLAN.alt.label}</b>
+					<b>Alternative considered: {c.plan.alt.label}</b>
 					<div class="t-footnote muted">
-						Net {fmt.inr(PLAN.alt.net)}: {fmt.inr(PLAN.net - PLAN.alt.net)} less, and nothing stays in Munchly's own trade.
+						Net {fmt.inr(c.plan.alt.net)}: {fmt.inr(c.plan.net - c.plan.alt.net)} less, and nothing stays in {W.short}'s
+						own trade.
 					</div>
 				</div>
 				<Badge>not chosen</Badge></Card
 			>
-			<MoneyPanel plan={PLAN} compact={app.bp !== 'desktop'} />
+			<MoneyPanel plan={c.plan} sku={c.sku} rules={ws.data.rules} compact={app.bp !== 'desktop'} />
 		</div>{:else}<Locked
 			icon="split"
 			agent="Router Agent"
@@ -174,9 +185,9 @@
 	{#if approved}<Card class="row wrap" style="gap: 14px"
 			><Avatar person={approver} size="lg" />
 			<div class="grow">
-				<b>Approved by {approver.short} · 09:40 · phone</b>
+				<b>Approved by {approver.short} · {h.plan?.at} · {h.plan?.device}</b>
 				<div class="t-footnote muted">
-					Logged with who, when and device. The agents are executing; Rakesh bhai has the same plan in his app.
+					Logged with who, when and device. The agents are executing; {cast.distributor.short} has the same plan in his app.
 				</div>
 			</div>
 			<Button variant="primary" iconRight="arrow-right" onclick={() => router.go('execution')}>Watch execution</Button
@@ -184,7 +195,7 @@
 		>{/if}
 {/snippet}
 {#snippet side()}<SectionTitle sub="Gaps drawn to the clock">Agent timeline</SectionTitle><Card
-		><AgentFeed events={timeline} people={D.people} live={hm.agentLive ? timeline.length - 1 : -1} /></Card
+		><AgentFeed events={timeline} people={ws.data.people} live={hm.agentLive ? timeline.length - 1 : -1} /></Card
 	>{/snippet}
 
 <Screen
@@ -215,11 +226,15 @@
 					>
 				</div>
 			</div>
-			{#if app.bp === 'phone'}<TrackerCompact stages={TRACK_TIMED} done={hm.done} current={hm.current} />{:else}<Tracker
-					stages={TRACK}
+			{#if app.bp === 'phone'}<TrackerCompact
+					stages={trackTimed(ws.data.stages)}
 					done={hm.done}
 					current={hm.current}
-					times={STAGE_TIMES}
+				/>{:else}<Tracker
+					stages={track(ws.data.stages)}
+					done={hm.done}
+					current={hm.current}
+					times={stageTimes(ws.data.stages)}
 				/>{/if}
 		</Card>
 		<Columns sideWidth={340} {main} {side} />

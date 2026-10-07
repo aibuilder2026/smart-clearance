@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { useNotice } from '../../../notice.svelte';
-	import { store } from '../../store.svelte';
+	import { useWorkspace } from '../../source';
 	import type { Notification, User } from '../../types';
 
 	// in-app banners for the notifications that arrive while the person has the app open (screens/common.jsx
@@ -9,10 +9,11 @@
 	type Props = { me: User; onopen?: (n: Notification) => void };
 	let { me, onopen }: Props = $props();
 	const notices = useNotice();
+	const ws = useWorkspace();
 	let seen: Set<string> | null = null;
 
 	$effect(() => {
-		const mine = store.state.notifications.filter((n) => n.to === me.id);
+		const mine = ws.state.notifications.filter((n) => n.to === me.id);
 		untrack(() => {
 			if (seen === null) {
 				// bookkeeping only: nothing draws from it, so it is not state

@@ -67,6 +67,18 @@ describe('consoleHttp', () => {
 			fields: { contact: 'Enter a name.' }
 		});
 	});
+	it("puts a client's length of a journey day on its clock (SC-68)", async () => {
+		const auth = fakeAuth();
+		await auth.signIn('neha@x.example', 'right');
+		const fetcher = vi.fn(async (_url: string | URL | Request, init?: RequestInit) =>
+			reply(200, { id: 'munchly', dayMinutes: JSON.parse(String(init?.body)).dayMinutes })
+		);
+		const api = consoleHttp('http://api', { auth, fetcher: fetcher as typeof fetch });
+		expect(await api.setDayMinutes('munchly', 5)).toMatchObject({ id: 'munchly', dayMinutes: 5 });
+		expect(fetcher.mock.calls[0][0]).toBe('http://api/v1/console/clients/munchly/clock');
+		expect(fetcher.mock.calls[0][1]?.method).toBe('PUT');
+		expect(JSON.parse(String(fetcher.mock.calls[0][1]?.body))).toEqual({ dayMinutes: 5 });
+	});
 });
 
 describe('transport: tracing (SC-57)', () => {

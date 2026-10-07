@@ -161,7 +161,15 @@ async def run_now(ctx: Ctx, client_id: str, agent_id: str) -> None:
     ctx.require("clients.configure", "Your role can't run a client's agents.")
     c = await lock_client(ctx, client_id)
     a = _agent(ctx, agent_id)
-    await record_run(ctx, client_id, agent_id, NOTHING_NEW)
+    if c.journey_day0 is not None:  # a client running live journeys: the real agent runs, and records its own run
+        from sc_api.domain import journey
+        from sc_api.services.journey import events
+
+        await events.publish(
+            ctx, journey.Event(journey.STEP, {"type": journey.RUN_NOW, "client": c.id, "agent": agent_id}, c.id)
+        )
+    else:
+        await record_run(ctx, client_id, agent_id, NOTHING_NEW)
     await audit.record(ctx, c.id, "agent.run", f"Ran the {a['name']} agent now for {c.name}", {"agent": agent_id})
 
 

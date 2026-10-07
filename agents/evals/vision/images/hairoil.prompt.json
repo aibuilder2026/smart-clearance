@@ -1,0 +1,15 @@
+{
+ "model": "Qwen-Image-2.1 (bf16), run locally through the qwen-image-bf16 plugin 0.2.0 (its CLI)",
+ "seed": 36,
+ "size": "1024 (4:3, 1184 x 896)",
+ "prompt": "A realistic close-up smartphone photo of a printed white label stuck on the side of a brown corrugated cardboard carton. The label is printed in bold black sans-serif type, one line each: \"GLOWRA COCONUT HAIR OIL 200 ml\", \"BATCH NO: GL-2410-012\", \"MFG: 14/02/2026\", \"BEST BEFORE: 14/02/2028\", \"MRP ₹150.00 (incl. of all taxes)\". Even light on a shelf. Photorealistic, natural colours, the label text crisp and legible.",
+ "postProcessing": [
+  {
+   "step": "convert",
+   "to": "WebP",
+   "quality": 88
+  }
+ ],
+ "source": "src/hairoil.png (sha256 c8058709b7781483, kept locally)",
+ "seen": null
+}

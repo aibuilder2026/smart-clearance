@@ -31,8 +31,18 @@ def db_password(settings: Settings) -> str | None:
     return None
 
 
-async def make_engine(settings: Settings | None = None, *, user: str | None = None) -> AsyncEngine:
+async def make_engine(
+    settings: Settings | None = None,
+    *,
+    user: str | None = None,
+    pool_size: int | None = None,
+    max_overflow: int | None = None,
+) -> AsyncEngine:
     s = settings or get_settings()
+    pool = {
+        "pool_size": s.db_pool_size if pool_size is None else pool_size,
+        "max_overflow": s.db_max_overflow if max_overflow is None else max_overflow,
+    }
     connect_args = {"server_settings": {"search_path": SCHEMA, "application_name": "backend-api"}}
     if s.db_mode == "cloudsql":
         from google.cloud.sql.connector import create_async_connector
@@ -53,7 +63,7 @@ async def make_engine(settings: Settings | None = None, *, user: str | None = No
                 **connect_args,
             )
 
-        engine = create_async_engine("postgresql+asyncpg://", async_creator=creator, pool_size=s.db_pool_size)
+        engine = create_async_engine("postgresql+asyncpg://", async_creator=creator, **pool)
         _connectors[id(engine)] = connector
         tracing.instrument_engine(engine)
         return engine
@@ -65,7 +75,7 @@ async def make_engine(settings: Settings | None = None, *, user: str | None = No
         port=s.db_port,
         database=s.db_name,
     )
-    engine = create_async_engine(url, pool_size=s.db_pool_size, pool_pre_ping=True, connect_args=connect_args)
+    engine = create_async_engine(url, pool_pre_ping=True, connect_args=connect_args, **pool)
     tracing.instrument_engine(engine)
     return engine
 

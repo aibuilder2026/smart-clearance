@@ -3,7 +3,7 @@ name: CI
 # Lint, test and build the frontend, and lint and test backend-api against PostgreSQL 18 (SC-45), on every change
 # that can affect them, with a secret scan. From main: backend-api is built, migrated and deployed to Cloud Run by
 # Cloud Build when it changed (SC-50, backend-api/cloudbuild.yaml), then the apps are deployed to Firebase Hosting, each
-# to its own site (SC-40; the workspace app since SC-62, the guided demo since SC-64). Once backend-api runs in the cloud, the apps are built against it (the PUBLIC_* repository variables).
+# to its own site (SC-40; the workspace app since SC-62, the guided demo since SC-64). Once backend-api runs in the cloud, the apps are built against it (the PUBLIC_* repository variables; the workspace app's WORKSPACE_* ones, SC-73).
 # prod is the only environment:
 # - its credentials come through Workload Identity Federation, so no key exists (infra/prod/deployer.tf, build.tf);
 # - only main may deploy to it, and its variables are Terraform's (infra/prod/github.tf).
@@ -17,6 +17,7 @@ on:
       - '!design3/designs/**'
       - 'infra/**'
       - 'backend-api/**'
+      - 'agents/**'
       - '.github/workflows/ci.yml'
       - '.github/actions/**'
   push:
@@ -27,6 +28,7 @@ on:
       - '!design3/designs/**'
       - 'infra/**'
       - 'backend-api/**'
+      - 'agents/**'
       - '.github/workflows/ci.yml'
       - '.github/actions/**'
   workflow_dispatch:
@@ -114,6 +116,40 @@ jobs:
       - name: Tests (pytest)
         run: uv run --frozen pytest -q
 
+  agents-gate:
+    name: Agents gate (ruff, pytest on Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.14', '3.13']
+    defaults:
+      run:
+        working-directory: agents
+    env:
+      # the stub tier: recorded model responses, no live model and no network (SC-72)
+      MODEL_TIER: stub
+      AGENTS_ENV: test
+      # every uv command in the job on the matrix's Python (agents/.python-version names 3.14)
+      UV_PYTHON: ${{ matrix.python }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: agents/uv.lock
+      - name: WeasyPrint's system libraries, so the PDF test runs (Pango, HarfBuzz)
+        run: sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz-subset0
+      - run: uv sync --frozen
+      - name: Lint (ruff), and the scripts (bash -n, shellcheck)
+        run: |
+          uv run --frozen ruff check . && uv run --frozen ruff format --check .
+          for s in scripts/*.sh; do bash -n "$s"; done
+          shellcheck -x -P SCRIPTDIR scripts/*.sh
+      - name: Tests (pytest)
+        run: uv run --frozen pytest -q
+
   secret-scan:
     name: Secret scan (gitleaks)
     runs-on: ubuntu-latest
@@ -138,7 +174,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/setup-frontend
-      - name: Build the landing page, the console, the workspace app and the guided demo
+      - name: Build the landing page, the console and the guided demo
         working-directory: frontend
         # empty until backend-api runs in the cloud: the apps then use their in-browser mock
         env:
@@ -147,7 +183,22 @@ jobs:
           PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ vars.PUBLIC_FIREBASE_AUTH_DOMAIN }}
           PUBLIC_FIREBASE_PROJECT_ID: ${{ vars.PUBLIC_FIREBASE_PROJECT_ID }}
           PUBLIC_FIREBASE_APP_ID: ${{ vars.PUBLIC_FIREBASE_APP_ID }}
-        run: corepack pnpm build
+        run: corepack pnpm --filter @smart-clearance/admin --filter @smart-clearance/console --filter @smart-clearance/demo run build
+      - name: Build the workspace app
+        working-directory: frontend
+        # the workspace app has its own Firebase web app (infra/prod/auth.tf). It runs on its stub until WORKSPACE_API_BASE
+        # is set, once backend-api serves the workspace in production (SC-74); a live build carries none of the stub's seed
+        env:
+          PUBLIC_API_BASE: ${{ vars.WORKSPACE_API_BASE }}
+          PUBLIC_WORKSPACE_ID: ${{ vars.WORKSPACE_ID }}
+          PUBLIC_FIREBASE_API_KEY: ${{ vars.WORKSPACE_FIREBASE_API_KEY }}
+          PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ vars.PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          PUBLIC_FIREBASE_PROJECT_ID: ${{ vars.PUBLIC_FIREBASE_PROJECT_ID }}
+          PUBLIC_FIREBASE_APP_ID: ${{ vars.WORKSPACE_FIREBASE_APP_ID }}
+          PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.WORKSPACE_FIREBASE_MESSAGING_SENDER_ID }}
+        run: |
+          corepack pnpm build:workspace
+          if [ -n "$PUBLIC_API_BASE" ]; then node scripts/no-seed.mjs workspace/build; fi
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: frontend-build

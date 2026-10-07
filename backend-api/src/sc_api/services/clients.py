@@ -8,6 +8,7 @@ from typing import Any
 from sqlalchemy import select
 
 from sc_api import models as m
+from sc_api.domain.clock import DAY_MINUTES
 from sc_api.domain.mirrors import MIRRORED, RULES_FROM_AGENTS, stored
 from sc_api.domain.rules import agent_defaults, exits_for, js_str, setup_errors
 from sc_api.errors import ApiError
@@ -50,6 +51,7 @@ class ClientSpec:
     offer_window_hours: int | None = None
     hindi_offers: bool = True
     require_photo: bool = True
+    day_minutes: int = DAY_MINUTES  # the length of a journey day (SC-68): a client starts in real time
     agents: dict[str, dict[str, Any]] = field(default_factory=dict)
 
 
@@ -94,6 +96,7 @@ async def insert(ctx: Ctx, spec: ClientSpec, *, created_at: datetime | None = No
         offer_window_hours=spec.offer_window_hours or d["offerWindowHours"],
         hindi_offers=spec.hindi_offers,
         require_photo=spec.require_photo,
+        day_minutes=spec.day_minutes,
         sign_in=spec.sign_in,
         created_at=created_at or ctx.clock.now(),
     )

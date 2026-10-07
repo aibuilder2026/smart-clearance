@@ -1,13 +1,106 @@
 {
-	"note": "The platform's roles and what each may do. Written by hand (not generated); loaded at migrate time into roles, permissions and role_permissions.",
+	"note": "The platform's roles and what each may do, and the workspace roles a client's members hold (SC-66). Written by hand (not generated); loaded at migrate time into roles, permissions and role_permissions.",
 	"permissions": [
-		{ "id": "console.read", "description": "See the console: the overview, clients, staff, demo requests and the audit log" },
-		{ "id": "clients.create", "description": "Set up a new client" },
-		{ "id": "clients.configure", "description": "Configure a client's agents, supply-chain profile, channels and rules" },
-		{ "id": "clients.supply", "description": "Remind distributors and ask for stock exports" },
-		{ "id": "clients.people", "description": "Invite a client's people, renew invitations, change their access, deactivate them" },
-		{ "id": "clients.commercial", "description": "Change a client's plan and take it live" },
-		{ "id": "staff.invite", "description": "Invite colleagues to the console" }
+		{
+			"id": "console.read",
+			"description": "See the console: the overview, clients, staff, demo requests and the audit log"
+		},
+		{
+			"id": "clients.create",
+			"description": "Set up a new client"
+		},
+		{
+			"id": "clients.configure",
+			"description": "Configure a client's agents, supply-chain profile, channels and rules"
+		},
+		{
+			"id": "clients.supply",
+			"description": "Remind distributors and ask for stock exports"
+		},
+		{
+			"id": "clients.people",
+			"description": "Invite a client's people, renew invitations, change their access, deactivate them"
+		},
+		{
+			"id": "clients.commercial",
+			"description": "Change a client's plan and take it live"
+		},
+		{
+			"id": "staff.invite",
+			"description": "Invite colleagues to the console"
+		},
+		{
+			"id": "ws.read",
+			"description": "See the workspace: its batches, the journey of those that concern you, your inbox"
+		},
+		{
+			"id": "ws.money",
+			"description": "See the client's figures: plans, nets, the P&L, write-offs"
+		},
+		{
+			"id": "ws.audit",
+			"description": "Read the workspace's audit log"
+		},
+		{
+			"id": "ws.members",
+			"description": "Invite the workspace's people, change their roles, deactivate them"
+		},
+		{
+			"id": "ws.rules",
+			"description": "Change the workspace's guardrails"
+		},
+		{
+			"id": "setup.confirm",
+			"description": "Confirm the Data agent's mapping and the guardrails"
+		},
+		{
+			"id": "setup.upload",
+			"description": "Upload a stock export for the Data agent"
+		},
+		{
+			"id": "distributor.permit",
+			"description": "Give, pause or resume a distributor's one-time permission for the agents to act in its name"
+		},
+		{
+			"id": "photo.send",
+			"description": "Send a batch's label photo"
+		},
+		{
+			"id": "plan.approve",
+			"description": "Approve a plan (the client's approver only)"
+		},
+		{
+			"id": "offer.order",
+			"description": "Order under a scheme offered to your shop"
+		},
+		{
+			"id": "listing.bid",
+			"description": "Bid on a listing, ask about it and accept a counter"
+		},
+		{
+			"id": "pickup.manage",
+			"description": "Confirm and collect a donation"
+		},
+		{
+			"id": "dispatch.manage",
+			"description": "Load the buyer's truck and run the van round"
+		},
+		{
+			"id": "invoice.issue",
+			"description": "Issue the drafted invoice"
+		},
+		{
+			"id": "docs.read",
+			"description": "See a batch's documents"
+		},
+		{
+			"id": "docs.review",
+			"description": "Review the client's papers"
+		},
+		{
+			"id": "report.read",
+			"description": "See the Finance & ESG report"
+		}
 	],
 	"roles": [
 		{
@@ -16,7 +109,15 @@
 			"name": "Super admin",
 			"team": "Platform",
 			"description": "Everything, including plans, going live and the platform's own staff",
-			"permissions": ["console.read", "clients.create", "clients.configure", "clients.supply", "clients.people", "clients.commercial", "staff.invite"]
+			"permissions": [
+				"console.read",
+				"clients.create",
+				"clients.configure",
+				"clients.supply",
+				"clients.people",
+				"clients.commercial",
+				"staff.invite"
+			]
 		},
 		{
 			"id": "platform-engineer",
@@ -24,7 +125,13 @@
 			"name": "Platform engineer",
 			"team": "Platform",
 			"description": "Sets clients up and configures them; not plans, going live or staff",
-			"permissions": ["console.read", "clients.create", "clients.configure", "clients.supply", "clients.people"]
+			"permissions": [
+				"console.read",
+				"clients.create",
+				"clients.configure",
+				"clients.supply",
+				"clients.people"
+			]
 		},
 		{
 			"id": "support",
@@ -32,7 +139,13 @@
 			"name": "Support",
 			"team": "Customer success",
 			"description": "Helps clients day to day: their setup, people and distributors; not plans, going live or staff",
-			"permissions": ["console.read", "clients.create", "clients.configure", "clients.supply", "clients.people"]
+			"permissions": [
+				"console.read",
+				"clients.create",
+				"clients.configure",
+				"clients.supply",
+				"clients.people"
+			]
 		},
 		{
 			"id": "approver",
@@ -61,6 +174,109 @@
 			"name": "Partner",
 			"description": "Distributors, kiranas and food banks the client invites",
 			"permissions": []
+		},
+		{
+			"id": "ws-operator",
+			"scope": "workspace-role",
+			"name": "Supply-chain operator",
+			"description": "Watches the batches, approves plans (as the client's approver) and sets the guardrails",
+			"permissions": [
+				"ws.read",
+				"ws.money",
+				"ws.rules",
+				"setup.confirm",
+				"setup.upload",
+				"plan.approve",
+				"docs.read",
+				"report.read"
+			]
+		},
+		{
+			"id": "ws-distributor",
+			"scope": "workspace-role",
+			"name": "Distributor",
+			"description": "Owns the stock: gives the agents a one-time permission, sends label photos, dispatches and issues invoices",
+			"permissions": [
+				"ws.read",
+				"setup.upload",
+				"distributor.permit",
+				"photo.send",
+				"dispatch.manage",
+				"invoice.issue",
+				"docs.read"
+			]
+		},
+		{
+			"id": "ws-retailer",
+			"scope": "workspace-role",
+			"name": "Kirana retailer",
+			"description": "Orders under the scheme offered to the shop",
+			"permissions": [
+				"ws.read",
+				"offer.order"
+			]
+		},
+		{
+			"id": "ws-buyer",
+			"scope": "workspace-role",
+			"name": "Marketplace buyer",
+			"description": "Bids on the listings open to the buyer",
+			"permissions": [
+				"ws.read",
+				"listing.bid"
+			]
+		},
+		{
+			"id": "ws-finance",
+			"scope": "workspace-role",
+			"name": "Finance & GST",
+			"description": "Reviews the papers and reads the report",
+			"permissions": [
+				"ws.read",
+				"ws.money",
+				"ws.audit",
+				"docs.read",
+				"docs.review",
+				"report.read"
+			]
+		},
+		{
+			"id": "ws-sustainability",
+			"scope": "workspace-role",
+			"name": "Sustainability & BRSR",
+			"description": "Reads the report and the impact ledger",
+			"permissions": [
+				"ws.read",
+				"ws.money",
+				"report.read"
+			]
+		},
+		{
+			"id": "ws-foodbank",
+			"scope": "workspace-role",
+			"name": "Food-bank partner",
+			"description": "Confirms and collects donations",
+			"permissions": [
+				"ws.read",
+				"pickup.manage"
+			]
+		},
+		{
+			"id": "ws-admin",
+			"scope": "workspace-role",
+			"name": "Workspace admin",
+			"description": "Runs the workspace: people, guardrails, integrations, the audit log",
+			"permissions": [
+				"ws.read",
+				"ws.money",
+				"ws.audit",
+				"ws.members",
+				"ws.rules",
+				"setup.confirm",
+				"setup.upload",
+				"docs.read",
+				"report.read"
+			]
 		}
 	]
 }

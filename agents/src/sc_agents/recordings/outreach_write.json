@@ -1,0 +1,11 @@
+{
+ "json": {
+  "hi": "नमस्ते {shop}! Munchly Masala Chips 150 g पर आज खास ऑफर: 10 पैकेट लो, 2 मुफ़्त. Best before 18 Nov 2026. सिर्फ़ 48 घंटे. ऑर्डर के लिए टैप करें — Rakesh Traders",
+  "en": "Hello {shop}, today's offer on Munchly Masala Chips 150 g: buy 10 packets, get 2 free. Best before 18 Nov 2026. 48 hours only. Tap to order. Rakesh Traders",
+  "mr": "नमस्कार {shop}! Munchly Masala Chips 150 g वर आज खास ऑफर: 10 पाकिटे घ्या, 2 मोफत. Best before 18 Nov 2026. फक्त 48 तास. ऑर्डरसाठी टॅप करा — Rakesh Traders"
+ },
+ "usage": [
+  388,
+  196
+ ]
+}

@@ -1,0 +1,15 @@
+{
+ "model": "Qwen-Image-2.1 (bf16), run locally through the qwen-image-bf16 plugin 0.2.0 (its CLI)",
+ "seed": 54,
+ "size": "1024 (4:3, 1184 x 896)",
+ "prompt": "A realistic close-up smartphone photo of a printed white label stuck on the side of a brown corrugated cardboard carton. The label is printed in bold black sans-serif type, one line each: \"MUNCHLY MANGO DRINK 200 ml\", \"B.NO.: MF-2410-118\", \"PKD: 27.04.2026\", \"USE BY: 24.10.2026\", \"M.R.P. Rs. 20/-\". Even light in a Hyderabad godown. Photorealistic, natural colours, the label text crisp and legible.",
+ "postProcessing": [
+  {
+   "step": "convert",
+   "to": "WebP",
+   "quality": 88
+  }
+ ],
+ "source": "src/mango-pkd.png (sha256 dfa7e6f0400bf297, kept locally)",
+ "seen": "the PKD year's third digit is misprinted (two glyphs overlap): an empty MFG, or the evident 2026, are both right"
+}

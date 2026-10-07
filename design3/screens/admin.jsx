@@ -96,8 +96,8 @@
       </div>
       <Sheet open={invite} onClose={() => setInvite(false)} title="Invite someone" side={app.bp === "phone" ? "bottom" : "center"} detent="medium" footer={<Button variant="primary" block icon="send" disabled={!form.name || !form.contact} onClick={send}>Send invite</Button>}>
         <div className="stack">
-          <Field label="Name or organisation" htmlFor="inv-name"><Input id="inv-name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Shree Sai Kirana" /></Field>
-          <Field label="Email or mobile number" htmlFor="inv-contact" help={`Munchly staff sign in with their ${WS.emailDomain} Google account; the trade signs in with a one-time code at ${WS.domain}.`}><Input id="inv-contact" value={form.contact} onChange={e => setForm({ ...form, contact: e.target.value })} placeholder="+91 98230 60014" /></Field>
+          <Field label="Name or organisation" htmlFor="inv-name"><Input id="inv-name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={WS.invite.name} /></Field>
+          <Field label="Email or mobile number" htmlFor="inv-contact" help={`Munchly staff sign in with their ${WS.emailDomain} Google account; the trade signs in with a one-time code at ${WS.domain}.`}><Input id="inv-contact" value={form.contact} onChange={e => setForm({ ...form, contact: e.target.value })} placeholder={WS.invite.contact} /></Field>
           <Field label="Role" htmlFor="inv-role"><Select id="inv-role" value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>{Object.entries(ROLES).filter(([k]) => k !== "buyer").map(([k, v]) => <option key={k} value={k}>{v}</option>)}</Select></Field>
         </div>
       </Sheet>

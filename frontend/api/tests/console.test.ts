@@ -151,17 +151,52 @@ describe('every change is logged in the words the prototype uses', () => {
 			.invitePerson('munchly', { name: 'Sunil', contact: 'sunil@gmail.com', access: 'Member' })
 			.catch((e) => e);
 		expect(bad).toBeInstanceOf(ApiError);
-		expect(bad.fields.contact).toBe(
-			'Munchly Foods staff need a munchly.in address. Partners can use any address or a phone number.'
-		);
-		const c = await api.invitePerson('munchly', { name: ' Sunil Rao ', contact: '+91 98230 11111', access: 'Partner' });
+		expect(bad.fields.contact).toBe('Munchly Foods staff need a munchly.in address. Partners can use any address.');
+		// an email address only (SC-68): a mobile number is refused
+		const phone = await api
+			.invitePerson('munchly', { name: 'Sunil Rao', contact: '+91 98230 11111', access: 'Partner' })
+			.catch((e) => e);
+		expect(phone.fields.contact).toBe('Enter an email address, such as name@munchly.in.');
+		const c = await api.invitePerson('munchly', {
+			name: ' Sunil Rao ',
+			contact: ' Sunil.Rao@Google.example ',
+			access: 'Partner'
+		});
 		const p = c.people.at(-1)!;
-		expect(p).toMatchObject({ name: 'Sunil Rao', org: 'Sunil Rao', provider: 'Phone and code', status: 'invited' });
+		expect(p).toMatchObject({
+			name: 'Sunil Rao',
+			org: 'Sunil Rao',
+			provider: 'Email and password',
+			status: 'invited',
+			email: 'sunil.rao@google.example',
+			phone: ''
+		});
 		expect((await lastAudit()).text).toBe('Invited Sunil Rao as Partner');
 		await api.updatePerson('munchly', p.id, { access: 'Member' });
 		expect((await lastAudit()).text).toBe('Gave Sunil Rao Member access');
 		await api.updatePerson('munchly', 'krishna', { status: 'active' });
 		expect((await lastAudit()).text).toBe('Reactivated Krishna Kirana Bhandar');
+	});
+	it('the length of a journey day, and nothing when it is unchanged (SC-68)', async () => {
+		expect((await api.client('munchly'))!.dayMinutes).toBe(1440);
+		const c = await api.setDayMinutes('munchly', 5);
+		expect(c.dayMinutes).toBe(5);
+		expect(await lastAudit()).toMatchObject({
+			who: 'Neha Kulkarni',
+			client: 'munchly',
+			text: 'Set the length of a journey day for Munchly Foods to 5 minutes (was a day)'
+		});
+		const n = (await api.audit()).length;
+		await api.setDayMinutes('munchly', 5);
+		expect(await api.audit()).toHaveLength(n);
+		await api.setDayMinutes('munchly', 1440);
+		expect((await lastAudit()).text).toBe('Set the length of a journey day for Munchly Foods to a day (was 5 minutes)');
+		for (const bad of [0, 1441, 4.5])
+			await expect(api.setDayMinutes('munchly', bad)).rejects.toMatchObject({
+				status: 422,
+				fields: { dayMinutes: 'Enter a whole number of minutes, from 1 to 1,440.' }
+			});
+		await expect(api.setDayMinutes('nope', 5)).rejects.toMatchObject({ status: 404 });
 	});
 	it('a reminder to a distributor, the plan, and going live', async () => {
 		await api.remindDistributor('munchly', 'patil');
@@ -178,7 +213,8 @@ describe('a new client', () => {
 			id: 'kesari',
 			domain: 'kesari.smartclearance.com',
 			status: 'setting-up',
-			approver: 'admin-kesari'
+			approver: 'admin-kesari',
+			dayMinutes: 1440
 		});
 		expect(c.agents.negotiator.autonomy).toBe('ask');
 		expect(c.agents.gate.settings.approver).toBe('admin-kesari');

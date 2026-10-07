@@ -1,0 +1,15 @@
+{
+ "json": {
+  "notes": {
+   "expiresoon": "₹15 a pack, ₹15.00 net, no cap: clears in 5–9 days, well inside the 47 days left, and the GST credit is kept.",
+   "kirana": "Best net at ₹17.50 a pack (₹21.60 with the scheme), but capped at 588 units the kiranas can move in time.",
+   "staff": "₹12 a pack, capped at 50 units: a small, quick exit that pays less than the scheme or ExpireSoon.",
+   "foodbank": "No price, and the GST credit is reversed, so it nets −₹1.40 a pack: kept for stock no buyer takes.",
+   "writeoff": "The baseline: destroying the stock costs ₹19.36 a pack in lost credit, disposal and EPR."
+  }
+ },
+ "usage": [
+  1806,
+  212
+ ]
+}

@@ -31,7 +31,7 @@ from sqlalchemy import (
     func,
 )
 from sqlalchemy import text as sql
-from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from sc_api.db import SCHEMA
@@ -106,7 +106,10 @@ class Role(Base):
     __tablename__ = "roles"
     __table_args__ = (UniqueConstraint("scope", "name"),)
     id: Mapped[str] = mapped_column(Text, primary_key=True)
-    scope: Mapped[str] = mapped_column(Text, CheckConstraint("scope in ('platform','workspace')", name="scope"))
+    # platform: console staff; workspace: a client's access levels; workspace-role: what a member does there (SC-66)
+    scope: Mapped[str] = mapped_column(
+        Text, CheckConstraint("scope in ('platform','workspace','workspace-role')", name="scope")
+    )
     name: Mapped[str] = mapped_column(Text)
     description: Mapped[str] = mapped_column(Text)
     team: Mapped[str | None] = mapped_column(Text)
@@ -224,6 +227,25 @@ class Client(Base):
     require_photo: Mapped[bool] = mapped_column(Boolean)
     sign_in: Mapped[list[Any]] = mapped_column(JSONB)
     created_at: Mapped[datetime] = mapped_column(TS)
+    # the journey clock (SC-66, domain/clock.py): journey time = anchor + wall time elapsed x 1440 / clock_speed
+    day_minutes: Mapped[int] = mapped_column(Integer, server_default="1440")
+    clock_speed: Mapped[int] = mapped_column(Integer, server_default="1440")
+    clock_anchor_wall: Mapped[datetime | None] = mapped_column(TS)
+    clock_anchor_journey: Mapped[datetime | None] = mapped_column(TS)
+    journey_day0: Mapped[date | None] = mapped_column(Date)
+    stream_seq: Mapped[int] = mapped_column(BigInteger, server_default="0")
+    setup_mapped: Mapped[int] = mapped_column(Integer, server_default="0")
+    setup_confirmed_at: Mapped[datetime | None] = mapped_column(TS)
+    setup_confirmed_by: Mapped[str | None] = mapped_column(Text)
+    last_import: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    last_watch: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    floors: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    approval_taps: Mapped[int] = mapped_column(Integer, server_default="10")
+    disposal_per_unit: Mapped[float] = mapped_column(MONEY, server_default="1.5")
+    epr_per_kg: Mapped[float] = mapped_column(MONEY, server_default="6")
+    kirana_uplift: Mapped[float] = mapped_column(Numeric(6, 2, asdecimal=False), server_default="3.5")
+    van_per_unit: Mapped[float] = mapped_column(MONEY, server_default="0.5")
+    workspace_doc: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     seq: Mapped[int] = seq()
 
 
@@ -252,6 +274,11 @@ class ClientMember(Base):
     img: Mapped[str | None] = mapped_column(Text)
     invited_at: Mapped[datetime] = mapped_column(TS)
     joined_at: Mapped[datetime | None] = mapped_column(TS)
+    # what the member stands for in the workspace: a distributor's, kirana's, buyer's or food bank's id (SC-66)
+    org_ref: Mapped[str | None] = mapped_column(Text)
+    lang: Mapped[str | None] = mapped_column(Text)
+    city: Mapped[str | None] = mapped_column(Text)
+    invited_by_name: Mapped[str | None] = mapped_column(Text)
     seq: Mapped[int] = seq()
 
 
@@ -305,6 +332,16 @@ class Distributor(Base):
     permission_given_at: Mapped[datetime | None] = mapped_column(TS)
     export_expected_at: Mapped[datetime | None] = mapped_column(TS)
     export_arrived_at: Mapped[datetime | None] = mapped_column(TS)
+    short: Mapped[str | None] = mapped_column(Text)
+    godown: Mapped[str | None] = mapped_column(Text)
+    address: Mapped[str | None] = mapped_column(Text)
+    gstin: Mapped[str | None] = mapped_column(Text)
+    cluster: Mapped[str | None] = mapped_column(Text)
+    territory: Mapped[str | None] = mapped_column(Text)
+    pins: Mapped[str | None] = mapped_column(Text)
+    # the member who gave the permission, and whether he has paused it (the agents then act in his name no more)
+    permission_by: Mapped[str | None] = mapped_column(Text)
+    permission_paused: Mapped[bool] = mapped_column(Boolean, server_default=sql("false"))
     seq: Mapped[int] = seq()
 
 
@@ -329,6 +366,15 @@ class Sku(Base):
     life_days: Mapped[int] = mapped_column(Integer)
     gate_blinkit_days: Mapped[int | None] = mapped_column(Integer)
     gate_qcom_pct: Mapped[int | None] = mapped_column(Integer)
+    # its economics, for the money rules (SC-66)
+    category: Mapped[str | None] = mapped_column(Text)
+    hsn: Mapped[str | None] = mapped_column(Text)
+    dp: Mapped[float | None] = mapped_column(MONEY)
+    cost: Mapped[float | None] = mapped_column(MONEY)
+    itc_per_unit: Mapped[float | None] = mapped_column(MONEY)
+    per_carton: Mapped[int | None] = mapped_column(Integer)
+    kg_per_unit: Mapped[float | None] = mapped_column(Numeric(8, 4, asdecimal=False))
+    img: Mapped[str | None] = mapped_column(Text)
     seq: Mapped[int] = seq()
 
 
@@ -373,6 +419,16 @@ class AgentRun(Base):
     agent_id: Mapped[str] = mapped_column(ForeignKey("agents.id"))
     ran_at: Mapped[datetime] = mapped_column(TS)
     text: Mapped[str] = mapped_column(Text)
+    # a live agent's run (SC-66): the event it answered (unique, so a redelivery acts once), its trace and model
+    run_id: Mapped[str | None] = mapped_column(Text, unique=True)
+    event_key: Mapped[str | None] = mapped_column(Text, unique=True)
+    case_id: Mapped[str | None] = mapped_column(Text)
+    trace_id: Mapped[str | None] = mapped_column(Text)
+    status: Mapped[str | None] = mapped_column(Text)
+    model: Mapped[str | None] = mapped_column(Text)
+    fallback: Mapped[bool | None] = mapped_column(Boolean)
+    latency_ms: Mapped[int | None] = mapped_column(Integer)
+    corrected: Mapped[bool | None] = mapped_column(Boolean)
 
 
 class Batch(Base):
@@ -425,6 +481,10 @@ class Batch(Base):
     gate_at: Mapped[datetime | None] = mapped_column(TS)
     judged_blinkit_days: Mapped[int | None] = mapped_column(Integer)
     judged_qcom_pct: Mapped[int | None] = mapped_column(Integer)
+    # from the stock export and the label (SC-66): when it was made, how fast it sells, where it sits
+    mfg: Mapped[date | None] = mapped_column(Date)
+    sell_per_day: Mapped[float | None] = mapped_column(Numeric(10, 2, asdecimal=False))
+    shelf: Mapped[str | None] = mapped_column(Text)
     seq: Mapped[int] = seq()
 
 
@@ -441,3 +501,260 @@ class AuditEntry(Base):
     action: Mapped[str] = mapped_column(Text)
     text: Mapped[str] = mapped_column(Text)
     details: Mapped[dict[str, Any]] = mapped_column(JSONB, server_default=sql("'{}'::jsonb"))
+
+
+# --- the live workspace (SC-66) -----------------------------------------------------------------------------------
+
+
+class Kirana(Base):
+    """a shop on a distributor's beat: its pincode, and its own 14-day sales, which cap a scheme order"""
+
+    __tablename__ = "kiranas"
+    __table_args__ = (
+        ForeignKeyConstraint(["client_id", "distributor_id"], ["distributors.client_id", "distributors.id"]),
+    )
+    client_id: Mapped[str] = mapped_column(ForeignKey("clients.id"), primary_key=True)
+    id: Mapped[str] = mapped_column(Text, primary_key=True)
+    distributor_id: Mapped[str] = mapped_column(Text)
+    name: Mapped[str] = mapped_column(Text)
+    area: Mapped[str] = mapped_column(Text)
+    pincode: Mapped[str] = mapped_column(Text)
+    sales_14d: Mapped[int] = mapped_column(Integer)
+    member_ref: Mapped[str | None] = mapped_column(Text)
+
+
+class Partner(Base):
+    """a buyer (the marketplace's) or a food bank the client works with; its details as the papers need them"""
+
+    __tablename__ = "partners"
+    client_id: Mapped[str] = mapped_column(ForeignKey("clients.id"), primary_key=True)
+    id: Mapped[str] = mapped_column(Text, primary_key=True)
+    kind: Mapped[str] = mapped_column(Text, CheckConstraint("kind in ('buyer','foodbank')", name="kind"))
+    name: Mapped[str] = mapped_column(Text)
+    short: Mapped[str] = mapped_column(Text)
+    city: Mapped[str | None] = mapped_column(Text)
+    details: Mapped[dict[str, Any]] = mapped_column(JSONB, server_default=sql("'{}'::jsonb"))
+    member_ref: Mapped[str | None] = mapped_column(Text)
+
+
+class DocumentNumber(Base):
+    """the next number of each kind of paper a client issues (invoice, credit note, listing)"""
+
+    __tablename__ = "document_numbers"
+    client_id: Mapped[str] = mapped_column(ForeignKey("clients.id"), primary_key=True)
+    kind: Mapped[str] = mapped_column(Text, primary_key=True)
+    prefix: Mapped[str] = mapped_column(Text)
+    next: Mapped[int] = mapped_column(Integer)
+    width: Mapped[int] = mapped_column(Integer)
+
+
+class Case(Base):
+    """one batch's journey, from the Watcher's flag to the report (domain/journey.py). Times are journey time; the
+    *_wall ones are wall time"""
+
+    __tablename__ = "cases"
+    __table_args__ = (
+        CheckConstraint("status in ('open','cleared','reset')", name="status"),
+        ForeignKeyConstraint(["client_id", "batch_ref"], ["batches.client_id", "batches.ref"]),
+        Index("uq_cases_open_batch", "client_id", "batch_ref", unique=True, postgresql_where=sql("status = 'open'")),
+    )
+    id: Mapped[str] = mapped_column(Text, primary_key=True)
+    client_id: Mapped[str] = mapped_column(ForeignKey("clients.id"))
+    batch_ref: Mapped[str] = mapped_column(Text)
+    sku_id: Mapped[str] = mapped_column(Text)
+    distributor_id: Mapped[str] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(Text)
+    phase: Mapped[str] = mapped_column(Text)
+    stage: Mapped[int] = mapped_column(Integer)
+    opened_at: Mapped[datetime] = mapped_column(TS)
+    opened_wall: Mapped[datetime] = mapped_column(TS)
+    closed_at: Mapped[datetime | None] = mapped_column(TS)
+    assess: Mapped[dict[str, Any]] = mapped_column(JSONB)
+    photo: Mapped[dict[str, Any]] = mapped_column(JSONB, server_default=sql("""'{"status":"none"}'::jsonb"""))
+    valuation: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    plan: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    approval: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    listing: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    offer: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    award: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    truck: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    van: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    docs: Mapped[list[Any] | None] = mapped_column(JSONB)
+    invoice_issued_at: Mapped[datetime | None] = mapped_column(TS)
+    reviewed: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    shelf: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    ledger: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    donation: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    escalated: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    updated_wall: Mapped[datetime] = mapped_column(TS)
+    seq: Mapped[int] = seq()
+
+
+class CaseOrder(Base):
+    __tablename__ = "case_orders"
+    __table_args__ = (UniqueConstraint("case_id", "kirana_id"), CheckConstraint("units > 0", name="units"))
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
+    case_id: Mapped[str] = mapped_column(ForeignKey("cases.id"))
+    kirana_id: Mapped[str] = mapped_column(Text)
+    units: Mapped[int] = mapped_column(Integer)
+    at: Mapped[datetime] = mapped_column(TS)
+    wall: Mapped[datetime] = mapped_column(TS)
+    member_ref: Mapped[str | None] = mapped_column(Text)
+
+
+class CaseBid(Base):
+    __tablename__ = "case_bids"
+    __table_args__ = (CheckConstraint("status in ('placed','countered','accepted','declined')", name="status"),)
+    id: Mapped[str] = mapped_column(Text, primary_key=True)
+    case_id: Mapped[str] = mapped_column(ForeignKey("cases.id"))
+    price: Mapped[float] = mapped_column(MONEY)
+    at: Mapped[datetime] = mapped_column(TS)
+    wall: Mapped[datetime] = mapped_column(TS)
+    by_ref: Mapped[str] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(Text)
+    counter: Mapped[float | None] = mapped_column(MONEY)
+    answered_at: Mapped[datetime | None] = mapped_column(TS)
+    seq: Mapped[int] = seq()
+
+
+class CaseMessage(Base):
+    __tablename__ = "case_messages"
+    __table_args__ = (CheckConstraint("sender in ('buyer','agent')", name="sender"),)
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
+    case_id: Mapped[str] = mapped_column(ForeignKey("cases.id"))
+    sender: Mapped[str] = mapped_column(Text)
+    text: Mapped[str] = mapped_column(Text)
+    at: Mapped[datetime] = mapped_column(TS)
+    wall: Mapped[datetime] = mapped_column(TS)
+    by_ref: Mapped[str | None] = mapped_column(Text)
+    answered: Mapped[bool] = mapped_column(Boolean, server_default=sql("false"))
+
+
+class CasePhoto(Base):
+    __tablename__ = "case_photos"
+    __table_args__ = (CheckConstraint("status in ('uploading','sent','read','rejected')", name="status"),)
+    id: Mapped[str] = mapped_column(Text, primary_key=True)
+    case_id: Mapped[str] = mapped_column(ForeignKey("cases.id"))
+    object: Mapped[str] = mapped_column(Text)
+    content_type: Mapped[str] = mapped_column(Text)
+    bytes: Mapped[int] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(Text)
+    by_ref: Mapped[str] = mapped_column(Text)
+    created_wall: Mapped[datetime] = mapped_column(TS)
+    sent_at: Mapped[datetime | None] = mapped_column(TS)
+
+
+class Timer(Base):
+    """something due on journey time: an offer closing, the day-7 shelf check, the report"""
+
+    __tablename__ = "timers"
+    __table_args__ = (Index("ix_timers_due", "due_wall", postgresql_where=sql("fired_wall IS NULL")),)
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
+    client_id: Mapped[str] = mapped_column(ForeignKey("clients.id"))
+    case_id: Mapped[str | None] = mapped_column(ForeignKey("cases.id"))
+    kind: Mapped[str] = mapped_column(Text)
+    due_at: Mapped[datetime] = mapped_column(TS)
+    due_wall: Mapped[datetime] = mapped_column(TS)
+    fired_wall: Mapped[datetime | None] = mapped_column(TS)
+    payload: Mapped[dict[str, Any]] = mapped_column(JSONB, server_default=sql("'{}'::jsonb"))
+
+
+class FeedEvent(Base):
+    """an entry in the agents' timeline: an agent's step or a person's, with the agent's tool calls"""
+
+    __tablename__ = "feed_events"
+    __table_args__ = (Index("ix_feed_events_case", "case_id", "id"),)
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
+    client_id: Mapped[str] = mapped_column(ForeignKey("clients.id"))
+    case_id: Mapped[str | None] = mapped_column(ForeignKey("cases.id"))
+    key: Mapped[str] = mapped_column(Text)
+    stage: Mapped[str] = mapped_column(Text)
+    agent: Mapped[str | None] = mapped_column(Text)
+    person: Mapped[str | None] = mapped_column(Text)
+    icon: Mapped[str | None] = mapped_column(Text)
+    at: Mapped[datetime] = mapped_column(TS)
+    wall: Mapped[datetime] = mapped_column(TS)
+    text: Mapped[str] = mapped_column(Text)
+    calls: Mapped[list[Any]] = mapped_column(JSONB, server_default=sql("'[]'::jsonb"))
+    human: Mapped[bool] = mapped_column(Boolean, server_default=sql("false"))
+
+
+class Notification(Base):
+    """an item in a member's inbox, and whether its push went out"""
+
+    __tablename__ = "notifications"
+    __table_args__ = (
+        CheckConstraint("push_status in ('none','pending','sent','failed')", name="push_status"),
+        Index("ix_notifications_member", "client_id", "member_ref", "id"),
+    )
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
+    client_id: Mapped[str] = mapped_column(ForeignKey("clients.id"))
+    member_ref: Mapped[str] = mapped_column(Text)
+    case_id: Mapped[str | None] = mapped_column(ForeignKey("cases.id"))
+    key: Mapped[str] = mapped_column(Text)
+    title: Mapped[str] = mapped_column(Text)
+    body: Mapped[str] = mapped_column(Text)
+    en: Mapped[str | None] = mapped_column(Text)
+    hindi: Mapped[bool] = mapped_column(Boolean, server_default=sql("false"))
+    link: Mapped[str | None] = mapped_column(Text)
+    at: Mapped[datetime] = mapped_column(TS)
+    wall: Mapped[datetime] = mapped_column(TS)
+    read_wall: Mapped[datetime | None] = mapped_column(TS)
+    push_status: Mapped[str] = mapped_column(Text, server_default="pending")
+    pushed_wall: Mapped[datetime | None] = mapped_column(TS)
+    push_error: Mapped[str | None] = mapped_column(Text)
+
+
+class StreamRow(Base):
+    """what each member's live view hears, in one sequence per client (services/stream.py)"""
+
+    __tablename__ = "stream"
+    client_id: Mapped[str] = mapped_column(ForeignKey("clients.id"), primary_key=True)
+    seq: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    kind: Mapped[str] = mapped_column(Text)
+    ref: Mapped[str | None] = mapped_column(Text)
+    audience: Mapped[list[str] | None] = mapped_column(ARRAY(Text))
+    feed_id: Mapped[int | None] = mapped_column(ForeignKey("feed_events.id"))
+    notification_id: Mapped[int | None] = mapped_column(ForeignKey("notifications.id"))
+    wall: Mapped[datetime] = mapped_column(TS)
+
+
+class Device(Base):
+    """a member's browser registered for push (its FCM token)"""
+
+    __tablename__ = "devices"
+    __table_args__ = (Index("ix_devices_user", "user_id"),)
+    token: Mapped[str] = mapped_column(Text, primary_key=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"))
+    client_id: Mapped[str] = mapped_column(ForeignKey("clients.id"))
+    user_agent: Mapped[str] = mapped_column(Text)
+    created_wall: Mapped[datetime] = mapped_column(TS)
+    last_seen_wall: Mapped[datetime] = mapped_column(TS)
+
+
+class IdempotencyKey(Base):
+    """a member's change, by the key its request carried: a retry with the same key answers without acting again"""
+
+    __tablename__ = "idempotency_keys"
+    client_id: Mapped[str] = mapped_column(ForeignKey("clients.id"), primary_key=True)
+    member_ref: Mapped[str] = mapped_column(Text, primary_key=True)
+    key: Mapped[str] = mapped_column(Text, primary_key=True)
+    route: Mapped[str] = mapped_column(Text)
+    ref: Mapped[str | None] = mapped_column(Text)
+    created_wall: Mapped[datetime] = mapped_column(TS)
+
+
+class Outbox(Base):
+    """a Pub/Sub message, written with the change that caused it and published once that change has committed"""
+
+    __tablename__ = "outbox"
+    __table_args__ = (Index("ix_outbox_pending", "id", postgresql_where=sql("published_wall IS NULL")),)
+    id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)
+    topic: Mapped[str] = mapped_column(Text)
+    ordering_key: Mapped[str] = mapped_column(Text, server_default="")
+    attributes: Mapped[dict[str, Any]] = mapped_column(JSONB, server_default=sql("'{}'::jsonb"))
+    payload: Mapped[dict[str, Any]] = mapped_column(JSONB)
+    created_wall: Mapped[datetime] = mapped_column(TS)
+    published_wall: Mapped[datetime | None] = mapped_column(TS)
+    attempts: Mapped[int] = mapped_column(Integer, server_default="0")
+    last_error: Mapped[str | None] = mapped_column(Text)
