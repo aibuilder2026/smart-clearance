@@ -258,3 +258,32 @@ async def mark_read(ctx: Ctx, client_id: str, member_ref: str, ids: list[int] | 
         q = q.where(m.Notification.id.in_(ids))
     result = await ctx.session.execute(q)
     return result.rowcount or 0
+
+
+async def set_day_minutes(ctx: Ctx, client_id: str, minutes: int) -> None:
+    """the console's setting: how many minutes of wall time a journey day lasts while a batch is at risk (1 to 1440;
+    1440 is real time). The clock re-anchors at once, so no journey time is skipped"""
+    from sc_api.errors import ApiError
+    from sc_api.services import audit
+    from sc_api.services.presenter import lock_client
+
+    ctx.require("clients.configure", "Your role can't change a client's clock.")
+    if not 1 <= minutes <= DAY_MINUTES:
+        raise ApiError(422, "A journey day lasts 1 to 1,440 minutes.", {"dayMinutes": "1 to 1,440 minutes."})
+    c = await lock_client(ctx, client_id)
+    if c.day_minutes == minutes:
+        return
+    was, c.day_minutes = c.day_minutes, minutes
+    await apply_speed(ctx, c)
+    if c.clock_speed != DAY_MINUTES:  # a case is open: the new speed applies now
+        await set_speed(ctx, c, minutes)
+    words = {DAY_MINUTES: "real time"}
+    await audit.record(
+        ctx,
+        c.id,
+        "client.clock",
+        f"Set {c.name}'s journey day to {words.get(minutes, f'{minutes} minutes')} "
+        f"(was {words.get(was, f'{was} minutes')})",
+        {"from": was, "to": minutes},
+    )
+    await changed(ctx, c)

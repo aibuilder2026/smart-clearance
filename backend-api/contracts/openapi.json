@@ -901,6 +901,20 @@
         "title": "ClientPerson",
         "type": "object"
       },
+      "ClockInput": {
+        "additionalProperties": false,
+        "properties": {
+          "dayMinutes": {
+            "title": "Dayminutes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "dayMinutes"
+        ],
+        "title": "ClockInput",
+        "type": "object"
+      },
       "ClosedToday": {
         "additionalProperties": false,
         "description": "the batches closed today (India's day): how many, what they recovered, and the latest three",
@@ -3341,6 +3355,63 @@
           }
         ],
         "summary": "Override a batch's gates, with why",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}/clock": {
+      "put": {
+        "operationId": "set_clock_v1_console_clients__client_id__clock_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClockInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "How long a journey day lasts while a batch is at risk",
         "tags": [
           "console"
         ]

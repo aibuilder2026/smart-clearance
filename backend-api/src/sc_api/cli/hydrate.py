@@ -13,18 +13,22 @@ local unless --allow-env names it.
 
 import argparse
 import asyncio
+from dataclasses import replace
 from datetime import UTC, datetime
 
 from sqlalchemy import func, select
 
 from sc_api import models as m
+from sc_api.cli import live
 from sc_api.cli.story import Story
 from sc_api.cli.synth import SyntheticIdentity, World
+from sc_api.cloud import cloud
 from sc_api.db import engine_scope, sessions
 from sc_api.domain.clock import FixedClock, SeededIds
 from sc_api.identity import provider
 from sc_api.services import reference
 from sc_api.services.context import SYSTEM, Ctx
+from sc_api.services.journey import reset
 from sc_api.settings import get_settings
 
 
@@ -41,8 +45,16 @@ async def run(args: argparse.Namespace) -> None:
             ref=await reference.read(session),
         )
         world = World(ctx, seed=args.seed, days=args.days)
+        ctx = replace(ctx, cloud=cloud(settings, ctx.identity)) if settings.exports_bucket else ctx
+        world.ctx = ctx
         if args.tick:
             print(f"sc-hydrate: today's runs for {await world.tick()} live client(s)")
+            return
+        if args.journey_reset:
+            out = await reset.reset(ctx, args.journey_reset)
+            await session.commit()
+            await _publish(ctx)
+            print(f"sc-hydrate: {args.journey_reset}'s journey starts again on {out['day0']}")
             return
         clients = (await session.execute(select(func.count()).select_from(m.Client))).scalar_one()
         if clients:
@@ -56,6 +68,14 @@ async def run(args: argparse.Namespace) -> None:
             await session.commit()
             world.staff.extend(a for a in story.actors.values() if a.staff_ref and a.role)
             print("sc-hydrate: Munchly Foods, from design3's story")
+            if not args.no_live:
+                ctx.clock.set(datetime.now(UTC))  # type: ignore[attr-defined]
+                out = await live.build(ctx)
+                await session.commit()
+                print(
+                    f"sc-hydrate: Munchly's live workspace: {out['members']} members on email and password, "
+                    f"{out['kiranas']} kiranas; the journey starts on {out['day0']}"
+                )
         await world.make_staff(args.staff)
         for n in range(args.clients):
             await world.client(n, args.clients, live=n % 3 != 2)
@@ -79,6 +99,17 @@ async def run(args: argparse.Namespace) -> None:
                 q = q.where(m.User.firebase_uid.is_not(None))
             counts[name] = (await session.execute(q)).scalar_one()
         print("sc-hydrate:", ", ".join(f"{v} {k}" for k, v in counts.items()))
+        await _publish(ctx)
+
+
+async def _publish(ctx: Ctx) -> None:
+    """the journey's first events (the backfill for the Data agent, the Mango donation), to Pub/Sub"""
+    if ctx.cloud is None:
+        return
+    from sc_api.services.journey.outbox import drain
+
+    sent = await drain(sessions(ctx.session.bind), ctx.cloud.publisher, datetime.now(UTC))  # type: ignore[arg-type]
+    print(f"sc-hydrate: {sent} event(s) published")
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -89,6 +120,8 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--days", type=int, default=35)
     p.add_argument("--no-demo-story", action="store_true")
     p.add_argument("--tick", action="store_true")
+    p.add_argument("--no-live", action="store_true", help="leave Munchly's live workspace out (SC-66)")
+    p.add_argument("--journey-reset", metavar="CLIENT", help="start a client's live journey again (SC-66)")
     p.add_argument("--allow-env", help="hydrate an environment other than local (named, to be sure)")
     args = p.parse_args(argv)
     env = get_settings().sc_env
