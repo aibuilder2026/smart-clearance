@@ -12,22 +12,42 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
-		"test": "vitest run"
+		"test": "vitest run",
+		"test:a11y": "vite build && playwright test --project=desktop-light --project=desktop-dark --project=tablet-light --project=phone-light --project=phone-dark && node ../testing/src/a11y-coverage.ts",
+		"test:e2e": "vite build && playwright test --project=flows --project=firefox-desktop --project=webkit-tablet --project=webkit-phone",
+		"test:parity": "vite build && playwright test -c playwright.parity.config.ts"
 	},
 	"dependencies": {
 		"@smart-clearance/core": "workspace:*"
 	},
 	"devDependencies": {
+		"@playwright/test": "^1.63.0",
+		"@smart-clearance/testing": "workspace:*",
 		"@sveltejs/adapter-static": "^4.0.0",
 		"@sveltejs/kit": "^3.0.0",
 		"@sveltejs/vite-plugin-svelte": "catalog:",
 		"@tailwindcss/vite": "^4.3.3",
 		"@types/node": "catalog:",
+		"@types/pngjs": "^6.0.5",
+		"pixelmatch": "^7.2.0",
+		"pngjs": "^7.0.0",
 		"svelte": "catalog:",
 		"svelte-check": "catalog:",
 		"tailwindcss": "^4.3.3",
 		"typescript": "catalog:",
 		"vite": "catalog:",
 		"vitest": "catalog:"
+	},
+	"a11yCoverage": {
+		"why": "The demo's people are the story's: the workspace admin is never one of them and switching person is off, so the admin's screens, and the workspace app's own shell, are never on the demo's screen (SC-65).",
+		"unreached": [
+			"workspace/WorkspaceApp.svelte",
+			"workspace/screens/admin/WorkspaceSettings.svelte",
+			"workspace/screens/admin/Users.svelte",
+			"workspace/screens/admin/RowMenu.svelte",
+			"workspace/screens/admin/Rules.svelte",
+			"workspace/screens/admin/Integrations.svelte",
+			"workspace/screens/admin/Audit.svelte"
+		]
 	}
 }

@@ -1,3 +1,5 @@
 # generated (see ../.prettierignore)
 .svelte-kit/
 build/
+test-results/
+playwright-report/

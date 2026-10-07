@@ -16,11 +16,18 @@
 	const reduce = prefersReducedMotion.current;
 </script>
 
-<div class="finale" transition:rise|global={{ y: 0, duration: 240 }}>
+<!-- a dialog over the stage, which is inert behind it while it shows (Director.svelte) -->
+<div
+	class="finale"
+	role="dialog"
+	aria-modal="true"
+	aria-labelledby="finale-title"
+	transition:rise|global={{ y: 0, duration: 240 }}
+>
 	<div class="finale-in">
 		<Mark size={64} play={!reduce} />
 		<span class="finale-ws"><WorkspaceMark ws={WS} size={22} /><span>{WS.name} · {WS.domain}</span></span>
-		<h2 class="finale-title">Every carton gets a second chance</h2>
+		<h2 class="finale-title" id="finale-title">Every carton gets a second chance</h2>
 		<p class="finale-hi hi" lang="hi">हर कार्टन को दूसरा मौका</p>
 		<div class="finale-hero">
 			<Money value={D.actual.net} roll from={0} class="finale-num" style="color: var(--primary-text)" /><span

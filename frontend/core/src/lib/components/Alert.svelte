@@ -58,7 +58,7 @@
 			interactOutsideBehavior="close"
 			onOpenAutoFocus={focusPanel}
 			trapFocus={!app.embedded}
-			preventScroll={!app.embedded}
+			preventScroll={!app.embedded && app.scroll !== 'window'}
 		>
 			{#snippet child({ props, open: shown })}
 				{#if shown}

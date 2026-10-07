@@ -231,7 +231,8 @@ test.describe('the film and the table, with motion on (SC-60)', () => {
 		await expect(ctl, 'the film ends and offers Replay').toHaveText(/Replay/, { timeout: 4000 });
 		await page.keyboard.press('Enter');
 		await expect(ctl).toHaveText(/Pause/);
-		await expect(page.locator('.film-word [aria-hidden]')).toHaveText('chance', { timeout: 8000 });
+		// the word on screen, not the one leaving (inert while it fades out); the turns take 4.5 s, slower on a busy machine
+		await expect(page.locator('.film-word [aria-hidden]:not([inert])')).toHaveText('chance', { timeout: 15000 });
 	});
 
 	test('motion · the agents work the batch on the table once, each in focus, and hold on the result', async ({

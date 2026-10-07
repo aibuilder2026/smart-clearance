@@ -148,7 +148,14 @@
 				{#if shown}<div {...props} class="scrim" transition:scrim></div>{/if}
 			{/snippet}
 		</Dialog.Overlay>
-		<Dialog.Content forceMount onOpenAutoFocus={focusPanel} trapFocus={!app.embedded} preventScroll={!app.embedded}>
+		<!-- no scroll lock on a page that scrolls the window: bits-ui's would collapse it to the window's height and jump it
+		     to the top behind the sheet (SC-65); the prototype's sheets never lock it -->
+		<Dialog.Content
+			forceMount
+			onOpenAutoFocus={focusPanel}
+			trapFocus={!app.embedded}
+			preventScroll={!app.embedded && app.scroll !== 'window'}
+		>
 			{#snippet child({ props, open: shown })}
 				{#if shown}
 					<div

@@ -25,13 +25,29 @@ function files(dir: string): string[] {
 
 // the core components the app imports, and where
 const used = new Map<string, string>();
+const use = (name: string, path: string) => known.has(name) && !used.has(name) && used.set(name, path);
+let workspace = false;
 for (const path of files('src')) {
-	for (const m of readFileSync(path, 'utf8').matchAll(/import\s*\{([^}]*)\}\s*from\s*'@smart-clearance\/core[^']*'/g)) {
-		for (const name of m[1].split(',').map((n) => n.replace(/^\s*type\s+/, '').trim())) {
-			if (known.has(name) && !used.has(name)) used.set(name, path);
-		}
+	for (const m of readFileSync(path, 'utf8').matchAll(
+		/import\s*\{([^}]*)\}\s*from\s*'@smart-clearance\/core([^']*)'/g
+	)) {
+		if (m[2] === '/workspace') workspace = true;
+		for (const name of m[1].split(',').map((n) => n.replace(/^\s*type\s+/, '').trim())) use(name, path);
 	}
 }
+// an app on the workspace app (SC-62: the workspace host and the guided demo) uses every core component its screens
+// do: they live in core (src/lib/workspace), importing the kit by path or from the package's index
+// An app can name the workspace screens it never shows, with why, in its package.json (`a11yCoverage.unreached`, paths
+// under core/src/lib): the guided demo has no workspace admin, so the admin's screens are never on its screen
+const pkg = JSON.parse(readFileSync('package.json', 'utf8')) as { a11yCoverage?: { unreached?: string[] } };
+const unreached = new Set((pkg.a11yCoverage?.unreached ?? []).map((p) => join(core, p)));
+if (workspace)
+	for (const path of files(join(core, 'workspace')).filter((p) => !unreached.has(p))) {
+		const text = readFileSync(path, 'utf8');
+		for (const m of text.matchAll(/from\s*'(?:\.\.\/)+(?:components|patterns)\/(\w+)\.svelte'/g)) use(m[1], path);
+		for (const m of text.matchAll(/import\s*\{([^}]*)\}\s*from\s*'(?:\.\.\/)+index'/g))
+			for (const name of m[1].split(',').map((n) => n.replace(/^\s*type\s+/, '').trim())) use(name, path);
+	}
 
 // what the scans saw, and the findings they made
 const results = 'test-results/a11y';

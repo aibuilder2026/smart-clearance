@@ -133,7 +133,9 @@
         if (!root) return;
         const el = root.querySelector(`[data-anchor="${spec.anchor}"]`);
         const sc = root.querySelector(".scroll");
-        if (el && sc) sc.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top - sc.getBoundingClientRect().top + sc.scrollTop - 64), behavior: "smooth" });
+        if (!el || !sc) return;
+        const k = sc.getBoundingClientRect().height / (sc.clientHeight || 1) || 1;
+        sc.scrollTo({ top: Math.max(0, (el.getBoundingClientRect().top - sc.getBoundingClientRect().top) / k + sc.scrollTop - 64), behavior: "smooth" });
       }, 420);
       return () => clearTimeout(t);
     }, [spec.anchor, spec.who, routeState && routeState.name, !!lock, s.hero.phase]);
@@ -200,7 +202,7 @@
     const size = useSize(canvas);
     const real = typeof window !== "undefined" && window.innerWidth < 768;
     const cfg = STAGES[n];
-    const beatDone = (b, st) => b.ui ? !!ui[b.ui] : b.done(st);
+    const beatDone = (b, st) => b.ui ? !!ui[b.ui] || cfg.beats.slice(cfg.beats.indexOf(b) + 1).some((x) => !x.ui && x.done(st)) : b.done(st);
     let idx = 0;
     while (idx < cfg.beats.length && beatDone(cfg.beats[idx], s)) idx++;
     const beat = cfg.beats[Math.min(idx, cfg.beats.length - 1)];

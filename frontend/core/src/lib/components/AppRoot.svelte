@@ -18,7 +18,7 @@
 	let { class: className, style, theme, embedded = false, scroll = 'app', children }: Props = $props();
 
 	// svelte-ignore state_referenced_locally
-	const app = new AppState({ embedded });
+	const app = new AppState({ embedded, scroll });
 	provideApp(app);
 
 	let root: HTMLDivElement | undefined = $state();

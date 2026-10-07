@@ -12,10 +12,14 @@ export class AppState {
 	mounted = $state(false);
 	/** an app drawn inside a device preview (the demo, the design system page), not the page itself */
 	readonly embedded: boolean;
+	/** 'window': a page that scrolls the window (the landing page), whose overlays sit in a fixed layer and leave the
+	 *  page where it was, as the prototype's do; 'app': the app scrolls inside its root */
+	readonly scroll: 'app' | 'window';
 	readonly bp: Breakpoint = $derived(bpOf(this.w));
 
-	constructor({ embedded = false }: { embedded?: boolean } = {}) {
+	constructor({ embedded = false, scroll = 'app' }: { embedded?: boolean; scroll?: 'app' | 'window' } = {}) {
 		this.embedded = embedded;
+		this.scroll = scroll;
 		if (typeof window !== 'undefined' && !embedded) {
 			this.w = window.innerWidth;
 			this.h = window.innerHeight;

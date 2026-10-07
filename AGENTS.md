@@ -52,9 +52,9 @@ corepack pnpm dev:workspace               # Munchly's workspace app on :5175 (ex
 corepack pnpm dev:demo                    # the guided demo on :5176 (→ moves on a beat; 1 to 9 jump to a stage)
 corepack pnpm build                       # every app, into admin/build, console/build and workspace/build (build:admin, build:console, build:workspace)
 corepack pnpm lint && corepack pnpm check && corepack pnpm test   # the gate jira-flow runs
-corepack pnpm test:a11y                   # the a11y suite: both apps' builds, WCAG 2.2 AA in five projects, keyboard, motion, and component coverage
-corepack pnpm test:e2e                    # both apps: the console's flows, Firefox and WebKit smoke
-corepack pnpm test:parity                 # both apps' builds against design3, pixel by pixel
+corepack pnpm test:a11y                   # the a11y suite: every app's build, WCAG 2.2 AA in five projects, keyboard, motion, and component coverage
+corepack pnpm test:e2e                    # every app: the console's flows, the workspace journey, the demo's playthrough, Firefox and WebKit smoke
+corepack pnpm test:parity                 # every app's build against design3, pixel by pixel
 corepack pnpm seed && corepack pnpm icons # regenerate from design3 after it changes
 ```
 
@@ -197,7 +197,9 @@ Local pages:
   - sheets and alerts taking, keeping and returning focus (Find your workspace, Find a workspace, the client actions alert);
   - the menu-button pattern (the appearance, sign-in and client actions menus);
   - Book a demo's errors tied to their fields, and the New client flow saying what a step is missing;
-  - the landing page's town: its tour's Pause and Play, Replay, places and agents opened by keyboard, the steps.
+  - the landing page's film and table: Pause, Play and Replay, the rail;
+  - the workspace app's sign-in by keyboard, the one-time code's first box taking focus, its sheets and the users row menu (SC-65);
+  - the guided demo's keys (→ ← 1–9 P N), its stage bar, the appearance menu, and the finale, which keeps focus inside it while the stage behind is inert (SC-65).
 
   These criteria still need a manual pass: 2.4.11, 2.5.7, 3.2.6, 3.3.7 and 3.3.8.
 - Nothing loops forever: every animation stops within five seconds (WCAG 2.2.2), and only loading indicators keep turning. `motion.a11y.spec.ts` fails on any endless animation.
@@ -328,7 +330,7 @@ From the Claude desktop app:
 - Terraform runs from a workstation, as a person: CI checks the configuration but never plans or applies.
 - The `chrome-devtools` MCP server starts only in a new session, after a one-time approval.
 - The WCAG 2.2 criteria axe cannot check are untested.
-- The a11y suite scans only the landing page and the console. The workspace app (SC-62) and the guided demo (SC-63) have no a11y, e2e or parity suite yet.
+- The a11y suite scans the four apps' builds. design3's prototypes are not scanned; a design change is checked once it is ported.
 - The workspace app (`frontend/workspace`, its screens in `frontend/core/src/lib/workspace/`) runs on the prototype's stub: its store and agents in the browser, persisted per browser (`sc3-store`). backend-api has no workspace routes, and the app is not installable yet. It is live at munchly-smartclearance.web.app, where each browser keeps its own journey.
 - A switched-off agent's summary in the console's agent pipeline fails contrast (2.4:1, faded with opacity; SC-59), found by the a11y suite's first scan of the paused state (SC-58).
 - The console edits its own browser store (`core/platform.js`, seeded from the app's data). The app's workspace doesn't read the console's changes yet.

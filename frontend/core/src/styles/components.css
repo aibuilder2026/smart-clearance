@@ -101,6 +101,8 @@
 .list.icons .list-row { --inset: 60px; }
 button.list-row, a.list-row { transition: background-color var(--t-fast); color: inherit; text-decoration: none; }
 button.list-row:hover, a.list-row:hover { background: var(--fill); }
+/* in dark, the hover's fill takes a row's tertiary text under 4.5:1 (4.37:1 on a sheet), so a hovered row lifts it to the secondary ink (SC-65) */
+[data-theme="dark"] :is(button, a).list-row:hover :is(.subtle, .lr-sub) { color: var(--fg-2); }
 .list-row .lr-main { flex: 1 1 auto; min-width: min(40%, 9em); }
 .list-row .lr-title { font-size: 15px; font-weight: 500; }
 .list-row .lr-sub { font-size: 13px; color: var(--fg-3); }
@@ -470,14 +472,16 @@ button.list-row:hover, a.list-row:hover { background: var(--fill); }
   .iconbtn.round { width: 32px; height: 32px; }
 }
 
-/* @port adapters: what the SvelteKit build needs beyond the prototype's CSS (frontend/core/README.md, "Ported CSS").
-   .app-window: a root that grows with its page, so the window scrolls (the prototype's pages scroll inside a fixed .app).
-   .app-overlays: the fixed layer such a page's sheets and alerts portal into; .app's layout containment would otherwise
-   pin them to the top of the page. It is a query container named "app" too, so overlay rules read the same widths.
-   .when-light / .when-dark: one icon for each appearance, chosen by <html data-theme> before the page hydrates. */
+
+/* a page that scrolls the window (AppRoot scroll="window", the landing page): its root grows with the page, and its sheets
+   and alerts go into a fixed layer over the window, since the root's containment would otherwise centre them on the
+   whole page. The layer is a query container named "app" too, so overlay rules read the same widths (SC-65) */
 .app.app-window { height: auto; min-height: 100vh; min-height: 100dvh; overflow: visible; }
 .app.app-overlays { position: fixed; inset: 0; z-index: var(--z-sheet); height: auto; min-height: 0; background: none; overflow: hidden; pointer-events: none; }
 .app.app-overlays > * { pointer-events: auto; }
+
+/* @port adapters: what the SvelteKit build needs beyond the prototype's CSS (frontend/core/README.md, "Ported CSS").
+   .when-light / .when-dark: one icon for each appearance, chosen by <html data-theme> before the page hydrates. */
 [data-theme="dark"] .when-light, :root:not([data-theme="dark"]) .when-dark { display: none; }
 /* a menu item that is a link (another site, in a new tab) looks like the menu's buttons */
 .menu a.mi { text-decoration: none; }

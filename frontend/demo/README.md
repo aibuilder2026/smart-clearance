@@ -43,6 +43,15 @@ workstation, and CI releases it with the other apps on every merge to `main`.
 - **Kept in step with design3:** `src/lib/demo.css` is `design3/demo/demo.css` verbatim, and the beats are the
   director's, in order (`tests/unit/shared.test.ts`).
 
-## Not yet
+## The browser suites (SC-65)
 
-- No a11y, e2e or parity suite; the gate (`lint`, `check`, `test`) covers it.
+Run only when asked (the `browser-suites` skill), each on the demo's build:
+
+- **`test:a11y`**: every stage, beat by beat, and the finale, the splash, phone only, the notes, the appearance menu
+  and the real phone's notes sheet, in five viewport and theme projects; the keys, the stage bar, the menu and the
+  finale by keyboard; nothing looping, on stages, during autoplay and on the finale. Then the coverage check, which
+  leaves out the workspace admin's screens, which the demo never shows (`a11yCoverage` in `package.json`).
+- **`test:e2e`**: → from the first sign-in to the finale (41 beats), each person's move made inside the devices, Back,
+  Restart, Play it again, autoplay, phone only, the notes and a reload; Firefox and WebKit smoke runs.
+- **`test:parity`**: the nine stages and the finale against `design3/demo` in five projects, and phone only and notes
+  hidden on desktops.

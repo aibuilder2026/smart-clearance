@@ -8,6 +8,8 @@ html, body { height: 100%; margin: 0; background: var(--bg); }
               radial-gradient(50% 45% at 18% 88%, color-mix(in oklab, var(--aurora-2) 45%, transparent), transparent 70%),
               radial-gradient(40% 40% at 95% 95%, color-mix(in oklab, var(--aurora-3) 40%, transparent), transparent 70%); }
 .demo > * { position: relative; z-index: 1; }
+/* the splash covers the stage, as on every page: the rule above would put it in the grid's flow, under the stage (SC-65) */
+.demo > .splash { position: absolute; z-index: var(--z-splash); }
 
 /* top bar */
 /* the top bar sits above the stage so its menus open over the devices, not under them */

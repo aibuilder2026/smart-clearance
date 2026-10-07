@@ -62,8 +62,22 @@ A screen the person's role cannot open falls back to their home.
 - **The session** (`sc3-session`), the splash once a session (`sc3-app-splash`), the theme (`sc3-theme`) and the hero's
   paused animation (`sc3-hero-paused`) keep the prototype's storage keys.
 
+## The browser suites (SC-65)
+
+Run only when asked (the `browser-suites` skill), each on the app's build, the journey put at a stage by running
+design3's own core scripts (`tests/e2e/workspace.ts`):
+
+- **`test:a11y`**: every person's every screen with the batch cleared; the sign-in and each of its sheets; the splash,
+  a banner, the workspace and switch-person sheets, a toast; the users menu and sheets; Route Room, the approval,
+  Execution, Paperwork and the camera at the stages they belong to; in five viewport and theme projects. The sign-in,
+  the code's first box, the sheets and the users menu by keyboard; nothing looping. Then the coverage check, which
+  follows the workspace screens into core.
+- **`test:e2e`**: Priya's journey from a wrong email to execution; a phone sign-in with a wrong code; a first-time
+  invitee joining; a bid, the counter and the award; switching person; the shell, back and forward; Reset demo data.
+  Firefox and WebKit smoke runs.
+- **`test:parity`**: 27 screens and the sign-in against `design3/app` in five projects.
+
 ## Not yet
 
 - Not installable: the prototype's manifest and offline service worker (`design3/app/manifest.webmanifest`, `sw.js`)
   are not ported. The Install buttons appear only when the browser offers an install.
-- No a11y, e2e or parity suite yet; the gate (`lint`, `check`, `test`) covers it.

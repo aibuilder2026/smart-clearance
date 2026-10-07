@@ -25,4 +25,5 @@
 	const s = $derived(STATUS[status] || { label: status });
 </script>
 
-<Badge tone={s.tone} dot {live}>{s.label}</Badge>
+<!-- data-status names it for the a11y suite's coverage (@smart-clearance/testing/a11y); nothing styles it -->
+<Badge tone={s.tone} dot {live} data-status={status}>{s.label}</Badge>
