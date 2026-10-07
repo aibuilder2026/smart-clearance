@@ -2,8 +2,9 @@
    run Munchly Foods' journey for real. Sign-in is email and password for everyone (Munchly's people on munchly.example,
    everyone outside Munchly on google.example); every shop Rakesh Traders offers the scheme to has its own account; the
    shops' pincodes and sales feed the synthetic DMS exports the Data agent loads into BigQuery.
-   The prototype's pages do not load this file: frontend/scripts/seed.mjs runs it after data.js and writes it into
-   backend-api's reference data. Every person and shop here is fictional; the places are real. */
+   frontend/scripts/seed.mjs runs it after data.js and writes it into backend-api's reference data; of the prototype's
+   pages only the app loads it, for its live mode's sign-in addresses (SC-73). Every person and shop here is fictional;
+   the places are real. */
 (function () {
   const D = window.SC3_DATA;
 

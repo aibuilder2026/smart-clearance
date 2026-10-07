@@ -9,14 +9,17 @@
 	import { fade } from '../../../motion/transitions';
 	import { fmt } from '../../../format';
 	import { useRoute } from '../../context';
+	import { useLive } from '../../live.svelte';
 	import { castOf } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import LabelShot from '../brand/LabelShot.svelte';
 	import Screen from '../common/Screen.svelte';
+	import SendFill from '../live/SendFill.svelte';
 
 	// the camera: frame one carton label, shoot (or pick from the gallery), send; then Vision reads batch, dates and MRP.
-	// With a real camera, the shutter opens the phone's own camera
+	// With a real camera, the shutter opens the phone's own camera. On the live workspace (SC-73) the photo itself goes:
+	// the shutter opens the camera on a phone and the file picker elsewhere, and Send fills as the photo uploads
 	let { me, realCamera }: { me: User; realCamera?: boolean } = $props();
 	const ws = useWorkspace();
 	const c = $derived(ws.case!);
@@ -28,8 +31,19 @@
 	let shot: string | null = $state(null);
 	let flash = $state(false);
 	let sending = $state(false);
+	let gallery: HTMLInputElement | null = $state(null);
+	/** the photo picked or taken, which the live workspace uploads */
+	let photo: File | null = $state(null);
+	const live = useLive();
+	const on = $derived(!!live?.on);
+	const key = $derived(`photo:${c.batch.id}`);
+	const going = $derived(ws.uploads?.get(key));
 
 	const take = () => {
+		if (on) {
+			(window.matchMedia('(pointer: coarse)').matches ? file : gallery)?.click();
+			return;
+		}
 		if (realCamera && file && window.matchMedia('(pointer: coarse)').matches) {
 			file.click();
 			return;
@@ -45,11 +59,16 @@
 	};
 	const picked = (e: Event) => {
 		const f = (e.currentTarget as HTMLInputElement).files?.[0];
-		if (f) shot = URL.createObjectURL(f);
+		if (f) {
+			photo = f;
+			shot = URL.createObjectURL(f);
+		}
 	};
 	const send = () => {
 		sending = true;
-		void ws.act('sendPhoto', undefined, { feel: 700 }).then(() => (sending = false));
+		void ws
+			.act('sendPhoto', on ? (photo ?? undefined) : undefined, { feel: on ? 0 : 700 })
+			.then(() => (sending = false));
 	};
 	// the scan line sweeps the label three times while Vision reads it, then rests
 	const scan = (el: HTMLElement) => {
@@ -107,7 +126,10 @@
 						>{#each record as [k, v] (k)}<ListRow title={k} value={v} />{/each}</List
 					>{/if}
 				<Button variant="secondary" block onclick={() => go('home')}>Back to today</Button>
-			</Card>{:else if shot}<div class="row" style="gap: 10px">
+			</Card>{:else if going != null}<SendFill
+				p={going}
+				oncancel={ws.cancelUpload ? () => ws.cancelUpload?.(key) : undefined}
+			/>{:else if shot}<div class="row" style="gap: 10px">
 				<Button variant="secondary" size="lg" icon="rotate-ccw" onclick={() => (shot = null)}>Retake</Button><Button
 					variant="primary"
 					size="lg"
@@ -119,6 +141,7 @@
 			</div>{:else}<div class="cam-bar">
 				<label class="iconbtn round" aria-label="Choose a photo from the gallery" style="cursor: pointer"
 					><Icon name="image" size={22} /><input
+						bind:this={gallery}
 						type="file"
 						accept="image/*"
 						onchange={picked}
@@ -138,8 +161,9 @@
 				/>
 			</div>{/if}
 		{#if realCamera}<p class="t-caption subtle" style="text-align: center; margin: 0">
-				On a phone the shutter opens your camera. In this prototype a stub stands in for Gemini vision and returns the
-				batch record.
+				{#if !on}On a phone the shutter opens your camera. In this prototype a stub stands in for Gemini vision and
+					returns the batch record.{:else if going != null}A slow connection only slows the send.{:else}On a phone the
+					shutter opens your camera.{/if}
 			</p>{/if}
 	</div>
 </Screen>

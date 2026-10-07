@@ -29,6 +29,10 @@ Smart-Clearance is sold to manufacturers as software as a service: each one gets
   - "Explore as someone in the story" skips straight to a person.
 - **The admin's Workspace screen** shows the sign-in methods, the supply-chain profile as set up for Munchly, the distributors and the branding.
 
+## The app on a live backend (SC-73, SC-68's option B)
+
+`app/…v3.html?live` shows the workspace as it runs on backend-api, simulated in the browser (`app/app.jsx` LiveApp, its pieces in `screens/live.jsx`): email and password with the story's people as chips that fill the email only (their addresses from `core/world.js`), live and journey time under every title (one journey day lasts five minutes here), a band while the stream is down, the console's splash (`console/splash.js`) in the workspace's words for the first load and signing in, one step after the first sign-in that asks for notifications, the flagged batches as tabs over the tracker card and under the Route Room's title (`#/route/<batch>`), Send filling as the label photo goes, Setup's export upload, a failed approval with Retry, and a quiet day. `?state=` starts at one of SC-68's moments and `?shot=1` holds it still; the button at the bottom left lists them. Without `?live` nothing changes, and the guided demo never sees it.
+
 ## The console (SC-25)
 
 The console is the platform's own surface, separate from every client workspace.

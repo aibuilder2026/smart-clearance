@@ -144,14 +144,15 @@ export const personById = (
 ): { id?: string; name: string; short?: string; img?: string } =>
 	data.people[id] || s.users.find((u) => u.id === id) || { name: id };
 
-/** a distributor's one-time permission: the one in focus as the state holds it, the others as the workspace's setup */
+/** a distributor's one-time permission: the one in focus as the state holds it, the others as the workspace's setup
+ *  (with no batch in focus, every one as the setup holds it) */
 export function permissionOf(
 	s: State,
 	id: string,
 	data: Pick<WorkspaceData, 'setup'>,
-	c: Pick<CaseData, 'dist'>
+	c: Pick<CaseData, 'dist'> | null
 ): { tone?: 'green' | 'amber'; label: string } {
-	if (id === c.dist.id) {
+	if (c && id === c.dist.id) {
 		const p = s.setup.permission;
 		return p
 			? p.paused
@@ -195,15 +196,16 @@ const nobody = (role: RoleId): User => ({
 	kind: 'partner',
 	lastSeen: null
 });
-export function castOf(s: State, c: Pick<CaseData, 'dist' | 'kiranas' | 'buyer' | 'donation'>) {
+export function castOf(s: State, c: Pick<CaseData, 'dist' | 'kiranas' | 'buyer' | 'donation'> | null) {
 	const by = (r: RoleId, org?: string | null) =>
 		(org === null ? undefined : s.users.find((u) => u.role === r && (!org || u.org === org))) ?? nobody(r);
+	// with no batch in focus (the live workspace's quiet day), nobody stands for the batch's own partners
 	return {
 		operator: by('operator'),
-		distributor: by('distributor', c.dist.name),
-		kirana: by('retailer', c.kiranas[0]?.name ?? null),
-		buyer: by('buyer', c.buyer.name || null),
-		foodbank: by('foodbank', c.donation.partner?.name || null),
+		distributor: by('distributor', c ? c.dist.name : null),
+		kirana: by('retailer', c?.kiranas[0]?.name ?? null),
+		buyer: by('buyer', c?.buyer.name || null),
+		foodbank: by('foodbank', c?.donation.partner?.name || null),
 		finance: by('finance'),
 		sustainability: by('sustainability')
 	};

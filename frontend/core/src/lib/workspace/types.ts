@@ -581,6 +581,36 @@ export type WorkspacePublic = {
 	platform: WorkspaceSeed['platform'];
 	/** the stub's own sign-in: the one-time code it sends, and the accounts a visitor may try */
 	prototype?: { code: string; accounts: [string, string][] };
+	/** a live workspace's sign-in (SC-73): the story's people, by where they stand; a chip fills the email only, the
+	 *  password is handed over apart. Empty for a real client's workspace */
+	accounts?: SignInGroup[];
+};
+
+/** someone a synthetic workspace offers on its sign-in, by address only */
+export type SignInPerson = {
+	id: string;
+	name: string;
+	role: RoleId;
+	title: string;
+	img?: string;
+	email: string;
+	/** what they do in the story */
+	does: string;
+};
+export type SignInGroup = { group: string; note: string; people: SignInPerson[] };
+
+/** the live workspace's journey clock (SC-73): the journey time when the workspace was read, the wall time it was read
+ *  at, and the client's pace (one journey day lasts dayMinutes of real time, 1 to 1,440; 1,440 is real time) */
+export type JourneyClock = { now: string; read: number; dayMinutes: number; compressed: boolean; day: number | null };
+
+/** a batch in a journey that a screen can put in focus (the live workspace, SC-73): its tab's facts */
+export type CaseTab = {
+	ref: string;
+	/** its SKU, by id in the workspace's data */
+	sku: string;
+	/** the stage it is at, 0 to 8, or 9 once cleared */
+	stage: number;
+	phase: Phase;
 };
 
 /** the workspace's own data: who it is, its people and supply chain, the rules it plans by, its batches and quarter */
@@ -655,7 +685,7 @@ export type CaseData = {
 /** the people a visitor can step into in the stub, by where they stand */
 export type ExploreGroup = { group: string; note: string; ids: [string, string][] };
 
-/** an invitation to the workspace: a person or a partner organisation, by email or mobile number */
+/** an invitation to the workspace: a person or a partner organisation, by email (SC-68: an email address only) */
 export type InviteInput = { name: string; contact: string; role: RoleId };
 
 /** the steps of the journey a person takes (the agents take the rest), and what each is told */

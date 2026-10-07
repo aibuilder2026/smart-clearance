@@ -10,11 +10,12 @@ Smart-Clearance (working title Short-Date Router) is an agentic near-expiry stoc
 - the story documents;
 - a narrated walkthrough video;
 - the first production code: the SvelteKit frontend (SC-27), with the landing page and the staff console as two apps
-  (SC-37), the client workspace app on stub data (SC-62) and the guided demo on the same (SC-63).
+  (SC-37), the client workspace app (SC-62), which runs Munchly's journey live on backend-api and the agents or on
+  the prototype's stub (SC-73), and the guided demo on that stub (SC-63).
 
 Smart-Clearance is meant to be sold to manufacturers as software as a service, one workspace each at `<client>.smartclearance.com`, set up for that client's supply chain. The prototypes are Munchly Foods' workspace at munchly.smartclearance.com.
 
-The production code starts in `frontend/` (SC-27): design system v3 in Svelte, the platform's landing page, and the staff console (SC-37), each app built and deployed on its own. `backend-api/` (SC-45) is the platform's API: FastAPI on PostgreSQL 18, Firebase Authentication with email and password, and every secret in Google Secret Manager. It serves the frontend's contract, runs locally against the developer's Docker Postgres, and in the cloud on Cloud Run with Cloud SQL (SC-50), built and deployed by Cloud Build. Without `PUBLIC_API_BASE` the frontend runs on its in-browser mocks; with it, the console signs staff in with Firebase (email and password, SC-46) and both apps read and write the API. `agents/` (SC-72) is the agents service: Google ADK pipelines on Gemini through Vertex AI, one run a Pub/Sub event, reading backend-api's `/internal` routes, BigQuery and Cloud Storage and reporting back; backend-api stays the system of record. `infra/` (SC-39) is Terraform for the Google Cloud project, `aibuilder-510213`: Firebase Hosting, one site per app, released by its deploy script.
+The production code starts in `frontend/` (SC-27): design system v3 in Svelte, the platform's landing page, and the staff console (SC-37), each app built and deployed on its own. `backend-api/` (SC-45) is the platform's API: FastAPI on PostgreSQL 18, Firebase Authentication with email and password, and every secret in Google Secret Manager. It serves the frontend's contract, runs locally against the developer's Docker Postgres, and in the cloud on Cloud Run with Cloud SQL (SC-50), built and deployed by Cloud Build. Without `PUBLIC_API_BASE` the frontend runs on its in-browser mocks; with it, the console signs staff in with Firebase (email and password, SC-46) and both apps read and write the API. With `PUBLIC_API_BASE` the workspace app (SC-73) runs Munchly's journey on backend-api's workspace routes (SC-71): members sign in with email and password, the screens follow the journey over server-sent events, and pushes reach them through Firebase Cloud Messaging; without it, the app runs on the prototype's stub, and a live build carries none of it. `agents/` (SC-72) is the agents service: Google ADK pipelines on Gemini through Vertex AI, one run a Pub/Sub event, reading backend-api's `/internal` routes, BigQuery and Cloud Storage and reporting back; backend-api stays the system of record. `infra/` (SC-39) is Terraform for the Google Cloud project, `aibuilder-510213`: Firebase Hosting, one site per app, released by its deploy script.
 
 ## Layout
 
@@ -73,11 +74,14 @@ The backend (from the repository root; `backend-api/README.md` has the prerequis
 ```sh
 backend-api/scripts/bootstrap.sh            # once per project: secrets, database and logins, schema, reference data, synthetic world
 backend-api/scripts/dev.sh                  # the API on :8000, as sc-api-local (or the backend-api preview config)
-backend-api/scripts/test.sh                 # pytest against smart_clearance_test: 214 tests, a few seconds
+backend-api/scripts/test.sh                 # pytest against smart_clearance_test: about 400 tests, a few seconds
 backend-api/scripts/hydrate.sh --reset      # rebuild the synthetic world (Firebase accounts are kept)
 backend-api/scripts/hydrate.sh --tick       # today's agent runs, and a few batches moved on a stop (the console's day is today)
 backend-api/scripts/default-password.sh --copy   # the password every account starts on
-backend-api/scripts/console-env.sh          # point the frontend's .env.local at the local API (restart its dev servers)
+backend-api/scripts/hydrate.sh --journey-reset munchly   # Munchly's live journey from its start again (the story's own calendar)
+backend-api/scripts/app-env.sh              # point the console's, the landing page's and the workspace app's .env.local at the local API (restart their dev servers)
+backend-api/scripts/walk.sh [--day-minutes N]   # Munchly's journey walked over HTTP on the local API, with the agents running (agents/scripts/dev.sh)
+backend-api/scripts/live-fixtures.sh        # what the API answers at five moments of the journey, for the workspace app's live tests
 backend-api/scripts/e2e.sh                  # the landing page and the console end to end on the local API and Firebase Auth
 cd backend-api && uv run ruff check . && scripts/test.sh   # the gate jira-flow runs
 ```
@@ -328,7 +332,7 @@ From the Claude desktop app:
 
 - The jira-flow gates cover `frontend/` (lint, type check, unit tests) and `infra/` (`terraform fmt` and `validate`, the scripts' syntax; no plan, since that needs credentials), and `backend-api/` (ruff, and pytest on a real Postgres), and `agents/` (ruff, and pytest with the stub tier: no live model), and CI runs all four on every pull request with a secret scan. The agents' evals call live Gemini and run only on request (`agents/scripts/eval.sh`). Nothing gates `design3/`, or the frontend's e2e and parity suites: they run only when the maintainer asks (the `browser-suites` skill).
 - The frontend's Firefox smoke run could not be started in the agent's sandboxed shell; when the e2e suite is asked for, run it on a normal machine to cover Firefox.
-- The hosted pages on Claude Design still run on the mocks; the deployed apps read backend-api on Cloud Run from their first deploy after SC-50. Locally, `backend-api/scripts/console-env.sh` points both apps at the local API.
+- The hosted pages on Claude Design still run on the mocks; the deployed apps read backend-api on Cloud Run from their first deploy after SC-50. Locally, `backend-api/scripts/app-env.sh` points the apps at the local API.
 - Local development and prod share one Firebase user pool, so the same accounts sign in to both.
 - Cloud Run scales to zero: the first request after a quiet spell waits a few seconds. Cloud SQL is `db-f1-micro`, a shared core without an SLA.
 - `frontend/console` runs on its in-browser mock: sign-in is a stand-in for Google and a passkey, changes stay in that browser (`sc-console`), and two fictional demo requests stand in for the landing page's. Both apps are live on Firebase Hosting's own addresses (SC-39), with no custom domain yet.
@@ -339,7 +343,9 @@ From the Claude desktop app:
 - The `chrome-devtools` MCP server starts only in a new session, after a one-time approval.
 - The WCAG 2.2 criteria axe cannot check are untested.
 - The a11y suite scans the four apps' builds. design3's prototypes are not scanned; a design change is checked once it is ported.
-- The workspace app (`frontend/workspace`, its screens in `frontend/core/src/lib/workspace/`) runs on the prototype's stub: its store and agents in the browser, persisted per browser (`sc3-store`). backend-api has no workspace routes, and the app is not installable yet. It is live at munchly-smartclearance.web.app, where each browser keeps its own journey.
+- The workspace app runs live on backend-api locally (SC-73), with the agents' pull worker; in production it stays on the prototype's stub (munchly-smartclearance.web.app, each browser keeping its own journey) until infra phase B (SC-74) is applied and `workspace_live` sets `WORKSPACE_API_BASE`.
+- The browser suites cover the workspace app on its stub; its live states are tested in jsdom on what backend-api answered (`frontend/workspace/tests/live`). A live end-to-end spec for the workspace, with two people in two browsers, is not written.
+- Locally, the Paperwork agent cannot render PDFs without Pango (the agents' image has it), so the papers carry no PDF there.
 - A switched-off agent's summary in the console's agent pipeline fails contrast (2.4:1, faded with opacity; SC-59), found by the a11y suite's first scan of the paused state (SC-58).
 - The console edits its own browser store (`core/platform.js`, seeded from the app's data). The app's workspace doesn't read the console's changes yet.
 - The landing page's Book a demo saves its request in the browser store, where the console lists it; nothing is sent anywhere.

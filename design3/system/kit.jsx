@@ -444,16 +444,20 @@
 
   /* ---------- page: a navigation bar whose large title collapses into the bar on scroll ---------- */
   // lead: what sits at the left of the bar when there is no back button (on a phone, the workspace)
-  function Page({ title, sub, back, onBack, actions, lead, children, wide, pad = true, hideLarge }) {
+  // top: a band under the bar that stays while it lasts; below: a row under the large title; barSub: a second line under
+  // the bar's title once the large title has collapsed into it (SC-73, the live workspace)
+  function Page({ title, sub, back, onBack, actions, lead, children, wide, pad = true, hideLarge, top, below, barSub }) {
     const sentinel = useRef(null); const [scrolled, setScrolled] = useState(false);
     useEffect(() => { const s = sentinel.current; if (!s) return; let root = s.parentElement; while (root && !(root.classList && root.classList.contains("scroll"))) root = root.parentElement; const io = new IntersectionObserver(([e]) => setScrolled(!e.isIntersecting), { root: root || null, threshold: 0 }); io.observe(s); return () => io.disconnect(); }, []);
     return <div className="layer">
-      <header className={cx("navbar", scrolled && "scrolled")}>
+      <header className={cx("navbar", scrolled && "scrolled", barSub && "nb-two")}>
         {back ? <button type="button" className="nb-back" onClick={onBack} aria-label={"Back to " + back}><Icon name="chevron-left" size={22} stroke={2.2} /><span className="nb-back-t">{back}</span></button> : lead || null}
-        <span className="nb-title">{title}</span>
+        <span className="nb-title">{title}{barSub && <span className="nb-sub">{barSub}</span>}</span>
         <div className="nb-actions">{actions}</div>
       </header>
+      {top}
       {!hideLarge && <div className="largetitle"><h1>{title}</h1>{sub && <div className="lt-sub">{sub}</div>}</div>}
+      {below}
       <div ref={sentinel} style={{ height: 1, marginTop: -1 }} aria-hidden="true" />
       <div className="pagebody" style={pad ? { padding: "0 var(--page-x, 16px) 40px", maxWidth: wide ? "none" : 1320 } : undefined}>{children}</div>
     </div>;

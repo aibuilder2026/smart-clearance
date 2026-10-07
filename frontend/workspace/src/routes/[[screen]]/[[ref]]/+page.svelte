@@ -17,6 +17,9 @@
 			replace: !!opts.replace,
 			reset: false
 		});
+	// on backend-api, the console's splash covers the first load, signing in and signing out (hooks.server.ts puts it
+	// first in <body>), and the first sign-in on a device asks for push
+	const splash = typeof window !== 'undefined' ? (window.SC3_SPLASH ?? null) : null;
 </script>
 
-<WorkspaceApp {screen} {ref} {navigate} back={() => history.back()} />
+<WorkspaceApp {screen} {ref} {navigate} back={() => history.back()} push={data.push} {splash} />

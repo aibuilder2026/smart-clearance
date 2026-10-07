@@ -28,14 +28,36 @@
 <script src="core/data.js"></script>
 <script src="core/store.js"></script>
 <script src="core/flow.js"></script>
+<script src="core/world.js"></script>
 </head>
 <body>
+<script>
+  // live mode (?live, or ?state= one of SC-68's moments; SC-73): the console's splash (SC-51) covers the first load and
+  // signing in, in the workspace's own words, from the first paint. On the stub it never shows
+  (function () {
+    var q = new URLSearchParams(location.search), W = window.SC3_DATA.WORKSPACE;
+    var live = window.SC3_LIVE = q.has("live") || q.has("state");
+    if (!live || (q.get("shot") === "1" && q.get("state") !== "firstload")) { window.SC3_SPLASH_MANUAL = true; if (!live) return; }
+    window.SC3_SPLASH_SETUP = {
+      cls: "ws", brand: { id: W.id, name: W.name, mark: W.mark },
+      words: {
+        boot: { title: "Opening your workspace", sub: "", late: "Waking the workspace up…", say: "Opening the workspace." },
+        enter: { title: function (who) { return who ? "Welcome, " + who : "Welcome"; }, sub: "", say: function (who) { return "Signed in. Opening the workspace" + (who ? " for " + who : "") + "."; } },
+        leave: { sub: "" },
+        fail: { title: "The workspace did not answer", text: "It is taking too long. Check the connection, then try again." }
+      },
+      reads: { boot: [{ id: "workspace", label: W.name + "' workspace" }, { id: "session", label: "Signed in" }] }
+    };
+  })();
+</script>
+<script src="../console/splash.js"></script>
 <div id="root"></div>
 <noscript>Smart-Clearance needs JavaScript to run.</noscript>
 <script src="system/kit.js"></script>
 <script src="system/world.js"></script>
 <script src="system/product.js"></script>
 <script src="screens/common.js"></script>
+<script src="screens/live.js"></script>
 <script src="screens/brand.js"></script>
 <script src="screens/trade.js"></script>
 <script src="screens/finance.js"></script>

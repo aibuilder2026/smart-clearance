@@ -21,7 +21,7 @@
 	// chain it was set up for and its distributors (screens/admin.jsx WorkspaceSettings)
 	let { me }: { me: User } = $props();
 	const ws = useWorkspace();
-	const c = $derived(ws.case!);
+	const c = $derived(ws.case);
 	const app = useApp();
 	const router = useRoute();
 
