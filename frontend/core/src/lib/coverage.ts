@@ -5,7 +5,6 @@ export type Coverage = { status: 'built' } | { status: 'planned'; with: string }
 
 const built: Coverage = { status: 'built' };
 const later = (with_: string): Coverage => ({ status: 'planned', with: with_ });
-const app = later('the workspace app port');
 
 export const COVERAGE: Record<string, Coverage> = {
 	// foundations
@@ -68,25 +67,26 @@ export const COVERAGE: Record<string, Coverage> = {
 	TrackerCompact: built,
 	// data, not a component: each stage's time comes with the console's config
 	STAGE_TIMES: { status: 'api', as: 'GET /v1/console/config, stages[].time' },
-	// later, with the screens that use them
-	Skeleton: app,
-	Tile: app,
-	Countdown: app,
-	TrackerCard: app,
-	StatusBadge: app,
-	BatchRow: app,
-	AgentFeed: app,
-	ClusterMap: app,
-	HaulLine: app,
-	ChannelBars: later('the workspace app port, on LayerChart'),
-	TrendChart: later('the workspace app port, on LayerChart'),
-	MixBar: later('the workspace app port, on LayerChart'),
-	CH_ORDER: app,
-	ChannelTable: app,
-	SplitBar: app,
-	MoneyPanel: app,
-	DocCard: app,
-	CodeBlock: app,
+	// the workspace app's (SC-62); the charts are the prototype's own hand-built SVG, as drawn there
+	Skeleton: built,
+	Tile: built,
+	Countdown: built,
+	TrackerCard: built,
+	StatusBadge: built,
+	BatchRow: built,
+	AgentFeed: built,
+	ClusterMap: built,
+	HaulLine: built,
+	ChannelBars: built,
+	TrendChart: built,
+	MixBar: built,
+	CH_ORDER: built,
+	ChannelTable: built,
+	SplitBar: built,
+	MoneyPanel: built,
+	DocCard: built,
+	CodeBlock: built,
+	// later, with the guided demo
 	StatusBar: later('the guided demo port'),
 	PhoneFrame: later('the guided demo port')
 };

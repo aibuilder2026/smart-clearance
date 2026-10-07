@@ -1,0 +1,27 @@
+/* The cascade, in one place, as the console's (console/src/app.css): Tailwind's theme and utilities, never its preflight;
+   design system v3's tokens and components unlayered, as the prototype loads them; base.css in a layer; the screens'
+   shared stylesheet after the components, as design3/app loads it. Then the app page's own rules (design3/app/app.css). */
+@layer theme, base, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import '@smart-clearance/core/styles/tokens.css';
+@import '@smart-clearance/core/styles/fonts.css';
+@import '@smart-clearance/core/styles/base.css' layer(base);
+@import '@smart-clearance/core/styles/components.css';
+@import '@smart-clearance/core/styles/screens.css';
+@import 'tailwindcss/utilities.css' layer(utilities);
+@import '@smart-clearance/core/styles/tailwind.css';
+
+@source '../../core/src';
+
+/* design3/app/app.css: the page never scrolls or bounces itself; the app root fills it and its screens scroll inside */
+html,
+body {
+	height: 100%;
+	margin: 0;
+	background: var(--bg);
+	overscroll-behavior: none;
+}
+.app-root {
+	overflow: hidden;
+}

@@ -14,7 +14,8 @@ export default ts.config(
 			'**/playwright-report-live/',
 			'**/tests/parity/out/',
 			'admin/src/lib/seed/',
-			'api/src/seed/'
+			'api/src/seed/',
+			'core/src/lib/workspace/seed/'
 		]
 	},
 	js.configs.recommended,

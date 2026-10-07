@@ -6,13 +6,17 @@ billing_account = "012B20-D65DBD-FBAC0E"
 github_repository = "aibuilder2026/smart-clearance"
 
 # Keyed by the targets in frontend/firebase.json. Add custom_domain = "smartclearance.com" (and
-# "console.smartclearance.com") once the domain is registered.
+# "console.smartclearance.com", "munchly.smartclearance.com") once the domain is registered.
 hosting_sites = {
   site = {
     site_id = "smartclearance"
   }
   console = {
     site_id = "smartclearance-console"
+  }
+  # Munchly Foods' workspace (SC-62); munchly.smartclearance.com once the domain is registered
+  workspace = {
+    site_id = "munchly-smartclearance"
   }
 }
 

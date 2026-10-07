@@ -10,7 +10,7 @@ Smart-Clearance (working title Short-Date Router) is an agentic near-expiry stoc
 - the story documents;
 - a narrated walkthrough video;
 - the first production code: the SvelteKit frontend (SC-27), with the landing page and the staff console as two apps
-  (SC-37).
+  (SC-37), and the client workspace app on stub data (SC-62).
 
 Smart-Clearance is meant to be sold to manufacturers as software as a service, one workspace each at `<client>.smartclearance.com`, set up for that client's supply chain. The prototypes are Munchly Foods' workspace at munchly.smartclearance.com.
 
@@ -22,11 +22,11 @@ The production code starts in `frontend/` (SC-27): design system v3 in Svelte, t
 | --- | --- |
 | `design3/` | The current design and the source of truth for designs:
 <ul><li>design system, guided demo, app prototype (Munchly Foods' workspace, an installable PWA), the platform's landing page and console;</li><li>every design review in `designs/`, one folder per issue.</li></ul>Start with `design3/README.md`. |
-| `frontend/` | The SvelteKit 3 frontend, a pnpm workspace that implements design3. Two apps, each deployed on its own:<ul><li>`admin`, the platform's own site: the landing page (smartclearance.com);</li><li>`console`, the staff console (console.smartclearance.com).</li></ul>Three shared packages:<ul><li>`core`, design system v3 in Svelte;</li><li>`api`, the contract with backend-api and an in-browser mock of it;</li><li>`testing`, what the apps' test suites share.</li></ul>Start with `frontend/README.md`. |
+| `frontend/` | The SvelteKit 3 frontend, a pnpm workspace that implements design3. Three apps, each built on its own:<ul><li>`admin`, the platform's own site: the landing page (smartclearance.com);</li><li>`console`, the staff console (console.smartclearance.com);</li><li>`workspace`, a client's workspace (munchly.smartclearance.com), a thin host for the workspace app in `core` (SC-62), live at munchly-smartclearance.web.app.</li></ul>Three shared packages:<ul><li>`core`, design system v3 in Svelte, and the workspace app's screens and stub (`core/src/lib/workspace/`);</li><li>`api`, the contract with backend-api and an in-browser mock of it;</li><li>`testing`, what the apps' test suites share.</li></ul>Start with `frontend/README.md`. |
 | `backend-api/` | The platform's API (SC-45): FastAPI, PostgreSQL (one database, `smart_clearance`), Firebase Auth, Secret Manager.<ul><li>`src/sc_api/`: routes, services (the only writers; every change writes its audit line), models, the ported rules;</li><li>`migrations/` (Alembic), `db/` (roles);</li><li>`scripts/`: doctor, secrets, db-init, migrate, hydrate, dev, up, test, bootstrap;</li><li>`tests/` (pytest on a real Postgres), `contracts/openapi.json`.</li></ul>Start with `backend-api/README.md`. |
 | `agents/` | The AI agents, planned. README only for now. |
 | `infra/` | Terraform for the Google Cloud project, and the scripts that run it:<ul><li>`bootstrap/`, the state bucket;</li><li>`prod/`, the billing link, Firebase, a Hosting site per app, and CI's keyless deployer with the repository's `prod` environment;</li><li>`scripts/`, bootstrap, the Terraform wrapper, the deploy and the gate.</li></ul>Start with `infra/README.md`. |
-| `.github/` | GitHub Actions (SC-40): `workflows/ci.yml` lints, type-checks, tests and builds the frontend and checks `infra/` on every pull request, then deploys both apps from `main`. `actions/setup-frontend` is the shared Node, pnpm and cache setup. |
+| `.github/` | GitHub Actions (SC-40): `workflows/ci.yml` lints, type-checks, tests and builds the frontend and checks `infra/` on every pull request, then deploys the apps from `main`. `actions/setup-frontend` is the shared Node, pnpm and cache setup. |
 | `design2/`, `design/` | Earlier rounds, superseded by v3. Reference only. |
 | `docs/` | Story pages: `dobara-journey-map.html` (Journey Map v4.1, the source of every figure), the story, the tech stack and the walkthrough. |
 | `video/` | The narrated walkthrough. `build.py` builds the page and `record.mjs` records it with Playwright; `recorder/` is a local voice-recording page. |
@@ -48,7 +48,8 @@ The frontend (from `frontend/`; pnpm comes through corepack, nothing is installe
 corepack pnpm install                     # once
 corepack pnpm dev                         # the landing page on :5173, and /ds
 corepack pnpm dev:console                 # the console on :5174 (sign in as Neha Kulkarni or Sameer Rao)
-corepack pnpm build                       # both apps, into admin/build and console/build (build:admin, build:console)
+corepack pnpm dev:workspace               # Munchly's workspace app on :5175 (explore as anyone in the story)
+corepack pnpm build                       # every app, into admin/build, console/build and workspace/build (build:admin, build:console, build:workspace)
 corepack pnpm lint && corepack pnpm check && corepack pnpm test   # the gate jira-flow runs
 corepack pnpm test:a11y                   # the a11y suite: both apps' builds, WCAG 2.2 AA in five projects, keyboard, motion, and component coverage
 corepack pnpm test:e2e                    # both apps: the console's flows, Firefox and WebKit smoke
@@ -62,7 +63,7 @@ The infrastructure (from the repository root; `infra/README.md` has the prerequi
 infra/scripts/bootstrap.sh                  # once per project: the Terraform state bucket
 infra/scripts/tf.sh plan -out=prod.tfplan   # read the whole plan, then:
 infra/scripts/tf.sh apply prod.tfplan
-infra/scripts/deploy.sh                     # build both apps and release them to Firebase Hosting (or: deploy.sh site | console)
+infra/scripts/deploy.sh                     # build every app and release them to Firebase Hosting (or: deploy.sh site | console | workspace)
 infra/scripts/check.sh                      # the gate jira-flow runs: terraform fmt and validate, and the scripts' syntax
 ```
 
@@ -143,13 +144,13 @@ Local pages:
 - `frontend/` implements design3. A design change is made in design3 first (the design-first skill), then ported.
 - Ported CSS stays verbatim outside marked `/* @port … @port-end */` blocks; the drift tests fail otherwise.
 - Never hand-edit the generated files:
-  - `frontend/api/src/seed/` and `frontend/admin/src/lib/seed/`, written from `design3/core` by `corepack pnpm seed`;
+  - `frontend/api/src/seed/`, `frontend/admin/src/lib/seed/` and `frontend/core/src/lib/workspace/seed/`, written from `design3/core` by `corepack pnpm seed`;
   - `frontend/core/src/lib/icons/registry.ts`, from `design3/system/icons.js` by `corepack pnpm icons`.
 
   `seed:check` and `icons:check` run in the gate.
 - Reference design3's images in place; the build hashes them. Never copy them.
 - What the apps share lives in a shared package, never in a copy: components and CSS in `core`, the contract and mocks in `api`, test helpers in `testing`. Each app's `src/app.html` is the same file, and a test keeps it so.
-- Each app deploys on its own: `frontend/firebase.json` has a Hosting target for each (`site` and `console`), and `infra/scripts/deploy.sh` releases each to the Hosting site Terraform made for it.
+- Each app deploys on its own: `frontend/firebase.json` has a Hosting target for each (`site`, `console` and `workspace`), and `infra/scripts/deploy.sh` releases each to the Hosting site Terraform made for it.
 - SvelteKit 3 differs from 2:
   - its config is in `vite.config.ts`;
   - imports use `#lib/…` with the `.ts` extension written out;
@@ -163,7 +164,7 @@ Local pages:
 - State lives in `gs://aibuilder-510213-tfstate`, one prefix per root. Never commit state, plans or `.terraform/`; do commit `.terraform.lock.hcl`.
 - What would hurt to lose carries a `deletion_policy`: `PREVENT` on the state bucket and the Hosting sites, `ABANDON` on the billing link.
 - Releases are not Terraform: the provider cannot upload Hosting files, so `infra/scripts/deploy.sh` releases them through firebase-tools (pinned).
-- A merge to `main` that touches the frontend, design3 or `infra/` deploys both apps (SC-40). CI's deploy job runs in the GitHub environment `prod`, the only environment, which only `main` may deploy to.
+- A merge to `main` that touches the frontend, design3 or `infra/` deploys every app (SC-40). CI's deploy job runs in the GitHub environment `prod`, the only environment, which only `main` may deploy to.
 - CI signs in to Google through Workload Identity Federation, from the `prod` environment only. It uses two accounts:
   - `github-deployer`, which may only deploy Hosting;
   - `github-backend` (SC-50), which may only start Cloud Build builds as `sc-builder`, the account that pushes backend-api's image, migrates the database and deploys Cloud Run.
@@ -233,7 +234,7 @@ Local pages:
 | Skill | `browser-suites` | `.claude/skills/` | The frontend's a11y, e2e and parity suites, which run only when the maintainer explicitly asks (SC-55): what counts as an ask, what each suite needs first, the commands, and how to report. |
 | Hook | `ask-before-suites` | `.claude/hooks/`, registered in `.claude/settings.json` | A `PreToolUse` hook on Bash. A command that would run the e2e, parity or a11y suite, Playwright, or the live e2e script becomes a permission prompt; every other command passes. Needs `jq` (SC-55). |
 | Config | jira-flow | `.claude/jira-flow.json`, `.claude/jira/taxonomy.md` | Jira project SC: site, issue types, transition ids, branch, commit and PR patterns, and ship rules. |
-| Config | Preview servers | `.claude/launch.json` | <ul><li>`voice-recorder`: `video/recorder/server.py` on 8765;</li><li>`frontend-admin`: the frontend's dev server on 5173;</li><li>`frontend-preview`: its build on 4173 (restart it after a rebuild: its file list is read at start);</li><li>`frontend-console`: the console's dev server on 5174;</li><li>`frontend-console-preview`: its build on 4176 (restart it after a rebuild);</li><li>`design3`: design3 on 8787;</li><li>`backend-api`: the API on 8000 (`backend-api/scripts/dev.sh`).</li></ul> |
+| Config | Preview servers | `.claude/launch.json` | <ul><li>`voice-recorder`: `video/recorder/server.py` on 8765;</li><li>`frontend-admin`: the frontend's dev server on 5173;</li><li>`frontend-preview`: its build on 4173 (restart it after a rebuild: its file list is read at start);</li><li>`frontend-console`: the console's dev server on 5174;</li><li>`frontend-console-preview`: its build on 4176 (restart it after a rebuild);</li><li>`frontend-workspace`: the workspace app's dev server on 5175;</li><li>`frontend-workspace-preview`: its build on 4177 (restart it after a rebuild);</li><li>`design3`: design3 on 8787;</li><li>`backend-api`: the API on 8000 (`backend-api/scripts/dev.sh`).</li></ul> |
 | CI | GitHub Actions | `.github/workflows/ci.yml` | The frontend gate, the infra gate and the build on every pull request; the deploy from `main` through the `prod` environment and Workload Identity Federation (SC-40). |
 | Config | Terraform | `infra/` | Terraform 1.9 or later with `hashicorp/google` and `google-beta` 8.5, and `integrations/github` 6.13, locked for macOS and Linux. State in GCS; credentials from application-default credentials, or a token borrowed from `gcloud`. firebase-tools 15.32.1 for releases, through `npx`. |
 | Tests | Backend suite | `backend-api/tests/` | pytest 9 with httpx against a real PostgreSQL 18 (`smart_clearance_test`; a `postgres:18` service in CI): the frontend's contract tests ported, the rules against `platform.js`'s fixtures, roles, the append-only audit log, the synthetic world. |
@@ -296,7 +297,7 @@ From the Claude desktop app:
 - **Jira:** project SC on [duttaarun2015.atlassian.net](https://duttaarun2015.atlassian.net). Issue links take the form `/browse/SC-<n>`.
 - **Slack:** #smart-clearance (private), channel id `C0C675VAFFY`.
 - **Google Cloud:** project `aibuilder-510213` (AIBuilder), on billing account `012B20-D65DBD-FBAC0E`, with Terraform's state in `gs://aibuilder-510213-tfstate` (SC-39).
-- **The live apps (Firebase Hosting, SC-39):** the landing page at [smartclearance.web.app](https://smartclearance.web.app), the staff console at [smartclearance-console.web.app](https://smartclearance-console.web.app).
+- **The live apps (Firebase Hosting, SC-39):** the landing page at [smartclearance.web.app](https://smartclearance.web.app), the staff console at [smartclearance-console.web.app](https://smartclearance-console.web.app), and Munchly Foods' workspace at [munchly-smartclearance.web.app](https://munchly-smartclearance.web.app) (SC-62).
 - **Hosted pages (Claude Design):**
   - [design system](https://claude.ai/design/p/909d23bb-bd3c-466b-abf8-4eccc7c5881e?file=Smart-Clearance+DS+v3.html)
   - [guided demo](https://claude.ai/design/p/8294ec70-3e6b-4359-8de6-2a3fd056c3b2?file=Smart-Clearance+demo+v3.html)
@@ -326,7 +327,8 @@ From the Claude desktop app:
 - Terraform runs from a workstation, as a person: CI checks the configuration but never plans or applies.
 - The `chrome-devtools` MCP server starts only in a new session, after a one-time approval.
 - The WCAG 2.2 criteria axe cannot check are untested.
-- The a11y suite scans only what the frontend has built: the landing page and the console. The guided demo and the workspace app exist only as design3's prototypes, which nothing scans since SC-58 removed design3's suite; they are scanned when they are ported.
+- The a11y suite scans only the landing page and the console. The workspace app (SC-62) has no a11y, e2e or parity suite yet, and the guided demo exists only as design3's prototype, which nothing scans since SC-58 removed design3's suite.
+- The workspace app (`frontend/workspace`, its screens in `frontend/core/src/lib/workspace/`) runs on the prototype's stub: its store and agents in the browser, persisted per browser (`sc3-store`). backend-api has no workspace routes, and the app is not installable yet. It is live at munchly-smartclearance.web.app, where each browser keeps its own journey.
 - A switched-off agent's summary in the console's agent pipeline fails contrast (2.4:1, faded with opacity; SC-59), found by the a11y suite's first scan of the paused state (SC-58).
 - The console edits its own browser store (`core/platform.js`, seeded from the app's data). The app's workspace doesn't read the console's changes yet.
 - The landing page's Book a demo saves its request in the browser store, where the console lists it; nothing is sent anywhere.

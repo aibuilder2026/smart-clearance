@@ -10,6 +10,7 @@ set up by Smart-Clearance's own staff from a console.
 | --- | --- | --- |
 | The landing page, smartclearance.com | [smartclearance.web.app](https://smartclearance.web.app) | live, on backend-api |
 | The staff console, console.smartclearance.com | [smartclearance-console.web.app](https://smartclearance-console.web.app) | live, on backend-api with Firebase sign-in |
+| Munchly Foods' workspace, munchly.smartclearance.com | [munchly-smartclearance.web.app](https://munchly-smartclearance.web.app) | live, on the prototype's stub data in the browser (SC-62) |
 | backend-api, the platform API | Cloud Run in `asia-south1`, Cloud SQL for PostgreSQL 18 | live, with a synthetic world |
 | The design prototypes (design system, guided demo, workspace app, landing page, console) | [Claude Design](#documentation-map) | hosted, on in-browser mocks |
 | The agents service | `agents/` | planned |
@@ -338,7 +339,7 @@ Manager only; ask before adding anything that costs money.
 | Project | `aibuilder-510213` (AIBuilder), billing account `012B20-D65DBD-FBAC0E` |
 | Region | `asia-south1` (Mumbai) |
 | Terraform state | `gs://aibuilder-510213-tfstate`, prefixes `bootstrap` and `prod` |
-| Firebase Hosting | sites `smartclearance` (the landing page) and `smartclearance-console` (the console) |
+| Firebase Hosting | sites `smartclearance` (the landing page), `smartclearance-console` (the console) and `munchly-smartclearance` (Munchly's workspace) |
 | Firebase Authentication | Identity Platform, email and password only, sign-up disabled, one user pool shared by local development and production |
 | Cloud SQL | instance `sc-main`, PostgreSQL 18, `db-f1-micro`, database `smart_clearance`, IAM authentication only, through connectors only |
 | Cloud Run | service `backend-api` (0 to 2 instances), jobs `backend-api-migrate` and `backend-api-hydrate` |

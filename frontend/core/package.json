@@ -9,6 +9,11 @@
 			"svelte": "./src/lib/index.ts",
 			"default": "./src/lib/index.ts"
 		},
+		"./workspace": {
+			"types": "./src/lib/workspace/index.ts",
+			"svelte": "./src/lib/workspace/index.ts",
+			"default": "./src/lib/workspace/index.ts"
+		},
 		"./identity": "./src/lib/identity.ts",
 		"./format": "./src/lib/format.ts",
 		"./styles/*": "./src/styles/*"

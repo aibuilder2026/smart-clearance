@@ -3,7 +3,13 @@
 	import { cx } from '../cx';
 
 	export type Person = { name?: string; short?: string; img?: string | null };
-	type Props = { person?: Person | null; size?: 'sm' | 'lg' | 'xl'; ring?: boolean; status?: boolean; class?: string };
+	type Props = {
+		person?: Person | null;
+		size?: 'xs' | 'sm' | 'lg' | 'xl' | 'xxl';
+		ring?: boolean;
+		status?: boolean;
+		class?: string;
+	};
 	let { person, size, ring, status, class: className }: Props = $props();
 
 	let failed = $state(false);
