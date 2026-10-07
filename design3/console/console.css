@@ -33,6 +33,31 @@
 .cs-tabs { overflow-x: auto; margin: 0 -2px; padding: 2px; scrollbar-width: none; }
 .cs-tabs::-webkit-scrollbar { display: none; }
 .cs-tabs .tabs { min-width: max-content; }
+/* the length of a journey day (SC-68, option A): a badge in the client's head on every tab, in the information blue
+   when days are short; it opens a sheet of presets and a number. Its hit area reaches 44 px */
+.cs-jday { position: relative; display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 8px 0 7px; border-radius: 99px; background: var(--fill-2); color: var(--fg-2); font-size: 12.5px; font-weight: 600; white-space: nowrap; transition: background-color var(--t-fast); }
+.cs-jday.fast { background: var(--blue-soft); color: var(--blue-text); }
+.cs-jday::after { content: ""; position: absolute; inset: -10px -2px; }
+.cs-jday:hover { background: var(--fill-3); }
+.cs-jday.fast:hover { background: color-mix(in oklab, var(--blue-soft) 82%, var(--blue)); }
+.cs-jday:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.cs-jd-presets { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; border: 0; min-width: 0; }
+.cs-jd-preset { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; min-height: 66px; padding: 12px 14px; border-radius: 14px; background: var(--surface); box-shadow: 0 0 0 var(--hair) var(--line-2); cursor: pointer; transition: box-shadow var(--t-fast); }
+[data-theme="dark"] .cs-jd-preset { background: var(--fill); }
+.cs-jd-preset input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.cs-jd-preset:hover { box-shadow: 0 0 0 var(--hair) var(--line-2), var(--shadow-1); }
+.cs-jd-preset.on { box-shadow: 0 0 0 2px var(--primary); }
+.cs-jd-preset:has(input:focus-visible) { outline: 3px solid var(--ring); outline-offset: 2px; }
+.cs-jd-p-n { font-size: 15px; font-weight: 650; }
+.cs-jd-p-v { justify-self: end; font-size: 13px; color: var(--fg-2); }
+.cs-jd-p-s { grid-column: 1; font-size: 12.5px; color: var(--fg-3); }
+.cs-jd-preset > .ic { position: absolute; right: 12px; bottom: 12px; color: var(--primary-text); }
+.cs-jd-num { display: flex; align-items: center; gap: 10px; }
+.cs-jd-num .input { width: 120px; font-variant-numeric: tabular-nums; }
+.cs-jd-unit { font-size: 14px; color: var(--fg-2); white-space: nowrap; }
+.cs-jd-note { display: grid; grid-template-columns: auto 1fr; gap: 10px; padding: 11px 13px; border-radius: 12px; background: var(--blue-soft); color: var(--fg); font-size: 13.5px; line-height: 1.45; }
+.cs-jd-note .ic { margin-top: 1px; color: var(--blue-text); }
+@container app (max-width: 767px) { .cs-jd-presets { grid-template-columns: minmax(0, 1fr); } }
 
 /* agents: the pipeline is a vertical tracker; the human approval is a locked amber gate */
 .cs-agents { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 22px; align-items: start; }

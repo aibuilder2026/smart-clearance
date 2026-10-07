@@ -445,11 +445,46 @@
     </Screen>;
   }
 
+  /* ---------- the length of a journey day (SC-68, option A): a badge in the client's head, and its sheet ---------- */
+  // how many minutes of real time one day of the client's journey lasts (P.DAY_MINUTES, 1,440, is real time). The badge
+  // says it on every tab, in the information blue when days are short, so a client left on a short day shows wherever
+  // staff are in its page; it opens a sheet of presets and a number, with what the setting does to the agents
+  function JourneyBadge({ c, onOpen }) {
+    const m = c.dayMinutes, fast = m < P.DAY_MINUTES;
+    return <button type="button" className={cx("cs-jday", fast && "fast")} onClick={onOpen} aria-haspopup="dialog"><Icon name={fast ? "fast-forward" : "clock"} size={13} stroke={2.2} /><span className="sr-only">Length of a journey day: </span>{P.dayBadge(m)}<Icon name="chevron-down" size={13} /></button>;
+  }
+  function JourneyDaySheet({ c, me, open, onClose }) {
+    const app = useApp(); const { toast } = useNotice(); const cur = c.dayMinutes;
+    const [v, setV] = useState(cur); const [txt, setTxt] = useState(String(cur)); const [err, setErr] = useState("");
+    useEffect(() => { if (open) { setV(cur); setTxt(String(cur)); setErr(""); } }, [open, c.id, cur]);
+    // a whole number of minutes, as typed; the readouts keep the last good one while the field says what is wrong
+    const type = t => { setTxt(t); const n = /^\s*\d+\s*$/.test(t) ? Number(t) : NaN; const e = P.dayMinutesError(n); setErr(e || ""); if (!e) setV(n); };
+    const pick = n => { setV(n); setTxt(String(n)); setErr(""); };
+    const save = () => {
+      if (err) return;
+      if (v !== cur) {
+        P.update(d => { d.clients.find(y => y.id === c.id).dayMinutes = v; }, { who: me.name, client: c.id, text: P.dayMinutesLine(c, v, cur) });
+        toast({ text: `${c.name}: ${v >= P.DAY_MINUTES ? "back to real time" : "a journey day now lasts " + P.dayWords(v)}`, tone: "ok" });
+      }
+      onClose();
+    };
+    return <Sheet open={open} onClose={onClose} title="Length of a journey day" side={app.bp === "phone" ? "bottom" : "center"} detent="large"
+      footer={<><Button variant="primary" size="lg" block disabled={!!err} onClick={save}>Save</Button><Button variant="ghost" block onClick={onClose}>Cancel</Button></>}>
+      <div className="stack">
+        <p className="t-subhead muted" style={{ margin: 0 }}>How many minutes of real time one day of {P.poss(c.name)} journey lasts. The agents' schedules, the offer windows and every time in the workspace follow it.</p>
+        <fieldset className="cs-jd-presets"><legend className="sr-only">Presets</legend>{P.DAY_PRESETS.map(p => <label key={p.id} className={cx("cs-jd-preset", v === p.id && "on")}><input type="radio" name="jd-preset" checked={v === p.id} onChange={() => pick(p.id)} /><span className="cs-jd-p-n">{p.label}</span><span className="cs-jd-p-v tnum">{p.id.toLocaleString("en-IN")} min</span><span className="cs-jd-p-s">{p.sub}</span>{v === p.id && <Icon name="check" size={16} stroke={2.4} />}</label>)}</fieldset>
+        <Field label="Or any number of minutes" htmlFor="jd-min" help={err ? null : "From 1 to 1,440. 1,440 is real time."} error={err || null}><span className="cs-jd-num"><Input id="jd-min" inputMode="numeric" autoComplete="off" value={txt} onChange={e => type(e.target.value)} /><span className="cs-jd-unit">minutes a day</span></span></Field>
+        <List head={P.dayHead(v)}>{P.dayReadouts(v).map(r => <ListRow key={r.title} icon={r.icon} iconTone="soft" title={r.title} value={r.value} />)}</List>
+        <div aria-live="polite">{c.status === "live" && v < P.DAY_MINUTES && <div className="cs-jd-note"><Icon name="info" size={18} /><span>{c.name} is live. Below real time its partners get less time to answer than a real day gives them, so keep short days for demos and rehearsals.</span></div>}</div>
+      </div>
+    </Sheet>;
+  }
+
   /* ---------- one client: header, tabs ---------- */
-  const TABS = [{ id: "agents", label: "Agents" }, { id: "supply", label: "Supply chain" }, { id: "rules", label: "Channels & rules" }, { id: "people", label: "People" }, { id: "integrations", label: "Integrations" }, { id: "plan", label: "Plan" }, { id: "audit", label: "Audit" }];
+  const TABS =[{ id: "agents", label: "Agents" }, { id: "supply", label: "Supply chain" }, { id: "rules", label: "Channels & rules" }, { id: "people", label: "People" }, { id: "integrations", label: "Integrations" }, { id: "plan", label: "Plan" }, { id: "audit", label: "Audit" }];
   function ClientPage({ id, tab, go, me }) {
     const s = usePlatform(); const app = useApp(); const c = s.clients.find(x => x.id === id);
-    const [menu, setMenu] = useState(false); const [pause, setPause] = useState(false); const { toast } = useNotice();
+    const [menu, setMenu] = useState(false); const [pause, setPause] = useState(false); const [clock, setClock] = useState(false); const { toast } = useNotice();
     if (!c) return <Screen title="No such client" back="Clients" onBack={() => go("clients")}><Card><Empty icon="search" title="This client isn't set up" body="It may have been removed when the prototype's data was reset." action={<Button onClick={() => go("clients")}>All clients</Button>} /></Card></Screen>;
     const t = TABS.some(x => x.id === tab) ? tab : "agents";
     const allOff = agentsOn(c) === 0;
@@ -467,7 +502,7 @@
           <WorkspaceMark ws={c} size={app.bp === "phone" ? 48 : 60} />
           <div className="stack tight grow" style={{ gap: 6, minWidth: 0 }}>
             <span className="si-url" style={{ justifySelf: "start" }}><Icon name="lock" size={12} stroke={2.2} />{c.domain}</span>
-            <span className="row tight wrap">{statusBadge(c)}<Badge size="sm">{planName(c.plan)}</Badge><Badge size="sm" icon="map-pin">{c.city}{c.region && c.region !== "India" ? " · " + c.region : ""}</Badge><Badge size="sm" icon="bot">{agentsOn(c)} of {P.AGENTS.length - 1} agents on</Badge></span>
+            <span className="row tight wrap">{statusBadge(c)}<Badge size="sm">{planName(c.plan)}</Badge><Badge size="sm" icon="map-pin">{c.city}{c.region && c.region !== "India" ? " · " + c.region : ""}</Badge><Badge size="sm" icon="bot">{agentsOn(c)} of {P.AGENTS.length - 1} agents on</Badge><JourneyBadge c={c} onOpen={() => setClock(true)} /></span>
           </div>
         </div>
         <div className="cs-tabs"><Tabs id="client-tabs" tabs={TABS} value={t} onChange={v => go("clients", c.id, v, true)} /></div>
@@ -481,6 +516,7 @@
         {t === "audit" && <AuditList filter={c.id} />}
         </Loading>
       </div>
+      <JourneyDaySheet c={c} me={me} open={clock} onClose={() => setClock(false)} />
       <Alert open={pause} onClose={() => setPause(false)} title={`Pause every agent for ${c.name}?`} message="Nothing new is detected, priced, listed or sent until you resume. Plans already approved stay where they are." actions={[{ label: "Cancel" }, { label: "Pause", danger: true, strong: true, onClick: () => setAll(false) }]} />
     </Screen>;
   }
@@ -761,23 +797,26 @@
       </Sheet>
     </div>;
   }
+  // an invitation is an email address only (SC-68): everyone signs in with an email and a password. The account starts on
+  // the default password, which the operator hands over; nothing is ever mailed. Staff use the client's own domain, and
+  // partners any address
   function InviteForm({ c, me, onDone }) {
     const { toast } = useNotice(); const [f, setF] = useState({ name: "", contact: "", access: "Member" }); const [err, setErr] = useState("");
     const send = () => {
-      const contact = f.contact.trim(); const phone = /^[+\d\s]{10,}$/.test(contact); const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact);
+      const contact = f.contact.trim().toLowerCase(); const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact);
       if (!f.name.trim()) { setErr("Enter a name."); return; }
-      if (!phone && !email) { setErr("Enter a work email address or a mobile number."); return; }
-      if (email && f.access !== "Partner" && !contact.toLowerCase().endsWith("@" + c.emailDomain)) { setErr(`${c.name} staff need a ${c.emailDomain} address. Partners can use any address or a phone number.`); return; }
+      if (!email) { setErr(`Enter an email address, such as name@${c.emailDomain}.`); return; }
+      if (f.access !== "Partner" && !contact.endsWith("@" + c.emailDomain)) { setErr(`${c.name} staff need a ${c.emailDomain} address. Partners can use any address.`); return; }
       const id = "p-" + Date.now().toString(36);
-      P.update(d => { d.clients.find(y => y.id === c.id).people.push({ id, name: f.name.trim(), org: f.access === "Partner" ? f.name.trim() : c.name, role: f.access === "Partner" ? "Partner" : "Staff", kind: f.access, access: f.access, provider: phone ? "Phone and code" : f.access === "Partner" ? "Google, invited" : "Google", status: "invited", img: null, email: email ? contact : "", phone: phone ? contact : "" }); }, { who: me.name, client: c.id, text: `Invited ${f.name.trim()} as ${f.access}` });
-      toast({ text: `Invitation sent to ${f.name.trim()}`, tone: "ok" }); setF({ name: "", contact: "", access: "Member" }); setErr(""); onDone && onDone();
+      P.update(d => { d.clients.find(y => y.id === c.id).people.push({ id, name: f.name.trim(), org: f.access === "Partner" ? f.name.trim() : c.name, role: f.access === "Partner" ? "Partner" : "Staff", kind: f.access, access: f.access, provider: "Email and password", status: "invited", img: null, email: contact, phone: "" }); }, { who: me.name, client: c.id, text: `Invited ${f.name.trim()} as ${f.access}` });
+      toast({ text: `${f.name.trim()} can sign in with the default password`, tone: "ok" }); setF({ name: "", contact: "", access: "Member" }); setErr(""); onDone && onDone();
     };
     return <form className="stack" style={{ gap: 12 }} onSubmit={e => { e.preventDefault(); send(); }} noValidate>
       <Field label="Name" htmlFor="inv-name"><Input id="inv-name" value={f.name} onChange={e => { setF({ ...f, name: e.target.value }); setErr(""); }} placeholder="Name or organisation" /></Field>
-      <Field label="Work email or mobile number" htmlFor="inv-contact" error={err || null}><Input id="inv-contact" value={f.contact} onChange={e => { setF({ ...f, contact: e.target.value }); setErr(""); }} autoComplete="off" spellCheck={false} placeholder={`name@${c.emailDomain}`} /></Field>
+      <Field label="Email" htmlFor="inv-contact" error={err || null}><Input id="inv-contact" icon="mail" type="email" value={f.contact} onChange={e => { setF({ ...f, contact: e.target.value }); setErr(""); }} autoComplete="off" spellCheck={false} autoCapitalize="none" placeholder={`name@${c.emailDomain}`} /></Field>
       <Field label="Access" htmlFor="inv-access"><Select id="inv-access" value={f.access} onChange={e => setF({ ...f, access: e.target.value })}>{ACCESS.map(a => <option key={a}>{a}</option>)}</Select></Field>
-      <p className="t-footnote subtle" style={{ margin: 0 }}>{c.name} staff need a {c.emailDomain} address; partners sign in with a code or by invitation.</p>
-      <Button type="submit" variant="primary" icon="send">Send invitation</Button>
+      <p className="t-footnote subtle" style={{ margin: 0 }}>{c.name} staff need a {c.emailDomain} address; partners use any address. They sign in with it and the default password, which you hand over. Nothing is sent by email.</p>
+      <Button type="submit" variant="primary" icon="user-plus">Invite</Button>
     </form>;
   }
 
