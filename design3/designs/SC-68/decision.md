@@ -113,4 +113,21 @@ tab; presets make real time unmistakable and the usual values one tap.
 
 ## The pick
 
-Pick pending.
+The maintainer picked on 7 Oct 2026, in the request that asked for the pick:
+
+- **The workspace: B, In the header, batch by batch.** A live line under every page title (Live · journey time ·
+  1 day = N min), a band across the page while the stream is down, the console's splash (SC-51) for the first load, one
+  first-run step after the first sign-in that asks for notifications with a preview of the push itself (install first on
+  an iPhone; denied says how to undo it), the flagged batches as tabs over the tracker card and under the Route Room's
+  title, and the Send button filling as the label photo goes.
+- **The console: A, a badge in the client's head.** "1 day = N min" on every tab of a client, opening a sheet with the
+  presets (Real time 1,440, Rehearsal 60, Demo 5, Fast 1) or any number from 1 to 1,440, what the setting does to the
+  agents, and a warning when the client is live. The invitation takes an email only.
+- **The open questions**, answered with the recommendations:
+  1. Judges' accounts: chips on the sign-in that fill the email only; the default password is handed over apart.
+  2. The workspace admin's Users screen invites by email only, as the console does.
+  3. The Raipur buyer keeps ExpireSoon's look.
+  4. The journey clock is essential under WCAG 2.2.2: it steps a quarter hour at a time, is never announced, and has
+     no pause.
+
+Only the picked options are built: design3 first (the app and the console prototypes), then ported to `frontend/`.
