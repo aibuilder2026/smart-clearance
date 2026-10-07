@@ -664,7 +664,8 @@ export type ActionArgs = {
 	permit: undefined;
 	/** true pauses, false resumes */
 	pause: boolean;
-	sendPhoto: undefined;
+	/** the label photo: the live source uploads it; the stub only marks it sent */
+	sendPhoto: Blob | undefined;
 	/** who approves */
 	approve: string;
 	/** a kirana's order, and how many packets when it differs from its share */

@@ -183,14 +183,27 @@ export const addDays = (iso: string, n: number) => {
 /** who plays each part in the batch's story, from the workspace's members: the operator who approves, the batch's
  *  distributor, the first kirana that orders, the buyer, the food bank that takes the donation, finance and
  *  sustainability */
+/** someone the member cannot see, or nobody yet: an account with no name, so a screen still draws */
+const nobody = (role: RoleId): User => ({
+	id: '',
+	name: '',
+	short: '',
+	org: '',
+	role,
+	provider: 'password',
+	status: 'active',
+	kind: 'partner',
+	lastSeen: null
+});
 export function castOf(s: State, c: Pick<CaseData, 'dist' | 'kiranas' | 'buyer' | 'donation'>) {
-	const by = (r: RoleId, org?: string) => s.users.find((u) => u.role === r && (!org || u.org === org))!;
+	const by = (r: RoleId, org?: string | null) =>
+		(org === null ? undefined : s.users.find((u) => u.role === r && (!org || u.org === org))) ?? nobody(r);
 	return {
 		operator: by('operator'),
 		distributor: by('distributor', c.dist.name),
-		kirana: by('retailer', c.kiranas[0].name),
-		buyer: by('buyer', c.buyer.name),
-		foodbank: by('foodbank', c.donation.partner.name),
+		kirana: by('retailer', c.kiranas[0]?.name ?? null),
+		buyer: by('buyer', c.buyer.name || null),
+		foodbank: by('foodbank', c.donation.partner?.name || null),
 		finance: by('finance'),
 		sustainability: by('sustainability')
 	};

@@ -181,3 +181,13 @@ def neha() -> dict[str, str]:
 @pytest.fixture
 def sameer() -> dict[str, str]:
     return token(SAMEER)
+
+
+@pytest.fixture
+async def munchly(ctx: Ctx):
+    """Munchly's live workspace (cli/live.py), with its journey at day 0"""
+    from sc_api.cli import live
+
+    out = await live.build(ctx)
+    await ctx.session.commit()
+    return out

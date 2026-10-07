@@ -16,5 +16,10 @@ export const ALLOW: Allowance[] = [
 	{ file: 'core/src/lib/workspace/screens/finance/Paper.svelte', match: '17', reason: LAW_17 },
 	{ file: 'core/src/lib/workspace/screens/finance/Paper.svelte', match: '1 October', reason: LAW_DATE },
 	{ file: 'core/src/lib/workspace/screens/finance/Report.svelte', match: '17', reason: LAW_17 },
-	{ file: 'core/src/lib/workspace/screens/finance/Report.svelte', match: '1 October', reason: LAW_DATE }
+	{ file: 'core/src/lib/workspace/screens/finance/Report.svelte', match: '1 October', reason: LAW_DATE },
+	{
+		file: 'workspace/src/lib/live/project.ts',
+		match: 'mango',
+		reason: "the name of core's State field for the batch being donated (State['mango']), which the live source fills"
+	}
 ];

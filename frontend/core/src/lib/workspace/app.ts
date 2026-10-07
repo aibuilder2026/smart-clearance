@@ -5,7 +5,7 @@ export { default as WorkspaceApp } from './WorkspaceApp.svelte';
 export { default as RoleApp } from './RoleApp.svelte';
 export { default as SignIn } from './screens/auth/SignIn.svelte';
 export { default as LockScreen, type LockPush } from './screens/common/LockScreen.svelte';
-export { provideWorkspace, setDefaultSource, useWorkspace, type WorkspaceSource } from './source';
+export { provideWorkspace, setDefaultSource, useWorkspace, type Failure, type WorkspaceSource } from './source';
 export {
 	HOME,
 	NAV,

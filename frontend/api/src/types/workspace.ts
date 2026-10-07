@@ -694,8 +694,16 @@ export type CaseDetail = {
 	returnBy: string | null;
 	/** the pushes this batch's journey sent the member, by key (detect, verify, plan, approved, offer …) */
 	push: Record<string, PushCopy>;
+	/** the plan's split without Munchly's figures, once approved: all of it for staff and the distributor, a partner's
+	 *  own line for the others */
+	split: WsSplitLine[] | null;
 	moments: CaseMoments;
 };
+
+export type WsSplitLine = Pick<
+	WsPlanLine,
+	'id' | 'name' | 'short' | 'units' | 'price' | 'packPrice' | 'charged' | 'cartons'
+>;
 
 /* ---------- the quarter and the audit log ---------- */
 

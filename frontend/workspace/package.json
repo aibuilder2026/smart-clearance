@@ -18,6 +18,7 @@
 		"test:parity": "vite build && playwright test -c playwright.parity.config.ts"
 	},
 	"dependencies": {
+		"@smart-clearance/api": "workspace:*",
 		"@smart-clearance/core": "workspace:*"
 	},
 	"devDependencies": {
@@ -27,8 +28,10 @@
 		"@sveltejs/kit": "^3.0.0",
 		"@sveltejs/vite-plugin-svelte": "catalog:",
 		"@tailwindcss/vite": "^4.3.3",
+		"@testing-library/svelte": "catalog:",
 		"@types/node": "catalog:",
 		"@types/pngjs": "^6.0.5",
+		"jsdom": "catalog:",
 		"pixelmatch": "^7.2.0",
 		"pngjs": "^7.0.0",
 		"svelte": "catalog:",

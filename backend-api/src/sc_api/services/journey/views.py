@@ -234,10 +234,8 @@ async def snapshot(ctx: Ctx, client_id: str, cm: m.ClientMember) -> dict[str, An
                 "atRisk": int(case.assess.get("atRisk") or 0),
                 "net": float(case.plan["net"]) if case.plan and mine else None,
                 "updatedAt": _iso(case.updated_wall),
-                # the packs going to a food bank, for those who see the donation
-                "donation": int(case.donation["units"])
-                if case.donation and (mine or cm.workspace_role == "foodbank")
-                else None,
+                # the packs going to a food bank, booked or planned, for those who see the donation
+                "donation": _donated(case, mine or cm.workspace_role == "foodbank"),
                 "open": case.status == "open",
             }
         )
@@ -274,6 +272,8 @@ async def snapshot(ctx: Ctx, client_id: str, cm: m.ClientMember) -> dict[str, An
     ).all()
 
     doc = c.workspace_doc or {}
+    # which distributor each kirana's account answers to, so a distributor sees his beat and a kirana its distributor
+    beat = {k.id: k.distributor_id for k in await world.kiranas(ctx, client_id)}
     return {
         "seq": c.stream_seq,
         "me": member_out(cm, me_user),
@@ -297,7 +297,9 @@ async def snapshot(ctx: Ctx, client_id: str, cm: m.ClientMember) -> dict[str, An
         },
         "market": doc.get("market", {"dispatchHours": 0, "balanceHours": 0, "minOrder": 0, "lots": []}),
         "roles": doc.get("roles", {}),
-        "members": [member_out(p, u, me=cm) for p, u in people if mine or cm.workspace_role == "admin" or _peer(cm, p)],
+        "members": [
+            member_out(p, u, me=cm) for p, u in people if mine or cm.workspace_role == "admin" or _peer(cm, p, beat)
+        ],
         "skus": {k: world.sku_obj(x) for k, x in skus.items()},
         "distributors": {k: world.dist_obj(d) for k, d in dists.items()},
         "buyer": buyer if mine or cm.workspace_role in ("buyer", "distributor") else None,
@@ -318,10 +320,27 @@ async def snapshot(ctx: Ctx, client_id: str, cm: m.ClientMember) -> dict[str, An
     }
 
 
-def _peer(me: m.ClientMember, other: m.ClientMember) -> bool:
-    """whom a partner may see: themselves, the client's own people, and their distributor's people"""
+def _donated(case: m.Case, sees: bool) -> int | None:
+    """the packs of a batch going to a food bank: the booked donation's, else the plan's food-bank line"""
+    if not sees:
+        return None
+    if case.donation:
+        return int(case.donation["units"])
+    line = next((x for x in (case.plan or {}).get("lines", []) if x.get("id") == "foodbank"), None)
+    return int(line["units"]) if line and line.get("units") else None
+
+
+def _peer(me: m.ClientMember, other: m.ClientMember, beat: dict[str, str]) -> bool:
+    """whom a partner may see: themselves, the client's own people, their own organisation's people, the kiranas on a
+    distributor's beat, and a kirana's distributor"""
+    if other.ref == me.ref or other.member_class == "staff":
+        return True
+    if me.org_ref is None or other.org_ref is None:
+        return False
     return (
-        other.ref == me.ref or other.member_class == "staff" or (me.org_ref is not None and other.org_ref == me.org_ref)
+        other.org_ref == me.org_ref
+        or beat.get(other.org_ref) == me.org_ref  # a kirana on my beat
+        or beat.get(me.org_ref) == other.org_ref  # my distributor
     )
 
 
@@ -628,19 +647,42 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
                 }
             )
 
-    pushes = (
-        await ctx.session.execute(
-            select(m.Notification)
-            .where(m.Notification.case_id == case.id, m.Notification.member_ref == cm.ref)
-            .order_by(m.Notification.id)
+    # the pushes the screens show: a member's own; staff see each the journey sent (the first of each kind), and a
+    # distributor also the offer his kiranas got
+    q = select(m.Notification).where(m.Notification.case_id == case.id).order_by(m.Notification.id)
+    if not mine:
+        beat_members = (
+            [k.member_ref for k in await world.kiranas(ctx, client_id, case.distributor_id) if k.member_ref]
+            if role == "distributor"
+            else []
         )
-    ).scalars()
-    push = {
-        n.key: {"to": n.member_ref, "at": _iso(n.at), "title": n.title, "body": n.body, "hindi": n.hindi, "en": n.en}
-        for n in pushes
-    }
+        q = q.where(m.Notification.member_ref.in_([cm.ref, *beat_members]))
+    push: dict[str, dict[str, Any]] = {}
+    for n in (await ctx.session.execute(q)).scalars():
+        if n.key in push and n.member_ref != cm.ref:
+            continue
+        push[n.key] = {
+            "to": n.member_ref,
+            "at": _iso(n.at),
+            "title": n.title,
+            "body": n.body,
+            "hindi": n.hindi,
+            "en": n.en,
+        }
 
     donation = dict(case.donation) if case.donation and (mine or role == "foodbank") else None
+    # the plan's split, without Munchly's figures: the whole of it for the distributor holding the batch, a partner's
+    # own line for the others (a kirana the scheme's, the buyer the lot's, a food bank its donation)
+    own = {"retailer": "kirana", "buyer": "expiresoon", "foodbank": "foodbank"}.get(role or "")
+    split = (
+        [
+            {k: ln.get(k) for k in ("id", "name", "short", "units", "price", "packPrice", "charged", "cartons")}
+            for ln in case.plan.get("lines", [])
+            if mine or role == "distributor" or ln.get("id") == own
+        ]
+        if case.plan and case.phase not in ("watching", "at-risk", "verified", "valued")
+        else None
+    )
     batch = {**_batch_out(bo), "assess": case.assess, "phase": case.phase}
     return {
         "seq": c.stream_seq,
@@ -680,6 +722,7 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
         ),
         "returnBy": (b.best_before - timedelta(days=c.return_window_days)).isoformat() if b.best_before else None,
         "push": push,
+        "split": split,
         "moments": _moments(c, case, d, listing),
     }
 

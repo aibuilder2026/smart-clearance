@@ -5,11 +5,9 @@ holds design3's own run of the same steps), and every role sees only its own cut
 
 from datetime import datetime, timedelta
 
-import pytest
 from sqlalchemy import select
 
 from sc_api import models as m
-from sc_api.cli import live
 from sc_api.domain import copy
 from sc_api.domain.clock import IST
 from sc_api.services.reference import load
@@ -35,13 +33,6 @@ MEERA = token("feeding-india@google.example")
 
 def flow(action: str) -> dict:
     return next(s for s in FLOW["steps"] if s["action"] == action)
-
-
-@pytest.fixture
-async def munchly(ctx):
-    out = await live.build(ctx)
-    await ctx.session.commit()
-    return out
 
 
 async def agent(api, path: str, key: str, agent_id: str, **body) -> dict:
@@ -491,3 +482,23 @@ async def test_a_change_retried_with_its_key_acts_once(api, munchly, cloud):
     mine = {**PRIYA, "Idempotency-Key": "order-1"}
     fresh = await api.post(f"{WS}/notifications/read", json={"all": True}, headers=mine)
     assert fresh.status_code == 200
+
+
+async def test_partners_see_their_beat_their_line_and_the_pushes_they_show(api, munchly, cloud):
+    await to_plan(api, cloud)
+    assert (await api.post(f"{WS}/cases/{HERO}/approval", json={"device": "phone"}, headers=PRIYA)).status_code == 200
+    await agent(api, f"/cases/{HERO}/listing", "lister", "lister")
+    await agent(api, f"/cases/{HERO}/offer", "outreach", "outreach")
+    # a distributor sees the kiranas on his beat; a kirana sees its distributor, and no other kirana
+    rakesh = {m["id"] for m in (await api.get(f"{WS}/snapshot", headers=RAKESH)).json()["members"]}
+    assert {"ganesh", "jaidurga"} <= rakesh and "patil-owner" not in rakesh
+    ganesh = {m["id"] for m in (await api.get(f"{WS}/snapshot", headers=GANESH)).json()["members"]}
+    assert "rakesh" in ganesh and "jaidurga" not in ganesh
+    # the split without Munchly's figures: all of it for the distributor, a kirana the scheme's line
+    seen = await case(api, RAKESH)
+    assert [x["id"] for x in seen["split"]] == ["kirana", "expiresoon"] and "net" not in seen["split"][0]
+    assert seen["push"]["offer"]["to"] != "rakesh"  # the offer his kiranas got
+    shop = await case(api, GANESH)
+    assert [x["id"] for x in shop["split"]] == ["kirana"] and shop["split"][0]["packPrice"] is not None
+    # staff see each push the journey sent
+    assert {"detect", "verify", "plan", "approved", "offer"} <= set((await case(api, PRIYA))["push"])
