@@ -21,6 +21,7 @@ Both roots use `hashicorp/google` 8.5, and `prod` also uses `google-beta` 8.5 (F
 | ---------------------------------- | ----------------------------------- | ------------------------ | -------------------------------------- |
 | `site`                             | `frontend/admin`, the landing page  | `smartclearance`         | https://smartclearance.web.app         |
 | `console`                          | `frontend/console`, the staff console | `smartclearance-console` | https://smartclearance-console.web.app |
+| `workspace`                        | `frontend/workspace`, Munchly Foods' workspace (SC-62) | `munchly-smartclearance` | https://munchly-smartclearance.web.app |
 
 `prod/terraform.tfvars` maps each target to its site. A site id is global across Firebase; once taken, it is gone.
 

@@ -16,6 +16,11 @@ corepack pnpm build:workspace      # the static app, into workspace/build/
 corepack pnpm preview:workspace    # serves the build on :4177
 ```
 
+It is live at https://munchly-smartclearance.web.app, its own Firebase Hosting site (`workspace` in
+`../firebase.json`, `munchly-smartclearance` in `infra/prod/terraform.tfvars`): `infra/scripts/deploy.sh workspace`
+releases it from a workstation, and CI releases it with the other apps on every merge to `main`. Each browser keeps its
+own journey there, as the prototype does.
+
 Sign in as anyone in the story: "Explore as someone in the story", or one of the accounts under the form (Priya by
 email; Rakesh bhai or Ganesh ji by phone, with the code `246810`; Shree Sai Kirana as a first-time invitee). Profile →
 Switch person moves between them, and Reset demo data puts the batch back at the start.
@@ -59,8 +64,6 @@ A screen the person's role cannot open falls back to their home.
 
 ## Not yet
 
-- No Hosting site: `../firebase.json` and `infra/` have no target for this app, and CI does not build it (`build`
-  covers the landing page and the console only).
 - Not installable: the prototype's manifest and offline service worker (`design3/app/manifest.webmanifest`, `sw.js`)
   are not ported. The Install buttons appear only when the browser offers an install.
 - No a11y, e2e or parity suite yet; the gate (`lint`, `check`, `test`) covers it.

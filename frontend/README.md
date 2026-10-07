@@ -91,16 +91,18 @@ The gate jira-flow runs for a change under `frontend/` is `corepack pnpm lint &&
 ## Deploying
 
 Each app is a static build, deployed on its own host name. `firebase.json` gives Firebase Hosting (the Tech Stack's
-choice) two targets:
+choice) three targets:
 
-| Target    | Build           | Host name                  | Unknown paths |
-| --------- | --------------- | -------------------------- | ------------- |
-| `site`    | `admin/build`   | smartclearance.com         | `/200.html`   |
-| `console` | `console/build` | console.smartclearance.com | `/index.html` |
+| Target      | Build             | Host name                                                         | Unknown paths |
+| ----------- | ----------------- | ----------------------------------------------------------------- | ------------- |
+| `site`      | `admin/build`     | smartclearance.com                                                | `/200.html`   |
+| `console`   | `console/build`   | console.smartclearance.com                                        | `/index.html` |
+| `workspace` | `workspace/build` | munchly-smartclearance.web.app (munchly.smartclearance.com later) | `/index.html` |
 
-Both cache `/_app/immutable/` for a year and everything else with `no-cache`; the console's pages also carry
-`noindex`. Terraform in `../infra` makes a Hosting site for each target (SC-39). From the repository root,
-`infra/scripts/deploy.sh` builds both apps and releases them (`deploy.sh site` or `deploy.sh console` for one). CI
+All three cache `/_app/immutable/` for a year and everything else with `no-cache`; the console's and the workspace's
+pages also carry `noindex`, `X-Frame-Options: DENY` and the referrer policy. Terraform in `../infra` makes a Hosting site
+for each target (SC-39). From the repository root, `infra/scripts/deploy.sh` builds every app and releases them
+(`deploy.sh site`, `deploy.sh console` or `deploy.sh workspace` for one). CI
 does the same on every merge to `main` that touches the frontend (`.github/workflows/ci.yml`, SC-40). It
 writes `.firebaserc` from Terraform's outputs on each run, so that file is not committed. `../infra/README.md` has
 the sites, their addresses and the prerequisites.
@@ -155,5 +157,5 @@ Never edit the generated files (`api/src/seed/*`, `admin/src/lib/seed/*`, `core/
 - The Firefox smoke run could not be run in the agent's sandboxed shell (Firefox cannot start there); WebKit and Chromium were. Run `corepack pnpm test:e2e` on a normal machine to cover it.
 - The landing page ships about 159 kB of JavaScript (gzip), measured on the scripts its prerendered page loads; SC-60's film and table replaced SC-32's WebGL2 town. bits-ui and its floating-ui layer are about 30 kB of it and the icon registry about 9 kB. A leaner menu and sheet, or a per-route icon registry, would cut it.
 - On the mock, demo requests stay in the browser (`localStorage`, `sc-demo-requests`); with `PUBLIC_API_BASE` they go to `backend-api`, and the console lists them. The hosted pages still run on the mocks, until backend-api runs in the cloud.
-- The client workspace app (SC-62) runs on the prototype's stub, in the browser: backend-api has no workspace routes yet. It has no Hosting site, CI does not build it, it is not installable (no manifest or service worker), and it has no a11y, e2e or parity suite yet (`workspace/README.md`).
+- The client workspace app (SC-62) runs on the prototype's stub, in the browser: backend-api has no workspace routes yet. It is live at https://munchly-smartclearance.web.app, released by CI with the other apps. It is not installable (no manifest or service worker), and it has no a11y, e2e or parity suite yet (`workspace/README.md`).
 - On its mock the console lets any active staff member's address in with any password, and its changes stay in the browser (`sc-console`); two fictional demo requests stand in for the landing page's. With `PUBLIC_API_BASE` it signs in with Firebase Authentication and reads and writes `backend-api`.
