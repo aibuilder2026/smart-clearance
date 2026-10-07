@@ -17,7 +17,7 @@ import logging
 from typing import Any
 
 from google.genai import types
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from sc_agents import checks
 from sc_agents.agents import halt, step
@@ -33,7 +33,8 @@ NOTE_MAX = 140
 
 
 class Note(BaseModel):
-    note: str | None = None
+    # every field required: Gemini's structured output may leave out a property the schema does not require (SC-77)
+    note: str = Field(description="the note on the pack of papers")
 
 
 def _on(state: dict[str, Any]) -> bool:

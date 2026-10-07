@@ -175,3 +175,16 @@ def test_journey_days_are_indias():
 
     assert ist_day("2026-10-02T20:00:00+00:00") == "2026-10-03" and ist_day("2026-10-02T10:00:00") == "2026-10-02"
     assert journey_today({"now": "2026-10-02T03:35:00+00:00"}) == "2026-10-02"
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["best before 18 Nov 2026", "best before Nov 18, 2026", "by 18 November", "on 2026-11-18", "BB 18/11/26"],
+)
+def test_a_dates_day_is_not_a_price(text):
+    assert not checks.shows(text, 18.0)
+
+
+@pytest.mark.parametrize("text", ["not under ₹18", "18 a pack", "Rs 18.00", "₹18 on 18 Nov"])
+def test_a_price_still_shows(text):
+    assert checks.shows(text, 18.0)

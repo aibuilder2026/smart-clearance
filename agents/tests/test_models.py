@@ -14,6 +14,7 @@ STEP = "journey.step"
 
 async def test_a_model_call_past_its_timeout_falls_back(run, backend, recordings, deps):
     deps.settings.model_timeout_s = 0.05
+    deps.settings.model_attempts = 1
     recordings.data["router_write"] = {"json": {"explanation": "late words"}, "delay": 0.5}
     backend["GET", CASE] = case(phase="valued", photo="verified")
     outcome, rc = await run(message(STEP, {"type": "route", "ref": HERO}))
@@ -52,7 +53,13 @@ async def test_words_with_a_figure_outside_the_plan_fall_back(run, backend, reco
 
 async def test_a_note_with_a_foreign_figure_is_left_out_alone(run, backend, recordings):
     recordings.data["valuer_write"] = {
-        "json": {"notes": {"expiresoon": "₹15 a pack, no cap.", "kirana": "Capped at 900 units.", "bogus": "x"}}
+        "json": {
+            "notes": [
+                {"channel": "expiresoon", "note": "₹15 a pack, no cap."},
+                {"channel": "kirana", "note": "Capped at 900 units."},
+                {"channel": "bogus", "note": "x"},
+            ]
+        }
     }
     backend["GET", CASE] = case(phase="verified", photo="verified")
     await run(message(STEP, {"type": "value", "ref": HERO}))
@@ -167,3 +174,15 @@ async def test_execute_branches_fall_back_independently(run, backend, recordings
     assert backend.report("offer")["words"] == {} and backend.report("offer")["run"]["fallback"] is True
     assert backend.report("listing")["run"]["fallback"] is False and "title" in backend.report("listing")
     assert LISTING["reserve"] == 13.5
+
+
+def test_a_call_is_allowed_every_attempt_and_the_waits_between(deps):
+    """Bounded's deadline covers the retries google-genai makes on 429, 500, 503 and 504, and no more (SC-77)"""
+    from sc_agents.models import budget, retries
+
+    deps.settings.model_timeout_s, deps.settings.model_attempts = 30.0, 3
+    r = retries(deps.settings)
+    assert r.attempts == 3 and set(r.http_status_codes) == {429, 500, 503, 504}
+    assert budget(deps.settings) == 30 * 3 + (1 + 1) + (2 + 1)
+    deps.settings.model_attempts = 1
+    assert budget(deps.settings) == 30

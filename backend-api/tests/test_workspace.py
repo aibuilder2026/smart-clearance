@@ -5,6 +5,7 @@ holds design3's own run of the same steps), and every role sees only its own cut
 
 from datetime import datetime, timedelta
 
+import pytest
 from sqlalchemy import select
 
 from sc_api import models as m
@@ -332,6 +333,31 @@ async def test_a_wrong_label_asks_again(api, munchly, cloud):
     )
     c = await case(api, RAKESH)
     assert c["journey"]["photo"]["status"] == "requested" and "retake" in c["push"]
+
+
+@pytest.mark.parametrize(
+    ("read", "why"),
+    [
+        (
+            {"batch": None, "mfg": None, "bestBefore": None, "mrp": None, "confidence": 0.95},
+            "the label could not be read",
+        ),
+        ({"bestBefore": "2026-11-18", "mrp": 30, "confidence": 0.95}, "the batch number could not be read"),
+    ],
+)
+async def test_a_label_read_without_its_batch_number_asks_again(api, munchly, cloud, read, why):
+    """however sure the model says it is: the first live eval run had Vision return only its confidence (SC-77)"""
+    await setup(api)
+    await detect(api)
+    await agent(api, f"/cases/{HERO}/photo-request", "vision-ask", "vision")
+    await put_photo(api, cloud, HERO)
+    await agent(api, f"/cases/{HERO}/photo-read", "vision-read", "vision", read=read)
+    c = await case(api, RAKESH)
+    photo = c["journey"]["photo"]
+    assert photo["status"] == "requested" and photo["read"]["matches"] is False
+    assert photo["read"]["mismatches"] == [why] and why in c["push"]["retake"]["body"]
+    text = (await case(api, PRIYA))["feed"][-1]["text"]
+    assert "Matches the DMS record" not in text and "Read the label: ," not in text
 
 
 async def test_the_negotiator_never_goes_under_the_reserve(api, munchly, cloud):

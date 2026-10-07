@@ -1,12 +1,15 @@
 """sc-agents-eval: the agents' evals against live Gemini (agents/scripts/eval.sh). Run on request only.
 
     sc-agents-eval [vision data valuer router lister outreach negotiator] [--split train|held-out|all]
-                   [--limit N] [--no-judge] [--yes]
+                   [--limit N] [--pace SECONDS] [--no-judge] [--yes]
 
 Each case goes through its writer as the pipeline calls it (harness.py), is scored by the deterministic checks
 (scorers.py) and, for the agents that write words, by the Gemini Pro judge at temperature 0 (judge.py). Each case's
 result goes into BigQuery's agent_evals (smartclearance_local, as sc-agents-local) and a results file; the set's pass
 marks into summary.json beside it.
+
+The cases run one at a time, a second apart (--pace): the first live run met the Pro preview's per-minute quota, and
+each call also retries 429, 500, 503 and 504 with backoff (models.py, judge.py) (SC-77).
 """
 
 import argparse
@@ -42,21 +45,25 @@ COST = {
 def marks(set_name: str, results: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     """the set's pass marks, each with its value, target and whether it was met"""
 
-    def mark(value: float, target: float, *, at_most: bool = False) -> dict[str, Any]:
+    def mark(value: float | None, target: float, *, at_most: bool = False) -> dict[str, Any]:
+        if value is None:
+            judged = sum(1 for r in results if r["scores"].get("rubric"))
+            return {"value": None, "target": target, "met": False, "note": f"judged {judged} of {len(results)}"}
         met = value <= target if at_most else value >= target
         return {"value": round(value, 3), "target": target, "met": met}
 
     def rate(rs: list[dict], key: str) -> float:
         return mean(r["scores"][key] for r in rs) if rs else 1.0
 
-    def rubric(rs: list[dict], criterion: str | None = None) -> float:
+    def rubric(rs: list[dict], criterion: str | None = None) -> float | None:
+        """the rubric's mean over the cases judged; None when none was (a judge that never answered is no score)"""
         vals = [
             (r["scores"]["rubric"].get(criterion) if criterion else r["scores"].get("rubricAvg"))
             for r in rs
             if r["scores"].get("rubric")
         ]
         vals = [v for v in vals if v is not None]
-        return mean(vals) if vals else 0.0
+        return mean(vals) if vals else None
 
     rs = results
     if set_name == "vision":
@@ -111,7 +118,9 @@ async def run_set(set_name: str, deps: Deps, args, eval_run: str, client: Any) -
     settings = deps.settings
     results: list[dict[str, Any]] = []
     rows: list[dict[str, Any]] = []
-    for case in cases:
+    for i, case in enumerate(cases):
+        if i and args.pace:
+            await asyncio.sleep(args.pace)
         spec = harness.spec_of(set_name, case)
         out, rc, state = await harness.run_case(set_name, case, deps)
         scores, problems = scorers.score(set_name, case, out, state)
@@ -120,9 +129,12 @@ async def run_set(set_name: str, deps: Deps, args, eval_run: str, client: Any) -
             facts = {k: v for k, v in state.items() if k.endswith(("_facts", "_question", "_before"))}
             try:
                 v = await judge.judge(client, settings.model_id("pro"), set_name, facts, out)
-                scores["rubric"], scores["reasons"] = v.scores, v.reasons
-                scores["rubricAvg"] = round(mean(v.scores.values()), 2) if v.scores else None
+                rubric = judge.by_criterion(v, judge.RUBRICS[set_name])
+                scores["rubric"], scores["reasons"] = rubric, v.reasons
+                scores["rubricAvg"] = round(mean(rubric.values()), 2) if rubric else None
             except Exception as e:
+                # not judged: the rubric's mark counts only the cases judged, and says how many were not (SC-77)
+                scores["judgeFailed"] = f"{type(e).__name__}: {e}"[:200]
                 log.warning("judge failed on %s: %s", case["id"], e)
         passed = bool(scores["pass"]) and (scores.get("rubricAvg") is None or scores["rubricAvg"] >= 4)
         r = {
@@ -214,7 +226,8 @@ async def main_async(args) -> int:
         s = await run_set(name, deps, args, eval_run, client)
         ok = ok and s["met"]
         for k, v in s["marks"].items():
-            print(f"  {'met' if v['met'] else 'NOT MET'} {k}: {v['value']} (target {v['target']})")
+            note = f"; {v['note']}" if v.get("note") else ""
+            print(f"  {'met' if v['met'] else 'NOT MET'} {k}: {v['value']} (target {v['target']}){note}")
     return 0 if ok else 1
 
 
@@ -225,6 +238,7 @@ def main() -> None:
     p.add_argument("sets", nargs="*", help=f"any of {', '.join(SETS)} (all when none)")
     p.add_argument("--split", choices=["train", "held-out", "all"], default="all")
     p.add_argument("--limit", type=int, default=0)
+    p.add_argument("--pace", type=float, default=1.0, help="seconds between cases (default 1)")
     p.add_argument("--no-judge", action="store_true")
     p.add_argument("--yes", action="store_true", help="skip the cost question")
     args = p.parse_args()

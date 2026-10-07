@@ -8,7 +8,7 @@ import re
 from typing import Any
 
 from google.genai import types
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from sc_agents import checks, fmt
 from sc_agents.agents import step
@@ -23,8 +23,9 @@ TITLE_MAX, DESCRIPTION_MAX = 100, 500
 
 
 class Listing(BaseModel):
-    title: str | None = None
-    description: str | None = None
+    # every field required: Gemini's structured output may leave out a property the schema does not require (SC-77)
+    title: str = Field(description="the lot's title")
+    description: str = Field(description="the lot's description")
 
 
 def due(state: dict[str, Any]) -> bool:

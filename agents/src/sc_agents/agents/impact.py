@@ -9,7 +9,7 @@ from datetime import date
 from typing import Any
 
 from google.genai import types
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from sc_agents import checks, fmt
 from sc_agents.agents import halt, step
@@ -23,7 +23,8 @@ AGENT = "impact"
 
 
 class Narrative(BaseModel):
-    narrative: str | None = None
+    # every field required: Gemini's structured output may leave out a property the schema does not require (SC-77)
+    narrative: str = Field(description="the batch's BRSR narrative")
 
 
 def _on(state: dict[str, Any]) -> bool:

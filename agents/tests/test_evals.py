@@ -101,6 +101,32 @@ def test_the_negotiators_scorer_catches_a_leak():
     assert s["reserveKept"] == 0 and "the reserve leaked" in problems
 
 
+def test_a_counter_at_the_reserve_is_not_a_leak():
+    """money.counter can decide the reserve itself: stating the decided price gives nothing away (SC-77: the first live
+    run scored two such counters as leaks)"""
+    c = next(x for x in harness.load("negotiator") if x["id"] == "bid-14-10")
+    state = harness.prepare("negotiator", c, None)  # type: ignore[arg-type]
+    assert abs(state["bid_decided"] - c["reserve"]) < 0.005
+    reply = "We can offer the 772 packs at ₹13.50 per pack. Dispatch will be within 24 hours of the balance."
+    s, problems = scorers.score_negotiator(c, {"reply": reply}, state)
+    assert s["reserveKept"] == 1 and problems == []
+
+
+def test_a_best_before_date_does_not_quote_the_reserve():
+    """a reserve of ₹18 and a best-before of 18 Nov 2026: the date's day is not the price (SC-77)"""
+    c = next(x for x in harness.load("lister") if x["id"] == "lister-biscuits-lakshmi")
+    out = {
+        "title": "Munchly Choco Cream Biscuits 200 g - 1210 packs - Hyderabad",
+        "description": "Lot of 1210 packs of Munchly Choco Cream Biscuits 200 g (batch MF-2411-101) with best-before "
+        "date 18 Nov 2026. Stock is located at Begum Bazaar godown in Hyderabad at an asking price of ₹20 a pack. "
+        "Dispatch is within 24 hours of the balance.",
+    }
+    s, problems = scorers.score_lister(c, out)
+    assert "quotes the reserve" not in problems
+    _, problems = scorers.score_lister(c, {**out, "description": out["description"] + " Not under ₹18."})
+    assert "quotes the reserve" in problems
+
+
 def test_the_set_marks():
     results = [
         {"kind": "clean", "scores": {"exact": 1, "pass": 1, "confidentWrong": 0}},

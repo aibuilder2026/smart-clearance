@@ -81,7 +81,7 @@ def score_data(case: dict[str, Any], out: dict[str, Any]) -> tuple[dict[str, Any
 
 def score_valuer(case: dict[str, Any], out: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
     f = valuer.facts(case["preview"], case["history"])
-    notes = (out or {}).get("notes") or {}
+    notes = valuer.as_map((out or {}).get("notes"))
     kept, dropped = valuer.keep(notes, f)
     ids = [c["id"] for c in f["channels"]]
     problems = []
@@ -176,7 +176,10 @@ def score_negotiator(
 ) -> tuple[dict[str, Any], list[str]]:
     text = " ".join(str((out or {}).get("reply") or "").split())
     problems = []
-    leaked = checks.shows(text, case["reserve"])
+    # a price the reply may state gives nothing away when it happens to be the reserve: money.counter can decide the
+    # reserve itself (backend-api's reply_ok holds the same), so it leaks only as a figure the reply may not quote
+    may = [state["bid_decided"], *state["bid_others"]] if case["type"] == "bid" else state["chat_allowed"]
+    leaked = checks.shows(text, case["reserve"]) and not any(abs(p - case["reserve"]) < 0.005 for p in may)
     if leaked:
         problems.append("the reserve leaked")
     if case["type"] == "bid":

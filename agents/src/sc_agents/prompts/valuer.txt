@@ -10,4 +10,4 @@ Rules:
 - The write-off is the baseline: its note says what destroying the stock costs, from its own figures.
 - No brand names other than the product's, no people's names.
 
-Return JSON: {"notes": {"<channel id>": "<note>", ...}}.
+Return JSON: {"notes": [{"channel": "<channel id>", "note": "<note>"}, ...]}, one note for each channel in the table.

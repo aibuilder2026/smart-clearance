@@ -2,7 +2,7 @@
 
 `GET …/valuation-preview` is the channel table backend-api will save (domain/money.py); BigQuery's `channel_prices`
 holds what was paid lately for the SKU (awards and schemes). Gemini Pro writes one note per channel from those facts
-alone, `{notes: {channelId: text}}`; a note that quotes a figure outside them is left out. Then
+alone, `{notes: [{channel, note}]}`; a note that quotes a figure outside them is left out. Then
 `POST …/valuation {notes}`."""
 
 import json
@@ -10,7 +10,7 @@ import logging
 from typing import Any
 
 from google.genai import types
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from sc_agents import checks, fmt
 from sc_agents.agents import halt, step
@@ -23,8 +23,22 @@ AGENT = "valuer"
 NOTE_MAX = 160
 
 
+class ChannelNote(BaseModel):
+    channel: str = Field(description="the channel's id, as the table gives it")
+    note: str = Field(description="the note on that channel")
+
+
 class Notes(BaseModel):
-    notes: dict[str, str] | None = None
+    # a list of pairs, not a map: Gemini's structured output cannot hold a map of free keys, and returned it empty
+    # (SC-77)
+    notes: list[ChannelNote] = Field(description="one note for each channel in the table")
+
+
+def as_map(notes: Any) -> dict[str, Any]:
+    """the notes by channel, from the model's list (or a map, as earlier recordings hold them)"""
+    if isinstance(notes, dict):
+        return notes
+    return {n.get("channel"): n.get("note") for n in notes or [] if isinstance(n, dict) and n.get("channel")}
 
 
 def due(state: dict[str, Any]) -> bool:
@@ -119,12 +133,12 @@ def _parts(state: dict[str, Any]) -> list[types.Part]:
     ]
 
 
-def keep(notes: dict[str, Any], f: dict[str, Any]) -> tuple[dict[str, str], list[str]]:
+def keep(notes: Any, f: dict[str, Any]) -> tuple[dict[str, str], list[str]]:
     """the notes that pass: a known channel, under the length, no figure outside the facts; and the ones dropped"""
     ids = {c["id"] for c in f["channels"]}
     pool = allowed(f)
     kept, dropped = {}, []
-    for k, v in (notes or {}).items():
+    for k, v in as_map(notes).items():
         text = " ".join(str(v).split())
         if k in ids and text and len(text) <= NOTE_MAX and checks.check_numbers(text, pool):
             kept[k] = text
@@ -136,7 +150,7 @@ def keep(notes: dict[str, Any], f: dict[str, Any]) -> tuple[dict[str, str], list
 async def _report(rc: RunCtx, state: dict[str, Any]) -> dict[str, Any]:
     run = rc.run(AGENT)
     f = state["valuer_facts"]
-    kept, dropped = keep((state.get("valuer_notes") or {}).get("notes") or {}, f)
+    kept, dropped = keep(as_map((state.get("valuer_notes") or {}).get("notes")), f)
     if dropped or not kept:
         run.fell_back("notes left out" if dropped else "no notes")
     out = await rc.report(AGENT, case_path(rc.msg.client, rc.msg.ref or "", "valuation"), {"notes": kept})

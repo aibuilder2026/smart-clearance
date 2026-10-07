@@ -9,7 +9,7 @@ import json
 from typing import Any
 
 from google.genai import types
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from sc_agents import checks, fmt
 from sc_agents.agents import halt, step
@@ -22,7 +22,8 @@ EXPLANATION_MAX = 600
 
 
 class Explanation(BaseModel):
-    explanation: str | None = None
+    # every field required: Gemini's structured output may leave out a property the schema does not require (SC-77)
+    explanation: str = Field(description="why the plan splits the batch as it does, in two or three sentences")
 
 
 def due(state: dict[str, Any]) -> bool:
