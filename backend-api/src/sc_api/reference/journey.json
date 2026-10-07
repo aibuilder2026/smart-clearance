@@ -1,0 +1,2791 @@
+{
+	"day0": "2026-10-02",
+	"platform": {
+		"name": "Smart-Clearance",
+		"domain": "smartclearance.com"
+	},
+	"client": {
+		"name": "Munchly Foods Ltd",
+		"short": "Munchly Foods",
+		"city": "Pune",
+		"listed": "NSE",
+		"gstin": "27AABCM1234F1Z5",
+		"fssai": "10019022001234",
+		"revenue": "₹640 crore",
+		"skus": 8,
+		"distributors": 4,
+		"kiranas": 195,
+		"shortDatedPerQuarter": 1800000,
+		"destroyedToday": 0.7
+	},
+	"workspace": {
+		"id": "munchly",
+		"name": "Munchly Foods",
+		"short": "Munchly",
+		"domain": "munchly.smartclearance.com",
+		"emailDomain": "munchly.in",
+		"mark": {
+			"from": "#f68d3e",
+			"to": "#d6461e",
+			"ink": "#ffffff"
+		},
+		"since": "1 Oct 2026",
+		"plan": "Pilot",
+		"region": "India, Mumbai region",
+		"signIn": [
+			{
+				"id": "password",
+				"icon": "mail",
+				"title": "Email and password",
+				"who": "Everyone in Munchly's workspace",
+				"rule": "Addresses Munchly invited: munchly.example for Munchly's people, google.example for distributors, kiranas, buyers and food banks"
+			}
+		],
+		"outside": "The ExpireSoon buyer signs in to the workspace's marketplace area with the address Munchly invited, and sees only the listings open to him. Buyers inside Munchly's territories never see them.",
+		"invite": {
+			"name": "Shree Sai Kirana",
+			"contact": "+91 98230 60014"
+		},
+		"profile": [
+			{
+				"id": "route",
+				"icon": "factory",
+				"title": "Route to market",
+				"value": "4 distributors",
+				"text": "Munchly sells only to its distributors. Each one supplies the kiranas on his salesman's beat and the Blinkit, Zepto and Instamart warehouses in his city."
+			},
+			{
+				"id": "owner",
+				"icon": "warehouse",
+				"title": "Who owns short-dated stock",
+				"value": "the distributor",
+				"text": "He bought it at ₹22.00 a pack, so the agent lists, offers and invoices in his name, with his one-time permission."
+			},
+			{
+				"id": "expiry",
+				"icon": "undo-2",
+				"title": "Expiry policy",
+				"value": "full credit at expiry",
+				"text": "Expired stock comes back to Munchly for full credit and is destroyed, so Munchly acts before expiry and pays price support instead of a claim."
+			},
+			{
+				"id": "gates",
+				"icon": "shield",
+				"title": "Quick-commerce gates",
+				"value": "Blinkit 90+ days · Zepto, Instamart 60% of life",
+				"text": "A batch that misses a gate stays in the distributor's godown."
+			},
+			{
+				"id": "channels",
+				"icon": "route",
+				"title": "Exits for distributor stock",
+				"value": "four, and the bin as the baseline",
+				"text": "ExpireSoon, the kirana scheme, a staff sale at the godown and food banks. Discount D2C and the Pune plant staff sale apply only to Munchly's own warehouse stock."
+			},
+			{
+				"id": "territory",
+				"icon": "map-pin",
+				"title": "Territory guard",
+				"value": "4 territories",
+				"text": "ExpireSoon listings are hidden from buyers inside Munchly's distributor territories, matched by pincode."
+			},
+			{
+				"id": "returns",
+				"icon": "calendar-clock",
+				"title": "Scheme returns",
+				"value": "until 20 days before best-before",
+				"text": "Returned packs reach the godown in time for a staff sale or a food bank."
+			}
+		],
+		"hint": "name@munchly.in or 98230 44118"
+	},
+	"domains": {
+		"staff": "munchly.example",
+		"partners": "google.example"
+	},
+	"skus": {
+		"chips": {
+			"id": "chips",
+			"code": "MF-MC-150",
+			"brand": "Munchly",
+			"name": "Masala Chips 150 g",
+			"category": "snacks",
+			"hsn": "2005",
+			"mrp": 30,
+			"dp": 22,
+			"cost": 16,
+			"gst": 0.05,
+			"itcPerUnit": 0.9,
+			"perCarton": 24,
+			"lifeDays": 180,
+			"kgPerUnit": 0.16,
+			"img": "pack-chips",
+			"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
+		},
+		"biscuits": {
+			"id": "biscuits",
+			"code": "MF-CC-200",
+			"brand": "Munchly",
+			"name": "Choco Cream Biscuits 200 g",
+			"category": "biscuits",
+			"hsn": "1905",
+			"mrp": 40,
+			"cost": 22,
+			"gst": 0.05,
+			"perCarton": 24,
+			"lifeDays": 270,
+			"kgPerUnit": 0.215,
+			"img": "pack-biscuits"
+		},
+		"chikki": {
+			"id": "chikki",
+			"code": "MF-PC-100",
+			"brand": "Munchly",
+			"name": "Peanut Chikki 100 g",
+			"category": "snacks",
+			"hsn": "1704",
+			"mrp": 25,
+			"cost": 13,
+			"gst": 0.05,
+			"perCarton": 30,
+			"lifeDays": 180,
+			"kgPerUnit": 0.11,
+			"img": "pack-chikki"
+		},
+		"poha": {
+			"id": "poha",
+			"code": "MF-IP-250",
+			"brand": "Munchly",
+			"name": "Instant Poha 250 g",
+			"category": "staples",
+			"hsn": "1904",
+			"mrp": 55,
+			"cost": 31,
+			"gst": 0.05,
+			"perCarton": 20,
+			"lifeDays": 270,
+			"kgPerUnit": 0.27,
+			"img": "pack-poha"
+		},
+		"oats": {
+			"id": "oats",
+			"code": "MF-MO-200",
+			"brand": "Munchly",
+			"name": "Masala Oats 200 g",
+			"category": "staples",
+			"hsn": "2106",
+			"mrp": 65,
+			"cost": 36,
+			"gst": 0.05,
+			"perCarton": 20,
+			"lifeDays": 270,
+			"kgPerUnit": 0.22,
+			"img": "pack-oats"
+		},
+		"mango": {
+			"id": "mango",
+			"code": "MF-MD-200",
+			"brand": "Munchly",
+			"name": "Mango Drink 200 ml",
+			"category": "beverages",
+			"hsn": "2202",
+			"mrp": 20,
+			"cost": 11,
+			"gst": 0.05,
+			"perCarton": 27,
+			"lifeDays": 180,
+			"kgPerUnit": 0.215,
+			"img": "pack-mango"
+		},
+		"facewash": {
+			"id": "facewash",
+			"code": "GL-AF-100",
+			"brand": "Glowra",
+			"name": "Aloe Face Wash 100 ml",
+			"category": "personal-care",
+			"hsn": "3401",
+			"mrp": 120,
+			"cost": 58,
+			"gst": 0.18,
+			"perCarton": 12,
+			"lifeDays": 730,
+			"kgPerUnit": 0.12,
+			"img": "pack-facewash"
+		},
+		"hairoil": {
+			"id": "hairoil",
+			"code": "GL-CO-200",
+			"brand": "Glowra",
+			"name": "Coconut Hair Oil 200 ml",
+			"category": "personal-care",
+			"hsn": "3305",
+			"mrp": 150,
+			"cost": 72,
+			"gst": 0.05,
+			"perCarton": 12,
+			"lifeDays": 730,
+			"kgPerUnit": 0.23,
+			"img": "pack-hairoil"
+		}
+	},
+	"distributors": {
+		"rakesh": {
+			"id": "rakesh",
+			"name": "Rakesh Traders",
+			"short": "Rakesh Traders",
+			"city": "Nagpur",
+			"state": "Maharashtra",
+			"godown": "Kalamna Market godown",
+			"address": "Kalamna Market, Nagpur, Maharashtra",
+			"gstin": "27AABCR1234F1Z5",
+			"kiranas": 38,
+			"cluster": "Nagpur, Wardha and Kamptee",
+			"territory": "Nagpur with Wardha and Kamptee",
+			"pins": "440, 441, 442",
+			"staffCap": 50
+		},
+		"patil": {
+			"id": "patil",
+			"name": "Patil Distributors",
+			"short": "Patil Distributors",
+			"city": "Pune",
+			"state": "Maharashtra",
+			"godown": "Market Yard godown",
+			"kiranas": 52,
+			"cluster": "Pune city",
+			"territory": "Pune",
+			"pins": "411, 412"
+		},
+		"gupta": {
+			"id": "gupta",
+			"name": "Gupta & Sons",
+			"short": "Gupta & Sons",
+			"city": "Indore",
+			"state": "Madhya Pradesh",
+			"godown": "Siyaganj godown",
+			"kiranas": 47,
+			"cluster": "Indore",
+			"territory": "Indore",
+			"pins": "452, 453"
+		},
+		"lakshmi": {
+			"id": "lakshmi",
+			"name": "Lakshmi Agencies",
+			"short": "Lakshmi Agencies",
+			"city": "Hyderabad",
+			"state": "Telangana",
+			"godown": "Begum Bazaar godown",
+			"kiranas": 58,
+			"cluster": "Hyderabad old city",
+			"territory": "Hyderabad",
+			"pins": "500, 501",
+			"staffCap": 150
+		}
+	},
+	"buyer": {
+		"id": "agrawal",
+		"name": "Agrawal Wholesale",
+		"short": "Agrawal Wholesale",
+		"city": "Raipur",
+		"state": "Chhattisgarh",
+		"stateCode": "22",
+		"address": "Ganj Mandi, Raipur, Chhattisgarh",
+		"gstin": "22AAGFA4821M1Z3",
+		"kind": "Kirana wholesaler · ExpireSoon buyer"
+	},
+	"people": {
+		"priya": {
+			"id": "priya",
+			"name": "Priya Deshmukh",
+			"short": "Priya",
+			"role": "Regional Supply-Chain Manager",
+			"org": "Munchly Foods",
+			"city": "Pune",
+			"img": "sc3img:/people/p-priya.webp",
+			"email": "priya.deshmukh@munchly.in",
+			"sign": "Google",
+			"kind": "staff"
+		},
+		"rakesh": {
+			"id": "rakesh",
+			"name": "Rakesh bhai",
+			"short": "Rakesh bhai",
+			"role": "Owner, distributor",
+			"org": "Rakesh Traders",
+			"city": "Nagpur",
+			"img": "sc3img:/people/p-rakesh.webp",
+			"phone": "+91 98230 44118",
+			"sign": "Phone OTP",
+			"lang": "hi",
+			"kind": "partner"
+		},
+		"ganesh": {
+			"id": "ganesh",
+			"name": "Ganesh ji",
+			"short": "Ganesh ji",
+			"role": "Owner, kirana",
+			"org": "Shree Ganesh Kirana",
+			"city": "Itwari, Nagpur",
+			"img": "sc3img:/people/p-ganesh.webp",
+			"phone": "+91 98230 55120",
+			"sign": "Phone OTP",
+			"lang": "hi",
+			"kind": "partner"
+		},
+		"agrawal": {
+			"id": "agrawal",
+			"name": "Agrawal ji",
+			"short": "Agrawal ji",
+			"role": "Buyer",
+			"org": "Agrawal Wholesale",
+			"city": "Raipur",
+			"img": "sc3img:/people/p-agrawal.webp",
+			"email": "orders@agrawalwholesale.example",
+			"sign": "ExpireSoon",
+			"kind": "external"
+		},
+		"anita": {
+			"id": "anita",
+			"name": "Anita Rao",
+			"short": "Anita",
+			"role": "Finance & GST",
+			"org": "Munchly Foods",
+			"city": "Pune",
+			"img": "sc3img:/people/p-anita.webp",
+			"email": "anita.rao@munchly.in",
+			"sign": "Google",
+			"kind": "staff"
+		},
+		"vikram": {
+			"id": "vikram",
+			"name": "Vikram Sethi",
+			"short": "Vikram",
+			"role": "Sustainability & BRSR",
+			"org": "Munchly Foods",
+			"city": "Pune",
+			"img": "sc3img:/people/p-vikram.webp",
+			"email": "vikram.sethi@munchly.in",
+			"sign": "Google",
+			"kind": "staff"
+		},
+		"meera": {
+			"id": "meera",
+			"name": "Meera",
+			"short": "Meera",
+			"role": "City lead",
+			"org": "Feeding India",
+			"city": "Hyderabad",
+			"img": "sc3img:/people/p-meera.webp",
+			"email": "meera@feedingindia.example",
+			"sign": "Google",
+			"kind": "partner"
+		},
+		"arjun": {
+			"id": "arjun",
+			"name": "Arjun Nair",
+			"short": "Arjun",
+			"role": "Workspace admin",
+			"org": "Munchly Foods",
+			"city": "Pune",
+			"img": "sc3img:/people/p-arjun.webp",
+			"email": "arjun.nair@munchly.in",
+			"sign": "Google",
+			"kind": "staff"
+		}
+	},
+	"areas": {
+		"Itwari": "440002",
+		"Sadar": "440001",
+		"Dharampeth": "440010",
+		"Sitabuldi": "440012",
+		"Wardha Road": "440015",
+		"Mahal": "440032",
+		"Kamptee": "441001",
+		"Wardha": "442001"
+	},
+	"kiranas": [
+		{
+			"id": "k0",
+			"name": "Shree Ganesh Kirana",
+			"area": "Itwari",
+			"pincode": "440002",
+			"sales14": 6,
+			"orders": 24,
+			"at": "09:52",
+			"member": "ganesh"
+		},
+		{
+			"id": "k1",
+			"name": "Jai Durga Stores",
+			"area": "Kamptee",
+			"pincode": "441001",
+			"sales14": 6,
+			"orders": 24,
+			"at": "09:58",
+			"member": "jaidurga"
+		},
+		{
+			"id": "k2",
+			"name": "Om Sai Provision",
+			"area": "Wardha Road",
+			"pincode": "440015",
+			"sales14": 3,
+			"orders": 12,
+			"at": "10:01",
+			"member": "kirana-om-sai-provision"
+		},
+		{
+			"id": "k3",
+			"name": "Maa Bhavani Kirana",
+			"area": "Itwari",
+			"pincode": "440002",
+			"sales14": 3,
+			"orders": 12,
+			"at": "10:04",
+			"member": "kirana-maa-bhavani-kirana"
+		},
+		{
+			"id": "k4",
+			"name": "New Sagar Stores",
+			"area": "Kamptee",
+			"pincode": "441001",
+			"sales14": 9,
+			"orders": 36,
+			"at": "10:08",
+			"member": "kirana-new-sagar-stores"
+		},
+		{
+			"id": "k5",
+			"name": "Gurukripa Traders",
+			"area": "Mahal",
+			"pincode": "440032",
+			"sales14": 6,
+			"orders": 24,
+			"at": "10:11",
+			"member": "kirana-gurukripa-traders"
+		},
+		{
+			"id": "k6",
+			"name": "Mahalaxmi Kirana",
+			"area": "Sitabuldi",
+			"pincode": "440012",
+			"sales14": 3,
+			"orders": 12,
+			"at": "10:15",
+			"member": "kirana-mahalaxmi-kirana"
+		},
+		{
+			"id": "k7",
+			"name": "Shiv Shakti Store",
+			"area": "Wardha",
+			"pincode": "442001",
+			"sales14": 3,
+			"orders": 12,
+			"at": "10:19",
+			"member": "kirana-shiv-shakti-store"
+		},
+		{
+			"id": "k8",
+			"name": "Patel Provision",
+			"area": "Dharampeth",
+			"pincode": "440010",
+			"sales14": 6,
+			"orders": 24,
+			"at": "10:22",
+			"member": "kirana-patel-provision"
+		},
+		{
+			"id": "k9",
+			"name": "Annapurna Stores",
+			"area": "Sadar",
+			"pincode": "440001",
+			"sales14": 3,
+			"orders": 12,
+			"at": "10:26",
+			"member": "kirana-annapurna-stores"
+		},
+		{
+			"id": "k10",
+			"name": "Sahyog Kirana",
+			"area": "Kamptee",
+			"pincode": "441001",
+			"sales14": 12,
+			"orders": 48,
+			"at": "10:30",
+			"member": "kirana-sahyog-kirana"
+		},
+		{
+			"id": "k11",
+			"name": "Raj Super Mart",
+			"area": "Mahal",
+			"pincode": "440032",
+			"sales14": 9,
+			"orders": 36,
+			"at": "10:33",
+			"member": "kirana-raj-super-mart"
+		},
+		{
+			"id": "k12",
+			"name": "Vaishnavi Stores",
+			"area": "Itwari",
+			"pincode": "440002",
+			"sales14": 6,
+			"orders": 24,
+			"at": "10:37",
+			"member": "kirana-vaishnavi-stores"
+		},
+		{
+			"id": "k13",
+			"name": "Sai Kripa Kirana",
+			"area": "Dharampeth",
+			"pincode": "440010",
+			"sales14": 3,
+			"orders": 12,
+			"at": "10:41",
+			"member": "kirana-sai-kripa-kirana"
+		},
+		{
+			"id": "k14",
+			"name": "Shree Ram Provision",
+			"area": "Sitabuldi",
+			"pincode": "440012",
+			"sales14": 3,
+			"orders": 12,
+			"at": "10:44",
+			"member": "kirana-shree-ram-provision"
+		},
+		{
+			"id": "k15",
+			"name": "Hanuman General Store",
+			"area": "Wardha Road",
+			"pincode": "440015",
+			"sales14": 3,
+			"orders": 12,
+			"at": "10:48",
+			"member": "kirana-hanuman-general-store"
+		},
+		{
+			"id": "k16",
+			"name": "Gajanan Kirana",
+			"area": "Wardha",
+			"pincode": "442001",
+			"sales14": 6,
+			"orders": 24,
+			"at": "10:52",
+			"member": "kirana-gajanan-kirana"
+		},
+		{
+			"id": "k17",
+			"name": "Kamal Provision Store",
+			"area": "Mahal",
+			"pincode": "440032",
+			"sales14": 3,
+			"orders": 12,
+			"at": "10:55",
+			"member": "kirana-kamal-provision-store"
+		},
+		{
+			"id": "k18",
+			"name": "Navkar Stores",
+			"area": "Itwari",
+			"pincode": "440002",
+			"sales14": 3,
+			"orders": 12,
+			"at": "10:59",
+			"member": "kirana-navkar-stores"
+		},
+		{
+			"id": "k19",
+			"name": "Siddhivinayak Kirana",
+			"area": "Sadar",
+			"pincode": "440001",
+			"sales14": 6,
+			"orders": 24,
+			"at": "11:02",
+			"member": "kirana-siddhivinayak-kirana"
+		},
+		{
+			"id": "k20",
+			"name": "Jyoti General Store",
+			"area": "Kamptee",
+			"pincode": "441001",
+			"sales14": 3,
+			"orders": 12,
+			"at": "11:06",
+			"member": "kirana-jyoti-general-store"
+		},
+		{
+			"id": "k21",
+			"name": "Laxmi Narayan Stores",
+			"area": "Wardha",
+			"pincode": "442001",
+			"sales14": 3,
+			"orders": 12,
+			"at": "11:10",
+			"member": "kirana-laxmi-narayan-stores"
+		},
+		{
+			"id": "k22",
+			"name": "Bharat Kirana",
+			"area": "Sitabuldi",
+			"pincode": "440012",
+			"sales14": 3,
+			"orders": 12,
+			"at": "11:14",
+			"member": "kirana-bharat-kirana"
+		},
+		{
+			"id": "k23",
+			"name": "Shubham Provision",
+			"area": "Dharampeth",
+			"pincode": "440010",
+			"sales14": 9,
+			"orders": 36,
+			"at": "11:17",
+			"member": "kirana-shubham-provision"
+		},
+		{
+			"id": "k24",
+			"name": "Mauli Kirana",
+			"area": "Wardha Road",
+			"pincode": "440015",
+			"sales14": 3,
+			"orders": 12,
+			"at": "11:21",
+			"member": "kirana-mauli-kirana"
+		},
+		{
+			"id": "k25",
+			"name": "Ekta Super Bazaar",
+			"area": "Sadar",
+			"pincode": "440001",
+			"sales14": 6,
+			"orders": 24,
+			"at": "11:24",
+			"member": "kirana-ekta-super-bazaar"
+		},
+		{
+			"id": "k26",
+			"name": "Pooja Provision",
+			"area": "Itwari",
+			"pincode": "440002",
+			"sales14": 3,
+			"orders": 12,
+			"at": "11:27",
+			"member": "kirana-pooja-provision"
+		},
+		{
+			"id": "k27",
+			"name": "Tulsi Kirana",
+			"area": "Kamptee",
+			"pincode": "441001",
+			"sales14": 3,
+			"orders": 12,
+			"at": "11:31",
+			"member": "kirana-tulsi-kirana"
+		},
+		{
+			"id": "k28",
+			"name": "Vithal Stores",
+			"area": "Mahal",
+			"pincode": "440032",
+			"sales14": 3,
+			"orders": 12,
+			"at": "11:34",
+			"member": "kirana-vithal-stores"
+		},
+		{
+			"id": "k29",
+			"name": "Anand General Store",
+			"area": "Dharampeth",
+			"pincode": "440010",
+			"sales14": 6,
+			"orders": 24,
+			"at": "11:38",
+			"member": "kirana-anand-general-store"
+		},
+		{
+			"id": "k30",
+			"name": "Sainath Kirana",
+			"area": "Wardha",
+			"pincode": "442001",
+			"sales14": 3,
+			"orders": 12,
+			"at": "11:41",
+			"member": "kirana-sainath-kirana"
+		},
+		{
+			"id": "k31",
+			"name": "Shree Sai Kirana",
+			"area": "Mahal",
+			"pincode": "440032",
+			"sales14": 3,
+			"orders": 0,
+			"at": null,
+			"member": "shreesai"
+		},
+		{
+			"id": "k32",
+			"name": "Balaji Provision",
+			"area": "Sadar",
+			"pincode": "440001",
+			"sales14": 3,
+			"orders": 0,
+			"at": null,
+			"member": "kirana-balaji-provision"
+		},
+		{
+			"id": "k33",
+			"name": "Rameshwar Stores",
+			"area": "Wardha Road",
+			"pincode": "440015",
+			"sales14": 3,
+			"orders": 0,
+			"at": null,
+			"member": "kirana-rameshwar-stores"
+		},
+		{
+			"id": "k34",
+			"name": "Ganga Kirana",
+			"area": "Kamptee",
+			"pincode": "441001",
+			"sales14": 3,
+			"orders": 0,
+			"at": null,
+			"member": "kirana-ganga-kirana"
+		},
+		{
+			"id": "k35",
+			"name": "Navratna General Store",
+			"area": "Dharampeth",
+			"pincode": "440010",
+			"sales14": 3,
+			"orders": 0,
+			"at": null,
+			"member": "kirana-navratna-general-store"
+		},
+		{
+			"id": "k36",
+			"name": "Sant Tukaram Kirana",
+			"area": "Wardha",
+			"pincode": "442001",
+			"sales14": 3,
+			"orders": 0,
+			"at": null,
+			"member": "kirana-sant-tukaram-kirana"
+		},
+		{
+			"id": "k37",
+			"name": "Mohan Stores",
+			"area": "Itwari",
+			"pincode": "440002",
+			"sales14": 3,
+			"orders": 0,
+			"at": null,
+			"member": "kirana-mohan-stores"
+		}
+	],
+	"offered": 38,
+	"members": [
+		{
+			"id": "priya",
+			"name": "Priya Deshmukh",
+			"short": "Priya",
+			"org": "Munchly Foods",
+			"role": "operator",
+			"kind": "staff",
+			"access": "approver",
+			"status": "active",
+			"invitedBy": null,
+			"city": "Pune",
+			"lang": null,
+			"img": "sc3img:/people/p-priya.webp",
+			"login": "priya.deshmukh@munchly.example"
+		},
+		{
+			"id": "rakesh",
+			"name": "Rakesh bhai",
+			"short": "Rakesh bhai",
+			"org": "Rakesh Traders",
+			"role": "distributor",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": null,
+			"city": "Nagpur",
+			"lang": "hi",
+			"img": "sc3img:/people/p-rakesh.webp",
+			"login": "rakesh-traders@google.example"
+		},
+		{
+			"id": "ganesh",
+			"name": "Ganesh ji",
+			"short": "Ganesh ji",
+			"org": "Shree Ganesh Kirana",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": null,
+			"city": "Itwari, Nagpur",
+			"lang": "hi",
+			"img": "sc3img:/people/p-ganesh.webp",
+			"login": "shree-ganesh-kirana@google.example"
+		},
+		{
+			"id": "agrawal",
+			"name": "Agrawal ji",
+			"short": "Agrawal ji",
+			"org": "Agrawal Wholesale",
+			"role": "buyer",
+			"kind": "external",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": null,
+			"city": "Raipur",
+			"lang": null,
+			"img": "sc3img:/people/p-agrawal.webp",
+			"login": "agrawal-wholesale@google.example"
+		},
+		{
+			"id": "anita",
+			"name": "Anita Rao",
+			"short": "Anita",
+			"org": "Munchly Foods",
+			"role": "finance",
+			"kind": "staff",
+			"access": "member",
+			"status": "active",
+			"invitedBy": null,
+			"city": "Pune",
+			"lang": null,
+			"img": "sc3img:/people/p-anita.webp",
+			"login": "anita.rao@munchly.example"
+		},
+		{
+			"id": "vikram",
+			"name": "Vikram Sethi",
+			"short": "Vikram",
+			"org": "Munchly Foods",
+			"role": "sustainability",
+			"kind": "staff",
+			"access": "member",
+			"status": "active",
+			"invitedBy": null,
+			"city": "Pune",
+			"lang": null,
+			"img": "sc3img:/people/p-vikram.webp",
+			"login": "vikram.sethi@munchly.example"
+		},
+		{
+			"id": "meera",
+			"name": "Meera",
+			"short": "Meera",
+			"org": "Feeding India",
+			"role": "foodbank",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": null,
+			"city": "Hyderabad",
+			"lang": null,
+			"img": "sc3img:/people/p-meera.webp",
+			"login": "feeding-india@google.example"
+		},
+		{
+			"id": "arjun",
+			"name": "Arjun Nair",
+			"short": "Arjun",
+			"org": "Munchly Foods",
+			"role": "admin",
+			"kind": "staff",
+			"access": "admin",
+			"status": "active",
+			"invitedBy": null,
+			"city": "Pune",
+			"lang": null,
+			"img": "sc3img:/people/p-arjun.webp",
+			"login": "arjun.nair@munchly.example"
+		},
+		{
+			"id": "patil-owner",
+			"name": "Patil Distributors",
+			"short": "Patil Distributors",
+			"org": "Patil Distributors",
+			"role": "distributor",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": null,
+			"city": null,
+			"lang": null,
+			"img": null,
+			"login": "patil-distributors@google.example"
+		},
+		{
+			"id": "gupta-owner",
+			"name": "Gupta & Sons",
+			"short": "Gupta & Sons",
+			"org": "Gupta & Sons",
+			"role": "distributor",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": null,
+			"city": null,
+			"lang": null,
+			"img": null,
+			"login": "gupta-sons@google.example"
+		},
+		{
+			"id": "lakshmi-owner",
+			"name": "Lakshmi Agencies",
+			"short": "Lakshmi Agencies",
+			"org": "Lakshmi Agencies",
+			"role": "distributor",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": null,
+			"city": null,
+			"lang": null,
+			"img": null,
+			"login": "lakshmi-agencies@google.example"
+		},
+		{
+			"id": "jaidurga",
+			"name": "Jai Durga Stores",
+			"short": "Jai Durga Stores",
+			"org": "Jai Durga Stores",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": null,
+			"city": null,
+			"lang": null,
+			"img": null,
+			"login": "jai-durga-stores@google.example"
+		},
+		{
+			"id": "krishna",
+			"name": "Krishna Kirana Bhandar",
+			"short": "Krishna Kirana Bhandar",
+			"org": "Krishna Kirana Bhandar",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "deactivated",
+			"invitedBy": null,
+			"city": null,
+			"lang": null,
+			"img": null,
+			"login": "krishna-kirana-bhandar@google.example"
+		},
+		{
+			"id": "shreesai",
+			"name": "Shree Sai Kirana",
+			"short": "Shree Sai Kirana",
+			"org": "Shree Sai Kirana",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "invited",
+			"invitedBy": "Rakesh Traders",
+			"city": null,
+			"lang": null,
+			"img": null,
+			"login": "shree-sai-kirana@google.example"
+		},
+		{
+			"id": "ifbn",
+			"name": "India FoodBanking Network",
+			"short": "India FoodBanking Network",
+			"org": "India FoodBanking Network",
+			"role": "foodbank",
+			"kind": "partner",
+			"access": "partner",
+			"status": "invited",
+			"invitedBy": "Munchly Foods",
+			"city": null,
+			"lang": null,
+			"img": null,
+			"login": "india-foodbanking-network@google.example"
+		},
+		{
+			"id": "kirana-om-sai-provision",
+			"name": "Om Sai Provision",
+			"short": "Om Sai Provision",
+			"org": "Om Sai Provision",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Wardha Road, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "om-sai-provision@google.example"
+		},
+		{
+			"id": "kirana-maa-bhavani-kirana",
+			"name": "Maa Bhavani Kirana",
+			"short": "Maa Bhavani Kirana",
+			"org": "Maa Bhavani Kirana",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Itwari, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "maa-bhavani-kirana@google.example"
+		},
+		{
+			"id": "kirana-new-sagar-stores",
+			"name": "New Sagar Stores",
+			"short": "New Sagar Stores",
+			"org": "New Sagar Stores",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Kamptee, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "new-sagar-stores@google.example"
+		},
+		{
+			"id": "kirana-gurukripa-traders",
+			"name": "Gurukripa Traders",
+			"short": "Gurukripa Traders",
+			"org": "Gurukripa Traders",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Mahal, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "gurukripa-traders@google.example"
+		},
+		{
+			"id": "kirana-mahalaxmi-kirana",
+			"name": "Mahalaxmi Kirana",
+			"short": "Mahalaxmi Kirana",
+			"org": "Mahalaxmi Kirana",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Sitabuldi, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "mahalaxmi-kirana@google.example"
+		},
+		{
+			"id": "kirana-shiv-shakti-store",
+			"name": "Shiv Shakti Store",
+			"short": "Shiv Shakti Store",
+			"org": "Shiv Shakti Store",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Wardha, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "shiv-shakti-store@google.example"
+		},
+		{
+			"id": "kirana-patel-provision",
+			"name": "Patel Provision",
+			"short": "Patel Provision",
+			"org": "Patel Provision",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Dharampeth, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "patel-provision@google.example"
+		},
+		{
+			"id": "kirana-annapurna-stores",
+			"name": "Annapurna Stores",
+			"short": "Annapurna Stores",
+			"org": "Annapurna Stores",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Sadar, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "annapurna-stores@google.example"
+		},
+		{
+			"id": "kirana-sahyog-kirana",
+			"name": "Sahyog Kirana",
+			"short": "Sahyog Kirana",
+			"org": "Sahyog Kirana",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Kamptee, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "sahyog-kirana@google.example"
+		},
+		{
+			"id": "kirana-raj-super-mart",
+			"name": "Raj Super Mart",
+			"short": "Raj Super Mart",
+			"org": "Raj Super Mart",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Mahal, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "raj-super-mart@google.example"
+		},
+		{
+			"id": "kirana-vaishnavi-stores",
+			"name": "Vaishnavi Stores",
+			"short": "Vaishnavi Stores",
+			"org": "Vaishnavi Stores",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Itwari, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "vaishnavi-stores@google.example"
+		},
+		{
+			"id": "kirana-sai-kripa-kirana",
+			"name": "Sai Kripa Kirana",
+			"short": "Sai Kripa Kirana",
+			"org": "Sai Kripa Kirana",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Dharampeth, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "sai-kripa-kirana@google.example"
+		},
+		{
+			"id": "kirana-shree-ram-provision",
+			"name": "Shree Ram Provision",
+			"short": "Shree Ram Provision",
+			"org": "Shree Ram Provision",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Sitabuldi, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "shree-ram-provision@google.example"
+		},
+		{
+			"id": "kirana-hanuman-general-store",
+			"name": "Hanuman General Store",
+			"short": "Hanuman General Store",
+			"org": "Hanuman General Store",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Wardha Road, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "hanuman-general-store@google.example"
+		},
+		{
+			"id": "kirana-gajanan-kirana",
+			"name": "Gajanan Kirana",
+			"short": "Gajanan Kirana",
+			"org": "Gajanan Kirana",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Wardha, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "gajanan-kirana@google.example"
+		},
+		{
+			"id": "kirana-kamal-provision-store",
+			"name": "Kamal Provision Store",
+			"short": "Kamal Provision Store",
+			"org": "Kamal Provision Store",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Mahal, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "kamal-provision-store@google.example"
+		},
+		{
+			"id": "kirana-navkar-stores",
+			"name": "Navkar Stores",
+			"short": "Navkar Stores",
+			"org": "Navkar Stores",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Itwari, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "navkar-stores@google.example"
+		},
+		{
+			"id": "kirana-siddhivinayak-kirana",
+			"name": "Siddhivinayak Kirana",
+			"short": "Siddhivinayak Kirana",
+			"org": "Siddhivinayak Kirana",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Sadar, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "siddhivinayak-kirana@google.example"
+		},
+		{
+			"id": "kirana-jyoti-general-store",
+			"name": "Jyoti General Store",
+			"short": "Jyoti General Store",
+			"org": "Jyoti General Store",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Kamptee, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "jyoti-general-store@google.example"
+		},
+		{
+			"id": "kirana-laxmi-narayan-stores",
+			"name": "Laxmi Narayan Stores",
+			"short": "Laxmi Narayan Stores",
+			"org": "Laxmi Narayan Stores",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Wardha, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "laxmi-narayan-stores@google.example"
+		},
+		{
+			"id": "kirana-bharat-kirana",
+			"name": "Bharat Kirana",
+			"short": "Bharat Kirana",
+			"org": "Bharat Kirana",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Sitabuldi, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "bharat-kirana@google.example"
+		},
+		{
+			"id": "kirana-shubham-provision",
+			"name": "Shubham Provision",
+			"short": "Shubham Provision",
+			"org": "Shubham Provision",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Dharampeth, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "shubham-provision@google.example"
+		},
+		{
+			"id": "kirana-mauli-kirana",
+			"name": "Mauli Kirana",
+			"short": "Mauli Kirana",
+			"org": "Mauli Kirana",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Wardha Road, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "mauli-kirana@google.example"
+		},
+		{
+			"id": "kirana-ekta-super-bazaar",
+			"name": "Ekta Super Bazaar",
+			"short": "Ekta Super Bazaar",
+			"org": "Ekta Super Bazaar",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Sadar, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "ekta-super-bazaar@google.example"
+		},
+		{
+			"id": "kirana-pooja-provision",
+			"name": "Pooja Provision",
+			"short": "Pooja Provision",
+			"org": "Pooja Provision",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Itwari, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "pooja-provision@google.example"
+		},
+		{
+			"id": "kirana-tulsi-kirana",
+			"name": "Tulsi Kirana",
+			"short": "Tulsi Kirana",
+			"org": "Tulsi Kirana",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Kamptee, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "tulsi-kirana@google.example"
+		},
+		{
+			"id": "kirana-vithal-stores",
+			"name": "Vithal Stores",
+			"short": "Vithal Stores",
+			"org": "Vithal Stores",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Mahal, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "vithal-stores@google.example"
+		},
+		{
+			"id": "kirana-anand-general-store",
+			"name": "Anand General Store",
+			"short": "Anand General Store",
+			"org": "Anand General Store",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Dharampeth, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "anand-general-store@google.example"
+		},
+		{
+			"id": "kirana-sainath-kirana",
+			"name": "Sainath Kirana",
+			"short": "Sainath Kirana",
+			"org": "Sainath Kirana",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Wardha, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "sainath-kirana@google.example"
+		},
+		{
+			"id": "kirana-balaji-provision",
+			"name": "Balaji Provision",
+			"short": "Balaji Provision",
+			"org": "Balaji Provision",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Sadar, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "balaji-provision@google.example"
+		},
+		{
+			"id": "kirana-rameshwar-stores",
+			"name": "Rameshwar Stores",
+			"short": "Rameshwar Stores",
+			"org": "Rameshwar Stores",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Wardha Road, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "rameshwar-stores@google.example"
+		},
+		{
+			"id": "kirana-ganga-kirana",
+			"name": "Ganga Kirana",
+			"short": "Ganga Kirana",
+			"org": "Ganga Kirana",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Kamptee, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "ganga-kirana@google.example"
+		},
+		{
+			"id": "kirana-navratna-general-store",
+			"name": "Navratna General Store",
+			"short": "Navratna General Store",
+			"org": "Navratna General Store",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Dharampeth, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "navratna-general-store@google.example"
+		},
+		{
+			"id": "kirana-sant-tukaram-kirana",
+			"name": "Sant Tukaram Kirana",
+			"short": "Sant Tukaram Kirana",
+			"org": "Sant Tukaram Kirana",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Wardha, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "sant-tukaram-kirana@google.example"
+		},
+		{
+			"id": "kirana-mohan-stores",
+			"name": "Mohan Stores",
+			"short": "Mohan Stores",
+			"org": "Mohan Stores",
+			"role": "retailer",
+			"kind": "partner",
+			"access": "partner",
+			"status": "active",
+			"invitedBy": "Rakesh Traders",
+			"city": "Itwari, Nagpur",
+			"lang": "hi",
+			"img": null,
+			"login": "mohan-stores@google.example"
+		}
+	],
+	"org": {
+		"priya": null,
+		"rakesh": "rakesh",
+		"ganesh": "k0",
+		"agrawal": "agrawal",
+		"anita": null,
+		"vikram": null,
+		"meera": "feeding-india",
+		"arjun": null,
+		"patil-owner": "patil",
+		"gupta-owner": "gupta",
+		"lakshmi-owner": "lakshmi",
+		"jaidurga": "k1",
+		"krishna": null,
+		"shreesai": "k31",
+		"ifbn": "india-foodbanking-network",
+		"kirana-om-sai-provision": "k2",
+		"kirana-maa-bhavani-kirana": "k3",
+		"kirana-new-sagar-stores": "k4",
+		"kirana-gurukripa-traders": "k5",
+		"kirana-mahalaxmi-kirana": "k6",
+		"kirana-shiv-shakti-store": "k7",
+		"kirana-patel-provision": "k8",
+		"kirana-annapurna-stores": "k9",
+		"kirana-sahyog-kirana": "k10",
+		"kirana-raj-super-mart": "k11",
+		"kirana-vaishnavi-stores": "k12",
+		"kirana-sai-kripa-kirana": "k13",
+		"kirana-shree-ram-provision": "k14",
+		"kirana-hanuman-general-store": "k15",
+		"kirana-gajanan-kirana": "k16",
+		"kirana-kamal-provision-store": "k17",
+		"kirana-navkar-stores": "k18",
+		"kirana-siddhivinayak-kirana": "k19",
+		"kirana-jyoti-general-store": "k20",
+		"kirana-laxmi-narayan-stores": "k21",
+		"kirana-bharat-kirana": "k22",
+		"kirana-shubham-provision": "k23",
+		"kirana-mauli-kirana": "k24",
+		"kirana-ekta-super-bazaar": "k25",
+		"kirana-pooja-provision": "k26",
+		"kirana-tulsi-kirana": "k27",
+		"kirana-vithal-stores": "k28",
+		"kirana-anand-general-store": "k29",
+		"kirana-sainath-kirana": "k30",
+		"kirana-balaji-provision": "k32",
+		"kirana-rameshwar-stores": "k33",
+		"kirana-ganga-kirana": "k34",
+		"kirana-navratna-general-store": "k35",
+		"kirana-sant-tukaram-kirana": "k36",
+		"kirana-mohan-stores": "k37"
+	},
+	"batches": [
+		{
+			"id": "MF-2409-117",
+			"sku": "chips",
+			"distributor": "rakesh",
+			"units": 1840,
+			"daysLeft": 47,
+			"sellPerDay": 12,
+			"bestBefore": "2026-11-18",
+			"mfg": "2026-05-18",
+			"city": "Nagpur",
+			"staffCap": 50,
+			"shelf": "B4",
+			"hero": true
+		},
+		{
+			"id": "MF-2410-118",
+			"sku": "mango",
+			"distributor": "lakshmi",
+			"units": 2000,
+			"daysLeft": 22,
+			"sellPerDay": 28,
+			"bestBefore": "2026-10-24",
+			"mfg": "2026-04-27",
+			"city": "Hyderabad",
+			"staffCap": 150,
+			"second": true
+		},
+		{
+			"id": "MF-2408-209",
+			"sku": "chips",
+			"distributor": "gupta",
+			"units": 1032,
+			"daysLeft": 74,
+			"sellPerDay": 22,
+			"bestBefore": "2026-12-15",
+			"mfg": "2026-06-18",
+			"city": "Indore"
+		},
+		{
+			"id": "MF-2408-311",
+			"sku": "chikki",
+			"distributor": "gupta",
+			"units": 960,
+			"daysLeft": 61,
+			"sellPerDay": 20,
+			"bestBefore": "2026-12-02",
+			"mfg": "2026-06-05",
+			"city": "Indore"
+		},
+		{
+			"id": "MF-2409-415",
+			"sku": "oats",
+			"distributor": "patil",
+			"units": 900,
+			"daysLeft": 75,
+			"sellPerDay": 18,
+			"bestBefore": "2026-12-16",
+			"mfg": "2026-03-21",
+			"city": "Pune"
+		},
+		{
+			"id": "MF-2409-204",
+			"sku": "biscuits",
+			"distributor": "patil",
+			"units": 2880,
+			"daysLeft": 96,
+			"sellPerDay": 40,
+			"bestBefore": "2027-01-06",
+			"mfg": "2026-04-11",
+			"city": "Pune"
+		},
+		{
+			"id": "MF-2410-402",
+			"sku": "poha",
+			"distributor": "lakshmi",
+			"units": 1200,
+			"daysLeft": 200,
+			"sellPerDay": 20,
+			"bestBefore": "2027-04-20",
+			"mfg": "2026-07-24",
+			"city": "Hyderabad",
+			"staffCap": 150
+		},
+		{
+			"id": "GL-2410-044",
+			"sku": "facewash",
+			"distributor": "rakesh",
+			"units": 360,
+			"daysLeft": 460,
+			"sellPerDay": 6,
+			"bestBefore": "2028-01-05",
+			"mfg": "2026-01-05",
+			"city": "Nagpur",
+			"staffCap": 50
+		},
+		{
+			"id": "GL-2410-012",
+			"sku": "hairoil",
+			"distributor": "gupta",
+			"units": 216,
+			"daysLeft": 500,
+			"sellPerDay": 4,
+			"bestBefore": "2028-02-14",
+			"mfg": "2026-02-14",
+			"city": "Indore"
+		}
+	],
+	"stages": [
+		{
+			"id": "connect",
+			"n": 1,
+			"title": "Connect",
+			"when": "once · 15 min",
+			"who": "Priya and Anita set the guardrails; Rakesh bhai gives a one-time permission",
+			"screen": "S0 Setup",
+			"role": "brand",
+			"view": "setup",
+			"sees": "Priya signs in to Munchly's workspace, connects the distributor stock export and sets the allow-list, the floors, the donation partners, the territory guard and the return window. Rakesh bhai signs in with his phone and lets the agent act in his name.",
+			"agents": "Data Agent maps the DMS columns, loads BigQuery and back-fills 90 days of sell-through by pincode and by shop.",
+			"money": "The true cost of a write-off is shown before any batch is routed: stock at cost + ITC reversal + disposal + EPR, −₹19.36 a packet of chips.",
+			"pain": "Another tool to feed",
+			"relief": "A 15-minute setup from an export",
+			"human": false,
+			"time": "once"
+		},
+		{
+			"id": "detect",
+			"n": 2,
+			"title": "Detect",
+			"when": "day 0 · 09:00",
+			"who": "Nobody. The Watcher runs",
+			"screen": "S1 Command Center",
+			"role": "brand",
+			"view": "command",
+			"sees": "A push and a dashboard alert: MF-2409-117 Masala Chips is blocked from quick commerce and 1,360 units will not sell by 18 Nov.",
+			"agents": "Watcher checks each quick-commerce gate, projects sell-through to seven days before best-before, raises batch.at_risk.",
+			"money": "₹40,800 at MRP at risk; destroying it would hit Munchly's P&L by −₹26,330, the ITC reversal included.",
+			"pain": "We find out when it has already expired",
+			"relief": "47 days of warning",
+			"human": false,
+			"time": "09:00"
+		},
+		{
+			"id": "verify",
+			"n": 3,
+			"title": "Verify",
+			"when": "day 0 · 09:20",
+			"who": "Rakesh bhai sends one photo",
+			"screen": "S2 Route Room · label",
+			"role": "distributor",
+			"view": "photo",
+			"sees": "Rakesh bhai gets a Hindi push, taps it, the camera opens, one picture of the carton label.",
+			"agents": "Vision Agent (Gemini) reads batch, MFG, best-before and MRP from the photo and reconciles them with the DMS record.",
+			"money": "MRP ₹30 confirmed from the pack: every price anchors to a verified number.",
+			"pain": "DMS data is wrong half the time",
+			"relief": "The photo is the truth",
+			"human": false,
+			"time": "09:20"
+		},
+		{
+			"id": "value",
+			"n": 4,
+			"title": "Value",
+			"when": "day 0 · 09:21",
+			"who": "Nobody. The Valuer runs",
+			"screen": "S2 Route Room · channels",
+			"role": "brand",
+			"view": "route",
+			"sees": "A channel table: price, days to clear and net ₹ per channel, ineligible channels greyed with the reason.",
+			"agents": "Valuer prices five channels against days left, capacities and the floor, with the GST-aware write-off as the baseline.",
+			"money": "Net ₹ per unit for every channel, and whether the input credit survives: −₹19.36 a unit if destroyed.",
+			"pain": "We just dump it to whoever answers",
+			"relief": "Five options, priced",
+			"human": false,
+			"time": "09:21"
+		},
+		{
+			"id": "decide",
+			"n": 5,
+			"title": "Decide",
+			"when": "day 0 · 09:22",
+			"who": "The Router proposes",
+			"screen": "S2 Route Room · split",
+			"role": "brand",
+			"view": "route",
+			"sees": "A recommended split with plain-language reasoning and one alternative side by side.",
+			"agents": "Router fills the best-paying channel to its capacity, then the next, and writes why.",
+			"money": "₹21,770 net, 53% of MRP. Munchly's P&L +₹10 against −₹26,330 if destroyed: a ₹26,340 swing.",
+			"pain": "Who decides?",
+			"relief": "A recommendation with reasons",
+			"human": false,
+			"time": "09:22"
+		},
+		{
+			"id": "approve",
+			"n": 6,
+			"title": "Approve",
+			"when": "day 0 · 09:40",
+			"who": "Priya, one tap",
+			"screen": "S2 Approve sheet",
+			"role": "brand",
+			"view": "route",
+			"human": true,
+			"sees": "Priya taps Approve from the push or the dashboard. Nothing is listed, messaged or shipped before this, and Rakesh bhai gets the same plan with a pause button.",
+			"agents": "Agents wait. The approval is logged with who, when and which channels.",
+			"money": "The sheet repeats the three numbers that matter: net ₹21,770, swing ₹26,340, ITC ₹1,224 retained.",
+			"pain": "I don't trust a bot to sell my brand",
+			"relief": "Nothing goes out without a tap",
+			"time": "09:40"
+		},
+		{
+			"id": "execute",
+			"n": 7,
+			"title": "Execute",
+			"when": "day 0 – 14",
+			"who": "Kiranas and a buyer in Raipur respond",
+			"screen": "S3 Execution · S4 ExpireSoon",
+			"role": "brand",
+			"view": "execution",
+			"sees": "The agent timeline: listing live, kirana orders ticking up, a bid countered, the award.",
+			"agents": "Lister posts to ExpireSoon in Rakesh Traders' name, hidden from buyers inside Munchly's territories; Outreach pushes a Hindi offer to 38 kiranas; Negotiator handles the bid; Donation books Feeding India for the Mango Drink batch.",
+			"money": "Planned against actual as the bid lands: ₹15 → ₹14.20 a unit on the ExpireSoon lot, ₹21,770 → ₹21,152 net.",
+			"pain": "Listing and chasing takes days",
+			"relief": "Live in minutes, the agent chases",
+			"human": false,
+			"time": "day 0⁠–⁠14"
+		},
+		{
+			"id": "settle",
+			"n": 8,
+			"title": "Settle",
+			"when": "day 3 – 7 · true-up 29 Oct",
+			"who": "Rakesh bhai issues his invoice and dispatches; Anita reviews Munchly's papers",
+			"screen": "S5 Paperwork",
+			"role": "finance",
+			"view": "paperwork",
+			"sees": "The document pack: Rakesh's invoice drafted for him to issue, the e-way bill check, Munchly's price-support credit note and the ITC memo. On day 7, the shelf check.",
+			"agents": "Paperwork drafts Rakesh's invoice, checks the e-way bill threshold, issues the price-support credit note, writes the ITC memo and the FSSAI checklist.",
+			"money": "No ITC reversal under s.17(5)(h); no e-way bill under ₹50,000. Price support to Rakesh: ₹8,768, the ₹394 van and listing fee included, instead of a ₹34,490 expiry claim.",
+			"pain": "Finance finds out at month end",
+			"relief": "Papers ready at the award",
+			"human": false,
+			"time": "day 3⁠–⁠7"
+		},
+		{
+			"id": "report",
+			"n": 9,
+			"title": "Report",
+			"when": "after 29 Oct · quarterly",
+			"who": "Vikram, Anita and the CFO",
+			"screen": "S6 Finance & ESG",
+			"role": "sustainability",
+			"view": "report",
+			"sees": "The Finance & ESG dashboard; one click exports the BRSR waste table and the GST memo.",
+			"agents": "Impact Agent posts the ledger once the return window closes and builds the BRSR Principle 6 rows with evidence links.",
+			"money": "217.6 kg diverted · 544 kg CO₂e avoided (indicative) · 0 meals: one line in the BRSR report.",
+			"pain": "We have no waste number",
+			"relief": "A BRSR line with evidence",
+			"human": false,
+			"time": "after 29 Oct"
+		}
+	],
+	"setup": {
+		"minutes": 15,
+		"dms": {
+			"source": "Bizom-style DMS export (CSV)",
+			"file": "dms_export_2026-10-01.csv",
+			"rows": 312,
+			"columns": [
+				[
+					"distributor",
+					"distributor_name"
+				],
+				[
+					"sku",
+					"item_code"
+				],
+				[
+					"batch",
+					"batch_no"
+				],
+				[
+					"mfg",
+					"mfg_date"
+				],
+				[
+					"best_before",
+					"bb_date"
+				],
+				[
+					"units",
+					"closing_qty"
+				],
+				[
+					"godown",
+					"location"
+				],
+				[
+					"pincode",
+					"pin"
+				]
+			],
+			"salesDays": 90
+		},
+		"channels": [
+			"expiresoon",
+			"kirana",
+			"staff",
+			"foodbank"
+		],
+		"channelNames": {
+			"kirana": "Kiranas",
+			"expiresoon": "ExpireSoon",
+			"staff": "Staff sale",
+			"foodbank": "Food bank",
+			"writeoff": "Write-off"
+		},
+		"allowList": [
+			[
+				"snacks",
+				[
+					"expiresoon",
+					"kirana",
+					"staff",
+					"foodbank"
+				]
+			],
+			[
+				"biscuits",
+				[
+					"expiresoon",
+					"kirana",
+					"staff",
+					"foodbank"
+				]
+			],
+			[
+				"staples",
+				[
+					"expiresoon",
+					"kirana",
+					"staff",
+					"foodbank"
+				]
+			],
+			[
+				"beverages",
+				[
+					"expiresoon",
+					"kirana",
+					"staff",
+					"foodbank"
+				]
+			],
+			[
+				"personal-care",
+				[
+					"expiresoon",
+					"kirana",
+					"staff"
+				]
+			]
+		],
+		"brandSafety": [
+			"Personal care never goes to food banks",
+			"Premium gift packs never go to a staff sale"
+		],
+		"partners": [
+			{
+				"name": "Feeding India",
+				"minDays": 15,
+				"minUnits": 50,
+				"logistics": "Volunteer pickup within 48 h, hunger spots in 100+ cities",
+				"pickup": "volunteer pickup in 48 h",
+				"paper": "In-app receipt"
+			},
+			{
+				"name": "India FoodBanking Network",
+				"minDays": 21,
+				"minUnits": 100,
+				"logistics": "Drop at a member warehouse or a scheduled pickup",
+				"paper": "Donation acknowledgement (CSR / 80G, indicative)"
+			}
+		],
+		"approval": "The first 10 routes per channel need a tap; after that the agent runs inside the guardrails and reports.",
+		"permissions": {
+			"patil": "1 Oct",
+			"gupta": "1 Oct",
+			"lakshmi": "1 Oct"
+		},
+		"acts": [
+			"List your Munchly stock on ExpireSoon",
+			"Send scheme offers to your kiranas",
+			"Draft your invoices",
+			"Book dispatch slots in your calendar"
+		]
+	},
+	"shelf": {
+		"date": "Friday 9 Oct",
+		"counted": 31,
+		"shop": "Jai Durga Stores",
+		"area": "Kamptee",
+		"took": 24,
+		"left": 18,
+		"pickUp": 12,
+		"leave": 6,
+		"round": "Thursday's round",
+		"returnBy": "2026-10-29"
+	},
+	"returnBy": "2026-10-29",
+	"quarter": {
+		"label": "Q3 FY27",
+		"period": "Oct to Dec 2026",
+		"recovered": 630000,
+		"itc": 79000,
+		"kg": 5700,
+		"meals": 3700,
+		"batches": 23,
+		"weeks": [
+			[
+				"W1",
+				21152,
+				26330
+			],
+			[
+				"W2",
+				38400,
+				45100
+			],
+			[
+				"W3",
+				41200,
+				49800
+			],
+			[
+				"W4",
+				52600,
+				60300
+			],
+			[
+				"W5",
+				47900,
+				55200
+			],
+			[
+				"W6",
+				55800,
+				63900
+			],
+			[
+				"W7",
+				49300,
+				58400
+			],
+			[
+				"W8",
+				60100,
+				68700
+			],
+			[
+				"W9",
+				51800,
+				60400
+			],
+			[
+				"W10",
+				57900,
+				66100
+			],
+			[
+				"W11",
+				53400,
+				62800
+			],
+			[
+				"W12",
+				53448,
+				61980
+			],
+			[
+				"W13",
+				47000,
+				54500
+			]
+		],
+		"mix": [
+			[
+				"kirana",
+				42
+			],
+			[
+				"expiresoon",
+				38
+			],
+			[
+				"staff",
+				5
+			],
+			[
+				"foodbank",
+				12
+			],
+			[
+				"writeoff",
+				3
+			]
+		],
+		"mixNames": {
+			"kirana": "Kirana scheme",
+			"expiresoon": "ExpireSoon",
+			"staff": "Staff sale",
+			"foodbank": "Food bank",
+			"writeoff": "Write-off"
+		},
+		"brsr": [
+			{
+				"cat": "Food waste: packaged food past quick-commerce gates",
+				"diverted": 4840,
+				"resold": 4260,
+				"donated": 580,
+				"disposed": 60,
+				"evidence": "Tax invoices, ExpireSoon listing IDs, in-app order logs, food-bank receipts"
+			},
+			{
+				"cat": "Plastic packaging (EPR)",
+				"diverted": 860,
+				"resold": 770,
+				"donated": 90,
+				"disposed": 10,
+				"evidence": "Packaging weights per SKU, EPR factor, the same invoices"
+			}
+		],
+		"writeOffAvoided": 733510,
+		"co2": 14250
+	},
+	"rules": {
+		"watchTime": "09:00",
+		"floors": {
+			"snacks": 35,
+			"biscuits": 35,
+			"staples": 40,
+			"beverages": 30,
+			"personal-care": 40
+		},
+		"approvalTaps": 10,
+		"hindiOffers": true,
+		"requirePhoto": true,
+		"offerWindowHours": 48,
+		"tokenPct": 15,
+		"disposalPerUnit": 1.5,
+		"eprPerKg": 6,
+		"territoryGuard": true,
+		"returnWindowDays": 20,
+		"kiranaUplift": 3.5,
+		"vanPerUnit": 0.5
+	},
+	"moneyRules": {
+		"projectionStopDays": 7,
+		"gates": {
+			"blinkit": {
+				"label": "Blinkit",
+				"minDays": 90
+			},
+			"zepto": {
+				"label": "Zepto",
+				"pctLife": 0.6
+			},
+			"instamart": {
+				"label": "Instamart",
+				"pctLife": 0.6
+			}
+		},
+		"disposalPerUnit": 1.5,
+		"eprPerKg": 6,
+		"co2PerKg": 2.5,
+		"vanPerUnit": 0.5,
+		"listingFee": 100,
+		"foodbankHandlingPerUnit": 0.5,
+		"tokenPct": 0.15,
+		"kiranaWindowDays": 14,
+		"kiranaUplift": 3.5,
+		"shopCapTimes": 4,
+		"scheme": {
+			"buy": 10,
+			"free": 2
+		},
+		"staffCap": 50,
+		"returnWindowDays": 20,
+		"floors": {
+			"snacks": 0.35,
+			"biscuits": 0.35,
+			"staples": 0.4,
+			"beverages": 0.3,
+			"personal-care": 0.4
+		},
+		"ewayThreshold": 50000,
+		"negotiation": {
+			"reservePerUnit": 13.5,
+			"counterPctOfAsk": 0.95
+		}
+	},
+	"channels": [
+		{
+			"id": "expiresoon",
+			"name": "ExpireSoon listing",
+			"short": "ExpireSoon",
+			"minDays": 30,
+			"need": "30+ days",
+			"pricePct": 0.5,
+			"unlimited": true,
+			"clears": "5–9 days",
+			"icon": "shopping-bag"
+		},
+		{
+			"id": "kirana",
+			"name": "Kirana cluster push",
+			"short": "Kirana cluster",
+			"minDays": 20,
+			"need": "20+ days",
+			"pricePct": 0.6,
+			"clears": "10–14 days",
+			"icon": "store"
+		},
+		{
+			"id": "staff",
+			"name": "Staff sale",
+			"short": "Staff sale",
+			"minDays": 0,
+			"need": "until best-before",
+			"pricePct": 0.4,
+			"clears": "2–3 days",
+			"icon": "users"
+		},
+		{
+			"id": "foodbank",
+			"name": "Food bank donation",
+			"short": "Food bank",
+			"minDays": 15,
+			"need": "15+ days, food",
+			"pricePct": 0,
+			"unlimited": true,
+			"clears": "1–2 days",
+			"icon": "heart-handshake",
+			"foodOnly": true
+		},
+		{
+			"id": "writeoff",
+			"name": "Write-off (destroy)",
+			"short": "Write-off",
+			"minDays": 0,
+			"need": "—",
+			"pricePct": 0,
+			"unlimited": true,
+			"clears": "—",
+			"icon": "trash-2",
+			"baseline": true
+		}
+	],
+	"integrations": [
+		{
+			"id": "auth",
+			"name": "Firebase Authentication",
+			"kind": "Identity",
+			"status": "ok",
+			"note": "Email and password, by invitation: munchly.example and google.example"
+		},
+		{
+			"id": "fcm",
+			"name": "Firebase Cloud Messaging",
+			"kind": "Push",
+			"status": "ok",
+			"note": "Web push to every member's devices, with the in-app inbox behind it"
+		},
+		{
+			"id": "bq",
+			"name": "BigQuery",
+			"kind": "Data",
+			"status": "ok",
+			"note": "Sell-through by pincode, stock, shelf counts, channel prices, the impact ledger"
+		},
+		{
+			"id": "pubsub",
+			"name": "Cloud Pub/Sub",
+			"kind": "Events",
+			"status": "ok",
+			"note": "batch.at_risk, offer.received, deal.closed, journey steps and pushes"
+		},
+		{
+			"id": "gemini",
+			"name": "Gemini on Vertex AI",
+			"kind": "Agents",
+			"status": "ok",
+			"note": "Flash for labels, listings and offers; Pro for routing and negotiation"
+		},
+		{
+			"id": "dms",
+			"name": "DMS export (Bizom-style)",
+			"kind": "Inventory",
+			"status": "mock",
+			"note": "A synthetic nightly CSV for each distributor, in Cloud Storage"
+		},
+		{
+			"id": "tally",
+			"name": "Tally invoice drafts",
+			"kind": "Accounting",
+			"status": "mock",
+			"note": "Distributors issue the drafted invoices from their own Tally"
+		},
+		{
+			"id": "expiresoon",
+			"name": "ExpireSoon",
+			"kind": "Marketplace",
+			"status": "mock",
+			"note": "The marketplace area of this workspace, where invited buyers bid"
+		},
+		{
+			"id": "foodbank",
+			"name": "Food-bank partners",
+			"kind": "Donation",
+			"status": "mock",
+			"note": "Feeding India and IFBN intake rules"
+		}
+	],
+	"numbers": {
+		"invoice": {
+			"prefix": "INV/26-27/",
+			"next": 931,
+			"width": 4
+		},
+		"support": {
+			"prefix": "CN/",
+			"next": 117,
+			"width": 4
+		},
+		"listing": {
+			"prefix": "ES-",
+			"next": 24117,
+			"width": 5
+		}
+	},
+	"label": {
+		"batch": "MF-2409-117",
+		"mfg": "2026-05-18",
+		"bestBefore": "2026-11-18",
+		"mrp": 30,
+		"pack": "Masala Chips 150 g",
+		"shelf": "B4"
+	},
+	"roles": {
+		"operator": "Supply-chain operator",
+		"distributor": "Distributor",
+		"retailer": "Kirana retailer",
+		"buyer": "Marketplace buyer",
+		"finance": "Finance & GST",
+		"sustainability": "Sustainability & BRSR",
+		"foodbank": "Food-bank partner",
+		"admin": "Workspace admin"
+	},
+	"copy": {
+		"push": {
+			"detect": {
+				"to": "priya",
+				"at": "09:00",
+				"title": "Masala Chips 150 g · Nagpur",
+				"body": "Priya ji, Nagpur godown mein Masala Chips 150g (batch MF-2409-117) ki 1,360 units 18 Nov se pehle nahi bikengi. Q-commerce block hai. Route dekhne ke liye tap karein."
+			},
+			"verify": {
+				"to": "rakesh",
+				"at": "09:05",
+				"title": "Ek photo chahiye",
+				"body": "Rakesh bhai, Masala Chips 150g ka ek carton ka label photo bhej dein (batch MF-2409-117). Bas ek photo, baaki hum kar lenge."
+			},
+			"plan": {
+				"to": "priya",
+				"at": "09:23",
+				"title": "Plan ready · MF-2409-117",
+				"body": "Plan for MF-2409-117: 588 units kirana (₹18), 772 units ExpireSoon (₹15). Net ₹21,770, ₹26,340 better than write-off. GST ITC ₹1,224 safe. Tap to review and approve."
+			},
+			"approved": {
+				"to": "rakesh",
+				"at": "09:40",
+				"title": "Plan approved · Masala Chips",
+				"body": "Rakesh bhai, Munchly ne MF-2409-117 ka plan approve kiya: 588 packets aapke kiranas ko scheme par, 772 aapke naam se ExpireSoon par. Kuch rokna ho to app mein Pause dabayein."
+			},
+			"offer": {
+				"to": "ganesh",
+				"at": "09:41",
+				"title": "आज का खास ऑफर",
+				"hindi": true,
+				"body": "नमस्ते Shree Ganesh Kirana! Munchly Masala Chips 150g पर आज खास ऑफर: 10 पैकेट लो, 2 मुफ़्त. Best before 18 Nov 2026. सिर्फ़ 48 घंटे. ऑर्डर के लिए टैप करें — Rakesh Traders",
+				"en": "Today's offer on Munchly Masala Chips 150 g: buy 10 packets, get 2 free. Best before 18 Nov 2026. 48 hours only. Tap to order. Rakesh Traders"
+			},
+			"award": {
+				"to": "priya",
+				"at": "11:09",
+				"title": "Awarded on ExpireSoon",
+				"body": "772 units at ₹14.20 to Agrawal Wholesale, Raipur. Token ₹1,644 received; balance ₹9,318 due in 48 h."
+			},
+			"won": {
+				"to": "rakesh",
+				"at": "11:09",
+				"title": "Buyer mil gaya · ExpireSoon",
+				"body": "Rakesh bhai, Agrawal Wholesale (Raipur) ne 772 packets ₹14.20 par le liye. Token ₹1,644 aa gaya."
+			},
+			"van": {
+				"to": "rakesh",
+				"at": "Mon 18:00",
+				"title": "Van route for Tuesday",
+				"body": "Van route for Tuesday updated: 31 kiranas, 588 packets. The Raipur lot (772) is collected by the buyer's truck once the balance lands."
+			},
+			"papers": {
+				"to": "anita",
+				"at": "Mon 5 Oct",
+				"title": "Document pack ready · MF-2409-117",
+				"body": "Papers ready for MF-2409-117: Rakesh's invoice draft, e-way bill check, price-support credit note, GST memo. Nothing to chase."
+			},
+			"invoice": {
+				"to": "rakesh",
+				"at": "Mon 5 Oct",
+				"title": "Invoice draft ready",
+				"body": "Invoice draft to Agrawal Wholesale, Raipur: 772 × ₹14.20, IGST 5%, ₹11,510. Issue it from Tally. Munchly's price support of ₹8,768 is on its way."
+			},
+			"shelf": {
+				"to": "rakesh",
+				"at": "Fri 9 Oct",
+				"title": "Shelf check · one pick-up",
+				"body": "Jai Durga Stores, Kamptee has 18 of 24 scheme packs left. Pick up 12 on Thursday's round; leave 6."
+			},
+			"report": {
+				"to": "vikram",
+				"at": "30 Oct",
+				"title": "Ledger posted · MF-2409-117",
+				"body": "217.6 kg diverted from disposal with invoices behind every kilo. The BRSR row is ready."
+			},
+			"closed": {
+				"to": "priya",
+				"at": "30 Oct",
+				"title": "Batch closed · 0 cartons destroyed",
+				"body": "₹21,152 recovered, ₹1,224 GST credit kept, 217.6 kg kept out of landfill."
+			}
+		},
+		"chat": [
+			{
+				"from": "buyer",
+				"text": "Can you do ₹13 for all 772?",
+				"at": "11:02"
+			},
+			{
+				"from": "agent",
+				"text": "₹14.20 for 772, Nagpur stock, dispatch within 24 h of balance.",
+				"at": "11:03"
+			},
+			{
+				"from": "buyer",
+				"text": "Ok, ₹14.20. Token paid.",
+				"at": "11:09"
+			}
+		],
+		"events": [
+			{
+				"key": "permit",
+				"stage": "connect",
+				"person": "rakesh",
+				"at": "Thu 16:52",
+				"min": 0,
+				"text": "Gave Smart-Clearance a one-time permission to list his Munchly stock, offer schemes to his kiranas, draft his invoices and book dispatch slots, inside Munchly's floors."
+			},
+			{
+				"key": "watch",
+				"stage": "detect",
+				"agent": "Watcher",
+				"icon": "radar",
+				"at": "09:00",
+				"min": 0,
+				"text": "Checked 312 batches across 4 distributors. MF-2409-117 fails all three quick-commerce gates and will not sell through.",
+				"calls": [
+					[
+						"gates.check",
+						"Blinkit 47/90 · Zepto 47/110 · Instamart 47/110",
+						"bad"
+					],
+					[
+						"sellthrough.project",
+						"12/day × 40 days = 480 of 1,840",
+						""
+					],
+					[
+						"pubsub.publish",
+						"batch.at_risk",
+						"ok"
+					]
+				]
+			},
+			{
+				"key": "ask",
+				"stage": "verify",
+				"agent": "Vision",
+				"icon": "scan-line",
+				"at": "09:05",
+				"min": 5,
+				"text": "Asked Rakesh Traders for one label photo before quoting any price.",
+				"calls": [
+					[
+						"fcm.send",
+						"Rakesh bhai · Hindi",
+						"ok"
+					]
+				]
+			},
+			{
+				"key": "photo",
+				"stage": "verify",
+				"person": "rakesh",
+				"at": "09:19",
+				"min": 14,
+				"text": "Sent one photo of the carton label from shelf B4."
+			},
+			{
+				"key": "read",
+				"stage": "verify",
+				"agent": "Vision",
+				"icon": "scan-line",
+				"at": "09:20",
+				"min": 1,
+				"text": "Read the label: batch MF-2409-117, MFG 18 May 2026, best before 18 Nov 2026, MRP ₹30.00, confidence 0.97. Matches the DMS record.",
+				"calls": [
+					[
+						"gemini.vision.read_label",
+						"confidence 0.97",
+						"ok"
+					],
+					[
+						"dms.reconcile",
+						"match",
+						"ok"
+					]
+				]
+			},
+			{
+				"key": "value",
+				"stage": "value",
+				"agent": "Valuer",
+				"icon": "scale",
+				"at": "09:21",
+				"min": 1,
+				"text": "Priced five channels against 47 days left. Destroying costs −₹19.36 a unit, −₹26,330 for the batch.",
+				"calls": [
+					[
+						"bigquery.price_history",
+						"snacks · 47 days",
+						""
+					],
+					[
+						"gst.rate",
+						"HSN 2005 → 5%",
+						""
+					],
+					[
+						"cost_sheet.input_gst",
+						"₹0.90 a pack",
+						""
+					],
+					[
+						"epr.factor",
+						"₹6 / kg",
+						""
+					]
+				]
+			},
+			{
+				"key": "route",
+				"stage": "decide",
+				"agent": "Router",
+				"icon": "split",
+				"at": "09:22",
+				"min": 1,
+				"text": "588 units to the kirana cluster at ₹18 effective, capped by what 38 kiranas can move in 14 days; 772 to ExpireSoon at ₹15. The Nagpur staff sale pays less a unit, so it gets nothing this time.",
+				"calls": [
+					[
+						"allocate.greedy",
+						"1,360 units → net ₹21,770",
+						"ok"
+					]
+				]
+			},
+			{
+				"key": "notify",
+				"stage": "approve",
+				"agent": "Notifier",
+				"icon": "bell",
+				"at": "09:23",
+				"min": 1,
+				"text": "Sent Priya the plan to review, and Rakesh bhai the same plan with a pause button."
+			},
+			{
+				"key": "approved",
+				"stage": "approve",
+				"person": "priya",
+				"at": "09:40",
+				"min": 17,
+				"text": "Approved the plan from her phone.",
+				"human": true
+			},
+			{
+				"key": "list",
+				"stage": "execute",
+				"agent": "Lister",
+				"icon": "shopping-bag",
+				"at": "09:41",
+				"min": 1,
+				"text": "Posted 772 units on ExpireSoon in Rakesh Traders' name at ₹15, with the label photo and dates. Reserve ₹13.50; hidden from buyers inside Munchly's territories.",
+				"calls": [
+					[
+						"POST /v1/listings",
+						"201 · ES-24117",
+						"ok"
+					]
+				]
+			},
+			{
+				"key": "outreach",
+				"stage": "execute",
+				"agent": "Outreach",
+				"icon": "send",
+				"at": "09:41",
+				"min": 0,
+				"text": "Pushed the Hindi scheme to 38 kiranas in the Nagpur cluster: buy 10 get 2 for 48 hours, no shop over 4× its own 14-day sales.",
+				"calls": [
+					[
+						"fcm.send",
+						"38 kiranas · Hindi",
+						"ok"
+					]
+				]
+			},
+			{
+				"key": "counter",
+				"stage": "execute",
+				"agent": "Negotiator",
+				"icon": "messages-square",
+				"at": "11:03",
+				"min": 82,
+				"text": "Agrawal Wholesale bid ₹13 for all 772, below the reserve. Countered at ₹14.20 with 24-hour dispatch from Rakesh bhai's calendar.",
+				"calls": [
+					[
+						"listing.counter",
+						"₹13.00 → ₹14.20",
+						""
+					]
+				]
+			},
+			{
+				"key": "accepted",
+				"stage": "execute",
+				"person": "agrawal",
+				"at": "11:09",
+				"min": 6,
+				"text": "Accepted ₹14.20 and paid the ₹1,644 token."
+			},
+			{
+				"key": "orders",
+				"stage": "execute",
+				"agent": "Outreach",
+				"icon": "store",
+				"at": "11:41",
+				"min": 32,
+				"text": "31 of 38 kiranas ordered all 588 units in about two hours, each under its cap.",
+				"calls": [
+					[
+						"orders.sum",
+						"588 units · 31 shops",
+						"ok"
+					]
+				]
+			},
+			{
+				"key": "donate",
+				"stage": "execute",
+				"agent": "Donation",
+				"icon": "heart-handshake",
+				"at": "Day 0",
+				"min": 60,
+				"text": "Mango Drink batch: booked Feeding India for 58 units. India FoodBanking Network needs 21+ days and 100+ units.",
+				"calls": [
+					[
+						"foodbank.match",
+						"Feeding India · 58 units",
+						"ok"
+					]
+				]
+			},
+			{
+				"key": "dispatch",
+				"stage": "settle",
+				"person": "rakesh",
+				"at": "Mon 5 Oct",
+				"min": 4200,
+				"text": "Loaded Agrawal Wholesale's truck for Raipur once the balance landed."
+			},
+			{
+				"key": "papers",
+				"stage": "settle",
+				"agent": "Paperwork",
+				"icon": "file-check",
+				"at": "Mon 5 Oct",
+				"min": 20,
+				"text": "Drafted Rakesh's invoice INV/26-27/0931 for him to issue, checked the e-way bill rule, issued the price-support credit note CN/0117 and wrote the ITC memo.",
+				"calls": [
+					[
+						"docs.invoice",
+						"₹11,510 · draft",
+						"ok"
+					],
+					[
+						"eway.check",
+						"below ₹50,000",
+						""
+					],
+					[
+						"docs.credit_note",
+						"₹8,768",
+						"ok"
+					],
+					[
+						"itc.memo",
+						"₹1,224 retained",
+						"ok"
+					]
+				]
+			},
+			{
+				"key": "van",
+				"stage": "settle",
+				"person": "rakesh",
+				"at": "Tue 6 Oct",
+				"min": 1440,
+				"text": "Ran the Tuesday round: 31 drops, 588 packets."
+			},
+			{
+				"key": "shelf",
+				"stage": "settle",
+				"agent": "Outreach",
+				"icon": "list-checks",
+				"at": "Fri 9 Oct",
+				"min": 4320,
+				"text": "Shelf check: the salesman counted the scheme packs at 31 shops. Jai Durga Stores, Kamptee, has 18 of 24 left: pick up 12 on Thursday's round and leave 6.",
+				"calls": [
+					[
+						"shelf.check",
+						"31 shops counted",
+						"ok"
+					]
+				]
+			},
+			{
+				"key": "ledger",
+				"stage": "report",
+				"agent": "Impact",
+				"icon": "leaf",
+				"at": "30 Oct",
+				"min": 30000,
+				"text": "The return window closed on 29 Oct. Posted the ledger: 217.6 kg diverted, 544 kg CO₂e avoided (indicative), 0 meals. BRSR row written.",
+				"calls": [
+					[
+						"ledger.post",
+						"₹21,152",
+						"ok"
+					],
+					[
+						"brsr.rows",
+						"Principle 6",
+						"ok"
+					]
+				]
+			}
+		],
+		"connectEvent": {
+			"stage": "connect",
+			"agent": "Data",
+			"icon": "database",
+			"at": "Thu 16:30",
+			"min": 0,
+			"text": "Mapped 8 DMS columns, loaded 312 batches from 4 distributors and back-filled 90 days of sell-through by pincode and by shop into BigQuery.",
+			"calls": [
+				[
+					"bigquery.load",
+					"312 batches",
+					"ok"
+				],
+				[
+					"sellthrough.backfill",
+					"90 days · by pincode, by shop",
+					"ok"
+				]
+			]
+		}
+	}
+}
