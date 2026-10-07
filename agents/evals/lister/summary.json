@@ -1,0 +1,50 @@
+{
+ "evalRun": "eval-20261007-2236-52ed27",
+ "at": "2026-10-07T22:57:25.853533+00:00",
+ "set": "lister",
+ "split": "all",
+ "models": {
+  "pro": "gemini-3.1-pro-preview",
+  "flash": "gemini-3.8-flash"
+ },
+ "prompts": {
+  "lister": "f5800ad4a1b7"
+ },
+ "cases": 15,
+ "passed": 13,
+ "fallbacks": 1,
+ "tokens": [
+  7124,
+  1524
+ ],
+ "marks": {
+  "noFactualErrorOrLeak": {
+   "value": 0.867,
+   "target": 1.0,
+   "met": false
+  },
+  "rubricFaithful": {
+   "value": 0.0,
+   "target": 4.0,
+   "met": false
+  }
+ },
+ "met": false,
+ "failures": [
+  {
+   "id": "lister-biscuits-lakshmi",
+   "problems": [
+    "quotes the reserve"
+   ]
+  },
+  {
+   "id": "lister-mango-patil",
+   "problems": [
+    "fails the length or figures check",
+    "leaves out 1210",
+    "leaves out Pune",
+    "leaves out 6 Jan 2027"
+   ]
+  }
+ ]
+}
