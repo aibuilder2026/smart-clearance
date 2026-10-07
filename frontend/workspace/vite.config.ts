@@ -2,12 +2,27 @@ import { fileURLToPath } from 'node:url';
 import adapter from '@sveltejs/adapter-static';
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
+
+const live = (mode: string) =>
+	!!(process.env.PUBLIC_API_BASE || loadEnv(mode, process.cwd(), 'PUBLIC_').PUBLIC_API_BASE);
 
 // design3 stays the source of truth: its images are referenced in place by core and hashed into the build, never copied
 const design3 = fileURLToPath(new URL('../../design3', import.meta.url));
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
+	// a live build (PUBLIC_API_BASE set) reads everything from backend-api: the prototype's stub, with Munchly's whole
+	// seed, is replaced by an empty module, so it cannot end up in the bundle (scripts/no-seed.mjs checks the build)
+	resolve: {
+		alias: live(mode)
+			? [
+					{
+						find: '@smart-clearance/core/workspace/stub',
+						replacement: fileURLToPath(new URL('./src/lib/no-stub.ts', import.meta.url))
+					}
+				]
+			: []
+	},
 	plugins: [
 		tailwindcss(),
 		sveltekit({
@@ -21,4 +36,4 @@ export default defineConfig({
 	],
 	server: { port: 5175, strictPort: true, fs: { allow: ['..', design3] } },
 	preview: { port: 4177, strictPort: true }
-});
+}));

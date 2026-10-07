@@ -1,18 +1,17 @@
 <script lang="ts">
 	import '../app.css';
 	import { AppRoot, ICON_SVG, ThemeProvider } from '@smart-clearance/core';
-	import { stubSource } from '@smart-clearance/core/workspace/stub';
 
-	let { children } = $props();
-	// the workspace this host serves, as its sign-in page names it (the stub's until SC-73)
-	const workspace = stubSource.publicInfo.workspace;
+	let { children, data } = $props();
+	// the workspace this host serves, as its sign-in page names it (on backend-api, once its public page has answered)
+	const workspace = $derived(data.source.publicInfo?.workspace);
 </script>
 
 <svelte:head>
 	<link rel="icon" href={ICON_SVG} type="image/svg+xml" />
 	<meta
 		name="description"
-		content={`${workspace.name}' workspace on Smart-Clearance: near-expiry stock routed to the channel that recovers the most, with one human approval: kiranas, marketplaces, staff sales and food banks.`}
+		content={`${workspace?.name ?? 'A client'}' workspace on Smart-Clearance: near-expiry stock routed to the channel that recovers the most, with one human approval: kiranas, marketplaces, staff sales and food banks.`}
 	/>
 	<meta name="robots" content="noindex" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
