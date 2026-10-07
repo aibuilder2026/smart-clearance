@@ -12,6 +12,10 @@ corepack pnpm build:demo      # the static app, into demo/build/
 corepack pnpm preview:demo    # serves the build on :4178
 ```
 
+It is live at https://smartclearance-demo.web.app, its own Firebase Hosting site (`demo` in `../firebase.json`,
+`smartclearance-demo` in `infra/prod/terraform.tfvars`; SC-64): `infra/scripts/deploy.sh demo` releases it from a
+workstation, and CI releases it with the other apps on every merge to `main`.
+
 ## How to drive it
 
 - **Next** (or →, Page Down) moves on a beat: it makes the person's move, or on an agent's beat skips ahead to what the
@@ -41,5 +45,4 @@ corepack pnpm preview:demo    # serves the build on :4178
 
 ## Not yet
 
-- No Hosting site, and CI builds it but does not release it.
 - No a11y, e2e or parity suite; the gate (`lint`, `check`, `test`) covers it.
