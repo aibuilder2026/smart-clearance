@@ -12,6 +12,7 @@ import {
 import { createFirebase, refusals } from '@smart-clearance/api/firebase';
 import { browserActivity, workspaceHttp } from '@smart-clearance/api/workspace';
 import { LiveSource } from './source.svelte';
+import { Push, registerWorker } from './push.svelte';
 
 /** one email-and-password refusal for any wrong sign-in, as the console's (enumeration protection) */
 export const SIGN_IN_FAILED = 'That email and password do not match an account in this workspace.';
@@ -30,10 +31,16 @@ export const firebase = createFirebase(
 	}
 );
 
+/** this device's web push, once the live workspace has started */
+export let push: Push | null = null;
+
 export function live(): LiveSource {
 	if (!PUBLIC_API_BASE || !PUBLIC_WORKSPACE_ID)
 		throw new Error('PUBLIC_API_BASE and PUBLIC_WORKSPACE_ID are not set: run backend-api/scripts/app-env.sh');
 	const api = workspaceHttp(PUBLIC_API_BASE, PUBLIC_WORKSPACE_ID, { auth: firebase.auth });
+	// the offline shell and where pushes arrive; the ask for push is the member's (push)
+	void registerWorker();
+	push = new Push({ app: firebase.app, api });
 	return new LiveSource({
 		api,
 		base: PUBLIC_API_BASE,

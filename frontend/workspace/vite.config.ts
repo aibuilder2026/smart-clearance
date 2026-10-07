@@ -29,6 +29,8 @@ export default defineConfig(({ mode }) => ({
 			// the workspace is behind a sign-in, so nothing is prerendered: every route is the client-side app, served by the
 			// index.html fallback (the host rewrites every path to it)
 			adapter: adapter({ pages: 'build', assets: 'build', fallback: 'index.html', strict: true }),
+			// a live build registers the service worker itself (src/lib/live/push.svelte.ts); the prototype has none
+			serviceWorker: { register: false },
 			// runes everywhere in our own code; libraries decide for themselves
 			dynamicCompileOptions: ({ filename }) =>
 				filename.split(/[/\\]/).includes('node_modules') ? undefined : { runes: true }

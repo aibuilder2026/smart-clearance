@@ -19,7 +19,8 @@
 	},
 	"dependencies": {
 		"@smart-clearance/api": "workspace:*",
-		"@smart-clearance/core": "workspace:*"
+		"@smart-clearance/core": "workspace:*",
+		"firebase": "12.19.0"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.63.0",
