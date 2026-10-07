@@ -104,7 +104,8 @@ The topics and subscriptions, buckets and dataset are infra phase A (SC-70, `inf
 `analytics.tf`, `agents.tf`), per environment:
 
 - Pub/Sub: `local.agents.batch.at_risk`, `.offer.received`, `.deal.closed`, `.journey.step` (pull, ordered by batch,
-  600 s ack deadline, five attempts then `local.dead-letter`); prod's push subscriptions come with the service (SC-74).
+  600 s ack deadline, five attempts then `local.dead-letter`); in prod, `prod.agents.<topic>` push to the service's
+  `/pubsub` with the same deadline, ordering and dead letter (SC-74, `infra/prod/events.tf`).
   A payload has `client`, usually `ref`, and `eventId`; the attributes carry `event_id` and `traceparent`.
 - BigQuery `smartclearance_local` (prod: `smartclearance`): `stock_snapshots`, `secondary_sales`, `shelf_counts`,
   `channel_prices`, `impact_ledger`, `agent_runs` (one row per agent run: status, model, tokens, latency, fallback,
@@ -190,10 +191,14 @@ reference data.
 ## Deploying
 
 `cloudbuild.yaml` builds the image (`Dockerfile`: Python 3.14, uv, and the Pango, HarfBuzz and fonts WeasyPrint needs),
-pushes `asia-south1-docker.pkg.dev/aibuilder-510213/sc/agents:<tag>`, and moves the Cloud Run service `agents` onto it
-once that service exists. The service, its push subscriptions (signed as sc-invoker), the `/readyz` startup probe and
-CI's deploy job are infra phase B and SC-74; until then the build stops after the push. CI's `agents-gate` runs ruff,
-the scripts' checks and the tests on Python 3.14 and 3.13 for every change here.
+pushes `asia-south1-docker.pkg.dev/aibuilder-510213/sc/agents:<tag>`, and moves the Cloud Run service `agents` onto it.
+The service is infra phase B (SC-74, `infra/prod/agents.tf`, behind `agents_runtime`): internal ingress, only
+`sc-invoker` may invoke it, 0 to 2 instances of 1 vCPU and 1 GiB, a 600 s timeout, `/readyz` as its startup probe, and
+its settings (`AGENTS_ENV=prod`, `API_BASE`, the prod buckets and dataset, `MODEL_TIER=live`, `MODEL_PRO`,
+`MODEL_FLASH`, `GENAI_LOCATION`, JSON logs, traces to Cloud Trace) from Terraform; without the service the build stops
+after the push. CI's `agents` job starts the build on a merge to `main` that touches `agents/`, after backend-api's and
+before the Hosting deploy. CI's `agents-gate` runs ruff, the scripts' checks and the tests on Python 3.14 and 3.13 for
+every change here.
 
 ## Layout
 
@@ -214,8 +219,8 @@ the scripts' checks and the tests on Python 3.14 and 3.13 for every change here.
 
 ## Known gaps
 
-- A local end-to-end run waits for infra phase A (SC-70) to be applied; the Cloud Run service, its push subscriptions
-  and CI's deploy job are SC-74.
+- A local end-to-end run waits for infra phase A (SC-70) to be applied; the Cloud Run service and its push
+  subscriptions wait for infra phase B (SC-74) to be applied.
 - The evals have not been run against live Gemini yet (they run on request); `summary.json` appears with the first run.
 - The recordings were written by hand from the story's figures; `smoke.sh --record DIR` writes live outputs in the same
   form, to review before replacing them (the tests assert some of their words).

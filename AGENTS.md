@@ -183,8 +183,8 @@ Local pages:
   - `github-backend` (SC-50), which may only start Cloud Build builds as `sc-builder`, the account that pushes backend-api's image, migrates the database and deploys Cloud Run.
 
   Never create a service account key, or store a Google credential as a GitHub secret.
-- A merge to `main` touching `backend-api/` rebuilds and redeploys it through Cloud Build (`backend-api/cloudbuild.yaml`) before the apps are deployed. Cloud Build owns the Cloud Run image; Terraform ignores it.
-- The cloud runtime costs about GBP 9 a month, nearly all Cloud SQL; a GBP 20 budget alerts the operator. Ask before adding anything that costs money, with its price.
+- A merge to `main` touching `backend-api/` rebuilds and redeploys it through Cloud Build (`backend-api/cloudbuild.yaml`) before the apps are deployed; one touching `agents/` does the same for the agents service (`agents/cloudbuild.yaml`, SC-74), after backend-api. Cloud Build owns the Cloud Run images; Terraform ignores them.
+- The cloud runtime costs about GBP 9 a month, nearly all Cloud SQL. The journey in prod (`agents_runtime`, infra phase B, SC-74) adds GBP 1 to 3 with light use and 8 to 15 with heavy use, nearly all Gemini, and the budget that alerts the operator is GBP 30 with it (GBP 20 before). Ask before adding anything that costs money, with its price.
 - In workflows, pin every action to a commit SHA, with its version in a comment. Keep the workflow token read-only, and grant `id-token: write` only to the job that deploys.
 
 **The backend and secrets**

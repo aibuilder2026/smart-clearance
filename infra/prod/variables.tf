@@ -122,7 +122,7 @@ variable "db_tier" {
 }
 
 variable "budget_amount" {
-  description = "The project's monthly budget, in the billing account's currency (GBP), once the runtime is on. The runtime is expected to cost about 9 a month, nearly all Cloud SQL."
+  description = "The project's monthly budget, in the billing account's currency (GBP), once the runtime is on. backend-api's runtime is expected to cost about 9 a month, nearly all Cloud SQL; the agents' runtime (agents_runtime) adds 1 to 15 more."
   type        = number
   default     = 20
 }
@@ -135,5 +135,58 @@ variable "trace_sample_rate" {
   validation {
     condition     = var.trace_sample_rate >= 0 && var.trace_sample_rate <= 1
     error_message = "trace_sample_rate is a share: between 0 and 1."
+  }
+}
+
+# --- the journey's agents and live workspace in the cloud: infra phase B (SC-74; agents.tf, events.tf, scheduler.tf,
+#     run.tf, build.tf, monitoring.tf, github.tf)
+
+variable "agents_runtime" {
+  description = "Run the journey in prod: the agents service on Cloud Run, the prod push subscriptions, Cloud Scheduler's tick and journey reset, backend-api's live-workspace settings and the agents' alerts. They cost money (Gemini above all), so off until asked for. Needs backend_runtime."
+  type        = bool
+  default     = false
+
+  validation {
+    condition     = !var.agents_runtime || var.backend_runtime
+    error_message = "agents_runtime needs backend_runtime: the agents and the pushes call backend-api on Cloud Run."
+  }
+}
+
+variable "agents_image" {
+  description = <<-EOT
+    The image the agents service is created with. Google's placeholder answers 200 on every path until Cloud Build
+    deploys the agents' own image (agents/cloudbuild.yaml); from then on Cloud Build owns the image and Terraform leaves
+    it alone (lifecycle.ignore_changes in agents.tf).
+  EOT
+  type        = string
+  default     = "us-docker.pkg.dev/cloudrun/container/hello"
+}
+
+variable "model_pro" {
+  description = "The Gemini model the agents' Pro tier calls on Vertex AI (MODEL_PRO: the Valuer, the Router, the Negotiator's bids). Model ids move with Google's releases; this one was listed (publishers/google/models, public preview) on 7 Oct 2026."
+  type        = string
+  default     = "gemini-3.1-pro-preview"
+}
+
+variable "model_flash" {
+  description = "The Gemini model the agents' Flash tier calls on Vertex AI (MODEL_FLASH: Vision, Data, the Lister, Outreach, the Negotiator's questions, Paperwork, Impact). Listed as GA on 7 Oct 2026."
+  type        = string
+  default     = "gemini-3.8-flash"
+}
+
+variable "genai_location" {
+  description = "Where the agents reach Gemini on Vertex AI (GENAI_LOCATION): the Gemini 3 models are served on the global endpoint."
+  type        = string
+  default     = "global"
+}
+
+variable "workspace_live" {
+  description = "Build the workspace app against backend-api instead of its stub: sets the repository variable WORKSPACE_API_BASE, which CI's workspace build reads (.github/workflows/ci.yml). Needs agents_runtime, since a live workspace's journey runs on the agents."
+  type        = bool
+  default     = false
+
+  validation {
+    condition     = !var.workspace_live || var.agents_runtime
+    error_message = "workspace_live needs agents_runtime: the live workspace's journey runs on the agents and the prod pushes."
   }
 }

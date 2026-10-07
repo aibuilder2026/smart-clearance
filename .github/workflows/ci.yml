@@ -2,7 +2,8 @@ name: CI
 
 # Lint, test and build the frontend, and lint and test backend-api against PostgreSQL 18 (SC-45), on every change
 # that can affect them, with a secret scan. From main: backend-api is built, migrated and deployed to Cloud Run by
-# Cloud Build when it changed (SC-50, backend-api/cloudbuild.yaml), then the apps are deployed to Firebase Hosting, each
+# Cloud Build when it changed (SC-50, backend-api/cloudbuild.yaml), then the agents when they changed (SC-74,
+# agents/cloudbuild.yaml), then the apps are deployed to Firebase Hosting, each
 # to its own site (SC-40; the workspace app since SC-62, the guided demo since SC-64). Once backend-api runs in the cloud, the apps are built against it (the PUBLIC_* repository variables; the workspace app's WORKSPACE_* ones, SC-73).
 # prod is the only environment:
 # - its credentials come through Workload Identity Federation, so no key exists (infra/prod/deployer.tf, build.tf);
@@ -266,10 +267,66 @@ jobs:
             sleep 15
           done
 
+  agents:
+    name: Deploy the agents to Cloud Run (prod)
+    # after backend-api, so the agents never call an API older than they are
+    needs: [infra-gate, agents-gate, secret-scan, backend]
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: prod
+    concurrency:
+      group: deploy-agents-prod
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write # GitHub's OIDC token, exchanged for github-backend's Google credentials
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Did the agents change? (always, when run by hand)
+        id: changed
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == workflow_dispatch ]] || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null ||
+            [[ -n "$(git diff --name-only "$BEFORE" "$GITHUB_SHA" -- agents)" ]]; then
+            echo "agents=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "agents=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        if: steps.changed.outputs.agents == 'true' && vars.GCP_BACKEND_SERVICE_ACCOUNT != ''
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_BACKEND_SERVICE_ACCOUNT }}
+      - name: Cloud Build builds and deploys them, as sc-builder
+        if: steps.changed.outputs.agents == 'true' && vars.GCP_BACKEND_SERVICE_ACCOUNT != ''
+        env:
+          PROJECT: ${{ vars.GCP_PROJECT_ID }}
+          BUILDER: ${{ vars.GCP_BUILDER_SERVICE_ACCOUNT }}
+          BUCKET: ${{ vars.GCP_BUILD_BUCKET }}
+          REGION: ${{ vars.GCP_REGION }}
+        run: |
+          id="$(gcloud builds submit agents --project="$PROJECT" --config=agents/cloudbuild.yaml --async --format='value(id)' \
+            --service-account="$BUILDER" --gcs-source-staging-dir="gs://$BUCKET/source" \
+            --substitutions="_REGION=$REGION,_TAG=${GITHUB_SHA::12}")"
+          echo "Cloud Build $id: https://console.cloud.google.com/cloud-build/builds/$id"
+          while :; do
+            status="$(gcloud builds describe "$id" --project="$PROJECT" --format='value(status)')"
+            case "$status" in
+              SUCCESS) echo "the agents ${GITHUB_SHA::12} are deployed"; exit 0 ;;
+              FAILURE|INTERNAL_ERROR|TIMEOUT|CANCELLED|EXPIRED) echo "::error::Cloud Build $id: $status"; exit 1 ;;
+            esac
+            sleep 15
+          done
+
   deploy:
     name: Deploy to Firebase Hosting (prod)
-    needs: [frontend-gate, infra-gate, backend-gate, secret-scan, build, backend]
-    # after backend-api, so the apps never reach an API older than they are
+    needs: [frontend-gate, infra-gate, backend-gate, agents-gate, secret-scan, build, backend, agents]
+    # after backend-api and the agents, so the apps never reach an API older than they are
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     timeout-minutes: 15

@@ -3,9 +3,10 @@
 #   then publishes them (the ordering key is the client and batch, so one batch's events arrive in order).
 # - The agents consume batch.at_risk, offer.received, deal.closed and journey.step; backend-api's Notifier consumes
 #   notify and sends the FCM push.
-# - In prod the consumers are push subscriptions to Cloud Run (infra phase B, SC-74). Locally they are pull
-#   subscriptions, which a developer's backend-api and agents read as sc-api-local and sc-agents-local: nothing on
-#   the internet can push to a laptop, and no emulator is used.
+# - In prod the consumers are push subscriptions to Cloud Run (infra phase B, SC-74, behind agents_runtime): the agents'
+#   four to the agents service's /pubsub, prod.notify to backend-api's /internal/pubsub/notify, each signed with an OIDC
+#   token as sc-invoker. Locally they are pull subscriptions, which a developer's backend-api and agents read as
+#   sc-api-local and sc-agents-local: nothing on the internet can push to a laptop, and no emulator is used.
 # - A message that fails five times goes to the environment's dead-letter topic, kept for a week in its hold
 #   subscription for an operator to read.
 # - Subscriptions never expire: an idle one otherwise disappears after 31 days.
@@ -19,8 +20,7 @@ locals {
     "${pair[0]}.${pair[1]}" => { env = pair[0], name = pair[1] }
   }
 
-  # what each environment consumes by pulling: only local, for now (prod's push subscriptions come with the agents
-  # service, SC-74)
+  # what each environment consumes by pulling: only local (prod's consumers are pushed to, below)
   pull_subscriptions = merge(
     {
       for topic in local.agent_topics : "local.agents.${topic}" => {
@@ -31,6 +31,19 @@ locals {
       "local.notify.api" = { env = "local", topic = "local.notify", consumer = "api", ordered = false }
     },
   )
+
+  # what prod consumes, pushed to Cloud Run: the agents run each event's pipeline inside the push's request (up to its
+  # 600 s ack deadline); the Notifier's push to FCM takes a second, so its push is given 60 s
+  push_subscriptions = var.agents_runtime ? merge(
+    {
+      for topic in local.agent_topics : "prod.agents.${topic}" => {
+        topic = "prod.${topic}", consumer = "agents", ordered = true, ack_deadline = 600
+      }
+    },
+    {
+      "prod.notify.api" = { topic = "prod.notify", consumer = "api", ordered = false, ack_deadline = 60 }
+    },
+  ) : {}
 }
 
 resource "google_pubsub_topic" "this" {
@@ -124,6 +137,70 @@ resource "google_pubsub_subscription_iam_member" "dead_letter_forwarder" {
   for_each = local.pull_subscriptions
 
   subscription = google_pubsub_subscription.pull[each.key].id
+  role         = "roles/pubsub.subscriber"
+  member       = google_project_service_identity.pubsub.member
+}
+
+# --- prod's push subscriptions (infra phase B, SC-74) ----------------------------------------------------------------
+
+# Pub/Sub's service agent mints each push's OIDC token as sc-invoker. Its project-wide role (roles/pubsub.serviceAgent)
+# already allows that in this project; the grant on sc-invoker itself says so where the identity is, and keeps the
+# pushes signing should that role ever narrow.
+resource "google_service_account_iam_member" "pubsub_signs_as_invoker" {
+  count = local.agents_run
+
+  service_account_id = google_service_account.invoker.name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = google_project_service_identity.pubsub.member
+}
+
+resource "google_pubsub_subscription" "push" {
+  for_each = local.push_subscriptions
+
+  name  = each.key
+  topic = google_pubsub_topic.this[each.value.topic].id
+
+  ack_deadline_seconds    = each.value.ack_deadline
+  enable_message_ordering = each.value.ordered
+  labels                  = { app = "smart-clearance", env = "prod" }
+
+  # the agents service checks the token itself (Cloud Run's IAM, audience its URL); backend-api checks it in code
+  # (identity.py: audience sc-backend-api, and sc-invoker among INTERNAL_CALLERS)
+  push_config {
+    push_endpoint = (each.value.consumer == "agents"
+      ? "${google_cloud_run_v2_service.agents[0].uri}/pubsub"
+    : "${google_cloud_run_v2_service.api[0].uri}/internal/pubsub/notify")
+
+    oidc_token {
+      service_account_email = google_service_account.invoker.email
+      audience              = each.value.consumer == "agents" ? google_cloud_run_v2_service.agents[0].uri : local.internal_audience
+    }
+  }
+
+  retry_policy {
+    minimum_backoff = "10s"
+    maximum_backoff = "600s"
+  }
+
+  dead_letter_policy {
+    dead_letter_topic     = google_pubsub_topic.this["prod.dead-letter"].id
+    max_delivery_attempts = 5
+  }
+
+  expiration_policy {
+    ttl = ""
+  }
+
+  depends_on = [
+    google_cloud_run_v2_service_iam_member.agents_invoker,
+    google_service_account_iam_member.pubsub_signs_as_invoker,
+  ]
+}
+
+resource "google_pubsub_subscription_iam_member" "dead_letter_forwarder_push" {
+  for_each = local.push_subscriptions
+
+  subscription = google_pubsub_subscription.push[each.key].id
   role         = "roles/pubsub.subscriber"
   member       = google_project_service_identity.pubsub.member
 }

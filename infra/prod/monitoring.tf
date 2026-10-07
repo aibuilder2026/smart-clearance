@@ -7,13 +7,18 @@
 # - Alerts, emailed to var.alert_email: the API down, server errors, slow responses, errors in the logs, and the
 #   database's CPU, memory and disk.
 # - A dashboard: requests by status, latency, instances, and the database.
-# Google's own metrics, uptime checks within 1M a month and alerting are free at this size.
+# - With agents_runtime on (infra phase B, SC-74), four more alerts: messages waiting in prod's dead letter, the agents
+#   service's server errors, the agents falling back on backend-api's templates (a log-based metric from each run's
+#   log line), and FCM refusing the Notifier's pushes (a log-based metric from its warning).
+# Google's own metrics, log-based metrics, uptime checks within 1M a month and alerting are free at this size.
 
 locals {
-  alerts   = var.backend_runtime && var.alert_email != null ? 1 : 0
-  channels = local.alerts == 1 ? [google_monitoring_notification_channel.email[0].id] : []
-  api_run  = "resource.type=\"cloud_run_revision\" AND resource.label.service_name=\"backend-api\""
-  database = "resource.type=\"cloudsql_database\" AND resource.label.database_id=\"${var.project_id}:sc-main\""
+  alerts        = var.backend_runtime && var.alert_email != null ? 1 : 0
+  agents_alerts = local.alerts == 1 && var.agents_runtime ? 1 : 0
+  channels      = local.alerts == 1 ? [google_monitoring_notification_channel.email[0].id] : []
+  api_run       = "resource.type=\"cloud_run_revision\" AND resource.label.service_name=\"backend-api\""
+  agents_srv    = "resource.type=\"cloud_run_revision\" AND resource.label.service_name=\"agents\""
+  database      = "resource.type=\"cloudsql_database\" AND resource.label.database_id=\"${var.project_id}:sc-main\""
 }
 
 resource "google_monitoring_notification_channel" "email" {
@@ -247,4 +252,184 @@ resource "google_monitoring_dashboard" "backend" {
   })
 
   depends_on = [google_project_service.this]
+}
+
+# --- the journey in prod (infra phase B, SC-74) -----------------------------------------------------------------------
+
+# Each agent's run on an event writes one line (agents/src/sc_agents/dispatch.py, record()):
+#   run <run id>: <agent> on <event> <batch or client>, <status>[ (<note>)]
+# with status done, noop, failed or fallback (a writer's words were left out, so backend-api's template stood in).
+# Regular expressions here use [^ ] and [(] rather than backslashes, which the logging query language would escape.
+resource "google_logging_metric" "agent_runs" {
+  count = local.agents_run
+
+  name        = "sc_agents_runs"
+  description = "The agents' runs by agent and status (done, noop, failed or fallback), from each run's log line in the agents service (dispatch.py, record())."
+  filter = join(" AND ", [
+    "resource.type=\"cloud_run_revision\"",
+    "resource.labels.service_name=\"agents\"",
+    "jsonPayload.logger=\"sc_agents.dispatch\"",
+    "jsonPayload.message=~\"^run [^ ]+: [^ ]+ on \"",
+  ])
+
+  metric_descriptor {
+    metric_kind = "DELTA"
+    value_type  = "INT64"
+    unit        = "1"
+
+    labels {
+      key         = "status"
+      value_type  = "STRING"
+      description = "done, noop, failed or fallback"
+    }
+    labels {
+      key         = "agent"
+      value_type  = "STRING"
+      description = "The agent, as BigQuery's agent_runs names it"
+    }
+  }
+
+  label_extractors = {
+    status = "REGEXP_EXTRACT(jsonPayload.message, \", (done|noop|failed|fallback)(?:$| [(])\")"
+    agent  = "REGEXP_EXTRACT(jsonPayload.message, \"^run [^ ]+: ([^ ]+) on \")"
+  }
+}
+
+# The Notifier's warning when FCM refuses a notification's push for a reason other than the device being gone
+# (backend-api/src/sc_api/services/journey/notifier.py): one line a notification. The inbox row is already written,
+# so the member still reads it in the app.
+resource "google_logging_metric" "push_failures" {
+  count = local.agents_run
+
+  name        = "sc_fcm_push_failures"
+  description = "Notifications whose push FCM refused, for a reason other than the device being gone, from backend-api's Notifier (notifier.py)."
+  filter = join(" AND ", [
+    "resource.type=\"cloud_run_revision\"",
+    "resource.labels.service_name=\"backend-api\"",
+    "jsonPayload.logger=\"sc_api.notifier\"",
+    "jsonPayload.message=~\"^notification [0-9]+: FCM refused \"",
+  ])
+
+  metric_descriptor {
+    metric_kind = "DELTA"
+    value_type  = "INT64"
+    unit        = "1"
+  }
+}
+
+resource "google_monitoring_alert_policy" "dead_letters" {
+  count = local.agents_alerts
+
+  display_name          = "Prod events are waiting in the dead letter"
+  combiner              = "OR"
+  notification_channels = local.channels
+
+  conditions {
+    display_name = "prod.dead-letter.hold holds an undelivered message"
+    condition_threshold {
+      filter          = "metric.type=\"pubsub.googleapis.com/subscription/num_undelivered_messages\" AND resource.type=\"pubsub_subscription\" AND resource.label.subscription_id=\"${google_pubsub_subscription.dead_letter_hold["prod"].name}\""
+      comparison      = "COMPARISON_GT"
+      threshold_value = 0
+      duration        = "0s"
+      aggregations {
+        alignment_period   = "300s"
+        per_series_aligner = "ALIGN_MAX"
+      }
+    }
+  }
+
+  documentation {
+    mime_type = "text/markdown"
+    content   = "A prod event failed five deliveries to the agents or the Notifier and went to `prod.dead-letter`. Read it with `gcloud pubsub subscriptions pull prod.dead-letter.hold --limit=10` (add `--auto-ack` once it is handled; the hold keeps a week), and look at the agents service's or backend-api's logs at that time. The tick sends a journey stalled for ten minutes its event again, so the journey itself goes on."
+  }
+}
+
+resource "google_monitoring_alert_policy" "agents_errors" {
+  count = local.agents_alerts
+
+  display_name          = "The agents service answers with server errors"
+  combiner              = "OR"
+  notification_channels = local.channels
+
+  conditions {
+    display_name = "More than 5 responses of 5xx in 5 minutes"
+    condition_threshold {
+      filter          = "metric.type=\"run.googleapis.com/request_count\" AND ${local.agents_srv} AND metric.label.response_code_class=\"5xx\""
+      comparison      = "COMPARISON_GT"
+      threshold_value = 5
+      duration        = "0s"
+      aggregations {
+        alignment_period     = "300s"
+        per_series_aligner   = "ALIGN_DELTA"
+        cross_series_reducer = "REDUCE_SUM"
+      }
+    }
+  }
+
+  documentation {
+    mime_type = "text/markdown"
+    content   = "A 503 is how the agents ask Pub/Sub for another delivery (backend-api or a Google service did not answer); a run of them, or any 500, means the agents keep failing. Look at the agents service's logs in Cloud Run, its latest revision (its startup probe, /readyz, checks both models resolve on Vertex AI), and backend-api."
+  }
+}
+
+resource "google_monitoring_alert_policy" "agents_fallbacks" {
+  count = local.agents_alerts
+
+  display_name          = "The agents fall back on backend-api's templates"
+  combiner              = "OR"
+  notification_channels = local.channels
+
+  conditions {
+    display_name = "Over 25% of the agents' runs in an hour fell back"
+    condition_threshold {
+      filter             = "metric.type=\"logging.googleapis.com/user/${google_logging_metric.agent_runs[0].name}\" AND resource.type=\"cloud_run_revision\" AND metric.label.status=\"fallback\""
+      denominator_filter = "metric.type=\"logging.googleapis.com/user/${google_logging_metric.agent_runs[0].name}\" AND resource.type=\"cloud_run_revision\" AND metric.label.status=one_of(\"done\", \"fallback\", \"failed\")"
+      comparison         = "COMPARISON_GT"
+      threshold_value    = 0.25
+      duration           = "0s"
+      aggregations {
+        alignment_period     = "3600s"
+        per_series_aligner   = "ALIGN_DELTA"
+        cross_series_reducer = "REDUCE_SUM"
+      }
+      denominator_aggregations {
+        alignment_period     = "3600s"
+        per_series_aligner   = "ALIGN_DELTA"
+        cross_series_reducer = "REDUCE_SUM"
+      }
+    }
+  }
+
+  documentation {
+    mime_type = "text/markdown"
+    content   = "The model calls are failing, timing out (20 s) or writing words that fail their checks, so backend-api's templates stand in: the journey goes on, in plainer words. Each run's note says why (`run …: <agent> … fallback (<why>)` in the agents service's logs; BigQuery's `smartclearance.agent_runs` has the model and latency). Check the models still resolve on Vertex AI (MODEL_PRO, MODEL_FLASH)."
+  }
+}
+
+resource "google_monitoring_alert_policy" "push_failures" {
+  count = local.agents_alerts
+
+  display_name          = "FCM refuses the workspace's pushes"
+  combiner              = "OR"
+  notification_channels = local.channels
+
+  conditions {
+    display_name = "FCM refused a push in the last 10 minutes"
+    condition_threshold {
+      filter          = "metric.type=\"logging.googleapis.com/user/${google_logging_metric.push_failures[0].name}\" AND resource.type=\"cloud_run_revision\""
+      comparison      = "COMPARISON_GT"
+      threshold_value = 0
+      duration        = "0s"
+      aggregations {
+        alignment_period     = "600s"
+        per_series_aligner   = "ALIGN_DELTA"
+        cross_series_reducer = "REDUCE_SUM"
+      }
+    }
+  }
+
+  documentation {
+    mime_type = "text/markdown"
+    content   = "FCM refused a notification's push for a reason other than the device being gone (those devices are dropped). The Notifier's warning in backend-api's logs names FCM's error: PERMISSION_DENIED or UNAUTHENTICATED points at sc-api's scMessagingSend role or the web push setup, RESOURCE_EXHAUSTED, UNAVAILABLE or INTERNAL at FCM itself. The member still reads the notification in the app's inbox."
+  }
 }

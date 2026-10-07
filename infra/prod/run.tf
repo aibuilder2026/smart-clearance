@@ -9,8 +9,31 @@
 #   backend-api/src/sc_api/tracing.py); every request's log lines carry its trace either way.
 # - Terraform creates them on var.backend_image (a placeholder); Cloud Build deploys every image after that
 #   (backend-api/cloudbuild.yaml), so each one ignores its image here.
+# - With agents_runtime on (infra phase B, SC-74), the API runs Munchly's live workspace in prod: it publishes the prod
+#   events and uses the prod buckets (SC-66), lets the agents and sc-invoker into /internal (Pub/Sub's notify push,
+#   Cloud Scheduler's tick and reset), and serves the workspace's live stream, which it ends after 900 s
+#   (STREAM_MAX_SECONDS), so a request may last an hour. Its database pool is smaller (3, and 2 more at a peak), as two
+#   instances, their stream listeners and the jobs share db-f1-micro's 25 connections.
 
 locals {
+  # the audience of the Google ID tokens backend-api's /internal routes take (settings.py's internal_audience), which
+  # the agents, the notify push and the Scheduler jobs mint theirs for
+  internal_audience = "sc-backend-api"
+
+  # where a member's push opens the workspace app: its custom domain once there is one, else its web.app address
+  workspace_origin = local.workspace_site.custom_domain == null ? "https://${local.workspace_site.site_id}.web.app" : "https://${local.workspace_site.custom_domain}"
+
+  # what the API and the hydrate job both need for the live workspace: prod's topics and buckets (hydrate writes the
+  # synthetic DMS exports and publishes the journey's first events)
+  journey_env = var.agents_runtime ? {
+    EVENTS_ENV       = "prod"
+    CLOUD            = "google"
+    PHOTOS_BUCKET    = google_storage_bucket.app["prod.photos"].name
+    DOCS_BUCKET      = google_storage_bucket.app["prod.docs"].name
+    EXPORTS_BUCKET   = google_storage_bucket.app["prod.exports"].name
+    WORKSPACE_ORIGIN = local.workspace_origin
+  } : {}
+
   api_origins = distinct(flatten([
     for site in var.hosting_sites : concat(
       ["https://${site.site_id}.web.app", "https://${site.site_id}.firebaseapp.com"],
@@ -18,8 +41,9 @@ locals {
     )
   ]))
   default_password_secret = "${google_secret_manager_secret.this["sc-default-user-password"].id}/versions/latest"
-  # what the API and the hydrate job both need: the project, the database as sc-api, and the default password
-  api_env = var.backend_runtime ? {
+  # what the API and the hydrate job both need: the project, the database as sc-api, the default password, and the live
+  # workspace's settings when the agents run
+  api_env = var.backend_runtime ? merge({
     SC_ENV                  = "prod"
     GOOGLE_CLOUD_PROJECT    = var.project_id
     DB_MODE                 = "cloudsql"
@@ -29,6 +53,15 @@ locals {
     STAFF_EMAIL_DOMAIN      = var.staff_email_domain
     DEFAULT_PASSWORD_SECRET = local.default_password_secret
     LOG_FORMAT              = "json" # one JSON object a line, so Cloud Logging reads each line's severity
+  }, local.journey_env) : {}
+
+  # what only the service needs when the agents run: who may call /internal, the Notifier pushed to, and the pool
+  api_service_journey_env = var.agents_runtime ? {
+    INTERNAL_AUDIENCE = local.internal_audience
+    INTERNAL_CALLERS  = jsonencode([google_service_account.agents.email, google_service_account.invoker.email])
+    NOTIFY_MODE       = "push" # Pub/Sub pushes prod.notify to /internal/pubsub/notify (events.tf)
+    DB_POOL_SIZE      = "3"
+    DB_MAX_OVERFLOW   = "2"
   } : {}
 }
 
@@ -89,7 +122,8 @@ resource "google_cloud_run_v2_service" "api" {
 
   template {
     service_account = google_service_account.api[0].email
-    timeout         = "60s"
+    # an hour once the workspace's live stream is served (the API ends each stream after 900 s); a minute before
+    timeout = var.agents_runtime ? "3600s" : "60s"
 
     scaling {
       min_instance_count = 0
@@ -113,7 +147,7 @@ resource "google_cloud_run_v2_service" "api" {
           CORS_ORIGINS      = jsonencode(local.api_origins)
           TRACE_EXPORT      = "otlp" # spans to Cloud Trace (SC-57)
           TRACE_SAMPLE_RATE = tostring(var.trace_sample_rate)
-        })
+        }, local.api_service_journey_env)
         content {
           name  = env.key
           value = env.value
