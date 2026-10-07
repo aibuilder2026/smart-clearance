@@ -160,6 +160,26 @@ def test_readiness_checks_both_models(deps):
     assert r.status_code == 503 and "pro" in r.json()["models"]
 
 
+def test_readiness_checks_the_models_in_a_container_just_started(deps, monkeypatch):
+    """a monotonic clock only seconds old (a new container, a CI runner) still means no check has passed yet (SC-76)"""
+
+    class Models:
+        stub = False
+        checked = 0
+
+        async def check(self):
+            Models.checked += 1
+            return {"flash": "NotFound: 404 gemini-y"}
+
+    import sc_agents.service as service
+
+    monkeypatch.setattr(service.time, "monotonic", lambda: 5.0)
+    deps.models = Models()  # type: ignore[assignment]
+    with TestClient(create_app(deps)) as c:
+        r = c.get("/readyz")
+    assert r.status_code == 503 and Models.checked == 1
+
+
 # --- the pull worker ------------------------------------------------------------------------------------------------
 
 
