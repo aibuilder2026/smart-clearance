@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SC-68 Option C · on the tracker</title>
+<meta name="description" content="Munchly's workspace on a live backend, option C: the tracker docked at the foot of every screen as a live order bar, carrying the batch in focus, journey time, the connection, uploads, a failed approval and the push ask. Every company, person and figure is fictional.">
+<meta name="robots" content="noindex">
+<script>
+  // ?theme= from the board (or the reader's own appearance, sc3-theme); ?state= picks the scenario; ?shot=1 holds it still
+  (function () {
+    var p = new URLSearchParams(location.search), q = p.get("theme"), mode = q;
+    try { if (q === "dark" || q === "light") localStorage.setItem("sc3-theme", q); mode = localStorage.getItem("sc3-theme") || q; localStorage.setItem("sc3-hero-paused", p.get("shot") === "1" ? "1" : "0"); } catch (e) {}
+    var dark = mode === "dark" || (mode !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+  })();
+  window.SC3_IMG = "../../../system/img/";
+</script>
+<link rel="icon" href="../../../system/img/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../../system/tokens.css">
+<link rel="stylesheet" href="../../../system/base.css">
+<link rel="stylesheet" href="../../../system/components.css">
+<link rel="stylesheet" href="../../../screens/screens.css">
+<link rel="stylesheet" href="../../../app/app.css">
+<link rel="stylesheet" href="../sc68.css">
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/framer-motion@11.18.2/dist/framer-motion.js"></script>
+<script src="../../../system/icons.js"></script>
+<script src="../../../core/money.js"></script>
+<script src="../../../core/data.js"></script>
+<script src="../../../core/store.js"></script>
+<script src="../../../core/flow.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<noscript>This mockup needs JavaScript to run.</noscript>
+<script src="../../../system/kit.js"></script>
+<script src="../../../system/world.js"></script>
+<script src="../../../system/product.js"></script>
+<script src="../../../screens/common.js"></script>
+<script src="../sc68-pre.js"></script>
+<script src="../../../screens/brand.js"></script>
+<script src="../../../screens/trade.js"></script>
+<script src="../../../screens/finance.js"></script>
+<script src="../../../screens/admin.js"></script>
+<script src="../../../screens/auth.js"></script>
+<script src="../../../screens/roles.js"></script>
+<script src="../sc68.js"></script>
+<script src="opt.js"></script>
+</body>
+</html>
