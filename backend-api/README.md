@@ -218,6 +218,9 @@ by the agents in `agents/`. The contract is `frontend/api/src/types/workspace.ts
   batch's sell-through.
 - **The agents' routes** (`/internal`): Google ID tokens minted for `INTERNAL_AUDIENCE` by `sc-agents`,
   `sc-agents-local` or `sc-invoker`; each report names the event it answered, so a redelivered event does nothing.
+  The agents service is `agents/` (SC-72). `GET …/batches` names each distributor and each SKU's item code, which the
+  Data agent maps a DMS export's rows by; `GET …/agents` gives the offer window Outreach's offer states; and the
+  Router may quote how many kiranas the scheme goes to, as the template does.
 - **Locally, no emulator:** `dev.sh` uses the `local` topics and buckets, pulls `local.notify.api` and ticks every
   `TICK_SECONDS` itself.
 
@@ -275,7 +278,7 @@ resources and their costs, about GBP 9 a month).
 
 ## Tests
 
-`scripts/test.sh` (380 tests, a few seconds) runs against a real PostgreSQL. It migrates `smart_clearance_test` from
+`scripts/test.sh` (382 tests, a few seconds) runs against a real PostgreSQL. It migrates `smart_clearance_test` from
 scratch and imports Munchly through the services. Each test runs in a transaction that is rolled back, as `sc_api`,
 with a fake Firebase that never reaches Google. The suite covers:
 

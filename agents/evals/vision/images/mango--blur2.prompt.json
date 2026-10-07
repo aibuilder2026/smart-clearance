@@ -1,0 +1,19 @@
+{
+ "model": "Qwen-Image-2.1 (bf16), run locally through the qwen-image-bf16 plugin 0.2.0 (its CLI)",
+ "seed": 31,
+ "size": "1024 (4:3, 1184 x 896)",
+ "prompt": "A realistic close-up smartphone photo of a printed white label stuck on the side of a brown corrugated cardboard carton. The label is printed in bold black sans-serif type, one line each: \"MUNCHLY MANGO DRINK 200 ml\", \"BATCH NO: MF-2410-118\", \"MFG: 27/04/2026\", \"BEST BEFORE: 24/10/2026\", \"MRP ₹20.00 (incl. of all taxes)\". Even light in a Hyderabad godown. Photorealistic, natural colours, the label text crisp and legible.",
+ "postProcessing": [
+  {
+   "step": "gaussian_blur",
+   "radius": 2.0
+  },
+  {
+   "step": "convert",
+   "to": "WebP",
+   "quality": 88
+  }
+ ],
+ "source": "src/mango.png (sha256 fcd06c689a767858, kept locally)",
+ "seen": null
+}

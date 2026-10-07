@@ -1,0 +1,9 @@
+.env
+.pytest_cache/
+.ruff_cache/
+__pycache__/
+# the Vision eval's PNG originals stay local (the WebP ships), with the generator's log
+evals/vision/src/
+# eval runs: the harvested candidates and each run's per-case results (the summary JSON ships)
+evals/harvest/
+evals/*/results-*.jsonl

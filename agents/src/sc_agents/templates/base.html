@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{{ doc.type }} · {{ doc.no }}</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 20mm; @bottom-left { content: "{{ case.ref }} · {{ doc.type }}"; font: 8pt sans-serif; color: #6b6b6b; } @bottom-right { content: "Page " counter(page) " of " counter(pages); font: 8pt sans-serif; color: #6b6b6b; } }
+  body { font-family: Geist, "Noto Sans Devanagari", system-ui, sans-serif; font-size: 10pt; color: #1d1d1b; line-height: 1.45; }
+  header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #1f5c3d; padding-bottom: 8pt; margin-bottom: 14pt; }
+  h1 { font-size: 16pt; margin: 0 0 2pt; color: #1f5c3d; }
+  .muted { color: #5a5a55; }
+  .status { display: inline-block; border: 1px solid #1f5c3d; color: #1f5c3d; border-radius: 3pt; padding: 1pt 6pt; font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.04em; }
+  .parties { display: flex; gap: 18pt; margin: 0 0 14pt; }
+  .parties > div { flex: 1; border: 1px solid #d9d6cc; border-radius: 4pt; padding: 8pt 10pt; }
+  .label { font-size: 8pt; text-transform: uppercase; letter-spacing: 0.06em; color: #5a5a55; margin-bottom: 2pt; }
+  table { width: 100%; border-collapse: collapse; margin: 6pt 0 12pt; }
+  th, td { text-align: left; padding: 5pt 6pt; border-bottom: 1px solid #e3e0d6; vertical-align: top; }
+  th { font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.04em; color: #5a5a55; }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.total td { font-weight: 700; border-top: 1.5px solid #1d1d1b; border-bottom: none; }
+  .note { border-left: 3px solid #c9862b; padding: 4pt 10pt; background: #faf6ec; margin: 10pt 0; }
+  ul.checks { list-style: none; padding: 0; }
+  ul.checks li { padding: 4pt 0 4pt 18pt; border-bottom: 1px solid #eeebe2; position: relative; }
+  ul.checks li::before { content: "☐"; position: absolute; left: 0; }
+  footer { margin-top: 18pt; font-size: 8.5pt; color: #5a5a55; border-top: 1px solid #e3e0d6; padding-top: 6pt; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>{{ doc.type }}</h1>
+    <div class="muted">No. {{ doc.no }}{% if today %} · {{ today|date }}{% endif %}</div>
+  </div>
+  <div style="text-align: right">
+    <div class="status">{{ doc.status }}</div>
+    <div class="muted" style="margin-top: 4pt">{{ doc.owner }}</div>
+  </div>
+</header>
+{% block body %}{% endblock %}
+<footer>
+  Batch {{ case.ref }} · {{ case.sku.brand }} {{ case.sku.name }} · best before {{ case.batch.bestBefore|date }}.
+  Drafted by Smart-Clearance's Paperwork agent from the figures on the batch's record; a person issues and signs it.
+  {% if note %}<div style="margin-top: 4pt">{{ note }}</div>{% endif %}
+</footer>
+</body>
+</html>

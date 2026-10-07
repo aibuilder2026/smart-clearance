@@ -423,7 +423,20 @@ async def test_the_agents_see_the_figures_before_they_write(api, munchly, cloud)
     await agent(api, f"/cases/{HERO}/valuation", "valuer", "valuer")
     preview = (await api.get(f"/internal/clients/munchly/cases/{HERO}/plan-preview", headers=AGENT)).json()
     assert preview["plan"]["net"] == 21770 and preview["offered"] == 38
-    # the Router's own words, when every figure in them is the plan's
-    words = "588 to the kirana scheme and 772 to ExpireSoon: net ₹21,770, against a ₹26,330 write-off."
+    # the Router's own words, when every figure in them is the plan's (the kiranas offered included, as the template)
+    words = (
+        "588 to the kirana scheme, capped by what 38 kiranas can move in 14 days, and 772 to ExpireSoon: net ₹21,770, "
+        "against a ₹26,330 write-off."
+    )
     await agent(api, f"/cases/{HERO}/plan", "router", "router", explanation=words)
     assert (await case(api, PRIYA))["plan"]["explanation"] == words
+
+
+async def test_the_data_agent_maps_exports_by_names_and_item_codes(api, munchly):
+    """SC-72: the Data agent maps a DMS export's distributor names and item codes to their ids, and Outreach's offer
+    says how long the scheme lasts"""
+    out = (await api.get("/internal/clients/munchly/batches", headers=AGENT)).json()
+    assert out["distributors"]["rakesh"]["name"] == "Rakesh Traders"
+    assert out["skus"]["chips"] == {"code": "MF-MC-150", "name": "Masala Chips 150 g"}
+    agents = (await api.get("/internal/clients/munchly/agents", headers=AGENT)).json()
+    assert agents["offerWindowHours"] == 48
