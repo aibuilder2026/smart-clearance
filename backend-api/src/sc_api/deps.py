@@ -19,7 +19,7 @@ from sc_api import tracing
 from sc_api.errors import ApiError
 from sc_api.identity import Verified
 from sc_api.services import reference, staff
-from sc_api.services.context import Actor, Ctx
+from sc_api.services.context import SYSTEM, Actor, Ctx
 
 bearer = HTTPBearer(auto_error=False)
 VISITOR = Actor(name="Visitor")
@@ -50,6 +50,7 @@ async def _ctx(request: Request, actor: Actor) -> AsyncIterator[Ctx]:
                 identity=state.identity,
                 settings=state.settings,
                 ref=await _reference(request, session),
+                cloud=getattr(state, "cloud", None),
             )
         except BaseException:
             await session.rollback()
@@ -94,6 +95,51 @@ async def signing_in_ctx(
         yield ctx.acting_as(signed_in.actor), signed_in
 
 
+# --- a workspace's members (SC-66) ----------------------------------------------------------------------------------
+
+
+async def member_ctx(
+    request: Request, ws: str, credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)]
+) -> AsyncIterator[Ctx]:
+    """a signed-in member of workspace `ws` (the path's): a Firebase ID token of an active member, or 403"""
+    from sc_api.services.journey import views
+
+    verified = await _verified(request, credentials)
+    async with _ctx(request, VISITOR) as ctx:
+        actor, member = await views.signed_in(ctx, ws, verified.uid)
+        request.state.member = member
+        yield ctx.acting_as(actor)
+
+
+async def member_signing_in_ctx(
+    request: Request, ws: str, credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)]
+) -> AsyncIterator[Ctx]:
+    """POST /v1/workspaces/{ws}/session: an invited member's first sign-in makes them active"""
+    from sc_api.services.journey import views
+
+    verified = await _verified(request, credentials)
+    async with _ctx(request, VISITOR) as ctx:
+        actor, member = await views.signed_in(ctx, ws, verified.uid, activate=True)
+        await ctx.session.commit()
+        request.state.member = member
+        yield ctx.acting_as(actor)
+
+
+async def internal_ctx(
+    request: Request, credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)]
+) -> AsyncIterator[Ctx]:
+    """an /internal route's caller: an agent, Pub/Sub's push or Cloud Scheduler, by its Google ID token"""
+    if credentials is None or credentials.scheme.lower() != "bearer" or not credentials.credentials:
+        raise ApiError(401, "A Google ID token is needed.")
+    with tracing.tracer.start_as_current_span("verify caller"):
+        request.state.caller = await request.app.state.callers.verify(credentials.credentials)
+    async with _ctx(request, SYSTEM) as ctx:
+        yield ctx
+
+
 Public = Annotated[Ctx, Depends(public_ctx)]
 StaffCtx = Annotated[Ctx, Depends(staff_ctx)]
 SigningIn = Annotated[tuple[Ctx, staff.SignedIn], Depends(signing_in_ctx)]
+MemberCtx = Annotated[Ctx, Depends(member_ctx)]
+MemberSigningIn = Annotated[Ctx, Depends(member_signing_in_ctx)]
+InternalCtx = Annotated[Ctx, Depends(internal_ctx)]

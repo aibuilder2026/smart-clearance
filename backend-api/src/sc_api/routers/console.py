@@ -24,12 +24,14 @@ from sc_api.schemas import (
     PlanPatch,
     ProfileInput,
     RulesInput,
+    Shape,
     SkuGatesInput,
     Staff,
     StaffInviteInput,
 )
 from sc_api.services import agents, audit, clients, dashboard, people, presenter, site, staff, supply
 from sc_api.services.context import Ctx
+from sc_api.services.journey import events as journey_events
 
 router = APIRouter(prefix="/v1", tags=["console"])
 C = "/console/clients/{client_id}"
@@ -152,6 +154,16 @@ async def save_rules(client_id: str, data: RulesInput, ctx: StaffCtx) -> ClientO
     return await _changed(ctx, client_id)
 
 
+class ClockInput(Shape):
+    day_minutes: int
+
+
+@router.put(C + "/clock", response_model=ClientOut, summary="How long a journey day lasts while a batch is at risk")
+async def set_clock(client_id: str, data: ClockInput, ctx: StaffCtx) -> ClientOut:
+    await journey_events.set_day_minutes(ctx, client_id, data.day_minutes)
+    return await _changed(ctx, client_id)
+
+
 @router.post(C + "/agents/pause", response_model=ClientOut)
 async def pause(client_id: str, ctx: StaffCtx) -> ClientOut:
     await agents.set_all(ctx, client_id, False)
@@ -171,9 +183,14 @@ async def update_agent(client_id: str, agent_id: str, data: AgentPatch, ctx: Sta
 
 
 @router.post(C + "/agents/{agent_id}/runs", response_model=ClientOut)
-async def run_agent(client_id: str, agent_id: str, ctx: StaffCtx) -> ClientOut:
+async def run_agent(client_id: str, agent_id: str, request: Request, ctx: StaffCtx) -> ClientOut:
     await agents.run_now(ctx, client_id, agent_id)
-    return await _changed(ctx, client_id)
+    out = await _changed(ctx, client_id)
+    if (cloud := getattr(request.app.state, "cloud", None)) is not None:  # the run's event, to the agents (SC-66)
+        from sc_api.services.journey.outbox import drain
+
+        await drain(request.app.state.sessions, cloud.publisher, ctx.clock.now())
+    return out
 
 
 @router.post(C + "/distributors/{distributor_id}/reminders", status_code=204)

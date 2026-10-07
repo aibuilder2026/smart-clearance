@@ -15,6 +15,7 @@ from sc_api.services.reference import Reference
 from sc_api.settings import Settings
 
 if TYPE_CHECKING:
+    from sc_api.cloud import Cloud
     from sc_api.identity import IdentityProvider
 
 
@@ -28,6 +29,9 @@ class Actor:
     staff_ref: str | None = None
     role: str | None = None
     permissions: frozenset[str] = field(default_factory=frozenset)
+    # a workspace member (SC-66): their ref in the client's workspace, and the client
+    member_ref: str | None = None
+    client_id: str | None = None
 
     def require(self, permission: str, refusal: str) -> None:
         if permission not in self.permissions:
@@ -46,6 +50,8 @@ class Ctx:
     identity: IdentityProvider
     settings: Settings
     ref: Reference
+    # Pub/Sub, Cloud Storage and FCM (cloud.py); the services only need Storage, to sign links
+    cloud: Cloud | None = None
 
     def acting_as(self, actor: Actor) -> Ctx:
         return replace(self, actor=actor)
