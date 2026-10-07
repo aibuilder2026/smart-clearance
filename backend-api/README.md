@@ -236,13 +236,15 @@ resources and their costs, about GBP 9 a month).
 
 ## Tests
 
-`scripts/test.sh` (214 tests, a few seconds) runs against a real PostgreSQL. It migrates `smart_clearance_test` from
+`scripts/test.sh` (350 tests, a few seconds) runs against a real PostgreSQL. It migrates `smart_clearance_test` from
 scratch and imports Munchly through the services. Each test runs in a transaction that is rolled back, as `sc_api`,
 with a fake Firebase that never reaches Google. The suite covers:
 
 - every `frontend/api/tests/console.test.ts` and `site.test.ts` case, with exact audit lines;
 - Munchly as the API serves it equal to design3's seed;
 - the Python rules against fixtures from `platform.js` itself;
+- the money rules (`domain/money.py`, SC-71) against `money.js`'s own answers (`reference/money.json`): every plan,
+  write-off, counter, award, credit note, document and format, with no database needed;
 - the server-only checks;
 - the roles;
 - the audit log refusing UPDATE, DELETE and TRUNCATE;
@@ -261,8 +263,8 @@ CI runs the same suite on a `postgres:18` service container, with a secret scan 
 
 - Phone sign-in, and the workspace app's own sign-in for a client's people, come later; until then `people.accept`
   is called only by hydrate.
-- `money.js` is not ported yet: the showcase is design3's computed figures, loaded as content. The port comes with the
-  agents.
+- `money.js` is ported (`domain/money.py`, SC-71), but nothing calls it yet: the showcase is still design3's computed
+  figures, loaded as content, and the agents and the workspace API come next.
 - Cloud Run scales to zero, so the first request after a quiet spell waits for a cold start (a few seconds).
 - `db-f1-micro` is a shared core with 0.6 GB of memory and no SLA: enough for the prototype, not for real load.
 - The rate limiter keeps its counts per instance.
