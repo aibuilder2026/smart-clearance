@@ -3,15 +3,17 @@
 	import Card from '../../../components/Card.svelte';
 	import Empty from '../../../components/Empty.svelte';
 	import Product from '../../../components/Product.svelte';
-	import { kOf } from '../../legacy';
-	import { store } from '../../store.svelte';
+	import { kOf } from '../../model';
+	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import Screen from '../common/Screen.svelte';
 
 	// his order from the scheme, and whether Tuesday's van has brought it
 	let { me }: { me: User } = $props();
-	const k = $derived(kOf(me));
-	const h = $derived(store.state.hero);
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
+	const k = $derived(kOf(me, c));
+	const h = $derived(ws.state.hero);
 	const mine = $derived(h.orders.find((o) => o.id === k.id));
 </script>
 

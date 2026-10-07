@@ -55,8 +55,7 @@
 	import Segmented from '../../../components/Segmented.svelte';
 	import { rise } from '../../../motion/transitions';
 	import { useRoute } from '../../context';
-	import { D, ES } from '../../data';
-	import { store } from '../../store.svelte';
+	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import Screen from '../common/Screen.svelte';
 	import EsBar from './EsBar.svelte';
@@ -66,9 +65,11 @@
 	// Agrawal ji on ExpireSoon, another company's marketplace: Rakesh Traders' lot featured once it is listed, the other
 	// lots in a grid, a search and the categories
 	let { me }: { me: User } = $props();
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
 	const { go } = useRoute();
 	const app = useApp();
-	const h = $derived(store.state.hero);
+	const h = $derived(ws.state.hero);
 	let q = $state('');
 	let cat = $state<'all' | 'snacks' | 'staples'>('all');
 	const hero = $derived<EsListing | null>(
@@ -76,7 +77,7 @@
 			? {
 					id: 'ES-24117',
 					name: 'Munchly Masala Chips 150 g',
-					units: ES.units,
+					units: c.lines.expiresoon.units,
 					price: 15,
 					mrp: 30,
 					days: 47,
@@ -102,7 +103,7 @@
 </script>
 
 <div class="esw">
-	<Screen {me} title="Marketplace" sub={`Lots for ${D.buyer.city} · every listing shows its dates`} hideLarge={false}>
+	<Screen {me} title="Marketplace" sub={`Lots for ${c.buyer.city} · every listing shows its dates`} hideLarge={false}>
 		<div class="stack" style="gap: 16px">
 			<EsBar />
 			<div class="row wrap" style="gap: 10px">
@@ -129,7 +130,7 @@
 								icon="badge-check">label photo verified</Badge
 							></span
 						>
-						<div class="t-title2">Munchly Masala Chips 150 g · {ES.units} units</div>
+						<div class="t-title2">Munchly Masala Chips 150 g · {c.lines.expiresoon.units} units</div>
 						<span class="row base wrap" style="gap: 8px"
 							><span class="es-price lg">₹15</span><span class="muted">MRP ₹30 · 50% off</span><EsDate
 								days={47}

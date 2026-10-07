@@ -8,39 +8,32 @@
 	import Icon from '../../../icons/Icon.svelte';
 	import { rise } from '../../../motion/transitions';
 	import { useRoute } from '../../context';
-	import { CHIPS, D } from '../../data';
-	import { A } from '../../flow';
-	import { fmt } from '../../model';
-	import { kOf, offerMath } from '../../legacy';
-	import { store } from '../../store.svelte';
+	import { fmt, kOf, offerMath } from '../../model';
+	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import Screen from '../common/Screen.svelte';
 	import OfferCard from './OfferCard.svelte';
 
 	// the scheme in full: how many packets in twelves, what he pays, the free ones, his margin at MRP; then one tap orders
 	let { me }: { me: User } = $props();
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
 	const { go } = useRoute();
-	const h = $derived(store.state.hero);
-	const k = $derived(kOf(me));
-	let n = $state(untrack(() => kOf(me).units));
+	const h = $derived(ws.state.hero);
+	const k = $derived(kOf(me, c));
+	let n = $state(untrack(() => kOf(me, c).units));
 	let busy = $state(false);
-	const m = $derived(offerMath(n));
+	const m = $derived(offerMath(n, c));
 	const mine = $derived(h.orders.find((o) => o.id === k.id));
 	const order = () => {
 		busy = true;
-		setTimeout(() => {
-			busy = false;
-			store.update((st) => {
-				A.order(st, k.id);
-				const o = st.hero.orders.find((x) => x.id === k.id);
-				if (o) o.units = n;
-			});
-		}, 650);
+		// the order with the count he chose, as one change
+		void ws.act('order', { kirana: k.id, units: n }, { feel: 650 }).then(() => (busy = false));
 	};
 	const lines = $derived<[string, string, string][]>([
 		['You pay', `${m.paid} × ₹${m.pack.toFixed(2)}`, fmt.inr(m.pay)],
 		['Free packets', '2 with every 10', `${m.free}`],
-		['You sell at MRP', `${n} × ₹${CHIPS.mrp}`, fmt.inr(m.sell)]
+		['You sell at MRP', `${n} × ₹${c.sku.mrp}`, fmt.inr(m.sell)]
 	]);
 </script>
 
@@ -59,7 +52,7 @@
 					>
 					<div class="t-title2 hi" lang="hi">ऑर्डर हो गया</div>
 					<span class="muted">{mine.units} packets on Tuesday's van · pay on delivery</span>
-					<Money value={offerMath(mine.units).margin} size="m" style="color: var(--primary-text)" /><span
+					<Money value={offerMath(mine.units, c).margin} size="m" style="color: var(--primary-text)" /><span
 						class="t-footnote subtle">your margin at MRP on this order</span
 					>
 					<Button variant="secondary" onclick={() => go('home')}>Done</Button>
@@ -78,7 +71,7 @@
 					<div class="row between" style="padding: 12px 14px; border-radius: 14px; background: var(--primary-soft)">
 						<span class="stack tight" style="gap: 0"
 							><b>Margin today</b><span class="t-footnote muted"
-								>₹{(m.pay / n).toFixed(2)} a packet in effect, sold at ₹{CHIPS.mrp}</span
+								>₹{(m.pay / n).toFixed(2)} a packet in effect, sold at ₹{c.sku.mrp}</span
 							></span
 						><Money value={m.margin} size="s" roll style="color: var(--primary-text)" />
 					</div>
@@ -87,7 +80,7 @@
 					>
 					<span class="t-caption subtle" style="text-align: center"
 						>Best before 18 Nov 2026 · 47 days on every packet · unsold packs go back to the salesman until {fmt.day(
-							D.returnBy
+							c.returnBy
 						)}</span
 					>
 				</Card>{/if}{/if}

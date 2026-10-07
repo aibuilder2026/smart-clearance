@@ -4,13 +4,15 @@
 	import Button from '../../../components/Button.svelte';
 	import Mark from '../../../components/Mark.svelte';
 	import Product from '../../../components/Product.svelte';
-	import { CHIPS, D, KL } from '../../data';
+	import { useWorkspace } from '../../source';
 
 	// the scheme as the kirana gets it from Rakesh Traders: Hindi first, English a tap away
 	type Props = { onopen?: () => void; compact?: boolean; shop?: string };
 	let { onopen, compact, shop }: Props = $props();
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
 	let en = $state(false);
-	const p0 = D.push.offer;
+	const p0 = $derived(c.push.offer);
 	const p = $derived({ ...p0, body: p0.body.replace('Shree Ganesh Kirana', shop || 'Shree Ganesh Kirana') });
 </script>
 
@@ -28,8 +30,8 @@
 			<div class="stack tight" style="gap: 4px">
 				<div class={cx('t-title2', !en && 'hi')} lang={en ? 'en' : 'hi'}>{en ? "Today's special offer" : p.title}</div>
 				<div class="row base" style="gap: 8px">
-					<span class="num m">₹{KL.packPrice!.toFixed(2)}</span><span class="subtle t-subhead"
-						>a packet · MRP ₹{CHIPS.mrp}</span
+					<span class="num m">₹{c.lines.kirana.packPrice!.toFixed(2)}</span><span class="subtle t-subhead"
+						>a packet · MRP ₹{c.sku.mrp}</span
 					>
 				</div>
 				<span class="row tight wrap"

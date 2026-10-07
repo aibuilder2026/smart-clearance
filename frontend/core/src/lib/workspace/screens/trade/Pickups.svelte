@@ -15,32 +15,32 @@
 	import Icon from '../../../icons/Icon.svelte';
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
-	import { D } from '../../data';
-	import { act } from '../../flow';
 	import { fmt } from '../../model';
-	import { store } from '../../store.svelte';
+	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import Screen from '../common/Screen.svelte';
 
 	// Meera at Feeding India: the donation agent's request for the Mango Drink, her yes, the pickup and the receipt, beside
 	// the FSSAI checklist and her intake rules
 	let { me }: { me: User } = $props();
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
 	const app = useApp();
 	const { toast } = useNotice();
-	const d = $derived(store.state.mango.donation);
+	const d = $derived(ws.state.mango.donation);
 	let later = $state(false);
-	const n = D.mangoFb;
-	const bb = fmt.date(D.batches[1].bestBefore);
-	const checklist = [
+	const n = $derived(c.donation.units);
+	const bb = $derived(fmt.date(c.donation.batch.bestBefore));
+	const checklist = $derived([
 		'Sealed, undamaged packs',
 		`Best before ${bb}, 22 days left`,
 		'Ambient storage, away from sunlight',
 		'Batch MF-2410-118 on every carton',
 		'Donor: Munchly Foods via Lakshmi Agencies'
-	];
+	]);
 	const slots = ['Wednesday 10:00', 'Wednesday 16:00', 'Thursday 11:00'];
 	const collect = () => {
-		act('collect');
+		void ws.act('collect');
 		toast({ text: `Receipt issued · ${n} drinks`, tone: 'ok' });
 	};
 	const suggest = () => {
@@ -79,7 +79,7 @@
 							{n} packs of Mango Drink, 22 days left, with the FSSAI checklist. Pickup Tuesday 10 am from Begum Bazaar?
 						</p>
 						{#if d === 'booked'}<div class="row wrap" style="gap: 10px">
-								<Button variant="primary" size="lg" icon="check" onclick={() => act('confirmPickup')}
+								<Button variant="primary" size="lg" icon="check" onclick={() => ws.act('confirmPickup')}
 									>Confirm Tuesday 10:00</Button
 								><Button variant="secondary" size="lg" onclick={() => (later = true)}>Suggest another time</Button>
 							</div>{:else}<div class="row top" style="gap: 10px; justify-content: flex-end">
@@ -90,7 +90,7 @@
 									Tuesday works. We'll serve them at the Charminar hunger spot this week.
 									<div class="t-caption" style="opacity: 0.9">Meera · Day 1</div>
 								</div>
-								<Avatar person={D.people.meera} size="sm" />
+								<Avatar person={ws.data.people.meera} size="sm" />
 							</div>{/if}
 					</div>
 				</div>

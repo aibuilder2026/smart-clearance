@@ -1,18 +1,20 @@
 <script lang="ts">
 	import Badge from '../../../components/Badge.svelte';
 	import Card from '../../../components/Card.svelte';
-	import { CHIPS, D, ES, KL, PLAN, SHOPS } from '../../data';
 	import { fmt } from '../../model';
+	import { useWorkspace } from '../../source';
 
 	// what he receives and what he paid: the price support makes the two equal
 	let { settled }: { settled?: boolean } = $props();
-	const recv = KL.gross + D.award.gross + D.support.total;
-	const paid = PLAN.units * CHIPS.dp! + D.support.van + D.support.fee;
-	const rows: [string, number][] = [
-		[`From ${SHOPS} kiranas (${KL.units} packets)`, KL.gross],
-		[`From ${D.buyer.name} (${ES.units} packets)`, D.award.gross],
-		['Price-support credit note from Munchly', D.support.total]
-	];
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
+	const recv = $derived(c.lines.kirana.gross + c.award.gross + c.support.total);
+	const paid = $derived(c.plan.units * c.sku.dp! + c.support.van + c.support.fee);
+	const rows: [string, number][] = $derived([
+		[`From ${c.kiranas.length} kiranas (${c.lines.kirana.units} packets)`, c.lines.kirana.gross],
+		[`From ${c.buyer.name} (${c.lines.expiresoon.units} packets)`, c.award.gross],
+		['Price-support credit note from Munchly', c.support.total]
+	]);
 </script>
 
 <Card class="stack snug">
@@ -29,7 +31,7 @@
 		<div class="hairline" style="margin: 4px 0"></div>
 		<div class="row between"><b>What you receive</b><span class="tnum strong">{fmt.inr(recv)}</span></div>
 		<div class="row between">
-			<span>What you paid: {fmt.num(PLAN.units)} × ₹{CHIPS.dp}, the van and the listing fee</span><span class="tnum"
+			<span>What you paid: {fmt.num(c.plan.units)} × ₹{c.sku.dp}, the van and the listing fee</span><span class="tnum"
 				>{fmt.inr(-paid)}</span
 			>
 		</div>

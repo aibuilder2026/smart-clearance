@@ -1,14 +1,17 @@
 <script lang="ts">
 	import Card from '../../../components/Card.svelte';
 	import Empty from '../../../components/Empty.svelte';
-	import { distOf } from '../../legacy';
+	import { distOf } from '../../model';
+	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import Screen from '../common/Screen.svelte';
 	import VanInner from './VanInner.svelte';
 
 	// the van round and the ExpireSoon lot; only Rakesh Traders has scheme orders in the story
 	let { me }: { me: User } = $props();
-	const dist = $derived(distOf(me));
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
+	const dist = $derived(distOf(me, ws.data, c));
 </script>
 
 {#if dist.id !== 'rakesh'}<Screen {me} title="Van route" sub={dist.cluster}

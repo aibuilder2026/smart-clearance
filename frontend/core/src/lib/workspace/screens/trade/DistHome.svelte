@@ -12,10 +12,8 @@
 	import { rise } from '../../../motion/transitions';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
 	import { useRoute } from '../../context';
-	import { D, ES, KL, SHOPS } from '../../data';
-	import { fmt, isRouted } from '../../model';
-	import { batchViews, cartons, distOf } from '../../legacy';
-	import { store } from '../../store.svelte';
+	import { batchViews, cartons, distOf, fmt, isRouted } from '../../model';
+	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import Screen from '../common/Screen.svelte';
 	import ActingFor from './ActingFor.svelte';
@@ -26,14 +24,16 @@
 	// Rakesh bhai's day: the permission, the label photo Vision asks for, the plan once approved, his van round and the
 	// ExpireSoon lot, the invoice draft, how he ends whole, and his stock from the nightly DMS export
 	let { me }: { me: User } = $props();
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
 	const { go } = useRoute();
 	const app = useApp();
-	const s = $derived(store.state);
+	const s = $derived(ws.state);
 	const h = $derived(s.hero);
-	const dist = $derived(distOf(me));
+	const dist = $derived(distOf(me, ws.data, c));
 	const hero = $derived(dist.id === 'rakesh');
 	const perm = $derived(s.setup.permission);
-	const mine = $derived(batchViews(s).filter((v) => v.distributor === dist.id));
+	const mine = $derived(batchViews(s, ws.data).filter((v) => v.distributor === dist.id));
 	const units = $derived(h.orders.reduce((t, o) => t + o.units, 0));
 	const approved = $derived(isRouted(h.phase));
 	const settled = $derived(['settled', 'cleared'].includes(h.phase));
@@ -62,10 +62,10 @@
 		{#if hero && h.photo.status === 'requested'}<div class="bezel" in:rise|global={{ y: 8 }}>
 				<div class="card raised stack snug" style="padding: 20px">
 					<div class="row tight">
-						<Mark size={30} /><span class="t-footnote subtle strong">Smart-Clearance · {D.push.verify.at}</span>
+						<Mark size={30} /><span class="t-footnote subtle strong">Smart-Clearance · {c.push.verify.at}</span>
 					</div>
-					<div class="t-title3">{D.push.verify.title}</div>
-					<p class="t-body" style="margin: 0">{D.push.verify.body}</p>
+					<div class="t-title3">{c.push.verify.title}</div>
+					<p class="t-body" style="margin: 0">{c.push.verify.body}</p>
 					<div class="row" style="gap: 12px">
 						<Product name="phone-scan" size={72} /><span class="t-footnote muted"
 							>Shelf B4 · one carton of Masala Chips 150 g · batch MF-2409-117</span
@@ -96,14 +96,15 @@
 				<div class="stack tight t-subhead">
 					<div class="row top" style="gap: 10px">
 						<span class="dotmark" style="background: var(--ch-kirana)"></span><span
-							><b>{KL.units} packets to your kiranas</b> on the scheme: ₹{KL.packPrice!.toFixed(2)} a pack, 2 free with every
-							10, delivered on your Tuesday round.</span
+							><b>{c.lines.kirana.units} packets to your kiranas</b> on the scheme: ₹{c.lines.kirana.packPrice!.toFixed(
+								2
+							)} a pack, 2 free with every 10, delivered on your Tuesday round.</span
 						>
 					</div>
 					<div class="row top" style="gap: 10px">
 						<span class="dotmark" style="background: var(--ch-expiresoon)"></span><span
-							><b>{ES.units} on ExpireSoon in your name</b> at ₹15, hidden from buyers in Munchly's territories. The buyer
-							collects with his own truck.</span
+							><b>{c.lines.expiresoon.units} on ExpireSoon in your name</b> at ₹15, hidden from buyers in Munchly's territories.
+							The buyer collects with his own truck.</span
 						>
 					</div>
 				</div>
@@ -123,12 +124,12 @@
 					</div>
 					<div class="row base" style="gap: 8px">
 						<span class="num m"><Roll value={h.orders.length} /></span><span class="muted"
-							>shops · {cartons(units)}</span
+							>shops · {cartons(units, c.sku.perCarton)}</span
 						>
 					</div>
 					<span class="t-footnote subtle"
 						>{h.van.status === 'done'
-							? `Delivered · all ${SHOPS} shops`
+							? `Delivered · all ${c.kiranas.length} shops`
 							: h.orders.length
 								? 'Orders from the Masala Chips scheme join this round'
 								: 'Scheme orders will appear here'}</span
@@ -138,18 +139,20 @@
 					<div class="card-head">
 						<span class="row tight"
 							><span class="icontile violet"><Icon name="package" size={17} stroke={2} /></span><span class="card-title"
-								>{D.buyer.city} lot · ExpireSoon</span
+								>{c.buyer.city} lot · ExpireSoon</span
 							></span
 						><Icon name="chevron-right" size={18} class="subtle" />
 					</div>
 					<div class="row base" style="gap: 8px">
-						<span class="num m">{ES.units}</span><span class="muted">units · {cartons(ES.units)}</span>
+						<span class="num m">{c.lines.expiresoon.units}</span><span class="muted"
+							>units · {cartons(c.lines.expiresoon.units, c.sku.perCarton)}</span
+						>
 					</div>
 					<span class="t-footnote subtle"
 						>{h.truck.status === 'dispatched'
-							? `Collected by ${D.buyer.name}'s truck`
+							? `Collected by ${c.buyer.name}'s truck`
 							: h.award
-								? `Sold at ₹${D.counter.price.toFixed(2)} · token ${fmt.inr(D.award.token)} paid`
+								? `Sold at ₹${c.counter.price.toFixed(2)} · token ${fmt.inr(c.award.token)} paid`
 								: h.listing
 									? 'Listed at ₹15 in your name · waiting for a buyer'
 									: 'Not listed'}</span

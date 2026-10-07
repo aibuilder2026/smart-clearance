@@ -8,8 +8,7 @@
 	import { prefersReducedMotion } from '../../../motion';
 	import { fade } from '../../../motion/transitions';
 	import { useRoute } from '../../context';
-	import { act } from '../../flow';
-	import { store } from '../../store.svelte';
+	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import LabelShot from '../brand/LabelShot.svelte';
 	import Screen from '../common/Screen.svelte';
@@ -17,8 +16,9 @@
 	// the camera: frame one carton label, shoot (or pick from the gallery), send; then Vision reads batch, dates and MRP.
 	// With a real camera, the shutter opens the phone's own camera
 	let { me, realCamera }: { me: User; realCamera?: boolean } = $props();
+	const ws = useWorkspace();
 	const { go } = useRoute();
-	const h = $derived(store.state.hero);
+	const h = $derived(ws.state.hero);
 	const verified = $derived(h.photo.status === 'verified');
 	const sent = $derived(h.photo.status === 'reading' || verified);
 	let file: HTMLInputElement | null = $state(null);
@@ -46,10 +46,7 @@
 	};
 	const send = () => {
 		sending = true;
-		setTimeout(() => {
-			sending = false;
-			act('sendPhoto');
-		}, 700);
+		void ws.act('sendPhoto', undefined, { feel: 700 }).then(() => (sending = false));
 	};
 	// the scan line sweeps the label three times while Vision reads it, then rests
 	const scan = (el: HTMLElement) => {

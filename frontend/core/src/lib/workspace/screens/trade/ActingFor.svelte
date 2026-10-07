@@ -4,15 +4,16 @@
 	import Button from '../../../components/Button.svelte';
 	import Card from '../../../components/Card.svelte';
 	import Icon from '../../../icons/Icon.svelte';
-	import { act } from '../../flow';
+	import { useWorkspace } from '../../source';
 	import type { State } from '../../types';
 
 	// once he has allowed it: what the agent does in his name, and the one switch that pauses all of it
 	type Props = { p: NonNullable<State['setup']['permission']> };
 	let { p }: Props = $props();
+	const ws = useWorkspace();
 	const { toast } = useNotice();
 	const flip = () => {
-		act('pause', !p.paused);
+		void ws.act('pause', !p.paused);
 		toast({
 			text: p.paused ? 'Resumed · the agents carry on' : 'Paused · nothing more happens in your name',
 			tone: 'ok'
