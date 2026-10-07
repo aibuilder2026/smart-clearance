@@ -83,11 +83,12 @@ async def apply_speed(ctx: Ctx, c: m.Client) -> None:
     await set_speed(ctx, c, c.day_minutes if open_ else DAY_MINUTES)
 
 
-async def start_at(ctx: Ctx, c: m.Client, at: datetime) -> None:
-    """a journey starting at `at` (journey time) now: the clock jumps forward to it, never back"""
+async def start_at(ctx: Ctx, c: m.Client, at: datetime, *, replay: bool = False) -> None:
+    """a journey starting at `at` (journey time) now: the clock jumps forward to it, never back; but a replay of the
+    story (a synthetic workspace, reset.py) starts again on the story's own day, so it may go back"""
     wall = ctx.clock.now()
     current = clock_of(c).at(wall)
-    target = max(at, current)
+    target = at if replay else max(at, current)
     c.clock_anchor_wall, c.clock_anchor_journey = wall, target
     c.clock_speed = c.clock_speed or DAY_MINUTES
     await ctx.session.flush()

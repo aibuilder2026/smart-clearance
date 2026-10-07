@@ -100,6 +100,15 @@ async def to_plan(api, cloud) -> None:
 # --- signing in -------------------------------------------------------------------------------------------------------
 
 
+async def test_the_console_still_reads_the_live_client(api, munchly, neha):
+    """the live build's sign-in methods are the console's shape too (a 500 on every console call for Munchly, else)"""
+    r = await api.get("/v1/console/clients/munchly", headers=neha)
+    assert r.status_code == 200, r.text
+    assert [x["id"] for x in r.json()["signIn"]] == [x["id"] for x in J["workspace"]["signIn"]]
+    r = await api.put("/v1/console/clients/munchly/clock", json={"dayMinutes": 5}, headers=neha)
+    assert r.status_code == 200, r.text
+
+
 async def test_the_workspace_signs_its_members_in(api, munchly):
     public = (await api.get(WS)).json()
     assert public["name"] == "Munchly Foods" and public["signIn"][0]["id"] == "password"
@@ -255,6 +264,9 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     assert done["pickupAt"] == mango["donation"]["pickupAt"] and done["confirmedAt"] is not None
     assert done["reply"] == copy.pickup_reply(day=copy.weekday(pickup), spot=done["spot"])
     assert (await api.post(f"{WS}/cases/{MANGO}/donation/collect", headers=MEERA)).status_code == 200
+    # the donation's papers come first, with no credit note (no distributor's price to support): no number is spent
+    await agent(api, f"/cases/{MANGO}/documents", "paperwork-mango", "paperwork")
+    assert "support" not in [d["id"] for d in (await case(api, PRIYA, MANGO))["docs"]]
 
     # settle: the truck, the papers, the invoice, the review, the van round, the shelf check
     r = await api.post(f"{WS}/cases/{HERO}/dispatches", json={"kind": "truck"}, headers=RAKESH)
@@ -521,3 +533,10 @@ async def test_the_data_agent_maps_exports_by_names_and_item_codes(api, munchly)
     assert out["skus"]["chips"] == {"code": "MF-MC-150", "name": "Masala Chips 150 g"}
     agents = (await api.get("/internal/clients/munchly/agents", headers=AGENT)).json()
     assert agents["offerWindowHours"] == 48
+
+
+async def test_an_export_is_written_once(cloud):
+    """the API creates objects and never replaces them: a journey started again on the same day keeps its exports"""
+    assert await cloud.storage.write("exports-test", "munchly/day.csv", b"first", "text/csv") is True
+    assert await cloud.storage.write("exports-test", "munchly/day.csv", b"second", "text/csv") is False
+    assert cloud.storage.objects[("exports-test", "munchly/day.csv")] == b"first"

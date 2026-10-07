@@ -1418,10 +1418,16 @@ async def documents(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> None
         "buyer": buyer or {"name": "", "short": "", "city": ""},
         "client": {"name": s.c.name, "short": s.c.short},
     }
-    numbers = {"support": await world.next_number(ctx, client_id, "support")}
-    numbers["invoice"] = await world.next_number(ctx, client_id, "invoice") if award and _line(s, "expiresoon") else ""
+    # without the distributor's own price (dp) there is no gap to support, so no credit note: a number is drawn only for
+    # a paper that is issued, so the sequence has no gaps
+    blank = {"support": "", "invoice": ""}
+    draft = money.documents(plan_, sku, awarded, support, parties, numbers=blank, rules=s.rules)
+    issues_support = any(d["id"] == "support" and money.jsonable(d.get("amount")) is not None for d in draft)
+    numbers = {
+        "support": await world.next_number(ctx, client_id, "support") if issues_support else "",
+        "invoice": await world.next_number(ctx, client_id, "invoice") if award and _line(s, "expiresoon") else "",
+    }
     docs = money.documents(plan_, sku, awarded, support, parties, numbers=numbers, rules=s.rules)
-    # without the distributor's own price (dp) there is no gap to support: no credit note
     docs = [d for d in docs if not (d["id"] == "support" and money.jsonable(d.get("amount")) is None)]
     # the papers are dated the journey day the Paperwork agent drafts them
     dated = _today(ctx, s.c).isoformat()

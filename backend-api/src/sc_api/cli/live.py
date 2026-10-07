@@ -30,7 +30,8 @@ async def build(ctx: Ctx, client_id: str = "munchly") -> dict[str, Any]:
         raise SystemExit(f"live: there is no client {client_id}; import the story first")
     w = j["workspace"]
     c.email_domain = j["domains"]["staff"]
-    c.sign_in = [{**s, "on": True} for s in w["signIn"]]
+    # the console's sign-in methods (SignInMethod); the workspace's own, with their icons, are in workspace_doc
+    c.sign_in = [{k: s[k] for k in ("id", "title", "who", "rule")} | {"on": True} for s in w["signIn"]]
     c.workspace_doc = {
         **(c.workspace_doc or {}),
         "platform": j["platform"],

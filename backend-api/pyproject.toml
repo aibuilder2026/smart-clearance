@@ -30,6 +30,7 @@ dependencies = [
 [project.scripts]
 sc-admin = "sc_api.cli.admin:main"
 sc-hydrate = "sc_api.cli.hydrate:main"
+sc-walk = "sc_api.cli.walk:main"
 
 [dependency-groups]
 dev = [
