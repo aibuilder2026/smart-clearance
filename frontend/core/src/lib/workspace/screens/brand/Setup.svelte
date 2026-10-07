@@ -12,21 +12,20 @@
 	import Icon from '../../../icons/Icon.svelte';
 	import { useNotice } from '../../../notice.svelte';
 	import { useRoute } from '../../context';
-	import { addDays, D, PLAN } from '../../data';
-	import { act } from '../../flow';
-	import { fmt } from '../../model';
-	import { permissionOf } from '../../legacy';
-	import { store } from '../../store.svelte';
+	import { addDays, fmt, permissionOf } from '../../model';
+	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import PlayAs from '../common/PlayAs.svelte';
 	import Screen from '../common/Screen.svelte';
 
 	// S0 Setup: connect the stock data once, and set the rules the agents must obey (screens/brand.jsx Setup)
 	let { me }: { me: User } = $props();
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
 	const router = useRoute();
 	const app = useApp();
 	const notices = useNotice();
-	const s = $derived(store.state);
+	const s = $derived(ws.state);
 
 	const CH_NAMES: Record<string, string> = {
 		kirana: 'Kiranas',
@@ -44,31 +43,30 @@
 	];
 
 	// the guardrails as the store holds them; changes stay on this screen, as in the prototype
-	let floors = $state({ ...store.state.rules.floors });
-	let taps = $state(store.state.rules.approvalTaps);
+	let floors = $state({ ...ws.state.rules.floors });
+	let taps = $state(ws.state.rules.approvalTaps);
 	let busy = $state(false);
-	let ret = $state(store.state.rules.returnWindowDays);
-	let uplift = $state(store.state.rules.kiranaUplift);
-	let van = $state(store.state.rules.vanPerUnit);
+	let ret = $state(ws.state.rules.returnWindowDays);
+	let uplift = $state(ws.state.rules.kiranaUplift);
+	let van = $state(ws.state.rules.vanPerUnit);
 	const done = $derived(s.setup.confirmed);
 
 	const confirm = () => {
 		busy = true;
-		setTimeout(() => {
+		void ws.act('connect', undefined, { feel: 900 }).then(() => {
 			busy = false;
-			act('connect');
 			notices.toast({ text: 'Setup confirmed · the Watcher starts at 09:00', tone: 'ok' });
-		}, 900);
+		});
 	};
-	const chans = D.setup.channels;
-	const wo = PLAN.writeOff;
-	const chips = D.skus.chips;
-	const COSTS: [string, number][] = [
+	const chans = $derived(ws.data.setup.channels);
+	const wo = $derived(c.plan.writeOff);
+	const chips = $derived(c.sku);
+	const COSTS: [string, number][] = $derived([
 		['Stock at cost', chips.cost],
 		['GST credit reversed', wo.itcPerUnit],
-		['Disposal', D.rules.disposalPerUnit],
-		['EPR, indicative', chips.kgPerUnit * D.rules.eprPerKg]
-	];
+		['Disposal', ws.data.rules.disposalPerUnit],
+		['EPR, indicative', chips.kgPerUnit * ws.data.rules.eprPerKg]
+	]);
 	// the prototype's switches show the rule and never change it
 	const noop = () => {};
 </script>
@@ -124,7 +122,7 @@
 				<table class="table">
 					<thead><tr><th>Smart-Clearance field</th><th>Column in your file</th><th>Status</th></tr></thead>
 					<tbody>
-						{#each D.setup.dms.columns as [f, c] (f)}<tr
+						{#each ws.data.setup.dms.columns as [f, c] (f)}<tr
 								><td class="strong">{f.replace('_', ' ')}</td><td class="mono">{c}</td><td
 									><Badge size="sm" tone="green" icon="check">mapped</Badge></td
 								></tr
@@ -156,7 +154,7 @@
 							/>{/snippet}
 						<ListRow
 							title={l}
-							sub={`${fmt.inr2((D.skus[sku].mrp * floors[k]) / 100)} on a ₹${D.skus[sku].mrp} pack`}
+							sub={`${fmt.inr2((ws.data.skus[sku].mrp * floors[k]) / 100)} on a ₹${ws.data.skus[sku].mrp} pack`}
 							{value}
 						/>
 					{/each}
@@ -165,7 +163,7 @@
 					head="Territory guard"
 					foot="ExpireSoon listings are hidden from buyers inside these territories, matched by pincode, so clearance stock never undercuts a Munchly distributor."
 				>
-					{#each Object.values(D.distributors) as d (d.id)}<ListRow
+					{#each Object.values(ws.data.distributors) as d (d.id)}<ListRow
 							icon="map-pin"
 							iconTone="gray"
 							title={d.territory}
@@ -197,7 +195,7 @@
 								></thead
 							>
 							<tbody>
-								{#each D.setup.allowList as [cat, ok] (cat)}<tr
+								{#each ws.data.setup.allowList as [cat, ok] (cat)}<tr
 										><td class="strong" style="text-transform: capitalize">{cat.replace('-', ' ')}</td
 										>{#each chans as c (c)}<td style="text-align: center"
 												>{#if ok.includes(c)}<Icon
@@ -225,8 +223,8 @@
 					head="Distributors' one-time permission"
 					foot="Each distributor lets the agent list his Munchly stock, offer schemes to his kiranas, draft his invoices and book dispatch slots, inside Munchly's floors. He can pause it at any time."
 				>
-					{#each Object.values(D.distributors) as d (d.id)}
-						{@const p = permissionOf(s, d.id)}
+					{#each Object.values(ws.data.distributors) as d (d.id)}
+						{@const p = permissionOf(s, d.id, ws.data, c)}
 						{#snippet badge()}<Badge size="sm" tone={p.tone} dot={!p.tone}>{p.label}</Badge>{/snippet}
 						<ListRow
 							icon="handshake"
@@ -244,14 +242,14 @@
 				>
 					<ListRow
 						title="Kiranas may return scheme packs until"
-						sub={`${fmt.day(addDays(D.batches[0].bestBefore, -ret))} for this batch`}
+						sub={`${fmt.day(addDays(c.batch.bestBefore, -ret))} for this batch`}
 						value={retValue}
 					/>
 					<ListRow title="Scheme uplift on normal sales" value={upliftValue} />
 					<ListRow title="Van rate, a unit" value={vanValue} />
 				</List>
 				<div class="stack snug">
-					{#each D.setup.partners as p (p.name)}<Card class="stack tight"
+					{#each ws.data.setup.partners as p (p.name)}<Card class="stack tight"
 							><div class="card-head">
 								<span class="row tight"
 									><span class="icontile red"><Icon name="heart-handshake" size={17} stroke={2} /></span><b>{p.name}</b
@@ -292,8 +290,8 @@
 			</div>
 			<span class="t-footnote subtle"
 				>For Masala Chips 150 g: cost ₹{chips.cost}; {fmt.inr2(wo.itcPerUnit)} of input GST a packet from the cost sheet (chips
-				are at {Math.round(chips.gst * 100)}% GST since GST 2.0); disposal {fmt.inr2(D.rules.disposalPerUnit)} a unit; EPR
-				₹{D.rules.eprPerKg} a kilo of product and pack. Factors marked indicative are editable here.</span
+				are at {Math.round(chips.gst * 100)}% GST since GST 2.0); disposal {fmt.inr2(ws.data.rules.disposalPerUnit)} a unit;
+				EPR ₹{ws.data.rules.eprPerKg} a kilo of product and pack. Factors marked indicative are editable here.</span
 			>
 		</Card>
 		<div class="row wrap" style="gap: 10px">

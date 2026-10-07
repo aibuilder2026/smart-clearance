@@ -1,18 +1,17 @@
 <script lang="ts">
 	import { cx } from '../cx';
 	import { fmt } from '../format';
-	import { CHIPS } from '../workspace/data';
-	import type { Actual, Plan } from '../workspace/types';
+	import type { Actual, Plan, Sku } from '../workspace/types';
 	import Badge from './Badge.svelte';
 	import Money from './Money.svelte';
 
 	// the money panel, set out the way a challan would be: what destroying does to the P&L, what the split recovers and
 	// its P&L effect. The book cost of the stock appears once on each side, so the swing does not count it twice.
 	// actual: the result after the negotiation, when there is one (the kit's MoneyPanel)
-	type Props = { plan: Plan; actual?: Actual; compact?: boolean };
-	let { plan, actual, compact }: Props = $props();
+	// sku: the product the plan is for, its cost and MRP
+	type Props = { plan: Plan; sku: Pick<Sku, 'cost' | 'mrp'>; actual?: Actual; compact?: boolean };
+	let { plan, sku, actual, compact }: Props = $props();
 	const wo = $derived(plan.writeOff);
-	const sku = CHIPS;
 	const net = $derived(actual ? actual.net : plan.net);
 	const pnl = $derived(actual ? actual.pnl : plan.pnl);
 	const swing = $derived(actual ? actual.swing : plan.swing);

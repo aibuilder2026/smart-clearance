@@ -2,14 +2,15 @@
 	import Avatar from '../../../components/Avatar.svelte';
 	import Badge from '../../../components/Badge.svelte';
 	import { prefersReducedMotion } from '../../../motion';
-	import { D } from '../../data';
 	import PlayAs from '../common/PlayAs.svelte';
 	import LabelShot from './LabelShot.svelte';
+	import { useWorkspace } from '../../source';
 
 	// the label photo as Vision sees it: dimmed and waiting for Rakesh bhai's photo, a scan line while it reads (three
 	// passes, then it stops), and the verified badge once the label matches (screens/brand.jsx LabelPhoto)
 	type Props = { status: 'none' | 'requested' | 'reading' | 'verified' };
 	let { status }: Props = $props();
+	const ws = useWorkspace();
 
 	const scan = (el: HTMLElement) => {
 		const a = el.animate(
@@ -40,7 +41,7 @@
 			style="position: absolute; inset: 0; display: grid; place-items: center; background: color-mix(in oklab, var(--bg) 55%, transparent); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px)"
 		>
 			<div class="stack tight" style="justify-items: center; text-align: center; padding: 16px">
-				<Avatar person={D.people.rakesh} size="lg" /><b
+				<Avatar person={ws.data.people.rakesh} size="lg" /><b
 					>{status === 'requested' ? "Waiting for Rakesh bhai's photo" : 'No label photo yet'}</b
 				><span class="t-footnote muted"
 					>{status === 'requested'

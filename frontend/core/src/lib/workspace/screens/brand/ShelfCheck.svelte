@@ -2,14 +2,16 @@
 	import Badge from '../../../components/Badge.svelte';
 	import Card from '../../../components/Card.svelte';
 	import Icon from '../../../icons/Icon.svelte';
-	import { D } from '../../data';
 	import { fmt } from '../../model';
+	import { useWorkspace } from '../../source';
 	import type { Hero } from '../../types';
 
 	// day 7: the salesman's shelf counts, and the one pick-up the agent suggests (screens/brand.jsx ShelfCheck)
 	type Props = { shelf: Hero['shelf']; compact?: boolean };
 	let { shelf, compact }: Props = $props();
-	const S7 = D.shelf;
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
+	const S7 = $derived(c.shelf);
 </script>
 
 <Card class="stack snug">
@@ -44,6 +46,7 @@
 			>{/if}
 	{:else}<span class="t-footnote muted"
 			>On day 7 the salesman counts the scheme packs on each shelf. Where a shop is selling too slowly, the agent
-			suggests bringing packs back on the next round while they still have {D.rules.returnWindowDays} or more days on them.</span
+			suggests bringing packs back on the next round while they still have {ws.data.rules.returnWindowDays} or more days on
+			them.</span
 		>{/if}
 </Card>

@@ -17,10 +17,8 @@
 	import Icon from '../../../icons/Icon.svelte';
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
-	import { D, ES, KL, PLAN } from '../../data';
-	import { fmt, isRouted } from '../../model';
-	import { heroModel } from '../../legacy';
-	import { store } from '../../store.svelte';
+	import { fmt, heroModel, isRouted } from '../../model';
+	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import PlayAs from '../common/PlayAs.svelte';
 	import Screen from '../common/Screen.svelte';
@@ -31,34 +29,38 @@
 	// S3 Execution: day 0 to 14, four agents at work: the Lister's ExpireSoon lot, Outreach's scheme to the kiranas, the
 	// Negotiator's thread and the Mango Drink donation (screens/brand.jsx Execution)
 	let { me }: { me: User } = $props();
-	const s = $derived(store.state);
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
+	const s = $derived(ws.state);
 	const h = $derived(s.hero);
-	const hm = $derived(heroModel(s));
+	const hm = $derived(heroModel(s, ws.data, c));
 	let sheet = $state(false);
 
 	const started = $derived(isRouted(h.phase));
 	const units = $derived(h.orders.reduce((t, o) => t + o.units, 0));
 	const lastBid = $derived(h.bids[h.bids.length - 1]);
-	const all = $derived(h.orders.length === D.kiranas.length);
-	const ML = (id: string) => D.mangoPlan.lines.find((l) => l.id === id) || { units: 0 };
-	const req = `POST /v1/listings\n{\n  "seller": "Rakesh Traders, Nagpur",\n  "on_behalf": "one-time permission · inside Munchly floors",\n  "sku": "MF-MC-150",\n  "batch": "MF-2409-117",\n  "units": ${ES.units},\n  "price": 15.00,\n  "reserve": 13.50,\n  "mrp": 30.00,\n  "best_before": "2026-11-18",\n  "hide_from_pincodes": ["440", "441", "442", "411", "412", "452", "453", "500", "501"],\n  "label_photo": "gs://smart-clearance/labels/MF-2409-117.jpg"\n}`;
+	const all = $derived(h.orders.length === c.kiranas.length);
+	const ML = (id: string) => c.donation.plan.lines.find((l) => l.id === id) || { units: 0 };
+	const req = $derived(
+		`POST /v1/listings\n{\n  "seller": "Rakesh Traders, Nagpur",\n  "on_behalf": "one-time permission · inside Munchly floors",\n  "sku": "MF-MC-150",\n  "batch": "MF-2409-117",\n  "units": ${c.lines.expiresoon.units},\n  "price": 15.00,\n  "reserve": 13.50,\n  "mrp": 30.00,\n  "best_before": "2026-11-18",\n  "hide_from_pincodes": ["440", "441", "442", "411", "412", "452", "453", "500", "501"],\n  "label_photo": "gs://smart-clearance/labels/MF-2409-117.jpg"\n}`
+	);
 	const res = $derived(
 		h.listing
 			? `HTTP/1.1 201 Created\n{\n  "id": "ES-24117",\n  "status": "${h.listing.status}",\n  "url": "https://expiresoon.example/l/ES-24117"\n}`
 			: ''
 	);
-	const AWARD: [string, string, string][] = [
-		['ExpireSoon, planned', `${ES.units} × ₹15.00`, fmt.inr(D.actual.esPlanned)],
-		['ExpireSoon, actual', `${ES.units} × ₹${D.counter.price.toFixed(2)}`, fmt.inr(D.actual.esActual)],
-		['Net, planned', '', fmt.inr(PLAN.net)],
-		['Net, actual', `−${fmt.inr(D.actual.delta)} on the counter`, fmt.inr(D.actual.net)]
-	];
+	const AWARD: [string, string, string][] = $derived([
+		['ExpireSoon, planned', `${c.lines.expiresoon.units} × ₹15.00`, fmt.inr(c.actual.esPlanned)],
+		['ExpireSoon, actual', `${c.lines.expiresoon.units} × ₹${c.counter.price.toFixed(2)}`, fmt.inr(c.actual.esActual)],
+		['Net, planned', '', fmt.inr(c.plan.net)],
+		['Net, actual', `−${fmt.inr(c.actual.delta)} on the counter`, fmt.inr(c.actual.net)]
+	]);
 	const STAGES = ['approve', 'execute', 'settle', 'report'];
 	const timeline = $derived(s.feed.filter((e) => STAGES.includes(e.stage)));
 </script>
 
 {#snippet matches()}<Badge size="sm" tone="green">matches</Badge>{/snippet}
-{#snippet short()}<Badge size="sm">{D.mangoFb} units</Badge>{/snippet}
+{#snippet short()}<Badge size="sm">{c.donation.units} units</Badge>{/snippet}
 {#snippet main()}<div
 		style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); align-items: start"
 	>
@@ -89,43 +91,44 @@
 		<Card class="stack snug">
 			<div class="card-head">
 				<span class="row tight"
-					><Aura on={!!h.offer && units < KL.units} class="icontile" style="border-radius: 9px"
+					><Aura on={!!h.offer && units < c.lines.kirana.units} class="icontile" style="border-radius: 9px"
 						><Icon name="send" size={17} stroke={2} /></Aura
-					><span class="card-title">Outreach · {D.offered} kiranas</span></span
+					><span class="card-title">Outreach · {c.offered} kiranas</span></span
 				><Badge tone="blue" icon="bell">push · Hindi</Badge>
 			</div>
 			{#if h.offer}<div
 					class="banner"
 					style="box-shadow: none; background: var(--fill); grid-template-columns: 28px minmax(0,1fr)"
 				>
-					<Mark size={28} /><span class="hi t-subhead" lang="hi" style="line-height: 1.45">{D.push.offer.body}</span>
+					<Mark size={28} /><span class="hi t-subhead" lang="hi" style="line-height: 1.45">{c.push.offer.body}</span>
 				</div>{/if}
 			<div class="row wrap" style="gap: 18px">
 				<div class="stack tight" style="gap: 0">
 					<span class="num m"
-						><Roll value={h.orders.length} /><span class="subtle" style="font-size: 0.45em">{` / ${D.offered}`}</span
+						><Roll value={h.orders.length} /><span class="subtle" style="font-size: 0.45em">{` / ${c.offered}`}</span
 						></span
 					><span class="t-footnote subtle">kiranas ordered</span>
 				</div>
 				<div class="stack tight" style="gap: 0">
 					<span class="num m"
-						><Roll value={units} /><span class="subtle" style="font-size: 0.45em">{` / ${KL.units}`}</span></span
+						><Roll value={units} /><span class="subtle" style="font-size: 0.45em">{` / ${c.lines.kirana.units}`}</span
+						></span
 					><span class="t-footnote subtle">units</span>
 				</div>
 			</div>
-			<Progress value={units / KL.units} label="Units ordered" />
+			<Progress value={units / c.lines.kirana.units} label="Units ordered" />
 			{#if h.offer && !h.orders.some((o) => o.id === 'k0')}<PlayAs who="ganesh" route="offer">Order as Ganesh ji</PlayAs
 				>{/if}
-			<ClusterMap kiranas={D.kiranas} orderedCount={h.orders.length} route height={200} />
+			<ClusterMap kiranas={c.kiranas} orderedCount={h.orders.length} route height={200} />
 			<div class="stack tight">
-				{#each h.orders.slice(-3).reverse() as o (o.id)}{@const k = D.kiranas.find((x) => x.id === o.id)!}
+				{#each h.orders.slice(-3).reverse() as o (o.id)}{@const k = c.kiranas.find((x) => x.id === o.id)!}
 					<div class="row between t-subhead">
 						<span>{k.name} <span class="subtle t-footnote">{k.area}</span></span><span class="tnum strong"
 							>{o.units} <span class="subtle t-caption">{o.at}</span></span
 						>
 					</div>{/each}{#if !h.orders.length}<span class="t-footnote muted"
-						>Orders arrive as shops tap the offer. No shop can order more than {D.rules.shopCapTimes}× its own 14-day
-						sales.</span
+						>Orders arrive as shops tap the offer. No shop can order more than {ws.data.rules.shopCapTimes}× its own
+						14-day sales.</span
 					>{/if}
 			</div>
 		</Card>
@@ -135,7 +138,7 @@
 					><Aura on={!!lastBid && lastBid.status === 'placed'} class="icontile gray" style="border-radius: 9px"
 						><Icon name="messages-square" size={17} stroke={2} /></Aura
 					><span class="card-title">Negotiator</span></span
-				>{#if h.award}<Badge tone="green" icon="check">awarded · ₹{D.counter.price.toFixed(2)}</Badge>{:else}<Badge
+				>{#if h.award}<Badge tone="green" icon="check">awarded · ₹{c.counter.price.toFixed(2)}</Badge>{:else}<Badge
 						>reserve ₹13.50 · hidden</Badge
 					>{/if}
 			</div>
@@ -155,7 +158,7 @@
 						/>{/each}</List
 				>{/if}
 			{#if h.award}<Badge tone="green" icon="badge-check"
-					>Token {fmt.inr(D.award.token)} received · balance {fmt.inr(D.award.balance)} plus IGST in 48 h</Badge
+					>Token {fmt.inr(c.award.token)} received · balance {fmt.inr(c.award.balance)} plus IGST in 48 h</Badge
 				>{/if}
 			{#if h.award && all && h.truck.status !== 'dispatched'}<PlayAs who="rakesh" route="van"
 					>Load the buyer's truck as Rakesh bhai</PlayAs
@@ -180,7 +183,7 @@
 				<div class="stack tight" style="gap: 2px">
 					<b>MF-2410-118 · 22 days left</b><span class="t-footnote muted"
 						>Lakshmi Agencies, Hyderabad: {fmt.num(ML('kirana').units)} packs to her kiranas, {ML('staff').units} to her staff
-						sale, {D.mangoFb} left for a food bank. Too few days for ExpireSoon.</span
+						sale, {c.donation.units} left for a food bank. Too few days for ExpireSoon.</span
 					>
 				</div>
 			</div>
@@ -207,7 +210,7 @@
 		{#if h.van.status === 'done' || h.shelf}<ShelfCheck shelf={h.shelf} />{/if}
 	</div>{/snippet}
 {#snippet side()}<SectionTitle>Agent timeline</SectionTitle><Card
-		><AgentFeed events={timeline} people={D.people} live={hm.agentLive ? timeline.length - 1 : -1} /></Card
+		><AgentFeed events={timeline} people={ws.data.people} live={hm.agentLive ? timeline.length - 1 : -1} /></Card
 	>{/snippet}
 
 <Screen {me} title="Execution" sub="MF-2409-117 · day 0 to 14 · four agents" back="Route Room">

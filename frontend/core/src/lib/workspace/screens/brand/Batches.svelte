@@ -10,25 +10,25 @@
 	import Sheet from '../../../components/Sheet.svelte';
 	import StatusBadge from '../../../components/StatusBadge.svelte';
 	import { useRoute } from '../../context';
-	import { D } from '../../data';
-	import { fmt } from '../../model';
-	import { batchViews } from '../../legacy';
-	import { store } from '../../store.svelte';
+	import { batchViews, fmt } from '../../model';
+	import { useWorkspace } from '../../source';
 	import type { BatchView, User } from '../../types';
 	import Screen from '../common/Screen.svelte';
 
 	// Batches: every lot the Watcher sees, from the DMS export; the hero opens the Route Room, any other its sheet
 	// (screens/brand.jsx Batches)
 	let { me }: { me: User } = $props();
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
 	const app = useApp();
 	const router = useRoute();
 	let openId = $state<string | null>(null);
 
 	type Row = BatchView & { name: string };
-	const views = $derived(batchViews(store.state));
+	const views = $derived(batchViews(ws.state, ws.data));
 	const rows = $derived<Row[]>(views.map((v) => ({ ...v, name: v.skuObj.name })));
 	const sel = $derived(openId ? views.find((v) => v.id === openId) : undefined);
-	const ML = (id: string) => D.mangoPlan.lines.find((l) => l.id === id) || { units: 0 };
+	const ML = (id: string) => c.donation.plan.lines.find((l) => l.id === id) || { units: 0 };
 	const openRow = (v: BatchView) => (v.hero ? router.go('route') : (openId = v.id));
 	const facts = (b: BatchView): [string, string][] => [
 		['Batch', b.id],
@@ -89,7 +89,7 @@
 				>
 				<p class="t-footnote muted">
 					{sel.phase === 'executing'
-						? `Routed yesterday: ${fmt.num(ML('kirana').units)} packs to Hyderabad kiranas, ${ML('staff').units} to the staff sale at Lakshmi's godown, ${D.mangoFb} to Feeding India.`
+						? `Routed yesterday: ${fmt.num(ML('kirana').units)} packs to Hyderabad kiranas, ${ML('staff').units} to the staff sale at Lakshmi's godown, ${c.donation.units} to Feeding India.`
 						: sel.assess.status === 'gated'
 							? 'Outside at least one quick-commerce gate, but real sell-through clears it in time. The Watcher checks again tomorrow at 09:00.'
 							: 'Inside every gate and selling through. Nothing to do.'}

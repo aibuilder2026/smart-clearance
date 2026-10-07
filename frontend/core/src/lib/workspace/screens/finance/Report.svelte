@@ -17,7 +17,7 @@
 	import { useNotice } from '../../../notice.svelte';
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
-	import { D, INVOICE, PLAN, SHOPS } from '../../data';
+	import { CHIPS, D, INVOICE, PLAN, SHOPS } from '../../data';
 	import { csv, download, fmt } from '../../model';
 	import { store } from '../../store.svelte';
 	import type { Quarter, User } from '../../types';
@@ -220,7 +220,7 @@
 						: 'Posts this batch to the ledger once the paperwork is done and the return window closes.'}
 				/>{/if}
 			<SectionTitle sub="Planned on the Route Room; actual after the negotiation">Money reading</SectionTitle>
-			<MoneyPanel plan={PLAN} actual={h.award ? D.actual : undefined} compact={app.bp !== 'desktop'} />
+			<MoneyPanel plan={PLAN} sku={CHIPS} actual={h.award ? D.actual : undefined} compact={app.bp !== 'desktop'} />
 			{#if h.award}<Card class="row wrap" style="gap: 14px"
 					><span class="icontile violet"><Icon name="trending-down" size={17} /></span>
 					<div class="grow">

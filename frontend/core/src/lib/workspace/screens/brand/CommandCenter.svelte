@@ -12,10 +12,8 @@
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
 	import { useRoute } from '../../context';
-	import { D, ES, KL, PLAN, SHOPS } from '../../data';
-	import { fmt, isRouted } from '../../model';
-	import { batchViews, heroModel } from '../../legacy';
-	import { store } from '../../store.svelte';
+	import { batchViews, fmt, heroModel, isRouted } from '../../model';
+	import { useWorkspace } from '../../source';
 	import type { BatchView, User } from '../../types';
 	import PlayAs from '../common/PlayAs.svelte';
 	import Screen from '../common/Screen.svelte';
@@ -23,14 +21,16 @@
 	// S1 Command Center: the first viewport is the batch, tracked like an order: tracker first, the agents beside it, the
 	// cluster under it (screens/brand.jsx CommandCenter)
 	let { me }: { me: User } = $props();
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
 	const router = useRoute();
 	const app = useApp();
-	const s = $derived(store.state);
-	const hm = $derived(heroModel(s));
+	const s = $derived(ws.state);
+	const hm = $derived(heroModel(s, ws.data, c));
 	const phone = $derived(app.bp === 'phone');
 	let sel = $state<string | null>(null);
 
-	const views = $derived(batchViews(s));
+	const views = $derived(batchViews(s, ws.data));
 	const atRisk = (v: BatchView) => (v.phase === 'at-risk' || (!v.phase && v.assess.status === 'at-risk') ? -1 : 0);
 	const watchlist = $derived(
 		views
@@ -54,7 +54,7 @@
 		>{/if}{/snippet}
 {#snippet money()}<div class="stack tight" style="gap: 2px">
 		<Money
-			value={s.hero.posted ? D.actual.net : PLAN.net}
+			value={s.hero.posted ? c.actual.net : c.plan.net}
 			size={phone ? 's' : 'm'}
 			roll
 			style="color: var(--primary-text)"
@@ -63,7 +63,7 @@
 				? 'recovered, after the negotiation'
 				: routed
 					? 'on plan · settles day 3–7'
-					: 'net recovered on the plan'} · swing {fmt.inr(s.hero.posted ? D.actual.swing : PLAN.swing)}</span
+					: 'net recovered on the plan'} · swing {fmt.inr(s.hero.posted ? c.actual.swing : c.plan.swing)}</span
 		>
 	</div>{/snippet}
 {#snippet emptyAction()}{#if !s.setup.confirmed}<Button
@@ -73,6 +73,8 @@
 		>{:else if !perm}<PlayAs who="rakesh" route="home">Give the permission as Rakesh bhai</PlayAs>{/if}{/snippet}
 {#snippet tracker()}{#if flagged}<TrackerCard
 			view={hm.view}
+			stages={ws.data.stages}
+			writeOff={c.plan.writeOff.total}
 			done={hm.done}
 			current={hm.current}
 			eta={paused ? 'Paused by Rakesh bhai' : hm.eta}
@@ -81,7 +83,7 @@
 			{primary}
 			money={s.hero.plan ? money : undefined}
 			line={s.hero.phase === 'cleared'
-				? `All ${fmt.num(PLAN.units)} units placed: ${KL.units} with ${SHOPS} kiranas, ${ES.units} with a ${D.buyer.city} wholesaler. Nothing went to the bin.`
+				? `All ${fmt.num(c.plan.units)} units placed: ${c.lines.kirana.units} with ${c.kiranas.length} kiranas, ${c.lines.expiresoon.units} with a ${c.buyer.city} wholesaler. Nothing went to the bin.`
 				: undefined}
 		/>{:else}<Card
 			><Empty
@@ -105,19 +107,19 @@
 					size="sm"
 					tone={hm.ordered ? 'green' : undefined}
 					dot={!!hm.ordered}
-					live={hm.ordered > 0 && hm.ordered < SHOPS}
+					live={hm.ordered > 0 && hm.ordered < c.kiranas.length}
 					>{hm.ordered
-						? `${hm.ordered} of ${D.offered} kiranas ordered`
+						? `${hm.ordered} of ${c.offered} kiranas ordered`
 						: s.hero.offer
-							? `${D.offered} kiranas messaged`
-							: `${D.offered} kiranas`}</Badge
+							? `${c.offered} kiranas messaged`
+							: `${c.offered} kiranas`}</Badge
 				>
 			</div>
 			<ClusterMap
-				kiranas={D.kiranas}
+				kiranas={c.kiranas}
 				orderedCount={hm.ordered}
 				route={routed}
-				vanProgress={s.hero.van.status === 'done' ? 1 : (hm.ordered / SHOPS) * 0.6}
+				vanProgress={s.hero.van.status === 'done' ? 1 : (hm.ordered / c.kiranas.length) * 0.6}
 				height={phone ? 220 : 280}
 			/>
 		</Card>{/if}{/snippet}
@@ -125,7 +127,7 @@
 		<SectionTitle sub="Every hand-off, as it happens">Agent activity</SectionTitle><Card
 			>{#if s.feed.length}<AgentFeed
 					events={s.feed}
-					people={D.people}
+					people={ws.data.people}
 					live={hm.agentLive ? s.feed.length - 1 : -1}
 					max={phone ? 3 : 6}
 				/>{:else}<span class="t-footnote muted">The agents report here once the Watcher runs.</span>{/if}</Card

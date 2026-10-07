@@ -3,8 +3,8 @@
 	import { useApp } from '../app.svelte';
 	import { fmt } from '../format';
 	import Icon from '../icons/Icon.svelte';
-	import { D, STAGE_TIMES, TRACK, TRACK_TIMED } from '../workspace/data';
-	import type { BatchView } from '../workspace/types';
+	import { stageTimes, track, trackTimed } from '../workspace/model';
+	import type { BatchView, Stage } from '../workspace/types';
 	import Aura from './Aura.svelte';
 	import Badge from './Badge.svelte';
 	import DaysNum from './DaysNum.svelte';
@@ -18,6 +18,10 @@
 	// happens next (the kit's TrackerCard)
 	type Props = {
 		view: BatchView;
+		/** the nine stages, with when each happens and who acts */
+		stages: Stage[];
+		/** what destroying the batch would cost, shown when there is no money snippet */
+		writeOff: number;
 		done?: number;
 		current?: number;
 		eta?: string;
@@ -36,6 +40,8 @@
 	};
 	let {
 		view,
+		stages,
+		writeOff,
 		done = 2,
 		current = 2,
 		eta,
@@ -93,7 +99,7 @@
 		</div>
 		<div class="row wrap" style="gap: {phone ? 10 : 18}px; margin-top: {phone ? 12 : 16}px; align-items: flex-end">
 			{#if money}{@render money()}{:else}<div class="stack tight" style="gap: 2px">
-					<Money value={-D.plan.writeOff.total} size={phone ? 's' : 'm'} style="color: var(--red-text)" /><span
+					<Money value={-writeOff} size={phone ? 's' : 'm'} style="color: var(--red-text)" /><span
 						class="t-footnote subtle">if destroyed · {fmt.num(a.atRisk)} units at risk</span
 					>
 				</div>{/if}
@@ -105,11 +111,11 @@
 			</div>
 		</div>
 		<div style="margin-top: {phone ? 14 : 22}px">
-			{#if phone}<TrackerCompact stages={TRACK_TIMED} {done} {current} />{:else}<Tracker
-					stages={TRACK}
+			{#if phone}<TrackerCompact stages={trackTimed(stages)} {done} {current} />{:else}<Tracker
+					stages={track(stages)}
 					{done}
 					{current}
-					times={STAGE_TIMES}
+					times={stageTimes(stages)}
 					{onstop}
 				/>{/if}
 		</div>
