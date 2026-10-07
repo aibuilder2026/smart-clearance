@@ -1,17 +1,8 @@
 <script lang="ts" module>
-	import type { IconName } from '../../../icons/registry';
+	import type { MarketLot } from '../../types';
 
 	/** a lot on ExpireSoon */
-	export type EsListing = {
-		id: string;
-		name: string;
-		icon?: IconName;
-		units: number;
-		price: number;
-		mrp: number;
-		days: number;
-		seller: string;
-	};
+	export type EsListing = MarketLot;
 </script>
 
 <script lang="ts">

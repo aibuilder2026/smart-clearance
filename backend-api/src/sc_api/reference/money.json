@@ -132,7 +132,8 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
-				"img": "pack-chips"
+				"img": "pack-chips",
+				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
 			"assess": {
 				"gates": [
@@ -627,7 +628,8 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
-				"img": "pack-chips"
+				"img": "pack-chips",
+				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
 			"assess": {
 				"gates": [
@@ -2118,7 +2120,8 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
-				"img": "pack-chips"
+				"img": "pack-chips",
+				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
 			"assess": {
 				"gates": [
@@ -2359,7 +2362,8 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
-				"img": "pack-chips"
+				"img": "pack-chips",
+				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
 			"assess": {
 				"gates": [
@@ -2598,7 +2602,8 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
-				"img": "pack-chips"
+				"img": "pack-chips",
+				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
 			"assess": {
 				"gates": [
@@ -3332,7 +3337,8 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
-				"img": "pack-chips"
+				"img": "pack-chips",
+				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
 			"assess": {
 				"gates": [
@@ -3567,7 +3573,8 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
-				"img": "pack-chips"
+				"img": "pack-chips",
+				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
 			"out": {
 				"units": 1360,
@@ -4638,7 +4645,8 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
-				"img": "pack-chips"
+				"img": "pack-chips",
+				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
 			"awardPrice": 14.2,
 			"out": {
@@ -4858,7 +4866,8 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
-				"img": "pack-chips"
+				"img": "pack-chips",
+				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
 			"awardPrice": null,
 			"out": {
@@ -5140,7 +5149,8 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
-				"img": "pack-chips"
+				"img": "pack-chips",
+				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
 			"out": {
 				"units": 1360,
@@ -5371,7 +5381,8 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
-				"img": "pack-chips"
+				"img": "pack-chips",
+				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
 			"award": {
 				"units": 772,
