@@ -817,13 +817,3 @@ export interface WorkspaceApi {
 	 *  The stream itself is GET /events/stream (SSE), read by workspaceEvents (SC-73) */
 	events(after: number, wait?: number): Promise<EventsPage>;
 }
-
-/** the API's refusals the workspace app handles by code */
-export const WS_ERRORS = {
-	signInFailed: 'SIGN_IN_FAILED',
-	notAMember: 'NOT_A_MEMBER',
-	forbidden: 'FORBIDDEN',
-	/** the step is no longer possible: the journey has moved on (read the case again) */
-	stale: 'STALE',
-	rateLimited: 'RATE_LIMITED'
-} as const;
