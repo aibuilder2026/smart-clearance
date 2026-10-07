@@ -16,15 +16,12 @@
 	import { digits, isEmail, phoneOf } from '../../../identity';
 	import { rise } from '../../../motion/transitions';
 	import FindWorkspace, { type WorkspaceMatch } from '../../../patterns/FindWorkspace.svelte';
-	import { act } from '../../flow';
-	import { D, WS } from '../../data';
-	import { role } from '../../legacy';
-	import { store } from '../../store.svelte';
+	import { role } from '../../model';
+	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import GoogleG from './GoogleG.svelte';
 	import HeroStage from './HeroStage.svelte';
 	import PeopleList from './PeopleList.svelte';
-	import { TEST_CODE } from './people';
 	import Url from './Url.svelte';
 
 	// signing in to the client's workspace, munchly.smartclearance.com (screens/auth.jsx SignIn). Email or phone first:
@@ -38,10 +35,16 @@
 		prefill?: string;
 	};
 	let { onsignin, install, guided, prefill = '' }: Props = $props();
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
 
 	const app = useApp();
-	const WS_OF = WS.name + "' workspace";
-	const userById = (id: string) => store.state.users.find((u) => u.id === id);
+	// the workspace as its sign-in page shows it, before anyone is in
+	const W = $derived(ws.publicInfo?.workspace ?? ws.data.workspace);
+	const WS_OF = $derived(W.name + "' workspace");
+	// the stub's own sign-in: the code it sends, and the accounts to try
+	const TEST_CODE = $derived(ws.publicInfo?.prototype?.code ?? '');
+	const userById = (id: string) => ws.state.users.find((u) => u.id === id);
 
 	// svelte-ignore state_referenced_locally (the demo's prefill is the field's first value only)
 	let id = $state(prefill);
@@ -65,7 +68,7 @@
 		const v = id.trim();
 		err = null;
 		if (!v) return void (err = { text: 'Enter your work email or mobile number.' });
-		const users = store.state.users;
+		const users = ws.state.users;
 		if (isEmail(v)) {
 			const email = v.toLowerCase();
 			const u = users.find((x) => x.email && x.email.toLowerCase() === email);
@@ -80,7 +83,7 @@
 				});
 			if (!u)
 				return void (err = {
-					text: email.endsWith('@' + WS.emailDomain)
+					text: email.endsWith('@' + W.emailDomain)
 						? `There's no account for ${email} in ${WS_OF} yet. Ask your workspace admin for access.`
 						: `${email} isn't a member of ${WS_OF}.`,
 					find: true
@@ -135,27 +138,22 @@
 	}
 	function join() {
 		if (!who) return;
-		act('join', who.id);
+		void ws.act('join', who.id);
 		finish(who.id);
 	}
 
 	// Find your workspace looks the email or number up in this workspace only: Munchly is the one set up here
 	async function find(t: string): Promise<WorkspaceMatch[]> {
-		const users = store.state.users;
+		const users = ws.state.users;
 		let u: User | undefined;
 		if (isEmail(t)) u = users.find((x) => x.email && x.email.toLowerCase() === t.toLowerCase());
 		else u = users.find((x) => x.phone && digits(x.phone) === digits(t));
-		if ((u && u.kind !== 'external') || (isEmail(t) && t.toLowerCase().endsWith('@' + WS.emailDomain)))
-			return [{ workspace: WS, value: t }];
+		if ((u && u.kind !== 'external') || (isEmail(t) && t.toLowerCase().endsWith('@' + W.emailDomain)))
+			return [{ workspace: W, value: t }];
 		return [];
 	}
 
-	const TRY: [string, string][] = [
-		['priya', D.people.priya.email!],
-		['rakesh', D.people.rakesh.phone!],
-		['ganesh', D.people.ganesh.phone!],
-		['shreesai', '+91 98230 60013']
-	];
+	const TRY = $derived(ws.publicInfo?.prototype?.accounts ?? []);
 	const isPhone = $derived(!!who && !!who.phone && sheet !== 'google');
 	const side = $derived(app.bp === 'phone' ? 'bottom' : 'center');
 </script>
@@ -166,15 +164,15 @@
 	<div class="si-panel">
 		<div class="si-card">
 			<div class="si-ws">
-				<WorkspaceMark ws={WS} size={app.bp === 'phone' ? 52 : 60} />
-				<div class="si-ws-name">{WS.name}</div>
+				<WorkspaceMark ws={W} size={app.bp === 'phone' ? 52 : 60} />
+				<div class="si-ws-name">{W.name}</div>
 				<Url />
 			</div>
 			{#if app.bp !== 'desktop'}<div class="si-hero" aria-hidden="true">
 					<Product name="carton-hero" size={app.bp === 'phone' ? 132 : 160} float />
 					{#if !guided}<div class="si-chip" in:rise|global={{ delay: 900 }}>
 							<span class="dot"></span><span
-								><b>MF-2409-117</b> · routed · <Money value={D.actual.net} size="s" style="font-size: 15px" /> recovered</span
+								><b>MF-2409-117</b> · routed · <Money value={c.actual.net} size="s" style="font-size: 15px" /> recovered</span
 							>
 						</div>{/if}
 				</div>{/if}
@@ -254,7 +252,7 @@
 			<div class="stack">
 				<div class="row tight">
 					<GoogleG size={20} /><span class="t-subhead"
-						><b>Choose an account</b> to continue to <span class="mono">{WS.domain}</span></span
+						><b>Choose an account</b> to continue to <span class="mono">{W.domain}</span></span
 					>
 				</div>
 				<button type="button" class="list-row si-acct" onclick={() => who && finish(who.id)}
@@ -270,8 +268,8 @@
 				>
 				<p class="t-footnote muted" style="margin: 0">
 					{who.kind === 'staff'
-						? `${WS.name} lets in only ${WS.emailDomain} accounts, through its own Google Workspace.`
-						: `${who.org} was invited to ${WS_OF} as a ${role(who.role)}.`}
+						? `${W.name} lets in only ${W.emailDomain} accounts, through its own Google Workspace.`
+						: `${who.org} was invited to ${WS_OF} as a ${role(who.role, ws.data.roles)}.`}
 				</p>
 			</div>
 		{/if}
@@ -312,17 +310,17 @@
 			</div>
 		{/if}
 	</Sheet>
-	<Sheet open={sheet === 'join'} onclose={close} title="Join {WS.name}" {side} detent="medium">
+	<Sheet open={sheet === 'join'} onclose={close} title="Join {W.name}" {side} detent="medium">
 		{#snippet footer()}<Button variant="primary" size="lg" block loading={!!who && busy === who.id} onclick={join}
 				>Join the workspace</Button
 			>{/snippet}
 		{#if who}
 			<div class="stack" style="justify-items: center; text-align: center">
-				<WorkspaceMark ws={WS} size={64} />
+				<WorkspaceMark ws={W} size={64} />
 				<div class="t-title3" style="text-wrap: balance">{who.org} is invited to {WS_OF}</div>
 				<p class="t-subhead muted" style="margin: 0; max-width: 40ch">
-					{who.invitedBy || WS.name} added this number as a {role(who.role)}. Offers, orders and payments for {WS.name}'
-					stock come here, in your language.
+					{who.invitedBy || W.name} added this number as a {role(who.role, ws.data.roles)}. Offers, orders and payments
+					for {W.name}' stock come here, in your language.
 				</p>
 				<Url />
 			</div>
@@ -333,8 +331,8 @@
 		onclose={close}
 		initial={id}
 		{find}
-		domain={D.platform.domain}
-		note="Only {WS.name} is set up in this prototype."
+		domain={(ws.publicInfo?.platform ?? ws.data.platform).domain}
+		note="Only {W.name} is set up in this prototype."
 		onuse={(v) => {
 			id = v;
 			err = null;

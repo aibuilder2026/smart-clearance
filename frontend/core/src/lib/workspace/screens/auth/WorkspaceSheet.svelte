@@ -7,8 +7,7 @@
 	import PoweredBy from '../../../components/PoweredBy.svelte';
 	import Sheet from '../../../components/Sheet.svelte';
 	import WorkspaceMark from '../../../components/WorkspaceMark.svelte';
-	import { WS } from '../../data';
-	import { ROLES } from '../../legacy';
+	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import Url from './Url.svelte';
 
@@ -16,6 +15,7 @@
 	// WorkspaceSheet)
 	type Props = { open?: boolean; onclose?: () => void; me: User; onsettings?: (() => void) | null };
 	let { open = $bindable(false), onclose, me, onsettings }: Props = $props();
+	const ws = useWorkspace();
 	const app = useApp();
 	const how = $derived(
 		me.provider === 'google'
@@ -28,29 +28,29 @@
 	);
 </script>
 
-{#snippet wsMark()}<WorkspaceMark ws={WS} size={32} />{/snippet}
+{#snippet wsMark()}<WorkspaceMark ws={ws.data.workspace} size={32} />{/snippet}
 {#snippet current()}<Badge size="sm" tone="green" icon="check">current</Badge>{/snippet}
 
 <Sheet bind:open {onclose} title="Workspace" side={app.bp === 'phone' ? 'bottom' : 'center'} detent="large">
 	<div class="stack">
 		<div class="row" style="gap: 14px">
-			<WorkspaceMark ws={WS} size={56} />
+			<WorkspaceMark ws={ws.data.workspace} size={56} />
 			<div class="stack tight" style="gap: 4px; min-width: 0">
-				<div class="t-title3">{WS.name}</div>
+				<div class="t-title3">{ws.data.workspace.name}</div>
 				<Url />
 			</div>
 		</div>
 		<List head="You">
-			<ListRow title={me.name} sub="{ROLES[me.role]} · {me.org}" />
+			<ListRow title={me.name} sub="{ws.data.roles[me.role]} · {me.org}" />
 			<ListRow title="Signed in with" sub={how} />
 		</List>
 		<List
 			head="Your workspaces"
 			foot={me.kind === 'partner'
 				? 'If another brand you work with runs Smart-Clearance, its workspace appears here too, under the same sign-in.'
-				: `${WS.plan} since ${WS.since} · ${WS.region}`}
+				: `${ws.data.workspace.plan} since ${ws.data.workspace.since} · ${ws.data.workspace.region}`}
 		>
-			<ListRow leading={wsMark} title={WS.name} sub={WS.domain} value={current} />
+			<ListRow leading={wsMark} title={ws.data.workspace.name} sub={ws.data.workspace.domain} value={current} />
 		</List>
 		{#if me.role === 'admin' && onsettings}<Button variant="secondary" icon="building-2" onclick={onsettings}
 				>Workspace settings</Button
