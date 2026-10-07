@@ -122,7 +122,12 @@
 		format={(v) => '₹' + v}
 	/>{/snippet}
 
-<Screen {me} title="Guardrails" sub="What the agents may and may not do in Munchly's name" actions={saveAction}>
+<Screen
+	{me}
+	title="Guardrails"
+	sub="What the agents may and may not do in {ws.data.workspace.short}'s name"
+	actions={saveAction}
+>
 	<div
 		style="display: grid; gap: 20px; grid-template-columns: {app.bp === 'desktop'
 			? 'repeat(2, minmax(0,1fr))'
@@ -148,7 +153,7 @@
 			>
 			<List head="Territory guard" foot="Matched by pincode against the four distributor territories."
 				><ListRow
-					title="Hide ExpireSoon listings from buyers inside Munchly's territories"
+					title="Hide ExpireSoon listings from buyers inside {ws.data.workspace.short}'s territories"
 					value={territoryGuard}
 				/></List
 			>

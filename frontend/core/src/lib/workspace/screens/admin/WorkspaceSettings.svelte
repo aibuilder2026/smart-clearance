@@ -42,7 +42,9 @@
 {#snippet mark()}<WorkspaceMark ws={ws.data.workspace} size={32} />{/snippet}
 {#snippet address()}<span class="mono t-footnote">{ws.data.workspace.domain}</span>{/snippet}
 
-{#snippet main()}<SectionTitle sub="Each workspace sets its own; these are Munchly's">How people sign in</SectionTitle>
+{#snippet main()}<SectionTitle sub="Each workspace sets its own; these are {ws.data.workspace.short}'s"
+		>How people sign in</SectionTitle
+	>
 	<List foot="Everyone signs in at the same address with an email or a phone number; the workspace picks the method.">
 		{#each ws.data.workspace.signIn as m (m.id)}<ListRow
 				icon={(m.icon === 'google' ? 'key-round' : m.icon) as IconName}
@@ -69,15 +71,15 @@
 		>{/if}{/snippet}
 
 {#snippet side()}<SectionTitle sub="Another manufacturer's workspace is set up for its own chain"
-		>Supply chain, as set up for Munchly</SectionTitle
+		>Supply chain, as set up for {ws.data.workspace.short}</SectionTitle
 	>
 	<Card class="wschain-card">
 		<div
 			class="wschain"
 			role="img"
-			aria-label={`Munchly Foods sells to ${distributors.length} distributors, who supply ${ws.data.client.kiranas} kiranas and the Blinkit, Zepto and Instamart warehouses in their cities.`}
+			aria-label={`${ws.data.client.short} sells to ${distributors.length} distributors, who supply ${ws.data.client.kiranas} kiranas and the Blinkit, Zepto and Instamart warehouses in their cities.`}
 		>
-			{@render step('factory', 'Munchly Foods', `${ws.data.client.city} · sells only to distributors`)}
+			{@render step('factory', ws.data.client.short, `${ws.data.client.city} · sells only to distributors`)}
 			<Icon name="arrow-right" size={16} class="subtle wschain-arrow" />
 			{@render step('warehouse', `${distributors.length} distributors`, 'own the stock they buy')}
 			<Icon name="arrow-right" size={16} class="subtle wschain-arrow" />
@@ -116,7 +118,7 @@
 <Screen
 	{me}
 	title="Workspace"
-	sub={`${ws.data.workspace.domain} · set up by Smart-Clearance for Munchly's supply chain`}
+	sub={`${ws.data.workspace.domain} · set up by Smart-Clearance for ${ws.data.workspace.short}'s supply chain`}
 >
 	<div class="stack" style="gap: 20px">
 		<div class="bezel">
@@ -142,7 +144,7 @@
 		<p class="t-footnote subtle" style="margin: 0; max-width: 72ch">
 			Smart-Clearance sets up each manufacturer's workspace for its own supply chain: who owns short-dated stock, which
 			exits exist, who approves and how people sign in. Changes to this profile go through Smart-Clearance onboarding;
-			the guardrails, users and integrations are Munchly's to run.
+			the guardrails, users and integrations are {ws.data.workspace.short}'s to run.
 		</p>
 	</div>
 </Screen>

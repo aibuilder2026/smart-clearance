@@ -147,13 +147,13 @@
 	>
 		<div class="stack">
 			<Field label="Name or organisation" htmlFor="inv-name"
-				><Input id="inv-name" bind:value={form.name} placeholder="Shree Sai Kirana" /></Field
+				><Input id="inv-name" bind:value={form.name} placeholder={ws.data.workspace.invite.name} /></Field
 			>
 			<Field
 				label="Email or mobile number"
 				htmlFor="inv-contact"
-				help={`Munchly staff sign in with their ${ws.data.workspace.emailDomain} Google account; the trade signs in with a one-time code at ${ws.data.workspace.domain}.`}
-				><Input id="inv-contact" bind:value={form.contact} placeholder="+91 98230 60014" /></Field
+				help={`${ws.data.workspace.short} staff sign in with their ${ws.data.workspace.emailDomain} Google account; the trade signs in with a one-time code at ${ws.data.workspace.domain}.`}
+				><Input id="inv-contact" bind:value={form.contact} placeholder={ws.data.workspace.invite.contact} /></Field
 			>
 			<Field label="Role" htmlFor="inv-role"
 				><Select id="inv-role" bind:value={form.role}

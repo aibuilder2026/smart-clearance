@@ -39,7 +39,7 @@
 	};
 </script>
 
-<Screen {me} title="Integrations" sub="Munchly's sign-in, Google Cloud services and partner APIs">
+<Screen {me} title="Integrations" sub={`${ws.data.workspace.short}'s sign-in, Google Cloud services and partner APIs`}>
 	<div class="list">
 		{#each ws.state.integrations as i (i.id)}<div
 				class="list-row"

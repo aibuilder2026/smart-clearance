@@ -30,7 +30,7 @@
 	const lkey = $derived('sc3-lang-' + me.id);
 	const loadLang = () => {
 		try {
-			return localStorage.getItem(lkey) || (['rakesh', 'ganesh'].includes(me.id) ? 'hi' : 'en');
+			return localStorage.getItem(lkey) || (me.lang === 'hi' ? 'hi' : 'en');
 		} catch {
 			return 'en';
 		}
@@ -119,9 +119,10 @@
 						onclick={() => router.go('workspace')}
 					/>{/if}</List
 			>{/if}
-		{#if me.id === 'rakesh' && perm}<List
-				head="Acting for Rakesh Traders"
-				foot="Inside Munchly's floors: listings, scheme offers, invoice drafts and dispatch slots in your name."
+		{#if perm && perm.by === me.id}<List
+				head="Acting for {me.org}"
+				foot="Inside {ws.data.workspace
+					.short}'s floors: listings, scheme offers, invoice drafts and dispatch slots in your name."
 				><ListRow
 					icon={perm.paused ? 'circle-pause' : 'handshake'}
 					title={perm.paused ? 'Paused' : 'On since ' + perm.at}

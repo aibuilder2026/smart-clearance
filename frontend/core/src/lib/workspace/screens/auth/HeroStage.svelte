@@ -78,7 +78,7 @@
 	</div>
 	{#if !guided}
 		<div class="si-figure">
-			<span class="si-cap">Recovered from one batch of Munchly chips headed for the bin</span><Money
+			<span class="si-cap">Recovered from one batch of {c.sku.brand} chips headed for the bin</span><Money
 				value={k >= 9 ? c.actual.net : Math.round((c.actual.net * k) / 9)}
 				size="xl"
 				roll

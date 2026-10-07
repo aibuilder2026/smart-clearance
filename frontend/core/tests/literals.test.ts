@@ -234,8 +234,8 @@ export function scan(file: string): Hit[] {
 	return hits.filter((h) => !ALLOW.some((a) => a.file === h.file && a.match === h.match));
 }
 
-/** the count when the ratchet was set (390, SC-67); it only goes down. LITERALS=1 lists every match */
-const BASELINE = 87;
+/** the count when the ratchet was set was 390 (SC-67); it reached 0, and stays there. LITERALS=1 lists every match */
+const BASELINE = 0;
 
 describe('the literal ratchet', () => {
 	const hits = UI_FILES.flatMap(scan);

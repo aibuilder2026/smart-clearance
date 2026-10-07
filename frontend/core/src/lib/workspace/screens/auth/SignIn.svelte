@@ -79,7 +79,7 @@
 				});
 			if (u && u.status === 'deactivated')
 				return void (err = {
-					text: "Your admin deactivated this account. Ask Munchly's workspace admin to restore it."
+					text: `Your admin deactivated this account. Ask ${W.short}'s workspace admin to restore it.`
 				});
 			if (!u)
 				return void (err = {
@@ -101,12 +101,12 @@
 			const u = users.find((x) => x.phone && digits(x.phone) === d);
 			if (!u)
 				return void (err = {
-					text: `No one has invited ${phoneOf(d)} to ${WS_OF}. Ask your distributor or Munchly for an invitation.`,
+					text: `No one has invited ${phoneOf(d)} to ${WS_OF}. Ask your distributor or ${W.short} for an invitation.`,
 					find: true
 				});
 			if (u.status === 'deactivated')
 				return void (err = {
-					text: 'Your admin deactivated this number. Ask your distributor or Munchly to restore it.'
+					text: `Your admin deactivated this number. Ask your distributor or ${W.short} to restore it.`
 				});
 			busy = 'go';
 			setTimeout(() => {
@@ -172,13 +172,15 @@
 					<Product name="carton-hero" size={app.bp === 'phone' ? 132 : 160} float />
 					{#if !guided}<div class="si-chip" in:rise|global={{ delay: 900 }}>
 							<span class="dot"></span><span
-								><b>MF-2409-117</b> · routed · <Money value={c.actual.net} size="s" style="font-size: 15px" /> recovered</span
+								><b>{c.batch.id}</b> · routed · <Money value={c.actual.net} size="s" style="font-size: 15px" /> recovered</span
 							>
 						</div>{/if}
 				</div>{/if}
 			<div class="stack tight" style="gap: 6px">
 				<h1 class="si-title">Sign in</h1>
-				<p class="si-sub">Use your Munchly email, or the mobile number Munchly or your distributor invited.</p>
+				<p class="si-sub">
+					Use your {W.short} email, or the mobile number {W.short} or your distributor invited.
+				</p>
 			</div>
 			<form
 				class="si-form"
@@ -196,7 +198,7 @@
 						autocomplete="username"
 						spellcheck={false}
 						autocapitalize="none"
-						placeholder="name@munchly.in or 98230 44118"
+						placeholder={W.hint}
 					/></Field
 				>
 				{#if err && (err.find || err.es)}<div class="row tight wrap" style="margin-top: -4px">

@@ -17,7 +17,7 @@
 	import { useNotice } from '../../../notice.svelte';
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
-	import { csv, download, fmt } from '../../model';
+	import { castOf, csv, download, fmt } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { Quarter, User } from '../../types';
 	import Locked from '../common/Locked.svelte';
@@ -33,14 +33,12 @@
 	const app = useApp();
 	const { toast } = useNotice();
 	const Q = $derived(ws.data.quarter);
-	const CH_NAMES = {
-		kirana: 'Kirana scheme',
-		expiresoon: 'ExpireSoon',
-		staff: 'Staff sale',
-		foodbank: 'Food bank',
-		writeoff: 'Write-off'
-	};
-	const EVIDENCE = $derived(`${c.invoice.no} · ES-24117 · ${c.kiranas.length} kirana order logs · CN/0117`);
+	const R = $derived(ws.data.rules);
+	// the evidence behind the batch's BRSR row: the invoice, the listing, the shops' orders and the credit note
+	const EVIDENCE = $derived(
+		`${c.invoice.no} · ${c.listing.id} · ${c.kiranas.length} kirana order logs · ${c.docs.find((d) => d.id === 'support')!.no}`
+	);
+	const tonnes = $derived((Q.kg / 1000).toFixed(1));
 	const PERIODS: { id: 'quarter' | 'batch'; label: string }[] = [
 		{ id: 'quarter', label: 'Quarter' },
 		{ id: 'batch', label: 'This batch' }
@@ -56,12 +54,12 @@
 
 	const exportBRSR = () => {
 		download(
-			'BRSR-P6-waste-Q3-FY27.csv',
+			`BRSR-P6-waste-${Q.label.replace(' ', '-')}.csv`,
 			csv([
 				['Category', 'Diverted (kg)', 'Resold (kg)', 'Donated (kg)', 'Disposed (kg)', 'Evidence'],
 				...Q.brsr.map((r) => [r.cat, r.diverted, r.resold, r.donated, r.disposed, r.evidence]),
 				...(h.posted
-					? [['This batch MF-2409-117 (packaged food)', c.plan.kg, c.plan.kg, 0, 0, EVIDENCE.replace(/ · /g, '; ')]]
+					? [[`This batch ${c.batch.id} (packaged food)`, c.plan.kg, c.plan.kg, 0, 0, EVIDENCE.replace(/ · /g, '; ')]]
 					: [])
 			])
 		);
@@ -83,7 +81,7 @@
 		>Recovered against the would-be write-off</SectionTitle
 	><Card><TrendChart weeks={Q.weeks} height={app.bp === 'phone' ? 190 : 240} /></Card>
 	<SectionTitle sub="Share of units by where they went · illustrative">Channel mix</SectionTitle><Card
-		><MixBar mix={Q.mix} names={CH_NAMES} /></Card
+		><MixBar mix={Q.mix} names={Q.mixNames} /></Card
 	>{/snippet}
 {#snippet quarterSide()}<SectionTitle>How the tax maths works</SectionTitle><Card class="stack snug t-subhead">
 		<p style="margin: 0">
@@ -99,30 +97,26 @@
 			it on CSR donations too, so a food-bank route costs the credit on every pack.
 		</p>
 		<div class="row tight wrap">
-			<Badge size="sm" icon="info">Disposal ₹1.50 a unit, indicative</Badge><Badge size="sm" icon="info"
-				>EPR ₹6 a kg, indicative</Badge
-			><Badge size="sm" icon="info">CO₂e 2.5 kg per kg, indicative</Badge>
+			<Badge size="sm" icon="info">Disposal {fmt.rate(R.disposalPerUnit)} a unit, indicative</Badge><Badge
+				size="sm"
+				icon="info">EPR ₹{R.eprPerKg} a kg, indicative</Badge
+			><Badge size="sm" icon="info">CO₂e {R.co2PerKg} kg per kg, indicative</Badge>
 		</div>
 	</Card>
 	<Card class="row top" style="gap: 14px; background: var(--surface-2)"
 		><span class="icontile"><Icon name="quote" size={17} /></span>
 		<div>
 			<p class="t-body" style="margin: 0">
-				5.7 tonnes kept out of landfill this quarter, with invoices behind every kilo. That goes straight into the
-				annual report.
+				{tonnes} tonnes kept out of landfill this quarter, with invoices behind every kilo. That goes straight into the annual
+				report.
 			</p>
-			<span class="t-footnote subtle">Vikram · sustainability</span>
+			<span class="t-footnote subtle">{castOf(ws.state, c).sustainability.short} · sustainability</span>
 		</div></Card
 	>{/snippet}
 {#snippet brsrRight()}<Button variant="primary" size="sm" icon="download" onclick={exportBRSR}>Export BRSR table</Button
 	>{/snippet}
 
-<Screen
-	{me}
-	title="Finance & ESG"
-	sub={`${Q.label} · Oct to Dec 2026 · one ledger, two readings`}
-	actions={periodAction}
->
+<Screen {me} title="Finance & ESG" sub={`${Q.label} · ${Q.period} · one ledger, two readings`} actions={periodAction}>
 	<div class="stack" style="gap: 20px">
 		{#if app.bp === 'phone'}{@render period()}{/if}
 		{#if view === 'quarter'}
@@ -132,8 +126,8 @@
 					class="card row wrap"
 					onclick={() => (view = 'batch')}
 					style="padding: 12px 16px; gap: 12px; text-align: left; box-shadow: var(--shadow-1), 0 0 0 1.5px color-mix(in oklab, var(--primary) 40%, transparent)"
-					><Product name="pack-chips" size={36} /><span class="grow t-subhead"
-						><b>MF-2409-117 posted</b> · {fmt.inr(c.actual.net)} recovered · {fmt.kg(c.plan.kg)} out of landfill · BRSR row
+					><Product name={c.sku.img} size={36} /><span class="grow t-subhead"
+						><b>{c.batch.id} posted</b> · {fmt.inr(c.actual.net)} recovered · {fmt.kg(c.plan.kg)} out of landfill · BRSR row
 						added</span
 					><Badge tone="green" icon="check">ledger</Badge></button
 				>{/if}
@@ -145,7 +139,7 @@
 				<Tile label="Kept out of landfill" icon="leaf"
 					><span class="num s"><Roll value={Q.kg / 1000} format={(v) => v.toFixed(1)} /> t</span></Tile
 				>
-				<Tile label="CO₂e avoided" icon="cloud" foot="indicative · 2.5 kg a kg"
+				<Tile label="CO₂e avoided" icon="cloud" foot="indicative · {R.co2PerKg} kg a kg"
 					><span class="num s"><Roll value={Q.co2 / 1000} format={(v) => v.toFixed(2)} /> t</span></Tile
 				>
 				<Tile label="Meals served" icon="heart-handshake"
@@ -157,7 +151,7 @@
 				below are illustrative. Week 1 is this batch.
 			</p>
 			<Columns sideWidth={380} main={quarterMain} side={quarterSide} />
-			<SectionTitle sub="Principle 6, waste management · the quarter's 5.7 t, split illustrative" right={brsrRight}
+			<SectionTitle sub="Principle 6, waste management · the quarter's {tonnes} t, split illustrative" right={brsrRight}
 				>BRSR Core</SectionTitle
 			>
 			<DataTable
@@ -177,9 +171,9 @@
 					<div class="card raised stack" style="padding: {app.bp === 'phone' ? 18 : 26}px; gap: 16px">
 						<div class="row between wrap" style="gap: 8px">
 							<span class="row tight"
-								><Product name="pack-chips" size={48} /><span class="stack tight" style="gap: 0"
-									><b>MF-2409-117 · Masala Chips 150 g</b><span class="t-footnote subtle"
-										>Rakesh Traders, Nagpur · trued up after {fmt.day(c.returnBy)}</span
+								><Product name={c.sku.img} size={48} /><span class="stack tight" style="gap: 0"
+									><b>{c.batch.id} · {c.sku.name}</b><span class="t-footnote subtle"
+										>{c.dist.name}, {c.dist.city} · trued up after {fmt.day(c.returnBy)}</span
 									></span
 								></span
 							><Badge tone="green" icon="check">posted to the ledger</Badge>
@@ -233,9 +227,8 @@
 					<div class="grow">
 						<b>{fmt.inr(c.actual.delta)} under plan</b>
 						<div class="t-footnote muted">
-							The ExpireSoon lot sold at ₹{c.counter.price.toFixed(2)} against ₹15.00 planned: {fmt.inr(
-								c.actual.esPlanned
-							)} became
+							The ExpireSoon lot sold at ₹{c.counter.price.toFixed(2)} against {fmt.rate(c.lines.expiresoon.price)} planned:
+							{fmt.inr(c.actual.esPlanned)} became
 							{fmt.inr(c.actual.esActual)}. Kiranas came in as planned; they are final once the return window closes.
 						</div>
 					</div></Card

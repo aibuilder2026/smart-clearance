@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { cx } from '../../../cx';
-	import { cartons, fmt } from '../../model';
+	import { cartons, fmt, productName } from '../../model';
 	import { useWorkspace } from '../../source';
 
 	// a document of the pack, set on paper (screens/finance.jsx Paper): the invoice Rakesh Traders issues, the e-way bill
@@ -18,6 +18,8 @@
 	const sp = $derived(c.support);
 	const esRow = $derived(sp.rows.find((r) => r.id === 'expiresoon')!);
 	const kRow = $derived(sp.rows.find((r) => r.id === 'kirana')!);
+	const W = $derived(ws.data.workspace);
+	const kl = $derived(c.lines.kirana);
 </script>
 
 {#snippet head(title: string, no: string, stamp: string, ok = false)}<div class="pp-head">
@@ -35,7 +37,7 @@
 
 {#if id === 'invoice'}
 	<div class="paper pp">
-		{@render head('Tax invoice', `${inv.no} · draft · 5 Oct 2026`, 'IGST')}
+		{@render head('Tax invoice', `${inv.no} · draft · ${fmt.date(inv.date!)}`, 'IGST')}
 		<div class="pp-parties">
 			<div>
 				<em>From</em><b>{R.name}</b><span>{R.address}</span><span class="pp-mono">GSTIN {R.gstin}</span>
@@ -50,9 +52,11 @@
 			<thead><tr><th>Item</th><th>HSN</th><th>Qty</th><th>Rate</th><th>Taxable</th></tr></thead>
 			<tbody
 				><tr
-					><td>Munchly Masala Chips 150 g<br /><em>Batch MF-2409-117 · best before 18 Nov 2026</em></td><td
-						>{c.sku.hsn}</td
-					><td>{inv.units}</td><td>₹{inv.price!.toFixed(2)}</td><td>{fmt.inr2(inv.taxable!)}</td></tr
+					><td
+						>{c.sku.brand}
+						{c.sku.name}<br /><em>Batch {c.batch.id} · best before {fmt.date(c.batch.bestBefore)}</em></td
+					><td>{c.sku.hsn}</td><td>{inv.units}</td><td>₹{inv.price!.toFixed(2)}</td><td>{fmt.inr2(inv.taxable!)}</td
+					></tr
 				></tbody
 			>
 		</table>
@@ -60,20 +64,23 @@
 			`IGST ${inv.gstPct}%`,
 			fmt.inr2(inv.igst!),
 			false,
-			'Maharashtra → Chhattisgarh'
+			`${R.state} → ${B.state}`
 		)}{@render line('Round off', fmt.inr2(inv.roundOff!))}{@render line('Invoice total', fmt.inr2(inv.total!), true)}
 		<p class="pp-note">
-			Drafted by the Paperwork agent for {R.name} to issue from Tally. Chips moved from 12% to 5% GST under GST 2.0 on 22
-			September 2025. The MRP of ₹30.00 stays printed on every pack: a discounted sale is fine, a second MRP is not (Legal
-			Metrology).
+			Drafted by the Paperwork agent for {R.name} to issue from Tally. {c.sku.gstNote} The MRP of {fmt.rate(c.sku.mrp)} stays
+			printed on every pack: a discounted sale is fine, a second MRP is not (Legal Metrology).
 		</p>
 	</div>
 {:else if id === 'eway'}
 	<div class="paper pp">
-		{@render head('E-way bill check', 'MF-2409-117 · ES-24117', 'NOT REQUIRED', true)}{@render line(
+		{@render head('E-way bill check', `${c.batch.id} · ${c.listing.id}`, 'NOT REQUIRED', true)}{@render line(
 			'Consignment value with GST',
 			fmt.inr2(inv.total!)
-		)}{@render line('Threshold, inter-state', '₹50,000.00')}{@render line('E-way bill', 'not required', true)}
+		)}{@render line('Threshold, inter-state', fmt.inr2(ws.data.rules.ewayThreshold))}{@render line(
+			'E-way bill',
+			'not required',
+			true
+		)}
 		<p class="pp-note">
 			{d?.note} A transporter note travels with the {cartons(c.lines.expiresoon.units, c.sku.perCarton)} on the buyer's truck
 			instead.
@@ -89,10 +96,10 @@
 			`₹${dp} − ₹${esRow.price.toFixed(2)} = ₹${esRow.gap.toFixed(2)} a pack`
 		)}
 		{@render line(
-			`${kRow.units} sold to ${c.kiranas.length} kiranas at ₹18 effective`,
+			`${kRow.units} sold to ${c.kiranas.length} kiranas at ₹${kl.price} effective`,
 			fmt.inr2(kRow.amount),
 			false,
-			`₹${dp} − ₹18 = ₹${kRow.gap.toFixed(2)}, free packs included`
+			`₹${dp} − ₹${kl.price} = ₹${kRow.gap.toFixed(2)}, free packs included`
 		)}
 		{@render line(
 			'Van delivery',
@@ -102,10 +109,9 @@
 		)}{@render line('ExpireSoon listing fee', fmt.inr2(sp.fee))}{@render line('Round off', fmt.inr2(d?.roundOff ?? 0))}
 		{@render line(`Credit to ${R.name}`, fmt.inr2(d?.amount ?? 0), true)}
 		<p class="pp-note">
-			A financial credit note, with no GST adjustment, so {R.name} ends whole at the ₹{dp} it paid. It covers the buy-10-get-2
-			scheme too, so no separate scheme note is needed. Munchly pays this instead of an expiry claim of {fmt.inr(
-				c.claim.total
-			)}. Trued up after the return window closes on {fmt.day(c.returnBy)}.
+			A financial credit note, with no GST adjustment, so {R.name} ends whole at the ₹{dp} it paid. It covers the buy-{c
+				.scheme.buy}-get-{c.scheme.free} scheme too, so no separate scheme note is needed. {W.short} pays this instead of
+			an expiry claim of {fmt.inr(c.claim.total)}. Trued up after the return window closes on {fmt.day(c.returnBy)}.
 		</p>
 	</div>
 {:else if id === 'itc'}
@@ -122,21 +128,21 @@
 		<p class="pp-note">
 			Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. These packs were sold
 			under tax invoices, so it does not apply. The credit would be reversed only if the stock came back under the
-			expiry claim and Munchly destroyed it. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since
+			expiry claim and {W.short} destroyed it. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since
 			1 October 2023, 17(5)(fa) on CSR donations.
 		</p>
 	</div>
 {:else if id === 'fssai'}
 	<div class="paper pp">
-		{@render head('FSSAI surplus-food checklist', 'MF-2409-117', 'NOT REQUIRED')}
+		{@render head('FSSAI surplus-food checklist', c.batch.id, 'NOT REQUIRED')}
 		<p class="pp-note">
-			Nothing from this batch was donated. The Mango Drink batch MF-2410-118 has its own checklist: {c.donation.units} packs
-			to Feeding India, Hyderabad.
+			Nothing from this batch was donated. The {productName(c.donation.sku)} batch {c.donation.batch.id} has its own checklist:
+			{c.donation.units} packs to {c.donation.partner.name}, {c.donation.dist.city}.
 		</p>
 	</div>
 {:else}
 	<div class="paper pp">
-		{@render head('Destruction certificate', 'MF-2409-117', 'NOT REQUIRED')}{@render line(
+		{@render head('Destruction certificate', c.batch.id, 'NOT REQUIRED')}{@render line(
 			'Units left to destroy',
 			'0',
 			true
