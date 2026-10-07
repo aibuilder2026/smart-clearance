@@ -184,6 +184,24 @@ async def test_the_watcher_reads_sell_through_from_bigquery(run, backend, store,
     assert rc.requests == []
 
 
+async def test_the_watcher_reads_up_to_the_journeys_day_only(run, backend, store, warehouse):
+    """a story replayed from its own calendar leaves later days loaded by an earlier replay: the Watcher's window ends at
+    backend-api's journey day, so those days never count (SC-75)"""
+    start = DAY0 - timedelta(days=90)
+    f = put(
+        store, "munchly/backfill/sales-backfill.csv", sales_csv([start + timedelta(days=i) for i in range(90)], start)
+    )
+    await run(message("journey.step", {"type": "export.uploaded", "file": f, "backfill": True}))
+    # forty days ahead of the journey, from a replay before: one shop's run of nothing sold
+    later = [DAY0 + timedelta(days=i) for i in range(1, 41)]
+    quiet = SALES + "\n" + "\n".join(f"rakesh,440001,MF-MC-150,{d.isoformat()},0,0" for d in later) + "\n"
+    g = put(store, "munchly/2026-11-11/sales-2026-11-11.csv", quiet.encode())
+    await run(message("journey.step", {"type": "export.uploaded", "file": g}, event_id="ev_later"))
+    await run(message("journey.step", {"type": "agent.due", "agent": "watcher"}, event_id="ev_w2"))
+    rates = {b["ref"]: b["sellPerDay"] for b in backend.report("/detect")["batches"]}
+    assert rates["MF-2409-117"] == 12
+
+
 async def test_the_watcher_without_history_keeps_each_batchs_own_rate(run, backend):
     await run(message("journey.step", {"type": "agent.due", "agent": "watcher"}))
     rates = {b["ref"]: b["sellPerDay"] for b in backend.report("/detect")["batches"]}

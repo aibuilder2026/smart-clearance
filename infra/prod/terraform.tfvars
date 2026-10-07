@@ -38,5 +38,5 @@ alert_email     = "gilchristfan@gmail.com"
 agents_runtime = true
 budget_amount  = 30
 
-# The workspace app stays on its stub until this is turned on (it sets WORKSPACE_API_BASE for CI's workspace build).
-workspace_live = false
+# The workspace app runs on backend-api: WORKSPACE_API_BASE for CI's workspace build (SC-75, after the prod hydrate).
+workspace_live = true

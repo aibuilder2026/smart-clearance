@@ -80,7 +80,8 @@ backend-api/scripts/hydrate.sh --tick       # today's agent runs, and a few batc
 backend-api/scripts/default-password.sh --copy   # the password every account starts on
 backend-api/scripts/hydrate.sh --journey-reset munchly   # Munchly's live journey from its start again (the story's own calendar)
 backend-api/scripts/app-env.sh              # point the console's, the landing page's and the workspace app's .env.local at the local API (restart their dev servers)
-backend-api/scripts/walk.sh [--day-minutes N]   # Munchly's journey walked over HTTP on the local API, with the agents running (agents/scripts/dev.sh)
+backend-api/scripts/hydrate.sh --live-only  # Munchly's live workspace on a world that already has its story (production: the hydrate job with --live-only,--allow-env,prod)
+backend-api/scripts/walk.sh [--day-minutes N]   # Munchly's journey walked over HTTP, with the agents running (agents/scripts/dev.sh); --api, --origin and --allow-env prod walk production
 backend-api/scripts/live-fixtures.sh        # what the API answers at five moments of the journey, for the workspace app's live tests
 backend-api/scripts/e2e.sh                  # the landing page and the console end to end on the local API and Firebase Auth
 cd backend-api && uv run ruff check . && scripts/test.sh   # the gate jira-flow runs

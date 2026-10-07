@@ -1,6 +1,6 @@
-"""Munchly's live journey, walked on this machine (SC-73): every person's step over HTTP against the local API,
-signed in through Firebase Authentication, while the agents (agents/scripts/dev.sh) answer through Pub/Sub, BigQuery
-and Cloud Storage. It checks the whole loop the workspace app runs on, with no browser.
+"""Munchly's live journey, walked (SC-73, SC-75): every person's step over HTTP against backend-api (this machine's, or
+production's with --api and --allow-env prod), signed in through Firebase Authentication, while the agents answer
+through Pub/Sub, BigQuery and Cloud Storage. It checks the whole loop the workspace app runs on, with no browser.
 
 - Each person signs in with a Firebase custom token, minted as sc-api-local (impersonated in code) and exchanged with
   the workspace's browser key: no password is handled, typed or printed.
@@ -8,28 +8,32 @@ and Cloud Storage. It checks the whole loop the workspace app runs on, with no b
   permission, Run now starts the Watcher, Rakesh sends the label photo to Cloud Storage, Priya approves, the kiranas
   order, Agrawal bids and takes the counter, Meera collects the donation, Rakesh loads the truck, issues the invoice and
   runs the van, Anita reviews the papers. Meanwhile Priya's SSE stream is read, and counted.
-- A local database only (SC_ENV=local); scripts/hydrate.sh --reset makes a fresh one, and --journey-reset munchly starts
-  the journey again.
+- It reads no database: the people's uids are the ones hydrate gives them (identity.synthetic_uid), and the stock export
+  is the story's batches as the journey stages them (reference/journey.json, the story's own calendar).
+- Locally, scripts/hydrate.sh --reset makes a fresh world and --journey-reset munchly starts the journey again. In
+  production the agents call live Gemini, about GBP 0.05-0.10 a journey: walk it there only on the maintainer's yes.
 
   backend-api/scripts/walk.sh [--day-minutes N] [--until STEP]
+  backend-api/scripts/walk.sh --api https://backend-api-….run.app --origin https://munchly-smartclearance.web.app \
+      --allow-env prod
 """
 
 import argparse
 import asyncio
 import json
 import time
+from datetime import date, timedelta
 from pathlib import Path
 from typing import Any
 
 import httpx
-from sqlalchemy import select
 
-from sc_api import models as m
-from sc_api.db import dispose, make_engine
+from sc_api.identity import synthetic_uid
 from sc_api.services.journey import dms
 from sc_api.services.reference import load
 from sc_api.settings import get_settings
 
+# where the walk goes: this machine's backend-api and workspace app, unless --api and --origin say otherwise (main)
 API = "http://localhost:8000"
 WS = f"{API}/v1/workspaces/munchly"
 ORIGIN = "http://localhost:5175"
@@ -128,45 +132,27 @@ class Walk:
                 return
 
 
-async def world() -> tuple[dict[str, str], dict[str, Any]]:
-    """the uids of the people the walk acts as, and the day's stock export, from the local database"""
+def world() -> tuple[dict[str, str], dict[str, Any]]:
+    """the uids of the people the walk acts as, and the day's stock export, from the reference data alone"""
     j = load("journey.json")
-    logins = {x["id"]: x["login"] for x in j["members"]}
     s = get_settings()
-    engine = await make_engine(s)
-    try:
-        from sqlalchemy.ext.asyncio import async_sessionmaker
-
-        from sc_api.domain.clock import Clock, Ids
-        from sc_api.identity import provider
-        from sc_api.services import reference
-        from sc_api.services.context import SYSTEM, Ctx
-
-        async with async_sessionmaker(engine, expire_on_commit=False)() as session:
-            emails = {**logins, "neha": f"neha.kulkarni@{s.staff_email_domain}"}
-            rows = (await session.execute(select(m.User.email, m.User.firebase_uid))).all()
-            by_email = {e: u for e, u in rows if e}
-            uids = {who: by_email[e] for who, e in emails.items() if by_email.get(e)}
-            ctx = Ctx(
-                session=session,
-                actor=SYSTEM,
-                clock=Clock(),
-                ids=Ids(),
-                identity=provider(s),
-                settings=s,
-                ref=await reference.read(session),
-            )
-            stock = dms._csv(dms.STOCK, await dms.stock_rows(ctx, "munchly"))
-    finally:
-        await dispose(engine)
-    return uids, {"csv": stock, "kiranas": j["kiranas"], "logins": logins}
+    logins = {x["id"]: x["login"] for x in j["members"]}
+    emails = {**logins, "neha": f"neha.kulkarni@{s.staff_email_domain}"}
+    uids = {who: synthetic_uid(e) for who, e in emails.items()}
+    # the open batches as the journey stages them on the story's calendar (reset.py), as dms.stock_rows writes them
+    rows = []
+    for b in j["batches"]:
+        d, x = j["distributors"][b["distributor"]], j["skus"][b["sku"]]
+        pin = ((d.get("pins") or "").split(",")[0].strip() or "400") + "008"
+        best = (date.fromisoformat(j["day0"]) + timedelta(days=b["daysLeft"])).isoformat()
+        rows.append(
+            [d["name"], x["code"], b["id"], b.get("mfg") or best, best, b["units"], d.get("godown") or d["city"], pin]
+        )
+    return uids, {"csv": dms._csv(dms.STOCK, rows), "kiranas": j["kiranas"], "logins": logins}
 
 
 async def run(day_minutes: int, until: str) -> None:
-    s = get_settings()
-    if s.sc_env != "local":
-        raise SystemExit(f"walk: a local database only (SC_ENV is {s.sc_env})")
-    uids, w = await world()
+    uids, w = world()
     hero = next(b["id"] for b in load("journey.json")["batches"] if b.get("hero"))
     mango = next(b["id"] for b in load("journey.json")["batches"] if b.get("second"))
     async with httpx.AsyncClient(base_url=API, timeout=60) as http:
@@ -326,10 +312,19 @@ async def steps(walk: Walk, w: dict[str, Any], hero: str, mango: str, day_minute
 
 
 def main(argv: list[str] | None = None) -> None:
+    global API, WS, ORIGIN
     p = argparse.ArgumentParser(prog="sc-walk", description=__doc__.split("\n\n")[0])
     p.add_argument("--day-minutes", type=int, default=5, help="Munchly's journey day while a batch is at risk")
     p.add_argument("--until", choices=STEPS, default=STEPS[-1], help="stop after this step")
+    p.add_argument("--api", default=API, help="backend-api's address (default: this machine's)")
+    p.add_argument("--origin", default=ORIGIN, help="the workspace app's address the browser key allows")
+    p.add_argument("--allow-env", help="walk an environment other than local (named, to be sure): prod")
     a = p.parse_args(argv)
+    API, ORIGIN = a.api.rstrip("/"), a.origin.rstrip("/")
+    WS = f"{API}/v1/workspaces/munchly"
+    local = API.startswith(("http://localhost", "http://127.0.0.1"))
+    if not local and a.allow_env != "prod":
+        raise SystemExit("walk: a backend other than this machine's is production: pass --allow-env prod to walk it")
     asyncio.run(run(a.day_minutes, a.until))
 
 

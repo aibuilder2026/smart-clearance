@@ -226,10 +226,12 @@ class FakeWarehouse:
             )
         return out
 
-    async def sales_means(self, client: str, *, window: int = 28) -> dict[tuple[str, str], float]:
+    async def sales_means(
+        self, client: str, *, window: int = 28, until: str | None = None
+    ) -> dict[tuple[str, str], float]:
         latest: dict[tuple, dict] = {}
         for r in self.tables["secondary_sales"]:
-            if r["client_id"] == client:
+            if r["client_id"] == client and (until is None or r["sale_date"] <= until):
                 latest[(r["distributor_id"], r["pincode"], r["sku_id"], r["sale_date"])] = r
         if not latest:
             return {}

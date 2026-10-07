@@ -569,3 +569,19 @@ async def test_an_export_is_written_once(cloud):
     assert await cloud.storage.write("exports-test", "munchly/day.csv", b"first", "text/csv") is True
     assert await cloud.storage.write("exports-test", "munchly/day.csv", b"second", "text/csv") is False
     assert cloud.storage.objects[("exports-test", "munchly/day.csv")] == b"first"
+
+
+async def test_a_journey_starts_again_on_the_storys_own_calendar(ctx, munchly):
+    """a synthetic workspace replays the story: every reset starts on the story's day 0 (the label photos, the papers
+    and the copy all carry its dates), however many times it is reset (SC-75)"""
+    from sc_api.services.journey import reset
+
+    first = await reset.reset(ctx, "munchly")
+    second = await reset.reset(ctx, "munchly")
+    assert first["day0"] == second["day0"] == J["day0"]
+    open_cases = (
+        (await ctx.session.execute(select(m.Case).where(m.Case.client_id == "munchly", m.Case.status == "open")))
+        .scalars()
+        .all()
+    )
+    assert [c.batch_ref for c in open_cases] == [MANGO]

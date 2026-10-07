@@ -1,11 +1,11 @@
 """The Watcher (detect), every journey morning at 09:00 (and on Run now): how fast each open batch sells, from
 BigQuery's secondary sales, for backend-api to judge against the quick-commerce gates.
 
-For each batch, the mean units a day its distributor sold of its SKU over the last 28 days of the loaded history
-(journey dates), shared between the distributor's batches of that SKU in proportion to their own recorded rates. A
-batch with no history keeps its own rate. `POST /internal/clients/{c}/detect {checked, distributors, batches}`:
-backend-api flags the batches at risk (money.py's assess) and opens their cases. No model: the figures are the
-judgement."""
+For each batch, the mean units a day its distributor sold of its SKU over the 28 days of loaded history up to the
+journey's day (backend-api's: a story replayed from its own calendar leaves later days loaded by earlier replays),
+shared between the distributor's batches of that SKU in proportion to their own recorded rates. A batch with no history
+keeps its own rate. `POST /internal/clients/{c}/detect {checked, distributors, batches}`: backend-api flags the batches
+at risk (money.py's assess) and opens their cases. No model: the figures are the judgement."""
 
 import logging
 from collections import defaultdict
@@ -44,7 +44,7 @@ async def _watch(rc: RunCtx, state: dict[str, Any]) -> dict[str, Any]:
     world = await rc.deps.backend.batches(rc.msg.client)
     batches = world.get("batches") or []
     try:
-        means = await rc.deps.warehouse.sales_means(rc.msg.client, window=WINDOW)
+        means = await rc.deps.warehouse.sales_means(rc.msg.client, window=WINDOW, until=world.get("day"))
     except Exception as e:
         raise Transient(f"BigQuery: {e}") from e
     if not means:
