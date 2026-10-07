@@ -13,7 +13,7 @@
   4. Build only the option the maintainer picks.
 
   `PRODUCT.md` and `DESIGN.md` are the context. For a finished build, hand off to `impeccable-finish-reviewer`. To record the design system, use `impeccable-documenter`.
-- **Accessibility:** the a11y, e2e and parity suites run only when the maintainer asks for them in the current request (the `browser-suites` skill, SC-55); never as a step of a design or UX change. For a manual WCAG audit, use the `accessibility-tester` agent with the `accessibility` and `web-design-guidelines` skills.
+- **Accessibility:** the a11y suite is the frontend's, `corepack pnpm test:a11y`: each app's real UI (never `/ds`), every core component it uses on screen in some scan (SC-58). The a11y, e2e and parity suites run only when the maintainer asks for them in the current request (the `browser-suites` skill, SC-55); never as a step of a design or UX change. For a manual WCAG audit, use the `accessibility-tester` agent with the `accessibility` and `web-design-guidelines` skills.
 - **Charts:** the `dataviz` skill. Validate palettes with its script; don't eyeball them.
 - **Images and motion:** `qwengen-bf16` for images (Qwen-Image) and `ltx-clip` for clips (LTX). Write the `.prompt.json` sidecar beside each asset.
 - **Canvas, WebGL and Three.js effects:** the `threeui-community` plugin (user scope). `/threeui <what you need>`, or its `threeui` MCP tools, search ThreeUI's free Community catalog and return the source.
@@ -55,8 +55,7 @@
 
 - Project agents, skills and `.mcp.json` servers load at session start. After changing them, start a new session.
 - The built-in browser was refused claude.ai pages; Claude in Chrome reaches them.
-- When asked to run it, the full accessibility suite takes about 6 minutes, so give it a long timeout. While iterating, use `npm run test:desktop`.
-- In the frontend the e2e suite takes about 30 seconds and the parity suite about 40, after a build. In the agent's sandboxed shell Firefox cannot start; Chromium and WebKit can.
+- When asked to run them, the a11y suite takes about 2 minutes an app with its build (give both apps a 10-minute timeout), the e2e suite under a minute an app, and the parity suite about 40 seconds an app after a build. Run them with `PUBLIC_API_BASE=` empty. In the agent's sandboxed shell Firefox cannot start; Chromium and WebKit can.
 
 ## Recent changes (5 Oct 2026)
 
@@ -545,6 +544,39 @@
   - **The `browser-suites` skill** (`.claude/skills/browser-suites/`) loads when a suite is asked for: what counts as an explicit ask, what each suite needs first (a build, `PUBLIC_API_BASE` empty, Firefox's sandbox limit), the commands, and how to report the counts.
   - **The `ask-before-suites` hook** (`.claude/hooks/ask-before-suites.sh`), a `PreToolUse` hook on Bash in `.claude/settings.json`, turns any command that would run a suite into a permission prompt; every other command passes. Tested on ten commands. It takes effect in a new session.
   - **Hosting:** unchanged.
+- **SC-57** (PR #45, merged): request tracing for backend-api. One trace ties a request's log lines, spans and audit rows together.
+  - **The gaps it closes:** app logs carried no trace; there were no spans inside the backend; an audit row did not lead to its request; the apps sent no trace header.
+  - **The apps:** `transport()` in `@smart-clearance/api` sends a W3C `traceparent` with every call, a new trace each, flags left to Cloud Run and the API; a failed call's `ApiError` carries its `trace`. Checked on the live API: Cloud Run keeps a client's trace id.
+  - **backend-api** (`tracing.py`): OpenTelemetry 1.45 with spans for each route (not the health checks), each SQL statement (an `EngineTracer` per engine) and the sign-in check ("verify ID token"), with Firebase's HTTP calls under it (requests, not httpx: firebase-admin's auth uses requests).
+    - **Logs:** a JSON line written during a request carries `logging.googleapis.com/trace`, `spanId` and `trace_sampled`, the crash handler's line included.
+    - **Audit rows:** `details.trace`, beside what the change records.
+    - **Sampling:** a request Cloud Run sampled is always kept; of the rest, `TRACE_SAMPLE_RATE` (0.25 on Cloud Run, `trace_sample_rate` in `infra/prod`).
+    - **Export:** `TRACE_EXPORT=otlp` sends spans over OTLP to the Telemetry API (`telemetry.googleapis.com`), read in Cloud Trace. Google's Python Cloud Trace exporter is deprecated, so it is not used. A test trace exported from a workstation was read back from Cloud Trace with its three spans nested.
+  - **Terraform** (`infra/prod`): the Telemetry and Cloud Trace APIs (both already on; adopted), `roles/telemetry.tracesWriter` for `sc-api` and `sc-api-local`, and `TRACE_EXPORT` and `TRACE_SAMPLE_RATE` on the service. Applied on the maintainer's yes (plan read in full: 4 added, 1 changed, 0 destroyed).
+  - **Cost:** Cloud Trace ingests 2.5 million spans a month free, then 0.20 USD a million; the prototype's traffic stays well under.
+  - **The agents:** `agents/README.md` sets the convention: the trace in each Pub/Sub message's attributes, and each agent run recording its trace id.
+  - **Checks:**
+    - backend-api 214 pass (9 new); the frontend gate passes; infra `check.sh` passes; ARCHITECTURE.md's 15 diagrams parse with Mermaid 11;
+    - live: 6 pass, the console's calls carrying `traceparent` through CORS, and each audit row they wrote keeping its own trace id;
+    - e2e: landing page 51, console 110 pass; only Firefox fails, as it can't start in the sandbox;
+    - parity: landing page 29, console 80 pass;
+    - design3's suite: 349 pass, with 0 failing WCAG rules.
+  - **Hosting:** unchanged.
+- **SC-58** (PR #46): the a11y suite runs on the frontend's real UI, and design3's is gone.
+  - **The request:** the maintainer found the a11y suite running on design3's prototypes, and asked for it on the actual UI components under `frontend/`. The decisions: remove design3's suite; scan every component the apps use, not `/ds`.
+  - **`corepack pnpm test:a11y`** (`:admin`, `:console`): each app's production build, the axe WCAG 2.2 AA scans with the keyboard and motion specs in five projects, then the coverage check. `test:e2e` keeps the console's flows and the Firefox and WebKit smoke runs. The `/ds` scan is gone; `/ds` stays a dev route that parity compares.
+  - **Coverage:** each scan records the core components on screen (`COMPONENTS` in `frontend/testing/src/a11y.ts`, with `data-product` on Product, which had no class of its own), and `testing/src/a11y-coverage.ts` fails the run when an app uses a component no scan reached. Its first run found two in the console: the toast (`NoticeHost`) and the checkboxes (`Check`); the console's spec now scans the toast after Pause every agent, and the New client flow's sign-in step.
+  - **Found on the way:** the paused state had never been scanned. A switched-off agent's summary failed contrast (2.4:1 light, 2.75:1 dark), faded by `.cs-stop.off .cs-card .cs-text { opacity: 0.6 }` in design3's and the port's `console.css`: SC-59, fixed on this branch (below).
+  - **design3/a11y removed;** its static server moved to `frontend/testing/design3-server.py` for the parity runs. The `browser-suites` skill, the `ask-before-suites` hook (now asking on `test:a11y`), CI's paths and the docs follow.
+  - **Checks:**
+    - a11y: landing page 44 pass, 0 WCAG findings, 22 of 22 components it uses on screen; console 94 pass and 5 fail (SC-59's contrast, in each project, before its fix), 36 of 36 components on screen;
+    - the frontend gate passes.
+  - **Hosting:** see SC-59.
+- **SC-59** (in PR #46): a switched-off agent's name takes the secondary ink instead of the card text's 60% opacity, as AGENTS.md's contrast rule asks; the Off badge and the grey node still mark it.
+  - **Where:** `design3/console/console.css`, its dist, and the verbatim port in `frontend/console/src/lib/console.css` (the drift test holds them together).
+  - **Measured** on design3's console with every agent paused: the name 7.90:1, the stage and summary 5.37:1 in light; 8.53:1 and 5.50:1 in dark (they were 2.43:1 and 2.75:1).
+  - **Checks:** the frontend gate passes. The a11y suite was not re-run after the fix.
+  - **Hosting:** the hosted landing page and console load commit `0384e24`; every pinned file was checked on jsDelivr first, and both pages render.
 - **SC-60** (In Review, branch `SC-60-landing-reimagined`): the landing page reimagined, in the manner of shopify.com/uk: the miniature business alive on film under the heading, a statement that fills in as it is read, the agents at work on the table with one in focus at a time, the product's moments as chapters in colour fields, and Impact's ledger. The workspace, plans and the close stay.
   - **Design first, in two rounds** on one board in platform v3, `SC-60 design review.html`, each option a complete page built on the real kit, with light and dark stills at 1440 and 390, Qwen plates and LTX clips:
     - round 1: A, the film; B, islands in the sky; C, one yes (recommended). The maintainer asked for "a culmination of A and C": A's hero, and the agents at work on C's table in place of "Five exits, one batch", "centered and in focus showing what is happening";
@@ -557,7 +589,7 @@
     - **The table:** the eleven agents at their posts on a handmade miniature, measured on the plate. One at a time in a large card at the centre, with what it is doing live (the Watcher's gates, the Valuer's prices, the Router's split, the yes with the amber button, Outreach's Hindi offer, the Lister's lot, the Negotiator's counter, Paperwork's documents, Impact's kilos) and a rail of all eleven on desktops. The camera closes in on each post (1.6×; 1.45× on phones and tablets, where the yes frames the phone's screen and the post together), the phone's screen follows the story, the packs fly to the kiranas and the buyer as dots of about 50, the tags count them in, and the result lands with Replay. 1.4 s an agent, 1.8 s on the yes, 15.8 s in all; Pause and Play, under the bar; the result at once under reduced motion.
     - **The chapters:** SC-28's cards in four colour fields (green, sunken, amber, night). **The ledger:** Impact's document for the batch. **The pill** keeps the demo at hand until the close.
   - **Found on the way:** the mockups placed everything on the table from the stage's corner while the layer sat at the plate's offset; the kit's `img { max-width: 100% }` cropped the plate to the stage; the camera was clamped to the stage, not the plate; the data's Hindi offer names the shop, the brand and the distributor (SC-28), so the page composes its own; the scene's Pause sat under the sticky bar; the film clips were caught by the root `.gitignore`'s `*.mp4`. All fixed and recorded in `decision.md`.
-  - **The port** (`frontend/admin`): `Hero`, `Statement`, `Scene` with `PhoneScreen` and `scene.ts`, `Chapters`, `Ledger`, `DemoPill` and `media.ts`; `Town`, `town/`, `Exits`, `How` and `street.ts` are gone. `site.css` is design3's verbatim, with no marked change. The showcase contract gains the batch's MRP and date, the plan's share of MRP, swing and CO₂e, the award's bid and token, the Negotiator's reserve, the price-support credit note and the offer's title; the seed and backend-api's reference data are regenerated. The e2e, parity and design3 a11y specs follow the new page, unrun.
-  - **Checks:** the gate passes (lint, check, 102 unit tests: core 29, api 53, admin 17, testing 3). Design3 and the build were played through with Playwright at 1440 × 900, 820 × 1180 and 390 × 844, light and dark: the loader lifts, the film plays once and replays, the tour runs with the camera on each post, Pause, Play, the rail and Replay work, a theme switch swaps the plates and the film under the loader in 2.3 s, and reduced motion opens on the result. The browser suites were not run (SC-55).
+  - **The port** (`frontend/admin`): `Hero`, `Statement`, `Scene` with `PhoneScreen` and `scene.ts`, `Chapters`, `Ledger`, `DemoPill` and `media.ts`; `Town`, `town/`, `Exits`, `How` and `street.ts` are gone. `site.css` is design3's verbatim, with no marked change. The showcase contract gains the batch's MRP and date, the plan's share of MRP, swing and CO₂e, the award's bid and token, the Negotiator's reserve, the price-support credit note and the offer's title; the seed and backend-api's reference data are regenerated. The a11y, e2e and parity specs follow the new page, unrun (design3's a11y suite went in SC-58).
+  - **Checks:** the gate passes (lint, check, 103 unit tests: core 29, api 54, admin 17, testing 3), after merging main (SC-57 to SC-59). Design3 and the build were played through with Playwright at 1440 × 900, 820 × 1180 and 390 × 844, light and dark: the loader lifts, the film plays once and replays, the tour runs with the camera on each post, Pause, Play, the rail and Replay work, a theme switch swaps the plates and the film under the loader in 2.3 s, and reduced motion opens on the result. The browser suites were not run (SC-55).
   - **Hosting:** the hosted landing page loads commit `d9ede0f`, with `dist/site.js` carrying `core/platform.js` and the film from jsDelivr (`SC3_SITE_MEDIA`), since GitHub raw serves video as octet-stream. The console is unchanged.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

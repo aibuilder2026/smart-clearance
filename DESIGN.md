@@ -762,7 +762,7 @@ The product's own page (smartclearance.com, `design3/site`) speaks in the same c
 - **Do** roll a figure in place when an agent changes it, and turn the aura only while an agent is working.
 - **Do** edge every card, list and overlay with a one-device-pixel hairline and a soft offset shadow.
 - **Do** compose light and dark separately and check both on every new surface.
-- **Do** measure text contrast (4.5:1) on the ground it actually sits on: fills, tinted chips and chat bubbles included, and after any opacity. Secondary text on a fill takes `ink-secondary`; `ink-tertiary` is for the plain surfaces. `design3/a11y` (`npm test`) checks every screen in both themes.
+- **Do** measure text contrast (4.5:1) on the ground it actually sits on: fills, tinted chips and chat bubbles included, and after any opacity. Secondary text on a fill takes `ink-secondary`; `ink-tertiary` is for the plain surfaces. The frontend's a11y suite (`corepack pnpm test:a11y`, SC-58) checks every screen of the built apps in both themes.
 - **Do** compute every money figure in core/money.js and label illustrative splits as illustrative.
 - **Do** lead every screen of a client's workspace with the Smart-Clearance mark and theming, with the client's workspace under it; keep the client's colours inside its mark.
 - **Do** give every raster a prompt sidecar and recoloured contact shadow, and set label text in type over photos.

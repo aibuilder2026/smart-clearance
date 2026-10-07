@@ -53,6 +53,9 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     # json on Cloud Run (infra/prod/run.tf): one JSON object a line, for Cloud Logging (logs.py)
     log_format: Literal["text", "json"] = "text"
+    # otlp on Cloud Run: sampled spans go to Cloud Trace (tracing.py). Locally every request is sampled, nothing sent.
+    trace_export: Literal["none", "otlp"] = "none"
+    trace_sample_rate: float = Field(default=1.0, ge=0.0, le=1.0)
 
     @field_validator("cors_origins", mode="before")
     @classmethod

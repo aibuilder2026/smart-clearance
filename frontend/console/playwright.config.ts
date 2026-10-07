@@ -1,10 +1,11 @@
 import { defineConfig, devices } from '@playwright/test';
 
-// The console's end-to-end suite, run against the production build (vite preview on :4177), as the landing page's is:
-// - WCAG 2.2 AA with axe-core, in the five projects the prototype's suite uses (design3/a11y);
-// - keyboard and motion behaviour axe cannot see, and the console's flows against the mock API;
-// - a smoke run in Firefox and WebKit.
-// Build first: `corepack pnpm build && corepack pnpm exec playwright test`. Firefox and WebKit need `playwright install firefox webkit`.
+// The console's browser suites, run against the production build (vite preview on :4177), as the landing page's are:
+// - test:a11y, the a11y suite (SC-58): WCAG 2.2 AA with axe-core in five viewport and theme projects, and the keyboard
+//   and motion behaviour axe cannot see, then the coverage check (every core component the console uses, on screen in
+//   a scan: testing/src/a11y-coverage.ts);
+// - test:e2e: the console's flows against the mock API, and a smoke run in Firefox and WebKit.
+// Each script builds first. Firefox and WebKit need `playwright install firefox webkit`.
 const A11Y = /.*\.a11y\.spec\.ts/;
 export default defineConfig({
 	testDir: 'tests/e2e',

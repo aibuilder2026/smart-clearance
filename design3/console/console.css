@@ -54,7 +54,7 @@
 .cs-stop.on .cs-card { box-shadow: var(--shadow-2), 0 0 0 2px var(--primary); }
 .cs-stop.is-gate .cs-card { background: color-mix(in oklab, var(--amber-soft) 70%, var(--surface)); box-shadow: 0 0 0 1px color-mix(in oklab, var(--amber) 55%, transparent); }
 .cs-stop.is-gate.on .cs-card { box-shadow: var(--shadow-2), 0 0 0 2px var(--amber); }
-.cs-stop.off .cs-card .cs-text { opacity: 0.6; }
+.cs-stop.off .cs-card .cs-name b { color: var(--fg-2); }
 .cs-open { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 12px; padding: 6px; border-radius: 12px; text-align: left; color: inherit; }
 .cs-open:hover { background: var(--fill); }
 .cs-open:focus-visible { outline: 3px solid var(--ring); outline-offset: 1px; }

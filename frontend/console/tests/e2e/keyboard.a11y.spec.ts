@@ -1,8 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { openConsole } from './console';
 
-// Behaviour axe-core cannot see, as design3/a11y/keyboard.a11y.spec.ts checks it on the prototype: sheets and alerts
-// take, keep and return focus; menus follow the WAI-ARIA menu-button pattern. Plus what the port adds: every place is a
+// Behaviour axe-core cannot see: sheets and alerts take, keep and return focus; menus follow the WAI-ARIA menu-button pattern. Plus what the port adds: every place is a
 // real link, a table row opens by keyboard, and the setup flow says what a step is missing. One desktop run is enough.
 // eslint-disable-next-line no-empty-pattern -- Playwright needs the fixtures argument destructured
 test.beforeEach(async ({}, testInfo) => {

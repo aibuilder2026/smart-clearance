@@ -64,3 +64,4 @@ infra/**/backend_override.tf
 infra/**/crash.log
 # written by infra/scripts/deploy.sh from Terraform's outputs
 frontend/.firebaserc
+.claude/settings.local.json

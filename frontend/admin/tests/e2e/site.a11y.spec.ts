@@ -4,7 +4,7 @@ import { isPhone, openSite } from './site';
 
 // smartclearance.com, the landing page: every section from the first viewport to the footer, the agents at work on
 // the table with the card in focus paused and then sold, plus the sign-in menu, Find your workspace, the phone menu and
-// Book a demo (empty, with its errors, and sent). As design3/a11y's site spec.
+// Book a demo (empty, with its errors, and sent).
 test('site · the whole page', async ({ page }, testInfo) => {
 	await openSite(page);
 	await report(testInfo, await scan(page, 'site'));
@@ -67,8 +67,8 @@ test('site · sign-in menu, Find your workspace and Book a demo', async ({ page 
 	await report(testInfo, findings);
 });
 
-// the loader (SC-35), as design3/a11y's site spec: while the page loads it says so once, the page under it is busy, and
-// it lifts once the film's poster is in; a change of theme plays under it and focus stays where the visitor left it
+// the loader (SC-35): while the page loads it says so once, the page under it is busy, and it lifts once the film's
+// poster is in; a change of theme plays under it and focus stays where the visitor left it
 test('site · the loader, on a load and on a change of theme', async ({ page }, testInfo) => {
 	test.skip(
 		testInfo.project.name !== 'desktop-light' && testInfo.project.name !== 'phone-dark',
