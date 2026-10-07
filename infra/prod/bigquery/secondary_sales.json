@@ -1,0 +1,11 @@
+[
+  { "name": "client_id", "type": "STRING", "mode": "REQUIRED", "description": "The client (workspace), e.g. munchly." },
+  { "name": "distributor_id", "type": "STRING", "mode": "REQUIRED", "description": "The distributor whose DMS reported the sale." },
+  { "name": "pincode", "type": "STRING", "mode": "REQUIRED", "description": "Where the packs were sold into: sales are by pincode, never by person." },
+  { "name": "sku_id", "type": "STRING", "mode": "REQUIRED", "description": "The client's SKU id." },
+  { "name": "sale_date", "type": "DATE", "mode": "REQUIRED", "description": "The day of the sales (journey time)." },
+  { "name": "units", "type": "INT64", "mode": "REQUIRED", "description": "Packs sold into the pincode that day." },
+  { "name": "value_inr", "type": "NUMERIC", "mode": "NULLABLE", "description": "Their invoiced value, in rupees." },
+  { "name": "source_file", "type": "STRING", "mode": "NULLABLE", "description": "The export it was loaded from (gs://...)." },
+  { "name": "loaded_at", "type": "TIMESTAMP", "mode": "NULLABLE", "description": "When the Data agent loaded it." }
+]

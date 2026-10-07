@@ -1,0 +1,11 @@
+[
+  { "name": "eval_run", "type": "STRING", "mode": "REQUIRED", "description": "One run of agents/scripts/eval.sh." },
+  { "name": "agent_id", "type": "STRING", "mode": "REQUIRED", "description": "The agent evaluated." },
+  { "name": "case_id", "type": "STRING", "mode": "REQUIRED", "description": "The eval case." },
+  { "name": "split", "type": "STRING", "mode": "NULLABLE", "description": "train (examples may be drawn from it) or held-out." },
+  { "name": "model", "type": "STRING", "mode": "NULLABLE", "description": "The Gemini model evaluated." },
+  { "name": "prompt_version", "type": "STRING", "mode": "NULLABLE", "description": "The prompt's version (its content hash)." },
+  { "name": "scores", "type": "JSON", "mode": "NULLABLE", "description": "Each metric's score for the case." },
+  { "name": "passed", "type": "BOOL", "mode": "REQUIRED", "description": "Whether the case met its pass mark." },
+  { "name": "run_at", "type": "TIMESTAMP", "mode": "REQUIRED", "description": "When the case ran." }
+]

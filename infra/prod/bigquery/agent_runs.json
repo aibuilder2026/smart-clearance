@@ -1,0 +1,17 @@
+[
+  { "name": "run_id", "type": "STRING", "mode": "REQUIRED", "description": "The run, as backend-api's agent_runs records it." },
+  { "name": "client_id", "type": "STRING", "mode": "REQUIRED", "description": "The client (workspace)." },
+  { "name": "agent_id", "type": "STRING", "mode": "REQUIRED", "description": "data, watcher, vision, valuer, router, lister, outreach, donation, negotiator, paperwork or impact." },
+  { "name": "batch_ref", "type": "STRING", "mode": "NULLABLE", "description": "The batch worked, when there is one." },
+  { "name": "event_type", "type": "STRING", "mode": "NULLABLE", "description": "The event that started the run." },
+  { "name": "event_id", "type": "STRING", "mode": "NULLABLE", "description": "The Pub/Sub message's event id." },
+  { "name": "started_at", "type": "TIMESTAMP", "mode": "REQUIRED", "description": "When the run started (wall time)." },
+  { "name": "ended_at", "type": "TIMESTAMP", "mode": "NULLABLE", "description": "When it ended." },
+  { "name": "status", "type": "STRING", "mode": "REQUIRED", "description": "done, noop, failed or fallback." },
+  { "name": "model", "type": "STRING", "mode": "NULLABLE", "description": "The Gemini model called, if any." },
+  { "name": "tokens_in", "type": "INT64", "mode": "NULLABLE", "description": "Prompt tokens, all calls in the run." },
+  { "name": "tokens_out", "type": "INT64", "mode": "NULLABLE", "description": "Output tokens, all calls in the run." },
+  { "name": "latency_ms", "type": "INT64", "mode": "NULLABLE", "description": "Time in model calls." },
+  { "name": "fallback", "type": "BOOL", "mode": "NULLABLE", "description": "Whether a template stood in for the model's words." },
+  { "name": "trace_id", "type": "STRING", "mode": "NULLABLE", "description": "The run's trace in Cloud Trace." }
+]

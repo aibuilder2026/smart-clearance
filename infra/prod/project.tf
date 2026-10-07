@@ -26,6 +26,16 @@ locals {
     "secretmanager.googleapis.com",   # backend-api's secrets
     "telemetry.googleapis.com",       # the OTLP endpoint backend-api sends its spans to (SC-57)
     "cloudtrace.googleapis.com",      # Cloud Trace, where those spans are read (on by default; adopted here)
+    # the journey's agents and live workspace (SC-66): free to enable; what they cost is in analytics.tf, storage.tf,
+    # events.tf and, behind agents_runtime, the agents service
+    "pubsub.googleapis.com",                # the journey's events (events.tf)
+    "cloudscheduler.googleapis.com",        # the tick and the journey reset (SC-74)
+    "bigquery.googleapis.com",              # the agents' history (analytics.tf)
+    "storage.googleapis.com",               # photos, documents and DMS exports (storage.tf; already on for builds)
+    "aiplatform.googleapis.com",            # Gemini on Vertex AI, for the agents
+    "fcm.googleapis.com",                   # sending push notifications (the Notifier)
+    "fcmregistrations.googleapis.com",      # the workspace app registering a device for push
+    "firebaseinstallations.googleapis.com", # the same, through FCM's web SDK
     ], var.backend_runtime ? [
     "sqladmin.googleapis.com",         # Cloud SQL
     "run.googleapis.com",              # Cloud Run

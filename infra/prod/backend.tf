@@ -54,3 +54,30 @@ resource "google_service_account_iam_member" "api_local_operators" {
   role               = "roles/iam.serviceAccountTokenCreator"
   member             = each.key
 }
+
+# The Notifier (SC-66) sends each member's pushes through FCM's HTTP v1 API, and nothing else: no topic subscriptions,
+# no delivery data. The cloud service and a local backend both send real pushes (no emulator).
+resource "google_project_iam_custom_role" "messaging_send" {
+  role_id     = "scMessagingSend"
+  title       = "Smart-Clearance: send FCM messages"
+  description = "Send Firebase Cloud Messaging messages to device tokens, and nothing else (backend-api's Notifier)."
+  permissions = ["cloudmessaging.messages.create"]
+}
+
+resource "google_project_iam_member" "messaging_send" {
+  for_each = { for env, ids in local.env_identities : env => ids.api if ids.api != null }
+
+  project = var.project_id
+  role    = google_project_iam_custom_role.messaging_send.id
+  member  = each.value
+}
+
+# The cloud service signs the photo upload and document download URLs as itself (IAM signBlob), since it has no key.
+# A local backend signs through the operator's impersonation of sc-api-local, which already allows it.
+resource "google_service_account_iam_member" "api_signs_as_itself" {
+  count = local.runtime
+
+  service_account_id = google_service_account.api[0].name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = google_service_account.api[0].member
+}

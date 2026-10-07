@@ -96,3 +96,56 @@ data "google_firebase_web_app_config" "console" {
   project    = google_firebase_project.this.project
   web_app_id = google_firebase_web_app.console.app_id
 }
+
+# The workspace app (SC-66) signs its members in the same way, through its own Firebase web app, and registers for push
+# (FCM): its browser key may call the two auth APIs and the two that FCM's web SDK registers a device through, only from
+# the workspace's origins. FCM's default VAPID key is used: a custom key pair can only be made by hand in the Firebase
+# console, which this repository's rules forbid.
+locals {
+  workspace_referrers = concat(
+    [for origin in local.workspace_origins : "${origin}/*"],
+    ["https://${var.project_id}.firebaseapp.com/*"],
+    [for origin in var.workspace_dev_origins : "${origin}/*"],
+  )
+}
+
+resource "google_apikeys_key" "workspace" {
+  name         = "workspace-browser"
+  display_name = "Workspace (browser): Firebase Auth and FCM registration only"
+  project      = var.project_id
+
+  restrictions {
+    api_targets {
+      service = "identitytoolkit.googleapis.com"
+    }
+    api_targets {
+      service = "securetoken.googleapis.com"
+    }
+    api_targets {
+      service = "firebaseinstallations.googleapis.com"
+    }
+    api_targets {
+      service = "fcmregistrations.googleapis.com"
+    }
+    browser_key_restrictions {
+      allowed_referrers = local.workspace_referrers
+    }
+  }
+
+  depends_on = [google_project_service.this]
+}
+
+resource "google_firebase_web_app" "workspace" {
+  provider     = google-beta
+  project      = google_firebase_project.this.project
+  display_name = "Smart-Clearance workspace"
+  api_key_id   = google_apikeys_key.workspace.uid
+}
+
+# Public by design, like the console's: backend-api/scripts/app-env.sh writes it into the workspace's git-ignored
+# .env.local, and CI's workspace build reads it from repository variables (github.tf).
+data "google_firebase_web_app_config" "workspace" {
+  provider   = google-beta
+  project    = google_firebase_project.this.project
+  web_app_id = google_firebase_web_app.workspace.app_id
+}
