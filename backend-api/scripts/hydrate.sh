@@ -5,6 +5,9 @@
 #   backend-api/scripts/hydrate.sh [--seed N] [--clients N] [--staff N] [--days N] [--no-demo-story]
 #   backend-api/scripts/hydrate.sh --reset [...]   drop the schema, migrate, hydrate again (Firebase accounts are kept)
 #   backend-api/scripts/hydrate.sh --tick          today's agent runs, so the console's day is today
+#   backend-api/scripts/hydrate.sh --journey-reset munchly   Munchly's live journey from its start again (SC-66)
+# Munchly's live workspace (SC-66) is built with the story: every member on email and password, the kiranas, and its
+# synthetic stock exports in the local exports bucket; --no-live leaves it out.
 # shellcheck source=lib.sh
 source "$(dirname "$0")/lib.sh"
 need uv gcloud
@@ -22,4 +25,5 @@ if $reset; then
 	uv_run sc-admin migrate
 fi
 as_api
+journey_env local
 uv_run sc-hydrate ${args[@]+"${args[@]}"}

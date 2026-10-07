@@ -64,3 +64,48 @@ class SeededIds(Ids):
 def ist(year: int, month: int, day: int, hour: int = 0, minute: int = 0) -> datetime:
     """An Indian wall-clock time, as an aware datetime."""
     return datetime(year, month, day, hour, minute, tzinfo=IST)
+
+
+# --- a client's journey clock (SC-66) -----------------------------------------------------------------------------
+
+DAY_MINUTES = 1440
+
+
+@dataclass(frozen=True)
+class JourneyClock:
+    """A client's journey time: anchor + the wall time since the anchor, sped up so one journey day lasts `speed`
+    minutes of wall time (1440: real time). The console sets the speed (clients.day_minutes); it applies while a case
+    is open, and real time runs between cases. Each change of speed re-anchors at that moment, so journey time never
+    jumps (services/journey/clock.py)."""
+
+    anchor_wall: datetime
+    anchor_journey: datetime
+    speed: int = DAY_MINUTES
+
+    @property
+    def factor(self) -> float:
+        return DAY_MINUTES / self.speed
+
+    def at(self, wall: datetime) -> datetime:
+        """the journey time at a wall time"""
+        return self.anchor_journey + (wall - self.anchor_wall) * self.factor
+
+    def wall_of(self, at: datetime) -> datetime:
+        """the wall time a journey time falls at"""
+        return self.anchor_wall + (at - self.anchor_journey) / self.factor
+
+    def today(self, wall: datetime) -> date:
+        return self.at(wall).astimezone(IST).date()
+
+    def reanchored(self, wall: datetime, speed: int) -> JourneyClock:
+        return JourneyClock(anchor_wall=wall, anchor_journey=self.at(wall), speed=speed)
+
+
+def real_time(wall: datetime) -> JourneyClock:
+    return JourneyClock(anchor_wall=wall, anchor_journey=wall, speed=DAY_MINUTES)
+
+
+def journey_morning(day: date, hour: int = 8) -> datetime:
+    """08:00 in India on a journey day: where a journey starts, just before the Data agent's 08:30 and the Watcher's
+    09:00"""
+    return datetime(day.year, day.month, day.day, hour, 0, tzinfo=IST)

@@ -51,3 +51,16 @@ new_password() {
 }
 
 uv_run() { (cd "$BACKEND_DIR" && uv run --frozen "$@"); }
+
+# the live workspace's cloud resources for an environment (infra/prod events.tf, storage.tf, agents.tf: SC-66), by
+# their names, so a laptop needs no Terraform to run; `local` is what a developer's backend and agents use
+journey_env() {
+	local env="${1:-local}"
+	export EVENTS_ENV="$env"
+	export PHOTOS_BUCKET="${PHOTOS_BUCKET:-$PROJECT_ID-sc-photos-$env}"
+	export DOCS_BUCKET="${DOCS_BUCKET:-$PROJECT_ID-sc-docs-$env}"
+	export EXPORTS_BUCKET="${EXPORTS_BUCKET:-$PROJECT_ID-sc-exports-$env}"
+	local agents="sc-agents@$PROJECT_ID.iam.gserviceaccount.com"
+	[[ $env == local ]] && agents="sc-agents-local@$PROJECT_ID.iam.gserviceaccount.com"
+	export INTERNAL_CALLERS="${INTERNAL_CALLERS:-$agents,sc-invoker@$PROJECT_ID.iam.gserviceaccount.com}"
+}

@@ -163,3 +163,56 @@ class FakeIdentity:
 
 def provider(settings: Settings) -> IdentityProvider:
     return FakeIdentity() if settings.identity == "fake" else FirebaseIdentity(settings)
+
+
+# --- the agents and Google's own callers (SC-66) ----------------------------------------------------------------------
+
+
+class Callers(Protocol):
+    async def verify(self, token: str) -> str:
+        """the service account a Google ID token was minted for, if it is one this API lets in"""
+        ...
+
+
+class GoogleCallers:
+    """backend-api's /internal routes take Google ID tokens: from the agents (sc-agents, or sc-agents-local on a
+    laptop), and from Pub/Sub's pushes and Cloud Scheduler's jobs (sc-invoker), each minted for INTERNAL_AUDIENCE"""
+
+    def __init__(self, settings: Settings):
+        self.audience = settings.internal_audience
+        self.allowed = {e.lower() for e in settings.internal_callers}
+
+    def _verify(self, token: str) -> str:
+        from google.auth.transport import requests as google_requests
+        from google.oauth2 import id_token
+
+        try:
+            claims = id_token.verify_oauth2_token(token, google_requests.Request(), audience=self.audience)
+        except ValueError as e:
+            raise ApiError(401, "Not a valid Google ID token for this API.") from e
+        email = (claims.get("email") or "").lower()
+        if not claims.get("email_verified") or email not in self.allowed:
+            raise ApiError(403, "This caller may not use the internal routes.")
+        return email
+
+    async def verify(self, token: str) -> str:
+        return await asyncio.to_thread(self._verify, token)
+
+
+@dataclass
+class FakeCallers:
+    """the test suite's: a token is "internal:<email>", and any email the settings allow passes"""
+
+    allowed: set[str] = field(default_factory=lambda: {"sc-agents@test.example", "sc-invoker@test.example"})
+
+    async def verify(self, token: str) -> str:
+        if not token.startswith("internal:"):
+            raise ApiError(401, "Not a valid Google ID token for this API.")
+        email = token[len("internal:") :]
+        if email not in self.allowed:
+            raise ApiError(403, "This caller may not use the internal routes.")
+        return email
+
+
+def callers(settings: Settings) -> Callers:
+    return FakeCallers() if settings.identity == "fake" else GoogleCallers(settings)
