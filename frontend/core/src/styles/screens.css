@@ -165,3 +165,186 @@
 .lock-note .ln-app { width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; background: #34c759; color: #fff; }
 .si-tagline { margin: 0; font-size: 15px; color: var(--fg-2); max-width: 46ch; }
 .si-tagline .hi { display: block; margin-top: 2px; font-weight: 600; }
+
+/* ---------- the workspace on a live backend (SC-73, SC-68 option B: in the header, batch by batch) ----------
+   Drawn only in the app's live mode (screens/live.jsx): the email-and-password sign-in, the connection and the journey
+   clock under every title, the band while the stream is down, the flagged batches as tabs, the first-run push step,
+   uploads, a step that failed, a quiet day, and the splash in the workspace's own words. */
+/* the sign-in: the console's email and password (SC-46), in the client's card */
+.si-pw .input { padding-right: 48px; }
+.si-eye { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 44px; height: 40px; border: 0; border-radius: 10px; background: transparent; color: var(--fg-3); cursor: pointer; }
+.si-eye:hover { color: var(--fg); background: var(--fill-2); }
+.si-eye:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.si-err { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; padding: 11px 13px; border-radius: 12px; background: var(--red-soft); color: var(--red-text); font-size: 13.5px; line-height: 1.4; text-align: left; }
+.si-err .ic, .si-out .ic, .lv-err .ic, .lv-band-err > .ic { margin-top: 1px; flex: none; }
+.si-hint { margin: 0; text-align: center; text-wrap: balance; }
+.si-btn { position: relative; overflow: hidden; gap: 10px; }
+.si-btn.on { pointer-events: none; }
+.si-btn-ic { display: inline-grid; flex: none; place-items: center; width: 20px; height: 20px; }
+.si-btn-lbl { display: inline-grid; overflow: hidden; }
+.si-btn-lbl > span { grid-area: 1 / 1; white-space: nowrap; }
+.si-btn-prog { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; transform-origin: left center; background: color-mix(in oklab, var(--primary-fg) 72%, transparent); }
+.si-chips { display: grid; gap: 6px; justify-items: center; width: 100%; }
+/* signed in, but not a member here: the account, said plainly */
+.si-who { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 10px; width: 100%; padding: 8px 10px 8px 8px; border-radius: 20px; background: var(--fill-2); text-align: left; }
+.si-who-av { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--primary-soft); color: var(--primary-text); }
+.si-who-t { min-width: 0; }
+.si-who-t b { display: block; font-size: 14.5px; font-weight: 650; overflow-wrap: anywhere; }
+.si-who-k { display: block; font-size: 12px; font-weight: 600; color: var(--fg-2); }
+.si-out { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; padding: 11px 13px; border-radius: 12px; background: var(--blue-soft); color: var(--fg); font-size: 13.5px; line-height: 1.45; text-align: left; }
+.si-out .ic { color: var(--blue-text); }
+
+/* the connection, as one small mark, and the journey clock */
+.lv-conn { position: relative; display: inline-grid; place-items: center; width: 14px; height: 14px; flex: none; color: var(--fg-2); }
+.lv-ping { position: absolute; box-sizing: border-box; border: 1.5px solid var(--primary); border-radius: 50%; }
+.lv-dot { display: block; border-radius: 50%; background: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+.lv-conn-spin .ic { animation: lv-spin 0.9s linear infinite; }
+@keyframes lv-spin { to { transform: rotate(360deg); } }
+.lv-time { display: inline-flex; align-items: baseline; gap: 6px; white-space: nowrap; }
+.lv-time .tnum { font-variant-numeric: tabular-nums; font-weight: 650; color: var(--fg); }
+.lv-cue { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px 0 6px; border-radius: 99px; background: var(--fill-2); color: var(--fg-2); font-size: 12px; font-weight: 600; white-space: nowrap; }
+.lv-cue .ic { color: var(--blue-text); }
+/* under every large title: live, journey time, the pace; once collapsed, the same line under the bar's title */
+.lv-subtext { display: block; }
+.lv-subtext:empty { display: none; }
+.lv-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-top: 8px; font-size: 13.5px; color: var(--fg-2); }
+.lv-subtext:empty + .lv-line { margin-top: 2px; }
+.lv-st { font-weight: 650; color: var(--primary-text); }
+.lv-line.off .lv-st { color: var(--fg-2); }
+.lv-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--fg-4); }
+.lv-barsub { display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
+.lv-barsub .lv-cue { height: auto; padding: 0; background: none; }
+/* while the stream is down, a band across the page under the bar; a step that failed takes the same place */
+.lv-band { position: sticky; top: calc(var(--navbar-h) + var(--safe-top)); z-index: calc(var(--z-bar) - 1); display: flex; align-items: center; gap: 10px; margin: 0 16px 10px; padding: 10px 12px 10px 14px; border-radius: 14px; background: var(--glass-strong); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line-2); font-size: 14px; line-height: 1.4; color: var(--fg-2); }
+.lv-band-t { flex: 1; min-width: 0; }
+.lv-band b { color: var(--fg); font-weight: 650; }
+.lv-band-err { align-items: flex-start; }
+.lv-band-err > .ic { color: var(--red-text); margin-top: 2px; }
+@container app (min-width: 768px) { .lv-band { margin: 0 28px 12px; } }
+/* a card whose updates have paused: the tracker goes grey and the agents stop */
+.lv-dim .tracker, .lv-dim .tk-compact { filter: grayscale(1); }
+.lv-dim .aura::before, .lv-dim .aura::after { animation: none !important; opacity: 0 !important; }
+/* the flagged batches, as tabs */
+.lv-qhead { padding: 0 4px; }
+.lv-tabs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 3px; margin: -3px; }
+.lv-tabs::-webkit-scrollbar { display: none; }
+.lv-tab { display: grid; grid-template-columns: 30px auto auto; align-items: center; gap: 10px; flex: 0 0 auto; min-height: 54px; padding: 8px 14px 8px 8px; border-radius: 14px; text-align: left; background: var(--fill); box-shadow: inset 0 0 0 var(--hair) var(--line); transition: background-color var(--t-fast), box-shadow var(--t-fast); }
+.lv-tab:hover { background: var(--fill-2); }
+.lv-tab.on { background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 2px var(--primary); }
+.lv-tab:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+.lv-tab-t b { display: block; font-size: 14px; font-weight: 650; white-space: nowrap; }
+.lv-tab-t .mono { display: block; font-size: 12px; color: var(--fg-2); }
+.lv-tab-stop { display: inline-flex; align-items: center; gap: 6px; padding-left: 4px; font-size: 12.5px; font-weight: 650; color: var(--fg-2); white-space: nowrap; }
+.lv-tab-stop i { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); }
+.lv-tab-stop.human i { background: var(--amber); }
+.lv-tabs-row { padding: 0 16px 16px; }
+@container app (min-width: 768px) { .lv-tabs-row { padding: 0 28px 20px; } }
+/* offline, approving waits; a step that did not go through */
+.lv-blocked { opacity: 0.45; cursor: not-allowed; }
+.lv-needs { display: inline-flex; align-items: center; gap: 6px; color: var(--fg-2); }
+.lv-err { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; margin-bottom: 10px; padding: 11px 13px; border-radius: 12px; background: var(--red-soft); color: var(--red-text); font-size: 13.5px; line-height: 1.45; }
+.lv-err b { color: inherit; font-weight: 650; }
+/* a day with nothing at risk; a batch waiting on a partner's photo; a file on its way */
+.lv-quiet { padding: 22px 24px; }
+.lv-quiet-in { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 20px; align-items: center; }
+@container app (max-width: 520px) { .lv-quiet-in { grid-template-columns: minmax(0, 1fr); justify-items: start; gap: 12px; } }
+.lv-await { display: grid; justify-items: center; align-content: center; gap: 14px; min-height: 260px; padding: 20px; border-radius: 14px; background: var(--surface-sunken); }
+.lv-upload .progress { height: 8px; }
+.lv-mini { list-style: none; margin: 6px 0 2px; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.lv-mini li { display: grid; gap: 2px; }
+.lv-mini li i { display: block; height: 4px; margin-bottom: 7px; border-radius: 2px; background: var(--fill-3); }
+.lv-mini li.now i { background: linear-gradient(90deg, var(--primary) 50%, var(--fill-3) 50%); }
+.lv-mini b { font-size: 13.5px; font-weight: 650; }
+.lv-mini span { font-size: 12px; color: var(--fg-3); }
+/* the label photo's Send fills as the photo goes, its words readable over both halves */
+.lv-fill { position: relative; height: 48px; overflow: hidden; border-radius: 14px; background: var(--primary-soft); }
+.lv-fill-off, .lv-fill-on { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.lv-fill-off { color: var(--primary-text); }
+.lv-fill-on { background: var(--primary); color: var(--primary-fg); transition: clip-path var(--t-base) var(--ease); }
+/* the first-run step: notifications, with a preview of the push itself */
+.lv-step { display: grid; gap: 28px; align-items: center; max-width: 1000px; margin: 20px auto 24px; }
+@container app (min-width: 900px) { .lv-step { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 56px; margin-top: 64px; } }
+.lv-step-copy { display: grid; gap: 14px; justify-items: start; }
+.lv-step-t { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 30px; line-height: 1.08; letter-spacing: -0.024em; font-variation-settings: "opsz" 60; text-wrap: balance; }
+@container app (min-width: 768px) { .lv-step-t { font-size: 34px; } }
+.lv-step-p { margin: 0; max-width: 48ch; font-size: 16px; line-height: 1.5; color: var(--fg-2); }
+.lv-step-acts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+.lv-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.lv-steps li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; align-items: start; font-size: 14.5px; line-height: 1.45; color: var(--fg-2); }
+.lv-steps b { color: var(--fg); font-weight: 600; overflow-wrap: anywhere; }
+.lv-stepn { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--fill-2); color: var(--fg); font-size: 13px; font-weight: 650; }
+.lv-pp { position: relative; display: grid; justify-items: center; align-content: start; gap: 4px; min-height: 300px; padding: 30px 18px 24px; border-radius: 28px; background: linear-gradient(165deg, #1f3a2e 0%, #10241b 55%, #0a1611 100%); color: #ffffff; box-shadow: var(--shadow-float); }
+.lv-pp-time { font-family: var(--font-display); font-weight: 700; font-size: 58px; line-height: 1; letter-spacing: -0.03em; }
+.lv-pp-date { font-size: 14px; color: #dfe9e3; }
+.lv-pp-note { display: grid; gap: 2px; width: 100%; max-width: 340px; margin-top: 22px; padding: 12px 14px 13px; border-radius: 20px; text-align: left; background: rgb(255 255 255 / 0.9); color: #0d1c15; }
+.lv-pp-head { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; font-size: 12px; font-weight: 600; color: #45554d; }
+.lv-pp-now { margin-left: auto; }
+.lv-pp-note b { font-size: 14.5px; font-weight: 650; }
+.lv-pp-note > span:last-child { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; font-size: 13.5px; line-height: 1.38; color: #45554d; }
+.lv-pp.blocked .lv-pp-note { filter: grayscale(1); opacity: 0.5; }
+.lv-pp-block { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; padding: 6px 12px; border-radius: 99px; background: rgb(255 255 255 / 0.14); font-size: 13px; font-weight: 600; }
+.lv-ia { display: grid; gap: 14px; padding: 18px; border-radius: 28px; background: var(--surface-sunken); box-shadow: inset 0 0 0 var(--hair) var(--line); }
+.lv-ia-bar { display: flex; justify-content: space-around; align-items: center; padding: 10px; border-radius: 14px; background: var(--surface); color: var(--fg-3); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+.lv-ia-share { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; color: var(--blue-text); box-shadow: 0 0 0 2px var(--blue); }
+.lv-ia-sheet { display: grid; overflow: hidden; border-radius: 14px; background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+.lv-ia-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; font-size: 15px; color: var(--fg-2); }
+.lv-ia-row + .lv-ia-row { box-shadow: inset 0 var(--hair) 0 var(--line); }
+.lv-ia-row.on { background: var(--blue-soft); color: var(--blue-text); font-weight: 650; }
+/* @splash-ws · the first load and signing in: the console's splash (SC-51, console/splash.js) in the workspace's words,
+   as SC-68 option B shows it: the mark, the workspace, the greeting and the reads as a list. Every rule is scoped to the
+   workspace's cover (.cs-splash.ws), so the console's own splash is untouched; the SvelteKit build inlines this block */
+.cs-splash.ws { position: fixed; inset: 0; z-index: var(--z-splash); display: grid; place-items: center; overflow: hidden; color: var(--fg); opacity: 0; transition: opacity 320ms linear; }
+.cs-splash.ws.in, .cs-splash.ws.still { opacity: 1; }
+.cs-splash.ws.still { transition: none; }
+.cs-splash.ws .sr-only { position: absolute; }
+.cs-splash.ws .cs-sp-cover, .cs-splash.ws .cs-sp-cover .ground { position: absolute; inset: 0; }
+.cs-splash.ws .cs-sp-cover { background: var(--bg); }
+.cs-splash.ws .cs-sp-lock { position: relative; z-index: 1; display: grid; justify-items: center; gap: 14px; width: min(420px, calc(100% - 40px)); text-align: center; }
+.cs-splash.ws .cs-sp-mkbox { display: grid; will-change: transform, opacity; }
+.cs-splash.ws .cs-sp-mk { display: block; width: 104px; height: 104px; overflow: visible; }
+.cs-splash.ws .cs-sp-mk .sq, .cs-splash.ws .cs-sp-mk circle { transform-box: fill-box; transform-origin: center; }
+.cs-splash.ws .cs-sp-mk .route { stroke-dasharray: 1 1; stroke-dashoffset: 1; opacity: 0; }
+.cs-splash.ws .cs-sp-mk .pin { opacity: 0; transform: translateY(-16px) scale(0.6); }
+.cs-splash.ws.landed .cs-sp-mk .pin { opacity: 1; transform: none; transition: opacity 120ms linear, transform 520ms var(--ease-spring); }
+.cs-splash.ws .cs-sp-mk .ping { opacity: 0; }
+.cs-splash.ws.landed .cs-sp-mk .ping { animation: ws-sp-ping 900ms ease-out 120ms both; }
+@keyframes ws-sp-ping { from { opacity: 0.9; transform: scale(0.6); } to { opacity: 0; transform: scale(2.2); } }
+.cs-splash.ws .cs-sp-words { display: grid; justify-items: center; gap: 10px; margin-top: 4px; }
+.cs-splash.ws .cs-sp-brand { display: inline-flex; align-items: center; gap: 8px; min-height: 22px; font-size: 14px; font-weight: 600; color: var(--fg-2); }
+.cs-splash.ws .cs-sp-brand svg { flex: none; }
+.cs-splash.ws .cs-sp-title { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 30px; line-height: 1.1; letter-spacing: -0.025em; font-variation-settings: "opsz" 60; color: var(--fg); text-wrap: balance; }
+.cs-splash.ws .cs-sp-sub { margin: 0; font-size: 15px; color: var(--fg-2); text-wrap: balance; }
+.cs-splash.ws .cs-sp-sub:empty { display: none; }
+/* the reads as a list: a dot, the read, the time it took */
+.cs-splash.ws .cs-sp-tracker { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; width: min(300px, 82vw); margin-top: 8px; text-align: left; }
+.cs-splash.ws .cs-sp-tracker .rail { display: none; }
+.cs-splash.ws .cs-sp-tracker .stop { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; justify-items: start; align-items: center; gap: 10px; padding: 0; text-align: left; }
+.cs-splash.ws .cs-sp-tracker .dot { width: 12px; height: 12px; box-shadow: inset 0 0 0 2px var(--fill-3); background: transparent; }
+.cs-splash.ws .cs-sp-tracker .dot svg { display: none; }
+.cs-splash.ws .cs-sp-tracker .stop.done .dot { background: var(--primary); box-shadow: none; }
+.cs-splash.ws .cs-sp-tracker .stop.now .dot { box-shadow: inset 0 0 0 2px var(--primary); }
+.cs-splash.ws .cs-sp-tracker .stop.now .dot::before { inset: 3px; }
+.cs-splash.ws .cs-sp-tracker .stop.now .dot::after { inset: -3px; animation-iteration-count: 1; }
+.cs-splash.ws .cs-sp-tracker .st-label { font-size: 14.5px; font-weight: 600; color: var(--fg-3); }
+.cs-splash.ws .cs-sp-tracker .stop.done .st-label, .cs-splash.ws .cs-sp-tracker .stop.now .st-label { color: var(--fg); }
+.cs-splash.ws .cs-sp-tracker .st-time { justify-self: end; font-size: 12px; color: var(--fg-2); }
+/* the words and the list rise once the title's face is in; the mark springs in on a first load */
+.cs-splash.ws:not(.go) .cs-sp-words, .cs-splash.ws:not(.go) .cs-sp-tracker { opacity: 0; }
+.cs-splash.ws.go .cs-sp-words { animation: ws-sp-rise 420ms var(--ease) backwards; }
+.cs-splash.ws.go .cs-sp-tracker { animation: ws-sp-rise 420ms var(--ease) 100ms backwards; }
+.cs-splash.ws.boot .cs-sp-mk .sq { animation: ws-sp-pop 560ms var(--ease-spring) backwards; }
+@keyframes ws-sp-rise { from { opacity: 0; transform: translateY(10px); } }
+@keyframes ws-sp-pop { from { opacity: 0; transform: scale(0.55); } }
+.cs-splash.ws .cs-sp-retry { margin-top: 10px; }
+.cs-splash.ws.failed .cs-sp-tracker { display: none; }
+@media (max-width: 599px) { .cs-splash.ws .cs-sp-mk { width: 84px; height: 84px; } }
+@media (prefers-reduced-motion: reduce) {
+  .cs-splash.ws .cs-sp-words, .cs-splash.ws .cs-sp-tracker, .cs-splash.ws .cs-sp-mk .sq, .cs-splash.ws .cs-sp-mk .ping { animation: none; }
+  .cs-splash.ws:not(.go) .cs-sp-words, .cs-splash.ws:not(.go) .cs-sp-tracker { opacity: 1; }
+  .cs-splash.ws .cs-sp-mk .pin { transition: none; }
+}
+/* @splash-ws-end */
+@media (prefers-reduced-motion: reduce) {
+  .lv-conn-spin .ic { animation: none; }
+  .lv-fill-on { transition: none; }
+}

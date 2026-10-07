@@ -1,13 +1,21 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
+	import Card from '../components/Card.svelte';
 	import Shell from '../components/Shell.svelte';
+	import Skeleton from '../components/Skeleton.svelte';
 	import Icon from '../icons/Icon.svelte';
 	import { rise } from '../motion/transitions';
+	import { useNotice } from '../notice.svelte';
 	import { provideRoute, provideWorkspaceLead, type Route } from './context';
+	import { LiveView, provideLive, type PushControl } from './live.svelte';
 	import { HOME, NAV, PARENT, routesFor } from './model';
 	import { useWorkspace } from './source';
 	import type { Notification, User } from './types';
 	import WorkspaceSheet from './screens/auth/WorkspaceSheet.svelte';
+	import NoBatch, { ABOUT_A_BATCH } from './screens/common/NoBatch.svelte';
 	import PushBanners from './screens/common/PushBanners.svelte';
+	import Screen from './screens/common/Screen.svelte';
+	import PushStep from './screens/live/PushStep.svelte';
 	import Batches from './screens/brand/Batches.svelte';
 	import CommandCenter from './screens/brand/CommandCenter.svelte';
 	import Execution from './screens/brand/Execution.svelte';
@@ -36,7 +44,9 @@
 
 	// one person's app (screens/roles.jsx RoleApp): their shell, their navigation, the screen the route names. Everyone
 	// but the ExpireSoon buyer is inside Munchly's workspace, so the product's mark leads the shell and the workspace sits
-	// under it. The app keys it by person, so each person starts fresh
+	// under it. The app keys it by person, so each person starts fresh. On the live workspace (SC-73) it keeps the journey
+	// clock and the connection for every screen, says when the stream is back, shows a screen about a batch as empty on a
+	// day with none in a journey, and puts the first-run push step before the first screen after a sign-in
 	type Props = {
 		me: User;
 		route: Route | null;
@@ -45,8 +55,10 @@
 		onback: () => void;
 		/** the label photo opens the phone's camera */
 		realCamera?: boolean;
+		/** the first sign-in on this device ends on one step that asks for notifications (the live workspace) */
+		pushStep?: { push: PushControl; done: () => void } | null;
 	};
-	let { me, route, ongo, onback, realCamera }: Props = $props();
+	let { me, route, ongo, onback, realCamera, pushStep }: Props = $props();
 
 	const allowed = $derived(routesFor(me.role));
 	const name = $derived(route?.name || HOME[me.role]);
@@ -56,6 +68,26 @@
 	const ws = useWorkspace();
 	const display = $derived({ ...me, role: ws.data.roles[me.role] });
 	let wsOpen = $state(false);
+	const { toast } = useNotice();
+
+	// the live workspace's clock and connection, for every screen; on the stub there is no clock and nothing draws
+	const live = new LiveView(ws);
+	provideLive(live);
+	$effect(() => (live.on ? live.start() : undefined));
+	// a dropped stream is remembered at the journey time it dropped; back live, a toast says it caught up
+	let wasDown = false;
+	$effect(() => {
+		const down = live.down;
+		if (!live.on) return;
+		untrack(() => {
+			if (!down && wasDown) toast({ text: `Back live. Caught up from ${live.since}.`, tone: 'ok', icon: 'activity' });
+			live.observe(down);
+			wasDown = down;
+		});
+	});
+	// a screen about the batch in focus, on a day with none: empty, or a moment while the batch asked for is read
+	const noBatch = $derived(!ws.case && !!ABOUT_A_BATCH[safe]);
+	const reading = $derived(noBatch && (ws.cases?.length ?? 0) > 0);
 
 	provideRoute({
 		get route() {
@@ -69,11 +101,16 @@
 		inside ? { name: ws.data.workspace.name, domain: ws.data.workspace.domain, open: () => (wsOpen = true) } : null
 	);
 	// the batch the address names, when it names one; the source decides what is in focus
-	$effect(() => ws.setFocus(route?.params?.ref ?? null));
+	// (only when the address changes: a tab on the Command Center puts another batch in focus without changing it)
+	$effect(() => {
+		const ref = route?.params?.ref ?? null;
+		untrack(() => ws.setFocus(ref));
+	});
 
 	// a new screen starts at its top: the page scrolls inside #main
 	$effect.pre(() => {
 		void safe;
+		void route?.params?.ref;
 		document.getElementById('main')?.scrollTo(0, 0);
 	});
 
@@ -108,7 +145,14 @@
 	>
 		{#key safe}
 			<div in:rise={{ y: 6, duration: 180 }}>
-				{#if safe === 'command'}<CommandCenter {me} />
+				{#if pushStep}<PushStep {me} push={pushStep.push} ondone={pushStep.done} />
+				{:else if reading}<Screen {me} title={ABOUT_A_BATCH[safe].name}
+						><Card class="stack" style="gap: 14px" aria-busy="true"
+							>{#each [0, 1, 2] as i (i)}<Skeleton h={i ? 18 : 44} r={i ? 6 : 12} />{/each}</Card
+						></Screen
+					>
+				{:else if noBatch}<NoBatch {me} screen={safe} />
+				{:else if safe === 'command'}<CommandCenter {me} />
 				{:else if safe === 'route'}<RouteRoom {me} />
 				{:else if safe === 'execution'}<Execution {me} />
 				{:else if safe === 'batches'}<Batches {me} />

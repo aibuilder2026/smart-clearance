@@ -13,6 +13,7 @@
 	import { useNotice } from '../../../notice.svelte';
 	import { useRoute } from '../../context';
 	import { addDays, castOf, fmt, permissionOf } from '../../model';
+	import ExportUpload from '../live/ExportUpload.svelte';
 	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import PlayAs from '../common/PlayAs.svelte';
@@ -21,7 +22,8 @@
 	// S0 Setup: connect the stock data once, and set the rules the agents must obey (screens/brand.jsx Setup)
 	let { me }: { me: User } = $props();
 	const ws = useWorkspace();
-	const c = $derived(ws.case!);
+	// the batch in focus: none on the live workspace's quiet day, when what is shown about one is left out
+	const c = $derived(ws.case);
 	const router = useRoute();
 	const app = useApp();
 	const notices = useNotice();
@@ -36,7 +38,7 @@
 			Object.values(ws.data.skus).find((x) => x.category === k)!.id
 		])
 	);
-	const cast = $derived(castOf(s, c));
+	const cast = $derived(castOf(s, c!));
 	const dms = $derived(ws.data.setup.dms);
 	const W = $derived(ws.data.workspace);
 
@@ -57,8 +59,8 @@
 		});
 	};
 	const chans = $derived(ws.data.setup.channels);
-	const wo = $derived(c.plan.writeOff);
-	const chips = $derived(c.sku);
+	const wo = $derived(c!.plan.writeOff);
+	const chips = $derived(c!.sku);
 	const COSTS: [string, number][] = $derived([
 		['Stock at cost', chips.cost],
 		['GST credit reversed', wo.itcPerUnit],
@@ -67,8 +69,27 @@
 	]);
 	// the prototype's switches show the rule and never change it
 	const noop = () => {};
+
+	// the live workspace (SC-73): a new stock export goes straight to the workspace's storage, its progress shown as it
+	// goes; Cancel stops it
+	let file: HTMLInputElement | null = $state(null);
+	let picked = $state<{ name: string; size: number } | null>(null);
+	const sending = $derived(ws.uploads?.get('export'));
+	const pick = (e: Event) => {
+		const input = e.currentTarget as HTMLInputElement;
+		const f = input.files?.[0];
+		input.value = '';
+		if (!f || !ws.uploadExport) return;
+		picked = { name: f.name, size: f.size };
+		void ws.uploadExport(f).then(() => {
+			if (!ws.failed) notices.toast({ text: 'Export uploaded · the Data agent is mapping its columns', tone: 'ok' });
+		});
+	};
 </script>
 
+{#snippet status()}{#if done}<Badge tone="green" icon="check">Loaded into BigQuery</Badge>{:else}<Badge dot
+			>Mapped · confirm below</Badge
+		>{/if}{/snippet}
 {#snippet guard()}<Switch bind:checked={() => s.rules.territoryGuard, noop} label="Territory guard" />{/snippet}
 {#snippet tapsValue()}<Stepper bind:value={taps} min={1} max={50} label="routes" />{/snippet}
 {#snippet careValue()}<Switch bind:checked={() => true, noop} label="Personal care never to food banks" />{/snippet}
@@ -101,6 +122,12 @@
 
 <Screen {me} title="Setup" sub="Connect the stock data once and set the rules the agents must obey">
 	<div class="stack" style="gap: 20px">
+		{#if sending != null && picked}<ExportUpload
+				name={picked.name}
+				size={picked.size}
+				p={sending}
+				oncancel={ws.cancelUpload ? () => ws.cancelUpload?.('export') : undefined}
+			/>{/if}
 		<Card class="stack snug">
 			<div class="card-head">
 				<span class="row tight"
@@ -111,9 +138,18 @@
 							>Bizom-style DMS export · {dms.rows} batches · {ws.data.client.distributors} distributors</span
 						></span
 					></span
-				>{#if done}<Badge tone="green" icon="check">Loaded into BigQuery</Badge>{:else}<Badge dot
-						>Mapped · confirm below</Badge
-					>{/if}
+				>{#if ws.uploadExport}<span class="row tight wrap"
+						>{#if sending == null}<Button size="sm" icon="upload" onclick={() => file?.click()}>Upload an export</Button
+							><input
+								bind:this={file}
+								type="file"
+								accept=".csv,text/csv"
+								class="sr-only"
+								tabindex={-1}
+								aria-hidden="true"
+								onchange={pick}
+							/>{/if}{@render status()}</span
+					>{:else}{@render status()}{/if}
 			</div>
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex (the region scrolls, so the keyboard must reach it) -->
 			<div class="table-wrap" style="box-shadow: none" tabindex="0" role="region" aria-label="Field mapping">
@@ -234,7 +270,7 @@
 						/>
 					{/each}
 				</List>
-				{#if !s.setup.permission}<PlayAs who={cast.distributor.id} route="home"
+				{#if !s.setup.permission && c}<PlayAs who={cast.distributor.id} route="home"
 						>Give the permission as {cast.distributor.short}</PlayAs
 					>{/if}
 				<List
@@ -243,7 +279,7 @@
 				>
 					<ListRow
 						title="Kiranas may return scheme packs until"
-						sub={`${fmt.day(addDays(c.batch.bestBefore, -ret))} for this batch`}
+						sub={c ? `${fmt.day(addDays(c.batch.bestBefore, -ret))} for this batch` : undefined}
 						value={retValue}
 					/>
 					<ListRow title="Scheme uplift on normal sales" value={upliftValue} />
@@ -263,38 +299,40 @@
 				</div>
 			</div>
 		</div>
-		<Card class="stack snug" style="background: var(--surface)">
-			<div class="card-head">
-				<span class="card-title">The true cost of a write-off</span><Badge tone="red" icon="trash-2"
-					>shown before any batch is routed</Badge
-				>
-			</div>
-			<div class="row wrap" style="gap: 10px; align-items: stretch">
-				{#each COSTS as [k, v], i (k)}{#if i > 0}<span class="center subtle" style="font-size: 20px" aria-hidden="true"
-							>+</span
-						>{/if}
-					<div class="tile" style="min-width: 130px; flex: 1 1 130px">
-						<span class="tl-label">{k}</span><span class="num s neg">{fmt.inr2(v)}</span>
-					</div>{/each}
-				<span class="center subtle" style="font-size: 20px" aria-hidden="true">=</span>
-				<div
-					class="tile"
-					style="min-width: 150px; flex: 1 1 150px; box-shadow: 0 0 0 1.5px color-mix(in oklab, var(--red) 45%, transparent)"
-				>
-					<span class="tl-label">Destroying, a unit</span><Money
-						value={-wo.perUnit}
-						size="s"
-						decimals
-						style="color: var(--red-text)"
-					/>
+		{#if c}<Card class="stack snug" style="background: var(--surface)">
+				<div class="card-head">
+					<span class="card-title">The true cost of a write-off</span><Badge tone="red" icon="trash-2"
+						>shown before any batch is routed</Badge
+					>
 				</div>
-			</div>
-			<span class="t-footnote subtle"
-				>For {chips.name}: cost ₹{chips.cost}; {fmt.inr2(wo.itcPerUnit)} of input GST a packet from the cost sheet (chips
-				are at {Math.round(chips.gst * 100)}% GST since GST 2.0); disposal {fmt.inr2(ws.data.rules.disposalPerUnit)} a unit;
-				EPR ₹{ws.data.rules.eprPerKg} a kilo of product and pack. Factors marked indicative are editable here.</span
-			>
-		</Card>
+				<div class="row wrap" style="gap: 10px; align-items: stretch">
+					{#each COSTS as [k, v], i (k)}{#if i > 0}<span
+								class="center subtle"
+								style="font-size: 20px"
+								aria-hidden="true">+</span
+							>{/if}
+						<div class="tile" style="min-width: 130px; flex: 1 1 130px">
+							<span class="tl-label">{k}</span><span class="num s neg">{fmt.inr2(v)}</span>
+						</div>{/each}
+					<span class="center subtle" style="font-size: 20px" aria-hidden="true">=</span>
+					<div
+						class="tile"
+						style="min-width: 150px; flex: 1 1 150px; box-shadow: 0 0 0 1.5px color-mix(in oklab, var(--red) 45%, transparent)"
+					>
+						<span class="tl-label">Destroying, a unit</span><Money
+							value={-wo.perUnit}
+							size="s"
+							decimals
+							style="color: var(--red-text)"
+						/>
+					</div>
+				</div>
+				<span class="t-footnote subtle"
+					>For {chips.name}: cost ₹{chips.cost}; {fmt.inr2(wo.itcPerUnit)} of input GST a packet from the cost sheet (chips
+					are at {Math.round(chips.gst * 100)}% GST since GST 2.0); disposal {fmt.inr2(ws.data.rules.disposalPerUnit)} a unit;
+					EPR ₹{ws.data.rules.eprPerKg} a kilo of product and pack. Factors marked indicative are editable here.</span
+				>
+			</Card>{/if}
 		<div class="row wrap" style="gap: 10px">
 			{#if done}<Badge tone="green" icon="check">Watching since setup</Badge><Button
 					variant="primary"

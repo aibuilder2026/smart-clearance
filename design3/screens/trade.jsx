@@ -58,6 +58,9 @@
     const units = h.orders.reduce((t, o) => t + o.units, 0);
     const approved = ["approved", "executing", "dispatched", "settled", "cleared"].includes(h.phase);
     const settled = ["settled", "cleared"].includes(h.phase);
+    // live (SC-73): a day with nothing asked of the distributor
+    const live = S.useLive();
+    if (live && live.quiet) return <S.Live.DistQuiet me={me} dist={dist} perm={hero ? (perm ? <ActingFor p={perm} /> : <PermissionCard />) : null} />;
     return <Screen me={me} title="Today" sub={`${dist.name} · ${dist.godown}, ${dist.city}`}>
       <div className="stack" style={{ gap: 16 }}>
         {hero && !perm && <PermissionCard />}
@@ -108,12 +111,14 @@
     const sent = h.photo.status === "reading" || h.photo.status === "verified";
     const take = () => { if (realCamera && file.current && window.matchMedia("(pointer: coarse)").matches) { file.current.click(); return; } setFlash(true); setTimeout(() => { setFlash(false); setShot("demo"); }, reduce ? 0 : 180); };
     const picked = e => { const f = e.target.files && e.target.files[0]; if (f) setShot(URL.createObjectURL(f)); };
-    const send = () => { setSending(true); setTimeout(() => { setSending(false); Flow.act("sendPhoto"); }, 700); };
+    // live (SC-73): the photo goes to the workspace's storage, and Send fills as it goes
+    const live = S.useLive(); const uploading = !!live && live.uploads.photo != null;
+    const send = () => { if (live) { live.sendPhoto(() => Flow.act("sendPhoto")); return; } setSending(true); setTimeout(() => { setSending(false); Flow.act("sendPhoto"); }, 700); };
     return <Screen me={me} title="Label photo" sub="Batch MF-2409-117 · shelf B4" back="Today">
       <div className="stack" style={{ gap: 16, maxWidth: 560, margin: "0 auto", width: "100%" }}>
         <div className="cam">
-          {shot && shot !== "demo" ? <img className="cam-feed" src={shot} alt="Your photo of the carton label" /> : <S.LabelShot cover dim={!shot && !sent} />}
-          {!shot && !sent && <><div className="cam-frame" aria-hidden="true"><i /><i /><i /><i /></div><div className="cam-hint">Fit one carton label in the frame</div></>}
+          {shot && shot !== "demo" ? <img className="cam-feed" src={shot} alt="Your photo of the carton label" /> : <S.LabelShot cover dim={!shot && !sent && !uploading} />}
+          {!shot && !sent && !uploading && <><div className="cam-frame" aria-hidden="true"><i /><i /><i /><i /></div><div className="cam-hint">Fit one carton label in the frame</div></>}
           {sent && <div className="cam-hint" style={{ background: "var(--green-700)" }}><Icon name={h.photo.status === "verified" ? "check" : "loader"} size={14} className={h.photo.status === "verified" ? "" : "spin"} /> {h.photo.status === "verified" ? "Verified · matches your records" : "Sent · Vision is reading the label"}</div>}
           <AnimatePresence>{flash && <motion.div key="f" className="cam-flash" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.12 }} />}</AnimatePresence>
           {h.photo.status === "reading" && !reduce && <motion.div aria-hidden="true" className="cam-scan" animate={{ top: ["20%", "76%", "20%"] }} transition={{ duration: 1.6, repeat: 2, ease: "easeInOut" }} />}
@@ -122,9 +127,9 @@
           <div className="row" style={{ gap: 12 }}><Aura on={h.photo.status === "reading"} className="icontile" style={{ borderRadius: 12, width: 40, height: 40 }}><Icon name={h.photo.status === "verified" ? "badge-check" : "scan-line"} size={19} /></Aura><div className="grow"><b>{h.photo.status === "verified" ? "Done. Dhanyavaad, Rakesh bhai." : "Reading batch, dates and MRP"}</b><div className="t-footnote muted">{h.photo.status === "verified" ? "The plan for this batch will reach Priya in a few minutes." : "This takes a few seconds."}</div></div></div>
           {h.photo.status === "verified" && <List>{[["Batch", "MF-2409-117"], ["Best before", "18 Nov 2026"], ["MRP", "₹30.00"]].map(([k, v]) => <ListRow key={k} title={k} value={v} />)}</List>}
           <Button variant="secondary" block onClick={() => go("home")}>Back to today</Button>
-        </Card> : shot ? <div className="row" style={{ gap: 10 }}><Button variant="secondary" size="lg" icon="rotate-ccw" onClick={() => setShot(null)}>Retake</Button><Button variant="primary" size="lg" block icon="send" loading={sending} onClick={send}>Send photo</Button></div>
+        </Card> : uploading ? <S.Live.SendFill p={live.uploads.photo} onCancel={() => live.cancelUpload("photo")} /> : shot ? <div className="row" style={{ gap: 10 }}><Button variant="secondary" size="lg" icon="rotate-ccw" onClick={() => setShot(null)}>Retake</Button><Button variant="primary" size="lg" block icon="send" loading={sending} onClick={send}>Send photo</Button></div>
           : <div className="cam-bar"><label className="iconbtn round" aria-label="Choose a photo from the gallery" style={{ cursor: "pointer" }}><Icon name="image" size={22} /><input type="file" accept="image/*" onChange={picked} className="sr-only" /></label><button type="button" className="shutter" aria-label="Take the photo" onClick={take}><span /></button><span style={{ width: 44 }} /><input ref={file} type="file" accept="image/*" capture="environment" onChange={picked} className="sr-only" tabIndex={-1} aria-hidden="true" /></div>}
-        {realCamera && <p className="t-caption subtle" style={{ textAlign: "center", margin: 0 }}>On a phone the shutter opens your camera. In this prototype a stub stands in for Gemini vision and returns the batch record.</p>}
+        {realCamera && <p className="t-caption subtle" style={{ textAlign: "center", margin: 0 }}>{live ? (uploading ? "A slow connection only slows the send." : "On a phone the shutter opens your camera.") : "On a phone the shutter opens your camera. In this prototype a stub stands in for Gemini vision and returns the batch record."}</p>}
       </div>
     </Screen>;
   }

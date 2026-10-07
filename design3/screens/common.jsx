@@ -47,10 +47,18 @@
   }
   // the client workspace the person is in; RoleApp provides it, and on a phone it sits at the left of the bar
   const WorkspaceCtx = createContext(null);
-  function Screen({ me, title, sub, back, children, actions, wide, hideLarge }) {
-    const { back: goBack } = useRoute(); const app = useApp(); const ws = useContext(WorkspaceCtx);
+  // the workspace on a live backend (SC-73, SC-68 option B): the connection, the journey clock, the batches flagged, a
+  // step that failed. The app provides it in its live mode (?live); the stub and the guided demo leave it null, so no
+  // screen changes there. Its pieces are screens/live.jsx's (window.SC3_SCREENS.Live)
+  const LiveCtx = createContext(null);
+  const useLive = () => useContext(LiveCtx);
+  // below: a row under the large title (the Route Room's batch tabs)
+  function Screen({ me, title, sub, back, children, actions, wide, hideLarge, below }) {
+    const { back: goBack } = useRoute(); const app = useApp(); const ws = useContext(WorkspaceCtx); const live = useLive(); const L = live && window.SC3_SCREENS.Live;
     const lead = app.bp === "phone" && ws ? <button type="button" className="ws-lead" onClick={ws.open} aria-label={`${ws.name} workspace, on Smart-Clearance`}><K.Mark size={24} still /><span className="ws-sep" aria-hidden="true" /><K.WorkspaceMark ws={D.WORKSPACE} size={26} /></button> : null;
-    return <Page title={title} sub={sub} back={back} onBack={goBack} lead={lead} actions={<TopActions me={me} extra={actions} />} wide={wide} hideLarge={hideLarge}>{children}</Page>;
+    // live: every page says under its title whether it is live and what journey time it is; a dropped stream is a band
+    const subNode = L ? <><span className="lv-subtext">{sub}</span><L.Line /></> : sub;
+    return <Page title={title} sub={subNode} back={back} onBack={goBack} lead={lead} actions={<TopActions me={me} extra={actions} />} wide={wide} hideLarge={hideLarge} below={below} top={L ? <L.Band /> : null} barSub={L ? <L.BarSub /> : null}>{children}</Page>;
   }
   // two columns on desktop, one on phones and tablets
   function Columns({ main, side, sideWidth = 360, gap = 20 }) {
@@ -96,5 +104,5 @@
 
   const PEOPLE_BY_ID = id => D.PEOPLE[id] || (Store.get().users.find(u => u.id === id) || { name: id });
 
-  window.SC3_SCREENS = Object.assign(window.SC3_SCREENS || {}, { LockScreen, AccountCtx, WorkspaceCtx, PlayAs, PushBanners, useStore, Router, useRoute, heroModel, unreadFor, TopActions, Screen, Columns, SectionTitle, Locked, PEOPLE_BY_ID, PHASE_STATUS });
+  window.SC3_SCREENS = Object.assign(window.SC3_SCREENS || {}, { LockScreen, AccountCtx, WorkspaceCtx, LiveCtx, useLive, PlayAs, PushBanners, useStore, Router, useRoute, heroModel, unreadFor, TopActions, Screen, Columns, SectionTitle, Locked, PEOPLE_BY_ID, PHASE_STATUS });
 })();

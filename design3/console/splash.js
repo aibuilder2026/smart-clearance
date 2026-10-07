@@ -9,11 +9,14 @@
 // reads and never goes backwards; the cover shows for at least 1.25 s on a first load and 0.9 s otherwise, and after
 // 8 s it says what did not answer. Only the splash moves, and only while something loads (WCAG 2.2.2); under reduced
 // motion it is a still frame that leaves when the reads are in. The page talks to it through window.SC3_SPLASH:
-// begin(kind, opts) · reads(list) · mark(id) · open({ anchor }) · fail({ title, text }) · animate (motion's, given by the app).
+// begin(kind, opts) · reads(list) · mark(id) · say({ title, sub, brand }) · open({ anchor }) · fail({ title, text }) ·
+// animate (motion's, given by the app). A client's workspace uses the same splash in its own words (SC-73): it sets
+// window.SC3_SPLASH_SETUP before this script ({ cls, brand, words, reads }); the console sets nothing.
 (function () {
   "use strict";
   var D = document, W = window;
   if (W.SC3_SPLASH) return;
+  var SET = W.SC3_SPLASH_SETUP || {};
   var reduce = !!(W.matchMedia && W.matchMedia("(prefers-reduced-motion: reduce)").matches);
   var clamp = function (v, a, b) { return Math.min(b, Math.max(a, v)); };
   var now = function () { return W.performance.now(); };
@@ -25,6 +28,7 @@
     enter: [{ id: "clients", label: "Your clients" }, { id: "dashboard", label: "Today" }, { id: "batches", label: "The batches" }, { id: "runs", label: "The agents" }],
     leave: [{ id: "session-end", label: "Closing your session" }, { id: "firebase", label: "Signed out" }],
   };
+  if (SET.reads) for (var rk in SET.reads) READS[rk] = SET.reads[rk];
   var MIN = { boot: 1250, enter: 900, leave: 900 }, MAX = 8000, LATE = 2600;
   var greet = function (name) { var h = new Date().getHours(); var g = h < 5 ? "Working late" : h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; return name ? g + ", " + name : g; };
   var today = function () { return new Date().toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" }); };
@@ -32,7 +36,24 @@
     boot: { title: "Opening the console", sub: "Smart-Clearance staff", late: "Waking the platform up…", say: "Opening the console." },
     enter: { title: function (who) { return greet(who); }, sub: function () { return today() + " · opening your console"; }, say: function (who) { return "Signed in. Opening the console" + (who ? " for " + who : "") + "."; } },
     leave: { title: "Signing you out", sub: function (who) { return who ? "Until next time, " + who + "." : "Until next time."; }, done: "Signed out", say: "Signing you out.", said: "Signed out." },
+    fail: { title: "The console did not answer", text: "The platform is taking too long. Check the connection, then try again." },
   };
+  if (SET.words) for (var wk in SET.words) WORDS[wk] = Object.assign({}, WORDS[wk], SET.words[wk]);
+  var esc = function (v) { return String(v == null ? "" : v).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+  // the brand line: the console's wordmark, or a workspace's own mark and name ({ id, name, mark }), as the kit's
+  // WorkspaceMark draws it: its colours in the tile, Munchly's m with a bite out of the corner, else its initial
+  var CONSOLE = '<span class="wordmark">Smart‑Clearance</span><span class="cs-sp-console">Console</span>';
+  function brandOf(b) {
+    if (b == null) return CONSOLE;
+    if (typeof b === "string") return b;
+    var c = b.mark || { from: "#5f6e67", to: "#45554d", ink: "#ffffff" }, m = b.id === "munchly", g = "cs-sp-wm";
+    return '<svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><defs><linearGradient id="' + g + 'g" x1="6" y1="2" x2="58" y2="62" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="' + esc(c.from) + '"/><stop offset="1" stop-color="' + esc(c.to) + '"/></linearGradient>' +
+      (m ? '<mask id="' + g + 'm"><rect width="64" height="64" fill="#fff"/><circle cx="59" cy="5" r="9" fill="#000"/><circle cx="47" cy="2.5" r="5.5" fill="#000"/><circle cx="61.5" cy="17" r="5.5" fill="#000"/></mask>' : "") + "</defs>" +
+      '<path d="M32 2C9.5 2 2 9.5 2 32s7.5 30 30 30 30-7.5 30-30S54.5 2 32 2Z" fill="url(#' + g + 'g)"' + (m ? ' mask="url(#' + g + 'm)"' : "") + "/>" +
+      (m ? '<path d="M18 45V33.5a7 7 0 0 1 14 0V45M32 33.5a7 7 0 0 1 14 0V45" fill="none" stroke="' + esc(c.ink) + '" stroke-width="6.6" stroke-linecap="round" stroke-linejoin="round"/>'
+        : '<text x="32" y="43" text-anchor="middle" fill="' + esc(c.ink) + '" style="font: 700 30px var(--font-ui)">' + esc((b.name || "?").slice(0, 1)) + "</text>") +
+      "</svg><span>" + esc(b.name) + "</span>";
+  }
   var secs = function (ms) { return (ms / 1000).toFixed(1) + " s"; };
 
   // the mark: the green squircle, the route drawn as an S from the godown dot to the amber pin
@@ -55,26 +76,28 @@
   function coverK(cx, cy, w, h) { return Math.max(Math.hypot(cx, cy), Math.hypot(w - cx, cy), Math.hypot(cx, h - cy), Math.hypot(w - cx, h - cy)) / 30 * 1.04; }
   function face(spec, ms) { return new Promise(function (res) { var t = setTimeout(res, ms); if (D.fonts && D.fonts.load) D.fonts.load(spec).then(function () { clearTimeout(t); res(); }, res); else res(); }); }
 
-  var S = W.SC3_SPLASH = { reduce: reduce, animate: null, active: null, lifted: false, behind: ".app-root" };
+  var S = W.SC3_SPLASH = { reduce: reduce, animate: null, active: null, lifted: false, behind: ".app-root", brand: null };
   var I = null, raf = 0;
 
   /* ---------- the cover ---------- */
   function build(kind, o) {
     var who = o.who || "", w = WORDS[kind];
-    var title = typeof w.title === "function" ? w.title(who) : w.title, sub = typeof w.sub === "function" ? w.sub(who) : w.sub;
-    var root = el("div", "cs-splash " + kind + (reduce ? " still" : ""));
+    var title = o.title != null ? o.title : typeof w.title === "function" ? w.title(who) : w.title, sub = o.sub != null ? o.sub : typeof w.sub === "function" ? w.sub(who) : w.sub;
+    var root = el("div", "cs-splash " + kind + (SET.cls ? " " + SET.cls : "") + (reduce ? " still" : ""));
     root.setAttribute("aria-hidden", "true");
     root.innerHTML = '<div class="cs-sp-cover"><div class="ground"></div></div><div class="cs-sp-lock"><div class="cs-sp-mkbox">' + MARK + '</div>' +
-      '<div class="cs-sp-words"><span class="cs-sp-brand"><span class="wordmark">Smart‑Clearance</span><span class="cs-sp-console">Console</span></span><p class="cs-sp-title"></p><p class="cs-sp-sub"></p></div>' +
+      '<div class="cs-sp-words"><span class="cs-sp-brand">' + brandOf(o.brand != null ? o.brand : S.brand != null ? S.brand : SET.brand) + '</span><p class="cs-sp-title"></p><p class="cs-sp-sub"></p></div>' +
       '<div class="tracker cs-sp-tracker"><div class="rail"><i></i></div></div></div>';
     var status = el("span", "sr-only"); status.setAttribute("role", "status"); status.setAttribute("aria-hidden", "false");
     root.appendChild(status);
-    root.querySelector(".cs-sp-title").textContent = title; root.querySelector(".cs-sp-sub").textContent = sub;
+    root.querySelector(".cs-sp-title").textContent = title || ""; root.querySelector(".cs-sp-sub").textContent = sub || "";
     var tr = root.querySelector(".cs-sp-tracker");
     var it = { el: root, kind: kind, who: who, words: w, status: status, t0: now(), last: now(), shown: 0, reads: [], stops: [], mk: root.querySelector(".cs-sp-mkbox"), route: root.querySelector(".route"), rail: root.querySelector(".rail > i"), tracker: tr, opening: false, gone: false, minShow: o.minShow || MIN[kind], late: false };
+    // the reads, named; those already in keep their place and their time (a page may name more once it knows who is in)
     it.setReads = function (list) {
-      if (it.reads.some(function (r) { return r.at != null; })) return;
-      it.reads = (list || []).map(function (r) { return { id: r.id, label: r.label, at: null }; });
+      var landed = it.reads.filter(function (r) { return r.at != null; });
+      var next = (list || []).filter(function (r) { return !landed.some(function (x) { return x.id === r.id; }); }).map(function (r) { return { id: r.id, label: r.label, at: null }; });
+      it.reads = landed.map(function (r) { var n = (list || []).filter(function (x) { return x.id === r.id; })[0]; return { id: r.id, label: n ? n.label : r.label, at: r.at }; }).concat(next);
       tr.innerHTML = '<div class="rail"><i></i></div>'; it.rail = tr.querySelector(".rail > i"); it.stops = [];
       tr.style.setProperty("--stops", String(it.reads.length));
       it.reads.forEach(function (r) {
@@ -151,8 +174,16 @@
       run();
     });
   };
-  // the reads of the wait that is on, named before any has landed (a page says what it is about to read)
+  // the reads of the wait that is on (a page says what it is about to read); any already in keep their place
   S.reads = function (list) { if (I && !I.gone) I.setReads(list); };
+  // new words for the wait that is on, or for every cover from now (brand): the page knows more once it has read it
+  S.say = function (o) {
+    o = o || {}; if (o.brand !== undefined) S.brand = o.brand;
+    var it = I; if (!it || it.gone) return;
+    if (o.title != null) it.el.querySelector(".cs-sp-title").textContent = o.title;
+    if (o.sub != null) it.el.querySelector(".cs-sp-sub").textContent = o.sub;
+    if (o.brand !== undefined) it.el.querySelector(".cs-sp-brand").innerHTML = brandOf(o.brand != null ? o.brand : SET.brand);
+  };
   S.mark = function (id) {
     var it = I; if (!it || it.gone) return;
     var r = it.reads.filter(function (x) { return x.id === id; })[0]; if (!r || r.at != null) return;
@@ -204,12 +235,12 @@
   S.fail = function (o) {
     var it = I; if (!it || it.gone || it.failed) return; it.failed = true; o = o || {};
     it.el.classList.add("failed");
-    it.el.querySelector(".cs-sp-title").textContent = o.title || "The console did not answer";
-    it.el.querySelector(".cs-sp-sub").textContent = o.text || "The platform is taking too long. Check the connection, then try again.";
+    it.el.querySelector(".cs-sp-title").textContent = o.title || WORDS.fail.title;
+    it.el.querySelector(".cs-sp-sub").textContent = o.text || WORDS.fail.text;
     var b = el("button", "btn btn-primary cs-sp-retry"); b.type = "button"; b.textContent = o.label || "Try again";
     b.addEventListener("click", o.onRetry || function () { W.location.reload(); });
     it.el.querySelector(".cs-sp-words").appendChild(b); it.el.setAttribute("aria-hidden", "false"); it.el.style.pointerEvents = "auto";
-    it.status.textContent = (o.title || "The console did not answer") + " " + (o.text || "");
+    it.status.textContent = (o.title || WORDS.fail.title) + " " + (o.text || WORDS.fail.text);
     var bh = behind(); if (bh) bh.removeAttribute("inert");
     b.focus();
   };

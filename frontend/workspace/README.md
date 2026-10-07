@@ -61,6 +61,17 @@ in. A screen the person's role cannot open falls back to their home.
 - **Where backend-api plugs in:** the screens read everything through the workspace source (`core/src/lib/workspace/
 source.ts`): the state, the workspace's data, the batch in focus, and every step a person takes. A live source over
   backend-api (SC-73) replaces the stub this page provides and leaves the screens as they are.
+- **On backend-api, SC-68's option B** (design3's `?live` mode, `design3/screens/live.jsx`): the sign-in is email and
+  password, with the story's people as chips that fill the email only; every page says under its title whether it is
+  live, the journey time and the pace; a band crosses the page while the stream is down, or when a step did not go
+  through; the batches in a journey are tabs over the Command Center's tracker card and under the Route Room's title
+  (`/route/<batch>`); the label photo's Send fills as it uploads, and Setup uploads a DMS export; a day with no batch
+  at risk is a quiet day. `src/hooks.server.ts` puts the console's splash (`design3/console/splash.js`) first in
+  `<body>` of a live build, in the workspace's words, for the first load, signing in and signing out; the first sign-in
+  on a device ends on one step that asks for push (`#lib/live/push.svelte.ts`, remembered as `sc-push-asked:*`). The
+  live source gives the screens what they need through the source's optional members (`clock`, `cases`, `uploads`,
+  `failed`, `outsider`, `reconnect`, `uploadExport`, `cancelUpload`); the stub has none of them, so nothing of this
+  draws on it.
 - **The session** (`sc3-session`), the splash once a session (`sc3-app-splash`), the theme (`sc3-theme`) and the hero's
   paused animation (`sc3-hero-paused`) keep the prototype's storage keys.
 

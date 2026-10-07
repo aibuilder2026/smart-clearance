@@ -6,6 +6,7 @@ export { default as RoleApp } from './RoleApp.svelte';
 export { default as SignIn } from './screens/auth/SignIn.svelte';
 export { default as LockScreen, type LockPush } from './screens/common/LockScreen.svelte';
 export { provideWorkspace, setDefaultSource, useWorkspace, type Failure, type WorkspaceSource } from './source';
+export { journeyAt, cue, type PushControl, type SplashControl, type SplashRead } from './live.svelte';
 export {
 	HOME,
 	NAV,
