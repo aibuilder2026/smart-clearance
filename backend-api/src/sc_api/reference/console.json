@@ -406,6 +406,7 @@
 				},
 				"territoryGuard": true,
 				"returnWindowDays": 20,
+				"dayMinutes": 1440,
 				"exits": {
 					"expiresoon": {
 						"on": true

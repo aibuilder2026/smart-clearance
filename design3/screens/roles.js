@@ -71,7 +71,7 @@
     }
   }
   const EsBrand = () => /* @__PURE__ */ React.createElement("span", { className: "row tight" }, /* @__PURE__ */ React.createElement("span", { className: "es-logo", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Icon, { name: "hourglass", size: 16, stroke: 2.2 })), /* @__PURE__ */ React.createElement("span", { className: "es-word" }, "ExpireSoon"));
-  function RoleApp({ me, route, onGo, onBack, realCamera }) {
+  function RoleApp({ me, route, onGo, onBack, realCamera, pushStep }) {
     const reduce = useReducedMotion();
     const top = useRef(null);
     const [wsOpen, setWsOpen] = useState(false);
@@ -80,17 +80,18 @@
     const safe = allowed.includes(name) ? name : HOME[me.role];
     const nav = NAV[me.role];
     const current = PARENT[safe] || safe;
+    const ref = route && route.params && route.params.ref;
     React.useLayoutEffect(() => {
       const el = top.current;
       const sc = el && el.closest(".scroll");
       if (sc) sc.scrollTop = 0;
-    }, [safe, me.id]);
+    }, [safe, me.id, ref]);
     useEffect(() => setWsOpen(false), [me.id]);
     const display = Object.assign({}, me, { role: S.ROLES[me.role] });
     const inside = me.role !== "buyer";
     const W = D.WORKSPACE;
     const ws = inside ? { name: W.name, domain: W.domain, open: () => setWsOpen(true) } : null;
-    const body = /* @__PURE__ */ React.createElement(Shell, { nav, current, onNav: (id) => onGo({ name: id, params: {}, replace: true }), user: display, onUser: () => onGo({ name: "profile" }), ws: inside ? W : null, onWorkspace: () => setWsOpen(true), brand: me.role === "buyer" ? /* @__PURE__ */ React.createElement(EsBrand, null) : void 0, brandMark: me.role === "buyer" ? /* @__PURE__ */ React.createElement("span", { className: "es-logo", style: { width: 36, height: 36, borderRadius: 11 } }, /* @__PURE__ */ React.createElement(Icon, { name: "hourglass", size: 18, stroke: 2.2 })) : void 0 }, /* @__PURE__ */ React.createElement(AnimatePresence, { mode: "wait", initial: false }, /* @__PURE__ */ React.createElement(motion.div, { key: safe, ref: top, initial: reduce ? false : { opacity: 0, y: 6 }, animate: { opacity: 1, y: 0 }, exit: reduce ? void 0 : { opacity: 0 }, transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] } }, screenFor(me, safe, { realCamera }))));
+    const body = /* @__PURE__ */ React.createElement(Shell, { nav, current, onNav: (id) => onGo({ name: id, params: {}, replace: true }), user: display, onUser: () => onGo({ name: "profile" }), ws: inside ? W : null, onWorkspace: () => setWsOpen(true), brand: me.role === "buyer" ? /* @__PURE__ */ React.createElement(EsBrand, null) : void 0, brandMark: me.role === "buyer" ? /* @__PURE__ */ React.createElement("span", { className: "es-logo", style: { width: 36, height: 36, borderRadius: 11 } }, /* @__PURE__ */ React.createElement(Icon, { name: "hourglass", size: 18, stroke: 2.2 })) : void 0 }, pushStep ? /* @__PURE__ */ React.createElement(S.Live.PushStep, { me, home: (nav.find((n) => n.id === HOME[me.role]) || nav[0]).label, ...pushStep }) : /* @__PURE__ */ React.createElement(AnimatePresence, { mode: "wait", initial: false }, /* @__PURE__ */ React.createElement(motion.div, { key: safe + (ref || ""), ref: top, initial: reduce ? false : { opacity: 0, y: 6 }, animate: { opacity: 1, y: 0 }, exit: reduce ? void 0 : { opacity: 0 }, transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] } }, screenFor(me, safe, { realCamera }))));
     const openNote = (n) => {
       window.SC3_STORE.update((st) => {
         const x = st.notifications.find((y) => y.id === n.id);

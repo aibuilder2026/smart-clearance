@@ -5,7 +5,7 @@
 (function () {
   const D = window.SC3_DATA, M = window.SC3_MONEY, AppStore = window.SC3_STORE;
   const R = M.RULES;
-  const KEY = "sc3-platform", VERSION = 3;
+  const KEY = "sc3-platform", VERSION = 4;
 
   /* ---------- Smart-Clearance's own people (fictional) ---------- */
   const STAFF = [
@@ -24,7 +24,7 @@
   const AGENTS = [
     { id: "data", name: "Data", stage: "connect", icon: "database", model: "Gemini Flash", job: "Loads each distributor's stock export and maps its columns" },
     { id: "watcher", name: "Watcher", stage: "detect", icon: "eye", model: "Gemini Flash", job: "Flags batches that won't sell in time, against the quick-commerce gates" },
-    { id: "vision", name: "Vision", stage: "verify", icon: "scan-line", model: "Gemini Pro", job: "Reads the label photo from the godown" },
+    { id: "vision", name: "Vision", stage: "verify", icon: "scan-line", model: "Gemini Flash", job: "Reads the label photo from the godown" },
     { id: "valuer", name: "Valuer", stage: "value", icon: "scale", model: "Gemini Pro", job: "Prices every exit, the bin included" },
     { id: "router", name: "Router", stage: "decide", icon: "route", model: "Gemini Pro", job: "Splits the batch under each exit's caps" },
     { id: "gate", name: "Approval", stage: "approve", icon: "hand", gate: true, job: "A person approves every plan, with the money on screen" },
@@ -170,6 +170,33 @@
   const overrideLine = (ref, o) => `Overrode ${ref}'s quick-commerce gates: ${gateText(o)} (${o.reason.trim()})`;
   const clearOverrideLine = ref => `Removed ${ref}'s quick-commerce gate override`;
 
+  /* ---------- the length of a journey day (SC-68, the console's option A) ---------- */
+  // how many minutes of real time one day of a client's journey lasts, from 1 to 1,440; 1,440 is real time. The agents'
+  // schedules, the offer windows and every time in the workspace follow it (backend-api's journey clock runs on it while
+  // a batch is at risk). A client starts in real time
+  const DAY_MINUTES = 1440;
+  const DAY_PRESETS = [
+    { id: 1440, label: "Real time", sub: "A journey day is a day" },
+    { id: 60, label: "Rehearsal", sub: "An hour a day" },
+    { id: 5, label: "Demo", sub: "Five minutes a day" },
+    { id: 1, label: "Fast", sub: "A minute a day" },
+  ];
+  // a length of day in words: 5 → "5 minutes", 90 → "1 h 30 min", 120 → "2 hours", 1,440 → "a day"
+  const dayWords = m => (m >= DAY_MINUTES ? "a day" : m >= 60 ? (m % 60 ? `${Math.floor(m / 60)} h ${m % 60} min` : `${m / 60} hour${m === 60 ? "" : "s"}`) : `${m} minute${m === 1 ? "" : "s"}`);
+  // a stretch of real time, roughly: 10 → "10 minutes", 235 → "3.9 hours", 2,880 → "2 days"
+  const spanWords = min => (min < 90 ? `${Math.round(min)} minutes` : min < 60 * 36 ? `${Math.round(min / 6) / 10} hours` : `${Math.round(min / 144) / 10} days`);
+  // the badge in the client's head: "Real time", "1 day = 5 min", "1 day = 2 hours"
+  const dayBadge = m => (m >= DAY_MINUTES ? "Real time" : `1 day = ${m >= 60 ? dayWords(m) : m + " min"}`);
+  // what a length of day does to the agents, in their own terms; the list's head says the length
+  const dayReadouts = m => [
+    { icon: "radar", title: "The Watcher's 09:00 check", value: m >= DAY_MINUTES ? "once a day" : `every ${dayWords(m)}` },
+    { icon: "send", title: "A 48-hour kirana offer", value: `open ${spanWords(2 * m)}` },
+    { icon: "route", title: "A 47-day batch journey", value: `about ${spanWords(47 * m)}` },
+  ];
+  const dayHead = m => (m >= DAY_MINUTES ? "In real time" : `At ${dayWords(m)} a day`);
+  const dayMinutesError = v => (isInt(v) && v >= 1 && v <= DAY_MINUTES ? null : "Enter a whole number of minutes, from 1 to 1,440.");
+  const dayMinutesLine = (client, to, was) => `Set the length of a journey day for ${client.name} to ${dayWords(to)} (was ${dayWords(was)})`;
+
   /* ---------- the Overview's dashboard (SC-48): every figure an aggregate over the batches and the runs ---------- */
   // a batch's recovery counts on the day it closed, or, while it is still open past Settle, the day it was flagged. It
   // is in flight from being flagged until it closes, and waits for a yes at Approve (the sixth stop). Days are India's
@@ -288,7 +315,7 @@
     const client = {
       id: W.id, name: W.name, legal: D.CLIENT && D.CLIENT.name || "Munchly Foods Ltd", city: "Pune", industry: "Snacks, drinks and personal care", domain: W.domain, emailDomain: W.emailDomain, mark: W.mark,
       plan: "pilot", status: "live", since: W.since, region: W.region, profile, gates: { blinkitDays: R.gates.blinkit.minDays, qcomPct: Math.round(R.gates.zepto.pctLife * 100) },
-      territoryGuard: true, returnWindowDays: R.returnWindowDays, exits: exitsFor(profile), rules: { reserve: R.negotiation.reservePerUnit, scheme: "2 free with every 10", staffCap: R.staffCap, tokenPct: Math.round(R.tokenPct * 100), offerWindowHours: app.rules.offerWindowHours, hindiOffers: app.rules.hindiOffers, requirePhoto: app.rules.requirePhoto },
+      territoryGuard: true, returnWindowDays: R.returnWindowDays, dayMinutes: DAY_MINUTES, exits: exitsFor(profile), rules: { reserve: R.negotiation.reservePerUnit, scheme: "2 free with every 10", staffCap: R.staffCap, tokenPct: Math.round(R.tokenPct * 100), offerWindowHours: app.rules.offerWindowHours, hindiOffers: app.rules.hindiOffers, requirePhoto: app.rules.requirePhoto },
       signIn: W.signIn.map(s => ({ id: s.id, title: s.title, who: s.who, rule: s.rule, on: true })),
       distributors, skus, people, integrations: app.integrations.map(i => ({ id: i.id, name: i.name, kind: i.kind, status: i.status, note: i.note })),
       recovered: D.ACTUAL.net, batches: D.BATCHES.length,
@@ -358,7 +385,7 @@
     const client = {
       id, name: f.name, legal: f.name, city: f.city, industry: f.industry, domain: id + ".smartclearance.com", emailDomain: f.emailDomain, mark: { from: f.colour, to: f.colour, ink: "#ffffff" },
       plan: f.plan, status: "setting-up", since: null, region: "India", profile, gates: { blinkitDays: R.gates.blinkit.minDays, qcomPct: Math.round(R.gates.zepto.pctLife * 100) },
-      territoryGuard: true, returnWindowDays: R.returnWindowDays, exits: exitsFor(profile), rules: { reserve: R.negotiation.reservePerUnit, scheme: "2 free with every 10", staffCap: R.staffCap, tokenPct: Math.round(R.tokenPct * 100), offerWindowHours: 48, hindiOffers: true, requirePhoto: true },
+      territoryGuard: true, returnWindowDays: R.returnWindowDays, dayMinutes: DAY_MINUTES, exits: exitsFor(profile), rules: { reserve: R.negotiation.reservePerUnit, scheme: "2 free with every 10", staffCap: R.staffCap, tokenPct: Math.round(R.tokenPct * 100), offerWindowHours: 48, hindiOffers: true, requirePhoto: true },
       signIn: [{ id: "google", title: "Google Workspace", who: f.name + " staff", rule: f.emailDomain + " accounts only", on: f.signGoogle }, { id: "phone", title: "Mobile number and a one-time code", who: "Distributors and kirana owners", rule: "Numbers the client or its distributors invite", on: f.signPhone }],
       distributors: [], skus: [], people: [admin], integrations: [], recovered: 0, batches: 0, approver: admin.id,
     };
@@ -379,6 +406,7 @@
     buildClient, slug, summary, fieldLabel, showValue, money, exitsFor, profileLines, optLabel, agentDefaults,
     dashboard, batchPage, RANGES, SIZES,
     TODAY, GATE_BOUNDS, batchGates, gateText, skuGatesError, overrideError, skuGatesLine, overrideLine, clearOverrideLine,
+    DAY_MINUTES, DAY_PRESETS, dayWords, spanWords, dayBadge, dayReadouts, dayHead, dayMinutesError, dayMinutesLine, poss,
     STAFF, AUTONOMY, AGENTS, STAGE_NAME, FIELDS, PLANS, CONNECTORS, EXITS, PROFILE, PRESETS, seed,
   };
   window.SC3_PLATFORM = Platform;

@@ -21,7 +21,6 @@
 		"@smart-clearance/api": "workspace:*",
 		"@smart-clearance/core": "workspace:*",
 		"@tanstack/svelte-query": "^6.3.1",
-		"firebase": "12.19.0",
 		"motion": "catalog:"
 	},
 	"devDependencies": {

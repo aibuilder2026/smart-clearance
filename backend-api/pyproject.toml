@@ -23,11 +23,14 @@ dependencies = [
     "opentelemetry-instrumentation-fastapi>=0.66b1,<0.67",
     "opentelemetry-instrumentation-sqlalchemy>=0.66b1,<0.67",
     "opentelemetry-instrumentation-requests>=0.66b1,<0.67",
+    "google-cloud-pubsub>=2.42,<2.43",
+    "google-cloud-storage>=3.16,<3.17",
 ]
 
 [project.scripts]
 sc-admin = "sc_api.cli.admin:main"
 sc-hydrate = "sc_api.cli.hydrate:main"
+sc-walk = "sc_api.cli.walk:main"
 
 [dependency-groups]
 dev = [

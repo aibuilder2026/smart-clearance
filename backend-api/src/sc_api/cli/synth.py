@@ -455,6 +455,12 @@ class World:
             await ctx.session.execute(
                 select(B.client_id, B.ref, B.stage_current)
                 .where(B.client_id.in_(live), B.closed_at.is_(None), B.stage_current.in_(MOVABLE))
+                # a batch in a live journey (SC-66) moves only with its own agents and people
+                .where(
+                    ~select(m.Case.id)
+                    .where(m.Case.client_id == B.client_id, m.Case.batch_ref == B.ref, m.Case.status == "open")
+                    .exists()
+                )
                 .order_by(B.stage_at, B.seq)
                 .limit(self.rng.randint(2, 4))
             )

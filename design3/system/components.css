@@ -125,6 +125,9 @@ button.list-row:hover, a.list-row:hover { background: var(--fill); }
 .navbar .nb-back-t { max-width: 9.5em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 @container app (max-width: 767px) { .navbar.scrolled .nb-back-t { display: none; } .navbar .nb-title { max-width: 50%; } }
 .navbar .nb-actions { margin-left: auto; display: flex; align-items: center; gap: 4px; }
+/* a second line under the bar's title once the large title has collapsed into it (SC-73: the live workspace's clock) */
+.navbar.nb-two .nb-title { display: flex; flex-direction: column; justify-content: center; line-height: 1.2; }
+.navbar .nb-sub { display: block; font-size: 11.5px; font-weight: 550; color: var(--fg-3); }
 .largetitle { padding: 2px 16px 14px; }
 .largetitle h1 { font-family: var(--font-display); font-weight: 750; font-size: 34px; line-height: 1.06; letter-spacing: -0.028em; font-variation-settings: "opsz" 72; }
 .largetitle .lt-sub { margin-top: 6px; font-size: 14px; color: var(--fg-3); }
@@ -147,7 +150,7 @@ button.list-row:hover, a.list-row:hover { background: var(--fill); }
 [data-theme="dark"] .sb-item[aria-current="page"] { background: var(--fill-2); box-shadow: none; }
 .sb-item .sb-n { margin-left: auto; font-size: 12px; color: var(--fg-3); font-variant-numeric: tabular-nums; }
 .sb-item .badge-count { margin-left: auto; box-shadow: none; }
-.sb-foot { margin-top: auto; padding-top: 10px; display: grid; gap: 6px; min-width: 0; }
+.sb-foot { margin-top: auto; padding-top: 10px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 0; }
 .sb-user { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 12px; text-align: left; width: 100%; }
 .sb-user:hover { background: var(--fill); }
 .sb-user .who { min-width: 0; flex: 1; } .sb-user b { display: block; font-size: 14px; font-weight: 600; } .sb-user span { display: block; font-size: 12px; color: var(--fg-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

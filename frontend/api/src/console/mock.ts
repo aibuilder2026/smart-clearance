@@ -26,6 +26,9 @@ import {
 	dashboard,
 	type BatchRecord,
 	clearOverrideLine,
+	DAY_MINUTES,
+	dayMinutesError,
+	dayMinutesLine,
 	exitsFor,
 	inviteError,
 	optLabel,
@@ -42,7 +45,7 @@ import {
 /** where the mock keeps the platform's state, and who is signed in */
 export const CONSOLE_KEY = 'sc-console';
 export const SESSION_KEY = 'sc-console-session';
-const VERSION = 3;
+const VERSION = 4;
 
 type State = {
 	v: number;
@@ -271,6 +274,7 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 			gates: { ...d.gates },
 			territoryGuard: true,
 			returnWindowDays: d.returnWindowDays,
+			dayMinutes: DAY_MINUTES,
 			exits: f.exits,
 			rules: {
 				reserve: d.reserve,
@@ -517,6 +521,14 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 				`Changed ${c.name}'s channels and rules: ${changed.join('; ')}`
 			);
 		},
+		async setDayMinutes(id, minutes) {
+			await wait();
+			const c = clientOf(id);
+			const problem = dayMinutesError(minutes);
+			if (problem) throw new ApiError(422, problem, { dayMinutes: problem });
+			if (minutes === c.dayMinutes) return out(c);
+			return change(id, (x) => (x.dayMinutes = minutes), dayMinutesLine(c, minutes, c.dayMinutes));
+		},
 		async clientBatches(id, sku) {
 			await wait();
 			const c = clientOf(id);
@@ -620,8 +632,8 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 			const c = clientOf(id);
 			const problem = inviteError(input, c);
 			if (problem) throw new ApiError(422, problem, input.name.trim() ? { contact: problem } : { name: problem });
-			const contact = input.contact.trim();
-			const phone = /^[+\d\s]{10,}$/.test(contact);
+			// an email address only (SC-68): the person signs in with it and the default password
+			const email = input.contact.trim().toLowerCase();
 			const name = input.name.trim();
 			const partner = input.access === 'Partner';
 			return change(
@@ -634,11 +646,11 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 						role: partner ? 'Partner' : 'Staff',
 						kind: input.access,
 						access: input.access,
-						provider: phone ? 'Phone and code' : partner ? 'Google, invited' : 'Google',
+						provider: 'Email and password',
 						status: 'invited',
 						img: null,
-						email: phone ? '' : contact,
-						phone: phone ? contact : ''
+						email,
+						phone: ''
 					}),
 				`Invited ${name} as ${input.access}`
 			);

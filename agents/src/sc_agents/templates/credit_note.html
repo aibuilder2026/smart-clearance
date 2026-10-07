@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="parties">
+  <div>
+    <div class="label">From</div>
+    <strong>{{ doc.owner }}</strong>
+  </div>
+  <div>
+    <div class="label">To</div>
+    <strong>{{ case.distributor.name }}</strong><br>
+    {{ case.distributor.address or case.distributor.city }}
+  </div>
+</div>
+<table>
+  <thead>
+    <tr><th>Exit</th><th class="n">Packs</th><th class="n">Price</th><th class="n">Gap a pack</th><th class="n">Support</th></tr>
+  </thead>
+  <tbody>
+    {% for r in doc.rows or [] %}
+    <tr>
+      <td>{{ r.short }}</td>
+      <td class="n">{{ r.units|num }}</td>
+      <td class="n">{{ r.price|inr(true) }}</td>
+      <td class="n">{{ r.gap|inr(true) }}</td>
+      <td class="n">{{ r.amount|inr(true) }}</td>
+    </tr>
+    {% endfor %}
+    {% if doc.van %}<tr><td colspan="4">Van round</td><td class="n">{{ doc.van|inr(true) }}</td></tr>{% endif %}
+    {% if doc.fee %}<tr><td colspan="4">Listing fee</td><td class="n">{{ doc.fee|inr(true) }}</td></tr>{% endif %}
+    {% if doc.roundOff %}<tr><td colspan="4">Round-off</td><td class="n">{{ doc.roundOff|inr(true) }}</td></tr>{% endif %}
+    <tr class="total"><td colspan="4">Credit</td><td class="n">{{ doc.amount|inr }}</td></tr>
+  </tbody>
+</table>
+{% if doc.note %}<div class="note">{{ doc.note }}</div>{% endif %}
+{% endblock %}

@@ -3,6 +3,7 @@ import { D } from '../src/lib/workspace/data';
 import { A, fastForward, SCRIPT, stageOf } from '../src/lib/workspace/flow';
 import { heroModel, routesFor, SCREENS } from '../src/lib/workspace/model';
 import { seedState, store } from '../src/lib/workspace/store.svelte';
+import { data, kase } from '../src/lib/workspace/stub.svelte';
 import type { RoleId } from '../src/lib/workspace/types';
 import { run } from './design3';
 
@@ -53,7 +54,7 @@ describe('the journey is flow.js', () => {
 		fastForward(9);
 		const s = store.get();
 		expect(stageOf(s)).toBe(9);
-		expect(heroModel(s).eta).toBe('Cleared · 0 cartons destroyed');
+		expect(heroModel(s, data, kase).eta).toBe('Cleared · 0 cartons destroyed');
 		expect(s.hero.orders.reduce((t, o) => t + o.units, 0)).toBe(D.plan.lines.find((l) => l.id === 'kirana')!.units);
 	});
 });

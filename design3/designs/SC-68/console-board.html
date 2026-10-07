@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-68 Console Journey Day</title>
+<meta name="description" content="Two ways for the console to set a client's length of a journey day, and the invitation by email only.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<style>
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px -6px rgb(17 41 30 / 0.1);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
+::selection { background: color-mix(in oklab, var(--green) 24%, transparent); }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 48px 16px 72px; }
+h1, h2, h3, h4 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+h2 { margin: 60px 0 14px; font-size: clamp(25px, 3vw, 32px); font-weight: 720; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 72, "wdth" 88; }
+h3 { font-size: 26px; font-weight: 720; letter-spacing: -0.018em; font-variation-settings: "opsz" 48, "wdth" 90; }
+h4 { margin: 26px 0 10px; font: 650 16px/1.35 var(--ui); letter-spacing: 0; }
+p { margin: 0 0 12px; max-width: 74ch; color: var(--ink-2); text-wrap: pretty; }
+p b, li b, td b { color: var(--ink); font-weight: 600; }
+.lede { font-size: 18px; margin-top: 14px; }
+blockquote { margin: 16px 0; padding: 16px 20px; border-radius: 14px; background: var(--sunken); color: var(--ink); font-size: 15.5px; max-width: 82ch; }
+blockquote ul { color: var(--ink); margin: 0; }
+ul { margin: 0 0 12px; padding-left: 20px; color: var(--ink-2); max-width: 80ch; display: grid; gap: 6px; }
+code { font: 500 0.9em/1 var(--mono); }
+figure { margin: 0; min-width: 0; }
+figure img, figure video { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+.four { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+@media (min-width: 900px) { .four { grid-template-columns: minmax(0, 2.6fr) minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); } }
+.phones { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+@media (min-width: 700px) { .phones { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .phones { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.desks { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 700px) { .desks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.card { padding: 22px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.shared { display: grid; gap: 18px; }
+@media (min-width: 900px) { .shared { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.shared h3.sub { margin: 0 0 6px; }
+h3.sub { font: 650 16px/1.35 var(--ui); letter-spacing: 0; font-variation-settings: normal; }
+.shared p, .shared li { font-size: 14.5px; }
+.opt { margin-top: 26px; display: grid; gap: 14px; padding: 26px 22px; border-radius: 28px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); scroll-margin-top: 20px; }
+.opt.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.opt header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.opt header p { margin: 0; flex-basis: 100%; font-size: 17px; color: var(--ink); max-width: 76ch; }
+.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 600 12.5px/1 var(--ui); color: var(--green-text); background: var(--green-soft); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+.btn.primary { background: var(--green); color: #fff; box-shadow: none; }
+:root[data-theme="dark"] .btn.primary { color: #03170d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #03170d; } }
+.states { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; }
+.states a { display: inline-flex; align-items: center; min-height: 32px; }
+.vid { display: grid; gap: 18px; }
+@media (min-width: 900px) { .vid { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: start; } }
+dl.facts { margin: 0; display: grid; gap: 12px; }
+dl.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); }
+dl.facts dd { margin: 2px 0 0; color: var(--ink-2); font-size: 14.5px; }
+dl.facts dd ul { margin-top: 4px; font-size: 14.5px; }
+.tablewrap { overflow-x: auto; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+table.cmp { border-collapse: collapse; width: 100%; min-width: 860px; font-size: 14px; color: var(--ink-2); }
+table.cmp th, table.cmp td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+table.cmp thead th { color: var(--ink); font-weight: 650; background: var(--sunken); }
+table.cmp tbody th { color: var(--ink); font-weight: 600; width: 14%; }
+table.cmp tr:last-child > * { border-bottom: 0; }
+.rec-box { padding: 22px; border-radius: 20px; background: var(--green-soft); }
+.rec-box p { color: var(--ink); }
+.q { padding: 20px 22px; border-radius: 20px; background: var(--amber-soft); }
+.q p, .q li { color: var(--ink); }
+.q h3 { font-size: 20px; margin-bottom: 8px; }
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
+</style>
+<body>
+<main class="wrap">
+<h1>The console: a journey day, and email-only invitations</h1>
+<p class="lede">SC-68 · console.smartclearance.com · epic SC-66, Workspace v1. Two options for where a client's new setting lives and how it is entered, built on the console itself; the invitation by email only is the same in both. Every company, person and figure is fictional.</p>
+<p>The maintainer's decisions behind it:</p>
+<blockquote><ul><li><b>A journey clock that can be compressed:</b> a client setting makes one journey day last 1 to 1,440 minutes (1,440 is real time), and the workspace's screens show journey time.</li>
+<li><b>Email and password for everyone:</b> accounts are made by invitation on a default password and no email is ever sent, so an invitation is an email address only. Today the form asks for “Work email or mobile number”.</li></ul></blockquote>
+<h2>The invitation now</h2><div class="four"><figure><img src="console/current-invite-light-1440.webp" width="1440" height="900" loading="lazy" alt="The People tab&#x27;s Invite a person form: Name, Work email or mobile number, Access, and Send invitation."><figcaption>Invite a person now · desktop, light</figcaption></figure><figure><img src="console/current-invite-dark-1440.webp" width="1440" height="900" loading="lazy" alt="The People tab&#x27;s Invite a person form: Name, Work email or mobile number, Access, and Send invitation. Dark."><figcaption>Invite a person now · desktop, dark</figcaption></figure><figure><img src="console/current-invite-light-390.webp" width="780" height="1688" loading="lazy" alt="The People tab&#x27;s Invite a person form: Name, Work email or mobile number, Access, and Send invitation."><figcaption>Invite a person now · phone, light</figcaption></figure><figure><img src="console/current-invite-dark-390.webp" width="780" height="1688" loading="lazy" alt="The People tab&#x27;s Invite a person form: Name, Work email or mobile number, Access, and Send invitation. Dark."><figcaption>Invite a person now · phone, dark</figcaption></figure></div>
+<h2>What both options share</h2><div class="shared">
+<div class="card"><h3 class="sub">What the number means</h3><ul><li>Minutes of real time in one journey day, 1 to 1,440; 1,440 is real time. Munchly's demo workspace runs at 5; a new client starts in real time.</li>
+<li>Its consequences are said in the agents' terms as it is entered: the Watcher's 09:00 check comes every 5 minutes, a 48-hour kirana offer stays open 10 minutes, a 47-day batch journey takes about 3.9 hours.</li></ul></div>
+<div class="card"><h3 class="sub">Saving it</h3><ul><li>Whole minutes only; anything else says “Enter a whole number of minutes, from 1 to 1,440.” in the field's own error.</li>
+<li>Saving writes the audit line in the staff member's name: “Set the length of a journey day for Munchly Foods to 5 minutes (was a day)”.</li></ul></div>
+<div class="card"><h3 class="sub">The invitation, by email only</h3><ul><li>“Email”, with Munchly's staff on <code>munchly.example</code> and partners on any address, such as their <code>google.example</code> one.</li>
+<li>The note says how they get in: “They sign in with it and the default password, which you hand over. Nothing is sent by email.” The button is Invite, not Send invitation.</li></ul></div></div>
+<div class="desks" style="margin-top:12px"><figure><img src="console/invite-light-1440.webp" width="1440" height="900" loading="lazy" alt="The People tab with Invite a person: Name Shree Sai Kirana, Email shree.sai.kirana@google.example, Access Partner, the note about the default password, and Invite."><figcaption>Invite a person, email only · desktop, light</figcaption></figure><figure><img src="console/invite-dark-1440.webp" width="1440" height="900" loading="lazy" alt="The People tab with Invite a person: Name Shree Sai Kirana, Email shree.sai.kirana@google.example, Access Partner, the note about the default password, and Invite. Dark."><figcaption>Invite a person, email only · desktop, dark</figcaption></figure></div><div class="phones" style="margin-top:12px"><figure><img src="console/invite-light-390.webp" width="780" height="1688" loading="lazy" alt="The invite sheet on a phone with the email-only field."><figcaption>Invite, phone, light</figcaption></figure><figure><img src="console/invite-dark-390.webp" width="780" height="1688" loading="lazy" alt="The invite sheet on a phone with the email-only field. Dark."><figcaption>Invite, phone, dark</figcaption></figure></div><section class="opt rec" id="option-a"><header><h3>Option A · In the client's head, presets and a number</h3><span class="tag">Recommended</span>
+<p>A badge in the client's head, beside Live, the plan and the agents, says how fast the client's days run on every tab: <b>1 day = 5 min</b> in the information blue, or Real time in grey. It opens a sheet with four presets and a number for anything else.</p></header>
+<dl class="facts"><dt>Where</dt><dd>The client page's head, on every tab. A client left on a short day is visible wherever staff are in its page.</dd>
+<dt>How it is entered</dt><dd>Presets: Real time (1,440), Rehearsal (60), Demo (5), Fast (1); or any number of minutes. The readouts change as it is chosen, and a live client gets a note that short days give its partners less time to answer.</dd>
+<dt>Trade-offs</dt><dd>One more badge in a full head on phones (it wraps under the others). The sheet is a second step to change it, which suits a setting changed rarely.</dd>
+<dt>What the build touches</dt><dd>design3 <code>console.jsx</code> (ClientPage's head, a sheet), <code>core/platform.js</code> (the client's journeyDay); frontend <code>ClientPage.svelte</code>, the contract's <code>Client.journeyDay</code> and a route in backend-api.</dd></dl>
+<div class="desks"><figure><img src="console/a-head-light-1440.webp" width="1440" height="900" loading="lazy" alt="The Munchly Foods client page: in the head, the badges Live, Pilot, Pune, 10 of 10 agents on, and 1 day = 5 min in blue with a chevron."><figcaption>The badge in the head · desktop, light</figcaption></figure><figure><img src="console/a-clock-dark-1440.webp" width="1440" height="900" loading="lazy" alt="The Length of a journey day sheet, dark: four presets with Demo, 5 min, selected; a minutes field; the three readouts; the note about a live client; Save and Cancel."><figcaption>The sheet · desktop, dark</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="console/a-head-light-390.webp" width="780" height="1688" loading="lazy" alt="The client head on a phone with the 1 day = 5 min badge under the others."><figcaption>The head · phone, light</figcaption></figure><figure><img src="console/a-clock-light-390.webp" width="780" height="1688" loading="lazy" alt="The sheet on a phone: the presets one under another, Demo selected."><figcaption>The sheet · phone, light</figcaption></figure><figure><img src="console/a-head-dark-390.webp" width="780" height="1688" loading="lazy" alt="The client head on a phone, dark."><figcaption>The head · phone, dark</figcaption></figure><figure><img src="console/a-clock-dark-390.webp" width="780" height="1688" loading="lazy" alt="The sheet on a phone, dark."><figcaption>The sheet · phone, dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="console/mockup.html?opt=a">Open option A</a><a class="btn" href="console/mockup.html?opt=a&amp;state=clock">With the sheet open</a></div></section>
+<section class="opt" id="option-b"><header><h3>Option B · On the Agents tab, a number only</h3>
+<p>A card over the agents' pipeline: <b>Length of a journey day</b>, a minutes field with Save, and the three readouts under it. The clock sits with the agents it drives.</p></header>
+<dl class="facts"><dt>Where</dt><dd>The Agents tab, the client page's first tab, above the pipeline.</dd>
+<dt>How it is entered</dt><dd>A number of minutes and Save; Reset appears once it changes. No presets: staff type 1,440 for real time.</dd>
+<dt>Trade-offs</dt><dd>Out of sight on the other six tabs. A number alone invites typos (5 for 50); the readouts are the only check. Fast to change in a demo.</dd>
+<dt>What the build touches</dt><dd>As A, with the card in AgentsTab instead of the head and the sheet.</dd></dl>
+<div class="desks"><figure><img src="console/b-clock-light-1440.webp" width="1440" height="900" loading="lazy" alt="The Agents tab with a card above the pipeline: Length of a journey day, Minutes a day 5 min, Save, and readouts: the Watcher&#x27;s 09:00 check every 5 minutes, a 48-hour kirana offer open 10 minutes, a 47-day batch journey about 3.9 hours."><figcaption>The card over the pipeline · desktop, light</figcaption></figure><figure><img src="console/b-clock-dark-1440.webp" width="1440" height="900" loading="lazy" alt="The same card, dark."><figcaption>The card · desktop, dark</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="console/b-clock-light-390.webp" width="780" height="1688" loading="lazy" alt="The card on a phone, the readouts one under another."><figcaption>The card · phone, light</figcaption></figure><figure><img src="console/b-clock-dark-390.webp" width="780" height="1688" loading="lazy" alt="The card on a phone, dark."><figcaption>The card · phone, dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="console/mockup.html?opt=b">Open option B</a></div></section>
+<div class="rec-box" style="margin-top:28px"><p><b>Recommended: A.</b> A client left on a five-minute day would run its Watcher every five minutes and close its kirana offers in ten, so the setting should be visible on every tab, not only where the agents are. Presets make the usual values one tap and real time unmistakable, and the number still allows anything from 1 to 1,440.</p></div>
+<footer>SC-68 · Smart-Clearance · epic SC-66, Workspace v1 · every company, person and figure is fictional · designs in <code>design3/designs/SC-68/</code></footer>
+</main>
+<script>
+  (function () { var q = new URLSearchParams(location.search).get("theme"); if (q === "dark" || q === "light") document.documentElement.setAttribute("data-theme", q); })();
+</script>
+</body>
+</html>

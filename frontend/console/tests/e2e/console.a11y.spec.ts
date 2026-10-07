@@ -120,6 +120,30 @@ test("a11y · an SKU's gates and a batch override", async ({ page, isMobile }, t
 	await report(testInfo, findings);
 });
 
+// SC-68: the length of a journey day: its badge in the client's head, the sheet with a preset and the live client's
+// note, a number out of range, and the badge once days are short
+test('a11y · the length of a journey day', async ({ page }, testInfo) => {
+	await openConsole(page, '/clients/munchly/agents');
+	const findings: Finding[] = [];
+	await page.getByRole('button', { name: /^Length of a journey day/ }).click();
+	const sheet = page.getByRole('dialog', { name: 'Length of a journey day' });
+	await sheet.waitFor();
+	await page.waitForTimeout(500);
+	findings.push(...(await scan(page, 'console · the journey day sheet, in real time')));
+	await sheet.getByRole('radio', { name: /^Demo/ }).check();
+	await expect(sheet.locator('.cs-jd-note')).toBeVisible();
+	findings.push(...(await scan(page, 'console · the journey day sheet, a demo day for a live client')));
+	await sheet.getByLabel('Or any number of minutes').fill('2000');
+	await expect(sheet.getByRole('alert')).toBeVisible();
+	findings.push(...(await scan(page, 'console · the journey day sheet, out of range')));
+	await sheet.getByLabel('Or any number of minutes').fill('5');
+	await sheet.getByRole('button', { name: 'Save', exact: true }).click();
+	await expect(page.getByRole('button', { name: /^Length of a journey day/ })).toContainText('1 day = 5 min');
+	await page.waitForTimeout(500);
+	findings.push(...(await scan(page, 'console · a client on a five-minute day')));
+	await report(testInfo, findings);
+});
+
 // SC-48: the Overview as a live dashboard: a stop chosen, the chart as a table, the closed batches, updates paused
 test('a11y · the Overview dashboard, its table and its filters', async ({ page }, testInfo) => {
 	await openConsole(page, '/');

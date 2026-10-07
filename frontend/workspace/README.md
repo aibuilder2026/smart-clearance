@@ -7,7 +7,8 @@ app v3 Claude Design project), so it had no design round.
 
 This app is a thin host. The workspace itself, every screen and the stub it runs on, lives in core
 (`@smart-clearance/core/workspace`, `../core/src/lib/workspace/`), where the guided demo's port can use the same
-screens, as design3's demo and app share `design3/screens`.
+screens, as design3's demo and app share `design3/screens`. The page takes the UI from the lean entry
+(`@smart-clearance/core/workspace/app`) and provides it the stub source (`@smart-clearance/core/workspace/stub`).
 
 ```sh
 cd frontend
@@ -27,9 +28,10 @@ Switch person moves between them, and Reset demo data puts the batch back at the
 
 ## Routes
 
-The prototype keeps its screen in the hash (`#/command`); the app keeps it in the path, one segment
-(`src/routes/[[screen]]`), so every screen has a real address. `/` is the sign-in, or the person's home once they are in.
-A screen the person's role cannot open falls back to their home.
+The prototype keeps its screen in the hash (`#/command`); the app keeps it in the path (`src/routes/[[screen]]/[[ref]]`),
+so every screen has a real address, and a screen about one batch names it after: the watchlist, the batches table and a
+notification about the batch open `/route/MF-2409-117` (SC-67). `/` is the sign-in, or the person's home once they are
+in. A screen the person's role cannot open falls back to their home.
 
 | Role                                       | Screens                                                                           |
 | ------------------------------------------ | --------------------------------------------------------------------------------- |
@@ -56,9 +58,20 @@ A screen the person's role cannot open falls back to their home.
   `corepack pnpm seed` (`core/src/lib/workspace/seed/`), so every figure is still worked out by `money.js`. A test runs
   design3's own `flow.js` beside the port and checks they leave the store the same at every stage
   (`core/tests/workspace.test.ts`).
-- **Where backend-api plugs in:** the screens only read `store.state` and change it through `act()` or `store.update()`.
-  Replacing the store's reads and the actions with API calls (and the agents with the real ones) leaves the screens as
-  they are.
+- **Where backend-api plugs in:** the screens read everything through the workspace source (`core/src/lib/workspace/
+source.ts`): the state, the workspace's data, the batch in focus, and every step a person takes. A live source over
+  backend-api (SC-73) replaces the stub this page provides and leaves the screens as they are.
+- **On backend-api, SC-68's option B** (design3's `?live` mode, `design3/screens/live.jsx`): the sign-in is email and
+  password, with the story's people as chips that fill the email only; every page says under its title whether it is
+  live, the journey time and the pace; a band crosses the page while the stream is down, or when a step did not go
+  through; the batches in a journey are tabs over the Command Center's tracker card and under the Route Room's title
+  (`/route/<batch>`); the label photo's Send fills as it uploads, and Setup uploads a DMS export; a day with no batch
+  at risk is a quiet day. `src/hooks.server.ts` puts the console's splash (`design3/console/splash.js`) first in
+  `<body>` of a live build, in the workspace's words, for the first load, signing in and signing out; the first sign-in
+  on a device ends on one step that asks for push (`#lib/live/push.svelte.ts`, remembered as `sc-push-asked:*`). The
+  live source gives the screens what they need through the source's optional members (`clock`, `cases`, `uploads`,
+  `failed`, `outsider`, `reconnect`, `uploadExport`, `cancelUpload`); the stub has none of them, so nothing of this
+  draws on it.
 - **The session** (`sc3-session`), the splash once a session (`sc3-app-splash`), the theme (`sc3-theme`) and the hero's
   paused animation (`sc3-hero-paused`) keep the prototype's storage keys.
 

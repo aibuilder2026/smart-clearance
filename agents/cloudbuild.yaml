@@ -1,0 +1,57 @@
+# The agents service's build and release on Cloud Build, as sc-builder (infra/prod/build.tf), the way backend-api's
+# cloudbuild.yaml releases it:
+# 1. build the image from agents/, reusing the last one's layers, and push it to Artifact Registry;
+# 2. move the Cloud Run service `agents` onto it, once that service exists (infra phase B, SC-74, adds it with its
+#    push subscriptions); until then the build stops after the push.
+# _DEPLOY=false stops after the push. By hand, from the repository's root:
+#
+#   gcloud builds submit agents --config=agents/cloudbuild.yaml \
+#     --service-account="projects/aibuilder-510213/serviceAccounts/sc-builder@aibuilder-510213.iam.gserviceaccount.com" \
+#     --gcs-source-staging-dir=gs://aibuilder-510213-builds/source --substitutions=_TAG="$(git rev-parse --short=12 HEAD)"
+
+substitutions:
+  _REGION: asia-south1
+  _REPOSITORY: sc
+  _SERVICE: agents
+  _TAG: manual
+  _DEPLOY: 'true'
+
+steps:
+  - id: pull the last image, for its layers
+    name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    args: ['-c', 'docker pull ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/agents:latest || true']
+
+  - id: build
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --cache-from=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/agents:latest
+      - --tag=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/agents:${_TAG}
+      - --tag=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/agents:latest
+      - .
+
+  - id: push
+    name: gcr.io/cloud-builders/docker
+    args: [push, --all-tags, '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/agents']
+
+  - id: deploy, once the service exists
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -euc
+      - |
+        [ "${_DEPLOY}" = true ] || exit 0
+        if ! gcloud run services describe "${_SERVICE}" --region="${_REGION}" --format='value(metadata.name)' >/dev/null 2>&1; then
+          echo "agents: no Cloud Run service '${_SERVICE}' yet (infra phase B, SC-74); the image is pushed, nothing deployed"
+          exit 0
+        fi
+        # waits for the new revision to be ready: its startup probe is /readyz (both models resolve), and the
+        # service is private (only sc-invoker may call it), so the build does not call it itself
+        gcloud run services update "${_SERVICE}" --region="${_REGION}" --quiet \
+          --image="${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/agents:${_TAG}"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: 1200s

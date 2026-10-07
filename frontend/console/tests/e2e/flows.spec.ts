@@ -76,15 +76,39 @@ test('flows · inviting a person checks the address, then adds them', async ({ p
 	await openConsole(page, '/clients/munchly/people');
 	const form = page.locator('.cs-invite');
 	await form.getByLabel('Name').fill('Sunil Rao');
-	await form.getByLabel('Work email or mobile number').fill('sunil@gmail.com');
-	await form.getByRole('button', { name: 'Send invitation' }).click();
+	await form.getByLabel('Email', { exact: true }).fill('sunil@gmail.com');
+	await form.getByRole('button', { name: 'Invite', exact: true }).click();
 	await expect(form.getByRole('alert')).toHaveText(
-		'Munchly Foods staff need a munchly.in address. Partners can use any address or a phone number.'
+		'Munchly Foods staff need a munchly.in address. Partners can use any address.'
 	);
-	await form.getByLabel('Work email or mobile number').fill('sunil.rao@munchly.in');
-	await form.getByRole('button', { name: 'Send invitation' }).click();
-	await expect(page.locator('.toast')).toHaveText('Invitation sent to Sunil Rao');
+	await form.getByLabel('Email', { exact: true }).fill('sunil.rao@munchly.in');
+	await form.getByRole('button', { name: 'Invite', exact: true }).click();
+	await expect(page.locator('.toast')).toHaveText('Sunil Rao can sign in with the default password');
 	await expect(page.getByRole('row', { name: /Sunil Rao/ })).toContainText('invited');
+});
+
+test("flows · a client's length of a journey day, on every tab, saved and logged (SC-68)", async ({ page }) => {
+	await openConsole(page, '/clients/munchly/people');
+	const badge = page.getByRole('button', { name: /^Length of a journey day/ });
+	await expect(badge).toHaveText(/Real time/);
+	await badge.click();
+	const sheet = page.getByRole('dialog', { name: 'Length of a journey day' });
+	await sheet.getByRole('radio', { name: /^Demo/ }).check();
+	await expect(sheet.getByText('Munchly Foods is live.', { exact: false })).toBeVisible();
+	await expect(sheet.locator('.list-row', { hasText: "The Watcher's 09:00 check" })).toContainText('every 5 minutes');
+	await sheet.getByLabel('Or any number of minutes').fill('0');
+	await expect(sheet.getByRole('alert')).toHaveText('Enter a whole number of minutes, from 1 to 1,440.');
+	await expect(sheet.getByRole('button', { name: 'Save', exact: true })).toBeDisabled();
+	await sheet.getByLabel('Or any number of minutes').fill('90');
+	await expect(sheet.locator('.list-head')).toHaveText('At 1 h 30 min a day');
+	await sheet.getByRole('button', { name: 'Save', exact: true }).click();
+	await expect(page.locator('.toast').last()).toHaveText('Munchly Foods: a journey day now lasts 1 h 30 min');
+	await expect(badge).toHaveText(/1 day = 1 h 30 min/);
+	await page.getByRole('tab', { name: 'Audit' }).click();
+	await expect(badge).toHaveText(/1 day = 1 h 30 min/);
+	await expect(page.locator('.list-row').first()).toContainText(
+		'Set the length of a journey day for Munchly Foods to 1 h 30 min (was a day)'
+	);
 });
 
 test('flows · an unknown client, and an unknown page', async ({ page }) => {

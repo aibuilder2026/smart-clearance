@@ -1,0 +1,9 @@
+{
+ "json": {
+  "explanation": "588 units go to the kirana cluster at ₹18 and 772 to ExpireSoon at ₹15: the scheme is capped by what 38 kiranas can move in 14 days, and ExpireSoon takes the rest. The plan recovers ₹21,770 against a ₹26,330 write-off."
+ },
+ "usage": [
+  1240,
+  74
+ ]
+}

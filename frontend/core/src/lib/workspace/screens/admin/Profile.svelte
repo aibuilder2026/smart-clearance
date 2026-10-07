@@ -13,16 +13,15 @@
 	import { useNotice } from '../../../notice.svelte';
 	import { useTheme } from '../../../theme.svelte';
 	import { useAccount, useRoute } from '../../context';
-	import { WS } from '../../data';
-	import { act } from '../../flow';
-	import { KINDS, ROLES, providerOf } from '../../model';
-	import { store } from '../../store.svelte';
+	import { kinds, PROVIDER_ICONS, providerOf } from '../../model';
+	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import Screen from '../common/Screen.svelte';
 
 	// every role's profile: who they are and how they sign in, their workspace, Rakesh's permission to act in his name,
 	// the theme, the notifications and their language, this device and the account (screens/admin.jsx Profile)
 	let { me }: { me: User } = $props();
+	const ws = useWorkspace();
 	const theme = useTheme();
 	const acc = useAccount();
 	const { toast } = useNotice();
@@ -31,7 +30,7 @@
 	const lkey = $derived('sc3-lang-' + me.id);
 	const loadLang = () => {
 		try {
-			return localStorage.getItem(lkey) || (['rakesh', 'ganesh'].includes(me.id) ? 'hi' : 'en');
+			return localStorage.getItem(lkey) || (me.lang === 'hi' ? 'hi' : 'en');
 		} catch {
 			return 'en';
 		}
@@ -46,21 +45,28 @@
 		}
 	};
 	let push = $state(true);
+	// the live workspace's web push on this device (SC-73): what the browser allows, and whether this device takes it
+	let pushOff = $state(false);
+	$effect(() => void acc.push?.check());
+	const PUSH_SAYS: Record<string, string> = {
+		denied: 'Blocked in this browser: allow it in the site settings',
+		'install-first': 'On iPhone, add the app to your Home Screen first',
+		unsupported: 'This browser cannot take pushes'
+	};
+	const pushSub = $derived(acc.push ? PUSH_SAYS[acc.push.state] : undefined);
 	// svelte-ignore state_referenced_locally (the app keys the screens by person, so the default is read once)
 	let digest = $state(me.role === 'finance' || me.role === 'sustainability');
-	const perm = $derived(store.state.setup.permission);
+	const perm = $derived(ws.state.setup.permission);
 	const inside = $derived(me.role !== 'buyer');
-	const signInIcon = $derived<IconName>(
-		me.provider === 'google' ? 'google' : me.provider === 'phone' ? 'smartphone' : 'hourglass'
-	);
+	const signInIcon = $derived<IconName>(PROVIDER_ICONS[me.provider]);
 </script>
 
-{#snippet wsMark()}<WorkspaceMark ws={WS} size={32} />{/snippet}
-{#snippet member()}<Badge size="sm" tone="green">{KINDS[me.kind] || 'member'}</Badge>{/snippet}
+{#snippet wsMark()}<WorkspaceMark ws={ws.data.workspace} size={32} />{/snippet}
+{#snippet member()}<Badge size="sm" tone="green">{kinds(ws.data.workspace)[me.kind] || 'member'}</Badge>{/snippet}
 {#snippet acting()}<Switch
 		checked={!perm?.paused}
 		onchange={(v) => {
-			act('pause', !v);
+			void ws.act('pause', !v);
 			toast({ text: v ? 'Resumed' : 'Paused · nothing more happens in your name', tone: 'ok' });
 		}}
 		label="Let Smart-Clearance act for you"
@@ -86,18 +92,26 @@
 		label="Notification language"
 		size="sm"
 	/>{/snippet}
-{#snippet pushSwitch()}<Switch bind:checked={push} label="Push notifications" />{/snippet}
+{#snippet pushSwitch()}{#if acc.push}{@const p = acc.push}<Switch
+			checked={p.state === 'granted' && !pushOff}
+			disabled={p.busy || (p.state !== 'granted' && p.state !== 'default')}
+			onchange={(v) => {
+				pushOff = !v;
+				void (v ? p.enable() : p.disable());
+			}}
+			label="Push notifications"
+		/>{:else}<Switch bind:checked={push} label="Push notifications" />{/if}{/snippet}
 {#snippet digestSwitch()}<Switch bind:checked={digest} label="Weekly digest" />{/snippet}
 {#snippet install()}{#if acc.install}<Button variant="secondary" size="sm" onclick={acc.install}>Install</Button
 		>{/if}{/snippet}
 
-<Screen {me} title="Profile" sub={ROLES[me.role]}>
+<Screen {me} title="Profile" sub={ws.data.roles[me.role]}>
 	<div class="stack" style="gap: 20px; max-width: 680px">
 		<Card class="row" style="gap: 16px"
 			><Avatar person={me} size="xl" ring />
 			<div class="stack tight" style="gap: 2px; min-width: 0">
 				<div class="t-title2">{me.name}</div>
-				<span class="muted">{ROLES[me.role]} · {me.org}</span><span class="t-footnote subtle row tight"
+				<span class="muted">{ws.data.roles[me.role]} · {me.org}</span><span class="t-footnote subtle row tight"
 					><Icon name={signInIcon} size={14} />{providerOf(me)}{me.email
 						? ' · ' + me.email
 						: me.phone
@@ -107,7 +121,12 @@
 			</div></Card
 		>
 		{#if inside}<List head="Workspace"
-				><ListRow leading={wsMark} title={WS.name} sub={WS.domain} value={member} />{#if me.role === 'admin'}<ListRow
+				><ListRow
+					leading={wsMark}
+					title={ws.data.workspace.name}
+					sub={ws.data.workspace.domain}
+					value={member}
+				/>{#if me.role === 'admin'}<ListRow
 						icon="building-2"
 						title="Workspace settings"
 						sub="Sign-in, supply-chain profile, branding"
@@ -115,9 +134,10 @@
 						onclick={() => router.go('workspace')}
 					/>{/if}</List
 			>{/if}
-		{#if me.id === 'rakesh' && perm}<List
-				head="Acting for Rakesh Traders"
-				foot="Inside Munchly's floors: listings, scheme offers, invoice drafts and dispatch slots in your name."
+		{#if perm && perm.by === me.id}<List
+				head="Acting for {me.org}"
+				foot="Inside {ws.data.workspace
+					.short}'s floors: listings, scheme offers, invoice drafts and dispatch slots in your name."
 				><ListRow
 					icon={perm.paused ? 'circle-pause' : 'handshake'}
 					title={perm.paused ? 'Paused' : 'On since ' + perm.at}
@@ -141,10 +161,11 @@
 			>{/if}
 		<List head="Appearance"><ListRow title="Theme" value={themeSwitch} /></List>
 		<List head="Notifications" foot="Offers to the trade go out in the language each person picks."
-			><ListRow title="Language" value={language} /><ListRow title="Push notifications" value={pushSwitch} /><ListRow
-				title="Weekly digest by email"
-				value={digestSwitch}
-			/></List
+			><ListRow title="Language" value={language} /><ListRow
+				title="Push notifications"
+				sub={pushSub}
+				value={pushSwitch}
+			/><ListRow title="Weekly digest by email" value={digestSwitch} /></List
 		>
 		{#if acc.install !== undefined}<List head="This device"
 				><ListRow
@@ -179,7 +200,7 @@
 						icon="log-out"
 						iconTone="red"
 						title="Sign out"
-						sub={inside ? `Back to ${WS.domain}` : undefined}
+						sub={inside ? `Back to ${ws.data.workspace.domain}` : undefined}
 						onclick={acc.signOut}
 					/>{/if}
 			</List>{/if}

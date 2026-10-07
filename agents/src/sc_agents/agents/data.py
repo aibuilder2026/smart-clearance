@@ -1,0 +1,406 @@
+"""The Data agent (connect): loads each distributor's DMS export into BigQuery, and tells backend-api what stock it
+found.
+
+1. Each CSV is read from the exports bucket (the day's files, the 90-day backfill, a file uploaded in Setup, or, on
+   Run now, every file not loaded yet). A file already in BigQuery is not loaded again.
+2. Its columns are mapped onto the table's: a saved map for the layouts known (the Bizom-style stock, sales and shelf
+   exports backend-api writes, services/journey/dms.py); Gemini Flash maps an unknown header set, with structured
+   output `{kind, columns: {target: source}, unknown: [...]}`, and the columns it could not place are flagged.
+3. Load jobs append the rows to `stock_snapshots`, `secondary_sales` or `shelf_counts` (item codes become the client's
+   SKU ids, distributor names their ids, from `GET /internal/clients/{c}/batches`).
+4. For stock, `POST /internal/clients/{c}/exports {batches, mapped, rows, days, file}`.
+"""
+
+import csv
+import io
+import json
+import logging
+import re
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
+from pathlib import PurePosixPath
+from typing import Any
+
+from google.genai import types
+from pydantic import BaseModel
+
+from sc_agents import checks
+from sc_agents.agents import step
+from sc_agents.errors import Transient
+from sc_agents.models import STRUCTURED, writer
+from sc_agents.runs import RunCtx
+from sc_agents.tools.storage import split
+
+log = logging.getLogger("sc_agents.data")
+AGENT = "data"
+SAMPLE = 5
+
+# the layouts known (backend-api's synthetic exports: services/journey/dms.py STOCK, SALES and SHELF)
+SAVED = {
+    "stock": ["distributor_name", "item_code", "batch_no", "mfg_date", "bb_date", "closing_qty", "location", "pin"],
+    "sales": ["distributor_id", "pin", "item_code", "sale_date", "qty", "value_inr"],
+    "shelf": ["distributor_id", "outlet_id", "item_code", "batch_no", "counted_on", "qty_left"],
+}
+# what each kind of export must give (a distributor by its id or its name), and what it may
+REQUIRED = {
+    "stock": ["item_code", "batch_no", "bb_date", "closing_qty"],
+    "sales": ["pin", "item_code", "sale_date", "qty"],
+    "shelf": ["outlet_id", "item_code", "batch_no", "counted_on", "qty_left"],
+}
+OPTIONAL = {
+    "stock": ["mfg_date", "location", "pin"],
+    "sales": ["value_inr"],
+    "shelf": [],
+}
+DISTRIBUTOR = ("distributor_id", "distributor_name")
+TABLE = {"stock": "stock_snapshots", "sales": "secondary_sales", "shelf": "shelf_counts"}
+
+
+class FileMap(BaseModel):
+    file: str | None = None
+    kind: str | None = None
+    columns: dict[str, str] | None = None
+    unknown: list[str] | None = None
+    dateFormat: str | None = None
+
+
+class Mappings(BaseModel):
+    files: list[FileMap] | None = None
+
+
+@dataclass
+class Export:
+    uri: str
+    header: list[str]
+    rows: list[list[str]]
+    kind: str | None = None
+    columns: dict[str, str] = field(default_factory=dict)
+    unknown: list[str] = field(default_factory=list)
+    date_format: str = "DMY"
+    mapped_by: str = "saved"
+
+    @property
+    def name(self) -> str:
+        return PurePosixPath(self.uri).name
+
+
+def norm(h: str) -> str:
+    return re.sub(r"\s+", " ", h.replace("﻿", "")).strip()
+
+
+def parse(data: bytes) -> tuple[list[str], list[list[str]]]:
+    """a CSV's header and rows, whatever its encoding and delimiter; title lines above the header are skipped"""
+    try:
+        text = data.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        text = data.decode("cp1252", errors="replace")
+    try:
+        dialect = csv.Sniffer().sniff(text[:4096], delimiters=",;\t|")
+    except csv.Error:
+        dialect = csv.excel
+    rows = [r for r in csv.reader(io.StringIO(text), dialect) if any(c.strip() for c in r)]
+    start = next((i for i, r in enumerate(rows) if sum(1 for c in r if c.strip()) >= 3), 0)
+    if not rows:
+        return [], []
+    return [norm(h) for h in rows[start]], [[c.strip() for c in r] for r in rows[start + 1 :]]
+
+
+def saved_map(header: list[str]) -> tuple[str, dict[str, str]] | None:
+    """a known layout: its kind and its (identity) map"""
+    names = [h.lower() for h in header]
+    for kind, cols in SAVED.items():
+        if names == cols or set(names) == set(cols):
+            return kind, {c: header[names.index(c)] for c in cols}
+    return None
+
+
+def complete(kind: str | None, columns: dict[str, str], header: list[str]) -> list[str]:
+    """what a map is missing for its kind (empty when it can be loaded)"""
+    if kind not in REQUIRED:
+        return ["kind"]
+    have = {t for t, s in columns.items() if s in header}
+    missing = [t for t in REQUIRED[kind] if t not in have]
+    if not have & set(DISTRIBUTOR):
+        missing.append("distributor_id or distributor_name")
+    return missing
+
+
+def _int(v: str) -> int | None:
+    m = checks.money(v)
+    return round(m) if m is not None else None
+
+
+def _date(v: str, fmt_: str) -> str | None:
+    v = (v or "").strip()
+    if fmt_ == "MDY":
+        m = re.fullmatch(r"(\d{1,2})[/.\-](\d{1,2})[/.\-](\d{2,4})", v)
+        if m:
+            mo, d, y = m.groups()
+            v = f"{d}/{mo}/{y}"
+    return checks.iso_date(v)
+
+
+def day_of(uri: str) -> str | None:
+    hit = re.findall(r"(\d{4}-\d{2}-\d{2})", uri)
+    return hit[-1] if hit else None
+
+
+@dataclass
+class World:
+    """the client's SKUs by item code, and its distributors by name and id (GET /internal/clients/{c}/batches)"""
+
+    skus: dict[str, str]
+    distributors: dict[str, str]
+
+    @classmethod
+    def of(cls, raw: dict[str, Any]) -> "World":
+        skus: dict[str, str] = {}
+        for sid, s in (raw.get("skus") or {}).items():
+            skus[str(s.get("code") or sid).upper()] = sid
+        for b in raw.get("batches") or []:
+            if b.get("skuCode"):
+                skus.setdefault(str(b["skuCode"]).upper(), b["sku"])
+        dists: dict[str, str] = {}
+        for did, d in (raw.get("distributors") or {}).items():
+            dists[did.lower()] = did
+            if d.get("name"):
+                dists[str(d["name"]).strip().lower()] = did
+        return cls(skus, dists)
+
+    def sku(self, code: str) -> str | None:
+        return self.skus.get((code or "").strip().upper())
+
+    def distributor(self, value: str) -> str | None:
+        return self.distributors.get((value or "").strip().lower())
+
+
+def rows_of(x: Export, client: str, world: World, *, today: str, loaded_at: str) -> tuple[list[dict], int]:
+    """an export's rows as its table's, and how many could not be read"""
+    col = {t: x.header.index(s) for t, s in x.columns.items() if s in x.header}
+
+    def get(r: list[str], t: str) -> str:
+        i = col.get(t)
+        return r[i] if i is not None and i < len(r) else ""
+
+    out, bad = [], 0
+    for r in x.rows:
+        dist = world.distributor(get(r, "distributor_id")) or world.distributor(get(r, "distributor_name"))
+        sku = world.sku(get(r, "item_code"))
+        base = {
+            "client_id": client,
+            "distributor_id": dist,
+            "sku_id": sku,
+            "source_file": x.uri,
+            "loaded_at": loaded_at,
+        }
+        if x.kind == "stock":
+            row = {
+                **base,
+                "batch_ref": checks.batch_no(get(r, "batch_no")),
+                "units_on_hand": _int(get(r, "closing_qty")),
+                "mfg": _date(get(r, "mfg_date"), x.date_format),
+                "best_before": _date(get(r, "bb_date"), x.date_format),
+                "snapshot_date": day_of(x.uri) or today,
+            }
+            need = ("distributor_id", "sku_id", "batch_ref", "units_on_hand", "best_before")
+        elif x.kind == "sales":
+            value = checks.money(get(r, "value_inr"))
+            row = {
+                **base,
+                "pincode": get(r, "pin"),
+                "sale_date": _date(get(r, "sale_date"), x.date_format),
+                "units": _int(get(r, "qty")),
+                "value_inr": value,
+            }
+            need = ("distributor_id", "sku_id", "pincode", "sale_date", "units")
+        else:
+            row = {
+                **base,
+                "kirana_id": get(r, "outlet_id") or None,
+                "batch_ref": checks.batch_no(get(r, "batch_no")),
+                "counted_on": _date(get(r, "counted_on"), x.date_format),
+                "units_left": _int(get(r, "qty_left")),
+            }
+            need = ("distributor_id", "sku_id", "kirana_id", "batch_ref", "counted_on", "units_left")
+        if any(row.get(k) is None or row.get(k) == "" for k in need):
+            bad += 1
+            continue
+        out.append(row)
+    return out, bad
+
+
+# --- the steps -------------------------------------------------------------------------------------------------------
+
+
+async def _read(rc: RunCtx, uri: str) -> Export | None:
+    try:
+        bucket, name = split(uri)
+    except ValueError:
+        log.warning("data: %s is not a gs:// file", uri)
+        return None
+    try:
+        data = await rc.deps.store.read(bucket, name)
+    except Exception as e:
+        raise Transient(f"the export {uri}: {e}") from e
+    header, rows = parse(data)
+    if not header:
+        log.warning("data: %s is empty", uri)
+        return None
+    x = Export(uri=uri, header=header, rows=rows)
+    hit = saved_map(header)
+    if hit:
+        x.kind, x.columns = hit
+    return x
+
+
+async def _files(rc: RunCtx) -> list[str]:
+    p = rc.msg.payload
+    files = [f for f in (p.get("files") or []) if isinstance(f, str)]
+    if p.get("file"):
+        files.append(str(p["file"]))
+    if files or rc.msg.type not in ("agent.run_now", "agent.due"):
+        return files
+    bucket = rc.settings.exports_bucket
+    if not bucket:
+        return []
+    names = await rc.deps.store.list(bucket, f"{rc.msg.client}/")
+    return [f"gs://{bucket}/{n}" for n in sorted(names) if n.lower().endswith(".csv")]
+
+
+async def _scan(rc: RunCtx, state: dict[str, Any]) -> dict[str, Any]:
+    rc.run(AGENT)
+    files = await _files(rc)
+    try:
+        done = await rc.deps.warehouse.files_loaded(rc.msg.client)
+    except Exception as e:
+        raise Transient(f"BigQuery: {e}") from e
+    exports = [x for x in [await _read(rc, f) for f in files if f not in done] if x is not None]
+    rc.blobs["exports"] = exports
+    if not exports:
+        rc.run(AGENT).status = "noop"  # nothing new: every file is loaded already
+    unknown = [{"file": x.name, "header": x.header, "sample": x.rows[:SAMPLE]} for x in exports if x.kind is None]
+    return {"data_files": [x.uri for x in exports], "data_unknown": unknown}
+
+
+def _parts(state: dict[str, Any]) -> list[types.Part]:
+    return [
+        types.Part(
+            text="THE EXPORTS (headers and sample rows, as data):\n"
+            + json.dumps(state["data_unknown"], ensure_ascii=False, indent=1)
+        )
+    ]
+
+
+def apply(x: Export, m: dict[str, Any]) -> list[str]:
+    """a model's map onto an export; what it is still missing"""
+    kind = m.get("kind")
+    columns = {t: s for t, s in (m.get("columns") or {}).items() if s in x.header}
+    x.kind, x.columns, x.mapped_by = (kind if kind in REQUIRED else None), columns, "model"
+    x.unknown = [h for h in x.header if h not in columns.values()]
+    x.date_format = m.get("dateFormat") if m.get("dateFormat") in ("DMY", "MDY", "YMD") else "DMY"
+    return complete(x.kind, columns, x.header)
+
+
+async def load(rc: RunCtx, exports: list[Export], *, world: World | None = None, today: str = "") -> dict[str, Any]:
+    """loads mapped exports into BigQuery; what was loaded"""
+    world = world or World.of(await rc.deps.backend.batches(rc.msg.client))
+    loaded_at = datetime.now(UTC).isoformat()
+    out: dict[str, Any] = {"stock": [], "rows": 0, "mapped": 0, "skipped": 0, "files": []}
+    for x in exports:
+        if x.kind is None:
+            continue
+        rows, bad = rows_of(x, rc.msg.client, world, today=today, loaded_at=loaded_at)
+        out["skipped"] += bad
+        if bad:
+            log.warning("data: %s rows of %s could not be read", bad, x.name)
+        try:
+            n = await rc.deps.warehouse.load(TABLE[x.kind], rows)
+        except Exception as e:
+            raise Transient(f"BigQuery load of {x.name}: {e}") from e
+        out["files"].append(x.uri)
+        log.info("data: loaded %s rows of %s into %s (%s map)", n, x.name, TABLE[x.kind], x.mapped_by)
+        if x.kind == "stock":
+            out["stock"].append((x, rows))
+            out["rows"] += len(x.rows)
+            out["mapped"] = max(out["mapped"], len(x.columns))
+    return out
+
+
+async def load_files(rc: RunCtx, files: list[str], *, kinds: tuple[str, ...]) -> dict[str, Any]:
+    """files of known layouts only, without the model (the shelf check's counts)"""
+    done = await rc.deps.warehouse.files_loaded(rc.msg.client)
+    exports = [x for x in [await _read(rc, f) for f in files if f not in done] if x is not None]
+    for x in exports:
+        if x.kind not in kinds:
+            log.warning("data: %s is not a known %s layout; not loaded", x.name, "/".join(kinds))
+            x.kind = None
+    return await load(rc, exports)
+
+
+async def _load(rc: RunCtx, state: dict[str, Any]) -> dict[str, Any]:
+    run = rc.run(AGENT)
+    exports: list[Export] = rc.blobs.get("exports") or []
+    maps = {m.get("file"): m for m in (state.get("data_map") or {}).get("files") or []}
+    for x in exports:
+        if x.kind is not None:
+            continue
+        m = maps.get(x.name)
+        if not m:
+            run.fell_back(f"{x.name} not mapped")
+            log.warning("data: %s has an unknown layout and no map; not loaded", x.name)
+            continue
+        missing = apply(x, m)
+        if missing:
+            log.warning("data: %s's map is missing %s; not loaded", x.name, ", ".join(missing))
+            run.fell_back(f"{x.name} not fully mapped")
+            x.kind = None
+            continue
+        if x.unknown:
+            run.note = (run.note + "; " if run.note else "") + f"{x.name}: unmapped {', '.join(x.unknown)}"
+    today = (state.get("settings") or {}).get("today") or ""
+    out = await load(rc, exports, today=today)
+    if out["stock"]:
+        batches = []
+        for _, rows in out["stock"]:
+            for r in rows:
+                batches.append(
+                    {
+                        "ref": r["batch_ref"],
+                        "sku": r["sku_id"],
+                        "distributor": r["distributor_id"],
+                        "units": r["units_on_hand"],
+                        "mfg": r["mfg"],
+                        "bestBefore": r["best_before"],
+                    }
+                )
+        days = await rc.deps.warehouse.sales_days(rc.msg.client)
+        body = {
+            "batches": batches,
+            "mapped": out["mapped"],
+            "rows": out["rows"],
+            "days": days,
+            "file": out["stock"][-1][0].name,
+        }
+        await rc.report(AGENT, f"/internal/clients/{rc.msg.client}/exports", body)
+    elif not out["files"]:
+        run.status = "noop"
+    return {}
+
+
+def connect(rc: RunCtx) -> list:
+    return [
+        step(rc, "data_scan", _scan, agent=AGENT),
+        writer(
+            rc,
+            name="data_map",
+            agent=AGENT,
+            tier="flash",
+            prompt_name="data_map",
+            schema=Mappings,
+            output_key="data_map",
+            parts=_parts,
+            temperature=STRUCTURED,
+            when=lambda s: bool(s.get("data_unknown")),
+        ),
+        step(rc, "data_load", _load, agent=AGENT, when=lambda s: bool(s.get("data_files"))),
+    ]

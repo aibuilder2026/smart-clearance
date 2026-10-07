@@ -1,0 +1,15 @@
+{
+ "model": "Qwen-Image-2.1 (bf16), run locally through the qwen-image-bf16 plugin 0.2.0 (its CLI)",
+ "seed": 18,
+ "size": "1024 (4:3, 1184 x 896)",
+ "prompt": "A realistic close-up smartphone photo of a printed white label stuck on the side of a brown corrugated cardboard carton. The label is printed in bold black sans-serif type, one line each: \"MUNCHLY MASALA CHIPS 150 g\", \"बैच नं. / BATCH NO: MF-2409-117\", \"निर्माण तिथि / MFG: 18/05/2026\", \"इससे पहले उपयोग करें / BEST BEFORE: 18/11/2026\", \"अधिकतम खुदरा मूल्य / MRP ₹30.00\". Even light; the label is bilingual, Hindi in Devanagari above the English on each line. Photorealistic, natural colours, the label text crisp and legible.",
+ "postProcessing": [
+  {
+   "step": "convert",
+   "to": "WebP",
+   "quality": 88
+  }
+ ],
+ "source": "src/story-hindi.png (sha256 fc3aa76fe00999d0, kept locally)",
+ "seen": "the Hindi words are imperfect (the figures are exact)"
+}

@@ -8,13 +8,16 @@
 	import { fmt } from '../../../format';
 	import Icon from '../../../icons/Icon.svelte';
 	import { prefersReducedMotion } from '../../../motion';
-	import { D, TRACK } from '../../data';
+	import { track } from '../../model';
+	import { useWorkspace } from '../../source';
 
 	// the stage beside the sign-in form on desktops: the product, and its one number (screens/auth.jsx HeroStage).
 	// WCAG 2.2.2: the batch walks the nine stages once and holds on the result, so nothing loops beside the sign-in. The
 	// walk can be paused on the way (a paused hero stays paused on return), and replayed from the start.
 	// guided (the demo, before the batch exists): the product and its promise, without the result
 	let { guided }: { guided?: boolean } = $props();
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
 
 	const KEY = 'sc3-hero-paused';
 	const reduce = $derived(prefersReducedMotion.current);
@@ -75,15 +78,15 @@
 	</div>
 	{#if !guided}
 		<div class="si-figure">
-			<span class="si-cap">Recovered from one batch of Munchly chips headed for the bin</span><Money
-				value={k >= 9 ? D.actual.net : Math.round((D.actual.net * k) / 9)}
+			<span class="si-cap">Recovered from one batch of {c.sku.brand} chips headed for the bin</span><Money
+				value={k >= 9 ? c.actual.net : Math.round((c.actual.net * k) / 9)}
 				size="xl"
 				roll
 				style="color: var(--primary-text)"
-			/><span class="si-cap">instead of {fmt.inr(-D.plan.writeOff.total)} to destroy it</span>
+			/><span class="si-cap">instead of {fmt.inr(-c.plan.writeOff.total)} to destroy it</span>
 		</div>
 		<div class="si-track" aria-hidden="true">
-			<Tracker stages={TRACK} done={Math.min(k, 9)} current={k < 9 ? k : -1} />
+			<Tracker stages={track(ws.data.stages)} done={Math.min(k, 9)} current={k < 9 ? k : -1} />
 		</div>
 		{#if !reduce}<div class="si-ctl">
 				<button type="button" class="btn btn-ghost btn-sm" onclick={control}

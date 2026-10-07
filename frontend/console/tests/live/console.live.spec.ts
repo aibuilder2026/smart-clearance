@@ -88,9 +88,9 @@ test('live · Book a demo on the landing page becomes a client in the console', 
 	await page.goto(`${CONSOLE}/clients/${slug}/people`);
 	const form = page.locator('.cs-invite');
 	await form.getByLabel('Name').fill('Sunil Rao');
-	await form.getByLabel('Work email or mobile number').fill(`sunil.rao@${domain}`);
-	await form.getByRole('button', { name: 'Send invitation' }).click();
-	await expect(page.locator('.toast').last()).toHaveText('Invitation sent to Sunil Rao');
+	await form.getByLabel('Email', { exact: true }).fill(`sunil.rao@${domain}`);
+	await form.getByRole('button', { name: 'Invite', exact: true }).click();
+	await expect(page.locator('.toast').last()).toHaveText('Sunil Rao can sign in with the default password');
 	await page.goto(`${CONSOLE}/clients/${slug}/plan`);
 	await page.getByRole('group', { name: 'Plan' }).getByRole('button', { name: 'Growth' }).click();
 	await expect(page.locator('.toast').last()).toHaveText(`${company} on Growth`);

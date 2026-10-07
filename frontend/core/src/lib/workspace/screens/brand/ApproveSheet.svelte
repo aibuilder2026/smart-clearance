@@ -10,40 +10,60 @@
 	import { prefersReducedMotion } from '../../../motion';
 	import { curveFrames } from '../../../motion/frames';
 	import { useRoute } from '../../context';
-	import { D, ES, KL, PLAN } from '../../data';
-	import { act } from '../../flow';
-	import { fmt } from '../../model';
-	import { store } from '../../store.svelte';
+	import { useLive } from '../../live.svelte';
+	import { castOf, fmt } from '../../model';
+	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
+	import ApproveFailed from '../live/ApproveFailed.svelte';
+	import NeedsNet from '../live/NeedsNet.svelte';
 
 	// the one yes: what the plan recovers and what happens the moment it is tapped; then the tick, the swing rolling in
-	// and the agents released (screens/brand.jsx ApproveSheet)
+	// and the agents released (screens/brand.jsx ApproveSheet). On the live workspace (SC-73, SC-68 option B) an approval
+	// that does not go through is said here, in the backend's words, with an amber Retry; offline, it waits for a connection
 	type Props = { open?: boolean; onclose?: () => void; me?: User | null };
 	let { open = $bindable(false), onclose, me }: Props = $props();
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
 	const router = useRoute();
 	let busy = $state(false);
 	let placed = $state(false);
-	const approvedNow = $derived(!!(store.state.hero.plan && store.state.hero.plan.status === 'approved'));
+	const approvedNow = $derived(!!(ws.state.hero.plan && ws.state.hero.plan.status === 'approved'));
+	const cast = $derived(castOf(ws.state, c));
+	const es = $derived(c.lines.expiresoon);
+	const kl = $derived(c.lines.kirana);
 
-	// opening shows the plan as it stands; an approval made elsewhere while it is open places it
+	// opening shows the plan as it stands; an approval made elsewhere while it is open places it (not this sheet's own
+	// while it is on its way: the live workspace shows it at once, and puts it back if it is refused)
 	$effect(() => {
 		if (open) placed = untrack(() => approvedNow);
 	});
 	$effect(() => {
-		if (approvedNow && untrack(() => open)) placed = true;
+		if (approvedNow && untrack(() => open && !busy)) placed = true;
 	});
 
 	const close = () => {
 		open = false;
 		onclose?.();
 	};
+	const live = useLive();
+	const offline = $derived(!!live?.on && live.offline);
+	const failed = $derived(ws.failed?.action === 'approve' ? ws.failed : null);
 	const approve = () => {
 		busy = true;
-		setTimeout(() => {
+		void ws.act('approve', me?.id, { feel: 650 }).then(() => {
 			busy = false;
-			act('approve', me ? me.id : 'priya');
-			placed = true;
-		}, 650);
+			// the live source says when it did not go through; then the plan still waits
+			if (ws.failed?.action !== 'approve') placed = true;
+		});
+	};
+	const retry = () => {
+		const f = failed;
+		if (!f) return approve();
+		busy = true;
+		void f.retry().then(() => {
+			busy = false;
+			if (ws.failed?.action !== 'approve') placed = true;
+		});
 	};
 
 	// the tick draws itself: the ring, then the check
@@ -56,21 +76,21 @@
 		return () => a.cancel();
 	};
 
-	const STEPS: [IconName, string][] = [
+	const STEPS: [IconName, string][] = $derived([
 		[
 			'shopping-bag',
-			`Lister posts ${ES.units} units on ExpireSoon at ₹15 in Rakesh Traders' name, with the label photo and dates; reserve ₹13.50, hidden from buyers inside Munchly's territories.`
+			`Lister posts ${es.units} units on ExpireSoon at ₹${es.price} in ${c.dist.name}' name, with the label photo and dates; reserve ${fmt.rate(ws.data.rules.negotiation.reservePerUnit)}, hidden from buyers inside ${ws.data.workspace.short}'s territories.`
 		],
 		[
 			'send',
-			`Outreach pushes the Hindi scheme to ${D.offered} kiranas: ${KL.units} units at ₹${KL.packPrice!.toFixed(2)} a pack, 2 free with every 10, for 48 hours.`
+			`Outreach pushes the Hindi scheme to ${c.offered} kiranas: ${kl.units} units at ${fmt.rate(kl.packPrice!)} a pack, ${c.scheme.free} free with every ${c.scheme.buy}, for ${ws.state.rules.offerWindowHours} hours.`
 		],
-		['smartphone', 'Rakesh bhai gets the same plan in his app and can pause it.'],
+		['smartphone', `${cast.distributor.short} gets the same plan in his app and can pause it.`],
 		[
 			'shield-check',
 			'Nothing is listed, messaged or shipped before this tap. The approval is logged with who, when and device.'
 		]
-	];
+	]);
 </script>
 
 {#snippet footer()}{#if placed}<Button
@@ -82,9 +102,24 @@
 				close();
 				router.go('execution');
 			}}>Watch execution</Button
-		>{:else}<Button variant="approve" size="lg" block icon="check" loading={busy} onclick={approve}
-			>Approve · release the agents</Button
-		><Button variant="ghost" block onclick={close}>Not now</Button>{/if}{/snippet}
+		>{:else}{#if failed && !busy}<ApproveFailed message={failed.message} />{/if}{#if offline}<Button
+				variant="approve"
+				size="lg"
+				block
+				icon="check"
+				aria-disabled="true"
+				aria-describedby="lv-sheet-net"
+				class="lv-blocked">Approve · release the agents</Button
+			><span style="justify-self: center"><NeedsNet id="lv-sheet-net" /></span>{:else if failed}<Button
+				variant="approve"
+				size="lg"
+				block
+				icon="refresh-cw"
+				loading={busy}
+				onclick={retry}>Retry · release the agents</Button
+			>{:else}<Button variant="approve" size="lg" block icon="check" loading={busy} onclick={approve}
+				>Approve · release the agents</Button
+			>{/if}<Button variant="ghost" block onclick={close}>Not now</Button>{/if}{/snippet}
 
 <Sheet bind:open {onclose} title={placed ? 'Plan placed' : 'Approve the plan'} {footer}>
 	{#if placed}
@@ -112,35 +147,35 @@
 					{@attach draw(450, 400, [0.42, 0, 0.58, 1])}
 				/></svg
 			>
-			<div class="t-title2">Approved · 09:40</div>
+			<div class="t-title2">Approved · {ws.state.hero.plan?.at}</div>
 			<div class="stack tight" style="justify-items: center">
-				<Money value={PLAN.swing} size="l" roll from={0} style="color: var(--primary-text)" /><span class="muted"
+				<Money value={c.plan.swing} size="l" roll from={0} style="color: var(--primary-text)" /><span class="muted"
 					>better than the bin, on one batch of chips</span
 				>
 			</div>
 			<p class="t-subhead muted" style="max-width: 40ch">
-				The Lister is posting on ExpireSoon in Rakesh Traders' name and Outreach is messaging {D.offered} kiranas now. Rakesh
-				bhai has the plan in his app. The approval is logged with who, when and device.
+				The Lister is posting on ExpireSoon in {c.dist.name}' name and Outreach is messaging {c.offered} kiranas now.
+				{cast.distributor.short} has the plan in his app. The approval is logged with who, when and device.
 			</p>
 		</div>
 	{:else}
 		<div class="stack">
 			<div class="stack tight">
-				<Money value={PLAN.net} size="l" style="color: var(--primary-text)" /><span class="muted"
-					>net recovered, {PLAN.pctMRP}% of MRP</span
+				<Money value={c.plan.net} size="l" style="color: var(--primary-text)" /><span class="muted"
+					>net recovered, {c.plan.pctMRP}% of MRP</span
 				>
 			</div>
 			<List
-				><ListRow icon="trending-up" title="Instead of destroying" value={fmt.inr(-PLAN.writeOff.total)} /><ListRow
+				><ListRow icon="trending-up" title="Instead of destroying" value={fmt.inr(-c.plan.writeOff.total)} /><ListRow
 					icon="scale"
 					iconTone="blue"
 					title="Swing on this batch"
-					value={fmt.inr(PLAN.swing)}
+					value={fmt.inr(c.plan.swing)}
 				/><ListRow
 					icon="badge-check"
 					iconTone="gray"
 					title="GST input credit retained"
-					value={fmt.inr(PLAN.itcRetained)}
+					value={fmt.inr(c.plan.itcRetained)}
 				/></List
 			>
 			<div class="stack tight">

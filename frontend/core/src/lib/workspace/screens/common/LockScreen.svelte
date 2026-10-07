@@ -4,8 +4,7 @@
 	import Icon from '../../../icons/Icon.svelte';
 	import type { IconName } from '../../../icons/registry';
 	import { rise } from '../../../motion/transitions';
-	import { D } from '../../data';
-	import { store } from '../../store.svelte';
+	import { useWorkspace } from '../../source';
 
 	// a phone's lock screen with one push: the trigger for every human moment in the journey (screens/common.jsx
 	// LockScreen). The guided demo shows it in a phone; tapping the push (or anywhere, when there is one) opens it
@@ -13,7 +12,8 @@
 	type Props = { who: string; push?: LockPush | null; time: string; date: string; onopen?: () => void };
 	let { who, push, time, date, onopen }: Props = $props();
 
-	const p = $derived(store.state.users.find((u) => u.id === who) || D.people[who] || { name: who, short: who });
+	const ws = useWorkspace();
+	const p = $derived(ws.state.users.find((u) => u.id === who) || ws.data.people[who] || { name: who, short: who });
 	const hindi = $derived(!!push && /[ऀ-ॿ]/.test(push.body));
 </script>
 

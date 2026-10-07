@@ -42,6 +42,10 @@
 			}
 		],
 		"outside": "Marketplace buyers sign in to ExpireSoon, another company's site. They are never members of this workspace.",
+		"invite": {
+			"name": "Shree Sai Kirana",
+			"contact": "+91 98230 60014"
+		},
 		"profile": [
 			{
 				"id": "route",
@@ -92,7 +96,8 @@
 				"value": "until 20 days before best-before",
 				"text": "Returned packs reach the godown in time for a staff sale or a food bank."
 			}
-		]
+		],
+		"hint": "name@munchly.in or 98230 44118"
 	},
 	"client": {
 		"name": "Munchly Foods Ltd",
@@ -124,7 +129,8 @@
 			"perCarton": 24,
 			"lifeDays": 180,
 			"kgPerUnit": 0.16,
-			"img": "pack-chips"
+			"img": "pack-chips",
+			"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 		},
 		"biscuits": {
 			"id": "biscuits",
@@ -1632,6 +1638,7 @@
 	],
 	"quarter": {
 		"label": "Q3 FY27",
+		"period": "Oct to Dec 2026",
 		"recovered": 630000,
 		"itc": 79000,
 		"kg": 5700,
@@ -1726,6 +1733,13 @@
 				3
 			]
 		],
+		"mixNames": {
+			"kirana": "Kirana scheme",
+			"expiresoon": "ExpireSoon",
+			"staff": "Staff sale",
+			"foodbank": "Food bank",
+			"writeoff": "Write-off"
+		},
 		"brsr": [
 			{
 				"cat": "Food waste: packaged food past quick-commerce gates",
@@ -1748,8 +1762,10 @@
 		"co2": 14250
 	},
 	"setup": {
+		"minutes": 15,
 		"dms": {
 			"source": "Bizom-style DMS export (CSV)",
+			"file": "dms_export_2026-10-01.csv",
 			"rows": 312,
 			"columns": [
 				[
@@ -1793,6 +1809,13 @@
 			"staff",
 			"foodbank"
 		],
+		"channelNames": {
+			"kirana": "Kiranas",
+			"expiresoon": "ExpireSoon",
+			"staff": "Staff sale",
+			"foodbank": "Food bank",
+			"writeoff": "Write-off"
+		},
 		"allowList": [
 			[
 				"snacks",
@@ -1849,6 +1872,7 @@
 				"minDays": 15,
 				"minUnits": 50,
 				"logistics": "Volunteer pickup within 48 h, hunger spots in 100+ cities",
+				"pickup": "volunteer pickup in 48 h",
 				"paper": "In-app receipt"
 			},
 			{
@@ -2215,7 +2239,8 @@
 			},
 			"hsn": "2005",
 			"gstPct": 5,
-			"note": "Drafted for Rakesh Traders to issue from Tally."
+			"note": "Drafted for Rakesh Traders to issue from Tally.",
+			"date": "2026-10-05"
 		},
 		{
 			"id": "eway",
@@ -2542,6 +2567,161 @@
 				"sellthrough.backfill",
 				"90 days · by pincode, by shop",
 				"ok"
+			]
+		]
+	},
+	"journey": {
+		"today": "Fri 2 Oct",
+		"planMinutes": 20,
+		"permissionAsked": "Thu 16:50",
+		"listing": {
+			"id": "ES-24117",
+			"url": "https://expiresoon.example/l/ES-24117"
+		},
+		"van": {
+			"day": "Tuesday",
+			"date": "Tue 6 Oct",
+			"leaves": "07:00",
+			"depot": "Kalamna godown",
+			"reply": "Theek hai. Mangalvaar subah nikal jaunga.",
+			"replyAt": "Mon 18:04"
+		},
+		"donation": {
+			"partner": "Feeding India",
+			"from": "Begum Bazaar",
+			"spot": "the Charminar hunger spot",
+			"day": "Tuesday",
+			"date": "Tue 6 Oct",
+			"time": "10:00",
+			"hour": "10 am",
+			"asked": "Day 0",
+			"confirmed": "Day 1",
+			"collected": "Day 4",
+			"slots": [
+				"Wednesday 10:00",
+				"Wednesday 16:00",
+				"Thursday 11:00"
+			],
+			"reply": "Tuesday works. We'll serve them at the Charminar hunger spot this week."
+		}
+	},
+	"market": {
+		"dispatchHours": 24,
+		"balanceHours": 48,
+		"minOrder": 100,
+		"lots": [
+			{
+				"id": "ES-23988",
+				"name": "Cream biscuits 75 g",
+				"icon": "cookie",
+				"units": 2400,
+				"price": 6,
+				"mrp": 10,
+				"days": 88,
+				"seller": "FMCG distributor, Bilaspur"
+			},
+			{
+				"id": "ES-24031",
+				"name": "Instant noodles 70 g",
+				"icon": "soup",
+				"units": 1800,
+				"price": 8,
+				"mrp": 14,
+				"days": 41,
+				"seller": "Wholesaler, Durg"
+			},
+			{
+				"id": "ES-24076",
+				"name": "UHT toned milk 1 L",
+				"icon": "milk",
+				"units": 600,
+				"price": 38,
+				"mrp": 72,
+				"days": 34,
+				"seller": "Dairy distributor, Bhilai"
+			},
+			{
+				"id": "ES-24102",
+				"name": "Whole-wheat atta 5 kg",
+				"icon": "wheat",
+				"units": 240,
+				"price": 160,
+				"mrp": 285,
+				"days": 52,
+				"seller": "Mill outlet, Rajnandgaon"
+			}
+		]
+	},
+	"explore": {
+		"groups": [
+			{
+				"group": "Munchly Foods",
+				"note": "staff · Google Workspace",
+				"ids": [
+					[
+						"priya",
+						"Approve the plan for the chips batch"
+					],
+					[
+						"anita",
+						"Review Munchly's credit note and GST memo"
+					],
+					[
+						"vikram",
+						"Export the BRSR table"
+					],
+					[
+						"arjun",
+						"The workspace, its people and the guardrails"
+					]
+				]
+			},
+			{
+				"group": "Invited partners",
+				"note": "a one-time code or Google",
+				"ids": [
+					[
+						"rakesh",
+						"Give the permission, send the photo, run the van"
+					],
+					[
+						"ganesh",
+						"Order from the Hindi offer"
+					],
+					[
+						"meera",
+						"Confirm a food-bank pickup"
+					]
+				]
+			},
+			{
+				"group": "Outside the workspace",
+				"note": "ExpireSoon, another company's marketplace",
+				"ids": [
+					[
+						"agrawal",
+						"Bid on the lot from Raipur"
+					]
+				]
+			}
+		],
+		"code": "246810",
+		"accounts": [
+			[
+				"priya",
+				"priya.deshmukh@munchly.in"
+			],
+			[
+				"rakesh",
+				"+91 98230 44118"
+			],
+			[
+				"ganesh",
+				"+91 98230 55120"
+			],
+			[
+				"shreesai",
+				"+91 98230 60013"
 			]
 		]
 	},

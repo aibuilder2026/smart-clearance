@@ -82,6 +82,8 @@
 
   const hero = BATCHES[0];
   const chips = SKUS.chips;
+  // the chips' own tax history, as the invoice states it
+  chips.gstNote = "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025.";
   const RISK = M.assess(hero, chips);
   const PLAN = M.plan(hero, chips);
   const ES = PLAN.lines.find(l => l.id === "expiresoon"), KL = PLAN.lines.find(l => l.id === "kirana");
@@ -94,6 +96,8 @@
   const CLAIM = M.expiryClaim(PLAN.units, chips);
   const DOCS = M.documents(PLAN, chips, AWARD, SUPPORT, { seller: DISTRIBUTORS.rakesh, buyer: BUYER, client: CLIENT });
   const INVOICE = DOCS.find(d => d.id === "invoice");
+  // drafted on day 3, when the balance lands and the lot is dispatched
+  INVOICE.date = addDays(DAY0, 3);
   const MANGO_PLAN = M.plan(BATCHES[1], SKUS.mango);
   const MANGO_FB = (MANGO_PLAN.lines.find(l => l.id === "foodbank") || { units: 0 }).units;
   const RETURN_BY = addDays(hero.bestBefore, -M.RULES.returnWindowDays);
@@ -112,6 +116,8 @@
       { id: "partner", icon: "mail", title: "Google, by invitation", who: "Partners such as food banks", rule: "Addresses Munchly invited" },
     ],
     outside: "Marketplace buyers sign in to ExpireSoon, another company's site. They are never members of this workspace.",
+    // what the invite form suggests typing
+    invite: { name: "Shree Sai Kirana", contact: "+91 98230 60014" },
     profile: [
       { id: "route", icon: "factory", title: "Route to market", value: `${Object.keys(DISTRIBUTORS).length} distributors`, text: "Munchly sells only to its distributors. Each one supplies the kiranas on his salesman's beat and the Blinkit, Zepto and Instamart warehouses in his city." },
       { id: "owner", icon: "warehouse", title: "Who owns short-dated stock", value: "the distributor", text: `He bought it at ${fmt.rate(chips.dp)} a pack, so the agent lists, offers and invoices in his name, with his one-time permission.` },
@@ -122,6 +128,9 @@
       { id: "returns", icon: "calendar-clock", title: "Scheme returns", value: `until ${M.RULES.returnWindowDays} days before best-before`, text: "Returned packs reach the godown in time for a staff sale or a food bank." },
     ],
   };
+
+  // what the sign-in suggests typing: an address in the workspace's domain, or an invited number
+  WORKSPACE.hint = `name@${WORKSPACE.emailDomain} or ${PEOPLE.rakesh.phone.slice(4)}`;
 
   const n0 = fmt.num, inr = fmt.inr;
   const shops = KIRANAS.length;
@@ -225,12 +234,13 @@
 
   // the quarter at its end (Q3 FY27), as the walkthrough reports it; weekly series sum to it, week 1 is this batch
   const QUARTER = {
-    label: "Q3 FY27", recovered: 630000, itc: 79000, kg: 5700, meals: 3700, batches: 23,
+    label: "Q3 FY27", period: "Oct to Dec 2026", recovered: 630000, itc: 79000, kg: 5700, meals: 3700, batches: 23,
     weeks: [
       ["W1", Math.round(ACTUAL.net), Math.round(PLAN.writeOff.total)], ["W2", 38400, 45100], ["W3", 41200, 49800], ["W4", 52600, 60300], ["W5", 47900, 55200], ["W6", 55800, 63900],
       ["W7", 49300, 58400], ["W8", 60100, 68700], ["W9", 51800, 60400], ["W10", 57900, 66100], ["W11", 53400, 62800], ["W12", 0, 61980], ["W13", 47000, 54500],
     ],
     mix: [["kirana", 42], ["expiresoon", 38], ["staff", 5], ["foodbank", 12], ["writeoff", 3]],
+    mixNames: { kirana: "Kirana scheme", expiresoon: "ExpireSoon", staff: "Staff sale", foodbank: "Food bank", writeoff: "Write-off" },
     brsr: [
       { cat: "Food waste: packaged food past quick-commerce gates", diverted: 4840, resold: 4260, donated: 580, disposed: 60, evidence: "Tax invoices, ExpireSoon listing IDs, in-app order logs, food-bank receipts" },
       { cat: "Plastic packaging (EPR)", diverted: 860, resold: 770, donated: 90, disposed: 10, evidence: "Packaging weights per SKU, EPR factor, the same invoices" },
@@ -242,12 +252,15 @@
   QUARTER.co2 = QUARTER.kg * M.RULES.co2PerKg;
 
   const SETUP = {
-    dms: { source: "Bizom-style DMS export (CSV)", rows: 312, columns: [["distributor", "distributor_name"], ["sku", "item_code"], ["batch", "batch_no"], ["mfg", "mfg_date"], ["best_before", "bb_date"], ["units", "closing_qty"], ["godown", "location"], ["pincode", "pin"]], salesDays: 90 },
+    // the setup takes about this many minutes, from one export
+    minutes: 15,
+    dms: { source: "Bizom-style DMS export (CSV)", file: "dms_export_2026-10-01.csv", rows: 312, columns: [["distributor", "distributor_name"], ["sku", "item_code"], ["batch", "batch_no"], ["mfg", "mfg_date"], ["best_before", "bb_date"], ["units", "closing_qty"], ["godown", "location"], ["pincode", "pin"]], salesDays: 90 },
     channels: ["expiresoon", "kirana", "staff", "foodbank"],
+    channelNames: { kirana: "Kiranas", expiresoon: "ExpireSoon", staff: "Staff sale", foodbank: "Food bank", writeoff: "Write-off" },
     allowList: [["snacks", ["expiresoon", "kirana", "staff", "foodbank"]], ["biscuits", ["expiresoon", "kirana", "staff", "foodbank"]], ["staples", ["expiresoon", "kirana", "staff", "foodbank"]], ["beverages", ["expiresoon", "kirana", "staff", "foodbank"]], ["personal-care", ["expiresoon", "kirana", "staff"]]],
     brandSafety: ["Personal care never goes to food banks", "Premium gift packs never go to a staff sale"],
     partners: [
-      { name: "Feeding India", minDays: 15, minUnits: 50, logistics: "Volunteer pickup within 48 h, hunger spots in 100+ cities", paper: "In-app receipt" },
+      { name: "Feeding India", minDays: 15, minUnits: 50, logistics: "Volunteer pickup within 48 h, hunger spots in 100+ cities", pickup: "volunteer pickup in 48 h", paper: "In-app receipt" },
       { name: "India FoodBanking Network", minDays: 21, minUnits: 100, logistics: "Drop at a member warehouse or a scheduled pickup", paper: "Donation acknowledgement (CSR / 80G, indicative)" },
     ],
     approval: "The first 10 routes per channel need a tap; after that the agent runs inside the guardrails and reports.",
@@ -256,7 +269,41 @@
     acts: ["List your Munchly stock on ExpireSoon", "Send scheme offers to your kiranas", "Draft your invoices", "Book dispatch slots in your calendar"],
   };
 
+  // the moments of the chips batch's journey the screens state beyond its timeline: the day it starts, how soon a plan
+  // follows the label, when Munchly asked Rakesh Traders for his permission, the lot's id on ExpireSoon, the Tuesday van
+  // round and Rakesh bhai's answer to it, and the Mango Drink donation's pickup
+  const JOURNEY = {
+    today: "Fri 2 Oct", planMinutes: 20, permissionAsked: "Thu 16:50",
+    listing: { id: "ES-24117", url: "https://expiresoon.example/l/ES-24117" },
+    van: { day: "Tuesday", date: "Tue 6 Oct", leaves: "07:00", depot: "Kalamna godown", reply: "Theek hai. Mangalvaar subah nikal jaunga.", replyAt: "Mon 18:04" },
+    donation: { partner: "Feeding India", from: "Begum Bazaar", spot: "the Charminar hunger spot", day: "Tuesday", date: "Tue 6 Oct", time: "10:00", hour: "10 am", asked: "Day 0", confirmed: "Day 1", collected: "Day 4", slots: ["Wednesday 10:00", "Wednesday 16:00", "Thursday 11:00"] },
+  };
+  JOURNEY.donation.reply = `${JOURNEY.donation.day} works. We'll serve them at ${JOURNEY.donation.spot} this week.`;
+
+  // ExpireSoon, another company's marketplace: its terms, and the other lots on it (illustrative)
+  const MARKET = {
+    dispatchHours: 24, balanceHours: 48, minOrder: 100,
+    lots: [
+      { id: "ES-23988", name: "Cream biscuits 75 g", icon: "cookie", units: 2400, price: 6, mrp: 10, days: 88, seller: "FMCG distributor, Bilaspur" },
+      { id: "ES-24031", name: "Instant noodles 70 g", icon: "soup", units: 1800, price: 8, mrp: 14, days: 41, seller: "Wholesaler, Durg" },
+      { id: "ES-24076", name: "UHT toned milk 1 L", icon: "milk", units: 600, price: 38, mrp: 72, days: 34, seller: "Dairy distributor, Bhilai" },
+      { id: "ES-24102", name: "Whole-wheat atta 5 kg", icon: "wheat", units: 240, price: 160, mrp: 285, days: 52, seller: "Mill outlet, Rajnandgaon" },
+    ],
+  };
+
+  // someone exploring the prototype steps into the story's people, by where they stand: inside Munchly, invited in, or
+  // outside the workspace. The one-time code every invited number gets, and the accounts the sign-in suggests
+  const EXPLORE = {
+    groups: [
+      { group: WORKSPACE.name, note: "staff · Google Workspace", ids: [["priya", "Approve the plan for the chips batch"], ["anita", `Review ${WORKSPACE.short}'s credit note and GST memo`], ["vikram", "Export the BRSR table"], ["arjun", "The workspace, its people and the guardrails"]] },
+      { group: "Invited partners", note: "a one-time code or Google", ids: [["rakesh", "Give the permission, send the photo, run the van"], ["ganesh", "Order from the Hindi offer"], ["meera", "Confirm a food-bank pickup"]] },
+      { group: "Outside the workspace", note: "ExpireSoon, another company's marketplace", ids: [["agrawal", `Bid on the lot from ${BUYER.city}`]] },
+    ],
+    code: "246810",
+    accounts: [["priya", PEOPLE.priya.email], ["rakesh", PEOPLE.rakesh.phone], ["ganesh", PEOPLE.ganesh.phone], ["shreesai", "+91 98230 60013"]],
+  };
+
   window.SC3_DATA = { DAY0, addDays, PLATFORM, WORKSPACE, CLIENT, SKUS, DISTRIBUTORS, BUYER, PEOPLE, KIRANAS, OFFERED, BATCHES, STAGES, PUSH, CHAT, EVENTS, EV, QUARTER, SETUP, SHELF,
-    RISK, PLAN, ASK, COUNTER, AWARD, ACTUAL, SUPPORT, SUPPORT_PLAN, CLAIM, DOCS, INVOICE, MANGO_PLAN, MANGO_FB, RETURN_BY, IMG,
+    RISK, PLAN, ASK, COUNTER, AWARD, ACTUAL, SUPPORT, SUPPORT_PLAN, CLAIM, DOCS, INVOICE, MANGO_PLAN, MANGO_FB, RETURN_BY, IMG, JOURNEY, MARKET, EXPLORE,
     batchView: b => { const sku = SKUS[b.sku]; return { ...b, skuObj: sku, dist: DISTRIBUTORS[b.distributor], assess: M.assess(b, sku) }; } };
 })();
