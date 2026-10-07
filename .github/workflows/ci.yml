@@ -17,6 +17,7 @@ on:
       - '!design3/designs/**'
       - 'infra/**'
       - 'backend-api/**'
+      - 'agents/**'
       - '.github/workflows/ci.yml'
       - '.github/actions/**'
   push:
@@ -27,6 +28,7 @@ on:
       - '!design3/designs/**'
       - 'infra/**'
       - 'backend-api/**'
+      - 'agents/**'
       - '.github/workflows/ci.yml'
       - '.github/actions/**'
   workflow_dispatch:
@@ -111,6 +113,40 @@ jobs:
       - run: uv sync --frozen
       - name: Lint (ruff)
         run: uv run --frozen ruff check . && uv run --frozen ruff format --check .
+      - name: Tests (pytest)
+        run: uv run --frozen pytest -q
+
+  agents-gate:
+    name: Agents gate (ruff, pytest on Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.14', '3.13']
+    defaults:
+      run:
+        working-directory: agents
+    env:
+      # the stub tier: recorded model responses, no live model and no network (SC-72)
+      MODEL_TIER: stub
+      AGENTS_ENV: test
+      # every uv command in the job on the matrix's Python (agents/.python-version names 3.14)
+      UV_PYTHON: ${{ matrix.python }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: agents/uv.lock
+      - name: WeasyPrint's system libraries, so the PDF test runs (Pango, HarfBuzz)
+        run: sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz-subset0
+      - run: uv sync --frozen
+      - name: Lint (ruff), and the scripts (bash -n, shellcheck)
+        run: |
+          uv run --frozen ruff check . && uv run --frozen ruff format --check .
+          for s in scripts/*.sh; do bash -n "$s"; done
+          shellcheck -x -P SCRIPTDIR scripts/*.sh
       - name: Tests (pytest)
         run: uv run --frozen pytest -q
 
