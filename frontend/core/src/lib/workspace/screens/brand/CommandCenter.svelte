@@ -13,7 +13,8 @@
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
 	import { useRoute } from '../../context';
 	import { D, ES, KL, PLAN, SHOPS } from '../../data';
-	import { batchViews, fmt, heroModel, isRouted } from '../../model';
+	import { fmt, isRouted } from '../../model';
+	import { batchViews, heroModel } from '../../legacy';
 	import { store } from '../../store.svelte';
 	import type { BatchView, User } from '../../types';
 	import PlayAs from '../common/PlayAs.svelte';

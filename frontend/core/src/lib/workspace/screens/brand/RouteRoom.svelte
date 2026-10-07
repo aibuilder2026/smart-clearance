@@ -24,7 +24,8 @@
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
 	import { useRoute } from '../../context';
 	import { D, ES, KL, PLAN, STAGE_TIMES, TRACK, TRACK_TIMED } from '../../data';
-	import { fmt, heroModel, isRouted } from '../../model';
+	import { fmt, isRouted } from '../../model';
+	import { heroModel } from '../../legacy';
 	import { store } from '../../store.svelte';
 	import type { Phase, User } from '../../types';
 	import Locked from '../common/Locked.svelte';

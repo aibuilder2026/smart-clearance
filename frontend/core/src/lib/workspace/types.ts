@@ -329,6 +329,9 @@ export type MoneyRules = {
 	returnWindowDays: number;
 	gates: { blinkit: { minDays: number }; zepto: { pctLife: number }; instamart: { pctLife: number } };
 	negotiation: { reservePerUnit: number; counterPctOfAsk: number };
+	/** a kirana pays the pack price for `buy` packets and gets `free` more */
+	scheme: { buy: number; free: number };
+	ewayThreshold: number;
 };
 
 /* ---------- the store: one workspace's live state ---------- */
@@ -493,3 +496,102 @@ export type WorkspaceSeed = {
 	connectEvent: FeedEvent;
 	initial: State;
 };
+
+/* ---------- what the screens read from their source (source.ts, SC-67) ---------- */
+
+/** the workspace before anyone signs in: its name, mark and address, and the platform it runs on */
+export type WorkspacePublic = {
+	workspace: Workspace;
+	platform: WorkspaceSeed['platform'];
+	/** the stub's own sign-in: the one-time code it sends, and the accounts a visitor may try */
+	prototype?: { code: string; accounts: [string, string][] };
+};
+
+/** the workspace's own data: who it is, its people and supply chain, the rules it plans by, its batches and quarter */
+export type WorkspaceData = {
+	/** the day the workspace's story starts */
+	day0: string;
+	platform: WorkspaceSeed['platform'];
+	workspace: Workspace;
+	client: WorkspaceSeed['client'];
+	skus: Record<string, Sku>;
+	distributors: Record<string, Distributor>;
+	people: Record<string, StoryPerson>;
+	roles: Record<RoleId, string>;
+	rules: MoneyRules;
+	setup: WorkspaceSeed['setup'];
+	/** the nine stages, with when each happens and who acts */
+	stages: Stage[];
+	/** every batch the Watcher sees */
+	batches: Batch[];
+	quarter: Quarter;
+};
+
+/** the batch in focus, and everything its screens read about it: its product and distributor, the kiranas and the
+ *  buyer it goes to, the plan, the deal, the papers and the second batch the same agents donate */
+export type CaseData = {
+	batch: Batch;
+	sku: Sku;
+	dist: Distributor;
+	buyer: Buyer;
+	/** the kiranas that ordered, and how many were offered the scheme */
+	kiranas: Kirana[];
+	offered: number;
+	/** the scheme the kiranas are offered */
+	scheme: { buy: number; free: number };
+	risk: Assess;
+	plan: Plan;
+	/** the Router's two lines: the kirana scheme and the ExpireSoon lot */
+	lines: { kirana: PlanLine; expiresoon: PlanLine };
+	counter: WorkspaceSeed['counter'];
+	award: Award;
+	actual: Actual;
+	support: Support;
+	supportPlan: Support;
+	claim: WorkspaceSeed['claim'];
+	docs: Doc[];
+	/** the invoice the distributor issues to the buyer */
+	invoice: Doc;
+	shelf: Shelf;
+	/** scheme packs may come back until this day */
+	returnBy: string;
+	/** the pushes of the case, by moment */
+	push: Record<string, Push>;
+	/** the batch the same agents donate, and how many packs go to the food bank */
+	donation: { batch: Batch; sku: Sku; dist: Distributor; plan: Plan; units: number };
+};
+
+/** the people a visitor can step into in the stub, by where they stand */
+export type ExploreGroup = { group: string; note: string; ids: [string, string][] };
+
+/** an invitation to the workspace: a person or a partner organisation, by email or mobile number */
+export type InviteInput = { name: string; contact: string; role: RoleId };
+
+/** the steps of the journey a person takes (the agents take the rest), and what each is told */
+export type ActionArgs = {
+	connect: undefined;
+	permit: undefined;
+	/** true pauses, false resumes */
+	pause: boolean;
+	sendPhoto: undefined;
+	/** who approves */
+	approve: string;
+	/** a kirana's order, and how many packets when it differs from its share */
+	order: { kirana: string; units?: number };
+	/** the bid, a packet */
+	bid: number;
+	accept: undefined;
+	confirmPickup: undefined;
+	collect: undefined;
+	dispatch: undefined;
+	issueInvoice: undefined;
+	review: undefined;
+	vanRound: undefined;
+	/** who joins */
+	join: string;
+};
+export type HumanAction = keyof ActionArgs;
+export type ActionArg<N extends HumanAction> = ActionArgs[N];
+
+export type Connection = 'local' | 'connecting' | 'live' | 'reconnecting' | 'polling' | 'paused' | 'offline';
+export type SourceStatus = { phase: 'loading' | 'ready' | 'error'; error?: unknown; connection: Connection };

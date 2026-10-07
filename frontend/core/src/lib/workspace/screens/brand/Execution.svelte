@@ -18,7 +18,8 @@
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
 	import { D, ES, KL, PLAN } from '../../data';
-	import { fmt, heroModel, isRouted } from '../../model';
+	import { fmt, isRouted } from '../../model';
+	import { heroModel } from '../../legacy';
 	import { store } from '../../store.svelte';
 	import type { User } from '../../types';
 	import PlayAs from '../common/PlayAs.svelte';

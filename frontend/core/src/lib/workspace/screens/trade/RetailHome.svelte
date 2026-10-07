@@ -8,7 +8,8 @@
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
 	import { useRoute } from '../../context';
 	import { D } from '../../data';
-	import { fmt, kOf } from '../../model';
+	import { fmt } from '../../model';
+	import { kOf } from '../../legacy';
 	import { store } from '../../store.svelte';
 	import type { User } from '../../types';
 	import Screen from '../common/Screen.svelte';

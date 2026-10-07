@@ -2,7 +2,7 @@
 	import Avatar from '../../../components/Avatar.svelte';
 	import Card from '../../../components/Card.svelte';
 	import Empty from '../../../components/Empty.svelte';
-	import { personById } from '../../model';
+	import { personById } from '../../legacy';
 	import { store } from '../../store.svelte';
 	import type { User } from '../../types';
 	import Screen from '../common/Screen.svelte';

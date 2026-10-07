@@ -4,7 +4,8 @@
 	import Money from '../../../components/Money.svelte';
 	import Icon from '../../../icons/Icon.svelte';
 	import { D, ES, INVOICE } from '../../data';
-	import { cartons, distOf, fmt } from '../../model';
+	import { fmt } from '../../model';
+	import { cartons, distOf } from '../../legacy';
 	import { store } from '../../store.svelte';
 	import type { User } from '../../types';
 	import Screen from '../common/Screen.svelte';

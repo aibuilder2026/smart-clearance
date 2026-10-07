@@ -14,7 +14,8 @@
 	import { useRoute } from '../../context';
 	import { addDays, D, PLAN } from '../../data';
 	import { act } from '../../flow';
-	import { fmt, permissionOf } from '../../model';
+	import { fmt } from '../../model';
+	import { permissionOf } from '../../legacy';
 	import { store } from '../../store.svelte';
 	import type { User } from '../../types';
 	import PlayAs from '../common/PlayAs.svelte';

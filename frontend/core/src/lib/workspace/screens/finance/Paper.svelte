@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { cx } from '../../../cx';
 	import { CHIPS, D, ES, INVOICE, PLAN, SHOPS } from '../../data';
-	import { cartons, fmt } from '../../model';
+	import { fmt } from '../../model';
+	import { cartons } from '../../legacy';
 
 	// a document of the pack, set on paper (screens/finance.jsx Paper): the invoice Rakesh Traders issues, the e-way bill
 	// check, Munchly's price-support credit note, the ITC memo, the FSSAI checklist and the destruction certificate

@@ -13,7 +13,8 @@
 	import type { IconName } from '../../../icons/registry';
 	import { useNotice } from '../../../notice.svelte';
 	import { D, WS } from '../../data';
-	import { KINDS, ROLES, STATUS_TONE, providerOf } from '../../model';
+	import { STATUS_TONE, providerOf } from '../../model';
+	import { KINDS, ROLES } from '../../legacy';
 	import { store } from '../../store.svelte';
 	import type { RoleId, User, UserStatus } from '../../types';
 	import Screen from '../common/Screen.svelte';

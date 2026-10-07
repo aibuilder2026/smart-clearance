@@ -3,7 +3,7 @@
 	import Card from '../../../components/Card.svelte';
 	import Empty from '../../../components/Empty.svelte';
 	import Product from '../../../components/Product.svelte';
-	import { kOf } from '../../model';
+	import { kOf } from '../../legacy';
 	import { store } from '../../store.svelte';
 	import type { User } from '../../types';
 	import Screen from '../common/Screen.svelte';

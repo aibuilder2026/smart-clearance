@@ -11,7 +11,8 @@
 	import StatusBadge from '../../../components/StatusBadge.svelte';
 	import { useRoute } from '../../context';
 	import { D } from '../../data';
-	import { batchViews, fmt } from '../../model';
+	import { fmt } from '../../model';
+	import { batchViews } from '../../legacy';
 	import { store } from '../../store.svelte';
 	import type { BatchView, User } from '../../types';
 	import Screen from '../common/Screen.svelte';

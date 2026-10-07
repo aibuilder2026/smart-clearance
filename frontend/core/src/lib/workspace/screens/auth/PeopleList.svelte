@@ -3,7 +3,7 @@
 	import Badge from '../../../components/Badge.svelte';
 	import Spinner from '../../../components/Spinner.svelte';
 	import { cx } from '../../../cx';
-	import { ROLES } from '../../model';
+	import { ROLES } from '../../legacy';
 	import { store } from '../../store.svelte';
 	import { DEMO_PEOPLE } from './people';
 

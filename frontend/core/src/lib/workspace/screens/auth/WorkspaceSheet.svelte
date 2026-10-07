@@ -8,7 +8,7 @@
 	import Sheet from '../../../components/Sheet.svelte';
 	import WorkspaceMark from '../../../components/WorkspaceMark.svelte';
 	import { WS } from '../../data';
-	import { ROLES } from '../../model';
+	import { ROLES } from '../../legacy';
 	import type { User } from '../../types';
 	import Url from './Url.svelte';
 

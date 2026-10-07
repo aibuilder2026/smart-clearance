@@ -12,7 +12,8 @@
 	import Icon from '../../../icons/Icon.svelte';
 	import { D, ES, INVOICE as inv } from '../../data';
 	import { act } from '../../flow';
-	import { cartons, fmt } from '../../model';
+	import { fmt } from '../../model';
+	import { cartons } from '../../legacy';
 	import { store } from '../../store.svelte';
 	import type { User } from '../../types';
 	import Chat from '../brand/Chat.svelte';

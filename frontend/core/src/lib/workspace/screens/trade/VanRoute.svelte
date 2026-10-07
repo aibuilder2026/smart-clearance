@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Card from '../../../components/Card.svelte';
 	import Empty from '../../../components/Empty.svelte';
-	import { distOf } from '../../model';
+	import { distOf } from '../../legacy';
 	import type { User } from '../../types';
 	import Screen from '../common/Screen.svelte';
 	import VanInner from './VanInner.svelte';

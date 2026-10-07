@@ -10,7 +10,8 @@
 	import { useRoute } from '../../context';
 	import { CHIPS, D } from '../../data';
 	import { A } from '../../flow';
-	import { fmt, kOf, offerMath } from '../../model';
+	import { fmt } from '../../model';
+	import { kOf, offerMath } from '../../legacy';
 	import { store } from '../../store.svelte';
 	import type { User } from '../../types';
 	import Screen from '../common/Screen.svelte';

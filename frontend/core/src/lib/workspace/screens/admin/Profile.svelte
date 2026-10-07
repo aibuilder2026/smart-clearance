@@ -15,7 +15,8 @@
 	import { useAccount, useRoute } from '../../context';
 	import { WS } from '../../data';
 	import { act } from '../../flow';
-	import { KINDS, ROLES, providerOf } from '../../model';
+	import { providerOf } from '../../model';
+	import { KINDS, ROLES } from '../../legacy';
 	import { store } from '../../store.svelte';
 	import type { User } from '../../types';
 	import Screen from '../common/Screen.svelte';

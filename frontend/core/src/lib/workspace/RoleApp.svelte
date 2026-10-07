@@ -4,7 +4,8 @@
 	import { rise } from '../motion/transitions';
 	import { provideRoute, provideWorkspaceLead, type Route } from './context';
 	import { WS } from './data';
-	import { HOME, NAV, PARENT, ROLES, routesFor } from './model';
+	import { HOME, NAV, PARENT, routesFor } from './model';
+	import { ROLES } from './legacy';
 	import { store } from './store.svelte';
 	import type { Notification, User } from './types';
 	import WorkspaceSheet from './screens/auth/WorkspaceSheet.svelte';

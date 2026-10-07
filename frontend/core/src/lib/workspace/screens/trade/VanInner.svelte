@@ -18,7 +18,8 @@
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
 	import { D, ES, SHOPS } from '../../data';
 	import { act } from '../../flow';
-	import { cartons, fmt } from '../../model';
+	import { fmt } from '../../model';
+	import { cartons } from '../../legacy';
 	import { store } from '../../store.svelte';
 	import type { User } from '../../types';
 	import ShelfCheck from '../brand/ShelfCheck.svelte';

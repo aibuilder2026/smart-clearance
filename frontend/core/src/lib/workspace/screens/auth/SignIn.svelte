@@ -18,7 +18,7 @@
 	import FindWorkspace, { type WorkspaceMatch } from '../../../patterns/FindWorkspace.svelte';
 	import { act } from '../../flow';
 	import { D, WS } from '../../data';
-	import { role } from '../../model';
+	import { role } from '../../legacy';
 	import { store } from '../../store.svelte';
 	import type { User } from '../../types';
 	import GoogleG from './GoogleG.svelte';
