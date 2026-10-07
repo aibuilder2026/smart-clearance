@@ -660,6 +660,7 @@ async def plan(ctx: Ctx, client_id: str, ref: str, explanation: str | None, run:
     figures += [x for ln in p["lines"] for x in (ln["units"], ln["price"], ln["net"], ln["gross"])]
     figures += [r["price"] for r in p["rows"]] + [s.c.offer_window_hours, money.RULES["kiranaWindowDays"]]
     offered = len(await world.kiranas(ctx, client_id, s.dist.id))
+    figures.append(offered)  # the template names how many kiranas the scheme goes to, and so may the Router (SC-72)
     fallback = not (explanation and copy.check_numbers(explanation, figures))
     text = copy.route_text(p, offered=offered, window_days=s.rules["kiranaWindowDays"]) if fallback else explanation
     s.case.plan = money.jsonable({**p, "explanation": text})
