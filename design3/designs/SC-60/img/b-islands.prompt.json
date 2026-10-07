@@ -1,0 +1,15 @@
+{
+  "name": "b-islands",
+  "model": "Qwen-Image-2.1 bf16 (local), qwen_image_bf16_mac.py",
+  "size": 2048,
+  "aspect": "16:9",
+  "output": "2752x1536",
+  "steps": 40,
+  "created": "2026-10-07",
+  "postprocess": "cwebp -q 82; the PNG originals stay local in src/",
+  "designed_in": "design3/designs/SC-60",
+  "prompt": "Tilt-shift photograph of a surreal handmade miniature diorama: six small islands of sand and sage grass floating in a pale hazy morning sky, soft clouds drifting below them, shallow depth of field. Each island carries one tiny building. Left of centre, the largest island: a distributor's corrugated godown warehouse with its shutter rolled up, full of stacked brown cartons, with a tiny yellow forklift on its forecourt. Right of centre at mid height: a lane of three colourful kirana shops with rows of snack packets hanging at their fronts and a green auto-rickshaw. Upper right, farther away: a small modern wholesale warehouse with a white delivery van. Upper middle: a small community kitchen with a blue awning. Lower left, nearer: a pale snack factory with a sawtooth roof and two brick chimneys beside a small two-storey office. Bottom right corner, farthest and smallest: a tiny fenced municipal dump yard with its gate closed, quiet and empty. Thin softly glowing green ribbons of road arc through the air like bridges of light, from the factory island to the godown island, and from the godown island on to the kirana island and up to the wholesale warehouse island. Warm sand, terracotta and sage-green palette against the pale sky. No lettering, no words or numbers on any sign, no logos, no people.",
+  "seed": 6101,
+  "use": "SC-60 option B, Islands in the sky, by day",
+  "attempts": "one; six islands as asked, the dump yard farthest and smallest, the green roads joining the factory, godown, lane and warehouse"
+}
