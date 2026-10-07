@@ -23,7 +23,7 @@
 			"name": "Vision",
 			"stage": "verify",
 			"icon": "scan-line",
-			"model": "Gemini Pro",
+			"model": "Gemini Flash",
 			"job": "Reads the label photo from the godown",
 			"gate": false
 		},

@@ -4,13 +4,13 @@
 		"design3/core/money.js": "c6ad0a4d6d2edfaf",
 		"design3/core/data.js": "4f3d664c57808b11",
 		"design3/core/store.js": "2b6b85628a795539",
-		"design3/core/platform.js": "acd0bd778725fb54",
+		"design3/core/platform.js": "6a0afd2a3cc7f356",
 		"design3/screens/admin.jsx": "74ed0c12b66ae00f",
 		"design3/system/product.jsx": "0cb832b183ab3576"
 	},
 	"files": {
 		"showcase.json": "63b023d5b4f9e4b4",
-		"catalog.json": "7124236c89d475e5",
+		"catalog.json": "9364528d5346a8c3",
 		"directory.json": "1934572cea07ab5b",
 		"console.json": "57ba1e8c999fafa6"
 	}

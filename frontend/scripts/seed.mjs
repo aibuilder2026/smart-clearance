@@ -20,8 +20,13 @@ const SOURCES = [
 	'screens/admin.jsx',
 	'system/product.jsx'
 ];
-// the workspace app's seed reads one more file (only a literal in it)
-const SOURCES_OF = { 'core/src/lib/workspace/seed': [...SOURCES, 'core/flow.js'] };
+// the workspace app's seed reads one more file (only a literal in it); backend-api's reference data also runs the live
+// world (SC-66) and the journey itself, for the fixtures its Python ports are held to
+const WORLD_SOURCES = ['core/world.js', 'core/flow.js'];
+const SOURCES_OF = {
+	'core/src/lib/workspace/seed': [...SOURCES, 'core/flow.js'],
+	'../backend-api/src/sc_api/reference': [...SOURCES, ...WORLD_SOURCES]
+};
 
 const read = (p) => readFileSync(join(design3, p), 'utf8');
 const sha = (s) => createHash('sha256').update(s).digest('hex');
@@ -339,6 +344,163 @@ const ruleFixtures = {
 	].map((name) => ({ name, slug: P.slug(name) }))
 };
 
+/* ---------- the live journey (SC-66): Munchly's world for backend-api, and the fixtures its Python ports are held to
+   design3/core/world.js adds what the live workspace needs beyond the prototype's screens (sign-in addresses, all 38
+   kiranas, pincodes); flow.js is run step by step so the backend's journey can be compared with the prototype's. */
+for (const p of WORLD_SOURCES) vm.runInContext(read(p), sandbox, { filename: p });
+const W = window.SC3_WORLD,
+	F = window.SC3_FLOW,
+	M = window.SC3_MONEY;
+
+/** the world backend-api's hydrate builds Munchly from, and the story's copy the backend renders with live figures */
+const journey = {
+	day0: D.DAY0,
+	platform: D.PLATFORM,
+	client: D.CLIENT,
+	workspace: { ...D.WORKSPACE, signIn: W.SIGN_IN, outside: W.OUTSIDE },
+	domains: W.DOMAINS,
+	skus: D.SKUS,
+	distributors: D.DISTRIBUTORS,
+	buyer: D.BUYER,
+	people: D.PEOPLE,
+	areas: W.AREAS,
+	kiranas: W.KIRANAS,
+	offered: D.OFFERED,
+	members: W.MEMBERS,
+	org: W.ORG,
+	batches: D.BATCHES,
+	stages: workspaceSeed.stages,
+	setup: D.SETUP,
+	shelf: D.SHELF,
+	returnBy: D.RETURN_BY,
+	quarter: D.QUARTER,
+	rules: Store.seed().rules,
+	moneyRules: M.RULES,
+	channels: M.CHANNELS,
+	integrations: W.INTEGRATIONS,
+	numbers: W.NUMBERS,
+	label: W.LABEL,
+	roles: ROLES,
+	copy: { push: D.PUSH, chat: D.CHAT, events: D.EVENTS, connectEvent: F.CONNECT_EV }
+};
+
+/** money.js's own answers, for backend-api's domain/money.py: every case carries its inputs */
+const moneyFixtures = (() => {
+	const sku = (b) => D.SKUS[b.sku];
+	const hero = D.BATCHES.find((b) => b.hero);
+	const vary = (b, patch) => ({ ...b, ...patch, id: `${b.id}~${Object.keys(patch).join('-')}` });
+	// the story's nine batches, and the edges: too few days for the kirana scheme, for every exit but the staff sale, a
+	// personal-care batch the food bank may not take, a batch without label dates, and more stock than the exits hold
+	const batches = [
+		...D.BATCHES,
+		vary(hero, { daysLeft: 18 }),
+		vary(hero, { daysLeft: 10 }),
+		vary(hero, { mfg: undefined, bestBefore: undefined }),
+		vary(
+			D.BATCHES.find((b) => b.sku === 'facewash'),
+			{ daysLeft: 25, sellPerDay: 2 }
+		),
+		vary(
+			D.BATCHES.find((b) => b.sku === 'facewash'),
+			{ daysLeft: 12, units: 2000, sellPerDay: 1 }
+		),
+		vary(hero, { units: 20000 })
+	];
+	const plans = batches.map((b) => ({ batch: b, sku: sku(b), assess: M.assess(b, sku(b)), plan: M.plan(b, sku(b)) }));
+	const heroPlan = M.plan(hero, D.SKUS.chips);
+	const award = M.award(772, M.counter(15, 13).price);
+	const support = M.priceSupport(heroPlan, D.SKUS.chips, award.price);
+	const parties = { seller: D.DISTRIBUTORS.rakesh, buyer: D.BUYER, client: D.CLIENT };
+	const mango = D.BATCHES.find((b) => b.sku === 'mango');
+	const mangoPlan = M.plan(mango, D.SKUS.mango);
+	return {
+		rules: M.RULES,
+		channels: M.CHANNELS,
+		plans,
+		writeOff: [
+			[1360, 'chips'],
+			[58, 'mango'],
+			[1, 'facewash']
+		].map(([units, id]) => ({ units, sku: D.SKUS[id], out: M.writeOff(units, D.SKUS[id]) })),
+		counter: [15, 14, 12.5].flatMap((ask) =>
+			[10, 13, 13.5, 14, 14.2, 14.25, 15, 16].map((bid) => ({ ask, bid, out: M.counter(ask, bid) }))
+		),
+		award: [
+			[772, 14.2],
+			[772, 15],
+			[100, 13.33]
+		].map(([units, price]) => ({ units, price, out: M.award(units, price) })),
+		actualNet: [
+			{ plan: heroPlan, awardPrice: 14.2 },
+			{ plan: heroPlan, awardPrice: 15 },
+			{ plan: mangoPlan, awardPrice: 14 }
+		].map((c) => ({ ...c, out: M.actualNet(c.plan, c.awardPrice) })),
+		priceSupport: [
+			{ plan: heroPlan, sku: D.SKUS.chips, awardPrice: 14.2 },
+			{ plan: heroPlan, sku: D.SKUS.chips, awardPrice: null },
+			{ plan: mangoPlan, sku: D.SKUS.mango, awardPrice: null }
+		].map((c) => ({ ...c, out: M.priceSupport(c.plan, c.sku, c.awardPrice ?? undefined) })),
+		expiryClaim: [
+			[1360, 'chips'],
+			[500, 'facewash']
+		].map(([units, id]) => ({ units, sku: D.SKUS[id], out: M.expiryClaim(units, D.SKUS[id]) })),
+		// money.js numbers the story's invoice and credit note itself; the port takes the numbers as arguments
+		documents: [
+			{ plan: heroPlan, sku: D.SKUS.chips, award, support, parties },
+			{ plan: mangoPlan, sku: D.SKUS.mango, award: null, support: M.priceSupport(mangoPlan, D.SKUS.mango), parties }
+		].map((c) => ({
+			...c,
+			numbers: { invoice: 'INV/26-27/0931', support: 'CN/0117' },
+			out: M.documents(c.plan, c.sku, c.award, c.support, c.parties)
+		})),
+		fmt: {
+			num: [0, 7, 1360, 21770.4, 123456789, -1840],
+			inr: [0, 13.5, 1644, 21770.4, 26330, -26330, 1234567, -0.4],
+			inr2: [19.36, -19.36, 0.5, 1234.5, 100000],
+			signed: [26340, -26340, 0],
+			rate: [0.9, 13.5, 14.2, 22],
+			lakh: [630000, 1800000, 41000],
+			kg: [217.6, 544, 999.95, 1000, 5700, 14250.5],
+			pct: [0.6, 0.355, 1],
+			date: ['2026-11-18', '2026-10-02', '2027-01-09'],
+			day: ['2026-10-29', '2026-11-01']
+		}
+	};
+})();
+// each fmt sample with its answer
+moneyFixtures.fmt = Object.fromEntries(
+	Object.entries(moneyFixtures.fmt).map(([k, xs]) => [k, xs.map((x) => ({ in: x, out: M.fmt[k](x) }))])
+);
+
+/** design3's journey, step by step (flow.js SCRIPT): after each step, the stage and what changed. Ids and the
+ *  prototype's clock are left out, so the backend's journey can be compared with it */
+const flowFixture = (() => {
+	Store.reset();
+	const steps = [];
+	let before = Store.get();
+	const strip = ({ id: _id, ...rest }) => rest;
+	for (const [stage, name, o] of F.SCRIPT) {
+		F.run(name, o && o.arg);
+		const s = Store.get();
+		steps.push({
+			stage,
+			action: name,
+			arg: (o && o.arg) ?? null,
+			human: (o && o.human) ?? null,
+			stageOf: F.stageOf(s),
+			setup: s.setup,
+			hero: s.hero,
+			mango: s.mango,
+			feed: s.feed.slice(before.feed.length).map(strip),
+			notifications: s.notifications.slice(0, s.notifications.length - before.notifications.length).map(strip),
+			audit: s.audit.slice(0, s.audit.length - before.audit.length).map(strip)
+		});
+		before = s;
+	}
+	Store.reset();
+	return { stages: F.STAGE_IDS, steps };
+})();
+
 const json = (o) => JSON.stringify(o, null, '\t') + '\n';
 // each folder of generated files, with a manifest of where they came from
 const outputs = {
@@ -357,7 +519,10 @@ const outputs = {
 		'catalog.json': json(catalog),
 		'directory.json': json(directory),
 		'console.json': json(consoleSeed),
-		'rules.json': json(ruleFixtures)
+		'rules.json': json(ruleFixtures),
+		'journey.json': json(journey),
+		'money.json': json(moneyFixtures),
+		'flow.json': json(flowFixture)
 	}
 };
 for (const [dir, files] of Object.entries(outputs))
