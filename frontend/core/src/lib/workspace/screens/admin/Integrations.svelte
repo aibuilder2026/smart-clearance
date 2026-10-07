@@ -5,13 +5,14 @@
 	import Icon from '../../../icons/Icon.svelte';
 	import type { IconName } from '../../../icons/registry';
 	import { useNotice } from '../../../notice.svelte';
-	import { store } from '../../store.svelte';
+	import { useWorkspace } from '../../source';
 	import type { Integration, User } from '../../types';
 	import Screen from '../common/Screen.svelte';
 
 	// integrations: Munchly's sign-in, the Google Cloud services and the partner APIs, each connected or mocked, with a
 	// Test that answers in a toast (screens/admin.jsx Integrations)
 	let { me }: { me: User } = $props();
+	const ws = useWorkspace();
 	const { toast } = useNotice();
 	const KIND_ICON: Record<string, IconName> = {
 		Identity: 'key-round',
@@ -40,7 +41,7 @@
 
 <Screen {me} title="Integrations" sub="Munchly's sign-in, Google Cloud services and partner APIs">
 	<div class="list">
-		{#each store.state.integrations as i (i.id)}<div
+		{#each ws.state.integrations as i (i.id)}<div
 				class="list-row"
 				style="grid-template-columns: 40px minmax(0,1fr) auto"
 			>

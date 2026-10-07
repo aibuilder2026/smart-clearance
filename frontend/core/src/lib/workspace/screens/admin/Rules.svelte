@@ -6,31 +6,24 @@
 	import Stepper from '../../../components/Stepper.svelte';
 	import Switch from '../../../components/Switch.svelte';
 	import { useNotice } from '../../../notice.svelte';
-	import { store } from '../../store.svelte';
+	import { useWorkspace } from '../../source';
 	import type { Rules, User } from '../../types';
 	import Screen from '../common/Screen.svelte';
 
 	// guardrails: what the agents may and may not do in Munchly's name — floors, approvals, the territory guard, offers,
 	// the planning assumptions and the write-off factors — saved as one change (screens/admin.jsx Rules)
 	let { me }: { me: User } = $props();
+	const ws = useWorkspace();
 	const app = useApp();
 	const { toast } = useNotice();
 
-	const audit = (who: string, what: string, target: string) =>
-		store.update((s) => {
-			s.audit.unshift({ id: 'a-' + Date.now().toString(36), who, what, target, at: 'now' });
-		});
-
-	let r = $state.raw<Rules>(store.state.rules);
-	const dirty = $derived(JSON.stringify(r) !== JSON.stringify(store.state.rules));
+	let r = $state.raw<Rules>(ws.state.rules);
+	const dirty = $derived(JSON.stringify(r) !== JSON.stringify(ws.state.rules));
 	const set = <K extends keyof Rules>(k: K, v: Rules[K]) => (r = { ...r, [k]: v });
 	const setFloor = (k: string, v: number) => (r = { ...r, floors: { ...r.floors, [k]: v } });
 	const save = () => {
-		const next = r;
-		store.update((st) => {
-			st.rules = next;
-		});
-		audit(me.id, 'updated the guardrails', 'Rules');
+		// the rules, then their line in the audit log
+		void ws.saveRules(r);
 		toast({ text: 'Guardrails saved · agents use them from the next run', tone: 'ok' });
 	};
 	const floorTitle = (k: string) => k.replace('-', ' ').replace(/^./, (c) => c.toUpperCase());
