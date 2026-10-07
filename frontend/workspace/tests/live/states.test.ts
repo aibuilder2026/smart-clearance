@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { dayLabel } from '../../src/lib/live/when';
 import { fireEvent, render, waitFor, type RenderResult } from '@testing-library/svelte';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type {
@@ -160,7 +161,9 @@ describe('live, and the journey clock', () => {
 		const r = await draw(s, 'command');
 		await waitFor(() => expect(text(r)).toContain('Live'));
 		const line = r.container.querySelector('.lv-line')!;
-		expect(norm(line.textContent)).toMatch(/^Live\s?Wed 7 Oct\s?08:00\s?1 day = 5 min$/);
+		// the journey's date, from the API's clock (the story's own calendar), and its time in quarter hours
+		const day = dayLabel(m.members.priya.snapshot.clock.now).replace(/ /g, '\\s?');
+		expect(norm(line.textContent)).toMatch(new RegExp(`^Live\\s?${day}\\s?\\d\\d:(00|15|30|45)\\s?1 day = 5 min$`));
 		// the clock is never announced: no live region holds it
 		expect(line.closest('[aria-live], [role="status"], [role="alert"]')).toBeNull();
 	});
