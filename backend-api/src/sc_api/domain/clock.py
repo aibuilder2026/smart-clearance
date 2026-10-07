@@ -109,3 +109,28 @@ def journey_morning(day: date, hour: int = 8) -> datetime:
     """08:00 in India on a journey day: where a journey starts, just before the Data agent's 08:30 and the Watcher's
     09:00"""
     return datetime(day.year, day.month, day.day, hour, 0, tzinfo=IST)
+
+
+# --- the length of a journey day, as the console sets it (SC-68), in design3/core/platform.js's words ------------
+
+DAY_MINUTES_ERROR = "Enter a whole number of minutes, from 1 to 1,440."
+
+
+def day_words(m: int) -> str:
+    """a length of day in words: 5 → "5 minutes", 90 → "1 h 30 min", 120 → "2 hours", 1440 → "a day" """
+    if m >= DAY_MINUTES:
+        return "a day"
+    if m >= 60:
+        return f"{m // 60} h {m % 60} min" if m % 60 else f"{m // 60} hour{'' if m == 60 else 's'}"
+    return f"{m} minute{'' if m == 1 else 's'}"
+
+
+def day_minutes_error(value: object) -> str | None:
+    """what a length of day must be (a whole number of minutes, 1 to 1440), or the problem with it"""
+    whole = isinstance(value, int) and not isinstance(value, bool)
+    return None if whole and 1 <= value <= DAY_MINUTES else DAY_MINUTES_ERROR  # type: ignore[operator]
+
+
+def day_minutes_line(client_name: str, to: int, was: int) -> str:
+    """the audit line for a change of a client's length of day"""
+    return f"Set the length of a journey day for {client_name} to {day_words(to)} (was {day_words(was)})"

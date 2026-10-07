@@ -660,6 +660,10 @@
             "title": "City",
             "type": "string"
           },
+          "dayMinutes": {
+            "title": "Dayminutes",
+            "type": "integer"
+          },
           "distributors": {
             "items": {
               "$ref": "#/components/schemas/DistributorOut"
@@ -804,6 +808,7 @@
           "gates",
           "territoryGuard",
           "returnWindowDays",
+          "dayMinutes",
           "exits",
           "rules",
           "signIn",

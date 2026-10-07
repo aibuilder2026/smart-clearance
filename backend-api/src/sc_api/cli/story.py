@@ -141,6 +141,7 @@ class Story:
                 offer_window_hours=c["rules"]["offerWindowHours"],
                 hindi_offers=c["rules"]["hindiOffers"],
                 require_photo=c["rules"]["requirePhoto"],
+                day_minutes=c["dayMinutes"],
                 agents=agent_cfg,
             ),
             created_at=set_up,

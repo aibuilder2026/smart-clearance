@@ -18,6 +18,7 @@ window.SC3_ICONS = {
 "user-cog": "<circle cx=\"18\" cy=\"15\" r=\"3\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <path d=\"M10 15H6a4 4 0 0 0-4 4v2\" /> <path d=\"m21.7 16.4-.9-.3\" /> <path d=\"m15.2 13.9-.9-.3\" /> <path d=\"m16.6 18.7.3-.9\" /> <path d=\"m19.1 12.2.3-.9\" /> <path d=\"m19.6 18.7-.4-1\" /> <path d=\"m16.8 12.3-.4-1\" /> <path d=\"m14.3 16.6 1-.4\" /> <path d=\"m20.7 13.8 1-.4\" />",
 "user-check": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <polyline points=\"16 11 18 13 22 9\" />",
 "skip-forward": "<polygon points=\"5 4 15 12 5 20 5 4\" /> <line x1=\"19\" x2=\"19\" y1=\"5\" y2=\"19\" />",
+"fast-forward": "<polygon points=\"13 19 22 12 13 5 13 19\" /> <polygon points=\"2 19 11 12 2 5 2 19\" />",
 "skip-back": "<polygon points=\"19 20 9 12 19 4 19 20\" /> <line x1=\"5\" x2=\"5\" y1=\"19\" y2=\"5\" />",
 "keyboard": "<path d=\"M10 8h.01\" /> <path d=\"M12 12h.01\" /> <path d=\"M14 8h.01\" /> <path d=\"M16 12h.01\" /> <path d=\"M18 8h.01\" /> <path d=\"M6 8h.01\" /> <path d=\"M7 16h10\" /> <path d=\"M8 12h.01\" /> <rect width=\"20\" height=\"16\" x=\"2\" y=\"4\" rx=\"2\" />",
 "presentation": "<path d=\"M2 3h20\" /> <path d=\"M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3\" /> <path d=\"m7 21 5-5 5 5\" />",

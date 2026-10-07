@@ -120,6 +120,54 @@ export const overrideLine = (ref: string, o: OverrideInput) =>
 	`Overrode ${ref}'s quick-commerce gates: ${gateText(o)} (${o.reason.trim()})`;
 export const clearOverrideLine = (ref: string) => `Removed ${ref}'s quick-commerce gate override`;
 
+/** the length of a journey day (SC-68): how many minutes of real time one day of a client's journey lasts, from 1 to
+ *  1440. 1440 is real time, where every client starts */
+export const DAY_MINUTES = 1440;
+/** the sheet's presets: real time, a rehearsal, a demo and fast */
+export const DAY_PRESETS: { id: number; label: string; sub: string }[] = [
+	{ id: 1440, label: 'Real time', sub: 'A journey day is a day' },
+	{ id: 60, label: 'Rehearsal', sub: 'An hour a day' },
+	{ id: 5, label: 'Demo', sub: 'Five minutes a day' },
+	{ id: 1, label: 'Fast', sub: 'A minute a day' }
+];
+/** a length of day in words: 5 → "5 minutes", 90 → "1 h 30 min", 120 → "2 hours", 1440 → "a day" */
+export const dayWords = (m: number) =>
+	m >= DAY_MINUTES
+		? 'a day'
+		: m >= 60
+			? m % 60
+				? `${Math.floor(m / 60)} h ${m % 60} min`
+				: `${m / 60} hour${m === 60 ? '' : 's'}`
+			: `${m} minute${m === 1 ? '' : 's'}`;
+/** a stretch of real time, roughly: 10 → "10 minutes", 235 → "3.9 hours", 2880 → "2 days" */
+export const spanWords = (min: number) =>
+	min < 90
+		? `${Math.round(min)} minutes`
+		: min < 60 * 36
+			? `${Math.round(min / 6) / 10} hours`
+			: `${Math.round(min / 144) / 10} days`;
+/** the badge in the client's head: "Real time", "1 day = 5 min", "1 day = 2 hours" */
+export const dayBadge = (m: number) =>
+	m >= DAY_MINUTES ? 'Real time' : `1 day = ${m >= 60 ? dayWords(m) : m + ' min'}`;
+/** what a length of day does to the agents, in their own terms */
+export const dayReadouts = (m: number): { icon: 'radar' | 'send' | 'route'; title: string; value: string }[] => [
+	{
+		icon: 'radar',
+		title: "The Watcher's 09:00 check",
+		value: m >= DAY_MINUTES ? 'once a day' : `every ${dayWords(m)}`
+	},
+	{ icon: 'send', title: 'A 48-hour kirana offer', value: `open ${spanWords(2 * m)}` },
+	{ icon: 'route', title: 'A 47-day batch journey', value: `about ${spanWords(47 * m)}` }
+];
+/** the readouts' head: "In real time", "At 5 minutes a day" */
+export const dayHead = (m: number) => (m >= DAY_MINUTES ? 'In real time' : `At ${dayWords(m)} a day`);
+/** what a length of day must be, or the problem with it */
+export const dayMinutesError = (v: unknown): string | null =>
+	bad(v, [1, DAY_MINUTES]) ? 'Enter a whole number of minutes, from 1 to 1,440.' : null;
+/** the audit line for a change of a client's length of day */
+export const dayMinutesLine = (client: { name: string }, to: number, was: number) =>
+	`Set the length of a journey day for ${client.name} to ${dayWords(to)} (was ${dayWords(was)})`;
+
 /** a batch as the mock keeps it (design3/core/platform.js): when the Watcher flagged it, where it stands, what it
  *  recovered, and any gate override (with when it was set) */
 export type BatchRecord = {
@@ -492,15 +540,14 @@ export function agentDefaults(
 	return out;
 }
 
-/** what an invitation to a client's workspace must carry, or the problem with it */
+/** what an invitation to a client's workspace must carry, or the problem with it: an email address only (SC-68), at the
+ *  client's own domain for its staff and any address for a partner */
 export function inviteError(input: InviteInput, client: Pick<Client, 'name' | 'emailDomain'>): string | null {
-	const contact = input.contact.trim();
-	const phone = /^[+\d\s]{10,}$/.test(contact);
-	const email = isEmail(contact);
+	const contact = input.contact.trim().toLowerCase();
 	if (!input.name.trim()) return 'Enter a name.';
-	if (!phone && !email) return 'Enter a work email address or a mobile number.';
-	if (email && input.access !== 'Partner' && !contact.toLowerCase().endsWith('@' + client.emailDomain))
-		return `${client.name} staff need a ${client.emailDomain} address. Partners can use any address or a phone number.`;
+	if (!isEmail(contact)) return `Enter an email address, such as name@${client.emailDomain}.`;
+	if (input.access !== 'Partner' && !contact.endsWith('@' + client.emailDomain))
+		return `${client.name} staff need a ${client.emailDomain} address. Partners can use any address.`;
 	return null;
 }
 

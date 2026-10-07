@@ -333,6 +333,23 @@ const ruleFixtures = {
 		override: P.overrideLine('MF-2409-204', { qcomPct: 30, reason: ' A deal ' }),
 		clear: P.clearOverrideLine('MF-2409-204')
 	},
+	// SC-68: the length of a journey day, what it must be and the audit line that records a change of it
+	dayMinutes: {
+		errors: [0, 1, 5, 60, 1440, 1441, -5, 4.5, null, '5'].map((value) => ({ value, error: P.dayMinutesError(value) })),
+		lines: [
+			[5, 1440],
+			[1440, 5],
+			[1, 60],
+			[90, 1],
+			[120, 1439],
+			[59, 61]
+		].map(([to, was]) => ({
+			client: 'Munchly Foods',
+			to,
+			was,
+			text: P.dayMinutesLine({ name: 'Munchly Foods' }, to, was)
+		}))
+	},
 	slug: [
 		'Kesari Foods',
 		'Amrit Dairy Pvt',
