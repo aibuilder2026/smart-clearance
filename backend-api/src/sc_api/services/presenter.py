@@ -180,6 +180,7 @@ async def client_out(ctx: Ctx, client_id: str) -> ClientOut:
         gates=Gates(blinkit_days=c.gate_blinkit_days, qcom_pct=c.gate_qcom_pct),
         territory_guard=c.territory_guard,
         return_window_days=c.return_window_days,
+        day_minutes=c.day_minutes,
         exits=exit_states(c, exits_on),
         rules=rules,
         sign_in=[SignInMethod.model_validate(x) for x in c.sign_in],

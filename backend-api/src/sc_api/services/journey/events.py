@@ -14,7 +14,7 @@ from sqlalchemy import func, select, update
 
 from sc_api import models as m
 from sc_api import tracing
-from sc_api.domain.clock import DAY_MINUTES, JourneyClock
+from sc_api.domain.clock import DAY_MINUTES, JourneyClock, day_minutes_error, day_minutes_line
 from sc_api.domain.journey import NOTIFY, Event
 from sc_api.services.context import Ctx
 
@@ -261,15 +261,16 @@ async def mark_read(ctx: Ctx, client_id: str, member_ref: str, ids: list[int] | 
 
 
 async def set_day_minutes(ctx: Ctx, client_id: str, minutes: int) -> None:
-    """the console's setting: how many minutes of wall time a journey day lasts while a batch is at risk (1 to 1440;
-    1440 is real time). The clock re-anchors at once, so no journey time is skipped"""
+    """the console's setting, the length of a journey day (SC-68): how many minutes of wall time a journey day lasts
+    while a batch is at risk (1 to 1440; 1440 is real time). The clock re-anchors at once, so no journey time is
+    skipped. The audit line is the console prototype's (design3/core/platform.js dayMinutesLine)"""
     from sc_api.errors import ApiError
     from sc_api.services import audit
     from sc_api.services.presenter import lock_client
 
     ctx.require("clients.configure", "Your role can't change a client's clock.")
-    if not 1 <= minutes <= DAY_MINUTES:
-        raise ApiError(422, "A journey day lasts 1 to 1,440 minutes.", {"dayMinutes": "1 to 1,440 minutes."})
+    if problem := day_minutes_error(minutes):
+        raise ApiError(422, problem, {"dayMinutes": problem})
     c = await lock_client(ctx, client_id)
     if c.day_minutes == minutes:
         return
@@ -277,13 +278,5 @@ async def set_day_minutes(ctx: Ctx, client_id: str, minutes: int) -> None:
     await apply_speed(ctx, c)
     if c.clock_speed != DAY_MINUTES:  # a case is open: the new speed applies now
         await set_speed(ctx, c, minutes)
-    words = {DAY_MINUTES: "real time"}
-    await audit.record(
-        ctx,
-        c.id,
-        "client.clock",
-        f"Set {c.name}'s journey day to {words.get(minutes, f'{minutes} minutes')} "
-        f"(was {words.get(was, f'{was} minutes')})",
-        {"from": was, "to": minutes},
-    )
+    await audit.record(ctx, c.id, "client.clock", day_minutes_line(c.name, minutes, was), {"from": was, "to": minutes})
     await changed(ctx, c)

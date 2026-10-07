@@ -11,7 +11,8 @@
 	import { refresh } from '#lib/api/queries.ts';
 	import { useConsole } from '#lib/console.svelte.ts';
 
-	// an invitation to a client's workspace: staff at its email domain, partners at any address or a mobile number
+	// an invitation to a client's workspace is an email address only (SC-68): staff at its email domain, partners at any
+	// address. They sign in with it and the default password, which the operator hands over; nothing is ever mailed
 	let { c, ondone }: { c: Client; ondone?: () => void } = $props();
 	const k = useConsole();
 	let f = $state({ name: '', contact: '', access: 'Member' as Access });
@@ -24,15 +25,15 @@
 		busy = true;
 		const name = f.name.trim();
 		try {
-			await api.invitePerson(c.id, $state.snapshot(f));
+			await api.invitePerson(c.id, { ...$state.snapshot(f), contact: f.contact.trim().toLowerCase() });
 		} catch (e) {
-			err = e instanceof ApiError ? e.message : 'The invitation did not go out. Try again.';
+			err = e instanceof ApiError ? e.message : 'The invitation did not go through. Try again.';
 			return;
 		} finally {
 			busy = false;
 		}
 		await refresh();
-		k.notices.toast({ text: `Invitation sent to ${name}`, tone: 'ok' });
+		k.notices.toast({ text: `${name} can sign in with the default password`, tone: 'ok' });
 		f = { name: '', contact: '', access: 'Member' };
 		err = '';
 		ondone?.();
@@ -51,13 +52,16 @@
 	<Field label="Name" htmlFor="inv-name"
 		><Input id="inv-name" bind:value={f.name} oninput={() => (err = '')} placeholder="Name or organisation" /></Field
 	>
-	<Field label="Work email or mobile number" htmlFor="inv-contact" error={err || null}
+	<Field label="Email" htmlFor="inv-contact" error={err || null}
 		><Input
 			id="inv-contact"
+			icon="mail"
+			type="email"
 			bind:value={f.contact}
 			oninput={() => (err = '')}
 			autocomplete="off"
 			spellcheck={false}
+			autocapitalize="none"
 			placeholder="name@{c.emailDomain}"
 		/></Field
 	>
@@ -67,7 +71,8 @@
 		></Field
 	>
 	<p class="t-footnote subtle" style="margin: 0">
-		{c.name} staff need a {c.emailDomain} address; partners sign in with a code or by invitation.
+		{c.name} staff need a {c.emailDomain} address; partners use any address. They sign in with it and the default password,
+		which you hand over. Nothing is sent by email.
 	</p>
-	<Button type="submit" variant="primary" icon="send" loading={busy}>Send invitation</Button>
+	<Button type="submit" variant="primary" icon="user-plus" loading={busy}>Invite</Button>
 </form>

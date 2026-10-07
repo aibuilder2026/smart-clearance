@@ -64,6 +64,7 @@ export function consoleHttp(
 		setPlan: (id, plan) => call('PATCH', c(id), { plan }),
 		saveProfile: (id, input) => call('PUT', `${c(id)}/profile`, input),
 		saveRules: (id, input) => call('PUT', `${c(id)}/rules`, input),
+		setDayMinutes: (id, dayMinutes) => call('PUT', `${c(id)}/clock`, { dayMinutes }),
 		clientBatches: (id, sku) => call('GET', `${c(id)}/batches` + (sku ? `?sku=${encodeURIComponent(sku)}` : '')),
 		saveSkuGates: (id, sku, gates) => call('PUT', `${c(id)}/skus/${encodeURIComponent(sku)}/gates`, { gates }),
 		overrideBatch: (id, ref, input) => call('PUT', `${c(id)}/batches/${encodeURIComponent(ref)}/override`, input),

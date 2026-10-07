@@ -6,6 +6,15 @@ import {
 	dashboard,
 	type BatchQuery,
 	clearOverrideLine,
+	DAY_MINUTES,
+	DAY_PRESETS,
+	dayBadge,
+	dayHead,
+	dayMinutesError,
+	dayMinutesLine,
+	dayReadouts,
+	dayWords,
+	spanWords,
 	exitsFor,
 	overrideError,
 	overrideLine,
@@ -123,6 +132,48 @@ describe('quick-commerce gates per SKU, with a per-batch override (SC-47), match
 			P.overrideLine('MF-2409-204', { qcomPct: 30, reason: ' A deal ' })
 		);
 		expect(clearOverrideLine('MF-2409-204')).toBe(P.clearOverrideLine('MF-2409-204'));
+	});
+});
+
+describe('the length of a journey day (SC-68) matches platform.js', () => {
+	it('says every length from 1 to 1,440 minutes in the same words', () => {
+		expect(DAY_MINUTES).toBe(P.DAY_MINUTES);
+		expect(DAY_PRESETS).toEqual(P.DAY_PRESETS);
+		for (let m = 1; m <= 1440; m++) {
+			expect(dayWords(m)).toBe(P.dayWords(m));
+			expect(dayBadge(m)).toBe(P.dayBadge(m));
+			expect(dayHead(m)).toBe(P.dayHead(m));
+			expect(dayReadouts(m)).toEqual(P.dayReadouts(m));
+		}
+		for (const min of [1, 10, 89, 90, 235, 2159, 2160, 2880, 67680]) expect(spanWords(min)).toBe(P.spanWords(min));
+	});
+	it('checks a length and writes the audit line platform.js writes', () => {
+		for (const v of [0, 1, 5, 1440, 1441, -5, 4.5, null, '5', Number.NaN])
+			expect(dayMinutesError(v)).toBe(P.dayMinutesError(v));
+		for (const [to, was] of [
+			[5, 1440],
+			[1440, 5],
+			[90, 1],
+			[120, 1439]
+		])
+			expect(dayMinutesLine(munchly, to, was)).toBe(P.dayMinutesLine(munchly, to, was));
+		expect(dayMinutesLine(munchly, 5, 1440)).toBe(
+			'Set the length of a journey day for Munchly Foods to 5 minutes (was a day)'
+		);
+		expect(dayBadge(5)).toBe('1 day = 5 min');
+		expect(dayReadouts(5).map((r) => r.value)).toEqual(['every 5 minutes', 'open 10 minutes', 'about 3.9 hours']);
+	});
+	it('starts every client in real time', () => {
+		expect(munchly.dayMinutes).toBe(1440);
+		expect(
+			P.buildClient({
+				name: 'Kesari Foods',
+				preset: 'standard',
+				route: 'distributors',
+				owner: 'manufacturer',
+				expiry: 'full-credit'
+			}).dayMinutes
+		).toBe(1440);
 	});
 });
 

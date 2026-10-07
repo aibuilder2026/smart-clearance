@@ -5,6 +5,7 @@ from datetime import date
 
 import pytest
 
+from sc_api.domain.clock import day_minutes_error, day_minutes_line, day_words
 from sc_api.domain.gates import (
     batch_gates,
     clear_override_line,
@@ -80,3 +81,28 @@ def test_gate_lines():
     assert sku_gates_line("Munchly Foods", skus["mango"]["name"], None) == lines["skuDefault"]
     assert override_line("MF-2409-204", {"qcomPct": 30, "reason": " A deal "}) == lines["override"]
     assert clear_override_line("MF-2409-204") == lines["clear"]
+
+
+# SC-68: the length of a journey day, as the console sets it
+@pytest.mark.parametrize("case", FIXTURES["dayMinutes"]["errors"], ids=lambda c: repr(c["value"]))
+def test_day_minutes_error(case):
+    assert day_minutes_error(case["value"]) == case["error"]
+
+
+@pytest.mark.parametrize("case", FIXTURES["dayMinutes"]["lines"], ids=lambda c: f"{c['was']}->{c['to']}")
+def test_day_minutes_line(case):
+    assert day_minutes_line(case["client"], case["to"], case["was"]) == case["text"]
+
+
+def test_day_words_for_every_length():
+    assert [day_words(m) for m in (1, 2, 59, 60, 61, 90, 120, 1439, 1440)] == [
+        "1 minute",
+        "2 minutes",
+        "59 minutes",
+        "1 hour",
+        "1 h 1 min",
+        "1 h 30 min",
+        "2 hours",
+        "23 h 59 min",
+        "a day",
+    ]
