@@ -146,7 +146,39 @@ was); whether the four chapters stay now that the scene shows every agent's work
 
 ## The pick
 
-Round 1: a culmination of A and C (above). Round 2: not yet made.
+- **Round 1 (7 Oct 2026):** a culmination of A and C (above).
+- **Round 2 (7 Oct 2026):** **option 2, In focus** ("2 · In focus (Recommended)"), with the scene **after the statement
+  and the four chapters kept** ("After the statement, chapters stay (Recommended)"). Only this option is built: A's film
+  hero, the statement, the agents in focus on the table, the chapters, the ledger, the workspace, plans, the close.
+
+## The build (7 Oct 2026)
+
+- `design3/site/site.jsx` and `site.css`: the page as picked; the town (`town.jsx`) and the exits strip retired.
+  The plates move to `site/assets/plates/table.webp` and `table-night.webp`, the clips to `site/assets/media/town.mp4`
+  and `town-night.mp4`, each with its sidecar. The page scrolls the window, as the SvelteKit build does, so the sticky
+  bar and the scroll-driven statement work the same way in both; `dist.sh` bundles `core/platform.js` with the page.
+- **Found on the way, and fixed in the build:**
+  - the mockups placed the nodes, the tags and the phone's screen from the stage's corner while their layer already
+    sat at the plate's offset, so everything on the table drifted by the plate's overhang (small at 1440, the whole
+    screen on a phone). The build places them from the plate's own corner, and every post, the phone's screen and
+    the landing points were measured on the plate;
+  - the plate was cropped to the stage by the kit's `img { max-width: 100% }`, so the camera panned into blank page
+    on phones; it is now sized to its own extent (`max-width: none`);
+  - the camera's travel is clamped to the plate's edges, not the stage's; on phones the person's stop frames the
+    phone's screen and the post together;
+  - the phone's screen now follows the story: the batch flagged while the first agents work, the plan waiting for the
+    yes from the Router's stop, then placed;
+  - Outreach's Hindi offer is composed on the page without a client in it (`OFFER`), since the data's copy names the
+    shop, the brand and the distributor (SC-28);
+  - the scene's Pause sat under the sticky bar; it now sits below it. The chapters' agent chips inside a card keep
+    the card's own inks (only the copy's chips take the field's); on phones the ledger's lines stack and the card's
+    text flows instead of wrapping word by word.
+- **Checked** in design3 with Playwright at 1440 × 900, 820 × 1180 and 390 × 844, light and dark: the loader's
+  handshake lifts; the film plays once, ends on Replay and replays; the statement fills on scroll; the scene tours
+  the eleven stops with the camera on each post, the packs fly and the tags count them in, Pause holds and Play
+  resumes, a rail step jumps and holds, Replay runs it again; under reduced motion the page opens on the result with
+  a still poster; a theme switch plays dusk over the page and swaps the plates and the film underneath in 2.3 s.
+- The SvelteKit port in `frontend/admin`, after design3.
 
 ## In this folder
 

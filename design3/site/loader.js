@@ -1,6 +1,6 @@
 // Smart-Clearance v3 · smartclearance.com's loader (SC-35). Plain ES2019, loaded first in <body>, before React, so it
 // is on screen from the first paint. It follows the page's real loading: the scripts as each arrives, the fonts, the
-// first render, and the town's plate and depth map once the town has drawn them.
+// first render, and the hero's plate once the film's poster has decoded.
 //   · Every load of the page, reloads included, plays the route: the mark draws its S from the godown dot as the page
 //     loads; once the town is in, the amber pin lands and the mark opens into a window onto the page.
 //   · Every change of theme plays dusk or dawn: the town's skyline in paper layers rises under a sky that turns from day
@@ -304,8 +304,8 @@
   // a switch: cover the page as it is, change the theme underneath, wait for the new plates, part into the page
   function preload(to) {
     var base = W.SC3_SITE_IMG || "assets/plates/", list = [["business" + (to === "dark" ? "-night" : "") + ".webp", true]];
-    // the street and the islands too, when they are on screen or close to it
-    [[".ex-pano img", "exits"], [".islands .isl-plate", "islands"]].forEach(function (q) {
+    // the table and the islands too, when they are on screen or close to it
+    [[".tb-plate", "table"], [".islands .isl-plate", "islands"]].forEach(function (q) {
       var n = D.querySelector(q[0]); if (!n) return; var r = n.getBoundingClientRect();
       if (r.bottom > -vh() * 0.5 && r.top < vh() * 1.5) list.push([q[1] + (to === "dark" ? "-night" : "") + ".webp", false]);
     });
