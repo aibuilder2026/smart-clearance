@@ -4,7 +4,10 @@
 export { default as WorkspaceApp } from './WorkspaceApp.svelte';
 export { default as RoleApp } from './RoleApp.svelte';
 export { store, seedState } from './store.svelte';
-export { act, stageOf, Agents, type ActionName } from './flow';
-export { D, WS, PLAN, batchView } from './data';
-export { HOME, NAV, SCREENS, routesFor, heroModel } from './model';
+export { act, run, fastForward, stageOf, Agents, type ActionName } from './flow';
+export { D, WS, PLAN, KL, ES, INVOICE, batchView } from './data';
+export { HOME, NAV, SCREENS, routesFor, heroModel, offerMath } from './model';
+export { provideAccount, type Account, type Route } from './context';
+export { default as SignIn } from './screens/auth/SignIn.svelte';
+export { default as LockScreen, type LockPush } from './screens/common/LockScreen.svelte';
 export type * from './types';

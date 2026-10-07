@@ -60,6 +60,8 @@ export { default as DaysNum } from './components/DaysNum.svelte';
 export { default as Aura } from './components/Aura.svelte';
 export { default as PoweredBy } from './components/PoweredBy.svelte';
 export { default as WindowFrame } from './components/WindowFrame.svelte';
+export { default as PhoneFrame } from './components/PhoneFrame.svelte';
+export { default as StatusBar } from './components/StatusBar.svelte';
 export { default as Splash } from './components/Splash.svelte';
 export { default as Shell, type NavItem } from './components/Shell.svelte';
 export { default as Page } from './components/Page.svelte';

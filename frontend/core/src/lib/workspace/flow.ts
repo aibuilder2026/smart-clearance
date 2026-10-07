@@ -261,6 +261,8 @@ const STAGE_IDS = D.stages.map((s) => s.id);
 const call = (s: State, name: ActionName, arg?: Arg) => (A[name] as (s: State, arg?: Arg) => void)(s, arg);
 /** runs one step of the journey on the store */
 export const act = (name: ActionName, arg?: Arg) => store.update((s) => call(s, name, arg));
+/** flow.js's name for the same */
+export const run = act;
 /** puts the store in the state it has when stage n begins, every earlier stage done and read (the guided demo's jump) */
 export function fastForward(n: number) {
 	store.reset();
@@ -313,7 +315,11 @@ export const Agents = {
 			Agents.pending = null;
 		}
 	},
-	reconcile: () => reconcile()
+	reconcile: () => reconcile(),
+	/** what an agent (or a partner nobody plays) would do next, if anything: the guided demo runs it on Skip ahead */
+	nextStep: (s: State) => nextStep(s),
+	/** whether a step belongs to a stage the agents may reach (maxStage) */
+	allowed: (name: ActionName) => allowed(name)
 };
 
 const allowed = (name: ActionName) => !(name in ACTION_STAGE) || ACTION_STAGE[name]! <= Agents.maxStage;

@@ -4,6 +4,7 @@ packages:
   - admin
   - console
   - workspace
+  - demo
   - testing
 
 # install scripts this workspace never runs: firebase's (@firebase/util writes Firebase App Hosting's auto-init defaults;
