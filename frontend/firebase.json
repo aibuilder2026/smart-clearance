@@ -3,32 +3,114 @@
 		{
 			"target": "site",
 			"public": "admin/build",
-			"rewrites": [{ "source": "**", "destination": "/200.html" }],
+			"rewrites": [
+				{
+					"source": "**",
+					"destination": "/200.html"
+				}
+			],
 			"headers": [
-				{ "source": "**", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] },
+				{
+					"source": "**",
+					"headers": [
+						{
+							"key": "Cache-Control",
+							"value": "no-cache"
+						}
+					]
+				},
 				{
 					"source": "/_app/immutable/**",
-					"headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+					"headers": [
+						{
+							"key": "Cache-Control",
+							"value": "public, max-age=31536000, immutable"
+						}
+					]
 				}
 			]
 		},
 		{
 			"target": "console",
 			"public": "console/build",
-			"rewrites": [{ "source": "**", "destination": "/index.html" }],
+			"rewrites": [
+				{
+					"source": "**",
+					"destination": "/index.html"
+				}
+			],
 			"headers": [
 				{
 					"source": "**",
 					"headers": [
-						{ "key": "Cache-Control", "value": "no-cache" },
-						{ "key": "X-Robots-Tag", "value": "noindex, nofollow" },
-						{ "key": "X-Frame-Options", "value": "DENY" },
-						{ "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+						{
+							"key": "Cache-Control",
+							"value": "no-cache"
+						},
+						{
+							"key": "X-Robots-Tag",
+							"value": "noindex, nofollow"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "strict-origin-when-cross-origin"
+						}
 					]
 				},
 				{
 					"source": "/_app/immutable/**",
-					"headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+					"headers": [
+						{
+							"key": "Cache-Control",
+							"value": "public, max-age=31536000, immutable"
+						}
+					]
+				}
+			]
+		},
+		{
+			"target": "workspace",
+			"public": "workspace/build",
+			"rewrites": [
+				{
+					"source": "**",
+					"destination": "/index.html"
+				}
+			],
+			"headers": [
+				{
+					"source": "**",
+					"headers": [
+						{
+							"key": "Cache-Control",
+							"value": "no-cache"
+						},
+						{
+							"key": "X-Robots-Tag",
+							"value": "noindex, nofollow"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "strict-origin-when-cross-origin"
+						}
+					]
+				},
+				{
+					"source": "/_app/immutable/**",
+					"headers": [
+						{
+							"key": "Cache-Control",
+							"value": "public, max-age=31536000, immutable"
+						}
+					]
 				}
 			]
 		}

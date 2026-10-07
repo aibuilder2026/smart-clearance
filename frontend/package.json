@@ -10,7 +10,7 @@
 		"dev": "corepack pnpm --filter @smart-clearance/admin dev",
 		"dev:console": "corepack pnpm --filter @smart-clearance/console dev",
 		"dev:workspace": "corepack pnpm --filter @smart-clearance/workspace dev",
-		"build": "corepack pnpm --filter @smart-clearance/admin --filter @smart-clearance/console run build",
+		"build": "corepack pnpm --filter @smart-clearance/admin --filter @smart-clearance/console --filter @smart-clearance/workspace run build",
 		"build:admin": "corepack pnpm --filter @smart-clearance/admin build",
 		"build:console": "corepack pnpm --filter @smart-clearance/console build",
 		"build:workspace": "corepack pnpm --filter @smart-clearance/workspace build",
