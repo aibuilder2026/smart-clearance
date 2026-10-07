@@ -62,6 +62,9 @@ export type WorkspacePublic = {
 	mark: WsMark;
 	platform: { name: string; domain: string };
 	signIn: SignInOption[];
+	/** the domain Munchly's people sign in on, and what the sign-in suggests typing */
+	emailDomain: string;
+	hint: string;
 	manifest: { name: string; shortName: string; description: string; themeColor: string; backgroundColor: string };
 };
 

@@ -398,7 +398,8 @@ export type User = {
 	short: string;
 	org: string;
 	role: RoleId;
-	provider: 'google' | 'phone' | 'expiresoon';
+	/** how they sign in: the prototype's Google, phone code or ExpireSoon; the live workspace's email and password */
+	provider: 'google' | 'phone' | 'expiresoon' | 'password';
 	status: UserStatus;
 	kind: PersonKind;
 	img?: string;

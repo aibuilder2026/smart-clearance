@@ -3,6 +3,7 @@
 // share. Everything here takes its data as arguments: the screens read it from their source (source.ts), never from
 // the stub's seed, so this module works the same over the stub and over backend-api.
 import type { NavItem } from '../components/Shell.svelte';
+import type { IconName } from '../icons/registry';
 import { fmt } from '../format';
 import type {
 	Batch,
@@ -232,7 +233,15 @@ export const offerMath = (n: number, c: Pick<CaseData, 'lines' | 'sku' | 'scheme
 export const PROVIDERS: Record<User['provider'], string> = {
 	google: 'Google',
 	phone: 'Phone code',
-	expiresoon: 'ExpireSoon sign-in'
+	expiresoon: 'ExpireSoon sign-in',
+	password: 'Email and password'
+};
+/** each way of signing in, as an icon */
+export const PROVIDER_ICONS: Record<User['provider'], IconName> = {
+	google: 'google',
+	phone: 'smartphone',
+	expiresoon: 'hourglass',
+	password: 'mail'
 };
 /** how each kind of member is described, in the workspace's own name */
 export const kinds = (ws: Pick<Workspace, 'short'>): Record<User['kind'], string> => ({

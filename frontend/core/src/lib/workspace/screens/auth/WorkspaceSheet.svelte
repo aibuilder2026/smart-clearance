@@ -24,7 +24,9 @@
 				: `Google, by invitation · ${me.email}`
 			: me.provider === 'phone'
 				? `One-time code · ${me.phone}`
-				: me.provider
+				: me.provider === 'password'
+					? `Email and password · ${me.email}`
+					: me.provider
 	);
 </script>
 

@@ -12,7 +12,7 @@
 	import Icon from '../../../icons/Icon.svelte';
 	import type { IconName } from '../../../icons/registry';
 	import { useNotice } from '../../../notice.svelte';
-	import { kinds, providerOf, STATUS_TONE } from '../../model';
+	import { kinds, PROVIDER_ICONS, providerOf, STATUS_TONE } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { RoleId, User, UserStatus } from '../../types';
 	import Screen from '../common/Screen.svelte';
@@ -58,8 +58,7 @@
 		toast({ text: 'Role updated', tone: 'ok' });
 		roleFor = null;
 	};
-	const signInIcon = (u: User): IconName =>
-		u.provider === 'google' ? 'google' : u.provider === 'phone' ? 'smartphone' : 'hourglass';
+	const signInIcon = (u: User): IconName => PROVIDER_ICONS[u.provider];
 </script>
 
 {#snippet menu(u: User)}<RowMenu {u} {me} onrole={() => (roleFor = u)} onstatus={setStatus} />{/snippet}

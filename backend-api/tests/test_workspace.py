@@ -461,6 +461,8 @@ async def test_the_agents_see_the_figures_before_they_write(api, munchly, cloud)
 
 async def test_the_snapshot_carries_what_the_screens_state(api, munchly):
     snap = (await api.get(f"{WS}/snapshot", headers=PRIYA)).json()
+    public = (await api.get(WS)).json()
+    assert public["emailDomain"] == "munchly.example" and public["hint"] == "name@munchly.example"
     w = snap["workspace"]
     assert w["emailDomain"] == "munchly.example" and w["hint"] == "name@munchly.example"
     assert w["invite"]["contact"].endswith("@google.example")

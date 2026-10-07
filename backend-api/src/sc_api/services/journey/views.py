@@ -149,6 +149,8 @@ def public(c: m.Client, platform: dict[str, str]) -> dict[str, Any]:
         "mark": c.mark,
         "platform": platform,
         "signIn": doc.get("signIn", c.sign_in),
+        "emailDomain": c.email_domain,
+        "hint": doc.get("hint", f"name@{c.email_domain}"),
         "manifest": {
             "name": f"{c.short} · {platform['name']}",
             "shortName": doc.get("shortName", "Clearance"),

@@ -13,7 +13,7 @@
 	import { useNotice } from '../../../notice.svelte';
 	import { useTheme } from '../../../theme.svelte';
 	import { useAccount, useRoute } from '../../context';
-	import { kinds, providerOf } from '../../model';
+	import { kinds, PROVIDER_ICONS, providerOf } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import Screen from '../common/Screen.svelte';
@@ -49,9 +49,7 @@
 	let digest = $state(me.role === 'finance' || me.role === 'sustainability');
 	const perm = $derived(ws.state.setup.permission);
 	const inside = $derived(me.role !== 'buyer');
-	const signInIcon = $derived<IconName>(
-		me.provider === 'google' ? 'google' : me.provider === 'phone' ? 'smartphone' : 'hourglass'
-	);
+	const signInIcon = $derived<IconName>(PROVIDER_ICONS[me.provider]);
 </script>
 
 {#snippet wsMark()}<WorkspaceMark ws={ws.data.workspace} size={32} />{/snippet}
