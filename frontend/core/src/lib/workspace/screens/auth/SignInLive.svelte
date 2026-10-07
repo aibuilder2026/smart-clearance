@@ -38,7 +38,11 @@
 	let first = $state('');
 	let find = $state(false);
 	/** the address that signed in but is not a member here, and what the backend said */
-	let outside = $state<{ email: string; message: string } | null>(null);
+	// (an account whose session was found on opening the app and is not a member here: the backend's words, and no address,
+	// since only the backend knows it)
+	let outside = $state<{ email: string; message: string } | null>(
+		ws.outsider ? { email: '', message: ws.outsider } : null
+	);
 	let pw: HTMLInputElement | null = $state(null);
 	const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 	const say = (e: unknown) => (e instanceof Error && e.message ? e.message : 'That email and password do not match.');
@@ -109,11 +113,11 @@
 				{#if !outside}<p class="si-sub">Use the email address you were invited with, and your password.</p>{/if}
 			</div>
 			{#if outside}<div class="si-form" style="gap: 14px">
-					<div class="si-who">
-						<span class="si-who-av" aria-hidden="true"><Icon name="user" size={20} /></span><span class="si-who-t"
-							><span class="si-who-k">Signed in as</span><b>{outside.email}</b></span
-						>
-					</div>
+					{#if outside.email}<div class="si-who">
+							<span class="si-who-av" aria-hidden="true"><Icon name="user" size={20} /></span><span class="si-who-t"
+								><span class="si-who-k">Signed in as</span><b>{outside.email}</b></span
+							>
+						</div>{/if}
 					<div class="si-out" role="alert">
 						<Icon name="info" size={18} /><span
 							>{outside.message} Ask {W.short}'s workspace admin to invite you, or open a workspace you belong to.</span

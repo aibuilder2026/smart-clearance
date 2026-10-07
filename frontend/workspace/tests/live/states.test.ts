@@ -141,6 +141,15 @@ describe('the sign-in, on email and password', () => {
 		await fireEvent.click(r.getByRole('button', { name: 'Sign in with another account' }));
 		expect(text(r)).toContain('Use the email address you were invited with');
 	});
+
+	it('says so too when the session found on opening is not a member here', async () => {
+		const OUT = 'This account is not a member of this workspace.';
+		const { s } = signedOut({ me: () => Promise.reject(new NotAMember(OUT)) });
+		const r = await draw(s, null);
+		expect(text(r)).toContain('Not a member here');
+		expect(text(r)).toContain(OUT);
+		expect(text(r)).not.toContain('Signed in as');
+	});
 });
 
 describe('live, and the journey clock', () => {
