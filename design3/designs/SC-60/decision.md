@@ -105,15 +105,56 @@ under it. C opens on the result.
 3. **The order below the hero.** Every option keeps the workspace, plans and the close. Should the exits strip go, now
    that the hero and the ledger tell the same batch?
 
+## Round 1: the answer (7 Oct 2026)
+
+The maintainer did not pick one option but a mix, in the pick's own words:
+
+> I want a culmination of A and C. I like A as the hero perfectly no doubt, when I scroll down on A, I need the "Five
+> exits one batch" with [option C] replaced and blended and it show the agents in work like it does in current existing
+> landing, in a very robust and engaging way, I like the background C. I just agents centered and be in focus showing
+> what is happening
+
+So round 1 picked no option to build. A's film hero and spine are the base; C's table is the scene of the agents at
+work, in the place of "Five exits, one batch".
+
+## Round 2: A's hero, C's table, the agents at work (7 Oct 2026)
+
+One page: A's film hero, the statement, then **the table as the scene where the agents work the batch**, then A's
+chapters, the ledger, the workspace, plans and the close. The exits strip is gone; its content lives in the scene's
+tags (what the kiranas and the buyer took, what the bin would have cost).
+
+**The scene, every option:** C's table plate by day and night, blended into the page at its top and foot. The ten
+agents and the person stand at their posts on the table (Data, the Watcher, Vision, the Valuer and the Router round
+the godown; You and Paperwork at the phone; Outreach at the shops; the Lister and the Negotiator at the buyer's bay
+and truck; Impact at the landfill). The phone's screen shows the plan, waiting, then placed, then the agents at work.
+Each agent takes its turn in order, lit as it works; the packs leave the phone for the shops as Outreach works and
+for the buyer's truck as the Lister works; the tags count them in; the landfill tag turns to what was kept out; the
+result lands with Replay. Under reduced motion the scene opens on the result.
+
+| | Option | How the agents are shown |
+| --- | --- | --- |
+| 1 | **The tour on the table** | As the town's tour (SC-34): the whole table in view, the camera leaning a little (1.35×) toward the agent at work, a small card on a stem beside it with a line that fills while its stop holds, a caption at the foot with the steps, Pause. 1.4 s an agent, 1.8 s on the yes. |
+| 2 | **In focus** (recommended) | One agent at a time in a large card at the centre of the scene: its icon, name, post, what it did, and what it is doing live (the Watcher's gates and 1,360; the Valuer's five prices; the Router's split; the yes with ₹21,770 and the amber button; Outreach's Hindi offer; the Lister's lot; the Negotiator's counter; Paperwork's documents; Impact's kilos), with a rail of all eleven to jump between. The table closes in on the agent's post behind (1.6×) and recedes a little. Same pace, Pause. |
+| 3 | **The relay** | Option 2's picture, driven by the scroll instead of the clock: a pinned stage, each agent a stretch of scroll, a rail of the eleven at the left (a progress bar on phones). Under the visitor's hand throughout. |
+
+**Why 2 is recommended:** it is what the maintainer asked for in so many words, the agents centred and in focus,
+showing what is happening, and each card carries the agent's real work rather than a caption. Its cost is that the
+table is seen in pieces while the tour runs; it rests on the whole table before and after.
+
+**Open:** the scene's place on the page (after the statement, as built, or after the chapters, where the exits strip
+was); whether the four chapters stay now that the scene shows every agent's work.
+
 ## The pick
 
-Not yet made.
+Round 1: a culmination of A and C (above). Round 2: not yet made.
 
 ## In this folder
 
 - `board.html`: the review board.
 - `current/`: the page as it is.
 - `img/`: the new plates with their prompt sidecars; `media/`: the film clips with theirs.
-- `option-a/`, `option-b/`, `option-c/`: each option's `mockup.html`, stills and `motion.mp4`.
+- `option-a/`, `option-b/`, `option-c/`: each round-1 option's `mockup.html`, stills and `motion.mp4`.
+- `round-2/`: the combined page, three treatments of the scene (`option-1/` to `option-3/`, each with its `mockup.html`,
+  stills and `motion.mp4`), and their code (`sc60-r2.jsx`, compiled to `sc60-r2.js`, and `sc60-r2.css`).
 - `sc60.css`, `sc60-core.jsx` and `sc60-options.jsx` (compiled to `.js`): the mockups' code, on the real kit.
 - `src/`: the PNG originals and the generation scripts (`gen.sh`, `ltx-run.py`); local only.

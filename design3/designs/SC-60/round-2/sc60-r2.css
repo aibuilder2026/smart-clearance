@@ -1,0 +1,171 @@
+/* SC-60 round 2 · A's film hero, and C's table as the scene where the agents work the batch: the agents at their posts
+   on the table, each taking its turn in focus, the packs leaving the phone for the shops and the buyer's truck. Three
+   treatments of the scene: the tour on the table (1), in focus (2), the relay by scroll (3). */
+/* the section keeps overflow visible: the kit gives sections overflow auto, which would end the sticky stage */
+.site .s60-table { position: relative; isolation: isolate; overflow: visible; --on-plate: #0d1c15; }
+[data-theme="dark"] .s60-table { --on-plate: #ecf2ee; }
+.tb-head { max-width: 1248px; margin: 0 auto; padding: 0 16px 20px; display: grid; gap: 10px; }
+.tb-track { position: relative; }
+.s60-table.scroll .tb-track { height: 760svh; }
+.tb-stage { position: relative; height: 100svh; min-height: 600px; overflow: clip; background: var(--bg); }
+.s60-table.scroll .tb-stage { position: sticky; top: 0; }
+/* the world: the plate and what stands on it, moved as one by the camera */
+.tb-world { position: absolute; inset: 0; transform-origin: 0 0; will-change: transform; transition: transform 900ms var(--ease); }
+@media (prefers-reduced-motion: reduce) { .tb-world { transition: none; } }
+.tb-plate { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.tb-layer { position: absolute; left: 0; top: 0; pointer-events: none; }
+.tb-layer > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.tb-path { fill: none; stroke: #f6fff9; stroke-width: 4; opacity: 0; }
+.tb-dot { stroke: #fff; stroke-width: 3; filter: drop-shadow(0 4px 6px rgb(0 0 0 / 0.35)); }
+.tb-dot.kirana { fill: var(--ch-kirana); } .tb-dot.expiresoon { fill: var(--ch-expiresoon); }
+/* the plate's top and foot blend into the page */
+.tb-stage::before, .tb-stage::after { content: ""; position: absolute; left: 0; right: 0; z-index: 2; height: 18%; pointer-events: none; }
+.tb-stage::before { top: 0; background: linear-gradient(to bottom, var(--bg), transparent); }
+.tb-stage::after { bottom: 0; background: linear-gradient(to top, var(--bg), transparent); }
+/* in focus: the table recedes a little behind the card */
+.tb-shade { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: color-mix(in oklab, var(--bg) 28%, transparent); opacity: 0; transition: opacity 600ms var(--ease); }
+.s60-table.focus .tb-stage.working .tb-shade { opacity: 1; }
+/* an agent at its post: a frosted dot with its icon and name; lit once it has worked, ringed while it works, amber for
+   the person. The nodes keep their size as the camera nears (--iz) */
+.tb-node { position: absolute; left: 0; top: 0; z-index: 3; display: inline-flex; align-items: center; height: 30px; padding: 0 3px; border-radius: 999px; white-space: nowrap; translate: -15px -50%; scale: var(--iz, 1); transform-origin: 15px 50%;
+  font-size: 12.5px; font-weight: 650; color: var(--fg); background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%);
+  box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); transition: box-shadow 160ms var(--ease), color 240ms var(--ease), opacity 240ms var(--ease); pointer-events: auto; }
+.tb-node.left { flex-direction: row-reverse; translate: calc(-100% + 15px) -50%; transform-origin: calc(100% - 15px) 50%; }
+.tb-node i.dot { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: var(--fg-3); background: var(--fill-2); transition: background-color 240ms var(--ease), color 240ms var(--ease); }
+.tb-node .name { padding: 0 9px 0 7px; }
+.tb-node.left .name { padding: 0 7px 0 9px; }
+.tb-node.on i.dot { color: var(--primary-fg); background: var(--primary); }
+.tb-node.human i.dot { color: var(--amber-fg); background: var(--amber); }
+.tb-node.later { color: var(--fg-2); }
+.tb-node.later i.dot { opacity: 0.55; }
+.tb-node.now { box-shadow: var(--shadow-2), 0 0 0 2px var(--primary); }
+.tb-node.now.human { box-shadow: var(--shadow-2), 0 0 0 2px var(--amber); }
+.tb-node.now i.dot { position: relative; }
+.tb-node.now i.dot::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid currentColor; opacity: 0; animation: tb-ping 900ms var(--ease) 1 forwards; }
+@keyframes tb-ping { 0% { opacity: 0.8; transform: scale(0.7); } 100% { opacity: 0; transform: scale(1.5); } }
+/* a place's tag: what it took */
+.tb-tag { position: absolute; z-index: 2; translate: -50% -100%; scale: var(--iz, 1); transform-origin: 50% 100%; display: grid; justify-items: center; }
+.tb-tag-body { display: grid; gap: 1px; padding: 6px 11px 7px; border-radius: 12px; white-space: nowrap; font-size: 12.5px; color: var(--fg); text-align: left;
+  background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); transition: box-shadow 240ms var(--ease); }
+.tb-tag-body b { display: inline-flex; align-items: center; gap: 6px; font-weight: 650; }
+.tb-tag-body span { font-size: 12px; color: var(--fg-2); font-variant-numeric: tabular-nums; }
+.tb-tag.in.kirana .tb-tag-body { box-shadow: var(--shadow-2), 0 0 0 2px var(--ch-kirana); }
+.tb-tag.in.expiresoon .tb-tag-body { box-shadow: var(--shadow-2), 0 0 0 2px var(--ch-expiresoon); }
+.tb-tag .stem { width: 2px; height: 12px; border-radius: 1px; background: color-mix(in oklab, var(--fg) 34%, transparent); }
+/* the phone's screen, the plan on it */
+.tb-mini { position: absolute; z-index: 2; translate: -50% -50%; border-radius: 7% / 3.3%; overflow: hidden; background: var(--bg); pointer-events: none; }
+.tb-mini-in { width: 360px; transform-origin: 0 0; scale: var(--s); }
+.ps { display: grid; gap: 10px; padding: 16px 18px; font-size: 14px; color: var(--fg); }
+.ps .top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ps .who { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; color: var(--fg-2); }
+.ps .who b { color: var(--fg); }
+.ps h4 { margin: 0; font-family: var(--font-display); font-size: 22px; font-weight: 720; letter-spacing: -0.02em; font-variation-settings: "opsz" 48, "wdth" 94; }
+.ps .big { display: grid; gap: 2px; }
+.ps .big .money { font-size: 40px; color: var(--primary-text); }
+.ps .big .money .cur { font-size: 0.56em; margin-top: 0.12em; }
+.ps .big > span { font-size: 13px; color: var(--fg-2); }
+.ps .r { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; font-size: 13.5px; box-shadow: inset 0 var(--hair) 0 var(--line); }
+.ps .r b { font-weight: 650; font-variant-numeric: tabular-nums; }
+.ps .r b.red { color: var(--red-text); }
+.ps .btn { width: 100%; min-height: 48px; cursor: default; }
+.ps .placed { display: grid; justify-items: center; gap: 6px; text-align: center; padding: 8px 0 4px; }
+.ps .placed .t { font-family: var(--font-display); font-size: 19px; font-weight: 720; letter-spacing: -0.015em; }
+.ps .placed .money { font-size: 36px; color: var(--primary-text); }
+.ps .placed .money .cur { font-size: 0.56em; margin-top: 0.12em; }
+.ps .placed p { margin: 0; font-size: 13px; color: var(--fg-2); max-width: 30ch; }
+.ps .work { display: grid; gap: 7px; }
+.ps .work .w { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--fg-3); }
+.ps .work .w i { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; color: var(--fg-3); background: var(--fill-2); }
+.ps .work .w.on { color: var(--fg); }
+.ps .work .w.on i { color: var(--primary-fg); background: var(--primary); }
+/* 1 · the tour on the table: a small card beside the agent at work, on a stem, as the town's (SC-34) */
+.tb-tip { position: absolute; z-index: 4; left: 0; top: 0; width: max-content; max-width: min(18rem, 60vw); padding: 9px 12px 13px; border-radius: 12px; font-size: 13px; line-height: 1.4; color: var(--fg-2);
+  background: var(--glass-strong); -webkit-backdrop-filter: blur(12px) saturate(140%); backdrop-filter: blur(12px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); pointer-events: none; scale: var(--iz, 1); transform-origin: var(--ox, 50%) 100%; translate: -50% calc(-100% - 22px); }
+.tb-tip.below { translate: -50% 22px; transform-origin: var(--ox, 50%) 0; }
+.tb-tip::after { content: ""; position: absolute; left: 50%; top: 100%; width: 2px; height: 14px; margin-left: -1px; border-radius: 1px; background: color-mix(in oklab, var(--fg) 34%, transparent); }
+.tb-tip.below::after { top: auto; bottom: 100%; }
+.tb-tip header { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 7px; margin-bottom: 3px; }
+.tb-tip header i { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; color: var(--primary-fg); background: var(--primary); }
+.tb-tip.human header i { color: var(--amber-fg); background: var(--amber); }
+.tb-tip b { font-weight: 700; color: var(--fg); }
+.tb-tip header span { font-size: 12.5px; color: var(--fg-2); }
+.tb-tip p { margin: 0; color: var(--fg); }
+.tb-tip .time { position: absolute; left: 12px; right: 12px; bottom: 5px; height: 2px; border-radius: 2px; overflow: hidden; background: color-mix(in oklab, var(--primary) 20%, transparent); }
+.tb-tip .time::after { content: ""; position: absolute; inset: 0; background: var(--primary); transform: scaleX(0); transform-origin: 0 50%; animation: tb-time linear forwards; animation-duration: inherit; animation-play-state: inherit; }
+.tb-tip.human .time { background: color-mix(in oklab, var(--amber) 25%, transparent); }
+.tb-tip.human .time::after { background: var(--amber); }
+@keyframes tb-time { to { transform: scaleX(1); } }
+/* 2 and 3 · in focus: one agent at a time in a large card at the centre, what it is doing live inside it */
+.tb-focus { position: absolute; z-index: 5; left: 50%; bottom: 6%; translate: -50% 0; width: min(100% - 24px, 40rem); display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 18px; row-gap: 10px; padding: 18px 20px 16px; border-radius: 22px; color: var(--fg-2); font-size: 14.5px; line-height: 1.45;
+  background: var(--glass-strong); -webkit-backdrop-filter: blur(16px) saturate(150%); backdrop-filter: blur(16px) saturate(150%); box-shadow: var(--shadow-3), 0 0 0 var(--hair) var(--line); }
+.tb-focus .icn { grid-row: 1 / span 2; display: grid; place-items: center; width: 56px; height: 56px; border-radius: 18px; color: var(--primary-fg); background: var(--primary); }
+.tb-focus.human .icn { color: var(--amber-fg); background: var(--amber); }
+.tb-focus header { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; }
+.tb-focus header .n { font: 500 12px/1 var(--font-mono); color: var(--fg-3); }
+.tb-focus h3 { margin: 0; font-family: var(--font-display); font-size: 26px; font-weight: 740; letter-spacing: -0.022em; color: var(--fg); font-variation-settings: "opsz" 48, "wdth" 92; }
+.tb-focus header span { color: var(--fg-2); }
+.tb-focus p { margin: 0; color: var(--fg); font-size: 15.5px; }
+.tb-focus .frag { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding-top: 12px; box-shadow: inset 0 var(--hair) 0 var(--line); min-height: 48px; }
+.tb-focus .frag .num { font-size: 34px; color: var(--primary-text); }
+.tb-focus .frag .num.red { color: var(--red-text); }
+.tb-focus .frag .money { font-size: 34px; color: var(--primary-text); }
+.tb-focus .frag .money .cur { font-size: 0.58em; margin-top: 0.12em; }
+.tb-focus .frag .k { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--fg); }
+.tb-focus .frag .k b { font-variant-numeric: tabular-nums; }
+.tb-focus .frag .m-split { flex: 1 1 160px; margin: 0; }
+.tb-focus .frag .hi { font-size: 17px; font-weight: 600; color: var(--fg); }
+.tb-focus .frag img { width: 56px !important; height: 56px !important; }
+.tb-focus .frag .btn { cursor: default; }
+.tb-focus .rail { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; padding-top: 10px; }
+.tb-focus .rail button { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px 0 6px; border: 0; border-radius: 999px; font: 600 12.5px/1 var(--font-ui); color: var(--fg-2); background: var(--fill-2); cursor: pointer; transition: background-color 240ms var(--ease), color 240ms var(--ease); }
+.tb-focus .rail button i { width: 16px; height: 16px; border-radius: 50%; display: grid; place-items: center; color: var(--fg-3); background: var(--surface); }
+.tb-focus .rail button.on { color: var(--fg); }
+.tb-focus .rail button.on i { color: var(--primary-fg); background: var(--primary); }
+.tb-focus .rail button.human.on i { color: var(--amber-fg); background: var(--amber); }
+.tb-focus .rail button[aria-current="step"] { color: var(--fg); background: color-mix(in oklab, var(--fg) 12%, transparent); box-shadow: 0 0 0 1.5px var(--primary); }
+.tb-focus .rail button:hover { background: color-mix(in oklab, var(--fg) 12%, transparent); }
+/* the result, and the controls */
+.tb-cap { position: absolute; z-index: 5; left: 50%; bottom: 6%; translate: -50% 0; display: flex; align-items: center; gap: 6px; width: max-content; max-width: calc(100% - 24px); padding: 6px; border-radius: 14px; font-size: 14.5px; line-height: 1.4; color: var(--fg-2);
+  background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.tb-cap .text { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 8px; flex: 1; min-width: 0; padding: 4px 6px; }
+.tb-cap .n { font: 500 12px/1 var(--font-mono); color: var(--fg-3); }
+.tb-cap b { font-weight: 650; color: var(--fg); }
+.tb-cap .did { color: var(--primary-text); font-variant-numeric: tabular-nums; }
+.tb-cap.human .did { color: var(--amber-text); }
+.tb-cap button.step { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 10px; color: var(--fg); background: var(--fill-2); cursor: pointer; }
+.tb-cap button.step:hover:not(:disabled) { background: color-mix(in oklab, var(--fg) 12%, transparent); }
+.tb-cap button.step:disabled { opacity: 0.4; cursor: default; }
+.tb-ctl { position: absolute; z-index: 5; right: 16px; top: 16px; display: flex; gap: 8px; }
+.tb-ctl .replay { margin: 0; padding: 0 14px 0 12px; border-radius: 999px; background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.tb-result { position: absolute; z-index: 5; left: 50%; bottom: 6%; translate: -50% 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 14px; width: max-content; max-width: calc(100% - 24px); padding: 10px 12px 10px 16px; border-radius: 16px; font-size: 14.5px; line-height: 1.4; color: var(--fg-2);
+  background: var(--glass-strong); -webkit-backdrop-filter: blur(12px) saturate(150%); backdrop-filter: blur(12px) saturate(150%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.tb-result b { color: var(--fg); }
+.tb-result .did { color: var(--primary-text); font-weight: 600; font-variant-numeric: tabular-nums; }
+.tb-result .replay { min-height: 36px; margin: 0; }
+/* the rail of stops at the top left for the relay (3), as B's */
+.tb-rail { position: absolute; z-index: 5; left: 16px; top: 16px; display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.tb-rail button { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px 0 8px; border: 0; border-radius: 999px; font: 600 12.5px/1 var(--font-ui); color: var(--fg-2); background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); cursor: pointer; }
+.tb-rail button i { width: 16px; height: 16px; border-radius: 50%; display: grid; place-items: center; color: var(--fg-3); background: var(--fill-3); }
+.tb-rail button.on i { color: var(--primary-fg); background: var(--primary); }
+.tb-rail button.human.on i { color: var(--amber-fg); background: var(--amber); }
+.tb-rail button[aria-current="step"] { color: var(--fg); box-shadow: var(--shadow-2), 0 0 0 2px var(--primary); }
+@container app (max-width: 1023px) {
+  .tb-rail { display: flex; left: 12px; right: 12px; gap: 4px; }
+  .tb-rail li { flex: 1; }
+  .tb-rail button { width: 100%; height: 24px; padding: 10px 0; border-radius: 0; background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .tb-rail button i { display: block; width: 100%; height: 4px; border-radius: 2px; background: color-mix(in oklab, var(--fg) 22%, transparent); }
+  .tb-rail button.on i { background: var(--primary); }
+  .tb-rail button span { display: none; }
+  .tb-focus { bottom: 12px; padding: 14px 16px 14px; column-gap: 12px; }
+  .tb-focus .icn { width: 44px; height: 44px; border-radius: 14px; }
+  .tb-focus h3 { font-size: 21px; }
+  .tb-focus p { font-size: 14px; }
+  .tb-focus .frag .num, .tb-focus .frag .money { font-size: 28px; }
+  .tb-focus .rail { display: none; }
+  .tb-cap, .tb-result, .tb-focus { left: 12px; translate: none; max-width: calc(100% - 84px); width: auto; }
+  .tb-cap, .tb-result { bottom: 12px; }
+  .tb-ctl { top: 16px; right: 12px; }
+  .s60-table.scroll .tb-rail { top: 60px; }
+}
+@container app (min-width: 600px) { .tb-head { padding: 0 32px 24px; } }
+@container app (min-width: 1024px) { .tb-head { padding: 0 48px 28px; } .tb-ctl { right: 48px; top: 20px; } .tb-rail { left: 48px; top: 20px; } }

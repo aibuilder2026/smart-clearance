@@ -289,5 +289,6 @@
     const Page = PAGES[OPT] || PageC;
     return /* @__PURE__ */ React.createElement(C.Shell, { option: OPT, sections: SECTIONS }, (ctx) => /* @__PURE__ */ React.createElement(Page, { ...ctx }));
   }
-  C.mount(Site);
+  window.SC60_OPTS = { HeroFilm, HeroSky, HeroYes, Day, PageA, PageB, PageC, WORDS };
+  if (!window.SC60_NO_MOUNT) C.mount(Site);
 })();

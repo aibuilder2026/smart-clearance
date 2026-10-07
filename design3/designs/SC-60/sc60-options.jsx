@@ -295,5 +295,7 @@
   const PAGES = { a: PageA, b: PageB, c: PageC };
   const SECTIONS = OPT === "a" ? [["how", "How it works"], ["work", "Agents"], ["teams", "For teams"], ["pricing", "Pricing"]] : [["how", "How it works"], ["exits", "The exits"], ["teams", "For teams"], ["pricing", "Pricing"]];
   function Site() { const Page = PAGES[OPT] || PageC; return <C.Shell option={OPT} sections={SECTIONS}>{ctx => <Page {...ctx} />}</C.Shell>; }
-  C.mount(Site);
+  // round 2 builds on these without mounting this page
+  window.SC60_OPTS = { HeroFilm, HeroSky, HeroYes, Day, PageA, PageB, PageC, WORDS };
+  if (!window.SC60_NO_MOUNT) C.mount(Site);
 })();
