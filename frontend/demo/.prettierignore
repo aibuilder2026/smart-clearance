@@ -1,0 +1,4 @@
+# generated, or ported verbatim from design3 (the drift test keeps it identical); see ../.prettierignore
+.svelte-kit/
+build/
+src/lib/demo.css

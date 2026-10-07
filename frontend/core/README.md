@@ -70,8 +70,8 @@ workspace's seed, as the prototype's read `SC3_DATA`.
 **Patterns** (pieces of design3/screens the apps share): `FindWorkspace` (`screens/auth.jsx`), `Columns` and
 `SectionTitle` (`screens/common.jsx`).
 
-**Planned** (`coverage.ts` says with which port): the device frames with the guided demo. The stages' times
-(`STAGE_TIMES`) are data, served with the console's config.
+With the guided demo (SC-63): `PhoneFrame` and `StatusBar`, and the workspace app's `LockScreen`. Nothing of the kit is
+planned any more; the stages' times (`STAGE_TIMES`) are data, served with the console's config.
 
 ## The workspace app (`./workspace`)
 

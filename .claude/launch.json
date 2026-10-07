@@ -44,6 +44,18 @@
       "port": 4177
     },
     {
+      "name": "frontend-demo",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "cd frontend && exec corepack pnpm --filter @smart-clearance/demo dev"],
+      "port": 5176
+    },
+    {
+      "name": "frontend-demo-preview",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "cd frontend && exec corepack pnpm --filter @smart-clearance/demo preview"],
+      "port": 4178
+    },
+    {
       "name": "design3",
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8787", "--directory", "design3"],

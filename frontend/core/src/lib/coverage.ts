@@ -1,10 +1,10 @@
 // Where each piece of design system v3 stands in core. Every export of the prototype's window.SC3 (design3/system
 // kit.jsx, world.jsx, product.jsx) is listed exactly once, and a test keeps it that way: a new piece in design3 fails the
-// test until it is either built here or planned.
+// test until it is either built here or planned. Since the guided demo's port (SC-63) every piece is built, bar the
+// stages' times, which are data.
 export type Coverage = { status: 'built' } | { status: 'planned'; with: string } | { status: 'api'; as: string };
 
 const built: Coverage = { status: 'built' };
-const later = (with_: string): Coverage => ({ status: 'planned', with: with_ });
 
 export const COVERAGE: Record<string, Coverage> = {
 	// foundations
@@ -86,7 +86,7 @@ export const COVERAGE: Record<string, Coverage> = {
 	MoneyPanel: built,
 	DocCard: built,
 	CodeBlock: built,
-	// later, with the guided demo
-	StatusBar: later('the guided demo port'),
-	PhoneFrame: later('the guided demo port')
+	// the guided demo's (SC-63)
+	StatusBar: built,
+	PhoneFrame: built
 };

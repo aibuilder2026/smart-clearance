@@ -1,6 +1,6 @@
 # frontend
 
-Smart-Clearance's web frontend, in SvelteKit. It is a pnpm workspace: three apps, each built on its own, over three
+Smart-Clearance's web frontend, in SvelteKit. It is a pnpm workspace: four apps, each built on its own, over three
 shared packages.
 
 | Package                                                            | What it is                                                                                                                                                                  |
@@ -8,6 +8,7 @@ shared packages.
 | [`admin/`](admin/README.md) (`@smart-clearance/admin`)             | The platform's own site: the smartclearance.com landing page, prerendered, and `/ds`.                                                                                       |
 | [`console/`](console/README.md) (`@smart-clearance/console`)       | The staff console, console.smartclearance.com: a client-side app behind a staff sign-in, where each manufacturer's workspace is set up and run (SC-37).                     |
 | [`workspace/`](workspace/README.md) (`@smart-clearance/workspace`) | A manufacturer's workspace, Munchly Foods' at munchly.smartclearance.com: a thin client-side host for core's workspace app, on the prototype's stub data (SC-62).           |
+| [`demo/`](demo/README.md) (`@smart-clearance/demo`)                | The guided demo: nine stages of one batch on a laptop and a phone running the workspace app's real screens, with the narration, on the same stub data (SC-63).              |
 | [`core/`](core/README.md) (`@smart-clearance/core`)                | Design system v3 in Svelte 5: the tokens, component and screen CSS ported from design3, and the components. Every UI piece the apps share lives here.                       |
 | [`api/`](api/README.md) (`@smart-clearance/api`)                   | The frontend's side of backend-api: the contract, the HTTP transport, and an in-browser mock of each app's calls, seeded from design3. Each app imports only its own entry. |
 | [`testing/`](testing/README.md) (`@smart-clearance/testing`)       | What the apps' Playwright suites share: the a11y suite's axe scan, report and component coverage, and the parity suites' pixel compare and design3 server.                  |
@@ -73,7 +74,7 @@ Run them from `frontend/`.
 
 | Command                     | What it does                                                                                                                                                                                                                                  |
 | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `corepack pnpm dev`         | The landing page's dev server, :5173 (`dev:console`: the console's, :5174; `dev:workspace`: the workspace app's, :5175)                                                                                                                       |
+| `corepack pnpm dev`         | The landing page's dev server, :5173 (`dev:console`: the console's, :5174; `dev:workspace`: the workspace app's, :5175; `dev:demo`: the guided demo's, :5176)                                                                                 |
 | `corepack pnpm build`       | Both static apps, into `admin/build/` and `console/build/` (`build:admin`, `build:console`: one of them)                                                                                                                                      |
 | `corepack pnpm preview`     | Serves the landing page's build, :4173 (`preview:console`: the console's, :4176)                                                                                                                                                              |
 | `corepack pnpm lint`        | ESLint and Prettier                                                                                                                                                                                                                           |
@@ -157,5 +158,5 @@ Never edit the generated files (`api/src/seed/*`, `admin/src/lib/seed/*`, `core/
 - The Firefox smoke run could not be run in the agent's sandboxed shell (Firefox cannot start there); WebKit and Chromium were. Run `corepack pnpm test:e2e` on a normal machine to cover it.
 - The landing page ships about 159 kB of JavaScript (gzip), measured on the scripts its prerendered page loads; SC-60's film and table replaced SC-32's WebGL2 town. bits-ui and its floating-ui layer are about 30 kB of it and the icon registry about 9 kB. A leaner menu and sheet, or a per-route icon registry, would cut it.
 - On the mock, demo requests stay in the browser (`localStorage`, `sc-demo-requests`); with `PUBLIC_API_BASE` they go to `backend-api`, and the console lists them. The hosted pages still run on the mocks, until backend-api runs in the cloud.
-- The client workspace app (SC-62) runs on the prototype's stub, in the browser: backend-api has no workspace routes yet. It is live at https://munchly-smartclearance.web.app, released by CI with the other apps. It is not installable (no manifest or service worker), and it has no a11y, e2e or parity suite yet (`workspace/README.md`).
+- The client workspace app (SC-62) runs on the prototype's stub, in the browser: backend-api has no workspace routes yet. It is live at https://munchly-smartclearance.web.app, released by CI with the other apps. The guided demo (SC-63) runs on the same stub and is not hosted yet. The workspace app is not installable (no manifest or service worker), and it has no a11y, e2e or parity suite yet (`workspace/README.md`).
 - On its mock the console lets any active staff member's address in with any password, and its changes stay in the browser (`sc-console`); two fictional demo requests stand in for the landing page's. With `PUBLIC_API_BASE` it signs in with Firebase Authentication and reads and writes `backend-api`.
