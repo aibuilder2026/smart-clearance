@@ -5,30 +5,25 @@
 	import Mark from '../../../components/Mark.svelte';
 	import { cx } from '../../../cx';
 	import { useRoute } from '../../context';
-	import { store } from '../../store.svelte';
+	import { useWorkspace } from '../../source';
 	import type { Notification, User } from '../../types';
 	import Screen from '../common/Screen.svelte';
 
 	// every role's inbox: the agents' pushes, kept so nothing is lost if a phone was off; opening one marks it read and
 	// goes to its screen, when the person may open it (screens/admin.jsx Inbox)
 	let { me, routes }: { me: User; routes?: string[] } = $props();
+	const ws = useWorkspace();
 	const router = useRoute();
-	const mine = $derived(store.state.notifications.filter((n) => n.to === me.id));
+	const mine = $derived(ws.state.notifications.filter((n) => n.to === me.id));
 	const unread = $derived(mine.filter((n) => !n.read).length);
 
 	const open = (n: Notification) => {
-		store.update((st) => {
-			const x = st.notifications.find((y) => y.id === n.id);
-			if (x) x.read = true;
-		});
-		if (n.link && (!routes || routes.includes(n.link))) router.go(n.link);
+		void ws.markRead([n.id]);
+		// a notification about the batch opens its Route Room on it
+		if (n.link && (!routes || routes.includes(n.link)))
+			router.go(n.link, n.link === 'route' && ws.case ? { ref: ws.case.batch.id } : undefined);
 	};
-	const readAll = () =>
-		store.update((st) =>
-			st.notifications.forEach((n) => {
-				if (n.to === me.id) n.read = true;
-			})
-		);
+	const readAll = () => void ws.markRead(mine.map((n) => n.id));
 </script>
 
 {#snippet markAll()}{#if unread > 0}<Button variant="ghost" size="sm" onclick={readAll}>Mark all read</Button

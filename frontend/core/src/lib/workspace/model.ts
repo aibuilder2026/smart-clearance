@@ -1,13 +1,26 @@
-// What the screens work out from the store and the seed (design3/screens: common.jsx, roles.jsx, admin.jsx,
-// trade.jsx): the hero batch's live model, each role's navigation, and the small rules the screens share.
+// What the screens work out from the journey's state and the workspace's data (design3/screens: common.jsx, roles.jsx,
+// admin.jsx, trade.jsx): the batch in focus's live model, each role's navigation, and the small rules the screens
+// share. Everything here takes its data as arguments: the screens read it from their source (source.ts), never from
+// the stub's seed, so this module works the same over the stub and over backend-api.
 import type { NavItem } from '../components/Shell.svelte';
 import { fmt } from '../format';
-import { CHIPS, D, KL, batchView } from './data';
-import { stageOf } from './flow';
-import { store } from './store.svelte';
-import type { BatchView, Phase, RoleId, State, User } from './types';
+import type {
+	Batch,
+	BatchView,
+	CaseData,
+	Distributor,
+	Kirana,
+	Phase,
+	RoleId,
+	Sku,
+	Stage,
+	State,
+	User,
+	Workspace,
+	WorkspaceData
+} from './types';
 
-/* ---------- the hero batch, read from the store ---------- */
+/* ---------- the batch in focus, read from the state ---------- */
 
 export const PHASE_STATUS: Record<Phase, string> = {
 	watching: 'watching',
@@ -26,11 +39,35 @@ export const PHASE_STATUS: Record<Phase, string> = {
 export const ROUTED: Phase[] = ['approved', 'executing', 'dispatched', 'settled', 'cleared'];
 export const isRouted = (p: Phase) => ROUTED.includes(p);
 
-/** the hero batch: phase, tracker position, ETA, which agent is working */
-export function heroModel(s: State) {
+/** a batch with its SKU and distributor */
+export const viewOf = (b: Batch, data: Pick<WorkspaceData, 'skus' | 'distributors'>): BatchView => ({
+	...b,
+	skuObj: data.skus[b.sku],
+	dist: data.distributors[b.distributor]
+});
+
+/** which stage is active (0–8), or 9 when the batch is cleared; shops: how many kiranas the scheme waits for */
+export function stageAt(state: State, shops: number) {
+	const h = state.hero;
+	const all = h.orders.length === shops;
+	if (!state.setup.confirmed || !state.setup.permission) return 0;
+	if (h.phase === 'watching') return 1;
+	if (h.photo.status !== 'verified') return 2;
+	if (h.phase === 'verified') return 3;
+	if (h.phase === 'valued') return 4;
+	if (h.phase === 'planned') return 5;
+	if (h.phase === 'approved') return 6;
+	if (h.phase === 'executing') return h.award && all ? 7 : 6;
+	if (h.phase === 'dispatched') return 7;
+	if (h.phase === 'settled') return h.van.status === 'done' && h.shelf ? 8 : 7;
+	return 9;
+}
+
+/** the batch in focus: phase, tracker position, ETA, which agent is working */
+export function heroModel(s: State, data: Pick<WorkspaceData, 'skus' | 'distributors'>, c: CaseData) {
 	const h = s.hero;
-	const view: BatchView = batchView(D.batches[0]);
-	const idx = stageOf(s);
+	const view: BatchView = viewOf(c.batch, data);
+	const idx = stageAt(s, c.kiranas.length);
 	view.phase = PHASE_STATUS[h.phase];
 	const ordered = h.orders.length;
 	const orderedUnits = h.orders.reduce((t, o) => t + o.units, 0);
@@ -38,10 +75,10 @@ export function heroModel(s: State) {
 	let etaTone: 'green' | 'amber' | undefined = 'green';
 	let agentLive = '';
 	if (h.phase === 'watching') {
-		eta = 'Watcher runs daily at 09:00';
+		eta = `Watcher runs daily at ${s.rules.watchTime}`;
 		etaTone = undefined;
 	} else if (h.phase === 'at-risk') {
-		eta = h.photo.status === 'reading' ? 'Reading the label' : 'Plan ready in about 20 min';
+		eta = h.photo.status === 'reading' ? 'Reading the label' : `Plan ready in about ${c.planMinutes} min`;
 		agentLive =
 			h.photo.status === 'reading'
 				? 'Vision is reading the label'
@@ -59,9 +96,9 @@ export function heroModel(s: State) {
 		etaTone = 'amber';
 	} else if (h.phase === 'approved' || h.phase === 'executing') {
 		eta = h.award
-			? `Awarded at ₹${D.counter.price.toFixed(2)} · ${ordered} of ${D.kiranas.length} kiranas ordered`
-			: `Listing live · ${ordered} of ${D.kiranas.length} kiranas ordered`;
-		agentLive = h.award && ordered === D.kiranas.length ? '' : 'Lister, Outreach and Negotiator at work';
+			? `Awarded at ${fmt.rate(c.counter.price)} · ${ordered} of ${c.kiranas.length} kiranas ordered`
+			: `Listing live · ${ordered} of ${c.kiranas.length} kiranas ordered`;
+		agentLive = h.award && ordered === c.kiranas.length ? '' : 'Lister, Outreach and Negotiator at work';
 	} else if (h.phase === 'dispatched') {
 		eta = 'Paperwork in progress';
 		agentLive = 'Paperwork is drafting the pack';
@@ -80,15 +117,15 @@ export function heroModel(s: State) {
 		agentLive,
 		ordered,
 		orderedUnits,
-		plan: D.plan
+		plan: c.plan
 	};
 }
 
-/** every batch the Watcher sees, the hero at its phase and the Mango Drink batch in motion */
-export const batchViews = (s: State) => {
+/** every batch the Watcher sees, the one in focus at its phase and the one being donated in motion */
+export const batchViews = (s: State, data: Pick<WorkspaceData, 'skus' | 'distributors' | 'batches'>) => {
 	const phase = PHASE_STATUS[s.hero.phase];
-	return D.batches.map((b) => {
-		const v = batchView(b);
+	return data.batches.map((b) => {
+		const v = viewOf(b, data);
 		if (b.hero) v.phase = phase;
 		if (b.second) v.phase = 'executing';
 		return v;
@@ -98,13 +135,22 @@ export const batchViews = (s: State) => {
 export const unreadFor = (s: State, me: { id: string } | null | undefined) =>
 	s.notifications.filter((n) => n.to === me?.id && !n.read).length;
 
-/** someone in the story, or an account in the store */
-export const personById = (id: string): { id?: string; name: string; short?: string; img?: string } =>
-	D.people[id] || store.get().users.find((u) => u.id === id) || { name: id };
+/** someone in the story, or an account in the state */
+export const personById = (
+	id: string,
+	data: Pick<WorkspaceData, 'people'>,
+	s: State
+): { id?: string; name: string; short?: string; img?: string } =>
+	data.people[id] || s.users.find((u) => u.id === id) || { name: id };
 
-/** a distributor's one-time permission, as the store holds it */
-export function permissionOf(s: State, id: string): { tone?: 'green' | 'amber'; label: string } {
-	if (id === 'rakesh') {
+/** a distributor's one-time permission: the one in focus as the state holds it, the others as the workspace's setup */
+export function permissionOf(
+	s: State,
+	id: string,
+	data: Pick<WorkspaceData, 'setup'>,
+	c: Pick<CaseData, 'dist'>
+): { tone?: 'green' | 'amber'; label: string } {
+	if (id === c.dist.id) {
 		const p = s.setup.permission;
 		return p
 			? p.paused
@@ -112,46 +158,88 @@ export function permissionOf(s: State, id: string): { tone?: 'green' | 'amber'; 
 				: { tone: 'green', label: 'granted · ' + p.at }
 			: { label: 'requested' };
 	}
-	return D.setup.permissions[id]
-		? { tone: 'green', label: 'granted · ' + D.setup.permissions[id] }
+	return data.setup.permissions[id]
+		? { tone: 'green', label: 'granted · ' + data.setup.permissions[id] }
 		: { label: 'requested' };
 }
 
+/** the stages as the trackers draw them, with their times, and with who acts (the compact tracker's sheet) */
+export const track = (stages: Stage[]) => stages.map((s) => ({ id: s.id, title: s.title, human: s.human }));
+export const stageTimes = (stages: Stage[]): Record<string, string> =>
+	Object.fromEntries(stages.map((s) => [s.id, s.time]));
+export const trackTimed = (stages: Stage[]) =>
+	stages.map((s) => ({ id: s.id, title: s.title, human: s.human, time: s.time, text: s.who }));
+
+/** an ISO date n days on (or back) */
+export const addDays = (iso: string, n: number) => {
+	const d = new Date(iso + 'T00:00:00Z');
+	d.setUTCDate(d.getUTCDate() + n);
+	return d.toISOString().slice(0, 10);
+};
+
+/* ---------- the people and the products of the story ---------- */
+
+/** who plays each part in the batch's story, from the workspace's members: the operator who approves, the batch's
+ *  distributor, the first kirana that orders, the buyer, the food bank that takes the donation, finance and
+ *  sustainability */
+export function castOf(s: State, c: Pick<CaseData, 'dist' | 'kiranas' | 'buyer' | 'donation'>) {
+	const by = (r: RoleId, org?: string) => s.users.find((u) => u.role === r && (!org || u.org === org))!;
+	return {
+		operator: by('operator'),
+		distributor: by('distributor', c.dist.name),
+		kirana: by('retailer', c.kiranas[0].name),
+		buyer: by('buyer', c.buyer.name),
+		foodbank: by('foodbank', c.donation.partner.name),
+		finance: by('finance'),
+		sustainability: by('sustainability')
+	};
+}
+/** the first word of a name, as people say it: Rakesh, of Rakesh bhai; Lakshmi, of Lakshmi Agencies */
+export const first = (name: string) => name.split(' ')[0];
+const SIZE = /\s+(\d[\d.]*\s?(?:g|ml|kg|L))$/;
+/** a product's name without its pack size (Masala Chips), and the size (150 g) */
+export const productName = (sku: Pick<Sku, 'name'>) => sku.name.replace(SIZE, '');
+export const packSize = (sku: Pick<Sku, 'name'>) => SIZE.exec(sku.name)?.[1] ?? '';
+
 /* ---------- the trade ---------- */
 
-/** the distributor a person works for; Rakesh Traders unless they work for another */
-export const distOf = (me: { org?: string } | null | undefined) =>
-	Object.values(D.distributors).find((d) => d.name === me?.org) || D.distributors.rakesh;
-/** the kirana a person runs; Shree Ganesh Kirana unless they run another */
-export const kOf = (me: { org?: string } | null | undefined) =>
-	D.kiranas.find((k) => k.name === me?.org) || D.kiranas[0];
-/** packets as cartons of 24 */
-export const cartons = (u: number) => {
-	const c = Math.floor(u / 24);
-	const r = u % 24;
-	return r === 12 ? `${c}½ cartons` : r ? `${c} cartons + ${r}` : `${c} carton${c === 1 ? '' : 's'}`;
+/** the distributor a person works for; the batch's own unless they work for another */
+export const distOf = (
+	me: { org?: string } | null | undefined,
+	data: Pick<WorkspaceData, 'distributors'>,
+	c: Pick<CaseData, 'dist'>
+): Distributor => Object.values(data.distributors).find((d) => d.name === me?.org) || c.dist;
+/** the kirana a person runs; the first that ordered unless they run another */
+export const kOf = (me: { org?: string } | null | undefined, c: Pick<CaseData, 'kiranas'>): Kirana =>
+	c.kiranas.find((k) => k.name === me?.org) || c.kiranas[0];
+/** packets as cartons of `per` */
+export const cartons = (u: number, per: number) => {
+	const c = Math.floor(u / per);
+	const r = u % per;
+	return r * 2 === per ? `${c}½ cartons` : r ? `${c} cartons + ${r}` : `${c} carton${c === 1 ? '' : 's'}`;
 };
-/** the scheme: pay the pack price for 10 of every 12, sell all 12 at MRP */
-export const offerMath = (n: number) => {
-	const free = Math.floor(n / 12) * 2;
+/** the scheme: pay the pack price for `buy` of every `buy + free`, sell them all at MRP */
+export const offerMath = (n: number, c: Pick<CaseData, 'lines' | 'sku' | 'scheme'>) => {
+	const lot = c.scheme.buy + c.scheme.free;
+	const free = Math.floor(n / lot) * c.scheme.free;
 	const paid = n - free;
-	const pack = KL.packPrice!;
-	return { n, free, paid, pack, pay: paid * pack, sell: n * CHIPS.mrp, margin: n * CHIPS.mrp - paid * pack };
+	const pack = c.lines.kirana.packPrice!;
+	return { n, free, paid, pack, pay: paid * pack, sell: n * c.sku.mrp, margin: n * c.sku.mrp - paid * pack };
 };
 
 /* ---------- people and their access ---------- */
 
-export const ROLES = D.roles;
 export const PROVIDERS: Record<User['provider'], string> = {
 	google: 'Google',
 	phone: 'Phone code',
 	expiresoon: 'ExpireSoon sign-in'
 };
-export const KINDS: Record<User['kind'], string> = {
-	staff: 'Munchly staff',
+/** how each kind of member is described, in the workspace's own name */
+export const kinds = (ws: Pick<Workspace, 'short'>): Record<User['kind'], string> => ({
+	staff: `${ws.short} staff`,
 	partner: 'Invited partner',
 	external: 'Outside the workspace'
-};
+});
 export const STATUS_TONE: Record<User['status'], 'green' | 'blue' | undefined> = {
 	active: 'green',
 	invited: 'blue',
@@ -159,7 +247,8 @@ export const STATUS_TONE: Record<User['status'], 'green' | 'blue' | undefined> =
 };
 export const providerOf = (u: Pick<User, 'provider' | 'kind'>) =>
 	u.provider === 'google' ? (u.kind === 'staff' ? 'Google Workspace' : 'Google, invited') : PROVIDERS[u.provider];
-export const role = (r: RoleId) => (ROLES[r] || r).toLowerCase();
+/** a role's name, in lower case, as a sentence says it */
+export const role = (r: RoleId, roles: Record<RoleId, string>) => (roles[r] || r).toLowerCase();
 
 /* ---------- each role's navigation (screens/roles.jsx) ---------- */
 

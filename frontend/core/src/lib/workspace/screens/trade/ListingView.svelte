@@ -10,10 +10,8 @@
 	import Product from '../../../components/Product.svelte';
 	import Stepper from '../../../components/Stepper.svelte';
 	import Icon from '../../../icons/Icon.svelte';
-	import { D, ES, INVOICE as inv } from '../../data';
-	import { act } from '../../flow';
-	import { cartons, fmt } from '../../model';
-	import { store } from '../../store.svelte';
+	import { cartons, fmt, packSize } from '../../model';
+	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import Chat from '../brand/Chat.svelte';
 	import LabelPhoto from '../brand/LabelPhoto.svelte';
@@ -24,29 +22,31 @@
 	type Props = { me?: User; readOnly?: boolean };
 	// the buyer is the only one who bids, so the person is not read here; the screens pass it all the same
 	let { me: _me, readOnly }: Props = $props();
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
 	const app = useApp();
-	const h = $derived(store.state.hero);
+	const h = $derived(ws.state.hero);
 	let price = $state(13);
 	let msg = $state('');
 	const last = $derived(h.bids[h.bids.length - 1]);
 	const open = $derived(!last || last.status === 'declined');
-	const token = $derived(Math.round(price * ES.units * D.rules.tokenPct * 100) / 100);
-	const place = () => act('bid', price);
-	const accept = () => act('accept');
+	const token = $derived(Math.round(price * c.lines.expiresoon.units * ws.data.rules.tokenPct * 100) / 100);
+	const place = () => ws.act('bid', price);
+	const accept = () => ws.act('accept');
 	const terms = $derived<[string, string][]>([
-		['Seller', 'Rakesh Traders, Nagpur · verified'],
-		['Visible to', "buyers outside Munchly's distributor territories"],
-		['Dispatch', '24 h after the balance · buyer pays freight'],
-		['Lot', `${cartons(ES.units)} · 24 × 150 g a carton`],
-		['Minimum order', '100 units'],
+		['Seller', `${c.dist.name}, ${c.dist.city} · verified`],
+		['Visible to', `buyers outside ${ws.data.workspace.short}'s distributor territories`],
+		['Dispatch', `${ws.data.market.dispatchHours} h after the balance · buyer pays freight`],
+		['Lot', `${cartons(c.lines.expiresoon.units, c.sku.perCarton)} · ${c.sku.perCarton} × ${packSize(c.sku)} a carton`],
+		['Minimum order', `${ws.data.market.minOrder} units`],
 		['Listing', h.listing?.id ?? '']
 	]);
-	const bill: [string, string][] = [
-		[`${ES.units} × ₹${D.counter.price.toFixed(2)}`, fmt.inr2(inv.taxable!)],
-		[`IGST ${inv.gstPct}%, Maharashtra to Chhattisgarh`, fmt.inr2(inv.igst!)],
-		['Round off', fmt.inr2(inv.roundOff!)],
-		['Invoice total', fmt.inr2(inv.total!)]
-	];
+	const bill: [string, string][] = $derived([
+		[`${c.lines.expiresoon.units} × ₹${c.counter.price.toFixed(2)}`, fmt.inr2(c.invoice.taxable!)],
+		[`IGST ${c.invoice.gstPct}%, ${c.dist.state} to ${c.buyer.state}`, fmt.inr2(c.invoice.igst!)],
+		['Round off', fmt.inr2(c.invoice.roundOff!)],
+		['Invoice total', fmt.inr2(c.invoice.total!)]
+	]);
 </script>
 
 {#if !h.listing}<Card
@@ -62,18 +62,22 @@
 	>
 		<div class="stack" style="gap: 16px">
 			<div class="es-gallery">
-				<div class="es-thumb big"><Product name="pack-chips" size={app.bp === 'phone' ? 150 : 190} float /></div>
+				<div class="es-thumb big"><Product name={c.sku.img} size={app.bp === 'phone' ? 150 : 190} float /></div>
 				<div class="es-thumb big" style="padding: 0; overflow: hidden; container-type: inline-size">
 					<LabelPhoto status="verified" />
 				</div>
 			</div>
 			<div class="stack tight">
-				<div class="t-title2">Munchly Masala Chips 150 g · {ES.units} units</div>
+				<div class="t-title2">{c.sku.brand} {c.sku.name} · {c.lines.expiresoon.units} units</div>
 				<span class="row base wrap" style="gap: 8px"
-					><span class="es-price lg">₹15</span><span class="muted">a packet · MRP ₹30 · 50% off</span></span
+					><span class="es-price lg">₹{c.lines.expiresoon.price}</span><span class="muted"
+						>a packet · MRP ₹{c.sku.mrp} · {Math.round((1 - c.lines.expiresoon.price / c.sku.mrp) * 100)}% off</span
+					></span
 				><span class="row tight wrap"
-					><EsDate days={47} date="Best before 18 Nov 2026" /><Badge size="sm" tone="violet" icon="badge-check"
-						>label photo verified</Badge
+					><EsDate days={c.batch.daysLeft} date={`Best before ${fmt.date(c.batch.bestBefore)}`} /><Badge
+						size="sm"
+						tone="violet"
+						icon="badge-check">label photo verified</Badge
 					></span
 				>
 			</div>
@@ -88,10 +92,11 @@
 								><Icon name="badge-check" size={22} /></span
 							>
 							<div class="grow">
-								<b>Lot won at ₹{D.counter.price.toFixed(2)}</b>
+								<b>Lot won at ₹{c.counter.price.toFixed(2)}</b>
 								<div class="t-footnote muted">
-									Token {fmt.inr(D.award.token)} paid · {fmt.inr(D.award.balance)} of the bid and {fmt.inr(inv.igst!)} IGST
-									due in 48 h
+									Token {fmt.inr(c.award.token)} paid · {fmt.inr(c.award.balance)} of the bid and {fmt.inr(
+										c.invoice.igst!
+									)} IGST due in {ws.data.market.balanceHours} h
 								</div>
 							</div>
 						</div>
@@ -99,14 +104,18 @@
 							>{#each bill as [k, v] (k)}<ListRow title={k}
 									>{#snippet value()}<span class="tnum strong">{v}</span>{/snippet}</ListRow
 								>{/each}</List
-						><span class="t-caption subtle">Rakesh Traders issues the invoice from its own Tally.</span></Card
+						><span class="t-caption subtle">{c.dist.name} issues the invoice from its own Tally.</span></Card
 					>{:else if open}<Card class="stack snug">
 						<div class="card-head">
-							<span class="card-title">Place a bid</span><span class="t-caption subtle">ask ₹15.00</span>
+							<span class="card-title">Place a bid</span><span class="t-caption subtle"
+								>ask {fmt.rate(c.lines.expiresoon.price)}</span
+							>
 						</div>
 						<div class="row between">
 							<span class="stack tight" style="gap: 0"
-								><b>Your price a packet</b><span class="t-footnote subtle">for all {ES.units} units</span></span
+								><b>Your price a packet</b><span class="t-footnote subtle"
+									>for all {c.lines.expiresoon.units} units</span
+								></span
 							><Stepper
 								bind:value={price}
 								min={10}
@@ -117,12 +126,16 @@
 							/>
 						</div>
 						<div class="row between t-subhead">
-							<span>15% token on your bid</span><span class="tnum strong">{fmt.inr2(token)}</span>
+							<span>{Math.round(ws.data.rules.tokenPct * 100)}% token on your bid</span><span class="tnum strong"
+								>{fmt.inr2(token)}</span
+							>
 						</div>
 						<Button variant="violet" size="lg" block icon="gavel" onclick={place}
-							>Bid ₹{price.toFixed(2)} for {ES.units}</Button
+							>Bid ₹{price.toFixed(2)} for {c.lines.expiresoon.units}</Button
 						>
-						<span class="t-caption subtle">Balance in 48 h. The seller's agent replies in about a minute.</span>
+						<span class="t-caption subtle"
+							>Balance in {ws.data.market.balanceHours} h. The seller's agent replies in about a minute.</span
+						>
 					</Card>{:else if last}<Card class="stack snug"
 						><div class="card-head">
 							<span class="card-title">Your bid</span><Badge
@@ -134,11 +147,11 @@
 						</div>
 						<div class="row base" style="gap: 8px">
 							<span class="es-price lg">₹{last.price.toFixed(2)}</span><span class="muted"
-								>→ counter ₹{(last.counter || D.counter.price).toFixed(2)}</span
+								>→ counter ₹{(last.counter || c.counter.price).toFixed(2)}</span
 							>
 						</div>
 						{#if last.status === 'countered'}<Button variant="violet" size="lg" block icon="check" onclick={accept}
-								>Accept ₹{D.counter.price.toFixed(2)} · pay {fmt.inr(D.award.token)} token</Button
+								>Accept ₹{c.counter.price.toFixed(2)} · pay {fmt.inr(c.award.token)} token</Button
 							>{/if}
 					</Card>{/if}{/if}
 			<Card class="stack snug"
@@ -158,7 +171,7 @@
 					>
 						<input
 							class="input grow"
-							placeholder="Message Rakesh Traders"
+							placeholder={`Message ${c.dist.name}`}
 							bind:value={msg}
 							aria-label="Message the seller"
 						/><IconButton icon="send" label="Send" type="submit" />

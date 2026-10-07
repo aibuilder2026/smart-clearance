@@ -12,9 +12,8 @@
 	import Icon from '../../../icons/Icon.svelte';
 	import type { IconName } from '../../../icons/registry';
 	import { useNotice } from '../../../notice.svelte';
-	import { D, WS } from '../../data';
-	import { KINDS, ROLES, STATUS_TONE, providerOf } from '../../model';
-	import { store } from '../../store.svelte';
+	import { kinds, providerOf, STATUS_TONE } from '../../model';
+	import { useWorkspace } from '../../source';
 	import type { RoleId, User, UserStatus } from '../../types';
 	import Screen from '../common/Screen.svelte';
 	import RowMenu from './RowMenu.svelte';
@@ -22,76 +21,40 @@
 	// users: the people and partner organisations in the workspace, how each signs in and their status; invite someone,
 	// change a role, deactivate or reactivate (screens/admin.jsx Users)
 	let { me }: { me: User } = $props();
+	const ws = useWorkspace();
 	const app = useApp();
 	const { toast } = useNotice();
-
-	const audit = (who: string, what: string, target: string) =>
-		store.update((s) => {
-			s.audit.unshift({ id: 'a-' + Date.now().toString(36), who, what, target, at: 'now' });
-		});
 
 	let q = $state('');
 	let invite = $state(false);
 	let roleFor = $state<User | null>(null);
 	let form = $state<{ name: string; contact: string; role: RoleId }>({ name: '', contact: '', role: 'retailer' });
-	const members = $derived(store.state.users.filter((u) => u.kind !== 'external'));
+	const members = $derived(ws.state.users.filter((u) => u.kind !== 'external'));
 	const rows = $derived(
 		members.filter(
-			(u) => !q || (u.name + ' ' + (u.org || '') + ' ' + (ROLES[u.role] || '')).toLowerCase().includes(q.toLowerCase())
+			(u) =>
+				!q ||
+				(u.name + ' ' + (u.org || '') + ' ' + (ws.data.roles[u.role] || '')).toLowerCase().includes(q.toLowerCase())
 		)
 	);
 	const counts = $derived(
 		(Object.keys(STATUS_TONE) as UserStatus[]).map((k) => [k, members.filter((u) => u.status === k).length] as const)
 	);
-	const choices = (Object.entries(ROLES) as [RoleId, string][]).filter(([k]) => k !== 'buyer');
+	const choices = $derived((Object.entries(ws.data.roles) as [RoleId, string][]).filter(([k]) => k !== 'buyer'));
 
 	const setStatus = (u: User, status: UserStatus) => {
-		store.update((st) => {
-			const x = st.users.find((y) => y.id === u.id);
-			if (x) x.status = status;
-		});
-		audit(me.id, status === 'deactivated' ? 'deactivated' : 'reactivated', u.name);
+		void ws.setUserStatus(u.id, status);
 		toast({ text: `${u.short || u.name} ${status === 'deactivated' ? 'deactivated' : 'reactivated'}`, tone: 'ok' });
 	};
 	const send = () => {
-		const phone = /^[+\d\s]+$/.test(form.contact);
-		const staff = !phone && form.contact.toLowerCase().endsWith('@' + WS.emailDomain);
-		const id =
-			form.name
-				.toLowerCase()
-				.replace(/[^a-z0-9]+/g, '-')
-				.replace(/^-|-$/g, '') +
-			'-' +
-			Date.now().toString(36).slice(-3);
 		const f = { ...form };
-		store.update((st) => {
-			st.users.push({
-				id,
-				name: f.name,
-				short: f.name,
-				org: staff ? D.client.short : f.name,
-				role: f.role,
-				provider: phone ? 'phone' : 'google',
-				phone: phone ? f.contact : '',
-				email: phone ? '' : f.contact,
-				status: 'invited',
-				invitedBy: me.name,
-				kind: staff ? 'staff' : 'partner',
-				lastSeen: null,
-				extra: true
-			});
-		});
-		audit(me.id, 'invited ' + f.name + ' as ' + ROLES[f.role].toLowerCase(), f.contact);
+		void ws.invite(f);
 		invite = false;
 		form = { name: '', contact: '', role: 'retailer' };
 		toast({ text: `Invite sent to ${f.contact}`, tone: 'ok' });
 	};
-	const setRole = (u: User, k: RoleId, v: string) => {
-		store.update((st) => {
-			const x = st.users.find((y) => y.id === u.id);
-			if (x) x.role = k;
-		});
-		audit(me.id, 'changed the role to ' + v.toLowerCase(), u.name);
+	const setRole = (u: User, k: RoleId) => {
+		void ws.setUserRole(u.id, k);
 		toast({ text: 'Role updated', tone: 'ok' });
 		roleFor = null;
 	};
@@ -112,9 +75,9 @@
 			><b>{u.name}</b><span class="t-caption subtle">{u.extra ? u.phone || u.email : u.org}</span></span
 		></span
 	>{/snippet}
-{#snippet role(u: User)}{ROLES[u.role]}{/snippet}
+{#snippet role(u: User)}{ws.data.roles[u.role]}{/snippet}
 {#snippet kind(u: User)}<span class="t-footnote"
-		>{KINDS[u.kind]}{#if u.invitedBy}<span class="subtle">{` · by ${u.invitedBy}`}</span>{/if}</span
+		>{kinds(ws.data.workspace)[u.kind]}{#if u.invitedBy}<span class="subtle">{` · by ${u.invitedBy}`}</span>{/if}</span
 	>{/snippet}
 {#snippet provider(u: User)}<span class="row tight"><Icon name={signInIcon(u)} size={15} />{providerOf(u)}</span
 	>{/snippet}
@@ -128,7 +91,12 @@
 		>Send invite</Button
 	>{/snippet}
 
-<Screen {me} title="Users" sub={`People and partner organisations in ${WS.name}' workspace`} actions={inviteAction}>
+<Screen
+	{me}
+	title="Users"
+	sub={`People and partner organisations in ${ws.data.workspace.name}' workspace`}
+	actions={inviteAction}
+>
 	<div class="stack" style="gap: 16px">
 		<div class="row wrap" style="gap: 10px">
 			<div class="grow" style="min-width: 220px">
@@ -143,7 +111,8 @@
 			<div class="list">
 				{#each rows as u (u.id)}<div class="list-row" style="grid-template-columns: 40px minmax(0,1fr) auto">
 						<Avatar person={u} size="sm" /><span class="stack tight" style="gap: 0"
-							><b class="t-subhead">{u.name}</b><span class="t-caption subtle">{ROLES[u.role]} · {providerOf(u)}</span
+							><b class="t-subhead">{u.name}</b><span class="t-caption subtle"
+								>{ws.data.roles[u.role]} · {providerOf(u)}</span
 							></span
 						><span class="row tight"
 							><Badge size="sm" tone={STATUS_TONE[u.status]}>{u.status}</Badge><span style="position: relative"
@@ -159,15 +128,15 @@
 				initialSort={['name', 'asc']}
 				columns={[
 					{ key: 'name', label: 'Person or organisation', cell: person },
-					{ key: 'role', label: 'Role', sortValue: (u) => ROLES[u.role], cell: role },
-					{ key: 'kind', label: 'Access', sortValue: (u) => KINDS[u.kind], cell: kind },
+					{ key: 'role', label: 'Role', sortValue: (u) => ws.data.roles[u.role], cell: role },
+					{ key: 'kind', label: 'Access', sortValue: (u) => kinds(ws.data.workspace)[u.kind], cell: kind },
 					{ key: 'provider', label: 'Sign-in', cell: provider },
 					{ key: 'status', label: 'Status', cell: status },
 					{ key: 'act', label: '', sortable: false, cell: act }
 				] satisfies Column<User>[]}
 			/>
 		{/if}
-		<p class="t-footnote subtle" style="margin: 0">{WS.outside}</p>
+		<p class="t-footnote subtle" style="margin: 0">{ws.data.workspace.outside}</p>
 	</div>
 	<Sheet
 		bind:open={invite}
@@ -178,13 +147,13 @@
 	>
 		<div class="stack">
 			<Field label="Name or organisation" htmlFor="inv-name"
-				><Input id="inv-name" bind:value={form.name} placeholder="Shree Sai Kirana" /></Field
+				><Input id="inv-name" bind:value={form.name} placeholder={ws.data.workspace.invite.name} /></Field
 			>
 			<Field
 				label="Email or mobile number"
 				htmlFor="inv-contact"
-				help={`Munchly staff sign in with their ${WS.emailDomain} Google account; the trade signs in with a one-time code at ${WS.domain}.`}
-				><Input id="inv-contact" bind:value={form.contact} placeholder="+91 98230 60014" /></Field
+				help={`${ws.data.workspace.short} staff sign in with their ${ws.data.workspace.emailDomain} Google account; the trade signs in with a one-time code at ${ws.data.workspace.domain}.`}
+				><Input id="inv-contact" bind:value={form.contact} placeholder={ws.data.workspace.invite.contact} /></Field
 			>
 			<Field label="Role" htmlFor="inv-role"
 				><Select id="inv-role" bind:value={form.role}
@@ -206,7 +175,7 @@
 						type="button"
 						class="list-row"
 						style="grid-template-columns: minmax(0,1fr) auto; width: 100%; text-align: left"
-						onclick={() => setRole(u, k, v)}
+						onclick={() => setRole(u, k)}
 						><span>{v}</span>{#if u.role === k}<Icon name="check" size={18} />{/if}</button
 					>{/each}
 			</div>{/if}

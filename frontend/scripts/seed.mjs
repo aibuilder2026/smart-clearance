@@ -187,6 +187,10 @@ const workspaceSeed = {
 	roles: ROLES,
 	// the Data agent's first entry in the timeline (design3/core/flow.js CONNECT_EV)
 	connectEvent: CONNECT_EV,
+	// the journey's moments beyond its timeline, ExpireSoon's terms and other lots, and who a visitor can step into
+	journey: D.JOURNEY,
+	market: D.MARKET,
+	explore: D.EXPLORE,
 	initial: Store.seed()
 };
 

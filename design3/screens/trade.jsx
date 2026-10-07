@@ -20,7 +20,7 @@
     const allow = () => { setBusy(true); setTimeout(() => { setBusy(false); Flow.act("permit"); toast({ text: "Allowed · you can pause it any time", tone: "ok" }); }, 600); };
     if (later) return <Card className="row wrap" style={{ gap: 14 }}><WorkspaceMark ws={D.WORKSPACE} size={36} /><div className="grow"><b>Munchly is waiting for your permission</b><div className="t-footnote muted">Nothing is listed or offered in your name until you allow it.</div></div><Button variant="secondary" onClick={() => setLater(false)}>Review</Button></Card>;
     return <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bezel"><div className="card raised stack snug" style={{ padding: 20 }}>
-      <div className="row tight"><WorkspaceMark ws={D.WORKSPACE} size={30} /><span className="t-footnote subtle strong">{D.WORKSPACE.name} · Thu 16:50</span></div>
+      <div className="row tight"><WorkspaceMark ws={D.WORKSPACE} size={30} /><span className="t-footnote subtle strong">{D.WORKSPACE.name} · {D.JOURNEY.permissionAsked}</span></div>
       <div className="t-title3">Let Smart-Clearance act for Rakesh Traders</div>
       <div className="stack tight">{D.SETUP.acts.map(t => <div key={t} className="row top t-subhead" style={{ gap: 10 }}><Icon name="check" size={17} stroke={2.4} style={{ color: "var(--primary-text)", marginTop: 2, flex: "none" }} /><span>{t}</span></div>)}</div>
       <p className="t-footnote muted" style={{ margin: 0 }}>Always within Munchly's price floors. Every action shows here, and you can pause any of it. Munchly pays you the gap to the ₹{CHIPS.dp} you paid, so you end whole.</p>
@@ -74,13 +74,13 @@
         {hero && approved && !settled && <Card className="stack snug">
           <div className="card-head"><span className="card-title">Munchly's plan for your Masala Chips</span><Badge tone="green" icon="check">approved 09:40</Badge></div>
           <div className="stack tight t-subhead">
-            <div className="row top" style={{ gap: 10 }}><span className="dotmark" style={{ background: "var(--ch-kirana)" }} /><span><b>{KL.units} packets to your kiranas</b> on the scheme: ₹{KL.packPrice.toFixed(2)} a pack, 2 free with every 10, delivered on your Tuesday round.</span></div>
+            <div className="row top" style={{ gap: 10 }}><span className="dotmark" style={{ background: "var(--ch-kirana)" }} /><span><b>{KL.units} packets to your kiranas</b> on the scheme: ₹{KL.packPrice.toFixed(2)} a pack, 2 free with every 10, delivered on your {D.JOURNEY.van.day} round.</span></div>
             <div className="row top" style={{ gap: 10 }}><span className="dotmark" style={{ background: "var(--ch-expiresoon)" }} /><span><b>{ES.units} on ExpireSoon in your name</b> at ₹15, hidden from buyers in Munchly's territories. The buyer collects with his own truck.</span></div>
           </div>
         </Card>}
         {hero && approved && <div style={{ display: "grid", gap: 16, gridTemplateColumns: app.bp === "phone" ? "minmax(0,1fr)" : "repeat(2, minmax(0,1fr))" }}>
           <Card interactive className="stack snug" onClick={() => go("van")} role="button" tabIndex={0} onKeyDown={e => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), go("van"))}>
-            <div className="card-head"><span className="row tight"><span className="icontile"><Icon name="truck" size={17} stroke={2} /></span><span className="card-title">Tuesday van round</span></span><Icon name="chevron-right" size={18} className="subtle" /></div>
+            <div className="card-head"><span className="row tight"><span className="icontile"><Icon name="truck" size={17} stroke={2} /></span><span className="card-title">{D.JOURNEY.van.day} van round</span></span><Icon name="chevron-right" size={18} className="subtle" /></div>
             <div className="row base" style={{ gap: 8 }}><span className="num m"><Roll value={h.orders.length} /></span><span className="muted">shops · {cartons(units)}</span></div>
             <span className="t-footnote subtle">{h.van.status === "done" ? `Delivered · all ${SHOPS} shops` : h.orders.length ? "Orders from the Masala Chips scheme join this round" : "Scheme orders will appear here"}</span>
           </Card>
@@ -141,18 +141,18 @@
     const start = () => { setRunning(true); const t0 = performance.now(), dur = reduce ? 10 : 3600; const step = now => { const k = Math.min(1, (now - t0) / dur); setP(k); if (k < 1) requestAnimationFrame(step); else { setRunning(false); Flow.act("vanRound"); toast({ text: `Round done · ${SHOPS} shops, ${cartons(units)}`, tone: "ok" }); } }; requestAnimationFrame(step); };
     const dispatch = () => { Flow.act("dispatch"); toast({ text: `${D.BUYER.city} lot on the buyer's truck · invoice draft next`, tone: "ok" }); };
     const stops = D.KIRANAS.map(k => ({ ...k, ordered: h.orders.find(o => o.id === k.id) }));
-    return <Screen me={me} title="Van route" sub="Kalamna godown · Nagpur, Wardha and Kamptee" back="Today">
+    return <Screen me={me} title="Van route" sub={`${D.JOURNEY.van.depot} · Nagpur, Wardha and Kamptee`} back="Today">
       <Columns sideWidth={380}
         main={<>
           <Card pad={false} style={{ overflow: "hidden" }}><ClusterMap kiranas={D.KIRANAS} orderedCount={h.orders.length} route={h.orders.length > 0} vanProgress={p} height={app.bp === "phone" ? 260 : 380} /></Card>
           <Card className="stack snug">
-            <div className="card-head"><span className="card-title">Tuesday round</span><Badge tone={h.van.status === "done" ? "green" : undefined} icon={h.van.status === "done" ? "check" : "calendar"}>{h.van.status === "done" ? "delivered" : "Tue 6 Oct · from 07:00"}</Badge></div>
+            <div className="card-head"><span className="card-title">{D.JOURNEY.van.day} round</span><Badge tone={h.van.status === "done" ? "green" : undefined} icon={h.van.status === "done" ? "check" : "calendar"}>{h.van.status === "done" ? "delivered" : `${D.JOURNEY.van.date} · from ${D.JOURNEY.van.leaves}`}</Badge></div>
             <div className="row wrap" style={{ gap: 20 }}><div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={h.orders.length} /><span className="subtle" style={{ fontSize: "0.45em" }}> / {SHOPS}</span></span><span className="t-footnote subtle">shops on the round</span></div><div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={units} /></span><span className="t-footnote subtle">packets · {cartons(units)}</span></div></div>
             {h.van.status !== "done" && <Button variant="primary" size="lg" icon="navigation" loading={running} disabled={!full || running} onClick={start}>{full ? "Start the round" : `Waiting for orders · ${h.orders.length} of ${SHOPS}`}</Button>}
             <span className="t-caption subtle">₹{M.RULES.vanPerUnit.toFixed(2)} a packet for the van, repaid by Munchly in the price support.</span>
             <div className="feed" style={{ gap: 10 }}>
               <div className="row top" style={{ gap: 10 }}><Mark size={28} /><div className="t-subhead" style={{ padding: "9px 12px", borderRadius: 16, borderTopLeftRadius: 6, background: "var(--fill-2)" }}>{D.PUSH.van.body}<div className="t-caption muted">Outreach agent · Mon 18:00</div></div></div>
-              <div className="row top" style={{ gap: 10, justifyContent: "flex-end" }}><div className="t-subhead" style={{ padding: "9px 12px", borderRadius: 16, borderTopRightRadius: 6, background: "var(--primary)", color: "var(--primary-fg)" }}>Theek hai. Mangalvaar subah nikal jaunga.<div className="t-caption" style={{ opacity: 0.9 }}>Rakesh bhai · Mon 18:04</div></div><Avatar person={D.PEOPLE.rakesh} size="sm" /></div>
+              <div className="row top" style={{ gap: 10, justifyContent: "flex-end" }}><div className="t-subhead" style={{ padding: "9px 12px", borderRadius: 16, borderTopRightRadius: 6, background: "var(--primary)", color: "var(--primary-fg)" }}>{D.JOURNEY.van.reply}<div className="t-caption" style={{ opacity: 0.9 }}>Rakesh bhai · {D.JOURNEY.van.replyAt}</div></div><Avatar person={D.PEOPLE.rakesh} size="sm" /></div>
             </div>
           </Card>
           <div data-anchor="shelf" />
@@ -204,10 +204,10 @@
     const s = useStore(); const h = s.hero; const { go } = useRoute(); const k = kOf(me); const mine = h.orders.find(o => o.id === k.id);
     return <Screen me={me} title="Offers" sub={`${k.name} · ${k.area}, Nagpur`}>
       <div className="stack" style={{ gap: 16, maxWidth: 620 }}>
-        {h.offer ? (mine ? <Card className="stack snug"><div className="row" style={{ gap: 14 }}><Product name="pack-chips" size={64} /><div className="grow"><b>Ordered · {mine.units} packets</b><div className="t-footnote muted">Masala Chips 150 g · placed {mine.at} · comes on Tuesday's van</div></div><Badge tone="green" icon="check">confirmed</Badge></div></Card> : <OfferCard shop={k.name} onOpen={() => go("offer")} />)
+        {h.offer ? (mine ? <Card className="stack snug"><div className="row" style={{ gap: 14 }}><Product name="pack-chips" size={64} /><div className="grow"><b>Ordered · {mine.units} packets</b><div className="t-footnote muted">Masala Chips 150 g · placed {mine.at} · comes on {D.JOURNEY.van.day}'s van</div></div><Badge tone="green" icon="check">confirmed</Badge></div></Card> : <OfferCard shop={k.name} onOpen={() => go("offer")} />)
           : <Card><Empty img="kirana" title="No offers today" body="Rakesh Traders' schemes arrive here as a notification, in Hindi, ready to order in one tap." /></Card>}
         <SectionTitle>Your shop</SectionTitle>
-        <List>{[["Distributor", "Rakesh Traders, Nagpur"], ["Van day", "Tuesday"], ["Unsold scheme packs", `back to the salesman until ${fmt.day(D.RETURN_BY)}`], ["Language", "हिन्दी · English"]].map(([k, v]) => <ListRow key={k} title={k} value={k === "Language" ? <span lang="hi">{v}</span> : v} />)}</List>
+        <List>{[["Distributor", "Rakesh Traders, Nagpur"], ["Van day", D.JOURNEY.van.day], ["Unsold scheme packs", `back to the salesman until ${fmt.day(D.RETURN_BY)}`], ["Language", "हिन्दी · English"]].map(([k, v]) => <ListRow key={k} title={k} value={k === "Language" ? <span lang="hi">{v}</span> : v} />)}</List>
       </div>
     </Screen>;
   }
@@ -221,7 +221,7 @@
         {!h.offer ? null : mine ? <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="card stack" style={{ padding: 22, justifyItems: "center", textAlign: "center" }}>
           <span className="icontile" style={{ width: 56, height: 56, borderRadius: 18 }}><Icon name="check" size={28} stroke={2.4} /></span>
           <div className="t-title2 hi" lang="hi">ऑर्डर हो गया</div>
-          <span className="muted">{mine.units} packets on Tuesday's van · pay on delivery</span>
+          <span className="muted">{mine.units} packets on {D.JOURNEY.van.day}'s van · pay on delivery</span>
           <Money value={offerMath(mine.units).margin} size="m" style={{ color: "var(--primary-text)" }} /><span className="t-footnote subtle">your margin at MRP on this order</span>
           <Button variant="secondary" onClick={() => go("home")}>Done</Button>
         </motion.div> : <Card className="stack" style={{ gap: 16 }}>
@@ -237,17 +237,12 @@
   function RetailOrders({ me }) {
     const s = useStore(); const k = kOf(me); const mine = s.hero.orders.find(o => o.id === k.id);
     return <Screen me={me} title="Orders" sub={k.name}>
-      {mine ? <div className="list" style={{ maxWidth: 620 }}><div className="list-row" style={{ gridTemplateColumns: "48px minmax(0,1fr) auto" }}><Product name="pack-chips" size={44} /><span className="stack tight" style={{ gap: 0 }}><b className="t-subhead">Masala Chips 150 g · {mine.units} packets</b><span className="t-caption subtle">{mine.at} · buy 10 get 2 · Tuesday's van</span></span><Badge size="sm" tone={s.hero.van.status === "done" ? "green" : undefined}>{s.hero.van.status === "done" ? "delivered" : "on the round"}</Badge></div></div> : <Card style={{ maxWidth: 620 }}><Empty icon="shopping-basket" title="No orders yet" body="Orders you place from an offer show here with the van day." /></Card>}
+      {mine ? <div className="list" style={{ maxWidth: 620 }}><div className="list-row" style={{ gridTemplateColumns: "48px minmax(0,1fr) auto" }}><Product name="pack-chips" size={44} /><span className="stack tight" style={{ gap: 0 }}><b className="t-subhead">Masala Chips 150 g · {mine.units} packets</b><span className="t-caption subtle">{mine.at} · buy 10 get 2 · {D.JOURNEY.van.day}'s van</span></span><Badge size="sm" tone={s.hero.van.status === "done" ? "green" : undefined}>{s.hero.van.status === "done" ? "delivered" : "on the round"}</Badge></div></div> : <Card style={{ maxWidth: 620 }}><Empty icon="shopping-basket" title="No orders yet" body="Orders you place from an offer show here with the van day." /></Card>}
     </Screen>;
   }
 
   /* ======================= Agrawal ji · ExpireSoon (another company's marketplace) ======================= */
-  const OTHER_LISTINGS = [
-    { id: "ES-23988", name: "Cream biscuits 75 g", icon: "cookie", units: 2400, price: 6, mrp: 10, days: 88, seller: "FMCG distributor, Bilaspur" },
-    { id: "ES-24031", name: "Instant noodles 70 g", icon: "soup", units: 1800, price: 8, mrp: 14, days: 41, seller: "Wholesaler, Durg" },
-    { id: "ES-24076", name: "UHT toned milk 1 L", icon: "milk", units: 600, price: 38, mrp: 72, days: 34, seller: "Dairy distributor, Bhilai" },
-    { id: "ES-24102", name: "Whole-wheat atta 5 kg", icon: "wheat", units: 240, price: 160, mrp: 285, days: 52, seller: "Mill outlet, Rajnandgaon" },
-  ];
+  const OTHER_LISTINGS = D.MARKET.lots;
   function EsBar({ me, title }) {
     return <div className="es-top"><span className="row tight"><span className="es-logo" aria-hidden="true"><Icon name="hourglass" size={16} stroke={2.2} /></span><span className="es-word">ExpireSoon</span></span><span className="t-caption subtle es-tag">Near-expiry B2B marketplace · dates visible</span><span className="grow" />{title}</div>;
   }
@@ -265,7 +260,7 @@
   }
   function Market({ me }) {
     const s = useStore(); const h = s.hero; const { go } = useRoute(); const app = useApp(); const [q, setQ] = useState(""); const [cat, setCat] = useState("all");
-    const hero = h.listing && { id: "ES-24117", name: "Munchly Masala Chips 150 g", units: ES.units, price: 15, mrp: 30, days: 47, seller: "Rakesh Traders, Nagpur" };
+    const hero = h.listing && { id: D.JOURNEY.listing.id, name: "Munchly Masala Chips 150 g", units: ES.units, price: 15, mrp: 30, days: 47, seller: "Rakesh Traders, Nagpur" };
     const list = [hero, ...OTHER_LISTINGS].filter(Boolean).filter(l => (!q || l.name.toLowerCase().includes(q.toLowerCase())) && (cat === "all" || (cat === "snacks" ? /chips|biscuit|noodle/i.test(l.name) : cat === "staples" ? /atta|milk/i.test(l.name) : true)));
     return <div className="esw"><Screen me={me} title="Marketplace" sub={`Lots for ${D.BUYER.city} · every listing shows its dates`} hideLarge={false}>
       <div className="stack" style={{ gap: 16 }}>
@@ -273,7 +268,7 @@
         <div className="row wrap" style={{ gap: 10 }}><div className="grow" style={{ minWidth: 200 }}><K.SearchField value={q} onChange={setQ} placeholder="Search lots" /></div><K.Segmented options={[{ id: "all", label: "All" }, { id: "snacks", label: "Snacks" }, { id: "staples", label: "Staples" }]} value={cat} onChange={setCat} label="Category" /></div>
         {hero && <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="es-feature" onClick={() => go("listing")}>
           <Product name="pack-chips" size={app.bp === "phone" ? 96 : 132} float />
-          <div className="stack tight grow" style={{ gap: 6 }}><span className="row tight wrap"><Badge tone="violet" solid size="sm">new · {h.listing.at}</Badge><Badge size="sm" tone="violet" icon="badge-check">label photo verified</Badge></span><div className="t-title2">Munchly Masala Chips 150 g · {ES.units} units</div><span className="row base wrap" style={{ gap: 8 }}><span className="es-price lg">₹15</span><span className="muted">MRP ₹30 · 50% off</span><EsDate days={47} date="Best before 18 Nov 2026" /></span><span className="t-footnote subtle">Rakesh Traders, Nagpur · verified seller · dispatch 24 h after balance</span></div>
+          <div className="stack tight grow" style={{ gap: 6 }}><span className="row tight wrap"><Badge tone="violet" solid size="sm">new · {h.listing.at}</Badge><Badge size="sm" tone="violet" icon="badge-check">label photo verified</Badge></span><div className="t-title2">Munchly Masala Chips 150 g · {ES.units} units</div><span className="row base wrap" style={{ gap: 8 }}><span className="es-price lg">₹15</span><span className="muted">MRP ₹30 · 50% off</span><EsDate days={47} date="Best before 18 Nov 2026" /></span><span className="t-footnote subtle">Rakesh Traders, Nagpur · verified seller · dispatch {D.MARKET.dispatchHours} h after balance</span></div>
           <Button variant="violet" iconRight="arrow-right">View lot</Button>
         </motion.div>}
         <div className="es-grid">{list.filter(l => l !== hero).map(l => <ListingCard key={l.id} l={l} onOpen={() => {}} />)}</div>
@@ -292,16 +287,16 @@
       <div className="stack" style={{ gap: 16 }}>
         <div className="es-gallery"><div className="es-thumb big"><Product name="pack-chips" size={app.bp === "phone" ? 150 : 190} float /></div><div className="es-thumb big" style={{ padding: 0, overflow: "hidden", containerType: "inline-size" }}><S.LabelPhoto status="verified" /></div></div>
         <div className="stack tight"><div className="t-title2">Munchly Masala Chips 150 g · {ES.units} units</div><span className="row base wrap" style={{ gap: 8 }}><span className="es-price lg">₹15</span><span className="muted">a packet · MRP ₹30 · 50% off</span></span><span className="row tight wrap"><EsDate days={47} date="Best before 18 Nov 2026" /><Badge size="sm" tone="violet" icon="badge-check">label photo verified</Badge></span></div>
-        <List>{[["Seller", "Rakesh Traders, Nagpur · verified"], ["Visible to", "buyers outside Munchly's distributor territories"], ["Dispatch", "24 h after the balance · buyer pays freight"], ["Lot", `${cartons(ES.units)} · 24 × 150 g a carton`], ["Minimum order", "100 units"], ["Listing", h.listing.id]].map(([k, v]) => <ListRow key={k} title={k} value={v} />)}</List>
+        <List>{[["Seller", "Rakesh Traders, Nagpur · verified"], ["Visible to", "buyers outside Munchly's distributor territories"], ["Dispatch", `${D.MARKET.dispatchHours} h after the balance · buyer pays freight`], ["Lot", `${cartons(ES.units)} · 24 × 150 g a carton`], ["Minimum order", `${D.MARKET.minOrder} units`], ["Listing", h.listing.id]].map(([k, v]) => <ListRow key={k} title={k} value={v} />)}</List>
       </div>
       <div className="stack" style={{ gap: 16 }}>
-        {!readOnly && (h.award ? <Card className="stack snug"><div className="row" style={{ gap: 12 }}><span className="icontile violet" style={{ width: 44, height: 44, borderRadius: 14 }}><Icon name="badge-check" size={22} /></span><div className="grow"><b>Lot won at ₹{D.COUNTER.price.toFixed(2)}</b><div className="t-footnote muted">Token {fmt.inr(D.AWARD.token)} paid · {fmt.inr(D.AWARD.balance)} of the bid and {fmt.inr(inv.igst)} IGST due in 48 h</div></div></div><List>{[[`${ES.units} × ₹${D.COUNTER.price.toFixed(2)}`, fmt.inr2(inv.taxable)], [`IGST ${inv.gstPct}%, Maharashtra to Chhattisgarh`, fmt.inr2(inv.igst)], ["Round off", fmt.inr2(inv.roundOff)], ["Invoice total", fmt.inr2(inv.total)]].map(([k, v]) => <ListRow key={k} title={k} value={<span className="tnum strong">{v}</span>} />)}</List><span className="t-caption subtle">Rakesh Traders issues the invoice from its own Tally.</span></Card>
+        {!readOnly && (h.award ? <Card className="stack snug"><div className="row" style={{ gap: 12 }}><span className="icontile violet" style={{ width: 44, height: 44, borderRadius: 14 }}><Icon name="badge-check" size={22} /></span><div className="grow"><b>Lot won at ₹{D.COUNTER.price.toFixed(2)}</b><div className="t-footnote muted">Token {fmt.inr(D.AWARD.token)} paid · {fmt.inr(D.AWARD.balance)} of the bid and {fmt.inr(inv.igst)} IGST due in {D.MARKET.balanceHours} h</div></div></div><List>{[[`${ES.units} × ₹${D.COUNTER.price.toFixed(2)}`, fmt.inr2(inv.taxable)], [`IGST ${inv.gstPct}%, Maharashtra to Chhattisgarh`, fmt.inr2(inv.igst)], ["Round off", fmt.inr2(inv.roundOff)], ["Invoice total", fmt.inr2(inv.total)]].map(([k, v]) => <ListRow key={k} title={k} value={<span className="tnum strong">{v}</span>} />)}</List><span className="t-caption subtle">Rakesh Traders issues the invoice from its own Tally.</span></Card>
           : open ? <Card className="stack snug">
             <div className="card-head"><span className="card-title">Place a bid</span><span className="t-caption subtle">ask ₹15.00</span></div>
             <div className="row between"><span className="stack tight" style={{ gap: 0 }}><b>Your price a packet</b><span className="t-footnote subtle">for all {ES.units} units</span></span><Stepper value={price} onChange={setPrice} min={10} max={14} step={0.5} label="Bid price" format={v => "₹" + v.toFixed(2)} /></div>
             <div className="row between t-subhead"><span>15% token on your bid</span><span className="tnum strong">{fmt.inr2(token)}</span></div>
             <Button variant="violet" size="lg" block icon="gavel" onClick={place}>Bid ₹{price.toFixed(2)} for {ES.units}</Button>
-            <span className="t-caption subtle">Balance in 48 h. The seller's agent replies in about a minute.</span>
+            <span className="t-caption subtle">Balance in {D.MARKET.balanceHours} h. The seller's agent replies in about a minute.</span>
           </Card> : <Card className="stack snug"><div className="card-head"><span className="card-title">Your bid</span><Badge tone={last.status === "countered" ? "violet" : undefined} dot live={last.status === "placed"}>{last.status === "placed" ? "waiting for the seller" : last.status}</Badge></div>
             <div className="row base" style={{ gap: 8 }}><span className="es-price lg">₹{last.price.toFixed(2)}</span><span className="muted">→ counter ₹{(last.counter || D.COUNTER.price).toFixed(2)}</span></div>
             {last.status === "countered" && <Button variant="violet" size="lg" block icon="check" onClick={accept}>Accept ₹{D.COUNTER.price.toFixed(2)} · pay {fmt.inr(D.AWARD.token)} token</Button>}
@@ -313,38 +308,38 @@
       </div>
     </div>;
   }
-  function Listing({ me }) { return <div className="esw"><Screen me={me} title="Lot ES-24117" sub="Munchly Masala Chips 150 g · Rakesh Traders, Nagpur" back="Marketplace"><div className="stack" style={{ gap: 16 }}><EsBar /><ListingView me={me} /></div></Screen></div>; }
+  function Listing({ me }) { return <div className="esw"><Screen me={me} title={`Lot ${D.JOURNEY.listing.id}`} sub="Munchly Masala Chips 150 g · Rakesh Traders, Nagpur" back="Marketplace"><div className="stack" style={{ gap: 16 }}><EsBar /><ListingView me={me} /></div></Screen></div>; }
   function MyBids({ me }) {
     const s = useStore(); const h = s.hero; const { go } = useRoute();
     return <div className="esw"><Screen me={me} title="My bids" sub={`${D.BUYER.name} · ${D.BUYER.city}`}><div className="stack" style={{ gap: 16 }}><EsBar />
-      {h.bids.length ? <div className="list" data-x="bids">{h.bids.map(b => <button type="button" key={b.id} className="list-row" onClick={() => go("listing")} style={{ gridTemplateColumns: "48px minmax(0,1fr) auto", textAlign: "left", width: "100%" }}><Product name="pack-chips" size={44} /><span className="stack tight" style={{ gap: 0 }}><b className="t-subhead">ES-24117 · Masala Chips 150 g · {ES.units} units</b><span className="t-caption subtle">bid ₹{b.price.toFixed(2)} · {b.at}{b.counter ? ` · counter ₹${b.counter.toFixed(2)}` : ""}</span></span><Badge size="sm" tone={b.status === "accepted" ? "green" : "violet"}>{b.status === "accepted" ? "won" : b.status}</Badge></button>)}</div> : <Card><Empty img="marketplace-bag" title="No bids yet" body="Bids you place show here with the seller's reply." /></Card>}
+      {h.bids.length ? <div className="list" data-x="bids">{h.bids.map(b => <button type="button" key={b.id} className="list-row" onClick={() => go("listing")} style={{ gridTemplateColumns: "48px minmax(0,1fr) auto", textAlign: "left", width: "100%" }}><Product name="pack-chips" size={44} /><span className="stack tight" style={{ gap: 0 }}><b className="t-subhead">{D.JOURNEY.listing.id} · Masala Chips 150 g · {ES.units} units</b><span className="t-caption subtle">bid ₹{b.price.toFixed(2)} · {b.at}{b.counter ? ` · counter ₹${b.counter.toFixed(2)}` : ""}</span></span><Badge size="sm" tone={b.status === "accepted" ? "green" : "violet"}>{b.status === "accepted" ? "won" : b.status}</Badge></button>)}</div> : <Card><Empty img="marketplace-bag" title="No bids yet" body="Bids you place show here with the seller's reply." /></Card>}
     </div></Screen></div>;
   }
 
   /* ======================= Meera · Feeding India ======================= */
   function Pickups({ me }) {
-    const s = useStore(); const d = s.mango.donation; const app = useApp(); const [later, setLater] = useState(false); const { toast } = useNotice(); const n = D.MANGO_FB;
+    const s = useStore(); const d = s.mango.donation; const app = useApp(); const [later, setLater] = useState(false); const { toast } = useNotice(); const n = D.MANGO_FB; const DN = D.JOURNEY.donation;
     const bb = fmt.date(D.BATCHES[1].bestBefore);
     return <Screen me={me} title="Pickups" sub="Feeding India · Hyderabad">
       {!d ? <Card style={{ maxWidth: 640 }}><Empty img="donation-crate" title="No pickup requests" body="Brands' donation agents send surplus food here when it fits your intake rules: 15+ days left, 50+ units." /></Card> :
       <Columns sideWidth={340}
         main={<>
           <div className="bezel"><div className="card raised stack" style={{ padding: 22, gap: 16 }}>
-            <div className="row tight"><Mark size={28} /><span className="t-footnote subtle strong">Donation agent · Munchly Foods · Day 0</span></div>
-            <div className="row" style={{ gap: 16 }}><Product name="pack-mango" size={app.bp === "phone" ? 80 : 104} float /><div className="stack tight" style={{ gap: 4 }}><div className="t-title2">{n} packs of Mango Drink</div><span className="row tight wrap"><Badge icon="calendar">22 days left</Badge><Badge icon="map-pin">Begum Bazaar</Badge><Badge tone="green" icon="clipboard-check">FSSAI checklist</Badge></span></div></div>
-            <p className="t-body" style={{ margin: 0 }}>{n} packs of Mango Drink, 22 days left, with the FSSAI checklist. Pickup Tuesday 10 am from Begum Bazaar?</p>
-            {d === "booked" ? <div className="row wrap" style={{ gap: 10 }}><Button variant="primary" size="lg" icon="check" onClick={() => Flow.act("confirmPickup")}>Confirm Tuesday 10:00</Button><Button variant="secondary" size="lg" onClick={() => setLater(true)}>Suggest another time</Button></div>
-              : <div className="row top" style={{ gap: 10, justifyContent: "flex-end" }}><div className="t-subhead" style={{ padding: "9px 12px", borderRadius: 16, borderTopRightRadius: 6, background: "var(--primary)", color: "var(--primary-fg)", maxWidth: "85%" }}>Tuesday works. We'll serve them at the Charminar hunger spot this week.<div className="t-caption" style={{ opacity: 0.9 }}>Meera · Day 1</div></div><Avatar person={D.PEOPLE.meera} size="sm" /></div>}
+            <div className="row tight"><Mark size={28} /><span className="t-footnote subtle strong">Donation agent · Munchly Foods · {DN.asked}</span></div>
+            <div className="row" style={{ gap: 16 }}><Product name="pack-mango" size={app.bp === "phone" ? 80 : 104} float /><div className="stack tight" style={{ gap: 4 }}><div className="t-title2">{n} packs of Mango Drink</div><span className="row tight wrap"><Badge icon="calendar">22 days left</Badge><Badge icon="map-pin">{DN.from}</Badge><Badge tone="green" icon="clipboard-check">FSSAI checklist</Badge></span></div></div>
+            <p className="t-body" style={{ margin: 0 }}>{n} packs of Mango Drink, 22 days left, with the FSSAI checklist. Pickup {DN.day} {DN.hour} from {DN.from}?</p>
+            {d === "booked" ? <div className="row wrap" style={{ gap: 10 }}><Button variant="primary" size="lg" icon="check" onClick={() => Flow.act("confirmPickup")}>Confirm {DN.day} {DN.time}</Button><Button variant="secondary" size="lg" onClick={() => setLater(true)}>Suggest another time</Button></div>
+              : <div className="row top" style={{ gap: 10, justifyContent: "flex-end" }}><div className="t-subhead" style={{ padding: "9px 12px", borderRadius: 16, borderTopRightRadius: 6, background: "var(--primary)", color: "var(--primary-fg)", maxWidth: "85%" }}>{DN.reply}<div className="t-caption" style={{ opacity: 0.9 }}>Meera · {DN.confirmed}</div></div><Avatar person={D.PEOPLE.meera} size="sm" /></div>}
           </div></div>
-          {d !== "booked" && <Card className="stack snug"><div className="card-head"><span className="card-title">Pickup</span><Badge tone="green" icon={d === "collected" ? "check" : "calendar"}>{d === "collected" ? "collected" : "Tue 6 Oct · 10:00"}</Badge></div>
-            <K.VTracker items={[{ id: "req", title: "Requested by the donation agent", time: "Day 0" }, { id: "conf", title: "Confirmed by Meera", time: "Day 1" }, { id: "col", title: "Collected from Begum Bazaar", time: d === "collected" ? "Day 4" : "Tue 10:00" }, { id: "serve", title: "Served at the Charminar hunger spot", time: "this week" }]} done={d === "collected" ? 3 : 2} current={d === "collected" ? 3 : 2} />
+          {d !== "booked" && <Card className="stack snug"><div className="card-head"><span className="card-title">Pickup</span><Badge tone="green" icon={d === "collected" ? "check" : "calendar"}>{d === "collected" ? "collected" : `${DN.date} · ${DN.time}`}</Badge></div>
+            <K.VTracker items={[{ id: "req", title: "Requested by the donation agent", time: DN.asked }, { id: "conf", title: "Confirmed by Meera", time: DN.confirmed }, { id: "col", title: `Collected from ${DN.from}`, time: d === "collected" ? DN.collected : `${DN.date.split(" ")[0]} ${DN.time}` }, { id: "serve", title: `Served at ${DN.spot}`, time: "this week" }]} done={d === "collected" ? 3 : 2} current={d === "collected" ? 3 : 2} />
             {d === "confirmed" && <Button variant="primary" size="lg" icon="package-check" onClick={() => { Flow.act("collect"); toast({ text: `Receipt issued · ${n} drinks`, tone: "ok" }); }}>Mark collected</Button>}
             {d === "collected" && <div className="row" style={{ gap: 12, padding: "12px 14px", borderRadius: 14, background: "var(--primary-soft)" }}><Icon name="receipt" size={20} /><span className="grow"><b>In-app receipt issued</b><div className="t-footnote muted">{n} drinks served · shared with Munchly for its BRSR table</div></span></div>}
           </Card>}
         </>}
         side={<><SectionTitle>FSSAI surplus-food checklist</SectionTitle><Card className="paper stack tight" style={{ padding: 18 }}>{["Sealed, undamaged packs", `Best before ${bb}, 22 days left`, "Ambient storage, away from sunlight", "Batch MF-2410-118 on every carton", "Donor: Munchly Foods via Lakshmi Agencies"].map(t => <div key={t} className="row top" style={{ gap: 8 }}><Icon name="square-check" size={17} style={{ color: "#167a52", marginTop: 1 }} /><span className="t-subhead">{t}</span></div>)}</Card>
-          <List head="Your intake rules"><ListRow title="Days left" value="15 or more" /><ListRow title="Minimum lot" value="50 units" /><ListRow title="Logistics" value="volunteer pickup in 48 h" /></List></>} />}
-      <Sheet open={later} onClose={() => setLater(false)} title="Suggest another time" detent="medium" footer={<Button variant="primary" block onClick={() => { setLater(false); toast({ text: "Sent · the agent will confirm with Lakshmi Agencies" }); }}>Send</Button>}><div className="stack snug">{["Wednesday 10:00", "Wednesday 16:00", "Thursday 11:00"].map(t => <label key={t} className="list-row" style={{ gridTemplateColumns: "auto 1fr", cursor: "pointer" }}><input type="radio" name="slot" defaultChecked={t.startsWith("Wednesday 10")} /> {t}</label>)}</div></Sheet>
+          <List head="Your intake rules"><ListRow title="Days left" value="15 or more" /><ListRow title="Minimum lot" value="50 units" /><ListRow title="Logistics" value={D.SETUP.partners[0].pickup} /></List></>} />}
+      <Sheet open={later} onClose={() => setLater(false)} title="Suggest another time" detent="medium" footer={<Button variant="primary" block onClick={() => { setLater(false); toast({ text: "Sent · the agent will confirm with Lakshmi Agencies" }); }}>Send</Button>}><div className="stack snug">{DN.slots.map(t => <label key={t} className="list-row" style={{ gridTemplateColumns: "auto 1fr", cursor: "pointer" }}><input type="radio" name="slot" defaultChecked={t === DN.slots[0]} /> {t}</label>)}</div></Sheet>
     </Screen>;
   }
 

@@ -2,13 +2,16 @@
 	import Avatar from '../../../components/Avatar.svelte';
 	import Mark from '../../../components/Mark.svelte';
 	import { rise } from '../../../motion/transitions';
-	import { D } from '../../data';
+	import { useWorkspace } from '../../source';
+	import { castOf } from '../../model';
 	import type { ChatMessage } from '../../types';
 
 	// the Negotiator's thread with the buyer: the buyer's bubbles on the right in violet, the agent's on the left under
 	// the mark, and the typing dots while it answers (screens/brand.jsx Chat)
 	type Props = { chat: ChatMessage[]; typing?: boolean };
 	let { chat, typing }: Props = $props();
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
 </script>
 
 <div class="stack snug">
@@ -25,10 +28,10 @@
 			>
 				{m.text}
 				<div style="font-size: 11.5px; opacity: 0.9; margin-top: 3px">
-					{mine ? `${D.buyer.name}, ${D.buyer.city}` : 'Rakesh Traders · Negotiator agent'} · {m.at}
+					{mine ? `${c.buyer.name}, ${c.buyer.city}` : `${c.dist.name} · Negotiator agent`} · {m.at}
 				</div>
 			</div>
-			{#if mine}<Avatar person={D.people.agrawal} size="sm" />{/if}
+			{#if mine}<Avatar person={castOf(ws.state, c).buyer} size="sm" />{/if}
 		</div>
 	{/each}
 	{#if typing}<div class="row" style="gap: 8px">

@@ -15,10 +15,8 @@
 	import { useNotice } from '../../../notice.svelte';
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
-	import { D } from '../../data';
-	import { act } from '../../flow';
-	import { csv, download } from '../../model';
-	import { store } from '../../store.svelte';
+	import { castOf, csv, download, first } from '../../model';
+	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import Locked from '../common/Locked.svelte';
 	import Screen from '../common/Screen.svelte';
@@ -28,11 +26,17 @@
 	// S5 Paperwork (Anita, finance): the document pack the Paperwork agent drafts at the award, each document with its
 	// reason, one open on paper beside them (in a sheet on phones and tablets) (screens/finance.jsx Paperwork)
 	let { me }: { me: User } = $props();
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
 	const app = useApp();
 	const { toast } = useNotice();
-	const DOC = (id: string) => D.docs.find((d) => d.id === id)!;
+	const DOC = (id: string) => c.docs.find((d) => d.id === id)!;
 
-	const h = $derived(store.state.hero);
+	const h = $derived(ws.state.hero);
+	const cast = $derived(castOf(ws.state, c));
+	// the distributor's invoice is his: "Rakesh's", as finance says it
+	const his = $derived(first(cast.distributor.short));
+	const W = $derived(ws.data.workspace);
 	const ready = $derived(!!h.docs);
 	let sel = $state('invoice');
 	let sheet = $state(false);
@@ -44,16 +48,16 @@
 	};
 	const exportPack = () => {
 		download(
-			'MF-2409-117-document-pack.csv',
+			`${c.batch.id}-document-pack.csv`,
 			csv([
 				['Document', 'Issued by', 'Number', 'Status', 'Amount (₹)', 'Note'],
-				...D.docs.map((d) => [d.type, d.owner, d.no, d.status, d.amount ? d.amount.toFixed(2) : '', d.note || ''])
+				...c.docs.map((d) => [d.type, d.owner, d.no, d.status, d.amount ? d.amount.toFixed(2) : '', d.note || ''])
 			])
 		);
 		toast({ text: 'Document pack exported', tone: 'ok' });
 	};
 	const review = () => {
-		act('review');
+		void ws.act('review');
 		toast({ text: 'Pack reviewed · logged', tone: 'ok' });
 	};
 </script>
@@ -68,7 +72,7 @@
 		>Document pack</SectionTitle
 	>
 	<div class="docgrid">
-		{#each D.docs as d (d.id)}<div class={cx('docpick', sel === d.id && app.bp === 'desktop' && 'on')}>
+		{#each c.docs as d (d.id)}<div class={cx('docpick', sel === d.id && app.bp === 'desktop' && 'on')}>
 				<DocCard doc={d} onopen={() => open(d.id)} />
 			</div>{/each}
 	</div>
@@ -77,24 +81,25 @@
 		><span class="icontile"><Icon name="quote" size={17} /></span>
 		<div>
 			<p class="t-body" style="margin: 0">
-				Credit note, GST memo, and Rakesh's invoice attached as evidence. First batch this year with nothing for me to
+				Credit note, GST memo, and {his}'s invoice attached as evidence. First batch this year with nothing for me to
 				chase.
 			</p>
-			<span class="t-footnote subtle">Anita · finance</span>
+			<span class="t-footnote subtle">{cast.finance.short} · finance</span>
 		</div></Card
 	>{/snippet}
 {#snippet side()}{#if app.bp === 'desktop'}<SectionTitle
-			sub={doc.owner === D.client.short ? 'Issued by Munchly' : 'Drafted for Rakesh Traders'}>{doc.type}</SectionTitle
+			sub={doc.owner === ws.data.client.short ? `Issued by ${W.short}` : `Drafted for ${c.dist.name}`}
+			>{doc.type}</SectionTitle
 		>{#key sel}<div in:rise={{ y: 6, duration: 180 }}><Paper id={sel} /></div>{/key}{/if}{/snippet}
 
-<Screen {me} title="Paperwork" sub="MF-2409-117 · prepared by the Paperwork agent at the award">
+<Screen {me} title="Paperwork" sub={`${c.batch.id} · prepared by the Paperwork agent at the award`}>
 	{#if !ready}
 		<div class="stack" style="gap: 16px">
 			<Card class="row wrap" style="gap: 16px"
 				><Product name="documents" size={88} />
 				<div class="grow stack tight" style="gap: 2px">
 					<b>The pack is drafted at the award</b><span class="t-footnote muted"
-						>Rakesh's tax invoice, the e-way bill check, Munchly's price-support credit note, the ITC memo, the FSSAI
+						>{his}'s tax invoice, the e-way bill check, {W.short}'s price-support credit note, the ITC memo, the FSSAI
 						checklist and the destruction certificate, each generated or marked not required with the reason.</span
 					>
 				</div></Card
@@ -103,17 +108,17 @@
 				agent="Paperwork agent"
 				live={h.phase === 'dispatched'}
 				text={h.phase === 'dispatched'
-					? "Drafting Rakesh's invoice, the e-way bill check, the credit note and the ITC memo."
+					? `Drafting ${his}'s invoice, the e-way bill check, the credit note and the ITC memo.`
 					: "Drafts the whole pack once the lot is awarded and on the buyer's truck."}
 			/>
 			<div class="docgrid">
-				{#each D.docs as d (d.id)}<Skeleton h={132} r={20} />{/each}
+				{#each c.docs as d (d.id)}<Skeleton h={132} r={20} />{/each}
 			</div>
 		</div>
 	{:else}
 		<div class="stack" style="gap: 20px">
 			<div class="row wrap" style="gap: 12px">
-				<Tile label="Rakesh's invoice" icon="receipt"><Money value={DOC('invoice').total!} size="s" /></Tile>
+				<Tile label="{his}'s invoice" icon="receipt"><Money value={DOC('invoice').total!} size="s" /></Tile>
 				<Tile label="Price support" icon="hand-coins"><Money value={DOC('support').amount} size="s" /></Tile>
 				<Tile label="GST credit kept" icon="badge-check"
 					><Money value={DOC('itc').amount} size="s" style="color: var(--primary-text)" /></Tile

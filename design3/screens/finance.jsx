@@ -5,13 +5,13 @@
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, Store = window.SC3_STORE, Flow = window.SC3_FLOW, S = window.SC3_SCREENS; const fmt = M.fmt;
   const { cx, Icon, Badge, Button, Card, List, ListRow, Segmented, Sheet, Product, Empty, Money, Roll, Tile, Aura, AgentFeed, TrendChart, MixBar, MoneyPanel, DocCard, DataTable, useApp, useNotice } = K;
   const { useStore, useRoute, Screen, Columns, SectionTitle, Locked } = S;
-  const CH_NAMES = { kirana: "Kirana scheme", expiresoon: "ExpireSoon", staff: "Staff sale", foodbank: "Food bank", writeoff: "Write-off" };
+  const CH_NAMES = D.QUARTER.mixNames;
   const DOC = id => D.DOCS.find(d => d.id === id);
   const ES = D.PLAN.lines.find(l => l.id === "expiresoon"), KL = D.PLAN.lines.find(l => l.id === "kirana");
   const CHIPS = D.SKUS.chips, SHOPS = D.KIRANAS.length;
   const download = (name, text, type = "text/csv") => { const url = URL.createObjectURL(new Blob([text], { type: type + ";charset=utf-8" })); const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000); };
   const csv = rows => rows.map(r => r.map(c => { const v = String(c == null ? "" : c); return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v; }).join(",")).join("\n");
-  const EVIDENCE = `${D.INVOICE.no} · ES-24117 · ${SHOPS} kirana order logs · CN/0117`;
+  const EVIDENCE = `${D.INVOICE.no} · ${D.JOURNEY.listing.id} · ${SHOPS} kirana order logs · CN/0117`;
 
   /* ---------- the documents, set on paper ---------- */
   const Line = ({ k, v, strong, sub }) => <div className="pp-line"><span>{k}{sub && <em> {sub}</em>}</span><span className={strong ? "pp-strong" : ""}>{v}</span></div>;
@@ -19,13 +19,13 @@
     const d = DOC(id); const inv = DOC("invoice"); const R = D.DISTRIBUTORS.rakesh, B = D.BUYER;
     const head = (title, no, right) => <div className="pp-head"><div><div className="pp-title">{title}</div><div className="pp-no">{no}</div></div>{right}</div>;
     if (id === "invoice") return <div className="paper pp">
-      {head("Tax invoice", `${inv.no} · draft · 5 Oct 2026`, <span className="pp-stamp">IGST</span>)}
+      {head("Tax invoice", `${inv.no} · draft · ${fmt.date(inv.date)}`, <span className="pp-stamp">IGST</span>)}
       <div className="pp-parties"><div><em>From</em><b>{R.name}</b><span>{R.address}</span><span className="pp-mono">GSTIN {R.gstin}</span></div><div><em>To</em><b>{B.name}</b><span>{B.address} · place of supply {B.stateCode}</span><span className="pp-mono">GSTIN {B.gstin}</span></div></div>
       <table className="pp-table"><thead><tr><th>Item</th><th>HSN</th><th>Qty</th><th>Rate</th><th>Taxable</th></tr></thead><tbody><tr><td>Munchly Masala Chips 150 g<br /><em>Batch MF-2409-117 · best before 18 Nov 2026</em></td><td>{CHIPS.hsn}</td><td>{inv.units}</td><td>₹{inv.price.toFixed(2)}</td><td>{fmt.inr2(inv.taxable)}</td></tr></tbody></table>
       <Line k="Taxable value" v={fmt.inr2(inv.taxable)} /><Line k={`IGST ${inv.gstPct}%`} sub="Maharashtra → Chhattisgarh" v={fmt.inr2(inv.igst)} /><Line k="Round off" v={fmt.inr2(inv.roundOff)} /><Line k="Invoice total" v={fmt.inr2(inv.total)} strong />
-      <p className="pp-note">Drafted by the Paperwork agent for {R.name} to issue from Tally. Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025. The MRP of ₹30.00 stays printed on every pack: a discounted sale is fine, a second MRP is not (Legal Metrology).</p>
+      <p className="pp-note">Drafted by the Paperwork agent for {R.name} to issue from Tally. {CHIPS.gstNote} The MRP of ₹30.00 stays printed on every pack: a discounted sale is fine, a second MRP is not (Legal Metrology).</p>
     </div>;
-    if (id === "eway") return <div className="paper pp">{head("E-way bill check", "MF-2409-117 · ES-24117", <span className="pp-stamp ok">NOT REQUIRED</span>)}<Line k="Consignment value with GST" v={fmt.inr2(inv.total)} /><Line k="Threshold, inter-state" v="₹50,000.00" /><Line k="E-way bill" v="not required" strong /><p className="pp-note">{d.note} A transporter note travels with the {S.cartons(ES.units)} on the buyer's truck instead.</p></div>;
+    if (id === "eway") return <div className="paper pp">{head("E-way bill check", `MF-2409-117 · ${D.JOURNEY.listing.id}`, <span className="pp-stamp ok">NOT REQUIRED</span>)}<Line k="Consignment value with GST" v={fmt.inr2(inv.total)} /><Line k="Threshold, inter-state" v="₹50,000.00" /><Line k="E-way bill" v="not required" strong /><p className="pp-note">{d.note} A transporter note travels with the {S.cartons(ES.units)} on the buyer's truck instead.</p></div>;
     if (id === "support") { const sp = D.SUPPORT; const es = sp.rows.find(r => r.id === "expiresoon"), k = sp.rows.find(r => r.id === "kirana");
       return <div className="paper pp">{head("Price-support credit note", `${d.no} · ${D.CLIENT.short} → ${R.name}`, <span className="pp-stamp ok">NO GST ADJ.</span>)}
         <Line k={`${es.units} sold on ExpireSoon at ₹${es.price.toFixed(2)}`} sub={`₹${CHIPS.dp} − ₹${es.price.toFixed(2)} = ₹${es.gap.toFixed(2)} a pack`} v={fmt.inr2(es.amount)} />
@@ -90,7 +90,7 @@
     const exportBRSR = () => { download("BRSR-P6-waste-Q3-FY27.csv", csv([["Category", "Diverted (kg)", "Resold (kg)", "Donated (kg)", "Disposed (kg)", "Evidence"], ...Q.brsr.map(r => [r.cat, r.diverted, r.resold, r.donated, r.disposed, r.evidence]), ...(h.posted ? [["This batch MF-2409-117 (packaged food)", D.PLAN.kg, D.PLAN.kg, 0, 0, EVIDENCE.replace(/ · /g, "; ")]] : [])])); toast({ text: "BRSR table exported as CSV", tone: "ok" }); };
     // quarter totals as the walkthrough reports them; CO₂e is computed from the kilos with the indicative factor
     const tiles = [["Recovered", "indian-rupee", <Lakh value={Q.recovered} style={{ color: "var(--primary-text)" }} />], ["GST credit protected", "badge-check", <Money value={Q.itc} size="s" roll />], ["Kept out of landfill", "leaf", <span className="num s"><Roll value={Q.kg / 1000} format={v => v.toFixed(1)} /> t</span>], ["CO₂e avoided", "cloud", <span className="num s"><Roll value={Q.co2 / 1000} format={v => v.toFixed(2)} /> t</span>, "indicative · 2.5 kg a kg"], ["Meals served", "heart-handshake", <span className="num s"><Roll value={Q.meals} format={v => fmt.num(Math.round(v))} /></span>]];
-    return <Screen me={me} title="Finance & ESG" sub={`${Q.label} · Oct to Dec 2026 · one ledger, two readings`} actions={app.bp !== "phone" && <Segmented options={[{ id: "quarter", label: "Quarter" }, { id: "batch", label: "This batch" }]} value={view} onChange={setView} label="Period" />}>
+    return <Screen me={me} title="Finance & ESG" sub={`${Q.label} · ${Q.period} · one ledger, two readings`} actions={app.bp !== "phone" && <Segmented options={[{ id: "quarter", label: "Quarter" }, { id: "batch", label: "This batch" }]} value={view} onChange={setView} label="Period" />}>
       <div className="stack" style={{ gap: 20 }}>
         {app.bp === "phone" && <Segmented options={[{ id: "quarter", label: "Quarter" }, { id: "batch", label: "This batch" }]} value={view} onChange={setView} label="Period" />}
         {view === "quarter" ? <>

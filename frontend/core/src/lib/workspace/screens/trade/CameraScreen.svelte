@@ -2,15 +2,18 @@
 	import Card from '../../../components/Card.svelte';
 	import Empty from '../../../components/Empty.svelte';
 	import { distOf } from '../../model';
+	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import Screen from '../common/Screen.svelte';
 	import CameraInner from './CameraInner.svelte';
 
-	// the label photo Vision asks for; only Rakesh Traders has a request in the story
+	// the label photo Vision asks for; only the distributor of the batch in focus has a request
 	let { me, realCamera }: { me: User; realCamera?: boolean } = $props();
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
 </script>
 
-{#if distOf(me).id !== 'rakesh'}<Screen {me} title="Label photo" sub="Requests from the Vision agent"
+{#if distOf(me, ws.data, c).id !== c.dist.id}<Screen {me} title="Label photo" sub="Requests from the Vision agent"
 		><Card style="max-width: 560px"
 			><Empty
 				img="phone-scan"

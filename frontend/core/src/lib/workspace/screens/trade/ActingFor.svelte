@@ -4,15 +4,16 @@
 	import Button from '../../../components/Button.svelte';
 	import Card from '../../../components/Card.svelte';
 	import Icon from '../../../icons/Icon.svelte';
-	import { act } from '../../flow';
+	import { useWorkspace } from '../../source';
 	import type { State } from '../../types';
 
 	// once he has allowed it: what the agent does in his name, and the one switch that pauses all of it
 	type Props = { p: NonNullable<State['setup']['permission']> };
 	let { p }: Props = $props();
+	const ws = useWorkspace();
 	const { toast } = useNotice();
 	const flip = () => {
-		act('pause', !p.paused);
+		void ws.act('pause', !p.paused);
 		toast({
 			text: p.paused ? 'Resumed · the agents carry on' : 'Paused · nothing more happens in your name',
 			tone: 'ok'
@@ -29,7 +30,7 @@
 		<div class="t-footnote muted">
 			{p.paused
 				? 'Listings, offers and invoice drafts wait until you resume.'
-				: `Inside Munchly's floors · since ${p.at} · listings, scheme offers, invoice drafts, dispatch slots`}
+				: `Inside ${ws.data.workspace.short}'s floors · since ${p.at} · listings, scheme offers, invoice drafts, dispatch slots`}
 		</div>
 	</div>
 	<Button variant={p.paused ? 'primary' : 'secondary'} size="sm" icon={p.paused ? 'play' : 'pause'} onclick={flip}
