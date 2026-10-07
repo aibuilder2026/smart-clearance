@@ -1,0 +1,15 @@
+{
+ "story-thumb": {"note": "the thumb covers the words BEST BEFORE and MRP, not their figures: every field is legible", "pack": "Munchly Masila Chips 150 g"},
+ "story-blur": {"note": "sharp, not blurred", "pack": "Munchly Masla Chips 150 g"},
+ "story-glare": {"note": "a soft sheen only: every line is legible"},
+ "damaged": {"note": "the tear misses the MRP line: every field is legible"},
+ "story-dim": {"note": "dim, but every line is legible"},
+ "story-hindi": {"note": "the Hindi words are imperfect (the figures are exact)"},
+ "oats": {"pack": "Munchly Masla Oats 200 g"},
+ "story-tape": {"note": "the tape sits between the batch and MFG lines, covering neither: every field is legible"},
+ "story-short": {"pack": "Munchly Masla Chips 150 g"},
+ "story-month": {"pack": "Munchly Masla Chips 150 g"},
+ "chips-gupta-month": {"pack": "Munchly Masla Chips 150 g"},
+ "biscuits-hindi": {"note": "misprinted glyphs stand before the batch number on its own line; MF-2409-204 itself is clear"},
+ "mango-pkd": {"note": "the PKD year's third digit is misprinted (two glyphs overlap): an empty MFG, or the evident 2026, are both right", "fields": {"mfg": [null, "2026-04-27"]}}
+}

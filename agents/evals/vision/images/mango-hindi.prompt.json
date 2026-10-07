@@ -1,0 +1,15 @@
+{
+ "model": "Qwen-Image-2.1 (bf16), run locally through the qwen-image-bf16 plugin 0.2.0 (its CLI)",
+ "seed": 38,
+ "size": "1024 (4:3, 1184 x 896)",
+ "prompt": "A realistic close-up smartphone photo of a printed white label stuck on the side of a brown corrugated cardboard carton. The label is printed in bold black sans-serif type, one line each: \"MUNCHLY MANGO DRINK 200 ml\", \"बैच नं. / BATCH NO: MF-2410-118\", \"निर्माण तिथि / MFG: 27/04/2026\", \"इससे पहले उपयोग करें / BEST BEFORE: 24/10/2026\", \"अधिकतम खुदरा मूल्य / MRP ₹20.00\". Even light; bilingual label, Hindi in Devanagari above the English on each line. Photorealistic, natural colours, the label text crisp and legible.",
+ "postProcessing": [
+  {
+   "step": "convert",
+   "to": "WebP",
+   "quality": 88
+  }
+ ],
+ "source": "src/mango-hindi.png (sha256 d2ded4ea622464fc, kept locally)",
+ "seen": null
+}

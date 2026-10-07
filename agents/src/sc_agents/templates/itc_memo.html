@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block body %}
+<p>
+  <span class="label">Input tax credit kept</span><br>
+  <strong style="font-size: 14pt">{{ doc.amount|inr(true) }}</strong>
+</p>
+<table>
+  <tbody>
+    <tr><th>Batch</th><td>{{ case.ref }}, {{ case.sku.brand }} {{ case.sku.name }} (HSN {{ case.sku.hsn }})</td></tr>
+    <tr><th>Held by</th><td>{{ case.distributor.name }}, {{ case.distributor.city }}</td></tr>
+    <tr><th>Provision</th><td>Section 17(5)(h), CGST Act 2017</td></tr>
+  </tbody>
+</table>
+{% if doc.note %}<div class="note">{{ doc.note }}</div>{% endif %}
+{% endblock %}
