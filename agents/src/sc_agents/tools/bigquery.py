@@ -36,8 +36,11 @@ class Warehouse(Protocol):
         """recent prices paid for an SKU, by channel: n, avgPrice, avgPctOfMrp, lastOn, lastPrice"""
         ...
 
-    async def sales_means(self, client: str, *, window: int = 28) -> dict[tuple[str, str], float]:
-        """units a day by (distributor, SKU), over the last `window` days of the loaded history"""
+    async def sales_means(
+        self, client: str, *, window: int = 28, until: str | None = None
+    ) -> dict[tuple[str, str], float]:
+        """units a day by (distributor, SKU), over the last `window` days of the loaded history up to `until` (the
+        journey's day, ISO). A story replayed from its own calendar leaves later days loaded by earlier replays"""
         ...
 
     async def sales_days(self, client: str) -> int:
@@ -144,12 +147,16 @@ class BigQueryWarehouse:
             for r in rows
         ]
 
-    async def sales_means(self, client: str, *, window: int = 28) -> dict[tuple[str, str], float]:
+    async def sales_means(
+        self, client: str, *, window: int = 28, until: str | None = None
+    ) -> dict[tuple[str, str], float]:
         t = self.t("secondary_sales")
+        upto = "AND sale_date <= DATE(@until)" if until else ""
+        bound = {"until": until} if until else {}
         rows = await self.query(
             f"""
             WITH sales AS (
-              SELECT * FROM {t} WHERE client_id = @client
+              SELECT * FROM {t} WHERE client_id = @client {upto}
               QUALIFY ROW_NUMBER() OVER (
                 PARTITION BY distributor_id, pincode, sku_id, sale_date ORDER BY loaded_at DESC) = 1
             ), bounds AS (SELECT MAX(sale_date) AS last_day, MIN(sale_date) AS first_day FROM sales)
@@ -162,6 +169,7 @@ class BigQueryWarehouse:
             GROUP BY distributor_id, sku_id""",
             client=client,
             window=window,
+            **bound,
         )
         return {(r["distributor_id"], r["sku_id"]): float(r["per_day"]) for r in rows}
 

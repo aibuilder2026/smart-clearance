@@ -6,6 +6,10 @@
       password, with a deterministic uid; nothing is mailed.
   sc-hydrate --tick
       today's agent runs for every live client, so the console's day is today
+  sc-hydrate --live-only
+      Munchly's live workspace (SC-66) on a database that already holds Munchly's story, as production does since
+      SC-50: its members on email and password, the kiranas, the exports, and the journey from its start. Nothing else
+      in the database changes (SC-75)
 
 It refuses a database that already has clients (scripts/hydrate.sh --reset rebuilds it), and any environment but
 local unless --allow-env names it.
@@ -24,7 +28,7 @@ from sc_api.cli.story import Story
 from sc_api.cli.synth import SyntheticIdentity, World
 from sc_api.cloud import cloud
 from sc_api.db import engine_scope, sessions
-from sc_api.domain.clock import FixedClock, SeededIds
+from sc_api.domain.clock import FixedClock, Ids, SeededIds
 from sc_api.identity import provider
 from sc_api.services import reference
 from sc_api.services.context import SYSTEM, Ctx
@@ -50,8 +54,12 @@ async def run(args: argparse.Namespace) -> None:
         if args.tick:
             print(f"sc-hydrate: today's runs for {await world.tick()} live client(s)")
             return
+        # a journey started on a world already built takes fresh ids: the seeded ones would repeat that world's own
+        if args.live_only:
+            await _live_only(replace(ctx, ids=Ids()))
+            return
         if args.journey_reset:
-            out = await reset.reset(ctx, args.journey_reset)
+            out = await reset.reset(replace(ctx, ids=Ids()), args.journey_reset)
             await session.commit()
             await _publish(ctx)
             print(f"sc-hydrate: {args.journey_reset}'s journey starts again on {out['day0']}")
@@ -102,6 +110,23 @@ async def run(args: argparse.Namespace) -> None:
         await _publish(ctx)
 
 
+async def _live_only(ctx: Ctx) -> None:
+    """Munchly's live workspace on top of its story, where the story was imported before the workspace went live"""
+    munchly = await ctx.session.get(m.Client, "munchly")
+    if munchly is None:
+        raise SystemExit("sc-hydrate: there is no Munchly Foods here; import the story first (a full hydrate)")
+    if ctx.cloud is None:
+        raise SystemExit("sc-hydrate: the live workspace needs its buckets and topics (EXPORTS_BUCKET, EVENTS_ENV)")
+    ctx.clock.set(datetime.now(UTC))  # type: ignore[attr-defined]
+    out = await live.build(ctx)
+    await ctx.session.commit()
+    print(
+        f"sc-hydrate: Munchly's live workspace: {out['members']} members on email and password, "
+        f"{out['kiranas']} kiranas; the journey starts on {out['day0']}"
+    )
+    await _publish(ctx)
+
+
 async def _publish(ctx: Ctx) -> None:
     """the journey's first events (the backfill for the Data agent, the Mango donation), to Pub/Sub"""
     if ctx.cloud is None:
@@ -122,6 +147,9 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--tick", action="store_true")
     p.add_argument("--no-live", action="store_true", help="leave Munchly's live workspace out (SC-66)")
     p.add_argument("--journey-reset", metavar="CLIENT", help="start a client's live journey again (SC-66)")
+    p.add_argument(
+        "--live-only", action="store_true", help="Munchly's live workspace on a database that has its story (SC-75)"
+    )
     p.add_argument("--allow-env", help="hydrate an environment other than local (named, to be sure)")
     args = p.parse_args(argv)
     env = get_settings().sc_env
