@@ -1,0 +1,1272 @@
+{
+ "skus": {
+  "chips": {
+   "id": "chips",
+   "code": "MF-MC-150",
+   "brand": "Munchly",
+   "name": "Masala Chips 150 g",
+   "category": "snacks",
+   "hsn": "2005",
+   "mrp": 30,
+   "dp": 22,
+   "cost": 16,
+   "gst": 0.05,
+   "itcPerUnit": 0.9,
+   "perCarton": 24,
+   "lifeDays": 180,
+   "kgPerUnit": 0.16,
+   "img": "pack-chips"
+  },
+  "biscuits": {
+   "id": "biscuits",
+   "code": "MF-CC-200",
+   "brand": "Munchly",
+   "name": "Choco Cream Biscuits 200 g",
+   "category": "biscuits",
+   "hsn": "1905",
+   "mrp": 40,
+   "cost": 22,
+   "gst": 0.05,
+   "perCarton": 24,
+   "lifeDays": 270,
+   "kgPerUnit": 0.215,
+   "img": "pack-biscuits"
+  },
+  "chikki": {
+   "id": "chikki",
+   "code": "MF-PC-100",
+   "brand": "Munchly",
+   "name": "Peanut Chikki 100 g",
+   "category": "snacks",
+   "hsn": "1704",
+   "mrp": 25,
+   "cost": 13,
+   "gst": 0.05,
+   "perCarton": 30,
+   "lifeDays": 180,
+   "kgPerUnit": 0.11,
+   "img": "pack-chikki"
+  },
+  "poha": {
+   "id": "poha",
+   "code": "MF-IP-250",
+   "brand": "Munchly",
+   "name": "Instant Poha 250 g",
+   "category": "staples",
+   "hsn": "1904",
+   "mrp": 55,
+   "cost": 31,
+   "gst": 0.05,
+   "perCarton": 20,
+   "lifeDays": 270,
+   "kgPerUnit": 0.27,
+   "img": "pack-poha"
+  },
+  "oats": {
+   "id": "oats",
+   "code": "MF-MO-200",
+   "brand": "Munchly",
+   "name": "Masala Oats 200 g",
+   "category": "staples",
+   "hsn": "2106",
+   "mrp": 65,
+   "cost": 36,
+   "gst": 0.05,
+   "perCarton": 20,
+   "lifeDays": 270,
+   "kgPerUnit": 0.22,
+   "img": "pack-oats"
+  },
+  "mango": {
+   "id": "mango",
+   "code": "MF-MD-200",
+   "brand": "Munchly",
+   "name": "Mango Drink 200 ml",
+   "category": "beverages",
+   "hsn": "2202",
+   "mrp": 20,
+   "cost": 11,
+   "gst": 0.05,
+   "perCarton": 27,
+   "lifeDays": 180,
+   "kgPerUnit": 0.215,
+   "img": "pack-mango"
+  },
+  "facewash": {
+   "id": "facewash",
+   "code": "GL-AF-100",
+   "brand": "Glowra",
+   "name": "Aloe Face Wash 100 ml",
+   "category": "personal-care",
+   "hsn": "3401",
+   "mrp": 120,
+   "cost": 58,
+   "gst": 0.18,
+   "perCarton": 12,
+   "lifeDays": 730,
+   "kgPerUnit": 0.12,
+   "img": "pack-facewash"
+  },
+  "hairoil": {
+   "id": "hairoil",
+   "code": "GL-CO-200",
+   "brand": "Glowra",
+   "name": "Coconut Hair Oil 200 ml",
+   "category": "personal-care",
+   "hsn": "3305",
+   "mrp": 150,
+   "cost": 72,
+   "gst": 0.05,
+   "perCarton": 12,
+   "lifeDays": 730,
+   "kgPerUnit": 0.23,
+   "img": "pack-hairoil"
+  }
+ },
+ "distributors": {
+  "rakesh": {
+   "id": "rakesh",
+   "name": "Rakesh Traders",
+   "short": "Rakesh Traders",
+   "city": "Nagpur",
+   "state": "Maharashtra",
+   "godown": "Kalamna Market godown",
+   "address": "Kalamna Market, Nagpur, Maharashtra",
+   "gstin": "27AABCR1234F1Z5",
+   "kiranas": 38,
+   "cluster": "Nagpur, Wardha and Kamptee",
+   "territory": "Nagpur with Wardha and Kamptee",
+   "pins": "440, 441, 442",
+   "staffCap": 50
+  },
+  "patil": {
+   "id": "patil",
+   "name": "Patil Distributors",
+   "short": "Patil Distributors",
+   "city": "Pune",
+   "state": "Maharashtra",
+   "godown": "Market Yard godown",
+   "kiranas": 52,
+   "cluster": "Pune city",
+   "territory": "Pune",
+   "pins": "411, 412"
+  },
+  "gupta": {
+   "id": "gupta",
+   "name": "Gupta & Sons",
+   "short": "Gupta & Sons",
+   "city": "Indore",
+   "state": "Madhya Pradesh",
+   "godown": "Siyaganj godown",
+   "kiranas": 47,
+   "cluster": "Indore",
+   "territory": "Indore",
+   "pins": "452, 453"
+  },
+  "lakshmi": {
+   "id": "lakshmi",
+   "name": "Lakshmi Agencies",
+   "short": "Lakshmi Agencies",
+   "city": "Hyderabad",
+   "state": "Telangana",
+   "godown": "Begum Bazaar godown",
+   "kiranas": 58,
+   "cluster": "Hyderabad old city",
+   "territory": "Hyderabad",
+   "pins": "500, 501",
+   "staffCap": 150
+  }
+ },
+ "batches": [
+  {
+   "id": "MF-2409-117",
+   "sku": "chips",
+   "distributor": "rakesh",
+   "units": 1840,
+   "daysLeft": 47,
+   "sellPerDay": 12,
+   "bestBefore": "2026-11-18",
+   "mfg": "2026-05-18",
+   "city": "Nagpur",
+   "staffCap": 50,
+   "shelf": "B4",
+   "hero": true
+  },
+  {
+   "id": "MF-2410-118",
+   "sku": "mango",
+   "distributor": "lakshmi",
+   "units": 2000,
+   "daysLeft": 22,
+   "sellPerDay": 28,
+   "bestBefore": "2026-10-24",
+   "mfg": "2026-04-27",
+   "city": "Hyderabad",
+   "staffCap": 150,
+   "second": true
+  },
+  {
+   "id": "MF-2408-209",
+   "sku": "chips",
+   "distributor": "gupta",
+   "units": 1032,
+   "daysLeft": 74,
+   "sellPerDay": 22,
+   "bestBefore": "2026-12-15",
+   "mfg": "2026-06-18",
+   "city": "Indore"
+  },
+  {
+   "id": "MF-2408-311",
+   "sku": "chikki",
+   "distributor": "gupta",
+   "units": 960,
+   "daysLeft": 61,
+   "sellPerDay": 20,
+   "bestBefore": "2026-12-02",
+   "mfg": "2026-06-05",
+   "city": "Indore"
+  },
+  {
+   "id": "MF-2409-415",
+   "sku": "oats",
+   "distributor": "patil",
+   "units": 900,
+   "daysLeft": 75,
+   "sellPerDay": 18,
+   "bestBefore": "2026-12-16",
+   "mfg": "2026-03-21",
+   "city": "Pune"
+  },
+  {
+   "id": "MF-2409-204",
+   "sku": "biscuits",
+   "distributor": "patil",
+   "units": 2880,
+   "daysLeft": 96,
+   "sellPerDay": 40,
+   "bestBefore": "2027-01-06",
+   "mfg": "2026-04-11",
+   "city": "Pune"
+  },
+  {
+   "id": "MF-2410-402",
+   "sku": "poha",
+   "distributor": "lakshmi",
+   "units": 1200,
+   "daysLeft": 200,
+   "sellPerDay": 20,
+   "bestBefore": "2027-04-20",
+   "mfg": "2026-07-24",
+   "city": "Hyderabad",
+   "staffCap": 150
+  },
+  {
+   "id": "GL-2410-044",
+   "sku": "facewash",
+   "distributor": "rakesh",
+   "units": 360,
+   "daysLeft": 460,
+   "sellPerDay": 6,
+   "bestBefore": "2028-01-05",
+   "mfg": "2026-01-05",
+   "city": "Nagpur",
+   "staffCap": 50
+  },
+  {
+   "id": "GL-2410-012",
+   "sku": "hairoil",
+   "distributor": "gupta",
+   "units": 216,
+   "daysLeft": 500,
+   "sellPerDay": 4,
+   "bestBefore": "2028-02-14",
+   "mfg": "2026-02-14",
+   "city": "Indore"
+  }
+ ],
+ "kiranas": [
+  {
+   "id": "k0",
+   "name": "Shree Ganesh Kirana",
+   "orders": 24
+  },
+  {
+   "id": "k1",
+   "name": "Jai Durga Stores",
+   "orders": 24
+  },
+  {
+   "id": "k2",
+   "name": "Om Sai Provision",
+   "orders": 12
+  },
+  {
+   "id": "k3",
+   "name": "Maa Bhavani Kirana",
+   "orders": 12
+  },
+  {
+   "id": "k4",
+   "name": "New Sagar Stores",
+   "orders": 36
+  },
+  {
+   "id": "k5",
+   "name": "Gurukripa Traders",
+   "orders": 24
+  },
+  {
+   "id": "k6",
+   "name": "Mahalaxmi Kirana",
+   "orders": 12
+  },
+  {
+   "id": "k7",
+   "name": "Shiv Shakti Store",
+   "orders": 12
+  },
+  {
+   "id": "k8",
+   "name": "Patel Provision",
+   "orders": 24
+  },
+  {
+   "id": "k9",
+   "name": "Annapurna Stores",
+   "orders": 12
+  },
+  {
+   "id": "k10",
+   "name": "Sahyog Kirana",
+   "orders": 48
+  },
+  {
+   "id": "k11",
+   "name": "Raj Super Mart",
+   "orders": 36
+  },
+  {
+   "id": "k12",
+   "name": "Vaishnavi Stores",
+   "orders": 24
+  },
+  {
+   "id": "k13",
+   "name": "Sai Kripa Kirana",
+   "orders": 12
+  },
+  {
+   "id": "k14",
+   "name": "Shree Ram Provision",
+   "orders": 12
+  },
+  {
+   "id": "k15",
+   "name": "Hanuman General Store",
+   "orders": 12
+  },
+  {
+   "id": "k16",
+   "name": "Gajanan Kirana",
+   "orders": 24
+  },
+  {
+   "id": "k17",
+   "name": "Kamal Provision Store",
+   "orders": 12
+  },
+  {
+   "id": "k18",
+   "name": "Navkar Stores",
+   "orders": 12
+  },
+  {
+   "id": "k19",
+   "name": "Siddhivinayak Kirana",
+   "orders": 24
+  },
+  {
+   "id": "k20",
+   "name": "Jyoti General Store",
+   "orders": 12
+  },
+  {
+   "id": "k21",
+   "name": "Laxmi Narayan Stores",
+   "orders": 12
+  },
+  {
+   "id": "k22",
+   "name": "Bharat Kirana",
+   "orders": 12
+  },
+  {
+   "id": "k23",
+   "name": "Shubham Provision",
+   "orders": 36
+  },
+  {
+   "id": "k24",
+   "name": "Mauli Kirana",
+   "orders": 12
+  },
+  {
+   "id": "k25",
+   "name": "Ekta Super Bazaar",
+   "orders": 24
+  },
+  {
+   "id": "k26",
+   "name": "Pooja Provision",
+   "orders": 12
+  },
+  {
+   "id": "k27",
+   "name": "Tulsi Kirana",
+   "orders": 12
+  },
+  {
+   "id": "k28",
+   "name": "Vithal Stores",
+   "orders": 12
+  },
+  {
+   "id": "k29",
+   "name": "Anand General Store",
+   "orders": 24
+  },
+  {
+   "id": "k30",
+   "name": "Sainath Kirana",
+   "orders": 12
+  },
+  {
+   "id": "k31",
+   "name": "Shree Sai Kirana",
+   "orders": 0
+  },
+  {
+   "id": "k32",
+   "name": "Balaji Provision",
+   "orders": 0
+  },
+  {
+   "id": "k33",
+   "name": "Rameshwar Stores",
+   "orders": 0
+  },
+  {
+   "id": "k34",
+   "name": "Ganga Kirana",
+   "orders": 0
+  },
+  {
+   "id": "k35",
+   "name": "Navratna General Store",
+   "orders": 0
+  },
+  {
+   "id": "k36",
+   "name": "Sant Tukaram Kirana",
+   "orders": 0
+  },
+  {
+   "id": "k37",
+   "name": "Mohan Stores",
+   "orders": 0
+  }
+ ],
+ "shelf": {
+  "date": "Friday 9 Oct",
+  "counted": 31,
+  "shop": "Jai Durga Stores",
+  "area": "Kamptee",
+  "took": 24,
+  "left": 18,
+  "pickUp": 12,
+  "leave": 6,
+  "round": "Thursday's round",
+  "returnBy": "2026-10-29"
+ },
+ "label": {
+  "batch": "MF-2409-117",
+  "mfg": "2026-05-18",
+  "bestBefore": "2026-11-18",
+  "mrp": 30,
+  "pack": "Masala Chips 150 g",
+  "shelf": "B4"
+ },
+ "hero": {
+  "batch": {
+   "id": "MF-2409-117",
+   "sku": "chips",
+   "distributor": "rakesh",
+   "units": 1840,
+   "daysLeft": 47,
+   "sellPerDay": 12,
+   "bestBefore": "2026-11-18",
+   "mfg": "2026-05-18",
+   "city": "Nagpur",
+   "staffCap": 50,
+   "shelf": "B4",
+   "hero": true
+  },
+  "sku": {
+   "id": "chips",
+   "code": "MF-MC-150",
+   "brand": "Munchly",
+   "name": "Masala Chips 150 g",
+   "category": "snacks",
+   "hsn": "2005",
+   "mrp": 30,
+   "dp": 22,
+   "cost": 16,
+   "gst": 0.05,
+   "itcPerUnit": 0.9,
+   "perCarton": 24,
+   "lifeDays": 180,
+   "kgPerUnit": 0.16,
+   "img": "pack-chips"
+  },
+  "plan": {
+   "batch": "MF-2409-117",
+   "units": 1360,
+   "rows": [
+    {
+     "id": "expiresoon",
+     "name": "ExpireSoon listing",
+     "short": "ExpireSoon",
+     "minDays": 30,
+     "need": "30+ days",
+     "pricePct": 0.5,
+     "unlimited": true,
+     "clears": "5–9 days",
+     "icon": "shopping-bag",
+     "price": 15,
+     "packPrice": null,
+     "pricePctLabel": "50%",
+     "costPerUnit": 0,
+     "itcLoss": 0,
+     "net": 15,
+     "capacity": null,
+     "eligible": true,
+     "reason": "",
+     "itc": "retained"
+    },
+    {
+     "id": "kirana",
+     "name": "Kirana cluster push",
+     "short": "Kirana cluster",
+     "minDays": 20,
+     "need": "20+ days",
+     "pricePct": 0.6,
+     "clears": "10–14 days",
+     "icon": "store",
+     "price": 18,
+     "packPrice": 21.6,
+     "pricePctLabel": "60%",
+     "costPerUnit": 0.5,
+     "itcLoss": 0,
+     "net": 17.5,
+     "capacity": 588,
+     "eligible": true,
+     "reason": "",
+     "itc": "retained"
+    },
+    {
+     "id": "staff",
+     "name": "Nagpur staff sale",
+     "short": "Staff sale",
+     "minDays": 0,
+     "need": "until best-before",
+     "pricePct": 0.4,
+     "clears": "2–3 days",
+     "icon": "users",
+     "price": 12,
+     "packPrice": null,
+     "pricePctLabel": "40%",
+     "costPerUnit": 0,
+     "itcLoss": 0,
+     "net": 12,
+     "capacity": 50,
+     "eligible": true,
+     "reason": "",
+     "itc": "retained"
+    },
+    {
+     "id": "foodbank",
+     "name": "Food bank donation",
+     "short": "Food bank",
+     "minDays": 15,
+     "need": "15+ days, food",
+     "pricePct": 0,
+     "unlimited": true,
+     "clears": "1–2 days",
+     "icon": "heart-handshake",
+     "foodOnly": true,
+     "price": 0,
+     "packPrice": null,
+     "pricePctLabel": "—",
+     "costPerUnit": 0.5,
+     "itcLoss": 0.9,
+     "net": -1.4,
+     "capacity": null,
+     "eligible": true,
+     "reason": "",
+     "itc": "reversed"
+    },
+    {
+     "id": "writeoff",
+     "name": "Write-off (destroy)",
+     "short": "Write-off",
+     "minDays": 0,
+     "need": "—",
+     "pricePct": 0,
+     "unlimited": true,
+     "clears": "—",
+     "icon": "trash-2",
+     "baseline": true,
+     "price": 0,
+     "packPrice": null,
+     "pricePctLabel": "—",
+     "costPerUnit": 0,
+     "itcLoss": 0,
+     "net": -19.36,
+     "capacity": null,
+     "eligible": true,
+     "reason": "",
+     "itc": "reversed"
+    }
+   ],
+   "lines": [
+    {
+     "id": "kirana",
+     "name": "Kirana cluster push",
+     "short": "Kirana cluster",
+     "units": 588,
+     "price": 18,
+     "packPrice": 21.6,
+     "charged": 490,
+     "gross": 10584,
+     "cost": 294,
+     "itcLoss": 0,
+     "net": 10290,
+     "cartons": 24.5
+    },
+    {
+     "id": "expiresoon",
+     "name": "ExpireSoon listing",
+     "short": "ExpireSoon",
+     "units": 772,
+     "price": 15,
+     "packPrice": null,
+     "charged": 772,
+     "gross": 11580,
+     "cost": 100,
+     "itcLoss": 0,
+     "net": 11480,
+     "cartons": 32.166666666666664
+    }
+   ],
+   "gross": 22164,
+   "costs": 394,
+   "itcLoss": 0,
+   "net": 21770,
+   "pctMRP": 53,
+   "writeOff": {
+    "units": 1360,
+    "stock": 21760,
+    "itc": 1224,
+    "itcPerUnit": 0.9,
+    "disposal": 2040,
+    "kg": 217.6,
+    "epr": 1305.6,
+    "total": 26329.6,
+    "perUnit": 19.36
+   },
+   "bookCost": 21760,
+   "pnl": 10,
+   "swing": 26339.6,
+   "cashAvoided": 4569.6,
+   "itcRetained": 1224,
+   "itcReversed": 0,
+   "disposalAvoided": 3345.6,
+   "alt": {
+    "id": "expiresoon",
+    "short": "ExpireSoon",
+    "label": "all 1,360 to ExpireSoon",
+    "net": 20300
+   },
+   "kg": 217.6,
+   "co2": 544,
+   "meals": 0,
+   "soldUnits": 1360,
+   "donated": 0,
+   "leftover": 0
+  },
+  "assess": {
+   "gates": [
+    {
+     "id": "blinkit",
+     "app": "Blinkit",
+     "need": 90,
+     "has": 47,
+     "pass": false,
+     "rule": "needs 90+ days"
+    },
+    {
+     "id": "zepto",
+     "app": "Zepto",
+     "need": 110,
+     "has": 47,
+     "pass": false,
+     "rule": "needs 60% of a 184-day life (110 days)"
+    },
+    {
+     "id": "instamart",
+     "app": "Instamart",
+     "need": 110,
+     "has": 47,
+     "pass": false,
+     "rule": "needs 60% of a 184-day life (110 days)"
+    }
+   ],
+   "life": 184,
+   "usableDays": 40,
+   "willSell": 480,
+   "atRisk": 1360,
+   "atRiskMRP": 40800,
+   "blocked": true,
+   "status": "at-risk",
+   "lifeUsedPct": 74,
+   "urgency": 0.7445652173913043
+  }
+ },
+ "mango": {
+  "batch": {
+   "id": "MF-2410-118",
+   "sku": "mango",
+   "distributor": "lakshmi",
+   "units": 2000,
+   "daysLeft": 22,
+   "sellPerDay": 28,
+   "bestBefore": "2026-10-24",
+   "mfg": "2026-04-27",
+   "city": "Hyderabad",
+   "staffCap": 150,
+   "second": true
+  },
+  "sku": {
+   "id": "mango",
+   "code": "MF-MD-200",
+   "brand": "Munchly",
+   "name": "Mango Drink 200 ml",
+   "category": "beverages",
+   "hsn": "2202",
+   "mrp": 20,
+   "cost": 11,
+   "gst": 0.05,
+   "perCarton": 27,
+   "lifeDays": 180,
+   "kgPerUnit": 0.215,
+   "img": "pack-mango"
+  },
+  "plan": {
+   "batch": "MF-2410-118",
+   "units": 1580,
+   "rows": [
+    {
+     "id": "expiresoon",
+     "name": "ExpireSoon listing",
+     "short": "ExpireSoon",
+     "minDays": 30,
+     "need": "30+ days",
+     "pricePct": 0.5,
+     "unlimited": true,
+     "clears": "5–9 days",
+     "icon": "shopping-bag",
+     "price": 10,
+     "packPrice": null,
+     "pricePctLabel": "50%",
+     "costPerUnit": 0,
+     "itcLoss": 0,
+     "net": 10,
+     "capacity": null,
+     "eligible": false,
+     "reason": "needs 30+ days, has 22",
+     "itc": "retained"
+    },
+    {
+     "id": "kirana",
+     "name": "Kirana cluster push",
+     "short": "Kirana cluster",
+     "minDays": 20,
+     "need": "20+ days",
+     "pricePct": 0.6,
+     "clears": "10–14 days",
+     "icon": "store",
+     "price": 12,
+     "packPrice": 14.4,
+     "pricePctLabel": "60%",
+     "costPerUnit": 0.5,
+     "itcLoss": 0,
+     "net": 11.5,
+     "capacity": 1372,
+     "eligible": true,
+     "reason": "",
+     "itc": "retained"
+    },
+    {
+     "id": "staff",
+     "name": "Hyderabad staff sale",
+     "short": "Staff sale",
+     "minDays": 0,
+     "need": "until best-before",
+     "pricePct": 0.4,
+     "clears": "2–3 days",
+     "icon": "users",
+     "price": 8,
+     "packPrice": null,
+     "pricePctLabel": "40%",
+     "costPerUnit": 0,
+     "itcLoss": 0,
+     "net": 8,
+     "capacity": 150,
+     "eligible": true,
+     "reason": "",
+     "itc": "retained"
+    },
+    {
+     "id": "foodbank",
+     "name": "Food bank donation",
+     "short": "Food bank",
+     "minDays": 15,
+     "need": "15+ days, food",
+     "pricePct": 0,
+     "unlimited": true,
+     "clears": "1–2 days",
+     "icon": "heart-handshake",
+     "foodOnly": true,
+     "price": 0,
+     "packPrice": null,
+     "pricePctLabel": "—",
+     "costPerUnit": 0.5,
+     "itcLoss": 0.55,
+     "net": -1.05,
+     "capacity": null,
+     "eligible": true,
+     "reason": "",
+     "itc": "reversed"
+    },
+    {
+     "id": "writeoff",
+     "name": "Write-off (destroy)",
+     "short": "Write-off",
+     "minDays": 0,
+     "need": "—",
+     "pricePct": 0,
+     "unlimited": true,
+     "clears": "—",
+     "icon": "trash-2",
+     "baseline": true,
+     "price": 0,
+     "packPrice": null,
+     "pricePctLabel": "—",
+     "costPerUnit": 0,
+     "itcLoss": 0,
+     "net": -14.34,
+     "capacity": null,
+     "eligible": true,
+     "reason": "",
+     "itc": "reversed"
+    }
+   ],
+   "lines": [
+    {
+     "id": "kirana",
+     "name": "Kirana cluster push",
+     "short": "Kirana cluster",
+     "units": 1372,
+     "price": 12,
+     "packPrice": 14.4,
+     "charged": 1143,
+     "gross": 16464,
+     "cost": 686,
+     "itcLoss": 0,
+     "net": 15778,
+     "cartons": 50.81481481481482
+    },
+    {
+     "id": "staff",
+     "name": "Hyderabad staff sale",
+     "short": "Staff sale",
+     "units": 150,
+     "price": 8,
+     "packPrice": null,
+     "charged": 150,
+     "gross": 1200,
+     "cost": 0,
+     "itcLoss": 0,
+     "net": 1200,
+     "cartons": 5.555555555555555
+    },
+    {
+     "id": "foodbank",
+     "name": "Food bank donation",
+     "short": "Food bank",
+     "units": 58,
+     "price": 0,
+     "packPrice": null,
+     "charged": 58,
+     "gross": 0,
+     "cost": 29,
+     "itcLoss": 31.9,
+     "net": -60.9,
+     "cartons": 2.1481481481481484
+    }
+   ],
+   "gross": 17664,
+   "costs": 715,
+   "itcLoss": 31.9,
+   "net": 16917.1,
+   "pctMRP": 54,
+   "writeOff": {
+    "units": 1580,
+    "stock": 17380,
+    "itc": 869,
+    "itcPerUnit": 0.55,
+    "disposal": 2370,
+    "kg": 339.7,
+    "epr": 2038.2,
+    "total": 22657.2,
+    "perUnit": 14.34
+   },
+   "bookCost": 17380,
+   "pnl": -462.9,
+   "swing": 22194.3,
+   "cashAvoided": 5277.2,
+   "itcRetained": 837.1,
+   "itcReversed": 31.9,
+   "disposalAvoided": 4408.2,
+   "alt": null,
+   "kg": 339.7,
+   "co2": 849.25,
+   "meals": 58,
+   "soldUnits": 1522,
+   "donated": 58,
+   "leftover": 0
+  }
+ },
+ "docs": [
+  {
+   "id": "invoice",
+   "type": "Tax invoice",
+   "owner": "Rakesh Traders",
+   "no": "INV/26-27/0931",
+   "status": "drafted",
+   "amount": 11510,
+   "taxable": 10962.4,
+   "igst": 548,
+   "roundOff": -0.4,
+   "total": 11510,
+   "units": 772,
+   "price": 14.2,
+   "from": {
+    "id": "rakesh",
+    "name": "Rakesh Traders",
+    "short": "Rakesh Traders",
+    "city": "Nagpur",
+    "state": "Maharashtra",
+    "godown": "Kalamna Market godown",
+    "address": "Kalamna Market, Nagpur, Maharashtra",
+    "gstin": "27AABCR1234F1Z5",
+    "kiranas": 38,
+    "cluster": "Nagpur, Wardha and Kamptee",
+    "territory": "Nagpur with Wardha and Kamptee",
+    "pins": "440, 441, 442",
+    "staffCap": 50
+   },
+   "to": {
+    "id": "agrawal",
+    "name": "Agrawal Wholesale",
+    "short": "Agrawal Wholesale",
+    "city": "Raipur",
+    "state": "Chhattisgarh",
+    "stateCode": "22",
+    "address": "Ganj Mandi, Raipur, Chhattisgarh",
+    "gstin": "22AAGFA4821M1Z3",
+    "kind": "Kirana wholesaler · ExpireSoon buyer"
+   },
+   "hsn": "2005",
+   "gstPct": 5,
+   "note": "Drafted for Rakesh Traders to issue from Tally."
+  },
+  {
+   "id": "eway",
+   "type": "E-way bill check",
+   "owner": "Rakesh Traders",
+   "no": "MF-2409-117",
+   "status": "not required",
+   "amount": 11510,
+   "note": "The consignment is ₹11,510 with GST, under the ₹50,000 threshold. Checked again if the dispatch is split."
+  },
+  {
+   "id": "support",
+   "type": "Price-support credit note",
+   "owner": "Munchly Foods",
+   "no": "CN/0117",
+   "status": "generated",
+   "amount": 8768,
+   "exact": 8767.6,
+   "roundOff": 0.4,
+   "rows": [
+    {
+     "id": "kirana",
+     "short": "Kirana cluster",
+     "units": 588,
+     "price": 18,
+     "gap": 4,
+     "amount": 2352
+    },
+    {
+     "id": "expiresoon",
+     "short": "ExpireSoon",
+     "units": 772,
+     "price": 14.2,
+     "gap": 7.8,
+     "amount": 6021.6
+    }
+   ],
+   "van": 294,
+   "fee": 100,
+   "note": "Munchly Foods to Rakesh Traders: a financial credit note, no GST adjustment."
+  },
+  {
+   "id": "itc",
+   "type": "GST ITC memo",
+   "owner": "Munchly Foods",
+   "no": "s.17(5)(h)",
+   "status": "generated",
+   "amount": 1224,
+   "note": "Goods supplied under tax invoices, so the Section 17(5)(h) reversal does not apply."
+  },
+  {
+   "id": "fssai",
+   "type": "FSSAI surplus-food checklist",
+   "owner": "Munchly Foods",
+   "no": "no donation",
+   "status": "not required",
+   "amount": 0
+  },
+  {
+   "id": "destruction",
+   "type": "Destruction certificate",
+   "owner": "Munchly Foods",
+   "no": "0 units left",
+   "status": "not required",
+   "amount": 0
+  }
+ ],
+ "counter": [
+  {
+   "ask": 15,
+   "bid": 10,
+   "out": {
+    "action": "counter",
+    "price": 14.2,
+    "below": true
+   }
+  },
+  {
+   "ask": 15,
+   "bid": 13,
+   "out": {
+    "action": "counter",
+    "price": 14.2,
+    "below": true
+   }
+  },
+  {
+   "ask": 15,
+   "bid": 13.5,
+   "out": {
+    "action": "counter",
+    "price": 14.2,
+    "below": false
+   }
+  },
+  {
+   "ask": 15,
+   "bid": 14,
+   "out": {
+    "action": "counter",
+    "price": 14.2,
+    "below": false
+   }
+  },
+  {
+   "ask": 15,
+   "bid": 14.2,
+   "out": {
+    "action": "accept",
+    "price": 14.2
+   }
+  },
+  {
+   "ask": 15,
+   "bid": 14.25,
+   "out": {
+    "action": "accept",
+    "price": 14.25
+   }
+  },
+  {
+   "ask": 15,
+   "bid": 15,
+   "out": {
+    "action": "accept",
+    "price": 15
+   }
+  },
+  {
+   "ask": 15,
+   "bid": 16,
+   "out": {
+    "action": "accept",
+    "price": 16
+   }
+  },
+  {
+   "ask": 14,
+   "bid": 10,
+   "out": {
+    "action": "counter",
+    "price": 13.5,
+    "below": true
+   }
+  },
+  {
+   "ask": 14,
+   "bid": 13,
+   "out": {
+    "action": "counter",
+    "price": 13.5,
+    "below": true
+   }
+  },
+  {
+   "ask": 14,
+   "bid": 13.5,
+   "out": {
+    "action": "accept",
+    "price": 13.5
+   }
+  },
+  {
+   "ask": 14,
+   "bid": 14,
+   "out": {
+    "action": "accept",
+    "price": 14
+   }
+  },
+  {
+   "ask": 14,
+   "bid": 14.2,
+   "out": {
+    "action": "accept",
+    "price": 14.2
+   }
+  },
+  {
+   "ask": 14,
+   "bid": 14.25,
+   "out": {
+    "action": "accept",
+    "price": 14.25
+   }
+  },
+  {
+   "ask": 14,
+   "bid": 15,
+   "out": {
+    "action": "accept",
+    "price": 15
+   }
+  },
+  {
+   "ask": 14,
+   "bid": 16,
+   "out": {
+    "action": "accept",
+    "price": 16
+   }
+  },
+  {
+   "ask": 12.5,
+   "bid": 10,
+   "out": {
+    "action": "counter",
+    "price": 13.5,
+    "below": true
+   }
+  },
+  {
+   "ask": 12.5,
+   "bid": 13,
+   "out": {
+    "action": "accept",
+    "price": 13
+   }
+  },
+  {
+   "ask": 12.5,
+   "bid": 13.5,
+   "out": {
+    "action": "accept",
+    "price": 13.5
+   }
+  },
+  {
+   "ask": 12.5,
+   "bid": 14,
+   "out": {
+    "action": "accept",
+    "price": 14
+   }
+  },
+  {
+   "ask": 12.5,
+   "bid": 14.2,
+   "out": {
+    "action": "accept",
+    "price": 14.2
+   }
+  },
+  {
+   "ask": 12.5,
+   "bid": 14.25,
+   "out": {
+    "action": "accept",
+    "price": 14.25
+   }
+  },
+  {
+   "ask": 12.5,
+   "bid": 15,
+   "out": {
+    "action": "accept",
+    "price": 15
+   }
+  },
+  {
+   "ask": 12.5,
+   "bid": 16,
+   "out": {
+    "action": "accept",
+    "price": 16
+   }
+  }
+ ]
+}

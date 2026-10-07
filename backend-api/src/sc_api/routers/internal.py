@@ -88,12 +88,15 @@ async def agents_of(client_id: str, ctx: InternalCtx) -> dict[str, Any]:
         "clock": views.clock_out(ctx, c),
         "setupConfirmed": c.setup_confirmed_at is not None,
         "language": "hi" if c.hindi_offers else "en",
+        # how long a kirana scheme stays open, which Outreach's offer says (SC-72)
+        "offerWindowHours": c.offer_window_hours,
     }
 
 
 @router.get("/clients/{client_id}/batches")
 async def batches_of(client_id: str, ctx: InternalCtx) -> dict[str, Any]:
-    """the open batches the Watcher reads sell-through for, with the distributors' permissions"""
+    """the open batches the Watcher reads sell-through for, with the distributors' permissions; the distributors' names
+    and the SKUs' item codes, which the Data agent maps a DMS export's rows by (SC-72)"""
     c = await world.client(ctx, client_id)
     dists = await world.distributors(ctx, client_id)
     skus = await world.skus(ctx, client_id)
@@ -113,8 +116,10 @@ async def batches_of(client_id: str, ctx: InternalCtx) -> dict[str, Any]:
         "client": client_id,
         "day": today.isoformat(),
         "distributors": {
-            d.id: {"permission": d.permission == "given", "paused": d.permission_paused} for d in dists.values()
+            d.id: {"permission": d.permission == "given", "paused": d.permission_paused, "name": d.name}
+            for d in dists.values()
         },
+        "skus": {x.id: {"code": x.code, "name": x.name} for x in skus.values()},
         "batches": [
             {**world.batch_obj(b, dists[b.distributor_id], today), "skuCode": skus[b.sku_id].code} for b in rows
         ],

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block body %}
+<table>
+  <tbody>
+    <tr><th>Food</th><td>{{ case.sku.brand }} {{ case.sku.name }}, batch {{ case.ref }}</td></tr>
+    <tr><th>Quantity</th><td>{{ doc.no }}</td></tr>
+    <tr><th>Best before</th><td>{{ case.batch.bestBefore|date }}</td></tr>
+    <tr><th>From</th><td>{{ case.distributor.godown or case.distributor.city }}, {{ case.distributor.name }}</td></tr>
+    {% if case.donation %}<tr><th>To</th><td>{{ case.donation.partnerName }}</td></tr>{% endif %}
+  </tbody>
+</table>
+<p class="label">Checklist (FSS (Recovery and Distribution of Surplus Food) Regulations, 2019)</p>
+<ul class="checks">
+  <li>The food is within its best-before date, and will be when it is handed over.</li>
+  <li>The packs are sealed, undamaged and labelled as made.</li>
+  <li>It has been stored as its label says, apart from other stock.</li>
+  <li>The receiving organisation is a registered food-recovery organisation.</li>
+  <li>The receiving organisation has signed for the packs, with the date and quantity.</li>
+</ul>
+{% endblock %}

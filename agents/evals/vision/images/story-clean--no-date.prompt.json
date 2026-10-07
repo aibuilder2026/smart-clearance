@@ -1,0 +1,25 @@
+{
+ "model": "Qwen-Image-2.1 (bf16), run locally through the qwen-image-bf16 plugin 0.2.0 (its CLI)",
+ "seed": 11,
+ "size": "1024 (4:3, 1184 x 896)",
+ "prompt": "A realistic close-up smartphone photo of a printed white label stuck on the side of a brown corrugated cardboard carton. The label is printed in bold black sans-serif type, one line each: \"MUNCHLY MASALA CHIPS 150 g\", \"BATCH NO: MF-2409-117\", \"MFG: 18/05/2026\", \"BEST BEFORE: 18/11/2026\", \"MRP ₹30.00 (incl. of all taxes)\". Even daylight in a distributor's godown, the camera square on. Photorealistic, natural colours, the label text crisp and legible.",
+ "postProcessing": [
+  {
+   "step": "cover",
+   "box": [
+    0.18,
+    0.592,
+    0.72,
+    0.662
+   ],
+   "what": "bestBefore"
+  },
+  {
+   "step": "convert",
+   "to": "WebP",
+   "quality": 88
+  }
+ ],
+ "source": "src/story-clean.png (sha256 81867f4e1ee904f8, kept locally)",
+ "seen": null
+}
