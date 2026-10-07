@@ -3,7 +3,7 @@ name: CI
 # Lint, test and build the frontend, and lint and test backend-api against PostgreSQL 18 (SC-45), on every change
 # that can affect them, with a secret scan. From main: backend-api is built, migrated and deployed to Cloud Run by
 # Cloud Build when it changed (SC-50, backend-api/cloudbuild.yaml), then the apps are deployed to Firebase Hosting, each
-# to its own site (SC-40; the workspace app since SC-62). Once backend-api runs in the cloud, the apps are built against it (the PUBLIC_* repository variables).
+# to its own site (SC-40; the workspace app since SC-62, the guided demo since SC-64). Once backend-api runs in the cloud, the apps are built against it (the PUBLIC_* repository variables).
 # prod is the only environment:
 # - its credentials come through Workload Identity Federation, so no key exists (infra/prod/deployer.tf, build.tf);
 # - only main may deploy to it, and its variables are Terraform's (infra/prod/github.tf).
@@ -138,7 +138,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/setup-frontend
-      - name: Build the landing page, the console and the workspace app
+      - name: Build the landing page, the console, the workspace app and the guided demo
         working-directory: frontend
         # empty until backend-api runs in the cloud: the apps then use their in-browser mock
         env:
@@ -151,11 +151,12 @@ jobs:
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: frontend-build
-          # stored as admin/build, console/build and workspace/build, under their common folder, frontend/
+          # stored as admin/build, console/build, workspace/build and demo/build, under their common folder, frontend/
           path: |
             frontend/admin/build
             frontend/console/build
             frontend/workspace/build
+            frontend/demo/build
           if-no-files-found: error
           retention-days: 7
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Build the frontend and release it to Firebase Hosting, each app to its own site.
 #   infra/scripts/deploy.sh               every app
-#   infra/scripts/deploy.sh console       one app, by its frontend/firebase.json target: site (the landing page), console
-#                                         or workspace (Munchly Foods' workspace)
+#   infra/scripts/deploy.sh console       one app, by its frontend/firebase.json target: site (the landing page), console,
+#                                         workspace (Munchly Foods' workspace) or demo (the guided demo)
 #   SKIP_BUILD=1 infra/scripts/deploy.sh  release the builds already on disk
 #
 # The sites come from Terraform's hosting_sites output, or from HOSTING_SITES, which carries the same JSON (in CI, the
@@ -18,7 +18,7 @@ has_adc || die "firebase-tools needs application-default credentials: run 'gclou
 # firebase-tools bills its calls to this project when it runs as a person
 export GOOGLE_CLOUD_QUOTA_PROJECT="$PROJECT_ID"
 
-targets="${*:-site console workspace}"
+targets="${*:-site console workspace demo}"
 sites="${HOSTING_SITES:-}"
 [[ -n $sites ]] || sites="$(tf prod output -json hosting_sites)"
 
@@ -28,7 +28,8 @@ for target in $targets; do
 	site) build=build:admin ;;
 	console) build=build:console ;;
 	workspace) build=build:workspace ;;
-	*) die "unknown target '$target': site, console or workspace" ;;
+	demo) build=build:demo ;;
+	*) die "unknown target '$target': site, console, workspace or demo" ;;
 	esac
 	jq -e --arg t "$target" 'has($t)' <<<"$sites" >/dev/null ||
 		die "Terraform has no Hosting site for '$target' (infra/prod/terraform.tfvars, then tf.sh apply)"
