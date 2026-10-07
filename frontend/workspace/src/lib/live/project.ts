@@ -606,6 +606,7 @@ export function emptyData(pub: ApiPublic | null): WorkspaceData {
 	const workspace = pub
 		? workspaceOf(pub)
 		: workspaceOf({
+				accounts: [],
 				id: '',
 				name: '',
 				short: '',
