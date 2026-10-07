@@ -408,3 +408,22 @@ async def test_compressed_days_run_while_a_batch_is_at_risk(api, munchly, ctx):
     await detect(api)
     snap = (await api.get(f"{WS}/snapshot", headers=PRIYA)).json()
     assert snap["clock"]["compressed"] is True and snap["clock"]["dayMinutes"] == 2
+
+
+async def test_the_agents_see_the_figures_before_they_write(api, munchly, cloud):
+    await setup(api)
+    await detect(api)
+    await agent(api, f"/cases/{HERO}/photo-request", "vision-ask", "vision")
+    await put_photo(api, cloud, HERO)
+    await agent(
+        api, f"/cases/{HERO}/photo-read", "vision-read", "vision", read={"batch": HERO, "mrp": 30, "confidence": 0.97}
+    )
+    rows = (await api.get(f"/internal/clients/munchly/cases/{HERO}/valuation-preview", headers=AGENT)).json()["rows"]
+    assert [r["id"] for r in rows] == ["expiresoon", "kirana", "staff", "foodbank", "writeoff"]
+    await agent(api, f"/cases/{HERO}/valuation", "valuer", "valuer")
+    preview = (await api.get(f"/internal/clients/munchly/cases/{HERO}/plan-preview", headers=AGENT)).json()
+    assert preview["plan"]["net"] == 21770 and preview["offered"] == 38
+    # the Router's own words, when every figure in them is the plan's
+    words = "588 to the kirana scheme and 772 to ExpireSoon: net ₹21,770, against a ₹26,330 write-off."
+    await agent(api, f"/cases/{HERO}/plan", "router", "router", explanation=words)
+    assert (await case(api, PRIYA))["plan"]["explanation"] == words

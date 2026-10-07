@@ -7,6 +7,7 @@ out, or gets wrong, is written from here. tests/test_copy.py renders the story's
 design3's own sentences.
 """
 
+import math
 import re
 from datetime import date, datetime
 from typing import Any
@@ -88,9 +89,10 @@ def check_numbers(text: str, allowed: list[float]) -> bool:
     """whether every figure in a model's sentence is one of the computed ones: rupees, units and percentages it may
     quote. Small counting words (a day, two options) are not figures; anything else is refused"""
     found = re.findall(r"(?<![\w.])(\d[\d,]*(?:\.\d+)?)", text)
-    pool = {round(float(a), 2) for a in allowed}
+    # a figure as written: to the paisa, or rounded to the rupee as the app shows money (fmt.inr)
+    pool = {round(float(a), 2) for a in allowed} | {float(math.floor(float(a) + 0.5)) for a in allowed}
     for raw in found:
-        n = round(float(raw.replace(",", "")), 2)
+        n = round(float(raw.replace(",", "").rstrip(".")), 2)
         if n in pool or (n < 10 and float(n).is_integer()):
             continue
         return False

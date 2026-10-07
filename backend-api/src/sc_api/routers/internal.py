@@ -22,7 +22,7 @@ from sc_api.errors import ApiError, not_found
 from sc_api.schemas import Shape
 from sc_api.services.context import Ctx
 from sc_api.services.journey import events as ev
-from sc_api.services.journey import notifier, reset, steps, tick, views, world
+from sc_api.services.journey import notifier, previews, reset, steps, tick, views, world
 from sc_api.services.journey.outbox import drain
 
 log = logging.getLogger("sc_api.internal")
@@ -159,6 +159,24 @@ async def case_of(client_id: str, ref: str, ctx: InternalCtx) -> dict[str, Any]:
         "listingApi": (case.listing or {}).get("api"),
         "docsFull": case.docs,
     }
+
+
+@router.get(CASE + "/valuation-preview")
+async def valuation_preview(client_id: str, ref: str, ctx: InternalCtx) -> dict[str, Any]:
+    """the channel table the Valuer comments on, as it will be saved"""
+    return await previews.valuation(ctx, client_id, ref)
+
+
+@router.get(CASE + "/plan-preview")
+async def plan_preview(client_id: str, ref: str, ctx: InternalCtx) -> dict[str, Any]:
+    """the split the Router explains, as it will be saved"""
+    return await previews.plan(ctx, client_id, ref)
+
+
+@router.get(CASE + "/bids/{bid_id}/preview")
+async def bid_preview(client_id: str, ref: str, bid_id: str, ctx: InternalCtx) -> dict[str, Any]:
+    """the Negotiator's decision on a bid, which its words must state"""
+    return await previews.bid(ctx, client_id, ref, bid_id)
 
 
 # --- what the agents report ------------------------------------------------------------------------------------------
