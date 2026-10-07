@@ -462,6 +462,7 @@ async def test_the_snapshot_carries_what_the_screens_state(api, munchly):
     assert {"priya", "rakesh", "agrawal", "meera"} <= {p["id"] for p in people}
     assert next(p for p in people if p["id"] == "priya")["email"] == "priya.deshmukh@munchly.example"
     assert all("password" not in p for p in people)
+    assert public["accounts"][0]["note"] == "@munchly.example"
     w = snap["workspace"]
     assert w["emailDomain"] == "munchly.example" and w["hint"] == "name@munchly.example"
     assert w["invite"]["contact"].endswith("@google.example")

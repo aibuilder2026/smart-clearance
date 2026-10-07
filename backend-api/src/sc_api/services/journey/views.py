@@ -162,7 +162,9 @@ async def sign_in_accounts(ctx: Ctx, c: m.Client) -> list[dict[str, Any]]:
             if cm.status != "deactivated" and u.email
         ]
         if rows:
-            out.append({"group": g["group"], "note": g["note"], "people": rows})
+            # the group's sign-in domain (the prototype's own note names its Google and phone sign-ins)
+            domains = sorted({"@" + r["email"].split("@", 1)[1] for r in rows})
+            out.append({"group": g["group"], "note": " · ".join(domains), "people": rows})
     return out
 
 
