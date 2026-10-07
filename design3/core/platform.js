@@ -24,7 +24,7 @@
   const AGENTS = [
     { id: "data", name: "Data", stage: "connect", icon: "database", model: "Gemini Flash", job: "Loads each distributor's stock export and maps its columns" },
     { id: "watcher", name: "Watcher", stage: "detect", icon: "eye", model: "Gemini Flash", job: "Flags batches that won't sell in time, against the quick-commerce gates" },
-    { id: "vision", name: "Vision", stage: "verify", icon: "scan-line", model: "Gemini Pro", job: "Reads the label photo from the godown" },
+    { id: "vision", name: "Vision", stage: "verify", icon: "scan-line", model: "Gemini Flash", job: "Reads the label photo from the godown" },
     { id: "valuer", name: "Valuer", stage: "value", icon: "scale", model: "Gemini Pro", job: "Prices every exit, the bin included" },
     { id: "router", name: "Router", stage: "decide", icon: "route", model: "Gemini Pro", job: "Splits the batch under each exit's caps" },
     { id: "gate", name: "Approval", stage: "approve", icon: "hand", gate: true, job: "A person approves every plan, with the money on screen" },

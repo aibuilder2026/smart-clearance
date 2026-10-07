@@ -17,6 +17,10 @@
 			"types": "./src/console/index.ts",
 			"default": "./src/console/index.ts"
 		},
+		"./workspace": {
+			"types": "./src/workspace/index.ts",
+			"default": "./src/workspace/index.ts"
+		},
 		"./seed/*": "./src/seed/*"
 	},
 	"scripts": {
