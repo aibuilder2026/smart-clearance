@@ -408,7 +408,9 @@ const journey = {
 	roles: ROLES,
 	copy: { push: D.PUSH, chat: D.CHAT, events: D.EVENTS, connectEvent: F.CONNECT_EV },
 	moments: moments(D.JOURNEY),
-	market: D.MARKET
+	market: D.MARKET,
+	// the people a judge may sign in as, by where they stand (data.js EXPLORE): the live sign-in's chips fill their address
+	explore: D.EXPLORE.groups
 };
 
 /** money.js's own answers, for backend-api's domain/money.py: every case carries its inputs */

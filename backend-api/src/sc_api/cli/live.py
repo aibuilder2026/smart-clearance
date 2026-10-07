@@ -52,6 +52,11 @@ async def build(ctx: Ctx, client_id: str = "munchly") -> dict[str, Any]:
         "hint": f"name@{j['domains']['staff']}",
         "invite": {"name": w["invite"]["name"], "contact": f"{_slug(w['invite']['name'])}@{j['domains']['partners']}"},
         "market": j["market"],
+        # a synthetic workspace offers the story's people on its sign-in (their address; the password is handed over)
+        "accounts": [
+            {"group": g["group"], "note": g["note"], "people": [{"id": i, "does": does} for i, does in g["ids"]]}
+            for g in j["explore"]
+        ],
         "moments": {k: v for k, v in j["moments"].items()} | {"donation": _donation_rules(j["moments"]["donation"])},
         "quarter": j["quarter"],
         "synthetic": True,

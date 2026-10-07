@@ -138,10 +138,39 @@ def _workspace(c: m.Client) -> dict[str, Any]:
     }
 
 
-def public(c: m.Client, platform: dict[str, str]) -> dict[str, Any]:
+async def sign_in_accounts(ctx: Ctx, c: m.Client) -> list[dict[str, Any]]:
+    """the people a synthetic workspace offers on its sign-in, by where they stand: their name, role and address,
+    never a password (the default one is handed over apart). A real client's workspace offers none"""
+    doc = c.workspace_doc or {}
+    if not doc.get("synthetic") or not doc.get("accounts"):
+        return []
+    people = {cm.ref: (cm, u) for cm, u in await world.members(ctx, c.id)}
+    out = []
+    for g in doc["accounts"]:
+        found = [(people[p["id"]], p["does"]) for p in g["people"] if p["id"] in people]
+        rows = [
+            {
+                "id": cm.ref,
+                "name": cm.name,
+                "role": cm.workspace_role or "operator",
+                "title": cm.role_label,
+                "img": cm.img,
+                "email": u.email or "",
+                "does": does,
+            }
+            for (cm, u), does in found
+            if cm.status != "deactivated" and u.email
+        ]
+        if rows:
+            out.append({"group": g["group"], "note": g["note"], "people": rows})
+    return out
+
+
+def public(c: m.Client, platform: dict[str, str], accounts: list[dict[str, Any]] | None = None) -> dict[str, Any]:
     """GET /v1/workspaces/{ws}: what the sign-in page and the installed app show"""
     doc = c.workspace_doc or {}
     return {
+        "accounts": accounts or [],
         "id": c.id,
         "name": c.name,
         "short": c.short,

@@ -53,8 +53,22 @@ export type WsMark = { from: string; to: string; ink: string };
 
 export type SignInOption = { id: string; icon: string; title: string; who: string; rule: string };
 
+/** someone a synthetic workspace offers on its sign-in: their address fills the form; the password is handed over */
+export type SignInAccount = {
+	id: string;
+	name: string;
+	role: WsRole;
+	title: string;
+	img: string | null;
+	email: string;
+	/** what they do in the story */
+	does: string;
+};
+
 /** GET /v1/workspaces/{ws}: what the sign-in page and the installed app show. No token needed */
 export type WorkspacePublic = {
+	/** the people to sign in as, by where they stand; empty for a real client's workspace */
+	accounts: { group: string; note: string; people: SignInAccount[] }[];
 	id: string;
 	name: string;
 	short: string;

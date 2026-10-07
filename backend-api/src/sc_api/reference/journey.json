@@ -2868,5 +2868,57 @@
 				"seller": "Mill outlet, Rajnandgaon"
 			}
 		]
-	}
+	},
+	"explore": [
+		{
+			"group": "Munchly Foods",
+			"note": "staff · Google Workspace",
+			"ids": [
+				[
+					"priya",
+					"Approve the plan for the chips batch"
+				],
+				[
+					"anita",
+					"Review Munchly's credit note and GST memo"
+				],
+				[
+					"vikram",
+					"Export the BRSR table"
+				],
+				[
+					"arjun",
+					"The workspace, its people and the guardrails"
+				]
+			]
+		},
+		{
+			"group": "Invited partners",
+			"note": "a one-time code or Google",
+			"ids": [
+				[
+					"rakesh",
+					"Give the permission, send the photo, run the van"
+				],
+				[
+					"ganesh",
+					"Order from the Hindi offer"
+				],
+				[
+					"meera",
+					"Confirm a food-bank pickup"
+				]
+			]
+		},
+		{
+			"group": "Outside the workspace",
+			"note": "ExpireSoon, another company's marketplace",
+			"ids": [
+				[
+					"agrawal",
+					"Bid on the lot from Raipur"
+				]
+			]
+		}
+	]
 }

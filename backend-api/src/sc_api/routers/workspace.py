@@ -136,7 +136,7 @@ async def workspace(ws: str, ctx: Public) -> dict[str, Any]:
     platform = (c.workspace_doc or {}).get(
         "platform", {"name": "Smart-Clearance", "domain": ctx.settings.workspace_domain}
     )
-    return views.public(c, platform)
+    return views.public(c, platform, await views.sign_in_accounts(ctx, c))
 
 
 # --- the session -------------------------------------------------------------------------------------------------
