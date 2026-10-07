@@ -22,7 +22,7 @@ The production code starts in `frontend/` (SC-27): design system v3 in Svelte, t
 | --- | --- |
 | `design3/` | The current design and the source of truth for designs:
 <ul><li>design system, guided demo, app prototype (Munchly Foods' workspace, an installable PWA), the platform's landing page and console;</li><li>every design review in `designs/`, one folder per issue.</li></ul>Start with `design3/README.md`. |
-| `frontend/` | The SvelteKit 3 frontend, a pnpm workspace that implements design3. Four apps, each built on its own:<ul><li>`admin`, the platform's own site: the landing page (smartclearance.com);</li><li>`console`, the staff console (console.smartclearance.com);</li><li>`workspace`, a client's workspace (munchly.smartclearance.com), a thin host for the workspace app in `core` (SC-62), live at munchly-smartclearance.web.app;</li><li>`demo`, the guided demo (SC-63), on the workspace app's screens and stub, not hosted yet.</li></ul>Three shared packages:<ul><li>`core`, design system v3 in Svelte, and the workspace app's screens and stub (`core/src/lib/workspace/`);</li><li>`api`, the contract with backend-api and an in-browser mock of it;</li><li>`testing`, what the apps' test suites share.</li></ul>Start with `frontend/README.md`. |
+| `frontend/` | The SvelteKit 3 frontend, a pnpm workspace that implements design3. Four apps, each built on its own:<ul><li>`admin`, the platform's own site: the landing page (smartclearance.com);</li><li>`console`, the staff console (console.smartclearance.com);</li><li>`workspace`, a client's workspace (munchly.smartclearance.com), a thin host for the workspace app in `core` (SC-62), live at munchly-smartclearance.web.app;</li><li>`demo`, the guided demo (SC-63), on the workspace app's screens and stub, live at smartclearance-demo.web.app (SC-64).</li></ul>Three shared packages:<ul><li>`core`, design system v3 in Svelte, and the workspace app's screens and stub (`core/src/lib/workspace/`);</li><li>`api`, the contract with backend-api and an in-browser mock of it;</li><li>`testing`, what the apps' test suites share.</li></ul>Start with `frontend/README.md`. |
 | `backend-api/` | The platform's API (SC-45): FastAPI, PostgreSQL (one database, `smart_clearance`), Firebase Auth, Secret Manager.<ul><li>`src/sc_api/`: routes, services (the only writers; every change writes its audit line), models, the ported rules;</li><li>`migrations/` (Alembic), `db/` (roles);</li><li>`scripts/`: doctor, secrets, db-init, migrate, hydrate, dev, up, test, bootstrap;</li><li>`tests/` (pytest on a real Postgres), `contracts/openapi.json`.</li></ul>Start with `backend-api/README.md`. |
 | `agents/` | The AI agents, planned. README only for now. |
 | `infra/` | Terraform for the Google Cloud project, and the scripts that run it:<ul><li>`bootstrap/`, the state bucket;</li><li>`prod/`, the billing link, Firebase, a Hosting site per app, and CI's keyless deployer with the repository's `prod` environment;</li><li>`scripts/`, bootstrap, the Terraform wrapper, the deploy and the gate.</li></ul>Start with `infra/README.md`. |
@@ -64,7 +64,7 @@ The infrastructure (from the repository root; `infra/README.md` has the prerequi
 infra/scripts/bootstrap.sh                  # once per project: the Terraform state bucket
 infra/scripts/tf.sh plan -out=prod.tfplan   # read the whole plan, then:
 infra/scripts/tf.sh apply prod.tfplan
-infra/scripts/deploy.sh                     # build every app and release them to Firebase Hosting (or: deploy.sh site | console | workspace)
+infra/scripts/deploy.sh                     # build every app and release them to Firebase Hosting (or: deploy.sh site | console | workspace | demo)
 infra/scripts/check.sh                      # the gate jira-flow runs: terraform fmt and validate, and the scripts' syntax
 ```
 
@@ -151,7 +151,7 @@ Local pages:
   `seed:check` and `icons:check` run in the gate.
 - Reference design3's images in place; the build hashes them. Never copy them.
 - What the apps share lives in a shared package, never in a copy: components and CSS in `core`, the contract and mocks in `api`, test helpers in `testing`. Each app's `src/app.html` is the same file, and a test keeps it so.
-- Each app deploys on its own: `frontend/firebase.json` has a Hosting target for each (`site`, `console` and `workspace`), and `infra/scripts/deploy.sh` releases each to the Hosting site Terraform made for it.
+- Each app deploys on its own: `frontend/firebase.json` has a Hosting target for each (`site`, `console`, `workspace` and `demo`), and `infra/scripts/deploy.sh` releases each to the Hosting site Terraform made for it.
 - SvelteKit 3 differs from 2:
   - its config is in `vite.config.ts`;
   - imports use `#lib/…` with the `.ts` extension written out;
@@ -298,7 +298,7 @@ From the Claude desktop app:
 - **Jira:** project SC on [duttaarun2015.atlassian.net](https://duttaarun2015.atlassian.net). Issue links take the form `/browse/SC-<n>`.
 - **Slack:** #smart-clearance (private), channel id `C0C675VAFFY`.
 - **Google Cloud:** project `aibuilder-510213` (AIBuilder), on billing account `012B20-D65DBD-FBAC0E`, with Terraform's state in `gs://aibuilder-510213-tfstate` (SC-39).
-- **The live apps (Firebase Hosting, SC-39):** the landing page at [smartclearance.web.app](https://smartclearance.web.app), the staff console at [smartclearance-console.web.app](https://smartclearance-console.web.app), and Munchly Foods' workspace at [munchly-smartclearance.web.app](https://munchly-smartclearance.web.app) (SC-62).
+- **The live apps (Firebase Hosting, SC-39):** the landing page at [smartclearance.web.app](https://smartclearance.web.app), the staff console at [smartclearance-console.web.app](https://smartclearance-console.web.app), Munchly Foods' workspace at [munchly-smartclearance.web.app](https://munchly-smartclearance.web.app) (SC-62), and the guided demo at [smartclearance-demo.web.app](https://smartclearance-demo.web.app) (SC-64).
 - **Hosted pages (Claude Design):**
   - [design system](https://claude.ai/design/p/909d23bb-bd3c-466b-abf8-4eccc7c5881e?file=Smart-Clearance+DS+v3.html)
   - [guided demo](https://claude.ai/design/p/8294ec70-3e6b-4359-8de6-2a3fd056c3b2?file=Smart-Clearance+demo+v3.html)

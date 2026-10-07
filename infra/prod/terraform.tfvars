@@ -18,6 +18,10 @@ hosting_sites = {
   workspace = {
     site_id = "munchly-smartclearance"
   }
+  # the guided demo (SC-63, SC-64); "demo-" names are reserved by Firebase
+  demo = {
+    site_id = "smartclearance-demo"
+  }
 }
 
 # Who may run backend-api locally as its service account, sc-api-local (backend.tf): the account Terraform runs as.

@@ -30,7 +30,7 @@ variable "github_repository" {
 
 variable "hosting_sites" {
   description = <<-EOT
-    One Firebase Hosting site per app, keyed by the app's target in frontend/firebase.json (site, console, workspace).
+    One Firebase Hosting site per app, keyed by the app's target in frontend/firebase.json (site, console, workspace, demo).
     site_id is global across Firebase and becomes <site_id>.web.app. custom_domain is optional; Terraform registers it
     and outputs the DNS records to add at the registrar.
   EOT

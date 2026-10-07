@@ -22,8 +22,11 @@ Both roots use `hashicorp/google` 8.5, and `prod` also uses `google-beta` 8.5 (F
 | `site`                             | `frontend/admin`, the landing page  | `smartclearance`         | https://smartclearance.web.app         |
 | `console`                          | `frontend/console`, the staff console | `smartclearance-console` | https://smartclearance-console.web.app |
 | `workspace`                        | `frontend/workspace`, Munchly Foods' workspace (SC-62) | `munchly-smartclearance` | https://munchly-smartclearance.web.app |
+| `demo`                             | `frontend/demo`, the guided demo (SC-64) | `smartclearance-demo` | https://smartclearance-demo.web.app |
 
-`prod/terraform.tfvars` maps each target to its site. A site id is global across Firebase; once taken, it is gone.
+`prod/terraform.tfvars` maps each target to its site. A site id is global across Firebase; once taken, it is gone. Firebase
+refuses ids that start with `demo-` (it keeps them for its emulator's demo projects), which is why the demo's is
+`smartclearance-demo`.
 
 ## Before the first run
 
