@@ -1,0 +1,15 @@
+{
+  "name": "islands-depth-night",
+  "model": "Qwen-Image-2.1 bf16 (local), qwen_image_bf16_mac.py",
+  "steps": 40,
+  "created": "2026-10-08",
+  "designed_in": "design3/designs/SC-78",
+  "postprocess": "cwebp -q 82; the PNG originals stay local in src/",
+  "mode": "edit_image: islands-depth.png as the condition image, so the islands and the town stay where they are",
+  "size": 2048,
+  "output": "2752x1536",
+  "seed": 7812,
+  "edit_of": "islands-depth.png",
+  "prompt": "Make it night. A deep navy sky with a few faint stars, the town far below lit by warm street lamps and small windows, the tiny buildings on the islands lit from inside with warm windows, the giant products lit softly by cool moonlight from the left, and the green ribbons of light glowing brightly in the dark. Everything else stays exactly as it is: the same three floating islands in the same places, the same giant products, the same town below, the same framing.",
+  "use": "Your own workspace: the islands in depth, by night (SC-78 part 3, option A, dark mode)"
+}

@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-78 design review · The landing page refined</title>
+<meta name="description" content="Three options for each of the four parts of the landing page the maintainer asked about: a longer looping film that tells the story, the day scene's colour, the workspace islands, and the bar.">
+<script>
+  (function () { var m = null; try { m = localStorage.getItem("sc3-theme"); } catch (e) {} var dark = m === "dark" || (m !== "light" && matchMedia("(prefers-color-scheme: dark)").matches); document.documentElement.setAttribute("data-theme", dark ? "dark" : "light"); })();
+</script>
+<link rel="icon" href="../../system/img/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../system/tokens.css">
+<link rel="stylesheet" href="../../system/base.css">
+<link rel="stylesheet" href="../../system/components.css">
+<style>
+  html, body { overflow: auto; height: auto; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--font-ui); }
+  .board { max-width: 1280px; margin: 0 auto; padding: 40px 24px 96px; display: grid; gap: 40px; }
+  .board h1 { margin: 0; font-family: var(--font-display); font-size: 40px; font-weight: 720; letter-spacing: -0.028em; line-height: 1.06; }
+  .board h2 { margin: 0; font-family: var(--font-display); font-size: 28px; font-weight: 680; letter-spacing: -0.02em; }
+  .board h3 { margin: 0; font-size: 18px; font-weight: 650; letter-spacing: -0.01em; }
+  .board p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--fg-2); max-width: 78ch; }
+  .board blockquote { margin: 0; padding: 14px 18px; border-left: 3px solid var(--primary); border-radius: 0 12px 12px 0; background: var(--surface); color: var(--fg); font-size: 15px; line-height: 1.5; white-space: pre-line; }
+  .head { display: grid; gap: 14px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 13px; color: var(--fg-3); }
+  .meta span { padding: 6px 10px; border-radius: 999px; background: var(--fill); }
+  .sec { display: grid; gap: 18px; padding-top: 28px; box-shadow: inset 0 var(--hair) 0 var(--line); }
+  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .shot { display: grid; gap: 8px; }
+  .shot img, .shot video { width: 100%; height: auto; border-radius: 14px; box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); background: var(--surface); }
+  .shot figcaption { font-size: 13px; color: var(--fg-3); }
+  .pair { display: grid; gap: 14px; grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); align-items: start; }
+  .opt { display: grid; gap: 16px; padding: 22px; border-radius: 22px; background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+  .opt.rec { box-shadow: var(--shadow-1), 0 0 0 2px var(--primary); }
+  .opt-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .tag { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 600; background: var(--fill-2); color: var(--fg); }
+  .tag.rec { background: var(--primary-soft); color: var(--primary-text); }
+  .tag.k { background: var(--amber-soft); color: var(--amber-text); }
+  .links { display: flex; flex-wrap: wrap; gap: 8px; }
+  .links a { display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 999px; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--primary-fg); background: var(--primary); }
+  .links a.sec { color: var(--fg); background: var(--fill-2); box-shadow: none; padding: 0 14px; display: inline-flex; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { padding: 10px 12px; text-align: left; vertical-align: top; box-shadow: inset 0 calc(-1 * var(--hair)) 0 var(--line); }
+  th { font-weight: 650; color: var(--fg-2); font-size: 13px; }
+  td b { font-weight: 650; }
+  ul.plain { margin: 0; padding-left: 18px; font-size: 15px; line-height: 1.5; color: var(--fg-2); }
+  .note { padding: 14px 18px; border-radius: 14px; background: var(--amber-soft); color: var(--amber-text); font-size: 14px; line-height: 1.5; }
+  .ask { display: grid; gap: 10px; padding: 22px; border-radius: 22px; background: var(--primary-soft); color: var(--fg); }
+  .ask b { color: var(--primary-text); }
+  @media (max-width: 760px) { .pair { grid-template-columns: 1fr; } .board h1 { font-size: 32px; } }
+</style>
+</head>
+<body>
+<main class="board">
+  <header class="head">
+    <div class="meta"><span>SC-78</span><span>Landing page</span><span>8 Oct 2026</span><span>Design review, round 1</span></div>
+    <h1>The landing page refined: the film, the day scene, the islands and the bar.</h1>
+    <p>Four parts, two or three options each, built on the real kit. The three pages below combine them as A, B and C; the switcher at the foot of every page swaps any part on its own, so a mixed pick is just a link. Every page plays in light and dark, at 1440 and on a phone.</p>
+    <blockquote>1. The main hero image, can we make the video more immersive and longer (10s) and it should play in loop. It should tell the story as much as possible
+2. During day mode, the 1st image attached looks too whitish, night mode is fine
+3. This part (2nd image attached) can be refined more, the image needs to be more immersive and engaging and it does not look good.
+4. The 3rd image - the header with logo and options does not look good, refine it.
+Think hard and beautify the page more</blockquote>
+    <div class="links">
+      <a href="option-a/mockup.html">Open option A</a><a href="option-b/mockup.html">Open option B</a><a href="option-c/mockup.html">Open option C</a>
+      <a class="sec" href="option-a/mockup.html?theme=dark">A, dark</a><a class="sec" href="option-b/mockup.html?theme=dark">B, dark</a><a class="sec" href="option-c/mockup.html?theme=dark">C, dark</a>
+    </div>
+  </header>
+
+  <section class="sec">
+    <h2>The page as it is</h2>
+    <p>The film plays once (8 s by day) and ends on Replay. By day the scene is washed by the page's own near-white ground, blended over its top and foot and laid over the whole plate while an agent works. The islands are a cropped strip with the product renders pasted on. The bar sets a large mark beside a small wordmark, with the links jammed against it in white over a blurred sky.</p>
+    <div class="grid">
+      <figure class="shot"><img src="current/light-1440-hero.webp" alt="The current hero at 1440, light: the film under the heading" loading="lazy"><figcaption>The hero, light, 1440</figcaption></figure>
+      <figure class="shot"><img src="current/light-1440-scene.webp" alt="The current day scene at the Outreach stop, washed out" loading="lazy"><figcaption>The day scene at the Outreach stop: too white</figcaption></figure>
+      <figure class="shot"><img src="current/light-1440-workspace.webp" alt="The current islands section" loading="lazy"><figcaption>Your own workspace: the strip with pasted products</figcaption></figure>
+      <figure class="shot"><img src="current/light-1440-nav.webp" alt="The current bar over the film" loading="lazy"><figcaption>The bar over the film</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="sec" id="options">
+    <h2>The three pages</h2>
+    <p>Each page is the whole landing page with one option of every part. A is the recommended set.</p>
+    <div class="grid">
+      <article class="opt rec">
+        <div class="opt-head"><h3>A · One take, in depth</h3><span class="tag rec">Recommended</span></div>
+        <p>The film as one ten-second take that loops without a cut, with a story strip naming the beat it is on. The day scene re-lit. The islands in depth under a moving sky. The bar as a floating pill.</p>
+        <div class="links"><a href="option-a/mockup.html">Open A</a><a class="sec" href="option-a/mockup.html?theme=dark">dark</a></div>
+        <figure class="shot"><img src="option-a/light-1440.webp" alt="Option A's first screen, light" loading="lazy"><figcaption>Light, 1440</figcaption></figure>
+        <figure class="shot"><img src="option-a/dark-1440.webp" alt="Option A's first screen, dark" loading="lazy"><figcaption>Dark, 1440</figcaption></figure>
+        <div class="grid" style="grid-template-columns: 1fr 1fr">
+          <figure class="shot"><img src="option-a/light-390.webp" alt="Option A on a phone, light" loading="lazy"><figcaption>Phone, light</figcaption></figure>
+          <figure class="shot"><img src="option-a/dark-390.webp" alt="Option A on a phone, dark" loading="lazy"><figcaption>Phone, dark</figcaption></figure>
+        </div>
+        <figure class="shot"><video src="option-a/motion.mp4" poster="option-a/motion.webp" controls muted playsinline preload="metadata"></video><figcaption>The page played through: the loop, the scene, the islands</figcaption></figure>
+      </article>
+      <article class="opt">
+        <div class="opt-head"><h3>B · The push-in, on screen</h3></div>
+        <p>The film as a slow push-in from the whole business to the shops, dissolving back to go again. The day scene graded. The workspace itself on a browser window, its address typed in, one tab per team. The bar structured edge to edge with a progress line.</p>
+        <div class="links"><a href="option-b/mockup.html">Open B</a><a class="sec" href="option-b/mockup.html?theme=dark">dark</a></div>
+        <figure class="shot"><img src="option-b/light-1440.webp" alt="Option B's first screen, light" loading="lazy"><figcaption>Light, 1440</figcaption></figure>
+        <figure class="shot"><img src="option-b/dark-1440.webp" alt="Option B's first screen, dark" loading="lazy"><figcaption>Dark, 1440</figcaption></figure>
+        <div class="grid" style="grid-template-columns: 1fr 1fr">
+          <figure class="shot"><img src="option-b/light-390.webp" alt="Option B on a phone, light" loading="lazy"><figcaption>Phone, light</figcaption></figure>
+          <figure class="shot"><img src="option-b/dark-390.webp" alt="Option B on a phone, dark" loading="lazy"><figcaption>Phone, dark</figcaption></figure>
+        </div>
+        <figure class="shot"><video src="option-b/motion.mp4" poster="option-b/motion.webp" controls muted playsinline preload="metadata"></video><figcaption>The page played through: the push-in, the scene, the device</figcaption></figure>
+      </article>
+      <article class="opt">
+        <div class="opt-head"><h3>C · One day, the strip fixed</h3></div>
+        <p>The film as one day, morning to night and back, in twenty seconds. The day scene re-lit. The islands strip kept, its products drawn into the plate and the addresses on stems. The links in a centred capsule.</p>
+        <div class="links"><a href="option-c/mockup.html">Open C</a><a class="sec" href="option-c/mockup.html?theme=dark">dark</a></div>
+        <figure class="shot"><img src="option-c/light-1440.webp" alt="Option C's first screen, light" loading="lazy"><figcaption>Light, 1440</figcaption></figure>
+        <figure class="shot"><img src="option-c/dark-1440.webp" alt="Option C's first screen, dark" loading="lazy"><figcaption>Dark, 1440</figcaption></figure>
+        <div class="grid" style="grid-template-columns: 1fr 1fr">
+          <figure class="shot"><img src="option-c/light-390.webp" alt="Option C on a phone, light" loading="lazy"><figcaption>Phone, light</figcaption></figure>
+          <figure class="shot"><img src="option-c/dark-390.webp" alt="Option C on a phone, dark" loading="lazy"><figcaption>Phone, dark</figcaption></figure>
+        </div>
+        <figure class="shot"><video src="option-c/motion.mp4" poster="option-c/motion.webp" controls muted playsinline preload="metadata"></video><figcaption>The page played through: the day, the scene, the strip</figcaption></figure>
+      </article>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Part 1 · The film: longer, looping, telling the story</h2>
+    <p>Every option: ten seconds or more, looping, under a Pause control, drifting with the scroll instead of the clock, and a story strip under the copy that names the beat the film is on with a line filling through it: the Watcher's 1,360 packs, the yes with ₹21,770 on screen (in amber), Outreach's 588 packs to 31 kiranas, the Lister's 772 to a buyer and none to the bin. On phones only the current beat shows; under reduced motion, the plate, the final word and the last beat.</p>
+    <table>
+      <tr><th></th><th>The film</th><th>The loop</th><th>Costs</th></tr>
+      <tr><td><b>A · One take</b> <span class="tag rec">rec.</span></td><td>One ten-second take of the whole business at work: the forklift, the workers lifting a carton, the truck to the godown's gate, shoppers at the kiranas, the auto past the shops, the van up the highway, the green path pulsing from the godown to the shops and up the hill.</td><td>Seamless: the clip is generated to end on its first frame, so it loops without a cut.</td><td>Two clips (day 720p, night 540p), about 3 MB.</td></tr>
+      <tr><td><b>B · The push-in</b></td><td>The camera glides from the whole business to the kirana lane over ten seconds, as if following a carton to the shelves, while the same work goes on.</td><td>A one-second dissolve from the last frame back to the wide shot, on two players.</td><td>Two clips; the close shot leaves less sky for the heading.</td></tr>
+      <tr><td><b>C · One day</b></td><td>A whole day in twenty seconds: morning to night (the light lowers, the windows and lamps come on, the path brightens), then night to morning. The light theme starts in the morning, the dark one at night; the strip reads the hours.</td><td>Two clips chained without a cut: each ends on the frame the other begins on.</td><td>Two clips at 720p, about 5 MB; the same film in both themes.</td></tr>
+    </table>
+    <div class="grid">
+      <figure class="shot"><video src="media/a-loop.mp4" poster="../../site/assets/plates/business.webp" controls muted loop playsinline preload="metadata"></video><figcaption>A · the loop, by day</figcaption></figure>
+      <figure class="shot"><video src="media/b-push.mp4" poster="../../site/assets/plates/business.webp" controls muted playsinline preload="metadata"></video><figcaption>B · the push-in, by day</figcaption></figure>
+      <figure class="shot"><video src="media/c-dusk.mp4" poster="../../site/assets/plates/business.webp" controls muted playsinline preload="metadata"></video><figcaption>C · morning to night (then c-dawn.mp4 back)</figcaption></figure>
+    </div>
+    <div class="note"><b>A rule to change.</b> AGENTS.md says nothing loops forever. WCAG 2.2.2 allows auto-playing motion over five seconds when it can be paused, and the film has Pause. If a looping film is picked, the rule becomes: nothing loops forever except the hero's film, which loops under its Pause control.</div>
+  </section>
+
+  <section class="sec">
+    <h2>Part 2 · The day scene, no longer whitish</h2>
+    <p>Both options change the page the same way: the stage's ground becomes a warm sand field taken from the plate's own table, the top and foot blend over less of the stage, and the wash while an agent works is a sage-dark vignette that darkens the table round the card instead of whitening it. The night treatment is unchanged.</p>
+    <div class="pair">
+      <div class="grid">
+        <figure class="shot"><img src="img/table-warm.webp" alt="The day plate re-lit: late-morning sun across a honey-oak table" loading="lazy"><figcaption><b>A · Re-lit</b> (recommended): the approved plate re-lit by Qwen as an edit of itself, so the geometry holds. Late-morning sun raking across a honey-oak table, long shadows, the wall and curtain toned to cream.</figcaption></figure>
+        <figure class="shot"><img src="img/table-graded.webp" alt="The day plate graded: the same picture, warmer and deeper" loading="lazy"><figcaption><b>B · Graded</b>: the approved plate as it is, graded in ffmpeg (contrast, saturation, a warm shift). Exact geometry, the same picture, warmer and deeper.</figcaption></figure>
+      </div>
+      <figure class="shot"><img src="current/light-1440-scene.webp" alt="The scene as it is, by day" loading="lazy"><figcaption>As it is</figcaption></figure>
+    </div>
+    <div class="grid">
+      <figure class="shot"><img src="option-a/scene-1440.webp" alt="Option A's scene at the Outreach stop, by day" loading="lazy"><figcaption>A in the page, at the Outreach stop</figcaption></figure>
+      <figure class="shot"><img src="option-b/scene-1440.webp" alt="Option B's scene at the Outreach stop, by day" loading="lazy"><figcaption>B in the page, at the Outreach stop</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Part 3 · The workspace section, immersive and engaging</h2>
+    <table>
+      <tr><th></th><th>What it is</th><th>Trade-offs</th></tr>
+      <tr><td><b>A · Islands in depth</b> <span class="tag rec">rec.</span></td><td>A new 16:9 plate: three islands at three distances in a morning sky over the town, each carrying its product drawn into the plate, the green ribbons arcing down to one point on the town, where the mark sits. The stage is full-bleed and as tall as the window; the plate, the clouds and the address tags move at three speeds with the scroll; each address hangs from its island on a stem and lifts on hover.</td><td>A new plate (day and night). On phones the stage shows the nearest island and lists the addresses under it.</td></tr>
+      <tr><td><b>B · The workspace itself</b></td><td>No plate: the product on a browser window (a phone on phones), its address typed in as the section comes into view, and the four teams as its navigation: Supply chain, Finance, Sustainability, Distributors, each showing its real card. The tabs play through once; the rail takes over on a click. No client is named.</td><td>Drops the islands idea from the SC-28 comp. The most honest and the closest to what Shopify does.</td></tr>
+      <tr><td><b>C · The strip, fixed</b></td><td>The section as it is, with its products drawn into the plate instead of pasted on, the addresses on stems, the mask softened, and the plate drifting under the tags with the scroll.</td><td>The least change; still a strip.</td></tr>
+    </table>
+    <div class="grid">
+      <figure class="shot"><img src="option-a/ws-1440.webp" alt="Option A: the islands in depth" loading="lazy"><figcaption>A · Islands in depth</figcaption></figure>
+      <figure class="shot"><img src="option-b/ws-1440.webp" alt="Option B: the workspace on a browser window" loading="lazy"><figcaption>B · The workspace itself</figcaption></figure>
+      <figure class="shot"><img src="option-c/ws-1440.webp" alt="Option C: the strip with its products drawn in" loading="lazy"><figcaption>C · The strip, fixed</figcaption></figure>
+    </div>
+    <div class="grid">
+      <figure class="shot"><img src="img/islands-depth.webp" alt="The islands-in-depth plate, by day" loading="lazy"><figcaption>A's plate, day</figcaption></figure>
+      <figure class="shot"><img src="img/islands-depth-night.webp" alt="The islands-in-depth plate, by night" loading="lazy"><figcaption>A's plate, night</figcaption></figure>
+      <figure class="shot"><img src="img/islands-packs.webp" alt="The strip with the products drawn in, by day" loading="lazy"><figcaption>C's plate, day</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Part 4 · The bar</h2>
+    <p>Every option fixes the lock-up (a smaller mark beside a larger wordmark, with room between), sets the links with room between them, marks the current section, and keeps the sign-in menu, Appearance and Book a demo.</p>
+    <table>
+      <tr><th></th><th>What it is</th></tr>
+      <tr><td><b>A · The floating pill</b> <span class="tag rec">rec.</span></td><td>One glass capsule floating just below the top, with its own dark glass from the first paint, so it never muddies over the film; the brand, a hairline, the links with a highlight that slides to the current section, then Appearance, Sign in and Book a demo. On scroll it takes the page's glass.</td></tr>
+      <tr><td><b>B · The bar, structured</b></td><td>Full width, in three parts: the brand at the left, the links centred with a dot under the current one, the actions at the right; a stronger shade over the film; a 2 px green progress line along its foot once the page has scrolled.</td></tr>
+      <tr><td><b>C · Brand left, capsule centre</b></td><td>The brand and the actions free on the edges, and only the links in a centred glass capsule with the sliding highlight.</td></tr>
+    </table>
+    <div class="grid">
+      <figure class="shot"><img src="option-a/nav-1440.webp" alt="Option A's bar over the film" loading="lazy"><figcaption>A · the floating pill</figcaption></figure>
+      <figure class="shot"><img src="option-b/nav-1440.webp" alt="Option B's bar over the film" loading="lazy"><figcaption>B · the bar, structured</figcaption></figure>
+      <figure class="shot"><img src="option-c/nav-1440.webp" alt="Option C's bar over the film" loading="lazy"><figcaption>C · brand left, capsule centre</figcaption></figure>
+    </div>
+    <div class="grid">
+      <figure class="shot"><img src="option-a/nav-scrolled-1440.webp" alt="Option A's bar once the page has scrolled" loading="lazy"><figcaption>A, scrolled</figcaption></figure>
+      <figure class="shot"><img src="option-b/nav-scrolled-1440.webp" alt="Option B's bar once the page has scrolled" loading="lazy"><figcaption>B, scrolled</figcaption></figure>
+      <figure class="shot"><img src="option-c/nav-scrolled-1440.webp" alt="Option C's bar once the page has scrolled" loading="lazy"><figcaption>C, scrolled</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Checks made</h2>
+    <ul class="plain">
+      <li>Every page renders without console errors in Chromium at 1440 × 900 and 390 × 844, light and dark.</li>
+      <li>The story strip's dim text is white at 66% over the film's shade (at least 7:1); its lit text is white. The address tags and the switcher sit on the kit's strong glass.</li>
+      <li>Every figure comes from core/money.js; no client is named anywhere on the page (the device's workspace is "Your brand").</li>
+      <li>No browser suite was run (SC-55); the a11y, e2e and parity suites would check the picked option once built.</li>
+    </ul>
+  </section>
+
+  <section class="ask">
+    <b>The pick</b>
+    <p>One option for each part, or one of the three pages as a whole. The recommended set is A throughout. Say "A with the device" or "B with the pill" and the switcher's links show exactly that page.</p>
+  </section>
+</main>
+</body>
+</html>
