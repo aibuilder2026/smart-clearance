@@ -22,21 +22,23 @@
 	const k = $derived(kOf(me, c));
 	const mine = $derived(h.orders.find((o) => o.id === k.id));
 	const shop: [string, string][] = $derived([
-		['Distributor', 'Rakesh Traders, Nagpur'],
-		['Van day', 'Tuesday'],
+		['Distributor', `${c.dist.name}, ${c.dist.city}`],
+		['Van day', c.van.day],
 		['Unsold scheme packs', `back to the salesman until ${fmt.day(c.returnBy)}`],
 		['Language', 'हिन्दी · English']
 	]);
 </script>
 
-<Screen {me} title="Offers" sub={`${k.name} · ${k.area}, Nagpur`}>
+<Screen {me} title="Offers" sub={`${k.name} · ${k.area}, ${c.dist.city}`}>
 	<div class="stack" style="gap: 16px; max-width: 620px">
 		{#if h.offer}{#if mine}<Card class="stack snug"
 					><div class="row" style="gap: 14px">
-						<Product name="pack-chips" size={64} />
+						<Product name={c.sku.img} size={64} />
 						<div class="grow">
 							<b>Ordered · {mine.units} packets</b>
-							<div class="t-footnote muted">Masala Chips 150 g · placed {mine.at} · comes on Tuesday's van</div>
+							<div class="t-footnote muted">
+								{c.sku.name} · placed {mine.at} · comes on {c.van.day}'s van
+							</div>
 						</div>
 						<Badge tone="green" icon="check">confirmed</Badge>
 					</div></Card
@@ -44,7 +46,7 @@
 				><Empty
 					img="kirana"
 					title="No offers today"
-					body="Rakesh Traders' schemes arrive here as a notification, in Hindi, ready to order in one tap."
+					body={`${c.dist.name}' schemes arrive here as a notification, in Hindi, ready to order in one tap.`}
 				/></Card
 			>{/if}
 		<SectionTitle>Your shop</SectionTitle>

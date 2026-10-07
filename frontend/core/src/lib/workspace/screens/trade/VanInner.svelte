@@ -63,13 +63,13 @@
 	const lot = $derived<[string, string][]>([
 		['Buyer', h.award ? `${c.buyer.name}, ${c.buyer.city}` : '—'],
 		['Units', `${c.lines.expiresoon.units} · ${cartons(c.lines.expiresoon.units, c.sku.perCarton)}`],
-		['Price', h.award ? `₹${c.counter.price.toFixed(2)} a packet` : '₹15.00 asked'],
+		['Price', h.award ? `₹${c.counter.price.toFixed(2)} a packet` : `${fmt.rate(c.lines.expiresoon.price)} asked`],
 		['Token', h.award ? fmt.inr(c.award.token) + ' received' : '—'],
 		['Freight', "the buyer's own truck"]
 	]);
 </script>
 
-<Screen {me} title="Van route" sub="Kalamna godown · Nagpur, Wardha and Kamptee" back="Today">
+<Screen {me} title="Van route" sub={`${c.van.depot} · ${c.dist.cluster}`} back="Today">
 	<Columns sideWidth={380}>
 		{#snippet main()}
 			<Card pad={false} style="overflow: hidden"
@@ -83,9 +83,9 @@
 			>
 			<Card class="stack snug">
 				<div class="card-head">
-					<span class="card-title">Tuesday round</span><Badge
+					<span class="card-title">{c.van.day} round</span><Badge
 						tone={done ? 'green' : undefined}
-						icon={done ? 'check' : 'calendar'}>{done ? 'delivered' : 'Tue 6 Oct · from 07:00'}</Badge
+						icon={done ? 'check' : 'calendar'}>{done ? 'delivered' : `${c.van.date} · from ${c.van.leaves}`}</Badge
 					>
 				</div>
 				<div class="row wrap" style="gap: 20px">
@@ -112,7 +112,7 @@
 						>{full ? 'Start the round' : `Waiting for orders · ${h.orders.length} of ${c.kiranas.length}`}</Button
 					>{/if}
 				<span class="t-caption subtle"
-					>₹{ws.data.rules.vanPerUnit.toFixed(2)} a packet for the van, repaid by Munchly in the price support.</span
+					>₹{ws.data.rules.vanPerUnit.toFixed(2)} a packet for the van, repaid by {ws.data.workspace.short} in the price support.</span
 				>
 				<div class="feed" style="gap: 10px">
 					<div class="row top" style="gap: 10px">
@@ -122,7 +122,7 @@
 							style="padding: 9px 12px; border-radius: 16px; border-top-left-radius: 6px; background: var(--fill-2)"
 						>
 							{c.push.van.body}
-							<div class="t-caption muted">Outreach agent · Mon 18:00</div>
+							<div class="t-caption muted">Outreach agent · {c.push.van.at}</div>
 						</div>
 					</div>
 					<div class="row top" style="gap: 10px; justify-content: flex-end">
@@ -130,10 +130,10 @@
 							class="t-subhead"
 							style="padding: 9px 12px; border-radius: 16px; border-top-right-radius: 6px; background: var(--primary); color: var(--primary-fg)"
 						>
-							Theek hai. Mangalvaar subah nikal jaunga.
-							<div class="t-caption" style="opacity: 0.9">Rakesh bhai · Mon 18:04</div>
+							{c.van.reply}
+							<div class="t-caption" style="opacity: 0.9">{me.short} · {c.van.replyAt}</div>
 						</div>
-						<Avatar person={ws.data.people.rakesh} size="sm" />
+						<Avatar person={me} size="sm" />
 					</div>
 				</div>
 			</Card>

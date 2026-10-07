@@ -10,7 +10,7 @@
 	import Sheet from '../../../components/Sheet.svelte';
 	import StatusBadge from '../../../components/StatusBadge.svelte';
 	import { useRoute } from '../../context';
-	import { batchViews, fmt } from '../../model';
+	import { batchViews, first, fmt } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { BatchView, User } from '../../types';
 	import Screen from '../common/Screen.svelte';
@@ -89,9 +89,9 @@
 				>
 				<p class="t-footnote muted">
 					{sel.phase === 'executing'
-						? `Routed yesterday: ${fmt.num(ML('kirana').units)} packs to Hyderabad kiranas, ${ML('staff').units} to the staff sale at Lakshmi's godown, ${c.donation.units} to Feeding India.`
+						? `Routed yesterday: ${fmt.num(ML('kirana').units)} packs to ${c.donation.dist.city} kiranas, ${ML('staff').units} to the staff sale at ${first(c.donation.dist.name)}'s godown, ${c.donation.units} to ${c.donation.partner.name}.`
 						: sel.assess.status === 'gated'
-							? 'Outside at least one quick-commerce gate, but real sell-through clears it in time. The Watcher checks again tomorrow at 09:00.'
+							? `Outside at least one quick-commerce gate, but real sell-through clears it in time. The Watcher checks again tomorrow at ${ws.state.rules.watchTime}.`
 							: 'Inside every gate and selling through. Nothing to do.'}
 				</p>
 			</div>{/if}

@@ -12,7 +12,7 @@
 	import Icon from '../../../icons/Icon.svelte';
 	import { useNotice } from '../../../notice.svelte';
 	import { useRoute } from '../../context';
-	import { addDays, fmt, permissionOf } from '../../model';
+	import { addDays, castOf, fmt, permissionOf } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import PlayAs from '../common/PlayAs.svelte';
@@ -27,20 +27,18 @@
 	const notices = useNotice();
 	const s = $derived(ws.state);
 
-	const CH_NAMES: Record<string, string> = {
-		kirana: 'Kiranas',
-		expiresoon: 'ExpireSoon',
-		staff: 'Staff sale',
-		foodbank: 'Food bank',
-		writeoff: 'Write-off'
-	};
-	const FLOOR_ROWS: [string, string, string][] = [
-		['snacks', 'Snacks', 'chips'],
-		['biscuits', 'Biscuits', 'biscuits'],
-		['staples', 'Staples', 'poha'],
-		['beverages', 'Beverages', 'mango'],
-		['personal-care', 'Personal care', 'facewash']
-	];
+	const CH_NAMES = $derived(ws.data.setup.channelNames);
+	// each category's floor, shown on its first product's MRP
+	const FLOOR_ROWS = $derived(
+		Object.keys(ws.state.rules.floors).map((k): [string, string, string] => [
+			k,
+			k.charAt(0).toUpperCase() + k.slice(1).replace('-', ' '),
+			Object.values(ws.data.skus).find((x) => x.category === k)!.id
+		])
+	);
+	const cast = $derived(castOf(s, c));
+	const dms = $derived(ws.data.setup.dms);
+	const W = $derived(ws.data.workspace);
 
 	// the guardrails as the store holds them; changes stay on this screen, as in the prototype
 	let floors = $state({ ...ws.state.rules.floors });
@@ -55,7 +53,7 @@
 		busy = true;
 		void ws.act('connect', undefined, { feel: 900 }).then(() => {
 			busy = false;
-			notices.toast({ text: 'Setup confirmed · the Watcher starts at 09:00', tone: 'ok' });
+			notices.toast({ text: `Setup confirmed · the Watcher starts at ${ws.state.rules.watchTime}`, tone: 'ok' });
 		});
 	};
 	const chans = $derived(ws.data.setup.channels);
@@ -109,8 +107,8 @@
 					><span class="icontile"><Icon name="file-spreadsheet" size={17} stroke={2} /></span><span
 						class="stack tight"
 						style="gap: 0"
-						><b>dms_export_2026-10-01.csv</b><span class="t-footnote subtle"
-							>Bizom-style DMS export · 312 batches · 4 distributors</span
+						><b>{dms.file}</b><span class="t-footnote subtle"
+							>Bizom-style DMS export · {dms.rows} batches · {ws.data.client.distributors} distributors</span
 						></span
 					></span
 				>{#if done}<Badge tone="green" icon="check">Loaded into BigQuery</Badge>{:else}<Badge dot
@@ -133,7 +131,8 @@
 			<div class="row tight t-footnote muted">
 				<Aura on={!done} class="icontile soft" style="width: 26px; height: 26px; border-radius: 8px"
 					><Icon name="database" size={14} /></Aura
-				>Data Agent mapped 8 of 8 columns and back-filled 90 days of sell-through by pincode and by shop.
+				>Data Agent mapped {dms.columns.length} of {dms.columns.length} columns and back-filled {dms.salesDays} days of sell-through
+				by pincode and by shop.
 			</div>
 		</Card>
 		<div
@@ -161,7 +160,7 @@
 				</List>
 				<List
 					head="Territory guard"
-					foot="ExpireSoon listings are hidden from buyers inside these territories, matched by pincode, so clearance stock never undercuts a Munchly distributor."
+					foot={`ExpireSoon listings are hidden from buyers inside these territories, matched by pincode, so clearance stock never undercuts a ${W.short} distributor.`}
 				>
 					{#each Object.values(ws.data.distributors) as d (d.id)}<ListRow
 							icon="map-pin"
@@ -215,13 +214,13 @@
 						</table>
 					</div>
 					<span class="t-footnote subtle"
-						>Discount D2C applies only to Munchly's own warehouse stock. A distributor's stock is his, so it never goes
-						to Munchly's own site.</span
+						>Discount D2C applies only to {W.short}'s own warehouse stock. A distributor's stock is his, so it never
+						goes to {W.short}'s own site.</span
 					>
 				</Card>
 				<List
 					head="Distributors' one-time permission"
-					foot="Each distributor lets the agent list his Munchly stock, offer schemes to his kiranas, draft his invoices and book dispatch slots, inside Munchly's floors. He can pause it at any time."
+					foot={`Each distributor lets the agent list his ${W.short} stock, offer schemes to his kiranas, draft his invoices and book dispatch slots, inside ${W.short}'s floors. He can pause it at any time.`}
 				>
 					{#each Object.values(ws.data.distributors) as d (d.id)}
 						{@const p = permissionOf(s, d.id, ws.data, c)}
@@ -235,7 +234,9 @@
 						/>
 					{/each}
 				</List>
-				{#if !s.setup.permission}<PlayAs who="rakesh" route="home">Give the permission as Rakesh bhai</PlayAs>{/if}
+				{#if !s.setup.permission}<PlayAs who={cast.distributor.id} route="home"
+						>Give the permission as {cast.distributor.short}</PlayAs
+					>{/if}
 				<List
 					head="Scheme returns and planning"
 					foot="The uplift and the van rate are planning assumptions. The return window lets returned packs reach the godown in time for a staff sale or a food bank."
@@ -289,7 +290,7 @@
 				</div>
 			</div>
 			<span class="t-footnote subtle"
-				>For Masala Chips 150 g: cost ₹{chips.cost}; {fmt.inr2(wo.itcPerUnit)} of input GST a packet from the cost sheet (chips
+				>For {chips.name}: cost ₹{chips.cost}; {fmt.inr2(wo.itcPerUnit)} of input GST a packet from the cost sheet (chips
 				are at {Math.round(chips.gst * 100)}% GST since GST 2.0); disposal {fmt.inr2(ws.data.rules.disposalPerUnit)} a unit;
 				EPR ₹{ws.data.rules.eprPerKg} a kilo of product and pack. Factors marked indicative are editable here.</span
 			>

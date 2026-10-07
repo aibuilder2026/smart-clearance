@@ -18,6 +18,10 @@ export type Workspace = {
 	region: string;
 	signIn: { id: string; icon: string; title: string; who: string; rule: string }[];
 	outside: string;
+	/** what the sign-in suggests typing */
+	hint: string;
+	/** what the invite form suggests typing */
+	invite: { name: string; contact: string };
 	profile: { id: string; icon: IconName; title: string; value: string; text: string }[];
 };
 
@@ -38,6 +42,8 @@ export type Sku = {
 	lifeDays: number;
 	kgPerUnit: number;
 	img: string;
+	/** the product's own tax history, as its invoice states it */
+	gstNote?: string;
 };
 
 export type Distributor = {
@@ -268,6 +274,8 @@ export type Doc = {
 	price?: number;
 	gstPct?: number;
 	exact?: number;
+	/** when the document is dated (the invoice) */
+	date?: string;
 };
 
 export type Shelf = {
@@ -285,6 +293,8 @@ export type Shelf = {
 
 export type Quarter = {
 	label: string;
+	/** the months it covers */
+	period: string;
 	recovered: number;
 	itc: number;
 	kg: number;
@@ -293,6 +303,8 @@ export type Quarter = {
 	/** [week, recovered, would-be write-off] */
 	weeks: [string, number, number][];
 	mix: [string, number][];
+	/** each channel of the mix, by name */
+	mixNames: Record<string, string>;
 	brsr: { cat: string; diverted: number; resold: number; donated: number; disposed: number; evidence: string }[];
 	writeOffAvoided: number;
 	co2: number;
@@ -469,11 +481,14 @@ export type WorkspaceSeed = {
 	events: FeedEvent[];
 	quarter: Quarter;
 	setup: {
-		dms: { source: string; rows: number; columns: [string, string][]; salesDays: number };
+		/** how long the setup takes, in minutes */
+		minutes: number;
+		dms: { source: string; file: string; rows: number; columns: [string, string][]; salesDays: number };
 		channels: string[];
+		channelNames: Record<string, string>;
 		allowList: [string, string[]][];
 		brandSafety: string[];
-		partners: { name: string; minDays: number; minUnits: number; logistics: string; paper: string }[];
+		partners: Partner[];
 		approval: string;
 		permissions: Record<string, string>;
 		acts: string[];
@@ -494,8 +509,68 @@ export type WorkspaceSeed = {
 	rules: MoneyRules;
 	roles: Record<RoleId, string>;
 	connectEvent: FeedEvent;
+	journey: Journey;
+	market: Market;
+	explore: Explore;
 	initial: State;
 };
+
+/** a food-bank partner and its intake rules */
+export type Partner = {
+	name: string;
+	minDays: number;
+	minUnits: number;
+	logistics: string;
+	/** how it collects, in short */
+	pickup?: string;
+	paper: string;
+};
+
+/** the moments of the batch's journey the screens state beyond its timeline */
+export type Journey = {
+	/** the day it starts, as the screens date it */
+	today: string;
+	/** how soon a plan follows a verified label, in minutes */
+	planMinutes: number;
+	/** when the distributor was asked for the one-time permission */
+	permissionAsked: string;
+	/** the lot's listing on the marketplace */
+	listing: { id: string; url: string };
+	/** the distributor's van round that takes the scheme orders, and his answer to it */
+	van: { day: string; date: string; leaves: string; depot: string; reply: string; replyAt: string };
+	/** the donation's partner, pickup and schedule */
+	donation: {
+		partner: string;
+		from: string;
+		spot: string;
+		day: string;
+		date: string;
+		time: string;
+		hour: string;
+		asked: string;
+		confirmed: string;
+		collected: string;
+		slots: string[];
+		reply: string;
+	};
+};
+
+/** a lot on the marketplace */
+export type MarketLot = {
+	id: string;
+	name: string;
+	icon?: IconName;
+	units: number;
+	price: number;
+	mrp: number;
+	days: number;
+	seller: string;
+};
+/** ExpireSoon, another company's marketplace: its terms, and its other lots (illustrative) */
+export type Market = { dispatchHours: number; balanceHours: number; minOrder: number; lots: MarketLot[] };
+
+/** the stub's people to step into, the code it sends and the accounts its sign-in suggests */
+export type Explore = { groups: ExploreGroup[]; code: string; accounts: [string, string][] };
 
 /* ---------- what the screens read from their source (source.ts, SC-67) ---------- */
 
@@ -525,6 +600,8 @@ export type WorkspaceData = {
 	/** every batch the Watcher sees */
 	batches: Batch[];
 	quarter: Quarter;
+	/** the marketplace the workspace lists on */
+	market: Market;
 };
 
 /** the batch in focus, and everything its screens read about it: its product and distributor, the kiranas and the
@@ -557,8 +634,21 @@ export type CaseData = {
 	returnBy: string;
 	/** the pushes of the case, by moment */
 	push: Record<string, Push>;
-	/** the batch the same agents donate, and how many packs go to the food bank */
-	donation: { batch: Batch; sku: Sku; dist: Distributor; plan: Plan; units: number };
+	/** the day the case starts, as the screens date it */
+	today: string;
+	/** how soon a plan follows a verified label, in minutes */
+	planMinutes: number;
+	/** when the distributor was asked for the one-time permission */
+	permissionAsked: string;
+	/** the lot's listing on the marketplace */
+	listing: Journey['listing'];
+	/** the distributor's van round that takes the scheme orders */
+	van: Journey['van'];
+	/** the batch the same agents donate: how many packs go to the food bank, which partner takes them, and when */
+	donation: { batch: Batch; sku: Sku; dist: Distributor; plan: Plan; units: number; partner: Partner } & Omit<
+		Journey['donation'],
+		'partner'
+	>;
 };
 
 /** the people a visitor can step into in the stub, by where they stand */

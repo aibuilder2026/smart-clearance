@@ -7,7 +7,9 @@
 	import Icon from '../../../icons/Icon.svelte';
 	import { prefersReducedMotion } from '../../../motion';
 	import { fade } from '../../../motion/transitions';
+	import { fmt } from '../../../format';
 	import { useRoute } from '../../context';
+	import { castOf } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import LabelShot from '../brand/LabelShot.svelte';
@@ -17,6 +19,7 @@
 	// With a real camera, the shutter opens the phone's own camera
 	let { me, realCamera }: { me: User; realCamera?: boolean } = $props();
 	const ws = useWorkspace();
+	const c = $derived(ws.case!);
 	const { go } = useRoute();
 	const h = $derived(ws.state.hero);
 	const verified = $derived(h.photo.status === 'verified');
@@ -56,14 +59,14 @@
 		);
 		return { destroy: () => a.cancel() };
 	};
-	const record: [string, string][] = [
-		['Batch', 'MF-2409-117'],
-		['Best before', '18 Nov 2026'],
-		['MRP', '₹30.00']
-	];
+	const record: [string, string][] = $derived([
+		['Batch', c.batch.id],
+		['Best before', fmt.date(c.batch.bestBefore)],
+		['MRP', fmt.rate(c.sku.mrp)]
+	]);
 </script>
 
-<Screen {me} title="Label photo" sub="Batch MF-2409-117 · shelf B4" back="Today">
+<Screen {me} title="Label photo" sub={`Batch ${c.batch.id} · shelf ${c.batch.shelf}`} back="Today">
 	<div class="stack" style="gap: 16px; max-width: 560px; margin: 0 auto; width: 100%">
 		<div class="cam">
 			{#if shot && shot !== 'demo'}
@@ -92,9 +95,11 @@
 						><Icon name={verified ? 'badge-check' : 'scan-line'} size={19} /></Aura
 					>
 					<div class="grow">
-						<b>{verified ? 'Done. Dhanyavaad, Rakesh bhai.' : 'Reading batch, dates and MRP'}</b>
+						<b>{verified ? `Done. Dhanyavaad, ${me.short}.` : 'Reading batch, dates and MRP'}</b>
 						<div class="t-footnote muted">
-							{verified ? 'The plan for this batch will reach Priya in a few minutes.' : 'This takes a few seconds.'}
+							{verified
+								? `The plan for this batch will reach ${castOf(ws.state, c).operator.short} in a few minutes.`
+								: 'This takes a few seconds.'}
 						</div>
 					</div>
 				</div>

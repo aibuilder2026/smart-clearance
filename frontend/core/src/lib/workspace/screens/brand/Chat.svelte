@@ -3,6 +3,7 @@
 	import Mark from '../../../components/Mark.svelte';
 	import { rise } from '../../../motion/transitions';
 	import { useWorkspace } from '../../source';
+	import { castOf } from '../../model';
 	import type { ChatMessage } from '../../types';
 
 	// the Negotiator's thread with the buyer: the buyer's bubbles on the right in violet, the agent's on the left under
@@ -27,10 +28,10 @@
 			>
 				{m.text}
 				<div style="font-size: 11.5px; opacity: 0.9; margin-top: 3px">
-					{mine ? `${c.buyer.name}, ${c.buyer.city}` : 'Rakesh Traders · Negotiator agent'} · {m.at}
+					{mine ? `${c.buyer.name}, ${c.buyer.city}` : `${c.dist.name} · Negotiator agent`} · {m.at}
 				</div>
 			</div>
-			{#if mine}<Avatar person={ws.data.people.agrawal} size="sm" />{/if}
+			{#if mine}<Avatar person={castOf(ws.state, c).buyer} size="sm" />{/if}
 		</div>
 	{/each}
 	{#if typing}<div class="row" style="gap: 8px">

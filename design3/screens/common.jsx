@@ -27,7 +27,7 @@
     const ordered = h.orders.length, orderedUnits = h.orders.reduce((t, o) => t + o.units, 0);
     let eta = "", etaTone = "green", agentLive = "";
     if (h.phase === "watching") { eta = "Watcher runs daily at 09:00"; etaTone = undefined; }
-    else if (h.phase === "at-risk") { eta = h.photo.status === "reading" ? "Reading the label" : "Plan ready in about 20 min"; agentLive = h.photo.status === "reading" ? "Vision is reading the label" : h.photo.status === "requested" ? "Vision is waiting for the label photo" : "Vision is asking for a label photo"; }
+    else if (h.phase === "at-risk") { eta = h.photo.status === "reading" ? "Reading the label" : `Plan ready in about ${D.JOURNEY.planMinutes} min`; agentLive = h.photo.status === "reading" ? "Vision is reading the label" : h.photo.status === "requested" ? "Vision is waiting for the label photo" : "Vision is asking for a label photo"; }
     else if (h.phase === "verified") { eta = "Pricing five channels"; agentLive = "Valuer is pricing five channels"; }
     else if (h.phase === "valued") { eta = "Splitting the batch"; agentLive = "Router is splitting the batch"; }
     else if (h.phase === "planned") { eta = "Waiting for your approval"; etaTone = "amber"; }

@@ -221,7 +221,13 @@
 						: 'Posts this batch to the ledger once the paperwork is done and the return window closes.'}
 				/>{/if}
 			<SectionTitle sub="Planned on the Route Room; actual after the negotiation">Money reading</SectionTitle>
-			<MoneyPanel plan={c.plan} sku={c.sku} actual={h.award ? c.actual : undefined} compact={app.bp !== 'desktop'} />
+			<MoneyPanel
+				plan={c.plan}
+				sku={c.sku}
+				rules={ws.data.rules}
+				actual={h.award ? c.actual : undefined}
+				compact={app.bp !== 'desktop'}
+			/>
 			{#if h.award}<Card class="row wrap" style="gap: 14px"
 					><span class="icontile violet"><Icon name="trending-down" size={17} /></span>
 					<div class="grow">

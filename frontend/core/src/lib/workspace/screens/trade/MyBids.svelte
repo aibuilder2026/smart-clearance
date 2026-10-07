@@ -27,8 +27,8 @@
 							class="list-row"
 							onclick={() => go('listing')}
 							style="grid-template-columns: 48px minmax(0,1fr) auto; text-align: left; width: 100%"
-							><Product name="pack-chips" size={44} /><span class="stack tight" style="gap: 0"
-								><b class="t-subhead">ES-24117 · Masala Chips 150 g · {c.lines.expiresoon.units} units</b><span
+							><Product name={c.sku.img} size={44} /><span class="stack tight" style="gap: 0"
+								><b class="t-subhead">{c.listing.id} · {c.sku.name} · {c.lines.expiresoon.units} units</b><span
 									class="t-caption subtle"
 									>bid ₹{b.price.toFixed(2)} · {b.at}{b.counter ? ` · counter ₹${b.counter.toFixed(2)}` : ''}</span
 								></span

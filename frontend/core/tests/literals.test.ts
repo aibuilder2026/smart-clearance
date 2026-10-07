@@ -143,6 +143,12 @@ const CSS = /var\(--|\d(?:px|ms|em|rem|vh|vw|fr|deg)\b|minmax\(|repeat\(|oklab|c
 const notWords = (s: string) => CSS.test(s) || /^#[0-9a-f]{3,8}$/i.test(s) || /^-?\d+(\.\d+)?%$/.test(s);
 
 type Hit = { file: string; line: number; kind: string; match: string; text: string };
+
+/** an expression that names the journey's state (s, st, state, ws.state, store.state) */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- the parser's AST
+const ofState = (o: any): boolean =>
+	(o?.type === 'Identifier' && ['s', 'st', 'state'].includes(o.name)) ||
+	(o?.type === 'MemberExpression' && !o.computed && o.property?.name === 'state');
 type Ctx = { kind: 'text' | 'id'; value: string; at: number };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the parser's AST, walked generically
@@ -179,7 +185,8 @@ function contexts(src: string, ts: boolean): Ctx[] {
 				return;
 			}
 			case 'MemberExpression':
-				if (!n.computed && n.property?.type === 'Identifier' && IDS.has(n.property.name))
+				// the journey's state keeps the donated batch in a slot of its own (state.mango): a field of State, not a datum
+				if (!n.computed && n.property?.type === 'Identifier' && IDS.has(n.property.name) && !ofState(n.object))
 					out.push({ kind: 'id', value: n.property.name, at: n.property.start - shift });
 				break;
 			case 'Property':
@@ -228,7 +235,7 @@ export function scan(file: string): Hit[] {
 }
 
 /** the count when the ratchet was set (390, SC-67); it only goes down. LITERALS=1 lists every match */
-const BASELINE = 390;
+const BASELINE = 87;
 
 describe('the literal ratchet', () => {
 	const hits = UI_FILES.flatMap(scan);

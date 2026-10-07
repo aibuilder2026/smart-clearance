@@ -12,7 +12,7 @@
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
 	import { useRoute } from '../../context';
-	import { batchViews, fmt, heroModel, isRouted } from '../../model';
+	import { batchViews, castOf, fmt, heroModel, isRouted } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { BatchView, User } from '../../types';
 	import PlayAs from '../common/PlayAs.svelte';
@@ -42,6 +42,9 @@
 	const routed = $derived(isRouted(s.hero.phase));
 	const perm = $derived(s.setup.permission);
 	const paused = $derived(!!perm && perm.paused);
+	const cast = $derived(castOf(s, c));
+	const watch = $derived(s.rules.watchTime);
+	const rows = $derived(ws.data.setup.dms.rows);
 </script>
 
 {#snippet primary()}{#if s.hero.phase === 'planned'}<Button variant="approve" icon="check" onclick={openRoute}
@@ -70,14 +73,16 @@
 			variant="primary"
 			iconRight="arrow-right"
 			onclick={() => router.go('setup')}>Open Setup</Button
-		>{:else if !perm}<PlayAs who="rakesh" route="home">Give the permission as Rakesh bhai</PlayAs>{/if}{/snippet}
+		>{:else if !perm}<PlayAs who={cast.distributor.id} route="home"
+			>Give the permission as {cast.distributor.short}</PlayAs
+		>{/if}{/snippet}
 {#snippet tracker()}{#if flagged}<TrackerCard
 			view={hm.view}
 			stages={ws.data.stages}
 			writeOff={c.plan.writeOff.total}
 			done={hm.done}
 			current={hm.current}
-			eta={paused ? 'Paused by Rakesh bhai' : hm.eta}
+			eta={paused ? `Paused by ${cast.distributor.short}` : hm.eta}
 			etaTone={paused ? 'amber' : hm.etaTone}
 			agentLive={paused ? '' : hm.agentLive}
 			{primary}
@@ -91,19 +96,19 @@
 				title={!s.setup.confirmed
 					? 'Connect your stock data to start'
 					: !perm
-						? "Waiting for Rakesh Traders' permission"
+						? `Waiting for ${c.dist.name}' permission`
 						: 'Nothing at risk yet'}
 				body={!s.setup.confirmed
-					? 'Upload the distributor export once and set the guardrails. It takes about 15 minutes; the Watcher starts the next morning.'
+					? `Upload the distributor export once and set the guardrails. It takes about ${ws.data.setup.minutes} minutes; the Watcher starts the next morning.`
 					: !perm
-						? "Rakesh bhai's stock is listed and offered in his name, so he gives a one-time permission in his app first. He can pause it at any time."
-						: 'The Watcher checks every batch against the quick-commerce gates and sell-through at 09:00. You get a push the moment one cannot make it.'}
+						? `${cast.distributor.short}'s stock is listed and offered in his name, so he gives a one-time permission in his app first. He can pause it at any time.`
+						: `The Watcher checks every batch against the quick-commerce gates and sell-through at ${watch}. You get a push the moment one cannot make it.`}
 				action={!s.setup.confirmed || !perm ? emptyAction : undefined}
 			/></Card
 		>{/if}{/snippet}
 {#snippet cluster()}{#if flagged}<Card pad={false} class="stack" style="overflow: hidden; gap: 0">
 			<div class="card-head" style="padding: 14px 16px 10px">
-				<span class="card-title">Nagpur cluster</span><Badge
+				<span class="card-title">{c.dist.city} cluster</span><Badge
 					size="sm"
 					tone={hm.ordered ? 'green' : undefined}
 					dot={!!hm.ordered}
@@ -152,7 +157,9 @@
 <Screen
 	{me}
 	title="Command Center"
-	sub={flagged ? 'Fri 2 Oct · Watcher checked 312 batches at 09:00' : 'Watcher runs daily at 09:00 across 312 batches'}
+	sub={flagged
+		? `${c.today} · Watcher checked ${rows} batches at ${watch}`
+		: `Watcher runs daily at ${watch} across ${rows} batches`}
 >
 	{#if app.bp === 'desktop'}<Columns sideWidth={340} {main} side={feed} />{:else}<div class="stack" style="gap: 20px">
 			{@render tracker()}{@render feed()}{@render list()}{@render cluster()}

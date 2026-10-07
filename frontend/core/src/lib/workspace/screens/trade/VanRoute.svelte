@@ -7,14 +7,14 @@
 	import Screen from '../common/Screen.svelte';
 	import VanInner from './VanInner.svelte';
 
-	// the van round and the ExpireSoon lot; only Rakesh Traders has scheme orders in the story
+	// the van round and the ExpireSoon lot; only the distributor of the batch in focus has scheme orders
 	let { me }: { me: User } = $props();
 	const ws = useWorkspace();
 	const c = $derived(ws.case!);
 	const dist = $derived(distOf(me, ws.data, c));
 </script>
 
-{#if dist.id !== 'rakesh'}<Screen {me} title="Van route" sub={dist.cluster}
+{#if dist.id !== c.dist.id}<Screen {me} title="Van route" sub={dist.cluster}
 		><Card style="max-width: 560px"
 			><Empty
 				img="van"

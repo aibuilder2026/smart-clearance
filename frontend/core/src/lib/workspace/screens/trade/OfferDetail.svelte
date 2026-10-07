@@ -32,12 +32,17 @@
 	};
 	const lines = $derived<[string, string, string][]>([
 		['You pay', `${m.paid} × ₹${m.pack.toFixed(2)}`, fmt.inr(m.pay)],
-		['Free packets', '2 with every 10', `${m.free}`],
+		['Free packets', `${c.scheme.free} with every ${c.scheme.buy}`, `${m.free}`],
 		['You sell at MRP', `${n} × ₹${c.sku.mrp}`, fmt.inr(m.sell)]
 	]);
 </script>
 
-<Screen {me} title="Masala Chips 150 g" sub="Rakesh Traders · scheme for 48 hours" back="Offers">
+<Screen
+	{me}
+	title={c.sku.name}
+	sub={`${c.dist.name} · scheme for ${ws.state.rules.offerWindowHours} hours`}
+	back="Offers"
+>
 	<div class="stack" style="gap: 16px; max-width: 620px">
 		{#if h.offer}<OfferCard compact shop={k.name} />{:else}<Card
 				><Empty img="kirana" title="No offer right now" body="This offer has not been sent to your shop yet." /></Card
@@ -51,7 +56,7 @@
 						><Icon name="check" size={28} stroke={2.4} /></span
 					>
 					<div class="t-title2 hi" lang="hi">ऑर्डर हो गया</div>
-					<span class="muted">{mine.units} packets on Tuesday's van · pay on delivery</span>
+					<span class="muted">{mine.units} packets on {c.van.day}'s van · pay on delivery</span>
 					<Money value={offerMath(mine.units, c).margin} size="m" style="color: var(--primary-text)" /><span
 						class="t-footnote subtle">your margin at MRP on this order</span
 					>
@@ -79,9 +84,8 @@
 						><span class="hi" lang="hi">ऑर्डर करें</span> · {n} packets</Button
 					>
 					<span class="t-caption subtle" style="text-align: center"
-						>Best before 18 Nov 2026 · 47 days on every packet · unsold packs go back to the salesman until {fmt.day(
-							c.returnBy
-						)}</span
+						>Best before {fmt.date(c.batch.bestBefore)} · {c.batch.daysLeft} days on every packet · unsold packs go back to
+						the salesman until {fmt.day(c.returnBy)}</span
 					>
 				</Card>{/if}{/if}
 	</div>

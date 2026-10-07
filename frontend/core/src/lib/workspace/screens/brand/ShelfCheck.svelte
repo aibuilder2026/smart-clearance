@@ -2,7 +2,7 @@
 	import Badge from '../../../components/Badge.svelte';
 	import Card from '../../../components/Card.svelte';
 	import Icon from '../../../icons/Icon.svelte';
-	import { fmt } from '../../model';
+	import { castOf, first, fmt } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { Hero } from '../../types';
 
@@ -12,6 +12,7 @@
 	const ws = useWorkspace();
 	const c = $derived(ws.case!);
 	const S7 = $derived(c.shelf);
+	const staff = $derived(c.plan.rows.find((r) => r.id === 'staff')!);
 </script>
 
 <Card class="stack snug">
@@ -26,8 +27,8 @@
 	</div>
 	{#if shelf}
 		<span class="t-footnote muted"
-			>Rakesh's salesman counted the scheme packs at {S7.counted} shops on his beat. {S7.counted - 1} are selling in time;
-			one is slow.</span
+			>{first(castOf(ws.state, c).distributor.short)}'s salesman counted the scheme packs at {S7.counted} shops on his beat.
+			{S7.counted - 1} are selling in time; one is slow.</span
 		>
 		<div class="stack tight" style="padding: 12px 14px; border-radius: 14px; background: var(--fill)">
 			<div class="row between t-subhead">
@@ -42,7 +43,9 @@
 			</div>
 		</div>
 		{#if !compact}<span class="t-caption subtle"
-				>Returns go to the Nagpur staff sale or to Feeding India, and are accepted until {fmt.day(S7.returnBy)}.</span
+				>Returns go to the {staff.name} or to {c.donation.partner.name}, and are accepted until {fmt.day(
+					S7.returnBy
+				)}.</span
 			>{/if}
 	{:else}<span class="t-footnote muted"
 			>On day 7 the salesman counts the scheme packs on each shelf. Where a shop is selling too slowly, the agent

@@ -30,7 +30,7 @@
 		<div class="t-footnote muted">
 			{p.paused
 				? 'Listings, offers and invoice drafts wait until you resume.'
-				: `Inside Munchly's floors · since ${p.at} · listings, scheme offers, invoice drafts, dispatch slots`}
+				: `Inside ${ws.data.workspace.short}'s floors · since ${p.at} · listings, scheme offers, invoice drafts, dispatch slots`}
 		</div>
 	</div>
 	<Button variant={p.paused ? 'primary' : 'secondary'} size="sm" icon={p.paused ? 'play' : 'pause'} onclick={flip}

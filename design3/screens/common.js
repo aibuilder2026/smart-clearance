@@ -38,7 +38,7 @@
       eta = "Watcher runs daily at 09:00";
       etaTone = void 0;
     } else if (h.phase === "at-risk") {
-      eta = h.photo.status === "reading" ? "Reading the label" : "Plan ready in about 20 min";
+      eta = h.photo.status === "reading" ? "Reading the label" : `Plan ready in about ${D.JOURNEY.planMinutes} min`;
       agentLive = h.photo.status === "reading" ? "Vision is reading the label" : h.photo.status === "requested" ? "Vision is waiting for the label photo" : "Vision is asking for a label photo";
     } else if (h.phase === "verified") {
       eta = "Pricing five channels";

@@ -5,7 +5,6 @@
 // outside any provider (the guided demo, the design-system page) reads it.
 import { CHIPS, D, ES, INVOICE, KL } from './data';
 import { A, act as run, Agents, type ActionName } from './flow';
-import { DEMO_PEOPLE, TEST_CODE } from './screens/auth/people';
 import { setDefaultSource, type WorkspaceSource } from './source';
 import { store } from './store.svelte';
 import type {
@@ -40,7 +39,8 @@ export const data: WorkspaceData = Object.freeze({
 	setup: D.setup,
 	stages: D.stages,
 	batches: D.batches,
-	quarter: D.quarter
+	quarter: D.quarter,
+	market: D.market
 });
 
 /** the batch in focus: the chips batch the story follows, and the Mango Drink batch the same agents donate */
@@ -66,27 +66,26 @@ export const kase: CaseData = Object.freeze({
 	shelf: D.shelf,
 	returnBy: D.returnBy,
 	push: D.push,
+	today: D.journey.today,
+	planMinutes: D.journey.planMinutes,
+	permissionAsked: D.journey.permissionAsked,
+	listing: D.journey.listing,
+	van: D.journey.van,
 	donation: {
+		...D.journey.donation,
 		batch: second,
 		sku: D.skus[second.sku],
 		dist: D.distributors[second.distributor],
 		plan: D.mangoPlan,
-		units: D.mangoFb
+		units: D.mangoFb,
+		partner: D.setup.partners.find((p) => p.name === D.journey.donation.partner)!
 	}
 });
 
 const publicInfo: WorkspacePublic = Object.freeze({
 	workspace: D.workspace,
 	platform: D.platform,
-	prototype: {
-		code: TEST_CODE,
-		accounts: [
-			['priya', D.people.priya.email!],
-			['rakesh', D.people.rakesh.phone!],
-			['ganesh', D.people.ganesh.phone!],
-			['shreesai', '+91 98230 60013']
-		] as [string, string][]
-	}
+	prototype: { code: D.explore.code, accounts: D.explore.accounts }
 });
 
 /* ---------- the session and the splash, per browser ---------- */
@@ -124,7 +123,7 @@ class StubSource implements WorkspaceSource {
 	readonly case = kase;
 	/** the stub has one batch in focus, whatever a screen asks for */
 	readonly focus = null;
-	readonly explore = DEMO_PEOPLE;
+	readonly explore = D.explore.groups;
 	#pending = new Set<string>();
 	#session = $state<Session | null>(null);
 	#splash = $state(true);

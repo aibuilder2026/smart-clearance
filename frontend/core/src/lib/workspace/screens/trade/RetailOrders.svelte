@@ -20,9 +20,9 @@
 <Screen {me} title="Orders" sub={k.name}>
 	{#if mine}<div class="list" style="max-width: 620px">
 			<div class="list-row" style="grid-template-columns: 48px minmax(0,1fr) auto">
-				<Product name="pack-chips" size={44} /><span class="stack tight" style="gap: 0"
-					><b class="t-subhead">Masala Chips 150 g · {mine.units} packets</b><span class="t-caption subtle"
-						>{mine.at} · buy 10 get 2 · Tuesday's van</span
+				<Product name={c.sku.img} size={44} /><span class="stack tight" style="gap: 0"
+					><b class="t-subhead">{c.sku.name} · {mine.units} packets</b><span class="t-caption subtle"
+						>{mine.at} · buy {c.scheme.buy} get {c.scheme.free} · {c.van.day}'s van</span
 					></span
 				><Badge size="sm" tone={h.van.status === 'done' ? 'green' : undefined}
 					>{h.van.status === 'done' ? 'delivered' : 'on the round'}</Badge

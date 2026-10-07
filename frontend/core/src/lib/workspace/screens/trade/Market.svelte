@@ -1,51 +1,3 @@
-<script lang="ts" module>
-	import type { EsListing } from './ListingCard.svelte';
-
-	// the other lots on the marketplace, illustrative
-	const OTHER_LISTINGS: EsListing[] = [
-		{
-			id: 'ES-23988',
-			name: 'Cream biscuits 75 g',
-			icon: 'cookie',
-			units: 2400,
-			price: 6,
-			mrp: 10,
-			days: 88,
-			seller: 'FMCG distributor, Bilaspur'
-		},
-		{
-			id: 'ES-24031',
-			name: 'Instant noodles 70 g',
-			icon: 'soup',
-			units: 1800,
-			price: 8,
-			mrp: 14,
-			days: 41,
-			seller: 'Wholesaler, Durg'
-		},
-		{
-			id: 'ES-24076',
-			name: 'UHT toned milk 1 L',
-			icon: 'milk',
-			units: 600,
-			price: 38,
-			mrp: 72,
-			days: 34,
-			seller: 'Dairy distributor, Bhilai'
-		},
-		{
-			id: 'ES-24102',
-			name: 'Whole-wheat atta 5 kg',
-			icon: 'wheat',
-			units: 240,
-			price: 160,
-			mrp: 285,
-			days: 52,
-			seller: 'Mill outlet, Rajnandgaon'
-		}
-	];
-</script>
-
 <script lang="ts">
 	import { useApp } from '../../../app.svelte';
 	import Badge from '../../../components/Badge.svelte';
@@ -54,16 +6,17 @@
 	import SearchField from '../../../components/SearchField.svelte';
 	import Segmented from '../../../components/Segmented.svelte';
 	import { rise } from '../../../motion/transitions';
+	import { fmt } from '../../../format';
 	import { useRoute } from '../../context';
 	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import Screen from '../common/Screen.svelte';
 	import EsBar from './EsBar.svelte';
 	import EsDate from './EsDate.svelte';
-	import ListingCard from './ListingCard.svelte';
+	import ListingCard, { type EsListing } from './ListingCard.svelte';
 
-	// Agrawal ji on ExpireSoon, another company's marketplace: Rakesh Traders' lot featured once it is listed, the other
-	// lots in a grid, a search and the categories
+	// the buyer on ExpireSoon, another company's marketplace: the lot of the batch in focus featured once it is listed,
+	// the marketplace's other lots in a grid, a search and the categories
 	let { me }: { me: User } = $props();
 	const ws = useWorkspace();
 	const c = $derived(ws.case!);
@@ -75,18 +28,18 @@
 	const hero = $derived<EsListing | null>(
 		h.listing
 			? {
-					id: 'ES-24117',
-					name: 'Munchly Masala Chips 150 g',
+					id: c.listing.id,
+					name: `${c.sku.brand} ${c.sku.name}`,
 					units: c.lines.expiresoon.units,
-					price: 15,
-					mrp: 30,
-					days: 47,
-					seller: 'Rakesh Traders, Nagpur'
+					price: c.lines.expiresoon.price,
+					mrp: c.sku.mrp,
+					days: c.batch.daysLeft,
+					seller: `${c.dist.name}, ${c.dist.city}`
 				}
 			: null
 	);
 	const list = $derived(
-		[hero, ...OTHER_LISTINGS]
+		[hero, ...ws.data.market.lots]
 			.filter((l): l is EsListing => !!l)
 			.filter(
 				(l) =>
@@ -121,7 +74,7 @@
 			{#if hero}
 				<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions (the whole feature opens the lot, as its View lot button does by keyboard) -->
 				<div class="es-feature" onclick={() => go('listing')} in:rise|global={{ y: 8 }}>
-					<Product name="pack-chips" size={app.bp === 'phone' ? 96 : 132} float />
+					<Product name={c.sku.img} size={app.bp === 'phone' ? 96 : 132} float />
 					<div class="stack tight grow" style="gap: 6px">
 						<span class="row tight wrap"
 							><Badge tone="violet" solid size="sm">new · {h.listing?.at}</Badge><Badge
@@ -130,14 +83,14 @@
 								icon="badge-check">label photo verified</Badge
 							></span
 						>
-						<div class="t-title2">Munchly Masala Chips 150 g · {c.lines.expiresoon.units} units</div>
+						<div class="t-title2">{hero.name} · {hero.units} units</div>
 						<span class="row base wrap" style="gap: 8px"
-							><span class="es-price lg">₹15</span><span class="muted">MRP ₹30 · 50% off</span><EsDate
-								days={47}
-								date="Best before 18 Nov 2026"
-							/></span
+							><span class="es-price lg">₹{hero.price}</span><span class="muted"
+								>MRP ₹{hero.mrp} · {Math.round((1 - hero.price / hero.mrp) * 100)}% off</span
+							><EsDate days={hero.days} date={`Best before ${fmt.date(c.batch.bestBefore)}`} /></span
 						>
-						<span class="t-footnote subtle">Rakesh Traders, Nagpur · verified seller · dispatch 24 h after balance</span
+						<span class="t-footnote subtle"
+							>{hero.seller} · verified seller · dispatch {ws.data.market.dispatchHours} h after balance</span
 						>
 					</div>
 					<Button variant="violet" iconRight="arrow-right">View lot</Button>

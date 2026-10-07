@@ -14,7 +14,7 @@
 	const ws = useWorkspace();
 	const c = $derived(ws.case!);
 	const h = $derived(ws.state.hero);
-	const hero = $derived(distOf(me, ws.data, c).id === 'rakesh');
+	const hero = $derived(distOf(me, ws.data, c).id === c.dist.id);
 	const rows = $derived(
 		h.orders
 			.slice()
@@ -50,7 +50,7 @@
 					{#each rows as o (o.id)}<div class="list-row" style="grid-template-columns: minmax(0,1fr) auto">
 							<span class="stack tight" style="gap: 0"
 								><b class="t-subhead">{o.k.name}</b><span class="t-caption subtle"
-									>{o.k.area} · {o.at} · buy 10 get 2</span
+									>{o.k.area} · {o.at} · buy {c.scheme.buy} get {c.scheme.free}</span
 								></span
 							><span class="stack tight" style="gap: 0; justify-items: end"
 								><span class="tnum strong">{o.units} packets</span><span class="t-caption subtle"

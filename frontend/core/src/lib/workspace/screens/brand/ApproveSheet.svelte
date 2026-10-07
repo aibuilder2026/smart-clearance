@@ -10,7 +10,7 @@
 	import { prefersReducedMotion } from '../../../motion';
 	import { curveFrames } from '../../../motion/frames';
 	import { useRoute } from '../../context';
-	import { fmt } from '../../model';
+	import { castOf, fmt } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 
@@ -24,6 +24,9 @@
 	let busy = $state(false);
 	let placed = $state(false);
 	const approvedNow = $derived(!!(ws.state.hero.plan && ws.state.hero.plan.status === 'approved'));
+	const cast = $derived(castOf(ws.state, c));
+	const es = $derived(c.lines.expiresoon);
+	const kl = $derived(c.lines.kirana);
 
 	// opening shows the plan as it stands; an approval made elsewhere while it is open places it
 	$effect(() => {
@@ -58,13 +61,13 @@
 	const STEPS: [IconName, string][] = $derived([
 		[
 			'shopping-bag',
-			`Lister posts ${c.lines.expiresoon.units} units on ExpireSoon at ₹15 in Rakesh Traders' name, with the label photo and dates; reserve ₹13.50, hidden from buyers inside Munchly's territories.`
+			`Lister posts ${es.units} units on ExpireSoon at ₹${es.price} in ${c.dist.name}' name, with the label photo and dates; reserve ${fmt.rate(ws.data.rules.negotiation.reservePerUnit)}, hidden from buyers inside ${ws.data.workspace.short}'s territories.`
 		],
 		[
 			'send',
-			`Outreach pushes the Hindi scheme to ${c.offered} kiranas: ${c.lines.kirana.units} units at ₹${c.lines.kirana.packPrice!.toFixed(2)} a pack, 2 free with every 10, for 48 hours.`
+			`Outreach pushes the Hindi scheme to ${c.offered} kiranas: ${kl.units} units at ${fmt.rate(kl.packPrice!)} a pack, ${c.scheme.free} free with every ${c.scheme.buy}, for ${ws.state.rules.offerWindowHours} hours.`
 		],
-		['smartphone', 'Rakesh bhai gets the same plan in his app and can pause it.'],
+		['smartphone', `${cast.distributor.short} gets the same plan in his app and can pause it.`],
 		[
 			'shield-check',
 			'Nothing is listed, messaged or shipped before this tap. The approval is logged with who, when and device.'
@@ -111,15 +114,15 @@
 					{@attach draw(450, 400, [0.42, 0, 0.58, 1])}
 				/></svg
 			>
-			<div class="t-title2">Approved · 09:40</div>
+			<div class="t-title2">Approved · {ws.state.hero.plan?.at}</div>
 			<div class="stack tight" style="justify-items: center">
 				<Money value={c.plan.swing} size="l" roll from={0} style="color: var(--primary-text)" /><span class="muted"
 					>better than the bin, on one batch of chips</span
 				>
 			</div>
 			<p class="t-subhead muted" style="max-width: 40ch">
-				The Lister is posting on ExpireSoon in Rakesh Traders' name and Outreach is messaging {c.offered} kiranas now. Rakesh
-				bhai has the plan in his app. The approval is logged with who, when and device.
+				The Lister is posting on ExpireSoon in {c.dist.name}' name and Outreach is messaging {c.offered} kiranas now.
+				{cast.distributor.short} has the plan in his app. The approval is logged with who, when and device.
 			</p>
 		</div>
 	{:else}

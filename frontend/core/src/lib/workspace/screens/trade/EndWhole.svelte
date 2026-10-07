@@ -13,7 +13,7 @@
 	const rows: [string, number][] = $derived([
 		[`From ${c.kiranas.length} kiranas (${c.lines.kirana.units} packets)`, c.lines.kirana.gross],
 		[`From ${c.buyer.name} (${c.lines.expiresoon.units} packets)`, c.award.gross],
-		['Price-support credit note from Munchly', c.support.total]
+		[`Price-support credit note from ${ws.data.workspace.short}`, c.support.total]
 	]);
 </script>
 

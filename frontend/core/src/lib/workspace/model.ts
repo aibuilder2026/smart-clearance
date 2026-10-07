@@ -12,6 +12,7 @@ import type {
 	Kirana,
 	Phase,
 	RoleId,
+	Sku,
 	Stage,
 	State,
 	User,
@@ -77,7 +78,7 @@ export function heroModel(s: State, data: Pick<WorkspaceData, 'skus' | 'distribu
 		eta = `Watcher runs daily at ${s.rules.watchTime}`;
 		etaTone = undefined;
 	} else if (h.phase === 'at-risk') {
-		eta = h.photo.status === 'reading' ? 'Reading the label' : 'Plan ready in about 20 min';
+		eta = h.photo.status === 'reading' ? 'Reading the label' : `Plan ready in about ${c.planMinutes} min`;
 		agentLive =
 			h.photo.status === 'reading'
 				? 'Vision is reading the label'
@@ -175,6 +176,30 @@ export const addDays = (iso: string, n: number) => {
 	d.setUTCDate(d.getUTCDate() + n);
 	return d.toISOString().slice(0, 10);
 };
+
+/* ---------- the people and the products of the story ---------- */
+
+/** who plays each part in the batch's story, from the workspace's members: the operator who approves, the batch's
+ *  distributor, the first kirana that orders, the buyer, the food bank that takes the donation, finance and
+ *  sustainability */
+export function castOf(s: State, c: Pick<CaseData, 'dist' | 'kiranas' | 'buyer' | 'donation'>) {
+	const by = (r: RoleId, org?: string) => s.users.find((u) => u.role === r && (!org || u.org === org))!;
+	return {
+		operator: by('operator'),
+		distributor: by('distributor', c.dist.name),
+		kirana: by('retailer', c.kiranas[0].name),
+		buyer: by('buyer', c.buyer.name),
+		foodbank: by('foodbank', c.donation.partner.name),
+		finance: by('finance'),
+		sustainability: by('sustainability')
+	};
+}
+/** the first word of a name, as people say it: Rakesh, of Rakesh bhai; Lakshmi, of Lakshmi Agencies */
+export const first = (name: string) => name.split(' ')[0];
+const SIZE = /\s+(\d[\d.]*\s?(?:g|ml|kg|L))$/;
+/** a product's name without its pack size (Masala Chips), and the size (150 g) */
+export const productName = (sku: Pick<Sku, 'name'>) => sku.name.replace(SIZE, '');
+export const packSize = (sku: Pick<Sku, 'name'>) => SIZE.exec(sku.name)?.[1] ?? '';
 
 /* ---------- the trade ---------- */
 

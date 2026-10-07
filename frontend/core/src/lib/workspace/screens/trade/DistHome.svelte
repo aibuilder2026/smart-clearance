@@ -12,7 +12,7 @@
 	import { rise } from '../../../motion/transitions';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
 	import { useRoute } from '../../context';
-	import { batchViews, cartons, distOf, fmt, isRouted } from '../../model';
+	import { batchViews, cartons, distOf, fmt, isRouted, productName } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import Screen from '../common/Screen.svelte';
@@ -31,7 +31,8 @@
 	const s = $derived(ws.state);
 	const h = $derived(s.hero);
 	const dist = $derived(distOf(me, ws.data, c));
-	const hero = $derived(dist.id === 'rakesh');
+	const hero = $derived(dist.id === c.dist.id);
+	const W = $derived(ws.data.workspace);
 	const perm = $derived(s.setup.permission);
 	const mine = $derived(batchViews(s, ws.data).filter((v) => v.distributor === dist.id));
 	const units = $derived(h.orders.reduce((t, o) => t + o.units, 0));
@@ -55,7 +56,7 @@
 					<b>Nothing to do today</b>
 					<div class="t-footnote muted">
 						No photo requests, scheme orders or marketplace lots for {dist.name} right now. The Watcher checks your stock
-						every morning at 09:00.
+						every morning at {s.rules.watchTime}.
 					</div>
 				</div></Card
 			>{/if}
@@ -68,7 +69,7 @@
 					<p class="t-body" style="margin: 0">{c.push.verify.body}</p>
 					<div class="row" style="gap: 12px">
 						<Product name="phone-scan" size={72} /><span class="t-footnote muted"
-							>Shelf B4 · one carton of Masala Chips 150 g · batch MF-2409-117</span
+							>Shelf {c.batch.shelf} · one carton of {c.sku.name} · batch {c.batch.id}</span
 						>
 					</div>
 					<Button variant="primary" size="lg" icon="camera" block onclick={() => go('photo')}>Open camera</Button>
@@ -82,29 +83,31 @@
 					<b>{h.photo.status === 'verified' ? 'Label verified · thank you' : 'Photo sent · reading the label'}</b>
 					<div class="t-footnote muted">
 						{h.photo.status === 'verified'
-							? 'Batch, dates and MRP match your DMS record. Munchly gets a plan in a few minutes.'
-							: 'Sent at 09:19. Nothing else needed from you.'}
+							? `Batch, dates and MRP match your DMS record. ${W.short} gets a plan in a few minutes.`
+							: `Sent at ${h.photo.at}. Nothing else needed from you.`}
 					</div>
 				</div></Card
 			>{/if}
 		{#if hero && approved && !settled}<Card class="stack snug">
 				<div class="card-head">
-					<span class="card-title">Munchly's plan for your Masala Chips</span><Badge tone="green" icon="check"
-						>approved 09:40</Badge
+					<span class="card-title">{W.short}'s plan for your {productName(c.sku)}</span><Badge tone="green" icon="check"
+						>approved {h.plan?.at}</Badge
 					>
 				</div>
 				<div class="stack tight t-subhead">
 					<div class="row top" style="gap: 10px">
 						<span class="dotmark" style="background: var(--ch-kirana)"></span><span
-							><b>{c.lines.kirana.units} packets to your kiranas</b> on the scheme: ₹{c.lines.kirana.packPrice!.toFixed(
-								2
-							)} a pack, 2 free with every 10, delivered on your Tuesday round.</span
+							><b>{c.lines.kirana.units} packets to your kiranas</b> on the scheme: {fmt.rate(
+								c.lines.kirana.packPrice!
+							)} a pack,
+							{c.scheme.free} free with every {c.scheme.buy}, delivered on your {c.van.day} round.</span
 						>
 					</div>
 					<div class="row top" style="gap: 10px">
 						<span class="dotmark" style="background: var(--ch-expiresoon)"></span><span
-							><b>{c.lines.expiresoon.units} on ExpireSoon in your name</b> at ₹15, hidden from buyers in Munchly's territories.
-							The buyer collects with his own truck.</span
+							><b>{c.lines.expiresoon.units} on ExpireSoon in your name</b> at ₹{c.lines.expiresoon.price}, hidden from
+							buyers in
+							{W.short}'s territories. The buyer collects with his own truck.</span
 						>
 					</div>
 				</div>
@@ -118,7 +121,7 @@
 					<div class="card-head">
 						<span class="row tight"
 							><span class="icontile"><Icon name="truck" size={17} stroke={2} /></span><span class="card-title"
-								>Tuesday van round</span
+								>{c.van.day} van round</span
 							></span
 						><Icon name="chevron-right" size={18} class="subtle" />
 					</div>
@@ -131,7 +134,7 @@
 						>{h.van.status === 'done'
 							? `Delivered · all ${c.kiranas.length} shops`
 							: h.orders.length
-								? 'Orders from the Masala Chips scheme join this round'
+								? `Orders from the ${productName(c.sku)} scheme join this round`
 								: 'Scheme orders will appear here'}</span
 					>
 				</Card>
@@ -154,7 +157,7 @@
 							: h.award
 								? `Sold at ₹${c.counter.price.toFixed(2)} · token ${fmt.inr(c.award.token)} paid`
 								: h.listing
-									? 'Listed at ₹15 in your name · waiting for a buyer'
+									? `Listed at ₹${c.lines.expiresoon.price} in your name · waiting for a buyer`
 									: 'Not listed'}</span
 					>
 				</Card>

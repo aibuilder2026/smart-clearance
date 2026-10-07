@@ -1,16 +1,22 @@
 <script lang="ts">
 	import { cx } from '../cx';
 	import { fmt } from '../format';
-	import type { Actual, Plan, Sku } from '../workspace/types';
+	import type { Actual, MoneyRules, Plan, Sku } from '../workspace/types';
 	import Badge from './Badge.svelte';
 	import Money from './Money.svelte';
 
 	// the money panel, set out the way a challan would be: what destroying does to the P&L, what the split recovers and
 	// its P&L effect. The book cost of the stock appears once on each side, so the swing does not count it twice.
 	// actual: the result after the negotiation, when there is one (the kit's MoneyPanel)
-	// sku: the product the plan is for, its cost and MRP
-	type Props = { plan: Plan; sku: Pick<Sku, 'cost' | 'mrp'>; actual?: Actual; compact?: boolean };
-	let { plan, sku, actual, compact }: Props = $props();
+	// sku: the product the plan is for, its cost and MRP; rules: the write-off's disposal and EPR factors
+	type Props = {
+		plan: Plan;
+		sku: Pick<Sku, 'cost' | 'mrp'>;
+		rules: Pick<MoneyRules, 'disposalPerUnit' | 'eprPerKg'>;
+		actual?: Actual;
+		compact?: boolean;
+	};
+	let { plan, sku, rules, actual, compact }: Props = $props();
 	const wo = $derived(plan.writeOff);
 	const net = $derived(actual ? actual.net : plan.net);
 	const pnl = $derived(actual ? actual.pnl : plan.pnl);
@@ -40,8 +46,13 @@
 			<div class="stack tight t-subhead">
 				{@render row('Stock at cost', `${fmt.num(plan.units)} × ₹${sku.cost}`, -wo.stock, 'neg')}
 				{@render row('GST credit reversed', `s.17(5)(h) · ₹${wo.itcPerUnit.toFixed(2)} a unit`, -wo.itc, 'neg')}
-				{@render row('Disposal and transport', '₹1.50 a unit, indicative', -wo.disposal, 'neg')}
-				{@render row('EPR and waste liability', `${fmt.kg(wo.kg)} × ₹6, indicative`, -wo.epr, 'neg')}
+				{@render row(
+					'Disposal and transport',
+					`${fmt.rate(rules.disposalPerUnit)} a unit, indicative`,
+					-wo.disposal,
+					'neg'
+				)}
+				{@render row('EPR and waste liability', `${fmt.kg(wo.kg)} × ₹${rules.eprPerKg}, indicative`, -wo.epr, 'neg')}
 				<div class="hairline" style="margin: 4px 0"></div>
 				<div class="row between">
 					<b>Effect on the P&amp;L</b><Money value={-wo.total} size="s" style="color: var(--red-text)" />
