@@ -87,13 +87,14 @@ def gate_line(gates: list[dict[str, Any]]) -> str:
 
 def check_numbers(text: str, allowed: list[float]) -> bool:
     """whether every figure in a model's sentence is one of the computed ones: rupees, units and percentages it may
-    quote. Small counting words (a day, two options) are not figures; anything else is refused"""
-    found = re.findall(r"(?<![\w.])(\d[\d,]*(?:\.\d+)?)", text)
+    quote. Small counting words (a day, two options) are not figures, unless written as money (₹5, Rs 5); anything
+    else is refused"""
+    found = re.findall(r"(₹\s?|Rs\.?\s?|INR\s?)?(?<![\w.])(\d[\d,]*(?:\.\d+)?)", text)
     # a figure as written: to the paisa, or rounded to the rupee as the app shows money (fmt.inr)
     pool = {round(float(a), 2) for a in allowed} | {float(math.floor(float(a) + 0.5)) for a in allowed}
-    for raw in found:
+    for money_, raw in found:
         n = round(float(raw.replace(",", "").rstrip(".")), 2)
-        if n in pool or (n < 10 and float(n).is_integer()):
+        if n in pool or (not money_ and n < 10 and float(n).is_integer()):
             continue
         return False
     return True

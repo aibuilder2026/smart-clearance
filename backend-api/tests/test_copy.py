@@ -249,3 +249,11 @@ def test_the_food_banks_reply_is_designs():
     assert copy.serving_spot(partner="Feeding India", city="Hyderabad", spots=spots) == story["spot"]
     elsewhere = copy.serving_spot(partner="Feeding India", city="Nagpur", spots=spots)
     assert elsewhere == "Feeding India's serving point in Nagpur"
+
+
+def test_a_small_sum_of_money_is_a_figure():
+    # a counting word may stand; the same number as rupees must be a computed figure (SC-72's review)
+    assert copy.check_numbers("Two options, both within 3 days.", [14.2])
+    assert not copy.check_numbers("We can do ₹5 a packet.", [14.2])
+    assert not copy.check_numbers("We can do Rs 5 a packet.", [14.2])
+    assert copy.check_numbers("We can do ₹14.20 a packet.", [14.2])
