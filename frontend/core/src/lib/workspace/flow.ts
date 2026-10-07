@@ -3,6 +3,7 @@
 // person is not playing) and schedules it once.
 import { fmt } from '../format';
 import { D, EV, PLAN } from './data';
+import { stageAt } from './model';
 import { store } from './store.svelte';
 import type { State } from './types';
 
@@ -273,20 +274,7 @@ export function fastForward(n: number) {
 }
 
 /** which stage is active (0–8), or 9 when the batch is cleared */
-export function stageOf(state: State) {
-	const h = state.hero;
-	if (!state.setup.confirmed || !state.setup.permission) return 0;
-	if (h.phase === 'watching') return 1;
-	if (h.photo.status !== 'verified') return 2;
-	if (h.phase === 'verified') return 3;
-	if (h.phase === 'valued') return 4;
-	if (h.phase === 'planned') return 5;
-	if (h.phase === 'approved') return 6;
-	if (h.phase === 'executing') return h.award && all(state) ? 7 : 6;
-	if (h.phase === 'dispatched') return 7;
-	if (h.phase === 'settled') return h.van.status === 'done' && h.shelf ? 8 : 7;
-	return 9;
-}
+export const stageOf = (state: State) => stageAt(state, D.kiranas.length);
 
 /* ---------- the agents, as a reconciler ---------- */
 

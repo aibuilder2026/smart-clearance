@@ -5,7 +5,7 @@
   const fmt = M.fmt;
   const { cx, Icon, Avatar, Badge, Button, Sheet, Field, Input, OTP, Money, Mark, Wordmark, WorkspaceMark, PoweredBy, Product, Tracker, List, ListRow, useApp } = K;
   const WS = D.WORKSPACE, WS_OF = D.WORKSPACE.name + "' workspace";
-  const TEST_CODE = "246810";
+  const TEST_CODE = D.EXPLORE.code;
   const userById = (id) => Store.get().users.find((u) => u.id === id);
   const digits = (v) => {
     const d = (v || "").replace(/\D/g, "");
@@ -16,11 +16,7 @@
   const role = (r) => (S.ROLES[r] || r).toLowerCase();
   const GoogleG = ({ size = 18 }) => /* @__PURE__ */ React.createElement("svg", { width: size, height: size, viewBox: "0 0 48 48", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("path", { fill: "#FFC107", d: "M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" }), /* @__PURE__ */ React.createElement("path", { fill: "#FF3D00", d: "M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" }), /* @__PURE__ */ React.createElement("path", { fill: "#4CAF50", d: "M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z" }), /* @__PURE__ */ React.createElement("path", { fill: "#1976D2", d: "M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z" }));
   const Url = () => /* @__PURE__ */ React.createElement("span", { className: "si-url" }, /* @__PURE__ */ React.createElement(Icon, { name: "lock", size: 12, stroke: 2.2 }), WS.domain);
-  const DEMO_PEOPLE = [
-    { group: "Munchly Foods", note: "staff · Google Workspace", ids: [["priya", "Approve the plan for the chips batch"], ["anita", "Review Munchly's credit note and GST memo"], ["vikram", "Export the BRSR table"], ["arjun", "The workspace, its people and the guardrails"]] },
-    { group: "Invited partners", note: "a one-time code or Google", ids: [["rakesh", "Give the permission, send the photo, run the van"], ["ganesh", "Order from the Hindi offer"], ["meera", "Confirm a food-bank pickup"]] },
-    { group: "Outside the workspace", note: "ExpireSoon, another company's marketplace", ids: [["agrawal", "Bid on the lot from Raipur"]] }
-  ];
+  const DEMO_PEOPLE = D.EXPLORE.groups;
   const DEMO = DEMO_PEOPLE.reduce((t, g) => t.concat(g.ids), []);
   function PeopleList({ onPick, busy, current }) {
     return /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 18 } }, DEMO_PEOPLE.map((g) => /* @__PURE__ */ React.createElement("div", { key: g.group, className: "stack tight", style: { gap: 8 } }, /* @__PURE__ */ React.createElement("div", { className: "row tight" }, /* @__PURE__ */ React.createElement("b", { className: "t-subhead" }, g.group), /* @__PURE__ */ React.createElement("span", { className: "t-caption subtle" }, g.note)), /* @__PURE__ */ React.createElement("div", { className: "si-people" }, g.ids.map(([id, what]) => {
@@ -207,7 +203,7 @@
       Flow.act("join", who.id);
       finish(who.id);
     };
-    const TRY = [["priya", D.PEOPLE.priya.email], ["rakesh", D.PEOPLE.rakesh.phone], ["ganesh", D.PEOPLE.ganesh.phone], ["shreesai", "+91 98230 60013"]];
+    const TRY = D.EXPLORE.accounts;
     const isPhone = who && !!who.phone && sheet !== "google";
     return /* @__PURE__ */ React.createElement("div", { className: cx("signin", guided && "guided") }, /* @__PURE__ */ React.createElement("div", { className: "ground", "aria-hidden": "true" }), app.bp === "desktop" && /* @__PURE__ */ React.createElement(HeroStage, { guided }), /* @__PURE__ */ React.createElement("div", { className: "si-panel" }, /* @__PURE__ */ React.createElement("div", { className: "si-card" }, /* @__PURE__ */ React.createElement("div", { className: "si-ws" }, /* @__PURE__ */ React.createElement(WorkspaceMark, { ws: WS, size: app.bp === "phone" ? 52 : 60 }), /* @__PURE__ */ React.createElement("div", { className: "si-ws-name" }, WS.name), /* @__PURE__ */ React.createElement(Url, null)), app.bp !== "desktop" && /* @__PURE__ */ React.createElement("div", { className: "si-hero", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Product, { name: "carton-hero", size: app.bp === "phone" ? 132 : 160, float: true }), !guided && /* @__PURE__ */ React.createElement(motion.div, { className: "si-chip", initial: reduce ? false : { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, transition: { delay: 0.9 } }, /* @__PURE__ */ React.createElement("span", { className: "dot" }), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("b", null, "MF-2409-117"), " · routed · ", /* @__PURE__ */ React.createElement(Money, { value: D.ACTUAL.net, size: "s", style: { fontSize: 15 } }), " recovered"))), /* @__PURE__ */ React.createElement("div", { className: "stack tight", style: { gap: 6 } }, /* @__PURE__ */ React.createElement("h1", { className: "si-title" }, "Sign in"), /* @__PURE__ */ React.createElement("p", { className: "si-sub" }, "Use your Munchly email, or the mobile number Munchly or your distributor invited.")), /* @__PURE__ */ React.createElement("form", { className: "si-form", onSubmit: (e) => {
       e.preventDefault();
@@ -215,7 +211,7 @@
     }, noValidate: true }, /* @__PURE__ */ React.createElement(Field, { label: "Work email or mobile number", htmlFor: "si-id", error: err && err.text }, /* @__PURE__ */ React.createElement(Input, { id: "si-id", value: id, onChange: (e) => {
       setId(e.target.value);
       setErr(null);
-    }, autoComplete: "username", spellCheck: false, autoCapitalize: "none", placeholder: "name@munchly.in or 98230 44118" })), err && (err.find || err.es) && /* @__PURE__ */ React.createElement("div", { className: "row tight wrap", style: { marginTop: -4 } }, err.find && /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-link btn-sm", onClick: () => setSheet("find") }, "Find your workspace"), err.es && /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-link btn-sm", onClick: () => finish(err.es) }, "Open ExpireSoon instead")), /* @__PURE__ */ React.createElement(Button, { type: "submit", variant: "primary", size: "lg", block: true, loading: busy === "go" }, "Continue")), !guided && /* @__PURE__ */ React.createElement("div", { className: "si-try" }, /* @__PURE__ */ React.createElement("span", { className: "t-caption subtle strong" }, "Accounts in this prototype"), /* @__PURE__ */ React.createElement("div", { className: "row tight wrap", style: { justifyContent: "center" } }, TRY.map(([uid, val]) => {
+    }, autoComplete: "username", spellCheck: false, autoCapitalize: "none", placeholder: WS.hint })), err && (err.find || err.es) && /* @__PURE__ */ React.createElement("div", { className: "row tight wrap", style: { marginTop: -4 } }, err.find && /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-link btn-sm", onClick: () => setSheet("find") }, "Find your workspace"), err.es && /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-link btn-sm", onClick: () => finish(err.es) }, "Open ExpireSoon instead")), /* @__PURE__ */ React.createElement(Button, { type: "submit", variant: "primary", size: "lg", block: true, loading: busy === "go" }, "Continue")), !guided && /* @__PURE__ */ React.createElement("div", { className: "si-try" }, /* @__PURE__ */ React.createElement("span", { className: "t-caption subtle strong" }, "Accounts in this prototype"), /* @__PURE__ */ React.createElement("div", { className: "row tight wrap", style: { justifyContent: "center" } }, TRY.map(([uid, val]) => {
       const u = userById(uid);
       return u ? /* @__PURE__ */ React.createElement("button", { type: "button", key: uid, className: "chip", onClick: () => {
         setId(val);

@@ -7,7 +7,7 @@
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, Store = window.SC3_STORE, Flow = window.SC3_FLOW, S = window.SC3_SCREENS; const fmt = M.fmt;
   const { cx, Icon, Avatar, Badge, Button, Sheet, Field, Input, OTP, Money, Mark, Wordmark, WorkspaceMark, PoweredBy, Product, Tracker, List, ListRow, useApp } = K;
   const WS = D.WORKSPACE, WS_OF = D.WORKSPACE.name + "' workspace";
-  const TEST_CODE = "246810";
+  const TEST_CODE = D.EXPLORE.code;
   const userById = id => Store.get().users.find(u => u.id === id);
   const digits = v => { const d = (v || "").replace(/\D/g, ""); return d.length === 12 && d.startsWith("91") ? d.slice(2) : d; };
   const isEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((v || "").trim());
@@ -17,11 +17,7 @@
   const Url = () => <span className="si-url"><Icon name="lock" size={12} stroke={2.2} />{WS.domain}</span>;
 
   // the people a judge can step into, by where they stand: inside Munchly, invited in, or outside the workspace
-  const DEMO_PEOPLE = [
-    { group: "Munchly Foods", note: "staff · Google Workspace", ids: [["priya", "Approve the plan for the chips batch"], ["anita", "Review Munchly's credit note and GST memo"], ["vikram", "Export the BRSR table"], ["arjun", "The workspace, its people and the guardrails"]] },
-    { group: "Invited partners", note: "a one-time code or Google", ids: [["rakesh", "Give the permission, send the photo, run the van"], ["ganesh", "Order from the Hindi offer"], ["meera", "Confirm a food-bank pickup"]] },
-    { group: "Outside the workspace", note: "ExpireSoon, another company's marketplace", ids: [["agrawal", "Bid on the lot from Raipur"]] },
-  ];
+  const DEMO_PEOPLE = D.EXPLORE.groups;
   const DEMO = DEMO_PEOPLE.reduce((t, g) => t.concat(g.ids), []);
   function PeopleList({ onPick, busy, current }) {
     return <div className="stack" style={{ gap: 18 }}>{DEMO_PEOPLE.map(g => <div key={g.group} className="stack tight" style={{ gap: 8 }}>
@@ -112,7 +108,7 @@
     };
     const verify = v => { const c = v || code; if (c.length < 6) return; setBusy("verify"); setTimeout(() => { setBusy(null); if (c !== TEST_CODE) { setCodeErr(`That code doesn't match. This prototype sends ${TEST_CODE}.`); setCode(""); return; } if (who.status === "invited") setSheet("join"); else finish(who.id); }, 700); };
     const join = () => { Flow.act("join", who.id); finish(who.id); };
-    const TRY = [["priya", D.PEOPLE.priya.email], ["rakesh", D.PEOPLE.rakesh.phone], ["ganesh", D.PEOPLE.ganesh.phone], ["shreesai", "+91 98230 60013"]];
+    const TRY = D.EXPLORE.accounts;
     const isPhone = who && !!who.phone && sheet !== "google";
     return <div className={cx("signin", guided && "guided")}>
       <div className="ground" aria-hidden="true" />
@@ -123,7 +119,7 @@
           {app.bp !== "desktop" && <div className="si-hero" aria-hidden="true"><Product name="carton-hero" size={app.bp === "phone" ? 132 : 160} float />{!guided && <motion.div className="si-chip" initial={reduce ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}><span className="dot" /><span><b>MF-2409-117</b> · routed · <Money value={D.ACTUAL.net} size="s" style={{ fontSize: 15 }} /> recovered</span></motion.div>}</div>}
           <div className="stack tight" style={{ gap: 6 }}><h1 className="si-title">Sign in</h1><p className="si-sub">Use your Munchly email, or the mobile number Munchly or your distributor invited.</p></div>
           <form className="si-form" onSubmit={e => { e.preventDefault(); proceed(); }} noValidate>
-            <Field label="Work email or mobile number" htmlFor="si-id" error={err && err.text}><Input id="si-id" value={id} onChange={e => { setId(e.target.value); setErr(null); }} autoComplete="username" spellCheck={false} autoCapitalize="none" placeholder="name@munchly.in or 98230 44118" /></Field>
+            <Field label="Work email or mobile number" htmlFor="si-id" error={err && err.text}><Input id="si-id" value={id} onChange={e => { setId(e.target.value); setErr(null); }} autoComplete="username" spellCheck={false} autoCapitalize="none" placeholder={WS.hint} /></Field>
             {err && (err.find || err.es) && <div className="row tight wrap" style={{ marginTop: -4 }}>{err.find && <button type="button" className="btn btn-link btn-sm" onClick={() => setSheet("find")}>Find your workspace</button>}{err.es && <button type="button" className="btn btn-link btn-sm" onClick={() => finish(err.es)}>Open ExpireSoon instead</button>}</div>}
             <Button type="submit" variant="primary" size="lg" block loading={busy === "go"}>Continue</Button>
           </form>

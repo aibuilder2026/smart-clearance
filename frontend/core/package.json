@@ -14,6 +14,16 @@
 			"svelte": "./src/lib/workspace/index.ts",
 			"default": "./src/lib/workspace/index.ts"
 		},
+		"./workspace/app": {
+			"types": "./src/lib/workspace/app.ts",
+			"svelte": "./src/lib/workspace/app.ts",
+			"default": "./src/lib/workspace/app.ts"
+		},
+		"./workspace/stub": {
+			"types": "./src/lib/workspace/stub.ts",
+			"svelte": "./src/lib/workspace/stub.ts",
+			"default": "./src/lib/workspace/stub.ts"
+		},
 		"./identity": "./src/lib/identity.ts",
 		"./format": "./src/lib/format.ts",
 		"./styles/*": "./src/styles/*"

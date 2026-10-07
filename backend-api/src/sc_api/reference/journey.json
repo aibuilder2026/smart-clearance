@@ -42,6 +42,10 @@
 			}
 		],
 		"outside": "The ExpireSoon buyer signs in to the workspace's marketplace area with the address Munchly invited, and sees only the listings open to him. Buyers inside Munchly's territories never see them.",
+		"invite": {
+			"name": "Shree Sai Kirana",
+			"contact": "+91 98230 60014"
+		},
 		"profile": [
 			{
 				"id": "route",
@@ -92,7 +96,8 @@
 				"value": "until 20 days before best-before",
 				"text": "Returned packs reach the godown in time for a staff sale or a food bank."
 			}
-		]
+		],
+		"hint": "name@munchly.in or 98230 44118"
 	},
 	"domains": {
 		"staff": "munchly.example",
@@ -114,7 +119,8 @@
 			"perCarton": 24,
 			"lifeDays": 180,
 			"kgPerUnit": 0.16,
-			"img": "pack-chips"
+			"img": "pack-chips",
+			"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 		},
 		"biscuits": {
 			"id": "biscuits",
@@ -1848,8 +1854,10 @@
 		}
 	],
 	"setup": {
+		"minutes": 15,
 		"dms": {
 			"source": "Bizom-style DMS export (CSV)",
+			"file": "dms_export_2026-10-01.csv",
 			"rows": 312,
 			"columns": [
 				[
@@ -1893,6 +1901,13 @@
 			"staff",
 			"foodbank"
 		],
+		"channelNames": {
+			"kirana": "Kiranas",
+			"expiresoon": "ExpireSoon",
+			"staff": "Staff sale",
+			"foodbank": "Food bank",
+			"writeoff": "Write-off"
+		},
 		"allowList": [
 			[
 				"snacks",
@@ -1949,6 +1964,7 @@
 				"minDays": 15,
 				"minUnits": 50,
 				"logistics": "Volunteer pickup within 48 h, hunger spots in 100+ cities",
+				"pickup": "volunteer pickup in 48 h",
 				"paper": "In-app receipt"
 			},
 			{
@@ -1987,6 +2003,7 @@
 	"returnBy": "2026-10-29",
 	"quarter": {
 		"label": "Q3 FY27",
+		"period": "Oct to Dec 2026",
 		"recovered": 630000,
 		"itc": 79000,
 		"kg": 5700,
@@ -2081,6 +2098,13 @@
 				3
 			]
 		],
+		"mixNames": {
+			"kirana": "Kirana scheme",
+			"expiresoon": "ExpireSoon",
+			"staff": "Staff sale",
+			"foodbank": "Food bank",
+			"writeoff": "Write-off"
+		},
 		"brsr": [
 			{
 				"cat": "Food waste: packaged food past quick-commerce gates",

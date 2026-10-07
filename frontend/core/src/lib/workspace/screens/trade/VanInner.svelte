@@ -16,10 +16,8 @@
 	import { prefersReducedMotion } from '../../../motion';
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
-	import { D, ES, SHOPS } from '../../data';
-	import { act } from '../../flow';
 	import { cartons, fmt } from '../../model';
-	import { store } from '../../store.svelte';
+	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import ShelfCheck from '../brand/ShelfCheck.svelte';
 	import Screen from '../common/Screen.svelte';
@@ -27,13 +25,15 @@
 	// Rakesh bhai's Tuesday round: the map with the van on its way, the shops that ordered, his word to the Outreach
 	// agent, the day-7 shelf check after it; beside it, the ExpireSoon lot the buyer's truck collects
 	let { me }: { me: User } = $props();
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
 	const app = useApp();
 	const { toast } = useNotice();
-	const h = $derived(store.state.hero);
+	const h = $derived(ws.state.hero);
 	const units = $derived(h.orders.reduce((t, o) => t + o.units, 0));
-	const full = $derived(h.orders.length === SHOPS);
+	const full = $derived(h.orders.length === c.kiranas.length);
 	const done = $derived(h.van.status === 'done');
-	let p = $state(store.state.hero.van.status === 'done' ? 1 : 0);
+	let p = $state(ws.state.hero.van.status === 'done' ? 1 : 0);
 	let running = $state(false);
 	$effect(() => {
 		if (done && !untrack(() => running)) p = 1;
@@ -49,32 +49,32 @@
 			if (k < 1) requestAnimationFrame(step);
 			else {
 				running = false;
-				act('vanRound');
-				toast({ text: `Round done · ${SHOPS} shops, ${cartons(units)}`, tone: 'ok' });
+				void ws.act('vanRound');
+				toast({ text: `Round done · ${c.kiranas.length} shops, ${cartons(units, c.sku.perCarton)}`, tone: 'ok' });
 			}
 		};
 		requestAnimationFrame(step);
 	};
 	const dispatch = () => {
-		act('dispatch');
-		toast({ text: `${D.buyer.city} lot on the buyer's truck · invoice draft next`, tone: 'ok' });
+		void ws.act('dispatch');
+		toast({ text: `${c.buyer.city} lot on the buyer's truck · invoice draft next`, tone: 'ok' });
 	};
-	const stops = $derived(D.kiranas.map((k) => ({ ...k, ordered: h.orders.find((o) => o.id === k.id) })));
+	const stops = $derived(c.kiranas.map((k) => ({ ...k, ordered: h.orders.find((o) => o.id === k.id) })));
 	const lot = $derived<[string, string][]>([
-		['Buyer', h.award ? `${D.buyer.name}, ${D.buyer.city}` : '—'],
-		['Units', `${ES.units} · ${cartons(ES.units)}`],
-		['Price', h.award ? `₹${D.counter.price.toFixed(2)} a packet` : '₹15.00 asked'],
-		['Token', h.award ? fmt.inr(D.award.token) + ' received' : '—'],
+		['Buyer', h.award ? `${c.buyer.name}, ${c.buyer.city}` : '—'],
+		['Units', `${c.lines.expiresoon.units} · ${cartons(c.lines.expiresoon.units, c.sku.perCarton)}`],
+		['Price', h.award ? `₹${c.counter.price.toFixed(2)} a packet` : `${fmt.rate(c.lines.expiresoon.price)} asked`],
+		['Token', h.award ? fmt.inr(c.award.token) + ' received' : '—'],
 		['Freight', "the buyer's own truck"]
 	]);
 </script>
 
-<Screen {me} title="Van route" sub="Kalamna godown · Nagpur, Wardha and Kamptee" back="Today">
+<Screen {me} title="Van route" sub={`${c.van.depot} · ${c.dist.cluster}`} back="Today">
 	<Columns sideWidth={380}>
 		{#snippet main()}
 			<Card pad={false} style="overflow: hidden"
 				><ClusterMap
-					kiranas={D.kiranas}
+					kiranas={c.kiranas}
 					orderedCount={h.orders.length}
 					route={h.orders.length > 0}
 					vanProgress={p}
@@ -83,20 +83,22 @@
 			>
 			<Card class="stack snug">
 				<div class="card-head">
-					<span class="card-title">Tuesday round</span><Badge
+					<span class="card-title">{c.van.day} round</span><Badge
 						tone={done ? 'green' : undefined}
-						icon={done ? 'check' : 'calendar'}>{done ? 'delivered' : 'Tue 6 Oct · from 07:00'}</Badge
+						icon={done ? 'check' : 'calendar'}>{done ? 'delivered' : `${c.van.date} · from ${c.van.leaves}`}</Badge
 					>
 				</div>
 				<div class="row wrap" style="gap: 20px">
 					<div class="stack tight" style="gap: 0">
 						<span class="num m"
-							><Roll value={h.orders.length} /><span class="subtle" style="font-size: 0.45em"> / {SHOPS}</span></span
+							><Roll value={h.orders.length} /><span class="subtle" style="font-size: 0.45em">
+								/ {c.kiranas.length}</span
+							></span
 						><span class="t-footnote subtle">shops on the round</span>
 					</div>
 					<div class="stack tight" style="gap: 0">
 						<span class="num m"><Roll value={units} /></span><span class="t-footnote subtle"
-							>packets · {cartons(units)}</span
+							>packets · {cartons(units, c.sku.perCarton)}</span
 						>
 					</div>
 				</div>
@@ -106,10 +108,11 @@
 						icon="navigation"
 						loading={running}
 						disabled={!full || running}
-						onclick={start}>{full ? 'Start the round' : `Waiting for orders · ${h.orders.length} of ${SHOPS}`}</Button
+						onclick={start}
+						>{full ? 'Start the round' : `Waiting for orders · ${h.orders.length} of ${c.kiranas.length}`}</Button
 					>{/if}
 				<span class="t-caption subtle"
-					>₹{D.rules.vanPerUnit.toFixed(2)} a packet for the van, repaid by Munchly in the price support.</span
+					>₹{ws.data.rules.vanPerUnit.toFixed(2)} a packet for the van, repaid by {ws.data.workspace.short} in the price support.</span
 				>
 				<div class="feed" style="gap: 10px">
 					<div class="row top" style="gap: 10px">
@@ -118,8 +121,8 @@
 							class="t-subhead"
 							style="padding: 9px 12px; border-radius: 16px; border-top-left-radius: 6px; background: var(--fill-2)"
 						>
-							{D.push.van.body}
-							<div class="t-caption muted">Outreach agent · Mon 18:00</div>
+							{c.push.van.body}
+							<div class="t-caption muted">Outreach agent · {c.push.van.at}</div>
 						</div>
 					</div>
 					<div class="row top" style="gap: 10px; justify-content: flex-end">
@@ -127,10 +130,10 @@
 							class="t-subhead"
 							style="padding: 9px 12px; border-radius: 16px; border-top-right-radius: 6px; background: var(--primary); color: var(--primary-fg)"
 						>
-							Theek hai. Mangalvaar subah nikal jaunga.
-							<div class="t-caption" style="opacity: 0.9">Rakesh bhai · Mon 18:04</div>
+							{c.van.reply}
+							<div class="t-caption" style="opacity: 0.9">{me.short} · {c.van.replyAt}</div>
 						</div>
-						<Avatar person={D.people.rakesh} size="sm" />
+						<Avatar person={me} size="sm" />
 					</div>
 				</div>
 			</Card>
@@ -143,7 +146,7 @@
 				<div class="card-head">
 					<span class="row tight"
 						><span class="icontile violet"><Icon name="package" size={17} stroke={2} /></span><span class="card-title"
-							>{D.buyer.city} lot</span
+							>{c.buyer.city} lot</span
 						></span
 					><Badge tone={h.truck.status === 'dispatched' ? 'blue' : h.award ? 'green' : 'violet'}
 						>{h.truck.status === 'dispatched'
