@@ -600,6 +600,8 @@ export type WsDoc = {
 	price: number | null;
 	gstPct: number | null;
 	exact: number | null;
+	/** the journey day it is dated */
+	date: string | null;
 	/** whether a PDF can be downloaded (GET …/documents/{id}) */
 	pdf: boolean;
 };

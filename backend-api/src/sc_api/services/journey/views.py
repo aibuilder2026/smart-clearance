@@ -599,6 +599,7 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
                             "price",
                             "gstPct",
                             "exact",
+                            "date",
                         )
                     },
                     "pdf": bool(d_.get("pdf")),

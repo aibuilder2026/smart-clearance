@@ -1422,7 +1422,9 @@ async def documents(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> None
     docs = money.documents(plan_, sku, awarded, support, parties, numbers=numbers, rules=s.rules)
     # without the distributor's own price (dp) there is no gap to support: no credit note
     docs = [d for d in docs if not (d["id"] == "support" and money.jsonable(d.get("amount")) is None)]
-    s.case.docs = money.jsonable([{**d, "pdf": None} for d in docs])
+    # the papers are dated the journey day the Paperwork agent drafts them
+    dated = _today(ctx, s.c).isoformat()
+    s.case.docs = money.jsonable([{**d, "pdf": None, "date": dated} for d in docs])
     s.case.phase = "settled"
     orders = (await ctx.session.execute(select(m.CaseOrder).where(m.CaseOrder.case_id == s.case.id))).scalars().all()
     if not orders:  # nothing went to the kiranas: no van round, no shelf to check; the report follows the window

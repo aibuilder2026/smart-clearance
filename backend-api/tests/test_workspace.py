@@ -274,6 +274,8 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     assert docs["invoice"]["no"] == "INV/26-27/0931" and docs["invoice"]["total"] == 11510
     assert docs["support"]["no"] == "CN/0117" and docs["support"]["amount"] == 8768
     assert docs["eway"]["status"] == "not required"
+    today = (await api.get(f"{WS}/snapshot", headers=PRIYA)).json()["clock"]["now"]
+    assert docs["invoice"]["date"] == datetime.fromisoformat(today).astimezone(IST).date().isoformat()
     assert (await api.post(f"{WS}/cases/{HERO}/documents/invoice/issue", headers=RAKESH)).status_code == 200
     assert (await api.post(f"{WS}/cases/{HERO}/review", headers=ANITA)).status_code == 200
     assert (await api.post(f"{WS}/cases/{HERO}/dispatches", json={"kind": "van"}, headers=RAKESH)).status_code == 200
