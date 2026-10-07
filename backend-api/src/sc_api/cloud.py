@@ -198,8 +198,9 @@ class Delivery:
 
     @property
     def gone(self) -> bool:
-        """the device no longer takes pushes: its token is dropped"""
-        return self.error in ("UNREGISTERED", "registration-token-not-registered", "INVALID_ARGUMENT")
+        """the device no longer takes pushes: its token is dropped. firebase_admin reports an unregistered token as
+        NOT_FOUND (messaging.UnregisteredError's code), FCM itself as UNREGISTERED"""
+        return self.error in ("UNREGISTERED", "NOT_FOUND", "registration-token-not-registered", "INVALID_ARGUMENT")
 
 
 class Messenger(Protocol):
@@ -237,11 +238,21 @@ class FirebaseMessenger:
 @dataclass
 class FakeMessenger:
     sent: list[tuple[list[str], dict[str, str]]] = field(default_factory=list)
+    # devices that are gone, reported as firebase_admin reports them (NOT_FOUND)
     gone: set[str] = field(default_factory=set)
+    # devices FCM refuses for another reason: token → its error code
+    refused: dict[str, str] = field(default_factory=dict)
+
+    def _one(self, token: str) -> Delivery:
+        if token in self.gone:
+            return Delivery(token, False, "NOT_FOUND")
+        if token in self.refused:
+            return Delivery(token, False, self.refused[token])
+        return Delivery(token, True)
 
     async def send(self, tokens: list[str], data: dict[str, str]) -> list[Delivery]:
         self.sent.append((list(tokens), dict(data)))
-        return [Delivery(t, t not in self.gone, "UNREGISTERED" if t in self.gone else None) for t in tokens]
+        return [self._one(t) for t in tokens]
 
 
 @dataclass

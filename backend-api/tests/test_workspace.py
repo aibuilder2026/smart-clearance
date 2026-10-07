@@ -406,6 +406,35 @@ async def test_the_notifier_pushes_to_a_members_devices(api, munchly, cloud):
     assert len(cloud.messenger.sent) == sent
 
 
+async def test_the_notifier_drops_gone_devices_and_logs_what_fcm_refuses(api, munchly, cloud, ctx, caplog):
+    import base64
+    import json
+    import logging
+    import re
+
+    for t in ("tok-ok", "tok-gone", "tok-refused"):
+        r = await api.post(f"{WS}/devices", json={"token": t, "userAgent": "Chrome"}, headers=PRIYA)
+        assert r.status_code == 204
+    cloud.messenger.gone.add("tok-gone")
+    cloud.messenger.refused["tok-refused"] = "PERMISSION_DENIED"
+    await setup(api)
+    await detect(api)
+    notes = [p for p in cloud.publisher.sent if p["topic"] == "test.notify"]
+    assert notes
+    with caplog.at_level(logging.WARNING, logger="sc_api.notifier"):
+        for note in notes:
+            data = base64.b64encode(json.dumps(note["payload"]).encode()).decode()
+            r = await api.post("/internal/pubsub/notify", json={"message": {"data": data}}, headers=INVOKER)
+            assert r.status_code == 200
+    # firebase_admin reports a gone device as NOT_FOUND: its token is dropped, and the refused one kept
+    tokens = set((await ctx.session.execute(select(m.Device.token))).scalars())
+    assert "tok-gone" not in tokens and {"tok-ok", "tok-refused"} <= tokens
+    # a refusal is a warning in the form infra/prod/monitoring.tf's log-based metric counts; a gone device is not
+    lines = [r.getMessage() for r in caplog.records if r.name == "sc_api.notifier"]
+    refusal = re.compile(r"notification \d+: FCM refused 1 of [23] device\(s\): PERMISSION_DENIED")
+    assert lines and all(refusal.fullmatch(x) for x in lines)
+
+
 async def test_internal_routes_need_an_allowed_caller(api, munchly):
     assert (await api.get("/internal/clients/munchly/batches")).status_code == 401
     bad = {"Authorization": "Bearer internal:someone@test.example"}

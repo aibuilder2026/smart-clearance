@@ -1,7 +1,11 @@
 """The Notifier (SC-66): a notification's push to every device its member registered, through FCM. The inbox row
 already exists (written with the change that caused it), so a push that fails loses nothing: the member reads it in the
-app. Pub/Sub delivers each notification's message at least once; one already pushed is not pushed again."""
+app. Pub/Sub delivers each notification's message at least once; one already pushed is not pushed again.
 
+A device that is gone has its token dropped. Any other refusal is logged as a warning ("notification <id>: FCM refused
+…"), which the prod alert on FCM push failures counts (infra/prod/monitoring.tf, SC-74)."""
+
+import logging
 from typing import Any
 
 from sqlalchemy import delete, select
@@ -9,6 +13,8 @@ from sqlalchemy import delete, select
 from sc_api import models as m
 from sc_api.cloud import Messenger
 from sc_api.services.context import Ctx
+
+log = logging.getLogger("sc_api.notifier")
 
 
 def link_of(n: m.Notification, ref: str | None, origin: str | None) -> str:
@@ -48,6 +54,15 @@ async def push(ctx: Ctx, messenger: Messenger, notification_id: int) -> dict[str
     gone = [r.token for r in results if r.gone]
     if gone:
         await ctx.session.execute(delete(m.Device).where(m.Device.token.in_(gone)))
+    refused = [r for r in results if not r.ok and not r.gone]
+    if refused:
+        log.warning(
+            "notification %s: FCM refused %s of %s device(s): %s",
+            n.id,
+            len(refused),
+            len(results),
+            ", ".join(sorted({r.error or "unknown" for r in refused})),
+        )
     sent = sum(1 for r in results if r.ok)
     n.pushed_wall = ctx.clock.now()
     n.push_status = "sent" if sent else "failed"

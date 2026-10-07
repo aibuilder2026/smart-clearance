@@ -3,7 +3,9 @@
 Terraform for Smart-Clearance's Google Cloud project, `aibuilder-510213`, and the scripts that run it (SC-39). For
 now it hosts the two frontend apps on Firebase Hosting, each on its own site, and lets GitHub Actions deploy them from
 `main` without a key (SC-40). It also holds `backend-api`'s Firebase Authentication, secrets and identity (SC-44), with
-its cloud runtime (Cloud SQL, Cloud Run, Cloud Build, monitoring), on since SC-50.
+its cloud runtime (Cloud SQL, Cloud Run, Cloud Build, monitoring), on since SC-50, and the journey's events, data and
+agents (SC-66): phase A (SC-70) per environment, phase B (SC-74, `agents_runtime`) the agents service and its pushes
+in prod.
 
 ## What it manages
 
@@ -139,7 +141,7 @@ the prototype's traffic.
 | `registry.tf` | Artifact Registry `sc` for backend-api's images, keeping the last 10 | under GBP 0.10 |
 | `build.tf` | Cloud Build: `sc-builder`, what builds run as (push the image, run the migrate job, deploy the service and jobs); a source bucket that empties after 7 days; `github-backend`, the keyless account GitHub Actions starts builds as, from the `prod` environment only | free tier |
 | `monitoring.tf` | An email channel (`alert_email`); an uptime check on `/readyz` (it reaches the database) from three regions every 5 minutes; alerts for the API down, 5xx, slow responses, errors in the logs, and the database's CPU, memory and disk; a dashboard. Logs stay in Cloud Logging's `_Default` bucket for 30 days. | free |
-| `budget.tf` | A monthly budget on the project (`budget_amount`, GBP 20), alerting the billing account's admins and `alert_email` at 50%, 90% and 100%, and on a forecast over 100% | free |
+| `budget.tf` | A monthly budget on the project (`budget_amount`, GBP 30 since SC-74; GBP 20 before), alerting the billing account's admins and `alert_email` at 50%, 90% and 100%, and on a forecast over 100% | free |
 | `github.tf` | On the `prod` environment: what the backend job starts Cloud Build with. Repository variables `PUBLIC_API_BASE` and `PUBLIC_FIREBASE_*`, which both apps' builds read (the build job runs outside the environment) | |
 
 **How a change reaches Cloud Run.** A merge to `main` touching `backend-api/` runs CI's backend job: it signs in as
@@ -152,7 +154,7 @@ Munchly's workspace runs on backend-api and the ADK agents (`agents/`). Phase A 
 and the backend need. Each resource comes once per environment, `prod` and `local`, so a developer's backend and
 agents only ever touch the `local` set, through `sc-api-local` and `sc-agents-local`.
 
-Phase A costs under GBP 0.01 a month. Phase B (SC-74) adds the agents service on Cloud Run, the prod push
+Phase A costs under GBP 0.01 a month. Phase B (SC-74, below) adds the agents service on Cloud Run, the prod push
 subscriptions and Cloud Scheduler, behind `agents_runtime`.
 
 | File | What | About, a month |
@@ -169,6 +171,40 @@ subscriptions and Cloud Scheduler, behind `agents_runtime`.
 `infra/scripts/tf.sh output journey` names every topic, subscription, dataset, bucket and identity per environment,
 and `output workspace_firebase_config` gives the workspace's web config. backend-api's and the agents' scripts read
 both.
+
+### Phase B: the journey in prod (SC-74)
+
+`agents_runtime = true` (in `prod/terraform.tfvars`, which needs `backend_runtime`) runs the journey in prod. Turned
+off, everything below leaves the plan and backend-api goes back to its SC-50 settings.
+
+| File | What | About, a month |
+| --- | --- | --- |
+| `agents.tf` | The `agents` Cloud Run service in `asia-south1`, as `sc-agents`: internal ingress (Pub/Sub's pushes count as internal), Cloud Run's invoker IAM for `sc-invoker` only, 0 to 2 instances of 1 vCPU and 1 GiB, a 600 s timeout (a run finishes inside its push), `/readyz` as the startup probe (both models resolve on Vertex AI) and `/healthz` for liveness. Its settings: `AGENTS_ENV=prod`, `API_BASE` (backend-api's URL), `INTERNAL_AUDIENCE`, the prod buckets and dataset, `MODEL_TIER=live`, `MODEL_PRO` and `MODEL_FLASH` (`model_pro`, `model_flash`: `gemini-3.1-pro-preview` and `gemini-3.8-flash`, both listed on Vertex AI on 7 Oct 2026), `GENAI_LOCATION` (`global`), JSON logs and traces to Cloud Trace. Created on `agents_image`, a placeholder; Cloud Build deploys every image after that, and Terraform ignores the image. | Cloud Run under GBP 0.50; Gemini GBP 1 to 10 |
+| `events.tf` | The prod push subscriptions: `prod.agents.{batch.at_risk,offer.received,deal.closed,journey.step}` to the agents service's `/pubsub` (OIDC as `sc-invoker`, audience the service's URL, ordered, 600 s ack deadline), and `prod.notify.api` to backend-api's `/internal/pubsub/notify` (OIDC as `sc-invoker`, audience `sc-backend-api`, 60 s). Each retries with backoff (10 s to 10 min), dead-letters to `prod.dead-letter` after 5 attempts and never expires. Pub/Sub's service agent may sign as `sc-invoker` and forward each to the dead letter. | free tier |
+| `scheduler.tf` | `sc-tick`, every minute: POST `/internal/jobs/tick` (OIDC as `sc-invoker`, audience `sc-backend-api`). `sc-journey-reset`, **paused**: POST `/internal/jobs/journey-reset` with `{"client": "munchly"}`, at 07:30 in India once resumed (`gcloud scheduler jobs resume sc-journey-reset --location=asia-south1`, or `run` it once). | the tick keeps backend-api warm, about GBP 0.30; 2 jobs, inside the free 3 |
+| `run.tf` | backend-api's service: a 3,600 s timeout for the workspace's live stream (which the API ends after 900 s), `EVENTS_ENV=prod`, `CLOUD=google`, the three prod buckets, `INTERNAL_AUDIENCE=sc-backend-api`, `INTERNAL_CALLERS` (`sc-agents` and `sc-invoker`), `NOTIFY_MODE=push`, `WORKSPACE_ORIGIN` (the workspace's site) and a database pool of 3 plus 2. The hydrate job gets the same topics, buckets and origin, since it writes DMS exports and publishes the journey's first events. | the stream: GBP 0 to 4 |
+| `build.tf` | `sc-builder` may act as `sc-agents`, so Cloud Build can deploy the agents service (its project-wide `roles/run.developer` already lets it). | free tier |
+| `monitoring.tf` | To `alert_email`: messages waiting in `prod.dead-letter.hold`; the agents service's 5xx (more than 5 in 5 minutes); the agents falling back on backend-api's templates in over 25% of an hour's runs (the log-based metric `sc_agents_runs`, by agent and status, from each run's log line); FCM refusing a push for a reason other than a device gone (the log-based metric `sc_fcm_push_failures`, from the Notifier's warning). | free |
+| `budget.tf` | `budget_amount` is GBP 30 (it was 20). | free |
+| `github.tf` | With `workspace_live = true` (false for now), the repository variable `WORKSPACE_API_BASE`, backend-api's URL, which turns CI's workspace build from its stub to the live API. | |
+
+Pub/Sub, BigQuery, Cloud Storage and the log-based metrics stay in their free tiers, and Artifact Registry under
+GBP 0.50. **Phase B adds about GBP 1 to 3 a month with light use and GBP 8 to 15 with heavy use, on top of the GBP 9 of
+SC-50**, nearly all of it Gemini: Pro costs GBP 1.51 a million tokens in and 9.05 out, Flash GBP 1.13 in and 5.65 out,
+and one journey about GBP 0.05 to 0.10 (Google's catalog prices in GBP, `asia-south1`).
+
+**How a change reaches the agents service.** A merge to `main` touching `agents/` runs CI's agents job after the
+backend job: it signs in as `github-backend` and starts `agents/cloudbuild.yaml` on Cloud Build, which builds the
+image, pushes it and moves the service onto it; the new revision takes traffic once `/readyz` passes. The Hosting
+deploy waits for both.
+
+**In what order.** Apply phase B before the merge that brings SC-71 to SC-73's backend-api and agents to `main`, so the
+new backend-api starts with its prod settings. Until that merge, the tick answers 404 from the old backend-api every
+minute (Cloud Scheduler logs it; nothing alerts), and the agents service runs the placeholder. Between the merge's
+backend-api deploy and its agents deploy (a few minutes), the placeholder acknowledges whatever is pushed to it; the
+tick sends a journey stalled for ten minutes its event again.
+
+`infra/scripts/tf.sh output agents` gives the service's URL, its identity, its models and the Scheduler jobs.
 
 ## Moving it to another project
 
@@ -214,3 +250,7 @@ state prefix and tfvars.
 - The budget alert comes with the runtime (`budget.tf`); until then none is set.
 - Local development and prod share one Firebase user pool. backend-api's hydrate upserts users and never deletes them,
   and every synthetic address is on a reserved `.example` domain.
+- The agents service has no uptime check: its ingress is internal, so a probe from the internet cannot reach it. Its
+  5xx alert and the dead-letter alert stand in.
+- An alert on a new log-based metric can fail to create in the same apply, while Cloud Monitoring has not seen the
+  metric yet; a second plan and apply creates it.

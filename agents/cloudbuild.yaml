@@ -1,8 +1,9 @@
-# The agents service's build and release on Cloud Build, as sc-builder (infra/prod/build.tf), the way backend-api's
-# cloudbuild.yaml releases it:
+# The agents service's build and release on Cloud Build, as sc-builder (infra/prod/build.tf: roles/run.developer, and
+# acting as sc-agents), the way backend-api's cloudbuild.yaml releases it. CI's agents job starts it on a merge to main
+# that touches agents/ (.github/workflows/ci.yml), after backend-api's:
 # 1. build the image from agents/, reusing the last one's layers, and push it to Artifact Registry;
-# 2. move the Cloud Run service `agents` onto it, once that service exists (infra phase B, SC-74, adds it with its
-#    push subscriptions); until then the build stops after the push.
+# 2. move the Cloud Run service `agents` onto it. Terraform makes the service with agents_runtime (infra phase B,
+#    SC-74, infra/prod/agents.tf) and ignores its image from then on; where it is off, the build stops after the push.
 # _DEPLOY=false stops after the push. By hand, from the repository's root:
 #
 #   gcloud builds submit agents --config=agents/cloudbuild.yaml \
@@ -43,7 +44,7 @@ steps:
       - |
         [ "${_DEPLOY}" = true ] || exit 0
         if ! gcloud run services describe "${_SERVICE}" --region="${_REGION}" --format='value(metadata.name)' >/dev/null 2>&1; then
-          echo "agents: no Cloud Run service '${_SERVICE}' yet (infra phase B, SC-74); the image is pushed, nothing deployed"
+          echo "agents: no Cloud Run service '${_SERVICE}' (infra/prod agents_runtime is off); the image is pushed, nothing deployed"
           exit 0
         fi
         # waits for the new revision to be ready: its startup probe is /readyz (both models resolve), and the

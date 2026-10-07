@@ -60,6 +60,7 @@ infra/**/.terraform/
 infra/**/*.tfstate
 infra/**/*.tfstate.*
 infra/**/*.tfplan
+infra/**/*.plan.txt
 infra/**/backend_override.tf
 infra/**/crash.log
 # written by infra/scripts/deploy.sh from Terraform's outputs

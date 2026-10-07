@@ -28,6 +28,15 @@ hosting_sites = {
 operators = ["user:gilchristfan@gmail.com"]
 
 # backend-api in the cloud (SC-50): Cloud SQL, Cloud Run, Cloud Build, Artifact Registry, monitoring and the budget.
-# About GBP 9 a month, nearly all Cloud SQL; the budget warns at GBP 20.
+# About GBP 9 a month, nearly all Cloud SQL.
 backend_runtime = true
 alert_email     = "gilchristfan@gmail.com"
+
+# The journey in prod (infra phase B, SC-74): the agents service, the push subscriptions, Cloud Scheduler, backend-api's
+# live-workspace settings and the agents' alerts. GBP 1 to 3 a month with light use, 8 to 15 with heavy use (Gemini
+# above all), on top of the GBP 9; so the budget warns at GBP 30.
+agents_runtime = true
+budget_amount  = 30
+
+# The workspace app stays on its stub until this is turned on (it sets WORKSPACE_API_BASE for CI's workspace build).
+workspace_live = false

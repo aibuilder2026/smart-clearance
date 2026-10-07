@@ -1,7 +1,9 @@
 # backend-api is built and deployed by Cloud Build (backend-api/cloudbuild.yaml), started keylessly from GitHub Actions
-# (SC-50). Behind backend_runtime, like everything that costs money; builds sit in Cloud Build's free 2,500 minutes.
+# (SC-50), and so are the agents (agents/cloudbuild.yaml, SC-74). Behind backend_runtime, like everything that costs
+# money; builds sit in Cloud Build's free 2,500 minutes.
 # - sc-builder is what the build runs as. It pushes to the sc repository, runs the migrate job, and deploys new
-#   revisions of the API and its jobs as sc-api and sc-migrator, and nothing else.
+#   revisions of the API and its jobs as sc-api and sc-migrator, and of the agents service as sc-agents (with
+#   agents_runtime on), and nothing else.
 # - github-backend is what the workflow signs in as, through the same Workload Identity pool as the deployer, and only
 #   from the prod environment. It may start builds as sc-builder and stage their source, and nothing else: it cannot
 #   deploy or read data itself. github-deployer stays Hosting-only (deployer.tf).
@@ -64,12 +66,13 @@ resource "google_storage_bucket_iam_member" "builder" {
   member = google_service_account.builder[0].member
 }
 
-# deploying a revision or a job that runs as sc-api or sc-migrator means acting as them
+# deploying a revision or a job that runs as sc-api or sc-migrator means acting as them; and as sc-agents for the agents
+# service's revisions (agents/cloudbuild.yaml, infra phase B, SC-74), which roles/run.developer already lets it deploy
 resource "google_service_account_iam_member" "builder_acts_as" {
-  for_each = var.backend_runtime ? {
+  for_each = var.backend_runtime ? merge({
     api      = google_service_account.api[0].name
     migrator = google_service_account.migrator[0].name
-  } : {}
+  }, var.agents_runtime ? { agents = google_service_account.agents.name } : {}) : {}
 
   service_account_id = each.value
   role               = "roles/iam.serviceAccountUser"

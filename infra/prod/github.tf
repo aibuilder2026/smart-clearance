@@ -49,7 +49,7 @@ resource "github_actions_environment_variable" "prod" {
 # auth.tf). Repository variables, not the environment's: the build job runs outside the environment (on pull
 # requests too), and none of them is a secret, as each ships in the apps' JavaScript.
 resource "github_actions_variable" "app" {
-  for_each = var.backend_runtime ? {
+  for_each = var.backend_runtime ? merge({
     PUBLIC_API_BASE             = google_cloud_run_v2_service.api[0].uri
     PUBLIC_FIREBASE_API_KEY     = data.google_firebase_web_app_config.console.api_key
     PUBLIC_FIREBASE_AUTH_DOMAIN = data.google_firebase_web_app_config.console.auth_domain
@@ -60,7 +60,10 @@ resource "github_actions_variable" "app" {
     WORKSPACE_FIREBASE_APP_ID              = google_firebase_web_app.workspace.app_id
     WORKSPACE_FIREBASE_MESSAGING_SENDER_ID = data.google_firebase_web_app_config.workspace.messaging_sender_id
     WORKSPACE_ID                           = var.workspace_client
-  } : {}
+    }, var.workspace_live ? {
+    # the workspace app's build against backend-api instead of its stub (SC-73's ci.yml); off until workspace_live
+    WORKSPACE_API_BASE = google_cloud_run_v2_service.api[0].uri
+  } : {}) : {}
 
   repository    = local.github_repo
   variable_name = each.key

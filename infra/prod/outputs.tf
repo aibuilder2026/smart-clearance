@@ -85,15 +85,29 @@ output "workspace_firebase_config" {
 }
 
 output "journey" {
-  description = "What backend-api's and the agents' scripts read for each environment (SC-66): Pub/Sub topics and pull subscriptions, the BigQuery dataset, the buckets, and the identities."
+  description = "What backend-api's and the agents' scripts read for each environment (SC-66): Pub/Sub topics, the pull subscriptions (local) and push subscriptions (prod, with agents_runtime), the BigQuery dataset, the buckets, and the identities."
   value = {
     for env in local.event_envs : env => {
       topics        = { for id, t in local.topics : t.name => google_pubsub_topic.this[id].name if t.env == env }
       subscriptions = { for id, s in local.pull_subscriptions : id => google_pubsub_subscription.pull[id].name if s.env == env }
+      pushed        = env == "prod" ? { for id, s in google_pubsub_subscription.push : id => s.push_config[0].push_endpoint } : {}
       dataset       = google_bigquery_dataset.this[env].dataset_id
       buckets       = { for id, b in local.buckets : b.kind => google_storage_bucket.app[id].name if b.env == env }
       agents        = env == "prod" ? google_service_account.agents.email : google_service_account.agents_local.email
       invoker       = google_service_account.invoker.email
     }
+  }
+}
+
+output "agents" {
+  description = "The agents service in prod (infra phase B, SC-74), with agents_runtime on: its address (internal only, so only Pub/Sub's pushes reach it), its identity, its models, and the Scheduler jobs."
+  value = {
+    runtime         = var.agents_runtime
+    url             = var.agents_runtime ? google_cloud_run_v2_service.agents[0].uri : null
+    service         = var.agents_runtime ? google_cloud_run_v2_service.agents[0].name : null
+    service_account = google_service_account.agents.email
+    invoker         = google_service_account.invoker.email
+    models          = { pro = var.model_pro, flash = var.model_flash, location = var.genai_location }
+    scheduler_jobs  = { for job in concat(google_cloud_scheduler_job.tick, google_cloud_scheduler_job.journey_reset) : job.name => job.paused == true ? "paused" : job.schedule }
   }
 }
