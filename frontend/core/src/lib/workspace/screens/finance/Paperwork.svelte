@@ -15,10 +15,8 @@
 	import { useNotice } from '../../../notice.svelte';
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
-	import { D } from '../../data';
-	import { act } from '../../flow';
 	import { csv, download } from '../../model';
-	import { store } from '../../store.svelte';
+	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import Locked from '../common/Locked.svelte';
 	import Screen from '../common/Screen.svelte';
@@ -28,11 +26,13 @@
 	// S5 Paperwork (Anita, finance): the document pack the Paperwork agent drafts at the award, each document with its
 	// reason, one open on paper beside them (in a sheet on phones and tablets) (screens/finance.jsx Paperwork)
 	let { me }: { me: User } = $props();
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
 	const app = useApp();
 	const { toast } = useNotice();
-	const DOC = (id: string) => D.docs.find((d) => d.id === id)!;
+	const DOC = (id: string) => c.docs.find((d) => d.id === id)!;
 
-	const h = $derived(store.state.hero);
+	const h = $derived(ws.state.hero);
 	const ready = $derived(!!h.docs);
 	let sel = $state('invoice');
 	let sheet = $state(false);
@@ -47,13 +47,13 @@
 			'MF-2409-117-document-pack.csv',
 			csv([
 				['Document', 'Issued by', 'Number', 'Status', 'Amount (₹)', 'Note'],
-				...D.docs.map((d) => [d.type, d.owner, d.no, d.status, d.amount ? d.amount.toFixed(2) : '', d.note || ''])
+				...c.docs.map((d) => [d.type, d.owner, d.no, d.status, d.amount ? d.amount.toFixed(2) : '', d.note || ''])
 			])
 		);
 		toast({ text: 'Document pack exported', tone: 'ok' });
 	};
 	const review = () => {
-		act('review');
+		void ws.act('review');
 		toast({ text: 'Pack reviewed · logged', tone: 'ok' });
 	};
 </script>
@@ -68,7 +68,7 @@
 		>Document pack</SectionTitle
 	>
 	<div class="docgrid">
-		{#each D.docs as d (d.id)}<div class={cx('docpick', sel === d.id && app.bp === 'desktop' && 'on')}>
+		{#each c.docs as d (d.id)}<div class={cx('docpick', sel === d.id && app.bp === 'desktop' && 'on')}>
 				<DocCard doc={d} onopen={() => open(d.id)} />
 			</div>{/each}
 	</div>
@@ -84,7 +84,8 @@
 		</div></Card
 	>{/snippet}
 {#snippet side()}{#if app.bp === 'desktop'}<SectionTitle
-			sub={doc.owner === D.client.short ? 'Issued by Munchly' : 'Drafted for Rakesh Traders'}>{doc.type}</SectionTitle
+			sub={doc.owner === ws.data.client.short ? 'Issued by Munchly' : 'Drafted for Rakesh Traders'}
+			>{doc.type}</SectionTitle
 		>{#key sel}<div in:rise={{ y: 6, duration: 180 }}><Paper id={sel} /></div>{/key}{/if}{/snippet}
 
 <Screen {me} title="Paperwork" sub="MF-2409-117 · prepared by the Paperwork agent at the award">
@@ -107,7 +108,7 @@
 					: "Drafts the whole pack once the lot is awarded and on the buyer's truck."}
 			/>
 			<div class="docgrid">
-				{#each D.docs as d (d.id)}<Skeleton h={132} r={20} />{/each}
+				{#each c.docs as d (d.id)}<Skeleton h={132} r={20} />{/each}
 			</div>
 		</div>
 	{:else}

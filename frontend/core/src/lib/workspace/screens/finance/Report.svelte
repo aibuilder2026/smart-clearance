@@ -17,9 +17,8 @@
 	import { useNotice } from '../../../notice.svelte';
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
-	import { CHIPS, D, INVOICE, PLAN, SHOPS } from '../../data';
 	import { csv, download, fmt } from '../../model';
-	import { store } from '../../store.svelte';
+	import { useWorkspace } from '../../source';
 	import type { Quarter, User } from '../../types';
 	import Locked from '../common/Locked.svelte';
 	import Screen from '../common/Screen.svelte';
@@ -29,9 +28,11 @@
 	// and the BRSR table; this batch: what it posted to the ledger, and the money planned against the money made
 	// (screens/finance.jsx Report)
 	let { me }: { me: User } = $props();
+	const ws = useWorkspace();
+	const c = $derived(ws.case!);
 	const app = useApp();
 	const { toast } = useNotice();
-	const Q = D.quarter;
+	const Q = $derived(ws.data.quarter);
 	const CH_NAMES = {
 		kirana: 'Kirana scheme',
 		expiresoon: 'ExpireSoon',
@@ -39,16 +40,16 @@
 		foodbank: 'Food bank',
 		writeoff: 'Write-off'
 	};
-	const EVIDENCE = `${INVOICE.no} · ES-24117 · ${SHOPS} kirana order logs · CN/0117`;
+	const EVIDENCE = $derived(`${c.invoice.no} · ES-24117 · ${c.kiranas.length} kirana order logs · CN/0117`);
 	const PERIODS: { id: 'quarter' | 'batch'; label: string }[] = [
 		{ id: 'quarter', label: 'Quarter' },
 		{ id: 'batch', label: 'This batch' }
 	];
 
 	type Row = Quarter['brsr'][number] & { id: string };
-	const h = $derived(store.state.hero);
+	const h = $derived(ws.state.hero);
 	let view = $state<'quarter' | 'batch'>('quarter');
-	const rows: Row[] = Q.brsr.map((r, i) => ({ ...r, id: 'r' + i }));
+	const rows: Row[] = $derived(Q.brsr.map((r, i) => ({ ...r, id: 'r' + i })));
 	const grid = $derived(
 		`display: grid; gap: 12px; grid-template-columns: ${app.bp === 'phone' ? 'repeat(2, minmax(0,1fr))' : 'repeat(auto-fit, minmax(150px, 1fr))'}`
 	);
@@ -60,7 +61,7 @@
 				['Category', 'Diverted (kg)', 'Resold (kg)', 'Donated (kg)', 'Disposed (kg)', 'Evidence'],
 				...Q.brsr.map((r) => [r.cat, r.diverted, r.resold, r.donated, r.disposed, r.evidence]),
 				...(h.posted
-					? [['This batch MF-2409-117 (packaged food)', PLAN.kg, PLAN.kg, 0, 0, EVIDENCE.replace(/ · /g, '; ')]]
+					? [['This batch MF-2409-117 (packaged food)', c.plan.kg, c.plan.kg, 0, 0, EVIDENCE.replace(/ · /g, '; ')]]
 					: [])
 			])
 		);
@@ -132,7 +133,7 @@
 					onclick={() => (view = 'batch')}
 					style="padding: 12px 16px; gap: 12px; text-align: left; box-shadow: var(--shadow-1), 0 0 0 1.5px color-mix(in oklab, var(--primary) 40%, transparent)"
 					><Product name="pack-chips" size={36} /><span class="grow t-subhead"
-						><b>MF-2409-117 posted</b> · {fmt.inr(D.actual.net)} recovered · {fmt.kg(PLAN.kg)} out of landfill · BRSR row
+						><b>MF-2409-117 posted</b> · {fmt.inr(c.actual.net)} recovered · {fmt.kg(c.plan.kg)} out of landfill · BRSR row
 						added</span
 					><Badge tone="green" icon="check">ledger</Badge></button
 				>{/if}
@@ -178,34 +179,34 @@
 							<span class="row tight"
 								><Product name="pack-chips" size={48} /><span class="stack tight" style="gap: 0"
 									><b>MF-2409-117 · Masala Chips 150 g</b><span class="t-footnote subtle"
-										>Rakesh Traders, Nagpur · trued up after {fmt.day(D.returnBy)}</span
+										>Rakesh Traders, Nagpur · trued up after {fmt.day(c.returnBy)}</span
 									></span
 								></span
 							><Badge tone="green" icon="check">posted to the ledger</Badge>
 						</div>
 						<div style={grid}>
 							<Tile label="Recovered" icon="indian-rupee"
-								><Money value={D.actual.net} size="s" roll from={0} style="color: var(--primary-text)" /></Tile
+								><Money value={c.actual.net} size="s" roll from={0} style="color: var(--primary-text)" /></Tile
 							>
 							<Tile label="Better than destroying" icon="scale"
-								><Money value={D.actual.swing} size="s" roll from={0} /></Tile
+								><Money value={c.actual.swing} size="s" roll from={0} /></Tile
 							>
 							<Tile label="GST credit kept" icon="badge-check"
-								><Money value={PLAN.itcRetained} size="s" roll from={0} /></Tile
+								><Money value={c.plan.itcRetained} size="s" roll from={0} /></Tile
 							>
 							<Tile label="Out of landfill" icon="leaf"
-								><span class="num s"><Roll value={PLAN.kg} format={(v) => v.toFixed(1)} /> kg</span></Tile
+								><span class="num s"><Roll value={c.plan.kg} format={(v) => v.toFixed(1)} /> kg</span></Tile
 							>
 							<Tile label="CO₂e avoided" icon="cloud" foot="indicative"
-								><span class="num s"><Roll value={PLAN.co2} format={(v) => fmt.num(Math.round(v))} /> kg</span></Tile
+								><span class="num s"><Roll value={c.plan.co2} format={(v) => fmt.num(Math.round(v))} /> kg</span></Tile
 							>
 						</div>
 						<div class="stack tight">
 							<b class="t-subhead">BRSR line</b><span
 								class="mono t-footnote"
 								style="padding: 10px 12px; border-radius: 12px; background: var(--fill)"
-								>{fmt.kg(PLAN.kg)} diverted from disposal · {fmt.num(PLAN.co2)} kg CO₂e avoided (indicative) · 0 meals (nothing
-								donated)</span
+								>{fmt.kg(c.plan.kg)} diverted from disposal · {fmt.num(c.plan.co2)} kg CO₂e avoided (indicative) · 0 meals
+								(nothing donated)</span
 							><span class="t-caption subtle">Evidence: {EVIDENCE}</span>
 						</div>
 					</div>
@@ -215,21 +216,21 @@
 					live={h.phase === 'settled' && !!h.shelf}
 					text={h.phase === 'settled'
 						? 'Posts the ledger once the return window closes on ' +
-							fmt.day(D.returnBy) +
+							fmt.day(c.returnBy) +
 							', and writes the BRSR row with evidence links.'
 						: 'Posts this batch to the ledger once the paperwork is done and the return window closes.'}
 				/>{/if}
 			<SectionTitle sub="Planned on the Route Room; actual after the negotiation">Money reading</SectionTitle>
-			<MoneyPanel plan={PLAN} sku={CHIPS} actual={h.award ? D.actual : undefined} compact={app.bp !== 'desktop'} />
+			<MoneyPanel plan={c.plan} sku={c.sku} actual={h.award ? c.actual : undefined} compact={app.bp !== 'desktop'} />
 			{#if h.award}<Card class="row wrap" style="gap: 14px"
 					><span class="icontile violet"><Icon name="trending-down" size={17} /></span>
 					<div class="grow">
-						<b>{fmt.inr(D.actual.delta)} under plan</b>
+						<b>{fmt.inr(c.actual.delta)} under plan</b>
 						<div class="t-footnote muted">
-							The ExpireSoon lot sold at ₹{D.counter.price.toFixed(2)} against ₹15.00 planned: {fmt.inr(
-								D.actual.esPlanned
+							The ExpireSoon lot sold at ₹{c.counter.price.toFixed(2)} against ₹15.00 planned: {fmt.inr(
+								c.actual.esPlanned
 							)} became
-							{fmt.inr(D.actual.esActual)}. Kiranas came in as planned; they are final once the return window closes.
+							{fmt.inr(c.actual.esActual)}. Kiranas came in as planned; they are final once the return window closes.
 						</div>
 					</div></Card
 				>{/if}
