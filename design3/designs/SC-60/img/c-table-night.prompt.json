@@ -1,0 +1,16 @@
+{
+  "name": "c-table-night",
+  "model": "Qwen-Image-2.1 bf16 (local), qwen_image_bf16_mac.py",
+  "size": 2048,
+  "aspect": "16:9",
+  "output": "2752x1536",
+  "steps": 40,
+  "created": "2026-10-07",
+  "postprocess": "cwebp -q 82; the PNG originals stay local in src/",
+  "designed_in": "design3/designs/SC-60",
+  "prompt": "Make it evening. The window is dark blue night outside. One warm desk lamp lights the table from the left, with long soft shadows. The tiny kirana shops, the godown, the community kitchen and the wholesale warehouse are lit from inside with small warm windows. The phone screen stays plain matte black. The green painted path glows softly. Everything else stays exactly as it is: the same hand and phone, the same miniature buildings in the same places, the same chai tumbler.",
+  "seed": 6002,
+  "edit_of": "c-table.png",
+  "mode": "edit_image (the day plate as the condition image), so the geometry holds for the overlay",
+  "use": "SC-60 option C, One yes, by night (dark mode)"
+}

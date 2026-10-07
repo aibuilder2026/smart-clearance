@@ -1,0 +1,15 @@
+{
+  "name": "c-table",
+  "model": "Qwen-Image-2.1 bf16 (local), qwen_image_bf16_mac.py",
+  "size": 2048,
+  "aspect": "16:9",
+  "output": "2752x1536",
+  "steps": 40,
+  "created": "2026-10-07",
+  "postprocess": "cwebp -q 82; the PNG originals stay local in src/",
+  "designed_in": "design3/designs/SC-60",
+  "prompt": "Tilt-shift photograph, soft morning light from a window at the left, shallow depth of field. A pale wooden table. At the right of the frame a person's hand holds a modern smartphone upright, its screen a plain matte black rectangle facing the camera squarely, filling about a quarter of the frame height. Spread across the table in front of the phone, a handmade miniature diorama of an Indian snack trade: a tiny corrugated godown warehouse with its shutter rolled up and stacked brown cartons inside, a lane of three tiny colourful kirana shops with rows of snack packets hanging at their fronts, a tiny white delivery van, a tiny modern wholesale warehouse with a small blue truck at its bay, a small community kitchen with a blue awning, and in the far corner a tiny fenced dump yard with its gate closed. A steel tumbler of chai steams beside the diorama. One thin softly glowing green painted path runs along the table from the godown to the kirana lane and on to the wholesale warehouse. Warm sand, terracotta and sage-green palette. No lettering, no words or numbers on anything, no logos, no faces.",
+  "seed": 6001,
+  "use": "SC-60 option C, One yes: the morning table, by day",
+  "attempts": "one; the phone screen came out plain black as asked, the hand natural, the six places readable and apart"
+}

@@ -29,51 +29,38 @@ const endless = (page: Page) =>
 		LOADING
 	);
 
+const scrollTo = (p: Page, sel: string) => p.evaluate((s) => document.querySelector(s)!.scrollIntoView(), sel);
 const STATES: [string, (page: Page) => Promise<void>][] = [
-	['site · first viewport', async () => {}],
+	['site · first viewport, the film playing', async () => {}],
+	['site · the statement, half read', async (p) => scrollTo(p, '#how')],
 	[
-		'site · how it works, its cards rising',
+		"site · the table, at the person's yes",
 		async (p) => {
-			await p.evaluate(() => window.scrollTo(0, (document.querySelector('#how') as HTMLElement).offsetTop));
+			await scrollTo(p, '.tb-stage');
+			await p.waitForFunction(() => document.querySelector('.tb-focus h3')?.textContent === 'You', null, {
+				timeout: 15000
+			});
 		}
 	],
 	[
-		'site · the packs taking the street',
+		'site · the table, the packs flying',
 		async (p) => {
-			await p.evaluate(() => window.scrollTo(0, (document.querySelector('#exits') as HTMLElement).offsetTop));
+			await scrollTo(p, '.tb-stage');
+			await p.waitForFunction(() => document.querySelector('.tb-focus h3')?.textContent === 'Outreach', null, {
+				timeout: 15000
+			});
 		}
 	],
 	[
-		'site · the batch split by exit',
+		'site · the table, sold',
 		async (p) => {
-			await p.evaluate(() => window.scrollTo(0, (document.querySelector('#exits') as HTMLElement).offsetTop));
-			await p.waitForTimeout(4500);
-			await p.evaluate(() =>
-				window.scrollBy(0, (document.querySelector('.split') as HTMLElement).getBoundingClientRect().top - 120)
-			);
+			await scrollTo(p, '.tb-stage');
+			await p.waitForSelector('.tb-result', { timeout: 25000 });
 		}
 	],
-	[
-		"site · the town, at the person's yes",
-		async (p) => {
-			await p.waitForFunction(() => /One yes/.test(document.querySelector('.town-caption')?.textContent || ''));
-		}
-	],
-	[
-		'site · the town, a card beside an agent',
-		async (p) => {
-			await p.waitForFunction(() => !!document.querySelector('.town-tip b'));
-		}
-	],
-	[
-		'site · the town, a place opened',
-		async (p) => {
-			await p.waitForFunction(() =>
-				/Sold, not binned/.test(document.querySelector('.town-caption')?.textContent || '')
-			);
-			await p.locator('.town-pin', { hasText: 'Distributor' }).click();
-		}
-	],
+	['site · the chapters, their cards rising', async (p) => scrollTo(p, '#watch')],
+	['site · the agents at work after the yes', async (p) => scrollTo(p, '#work')],
+	['site · the ledger', async (p) => scrollTo(p, '#ledger')],
 	[
 		'site · Book a demo open',
 		async (p) => {

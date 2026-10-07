@@ -6,8 +6,8 @@ export const PROTOTYPE = 'http://127.0.0.1:8790';
 export const PORT = 'http://127.0.0.1:4175';
 
 /** Opens a page as a parity run sees it: the theme following the device, fonts loaded, motion settled. A prototype page
- *  scrolls inside its app root; `windowScroll` lets its document scroll instead, as the port's does, so a section taller
- *  than the window is captured whole on both sides. */
+ *  other than the landing page scrolls inside its app root; `windowScroll` lets its document scroll instead, as the
+ *  port's does, so a section taller than the window is captured whole on both sides. */
 export async function open(page: Page, url: string, { windowScroll = false } = {}) {
 	await page.addInitScript(() => {
 		try {

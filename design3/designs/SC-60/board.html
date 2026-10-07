@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-60 Landing Reimagined</title>
+<meta name="description" content="The Smart-Clearance landing page reimagined in the manner of shopify.com/uk: round 1's three pages, and round 2's three treatments of the agents at work on the table.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Noto+Sans+Devanagari:wght@600&display=swap">
+<style>
+/* SC-60's review board: the request, the page as it is, what Shopify does and what is ported, three options, the pick. */
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px -6px rgb(17 41 30 / 0.1);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark }
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
+::selection { background: color-mix(in oklab, var(--green) 24%, transparent); }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 48px 16px 72px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+h2 { margin: 64px 0 14px; font-size: clamp(25px, 3vw, 32px); font-weight: 720; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 72, "wdth" 88; }
+h3 { font-size: 24px; font-weight: 720; letter-spacing: -0.018em; font-variation-settings: "opsz" 48, "wdth" 90; }
+p { margin: 0 0 12px; max-width: 72ch; color: var(--ink-2); text-wrap: pretty; }
+p b, li b, td b { color: var(--ink); font-weight: 600; }
+.lede { font-size: 18px; margin-top: 14px; }
+blockquote { margin: 16px 0; padding: 14px 18px; border-radius: 14px; background: var(--sunken); color: var(--ink); font-size: 16px; max-width: 76ch; }
+blockquote p { color: var(--ink); max-width: none; }
+blockquote p:last-child { margin: 0; }
+ul, ol { margin: 0 0 12px; padding-left: 20px; color: var(--ink-2); max-width: 76ch; display: grid; gap: 6px; }
+code { font: 500 0.9em/1 var(--mono); }
+table { width: 100%; border-collapse: collapse; margin: 8px 0 16px; font-size: 14.5px; }
+th, td { padding: 10px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); color: var(--ink-2); }
+th { color: var(--ink); font-weight: 650; }
+td:first-child { color: var(--ink); font-weight: 600; white-space: nowrap; }
+
+.grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.frames { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+@media (min-width: 900px) { .frames { grid-template-columns: minmax(0, 2.6fr) minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); align-items: start; } }
+.pair { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .pair { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: start; } }
+figure { margin: 0; min-width: 0; }
+figure img, figure video { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+.tall img { max-height: 720px; width: auto; max-width: 100%; }
+
+.card { padding: 22px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.shared { display: grid; gap: 18px; }
+@media (min-width: 900px) { .shared { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.shared h3 { font: 650 16px/1.35 var(--ui); letter-spacing: 0; margin-bottom: 6px; }
+.shared p, .shared li { font-size: 14.5px; }
+
+.opt { margin-top: 22px; display: grid; gap: 18px; padding: 24px 22px; border-radius: 28px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); scroll-margin-top: 20px; }
+.opt.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.opt header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.opt header p { margin: 0; flex-basis: 100%; font-size: 17px; color: var(--ink); max-width: 76ch; }
+.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 600 12.5px/1 var(--ui); color: var(--green-text); background: var(--green-soft); }
+.tag.amber { color: var(--amber-text); background: var(--amber-soft); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+.btn.primary { color: #fff; background: var(--green); box-shadow: none; }
+:root[data-theme="dark"] .btn.primary, html:not([data-theme="light"]) .btn.primary { color: #03170d; }
+.cols { display: grid; gap: 18px; }
+@media (min-width: 900px) { .cols { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.cols h4 { margin: 0 0 6px; font: 650 14px/1.3 var(--ui); color: var(--ink); }
+.cols ul { font-size: 14px; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; padding: 0; list-style: none; }
+.toc a { display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border-radius: 999px; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--ink); background: var(--surface); box-shadow: 0 0 0 1px var(--line); }
+.pick { margin-top: 22px; padding: 22px; border-radius: 20px; background: var(--amber-soft); color: var(--ink); }
+.pick p { color: var(--ink); }
+.foot { margin-top: 48px; font-size: 13px; color: var(--ink-3); }
+.theme { position: fixed; right: 16px; top: 16px; z-index: 5; display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.theme button { min-height: 32px; padding: 0 12px; border: 0; border-radius: 999px; font: 600 13px/1 var(--ui); color: var(--ink-2); background: none; cursor: pointer; }
+.theme button[aria-pressed="true"] { color: var(--ink); background: var(--sunken); }
+</style>
+<script>
+  (function () { try { var m = localStorage.getItem("sc60-board-theme"); if (m) document.documentElement.setAttribute("data-theme", m); } catch (e) {} })();
+</script>
+<body>
+<div class="theme" role="group" aria-label="Appearance"><button type="button" data-theme="light">Light</button><button type="button" data-theme="dark">Dark</button><button type="button" data-theme="">Auto</button></div>
+<main class="wrap">
+  <h1>SC-60 · The landing page reimagined</h1>
+  <p class="lede">Three landing pages for smartclearance.com, in the manner of shopify.com/uk: a first viewport that is the story, a statement that fills in as it is read, chapters as colour fields with the product at work, a ledger, and a way into the demo that is always at hand. <b>Round 2 is on the table:</b> the maintainer asked for A's film hero with C's table as the scene of the agents at work. Three treatments of that scene are below; round 1 follows for the record.</p>
+  <ul class="toc"><li><a href="#r2">Round 2</a></li><li><a href="#r2-1">1 · The tour on the table</a></li><li><a href="#r2-2">2 · In focus</a></li><li><a href="#r2-3">3 · The relay</a></li><li><a href="#pick">The pick</a></li><li><a href="#request">Round 1</a></li><li><a href="#a">A</a></li><li><a href="#b">B</a></li><li><a href="#c">C</a></li></ul>
+
+  <h2 id="r2">Round 2 · A's film, C's table, the agents at work</h2>
+  <blockquote><p>I want a culmination of A and C. I like A as the hero perfectly no doubt, when I scroll down on A, I need the "Five exits one batch" with [option C] replaced and blended and it show the agents in work like it does in current existing landing, in a very robust and engaging way, I like the background C. I just agents centered and be in focus showing what is happening</p></blockquote>
+  <p>One page: A's film hero and the statement, then <b>the table as the scene where the agents work the batch</b>, then A's chapters, the ledger, the workspace, plans and the close. The exits strip is gone; what the kiranas and the buyer took, and what the bin would have cost, are the scene's tags. The scene is the same in every option: C's table by day and night, blended into the page; the ten agents and the person at their posts (five round the godown, You and Paperwork at the phone, Outreach at the shops, the Lister and the Negotiator at the buyer's bay and truck, Impact at the landfill); the phone's screen showing the plan waiting, placed, then the agents at work; each agent lit in turn; the packs leaving the phone for the shops and the truck; the result with Replay. The options differ in how the agent at work is shown.</p>
+
+  <section class="opt" id="r2-1" aria-labelledby="r2-1-h">
+    <header><h3 id="r2-1-h">1 · The tour on the table</h3><span class="tag">As the town's tour</span>
+      <p>The whole table stays in view; the camera leans a little toward the agent at work (1.35×), a small card opens on a stem beside it with a line that fills while its stop holds, and a caption at the foot carries the steps and Pause. 1.4 s an agent, 1.8 s on the yes; about 16 s in all.</p></header>
+    <div class="frames">
+      <figure><img src="round-2/option-1/light-1440.webp" alt="Round 2 option 1, light, at 1440: the table with the agents at their posts, the Valuer at work with a small card beside it, the caption at the foot." loading="lazy"><figcaption>Light · 1440 × 900, mid-tour</figcaption></figure>
+      <figure><img src="round-2/option-1/dark-1440.webp" alt="Round 2 option 1, dark, at 1440: the same scene under the desk lamp." loading="lazy"><figcaption>Dark · 1440 × 900</figcaption></figure>
+      <figure><img src="round-2/option-1/light-390.webp" alt="Round 2 option 1 on a phone, light." loading="lazy"><figcaption>Light · 390 × 844</figcaption></figure>
+      <figure><img src="round-2/option-1/moment-1440.webp" alt="Round 2 option 1 at the end: every agent lit, the packs arrived, the result reading Sold, not binned." loading="lazy"><figcaption>The end: sold, not binned</figcaption></figure>
+    </div>
+    <div class="pair">
+      <figure><video src="round-2/option-1/motion.mp4" poster="round-2/option-1/motion.webp" controls muted playsinline preload="metadata"></video><figcaption>The tour at 1440, about 19 s.</figcaption></figure>
+      <div class="cols" style="grid-template-columns: 1fr"><div><h4>Why</h4><ul><li>The closest to the landing page as it is: the agents at their posts, the whole business in one picture.</li><li>Calm: the picture barely moves; the cards do the telling.</li></ul></div><div><h4>Trade-offs</h4><ul><li>The cards are small, so what each agent is doing is a sentence, not the work itself.</li><li>The agents are at the edges of the picture, not at its centre.</li></ul></div></div>
+    </div>
+    <div class="links"><a class="btn primary" href="round-2/option-1/mockup.html?theme=light">Open 1, light</a><a class="btn" href="round-2/option-1/mockup.html?theme=dark">Open 1, dark</a></div>
+  </section>
+
+  <section class="opt rec" id="r2-2" aria-labelledby="r2-2-h">
+    <header><h3 id="r2-2-h">2 · In focus</h3><span class="tag">Recommended</span><span class="tag amber">Agents centred, at work</span>
+      <p>One agent at a time in a large card at the centre of the scene: its icon, name, post, what it did, and what it is doing live inside the card (the Watcher's gates and 1,360; the Valuer's five prices; the Router's split; the yes with ₹21,770 and the amber button; Outreach's Hindi offer; the Lister's lot; the Negotiator's counter; Paperwork's documents; Impact's kilos), with a rail of all eleven to jump between. Behind it the table closes in on the agent's post (1.6×) and recedes a little, so the agent is in focus. Same pace, Pause.</p></header>
+    <div class="frames">
+      <figure><img src="round-2/option-2/light-1440.webp" alt="Round 2 option 2, light, at 1440: the Valuer's card at the centre with its five prices, the table closed in on the godown behind it." loading="lazy"><figcaption>Light · 1440 × 900, mid-tour</figcaption></figure>
+      <figure><img src="round-2/option-2/dark-1440.webp" alt="Round 2 option 2, dark, at 1440." loading="lazy"><figcaption>Dark · 1440 × 900</figcaption></figure>
+      <figure><img src="round-2/option-2/light-390.webp" alt="Round 2 option 2 on a phone, light: the agent's card docked at the foot over the table." loading="lazy"><figcaption>Light · 390 × 844</figcaption></figure>
+      <figure><img src="round-2/option-2/moment-1440.webp" alt="Round 2 option 2 at the end: the whole table, every agent lit, the packs arrived, the result." loading="lazy"><figcaption>The end: the whole table again</figcaption></figure>
+    </div>
+    <div class="pair">
+      <figure><video src="round-2/option-2/motion.mp4" poster="round-2/option-2/motion.webp" controls muted playsinline preload="metadata"></video><figcaption>The agents in focus at 1440, about 19 s.</figcaption></figure>
+      <div class="cols" style="grid-template-columns: 1fr"><div><h4>Why</h4><ul><li>What was asked for in so many words: the agents centred and in focus, showing what is happening.</li><li>Each card carries the agent's real work, not a caption: the gates, the prices, the split, the offer, the counter, the documents, the kilos.</li><li>The rail lets a visitor jump to any agent; Pause holds the clock.</li></ul></div><div><h4>Trade-offs</h4><ul><li>The table is seen in pieces while the tour runs; it rests on the whole table before and after.</li><li>About 16 s of motion in the section, with Pause (WCAG 2.2.2).</li></ul></div></div>
+    </div>
+    <div class="links"><a class="btn primary" href="round-2/option-2/mockup.html?theme=light">Open 2, light</a><a class="btn" href="round-2/option-2/mockup.html?theme=dark">Open 2, dark</a></div>
+  </section>
+
+  <section class="opt" id="r2-3" aria-labelledby="r2-3-h">
+    <header><h3 id="r2-3-h">3 · The relay</h3><span class="tag">By scroll</span>
+      <p>Option 2's picture, driven by the scroll instead of the clock: the stage pins, each agent is a stretch of scroll, a rail of the eleven stands at the left (a progress bar on phones). Nothing moves on its own; the visitor sets the pace.</p></header>
+    <div class="frames">
+      <figure><img src="round-2/option-3/light-1440.webp" alt="Round 2 option 3, light, at 1440: the rail of agents at the left, the Valuer's card at the centre, the table closed in behind." loading="lazy"><figcaption>Light · 1440 × 900, mid-scroll</figcaption></figure>
+      <figure><img src="round-2/option-3/dark-1440.webp" alt="Round 2 option 3, dark, at 1440." loading="lazy"><figcaption>Dark · 1440 × 900</figcaption></figure>
+      <figure><img src="round-2/option-3/light-390.webp" alt="Round 2 option 3 on a phone, light: a progress bar under the bar, the card at the foot." loading="lazy"><figcaption>Light · 390 × 844</figcaption></figure>
+      <figure><img src="round-2/option-3/moment-1440.webp" alt="Round 2 option 3 at the Lister's stretch: the lot listed, the packs leaving for the buyer's truck." loading="lazy"><figcaption>The Lister's stretch</figcaption></figure>
+    </div>
+    <div class="pair">
+      <figure><video src="round-2/option-3/motion.mp4" poster="round-2/option-3/motion.webp" controls muted playsinline preload="metadata"></video><figcaption>Scrolling through the eleven at 1440, about 16 s.</figcaption></figure>
+      <div class="cols" style="grid-template-columns: 1fr"><div><h4>Why</h4><ul><li>Under the visitor's hand throughout: no clock, no Pause needed.</li><li>The same cards as option 2.</li></ul></div><div><h4>Trade-offs</h4><ul><li>About seven screens of scroll inside the page before the chapters.</li><li>A visitor who scrolls fast sees the agents flicker past.</li></ul></div></div>
+    </div>
+    <div class="links"><a class="btn primary" href="round-2/option-3/mockup.html?theme=light">Open 3, light</a><a class="btn" href="round-2/option-3/mockup.html?theme=dark">Open 3, dark</a></div>
+  </section>
+
+  <h3 style="margin-top: 28px">Open in round 2</h3>
+  <ol>
+    <li><b>The scene's place.</b> Built after the statement, where the story starts. It could instead sit after the chapters, where the exits strip was.</li>
+    <li><b>The chapters.</b> The scene shows every agent's work; the four chapters show the product's cards. Keep both, or let the scene carry it?</li>
+  </ol>
+  <div class="pick" id="pick">
+    <h3>The pick</h3>
+    <p>Round 1: a culmination of A and C (the quote above). Round 2: not yet made. Recommended: <b>2 · In focus</b>.</p>
+  </div>
+
+  <h2 id="request" style="margin-top: 96px">Round 1 · The request</h2>
+
+  <blockquote>
+    <p>Reimagine the entire landing page and see if you can come with something really more engaging that showcases the Agentic journey of smartclearance in a crisp and surreal way and really engaging manner. Come up with the best hero that is real eye catching and compatible across all device types. You have qwen and ltx2.5 and ffmpeg.</p>
+    <p>Draw inspiration from shopify.com/uk and then see how you can have the similar experience ported over to our app. Think hard and give me 3 best solutions.</p>
+  </blockquote>
+
+  <h2 id="current">The page as it is</h2>
+  <p>The town hero (SC-32 to SC-42): rich, but busy. Eleven pins, a caption, Replay and zoom share the first screen with the heading, and the 16.9 s tour has to be watched to be understood. Below it the story is told three more times, in three more devices. On phones the town is a square the visitor drags and pinches.</p>
+  <div class="frames">
+    <figure><img src="current/light-1440.webp" alt="The landing page as it is, light, at 1440: the heading over the miniature town, mid-tour, with the Watcher's card open." loading="lazy"><figcaption>Light · 1440 × 900</figcaption></figure>
+    <figure><img src="current/dark-1440.webp" alt="The landing page as it is, dark, at 1440: the town at night, mid-tour." loading="lazy"><figcaption>Dark · 1440 × 900</figcaption></figure>
+    <figure><img src="current/light-390.webp" alt="The landing page as it is on a phone, light." loading="lazy"><figcaption>Light · 390 × 844</figcaption></figure>
+    <figure><img src="current/dark-390.webp" alt="The landing page as it is on a phone, dark." loading="lazy"><figcaption>Dark · 390 × 844</figcaption></figure>
+  </div>
+
+  <h2 id="shopify">What shopify.com/uk does, and what is ported</h2>
+  <p>Read on 7 Oct 2026 at 1440 and 390. Its page is about 11,000 px tall, near-black, in light display type, and every section shows the product in motion. What carries over is the grammar, not the clothes: our type, our grounds, both themes, and figures from <code>core/money.js</code>.</p>
+  <table>
+    <thead><tr><th>Shopify</th><th>Here, in every option</th></tr></thead>
+    <tbody>
+      <tr><td>A film of one real merchant at work, a few huge words over it, the last word rotating.</td><td>The first viewport is one scene of the business, not a header: a film of it (A), the whole of it in the sky (B), or the one human moment in it (C).</td></tr>
+      <tr><td>A statement that fills in word by word as it is scrolled.</td><td>One paragraph, 28 to 64 px, whose words fill from the tertiary ink to the full ink as it is read. Both inks hold 4.5:1, so it reads before it fills.</td></tr>
+      <tr><td>Chapters as inset panels in committed colours, the product in motion inside.</td><td>Chapters as inset colour fields (deep green, sunken, amber for the yes, night green), each with the product's own card at work.</td></tr>
+      <tr><td>A marquee of storefronts as proof.</td><td>The five exits as a strip of cards, the two taken ones ringed, the bin in red. Nothing loops.</td></tr>
+      <tr><td>A persistent film pill, bottom right.</td><td>"Watch the 6-minute demo" as a pill on every screen, gone at the close.</td></tr>
+      <tr><td>Big numbers in bands.</td><td>A ledger: Impact's own document for the batch, its lines filling in.</td></tr>
+    </tbody>
+  </table>
+  <div class="shared">
+    <div class="card"><h3>Kept</h3><p>The bar, Your own workspace (the islands), Plans, the close on the dusk plate, the footer, Book a demo and Find your workspace. No client is named anywhere.</p></div>
+    <div class="card"><h3>Motion, every option</h3><p>Every motion plays once as its part comes into view and stops within five seconds, or is under the visitor's hand (scroll, a tap), or carries Pause. Under reduced motion every step lands in its final state.</p></div>
+    <div class="card"><h3>Built on the kit</h3><p>Each option is the real page: the kit's components, tokens and cards, Framer Motion for the motion, the window as the scroller, as the SvelteKit port has it. <code>sc60-core.jsx</code> holds what they share; <code>sc60-options.jsx</code> the three heroes and spines.</p></div>
+  </div>
+
+  <section class="opt" id="a" aria-labelledby="a-h">
+    <header><h3 id="a-h">A · The film</h3><span class="tag">Shopify's hero, literally</span>
+      <p>The miniature business comes alive on film: the forklift rolls out of the godown, the trucks move, the people walk, the painted road brightens once. Over it, enormous light type whose last word turns once through "buyer, shelf, invoice, ledger line" and rests on "chance". The film runs 8 s, so it carries Pause. Below, Shopify's spine: the statement, four chapters, the ledger, the exits, the workspace, plans, the close.</p></header>
+    <div class="frames">
+      <figure><img src="option-a/light-1440.webp" alt="Option A, light, at 1440: the town on film under the heading in light type, Book a demo and Watch the 6-minute demo at the foot." loading="lazy"><figcaption>Light · 1440 × 900</figcaption></figure>
+      <figure><img src="option-a/dark-1440.webp" alt="Option A, dark, at 1440: the town at night on film." loading="lazy"><figcaption>Dark · 1440 × 900</figcaption></figure>
+      <figure><img src="option-a/light-390.webp" alt="Option A on a phone, light: the film cropped, the heading at the foot." loading="lazy"><figcaption>Light · 390 × 844</figcaption></figure>
+      <figure><img src="option-a/dark-390.webp" alt="Option A on a phone, dark." loading="lazy"><figcaption>Dark · 390 × 844</figcaption></figure>
+    </div>
+    <div class="pair">
+      <figure><video src="option-a/motion.mp4" poster="option-a/motion.webp" controls muted playsinline preload="metadata"></video><figcaption>The first 12 s at 1440: the film plays once, the last word turns, then the statement fills in.</figcaption></figure>
+      <figure><img src="option-a/moment-1440.webp" alt="Option A's chapters: Say yes once in an amber field with the plan's card, then The agents do the rest in a night-green field with three cards." loading="lazy"><figcaption>The chapters: the yes in amber, the agents' work in night green.</figcaption></figure>
+    </div>
+    <div class="cols">
+      <div><h4>Why</h4><ul><li>The most cinematic, and the closest port of Shopify's page.</li><li>The chapters carry the whole story in order, each with the real card.</li><li>The lighter display weight (Bricolage 520) tests Shopify's airiness on our type.</li></ul></div>
+      <div><h4>Trade-offs</h4><ul><li>Two clips (720p day, 540p night) on the first paint; the plates stand in until they load.</li><li>The hero shows the world, not the mechanism; the yes is a chapter down the page.</li><li>The lighter weight departs from DESIGN.md (720 to 780): an open question.</li></ul></div>
+      <div><h4>The build would touch</h4><ul><li><code>site/site.jsx</code>: the hero, statement, chapters, ledger, exits strip, demo pill.</li><li><code>site/assets/media/</code>: the two clips, with sidecars.</li><li>The port: <code>Hero.svelte</code>, new <code>Statement</code>, <code>Chapter</code>, <code>Ledger</code>, <code>ExitsRow</code>, <code>DemoPill</code>; <code>Town.svelte</code> retired.</li></ul></div>
+    </div>
+    <div class="links"><a class="btn primary" href="option-a/mockup.html?theme=light">Open A, light</a><a class="btn" href="option-a/mockup.html?theme=dark">Open A, dark</a></div>
+  </section>
+
+  <section class="opt" id="b" aria-labelledby="b-h">
+    <header><h3 id="b-h">B · Islands in the sky</h3><span class="tag">The journey is the page</span>
+      <p>The business as six islands floating in a sky, joined by the painted road: the maker's factory, the distributor's godown, the kirana lane, a buyer's warehouse, a food bank and, farthest and smallest, the landfill. The copy stands in the band of cloud at the foot. Scrolling drives the stage through six stops: Stocked, At risk, Priced and split, One yes, Sold, Settled. Each lights its island and opens its card with the figure and the agents; during Sold the packs run the road as dots. A rail of the stops at the top left; a progress bar on phones.</p></header>
+    <div class="frames">
+      <figure><img src="option-b/light-1440.webp" alt="Option B, light, at 1440: six islands floating in a pale sky, the heading in the cloud at the foot, a rail of stops at the top left." loading="lazy"><figcaption>Light · 1440 × 900</figcaption></figure>
+      <figure><img src="option-b/dark-1440.webp" alt="Option B, dark, at 1440: the islands in a night sky, their windows lit." loading="lazy"><figcaption>Dark · 1440 × 900</figcaption></figure>
+      <figure><img src="option-b/light-390.webp" alt="Option B on a phone, light: the heading on a wash of sky over the islands, a progress bar under the bar." loading="lazy"><figcaption>Light · 390 × 844</figcaption></figure>
+      <figure><img src="option-b/dark-390.webp" alt="Option B on a phone, dark." loading="lazy"><figcaption>Dark · 390 × 844</figcaption></figure>
+    </div>
+    <div class="pair">
+      <figure><video src="option-b/motion.mp4" poster="option-b/motion.webp" controls muted playsinline preload="metadata"></video><figcaption>Scrolling through the six stops at 1440, about 18 s.</figcaption></figure>
+      <figure><img src="option-b/moment-1440.webp" alt="Option B at the Sold stop: the Retailers and the buyer's pins lit, violet and green dots on the road, the card reading 1,360 packs sold, 0 destroyed." loading="lazy"><figcaption>The Sold stop: the packs on the road, the card with the figure and the agents.</figcaption></figure>
+    </div>
+    <div class="cols">
+      <div><h4>Why</h4><ul><li>The journey told most completely, stop by stop, in one picture: the most surreal of the three.</li><li>Under the visitor's hand throughout: no autoplay, no video.</li><li>The same stage on every device, panned on phones.</li></ul></div>
+      <div><h4>Trade-offs</h4><ul><li>About six screens of scroll before the rest of the page; some visitors scroll through without reading.</li><li>Pins and cards over a busy picture need the wash and the glass to stay legible.</li><li>Close in kind to the town hero the maintainer has iterated three times.</li></ul></div>
+      <div><h4>The build would touch</h4><ul><li><code>site/site.jsx</code>: the sky stage replaces the town; the statement, ledger, exits strip, demo pill.</li><li><code>site/assets/plates/</code>: <code>islands-sky.webp</code> by day and night, with sidecars.</li><li>The port: <code>Sky.svelte</code> on <code>motion</code>'s scroll values; <code>Town.svelte</code> retired.</li></ul></div>
+    </div>
+    <div class="links"><a class="btn primary" href="option-b/mockup.html?theme=light">Open B, light</a><a class="btn" href="option-b/mockup.html?theme=dark">Open B, dark</a></div>
+  </section>
+
+  <section class="opt rec" id="c" aria-labelledby="c-h">
+    <header><h3 id="c-h">C · One yes</h3><span class="tag">Recommended</span><span class="tag amber">The human moment</span>
+      <p>Shopify's real person at a kitchen counter becomes ours: 09:00, chai, a hand holding a phone over the table, and on the table the business in miniature. The plan is lifted off the phone as the real approve sheet, tied to the screen that shows the same sheet. The Approve button is live: tapping it places the plan, streams the packs out of the sheet to the kiranas and the buyer's truck, lights the agents as they work, and rolls the swing. Replay. Below: the agents' day as one line from 09:00 to the ledger, the exits, the ledger, the workspace, plans, the close.</p></header>
+    <div class="frames">
+      <figure><img src="option-c/light-1440.webp" alt="Option C, light, at 1440: the heading at the left over a window, the approve sheet beside a hand holding a phone, the miniature godown, shops, warehouse and dump on the table with their tags." loading="lazy"><figcaption>Light · 1440 × 900, waiting for the yes</figcaption></figure>
+      <figure><img src="option-c/dark-1440.webp" alt="Option C, dark, at 1440: the same table under a desk lamp at night." loading="lazy"><figcaption>Dark · 1440 × 900</figcaption></figure>
+      <figure><img src="option-c/light-390.webp" alt="Option C on a phone, light: the heading, then the approve sheet as a card with the amber button in the first screen." loading="lazy"><figcaption>Light · 390 × 844</figcaption></figure>
+      <figure><img src="option-c/dark-390.webp" alt="Option C on a phone, dark." loading="lazy"><figcaption>Dark · 390 × 844</figcaption></figure>
+    </div>
+    <div class="pair">
+      <figure><video src="option-c/motion.mp4" poster="option-c/motion.webp" controls muted playsinline preload="metadata"></video><figcaption>The tap at 1440, about 11 s: the plan placed, the packs on their way, the agents lighting, the result.</figcaption></figure>
+      <figure><img src="option-c/moment-1440.webp" alt="Option C after the tap: the sheet reads Plan placed with ₹26,340 better than the bin and five agents at work; green and violet dots run to the shops and the truck; the result reads Sold, not binned." loading="lazy"><figcaption>After the tap: the agents at work, the packs arriving, the result.</figcaption></figure>
+    </div>
+    <div class="cols">
+      <div><h4>Why</h4><ul><li>It proves the mechanism in the first viewport: the money on screen, one tap, the agents at work. What a visitor remembers is "I pressed Approve and watched the packs go".</li><li>The closest in spirit to Shopify's hero, a real human moment, in our world: surreal in scale, calm in colour.</li><li>Honest on every device: the plan is a phone screen, so on a phone it is the screen. No video, no scroll hijack.</li></ul></div>
+      <div><h4>Trade-offs</h4><ul><li>The lifted sheet must stay in the clear part of the picture at every size: held at 1440 and 390, to be checked at 1366 × 768 and 820 × 1180 in the build.</li><li>A visitor may try to tap the phone itself; the sheet is tied to it with a line and the phone shows the same sheet.</li><li>The hand is a render; the night plate is an edit of the day plate so the geometry holds.</li></ul></div>
+      <div><h4>The build would touch</h4><ul><li><code>site/site.jsx</code>: the table hero with the live sheet and the stream; the statement, the agents' day, the exits strip, the ledger, the demo pill.</li><li><code>site/assets/plates/</code>: <code>table.webp</code> by day and night, with sidecars.</li><li>The port: <code>Yes.svelte</code> and <code>Day.svelte</code>; the approve sheet shared with the app's; <code>Town.svelte</code> retired.</li></ul></div>
+    </div>
+    <div class="links"><a class="btn primary" href="option-c/mockup.html?theme=light">Open C, light</a><a class="btn" href="option-c/mockup.html?theme=dark">Open C, dark</a></div>
+  </section>
+
+  <h2 id="compare">Side by side</h2>
+  <table>
+    <thead><tr><th></th><th>A · The film</th><th>B · Islands in the sky</th><th>C · One yes</th></tr></thead>
+    <tbody>
+      <tr><td>The hero's idea</td><td>The world, alive</td><td>The whole journey, in the sky</td><td>The one human moment</td></tr>
+      <tr><td>What the visitor does</td><td>Watches 8 s, reads, scrolls</td><td>Scrolls the journey</td><td>Taps Approve</td></tr>
+      <tr><td>Where the agents appear</td><td>Chapters down the page</td><td>At each stop's card</td><td>Lighting on the sheet as they work, then the day's line</td></tr>
+      <tr><td>Phones</td><td>The film cropped, copy at the foot</td><td>The stage full-screen, panned, card at the foot</td><td>Heading, the sheet, then the table; the tap brings the table into view</td></tr>
+      <tr><td>Weight</td><td>Two clips, about 2 to 4 MB</td><td>Two plates, about 250 kB each</td><td>Two plates, about 220 kB each</td></tr>
+      <tr><td>Risk</td><td>Type weight; the yes is far down</td><td>A long pinned stage</td><td>The sheet's place at odd sizes</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Open questions</h2>
+  <ol>
+    <li><b>A's display weight.</b> Bricolage 520 over the film, Shopify's airiness, against DESIGN.md's 720 to 780. Keep it for the film hero only, or hold the brand weight?</li>
+    <li><b>C's table on film.</b> The table could also be an LTX clip (the chai steams, the lamp flickers once, the van moves) under the live sheet. Worth the weight?</li>
+    <li><b>The exits strip.</b> Every option keeps the workspace, plans and the close. Should the exits strip go, now that the hero and the ledger tell the same batch?</li>
+  </ol>
+
+  <div class="pick">
+    <h3>Round 1's pick</h3>
+    <p>A culmination of A and C: A's hero, C's table as the scene of the agents at work. See round 2 above.</p>
+  </div>
+  <p class="foot">Every company, person and figure is fictional. The figures are computed in <code>design3/core/money.js</code>. Plates by Qwen-Image 2.1 (local), clips by LTX 2.5 Fast (local); each carries its prompt sidecar.</p>
+</main>
+<script>
+  (function () {
+    var btns = document.querySelectorAll(".theme button");
+    function paint() { var cur = document.documentElement.getAttribute("data-theme") || ""; btns.forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.theme === cur)); }); }
+    btns.forEach(function (b) { b.addEventListener("click", function () { var t = b.dataset.theme; if (t) document.documentElement.setAttribute("data-theme", t); else document.documentElement.removeAttribute("data-theme"); try { if (t) localStorage.setItem("sc60-board-theme", t); else localStorage.removeItem("sc60-board-theme"); } catch (e) {} paint(); }); });
+    paint();
+  })();
+</script>
+</body>
+</html>

@@ -8,8 +8,13 @@ const TO = { opacity: '1', transform: 'none' };
 /** A card that rises once it comes into view, its rows ([data-rise]) following it in turn (design3/site useRise:
  *  420 ms each, the rows from 160 ms, 110 ms apart; about a second and a half, once). `arm` runs when the card is set
  *  to wait for the reader and `show` as it starts to rise. A card on screen when the page starts, or for a reader who
- *  asks for less motion, stays as the server sent it: in place. Returns the cleanup. */
-export function riseInView(card: HTMLElement, { arm, show }: { arm?: () => void; show?: () => void } = {}) {
+ *  asks for less motion, stays as the server sent it: in place. `amount` is how much of the card must be in view.
+ *  Returns the cleanup. */
+export function riseInView(
+	card: HTMLElement,
+	{ arm, show }: { arm?: () => void; show?: () => void } = {},
+	amount = 0.3
+) {
 	if (prefersReducedMotion.current || card.getBoundingClientRect().top < innerHeight) return;
 	const rows = [...card.querySelectorAll<HTMLElement>('[data-rise]')];
 	Object.assign(card.style, CARD);
@@ -27,7 +32,7 @@ export function riseInView(card: HTMLElement, { arm, show }: { arm?: () => void;
 			});
 			show?.();
 		},
-		{ threshold: 0.3 }
+		{ threshold: amount }
 	);
 	io.observe(card);
 	return () => io.disconnect();

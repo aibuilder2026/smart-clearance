@@ -8,7 +8,9 @@
 		"distributorCity": "Nagpur",
 		"units": 1840,
 		"sellPerDay": 12,
-		"product": "Masala Chips 150 g"
+		"product": "Masala Chips 150 g",
+		"mrp": 30,
+		"bestBefore": "2026-11-18"
 	},
 	"risk": {
 		"atRisk": 1360,
@@ -45,13 +47,17 @@
 			"buy": 10,
 			"free": 2
 		},
-		"foodbankMinDays": 15
+		"foodbankMinDays": 15,
+		"reservePerUnit": 13.5
 	},
 	"plan": {
 		"net": 21770,
+		"pctMRP": 53,
+		"swing": 26339.6,
 		"soldUnits": 1360,
 		"itcRetained": 1224,
 		"kg": 217.6,
+		"co2": 544,
 		"writeOff": {
 			"total": 26329.6,
 			"perUnit": 19.36
@@ -119,7 +125,15 @@
 	"award": {
 		"units": 772,
 		"price": 14.2,
-		"gross": 10962.4
+		"gross": 10962.4,
+		"token": 1644,
+		"bid": 13
+	},
+	"support": {
+		"total": 8767.6
+	},
+	"offer": {
+		"title": "आज का खास ऑफर"
 	},
 	"actual": {
 		"net": 21152.4,

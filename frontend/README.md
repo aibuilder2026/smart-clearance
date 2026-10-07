@@ -151,7 +151,7 @@ Never edit the generated files (`api/src/seed/*`, `admin/src/lib/seed/*`, `core/
 ## Known gaps
 
 - The Firefox smoke run could not be run in the agent's sandboxed shell (Firefox cannot start there); WebKit and Chromium were. Run `corepack pnpm test:e2e` on a normal machine to cover it.
-- The landing page ships about 139 kB of JavaScript (gzip): about 128 kB before SC-32, and the hero's town adds about 11 kB net (its WebGL2 renderer, camera, gestures and graph). bits-ui and its floating-ui layer are about 30 kB of it and the icon registry about 9 kB. A leaner menu and sheet, or a per-route icon registry, would cut it.
+- The landing page ships about 159 kB of JavaScript (gzip), measured on the scripts its prerendered page loads; SC-60's film and table replaced SC-32's WebGL2 town. bits-ui and its floating-ui layer are about 30 kB of it and the icon registry about 9 kB. A leaner menu and sheet, or a per-route icon registry, would cut it.
 - On the mock, demo requests stay in the browser (`localStorage`, `sc-demo-requests`); with `PUBLIC_API_BASE` they go to `backend-api`, and the console lists them. The hosted pages still run on the mocks, until backend-api runs in the cloud.
 - The client workspace app is not ported yet. `core/src/lib/coverage.ts` lists the design-system pieces waiting for it.
 - On its mock the console lets any active staff member's address in with any password, and its changes stay in the browser (`sc-console`); two fictional demo requests stand in for the landing page's. With `PUBLIC_API_BASE` it signs in with Firebase Authentication and reads and writes `backend-api`.

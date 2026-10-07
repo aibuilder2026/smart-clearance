@@ -1,10 +1,10 @@
 (function() {
-  const { useState, useEffect, useLayoutEffect, useRef } = React;
-  const { useReducedMotion, motion } = Motion;
+  const { useState, useEffect, useLayoutEffect, useRef, useMemo } = React;
+  const { useReducedMotion, motion, useScroll, useTransform, useInView, AnimatePresence, animate } = Motion;
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, S = window.SC3_SCREENS, P = window.SC3_PLATFORM;
   const fmt = M.fmt;
   const { cx, Icon, IconButton, Button, Badge, Sheet, Field, Input, Select, Textarea, Menu, Mark, Wordmark, Money, Roll, GateChips, Product, Segmented, ModeMenuButton, ThemeProvider, AppRoot, NoticeHost, useApp, useTheme } = K;
-  const IMG = window.SC3_SITE_IMG || "assets/plates/";
+  const IMG = window.SC3_SITE_IMG || "assets/plates/", MEDIA = window.SC3_SITE_MEDIA || "assets/media/";
   const LINKS = Object.assign({ demo: "../demo/Smart-Clearance%20demo%20v3.html", app: "../app/Smart-Clearance%20app%20v3.html", console: "../console/Smart-Clearance%20console%20v3.html" }, window.SC3_LINKS || {});
   const external = (href) => /^https?:/.test(href);
   const linkProps = (href) => external(href) ? { href, target: "_blank", rel: "noopener" } : { href };
@@ -16,9 +16,56 @@
   if (P) P.usePersistence();
   const lineOf = (id) => D.PLAN.lines.find((l) => l.id === id);
   const KL = lineOf("kirana"), ESL = lineOf("expiresoon"), AW = D.AWARD;
-  const BATCH = D.BATCHES.find((b) => b.hero), DIST = D.DISTRIBUTORS[BATCH.distributor];
-  const SHOPS = D.KIRANAS.length, BIN = D.PLAN.writeOff.total, ES_NET = AW.gross - ESL.cost;
+  const BATCH = D.BATCHES.find((b) => b.hero), DIST = D.DISTRIBUTORS[BATCH.distributor], SKU = D.SKUS[BATCH.sku];
+  const SHOPS = D.KIRANAS.length, BIN = D.PLAN.writeOff.total, ES_NET = AW.gross - ESL.cost, N = D.RISK.atRisk;
+  const row = (id) => D.PLAN.rows.find((r) => r.id === id);
+  const planned = (id) => D.PLAN.lines.some((l) => l.id === id);
   const rate = (v) => Math.abs(v % 1) < 1e-9 ? fmt.inr(v) : fmt.inr2(v);
+  const SCHEME = M.RULES.scheme, BID = 13;
+  const BEST_BEFORE = (/* @__PURE__ */ new Date(BATCH.bestBefore + "T00:00:00")).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  const OFFER = { title: D.PUSH.offer.title, body: `नमस्ते! ${SKU.name} पर आज खास ऑफर: ${SCHEME.buy} पैकेट लो, ${SCHEME.free} मुफ़्त. Best before ${BEST_BEFORE}. सिर्फ़ 48 घंटे. ऑर्डर के लिए टैप करें.` };
+  const EASE = [0.22, 1, 0.36, 1];
+  const agentsAt = (...stages) => P.AGENTS.filter((a) => !a.gate && stages.includes(a.stage)).map((a) => a.name);
+  const DID = {
+    data: `${fmt.num(BATCH.units)} packs in stock, selling ${BATCH.sellPerDay} a day`,
+    watcher: `${fmt.num(N)} packs won't sell in the ${BATCH.daysLeft} days left`,
+    vision: "Read the label: the date matches",
+    valuer: `Five exits priced; the bin would cost ${fmt.inr(-BIN)}`,
+    router: `${fmt.num(KL.units)} to ${SHOPS} kiranas, ${fmt.num(AW.units)} to one buyer`,
+    gate: `Approved in one tap, ${fmt.inr(D.PLAN.net)} on screen`,
+    outreach: `${fmt.num(KL.units)} packs to ${SHOPS} kiranas, buy ${SCHEME.buy} get ${SCHEME.free} free`,
+    lister: `${fmt.num(AW.units)} packs listed in the distributor's name`,
+    negotiator: `Countered a bid to ${rate(AW.price)} a pack`,
+    paperwork: "The invoice, credit note and GST memo, drafted",
+    impact: `${fmt.num(D.PLAN.kg)} kg kept out of landfill`
+  };
+  const AGENTS = P.AGENTS.map((a) => ({ id: a.gate ? "you" : a.id, name: a.gate ? "You" : a.name, icon: a.icon, human: !!a.gate, did: DID[a.id] }));
+  const AGENT = Object.fromEntries(AGENTS.map((a) => [a.id, a]));
+  function useRise(amount = 0.3) {
+    const ref = useRef(null);
+    const reduce = useReducedMotion();
+    const inView = useInView(ref, { once: true, amount });
+    const shown = reduce || inView;
+    const move = (y, delay) => ({ initial: reduce ? false : { opacity: 0, y }, animate: shown ? { opacity: 1, y: 0 } : void 0, transition: { duration: 0.42, delay: reduce ? 0 : delay, ease: EASE } });
+    return { shown, card: { ref, ...move(16, 0) }, rise: (i) => move(10, 0.16 + i * 0.11) };
+  }
+  function useLit(on2, n, first, every) {
+    const reduce = useReducedMotion();
+    const [k, setK] = useState(reduce ? n : 0);
+    useEffect(() => {
+      if (reduce) {
+        setK(n);
+        return;
+      }
+      if (!on2 || k >= n) return;
+      const t = setTimeout(() => setK(k + 1), k === 0 ? first : every);
+      return () => clearTimeout(t);
+    }, [on2, k, reduce]);
+    return k;
+  }
+  function AgentChips({ who, lit, person }) {
+    return /* @__PURE__ */ React.createElement("span", { className: "agents" }, who.map((w, j) => /* @__PURE__ */ React.createElement("span", { key: w, className: cx("chip-agent", (lit == null || j < lit) && "on", person && j === 0 && "person") }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }), w)));
+  }
   const SECTIONS = [["how", "How it works"], ["agents", "Agents"], ["teams", "For teams"], ["pricing", "Pricing"]];
   const goTo = (id) => {
     const el = document.getElementById(id);
@@ -42,41 +89,266 @@
       onDemo();
     } }, "Book a demo"))));
   }
-  const { Town } = window.SC3_TOWN;
-  function Hero({ onFind }) {
-    return /* @__PURE__ */ React.createElement("section", { className: "hero", id: "agents", "aria-labelledby": "hero-h" }, /* @__PURE__ */ React.createElement("div", { className: "hero-frame" }, /* @__PURE__ */ React.createElement("div", { className: "hero-copy" }, /* @__PURE__ */ React.createElement("h1", { id: "hero-h", className: "hero-h" }, "Every near-expiry carton gets a second chance."), /* @__PURE__ */ React.createElement("p", { className: "hero-sub" }, "AI agents find the best exit for short-dated stock. You say yes once."), /* @__PURE__ */ React.createElement("div", { className: "hero-ctas" }, /* @__PURE__ */ React.createElement("a", { className: "btn btn-primary", ...linkProps(LINKS.demo) }, "Watch the 6-minute demo"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-secondary", onClick: onFind }, "Find your workspace"))), /* @__PURE__ */ React.createElement("div", { className: "hero-stage" }, /* @__PURE__ */ React.createElement(Town, null))));
+  const WORDS = ["buyer", "shelf", "invoice", "ledger line", "chance"];
+  function Hero({ onDemo }) {
+    const night = useTheme().resolved === "dark";
+    const reduce = useReducedMotion();
+    const vid = useRef(null);
+    const [state, setState] = useState(reduce ? "still" : "playing");
+    const [w, setW] = useState(reduce ? WORDS.length - 1 : 0);
+    useEffect(() => {
+      if (reduce || w >= WORDS.length - 1) return;
+      const t = setTimeout(() => setW(w + 1), w === 0 ? 1500 : 1e3);
+      return () => clearTimeout(t);
+    }, [w, reduce]);
+    const src = MEDIA + (night ? "town-night.mp4" : "town.mp4"), poster = IMG + (night ? "business-night.webp" : "business.webp");
+    useEffect(() => {
+      const L = window.SC3_LOADER;
+      if (!L) return;
+      let live = true;
+      const im = new Image();
+      im.decoding = "async";
+      im.src = poster;
+      const done = () => {
+        if (live && L.plateDrawn) requestAnimationFrame(() => L.plateDrawn(night));
+      };
+      (im.decode ? im.decode() : new Promise((r) => {
+        im.onload = r;
+        im.onerror = r;
+      })).then(done, done);
+      return () => {
+        live = false;
+      };
+    }, [poster, night]);
+    useEffect(() => {
+      setState(reduce ? "still" : "playing");
+    }, [src, reduce]);
+    const toggle = () => {
+      const v = vid.current;
+      if (!v) return;
+      if (state === "playing") {
+        v.pause();
+        setState("paused");
+      } else {
+        if (state === "ended") v.currentTime = 0;
+        v.play();
+        setState("playing");
+      }
+    };
+    return /* @__PURE__ */ React.createElement("section", { className: "hero film", id: "top-hero", "aria-labelledby": "hero-h" }, /* @__PURE__ */ React.createElement("div", { className: "film-media", "aria-hidden": "true" }, reduce ? /* @__PURE__ */ React.createElement("img", { src: poster, alt: "" }) : /* @__PURE__ */ React.createElement("video", { key: src, ref: vid, src, poster, muted: true, playsInline: true, autoPlay: true, preload: "auto", onEnded: () => setState("ended") }), /* @__PURE__ */ React.createElement("div", { className: "film-shade" })), /* @__PURE__ */ React.createElement("div", { className: "film-copy" }, /* @__PURE__ */ React.createElement("h1", { id: "hero-h", className: "film-h" }, "Every near-expiry carton gets a second ", /* @__PURE__ */ React.createElement("span", { className: "film-word" }, /* @__PURE__ */ React.createElement("span", { className: "sr-only" }, "chance"), /* @__PURE__ */ React.createElement(AnimatePresence, { mode: "popLayout", initial: false }, /* @__PURE__ */ React.createElement(motion.span, { key: WORDS[w], "aria-hidden": "true", initial: reduce ? false : { opacity: 0, y: "0.5em" }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: "-0.5em" }, transition: { duration: 0.42, ease: EASE } }, WORDS[w]))), "."), /* @__PURE__ */ React.createElement("p", { className: "film-sub" }, "AI agents find the best exit for short-dated stock, and do the running around. You say yes once."), /* @__PURE__ */ React.createElement("div", { className: "film-ctas" }, /* @__PURE__ */ React.createElement(Button, { variant: "primary", size: "lg", pill: true, onClick: () => onDemo() }, "Book a demo"), /* @__PURE__ */ React.createElement("a", { className: "btn btn-lg btn-pill film-ghost", ...linkProps(LINKS.demo) }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Icon, { name: "play", size: 12, stroke: 2.6 })), "Watch the 6-minute demo"))), !reduce && /* @__PURE__ */ React.createElement("div", { className: "film-ctl" }, /* @__PURE__ */ React.createElement("button", { type: "button", onClick: toggle }, /* @__PURE__ */ React.createElement(Icon, { name: state === "playing" ? "pause" : state === "ended" ? "rotate-ccw" : "play", size: 16 }), state === "playing" ? "Pause" : state === "ended" ? "Replay" : "Play")));
   }
-  const agentsAt = (...stages) => P.AGENTS.filter((a) => !a.gate && stages.includes(a.stage)).map((a) => a.name);
-  const EASE = [0.22, 1, 0.36, 1];
-  const SKU = D.SKUS[BATCH.sku], SCHEME = M.RULES.scheme;
-  const row = (id) => D.PLAN.rows.find((r) => r.id === id);
-  const planned = (id) => D.PLAN.lines.some((l) => l.id === id);
-  function useRise() {
+  function Word({ p, a, b, text, reduce }) {
+    const o = useTransform(p, [a, b], [0, 1]);
+    return /* @__PURE__ */ React.createElement("span", { className: "sw" }, text, /* @__PURE__ */ React.createElement(motion.span, { className: "lit", "aria-hidden": "true", style: { opacity: reduce ? 1 : o } }, text));
+  }
+  function Statement({ text, id }) {
     const ref = useRef(null);
     const reduce = useReducedMotion();
-    const inView = Motion.useInView(ref, { once: true, amount: 0.3 });
-    const shown = reduce || inView;
-    const move = (y, delay) => ({ initial: reduce ? false : { opacity: 0, y }, animate: shown ? { opacity: 1, y: 0 } : void 0, transition: { duration: 0.42, delay: reduce ? 0 : delay, ease: EASE } });
-    return { shown, card: { ref, ...move(16, 0) }, rise: (i) => move(10, 0.16 + i * 0.11) };
+    const { scrollYProgress } = useScroll({ target: ref, offset: ["start 85%", "end 45%"] });
+    const words = text.split(" ");
+    const n = words.length;
+    return /* @__PURE__ */ React.createElement("section", { className: "say", id, "aria-label": "In short" }, /* @__PURE__ */ React.createElement("p", { ref }, words.map((w, i) => /* @__PURE__ */ React.createElement(React.Fragment, { key: i }, /* @__PURE__ */ React.createElement(Word, { p: scrollYProgress, a: i / n * 0.92, b: Math.min(1, i / n * 0.92 + 0.1), text: w, reduce }), i < n - 1 ? " " : ""))));
   }
-  function useLit(on, n, first, every) {
+  const TAB_AR = 2752 / 1536;
+  const PHONE = { x: 0.633, y: 0.152, w: 0.097, h: 0.398 };
+  const POST = {
+    data: { x: 0.14, y: 0.62, side: "left" },
+    watcher: { x: 0.25, y: 0.47 },
+    vision: { x: 0.33, y: 0.66 },
+    valuer: { x: 0.16, y: 0.74, side: "left" },
+    router: { x: 0.37, y: 0.77 },
+    you: { x: 0.615, y: 0.4, side: "left" },
+    outreach: { x: 0.47, y: 0.58 },
+    lister: { x: 0.6, y: 0.64 },
+    negotiator: { x: 0.635, y: 0.77, side: "left" },
+    paperwork: { x: 0.755, y: 0.58 },
+    impact: { x: 0.91, y: 0.79, side: "left" }
+  };
+  const WHERE = { data: "at the godown", watcher: "at the godown", vision: "at the godown", valuer: "at the godown", router: "at the godown", you: "on your phone", outreach: "at the kiranas", lister: "at the buyer's bay", negotiator: "at the buyer's truck", paperwork: "on your phone", impact: "at the landfill" };
+  const TAGS = [
+    { id: "kirana", at: { x: 0.49, y: 0.55 }, name: "Kiranas", line: (got) => `${fmt.num(got.kirana)} of ${fmt.num(KL.units)} packs · ${SHOPS} shops` },
+    { id: "expiresoon", at: { x: 0.66, y: 0.6 }, name: "A buyer elsewhere", line: (got) => `${fmt.num(got.expiresoon)} of ${fmt.num(AW.units)} packs · ${rate(AW.price)} a pack` },
+    { id: "dump", at: { x: 0.84, y: 0.72 }, name: "Landfill", line: (got, done) => done ? `${fmt.num(D.PLAN.kg)} kg kept out` : `the bin would cost ${fmt.inr(-BIN)}` }
+  ];
+  const DROP = { kirana: { x: 0.49, y: 0.63 }, expiresoon: { x: 0.67, y: 0.71 } };
+  const ORDER = ["data", "watcher", "vision", "valuer", "router", "you", "outreach", "lister", "negotiator", "paperwork", "impact"];
+  const NS = ORDER.length, YES = ORDER.indexOf("you"), OUT = ORDER.indexOf("outreach"), LIST = ORDER.indexOf("lister");
+  const PACE = { agent: 1400, you: 1800 };
+  const AFTER = ["outreach", "lister", "negotiator", "paperwork", "impact"], BEFORE = ORDER.slice(0, YES), ROUTER = ORDER.indexOf("router");
+  const curve = (a, b, lift) => `M${a.x} ${a.y} Q${(a.x + b.x) / 2} ${Math.min(a.y, b.y) - lift} ${b.x} ${b.y}`;
+  function useCover(stageRef, ar, pan = 0.5, panY = 0.5) {
+    const [fit, setFit] = useState(null);
+    useLayoutEffect(() => {
+      const el = stageRef.current;
+      if (!el) return;
+      const measure = () => {
+        const w = el.clientWidth, h = el.clientHeight;
+        const s = Math.max(w / ar, h);
+        const pw = s * ar, ph = s;
+        setFit({ w, h, pw, ph, x: (w - pw) * pan, y: (h - ph) * panY });
+      };
+      measure();
+      const ro = new ResizeObserver(measure);
+      ro.observe(el);
+      return () => ro.disconnect();
+    }, [ar, pan, panY]);
+    return fit;
+  }
+  const at = (fit, p) => ({ left: fit.x + p.x * fit.pw, top: fit.y + p.y * fit.ph });
+  const on = (fit, p) => ({ left: p.x * fit.pw, top: p.y * fit.ph });
+  function Frag({ id }) {
+    switch (id) {
+      case "data":
+        return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Product, { name: "pack-snack-plain", size: 56 }), /* @__PURE__ */ React.createElement("span", { className: "k" }, fmt.num(BATCH.units), " packs · selling ", /* @__PURE__ */ React.createElement("b", null, BATCH.sellPerDay), " a day · ", /* @__PURE__ */ React.createElement("b", null, BATCH.daysLeft), " days to the date"));
+      case "watcher":
+        return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", { className: "num red" }, fmt.num(N)), /* @__PURE__ */ React.createElement("span", { className: "k" }, "packs won't sell in time"), /* @__PURE__ */ React.createElement(GateChips, { gates: D.RISK.gates, size: "sm" }));
+      case "vision":
+        return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Product, { name: "phone-scan", size: 56 }), /* @__PURE__ */ React.createElement("span", { className: "k" }, "One label photo from the godown · ", /* @__PURE__ */ React.createElement("b", null, "the date matches"), " the export"));
+      case "valuer":
+        return /* @__PURE__ */ React.createElement(React.Fragment, null, [["kirana", "Kiranas"], ["expiresoon", "ExpireSoon"], ["staff", "Staff sale"], ["foodbank", "Food bank"], ["writeoff", "The bin"]].map(([id2, n]) => /* @__PURE__ */ React.createElement("span", { key: id2, className: "k" }, /* @__PURE__ */ React.createElement("i", { className: "ex-dot " + (id2 === "writeoff" ? "bin" : id2), "aria-hidden": "true" }), n, " ", /* @__PURE__ */ React.createElement("b", { style: id2 === "writeoff" ? { color: "var(--red-text)" } : void 0 }, fmt.inr2(row(id2).net)))));
+      case "router":
+        return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "m-split", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("span", { className: "k", style: { flexGrow: KL.units } }), /* @__PURE__ */ React.createElement("span", { className: "e", style: { flexGrow: ESL.units } })), /* @__PURE__ */ React.createElement("span", { className: "k" }, /* @__PURE__ */ React.createElement("i", { className: "ex-dot kirana", "aria-hidden": "true" }), /* @__PURE__ */ React.createElement("b", null, fmt.num(KL.units)), " to ", SHOPS, " kiranas"), /* @__PURE__ */ React.createElement("span", { className: "k" }, /* @__PURE__ */ React.createElement("i", { className: "ex-dot expiresoon", "aria-hidden": "true" }), /* @__PURE__ */ React.createElement("b", null, fmt.num(AW.units)), " to one buyer"));
+      case "you":
+        return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Money, { value: D.PLAN.net }), /* @__PURE__ */ React.createElement("span", { className: "k" }, "on screen, against ", fmt.inr(-BIN), " to destroy it"), /* @__PURE__ */ React.createElement("span", { className: "btn btn-approve" }, /* @__PURE__ */ React.createElement(Icon, { name: "check", size: 16 }), "Approve · release the agents"));
+      case "outreach":
+        return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", { className: "hi", lang: "hi" }, OFFER.title), /* @__PURE__ */ React.createElement("span", { className: "k" }, "to ", /* @__PURE__ */ React.createElement("b", null, SHOPS), " kiranas in Hindi · buy ", SCHEME.buy, ", get ", SCHEME.free, " free · 48 hours"));
+      case "lister":
+        return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Product, { name: "marketplace-bag", size: 56 }), /* @__PURE__ */ React.createElement("span", { className: "k" }, /* @__PURE__ */ React.createElement("b", null, fmt.num(AW.units)), " packs listed in the distributor's name · reserve ", rate(M.RULES.negotiation.reservePerUnit)));
+      case "negotiator":
+        return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", { className: "k" }, "A bid of ", /* @__PURE__ */ React.createElement("b", null, fmt.inr(BID))), /* @__PURE__ */ React.createElement(Icon, { name: "arrow-right", size: 16 }), /* @__PURE__ */ React.createElement("span", { className: "k" }, "countered to ", /* @__PURE__ */ React.createElement("b", null, rate(AW.price)), ", accepted"), /* @__PURE__ */ React.createElement("span", { className: "k" }, "· token ", /* @__PURE__ */ React.createElement("b", null, fmt.inr(AW.token))));
+      case "paperwork":
+        return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Product, { name: "documents", size: 56 }), /* @__PURE__ */ React.createElement("span", { className: "k" }, "The distributor's invoice · the brand's credit note ", /* @__PURE__ */ React.createElement("b", null, fmt.inr(D.SUPPORT.total)), " · the GST memo"));
+      case "impact":
+        return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", { className: "num" }, fmt.num(D.PLAN.kg), " kg"), /* @__PURE__ */ React.createElement("span", { className: "k" }, "kept out of landfill · ", /* @__PURE__ */ React.createElement("b", null, fmt.inr(D.ACTUAL.net)), " recovered · 0 cartons destroyed"));
+      default:
+        return null;
+    }
+  }
+  function PhoneScreen({ phase, lit }) {
+    const list = phase === "placed" ? AFTER : BEFORE;
+    return /* @__PURE__ */ React.createElement("div", { className: "ps", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("div", { className: "top" }, /* @__PURE__ */ React.createElement("span", { className: "who" }, /* @__PURE__ */ React.createElement(Mark, { size: 24 }), /* @__PURE__ */ React.createElement("b", null, "Route Room")), phase === "placed" ? /* @__PURE__ */ React.createElement(Badge, { tone: "green", icon: "check" }, "Placed · 09:40") : phase === "plan" ? /* @__PURE__ */ React.createElement(Badge, { tone: "amber", dot: true }, "Waiting for you") : /* @__PURE__ */ React.createElement(Badge, { tone: "red", dot: true }, "At risk")), phase === "placed" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "placed" }, /* @__PURE__ */ React.createElement("span", { className: "t" }, "Plan placed"), /* @__PURE__ */ React.createElement(Money, { value: D.PLAN.swing }), /* @__PURE__ */ React.createElement("p", null, "better than the bin, on one batch of chips.")), /* @__PURE__ */ React.createElement("div", { className: "work" }, list.map((id, i) => /* @__PURE__ */ React.createElement("span", { key: id, className: cx("w", i < lit && "on") }, /* @__PURE__ */ React.createElement("i", null, /* @__PURE__ */ React.createElement(Icon, { name: AGENT[id].icon, size: 11, stroke: 2.4 })), /* @__PURE__ */ React.createElement("b", null, AGENT[id].name), /* @__PURE__ */ React.createElement("span", null, "· ", AGENT[id].did))))) : phase === "building" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h4", null, SKU.name), /* @__PURE__ */ React.createElement("div", { className: "big" }, /* @__PURE__ */ React.createElement("span", { className: "num red" }, fmt.num(N)), /* @__PURE__ */ React.createElement("span", null, "packs won't sell in the ", BATCH.daysLeft, " days left")), /* @__PURE__ */ React.createElement("div", { className: "work" }, list.map((id, i) => /* @__PURE__ */ React.createElement("span", { key: id, className: cx("w", i < lit && "on") }, /* @__PURE__ */ React.createElement("i", null, /* @__PURE__ */ React.createElement(Icon, { name: AGENT[id].icon, size: 11, stroke: 2.4 })), /* @__PURE__ */ React.createElement("b", null, AGENT[id].name), /* @__PURE__ */ React.createElement("span", null, "· ", i < lit ? AGENT[id].did : "waiting"))))) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h4", null, "Approve the plan"), /* @__PURE__ */ React.createElement("div", { className: "big" }, /* @__PURE__ */ React.createElement(Money, { value: D.PLAN.net }), /* @__PURE__ */ React.createElement("span", null, "net recovered, ", D.PLAN.pctMRP, "% of MRP")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "r" }, /* @__PURE__ */ React.createElement("span", null, "Instead of destroying"), /* @__PURE__ */ React.createElement("b", { className: "red" }, fmt.inr(-BIN))), /* @__PURE__ */ React.createElement("div", { className: "r" }, /* @__PURE__ */ React.createElement("span", null, fmt.num(KL.units), " packs to ", SHOPS, " kiranas"), /* @__PURE__ */ React.createElement("b", null, fmt.inr(KL.net))), /* @__PURE__ */ React.createElement("div", { className: "r" }, /* @__PURE__ */ React.createElement("span", null, fmt.num(ESL.units), " packs on ExpireSoon"), /* @__PURE__ */ React.createElement("b", null, fmt.inr(ESL.net)))), /* @__PURE__ */ React.createElement("span", { className: "btn btn-approve btn-lg" }, /* @__PURE__ */ React.createElement(Icon, { name: "check", size: 18 }), "Approve · release the agents")));
+  }
+  function Table() {
+    const night = useTheme().resolved === "dark";
     const reduce = useReducedMotion();
-    const [k, setK] = useState(reduce ? n : 0);
+    const app = useApp();
+    const desk = app.bp === "desktop";
+    const stage = useRef(null);
+    const fit = useCover(stage, TAB_AR, desk ? 0.5 : 0.42, 0.5);
+    const seen = useInView(stage, { amount: 0.6 });
+    const [s, setS] = useState(reduce ? NS : -1);
+    const [hold, setHold] = useState(false);
+    const [run, setRun] = useState(0);
     useEffect(() => {
-      if (reduce) {
-        setK(n);
-        return;
-      }
-      if (!on || k >= n) return;
-      const t = setTimeout(() => setK(k + 1), k === 0 ? first : every);
+      if (reduce) return;
+      if (s === -1 && seen) setS(0);
+    }, [seen, reduce, s]);
+    useEffect(() => {
+      if (reduce || hold || !seen || s < 0 || s >= NS) return;
+      const t = setTimeout(() => setS(s + 1), ORDER[s] === "you" ? PACE.you : PACE.agent);
       return () => clearTimeout(t);
-    }, [on, k, reduce]);
-    return k;
+    }, [s, hold, seen, reduce]);
+    const go = (i) => {
+      setHold(true);
+      setS(i);
+    };
+    const replay = () => {
+      setHold(false);
+      setGot({ kirana: 0, expiresoon: 0 });
+      setRun((r) => r + 1);
+      setS(0);
+    };
+    const agent = s >= 0 && s < NS ? ORDER[s] : null;
+    const done = s >= NS;
+    const working = agent != null;
+    const W = 1e3, H = Math.round(W / TAB_AR);
+    let cam = { tx: 0, ty: 0, sc: 1 };
+    if (fit && working) {
+      const sc = desk ? 1.6 : 1.45;
+      const f = at(fit, !desk && agent === "you" ? { x: 0.66, y: PHONE.y + PHONE.h / 2 } : POST[agent]);
+      const cx0 = fit.w * 0.5, cy0 = fit.h * 0.42;
+      let tx = cx0 - f.left * sc, ty = cy0 - f.top * sc;
+      tx = Math.min(-fit.x * sc, Math.max(fit.w - (fit.x + fit.pw) * sc, tx));
+      ty = Math.min(-fit.y * sc, Math.max(fit.h - (fit.y + fit.ph) * sc, ty));
+      cam = { tx, ty, sc };
+    }
+    const iz = 1 / cam.sc;
+    const dots = useRef([]), paths = useRef({});
+    const [got, setGot] = useState(reduce ? { kirana: KL.units, expiresoon: AW.units } : { kirana: 0, expiresoon: 0 });
+    const from = { x: (PHONE.x + PHONE.w / 2) * W, y: (PHONE.y + PHONE.h / 2) * H };
+    const routes = { kirana: curve(from, { x: DROP.kirana.x * W, y: DROP.kirana.y * H }, 40), expiresoon: curve(from, { x: DROP.expiresoon.x * W, y: DROP.expiresoon.y * H }, 30) };
+    const DOTS = useMemo(() => {
+      const out = [];
+      const nk = Math.round(KL.units / 50), ne = Math.round(AW.units / 50);
+      for (let i = 0; i < nk; i++) out.push("kirana");
+      for (let i = 0; i < ne; i++) out.push("expiresoon");
+      return out;
+    }, []);
+    const sent = useRef({ kirana: false, expiresoon: false });
+    const ctrls = useRef([]);
+    useEffect(() => {
+      if (s === 0 || s === -1) sent.current = { kirana: false, expiresoon: false };
+    }, [s, run]);
+    useEffect(() => () => {
+      ctrls.current.forEach((c) => c.stop());
+      ctrls.current = [];
+    }, [run]);
+    useEffect(() => {
+      if (reduce) return;
+      const id = s === OUT ? "kirana" : s === LIST ? "expiresoon" : null;
+      if (!id || sent.current[id]) return;
+      sent.current[id] = true;
+      const path = paths.current[id];
+      if (!path) return;
+      const L = path.getTotalLength();
+      const mine = DOTS.map((d, i) => [d, i]).filter(([d]) => d === id);
+      let arrived = 0;
+      mine.forEach(([, i], j) => {
+        const c = dots.current[i];
+        if (!c) return;
+        ctrls.current.push(animate(0, 1, {
+          duration: 0.8,
+          delay: 0.1 + j * 0.07,
+          ease: [0.45, 0, 0.4, 1],
+          onUpdate: (v) => {
+            const q = path.getPointAtLength(v * L);
+            c.setAttribute("cx", q.x);
+            c.setAttribute("cy", q.y);
+            c.setAttribute("opacity", v < 0.06 ? v * 16 : v > 0.94 ? Math.max(0, (1 - v) * 16) : 1);
+          },
+          onComplete: () => {
+            c.setAttribute("opacity", 0);
+            arrived += 1;
+            setGot((g) => ({ ...g, [id]: Math.round((id === "kirana" ? KL.units : AW.units) * arrived / mine.length) }));
+          }
+        }));
+      });
+    }, [s, reduce, run]);
+    useEffect(() => {
+      if (done) setGot({ kirana: KL.units, expiresoon: AW.units });
+    }, [done]);
+    const a = agent && AGENT[agent];
+    const human = agent === "you";
+    const mini = fit ? { ...on(fit, PHONE), width: PHONE.w * fit.pw, height: PHONE.h * fit.ph, "--s": PHONE.w * fit.pw / 360 } : null;
+    const card = a && /* @__PURE__ */ React.createElement("div", { className: cx("tb-focus", human && "human"), role: "group", "aria-live": "polite" }, /* @__PURE__ */ React.createElement("span", { className: "icn", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Icon, { name: a.icon, size: 26, stroke: 2 })), /* @__PURE__ */ React.createElement("header", null, /* @__PURE__ */ React.createElement("span", { className: "n" }, s + 1, " of ", NS), /* @__PURE__ */ React.createElement("h3", null, a.name), /* @__PURE__ */ React.createElement("span", null, WHERE[agent])), /* @__PURE__ */ React.createElement("p", null, a.did), /* @__PURE__ */ React.createElement("div", { className: "frag" }, /* @__PURE__ */ React.createElement(Frag, { id: agent })), desk && /* @__PURE__ */ React.createElement("div", { className: "rail", role: "group", "aria-label": "The agents, in order" }, ORDER.map((id, i) => /* @__PURE__ */ React.createElement("button", { key: id, type: "button", className: cx(i < s && "on", AGENT[id].human && "human"), "aria-current": i === s ? "step" : void 0, onClick: () => go(i) }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Icon, { name: AGENT[id].icon, size: 10, stroke: 2.4 })), AGENT[id].name))));
+    return /* @__PURE__ */ React.createElement("section", { id: "agents", className: "sec-table", "aria-labelledby": "tb-h" }, /* @__PURE__ */ React.createElement("header", { className: "tb-head" }, /* @__PURE__ */ React.createElement("h2", { id: "tb-h", className: "sec-h plain" }, "Five exits, one batch. Ten agents at work."), /* @__PURE__ */ React.createElement("p", { className: "sec-sub" }, fmt.num(N), " packs of masala chips that won't sell in the ", BATCH.daysLeft, " days they have left, on the table. The agents work the batch stop by stop; a person says yes once; the packs leave for the kiranas and a buyer, and nothing goes to the bin.")), /* @__PURE__ */ React.createElement("div", { className: cx("tb-stage", working && "working"), ref: stage }, /* @__PURE__ */ React.createElement("div", { className: "tb-world", style: { transform: `translate(${cam.tx}px, ${cam.ty}px) scale(${cam.sc})` } }, /* @__PURE__ */ React.createElement("img", { className: "tb-plate", style: fit ? { left: fit.x, top: fit.y, width: fit.pw, height: fit.ph } : { objectPosition: `${(desk ? 0.5 : 0.42) * 100}% 50%` }, src: IMG + (night ? "table-night.webp" : "table.webp"), alt: `A ${night ? "lamp-lit evening" : "morning"} table by a window: a hand holds a phone over a handmade miniature of a snack trade, a tiny godown full of cartons, a lane of kirana shops, a wholesale warehouse with a blue truck, a community kitchen, a closed dump yard in the far corner, a steel tumbler of chai, and a thin glowing green path along the table.` }), fit && /* @__PURE__ */ React.createElement("div", { className: "tb-layer", style: { left: fit.x, top: fit.y, width: fit.pw, height: fit.ph } }, /* @__PURE__ */ React.createElement("svg", { viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: "none", "aria-hidden": "true" }, Object.entries(routes).map(([id, d]) => /* @__PURE__ */ React.createElement("path", { key: id, ref: (el) => {
+      paths.current[id] = el;
+    }, className: "tb-path", d })), DOTS.map((id, i) => /* @__PURE__ */ React.createElement("circle", { key: i + ":" + run, ref: (el) => {
+      dots.current[i] = el;
+    }, className: "tb-dot " + id, r: "9", opacity: "0" }))), mini && /* @__PURE__ */ React.createElement("div", { className: "tb-mini", style: mini, "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("div", { className: "tb-mini-in" }, /* @__PURE__ */ React.createElement(PhoneScreen, { phase: done || s > YES ? "placed" : s >= ROUTER ? "plan" : "building", lit: done ? AFTER.length : s > YES ? s - YES : s + 1 }))), TAGS.map((t) => /* @__PURE__ */ React.createElement("span", { key: t.id, className: cx("tb-tag", t.id, got[t.id] > 0 && "in"), style: { ...on(fit, t.at), "--iz": iz }, "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("span", { className: "tb-tag-body" }, /* @__PURE__ */ React.createElement("b", null, /* @__PURE__ */ React.createElement("i", { className: "ex-dot " + (t.id === "dump" ? "bin" : t.id) }), t.name), /* @__PURE__ */ React.createElement("span", null, t.line(got, done))), /* @__PURE__ */ React.createElement("span", { className: "stem" }))), /* @__PURE__ */ React.createElement("ul", { className: "sr-only", "aria-label": "The agents at their posts" }, ORDER.map((id) => /* @__PURE__ */ React.createElement("li", { key: id }, AGENT[id].name, ", ", WHERE[id], ": ", AGENT[id].did))), ORDER.map((id, i) => {
+      const ag = AGENT[id];
+      const st = i < s || done ? "on" : i === s ? "now on" : "later";
+      return /* @__PURE__ */ React.createElement("span", { key: id, className: cx("tb-node", st, ag.human && "human", POST[id].side === "left" && "left"), style: { ...on(fit, POST[id]), "--iz": iz }, "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("i", { className: "dot" }, /* @__PURE__ */ React.createElement(Icon, { name: ag.icon, size: 13, stroke: 2.4 })), /* @__PURE__ */ React.createElement("span", { className: "name" }, ag.name));
+    }))), /* @__PURE__ */ React.createElement("div", { className: "tb-shade", "aria-hidden": "true" }), /* @__PURE__ */ React.createElement(AnimatePresence, { mode: "wait" }, a && /* @__PURE__ */ React.createElement(motion.div, { key: agent, initial: reduce ? false : { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: -8 }, transition: { duration: 0.3, ease: EASE }, style: { display: "contents" } }, card)), done && /* @__PURE__ */ React.createElement("div", { className: "tb-result", role: "status" }, /* @__PURE__ */ React.createElement("b", null, "Sold, not binned."), /* @__PURE__ */ React.createElement("span", { className: "did" }, fmt.inr(D.ACTUAL.net), " recovered, instead of ", fmt.inr(-BIN), " to destroy it"), !reduce && /* @__PURE__ */ React.createElement("button", { type: "button", className: "replay", onClick: replay }, /* @__PURE__ */ React.createElement(Icon, { name: "rotate-ccw", size: 16 }), "Replay")), !reduce && working && /* @__PURE__ */ React.createElement("div", { className: "tb-ctl" }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "replay", "aria-pressed": hold, onClick: () => setHold((h) => !h) }, /* @__PURE__ */ React.createElement(Icon, { name: hold ? "play" : "pause", size: 16 }), hold ? "Play" : "Pause"))));
+  }
+  function Chapter({ id, tone, title, lede, who, person, children, wide }) {
+    const { card, rise } = useRise(0.2);
+    return /* @__PURE__ */ React.createElement(motion.section, { id, className: cx("ch", "tone-" + tone), "aria-labelledby": id + "-h", ...card }, /* @__PURE__ */ React.createElement("div", { className: cx("ch-in", wide && "wide") }, /* @__PURE__ */ React.createElement("div", { className: "ch-copy" }, /* @__PURE__ */ React.createElement(motion.h2, { id: id + "-h", className: "ch-h", ...rise(0) }, title), /* @__PURE__ */ React.createElement(motion.p, { className: "ch-lede", ...rise(1) }, lede), who && /* @__PURE__ */ React.createElement(motion.span, { ...rise(2) }, /* @__PURE__ */ React.createElement(AgentChips, { who, person }))), /* @__PURE__ */ React.createElement("div", { className: "ch-stage" }, children)));
   }
   function AlertCard() {
     const { shown, card, rise } = useRise();
     const rolled = useLit(shown, 1, 490, 0) > 0;
-    return /* @__PURE__ */ React.createElement(motion.div, { className: "m-card", role: "group", "aria-label": "The Watcher's alert", ...card }, /* @__PURE__ */ React.createElement(motion.div, { className: "m-head", ...rise(0) }, /* @__PURE__ */ React.createElement("span", { className: "chip-agent on" }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }), "Watcher · 09:00"), /* @__PURE__ */ React.createElement(Badge, { tone: "red", dot: true }, "At risk")), /* @__PURE__ */ React.createElement(motion.div, { className: "m-batch", ...rise(1) }, /* @__PURE__ */ React.createElement(Product, { name: "pack-snack-plain", size: 52 }), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("b", null, SKU.name), /* @__PURE__ */ React.createElement("span", null, fmt.num(BATCH.units), " packs in a distributor's godown, ", DIST.city))), /* @__PURE__ */ React.createElement(motion.div, { className: "m-gates", ...rise(2) }, /* @__PURE__ */ React.createElement(GateChips, { gates: D.RISK.gates })), /* @__PURE__ */ React.createElement(motion.div, { className: "m-big", ...rise(3) }, /* @__PURE__ */ React.createElement("span", { className: "num" }, /* @__PURE__ */ React.createElement(Roll, { key: rolled ? "on" : "off", value: D.RISK.atRisk, from: rolled ? 0 : void 0 })), /* @__PURE__ */ React.createElement("span", null, "packs won't sell in the ", BATCH.daysLeft, " days they have left")));
+    return /* @__PURE__ */ React.createElement(motion.div, { className: "m-card", role: "group", "aria-label": "The Watcher's alert", ...card }, /* @__PURE__ */ React.createElement(motion.div, { className: "m-head", ...rise(0) }, /* @__PURE__ */ React.createElement("span", { className: "chip-agent on" }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }), "Watcher · 09:00"), /* @__PURE__ */ React.createElement(Badge, { tone: "red", dot: true }, "At risk")), /* @__PURE__ */ React.createElement(motion.div, { className: "m-batch", ...rise(1) }, /* @__PURE__ */ React.createElement(Product, { name: "pack-snack-plain", size: 52 }), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("b", null, SKU.name), /* @__PURE__ */ React.createElement("span", null, fmt.num(BATCH.units), " packs in a distributor's godown, ", DIST.city))), /* @__PURE__ */ React.createElement(motion.div, { className: "m-gates", ...rise(2) }, /* @__PURE__ */ React.createElement(GateChips, { gates: D.RISK.gates })), /* @__PURE__ */ React.createElement(motion.div, { className: "m-big", ...rise(3) }, /* @__PURE__ */ React.createElement("span", { className: "num" }, /* @__PURE__ */ React.createElement(Roll, { key: rolled ? "on" : "off", value: N, from: rolled ? 0 : void 0 })), /* @__PURE__ */ React.createElement("span", null, "packs won't sell in the ", BATCH.daysLeft, " days they have left")));
   }
   const PRICED = [
     { id: "kirana", name: "Kiranas", s: `up to ${fmt.num(row("kirana").capacity)} packs in ${M.RULES.kiranaWindowDays} days` },
@@ -87,7 +359,7 @@
   ];
   function PricesCard() {
     const { card, rise } = useRise();
-    return /* @__PURE__ */ React.createElement(motion.div, { className: "m-card", role: "group", "aria-label": "The Valuer's prices, net a pack", ...card }, /* @__PURE__ */ React.createElement(motion.div, { className: "m-head", ...rise(0) }, /* @__PURE__ */ React.createElement("span", { className: "chip-agent on" }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }), "Valuer"), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, "net a pack, after costs")), PRICED.map((p, i) => /* @__PURE__ */ React.createElement(motion.div, { key: p.id, className: cx("m-row", p.dot === "bin" ? "bin" : !planned(p.id) && "off"), ...rise(i + 1) }, /* @__PURE__ */ React.createElement("span", { className: "k" }, /* @__PURE__ */ React.createElement("i", { className: "ex-dot " + (p.dot || p.id), "aria-hidden": "true" }), p.name), /* @__PURE__ */ React.createElement("span", { className: "v" }, fmt.inr2(row(p.id).net)), /* @__PURE__ */ React.createElement("span", { className: "s" }, p.s))), /* @__PURE__ */ React.createElement(motion.div, { ...rise(PRICED.length + 1) }, /* @__PURE__ */ React.createElement("div", { className: "m-split-cap" }, /* @__PURE__ */ React.createElement("span", null, "The Router's split"), /* @__PURE__ */ React.createElement("span", null, fmt.num(D.RISK.atRisk), " packs")), /* @__PURE__ */ React.createElement("div", { className: "m-split", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("span", { className: "k", style: { flexGrow: KL.units } }), /* @__PURE__ */ React.createElement("span", { className: "e", style: { flexGrow: ESL.units } })), /* @__PURE__ */ React.createElement("div", { className: "m-split-legend" }, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("i", { className: "ex-dot kirana", "aria-hidden": "true" }), fmt.num(KL.units), " to ", SHOPS, " kiranas"), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("i", { className: "ex-dot expiresoon", "aria-hidden": "true" }), fmt.num(ESL.units), " on ExpireSoon"))));
+    return /* @__PURE__ */ React.createElement(motion.div, { className: "m-card", role: "group", "aria-label": "The Valuer's prices, net a pack", ...card }, /* @__PURE__ */ React.createElement(motion.div, { className: "m-head", ...rise(0) }, /* @__PURE__ */ React.createElement("span", { className: "chip-agent on" }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }), "Valuer"), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, "net a pack, after costs")), PRICED.map((p, i) => /* @__PURE__ */ React.createElement(motion.div, { key: p.id, className: cx("m-row", p.dot === "bin" ? "bin" : !planned(p.id) && "off"), ...rise(i + 1) }, /* @__PURE__ */ React.createElement("span", { className: "k" }, /* @__PURE__ */ React.createElement("i", { className: "ex-dot " + (p.dot || p.id), "aria-hidden": "true" }), p.name), /* @__PURE__ */ React.createElement("span", { className: "v" }, fmt.inr2(row(p.id).net)), /* @__PURE__ */ React.createElement("span", { className: "s" }, p.s))), /* @__PURE__ */ React.createElement(motion.div, { ...rise(PRICED.length + 1) }, /* @__PURE__ */ React.createElement("div", { className: "m-split-cap" }, /* @__PURE__ */ React.createElement("span", null, "The Router's split"), /* @__PURE__ */ React.createElement("span", null, fmt.num(N), " packs")), /* @__PURE__ */ React.createElement("div", { className: "m-split", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("span", { className: "k", style: { flexGrow: KL.units } }), /* @__PURE__ */ React.createElement("span", { className: "e", style: { flexGrow: ESL.units } })), /* @__PURE__ */ React.createElement("div", { className: "m-split-legend" }, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("i", { className: "ex-dot kirana", "aria-hidden": "true" }), fmt.num(KL.units), " to ", SHOPS, " kiranas"), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("i", { className: "ex-dot expiresoon", "aria-hidden": "true" }), fmt.num(ESL.units), " on ExpireSoon"))));
   }
   const RELEASED = agentsAt("execute", "settle", "report");
   function PlanCard() {
@@ -96,238 +368,29 @@
     const lit = useLit(shown, RELEASED.length, 900, 220);
     return /* @__PURE__ */ React.createElement(motion.div, { className: "m-card yes", role: "group", "aria-label": "The plan, waiting for one yes", ...card }, /* @__PURE__ */ React.createElement(motion.div, { className: "m-head", ...rise(0) }, /* @__PURE__ */ React.createElement("b", null, "Approve the plan"), /* @__PURE__ */ React.createElement(Badge, { tone: "amber", dot: true }, "Waiting for you")), /* @__PURE__ */ React.createElement(motion.div, { className: "m-big flush", ...rise(1) }, /* @__PURE__ */ React.createElement(Money, { key: rolled ? "on" : "off", value: D.PLAN.net, roll: true, from: rolled ? 0 : void 0 }), /* @__PURE__ */ React.createElement("span", null, "recovered, against ", fmt.inr(-BIN), " to destroy it")), /* @__PURE__ */ React.createElement(motion.div, { className: "m-row", ...rise(2) }, /* @__PURE__ */ React.createElement("span", { className: "k" }, /* @__PURE__ */ React.createElement("i", { className: "ex-dot kirana", "aria-hidden": "true" }), fmt.num(KL.units), " packs to ", SHOPS, " kiranas"), /* @__PURE__ */ React.createElement("span", { className: "v" }, fmt.inr(KL.net))), /* @__PURE__ */ React.createElement(motion.div, { className: "m-row", ...rise(3) }, /* @__PURE__ */ React.createElement("span", { className: "k" }, /* @__PURE__ */ React.createElement("i", { className: "ex-dot expiresoon", "aria-hidden": "true" }), fmt.num(ESL.units), " packs on ExpireSoon"), /* @__PURE__ */ React.createElement("span", { className: "v" }, fmt.inr(ESL.net))), /* @__PURE__ */ React.createElement(motion.div, { className: "m-go", ...rise(4) }, /* @__PURE__ */ React.createElement("span", { className: "btn btn-approve btn-lg" }, /* @__PURE__ */ React.createElement(Icon, { name: "check", size: 18 }), "Approve · release the agents")), /* @__PURE__ */ React.createElement(motion.div, { className: "m-after", ...rise(5) }, RELEASED.map((w, i) => /* @__PURE__ */ React.createElement("span", { key: w, className: cx("chip-agent", i < lit && "on") }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }), w))));
   }
-  const MOMENTS = [
-    {
-      t: "Spot it while there is time to sell",
-      art: "godown-plain",
-      who: agentsAt("connect", "detect", "verify"),
-      Card: AlertCard,
-      text: "Every morning at 09:00 the Watcher checks each batch against its date and the quick-commerce shelf-life rules, and flags the stock that won't sell in time. Vision reads the label photo from the godown to be sure."
-    },
-    {
-      t: "Price every exit, the bin included",
-      art: "kirana-plain",
-      who: agentsAt("value", "decide"),
-      Card: PricesCard,
-      text: `Kiranas on a ${SCHEME.free}-free-with-${SCHEME.buy} scheme, a clearance marketplace, a staff sale at the godown, a food bank: the Valuer prices each exit against the true cost of destroying the stock, and the Router splits the batch within each exit's limits.`
-    },
-    {
-      t: "Say yes once. The agents do the rest.",
-      art: "documents",
-      yes: true,
-      who: ["a person"].concat(RELEASED),
-      Card: PlanCard,
-      text: "A person approves the plan with the money on screen; nothing is listed, messaged or shipped before that tap. Then the agents list the lot, send kirana offers in Hindi, answer bids, draft the invoice, credit note and GST memo, and post the impact."
-    }
-  ];
-  function How() {
-    return /* @__PURE__ */ React.createElement("section", { id: "how", className: "sec sec-how", "aria-labelledby": "how-h" }, /* @__PURE__ */ React.createElement("div", { className: "wrap" }, /* @__PURE__ */ React.createElement("header", { className: "sec-head" }, /* @__PURE__ */ React.createElement("h2", { id: "how-h", className: "sec-h plain" }, "How Smart‑Clearance works"), /* @__PURE__ */ React.createElement("p", { className: "sec-sub" }, "It watches the stock in your distributors' godowns. When a batch won't sell before its date, its agents find the exit that recovers the most and do the work, once a person says yes.")), /* @__PURE__ */ React.createElement("ol", { className: "moments" }, MOMENTS.map((m, i) => /* @__PURE__ */ React.createElement("li", { key: m.t, className: cx("moment", i % 2 === 1 && "flip") }, /* @__PURE__ */ React.createElement("div", { className: "m-copy" }, /* @__PURE__ */ React.createElement("span", { className: "row tight" }, /* @__PURE__ */ React.createElement("span", { className: cx("step-n", m.yes && "yes"), "aria-hidden": "true" }, i + 1), /* @__PURE__ */ React.createElement("h3", null, m.t)), /* @__PURE__ */ React.createElement("p", null, m.text), /* @__PURE__ */ React.createElement("span", { className: "agents" }, m.who.map((w, j) => /* @__PURE__ */ React.createElement("span", { key: w, className: cx("chip-agent on", m.yes && j === 0 && "person") }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }), w)))), /* @__PURE__ */ React.createElement("div", { className: "m-stage" }, /* @__PURE__ */ React.createElement(Product, { name: m.art, size: 124, className: "m-art" }), /* @__PURE__ */ React.createElement(m.Card, null)))))));
+  function WorkCards() {
+    const { shown, card, rise } = useRise(0.2);
+    const lit = useLit(shown, 3, 300, 420);
+    const p0 = OFFER;
+    return /* @__PURE__ */ React.createElement(motion.div, { className: "ch-row three", ...card }, /* @__PURE__ */ React.createElement(motion.div, { className: "m-card", role: "group", "aria-label": "Outreach: the kirana offer, in Hindi", ...rise(0) }, /* @__PURE__ */ React.createElement("div", { className: "m-head" }, /* @__PURE__ */ React.createElement("span", { className: cx("chip-agent", lit > 0 && "on") }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }), "Outreach · 09:41"), /* @__PURE__ */ React.createElement(Badge, { tone: "green", icon: "gift" }, SCHEME.buy, " + ", SCHEME.free)), /* @__PURE__ */ React.createElement("div", { className: "m-batch" }, /* @__PURE__ */ React.createElement(Product, { name: "pack-snack-plain", size: 52 }), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("b", { lang: "hi", className: "hi" }, p0.title), /* @__PURE__ */ React.createElement("span", null, fmt.inr2(KL.packPrice), " a pack · MRP ", fmt.inr(SKU.mrp), " · 48 hours"))), /* @__PURE__ */ React.createElement("p", { lang: "hi", className: "hi m-hindi" }, p0.body), /* @__PURE__ */ React.createElement("div", { className: "m-row" }, /* @__PURE__ */ React.createElement("span", { className: "k" }, fmt.num(SHOPS), " shops ordered"), /* @__PURE__ */ React.createElement("span", { className: "v" }, fmt.num(KL.units), " packs"))), /* @__PURE__ */ React.createElement(motion.div, { className: "m-card violet", role: "group", "aria-label": "Lister and Negotiator: the lot on ExpireSoon", ...rise(1) }, /* @__PURE__ */ React.createElement("div", { className: "m-head" }, /* @__PURE__ */ React.createElement("span", { className: cx("chip-agent", lit > 1 && "on") }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }), "Lister · Negotiator"), /* @__PURE__ */ React.createElement(Badge, { tone: "violet", dot: true }, "ExpireSoon")), /* @__PURE__ */ React.createElement("div", { className: "m-batch" }, /* @__PURE__ */ React.createElement(Product, { name: "marketplace-bag", size: 52 }), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("b", null, fmt.num(AW.units), " packs, listed in the distributor's name"), /* @__PURE__ */ React.createElement("span", null, "reserve ", rate(M.RULES.negotiation.reservePerUnit), " · hidden inside the brand's territories"))), /* @__PURE__ */ React.createElement("div", { className: "m-row" }, /* @__PURE__ */ React.createElement("span", { className: "k" }, "A buyer bids"), /* @__PURE__ */ React.createElement("span", { className: "v" }, rate(BID))), /* @__PURE__ */ React.createElement("div", { className: "m-row" }, /* @__PURE__ */ React.createElement("span", { className: "k" }, "Countered, accepted"), /* @__PURE__ */ React.createElement("span", { className: "v" }, rate(AW.price), " a pack")), /* @__PURE__ */ React.createElement("div", { className: "m-row" }, /* @__PURE__ */ React.createElement("span", { className: "k" }, "Token paid"), /* @__PURE__ */ React.createElement("span", { className: "v" }, fmt.inr(AW.token)))), /* @__PURE__ */ React.createElement(motion.div, { className: "m-card", role: "group", "aria-label": "Paperwork: the documents, drafted", ...rise(2) }, /* @__PURE__ */ React.createElement("div", { className: "m-head" }, /* @__PURE__ */ React.createElement("span", { className: cx("chip-agent", lit > 2 && "on") }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }), "Paperwork"), /* @__PURE__ */ React.createElement(Badge, { tone: "gray" }, "drafted")), /* @__PURE__ */ React.createElement("div", { className: "m-batch" }, /* @__PURE__ */ React.createElement(Product, { name: "documents", size: 52 }), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("b", null, "Everything finance needs, drafted"), /* @__PURE__ */ React.createElement("span", null, "each on paper, with who keeps what"))), [["The distributor's invoice to the buyer", "IGST 5%"], ["The brand's price-support credit note", fmt.inr(D.SUPPORT.total)], ["GST input credit memo", fmt.inr(D.PLAN.itcRetained)]].map(([k, v]) => /* @__PURE__ */ React.createElement("div", { key: k, className: "m-row" }, /* @__PURE__ */ React.createElement("span", { className: "k" }, k), /* @__PURE__ */ React.createElement("span", { className: "v" }, v)))));
   }
-  const N = D.RISK.atRisk;
-  const EXITS = [
-    {
-      id: "kirana",
-      name: "Kiranas",
-      x: 0.35,
-      packs: KL.units,
-      taken: true,
-      art: "kirana-plain",
-      total: KL.net,
-      per: `${rate(row("kirana").net)} a pack, after the van`,
-      line: (n) => `${fmt.num(n)} packs · ${SHOPS} shops`
-    },
-    {
-      id: "expiresoon",
-      name: "ExpireSoon",
-      x: 0.515,
-      packs: AW.units,
-      taken: true,
-      art: "marketplace-bag",
-      total: ES_NET,
-      per: `${rate(AW.price)} a pack, countered from ${rate(ESL.price)}`,
-      line: (n) => `${fmt.num(n)} packs · ${rate(AW.price)}`
-    },
-    {
-      id: "staff",
-      name: "Staff sale",
-      x: 0.65,
-      packs: 0,
-      art: "godown-plain",
-      note: "priced, not needed",
-      per: `${rate(row("staff").net)} a pack, up to ${row("staff").capacity} packs`
-    },
-    {
-      id: "foodbank",
-      name: "Food bank",
-      x: 0.785,
-      packs: 0,
-      art: "donation-crate",
-      note: "priced, not needed",
-      per: `${rate(row("foodbank").net)} a pack: a donation reverses the GST credit`
-    },
-    {
-      id: "bin",
-      name: "The bin",
-      x: 0.93,
-      packs: 0,
-      bin: true,
-      art: "bin-plain",
-      total: -BIN,
-      note: "not taken",
-      per: `${rate(-D.PLAN.writeOff.perUnit)} a pack`
-    }
-  ];
-  const TAKEN = EXITS.filter((e) => e.taken);
-  const PW = 4256, PH = 992, DOOR = { x: 610, y: 690 }, ROAD = 812, FRONT = 646, HEAP = 742, EX_AR = PW / PH;
-  const exX = (e) => Math.round(e.x * PW), endY = (e) => e.bin ? HEAP : FRONT;
-  const OUT = `M${DOOR.x} ${DOOR.y} C${DOOR.x + 30} ${ROAD - 40} ${DOOR.x + 120} ${ROAD} ${DOOR.x + 260} ${ROAD}`;
-  const TRUNK = `${OUT} L${exX(EXITS[4]) - 110} ${ROAD}`;
-  const turn = (e) => {
-    const x = exX(e);
-    return ` Q${x} ${ROAD} ${x} ${ROAD - 100} L${x} ${endY(e)}`;
-  };
-  const spur = (e) => `M${exX(e) - 110} ${ROAD}${turn(e)}`;
-  const route = (e) => `${OUT} L${exX(e) - 110} ${ROAD}${turn(e)}`;
-  const DOT = 50, DOTS = [];
-  {
-    const k = Math.round(TAKEN[0].packs / DOT), n = k + Math.round(TAKEN[1].packs / DOT);
-    let sent = 0;
-    for (let i = 0; i < n; i++) {
-      const toK = sent < Math.round((i + 1) * k / n);
-      DOTS.push(toK ? TAKEN[0] : TAKEN[1]);
-      if (toK) sent += 1;
-    }
+  function Chapters() {
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Chapter, { id: "watch", tone: "green", title: "Spot it while there is time to sell", lede: "Every morning at 09:00 the Watcher checks each batch against its date and the quick-commerce shelf-life rules. Vision reads the label photo from the godown to be sure.", who: agentsAt("connect", "detect", "verify") }, /* @__PURE__ */ React.createElement(AlertCard, null)), /* @__PURE__ */ React.createElement(Chapter, { id: "price", tone: "sunken", title: "Price every exit, the bin included", lede: `Kiranas on a ${SCHEME.free}-free-with-${SCHEME.buy} scheme, a clearance marketplace, a staff sale at the godown, a food bank: the Valuer prices each against the true cost of destroying the stock, and the Router splits the batch within each exit's limits.`, who: agentsAt("value", "decide") }, /* @__PURE__ */ React.createElement(PricesCard, null)), /* @__PURE__ */ React.createElement(Chapter, { id: "yes", tone: "amber", title: "Say yes once.", lede: "A person approves the plan with the money on screen. Nothing is listed, messaged or shipped before that tap.", who: ["a person"], person: true }, /* @__PURE__ */ React.createElement(PlanCard, null)), /* @__PURE__ */ React.createElement(Chapter, { id: "work", tone: "night", title: "The agents do the rest.", lede: "They send the kirana offers in Hindi, list the lot in the distributor's name, answer bids, draft the invoice, credit note and GST memo, and post the impact.", who: agentsAt("execute", "settle", "report"), wide: true }, /* @__PURE__ */ React.createElement(WorkCards, null)));
   }
-  const dotsTo = (id) => DOTS.filter((d) => d.id === id).length;
-  const NONE = { kirana: 0, expiresoon: 0 }, ALL = Object.fromEntries(TAKEN.map((e) => [e.id, e.packs]));
-  function Flow({ stage, left, reduce, dots, routes }) {
-    const drawn = stage !== "wait";
-    const t = (duration, delay = 0) => reduce ? { duration: 0 } : { duration, delay, ease: EASE };
-    return /* @__PURE__ */ React.createElement("div", { className: cx("flow-layer", stage), "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("svg", { viewBox: `0 0 ${PW} ${PH}`, preserveAspectRatio: "none" }, /* @__PURE__ */ React.createElement("defs", null, /* @__PURE__ */ React.createElement("filter", { id: "fl-glow", x: "-20%", y: "-60%", width: "140%", height: "220%" }, /* @__PURE__ */ React.createElement("feGaussianBlur", { stdDeviation: "14" }))), /* @__PURE__ */ React.createElement(motion.path, { className: "fl-glow", d: TRUNK, initial: false, animate: { opacity: drawn ? 1 : 0 }, transition: t(0.6) }), /* @__PURE__ */ React.createElement(motion.path, { className: "fl-trunk", d: TRUNK, initial: false, animate: { pathLength: drawn ? 1 : 0 }, transition: t(0.7) }), EXITS.map((e, i) => e.taken ? /* @__PURE__ */ React.createElement(motion.path, { key: e.id, className: "fl-spur " + e.id, d: spur(e), initial: false, animate: { pathLength: drawn ? 1 : 0 }, transition: t(0.35, 0.3 + i * 0.12) }) : /* @__PURE__ */ React.createElement(motion.path, { key: e.id, className: "fl-spur none " + e.id, d: spur(e), initial: false, animate: { opacity: drawn ? 1 : 0 }, transition: t(0.4, 0.5 + i * 0.08) })), EXITS.map((e) => /* @__PURE__ */ React.createElement("circle", { key: "at" + e.id, className: cx("fl-drop", e.id, e.taken && "taken"), cx: exX(e), cy: endY(e), r: e.taken ? 30 : 24 })), /* @__PURE__ */ React.createElement("path", { className: "fl-x", d: `M${exX(EXITS[4]) - 15} ${HEAP - 15} l30 30 m0 -30 l-30 30` }), TAKEN.map((e) => /* @__PURE__ */ React.createElement("path", { key: "way" + e.id, ref: (el) => {
-      routes.current[e.id] = el;
-    }, d: route(e), fill: "none", stroke: "none" })), DOTS.map((e, i) => /* @__PURE__ */ React.createElement("circle", { key: i, ref: (el) => {
-      dots.current[i] = el;
-    }, className: "fl-dot " + e.id, r: "22", cx: DOOR.x, cy: DOOR.y, opacity: "0" }))), /* @__PURE__ */ React.createElement("div", { className: "fl-tag", style: { left: DOOR.x / PW * 100 + "%" } }, /* @__PURE__ */ React.createElement("b", null, fmt.num(left)), /* @__PURE__ */ React.createElement("span", null, left ? " packs at the godown" : " packs left at the godown")));
-  }
-  function Split({ boxRef, drawn, reduce, run }) {
-    const svg = useRef(null), src = useRef(null), rows = useRef([]);
-    const [geo, setGeo] = useState(null);
-    React.useLayoutEffect(() => {
-      const measure = () => {
-        const s = svg.current, b = src.current;
-        if (!s || !b || getComputedStyle(s).display === "none") {
-          setGeo(null);
-          return;
-        }
-        const r = s.getBoundingClientRect(), br = b.getBoundingClientRect();
-        const band = Math.min(150, br.height * 0.8);
-        let y0 = br.top + br.height / 2 - band / 2 - r.top;
-        setGeo({ w: r.width, h: r.height, rows: EXITS.map((e, i) => {
-          const q = rows.current[i].getBoundingClientRect(), t2 = e.packs / N * band, g = { e, a: y0, t: t2, cy: q.top + q.height / 2 - r.top };
-          y0 += t2;
-          return g;
-        }) });
-      };
-      measure();
-      const ro = new ResizeObserver(measure);
-      ro.observe(boxRef.current);
-      return () => ro.disconnect();
-    }, []);
-    const t = (duration, delay) => reduce ? { duration: 0 } : { duration, delay, ease: EASE };
-    const ribbon = (g) => {
-      const c = geo.w * 0.55, h = g.t / 2, ya = g.a + h;
-      return `M12 ${ya - h} C${c} ${ya - h} ${c} ${g.cy - h} ${geo.w} ${g.cy - h} L${geo.w} ${g.cy + h} C${c} ${g.cy + h} ${c} ${ya + h} 12 ${ya + h} Z`;
-    };
-    const thread = (g) => {
-      const c = geo.w * 0.55;
-      return `M12 ${g.a} C${c} ${g.a} ${c} ${g.cy} ${geo.w} ${g.cy}`;
-    };
-    return /* @__PURE__ */ React.createElement("div", { className: "split", ref: boxRef, role: "group", "aria-label": "Where the batch went" }, /* @__PURE__ */ React.createElement("div", { className: "split-src", ref: src }, /* @__PURE__ */ React.createElement(Product, { name: "pack-snack-plain", size: 72 }), /* @__PURE__ */ React.createElement("span", { className: "split-n" }, fmt.num(N)), /* @__PURE__ */ React.createElement("span", { className: "split-cap" }, "packs of masala chips with ", BATCH.daysLeft, " days left, at the distributor's godown")), /* @__PURE__ */ React.createElement("svg", { className: "split-svg", ref: svg, "aria-hidden": "true", viewBox: geo ? `0 0 ${geo.w} ${geo.h}` : "0 0 1 1", preserveAspectRatio: "none" }, geo && /* @__PURE__ */ React.createElement("defs", null, /* @__PURE__ */ React.createElement("clipPath", { id: "sp-wipe" }, /* @__PURE__ */ React.createElement(motion.rect, { key: "w" + run, x: "0", y: "0", height: geo.h, initial: reduce ? false : { width: 0 }, animate: { width: drawn ? geo.w : 0 }, transition: t(1.1, 0.2) }))), geo && /* @__PURE__ */ React.createElement("g", { clipPath: "url(#sp-wipe)" }, geo.rows.map((g) => /* @__PURE__ */ React.createElement("path", { key: g.e.id, className: cx(g.e.packs ? "sp-band" : "sp-none", g.e.id), d: g.e.packs ? ribbon(g) : thread(g) }))), geo && geo.rows.filter((g) => g.e.packs).map((g) => /* @__PURE__ */ React.createElement("rect", { key: "src" + g.e.id, className: "sp-src " + g.e.id, x: "0", y: g.a, width: "12", height: g.t }))), /* @__PURE__ */ React.createElement("ol", { className: "split-rows" }, EXITS.map((e, i) => /* @__PURE__ */ React.createElement("li", { key: e.id, ref: (el) => {
-      rows.current[i] = el;
-    }, className: cx("split-row", e.id, e.taken ? "taken" : "none", e.bin && "bin") }, /* @__PURE__ */ React.createElement(Product, { name: e.art, size: 52, className: "sr-art" }), /* @__PURE__ */ React.createElement("span", { className: "sr-main" }, /* @__PURE__ */ React.createElement("b", null, e.name), /* @__PURE__ */ React.createElement("span", null, e.taken ? `${fmt.num(e.packs)} packs · ${e.per}` : e.per), /* @__PURE__ */ React.createElement("span", { className: "sr-share", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(motion.i, { key: "s" + run, initial: reduce ? false : { scaleX: 0 }, animate: { scaleX: drawn ? e.packs / N : 0 }, transition: t(0.7, 0.3 + i * 0.12) }))), /* @__PURE__ */ React.createElement(motion.span, { key: "v" + run, className: "sr-v", initial: reduce || !e.taken ? false : { opacity: 0, y: 6 }, animate: { opacity: drawn || !e.taken ? 1 : 0, y: drawn || !e.taken ? 0 : 6 }, transition: t(0.4, 1 + i * 0.12) }, e.taken ? fmt.inr(e.total) : e.bin ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", { className: "sr-no" }, e.note), /* @__PURE__ */ React.createElement("span", { className: "sr-cost" }, fmt.inr(e.total), " if destroyed")) : /* @__PURE__ */ React.createElement("span", { className: "sr-no" }, e.note))))));
-  }
-  function Exits() {
-    const app = useApp();
-    const reduce = useReducedMotion();
-    const night = useTheme().resolved === "dark";
-    const swipe = app.bp !== "desktop";
-    const pan = useRef(null), split = useRef(null), dots = useRef([]), routes = useRef({});
-    const streetSeen = Motion.useInView(pan, { once: true, amount: 0.9 }), splitSeen = Motion.useInView(split, { once: true, amount: 0.4 });
-    const [run, setRun] = useState(0), [stage, setStage] = useState(reduce ? "done" : "wait"), [left, setLeft] = useState(reduce ? 0 : N);
-    const [got, setGot] = useState(reduce ? ALL : NONE), [splitRun, setSplitRun] = useState(reduce ? 0 : -1);
-    useEffect(() => {
-      if (reduce) {
-        setStage("done");
-        setLeft(0);
-        setGot(ALL);
-      }
-    }, [reduce]);
-    useEffect(() => {
-      const el = pan.current, li = el && el.querySelector(".ex-chips > li"), fig = el && el.querySelector(".ex-pano");
-      if (!swipe || !li || !fig) return;
-      el.scrollLeft = reduce ? Math.max(0, fig.offsetLeft + li.offsetLeft - el.clientWidth / 2) : 0;
-    }, [swipe, reduce]);
-    useEffect(() => {
-      if (reduce || !streetSeen) return;
-      setStage("play");
-      setLeft(N);
-      setGot(NONE);
-      const controls = [], timers = [], arrived = { ...NONE }, el = pan.current, fig = el && el.querySelector(".ex-pano");
-      const x0 = fig ? fig.getBoundingClientRect().left - el.getBoundingClientRect().left + el.scrollLeft : 0;
-      let gone = 0, lead = 0;
-      DOTS.forEach((e, i) => {
-        const path = routes.current[e.id], c = dots.current[i];
-        if (!path || !c) return;
-        const L = path.getTotalLength(), delay = 0.55 + i * 0.105, duration = 0.42 + L / 5200;
-        timers.push(setTimeout(() => {
-          gone += 1;
-          setLeft(Math.round(N * (1 - gone / DOTS.length)));
-        }, delay * 1e3));
-        controls.push(Motion.animate(0, 1, {
-          duration,
-          delay,
-          ease: [0.45, 0, 0.4, 1],
-          onUpdate: (v) => {
-            const pt = path.getPointAtLength(v * L);
-            c.setAttribute("cx", pt.x);
-            c.setAttribute("cy", pt.y);
-            c.setAttribute("opacity", v < 0.05 ? v * 20 : v > 0.93 ? Math.max(0, (1 - v) * 14) : 1);
-            if (fig && el.scrollWidth > el.clientWidth + 4 && pt.x > lead) {
-              lead = pt.x;
-              el.scrollLeft = Math.max(0, x0 + pt.x / PW * fig.clientWidth - el.clientWidth * 0.6);
-            }
-          },
-          onComplete: () => {
-            arrived[e.id] += 1;
-            setGot(Object.fromEntries(TAKEN.map((x) => [x.id, Math.round(x.packs * arrived[x.id] / dotsTo(x.id))])));
-            if (arrived.kirana + arrived.expiresoon === DOTS.length) setStage("done");
-          }
-        }));
-      });
-      return () => {
-        controls.forEach((c) => c.stop());
-        timers.forEach(clearTimeout);
-      };
-    }, [streetSeen, run, reduce]);
-    useEffect(() => {
-      if (reduce) {
-        setSplitRun(run);
-        return;
-      }
-      if (splitSeen && splitRun !== run && stage !== "play") setSplitRun(run);
-    }, [splitSeen, stage, run, reduce]);
-    const replay = () => {
-      setStage("play");
-      setLeft(N);
-      setGot(NONE);
-      setRun((r) => r + 1);
-    };
-    const results = [
-      { n: /* @__PURE__ */ React.createElement(Money, { value: D.ACTUAL.net, className: "r-n" }), l: "recovered", w: `${fmt.inr(KL.net)} from ${SHOPS} kiranas, after the van, and ${fmt.inr(ES_NET)} from a marketplace buyer, after the listing fee` },
-      { n: /* @__PURE__ */ React.createElement(Money, { value: D.ACTUAL.swing, className: "r-n" }), l: "better than the bin", w: `${fmt.inr(D.ACTUAL.pnl)} on the brand's books with the plan, price support included, against ${fmt.inr(-BIN)} to destroy it` },
-      { n: /* @__PURE__ */ React.createElement("span", { className: "num r-n" }, "0"), l: "cartons destroyed", w: `${fmt.num(D.PLAN.soldUnits)} packs sold on tax invoices, so the ${fmt.inr(D.PLAN.itcRetained)} GST credit stays` }
+  function Ledger() {
+    const { shown, card, rise } = useRise(0.3);
+    const rolled = useLit(shown, 1, 300, 0) > 0;
+    const lines = [
+      { k: "Recovered, net", s: `${fmt.inr(KL.net)} from ${SHOPS} kiranas after the van, ${fmt.inr(ES_NET)} from a marketplace buyer after the fee`, v: /* @__PURE__ */ React.createElement(Money, { value: D.ACTUAL.net, roll: rolled, from: rolled ? 0 : void 0 }) },
+      { k: "Better than the bin", s: `against ${fmt.inr(-BIN)} to destroy the stock: the goods, the GST credit, disposal and EPR`, v: /* @__PURE__ */ React.createElement(Money, { value: D.ACTUAL.swing, roll: rolled, from: rolled ? 0 : void 0 }) },
+      { k: "GST input credit kept", s: "goods supplied under tax invoices, so the Section 17(5)(h) reversal does not apply", v: /* @__PURE__ */ React.createElement(Money, { value: D.PLAN.itcRetained, roll: rolled, from: rolled ? 0 : void 0 }) },
+      { k: "Kept out of landfill", s: `${fmt.num(D.PLAN.co2)} kg CO₂e, indicative`, v: /* @__PURE__ */ React.createElement("span", { className: "num" }, /* @__PURE__ */ React.createElement(Roll, { value: D.PLAN.kg, from: rolled ? 0 : void 0 }), " kg") },
+      { k: "Cartons destroyed", s: `${fmt.num(D.PLAN.soldUnits)} packs sold on tax invoices`, v: /* @__PURE__ */ React.createElement("span", { className: "num" }, "0"), zero: true }
     ];
-    return /* @__PURE__ */ React.createElement("section", { id: "exits", className: "sec sec-exits", "aria-labelledby": "exits-h" }, /* @__PURE__ */ React.createElement("div", { className: "wrap" }, /* @__PURE__ */ React.createElement("header", { className: "sec-head" }, /* @__PURE__ */ React.createElement("h2", { id: "exits-h", className: "sec-h" }, "Five exits, one batch"), /* @__PURE__ */ React.createElement("p", { className: "sec-sub" }, "One batch: ", fmt.num(N), " packs of masala chips that won't sell in the ", BATCH.daysLeft, " days they have left. The agents priced every exit, the bin included, and sent the packs where they recover the most."))), /* @__PURE__ */ React.createElement("div", { className: "ex-body" }, /* @__PURE__ */ React.createElement("div", { ref: pan, className: "ex-pan", ...swipe ? { tabIndex: 0, role: "region", "aria-label": "The street from the godown to the bin; scroll sideways" } : {} }, /* @__PURE__ */ React.createElement("figure", { className: "ex-pano", style: { "--ar": EX_AR } }, /* @__PURE__ */ React.createElement("img", { src: IMG + (night ? "exits-night.webp" : "exits.webp"), alt: `One miniature street from end to end${night ? " at night" : ""}: the distributor's godown, two kirana shops hung with snack packets, a general store, more small shops, a van, and a smouldering rubbish heap at the far end.` }), /* @__PURE__ */ React.createElement(Flow, { stage, left, reduce, dots, routes }), /* @__PURE__ */ React.createElement("ul", { className: "ex-chips" }, EXITS.map((e) => /* @__PURE__ */ React.createElement("li", { key: e.id, style: { "--x": e.x } }, /* @__PURE__ */ React.createElement("span", { className: cx("ex-chip", e.id, e.taken && "taken", e.bin && "bin", e.taken && got[e.id] > 0 && "in") }, /* @__PURE__ */ React.createElement("span", { className: "ex-name" }, /* @__PURE__ */ React.createElement("i", { className: "ex-dot " + e.id, "aria-hidden": "true" }), e.name, e.taken && /* @__PURE__ */ React.createElement(Icon, { name: "check", size: 14, stroke: 2.6, className: "ex-took" })), e.taken ? /* @__PURE__ */ React.createElement("span", { className: "ex-line" }, /* @__PURE__ */ React.createElement("span", { "aria-hidden": "true" }, e.line(got[e.id])), /* @__PURE__ */ React.createElement("span", { className: "sr-only" }, e.line(e.packs))) : /* @__PURE__ */ React.createElement("span", { className: "ex-line" }, e.bin ? `${fmt.inr(-BIN)} · ${e.note}` : e.note))))))), /* @__PURE__ */ React.createElement("div", { className: "flow-key" }, /* @__PURE__ */ React.createElement("span", { className: "fk-dots", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("i", { className: "kirana" }), /* @__PURE__ */ React.createElement("i", { className: "expiresoon" })), /* @__PURE__ */ React.createElement("p", null, "Each dot is about ", DOT, " packs: green to ", SHOPS, " kiranas, violet to one buyer on ExpireSoon. The staff sale and the food bank were priced and not needed, and nothing went to the bin."), !reduce && /* @__PURE__ */ React.createElement("button", { type: "button", className: "replay", onClick: replay }, /* @__PURE__ */ React.createElement(Icon, { name: "rotate-ccw", size: 16 }), stage === "wait" ? "Send the batch" : "Send the batch again"))), /* @__PURE__ */ React.createElement("div", { className: "wrap" }, /* @__PURE__ */ React.createElement(Split, { boxRef: split, drawn: splitRun === run, reduce, run }), /* @__PURE__ */ React.createElement("div", { className: "results", role: "group", "aria-label": "What the batch came to" }, results.map((r) => /* @__PURE__ */ React.createElement("div", { key: r.l, className: "result" }, r.n, /* @__PURE__ */ React.createElement("span", { className: "r-l" }, r.l), /* @__PURE__ */ React.createElement("span", { className: "r-w" }, r.w)))), /* @__PURE__ */ React.createElement("p", { className: "results-note" }, "An illustrative batch. Every figure is worked out from the journey map.")));
+    return /* @__PURE__ */ React.createElement("section", { className: "sec-ledger", id: "ledger", "aria-labelledby": "ledger-h" }, /* @__PURE__ */ React.createElement(motion.div, { className: "ledger", role: "group", "aria-labelledby": "ledger-h", ...card }, /* @__PURE__ */ React.createElement(motion.div, { className: "ledger-head", ...rise(0) }, /* @__PURE__ */ React.createElement("b", null, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Icon, { name: "leaf", size: 14, stroke: 2.2 })), /* @__PURE__ */ React.createElement("span", { id: "ledger-h" }, "Impact · the ledger for one batch")), /* @__PURE__ */ React.createElement("span", null, "posted after the return window")), lines.map((l, i) => /* @__PURE__ */ React.createElement(motion.div, { key: l.k, className: cx("ledger-row", l.zero && "zero"), ...rise(i + 1) }, /* @__PURE__ */ React.createElement("span", { className: "k" }, l.k), /* @__PURE__ */ React.createElement("span", { className: "v" }, l.v), /* @__PURE__ */ React.createElement("span", { className: "s" }, l.s))), /* @__PURE__ */ React.createElement(motion.div, { className: "ledger-foot", ...rise(lines.length + 1) }, /* @__PURE__ */ React.createElement("span", null, "BRSR Principle 6 · two rows an auditor can follow back to the batch"), /* @__PURE__ */ React.createElement("span", null, "one illustrative batch"))), /* @__PURE__ */ React.createElement("p", { className: "ledger-note" }, "An illustrative batch. Every figure is worked out from the journey map."));
+  }
+  function DemoPill({ hidden }) {
+    return /* @__PURE__ */ React.createElement("a", { className: cx("pill", hidden && "off"), ...linkProps(LINKS.demo), "aria-label": "Watch the 6-minute demo" }, /* @__PURE__ */ React.createElement("span", { className: "thumb", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("img", { src: (window.SC3_IMG || "system/img/").replace(/img\/$/, "media/") + "carton-loop-poster.webp", alt: "" }), /* @__PURE__ */ React.createElement("i", null, /* @__PURE__ */ React.createElement(Icon, { name: "play", size: 12, stroke: 2.6 }))), /* @__PURE__ */ React.createElement("span", null, "Watch the 6-minute demo"));
   }
   const ISLANDS = [
     { id: "brand", x: 0.22, y: 0.6, ly: 0.86, product: "pack-snack-plain", url: "your-brand.smartclearance.com", live: true },
@@ -352,8 +415,8 @@
   function Plans({ onDemo }) {
     return /* @__PURE__ */ React.createElement("section", { id: "pricing", className: "sec sec-plans", "aria-labelledby": "plans-h" }, /* @__PURE__ */ React.createElement("div", { className: "wrap" }, /* @__PURE__ */ React.createElement("header", { className: "sec-head" }, /* @__PURE__ */ React.createElement("h2", { id: "plans-h", className: "sec-h plain" }, "Start with one distributor."), /* @__PURE__ */ React.createElement("p", { className: "sec-sub" }, "A pilot runs on one distributor's stock for 90 days. Prices are set with each manufacturer.")), /* @__PURE__ */ React.createElement("ul", { className: "plans" }, P.PLANS.map((p) => /* @__PURE__ */ React.createElement("li", { key: p.id, className: "plan" }, /* @__PURE__ */ React.createElement("b", { className: "plan-name" }, p.name), /* @__PURE__ */ React.createElement("ul", { className: "plan-scope" }, p.scope.map((s) => /* @__PURE__ */ React.createElement("li", { key: s }, s.replace(/^The client's /, "Your ")))), /* @__PURE__ */ React.createElement("span", { className: "plan-foot" }, /* @__PURE__ */ React.createElement("span", null, "Prices on request"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-link", onClick: () => onDemo(p.name) }, "Talk to us", /* @__PURE__ */ React.createElement("span", { className: "sr-only" }, " about ", p.name))))))));
   }
-  function Close({ onDemo }) {
-    return /* @__PURE__ */ React.createElement("section", { className: "close", "aria-labelledby": "close-h" }, /* @__PURE__ */ React.createElement("div", { className: "close-copy" }, /* @__PURE__ */ React.createElement("h2", { id: "close-h", className: "close-h" }, "Give your next batch a second chance."), /* @__PURE__ */ React.createElement("div", { className: "close-ctas" }, /* @__PURE__ */ React.createElement(Button, { variant: "primary", onClick: () => onDemo() }, "Book a demo"), /* @__PURE__ */ React.createElement("a", { className: "btn btn-secondary", ...linkProps(LINKS.demo) }, "Watch the 6-minute demo"))), /* @__PURE__ */ React.createElement("img", { className: "close-plate", src: IMG + "dusk.webp", width: "4128", height: "1024", alt: "", loading: "lazy" }));
+  function Close({ onDemo, closeRef }) {
+    return /* @__PURE__ */ React.createElement("section", { className: "close", "aria-labelledby": "close-h", ref: closeRef }, /* @__PURE__ */ React.createElement("div", { className: "close-copy" }, /* @__PURE__ */ React.createElement("h2", { id: "close-h", className: "close-h" }, "Give your next batch a second chance."), /* @__PURE__ */ React.createElement("div", { className: "close-ctas" }, /* @__PURE__ */ React.createElement(Button, { variant: "primary", onClick: () => onDemo() }, "Book a demo"), /* @__PURE__ */ React.createElement("a", { className: "btn btn-secondary", ...linkProps(LINKS.demo) }, "Watch the 6-minute demo"))), /* @__PURE__ */ React.createElement("img", { className: "close-plate", src: IMG + "dusk.webp", width: "4128", height: "1024", alt: "", loading: "lazy" }));
   }
   function Footer({ onFind }) {
     const { mode, setMode } = useTheme();
@@ -411,19 +474,28 @@
   function Site() {
     const [find, setFind] = useState(false);
     const [demo, setDemo] = useState(null);
+    const [scrolled, setScrolled] = useState(false);
+    const closeRef = useRef(null);
+    const nearEnd = useInView(closeRef, { amount: 0.2 });
     useEffect(() => {
       document.title = "Smart-Clearance";
       if (window.SC3_LOADER) window.SC3_LOADER.mark("app");
     }, []);
+    useEffect(() => {
+      const f = () => setScrolled(window.scrollY > 40);
+      f();
+      window.addEventListener("scroll", f, { passive: true });
+      return () => window.removeEventListener("scroll", f);
+    }, []);
     const onDemo = (plan) => setDemo({ plan: typeof plan === "string" ? plan : null });
-    return /* @__PURE__ */ React.createElement("div", { className: "site", id: "top" }, /* @__PURE__ */ React.createElement(Nav, { onFind: () => setFind(true), onDemo }), /* @__PURE__ */ React.createElement("main", null, /* @__PURE__ */ React.createElement(Hero, { onFind: () => setFind(true) }), /* @__PURE__ */ React.createElement(How, null), /* @__PURE__ */ React.createElement(Exits, null), /* @__PURE__ */ React.createElement(Workspace, null), /* @__PURE__ */ React.createElement(Plans, { onDemo }), /* @__PURE__ */ React.createElement(Close, { onDemo })), /* @__PURE__ */ React.createElement(Footer, { onFind: () => setFind(true) }), /* @__PURE__ */ React.createElement(S.FindWorkspace, { open: find, onClose: () => setFind(false), onUse: () => {
+    return /* @__PURE__ */ React.createElement("div", { className: cx("site", scrolled && "scrolled"), id: "top" }, /* @__PURE__ */ React.createElement(Nav, { onFind: () => setFind(true), onDemo }), /* @__PURE__ */ React.createElement("main", null, /* @__PURE__ */ React.createElement(Hero, { onDemo }), /* @__PURE__ */ React.createElement(Statement, { id: "how", text: "Short-dated stock that quick commerce sent back. Priced to every exit, the bin included. Sold in the days it has left." }), /* @__PURE__ */ React.createElement(Table, null), /* @__PURE__ */ React.createElement(Chapters, null), /* @__PURE__ */ React.createElement(Ledger, null), /* @__PURE__ */ React.createElement(Workspace, null), /* @__PURE__ */ React.createElement(Plans, { onDemo }), /* @__PURE__ */ React.createElement(Close, { onDemo, closeRef })), /* @__PURE__ */ React.createElement(Footer, { onFind: () => setFind(true) }), /* @__PURE__ */ React.createElement(DemoPill, { hidden: nearEnd }), /* @__PURE__ */ React.createElement(S.FindWorkspace, { open: find, onClose: () => setFind(false), onUse: () => {
       setFind(false);
       open(LINKS.app);
     }, note: "One manufacturer's workspace is set up in this prototype." }), /* @__PURE__ */ React.createElement(DemoSheet, { open: !!demo, plan: demo && demo.plan, onClose: () => setDemo(null) }));
   }
   const gate = window.SC3_LOADER && window.SC3_LOADER.switchTheme;
   function Root() {
-    return /* @__PURE__ */ React.createElement(ThemeProvider, { gate }, /* @__PURE__ */ React.createElement(AppRoot, { className: "site-root", style: { position: "fixed", inset: 0 } }, /* @__PURE__ */ React.createElement(NoticeHost, null, /* @__PURE__ */ React.createElement(Site, null))));
+    return /* @__PURE__ */ React.createElement(ThemeProvider, { gate }, /* @__PURE__ */ React.createElement(AppRoot, { className: "site-root" }, /* @__PURE__ */ React.createElement(NoticeHost, null, /* @__PURE__ */ React.createElement(Site, null))));
   }
   ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(Root, null));
 })();

@@ -65,7 +65,9 @@ const showcase = {
 		distributorCity: dist.city,
 		units: hero.units,
 		sellPerDay: hero.sellPerDay,
-		product: D.SKUS[hero.sku].name
+		product: D.SKUS[hero.sku].name,
+		mrp: D.SKUS[hero.sku].mrp,
+		bestBefore: hero.bestBefore
 	},
 	risk: {
 		atRisk: D.RISK.atRisk,
@@ -73,13 +75,17 @@ const showcase = {
 	},
 	rules: {
 		...pick(window.SC3_MONEY.RULES, ['kiranaWindowDays', 'scheme']),
-		foodbankMinDays: window.SC3_MONEY.CHANNELS.find((c) => c.id === 'foodbank').minDays
+		foodbankMinDays: window.SC3_MONEY.CHANNELS.find((c) => c.id === 'foodbank').minDays,
+		reservePerUnit: window.SC3_MONEY.RULES.negotiation.reservePerUnit
 	},
 	plan: {
 		net: D.PLAN.net,
+		pctMRP: D.PLAN.pctMRP,
+		swing: D.PLAN.swing,
 		soldUnits: D.PLAN.soldUnits,
 		itcRetained: D.PLAN.itcRetained,
 		kg: D.PLAN.kg,
+		co2: D.PLAN.co2,
 		writeOff: { total: D.PLAN.writeOff.total, perUnit: D.PLAN.writeOff.perUnit },
 		lines: D.PLAN.lines.map((l) => pick(l, ['id', 'short', 'units', 'price', 'packPrice', 'gross', 'cost', 'net'])),
 		rows: D.PLAN.rows.map((r) => ({
@@ -87,7 +93,11 @@ const showcase = {
 			capacity: r.capacity === Infinity ? null : r.capacity
 		}))
 	},
-	award: pick(D.AWARD, ['units', 'price', 'gross']),
+	// the buyer's opening bid is the one data.js counters (M.counter(ASK, 13))
+	award: { ...pick(D.AWARD, ['units', 'price', 'gross', 'token']), bid: 13 },
+	support: { total: D.SUPPORT.total },
+	// the offer's Hindi title only: its body names the shop, the brand and the distributor, which this page leaves out
+	offer: { title: D.PUSH.offer.title },
 	actual: pick(D.ACTUAL, ['net', 'pnl', 'swing']),
 	shops: D.KIRANAS.length,
 	stages: D.STAGES.map((s) => ({ id: s.id, title: s.title, human: !!s.human }))
