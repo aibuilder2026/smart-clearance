@@ -1771,7 +1771,7 @@ async def expire(ctx: Ctx, client_id: str, ref: str) -> None:
         "report",
         copy.expired_event(units=int(plan_.get("godown", 0)), godown=s.dist.godown or f"{s.dist.city} godown"),
         agent="Impact",
-        icon="calendar-x",
+        icon="hourglass",
     )
     await _save(ctx, s, note="expired")
     if s.case.phase == "dispatched" and not s.case.docs:
