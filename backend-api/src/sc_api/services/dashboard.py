@@ -30,6 +30,7 @@ from sc_api.schemas import (
     Waiting,
 )
 from sc_api.services.context import Ctx
+from sc_api.services.journey.events import clock_of
 
 APPROVE = 5  # the stop where a person says yes (0-based, as stage_current)
 STOPS = 9
@@ -245,6 +246,17 @@ async def batches(ctx: Ctx, q: BatchQuery) -> BatchPage:
         order = [key.asc().nulls_last() if asc else key.desc().nulls_last(), B.seq]
     page = max(1, q.page)
     rows = (await s.execute(base.where(*where).order_by(*order).limit(q.size).offset((page - 1) * q.size))).all()
+    # days left count from each client's own day: a live client's journey runs on its own calendar (SC-90), as its
+    # workspace reads it; every other client's is today
+    wall = ctx.clock.now()
+    clients = {
+        c.id: c
+        for c in (await s.execute(select(m.Client).where(m.Client.id.in_({b.client_id for b, _, _ in rows})))).scalars()
+    }
+
+    def day_of(client_id: str) -> date:
+        c = clients.get(client_id)
+        return clock_of(c).today(wall) if c is not None else today
 
     def label(at: datetime) -> str:
         return hhmm(at) if at.astimezone(IST).date() == today else day_month(at.astimezone(IST).date())
@@ -264,7 +276,7 @@ async def batches(ctx: Ctx, q: BatchQuery) -> BatchPage:
                 value_kind="recovered" if b.recovered > 0 or b.closed_at else "mrp",
                 updated=label(max(t for t in (b.opened_at, b.gate_at, b.closed_at) if t is not None)),
                 closed=b.closed_at is not None,
-                **({"days_left": (b.best_before - today).days} if b.best_before else {}),
+                **({"days_left": (b.best_before - day_of(b.client_id)).days} if b.best_before else {}),
                 **({"outcome": b.outcome} if b.outcome else {}),
             )
             for b, x, d in rows

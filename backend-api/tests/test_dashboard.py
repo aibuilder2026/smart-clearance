@@ -184,3 +184,19 @@ async def test_closed_today_counts_what_closed_today(api, neha, ctx, clock):
     assert d["closedToday"]["count"] == 2 and d["closedToday"]["recovered"] == 52_652.4
     assert [x["ref"] for x in d["closedToday"]["batches"]] == ["MF-2409-117", "MF-2410-402"], "the latest first"
     assert d["atStop"][8] == []
+
+
+async def test_a_live_clients_days_left_count_from_its_journey_day(api, neha, munchly):
+    """SC-90: a live client's journey runs on its own calendar (the story's, here), so the console's days left are its
+    workspace's, not the wall clock's"""
+    from tests.test_workspace import PRIYA, WS
+
+    snap = (await api.get(f"{WS}/snapshot", headers=PRIYA)).json()
+    ws = {b["id"]: b["daysLeft"] for b in snap["batches"]}
+    rows = (await api.get(f"{B}?client=munchly&size=32", headers=neha)).json()["rows"]
+    console = {x["ref"]: x["daysLeft"] for x in rows if x["ref"] in ws}
+    assert console and console == {ref: ws[ref] for ref in console}
+    gates = (await api.get("/v1/console/clients/munchly/batches", headers=neha)).json()
+    assert {x["ref"]: x["daysLeft"] for x in gates if x["ref"] in ws} == {
+        x["ref"]: ws[x["ref"]] for x in gates if x["ref"] in ws
+    }

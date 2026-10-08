@@ -89,6 +89,7 @@
     const hm = heroModel(s);
     const phone = app.bp === "phone";
     const [sel, setSel] = useState(null);
+    const [sheet, setSheet] = useState(null);
     const views = useMemo(() => D.BATCHES.map((b) => {
       const v = D.batchView(b);
       if (b.hero) v.phase = hm.view.phase;
@@ -122,10 +123,11 @@
     const list = /* @__PURE__ */ React.createElement("div", { className: "stack snug" }, /* @__PURE__ */ React.createElement(SectionTitle, { sub: "Sorted by days to best-before; at-risk batches first" }, "Watchlist"), /* @__PURE__ */ React.createElement("div", { className: "list" }, watchlist.map((v) => /* @__PURE__ */ React.createElement(BatchRow, { key: v.id, view: v, selected: sel === v.id, compact: phone, onOpen: () => {
       setSel(v.id);
       if (v.hero) openRoute();
+      else setSheet(v.id);
     } }))));
     const live = S.useLive();
     if (live) return /* @__PURE__ */ React.createElement(LiveCommandCenter, { me, live, hm, money, watchlist, sel, setSel, feed, cluster });
-    return /* @__PURE__ */ React.createElement(Screen, { me, title: "Command Center", sub: flagged ? `${D.JOURNEY.today} · Watcher checked 312 batches at 09:00` : "Watcher runs daily at 09:00 across 312 batches" }, app.bp === "desktop" ? /* @__PURE__ */ React.createElement(Columns, { sideWidth: 340, main: /* @__PURE__ */ React.createElement(React.Fragment, null, tracker, cluster, list), side: feed }) : /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 20 } }, tracker, feed, list, cluster));
+    return /* @__PURE__ */ React.createElement(Screen, { me, title: "Command Center", sub: flagged ? `${D.JOURNEY.today} · Watcher checked 312 batches at 09:00` : "Watcher runs daily at 09:00 across 312 batches" }, app.bp === "desktop" ? /* @__PURE__ */ React.createElement(Columns, { sideWidth: 340, main: /* @__PURE__ */ React.createElement(React.Fragment, null, tracker, cluster, list), side: feed }) : /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 20 } }, tracker, feed, list, cluster), /* @__PURE__ */ React.createElement(BatchSheet, { view: watchlist.find((v) => v.id === sheet), onClose: () => setSheet(null) }));
   }
   function LiveCommandCenter({ me, live, hm, money, watchlist, sel, setSel, feed, cluster }) {
     const s = useStore();
@@ -138,6 +140,7 @@
     const items = L.flaggedItems(s, live);
     const watch = s.rules.watchTime;
     const rows = D.SETUP.dms.rows;
+    const [sheet, setSheet] = useState(null);
     const openRoute = (ref) => go("route", { ref });
     const primary = s.hero.phase === "planned" ? /* @__PURE__ */ React.createElement(Button, { variant: "approve", icon: "check", disabled: offline, onClick: () => openRoute(items[0].ref) }, "Review and approve") : ["approved", "executing"].includes(s.hero.phase) ? /* @__PURE__ */ React.createElement(Button, { variant: "primary", iconRight: "arrow-right", onClick: () => go("execution") }, "Watch execution") : /* @__PURE__ */ React.createElement(Button, { variant: "primary", iconRight: "arrow-right", onClick: () => openRoute(items[0].ref) }, "Open Route Room");
     const hero = /* @__PURE__ */ React.createElement(L.Dim, { on: dim }, /* @__PURE__ */ React.createElement(TrackerCard, { view: hm.view, done: hm.done, current: hm.current, eta: dim ? L.pausedWords(live) : hm.eta, etaTone: dim ? "gray" : hm.etaTone, agentLive: dim ? "" : hm.agentLive, primary, money }));
@@ -145,10 +148,11 @@
     const list = /* @__PURE__ */ React.createElement("div", { className: "stack snug" }, /* @__PURE__ */ React.createElement(SectionTitle, { sub: live.quiet ? "Every batch clears inside its date at today's sell-through" : "Flagged batches first, then by days to best-before" }, "Watchlist"), /* @__PURE__ */ React.createElement("div", { className: "list" }, watchlist.map((v) => /* @__PURE__ */ React.createElement(BatchRow, { key: v.id, view: v, selected: sel === v.id, compact: phone, onOpen: () => {
       setSel(v.id);
       if (v.hero || v.second) openRoute(v.id);
+      else setSheet(v.id);
     } }))));
     const side = /* @__PURE__ */ React.createElement(L.Dim, { on: dim }, feed);
     const map = !live.quiet && cluster;
-    return /* @__PURE__ */ React.createElement(Screen, { me, title: "Command Center", sub: `Watcher checked ${rows} batches at ${watch} · ${live.quiet ? "nothing flagged" : items.length + " flagged"}` }, app.bp === "desktop" ? /* @__PURE__ */ React.createElement(Columns, { sideWidth: 340, main: /* @__PURE__ */ React.createElement(React.Fragment, null, top, map, list), side }) : /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 20 } }, top, side, list, map));
+    return /* @__PURE__ */ React.createElement(Screen, { me, title: "Command Center", sub: `Watcher checked ${rows} batches at ${watch} · ${live.quiet ? "nothing flagged" : items.length + " flagged"}` }, app.bp === "desktop" ? /* @__PURE__ */ React.createElement(Columns, { sideWidth: 340, main: /* @__PURE__ */ React.createElement(React.Fragment, null, top, map, list), side }) : /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 20 } }, top, side, list, map), /* @__PURE__ */ React.createElement(BatchSheet, { view: watchlist.find((v) => v.id === sheet), onClose: () => setSheet(null) }));
   }
   function LabelShot({ cover, dim, children }) {
     return /* @__PURE__ */ React.createElement("div", { className: cx("lshot", cover && "cover"), style: dim ? { filter: "saturate(0.85) brightness(0.94)" } : void 0 }, /* @__PURE__ */ React.createElement("img", { src: (window.SC3_IMG || "system/img/") + "label-shot.webp", alt: "" }), /* @__PURE__ */ React.createElement("div", { className: "lshot-label", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("b", null, "MUNCHLY"), /* @__PURE__ */ React.createElement("span", { className: "ls-prod" }, "Masala Chips 150 g"), /* @__PURE__ */ React.createElement("span", null, "BATCH  MF-2409-117"), /* @__PURE__ */ React.createElement("span", null, "MFG  18 MAY 2026"), /* @__PURE__ */ React.createElement("span", null, "BEST BEFORE  18 NOV 2026"), /* @__PURE__ */ React.createElement("span", null, "MRP ₹30.00 incl. of all taxes"), /* @__PURE__ */ React.createElement("span", null, "24 × 150 g")), children);
@@ -312,7 +316,6 @@
       return v;
     });
     const sel = open && views.find((v) => v.id === open);
-    const ML = (id) => D.MANGO_PLAN.lines.find((l) => l.id === id) || { units: 0 };
     return /* @__PURE__ */ React.createElement(Screen, { me, title: "Batches", sub: "Every lot the Watcher sees, from the DMS export" }, app.bp === "phone" ? /* @__PURE__ */ React.createElement("div", { className: "list" }, views.map((v) => /* @__PURE__ */ React.createElement(BatchRow, { key: v.id, view: v, compact: true, onOpen: () => v.hero ? go("route") : setOpen(v.id) }))) : /* @__PURE__ */ React.createElement(DataTable, { label: "Batches", rows: views.map((v) => ({ ...v, name: v.skuObj.name })), onRow: (v) => v.hero ? go("route") : setOpen(v.id), initialSort: ["daysLeft", "asc"], columns: [
       { key: "name", label: "Product", render: (v) => /* @__PURE__ */ React.createElement("span", { className: "row tight" }, /* @__PURE__ */ React.createElement(Product, { name: v.skuObj.img, size: 36 }), /* @__PURE__ */ React.createElement("span", { className: "stack tight", style: { gap: 0 } }, /* @__PURE__ */ React.createElement("b", null, v.skuObj.name), /* @__PURE__ */ React.createElement("span", { className: "mono subtle t-caption" }, v.id))) },
       { key: "dist", label: "Distributor", sortValue: (v) => v.dist.name, render: (v) => /* @__PURE__ */ React.createElement("span", null, v.dist.name, /* @__PURE__ */ React.createElement("div", { className: "t-caption subtle" }, v.dist.city)) },
@@ -321,7 +324,13 @@
       { key: "risk", label: "At risk", num: true, sortValue: (v) => v.assess.atRisk, render: (v) => v.assess.atRisk ? /* @__PURE__ */ React.createElement("span", { className: "neg strong" }, fmt.num(v.assess.atRisk)) : "—" },
       { key: "gates", label: "Quick-commerce gates", sortable: false, render: (v) => /* @__PURE__ */ React.createElement(GateChips, { gates: v.assess.gates, size: "sm" }) },
       { key: "status", label: "Status", sortValue: (v) => v.phase || v.assess.status, render: (v) => /* @__PURE__ */ React.createElement(StatusBadge, { status: v.phase || v.assess.status }) }
-    ] }), /* @__PURE__ */ React.createElement(Sheet, { open: !!sel, onClose: () => setOpen(null), title: sel ? sel.skuObj.name : "" }, sel && /* @__PURE__ */ React.createElement("div", { className: "stack" }, /* @__PURE__ */ React.createElement("div", { className: "row", style: { gap: 14 } }, /* @__PURE__ */ React.createElement(Product, { name: sel.skuObj.img, size: 88 }), /* @__PURE__ */ React.createElement("div", { className: "stack tight" }, /* @__PURE__ */ React.createElement(DaysNum, { days: sel.daysLeft, life: sel.skuObj.lifeDays, size: "l" }), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, "days left · best before ", fmt.date(sel.bestBefore)))), /* @__PURE__ */ React.createElement(GateChips, { gates: sel.assess.gates }), /* @__PURE__ */ React.createElement(List, null, [["Batch", sel.id], ["Distributor", `${sel.dist.name}, ${sel.dist.city}`], ["Units", fmt.num(sel.units)], ["Sells", `${sel.sellPerDay} a day`], ["Will sell before the last week", fmt.num(sel.assess.willSell)], ["At risk", sel.assess.atRisk ? fmt.num(sel.assess.atRisk) : "none"]].map(([k, val]) => /* @__PURE__ */ React.createElement(ListRow, { key: k, title: k, value: val }))), /* @__PURE__ */ React.createElement("p", { className: "t-footnote muted" }, sel.phase === "executing" ? `Routed yesterday: ${fmt.num(ML("kirana").units)} packs to Hyderabad kiranas, ${ML("staff").units} to the staff sale at Lakshmi's godown, ${D.MANGO_FB} to Feeding India.` : sel.assess.status === "gated" ? "Outside at least one quick-commerce gate, but real sell-through clears it in time. The Watcher checks again tomorrow at 09:00." : "Inside every gate and selling through. Nothing to do."))));
+    ] }), /* @__PURE__ */ React.createElement(BatchSheet, { view: sel, onClose: () => setOpen(null) }));
+  }
+  function BatchSheet({ view: sel, onClose }) {
+    const s = useStore();
+    const ML = (id) => D.MANGO_PLAN.lines.find((l) => l.id === id) || { units: 0 };
+    const next = !sel ? "" : sel.phase === "executing" ? `Routed yesterday: ${fmt.num(ML("kirana").units)} packs to Hyderabad kiranas, ${ML("staff").units} to the staff sale at Lakshmi's godown, ${D.MANGO_FB} to Feeding India.` : sel.phase ? "In a journey: the agents are working it, and its Route Room shows where it stands." : sel.assess.status === "at-risk" ? `At risk: ${fmt.num(sel.assess.atRisk)} packs will not sell before the last week. The Watcher checks every morning at ${s.rules.watchTime}, and flags it once Setup is confirmed and ${sel.dist.name} has given ${D.PLATFORM.name} permission to act.` : sel.assess.status === "gated" ? `Outside at least one quick-commerce gate, but real sell-through clears it in time. The Watcher checks again tomorrow at ${s.rules.watchTime}.` : "Inside every gate and selling through. Nothing to do.";
+    return /* @__PURE__ */ React.createElement(Sheet, { open: !!sel, onClose, title: sel ? sel.skuObj.name : "" }, sel && /* @__PURE__ */ React.createElement("div", { className: "stack" }, /* @__PURE__ */ React.createElement("div", { className: "row", style: { gap: 14 } }, /* @__PURE__ */ React.createElement(Product, { name: sel.skuObj.img, size: 88 }), /* @__PURE__ */ React.createElement("div", { className: "stack tight" }, /* @__PURE__ */ React.createElement(DaysNum, { days: sel.daysLeft, life: sel.skuObj.lifeDays, size: "l" }), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, "days left · best before ", fmt.date(sel.bestBefore)))), /* @__PURE__ */ React.createElement(GateChips, { gates: sel.assess.gates }), /* @__PURE__ */ React.createElement(List, null, [["Batch", sel.id], ["Distributor", `${sel.dist.name}, ${sel.dist.city}`], ["Units", fmt.num(sel.units)], ["Sells", `${sel.sellPerDay} a day`], ["Will sell before the last week", fmt.num(sel.assess.willSell)], ["At risk", sel.assess.atRisk ? fmt.num(sel.assess.atRisk) : "none"]].map(([k, val]) => /* @__PURE__ */ React.createElement(ListRow, { key: k, title: k, value: val }))), /* @__PURE__ */ React.createElement("p", { className: "t-footnote muted" }, next)));
   }
   Object.assign(window.SC3_SCREENS, { Setup, CommandCenter, RouteRoom, Execution, Batches, ApproveSheet, LabelPhoto, LabelShot, Chat, ShelfCheck, permissionOf });
 })();

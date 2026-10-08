@@ -10,6 +10,7 @@
 	import { useWorkspace } from '../../source';
 	import type { BatchView, User } from '../../types';
 	import Screen from '../common/Screen.svelte';
+	import BatchSheet from '../brand/BatchSheet.svelte';
 	import QuietCard from './QuietCard.svelte';
 
 	// S1 Command Center on a day with no batch at risk (screens/live.jsx Quiet, SC-68 option B; the live workspace with
@@ -24,6 +25,8 @@
 	const watch = $derived(s.rules.watchTime);
 	const rows = $derived(ws.data.setup.dms.rows);
 	const views = $derived(batchViews(s, ws.data).sort((a: BatchView, b: BatchView) => a.daysLeft - b.daysLeft));
+	// a row with no journey to open shows its batch in a sheet (SC-90)
+	let sheet = $state<string | null>(null);
 </script>
 
 {#snippet card()}<QuietCard
@@ -40,6 +43,7 @@
 					compact={app.bp === 'phone'}
 					onopen={() => {
 						if (v.phase) router.go('route', { ref: v.id });
+						else sheet = v.id;
 					}}
 				/>{/each}
 		</div>
@@ -55,4 +59,5 @@
 	{#if app.bp === 'desktop'}<Columns sideWidth={340} {main} side={feed} />{:else}<div class="stack" style="gap: 20px">
 			{@render card()}{@render feed()}{@render list()}
 		</div>{/if}
+	<BatchSheet view={views.find((v) => v.id === sheet)} onclose={() => (sheet = null)} />
 </Screen>

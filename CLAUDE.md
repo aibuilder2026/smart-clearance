@@ -891,4 +891,20 @@
   - **Locally:** migration 0007 is applied. The distributors' addresses arrive with the next `hydrate.sh --live-only`, which restarts the journey; until then the card leaves the code out.
   - **Hosting:** design3's `dist/` is rebuilt, and the hosted app page stays on its pinned commit.
 
+- **SC-90** (In Review, branch `SC-90-console-journey-clock`; bug): the console's live batches agree with the workspace, and every watchlist row opens something.
+  - **Found by the maintainer** during the two-batch demo: the console's days left were 5 apart from the workspace's on every batch, and on the Command Center the chips (at risk) and every other row opened nothing.
+  - **Days left:**
+    - the console counted from today's real date, the workspace from the client's journey clock (a synthetic workspace replays the story's calendar);
+    - `dashboard.batches` and `supply.client_batches` now count from each client's own day (`events.clock_of`);
+    - a client without a journey runs on real time, unchanged. Verified locally: all nine of Munchly's batches agree.
+  - **The watchlist:**
+    - a row opens its Route Room only when its batch is in a journey; every other row now opens the batch sheet the Batches screen uses (`BatchSheet`, design3 `brand.jsx` first, then core), on the busy and the quiet Command Center;
+    - the sheet no longer tells an at-risk batch "Nothing to do": it says the Watcher checks every morning and flags it once Setup is confirmed and its distributor has given permission.
+  - **Why the chips had no journey:** the Watcher flags a batch only once Setup is confirmed and its distributor has given permission. Rakesh's came after the day-0 check, so the chips were flagged at the next morning's check. For the story's figures, give it before day 0's 09:00, or fire the Watcher from the console after it.
+  - **Not changed:** the console's "Updated" column, which `platform.js` defines the same way.
+  - **Checks:**
+    - backend-api 453 passed (1 new: the console's days left are the workspace's);
+    - the frontend gate passes: workspace 47 (2 new: the sheet from the quiet and the busy Command Center), core 248, api 77, admin 17, demo 5, console 3;
+    - design3's sheet was opened from its watchlist in the prototype.
+  - **Locally:** the API hung on a reload while the workspace's event stream was open, and was restarted.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

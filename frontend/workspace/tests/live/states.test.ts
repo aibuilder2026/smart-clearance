@@ -505,3 +505,39 @@ describe('the staff sale and what is left at the godown (SC-87)', () => {
 		expect(t).toContain('of the ₹16,917 planned');
 	});
 });
+
+describe('every watchlist row opens something (SC-90)', () => {
+	it('an at-risk batch the Watcher has not flagged opens its sheet, saying when it will be', async () => {
+		const s = source(fakeApi(moment('start'), 'priya'));
+		const r = await draw(s, 'command');
+		await waitFor(() => expect(r.container.querySelector('button.batchrow')).toBeTruthy());
+		const row = [...r.container.querySelectorAll('button.batchrow')].find((b) => b.textContent?.includes(CHIPS))!;
+		await fireEvent.click(row);
+		const sheet = await waitFor(() => r.getByRole('dialog'));
+		const t = norm(sheet.textContent);
+		expect(t).toContain('Masala Chips 150 g');
+		expect(t).toContain(CHIPS);
+		expect(t).toMatch(/At risk: [\d,]+ packs will not sell before the last week\./);
+		expect(t).toContain(
+			'The Watcher checks every morning at 09:00, and flags it once Setup is confirmed and Rakesh Traders has given Smart-Clearance permission to act.'
+		);
+	});
+
+	it('on the busy Command Center, a batch in no journey opens its sheet, and one in a journey its Route Room', async () => {
+		const go = vi.fn();
+		const s = source(fakeApi(moment('executing'), 'priya'));
+		const r = render(LiveHost, {
+			props: { source: s, screen: 'command', at: null, onnavigate: go }
+		}) as unknown as RenderResult<never>;
+		await waitFor(() => expect(s.status.phase).toBe('ready'));
+		await waitFor(() => expect(r.container.querySelector('button.batchrow')).toBeTruthy());
+		const rows = () => [...r.container.querySelectorAll('button.batchrow')];
+		await fireEvent.click(rows().find((b) => b.textContent?.includes('MF-2408-311'))!);
+		const sheet = await waitFor(() => r.getByRole('dialog'));
+		expect(norm(sheet.textContent)).toContain('Peanut Chikki 100 g');
+		expect(norm(sheet.textContent)).toContain('Outside at least one quick-commerce gate');
+		expect(go).not.toHaveBeenCalled();
+		await fireEvent.click(rows().find((b) => b.textContent?.includes(MANGO))!);
+		expect(go).toHaveBeenCalledWith('route', { replace: undefined, ref: MANGO });
+	});
+});
