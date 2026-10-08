@@ -57,6 +57,7 @@ corepack pnpm test:a11y                   # the a11y suite: every app's build, W
 corepack pnpm test:e2e                    # every app: the console's flows, the workspace journey, the demo's playthrough, Firefox and WebKit smoke
 corepack pnpm test:parity                 # every app's build against design3, pixel by pixel
 corepack pnpm test:journey                # Munchly Chips E2E: the chips' live journey, every person in the real UI, recorded (SC-95; the live stack)
+corepack pnpm test:journey:mango          # Munchly Mango E2E: the Mango Drink's journey from where it stands, never resetting (SC-104)
 corepack pnpm seed && corepack pnpm icons # regenerate from design3 after it changes
 ```
 

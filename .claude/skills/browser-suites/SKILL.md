@@ -42,6 +42,9 @@ and console dev servers). It is not built and never runs with `PUBLIC_API_BASE` 
 resets Munchly's journey, takes about ten minutes, and the agents call live Gemini (about GBP 0.05–0.10 a run). Report
 its `report.md`: the steps, the figures against the story's, and the findings, with the recording.
 
+**Munchly Mango E2E** (SC-104), `corepack pnpm test:journey:mango`, takes the Mango Drink on from wherever its journey
+stands and **never resets**: it is the one to run when the maintainer asks to continue a journey as it is.
+
 ## Before running
 
 - **A build:** `test:a11y`, `test:e2e` and `test:parity` each build their app first, and serve the build on a preview
