@@ -708,7 +708,7 @@
     - the hosted console loads commit `99483d5`: re-pinned from `0384e24`, so it also carries SC-68's journey-day badge; it was checked to render with the triggers;
     - the hosted app page stays on `58c6874`: re-pinning it waits on SC-75's note about live mode's files, and Setup's waiting state shows only in live mode.
 
-- **SC-80** (In Review, branch `SC-80-label-photo`): the label photo step offers both ways in words, Take a photo and Upload a photo.
+- **SC-80** (PR #65, merged): the label photo step offers both ways in words, Take a photo and Upload a photo.
   - **The request:** "1. Either take photo. 2. Upload an already taken photo", with a sample to upload. The sample is the story's clean label photo from the Vision eval set, handed over as `label-MF-2409-117.jpg` and kept as `design3/designs/SC-80/sample/label-photo.webp`.
   - **Design first:** three options on one board in app v3, `SC-80 design review.html`:
     - A, two ways under the frame;
