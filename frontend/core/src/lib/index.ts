@@ -80,6 +80,7 @@ export { default as SectionTitle } from './patterns/SectionTitle.svelte';
 export { default as Skeleton } from './components/Skeleton.svelte';
 export { default as Tile } from './components/Tile.svelte';
 export { default as Countdown } from './components/Countdown.svelte';
+export { default as SellBar } from './components/SellBar.svelte';
 export { default as StatusBadge, STATUS } from './components/StatusBadge.svelte';
 export { default as TrackerCard } from './components/TrackerCard.svelte';
 export { default as BatchRow } from './components/BatchRow.svelte';

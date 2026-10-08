@@ -3,7 +3,7 @@
 (function () {
   const { useState, useMemo, Fragment } = React;
   const { motion, AnimatePresence } = Motion;
-  const K = window.SC3; const { cx, Icon, Badge, Button, Card, Product, useApp, Money, DaysNum, GateChips, Countdown, Tracker, VTracker, Aura, Roll, Avatar, Sheet } = K;
+  const K = window.SC3; const { cx, Icon, Badge, Button, Card, Product, useApp, Money, DaysNum, GateChips, Countdown, SellBar, Tracker, VTracker, Aura, Roll, Avatar, Sheet } = K;
   const M = window.SC3_MONEY; const fmt = M.fmt;
   const D = () => window.SC3_DATA;
 
@@ -69,16 +69,24 @@
   }
 
   // a batch as a row in the watchlist; list and map share the selection
+  // a gated batch that sells through, as the watchlist draws it (SC-83, option C): the days its packs take to sell at
+  // today's rate against the days retailers still take it (money.js's usable days), and how many days that leaves
+  function sellThrough(view) {
+    const a = view.assess;
+    if (view.phase || a.status !== "gated" || a.atRisk > 0) return null;
+    const sell = Math.ceil(view.units / view.sellPerDay); const spare = a.usableDays - sell;
+    return { sell, usable: a.usableDays, words: spare > 0 ? `Sells out ${spare} ${spare === 1 ? "day" : "days"} before retailers stop` : "Sells out the day retailers stop" };
+  }
   function BatchRow({ view, onOpen, selected, compact }) {
-    const a = view.assess; const sku = view.skuObj; const phase = view.phase;
+    const a = view.assess; const sku = view.skuObj; const phase = view.phase; const st = sellThrough(view);
     return <button type="button" className="list-row batchrow" onClick={onOpen} aria-current={selected ? "true" : undefined} style={{ background: selected ? "var(--fill)" : undefined }}>
       <Product name={sku.img} size={compact ? 46 : 54} alt="" />
       <span className="br-main">
         <span className="br-line"><span className="lr-title br-name">{sku.name}</span><StatusBadge status={phase || a.status} live={phase === "executing" || (!phase && a.status === "at-risk")} /></span>
         <span className="lr-sub br-name">{view.dist.name} · {view.dist.city}{!compact && <span className="mono br-id"> · {view.id}</span>}</span>
-        <span className="br-bar"><Countdown days={view.daysLeft} life={sku.lifeDays} status={phase ? "" : a.status} /><span className="t-caption subtle tnum">{view.daysLeft} days left</span>{a.atRisk > 0 && !phase && <span className="t-caption neg strong tnum">{fmt.num(a.atRisk)} at risk</span>}</span>
+        <span className="br-bar">{st ? <SellBar days={view.daysLeft} sell={st.sell} usable={st.usable} /> : <Countdown days={view.daysLeft} life={sku.lifeDays} status={phase ? "" : a.status} />}<span className="t-caption subtle tnum">{view.daysLeft} days left</span>{st ? <span className="t-caption br-ok tnum">{st.words}</span> : a.atRisk > 0 && !phase && <span className="t-caption neg strong tnum">{fmt.num(a.atRisk)} at risk</span>}</span>
       </span>
-      {!compact && <span className="not-phone br-gates"><GateChips gates={a.gates} size="sm" /></span>}
+      {!compact && <span className="not-phone br-gates"><GateChips gates={a.gates} size="sm" quiet={(phase || a.status) !== "at-risk"} /></span>}
       <Icon name="chevron-right" size={18} className="chev" />
     </button>;
   }

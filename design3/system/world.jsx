@@ -38,12 +38,19 @@
   }
 
   /* ---------- small pieces ---------- */
-  function GateChips({ gates, size }) {
-    return <span className="row tight wrap">{gates.map(g => <span key={g.id} className={cx("gate", g.pass ? "pass" : "fail")} title={`${g.app}: ${g.rule}, has ${g.has}`}><Icon name={g.pass ? "check" : "x"} size={13} stroke={2.6} />{g.app}{size !== "sm" && <span style={{ fontWeight: 500 }}>{g.has}/{g.need}</span>}</span>)}</span>;
+  // quiet: a failed gate on a batch that is not at risk, drawn neutral (red is for risk and the bin; SC-83)
+  function GateChips({ gates, size, quiet }) {
+    return <span className="row tight wrap">{gates.map(g => <span key={g.id} className={cx("gate", g.pass ? "pass" : "fail", !g.pass && quiet && "quiet")} title={`${g.app}: ${g.rule}, has ${g.has}`}><Icon name={g.pass ? "check" : "x"} size={13} stroke={2.6} />{g.app}{size !== "sm" && <span style={{ fontWeight: 500 }}>{g.has}/{g.need}</span>}</span>)}</span>;
   }
   function Countdown({ days, life, status, label }) {
     const p = Math.max(0.025, Math.min(1, days / life));
     return <div className={cx("countdown", status === "at-risk" ? "risk" : status === "gated" ? "gated" : "")} role="img" aria-label={label || `${days} of ${life} days of shelf life left`}><i style={{ "--p": p }} /></div>;
+  }
+  // a batch's projection at today's sell-through (SC-83): the days its packs take to sell, in green, against the days it
+  // has left, the last week (when retailers no longer take it) hatched
+  function SellBar({ days, sell, usable }) {
+    const span = Math.max(days, 1);
+    return <div className="sellbar" role="img" aria-label={`Sells out in ${sell} ${sell === 1 ? "day" : "days"}; retailers take it for ${usable} more ${usable === 1 ? "day" : "days"}`}><i style={{ "--p": Math.min(1, sell / span) }} /><b style={{ "--at": Math.min(1, usable / span) }} /></div>;
   }
   function Tile({ label, icon, children, foot, live, className, style }) {
     return <div className={cx("tile", live && "live", className)} style={style}><span className="tl-label">{icon && <Icon name={icon} size={15} />}{label}</span><span className="tl-value">{children}</span>{foot && <span className="tl-foot">{foot}</span>}</div>;
@@ -267,5 +274,5 @@
     </div><div style={{ position: "relative", minHeight: 0 }}>{children}</div></div>;
   }
 
-  Object.assign(window.SC3, { Roll, Money, DaysNum, GateChips, Countdown, Tile, Aura, Tracker, VTracker, AgentFeed, ClusterMap, HaulLine, ChannelBars, TrendChart, MixBar, CodeBlock, StatusBar, PhoneFrame, WindowFrame, CH_ORDER });
+  Object.assign(window.SC3, { Roll, Money, DaysNum, GateChips, Countdown, SellBar, Tile, Aura, Tracker, VTracker, AgentFeed, ClusterMap, HaulLine, ChannelBars, TrendChart, MixBar, CodeBlock, StatusBar, PhoneFrame, WindowFrame, CH_ORDER });
 })();

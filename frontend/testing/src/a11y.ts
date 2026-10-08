@@ -76,6 +76,7 @@ export const COMPONENTS: Record<string, { sel: string; text?: string }> = {
 	ClusterMap: { sel: '.map svg[viewBox="0 0 640 400"]' },
 	CodeBlock: { sel: 'pre.code' },
 	Countdown: { sel: '.countdown' },
+	SellBar: { sel: '.sellbar' },
 	DaysNum: { sel: '.num[style*="--wdth"]' },
 	DocCard: { sel: '.docpick > button.card' },
 	HaulLine: { sel: '.map svg[viewBox="0 0 640 96"]' },

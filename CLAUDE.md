@@ -759,5 +759,26 @@
   - **Checks:**
     - backend-api: 417 pass. The new test fails without the fix: 60 and the default instead of 30 and the override.
     - The frontend gate passes, with workspace at 40 tests: a new live test opens the Mango row from the quiet Command Center, and leaves a batch in no journey where it is.
+- **SC-83** (PR #68, merged): a gated batch that sells through says why it is fine on the watchlist.
+  - **The request:** the maintainer read "Gated · selling through" rows with three red crosses as at risk. Asked whether such a batch should count as at risk, they chose **"Keep it, clearer row"**: money.js's rule stays (at risk only when packs will not sell before the last week **and** every gate fails).
+  - **Design first:** three options on one board in app v3, `SC-83 design review.html`:
+    - A, sells out by;
+    - B, one chip;
+    - C, the projection drawn.
+
+    The maintainer picked **C**. Designs, stills and the decision are in `design3/designs/SC-83/`.
+  - **The row** (the kit's `BatchRow`, design3 first, then core):
+    - **Which rows:** only a gated batch that sells through (not in a journey, nothing at risk).
+    - **The bar:** a new `SellBar` replaces the countdown. The green part is the days its packs take to sell at today's rate; the hatched end is the last week retailers will not take it.
+    - **The line:** "Sells out 6 days before retailers stop", or "the day retailers stop". It keeps to the bar's row while the bar can shrink for it, else it takes a row of its own.
+    - **Red means risk:** a failed gate is red only while the batch is at risk (`GateChips`' `quiet`), and neutral on a batch selling through, in motion or cleared.
+    - **From the data:** every figure comes from the batch's packs, sales a day and money.js's usable days. money.js is unchanged.
+  - **The port:**
+    - `BatchRow`, `GateChips` and the new `SellBar` in core;
+    - `components.css` (verbatim);
+    - `coverage.ts`, and the a11y suite's `COMPONENTS` (`.sellbar`);
+    - 44 goldens of the gated rows; the seed manifests.
+  - **Checks:** the frontend gate passes: core 248, api 75, workspace 39, admin 17, demo 5, console 3. design3's watchlist was shot at 1440 and 820, light and dark. The browser suites were not run (SC-55).
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
