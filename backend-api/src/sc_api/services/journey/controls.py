@@ -31,6 +31,7 @@ DAILY = {"data": "daily load", "watcher": "daily check"}
 NAMES = {"data": "Data agent", "watcher": "Watcher"}
 TIMERS = {
     "offer.close": ("outreach", "closed the offer window"),
+    "listing.close": ("lister", "closed the unsold lot"),
     "shelf.due": ("outreach", "ran the day-7 shelf check"),
     "report.due": ("impact", "wrote the report"),
 }

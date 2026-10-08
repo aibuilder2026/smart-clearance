@@ -194,7 +194,7 @@ export type JourneyTrigger = {
 	id: string;
 	agent: string;
 	kind: 'run' | 'timer';
-	key: 'data.daily' | 'watcher.daily' | 'offer.close' | 'shelf.due' | 'report.due';
+	key: 'data.daily' | 'watcher.daily' | 'offer.close' | 'listing.close' | 'shelf.due' | 'report.due';
 	/** the batch a timer belongs to */
 	ref: string | null;
 	/** journey time, ISO with India's offset; null for a client whose workspace isn't live */

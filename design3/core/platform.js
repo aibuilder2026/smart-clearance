@@ -372,7 +372,7 @@
   // day 1, Sat 3 Oct 10:15: firing a daily run makes it that day's, firing a timer takes it away, and a reset puts the
   // journey back at day 0, 08:00, with nothing pending but the day's two runs.
   const DAILY = [{ id: "data", name: "Data agent", time: "08:30", what: "daily load" }, { id: "watcher", name: "Watcher", time: "09:00", what: "daily check" }];
-  const TIMER_WORDS = { "offer.close": "closed the offer window", "shelf.due": "ran the day-7 shelf check", "report.due": "wrote the report" };
+  const TIMER_WORDS = { "offer.close": "closed the offer window", "listing.close": "closed the unsold lot", "shelf.due": "ran the day-7 shelf check", "report.due": "wrote the report" };
   const JOURNEY_TIMERS = [
     { id: "timer-1", agent: "outreach", key: "offer.close", ref: "MF-2409-117", due: "2026-10-04T12:40:00+05:30" },
     { id: "timer-2", agent: "outreach", key: "shelf.due", ref: "MF-2409-117", due: "2026-10-09T12:40:00+05:30", blocked: "After the van round: the papers come first" },

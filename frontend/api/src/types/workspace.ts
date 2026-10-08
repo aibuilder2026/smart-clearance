@@ -477,7 +477,8 @@ export type Journey = {
 	plan: null | { status: 'proposed' | 'approved'; at: string; by: string | null; device: string | null };
 	listing: null | {
 		id: string;
-		status: 'live' | 'awarded';
+		/** ended: the lot's days ran out with no buyer (SC-86) */
+		status: 'live' | 'awarded' | 'ended';
 		units: number;
 		price: number;
 		/** hidden from the buyer */
@@ -502,6 +503,18 @@ export type Journey = {
 	};
 	van: { status: 'idle' | 'done'; done: number; at: string | null };
 	truck: { status: 'idle' | 'dispatched'; at: string | null };
+	/** the plan's staff sale at the distributor's godown, open once approved, then recorded with what sold (SC-86);
+	 *  for staff and the distributor holding the batch */
+	staff: null | {
+		status: 'open' | 'recorded';
+		units: number;
+		price: number;
+		godown: string;
+		at: string;
+		sold: number | null;
+		left: number | null;
+		recordedAt: string | null;
+	};
 	docs: null | { id: string; status: string }[];
 	invoiceIssued: boolean;
 	shelf: null | WsShelf;
@@ -650,8 +663,10 @@ export type KiranaOffer = {
 };
 
 export type Donation = {
-	status: 'booked' | 'confirmed' | 'collected';
-	partner: string;
+	/** declined: no food bank takes the line, or the one booked turned it down; the packs stay at the godown (SC-86) */
+	status: 'booked' | 'confirmed' | 'collected' | 'declined';
+	/** null when no food bank was booked */
+	partner: string | null;
 	units: number;
 	/** the pickup the Donation agent proposed, then the one the food bank confirmed */
 	pickupAt: string | null;
@@ -666,6 +681,8 @@ export type Donation = {
 	collectedAt: string | null;
 	/** the food bank's answer as it confirmed */
 	reply: string | null;
+	/** why the line went untaken, when declined */
+	reason: string | null;
 };
 
 /** the moments of a batch's journey its screens state, as facts on the journey clock */
@@ -701,6 +718,9 @@ export type CaseDetail = {
 	actual: WsActual | null;
 	support: WsSupport | null;
 	supportPlan: WsSupport | null;
+	/** what each finished line took (ordered, awarded, sold to staff, collected), and the packs no channel took, left at
+	 *  the godown (SC-86); for staff and the distributor, once a line has finished */
+	realised: { lines: { id: string; units: number }[]; godown: number } | null;
 	claim: WsClaim | null;
 	docs: WsDoc[];
 	shelf: WsShelf | null;

@@ -4,10 +4,12 @@ through Pub/Sub, BigQuery and Cloud Storage. It checks the whole loop the worksp
 
 - Each person signs in with a Firebase custom token, minted as sc-api-local (impersonated in code) and exchanged with
   the workspace's browser key: no password is handled, typed or printed.
-- The walk follows the story: Priya uploads the day's stock export in Setup and confirms it, Rakesh gives the one-time
-  permission, Run now starts the Watcher, Rakesh sends the label photo to Cloud Storage, Priya approves, the kiranas
-  order, Agrawal bids and takes the counter, Meera collects the donation, Rakesh loads the truck, issues the invoice and
-  runs the van, Anita reviews the papers. Meanwhile Priya's SSE stream is read, and counted.
+- The walk follows the story, both demo batches at once (SC-86): Priya uploads the day's stock export in Setup and
+  confirms it, Rakesh gives the one-time permission, Run now starts the Watcher, which flags the chips and the Mango
+  Drink; Rakesh and Lakshmi Agencies each send their label photo to Cloud Storage, Priya approves both, each cluster's
+  kiranas order, Agrawal bids and takes the counter, Lakshmi Agencies records the staff sale, Meera collects the
+  donation, Rakesh loads the truck, issues the invoice and runs his van, Lakshmi Agencies runs hers, Anita reviews the
+  papers. Meanwhile Priya's SSE stream is read, and counted.
 - It reads no database: the people's uids are the ones hydrate gives them (identity.synthetic_uid), and the stock export
   is the story's batches as the journey stages them (reference/journey.json, the story's own calendar).
 - Locally, scripts/hydrate.sh --reset makes a fresh world and --journey-reset munchly starts the journey again. In
@@ -151,6 +153,9 @@ def world() -> tuple[dict[str, str], dict[str, Any]]:
     return uids, {"csv": dms._csv(dms.STOCK, rows), "kiranas": j["kiranas"], "logins": logins}
 
 
+LAKSHMI = "lakshmi-owner"  # Lakshmi Agencies' own account, the Mango Drink's distributor
+
+
 async def run(day_minutes: int, until: str) -> None:
     uids, w = world()
     hero = next(b["id"] for b in load("journey.json")["batches"] if b.get("hero"))
@@ -196,68 +201,91 @@ async def steps(walk: Walk, w: dict[str, Any], hero: str, mango: str, day_minute
     if stop < 1:
         return
 
-    # 2. detect: Run now starts the Watcher, which flags the chips batch
+    # 2. detect: Run now starts the Watcher, which flags the chips batch and the Mango Drink, each its own journey
     await walk.call("neha", "POST", f"{C}/agents/watcher/runs")
     say("Neha ran the Watcher from the console")
     await walk.until(f"the Watcher flagged {hero}", lambda: walk.case("priya", hero))
+    await walk.until(f"the Watcher flagged {mango}", lambda: walk.case("priya", mango))
 
-    async def photo_asked():
-        c = await walk.case("rakesh", hero)
-        return c and c["journey"]["photo"]["status"] == "requested"
+    def photo_asked(who: str, ref: str):
+        async def check():
+            c = await walk.case(who, ref)
+            return c and c["journey"]["photo"]["status"] == "requested"
 
-    await walk.until("Vision asked Rakesh for the label photo", photo_asked)
+        return check
+
+    await walk.until("Vision asked Rakesh for the chips' label photo", photo_asked("rakesh", hero))
+    await walk.until("Vision asked Lakshmi Agencies for the Mango Drink's", photo_asked(LAKSHMI, mango))
     if stop < 2:
         return
 
-    # 3. verify: the photo straight to Cloud Storage, then Vision reads it
-    photo = sorted((REPO / "agents/evals/vision/images").glob("story-*.webp"))
-    data = photo[0].read_bytes() if photo else b"\xff\xd8\xff"
-    link = await walk.call(
-        "rakesh", "POST", f"{WS}/cases/{hero}/photos", {"contentType": "image/webp", "bytes": len(data)}
-    )
-    r = await walk.http.put(link["url"], content=data, headers=link["headers"])
-    if r.status_code >= 300:
-        raise SystemExit(f"walk: Cloud Storage refused the photo: {r.status_code}")
-    await walk.call("rakesh", "POST", f"{WS}/cases/{hero}/photos/{link['id']}")
-    say(f"Rakesh sent the label photo ({photo[0].name if photo else 'a placeholder'})")
+    # 3. verify: each distributor's photo straight to Cloud Storage, then Vision reads it
+    images = REPO / "agents/evals/vision/images"
+    for who, ref, name in (("rakesh", hero, "story-clean.webp"), (LAKSHMI, mango, "mango.webp")):
+        path = images / name
+        data = path.read_bytes() if path.exists() else b"\xff\xd8\xff"
+        link = await walk.call(
+            who, "POST", f"{WS}/cases/{ref}/photos", {"contentType": "image/webp", "bytes": len(data)}
+        )
+        r = await walk.http.put(link["url"], content=data, headers=link["headers"])
+        if r.status_code >= 300:
+            raise SystemExit(f"walk: Cloud Storage refused the photo: {r.status_code}")
+        await walk.call(who, "POST", f"{WS}/cases/{ref}/photos/{link['id']}")
+        say(f"{who} sent {ref}'s label photo ({name if path.exists() else 'a placeholder'})")
     if stop < 3:
         return
 
-    async def planned():
-        c = await walk.case("priya", hero)
-        return c if c and c["journey"]["phase"] == "planned" else None
+    def phase_is(ref: str, phase: str):
+        async def check():
+            c = await walk.case("priya", ref)
+            return c if c and c["journey"]["phase"] == phase else None
 
-    c = await walk.until("Vision read it, the Valuer priced it and the Router planned it", planned)
-    say(f"  plan: net ₹{c['plan']['net']:,.0f}, " + ", ".join(f"{x['id']} {x['units']}" for x in c["plan"]["lines"]))
+        return check
+
+    for ref in (hero, mango):
+        c = await walk.until(
+            f"Vision read {ref}'s label, the Valuer priced it, the Router planned it", phase_is(ref, "planned")
+        )
+        lines = ", ".join(f"{x['id']} {x['units']}" for x in c["plan"]["lines"])
+        say(f"  plan: net ₹{c['plan']['net']:,.0f}, {lines}")
     if stop < 4:
         return
 
-    # 4. approve, then the agents execute: the listing, the scheme, the donation
+    # 4. approve, then the agents execute each plan's lines: the listing, the schemes, the donation
     await walk.call("priya", "POST", f"{WS}/cases/{hero}/approval", {"device": "phone"})
-    say("Priya approved, on her phone")
+    await walk.call("priya", "POST", f"{WS}/cases/{mango}/approval", {"device": "desktop"})
+    say("Priya approved both: the chips on her phone, the Mango Drink at her desk")
 
-    async def executing():
-        c = await walk.case("priya", hero)
-        j = c and c["journey"]
-        return c if j and j["listing"] and j["offer"] else None
+    def executing(ref: str, *need: str):
+        async def check():
+            c = await walk.case("priya", ref)
+            j = c and c["journey"]
+            return c if j and all(j.get(k) or (c.get(k) if k == "donation" else None) for k in need) else None
 
-    c = await walk.until("the Lister listed the lot and Outreach sent the scheme", executing)
+        return check
+
+    c = await walk.until(
+        "the Lister listed the chips and Outreach sent its scheme", executing(hero, "listing", "offer")
+    )
     say(f"  listing {c['journey']['listing']['id']}, offer to {c['journey']['offer']['shops']} kiranas")
+    c = await walk.until(
+        "Outreach sent the Mango's scheme and Donation booked a food bank", executing(mango, "offer", "donation")
+    )
+    gift = c["donation"]
+    say(f"  offer to {c['journey']['offer']['shops']} kiranas; {gift['units']} packs to {gift['partner']}")
     if stop < 5:
         return
 
-    # 5. the kiranas order, each its own share
-    ordered = 0
-    for k in w["kiranas"]:
-        if not k["orders"]:
-            continue
-        member = next(x for x in load("journey.json")["members"] if x["id"] == k["member"])
-        who = member["id"]
-        if who not in walk.t.uids:
-            continue
-        await walk.call(who, "POST", f"{WS}/cases/{hero}/orders", {"units": k["orders"]})
-        ordered += k["orders"]
-    say(f"the kiranas ordered {ordered} packets")
+    # 5. each cluster's kiranas order their own share, by distributor
+    members = {x["id"]: x for x in load("journey.json")["members"]}
+    for ref, dist in ((hero, "rakesh"), (mango, "lakshmi")):
+        ordered = 0
+        for k in w["kiranas"]:
+            if not k["orders"] or k["distributor"] != dist or members[k["member"]]["id"] not in walk.t.uids:
+                continue
+            await walk.call(k["member"], "POST", f"{WS}/cases/{ref}/orders", {"units": k["orders"]})
+            ordered += k["orders"]
+        say(f"{dist}'s kiranas ordered {ordered} packets of {ref}")
     if stop < 6:
         return
 
@@ -278,7 +306,12 @@ async def steps(walk: Walk, w: dict[str, Any], hero: str, mango: str, day_minute
     if stop < 7:
         return
 
-    # 7. the donation: Meera confirms and collects
+    # 7. the Mango's other lines: Lakshmi Agencies' staff sale, and Meera's pickup
+    m_ = await walk.case(LAKSHMI, mango)
+    staff = (m_ or {}).get("journey", {}).get("staff")
+    if staff and staff["status"] == "open":
+        await walk.call(LAKSHMI, "POST", f"{WS}/cases/{mango}/staff-sale", {"sold": staff["units"]})
+        say(f"Lakshmi Agencies recorded the staff sale at {staff['godown']}: {staff['units']} packs")
     m_ = await walk.case("meera", mango)
     if m_ and m_["donation"] and m_["donation"]["status"] == "booked":
         await walk.call("meera", "POST", f"{WS}/cases/{mango}/donation/confirm")
@@ -297,6 +330,13 @@ async def steps(walk: Walk, w: dict[str, Any], hero: str, mango: str, day_minute
 
     c = await walk.until("Paperwork drafted the papers", papers)
     say("  " + ", ".join(f"{d['type']} {d['no']}" for d in c["docs"] if d["no"]))
+
+    async def mango_papers():
+        c = await walk.case("anita", mango)
+        return c if c and c["docs"] else None
+
+    c = await walk.until("Paperwork drafted the Mango Drink's papers", mango_papers)
+    say("  " + ", ".join(f"{d['type']}" for d in c["docs"]))
     if stop < 9:
         return
 
@@ -309,6 +349,11 @@ async def steps(walk: Walk, w: dict[str, Any], hero: str, mango: str, day_minute
     say(
         f"  actual net ₹{(c['actual'] or {}).get('net', 0):,.0f}; the shelf check and the report follow on journey time"
     )
+    await walk.call(LAKSHMI, "POST", f"{WS}/cases/{mango}/dispatches", {"kind": "van"})
+    c = await walk.case("priya", mango)
+    left = (c["realised"] or {}).get("godown", 0)
+    say(f"Lakshmi Agencies ran the van round; the Mango Drink is {c['journey']['phase']}")
+    say(f"  actual net ₹{(c['actual'] or {}).get('net', 0):,.0f}, {left} packs left at the godown")
 
 
 def main(argv: list[str] | None = None) -> None:

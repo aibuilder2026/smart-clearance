@@ -585,6 +585,8 @@ class Case(Base):
     shelf: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     ledger: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     donation: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    # the plan's staff sale at the distributor's godown, once approved (SC-86): open, then recorded with what sold
+    staff: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     escalated: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     updated_wall: Mapped[datetime] = mapped_column(TS)
     seq: Mapped[int] = seq()

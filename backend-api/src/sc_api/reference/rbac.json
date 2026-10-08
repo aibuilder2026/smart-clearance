@@ -86,6 +86,10 @@
 			"description": "Load the buyer's truck and run the van round"
 		},
 		{
+			"id": "staff.record",
+			"description": "Record the staff sale at the godown"
+		},
+		{
 			"id": "invoice.issue",
 			"description": "Issue the drafted invoice"
 		},
@@ -195,13 +199,14 @@
 			"id": "ws-distributor",
 			"scope": "workspace-role",
 			"name": "Distributor",
-			"description": "Owns the stock: gives the agents a one-time permission, sends label photos, dispatches and issues invoices",
+			"description": "Owns the stock: gives the agents a one-time permission, sends label photos, runs the staff sale, dispatches and issues invoices",
 			"permissions": [
 				"ws.read",
 				"setup.upload",
 				"distributor.permit",
 				"photo.send",
 				"dispatch.manage",
+				"staff.record",
 				"invoice.issue",
 				"docs.read"
 			]

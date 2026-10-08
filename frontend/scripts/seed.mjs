@@ -424,6 +424,7 @@ const journey = {
 	integrations: W.INTEGRATIONS,
 	numbers: W.NUMBERS,
 	label: W.LABEL,
+	labels: W.LABELS,
 	roles: ROLES,
 	copy: { push: D.PUSH, chat: D.CHAT, events: D.EVENTS, connectEvent: F.CONNECT_EV },
 	moments: moments(D.JOURNEY),
@@ -483,7 +484,22 @@ const moneyFixtures = (() => {
 			{ plan: heroPlan, awardPrice: 15 },
 			{ plan: mangoPlan, awardPrice: 14 }
 		].map((c) => ({ ...c, out: M.actualNet(c.plan, c.awardPrice) })),
+		// SC-86: a plan once its lines were done, as the journey reports them: done as planned, short on orders, the lot
+		// unsold, and the Mango with part of its kirana scheme and staff sale and no food bank
+		realised: [
+			{ plan: heroPlan, sku: D.SKUS.chips, done: { kirana: 588, expiresoon: 772 } },
+			{ plan: heroPlan, sku: D.SKUS.chips, done: { kirana: 500, expiresoon: 772 } },
+			{ plan: heroPlan, sku: D.SKUS.chips, done: { kirana: 588, expiresoon: 0 } },
+			{ plan: mangoPlan, sku: D.SKUS.mango, done: { kirana: 1372, staff: 150, foodbank: 58 } },
+			{ plan: mangoPlan, sku: D.SKUS.mango, done: { kirana: 240, staff: 120, foodbank: 0 } },
+			{ plan: mangoPlan, sku: D.SKUS.mango, done: null }
+		].map((c) => ({ ...c, out: M.realised(c.plan, c.sku, c.done) })),
 		priceSupport: [
+			{
+				plan: M.realised(heroPlan, D.SKUS.chips, { kirana: 500, expiresoon: 772 }),
+				sku: D.SKUS.chips,
+				awardPrice: 14.2
+			},
 			{ plan: heroPlan, sku: D.SKUS.chips, awardPrice: 14.2 },
 			{ plan: heroPlan, sku: D.SKUS.chips, awardPrice: null },
 			{ plan: mangoPlan, sku: D.SKUS.mango, awardPrice: null }

@@ -96,21 +96,23 @@
     return out;
   }
 
+  // one exit's line of a plan: its units at the channel's price, less its costs and any input credit lost
+  function lineOf(r, units, sku) {
+    const gross = r.baseline ? 0 : r2(units * r.price);
+    let cost = r2(units * r.costPerUnit);
+    if (r.id === "expiresoon") cost = r2(cost + RULES.listingFee);
+    const itcLoss = r.baseline ? 0 : r2(units * r.itcLoss);
+    // the scheme: kiranas are charged for 10 of every 12 packets at the pack price
+    const charged = r.packPrice ? Math.round(units * RULES.scheme.buy / (RULES.scheme.buy + RULES.scheme.free)) : units;
+    return { id: r.id, name: r.name, short: r.short, units, price: r.price, packPrice: r.packPrice, charged, gross, cost, itcLoss, net: r2(gross - cost - itcLoss), cartons: units / sku.perCarton };
+  }
+
   function plan(batch, sku) {
     const a = assess(batch, sku);
     const units = a.atRisk;
     const rows = channelTable(batch, sku, units);
     const alloc = allocate(rows, units);
-    const lines = alloc.map(x => {
-      const r = rows.find(y => y.id === x.id);
-      const gross = r.baseline ? 0 : r2(x.units * r.price);
-      let cost = r2(x.units * r.costPerUnit);
-      if (r.id === "expiresoon") cost = r2(cost + RULES.listingFee);
-      const itcLoss = r.baseline ? 0 : r2(x.units * r.itcLoss);
-      // the scheme: kiranas are charged for 10 of every 12 packets at the pack price
-      const charged = r.packPrice ? Math.round(x.units * RULES.scheme.buy / (RULES.scheme.buy + RULES.scheme.free)) : x.units;
-      return { id: r.id, name: r.name, short: r.short, units: x.units, price: r.price, packPrice: r.packPrice, charged, gross, cost, itcLoss, net: r2(gross - cost - itcLoss), cartons: x.units / sku.perCarton };
-    });
+    const lines = alloc.map(x => lineOf(rows.find(y => y.id === x.id), x.units, sku));
     const sum = k => r2(lines.reduce((t, l) => t + l[k], 0));
     const gross = sum("gross"), costs = sum("cost"), itcLoss = sum("itcLoss");
     const net = r2(gross - costs - itcLoss);
@@ -133,6 +135,30 @@
     };
   }
 
+  // what a plan came to once its lines were done (SC-86): each line on the units its channel actually took (`done`:
+  // ordered by kiranas, awarded on ExpireSoon, sold to staff, collected by the food bank; a channel not in `done` took
+  // what was planned). What no channel took is left at the godown: nothing recovered, and it still faces the write-off.
+  // A plan done as planned comes back as it was.
+  function realised(p, sku, done) {
+    const took = l => (l.id !== "writeoff" && done && done[l.id] != null ? Math.max(0, done[l.id]) : l.units);
+    if (p.lines.every(l => took(l) === l.units)) return { ...p, godown: 0 };
+    const lines = p.lines.map(l => (took(l) === l.units ? l : lineOf(p.rows.find(r => r.id === l.id), took(l), sku)));
+    const sum = k => r2(lines.reduce((t, l) => t + l[k], 0));
+    const units = (pred) => lines.filter(pred).reduce((t, l) => t + l.units, 0);
+    const gross = sum("gross"), costs = sum("cost"), itcLoss = sum("itcLoss");
+    const net = r2(gross - costs - itcLoss);
+    const godown = Math.max(0, p.units - units(() => true));
+    const soldUnits = units(l => l.id !== "foodbank" && l.id !== "writeoff");
+    const donated = units(l => l.id === "foodbank");
+    const left = p.leftover + godown;
+    const pnl = r2(net - p.bookCost - (left ? r2(left * (p.writeOff.perUnit - sku.cost)) : 0));
+    const kg = r2((p.units - left) * sku.kgPerUnit);
+    return {
+      ...p, lines, gross, costs, itcLoss, net, pctMRP: Math.round((net / (p.units * sku.mrp)) * 100), pnl, swing: r2(pnl + p.writeOff.total),
+      itcRetained: r2(soldUnits * itcOf(sku)), itcReversed: r2((donated + p.leftover) * itcOf(sku)), kg, co2: r2(kg * RULES.co2PerKg), meals: donated, soldUnits, donated, godown,
+    };
+  }
+
   function counter(ask, bid) {
     const n = RULES.negotiation;
     if (bid >= ask) return { action: "accept", price: bid };
@@ -151,7 +177,7 @@
   // Munchly's price-support credit note to the distributor who owns the stock: the gap between what he paid and what
   // each channel fetched, plus the van and listing fee he paid, so he ends whole. A financial note, no GST adjustment.
   function priceSupport(p, sku, awardPrice) {
-    const rows = p.lines.filter(l => l.id !== "writeoff").map(l => {
+    const rows = p.lines.filter(l => l.id !== "writeoff" && l.units > 0).map(l => {
       const price = l.id === "expiresoon" && awardPrice != null ? awardPrice : l.price;
       return { id: l.id, short: l.short, units: l.units, price, gap: r2(sku.dp - price), amount: r2(l.units * (sku.dp - price)) };
     });
@@ -198,5 +224,5 @@
     day: iso => new Date(iso + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" }),
   };
 
-  window.SC3_MONEY = { RULES, CHANNELS, lifeOf, itcOf, gates, assess, writeOff, channelTable, allocate, plan, counter, award, actualNet, priceSupport, expiryClaim, documents, fmt };
+  window.SC3_MONEY = { RULES, CHANNELS, lifeOf, itcOf, gates, assess, writeOff, channelTable, allocate, plan, counter, award, actualNet, realised, priceSupport, expiryClaim, documents, fmt };
 })();

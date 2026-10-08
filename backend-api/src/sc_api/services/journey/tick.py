@@ -158,12 +158,17 @@ def ready(t: m.Timer, case: m.Case) -> bool:
 
 
 async def fire_timer(ctx: Ctx, c: m.Client, t: m.Timer, case: m.Case, doc: dict[str, Any], today: date) -> None:
-    """a timer that is ready, fired: the offer window closes here; the shelf check and the report go to the agents"""
+    """a timer that is ready, fired: the offer window and an unsold lot close here; the shelf check and the report go to
+    the agents"""
     wall: datetime = ctx.clock.now()
     t.fired_wall = wall
     if t.kind == "offer.close":
         with suppress(steps.Noop):
             await steps.close_offer(ctx, c.id, case.batch_ref, steps.Run("outreach", event_key=f"timer:{t.id}"))
+        return
+    if t.kind == "listing.close":  # an ExpireSoon lot no buyer took closes unsold (SC-86)
+        with suppress(steps.Noop):
+            await steps.close_listing(ctx, c.id, case.batch_ref, steps.Run("lister", event_key=f"timer:{t.id}"))
         return
     payload: dict[str, Any] = {"type": J.TIMER, "kind": t.kind, "client": c.id, "ref": case.batch_ref}
     if t.kind == "shelf.due":

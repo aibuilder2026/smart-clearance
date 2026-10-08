@@ -73,14 +73,22 @@ async def set_speed(ctx: Ctx, c: m.Client, speed: int) -> None:
     await ctx.session.flush()
 
 
+async def running(ctx: Ctx, c: m.Client) -> bool:
+    """whether the journey is running (SC-86): from its start until every case it opened has cleared, so day 0 runs at
+    the client's day length before the Watcher has flagged anything"""
+    count = select(func.count()).select_from(m.Case).where(m.Case.client_id == c.id)
+    if (await ctx.session.execute(count.where(m.Case.status == "open"))).scalar_one():
+        return True
+    since = (c.workspace_doc or {}).get("journeyFrom")
+    if c.journey_day0 is None or not since:
+        return False
+    opened = await ctx.session.execute(count.where(m.Case.opened_wall >= datetime.fromisoformat(since)))
+    return not opened.scalar_one()
+
+
 async def apply_speed(ctx: Ctx, c: m.Client) -> None:
-    """the console's day length while a case is open, real time otherwise"""
-    open_ = (
-        await ctx.session.execute(
-            select(func.count()).select_from(m.Case).where(m.Case.client_id == c.id, m.Case.status == "open")
-        )
-    ).scalar_one()
-    await set_speed(ctx, c, c.day_minutes if open_ else DAY_MINUTES)
+    """the console's day length while the journey runs, real time otherwise"""
+    await set_speed(ctx, c, c.day_minutes if await running(ctx, c) else DAY_MINUTES)
 
 
 async def start_at(ctx: Ctx, c: m.Client, at: datetime, *, replay: bool = False) -> None:
@@ -277,7 +285,5 @@ async def set_day_minutes(ctx: Ctx, client_id: str, minutes: int) -> None:
         return
     was, c.day_minutes = c.day_minutes, minutes
     await apply_speed(ctx, c)
-    if c.clock_speed != DAY_MINUTES:  # a case is open: the new speed applies now
-        await set_speed(ctx, c, minutes)
     await audit.record(ctx, c.id, "client.clock", day_minutes_line(c.name, minutes, was), {"from": was, "to": minutes})
     await changed(ctx, c)

@@ -17,6 +17,7 @@ from tests.test_workspace import (
     ARJUN,
     GANESH,
     HERO,
+    LAKSHMI,
     MANGO,
     MEERA,
     PRIYA,
@@ -72,7 +73,7 @@ async def test_write_the_live_fixtures(api, munchly, cloud):
     await _write(api, "start", ["priya", "rakesh", "arjun"])
 
     await setup(api)
-    assert await detect(api) == [HERO]
+    assert await detect(api) == [HERO, MANGO]
     await agent(api, f"/cases/{HERO}/photo-request", "vision-ask", "vision")
     await _write(api, "at-risk", ["priya", "rakesh"])
 
@@ -92,8 +93,20 @@ async def test_write_the_live_fixtures(api, munchly, cloud):
     assert (await api.post(f"{WS}/cases/{HERO}/approval", json={"device": "phone"}, headers=PRIYA)).status_code == 200
     await agent(api, f"/cases/{HERO}/listing", "lister", "lister")
     await agent(api, f"/cases/{HERO}/offer", "outreach", "outreach")
+    # the Mango Drink runs its own journey to its donation (SC-86): Lakshmi Agencies' label, the plan, Priya's yes
+    await agent(api, f"/cases/{MANGO}/photo-request", "vision-ask-m", "vision")
+    await put_photo(api, cloud, MANGO, LAKSHMI)
+    read = {"batch": MANGO, "mrp": J["labels"][MANGO]["mrp"], "confidence": 0.96}
+    await agent(api, f"/cases/{MANGO}/photo-read", "vision-read-m", "vision", read=read)
+    await agent(api, f"/cases/{MANGO}/valuation", "valuer-m", "valuer")
+    await agent(api, f"/cases/{MANGO}/plan", "router-m", "router")
+    assert (
+        await api.post(f"{WS}/cases/{MANGO}/approval", json={"device": "desktop"}, headers=PRIYA)
+    ).status_code == 200
+    await agent(api, f"/cases/{MANGO}/offer", "outreach-m", "outreach")
     await agent(api, f"/cases/{MANGO}/donation", "donation", "outreach")
-    for k in J["kiranas"][:5]:
+    nagpur = [k for k in J["kiranas"] if k["distributor"] == "rakesh"]
+    for k in nagpur[:5]:
         member = next(x for x in J["members"] if x["id"] == k["member"])
         r = await api.post(f"{WS}/cases/{HERO}/orders", json={"units": k["orders"]}, headers=token(member["login"]))
         assert r.status_code == 200, r.text
@@ -102,7 +115,7 @@ async def test_write_the_live_fixtures(api, munchly, cloud):
     await agent(api, f"/cases/{HERO}/bids/{bid['id']}/answer", "negotiator-1", "negotiator")
     await _write(api, "executing", ["priya", "rakesh", "ganesh", "agrawal", "meera"])
 
-    for k in J["kiranas"][5:]:
+    for k in nagpur[5:]:
         if not k["orders"]:
             continue
         member = next(x for x in J["members"] if x["id"] == k["member"])
@@ -118,7 +131,7 @@ async def test_write_the_live_fixtures(api, munchly, cloud):
     assert (await api.post(f"{WS}/cases/{HERO}/dispatches", json={"kind": "van"}, headers=RAKESH)).status_code == 200
     counts = [
         {"kirana": k["id"], "left": J["shelf"]["left"] if k["name"] == J["shelf"]["shop"] else k["orders"] // 4}
-        for k in J["kiranas"]
+        for k in nagpur
         if k["orders"]
     ]
     await agent(api, f"/cases/{HERO}/shelf-check", "shelf", "outreach", counts=counts)
