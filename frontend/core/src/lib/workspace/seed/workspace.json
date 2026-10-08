@@ -2992,6 +2992,7 @@
 		],
 		"rules": {
 			"watchTime": "09:00",
+			"dataTime": "08:30",
 			"floors": {
 				"snacks": 35,
 				"biscuits": 35,

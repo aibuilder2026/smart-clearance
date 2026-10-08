@@ -4,61 +4,102 @@
     {
       "name": "voice-recorder",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["video/recorder/server.py"],
+      "runtimeArgs": [
+        "video/recorder/server.py"
+      ],
       "port": 8765
     },
     {
       "name": "frontend-admin",
       "runtimeExecutable": "sh",
-      "runtimeArgs": ["-c", "cd frontend && exec corepack pnpm --filter @smart-clearance/admin dev"],
+      "runtimeArgs": [
+        "-c",
+        "cd frontend && exec corepack pnpm --filter @smart-clearance/admin dev"
+      ],
       "port": 5173
     },
     {
       "name": "frontend-preview",
       "runtimeExecutable": "sh",
-      "runtimeArgs": ["-c", "cd frontend && exec corepack pnpm --filter @smart-clearance/admin preview"],
+      "runtimeArgs": [
+        "-c",
+        "cd frontend && exec corepack pnpm --filter @smart-clearance/admin preview"
+      ],
       "port": 4173
     },
     {
       "name": "frontend-console",
       "runtimeExecutable": "sh",
-      "runtimeArgs": ["-c", "cd frontend && exec corepack pnpm --filter @smart-clearance/console dev"],
+      "runtimeArgs": [
+        "-c",
+        "cd frontend && exec corepack pnpm --filter @smart-clearance/console dev"
+      ],
       "port": 5174
     },
     {
       "name": "frontend-console-preview",
       "runtimeExecutable": "sh",
-      "runtimeArgs": ["-c", "cd frontend && exec corepack pnpm --filter @smart-clearance/console preview"],
+      "runtimeArgs": [
+        "-c",
+        "cd frontend && exec corepack pnpm --filter @smart-clearance/console preview"
+      ],
       "port": 4176
+    },
+    {
+      "name": "frontend-console-mock",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "cd frontend && exec corepack pnpm --filter @smart-clearance/console exec vite preview --port 4196 --strictPort"
+      ],
+      "port": 4196
     },
     {
       "name": "frontend-workspace",
       "runtimeExecutable": "sh",
-      "runtimeArgs": ["-c", "cd frontend && exec corepack pnpm --filter @smart-clearance/workspace dev"],
+      "runtimeArgs": [
+        "-c",
+        "cd frontend && exec corepack pnpm --filter @smart-clearance/workspace dev"
+      ],
       "port": 5175
     },
     {
       "name": "frontend-workspace-preview",
       "runtimeExecutable": "sh",
-      "runtimeArgs": ["-c", "cd frontend && exec corepack pnpm --filter @smart-clearance/workspace preview"],
+      "runtimeArgs": [
+        "-c",
+        "cd frontend && exec corepack pnpm --filter @smart-clearance/workspace preview"
+      ],
       "port": 4177
     },
     {
       "name": "frontend-demo",
       "runtimeExecutable": "sh",
-      "runtimeArgs": ["-c", "cd frontend && exec corepack pnpm --filter @smart-clearance/demo dev"],
+      "runtimeArgs": [
+        "-c",
+        "cd frontend && exec corepack pnpm --filter @smart-clearance/demo dev"
+      ],
       "port": 5176
     },
     {
       "name": "frontend-demo-preview",
       "runtimeExecutable": "sh",
-      "runtimeArgs": ["-c", "cd frontend && exec corepack pnpm --filter @smart-clearance/demo preview"],
+      "runtimeArgs": [
+        "-c",
+        "cd frontend && exec corepack pnpm --filter @smart-clearance/demo preview"
+      ],
       "port": 4178
     },
     {
       "name": "design3",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8787", "--directory", "design3"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8787",
+        "--directory",
+        "design3"
+      ],
       "port": 8787
     },
     {

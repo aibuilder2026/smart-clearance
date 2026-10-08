@@ -495,6 +495,7 @@
     const [menu, setMenu] = useState(false);
     const [pause, setPause] = useState(false);
     const [clock, setClock] = useState(false);
+    const [reset, setReset] = useState(false);
     const { toast } = useNotice();
     if (!c) return /* @__PURE__ */ React.createElement(Screen, { title: "No such client", back: "Clients", onBack: () => go("clients") }, /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement(Empty, { icon: "search", title: "This client isn't set up", body: "It may have been removed when the prototype's data was reset.", action: /* @__PURE__ */ React.createElement(Button, { onClick: () => go("clients") }, "All clients") })));
     const t = TABS.some((x) => x.id === tab) ? tab : "agents";
@@ -521,7 +522,8 @@
         window.open(LINKS.app, "_blank", "noopener");
       } } : null,
       c.status !== "live" ? { label: "Go live", icon: "circle-play", onClick: goLive } : null,
-      allOff ? { label: "Resume every agent", icon: "play", onClick: () => setAll(true) } : { label: "Pause every agent", icon: "pause", danger: true, onClick: () => setPause(true) }
+      allOff ? { label: "Resume every agent", icon: "play", onClick: () => setAll(true) } : { label: "Pause every agent", icon: "pause", danger: true, onClick: () => setPause(true) },
+      P.journey(s, c.id).live ? { label: "Reset journey…", icon: "rotate-ccw", danger: true, onClick: () => setReset(true) } : null
     ];
     return /* @__PURE__ */ React.createElement(
       Screen,
@@ -534,12 +536,102 @@
       },
       /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 18 } }, /* @__PURE__ */ React.createElement("div", { className: "cs-head" }, /* @__PURE__ */ React.createElement(WorkspaceMark, { ws: c, size: app.bp === "phone" ? 48 : 60 }), /* @__PURE__ */ React.createElement("div", { className: "stack tight grow", style: { gap: 6, minWidth: 0 } }, /* @__PURE__ */ React.createElement("span", { className: "si-url", style: { justifySelf: "start" } }, /* @__PURE__ */ React.createElement(Icon, { name: "lock", size: 12, stroke: 2.2 }), c.domain), /* @__PURE__ */ React.createElement("span", { className: "row tight wrap" }, statusBadge(c), /* @__PURE__ */ React.createElement(Badge, { size: "sm" }, planName(c.plan)), /* @__PURE__ */ React.createElement(Badge, { size: "sm", icon: "map-pin" }, c.city, c.region && c.region !== "India" ? " · " + c.region : ""), /* @__PURE__ */ React.createElement(Badge, { size: "sm", icon: "bot" }, agentsOn(c), " of ", P.AGENTS.length - 1, " agents on"), /* @__PURE__ */ React.createElement(JourneyBadge, { c, onOpen: () => setClock(true) })))), /* @__PURE__ */ React.createElement("div", { className: "cs-tabs" }, /* @__PURE__ */ React.createElement(Tabs, { id: "client-tabs", tabs: TABS, value: t, onChange: (v) => go("clients", c.id, v, true) })), /* @__PURE__ */ React.createElement(Loading, { k: c.id + "/" + t, shape: TAB_SHAPE[t] || "list", kind: "tab" }, t === "agents" && /* @__PURE__ */ React.createElement(AgentsTab, { c, me }), t === "supply" && /* @__PURE__ */ React.createElement(SupplyTab, { c, me }), t === "rules" && /* @__PURE__ */ React.createElement(RulesTab, { c, me }), t === "people" && /* @__PURE__ */ React.createElement(PeopleTab, { c, me }), t === "integrations" && /* @__PURE__ */ React.createElement(IntegrationsTab, { c, me }), t === "plan" && /* @__PURE__ */ React.createElement(PlanTab, { c, me, onLive: goLive }), t === "audit" && /* @__PURE__ */ React.createElement(AuditList, { filter: c.id }))),
       /* @__PURE__ */ React.createElement(JourneyDaySheet, { c, me, open: clock, onClose: () => setClock(false) }),
+      /* @__PURE__ */ React.createElement(ResetJourneySheet, { c, me, open: reset, onClose: () => setReset(false) }),
       /* @__PURE__ */ React.createElement(Alert, { open: pause, onClose: () => setPause(false), title: `Pause every agent for ${c.name}?`, message: "Nothing new is detected, priced, listed or sent until you resume. Plans already approved stay where they are.", actions: [{ label: "Cancel" }, { label: "Pause", danger: true, strong: true, onClick: () => setAll(false) }] })
+    );
+  }
+  const TRIG = {
+    "data.daily": { title: "Daily load", act: "Run now", icon: "play" },
+    "watcher.daily": { title: "Daily check", act: "Run now", icon: "play" },
+    "offer.close": { title: "Offer window closes", act: "Close now", icon: "timer", every: (c) => `${c.rules.offerWindowHours} h after the offer went out`, ask: (t, when) => ({ title: "Close the offer window now?", message: `The kiranas' offer for ${t.ref} closes now instead of ${when}, and what they did not take is planned again. This can't be undone for this offer.` }) },
+    "shelf.due": { title: "Day-7 shelf check", act: "Check now", icon: "timer", every: () => "7 days after the offer", ask: (t, when) => ({ title: "Check the shelves now?", message: `Outreach counts what is left on each kirana's shelf for ${t.ref} now instead of ${when}, and books the pickups.` }) },
+    "report.due": { title: "Report due", act: "Report now", icon: "timer", every: () => "the morning after the return window", ask: (t, when) => ({ title: "Write the report now?", message: `Impact writes the report for ${t.ref} now instead of ${when}.` }) }
+  };
+  const EVENT_OF = { vision: "a label photo arrives", valuer: "the label is verified", router: "the channels are priced", lister: "a plan is approved", outreach: "a plan is approved", negotiator: "a buyer bids or writes", paperwork: "a deal closes", impact: "the batch is settled" };
+  const JT = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+  const journeyTime = (iso) => JT.format(new Date(iso));
+  function fromNow(iso, now = Date.now()) {
+    const ms = Date.parse(iso) - now;
+    const m = Math.round(ms / 6e4);
+    if (ms <= 0) return "due now";
+    if (m < 1) return "in under a minute";
+    if (m < 60) return `in ${m} min`;
+    const h = Math.floor(m / 60), d = Math.floor(h / 24);
+    if (h < 24) return `in ${h} h${m % 60 ? ` ${m % 60} min` : ""}`;
+    return d < 7 && h % 24 ? `in ${d} day${d === 1 ? "" : "s"} ${h % 24} h` : `in ${d} day${d === 1 ? "" : "s"}`;
+  }
+  function useTriggers(c, me, s) {
+    const { toast } = useNotice();
+    const j = useMemo(() => P.journey(s, c.id), [s, c.id]);
+    const [just, setJust] = useState({});
+    const [asking, setAsking] = useState(null);
+    const fire = (t) => {
+      const a = AGENT(t.agent);
+      const words = TRIG[t.key];
+      P.update((d) => P.fire(d, c.id, t, hhmm()), { who: me.name, client: c.id, text: P.fireLine(c, t) });
+      setJust((x) => ({ ...x, [t.id]: true }));
+      setAsking(null);
+      toast({ text: t.kind === "run" ? `${a.name} · ${words.title.toLowerCase()} running for ${c.name}` : `${a.name} · ${words.title.toLowerCase()}: fired for ${t.ref}`, tone: "ok" });
+    };
+    return { j, just, asking, ask: (t) => t.kind === "timer" ? setAsking(t) : fire(t), fire, cancel: () => setAsking(null) };
+  }
+  function TrigRow({ c, t, trig, dense }) {
+    const words = TRIG[t.key];
+    const a = AGENT(t.agent);
+    const off = !c.agents[t.agent] || !c.agents[t.agent].on;
+    const every = t.time ? `every day at ${t.time}` : words.every ? words.every(c) : "";
+    const sub = !t.due ? "Not scheduled: its workspace isn't live · runs on request" : `${trig.just[t.id] ? "Ran just now · next " : ""}${journeyTime(t.due)} · ${fromNow(t.dueWall)} · ${every}`;
+    const blocked = t.blocked || (off ? `The ${a.name} agent is off` : null);
+    return /* @__PURE__ */ React.createElement("div", { className: cx("cs-trig", dense && "dense", trig.just[t.id] && "fired") }, /* @__PURE__ */ React.createElement("span", { className: "cs-trig-txt" }, /* @__PURE__ */ React.createElement("span", { className: "cs-trig-t" }, /* @__PURE__ */ React.createElement("b", null, words.title), t.ref && /* @__PURE__ */ React.createElement("span", { className: "mono cs-trig-ref" }, t.ref)), /* @__PURE__ */ React.createElement("span", { className: "cs-trig-s" }, sub), blocked && /* @__PURE__ */ React.createElement("span", { className: "cs-trig-s cs-trig-why" }, /* @__PURE__ */ React.createElement(Icon, { name: "hourglass", size: 12, stroke: 2.2 }), blocked)), /* @__PURE__ */ React.createElement("span", { className: "cs-trig-act" }, /* @__PURE__ */ React.createElement(Button, { variant: "secondary", size: "sm", icon: words.icon, disabled: !!blocked, onClick: () => trig.ask(t), "aria-label": `${words.act}: ${a.name}, ${words.title.toLowerCase()}${t.ref ? ", " + t.ref : ""}` }, words.act)));
+  }
+  function StopTriggers({ c, agent, trig }) {
+    const mine = trig.j.triggers.filter((t) => t.agent === agent);
+    if (!mine.length) return null;
+    return /* @__PURE__ */ React.createElement("div", { className: "cs-trigs", role: "group", "aria-label": `${AGENT(agent).name}: scheduled runs and timers` }, mine.map((t) => /* @__PURE__ */ React.createElement(TrigRow, { key: t.id, c, t, trig, dense: true })));
+  }
+  function InspectorTriggers({ c, agent, trig }) {
+    const mine = trig.j.triggers.filter((t) => t.agent === agent);
+    if (!mine.length) return /* @__PURE__ */ React.createElement(List, null, /* @__PURE__ */ React.createElement(ListRow, { title: "When it runs", sub: EVENT_OF[agent] ? `When ${EVENT_OF[agent]}; nothing to run now` : "On its own events" }));
+    return /* @__PURE__ */ React.createElement("div", { className: "stack tight", style: { gap: 8 } }, /* @__PURE__ */ React.createElement("span", { className: "t-footnote strong" }, "Scheduled runs and timers"), mine.map((t) => /* @__PURE__ */ React.createElement(TrigRow, { key: t.id, c, t, trig })));
+  }
+  function TimerAlert({ c, trig }) {
+    const t = trig.asking;
+    const q = t ? TRIG[t.key].ask(t, journeyTime(t.due)) : { title: "", message: "" };
+    return /* @__PURE__ */ React.createElement(Alert, { open: !!t, onClose: trig.cancel, title: q.title, message: q.message, actions: [{ label: "Cancel" }, { label: t ? TRIG[t.key].act : "", strong: true, onClick: () => t && trig.fire(t) }] });
+  }
+  function ResetJourneySheet({ c, me, open, onClose }) {
+    const app = useApp();
+    const { toast } = useNotice();
+    const [v, setV] = useState(c.dayMinutes);
+    useEffect(() => {
+      if (open) setV(c.dayMinutes);
+    }, [open, c.id, c.dayMinutes]);
+    const go = () => {
+      if (v !== c.dayMinutes) P.update((d) => {
+        d.clients.find((y) => y.id === c.id).dayMinutes = v;
+      }, { who: me.name, client: c.id, text: P.dayMinutesLine(c, v, c.dayMinutes) });
+      P.update((d) => P.resetJourney(d, c.id), { who: me.name, client: c.id, text: P.resetLine() });
+      toast({ text: `${P.poss(c.name)} journey starts again: day 0, at ${v >= P.DAY_MINUTES ? "real time" : P.dayBadge(v).toLowerCase()}`, tone: "ok", icon: "rotate-ccw" });
+      onClose();
+    };
+    return /* @__PURE__ */ React.createElement(
+      Sheet,
+      {
+        open,
+        onClose,
+        title: `Start ${P.poss(c.name)} journey again?`,
+        side: app.bp === "phone" ? "bottom" : "center",
+        detent: "large",
+        footer: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Button, { variant: "destructive", size: "lg", block: true, icon: "rotate-ccw", onClick: go }, "Reset journey"), /* @__PURE__ */ React.createElement(Button, { variant: "ghost", block: true, onClick: onClose }, "Cancel"))
+      },
+      /* @__PURE__ */ React.createElement("div", { className: "stack" }, /* @__PURE__ */ React.createElement("p", { className: "t-subhead muted", style: { margin: 0 } }, "Its open batches close as reset, and the story's batches start again on day 0 at 08:00. The Data agent runs at 08:30 and the Watcher at 09:00. Nothing is deleted: the audit log keeps the journey that was."), /* @__PURE__ */ React.createElement("fieldset", { className: "cs-jd-presets" }, /* @__PURE__ */ React.createElement("legend", { className: "t-footnote strong", style: { marginBottom: 8 } }, "Length of a journey day"), P.DAY_PRESETS.map((p) => /* @__PURE__ */ React.createElement("label", { key: p.id, className: cx("cs-jd-preset", v === p.id && "on") }, /* @__PURE__ */ React.createElement("input", { type: "radio", name: "reset-day", checked: v === p.id, onChange: () => setV(p.id) }), /* @__PURE__ */ React.createElement("span", { className: "cs-jd-p-n" }, p.label, p.id === c.dayMinutes ? " · now" : ""), /* @__PURE__ */ React.createElement("span", { className: "cs-jd-p-v tnum" }, p.id.toLocaleString("en-IN"), " min"), /* @__PURE__ */ React.createElement("span", { className: "cs-jd-p-s" }, p.sub), v === p.id && /* @__PURE__ */ React.createElement(Icon, { name: "check", size: 16, stroke: 2.4 })))), !P.DAY_PRESETS.some((p) => p.id === c.dayMinutes) && /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, "Now ", P.dayWords(c.dayMinutes), " a day; pick one to change it."))
     );
   }
   function AgentsTab({ c, me }) {
     const app = useApp();
     const { toast } = useNotice();
+    const s = usePlatform();
+    const trig = useTriggers(c, me, s);
     const [sel, setSel] = useState(() => app.bp === "desktop" ? "negotiator" : null);
     const setAutonomy = (a, v) => {
       const from = c.agents[a.id].autonomy;
@@ -550,19 +642,20 @@
       toast({ text: `${a.name}: ${LEVEL(v).label}, for ${c.name}`, tone: "ok" });
     };
     const legend = /* @__PURE__ */ React.createElement("p", { className: "t-footnote subtle cs-legend" }, P.AUTONOMY.map((l) => /* @__PURE__ */ React.createElement("span", { key: l.id }, /* @__PURE__ */ React.createElement("span", { className: cx("cs-key", "auto-" + l.id), "aria-hidden": "true" }), /* @__PURE__ */ React.createElement("b", null, l.label), " ", l.text.charAt(0).toLowerCase() + l.text.slice(1))));
-    const pipe = /* @__PURE__ */ React.createElement(AgentPipeline, { c, sel, onSelect: setSel, onAutonomy: setAutonomy, compact: app.bp === "phone" });
-    const insp = sel ? /* @__PURE__ */ React.createElement(AgentInspector, { key: c.id + sel, c, id: sel, me, onAutonomy: setAutonomy }) : null;
-    if (app.bp === "desktop") return /* @__PURE__ */ React.createElement("div", { className: "cs-agents" }, /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 12, minWidth: 0 } }, legend, pipe), /* @__PURE__ */ React.createElement("aside", { className: "cs-inspector card", "aria-label": "Selected agent" }, insp || /* @__PURE__ */ React.createElement(Empty, { icon: "mouse-pointer-click", title: "Choose an agent", body: "Its limits, schedule and last run open here." })));
-    return /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 12 } }, legend, pipe, /* @__PURE__ */ React.createElement(Sheet, { open: !!sel, onClose: () => setSel(null), title: sel ? AGENT(sel).name : "", side: app.bp === "phone" ? "bottom" : "side", detent: "large" }, insp));
+    const pipe = /* @__PURE__ */ React.createElement(AgentPipeline, { c, sel, onSelect: setSel, onAutonomy: setAutonomy, compact: app.bp === "phone", trig });
+    const insp = sel ? /* @__PURE__ */ React.createElement(AgentInspector, { key: c.id + sel, c, id: sel, me, onAutonomy: setAutonomy, trig }) : null;
+    const shell = (body) => /* @__PURE__ */ React.createElement(React.Fragment, null, body, /* @__PURE__ */ React.createElement(TimerAlert, { c, trig }));
+    if (app.bp === "desktop") return shell(/* @__PURE__ */ React.createElement("div", { className: "cs-agents" }, /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 12, minWidth: 0 } }, legend, pipe), /* @__PURE__ */ React.createElement("aside", { className: "cs-inspector card", "aria-label": "Selected agent" }, insp || /* @__PURE__ */ React.createElement(Empty, { icon: "mouse-pointer-click", title: "Choose an agent", body: "Its limits, schedule and last run open here." }))));
+    return shell(/* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 12 } }, legend, pipe, /* @__PURE__ */ React.createElement(Sheet, { open: !!sel, onClose: () => setSel(null), title: sel ? AGENT(sel).name : "", side: app.bp === "phone" ? "bottom" : "side", detent: "large" }, insp)));
   }
-  function AgentPipeline({ c, sel, onSelect, onAutonomy, compact }) {
+  function AgentPipeline({ c, sel, onSelect, onAutonomy, compact, trig }) {
     return /* @__PURE__ */ React.createElement("ol", { className: "cs-pipe", "aria-label": `${c.name}'s agents, in the order they work` }, P.AGENTS.map((a) => {
       const cfg = c.agents[a.id];
       const on = sel === a.id;
-      return /* @__PURE__ */ React.createElement("li", { key: a.id, className: cx("cs-stop", a.gate && "is-gate", on && "on", !cfg.on && "off", "auto-" + cfg.autonomy) }, /* @__PURE__ */ React.createElement("span", { className: "cs-node", "aria-hidden": "true" }, a.gate && /* @__PURE__ */ React.createElement(Icon, { name: "lock", size: 11, stroke: 2.6 })), /* @__PURE__ */ React.createElement("div", { className: "cs-card" }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "cs-open", "aria-pressed": on, onClick: () => onSelect(a.id) }, /* @__PURE__ */ React.createElement("span", { className: cx("icontile", a.gate ? "amber" : "soft") }, /* @__PURE__ */ React.createElement(Icon, { name: a.icon, size: 17, stroke: 2 })), /* @__PURE__ */ React.createElement("span", { className: "cs-text" }, /* @__PURE__ */ React.createElement("span", { className: "cs-name" }, /* @__PURE__ */ React.createElement("b", null, a.name), /* @__PURE__ */ React.createElement("span", { className: "cs-stage" }, P.STAGE_NAME[a.stage]), !cfg.on && !a.gate && /* @__PURE__ */ React.createElement(Badge, { size: "sm" }, "Off")), /* @__PURE__ */ React.createElement("span", { className: "cs-sum" }, a.gate ? P.summary("gate", cfg.settings, c) : a.job.charAt(0).toLowerCase() + a.job.slice(1) + " · " + P.summary(a.id, cfg.settings, c)))), /* @__PURE__ */ React.createElement("div", { className: "cs-ctl" }, a.gate ? /* @__PURE__ */ React.createElement(Badge, { tone: "amber", icon: "lock" }, "Always on") : compact ? /* @__PURE__ */ React.createElement(Badge, { size: "sm", tone: cfg.autonomy === "act" ? "green" : void 0 }, LEVEL(cfg.autonomy).label) : /* @__PURE__ */ React.createElement(Segmented, { className: "sm", label: `${a.name}: autonomy`, options: P.AUTONOMY.map((x) => ({ id: x.id, label: x.label })), value: cfg.autonomy, onChange: (v) => onAutonomy(a, v) }))));
+      return /* @__PURE__ */ React.createElement("li", { key: a.id, className: "cs-pipe-item" }, /* @__PURE__ */ React.createElement("div", { className: cx("cs-stop", a.gate && "is-gate", on && "on", !cfg.on && "off", "auto-" + cfg.autonomy) }, /* @__PURE__ */ React.createElement("span", { className: "cs-node", "aria-hidden": "true" }, a.gate && /* @__PURE__ */ React.createElement(Icon, { name: "lock", size: 11, stroke: 2.6 })), /* @__PURE__ */ React.createElement("div", { className: "cs-card" }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "cs-open", "aria-pressed": on, onClick: () => onSelect(a.id) }, /* @__PURE__ */ React.createElement("span", { className: cx("icontile", a.gate ? "amber" : "soft") }, /* @__PURE__ */ React.createElement(Icon, { name: a.icon, size: 17, stroke: 2 })), /* @__PURE__ */ React.createElement("span", { className: "cs-text" }, /* @__PURE__ */ React.createElement("span", { className: "cs-name" }, /* @__PURE__ */ React.createElement("b", null, a.name), /* @__PURE__ */ React.createElement("span", { className: "cs-stage" }, P.STAGE_NAME[a.stage]), !cfg.on && !a.gate && /* @__PURE__ */ React.createElement(Badge, { size: "sm" }, "Off")), /* @__PURE__ */ React.createElement("span", { className: "cs-sum" }, a.gate ? P.summary("gate", cfg.settings, c) : a.job.charAt(0).toLowerCase() + a.job.slice(1) + " · " + P.summary(a.id, cfg.settings, c)))), /* @__PURE__ */ React.createElement("div", { className: "cs-ctl" }, a.gate ? /* @__PURE__ */ React.createElement(Badge, { tone: "amber", icon: "lock" }, "Always on") : compact ? /* @__PURE__ */ React.createElement(Badge, { size: "sm", tone: cfg.autonomy === "act" ? "green" : void 0 }, LEVEL(cfg.autonomy).label) : /* @__PURE__ */ React.createElement(Segmented, { className: "sm", label: `${a.name}: autonomy`, options: P.AUTONOMY.map((x) => ({ id: x.id, label: x.label })), value: cfg.autonomy, onChange: (v) => onAutonomy(a, v) })))), trig && /* @__PURE__ */ React.createElement(StopTriggers, { c, agent: a.id, trig }));
     }));
   }
-  function AgentInspector({ c, id, me, onAutonomy }) {
+  function AgentInspector({ c, id, me, onAutonomy, trig }) {
     const a = AGENT(id);
     const cfg = c.agents[id];
     const { toast } = useNotice();
@@ -581,15 +674,7 @@
     const toggle = (v) => P.update((d) => {
       d.clients.find((x) => x.id === c.id).agents[id].on = v;
     }, { who: me.name, client: c.id, text: `${v ? "Switched on" : "Switched off"} the ${a.name} agent for ${c.name}` });
-    const runNow = () => {
-      const at = hhmm();
-      P.update((d) => {
-        d.runs.unshift({ at, agent: id, client: c.id, text: "ran on request; nothing new" });
-        d.clients.find((x) => x.id === c.id).agents[id].last = `${at} today · ran on request; nothing new`;
-      }, { who: me.name, client: c.id, text: `Ran the ${a.name} agent now for ${c.name}` });
-      toast({ text: `${a.name} ran for ${c.name}: nothing new`, tone: "ok" });
-    };
-    return /* @__PURE__ */ React.createElement("div", { className: "stack cs-insp", style: { gap: 16 } }, /* @__PURE__ */ React.createElement("div", { className: "row", style: { gap: 12 } }, /* @__PURE__ */ React.createElement("span", { className: cx("icontile", a.gate ? "amber" : ""), style: { width: 42, height: 42, borderRadius: 12 } }, /* @__PURE__ */ React.createElement(Icon, { name: a.icon, size: 21, stroke: 2 })), /* @__PURE__ */ React.createElement("div", { className: "stack tight", style: { gap: 2 } }, /* @__PURE__ */ React.createElement("b", { className: "t-title3" }, a.name), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, P.STAGE_NAME[a.stage], " · ", a.gate ? "a person, always" : a.model + " on Vertex AI"))), /* @__PURE__ */ React.createElement("p", { className: "t-subhead muted", style: { margin: 0 } }, a.job, "."), a.gate ? /* @__PURE__ */ React.createElement("div", { className: "cs-gate-note" }, /* @__PURE__ */ React.createElement(Icon, { name: "lock", size: 16, stroke: 2.2 }), /* @__PURE__ */ React.createElement("span", null, "Every plan waits for one person's approval, with the money on screen, for every client. It can't be switched off.")) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(List, null, /* @__PURE__ */ React.createElement(ListRow, { title: "On", sub: cfg.on ? "Runs for this client" : "Skipped; the stops around it carry on", value: /* @__PURE__ */ React.createElement(Switch, { checked: cfg.on, onChange: toggle, label: `${a.name} on for ${c.name}` }) })), /* @__PURE__ */ React.createElement("div", { className: "stack tight", style: { gap: 8 } }, /* @__PURE__ */ React.createElement("span", { className: "t-footnote strong" }, "Autonomy"), /* @__PURE__ */ React.createElement(Segmented, { label: `${a.name}: autonomy`, options: P.AUTONOMY.map((x) => ({ id: x.id, label: x.label })), value: cfg.autonomy, onChange: (v) => onAutonomy(a, v) }), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, LEVEL(cfg.autonomy).text, "."))), fields.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 12 } }, fields.map((f) => /* @__PURE__ */ React.createElement(SettingField, { key: f.key, f, c, agent: a, value: draft[f.key], onChange: (v) => setDraft((x) => ({ ...x, [f.key]: v })) }))), /* @__PURE__ */ React.createElement(List, null, /* @__PURE__ */ React.createElement(ListRow, { title: "Last run", sub: cfg.last || "not run yet" }), /* @__PURE__ */ React.createElement(ListRow, { title: "Next run", sub: cfg.next || "not scheduled" })), /* @__PURE__ */ React.createElement("div", { className: "row tight wrap" }, !a.gate && /* @__PURE__ */ React.createElement(Button, { variant: "secondary", size: "sm", icon: "play", disabled: !cfg.on, onClick: runNow }, "Run now"), /* @__PURE__ */ React.createElement("span", { className: "grow" }), /* @__PURE__ */ React.createElement(Button, { variant: "primary", size: "sm", disabled: !dirty, onClick: save }, "Save")));
+    return /* @__PURE__ */ React.createElement("div", { className: "stack cs-insp", style: { gap: 16 } }, /* @__PURE__ */ React.createElement("div", { className: "row", style: { gap: 12 } }, /* @__PURE__ */ React.createElement("span", { className: cx("icontile", a.gate ? "amber" : ""), style: { width: 42, height: 42, borderRadius: 12 } }, /* @__PURE__ */ React.createElement(Icon, { name: a.icon, size: 21, stroke: 2 })), /* @__PURE__ */ React.createElement("div", { className: "stack tight", style: { gap: 2 } }, /* @__PURE__ */ React.createElement("b", { className: "t-title3" }, a.name), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, P.STAGE_NAME[a.stage], " · ", a.gate ? "a person, always" : a.model + " on Vertex AI"))), /* @__PURE__ */ React.createElement("p", { className: "t-subhead muted", style: { margin: 0 } }, a.job, "."), a.gate ? /* @__PURE__ */ React.createElement("div", { className: "cs-gate-note" }, /* @__PURE__ */ React.createElement(Icon, { name: "lock", size: 16, stroke: 2.2 }), /* @__PURE__ */ React.createElement("span", null, "Every plan waits for one person's approval, with the money on screen, for every client. It can't be switched off.")) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(List, null, /* @__PURE__ */ React.createElement(ListRow, { title: "On", sub: cfg.on ? "Runs for this client" : "Skipped; the stops around it carry on", value: /* @__PURE__ */ React.createElement(Switch, { checked: cfg.on, onChange: toggle, label: `${a.name} on for ${c.name}` }) })), /* @__PURE__ */ React.createElement("div", { className: "stack tight", style: { gap: 8 } }, /* @__PURE__ */ React.createElement("span", { className: "t-footnote strong" }, "Autonomy"), /* @__PURE__ */ React.createElement(Segmented, { label: `${a.name}: autonomy`, options: P.AUTONOMY.map((x) => ({ id: x.id, label: x.label })), value: cfg.autonomy, onChange: (v) => onAutonomy(a, v) }), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, LEVEL(cfg.autonomy).text, "."))), fields.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 12 } }, fields.map((f) => /* @__PURE__ */ React.createElement(SettingField, { key: f.key, f, c, agent: a, value: draft[f.key], onChange: (v) => setDraft((x) => ({ ...x, [f.key]: v })) }))), !a.gate && trig && /* @__PURE__ */ React.createElement(InspectorTriggers, { c, agent: id, trig }), /* @__PURE__ */ React.createElement(List, null, /* @__PURE__ */ React.createElement(ListRow, { title: "Last run", sub: cfg.last || "not run yet" })), /* @__PURE__ */ React.createElement("div", { className: "row tight wrap" }, /* @__PURE__ */ React.createElement("span", { className: "grow" }), /* @__PURE__ */ React.createElement(Button, { variant: "primary", size: "sm", disabled: !dirty, onClick: save }, "Save")));
   }
   const nameOf = (c, pid) => {
     const p = c.people.find((x) => x.id === pid);

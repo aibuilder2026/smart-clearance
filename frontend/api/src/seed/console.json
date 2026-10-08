@@ -1232,7 +1232,43 @@
 				"client": "munchly",
 				"text": "Overrode MF-2409-204's quick-commerce gates: Zepto and Instamart 30% of life (Zepto's Pune warehouse agreed to take this lot at 30% of its life)"
 			}
-		]
+		],
+		"journeys": {
+			"munchly": {
+				"day0": "2026-10-02",
+				"now": "2026-10-03T10:15:00+05:30",
+				"setupConfirmed": true,
+				"daily": {
+					"data": "2026-10-03",
+					"watcher": "2026-10-03"
+				},
+				"timers": [
+					{
+						"id": "timer-1",
+						"agent": "outreach",
+						"key": "offer.close",
+						"ref": "MF-2409-117",
+						"due": "2026-10-04T12:40:00+05:30"
+					},
+					{
+						"id": "timer-2",
+						"agent": "outreach",
+						"key": "shelf.due",
+						"ref": "MF-2409-117",
+						"due": "2026-10-09T12:40:00+05:30",
+						"blocked": "After the van round: the papers come first"
+					},
+					{
+						"id": "timer-3",
+						"agent": "impact",
+						"key": "report.due",
+						"ref": "MF-2409-117",
+						"due": "2026-10-30T10:00:00+05:30",
+						"blocked": "After the papers and the shelf check"
+					}
+				]
+			}
+		}
 	},
 	"today": "2026-10-06"
 }

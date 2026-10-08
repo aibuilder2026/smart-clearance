@@ -1499,6 +1499,179 @@
         "title": "Integration",
         "type": "object"
       },
+      "JourneyClockOut": {
+        "additionalProperties": false,
+        "properties": {
+          "compressed": {
+            "title": "Compressed",
+            "type": "boolean"
+          },
+          "day": {
+            "title": "Day",
+            "type": "integer"
+          },
+          "day0": {
+            "title": "Day0",
+            "type": "string"
+          },
+          "dayMinutes": {
+            "title": "Dayminutes",
+            "type": "integer"
+          },
+          "now": {
+            "title": "Now",
+            "type": "string"
+          }
+        },
+        "required": [
+          "now",
+          "day",
+          "day0",
+          "dayMinutes",
+          "compressed"
+        ],
+        "title": "JourneyClockOut",
+        "type": "object"
+      },
+      "JourneyOut": {
+        "additionalProperties": false,
+        "properties": {
+          "clock": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/JourneyClockOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "live": {
+            "title": "Live",
+            "type": "boolean"
+          },
+          "triggers": {
+            "items": {
+              "$ref": "#/components/schemas/JourneyTrigger"
+            },
+            "title": "Triggers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "live",
+          "triggers"
+        ],
+        "title": "JourneyOut",
+        "type": "object"
+      },
+      "JourneyResetInput": {
+        "additionalProperties": false,
+        "properties": {
+          "dayMinutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dayminutes"
+          }
+        },
+        "title": "JourneyResetInput",
+        "type": "object"
+      },
+      "JourneyTrigger": {
+        "additionalProperties": false,
+        "description": "a scheduled run or a pending journey timer, and when it falls due (journey time, and the wall time it fires)",
+        "properties": {
+          "agent": {
+            "title": "Agent",
+            "type": "string"
+          },
+          "blocked": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Blocked"
+          },
+          "due": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due"
+          },
+          "dueWall": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duewall"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "run",
+              "timer"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ref"
+          },
+          "time": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time"
+          }
+        },
+        "required": [
+          "id",
+          "agent",
+          "kind",
+          "key"
+        ],
+        "title": "JourneyTrigger",
+        "type": "object"
+      },
       "LookupInput": {
         "additionalProperties": false,
         "properties": {
@@ -3560,6 +3733,166 @@
           }
         ],
         "summary": "First Export",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}/journey": {
+      "get": {
+        "operationId": "journey_v1_console_clients__client_id__journey_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JourneyOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "A client's scheduled runs and journey timers",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}/journey/reset": {
+      "post": {
+        "operationId": "reset_journey_v1_console_clients__client_id__journey_reset_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JourneyResetInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JourneyOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Start a client's journey again from day 0",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}/journey/triggers/{trigger_id}": {
+      "post": {
+        "operationId": "fire_trigger_v1_console_clients__client_id__journey_triggers__trigger_id__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "trigger_id",
+            "required": true,
+            "schema": {
+              "title": "Trigger Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JourneyOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Fire a daily run or a timer now",
         "tags": [
           "console"
         ]

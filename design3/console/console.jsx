@@ -484,7 +484,7 @@
   const TABS =[{ id: "agents", label: "Agents" }, { id: "supply", label: "Supply chain" }, { id: "rules", label: "Channels & rules" }, { id: "people", label: "People" }, { id: "integrations", label: "Integrations" }, { id: "plan", label: "Plan" }, { id: "audit", label: "Audit" }];
   function ClientPage({ id, tab, go, me }) {
     const s = usePlatform(); const app = useApp(); const c = s.clients.find(x => x.id === id);
-    const [menu, setMenu] = useState(false); const [pause, setPause] = useState(false); const [clock, setClock] = useState(false); const { toast } = useNotice();
+    const [menu, setMenu] = useState(false); const [pause, setPause] = useState(false); const [clock, setClock] = useState(false); const [reset, setReset] = useState(false); const { toast } = useNotice();
     if (!c) return <Screen title="No such client" back="Clients" onBack={() => go("clients")}><Card><Empty icon="search" title="This client isn't set up" body="It may have been removed when the prototype's data was reset." action={<Button onClick={() => go("clients")}>All clients</Button>} /></Card></Screen>;
     const t = TABS.some(x => x.id === tab) ? tab : "agents";
     const allOff = agentsOn(c) === 0;
@@ -494,6 +494,7 @@
       c.id === "munchly" ? { label: "Open the workspace", icon: "external-link", onClick: () => { window.open(LINKS.app, "_blank", "noopener"); } } : null,
       c.status !== "live" ? { label: "Go live", icon: "circle-play", onClick: goLive } : null,
       allOff ? { label: "Resume every agent", icon: "play", onClick: () => setAll(true) } : { label: "Pause every agent", icon: "pause", danger: true, onClick: () => setPause(true) },
+      P.journey(s, c.id).live ? { label: "Reset journey…", icon: "rotate-ccw", danger: true, onClick: () => setReset(true) } : null,
     ];
     return <Screen title={c.name} sub={`${c.domain} · ${planName(c.plan)}${c.since ? " since " + c.since : ""}`} back="Clients" onBack={() => go("clients")}
       actions={<span style={{ position: "relative" }}><IconButton icon="ellipsis" label={`Actions for ${c.name}`} aria-haspopup="menu" aria-expanded={menu} onClick={() => setMenu(m => !m)} /><Menu open={menu} onClose={() => setMenu(false)} items={items} width={230} label={`Actions for ${c.name}`} /></span>}>
@@ -517,25 +518,111 @@
         </Loading>
       </div>
       <JourneyDaySheet c={c} me={me} open={clock} onClose={() => setClock(false)} />
+      <ResetJourneySheet c={c} me={me} open={reset} onClose={() => setReset(false)} />
       <Alert open={pause} onClose={() => setPause(false)} title={`Pause every agent for ${c.name}?`} message="Nothing new is detected, priced, listed or sent until you resume. Plans already approved stay where they are." actions={[{ label: "Cancel" }, { label: "Pause", danger: true, strong: true, onClick: () => setAll(false) }]} />
     </Screen>;
   }
 
+  /* ---------- a client's runs and timers, fired now (SC-79, option A) ---------- */
+  // The Data agent's daily load and the Watcher's daily check, and the timers an offer leaves (its window closing, the
+  // day-7 shelf check, the report), hang under the agent they belong to, each with when it falls due in journey time and
+  // how long that is from now; Run now fires one at once. A timer asks first, since closing an offer early can't be
+  // undone for that offer. The schedule is backend-api's (GET …/journey), here platform.js's.
+  const TRIG = {
+    "data.daily": { title: "Daily load", act: "Run now", icon: "play" },
+    "watcher.daily": { title: "Daily check", act: "Run now", icon: "play" },
+    "offer.close": { title: "Offer window closes", act: "Close now", icon: "timer", every: c => `${c.rules.offerWindowHours} h after the offer went out`, ask: (t, when) => ({ title: "Close the offer window now?", message: `The kiranas' offer for ${t.ref} closes now instead of ${when}, and what they did not take is planned again. This can't be undone for this offer.` }) },
+    "shelf.due": { title: "Day-7 shelf check", act: "Check now", icon: "timer", every: () => "7 days after the offer", ask: (t, when) => ({ title: "Check the shelves now?", message: `Outreach counts what is left on each kirana's shelf for ${t.ref} now instead of ${when}, and books the pickups.` }) },
+    "report.due": { title: "Report due", act: "Report now", icon: "timer", every: () => "the morning after the return window", ask: (t, when) => ({ title: "Write the report now?", message: `Impact writes the report for ${t.ref} now instead of ${when}.` }) },
+  };
+  const EVENT_OF = { vision: "a label photo arrives", valuer: "the label is verified", router: "the channels are priced", lister: "a plan is approved", outreach: "a plan is approved", negotiator: "a buyer bids or writes", paperwork: "a deal closes", impact: "the batch is settled" };
+  const JT = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+  const journeyTime = iso => JT.format(new Date(iso));
+  function fromNow(iso, now = Date.now()) {
+    const ms = Date.parse(iso) - now; const m = Math.round(ms / 60000);
+    if (ms <= 0) return "due now";
+    if (m < 1) return "in under a minute";
+    if (m < 60) return `in ${m} min`;
+    const h = Math.floor(m / 60), d = Math.floor(h / 24);
+    if (h < 24) return `in ${h} h${m % 60 ? ` ${m % 60} min` : ""}`;
+    return d < 7 && h % 24 ? `in ${d} day${d === 1 ? "" : "s"} ${h % 24} h` : `in ${d} day${d === 1 ? "" : "s"}`;
+  }
+  function useTriggers(c, me, s) {
+    const { toast } = useNotice();
+    const j = useMemo(() => P.journey(s, c.id), [s, c.id]);
+    const [just, setJust] = useState({}); const [asking, setAsking] = useState(null);
+    const fire = t => {
+      const a = AGENT(t.agent); const words = TRIG[t.key];
+      P.update(d => P.fire(d, c.id, t, hhmm()), { who: me.name, client: c.id, text: P.fireLine(c, t) });
+      setJust(x => ({ ...x, [t.id]: true })); setAsking(null);
+      toast({ text: t.kind === "run" ? `${a.name} · ${words.title.toLowerCase()} running for ${c.name}` : `${a.name} · ${words.title.toLowerCase()}: fired for ${t.ref}`, tone: "ok" });
+    };
+    return { j, just, asking, ask: t => (t.kind === "timer" ? setAsking(t) : fire(t)), fire, cancel: () => setAsking(null) };
+  }
+  function TrigRow({ c, t, trig, dense }) {
+    const words = TRIG[t.key]; const a = AGENT(t.agent); const off = !c.agents[t.agent] || !c.agents[t.agent].on;
+    const every = t.time ? `every day at ${t.time}` : words.every ? words.every(c) : "";
+    const sub = !t.due ? "Not scheduled: its workspace isn't live · runs on request" : `${trig.just[t.id] ? "Ran just now · next " : ""}${journeyTime(t.due)} · ${fromNow(t.dueWall)} · ${every}`;
+    const blocked = t.blocked || (off ? `The ${a.name} agent is off` : null);
+    return <div className={cx("cs-trig", dense && "dense", trig.just[t.id] && "fired")}>
+      <span className="cs-trig-txt"><span className="cs-trig-t"><b>{words.title}</b>{t.ref && <span className="mono cs-trig-ref">{t.ref}</span>}</span>
+        <span className="cs-trig-s">{sub}</span>
+        {blocked && <span className="cs-trig-s cs-trig-why"><Icon name="hourglass" size={12} stroke={2.2} />{blocked}</span>}</span>
+      <span className="cs-trig-act"><Button variant="secondary" size="sm" icon={words.icon} disabled={!!blocked} onClick={() => trig.ask(t)} aria-label={`${words.act}: ${a.name}, ${words.title.toLowerCase()}${t.ref ? ", " + t.ref : ""}`}>{words.act}</Button></span>
+    </div>;
+  }
+  function StopTriggers({ c, agent, trig }) {
+    const mine = trig.j.triggers.filter(t => t.agent === agent);
+    if (!mine.length) return null;
+    return <div className="cs-trigs" role="group" aria-label={`${AGENT(agent).name}: scheduled runs and timers`}>{mine.map(t => <TrigRow key={t.id} c={c} t={t} trig={trig} dense />)}</div>;
+  }
+  function InspectorTriggers({ c, agent, trig }) {
+    const mine = trig.j.triggers.filter(t => t.agent === agent);
+    if (!mine.length) return <List><ListRow title="When it runs" sub={EVENT_OF[agent] ? `When ${EVENT_OF[agent]}; nothing to run now` : "On its own events"} /></List>;
+    return <div className="stack tight" style={{ gap: 8 }}><span className="t-footnote strong">Scheduled runs and timers</span>{mine.map(t => <TrigRow key={t.id} c={c} t={t} trig={trig} />)}</div>;
+  }
+  // a timer asks first: what it does, instead of when
+  function TimerAlert({ c, trig }) {
+    const t = trig.asking; const q = t ? TRIG[t.key].ask(t, journeyTime(t.due)) : { title: "", message: "" };
+    return <Alert open={!!t} onClose={trig.cancel} title={q.title} message={q.message} actions={[{ label: "Cancel" }, { label: t ? TRIG[t.key].act : "", strong: true, onClick: () => t && trig.fire(t) }]} />;
+  }
+  // the reset: what it does, and the day length the journey starts at (the client's own, unless another is picked)
+  function ResetJourneySheet({ c, me, open, onClose }) {
+    const app = useApp(); const { toast } = useNotice(); const [v, setV] = useState(c.dayMinutes);
+    useEffect(() => { if (open) setV(c.dayMinutes); }, [open, c.id, c.dayMinutes]);
+    const go = () => {
+      if (v !== c.dayMinutes) P.update(d => { d.clients.find(y => y.id === c.id).dayMinutes = v; }, { who: me.name, client: c.id, text: P.dayMinutesLine(c, v, c.dayMinutes) });
+      P.update(d => P.resetJourney(d, c.id), { who: me.name, client: c.id, text: P.resetLine() });
+      toast({ text: `${P.poss(c.name)} journey starts again: day 0, at ${v >= P.DAY_MINUTES ? "real time" : P.dayBadge(v).toLowerCase()}`, tone: "ok", icon: "rotate-ccw" });
+      onClose();
+    };
+    return <Sheet open={open} onClose={onClose} title={`Start ${P.poss(c.name)} journey again?`} side={app.bp === "phone" ? "bottom" : "center"} detent="large"
+      footer={<><Button variant="destructive" size="lg" block icon="rotate-ccw" onClick={go}>Reset journey</Button><Button variant="ghost" block onClick={onClose}>Cancel</Button></>}>
+      <div className="stack">
+        <p className="t-subhead muted" style={{ margin: 0 }}>Its open batches close as reset, and the story's batches start again on day 0 at 08:00. The Data agent runs at 08:30 and the Watcher at 09:00. Nothing is deleted: the audit log keeps the journey that was.</p>
+        <fieldset className="cs-jd-presets"><legend className="t-footnote strong" style={{ marginBottom: 8 }}>Length of a journey day</legend>{P.DAY_PRESETS.map(p => <label key={p.id} className={cx("cs-jd-preset", v === p.id && "on")}><input type="radio" name="reset-day" checked={v === p.id} onChange={() => setV(p.id)} /><span className="cs-jd-p-n">{p.label}{p.id === c.dayMinutes ? " · now" : ""}</span><span className="cs-jd-p-v tnum">{p.id.toLocaleString("en-IN")} min</span><span className="cs-jd-p-s">{p.sub}</span>{v === p.id && <Icon name="check" size={16} stroke={2.4} />}</label>)}</fieldset>
+        {!P.DAY_PRESETS.some(p => p.id === c.dayMinutes) && <span className="t-footnote subtle">Now {P.dayWords(c.dayMinutes)} a day; pick one to change it.</span>}
+      </div>
+    </Sheet>;
+  }
+
   /* ---------- agents: the pipeline and the selected agent's settings ---------- */
   function AgentsTab({ c, me }) {
-    const app = useApp(); const { toast } = useNotice();
+    const app = useApp(); const { toast } = useNotice(); const s = usePlatform();
+    const trig = useTriggers(c, me, s);
     const [sel, setSel] = useState(() => (app.bp === "desktop" ? "negotiator" : null));
     const setAutonomy = (a, v) => { const from = c.agents[a.id].autonomy; if (from === v) return; P.update(d => { d.clients.find(x => x.id === c.id).agents[a.id].autonomy = v; }, { who: me.name, client: c.id, text: `Set the ${a.name} agent to ${LEVEL(v).label} for ${c.name} (was ${LEVEL(from).label})` }); toast({ text: `${a.name}: ${LEVEL(v).label}, for ${c.name}`, tone: "ok" }); };
     const legend = <p className="t-footnote subtle cs-legend">{P.AUTONOMY.map(l => <span key={l.id}><span className={cx("cs-key", "auto-" + l.id)} aria-hidden="true" /><b>{l.label}</b> {l.text.charAt(0).toLowerCase() + l.text.slice(1)}</span>)}</p>;
-    const pipe = <AgentPipeline c={c} sel={sel} onSelect={setSel} onAutonomy={setAutonomy} compact={app.bp === "phone"} />;
-    const insp = sel ? <AgentInspector key={c.id + sel} c={c} id={sel} me={me} onAutonomy={setAutonomy} /> : null;
-    if (app.bp === "desktop") return <div className="cs-agents"><div className="stack" style={{ gap: 12, minWidth: 0 }}>{legend}{pipe}</div><aside className="cs-inspector card" aria-label="Selected agent">{insp || <Empty icon="mouse-pointer-click" title="Choose an agent" body="Its limits, schedule and last run open here." />}</aside></div>;
-    return <div className="stack" style={{ gap: 12 }}>{legend}{pipe}<Sheet open={!!sel} onClose={() => setSel(null)} title={sel ? AGENT(sel).name : ""} side={app.bp === "phone" ? "bottom" : "side"} detent="large">{insp}</Sheet></div>;
+    const pipe = <AgentPipeline c={c} sel={sel} onSelect={setSel} onAutonomy={setAutonomy} compact={app.bp === "phone"} trig={trig} />;
+    const insp = sel ? <AgentInspector key={c.id + sel} c={c} id={sel} me={me} onAutonomy={setAutonomy} trig={trig} /> : null;
+    const shell = body => <>{body}<TimerAlert c={c} trig={trig} /></>;
+    if (app.bp === "desktop") return shell(<div className="cs-agents"><div className="stack" style={{ gap: 12, minWidth: 0 }}>{legend}{pipe}</div><aside className="cs-inspector card" aria-label="Selected agent">{insp || <Empty icon="mouse-pointer-click" title="Choose an agent" body="Its limits, schedule and last run open here." />}</aside></div>);
+    return shell(<div className="stack" style={{ gap: 12 }}>{legend}{pipe}<Sheet open={!!sel} onClose={() => setSel(null)} title={sel ? AGENT(sel).name : ""} side={app.bp === "phone" ? "bottom" : "side"} detent="large">{insp}</Sheet></div>);
   }
-  function AgentPipeline({ c, sel, onSelect, onAutonomy, compact }) {
+  function AgentPipeline({ c, sel, onSelect, onAutonomy, compact, trig }) {
     return <ol className="cs-pipe" aria-label={`${c.name}'s agents, in the order they work`}>
       {P.AGENTS.map(a => { const cfg = c.agents[a.id]; const on = sel === a.id;
-        return <li key={a.id} className={cx("cs-stop", a.gate && "is-gate", on && "on", !cfg.on && "off", "auto-" + cfg.autonomy)}>
+        return <li key={a.id} className="cs-pipe-item"><div className={cx("cs-stop", a.gate && "is-gate", on && "on", !cfg.on && "off", "auto-" + cfg.autonomy)}>
           <span className="cs-node" aria-hidden="true">{a.gate && <Icon name="lock" size={11} stroke={2.6} />}</span>
           <div className="cs-card">
             <button type="button" className="cs-open" aria-pressed={on} onClick={() => onSelect(a.id)}>
@@ -543,11 +630,12 @@
               <span className="cs-text"><span className="cs-name"><b>{a.name}</b><span className="cs-stage">{P.STAGE_NAME[a.stage]}</span>{!cfg.on && !a.gate && <Badge size="sm">Off</Badge>}</span><span className="cs-sum">{a.gate ? P.summary("gate", cfg.settings, c) : a.job.charAt(0).toLowerCase() + a.job.slice(1) + " · " + P.summary(a.id, cfg.settings, c)}</span></span>
             </button>
             <div className="cs-ctl">{a.gate ? <Badge tone="amber" icon="lock">Always on</Badge> : compact ? <Badge size="sm" tone={cfg.autonomy === "act" ? "green" : undefined}>{LEVEL(cfg.autonomy).label}</Badge> : <Segmented className="sm" label={`${a.name}: autonomy`} options={P.AUTONOMY.map(x => ({ id: x.id, label: x.label }))} value={cfg.autonomy} onChange={v => onAutonomy(a, v)} />}</div>
-          </div>
+          </div></div>
+          {trig && <StopTriggers c={c} agent={a.id} trig={trig} />}
         </li>; })}
     </ol>;
   }
-  function AgentInspector({ c, id, me, onAutonomy }) {
+  function AgentInspector({ c, id, me, onAutonomy, trig }) {
     const a = AGENT(id); const cfg = c.agents[id]; const { toast } = useNotice();
     const [draft, setDraft] = useState(cfg.settings);
     const key = JSON.stringify(cfg.settings);
@@ -560,7 +648,6 @@
       toast({ text: `${a.name} saved for ${c.name}`, tone: "ok" });
     };
     const toggle = v => P.update(d => { d.clients.find(x => x.id === c.id).agents[id].on = v; }, { who: me.name, client: c.id, text: `${v ? "Switched on" : "Switched off"} the ${a.name} agent for ${c.name}` });
-    const runNow = () => { const at = hhmm(); P.update(d => { d.runs.unshift({ at, agent: id, client: c.id, text: "ran on request; nothing new" }); d.clients.find(x => x.id === c.id).agents[id].last = `${at} today · ran on request; nothing new`; }, { who: me.name, client: c.id, text: `Ran the ${a.name} agent now for ${c.name}` }); toast({ text: `${a.name} ran for ${c.name}: nothing new`, tone: "ok" }); };
     return <div className="stack cs-insp" style={{ gap: 16 }}>
       <div className="row" style={{ gap: 12 }}><span className={cx("icontile", a.gate ? "amber" : "")} style={{ width: 42, height: 42, borderRadius: 12 }}><Icon name={a.icon} size={21} stroke={2} /></span><div className="stack tight" style={{ gap: 2 }}><b className="t-title3">{a.name}</b><span className="t-footnote subtle">{P.STAGE_NAME[a.stage]} · {a.gate ? "a person, always" : a.model + " on Vertex AI"}</span></div></div>
       <p className="t-subhead muted" style={{ margin: 0 }}>{a.job}.</p>
@@ -569,8 +656,9 @@
         <div className="stack tight" style={{ gap: 8 }}><span className="t-footnote strong">Autonomy</span><Segmented label={`${a.name}: autonomy`} options={P.AUTONOMY.map(x => ({ id: x.id, label: x.label }))} value={cfg.autonomy} onChange={v => onAutonomy(a, v)} /><span className="t-footnote subtle">{LEVEL(cfg.autonomy).text}.</span></div>
       </>}
       {fields.length > 0 && <div className="stack" style={{ gap: 12 }}>{fields.map(f => <SettingField key={f.key} f={f} c={c} agent={a} value={draft[f.key]} onChange={v => setDraft(x => ({ ...x, [f.key]: v }))} />)}</div>}
-      <List><ListRow title="Last run" sub={cfg.last || "not run yet"} /><ListRow title="Next run" sub={cfg.next || "not scheduled"} /></List>
-      <div className="row tight wrap">{!a.gate && <Button variant="secondary" size="sm" icon="play" disabled={!cfg.on} onClick={runNow}>Run now</Button>}<span className="grow" /><Button variant="primary" size="sm" disabled={!dirty} onClick={save}>Save</Button></div>
+      {!a.gate && trig && <InspectorTriggers c={c} agent={id} trig={trig} />}
+      <List><ListRow title="Last run" sub={cfg.last || "not run yet"} /></List>
+      <div className="row tight wrap"><span className="grow" /><Button variant="primary" size="sm" disabled={!dirty} onClick={save}>Save</Button></div>
     </div>;
   }
   const nameOf = (c, pid) => { const p = c.people.find(x => x.id === pid); return p ? p.name : "nobody"; };

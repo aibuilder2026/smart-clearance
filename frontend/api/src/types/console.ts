@@ -169,6 +169,29 @@ export type Client = {
 	agents: Record<string, AgentConfig>;
 };
 
+/** a client's scheduled run or pending journey timer (SC-79): the Data agent's daily load, the Watcher's daily check,
+ *  or what an offer leaves (its window closing, the day-7 shelf check, the report), with when it falls due */
+export type JourneyTrigger = {
+	/** 'data', 'watcher', or 'timer-<id>' */
+	id: string;
+	agent: string;
+	kind: 'run' | 'timer';
+	key: 'data.daily' | 'watcher.daily' | 'offer.close' | 'shelf.due' | 'report.due';
+	/** the batch a timer belongs to */
+	ref: string | null;
+	/** journey time, ISO with India's offset; null for a client whose workspace isn't live */
+	due: string | null;
+	/** the wall time it fires, ISO */
+	dueWall: string | null;
+	/** a daily run's time of day, HH:MM */
+	time: string | null;
+	/** why it can't be fired now, in words staff read */
+	blocked: string | null;
+};
+export type JourneyClock = { now: string; day: number; day0: string; dayMinutes: number; compressed: boolean };
+/** a client's journey as the console drives it: its clock, and what is coming, in time order (SC-79) */
+export type Journey = { live: boolean; clock: JourneyClock | null; triggers: JourneyTrigger[] };
+
 export type StaffRole = 'Super admin' | 'Platform engineer' | 'Support';
 /** one of Smart-Clearance's own people, who sign in to the console */
 export type Staff = {
@@ -379,6 +402,12 @@ export interface ConsoleApi {
 	saveRules(client: string, input: RulesInput): Promise<Client>;
 	/** the length of the client's journey day, in whole minutes from 1 to 1440 (SC-68); nothing is written when unchanged */
 	setDayMinutes(client: string, minutes: number): Promise<Client>;
+	/** a client's scheduled runs and pending journey timers, in time order (SC-79) */
+	journey(client: string): Promise<Journey>;
+	/** a daily run or a timer, fired now; a timer that isn't ready is refused with its reason */
+	fireTrigger(client: string, trigger: string): Promise<Journey>;
+	/** the client's journey from day 0 again, at the day length given (the client's own when none is) */
+	resetJourney(client: string, input?: { dayMinutes?: number }): Promise<Journey>;
 	/** a client's open batches with their quick-commerce gates as the agents read them; one SKU's when it is given */
 	clientBatches(client: string, sku?: string): Promise<BatchGates[]>;
 	/** an SKU's own quick-commerce gates, or null to put it back on the client's default */

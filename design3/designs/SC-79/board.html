@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-79 Console Demo Controls</title>
+<meta name="description" content="Three options for firing a client&#x27;s scheduled runs and journey timers from the console, and starting its journey again.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<style>
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px -6px rgb(17 41 30 / 0.1);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
+::selection { background: color-mix(in oklab, var(--green) 24%, transparent); }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 48px 16px 72px; }
+h1, h2, h3, h4 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+h2 { margin: 60px 0 14px; font-size: clamp(25px, 3vw, 32px); font-weight: 720; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 72, "wdth" 88; }
+h3 { font-size: 26px; font-weight: 720; letter-spacing: -0.018em; font-variation-settings: "opsz" 48, "wdth" 90; }
+h4 { margin: 26px 0 10px; font: 650 16px/1.35 var(--ui); letter-spacing: 0; }
+p { margin: 0 0 12px; max-width: 74ch; color: var(--ink-2); text-wrap: pretty; }
+p b, li b, td b { color: var(--ink); font-weight: 600; }
+.lede { font-size: 18px; margin-top: 14px; }
+blockquote { margin: 16px 0; padding: 16px 20px; border-radius: 14px; background: var(--sunken); color: var(--ink); font-size: 15.5px; max-width: 82ch; }
+blockquote ul { color: var(--ink); margin: 0; }
+ul { margin: 0 0 12px; padding-left: 20px; color: var(--ink-2); max-width: 80ch; display: grid; gap: 6px; }
+code { font: 500 0.9em/1 var(--mono); }
+figure { margin: 0; min-width: 0; }
+figure img, figure video { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+.four { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+@media (min-width: 900px) { .four { grid-template-columns: minmax(0, 2.6fr) minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); } }
+.phones { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+@media (min-width: 700px) { .phones { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .phones { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.desks { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 700px) { .desks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.card { padding: 22px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.shared { display: grid; gap: 18px; }
+@media (min-width: 900px) { .shared { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.shared h3.sub { margin: 0 0 6px; }
+h3.sub { font: 650 16px/1.35 var(--ui); letter-spacing: 0; font-variation-settings: normal; }
+.shared p, .shared li { font-size: 14.5px; }
+.opt { margin-top: 26px; display: grid; gap: 14px; padding: 26px 22px; border-radius: 28px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); scroll-margin-top: 20px; }
+.opt.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.opt header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.opt header p { margin: 0; flex-basis: 100%; font-size: 17px; color: var(--ink); max-width: 76ch; }
+.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 600 12.5px/1 var(--ui); color: var(--green-text); background: var(--green-soft); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+.btn.primary { background: var(--green); color: #fff; box-shadow: none; }
+:root[data-theme="dark"] .btn.primary { color: #03170d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #03170d; } }
+.states { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; }
+.states a { display: inline-flex; align-items: center; min-height: 32px; }
+.vid { display: grid; gap: 18px; }
+@media (min-width: 900px) { .vid { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: start; } }
+dl.facts { margin: 0; display: grid; gap: 12px; }
+dl.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); }
+dl.facts dd { margin: 2px 0 0; color: var(--ink-2); font-size: 14.5px; }
+dl.facts dd ul { margin-top: 4px; font-size: 14.5px; }
+.tablewrap { overflow-x: auto; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+table.cmp { border-collapse: collapse; width: 100%; min-width: 860px; font-size: 14px; color: var(--ink-2); }
+table.cmp th, table.cmp td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+table.cmp thead th { color: var(--ink); font-weight: 650; background: var(--sunken); }
+table.cmp tbody th { color: var(--ink); font-weight: 600; width: 14%; }
+table.cmp tr:last-child > * { border-bottom: 0; }
+.rec-box { padding: 22px; border-radius: 20px; background: var(--green-soft); }
+.rec-box p { color: var(--ink); }
+.q { padding: 20px 22px; border-radius: 20px; background: var(--amber-soft); }
+.q p, .q li { color: var(--ink); }
+.q h3 { font-size: 20px; margin-bottom: 8px; }
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
+</style>
+<body>
+<main class="wrap">
+<h1>The console: a client's runs on demand, and its journey from the start</h1>
+<p class="lede">SC-79 · console.smartclearance.com · three options for firing a client's scheduled runs and journey timers at once, and for starting its journey again, each built on the console itself. Munchly's journey is held still at day 1, Sat 3 Oct 10:15, in real time. Every company, person and figure is fictional.</p>
+<p>The maintainer's request (8 Oct), with the answers to two questions:</p>
+<blockquote><ul><li>“All batch runs should have a trigger which I should be able to control and do instant trigger from console screen against each agent for that client.”</li>
+<li>“On console there should a button which will do the reset of journey at each client level.”</li>
+<li><b>Control:</b> keep the schedule as it is, and add triggers. <b>Which:</b> the scheduled runs (the Data agent's 08:30, the Watcher's 09:00) and the journey's timers (the offer window closing, the day-7 shelf check, the report due). Agents that answer an event keep running on their own.</li></ul></blockquote>
+<h2>The console now</h2>
+<p>Each agent's inspector has Run now, but it does something only for the Data agent and the Watcher, and the timers have no control at all. A journey starts again only from a terminal (<code>hydrate.sh --journey-reset</code>) or a paused Scheduler job.</p>
+<div class="four"><figure><img src="current/console-agents-light-1440.webp" width="1440" height="900" loading="lazy" alt="Munchly Foods&#x27; Agents tab today: the pipeline of agents and the Negotiator&#x27;s inspector."><figcaption>Agents tab · light</figcaption></figure><figure><img src="current/console-agents-dark-1440.webp" width="1440" height="900" loading="lazy" alt="The same in dark."><figcaption>Agents tab · dark</figcaption></figure><figure><img src="current/console-agents-light-390.webp" width="780" height="1688" loading="lazy" alt="The Agents tab on a phone."><figcaption>Phone · light</figcaption></figure><figure><img src="current/console-agents-dark-390.webp" width="780" height="1688" loading="lazy" alt="The Agents tab on a phone, dark."><figcaption>Phone · dark</figcaption></figure></div>
+<h2>What all three share</h2><div class="shared">
+<div class="card"><h3 class="sub">What can be fired</h3><ul><li>The Data agent's <b>daily load</b> and the Watcher's <b>daily check</b>.</li><li>The journey's pending timers: the <b>offer window closing</b>, the <b>day-7 shelf check</b> and the <b>report due</b>, each for its batch.</li><li>Each says when it falls due in journey time, how long that is from now in real time, and its rhythm.</li></ul></div>
+<div class="card"><h3 class="sub">Firing one</h3><ul><li>At once, with no question: it runs as if its time had come, and the toast says what it did.</li><li>The schedule does not move: a daily run fired now still runs tomorrow at its time.</li><li>A timer that cannot fire yet says why, and its button is off: the shelf check waits for the van round, the report for the papers and the shelf check.</li><li>An audit line in the staff member's name: “Ran the Watcher agent's daily check now for Munchly Foods”.</li></ul></div>
+<div class="card"><h3 class="sub">Starting the journey again</h3><ul><li>Behind a confirmation: open batches close as reset, the story's batches start again on day 0 at 08:00, at the client's current day length. Nothing is deleted.</li><li>Only for roles that may configure clients, and audited.</li><li>Afterwards the coming runs are day 0's: the Data agent at 08:30 and the Watcher at 09:00.</li></ul></div></div>
+<section class="opt rec" id="option-a"><header><h3>Option A · On each agent</h3><span class="tag">Recommended</span>
+<p>The triggers hang under the agent they belong to, on the Agents tab's pipeline: the Data agent's daily load under Data, the Watcher's daily check under the Watcher, the offer window and the shelf check under Outreach, the report under Impact. The inspector lists the selected agent's own, or says what starts it. <b>Reset journey…</b> joins Pause every agent in the client's actions menu.</p></header>
+<dl class="facts"><dt>Where</dt><dd>The Agents tab, the client page's first tab: on each agent's stop, and in its inspector. The reset is in the actions menu (⋯) by the title.</dd><dt>Trade-offs</dt><dd>Matches the request's “against each agent”, and puts the trigger beside the schedule each stop already states. The Agents tab grows by five rows, and what comes next across agents is read top to bottom rather than in time order. The reset is one menu away, which suits a destructive action.</dd><dt>What the build touches</dt><dd>design3 <code>console.jsx</code> (AgentPipeline, AgentInspector, the actions menu, the alert) and <code>core/platform.js</code> (the schedule, firing, reset); the frontend's <code>AgentsTab</code> and client page; the contract's <code>ConsoleApi.journey</code>, <code>fireTrigger</code>, <code>resetJourney</code>; backend-api's console routes over the tick, the timers and <code>journey/reset.py</code>.</dd></dl>
+<div class="desks"><figure><img src="option-a/main-light-1440.webp" width="1440" height="2050" loading="lazy" alt="Option A: the Agents tab with Daily load under Data, Daily check under Watcher, the offer window and shelf check under Outreach, Report due under Impact, each with its button; Outreach&#x27;s inspector lists its two timers."><figcaption>The whole tab · light</figcaption></figure><figure><img src="option-a/main-dark-1440.webp" width="1440" height="2050" loading="lazy" alt="Option A in dark."><figcaption>The whole tab · dark</figcaption></figure><figure><img src="option-a/fired-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A after Run now on the Watcher: its row says Ran at 10:15 and that the next is still Sun 4 Oct 09:00."><figcaption>The Watcher's daily check, just run</figcaption></figure><figure><img src="option-a/reset-light-1440.webp" width="1440" height="900" loading="lazy" alt="The confirmation: Start Munchly Foods&#x27; journey again?"><figcaption>Reset journey… from the actions menu</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-a/main-light-390.webp" width="780" height="6600" loading="lazy" alt="Option A on a phone: each trigger under its agent, the buttons under the text."><figcaption>Phone · light</figcaption></figure><figure><img src="option-a/main-dark-390.webp" width="780" height="6600" loading="lazy" alt="Option A on a phone, dark."><figcaption>Phone · dark</figcaption></figure><figure><img src="option-a/reset-light-390.webp" width="780" height="1688" loading="lazy" alt="The confirmation on a phone."><figcaption>The reset · phone</figcaption></figure><figure><img src="option-a/reset-dark-390.webp" width="780" height="1688" loading="lazy" alt="The confirmation on a phone, dark."><figcaption>The reset · phone, dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="console/mockup.html?opt=a">Open option A</a><a class="btn" href="console/mockup.html?opt=a&amp;state=fired">With a run just fired</a><a class="btn" href="console/mockup.html?opt=a&amp;state=reset">With the reset asked</a></div></section>
+<section class="opt" id="option-b"><header><h3>Option B · One journey sheet</h3>
+<p>SC-68's badge in the client's head becomes the journey's: <b>Day 1 · Sat 3 Oct 10:15 · Real time</b>, on every tab. It opens one sheet: the day and its length, everything coming up in time order with its button, and <b>Start the journey again</b> at the foot.</p></header>
+<dl class="facts"><dt>Where</dt><dd>The client page's head on every tab, and a sheet from the side (from the bottom on phones).</dd><dt>Trade-offs</dt><dd>Everything a demo needs in one place, in the order it will happen, from any tab. The triggers are not on the agents, so “against each agent” is read as a row per agent. The badge is longer than SC-68's and wraps on phones.</dd><dt>What the build touches</dt><dd>As A, with the badge and a sheet instead of the pipeline's rows and the menu item; SC-68's day-length sheet opens from the new sheet.</dd></dl>
+<div class="desks"><figure><img src="option-b/head-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option B: the client head with the badge Day 1 · Sat 3 Oct 10:15 · Real time."><figcaption>The head, with the journey's badge</figcaption></figure><figure><img src="option-b/sheet-light-1440.webp" width="1440" height="900" loading="lazy" alt="The journey sheet: Day 1, Coming up with five rows and their buttons, and Start the journey again."><figcaption>The journey sheet · light</figcaption></figure><figure><img src="option-b/sheet-dark-1440.webp" width="1440" height="900" loading="lazy" alt="The journey sheet in dark."><figcaption>The journey sheet · dark</figcaption></figure><figure><img src="option-b/reset-light-1440.webp" width="1440" height="900" loading="lazy" alt="The confirmation over the page."><figcaption>The reset</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-b/head-light-390.webp" width="780" height="1688" loading="lazy" alt="The head on a phone, the badge wrapped under the others."><figcaption>Phone · the head</figcaption></figure><figure><img src="option-b/sheet-light-390.webp" width="780" height="1688" loading="lazy" alt="The journey sheet from the bottom on a phone."><figcaption>Phone · the sheet</figcaption></figure><figure><img src="option-b/sheet-dark-390.webp" width="780" height="1688" loading="lazy" alt="The journey sheet on a phone, dark."><figcaption>Phone · the sheet, dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="console/mockup.html?opt=b&amp;state=sheet">Open option B</a><a class="btn" href="console/mockup.html?opt=b&amp;state=fired">With a run just fired</a><a class="btn" href="console/mockup.html?opt=b&amp;state=reset">With the reset asked</a></div></section>
+<section class="opt" id="option-c"><header><h3>Option C · A Journey tab</h3>
+<p>A tab of its own after Agents: the day in journey time with its length, <b>Coming up</b> in time order with each button, <b>Earlier</b> with what has run, and <b>Start the journey again</b> set apart in red ink.</p></header>
+<dl class="facts"><dt>Where</dt><dd>A new eighth tab, <code>/clients/&lt;id&gt;/journey</code>.</dd><dt>Trade-offs</dt><dd>The most room, and the only option that shows what already ran beside what is coming, so a demo can be narrated from it. One more tab in a full row, and staff leave the Agents tab to fire a run.</dd><dt>What the build touches</dt><dd>As A, with a new tab and route instead of the pipeline's rows; the runs' history comes from the agent runs backend-api already records.</dd></dl>
+<div class="desks"><figure><img src="option-c/main-light-1440.webp" width="1440" height="1250" loading="lazy" alt="Option C: the Journey tab with Day 1, Coming up with five rows, Start the journey again, and Earlier with five runs."><figcaption>The Journey tab · light</figcaption></figure><figure><img src="option-c/main-dark-1440.webp" width="1440" height="1250" loading="lazy" alt="The Journey tab in dark."><figcaption>The Journey tab · dark</figcaption></figure><figure><img src="option-c/fired-light-1440.webp" width="1440" height="900" loading="lazy" alt="The Journey tab after the Watcher&#x27;s daily check ran."><figcaption>A run just fired</figcaption></figure><figure><img src="option-c/reset-light-1440.webp" width="1440" height="900" loading="lazy" alt="The confirmation over the Journey tab."><figcaption>The reset</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-c/main-light-390.webp" width="780" height="5000" loading="lazy" alt="The Journey tab on a phone: Coming up, Earlier, then Start the journey again."><figcaption>Phone · light</figcaption></figure><figure><img src="option-c/main-dark-390.webp" width="780" height="5000" loading="lazy" alt="The Journey tab on a phone, dark."><figcaption>Phone · dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="console/mockup.html?opt=c">Open option C</a><a class="btn" href="console/mockup.html?opt=c&amp;state=fired">With a run just fired</a><a class="btn" href="console/mockup.html?opt=c&amp;state=reset">With the reset asked</a></div></section>
+<div class="rec-box" style="margin-top:28px"><p><b>Recommended: A.</b> It is the request in its own words, a trigger against each agent, and it puts each trigger beside the schedule the agent's stop already states, so nothing new has to be learned. It adds no tab and no sheet, and the reset sits with Pause every agent, the other client-wide action. B is the better stage for a presenter who wants everything in time order from any tab; C is the place to grow a demo's controls if there will be more of them.</p></div>
+<div class="q" style="margin-top:18px"><h3>Open questions</h3><ul><li><b>A timer fired early.</b> Closing the kirana offer early cannot be undone for that offer. The options fire it at once, like the daily runs. Should a timer ask first?</li><li><b>The reset and the day length.</b> The reset keeps the client's current day length. Should it offer to set one, such as Demo (5 minutes), in the same confirmation?</li></ul></div>
+<footer>SC-79 · Smart-Clearance · demo controls · every company, person and figure is fictional · designs in <code>design3/designs/SC-79/</code></footer>
+</main>
+</body>
+</html>

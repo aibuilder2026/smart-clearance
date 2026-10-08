@@ -17,6 +17,8 @@ from sc_api.schemas import (
     Dashboard,
     DemoRequest,
     InviteInput,
+    JourneyOut,
+    JourneyResetInput,
     NewClientInput,
     OverrideInput,
     Overview,
@@ -31,6 +33,7 @@ from sc_api.schemas import (
 )
 from sc_api.services import agents, audit, clients, dashboard, people, presenter, site, staff, supply
 from sc_api.services.context import Ctx
+from sc_api.services.journey import controls as journey_controls
 from sc_api.services.journey import events as journey_events
 
 router = APIRouter(prefix="/v1", tags=["console"])
@@ -191,6 +194,39 @@ async def run_agent(client_id: str, agent_id: str, request: Request, ctx: StaffC
 
         await drain(request.app.state.sessions, cloud.publisher, ctx.clock.now())
     return out
+
+
+# --- a client's journey, driven from the console (SC-79) -----------------------------------------------------------
+
+
+async def _drain(request: Request, ctx: Ctx) -> None:
+    """what a change published goes to the agents now, as Run now's does, rather than at the next tick"""
+    if (cloud := getattr(request.app.state, "cloud", None)) is not None:
+        from sc_api.services.journey.outbox import drain
+
+        await drain(request.app.state.sessions, cloud.publisher, ctx.clock.now())
+
+
+@router.get(C + "/journey", response_model=JourneyOut, summary="A client's scheduled runs and journey timers")
+async def journey(client_id: str, ctx: StaffCtx) -> JourneyOut:
+    _read(ctx)
+    return JourneyOut.model_validate(await journey_controls.schedule(ctx, client_id))
+
+
+@router.post(C + "/journey/triggers/{trigger_id}", response_model=JourneyOut, summary="Fire a daily run or a timer now")
+async def fire_trigger(client_id: str, trigger_id: str, request: Request, ctx: StaffCtx) -> JourneyOut:
+    await journey_controls.fire(ctx, client_id, trigger_id)
+    await ctx.session.commit()
+    await _drain(request, ctx)
+    return JourneyOut.model_validate(await journey_controls.schedule(ctx, client_id))
+
+
+@router.post(C + "/journey/reset", response_model=JourneyOut, summary="Start a client's journey again from day 0")
+async def reset_journey(client_id: str, data: JourneyResetInput, request: Request, ctx: StaffCtx) -> JourneyOut:
+    await journey_controls.reset(ctx, client_id, data.day_minutes)
+    await ctx.session.commit()
+    await _drain(request, ctx)
+    return JourneyOut.model_validate(await journey_controls.schedule(ctx, client_id))
 
 
 @router.post(C + "/distributors/{distributor_id}/reminders", status_code=204)

@@ -3,8 +3,8 @@
 	"sources": {
 		"design3/core/money.js": "c6ad0a4d6d2edfaf",
 		"design3/core/data.js": "4f3d664c57808b11",
-		"design3/core/store.js": "2b6b85628a795539",
-		"design3/core/platform.js": "cacce6c5bf929895",
+		"design3/core/store.js": "a20f5029867446c7",
+		"design3/core/platform.js": "a201423473de2445",
 		"design3/screens/admin.jsx": "5ad6b5d3bfc25dea",
 		"design3/system/product.jsx": "0cb832b183ab3576",
 		"design3/core/world.js": "421a5434ada8af7e",
@@ -14,9 +14,9 @@
 		"showcase.json": "63b023d5b4f9e4b4",
 		"catalog.json": "9364528d5346a8c3",
 		"directory.json": "1934572cea07ab5b",
-		"console.json": "1605dcccb497f811",
+		"console.json": "2f9cc5e6c0ce5e9b",
 		"rules.json": "15aa21d38b11cb49",
-		"journey.json": "c4970a81e56ae413",
+		"journey.json": "8394ad2fecb92182",
 		"money.json": "adcdd41a9f758850",
 		"flow.json": "33f2394fdd4f5990"
 	}

@@ -17,6 +17,21 @@
     if (id === "rakesh") { const p = s.setup.permission; return p ? (p.paused ? { tone: "amber", label: "paused" } : { tone: "green", label: "granted · " + p.at }) : { tone: undefined, label: "requested" }; }
     return D.SETUP.permissions[id] ? { tone: "green", label: "granted · " + D.SETUP.permissions[id] } : { tone: undefined, label: "requested" };
   }
+  // the DMS export's card (SC-79): before the first mapping it says so, keeps the fields the Data agent looks for, and
+  // offers the upload; while the Data agent reads one it says that; once mapped it is the card as designed
+  function ExportCard({ phase, done, live, exp, onChoose, fileRef, pick, nextRun }) {
+    const mapped = phase === "mapped", reading = phase === "mapping", waiting = phase === "waiting"; const n = D.SETUP.dms.columns.length;
+    const title = mapped ? D.SETUP.dms.file : reading ? exp.name : "No stock export mapped yet";
+    const sub = mapped ? `Bizom-style DMS export · ${D.SETUP.dms.rows} batches · ${Object.keys(D.DISTRIBUTORS).length} distributors` : reading ? "The Data agent is reading its columns" : `The Data agent maps your distributors' first export, then loads ${D.SETUP.dms.salesDays} days of sell-through`;
+    const status = done ? <Badge tone="green" icon="check">Loaded into BigQuery</Badge> : mapped ? <Badge dot>Mapped · confirm below</Badge> : reading ? <Badge tone="blue" dot>Mapping</Badge> : <Badge dot>Waiting for an export</Badge>;
+    return <Card className="stack snug">
+      <div className="card-head"><span className="row tight" style={{ minWidth: 0 }}><span className={cx("icontile", !mapped && "soft")}><Icon name="file-spreadsheet" size={17} stroke={2} /></span><span className="stack tight" style={{ gap: 0, minWidth: 0 }}><b style={{ overflowWrap: "anywhere" }}>{title}</b><span className="t-footnote subtle">{sub}</span></span></span><span className="row tight wrap">{live && !reading && <><Button size="sm" variant={waiting ? "primary" : undefined} icon="upload" onClick={onChoose}>Upload an export</Button><input ref={fileRef} type="file" accept=".csv,text/csv" className="sr-only" tabIndex={-1} aria-hidden="true" onChange={pick} /></>}{status}</span></div>
+      <div className="table-wrap" style={{ boxShadow: "none" }} tabIndex={0} role="region" aria-label="Field mapping"><table className="table"><thead><tr><th>Smart-Clearance field</th><th>Column in your file</th><th>Status</th></tr></thead><tbody>
+        {D.SETUP.dms.columns.map(([f, c]) => <tr key={f}><td className="strong">{f.replace("_", " ")}</td><td className={mapped ? "mono" : "subtle"}>{mapped ? c : reading ? "reading…" : "not mapped yet"}</td><td>{mapped ? <Badge size="sm" tone="green" icon="check">mapped</Badge> : reading ? <Badge size="sm" tone="blue" dot>mapping</Badge> : <Badge size="sm" dot>waiting</Badge>}</td></tr>)}
+      </tbody></table></div>
+      <div className="row tight t-footnote muted"><Aura on={!done && !waiting} className="icontile soft" style={{ width: 26, height: 26, borderRadius: 8 }}><Icon name="database" size={14} /></Aura>{mapped ? `Data Agent mapped ${n} of ${n} columns and back-filled ${D.SETUP.dms.salesDays} days of sell-through by pincode and by shop.` : reading ? "Data Agent is matching the file's columns to these fields." : <span>Upload an export now, or the Data Agent maps the day's export at its run at <b className="tnum">{nextRun}</b>.</span>}</div>
+    </Card>;
+  }
   function Setup({ me, onConfirm }) {
     const s = useStore(); const { go } = useRoute(); const app = useApp(); const { toast } = useNotice();
     const [floors, setFloors] = useState(s.rules.floors); const [taps, setTaps] = useState(s.rules.approvalTaps); const [busy, setBusy] = useState(false);
@@ -26,18 +41,18 @@
     const chans = D.SETUP.channels; const wo = D.PLAN.writeOff; const chips = D.SKUS.chips;
     // live (SC-73): a new stock export goes straight to the workspace's storage, its progress shown as it goes
     const live = S.useLive(); const [exp, setExp] = useState({ name: D.SETUP.dms.file, size: 4.8e6 }); const fileRef = React.useRef(null);
-    const pick = e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; if (!f) return; setExp({ name: f.name, size: f.size }); live.uploadExport(() => toast({ text: "Export uploaded · the Data agent is mapping its columns", tone: "ok" })); };
+    // SC-79: a live workspace starts (and a reset leaves it) with no export mapped. Until the Data agent has mapped one,
+    // the card says so and Confirm waits; here the Data agent's mapping is simulated once the upload lands
+    const [reading, setReading] = useState(false);
+    const pick = e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; if (!f) return; setExp({ name: f.name, size: f.size }); live.uploadExport(() => { setReading(true); toast({ text: "Export uploaded · the Data agent is mapping its columns", tone: "ok" }); setTimeout(() => { Store.update(st => { st.setup.mapped = D.SETUP.dms.columns.length; }); setReading(false); toast({ text: `The Data agent mapped ${D.SETUP.dms.columns.length} of ${D.SETUP.dms.columns.length} columns`, tone: "ok", icon: "database" }); }, 1800); }); };
     const uploading = live && live.uploads.dms != null;
+    const mapped = done || !live || s.setup.mapped > 0;
+    const phase = mapped ? "mapped" : uploading ? "uploading" : reading ? "mapping" : "waiting";
+    const choose = () => fileRef.current && fileRef.current.click();
     return <Screen me={me} title="Setup" sub="Connect the stock data once and set the rules the agents must obey">
       <div className="stack" style={{ gap: 20 }}>
         {uploading && <S.Live.ExportUpload name={exp.name} size={exp.size} p={live.uploads.dms} onCancel={() => live.cancelUpload("dms")} />}
-        <Card className="stack snug">
-          <div className="card-head"><span className="row tight"><span className="icontile"><Icon name="file-spreadsheet" size={17} stroke={2} /></span><span className="stack tight" style={{ gap: 0 }}><b>{D.SETUP.dms.file}</b><span className="t-footnote subtle">Bizom-style DMS export · 312 batches · 4 distributors</span></span></span><span className="row tight wrap">{live && !uploading && <><Button size="sm" icon="upload" onClick={() => fileRef.current && fileRef.current.click()}>Upload an export</Button><input ref={fileRef} type="file" accept=".csv,text/csv" className="sr-only" tabIndex={-1} aria-hidden="true" onChange={pick} /></>}{done ? <Badge tone="green" icon="check">Loaded into BigQuery</Badge> : <Badge dot>Mapped · confirm below</Badge>}</span></div>
-          <div className="table-wrap" style={{ boxShadow: "none" }} tabIndex={0} role="region" aria-label="Field mapping"><table className="table"><thead><tr><th>Smart-Clearance field</th><th>Column in your file</th><th>Status</th></tr></thead><tbody>
-            {D.SETUP.dms.columns.map(([f, c]) => <tr key={f}><td className="strong">{f.replace("_", " ")}</td><td className="mono">{c}</td><td><Badge size="sm" tone="green" icon="check">mapped</Badge></td></tr>)}
-          </tbody></table></div>
-          <div className="row tight t-footnote muted"><Aura on={!done} className="icontile soft" style={{ width: 26, height: 26, borderRadius: 8 }}><Icon name="database" size={14} /></Aura>Data Agent mapped 8 of 8 columns and back-filled 90 days of sell-through by pincode and by shop.</div>
-        </Card>
+        {phase !== "uploading" && <ExportCard phase={phase} done={done} live={!!live} exp={exp} onChoose={choose} fileRef={fileRef} pick={pick} nextRun={`${s.rules.dataTime} ${live && live.clock.time < s.rules.dataTime ? "today" : "tomorrow"}`} />}
         <div style={{ display: "grid", gap: 20, gridTemplateColumns: app.bp === "desktop" ? "repeat(2, minmax(0,1fr))" : "minmax(0,1fr)", alignItems: "start" }}>
           <div className="stack" style={{ gap: 20 }}>
             <List head="Floor price by category" foot="No channel may sell below its category's floor.">
@@ -82,7 +97,7 @@
           </div>
           <span className="t-footnote subtle">For Masala Chips 150 g: cost ₹{chips.cost}; {fmt.inr2(wo.itcPerUnit)} of input GST a packet from the cost sheet (chips are at {Math.round(chips.gst * 100)}% GST since GST 2.0); disposal {fmt.inr2(M.RULES.disposalPerUnit)} a unit; EPR ₹{M.RULES.eprPerKg} a kilo of product and pack. Factors marked indicative are editable here.</span>
         </Card>
-        <div className="row wrap" style={{ gap: 10 }}>{done ? <><Badge tone="green" icon="check">Watching since setup</Badge><Button variant="primary" iconRight="arrow-right" onClick={() => go("command")}>Open Command Center</Button></> : <Button variant="primary" size="lg" icon="check" loading={busy} onClick={confirm}>Confirm and start watching</Button>}</div>
+        <div className="row wrap" style={{ gap: 10 }}>{done ? <><Badge tone="green" icon="check">Watching since setup</Badge><Button variant="primary" iconRight="arrow-right" onClick={() => go("command")}>Open Command Center</Button></> : <><Button variant="primary" size="lg" icon="check" loading={busy} disabled={!mapped} aria-describedby={mapped ? undefined : "setup-why"} onClick={confirm}>Confirm and start watching</Button>{!mapped && <span id="setup-why" className="setup-why"><Icon name="info" size={15} stroke={2.2} />Confirm once the Data agent has mapped an export.</span>}</>}</div>
       </div>
     </Screen>;
   }

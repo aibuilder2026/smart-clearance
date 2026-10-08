@@ -29,6 +29,13 @@ import {
 	DAY_MINUTES,
 	dayMinutesError,
 	dayMinutesLine,
+	fireLine,
+	fireOn,
+	journeyFromStart,
+	journeyOf,
+	possessive,
+	resetLine,
+	type MockJourney,
 	exitsFor,
 	inviteError,
 	optLabel,
@@ -45,7 +52,7 @@ import {
 /** where the mock keeps the platform's state, and who is signed in */
 export const CONSOLE_KEY = 'sc-console';
 export const SESSION_KEY = 'sc-console-session';
-const VERSION = 4;
+const VERSION = 5;
 
 type State = {
 	v: number;
@@ -58,6 +65,8 @@ type State = {
 	audit: AuditEntry[];
 	requests: DemoRequest[];
 	nextAudit: number;
+	/** each live client's journey (SC-79) */
+	journeys: Record<string, MockJourney>;
 };
 
 // an override as the contract shows it: when it was set stays the mock's own, for the Overview's "Updated"
@@ -528,6 +537,41 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 			if (problem) throw new ApiError(422, problem, { dayMinutes: problem });
 			if (minutes === c.dayMinutes) return out(c);
 			return change(id, (x) => (x.dayMinutes = minutes), dayMinutesLine(c, minutes, c.dayMinutes));
+		},
+		async journey(id) {
+			await wait();
+			return out(journeyOf(clientOf(id), state.journeys?.[id]));
+		},
+		async fireTrigger(id, trigger) {
+			await wait();
+			const c = clientOf(id);
+			const t = journeyOf(c, state.journeys?.[id]).triggers.find((x) => x.id === trigger);
+			if (!t) throw new ApiError(404, 'No such run or timer.');
+			if (t.blocked) throw new ApiError(409, t.blocked);
+			const at = hhmm();
+			update(
+				(d) => {
+					const text = fireOn(d.journeys?.[id], t);
+					d.runs.unshift({ at, agent: t.agent, client: id, text });
+				},
+				{ client: id, text: fireLine(c, t, AGENTS) }
+			);
+			return out(journeyOf(clientOf(id), state.journeys?.[id]));
+		},
+		async resetJourney(id, input) {
+			await wait();
+			const c = clientOf(id);
+			const j = state.journeys?.[id];
+			if (!j)
+				throw new ApiError(409, `${possessive(c.name)} workspace isn't live, so it has no journey to start again.`);
+			const minutes = input?.dayMinutes;
+			if (minutes != null && minutes !== c.dayMinutes) {
+				const problem = dayMinutesError(minutes);
+				if (problem) throw new ApiError(422, problem, { dayMinutes: problem });
+				change(id, (x) => (x.dayMinutes = minutes), dayMinutesLine(c, minutes, c.dayMinutes));
+			}
+			update((d) => (d.journeys[id] = journeyFromStart(j.day0)), { client: id, text: resetLine(j.day0) });
+			return out(journeyOf(clientOf(id), state.journeys[id]));
 		},
 		async clientBatches(id, sku) {
 			await wait();
