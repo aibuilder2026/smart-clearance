@@ -1127,4 +1127,8 @@
   - **Found:** it joined an invoice number and an ExpireSoon lot whether or not they existed, so the Mango Drink read "Evidence: · · 52 kirana order logs · CN/0118".
   - **The fix** (`Report.svelte`): the line names only what the batch has: its invoice and lot, its shops' orders, its credit note, and the FSSAI checklist where it donated. The Mango reads "52 kirana order logs · CN/0118 · FSSAI checklist"; the chips are unchanged.
   - **Checks:** a new live test reads both lines on the cleared moment, and fails without the fix.
+- **SC-108** (In Review, branch `SC-108-paperwork-subtitle`, stacked on SC-107; bug found by Munchly Mango E2E): Paperwork says "at the award" only for a batch with an award.
+  - **Found:** the subtitle read "prepared by the Paperwork agent at the award" for the Mango Drink, which had no award. Before its papers, the waiting card also promised a tax invoice, an e-way bill check and the buyer's truck.
+  - **The fix** (`Paperwork.svelte`): a batch with no ExpireSoon line reads "prepared by the Paperwork agent once every line was done". Its waiting card says the pack follows the last of its lines, and lists only the papers it gets. The chips are unchanged.
+  - **Checks:** the frontend gate passes, with workspace at 64 and core's goldens unchanged. A new live test reads both subtitles and the Mango's waiting state, and fails without the fix.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

@@ -33,6 +33,9 @@
 	const DOC = (id: string) => c.docs.find((d) => d.id === id);
 
 	const h = $derived(ws.state.hero);
+	// a batch with an ExpireSoon lot has its pack drafted at the award; one without, once the last of its lines is done
+	// (SC-86), with no tax invoice or e-way bill check to draft (SC-108)
+	const awarded = $derived(c.lines.expiresoon.units > 0);
 	const cast = $derived(castOf(ws.state, c));
 	// the distributor's invoice is his: "Rakesh's", as finance says it
 	const his = $derived(first(cast.distributor.short));
@@ -97,15 +100,21 @@
 			>{doc.type}</SectionTitle
 		>{#key sel}<div in:rise={{ y: 6, duration: 180 }}><Paper id={sel} /></div>{/key}{/if}{/snippet}
 
-<Screen {me} title="Paperwork" sub={`${c.batch.id} · prepared by the Paperwork agent at the award`}>
+<Screen
+	{me}
+	title="Paperwork"
+	sub={`${c.batch.id} · prepared by the Paperwork agent ${awarded ? 'at the award' : 'once every line was done'}`}
+>
 	{#if !ready}
 		<div class="stack" style="gap: 16px">
 			<Card class="row wrap" style="gap: 16px"
 				><Product name="documents" size={88} />
 				<div class="grow stack tight" style="gap: 2px">
-					<b>The pack is drafted at the award</b><span class="t-footnote muted"
-						>{his}'s tax invoice, the e-way bill check, {W.short}'s price-support credit note, the ITC memo, the FSSAI
-						checklist and the destruction certificate, each generated or marked not required with the reason.</span
+					<b>{awarded ? 'The pack is drafted at the award' : 'The pack is drafted once every line is done'}</b><span
+						class="t-footnote muted"
+						>{awarded ? `${his}'s tax invoice, the e-way bill check, ` : ''}{W.short}'s price-support credit note, the
+						ITC memo, the FSSAI checklist and the destruction certificate, each generated or marked not required with
+						the reason.</span
 					>
 				</div></Card
 			><Locked
@@ -113,8 +122,12 @@
 				agent="Paperwork agent"
 				live={h.phase === 'dispatched'}
 				text={h.phase === 'dispatched'
-					? `Drafting ${his}'s invoice, the e-way bill check, the credit note and the ITC memo.`
-					: "Drafts the whole pack once the lot is awarded and on the buyer's truck."}
+					? awarded
+						? `Drafting ${his}'s invoice, the e-way bill check, the credit note and the ITC memo.`
+						: 'Drafting the credit note, the ITC memo and the FSSAI checklist.'
+					: awarded
+						? "Drafts the whole pack once the lot is awarded and on the buyer's truck."
+						: 'Drafts the whole pack once every line of the plan is done.'}
 			/>
 			<div class="docgrid">
 				{#each c.docs as d (d.id)}<Skeleton h={132} r={20} />{/each}
