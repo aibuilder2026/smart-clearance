@@ -941,8 +941,9 @@
     - **The workspace:** the Shelf check card on Execution and the van screen, the live projection's shelf, `Shelf` in core and in the contract.
     - **design3 and the guided demo:** the day-7 beat, the stub flow's step, and the story data and pushes that served it.
   - **Kept:** a batch's godown shelf (B4, on the label photo) and shelf life; the story documents in `docs/`; BigQuery's `shelf_counts` table, unused; the `cases.shelf` column, unused, with no migration to drop it.
+  - **A journey started before:** its pending `shelf.due` timer is put away by the tick, sending nothing (`tick.KINDS`); the console lists only the timers a journey sets.
   - **Checks:**
-    - backend-api 453 passed;
+    - backend-api 454 passed (1 new: an old shelf timer put away unsent);
     - agents 190 passed;
     - the frontend gate passes: core 248 (6 goldens updated, each only losing the shelf card, its feed line or its push), api 77, workspace 50, admin 17, demo 5, console 3;
     - the live fixtures were regenerated;

@@ -89,7 +89,7 @@ async def _client(ctx: Ctx, client_id: str) -> dict[str, Any]:
     )
     for t in timers:
         case = await ctx.session.get(m.Case, t.case_id) if t.case_id else None
-        if case is None or case.status != "open":
+        if case is None or case.status != "open" or t.kind not in KINDS:
             t.fired_wall = wall
             continue
         if ready(t, case):
@@ -144,6 +144,10 @@ async def run_daily(
         payload["files"] = files
     daily[agent_id] = today.isoformat()
     await ev.publish(ctx, J.Event(J.STEP, payload, c.id))
+
+
+# the timers the journey sets; one of a kind since retired (the day-7 shelf check, SC-93) is put away, not fired
+KINDS = ("offer.close", "listing.close", "report.due")
 
 
 def ready(t: m.Timer, case: m.Case) -> bool:

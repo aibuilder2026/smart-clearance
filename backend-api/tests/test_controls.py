@@ -147,3 +147,30 @@ async def test_an_unsold_lot_closes_on_its_deadline_and_the_case_moves_on(api, m
     c = await case(api, PRIYA)
     assert c["journey"]["phase"] == "dispatched"  # nothing ordered, nothing sold: the papers follow
     assert c["realised"] == {"lines": [{"id": "kirana", "units": 0}, {"id": "expiresoon", "units": 0}], "godown": 1360}
+
+
+async def test_a_retired_shelf_check_timer_is_put_away_unsent(api, munchly, ctx, cloud, clock):
+    """SC-93: a journey started before the shelf check went may still hold its timer; the tick puts it away, sending
+    nothing, and the console lists only the timers the journey sets"""
+    from sqlalchemy import select
+
+    from sc_api import models as m
+
+    await to_plan(api, cloud)
+    assert (
+        await api.post(f"/v1/workspaces/munchly/cases/{HERO}/approval", json={"device": "phone"}, headers=PRIYA)
+    ).status_code == 200
+    await agent(api, f"/cases/{HERO}/offer", "outreach", "outreach")
+    offer = (await ctx.session.execute(select(m.Timer).where(m.Timer.kind == "offer.close"))).scalar_one()
+    old = m.Timer(
+        client_id="munchly", case_id=offer.case_id, kind="shelf.due", due_at=offer.due_at, due_wall=offer.due_wall
+    )
+    ctx.session.add(old)
+    await ctx.session.flush()
+    n = len(cloud.publisher.sent)
+    clock.advance(days=3)
+    r = await api.post("/internal/jobs/tick", headers=INVOKER)
+    assert r.status_code == 200, r.text
+    await ctx.session.refresh(old)
+    assert old.fired_wall is not None
+    assert not [p for p in cloud.publisher.sent[n:] if p["payload"].get("kind") == "shelf.due"]
