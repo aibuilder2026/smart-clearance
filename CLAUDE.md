@@ -1072,4 +1072,16 @@
     - Every figure is as the story has it, and every fix holds in the real UI: the Saturday round in all three places, the PDFs rendered on this Mac.
     - The only finding left is the note that Finance reads the invoice as "drafted" after Rakesh issues it, as in the prototype.
   - **Cleaned up:** the earlier runs' git-ignored output (`test-results/journey`, `playwright-report-journey`, about 1.1 GB) and the old run's 17 stills and recording.
+- **SC-102** (In Review, branch `SC-102-batch-status`, stacked on SC-101; bug found by the maintainer): Batches showed a cleared batch as At risk unless it was the batch in focus.
+  - **Found:** as Anita, after the chips cleared while the Mango Drink was still open, the chips read "At risk" on Batches.
+  - **The cause:** the live projection's `batchOf` dropped each batch's journey phase, which backend-api's snapshot sends. Only the batch in focus had one, from the case. Anita's batch in focus is the first open case, so every other row fell back to the Watcher's `assess.status`.
+  - **The fix:**
+    - core's `Batch` gains `journey` (the batch's own phase, where the source knows it);
+    - the projection keeps it;
+    - `batchViews` reads it for every batch not in focus, so Batches, the Command Center, the distributor's home and the quiet screens all agree.
+
+    The prototype's stub has no per-batch journeys, so it reads as before (core's goldens unchanged). As in the prototype, the At risk column and the gates still show the Watcher's reading.
+  - **Checks:**
+    - the frontend gate passes, with workspace at 59: a new live test draws Anita's Batches on the cleared moment, and fails without the fix;
+    - on the local app, Anita's Batches reads the chips Cleared and the Mango Drink At risk.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

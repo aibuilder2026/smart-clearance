@@ -670,6 +670,23 @@ describe("the buyer's listing (SC-92)", () => {
 		expect(face!.textContent?.trim()).not.toBe('?');
 	});
 
+	it('Batches shows every batch at its own journey: a cleared batch reads Cleared, in focus or not (SC-102)', async () => {
+		const m = moment('cleared');
+		const s = source(fakeApi(m, 'anita'));
+		const r = await draw(s, 'batches');
+		const row = (ref: string) =>
+			[...r.container.querySelectorAll('tr')].find((tr) => tr.textContent?.includes(ref))?.textContent ?? '';
+		await waitFor(() => expect(row(CHIPS)).not.toBe(''));
+		// Anita's batch in focus is not the chips: both batches' journeys cleared
+		expect(m.members.anita.snapshot.batches.find((b) => b.id === CHIPS)?.phase).toBe('cleared');
+		for (const ref of [CHIPS, MANGO]) {
+			expect(norm(row(ref))).toContain('Cleared');
+			expect(norm(row(ref))).not.toContain('At risk');
+		}
+		// a batch in no journey keeps the Watcher's reading
+		expect(norm(row('MF-2408-311'))).toContain('Gated');
+	});
+
 	it('before the Valuer prices a flagged batch, its card says what destroying it would cost, never ₹0 (SC-99)', async () => {
 		const s = source(fakeApi(moment('at-risk'), 'priya'));
 		const r = await draw(s, 'command', CHIPS);

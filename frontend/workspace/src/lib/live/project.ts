@@ -137,8 +137,9 @@ function distOf(d: WsDistributor): Distributor {
 }
 
 function batchOf(b: WsBatch, flags: { hero?: boolean; second?: boolean } = {}): Batch {
-	const { phase: _p, staffCap, shelf, ...rest } = b;
-	return { ...rest, staffCap: opt(staffCap), shelf: opt(shelf), ...flags };
+	const { phase, staffCap, shelf, ...rest } = b;
+	// the batch's own journey, so a list shows a cleared batch as cleared, whichever batch is in focus (SC-102)
+	return { ...rest, staffCap: opt(staffCap), shelf: opt(shelf), ...(phase ? { journey: phase } : {}), ...flags };
 }
 
 const EMPTY_ASSESS: Assess = {
