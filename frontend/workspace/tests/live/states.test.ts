@@ -393,3 +393,25 @@ describe('the label photo, taken or uploaded (SC-80)', () => {
 		vi.unstubAllGlobals();
 	});
 });
+
+describe('the quiet Command Center (SC-82)', () => {
+	it('opens a batch in a journey from the watchlist: the one going to a food bank, in its Route Room', async () => {
+		const m = moment('start');
+		const mango = m.members.priya.snapshot.cases[0].ref;
+		const s = source(fakeApi(m, 'priya'));
+		const go = vi.fn();
+		const r = render(LiveHost, {
+			props: { source: s, screen: 'command', at: null, onnavigate: go }
+		}) as unknown as RenderResult<never>;
+		await waitFor(() => expect(s.status.phase).toBe('ready'));
+		await waitFor(() => expect(text(r)).toContain('Nothing at risk today'));
+		const row = [...r.container.querySelectorAll('button.batchrow')].find((b) => b.textContent?.includes(mango))!;
+		await fireEvent.click(row);
+		expect(go).toHaveBeenCalledWith('route', { replace: undefined, ref: mango });
+		// a batch in no journey stays where it is
+		go.mockClear();
+		const other = [...r.container.querySelectorAll('button.batchrow')].find((b) => !b.textContent?.includes(mango))!;
+		await fireEvent.click(other);
+		expect(go).not.toHaveBeenCalled();
+	});
+});
