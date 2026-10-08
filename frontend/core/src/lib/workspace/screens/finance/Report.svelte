@@ -38,6 +38,14 @@
 	const EVIDENCE = $derived(
 		`${c.invoice.no} · ${c.listing.id} · ${c.kiranas.length} kirana order logs · ${c.docs.find((d) => d.id === 'support')!.no}`
 	);
+	// what the batch gave to food banks and the meals that made, for its BRSR line and row (SC-106): a batch that
+	// donated nothing says so, as the chips do
+	const MEALS = $derived(
+		c.plan.donated > 0
+			? `${fmt.num(c.plan.meals)} meals (${fmt.num(c.plan.donated)} packs donated)`
+			: '0 meals (nothing donated)'
+	);
+	const donatedKg = $derived(Math.round(c.plan.donated * c.sku.kgPerUnit * 100) / 100);
 	const tonnes = $derived((Q.kg / 1000).toFixed(1));
 	const PERIODS: { id: 'quarter' | 'batch'; label: string }[] = [
 		{ id: 'quarter', label: 'Quarter' },
@@ -59,7 +67,16 @@
 				['Category', 'Diverted (kg)', 'Resold (kg)', 'Donated (kg)', 'Disposed (kg)', 'Evidence'],
 				...Q.brsr.map((r) => [r.cat, r.diverted, r.resold, r.donated, r.disposed, r.evidence]),
 				...(h.posted
-					? [[`This batch ${c.batch.id} (packaged food)`, c.plan.kg, c.plan.kg, 0, 0, EVIDENCE.replace(/ · /g, '; ')]]
+					? [
+							[
+								`This batch ${c.batch.id} (packaged food)`,
+								c.plan.kg,
+								Math.round((c.plan.kg - donatedKg) * 100) / 100,
+								donatedKg,
+								0,
+								EVIDENCE.replace(/ · /g, '; ')
+							]
+						]
 					: [])
 			])
 		);
@@ -199,8 +216,7 @@
 							<b class="t-subhead">BRSR line</b><span
 								class="mono t-footnote"
 								style="padding: 10px 12px; border-radius: 12px; background: var(--fill)"
-								>{fmt.kg(c.plan.kg)} diverted from disposal · {fmt.num(c.plan.co2)} kg CO₂e avoided (indicative) · 0 meals
-								(nothing donated)</span
+								>{fmt.kg(c.plan.kg)} diverted from disposal · {fmt.num(c.plan.co2)} kg CO₂e avoided (indicative) · {MEALS}</span
 							><span class="t-caption subtle">Evidence: {EVIDENCE}</span>
 						</div>
 					</div>

@@ -1117,4 +1117,10 @@
     - the evidence line reads "· ·" where a batch with no ExpireSoon line has no invoice or lot;
     - Paperwork's subtitle says "at the award" for a batch with no award;
     - Saraswathi Kirana's story order of 4 cannot be placed in the offer screen (twelves, from 12), so the run ordered 16 for it and 16 for Bilal Stores (28 in the story).
+- **SC-106** (In Review, branch `SC-106-brsr-donation`; bug found by Munchly Mango E2E): a batch's BRSR line and BRSR export follow its own donation.
+  - **The fix** (`Report.svelte`):
+    - the line reads "{meals} meals ({packs} packs donated)" for a batch that donated (the Mango Drink's 86) and "0 meals (nothing donated)" for one that did not (the chips);
+    - the export's row splits the diverted kilos into resold and donated, by the SKU's kilos a pack.
+  - **design3:** its prototype only ever shows the chips, so its text stays right there.
+  - **Checks:** a new live test reads both batches' lines on the cleared moment, and fails without the fix.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

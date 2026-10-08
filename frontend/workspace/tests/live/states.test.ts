@@ -670,6 +670,26 @@ describe("the buyer's listing (SC-92)", () => {
 		expect(face!.textContent?.trim()).not.toBe('?');
 	});
 
+	it("a batch's BRSR line says what it donated and the meals that made, or that it donated nothing (SC-106)", async () => {
+		const m = moment('cleared');
+		const batchLine = async (ref: string) => {
+			const r = await draw(source(fakeApi(m, 'vikram')), 'report', ref);
+			await fireEvent.click(await waitFor(() => r.getByRole('button', { name: 'This batch' })));
+			// the batch asked for, once its case is read (until then the screen shows the first open batch)
+			await waitFor(() => expect(text(r)).toContain(`${ref} · `));
+			await waitFor(() => expect(text(r)).toContain('BRSR line'));
+			const t = text(r);
+			r.unmount();
+			return t;
+		};
+		// the Mango Drink gave 58 packs to Feeding India on the fixtures' journey
+		const mango = await batchLine(MANGO);
+		expect(mango).toContain('58 meals (58 packs donated)');
+		expect(mango).not.toContain('nothing donated');
+		// the chips gave nothing
+		expect(await batchLine(CHIPS)).toContain('0 meals (nothing donated)');
+	});
+
 	it("the Mango Drink's GST ITC memo reads its input credit from the plan, and Paperwork stays up (SC-105)", async () => {
 		const m = moment('cleared');
 		const r = await draw(source(fakeApi(m, 'anita')), 'paperwork', MANGO);
