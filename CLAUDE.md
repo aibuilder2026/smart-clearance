@@ -1019,4 +1019,20 @@
     - backend-api 467 passed; the story's journey test checks the buyer's bill before the papers, and that the paper matches it;
     - the frontend gate passes, with workspace at 56: a new live test draws the Lot won bill before the papers, and fails without the fix;
     - the live fixtures were regenerated.
+- **SC-100** (In Review, branch `SC-100-paper-pdfs`, stacked on SC-96; bug): the papers' PDFs on a Mac, and every paper keeping its PDF.
+  - **The request:** "install pango and have pdf generated on mac and push it to cloud store".
+  - **Pango:** Pango 1.58.2 was installed with Homebrew. WeasyPrint loads it with no further setting, so the local Paperwork agent renders the PDFs into `gs://aibuilder-510213-sc-docs-local/{client}/{ref}/{doc}.pdf`. `agents/scripts/dev.sh` says so as it starts when Pango is missing. AGENTS.md and the agents' README say how.
+  - **The bug it found:** a paper never kept its PDF, in production too.
+    - `steps.document_pdf` set `pdf` on the stored dicts in place, then assigned back an equal list, so SQLAlchemy wrote nothing.
+    - Every paper read `pdf: false`, and the documents link answered 404.
+    - It now writes a new dict for the paper.
+  - **Verified locally:**
+    - a reset journey walked to its papers (`walk.sh --day-minutes 60`);
+    - six PDFs in the bucket: the chips' invoice, credit note and ITC memo, and the Mango Drink's credit note, ITC memo and FSSAI checklist;
+    - each paper reads `pdf: true`;
+    - the signed link serves the ITC memo as `application/pdf`;
+    - the invoice PDF reads INV/26-27/0931, 772 × ₹14.20, IGST ₹548, total ₹11,510.
+  - **Checks:**
+    - backend-api 467 passed; the story's journey test records the invoice's PDF and opens its link, and fails without the fix;
+    - agents 191 passed (the PDF test now renders).
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

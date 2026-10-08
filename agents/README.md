@@ -143,6 +143,10 @@ agents/scripts/smoke.sh                 # one live call a writer, printed with i
 
 No emulator: a laptop uses the real `local` environment's resources, as backend-api's `dev.sh` does.
 
+The Paperwork agent's PDFs need Pango, which WeasyPrint loads: on a Mac, `brew install pango` (Homebrew's library is
+found with no further setting). The PDFs then go into the local docs bucket, `{client}/{ref}/{doc}.pdf`, and each paper
+keeps its own (SC-100). Without Pango the papers carry no PDF, and `dev.sh` says so as it starts.
+
 ## Tests
 
 ```sh
