@@ -709,6 +709,26 @@ describe("the buyer's listing (SC-92)", () => {
 		expect(await evidence(CHIPS)).toMatch(/^Evidence: INV\/26-27\/0931 · ES-24117 · \d+ kirana order logs · CN\/0117$/);
 	});
 
+	it('Paperwork says "at the award" only for a batch with an award; one without waits on its lines (SC-108)', async () => {
+		const subtitle = async (m: Moment, who: string, ref: string) => {
+			const r = await draw(source(fakeApi(m, who)), 'paperwork', ref);
+			await waitFor(() => expect(text(r)).toContain(`${ref} · prepared by the Paperwork agent`));
+			return r;
+		};
+		const cleared = moment('cleared');
+		const chips = await subtitle(cleared, 'anita', CHIPS);
+		expect(text(chips)).toContain(`${CHIPS} · prepared by the Paperwork agent at the award`);
+		chips.unmount();
+		const mango = await subtitle(cleared, 'anita', MANGO);
+		expect(text(mango)).toContain(`${MANGO} · prepared by the Paperwork agent once every line was done`);
+		mango.unmount();
+		// before its papers, the Mango Drink's pack waits on its lines, with no tax invoice or truck to wait for
+		const waiting = await subtitle(moment('executing'), 'priya', MANGO);
+		await waitFor(() => expect(text(waiting)).toContain('The pack is drafted once every line is done'));
+		expect(text(waiting)).toContain('Drafts the whole pack once every line of the plan is done.');
+		expect(text(waiting)).not.toMatch(/at the award|tax invoice|buyer's truck/);
+	});
+
 	it("the Mango Drink's GST ITC memo reads its input credit from the plan, and Paperwork stays up (SC-105)", async () => {
 		const m = moment('cleared');
 		const r = await draw(source(fakeApi(m, 'anita')), 'paperwork', MANGO);
