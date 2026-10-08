@@ -114,6 +114,21 @@ lacks; its highlight gives the reader a place. B is the classic (Shopify's own);
   godown's roof for about three seconds; it was rendered again (seed 7833) with the path told to stay on the road.
 - No browser suite was run (SC-55).
 
+## Published
+
+The board and the three pages are in the platform v3 Claude Design project, pinned to commit `8a3b627`:
+https://claude.ai/design/p/976c5462-c3c3-4621-80b5-29b3cdda8326?file=SC-78+design+review.html (and `SC-78 option A.html`,
+`B`, `C`). The kit comes from jsDelivr, the plates and stills from GitHub raw, the clips from jsDelivr (`src/publish.py`).
+
+## In this folder
+
+- `board.html`: the review board; `decision.md`: this record.
+- `current/`: the page as it is.
+- `img/`: the new plates with their prompt sidecars; `media/`: the six clips with theirs.
+- `option-a/`, `option-b/`, `option-c/`: each page's `mockup.html`, its stills and its `motion.mp4`.
+- `sc78.jsx` (compiled to `sc78.js`) and `sc78.css`: the options' code, on the real kit, over `site/site.css`.
+- `src/`: the PNG originals, the LTX renders, the generation scripts (`gen.sh`, `ltx-run.py`) and `publish.py`; local only.
+
 ## The pick
 
 _Pending._
