@@ -780,7 +780,7 @@
     - 44 goldens of the gated rows; the seed manifests.
   - **Checks:** the frontend gate passes: core 248, api 75, workspace 39, admin 17, demo 5, console 3. design3's watchlist was shot at 1440 and 820, light and dark. The browser suites were not run (SC-55).
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
-- **SC-84** (In Review, branch `SC-84-first-export`): a client's first stock export is set up by staff in the console, so the workspace's Setup opens mapped.
+- **SC-84** (PR #69, merged): a client's first stock export is set up by staff in the console, so the workspace's Setup opens mapped.
   - **The request:** the workspace's "Connect your stock data to start" should be done already the first time: the export is configured in the console while the client is being set up, and later daily syncs or uploads come from the workspace as needed. The maintainer's answers: **the export mapped** (staff upload it, the Data agent maps it, the client's operator still confirms the guardrails); a journey reset **keeps** the mapping.
   - **Design first:** three options on one board in platform v3, `SC-84 design review.html`:
     - A, a step in New client;
