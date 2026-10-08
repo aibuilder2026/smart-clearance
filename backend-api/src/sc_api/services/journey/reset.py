@@ -4,10 +4,10 @@ play the story again (POST /internal/jobs/journey-reset, hydrate.sh --journey-re
 Nothing is deleted: open cases close as `reset`, and the workspace no longer shows any case opened before the reset,
 whether it closed as `reset` or as `cleared` (SC-81). The story's batches are dated again from the new day 0, Rakesh
 Traders' permission and the setup's confirmation go back to not yet given, and the client's clock moves forward to
-08:00 on day 0, just before the Data agent's 08:30 and the Watcher's 09:00. The Mango Drink batch comes back as the
-story has it: already approved, its kirana and staff-sale lines done, its donation still to book. A gate override
-set on a batch in the console stays: it is the client's configuration (SC-82). So does the stock export's mapping and
-who uploaded it, so Setup opens mapped (SC-84).
+08:00 on day 0, just before the Data agent's 08:30 and the Watcher's 09:00, running at the client's day length from
+there (SC-86). Every at-risk batch then runs its own journey from the Watcher's first check: nothing is staged ahead
+(the Mango Drink was, until SC-86). A gate override set on a batch in the console stays: it is the client's
+configuration (SC-82). So does the stock export's mapping and who uploaded it, so Setup opens mapped (SC-84).
 """
 
 from datetime import date, datetime, time, timedelta
@@ -17,7 +17,6 @@ from sqlalchemy import select
 
 from sc_api import models as m
 from sc_api.domain import journey as J
-from sc_api.domain import money
 from sc_api.domain.clock import IST, journey_morning
 from sc_api.services import audit
 from sc_api.services.context import Ctx
@@ -104,7 +103,6 @@ async def reset(ctx: Ctx, client_id: str) -> dict[str, Any]:
     c.workspace_doc = {k: v for k, v in (c.workspace_doc or {}).items() if k != "daily"}
     await ctx.session.flush()
 
-    mango = await _second(ctx, c, j, day0)
     if ctx.cloud is not None and ctx.settings.exports_bucket and doc.get("synthetic"):
         backfill = await dms.write_backfill(ctx, client_id, day0)
         await ev.publish(
@@ -122,66 +120,4 @@ async def reset(ctx: Ctx, client_id: str) -> dict[str, Any]:
     )
     await ev.apply_speed(ctx, c)
     await ev.changed(ctx, c)
-    return {"day0": day0.isoformat(), "hero": hero_ref, "second": mango}
-
-
-async def _second(ctx: Ctx, c: m.Client, j: dict[str, Any], day0: date) -> str | None:
-    """the story's second batch (Mango Drink at Lakshmi Agencies), approved before day 0 with its kirana and staff
-    lines done: only its donation is left to book, which the Donation agent does once the journey runs"""
-    x = next((b for b in j["batches"] if b.get("second")), None)
-    if x is None:
-        return None
-    b = await ctx.session.get(m.Batch, (c.id, x["id"]), with_for_update=True)
-    sku = await ctx.session.get(m.Sku, (c.id, x["sku"]))
-    d = await ctx.session.get(m.Distributor, (c.id, x["distributor"]))
-    assert b is not None and sku is not None and d is not None
-    agents = await world.agent_settings(ctx, c.id)
-    rules = world.money_rules(c, agents)
-    bo, so = world.batch_obj(b, d, day0), world.sku_obj(sku)
-    a = money.assess(bo, so, gates=world.effective_gates(c, sku, b), rules=rules)
-    p = money.plan(bo, so, rules=rules)
-    before = journey_morning(day0) - timedelta(days=1)
-    kl = next((ln for ln in p["lines"] if ln["id"] == "kirana"), None)
-    case = m.Case(
-        id=ctx.ids.new("case", 10),
-        client_id=c.id,
-        batch_ref=b.ref,
-        sku_id=b.sku_id,
-        distributor_id=b.distributor_id,
-        status="open",
-        phase="executing",
-        stage=6,
-        opened_at=before,
-        opened_wall=ctx.clock.now(),
-        assess=money.jsonable(a),
-        photo={"status": "verified", "at": before.isoformat(), "confidence": 0.95, "history": True},
-        plan=money.jsonable({**p, "explanation": None}),
-        approval={
-            "status": "approved",
-            "at": before.isoformat(),
-            "by": c.approver_ref,
-            "device": "desktop",
-            "history": True,
-        },
-        offer=(
-            {
-                "status": "closed",
-                "at": before.isoformat(),
-                "closesAt": before.isoformat(),
-                "shops": 0,
-                "units": kl["units"],
-                "ordered": kl["units"],
-                "caps": {},
-                "history": True,
-            }
-            if kl
-            else None
-        ),
-        updated_wall=ctx.clock.now(),
-    )
-    ctx.session.add(case)
-    b.stage_done, b.stage_current, b.money = 6, 6, float(p["net"])
-    b.split = " · ".join(f"{ln['units']} {ln['short']}" for ln in p["lines"])
-    await ctx.session.flush()
-    await ev.publish(ctx, J.Event(J.STEP, {"type": J.EXECUTE, "client": c.id, "ref": b.ref}, f"{c.id}:{b.ref}"))
-    return b.ref
+    return {"day0": day0.isoformat(), "hero": hero_ref}

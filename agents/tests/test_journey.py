@@ -342,3 +342,17 @@ async def test_impact_posts_the_report_and_appends_the_ledger(run, backend, ware
 async def test_the_journey_reset_needs_nothing(run, backend):
     outcome, _ = await run(message("journey.step", {"type": "journey.reset"}))
     assert outcome == "noop" and backend.calls == []
+
+
+def test_impact_keeps_a_row_for_the_packs_left_at_the_godown():
+    """SC-86: a batch whose channels took less than planned leaves the rest at the godown; the ledger keeps a row for it,
+    with nothing recovered and nothing kept from landfill"""
+    from sc_agents.agents import impact
+
+    lines = [{"id": "kirana", "units": 240, "net": 2760}, {"id": "staff", "units": 120, "net": 960}]
+    ledger = {"net": 3720, "kg": 77.4, "co2": 193.5, "meals": 0, "lines": lines, "godown": 1220, "at": "2026-10-30"}
+    case_ = {"ref": "MF-2410-118", "sku": {"id": "mango", "kgPerUnit": 0.215}, "writeOffPerUnit": 14.34}
+    rows = {r["channel"]: r for r in impact.rows("munchly", case_, ledger, journey="j", recorded="2026-10-30T10:00")}
+    assert set(rows) == {"kirana", "staff", "godown"}
+    assert (rows["godown"]["units"], rows["godown"]["recovered_inr"], rows["godown"]["kg"]) == (1220, 0.0, 0.0)
+    assert rows["staff"]["recovered_inr"] == 960 and rows["godown"]["write_off_avoided_inr"] == 0.0

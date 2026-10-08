@@ -509,6 +509,43 @@ def push_pickup_confirmed(*, partner: str, units: int, sku_name: str, when: str,
     }
 
 
+def push_staff_open(*, sku_name: str, units: int, price_: float, godown: str) -> dict[str, Any]:
+    """the plan's staff sale, open at the distributor's godown once the plan is approved (SC-86)"""
+    return {
+        "title": f"Staff sale · {base(sku_name)}",
+        "body": f"{fmt.num(units)} packs of {base(sku_name)} for your staff at {price(price_)} a pack, at {godown}. "
+        "Record what sold when the sale is over.",
+    }
+
+
+def staff_event(*, sold: int, units: int, godown: str) -> str:
+    return f"Recorded the staff sale at {godown}: {fmt.num(sold)} of {fmt.num(units)} packs sold."
+
+
+def push_staff_recorded(*, distributor: str, sku_name: str, sold: int, units: int) -> dict[str, Any]:
+    return {
+        "title": f"Staff sale recorded · {base(sku_name)}",
+        "body": f"{distributor} sold {fmt.num(sold)} of {fmt.num(units)} packs to staff.",
+    }
+
+
+def declined_event(*, sku_name: str, units: int, reason: str) -> str:
+    """the food-bank line that no partner takes, or that the partner turns down (SC-86)"""
+    return f"No food bank takes the {fmt.num(units)} packs of {base(sku_name)}: {reason}."
+
+
+def push_declined(*, sku_name: str, units: int, reason: str) -> dict[str, Any]:
+    return {
+        "title": f"Donation not taken · {base(sku_name)}",
+        "body": f"{fmt.num(units)} packs stay at the godown: {reason}.",
+    }
+
+
+def listing_ended_event(*, listing_id: str, units: int) -> str:
+    """the ExpireSoon lot that closed with no buyer (SC-86)"""
+    return f"Lot {listing_id} closed unsold: {fmt.num(units)} packs stay at the godown."
+
+
 def push_escalated(*, buyer: str, bid: float, ref: str, reserve: float) -> dict[str, Any]:
     return {
         "title": f"A bid needs you · {ref}",

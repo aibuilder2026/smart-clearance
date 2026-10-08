@@ -54,7 +54,7 @@ def test_rules_and_channels_are_money_js():
 def test_every_case_is_here():
     assert len(F["plans"]) == 15
     assert {c["plan"]["batch"] for c in F["plans"][:9]} == {b["id"] for b in load("journey.json")["batches"]}
-    assert (len(F["counter"]), len(F["writeOff"]), len(F["award"])) == (24, 3, 3)
+    assert (len(F["counter"]), len(F["writeOff"]), len(F["award"]), len(F["realised"])) == (24, 3, 3, 6)
     assert {k: len(v) for k, v in F["fmt"].items()} == {
         "num": 6,
         "inr": 8,
@@ -109,6 +109,18 @@ def test_award(case):
 @pytest.mark.parametrize("case", F["actualNet"], ids=lambda c: f"{c['plan']['batch']}@{c['awardPrice']}")
 def test_actual_net(case):
     same(m.actual_net(case["plan"], case["awardPrice"]), case["out"])
+
+
+@pytest.mark.parametrize("case", F["realised"], ids=lambda c: f"{c['plan']['batch']}:{c['done']}")
+def test_realised(case):
+    same(m.realised(case["plan"], case["sku"], case["done"]), case["out"])
+
+
+def test_a_plan_done_as_planned_is_the_plan():
+    """the story's figures stand when every line is done as planned (SC-86)"""
+    for case in F["realised"]:
+        if case["out"]["godown"] == 0:
+            assert {k: v for k, v in case["out"].items() if k != "godown"} == case["plan"]
 
 
 @pytest.mark.parametrize("case", F["priceSupport"], ids=lambda c: f"{c['plan']['batch']}@{c['awardPrice']}")

@@ -32,35 +32,48 @@ def _on(state: dict[str, Any]) -> bool:
 
 
 def rows(client: str, case: dict[str, Any], ledger: dict[str, Any], *, journey: str, recorded: str) -> list[dict]:
-    """the ledger, one row per exit: what it recovered (ExpireSoon at its awarded price) and kept from landfill"""
+    """the ledger, one row per exit: what it recovered (ExpireSoon at its awarded price) and kept from landfill, and a
+    row for the packs left at the godown, if any (SC-86)"""
     closed = ist_day(ledger.get("at") or recorded) or recorded[:10]
     kg_per_unit = float(case["sku"].get("kgPerUnit") or 0)
     total_kg, total_co2 = float(ledger.get("kg") or 0), float(ledger.get("co2") or 0)
     per_unit_writeoff = float(case.get("writeOffPerUnit") or 0)
     delta = float((ledger.get("actual") or {}).get("delta") or 0)
+
+    def row(channel: str, units: int, kg: float, meals: int, recovered: float, avoided: float) -> dict[str, Any]:
+        return {
+            "client_id": client,
+            "journey_id": journey,
+            "batch_ref": case["ref"],
+            "sku_id": case["sku"]["id"],
+            "channel": channel,
+            "units": units,
+            "kg": kg,
+            "co2e_kg": round(total_co2 * kg / total_kg, 3) if total_kg else 0.0,
+            "meals": meals,
+            "recovered_inr": round(recovered, 2),
+            "write_off_avoided_inr": round(avoided, 2),
+            "closed_on": closed,
+            "quarter": fmt.fiscal_quarter(date.fromisoformat(closed)),
+            "recorded_at": recorded,
+        }
+
     out = []
     for ln in ledger.get("lines") or []:
         units = int(ln["units"])
-        kg = round(units * kg_per_unit, 3) if ln["id"] != "writeoff" else 0.0
-        recovered = float(ln.get("net") or 0) - (delta if ln["id"] == "expiresoon" else 0)
+        exits = ln["id"] != "writeoff"
         out.append(
-            {
-                "client_id": client,
-                "journey_id": journey,
-                "batch_ref": case["ref"],
-                "sku_id": case["sku"]["id"],
-                "channel": ln["id"],
-                "units": units,
-                "kg": kg,
-                "co2e_kg": round(total_co2 * kg / total_kg, 3) if total_kg else 0.0,
-                "meals": int(ledger.get("meals") or 0) if ln["id"] == "foodbank" else 0,
-                "recovered_inr": round(recovered, 2),
-                "write_off_avoided_inr": round(units * per_unit_writeoff, 2) if ln["id"] != "writeoff" else 0.0,
-                "closed_on": closed,
-                "quarter": fmt.fiscal_quarter(date.fromisoformat(closed)),
-                "recorded_at": recorded,
-            }
+            row(
+                ln["id"],
+                units,
+                round(units * kg_per_unit, 3) if exits else 0.0,
+                int(ledger.get("meals") or 0) if ln["id"] == "foodbank" else 0,
+                float(ln.get("net") or 0) - (delta if ln["id"] == "expiresoon" else 0),
+                units * per_unit_writeoff if exits else 0.0,
+            )
         )
+    if left := int(ledger.get("godown") or 0):  # what no channel took: nothing recovered, nothing kept out
+        out.append(row("godown", left, 0.0, 0, 0.0, 0.0))
     return out
 
 

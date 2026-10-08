@@ -55,6 +55,10 @@ class DispatchInput(Shape):
     kind: Literal["truck", "van"]
 
 
+class StaffSaleInput(Shape):
+    sold: int = Field(ge=0, le=100000)
+
+
 class PauseInput(Shape):
     paused: bool
 
@@ -331,6 +335,22 @@ async def collect(ws: str, ref: str, request: Request, ctx: MemberCtx) -> dict[s
     if (replay := await _replay(ctx, request, ws, ref)) is not None:
         return replay
     await steps.collect(ctx, ws, ref)
+    return await _done(ctx, request, ws, ref)
+
+
+@router.post(CASE + "/donation/decline", summary="The food bank turns the pickup down")
+async def decline_donation(ws: str, ref: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws, ref)) is not None:
+        return replay
+    await steps.decline_donation(ctx, ws, ref)
+    return await _done(ctx, request, ws, ref)
+
+
+@router.post(CASE + "/staff-sale", summary="The distributor records the staff sale at the godown")
+async def staff_sale(ws: str, ref: str, data: StaffSaleInput, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws, ref)) is not None:
+        return replay
+    await steps.staff_sale(ctx, ws, ref, data.sold)
     return await _done(ctx, request, ws, ref)
 
 

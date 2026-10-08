@@ -1,7 +1,7 @@
 """The console's demo controls (SC-79): a client's scheduled runs and journey timers, each fired at once by staff
 through what the tick itself runs, and its journey started again at a day length chosen then."""
 
-from tests.test_workspace import HERO, INVOKER, PRIYA, agent, case, detect, setup, to_plan
+from tests.test_workspace import HERO, INVOKER, MANGO, PRIYA, agent, case, detect, setup, to_plan
 
 C = "/v1/console/clients"
 
@@ -92,7 +92,7 @@ async def test_a_timer_fires_now_when_it_is_ready_and_says_why_when_not(api, mun
 
 async def test_the_journey_starts_again_at_the_day_length_chosen(api, munchly, neha, cloud):
     await setup(api)
-    assert await detect(api) == [HERO]
+    assert await detect(api) == [HERO, MANGO]
     r = await api.post(f"{C}/munchly/journey/reset", json={"dayMinutes": 5}, headers=neha)
     assert r.status_code == 200, r.text
     clock = r.json()["clock"]
@@ -125,3 +125,27 @@ async def test_a_client_without_a_live_journey_runs_its_daily_agents_on_request(
     assert r.status_code == 409
     assert r.json()["message"] == "Munchly Foods' workspace isn't live, so it has no journey to start again."
     assert (await api.get(f"{C}/nope/journey", headers=neha)).status_code == 404
+
+
+async def test_an_unsold_lot_closes_on_its_deadline_and_the_case_moves_on(api, munchly, neha, cloud):
+    """SC-86: the ExpireSoon lot has a deadline; fired from the console, a lot nobody bought closes, and once the scheme
+    has closed too the papers follow, with the lot's packs left at the godown"""
+    await to_plan(api, cloud)
+    r = await api.post(f"/v1/workspaces/munchly/cases/{HERO}/approval", json={"device": "phone"}, headers=PRIYA)
+    assert r.status_code == 200
+    await agent(api, f"/cases/{HERO}/listing", "lister", "lister")
+    await agent(api, f"/cases/{HERO}/offer", "outreach", "outreach")
+    triggers = (await api.get(f"{C}/munchly/journey", headers=neha)).json()["triggers"]
+    lot = next(t for t in triggers if t["key"] == "listing.close")
+    assert (lot["agent"], lot["ref"], lot["blocked"]) == ("lister", HERO, None)
+    r = await api.post(f"{C}/munchly/journey/triggers/{lot['id']}", headers=neha)
+    assert r.status_code == 200, r.text
+    (line,) = await last_audit(api, neha)
+    assert line["text"] == "Fired the Lister agent's timer now for Munchly Foods: closed the unsold lot for MF-2409-117"
+    c = await case(api, PRIYA)
+    assert c["journey"]["listing"]["status"] == "ended" and c["journey"]["phase"] == "executing"
+    offer = next(t for t in r.json()["triggers"] if t["key"] == "offer.close")
+    assert (await api.post(f"{C}/munchly/journey/triggers/{offer['id']}", headers=neha)).status_code == 200
+    c = await case(api, PRIYA)
+    assert c["journey"]["phase"] == "dispatched"  # nothing ordered, nothing sold: the papers follow
+    assert c["realised"] == {"lines": [{"id": "kirana", "units": 0}, {"id": "expiresoon", "units": 0}], "godown": 1360}

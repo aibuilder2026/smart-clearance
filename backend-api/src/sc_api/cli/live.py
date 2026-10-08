@@ -121,14 +121,14 @@ async def build(ctx: Ctx, client_id: str = "munchly") -> dict[str, Any]:
             _member_of(j, pid),
         )
 
-    hero = next(x for x in j["batches"] if x.get("hero"))
+    # each distributor's own cluster: Rakesh Traders' in Nagpur, Lakshmi Agencies' in Hyderabad (SC-86)
     for k in j["kiranas"]:
         row = await ctx.session.get(m.Kirana, (client_id, k["id"]))
         if row is None:
             row = m.Kirana(
                 client_id=client_id,
                 id=k["id"],
-                distributor_id=hero["distributor"],
+                distributor_id=k["distributor"],
                 name=k["name"],
                 area=k["area"],
                 pincode=k["pincode"],
@@ -138,7 +138,7 @@ async def build(ctx: Ctx, client_id: str = "munchly") -> dict[str, Any]:
             ctx.session.add(row)
         else:
             row.name, row.area, row.pincode, row.sales_14d = k["name"], k["area"], k["pincode"], int(k["sales14"])
-            row.member_ref = k["member"]
+            row.distributor_id, row.member_ref = k["distributor"], k["member"]
 
     for kind, n in j["numbers"].items():
         row = await ctx.session.get(m.DocumentNumber, (client_id, kind))

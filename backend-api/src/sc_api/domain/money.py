@@ -487,6 +487,33 @@ def allocate(rows: Sequence[Obj], units: float) -> list[dict[str, Any]]:
     return out
 
 
+def _line(r: Obj, units: float, sku: Obj, rules: Obj) -> dict[str, Any]:
+    """one exit's line of a plan: its units at the channel's price, less its costs and any input credit lost"""
+    baseline = bool(r.get("baseline"))
+    gross = 0 if baseline else r2(units * r["price"])
+    cost = r2(units * r["costPerUnit"])
+    if r["id"] == "expiresoon":
+        cost = r2(cost + rules["listingFee"])
+    itc_loss = 0 if baseline else r2(units * r["itcLoss"])
+    # the scheme: kiranas are charged for 10 of every 12 packets at the pack price
+    scheme = rules["scheme"]
+    charged = js_round(units * scheme["buy"] / (scheme["buy"] + scheme["free"])) if _truthy(r["packPrice"]) else units
+    return {
+        "id": r["id"],
+        "name": r["name"],
+        "short": r["short"],
+        "units": units,
+        "price": r["price"],
+        "packPrice": r["packPrice"],
+        "charged": charged,
+        "gross": gross,
+        "cost": cost,
+        "itcLoss": itc_loss,
+        "net": r2(gross - cost - itc_loss),
+        "cartons": _div(units, _get(sku, "perCarton")),
+    }
+
+
 def plan(batch: Obj, sku: Obj, *, floors: Obj | None = None, rules: Obj = RULES) -> dict[str, Any]:
     """the Router's split of what is at risk across the exits, with its money: gross, costs, net, the write-off it
     avoids, the P&L reading, the input credit kept and reversed, and the kilos and CO2e kept out of landfill"""
@@ -494,38 +521,7 @@ def plan(batch: Obj, sku: Obj, *, floors: Obj | None = None, rules: Obj = RULES)
     units = a["atRisk"]
     rows = channel_table(batch, sku, units, floors=floors, rules=rules)
     alloc = allocate(rows, units)
-    scheme = rules["scheme"]
-    lines = []
-    for x in alloc:
-        r = next(y for y in rows if y["id"] == x["id"])
-        baseline = bool(r.get("baseline"))
-        gross = 0 if baseline else r2(x["units"] * r["price"])
-        cost = r2(x["units"] * r["costPerUnit"])
-        if r["id"] == "expiresoon":
-            cost = r2(cost + rules["listingFee"])
-        itc_loss = 0 if baseline else r2(x["units"] * r["itcLoss"])
-        # the scheme: kiranas are charged for 10 of every 12 packets at the pack price
-        charged = (
-            js_round(x["units"] * scheme["buy"] / (scheme["buy"] + scheme["free"]))
-            if _truthy(r["packPrice"])
-            else x["units"]
-        )
-        lines.append(
-            {
-                "id": r["id"],
-                "name": r["name"],
-                "short": r["short"],
-                "units": x["units"],
-                "price": r["price"],
-                "packPrice": r["packPrice"],
-                "charged": charged,
-                "gross": gross,
-                "cost": cost,
-                "itcLoss": itc_loss,
-                "net": r2(gross - cost - itc_loss),
-                "cartons": _div(x["units"], _get(sku, "perCarton")),
-            }
-        )
+    lines = [_line(next(y for y in rows if y["id"] == x["id"]), x["units"], sku, rules) for x in alloc]
     gross = r2(_total(lines, "gross"))
     costs = r2(_total(lines, "cost"))
     itc_loss = r2(_total(lines, "itcLoss"))
@@ -582,6 +578,63 @@ def plan(batch: Obj, sku: Obj, *, floors: Obj | None = None, rules: Obj = RULES)
     }
 
 
+def realised(p: Obj, sku: Obj, done: Mapping[str, float] | None, *, rules: Obj = RULES) -> dict[str, Any]:
+    """what a plan came to once its lines were done (SC-86): each line on the units its channel actually took (`done`:
+    ordered by kiranas, awarded on ExpireSoon, sold to staff, collected by the food bank; a channel not in `done` took
+    what was planned). What no channel took is left at the godown: nothing recovered, and it still faces the
+    write-off. A plan done as planned comes back as it was."""
+
+    def took(ln: Obj) -> Any:
+        if ln["id"] != "writeoff" and done and done.get(ln["id"]) is not None:
+            return max(0, done[ln["id"]])
+        return ln["units"]
+
+    if all(took(ln) == ln["units"] for ln in p["lines"]):
+        return {**p, "godown": 0}
+    lines = [
+        ln
+        if took(ln) == ln["units"]
+        else _line(next(r for r in p["rows"] if r["id"] == ln["id"]), took(ln), sku, rules)
+        for ln in p["lines"]
+    ]
+
+    def units(keep: Any) -> Any:
+        return _total([ln for ln in lines if keep(ln)], "units")
+
+    gross = r2(_total(lines, "gross"))
+    costs = r2(_total(lines, "cost"))
+    itc_loss = r2(_total(lines, "itcLoss"))
+    net = r2(gross - costs - itc_loss)
+    godown = _max(0, p["units"] - units(lambda ln: True))
+    sold_units = units(lambda ln: ln["id"] not in ("foodbank", "writeoff"))
+    donated = units(lambda ln: ln["id"] == "foodbank")
+    left = p["leftover"] + godown
+    wo = p["writeOff"]
+    left_cost = r2(left * (wo["perUnit"] - _get(sku, "cost"))) if _truthy(left) else 0
+    pnl = r2(net - p["bookCost"] - left_cost)
+    kg = r2((p["units"] - left) * _get(sku, "kgPerUnit"))
+    itc = itc_of(sku)
+    return {
+        **p,
+        "lines": lines,
+        "gross": gross,
+        "costs": costs,
+        "itcLoss": itc_loss,
+        "net": net,
+        "pctMRP": js_round(_div(net, p["units"] * _get(sku, "mrp")) * 100),
+        "pnl": pnl,
+        "swing": r2(pnl + wo["total"]),
+        "itcRetained": r2(sold_units * itc),
+        "itcReversed": r2((donated + p["leftover"]) * itc),
+        "kg": kg,
+        "co2": r2(kg * rules["co2PerKg"]),
+        "meals": donated,
+        "soldUnits": sold_units,
+        "donated": donated,
+        "godown": godown,
+    }
+
+
 def counter(ask: float, bid: float, *, rules: Obj = RULES) -> dict[str, Any]:
     """the Negotiator's answer to a bid: accept it, or counter at 95% of the ask (to the 10 paise below), never under
     the reserve"""
@@ -624,7 +677,7 @@ def price_support(p: Obj, sku: Obj, award_price: float | None = None, *, rules: 
     dp = _get(sku, "dp")
     rows = []
     for ln in p["lines"]:
-        if ln["id"] == "writeoff":
+        if ln["id"] == "writeoff" or not ln["units"] > 0:
             continue
         price = award_price if ln["id"] == "expiresoon" and award_price is not None else ln["price"]
         rows.append(

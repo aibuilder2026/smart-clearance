@@ -92,6 +92,51 @@ def needs(case: dict[str, Any], channel: str) -> bool:
     return any(ln["id"] == channel and ln["units"] > 0 for ln in plan.get("lines", []))
 
 
+def line_done(case: dict[str, Any], channel: str) -> bool:
+    """whether a plan line has run its course (SC-86): the buyer's truck loaded or the lot ended unsold, the kirana
+    scheme closed, the staff sale recorded, the donation collected or declined. A write-off waits for nothing."""
+    if channel == "expiresoon":
+        return (case.get("truck") or {}).get("status") == "dispatched" or (case.get("listing") or {}).get(
+            "status"
+        ) == "ended"
+    if channel == "kirana":
+        return (case.get("offer") or {}).get("status") == "closed"
+    if channel == "staff":
+        return (case.get("staff") or {}).get("status") == "recorded"
+    if channel == "foodbank":
+        return (case.get("donation") or {}).get("status") in ("collected", "declined")
+    return True
+
+
+def lines_done(case: dict[str, Any]) -> bool:
+    """every line of the plan has run its course: the papers can follow"""
+    plan = case.get("plan") or {}
+    return bool(plan) and all(line_done(case, ln["id"]) for ln in plan.get("lines", []) if ln["units"] > 0)
+
+
+def done_units(case: dict[str, Any], ordered: int) -> dict[str, float]:
+    """what each finished line took, for money.realised: the kiranas' orders once the scheme closed, the lot awarded (or
+    nothing, ended unsold), the staff sale as recorded, the donation once collected (or nothing, declined). A line still
+    running is left out, and counts as planned."""
+    out: dict[str, float] = {}
+    if (case.get("offer") or {}).get("status") == "closed":
+        out["kirana"] = ordered
+    award, listing = case.get("award") or {}, case.get("listing") or {}
+    if award.get("units") is not None:
+        out["expiresoon"] = award["units"]
+    elif listing.get("status") == "ended":
+        out["expiresoon"] = 0
+    staff = case.get("staff") or {}
+    if staff.get("status") == "recorded":
+        out["staff"] = staff.get("sold", 0)
+    donation = case.get("donation") or {}
+    if donation.get("status") == "collected":
+        out["foodbank"] = donation.get("units", 0)
+    elif donation.get("status") == "declined":
+        out["foodbank"] = 0
+    return out
+
+
 def next_agent_event(case: dict[str, Any], *, client: str, ref: str, unanswered: str | None = None) -> Event | None:
     """the event that sets the next agent step going, when the journey waits for an agent and not a person: what the
     tick sends again when a case has stalled (a lost message, an agent that was down). None when a person, a timer or
@@ -115,9 +160,7 @@ def next_agent_event(case: dict[str, Any], *, client: str, ref: str, unanswered:
         return step(VALUE)
     if phase == "valued":
         return step(ROUTE)
-    if phase == "approved":
-        return step(EXECUTE)
-    if phase == "executing":
+    if phase in ("approved", "executing"):
         if unanswered:
             return Event(OFFER_RECEIVED, {"client": client, "ref": ref, **_unanswered(unanswered)}, key)
         missing = (
@@ -165,11 +208,18 @@ def can(case: dict[str, Any], action: str) -> str | None:
         return None if (case.get("van") or {}).get("status") != "done" else "The van round is done."
     if action in ("invoice", "review"):
         return None if phase in ("settled", "cleared") and case.get("docs") else "The papers are not drafted yet."
-    if action in ("pickup", "collect"):
+    if action in ("pickup", "collect", "decline"):
         d = case.get("donation")
-        if not d:
+        if not d or d["status"] == "declined":
             return "No donation is booked."
         if action == "pickup":
             return None if d["status"] == "booked" else "The pickup is already confirmed."
+        if action == "decline":
+            return None if d["status"] in ("booked", "confirmed") else "The packs are already collected."
         return None if d["status"] == "confirmed" else "The pickup is not confirmed yet."
+    if action == "staff":
+        st = (case.get("staff") or {}).get("status")
+        if st == "recorded":
+            return "The staff sale is already recorded."
+        return None if st == "open" else "There is no staff sale in this plan yet."
     return None

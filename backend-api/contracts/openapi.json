@@ -2612,6 +2612,22 @@
         "title": "StaffInviteInput",
         "type": "object"
       },
+      "StaffSaleInput": {
+        "additionalProperties": false,
+        "properties": {
+          "sold": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Sold",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sold"
+        ],
+        "title": "StaffSaleInput",
+        "type": "object"
+      },
       "Track": {
         "additionalProperties": false,
         "properties": {
@@ -5592,6 +5608,64 @@
         ]
       }
     },
+    "/v1/workspaces/{ws}/cases/{ref}/donation/decline": {
+      "post": {
+        "operationId": "decline_donation_v1_workspaces__ws__cases__ref__donation_decline_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Decline Donation V1 Workspaces  Ws  Cases  Ref  Donation Decline Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The food bank turns the pickup down",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
     "/v1/workspaces/{ws}/cases/{ref}/messages": {
       "post": {
         "operationId": "message_v1_workspaces__ws__cases__ref__messages_post",
@@ -5916,6 +5990,74 @@
           }
         ],
         "summary": "Finance has reviewed the papers",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/cases/{ref}/staff-sale": {
+      "post": {
+        "operationId": "staff_sale_v1_workspaces__ws__cases__ref__staff_sale_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffSaleInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Staff Sale V1 Workspaces  Ws  Cases  Ref  Staff Sale Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The distributor records the staff sale at the godown",
         "tags": [
           "workspace"
         ]

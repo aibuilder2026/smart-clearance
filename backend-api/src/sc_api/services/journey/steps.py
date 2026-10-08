@@ -25,6 +25,7 @@ from sc_api.services.journey import world
 from sc_api.services.presenter import lock_client
 
 PHOTO_MAX_BYTES = 8 * 1024 * 1024
+LISTING_DAYS = 9  # an ExpireSoon lot that has found no buyer by then closes unsold (the channel clears in 5-9 days)
 MESSAGES_PER_HOUR = 20
 MESSAGE_MAX = 500
 
@@ -116,6 +117,7 @@ def _state(case: m.Case) -> dict[str, Any]:
         "donation": case.donation,
         "truck": case.truck,
         "docs": case.docs,
+        "staff": case.staff,
     }
 
 
@@ -150,6 +152,24 @@ async def _save(ctx: Ctx, s: Scene, *, note: str | None = None) -> None:
     await ctx.session.flush()
     await ev.apply_speed(ctx, c)
     await ev.changed(ctx, c, s.ref)
+
+
+async def _advance(ctx: Ctx, s: Scene) -> None:
+    """once every line of the plan has run its course, the case is dispatched and the papers follow (SC-86): called by
+    each step that finishes a line, so any plan, whatever its lines, reaches the papers"""
+    if s.case.phase in ("approved", "executing") and J.lines_done(_state(s.case)):
+        s.case.phase = "dispatched"
+        await ev.publish(ctx, J.Event(J.STEP, {"type": J.SETTLE, "client": s.c.id, "ref": s.ref}, f"{s.c.id}:{s.ref}"))
+
+
+async def _orders(ctx: Ctx, s: Scene) -> list[m.CaseOrder]:
+    return list((await ctx.session.execute(select(m.CaseOrder).where(m.CaseOrder.case_id == s.case.id))).scalars())
+
+
+async def realised(ctx: Ctx, s: Scene) -> dict[str, Any]:
+    """the plan as its finished lines came to (money.realised): what was ordered, awarded, sold and collected"""
+    ordered = sum(o.units for o in await _orders(ctx, s))
+    return money.realised(s.case.plan or {}, s.sku_obj(), J.done_units(_state(s.case), ordered), rules=s.rules)
 
 
 async def _run(ctx: Ctx, s: Scene | None, client_id: str, run: Run | None, text: str, *, status: str = "done") -> None:
@@ -394,9 +414,9 @@ async def detect(ctx: Ctx, client_id: str, body: dict[str, Any], run: Run | None
     batches = (
         (
             await ctx.session.execute(
-                select(m.Batch).where(
-                    m.Batch.client_id == client_id, m.Batch.closed_at.is_(None), m.Batch.best_before.is_not(None)
-                )
+                select(m.Batch)
+                .where(m.Batch.client_id == client_id, m.Batch.closed_at.is_(None), m.Batch.best_before.is_not(None))
+                .order_by(m.Batch.seq)
             )
         )
         .scalars()
@@ -722,10 +742,21 @@ async def approve(ctx: Ctx, client_id: str, ref: str, device: str) -> None:
         "approved the plan",
         {"member": me, "target": f"{ref} · net {money.fmt.inr(plan_.get('net', 0))}", "batch": ref},
     )
+    staff = _line(s, "staff")
+    godown = s.dist.godown or s.dist.city
+    if staff and staff["units"] > 0:  # the staff sale opens at the godown, for the distributor to run and record
+        s.case.staff = {"status": "open", "units": staff["units"], "price": staff["price"], "godown": godown, "at": at}
     for p in await _people(ctx, s.c, org=s.dist.id):
         push = copy.push_approved(plan_, person=p.name, client=_client_short(s.c), sku_name=s.sku.name, ref=ref)
         await ev.notify(ctx, s.c, p.ref, "approved", link="home", case=s.case, **push)
-    await ev.publish(ctx, J.Event(J.STEP, {"type": J.EXECUTE, "client": s.c.id, "ref": ref}, f"{s.c.id}:{ref}"))
+        if s.case.staff:
+            push = copy.push_staff_open(
+                sku_name=s.sku.name, units=s.case.staff["units"], price_=s.case.staff["price"], godown=godown
+            )
+            await ev.notify(ctx, s.c, p.ref, "staff.open", link="home", case=s.case, **push)
+    if J.next_agent_event(_state(s.case), client=s.c.id, ref=ref) is not None:
+        await ev.publish(ctx, J.Event(J.STEP, {"type": J.EXECUTE, "client": s.c.id, "ref": ref}, f"{s.c.id}:{ref}"))
+    await _advance(ctx, s)  # a plan with no line to wait for (a write-off) goes straight to the papers
     await _save(ctx, s, note="approved")
 
 
@@ -778,6 +809,8 @@ async def listing(
         "api": {"request": request, "response": {"status": 201, "id": lid}},
     }
     s.case.phase = "executing"
+    days = int((s.agents.get("lister") or {}).get("days") or LISTING_DAYS)
+    await ev.timer(ctx, s.c, "listing.close", ev.now(ctx, s.c) + timedelta(days=days), case=s.case)
     e = copy.list_event(
         units=es["units"],
         distributor=s.dist.name,
@@ -857,6 +890,8 @@ async def offer(ctx: Ctx, client_id: str, ref: str, words: dict[str, str] | None
         if not s.c.hindi_offers:
             push = {"title": "Today's offer", "body": push["en"], "en": None, "hindi": False}
         await ev.notify(ctx, s.c, k.member_ref, "offer", link="offer", case=s.case, **push)
+    if not shops:  # no kirana to offer it to: the scheme closes with nothing ordered
+        await _close_offer(ctx, s)
     await _run(ctx, s, client_id, run, f"offered {ref} to {len(shops)} kiranas")
     await _save(ctx, s, note=f"scheme sent to {len(shops)} kiranas")
 
@@ -872,7 +907,16 @@ async def donation(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> None:
     banks = await world.partners(ctx, client_id, "foodbank")
     fit = [p for p in banks if days_left >= p.details.get("minDays", 0) and fb["units"] >= p.details.get("minUnits", 0)]
     if not fit:
-        raise Noop()
+        need = min(banks, key=lambda p: p.details.get("minUnits", 0), default=None)
+        reason = (
+            f"{need.name} needs {need.details.get('minDays', 0)}+ days and {need.details.get('minUnits', 0)}+ packs"
+            if need
+            else "no food bank partner is set up"
+        )
+        await _decline(ctx, s, reason, agent="Donation")
+        await _run(ctx, s, client_id, run, f"found no food bank for {fb['units']} of {ref}")
+        await _save(ctx, s, note="no food bank takes the donation")
+        return
     partner = fit[0]
     at = ev.now(ctx, s.c)
     pickup, slots = _pickup_times(s.c, at)
@@ -970,6 +1014,7 @@ async def _close_offer(ctx: Ctx, s: Scene) -> None:
         await ev.feed(
             ctx, s.c, s.case, "orders", "execute", e["text"], calls=e["calls"], agent="Outreach", icon="store"
         )
+    await _advance(ctx, s)
 
 
 async def close_offer(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> None:
@@ -1331,10 +1376,115 @@ async def collect(ctx: Ctx, client_id: str, ref: str) -> None:
         f"collected {s.case.donation['units']} packs and issued the receipt",
         {"member": me.ref, "target": ref, "batch": ref},
     )
-    if not _line(s, "expiresoon"):  # no buyer's truck to wait for: the papers follow the collection
-        s.case.phase = "dispatched"
-        await ev.publish(ctx, J.Event(J.STEP, {"type": J.SETTLE, "client": s.c.id, "ref": ref}, f"{s.c.id}:{ref}"))
+    await _advance(ctx, s)
     await _save(ctx, s)
+
+
+async def _decline(ctx: Ctx, s: Scene, reason: str, *, agent: str | None = None, person: str | None = None) -> None:
+    """the food-bank line goes untaken: the packs stay at the godown, the approver is told, and the case moves on"""
+    fb = _line(s, "foodbank") or {"units": 0}
+    s.case.donation = {
+        **(s.case.donation or {}),
+        "status": "declined",
+        "units": fb["units"],
+        "reason": reason,
+        "declinedAt": ev.now(ctx, s.c).isoformat(),
+    }
+    s.case.phase = "executing"
+    text = copy.declined_event(sku_name=s.sku.name, units=fb["units"], reason=reason)
+    if person:
+        await ev.feed(ctx, s.c, s.case, "declined", "execute", text, person=person, human=True)
+    else:
+        await ev.feed(ctx, s.c, s.case, "declined", "execute", text, agent=agent, icon="heart-handshake")
+    for ref_ in await _approver(ctx, s.c):
+        push = copy.push_declined(sku_name=s.sku.name, units=fb["units"], reason=reason)
+        await ev.notify(ctx, s.c, ref_, "donation.declined", link="execution", case=s.case, **push)
+    await _advance(ctx, s)
+
+
+async def decline_donation(ctx: Ctx, client_id: str, ref: str) -> None:
+    """the food bank turns the pickup down (SC-86): the packs stay at the godown"""
+    ctx.require("pickup.manage", "Only the food bank answers a pickup request.")
+    s = await scene(ctx, client_id, ref)
+    _guard(s, "decline")
+    me = await world.member(ctx, client_id, _member(ctx))
+    if me.org_ref != s.case.donation.get("partner"):
+        raise ApiError(403, "This donation is booked with another food bank.")
+    partner = s.case.donation.get("partnerName") or me.org
+    await audit.record(
+        ctx,
+        s.c.id,
+        "donation.decline",
+        "declined the pickup",
+        {"member": me.ref, "target": f"{ref} · {s.case.donation['units']} packs", "batch": ref},
+    )
+    await _decline(ctx, s, f"{partner} turned the pickup down", person=me.ref)
+    await _save(ctx, s)
+
+
+async def staff_sale(ctx: Ctx, client_id: str, ref: str, sold: int) -> None:
+    """the distributor records the staff sale at his godown (SC-86): what sold, out of the plan's staff line"""
+    ctx.require("staff.record", "Only the distributor records the staff sale.")
+    s = await scene(ctx, client_id, ref)
+    me = await world.member(ctx, client_id, _member(ctx))
+    if me.org_ref != s.dist.id:
+        raise ApiError(403, "Only the distributor holding this batch runs its staff sale.")
+    _guard(s, "staff")
+    units = int(s.case.staff["units"])
+    if sold < 0 or sold > units:
+        raise ApiError(422, f"Between 0 and {units} packs.", {"sold": f"Up to {units} packs."})
+    s.case.staff = {
+        **s.case.staff,
+        "status": "recorded",
+        "sold": sold,
+        "left": units - sold,
+        "recordedAt": ev.now(ctx, s.c).isoformat(),
+        "by": me.ref,
+    }
+    godown = s.case.staff.get("godown") or s.dist.city
+    await ev.feed(
+        ctx,
+        s.c,
+        s.case,
+        "staff",
+        "execute",
+        copy.staff_event(sold=sold, units=units, godown=godown),
+        person=me.ref,
+        human=True,
+    )
+    await audit.record(
+        ctx,
+        s.c.id,
+        "staff.record",
+        f"recorded the staff sale: {sold} of {units} packs",
+        {"member": me.ref, "target": f"{ref} · {godown}", "batch": ref},
+    )
+    for ref_ in await _approver(ctx, s.c):
+        push = copy.push_staff_recorded(distributor=s.dist.name, sku_name=s.sku.name, sold=sold, units=units)
+        await ev.notify(ctx, s.c, ref_, "staff.recorded", link="execution", case=s.case, **push)
+    await _advance(ctx, s)
+    await _save(ctx, s)
+
+
+async def close_listing(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> None:
+    """the ExpireSoon lot's deadline (SC-86): a lot no buyer has taken closes unsold, and the case moves on"""
+    s = await scene(ctx, client_id, ref)
+    await once(ctx, run)
+    listing_ = s.case.listing or {}
+    if listing_.get("status") != "live" or s.case.award:
+        raise Noop()
+    s.case.listing = {**listing_, "status": "ended", "endedAt": ev.now(ctx, s.c).isoformat()}
+    for b in (
+        await ctx.session.execute(
+            select(m.CaseBid).where(m.CaseBid.case_id == s.case.id, m.CaseBid.status.in_(("placed", "countered")))
+        )
+    ).scalars():
+        b.status = "expired"
+    text = copy.listing_ended_event(listing_id=listing_["id"], units=int(listing_.get("units", 0)))
+    await ev.feed(ctx, s.c, s.case, "unsold", "execute", text, agent="Lister", icon="shopping-bag")
+    await _advance(ctx, s)
+    await _run(ctx, s, client_id, run, f"closed {listing_['id']} unsold")
+    await _save(ctx, s, note=f"{listing_['id']} closed unsold")
 
 
 # --- settle -----------------------------------------------------------------------------------------------------------
@@ -1358,7 +1508,6 @@ async def dispatch(ctx: Ctx, client_id: str, ref: str, kind: str) -> None:
             )
         s.case.truck = {"status": "dispatched", "at": at.isoformat()}
         s.case.award = {**(s.case.award or {}), "status": "paid"}
-        s.case.phase = "dispatched"
         award = s.case.award
         await ev.feed(
             ctx,
@@ -1377,7 +1526,7 @@ async def dispatch(ctx: Ctx, client_id: str, ref: str, kind: str) -> None:
             f"loaded {copy.possessive(award.get('buyer', 'the buyer'))} truck",
             {"member": me.ref, "target": f"{s.case.listing['id']} · {award.get('city', '')}", "batch": ref},
         )
-        await ev.publish(ctx, J.Event(J.STEP, {"type": J.SETTLE, "client": s.c.id, "ref": ref}, f"{s.c.id}:{ref}"))
+        await _advance(ctx, s)
         await _save(ctx, s, note="dispatched")
         return
     _guard(s, "van")
@@ -1411,7 +1560,7 @@ async def documents(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> None
     await once(ctx, run)
     if s.case.phase != "dispatched" or s.case.docs:
         raise Noop()
-    plan_ = s.case.plan or {}
+    plan_ = await realised(ctx, s)  # the plan as its lines came to: what was ordered, awarded, sold and collected
     award = s.case.award
     sku = s.sku_obj()
     awarded = {k: award[k] for k in ("units", "price", "gross", "token", "balance")} if award else None
@@ -1431,18 +1580,19 @@ async def documents(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> None
     # a paper that is issued, so the sequence has no gaps
     blank = {"support": "", "invoice": ""}
     draft = money.documents(plan_, sku, awarded, support, parties, numbers=blank, rules=s.rules)
-    issues_support = any(d["id"] == "support" and money.jsonable(d.get("amount")) is not None for d in draft)
+    # a credit note is issued only for a gap to support (an SKU with its dealer price, and something sold below it)
+    issues_support = any(d["id"] == "support" and (money.jsonable(d.get("amount")) or 0) > 0 for d in draft)
     numbers = {
         "support": await world.next_number(ctx, client_id, "support") if issues_support else "",
         "invoice": await world.next_number(ctx, client_id, "invoice") if award and _line(s, "expiresoon") else "",
     }
     docs = money.documents(plan_, sku, awarded, support, parties, numbers=numbers, rules=s.rules)
-    docs = [d for d in docs if not (d["id"] == "support" and money.jsonable(d.get("amount")) is None)]
+    docs = [d for d in docs if not (d["id"] == "support" and not issues_support)]
     # the papers are dated the journey day the Paperwork agent drafts them
     dated = _today(ctx, s.c).isoformat()
     s.case.docs = money.jsonable([{**d, "pdf": None, "date": dated} for d in docs])
     s.case.phase = "settled"
-    orders = (await ctx.session.execute(select(m.CaseOrder).where(m.CaseOrder.case_id == s.case.id))).scalars().all()
+    orders = await _orders(ctx, s)
     if not orders:  # nothing went to the kiranas: no van round, no shelf to check; the report follows the window
         s.case.van = {"status": "done", "done": 0, "at": ev.now(ctx, s.c).isoformat()}
         s.case.shelf = {"skipped": True}
@@ -1632,7 +1782,7 @@ async def report(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> dict[st
     await once(ctx, run)
     if s.case.phase != "settled" or not s.case.shelf or (s.case.van or {}).get("status") != "done":
         raise Noop()
-    plan_ = s.case.plan or {}
+    plan_ = await realised(ctx, s)  # what the lines came to; what no channel took stays at the godown
     award = s.case.award
     actual = money.actual_net(plan_, award["price"]) if award else {"net": plan_.get("net", 0)}
     at = ev.now(ctx, s.c)
@@ -1645,6 +1795,8 @@ async def report(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> dict[st
             "meals": plan_.get("meals", 0),
             "itc": plan_.get("itcRetained", 0),
             "lines": plan_.get("lines", []),
+            "planned": (s.case.plan or {}).get("lines", []),
+            "godown": plan_.get("godown", 0),
             "at": at.isoformat(),
             "returnBy": return_by,
             "actual": actual,

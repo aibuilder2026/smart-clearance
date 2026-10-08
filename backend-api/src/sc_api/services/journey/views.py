@@ -14,7 +14,8 @@ from typing import Any
 from sqlalchemy import or_, select
 
 from sc_api import models as m
-from sc_api.domain import money
+from sc_api.domain import copy, money
+from sc_api.domain import journey as J
 from sc_api.domain.clock import IST
 from sc_api.errors import ApiError, not_found
 from sc_api.services.context import Actor, Ctx
@@ -370,7 +371,7 @@ def _donated(case: m.Case, sees: bool) -> int | None:
     if not sees:
         return None
     if case.donation:
-        return int(case.donation["units"])
+        return None if case.donation.get("status") == "declined" else int(case.donation["units"])
     line = next((x for x in (case.plan or {}).get("lines", []) if x.get("id") == "foodbank"), None)
     return int(line["units"]) if line and line.get("units") else None
 
@@ -523,6 +524,7 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
         else []
     )
 
+    orders_all = list(orders)
     if role == "retailer":
         orders = [o for o in orders if o.kirana_id == cm.org_ref]
     if role == "buyer":
@@ -606,6 +608,20 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
             "at": (case.van or {}).get("at"),
         },
         "truck": {"status": (case.truck or {}).get("status", "idle"), "at": (case.truck or {}).get("at")},
+        "staff": (
+            {
+                "status": case.staff["status"],
+                "units": case.staff["units"],
+                "price": case.staff["price"],
+                "godown": case.staff.get("godown", ""),
+                "at": case.staff.get("at"),
+                "sold": case.staff.get("sold"),
+                "left": case.staff.get("left"),
+                "recordedAt": case.staff.get("recordedAt"),
+            }
+            if case.staff and (mine or role == "distributor")
+            else None
+        ),
         "docs": [{"id": d_["id"], "status": d_["status"]} for d_ in case.docs] if case.docs else None,
         "invoiceIssued": case.invoice_issued_at is not None,
         "shelf": _shelf(case.shelf),
@@ -629,16 +645,31 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
             reserve = float((case.listing or {}).get("reserve") or 0)
             counter = {"action": "counter", "price": float(last.counter), "below": float(last.price) < reserve}
     award_price = float(case.award["price"]) if case.award else None
-    actual = (
-        money.jsonable(money.actual_net(case.plan, award_price)) if money_ok and case.plan and award_price else None
-    )
+    # what the finished lines took (SC-86): the actual figures and the credit note follow what happened, and what no
+    # channel took is left at the godown
+    lines_state = {"offer": case.offer, "award": case.award, "listing": case.listing}
+    lines_state |= {"staff": case.staff, "donation": case.donation}
+    done = J.done_units(lines_state, sum(o.units for o in orders_all))
+    real = money.realised(case.plan, world.sku_obj(x), done, rules=rules) if case.plan else None
+    settled = case.phase in ("dispatched", "settled", "cleared")
+    es = copy.line(case.plan or {}, "expiresoon")
+    actual = None
+    if money_ok and real is not None and (award_price is not None or settled):
+        actual = money.jsonable(
+            money.actual_net(real, award_price if award_price is not None else es["price"] if es else 0)
+        )
     support = support_plan = claim = None
     if case.plan and (money_ok or role == "distributor"):
         so = world.sku_obj(x)
         support_plan = money.jsonable(money.price_support(case.plan, so, rules=rules))
-        if award_price is not None:
-            support = money.jsonable(money.price_support(case.plan, so, award_price, rules=rules))
+        if award_price is not None or settled:
+            support = money.jsonable(money.price_support(real, so, award_price, rules=rules))
         claim = money.jsonable(money.expiry_claim(case.plan["units"], so, rules=rules)) if money_ok else None
+    realised_out = (
+        {"lines": [{"id": ln["id"], "units": ln["units"]} for ln in real["lines"]], "godown": real["godown"]}
+        if real is not None and done and (mine or role == "distributor")
+        else None
+    )
 
     docs = []
     if case.docs and (mine or role == "distributor"):
@@ -743,6 +774,7 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
         "actual": actual,
         "support": support,
         "supportPlan": support_plan,
+        "realised": realised_out,
         "claim": claim,
         "docs": docs,
         "shelf": _shelf(case.shelf),
@@ -751,16 +783,17 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
         "donation": (
             {
                 "status": donation["status"],
-                "partner": donation["partnerName"],
+                "partner": donation.get("partnerName"),
                 "units": donation["units"],
                 "pickupAt": donation.get("pickupAt"),
                 "slots": donation.get("slots", []),
                 "spot": donation.get("spot"),
-                "from": donation["from"],
-                "at": donation["at"],
+                "from": donation.get("from") or d.godown or d.city,
+                "at": donation.get("at") or donation.get("declinedAt"),
                 "confirmedAt": donation.get("confirmedAt"),
                 "collectedAt": donation.get("collectedAt"),
                 "reply": donation.get("reply"),
+                "reason": donation.get("reason"),
             }
             if donation
             else None

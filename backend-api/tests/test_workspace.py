@@ -30,6 +30,7 @@ RAKESH = token("rakesh-traders@google.example")
 GANESH = token("shree-ganesh-kirana@google.example")
 AGRAWAL = token("agrawal-wholesale@google.example")
 MEERA = token("feeding-india@google.example")
+LAKSHMI = token("lakshmi-agencies@google.example")
 
 
 def flow(action: str) -> dict:
@@ -50,13 +51,14 @@ async def case(api, who, ref: str = HERO) -> dict:
     return r.json()
 
 
-async def put_photo(api, cloud, ref: str) -> None:
-    r = await api.post(f"{WS}/cases/{ref}/photos", json={"contentType": "image/jpeg", "bytes": 120000}, headers=RAKESH)
+async def put_photo(api, cloud, ref: str, who: dict | None = None) -> None:
+    who = who or RAKESH
+    r = await api.post(f"{WS}/cases/{ref}/photos", json={"contentType": "image/jpeg", "bytes": 120000}, headers=who)
     assert r.status_code == 200, r.text
     link = r.json()
     name = link["url"].split("photos-test/", 1)[1].split("?", 1)[0]
     cloud.storage.objects[("photos-test", name)] = b"jpeg"
-    r = await api.post(f"{WS}/cases/{ref}/photos/{link['id']}", headers=RAKESH)
+    r = await api.post(f"{WS}/cases/{ref}/photos/{link['id']}", headers=who)
     assert r.status_code == 200, r.text
 
 
@@ -83,7 +85,7 @@ async def detect(api) -> list[str]:
 
 async def to_plan(api, cloud) -> None:
     await setup(api)
-    assert await detect(api) == [HERO]
+    assert await detect(api) == [HERO, MANGO]  # each at-risk batch its own journey (SC-86)
     await agent(api, f"/cases/{HERO}/photo-request", "vision-ask", "vision")
     await put_photo(api, cloud, HERO)
     label = J["label"]
@@ -135,7 +137,10 @@ async def test_every_member_is_on_email_and_the_right_domain(ctx, munchly):
         assert u.email and u.firebase_uid, cm.ref
         assert u.email.endswith("@munchly.example" if cm.member_class == "staff" else "@google.example"), u.email
     kiranas = (await ctx.session.execute(select(m.Kirana).where(m.Kirana.client_id == "munchly"))).scalars().all()
-    assert len(kiranas) == 38 and all(k.member_ref for k in kiranas)
+    assert len(kiranas) == 96 and all(k.member_ref for k in kiranas)
+    # each distributor's own cluster: Rakesh Traders' 38 in Nagpur, Lakshmi Agencies' 58 in Hyderabad (SC-86)
+    by = {d: sum(1 for k in kiranas if k.distributor_id == d) for d in ("rakesh", "lakshmi")}
+    assert by == {"rakesh": 38, "lakshmi": 58}
 
 
 # --- the journey ------------------------------------------------------------------------------------------------------
@@ -144,15 +149,15 @@ async def test_every_member_is_on_email_and_the_right_domain(ctx, munchly):
 async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     snap = (await api.get(f"{WS}/snapshot", headers=PRIYA)).json()
     assert snap["clock"]["day"] == 0 and snap["setup"]["confirmed"] is False
-    assert [c["ref"] for c in snap["cases"]] == [MANGO]  # the story's second batch, approved before day 0
+    assert snap["cases"] == []  # nothing staged ahead: each batch's journey starts at the Watcher's check (SC-86)
 
     await setup(api)
     snap = (await api.get(f"{WS}/snapshot", headers=PRIYA)).json()
     assert snap["setup"]["confirmed"] and snap["setup"]["mapped"] == 8
     assert snap["distributors"]["rakesh"]["permission"]["by"] == "rakesh"
 
-    # detect: the Watcher flags the chips batch and tells Priya
-    assert await detect(api) == [HERO]
+    # detect: the Watcher flags the chips batch (and the Mango Drink, its own journey) and tells Priya
+    assert await detect(api) == [HERO, MANGO]
     c = await case(api, PRIYA)
     assert c["journey"]["phase"] == "at-risk" and c["batch"]["assess"]["atRisk"] == 1360
     assert [f["key"] for f in c["feed"]] == ["watch"]
@@ -192,10 +197,9 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     assert r.status_code == 200 and r.json()["case"]["journey"]["plan"]["status"] == "approved"
     assert (await api.post(f"{WS}/cases/{HERO}/approval", json={"device": "phone"}, headers=PRIYA)).status_code == 409
 
-    # execute: the listing, the scheme, the Mango donation
+    # execute: the listing and the scheme
     await agent(api, f"/cases/{HERO}/listing", "lister", "lister")
     await agent(api, f"/cases/{HERO}/offer", "outreach", "outreach")
-    await agent(api, f"/cases/{MANGO}/donation", "donation", "outreach")
     c = await case(api, PRIYA)
     assert c["journey"]["listing"] == {
         **c["journey"]["listing"],
@@ -214,17 +218,6 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     assert f"{leaves:%H:%M}" == J["moments"]["van"]["leaves"] and timedelta(0) < leaves - closes <= timedelta(days=1)
     assert moments["van"]["depot"] == J["distributors"]["rakesh"]["godown"] and moments["planMinutes"] == 20
     assert moments["permissionAskedAt"] is not None and moments["day0"] is not None
-    mango = await case(api, MEERA, MANGO)
-    assert mango["donation"]["partner"] == "Feeding India" and mango["donation"]["units"] == 58
-    # the Donation agent proposes the next day at the partner's hour, with the slots it may move to, and its spot
-    booked = datetime.fromisoformat(mango["donation"]["at"]).astimezone(IST)
-    pickup = datetime.fromisoformat(mango["donation"]["pickupAt"]).astimezone(IST)
-    assert pickup.date() == (booked + timedelta(days=1)).date()
-    assert f"{pickup:%H:%M}" == J["moments"]["donation"]["time"]
-    assert len(mango["donation"]["slots"]) == len(J["moments"]["donation"]["slots"])
-    assert mango["donation"]["spot"] == J["moments"]["donation"]["story"]["spot"]
-    summary = next(x for x in (await api.get(f"{WS}/snapshot", headers=MEERA)).json()["cases"] if x["ref"] == MANGO)
-    assert summary["donation"] == 58
 
     # the buyer never sees the reserve; a kirana sees only its own shop
     seen = await case(api, AGRAWAL)
@@ -234,7 +227,7 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
 
     # every kiranawala orders his own share; the scheme closes once it is full
     for k in J["kiranas"]:
-        if not k["orders"]:
+        if not k["orders"] or k["distributor"] != "rakesh":
             continue
         member = next(x for x in J["members"] if x["id"] == k["member"])
         r = await api.post(f"{WS}/cases/{HERO}/orders", json={"units": k["orders"]}, headers=token(member["login"]))
@@ -258,17 +251,6 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     assert c["award"] == {"units": 772, "price": 14.2, "gross": 10962.4, "token": 1644, "balance": 9318.4}
     assert round(c["actual"]["net"]) == 21152
 
-    # the food bank's pickup: confirmed at the proposed time, with its answer
-    r = await api.post(f"{WS}/cases/{MANGO}/donation/confirm", headers=MEERA)
-    assert r.status_code == 200
-    done = r.json()["case"]["donation"]
-    assert done["pickupAt"] == mango["donation"]["pickupAt"] and done["confirmedAt"] is not None
-    assert done["reply"] == copy.pickup_reply(day=copy.weekday(pickup), spot=done["spot"])
-    assert (await api.post(f"{WS}/cases/{MANGO}/donation/collect", headers=MEERA)).status_code == 200
-    # the donation's papers come first, with no credit note (no distributor's price to support): no number is spent
-    await agent(api, f"/cases/{MANGO}/documents", "paperwork-mango", "paperwork")
-    assert "support" not in [d["id"] for d in (await case(api, PRIYA, MANGO))["docs"]]
-
     # settle: the truck, the papers, the invoice, the review, the van round, the shelf check
     r = await api.post(f"{WS}/cases/{HERO}/dispatches", json={"kind": "truck"}, headers=RAKESH)
     assert r.status_code == 200, r.text
@@ -286,7 +268,7 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     counts = [
         {"kirana": k["id"], "left": J["shelf"]["left"] if k["name"] == J["shelf"]["shop"] else k["orders"] // 4}
         for k in J["kiranas"]
-        if k["orders"]
+        if k["orders"] and k["distributor"] == "rakesh"
     ]
     await agent(api, f"/cases/{HERO}/shelf-check", "shelf", "outreach", counts=counts)
     c = await case(api, PRIYA)
@@ -309,9 +291,145 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     assert sorted(keys) == sorted(story) and keys[:9] == story[:9]
 
 
+def shops(distributor: str) -> list[dict]:
+    return [k for k in J["kiranas"] if k["distributor"] == distributor]
+
+
+def login(member_id: str) -> dict:
+    return token(next(x for x in J["members"] if x["id"] == member_id)["login"])
+
+
+async def mango_to_approved(api, cloud) -> dict:
+    """the Mango Drink to Priya's yes: Lakshmi Agencies sends its label, the Valuer and the Router plan it"""
+    await setup(api)
+    assert await detect(api) == [HERO, MANGO]
+    # Vision asks the batch's own distributor for the label: Lakshmi Agencies, not Rakesh Traders
+    await agent(api, f"/cases/{MANGO}/photo-request", "vision-ask-m", "vision")
+    assert (await case(api, LAKSHMI, MANGO))["journey"]["photo"]["status"] == "requested"
+    assert (await api.get(f"{WS}/cases/{MANGO}", headers=RAKESH)).status_code == 404
+    await put_photo(api, cloud, MANGO, LAKSHMI)
+    label = J["labels"][MANGO]
+    read = {"batch": MANGO, "mfg": None, "bestBefore": None, "mrp": label["mrp"], "confidence": 0.96}
+    await agent(api, f"/cases/{MANGO}/photo-read", "vision-read-m", "vision", read=read)
+    await agent(api, f"/cases/{MANGO}/valuation", "valuer-m", "valuer")
+    await agent(api, f"/cases/{MANGO}/plan", "router-m", "router")
+    c = await case(api, PRIYA, MANGO)
+    lines = [(ln["id"], ln["units"]) for ln in c["plan"]["lines"]]
+    assert lines == [("kirana", 1372), ("staff", 150), ("foodbank", 58)]
+    # the Router's words name every line, and Lakshmi Agencies' own cluster
+    assert "58 kiranas" in c["plan"]["explanation"] and "staff sale" in c["plan"]["explanation"]
+    r = await api.post(f"{WS}/cases/{MANGO}/approval", json={"device": "desktop"}, headers=PRIYA)
+    assert r.status_code == 200, r.text
+    return c
+
+
+async def test_the_mango_drinks_journey_end_to_end(api, munchly, cloud, ctx):
+    """SC-86: the story's second batch runs its whole journey, as any batch does. Its plan is a kirana scheme, a staff
+    sale and a food bank, each run by its own people; the papers follow only once all three are done, and the ledger
+    counts what each took. What no channel took is left at the godown."""
+    from sc_api.domain import money
+
+    planned = await mango_to_approved(api, cloud)
+    # the staff sale opens at Lakshmi Agencies' godown, for her to run and record
+    seen = await case(api, LAKSHMI, MANGO)
+    staff = seen["journey"]["staff"]
+    godown = J["distributors"]["lakshmi"]["godown"]
+    assert (staff["status"], staff["units"], staff["price"], staff["godown"]) == ("open", 150, 8, godown)
+    assert seen["push"]["staff.open"]["title"] == "Staff sale · Mango Drink"
+
+    # execute: the scheme to Lakshmi Agencies' own kiranas, the food bank booked; no ExpireSoon lot in this plan
+    await agent(api, f"/cases/{MANGO}/offer", "outreach-m", "outreach")
+    await agent(api, f"/cases/{MANGO}/donation", "donation-m", "outreach")
+    assert (await agent(api, f"/cases/{MANGO}/listing", "lister-m", "lister")).get("noop") is True
+    c = await case(api, PRIYA, MANGO)
+    assert c["journey"]["offer"]["shops"] == len(shops("lakshmi")) == 58 and c["journey"]["listing"] is None
+    mango = await case(api, MEERA, MANGO)
+    assert mango["donation"]["partner"] == "Feeding India" and mango["donation"]["units"] == 58
+    # the Donation agent proposes the next day at the partner's hour, with the slots it may move to, and its spot
+    booked = datetime.fromisoformat(mango["donation"]["at"]).astimezone(IST)
+    pickup = datetime.fromisoformat(mango["donation"]["pickupAt"]).astimezone(IST)
+    assert pickup.date() == (booked + timedelta(days=1)).date()
+    assert f"{pickup:%H:%M}" == J["moments"]["donation"]["time"]
+    assert len(mango["donation"]["slots"]) == len(J["moments"]["donation"]["slots"])
+    assert mango["donation"]["spot"] == J["moments"]["donation"]["story"]["spot"]
+    summary = next(x for x in (await api.get(f"{WS}/snapshot", headers=MEERA)).json()["cases"] if x["ref"] == MANGO)
+    assert summary["donation"] == 58
+
+    # three Hyderabad shops order, by hand; a Nagpur shop was not offered this scheme
+    took = shops("lakshmi")[:3]
+    for k in took:
+        r = await api.post(f"{WS}/cases/{MANGO}/orders", json={"units": 4 * k["sales14"]}, headers=login(k["member"]))
+        assert r.status_code == 200, (k["name"], r.text)
+    ordered = sum(4 * k["sales14"] for k in took)
+    assert (await api.post(f"{WS}/cases/{MANGO}/orders", json={"units": 4}, headers=GANESH)).status_code == 403
+
+    # the food bank confirms and collects; the case waits for the scheme and the staff sale
+    r = await api.post(f"{WS}/cases/{MANGO}/donation/confirm", headers=MEERA)
+    assert r.status_code == 200
+    done = r.json()["case"]["donation"]
+    assert done["reply"] == copy.pickup_reply(day=copy.weekday(pickup), spot=done["spot"])
+    assert (await api.post(f"{WS}/cases/{MANGO}/donation/collect", headers=MEERA)).status_code == 200
+    assert (await case(api, PRIYA, MANGO))["journey"]["phase"] == "executing"
+    await agent(api, f"/cases/{MANGO}/offer/close", "close-m", "outreach")
+    assert (await case(api, PRIYA, MANGO))["journey"]["phase"] == "executing"  # the staff sale is still open
+
+    # the staff sale: Lakshmi Agencies' to record, within the line, once
+    bad = await api.post(f"{WS}/cases/{MANGO}/staff-sale", json={"sold": 120}, headers=RAKESH)
+    assert bad.status_code == 403
+    bad = await api.post(f"{WS}/cases/{MANGO}/staff-sale", json={"sold": 151}, headers=LAKSHMI)
+    assert bad.status_code == 422 and bad.json()["message"] == "Between 0 and 150 packs."
+    r = await api.post(f"{WS}/cases/{MANGO}/staff-sale", json={"sold": 120}, headers=LAKSHMI)
+    assert r.status_code == 200, r.text
+    assert r.json()["case"]["journey"]["phase"] == "dispatched"  # the last of the three: the papers follow
+    assert (await api.post(f"{WS}/cases/{MANGO}/staff-sale", json={"sold": 1}, headers=LAKSHMI)).status_code == 409
+    assert (await case(api, PRIYA, MANGO))["push"]["staff.recorded"]["body"] == (
+        "Lakshmi Agencies sold 120 of 150 packs to staff."
+    )
+
+    # the papers: no buyer's invoice, and no credit note (no distributor's price to support), so no number is spent
+    await agent(api, f"/cases/{MANGO}/documents", "paperwork-m", "paperwork")
+    c = await case(api, PRIYA, MANGO)
+    assert {"invoice", "support"}.isdisjoint(d["id"] for d in c["docs"])
+    left = 1372 - ordered + 30
+    want = money.realised(planned["plan"], c["sku"], {"kirana": ordered, "staff": 120, "foodbank": 58})
+    lines = [{"id": "kirana", "units": ordered}, {"id": "staff", "units": 120}, {"id": "foodbank", "units": 58}]
+    assert c["realised"] == {"lines": lines, "godown": left} and want["godown"] == left
+    assert c["actual"]["net"] == want["net"] < planned["plan"]["net"]
+
+    # settle and report: the van to the shops that ordered, the shelf check, the ledger on what happened
+    assert (await api.post(f"{WS}/cases/{MANGO}/dispatches", json={"kind": "van"}, headers=LAKSHMI)).status_code == 200
+    counts = [{"kirana": k["id"], "left": k["sales14"]} for k in took]
+    await agent(api, f"/cases/{MANGO}/shelf-check", "shelf-m", "outreach", counts=counts)
+    out = await agent(api, f"/cases/{MANGO}/report", "impact-m", "impact")
+    assert (out["ledger"]["net"], out["ledger"]["godown"], out["ledger"]["meals"]) == (want["net"], left, 58)
+    batch = await ctx.session.get(m.Batch, ("munchly", MANGO))
+    await ctx.session.refresh(batch)
+    assert batch.outcome == "cleared" and round(batch.recovered, 2) == want["net"]
+
+
+async def test_a_food_bank_can_turn_the_pickup_down(api, munchly, cloud):
+    """the food bank declines: the packs stay at the godown, the approver is told, and the case goes on without them"""
+    await mango_to_approved(api, cloud)
+    await agent(api, f"/cases/{MANGO}/offer", "outreach-m", "outreach")
+    await agent(api, f"/cases/{MANGO}/donation", "donation-m", "outreach")
+    assert (await api.post(f"{WS}/cases/{MANGO}/donation/decline", headers=GANESH)).status_code == 403
+    r = await api.post(f"{WS}/cases/{MANGO}/donation/decline", headers=MEERA)
+    assert r.status_code == 200, r.text
+    assert r.json()["case"]["donation"]["status"] == "declined"
+    assert (await api.post(f"{WS}/cases/{MANGO}/donation/collect", headers=MEERA)).status_code == 409
+    push = (await case(api, PRIYA, MANGO))["push"]["donation.declined"]
+    assert push["body"] == "58 packs stay at the godown: Feeding India turned the pickup down."
+    await agent(api, f"/cases/{MANGO}/offer/close", "close-m", "outreach")
+    r = await api.post(f"{WS}/cases/{MANGO}/staff-sale", json={"sold": 150}, headers=LAKSHMI)
+    assert r.json()["case"]["journey"]["phase"] == "dispatched"
+    await agent(api, f"/cases/{MANGO}/documents", "paperwork-m", "paperwork")
+    c = await case(api, PRIYA, MANGO)
+    assert c["realised"]["godown"] == 1372 + 58 and c["realised"]["lines"][-1] == {"id": "foodbank", "units": 0}
+
+
 async def test_a_redelivered_event_acts_once(api, munchly, cloud):
     await setup(api)
-    assert await detect(api) == [HERO]
+    assert await detect(api) == [HERO, MANGO]
     await agent(api, f"/cases/{HERO}/photo-request", "vision-ask", "vision")
     again = await agent(api, f"/cases/{HERO}/photo-request", "vision-ask", "vision")
     assert again.get("noop") is True
@@ -610,7 +728,7 @@ async def test_a_journey_starts_again_on_the_storys_own_calendar(ctx, munchly):
         .scalars()
         .all()
     )
-    assert [c.batch_ref for c in open_cases] == [MANGO]
+    assert open_cases == []  # nothing staged ahead (SC-86)
 
 
 async def test_a_journey_started_again_keeps_the_gates_set_on_a_batch(api, munchly, neha, ctx):
@@ -642,7 +760,7 @@ async def test_a_journey_started_again_shows_no_case_an_earlier_journey_finished
     from sc_api.services.journey import reset
 
     await setup(api)
-    assert await detect(api) == [HERO]
+    assert await detect(api) == [HERO, MANGO]
     # the hero's journey played through to its report, as the maintainer's had been
     old = (
         await ctx.session.execute(select(m.Case).where(m.Case.client_id == "munchly", m.Case.batch_ref == HERO))
@@ -656,11 +774,11 @@ async def test_a_journey_started_again_shows_no_case_an_earlier_journey_finished
     await reset.reset(ctx, "munchly")
     await ctx.session.flush()
     snap = (await api.get(f"{WS}/snapshot", headers=PRIYA)).json()
-    assert [c["ref"] for c in snap["cases"]] == [MANGO]
+    assert snap["cases"] == []
     assert next(b for b in snap["batches"] if b["id"] == HERO)["phase"] is None
     assert (await api.get(f"{WS}/cases/{HERO}", headers=PRIYA)).status_code == 404
     assert (await api.get(f"/internal/clients/munchly/cases/{HERO}", headers=AGENT)).status_code == 404
-    assert (await api.get(f"{WS}/cases/{MANGO}", headers=PRIYA)).status_code == 200
+    assert (await api.get(f"{WS}/cases/{MANGO}", headers=PRIYA)).status_code == 404
     # nothing is deleted: the earlier journey's case is still in the record
     await ctx.session.refresh(old)
     assert old.status == "cleared"
@@ -680,7 +798,7 @@ async def test_a_journey_started_again_shows_no_case_an_earlier_journey_finished
         distributors=4,
         batches=[{"ref": b["id"], "sellPerDay": b["sellPerDay"]} for b in batches],
     )
-    assert out["result"] == [HERO]
+    assert out["result"] == [HERO, MANGO]
     snap = (await api.get(f"{WS}/snapshot", headers=PRIYA)).json()
     assert {c["ref"]: c["phase"] for c in snap["cases"]}[HERO] == "at-risk"
     assert (await case(api, PRIYA))["journey"]["phase"] == "at-risk"

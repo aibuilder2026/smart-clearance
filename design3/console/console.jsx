@@ -531,7 +531,8 @@
   const TRIG = {
     "data.daily": { title: "Daily load", act: "Run now", icon: "play" },
     "watcher.daily": { title: "Daily check", act: "Run now", icon: "play" },
-    "offer.close": { title: "Offer window closes", act: "Close now", icon: "timer", every: c => `${c.rules.offerWindowHours} h after the offer went out`, ask: (t, when) => ({ title: "Close the offer window now?", message: `The kiranas' offer for ${t.ref} closes now instead of ${when}, and what they did not take is planned again. This can't be undone for this offer.` }) },
+    "offer.close": { title: "Offer window closes", act: "Close now", icon: "timer", every: c => `${c.rules.offerWindowHours} h after the offer went out`, ask: (t, when) => ({ title: "Close the offer window now?", message: `The kiranas' offer for ${t.ref} closes now instead of ${when}. What they did not order goes to the ExpireSoon lot while it is open, or stays at the godown. This can't be undone for this offer.` }) },
+    "listing.close": { title: "Unsold lot closes", act: "Close now", icon: "timer", every: () => "when the lot's days on ExpireSoon are up", ask: (t, when) => ({ title: "Close the unsold lot now?", message: `The ExpireSoon lot for ${t.ref} closes now instead of ${when}, and its packs stay at the godown. This can't be undone for this lot.` }) },
     "shelf.due": { title: "Day-7 shelf check", act: "Check now", icon: "timer", every: () => "7 days after the offer", ask: (t, when) => ({ title: "Check the shelves now?", message: `Outreach counts what is left on each kirana's shelf for ${t.ref} now instead of ${when}, and books the pickups.` }) },
     "report.due": { title: "Report due", act: "Report now", icon: "timer", every: () => "the morning after the return window", ask: (t, when) => ({ title: "Write the report now?", message: `Impact writes the report for ${t.ref} now instead of ${when}.` }) },
   };
