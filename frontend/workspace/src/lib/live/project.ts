@@ -423,6 +423,7 @@ export function caseOf(
 			amount: 0
 		},
 		shelf: shelfOf(detail.shelf, returnBy),
+		realised: detail.realised,
 		returnBy,
 		push: pushesOf(detail, today),
 		today: dayLabel(day0),
@@ -479,7 +480,8 @@ const EMPTY_HERO: Hero = {
 	invoiceIssued: false,
 	shelf: null,
 	posted: false,
-	reviewed: false
+	reviewed: false,
+	staff: null
 };
 
 function heroOf(detail: CaseDetail | null, today: string): Hero {
@@ -519,7 +521,18 @@ function heroOf(detail: CaseDetail | null, today: string): Hero {
 		invoiceIssued: j.invoiceIssued,
 		shelf: j.shelf ? { ...shelfOf(j.shelf, detail.returnBy ?? ''), at: at(j.shelf.at) } : null,
 		posted: j.posted,
-		reviewed: j.reviewed
+		reviewed: j.reviewed,
+		staff: j.staff
+			? {
+					status: j.staff.status,
+					units: j.staff.units,
+					price: j.staff.price,
+					godown: j.staff.godown,
+					at: at(j.staff.at),
+					sold: j.staff.sold,
+					left: j.staff.left
+				}
+			: null
 	};
 }
 

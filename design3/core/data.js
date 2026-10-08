@@ -25,12 +25,13 @@
     hairoil:  { id: "hairoil", code: "GL-CO-200", brand: "Glowra", name: "Coconut Hair Oil 200 ml", category: "personal-care", hsn: "3305", mrp: 150, cost: 72, gst: 0.05, perCarton: 12, lifeDays: 730, kgPerUnit: 0.23, img: "pack-hairoil" },
   };
 
-  // each territory is matched by pincode for the territory guard; a godown may set its own staff-sale cap
+  // each territory is matched by pincode for the territory guard; a godown may set its own staff-sale cap. `upi` is the
+  // address staff pay at a staff sale (SC-87): fictional, on no real bank's handle
   const DISTRIBUTORS = {
-    rakesh:  { id: "rakesh", name: "Rakesh Traders", short: "Rakesh Traders", city: "Nagpur", state: "Maharashtra", godown: "Kalamna Market godown", address: "Kalamna Market, Nagpur, Maharashtra", gstin: "27AABCR1234F1Z5", kiranas: 38, cluster: "Nagpur, Wardha and Kamptee", territory: "Nagpur with Wardha and Kamptee", pins: "440, 441, 442", staffCap: 50 },
-    patil:   { id: "patil", name: "Patil Distributors", short: "Patil Distributors", city: "Pune", state: "Maharashtra", godown: "Market Yard godown", kiranas: 52, cluster: "Pune city", territory: "Pune", pins: "411, 412" },
-    gupta:   { id: "gupta", name: "Gupta & Sons", short: "Gupta & Sons", city: "Indore", state: "Madhya Pradesh", godown: "Siyaganj godown", kiranas: 47, cluster: "Indore", territory: "Indore", pins: "452, 453" },
-    lakshmi: { id: "lakshmi", name: "Lakshmi Agencies", short: "Lakshmi Agencies", city: "Hyderabad", state: "Telangana", godown: "Begum Bazaar godown", kiranas: 58, cluster: "Hyderabad old city", territory: "Hyderabad", pins: "500, 501", staffCap: 150 },
+    rakesh:  { id: "rakesh", name: "Rakesh Traders", short: "Rakesh Traders", city: "Nagpur", state: "Maharashtra", godown: "Kalamna Market godown", address: "Kalamna Market, Nagpur, Maharashtra", gstin: "27AABCR1234F1Z5", kiranas: 38, cluster: "Nagpur, Wardha and Kamptee", territory: "Nagpur with Wardha and Kamptee", pins: "440, 441, 442", staffCap: 50, upi: "rakesh-traders@exampleupi" },
+    patil:   { id: "patil", name: "Patil Distributors", short: "Patil Distributors", city: "Pune", state: "Maharashtra", godown: "Market Yard godown", kiranas: 52, cluster: "Pune city", territory: "Pune", pins: "411, 412", upi: "patil-distributors@exampleupi" },
+    gupta:   { id: "gupta", name: "Gupta & Sons", short: "Gupta & Sons", city: "Indore", state: "Madhya Pradesh", godown: "Siyaganj godown", kiranas: 47, cluster: "Indore", territory: "Indore", pins: "452, 453", upi: "gupta-sons@exampleupi" },
+    lakshmi: { id: "lakshmi", name: "Lakshmi Agencies", short: "Lakshmi Agencies", city: "Hyderabad", state: "Telangana", godown: "Begum Bazaar godown", kiranas: 58, cluster: "Hyderabad old city", territory: "Hyderabad", pins: "500, 501", staffCap: 150, upi: "lakshmi-agencies@exampleupi" },
   };
 
   // outside every Munchly territory, so the territory guard lets him see the listing

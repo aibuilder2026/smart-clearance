@@ -405,6 +405,12 @@ async def test_the_mango_drinks_journey_end_to_end(api, munchly, cloud, ctx):
     batch = await ctx.session.get(m.Batch, ("munchly", MANGO))
     await ctx.session.refresh(batch)
     assert batch.outcome == "cleared" and round(batch.recovered, 2) == want["net"]
+    # the close tells Priya what the godown still holds (SC-87), and Lakshmi Agencies' staff pay to its own address
+    closed = (await case(api, PRIYA, MANGO))["push"]["closed"]
+    assert closed["title"] == f"Batch closed · {money.fmt.num(left)} packs left at the godown"
+    assert closed["body"].endswith(f"{money.fmt.num(left)} packs no channel took are at Begum Bazaar godown.")
+    snap = (await api.get(f"{WS}/snapshot", headers=LAKSHMI)).json()
+    assert snap["distributors"]["lakshmi"]["upi"] == J["distributors"]["lakshmi"]["upi"]
 
 
 async def test_a_food_bank_can_turn_the_pickup_down(api, munchly, cloud):

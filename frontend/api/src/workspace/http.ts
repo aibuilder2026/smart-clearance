@@ -165,6 +165,7 @@ export function workspaceHttp(
 		bid: (ref, price) => change('POST', `${c(ref)}/bids`, { price }),
 		message: (ref, text) => change('POST', `${c(ref)}/messages`, { text }),
 		accept: (ref, bid) => change('POST', `${c(ref)}/bids/${enc(bid)}/accept`),
+		staffSale: (ref, sold) => change('POST', `${c(ref)}/staff-sale`, { sold }),
 		confirmPickup: (ref) => change('POST', `${c(ref)}/donation/confirm`),
 		collect: (ref) => change('POST', `${c(ref)}/donation/collect`),
 		dispatch: (ref, kind) => change('POST', `${c(ref)}/dispatches`, { kind }),

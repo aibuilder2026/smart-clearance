@@ -220,6 +220,16 @@ def test_the_pushes_read_as_design3():
     assert (closed["title"], closed["body"]) == (PUSH["closed"]["title"], PUSH["closed"]["body"])
 
 
+def test_the_closing_push_names_what_the_godown_holds():
+    """SC-87: when the lines left packs at the godown, the close says how many, where, and what the plan expected"""
+    closed = copy.push_closed(
+        net=14469.4, itc=0, kg=290.5, cartons=0, planned=16917.1, godown=222, at="Begum Bazaar godown"
+    )
+    assert closed["title"] == "Batch closed · 222 packs left at the godown"
+    assert closed["body"].startswith("₹14,469 recovered of ₹16,917 planned, ₹0 GST credit kept")
+    assert closed["body"].endswith("222 packs no channel took are at Begum Bazaar godown.")
+
+
 def test_the_chat_reads_as_design3():
     chat = J["copy"]["chat"]
     assert copy.chat_bid(bid=13, units=772) == chat[0]["text"]

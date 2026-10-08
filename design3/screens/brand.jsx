@@ -305,6 +305,29 @@
       </> : <span className="t-footnote muted">On day 7 the salesman counts the scheme packs on each shelf. Where a shop is selling too slowly, the agent suggests bringing packs back on the next round while they still have {M.RULES.returnWindowDays} or more days on them.</span>}
     </Card>;
   }
+  // the staff sale on Execution (SC-87, option A): the distributor runs it at the godown and records what sold, once; no
+  // agent acts here. Before it opens, the plan's line
+  function StaffOps({ staff, line, dist }) {
+    const units = staff ? staff.units : line.units, price = staff ? staff.price : line.price, sold = staff && staff.status === "recorded" ? staff.sold : null;
+    return <Card className="stack snug">
+      <div className="card-head"><span className="row tight"><span className="icontile" style={{ borderRadius: 9 }}><Icon name="users" size={17} stroke={2} /></span><span className="card-title">Staff sale · {dist.short}</span></span>{!staff ? <Badge>opens on approval</Badge> : sold == null ? <Badge tone="blue" dot>open</Badge> : <Badge tone="green" icon="check">recorded</Badge>}</div>
+      <div className="row wrap" style={{ gap: 18 }}><div className="stack tight" style={{ gap: 0 }}><span className="num m">{sold == null ? "—" : fmt.num(sold)}<span className="subtle" style={{ fontSize: "0.45em" }}>{` / ${fmt.num(units)}`}</span></span><span className="t-footnote subtle">sold to staff</span></div><div className="stack tight" style={{ gap: 0 }}><span className="num m">₹{price}</span><span className="t-footnote subtle">a pack, by UPI</span></div></div>
+      <K.Progress value={(sold || 0) / units} label="Staff packs sold" />
+      <span className="t-footnote muted">{dist.short} runs it at {(staff && staff.godown) || dist.godown} and records what sold; no agent acts here.</span>
+    </Card>;
+  }
+  // what no channel took, once every line is done (SC-87, option A): each line's planned packs it did not take, which
+  // still face the write-off, and the net the lines came to against the plan's
+  function GodownLeft({ realised, plan, actual, dist }) {
+    const took = id => (realised.lines.find(l => l.id === id) || { units: 0 }).units;
+    const rows = plan.lines.filter(l => l.id !== "writeoff" && l.units > took(l.id)).map(l => [l.id, l.short, l.units - took(l.id)]);
+    return <Card className="stack snug">
+      <div className="card-head"><span className="row tight"><span className="icontile gray" style={{ borderRadius: 9 }}><Icon name="warehouse" size={17} stroke={2} /></span><span className="card-title">Left at the godown</span></span><Badge>{fmt.num(realised.godown)} {realised.godown === 1 ? "pack" : "packs"}</Badge></div>
+      <List>{rows.map(([id, name, n]) => <ListRow key={id} title={name} sub="planned, not taken" value={<span className="tnum strong">{fmt.num(n)}</span>} />)}</List>
+      <span className="t-footnote muted">Not recovered: {fmt.num(realised.godown)} {realised.godown === 1 ? "pack" : "packs"} at {dist.godown}, still facing the write-off at best-before. The figures count only what each channel took: net {fmt.inr(actual)} of the {fmt.inr(plan.net)} planned.</span>
+    </Card>;
+  }
+
   function Execution({ me, onOpenListing }) {
     const s = useStore(); const h = s.hero; const app = useApp(); const hm = heroModel(s); const [sheet, setSheet] = useState(false);
     const started = ["approved", "executing", "dispatched", "settled", "cleared"].includes(h.phase);
@@ -353,6 +376,8 @@
             <span className="t-footnote subtle">The GST credit on donated packs is reversed: section 17(5)(h) blocks it on gifts, and since 1 October 2023 section 17(5)(fa) blocks it on CSR donations too.</span>
             {s.mango.donation === "booked" && <S.PlayAs who="meera" route="pickups">Confirm as Meera</S.PlayAs>}
           </Card>
+          {hasLine("staff") && <StaffOps staff={h.staff} line={D.PLAN.lines.find(l => l.id === "staff")} dist={D.DISTRIBUTORS[D.BATCHES.find(b => b.hero).distributor]} />}
+          {h.realised && h.realised.godown > 0 && ["dispatched", "settled", "cleared"].includes(h.phase) && <GodownLeft realised={h.realised} plan={D.PLAN} actual={h.realisedNet} dist={D.DISTRIBUTORS[D.BATCHES.find(b => b.hero).distributor]} />}
           {(h.van.status === "done" || h.shelf) && <ShelfCheck shelf={h.shelf} />}
         </div>}
         side={<><SectionTitle>Agent timeline</SectionTitle><Card><AgentFeed events={s.feed.filter(e => ["approve", "execute", "settle", "report"].includes(e.stage))} people={D.PEOPLE} live={hm.agentLive ? s.feed.filter(e => ["approve", "execute", "settle", "report"].includes(e.stage)).length - 1 : -1} /></Card></>} />}

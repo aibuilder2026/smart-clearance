@@ -477,10 +477,21 @@ def push_report(*, ref: str, kg: float) -> dict[str, Any]:
     }
 
 
-def push_closed(*, net: float, itc: float, kg: float, cartons: int) -> dict[str, Any]:
+def push_closed(
+    *, net: float, itc: float, kg: float, cartons: int, planned: float | None = None, godown: int = 0, at: str = ""
+) -> dict[str, Any]:
+    """the batch closed: what it recovered; when some packs were left at the godown (SC-87), what the plan expected and
+    where they wait"""
+    if not godown:
+        return {
+            "title": f"Batch closed · {cartons} cartons destroyed",
+            "body": f"{fmt.inr(net)} recovered, {fmt.inr(itc)} GST credit kept, {fmt.kg(kg)} kept out of landfill.",
+        }
+    packs, are = ("pack", "is") if godown == 1 else ("packs", "are")
     return {
-        "title": f"Batch closed · {cartons} cartons destroyed",
-        "body": f"{fmt.inr(net)} recovered, {fmt.inr(itc)} GST credit kept, {fmt.kg(kg)} kept out of landfill.",
+        "title": f"Batch closed · {fmt.num(godown)} {packs} left at the godown",
+        "body": f"{fmt.inr(net)} recovered of {fmt.inr(planned or 0)} planned, {fmt.inr(itc)} GST credit kept, "
+        f"{fmt.kg(kg)} kept out of landfill. {fmt.num(godown)} {packs} no channel took {are} at {at}.",
     }
 
 

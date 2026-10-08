@@ -242,7 +242,8 @@
 			"cluster": "Nagpur, Wardha and Kamptee",
 			"territory": "Nagpur with Wardha and Kamptee",
 			"pins": "440, 441, 442",
-			"staffCap": 50
+			"staffCap": 50,
+			"upi": "rakesh-traders@exampleupi"
 		},
 		"patil": {
 			"id": "patil",
@@ -254,7 +255,8 @@
 			"kiranas": 52,
 			"cluster": "Pune city",
 			"territory": "Pune",
-			"pins": "411, 412"
+			"pins": "411, 412",
+			"upi": "patil-distributors@exampleupi"
 		},
 		"gupta": {
 			"id": "gupta",
@@ -266,7 +268,8 @@
 			"kiranas": 47,
 			"cluster": "Indore",
 			"territory": "Indore",
-			"pins": "452, 453"
+			"pins": "452, 453",
+			"upi": "gupta-sons@exampleupi"
 		},
 		"lakshmi": {
 			"id": "lakshmi",
@@ -279,7 +282,8 @@
 			"cluster": "Hyderabad old city",
 			"territory": "Hyderabad",
 			"pins": "500, 501",
-			"staffCap": 150
+			"staffCap": 150,
+			"upi": "lakshmi-agencies@exampleupi"
 		}
 	},
 	"buyer": {

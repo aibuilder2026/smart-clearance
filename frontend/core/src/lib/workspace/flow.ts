@@ -178,6 +178,12 @@ export const A = {
 			link: 'execution'
 		});
 	},
+	// the staff sale, recorded once by the distributor (SC-87); the story's stub opens none
+	recordStaffSale: (s: State, sold?: Arg) => {
+		const st = s.hero.staff;
+		if (!st || st.status !== 'open' || typeof sold !== 'number') return;
+		Object.assign(st, { status: 'recorded', sold, left: st.units - sold });
+	},
 	collect: (s: State) => {
 		s.mango.donation = 'collected';
 		audit(s, 'meera', `collected ${D.mangoFb} packs and issued the receipt`, 'MF-2410-118', 'Day 4');

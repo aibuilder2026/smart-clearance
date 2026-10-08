@@ -114,7 +114,7 @@ async def test_write_the_live_fixtures(api, munchly, cloud):
     r = await api.post(f"{WS}/cases/{HERO}/bids", json={"price": 13}, headers=AGRAWAL)
     bid = r.json()["case"]["journey"]["bids"][-1]
     await agent(api, f"/cases/{HERO}/bids/{bid['id']}/answer", "negotiator-1", "negotiator")
-    await _write(api, "executing", ["priya", "rakesh", "ganesh", "agrawal", "meera"])
+    await _write(api, "executing", ["priya", "rakesh", "ganesh", "agrawal", "meera", "lakshmi-owner"])
 
     for k in nagpur[5:]:
         if not k["orders"]:
