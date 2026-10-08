@@ -180,11 +180,14 @@ async def _fire_daily(ctx: Ctx, c: m.Client, agent_id: str) -> None:
     today: date = ev.now(ctx, c).astimezone(IST).date()
     doc = dict(c.workspace_doc or {})
     daily = dict(doc.get("daily") or {})
-    if daily.get(agent_id) != today.isoformat():  # today's run, early: what the tick would start at its time
+    # the Data agent's run is the day's files, sent again if need be (written once, so the same files): a journey
+    # started again needs that day's stock reported, from files an earlier journey loaded (SC-79). The Watcher's first
+    # run of the day is the tick's own; after it, Run now's event has it check again
+    if agent_id == "data" or daily.get(agent_id) != today.isoformat():
         await tick.run_daily(ctx, c, agent_id, today, daily, doc, start=(c.journey_day0 or today) - timedelta(days=90))
         c.workspace_doc = {**doc, "daily": daily}
         await ctx.session.flush()
-    else:  # today's has run: the agent looks again (the Data agent sweeps new files; the Watcher checks again)
+    else:
         from sc_api.domain import journey as J
 
         await ev.publish(ctx, J.Event(J.STEP, {"type": J.RUN_NOW, "client": c.id, "agent": agent_id}, c.id))

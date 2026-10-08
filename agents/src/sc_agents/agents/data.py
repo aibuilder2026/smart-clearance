@@ -2,7 +2,9 @@
 found.
 
 1. Each CSV is read from the exports bucket (the day's files, the 90-day backfill, a file uploaded in Setup, or, on
-   Run now, every file not loaded yet). A file already in BigQuery is not loaded again.
+   Run now, every file not loaded yet). A file already in BigQuery is not loaded again; but a file the event names (the
+   day's own) is still read and its stock reported, since a journey started again replays the story's calendar and
+   needs the day's stock from files an earlier journey loaded (SC-79).
 2. Its columns are mapped onto the table's: a saved map for the layouts known (the Bizom-style stock, sales and shelf
    exports backend-api writes, services/journey/dms.py); Gemini Flash maps an unknown header set, with structured
    output `{kind, columns: {target: source}, unknown: [...]}`, and the columns it could not place are flagged.
@@ -85,6 +87,8 @@ class Export:
     unknown: list[str] = field(default_factory=list)
     date_format: str = "DMY"
     mapped_by: str = "saved"
+    # already in BigQuery: not loaded again, but its stock is still reported (SC-79)
+    loaded: bool = False
 
     @property
     def name(self) -> str:
@@ -271,7 +275,18 @@ async def _files(rc: RunCtx) -> list[str]:
     if not bucket:
         return []
     names = await rc.deps.store.list(bucket, f"{rc.msg.client}/")
-    return [f"gs://{bucket}/{n}" for n in sorted(names) if n.lower().endswith(".csv")]
+    # only days up to the journey's (backend-api's): a story replayed from its own calendar leaves later days' files
+    # from an earlier journey in the bucket, and their stock is not this journey's yet (SC-79)
+    rc.blobs["batches"] = await rc.deps.backend.batches(rc.msg.client)  # read once: the load uses it too
+    day = rc.blobs["batches"].get("day") or ""
+    return [f"gs://{bucket}/{n}" for n in sorted(names) if n.lower().endswith(".csv") and not _later(n, day)]
+
+
+def _later(name: str, day: str) -> bool:
+    """whether a file sits in a day's folder after the journey's day (`munchly/2026-11-15/stock-2026-11-15.csv`)"""
+    parts = name.split("/")
+    folder = parts[1] if len(parts) > 2 else ""
+    return bool(day) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", folder) is not None and folder > day
 
 
 async def _scan(rc: RunCtx, state: dict[str, Any]) -> dict[str, Any]:
@@ -281,7 +296,13 @@ async def _scan(rc: RunCtx, state: dict[str, Any]) -> dict[str, Any]:
         done = await rc.deps.warehouse.files_loaded(rc.msg.client)
     except Exception as e:
         raise Transient(f"BigQuery: {e}") from e
-    exports = [x for x in [await _read(rc, f) for f in files if f not in done] if x is not None]
+    p = rc.msg.payload
+    named = bool(p.get("files") or p.get("file"))
+    exports = [x for x in [await _read(rc, f) for f in files if named or f not in done] if x is not None]
+    for x in exports:
+        x.loaded = x.uri in done
+    if named and all(x.loaded and x.kind != "stock" for x in exports):
+        exports = []  # nothing new and no stock to report: the day's sales were loaded before
     rc.blobs["exports"] = exports
     if not exports:
         rc.run(AGENT).status = "noop"  # nothing new: every file is loaded already
@@ -322,7 +343,7 @@ def apply(x: Export, m: dict[str, Any]) -> list[str]:
 
 async def load(rc: RunCtx, exports: list[Export], *, world: World | None = None, today: str = "") -> dict[str, Any]:
     """loads mapped exports into BigQuery; what was loaded"""
-    world = world or World.of(await rc.deps.backend.batches(rc.msg.client))
+    world = world or World.of(rc.blobs.get("batches") or await rc.deps.backend.batches(rc.msg.client))
     loaded_at = datetime.now(UTC).isoformat()
     out: dict[str, Any] = {"stock": [], "rows": 0, "mapped": 0, "skipped": 0, "files": []}
     for x in exports:
@@ -332,12 +353,15 @@ async def load(rc: RunCtx, exports: list[Export], *, world: World | None = None,
         out["skipped"] += bad
         if bad:
             log.warning("data: %s rows of %s could not be read", bad, x.name)
-        try:
-            n = await rc.deps.warehouse.load(TABLE[x.kind], rows)
-        except Exception as e:
-            raise Transient(f"BigQuery load of {x.name}: {e}") from e
+        if x.loaded:  # in BigQuery already (an earlier journey's day): reported, not loaded twice
+            log.info("data: %s is in %s already; its stock is reported again", x.name, TABLE[x.kind])
+        else:
+            try:
+                n = await rc.deps.warehouse.load(TABLE[x.kind], rows)
+            except Exception as e:
+                raise Transient(f"BigQuery load of {x.name}: {e}") from e
+            log.info("data: loaded %s rows of %s into %s (%s map)", n, x.name, TABLE[x.kind], x.mapped_by)
         out["files"].append(x.uri)
-        log.info("data: loaded %s rows of %s into %s (%s map)", n, x.name, TABLE[x.kind], x.mapped_by)
         if x.kind == "stock":
             out["stock"].append((x, rows))
             out["rows"] += len(x.rows)

@@ -50,9 +50,15 @@ async def test_a_live_clients_daily_runs_and_firing_one_now(api, munchly, neha, 
     r = await api.post(f"{C}/munchly/journey/triggers/watcher", headers=neha)
     assert r.status_code == 200, r.text
     assert due(cloud)[-1]["agent"] == "watcher"
-    # a run already made today: the agent looks again (Run now's event)
+    # a run already made today: the Data agent gets the day's files again (the same ones, written once), so a journey
+    # started again has the day's stock reported; the Watcher looks again (Run now's event)
     n = len(cloud.publisher.sent)
     assert (await api.post(f"{C}/munchly/journey/triggers/data", headers=neha)).status_code == 200
+    again = [p["payload"] for p in cloud.publisher.sent[n:]]
+    assert [(p["type"], p["agent"], p["day"]) for p in again] == [("agent.due", "data", "2026-10-02")]
+    assert again[0]["files"] == sent["files"]
+    n = len(cloud.publisher.sent)
+    assert (await api.post(f"{C}/munchly/journey/triggers/watcher", headers=neha)).status_code == 200
     assert [p["payload"]["type"] for p in cloud.publisher.sent[n:]] == ["agent.run_now"]
 
 
