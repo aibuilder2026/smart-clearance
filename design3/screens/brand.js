@@ -143,7 +143,7 @@
     const top = live.quiet ? /* @__PURE__ */ React.createElement(L.Quiet, null) : items.length > 1 ? /* @__PURE__ */ React.createElement(L.Flagged, { items }, (it) => it.hero ? hero : /* @__PURE__ */ React.createElement(L.MangoCard, { item: it, dim })) : hero;
     const list = /* @__PURE__ */ React.createElement("div", { className: "stack snug" }, /* @__PURE__ */ React.createElement(SectionTitle, { sub: live.quiet ? "Every batch clears inside its date at today's sell-through" : "Flagged batches first, then by days to best-before" }, "Watchlist"), /* @__PURE__ */ React.createElement("div", { className: "list" }, watchlist.map((v) => /* @__PURE__ */ React.createElement(BatchRow, { key: v.id, view: v, selected: sel === v.id, compact: phone, onOpen: () => {
       setSel(v.id);
-      if (v.hero) openRoute(v.id);
+      if (v.hero || v.second) openRoute(v.id);
     } }))));
     const side = /* @__PURE__ */ React.createElement(L.Dim, { on: dim }, feed);
     const map = !live.quiet && cluster;

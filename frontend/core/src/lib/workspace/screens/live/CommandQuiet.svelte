@@ -5,6 +5,7 @@
 	import Card from '../../../components/Card.svelte';
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
+	import { useRoute } from '../../context';
 	import { batchViews } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { BatchView, User } from '../../types';
@@ -13,10 +14,12 @@
 
 	// S1 Command Center on a day with no batch at risk (screens/live.jsx Quiet, SC-68 option B; the live workspace with
 	// no batch in a journey): what the Watcher checked and when it checks next, every batch clearing inside its date, and
-	// the agents' last hand-offs
+	// the agents' last hand-offs. A batch in a journey (on a quiet day, the one going to a food bank) opens its Route
+	// Room from the watchlist, as on the busy Command Center (SC-82)
 	let { me }: { me: User } = $props();
 	const ws = useWorkspace();
 	const app = useApp();
+	const router = useRoute();
 	const s = $derived(ws.state);
 	const watch = $derived(s.rules.watchTime);
 	const rows = $derived(ws.data.setup.dms.rows);
@@ -32,7 +35,13 @@
 {#snippet list()}<div class="stack snug">
 		<SectionTitle sub="Every batch clears inside its date at today's sell-through">Watchlist</SectionTitle>
 		<div class="list">
-			{#each views as v (v.id)}<BatchRow view={v} compact={app.bp === 'phone'} onopen={() => {}} />{/each}
+			{#each views as v (v.id)}<BatchRow
+					view={v}
+					compact={app.bp === 'phone'}
+					onopen={() => {
+						if (v.phase) router.go('route', { ref: v.id });
+					}}
+				/>{/each}
 		</div>
 	</div>{/snippet}
 {#snippet feed()}{#if s.feed.length}<div class="stack snug">

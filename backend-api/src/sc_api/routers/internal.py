@@ -143,15 +143,7 @@ async def case_of(client_id: str, ref: str, ctx: InternalCtx) -> dict[str, Any]:
     if staff is None:
         raise not_found("operator")
     detail = await views.case_detail(ctx, client_id, ref, staff)
-    case = (
-        (
-            await ctx.session.execute(
-                select(m.Case).where(m.Case.client_id == client_id, m.Case.batch_ref == ref).order_by(m.Case.seq.desc())
-            )
-        )
-        .scalars()
-        .first()
-    )
+    case = await views.latest_case(ctx, client_id, ref)
     assert case is not None
     c = await world.client(ctx, client_id)
     return {

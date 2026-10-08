@@ -611,3 +611,76 @@ async def test_a_journey_starts_again_on_the_storys_own_calendar(ctx, munchly):
         .all()
     )
     assert [c.batch_ref for c in open_cases] == [MANGO]
+
+
+async def test_a_journey_started_again_keeps_the_gates_set_on_a_batch(api, munchly, neha, ctx):
+    """a batch's gate override is the client's configuration (SC-47): starting the journey again keeps it, and the
+    workspace judges the batch by it, as the console shows it (SC-82)"""
+    from sc_api.services.journey import reset
+
+    biscuits = "MF-2409-204"
+    why = "Zepto's Pune warehouse agreed to take this lot at 30% of its life"
+    r = await api.put(
+        f"/v1/console/clients/munchly/batches/{biscuits}/override", json={"qcomPct": 30, "reason": why}, headers=neha
+    )
+    assert r.status_code == 200, r.text
+    await reset.reset(ctx, "munchly")
+    await ctx.session.flush()
+    rows = (await api.get("/v1/console/clients/munchly/batches", headers=neha)).json()
+    b = next(x for x in rows if x["ref"] == biscuits)
+    assert (b["qcomPct"], [g["source"] for g in b["checks"]][1:]) == (30, ["override", "override"])
+    snap = (await api.get(f"{WS}/snapshot", headers=PRIYA)).json()
+    a = next(x for x in snap["batches"] if x["id"] == biscuits)["assess"]
+    assert [(g["id"], g["pass"]) for g in a["gates"]] == [("blinkit", True), ("zepto", True), ("instamart", True)]
+    assert a["status"] == "safe"
+
+
+async def test_a_journey_started_again_shows_no_case_an_earlier_journey_finished(api, munchly, ctx, clock):
+    """a case an earlier journey finished stays in the record, but the journey started again does not show it: the
+    snapshot, the batch's case and the agents' read all begin at the reset, until the Watcher flags the batch again
+    (SC-81)"""
+    from sc_api.services.journey import reset
+
+    await setup(api)
+    assert await detect(api) == [HERO]
+    # the hero's journey played through to its report, as the maintainer's had been
+    old = (
+        await ctx.session.execute(select(m.Case).where(m.Case.client_id == "munchly", m.Case.batch_ref == HERO))
+    ).scalar_one()
+    old.status, old.phase, old.stage, old.closed_at = "cleared", "cleared", 9, old.opened_at
+    await ctx.session.flush()
+    snap = (await api.get(f"{WS}/snapshot", headers=PRIYA)).json()
+    assert {c["ref"]: c["phase"] for c in snap["cases"]}[HERO] == "cleared"
+
+    clock.advance(minutes=5)
+    await reset.reset(ctx, "munchly")
+    await ctx.session.flush()
+    snap = (await api.get(f"{WS}/snapshot", headers=PRIYA)).json()
+    assert [c["ref"] for c in snap["cases"]] == [MANGO]
+    assert next(b for b in snap["batches"] if b["id"] == HERO)["phase"] is None
+    assert (await api.get(f"{WS}/cases/{HERO}", headers=PRIYA)).status_code == 404
+    assert (await api.get(f"/internal/clients/munchly/cases/{HERO}", headers=AGENT)).status_code == 404
+    assert (await api.get(f"{WS}/cases/{MANGO}", headers=PRIYA)).status_code == 200
+    # nothing is deleted: the earlier journey's case is still in the record
+    await ctx.session.refresh(old)
+    assert old.status == "cleared"
+
+    # the journey goes on as before: the Watcher flags the hero again, and its new case is the one shown
+    clock.advance(minutes=5)
+    batches = (await api.get("/internal/clients/munchly/batches", headers=AGENT)).json()["batches"]
+    await agent(api, "/exports", "data-2", "data", batches=batches, mapped=8, rows=312, days=90, file="stock.csv")
+    assert (await api.post(f"{WS}/setup/confirm", headers=PRIYA)).status_code == 200
+    assert (await api.post(f"{WS}/permission", headers=RAKESH)).status_code == 200
+    out = await agent(
+        api,
+        "/detect",
+        "watch-2",
+        "watcher",
+        checked=312,
+        distributors=4,
+        batches=[{"ref": b["id"], "sellPerDay": b["sellPerDay"]} for b in batches],
+    )
+    assert out["result"] == [HERO]
+    snap = (await api.get(f"{WS}/snapshot", headers=PRIYA)).json()
+    assert {c["ref"]: c["phase"] for c in snap["cases"]}[HERO] == "at-risk"
+    assert (await case(api, PRIYA))["journey"]["phase"] == "at-risk"

@@ -196,14 +196,28 @@ def _phase(case: m.Case | None) -> str | None:
     return case.phase if case else None
 
 
+def journey_from(c: m.Client | None) -> datetime | None:
+    """when the client's journey was last started again (wall time): the cases opened before it belong to an earlier
+    journey, kept in the record but no longer shown (SC-81)"""
+    at = ((c.workspace_doc if c else None) or {}).get("journeyFrom")
+    return datetime.fromisoformat(at) if at else None
+
+
 async def _open_cases(ctx: Ctx, client_id: str) -> dict[str, m.Case]:
-    rows = (
-        await ctx.session.execute(select(m.Case).where(m.Case.client_id == client_id).order_by(m.Case.seq.desc()))
-    ).scalars()
+    q = select(m.Case).where(m.Case.client_id == client_id)
+    since = journey_from(await ctx.session.get(m.Client, client_id))
+    if since is not None:
+        q = q.where(m.Case.opened_wall >= since)
+    rows = (await ctx.session.execute(q.order_by(m.Case.seq.desc()))).scalars()
     out: dict[str, m.Case] = {}
-    for case in rows:  # the latest case of each batch: open, or the last one closed
+    for case in rows:  # the latest case of each batch in this journey: open, or the last one closed
         out.setdefault(case.batch_ref, case)
     return out
+
+
+async def latest_case(ctx: Ctx, client_id: str, ref: str) -> m.Case | None:
+    """a batch's case in the client's current journey: open, or the last one closed"""
+    return (await _open_cases(ctx, client_id)).get(ref)
 
 
 def visible(cm: m.ClientMember, case: m.Case) -> bool:
