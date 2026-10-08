@@ -394,13 +394,17 @@
   const all = h => h.orders.length === D.KIRANAS.length;
 
   /* ---------- Batches ---------- */
+  // the screen each role reads a batch on, which a batch in a journey opens from Batches: the operator its Route Room,
+  // finance its Paperwork, sustainability its report (SC-103); a role with none opens the batch's sheet
+  const BATCH_SCREEN = { operator: "route", finance: "paperwork", sustainability: "report" };
   function Batches({ me }) {
     const s = useStore(); const app = useApp(); const { go } = useRoute(); const [open, setOpen] = useState(null); const hm = heroModel(s);
     const views = D.BATCHES.map(b => { const v = D.batchView(b); if (b.hero) v.phase = hm.view.phase; if (b.second) v.phase = "executing"; return v; });
     const sel = open && views.find(v => v.id === open);
+    const openRow = v => (v.hero && BATCH_SCREEN[me.role] ? go(BATCH_SCREEN[me.role]) : setOpen(v.id));
     return <Screen me={me} title="Batches" sub="Every lot the Watcher sees, from the DMS export">
-      {app.bp === "phone" ? <div className="list">{views.map(v => <BatchRow key={v.id} view={v} compact onOpen={() => (v.hero ? go("route") : setOpen(v.id))} />)}</div> :
-      <DataTable label="Batches" rows={views.map(v => ({ ...v, name: v.skuObj.name }))} onRow={v => (v.hero ? go("route") : setOpen(v.id))} initialSort={["daysLeft", "asc"]} columns={[
+      {app.bp === "phone" ? <div className="list">{views.map(v => <BatchRow key={v.id} view={v} compact onOpen={() => openRow(v)} />)}</div> :
+      <DataTable label="Batches" rows={views.map(v => ({ ...v, name: v.skuObj.name }))} onRow={openRow} initialSort={["daysLeft", "asc"]} columns={[
         { key: "name", label: "Product", render: v => <span className="row tight"><Product name={v.skuObj.img} size={36} /><span className="stack tight" style={{ gap: 0 }}><b>{v.skuObj.name}</b><span className="mono subtle t-caption">{v.id}</span></span></span> },
         { key: "dist", label: "Distributor", sortValue: v => v.dist.name, render: v => <span>{v.dist.name}<div className="t-caption subtle">{v.dist.city}</div></span> },
         { key: "daysLeft", label: "Days left", num: true }, { key: "units", label: "Units", num: true, render: v => fmt.num(v.units) },

@@ -343,6 +343,13 @@ export const NAV: Record<RoleId, NavItem[]> = {
 		{ id: 'audit', label: 'Audit log', short: 'Audit', icon: 'scroll-text' }
 	]
 };
+/** the screen each role reads a batch on, which a batch in a journey opens from Batches: the operator its Route Room,
+ *  finance its Paperwork, sustainability its report (SC-103); a role with none opens the batch's sheet */
+export const BATCH_SCREEN: Partial<Record<RoleId, string>> = {
+	operator: 'route',
+	finance: 'paperwork',
+	sustainability: 'report'
+};
 /** where each role starts */
 export const HOME: Record<RoleId, string> = {
 	operator: 'command',

@@ -670,6 +670,43 @@ describe("the buyer's listing (SC-92)", () => {
 		expect(face!.textContent?.trim()).not.toBe('?');
 	});
 
+	it("from Batches, a batch in a journey opens the person's own screen for it: Finance its processed papers (SC-103)", async () => {
+		const m = moment('cleared');
+		const open = async (who: string) => {
+			const go = vi.fn();
+			const s = source(fakeApi(m, who));
+			const r = render(LiveHost, {
+				props: { source: s, screen: 'batches', at: null, onnavigate: go }
+			}) as unknown as RenderResult<never>;
+			await waitFor(() => expect(s.status.phase).toBe('ready'));
+			const row = (ref: string) =>
+				[...r.container.querySelectorAll('tbody tr')].find((tr) => tr.textContent?.includes(ref))!;
+			await waitFor(() => expect(row(CHIPS)).toBeTruthy());
+			return { go, r, row };
+		};
+		// Anita: the cleared chips are not her batch in focus, and open their Paperwork
+		const anita = await open('anita');
+		await fireEvent.click(anita.row(CHIPS));
+		expect(anita.go).toHaveBeenCalledWith('paperwork', { replace: undefined, ref: CHIPS });
+		// a batch in no journey opens its sheet, and goes nowhere
+		anita.go.mockClear();
+		await fireEvent.click(anita.row('MF-2408-311'));
+		expect(anita.go).not.toHaveBeenCalled();
+		anita.r.unmount();
+		// Vikram: the batch's report
+		const vikram = await open('vikram');
+		await fireEvent.click(vikram.row(CHIPS));
+		expect(vikram.go).toHaveBeenCalledWith('report', { replace: undefined, ref: CHIPS });
+		vikram.r.unmount();
+		// and the chips' Paperwork, as Anita lands on it: the papers processed, the pack reviewed
+		const r = await draw(source(fakeApi(m, 'anita')), 'paperwork', CHIPS);
+		await waitFor(() => expect(text(r)).toContain('INV/26-27/0931'));
+		expect(text(r)).toContain('CN/0117');
+		expect(text(r)).toContain('GST ITC memo');
+		expect(r.getByText('reviewed', { exact: true })).toBeTruthy();
+		expect(r.queryByRole('button', { name: 'Mark reviewed' })).toBeNull();
+	});
+
 	it('Batches shows every batch at its own journey: a cleared batch reads Cleared, in focus or not (SC-102)', async () => {
 		const m = moment('cleared');
 		const s = source(fakeApi(m, 'anita'));

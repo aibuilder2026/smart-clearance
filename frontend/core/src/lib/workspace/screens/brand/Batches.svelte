@@ -6,14 +6,16 @@
 	import Product from '../../../components/Product.svelte';
 	import StatusBadge from '../../../components/StatusBadge.svelte';
 	import { useRoute } from '../../context';
-	import { batchViews, fmt } from '../../model';
+	import { BATCH_SCREEN, batchViews, fmt } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { BatchView, User } from '../../types';
 	import Screen from '../common/Screen.svelte';
 	import BatchSheet from './BatchSheet.svelte';
 
-	// Batches: every lot the Watcher sees, from the DMS export; the hero opens the Route Room, any other its sheet
-	// (screens/brand.jsx Batches)
+	// Batches: every lot the Watcher sees, from the DMS export (screens/brand.jsx Batches). A batch in a journey opens
+	// the screen the person reads a batch on, with it in focus: the operator's Route Room, finance's Paperwork,
+	// sustainability's report (SC-103); any other batch opens its sheet. On the live workspace every batch in a journey
+	// has its own (SC-102), so a cleared batch opens its processed papers for Finance
 	let { me }: { me: User } = $props();
 	const ws = useWorkspace();
 	const app = useApp();
@@ -24,7 +26,9 @@
 	const views = $derived(batchViews(ws.state, ws.data));
 	const rows = $derived<Row[]>(views.map((v) => ({ ...v, name: v.skuObj.name })));
 	const sel = $derived(openId ? views.find((v) => v.id === openId) : undefined);
-	const openRow = (v: BatchView) => (v.hero ? router.go('route', { ref: v.id }) : (openId = v.id));
+	const target = $derived(BATCH_SCREEN[me.role]);
+	const openRow = (v: BatchView) =>
+		target && (v.hero || v.journey) ? router.go(target, { ref: v.id }) : (openId = v.id);
 </script>
 
 {#snippet product(v: Row)}<span class="row tight"

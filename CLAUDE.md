@@ -1084,4 +1084,15 @@
   - **Checks:**
     - the frontend gate passes, with workspace at 59: a new live test draws Anita's Batches on the cleared moment, and fails without the fix;
     - on the local app, Anita's Batches reads the chips Cleared and the Mango Drink At risk.
+- **SC-103** (In Review, branch `SC-103-batch-opens-its-screen`, stacked on SC-102; bug found by the maintainer): on Batches, a batch in a journey opens the screen the person reads a batch on.
+  - **Found:** as Anita, clicking the cleared chips on Batches opened the batch sheet, not the papers already processed for it.
+  - **The cause:** only the batch in focus opened a screen, and it was always the Route Room. For Finance, RoleApp sent that to her home, Paperwork, without its batch; every other row opened the sheet.
+  - **The fix** (design3 `brand.jsx` first, then core): `BATCH_SCREEN` maps each role to its screen.
+    - The operator gets the Route Room, Finance the batch's Paperwork, Sustainability its report.
+    - A batch in a journey opens that screen with the batch in focus: the batch in focus, or, on the live workspace, any batch with its own journey (SC-102).
+    - Any other batch opens its sheet. In the prototype each role lands where it did before.
+  - **Checks:**
+    - the frontend gate passes, with workspace at 60: a new live test clicks the cleared chips on Batches as Anita (Paperwork) and Vikram (report), checks a batch in no journey stays put, and draws the chips' processed Paperwork; it fails without the fix;
+    - on the local app, Anita's click opens `/paperwork/MF-2409-117`, reviewed, with INV/26-27/0931, CN/0117 and the GST ITC memo.
+  - **Hosting:** design3's `dist/` is rebuilt.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
