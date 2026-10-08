@@ -670,6 +670,17 @@ describe("the buyer's listing (SC-92)", () => {
 		expect(face!.textContent?.trim()).not.toBe('?');
 	});
 
+	it("the Mango Drink's GST ITC memo reads its input credit from the plan, and Paperwork stays up (SC-105)", async () => {
+		const m = moment('cleared');
+		const r = await draw(source(fakeApi(m, 'anita')), 'paperwork', MANGO);
+		await fireEvent.click(await waitFor(() => r.getByRole('button', { name: /GST ITC memo/ })));
+		// the Mango's SKU has no itcPerUnit of its own: ₹11 at cost × 5% GST, as money.js works it out
+		expect(m.members.anita.cases[MANGO].sku.itcPerUnit ?? null).toBeNull();
+		await waitFor(() => expect(text(r)).toContain('₹0.55 a pack, from the cost sheet'));
+		expect(text(r)).not.toMatch(/NaN|undefined/);
+		expect(r.getByRole('button', { name: /FSSAI surplus-food checklist/ })).toBeTruthy();
+	});
+
 	it("from Batches, a batch in a journey opens the person's own screen for it: Finance its processed papers (SC-103)", async () => {
 		const m = moment('cleared');
 		const open = async (who: string) => {
