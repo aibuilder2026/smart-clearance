@@ -738,4 +738,14 @@
     - The browser suites were not run (SC-55).
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app and demo pages stay on their pinned commit, as for SC-79.
 
+- **SC-81** (In Review, branch `SC-81-reset-hides-old-cases`; bug): a journey started again no longer shows the cases an earlier journey finished.
+  - **Found:** after a local run-through to the report, `hydrate.sh --journey-reset munchly` left MF-2409-117 showing as cleared at day 0. The reset closed only open cases, and the workspace shows each batch's latest case, so a case already closed as `cleared` stayed in view until the Watcher flagged the batch again.
+  - **The fix:**
+    - The reset records when the journey began (`workspace_doc.journeyFrom`, wall time).
+    - `views.latest_case` ignores cases opened before it, for the snapshot, a batch's case, its documents and the agents' `/internal` read.
+    - Nothing is deleted, and no migration is needed. The console's Reset journey (SC-79) runs the same reset.
+  - **Checks:**
+    - backend-api: 416 pass. The new test fails without the fix, with the old cleared case listed beside the Mango Drink's.
+    - Locally, a reset leaves only the Mango Drink's case in Munchly's workspace.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

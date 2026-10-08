@@ -1,7 +1,8 @@
 """A journey from the start (SC-66): what hydrate does after it builds Munchly's world, and what an operator runs to
 play the story again (POST /internal/jobs/journey-reset, hydrate.sh --journey-reset, or the paused Scheduler job).
 
-Nothing is deleted: open cases close as `reset`. The story's batches are dated again from the new day 0, Rakesh
+Nothing is deleted: open cases close as `reset`, and the workspace no longer shows any case opened before the reset,
+whether it closed as `reset` or as `cleared` (SC-81). The story's batches are dated again from the new day 0, Rakesh
 Traders' permission and the setup's confirmation go back to not yet given, and the client's clock moves forward to
 08:00 on day 0, just before the Data agent's 08:30 and the Watcher's 09:00. The Mango Drink batch comes back as the
 story has it: already approved, its kirana and staff-sale lines done, its donation still to book.
@@ -33,6 +34,8 @@ def next_day0(now: datetime) -> date:
 async def reset(ctx: Ctx, client_id: str) -> dict[str, Any]:
     c = await lock_client(ctx, client_id)
     j = load("journey.json")
+    # the moment this journey begins: the workspace shows no case opened before it, however that case ended (SC-81)
+    started = ctx.clock.now()
     # a synthetic workspace replays the story on its own calendar, so the label photos, the papers and the copy all
     # carry the story's dates; a real client's journey starts on its next morning
     synthetic = bool((c.workspace_doc or {}).get("synthetic"))
@@ -93,6 +96,7 @@ async def reset(ctx: Ctx, client_id: str) -> dict[str, Any]:
     doc = dict(c.workspace_doc or {})
     doc["daily"] = {}
     doc["heroRef"] = hero_ref
+    doc["journeyFrom"] = started.isoformat()
     c.workspace_doc = doc
     await ev.start_at(ctx, c, journey_morning(day0), replay=synthetic)
     # the daily runs start over with the journey's days
