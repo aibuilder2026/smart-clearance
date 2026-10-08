@@ -16,7 +16,8 @@
 		"test:a11y": "vite build && playwright test --project=desktop-light --project=desktop-dark --project=tablet-light --project=phone-light --project=phone-dark && node ../testing/src/a11y-coverage.ts",
 		"test:e2e": "vite build && playwright test --project=flows --project=firefox-desktop --project=webkit-tablet --project=webkit-phone",
 		"test:parity": "vite build && playwright test -c playwright.parity.config.ts",
-		"test:journey": "playwright test -c playwright.journey.config.ts"
+		"test:journey": "playwright test -c playwright.journey.config.ts --project=\"Munchly Chips E2E\"",
+		"test:journey:mango": "playwright test -c playwright.journey.config.ts --project=\"Munchly Mango E2E\""
 	},
 	"dependencies": {
 		"@smart-clearance/api": "workspace:*",

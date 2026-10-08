@@ -1,0 +1,227 @@
+{
+	"flow": "Munchly Mango E2E",
+	"status": "passed",
+	"took": 60,
+	"steps": [
+		{
+			"n": 1,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Command Center: the Mango Drink at settled",
+			"at": "2026-10-08T23:22:40.412Z",
+			"ms": 6835,
+			"shot": "steps/01-Command-Center-the-Mango-Drink-at-settled.png"
+		},
+		{
+			"n": 2,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Execution: the scheme sent, the staff sale open, the donation booked",
+			"at": "2026-10-08T23:22:45.499Z",
+			"ms": 5087,
+			"shot": "steps/02-Execution-the-scheme-sent-the-staff-sale-open-th.png"
+		},
+		{
+			"n": 3,
+			"who": "Anita Rao",
+			"role": "Finance",
+			"did": "Paper: Price-support credit note CN/0118",
+			"at": "2026-10-08T23:22:51.788Z",
+			"ms": 6289,
+			"shot": "steps/03-Paper-Price-support-credit-note-CN-0118.png"
+		},
+		{
+			"n": 4,
+			"who": "Anita Rao",
+			"role": "Finance",
+			"did": "Paper: GST ITC memo s.17(5)(h)",
+			"at": "2026-10-08T23:22:53.834Z",
+			"ms": 2046,
+			"shot": "steps/04-Paper-GST-ITC-memo-s-17-5-h-.png"
+		},
+		{
+			"n": 5,
+			"who": "Anita Rao",
+			"role": "Finance",
+			"did": "Paper: FSSAI surplus-food checklist 86 units",
+			"at": "2026-10-08T23:22:55.874Z",
+			"ms": 2040,
+			"shot": "steps/05-Paper-FSSAI-surplus-food-checklist-86-units.png"
+		},
+		{
+			"n": 6,
+			"who": "Anita Rao",
+			"role": "Finance",
+			"did": "Paper: Destruction certificate 0 units left",
+			"at": "2026-10-08T23:22:57.919Z",
+			"ms": 2045,
+			"shot": "steps/06-Paper-Destruction-certificate-0-units-left.png"
+		},
+		{
+			"n": 7,
+			"who": "Anita Rao",
+			"role": "Finance",
+			"did": "Pack reviewed",
+			"at": "2026-10-08T23:22:59.427Z",
+			"ms": 1508,
+			"shot": "steps/07-Pack-reviewed.png"
+		},
+		{
+			"n": 8,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Report now: Expire it and report now?",
+			"at": "2026-10-08T23:23:04.266Z",
+			"ms": 4839,
+			"shot": "steps/08-Report-now-Expire-it-and-report-now-.png"
+		},
+		{
+			"n": 9,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Impact posted the ledger",
+			"at": "2026-10-08T23:23:12.987Z",
+			"ms": 8721,
+			"shot": "steps/09-Impact-posted-the-ledger.png"
+		},
+		{
+			"n": 10,
+			"who": "Vikram Sethi",
+			"role": "ESG",
+			"did": "ESG: the batch posted to the ledger",
+			"at": "2026-10-08T23:23:18.154Z",
+			"ms": 5167,
+			"shot": "steps/10-ESG-the-batch-posted-to-the-ledger.png"
+		},
+		{
+			"n": 11,
+			"who": "Vikram Sethi",
+			"role": "ESG",
+			"did": "ESG: the BRSR line, the meals and the evidence",
+			"at": "2026-10-08T23:23:20.071Z",
+			"ms": 1917,
+			"shot": "steps/11-ESG-the-BRSR-line-the-meals-and-the-evidence.png"
+		},
+		{
+			"n": 12,
+			"who": "Vikram Sethi",
+			"role": "ESG",
+			"did": "ESG: the quarter, BRSR Core",
+			"at": "2026-10-08T23:23:21.512Z",
+			"ms": 1441,
+			"shot": "steps/12-ESG-the-quarter-BRSR-Core.png"
+		},
+		{
+			"n": 13,
+			"who": "Anita Rao",
+			"role": "Finance",
+			"did": "Batches: the Mango Drink cleared",
+			"at": "2026-10-08T23:23:25.768Z",
+			"ms": 4256,
+			"shot": "steps/13-Batches-the-Mango-Drink-cleared.png"
+		},
+		{
+			"n": 14,
+			"who": "Anita Rao",
+			"role": "Finance",
+			"did": "The Mango Drink's papers, processed",
+			"at": "2026-10-08T23:23:27.212Z",
+			"ms": 1444,
+			"shot": "steps/14-The-Mango-Drink-s-papers-processed.png"
+		},
+		{
+			"n": 15,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Execution: every line done",
+			"at": "2026-10-08T23:23:31.536Z",
+			"ms": 4324,
+			"shot": "steps/15-Execution-every-line-done.png"
+		},
+		{
+			"n": 16,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Command Center at the end",
+			"at": "2026-10-08T23:23:33.803Z",
+			"ms": 2267,
+			"shot": "steps/16-Command-Center-at-the-end.png"
+		}
+	],
+	"figures": {
+		"Phase at the start": "settled",
+		"Label photo at the start": "verified",
+		"Write-off": "₹23,058.72",
+		"Plan net": "₹16,887.7",
+		"Plan line kirana": "1372 packs",
+		"Plan line staff": "150 packs",
+		"Plan line foodbank": "86 packs",
+		"Kiranas offered the scheme": 58,
+		"Donation booked": "86 packs to Feeding India",
+		"Paper: Price-support credit note": "CN/0118 (generated, PDF)",
+		"Paper: GST ITC memo": "s.17(5)(h) (generated, PDF)",
+		"Paper: FSSAI surplus-food checklist": "86 units (generated, PDF)",
+		"Paper: Destruction certificate": "0 units left (not required)",
+		"Papers with their PDF": "support, itc, fssai",
+		"Van round push": "Van route for Sunday",
+		"Phase before the report": "settled",
+		"Actual net": 16887.7,
+		"Left at the godown": 0,
+		"Realised kirana": "1372 packs",
+		"Realised staff": "150 packs",
+		"Realised foodbank": "86 packs",
+		"Phase after the report": "cleared",
+		"Quarter: recovered": "₹6,68,040",
+		"Quarter: GST credit protected": "₹81,061",
+		"Quarter: kept out of landfill": "6263.3 kg",
+		"Quarter: meals": 3786,
+		"Quarter: batches": 25
+	},
+	"findings": [
+		{
+			"severity": "note",
+			"where": "MF-2410-118",
+			"what": "skipped, already done: the label photo was sent"
+		},
+		{
+			"severity": "note",
+			"where": "MF-2410-118",
+			"what": "planned after day 0, so ₹16,887.7 where the story's day-0 plan nets ₹16,917.1: kirana 1372, staff 150, foodbank 86"
+		},
+		{
+			"severity": "note",
+			"where": "MF-2410-118",
+			"what": "skipped, already done: the plan was approved"
+		},
+		{
+			"severity": "warning",
+			"where": "/offer/MF-2410-118",
+			"what": "Bilal Stores ordered 16 of its 28, so the scheme fills to 1372 exactly"
+		},
+		{
+			"severity": "warning",
+			"where": "/offer/MF-2410-118",
+			"what": "Saraswathi Kirana's story order of 4 packets cannot be placed: the offer screen orders in twelves from its share of 28, so it ordered 16"
+		},
+		{
+			"severity": "note",
+			"where": "MF-2410-118",
+			"what": "skipped, already done: the scheme closed"
+		},
+		{
+			"severity": "note",
+			"where": "MF-2410-118",
+			"what": "skipped, already done: the staff sale was recorded"
+		},
+		{
+			"severity": "note",
+			"where": "MF-2410-118",
+			"what": "skipped, already done: the donation was collected"
+		},
+		{
+			"severity": "note",
+			"where": "MF-2410-118",
+			"what": "skipped, already done: the van round ran"
+		}
+	]
+}

@@ -2,7 +2,7 @@ import type { Page, TestInfo } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-// What the Munchly Chips E2E run keeps besides Playwright's own report (SC-95): a caption on the recording naming who
+// What a journey flow's run keeps besides Playwright's own report (SC-95; Munchly Chips E2E, Munchly Mango E2E): a caption on the recording naming who
 // is acting and what they do, a still at each step, every figure the journey reached, and the findings (page errors,
 // failed API calls, anything the run noticed that was not as the story says). report.md and report.json are written to
 // the run's output folder when the test ends, pass or fail.
@@ -12,6 +12,8 @@ const SETTLE = Number(process.env.E2E_SETTLE ?? 1200);
 
 export type Step = { n: number; who: string; role: string; did: string; at: string; ms: number; shot?: string };
 export type Finding = { severity: 'error' | 'warning' | 'note'; where: string; what: string };
+/** the flow a run is of, and the batch it takes, as its caption and report name them */
+export type About = { flow: string; batch: string };
 
 export class Run {
 	readonly steps: Step[] = [];
@@ -26,7 +28,11 @@ export class Run {
 
 	constructor(
 		private page: Page,
-		private info: TestInfo
+		private info: TestInfo,
+		readonly about: About = {
+			flow: 'Munchly Chips E2E',
+			batch: 'MF-2409-117, Masala Chips 150 g, Rakesh Traders, Nagpur'
+		}
 	) {
 		this.dir = info.outputPath('steps');
 		mkdirSync(this.dir, { recursive: true });
@@ -64,7 +70,7 @@ export class Run {
 		const { who, role, did } = this.caption;
 		if (!who) return;
 		await this.page.evaluate(
-			([who, role, did, n]) => {
+			([who, role, did, n, flow]) => {
 				let el = document.getElementById('e2e-caption');
 				if (!el) {
 					el = document.createElement('div');
@@ -76,9 +82,9 @@ export class Run {
 						'border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.25);max-width:80vw;text-align:center';
 					document.body.appendChild(el);
 				}
-				el.innerHTML = `<b style="color:#f5c542">Munchly Chips E2E · ${n}</b> · <b>${who}</b> <span style="opacity:.75">(${role})</span> — ${did}`;
+				el.innerHTML = `<b style="color:#f5c542">${flow} · ${n}</b> · <b>${who}</b> <span style="opacity:.75">(${role})</span> — ${did}`;
 			},
-			[who, role, did, this.stage] as const
+			[who, role, did, this.stage, this.about.flow] as const
 		);
 	}
 
@@ -113,14 +119,14 @@ export class Run {
 	write(status: string, error?: string) {
 		const out = this.info.outputPath();
 		const took = Math.round((Date.now() - this.started) / 1000);
-		const json = { flow: 'Munchly Chips E2E', status, error, took, steps: this.steps, figures: this.figures };
+		const json = { flow: this.about.flow, status, error, took, steps: this.steps, figures: this.figures };
 		writeFileSync(join(out, 'report.json'), JSON.stringify({ ...json, findings: this.findings }, null, 2));
 		const md = [
-			'# Munchly Chips E2E',
+			`# ${this.about.flow}`,
 			'',
 			`- **Status:** ${status}${error ? ` (${error.split('\n')[0]})` : ''}`,
 			`- **Started:** ${new Date(this.started).toISOString()}, took ${Math.floor(took / 60)} min ${took % 60} s`,
-			`- **Batch:** MF-2409-117, Masala Chips 150 g, Rakesh Traders, Nagpur`,
+			`- **Batch:** ${this.about.batch}`,
 			'',
 			'## Steps',
 			'',

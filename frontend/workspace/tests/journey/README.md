@@ -29,6 +29,28 @@ if destroyed on the Command Center at Detect, the Lot won bill's total of ₹11,
 signs, one day for the van round on the Van route, in its push and in the timeline, and an FSSAI paper that names no
 batch as donated.
 
+## Munchly Mango E2E
+
+The Mango Drink 200 ml batch (MF-2410-118, Lakshmi Agencies, Hyderabad), `munchly-mango.journey.ts` (SC-104). It
+**never resets the journey**: each step reads the batch's case first and is skipped when it is done, so it takes the
+batch on from wherever it stands, and can be run again after a failure.
+
+- **Its plan:** three lines and no ExpireSoon lot (22 days left is under ExpireSoon's 30): the kiranas' scheme, the
+  staff sale at the godown, and the food-bank donation.
+- **Its people:** Lakshmi Agencies (photo, staff sale, van round), Priya (approval), each ordering Hyderabad kirana,
+  Meera of Feeding India (pickup), Anita (review), Neha (report) and Vikram (ESG).
+- **The kirana orders:** the offer screen orders in twelves from a shop's share down to 12. A story order it cannot
+  place (Saraswathi Kirana's 4) is ordered at the nearest it can, and as many twelves are taken off a later shop, so
+  the scheme still fills to the packet. The report says which shops ordered other than the story.
+- **The figures:** each is checked against the batch's own plan, which grows by a day's sales for each day it is made
+  after day 0.
+
+```sh
+E2E_SLOWMO=120 corepack pnpm test:journey:mango --headed
+```
+
+Its run of 9 Oct is in `runs/2026-10-09-mango/`.
+
 ## Before a run
 
 - backend-api on :8000 (`backend-api/scripts/dev.sh`), on a world with Munchly's live workspace (`hydrate.sh --reset`,

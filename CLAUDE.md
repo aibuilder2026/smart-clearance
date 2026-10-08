@@ -1100,4 +1100,21 @@
   - **The cause:** `Paper.svelte` read `c.sku.itcPerUnit`, which only the chips' SKU carries.
   - **The fix:** the memo reads the plan's write-off `itcPerUnit`, the figure backend-api works out for every SKU (₹0.90 for the chips; cost × GST, ₹0.55, for the Mango) and every other screen already reads.
   - **Checks:** the frontend gate passes, with workspace at 61 and core's goldens unchanged. A new live test opens the Mango's memo on the cleared moment and reads ₹0.55 a pack; it fails without the fix with the same TypeError.
+- **SC-104** (In Review, branch `SC-104-munchly-mango-e2e`, stacked on SC-105): Munchly Mango E2E, the Mango Drink's live journey from where it stands, asked for by the maintainer ("Dont reset any journey").
+  - **The flow** (`munchly-mango.journey.ts`, `corepack pnpm test:journey:mango`):
+    - each step reads the case first and is skipped when done; it never resets;
+    - Lakshmi Agencies, Priya, each ordering Hyderabad kirana, Meera, Anita, Neha and Vikram act in the real UI;
+    - figures are checked against the batch's own plan.
+
+    Each flow has its own Playwright project, so `test:journey` (the chips, which resets) never starts the Mango's. The helpers both flows share moved into `flow.ts`; the chips flow's read-only steps were run after the move.
+  - **The run of 9 Oct** (`runs/2026-10-09-mango/REPORT.md`; the 7 min 55 s recording stays local): passed end to end in two parts, from Verify.
+    - Part 1 ran to Anita's review, where SC-105 blanked Paperwork. Part 2 ran after the fix, skipped what was done, and went on to the ledger.
+    - Plan ₹16,887.70, made on journey day 1: 1,372 to 52 kiranas, 150 to staff, 86 to Feeding India.
+    - The scheme filled, the staff sale was recorded, and the donation was collected. CN/0118, the ITC memo and the FSSAI checklist each carry their PDF. The Sunday round ran.
+    - Impact posted; actual ₹16,887.70, nothing left at the godown. Batches reads it Cleared and opens its papers.
+  - **Findings, not fixed:**
+    - the batch's BRSR line reads "0 meals (nothing donated)", and its export 0 donated, for a batch that donated 86 (hard-coded from the chips' story);
+    - the evidence line reads "· ·" where a batch with no ExpireSoon line has no invoice or lot;
+    - Paperwork's subtitle says "at the award" for a batch with no award;
+    - Saraswathi Kirana's story order of 4 cannot be placed in the offer screen (twelves, from 12), so the run ordered 16 for it and 16 for Bilal Stores (28 in the story).
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
