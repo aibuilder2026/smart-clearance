@@ -36,7 +36,10 @@ class Settings(BaseSettings):
     model_pro: str | None = None
     model_flash: str | None = None
     genai_location: str = "global"
-    model_timeout_s: float = Field(default=20.0, gt=0)
+    # each attempt's deadline, and how many attempts a call gets on Vertex AI's capacity answers (429, 500, 503, 504):
+    # the first live eval run met the Pro preview's quota and 20 s deadlines (SC-77)
+    model_timeout_s: float = Field(default=30.0, gt=0)
+    model_attempts: int = Field(default=3, ge=1, le=5)
     model_calls_per_run: int = Field(default=12, ge=1)
     # the Impact agent's BRSR narrative (one Flash call a cleared batch, not sent back yet): off unless asked for
     impact_narrative: bool = False

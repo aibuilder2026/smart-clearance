@@ -66,27 +66,50 @@ def test_a_covered_date_must_not_verify():
     assert scorers.score_vision(c, {**ok, "bestBefore": "2026-11-18"})[0]["pass"] == 0  # a guessed date
 
 
+def pairs(columns: dict[str, str]) -> list[dict[str, str]]:
+    """a map of columns in the shape Gemini returns it: a list of pairs (SC-77)"""
+    return [{"column": t, "header": h} for t, h in columns.items()]
+
+
 def test_a_data_map_is_held_to_its_layout():
     c = next(x for x in harness.load("data") if x["id"] == "data-marg-stock")
-    right = {
-        "files": [
-            {"file": c["file"], "kind": "stock", "columns": c["expect"]["columns"], "unknown": c["expect"]["unknown"]}
-        ]
-    }
+    cols = c["expect"]["columns"]
+    right = {"files": [{"file": c["file"], "kind": "stock", "columns": pairs(cols), "unknown": c["expect"]["unknown"]}]}
     assert scorers.score_data(c, right)[0]["pass"] == 1
     cartons = json.loads(json.dumps(right))
-    cartons["files"][0]["columns"]["closing_qty"] = "QTY_IN_CASES"
+    cartons["files"][0]["columns"] = pairs({**cols, "closing_qty": "QTY_IN_CASES"})
     s, problems = scorers.score_data(c, cartons)
     assert s["pass"] == 0 and any("closing_qty" in p for p in problems)
     by_id = json.loads(json.dumps(right))
-    by_id["files"][0]["columns"]["distributor_name"] = by_id["files"][0]["columns"].pop("distributor_id")
+    by_id["files"][0]["columns"] = pairs(
+        {("distributor_name" if t == "distributor_id" else t): h for t, h in cols.items()}
+    )
     assert scorers.score_data(c, by_id)[0]["pass"] == 1  # a distributor by id or name loads the same
+    # a map, as earlier recordings hold them, still scores
+    assert scorers.score_data(c, {"files": [{**right["files"][0], "columns": cols}]})[0]["pass"] == 1
+
+
+async def test_the_data_set_scores_a_live_shaped_answer(deps, recordings):
+    """the stub's own data_map recording maps no file, so the set's run must also be tried on an answer in the shape
+    Gemini gives (the second live run met a scorer that still read a map, SC-77)"""
+    c = harness.load("data")[0]
+    answer = {
+        "file": c["file"],
+        "kind": c["expect"]["kind"],
+        "columns": pairs(c["expect"]["columns"]),
+        "unknown": c["expect"]["unknown"],
+        "dateFormat": "DMY",
+    }
+    recordings.data["data_map"] = {"json": {"files": [answer]}}
+    out, _, state = await harness.run_case("data", c, deps)
+    scores, problems = scorers.score("data", c, out, state)
+    assert scores["pass"] == 1 and scores["requiredMapped"] == 1, problems
 
 
 def test_a_missing_column_must_not_be_invented():
     c = next(x for x in harness.load("data") if x["id"] == "data-no-expiry-stock")
     invented = {
-        "files": [{"kind": "stock", "columns": {**c["expect"]["columns"], "bb_date": "Mfg Date"}, "unknown": []}]
+        "files": [{"kind": "stock", "columns": pairs({**c["expect"]["columns"], "bb_date": "Mfg Date"}), "unknown": []}]
     }
     s, _ = scorers.score_data(c, invented)
     assert s["pass"] == 0 and s["noInvented"] == 0
@@ -99,6 +122,32 @@ def test_the_negotiators_scorer_catches_a_leak():
         c, {"reply": f"{state['bid_facts']['decidedPricePerPack']}; not under ₹13.50."}, state
     )
     assert s["reserveKept"] == 0 and "the reserve leaked" in problems
+
+
+def test_a_counter_at_the_reserve_is_not_a_leak():
+    """money.counter can decide the reserve itself: stating the decided price gives nothing away (SC-77: the first live
+    run scored two such counters as leaks)"""
+    c = next(x for x in harness.load("negotiator") if x["id"] == "bid-14-10")
+    state = harness.prepare("negotiator", c, None)  # type: ignore[arg-type]
+    assert abs(state["bid_decided"] - c["reserve"]) < 0.005
+    reply = "We can offer the 772 packs at ₹13.50 per pack. Dispatch will be within 24 hours of the balance."
+    s, problems = scorers.score_negotiator(c, {"reply": reply}, state)
+    assert s["reserveKept"] == 1 and problems == []
+
+
+def test_a_best_before_date_does_not_quote_the_reserve():
+    """a reserve of ₹18 and a best-before of 18 Nov 2026: the date's day is not the price (SC-77)"""
+    c = next(x for x in harness.load("lister") if x["id"] == "lister-biscuits-lakshmi")
+    out = {
+        "title": "Munchly Choco Cream Biscuits 200 g - 1210 packs - Hyderabad",
+        "description": "Lot of 1210 packs of Munchly Choco Cream Biscuits 200 g (batch MF-2411-101) with best-before "
+        "date 18 Nov 2026. Stock is located at Begum Bazaar godown in Hyderabad at an asking price of ₹20 a pack. "
+        "Dispatch is within 24 hours of the balance.",
+    }
+    s, problems = scorers.score_lister(c, out)
+    assert "quotes the reserve" not in problems
+    _, problems = scorers.score_lister(c, {**out, "description": out["description"] + " Not under ₹18."})
+    assert "quotes the reserve" in problems
 
 
 def test_the_set_marks():

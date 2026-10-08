@@ -71,7 +71,7 @@ resource "google_pubsub_subscription" "pull" {
   name  = each.key
   topic = google_pubsub_topic.this[each.value.topic].id
 
-  ack_deadline_seconds    = 600 # an agent's run finishes within its ack deadline (Gemini calls time out at 20 s)
+  ack_deadline_seconds    = 600 # an agent's run finishes within its ack deadline (a Gemini call is allowed about 95 s over its three attempts)
   enable_message_ordering = each.value.ordered
   labels                  = { app = "smart-clearance", env = each.value.env }
 

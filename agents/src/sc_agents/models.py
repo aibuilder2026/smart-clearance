@@ -10,7 +10,8 @@ model is ever reached: the stub tier's model raises if it is.
 
 **A writer** is an `LlmAgent` with a structured output (`output_schema`, saved under `output_key`) inside `Bounded`,
 which holds it to the run's rules:
-- a 20 s timeout (MODEL_TIMEOUT_S), on the HTTP request and around the whole call;
+- a 30 s deadline an attempt (MODEL_TIMEOUT_S), and up to 3 attempts (MODEL_ATTEMPTS) when Vertex AI answers 429, 500,
+  503 or 504, with backoff; `Bounded` allows the whole call that long, and no longer (SC-77);
 - any error, timeout, or output that does not validate leaves the output empty, so the agent omits that field and
   backend-api's template stands in; the run says it fell back;
 - at most 12 model calls a run (MODEL_CALLS_PER_RUN); past that, the writer falls back without calling;
@@ -92,6 +93,26 @@ class Recordings:
         return spec
 
 
+BACKOFF = {"initial_delay": 1.0, "max_delay": 8.0, "exp_base": 2.0, "jitter": 1.0}
+RETRIED = [429, 500, 503, 504]
+
+
+def retries(settings: Settings) -> types.HttpRetryOptions:
+    """Vertex AI's capacity answers, retried with backoff: the Pro preview's quota (429), and deadlines (504)"""
+    return types.HttpRetryOptions(attempts=settings.model_attempts, http_status_codes=RETRIED, **BACKOFF)
+
+
+def budget(settings: Settings) -> float:
+    """how long a call may take in all: each attempt's deadline, and the longest wait before each retry (tenacity's
+    exponential wait, plus its jitter, under the cap)"""
+    b = BACKOFF
+    waits = sum(
+        min(b["max_delay"], b["initial_delay"] * b["exp_base"] ** n + b["jitter"])
+        for n in range(settings.model_attempts - 1)
+    )
+    return settings.model_timeout_s * settings.model_attempts + waits
+
+
 class ModelTier:
     def __init__(self, settings: Settings, recordings: Recordings | None = None):
         self.settings = settings
@@ -108,6 +129,7 @@ class ModelTier:
 
                 self._llms[tier] = Gemini(
                     model=self.settings.model_id(tier),
+                    retry_options=retries(self.settings),
                     client_kwargs={
                         "enterprise": True,
                         "project": self.settings.google_cloud_project,
@@ -302,7 +324,7 @@ def writer(
     config = types.GenerateContentConfig(
         temperature=temperature,
         max_output_tokens=max_tokens,
-        http_options=types.HttpOptions(timeout=int(timeout * 1000)),
+        http_options=types.HttpOptions(timeout=int(timeout * 1000), retry_options=retries(settings)),
         thinking_config=types.ThinkingConfig(thinking_level=types.ThinkingLevel.LOW),
     )
     llm = LlmAgent(
@@ -328,7 +350,7 @@ def writer(
         agent=agent,
         step=step,
         output_key=output_key,
-        timeout=timeout,
+        timeout=budget(settings),
         scope=scope,
         when=when,
     )

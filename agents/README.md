@@ -76,10 +76,12 @@ Neither has a default in code: model ids move with Google's releases, so each en
 (`.env.example` has the ones above). `GET /readyz` checks that both resolve.
 
 Every model call:
-- has a 20 s timeout (`MODEL_TIMEOUT_S`), on the HTTP request and around the whole call;
+- has a 30 s deadline an attempt (`MODEL_TIMEOUT_S`), and up to 3 attempts (`MODEL_ATTEMPTS`) when Vertex AI answers
+  429, 500, 503 or 504, with exponential backoff (1 s, then 2 s, each plus up to 1 s of jitter); the whole call is
+  allowed exactly that long (SC-77: the first live eval run met the Pro preview's quota, and 20 s deadlines);
 - falls back on any error, timeout or output that does not match its schema by leaving its field out, so
   backend-api's template stands in (Vision's read is the exception: Pub/Sub retries it, then asks for a retake);
-- runs at temperature 0.2 for structured output and 0.7 for offer copy, with low thinking, for the timeout;
+- runs at temperature 0.2 for structured output and 0.7 for offer copy, with low thinking, for the deadline;
 - counts towards at most 12 model calls a run (`MODEL_CALLS_PER_RUN`); past that, the writer falls back.
 
 `MODEL_TIER=stub` replays recorded responses (`src/sc_agents/recordings/`, the story's batch) from each writer's
@@ -147,9 +149,9 @@ No emulator: a laptop uses the real `local` environment's resources, as backend-
 cd agents && uv run ruff check . && uv run ruff format --check . && uv run pytest     # the gate (or scripts/test.sh)
 ```
 
-About 140 tests, a couple of seconds, with no network and no live model: the stub tier's recordings; backend-api as an
+About 190 tests, a couple of seconds, with no network and no live model: the stub tier's recordings; backend-api as an
 httpx `MockTransport` that records every request (each pipeline's exact paths, bodies and event keys); BigQuery and
-Cloud Storage fakes; push and pull parsing; the 20 s timeout and every other fallback; the model-call limit; the reserve
+Cloud Storage fakes; push and pull parsing; the call's deadline over its retries and every other fallback; the model-call limit; the reserve
 never reaching a model, from the bid's facts or from eight hostile buyer messages; the trajectory of every pipeline
 (the steps in order: ADK's own evaluator scores tool-call trajectories, and these pipelines call no tools); the eval
 harness offline; the PDFs (WeasyPrint's render is skipped where Pango is not installed).
@@ -169,7 +171,19 @@ Each case goes through its writer exactly as the pipeline calls it (`src/sc_agen
 deterministic checks (`scorers.py`) and, for the agents that write words, by a Gemini Pro judge at temperature 0 on a
 rubric of 1 to 5 (`judge.py`). Each case's result goes into BigQuery's `smartclearance_local.agent_evals` and
 `results-<run>.jsonl` (git-ignored); the set's pass marks into `summary.json` beside it. Each set splits into train
-(examples may be drawn from it for the prompts) and held-out.
+(examples may be drawn from it for the prompts) and held-out. The cases run one at a time, a second apart (`--pace`),
+each call retrying Vertex AI's 429, 500, 503 and 504; a case the judge could not score is reported as such
+(`judged X of N`), never as 0.
+
+**What the first live run found** (7–8 Oct, SC-77; its summaries are in `evals/*/summary.json`): Gemini's structured
+output returns a map of free keys empty, and may leave out a property the schema does not require. So no output schema
+holds a map (the Data agent's columns and the Valuer's notes are lists of pairs) and every property is required, null
+standing for "not there"; `tests/test_schemas.py` holds every schema and recording to that.
+
+**The second live run** (7–8 Oct, SC-77) met every set's marks but one: Vision 72 of 73, Data 25 of 25, Router 20 of
+20, Lister 15 of 15, Outreach 15 of 15, Negotiator 38 of 40, and the Valuer 19 of 20 once its prompt asked for one point
+a note (the judge had found its notes reading the table back). The three failures were the Pro preview's quota: a 429
+after every attempt, each falling back as designed.
 
 | Set | Cases | From | Pass marks |
 | --- | --- | --- | --- |
@@ -221,7 +235,9 @@ every change here.
 
 - A local end-to-end run waits for infra phase A (SC-70) to be applied; the Cloud Run service and its push
   subscriptions wait for infra phase B (SC-74) to be applied.
-- The evals have not been run against live Gemini yet (they run on request); `summary.json` appears with the first run.
+- `gemini-3.1-pro-preview` (a public preview, on a shared quota) still answers 429 under the evals' load, which pairs
+  each Pro call with a Pro judge: three cases of 208 fell back in the second run. Production makes about seven model
+  calls a journey; if it falls back there too, the choices are a quota increase or moving a writer to Flash.
 - The recordings were written by hand from the story's figures; `smoke.sh --record DIR` writes live outputs in the same
   form, to review before replacing them (the tests assert some of their words).
 - A shelf-count export in an unknown layout is not mapped by the model on the shelf check (only on the Data agent's

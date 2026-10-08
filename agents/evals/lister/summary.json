@@ -1,0 +1,34 @@
+{
+ "evalRun": "eval-20261007-2332-d87590",
+ "at": "2026-10-07T23:52:26.631383+00:00",
+ "set": "lister",
+ "split": "all",
+ "models": {
+  "pro": "gemini-3.1-pro-preview",
+  "flash": "gemini-3.8-flash"
+ },
+ "prompts": {
+  "lister": "f5800ad4a1b7"
+ },
+ "cases": 15,
+ "passed": 15,
+ "fallbacks": 0,
+ "tokens": [
+  8063,
+  1640
+ ],
+ "marks": {
+  "noFactualErrorOrLeak": {
+   "value": 1,
+   "target": 1.0,
+   "met": true
+  },
+  "rubricFaithful": {
+   "value": 5,
+   "target": 4.0,
+   "met": true
+  }
+ },
+ "met": true,
+ "failures": []
+}

@@ -115,15 +115,15 @@ async def test_an_unknown_layout_is_mapped_by_the_model(run, backend, store, war
                 {
                     "file": "ex_1.csv",
                     "kind": "stock",
-                    "columns": {
-                        "distributor_name": "Party Name",
-                        "item_code": "Item Code",
-                        "batch_no": "बैच नं.",
-                        "mfg_date": "Mfg Dt",
-                        "bb_date": "Exp Dt",
-                        "closing_qty": "Cl. Qty",
-                        "location": "Godown",
-                    },
+                    "columns": [
+                        {"column": "distributor_name", "header": "Party Name"},
+                        {"column": "item_code", "header": "Item Code"},
+                        {"column": "batch_no", "header": "बैच नं."},
+                        {"column": "mfg_date", "header": "Mfg Dt"},
+                        {"column": "bb_date", "header": "Exp Dt"},
+                        {"column": "closing_qty", "header": "Cl. Qty"},
+                        {"column": "location", "header": "Godown"},
+                    ],
                     "unknown": ["Remarks"],
                     "dateFormat": "DMY",
                 }
@@ -150,7 +150,17 @@ async def test_an_unknown_layout_is_mapped_by_the_model(run, backend, store, war
 async def test_a_map_missing_a_required_column_loads_nothing(run, backend, store, warehouse, recordings):
     f = put(store, "munchly/uploads/ex_2.csv", b"Party,Item,Qty\nRakesh Traders,MF-MC-150,10\n")
     recordings.data["data_map"] = {
-        "json": {"files": [{"file": "ex_2.csv", "kind": "stock", "columns": {"item_code": "Item"}, "unknown": []}]}
+        "json": {
+            "files": [
+                {
+                    "file": "ex_2.csv",
+                    "kind": "stock",
+                    "columns": [{"column": "item_code", "header": "Item"}],
+                    "unknown": [],
+                    "dateFormat": None,
+                }
+            ]
+        }
     }
     outcome, rc = await run(message("journey.step", {"type": "export.uploaded", "file": f}))
     assert backend.reports() == [] and warehouse.tables["stock_snapshots"] == []

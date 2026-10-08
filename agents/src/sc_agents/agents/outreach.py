@@ -15,7 +15,7 @@ import re
 from typing import Any
 
 from google.genai import types
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from sc_agents import checks, fmt
 from sc_agents.agents import step
@@ -32,9 +32,10 @@ LANGUAGES = ("hi", "en", "mr")
 
 
 class Offer(BaseModel):
-    hi: str | None = None
-    en: str | None = None
-    mr: str | None = None
+    # every field required: Gemini's structured output may leave out a property the schema does not require (SC-77)
+    hi: str = Field(description="the offer in Hindi, in Devanagari")
+    en: str = Field(description="the offer in English")
+    mr: str = Field(description="the offer in Marathi, in Devanagari")
 
 
 def due(state: dict[str, Any]) -> bool:

@@ -586,13 +586,20 @@ async def photo_read(ctx: Ctx, client_id: str, ref: str, read: dict[str, Any], r
     if read.get("mrp") is not None and abs(float(read["mrp"]) - record["mrp"]) > 0.001:
         mismatches.append(f"MRP ₹{float(read['mrp']):.2f}")
     confidence = float(read.get("confidence") or 0)
-    ok = not mismatches and confidence >= threshold and bool(read.get("batch"))
+    # a read without the batch number cannot be held to the record, and one with nothing on it did not read the label
+    # at all, however sure the model says it is (SC-77: live Gemini once returned only its confidence)
+    seen = any(read.get(k) for k in ("batch", "mfg", "bestBefore")) or read.get("mrp") is not None
+    unread = (
+        [] if read.get("batch") else ["the batch number could not be read" if seen else "the label could not be read"]
+    )
+    problems = mismatches + unread
+    ok = not problems and confidence >= threshold
     e = copy.read_event(
-        {**read, "confidence": confidence}, matches=not mismatches, mismatches=mismatches or ["the label is unclear"]
+        {**read, "confidence": confidence}, matches=not problems, mismatches=problems or ["the label is unclear"]
     )
     await ev.feed(ctx, s.c, s.case, "read", "verify", e["text"], calls=e["calls"], agent="Vision", icon="scan-line")
     at = ev.now(ctx, s.c).isoformat()
-    label = {**read, "confidence": confidence, "matches": not mismatches, "mismatches": mismatches}
+    label = {**read, "confidence": confidence, "matches": not problems, "mismatches": problems}
     if ok:
         s.case.photo = {**s.case.photo, "status": "verified", "at": at, "confidence": confidence, "read": label}
         s.case.phase = "verified"
@@ -601,7 +608,7 @@ async def photo_read(ctx: Ctx, client_id: str, ref: str, read: dict[str, Any], r
         return True
     attempts = int(s.case.photo.get("attempts", 0)) + 1
     s.case.photo = {"status": "requested", "at": at, "attempts": attempts, "read": label}
-    why = ", ".join(mismatches) if mismatches else f"confidence {confidence:.2f} is under {threshold:.2f}"
+    why = ", ".join(problems) if problems else f"confidence {confidence:.2f} is under {threshold:.2f}"
     for p in await _people(ctx, s.c, org=s.dist.id):
         await ev.notify(
             ctx,

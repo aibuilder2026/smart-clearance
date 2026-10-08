@@ -27,12 +27,14 @@ AGENT = "vision"
 
 
 class LabelRead(BaseModel):
-    batch: str | None = Field(default=None, description="the batch number exactly as printed, e.g. MF-2409-117")
-    mfg: str | None = Field(default=None, description="the manufacturing (or packing) date, YYYY-MM-DD")
-    bestBefore: str | None = Field(default=None, description="the best-before (use-by, expiry) date, YYYY-MM-DD")
-    mrp: float | None = Field(default=None, description="the MRP in rupees")
-    pack: str | None = Field(default=None, description="the product and pack size as printed")
-    confidence: float | None = Field(default=None, description="0 to 1: how sure every returned field is exact")
+    # every field required, null where the label does not show it: with each optional, Gemini's structured output
+    # often returned only `confidence`, and a read with nothing in it passed for a read (SC-77)
+    batch: str | None = Field(description="the batch number exactly as printed, e.g. MF-2409-117; null if unreadable")
+    mfg: str | None = Field(description="the manufacturing (or packing) date, YYYY-MM-DD; null if unreadable")
+    bestBefore: str | None = Field(description="the best-before (use-by, expiry) date, YYYY-MM-DD; null if unreadable")
+    mrp: float | None = Field(description="the MRP in rupees; null if unreadable")
+    pack: str | None = Field(description="the product and pack size as printed; null if unreadable")
+    confidence: float = Field(description="0 to 1: how sure every field returned is exact")
 
 
 def mime_of(data: bytes) -> str:

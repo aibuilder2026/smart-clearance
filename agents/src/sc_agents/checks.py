@@ -13,6 +13,12 @@ RUPEES = re.compile(r"(?:₹|\bRs\.?|\bINR)\s*(\d[\d,]*(?:\.\d+)?)", re.IGNORECA
 MONTHS = {
     m: i for i, m in enumerate(("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"), 1)
 }
+_MON = r"(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?"
+DATES = re.compile(
+    rf"\b\d{{1,2}}\s+{_MON}(?:,?\s+\d{{2,4}})?\b|\b{_MON}\s+\d{{1,2}}(?:,?\s+\d{{2,4}})?\b"
+    r"|\b\d{4}-\d{2}-\d{2}\b|\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b",
+    re.IGNORECASE,
+)
 
 
 def _num(raw: str) -> float | None:
@@ -57,8 +63,15 @@ def states_price(text: str, price: float) -> bool:
     return f"{price:.2f}" in text or (float(price).is_integer() and f"₹{price:.0f}" in text)
 
 
+def undated(text: str) -> str:
+    """a text with its dates set aside (18 Nov 2026, Nov 18, 2026-11-18, 18/11/26): a date's day is not a price"""
+    return DATES.sub(" ", text)
+
+
 def shows(text: str, value: float) -> bool:
-    """whether a text quotes a figure (the reserve, say) in any of the ways it could be written"""
+    """whether a text quotes a figure (the reserve, say) in any of the ways it could be written; a best-before of 18 Nov
+    does not quote a reserve of ₹18 (the first live eval run, SC-77)"""
+    text = undated(text)
     return any(abs(n - value) < 0.005 for n in figures(text)) or f"{value:.2f}" in text
 
 

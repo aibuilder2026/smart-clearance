@@ -15,7 +15,7 @@ import json
 from typing import Any
 
 from google.genai import types
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from sc_agents import checks, fmt
 from sc_agents.agents import halt, step
@@ -31,7 +31,8 @@ HISTORY = 4
 
 
 class Reply(BaseModel):
-    reply: str | None = None
+    # every field required: Gemini's structured output may leave out a property the schema does not require (SC-77)
+    reply: str = Field(description="the reply to the buyer, in the buyer's language")
 
 
 def _on(state: dict[str, Any]) -> bool:

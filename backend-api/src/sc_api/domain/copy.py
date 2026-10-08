@@ -177,6 +177,14 @@ def read_event(read: dict[str, Any], *, matches: bool, mismatches: list[str]) ->
         parts.append(f"best before {fmt.date(read['bestBefore'])}")
     if read.get("mrp") is not None:
         parts.append(f"MRP ₹{read['mrp']:.2f}")
+    if not parts:  # nothing on the label could be read: there is nothing to hold to the record
+        return {
+            "text": f"Could not read the label, confidence {conf}. Asked for another photo.",
+            "calls": [
+                ["gemini.vision.read_label", f"confidence {conf}", "bad"],
+                ["dms.reconcile", "nothing to match", "bad"],
+            ],
+        }
     verdict = "Matches the DMS record." if matches else f"Does not match the DMS record: {', '.join(mismatches)}."
     return {
         "text": f"Read the label: {', '.join(parts)}, confidence {conf}. {verdict}",

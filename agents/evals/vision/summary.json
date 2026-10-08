@@ -1,0 +1,46 @@
+{
+ "evalRun": "eval-20261007-2323-c0c5fd",
+ "at": "2026-10-07T23:31:10.964088+00:00",
+ "set": "vision",
+ "split": "all",
+ "models": {
+  "pro": "gemini-3.1-pro-preview",
+  "flash": "gemini-3.8-flash"
+ },
+ "prompts": {
+  "vision": "9705098c777c"
+ },
+ "cases": 73,
+ "passed": 72,
+ "fallbacks": 0,
+ "tokens": [
+  147095,
+  5106
+ ],
+ "marks": {
+  "cleanExact": {
+   "value": 1,
+   "target": 1.0,
+   "met": true
+  },
+  "hardPass": {
+   "value": 0.984,
+   "target": 0.9,
+   "met": true
+  },
+  "confidentWrongReads": {
+   "value": 0,
+   "target": 0,
+   "met": true
+  }
+ },
+ "met": true,
+ "failures": [
+  {
+   "id": "story-shelf--unreadable",
+   "problems": [
+    "wrong batch='MF-2409-117', mfg='2026-05-18', bestBefore='2026-11-18', mrp=30.0"
+   ]
+  }
+ ]
+}

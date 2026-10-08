@@ -1,0 +1,39 @@
+{
+ "evalRun": "eval-20261007-2332-d87590",
+ "at": "2026-10-07T23:34:44.544239+00:00",
+ "set": "data",
+ "split": "all",
+ "models": {
+  "pro": "gemini-3.1-pro-preview",
+  "flash": "gemini-3.8-flash"
+ },
+ "prompts": {
+  "data_map": "ebfb0fe2bd56"
+ },
+ "cases": 25,
+ "passed": 25,
+ "fallbacks": 0,
+ "tokens": [
+  31643,
+  3129
+ ],
+ "marks": {
+  "requiredMapped": {
+   "value": 1.0,
+   "target": 1.0,
+   "met": true
+  },
+  "unknownFlagged": {
+   "value": 1,
+   "target": 1.0,
+   "met": true
+  },
+  "casesPassed": {
+   "value": 1,
+   "target": 1.0,
+   "met": true
+  }
+ },
+ "met": true,
+ "failures": []
+}

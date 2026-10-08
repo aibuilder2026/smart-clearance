@@ -1,0 +1,46 @@
+{
+ "evalRun": "eval-20261008-0033-dedbcd",
+ "at": "2026-10-08T00:50:00.600417+00:00",
+ "set": "valuer",
+ "split": "all",
+ "models": {
+  "pro": "gemini-3.1-pro-preview",
+  "flash": "gemini-3.8-flash"
+ },
+ "prompts": {
+  "valuer": "9d1e79d425e7"
+ },
+ "cases": 20,
+ "passed": 19,
+ "fallbacks": 1,
+ "tokens": [
+  27854,
+  3088
+ ],
+ "marks": {
+  "noForeignFigure": {
+   "value": 1,
+   "target": 1.0,
+   "met": true
+  },
+  "everyChannel": {
+   "value": 0.95,
+   "target": 1.0,
+   "met": false
+  },
+  "rubricAverage": {
+   "value": 5,
+   "target": 4.0,
+   "met": true
+  }
+ },
+ "met": false,
+ "failures": [
+  {
+   "id": "valuer-01-MF-2410-118",
+   "problems": [
+    "no note for expiresoon, kirana, staff, foodbank, writeoff"
+   ]
+  }
+ ]
+}

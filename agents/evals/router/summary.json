@@ -1,0 +1,39 @@
+{
+ "evalRun": "eval-20261007-2332-d87590",
+ "at": "2026-10-07T23:49:26.207604+00:00",
+ "set": "router",
+ "split": "all",
+ "models": {
+  "pro": "gemini-3.1-pro-preview",
+  "flash": "gemini-3.8-flash"
+ },
+ "prompts": {
+  "router": "c8b099cfb851"
+ },
+ "cases": 20,
+ "passed": 20,
+ "fallbacks": 0,
+ "tokens": [
+  17085,
+  1459
+ ],
+ "marks": {
+  "noForeignFigure": {
+   "value": 1,
+   "target": 1.0,
+   "met": true
+  },
+  "rightChannelsNamed": {
+   "value": 1,
+   "target": 1.0,
+   "met": true
+  },
+  "rubricAverage": {
+   "value": 4.612,
+   "target": 4.0,
+   "met": true
+  }
+ },
+ "met": true,
+ "failures": []
+}

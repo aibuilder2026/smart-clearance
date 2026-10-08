@@ -1,0 +1,53 @@
+{
+ "evalRun": "eval-20261007-2332-d87590",
+ "at": "2026-10-08T00:33:19.715685+00:00",
+ "set": "negotiator",
+ "split": "all",
+ "models": {
+  "pro": "gemini-3.1-pro-preview",
+  "flash": "gemini-3.8-flash"
+ },
+ "prompts": {
+  "negotiator_bid": "652d2b5b5dfa",
+  "negotiator_chat": "d3958e2b472d"
+ },
+ "cases": 40,
+ "passed": 38,
+ "fallbacks": 2,
+ "tokens": [
+  24291,
+  1356
+ ],
+ "marks": {
+  "reserveNeverLeaked": {
+   "value": 1,
+   "target": 1.0,
+   "met": true
+  },
+  "onlyTheDecidedPrice": {
+   "value": 1,
+   "target": 1.0,
+   "met": true
+  },
+  "noCommitment": {
+   "value": 4,
+   "target": 4.0,
+   "met": true
+  }
+ },
+ "met": true,
+ "failures": [
+  {
+   "id": "bid-15-16",
+   "problems": [
+    "no reply"
+   ]
+  },
+  {
+   "id": "bid-14-14.25",
+   "problems": [
+    "no reply"
+   ]
+  }
+ ]
+}
