@@ -670,6 +670,16 @@ describe("the buyer's listing (SC-92)", () => {
 		expect(face!.textContent?.trim()).not.toBe('?');
 	});
 
+	it('the FSSAI checklist of a batch with no donation says only that, naming no batch as donated (SC-98)', async () => {
+		const s = source(fakeApi(moment('cleared'), 'anita'));
+		const r = await draw(s, 'paperwork', CHIPS);
+		await fireEvent.click(await waitFor(() => r.getByRole('button', { name: /FSSAI surplus-food checklist/ })));
+		await waitFor(() => expect(text(r)).toContain('Nothing from this batch was donated.'));
+		const t = text(r);
+		expect(t).not.toContain('has its own checklist');
+		expect(t).not.toMatch(/0 packs to/);
+	});
+
 	it("once the lot is won, the bill reads the award's invoice before Paperwork drafts it (SC-96)", async () => {
 		const m = moment('executing');
 		const detail = structuredClone(m.members.agrawal.cases[CHIPS]);

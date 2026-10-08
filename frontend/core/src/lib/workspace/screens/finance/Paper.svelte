@@ -184,9 +184,13 @@
 				to {c.donation.partner.name}, inside their best-before, with the label photo attached.
 			</p>
 		{:else}{@render head('FSSAI surplus-food checklist', c.batch.id, 'NOT REQUIRED')}
+			<!-- another batch's donation is pointed at only when there is one: on the live workspace a batch with no
+			donation of its own has nothing to point at (SC-98) -->
 			<p class="pp-note">
-				Nothing from this batch was donated. The {productName(c.donation.sku)} batch {c.donation.batch.id} has its own checklist:
-				{c.donation.units} packs to {c.donation.partner.name}, {c.donation.dist.city}.
+				Nothing from this batch was donated.{#if c.donation.batch.id !== c.batch.id && c.donation.units > 0}{' '}The {productName(
+						c.donation.sku
+					)} batch {c.donation.batch.id} has its own checklist:
+					{c.donation.units} packs to {c.donation.partner.name}, {c.donation.dist.city}.{/if}
 			</p>{/if}
 	</div>
 {:else}

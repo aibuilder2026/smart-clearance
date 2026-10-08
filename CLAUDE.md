@@ -1045,4 +1045,9 @@
   - **Checks:**
     - backend-api 468 passed: a new unit test of the rule; the story's journey test checks the card, the push and the timeline agree, and fails without the fix (Mon 5 Oct for Sat 3 Oct);
     - workspace 56 passed on the regenerated live fixtures.
+- **SC-98** (In Review, branch `SC-98-fssai-paper`, stacked on SC-97; bug found by Munchly Chips E2E): the FSSAI checklist of a batch with no donation.
+  - **Found:** on the live workspace, the chips' "not required" paper read "The Masala Chips batch MF-2409-117 has its own checklist: 0 packs to Feeding India, Nagpur".
+  - **The cause:** the sentence pointing at the donated batch fell back to the batch itself.
+  - **The fix** (`Paper.svelte`): it points at another batch only when that batch was donated. The prototype and the stub, where the Mango Drink is, read as before (core's goldens unchanged), so design3 needs no change.
+  - **Checks:** core 248 passed; workspace 57 (1 new: Anita's chips paper on the cleared moment, which fails without the fix).
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
