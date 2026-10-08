@@ -5,7 +5,8 @@ Nothing is deleted: open cases close as `reset`, and the workspace no longer sho
 whether it closed as `reset` or as `cleared` (SC-81). The story's batches are dated again from the new day 0, Rakesh
 Traders' permission and the setup's confirmation go back to not yet given, and the client's clock moves forward to
 08:00 on day 0, just before the Data agent's 08:30 and the Watcher's 09:00. The Mango Drink batch comes back as the
-story has it: already approved, its kirana and staff-sale lines done, its donation still to book.
+story has it: already approved, its kirana and staff-sale lines done, its donation still to book. A gate override
+set on a batch in the console stays: it is the client's configuration (SC-82).
 """
 
 from datetime import date, datetime, time, timedelta
@@ -77,8 +78,7 @@ async def reset(ctx: Ctx, client_id: str) -> dict[str, Any]:
         b.stage_done = b.stage_current = 1
         b.stage_at, b.closed_at, b.outcome = ctx.clock.now(), None, None
         b.note, b.money, b.split, b.recovered = None, None, None, 0
-        b.gate_blinkit_days = b.gate_qcom_pct = b.gate_reason = b.gate_by_name = None
-        b.gate_by_user_id = b.gate_at = None
+        # a batch's gate override is the client's configuration (SC-47): the journey starting again keeps it (SC-82)
     await ctx.session.flush()
 
     # who has given the agents permission: the story's three other distributors, not Rakesh Traders yet

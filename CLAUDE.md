@@ -748,4 +748,16 @@
     - backend-api: 416 pass. The new test fails without the fix, with the old cleared case listed beside the Mango Drink's.
     - Locally, a reset leaves only the Mango Drink's case in Munchly's workspace.
 
+- **SC-82** (In Review, branch `SC-82-command-center-after-reset`, on SC-81; bug): the live Command Center after a reset.
+  - **Found by the maintainer** on the local workspace at day 0:
+    - the watchlist's Mango Drink, in motion, opened nothing;
+    - "Gated · selling through" rows showed three crossed gates;
+    - "All SKU and batch level overrides should be taken as configured per client".
+  - **The watchlist:** on the quiet Command Center (`CommandQuiet.svelte`), every row's handler was empty. On the busy Command Center, the batch going to a food bank opened nothing either, since the tabs leave it out. A batch in a journey now opens its Route Room on both, design3 first (`brand.jsx`'s live Command Center), then the port.
+  - **The overrides:** every reading in backend-api already used SC-47's effective gates (batch, else SKU, else the client's default). But `journey/reset.py` cleared every batch's override, so Reset journey dropped Munchly's seeded override on MF-2409-204 (Zepto and Instamart at 30%), and the biscuits read as gated. The reset now keeps batch overrides, the client's configuration. Locally, the override was set again through the console API, and the biscuits read safe.
+  - **"Gated · selling through" is the money model's rule:** a batch is at risk only when units will not sell before the projection stops and every gate fails. MF-2408-311, for example, sells all 960 packs inside its date. Whether a batch that fails every gate should count as at risk anyway is the maintainer's call.
+  - **Checks:**
+    - backend-api: 417 pass. The new test fails without the fix: 60 and the default instead of 30 and the override.
+    - The frontend gate passes, with workspace at 40 tests: a new live test opens the Mango row from the quiet Command Center, and leaves a batch in no journey where it is.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

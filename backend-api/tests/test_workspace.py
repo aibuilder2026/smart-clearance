@@ -613,6 +613,28 @@ async def test_a_journey_starts_again_on_the_storys_own_calendar(ctx, munchly):
     assert [c.batch_ref for c in open_cases] == [MANGO]
 
 
+async def test_a_journey_started_again_keeps_the_gates_set_on_a_batch(api, munchly, neha, ctx):
+    """a batch's gate override is the client's configuration (SC-47): starting the journey again keeps it, and the
+    workspace judges the batch by it, as the console shows it (SC-82)"""
+    from sc_api.services.journey import reset
+
+    biscuits = "MF-2409-204"
+    why = "Zepto's Pune warehouse agreed to take this lot at 30% of its life"
+    r = await api.put(
+        f"/v1/console/clients/munchly/batches/{biscuits}/override", json={"qcomPct": 30, "reason": why}, headers=neha
+    )
+    assert r.status_code == 200, r.text
+    await reset.reset(ctx, "munchly")
+    await ctx.session.flush()
+    rows = (await api.get("/v1/console/clients/munchly/batches", headers=neha)).json()
+    b = next(x for x in rows if x["ref"] == biscuits)
+    assert (b["qcomPct"], [g["source"] for g in b["checks"]][1:]) == (30, ["override", "override"])
+    snap = (await api.get(f"{WS}/snapshot", headers=PRIYA)).json()
+    a = next(x for x in snap["batches"] if x["id"] == biscuits)["assess"]
+    assert [(g["id"], g["pass"]) for g in a["gates"]] == [("blinkit", True), ("zepto", True), ("instamart", True)]
+    assert a["status"] == "safe"
+
+
 async def test_a_journey_started_again_shows_no_case_an_earlier_journey_finished(api, munchly, ctx, clock):
     """a case an earlier journey finished stays in the record, but the journey started again does not show it: the
     snapshot, the batch's case and the agents' read all begin at the reset, until the Watcher flags the batch again

@@ -205,7 +205,7 @@
 					onopen={() => {
 						sel = v.id;
 						if (v.hero) openRoute();
-						else if (tabs.some((t) => t.ref === v.id)) router.go('route', { ref: v.id });
+						else if ((on && v.second) || tabs.some((t) => t.ref === v.id)) router.go('route', { ref: v.id });
 					}}
 				/>{/each}
 		</div>
