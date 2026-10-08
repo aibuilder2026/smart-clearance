@@ -1,38 +1,51 @@
-/* Smart-Clearance v3 · smartclearance.com, the product's own landing page (SC-60): the miniature business alive on film
-   under the heading, a statement that fills in as it is read, the agents at work on the table, one in focus at a
-   time, the product's moments as chapters in colour fields, Impact's ledger, a workspace per manufacturer, plans and
-   the close. The page scrolls the window, as the SvelteKit build does, so its sticky bar and scroll-driven motion
-   work the same way in both. */
+/* Smart-Clearance v3 · smartclearance.com, the product's own landing page (SC-60, refined in SC-78): the miniature
+   business through one day on film under the heading, with a strip reading the hours of the story; a statement that
+   fills in as it is read; the agents at work on the table, one in focus at a time; the product's moments as chapters
+   in colour fields; Impact's ledger; the workspace itself on a device, one tab per team; plans and the close. The page
+   scrolls the window, as the SvelteKit build does, so its sticky bar and scroll-driven motion work the same way in
+   both. */
 html, body { overflow-x: clip; }
 .app.site-root { position: relative; height: auto; min-height: 100svh; overflow: visible; }
 .site { position: relative; min-height: 100svh; background: var(--bg); scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { .site { scroll-behavior: auto; } }
 
-/* the bar: clear over the film, its glass once the page has scrolled */
-.site-nav { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 10px; height: 60px; margin-bottom: calc(-60px - var(--safe-top)); padding: 0 16px; padding-top: var(--safe-top); color: #fff;
-  background: linear-gradient(to bottom, rgb(5 12 9 / 0.55), rgb(5 12 9 / 0)); transition: background-color 240ms var(--ease), color 240ms var(--ease); }
+/* the bar: the brand, the links centred with a dot under the section the reader is in, the actions. Clear over the
+   film, its glass once the page has scrolled, with a progress line along its foot */
+.site-nav { position: sticky; top: 0; z-index: 20; margin-bottom: calc(-66px - var(--safe-top)); color: #fff;
+  background: linear-gradient(to bottom, rgb(5 12 9 / 0.64), rgb(5 12 9 / 0.18) 70%, rgb(5 12 9 / 0)); transition: background-color 240ms var(--ease), color 240ms var(--ease); }
 .site.scrolled .site-nav { color: var(--fg); background: color-mix(in oklab, var(--bg) 78%, transparent); -webkit-backdrop-filter: saturate(170%) blur(18px); backdrop-filter: saturate(170%) blur(18px); box-shadow: 0 var(--hair) 0 var(--line); }
-.nav-brand { display: inline-flex; align-items: center; gap: 8px; color: inherit; text-decoration: none; border-radius: 10px; }
-.nav-mark { display: inline-grid; width: 34px; height: 34px; }
-.nav-mark svg { width: 100%; height: 100%; }
-.nav-links { display: flex; align-items: center; }
-.nav-links a, .nav-text { color: inherit; font-size: 15px; font-weight: 500; text-decoration: none; border-radius: 10px; padding: 6px 4px; }
-.nav-links a:hover, .nav-text:hover { color: #cfeedd; }
-.site.scrolled .nav-links a:hover, .site.scrolled .nav-text:hover { color: var(--primary-text); }
+.nav-in { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; height: 64px; max-width: 1440px; margin: 0 auto; padding: var(--safe-top) 12px 0; }
+.nav-brand { display: inline-flex; align-items: center; gap: 10px; justify-self: start; padding: 2px 4px 2px 2px; color: inherit; text-decoration: none; border-radius: 10px; }
+.nav-mark { display: inline-grid; }
+.nav-links { display: flex; align-items: center; justify-self: center; gap: 30px; }
+.nav-links a { position: relative; padding: 6px 0; font-size: 14.5px; font-weight: 560; letter-spacing: 0.002em; color: inherit; text-decoration: none; border-radius: 6px; opacity: 0.8; transition: opacity 160ms var(--ease); }
+.nav-links a:hover, .nav-links a.on { opacity: 1; }
+/* the dot under the section the reader is in: the brand green on the film's dark shade, the primary on the page */
+.nav-links a::after { content: ""; position: absolute; left: 50%; bottom: -3px; width: 5px; height: 5px; border-radius: 50%; background: #5fdca2; transform: translateX(-50%) scale(0); transition: transform 240ms var(--ease); }
+.site.scrolled .nav-links a::after { background: var(--primary); }
+.nav-links a.on::after { transform: translateX(-50%) scale(1); }
+.nav-actions { justify-self: end; display: flex; align-items: center; gap: 2px; }
+.nav-text { color: inherit; font-size: 15px; font-weight: 500; text-decoration: none; border-radius: 10px; padding: 6px 10px; }
+.nav-text:hover { color: #cfeedd; }
+.site.scrolled .nav-text:hover { color: var(--primary-text); }
 .site-nav .iconbtn { color: inherit; }
 .nav-signin { position: relative; }
 .nav-mode { display: inline-flex; }
 .nav-demo { height: 40px; }
+.nav-progress { display: block; height: 2px; transform-origin: 0 50%; background: var(--primary); opacity: 0; transition: opacity 240ms var(--ease); }
+.site.scrolled .nav-progress { opacity: 1; }
 .site-nav a:focus-visible, .site-nav button:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
 
-/* ---------- 1 · the first viewport: the miniature business alive on film, enormous type over it ---------- */
-.hero.film { position: relative; display: grid; align-items: end; min-height: max(560px, 100svh); isolation: isolate; color: #fff; background: #0b1a14; }
-.film-media { position: absolute; inset: 0; z-index: -1; overflow: hidden; }
-.film-media video, .film-media img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 44% 56%; transform-origin: 50% 60%; animation: film-drift 8.2s var(--ease) forwards; }
-@keyframes film-drift { from { transform: scale(1.07); } to { transform: scale(1); } }
-@media (prefers-reduced-motion: reduce) { .film-media video, .film-media img { animation: none; } }
+/* ---------- 1 · the first viewport: one day at the business on film, enormous type over it, the hours under it ---------- */
+.hero.film { position: relative; display: grid; align-items: end; align-content: end; min-height: max(560px, 100svh); isolation: isolate; overflow: hidden; color: #fff; background: #0b1a14; }
+/* the film drifts with the scroll, not the clock (site.jsx moves it); the two players cross-fade as one hands to the other */
+.film-media { position: absolute; inset: 0; z-index: -1; overflow: hidden; will-change: transform; transform-origin: 50% 40%; }
+.film-media video, .film-media img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 44% 56%; }
+.film-media .fx { position: absolute; inset: 0; opacity: 0; transition: opacity 1000ms linear; }
+.film-media .fx.front { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .film-media .fx { transition: none; } }
 .film-shade { position: absolute; inset: 0; background: linear-gradient(to top, rgb(5 12 9 / 0.82) 0, rgb(5 12 9 / 0.5) 34%, rgb(5 12 9 / 0.14) 64%, rgb(5 12 9 / 0.1) 100%), linear-gradient(to right, rgb(5 12 9 / 0.45) 0, transparent 58%); }
-.film-copy { position: relative; z-index: 1; width: 100%; max-width: 1344px; margin: 0 auto; padding: 120px 16px 40px; display: grid; gap: 16px; justify-items: start; }
+.film-copy { position: relative; z-index: 1; width: 100%; max-width: 1344px; margin: 0 auto; padding: 120px 16px 14px; display: grid; gap: 16px; justify-items: start; }
 .film-h { margin: 0; font-family: var(--font-display); font-weight: 520; font-size: clamp(40px, 7.4cqw, 108px); line-height: 0.98; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 96; color: #fff; max-width: 10.5ch; text-wrap: balance; }
 .film-word { display: inline-grid; vertical-align: baseline; }
 .film-word > span { grid-area: 1 / 1; white-space: nowrap; }
@@ -46,10 +59,24 @@ html, body { overflow-x: clip; }
 .film-ghost i { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #fff; color: #0d1c15; }
 .film-ghost i svg { margin-left: 1px; }
 /* Pause, since the film runs longer than five seconds (WCAG 2.2.2); under the bar, clear of the demo pill */
-.film-ctl { position: absolute; right: 16px; top: calc(60px + var(--safe-top) + 12px); z-index: 2; display: flex; gap: 8px; }
+.film-ctl { position: absolute; right: 16px; top: calc(66px + var(--safe-top) + 12px); z-index: 2; display: flex; gap: 8px; }
 .film-ctl button { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px 0 10px; border: 0; border-radius: 999px; font: 600 13px/1 var(--font-ui); color: #fff; background: rgb(5 12 9 / 0.5); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); cursor: pointer; }
 .film-ctl button:hover { background: rgb(5 12 9 / 0.68); }
 .film-ctl button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+/* the strip under the copy: the four beats of the half-day the film is on, the one it is at lit with a line filling
+   through it, the person's in amber. On phones only the beat it is at shows */
+.film-story { position: relative; z-index: 1; width: 100%; max-width: 1344px; margin: 0 auto; padding: 0 16px 16px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; color: #fff; }
+.fs { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 10px; align-items: baseline; padding: 11px 0 0; font-size: 13px; line-height: 1.35; color: rgb(255 255 255 / 0.66); transition: color 240ms var(--ease); }
+.fs::before { content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 2px; border-radius: 1px; background: rgb(255 255 255 / 0.22); }
+.fs-bar { position: absolute; left: 0; top: 0; width: 100%; height: 2px; border-radius: 1px; background: #fff; transform-origin: 0 50%; transform: scaleX(0); }
+.fs.done .fs-bar { transform: scaleX(1); }
+.fs.now { color: #fff; }
+.fs.done { color: rgb(255 255 255 / 0.86); }
+.fs:not(.now) { display: none; }
+.fs-at { font-variant-numeric: tabular-nums; font-weight: 650; font-size: 12px; letter-spacing: 0.02em; }
+.fs-t b { font-weight: 650; }
+.fs.human .fs-at { color: #f7c04a; }
+.fs.human .fs-bar { background: #f7c04a; }
 
 /* ---------- 2 · the statement: its words fill in from the tertiary ink, which keeps 4.5:1 on both grounds, to the full ink ---------- */
 .say { padding: 88px 16px 40px; }
@@ -59,10 +86,10 @@ html, body { overflow-x: clip; }
 .say .sw .lit { position: absolute; inset: 0; color: var(--fg); }
 
 /* ---------- 3 · the agents at work on the table, one in focus at a time ---------- */
-.sec-table { position: relative; isolation: isolate; overflow: visible; --on-plate: #0d1c15; }
-[data-theme="dark"] .sec-table { --on-plate: #ecf2ee; }
+.sec-table { position: relative; isolation: isolate; overflow: visible; --on-plate: #0d1c15; --tb-ground: #ebe2d2; }
+[data-theme="dark"] .sec-table { --on-plate: #ecf2ee; --tb-ground: var(--bg); }
 .tb-head { max-width: calc(1248px + 32px); margin: 0 auto; padding: 0 16px 20px; display: grid; gap: 10px; }
-.tb-stage { position: relative; height: 100svh; min-height: 600px; overflow: clip; background: var(--bg); }
+.tb-stage { position: relative; height: 100svh; min-height: 600px; overflow: clip; background: var(--tb-ground); }
 /* the world: the plate and what stands on it, moved as one by the camera */
 .tb-world { position: absolute; inset: 0; transform-origin: 0 0; will-change: transform; transition: transform 900ms var(--ease); }
 @media (prefers-reduced-motion: reduce) { .tb-world { transition: none; } }
@@ -74,11 +101,12 @@ html, body { overflow-x: clip; }
 .tb-dot { stroke: #fff; stroke-width: 3; filter: drop-shadow(0 4px 6px rgb(0 0 0 / 0.35)); }
 .tb-dot.kirana { fill: var(--ch-kirana); } .tb-dot.expiresoon { fill: var(--ch-expiresoon); }
 /* the plate's top and foot blend into the page */
-.tb-stage::before, .tb-stage::after { content: ""; position: absolute; left: 0; right: 0; z-index: 2; height: 18%; pointer-events: none; }
+.tb-stage::before, .tb-stage::after { content: ""; position: absolute; left: 0; right: 0; z-index: 2; height: 14%; pointer-events: none; }
 .tb-stage::before { top: 0; background: linear-gradient(to bottom, var(--bg), transparent); }
 .tb-stage::after { bottom: 0; background: linear-gradient(to top, var(--bg), transparent); }
-/* the table recedes a little behind the card in focus */
-.tb-shade { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: color-mix(in oklab, var(--bg) 28%, transparent); opacity: 0; transition: opacity 600ms var(--ease); }
+/* the table recedes a little behind the card in focus: by day a sage-dark vignette, never a whitening wash */
+.tb-shade { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(120% 90% at 50% 46%, rgb(13 28 21 / 0.08), rgb(13 28 21 / 0.26)); opacity: 0; transition: opacity 600ms var(--ease); }
+[data-theme="dark"] .tb-shade { background: color-mix(in oklab, var(--bg) 28%, transparent); }
 .tb-stage.working .tb-shade { opacity: 1; }
 /* an agent at its post: a frosted dot with its icon and name; lit once it has worked, ringed while it works, amber for
    the person. The nodes keep their size as the camera nears (--iz) */
@@ -176,7 +204,7 @@ html, body { overflow-x: clip; }
 .tb-result .did { color: var(--primary-text); font-weight: 600; font-variant-numeric: tabular-nums; }
 .tb-result .replay { min-height: 36px; margin: 0; }
 /* Pause, under the bar (the stage starts at the top of the window while the tour plays) */
-.tb-ctl { position: absolute; z-index: 5; right: 16px; top: calc(60px + var(--safe-top) + 12px); display: flex; gap: 8px; }
+.tb-ctl { position: absolute; z-index: 5; right: 16px; top: calc(66px + var(--safe-top) + 12px); display: flex; gap: 8px; }
 .tb-ctl .replay { margin: 0; padding: 0 14px 0 12px; border-radius: 999px; background: var(--glass-strong); -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
 /* Replay, and Pause: the scene's */
 .replay { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; margin-top: 6px; padding: 0 4px; border: 0; background: none; cursor: pointer;
@@ -301,26 +329,54 @@ html, body { overflow-x: clip; }
 .sec-head:has(> .sec-h.plain) { max-width: 64rem; }
 .site a:focus-visible, .site button:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
 
-/* 6 · a workspace per manufacturer: the islands, one product on each, then what each team gets (comp L5) */
-.isl-pan { margin: 0 -16px; padding: 0 16px; overflow-x: auto; overscroll-behavior-x: contain; }
-.isl-pan:focus-visible { outline: 3px solid var(--ring); outline-offset: -3px; border-radius: 14px; }
-.islands { position: relative; margin: 0 auto; height: 270px; width: calc(270px * var(--ar)); }
-.isl-plate { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 16%, #000 82%, transparent 100%); mask-image: linear-gradient(to bottom, transparent 0, #000 16%, #000 82%, transparent 100%); }
-[data-theme="dark"] .isl-plate { -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 36%, #000 80%, transparent 100%); mask-image: linear-gradient(to bottom, transparent 0, #000 36%, #000 80%, transparent 100%); }
-.isl-packs { position: absolute; left: calc(var(--x) * 100%); top: calc(var(--y) * 100%); translate: -50% -86%; display: flex; align-items: flex-end; pointer-events: none; }
-.isl-pack { width: clamp(96px, 17cqw, 250px) !important; height: auto !important; filter: drop-shadow(0 10px 14px rgb(13 28 21 / 0.22)); }
-[data-theme="dark"] .isl-pack { filter: brightness(0.86) drop-shadow(0 10px 14px rgb(0 0 0 / 0.4)); }
-.isl-hub { position: absolute; left: calc(var(--x) * 100%); top: calc(var(--y) * 100%); translate: -50% -50%; display: grid; filter: drop-shadow(0 8px 14px rgb(13 28 21 / 0.28)); }
+/* 6 · a workspace per manufacturer: the workspace itself on a device, its address typed in, one tab per team; then
+   the addresses, what each team gets, and what it works with */
+.wsd-stage { position: relative; max-width: 1180px; margin: 8px auto 0; padding: 36px 0 0; }
+.wsd-ground { position: absolute; left: 50%; top: 0; width: min(100%, 1180px); height: 100%; translate: -50% 0; border-radius: 32px; background: linear-gradient(to bottom, var(--primary-soft), transparent 78%); }
+[data-theme="dark"] .wsd-ground { background: linear-gradient(to bottom, rgb(22 122 82 / 0.22), transparent 78%); }
+.wsd-stage .device-window { position: relative; z-index: 1; margin: 0 auto; max-width: 1080px; box-shadow: var(--shadow-3), 0 0 0 var(--hair) var(--line); }
+.wsd { display: grid; grid-template-columns: 224px minmax(0, 1fr); height: 580px; background: var(--bg); }
+.wsd-rail { display: grid; align-content: start; gap: 4px; padding: 16px 12px; box-shadow: inset calc(-1 * var(--hair)) 0 0 var(--line); background: var(--surface-raised, var(--surface)); }
+.wsd-rail .who { display: flex; align-items: center; gap: 10px; padding: 6px 8px 14px; font-size: 14px; font-weight: 650; color: var(--fg); }
+.wsd-rail button { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 10px; border: 0; border-radius: 10px; background: none; color: var(--fg-2); font: 500 14px/1.2 var(--font-ui); text-align: left; cursor: pointer; transition: background-color 160ms var(--ease), color 160ms var(--ease); }
+.wsd-rail button:hover { background: var(--fill); color: var(--fg); }
+.wsd-rail button[aria-selected="true"] { background: var(--fill-2); color: var(--fg); font-weight: 600; }
+.wsd-rail button[aria-selected="true"] svg { color: var(--primary-text); }
+.wsd-rail button:focus-visible { outline: 3px solid var(--ring); outline-offset: -3px; }
+.wsd-main { display: grid; align-content: start; gap: 18px; padding: 26px 30px; overflow: hidden; }
+.wsd-title h3 { margin: 0; font-family: var(--font-display); font-size: 24px; font-weight: 680; letter-spacing: -0.02em; font-variation-settings: "opsz" 48, "wdth" 100; color: var(--fg); }
+.wsd-title p { margin: 4px 0 0; font-size: 14.5px; color: var(--fg-2); }
+.wsd-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-items: start; }
+.wsd-main .m-card { max-width: 560px; }
+/* beside the team's card, what the agents did for it today */
+.wsd-side { display: none; gap: 10px; align-content: start; padding: 16px 16px 18px; border-radius: 16px; background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); font-size: 13px; color: var(--fg-2); }
+.wsd-side > b { font-size: 12px; font-weight: 650; letter-spacing: 0.04em; text-transform: uppercase; color: var(--fg-3); }
+.wsd-line { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 8px; row-gap: 2px; align-items: start; line-height: 1.35; }
+.wsd-line > i { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; color: var(--primary-fg); background: var(--primary); }
+.wsd-line b { color: var(--fg); font-weight: 600; }
+.wsd-line .at { grid-column: 2; font-size: 11.5px; font-variant-numeric: tabular-nums; color: var(--fg-3); }
+.wsd-avatar { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 16px; background: var(--primary-soft); color: var(--primary-text); }
+.wsd .m-row .v.red { color: var(--red-text); }
+/* on a phone: the same workspace on a phone frame, scaled to the stage's width, the teams as a row of tabs. The
+   layout stacks over the kit's aurora ground, so it keeps its own stacking context */
+.wsd-phone { position: relative; z-index: 1; margin: 0 auto; }
+.wsd-phone-in { position: absolute; left: 50%; top: 0; width: 414px; height: 868px; margin-left: -207px; transform-origin: top center; }
+.wsd.phone { position: relative; z-index: 1; display: grid; grid-template-rows: auto auto minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); height: 100%; padding-top: var(--safe-top, 50px); box-sizing: border-box; }
+.wsd.phone .wsd-addr { display: inline-flex; align-items: center; gap: 6px; margin: 8px 16px 0; padding: 7px 12px; border-radius: 999px; font-size: 13px; color: var(--fg-2); background: var(--fill); justify-self: center; }
+.wsd.phone .wsd-rail { grid-auto-flow: column; justify-content: start; gap: 6px; padding: 10px 12px; overflow-x: auto; box-shadow: none; background: none; }
+.wsd.phone .wsd-rail .who { display: none; }
+.wsd.phone .wsd-rail button { min-height: 36px; padding: 0 12px; border-radius: 999px; background: var(--fill); white-space: nowrap; }
+.wsd.phone .wsd-rail button[aria-selected="true"] { background: var(--primary); color: var(--primary-fg); }
+.wsd.phone .wsd-rail button[aria-selected="true"] svg { color: inherit; }
+.wsd.phone .wsd-main { padding: 12px 16px 24px; overflow-y: auto; }
+/* the addresses: one workspace each */
 .isl-urls { margin: 0; padding: 0; list-style: none; }
-.isl-urls.on-plate { display: none; }
-.isl-url { position: absolute; left: calc(var(--x) * 100%); top: calc(var(--y) * 100%); translate: -50% 0; display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 999px; white-space: nowrap;
+.isl-url { display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 999px; white-space: nowrap;
   font-size: 13px; color: var(--fg); background: var(--glass-strong); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
 .isl-url > i { width: 8px; height: 8px; border-radius: 50%; background: var(--fg-4); }
 .isl-url.live > i { background: var(--primary); }
 .isl-live { color: var(--primary-text); font-weight: 600; }
-.isl-urls.below { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 18px 0 0; }
-.isl-urls.below .isl-url { position: static; translate: none; }
+.isl-urls.below { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 28px 0 0; }
 .teams { display: grid; gap: 12px; margin: 26px 0 0; padding: 0; list-style: none; }
 .team { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 12px; row-gap: 6px; align-items: center; padding: 20px 20px 22px; border-radius: 18px;
   background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
@@ -396,8 +452,6 @@ html, body { overflow-x: clip; }
   .sec-ledger { padding: 96px 32px; }
   .ledger { padding: 34px 36px 28px; }
   .teams { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .isl-pan { margin: 0 -32px; padding: 0; overflow: visible; }
-  .islands { width: 100%; height: auto; aspect-ratio: var(--ar); }
   .foot { padding: 52px 32px 30px; }
   .foot-cols { grid-template-columns: repeat(3, minmax(0, max-content)); }
   .foot-col a, .foot-link { min-height: 32px; }
@@ -418,12 +472,16 @@ html, body { overflow-x: clip; }
   .sec-sub { font-size: 18px; }
   .sec-head { margin-bottom: 36px; }
   .sec-h.plain { font-size: clamp(34px, 2.6cqw, 40px); }
-  .film-copy { padding: 140px 48px 72px; gap: 20px; }
-  .film-ctl { right: 48px; top: calc(60px + var(--safe-top) + 20px); }
+  .film-copy { padding: 140px 48px 20px; gap: 20px; }
+  .film-story { padding: 0 48px 20px; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+  .fs:not(.now) { display: grid; }
+  .wsd-body { grid-template-columns: minmax(0, 1fr) 272px; }
+  .wsd-side { display: grid; }
+  .film-ctl { right: 48px; top: calc(66px + var(--safe-top) + 20px); }
   .film-media video, .film-media img { object-position: 50% 54%; }
   .say { padding: 128px 48px 56px; }
   .tb-head { max-width: calc(1248px + 96px); padding: 0 48px 28px; }
-  .tb-ctl { right: 48px; top: calc(60px + var(--safe-top) + 20px); }
+  .tb-ctl { right: 48px; top: calc(66px + var(--safe-top) + 20px); }
   .ch { padding: 88px 56px 64px; }
   .pill { right: 24px; bottom: 24px; padding: 8px 18px 8px 8px; }
   .pill .thumb { width: 52px; height: 52px; }
@@ -432,11 +490,8 @@ html, body { overflow-x: clip; }
   .foot { padding: 56px 48px 32px; }
 }
 @container app (min-width: 1100px) {
-  /* the islands run edge to edge, so each address has room under its island */
-  .isl-pan { margin: 0 -48px; padding: 0; overflow: visible; }
-  .isl-urls.below { display: none; }
-  .isl-urls.on-plate { display: block; }
-  .islands { width: 100%; height: auto; aspect-ratio: var(--ar); }
+  /* the links show from here (the kit's desktop), centred between the brand and the actions */
+  .nav-in { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); padding-inline: 20px; }
 }
 
 /* book a demo: the sent state */

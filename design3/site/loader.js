@@ -304,8 +304,8 @@
   // a switch: cover the page as it is, change the theme underneath, wait for the new plates, part into the page
   function preload(to) {
     var base = W.SC3_SITE_IMG || "assets/plates/", list = [["business" + (to === "dark" ? "-night" : "") + ".webp", true]];
-    // the table and the islands too, when they are on screen or close to it
-    [[".tb-plate", "table"], [".islands .isl-plate", "islands"]].forEach(function (q) {
+    // the table too, when it is on screen or close to it
+    [[".tb-plate", "table"]].forEach(function (q) {
       var n = D.querySelector(q[0]); if (!n) return; var r = n.getBoundingClientRect();
       if (r.bottom > -vh() * 0.5 && r.top < vh() * 1.5) list.push([q[1] + (to === "dark" ? "-night" : "") + ".webp", false]);
     });
