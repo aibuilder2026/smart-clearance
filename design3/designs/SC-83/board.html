@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-83 Watchlist Row</title>
+<meta name="description" content="Three options for the watchlist row of a gated batch that sells through: saying why it is fine.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<style>
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px -6px rgb(17 41 30 / 0.1);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
+::selection { background: color-mix(in oklab, var(--green) 24%, transparent); }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 48px 16px 72px; }
+h1, h2, h3, h4 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+h2 { margin: 60px 0 14px; font-size: clamp(25px, 3vw, 32px); font-weight: 720; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 72, "wdth" 88; }
+h3 { font-size: 26px; font-weight: 720; letter-spacing: -0.018em; font-variation-settings: "opsz" 48, "wdth" 90; }
+h4 { margin: 26px 0 10px; font: 650 16px/1.35 var(--ui); letter-spacing: 0; }
+p { margin: 0 0 12px; max-width: 74ch; color: var(--ink-2); text-wrap: pretty; }
+p b, li b, td b { color: var(--ink); font-weight: 600; }
+.lede { font-size: 18px; margin-top: 14px; }
+blockquote { margin: 16px 0; padding: 16px 20px; border-radius: 14px; background: var(--sunken); color: var(--ink); font-size: 15.5px; max-width: 82ch; }
+blockquote ul { color: var(--ink); margin: 0; }
+ul { margin: 0 0 12px; padding-left: 20px; color: var(--ink-2); max-width: 80ch; display: grid; gap: 6px; }
+code { font: 500 0.9em/1 var(--mono); }
+figure { margin: 0; min-width: 0; }
+figure img, figure video { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+.four { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+@media (min-width: 900px) { .four { grid-template-columns: minmax(0, 2.6fr) minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); } }
+.phones { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+@media (min-width: 700px) { .phones { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .phones { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.desks { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 700px) { .desks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.card { padding: 22px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.shared { display: grid; gap: 18px; }
+@media (min-width: 900px) { .shared { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.shared h3.sub { margin: 0 0 6px; }
+h3.sub { font: 650 16px/1.35 var(--ui); letter-spacing: 0; font-variation-settings: normal; }
+.shared p, .shared li { font-size: 14.5px; }
+.opt { margin-top: 26px; display: grid; gap: 14px; padding: 26px 22px; border-radius: 28px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); scroll-margin-top: 20px; }
+.opt.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.opt header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.opt header p { margin: 0; flex-basis: 100%; font-size: 17px; color: var(--ink); max-width: 76ch; }
+.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 600 12.5px/1 var(--ui); color: var(--green-text); background: var(--green-soft); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+.btn.primary { background: var(--green); color: #fff; box-shadow: none; }
+:root[data-theme="dark"] .btn.primary { color: #03170d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #03170d; } }
+.states { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; }
+.states a { display: inline-flex; align-items: center; min-height: 32px; }
+.vid { display: grid; gap: 18px; }
+@media (min-width: 900px) { .vid { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: start; } }
+dl.facts { margin: 0; display: grid; gap: 12px; }
+dl.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); }
+dl.facts dd { margin: 2px 0 0; color: var(--ink-2); font-size: 14.5px; }
+dl.facts dd ul { margin-top: 4px; font-size: 14.5px; }
+.tablewrap { overflow-x: auto; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+table.cmp { border-collapse: collapse; width: 100%; min-width: 860px; font-size: 14px; color: var(--ink-2); }
+table.cmp th, table.cmp td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+table.cmp thead th { color: var(--ink); font-weight: 650; background: var(--sunken); }
+table.cmp tbody th { color: var(--ink); font-weight: 600; width: 14%; }
+table.cmp tr:last-child > * { border-bottom: 0; }
+.rec-box { padding: 22px; border-radius: 20px; background: var(--green-soft); }
+.rec-box p { color: var(--ink); }
+.q { padding: 20px 22px; border-radius: 20px; background: var(--amber-soft); }
+.q p, .q li { color: var(--ink); }
+.q h3 { font-size: 20px; margin-bottom: 8px; }
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
+</style>
+
+<body>
+<main class="wrap">
+<h1>A gated batch that sells through</h1>
+<p class="lede">SC-83 · Munchly's workspace · three options for the watchlist row of a batch that fails a quick-commerce gate but sells out in normal trade before retailers stop taking it. Every company, person and figure is fictional.</p>
+<p>The maintainer (8 Oct), on the live Command Center:</p>
+<blockquote><ul><li>“Some of them are showing gated selling through, but shows cross on Blinkit, Zepto and Instamart, so they should be at risk.”</li><li>Asked whether such a batch should count as at risk: <b>keep the rule, with a clearer row</b>.</li></ul></blockquote>
+<p>The rule stays as money.js has it: a batch is <b>at risk</b> only when packs will not sell before the last week <b>and</b> every gate fails. Peanut Chikki (MF-2408-311): 960 packs, 61 days left, 20 a day: all 960 sell in 48 days, 6 before retailers stop, though quick commerce takes none of it.</p>
+<h2>The row now</h2>
+<p>Three red crosses and an amber badge on a batch that needs nothing; red is meant for risk and the bin.</p>
+<div class="vid"><figure><img src="current/rows-light-1440.webp" width="792" height="803" loading="lazy" alt="The watchlist now: the gated rows with red crosses on Blinkit, Zepto and Instamart."><figcaption>The watchlist now</figcaption></figure><div class="phones" style="grid-template-columns: repeat(2, minmax(0, 1fr))"><figure><img src="current/quiet-light-390.webp" width="780" height="1688" loading="lazy" alt="The Command Center on a phone now."><figcaption>Phone · light</figcaption></figure><figure><img src="current/quiet-dark-390.webp" width="780" height="1688" loading="lazy" alt="The same, dark."><figcaption>Phone · dark</figcaption></figure></div></div>
+<h2>What all three share</h2><div class="shared">
+<div class="card"><h3 class="sub">The rule stays</h3><ul><li>At risk, gated and safe are money.js's, unchanged; the Watcher flags what it flags today.</li><li>Only a batch that is gated and sells through changes; at-risk and safe rows are as they are.</li></ul></div>
+<div class="card"><h3 class="sub">Red means risk</h3><ul><li>A failed gate is red only on a batch at risk. On a batch in motion, cleared or selling through, it is neutral (B folds it into one chip).</li></ul></div>
+<div class="card"><h3 class="sub">From the data</h3><ul><li>The sell-out day and the margin come from the batch's packs, its sales a day and its best-before, as money.js projects them; nothing is typed.</li><li>Every screen that shows the row gets it: the Command Center, the Batches list on phones, a distributor's own stock.</li></ul></div></div>
+<section class="opt rec" id="option-a"><header><h3>Option A · Sells out by</h3><span class="tag">Recommended</span>
+<p>The row keeps its badge and gates, and gains the reason it is fine, on its own line under the bar: <b>✓ Sells out by 19 Nov · 6 days to spare</b>, in the brand's green. A failed gate is drawn <b>neutral</b> unless the batch is at risk: red stays for risk and the bin.</p></header>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>Says why in words, with the date and the margin, which is what was asked.</li><li>The gates are still there to read, and red keeps one meaning: a failed gate turns red only on a batch at risk (the at-risk hero, or a batch the Watcher flagged).</li><li>A gated row is a line taller than the others (96 px against 78 px); on phones, where the gates are hidden, the line is the only word on the gates.</li></ul></dd><dt>What the build touches</dt><dd>The kit's <code>BatchRow</code> and <code>GateChips</code> (a neutral fail when not at risk), <code>components.css</code>, then core's two components. The sell-out day comes from the batch's packs, its sales a day and its best-before (money.js's projection), so no new figure is typed.</dd></dl>
+<div class="desks"><figure><img src="option-a/rows-light-1440.webp" width="792" height="912" loading="lazy" alt="Option A · Sells out by: the watchlist rows, light."><figcaption>The watchlist · light</figcaption></figure><figure><img src="option-a/rows-dark-1440.webp" width="792" height="912" loading="lazy" alt="Option A · Sells out by: the watchlist rows, dark."><figcaption>The watchlist · dark</figcaption></figure><figure><img src="option-a/quiet-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A · Sells out by on the Command Center, light."><figcaption>Command Center · light</figcaption></figure><figure><img src="option-a/quiet-dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option A · Sells out by on the Command Center, dark."><figcaption>Command Center · dark</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-a/rows-light-390.webp" width="716" height="1814" loading="lazy" alt="Option A · Sells out by on a phone, the rows."><figcaption>Phone · the rows</figcaption></figure><figure><img src="option-a/quiet-light-390.webp" width="780" height="1688" loading="lazy" alt="Option A · Sells out by on a phone."><figcaption>Phone · light</figcaption></figure><figure><img src="option-a/quiet-dark-390.webp" width="780" height="1688" loading="lazy" alt="Option A · Sells out by on a phone, dark."><figcaption>Phone · dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="row/mockup.html?state=quiet&amp;opt=a">Open option A</a><a class="btn" href="row/mockup.html?state=live&amp;opt=a">On a busy day</a></div></section>
+<section class="opt" id="option-b"><header><h3>Option B · One chip</h3>
+<p>For a batch that sells through, the badge says <b>Selling through in trade</b> (neutral), the line says when it sells out, and the failed gates fold into one neutral chip that names them: <b>Not for quick commerce</b>, or <b>Not for Zepto, Instamart</b> when Blinkit passes.</p></header>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>The quietest row: no crosses at all where nothing is wrong.</li><li>Rows keep one height.</li><li>It renames a status the Batches screen's filters, the Route Room and the design system call Gated, and hides which gate failed behind the chip's title.</li></ul></dd><dt>What the build touches</dt><dd>As A, plus the status's label in the kit's <code>STATUS</code> (and core's <code>StatusBadge</code>), and the Batches filter's words.</dd></dl>
+<div class="desks"><figure><img src="option-b/rows-light-1440.webp" width="792" height="803" loading="lazy" alt="Option B · One chip: the watchlist rows, light."><figcaption>The watchlist · light</figcaption></figure><figure><img src="option-b/rows-dark-1440.webp" width="792" height="803" loading="lazy" alt="Option B · One chip: the watchlist rows, dark."><figcaption>The watchlist · dark</figcaption></figure><figure><img src="option-b/quiet-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option B · One chip on the Command Center, light."><figcaption>Command Center · light</figcaption></figure><figure><img src="option-b/quiet-dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option B · One chip on the Command Center, dark."><figcaption>Command Center · dark</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-b/rows-light-390.webp" width="716" height="1806" loading="lazy" alt="Option B · One chip on a phone, the rows."><figcaption>Phone · the rows</figcaption></figure><figure><img src="option-b/quiet-light-390.webp" width="780" height="1688" loading="lazy" alt="Option B · One chip on a phone."><figcaption>Phone · light</figcaption></figure><figure><img src="option-b/quiet-dark-390.webp" width="780" height="1688" loading="lazy" alt="Option B · One chip on a phone, dark."><figcaption>Phone · dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="row/mockup.html?state=quiet&amp;opt=b">Open option B</a><a class="btn" href="row/mockup.html?state=live&amp;opt=b">On a busy day</a></div></section>
+<section class="opt" id="option-c"><header><h3>Option C · The projection drawn</h3>
+<p>The countdown bar becomes the batch's own projection: the green part is the days its packs take to sell, the hatched end is the last week retailers will not take it. The line says <b>Sells out 6 days before retailers stop</b>. Failed gates are neutral, as in A.</p></header>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>Shows the margin at a glance, and it reads the same on a phone.</li><li>A new chart to learn: the bar no longer means shelf life left, as it does on every other row and screen.</li><li>Short margins (a day or two) are hard to see in a 150 px bar.</li></ul></dd><dt>What the build touches</dt><dd>As A, plus a sell-through bar in the kit (with its accessible name) and core.</dd></dl>
+<div class="desks"><figure><img src="option-c/rows-light-1440.webp" width="792" height="803" loading="lazy" alt="Option C · The projection drawn: the watchlist rows, light."><figcaption>The watchlist · light</figcaption></figure><figure><img src="option-c/rows-dark-1440.webp" width="792" height="803" loading="lazy" alt="Option C · The projection drawn: the watchlist rows, dark."><figcaption>The watchlist · dark</figcaption></figure><figure><img src="option-c/quiet-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option C · The projection drawn on the Command Center, light."><figcaption>Command Center · light</figcaption></figure><figure><img src="option-c/quiet-dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option C · The projection drawn on the Command Center, dark."><figcaption>Command Center · dark</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-c/rows-light-390.webp" width="716" height="1806" loading="lazy" alt="Option C · The projection drawn on a phone, the rows."><figcaption>Phone · the rows</figcaption></figure><figure><img src="option-c/quiet-light-390.webp" width="780" height="1688" loading="lazy" alt="Option C · The projection drawn on a phone."><figcaption>Phone · light</figcaption></figure><figure><img src="option-c/quiet-dark-390.webp" width="780" height="1688" loading="lazy" alt="Option C · The projection drawn on a phone, dark."><figcaption>Phone · dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="row/mockup.html?state=quiet&amp;opt=c">Open option C</a><a class="btn" href="row/mockup.html?state=live&amp;opt=c">On a busy day</a></div></section>
+<div class="rec-box" style="margin-top:28px"><p><b>Recommended: A.</b> It says why the batch is fine in the words asked for, keeps the gates readable, and gives red back one meaning. B is quieter but renames a status used across the product and hides which gate failed; C draws the margin but changes what the bar means on one kind of row.</p></div>
+<footer>SC-83 · Smart-Clearance · Munchly's workspace · every company, person and figure is fictional · designs in <code>design3/designs/SC-83/</code></footer>
+</main>
+</body>
+</html>

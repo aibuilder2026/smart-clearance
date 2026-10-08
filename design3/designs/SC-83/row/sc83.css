@@ -1,0 +1,16 @@
+/* SC-83's watchlist row: on the design system's tokens; nothing moves. */
+
+/* A, B, C: a failed gate on a batch that is not at risk, neutral (red is for risk and the bin) */
+.gate.fail.s83-quiet { background: var(--fill); color: var(--fg-2); }
+
+/* A, C: why a gated batch is fine, in the brand's ink */
+.s83-ok { display: inline-flex; align-items: center; gap: 4px; color: var(--primary-text); font-weight: 600; white-space: nowrap; }
+.s83-ok .ic { flex: none; }
+
+/* C: the selling days against the days retailers take it, the last week hatched */
+.s83-sell { position: relative; height: 6px; border-radius: var(--r-full); background: var(--fill-2); }
+.s83-sell > i { position: absolute; inset: 0; border-radius: inherit; transform-origin: left center; transform: scaleX(var(--w, 0)); background: var(--primary); }
+.s83-sell > b { position: absolute; top: -3px; bottom: -3px; left: calc(var(--at, 1) * 100%); right: 0; border-left: 2px solid var(--fg-3); border-radius: 0 var(--r-full) var(--r-full) 0; background: repeating-linear-gradient(135deg, transparent 0 3px, color-mix(in oklab, var(--fg-3) 30%, transparent) 3px 5px); }
+
+/* A: why it is fine, on its own line under the bar, so the days left keep theirs */
+.batchrow .br-bar > .s83-own { grid-column: 1 / -1; margin-top: 1px; }
