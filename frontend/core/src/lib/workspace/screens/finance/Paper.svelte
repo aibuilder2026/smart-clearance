@@ -141,7 +141,9 @@
 			'Input GST on the stock',
 			fmt.inr2(d?.amount ?? 0),
 			true,
-			`₹${c.sku.itcPerUnit!.toFixed(2)} a pack, from the cost sheet`
+			// the plan's own figure, from the cost sheet: an SKU with no itcPerUnit of its own (the Mango Drink) has cost ×
+			// GST worked out by money.js and backend-api (SC-105)
+			`₹${c.plan.writeOff.itcPerUnit.toFixed(2)} a pack, from the cost sheet`
 		)}{@render line('Reversal in GSTR-3B, Table 4(B)(1)', away ? fmt.inr2(c.plan.itcReversed) : 'none')}
 		<p class="pp-note">
 			Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. These packs were sold

@@ -1095,4 +1095,9 @@
     - the frontend gate passes, with workspace at 60: a new live test clicks the cleared chips on Batches as Anita (Paperwork) and Vikram (report), checks a batch in no journey stays put, and draws the chips' processed Paperwork; it fails without the fix;
     - on the local app, Anita's click opens `/paperwork/MF-2409-117`, reviewed, with INV/26-27/0931, CN/0117 and the GST ITC memo.
   - **Hosting:** design3's `dist/` is rebuilt.
+- **SC-105** (In Review, branch `SC-105-itc-memo`; bug found by Munchly Mango E2E): opening the Mango Drink's GST ITC memo blanked the whole Paperwork screen.
+  - **Found:** at Anita's review in the Mango flow's first run, the console read `Cannot read properties of undefined (reading 'toFixed')`, and Paperwork went blank: no further papers, no Mark reviewed.
+  - **The cause:** `Paper.svelte` read `c.sku.itcPerUnit`, which only the chips' SKU carries.
+  - **The fix:** the memo reads the plan's write-off `itcPerUnit`, the figure backend-api works out for every SKU (₹0.90 for the chips; cost × GST, ₹0.55, for the Mango) and every other screen already reads.
+  - **Checks:** the frontend gate passes, with workspace at 61 and core's goldens unchanged. A new live test opens the Mango's memo on the cleared moment and reads ₹0.55 a pack; it fails without the fix with the same TypeError.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
