@@ -1035,4 +1035,14 @@
   - **Checks:**
     - backend-api 467 passed; the story's journey test records the invoice's PDF and opens its link, and fails without the fix;
     - agents 191 passed (the PDF test now renders).
+- **SC-97** (In Review, branch `SC-97-van-round-day`, stacked on SC-100; bug found by Munchly Chips E2E): one day for the van round.
+  - **Found:** Rakesh's Van route read "Monday round", its push "Van route for Saturday", and the timeline, once run, "Ran the Friday round".
+  - **The causes:**
+    - the card dated the round from the offer's scheduled close, 48 hours on, even when the scheme filled early;
+    - the push used the day after the papers;
+    - the timeline used the day it ran.
+  - **The rule** (`domain/journey.py` `van_leaves`): at the client's van hour (`world.van_time`), on the first morning after the scheme closed and after the papers were drafted, whichever is later, since the van runs only once the batch is settled. Before the scheme closes, it is the morning after its window would. It is the story's own: filled on Friday, papers on Monday, the Tuesday round. The Van route, the push and the timeline all read it.
+  - **Checks:**
+    - backend-api 468 passed: a new unit test of the rule; the story's journey test checks the card, the push and the timeline agree, and fails without the fix (Mon 5 Oct for Sat 3 Oct);
+    - workspace 56 passed on the regenerated live fixtures.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

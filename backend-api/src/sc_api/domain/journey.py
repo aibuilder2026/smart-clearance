@@ -7,7 +7,10 @@ The stages, 0-based as the console counts them (services/supply.py STOP_AGENT):
 """
 
 from dataclasses import dataclass
+from datetime import date, datetime, timedelta
 from typing import Any
+
+from sc_api.domain.clock import IST
 
 PHASES = (
     "watching",
@@ -230,3 +233,22 @@ def can(case: dict[str, Any], action: str) -> str | None:
             return "The staff sale is already recorded."
         return None if st == "open" else "There is no staff sale in this plan yet."
     return None
+
+
+def van_leaves(
+    offer: dict[str, Any] | None, docs: list[dict[str, Any]] | None, leaves: str = "07:00"
+) -> datetime | None:
+    """when the van round that takes the scheme's orders leaves (SC-97): at the van's hour, on the first morning after
+    the scheme closed (when it filled, or when its window ran out) and after the papers were drafted, whichever is
+    later, since the van runs once the batch is settled. Before the scheme closes, the morning after its window would.
+    One answer for the Van route, the push that announces the round and the timeline that records it."""
+    at = (offer or {}).get("closedAt") or (offer or {}).get("closesAt")
+    if not at:
+        return None
+    h, mi = (int(x) for x in leaves.split(":"))
+    closed = datetime.fromisoformat(at).astimezone(IST)
+    day = closed.date() if (closed.hour, closed.minute) < (h, mi) else closed.date() + timedelta(days=1)
+    drafted = [date.fromisoformat(d["date"]) for d in docs or [] if d.get("date")]
+    if drafted:
+        day = max(day, min(drafted) + timedelta(days=1))
+    return datetime(day.year, day.month, day.day, h, mi, tzinfo=IST)

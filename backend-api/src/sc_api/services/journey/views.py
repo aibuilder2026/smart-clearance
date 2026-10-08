@@ -823,15 +823,10 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
 def _moments(c: m.Client, case: m.Case, d: m.Distributor, listing: dict[str, Any] | None) -> dict[str, Any]:
     """the journey's moments its screens state, as facts on the journey clock: the case's day 0, how soon a plan follows
     the label, when the distributor was asked for his permission, the listing's address, and the van round that
-    takes the scheme's orders (the morning after the offer closes)"""
+    takes the scheme's orders (the morning after the scheme closed and the papers were drafted, SC-97)"""
     rules = (c.workspace_doc or {}).get("moments") or {}
-    leaves = None
-    closes = (case.offer or {}).get("closesAt")
-    if closes:
-        h, mi = (int(x) for x in str((rules.get("van") or {}).get("leaves", "07:00")).split(":"))
-        at = datetime.fromisoformat(closes).astimezone(IST)
-        day = at if (at.hour, at.minute) < (h, mi) else at + timedelta(days=1)
-        leaves = day.replace(hour=h, minute=mi, second=0, microsecond=0).isoformat()
+    van = J.van_leaves(case.offer, case.docs, world.van_time(c))
+    leaves = van.isoformat() if van else None
     url = rules.get("listingUrl")
     return {
         "day0": _iso(case.opened_at),
