@@ -60,6 +60,8 @@ export type Distributor = {
 	territory: string;
 	pins: string;
 	staffCap?: number;
+	/** where its staff pay at a staff sale (SC-87) */
+	upi?: string | null;
 };
 
 export type Buyer = {
@@ -398,6 +400,19 @@ export type Hero = {
 	shelf: null | (Shelf & { at: string });
 	posted: boolean;
 	reviewed?: boolean;
+	/** the plan's staff sale at the distributor's godown (SC-86), open once approved, then recorded with what sold; the
+	 *  story's stub opens none */
+	staff?: StaffSale | null;
+};
+
+export type StaffSale = {
+	status: 'open' | 'recorded';
+	units: number;
+	price: number;
+	godown: string;
+	at: string;
+	sold: number | null;
+	left: number | null;
 };
 
 export type UserStatus = 'active' | 'invited' | 'deactivated';
@@ -686,6 +701,9 @@ export type CaseData = {
 	listing: Journey['listing'];
 	/** the distributor's van round that takes the scheme orders */
 	van: Journey['van'];
+	/** what each finished line took, and the packs no channel took, left at the godown (SC-86); the live source only,
+	 *  once a line has finished */
+	realised?: { lines: { id: string; units: number }[]; godown: number } | null;
 	/** the batch the same agents donate: how many packs go to the food bank, which partner takes them, and when */
 	donation: { batch: Batch; sku: Sku; dist: Distributor; plan: Plan; units: number; partner: Partner } & Omit<
 		Journey['donation'],
@@ -714,6 +732,8 @@ export type ActionArgs = {
 	/** the bid, a packet */
 	bid: number;
 	accept: undefined;
+	/** the staff sale recorded: how many of its packs sold (SC-87) */
+	recordStaffSale: number;
 	confirmPickup: undefined;
 	collect: undefined;
 	dispatch: undefined;

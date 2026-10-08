@@ -456,3 +456,52 @@ describe("each batch's screens follow its own plan (SC-85)", () => {
 		expect(text(r)).toContain('three agents');
 	});
 });
+
+describe('the staff sale and what is left at the godown (SC-87)', () => {
+	it("Lakshmi Agencies records the Mango Drink's staff sale on her Today, once", async () => {
+		const staffSale = vi.fn(() => Promise.resolve({ seq: 1, case: null }));
+		const s = source(fakeApi(moment('executing'), 'lakshmi-owner', { staffSale }));
+		const r = await draw(s, 'home');
+		await waitFor(() => expect(text(r)).toContain('Staff sale · Mango Drink'));
+		const t = text(r);
+		expect(t).toContain('150 packs for your staff at ₹8 a pack, at Begum Bazaar godown');
+		// her own address, from her distributor's record, beside a code drawn from it that nothing reads out
+		expect(t).toContain('lakshmi-agencies@exampleupi');
+		expect(r.container.querySelector('svg.paycode')?.getAttribute('aria-hidden')).toBe('true');
+		// the count starts at every pack; three did not sell
+		const fewer = r.getByRole('button', { name: 'Fewer packs sold to staff' });
+		for (let i = 0; i < 3; i++) await fireEvent.click(fewer);
+		await fireEvent.click(r.getByRole('button', { name: 'Record the sale' }));
+		await waitFor(() => expect(staffSale).toHaveBeenCalledWith(MANGO, 147));
+		await waitFor(() => expect(text(r)).toContain('147 of 150 sold to staff at ₹8 a pack'));
+		expect(text(r)).toContain('3 packs stay at Begum Bazaar godown.');
+		expect(r.queryByRole('button', { name: 'Record the sale' })).toBeNull();
+	});
+
+	it("Priya's Execution shows the sale open, and Rakesh Traders' Today has none", async () => {
+		const s = source(fakeApi(moment('executing'), 'priya'));
+		const r = await draw(s, 'execution', MANGO);
+		await waitFor(() => expect(text(r)).toContain('Staff sale · Lakshmi Agencies'));
+		expect(text(r)).toContain('open — / 150sold to staff');
+		expect(text(r)).toContain('Lakshmi Agencies runs it at Begum Bazaar godown and records what sold');
+		expect(text(r)).not.toContain('Left at the godown'); // its lines are still running
+		const r2 = await draw(source(fakeApi(moment('executing'), 'rakesh')), 'home');
+		await waitFor(() => expect(text(r2)).toContain('Today'));
+		expect(text(r2)).not.toContain('Staff sale ·');
+	});
+
+	it('once every line is done, Execution says what each line left at the godown', async () => {
+		const s = source(fakeApi(moment('cleared'), 'priya'));
+		const r = await draw(s, 'execution', MANGO);
+		await waitFor(() => expect(text(r)).toContain('Left at the godown'));
+		const c = moment('cleared').members.priya.cases[MANGO];
+		const took = (id: string) => c.realised!.lines.find((l) => l.id === id)!.units;
+		const t = text(r);
+		expect(t).toContain(`${c.realised!.godown.toLocaleString('en-IN')} packs`);
+		expect(t).toContain(`Kirana clusterplanned, not taken${(1372 - took('kirana')).toLocaleString('en-IN')}`);
+		expect(t).toContain(`Staff saleplanned, not taken${150 - took('staff')}`);
+		expect(t).not.toContain('Food bankplanned, not taken'); // it took every pack
+		expect(t).toContain('recorded 120 / 150sold to staff');
+		expect(t).toContain('of the ₹16,917 planned');
+	});
+});

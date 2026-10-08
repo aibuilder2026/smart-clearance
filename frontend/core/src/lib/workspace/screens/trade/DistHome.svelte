@@ -20,6 +20,7 @@
 	import EndWhole from './EndWhole.svelte';
 	import InvoiceDraft from './InvoiceDraft.svelte';
 	import PermissionCard from './PermissionCard.svelte';
+	import StaffSale from './StaffSale.svelte';
 	import DistQuiet from '../live/DistQuiet.svelte';
 
 	// Rakesh bhai's day: the permission, the label photo Vision asks for, the plan once approved, his van round and the
@@ -128,6 +129,12 @@
 							{' '}{/each}
 					</div>
 				</Card>{/if}
+			{#if hero && h.staff}<StaffSale
+					staff={h.staff}
+					{dist}
+					product={productName(c.sku)}
+					clears={c.plan.rows.find((r) => r.id === 'staff')?.clears}
+				/>{/if}
 			{#if hero && approved && (hasKirana || hasES)}<div
 					style="display: grid; gap: 16px; grid-template-columns: {app.bp === 'phone' || !(hasKirana && hasES)
 						? 'minmax(0,1fr)'

@@ -1,6 +1,9 @@
 /* Smart-Clearance v3 · styles for the shared role screens (demo and app) */
 .list-row[style*="grid-template-columns"] { display: grid; align-items: center; column-gap: 12px; }
 .dotmark { width: 10px; height: 10px; border-radius: 3px; flex: none; margin-top: 6px; }
+/* the staff sale's UPI code (SC-87): an illustration drawn from the address, dark on white as a printed code is */
+.paycode { flex: none; border-radius: 10px; background: #fff; }
+.paycode rect { fill: #0b1510; }
 .spin { animation: spin 0.9s linear infinite; }
 .docgrid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); }
 .docpick { border-radius: var(--r-lg); transition: box-shadow var(--t-fast); }

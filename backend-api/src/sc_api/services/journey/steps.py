@@ -1826,6 +1826,9 @@ async def report(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> dict[st
                 itc=float(plan_.get("itcRetained", 0)),
                 kg=float(plan_.get("kg", 0)),
                 cartons=cartons,
+                planned=float((s.case.plan or {}).get("net", 0)),
+                godown=int(plan_.get("godown", 0)),
+                at=s.dist.godown or f"{s.dist.city} godown",
             ),
         )
     for p in await _people(ctx, s.c, role="sustainability"):

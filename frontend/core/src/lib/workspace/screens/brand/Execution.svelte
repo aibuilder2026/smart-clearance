@@ -24,7 +24,9 @@
 	import Screen from '../common/Screen.svelte';
 	import ListingView from '../trade/ListingView.svelte';
 	import Chat from './Chat.svelte';
+	import GodownLeft from './GodownLeft.svelte';
 	import ShelfCheck from './ShelfCheck.svelte';
+	import StaffOps from './StaffOps.svelte';
 
 	// S3 Execution: day 0 to 14, four agents at work: the Lister's ExpireSoon lot, Outreach's scheme to the kiranas, the
 	// Negotiator's thread and the Mango Drink donation (screens/brand.jsx Execution)
@@ -68,6 +70,9 @@
 	const hasKirana = $derived(has('kirana'));
 	const esRow = $derived(c.plan.rows.find((r) => r.id === 'expiresoon'));
 	const giving = $derived(c.donation.units > 0);
+	// the staff sale and what the lines left at the godown, once every line is done (SC-87)
+	const staffLine = $derived(c.plan.lines.find((l) => l.id === 'staff' && l.units > 0));
+	const done = $derived(['dispatched', 'settled', 'cleared'].includes(h.phase));
 	const at = $derived([hasES, hasKirana, hasES, giving].filter(Boolean).length);
 	const COUNT = ['no agents', 'one agent', 'two agents', 'three agents', 'four agents'];
 	const STAGES = ['approve', 'execute', 'settle', 'report'];
@@ -241,6 +246,13 @@
 						>Confirm as {cast.foodbank.short}</PlayAs
 					>{/if}
 			</Card>{/if}
+		{#if staffLine}<StaffOps staff={h.staff} line={staffLine} dist={c.dist} />{/if}
+		{#if c.realised && c.realised.godown > 0 && done}<GodownLeft
+				realised={c.realised}
+				plan={c.plan}
+				net={c.actual.net}
+				dist={c.dist}
+			/>{/if}
 		{#if h.van.status === 'done' || h.shelf}<ShelfCheck shelf={h.shelf} />{/if}
 	</div>{/snippet}
 {#snippet side()}<SectionTitle>Agent timeline</SectionTitle><Card

@@ -339,6 +339,8 @@ class Distributor(Base):
     cluster: Mapped[str | None] = mapped_column(Text)
     territory: Mapped[str | None] = mapped_column(Text)
     pins: Mapped[str | None] = mapped_column(Text)
+    # where its staff pay at a staff sale (SC-87)
+    upi: Mapped[str | None] = mapped_column(Text)
     # the member who gave the permission, and whether he has paused it (the agents then act in his name no more)
     permission_by: Mapped[str | None] = mapped_column(Text)
     permission_paused: Mapped[bool] = mapped_column(Boolean, server_default=sql("false"))

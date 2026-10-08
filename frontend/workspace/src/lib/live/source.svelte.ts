@@ -509,6 +509,23 @@ export class LiveSource implements WorkspaceSource {
 				if (!bid) return;
 				return this.#send(name, () => api.accept(ref, bid.id));
 			}
+			case 'recordStaffSale': {
+				const sold = arg as number;
+				return this.#send(
+					name,
+					() => api.staffSale(ref, sold),
+					this.#show((c) => {
+						if (c.journey.staff)
+							c.journey.staff = {
+								...c.journey.staff,
+								status: 'recorded',
+								sold,
+								left: c.journey.staff.units - sold,
+								recordedAt: this.#now()
+							};
+					})
+				);
+			}
 			case 'confirmPickup':
 				return this.#send(name, () => api.confirmPickup(second || ref));
 			case 'collect':

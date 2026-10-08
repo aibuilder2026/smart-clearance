@@ -113,6 +113,7 @@ def dist_obj(d: m.Distributor) -> dict[str, Any]:
         "territory": d.territory or d.city,
         "pins": d.pins or "",
         "staffCap": d.staff_cap,
+        "upi": d.upi,
         "permission": (
             {"by": d.permission_by, "at": d.permission_given_at.isoformat(), "paused": d.permission_paused}
             if d.permission == "given" and d.permission_given_at

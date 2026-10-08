@@ -90,6 +90,7 @@ async def build(ctx: Ctx, client_id: str = "munchly") -> dict[str, Any]:
             continue
         d.short, d.godown, d.address, d.gstin = x["short"], x["godown"], x.get("address"), x.get("gstin")
         d.cluster, d.territory, d.pins, d.state = x["cluster"], x["territory"], x["pins"], x["state"]
+        d.upi = x.get("upi")
         if x.get("staffCap") is not None:
             d.staff_cap = x["staffCap"]
 

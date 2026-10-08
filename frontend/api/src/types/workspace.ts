@@ -137,6 +137,8 @@ export type WsDistributor = {
 	territory: string;
 	pins: string;
 	staffCap: number | null;
+	/** where its staff pay at a staff sale (SC-87), or null */
+	upi: string | null;
 	permission: Permission | null;
 };
 
@@ -841,6 +843,8 @@ export interface WorkspaceApi {
 	message(ref: string, text: string): Promise<ActionResult>;
 	accept(ref: string, bid: string): Promise<ActionResult>;
 	/** POST /cases/{ref}/donation/confirm and /donation/collect: the food bank's steps */
+	/** POST /cases/{ref}/staff-sale {sold}: the distributor records the staff sale once, how many of its packs sold */
+	staffSale(ref: string, sold: number): Promise<ActionResult>;
 	confirmPickup(ref: string): Promise<ActionResult>;
 	collect(ref: string): Promise<ActionResult>;
 	/** POST /cases/{ref}/dispatches {kind}: the buyer's truck loaded, or the van round run */

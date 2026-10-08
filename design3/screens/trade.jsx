@@ -51,6 +51,45 @@
     const inv = D.INVOICE; const { toast } = useNotice();
     return <Card className="row wrap" style={{ gap: 14 }}><span className="icontile"><Icon name="receipt" size={17} stroke={2} /></span><div className="grow" style={{ minWidth: 0 }}><b>Invoice {inv.no} to {D.BUYER.name}</b><div className="t-footnote muted">{ES.units} × ₹{D.COUNTER.price.toFixed(2)} + IGST {inv.gstPct}% · {fmt.inr(inv.total)} · drafted by the Paperwork agent for you</div></div>{h.invoiceIssued ? <Badge tone="green" icon="check">issued from Tally</Badge> : <Button variant="primary" size="sm" icon="check" onClick={() => { Flow.act("issueInvoice"); toast({ text: "Marked issued from Tally", tone: "ok" }); }}>Issue from Tally</Button>}</Card>;
   }
+  // the staff sale at the godown (SC-87, option A): the packs and the price, the distributor's UPI address to show staff,
+  // and one count to record what sold, once, when the sale is over. The code beside the address is an illustration drawn
+  // from it, not a payment code: nothing scans it
+  function payCells(upi, n = 21) {
+    let seed = [...upi].reduce((t, ch) => (t * 31 + ch.charCodeAt(0)) >>> 0, 7);
+    const r = () => (seed = (seed * 1103515245 + 12345) >>> 0) / 2 ** 32;
+    const corner = (x, y) => [[0, 0], [n - 7, 0], [0, n - 7]].find(([a, b]) => x >= a && x < a + 7 && y >= b && y < b + 7);
+    const cells = [];
+    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+      const f = corner(x, y);
+      if (f) { if (Math.max(Math.abs(x - f[0] - 3), Math.abs(y - f[1] - 3)) !== 2) cells.push([x, y]); }
+      else if (r() < 0.47) cells.push([x, y]);
+    }
+    return cells;
+  }
+  function PayCode({ upi, size = 92 }) {
+    const cells = useMemo(() => payCells(upi), [upi]);
+    return <svg className="paycode" width={size} height={size} viewBox="-1 -1 23 23" aria-hidden="true">{cells.map(([x, y]) => <rect key={x + "-" + y} x={x} y={y} width="1" height="1" />)}</svg>;
+  }
+  function StaffSale({ staff, dist, product, clears }) {
+    const [n, setN] = useState(staff.units); const [busy, setBusy] = useState(false); const { toast } = useNotice();
+    const record = () => { setBusy(true); setTimeout(() => { setBusy(false); Flow.act("recordStaffSale", n); toast({ text: `Recorded · ${fmt.num(n)} of ${fmt.num(staff.units)} packs sold`, tone: "ok" }); }, 400); };
+    const open = staff.status === "open";
+    return <Card className="stack snug">
+      <div className="card-head"><span className="row tight"><span className="icontile"><Icon name="users" size={17} stroke={2} /></span><span className="card-title">Staff sale · {product}</span></span>{open ? <Badge tone="blue" dot>open</Badge> : <Badge tone="green" icon="check">recorded</Badge>}</div>
+      {open ? <>
+        <span className="t-subhead">{fmt.num(staff.units)} packs for your staff at <b>₹{staff.price}</b> a pack, at {staff.godown}. Staff pay you by UPI.</span>
+        {dist.upi && <div className="row" style={{ gap: 14 }}><PayCode upi={dist.upi} /><div className="stack tight" style={{ gap: 2, minWidth: 0 }}><b className="mono t-footnote" style={{ overflowWrap: "anywhere" }}>{dist.upi}</b><span className="t-footnote muted">Your own UPI: staff pay you at the godown{clears ? `, over ${clears}` : ""}.</span></div></div>}
+        <div className="row wrap" style={{ gap: 12 }}><Stepper value={n} onChange={setN} min={0} max={staff.units} label="packs sold to staff" /><span className="t-subhead muted">of {fmt.num(staff.units)} packs sold</span></div>
+        <Button variant="primary" size="lg" block icon="check" loading={busy} onClick={record}>Record the sale</Button>
+        <span className="t-caption subtle">Record once, when the sale is over. What does not sell stays at the godown.</span>
+      </> : <>
+        <span className="t-subhead"><b>{fmt.num(staff.sold)} of {fmt.num(staff.units)}</b> sold to staff at ₹{staff.price} a pack</span>
+        <K.Progress value={staff.sold / staff.units} label="Staff packs sold" />
+        <span className="t-footnote muted">{staff.left ? `${fmt.num(staff.left)} ${staff.left === 1 ? "pack stays" : "packs stay"} at ${staff.godown}.` : "Every pack sold."}</span>
+      </>}
+    </Card>;
+  }
+
   function DistHome({ me }) {
     const s = useStore(); const h = s.hero; const { go } = useRoute(); const app = useApp();
     const dist = distOf(me); const hero = dist.id === "rakesh"; const perm = s.setup.permission;
@@ -81,6 +120,7 @@
             <div className="row top" style={{ gap: 10 }}><span className="dotmark" style={{ background: "var(--ch-expiresoon)" }} /><span><b>{ES.units} on ExpireSoon in your name</b> at ₹15, hidden from buyers in Munchly's territories. The buyer collects with his own truck.</span></div>
           </div>
         </Card>}
+        {hero && h.staff && <StaffSale staff={h.staff} dist={dist} product={CHIPS.name.replace(/ \d.*$/, "")} clears={(M.CHANNELS.find(x => x.id === "staff") || {}).clears} />}
         {hero && approved && <div style={{ display: "grid", gap: 16, gridTemplateColumns: app.bp === "phone" ? "minmax(0,1fr)" : "repeat(2, minmax(0,1fr))" }}>
           <Card interactive className="stack snug" onClick={() => go("van")} role="button" tabIndex={0} onKeyDown={e => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), go("van"))}>
             <div className="card-head"><span className="row tight"><span className="icontile"><Icon name="truck" size={17} stroke={2} /></span><span className="card-title">{D.JOURNEY.van.day} van round</span></span><Icon name="chevron-right" size={18} className="subtle" /></div>

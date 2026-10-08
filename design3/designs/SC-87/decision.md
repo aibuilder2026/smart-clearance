@@ -50,4 +50,6 @@ An open question: in the build, should the UPI code be a real payment code for t
 
 ## The pick
 
-Waiting for the maintainer's pick.
+8 Oct: the maintainer picked **A, a card on Today**, from the board in app v3 (`SC-87 design review.html`).
+
+Their answer to the open question: the UPI code is an **illustration**, as in the mockups. It is not scannable, and there is no QR library in core.

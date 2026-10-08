@@ -7959,7 +7959,8 @@
 					"cluster": "Nagpur, Wardha and Kamptee",
 					"territory": "Nagpur with Wardha and Kamptee",
 					"pins": "440, 441, 442",
-					"staffCap": 50
+					"staffCap": 50,
+					"upi": "rakesh-traders@exampleupi"
 				},
 				"buyer": {
 					"id": "agrawal",
@@ -8018,7 +8019,8 @@
 						"cluster": "Nagpur, Wardha and Kamptee",
 						"territory": "Nagpur with Wardha and Kamptee",
 						"pins": "440, 441, 442",
-						"staffCap": 50
+						"staffCap": 50,
+						"upi": "rakesh-traders@exampleupi"
 					},
 					"to": {
 						"id": "agrawal",
@@ -8350,7 +8352,8 @@
 					"cluster": "Nagpur, Wardha and Kamptee",
 					"territory": "Nagpur with Wardha and Kamptee",
 					"pins": "440, 441, 442",
-					"staffCap": 50
+					"staffCap": 50,
+					"upi": "rakesh-traders@exampleupi"
 				},
 				"buyer": {
 					"id": "agrawal",
