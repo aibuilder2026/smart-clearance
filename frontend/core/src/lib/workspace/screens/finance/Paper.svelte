@@ -187,9 +187,9 @@
 			<!-- another batch's donation is pointed at only when there is one: on the live workspace a batch with no
 			donation of its own has nothing to point at (SC-98) -->
 			<p class="pp-note">
-				Nothing from this batch was donated.{#if c.donation.batch.id !== c.batch.id && c.donation.units > 0}{' '}The {productName(
-						c.donation.sku
-					)} batch {c.donation.batch.id} has its own checklist:
+				Nothing from this batch was donated.
+				{#if c.donation.batch.id !== c.batch.id && c.donation.units > 0}The {productName(c.donation.sku)} batch {c
+						.donation.batch.id} has its own checklist:
 					{c.donation.units} packs to {c.donation.partner.name}, {c.donation.dist.city}.{/if}
 			</p>{/if}
 	</div>
