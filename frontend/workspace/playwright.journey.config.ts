@@ -6,7 +6,8 @@ import { defineConfig } from '@playwright/test';
 // (backend-api/scripts/app-env.sh). Each person is signed in with a Firebase custom token (tests/journey/auth.ts), so
 // no password is handled. One page drives every person in turn, so the whole journey is one recording.
 //
-//   corepack pnpm test:journey                      headless, recorded
+//   corepack pnpm test:journey                      Munchly Chips E2E, headless, recorded (it resets the journey)
+//   corepack pnpm test:journey:mango                Munchly Mango E2E (SC-104), from where the journey stands
 //   corepack pnpm test:journey --headed             watch it run (E2E_SLOWMO=250 slows each action, in ms)
 //   corepack pnpm test:journey --ui                 Playwright's UI mode, step by step
 //
@@ -36,5 +37,9 @@ export default defineConfig({
 		actionTimeout: 20_000,
 		launchOptions: { slowMo: Number(process.env.E2E_SLOWMO ?? 0) }
 	},
-	projects: [{ name: 'Munchly Chips E2E' }]
+	// one project a flow, so running one never starts the other (the chips flow resets the journey; the Mango's never does)
+	projects: [
+		{ name: 'Munchly Chips E2E', testMatch: /munchly-chips\.journey\.ts/ },
+		{ name: 'Munchly Mango E2E', testMatch: /munchly-mango\.journey\.ts/ }
+	]
 });

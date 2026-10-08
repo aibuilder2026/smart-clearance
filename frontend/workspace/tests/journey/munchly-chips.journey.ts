@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
-import { readFileSync } from 'node:fs';
-import { api, mint, openAs, person } from './auth.ts';
+import { api, mint } from './auth.ts';
+import { AGENT_WAIT, as, begin, caseAs, inr, kiranasOf, sidebar, staff, story, until, WS } from './flow.ts';
 import { Run } from './record.ts';
 
 // Munchly Chips E2E (SC-95): the Masala Chips 150 g batch (MF-2409-117, Rakesh Traders, Nagpur) from a fresh journey to
@@ -14,110 +14,14 @@ import { Run } from './record.ts';
 // E2E_FROM=<step id> resumes on the journey as it stands; E2E_UNTIL=<step id> stops after that step.
 
 const HERO = 'MF-2409-117';
-const WS = '/v1/workspaces/munchly';
 const DAY_MINUTES = Number(process.env.E2E_DAY_MINUTES ?? 60);
 const PRESETS: Record<number, RegExp> = { 1440: /Real time/, 60: /Rehearsal/, 5: /Demo/, 1: /Fast/ };
-const AGENT_WAIT = 6 * 60_000; // what the agents take on live Gemini, with room for a retry or two
-
-// the people, and the story's kiranas for Rakesh's cluster (their own orders fill the scheme to the packet)
-type Kirana = { id: string; name: string; member: string; orders: number; distributor: string };
-type Member = { id: string; name: string; role: string };
-type Case = {
-	journey: {
-		phase: string;
-		photo: { status: string };
-		listing: { id: string; status: string; units: number; price: number } | null;
-		offer: { status: string; shops: number } | null;
-		orders: { units: number }[];
-		bids: { id: string; status: string; price: number; counter?: number }[];
-		award: { units: number; price: number; token: number } | null;
-		truck: { status: string };
-		van: { status: string };
-		invoiceIssued: boolean;
-		reviewed: boolean;
-		posted: boolean;
-	};
-	plan: { net: number; lines: { id: string; units: number }[] } | null;
-	writeOff: { total: number } | null;
-	actual: { net: number } | null;
-	docs: { id: string; type: string; no: string; status: string; pdf: boolean }[];
-	moments: { van: { leavesAt: string | null } };
-	push: Record<string, { title: string }>;
-	feed: { key: string; text: string }[];
-	kiranas: { id: string; name: string }[];
-	realised: { lines: { id: string; units: number }[]; godown: number } | null;
-};
-
-const STORY = JSON.parse(
-	readFileSync(new URL('../../../../backend-api/src/sc_api/reference/journey.json', import.meta.url), 'utf8')
-) as { kiranas: Kirana[]; members: Member[] };
-const KIRANAS = STORY.kiranas.filter((k) => k.distributor === 'rakesh' && k.orders > 0);
-
-const ROLES: Record<string, string> = {
-	neha: 'Smart-Clearance staff · console',
-	priya: 'Supply Chain',
-	rakesh: 'Distributor',
-	agrawal: 'Bidder on ExpireSoon',
-	anita: 'Finance',
-	vikram: 'ESG'
-};
+// the story's kiranas for Rakesh's cluster: their own orders fill the scheme to the packet
+const KIRANAS = kiranasOf('rakesh');
 
 let run: Run;
 /** the van round's day, as the Van route and its push name it */
 let vanDay = '';
-
-/** the case as someone sees it, or null before the Watcher has flagged it */
-async function caseAs(who: string): Promise<Case | null> {
-	try {
-		return await api<Case>('workspace', who, `${WS}/cases/${HERO}`);
-	} catch {
-		return null;
-	}
-}
-
-/** waits for the agents: polls the case as someone until the check holds, then returns it */
-async function until(what: string, who: string, check: (c: Case) => boolean, timeout = AGENT_WAIT): Promise<Case> {
-	let got: Case | null = null;
-	const holds = async () => {
-		got = await caseAs(who);
-		return got ? check(got) : false;
-	};
-	await expect.poll(holds, { message: what, timeout, intervals: [2000] }).toBe(true);
-	return got!;
-}
-
-/** the splash (design3/console/splash.js) has lifted off the page */
-async function settled(page: Page) {
-	await expect(page.locator('html')).not.toHaveClass(/cs-covered/, { timeout: 60_000 });
-	await expect(page.locator('.cs-splash')).toHaveCount(0, { timeout: 15_000 });
-}
-
-/** someone opens the workspace app at a path, with the caption naming them and what they are about to do */
-async function as(page: Page, who: string, path: string, did: string) {
-	const p = person(who);
-	await openAs(page, 'workspace', who, path);
-	await run.act(p.name, ROLES[who] ?? `Kirana · ${p.org}`, did);
-	await settled(page);
-	await expect(page.locator('#main')).toBeVisible();
-}
-
-/** Neha opens the console at a path */
-async function staff(page: Page, path: string, did: string) {
-	await openAs(page, 'console', 'neha', path);
-	await run.act('Neha Kulkarni', ROLES.neha, did);
-	await settled(page);
-}
-
-/** a figure the story fixes: kept in the report, checked softly so the run goes on to the end */
-function story(name: string, actual: string | number | undefined, expected: string | number) {
-	run.figure(name, actual ?? '(missing)');
-	if (actual !== expected) run.find('warning', HERO, `${name}: ${actual} where the story has ${expected}`);
-	expect.soft(actual, name).toBe(expected);
-}
-
-const sidebar = (page: Page, label: string) =>
-	page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: label, exact: true });
-const inr = (n: number | undefined) => (n == null ? '(none)' : `₹${n.toLocaleString('en-IN')}`);
 
 /** the journey's steps, in order: each acts in the UI, then waits for what follows from it */
 const STEPS: { id: string; title: string; run: (page: Page) => Promise<void> }[] = [
@@ -480,6 +384,7 @@ test.describe.configure({ mode: 'serial' });
 
 test('Munchly Chips E2E: the Masala Chips batch, end to end, every person in the real UI', async ({ page }, info) => {
 	run = new Run(page, info);
+	begin(run, HERO);
 	mint(['neha', 'priya', 'rakesh', 'agrawal', 'anita', 'vikram', ...KIRANAS.map((k) => k.member)]);
 	const from = process.env.E2E_FROM ? STEPS.findIndex((s) => s.id === process.env.E2E_FROM) : 0;
 	const to = process.env.E2E_UNTIL ? STEPS.findIndex((s) => s.id === process.env.E2E_UNTIL) : STEPS.length - 1;

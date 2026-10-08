@@ -1,0 +1,674 @@
+{
+	"flow": "Munchly Mango E2E",
+	"status": "failed",
+	"error": "locator.click: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Mark reviewed' })\u001b[22m\n",
+	"took": 427,
+	"steps": [
+		{
+			"n": 1,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Command Center: the Mango Drink at at-risk",
+			"at": "2026-10-08T23:11:28.271Z",
+			"ms": 6737,
+			"shot": "steps/01-Command-Center-the-Mango-Drink-at-at-risk.png"
+		},
+		{
+			"n": 2,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "The label photo chosen",
+			"at": "2026-10-08T23:11:33.416Z",
+			"ms": 5145,
+			"shot": "steps/02-The-label-photo-chosen.png"
+		},
+		{
+			"n": 3,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Vision read the label",
+			"at": "2026-10-08T23:11:53.298Z",
+			"ms": 19882,
+			"shot": "steps/03-Vision-read-the-label.png"
+		},
+		{
+			"n": 4,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Route Room: the plan, waiting for a yes",
+			"at": "2026-10-08T23:12:25.372Z",
+			"ms": 32074,
+			"shot": "steps/04-Route-Room-the-plan-waiting-for-a-yes.png"
+		},
+		{
+			"n": 5,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "The approve sheet: the scheme, the staff sale and the donation",
+			"at": "2026-10-08T23:12:26.834Z",
+			"ms": 1462,
+			"shot": "steps/05-The-approve-sheet-the-scheme-the-staff-sale-and-.png"
+		},
+		{
+			"n": 6,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Plan placed",
+			"at": "2026-10-08T23:12:29.568Z",
+			"ms": 2734,
+			"shot": "steps/06-Plan-placed.png"
+		},
+		{
+			"n": 7,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Execution: the scheme sent, the staff sale open, the donation booked",
+			"at": "2026-10-08T23:12:36.344Z",
+			"ms": 6776,
+			"shot": "steps/07-Execution-the-scheme-sent-the-staff-sale-open-th.png"
+		},
+		{
+			"n": 8,
+			"who": "Sri Lakshmi Ganapathi Kirana",
+			"role": "Kirana · Sri Lakshmi Ganapathi Kirana",
+			"did": "Sri Lakshmi Ganapathi Kirana ordered 24 packets",
+			"at": "2026-10-08T23:12:41.938Z",
+			"ms": 5594,
+			"shot": "steps/08-Sri-Lakshmi-Ganapathi-Kirana-ordered-24-packets.png"
+		},
+		{
+			"n": 9,
+			"who": "Al-Noor Provision Store",
+			"role": "Kirana · Al-Noor Provision Store",
+			"did": "Al-Noor Provision Store ordered 28 packets",
+			"at": "2026-10-08T23:12:47.373Z",
+			"ms": 5435,
+			"shot": "steps/09-Al-Noor-Provision-Store-ordered-28-packets.png"
+		},
+		{
+			"n": 10,
+			"who": "Deccan General Stores",
+			"role": "Kirana · Deccan General Stores",
+			"did": "Deccan General Stores ordered 32 packets",
+			"at": "2026-10-08T23:12:52.815Z",
+			"ms": 5442,
+			"shot": "steps/10-Deccan-General-Stores-ordered-32-packets.png"
+		},
+		{
+			"n": 11,
+			"who": "Sai Krishna Kirana",
+			"role": "Kirana · Sai Krishna Kirana",
+			"did": "Sai Krishna Kirana ordered 20 packets",
+			"at": "2026-10-08T23:12:58.217Z",
+			"ms": 5402,
+			"shot": "steps/11-Sai-Krishna-Kirana-ordered-20-packets.png"
+		},
+		{
+			"n": 12,
+			"who": "Hussaini Provision",
+			"role": "Kirana · Hussaini Provision",
+			"did": "Hussaini Provision ordered 36 packets",
+			"at": "2026-10-08T23:13:04.740Z",
+			"ms": 6523,
+			"shot": "steps/12-Hussaini-Provision-ordered-36-packets.png"
+		},
+		{
+			"n": 13,
+			"who": "Bhavani Kirana",
+			"role": "Kirana · Bhavani Kirana",
+			"did": "Bhavani Kirana ordered 24 packets",
+			"at": "2026-10-08T23:13:10.178Z",
+			"ms": 5438,
+			"shot": "steps/13-Bhavani-Kirana-ordered-24-packets.png"
+		},
+		{
+			"n": 14,
+			"who": "Golconda Stores",
+			"role": "Kirana · Golconda Stores",
+			"did": "Golconda Stores ordered 28 packets",
+			"at": "2026-10-08T23:13:15.646Z",
+			"ms": 5468,
+			"shot": "steps/14-Golconda-Stores-ordered-28-packets.png"
+		},
+		{
+			"n": 15,
+			"who": "Moazzam Kirana",
+			"role": "Kirana · Moazzam Kirana",
+			"did": "Moazzam Kirana ordered 16 packets",
+			"at": "2026-10-08T23:13:21.053Z",
+			"ms": 5407,
+			"shot": "steps/15-Moazzam-Kirana-ordered-16-packets.png"
+		},
+		{
+			"n": 16,
+			"who": "Anjaneya Provision Store",
+			"role": "Kirana · Anjaneya Provision Store",
+			"did": "Anjaneya Provision Store ordered 32 packets",
+			"at": "2026-10-08T23:13:26.439Z",
+			"ms": 5386,
+			"shot": "steps/16-Anjaneya-Provision-Store-ordered-32-packets.png"
+		},
+		{
+			"n": 17,
+			"who": "Shalimar General Store",
+			"role": "Kirana · Shalimar General Store",
+			"did": "Shalimar General Store ordered 28 packets",
+			"at": "2026-10-08T23:13:31.879Z",
+			"ms": 5440,
+			"shot": "steps/17-Shalimar-General-Store-ordered-28-packets.png"
+		},
+		{
+			"n": 18,
+			"who": "Ravi Teja Kirana",
+			"role": "Kirana · Ravi Teja Kirana",
+			"did": "Ravi Teja Kirana ordered 24 packets",
+			"at": "2026-10-08T23:13:37.300Z",
+			"ms": 5421,
+			"shot": "steps/18-Ravi-Teja-Kirana-ordered-24-packets.png"
+		},
+		{
+			"n": 19,
+			"who": "Madina Provision",
+			"role": "Kirana · Madina Provision",
+			"did": "Madina Provision ordered 28 packets",
+			"at": "2026-10-08T23:13:42.820Z",
+			"ms": 5520,
+			"shot": "steps/19-Madina-Provision-ordered-28-packets.png"
+		},
+		{
+			"n": 20,
+			"who": "Sri Durga Bhavani Stores",
+			"role": "Kirana · Sri Durga Bhavani Stores",
+			"did": "Sri Durga Bhavani Stores ordered 32 packets",
+			"at": "2026-10-08T23:13:48.277Z",
+			"ms": 5457,
+			"shot": "steps/20-Sri-Durga-Bhavani-Stores-ordered-32-packets.png"
+		},
+		{
+			"n": 21,
+			"who": "Hyderabadi Kirana",
+			"role": "Kirana · Hyderabadi Kirana",
+			"did": "Hyderabadi Kirana ordered 20 packets",
+			"at": "2026-10-08T23:13:53.712Z",
+			"ms": 5435,
+			"shot": "steps/21-Hyderabadi-Kirana-ordered-20-packets.png"
+		},
+		{
+			"n": 22,
+			"who": "Gulzar House Stores",
+			"role": "Kirana · Gulzar House Stores",
+			"did": "Gulzar House Stores ordered 36 packets",
+			"at": "2026-10-08T23:13:59.236Z",
+			"ms": 5524,
+			"shot": "steps/22-Gulzar-House-Stores-ordered-36-packets.png"
+		},
+		{
+			"n": 23,
+			"who": "Padmavathi Kirana",
+			"role": "Kirana · Padmavathi Kirana",
+			"did": "Padmavathi Kirana ordered 24 packets",
+			"at": "2026-10-08T23:14:04.705Z",
+			"ms": 5469,
+			"shot": "steps/23-Padmavathi-Kirana-ordered-24-packets.png"
+		},
+		{
+			"n": 24,
+			"who": "Asif Nagar Provisions",
+			"role": "Kirana · Asif Nagar Provisions",
+			"did": "Asif Nagar Provisions ordered 28 packets",
+			"at": "2026-10-08T23:14:10.160Z",
+			"ms": 5455,
+			"shot": "steps/24-Asif-Nagar-Provisions-ordered-28-packets.png"
+		},
+		{
+			"n": 25,
+			"who": "Ramakrishna General Store",
+			"role": "Kirana · Ramakrishna General Store",
+			"did": "Ramakrishna General Store ordered 16 packets",
+			"at": "2026-10-08T23:14:15.599Z",
+			"ms": 5439,
+			"shot": "steps/25-Ramakrishna-General-Store-ordered-16-packets.png"
+		},
+		{
+			"n": 26,
+			"who": "Taj Kirana",
+			"role": "Kirana · Taj Kirana",
+			"did": "Taj Kirana ordered 32 packets",
+			"at": "2026-10-08T23:14:21.203Z",
+			"ms": 5604,
+			"shot": "steps/26-Taj-Kirana-ordered-32-packets.png"
+		},
+		{
+			"n": 27,
+			"who": "Sitara Provision Store",
+			"role": "Kirana · Sitara Provision Store",
+			"did": "Sitara Provision Store ordered 28 packets",
+			"at": "2026-10-08T23:14:26.658Z",
+			"ms": 5455,
+			"shot": "steps/27-Sitara-Provision-Store-ordered-28-packets.png"
+		},
+		{
+			"n": 28,
+			"who": "Vinayaka Stores",
+			"role": "Kirana · Vinayaka Stores",
+			"did": "Vinayaka Stores ordered 24 packets",
+			"at": "2026-10-08T23:14:32.062Z",
+			"ms": 5404,
+			"shot": "steps/28-Vinayaka-Stores-ordered-24-packets.png"
+		},
+		{
+			"n": 29,
+			"who": "Nizam Kirana",
+			"role": "Kirana · Nizam Kirana",
+			"did": "Nizam Kirana ordered 28 packets",
+			"at": "2026-10-08T23:14:37.534Z",
+			"ms": 5472,
+			"shot": "steps/29-Nizam-Kirana-ordered-28-packets.png"
+		},
+		{
+			"n": 30,
+			"who": "Annapurna Provisions",
+			"role": "Kirana · Annapurna Provisions",
+			"did": "Annapurna Provisions ordered 32 packets",
+			"at": "2026-10-08T23:14:42.988Z",
+			"ms": 5454,
+			"shot": "steps/30-Annapurna-Provisions-ordered-32-packets.png"
+		},
+		{
+			"n": 31,
+			"who": "Musi River Stores",
+			"role": "Kirana · Musi River Stores",
+			"did": "Musi River Stores ordered 20 packets",
+			"at": "2026-10-08T23:14:48.391Z",
+			"ms": 5403,
+			"shot": "steps/31-Musi-River-Stores-ordered-20-packets.png"
+		},
+		{
+			"n": 32,
+			"who": "Kothi Kirana",
+			"role": "Kirana · Kothi Kirana",
+			"did": "Kothi Kirana ordered 36 packets",
+			"at": "2026-10-08T23:14:53.832Z",
+			"ms": 5441,
+			"shot": "steps/32-Kothi-Kirana-ordered-36-packets.png"
+		},
+		{
+			"n": 33,
+			"who": "Siddiq General Store",
+			"role": "Kirana · Siddiq General Store",
+			"did": "Siddiq General Store ordered 24 packets",
+			"at": "2026-10-08T23:14:59.268Z",
+			"ms": 5436,
+			"shot": "steps/33-Siddiq-General-Store-ordered-24-packets.png"
+		},
+		{
+			"n": 34,
+			"who": "Lalitha Provision",
+			"role": "Kirana · Lalitha Provision",
+			"did": "Lalitha Provision ordered 28 packets",
+			"at": "2026-10-08T23:15:04.689Z",
+			"ms": 5421,
+			"shot": "steps/34-Lalitha-Provision-ordered-28-packets.png"
+		},
+		{
+			"n": 35,
+			"who": "Mehboob Kirana",
+			"role": "Kirana · Mehboob Kirana",
+			"did": "Mehboob Kirana ordered 16 packets",
+			"at": "2026-10-08T23:15:10.112Z",
+			"ms": 5423,
+			"shot": "steps/35-Mehboob-Kirana-ordered-16-packets.png"
+		},
+		{
+			"n": 36,
+			"who": "Srinivasa Stores",
+			"role": "Kirana · Srinivasa Stores",
+			"did": "Srinivasa Stores ordered 32 packets",
+			"at": "2026-10-08T23:15:15.516Z",
+			"ms": 5404,
+			"shot": "steps/36-Srinivasa-Stores-ordered-32-packets.png"
+		},
+		{
+			"n": 37,
+			"who": "Zam Zam Provisions",
+			"role": "Kirana · Zam Zam Provisions",
+			"did": "Zam Zam Provisions ordered 28 packets",
+			"at": "2026-10-08T23:15:21.085Z",
+			"ms": 5569,
+			"shot": "steps/37-Zam-Zam-Provisions-ordered-28-packets.png"
+		},
+		{
+			"n": 38,
+			"who": "Pochamma Kirana",
+			"role": "Kirana · Pochamma Kirana",
+			"did": "Pochamma Kirana ordered 24 packets",
+			"at": "2026-10-08T23:15:26.507Z",
+			"ms": 5422,
+			"shot": "steps/38-Pochamma-Kirana-ordered-24-packets.png"
+		},
+		{
+			"n": 39,
+			"who": "Rahmat General Store",
+			"role": "Kirana · Rahmat General Store",
+			"did": "Rahmat General Store ordered 28 packets",
+			"at": "2026-10-08T23:15:31.962Z",
+			"ms": 5455,
+			"shot": "steps/39-Rahmat-General-Store-ordered-28-packets.png"
+		},
+		{
+			"n": 40,
+			"who": "Krishnaveni Provisions",
+			"role": "Kirana · Krishnaveni Provisions",
+			"did": "Krishnaveni Provisions ordered 32 packets",
+			"at": "2026-10-08T23:15:37.416Z",
+			"ms": 5454,
+			"shot": "steps/40-Krishnaveni-Provisions-ordered-32-packets.png"
+		},
+		{
+			"n": 41,
+			"who": "Shah Ali Kirana",
+			"role": "Kirana · Shah Ali Kirana",
+			"did": "Shah Ali Kirana ordered 20 packets",
+			"at": "2026-10-08T23:15:42.820Z",
+			"ms": 5404,
+			"shot": "steps/41-Shah-Ali-Kirana-ordered-20-packets.png"
+		},
+		{
+			"n": 42,
+			"who": "Mahalakshmi Stores",
+			"role": "Kirana · Mahalakshmi Stores",
+			"did": "Mahalakshmi Stores ordered 36 packets",
+			"at": "2026-10-08T23:15:48.308Z",
+			"ms": 5488,
+			"shot": "steps/42-Mahalakshmi-Stores-ordered-36-packets.png"
+		},
+		{
+			"n": 43,
+			"who": "Banjara Provision Store",
+			"role": "Kirana · Banjara Provision Store",
+			"did": "Banjara Provision Store ordered 24 packets",
+			"at": "2026-10-08T23:15:53.713Z",
+			"ms": 5405,
+			"shot": "steps/43-Banjara-Provision-Store-ordered-24-packets.png"
+		},
+		{
+			"n": 44,
+			"who": "Ghouse Kirana",
+			"role": "Kirana · Ghouse Kirana",
+			"did": "Ghouse Kirana ordered 28 packets",
+			"at": "2026-10-08T23:15:59.352Z",
+			"ms": 5639,
+			"shot": "steps/44-Ghouse-Kirana-ordered-28-packets.png"
+		},
+		{
+			"n": 45,
+			"who": "Sri Rama Stores",
+			"role": "Kirana · Sri Rama Stores",
+			"did": "Sri Rama Stores ordered 16 packets",
+			"at": "2026-10-08T23:16:05.308Z",
+			"ms": 5956,
+			"shot": "steps/45-Sri-Rama-Stores-ordered-16-packets.png"
+		},
+		{
+			"n": 46,
+			"who": "Patel Market Kirana",
+			"role": "Kirana · Patel Market Kirana",
+			"did": "Patel Market Kirana ordered 32 packets",
+			"at": "2026-10-08T23:16:10.711Z",
+			"ms": 5403,
+			"shot": "steps/46-Patel-Market-Kirana-ordered-32-packets.png"
+		},
+		{
+			"n": 47,
+			"who": "Yadamma Provisions",
+			"role": "Kirana · Yadamma Provisions",
+			"did": "Yadamma Provisions ordered 28 packets",
+			"at": "2026-10-08T23:16:16.131Z",
+			"ms": 5420,
+			"shot": "steps/47-Yadamma-Provisions-ordered-28-packets.png"
+		},
+		{
+			"n": 48,
+			"who": "Darussalam Stores",
+			"role": "Kirana · Darussalam Stores",
+			"did": "Darussalam Stores ordered 24 packets",
+			"at": "2026-10-08T23:16:22.053Z",
+			"ms": 5922,
+			"shot": "steps/48-Darussalam-Stores-ordered-24-packets.png"
+		},
+		{
+			"n": 49,
+			"who": "Gowri Kirana",
+			"role": "Kirana · Gowri Kirana",
+			"did": "Gowri Kirana ordered 28 packets",
+			"at": "2026-10-08T23:16:27.556Z",
+			"ms": 5503,
+			"shot": "steps/49-Gowri-Kirana-ordered-28-packets.png"
+		},
+		{
+			"n": 50,
+			"who": "Irani Gali Provisions",
+			"role": "Kirana · Irani Gali Provisions",
+			"did": "Irani Gali Provisions ordered 32 packets",
+			"at": "2026-10-08T23:16:32.963Z",
+			"ms": 5407,
+			"shot": "steps/50-Irani-Gali-Provisions-ordered-32-packets.png"
+		},
+		{
+			"n": 51,
+			"who": "Satyanarayana Stores",
+			"role": "Kirana · Satyanarayana Stores",
+			"did": "Satyanarayana Stores ordered 20 packets",
+			"at": "2026-10-08T23:16:38.368Z",
+			"ms": 5405,
+			"shot": "steps/51-Satyanarayana-Stores-ordered-20-packets.png"
+		},
+		{
+			"n": 52,
+			"who": "Farhan General Store",
+			"role": "Kirana · Farhan General Store",
+			"did": "Farhan General Store ordered 36 packets",
+			"at": "2026-10-08T23:16:43.820Z",
+			"ms": 5452,
+			"shot": "steps/52-Farhan-General-Store-ordered-36-packets.png"
+		},
+		{
+			"n": 53,
+			"who": "Sunanda Kirana",
+			"role": "Kirana · Sunanda Kirana",
+			"did": "Sunanda Kirana ordered 24 packets",
+			"at": "2026-10-08T23:16:49.359Z",
+			"ms": 5539,
+			"shot": "steps/53-Sunanda-Kirana-ordered-24-packets.png"
+		},
+		{
+			"n": 54,
+			"who": "Mir Alam Provisions",
+			"role": "Kirana · Mir Alam Provisions",
+			"did": "Mir Alam Provisions ordered 28 packets",
+			"at": "2026-10-08T23:16:55.448Z",
+			"ms": 6089,
+			"shot": "steps/54-Mir-Alam-Provisions-ordered-28-packets.png"
+		},
+		{
+			"n": 55,
+			"who": "Jyothi Stores",
+			"role": "Kirana · Jyothi Stores",
+			"did": "Jyothi Stores ordered 16 packets",
+			"at": "2026-10-08T23:17:00.952Z",
+			"ms": 5504,
+			"shot": "steps/55-Jyothi-Stores-ordered-16-packets.png"
+		},
+		{
+			"n": 56,
+			"who": "Purani Haveli Kirana",
+			"role": "Kirana · Purani Haveli Kirana",
+			"did": "Purani Haveli Kirana ordered 32 packets",
+			"at": "2026-10-08T23:17:06.405Z",
+			"ms": 5453,
+			"shot": "steps/56-Purani-Haveli-Kirana-ordered-32-packets.png"
+		},
+		{
+			"n": 57,
+			"who": "Narayana Provision Store",
+			"role": "Kirana · Narayana Provision Store",
+			"did": "Narayana Provision Store ordered 28 packets",
+			"at": "2026-10-08T23:17:11.812Z",
+			"ms": 5407,
+			"shot": "steps/57-Narayana-Provision-Store-ordered-28-packets.png"
+		},
+		{
+			"n": 58,
+			"who": "Bilal Stores",
+			"role": "Kirana · Bilal Stores",
+			"did": "Bilal Stores ordered 16 packets",
+			"at": "2026-10-08T23:17:17.349Z",
+			"ms": 5537,
+			"shot": "steps/58-Bilal-Stores-ordered-16-packets.png"
+		},
+		{
+			"n": 59,
+			"who": "Saraswathi Kirana",
+			"role": "Kirana · Saraswathi Kirana",
+			"did": "Saraswathi Kirana ordered 16 packets",
+			"at": "2026-10-08T23:17:22.885Z",
+			"ms": 5536,
+			"shot": "steps/59-Saraswathi-Kirana-ordered-16-packets.png"
+		},
+		{
+			"n": 60,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "The staff sale card, every pack to start",
+			"at": "2026-10-08T23:17:27.861Z",
+			"ms": 4976,
+			"shot": "steps/60-The-staff-sale-card-every-pack-to-start.png"
+		},
+		{
+			"n": 61,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Staff sale recorded",
+			"at": "2026-10-08T23:17:31.584Z",
+			"ms": 3723,
+			"shot": "steps/61-Staff-sale-recorded.png"
+		},
+		{
+			"n": 62,
+			"who": "Meera",
+			"role": "Food bank",
+			"did": "Pickup confirmed",
+			"at": "2026-10-08T23:17:36.485Z",
+			"ms": 4901,
+			"shot": "steps/62-Pickup-confirmed.png"
+		},
+		{
+			"n": 63,
+			"who": "Meera",
+			"role": "Food bank",
+			"did": "Donation collected",
+			"at": "2026-10-08T23:17:37.919Z",
+			"ms": 1434,
+			"shot": "steps/63-Donation-collected.png"
+		},
+		{
+			"n": 64,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "The Sunday round, every shop's order on it",
+			"at": "2026-10-08T23:17:55.720Z",
+			"ms": 17801,
+			"shot": "steps/64-The-Sunday-round-every-shop-s-order-on-it.png"
+		},
+		{
+			"n": 65,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "The van round run",
+			"at": "2026-10-08T23:18:01.552Z",
+			"ms": 5832,
+			"shot": "steps/65-The-van-round-run.png"
+		},
+		{
+			"n": 66,
+			"who": "Anita Rao",
+			"role": "Finance",
+			"did": "Paper: Price-support credit note CN/0118",
+			"at": "2026-10-08T23:18:06.671Z",
+			"ms": 5119,
+			"shot": "steps/66-Paper-Price-support-credit-note-CN-0118.png"
+		},
+		{
+			"n": 67,
+			"who": "Anita Rao",
+			"role": "Finance",
+			"did": "Paper: GST ITC memo s.17(5)(h)",
+			"at": "2026-10-08T23:18:08.696Z",
+			"ms": 2025,
+			"shot": "steps/67-Paper-GST-ITC-memo-s-17-5-h-.png"
+		}
+	],
+	"figures": {
+		"Phase at the start": "at-risk",
+		"Label photo at the start": "requested",
+		"Write-off": "₹22,657.2",
+		"Plan net": 16887.7,
+		"Plan line kirana": "1372 packs",
+		"Plan line staff": "150 packs",
+		"Plan line foodbank": "86 packs",
+		"Kiranas offered the scheme": 58,
+		"Donation booked": "86 packs to Feeding India",
+		"Kirana orders": "52 shops, 1372 packets",
+		"Staff sale": 150,
+		"Donation": "86 packs collected",
+		"Paper: Price-support credit note": "CN/0118 (generated, PDF)",
+		"Paper: GST ITC memo": "s.17(5)(h) (generated, PDF)",
+		"Paper: FSSAI surplus-food checklist": "86 units (generated, PDF)",
+		"Paper: Destruction certificate": "0 units left (not required)",
+		"Papers with their PDF": "support, itc, fssai",
+		"Van round push": "Van route for Sunday",
+		"Van round in the timeline": "Ran the Sunday round"
+	},
+	"findings": [
+		{
+			"severity": "warning",
+			"where": "MF-2410-118",
+			"what": "Plan net: 16887.7 where the story has 16917.1"
+		},
+		{
+			"severity": "warning",
+			"where": "MF-2410-118",
+			"what": "Donation booked: 86 packs to Feeding India where the story has 58 packs to Feeding India"
+		},
+		{
+			"severity": "warning",
+			"where": "/offer/MF-2410-118",
+			"what": "Bilal Stores ordered 16 of its 28, so the scheme fills to 1372 exactly"
+		},
+		{
+			"severity": "warning",
+			"where": "/offer/MF-2410-118",
+			"what": "Saraswathi Kirana's story order of 4 packets cannot be placed: the offer screen orders in twelves from its share of 28, so it ordered 16"
+		},
+		{
+			"severity": "warning",
+			"where": "MF-2410-118",
+			"what": "Donation: 86 packs collected where the story has 58 packs collected"
+		},
+		{
+			"severity": "warning",
+			"where": "/paperwork/MF-2410-118",
+			"what": "console error: TypeError: Cannot read properties of undefined (reading 'toFixed')\n    at frontend/core/src/lib/workspace/screens/finance/Paper.svelte?t=1791500463885:531:57\n    at update_r"
+		},
+		{
+			"severity": "warning",
+			"where": "/paperwork/MF-2410-118",
+			"what": "no card for the paper \"FSSAI surplus-food checklist\""
+		},
+		{
+			"severity": "warning",
+			"where": "/paperwork/MF-2410-118",
+			"what": "no card for the paper \"Destruction certificate\""
+		}
+	]
+}
