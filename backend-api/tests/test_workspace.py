@@ -808,3 +808,11 @@ async def test_a_journey_started_again_shows_no_case_an_earlier_journey_finished
     snap = (await api.get(f"{WS}/snapshot", headers=PRIYA)).json()
     assert {c["ref"]: c["phase"] for c in snap["cases"]}[HERO] == "at-risk"
     assert (await case(api, PRIYA))["journey"]["phase"] == "at-risk"
+
+
+async def test_a_partners_member_stands_for_its_organisation(api, munchly):
+    """SC-92: the buyer's member carries Agrawal Wholesale, as the reference data names it, though the story's import
+    made the member first under the person's own name"""
+    snap = (await api.get(f"{WS}/snapshot", headers=AGRAWAL)).json()
+    me = next(x for x in snap["members"] if x["id"] == "agrawal")
+    assert me["org"] == next(x for x in J["members"] if x["id"] == "agrawal")["org"] == "Agrawal Wholesale"

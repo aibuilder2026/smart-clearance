@@ -917,4 +917,19 @@
     - the frontend gate passes: workspace 49 (2 new; the focus test fails without the fix, showing the Mango's Execution), core 248, api 77, admin 17, demo 5, console 3;
     - the workspace e2e spec expects `/execution/MF-2409-117` after approving;
     - the browser suites were not run.
+- **SC-92** (In Review, branch `SC-92-buyer-chat`; bug): the buyer's chat sends, the counter names its token, and the buyer has his face.
+  - **Found by the maintainer** on Agrawal ji's listing: "This chat does not work as expected... no way for users to communicate".
+  - **What was wrong:**
+    - the chat box only cleared itself (`ListingView.svelte`, the prototype's decorative form), though the live source has `message` and the Negotiator answers it;
+    - Accept read "pay ₹0 token", as the award's token exists only once accepted;
+    - the buyer's bubble showed "?": his member was named "Agrawal ji" for its organisation, since hydrate's live build never updated the organisation of a member the story's import had made.
+  - **The fix:**
+    - the box sends in the live workspace; the prototype and the guided demo keep their decorative box;
+    - Accept's token is worked out from the counter as money.js's `award` does (₹1,644 on 772 at ₹14.20);
+    - hydrate sets an existing member's organisation from the reference data. A database built before it needs a `--live-only` hydrate to correct the buyer's.
+  - **Checks:**
+    - backend-api 454 passed (1 new);
+    - the frontend gate passes: workspace 50 (1 new: the message sent, the token, the buyer's face, which fails on the old data), core 248, api 77, admin 17, demo 5, console 3;
+    - the live fixtures were regenerated;
+    - the browser suites were not run.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

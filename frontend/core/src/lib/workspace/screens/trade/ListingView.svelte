@@ -31,6 +31,11 @@
 	const last = $derived(h.bids[h.bids.length - 1]);
 	const open = $derived(!last || last.status === 'declined');
 	const token = $derived(Math.round(price * c.lines.expiresoon.units * ws.data.rules.tokenPct * 100) / 100);
+	// the token accepting the counter takes, as money.js's award works it out: a share of the lot at the counter price,
+	// to the rupee (SC-92; the award itself exists only once accepted)
+	const counterToken = $derived(
+		Math.round((Math.round(c.lines.expiresoon.units * c.counter.price * 100) / 100) * ws.data.rules.tokenPct)
+	);
 	const place = () => ws.act('bid', price);
 	const accept = () => ws.act('accept');
 	const terms = $derived<[string, string][]>([
@@ -151,7 +156,7 @@
 							>
 						</div>
 						{#if last.status === 'countered'}<Button variant="violet" size="lg" block icon="check" onclick={accept}
-								>Accept ₹{c.counter.price.toFixed(2)} · pay {fmt.inr(c.award.token)} token</Button
+								>Accept ₹{c.counter.price.toFixed(2)} · pay {fmt.inr(counterToken)} token</Button
 							>{/if}
 					</Card>{/if}{/if}
 			<Card class="stack snug"
@@ -166,6 +171,9 @@
 						style="gap: 8px"
 						onsubmit={(e) => {
 							e.preventDefault();
+							// the live workspace sends it to the seller, whose Negotiator answers (SC-92); the prototype's box is for show
+							const text = msg.trim();
+							if (text) void ws.message?.(text);
 							msg = '';
 						}}
 					>
