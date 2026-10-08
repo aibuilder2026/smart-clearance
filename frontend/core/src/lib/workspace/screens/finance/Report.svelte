@@ -34,9 +34,18 @@
 	const { toast } = useNotice();
 	const Q = $derived(ws.data.quarter);
 	const R = $derived(ws.data.rules);
-	// the evidence behind the batch's BRSR row: the invoice, the listing, the shops' orders and the credit note
+	// the evidence behind the batch's BRSR row, only what the batch has (SC-107): the invoice and the ExpireSoon lot, the
+	// shops' orders, the credit note, and the FSSAI checklist of what it donated
 	const EVIDENCE = $derived(
-		`${c.invoice.no} · ${c.listing.id} · ${c.kiranas.length} kirana order logs · ${c.docs.find((d) => d.id === 'support')!.no}`
+		[
+			c.invoice.no,
+			c.listing.id,
+			c.kiranas.length ? `${c.kiranas.length} kirana order logs` : '',
+			c.docs.find((d) => d.id === 'support')?.no ?? '',
+			c.plan.donated > 0 ? 'FSSAI checklist' : ''
+		]
+			.filter(Boolean)
+			.join(' · ')
 	);
 	// what the batch gave to food banks and the meals that made, for its BRSR line and row (SC-106): a batch that
 	// donated nothing says so, as the chips do

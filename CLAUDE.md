@@ -1123,4 +1123,8 @@
     - the export's row splits the diverted kilos into resold and donated, by the SKU's kilos a pack.
   - **design3:** its prototype only ever shows the chips, so its text stays right there.
   - **Checks:** a new live test reads both batches' lines on the cleared moment, and fails without the fix.
+- **SC-107** (In Review, branch `SC-107-evidence-line`, stacked on SC-106; bug found by Munchly Mango E2E): a batch's evidence line names only what the batch has.
+  - **Found:** it joined an invoice number and an ExpireSoon lot whether or not they existed, so the Mango Drink read "Evidence: · · 52 kirana order logs · CN/0118".
+  - **The fix** (`Report.svelte`): the line names only what the batch has: its invoice and lot, its shops' orders, its credit note, and the FSSAI checklist where it donated. The Mango reads "52 kirana order logs · CN/0118 · FSSAI checklist"; the chips are unchanged.
+  - **Checks:** a new live test reads both lines on the cleared moment, and fails without the fix.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
