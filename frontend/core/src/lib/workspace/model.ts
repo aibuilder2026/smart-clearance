@@ -129,13 +129,16 @@ export function heroModel(s: State, data: Pick<WorkspaceData, 'skus' | 'distribu
 	};
 }
 
-/** every batch the Watcher sees, the one in focus at its phase and the one being donated in motion */
+/** every batch the Watcher sees: the one in focus at the state's phase; any other at its own journey's, where the
+ *  source has it (the live workspace, SC-102: a cleared batch reads cleared, not the Watcher's at risk); else the
+ *  prototype's donated batch in motion */
 export const batchViews = (s: State, data: Pick<WorkspaceData, 'skus' | 'distributors' | 'batches'>) => {
 	const phase = PHASE_STATUS[s.hero.phase];
 	return data.batches.map((b) => {
 		const v = viewOf(b, data);
 		if (b.hero) v.phase = phase;
-		if (b.second) v.phase = 'executing';
+		else if (b.journey) v.phase = PHASE_STATUS[b.journey];
+		else if (b.second) v.phase = 'executing';
 		return v;
 	});
 };

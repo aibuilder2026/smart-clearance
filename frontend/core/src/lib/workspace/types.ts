@@ -123,6 +123,9 @@ export type Batch = {
 	shelf?: string;
 	hero?: boolean;
 	second?: boolean;
+	/** the phase of the batch's own journey, when the source knows it: the live workspace has every batch's (SC-102);
+	 *  the prototype's stub only the batch in focus's, from the state */
+	journey?: Phase;
 	assess: Assess;
 };
 
