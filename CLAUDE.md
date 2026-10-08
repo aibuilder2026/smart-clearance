@@ -748,7 +748,7 @@
     - backend-api: 416 pass. The new test fails without the fix, with the old cleared case listed beside the Mango Drink's.
     - Locally, a reset leaves only the Mango Drink's case in Munchly's workspace.
 
-- **SC-82** (In Review, branch `SC-82-command-center-after-reset`, on SC-81; bug): the live Command Center after a reset.
+- **SC-82** (PR #67, merged; bug): the live Command Center after a reset.
   - **Found by the maintainer** on the local workspace at day 0:
     - the watchlist's Mango Drink, in motion, opened nothing;
     - "Gated · selling through" rows showed three crossed gates;
