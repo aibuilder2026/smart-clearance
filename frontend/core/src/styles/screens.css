@@ -265,6 +265,9 @@
 @container app (max-width: 520px) { .lv-quiet-in { grid-template-columns: minmax(0, 1fr); justify-items: start; gap: 12px; } }
 .lv-await { display: grid; justify-items: center; align-content: center; gap: 14px; min-height: 260px; padding: 20px; border-radius: 14px; background: var(--surface-sunken); }
 .lv-upload .progress { height: 8px; }
+/* Setup before the first export is mapped (SC-79): why Confirm waits, beside it and tied to it */
+.setup-why { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: var(--fg-2); }
+.setup-why .ic { color: var(--fg-2); }
 .lv-mini { list-style: none; margin: 6px 0 2px; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
 .lv-mini li { display: grid; gap: 2px; }
 .lv-mini li i { display: block; height: 4px; margin-bottom: 7px; border-radius: 2px; background: var(--fill-3); }

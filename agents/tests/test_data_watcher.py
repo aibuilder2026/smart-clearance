@@ -104,6 +104,24 @@ async def test_the_daily_run_loads_stock_and_sales_and_reports_the_stock(run, ba
     assert len(snap) == 9 and {r["snapshot_date"] for r in snap} == {"2026-10-02"}
 
 
+async def test_a_days_run_on_files_an_earlier_journey_loaded_still_reports_the_stock(run, backend, store, warehouse):
+    """a journey started again replays the story's calendar: day 0's files are in BigQuery from the journey before, so
+    they are not loaded twice, but the day's stock is reported again, or Setup would never be mapped (SC-79)"""
+    files = [
+        put(store, "munchly/2026-10-02/stock-2026-10-02.csv", stock_csv()),
+        put(store, "munchly/2026-10-02/sales-2026-10-02.csv", sales_csv([DAY0], DAY0 - timedelta(days=90))),
+    ]
+    due = {"type": "agent.due", "agent": "data", "day": "2026-10-02", "files": files}
+    await run(message("journey.step", due, event_id="ev_first"))
+    rows = {t: len(warehouse.tables[t]) for t in ("stock_snapshots", "secondary_sales")}
+    backend.calls.clear()
+    outcome, rc = await run(message("journey.step", due, event_id="ev_again"))
+    assert outcome == "done" and rc.runs["data"].status != "noop"
+    body = backend.report("/exports")
+    assert body["run"]["eventKey"] == "ev_again:data" and body["mapped"] == 8 and len(body["batches"]) == 9
+    assert {t: len(warehouse.tables[t]) for t in rows} == rows  # nothing loaded twice
+
+
 async def test_an_unknown_layout_is_mapped_by_the_model(run, backend, store, warehouse, recordings):
     """a Tally-style export with Hindi and abbreviated headers, and a column nobody asked for"""
     header = "Party Name,Item Code,बैच नं.,Mfg Dt,Exp Dt,Cl. Qty,Godown,Remarks"
@@ -175,6 +193,16 @@ async def test_run_now_sweeps_the_files_not_loaded_yet(run, backend, store, ware
     backend.calls.clear()
     outcome, _ = await run(message("journey.step", {"type": "agent.run_now", "agent": "data"}, event_id="ev_2"))
     assert outcome == "noop" and backend.reports() == []
+
+
+async def test_run_now_leaves_later_days_files_from_an_earlier_journey(run, backend, store, warehouse):
+    """a journey started again: an earlier journey's later days are still in the bucket, and Run now's sweep stops at
+    the journey's own day (backend-api's), as the Watcher's window does (SC-79)"""
+    put(store, "munchly/2026-10-02/stock-2026-10-02.csv", stock_csv())
+    put(store, "munchly/2026-11-15/stock-2026-11-15.csv", stock_csv())
+    await run(message("journey.step", {"type": "agent.run_now", "agent": "data"}))
+    loaded = {r["source_file"] for r in warehouse.tables["stock_snapshots"]}
+    assert loaded == {"gs://exports-test/munchly/2026-10-02/stock-2026-10-02.csv"}
 
 
 async def test_the_watcher_reads_sell_through_from_bigquery(run, backend, store, warehouse):

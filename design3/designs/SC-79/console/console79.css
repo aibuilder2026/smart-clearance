@@ -1,0 +1,44 @@
+/* SC-79's console mockup: the demo controls. On the design system's tokens; nothing here loops or glows. */
+
+/* one scheduled run or timer: what it is, when it falls due (journey time), how long from now, and its button */
+.c79-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px 12px; padding: 10px 12px; border-radius: 12px; background: var(--surface); box-shadow: 0 0 0 var(--hair) var(--line); }
+.c79-row:not(:has(.c79-ic)) { grid-template-columns: minmax(0, 1fr) auto; }
+.c79-row.fired { background: color-mix(in oklab, var(--primary-soft) 55%, var(--surface)); }
+.c79-ic { width: 30px; height: 30px; border-radius: 9px; }
+.c79-txt { display: grid; gap: 2px; min-width: 0; }
+.c79-t { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; font-size: 14px; }
+.c79-t b { font-weight: 620; }
+.c79-ref { font-size: 12px; color: var(--fg-2); }
+.c79-s { font-size: 12.5px; line-height: 1.4; color: var(--fg-2); }
+.c79-why { display: inline-flex; align-items: center; gap: 5px; color: var(--fg-3); }
+.c79-act { display: flex; justify-content: flex-end; }
+.c79-act .btn { min-height: 36px; }
+
+/* A: the triggers hang under the agent's stop, inset to the card's text */
+.c79-strip { display: grid; gap: 6px; margin: 6px 0 2px 52px; }
+.c79-row.dense { padding: 8px 10px; border-radius: 11px; background: var(--surface-sunken); box-shadow: none; }
+.c79-row.dense.fired { background: var(--primary-soft); }
+
+/* B: the badge carries the journey day and time */
+.c79-jbadge { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+
+/* B and C: starting the journey again, set apart and in red ink, never a filled red button */
+.c79-danger { display: flex; align-items: center; justify-content: space-between; gap: 12px 16px; flex-wrap: wrap; padding: 14px 16px; border-radius: 14px; background: var(--surface); box-shadow: 0 0 0 var(--hair) color-mix(in oklab, var(--red) 40%, var(--line)); }
+.c79-danger b { font-size: 14.5px; font-weight: 620; }
+.c79-danger-btn.btn { color: var(--red-text); }
+
+/* C: the Journey tab */
+.c79-jhead { display: flex; align-items: center; gap: 14px; padding: 16px 18px; }
+.c79-jhead .icontile { width: 40px; height: 40px; border-radius: 12px; }
+.c79-list { display: grid; gap: 8px; padding: 10px; }
+.c79-list .c79-row { box-shadow: none; background: var(--surface-sunken); }
+.c79-list .c79-row.fired { background: var(--primary-soft); }
+.c79-jgrid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+
+@container app (max-width: 767px) {
+  .c79-strip { margin-left: 0; }
+  .c79-row { grid-template-columns: minmax(0, 1fr); }
+  .c79-row:has(.c79-ic) { grid-template-columns: auto minmax(0, 1fr); }
+  .c79-act { grid-column: 1 / -1; justify-content: flex-start; }
+  .c79-row:has(.c79-ic) .c79-act { grid-column: 2; }
+}

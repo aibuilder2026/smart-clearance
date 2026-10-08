@@ -5,7 +5,7 @@
 (function () {
   const D = window.SC3_DATA, M = window.SC3_MONEY, AppStore = window.SC3_STORE;
   const R = M.RULES;
-  const KEY = "sc3-platform", VERSION = 4;
+  const KEY = "sc3-platform", VERSION = 5;
 
   /* ---------- Smart-Clearance's own people (fictional) ---------- */
   const STAFF = [
@@ -363,8 +363,52 @@
     { id: "a8", at: "4 Oct, 16:20", who: "Neha Kulkarni", client: "munchly", text: "Overrode MF-2409-204's quick-commerce gates: Zepto and Instamart 30% of life (Zepto's Pune warehouse agreed to take this lot at 30% of its life)" },
   ];
 
+  /* ---------- a client's journey, driven from the console (SC-79) ---------- */
+  // What backend-api answers for a client whose workspace is live (GET …/journey): the Data agent's daily load and the
+  // Watcher's daily check, and the timers an offer leaves (its window closing, the day-7 shelf check, the report), each
+  // with when it falls due in journey time and the wall time it fires. The prototype holds Munchly's journey still at
+  // day 1, Sat 3 Oct 10:15: firing a daily run makes it that day's, firing a timer takes it away, and a reset puts the
+  // journey back at day 0, 08:00, with nothing pending but the day's two runs.
+  const DAILY = [{ id: "data", name: "Data agent", time: "08:30", what: "daily load" }, { id: "watcher", name: "Watcher", time: "09:00", what: "daily check" }];
+  const TIMER_WORDS = { "offer.close": "closed the offer window", "shelf.due": "ran the day-7 shelf check", "report.due": "wrote the report" };
+  const JOURNEY_TIMERS = [
+    { id: "timer-1", agent: "outreach", key: "offer.close", ref: "MF-2409-117", due: "2026-10-04T12:40:00+05:30" },
+    { id: "timer-2", agent: "outreach", key: "shelf.due", ref: "MF-2409-117", due: "2026-10-09T12:40:00+05:30", blocked: "After the van round: the papers come first" },
+    { id: "timer-3", agent: "impact", key: "report.due", ref: "MF-2409-117", due: "2026-10-30T10:00:00+05:30", blocked: "After the papers and the shelf check" },
+  ];
+  const seedJourney = () => ({ day0: D.DAY0, now: D.addDays(D.DAY0, 1) + "T10:15:00+05:30", setupConfirmed: true, daily: { data: D.addDays(D.DAY0, 1), watcher: D.addDays(D.DAY0, 1) }, timers: JOURNEY_TIMERS.map(t => Object.assign({}, t)) });
+  const ms = iso => Date.parse(iso);
+  function journey(s, id, wall = Date.now()) {
+    const c = s.clients.find(x => x.id === id); const j = (s.journeys || {})[id];
+    const off = a => (c && c.agents[a.id] && !c.agents[a.id].on ? `The ${a.name} is off` : null);
+    if (!c || !j) return { live: false, clock: null, triggers: DAILY.map(a => ({ id: a.id, agent: a.id, kind: "run", key: a.id + ".daily", ref: null, due: null, dueWall: null, time: a.time, blocked: c ? off(a) : null })) };
+    const today = j.now.slice(0, 10);
+    // a journey day lasts dayMinutes of wall time while a batch is at risk, as backend-api's clock runs
+    const wallOf = at => new Date(wall + (ms(at) - ms(j.now)) * c.dayMinutes / DAY_MINUTES).toISOString();
+    const runs = DAILY.map(a => { const day = j.daily[a.id] === today ? D.addDays(today, 1) : today; const due = `${day}T${a.time}:00+05:30`; return { id: a.id, agent: a.id, kind: "run", key: a.id + ".daily", ref: null, due, dueWall: wallOf(due), time: a.time, blocked: off(a) || (a.id === "watcher" && !j.setupConfirmed ? "After Setup is confirmed" : null) }; });
+    const timers = j.timers.map(t => ({ id: t.id, agent: t.agent, kind: "timer", key: t.key, ref: t.ref, due: t.due, dueWall: wallOf(t.due), time: null, blocked: t.blocked || null }));
+    const day = Math.round((ms(today + "T00:00:00+05:30") - ms(j.day0 + "T00:00:00+05:30")) / 864e5);
+    return { live: true, clock: { now: j.now, day, day0: j.day0, dayMinutes: c.dayMinutes, compressed: c.dayMinutes < DAY_MINUTES }, triggers: runs.concat(timers).sort((a, b) => ms(a.due) - ms(b.due)) };
+  }
+  // the audit line a fire writes, in backend-api's words
+  function fireLine(c, t) {
+    if (t.kind === "run") { const a = DAILY.find(x => x.id === t.id); return t.due ? `Ran the ${a.name}'s ${a.what} now for ${c.name}` : `Ran the ${a.name === "Data agent" ? "Data" : a.name} agent now for ${c.name}`; }
+    const agent = AGENTS.find(a => a.id === t.agent);
+    return `Fired the ${agent.name} agent's timer now for ${c.name}: ${TIMER_WORDS[t.key]} for ${t.ref}`;
+  }
+  // a fire, on the draft: a daily run becomes that day's, a timer goes; the run's line joins today's runs
+  function fire(draft, id, t, at) {
+    const j = (draft.journeys || {})[id];
+    if (t.kind === "run") { if (j) j.daily[t.id] = j.now.slice(0, 10); draft.runs.unshift({ at, agent: t.id, client: id, text: j ? `ran the ${DAILY.find(x => x.id === t.id).what} on request` : "ran on request; nothing new" }); return; }
+    if (j) j.timers = j.timers.filter(x => x.id !== t.id);
+    draft.runs.unshift({ at, agent: t.agent, client: id, text: `${TIMER_WORDS[t.key]} for ${t.ref}, on request` });
+  }
+  // the journey from day 0 again: nothing pending but the day's two runs, Setup to confirm again
+  function resetJourney(draft, id) { draft.journeys[id] = { day0: D.DAY0, now: D.DAY0 + "T08:00:00+05:30", setupConfirmed: false, daily: {}, timers: [] }; }
+  const resetLine = () => `started the journey again from ${D.DAY0}`;
+
   function seed() {
-    return { v: VERSION, clients: [seedMunchly()], staff: STAFF.map(s => Object.assign({ status: "active" }, s)), runs: RUNS.slice(), tracks: TRACKS.slice(), batches: BATCHES.map(b => Object.assign({}, b, b.override ? { override: Object.assign({}, b.override) } : {})), audit: AUDIT.slice(), requests: [], seq: 1, nextAudit: 100 };
+    return { v: VERSION, journeys: { munchly: seedJourney() }, clients: [seedMunchly()], staff: STAFF.map(s => Object.assign({ status: "active" }, s)), runs: RUNS.slice(), tracks: TRACKS.slice(), batches: BATCHES.map(b => Object.assign({}, b, b.override ? { override: Object.assign({}, b.override) } : {})), audit: AUDIT.slice(), requests: [], seq: 1, nextAudit: 100 };
   }
 
   /* ---------- the store ---------- */
@@ -407,6 +451,7 @@
     dashboard, batchPage, RANGES, SIZES,
     TODAY, GATE_BOUNDS, batchGates, gateText, skuGatesError, overrideError, skuGatesLine, overrideLine, clearOverrideLine,
     DAY_MINUTES, DAY_PRESETS, dayWords, spanWords, dayBadge, dayReadouts, dayHead, dayMinutesError, dayMinutesLine, poss,
+    journey, fire, fireLine, resetJourney, resetLine,
     STAFF, AUTONOMY, AGENTS, STAGE_NAME, FIELDS, PLANS, CONNECTORS, EXITS, PROFILE, PRESETS, seed,
   };
   window.SC3_PLATFORM = Platform;

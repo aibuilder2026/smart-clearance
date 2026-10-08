@@ -645,7 +645,7 @@
   - **Checks:** backend-api 407; the frontend gate (core 248, api 69, workspace 35, admin 17, demo 5, console 3). The browser suites were not run (SC-55).
 - **SC-74** (PR #59, merged): infra phase B, applied on the maintainer's yes (7 Oct: 22 added, 3 changed, 0 destroyed; a fresh plan clean once the scheduler jobs dropped a `retry_config` that held only defaults): the `agents` Cloud Run service (internal, as `sc-agents`, deployed by Cloud Build from CI), prod push subscriptions, Scheduler (`sc-tick` every minute, `sc-journey-reset` paused), backend-api's live settings and 3,600 s timeout, alerts, and the budget at GBP 30. About GBP 1–3 a month with light use, GBP 8–15 with heavy use.
   - **The merges** (#52 to #59, in order): each branch was brought up to date with `main`, its generated files regenerated, and its gates run. The idempotency table moved into its own migration, 0005, so production, which ran SC-71's 0004 first, gains it too.
-- **SC-78** (In Review, branch `SC-78-landing-refined`): the landing page refined: the film, the day scene, the workspace section and the bar.
+- **SC-78** (PR #63, merged): the landing page refined: the film, the day scene, the workspace section and the bar.
   - **The request:** a longer (10 s), looping, more immersive hero film that tells the story; the day scene too whitish; the islands section not good enough; the bar's lock-up and links not good enough; "beautify the page more".
   - **Design first:** four parts, two or three options each, as three complete pages on one board in platform v3, `SC-78 design review.html`, with a switcher that swaps any part. The pick, part by part: the film **C, One day**; the day scene **A, Re-lit**; the workspace section **B, The workspace itself**; the bar **B, structured**. Designs, plates, the six clips, stills, recordings and the decision are in `design3/designs/SC-78/`.
   - **The film:** two ten-second LTX clips, morning to night and night to morning, each ending on the frame the other begins on (seams of 1.9 and 3.1 on a 255 scale), chained and looping under Pause (WCAG 2.2.2); the light theme starts in the morning, the dark at night. A strip under the copy reads the hours of the story (four beats a half-day, the yes in amber); the film drifts with the scroll, not the clock. AGENTS.md's loop rule now exempts the hero film under its Pause. The day loop's first render let the glowing path wander onto the godown's roof; the seamless-loop option was re-rendered with the path told to stay on the road.
@@ -660,7 +660,7 @@
   - **In production, on the maintainer's yes:** the prod hydrate (`--live-only`: 50 members, 38 kiranas, day 0 on 2 Oct); `workspace_live = true` applied, so CI builds the workspace app on backend-api (munchly-smartclearance.web.app signs Munchly's people in with email and password); one journey walked in production with live Gemini, to the story's figures; the evals' first live run (208 cases, about GBP 2.10), whose findings moved to SC-77.
   - **What it changed:** `sc-hydrate --live-only` builds Munchly's live world on a database that already holds its story, as production does (no reset); the walk (`scripts/walk.sh`) reads no database and can walk production (`--api … --origin … --allow-env prod`); a journey reset through hydrate takes fresh ids (the seeded ones repeated the world's own); the Watcher reads sell-through up to the journey's day, so a replay of the story's calendar never counts later days an earlier replay loaded.
   - **Verified locally:** a world built with `--live-only` on top of the story walked to the story's figures (₹21,770 planned, ₹14.20 countered, INV/26-27/0931 and CN/0117, ₹21,152 actual), and a second reset in a row works.
-- **SC-77** (In Review, branch `SC-77-agents-live-gemini`): the agents on live Gemini, fixing what the first eval run found.
+- **SC-77** (PR #62, merged): the agents on live Gemini, fixing what the first eval run found.
   - **Gemini's structured output:** a map of free keys comes back empty, and a property the schema does not require may be left out. So the Data agent's column map and the Valuer's notes are lists of pairs; every field of every output schema is required, null standing for "not there" (Vision's label read returned only its confidence); the judge scores as a list too. `tests/test_schemas.py` holds every schema to that, and every recording to its schema.
   - **Capacity:** each model call gets up to 3 attempts on 429, 500, 503 and 504, with backoff (1 s, then 2 s, plus up to 1 s of jitter), 30 s an attempt (`MODEL_ATTEMPTS`, `MODEL_TIMEOUT_S`), and `Bounded` allows the whole call exactly that long. The judge retries too, and a case it could not score is reported apart, not as 0. The eval runner paces its cases a second apart (`--pace`).
   - **backend-api's label check:** a read with no batch number asks for another photo with the reason ("the batch number could not be read", or "the label could not be read" when nothing was), never "confidence under the threshold"; the feed says it could not read the label.
@@ -668,7 +668,45 @@
   - **The Valuer's prompt:** the second run's judge found its notes faithful (5) but reading each row back (useful 2.25, clear 3.6); a note now makes one point, why that exit suits this batch now, quoting at most two figures (5 on every criterion after).
   - **The second live run** (7–8 Oct, on the maintainer's yes; each set's `summary.json` is committed): Vision 72 of 73 (clean labels exact, hard ones 98.4%, no confident wrong read), Data 25 of 25, Router 20 of 20 (rubric 4.61), Lister 15 of 15, Outreach 15 of 15, Negotiator 38 of 40 (the reserve never leaked, only the decided price), Valuer 19 of 20 on the new prompt (rubric 5; every channel noted wherever the model answered). The three cases that failed were the Pro preview's quota (429 after every attempt), each falling back safely; the eval's judge also runs on Pro, about doubling the load production puts on it. A scorer that still read the Data map as a dict stopped the run once; fixed, with a test on Gemini's shape.
   - **Checks:** agents 187 pass; backend-api 411 pass; infra `check.sh` passes.
-  - **On the maintainer's yes:** the PR, whose merge redeploys the agents and backend-api through CI, and closing SC-77.
+- **SC-79** (PR #64, merged): demo controls. The console fires a client's scheduled runs and journey timers at once, and starts its journey again; the workspace's Setup waits for the first mapped export.
+  - **The request:**
+    - "All batch runs should have a trigger which I should be able to control and do instant trigger from console screen against each agent for that client."
+    - A button on each client that resets its journey.
+    - The Setup fix: after a reset, "Confirm and start watching" was offered before any export was mapped, and backend-api refused it.
+    - The maintainer's answers: keep the schedule and add triggers; only the scheduled runs and the timers.
+  - **Design first:**
+    - three console options on one board in platform v3 (`SC-79 design review.html`): A, on each agent; B, one journey sheet; C, a Journey tab;
+    - two Setup options in app v3: A, waiting in the export card; B, three steps;
+    - the picks: console **A**, Setup **A**; a timer asks before it fires early; the reset offers a day length.
+
+    Designs, stills and the decision are in `design3/designs/SC-79/`.
+  - **The console:**
+    - under each agent's stop on the Agents tab, and in its inspector, are its scheduled runs and pending timers: the Data agent's daily load, the Watcher's daily check, Outreach's offer window and day-7 shelf check, Impact's report;
+    - each shows when it falls due in journey time and how long that is in real time, with a button to fire it now;
+    - a timer that isn't ready says why, and its button is disabled;
+    - a timer asks first ("Close the offer window now?"); a daily run fires at once;
+    - **Reset journey…** joins Pause every agent in the client's actions menu. Its sheet explains the reset and offers Real time, Rehearsal, Demo or Fast, starting on the client's current length.
+  - **backend-api:**
+    - `GET …/clients/{id}/journey`, `POST …/journey/triggers/{trigger}` and `POST …/journey/reset {dayMinutes?}`, in `services/journey/controls.py`;
+    - firing runs what the tick runs, so the tick's daily runs and its timer firing are now functions (`tick.run_daily`, `ready`, `fire_timer`);
+    - a daily run fired early is that day's run, so the tick doesn't run it again;
+    - every fire and the reset write an audit line in the staff member's name;
+    - a client that isn't live keeps the old Run now for its two daily agents, and has no journey to reset.
+  - **Setup:**
+    - on a live workspace with no mapped export, the card says "No stock export mapped yet", keeps the eight fields as waiting, makes Upload an export primary, and names the Data agent's next run;
+    - Confirm is disabled until an export is mapped, with its reason tied to it;
+    - the workspace's rules gain `dataTime`;
+    - the stub and the guided demo are unchanged.
+  - **The contract:** `Journey`, `JourneyTrigger`, `journey`, `fireTrigger`, `resetJourney`. The mock follows design3's `platform.js`, held to it by tests.
+  - **Checks:**
+    - backend-api 415 pass, 4 of them new;
+    - the frontend gate passes: core 248, api 75 (6 new), workspace 37 (2 new), admin 17, demo 5, console 3;
+    - agents 187 pass;
+    - played through on the console's mock build (`frontend-console-mock`, :4196): a timer asked and fired; the reset at Demo, with both audit lines;
+    - the browser suites were not run (SC-55).
+  - **Hosting:**
+    - the hosted console loads commit `99483d5`: re-pinned from `0384e24`, so it also carries SC-68's journey-day badge; it was checked to render with the triggers;
+    - the hosted app page stays on `58c6874`: re-pinning it waits on SC-75's note about live mode's files, and Setup's waiting state shows only in live mode.
 
 - **SC-80** (In Review, branch `SC-80-label-photo`): the label photo step offers both ways in words, Take a photo and Upload a photo.
   - **The request:** "1. Either take photo. 2. Upload an already taken photo", with a sample to upload. The sample is the story's clean label photo from the Vision eval set, handed over as `label-MF-2409-117.jpg` and kept as `design3/designs/SC-80/sample/label-photo.webp`.

@@ -312,6 +312,8 @@ export type Quarter = {
 
 export type Rules = {
 	watchTime: string;
+	/** the Data agent's daily run (SC-79) */
+	dataTime: string;
 	floors: Record<string, number>;
 	approvalTaps: number;
 	hindiOffers: boolean;

@@ -189,6 +189,33 @@ describe('live, and the journey clock', () => {
 	});
 });
 
+describe('Setup before the first export is mapped (SC-79)', () => {
+	it("says it is waiting, keeps the fields, names the Data agent's run, and holds Confirm with its reason", async () => {
+		const m = moment('start');
+		expect(m.members.priya.snapshot.setup.mapped).toBe(0);
+		const r = await draw(source(fakeApi(m, 'priya')), 'setup');
+		await waitFor(() => expect(text(r)).toContain('No stock export mapped yet'));
+		expect(text(r)).toContain('Waiting for an export');
+		expect(text(r)).not.toContain('Mapped · confirm below');
+		const time = m.members.priya.snapshot.rules.dataTime;
+		expect(text(r)).toContain(`the Data Agent maps the day's export at its run at ${time} today`);
+		const confirm = [...r.container.querySelectorAll('button')].find((b) =>
+			b.textContent?.includes('Confirm and start')
+		)!;
+		expect(confirm.disabled).toBe(true);
+		const why = r.container.querySelector(`#${confirm.getAttribute('aria-describedby')}`)!;
+		expect(norm(why.textContent)).toBe('Confirm once the Data agent has mapped an export.');
+	});
+
+	it('is the screen as designed once an export is mapped and Setup confirmed', async () => {
+		const r = await draw(source(fakeApi(moment('at-risk'), 'priya')), 'setup');
+		await waitFor(() => expect(text(r)).toContain('Loaded into BigQuery'));
+		expect(text(r)).toContain('Data Agent mapped');
+		expect(text(r)).not.toContain('No stock export mapped yet');
+		expect(text(r)).not.toContain('Waiting for an export');
+	});
+});
+
 describe('a step that did not go through', () => {
 	it('says so in the approve sheet, with an amber Retry that goes through', async () => {
 		const m = moment('planned');

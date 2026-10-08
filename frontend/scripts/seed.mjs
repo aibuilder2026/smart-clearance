@@ -233,7 +233,9 @@ const consoleSeed = {
 		})),
 		// the batches the Watcher sees, with their best-before dates and any gate override (SC-47)
 		batches: platform.batches,
-		audit: platform.audit
+		audit: platform.audit,
+		// each live client's journey, as the console fires its runs and timers and resets it (SC-79)
+		journeys: platform.journeys
 	},
 	// the day the console opens on, which every batch's days left counts from
 	today: P.TODAY

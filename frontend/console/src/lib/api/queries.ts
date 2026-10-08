@@ -44,6 +44,14 @@ export const clientsQuery = () =>
 	queryOptions({ queryKey: ['console', 'clients'] as const, queryFn: () => api.clients() });
 export const clientQuery = (id: string) =>
 	queryOptions({ queryKey: ['console', 'client', id] as const, queryFn: () => api.client(id) });
+/** a client's scheduled runs and journey timers (SC-79): read again every 30 s, so "in 22 h" stays true */
+export const journeyQuery = (id: string) =>
+	queryOptions({
+		queryKey: ['console', 'journey', id] as const,
+		queryFn: () => api.journey(id),
+		refetchInterval: 30_000,
+		staleTime: 10_000
+	});
 /** a client's open batches with their quick-commerce gates (SC-47) */
 export const clientBatchesQuery = (id: string) =>
 	queryOptions({ queryKey: ['console', 'client-batches', id] as const, queryFn: () => api.clientBatches(id) });

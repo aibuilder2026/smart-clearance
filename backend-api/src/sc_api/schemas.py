@@ -520,3 +520,38 @@ class NewClientInput(Shape):
 
 def dump(model: BaseModel) -> dict[str, Any]:
     return model.model_dump(mode="json", by_alias=True)
+
+
+# --- the console's demo controls (SC-79) ---------------------------------------------------------------------------
+
+
+class JourneyTrigger(Shape):
+    """a scheduled run or a pending journey timer, and when it falls due (journey time, and the wall time it fires)"""
+
+    id: str
+    agent: str
+    kind: Literal["run", "timer"]
+    key: str
+    ref: str | None = None
+    due: str | None = None
+    due_wall: str | None = None
+    time: str | None = None
+    blocked: str | None = None
+
+
+class JourneyClockOut(Shape):
+    now: str
+    day: int
+    day0: str
+    day_minutes: int
+    compressed: bool
+
+
+class JourneyOut(Shape):
+    live: bool
+    clock: JourneyClockOut | None = None
+    triggers: list[JourneyTrigger]
+
+
+class JourneyResetInput(Shape):
+    day_minutes: int | None = None
