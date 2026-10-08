@@ -345,3 +345,51 @@ describe('the label photo on its way', () => {
 		vi.unstubAllGlobals();
 	});
 });
+
+describe('the label photo, taken or uploaded (SC-80)', () => {
+	const desktop = () =>
+		vi.stubGlobal('matchMedia', (q: string) => ({
+			matches: false,
+			media: q,
+			addEventListener() {},
+			removeEventListener() {}
+		}));
+
+	it('refuses a file that is not a photo, or one of 8 MB or more, and says why', async () => {
+		desktop();
+		const s = source(fakeApi(moment('at-risk'), 'rakesh'));
+		const r = await draw(s, 'photo');
+		expect(r.getByRole('button', { name: 'Take a photo' })).toBeTruthy();
+		const input = r.container.querySelector('input[type="file"]:not([capture])') as HTMLInputElement;
+		expect(input.accept).toBe('image/jpeg,image/png,image/webp');
+		await fireEvent.change(input, { target: { files: [new File(['x'], 'notes.txt', { type: 'text/plain' })] } });
+		expect(norm(r.getByRole('alert').textContent)).toBe(
+			'That file is not a photo Vision can read. Send a JPEG, PNG or WebP.'
+		);
+		const big = new File(['x'], 'big.jpg', { type: 'image/jpeg' });
+		Object.defineProperty(big, 'size', { value: 9 * 1048576 });
+		await fireEvent.change(input, { target: { files: [big] } });
+		expect(norm(r.getByRole('alert').textContent)).toBe('That photo is 9.0 MB. Send one under 8 MB.');
+		expect(r.queryByRole('button', { name: 'Send photo' })).toBeNull();
+		vi.unstubAllGlobals();
+	});
+
+	it('on a laptop, Take a photo asks for the camera, and a refused camera says so and points to Upload', async () => {
+		desktop();
+		const getUserMedia = vi.fn(() => Promise.reject(Object.assign(new Error('denied'), { name: 'NotAllowedError' })));
+		vi.stubGlobal('navigator', Object.assign(Object.create(navigator), { mediaDevices: { getUserMedia } }));
+		const s = source(fakeApi(moment('at-risk'), 'rakesh'));
+		const r = await draw(s, 'photo');
+		await fireEvent.click(r.getByRole('button', { name: 'Take a photo' }));
+		await waitFor(() =>
+			expect(norm(r.getByRole('alert').textContent)).toBe(
+				"The camera is blocked for this page. Allow it in the browser's site settings, or upload a photo."
+			)
+		);
+		expect(getUserMedia).toHaveBeenCalledWith(expect.objectContaining({ audio: false }));
+		// the frame is back to the example, with both ways
+		expect(r.getByRole('button', { name: 'Upload a photo' })).toBeTruthy();
+		expect(r.container.querySelector('video')).toBeNull();
+		vi.unstubAllGlobals();
+	});
+});

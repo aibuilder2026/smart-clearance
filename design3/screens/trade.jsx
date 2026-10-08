@@ -105,20 +105,74 @@
     if (distOf(me).id !== "rakesh") return <Screen me={me} title="Label photo" sub="Requests from the Vision agent"><Card style={{ maxWidth: 560 }}><Empty img="phone-scan" title="No photo requests" body="When a batch needs checking, Vision asks for one picture of a carton label here." /></Card></Screen>;
     return <CameraInner me={me} realCamera={realCamera} />;
   }
+  // the label photo (SC-80, option A): the frame shows what Vision needs, and under it the two ways, Take a photo and
+  // Upload a photo, the primary following the device. A phone takes the photo with its own camera app; on the live
+  // workspace a laptop opens its camera in the frame. A photo in hand shows whole before it goes. What is sent is what
+  // backend-api takes, a JPEG, PNG or WebP under 8 MB; naming the types makes an iPhone hand over its HEIC as a JPEG
+  const PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"], PHOTO_MAX_MB = 8;
+  const PHOTO_RULE = `JPEG, PNG or WebP, under ${PHOTO_MAX_MB}\u00a0MB`;
+  const CAM_BLOCKED = "The camera is blocked for this page. Allow it in the browser's site settings, or upload a photo.";
+  const CAM_NONE = "No camera was found. Upload a photo instead.";
   function CameraInner({ me, realCamera }) {
-    const s = useStore(); const h = s.hero; const { go, back } = useRoute(); const reduce = useReducedMotion(); const file = useRef(null);
+    const s = useStore(); const h = s.hero; const { go } = useRoute(); const reduce = useReducedMotion(); const app = useApp();
+    const phoneCam = useRef(null), files = useRef(null), video = useRef(null), stream = useRef(null);
     const [shot, setShot] = useState(null); const [flash, setFlash] = useState(false); const [sending, setSending] = useState(false);
+    const [camOn, setCamOn] = useState(false); const [camLive, setCamLive] = useState(null); const [over, setOver] = useState(false);
+    const [err, setErr] = useState(null); const [ratio, setRatio] = useState(null);
     const sent = h.photo.status === "reading" || h.photo.status === "verified";
-    const take = () => { if (realCamera && file.current && window.matchMedia("(pointer: coarse)").matches) { file.current.click(); return; } setFlash(true); setTimeout(() => { setFlash(false); setShot("demo"); }, reduce ? 0 : 180); };
-    const picked = e => { const f = e.target.files && e.target.files[0]; if (f) setShot(URL.createObjectURL(f)); };
     // live (SC-73): the photo goes to the workspace's storage, and Send fills as it goes
     const live = S.useLive(); const uploading = !!live && live.uploads.photo != null;
+    const coarse = typeof matchMedia === "function" && matchMedia("(pointer: coarse)").matches;
+    const desk = !coarse && app.bp !== "phone";
+    const stopCam = () => { if (stream.current) stream.current.getTracks().forEach(t => t.stop()); stream.current = null; setCamLive(null); setCamOn(false); };
+    useEffect(() => () => { if (stream.current) stream.current.getTracks().forEach(t => t.stop()); }, []);
+    // a photo picked, dropped or taken: refused with its reason if backend-api would refuse it
+    const use = (f, how) => {
+      setOver(false); if (!f) return;
+      if (!PHOTO_TYPES.includes(f.type)) { setErr("That file is not a photo Vision can read. Send a JPEG, PNG or WebP."); return; }
+      if (f.size >= PHOTO_MAX_MB * 1048576) { setErr(`That photo is ${(f.size / 1048576).toFixed(1)}\u00a0MB. Send one under ${PHOTO_MAX_MB}\u00a0MB.`); return; }
+      setErr(null); setRatio(null); setShot({ url: URL.createObjectURL(f), how, name: f.name });
+    };
+    const picked = how => e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; use(f, how); };
+    // a laptop's camera in the frame (the rear one where there is one); refused or missing, it says so
+    const openCam = async () => {
+      const md = navigator.mediaDevices; if (!md || !md.getUserMedia) { setErr(CAM_NONE); return; }
+      setCamOn(true);
+      try { const st = await md.getUserMedia({ video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false }); stream.current = st; setCamLive(st); }
+      catch (e) { stopCam(); setErr(e && e.name === "NotAllowedError" ? CAM_BLOCKED : CAM_NONE); }
+    };
+    const feed = el => { video.current = el; if (el && camLive && el.srcObject !== camLive) { el.srcObject = camLive; el.play().catch(() => {}); } };
+    const blink = () => { setFlash(true); setTimeout(() => setFlash(false), reduce ? 0 : 180); };
+    const take = () => {
+      setErr(null);
+      if (realCamera && coarse && phoneCam.current) { phoneCam.current.click(); return; }
+      if (realCamera && live) { openCam(); return; }
+      // the prototype's stand-in: the shelf as the photo
+      blink(); setTimeout(() => setShot({ demo: true, how: "camera" }), reduce ? 0 : 180);
+    };
+    const shutter = () => {
+      const v = video.current; if (!v || !v.videoWidth) return;
+      const c = document.createElement("canvas"); c.width = v.videoWidth; c.height = v.videoHeight; c.getContext("2d").drawImage(v, 0, 0);
+      blink(); c.toBlob(b => { stopCam(); if (b) use(new File([b], "label-photo.jpg", { type: "image/jpeg" }), "camera"); }, "image/jpeg", 0.92);
+    };
+    const upload = () => { setErr(null); files.current && files.current.click(); };
+    const again = () => { setShot(null); setRatio(null); (shot && shot.how === "camera" ? take : upload)(); };
+    const drop = sent || uploading ? {} : { onDragOver: e => { e.preventDefault(); setOver(true); }, onDragLeave: () => setOver(false), onDrop: e => { e.preventDefault(); use(e.dataTransfer.files && e.dataTransfer.files[0], "upload"); } };
     const send = () => { if (live) { live.sendPhoto(() => Flow.act("sendPhoto")); return; } setSending(true); setTimeout(() => { setSending(false); Flow.act("sendPhoto"); }, 700); };
+    const busy = sent || uploading;
+    const photo = shot && !shot.demo;
+    const caption = shot ? "Check that you can read the batch, both dates and the MRP." : camOn ? "Hold the label flat to the camera, close enough to read." : desk ? `${PHOTO_RULE}. Or drop a photo on the frame.` : `Take a photo opens your camera. ${PHOTO_RULE}.`;
     return <Screen me={me} title="Label photo" sub="Batch MF-2409-117 · shelf B4" back="Today">
       <div className="stack" style={{ gap: 16, maxWidth: 560, margin: "0 auto", width: "100%" }}>
-        <div className="cam">
-          {shot && shot !== "demo" ? <img className="cam-feed" src={shot} alt="Your photo of the carton label" /> : <S.LabelShot cover dim={!shot && !sent && !uploading} />}
-          {!shot && !sent && !uploading && <><div className="cam-frame" aria-hidden="true"><i /><i /><i /><i /></div><div className="cam-hint">Fit one carton label in the frame</div></>}
+        <div className={cx("cam", camOn && "landscape")} style={photo && ratio ? { aspectRatio: String(ratio) } : undefined} {...drop}>
+          {photo ? <motion.img key={shot.url} className="cam-feed whole" src={shot.url} alt="Your photo of the carton label" onLoad={e => setRatio(Math.max(0.75, Math.min(1.5, e.target.naturalWidth / e.target.naturalHeight)))} initial={reduce ? false : { opacity: 0, scale: 1.02 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }} />
+            : camOn ? <video ref={feed} className="cam-feed" playsInline muted aria-label="The laptop's camera" />
+            : <S.LabelShot cover dim={!shot && !busy} />}
+          {!shot && !busy && <><div className="cam-frame" aria-hidden="true"><i /><i /><i /><i /></div><div className="cam-hint">{camOn ? (camLive ? "Fit one carton label in the frame" : "Starting the camera…") : "Like this: one carton label, close up"}</div></>}
+          {!shot && !camOn && !busy && <span className="cam-tag">Example</span>}
+          {camOn && <span className="cam-tag on"><i aria-hidden="true" />Laptop camera</span>}
+          {shot && !busy && <span className="cam-tag">{photo && shot.how === "upload" && shot.name ? shot.name : "Your photo"}</span>}
+          <AnimatePresence>{over && !busy && <motion.div key="d" className="cam-drop" initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.16 }}><span className="cam-drop-in"><Icon name="image" size={22} /><b>Drop the photo to use it</b></span></motion.div>}</AnimatePresence>
           {sent && <div className="cam-hint" style={{ background: "var(--green-700)" }}><Icon name={h.photo.status === "verified" ? "check" : "loader"} size={14} className={h.photo.status === "verified" ? "" : "spin"} /> {h.photo.status === "verified" ? "Verified · matches your records" : "Sent · Vision is reading the label"}</div>}
           <AnimatePresence>{flash && <motion.div key="f" className="cam-flash" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.12 }} />}</AnimatePresence>
           {h.photo.status === "reading" && !reduce && <motion.div aria-hidden="true" className="cam-scan" animate={{ top: ["20%", "76%", "20%"] }} transition={{ duration: 1.6, repeat: 2, ease: "easeInOut" }} />}
@@ -127,9 +181,17 @@
           <div className="row" style={{ gap: 12 }}><Aura on={h.photo.status === "reading"} className="icontile" style={{ borderRadius: 12, width: 40, height: 40 }}><Icon name={h.photo.status === "verified" ? "badge-check" : "scan-line"} size={19} /></Aura><div className="grow"><b>{h.photo.status === "verified" ? "Done. Dhanyavaad, Rakesh bhai." : "Reading batch, dates and MRP"}</b><div className="t-footnote muted">{h.photo.status === "verified" ? "The plan for this batch will reach Priya in a few minutes." : "This takes a few seconds."}</div></div></div>
           {h.photo.status === "verified" && <List>{[["Batch", "MF-2409-117"], ["Best before", "18 Nov 2026"], ["MRP", "₹30.00"]].map(([k, v]) => <ListRow key={k} title={k} value={v} />)}</List>}
           <Button variant="secondary" block onClick={() => go("home")}>Back to today</Button>
-        </Card> : uploading ? <S.Live.SendFill p={live.uploads.photo} onCancel={() => live.cancelUpload("photo")} /> : shot ? <div className="row" style={{ gap: 10 }}><Button variant="secondary" size="lg" icon="rotate-ccw" onClick={() => setShot(null)}>Retake</Button><Button variant="primary" size="lg" block icon="send" loading={sending} onClick={send}>Send photo</Button></div>
-          : <div className="cam-bar"><label className="iconbtn round" aria-label="Choose a photo from the gallery" style={{ cursor: "pointer" }}><Icon name="image" size={22} /><input type="file" accept="image/*" onChange={picked} className="sr-only" /></label><button type="button" className="shutter" aria-label="Take the photo" onClick={take}><span /></button><span style={{ width: 44 }} /><input ref={file} type="file" accept="image/*" capture="environment" onChange={picked} className="sr-only" tabIndex={-1} aria-hidden="true" /></div>}
-        {realCamera && <p className="t-caption subtle" style={{ textAlign: "center", margin: 0 }}>{live ? (uploading ? "A slow connection only slows the send." : "On a phone the shutter opens your camera.") : "On a phone the shutter opens your camera. In this prototype a stub stands in for Gemini vision and returns the batch record."}</p>}
+        </Card> : uploading ? <S.Live.SendFill p={live.uploads.photo} onCancel={() => live.cancelUpload("photo")} />
+          : <AnimatePresence mode="wait" initial={false}>
+            {shot ? <motion.div key="send" className="row" style={{ gap: 10 }} initial={reduce ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}><Button variant="secondary" size="lg" icon={shot.how === "camera" ? "rotate-ccw" : "image"} onClick={again} style={{ flex: "none" }}>{shot.how === "camera" ? "Retake" : "Choose another"}</Button><Button variant="primary" size="lg" block icon="send" loading={sending} onClick={send}>Send photo</Button></motion.div>
+              : camOn ? <motion.div key="cam" className="cam-bar" initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.16 }}><Button variant="ghost" onClick={stopCam}>Cancel</Button><button type="button" className="shutter" aria-label="Take the photo" disabled={!camLive} onClick={shutter}><span /></button><Button variant="ghost" icon="image" onClick={() => { stopCam(); upload(); }}>Upload</Button></motion.div>
+              : <motion.div key="two" className="cam-two" initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.16 }}><Button variant={desk ? "secondary" : "primary"} size="lg" icon="camera" onClick={take}>Take a photo</Button><Button variant={desk ? "primary" : "secondary"} size="lg" icon="upload" onClick={upload}>Upload a photo</Button></motion.div>}
+          </AnimatePresence>}
+        <input ref={phoneCam} type="file" accept={PHOTO_TYPES.join(",")} capture="environment" onChange={picked("camera")} className="sr-only" tabIndex={-1} aria-hidden="true" />
+        <input ref={files} type="file" accept={PHOTO_TYPES.join(",")} onChange={picked("upload")} className="sr-only" tabIndex={-1} aria-hidden="true" />
+        {err && !busy ? <p className="cam-alert" role="alert"><Icon name="triangle-alert" size={15} />{err}</p>
+          : uploading ? <p className="t-caption subtle" style={{ textAlign: "center", margin: 0 }}>A slow connection only slows the send.</p>
+          : !sent && realCamera && <p className="t-caption subtle" style={{ textAlign: "center", margin: 0 }}>{live ? caption : `${caption} In this prototype a stub stands in for Gemini vision and returns the batch record.`}</p>}
       </div>
     </Screen>;
   }

@@ -1,0 +1,58 @@
+/* SC-80's camera mockup: take a photo or upload one already taken. On the design system's tokens; nothing loops. */
+
+/* the chips on the frame: "Example", the photo's name, the camera that is on (the cam-hint's glass, at the foot) */
+.s80-tag { position: absolute; left: 14px; bottom: 14px; z-index: 2; display: inline-flex; align-items: center; gap: 6px; max-width: calc(100% - 28px); padding: 6px 12px; border-radius: 99px; background: rgb(0 0 0 / 0.58); color: #fff; font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.s80-live i { width: 8px; height: 8px; border-radius: 99px; background: #ff5a4f; flex: none; }
+
+/* a photo in hand, shown whole on the camera's dark ground; a laptop's camera, landscape as it is */
+.cam-feed.s80-whole { object-fit: contain; }
+.cam.s80-landscape { aspect-ratio: 4 / 3; }
+
+/* a photo dragged over the frame */
+.s80-dropcue { position: absolute; inset: 0; z-index: 4; display: grid; place-items: center; background: rgb(5 8 6 / 0.62); outline: 3px dashed rgb(255 255 255 / 0.9); outline-offset: -14px; border-radius: inherit; }
+.s80-dropcue-in { display: grid; justify-items: center; gap: 8px; padding: 16px 22px; border-radius: 18px; background: rgb(0 0 0 / 0.66); color: #fff; font-size: 16px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+
+/* A: the two ways, side by side, each a large button */
+.s80-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.s80-two .btn { width: 100%; justify-content: center; }
+.s80-review .btn:first-child { flex: none; }
+
+/* B: what Vision needs, with an example */
+.s80-ask { display: grid; grid-template-columns: 132px minmax(0, 1fr); align-items: center; gap: 16px; padding: 14px 18px 14px 14px; }
+.s80-thumb { width: 132px; border-radius: 14px; overflow: hidden; box-shadow: 0 0 0 var(--hair) var(--line); }
+/* B: the two choices, each a row-sized card the whole of which is the target */
+.s80-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.s80-choice { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; min-height: 76px; padding: 14px 16px; border: 0; border-radius: 20px; background: var(--surface); color: var(--fg); text-align: left; cursor: pointer; box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); transition: box-shadow var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease); }
+.s80-choice:hover { box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.s80-choice:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+.s80-choice.over { background: var(--primary-soft); outline: 1.5px dashed color-mix(in oklab, var(--primary) 55%, var(--line-2)); outline-offset: -1.5px; }
+.s80-choice .icontile { width: 44px; height: 44px; border-radius: 13px; }
+.s80-choice-t { display: grid; gap: 2px; min-width: 0; }
+.s80-choice-t b { font-size: 16px; font-weight: 650; }
+.s80-choice-t span { font-size: 13.5px; color: var(--fg-2); }
+.s80-chev { color: var(--fg-3); }
+/* B: the photo checked before it goes */
+.s80-cam-review { aspect-ratio: 4 / 3; }
+.s80-ticks { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.s80-ticks li { display: flex; align-items: center; gap: 10px; font-size: 15px; }
+.s80-ticks .ic { color: var(--primary-text); flex: none; }
+
+/* C: Upload beside the shutter, labelled, a 48 px target */
+.s80-bar { padding: 4px 12px; }
+.s80-side { display: grid; justify-items: center; gap: 4px; width: 72px; padding: 0; border: 0; background: none; color: var(--fg-2); font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; }
+button.s80-side:focus-visible { outline: 3px solid var(--ring); outline-offset: 3px; border-radius: 14px; }
+.s80-side-ic { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; background: var(--fill-2); color: var(--fg); }
+/* C: the camera refused, said in the frame, with the way round it */
+.s80-blocked { position: absolute; inset: 0; display: grid; align-content: center; justify-items: center; gap: 10px; padding: 24px; text-align: center; background: #101613; color: #e7eee9; }
+.s80-blocked b { font-size: 17px; font-weight: 650; color: #fff; }
+.s80-blocked > span:not(.s80-blocked-ic):not(.row) { max-width: 34ch; font-size: 14px; color: #b9c7bf; }
+.s80-blocked .btn.s80-on-dark { background: rgb(255 255 255 / 0.12); color: #fff; box-shadow: none; }
+.s80-blocked-ic { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; background: rgb(255 255 255 / 0.1); color: #fff; }
+
+@container app (max-width: 767px) {
+  .s80-ask { grid-template-columns: 96px minmax(0, 1fr); gap: 12px; }
+  .s80-thumb { width: 96px; border-radius: 12px; }
+  .s80-ask .t-headline { font-size: 16px; }
+  .s80-ask .t-subhead { font-size: 13.5px; }
+  .s80-choices { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+}

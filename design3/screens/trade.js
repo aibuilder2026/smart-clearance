@@ -77,33 +77,129 @@
     if (distOf(me).id !== "rakesh") return /* @__PURE__ */ React.createElement(Screen, { me, title: "Label photo", sub: "Requests from the Vision agent" }, /* @__PURE__ */ React.createElement(Card, { style: { maxWidth: 560 } }, /* @__PURE__ */ React.createElement(Empty, { img: "phone-scan", title: "No photo requests", body: "When a batch needs checking, Vision asks for one picture of a carton label here." })));
     return /* @__PURE__ */ React.createElement(CameraInner, { me, realCamera });
   }
+  const PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"], PHOTO_MAX_MB = 8;
+  const PHOTO_RULE = `JPEG, PNG or WebP, under ${PHOTO_MAX_MB} MB`;
+  const CAM_BLOCKED = "The camera is blocked for this page. Allow it in the browser's site settings, or upload a photo.";
+  const CAM_NONE = "No camera was found. Upload a photo instead.";
   function CameraInner({ me, realCamera }) {
     const s = useStore();
     const h = s.hero;
-    const { go, back } = useRoute();
+    const { go } = useRoute();
     const reduce = useReducedMotion();
-    const file = useRef(null);
+    const app = useApp();
+    const phoneCam = useRef(null), files = useRef(null), video = useRef(null), stream = useRef(null);
     const [shot, setShot] = useState(null);
     const [flash, setFlash] = useState(false);
     const [sending, setSending] = useState(false);
+    const [camOn, setCamOn] = useState(false);
+    const [camLive, setCamLive] = useState(null);
+    const [over, setOver] = useState(false);
+    const [err, setErr] = useState(null);
+    const [ratio, setRatio] = useState(null);
     const sent = h.photo.status === "reading" || h.photo.status === "verified";
-    const take = () => {
-      if (realCamera && file.current && window.matchMedia("(pointer: coarse)").matches) {
-        file.current.click();
-        return;
-      }
-      setFlash(true);
-      setTimeout(() => {
-        setFlash(false);
-        setShot("demo");
-      }, reduce ? 0 : 180);
-    };
-    const picked = (e) => {
-      const f = e.target.files && e.target.files[0];
-      if (f) setShot(URL.createObjectURL(f));
-    };
     const live = S.useLive();
     const uploading = !!live && live.uploads.photo != null;
+    const coarse = typeof matchMedia === "function" && matchMedia("(pointer: coarse)").matches;
+    const desk = !coarse && app.bp !== "phone";
+    const stopCam = () => {
+      if (stream.current) stream.current.getTracks().forEach((t) => t.stop());
+      stream.current = null;
+      setCamLive(null);
+      setCamOn(false);
+    };
+    useEffect(() => () => {
+      if (stream.current) stream.current.getTracks().forEach((t) => t.stop());
+    }, []);
+    const use = (f, how) => {
+      setOver(false);
+      if (!f) return;
+      if (!PHOTO_TYPES.includes(f.type)) {
+        setErr("That file is not a photo Vision can read. Send a JPEG, PNG or WebP.");
+        return;
+      }
+      if (f.size >= PHOTO_MAX_MB * 1048576) {
+        setErr(`That photo is ${(f.size / 1048576).toFixed(1)} MB. Send one under ${PHOTO_MAX_MB} MB.`);
+        return;
+      }
+      setErr(null);
+      setRatio(null);
+      setShot({ url: URL.createObjectURL(f), how, name: f.name });
+    };
+    const picked = (how) => (e) => {
+      const f = e.target.files && e.target.files[0];
+      e.target.value = "";
+      use(f, how);
+    };
+    const openCam = async () => {
+      const md = navigator.mediaDevices;
+      if (!md || !md.getUserMedia) {
+        setErr(CAM_NONE);
+        return;
+      }
+      setCamOn(true);
+      try {
+        const st = await md.getUserMedia({ video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
+        stream.current = st;
+        setCamLive(st);
+      } catch (e) {
+        stopCam();
+        setErr(e && e.name === "NotAllowedError" ? CAM_BLOCKED : CAM_NONE);
+      }
+    };
+    const feed = (el) => {
+      video.current = el;
+      if (el && camLive && el.srcObject !== camLive) {
+        el.srcObject = camLive;
+        el.play().catch(() => {
+        });
+      }
+    };
+    const blink = () => {
+      setFlash(true);
+      setTimeout(() => setFlash(false), reduce ? 0 : 180);
+    };
+    const take = () => {
+      setErr(null);
+      if (realCamera && coarse && phoneCam.current) {
+        phoneCam.current.click();
+        return;
+      }
+      if (realCamera && live) {
+        openCam();
+        return;
+      }
+      blink();
+      setTimeout(() => setShot({ demo: true, how: "camera" }), reduce ? 0 : 180);
+    };
+    const shutter = () => {
+      const v = video.current;
+      if (!v || !v.videoWidth) return;
+      const c = document.createElement("canvas");
+      c.width = v.videoWidth;
+      c.height = v.videoHeight;
+      c.getContext("2d").drawImage(v, 0, 0);
+      blink();
+      c.toBlob((b) => {
+        stopCam();
+        if (b) use(new File([b], "label-photo.jpg", { type: "image/jpeg" }), "camera");
+      }, "image/jpeg", 0.92);
+    };
+    const upload = () => {
+      setErr(null);
+      files.current && files.current.click();
+    };
+    const again = () => {
+      setShot(null);
+      setRatio(null);
+      (shot && shot.how === "camera" ? take : upload)();
+    };
+    const drop = sent || uploading ? {} : { onDragOver: (e) => {
+      e.preventDefault();
+      setOver(true);
+    }, onDragLeave: () => setOver(false), onDrop: (e) => {
+      e.preventDefault();
+      use(e.dataTransfer.files && e.dataTransfer.files[0], "upload");
+    } };
     const send = () => {
       if (live) {
         live.sendPhoto(() => Flow.act("sendPhoto"));
@@ -115,7 +211,13 @@
         Flow.act("sendPhoto");
       }, 700);
     };
-    return /* @__PURE__ */ React.createElement(Screen, { me, title: "Label photo", sub: "Batch MF-2409-117 · shelf B4", back: "Today" }, /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 16, maxWidth: 560, margin: "0 auto", width: "100%" } }, /* @__PURE__ */ React.createElement("div", { className: "cam" }, shot && shot !== "demo" ? /* @__PURE__ */ React.createElement("img", { className: "cam-feed", src: shot, alt: "Your photo of the carton label" }) : /* @__PURE__ */ React.createElement(S.LabelShot, { cover: true, dim: !shot && !sent && !uploading }), !shot && !sent && !uploading && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "cam-frame", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("i", null), /* @__PURE__ */ React.createElement("i", null), /* @__PURE__ */ React.createElement("i", null), /* @__PURE__ */ React.createElement("i", null)), /* @__PURE__ */ React.createElement("div", { className: "cam-hint" }, "Fit one carton label in the frame")), sent && /* @__PURE__ */ React.createElement("div", { className: "cam-hint", style: { background: "var(--green-700)" } }, /* @__PURE__ */ React.createElement(Icon, { name: h.photo.status === "verified" ? "check" : "loader", size: 14, className: h.photo.status === "verified" ? "" : "spin" }), " ", h.photo.status === "verified" ? "Verified · matches your records" : "Sent · Vision is reading the label"), /* @__PURE__ */ React.createElement(AnimatePresence, null, flash && /* @__PURE__ */ React.createElement(motion.div, { key: "f", className: "cam-flash", initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.12 } })), h.photo.status === "reading" && !reduce && /* @__PURE__ */ React.createElement(motion.div, { "aria-hidden": "true", className: "cam-scan", animate: { top: ["20%", "76%", "20%"] }, transition: { duration: 1.6, repeat: 2, ease: "easeInOut" } })), sent ? /* @__PURE__ */ React.createElement(Card, { className: "stack snug" }, /* @__PURE__ */ React.createElement("div", { className: "row", style: { gap: 12 } }, /* @__PURE__ */ React.createElement(Aura, { on: h.photo.status === "reading", className: "icontile", style: { borderRadius: 12, width: 40, height: 40 } }, /* @__PURE__ */ React.createElement(Icon, { name: h.photo.status === "verified" ? "badge-check" : "scan-line", size: 19 })), /* @__PURE__ */ React.createElement("div", { className: "grow" }, /* @__PURE__ */ React.createElement("b", null, h.photo.status === "verified" ? "Done. Dhanyavaad, Rakesh bhai." : "Reading batch, dates and MRP"), /* @__PURE__ */ React.createElement("div", { className: "t-footnote muted" }, h.photo.status === "verified" ? "The plan for this batch will reach Priya in a few minutes." : "This takes a few seconds."))), h.photo.status === "verified" && /* @__PURE__ */ React.createElement(List, null, [["Batch", "MF-2409-117"], ["Best before", "18 Nov 2026"], ["MRP", "₹30.00"]].map(([k, v]) => /* @__PURE__ */ React.createElement(ListRow, { key: k, title: k, value: v }))), /* @__PURE__ */ React.createElement(Button, { variant: "secondary", block: true, onClick: () => go("home") }, "Back to today")) : uploading ? /* @__PURE__ */ React.createElement(S.Live.SendFill, { p: live.uploads.photo, onCancel: () => live.cancelUpload("photo") }) : shot ? /* @__PURE__ */ React.createElement("div", { className: "row", style: { gap: 10 } }, /* @__PURE__ */ React.createElement(Button, { variant: "secondary", size: "lg", icon: "rotate-ccw", onClick: () => setShot(null) }, "Retake"), /* @__PURE__ */ React.createElement(Button, { variant: "primary", size: "lg", block: true, icon: "send", loading: sending, onClick: send }, "Send photo")) : /* @__PURE__ */ React.createElement("div", { className: "cam-bar" }, /* @__PURE__ */ React.createElement("label", { className: "iconbtn round", "aria-label": "Choose a photo from the gallery", style: { cursor: "pointer" } }, /* @__PURE__ */ React.createElement(Icon, { name: "image", size: 22 }), /* @__PURE__ */ React.createElement("input", { type: "file", accept: "image/*", onChange: picked, className: "sr-only" })), /* @__PURE__ */ React.createElement("button", { type: "button", className: "shutter", "aria-label": "Take the photo", onClick: take }, /* @__PURE__ */ React.createElement("span", null)), /* @__PURE__ */ React.createElement("span", { style: { width: 44 } }), /* @__PURE__ */ React.createElement("input", { ref: file, type: "file", accept: "image/*", capture: "environment", onChange: picked, className: "sr-only", tabIndex: -1, "aria-hidden": "true" })), realCamera && /* @__PURE__ */ React.createElement("p", { className: "t-caption subtle", style: { textAlign: "center", margin: 0 } }, live ? uploading ? "A slow connection only slows the send." : "On a phone the shutter opens your camera." : "On a phone the shutter opens your camera. In this prototype a stub stands in for Gemini vision and returns the batch record.")));
+    const busy = sent || uploading;
+    const photo = shot && !shot.demo;
+    const caption = shot ? "Check that you can read the batch, both dates and the MRP." : camOn ? "Hold the label flat to the camera, close enough to read." : desk ? `${PHOTO_RULE}. Or drop a photo on the frame.` : `Take a photo opens your camera. ${PHOTO_RULE}.`;
+    return /* @__PURE__ */ React.createElement(Screen, { me, title: "Label photo", sub: "Batch MF-2409-117 · shelf B4", back: "Today" }, /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 16, maxWidth: 560, margin: "0 auto", width: "100%" } }, /* @__PURE__ */ React.createElement("div", { className: cx("cam", camOn && "landscape"), style: photo && ratio ? { aspectRatio: String(ratio) } : void 0, ...drop }, photo ? /* @__PURE__ */ React.createElement(motion.img, { key: shot.url, className: "cam-feed whole", src: shot.url, alt: "Your photo of the carton label", onLoad: (e) => setRatio(Math.max(0.75, Math.min(1.5, e.target.naturalWidth / e.target.naturalHeight))), initial: reduce ? false : { opacity: 0, scale: 1.02 }, animate: { opacity: 1, scale: 1 }, transition: { duration: 0.24, ease: [0.22, 1, 0.36, 1] } }) : camOn ? /* @__PURE__ */ React.createElement("video", { ref: feed, className: "cam-feed", playsInline: true, muted: true, "aria-label": "The laptop's camera" }) : /* @__PURE__ */ React.createElement(S.LabelShot, { cover: true, dim: !shot && !busy }), !shot && !busy && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "cam-frame", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("i", null), /* @__PURE__ */ React.createElement("i", null), /* @__PURE__ */ React.createElement("i", null), /* @__PURE__ */ React.createElement("i", null)), /* @__PURE__ */ React.createElement("div", { className: "cam-hint" }, camOn ? camLive ? "Fit one carton label in the frame" : "Starting the camera…" : "Like this: one carton label, close up")), !shot && !camOn && !busy && /* @__PURE__ */ React.createElement("span", { className: "cam-tag" }, "Example"), camOn && /* @__PURE__ */ React.createElement("span", { className: "cam-tag on" }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }), "Laptop camera"), shot && !busy && /* @__PURE__ */ React.createElement("span", { className: "cam-tag" }, photo && shot.how === "upload" && shot.name ? shot.name : "Your photo"), /* @__PURE__ */ React.createElement(AnimatePresence, null, over && !busy && /* @__PURE__ */ React.createElement(motion.div, { key: "d", className: "cam-drop", initial: reduce ? false : { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.16 } }, /* @__PURE__ */ React.createElement("span", { className: "cam-drop-in" }, /* @__PURE__ */ React.createElement(Icon, { name: "image", size: 22 }), /* @__PURE__ */ React.createElement("b", null, "Drop the photo to use it")))), sent && /* @__PURE__ */ React.createElement("div", { className: "cam-hint", style: { background: "var(--green-700)" } }, /* @__PURE__ */ React.createElement(Icon, { name: h.photo.status === "verified" ? "check" : "loader", size: 14, className: h.photo.status === "verified" ? "" : "spin" }), " ", h.photo.status === "verified" ? "Verified · matches your records" : "Sent · Vision is reading the label"), /* @__PURE__ */ React.createElement(AnimatePresence, null, flash && /* @__PURE__ */ React.createElement(motion.div, { key: "f", className: "cam-flash", initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.12 } })), h.photo.status === "reading" && !reduce && /* @__PURE__ */ React.createElement(motion.div, { "aria-hidden": "true", className: "cam-scan", animate: { top: ["20%", "76%", "20%"] }, transition: { duration: 1.6, repeat: 2, ease: "easeInOut" } })), sent ? /* @__PURE__ */ React.createElement(Card, { className: "stack snug" }, /* @__PURE__ */ React.createElement("div", { className: "row", style: { gap: 12 } }, /* @__PURE__ */ React.createElement(Aura, { on: h.photo.status === "reading", className: "icontile", style: { borderRadius: 12, width: 40, height: 40 } }, /* @__PURE__ */ React.createElement(Icon, { name: h.photo.status === "verified" ? "badge-check" : "scan-line", size: 19 })), /* @__PURE__ */ React.createElement("div", { className: "grow" }, /* @__PURE__ */ React.createElement("b", null, h.photo.status === "verified" ? "Done. Dhanyavaad, Rakesh bhai." : "Reading batch, dates and MRP"), /* @__PURE__ */ React.createElement("div", { className: "t-footnote muted" }, h.photo.status === "verified" ? "The plan for this batch will reach Priya in a few minutes." : "This takes a few seconds."))), h.photo.status === "verified" && /* @__PURE__ */ React.createElement(List, null, [["Batch", "MF-2409-117"], ["Best before", "18 Nov 2026"], ["MRP", "₹30.00"]].map(([k, v]) => /* @__PURE__ */ React.createElement(ListRow, { key: k, title: k, value: v }))), /* @__PURE__ */ React.createElement(Button, { variant: "secondary", block: true, onClick: () => go("home") }, "Back to today")) : uploading ? /* @__PURE__ */ React.createElement(S.Live.SendFill, { p: live.uploads.photo, onCancel: () => live.cancelUpload("photo") }) : /* @__PURE__ */ React.createElement(AnimatePresence, { mode: "wait", initial: false }, shot ? /* @__PURE__ */ React.createElement(motion.div, { key: "send", className: "row", style: { gap: 10 }, initial: reduce ? false : { opacity: 0, y: 6 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.16, ease: [0.22, 1, 0.36, 1] } }, /* @__PURE__ */ React.createElement(Button, { variant: "secondary", size: "lg", icon: shot.how === "camera" ? "rotate-ccw" : "image", onClick: again, style: { flex: "none" } }, shot.how === "camera" ? "Retake" : "Choose another"), /* @__PURE__ */ React.createElement(Button, { variant: "primary", size: "lg", block: true, icon: "send", loading: sending, onClick: send }, "Send photo")) : camOn ? /* @__PURE__ */ React.createElement(motion.div, { key: "cam", className: "cam-bar", initial: reduce ? false : { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.16 } }, /* @__PURE__ */ React.createElement(Button, { variant: "ghost", onClick: stopCam }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "shutter", "aria-label": "Take the photo", disabled: !camLive, onClick: shutter }, /* @__PURE__ */ React.createElement("span", null)), /* @__PURE__ */ React.createElement(Button, { variant: "ghost", icon: "image", onClick: () => {
+      stopCam();
+      upload();
+    } }, "Upload")) : /* @__PURE__ */ React.createElement(motion.div, { key: "two", className: "cam-two", initial: reduce ? false : { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.16 } }, /* @__PURE__ */ React.createElement(Button, { variant: desk ? "secondary" : "primary", size: "lg", icon: "camera", onClick: take }, "Take a photo"), /* @__PURE__ */ React.createElement(Button, { variant: desk ? "primary" : "secondary", size: "lg", icon: "upload", onClick: upload }, "Upload a photo"))), /* @__PURE__ */ React.createElement("input", { ref: phoneCam, type: "file", accept: PHOTO_TYPES.join(","), capture: "environment", onChange: picked("camera"), className: "sr-only", tabIndex: -1, "aria-hidden": "true" }), /* @__PURE__ */ React.createElement("input", { ref: files, type: "file", accept: PHOTO_TYPES.join(","), onChange: picked("upload"), className: "sr-only", tabIndex: -1, "aria-hidden": "true" }), err && !busy ? /* @__PURE__ */ React.createElement("p", { className: "cam-alert", role: "alert" }, /* @__PURE__ */ React.createElement(Icon, { name: "triangle-alert", size: 15 }), err) : uploading ? /* @__PURE__ */ React.createElement("p", { className: "t-caption subtle", style: { textAlign: "center", margin: 0 } }, "A slow connection only slows the send.") : !sent && realCamera && /* @__PURE__ */ React.createElement("p", { className: "t-caption subtle", style: { textAlign: "center", margin: 0 } }, live ? caption : `${caption} In this prototype a stub stands in for Gemini vision and returns the batch record.`)));
   }
   function VanRoute({ me }) {
     if (distOf(me).id !== "rakesh") return /* @__PURE__ */ React.createElement(Screen, { me, title: "Van route", sub: distOf(me).cluster }, /* @__PURE__ */ React.createElement(Card, { style: { maxWidth: 560 } }, /* @__PURE__ */ React.createElement(Empty, { img: "van", title: "No scheme orders on the van", body: "Orders from Smart-Clearance offers join your next round automatically." })));

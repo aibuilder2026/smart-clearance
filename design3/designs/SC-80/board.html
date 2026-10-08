@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-80 Label Photo</title>
+<meta name="description" content="Three options for the label photo step: take a photo, or upload one already taken.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<style>
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px -6px rgb(17 41 30 / 0.1);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
+::selection { background: color-mix(in oklab, var(--green) 24%, transparent); }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 48px 16px 72px; }
+h1, h2, h3, h4 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+h2 { margin: 60px 0 14px; font-size: clamp(25px, 3vw, 32px); font-weight: 720; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 72, "wdth" 88; }
+h3 { font-size: 26px; font-weight: 720; letter-spacing: -0.018em; font-variation-settings: "opsz" 48, "wdth" 90; }
+h4 { margin: 26px 0 10px; font: 650 16px/1.35 var(--ui); letter-spacing: 0; }
+p { margin: 0 0 12px; max-width: 74ch; color: var(--ink-2); text-wrap: pretty; }
+p b, li b, td b { color: var(--ink); font-weight: 600; }
+.lede { font-size: 18px; margin-top: 14px; }
+blockquote { margin: 16px 0; padding: 16px 20px; border-radius: 14px; background: var(--sunken); color: var(--ink); font-size: 15.5px; max-width: 82ch; }
+blockquote ul { color: var(--ink); margin: 0; }
+ul { margin: 0 0 12px; padding-left: 20px; color: var(--ink-2); max-width: 80ch; display: grid; gap: 6px; }
+code { font: 500 0.9em/1 var(--mono); }
+figure { margin: 0; min-width: 0; }
+figure img, figure video { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+.four { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+@media (min-width: 900px) { .four { grid-template-columns: minmax(0, 2.6fr) minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); } }
+.phones { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+@media (min-width: 700px) { .phones { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .phones { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.desks { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 700px) { .desks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.card { padding: 22px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.shared { display: grid; gap: 18px; }
+@media (min-width: 900px) { .shared { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.shared h3.sub { margin: 0 0 6px; }
+h3.sub { font: 650 16px/1.35 var(--ui); letter-spacing: 0; font-variation-settings: normal; }
+.shared p, .shared li { font-size: 14.5px; }
+.opt { margin-top: 26px; display: grid; gap: 14px; padding: 26px 22px; border-radius: 28px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); scroll-margin-top: 20px; }
+.opt.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.opt header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.opt header p { margin: 0; flex-basis: 100%; font-size: 17px; color: var(--ink); max-width: 76ch; }
+.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 600 12.5px/1 var(--ui); color: var(--green-text); background: var(--green-soft); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+.btn.primary { background: var(--green); color: #fff; box-shadow: none; }
+:root[data-theme="dark"] .btn.primary { color: #03170d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #03170d; } }
+.states { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; }
+.states a { display: inline-flex; align-items: center; min-height: 32px; }
+.vid { display: grid; gap: 18px; }
+@media (min-width: 900px) { .vid { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: start; } }
+dl.facts { margin: 0; display: grid; gap: 12px; }
+dl.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); }
+dl.facts dd { margin: 2px 0 0; color: var(--ink-2); font-size: 14.5px; }
+dl.facts dd ul { margin-top: 4px; font-size: 14.5px; }
+.tablewrap { overflow-x: auto; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+table.cmp { border-collapse: collapse; width: 100%; min-width: 860px; font-size: 14px; color: var(--ink-2); }
+table.cmp th, table.cmp td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+table.cmp thead th { color: var(--ink); font-weight: 650; background: var(--sunken); }
+table.cmp tbody th { color: var(--ink); font-weight: 600; width: 14%; }
+table.cmp tr:last-child > * { border-bottom: 0; }
+.rec-box { padding: 22px; border-radius: 20px; background: var(--green-soft); }
+.rec-box p { color: var(--ink); }
+.q { padding: 20px 22px; border-radius: 20px; background: var(--amber-soft); }
+.q p, .q li { color: var(--ink); }
+.q h3 { font-size: 20px; margin-bottom: 8px; }
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
+</style>
+<body>
+<main class="wrap">
+<h1>The label photo: take one, or upload one</h1>
+<p class="lede">SC-80 · Munchly's workspace · three options for the distributor's label photo step, where Vision asks for one carton label before anything is priced. Every company, person and figure is fictional.</p>
+<p>The request, from the maintainer (8 Oct), looking at the step on a laptop:</p>
+<blockquote><ul><li>“This should be modified… 1. Either take photo. 2. Upload an already taken photo.”</li></ul></blockquote>
+<h2>The step now</h2>
+<p>A drawing of the label in a viewfinder, a shutter, and a 30 px gallery icon with no words. On the live workspace the shutter opens the phone's camera on a touch screen and the file picker on a laptop, and nothing on the screen says either. On a laptop the frame looks like a camera that is on.</p>
+<div class="four"><figure><img src="current/camera-light-1440.webp" width="1440" height="900" loading="lazy" alt="The label photo step today on a laptop: the drawn label in a viewfinder frame, Fit one carton label in the frame, a shutter and a small gallery icon."><figcaption>Now · light</figcaption></figure><figure><img src="current/camera-dark-1440.webp" width="1440" height="900" loading="lazy" alt="The same in dark."><figcaption>Now · dark</figcaption></figure><figure><img src="current/camera-light-390.webp" width="780" height="1688" loading="lazy" alt="The step today on a phone."><figcaption>Phone · light</figcaption></figure><figure><img src="current/camera-dark-390.webp" width="780" height="1688" loading="lazy" alt="The step today on a phone, dark."><figcaption>Phone · dark</figcaption></figure></div>
+<h2>What all three share</h2><div class="shared">
+<div class="card"><h3 class="sub">Both ways, in words</h3><ul><li><b>Take a photo</b> and <b>Upload a photo</b> are both on the screen, labelled, each at least 44 px.</li><li>On a phone, taking a photo opens the phone's camera. Uploading opens its gallery, or the files on a laptop.</li><li>On a laptop, a photo can also be dropped onto the frame or the upload choice. Dropping always has a button beside it.</li></ul></div>
+<div class="card"><h3 class="sub">What is sent</h3><ul><li>What backend-api takes: <b>JPEG, PNG or WebP, under 8 MB</b>, said once under the choices.</li><li>Naming those types makes an iPhone hand over its HEIC photos as JPEG.</li><li>A photo in hand is shown <b>whole</b>, in its own shape, so the batch, dates and MRP can be checked before it goes.</li></ul></div>
+<div class="card"><h3 class="sub">After Send, unchanged</h3><ul><li>Send fills as the photo goes (SC-73). Vision then reads the label, and the step ends on the verified record.</li><li>The guided demo and the stub keep a simulated photo; only the demo's hint follows the new words.</li><li>Motion: the photo fades in (240 ms) and the buttons swap (160 ms), on the system's ease. Under reduced motion both land at once.</li></ul></div></div>
+
+<section class="opt rec" id="option-a"><header><h3>Option A · Two ways under the frame</h3><span class="tag">Recommended</span>
+<p>The frame stays as the guide, now marked <b>Example</b> and captioned “Like this: one carton label, close up”. Under it are two large buttons, <b>Take a photo</b> and <b>Upload a photo</b>. The primary follows the device: Take on a phone, Upload on a laptop. On a laptop, Take a photo opens its camera inside the frame, landscape, with the shutter, Cancel and Upload under it.</p></header>
+<dl class="facts"><dt>Where</dt><dd>The bar under the frame, and the frame's own words.</dd><dt>Trade-offs</dt><dd>
+  <ul>
+    <li>The closest to the approved screen: the same frame and hint, and both ways named in the same place on every device.</li>
+    <li>Nothing asks for the camera until he chooses to take a photo.</li>
+    <li>The frame is an example until he does. The Example chip and the hint say so, but it is still a picture where a camera might be expected.</li>
+  </ul></dd>
+<dt>What the build touches</dt><dd>
+  <ul>
+    <li>design3: <code>screens/trade.jsx</code> (CameraInner) and <code>screens/screens.css</code>.</li>
+    <li>The frontend: <code>CameraInner.svelte</code> and core's <code>screens.css</code>, which is verbatim with a drift test. On a laptop, Take a photo uses the browser's camera (<code>getUserMedia</code>).</li>
+    <li>The demo's hint and two workspace e2e specs, which press “Take the photo”.</li>
+    <li>No contract change.</li>
+  </ul></dd></dl>
+<div class="desks"><figure><img src="option-a/choose-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A on a laptop: the example frame marked Example, Like this: one carton label, close up; under it Take a photo and Upload a photo, Upload primary, and JPEG, PNG or WebP, under 8 MB. Or drop a photo on the frame."><figcaption>Laptop · light</figcaption></figure><figure><img src="option-a/choose-dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option A on a laptop, dark."><figcaption>Laptop · dark</figcaption></figure><figure><img src="option-a/camera-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A after Take a photo on a laptop: the laptop camera in a landscape frame with Laptop camera, Cancel, the shutter and Upload."><figcaption>Take a photo, on a laptop</figcaption></figure><figure><img src="option-a/drop-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A with a photo dragged over the frame: Drop the photo to use it."><figcaption>A photo dragged over the frame</figcaption></figure><figure><img src="option-a/picked-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A with an uploaded photo shown whole, its file name, Choose another and Send photo."><figcaption>A photo in hand</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-a/choose-light-390.webp" width="780" height="1688" loading="lazy" alt="Option A on a phone: Take a photo primary, Upload a photo beside it."><figcaption>Phone · light</figcaption></figure><figure><img src="option-a/choose-dark-390.webp" width="780" height="1688" loading="lazy" alt="Option A on a phone, dark."><figcaption>Phone · dark</figcaption></figure><figure><img src="option-a/picked-light-390.webp" width="780" height="1688" loading="lazy" alt="Option A on a phone with a photo in hand, shown whole."><figcaption>Phone · a photo in hand</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="camera/mockup.html?state=upload-photo&amp;opt=a">Open option A</a><a class="btn" href="camera/mockup.html?state=upload-photo&amp;opt=a&amp;moment=camera">Laptop camera</a><a class="btn" href="camera/mockup.html?state=upload-photo&amp;opt=a&amp;moment=picked">A photo in hand</a></div></section>
+
+<section class="opt" id="option-b"><header><h3>Option B · Choose first</h3>
+<p>No viewfinder until he chooses. A card says what Vision needs, with the label as an example. Under it are two choices the size of a list row: <b>Take a photo</b> (“With your camera, at the shelf”) and <b>Upload a photo</b> (“One you already took”). The photo then shows on its own, with a short check of what must be readable before <b>Send photo</b>.</p></header>
+<dl class="facts"><dt>Where</dt><dd>The whole step, in two screens: choose, then check and send.</dd><dt>Trade-offs</dt><dd>
+  <ul>
+    <li>The plainest: two choices, no camera metaphor to misread.</li>
+    <li>The check before sending asks him to look, which suits a photo Vision may otherwise ask for again.</li>
+    <li>It loses the viewfinder that shows how to frame the label, and the step feels like a form, not a camera.</li>
+    <li>It is the biggest change to a screen the story and the demo show.</li>
+  </ul></dd>
+<dt>What the build touches</dt><dd>As A, with a new layout in <code>CameraInner</code> and the review card.</dd></dl>
+<div class="desks"><figure><img src="option-b/choose-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option B on a laptop: One photo of a carton label with the example, then Take a photo, With this laptop's camera, and Upload a photo, One you already took. Or drop it here."><figcaption>Laptop · light</figcaption></figure><figure><img src="option-b/choose-dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option B on a laptop, dark."><figcaption>Laptop · dark</figcaption></figure><figure><img src="option-b/choose-light-820.webp" width="820" height="1180" loading="lazy" alt="Option B on a tablet."><figcaption>Tablet</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-b/choose-light-390.webp" width="780" height="1688" loading="lazy" alt="Option B on a phone: the two choices stacked."><figcaption>Phone · light</figcaption></figure><figure><img src="option-b/choose-dark-390.webp" width="780" height="1688" loading="lazy" alt="Option B on a phone, dark."><figcaption>Phone · dark</figcaption></figure><figure><img src="option-b/picked-light-390.webp" width="780" height="1688" loading="lazy" alt="Option B with a photo in hand: Before you send it, check you can read the batch number, the MFG and best-before dates, the MRP; Choose another and Send photo."><figcaption>Phone · check, then send</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="camera/mockup.html?state=upload-photo&amp;opt=b">Open option B</a><a class="btn" href="camera/mockup.html?state=upload-photo&amp;opt=b&amp;moment=picked">Check, then send</a></div></section>
+
+<section class="opt" id="option-c"><header><h3>Option C · The real viewfinder</h3>
+<p>The camera opens in the frame as the step opens: the phone's rear camera, or a laptop's camera in landscape. The shutter takes the photo there. <b>Upload</b> sits beside the shutter with its name under it, where a phone's camera keeps its gallery. If the camera is refused or missing, the frame says so and offers Upload.</p></header>
+<dl class="facts"><dt>Where</dt><dd>The frame itself, and the bar under it.</dd><dt>Trade-offs</dt><dd>
+  <ul>
+    <li>The most like a camera: what the frame shows is what he will send.</li>
+    <li>The browser asks for the camera as soon as the step opens, a second permission for a distributor who has just given the one-time permission.</li>
+    <li>A photo taken in the browser is lower in quality than one from the phone's own camera app: no flash or HDR control, on cheap Android phones in a dim godown.</li>
+    <li>It needs a state for a refused camera.</li>
+  </ul></dd>
+<dt>What the build touches</dt><dd>As A, with <code>getUserMedia</code> on every device, the refused-camera state, and the stream stopped when he leaves the step.</dd></dl>
+<div class="desks"><figure><img src="option-c/viewfinder-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option C on a laptop: the laptop camera live in a landscape frame, Upload beside the shutter."><figcaption>Laptop · light</figcaption></figure><figure><img src="option-c/viewfinder-dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option C on a laptop, dark."><figcaption>Laptop · dark</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-c/viewfinder-light-390.webp" width="780" height="1688" loading="lazy" alt="Option C on a phone: the camera in the frame, Camera, Upload beside the shutter."><figcaption>Phone · light</figcaption></figure><figure><img src="option-c/viewfinder-dark-390.webp" width="780" height="1688" loading="lazy" alt="Option C on a phone, dark."><figcaption>Phone · dark</figcaption></figure><figure><img src="option-c/blocked-light-390.webp" width="780" height="1688" loading="lazy" alt="Option C with the camera refused: The camera is blocked for this page, Upload a photo, Try the camera again."><figcaption>The camera refused</figcaption></figure><figure><img src="option-c/picked-light-390.webp" width="780" height="1688" loading="lazy" alt="Option C with a photo in hand."><figcaption>A photo in hand</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="camera/mockup.html?state=upload-photo&amp;opt=c">Open option C</a><a class="btn" href="camera/mockup.html?state=upload-photo&amp;opt=c&amp;moment=blocked">The camera refused</a></div></section>
+
+<div class="rec-box" style="margin-top:28px"><p><b>Recommended: A.</b> It answers the request directly, with both ways named under the frame on every device. It keeps the approved screen and its guide to framing the label, and asks for the camera only when he chooses to take a photo. On a phone, taking a photo uses the phone's own camera app, which takes the better photo in a dim godown. B is clearer still but drops the guide. C feels most like a camera, but it asks for the camera up front and takes a poorer photo on the phones the trade uses.</p></div>
+<div class="q" style="margin-top:18px"><h3>One question</h3><p>On a laptop, should <b>Take a photo</b> open the laptop's camera (as drawn in A and C), or should laptops offer Upload only? A laptop's camera faces the person, so photographing a carton label with it is awkward. It does work for a label held up to it, as in a demo.</p></div>
+<footer>SC-80 · Smart-Clearance · Munchly's workspace · every company, person and figure is fictional · designs in <code>design3/designs/SC-80/</code> · the laptop camera is simulated in the mockups with the sample label photo (<code>sample/label-photo.webp</code>, from the Vision eval set)</footer>
+</main>
+</body>
+</html>

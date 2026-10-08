@@ -255,7 +255,7 @@ test("Report: the quarter and this batch's view", async ({ page }, testInfo) => 
 	await report(testInfo, findings);
 });
 
-// a label photo for the camera on touch screens, where the shutter opens the phone's own camera (a file chooser here)
+// a label photo for the camera on touch screens, where Take a photo opens the phone's own camera (a file chooser here)
 const LABEL = fileURLToPath(new URL('../../../../design3/system/img/label-shot.webp', import.meta.url));
 
 test('the label photo: the request, the camera, and Vision reading it', async ({ page }, testInfo) => {
@@ -268,7 +268,7 @@ test('the label photo: the request, the camera, and Vision reading it', async ({
 	await page.waitForTimeout(300);
 	findings.push(...(await scan(page, 'the camera')));
 	page.on('filechooser', (fc) => fc.setFiles(LABEL));
-	await page.getByRole('button', { name: 'Take the photo' }).click();
+	await page.getByRole('button', { name: 'Take a photo' }).click();
 	await expect(page.getByRole('button', { name: 'Send photo' })).toBeVisible();
 	findings.push(...(await scan(page, 'the camera · a photo taken')));
 	await page.getByRole('button', { name: 'Send photo' }).click();

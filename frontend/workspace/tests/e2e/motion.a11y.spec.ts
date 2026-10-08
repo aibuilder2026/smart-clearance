@@ -49,7 +49,7 @@ for (const [name, path, o, live] of STATES)
 
 test('motion · the camera while Vision reads the label: nothing loops', async ({ page }) => {
 	await openWorkspace(page, '/photo', { as: 'rakesh', stage: 2, clock: true });
-	await page.getByRole('button', { name: 'Take the photo' }).click();
+	await page.getByRole('button', { name: 'Take a photo' }).click();
 	await page.getByRole('button', { name: 'Send photo' }).click();
 	await expect(page.getByText('Sent · Vision is reading the label')).toBeVisible();
 	// Vision reads for about two seconds; the clock holds it there while the animations are counted

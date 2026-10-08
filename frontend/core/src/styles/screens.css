@@ -24,6 +24,21 @@
 .shutter span { width: 60px; height: 60px; border-radius: 50%; background: var(--fg); transition: transform var(--t-fast) var(--ease); }
 .shutter:active span { transform: scale(0.88); }
 .shutter:focus-visible { outline: 3px solid var(--ring); outline-offset: 3px; }
+.shutter:disabled { opacity: 0.45; cursor: default; }
+/* the label photo (SC-80): a laptop's camera, landscape as it is; a photo in hand, shown whole on the camera's ground */
+.cam.landscape { aspect-ratio: 4 / 3; }
+.cam-feed.whole { object-fit: contain; }
+/* the frame's chips at its foot: Example, the photo's name, the camera that is on (the hint's glass) */
+.cam-tag { position: absolute; left: 14px; bottom: 14px; z-index: 2; display: inline-flex; align-items: center; gap: 6px; max-width: calc(100% - 28px); padding: 6px 12px; border-radius: 99px; background: rgb(0 0 0 / 0.58); color: #fff; font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.cam-tag.on i { width: 8px; height: 8px; border-radius: 99px; background: #ff5a4f; flex: none; }
+/* a photo dragged over the frame */
+.cam-drop { position: absolute; inset: 0; z-index: 4; display: grid; place-items: center; background: rgb(5 8 6 / 0.62); outline: 3px dashed rgb(255 255 255 / 0.9); outline-offset: -14px; border-radius: inherit; }
+.cam-drop-in { display: grid; justify-items: center; gap: 8px; padding: 16px 22px; border-radius: 18px; background: rgb(0 0 0 / 0.66); color: #fff; font-size: 16px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+/* the two ways under the frame, and why a photo or the camera could not be used */
+.cam-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.cam-two .btn { width: 100%; justify-content: center; }
+.cam-alert { display: flex; align-items: flex-start; justify-content: center; gap: 6px; margin: 0; font-size: 13.5px; font-weight: 500; color: var(--red-text); text-align: center; text-wrap: pretty; }
+.cam-alert .ic { flex: none; margin-top: 2px; }
 
 /* ---------- paper: documents keep a white page in both themes ---------- */
 .paper { background: #fffefb !important; color: #1b211e; border-radius: 6px !important; box-shadow: 0 1px 2px rgb(0 0 0 / 0.08), 0 12px 32px -8px rgb(16 32 24 / 0.22) !important; }

@@ -181,7 +181,7 @@ export const STAGES: Stage[] = [
 				time: '09:19',
 				done: (s) => ['reading', 'verified'].includes(s.hero.photo.status),
 				run: () => act('sendPhoto'),
-				hint: 'Tap the shutter, then Send photo'
+				hint: 'Tap Take a photo, then Send photo'
 			},
 			{
 				text: 'Gemini reads batch, dates and MRP; they match the DMS record',

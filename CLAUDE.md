@@ -708,4 +708,34 @@
     - the hosted console loads commit `99483d5`: re-pinned from `0384e24`, so it also carries SC-68's journey-day badge; it was checked to render with the triggers;
     - the hosted app page stays on `58c6874`: re-pinning it waits on SC-75's note about live mode's files, and Setup's waiting state shows only in live mode.
 
+- **SC-80** (PR #65, merged): the label photo step offers both ways in words, Take a photo and Upload a photo.
+  - **The request:** "1. Either take photo. 2. Upload an already taken photo", with a sample to upload. The sample is the story's clean label photo from the Vision eval set, handed over as `label-MF-2409-117.jpg` and kept as `design3/designs/SC-80/sample/label-photo.webp`.
+  - **Design first:** three options on one board in app v3, `SC-80 design review.html`:
+    - A, two ways under the frame;
+    - B, choose first;
+    - C, the real viewfinder.
+
+    The maintainer picked **A**. Designs, stills and the decision are in `design3/designs/SC-80/`.
+  - **The step:**
+    - The frame is the guide, marked Example ("Like this: one carton label, close up").
+    - Under it are Take a photo and Upload a photo, 48 px each. The primary follows the device: Take on a phone, Upload on a laptop.
+    - A phone takes the photo with its own camera app (`capture`). On the live workspace, a laptop opens its camera in a landscape frame (`getUserMedia`, the rear camera where there is one), with Cancel, the shutter and Upload. A frame from it is sent as a JPEG, and the stream stops when the photo is taken or the step is left.
+    - On a laptop, a photo can also be dropped on the frame.
+    - A photo in hand shows whole, in its own shape, under its file name, with Retake or Choose another, and Send.
+    - What backend-api refuses is refused first, with the reason as an alert: a file that is not a JPEG, PNG or WebP, or a photo of 8 MB or more. A refused or missing camera says so and points to Upload.
+    - The 30 px gallery icon is gone.
+    - The stub and the guided demo keep the stand-in photo. The demo's hint is now "Tap Take a photo, then Send photo".
+  - **The port:** `CameraInner.svelte`; core's `screens.css` (verbatim); the goldens for Rakesh's camera screen; two live tests (a file refused, the camera refused); the workspace e2e specs press "Take a photo".
+  - **Checks:**
+    - The frontend gate passes: core 248, api 69, workspace 37 (2 new), admin 17, demo 5, console 3.
+    - Played through in design3:
+      - the laptop camera, with Chromium's fake camera: the shutter, the photo whole, Send;
+      - an upload, and a text file refused;
+      - no camera;
+      - the phone's camera;
+      - the demo's Verify beat.
+    - Played through on the stub build of the workspace app: the stand-in photo, a 9 MB file refused, the sample uploaded and verified, the phone's camera with its `accept` list.
+    - The browser suites were not run (SC-55).
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app and demo pages stay on their pinned commit, as for SC-79.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
