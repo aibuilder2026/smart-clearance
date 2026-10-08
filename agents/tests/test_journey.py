@@ -356,3 +356,13 @@ def test_impact_keeps_a_row_for_the_packs_left_at_the_godown():
     assert set(rows) == {"kirana", "staff", "godown"}
     assert (rows["godown"]["units"], rows["godown"]["recovered_inr"], rows["godown"]["kg"]) == (1220, 0.0, 0.0)
     assert rows["staff"]["recovered_inr"] == 960 and rows["godown"]["write_off_avoided_inr"] == 0.0
+
+
+def test_a_journey_started_again_keeps_its_own_ledger_rows():
+    """SC-88: a replay of the story's calendar is a journey of its own, so its ledger rows never stand in for an earlier
+    run's"""
+    from sc_agents.agents.impact import journey_id
+
+    assert journey_id("munchly", {"day0": "2026-10-02"}) == "munchly:2026-10-02"
+    later = {"day0": "2026-10-02", "journeyFrom": "2026-10-08T17:45:12.123+00:00"}
+    assert journey_id("munchly", later) == "munchly:2026-10-02@202610081745"

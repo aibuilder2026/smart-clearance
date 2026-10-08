@@ -42,6 +42,8 @@ def settings_of(raw: dict[str, Any]) -> dict[str, Any]:
         "offerWindowHours": int(raw.get("offerWindowHours") or 48),
         "today": journey_today(clock),
         "day0": clock.get("day0"),
+        # when the journey was last started again (SC-88): a replay of the story's calendar is its own journey
+        "journeyFrom": raw.get("journeyFrom"),
         "setupConfirmed": bool(raw.get("setupConfirmed")),
     }
 

@@ -253,7 +253,12 @@ async def snapshot(ctx: Ctx, client_id: str, cm: m.ClientMember) -> dict[str, An
         rows = (
             await ctx.session.execute(
                 select(m.Batch)
-                .where(m.Batch.client_id == client_id, m.Batch.best_before.is_not(None))
+                # a batch an earlier journey's upload brought, closed at the reset, is not the workspace's (SC-88)
+                .where(
+                    m.Batch.client_id == client_id,
+                    m.Batch.best_before.is_not(None),
+                    m.Batch.outcome.is_distinct_from("reset"),
+                )
                 .order_by(m.Batch.seq)
             )
         ).scalars()
@@ -307,15 +312,15 @@ async def snapshot(ctx: Ctx, client_id: str, cm: m.ClientMember) -> dict[str, An
         buyer = {"id": p.id, "name": p.name, "short": p.short, "city": p.city or "", **_buyer_details(p)}
         break
 
-    notes = (
-        await ctx.session.execute(
-            select(m.Notification, m.Case.batch_ref)
-            .outerjoin(m.Case, m.Case.id == m.Notification.case_id)
-            .where(m.Notification.client_id == client_id, m.Notification.member_ref == cm.ref)
-            .order_by(m.Notification.id.desc())
-            .limit(100)
-        )
-    ).all()
+    # the member's inbox in this journey: the pushes an earlier one sent stay in the record, not on the screens (SC-88)
+    nq = (
+        select(m.Notification, m.Case.batch_ref)
+        .outerjoin(m.Case, m.Case.id == m.Notification.case_id)
+        .where(m.Notification.client_id == client_id, m.Notification.member_ref == cm.ref)
+    )
+    if (since := journey_from(c)) is not None:
+        nq = nq.where(m.Notification.wall >= since)
+    notes = (await ctx.session.execute(nq.order_by(m.Notification.id.desc()).limit(100))).all()
 
     doc = c.workspace_doc or {}
     # which distributor each kirana's account answers to, so a distributor sees his beat and a kirana its distributor
@@ -844,21 +849,14 @@ def _shelf(shelf: dict[str, Any] | None) -> dict[str, Any] | None:
 
 
 async def quarter(ctx: Ctx, client_id: str) -> dict[str, Any]:
-    """the Finance & ESG report: the quarter so far, from the cleared batches' ledgers, on top of the quarter's history
-    hydrate imported (workspace_doc.quarter)"""
+    """the Finance & ESG report: the quarter so far, from this journey's cleared batches' ledgers, on top of the
+    quarter's history hydrate imported (workspace_doc.quarter)"""
     c = await world.client(ctx, client_id)
     base = dict((c.workspace_doc or {}).get("quarter") or {})
-    cleared = (
-        (
-            await ctx.session.execute(
-                select(m.Case).where(
-                    m.Case.client_id == client_id, m.Case.status == "cleared", m.Case.ledger.is_not(None)
-                )
-            )
-        )
-        .scalars()
-        .all()
-    )
+    q = select(m.Case).where(m.Case.client_id == client_id, m.Case.status == "cleared", m.Case.ledger.is_not(None))
+    if (since := journey_from(c)) is not None:  # this journey's batches, on top of the history (SC-88)
+        q = q.where(m.Case.opened_wall >= since)
+    cleared = (await ctx.session.execute(q)).scalars().all()
     for case in cleared:
         ledger = case.ledger or {}
         base["recovered"] = round(base.get("recovered", 0) + float(ledger.get("net", 0)))

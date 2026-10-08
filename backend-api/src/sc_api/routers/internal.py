@@ -90,6 +90,8 @@ async def agents_of(client_id: str, ctx: InternalCtx) -> dict[str, Any]:
         "language": "hi" if c.hindi_offers else "en",
         # how long a kirana scheme stays open, which Outreach's offer says (SC-72)
         "offerWindowHours": c.offer_window_hours,
+        # when the journey was last started again (SC-88): the ledger's rows are this journey's
+        "journeyFrom": (c.workspace_doc or {}).get("journeyFrom"),
     }
 
 
