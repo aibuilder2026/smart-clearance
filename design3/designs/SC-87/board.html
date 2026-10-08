@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-87 Staff Sale</title>
+<meta name="description" content="Three options for the distributor's staff sale in Munchly's workspace, and how the packs no channel took read as left at the godown.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<style>
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px -6px rgb(17 41 30 / 0.1);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
+::selection { background: color-mix(in oklab, var(--green) 24%, transparent); }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 48px 16px 72px; }
+h1, h2, h3, h4 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+h2 { margin: 60px 0 14px; font-size: clamp(25px, 3vw, 32px); font-weight: 720; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 72, "wdth" 88; }
+h3 { font-size: 26px; font-weight: 720; letter-spacing: -0.018em; font-variation-settings: "opsz" 48, "wdth" 90; }
+h4 { margin: 26px 0 10px; font: 650 16px/1.35 var(--ui); letter-spacing: 0; }
+p { margin: 0 0 12px; max-width: 74ch; color: var(--ink-2); text-wrap: pretty; }
+p b, li b, td b { color: var(--ink); font-weight: 600; }
+.lede { font-size: 18px; margin-top: 14px; }
+blockquote { margin: 16px 0; padding: 16px 20px; border-radius: 14px; background: var(--sunken); color: var(--ink); font-size: 15.5px; max-width: 82ch; }
+blockquote ul { color: var(--ink); margin: 0; }
+ul { margin: 0 0 12px; padding-left: 20px; color: var(--ink-2); max-width: 80ch; display: grid; gap: 6px; }
+code { font: 500 0.9em/1 var(--mono); }
+figure { margin: 0; min-width: 0; }
+figure img, figure video { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+.four { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+@media (min-width: 900px) { .four { grid-template-columns: minmax(0, 2.6fr) minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); } }
+.duo { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+@media (min-width: 900px) { .duo { grid-template-columns: minmax(0, 2.4fr) minmax(0, 2.4fr) minmax(0, 1fr) minmax(0, 1fr); } }
+.phones { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+@media (min-width: 700px) { .phones { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .phones { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.desks { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 700px) { .desks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.card { padding: 22px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.shared { display: grid; gap: 18px; }
+@media (min-width: 900px) { .shared { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.shared h3.sub { margin: 0 0 6px; }
+h3.sub { font: 650 16px/1.35 var(--ui); letter-spacing: 0; font-variation-settings: normal; }
+.shared p, .shared li { font-size: 14.5px; }
+.opt { margin-top: 26px; display: grid; gap: 14px; padding: 26px 22px; border-radius: 28px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); scroll-margin-top: 20px; }
+.opt.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.opt header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.opt header p { margin: 0; flex-basis: 100%; font-size: 17px; color: var(--ink); max-width: 76ch; }
+.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 600 12.5px/1 var(--ui); color: var(--green-text); background: var(--green-soft); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+.btn.primary { background: var(--green); color: #fff; box-shadow: none; }
+:root[data-theme="dark"] .btn.primary { color: #03170d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #03170d; } }
+.states { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; }
+.states a { display: inline-flex; align-items: center; min-height: 32px; }
+.vid { display: grid; gap: 18px; }
+@media (min-width: 900px) { .vid { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: start; } }
+dl.facts { margin: 0; display: grid; gap: 12px; }
+dl.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); }
+dl.facts dd { margin: 2px 0 0; color: var(--ink-2); font-size: 14.5px; }
+dl.facts dd ul { margin-top: 4px; font-size: 14.5px; }
+.tablewrap { overflow-x: auto; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+table.cmp { border-collapse: collapse; width: 100%; min-width: 860px; font-size: 14px; color: var(--ink-2); }
+table.cmp th, table.cmp td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+table.cmp thead th { color: var(--ink); font-weight: 650; background: var(--sunken); }
+table.cmp tbody th { color: var(--ink); font-weight: 600; width: 14%; }
+table.cmp tr:last-child > * { border-bottom: 0; }
+.rec-box { padding: 22px; border-radius: 20px; background: var(--green-soft); }
+.rec-box p { color: var(--ink); }
+.q { padding: 20px 22px; border-radius: 20px; background: var(--amber-soft); }
+.q p, .q li { color: var(--ink); }
+.q h3 { font-size: 20px; margin-bottom: 8px; }
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
+</style>
+
+<body>
+<main class="wrap">
+<h1>The staff sale, and what is left at the godown</h1>
+<p class="lede">SC-87 · Munchly's workspace · three options for the distributor's staff sale on the Mango Drink batch (MF-2410-118, Lakshmi Agencies, Hyderabad), and for how the packs no channel took read as <b>left at the godown</b>. Every company, person and figure is fictional.</p>
+<p>The maintainer (8 Oct), on the Mango Drink's journey:</p>
+<blockquote><ul><li>“I also see staff sale and Kirana split for Mango drink, something does not add on for this journey.”</li><li>“I need Mango Drink batch and Masala chip batch to showcase demo … the logic has to be dynamic not stubbed or hardcoded.”</li><li>Asked who runs the staff sale: <b>the distributor records it</b>, after a short design round. Asked about kirana orders: <b>by hand only</b>; units no shop ordered are reported, not counted as sold.</li></ul></blockquote>
+<h2>Now</h2>
+<p>The Router's plan for the Mango Drink is 1,372 packs to Lakshmi Agencies' kiranas, 150 to her staff sale at ₹8 and 58 to a food bank (net ₹16,917). SC-86 made backend-api run every line: the staff sale opens when the plan is approved and waits for Lakshmi Agencies to record what sold (<code>POST …/cases/MF-2410-118/staff-sale {sold}</code>), and the figures count only what each channel took. The screens have nothing for it yet: Lakshmi Agencies' Today says “Nothing to do today”, and Execution has no staff sale and no figure for what is left.</p>
+<div class="four"><figure><img src="current/lakshmi-home-light-1440.webp" width="1440" height="900" loading="lazy" alt="Lakshmi Agencies' Today now: Nothing to do today, with the Mango Drink in motion."><figcaption>Lakshmi Agencies · Today</figcaption></figure><figure><img src="current/execution-light-1440.webp" width="1440" height="900" loading="lazy" alt="Execution now: the chips' agents, no staff sale."><figcaption>Priya · Execution</figcaption></figure><figure><img src="current/lakshmi-home-light-390.webp" width="780" height="1688" loading="lazy" alt="Lakshmi Agencies' Today on a phone now."><figcaption>Phone</figcaption></figure></div>
+<h2>What all three share</h2><div class="shared">
+<div class="card"><h3 class="sub">The sale</h3><ul><li>Lakshmi Agencies runs it at Begum Bazaar godown: 150 packs at ₹8, money.js's 40% of MRP. Staff pay her by UPI; no agent acts.</li><li>Only the batch's own distributor records it, once: 0 to 150 packs (SC-86's guard).</li><li>Whatever is not sold stays at the godown.</li></ul></div>
+<div class="card"><h3 class="sub">The figures</h3><ul><li>money.js's <code>realised</code>: each line on what its channel took. The example: 1,180 of 1,372 ordered, 120 of 150 sold to staff, 58 collected: net ₹14,469 of ₹16,917.</li><li><b>Left at the godown</b> is the rest, 222 packs: recovered nothing, and still facing the write-off at best-before.</li></ul></div>
+<div class="card"><h3 class="sub">The close</h3><ul><li>Once the offer, the staff sale and the pickup are done, the batch is settled (SC-86), and Priya gets one push: what was recovered of the plan, by channel, and what the godown still holds.</li><li>The report and Finance read the same figures.</li></ul></div></div>
+<p style="margin-top:14px">The mockups show the cards on the real kit, beside each other, without the app's sidebar. The build places them on Lakshmi Agencies' Today and on Priya's Execution.</p>
+<section class="opt rec" id="option-a"><header><h3>Option A · A card on Today</h3><span class="tag">Recommended</span>
+<p>Lakshmi Agencies' Today gains a <b>Staff sale</b> card under the plan: the packs, the price, her UPI code to show staff, and one stepper to record what sold when the sale is over. Priya's Execution gets a matching card, and a <b>Left at the godown</b> card, line by line, once the lines are done.</p></header>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>One record, one tap: the step SC-86 built, as it stands. The quickest to play in a demo.</li><li>Execution says plainly what each line left behind, with the net beside the plan's.</li><li>Priya sees nothing until the sale is recorded (2 to 3 days at money.js's pace).</li></ul></dd><dt>What the build touches</dt><dd>design3's <code>trade.jsx</code> (DistHome) and <code>brand.jsx</code> (Execution), then core's <code>DistHome.svelte</code> and <code>Execution.svelte</code>; the live projection of <code>journey.staff</code> and <code>realised</code>; EndWhole, the report's ledger and the closing push; a UPI address for each distributor in <code>world.js</code> (fictional); the a11y coverage and the goldens.</dd></dl>
+<div class="desks">
+<figure><img src="option-a/open-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option A · A card on Today: The sale open, the distributor beside the operator."><figcaption>The sale open</figcaption></figure>
+<figure><img src="option-a/recorded-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option A · A card on Today: the sale recorded, and what is left at the godown."><figcaption>Recorded, and left at the godown</figcaption></figure>
+<figure><img src="option-a/open-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option A · A card on Today: The sale open, dark."><figcaption>The sale open · dark</figcaption></figure>
+<figure><img src="option-a/recorded-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option A · A card on Today: recorded, dark."><figcaption>Recorded · dark</figcaption></figure>
+</div>
+<div class="phones" style="margin-top:12px">
+<figure><img src="option-a/dist-open-390-light.webp" width="780" height="1688" loading="lazy" alt="Option A · A card on Today: Lakshmi Agencies on a phone."><figcaption>Lakshmi Agencies · phone</figcaption></figure>
+<figure><img src="option-a/dist-open-390-dark.webp" width="780" height="1688" loading="lazy" alt="Option A · A card on Today: Lakshmi Agencies on a phone, dark."><figcaption>Phone · dark</figcaption></figure>
+<figure><img src="option-a/ops-recorded-390-light.webp" width="780" height="2328" loading="lazy" alt="Option A · A card on Today: Priya's Execution on a phone, recorded."><figcaption>Priya · Execution · phone</figcaption></figure>
+<figure><img src="option-a/ops-recorded-390-dark.webp" width="780" height="2328" loading="lazy" alt="Option A · A card on Today: Priya's Execution on a phone, dark."><figcaption>Execution · dark</figcaption></figure>
+</div>
+<div class="links"><a class="btn primary" href="staff/mockup.html?opt=a&amp;moment=open">Open option A</a><a class="btn" href="staff/mockup.html?opt=a&amp;moment=recorded">Recorded</a></div></section>
+<section class="opt" id="option-b"><header><h3>Option B · A running tally</h3>
+<p>The card opens a <b>sale sheet</b> to keep at the godown: the UPI code large, and +1 and +10 as staff pay, then <b>Close the sale</b>. Priya's Execution shows the tally as it climbs, and each card notes what its line left at the godown.</p></header>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>Live: Priya watches the sale happen, as she watches the kiranas order.</li><li>More taps for Lakshmi Agencies, every sale, over two or three days.</li><li>What is left is spread over the cards; no one place adds it up.</li></ul></dd><dt>What the build touches</dt><dd>As A, plus backend-api: the sale's count kept while it is open (<code>sold</code> updated, then closed), each change on the stream; a sheet in core.</dd></dl>
+<div class="desks">
+<figure><img src="option-b/open-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option B · A running tally: The sale open, 84 sold so far, the distributor beside the operator."><figcaption>The sale open, 84 sold so far</figcaption></figure>
+<figure><img src="option-b/recorded-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option B · A running tally: the sale recorded, and what is left at the godown."><figcaption>Recorded, and left at the godown</figcaption></figure>
+<figure><img src="option-b/open-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option B · A running tally: The sale open, 84 sold so far, dark."><figcaption>The sale open, 84 sold so far · dark</figcaption></figure>
+<figure><img src="option-b/recorded-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option B · A running tally: recorded, dark."><figcaption>Recorded · dark</figcaption></figure>
+</div>
+<div class="phones" style="margin-top:12px">
+<figure><img src="option-b/dist-open-390-light.webp" width="780" height="1688" loading="lazy" alt="Option B · A running tally: Lakshmi Agencies on a phone."><figcaption>Lakshmi Agencies · phone</figcaption></figure>
+<figure><img src="option-b/dist-open-390-dark.webp" width="780" height="1688" loading="lazy" alt="Option B · A running tally: Lakshmi Agencies on a phone, dark."><figcaption>Phone · dark</figcaption></figure>
+<figure><img src="option-b/ops-recorded-390-light.webp" width="780" height="1840" loading="lazy" alt="Option B · A running tally: Priya's Execution on a phone, recorded."><figcaption>Priya · Execution · phone</figcaption></figure>
+<figure><img src="option-b/ops-recorded-390-dark.webp" width="780" height="1840" loading="lazy" alt="Option B · A running tally: Priya's Execution on a phone, dark."><figcaption>Execution · dark</figcaption></figure>
+<figure><img src="option-b/sheet-390-light.webp" width="780" height="1688" loading="lazy" alt="Option B: the sale sheet, the UPI code and the tally."><figcaption>The sale sheet</figcaption></figure>
+<figure><img src="option-b/sheet-390-dark.webp" width="780" height="1688" loading="lazy" alt="Option B: the sale sheet, dark."><figcaption>The sale sheet · dark</figcaption></figure>
+</div>
+<div class="links"><a class="btn primary" href="staff/mockup.html?opt=b&amp;moment=open">Open option B</a><a class="btn" href="staff/mockup.html?opt=b&amp;moment=open&amp;side=dist&amp;sheet=1">The sale sheet</a><a class="btn" href="staff/mockup.html?opt=b&amp;moment=recorded">Closed</a></div></section>
+<section class="opt" id="option-c"><header><h3>Option C · One question at the end</h3>
+<p>Nothing to do while the sale runs: Today says it is running and when it closes. When it closes, a push asks one question, <b>How many of the 150 sold to staff?</b>, with All 150, None, or a count. Execution opens with one line: the packs left at the godown, and the net against the plan.</p></header>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>The least asked of the distributor, at the moment it is known.</li><li>The sale gets a closing time: a <code>staff.close</code> timer, like the listing's, which the console can fire early (SC-79).</li><li>One line hides which line left what.</li></ul></dd><dt>What the build touches</dt><dd>As A, plus backend-api: the <code>staff.close</code> timer, its push and the console's trigger.</dd></dl>
+<div class="desks">
+<figure><img src="option-c/ask-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option C · One question at the end: The question, when the sale closes, the distributor beside the operator."><figcaption>The question, when the sale closes</figcaption></figure>
+<figure><img src="option-c/recorded-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option C · One question at the end: the sale recorded, and what is left at the godown."><figcaption>Recorded, and left at the godown</figcaption></figure>
+<figure><img src="option-c/ask-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option C · One question at the end: The question, when the sale closes, dark."><figcaption>The question, when the sale closes · dark</figcaption></figure>
+<figure><img src="option-c/recorded-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option C · One question at the end: recorded, dark."><figcaption>Recorded · dark</figcaption></figure>
+</div>
+<div class="phones" style="margin-top:12px">
+<figure><img src="option-c/dist-ask-390-light.webp" width="780" height="1688" loading="lazy" alt="Option C · One question at the end: Lakshmi Agencies on a phone."><figcaption>Lakshmi Agencies · phone</figcaption></figure>
+<figure><img src="option-c/dist-ask-390-dark.webp" width="780" height="1688" loading="lazy" alt="Option C · One question at the end: Lakshmi Agencies on a phone, dark."><figcaption>Phone · dark</figcaption></figure>
+<figure><img src="option-c/ops-recorded-390-light.webp" width="780" height="1940" loading="lazy" alt="Option C · One question at the end: Priya's Execution on a phone, recorded."><figcaption>Priya · Execution · phone</figcaption></figure>
+<figure><img src="option-c/ops-recorded-390-dark.webp" width="780" height="1940" loading="lazy" alt="Option C · One question at the end: Priya's Execution on a phone, dark."><figcaption>Execution · dark</figcaption></figure>
+</div>
+<div class="links"><a class="btn primary" href="staff/mockup.html?opt=c&amp;moment=ask">Open option C</a><a class="btn" href="staff/mockup.html?opt=c&amp;moment=open">While it runs</a><a class="btn" href="staff/mockup.html?opt=c&amp;moment=recorded">Recorded</a></div></section>
+<div class="q" style="margin-top:28px"><h3>One question</h3><p>The UPI code: in the build, a real UPI payment code for the distributor's (fictional) address at ₹8, drawn by a small QR encoder in core, or an illustration as in the mockups?</p></div>
+<div class="rec-box" style="margin-top:18px"><p><b>Recommended: A.</b> It is the step SC-86 built, recorded once by the one who knows, and it plays in a demo in a single tap. Its Left at the godown card is where the realised figures become visible: what each line left, and the net against the plan. B adds a live tally at the cost of a tap per sale; C asks least of the distributor but needs a closing timer, and adds up the godown in one line.</p></div>
+<footer>SC-87 · Smart-Clearance · Munchly's workspace · every company, person and figure is fictional · designs in <code>design3/designs/SC-87/</code></footer>
+</main>
+</body>
+</html>
