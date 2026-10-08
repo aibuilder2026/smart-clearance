@@ -248,8 +248,13 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     r = await api.post(f"{WS}/cases/{HERO}/bids/{bid['id']}/accept", headers=AGRAWAL)
     assert r.status_code == 200, r.text
     c = await case(api, PRIYA)
-    assert c["award"] == {"units": 772, "price": 14.2, "gross": 10962.4, "token": 1644, "balance": 9318.4}
+    invoice = {"taxable": 10962.4, "igst": 548, "gstPct": 5, "roundOff": -0.4, "total": 11510}
+    award = {"units": 772, "price": 14.2, "gross": 10962.4, "token": 1644, "balance": 9318.4, "invoice": invoice}
+    assert c["award"] == award
     assert round(c["actual"]["net"]) == 21152
+    # the buyer's bill reads the award's invoice from the win, before Paperwork has drafted it (SC-96)
+    seen = await case(api, AGRAWAL)
+    assert seen["award"]["invoice"] == invoice and seen["docs"] == []
 
     # settle: the truck, the papers, the invoice, the review, the van round
     r = await api.post(f"{WS}/cases/{HERO}/dispatches", json={"kind": "truck"}, headers=RAKESH)
@@ -258,6 +263,7 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     c = await case(api, ANITA)
     docs = {d["id"]: d for d in c["docs"]}
     assert docs["invoice"]["no"] == "INV/26-27/0931" and docs["invoice"]["total"] == 11510
+    assert {k: docs["invoice"][k] for k in invoice} == invoice  # the paper is the bill the buyer saw
     assert docs["support"]["no"] == "CN/0117" and docs["support"]["amount"] == 8768
     assert docs["eway"]["status"] == "not required"
     today = (await api.get(f"{WS}/snapshot", headers=PRIYA)).json()["clock"]["now"]
