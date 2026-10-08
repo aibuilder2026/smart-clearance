@@ -68,7 +68,7 @@ class Tokens:
         self.creds = credentials()
         self.uids, self.key, self.cache = uids, browser_key(), {}
 
-    def _custom(self, uid: str) -> str:
+    def custom(self, uid: str) -> str:
         import base64
 
         def b64(b: bytes) -> str:
@@ -82,7 +82,7 @@ class Tokens:
 
     async def header(self, who: str) -> dict[str, str]:
         if who not in self.cache:
-            custom = await asyncio.to_thread(self._custom, self.uids[who])
+            custom = await asyncio.to_thread(self.custom, self.uids[who])
             async with httpx.AsyncClient(timeout=20) as c:
                 r = await c.post(
                     f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key={self.key}",

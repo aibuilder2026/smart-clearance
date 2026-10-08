@@ -983,4 +983,30 @@
     - the live fixtures were regenerated;
     - the browser suites were not run.
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
+- **SC-95** (In Review, branch `SC-95-munchly-chips-e2e`): Munchly Chips E2E, a recorded browser suite over the live journey of the Masala Chips batch, asked for by the maintainer.
+  - **The suite:** `corepack pnpm test:journey` from `frontend/` (`frontend/workspace/tests/journey/`, `playwright.journey.config.ts`). From a console Reset journey to Impact's report, every person acts in the real UI in turn:
+    - Neha in the console;
+    - Priya (Supply Chain);
+    - Rakesh (distributor);
+    - each of the 31 ordering kiranas;
+    - Agrawal Wholesale on ExpireSoon;
+    - Anita (Finance);
+    - Vikram (ESG).
+
+    One page drives everyone, so a run is one recording, with a caption naming who acts. It runs on request only (SC-55; the `ask-before-suites` hook asks on `test:journey`), on the live stack: backend-api, the agents' worker, and the workspace and console dev servers. `E2E_FROM` and `E2E_UNTIL` run part of it; `--headed` and `E2E_SLOWMO` let it be watched; `--ui` steps through it.
+  - **Signing in without a password:** `backend-api/scripts/sessions.sh` (`sc_api/cli/sessions.py`) mints Firebase custom tokens as sc-api-local, as walk.sh does. The suite exchanges each with the app's own key and leaves the session where the app's Firebase SDK keeps it, from a bare page it serves on the app's origin. The sign-in form is not exercised.
+  - **What a run keeps:** the video, a still for each step, and `report.md`/`report.json` with the steps, the figures against the story, and the findings. Findings are page errors, failed API calls, figures off the story, and any NaN, undefined or Invalid Date on screen.
+  - **The run of 8 Oct** (`frontend/workspace/tests/journey/runs/2026-10-08/REPORT.md`; the recording stays local): passed in 5 min 56 s, 65 steps, headed.
+    - The plan: ₹21,770.
+    - The kiranas: 31 of 38 ordered 588.
+    - ExpireSoon: 772 awarded at ₹14.20, with a ₹1,644 token.
+    - The papers: INV/26-27/0931, CN/0117 and the GST ITC memo.
+    - The close: Impact posted the ledger, the batch cleared, actual ₹21,152.40, nothing left at the godown.
+    - Findings, not fixed:
+      - the buyer's Lot won bill shows ₹NaN and "IGST undefined%" until the invoice is drafted;
+      - the van round reads Monday on its card, Saturday in its push and Friday once run (`views._moments` dates it from the offer's scheduled close);
+      - the chips' FSSAI checklist names the chips as donated, 0 packs;
+      - "₹0 if destroyed" on the Command Center before the Valuer prices;
+      - the invoice reads "drafted" for Finance after Rakesh issues it, as in the prototype.
+  - **Checks:** backend-api 467 passed (2 new); the frontend gate passes (core 248, api 77, workspace 55, admin 17, demo 5, console 3).
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

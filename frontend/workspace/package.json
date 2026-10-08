@@ -15,7 +15,8 @@
 		"test": "vitest run",
 		"test:a11y": "vite build && playwright test --project=desktop-light --project=desktop-dark --project=tablet-light --project=phone-light --project=phone-dark && node ../testing/src/a11y-coverage.ts",
 		"test:e2e": "vite build && playwright test --project=flows --project=firefox-desktop --project=webkit-tablet --project=webkit-phone",
-		"test:parity": "vite build && playwright test -c playwright.parity.config.ts"
+		"test:parity": "vite build && playwright test -c playwright.parity.config.ts",
+		"test:journey": "playwright test -c playwright.journey.config.ts"
 	},
 	"dependencies": {
 		"@smart-clearance/api": "workspace:*",

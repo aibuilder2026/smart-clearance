@@ -1,5 +1,5 @@
 #!/bin/sh
-# Browser suites on request only (SC-55): the frontend's a11y, e2e and parity suites (the a11y suite is the frontend's
+# Browser suites on request only (SC-55): the frontend's a11y, e2e, parity and journey (SC-95) suites (the a11y suite is the frontend's
 # since SC-58) and the live e2e script run only when the maintainer explicitly asks for them in the current request. This PreToolUse hook on
 # Bash turns any command that would run one into a permission prompt, as a backstop to the rule in AGENTS.md and the
 # browser-suites skill. It stays silent for every other command. Needs jq, like design-first-reminder.sh.
@@ -8,7 +8,7 @@ command=$(jq -r '.tool_input.command // ""' 2>/dev/null) || exit 0
 [ -n "$command" ] || exit 0
 
 # What runs a suite: the frontend's pnpm scripts, Playwright itself and backend-api's live e2e.
-suites='test:a11y|test:e2e|test:parity|playwright test|playwright-cli|scripts/e2e\.sh|e2e\.sh'
+suites='test:a11y|test:e2e|test:parity|test:journey|playwright test|playwright-cli|scripts/e2e\.sh|e2e\.sh'
 printf '%s' "$command" | grep -qE "($suites)" && matched=1
 [ -n "${matched:-}" ] || exit 0
 

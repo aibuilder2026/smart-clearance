@@ -38,6 +38,9 @@ frontend/**/test-results/
 frontend/**/playwright-report/
 frontend/**/playwright-report-live/
 frontend/**/blob-report/
+frontend/**/playwright-report-journey/
+# Munchly Chips E2E runs (SC-95): the report and its stills ship; the recordings stay local
+frontend/workspace/tests/journey/runs/**/*.webm
 frontend/**/tests/parity/out/
 frontend/**/.env
 frontend/**/.env.*

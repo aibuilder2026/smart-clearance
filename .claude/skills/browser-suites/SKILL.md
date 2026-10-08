@@ -35,6 +35,13 @@ When unsure, treat it as not asked: say what you would run and ask.
 The live e2e suite, `backend-api/scripts/e2e.sh` (the landing page and the console on the local API and Firebase),
 counts as a suite too: it runs on request only, and it adds a client to the local database.
 
+So does **Munchly Chips E2E** (SC-95), `corepack pnpm test:journey` from `frontend/`
+(`frontend/workspace/tests/journey/`, its README has the steps): the Masala Chips batch's live journey from a reset to
+Impact's report, every person in the real UI, on the local stack (backend-api, the agents' pull worker, the workspace
+and console dev servers). It is not built and never runs with `PUBLIC_API_BASE` empty: it needs the live stack. It
+resets Munchly's journey, takes about ten minutes, and the agents call live Gemini (about GBP 0.05–0.10 a run). Report
+its `report.md`: the steps, the figures against the story's, and the findings, with the recording.
+
 ## Before running
 
 - **A build:** `test:a11y`, `test:e2e` and `test:parity` each build their app first, and serve the build on a preview
