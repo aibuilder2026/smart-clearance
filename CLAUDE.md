@@ -738,7 +738,7 @@
     - The browser suites were not run (SC-55).
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app and demo pages stay on their pinned commit, as for SC-79.
 
-- **SC-81** (In Review, branch `SC-81-reset-hides-old-cases`; bug): a journey started again no longer shows the cases an earlier journey finished.
+- **SC-81** (PR #66, merged; bug): a journey started again no longer shows the cases an earlier journey finished.
   - **Found:** after a local run-through to the report, `hydrate.sh --journey-reset munchly` left MF-2409-117 showing as cleared at day 0. The reset closed only open cases, and the workspace shows each batch's latest case, so a case already closed as `cleared` stayed in view until the Watcher flagged the batch again.
   - **The fix:**
     - The reset records when the journey began (`workspace_doc.journeyFrom`, wall time).
