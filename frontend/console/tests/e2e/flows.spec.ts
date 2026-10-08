@@ -64,8 +64,17 @@ test('flows · a demo request becomes a client, step by step', async ({ page }) 
 	await expect(page.getByLabel("Admin's work email")).toHaveValue('ritu@kesari.in');
 	await next();
 	await page.getByRole('button', { name: 'Create workspace' }).click();
-	await expect(page).toHaveURL(/\/clients\/kesari\/agents$/);
+	// it opens on its Supply chain tab, where its first stock export is next (SC-84)
+	await expect(page).toHaveURL(/\/clients\/kesari\/supply$/);
 	await expect(page.locator('.toast')).toHaveText("Kesari Foods's workspace is set up");
+	await expect(page.getByText('Not uploaded yet')).toBeVisible();
+	await page.locator('input[type="file"]').setInputFiles({
+		name: 'kesari_stock.csv',
+		mimeType: 'text/csv',
+		buffer: Buffer.from('distributor_name,item_code,batch_no\n')
+	});
+	await expect(page.getByText('Mapped', { exact: true })).toBeVisible({ timeout: 10_000 });
+	await expect(page.getByRole('region', { name: 'Field mapping' })).toContainText('item_code');
 	await expect(page.locator('.cs-head')).toContainText('Setting up');
 	await page.getByRole('link', { name: /^Overview/ }).click();
 	await expect(page.locator('.list-row', { hasText: 'ritu@kesari.in' })).toContainText('set up');

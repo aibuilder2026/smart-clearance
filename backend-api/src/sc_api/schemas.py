@@ -243,6 +243,43 @@ class SignInMethod(Shape):
     on: bool
 
 
+class ExportColumnOut(Shape):
+    """a Smart-Clearance field a stock export fills, and the file's column for it once the Data agent has mapped it"""
+
+    field: str
+    column: str | None
+
+
+class FirstExportOut(Shape):
+    """a client's stock export as staff set it up (SC-84): mapping until the Data agent has read it, then mapped"""
+
+    status: Literal["mapping", "mapped"]
+    file: str
+    rows: int
+    batches: int
+    distributors: int
+    by: str | None
+    at: str | None
+    columns: list[ExportColumnOut]
+
+
+class ExportUploadInput(Shape):
+    content_type: str = Field(max_length=100)
+    bytes: int = Field(gt=0)
+    file_name: str | None = Field(default=None, max_length=200)
+
+
+class ExportArrivedInput(Shape):
+    file_name: str | None = Field(default=None, max_length=200)
+
+
+class UploadLinkOut(Shape):
+    id: str
+    url: str
+    headers: dict[str, str]
+    expires_at: str
+
+
 class ClientOut(Shape):
     id: str
     name: str
@@ -272,6 +309,7 @@ class ClientOut(Shape):
     batches: int
     approver: str | None
     agents: dict[str, AgentConfig]
+    first_export: FirstExportOut | None
 
 
 class Staff(Shape):

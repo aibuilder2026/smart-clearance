@@ -4,7 +4,8 @@
 # - docs: the PDFs the Paperwork agent renders (invoice, credit note, ITC memo, FSSAI checklist), downloaded through
 #   short signed URLs.
 # - exports: the distributors' DMS exports as CSV, which the Data agent loads into BigQuery. No real DMS exists yet:
-#   backend-api's hydrate and its tick write synthetic ones, and Setup's upload comes in through a signed URL too.
+#   backend-api's hydrate and its tick write synthetic ones, and Setup's upload, and the console's first export for a
+#   client (SC-84), come in through signed URLs too.
 # Each environment's identities reach only its own buckets. A few megabytes: under GBP 0.01 a month.
 
 locals {
@@ -23,6 +24,11 @@ locals {
   upload_origins = {
     prod  = local.workspace_origins
     local = var.workspace_dev_origins
+  }
+  # staff upload a client's first stock export from the console (SC-84), so the exports buckets answer its origins too
+  export_origins = {
+    prod  = concat(local.workspace_origins, local.console_origins)
+    local = concat(var.workspace_dev_origins, var.console_dev_origins)
   }
 
   # who may do what with each kind of bucket
@@ -68,7 +74,7 @@ resource "google_storage_bucket" "app" {
   dynamic "cors" {
     for_each = each.value.kind == "docs" ? [] : [1]
     content {
-      origin          = local.upload_origins[each.value.env]
+      origin          = each.value.kind == "exports" ? local.export_origins[each.value.env] : local.upload_origins[each.value.env]
       method          = ["PUT", "GET", "HEAD"]
       response_header = ["Content-Type"]
       max_age_seconds = 3600

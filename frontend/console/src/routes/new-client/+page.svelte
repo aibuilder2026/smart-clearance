@@ -176,7 +176,8 @@
 			(c) => `${c.name}'s workspace is set up`
 		);
 		busy = false;
-		if (client) await goto(href('clients', client.id, 'agents'), { replace: true });
+		// its first stock export is next, at the top of its Supply chain tab (SC-84)
+		if (client) await goto(href('clients', client.id, 'supply'), { replace: true });
 	}
 </script>
 
@@ -385,6 +386,7 @@
 							sub="{k.config.presets.find((p) => p.id === f.preset)?.label}; the approval is always on"
 						/>
 						<ListRow title="Admin" sub="{f.adminName} · {f.adminEmail}" />
+						<ListRow title="First stock export" sub="Next, on the client's Supply chain tab" />
 					</List>
 					<div class="stack" style="gap: 12px">
 						<SectionTitle sub="Prices on request">Plan</SectionTitle><Segmented

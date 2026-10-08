@@ -101,7 +101,8 @@ async def test_the_journey_starts_again_at_the_day_length_chosen(api, munchly, n
     assert "Set the length of a journey day for Munchly Foods to 5 minutes (was a day)" in texts
     assert "started the journey again from 2026-10-02" in texts
     snap = (await api.get("/v1/workspaces/munchly/snapshot", headers=PRIYA)).json()
-    assert snap["setup"]["confirmed"] is False and snap["setup"]["mapped"] == 0
+    # the guardrails wait for the operator again; the export's mapping stays (SC-84)
+    assert snap["setup"]["confirmed"] is False and snap["setup"]["mapped"] == 8
     # no day length given: the client's own stays
     r = await api.post(f"{C}/munchly/journey/reset", json={}, headers=neha)
     assert r.status_code == 200 and r.json()["clock"]["dayMinutes"] == 5

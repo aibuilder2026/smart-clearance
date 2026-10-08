@@ -24,6 +24,8 @@ import type {
 	ConsoleConfig,
 	ConsoleDefaults,
 	ExitDef,
+	ExportColumn,
+	FirstExport,
 	Exits,
 	InviteInput,
 	PresetId,
@@ -714,3 +716,43 @@ export const journeyFromStart = (day0: string): MockJourney => ({
 	timers: []
 });
 export const resetLine = (day0: string) => `started the journey again from ${day0}`;
+
+/* ---------- a client's stock export, uploaded by staff (SC-84; platform.js exportUploaded, exportMapped) ---------- */
+
+/** the export uploaded: mapping until the Data agent has read it, each field still waiting for its column */
+export function exportUploaded(
+	c: Client,
+	file: string,
+	who: string,
+	at: string,
+	fields: readonly ExportColumn[] = []
+): void {
+	const columns = fields.map((x) => ({ field: x.field, column: null }));
+	c.firstExport = {
+		status: 'mapping',
+		file,
+		rows: 0,
+		batches: 0,
+		distributors: c.distributors.length,
+		by: who,
+		at,
+		columns
+	};
+}
+/** the Data agent has read it: mapped, with what the file brought and its columns (the mock's export is the story's) */
+export function exportMapped(
+	c: Client,
+	sample: Pick<FirstExport, 'rows' | 'batches' | 'distributors' | 'columns'>
+): void {
+	if (!c.firstExport) return;
+	c.firstExport = {
+		...c.firstExport,
+		status: 'mapped',
+		rows: sample.rows,
+		batches: sample.batches,
+		distributors: Math.max(c.distributors.length, sample.distributors),
+		columns: sample.columns.map((x) => ({ ...x }))
+	};
+}
+export const exportLine = (c: Pick<Client, 'name'>, file: string) =>
+	`Uploaded ${possessive(c.name)} stock export ${file}; the Data agent maps and loads it`;

@@ -16,6 +16,8 @@ from sc_api.schemas import (
     ConsoleConfig,
     Dashboard,
     DemoRequest,
+    ExportArrivedInput,
+    ExportUploadInput,
     InviteInput,
     JourneyOut,
     JourneyResetInput,
@@ -30,8 +32,9 @@ from sc_api.schemas import (
     SkuGatesInput,
     Staff,
     StaffInviteInput,
+    UploadLinkOut,
 )
-from sc_api.services import agents, audit, clients, dashboard, people, presenter, site, staff, supply
+from sc_api.services import agents, audit, clients, dashboard, exports, people, presenter, site, staff, supply
 from sc_api.services.context import Ctx
 from sc_api.services.journey import controls as journey_controls
 from sc_api.services.journey import events as journey_events
@@ -227,6 +230,28 @@ async def reset_journey(client_id: str, data: JourneyResetInput, request: Reques
     await ctx.session.commit()
     await _drain(request, ctx)
     return JourneyOut.model_validate(await journey_controls.schedule(ctx, client_id))
+
+
+# --- a client's stock export, set up by staff (SC-84) -----------------------------------------------------------------
+
+
+@router.post(C + "/exports", response_model=UploadLinkOut, summary="A signed link to upload a client's stock export")
+async def export_link(client_id: str, data: ExportUploadInput, ctx: StaffCtx) -> UploadLinkOut:
+    return UploadLinkOut.model_validate(await exports.upload_link(ctx, client_id, data.content_type, data.bytes))
+
+
+@router.post(
+    C + "/exports/{export_id}",
+    response_model=ClientOut,
+    summary="The export has arrived: the Data agent maps and loads it",
+)
+async def export_arrived(
+    client_id: str, export_id: str, data: ExportArrivedInput, request: Request, ctx: StaffCtx
+) -> ClientOut:
+    await exports.arrived(ctx, client_id, export_id, data.file_name)
+    await ctx.session.commit()
+    await _drain(request, ctx)
+    return await presenter.client_out(ctx, client_id)
 
 
 @router.post(C + "/distributors/{distributor_id}/reminders", status_code=204)

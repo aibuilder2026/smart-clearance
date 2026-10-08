@@ -33,6 +33,9 @@ import {
 	fireOn,
 	journeyFromStart,
 	journeyOf,
+	exportLine,
+	exportMapped,
+	exportUploaded,
 	possessive,
 	resetLine,
 	type MockJourney,
@@ -52,7 +55,7 @@ import {
 /** where the mock keeps the platform's state, and who is signed in */
 export const CONSOLE_KEY = 'sc-console';
 export const SESSION_KEY = 'sc-console-session';
-const VERSION = 5;
+const VERSION = 6;
 
 type State = {
 	v: number;
@@ -314,6 +317,7 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 			skus: [],
 			people: [admin],
 			integrations: [],
+			firstExport: null,
 			recovered: 0,
 			batches: 0,
 			approver: admin.id,
@@ -572,6 +576,31 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 			}
 			update((d) => (d.journeys[id] = journeyFromStart(j.day0)), { client: id, text: resetLine(j.day0) });
 			return out(journeyOf(clientOf(id), state.journeys[id]));
+		},
+		async uploadExport(id, file, opts) {
+			const c = clientOf(id);
+			const by = who();
+			for (const p of [0.35, 0.7, 1]) {
+				await wait();
+				opts?.onProgress?.(p);
+			}
+			// the Data agent maps it a moment later, as design3's prototype shows (at once with no latency, as in tests); the
+			// mock's export is the story's, as the seed's first export has it
+			const sample = state.clients.find((x) => x.firstExport?.status === 'mapped')?.firstExport ?? {
+				rows: 0,
+				batches: 0,
+				distributors: 0,
+				columns: []
+			};
+			const map = () => change(id, (x) => exportMapped(x, sample));
+			change(
+				id,
+				(x) => exportUploaded(x, file.name, by, new Date().toISOString(), sample.columns),
+				exportLine(c, file.name)
+			);
+			if (latency) setTimeout(map, 1800);
+			else map();
+			return out(clientOf(id));
 		},
 		async clientBatches(id, sku) {
 			await wait();

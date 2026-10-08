@@ -78,8 +78,11 @@ test('live · Book a demo on the landing page becomes a client in the console', 
 	await expect(page.getByLabel("Admin's work email")).toHaveValue(`ritu@${domain}`);
 	await next();
 	await page.getByRole('button', { name: 'Create workspace' }).click();
-	await expect(page).toHaveURL(new RegExp(`/clients/${slug}/agents$`));
+	// it opens on its Supply chain tab, where its first stock export is next (SC-84)
+	await expect(page).toHaveURL(new RegExp(`/clients/${slug}/supply$`));
 	await expect(page.locator('.toast')).toHaveText(`${company}'s workspace is set up`);
+	await expect(page.getByRole('button', { name: 'Choose a CSV' })).toBeVisible();
+	await page.goto(`${CONSOLE}/clients/${slug}/agents`);
 
 	// an agent, a person and the plan, each written to the audit log in the signed-in name
 	const negotiator = page.getByRole('group', { name: 'Negotiator: autonomy' }).first();

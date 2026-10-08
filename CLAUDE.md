@@ -780,5 +780,36 @@
     - 44 goldens of the gated rows; the seed manifests.
   - **Checks:** the frontend gate passes: core 248, api 75, workspace 39, admin 17, demo 5, console 3. design3's watchlist was shot at 1440 and 820, light and dark. The browser suites were not run (SC-55).
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
+- **SC-84** (PR #69, merged): a client's first stock export is set up by staff in the console, so the workspace's Setup opens mapped.
+  - **The request:** the workspace's "Connect your stock data to start" should be done already the first time: the export is configured in the console while the client is being set up, and later daily syncs or uploads come from the workspace as needed. The maintainer's answers: **the export mapped** (staff upload it, the Data agent maps it, the client's operator still confirms the guardrails); a journey reset **keeps** the mapping.
+  - **Design first:** three options on one board in platform v3, `SC-84 design review.html`:
+    - A, a step in New client;
+    - B, on the Supply chain tab;
+    - C, as a connector.
+
+    The maintainer picked **B**. Designs, stills and the decision are in `design3/designs/SC-84/`.
+  - **The console** (design3 first, then `frontend/console`):
+    - **First stock export** opens the client's Supply chain tab, above the distributors, SKUs and batches it brings. Its moments: waiting (drop or choose a CSV), uploading, the Data agent mapping, and mapped (the file, its rows and distributors, who uploaded it and when, the field mapping, Replace).
+    - Its "90 days of sell-through" and "at 08:30" are the Data agent's own settings (`backfillDays`, `time`).
+    - New client's Review says the export comes next, and the new client opens on its Supply chain tab.
+  - **The workspace:** while Setup isn't confirmed and the export is mapped, the Command Center reads "Confirm Setup to start watching", with the export's batches and distributors, and "Review and confirm". With nothing mapped (live only), it reads as before.
+  - **The contract:** `Client.firstExport` (`status` mapping or mapped, the file, rows, batches, distributors, who and when, and `columns`: each field with the file's column) and `ConsoleApi.uploadExport`. The mock follows `platform.js`, mapping 1.8 s after an upload when it has latency.
+  - **backend-api:**
+    - `POST …/clients/{id}/exports` (a signed link) and `POST …/exports/{export}` (it has arrived), in `services/exports.py`. It takes Setup's path (the exports bucket, then the Data agent's `export.uploaded`), and writes the audit line in the staff member's name.
+    - The client keeps its first export and the column map the Data agent reports (`workspace_doc`).
+    - A journey reset keeps `setup_mapped` and the last import; only the confirmation goes back to not given.
+    - The story's export is recorded mapped, by Neha Kulkarni.
+  - **agents:** the Data agent reports the stock file's columns, field by field (`data.FIELD`).
+  - **infra:** the exports buckets' CORS gains the console's origins, since the console uploads straight to the bucket. Applied on the maintainer's yes (plan read in full: 0 to add, 2 changed in place, 0 destroyed; free); a fresh plan shows no changes.
+  - **The demo's sample export:** `design3/designs/SC-84/sample/dms_export_2026-10-01.csv`, Munchly's nine story batches as its distributors' closing stock on 1 Oct, in the Bizom-style layout backend-api's synthetic exports use. The Data agent's own parser reads it from its saved layout (no model call): 8 of 8 fields, 9 rows, none unread. Uploading it re-states what the workspace already holds, so it adds no batches.
+  - **Checks:**
+    - backend-api 421 pass, 3 of them new (`test_first_export.py`), and the reset test updated;
+    - agents 189 pass;
+    - the frontend gate passes: core 248 (two Command Center goldens updated), api 77 (2 new), workspace 40, admin 17, demo 5, console 3;
+    - infra `check.sh` passes;
+    - played through on the console's mock build: Munchly's export mapped in light, dark and on a phone; a demo request made a client, ending on its Supply chain tab; an upload mapped, with its audit line; no page errors;
+    - design3's card and the port's were shot at 1440 and match;
+    - the console's e2e, live and a11y specs follow the new end of New client, and a scan of the waiting card is added. The browser suites were not run (SC-55).
+  - **Hosting:** the hosted console loads commit `76774dc`; every pinned file was checked on jsDelivr first, and the page renders the card. The hosted app page stays on its pinned commit.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-84 First Export</title>
+<meta name="description" content="Three options for where staff set up a client's first stock export in the console, so its workspace's Setup opens mapped.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<style>
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px -6px rgb(17 41 30 / 0.1);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
+::selection { background: color-mix(in oklab, var(--green) 24%, transparent); }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 48px 16px 72px; }
+h1, h2, h3, h4 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+h2 { margin: 60px 0 14px; font-size: clamp(25px, 3vw, 32px); font-weight: 720; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 72, "wdth" 88; }
+h3 { font-size: 26px; font-weight: 720; letter-spacing: -0.018em; font-variation-settings: "opsz" 48, "wdth" 90; }
+h4 { margin: 26px 0 10px; font: 650 16px/1.35 var(--ui); letter-spacing: 0; }
+p { margin: 0 0 12px; max-width: 74ch; color: var(--ink-2); text-wrap: pretty; }
+p b, li b, td b { color: var(--ink); font-weight: 600; }
+.lede { font-size: 18px; margin-top: 14px; }
+blockquote { margin: 16px 0; padding: 16px 20px; border-radius: 14px; background: var(--sunken); color: var(--ink); font-size: 15.5px; max-width: 82ch; }
+blockquote ul { color: var(--ink); margin: 0; }
+ul { margin: 0 0 12px; padding-left: 20px; color: var(--ink-2); max-width: 80ch; display: grid; gap: 6px; }
+code { font: 500 0.9em/1 var(--mono); }
+figure { margin: 0; min-width: 0; }
+figure img, figure video { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+.four { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+@media (min-width: 900px) { .four { grid-template-columns: minmax(0, 2.6fr) minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); } }
+.phones { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+@media (min-width: 700px) { .phones { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .phones { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.desks { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 700px) { .desks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.card { padding: 22px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.shared { display: grid; gap: 18px; }
+@media (min-width: 900px) { .shared { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.shared h3.sub { margin: 0 0 6px; }
+h3.sub { font: 650 16px/1.35 var(--ui); letter-spacing: 0; font-variation-settings: normal; }
+.shared p, .shared li { font-size: 14.5px; }
+.opt { margin-top: 26px; display: grid; gap: 14px; padding: 26px 22px; border-radius: 28px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); scroll-margin-top: 20px; }
+.opt.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.opt header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.opt header p { margin: 0; flex-basis: 100%; font-size: 17px; color: var(--ink); max-width: 76ch; }
+.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 600 12.5px/1 var(--ui); color: var(--green-text); background: var(--green-soft); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+.btn.primary { background: var(--green); color: #fff; box-shadow: none; }
+:root[data-theme="dark"] .btn.primary { color: #03170d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #03170d; } }
+.states { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; }
+.states a { display: inline-flex; align-items: center; min-height: 32px; }
+.vid { display: grid; gap: 18px; }
+@media (min-width: 900px) { .vid { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: start; } }
+dl.facts { margin: 0; display: grid; gap: 12px; }
+dl.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); }
+dl.facts dd { margin: 2px 0 0; color: var(--ink-2); font-size: 14.5px; }
+dl.facts dd ul { margin-top: 4px; font-size: 14.5px; }
+.tablewrap { overflow-x: auto; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+table.cmp { border-collapse: collapse; width: 100%; min-width: 860px; font-size: 14px; color: var(--ink-2); }
+table.cmp th, table.cmp td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+table.cmp thead th { color: var(--ink); font-weight: 650; background: var(--sunken); }
+table.cmp tbody th { color: var(--ink); font-weight: 600; width: 14%; }
+table.cmp tr:last-child > * { border-bottom: 0; }
+.rec-box { padding: 22px; border-radius: 20px; background: var(--green-soft); }
+.rec-box p { color: var(--ink); }
+.q { padding: 20px 22px; border-radius: 20px; background: var(--amber-soft); }
+.q p, .q li { color: var(--ink); }
+.q h3 { font-size: 20px; margin-bottom: 8px; }
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
+</style>
+
+<body>
+<main class="wrap">
+<h1>The client's first stock export</h1>
+<p class="lede">SC-84 · the console and Munchly's workspace · three options for where staff set up a client's first stock export, so its workspace's Setup opens mapped. Every company, person and figure is fictional.</p>
+<p>The maintainer (8 Oct), on the workspace's first screen:</p>
+<blockquote><ul><li>“I want this export to be already done by default first time, as from console when the client is being configured this first time export will be configured already, and then later daily syncs can be done or uploaded from UI as needed.”</li><li>Asked what is done in the console: <b>the export mapped</b> (the client's operator still confirms the guardrails). Asked what a journey reset does to it: <b>keep it</b>.</li></ul></blockquote>
+<h2>Now</h2>
+<p>New client has no step for the data; a client's Integrations tab only asks the distributors for the first export; the workspace opens on “Connect your stock data to start”, and Setup maps the export itself.</p>
+<div class="desks"><figure><img src="current/new-client-light-1440.webp" width="1440" height="900" loading="lazy" alt="The console's New client flow today: Company, Workspace, Supply chain, Exits, Agents, People, Review."><figcaption>The console: New client</figcaption></figure><figure><img src="current/integrations-light-1440.webp" width="1440" height="900" loading="lazy" alt="Munchly's Integrations tab today."><figcaption>The console: a client's Integrations</figcaption></figure><figure><img src="current/command-light-1440.webp" width="1440" height="900" loading="lazy" alt="The workspace's Command Center today: Connect your stock data to start."><figcaption>The workspace: the first screen</figcaption></figure></div>
+<h2>What all three share</h2><div class="shared">
+<div class="card"><h3 class="sub">One card</h3><ul><li>Drop or choose the CSV; it uploads, the Data agent maps its eight fields, and the card shows the mapping with what the file brought (batches, distributors) and who uploaded it.</li><li>Replace keeps the same card.</li></ul></div>
+<div class="card"><h3 class="sub">Then, as now</h3><ul><li>The Data agent loads each day's export at 08:30 (and the console fires it at once, SC-79).</li><li>The client's operator can upload an export from Setup at any time.</li><li>A journey reset keeps the export and its mapping.</li></ul></div>
+<div class="card"><h3 class="sub">The workspace</h3><ul><li>Setup opens mapped, as designed (SC-73).</li><li>The Command Center's first card says what is left: <b>Confirm Setup to start watching</b>, with the export's batches and distributors, and Review and confirm.</li></ul></div></div>
+<section class="opt rec" id="option-a"><header><h3>Option A · A step in New client</h3><span class="tag">Recommended</span>
+<p>New client gains a <b>Stock data</b> step after Supply chain: staff drop the client's first export, watch the Data agent map its eight fields, and Review lists it. A client already set up keeps the same card at the top of its <b>Integrations</b> tab, to replace the export.</p></header>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>It happens where the client is configured, as asked: the workspace is ready the day it is handed over.</li><li>The step can wait (“No file to hand? Continue”): the client's Setup still asks for it then.</li><li>One more step in an eight-step flow.</li></ul></dd><dt>What the build touches</dt><dd>The console's New client flow and Integrations tab (design3, then <code>frontend/console</code>); a console route for a client's first export in backend-api (store it, publish it to the Data agent, keep its mapping); the reset keeping the mapping; the workspace's first card.</dd></dl>
+<div class="desks"><figure><img src="option-a/step-waiting-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A · A step in New client: The step, before the file."><figcaption>The step, before the file</figcaption></figure><figure><img src="option-a/step-mapping-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A · A step in New client: The Data agent mapping."><figcaption>The Data agent mapping</figcaption></figure><figure><img src="option-a/step-mapped-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A · A step in New client: Mapped."><figcaption>Mapped</figcaption></figure><figure><img src="option-a/step-mapped-dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option A · A step in New client: Mapped · dark."><figcaption>Mapped · dark</figcaption></figure><figure><img src="option-a/review-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A · A step in New client: Review lists it."><figcaption>Review lists it</figcaption></figure><figure><img src="option-a/integrations-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A · A step in New client: A client already set up: Integrations."><figcaption>A client already set up: Integrations</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-a/step-waiting-light-390.webp" width="780" height="1688" loading="lazy" alt="Option A · A step in New client on a phone."><figcaption>Phone</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="console/mockup.html?opt=a&amp;step=3">Open option A</a><a class="btn" href="console/mockup.html?opt=a#/clients/munchly/integrations">An existing client</a></div></section>
+<section class="opt" id="option-b"><header><h3>Option B · On the Supply chain tab</h3>
+<p>The first export sits at the top of the client's <b>Supply chain</b> tab, above the distributors, SKUs and batches it brings. New client ends there: Review says the export comes next, on Supply chain, and the new client opens on that tab.</p></header>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>Cause and effect on one page: the file, then what it brought.</li><li>Set up just after the client is created, not inside the flow.</li><li>The tab is long once the client is live; the card moves down the page's purpose.</li></ul></dd><dt>What the build touches</dt><dd>As A, with the card on the Supply chain tab instead of a New client step.</dd></dl>
+<div class="desks"><figure><img src="option-b/supply-waiting-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option B · On the Supply chain tab: A new client, before the file."><figcaption>A new client, before the file</figcaption></figure><figure><img src="option-b/supply-waiting-dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option B · On the Supply chain tab: Before the file · dark."><figcaption>Before the file · dark</figcaption></figure><figure><img src="option-b/supply-mapping-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option B · On the Supply chain tab: The Data agent mapping."><figcaption>The Data agent mapping</figcaption></figure><figure><img src="option-b/supply-mapped-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option B · On the Supply chain tab: A client live: the export and what it brought."><figcaption>A client live: the export and what it brought</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-b/supply-waiting-light-390.webp" width="780" height="1688" loading="lazy" alt="Option B · On the Supply chain tab on a phone."><figcaption>Phone</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="console/mockup.html?opt=b">Open option B</a><a class="btn" href="console/mockup.html?opt=b#/clients/munchly/supply">A client live</a></div></section>
+<section class="opt" id="option-c"><header><h3>Option C · As a connector</h3>
+<p><b>Distributor stock exports</b> is the first row of the client's Integrations, as a connector. It opens a sheet with the first export, its mapping, and what follows: the Data agent's daily load at 08:30, uploads from the workspace's Setup, and the distributors' upload link.</p></header>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>Fits how the console treats every other source of data, with the daily sync in the same place.</li><li>One click further from the client's page, and nothing in New client says it is due.</li><li>The sheet is the only place that shows the mapping.</li></ul></dd><dt>What the build touches</dt><dd>As A, with the card in a sheet from the Integrations tab.</dd></dl>
+<div class="desks"><figure><img src="option-c/integrations-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option C · As a connector: Integrations, the connector first."><figcaption>Integrations, the connector first</figcaption></figure><figure><img src="option-c/sheet-waiting-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option C · As a connector: The sheet, before the file."><figcaption>The sheet, before the file</figcaption></figure><figure><img src="option-c/sheet-waiting-dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option C · As a connector: Before the file · dark."><figcaption>Before the file · dark</figcaption></figure><figure><img src="option-c/sheet-mapped-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option C · As a connector: A client live: mapped, and the daily load."><figcaption>A client live: mapped, and the daily load</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-c/sheet-waiting-light-390.webp" width="780" height="1688" loading="lazy" alt="Option C · As a connector on a phone."><figcaption>Phone</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="console/mockup.html?opt=c&amp;sheet=1">Open option C</a><a class="btn" href="console/mockup.html?opt=c&amp;sheet=1#/clients/munchly/integrations">A client live</a></div></section>
+<h2>The workspace, with any option</h2>
+<p>Once the export is mapped in the console, the workspace's first card asks only for the yes.</p>
+<div class="four"><figure><img src="shared/command-light-1440.webp" width="1440" height="900" loading="lazy" alt="The workspace's first card: Confirm Setup to start watching, the export mapped, Review and confirm."><figcaption>Command Center · light</figcaption></figure><figure><img src="shared/command-dark-1440.webp" width="1440" height="900" loading="lazy" alt="The same, dark."><figcaption>Command Center · dark</figcaption></figure><figure><img src="shared/command-light-390.webp" width="780" height="1688" loading="lazy" alt="On a phone."><figcaption>Phone · light</figcaption></figure><figure><img src="shared/command-dark-390.webp" width="780" height="1688" loading="lazy" alt="On a phone, dark."><figcaption>Phone · dark</figcaption></figure></div>
+<div class="links"><a class="btn" href="workspace/mockup.html">Open the workspace</a></div>
+<div class="rec-box" style="margin-top:28px"><p><b>Recommended: A.</b> It puts the first export where the client is configured, which is what was asked, so the workspace is ready on its first day; it can still wait, and an existing client replaces it on Integrations. B shows the export beside what it brought but after the flow; C fits the connectors but hides the step a new client needs.</p></div>
+<footer>SC-84 · Smart-Clearance · the console and Munchly's workspace · every company, person and figure is fictional · designs in <code>design3/designs/SC-84/</code></footer>
+</main>
+</body>
+</html>

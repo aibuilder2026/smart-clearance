@@ -136,6 +136,23 @@ export type Integration = {
 export type SignInMethod = { id: string; title: string; who: string; rule: string; on: boolean };
 
 /** one manufacturer's workspace on Smart-Clearance */
+/** a client's stock export as staff set it up (SC-84): mapping until the Data agent has read it, then mapped with
+ *  what the file brought, and who uploaded it; null until one is uploaded or a daily load has mapped one */
+export type FirstExport = {
+	status: 'mapping' | 'mapped';
+	file: string;
+	rows: number;
+	batches: number;
+	distributors: number;
+	by: string | null;
+	/** when it was uploaded, an ISO time; null for an export the story set up */
+	at: string | null;
+	/** each Smart-Clearance field the export fills, with the file's column once the Data agent has mapped it */
+	columns: ExportColumn[];
+};
+
+export type ExportColumn = { field: string; column: string | null };
+
 export type Client = {
 	id: string;
 	name: string;
@@ -167,6 +184,7 @@ export type Client = {
 	batches: number;
 	approver: string | null;
 	agents: Record<string, AgentConfig>;
+	firstExport: FirstExport | null;
 };
 
 /** a client's scheduled run or pending journey timer (SC-79): the Data agent's daily load, the Watcher's daily check,
@@ -408,6 +426,13 @@ export interface ConsoleApi {
 	fireTrigger(client: string, trigger: string): Promise<Journey>;
 	/** the client's journey from day 0 again, at the day length given (the client's own when none is) */
 	resetJourney(client: string, input?: { dayMinutes?: number }): Promise<Journey>;
+	/** a client's stock export, uploaded by staff (SC-84): a signed link, the file, then the Data agent maps and loads it.
+	 *  The client comes back with its export mapping, or mapped */
+	uploadExport(
+		client: string,
+		file: File,
+		opts?: { onProgress?: (fraction: number) => void; signal?: AbortSignal }
+	): Promise<Client>;
 	/** a client's open batches with their quick-commerce gates as the agents read them; one SKU's when it is given */
 	clientBatches(client: string, sku?: string): Promise<BatchGates[]>;
 	/** an SKU's own quick-commerce gates, or null to put it back on the client's default */

@@ -695,6 +695,16 @@
             "title": "Exits",
             "type": "object"
           },
+          "firstExport": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FirstExportOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "gates": {
             "$ref": "#/components/schemas/Gates"
           },
@@ -819,7 +829,8 @@
           "recovered",
           "batches",
           "approver",
-          "agents"
+          "agents",
+          "firstExport"
         ],
         "title": "ClientOut",
         "type": "object"
@@ -1380,6 +1391,156 @@
           "on"
         ],
         "title": "ExitState",
+        "type": "object"
+      },
+      "ExportArrivedInput": {
+        "additionalProperties": false,
+        "properties": {
+          "fileName": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filename"
+          }
+        },
+        "title": "ExportArrivedInput",
+        "type": "object"
+      },
+      "ExportColumnOut": {
+        "additionalProperties": false,
+        "description": "a Smart-Clearance field a stock export fills, and the file's column for it once the Data agent has mapped it",
+        "properties": {
+          "column": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Column"
+          },
+          "field": {
+            "title": "Field",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "column"
+        ],
+        "title": "ExportColumnOut",
+        "type": "object"
+      },
+      "ExportUploadInput": {
+        "additionalProperties": false,
+        "properties": {
+          "bytes": {
+            "exclusiveMinimum": 0.0,
+            "title": "Bytes",
+            "type": "integer"
+          },
+          "contentType": {
+            "maxLength": 100,
+            "title": "Contenttype",
+            "type": "string"
+          },
+          "fileName": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filename"
+          }
+        },
+        "required": [
+          "contentType",
+          "bytes"
+        ],
+        "title": "ExportUploadInput",
+        "type": "object"
+      },
+      "FirstExportOut": {
+        "additionalProperties": false,
+        "description": "a client's stock export as staff set it up (SC-84): mapping until the Data agent has read it, then mapped",
+        "properties": {
+          "at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "At"
+          },
+          "batches": {
+            "title": "Batches",
+            "type": "integer"
+          },
+          "by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "By"
+          },
+          "columns": {
+            "items": {
+              "$ref": "#/components/schemas/ExportColumnOut"
+            },
+            "title": "Columns",
+            "type": "array"
+          },
+          "distributors": {
+            "title": "Distributors",
+            "type": "integer"
+          },
+          "file": {
+            "title": "File",
+            "type": "string"
+          },
+          "rows": {
+            "title": "Rows",
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "mapping",
+              "mapped"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "file",
+          "rows",
+          "batches",
+          "distributors",
+          "by",
+          "at",
+          "columns"
+        ],
+        "title": "FirstExportOut",
         "type": "object"
       },
       "GateCheck": {
@@ -2540,6 +2701,38 @@
         "title": "UploadInput",
         "type": "object"
       },
+      "UploadLinkOut": {
+        "additionalProperties": false,
+        "properties": {
+          "expiresAt": {
+            "title": "Expiresat",
+            "type": "string"
+          },
+          "headers": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Headers",
+            "type": "object"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "headers",
+          "expiresAt"
+        ],
+        "title": "UploadLinkOut",
+        "type": "object"
+      },
       "ValidationError": {
         "properties": {
           "ctx": {
@@ -3639,6 +3832,129 @@
           }
         ],
         "summary": "Remind",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}/exports": {
+      "post": {
+        "operationId": "export_link_v1_console_clients__client_id__exports_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportUploadInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadLinkOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "A signed link to upload a client's stock export",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}/exports/{export_id}": {
+      "post": {
+        "operationId": "export_arrived_v1_console_clients__client_id__exports__export_id__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "export_id",
+            "required": true,
+            "schema": {
+              "title": "Export Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportArrivedInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The export has arrived: the Data agent maps and loads it",
         "tags": [
           "console"
         ]
