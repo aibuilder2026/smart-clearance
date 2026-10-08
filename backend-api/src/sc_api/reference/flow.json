@@ -44,7 +44,6 @@
 				},
 				"docs": null,
 				"invoiceIssued": false,
-				"shelf": null,
 				"posted": false
 			},
 			"mango": {
@@ -121,7 +120,6 @@
 				},
 				"docs": null,
 				"invoiceIssued": false,
-				"shelf": null,
 				"posted": false
 			},
 			"mango": {
@@ -195,7 +193,6 @@
 				},
 				"docs": null,
 				"invoiceIssued": false,
-				"shelf": null,
 				"posted": false
 			},
 			"mango": {
@@ -281,7 +278,6 @@
 				},
 				"docs": null,
 				"invoiceIssued": false,
-				"shelf": null,
 				"posted": false
 			},
 			"mango": {
@@ -358,7 +354,6 @@
 				},
 				"docs": null,
 				"invoiceIssued": false,
-				"shelf": null,
 				"posted": false
 			},
 			"mango": {
@@ -425,7 +420,6 @@
 				},
 				"docs": null,
 				"invoiceIssued": false,
-				"shelf": null,
 				"posted": false
 			},
 			"mango": {
@@ -498,7 +492,6 @@
 				},
 				"docs": null,
 				"invoiceIssued": false,
-				"shelf": null,
 				"posted": false
 			},
 			"mango": {
@@ -584,7 +577,6 @@
 				},
 				"docs": null,
 				"invoiceIssued": false,
-				"shelf": null,
 				"posted": false
 			},
 			"mango": {
@@ -675,7 +667,6 @@
 				},
 				"docs": null,
 				"invoiceIssued": false,
-				"shelf": null,
 				"posted": false
 			},
 			"mango": {
@@ -764,7 +755,6 @@
 				},
 				"docs": null,
 				"invoiceIssued": false,
-				"shelf": null,
 				"posted": false
 			},
 			"mango": {
@@ -848,7 +838,6 @@
 				},
 				"docs": null,
 				"invoiceIssued": false,
-				"shelf": null,
 				"posted": false
 			},
 			"mango": {
@@ -943,7 +932,6 @@
 				},
 				"docs": null,
 				"invoiceIssued": false,
-				"shelf": null,
 				"posted": false
 			},
 			"mango": {
@@ -1042,7 +1030,6 @@
 				},
 				"docs": null,
 				"invoiceIssued": false,
-				"shelf": null,
 				"posted": false
 			},
 			"mango": {
@@ -1272,7 +1259,6 @@
 				},
 				"docs": null,
 				"invoiceIssued": false,
-				"shelf": null,
 				"posted": false
 			},
 			"mango": {
@@ -1526,7 +1512,6 @@
 				},
 				"docs": null,
 				"invoiceIssued": false,
-				"shelf": null,
 				"posted": false
 			},
 			"mango": {
@@ -1776,7 +1761,6 @@
 				},
 				"docs": null,
 				"invoiceIssued": false,
-				"shelf": null,
 				"posted": false
 			},
 			"mango": {
@@ -2050,7 +2034,6 @@
 				},
 				"docs": null,
 				"invoiceIssued": false,
-				"shelf": null,
 				"posted": false
 			},
 			"mango": {
@@ -2333,7 +2316,6 @@
 				},
 				"docs": null,
 				"invoiceIssued": false,
-				"shelf": null,
 				"posted": false
 			},
 			"mango": {
@@ -2607,7 +2589,6 @@
 				},
 				"docs": null,
 				"invoiceIssued": false,
-				"shelf": null,
 				"posted": false
 			},
 			"mango": {
@@ -2906,7 +2887,6 @@
 					}
 				],
 				"invoiceIssued": false,
-				"shelf": null,
 				"posted": false
 			},
 			"mango": {
@@ -3246,7 +3226,6 @@
 					}
 				],
 				"invoiceIssued": false,
-				"shelf": null,
 				"posted": false,
 				"reviewed": true
 			},
@@ -3271,306 +3250,6 @@
 			"action": "vanRound",
 			"arg": null,
 			"human": "rakesh",
-			"stageOf": 7,
-			"setup": {
-				"confirmed": true,
-				"mapped": 8,
-				"permission": {
-					"by": "rakesh",
-					"at": "Thu 16:52",
-					"paused": false
-				}
-			},
-			"hero": {
-				"id": "MF-2409-117",
-				"phase": "settled",
-				"photo": {
-					"status": "verified",
-					"at": "09:20",
-					"confidence": 0.97
-				},
-				"plan": {
-					"status": "approved",
-					"at": "09:40",
-					"by": "priya",
-					"device": "phone"
-				},
-				"listing": {
-					"id": "ES-24117",
-					"status": "awarded",
-					"units": 772,
-					"price": 15,
-					"reserve": 13.5,
-					"at": "09:41"
-				},
-				"offer": {
-					"status": "sent",
-					"at": "09:41",
-					"shops": 38
-				},
-				"orders": [
-					{
-						"id": "k0",
-						"units": 24,
-						"at": "09:52"
-					},
-					{
-						"id": "k1",
-						"units": 24,
-						"at": "09:58"
-					},
-					{
-						"id": "k2",
-						"units": 12,
-						"at": "10:01"
-					},
-					{
-						"id": "k3",
-						"units": 12,
-						"at": "10:04"
-					},
-					{
-						"id": "k4",
-						"units": 36,
-						"at": "10:08"
-					},
-					{
-						"id": "k5",
-						"units": 24,
-						"at": "10:11"
-					},
-					{
-						"id": "k6",
-						"units": 12,
-						"at": "10:15"
-					},
-					{
-						"id": "k7",
-						"units": 12,
-						"at": "10:19"
-					},
-					{
-						"id": "k8",
-						"units": 24,
-						"at": "10:22"
-					},
-					{
-						"id": "k9",
-						"units": 12,
-						"at": "10:26"
-					},
-					{
-						"id": "k10",
-						"units": 48,
-						"at": "10:30"
-					},
-					{
-						"id": "k11",
-						"units": 36,
-						"at": "10:33"
-					},
-					{
-						"id": "k12",
-						"units": 24,
-						"at": "10:37"
-					},
-					{
-						"id": "k13",
-						"units": 12,
-						"at": "10:41"
-					},
-					{
-						"id": "k14",
-						"units": 12,
-						"at": "10:44"
-					},
-					{
-						"id": "k15",
-						"units": 12,
-						"at": "10:48"
-					},
-					{
-						"id": "k16",
-						"units": 24,
-						"at": "10:52"
-					},
-					{
-						"id": "k17",
-						"units": 12,
-						"at": "10:55"
-					},
-					{
-						"id": "k18",
-						"units": 12,
-						"at": "10:59"
-					},
-					{
-						"id": "k19",
-						"units": 24,
-						"at": "11:02"
-					},
-					{
-						"id": "k20",
-						"units": 12,
-						"at": "11:06"
-					},
-					{
-						"id": "k21",
-						"units": 12,
-						"at": "11:10"
-					},
-					{
-						"id": "k22",
-						"units": 12,
-						"at": "11:14"
-					},
-					{
-						"id": "k23",
-						"units": 36,
-						"at": "11:17"
-					},
-					{
-						"id": "k24",
-						"units": 12,
-						"at": "11:21"
-					},
-					{
-						"id": "k25",
-						"units": 24,
-						"at": "11:24"
-					},
-					{
-						"id": "k26",
-						"units": 12,
-						"at": "11:27"
-					},
-					{
-						"id": "k27",
-						"units": 12,
-						"at": "11:31"
-					},
-					{
-						"id": "k28",
-						"units": 12,
-						"at": "11:34"
-					},
-					{
-						"id": "k29",
-						"units": 24,
-						"at": "11:38"
-					},
-					{
-						"id": "k30",
-						"units": 12,
-						"at": "11:41"
-					}
-				],
-				"bids": [
-					{
-						"id": "b1",
-						"price": 13,
-						"at": "11:02",
-						"by": "agrawal",
-						"status": "accepted",
-						"counter": 14.2
-					}
-				],
-				"chat": [
-					{
-						"from": "buyer",
-						"text": "Can you do ₹13 for all 772?",
-						"at": "11:02"
-					},
-					{
-						"from": "agent",
-						"text": "₹14.20 for 772, Nagpur stock, dispatch within 24 h of balance.",
-						"at": "11:03"
-					},
-					{
-						"from": "buyer",
-						"text": "Ok, ₹14.20. Token paid.",
-						"at": "11:09"
-					}
-				],
-				"award": {
-					"at": "11:09",
-					"buyer": "Agrawal Wholesale",
-					"status": "paid",
-					"units": 772,
-					"price": 14.2,
-					"gross": 10962.4,
-					"token": 1644,
-					"balance": 9318.4
-				},
-				"van": {
-					"status": "done",
-					"done": 31
-				},
-				"truck": {
-					"status": "dispatched",
-					"at": "Mon 5 Oct"
-				},
-				"docs": [
-					{
-						"id": "invoice",
-						"status": "drafted"
-					},
-					{
-						"id": "eway",
-						"status": "not required"
-					},
-					{
-						"id": "support",
-						"status": "generated"
-					},
-					{
-						"id": "itc",
-						"status": "generated"
-					},
-					{
-						"id": "fssai",
-						"status": "not required"
-					},
-					{
-						"id": "destruction",
-						"status": "not required"
-					}
-				],
-				"invoiceIssued": false,
-				"shelf": null,
-				"posted": false,
-				"reviewed": true
-			},
-			"mango": {
-				"id": "MF-2410-118",
-				"phase": "executing",
-				"donation": "confirmed"
-			},
-			"feed": [
-				{
-					"key": "van",
-					"stage": "settle",
-					"person": "rakesh",
-					"at": "Tue 6 Oct",
-					"min": 1440,
-					"text": "Ran the Tuesday round: 31 drops, 588 packets."
-				}
-			],
-			"notifications": [],
-			"audit": [
-				{
-					"who": "rakesh",
-					"what": "ran the Tuesday round: 31 drops",
-					"target": "Nagpur cluster",
-					"at": "Tue 6 Oct"
-				}
-			]
-		},
-		{
-			"stage": "settle",
-			"action": "shelfCheck",
-			"arg": null,
-			"human": null,
 			"stageOf": 8,
 			"setup": {
 				"confirmed": true,
@@ -3837,19 +3516,6 @@
 					}
 				],
 				"invoiceIssued": false,
-				"shelf": {
-					"at": "Friday 9 Oct",
-					"date": "Friday 9 Oct",
-					"counted": 31,
-					"shop": "Jai Durga Stores",
-					"area": "Kamptee",
-					"took": 24,
-					"left": 18,
-					"pickUp": 12,
-					"leave": 6,
-					"round": "Thursday's round",
-					"returnBy": "2026-10-29"
-				},
 				"posted": false,
 				"reviewed": true
 			},
@@ -3860,33 +3526,23 @@
 			},
 			"feed": [
 				{
-					"key": "shelf",
+					"key": "van",
 					"stage": "settle",
-					"agent": "Outreach",
-					"icon": "list-checks",
-					"at": "Fri 9 Oct",
-					"min": 4320,
-					"text": "Shelf check: the salesman counted the scheme packs at 31 shops. Jai Durga Stores, Kamptee, has 18 of 24 left: pick up 12 on Thursday's round and leave 6.",
-					"calls": [
-						[
-							"shelf.check",
-							"31 shops counted",
-							"ok"
-						]
-					]
+					"person": "rakesh",
+					"at": "Tue 6 Oct",
+					"min": 1440,
+					"text": "Ran the Tuesday round: 31 drops, 588 packets."
 				}
 			],
-			"notifications": [
+			"notifications": [],
+			"audit": [
 				{
-					"to": "rakesh",
-					"read": false,
-					"link": "van",
-					"at": "Fri 9 Oct",
-					"title": "Shelf check · one pick-up",
-					"body": "Jai Durga Stores, Kamptee has 18 of 24 scheme packs left. Pick up 12 on Thursday's round; leave 6."
+					"who": "rakesh",
+					"what": "ran the Tuesday round: 31 drops",
+					"target": "Nagpur cluster",
+					"at": "Tue 6 Oct"
 				}
-			],
-			"audit": []
+			]
 		},
 		{
 			"stage": "report",
@@ -4159,19 +3815,6 @@
 					}
 				],
 				"invoiceIssued": false,
-				"shelf": {
-					"at": "Friday 9 Oct",
-					"date": "Friday 9 Oct",
-					"counted": 31,
-					"shop": "Jai Durga Stores",
-					"area": "Kamptee",
-					"took": 24,
-					"left": 18,
-					"pickUp": 12,
-					"leave": 6,
-					"round": "Thursday's round",
-					"returnBy": "2026-10-29"
-				},
 				"posted": true,
 				"reviewed": true
 			},

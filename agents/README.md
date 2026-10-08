@@ -17,7 +17,7 @@ In the order they work along the nine stops; the approval is a person, never an 
 
 | Agent | Event | What it does | Model | Reports |
 | --- | --- | --- | --- | --- |
-| Data | `agent.due data` (08:30 journey time), `export.uploaded`, Run now | Reads each DMS export (CSV) from the exports bucket, maps its columns (a saved map for the Bizom-style layouts backend-api writes; Gemini Flash for an unknown header set, flagging what it cannot place), and loads `stock_snapshots`, `secondary_sales` or `shelf_counts` with BigQuery load jobs. Item codes become SKU ids and distributor names their ids. | Flash, only for an unknown layout | `POST /internal/clients/{c}/exports` for stock |
+| Data | `agent.due data` (08:30 journey time), `export.uploaded`, Run now | Reads each DMS export (CSV) from the exports bucket, maps its columns (a saved map for the Bizom-style layouts backend-api writes; Gemini Flash for an unknown header set, flagging what it cannot place), and loads `stock_snapshots` or `secondary_sales` with BigQuery load jobs. Item codes become SKU ids and distributor names their ids. | Flash, only for an unknown layout | `POST /internal/clients/{c}/exports` for stock |
 | Watcher | `agent.due watcher` (09:00), Run now | Each open batch's sell-through: its distributor's mean units a day of its SKU over the last 28 days of loaded history, shared by the batches' own rates (a batch with no history keeps its own). | none | `POST …/detect` |
 | Vision | `batch.at_risk` | Asks the distributor for one label photo. | none | `POST …/cases/{ref}/photo-request` |
 | Vision | `journey.step decide` | Reads the label photo from the photos bucket into `{batch, mfg, bestBefore, mrp, pack, confidence}`. It is not shown the DMS record, so it reads what is printed. A read it could not make is retried by Pub/Sub; on the last delivery an empty read asks for a retake. | Flash, multimodal | `POST …/photo-read` |
@@ -30,7 +30,6 @@ In the order they work along the nine stops; the approval is a person, never an 
 | Negotiator | `offer.received {message}` | Answers a buyer's question from the lot's facts. | Flash | `POST …/messages/{id}/answer {reply}` |
 | Negotiator | `deal.closed` | The awarded price into `channel_prices` (source `award`). | none | (BigQuery only) |
 | Paperwork | `journey.step settle` | backend-api drafts the papers; Paperwork renders the invoice, credit note, ITC memo and FSSAI checklist as PDFs (Jinja2 and WeasyPrint) into the docs bucket as `{client}/{ref}/{doc}.pdf`. Flash writes a one-line cover note for the footer. | Flash, optional | `POST …/documents`, `PATCH …/documents/{doc} {object}` |
-| Outreach | `journey.step timer shelf.due` | Loads the salesman's shelf counts into `shelf_counts`, reads each shop's latest count back. | none | `POST …/shelf-check {counts}` |
 | Impact | `journey.step timer report.due` | Posts the report; appends one `impact_ledger` row per exit (with the fiscal quarter). The BRSR narrative is optional (`IMPACT_NARRATIVE=true`), logged and not sent back yet. | Flash, optional | `POST …/report` |
 
 `agent.run_now` runs the Data agent's or the Watcher's daily job, and nothing for the others; `journey.reset` needs
@@ -109,7 +108,8 @@ The topics and subscriptions, buckets and dataset are infra phase A (SC-70, `inf
   600 s ack deadline, five attempts then `local.dead-letter`); in prod, `prod.agents.<topic>` push to the service's
   `/pubsub` with the same deadline, ordering and dead letter (SC-74, `infra/prod/events.tf`).
   A payload has `client`, usually `ref`, and `eventId`; the attributes carry `event_id` and `traceparent`.
-- BigQuery `smartclearance_local` (prod: `smartclearance`): `stock_snapshots`, `secondary_sales`, `shelf_counts`,
+- BigQuery `smartclearance_local` (prod: `smartclearance`): `stock_snapshots`, `secondary_sales`, `shelf_counts` (unused since
+  the shelf check went, SC-93),
   `channel_prices`, `impact_ledger`, `agent_runs` (one row per agent run: status, model, tokens, latency, fallback,
   trace) and `agent_evals`. Loads are load jobs (a file already loaded is not loaded again); the rest are streaming
   inserts with row ids. A failed `agent_runs` insert only logs.
@@ -240,8 +240,6 @@ every change here.
   calls a journey; if it falls back there too, the choices are a quota increase or moving a writer to Flash.
 - The recordings were written by hand from the story's figures; `smoke.sh --record DIR` writes live outputs in the same
   form, to review before replacing them (the tests assert some of their words).
-- A shelf-count export in an unknown layout is not mapped by the model on the shelf check (only on the Data agent's
-  own runs); backend-api's synthetic shelf exports are a known layout.
 - backend-api accepts a reply quoting a small rupee amount (₹5 counts as a counting word in `copy.check_numbers`); the
   agents never send one, and backend-api could hold money to the stricter rule too.
 - Agent Engine comes later: the tools are plain HTTP with a Google ID token, so they move unchanged.

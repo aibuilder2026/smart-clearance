@@ -629,7 +629,6 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
         ),
         "docs": [{"id": d_["id"], "status": d_["status"]} for d_ in case.docs] if case.docs else None,
         "invoiceIssued": case.invoice_issued_at is not None,
-        "shelf": _shelf(case.shelf),
         "posted": case.ledger is not None,
         "reviewed": case.reviewed is not None,
     }
@@ -782,7 +781,6 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
         "realised": realised_out,
         "claim": claim,
         "docs": docs,
-        "shelf": _shelf(case.shelf),
         "kiranas": kiranas,
         "offered": int((case.offer or {}).get("shops", 0)),
         "donation": (
@@ -833,15 +831,6 @@ def _moments(c: m.Client, case: m.Case, d: m.Distributor, listing: dict[str, Any
             "depot": d.godown or d.city,
             "doneAt": (case.van or {}).get("at"),
         },
-    }
-
-
-def _shelf(shelf: dict[str, Any] | None) -> dict[str, Any] | None:
-    if not shelf or shelf.get("skipped") or not shelf.get("shop"):
-        return None
-    return {
-        k: shelf.get(k)
-        for k in ("at", "counted", "shop", "area", "took", "left", "pickUp", "leave", "round", "returnBy")
     }
 
 

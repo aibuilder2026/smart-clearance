@@ -37,7 +37,7 @@ ROUTE = "route"  # the Router alone
 EXECUTE = "execute"  # the Lister, Outreach and Donation, once a plan is approved
 SETTLE = "settle"  # Paperwork, once the buyer's truck is loaded
 DUE = "agent.due"  # a daily run: the Data agent at 08:30, the Watcher at 09:00 (journey time)
-TIMER = "timer"  # an offer closing, the day-7 shelf check, the report
+TIMER = "timer"  # an offer closing, an unsold lot closing, the report
 RUN_NOW = "agent.run_now"  # the console's Run now
 RESET = "journey.reset"
 
@@ -74,7 +74,7 @@ def stage_of(case: dict[str, Any], *, setup_confirmed: bool, permission: bool) -
     if phase == "dispatched":
         return 7
     if phase == "settled":
-        return 8 if (case.get("van") or {}).get("status") == "done" and case.get("shelf") else 7
+        return 8 if (case.get("van") or {}).get("status") == "done" else 7
     return 9
 
 

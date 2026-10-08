@@ -23,7 +23,6 @@ def main() -> None:
         "distributors": dists,
         "batches": j["batches"],
         "kiranas": [{"id": k["id"], "name": k["name"], "orders": k["orders"]} for k in j["kiranas"]],
-        "shelf": j["shelf"],
         "label": j["label"],
         "hero": {"batch": hero["batch"], "sku": hero["sku"], "plan": hero["plan"], "assess": hero["assess"]},
         "mango": {"batch": mango["batch"], "sku": mango["sku"], "plan": mango["plan"]},

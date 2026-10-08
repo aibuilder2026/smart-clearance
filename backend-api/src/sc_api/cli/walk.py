@@ -346,9 +346,7 @@ async def steps(walk: Walk, w: dict[str, Any], hero: str, mango: str, day_minute
     await walk.call("rakesh", "POST", f"{WS}/cases/{hero}/dispatches", {"kind": "van"})
     c = await walk.case("priya", hero)
     say(f"Rakesh issued the invoice, Anita reviewed the pack, the van ran; the batch is {c['journey']['phase']}")
-    say(
-        f"  actual net ₹{(c['actual'] or {}).get('net', 0):,.0f}; the shelf check and the report follow on journey time"
-    )
+    say(f"  actual net ₹{(c['actual'] or {}).get('net', 0):,.0f}; the report follows on journey time")
     await walk.call(LAKSHMI, "POST", f"{WS}/cases/{mango}/dispatches", {"kind": "van"})
     c = await walk.case("priya", mango)
     left = (c["realised"] or {}).get("godown", 0)

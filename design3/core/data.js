@@ -103,8 +103,6 @@
   const MANGO_FB = (MANGO_PLAN.lines.find(l => l.id === "foodbank") || { units: 0 }).units;
   const RETURN_BY = addDays(hero.bestBefore, -M.RULES.returnWindowDays);
 
-  // the day-7 shelf check: the salesman's count at one Kamptee shop and the pick-up the agent suggests
-  const SHELF = { date: "Friday 9 Oct", counted: KIRANAS.length, shop: "Jai Durga Stores", area: "Kamptee", took: 24, left: 18, pickUp: 12, leave: 6, round: "Thursday's round", returnBy: RETURN_BY };
 
   const WORKSPACE = {
     id: "munchly", name: "Munchly Foods", short: "Munchly", domain: "munchly." + PLATFORM.domain, emailDomain: "munchly.in",
@@ -175,7 +173,7 @@
       money: `Planned against actual as the bid lands: ₹15 → ₹${COUNTER.price.toFixed(2)} a unit on the ExpireSoon lot, ${inr(PLAN.net)} → ${inr(ACTUAL.net)} net.`,
       pain: "Listing and chasing takes days", relief: "Live in minutes, the agent chases" },
     { id: "settle", n: 8, title: "Settle", when: "day 3 – 7 · true-up 29 Oct", who: "Rakesh bhai issues his invoice and dispatches; Anita reviews Munchly's papers", screen: "S5 Paperwork", role: "finance", view: "paperwork",
-      sees: "The document pack: Rakesh's invoice drafted for him to issue, the e-way bill check, Munchly's price-support credit note and the ITC memo. On day 7, the shelf check.",
+      sees: "The document pack: Rakesh's invoice drafted for him to issue, the e-way bill check, Munchly's price-support credit note and the ITC memo.",
       agents: "Paperwork drafts Rakesh's invoice, checks the e-way bill threshold, issues the price-support credit note, writes the ITC memo and the FSSAI checklist.",
       money: `No ITC reversal under s.17(5)(h); no e-way bill under ₹50,000. Price support to Rakesh: ${inr(SUPPORT.total)}, the ${inr(SUPPORT.van + SUPPORT.fee)} van and listing fee included, instead of a ${inr(CLAIM.total)} expiry claim.`,
       pain: "Finance finds out at month end", relief: "Papers ready at the award" },
@@ -197,7 +195,6 @@
     van: { to: "rakesh", at: "Mon 18:00", title: "Van route for Tuesday", body: `Van route for Tuesday updated: ${shops} kiranas, ${KL.units} packets. The ${BUYER.city} lot (${ES.units}) is collected by the buyer's truck once the balance lands.` },
     papers: { to: "anita", at: "Mon 5 Oct", title: "Document pack ready · MF-2409-117", body: "Papers ready for MF-2409-117: Rakesh's invoice draft, e-way bill check, price-support credit note, GST memo. Nothing to chase." },
     invoice: { to: "rakesh", at: "Mon 5 Oct", title: "Invoice draft ready", body: `Invoice draft to ${BUYER.name}, ${BUYER.city}: ${ES.units} × ₹${COUNTER.price.toFixed(2)}, IGST ${INVOICE.gstPct}%, ${inr(INVOICE.total)}. Issue it from Tally. Munchly's price support of ${inr(SUPPORT.total)} is on its way.` },
-    shelf: { to: "rakesh", at: "Fri 9 Oct", title: "Shelf check · one pick-up", body: `${SHELF.shop}, ${SHELF.area} has ${SHELF.left} of ${SHELF.took} scheme packs left. Pick up ${SHELF.pickUp} on ${SHELF.round}; leave ${SHELF.leave}.` },
     report: { to: "vikram", at: "30 Oct", title: "Ledger posted · MF-2409-117", body: `${fmt.kg(PLAN.kg)} diverted from disposal with invoices behind every kilo. The BRSR row is ready.` },
     closed: { to: "priya", at: "30 Oct", title: "Batch closed · 0 cartons destroyed", body: `${inr(ACTUAL.net)} recovered, ${inr(PLAN.itcRetained)} GST credit kept, ${fmt.kg(PLAN.kg)} kept out of landfill.` },
   };
@@ -228,7 +225,6 @@
     { key: "dispatch", stage: "settle", person: "rakesh", at: "Mon 5 Oct", min: 4200, text: `Loaded ${BUYER.name}'s truck for ${BUYER.city} once the balance landed.` },
     { key: "papers", stage: "settle", agent: "Paperwork", icon: "file-check", at: "Mon 5 Oct", min: 20, text: `Drafted Rakesh's invoice ${INVOICE.no} for him to issue, checked the e-way bill rule, issued the price-support credit note CN/0117 and wrote the ITC memo.`, calls: [["docs.invoice", `${inr(INVOICE.total)} · draft`, "ok"], ["eway.check", "below ₹50,000", ""], ["docs.credit_note", inr(SUPPORT.total), "ok"], ["itc.memo", `${inr(PLAN.itcRetained)} retained`, "ok"]] },
     { key: "van", stage: "settle", person: "rakesh", at: "Tue 6 Oct", min: 1440, text: `Ran the Tuesday round: ${shops} drops, ${KL.units} packets.` },
-    { key: "shelf", stage: "settle", agent: "Outreach", icon: "list-checks", at: "Fri 9 Oct", min: 4320, text: `Shelf check: the salesman counted the scheme packs at ${SHELF.counted} shops. ${SHELF.shop}, ${SHELF.area}, has ${SHELF.left} of ${SHELF.took} left: pick up ${SHELF.pickUp} on ${SHELF.round} and leave ${SHELF.leave}.`, calls: [["shelf.check", `${SHELF.counted} shops counted`, "ok"]] },
     { key: "ledger", stage: "report", agent: "Impact", icon: "leaf", at: "30 Oct", min: 30000, text: `The return window closed on ${fmt.day(RETURN_BY)}. Posted the ledger: ${fmt.kg(PLAN.kg)} diverted, ${fmt.kg(PLAN.co2)} CO₂e avoided (indicative), 0 meals. BRSR row written.`, calls: [["ledger.post", inr(ACTUAL.net), "ok"], ["brsr.rows", "Principle 6", "ok"]] },
   ];
   const EV = key => EVENTS.find(e => e.key === key);
@@ -304,7 +300,7 @@
     accounts: [["priya", PEOPLE.priya.email], ["rakesh", PEOPLE.rakesh.phone], ["ganesh", PEOPLE.ganesh.phone], ["shreesai", "+91 98230 60013"]],
   };
 
-  window.SC3_DATA = { DAY0, addDays, PLATFORM, WORKSPACE, CLIENT, SKUS, DISTRIBUTORS, BUYER, PEOPLE, KIRANAS, OFFERED, BATCHES, STAGES, PUSH, CHAT, EVENTS, EV, QUARTER, SETUP, SHELF,
+  window.SC3_DATA = { DAY0, addDays, PLATFORM, WORKSPACE, CLIENT, SKUS, DISTRIBUTORS, BUYER, PEOPLE, KIRANAS, OFFERED, BATCHES, STAGES, PUSH, CHAT, EVENTS, EV, QUARTER, SETUP,
     RISK, PLAN, ASK, COUNTER, AWARD, ACTUAL, SUPPORT, SUPPORT_PLAN, CLAIM, DOCS, INVOICE, MANGO_PLAN, MANGO_FB, RETURN_BY, IMG, JOURNEY, MARKET, EXPLORE,
     batchView: b => { const sku = SKUS[b.sku]; return { ...b, skuObj: sku, dist: DISTRIBUTORS[b.distributor], assess: M.assess(b, sku) }; } };
 })();

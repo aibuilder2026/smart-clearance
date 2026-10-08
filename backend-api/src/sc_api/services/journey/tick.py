@@ -3,8 +3,8 @@
 
 1. the daily runs, on journey time: the day's synthetic DMS exports and the Data agent at its time (08:30), then the
    Watcher at its own (09:00), once setup is confirmed;
-2. the timers that are due: an offer's window closing (done here), the day-7 shelf check and the report (sent to the
-   agents, which read BigQuery);
+2. the timers that are due: an offer's window and an unsold lot closing (done here), and the report (sent to Impact,
+   which reads BigQuery);
 3. a journey stalled on an agent for ten minutes (a message lost, an agent down) gets its event again;
 4. then the outbox goes out.
 
@@ -89,7 +89,7 @@ async def _client(ctx: Ctx, client_id: str) -> dict[str, Any]:
     )
     for t in timers:
         case = await ctx.session.get(m.Case, t.case_id) if t.case_id else None
-        if case is None or case.status != "open":
+        if case is None or case.status != "open" or t.kind not in KINDS:
             t.fired_wall = wall
             continue
         if ready(t, case):
@@ -146,20 +146,20 @@ async def run_daily(
     await ev.publish(ctx, J.Event(J.STEP, payload, c.id))
 
 
+# the timers the journey sets; one of a kind since retired (the day-7 shelf check, SC-93) is put away, not fired
+KINDS = ("offer.close", "listing.close", "report.due")
+
+
 def ready(t: m.Timer, case: m.Case) -> bool:
-    """whether a timer can fire: the offer closes whenever it is due; the shelf check waits for the papers and the van
-    round, and the report for the shelf check too"""
-    van_done = (case.van or {}).get("status") == "done"
-    if t.kind == "shelf.due":
-        return case.phase == "settled" and van_done
+    """whether a timer can fire: the offer closes whenever it is due; the report waits for the papers and the van
+    round"""
     if t.kind == "report.due":
-        return bool(case.phase == "settled" and case.shelf and van_done)
+        return case.phase == "settled" and (case.van or {}).get("status") == "done"
     return True
 
 
 async def fire_timer(ctx: Ctx, c: m.Client, t: m.Timer, case: m.Case, doc: dict[str, Any], today: date) -> None:
-    """a timer that is ready, fired: the offer window and an unsold lot close here; the shelf check and the report go to
-    the agents"""
+    """a timer that is ready, fired: the offer window and an unsold lot close here; the report goes to the agents"""
     wall: datetime = ctx.clock.now()
     t.fired_wall = wall
     if t.kind == "offer.close":
@@ -171,12 +171,6 @@ async def fire_timer(ctx: Ctx, c: m.Client, t: m.Timer, case: m.Case, doc: dict[
             await steps.close_listing(ctx, c.id, case.batch_ref, steps.Run("lister", event_key=f"timer:{t.id}"))
         return
     payload: dict[str, Any] = {"type": J.TIMER, "kind": t.kind, "client": c.id, "ref": case.batch_ref}
-    if t.kind == "shelf.due":
-        files = []
-        if doc.get("synthetic") and ctx.cloud is not None and ctx.settings.exports_bucket:
-            story = (doc.get("story") or {}).get("shelf") if case.batch_ref == doc.get("heroRef") else None
-            files = [await dms.write_shelf(ctx, c.id, case, today, story)]
-        payload["files"] = files
     await ev.publish(ctx, J.Event(J.STEP, payload, f"{c.id}:{case.batch_ref}"))
 
 

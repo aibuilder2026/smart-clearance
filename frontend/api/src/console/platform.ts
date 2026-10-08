@@ -624,7 +624,6 @@ const DAILY = [
 const TIMER_WORDS: Record<string, string> = {
 	'offer.close': 'closed the offer window',
 	'listing.close': 'closed the unsold lot',
-	'shelf.due': 'ran the day-7 shelf check',
 	'report.due': 'wrote the report'
 };
 const DAY_MS = 864e5;

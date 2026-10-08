@@ -584,7 +584,6 @@ class Case(Base):
     docs: Mapped[list[Any] | None] = mapped_column(JSONB)
     invoice_issued_at: Mapped[datetime | None] = mapped_column(TS)
     reviewed: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
-    shelf: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     ledger: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     donation: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     # the plan's staff sale at the distributor's godown, once approved (SC-86): open, then recorded with what sold
@@ -649,7 +648,7 @@ class CasePhoto(Base):
 
 
 class Timer(Base):
-    """something due on journey time: an offer closing, the day-7 shelf check, the report"""
+    """something due on journey time: an offer closing, an unsold lot closing, the report"""
 
     __tablename__ = "timers"
     __table_args__ = (Index("ix_timers_due", "due_wall", postgresql_where=sql("fired_wall IS NULL")),)

@@ -62,7 +62,6 @@ async def build(ctx: Ctx, client_id: str = "munchly") -> dict[str, Any]:
         "quarter": j["quarter"],
         "synthetic": True,
         "heroRef": next(b["id"] for b in j["batches"] if b.get("hero")),
-        "story": {"shelf": j["shelf"]},
     }
     for i in j["integrations"]:
         row = await ctx.session.get(m.ClientIntegration, (client_id, i["id"]))

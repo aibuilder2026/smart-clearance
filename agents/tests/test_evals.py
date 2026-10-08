@@ -21,7 +21,7 @@ def test_every_set_loads_with_its_splits(name):
 
 def test_the_sets_are_the_sizes_planned():
     sizes = {name: len(harness.load(name)) for name in SETS}
-    assert sizes["vision"] >= 60 and sizes["data"] == 25 and sizes["negotiator"] == 40
+    assert sizes["vision"] >= 60 and sizes["data"] == 19 and sizes["negotiator"] == 40
     assert sizes["valuer"] == sizes["router"] == 20 and sizes["lister"] + sizes["outreach"] == 30
     vision = harness.load("vision")
     assert {c["expect"] for c in vision} == {"exact", "no-date", "no-batch", "unreadable"}

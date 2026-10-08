@@ -2,10 +2,10 @@
 falls due, fired at once on a staff member's word; and its journey started again, at a day length chosen then.
 
 The schedule is the tick's own (tick.py): the Data agent's daily load and the Watcher's daily check on journey time,
-and the timers an offer leaves (its window closing, the day-7 shelf check, the report). Firing one runs what the tick
+and the timers an offer leaves (its window closing, an unsold lot closing, the report). Firing one runs what the tick
 would run, through the same functions, so a demo shows the real thing; the schedule does not move (a daily run fired
-early is that day's run). A timer that is not ready yet (the shelf check before the van round, the report before the
-papers and the shelf check) says why and is refused. Every fire and the reset write an audit line in the staff
+early is that day's run). A timer that is not ready yet (the report before the papers and the van round) says why and is
+refused. Every fire and the reset write an audit line in the staff
 member's name. A client whose workspace is not live has no journey: its two daily runs can still be run now, as before
 (agents.run_now).
 """
@@ -32,12 +32,10 @@ NAMES = {"data": "Data agent", "watcher": "Watcher"}
 TIMERS = {
     "offer.close": ("outreach", "closed the offer window"),
     "listing.close": ("lister", "closed the unsold lot"),
-    "shelf.due": ("outreach", "ran the day-7 shelf check"),
     "report.due": ("impact", "wrote the report"),
 }
 BLOCKED = {
-    "shelf.due": "After the van round: the papers come first",
-    "report.due": "After the papers and the shelf check",
+    "report.due": "After the papers and the van round",
 }
 
 

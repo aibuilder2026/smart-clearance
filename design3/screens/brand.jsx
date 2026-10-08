@@ -290,23 +290,6 @@
       {mine && <Avatar person={D.PEOPLE.agrawal} size="sm" />}
     </motion.div>; })}{typing && <div className="row" style={{ gap: 8 }}><K.Mark size={28} /><div style={{ padding: "12px 14px", borderRadius: 18, background: "var(--fill-2)" }}><span className="typing"><i /><i /><i /></span></div></div>}</div>;
   }
-  // day 7: the salesman's shelf counts, and the one pick-up the agent suggests
-  function ShelfCheck({ shelf, compact }) {
-    const S7 = D.SHELF;
-    return <Card className="stack snug">
-      <div className="card-head"><span className="row tight"><span className="icontile" style={{ borderRadius: 9 }}><Icon name="list-checks" size={17} stroke={2} /></span><span className="card-title">Shelf check · day 7</span></span><Badge tone={shelf ? "green" : undefined} icon={shelf ? "check" : "calendar"}>{shelf ? S7.date : `due ${S7.date}`}</Badge></div>
-      {shelf ? <>
-        <span className="t-footnote muted">Rakesh's salesman counted the scheme packs at {S7.counted} shops on his beat. {S7.counted - 1} are selling in time; one is slow.</span>
-        <div className="stack tight" style={{ padding: "12px 14px", borderRadius: 14, background: "var(--fill)" }}>
-          <div className="row between t-subhead"><b>{S7.shop}, {S7.area}</b><span className="tnum strong">{S7.left} of {S7.took} left</span></div>
-          <span className="t-footnote muted">It took {S7.took} a week ago, so it is selling about one a day.</span>
-          <div className="row between t-subhead"><span>Pick up on {S7.round}</span><span className="tnum strong">{S7.pickUp} packs</span></div>
-          <div className="row between t-subhead"><span>Leave the ones it can sell in time</span><span className="tnum strong">{S7.leave} packs</span></div>
-        </div>
-        {!compact && <span className="t-caption subtle">Returns go to the Nagpur staff sale or to Feeding India, and are accepted until {fmt.day(S7.returnBy)}.</span>}
-      </> : <span className="t-footnote muted">On day 7 the salesman counts the scheme packs on each shelf. Where a shop is selling too slowly, the agent suggests bringing packs back on the next round while they still have {M.RULES.returnWindowDays} or more days on them.</span>}
-    </Card>;
-  }
   // the staff sale on Execution (SC-87, option A): the distributor runs it at the godown and records what sold, once; no
   // agent acts here. Before it opens, the plan's line
   function StaffOps({ staff, line, dist }) {
@@ -380,7 +363,6 @@
           </Card>
           {hasLine("staff") && <StaffOps staff={h.staff} line={D.PLAN.lines.find(l => l.id === "staff")} dist={D.DISTRIBUTORS[D.BATCHES.find(b => b.hero).distributor]} />}
           {h.realised && h.realised.godown > 0 && ["dispatched", "settled", "cleared"].includes(h.phase) && <GodownLeft realised={h.realised} plan={D.PLAN} actual={h.realisedNet} dist={D.DISTRIBUTORS[D.BATCHES.find(b => b.hero).distributor]} />}
-          {(h.van.status === "done" || h.shelf) && <ShelfCheck shelf={h.shelf} />}
         </div>}
         side={<><SectionTitle>Agent timeline</SectionTitle><Card><AgentFeed events={s.feed.filter(e => ["approve", "execute", "settle", "report"].includes(e.stage))} people={D.PEOPLE} live={hm.agentLive ? s.feed.filter(e => ["approve", "execute", "settle", "report"].includes(e.stage)).length - 1 : -1} /></Card></>} />}
       <Sheet open={sheet} onClose={() => setSheet(false)} title="ExpireSoon · as buyers see it">{window.SC3_SCREENS.ListingView ? React.createElement(window.SC3_SCREENS.ListingView, { readOnly: true }) : null}</Sheet>
@@ -423,5 +405,5 @@
     </div>}</Sheet>;
   }
 
-  Object.assign(window.SC3_SCREENS, { Setup, CommandCenter, RouteRoom, Execution, Batches, ApproveSheet, LabelPhoto, LabelShot, Chat, ShelfCheck, permissionOf });
+  Object.assign(window.SC3_SCREENS, { Setup, CommandCenter, RouteRoom, Execution, Batches, ApproveSheet, LabelPhoto, LabelShot, Chat, permissionOf });
 })();

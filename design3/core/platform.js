@@ -367,16 +367,15 @@
 
   /* ---------- a client's journey, driven from the console (SC-79) ---------- */
   // What backend-api answers for a client whose workspace is live (GET …/journey): the Data agent's daily load and the
-  // Watcher's daily check, and the timers an offer leaves (its window closing, the day-7 shelf check, the report), each
+  // Watcher's daily check, and the timers an offer leaves (its window closing, the report), each
   // with when it falls due in journey time and the wall time it fires. The prototype holds Munchly's journey still at
   // day 1, Sat 3 Oct 10:15: firing a daily run makes it that day's, firing a timer takes it away, and a reset puts the
   // journey back at day 0, 08:00, with nothing pending but the day's two runs.
   const DAILY = [{ id: "data", name: "Data agent", time: "08:30", what: "daily load" }, { id: "watcher", name: "Watcher", time: "09:00", what: "daily check" }];
-  const TIMER_WORDS = { "offer.close": "closed the offer window", "listing.close": "closed the unsold lot", "shelf.due": "ran the day-7 shelf check", "report.due": "wrote the report" };
+  const TIMER_WORDS = { "offer.close": "closed the offer window", "listing.close": "closed the unsold lot", "report.due": "wrote the report" };
   const JOURNEY_TIMERS = [
     { id: "timer-1", agent: "outreach", key: "offer.close", ref: "MF-2409-117", due: "2026-10-04T12:40:00+05:30" },
-    { id: "timer-2", agent: "outreach", key: "shelf.due", ref: "MF-2409-117", due: "2026-10-09T12:40:00+05:30", blocked: "After the van round: the papers come first" },
-    { id: "timer-3", agent: "impact", key: "report.due", ref: "MF-2409-117", due: "2026-10-30T10:00:00+05:30", blocked: "After the papers and the shelf check" },
+    { id: "timer-3", agent: "impact", key: "report.due", ref: "MF-2409-117", due: "2026-10-30T10:00:00+05:30", blocked: "After the papers and the van round" },
   ];
   const seedJourney = () => ({ day0: D.DAY0, now: D.addDays(D.DAY0, 1) + "T10:15:00+05:30", setupConfirmed: true, daily: { data: D.addDays(D.DAY0, 1), watcher: D.addDays(D.DAY0, 1) }, timers: JOURNEY_TIMERS.map(t => Object.assign({}, t)) });
   const ms = iso => Date.parse(iso);

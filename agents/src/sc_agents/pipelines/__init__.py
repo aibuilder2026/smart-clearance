@@ -14,7 +14,6 @@ in the console does nothing; the journey waits, and backend-api's tick sends the
 | `offer.received {message}` | the Negotiator answers the question |
 | `deal.closed` | the awarded price into BigQuery's channel_prices |
 | `journey.step settle` | Paperwork |
-| `journey.step timer shelf.due` | Outreach's shelf check |
 | `journey.step timer report.due` | Impact |
 | `journey.step agent.due data`, `export.uploaded` | the Data agent |
 | `journey.step agent.due watcher` | the Watcher |
@@ -78,8 +77,6 @@ def build(rc: RunCtx) -> BaseAgent | None:
         return _seq("settle", settings, paperwork.settle(rc))
     if kind == "timer":
         timer = m.payload.get("kind")
-        if timer == "shelf.due":
-            return _seq("shelf_check", settings, outreach.shelf_check(rc))
         if timer == "report.due":
             return _seq("report", settings, impact.report(rc))
         return None

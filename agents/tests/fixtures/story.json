@@ -477,18 +477,6 @@
    "orders": 0
   }
  ],
- "shelf": {
-  "date": "Friday 9 Oct",
-  "counted": 31,
-  "shop": "Jai Durga Stores",
-  "area": "Kamptee",
-  "took": 24,
-  "left": 18,
-  "pickUp": 12,
-  "leave": 6,
-  "round": "Thursday's round",
-  "returnBy": "2026-10-29"
- },
  "label": {
   "batch": "MF-2409-117",
   "mfg": "2026-05-18",

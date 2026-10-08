@@ -23,7 +23,6 @@ import type {
 	PlanLine,
 	Push,
 	Quarter,
-	Shelf,
 	Sku,
 	Stage,
 	State,
@@ -48,12 +47,11 @@ import type {
 	WsPlanLine,
 	WsSplitLine,
 	WsQuarter,
-	WsShelf,
 	WsSku,
 	WsSupport,
 	WsWorkspace
 } from '@smart-clearance/api/workspace';
-import { dateOf, dayLabel, dayMonth, dayN, dayTime, hhmm, hourWord, longLabel, minutes, weekday, when } from './when';
+import { dateOf, dayLabel, dayMonth, dayN, dayTime, hhmm, hourWord, minutes, weekday, when } from './when';
 
 /** the store's version the screens' State follows (core's store.svelte.ts) */
 export const STATE_VERSION = 5;
@@ -309,23 +307,6 @@ function docOf(d: WsDoc): Doc {
 	};
 }
 
-function shelfOf(s: WsShelf | null, returnBy: string): Shelf {
-	return s
-		? {
-				date: longLabel(s.at),
-				counted: s.counted,
-				shop: s.shop,
-				area: s.area,
-				took: s.took,
-				left: s.left,
-				pickUp: s.pickUp,
-				leave: s.leave,
-				round: s.round,
-				returnBy: s.returnBy
-			}
-		: { date: '', counted: 0, shop: '', area: '', took: 0, left: 0, pickUp: 0, leave: 0, round: '', returnBy };
-}
-
 /** the pushes of a case by moment; a moment not reached yet, or not the member's to see, reads as an empty push */
 function pushesOf(detail: CaseDetail, today: string): Record<string, Push> {
 	const sent = Object.fromEntries(
@@ -422,7 +403,6 @@ export function caseOf(
 			status: 'drafted',
 			amount: 0
 		},
-		shelf: shelfOf(detail.shelf, returnBy),
 		realised: detail.realised,
 		returnBy,
 		push: pushesOf(detail, today),
@@ -478,7 +458,6 @@ const EMPTY_HERO: Hero = {
 	truck: { status: 'idle' },
 	docs: null,
 	invoiceIssued: false,
-	shelf: null,
 	posted: false,
 	reviewed: false,
 	staff: null
@@ -519,7 +498,6 @@ function heroOf(detail: CaseDetail | null, today: string): Hero {
 		truck: { status: j.truck.status, at: opt(at(j.truck.at) || null) },
 		docs: j.docs,
 		invoiceIssued: j.invoiceIssued,
-		shelf: j.shelf ? { ...shelfOf(j.shelf, detail.returnBy ?? ''), at: at(j.shelf.at) } : null,
 		posted: j.posted,
 		reviewed: j.reviewed,
 		staff: j.staff

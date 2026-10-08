@@ -51,11 +51,6 @@ export const dayMonth = (iso: string) => {
 	const p = parts(iso);
 	return `${p.day} ${p.month}`;
 };
-/** Friday 9 Oct */
-export const longLabel = (iso: string) => {
-	const p = parts(iso);
-	return `${p.long} ${p.day} ${p.month}`;
-};
 /** Tuesday */
 export const weekday = (iso: string) => parts(iso).long;
 /** Thu 16:52 */

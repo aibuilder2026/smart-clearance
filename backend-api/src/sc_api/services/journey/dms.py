@@ -4,7 +4,6 @@ CSV files in the exports bucket, for the Data agent to map and load into BigQuer
 - stock-<day>.csv: each open batch at its distributor's godown, in a Bizom-style layout (the columns the story's Data
   agent maps: distributor_name, item_code, batch_no, mfg_date, bb_date, closing_qty, location, pin);
 - sales-<day>.csv, and sales-backfill.csv for the 90 days before the journey: secondary sales by pincode and day;
-- shelf-<day>.csv: the salesman's counts of the scheme packs left at each shop, once a van round has run.
 
 The sales are calibrated so the Watcher's projection gives each batch its own rate (12 a day for MF-2409-117): a
 distributor's daily sales of an SKU add up to the batch's `sell_per_day`, split across the shops' pincodes by their
@@ -25,7 +24,6 @@ from sc_api.services.journey import world
 
 STOCK = ["distributor_name", "item_code", "batch_no", "mfg_date", "bb_date", "closing_qty", "location", "pin"]
 SALES = ["distributor_id", "pin", "item_code", "sale_date", "qty", "value_inr"]
-SHELF = ["distributor_id", "outlet_id", "item_code", "batch_no", "counted_on", "qty_left"]
 
 
 def _csv(header: list[str], rows: list[list[Any]]) -> bytes:
@@ -118,23 +116,6 @@ async def stock_rows(ctx: Ctx, client_id: str) -> list[list[Any]]:
     return rows
 
 
-async def shelf_rows(ctx: Ctx, client_id: str, case: m.Case, day: date, story: dict[str, Any] | None) -> list[list]:
-    """each scheme shop's packs left a week on: most have sold three in four; the story's shop has its own count"""
-    orders = (await ctx.session.execute(select(m.CaseOrder).where(m.CaseOrder.case_id == case.id))).scalars().all()
-    x = await ctx.session.get(m.Sku, (client_id, case.sku_id))
-    shops = {k.id: k for k in await world.kiranas(ctx, client_id, case.distributor_id)}
-    rows = []
-    for o in sorted(orders, key=lambda o: o.kirana_id):
-        k = shops.get(o.kirana_id)
-        left = o.units - math.ceil(o.units * 0.75)
-        if story and k is not None and k.name == story.get("shop") and story.get("took") == o.units:
-            left = int(story["left"])
-        rows.append(
-            [case.distributor_id, o.kirana_id, x.code if x else case.sku_id, case.batch_ref, day.isoformat(), left]
-        )
-    return rows
-
-
 async def write_day(ctx: Ctx, client_id: str, day: date, *, start: date) -> list[str]:
     """the day's stock and sales exports in the exports bucket; their gs:// names"""
     assert ctx.cloud is not None and ctx.settings.exports_bucket
@@ -157,13 +138,4 @@ async def write_backfill(ctx: Ctx, client_id: str, day0: date, days: int = 90) -
     rows = await sales_rows(ctx, client_id, [start + timedelta(days=i) for i in range(days)], start)
     name = f"{client_id}/backfill/sales-backfill-{day0.isoformat()}.csv"
     await ctx.cloud.storage.write(ctx.settings.exports_bucket, name, _csv(SALES, rows), "text/csv")
-    return f"gs://{ctx.settings.exports_bucket}/{name}"
-
-
-async def write_shelf(ctx: Ctx, client_id: str, case: m.Case, day: date, story: dict[str, Any] | None) -> str:
-    assert ctx.cloud is not None and ctx.settings.exports_bucket
-    # one file a case: a journey started again counts its own shelves, never an earlier one's (SC-88)
-    name = f"{client_id}/{day.isoformat()}/shelf-{case.batch_ref}-{case.id}-{day.isoformat()}.csv"
-    rows = await shelf_rows(ctx, client_id, case, day, story)
-    await ctx.cloud.storage.write(ctx.settings.exports_bucket, name, _csv(SHELF, rows), "text/csv")
     return f"gs://{ctx.settings.exports_bucket}/{name}"

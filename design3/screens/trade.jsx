@@ -262,8 +262,6 @@
               <div className="row top" style={{ gap: 10, justifyContent: "flex-end" }}><div className="t-subhead" style={{ padding: "9px 12px", borderRadius: 16, borderTopRightRadius: 6, background: "var(--primary)", color: "var(--primary-fg)" }}>{D.JOURNEY.van.reply}<div className="t-caption" style={{ opacity: 0.9 }}>Rakesh bhai · {D.JOURNEY.van.replyAt}</div></div><Avatar person={D.PEOPLE.rakesh} size="sm" /></div>
             </div>
           </Card>
-          <div data-anchor="shelf" />
-          {(h.van.status === "done" || h.shelf) && <S.ShelfCheck shelf={h.shelf} />}
         </>}
         side={<>
           <div data-anchor="lot" />

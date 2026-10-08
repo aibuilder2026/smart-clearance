@@ -7,8 +7,8 @@ const SPLASH = 'sc3-demo-splash';
  *  Agents' delays): stage 2 the Watcher, 3 Vision's request, 4 the Valuer, 5 the Router, 7 the Lister, Outreach and
  *  Donation one after another, 9 Impact. Used where the notes, and so the beats, are not on screen. */
 const AGENTS_MS = [0, 2400, 1800, 1500, 1600, 0, 4200, 0, 3500];
-/** the longest an agent waits before its next step once a person has moved (Vision reading the photo, Paperwork, the
- *  shelf check), and a margin */
+/** the longest an agent waits before its next step once a person has moved (Vision reading the photo, Paperwork), and
+ *  a margin */
 const STEP_MS = 3000;
 
 /** below 768 px the demo is the real-phone mode: the person in focus full screen, under a slim bar */

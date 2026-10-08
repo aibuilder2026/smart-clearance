@@ -1,10 +1,10 @@
 """BigQuery: the history the agents analyse, one dataset per environment (infra/prod analytics.tf; the schemas are in
 infra/prod/bigquery/). Postgres stays the record; nothing here is personal.
 
-- The Data agent loads the DMS exports with load jobs (free): `stock_snapshots`, `secondary_sales`, `shelf_counts`.
+- The Data agent loads the DMS exports with load jobs (free): `stock_snapshots` and `secondary_sales`.
   A file already loaded (its `source_file` is in the table) is not loaded again, and the queries count a day's row once
   however often it was loaded.
-- The Watcher reads sell-through, the Valuer recent prices, Outreach the day-7 shelf counts.
+- The Watcher reads sell-through, the Valuer recent prices.
 - `channel_prices` gains a row for each awarded price (deal.closed) and each scheme sent; `impact_ledger` a row per
   exit of a cleared batch; `agent_runs` a row per agent run. These are streaming inserts with row ids, so a retried
   insert is not doubled.
@@ -16,7 +16,7 @@ from typing import Any, Protocol
 
 from sc_agents.settings import Settings
 
-TABLES = ("secondary_sales", "stock_snapshots", "shelf_counts", "channel_prices", "impact_ledger", "agent_runs")
+TABLES = ("secondary_sales", "stock_snapshots", "channel_prices", "impact_ledger", "agent_runs")
 
 
 class Warehouse(Protocol):
@@ -45,10 +45,6 @@ class Warehouse(Protocol):
 
     async def sales_days(self, client: str) -> int:
         """how many days of secondary sales are loaded"""
-        ...
-
-    async def shelf_counts(self, client: str, ref: str) -> list[dict[str, Any]]:
-        """the latest count of each kirana's scheme packs left: [{kirana, left}]"""
         ...
 
     async def files_loaded(self, client: str) -> set[str]:
@@ -180,21 +176,9 @@ class BigQueryWarehouse:
         )
         return int(rows[0]["n"]) if rows else 0
 
-    async def shelf_counts(self, client: str, ref: str) -> list[dict[str, Any]]:
-        rows = await self.query(
-            f"""
-            SELECT kirana_id, units_left FROM {self.t("shelf_counts")}
-            WHERE client_id = @client AND batch_ref = @ref
-            QUALIFY ROW_NUMBER() OVER (PARTITION BY kirana_id ORDER BY counted_on DESC, loaded_at DESC) = 1
-            ORDER BY kirana_id""",
-            client=client,
-            ref=ref,
-        )
-        return [{"kirana": r["kirana_id"], "left": int(r["units_left"])} for r in rows]
-
     async def files_loaded(self, client: str) -> set[str]:
         parts = " UNION DISTINCT ".join(
             f"SELECT source_file FROM {self.t(t)} WHERE client_id = @client AND source_file IS NOT NULL"
-            for t in ("stock_snapshots", "secondary_sales", "shelf_counts")
+            for t in ("stock_snapshots", "secondary_sales")
         )
         return {r["source_file"] for r in await self.query(parts, client=client)}

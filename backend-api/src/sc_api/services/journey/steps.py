@@ -112,7 +112,6 @@ def _state(case: m.Case) -> dict[str, Any]:
         "award": case.award,
         "offer": case.offer,
         "van": case.van,
-        "shelf": case.shelf,
         "listing": case.listing,
         "donation": case.donation,
         "truck": case.truck,
@@ -865,7 +864,6 @@ async def offer(ctx: Ctx, client_id: str, ref: str, words: dict[str, str] | None
     }
     s.case.phase = "executing"
     await ev.timer(ctx, s.c, "offer.close", closes, case=s.case)
-    await ev.timer(ctx, s.c, "shelf.due", at + timedelta(days=7), case=s.case)
     e = copy.outreach_event(
         offered=len(shops),
         city=s.dist.city,
@@ -1593,12 +1591,12 @@ async def documents(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> None
     s.case.docs = money.jsonable([{**d, "pdf": None, "date": dated} for d in docs])
     s.case.phase = "settled"
     orders = await _orders(ctx, s)
-    if not orders:  # nothing went to the kiranas: no van round, no shelf to check; the report follows the window
+    if not orders:  # nothing went to the kiranas: no van round
         s.case.van = {"status": "done", "done": 0, "at": ev.now(ctx, s.c).isoformat()}
-        s.case.shelf = {"skipped": True}
-        return_by = s.batch.best_before - timedelta(days=s.c.return_window_days)
-        report_at = datetime(return_by.year, return_by.month, return_by.day, 10, tzinfo=IST) + timedelta(days=1)
-        await ev.timer(ctx, s.c, "report.due", max(report_at, ev.now(ctx, s.c)), case=s.case)
+    # the report follows the return window, once the van round has run
+    return_by = s.batch.best_before - timedelta(days=s.c.return_window_days)
+    report_at = datetime(return_by.year, return_by.month, return_by.day, 10, tzinfo=IST) + timedelta(days=1)
+    await ev.timer(ctx, s.c, "report.due", max(report_at, ev.now(ctx, s.c)), case=s.case)
     invoice = next((d for d in docs if d["id"] == "invoice"), None)
     credit = next((d for d in docs if d["id"] == "support"), None)
     dist_people = await _people(ctx, s.c, org=s.dist.id)
@@ -1716,71 +1714,12 @@ async def review(ctx: Ctx, client_id: str, ref: str) -> None:
     await _save(ctx, s)
 
 
-async def shelf_check(ctx: Ctx, client_id: str, ref: str, counts: list[dict[str, Any]] | None, run: Run | None) -> None:
-    """the day-7 shelf check: the salesman's counts (the Data agent's shelf_counts), and one pick-up for the shop with
-    the most scheme packs left, leaving it two weeks of its own sales"""
-    s = await scene(ctx, client_id, ref)
-    await once(ctx, run)
-    if s.case.shelf or (s.case.van or {}).get("status") != "done":
-        raise Noop()
-    orders = (await ctx.session.execute(select(m.CaseOrder).where(m.CaseOrder.case_id == s.case.id))).scalars().all()
-    took = {o.kirana_id: o.units for o in orders}
-    shops = {k.id: k for k in await world.kiranas(ctx, client_id, s.dist.id)}
-    left = {c["kirana"]: int(c["left"]) for c in counts or [] if c.get("kirana") in took}
-    pick = max(left, key=lambda k: (left[k] - shops[k].sales_14d if k in shops else 0, left[k]), default=None)
-    at = ev.now(ctx, s.c)
-    return_by = (s.batch.best_before - timedelta(days=s.c.return_window_days)).isoformat()
-    if pick is None:
-        shelf = {
-            "date": at.isoformat(),
-            "counted": len(took),
-            "shop": "",
-            "area": "",
-            "took": 0,
-            "left": 0,
-            "pickUp": 0,
-            "leave": 0,
-            "round": "",
-            "returnBy": return_by,
-            "at": at.isoformat(),
-        }
-    else:
-        k = shops[pick]
-        leave = min(left[pick], k.sales_14d)
-        round_day = at + timedelta(days=6)
-        shelf = {
-            "date": at.isoformat(),
-            "counted": len(took),
-            "shop": k.name,
-            "area": k.area,
-            "took": took[pick],
-            "left": left[pick],
-            "pickUp": left[pick] - leave,
-            "leave": leave,
-            "round": f"{copy.weekday(round_day)}'s round",
-            "returnBy": return_by,
-            "at": at.isoformat(),
-        }
-    s.case.shelf = shelf
-    if pick is not None:
-        e = copy.shelf_event(shelf)
-        await ev.feed(
-            ctx, s.c, s.case, "shelf", "settle", e["text"], calls=e["calls"], agent="Outreach", icon="list-checks"
-        )
-        for p in await _people(ctx, s.c, org=s.dist.id):
-            await ev.notify(ctx, s.c, p.ref, "shelf", link="van", case=s.case, **copy.push_shelf(shelf))
-    report_at = datetime.fromisoformat(return_by).replace(tzinfo=IST) + timedelta(days=1, hours=10)
-    await ev.timer(ctx, s.c, "report.due", max(report_at, at), case=s.case)
-    await _run(ctx, s, client_id, run, f"checked {len(took)} shelves for {ref}")
-    await _save(ctx, s)
-
-
 async def report(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> dict[str, Any]:
     """Impact posts the ledger once the return window has closed: the batch is cleared, and the console's batch closes
     with what it recovered. Returns the ledger, which the agent appends to BigQuery"""
     s = await scene(ctx, client_id, ref)
     await once(ctx, run)
-    if s.case.phase != "settled" or not s.case.shelf or (s.case.van or {}).get("status") != "done":
+    if s.case.phase != "settled" or (s.case.van or {}).get("status") != "done":
         raise Noop()
     plan_ = await realised(ctx, s)  # what the lines came to; what no channel took stays at the godown
     award = s.case.award

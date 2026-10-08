@@ -419,15 +419,6 @@ export const STAGES: Stage[] = [
 				done: (s) => s.hero.van.status === 'done',
 				run: () => act('vanRound'),
 				hint: 'Tap Start the round'
-			},
-			{
-				text: `Day 7: the shelf counts come in; one ${D.shelf.area} shop gets a pick-up on ${D.shelf.round}`,
-				agent: 'Outreach',
-				focus: 'phone',
-				date: 'Friday 9 October',
-				time: '17:00',
-				done: (s) => !!s.hero.shelf,
-				phone: { anchor: 'shelf' }
 			}
 		]
 	},

@@ -293,26 +293,6 @@ async def test_paperwork_redelivered_renders_only_what_is_missing(run, backend):
     assert outcome == "done"
 
 
-async def test_the_shelf_check_loads_the_counts_and_reports_them(run, backend, store, warehouse):
-    rows = ["distributor_id,outlet_id,item_code,batch_no,counted_on,qty_left"]
-    for k in STORY["kiranas"]:
-        if k["orders"]:
-            left = 18 if k["name"] == "Jai Durga Stores" else k["orders"] // 4
-            rows.append(f"rakesh,{k['id']},MF-MC-150,{HERO},2026-10-09,{left}")
-    name = f"munchly/2026-10-09/shelf-{HERO}-2026-10-09.csv"
-    store.objects[("exports-test", name)] = ("\n".join(rows) + "\n").encode()
-    files = [f"gs://exports-test/{name}"]
-    await run(message(STEP, {"type": "timer", "kind": "shelf.due", "ref": HERO, "files": files}, event_id="ev_sh"))
-    body = backend.report("shelf-check")
-    run_of(body, "outreach", "ev_sh:outreach")
-    counted = {c["kirana"]: c["left"] for c in body["counts"]}
-    assert len(counted) == len(rows) - 1 and counted["k1"] == 18
-    assert all(r["sku_id"] == "chips" for r in warehouse.tables["shelf_counts"])
-    # loaded once, however often the event comes
-    await run(message(STEP, {"type": "timer", "kind": "shelf.due", "ref": HERO, "files": files}, event_id="ev_sh2"))
-    assert len(warehouse.tables["shelf_counts"]) == len(rows) - 1
-
-
 async def test_impact_posts_the_report_and_appends_the_ledger(run, backend, warehouse):
     plan = STORY["hero"]["plan"]
     ledger = {
