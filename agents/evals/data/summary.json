@@ -1,6 +1,6 @@
 {
- "evalRun": "eval-20261007-2236-52ed27",
- "at": "2026-10-07T22:43:08.656443+00:00",
+ "evalRun": "eval-20261007-2332-d87590",
+ "at": "2026-10-07T23:34:44.544239+00:00",
  "set": "data",
  "split": "all",
  "models": {
@@ -8,319 +8,32 @@
   "flash": "gemini-3.8-flash"
  },
  "prompts": {
-  "data_map": "fbf09793eac4"
+  "data_map": "ebfb0fe2bd56"
  },
  "cases": 25,
- "passed": 0,
+ "passed": 25,
  "fallbacks": 0,
  "tokens": [
-  25343,
-  916
+  31643,
+  3129
  ],
  "marks": {
   "requiredMapped": {
-   "value": 0.0,
+   "value": 1.0,
    "target": 1.0,
-   "met": false
+   "met": true
   },
   "unknownFlagged": {
-   "value": 0.6,
+   "value": 1,
    "target": 1.0,
-   "met": false
+   "met": true
   },
   "casesPassed": {
-   "value": 0,
+   "value": 1,
    "target": 1.0,
-   "met": false
+   "met": true
   }
  },
- "met": false,
- "failures": [
-  {
-   "id": "data-tally-stock",
-   "problems": [
-    "distributor → None, not 'Party Name'",
-    "item_code → None, not 'Item Code'",
-    "batch_no → None, not 'Batch/Lot No.'",
-    "mfg_date → None, not 'Mfg. Dt.'",
-    "bb_date → None, not 'Expiry Dt.'",
-    "closing_qty → None, not 'Closing Qty'",
-    "location → None, not 'Godown'",
-    "not flagged: Stock Item, Rate, Value"
-   ]
-  },
-  {
-   "id": "data-busy-stock",
-   "problems": [
-    "distributor → None, not 'Distributor'",
-    "item_code → None, not 'Item Code'",
-    "batch_no → None, not 'Batch No'",
-    "mfg_date → None, not 'Mfg Date'",
-    "bb_date → None, not 'Exp Date'",
-    "closing_qty → None, not 'Cl. Stock'",
-    "location → None, not 'Location'",
-    "pin → None, not 'Pin Code'",
-    "not flagged: Item Name, Unit"
-   ]
-  },
-  {
-   "id": "data-marg-stock",
-   "problems": [
-    "distributor → None, not 'DIST_CODE'",
-    "item_code → None, not 'PRODUCT_CODE'",
-    "batch_no → None, not 'BATCH'",
-    "mfg_date → None, not 'MFD'",
-    "bb_date → None, not 'EXPIRY'",
-    "closing_qty → None, not 'QTY_IN_PCS'",
-    "location → None, not 'GODOWN'",
-    "not flagged: PRODUCT_NAME, QTY_IN_CASES"
-   ]
-  },
-  {
-   "id": "data-hindi-stock",
-   "problems": [
-    "distributor → None, not 'वितरक'",
-    "item_code → None, not 'आइटम कोड'",
-    "batch_no → None, not 'बैच नं.'",
-    "mfg_date → None, not 'निर्माण तिथि'",
-    "bb_date → None, not 'समाप्ति तिथि'",
-    "closing_qty → None, not 'शेष मात्रा'",
-    "location → None, not 'गोदाम'"
-   ]
-  },
-  {
-   "id": "data-hinglish-stock",
-   "problems": [
-    "distributor → None, not 'Vitrak'",
-    "item_code → None, not 'Maal Code'",
-    "batch_no → None, not 'Batch'",
-    "mfg_date → None, not 'Banane Ki Tarikh'",
-    "bb_date → None, not 'Expiry Tarikh'",
-    "closing_qty → None, not 'Bacha Maal'",
-    "location → None, not 'Godam'"
-   ]
-  },
-  {
-   "id": "data-abbrev-stock",
-   "problems": [
-    "distributor → None, not 'Dist'",
-    "item_code → None, not 'SKU'",
-    "batch_no → None, not 'B.No.'",
-    "mfg_date → None, not 'MFD'",
-    "bb_date → None, not 'BBD'",
-    "closing_qty → None, not 'Cl.Qty'",
-    "pin → None, not 'PIN'"
-   ]
-  },
-  {
-   "id": "data-extra-stock",
-   "problems": [
-    "distributor → None, not 'Distributor Name'",
-    "item_code → None, not 'Item Code'",
-    "batch_no → None, not 'Batch No'",
-    "mfg_date → None, not 'Mfg Date'",
-    "bb_date → None, not 'Best Before'",
-    "closing_qty → None, not 'Closing Qty'",
-    "not flagged: Opening Qty, Receipts, Issues, Free Qty, Scheme"
-   ]
-  },
-  {
-   "id": "data-no-expiry-stock",
-   "problems": [
-    "distributor → None, not 'Distributor'",
-    "item_code → None, not 'Item Code'",
-    "batch_no → None, not 'Batch No'",
-    "mfg_date → None, not 'Mfg Date'",
-    "closing_qty → None, not 'Closing Qty'"
-   ]
-  },
-  {
-   "id": "data-us-dates-stock",
-   "problems": [
-    "distributor → None, not 'distributor'",
-    "item_code → None, not 'sku_code'",
-    "batch_no → None, not 'lot'",
-    "mfg_date → None, not 'manufactured'",
-    "bb_date → None, not 'expires'",
-    "closing_qty → None, not 'on_hand'"
-   ]
-  },
-  {
-   "id": "data-no-distributor-stock",
-   "problems": [
-    "item_code → None, not 'Item Code'",
-    "batch_no → None, not 'Batch No'",
-    "bb_date → None, not 'Expiry'",
-    "closing_qty → None, not 'Qty'"
-   ]
-  },
-  {
-   "id": "data-plain-sales",
-   "problems": [
-    "distributor → None, not 'Distributor'",
-    "sale_date → None, not 'Sale Date'",
-    "pin → None, not 'Pin'",
-    "item_code → None, not 'SKU Code'",
-    "qty → None, not 'Qty Sold'",
-    "value_inr → None, not 'Net Amount'",
-    "not flagged: Retailer"
-   ]
-  },
-  {
-   "id": "data-busy-sales",
-   "problems": [
-    "distributor → None, not 'Dist ID'",
-    "sale_date → None, not 'Bill Date'",
-    "pin → None, not 'Pincode'",
-    "item_code → None, not 'Item Code'",
-    "qty → None, not 'Sale Qty'",
-    "value_inr → None, not 'Taxable Value'",
-    "not flagged: Item Description, Free Qty, GST"
-   ]
-  },
-  {
-   "id": "data-marg-sales",
-   "problems": [
-    "distributor → None, not 'DISTCD'",
-    "sale_date → None, not 'DOCDATE'",
-    "pin → None, not 'PINCODE'",
-    "item_code → None, not 'PCODE'",
-    "qty → None, not 'QTY'",
-    "value_inr → None, not 'NETAMT'",
-    "not flagged: PNAME"
-   ]
-  },
-  {
-   "id": "data-hindi-sales",
-   "problems": [
-    "distributor → None, not 'वितरक कोड'",
-    "sale_date → None, not 'तारीख'",
-    "pin → None, not 'पिन कोड'",
-    "item_code → None, not 'आइटम कोड'",
-    "qty → None, not 'बिक्री मात्रा'",
-    "value_inr → None, not 'राशि'"
-   ]
-  },
-  {
-   "id": "data-hinglish-sales",
-   "problems": [
-    "distributor → None, not 'Vitrak ID'",
-    "sale_date → None, not 'Tarikh'",
-    "pin → None, not 'Pin'",
-    "item_code → None, not 'Maal Code'",
-    "qty → None, not 'Becha'",
-    "value_inr → None, not 'Rakam'"
-   ]
-  },
-  {
-   "id": "data-terse-sales",
-   "problems": [
-    "distributor → None, not 'DID'",
-    "sale_date → None, not 'DT'",
-    "pin → None, not 'PIN'",
-    "item_code → None, not 'IC'",
-    "qty → None, not 'Q'",
-    "value_inr → None, not 'V'"
-   ]
-  },
-  {
-   "id": "data-route-sales",
-   "problems": [
-    "distributor → None, not 'Distributor ID'",
-    "pin → None, not 'Pin'",
-    "sale_date → None, not 'Date'",
-    "item_code → None, not 'Item Code'",
-    "qty → None, not 'Pcs'",
-    "value_inr → None, not 'Value'",
-    "not flagged: Route, Beat, Salesman, Cases"
-   ]
-  },
-  {
-   "id": "data-no-pin-sales",
-   "problems": [
-    "distributor → None, not 'Distributor ID'",
-    "sale_date → None, not 'Date'",
-    "item_code → None, not 'Item Code'",
-    "qty → None, not 'Qty'"
-   ]
-  },
-  {
-   "id": "data-iso-sales",
-   "problems": [
-    "distributor → None, not 'dist'",
-    "sale_date → None, not 'day'",
-    "pin → None, not 'zip'",
-    "item_code → None, not 'sku'",
-    "qty → None, not 'units'",
-    "value_inr → None, not 'inr'"
-   ]
-  },
-  {
-   "id": "data-audit-shelf",
-   "problems": [
-    "distributor → None, not 'Distributor Code'",
-    "outlet_id → None, not 'Outlet Code'",
-    "item_code → None, not 'Item Code'",
-    "batch_no → None, not 'Batch'",
-    "counted_on → None, not 'Audit Date'",
-    "qty_left → None, not 'Stock Left'",
-    "not flagged: Outlet Name"
-   ]
-  },
-  {
-   "id": "data-hindi-shelf",
-   "problems": [
-    "distributor → None, not 'वितरक कोड'",
-    "outlet_id → None, not 'दुकान कोड'",
-    "item_code → None, not 'आइटम कोड'",
-    "batch_no → None, not 'बैच'",
-    "counted_on → None, not 'गिनती की तारीख'",
-    "qty_left → None, not 'बचे पैकेट'"
-   ]
-  },
-  {
-   "id": "data-terse-shelf",
-   "problems": [
-    "distributor → None, not 'DCode'",
-    "outlet_id → None, not 'RetCode'",
-    "item_code → None, not 'SKU'",
-    "batch_no → None, not 'Lot'",
-    "counted_on → None, not 'CntDt'",
-    "qty_left → None, not 'Bal'"
-   ]
-  },
-  {
-   "id": "data-extra-shelf",
-   "problems": [
-    "distributor → None, not 'Dist ID'",
-    "outlet_id → None, not 'Shop ID'",
-    "item_code → None, not 'Item Code'",
-    "batch_no → None, not 'Batch No'",
-    "counted_on → None, not 'Date'",
-    "qty_left → None, not 'Qty Left'",
-    "not flagged: Shop Name, Salesman, Facing, Photo"
-   ]
-  },
-  {
-   "id": "data-no-batch-shelf",
-   "problems": [
-    "distributor → None, not 'Dist ID'",
-    "outlet_id → None, not 'Shop ID'",
-    "item_code → None, not 'Item Code'",
-    "counted_on → None, not 'Date'",
-    "qty_left → None, not 'Qty Left'"
-   ]
-  },
-  {
-   "id": "data-hinglish-shelf",
-   "problems": [
-    "distributor → None, not 'Vitrak'",
-    "outlet_id → None, not 'Dukaan'",
-    "item_code → None, not 'Maal Code'",
-    "batch_no → None, not 'Batch'",
-    "counted_on → None, not 'Tarikh'",
-    "qty_left → None, not 'Bacha'"
-   ]
-  }
- ]
+ "met": true,
+ "failures": []
 }

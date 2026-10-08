@@ -1,6 +1,6 @@
 {
- "evalRun": "eval-20261007-2236-52ed27",
- "at": "2026-10-07T23:00:12.494488+00:00",
+ "evalRun": "eval-20261007-2332-d87590",
+ "at": "2026-10-07T23:55:51.352010+00:00",
  "set": "outreach",
  "split": "all",
  "models": {
@@ -14,8 +14,8 @@
  "passed": 15,
  "fallbacks": 0,
  "tokens": [
-  8139,
-  2641
+  8889,
+  2660
  ],
  "marks": {
   "noFactualErrorOrLeak": {
@@ -24,11 +24,11 @@
    "met": true
   },
   "rubricFaithful": {
-   "value": 0.0,
+   "value": 5,
    "target": 4.0,
-   "met": false
+   "met": true
   }
  },
- "met": false,
+ "met": true,
  "failures": []
 }

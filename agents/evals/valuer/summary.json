@@ -1,6 +1,6 @@
 {
- "evalRun": "eval-20261007-2236-52ed27",
- "at": "2026-10-07T22:47:31.927375+00:00",
+ "evalRun": "eval-20261008-0033-dedbcd",
+ "at": "2026-10-08T00:50:00.600417+00:00",
  "set": "valuer",
  "split": "all",
  "models": {
@@ -8,14 +8,14 @@
   "flash": "gemini-3.8-flash"
  },
  "prompts": {
-  "valuer": "029142f52ec7"
+  "valuer": "9d1e79d425e7"
  },
  "cases": 20,
- "passed": 0,
- "fallbacks": 3,
+ "passed": 19,
+ "fallbacks": 1,
  "tokens": [
-  20811,
-  161
+  27854,
+  3088
  ],
  "marks": {
   "noForeignFigure": {
@@ -24,134 +24,20 @@
    "met": true
   },
   "everyChannel": {
-   "value": 0,
+   "value": 0.95,
    "target": 1.0,
    "met": false
   },
   "rubricAverage": {
-   "value": 0.0,
+   "value": 5,
    "target": 4.0,
-   "met": false
+   "met": true
   }
  },
  "met": false,
  "failures": [
   {
-   "id": "valuer-00-MF-2409-117",
-   "problems": [
-    "no note for expiresoon, kirana, staff, foodbank, writeoff"
-   ]
-  },
-  {
    "id": "valuer-01-MF-2410-118",
-   "problems": [
-    "no note for expiresoon, kirana, staff, foodbank, writeoff"
-   ]
-  },
-  {
-   "id": "valuer-09-MF-2409-117~daysLeft",
-   "problems": [
-    "no note for expiresoon, kirana, staff, foodbank, writeoff"
-   ]
-  },
-  {
-   "id": "valuer-10-MF-2409-117~daysLeft",
-   "problems": [
-    "no note for expiresoon, kirana, staff, foodbank, writeoff"
-   ]
-  },
-  {
-   "id": "valuer-11-MF-2409-117~mfg-bestBefore",
-   "problems": [
-    "no note for expiresoon, kirana, staff, foodbank, writeoff"
-   ]
-  },
-  {
-   "id": "valuer-12-GL-2410-044~daysLeft-sellPerDay",
-   "problems": [
-    "no note for expiresoon, kirana, staff, foodbank, writeoff"
-   ]
-  },
-  {
-   "id": "valuer-13-GL-2410-044~daysLeft-units-sellPerDay",
-   "problems": [
-    "no note for expiresoon, kirana, staff, foodbank, writeoff"
-   ]
-  },
-  {
-   "id": "valuer-14-MF-2409-117~units",
-   "problems": [
-    "no note for expiresoon, kirana, staff, foodbank, writeoff"
-   ]
-  },
-  {
-   "id": "valuer-MF-2409-117-40d",
-   "problems": [
-    "no note for expiresoon, kirana, staff, foodbank, writeoff"
-   ]
-  },
-  {
-   "id": "valuer-MF-2409-117-32d",
-   "problems": [
-    "no note for expiresoon, kirana, staff, foodbank, writeoff"
-   ]
-  },
-  {
-   "id": "valuer-MF-2409-117-24d",
-   "problems": [
-    "no note for expiresoon, kirana, staff, foodbank, writeoff"
-   ]
-  },
-  {
-   "id": "valuer-MF-2409-117-18d",
-   "problems": [
-    "no note for expiresoon, kirana, staff, foodbank, writeoff"
-   ]
-  },
-  {
-   "id": "valuer-MF-2409-117-60d",
-   "problems": [
-    "no note for expiresoon, kirana, staff, foodbank, writeoff"
-   ]
-  },
-  {
-   "id": "valuer-MF-2410-118-40d",
-   "problems": [
-    "no note for expiresoon, kirana, staff, foodbank, writeoff"
-   ]
-  },
-  {
-   "id": "valuer-MF-2410-118-32d",
-   "problems": [
-    "no note for expiresoon, kirana, staff, foodbank, writeoff"
-   ]
-  },
-  {
-   "id": "valuer-MF-2410-118-24d",
-   "problems": [
-    "no note for expiresoon, kirana, staff, foodbank, writeoff"
-   ]
-  },
-  {
-   "id": "valuer-MF-2410-118-18d",
-   "problems": [
-    "no note for expiresoon, kirana, staff, foodbank, writeoff"
-   ]
-  },
-  {
-   "id": "valuer-MF-2410-118-60d",
-   "problems": [
-    "no note for expiresoon, kirana, staff, foodbank, writeoff"
-   ]
-  },
-  {
-   "id": "valuer-MF-2408-209-40d",
-   "problems": [
-    "no note for expiresoon, kirana, staff, foodbank, writeoff"
-   ]
-  },
-  {
-   "id": "valuer-MF-2408-209-32d",
    "problems": [
     "no note for expiresoon, kirana, staff, foodbank, writeoff"
    ]

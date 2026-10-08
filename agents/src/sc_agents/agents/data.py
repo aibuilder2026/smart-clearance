@@ -298,17 +298,22 @@ def _parts(state: dict[str, Any]) -> list[types.Part]:
     ]
 
 
-def apply(x: Export, m: dict[str, Any]) -> list[str]:
-    """a model's map onto an export; what it is still missing"""
-    kind = m.get("kind")
+def columns_of(m: dict[str, Any]) -> dict[str, str]:
+    """a file map's columns, target to header, from the model's list of pairs (or a map, as earlier recordings hold
+    them)"""
     raw = m.get("columns") or []
-    # the model's list of pairs (a map, as earlier recordings hold them, still reads)
     pairs = (
         raw.items()
         if isinstance(raw, dict)
         else ((c.get("column"), c.get("header")) for c in raw if isinstance(c, dict))
     )
-    columns = {t: s for t, s in pairs if t and s in x.header}
+    return {t: s for t, s in pairs if t and s}
+
+
+def apply(x: Export, m: dict[str, Any]) -> list[str]:
+    """a model's map onto an export; what it is still missing"""
+    kind = m.get("kind")
+    columns = {t: s for t, s in columns_of(m).items() if s in x.header}
     x.kind, x.columns, x.mapped_by = (kind if kind in REQUIRED else None), columns, "model"
     x.unknown = [h for h in x.header if h not in columns.values()]
     x.date_format = m.get("dateFormat") if m.get("dateFormat") in ("DMY", "MDY", "YMD") else "DMY"

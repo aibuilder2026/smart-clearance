@@ -1,6 +1,6 @@
 {
- "evalRun": "eval-20261007-2236-52ed27",
- "at": "2026-10-07T22:42:21.703858+00:00",
+ "evalRun": "eval-20261007-2323-c0c5fd",
+ "at": "2026-10-07T23:31:10.964088+00:00",
  "set": "vision",
  "split": "all",
  "models": {
@@ -8,25 +8,25 @@
   "flash": "gemini-3.8-flash"
  },
  "prompts": {
-  "vision": "d1a1417d5292"
+  "vision": "9705098c777c"
  },
  "cases": 73,
- "passed": 45,
- "fallbacks": 6,
+ "passed": 72,
+ "fallbacks": 0,
  "tokens": [
-  127233,
-  3681
+  147095,
+  5106
  ],
  "marks": {
   "cleanExact": {
-   "value": 0.5,
+   "value": 1,
    "target": 1.0,
-   "met": false
+   "met": true
   },
   "hardPass": {
-   "value": 0.639,
+   "value": 0.984,
    "target": 0.9,
-   "met": false
+   "met": true
   },
   "confidentWrongReads": {
    "value": 0,
@@ -34,119 +34,13 @@
    "met": true
   }
  },
- "met": false,
+ "met": true,
  "failures": [
   {
-   "id": "story-clean",
-   "problems": []
-  },
-  {
-   "id": "story-clean--blur2",
-   "problems": []
-  },
-  {
-   "id": "story-clean--small",
-   "problems": []
-  },
-  {
-   "id": "story-hand",
-   "problems": []
-  },
-  {
-   "id": "story-hand--tilt12",
-   "problems": []
-  },
-  {
-   "id": "story-hand--glare",
-   "problems": []
-  },
-  {
-   "id": "story-shelf",
-   "problems": []
-  },
-  {
-   "id": "story-glare",
-   "problems": []
-  },
-  {
-   "id": "story-angle",
-   "problems": []
-  },
-  {
-   "id": "story-hindi",
-   "problems": []
-  },
-  {
-   "id": "story-hindi--blur2",
-   "problems": []
-  },
-  {
-   "id": "wrong-batch--blur2",
-   "problems": []
-  },
-  {
-   "id": "wrong-batch--glare",
-   "problems": []
-  },
-  {
-   "id": "damaged",
-   "problems": []
-  },
-  {
-   "id": "mango",
-   "problems": []
-  },
-  {
-   "id": "mango--glare",
-   "problems": []
-  },
-  {
-   "id": "chikki",
-   "problems": []
-  },
-  {
-   "id": "chikki--jpeg15",
-   "problems": []
-  },
-  {
-   "id": "oats--blur2",
-   "problems": []
-  },
-  {
-   "id": "facewash",
-   "problems": []
-  },
-  {
-   "id": "facewash--blur2",
-   "problems": []
-  },
-  {
-   "id": "chips-gupta--blur2",
-   "problems": []
-  },
-  {
-   "id": "mango-hindi",
-   "problems": []
-  },
-  {
-   "id": "poha-angle",
-   "problems": []
-  },
-  {
-   "id": "story-pkd",
-   "problems": []
-  },
-  {
-   "id": "story-pkd--dark",
-   "problems": []
-  },
-  {
-   "id": "chikki-month",
-   "problems": []
-  },
-  {
-   "id": "chips-gupta-month",
-   "problems": []
+   "id": "story-shelf--unreadable",
+   "problems": [
+    "wrong batch='MF-2409-117', mfg='2026-05-18', bestBefore='2026-11-18', mrp=30.0"
+   ]
   }
  ]
 }

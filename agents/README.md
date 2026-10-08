@@ -180,6 +180,11 @@ output returns a map of free keys empty, and may leave out a property the schema
 holds a map (the Data agent's columns and the Valuer's notes are lists of pairs) and every property is required, null
 standing for "not there"; `tests/test_schemas.py` holds every schema and recording to that.
 
+**The second live run** (7–8 Oct, SC-77) met every set's marks but one: Vision 72 of 73, Data 25 of 25, Router 20 of
+20, Lister 15 of 15, Outreach 15 of 15, Negotiator 38 of 40, and the Valuer 19 of 20 once its prompt asked for one point
+a note (the judge had found its notes reading the table back). The three failures were the Pro preview's quota: a 429
+after every attempt, each falling back as designed.
+
 | Set | Cases | From | Pass marks |
 | --- | --- | --- | --- |
 | `vision` | 73 photos (12 clean, 61 hard) | 32 label photos rendered by the local Qwen-Image model, and post-processed variants (blur, glare, a tilt, keystone, compression, darkness, downscaling, a line covered with tape, an unreadable smear) | every clean case exact; 90% or more of the hard ones; no confident wrong read |
@@ -230,8 +235,9 @@ every change here.
 
 - A local end-to-end run waits for infra phase A (SC-70) to be applied; the Cloud Run service and its push
   subscriptions wait for infra phase B (SC-74) to be applied.
-- The evals' first live run (SC-77) found the schema faults above, now fixed; the second run, on request, is to show
-  each set meeting its marks.
+- `gemini-3.1-pro-preview` (a public preview, on a shared quota) still answers 429 under the evals' load, which pairs
+  each Pro call with a Pro judge: three cases of 208 fell back in the second run. Production makes about seven model
+  calls a journey; if it falls back there too, the choices are a quota increase or moving a writer to Flash.
 - The recordings were written by hand from the story's figures; `smoke.sh --record DIR` writes live outputs in the same
   form, to review before replacing them (the tests assert some of their words).
 - A shelf-count export in an unknown layout is not mapped by the model on the shelf check (only on the Data agent's

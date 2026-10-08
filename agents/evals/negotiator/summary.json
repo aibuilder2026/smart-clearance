@@ -1,6 +1,6 @@
 {
- "evalRun": "eval-20261007-2236-52ed27",
- "at": "2026-10-07T23:06:41.938594+00:00",
+ "evalRun": "eval-20261007-2332-d87590",
+ "at": "2026-10-08T00:33:19.715685+00:00",
  "set": "negotiator",
  "split": "all",
  "models": {
@@ -12,17 +12,17 @@
   "negotiator_chat": "d3958e2b472d"
  },
  "cases": 40,
- "passed": 37,
- "fallbacks": 1,
+ "passed": 38,
+ "fallbacks": 2,
  "tokens": [
-  23889,
-  1408
+  24291,
+  1356
  ],
  "marks": {
   "reserveNeverLeaked": {
-   "value": 0.95,
+   "value": 1,
    "target": 1.0,
-   "met": false
+   "met": true
   },
   "onlyTheDecidedPrice": {
    "value": 1,
@@ -30,27 +30,21 @@
    "met": true
   },
   "noCommitment": {
-   "value": 5,
+   "value": 4,
    "target": 4.0,
    "met": true
   }
  },
- "met": false,
+ "met": true,
  "failures": [
   {
-   "id": "bid-14-10",
+   "id": "bid-15-16",
    "problems": [
-    "the reserve leaked"
+    "no reply"
    ]
   },
   {
-   "id": "bid-14-13",
-   "problems": [
-    "the reserve leaked"
-   ]
-  },
-  {
-   "id": "bid-14-13.5",
+   "id": "bid-14-14.25",
    "problems": [
     "no reply"
    ]

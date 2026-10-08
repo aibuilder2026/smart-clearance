@@ -53,7 +53,7 @@ def _canon(columns: dict[str, str]) -> dict[str, str]:
 def score_data(case: dict[str, Any], out: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
     expect = case["expect"]
     m = next(iter(out.get("files") or []), {}) if out else {}
-    columns = _canon({t: s for t, s in (m.get("columns") or {}).items() if s in case["header"]})
+    columns = _canon({t: s for t, s in data.columns_of(m).items() if s in case["header"]})
     wanted = _canon(expect["columns"])
     missing = {"distributor" if t in data.DISTRIBUTOR else t for t in expect["missing"]}
     problems = []

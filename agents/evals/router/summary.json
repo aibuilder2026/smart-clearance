@@ -1,6 +1,6 @@
 {
- "evalRun": "eval-20261007-2236-52ed27",
- "at": "2026-10-07T22:53:46.791819+00:00",
+ "evalRun": "eval-20261007-2332-d87590",
+ "at": "2026-10-07T23:49:26.207604+00:00",
  "set": "router",
  "split": "all",
  "models": {
@@ -11,37 +11,29 @@
   "router": "c8b099cfb851"
  },
  "cases": 20,
- "passed": 19,
- "fallbacks": 1,
+ "passed": 20,
+ "fallbacks": 0,
  "tokens": [
-  15678,
-  1429
+  17085,
+  1459
  ],
  "marks": {
   "noForeignFigure": {
-   "value": 0.95,
+   "value": 1,
    "target": 1.0,
-   "met": false
+   "met": true
   },
   "rightChannelsNamed": {
-   "value": 0.95,
+   "value": 1,
    "target": 1.0,
-   "met": false
+   "met": true
   },
   "rubricAverage": {
-   "value": 0.0,
+   "value": 4.612,
    "target": 4.0,
-   "met": false
+   "met": true
   }
  },
- "met": false,
- "failures": [
-  {
-   "id": "router-13-GL-2410-044~daysLeft-units-sellPerDay",
-   "problems": [
-    "no explanation",
-    "does not name staff, writeoff"
-   ]
-  }
- ]
+ "met": true,
+ "failures": []
 }
