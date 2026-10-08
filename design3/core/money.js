@@ -193,6 +193,18 @@
     return { units, credit, disposal: wo.disposal, epr: wo.epr, itc: wo.itc, total: r2(credit + wo.disposal + wo.epr + wo.itc) };
   }
 
+  // the packs left at the godown on expiry day, settled by the client's expiry policy (SC-94). Full credit: they come
+  // back for the dealer price, and the client destroys them, paying disposal and EPR and reversing the GST credit.
+  // Price support: the client pays the distributor the gap to what he paid (they fetched nothing, so the dealer price),
+  // and he destroys them. No returns: the distributor's loss. An SKU without its dealer price has no credit to work out
+  function expirySettlement(units, sku, policy) {
+    const wo = writeOff(units, sku);
+    const credit = policy === "none" || !units ? 0 : sku.dp == null ? null : r2(units * sku.dp);
+    const ours = policy === "full-credit" && units > 0;
+    const disposal = ours ? wo.disposal : 0, epr = ours ? wo.epr : 0, itc = ours ? wo.itc : 0;
+    return { policy, units, credit, destroyedBy: units ? (ours ? "client" : "distributor") : null, kg: wo.kg, disposal, epr, itc, total: r2((credit || 0) + disposal + epr + itc) };
+  }
+
   function documents(p, sku, aw, support, parties) {
     const es = p.lines.find(l => l.id === "expiresoon");
     const docs = [];
@@ -224,5 +236,5 @@
     day: iso => new Date(iso + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" }),
   };
 
-  window.SC3_MONEY = { RULES, CHANNELS, lifeOf, itcOf, gates, assess, writeOff, channelTable, allocate, plan, counter, award, actualNet, realised, priceSupport, expiryClaim, documents, fmt };
+  window.SC3_MONEY = { RULES, CHANNELS, lifeOf, itcOf, gates, assess, writeOff, channelTable, allocate, plan, counter, award, actualNet, realised, priceSupport, expiryClaim, expirySettlement, documents, fmt };
 })();

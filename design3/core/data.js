@@ -20,7 +20,7 @@
     chikki:   { id: "chikki", code: "MF-PC-100", brand: "Munchly", name: "Peanut Chikki 100 g", category: "snacks", hsn: "1704", mrp: 25, cost: 13, gst: 0.05, perCarton: 30, lifeDays: 180, kgPerUnit: 0.11, img: "pack-chikki" },
     poha:     { id: "poha", code: "MF-IP-250", brand: "Munchly", name: "Instant Poha 250 g", category: "staples", hsn: "1904", mrp: 55, cost: 31, gst: 0.05, perCarton: 20, lifeDays: 270, kgPerUnit: 0.27, img: "pack-poha" },
     oats:     { id: "oats", code: "MF-MO-200", brand: "Munchly", name: "Masala Oats 200 g", category: "staples", hsn: "2106", mrp: 65, cost: 36, gst: 0.05, perCarton: 20, lifeDays: 270, kgPerUnit: 0.22, img: "pack-oats" },
-    mango:    { id: "mango", code: "MF-MD-200", brand: "Munchly", name: "Mango Drink 200 ml", category: "beverages", hsn: "2202", mrp: 20, cost: 11, gst: 0.05, perCarton: 27, lifeDays: 180, kgPerUnit: 0.215, img: "pack-mango" },
+    mango:    { id: "mango", code: "MF-MD-200", brand: "Munchly", name: "Mango Drink 200 ml", category: "beverages", hsn: "2202", mrp: 20, dp: 14.5, cost: 11, gst: 0.05, perCarton: 27, lifeDays: 180, kgPerUnit: 0.215, img: "pack-mango" },
     facewash: { id: "facewash", code: "GL-AF-100", brand: "Glowra", name: "Aloe Face Wash 100 ml", category: "personal-care", hsn: "3401", mrp: 120, cost: 58, gst: 0.18, perCarton: 12, lifeDays: 730, kgPerUnit: 0.12, img: "pack-facewash" },
     hairoil:  { id: "hairoil", code: "GL-CO-200", brand: "Glowra", name: "Coconut Hair Oil 200 ml", category: "personal-care", hsn: "3305", mrp: 150, cost: 72, gst: 0.05, perCarton: 12, lifeDays: 730, kgPerUnit: 0.23, img: "pack-hairoil" },
   };

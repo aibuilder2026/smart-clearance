@@ -38,9 +38,10 @@
 	const his = $derived(first(cast.distributor.short));
 	const W = $derived(ws.data.workspace);
 	const ready = $derived(!!h.docs);
-	// the pack opens on its first paper (SC-85: a batch with no buyer has no invoice)
+	// the pack opens on its first paper (SC-85: a batch with no buyer has no invoice); once a batch has expired, on its
+	// expiry paper (SC-94)
 	let picked = $state<string | null>(null);
-	const sel = $derived(picked && DOC(picked) ? picked : (c.docs[0]?.id ?? 'invoice'));
+	const sel = $derived(picked && DOC(picked) ? picked : DOC('expiry') ? 'expiry' : (c.docs[0]?.id ?? 'invoice'));
 	let sheet = $state(false);
 	const doc = $derived(DOC(sel));
 	const invoice = $derived(DOC('invoice'));

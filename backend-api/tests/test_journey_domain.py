@@ -80,3 +80,12 @@ def test_the_staff_sale_and_a_declined_pickup_are_guarded():
     assert J.can({**booked, "donation": {"status": "collected"}}, "decline") == "The packs are already collected."
     declined = {**booked, "donation": {"status": "declined"}}
     assert J.can(declined, "pickup") == J.can(declined, "collect") == "No donation is booked."
+
+
+def test_on_expiry_day_every_line_is_done_and_a_line_never_run_took_nothing():
+    """SC-94: Report now (or best-before) takes the journey to its end as it stands"""
+    case = {"plan": plan(("kirana", 588), ("expiresoon", 772), ("staff", 50)), "offer": {"status": "closed"}}
+    assert not J.lines_done(case)
+    case["expiredAt"] = "2026-11-18T10:00:00+05:30"
+    assert J.lines_done(case)
+    assert J.done_units(case, 100) == {"kirana": 100, "expiresoon": 0, "staff": 0}

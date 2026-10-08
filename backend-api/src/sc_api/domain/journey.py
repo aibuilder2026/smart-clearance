@@ -94,7 +94,10 @@ def needs(case: dict[str, Any], channel: str) -> bool:
 
 def line_done(case: dict[str, Any], channel: str) -> bool:
     """whether a plan line has run its course (SC-86): the buyer's truck loaded or the lot ended unsold, the kirana
-    scheme closed, the staff sale recorded, the donation collected or declined. A write-off waits for nothing."""
+    scheme closed, the staff sale recorded, the donation collected or declined. A write-off waits for nothing, and on
+    expiry day (SC-94) every line has run its course."""
+    if case.get("expiredAt"):
+        return True
     if channel == "expiresoon":
         return (case.get("truck") or {}).get("status") == "dispatched" or (case.get("listing") or {}).get(
             "status"
@@ -134,6 +137,10 @@ def done_units(case: dict[str, Any], ordered: int) -> dict[str, float]:
         out["foodbank"] = donation.get("units", 0)
     elif donation.get("status") == "declined":
         out["foodbank"] = 0
+    if case.get("expiredAt"):  # expiry day (SC-94): a line never run took nothing
+        for ln in (case.get("plan") or {}).get("lines", []):
+            if ln["id"] != "writeoff":
+                out.setdefault(ln["id"], 0)
     return out
 
 

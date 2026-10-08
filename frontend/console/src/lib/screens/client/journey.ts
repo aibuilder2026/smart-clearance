@@ -34,13 +34,13 @@ export const TRIG: Record<JourneyTrigger['key'], Words> = {
 		})
 	},
 	'report.due': {
-		title: 'Report due',
+		title: 'Expiry day · report',
 		act: 'Report now',
 		icon: 'timer',
-		every: () => 'the morning after the return window',
+		every: () => 'on best-before',
 		ask: (t, when) => ({
-			title: 'Write the report now?',
-			message: `Impact writes the report for ${t.ref} now instead of ${when}.`
+			title: 'Expire it and report now?',
+			message: `${t.ref} is treated as expired now instead of ${when}: open lines close as they stand, the papers follow, what is left at the godown settles by the client's expiry policy, and Impact writes the report. This can't be undone.`
 		})
 	}
 };

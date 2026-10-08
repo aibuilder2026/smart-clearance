@@ -313,6 +313,28 @@
     </Card>;
   }
 
+  // expiry day's settlement (SC-94, option B): the packs left at the godown, settled by the client's expiry policy:
+  // the policy, three figures (the credit to the distributor, who destroys the packs, the client's other costs), the
+  // sentence, and the paper
+  const POLICY_NAME = { "full-credit": "Full credit at expiry", "price-support": "Price support only", none: "No returns" };
+  function expirySentence(x, client, dist) {
+    const n = fmt.num(x.units), amount = x.credit != null ? ` (${fmt.inr(x.credit)})` : "";
+    const whose = dist.name + (/s$/.test(dist.name) ? "'" : "'s");
+    if (x.policy === "full-credit") return `The ${n} packs come back to ${client} for full credit${amount || " at the dealer price"}, and ${client} destroys them.`;
+    if (x.policy === "price-support") return `The ${n} packs stay with ${dist.name}, which destroys them; ${client} pays it the gap to its price${amount}.`;
+    return `With no returns, the ${n} packs are ${whose} loss, and it destroys them.`;
+  }
+  function ExpirySettlement({ settle: x, dist }) {
+    const { go } = useRoute(); const client = D.CLIENT.short;
+    const figures = [[`Credit to ${dist.short}`, x.policy === "none" ? "—" : x.credit != null ? fmt.inr(x.credit) : "at the dealer price"], ["Destroyed by", x.destroyedBy === "client" ? client : dist.short], [x.policy === "full-credit" ? "Disposal, EPR, GST" : "Client's other costs", x.policy === "full-credit" ? fmt.inr(x.disposal + x.epr + x.itc) : "—"]];
+    return <Card className="stack snug">
+      <div className="card-head"><span className="row tight"><span className="icontile" style={{ borderRadius: 9 }}><Icon name="hand-coins" size={17} stroke={2} /></span><span className="card-title">Expiry settlement</span></span><Badge tone={x.policy === "none" ? undefined : "green"} icon="check">{POLICY_NAME[x.policy]}</Badge></div>
+      <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 120px), 1fr))" }}>{figures.map(([k, v]) => <div key={k} className="stack tight" style={{ gap: 2, padding: "10px 12px", borderRadius: 12, background: "var(--fill)" }}><span className="t-caption subtle">{k}</span><b className="tnum">{v}</b></div>)}</div>
+      <span className="t-footnote muted">{expirySentence(x, client, dist)}</span>
+      {x.policy !== "none" && <Button variant="outline" icon="file-text" onClick={() => go("paperwork", { ref: D.BATCHES.find(b => b.hero).id })}>Open the paper</Button>}
+    </Card>;
+  }
+
   function Execution({ me, onOpenListing }) {
     const s = useStore(); const h = s.hero; const app = useApp(); const hm = heroModel(s); const [sheet, setSheet] = useState(false);
     const started = ["approved", "executing", "dispatched", "settled", "cleared"].includes(h.phase);
@@ -363,6 +385,7 @@
           </Card>
           {hasLine("staff") && <StaffOps staff={h.staff} line={D.PLAN.lines.find(l => l.id === "staff")} dist={D.DISTRIBUTORS[D.BATCHES.find(b => b.hero).distributor]} />}
           {h.realised && h.realised.godown > 0 && ["dispatched", "settled", "cleared"].includes(h.phase) && <GodownLeft realised={h.realised} plan={D.PLAN} actual={h.realisedNet} dist={D.DISTRIBUTORS[D.BATCHES.find(b => b.hero).distributor]} />}
+          {h.expiry && h.expiry.units > 0 && <ExpirySettlement settle={h.expiry} dist={D.DISTRIBUTORS[D.BATCHES.find(b => b.hero).distributor]} />}
         </div>}
         side={<><SectionTitle>Agent timeline</SectionTitle><Card><AgentFeed events={s.feed.filter(e => ["approve", "execute", "settle", "report"].includes(e.stage))} people={D.PEOPLE} live={hm.agentLive ? s.feed.filter(e => ["approve", "execute", "settle", "report"].includes(e.stage)).length - 1 : -1} /></Card></>} />}
       <Sheet open={sheet} onClose={() => setSheet(false)} title="ExpireSoon · as buyers see it">{window.SC3_SCREENS.ListingView ? React.createElement(window.SC3_SCREENS.ListingView, { readOnly: true }) : null}</Sheet>

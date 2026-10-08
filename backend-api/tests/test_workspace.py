@@ -375,10 +375,13 @@ async def test_the_mango_drinks_journey_end_to_end(api, munchly, cloud, ctx):
         "Lakshmi Agencies sold 120 of 150 packs to staff."
     )
 
-    # the papers: no buyer's invoice, and no credit note (no distributor's price to support), so no number is spent
+    # the papers: no buyer's invoice; a price-support credit note for what the kiranas and the staff took below the
+    # ₹14.50 Lakshmi Agencies paid (SC-94 gave the Mango its dealer price)
     await agent(api, f"/cases/{MANGO}/documents", "paperwork-m", "paperwork")
     c = await case(api, PRIYA, MANGO)
-    assert {"invoice", "support"}.isdisjoint(d["id"] for d in c["docs"])
+    docs = {d["id"]: d for d in c["docs"]}
+    assert "invoice" not in docs and docs["support"]["no"].startswith("CN/")
+    assert {r["id"] for r in c["support"]["rows"]} == {"kirana", "staff", "foodbank"}
     left = 1372 - ordered + 30
     want = money.realised(planned["plan"], c["sku"], {"kirana": ordered, "staff": 120, "foodbank": 58})
     lines = [{"id": "kirana", "units": ordered}, {"id": "staff", "units": 120}, {"id": "foodbank", "units": 58}]
@@ -394,8 +397,12 @@ async def test_the_mango_drinks_journey_end_to_end(api, munchly, cloud, ctx):
     assert batch.outcome == "cleared" and round(batch.recovered, 2) == want["net"]
     # the close tells Priya what the godown still holds (SC-87), and Lakshmi Agencies' staff pay to its own address
     closed = (await case(api, PRIYA, MANGO))["push"]["closed"]
-    assert closed["title"] == f"Batch closed · {money.fmt.num(left)} packs left at the godown"
-    assert closed["body"].endswith(f"{money.fmt.num(left)} packs no channel took are at Begum Bazaar godown.")
+    assert closed["title"] == f"Batch closed · {money.fmt.num(left)} packs expired at the godown"
+    # settled by Munchly's expiry policy, full credit at the ₹14.50 dealer price (SC-94)
+    assert closed["body"].endswith(
+        f"The {money.fmt.num(left)} packs that expired at Begum Bazaar godown come back to Munchly for full credit "
+        f"({money.fmt.inr(left * 14.5)}), and Munchly destroys them."
+    )
     snap = (await api.get(f"{WS}/snapshot", headers=LAKSHMI)).json()
     assert snap["distributors"]["lakshmi"]["upi"] == J["distributors"]["lakshmi"]["upi"]
 

@@ -151,10 +151,10 @@ KINDS = ("offer.close", "listing.close", "report.due")
 
 
 def ready(t: m.Timer, case: m.Case) -> bool:
-    """whether a timer can fire: the offer closes whenever it is due; the report waits for the papers and the van
-    round"""
+    """whether a timer can fire: the offer and the lot close whenever they are due; the report, expiry day, once a plan
+    is approved (it takes the journey to its end as it stands, SC-94)"""
     if t.kind == "report.due":
-        return case.phase == "settled" and (case.van or {}).get("status") == "done"
+        return case.phase in ("approved", "executing", "dispatched", "settled")
     return True
 
 
@@ -170,6 +170,9 @@ async def fire_timer(ctx: Ctx, c: m.Client, t: m.Timer, case: m.Case, doc: dict[
         with suppress(steps.Noop):
             await steps.close_listing(ctx, c.id, case.batch_ref, steps.Run("lister", event_key=f"timer:{t.id}"))
         return
+    if t.kind == "report.due":  # expiry day: the journey closes as it stands, then Impact reports (SC-94)
+        with suppress(steps.Noop):
+            await steps.expire(ctx, c.id, case.batch_ref)
     payload: dict[str, Any] = {"type": J.TIMER, "kind": t.kind, "client": c.id, "ref": case.batch_ref}
     await ev.publish(ctx, J.Event(J.STEP, payload, f"{c.id}:{case.batch_ref}"))
 

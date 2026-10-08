@@ -33,12 +33,14 @@
     return <Card className="row wrap" style={{ gap: 12 }}><span className={cx("icontile", p.paused ? "amber" : "")} style={{ width: 40, height: 40, borderRadius: 12 }}><Icon name={p.paused ? "circle-pause" : "handshake"} size={19} /></span><div className="grow" style={{ minWidth: 0 }}><b>{p.paused ? "Paused: nothing happens in your name" : "Smart-Clearance acts for you"}</b><div className="t-footnote muted">{p.paused ? "Listings, offers and invoice drafts wait until you resume." : `Inside Munchly's floors · since ${p.at} · listings, scheme offers, invoice drafts, dispatch slots`}</div></div><Button variant={p.paused ? "primary" : "secondary"} size="sm" icon={p.paused ? "play" : "pause"} onClick={flip}>{p.paused ? "Resume" : "Pause"}</Button></Card>;
   }
   // what he receives and what he paid: the price support makes the two equal
+  // on expiry day, the expiry credit for the packs left at the godown joins what he receives (SC-94)
   function EndWhole({ settled }) {
-    const recv = KL.gross + D.AWARD.gross + D.SUPPORT.total; const paid = D.PLAN.units * CHIPS.dp + D.SUPPORT.van + D.SUPPORT.fee;
+    const h = useStore().hero; const x = settled && h.expiry && h.expiry.units > 0 && h.expiry.credit ? h.expiry : null;
+    const recv = KL.gross + D.AWARD.gross + D.SUPPORT.total + (x ? x.credit : 0); const paid = D.PLAN.units * CHIPS.dp + D.SUPPORT.van + D.SUPPORT.fee;
     return <Card className="stack snug">
       <div className="card-head"><span className="card-title">You end whole</span><Badge tone={settled ? "green" : undefined} icon={settled ? "check" : "clock"}>{settled ? "credit note issued" : "on the plan"}</Badge></div>
       <div className="stack tight t-subhead">
-        {[[`From ${SHOPS} kiranas (${KL.units} packets)`, KL.gross], [`From ${D.BUYER.name} (${ES.units} packets)`, D.AWARD.gross], ["Price-support credit note from Munchly", D.SUPPORT.total]].map(([k, v]) => <div key={k} className="row between"><span>{k}</span><span className="tnum">{fmt.inr(v)}</span></div>)}
+        {[[`From ${SHOPS} kiranas (${KL.units} packets)`, KL.gross], [`From ${D.BUYER.name} (${ES.units} packets)`, D.AWARD.gross], ["Price-support credit note from Munchly", D.SUPPORT.total], ...(x ? [[`Expiry credit note for ${fmt.num(x.units)} packs from Munchly`, x.credit]] : [])].map(([k, v]) => <div key={k} className="row between"><span>{k}</span><span className="tnum">{fmt.inr(v)}</span></div>)}
         <div className="hairline" style={{ margin: "4px 0" }} />
         <div className="row between"><b>What you receive</b><span className="tnum strong">{fmt.inr(recv)}</span></div>
         <div className="row between"><span>What you paid: {fmt.num(D.PLAN.units)} × ₹{CHIPS.dp}, the van and the listing fee</span><span className="tnum">{fmt.inr(-paid)}</span></div>

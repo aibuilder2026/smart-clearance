@@ -279,6 +279,26 @@ export type Doc = {
 	exact?: number;
 	/** when the document is dated (the invoice) */
 	date?: string;
+	/** the expiry paper's settlement (SC-94) */
+	policy?: 'full-credit' | 'price-support' | 'none';
+	destroyedBy?: 'client' | 'distributor' | null;
+	disposal?: number;
+	epr?: number;
+	itc?: number;
+	reversed?: number;
+};
+
+/** expiry day's settlement of the packs left at the godown (SC-94, money.js expirySettlement) */
+export type ExpirySettlement = {
+	policy: 'full-credit' | 'price-support' | 'none';
+	units: number;
+	credit: number | null;
+	destroyedBy: 'client' | 'distributor' | null;
+	kg: number;
+	disposal: number;
+	epr: number;
+	itc: number;
+	total: number;
 };
 
 export type Quarter = {
@@ -688,6 +708,8 @@ export type CaseData = {
 	/** what each finished line took, and the packs no channel took, left at the godown (SC-86); the live source only,
 	 *  once a line has finished */
 	realised?: { lines: { id: string; units: number }[]; godown: number } | null;
+	/** expiry day's settlement, once the report has run (SC-94); the live source only */
+	expiry?: ExpirySettlement | null;
 	/** the batch the same agents donate: how many packs go to the food bank, which partner takes them, and when */
 	donation: { batch: Batch; sku: Sku; dist: Distributor; plan: Plan; units: number; partner: Partner } & Omit<
 		Journey['donation'],

@@ -7,7 +7,7 @@
   const { useStore, useRoute, Screen, Columns, SectionTitle, Locked } = S;
   const CH_NAMES = D.QUARTER.mixNames;
   const DOC = id => D.DOCS.find(d => d.id === id);
-  const ES = D.PLAN.lines.find(l => l.id === "expiresoon"), KL = D.PLAN.lines.find(l => l.id === "kirana");
+  const ES = D.PLAN.lines.find(l => l.id === "expiresoon");
   const CHIPS = D.SKUS.chips, SHOPS = D.KIRANAS.length;
   const download = (name, text, type = "text/csv") => { const url = URL.createObjectURL(new Blob([text], { type: type + ";charset=utf-8" })); const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000); };
   const csv = rows => rows.map(r => r.map(c => { const v = String(c == null ? "" : c); return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v; }).join(",")).join("\n");
@@ -35,23 +35,36 @@
         <p className="pp-note">A financial credit note, with no GST adjustment, so {R.name} ends whole at the ₹{CHIPS.dp} it paid. It covers the buy-10-get-2 scheme too, so no separate scheme note is needed. Munchly pays this instead of an expiry claim of {fmt.inr(D.CLAIM.total)}. Trued up after the return window closes on {fmt.day(D.RETURN_BY)}.</p>
       </div>; }
     if (id === "itc") return <div className="paper pp">{head("GST ITC memo", `Section 17(5)(h) · ${D.CLIENT.short}`, <span className="pp-stamp ok">ITC KEPT</span>)}<Line k="Packets sold under tax invoices" v={fmt.num(D.PLAN.soldUnits)} /><Line k="Destroyed, gifted or lost" v="0" /><Line k="Input GST on the stock" sub={`₹${CHIPS.itcPerUnit.toFixed(2)} a pack, from the cost sheet`} v={fmt.inr2(d.amount)} strong /><Line k="Reversal in GSTR-3B, Table 4(B)(1)" v="none" /><p className="pp-note">Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. These packs were sold under tax invoices, so it does not apply. The credit would be reversed only if the stock came back under the expiry claim and Munchly destroyed it. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since 1 October 2023, 17(5)(fa) on CSR donations.</p></div>;
+    if (id === "expiry") { const C = D.CLIENT.short, x = d;
+      if (x.policy === "none") return <div className="paper pp">{head("Expiry notice", `${D.BATCHES.find(b => b.hero).id} · ${R.name}`, <span className="pp-stamp">NO RETURNS</span>)}<Line k="Packs expired at the godown" v={fmt.num(x.units)} strong /><Line k={`Credit from ${C}`} v="none" /><p className="pp-note">{x.note}</p></div>;
+      return <div className="paper pp">{head(x.type, `${x.no} · ${C} → ${R.name}`, <span className="pp-stamp ok">NO GST ADJ.</span>)}
+        <Line k={`${fmt.num(x.units)} packs expired at the godown`} sub="at the dealer price" v={x.amount != null ? fmt.inr2(x.amount) : "—"} />
+        <Line k={`Credit to ${R.name}`} v={x.amount != null ? fmt.inr2(x.amount) : "—"} strong />
+        {x.policy === "full-credit" && <><div className="pp-sub">{C}'s own costs, on destroying them</div><Line k="Disposal" v={fmt.inr2(x.disposal)} /><Line k="EPR on the packaging" v={fmt.inr2(x.epr)} /><Line k="Input GST reversed" sub="section 17(5)(h)" v={fmt.inr2(x.itc)} /><Line k="Expiry, all in" v={fmt.inr2((x.amount || 0) + x.disposal + x.epr + x.itc)} strong /></>}
+        <p className="pp-note">{x.note}</p></div>; }
     if (id === "fssai") return <div className="paper pp">{head("FSSAI surplus-food checklist", "MF-2409-117", <span className="pp-stamp">NOT REQUIRED</span>)}<p className="pp-note">Nothing from this batch was donated. The Mango Drink batch MF-2410-118 has its own checklist: {D.MANGO_FB} packs to Feeding India, Hyderabad.</p></div>;
     return <div className="paper pp">{head("Destruction certificate", "MF-2409-117", <span className="pp-stamp">NOT REQUIRED</span>)}<Line k="Units left to destroy" v="0" strong /><p className="pp-note">Issued only when units remain, with the ITC reversal entry pre-filled so finance is never surprised.</p></div>;
   }
 
-  // the same batch read from each side: the distributor ends whole, and Munchly pays less than a claim
+  // the same batch read from each side: the distributor ends whole, and Munchly pays less than a claim. What the
+  // distributor receives is what each channel took, at its price (the credit note's rows), so a line that took less
+  // counts less; on expiry day the packs left at the godown add their settlement on both sides (SC-94)
   function KeepsWhat() {
-    const recv = KL.gross + D.AWARD.gross + D.SUPPORT.total; const paid = D.PLAN.units * CHIPS.dp + D.SUPPORT.van + D.SUPPORT.fee;
+    const h = useStore().hero; const x = h.expiry && h.expiry.units > 0 ? h.expiry : null;
+    const took = D.SUPPORT.rows.reduce((t, r) => t + r.units * r.price, 0), credit = (x && x.credit) || 0, settled = x ? x.total : 0;
+    const recv = took + D.SUPPORT.total; const paid = D.PLAN.units * CHIPS.dp + D.SUPPORT.van + D.SUPPORT.fee; const ends = Math.round(recv + credit - paid);
     return <Card className="stack snug">
       <span className="card-title">Who keeps what</span>
       <div className="stack tight t-subhead">
         <div className="row between"><span>{D.DISTRIBUTORS.rakesh.name} receives</span><span className="tnum">{fmt.inr(recv)}</span></div>
+        {credit > 0 && <div className="row between"><span>and the expiry credit for {fmt.num(x.units)} packs</span><span className="tnum">{fmt.inr(credit)}</span></div>}
         <div className="row between"><span>and paid {fmt.num(D.PLAN.units)} × ₹{CHIPS.dp}, the van and the fee</span><span className="tnum">{fmt.inr(-paid)}</span></div>
-        <div className="row between"><b>He ends whole</b><span className="tnum strong">{fmt.inr(Math.round(recv - paid))}</span></div>
+        <div className="row between"><b>{x && !credit ? "Its loss on the expired packs" : "He ends whole"}</b><span className="tnum strong">{fmt.inr(ends)}</span></div>
         <div className="hairline" style={{ margin: "4px 0" }} />
         <div className="row between"><span>Expiry claim Munchly avoids</span><span className="tnum">{fmt.inr(D.CLAIM.total)}</span></div>
         <div className="row between"><span>Price support it pays instead</span><span className="tnum neg">{fmt.inr(-D.SUPPORT.total)}</span></div>
-        <div className="row between"><b>Better for Munchly</b><Money value={D.CLAIM.total - D.SUPPORT.total} size="s" style={{ color: "var(--primary-text)", fontSize: 22 }} /></div>
+        {settled > 0 && <div className="row between"><span>and the expiry settlement for {fmt.num(x.units)} packs</span><span className="tnum neg">{fmt.inr(-settled)}</span></div>}
+        <div className="row between"><b>Better for Munchly</b><Money value={D.CLAIM.total - D.SUPPORT.total - settled} size="s" style={{ color: "var(--primary-text)", fontSize: 22 }} /></div>
       </div>
       <span className="t-caption subtle">The same {fmt.inr(D.ACTUAL.swing)} swing as the ledger, seen from Munchly's cash: the ₹{CHIPS.dp} credit Rakesh would have claimed and the ₹{CHIPS.dp} he paid cancel out. At plan prices it is {fmt.inr(D.SUPPORT_PLAN.total)} of support and a {fmt.inr(D.PLAN.swing)} swing.</span>
     </Card>;
@@ -59,7 +72,7 @@
 
   function Paperwork({ me }) {
     const s = useStore(); const h = s.hero; const app = useApp(); const { toast } = useNotice();
-    const ready = !!h.docs; const [sel, setSel] = useState("invoice"); const [sheet, setSheet] = useState(false);
+    const ready = !!h.docs; const [sel, setSel] = useState(() => (DOC("expiry") ? "expiry" : "invoice")); const [sheet, setSheet] = useState(false); // once a batch has expired, its expiry paper first (SC-94)
     const open = id => { setSel(id); if (app.bp !== "desktop") setSheet(true); };
     const exportPack = () => { download("MF-2409-117-document-pack.csv", csv([["Document", "Issued by", "Number", "Status", "Amount (₹)", "Note"], ...D.DOCS.map(d => [d.type, d.owner, d.no, d.status, d.amount ? d.amount.toFixed(2) : "", d.note || ""])])); toast({ text: "Document pack exported", tone: "ok" }); };
     return <Screen me={me} title="Paperwork" sub="MF-2409-117 · prepared by the Paperwork agent at the award">

@@ -506,6 +506,89 @@ describe('the staff sale and what is left at the godown (SC-87)', () => {
 	});
 });
 
+describe("expiry day's settlement (SC-94)", () => {
+	const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
+	const inr2 = (n: number) => `₹${n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+	it("Priya's Execution settles the packs left at the godown by Munchly's policy, and opens the paper", async () => {
+		const go = vi.fn();
+		const s = source(fakeApi(moment('cleared'), 'priya'));
+		const r = render(LiveHost, {
+			props: { source: s, screen: 'execution', at: MANGO, onnavigate: go }
+		}) as unknown as RenderResult<never>;
+		await waitFor(() => expect(text(r)).toContain('Expiry settlement'));
+		const x = moment('cleared').members.priya.cases[MANGO].expiry!;
+		expect(x.policy).toBe('full-credit');
+		const t = text(r);
+		expect(t).toContain('Left at the godown'); // the card stays as it is, and the settlement follows it
+		expect(t).toContain('Full credit at expiry');
+		expect(t).toContain(`Credit to Lakshmi Agencies${inr(x.credit!)}`);
+		expect(t).toContain('Destroyed byMunchly');
+		expect(t).toContain(`Disposal, EPR, GST${inr(x.disposal + x.epr + x.itc)}`);
+		expect(t).toContain(
+			`The ${x.units.toLocaleString('en-IN')} packs come back to Munchly for full credit (${inr(x.credit!)}), and Munchly destroys them.`
+		);
+		await fireEvent.click(r.getByRole('button', { name: 'Open the paper' }));
+		expect(go).toHaveBeenCalledWith('paperwork', { replace: undefined, ref: MANGO });
+	});
+
+	it("the chips' Execution has no settlement: every pack went to a channel", async () => {
+		const s = source(fakeApi(moment('cleared'), 'priya'));
+		const r = await draw(s, 'execution', CHIPS);
+		await waitFor(() => expect(text(r)).toContain(`${CHIPS} · day 0 to`));
+		expect(moment('cleared').members.priya.cases[CHIPS].expiry!.units).toBe(0);
+		expect(text(r)).not.toContain('Expiry settlement');
+	});
+
+	it("Anita's Paperwork opens on the expiry credit note, with Munchly's own costs", async () => {
+		vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1440); // a desktop: the paper open beside the pack
+		const s = source(fakeApi(moment('cleared'), 'anita'));
+		const r = await draw(s, 'paperwork', MANGO);
+		await waitFor(() => expect(text(r)).toContain('Expiry credit note'));
+		const d = moment('cleared').members.anita.cases[MANGO].docs.find((x) => x.id === 'expiry')!;
+		const t = text(r);
+		expect(t).toContain(`${d.no} · Munchly → Lakshmi Agencies`);
+		expect(t).toContain(`${d.units!.toLocaleString('en-IN')} packs expired at the godown`);
+		expect(t).toContain(`Credit to Lakshmi Agencies${inr2(d.amount!)}`);
+		expect(t).toContain("Munchly's own costs, on destroying them");
+		expect(t).toContain(`Disposal${inr2(d.disposal!)}`);
+		expect(t).toContain(`Expiry, all in${inr2(d.amount! + d.disposal! + d.epr! + d.itc!)}`);
+		expect(t).toContain(d.note);
+	});
+
+	it("Lakshmi Agencies' You end whole counts what each line took, and the expiry credit", async () => {
+		const s = source(fakeApi(moment('cleared'), 'lakshmi-owner'));
+		const r = await draw(s, 'home', MANGO);
+		await waitFor(() => expect(text(r)).toContain('You end whole'));
+		const c = moment('cleared').members['lakshmi-owner'].cases[MANGO];
+		const x = c.expiry!;
+		const t = text(r);
+		expect(t).toContain('credit note issued');
+		expect(t).toContain('(84 packets)₹1,008'); // what the kiranas ordered, at ₹12
+		expect(t).toContain('From your staff sale (120 packets)₹960');
+		expect(t).toContain(`Price-support credit note from Munchly${inr(c.support!.total)}`);
+		expect(t).toContain(
+			`Expiry credit note for ${x.units.toLocaleString('en-IN')} packs from Munchly${inr(x.credit!)}`
+		);
+		expect(t).toContain('Your gain or loss₹0');
+	});
+
+	it("Anita's Who keeps what counts what each line took, and the settlement on both sides", async () => {
+		const s = source(fakeApi(moment('cleared'), 'anita'));
+		const r = await draw(s, 'paperwork', MANGO);
+		await waitFor(() => expect(text(r)).toContain('Who keeps what'));
+		const c = moment('cleared').members.anita.cases[MANGO];
+		const x = c.expiry!;
+		const took = c.support!.rows.reduce((t, row) => t + row.units * row.price, 0); // 84 at ₹12, 120 at ₹8, 58 donated
+		const t = text(r);
+		expect(t).toContain(`Lakshmi Agencies receives${inr(took + c.support!.total)}`);
+		expect(t).toContain(`and the expiry credit for ${x.units.toLocaleString('en-IN')} packs${inr(x.credit!)}`);
+		expect(t).toContain('He ends whole₹0');
+		expect(t).toContain(`and the expiry settlement for ${x.units.toLocaleString('en-IN')} packs−${inr(x.total)}`);
+		expect(t).toContain(`Better for Munchly${inr(c.claim!.total - c.support!.total - x.total)}`);
+	});
+});
+
 describe('every watchlist row opens something (SC-90)', () => {
 	it('an at-risk batch the Watcher has not flagged opens its sheet, saying when it will be', async () => {
 		const s = source(fakeApi(moment('start'), 'priya'));

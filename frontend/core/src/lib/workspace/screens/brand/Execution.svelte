@@ -24,6 +24,7 @@
 	import Screen from '../common/Screen.svelte';
 	import ListingView from '../trade/ListingView.svelte';
 	import Chat from './Chat.svelte';
+	import ExpirySettlement from './ExpirySettlement.svelte';
 	import GodownLeft from './GodownLeft.svelte';
 	import StaffOps from './StaffOps.svelte';
 
@@ -251,6 +252,12 @@
 				plan={c.plan}
 				net={c.actual.net}
 				dist={c.dist}
+			/>{/if}
+		{#if c.expiry && c.expiry.units > 0}<ExpirySettlement
+				settle={c.expiry}
+				dist={c.dist}
+				client={ws.data.client.short}
+				batch={c.batch.id}
 			/>{/if}
 	</div>{/snippet}
 {#snippet side()}<SectionTitle>Agent timeline</SectionTitle><Card

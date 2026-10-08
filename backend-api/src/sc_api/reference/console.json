@@ -1298,8 +1298,8 @@
 						"agent": "impact",
 						"key": "report.due",
 						"ref": "MF-2409-117",
-						"due": "2026-10-30T10:00:00+05:30",
-						"blocked": "After the papers and the van round"
+						"due": "2026-11-18T10:00:00+05:30",
+						"blocked": null
 					}
 				]
 			}

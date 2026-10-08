@@ -506,6 +506,20 @@ const moneyFixtures = (() => {
 			[1360, 'chips'],
 			[500, 'facewash']
 		].map(([units, id]) => ({ units, sku: D.SKUS[id], out: M.expiryClaim(units, D.SKUS[id]) })),
+		// SC-94: what the godown's packs come to on expiry day, under each expiry policy; the Mango has no dealer price
+		expirySettlement: [
+			[564, 'chips', 'full-credit'],
+			[564, 'chips', 'price-support'],
+			[564, 'chips', 'none'],
+			[1318, 'mango', 'full-credit'],
+			[1318, 'mango', 'price-support'],
+			[0, 'chips', 'full-credit']
+		].map(([units, id, policy]) => ({
+			units,
+			sku: D.SKUS[id],
+			policy,
+			out: M.expirySettlement(units, D.SKUS[id], policy)
+		})),
 		// money.js numbers the story's invoice and credit note itself; the port takes the numbers as arguments
 		documents: [
 			{ plan: heroPlan, sku: D.SKUS.chips, award, support, parties },

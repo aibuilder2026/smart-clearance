@@ -117,6 +117,7 @@ def _state(case: m.Case) -> dict[str, Any]:
         "truck": case.truck,
         "docs": case.docs,
         "staff": case.staff,
+        "expiredAt": case.expired_at.isoformat() if case.expired_at else None,
     }
 
 
@@ -756,6 +757,10 @@ async def approve(ctx: Ctx, client_id: str, ref: str, device: str) -> None:
     if J.next_agent_event(_state(s.case), client=s.c.id, ref=ref) is not None:
         await ev.publish(ctx, J.Event(J.STEP, {"type": J.EXECUTE, "client": s.c.id, "ref": ref}, f"{s.c.id}:{ref}"))
     await _advance(ctx, s)  # a plan with no line to wait for (a write-off) goes straight to the papers
+    # the report falls due on expiry day, the batch's best-before, and closes the journey as it stands (SC-94)
+    bb = s.batch.best_before
+    report_at = datetime(bb.year, bb.month, bb.day, 10, tzinfo=IST)
+    await ev.timer(ctx, s.c, "report.due", max(report_at, ev.now(ctx, s.c)), case=s.case)
     await _save(ctx, s, note="approved")
 
 
@@ -1471,6 +1476,14 @@ async def close_listing(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> 
     listing_ = s.case.listing or {}
     if listing_.get("status") != "live" or s.case.award:
         raise Noop()
+    await _end_listing(ctx, s)
+    await _run(ctx, s, client_id, run, f"closed {listing_['id']} unsold")
+    await _save(ctx, s, note=f"{listing_['id']} closed unsold")
+
+
+async def _end_listing(ctx: Ctx, s: Scene) -> None:
+    """a lot no buyer took closes unsold: its open bids lapse, and the case moves on"""
+    listing_ = s.case.listing or {}
     s.case.listing = {**listing_, "status": "ended", "endedAt": ev.now(ctx, s.c).isoformat()}
     for b in (
         await ctx.session.execute(
@@ -1478,11 +1491,9 @@ async def close_listing(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> 
         )
     ).scalars():
         b.status = "expired"
-    text = copy.listing_ended_event(listing_id=listing_["id"], units=int(listing_.get("units", 0)))
+    text = copy.listing_ended_event(listing_id=listing_.get("id", ""), units=int(listing_.get("units", 0)))
     await ev.feed(ctx, s.c, s.case, "unsold", "execute", text, agent="Lister", icon="shopping-bag")
     await _advance(ctx, s)
-    await _run(ctx, s, client_id, run, f"closed {listing_['id']} unsold")
-    await _save(ctx, s, note=f"{listing_['id']} closed unsold")
 
 
 # --- settle -----------------------------------------------------------------------------------------------------------
@@ -1593,10 +1604,6 @@ async def documents(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> None
     orders = await _orders(ctx, s)
     if not orders:  # nothing went to the kiranas: no van round
         s.case.van = {"status": "done", "done": 0, "at": ev.now(ctx, s.c).isoformat()}
-    # the report follows the return window, once the van round has run
-    return_by = s.batch.best_before - timedelta(days=s.c.return_window_days)
-    report_at = datetime(return_by.year, return_by.month, return_by.day, 10, tzinfo=IST) + timedelta(days=1)
-    await ev.timer(ctx, s.c, "report.due", max(report_at, ev.now(ctx, s.c)), case=s.case)
     invoice = next((d for d in docs if d["id"] == "invoice"), None)
     credit = next((d for d in docs if d["id"] == "support"), None)
     dist_people = await _people(ctx, s.c, org=s.dist.id)
@@ -1714,6 +1721,111 @@ async def review(ctx: Ctx, client_id: str, ref: str) -> None:
     await _save(ctx, s)
 
 
+# --- expiry day (SC-94) -----------------------------------------------------------------------------------------------
+
+
+async def expire(ctx: Ctx, client_id: str, ref: str) -> None:
+    """expiry day: Report now in the console, or the report's own timer at best-before (SC-94). The journey is taken to
+    its end as it stands: the kirana scheme closes with the orders placed, a lot no buyer accepted ends unsold and an
+    accepted one counts as collected, an open staff sale closes at what was recorded, a confirmed pickup counts as
+    collected and an unconfirmed one is declined, and the orders placed count as delivered. The papers follow if they
+    were not drafted; the report then settles what is left at the godown by the client's expiry policy"""
+    s = await scene(ctx, client_id, ref)
+    if s.case.status != "open" or s.case.phase not in ("approved", "executing", "dispatched", "settled"):
+        raise Noop()
+    at = ev.now(ctx, s.c).isoformat()
+    s.case.expired_at = ctx.clock.now()  # every line not yet run counts as done, with nothing taken
+    if (s.case.offer or {}).get("status") == "sent":
+        await _close_offer(ctx, s)
+    if s.case.award:
+        if (s.case.truck or {}).get("status") != "dispatched":  # the accepted lot counts as collected
+            s.case.truck = {"status": "dispatched", "at": at, "onExpiry": True}
+            s.case.award = {**s.case.award, "status": "paid"}
+    elif (s.case.listing or {}).get("status") == "live":
+        await _end_listing(ctx, s)
+    if (s.case.staff or {}).get("status") == "open":
+        units = int(s.case.staff["units"])
+        s.case.staff = {
+            **s.case.staff,
+            "status": "recorded",
+            "sold": 0,
+            "left": units,
+            "recordedAt": at,
+            "onExpiry": True,
+        }
+    d = s.case.donation or {}
+    if d.get("status") == "confirmed":
+        s.case.donation = {**d, "status": "collected", "collectedAt": at, "onExpiry": True}
+    elif d and d.get("status") not in ("collected", "declined"):
+        await _decline(ctx, s, "the batch expired before the pickup", agent="Donation")
+    await _advance(ctx, s)
+    orders = await _orders(ctx, s)
+    if (s.case.van or {}).get("status") != "done":  # the orders placed count as delivered
+        s.case.van = {"status": "done", "done": len(orders), "at": at, "onExpiry": bool(orders)}
+    plan_ = await realised(ctx, s)
+    await ev.feed(
+        ctx,
+        s.c,
+        s.case,
+        "expired",
+        "report",
+        copy.expired_event(units=int(plan_.get("godown", 0)), godown=s.dist.godown or f"{s.dist.city} godown"),
+        agent="Impact",
+        icon="hourglass",
+    )
+    await _save(ctx, s, note="expired")
+    if s.case.phase == "dispatched" and not s.case.docs:
+        await documents(ctx, client_id, ref, None)
+
+
+EXPIRY_PAPER = {
+    "full-credit": "Expiry credit note",
+    "price-support": "Price support at expiry",
+    "none": "Expiry notice",
+}
+
+
+async def _settle_expiry(ctx: Ctx, s: Scene, plan_: dict[str, Any]) -> dict[str, Any]:
+    """the packs left at the godown, expired: settled by the client's expiry policy (money.expiry_settlement), with its
+    paper; the destruction certificate counts them when the client destroys them, and the GST memo reverses their
+    credit"""
+    godown = int(plan_.get("godown", 0))
+    settle = money.jsonable(money.expiry_settlement(godown, s.sku_obj(), s.c.expiry, rules=s.rules))
+    if not godown:
+        return settle
+    client, dist = _client_short(s.c), s.dist.name
+    at = s.dist.godown or f"{s.dist.city} godown"
+    number = await world.next_number(ctx, s.c.id, "support") if (settle["credit"] or 0) > 0 else ""
+    paper = {
+        "id": "expiry",
+        "type": EXPIRY_PAPER[s.c.expiry],
+        "owner": client,
+        "no": number,
+        "status": "not required" if s.c.expiry == "none" else "generated",
+        "amount": settle["credit"],
+        "units": godown,
+        "policy": s.c.expiry,
+        "destroyedBy": settle["destroyedBy"],
+        "disposal": settle["disposal"],
+        "epr": settle["epr"],
+        "itc": settle["itc"],
+        "note": copy.expiry_settled(
+            policy=s.c.expiry, units=godown, credit=settle["credit"], client=client, distributor=dist, godown=at
+        ),
+        "pdf": None,
+        "date": _today(ctx, s.c).isoformat(),
+    }
+    docs = [dict(d) for d in (s.case.docs or [])]
+    for d in docs:
+        if d["id"] == "destruction" and settle["destroyedBy"] == "client":
+            n = int(plan_.get("leftover", 0)) + godown
+            d.update({"no": f"{n} units", "status": "generated", "units": n})
+        if d["id"] == "itc" and settle["itc"]:
+            d["reversed"] = settle["itc"]
+    s.case.docs = money.jsonable([*docs, paper])
+    return settle
+
+
 async def report(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> dict[str, Any]:
     """Impact posts the ledger once the return window has closed: the batch is cleared, and the console's batch closes
     with what it recovered. Returns the ledger, which the agent appends to BigQuery"""
@@ -1722,6 +1834,7 @@ async def report(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> dict[st
     if s.case.phase != "settled" or (s.case.van or {}).get("status") != "done":
         raise Noop()
     plan_ = await realised(ctx, s)  # what the lines came to; what no channel took stays at the godown
+    settle = await _settle_expiry(ctx, s, plan_)  # and expires, settled by the client's expiry policy (SC-94)
     award = s.case.award
     actual = money.actual_net(plan_, award["price"]) if award else {"net": plan_.get("net", 0)}
     at = ev.now(ctx, s.c)
@@ -1736,6 +1849,7 @@ async def report(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> dict[st
             "lines": plan_.get("lines", []),
             "planned": (s.case.plan or {}).get("lines", []),
             "godown": plan_.get("godown", 0),
+            "expiry": settle,
             "at": at.isoformat(),
             "returnBy": return_by,
             "actual": actual,
@@ -1768,6 +1882,7 @@ async def report(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> dict[st
                 planned=float((s.case.plan or {}).get("net", 0)),
                 godown=int(plan_.get("godown", 0)),
                 at=s.dist.godown or f"{s.dist.city} godown",
+                settled=next((d["note"] for d in s.case.docs or [] if d["id"] == "expiry"), ""),
             ),
         )
     for p in await _people(ctx, s.c, role="sustainability"):
