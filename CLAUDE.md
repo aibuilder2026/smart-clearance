@@ -1061,7 +1061,7 @@
     - backend-api 468 passed; the story's journey test checks −₹26,329.60 at Detect, nothing for a partner, and the same write-off in the plan;
     - the frontend gate passes, with workspace at 58: a new live test draws the card at Detect, and fails without the fix;
     - the live fixtures were regenerated.
-- **SC-101** (In Progress, branch `SC-101-munchly-chips-rerun`): Munchly Chips E2E run again after SC-96 to SC-100, and the old run's stills and recording cleaned up, asked for by the maintainer.
+- **SC-101** (In Review, branch `SC-101-munchly-chips-rerun`): Munchly Chips E2E run again after SC-96 to SC-100, and the old run's stills and recording cleaned up, asked for by the maintainer.
   - **The suite** now checks each fix as it goes:
     - −₹26,330 if destroyed at Detect;
     - the Lot won bill's total of ₹11,510.00;
