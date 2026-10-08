@@ -260,8 +260,17 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     r = await api.post(f"{WS}/cases/{HERO}/dispatches", json={"kind": "truck"}, headers=RAKESH)
     assert r.status_code == 200, r.text
     await agent(api, f"/cases/{HERO}/documents", "paperwork", "paperwork")
+    # the Paperwork agent's PDF is kept on its paper, and Finance can open it (SC-100)
+    r = await api.patch(
+        f"/internal/clients/munchly/cases/{HERO}/documents/invoice",
+        json={"object": f"munchly/{HERO}/invoice.pdf", "run": {"agent": "paperwork", "eventKey": "paperwork-pdf"}},
+        headers=AGENT,
+    )
+    assert r.status_code == 200, r.text
     c = await case(api, ANITA)
     docs = {d["id"]: d for d in c["docs"]}
+    assert docs["invoice"]["pdf"] is True and docs["support"]["pdf"] is False
+    assert (await api.get(f"{WS}/documents/{HERO}/invoice", headers=ANITA)).status_code == 200
     assert docs["invoice"]["no"] == "INV/26-27/0931" and docs["invoice"]["total"] == 11510
     assert {k: docs["invoice"][k] for k in invoice} == invoice  # the paper is the bill the buyer saw
     assert docs["support"]["no"] == "CN/0117" and docs["support"]["amount"] == 8768

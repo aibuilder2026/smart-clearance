@@ -348,7 +348,7 @@ From the Claude desktop app:
 - The a11y suite scans the four apps' builds. design3's prototypes are not scanned; a design change is checked once it is ported.
 - The workspace app runs live on backend-api locally (SC-73), with the agents' pull worker; in production it stays on the prototype's stub (munchly-smartclearance.web.app, each browser keeping its own journey) until infra phase B (SC-74) is applied and `workspace_live` sets `WORKSPACE_API_BASE`.
 - The browser suites cover the workspace app on its stub; its live states are tested in jsdom on what backend-api answered (`frontend/workspace/tests/live`). A live end-to-end spec for the workspace, with two people in two browsers, is not written.
-- Locally, the Paperwork agent cannot render PDFs without Pango (the agents' image has it), so the papers carry no PDF there.
+- Locally, the Paperwork agent renders its PDFs once Pango is installed (on a Mac, `brew install pango`; the agents' image has it), into the local docs bucket; without it the papers carry no PDF, and `agents/scripts/dev.sh` says so as it starts (SC-100).
 - A switched-off agent's summary in the console's agent pipeline fails contrast (2.4:1, faded with opacity; SC-59), found by the a11y suite's first scan of the paused state (SC-58).
 - The console edits its own browser store (`core/platform.js`, seeded from the app's data). The app's workspace doesn't read the console's changes yet.
 - The landing page's Book a demo saves its request in the browser store, where the console lists it; nothing is sent anywhere.

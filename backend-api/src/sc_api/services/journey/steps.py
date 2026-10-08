@@ -1671,11 +1671,9 @@ async def documents(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> None
 async def document_pdf(ctx: Ctx, client_id: str, ref: str, doc_id: str, name: str, run: Run | None) -> None:
     """the PDF the Paperwork agent rendered into the docs bucket"""
     s = await scene(ctx, client_id, ref)
-    docs = list(s.case.docs or [])
-    for d in docs:
-        if d["id"] == doc_id:
-            d["pdf"] = name
-    s.case.docs = docs
+    # a new dict for the paper, not the stored one changed in place: the column is then a value that differs from what
+    # was loaded, so it is written (SC-100: in place, the PDF was never kept)
+    s.case.docs = [{**d, "pdf": name} if d["id"] == doc_id else d for d in s.case.docs or []]
     await ctx.session.flush()
     await ev.changed(ctx, s.c, ref)
 

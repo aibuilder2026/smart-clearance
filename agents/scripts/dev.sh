@@ -13,4 +13,7 @@ need uv gcloud
 agents_env local
 need_models
 cd "$AGENTS_DIR"
+# the Paperwork agent's PDFs need Pango (SC-100); without it the papers carry no PDF
+uv run --frozen python -c 'import weasyprint' >/dev/null 2>&1 ||
+	echo "agents: WeasyPrint cannot load Pango, so the papers will carry no PDF (on a Mac: brew install pango)" >&2
 exec uv run --frozen sc-agents-worker
