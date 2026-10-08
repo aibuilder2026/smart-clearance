@@ -31,6 +31,14 @@ def _on(state: dict[str, Any]) -> bool:
     return (state.get("settings") or {}).get("on", {}).get(AGENT, True)
 
 
+def journey_id(client: str, settings: dict[str, Any]) -> str:
+    """the journey a ledger row belongs to: the client and its day 0, and when it was started again, so a replay of the
+    story's calendar is a journey of its own (SC-88)"""
+    since = str(settings.get("journeyFrom") or "")
+    stamp = "".join(ch for ch in since[:16] if ch.isdigit())
+    return f"{client}:{settings.get('day0') or ''}" + (f"@{stamp}" if stamp else "")
+
+
 def rows(client: str, case: dict[str, Any], ledger: dict[str, Any], *, journey: str, recorded: str) -> list[dict]:
     """the ledger, one row per exit: what it recovered (ExpireSoon at its awarded price) and kept from landfill, and a
     row for the packs left at the godown, if any (SC-86)"""
@@ -85,7 +93,7 @@ async def _report(rc: RunCtx, state: dict[str, Any]) -> dict[str, Any]:
         return halt()
     ledger = out["ledger"]
     settings = state.get("settings") or {}
-    journey = f"{rc.msg.client}:{settings.get('day0') or ''}"
+    journey = journey_id(rc.msg.client, settings)
     found = rows(rc.msg.client, case, ledger, journey=journey, recorded=rc.deps.clock().isoformat())
     ids = [f"ledger:{r['journey_id']}:{r['batch_ref']}:{r['channel']}" for r in found]
     try:

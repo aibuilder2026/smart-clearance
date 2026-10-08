@@ -14,7 +14,7 @@ from typing import Any
 from sc_api.domain.clock import IST
 from sc_api.domain.display import MONTHS
 from sc_api.identity import synthetic_uid
-from sc_api.services import agents, audit, clients, people, staff, supply
+from sc_api.services import agents, audit, clients, exports, people, staff, supply
 from sc_api.services.context import Actor, Ctx
 from sc_api.services.reference import load
 
@@ -233,24 +233,7 @@ class Story:
             )
         # its first stock export, set up in the console and mapped (SC-84), so the workspace's Setup opens mapped
         if fx := c.get("firstExport"):
-            row.setup_mapped = sum(1 for x in fx["columns"] if x["column"])
-            row.last_import = {
-                "at": self.when("1 Oct, 16:40").isoformat(),
-                "file": fx["file"],
-                "rows": fx["rows"],
-                "batches": fx["batches"],
-            }
-            row.workspace_doc = {
-                **(row.workspace_doc or {}),
-                "firstExport": {
-                    "export": "story",
-                    "file": fx["file"],
-                    "by": fx["by"],
-                    "at": fx["at"],
-                    "pending": False,
-                },
-                "exportColumns": [[x["field"], x["column"]] for x in fx["columns"] if x["column"]],
-            }
+            exports.restore(row, fx, self.when("1 Oct, 16:40"))
 
     async def history(self) -> None:
         ctx, c = self.ctx, self.client

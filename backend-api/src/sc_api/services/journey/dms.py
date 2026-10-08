@@ -162,7 +162,8 @@ async def write_backfill(ctx: Ctx, client_id: str, day0: date, days: int = 90) -
 
 async def write_shelf(ctx: Ctx, client_id: str, case: m.Case, day: date, story: dict[str, Any] | None) -> str:
     assert ctx.cloud is not None and ctx.settings.exports_bucket
-    name = f"{client_id}/{day.isoformat()}/shelf-{case.batch_ref}-{day.isoformat()}.csv"
+    # one file a case: a journey started again counts its own shelves, never an earlier one's (SC-88)
+    name = f"{client_id}/{day.isoformat()}/shelf-{case.batch_ref}-{case.id}-{day.isoformat()}.csv"
     rows = await shelf_rows(ctx, client_id, case, day, story)
     await ctx.cloud.storage.write(ctx.settings.exports_bucket, name, _csv(SHELF, rows), "text/csv")
     return f"gs://{ctx.settings.exports_bucket}/{name}"

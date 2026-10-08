@@ -4,7 +4,7 @@ client keeps who uploaded it and when (`workspace_doc.firstExport`). Its mapping
 (`steps.record_export`: `setup_mapped`, `last_import`), which marks the upload mapped once it names that file. A
 journey reset keeps both, so the workspace's Setup opens mapped and its operator only confirms the guardrails."""
 
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Any
 
 from sc_api import models as m
@@ -73,6 +73,18 @@ async def arrived(ctx: Ctx, client_id: str, export_id: str, file_name: str | Non
         f"Uploaded {copy.possessive(c.name)} stock export {shown}; the Data agent maps and loads it",
         {"export": export_id, "file": shown},
     )
+
+
+def restore(c: m.Client, fx: dict[str, Any], at: datetime) -> None:
+    """the client's first stock export as the story has it, mapped (cli/story.py builds it; a journey reset puts it
+    back, SC-88): the workspace's Setup opens mapped, by the story's own file and columns"""
+    c.setup_mapped = sum(1 for x in fx["columns"] if x["column"])
+    c.last_import = {"at": at.isoformat(), "file": fx["file"], "rows": fx["rows"], "batches": fx["batches"]}
+    c.workspace_doc = {
+        **(c.workspace_doc or {}),
+        "firstExport": {"export": "story", "file": fx["file"], "by": fx["by"], "at": fx["at"], "pending": False},
+        "exportColumns": [[x["field"], x["column"]] for x in fx["columns"] if x["column"]],
+    }
 
 
 def loaded(c: m.Client, files: list[str], columns: Any = None) -> None:

@@ -1,13 +1,17 @@
 """A journey from the start (SC-66): what hydrate does after it builds Munchly's world, and what an operator runs to
 play the story again (POST /internal/jobs/journey-reset, hydrate.sh --journey-reset, or the paused Scheduler job).
 
-Nothing is deleted: open cases close as `reset`, and the workspace no longer shows any case opened before the reset,
-whether it closed as `reset` or as `cleared` (SC-81). The story's batches are dated again from the new day 0, Rakesh
-Traders' permission and the setup's confirmation go back to not yet given, and the client's clock moves forward to
-08:00 on day 0, just before the Data agent's 08:30 and the Watcher's 09:00, running at the client's day length from
-there (SC-86). Every at-risk batch then runs its own journey from the Watcher's first check: nothing is staged ahead
-(the Mango Drink was, until SC-86). A gate override set on a batch in the console stays: it is the client's
-configuration (SC-82). So does the stock export's mapping and who uploaded it, so Setup opens mapped (SC-84).
+Open cases close as `reset`, and the workspace no longer shows any case opened before the reset, whether it closed as
+`reset` or as `cleared` (SC-81), nor an earlier journey's pushes or ledgers (SC-88). The story's batches are dated again
+from the new day 0, Rakesh Traders' permission and the setup's confirmation go back to not yet given, and the client's
+clock moves forward to 08:00 on day 0, just before the Data agent's 08:30 and the Watcher's 09:00, running at the
+client's day length from there (SC-86). Every at-risk batch then runs its own journey from the Watcher's first check:
+nothing is staged ahead (the Mango Drink was, until SC-86).
+
+A synthetic workspace replaying the story goes back to the story's own start (SC-88): its members' statuses (and any
+member added in a demo leaves the workspace), its document numbers, its stock export as the story maps it, and no batch
+but the story's. What stays is the client's configuration: a gate override set on a batch (SC-82), the SKUs' gates,
+the guardrails, the agents' settings and the day length.
 """
 
 from datetime import date, datetime, time, timedelta
@@ -18,7 +22,7 @@ from sqlalchemy import select
 from sc_api import models as m
 from sc_api.domain import journey as J
 from sc_api.domain.clock import IST, journey_morning
-from sc_api.services import audit
+from sc_api.services import audit, exports
 from sc_api.services.context import Ctx
 from sc_api.services.journey import dms, world
 from sc_api.services.journey import events as ev
@@ -98,6 +102,8 @@ async def reset(ctx: Ctx, client_id: str) -> dict[str, Any]:
     doc["heroRef"] = hero_ref
     doc["journeyFrom"] = started.isoformat()
     c.workspace_doc = doc
+    if synthetic:
+        await _story(ctx, c, j, day0)
     await ev.start_at(ctx, c, journey_morning(day0), replay=synthetic)
     # the daily runs start over with the journey's days
     c.workspace_doc = {k: v for k, v in (c.workspace_doc or {}).items() if k != "daily"}
@@ -121,3 +127,42 @@ async def reset(ctx: Ctx, client_id: str) -> dict[str, Any]:
     await ev.apply_speed(ctx, c)
     await ev.changed(ctx, c)
     return {"day0": day0.isoformat(), "hero": hero_ref}
+
+
+async def _story(ctx: Ctx, c: m.Client, j: dict[str, Any], day0: date) -> None:
+    """the story's own start, for a synthetic workspace (SC-88): what a run-through changed beyond its cases"""
+    story = {x["id"]: x for x in j["members"]}
+    left = []
+    for cm in (
+        await ctx.session.execute(select(m.ClientMember).where(m.ClientMember.client_id == c.id).with_for_update())
+    ).scalars():
+        x = story.get(cm.ref)
+        if x is None:  # invited in a demo: leaves the workspace (the account stays), unless it is the approver
+            if cm.ref != c.approver_ref:
+                left.append(cm.name)
+                await ctx.session.delete(cm)
+            continue
+        if cm.status != x["status"]:
+            cm.status = x["status"]
+            cm.joined_at = None if x["status"] == "invited" else cm.joined_at or ctx.clock.now()
+    for kind, n in j["numbers"].items():  # the papers are numbered from the story's again
+        row = await ctx.session.get(m.DocumentNumber, (c.id, kind), with_for_update=True)
+        if row is not None:
+            row.next = n["next"]
+    fx = next((x.get("firstExport") for x in load("console.json")["state"]["clients"] if x["id"] == c.id), None)
+    if fx:  # the story's own stock export, mapped (SC-84)
+        exports.restore(c, fx, datetime.combine(day0 - timedelta(days=1), time(16, 40), IST))
+    ours = {x["id"] for x in j["batches"]}
+    for b in (await ctx.session.execute(select(m.Batch).where(m.Batch.client_id == c.id).with_for_update())).scalars():
+        if b.ref in ours:
+            continue
+        used = await ctx.session.execute(select(m.Case.id).where(m.Case.client_id == c.id, m.Case.batch_ref == b.ref))
+        if used.first() is None:
+            await ctx.session.delete(b)  # a batch an uploaded export brought: gone with the journey
+        else:
+            b.closed_at, b.outcome = b.closed_at or ctx.clock.now(), "reset"
+    await ctx.session.flush()
+    if left:
+        await audit.record(
+            ctx, c.id, "journey.members", f"took {', '.join(left)} out of the workspace for the story's start", {}
+        )
