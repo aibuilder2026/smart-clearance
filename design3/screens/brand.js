@@ -314,6 +314,7 @@
     ), /* @__PURE__ */ React.createElement(Sheet, { open: sheet, onClose: () => setSheet(false), title: "ExpireSoon · as buyers see it" }, window.SC3_SCREENS.ListingView ? React.createElement(window.SC3_SCREENS.ListingView, { readOnly: true }) : null));
   }
   const all = (h) => h.orders.length === D.KIRANAS.length;
+  const BATCH_SCREEN = { operator: "route", finance: "paperwork", sustainability: "report" };
   function Batches({ me }) {
     const s = useStore();
     const app = useApp();
@@ -327,7 +328,8 @@
       return v;
     });
     const sel = open && views.find((v) => v.id === open);
-    return /* @__PURE__ */ React.createElement(Screen, { me, title: "Batches", sub: "Every lot the Watcher sees, from the DMS export" }, app.bp === "phone" ? /* @__PURE__ */ React.createElement("div", { className: "list" }, views.map((v) => /* @__PURE__ */ React.createElement(BatchRow, { key: v.id, view: v, compact: true, onOpen: () => v.hero ? go("route") : setOpen(v.id) }))) : /* @__PURE__ */ React.createElement(DataTable, { label: "Batches", rows: views.map((v) => ({ ...v, name: v.skuObj.name })), onRow: (v) => v.hero ? go("route") : setOpen(v.id), initialSort: ["daysLeft", "asc"], columns: [
+    const openRow = (v) => v.hero && BATCH_SCREEN[me.role] ? go(BATCH_SCREEN[me.role]) : setOpen(v.id);
+    return /* @__PURE__ */ React.createElement(Screen, { me, title: "Batches", sub: "Every lot the Watcher sees, from the DMS export" }, app.bp === "phone" ? /* @__PURE__ */ React.createElement("div", { className: "list" }, views.map((v) => /* @__PURE__ */ React.createElement(BatchRow, { key: v.id, view: v, compact: true, onOpen: () => openRow(v) }))) : /* @__PURE__ */ React.createElement(DataTable, { label: "Batches", rows: views.map((v) => ({ ...v, name: v.skuObj.name })), onRow: openRow, initialSort: ["daysLeft", "asc"], columns: [
       { key: "name", label: "Product", render: (v) => /* @__PURE__ */ React.createElement("span", { className: "row tight" }, /* @__PURE__ */ React.createElement(Product, { name: v.skuObj.img, size: 36 }), /* @__PURE__ */ React.createElement("span", { className: "stack tight", style: { gap: 0 } }, /* @__PURE__ */ React.createElement("b", null, v.skuObj.name), /* @__PURE__ */ React.createElement("span", { className: "mono subtle t-caption" }, v.id))) },
       { key: "dist", label: "Distributor", sortValue: (v) => v.dist.name, render: (v) => /* @__PURE__ */ React.createElement("span", null, v.dist.name, /* @__PURE__ */ React.createElement("div", { className: "t-caption subtle" }, v.dist.city)) },
       { key: "daysLeft", label: "Days left", num: true },
