@@ -759,7 +759,7 @@
   - **Checks:**
     - backend-api: 417 pass. The new test fails without the fix: 60 and the default instead of 30 and the override.
     - The frontend gate passes, with workspace at 40 tests: a new live test opens the Mango row from the quiet Command Center, and leaves a batch in no journey where it is.
-- **SC-83** (In Review, branch `SC-83-gated-row`): a gated batch that sells through says why it is fine on the watchlist.
+- **SC-83** (PR #68, merged): a gated batch that sells through says why it is fine on the watchlist.
   - **The request:** the maintainer read "Gated · selling through" rows with three red crosses as at risk. Asked whether such a batch should count as at risk, they chose **"Keep it, clearer row"**: money.js's rule stays (at risk only when packs will not sell before the last week **and** every gate fails).
   - **Design first:** three options on one board in app v3, `SC-83 design review.html`:
     - A, sells out by;
