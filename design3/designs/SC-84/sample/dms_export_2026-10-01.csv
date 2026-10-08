@@ -1,0 +1,10 @@
+distributor_name,item_code,batch_no,mfg_date,bb_date,closing_qty,location,pin
+Rakesh Traders,MF-MC-150,MF-2409-117,2026-05-18,2026-11-18,1840,Kalamna Market godown,440008
+Lakshmi Agencies,MF-MD-200,MF-2410-118,2026-04-27,2026-10-24,2000,Begum Bazaar godown,500008
+Gupta & Sons,MF-MC-150,MF-2408-209,2026-06-18,2026-12-15,1032,Siyaganj godown,452008
+Gupta & Sons,MF-PC-100,MF-2408-311,2026-06-05,2026-12-02,960,Siyaganj godown,452008
+Patil Distributors,MF-MO-200,MF-2409-415,2026-03-21,2026-12-16,900,Market Yard godown,411008
+Patil Distributors,MF-CC-200,MF-2409-204,2026-04-11,2027-01-06,2880,Market Yard godown,411008
+Lakshmi Agencies,MF-IP-250,MF-2410-402,2026-07-24,2027-04-20,1200,Begum Bazaar godown,500008
+Rakesh Traders,GL-AF-100,GL-2410-044,2026-01-05,2028-01-05,360,Kalamna Market godown,440008
+Gupta & Sons,GL-CO-200,GL-2410-012,2026-02-14,2028-02-14,216,Siyaganj godown,452008

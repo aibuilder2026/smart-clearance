@@ -100,6 +100,11 @@ What the build carries:
   The card reads the client again every 1.5 s while it is mapping.
 - **Infrastructure:** the console uploads straight to the exports bucket through the signed link, so the exports
   buckets' CORS gains the console's origins (prod: its two Hosting addresses; local: its dev and preview ports). The
-  photos buckets are unchanged. Planned, read in full: 0 to add, 2 to change in place, 0 to destroy; free.
+  photos buckets are unchanged. Planned, read in full: 0 to add, 2 to change in place, 0 to destroy; free. Applied on
+  the maintainer's yes; a fresh plan shows no changes.
 - **Stills** in `built/`: design3's card (`supply-munchly-*`), the port's (`port-*`), New client's Review row, a new
   client waiting for its export, and the same client mapped after an upload.
+- **The demo's sample** (`sample/dms_export_2026-10-01.csv`, asked for by the maintainer): Munchly's nine story batches as
+  each distributor's closing stock on 1 Oct, in the Bizom-style layout of backend-api's synthetic exports
+  (`services/journey/dms.py`). The Data agent's parser maps it from its saved layout: 8 of 8 fields, 9 rows, none
+  unread. It re-states the batches the workspace holds, so an upload adds none.

@@ -800,7 +800,8 @@
     - A journey reset keeps `setup_mapped` and the last import; only the confirmation goes back to not given.
     - The story's export is recorded mapped, by Neha Kulkarni.
   - **agents:** the Data agent reports the stock file's columns, field by field (`data.FIELD`).
-  - **infra:** the exports buckets' CORS gains the console's origins, since the console uploads straight to the bucket. Planned, read in full: 0 to add, 2 to change in place, 0 to destroy; free. **Not applied yet**: it waits for the maintainer's yes. Until then, uploads from the console are refused by the bucket.
+  - **infra:** the exports buckets' CORS gains the console's origins, since the console uploads straight to the bucket. Applied on the maintainer's yes (plan read in full: 0 to add, 2 changed in place, 0 destroyed; free); a fresh plan shows no changes.
+  - **The demo's sample export:** `design3/designs/SC-84/sample/dms_export_2026-10-01.csv`, Munchly's nine story batches as its distributors' closing stock on 1 Oct, in the Bizom-style layout backend-api's synthetic exports use. The Data agent's own parser reads it from its saved layout (no model call): 8 of 8 fields, 9 rows, none unread. Uploading it re-states what the workspace already holds, so it adds no batches.
   - **Checks:**
     - backend-api 421 pass, 3 of them new (`test_first_export.py`), and the reset test updated;
     - agents 189 pass;
