@@ -227,7 +227,8 @@
 					Logged with who, when and device. The agents are executing; {cast.distributor.short} has the same plan in his app.
 				</div>
 			</div>
-			<Button variant="primary" iconRight="arrow-right" onclick={() => router.go('execution')}>Watch execution</Button
+			<Button variant="primary" iconRight="arrow-right" onclick={() => router.go('execution', { ref: c.batch.id })}
+				>Watch execution</Button
 			></Card
 		>{/if}
 {/snippet}

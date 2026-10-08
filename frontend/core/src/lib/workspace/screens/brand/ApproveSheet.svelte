@@ -112,7 +112,7 @@
 			iconRight="arrow-right"
 			onclick={() => {
 				close();
-				router.go('execution');
+				router.go('execution', { ref: c.batch.id });
 			}}>Watch execution</Button
 		>{:else}{#if failed && !busy}<ApproveFailed message={failed.message} />{/if}{#if offline}<Button
 				variant="approve"

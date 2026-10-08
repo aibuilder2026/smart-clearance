@@ -110,7 +110,7 @@
     const views = useMemo(() => D.BATCHES.map(b => { const v = D.batchView(b); if (b.hero) v.phase = hm.view.phase; if (b.second) v.phase = "executing"; return v; }), [s.seq]);
     const watchlist = views.filter(v => !(v.hero && s.hero.phase === "watching")).sort((a, b) => (a.phase === "at-risk" || (!a.phase && a.assess.status === "at-risk") ? -1 : 0) - (b.phase === "at-risk" || (!b.phase && b.assess.status === "at-risk") ? -1 : 0) || a.daysLeft - b.daysLeft);
     const openRoute = () => (onOpenRoute ? onOpenRoute() : go("route"));
-    const primary = s.hero.phase === "planned" ? <Button variant="approve" icon="check" onClick={openRoute}>Review and approve</Button> : ["approved", "executing"].includes(s.hero.phase) ? <Button variant="primary" iconRight="arrow-right" onClick={() => go("execution")}>Watch execution</Button> : <Button variant="primary" iconRight="arrow-right" onClick={openRoute}>Open Route Room</Button>;
+    const primary = s.hero.phase === "planned" ? <Button variant="approve" icon="check" onClick={openRoute}>Review and approve</Button> : ["approved", "executing"].includes(s.hero.phase) ? <Button variant="primary" iconRight="arrow-right" onClick={() => go("execution", { ref: s.hero.id })}>Watch execution</Button> : <Button variant="primary" iconRight="arrow-right" onClick={openRoute}>Open Route Room</Button>;
     const flagged = s.hero.phase !== "watching" && s.setup.confirmed;
     const routed = ["approved", "executing", "dispatched", "settled", "cleared"].includes(s.hero.phase);
     const perm = s.setup.permission;
@@ -142,7 +142,7 @@
     const dim = L.down(live.conn); const offline = live.conn === "offline"; const items = L.flaggedItems(s, live);
     const watch = s.rules.watchTime; const rows = D.SETUP.dms.rows; const [sheet, setSheet] = useState(null);
     const openRoute = ref => go("route", { ref });
-    const primary = s.hero.phase === "planned" ? <Button variant="approve" icon="check" disabled={offline} onClick={() => openRoute(items[0].ref)}>Review and approve</Button> : ["approved", "executing"].includes(s.hero.phase) ? <Button variant="primary" iconRight="arrow-right" onClick={() => go("execution")}>Watch execution</Button> : <Button variant="primary" iconRight="arrow-right" onClick={() => openRoute(items[0].ref)}>Open Route Room</Button>;
+    const primary = s.hero.phase === "planned" ? <Button variant="approve" icon="check" disabled={offline} onClick={() => openRoute(items[0].ref)}>Review and approve</Button> : ["approved", "executing"].includes(s.hero.phase) ? <Button variant="primary" iconRight="arrow-right" onClick={() => go("execution", { ref: s.hero.id })}>Watch execution</Button> : <Button variant="primary" iconRight="arrow-right" onClick={() => openRoute(items[0].ref)}>Open Route Room</Button>;
     const hero = <L.Dim on={dim}><TrackerCard view={hm.view} done={hm.done} current={hm.current} eta={dim ? L.pausedWords(live) : hm.eta} etaTone={dim ? "gray" : hm.etaTone} agentLive={dim ? "" : hm.agentLive} primary={primary} money={money} /></L.Dim>;
     const top = live.quiet ? <L.Quiet /> : items.length > 1 ? <L.Flagged items={items}>{it => (it.hero ? hero : <L.MangoCard item={it} dim={dim} />)}</L.Flagged> : hero;
     const list = <div className="stack snug"><SectionTitle sub={live.quiet ? "Every batch clears inside its date at today's sell-through" : "Flagged batches first, then by days to best-before"}>Watchlist</SectionTitle><div className="list">{watchlist.map(v => <BatchRow key={v.id} view={v} selected={sel === v.id} compact={phone} onOpen={() => { setSel(v.id); if (v.hero || v.second) openRoute(v.id); else setSheet(v.id); }} />)}</div></div>;
@@ -174,7 +174,7 @@
     </div>;
   }
   function ApproveSheet({ open, onClose, me }) {
-    const { go } = useRoute(); const [busy, setBusy] = useState(false); const [placed, setPlaced] = useState(false); const reduce = useReducedMotion();
+    const { go } = useRoute(); const hero = useStore().hero; const [busy, setBusy] = useState(false); const [placed, setPlaced] = useState(false); const reduce = useReducedMotion();
     const s = S.useStore(); const approvedNow = !!(s.hero.plan && s.hero.plan.status === "approved");
     useEffect(() => { if (open) setPlaced(approvedNow); }, [open]);
     useEffect(() => { if (open && approvedNow) setPlaced(true); }, [approvedNow]);
@@ -188,7 +188,7 @@
     };
     const yes = offline ? <><Button variant="approve" size="lg" block icon="check" aria-disabled="true" aria-describedby="lv-sheet-net" className="lv-blocked">Approve · release the agents</Button><span style={{ justifySelf: "center" }}><S.Live.NeedsNet id="lv-sheet-net" /></span></>
       : <Button variant="approve" size="lg" block icon={failed ? "refresh-cw" : "check"} loading={busy} onClick={approve}>{failed ? "Retry · release the agents" : "Approve · release the agents"}</Button>;
-    return <Sheet open={open} onClose={onClose} title={placed ? "Plan placed" : "Approve the plan"} footer={placed ? <Button variant="primary" size="lg" block iconRight="arrow-right" onClick={() => { onClose(); go("execution"); }}>Watch execution</Button> : <>{failed && !busy && <S.Live.ApproveFailed message={failed.message} />}{yes}<Button variant="ghost" block onClick={onClose}>Not now</Button></>}>
+    return <Sheet open={open} onClose={onClose} title={placed ? "Plan placed" : "Approve the plan"} footer={placed ? <Button variant="primary" size="lg" block iconRight="arrow-right" onClick={() => { onClose(); go("execution", { ref: hero.id }); }}>Watch execution</Button> : <>{failed && !busy && <S.Live.ApproveFailed message={failed.message} />}{yes}<Button variant="ghost" block onClick={onClose}>Not now</Button></>}>
       {placed ? <div className="stack" style={{ justifyItems: "center", textAlign: "center", padding: "12px 0 8px" }}>
         <svg width="96" height="96" viewBox="0 0 96 96" aria-hidden="true"><motion.circle cx="48" cy="48" r="42" fill="none" stroke="var(--primary)" strokeWidth="6" initial={reduce ? false : { pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.6, ease: [0.65, 0, 0.35, 1] }} /><motion.path d="M30 49 L43 62 L67 36" fill="none" stroke="var(--primary)" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" initial={reduce ? false : { pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.45, duration: 0.4 }} /></svg>
         <div className="t-title2">Approved · 09:40</div>
@@ -267,7 +267,7 @@
               {D.PLAN.alt && <Card className="row wrap" style={{ gap: 14, background: "var(--surface-2)" }}><span className="icontile soft"><Icon name="git-branch" size={17} /></span><div className="grow"><b>Alternative considered: {D.PLAN.alt.label}</b><div className="t-footnote muted">Net {fmt.inr(D.PLAN.alt.net)}: {fmt.inr(D.PLAN.net - D.PLAN.alt.net)} less, and nothing stays in Munchly's own trade.</div></div><Badge>not chosen</Badge></Card>}
               <MoneyPanel plan={D.PLAN} compact={app.bp !== "desktop"} />
             </div> : <Locked icon="split" agent="Router Agent" live={h.phase === "valued"} text={h.phase === "valued" ? "Filling the best-paying channel to its cap, then the next." : "Proposes a split once the channels are priced."} />}
-            {approved && <Card className="row wrap" style={{ gap: 14 }}><Avatar person={D.PEOPLE[(h.plan && h.plan.by) || "priya"]} size="lg" /><div className="grow"><b>Approved by {D.PEOPLE[(h.plan && h.plan.by) || "priya"].short} · 09:40 · phone</b><div className="t-footnote muted">Logged with who, when and device. The agents are executing; Rakesh bhai has the same plan in his app.</div></div><Button variant="primary" iconRight="arrow-right" onClick={() => go("execution")}>Watch execution</Button></Card>}
+            {approved && <Card className="row wrap" style={{ gap: 14 }}><Avatar person={D.PEOPLE[(h.plan && h.plan.by) || "priya"]} size="lg" /><div className="grow"><b>Approved by {D.PEOPLE[(h.plan && h.plan.by) || "priya"].short} · 09:40 · phone</b><div className="t-footnote muted">Logged with who, when and device. The agents are executing; Rakesh bhai has the same plan in his app.</div></div><Button variant="primary" iconRight="arrow-right" onClick={() => go("execution", { ref: h.id })}>Watch execution</Button></Card>}
           </>}
           side={<><SectionTitle sub="Gaps drawn to the clock">Agent timeline</SectionTitle><Card><Dim on={dim}><AgentFeed events={s.feed.filter(e => e.stage !== "connect")} people={D.PEOPLE} live={hm.agentLive && !dim ? s.feed.filter(e => e.stage !== "connect").length - 1 : -1} /></Dim></Card></>} />
       </div>
