@@ -1540,7 +1540,8 @@ async def dispatch(ctx: Ctx, client_id: str, ref: str, kind: str) -> None:
         return
     _guard(s, "van")
     orders = (await ctx.session.execute(select(m.CaseOrder).where(m.CaseOrder.case_id == s.case.id))).scalars().all()
-    day = copy.weekday(at)
+    # the round is named by its own day, as its Van route and push name it (SC-97), even when it runs early
+    day = copy.weekday(J.van_leaves(s.case.offer, s.case.docs, world.van_time(s.c)) or at)
     s.case.van = {"status": "done", "done": len(orders), "at": at.isoformat()}
     await ev.feed(
         ctx,
@@ -1657,7 +1658,10 @@ async def documents(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> None
                 link="van",
                 case=s.case,
                 **copy.push_van(
-                    day=copy.weekday(ev.now(ctx, s.c) + timedelta(days=1)),
+                    day=copy.weekday(
+                        J.van_leaves(s.case.offer, s.case.docs, world.van_time(s.c))
+                        or ev.now(ctx, s.c) + timedelta(days=1)
+                    ),
                     shops=len(orders),
                     units=sum(o.units for o in orders),
                     city=award.get("city", "") if award else "",

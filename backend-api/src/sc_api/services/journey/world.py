@@ -32,6 +32,11 @@ async def agent_settings(ctx: Ctx, client_id: str) -> dict[str, dict[str, Any]]:
     return {r.agent_id: {"on": r.on, "autonomy": r.autonomy, **(r.settings or {})} for r in rows}
 
 
+def van_time(c: m.Client) -> str:
+    """the hour the client's distributors' van rounds leave, as the workspace's moments state it"""
+    return str((((c.workspace_doc or {}).get("moments") or {}).get("van") or {}).get("leaves", "07:00"))
+
+
 def floors_pct(c: m.Client) -> dict[str, int]:
     return {**DEFAULT_FLOORS, **(c.floors or {})}
 

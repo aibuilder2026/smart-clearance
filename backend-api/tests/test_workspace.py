@@ -3,7 +3,7 @@ signed in with their own token (Munchly's people on munchly.example, everyone el
 reporting through /internal with a Google ID token's stand-in. The figures are the journey map's (reference/flow.json
 holds design3's own run of the same steps), and every role sees only its own cut."""
 
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 import pytest
 from sqlalchemy import select
@@ -277,9 +277,20 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     assert docs["eway"]["status"] == "not required"
     today = (await api.get(f"{WS}/snapshot", headers=PRIYA)).json()["clock"]["now"]
     assert docs["invoice"]["date"] == datetime.fromisoformat(today).astimezone(IST).date().isoformat()
+    # one day for the van round (SC-97): the morning after the scheme filled and the papers were drafted, on the
+    # Van route and in the push that announces it
+    seen = await case(api, RAKESH)
+    van = datetime.fromisoformat(seen["moments"]["van"]["leavesAt"]).astimezone(IST)
+    window = datetime.fromisoformat(seen["journey"]["offer"]["closesAt"]).astimezone(IST)
+    papers = date.fromisoformat(docs["invoice"]["date"])
+    assert van.date() == papers + timedelta(days=1) and van < window  # the scheme filled early: not the window's day
+    assert seen["push"]["van"]["title"] == f"Van route for {van:%A}"
     assert (await api.post(f"{WS}/cases/{HERO}/documents/invoice/issue", headers=RAKESH)).status_code == 200
     assert (await api.post(f"{WS}/cases/{HERO}/review", headers=ANITA)).status_code == 200
     assert (await api.post(f"{WS}/cases/{HERO}/dispatches", json={"kind": "van"}, headers=RAKESH)).status_code == 200
+    # and in the timeline, once it has run
+    ran = next(f for f in (await case(api, PRIYA))["feed"] if f["key"] == "van")
+    assert ran["text"].startswith(f"Ran the {van:%A} round")
 
     # report: the ledger posts, the batch clears, and the console's batch closes with what it recovered
     out = await agent(api, f"/cases/{HERO}/report", "impact", "impact")

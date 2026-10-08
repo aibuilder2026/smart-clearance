@@ -1,9 +1,12 @@
 """The journey's rules for any plan (SC-86): a case reaches its papers once every line in its plan has run its course,
 whatever its lines, and nothing waits on an agent that has no step to take."""
 
+from datetime import datetime
+
 import pytest
 
 from sc_api.domain import journey as J
+from sc_api.domain.clock import IST
 
 
 def plan(*lines: tuple[str, int]) -> dict:
@@ -89,3 +92,20 @@ def test_on_expiry_day_every_line_is_done_and_a_line_never_run_took_nothing():
     case["expiredAt"] = "2026-11-18T10:00:00+05:30"
     assert J.lines_done(case)
     assert J.done_units(case, 100) == {"kirana": 100, "expiresoon": 0, "staff": 0}
+
+
+def test_the_van_round_leaves_the_morning_after_the_scheme_closed_and_the_papers():
+    """one day for the round (SC-97): the Van route, its push and the timeline all read it from here"""
+    window = {"closesAt": "2026-10-04T09:41:00+05:30"}
+    filled = {**window, "closedAt": "2026-10-02T11:41:00+05:30"}
+    # before the scheme closes: the morning after its window would
+    assert J.van_leaves(window, None) == datetime(2026, 10, 5, 7, 0, tzinfo=IST)
+    # filled early on day 0, the papers the same day: the next morning
+    assert J.van_leaves(filled, [{"id": "invoice", "date": "2026-10-02"}]) == datetime(2026, 10, 3, 7, 0, tzinfo=IST)
+    # the story: filled on Friday, the papers on Monday, the Tuesday round
+    papers = [{"id": "support", "date": "2026-10-05"}, {"id": "expiry", "date": "2026-10-20"}]
+    assert J.van_leaves(filled, papers) == datetime(2026, 10, 6, 7, 0, tzinfo=IST)
+    # a scheme that closed before the van's hour goes that morning; another client's van hour
+    early = {"closedAt": "2026-10-03T06:30:00+05:30"}
+    assert J.van_leaves(early, None, "06:45") == datetime(2026, 10, 3, 6, 45, tzinfo=IST)
+    assert J.van_leaves(None, None) is None and J.van_leaves({"status": "sent"}, None) is None
