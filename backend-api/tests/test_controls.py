@@ -70,12 +70,10 @@ async def test_a_timer_fires_now_when_it_is_ready_and_says_why_when_not(api, mun
     await agent(api, f"/cases/{HERO}/offer", "outreach", "outreach")
     triggers = (await api.get(f"{C}/munchly/journey", headers=neha)).json()["triggers"]
     offer = next(t for t in triggers if t["key"] == "offer.close")
-    shelf = next(t for t in triggers if t["key"] == "shelf.due")
     assert (offer["agent"], offer["kind"], offer["ref"], offer["blocked"]) == ("outreach", "timer", HERO, None)
-    assert offer["due"] < shelf["due"] and offer["dueWall"]
-    assert shelf["blocked"] == "After the van round: the papers come first"
-    r = await api.post(f"{C}/munchly/journey/triggers/{shelf['id']}", headers=neha)
-    assert r.status_code == 409 and r.json()["message"] == shelf["blocked"]
+    assert offer["dueWall"]
+    # no day-7 shelf check any more (SC-93): the offer leaves its window closing, and nothing else yet
+    assert [t["key"] for t in triggers if t["kind"] == "timer"] == ["offer.close"]
     r = await api.post(f"{C}/munchly/journey/triggers/{offer['id']}", headers=neha)
     assert r.status_code == 200, r.text
     assert offer["id"] not in {t["id"] for t in r.json()["triggers"]}

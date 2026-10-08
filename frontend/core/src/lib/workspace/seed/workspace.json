@@ -1197,7 +1197,7 @@
 			"screen": "S5 Paperwork",
 			"role": "finance",
 			"view": "paperwork",
-			"sees": "The document pack: Rakesh's invoice drafted for him to issue, the e-way bill check, Munchly's price-support credit note and the ITC memo. On day 7, the shelf check.",
+			"sees": "The document pack: Rakesh's invoice drafted for him to issue, the e-way bill check, Munchly's price-support credit note and the ITC memo.",
 			"agents": "Paperwork drafts Rakesh's invoice, checks the e-way bill threshold, issues the price-support credit note, writes the ITC memo and the FSSAI checklist.",
 			"money": "No ITC reversal under s.17(5)(h); no e-way bill under ₹50,000. Price support to Rakesh: ₹8,768, the ₹394 van and listing fee included, instead of a ₹34,490 expiry claim.",
 			"pain": "Finance finds out at month end",
@@ -1285,12 +1285,6 @@
 			"at": "Mon 5 Oct",
 			"title": "Invoice draft ready",
 			"body": "Invoice draft to Agrawal Wholesale, Raipur: 772 × ₹14.20, IGST 5%, ₹11,510. Issue it from Tally. Munchly's price support of ₹8,768 is on its way."
-		},
-		"shelf": {
-			"to": "rakesh",
-			"at": "Fri 9 Oct",
-			"title": "Shelf check · one pick-up",
-			"body": "Jai Durga Stores, Kamptee has 18 of 24 scheme packs left. Pick up 12 on Thursday's round; leave 6."
 		},
 		"report": {
 			"to": "vikram",
@@ -1603,22 +1597,6 @@
 			"text": "Ran the Tuesday round: 31 drops, 588 packets."
 		},
 		{
-			"key": "shelf",
-			"stage": "settle",
-			"agent": "Outreach",
-			"icon": "list-checks",
-			"at": "Fri 9 Oct",
-			"min": 4320,
-			"text": "Shelf check: the salesman counted the scheme packs at 31 shops. Jai Durga Stores, Kamptee, has 18 of 24 left: pick up 12 on Thursday's round and leave 6.",
-			"calls": [
-				[
-					"shelf.check",
-					"31 shops counted",
-					"ok"
-				]
-			]
-		},
-		{
 			"key": "ledger",
 			"stage": "report",
 			"agent": "Impact",
@@ -1899,18 +1877,6 @@
 			"Draft your invoices",
 			"Book dispatch slots in your calendar"
 		]
-	},
-	"shelf": {
-		"date": "Friday 9 Oct",
-		"counted": 31,
-		"shop": "Jai Durga Stores",
-		"area": "Kamptee",
-		"took": 24,
-		"left": 18,
-		"pickUp": 12,
-		"leave": 6,
-		"round": "Thursday's round",
-		"returnBy": "2026-10-29"
 	},
 	"risk": {
 		"gates": [
@@ -2760,7 +2726,6 @@
 			},
 			"docs": null,
 			"invoiceIssued": false,
-			"shelf": null,
 			"posted": false
 		},
 		"mango": {

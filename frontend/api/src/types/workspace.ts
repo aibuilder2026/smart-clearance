@@ -519,7 +519,6 @@ export type Journey = {
 	};
 	docs: null | { id: string; status: string }[];
 	invoiceIssued: boolean;
-	shelf: null | WsShelf;
 	posted: boolean;
 	reviewed: boolean;
 };
@@ -640,19 +639,6 @@ export type WsDoc = {
 	pdf: boolean;
 };
 
-export type WsShelf = {
-	at: string;
-	counted: number;
-	shop: string;
-	area: string;
-	took: number;
-	left: number;
-	pickUp: number;
-	leave: number;
-	round: string;
-	returnBy: string;
-};
-
 /** a shop the scheme was offered to, with its cap and what it ordered */
 export type KiranaOffer = {
 	id: string;
@@ -725,7 +711,6 @@ export type CaseDetail = {
 	realised: { lines: { id: string; units: number }[]; godown: number } | null;
 	claim: WsClaim | null;
 	docs: WsDoc[];
-	shelf: WsShelf | null;
 	kiranas: KiranaOffer[];
 	offered: number;
 	donation: Donation | null;

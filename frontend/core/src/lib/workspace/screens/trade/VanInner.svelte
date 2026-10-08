@@ -19,11 +19,10 @@
 	import { cartons, clusterOf, fmt } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
-	import ShelfCheck from '../brand/ShelfCheck.svelte';
 	import Screen from '../common/Screen.svelte';
 
 	// Rakesh bhai's Tuesday round: the map with the van on its way, the shops that ordered, his word to the Outreach
-	// agent, the day-7 shelf check after it; beside it, the ExpireSoon lot the buyer's truck collects
+	// agent; beside it, the ExpireSoon lot the buyer's truck collects
 	let { me }: { me: User } = $props();
 	const ws = useWorkspace();
 	const c = $derived(ws.case!);
@@ -138,8 +137,6 @@
 					</div>
 				</div>
 			</Card>
-			<div data-anchor="shelf"></div>
-			{#if done || h.shelf}<ShelfCheck shelf={h.shelf} />{/if}
 		{/snippet}
 		{#snippet side()}
 			<div data-anchor="lot"></div>

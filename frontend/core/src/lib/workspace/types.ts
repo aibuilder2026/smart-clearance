@@ -281,19 +281,6 @@ export type Doc = {
 	date?: string;
 };
 
-export type Shelf = {
-	date: string;
-	counted: number;
-	shop: string;
-	area: string;
-	took: number;
-	left: number;
-	pickUp: number;
-	leave: number;
-	round: string;
-	returnBy: string;
-};
-
 export type Quarter = {
 	label: string;
 	/** the months it covers */
@@ -397,7 +384,6 @@ export type Hero = {
 	truck: { status: 'idle' | 'dispatched'; at?: string };
 	docs: null | { id: string; status: string }[];
 	invoiceIssued: boolean;
-	shelf: null | (Shelf & { at: string });
 	posted: boolean;
 	reviewed?: boolean;
 	/** the plan's staff sale at the distributor's godown (SC-86), open once approved, then recorded with what sold; the
@@ -520,7 +506,6 @@ export type WorkspaceSeed = {
 		permissions: Record<string, string>;
 		acts: string[];
 	};
-	shelf: Shelf;
 	risk: Assess;
 	plan: Plan;
 	counter: { action: string; price: number; below: boolean };
@@ -686,7 +671,6 @@ export type CaseData = {
 	docs: Doc[];
 	/** the invoice the distributor issues to the buyer */
 	invoice: Doc;
-	shelf: Shelf;
 	/** scheme packs may come back until this day */
 	returnBy: string;
 	/** the pushes of the case, by moment */

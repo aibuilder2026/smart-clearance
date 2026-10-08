@@ -42,7 +42,6 @@
     issueInvoice: s => { s.hero.invoiceIssued = true; audit(s, "rakesh", "issued the invoice from Tally", D.INVOICE.no + " · " + D.BUYER.name, "Mon 5 Oct"); },
     review: s => { s.hero.reviewed = true; audit(s, "anita", "reviewed Munchly's credit note and GST memo", "MF-2409-117", "Mon 5 Oct"); },
     vanRound: s => { s.hero.van = { status: "done", done: D.KIRANAS.length }; feed(s, E("van")); audit(s, "rakesh", `ran the Tuesday round: ${D.KIRANAS.length} drops`, "Nagpur cluster", "Tue 6 Oct"); },
-    shelfCheck: s => { s.hero.shelf = Object.assign({ at: D.SHELF.date }, D.SHELF); feed(s, E("shelf")); notify(s, "rakesh", Object.assign({ link: "van" }, D.PUSH.shelf)); },
     report: s => { s.hero.phase = "cleared"; s.hero.posted = true; feed(s, E("ledger")); notify(s, "priya", Object.assign({ link: "command" }, D.PUSH.closed)); notify(s, "vikram", Object.assign({ link: "report" }, D.PUSH.report)); audit(s, "vikram", "signed off the BRSR row", "MF-2409-117", "30 Oct"); },
   };
 
@@ -53,7 +52,7 @@
     ["verify", "requestPhoto"], ["verify", "sendPhoto", { human: "rakesh" }], ["verify", "verify"],
     ["value", "value"], ["decide", "decide"], ["approve", "approve", { human: "priya" }],
     ["execute", "list"], ["execute", "outreach"], ["execute", "donate"], ["execute", "order", { arg: "k0", human: "ganesh" }], ["execute", "allOrders"], ["execute", "bid", { arg: 13, human: "agrawal" }], ["execute", "counter"], ["execute", "accept", { human: "agrawal" }], ["execute", "confirmPickup", { human: "meera" }],
-    ["settle", "dispatch", { human: "rakesh" }], ["settle", "settle"], ["settle", "review", { human: "anita" }], ["settle", "vanRound", { human: "rakesh" }], ["settle", "shelfCheck"],
+    ["settle", "dispatch", { human: "rakesh" }], ["settle", "settle"], ["settle", "review", { human: "anita" }], ["settle", "vanRound", { human: "rakesh" }],
     ["report", "report"],
   ];
   const STAGE_IDS = D.STAGES.map(s => s.id);
@@ -72,7 +71,7 @@
     if (h.phase === "approved") return 6;
     if (h.phase === "executing") return h.award && all(state) ? 7 : 6;
     if (h.phase === "dispatched") return 7;
-    if (h.phase === "settled") return h.van.status === "done" && h.shelf ? 8 : 7;
+    if (h.phase === "settled") return h.van.status === "done" ? 8 : 7;
     return 9;
   }
 
@@ -117,7 +116,6 @@
       case "dispatched": return { name: "settle", delay: 1800 };
       case "settled": {
         if (h.van.status !== "done") return auto ? { name: "vanRound", delay: 9000, partner: "rakesh" } : null;
-        if (!h.shelf) return { name: "shelfCheck", delay: 2600 };
         return { name: "report", delay: 3500 };
       }
       default: return null;

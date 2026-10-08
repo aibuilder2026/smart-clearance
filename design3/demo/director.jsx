@@ -78,7 +78,6 @@
         { text: "Paperwork drafts Rakesh's invoice, checks the e-way bill rule, issues Munchly's price-support credit note and writes the GST memo", agent: "Paperwork", focus: "desk", time: "10:16", done: s => !!s.hero.docs },
         { text: "Anita reviews Munchly's papers: nothing to chase", who: "anita", focus: "desk", time: "10:30", done: s => !!s.hero.reviewed, run: () => Flow.act("review"), hint: "Tap Mark reviewed" },
         { text: `Tuesday: the van takes the scheme orders to ${D.KIRANAS.length} shops`, who: "rakesh", focus: "phone", date: "Tuesday 6 October", time: "07:30", done: s => s.hero.van.status === "done", run: () => Flow.act("vanRound"), hint: "Tap Start the round" },
-        { text: `Day 7: the shelf counts come in; one ${D.SHELF.area} shop gets a pick-up on ${D.SHELF.round}`, agent: "Outreach", focus: "phone", date: "Friday 9 October", time: "17:00", done: s => !!s.hero.shelf, phone: { anchor: "shelf" } },
       ] },
     { date: "Friday 30 October", desk: { who: "vikram", route: "report" }, phone: { who: "priya", route: "command" },
       figures: [{ label: "Recovered", value: D.ACTUAL.net, tone: "green" }, { label: "Better than the bin", value: D.ACTUAL.swing }],

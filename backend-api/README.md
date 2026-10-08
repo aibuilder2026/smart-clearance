@@ -196,7 +196,7 @@ by the agents in `agents/`. The contract is `frontend/api/src/types/workspace.ts
 - **A batch's case** (`services/journey/steps.py`): the Watcher flags a batch, Vision asks for and reads its label,
   the Valuer and the Router price and split it, the approver says yes, the Lister, Outreach and Donation execute, the
   kiranas order, the buyer bids and the Negotiator answers, the distributor dispatches, Paperwork drafts the papers,
-  the shelf is checked on day 7, and Impact posts the ledger. Every step is one change with its timeline entry, its
+  and Impact posts the ledger. Every step is one change with its timeline entry, its
   pushes, its audit line and the agents' next event; nothing here acts for a person.
 - **The money is money.js's** (`domain/money.py`); an agent brings only words (a reason, an offer, a reply), held to the
   computed figures, and a template stands in for whatever it gets wrong (`domain/copy.py`).
@@ -213,8 +213,7 @@ by the agents in `agents/`. The contract is `frontend/api/src/types/workspace.ts
 - **The journey clock:** a client's `day_minutes` (the console's setting, 1 to 1,440) sets how long a journey day lasts
   while a batch is at risk; real time runs between. The tick (every minute, `/internal/jobs/tick`) runs the Data agent
   at 08:30 and the Watcher at 09:00 on journey time, fires due timers, and re-sends a stalled journey's event.
-- **Synthetic DMS exports** (`services/journey/dms.py`): no DMS is connected, so stock, secondary sales by pincode and
-  shelf counts are written as CSV into the exports bucket for the Data agent to load into BigQuery, calibrated to each
+- **Synthetic DMS exports** (`services/journey/dms.py`): no DMS is connected, so stock and secondary sales by pincode are written as CSV into the exports bucket for the Data agent to load into BigQuery, calibrated to each
   batch's sell-through.
 - **The agents' routes** (`/internal`): Google ID tokens minted for `INTERNAL_AUDIENCE` by `sc-agents`,
   `sc-agents-local` or `sc-invoker`; each report names the event it answered, so a redelivered event does nothing.

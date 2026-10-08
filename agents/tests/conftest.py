@@ -248,17 +248,10 @@ class FakeWarehouse:
     async def sales_days(self, client: str) -> int:
         return len({r["sale_date"] for r in self.tables["secondary_sales"] if r["client_id"] == client})
 
-    async def shelf_counts(self, client: str, ref: str) -> list[dict[str, Any]]:
-        latest: dict[str, dict] = {}
-        for r in sorted(self.tables["shelf_counts"], key=lambda r: r["counted_on"]):
-            if r["client_id"] == client and r["batch_ref"] == ref:
-                latest[r["kirana_id"]] = r
-        return [{"kirana": k, "left": latest[k]["units_left"]} for k in sorted(latest)]
-
     async def files_loaded(self, client: str) -> set[str]:
         return {
             r["source_file"]
-            for t in ("stock_snapshots", "secondary_sales", "shelf_counts")
+            for t in ("stock_snapshots", "secondary_sales")
             for r in self.tables[t]
             if r["client_id"] == client and r.get("source_file")
         }

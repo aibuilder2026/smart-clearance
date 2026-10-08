@@ -25,7 +25,6 @@
 	import ListingView from '../trade/ListingView.svelte';
 	import Chat from './Chat.svelte';
 	import GodownLeft from './GodownLeft.svelte';
-	import ShelfCheck from './ShelfCheck.svelte';
 	import StaffOps from './StaffOps.svelte';
 
 	// S3 Execution: day 0 to 14, four agents at work: the Lister's ExpireSoon lot, Outreach's scheme to the kiranas, the
@@ -253,7 +252,6 @@
 				net={c.actual.net}
 				dist={c.dist}
 			/>{/if}
-		{#if h.van.status === 'done' || h.shelf}<ShelfCheck shelf={h.shelf} />{/if}
 	</div>{/snippet}
 {#snippet side()}<SectionTitle>Agent timeline</SectionTitle><Card
 		><AgentFeed events={timeline} people={ws.data.people} live={hm.agentLive ? timeline.length - 1 : -1} /></Card

@@ -63,7 +63,6 @@ export const kase: CaseData = Object.freeze({
 	claim: D.claim,
 	docs: D.docs,
 	invoice: INVOICE,
-	shelf: D.shelf,
 	returnBy: D.returnBy,
 	push: D.push,
 	today: D.journey.today,

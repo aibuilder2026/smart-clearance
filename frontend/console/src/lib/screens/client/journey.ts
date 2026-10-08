@@ -33,16 +33,6 @@ export const TRIG: Record<JourneyTrigger['key'], Words> = {
 			message: `The ExpireSoon lot for ${t.ref} closes now instead of ${when}, and its packs stay at the godown. This can't be undone for this lot.`
 		})
 	},
-	'shelf.due': {
-		title: 'Day-7 shelf check',
-		act: 'Check now',
-		icon: 'timer',
-		every: () => '7 days after the offer',
-		ask: (t, when) => ({
-			title: 'Check the shelves now?',
-			message: `Outreach counts what is left on each kirana's shelf for ${t.ref} now instead of ${when}, and books the pickups.`
-		})
-	},
 	'report.due': {
 		title: 'Report due',
 		act: 'Report now',

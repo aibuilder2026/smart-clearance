@@ -5,10 +5,10 @@ found.
    Run now, every file not loaded yet). A file already in BigQuery is not loaded again; but a file the event names (the
    day's own) is still read and its stock reported, since a journey started again replays the story's calendar and
    needs the day's stock from files an earlier journey loaded (SC-79).
-2. Its columns are mapped onto the table's: a saved map for the layouts known (the Bizom-style stock, sales and shelf
+2. Its columns are mapped onto the table's: a saved map for the layouts known (the Bizom-style stock and sales
    exports backend-api writes, services/journey/dms.py); Gemini Flash maps an unknown header set, with structured
    output `{kind, columns: {target: source}, unknown: [...]}`, and the columns it could not place are flagged.
-3. Load jobs append the rows to `stock_snapshots`, `secondary_sales` or `shelf_counts` (item codes become the client's
+3. Load jobs append the rows to `stock_snapshots` or `secondary_sales` (item codes become the client's
    SKU ids, distributor names their ids, from `GET /internal/clients/{c}/batches`).
 4. For stock, `POST /internal/clients/{c}/exports {batches, mapped, rows, days, file}`.
 """
@@ -37,22 +37,19 @@ log = logging.getLogger("sc_agents.data")
 AGENT = "data"
 SAMPLE = 5
 
-# the layouts known (backend-api's synthetic exports: services/journey/dms.py STOCK, SALES and SHELF)
+# the layouts known (backend-api's synthetic exports: services/journey/dms.py STOCK and SALES)
 SAVED = {
     "stock": ["distributor_name", "item_code", "batch_no", "mfg_date", "bb_date", "closing_qty", "location", "pin"],
     "sales": ["distributor_id", "pin", "item_code", "sale_date", "qty", "value_inr"],
-    "shelf": ["distributor_id", "outlet_id", "item_code", "batch_no", "counted_on", "qty_left"],
 }
 # what each kind of export must give (a distributor by its id or its name), and what it may
 REQUIRED = {
     "stock": ["item_code", "batch_no", "bb_date", "closing_qty"],
     "sales": ["pin", "item_code", "sale_date", "qty"],
-    "shelf": ["outlet_id", "item_code", "batch_no", "counted_on", "qty_left"],
 }
 OPTIONAL = {
     "stock": ["mfg_date", "location", "pin"],
     "sales": ["value_inr"],
-    "shelf": [],
 }
 DISTRIBUTOR = ("distributor_id", "distributor_name")
 # the Smart-Clearance field each stock column fills, as Setup and the console show the mapping (SC-84)
@@ -67,7 +64,7 @@ FIELD = {
     "location": "godown",
     "pin": "pincode",
 }
-TABLE = {"stock": "stock_snapshots", "sales": "secondary_sales", "shelf": "shelf_counts"}
+TABLE = {"stock": "stock_snapshots", "sales": "secondary_sales"}
 
 
 class ColumnMatch(BaseModel):
@@ -79,7 +76,7 @@ class FileMap(BaseModel):
     # every field required, and the columns a list of pairs, not a map: Gemini's structured output cannot hold a map
     # of free keys and returned it empty, and it may leave out a property the schema does not require (SC-77)
     file: str = Field(description="the file's name as given")
-    kind: Literal["stock", "sales", "shelf", "unknown"] = Field(description="what kind of export it is")
+    kind: Literal["stock", "sales", "unknown"] = Field(description="what kind of export it is")
     columns: list[ColumnMatch] = Field(description="each target column mapped, with its source header")
     unknown: list[str] = Field(description="every source header not mapped")
     dateFormat: Literal["DMY", "MDY", "YMD"] | None = Field(description="how the sample rows write dates")
@@ -236,15 +233,6 @@ def rows_of(x: Export, client: str, world: World, *, today: str, loaded_at: str)
                 "value_inr": value,
             }
             need = ("distributor_id", "sku_id", "pincode", "sale_date", "units")
-        else:
-            row = {
-                **base,
-                "kirana_id": get(r, "outlet_id") or None,
-                "batch_ref": checks.batch_no(get(r, "batch_no")),
-                "counted_on": _date(get(r, "counted_on"), x.date_format),
-                "units_left": _int(get(r, "qty_left")),
-            }
-            need = ("distributor_id", "sku_id", "kirana_id", "batch_ref", "counted_on", "units_left")
         if any(row.get(k) is None or row.get(k) == "" for k in need):
             bad += 1
             continue
@@ -379,17 +367,6 @@ async def load(rc: RunCtx, exports: list[Export], *, world: World | None = None,
             out["rows"] += len(x.rows)
             out["mapped"] = max(out["mapped"], len(x.columns))
     return out
-
-
-async def load_files(rc: RunCtx, files: list[str], *, kinds: tuple[str, ...]) -> dict[str, Any]:
-    """files of known layouts only, without the model (the shelf check's counts)"""
-    done = await rc.deps.warehouse.files_loaded(rc.msg.client)
-    exports = [x for x in [await _read(rc, f) for f in files if f not in done] if x is not None]
-    for x in exports:
-        if x.kind not in kinds:
-            log.warning("data: %s is not a known %s layout; not loaded", x.name, "/".join(kinds))
-            x.kind = None
-    return await load(rc, exports)
 
 
 async def _load(rc: RunCtx, state: dict[str, Any]) -> dict[str, Any]:

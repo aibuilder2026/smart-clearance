@@ -251,7 +251,7 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     assert c["award"] == {"units": 772, "price": 14.2, "gross": 10962.4, "token": 1644, "balance": 9318.4}
     assert round(c["actual"]["net"]) == 21152
 
-    # settle: the truck, the papers, the invoice, the review, the van round, the shelf check
+    # settle: the truck, the papers, the invoice, the review, the van round
     r = await api.post(f"{WS}/cases/{HERO}/dispatches", json={"kind": "truck"}, headers=RAKESH)
     assert r.status_code == 200, r.text
     await agent(api, f"/cases/{HERO}/documents", "paperwork", "paperwork")
@@ -265,17 +265,6 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     assert (await api.post(f"{WS}/cases/{HERO}/documents/invoice/issue", headers=RAKESH)).status_code == 200
     assert (await api.post(f"{WS}/cases/{HERO}/review", headers=ANITA)).status_code == 200
     assert (await api.post(f"{WS}/cases/{HERO}/dispatches", json={"kind": "van"}, headers=RAKESH)).status_code == 200
-    counts = [
-        {"kirana": k["id"], "left": J["shelf"]["left"] if k["name"] == J["shelf"]["shop"] else k["orders"] // 4}
-        for k in J["kiranas"]
-        if k["orders"] and k["distributor"] == "rakesh"
-    ]
-    await agent(api, f"/cases/{HERO}/shelf-check", "shelf", "outreach", counts=counts)
-    c = await case(api, PRIYA)
-    shelf = J["shelf"]
-    assert {k: c["shelf"][k] for k in ("shop", "took", "left", "pickUp", "leave")} == {
-        k: shelf[k] for k in ("shop", "took", "left", "pickUp", "leave")
-    }
 
     # report: the ledger posts, the batch clears, and the console's batch closes with what it recovered
     out = await agent(api, f"/cases/{HERO}/report", "impact", "impact")
@@ -396,10 +385,8 @@ async def test_the_mango_drinks_journey_end_to_end(api, munchly, cloud, ctx):
     assert c["realised"] == {"lines": lines, "godown": left} and want["godown"] == left
     assert c["actual"]["net"] == want["net"] < planned["plan"]["net"]
 
-    # settle and report: the van to the shops that ordered, the shelf check, the ledger on what happened
+    # settle and report: the van to the shops that ordered, the ledger on what happened
     assert (await api.post(f"{WS}/cases/{MANGO}/dispatches", json={"kind": "van"}, headers=LAKSHMI)).status_code == 200
-    counts = [{"kirana": k["id"], "left": k["sales14"]} for k in took]
-    await agent(api, f"/cases/{MANGO}/shelf-check", "shelf-m", "outreach", counts=counts)
     out = await agent(api, f"/cases/{MANGO}/report", "impact-m", "impact")
     assert (out["ledger"]["net"], out["ledger"]["godown"], out["ledger"]["meals"]) == (want["net"], left, 58)
     batch = await ctx.session.get(m.Batch, ("munchly", MANGO))

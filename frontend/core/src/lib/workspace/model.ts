@@ -60,7 +60,7 @@ export function stageAt(state: State, shops: number) {
 	if (h.phase === 'approved') return 6;
 	if (h.phase === 'executing') return h.award && all ? 7 : 6;
 	if (h.phase === 'dispatched') return 7;
-	if (h.phase === 'settled') return h.van.status === 'done' && h.shelf ? 8 : 7;
+	if (h.phase === 'settled') return h.van.status === 'done' ? 8 : 7;
 	return 9;
 }
 

@@ -335,15 +335,6 @@ def van_event(*, day: str, shops: int, units: int) -> str:
     return f"Ran the {day} round: {shops} drops, {fmt.num(units)} packets."
 
 
-def shelf_event(shelf: dict[str, Any]) -> dict[str, Any]:
-    return {
-        "text": f"Shelf check: the salesman counted the scheme packs at {shelf['counted']} shops. {shelf['shop']}, "
-        f"{shelf['area']}, has {shelf['left']} of {shelf['took']} left: pick up {shelf['pickUp']} on "
-        f"{shelf['round']} and leave {shelf['leave']}.",
-        "calls": [["shelf.check", f"{shelf['counted']} shops counted", "ok"]],
-    }
-
-
 def ledger_event(*, return_by: str, kg: float, co2: float, meals: int, net: float) -> dict[str, Any]:
     return {
         "text": f"The return window closed on {fmt.day(return_by)}. Posted the ledger: {fmt.kg(kg)} diverted, "
@@ -459,14 +450,6 @@ def push_invoice(
         "body": f"Invoice draft to {buyer}, {city}: {fmt.num(units)} × ₹{price_:.2f}, IGST {gst_pct}%, "
         f"{fmt.inr(total)}. Issue it from Tally. {possessive(client)} price support of {fmt.inr(support)} is on "
         f"its way.",
-    }
-
-
-def push_shelf(shelf: dict[str, Any]) -> dict[str, Any]:
-    return {
-        "title": "Shelf check · one pick-up",
-        "body": f"{shelf['shop']}, {shelf['area']} has {shelf['left']} of {shelf['took']} scheme packs left. Pick up "
-        f"{shelf['pickUp']} on {shelf['round']}; leave {shelf['leave']}.",
     }
 
 

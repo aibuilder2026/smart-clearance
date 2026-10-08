@@ -932,4 +932,19 @@
     - the frontend gate passes: workspace 50 (1 new: the message sent, the token, the buyer's face, which fails on the old data), core 248, api 77, admin 17, demo 5, console 3;
     - the live fixtures were regenerated;
     - the browser suites were not run.
+- **SC-93** (In Review, branch `SC-93-no-shelf-check`): the day-7 shelf check is gone, from the product and the prototype.
+  - **The request:** "remove the Shelf Check at distributor level, that feature is not needed". Asked how far: the product and the prototype.
+  - **Gone:**
+    - **backend-api:** the `shelf.due` timer, the shelf-check step and its `/internal` route, the DMS shelf file, the shelf wording, the case's `shelf` in the views. The report waits for the papers and the van round only, and its timer is set when the papers are drafted (the return window, as before; SC-94 moves it).
+    - **agents:** Outreach's shelf pipeline; the Data agent's shelf kind, its layout, prompt and loads. The Data agent's eval set drops its six shelf cases (19 now).
+    - **The console:** the trigger row (design3 `console.jsx`, `platform.js`, the port).
+    - **The workspace:** the Shelf check card on Execution and the van screen, the live projection's shelf, `Shelf` in core and in the contract.
+    - **design3 and the guided demo:** the day-7 beat, the stub flow's step, and the story data and pushes that served it.
+  - **Kept:** a batch's godown shelf (B4, on the label photo) and shelf life; the story documents in `docs/`; BigQuery's `shelf_counts` table, unused; the `cases.shelf` column, unused, with no migration to drop it.
+  - **Checks:**
+    - backend-api 453 passed;
+    - agents 190 passed;
+    - the frontend gate passes: core 248 (6 goldens updated, each only losing the shelf card, its feed line or its push), api 77, workspace 50, admin 17, demo 5, console 3;
+    - the live fixtures were regenerated;
+    - the browser suites were not run.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

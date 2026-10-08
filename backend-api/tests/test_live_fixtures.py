@@ -130,12 +130,6 @@ async def test_write_the_live_fixtures(api, munchly, cloud):
     assert (await api.post(f"{WS}/cases/{HERO}/documents/invoice/issue", headers=RAKESH)).status_code == 200
     assert (await api.post(f"{WS}/cases/{HERO}/review", headers=ANITA)).status_code == 200
     assert (await api.post(f"{WS}/cases/{HERO}/dispatches", json={"kind": "van"}, headers=RAKESH)).status_code == 200
-    counts = [
-        {"kirana": k["id"], "left": J["shelf"]["left"] if k["name"] == J["shelf"]["shop"] else k["orders"] // 4}
-        for k in nagpur
-        if k["orders"]
-    ]
-    await agent(api, f"/cases/{HERO}/shelf-check", "shelf", "outreach", counts=counts)
     await agent(api, f"/cases/{HERO}/report", "impact", "impact")
     # the Mango Drink to its report too (SC-86): three of Lakshmi Agencies' kiranas order, the scheme closes, the staff
     # sale is recorded, and its papers (no invoice, no credit note) follow the last of its lines
@@ -151,7 +145,5 @@ async def test_write_the_live_fixtures(api, munchly, cloud):
     assert r.status_code == 200, r.text
     await agent(api, f"/cases/{MANGO}/documents", "paperwork-m", "paperwork")
     assert (await api.post(f"{WS}/cases/{MANGO}/dispatches", json={"kind": "van"}, headers=LAKSHMI)).status_code == 200
-    counts = [{"kirana": k["id"], "left": k["sales14"]} for k in hyd]
-    await agent(api, f"/cases/{MANGO}/shelf-check", "shelf-m", "outreach", counts=counts)
     await agent(api, f"/cases/{MANGO}/report", "impact-m", "impact")
     await _write(api, "cleared", ["priya", "rakesh", "anita", "vikram", "arjun", "meera", "lakshmi-owner"])

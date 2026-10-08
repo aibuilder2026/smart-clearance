@@ -1,12 +1,9 @@
-"""Outreach (execute and settle): the kirana scheme, and the day-7 shelf check.
+"""Outreach (execute): the kirana scheme.
 
 - **The offer** (`journey.step {type: execute}`): Gemini Flash writes the scheme's offer in Hindi, English and Marathi,
   each opening with a `{shop}` placeholder for the shop's name; `POST …/offer {words: {hi, en, mr}}`. backend-api sends
   it to the distributor's kiranas, each capped at four times its own 14-day sales. The scheme's pack price goes into
   BigQuery's `channel_prices` (source `offer`).
-- **The shelf check** (`journey.step {type: timer, kind: shelf.due}`): the salesman's counts are loaded into BigQuery's
-  `shelf_counts` (as the Data agent loads any export), the batch's latest count for each shop is read back, and
-  `POST …/shelf-check {counts: [{kirana, left}]}`; backend-api picks the one shop to collect from.
 """
 
 import json
@@ -144,21 +141,3 @@ def offer(rc: RunCtx) -> list:
         ),
         step(rc, "outreach_report", _report, agent=AGENT, scope=SCOPE, when=ready),
     ]
-
-
-# --- the day-7 shelf check --------------------------------------------------------------------------------------------
-
-
-async def _shelf(rc: RunCtx, state: dict[str, Any]) -> dict[str, Any]:
-    from sc_agents.agents import data
-
-    rc.run(AGENT)
-    files = [f for f in rc.msg.payload.get("files") or [] if isinstance(f, str)]
-    await data.load_files(rc, files, kinds=("shelf",))
-    counts = await rc.deps.warehouse.shelf_counts(rc.msg.client, rc.msg.ref or "")
-    await rc.report(AGENT, case_path(rc.msg.client, rc.msg.ref or "", "shelf-check"), {"counts": counts})
-    return {}
-
-
-def shelf_check(rc: RunCtx) -> list:
-    return [step(rc, "outreach_shelf", _shelf, agent=AGENT)]

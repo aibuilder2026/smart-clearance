@@ -207,7 +207,7 @@
 				</div>{:else}<Locked
 					icon="book-open-check"
 					agent="Impact agent"
-					live={h.phase === 'settled' && !!h.shelf}
+					live={h.phase === 'settled' && h.van.status === 'done'}
 					text={h.phase === 'settled'
 						? 'Posts the ledger once the return window closes on ' +
 							fmt.day(c.returnBy) +

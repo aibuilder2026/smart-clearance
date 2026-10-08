@@ -188,13 +188,13 @@ export type Client = {
 };
 
 /** a client's scheduled run or pending journey timer (SC-79): the Data agent's daily load, the Watcher's daily check,
- *  or what an offer leaves (its window closing, the day-7 shelf check, the report), with when it falls due */
+ *  or what an offer leaves (its window closing, the report), with when it falls due */
 export type JourneyTrigger = {
 	/** 'data', 'watcher', or 'timer-<id>' */
 	id: string;
 	agent: string;
 	kind: 'run' | 'timer';
-	key: 'data.daily' | 'watcher.daily' | 'offer.close' | 'listing.close' | 'shelf.due' | 'report.due';
+	key: 'data.daily' | 'watcher.daily' | 'offer.close' | 'listing.close' | 'report.due';
 	/** the batch a timer belongs to */
 	ref: string | null;
 	/** journey time, ISO with India's offset; null for a client whose workspace isn't live */

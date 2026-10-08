@@ -106,7 +106,7 @@
   const INTEGRATIONS = [
     { id: "auth", name: "Firebase Authentication", kind: "Identity", status: "ok", note: `Email and password, by invitation: ${DOMAINS.staff} and ${DOMAINS.partners}` },
     { id: "fcm", name: "Firebase Cloud Messaging", kind: "Push", status: "ok", note: "Web push to every member's devices, with the in-app inbox behind it" },
-    { id: "bq", name: "BigQuery", kind: "Data", status: "ok", note: "Sell-through by pincode, stock, shelf counts, channel prices, the impact ledger" },
+    { id: "bq", name: "BigQuery", kind: "Data", status: "ok", note: "Sell-through by pincode, stock, channel prices, the impact ledger" },
     { id: "pubsub", name: "Cloud Pub/Sub", kind: "Events", status: "ok", note: "batch.at_risk, offer.received, deal.closed, journey steps and pushes" },
     { id: "gemini", name: "Gemini on Vertex AI", kind: "Agents", status: "ok", note: "Flash for labels, listings and offers; Pro for routing and negotiation" },
     { id: "dms", name: "DMS export (Bizom-style)", kind: "Inventory", status: "mock", note: "A synthetic nightly CSV for each distributor, in Cloud Storage" },

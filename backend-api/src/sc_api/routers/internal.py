@@ -264,11 +264,6 @@ async def document_pdf(
     return await _step(ctx, request, steps.document_pdf, client_id, ref, doc, name, _run(data))
 
 
-@router.post(CASE + "/shelf-check")
-async def shelf_check(client_id: str, ref: str, data: Report, request: Request, ctx: InternalCtx) -> dict[str, Any]:
-    return await _step(ctx, request, steps.shelf_check, client_id, ref, data.extra().get("counts"), _run(data))
-
-
 @router.post(CASE + "/report")
 async def report(client_id: str, ref: str, data: Report, request: Request, ctx: InternalCtx) -> dict[str, Any]:
     return await _step(ctx, request, steps.report, client_id, ref, _run(data))

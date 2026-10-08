@@ -218,11 +218,6 @@ export const A = {
 		feed(s, EV('van'));
 		audit(s, 'rakesh', `ran the Tuesday round: ${D.kiranas.length} drops`, 'Nagpur cluster', 'Tue 6 Oct');
 	},
-	shelfCheck: (s: State) => {
-		s.hero.shelf = { at: D.shelf.date, ...D.shelf };
-		feed(s, EV('shelf'));
-		notify(s, 'rakesh', { link: 'van', ...P.shelf });
-	},
 	report: (s: State) => {
 		s.hero.phase = 'cleared';
 		s.hero.posted = true;
@@ -260,7 +255,6 @@ export const SCRIPT: [string, ActionName, { arg?: Arg; human?: string }?][] = [
 	['settle', 'settle'],
 	['settle', 'review', { human: 'anita' }],
 	['settle', 'vanRound', { human: 'rakesh' }],
-	['settle', 'shelfCheck'],
 	['report', 'report']
 ];
 const STAGE_IDS = D.stages.map((s) => s.id);
@@ -380,7 +374,6 @@ function nextStep(s: State): Step | null {
 			return { name: 'settle', delay: 1800 };
 		case 'settled':
 			if (h.van.status !== 'done') return auto ? { name: 'vanRound', delay: 9000, partner: 'rakesh' } : null;
-			if (!h.shelf) return { name: 'shelfCheck', delay: 2600 };
 			return { name: 'report', delay: 3500 };
 		default:
 			return null;

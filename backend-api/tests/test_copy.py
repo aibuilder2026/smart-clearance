@@ -119,7 +119,6 @@ def test_names():
                 others=[{"name": "India FoodBanking Network", "minDays": 21, "minUnits": 100}],
             ),
         ),
-        ("shelf", lambda: copy.shelf_event({**J["shelf"], "round": J["shelf"]["round"]})),
         ("ledger", lambda: copy.ledger_event(return_by=J["returnBy"], kg=PLAN["kg"], co2=PLAN["co2"], meals=0, net=0)),
     ],
 )
@@ -211,8 +210,6 @@ def test_the_pushes_read_as_design3():
         support=SUPPORT["total"],
     )
     assert (invoice["title"], invoice["body"]) == (PUSH["invoice"]["title"], PUSH["invoice"]["body"])
-    shelf = copy.push_shelf(J["shelf"])
-    assert (shelf["title"], shelf["body"]) == (PUSH["shelf"]["title"], PUSH["shelf"]["body"])
     report = copy.push_report(ref=HERO["id"], kg=PLAN["kg"])
     assert (report["title"], report["body"]) == (PUSH["report"]["title"], PUSH["report"]["body"])
     actual = money.actual_net(PLAN, COUNTER["price"])

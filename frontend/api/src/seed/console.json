@@ -1294,20 +1294,12 @@
 						"due": "2026-10-04T12:40:00+05:30"
 					},
 					{
-						"id": "timer-2",
-						"agent": "outreach",
-						"key": "shelf.due",
-						"ref": "MF-2409-117",
-						"due": "2026-10-09T12:40:00+05:30",
-						"blocked": "After the van round: the papers come first"
-					},
-					{
 						"id": "timer-3",
 						"agent": "impact",
 						"key": "report.due",
 						"ref": "MF-2409-117",
 						"due": "2026-10-30T10:00:00+05:30",
-						"blocked": "After the papers and the shelf check"
+						"blocked": "After the papers and the van round"
 					}
 				]
 			}
