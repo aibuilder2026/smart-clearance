@@ -39,6 +39,7 @@
 		"test:parity:console": "corepack pnpm --filter @smart-clearance/console test:parity",
 		"test:parity:workspace": "corepack pnpm --filter @smart-clearance/workspace test:parity",
 		"test:parity:demo": "corepack pnpm --filter @smart-clearance/demo test:parity",
+		"test:journey": "corepack pnpm --filter @smart-clearance/workspace test:journey",
 		"seed": "node scripts/seed.mjs",
 		"seed:check": "node scripts/seed.mjs --check",
 		"icons": "node scripts/icons.mjs",

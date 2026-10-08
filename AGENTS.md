@@ -56,6 +56,7 @@ corepack pnpm lint && corepack pnpm check && corepack pnpm test   # the gate jir
 corepack pnpm test:a11y                   # the a11y suite: every app's build, WCAG 2.2 AA in five projects, keyboard, motion, and component coverage
 corepack pnpm test:e2e                    # every app: the console's flows, the workspace journey, the demo's playthrough, Firefox and WebKit smoke
 corepack pnpm test:parity                 # every app's build against design3, pixel by pixel
+corepack pnpm test:journey                # Munchly Chips E2E: the chips' live journey, every person in the real UI, recorded (SC-95; the live stack)
 corepack pnpm seed && corepack pnpm icons # regenerate from design3 after it changes
 ```
 
@@ -84,6 +85,7 @@ backend-api/scripts/hydrate.sh --live-only  # Munchly's live workspace on a worl
 backend-api/scripts/walk.sh [--day-minutes N]   # Munchly's journey walked over HTTP, with the agents running (agents/scripts/dev.sh); --api, --origin and --allow-env prod walk production
 backend-api/scripts/live-fixtures.sh        # what the API answers at five moments of the journey, for the workspace app's live tests
 backend-api/scripts/e2e.sh                  # the landing page and the console end to end on the local API and Firebase Auth
+backend-api/scripts/sessions.sh priya …     # Firebase custom tokens for the journey's people, for the Munchly Chips E2E suite (no password)
 cd backend-api && uv run ruff check . && scripts/test.sh   # the gate jira-flow runs
 ```
 
