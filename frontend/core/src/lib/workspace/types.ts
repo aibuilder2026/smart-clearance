@@ -376,7 +376,15 @@ export type Hero = {
 	phase: Phase;
 	photo: { status: 'none' | 'requested' | 'reading' | 'verified'; at?: string; confidence?: number };
 	plan: null | { status: 'proposed' | 'approved'; at: string; by?: string; device?: string };
-	listing: null | { id: string; status: 'live' | 'awarded'; units: number; price: number; reserve: number; at: string };
+	listing: null | {
+		id: string;
+		/** ended: the lot closed unsold on its deadline (SC-86) */
+		status: 'live' | 'awarded' | 'ended';
+		units: number;
+		price: number;
+		reserve: number;
+		at: string;
+	};
 	offer: null | { status: string; at: string; shops: number };
 	orders: { id: string; units: number; at: string }[];
 	bids: Bid[];
@@ -442,7 +450,7 @@ export type State = {
 	workspace: string;
 	setup: { confirmed: boolean; mapped: number; permission: null | { by: string; at: string; paused: boolean } };
 	hero: Hero;
-	mango: { id: string; phase: string; donation: null | 'booked' | 'confirmed' | 'collected' };
+	mango: { id: string; phase: string; donation: null | 'booked' | 'confirmed' | 'collected' | 'declined' };
 	feed: FeedEvent[];
 	notifications: Notification[];
 	audit: AuditRow[];
