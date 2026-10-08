@@ -24,7 +24,10 @@ live Gemini through the local pull worker. One page drives everyone, so the whol
 
 The story's figures are checked as it goes (softly, so the run reaches the end): a plan of ₹21,770 net (588 to kiranas,
 772 to ExpireSoon), 38 kiranas offered, 31 ordering 588 packets, an award of 772 at ₹14.20 with a ₹1,644 token, an
-actual net of ₹21,152.40 and nothing left at the godown.
+actual net of ₹21,152.40 and nothing left at the godown. It also holds the fixes its first run led to (SC-96 to SC-100): −₹26,330
+if destroyed on the Command Center at Detect, the Lot won bill's total of ₹11,510.00, a PDF on each paper a person
+signs, one day for the van round on the Van route, in its push and in the timeline, and an FSSAI paper that names no
+batch as donated.
 
 ## Before a run
 

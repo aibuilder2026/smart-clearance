@@ -1061,4 +1061,15 @@
     - backend-api 468 passed; the story's journey test checks −₹26,329.60 at Detect, nothing for a partner, and the same write-off in the plan;
     - the frontend gate passes, with workspace at 58: a new live test draws the card at Detect, and fails without the fix;
     - the live fixtures were regenerated.
+- **SC-101** (In Review, branch `SC-101-munchly-chips-rerun`): Munchly Chips E2E run again after SC-96 to SC-100, and the old run's stills and recording cleaned up, asked for by the maintainer.
+  - **The suite** now checks each fix as it goes:
+    - −₹26,330 if destroyed at Detect;
+    - the Lot won bill's total of ₹11,510.00;
+    - the invoice, credit note and ITC memo each with its PDF;
+    - one day for the van round on the Van route, in its push and in the timeline;
+    - the FSSAI paper naming no batch as donated.
+  - **The run** (`frontend/workspace/tests/journey/runs/2026-10-08/REPORT.md`, replacing the earlier run's report, stills and recording): passed in 6 min 41 s, 65 steps, headed, on `main`.
+    - Every figure is as the story has it, and every fix holds in the real UI: the Saturday round in all three places, the PDFs rendered on this Mac.
+    - The only finding left is the note that Finance reads the invoice as "drafted" after Rakesh issues it, as in the prototype.
+  - **Cleaned up:** the earlier runs' git-ignored output (`test-results/journey`, `playwright-report-journey`, about 1.1 GB) and the old run's 17 stills and recording.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
