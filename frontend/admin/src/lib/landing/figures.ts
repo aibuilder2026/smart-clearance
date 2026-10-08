@@ -16,6 +16,19 @@ export type Agent = {
 	/** what it did for this batch */
 	did: string;
 };
+/** a beat of the film's half-day: the hour, who, and what they did (the figures money.js's) */
+export type Beat = { at: string; who: string; t: string; human?: boolean };
+/** a team of the manufacturer's, as a tab of its workspace */
+export type Team = {
+	id: 'supply' | 'finance' | 'impact' | 'dist';
+	icon: IconName;
+	t: string;
+	/** the path the window's address shows for it */
+	route: string;
+	d: string;
+	/** what the agents did for this team today: the hour and the agent */
+	today: [string, AgentId][];
+};
 export type Chapter = {
 	id: 'watch' | 'price' | 'yes' | 'work';
 	tone: 'green' | 'sunken' | 'amber' | 'night';
@@ -268,7 +281,81 @@ export function figures(s: Showcase, c: Catalog) {
 		}
 	];
 
-	// 6 · the workspace (comp L5): the connectors the comp shows, in its order
+	// 1 · the film's story: the hours of one day, four beats to each half (SC-78)
+	const beats: { day: Beat[]; night: Beat[] } = {
+		day: [
+			{ at: '09:00', who: 'The Watcher', t: `flags ${fmt.num(N)} packs at risk` },
+			{ at: '09:40', who: 'You', t: `say yes once, ${fmt.inr(s.plan.net)} on screen`, human: true },
+			{ at: '13:00', who: 'Outreach', t: `${SHOPS} kiranas order ${fmt.num(KL.units)} packs` },
+			{ at: '17:30', who: 'The Negotiator', t: `closes a buyer at ${rate(AW.price)} a pack` }
+		],
+		night: [
+			{ at: '21:00', who: 'Paperwork', t: 'drafts the invoice and the credit note' },
+			{ at: '23:30', who: 'The kiranas', t: `sell on; ${fmt.num(s.plan.soldUnits)} packs on tax invoices` },
+			{ at: '05:00', who: 'Impact', t: `posts ${fmt.num(s.plan.kg)} kg kept out of landfill` },
+			{ at: '09:00', who: 'The Watcher', t: 'runs again, on the next batch' }
+		]
+	};
+
+	// 6 · the workspace itself, on a device (SC-78): the four teams as its tabs, each with what it sees of the batch
+	// and what the agents did for it today; the connectors the comp shows, in its order
+	const teams: Team[] = [
+		{
+			id: 'supply',
+			icon: 'route',
+			t: 'Supply chain',
+			route: 'route',
+			d: 'One tap to approve a plan, with the money on screen.',
+			today: [
+				['09:00', 'watcher'],
+				['09:12', 'vision'],
+				['09:31', 'router']
+			]
+		},
+		{
+			id: 'finance',
+			icon: 'receipt',
+			t: 'Finance',
+			route: 'paperwork',
+			d: 'The invoice, credit note and GST memo, drafted.',
+			today: [
+				['09:40', 'you'],
+				['14:05', 'negotiator'],
+				['18:20', 'paperwork']
+			]
+		},
+		{
+			id: 'impact',
+			icon: 'leaf',
+			t: 'Sustainability',
+			route: 'report',
+			d: 'A BRSR line an auditor can follow back to the batch.',
+			today: [
+				['18:20', 'paperwork'],
+				['Day 7', 'impact'],
+				['Day 7', 'data']
+			]
+		},
+		{
+			id: 'dist',
+			icon: 'handshake',
+			t: 'Distributors',
+			route: 'permissions',
+			d: 'Nothing listed in their name without their permission.',
+			today: [
+				['09:00', 'data'],
+				['09:41', 'outreach'],
+				['11:30', 'lister']
+			]
+		}
+	];
+	// the addresses: one workspace each, none of them a client's (SC-28)
+	const addresses = [
+		{ id: 'brand', url: 'your-brand.smartclearance.com', live: true },
+		{ id: 'company', url: 'your-company.smartclearance.com', live: false },
+		{ id: 'group', url: 'your-group.smartclearance.com', live: false }
+	];
+
 	const connectors = ['dms', 'tally', 'bq', 'sso', 'expiresoon', 'irp', 'whatsapp']
 		.map((id) => c.connectors.find((x) => x.id === id))
 		.filter((x) => x !== undefined);
@@ -285,6 +372,9 @@ export function figures(s: Showcase, c: Catalog) {
 		chapters,
 		how,
 		ledger,
+		beats,
+		teams,
+		addresses,
 		plans: c.plans.map((p) => ({ ...p, scope: p.scope.map((x) => x.replace(/^The client's /, 'Your ')) })),
 		connectors
 	};

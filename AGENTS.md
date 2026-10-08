@@ -215,8 +215,8 @@ Local pages:
   - the guided demo's keys (→ ← 1–9 P N), its stage bar, the appearance menu, and the finale, which keeps focus inside it while the stage behind is inert (SC-65).
 
   These criteria still need a manual pass: 2.4.11, 2.5.7, 3.2.6, 3.3.7 and 3.3.8.
-- Nothing loops forever: every animation stops within five seconds (WCAG 2.2.2), and only loading indicators keep turning. `motion.a11y.spec.ts` fails on any endless animation.
-  - The landing page's two longer motions (SC-60) are the hero's film (8 s by day, 6 s by night; Pause, Play and Replay) and the table's tour (15.8 s; Pause and Play, a rail to jump between the agents, Replay). Each plays once and holds; the tour also holds while the table is out of view.
+- Nothing loops forever, except the landing page's hero film, which loops under its Pause control (SC-78): every other animation stops within five seconds (WCAG 2.2.2), and only loading indicators keep turning. `motion.a11y.spec.ts` fails on any endless CSS or web animation.
+  - The landing page's two longer motions are the hero's film (SC-78: one day at the business, two ten-second clips chained without a cut, looping; Pause and Play; a strip under the copy reads the hours of the story) and the table's tour (SC-60: 15.8 s; Pause and Play, a rail to jump between the agents, Replay). The tour plays once and holds, also while the table is out of view. The film drifts with the scroll, never on its own clock.
   - The landing page's loader (SC-35) is a loading indicator: it moves only while the page, or a new theme's plates, load.
   - The console's loader (SC-49), the route and its placeholders' green wash, is a loading indicator too: it moves only while a screen or tab is read. The Overview moves only when a reading changes something, and Pause updates stops the readings.
   - The console's splash (SC-51, `design3/console/splash.js`) is a loading indicator: it covers the first load, signing in and signing out only while their reads are out, and leaves once the page behind it is drawn.

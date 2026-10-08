@@ -1,0 +1,14 @@
+{
+  "name": "table-warm",
+  "model": "Qwen-Image-2.1 bf16 (local), qwen_image_bf16_mac.py",
+  "steps": 40,
+  "created": "2026-10-08",
+  "designed_in": "design3/designs/SC-78",
+  "postprocess": "cwebp -q 82; the PNG originals stay local in src/",
+  "mode": "edit_image: the approved day plate (design3/site/assets/plates/table.webp, SC-60) as the condition image, so the geometry holds for the posts measured on it",
+  "size": 2048,
+  "output": "2752x1536",
+  "seed": 7801,
+  "prompt": "Keep everything exactly as it is: the same hand and phone with its plain matte black screen, the same miniature buildings in the same places, the same white van, blue truck, fence and chai tumbler, the same framing. Change only the light and the colour: late-morning sun comes low through the window at the left and rakes across the table, casting long soft shadows from every building and carton; the wooden table turns a warm honey oak with visible grain; the white wall, the curtain and the window are toned down to warm cream with no glare and no haze; the colours are deeper and richer, terracotta, sage green and brown, with darker shadows under the buildings and inside the godown; the thin painted green path stays and glows a little. A richer, warmer, higher-contrast tilt-shift photograph. No lettering, no words or numbers, no logos, no faces.",
+  "use": "the agents' table scene by day, re-lit (SC-78 part 2, option A)"
+}

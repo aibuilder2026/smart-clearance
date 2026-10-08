@@ -20,19 +20,23 @@
 	import Statement from './Statement.svelte';
 	import Workspace from './Workspace.svelte';
 
-	// smartclearance.com: the product's own landing page, independent of any client (design3/site, SC-60). The miniature
-	// business alive on film under the heading, a statement that fills in as it is read, the agents at work on the
-	// table, one in focus at a time, the product's moments as chapters, Impact's ledger, a workspace per manufacturer,
-	// plans and the close. It names no client: the batch it follows is an illustrative one (SC-28).
+	// smartclearance.com: the product's own landing page, independent of any client (design3/site, SC-60, refined in
+	// SC-78). One day at the miniature business on film under the heading, a statement that fills in as it is read, the
+	// agents at work on the table, one in focus at a time, the product's moments as chapters, Impact's ledger, the
+	// workspace itself on a device, plans and the close. It names no client: the batch it follows is an illustrative
+	// one (SC-28).
 	let { showcase, catalog }: { showcase: Showcase; catalog: Catalog } = $props();
 	const f = $derived(figures(showcase, catalog));
 
 	let find = $state(false);
 	let demo = $state(false);
 	let demoPlan: string | null = $state(null);
-	// the bar is clear over the film, and takes its glass once the page has scrolled; the demo pill stands down at the close
+	// the bar is clear over the film, and takes its glass once the page has scrolled; the demo pill keeps clear of the
+	// hero, which carries its own way into the demo, of the workspace section, whose cards it would cover, and of the close
 	let scrolled = $state(false);
 	let nearEnd = $state(false);
+	let onHero = $state(true);
+	let onTeams = $state(false);
 	// The page's loader (design3/site/loader.js, SC-35; hooks.server.ts puts it first in <body>): it runs its exits on
 	// motion's animate(), finds the plates by their hashed names, covers each change of theme, and hears that the page
 	// is up. Every load plays the route; every change of theme plays dusk or dawn.
@@ -41,15 +45,19 @@
 		'business.webp': PLATES.town.day,
 		'business-night.webp': PLATES.town.night,
 		'table.webp': PLATES.table.day,
-		'table-night.webp': PLATES.table.night,
-		'islands.webp': PLATES.islands.day,
-		'islands-night.webp': PLATES.islands.night
+		'table-night.webp': PLATES.table.night
 	};
 	onMount(() => {
 		scrolled = window.scrollY > 40;
 		const close = document.querySelector('.close');
 		const io = new IntersectionObserver((es) => (nearEnd = es.some((e) => e.isIntersecting)), { threshold: 0.2 });
 		if (close) io.observe(close);
+		const hero = document.getElementById('top-hero');
+		const ioHero = new IntersectionObserver((es) => (onHero = es.some((e) => e.isIntersecting)), { threshold: 0.12 });
+		if (hero) ioHero.observe(hero);
+		const teams = document.getElementById('teams');
+		const ioTeams = new IntersectionObserver((es) => (onTeams = es.some((e) => e.isIntersecting)), { threshold: 0.2 });
+		if (teams) ioTeams.observe(teams);
 		const loader = window.SC3_LOADER;
 		if (loader) {
 			loader.animate = animate as NonNullable<typeof loader.animate>;
@@ -59,6 +67,8 @@
 		}
 		return () => {
 			io.disconnect();
+			ioHero.disconnect();
+			ioTeams.disconnect();
 			if (loader && theme.gate === loader.switchTheme) theme.gate = null;
 		};
 	});
@@ -74,7 +84,7 @@
 <div class={cx('site', scrolled && 'scrolled')} id="top">
 	<Nav {onfind} {ondemo} />
 	<main>
-		<Hero {ondemo} />
+		<Hero {f} {ondemo} />
 		<Statement
 			id="how"
 			text="Short-dated stock that quick commerce sent back. Priced to every exit, the bin included. Sold in the days it has left."
@@ -87,7 +97,7 @@
 		<Close {ondemo} />
 	</main>
 	<Footer {onfind} />
-	<DemoPill hidden={nearEnd} />
+	<DemoPill hidden={nearEnd || onHero || onTeams} />
 	<FindWorkspace
 		bind:open={find}
 		find={(q) => api.lookupWorkspaces(q)}
