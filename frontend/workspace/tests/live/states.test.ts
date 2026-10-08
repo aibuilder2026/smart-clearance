@@ -690,6 +690,25 @@ describe("the buyer's listing (SC-92)", () => {
 		expect(await batchLine(CHIPS)).toContain('0 meals (nothing donated)');
 	});
 
+	it("a batch's evidence names only what it has: no empty slots for an invoice or a lot it never had (SC-107)", async () => {
+		const m = moment('cleared');
+		const evidence = async (ref: string) => {
+			const r = await draw(source(fakeApi(m, 'vikram')), 'report', ref);
+			await fireEvent.click(await waitFor(() => r.getByRole('button', { name: 'This batch' })));
+			await waitFor(() => expect(text(r)).toContain(`${ref} · `));
+			const line = await waitFor(() => r.getByText(/^Evidence:/));
+			const t = norm(line.textContent);
+			r.unmount();
+			return t;
+		};
+		// the Mango Drink: no ExpireSoon lot, so no invoice; its donation's FSSAI checklist
+		const mango = await evidence(MANGO);
+		expect(mango).not.toMatch(/· ·|Evidence: ·/);
+		expect(mango).toMatch(/^Evidence: \d+ kirana order logs · CN\/0118 · FSSAI checklist$/);
+		// the chips keep their invoice and lot
+		expect(await evidence(CHIPS)).toMatch(/^Evidence: INV\/26-27\/0931 · ES-24117 · \d+ kirana order logs · CN\/0117$/);
+	});
+
 	it("the Mango Drink's GST ITC memo reads its input credit from the plan, and Paperwork stays up (SC-105)", async () => {
 		const m = moment('cleared');
 		const r = await draw(source(fakeApi(m, 'anita')), 'paperwork', MANGO);
