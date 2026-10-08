@@ -932,7 +932,7 @@
     - the frontend gate passes: workspace 50 (1 new: the message sent, the token, the buyer's face, which fails on the old data), core 248, api 77, admin 17, demo 5, console 3;
     - the live fixtures were regenerated;
     - the browser suites were not run.
-- **SC-93** (In Review, branch `SC-93-no-shelf-check`): the day-7 shelf check is gone, from the product and the prototype.
+- **SC-93** (PR #77, merged): the day-7 shelf check is gone, from the product and the prototype.
   - **The request:** "remove the Shelf Check at distributor level, that feature is not needed". Asked how far: the product and the prototype.
   - **Gone:**
     - **backend-api:** the `shelf.due` timer, the shelf-check step and its `/internal` route, the DMS shelf file, the shelf wording, the case's `shelf` in the views. The report waits for the papers and the van round only, and its timer is set when the papers are drafted (the return window, as before; SC-94 moves it).
@@ -948,7 +948,7 @@
     - the frontend gate passes: core 248 (6 goldens updated, each only losing the shelf card, its feed line or its push), api 77, workspace 50, admin 17, demo 5, console 3;
     - the live fixtures were regenerated;
     - the browser suites were not run.
-- **SC-94** (In Review, branch `SC-94-expiry-day`, on SC-93's): Report now is expiry day, and the packs left at the godown settle by the client's expiry policy.
+- **SC-94** (PR #78, merged): Report now is expiry day, and the packs left at the godown settle by the client's expiry policy.
   - **The request:** "Impact report is not running even on clicking report now"; food left at the godown should follow full credit or price support, "as per client setting"; Report now "should be treated as Food is being expired and full journey should be realized and completed". The maintainer's answers:
     - price support only: the gap is paid, and the stock stays with the distributor, who destroys it;
     - Report now closes the journey as it stands;
