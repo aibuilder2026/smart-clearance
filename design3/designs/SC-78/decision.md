@@ -135,3 +135,25 @@ The maintainer picked, part by part: **the film C, One day** ("I like option C m
 Re-lit**; **the workspace section B, The workspace itself**; and **the bar B, structured** ("the top header selection
 should be like B"; the structured answer had said A, and B was confirmed when asked). The page that is built is
 `option-c/mockup.html?scene=a&ws=b&nav=b`. Only this combination is built.
+
+## The build (8 Oct 2026)
+
+- **design3** (`site/site.jsx`, `site.css`, `loader.js`): the bar in three parts with the dot and the progress line; the
+  film as two chained clips (`site/assets/media/day-to-night.mp4`, `night-to-day.mp4`, with their sidecars; the town
+  clips removed), the strip, the scroll drift, Pause; the table plate re-lit in place (`table.webp`, its sidecar
+  recording the edit), the stage's warm ground and vignette; the workspace on a device (the islands plates removed,
+  the loader no longer preloading them); the demo pill clear of the hero and the workspace section. `dist/` rebuilt.
+- **The port** (`frontend/admin`): `Hero.svelte`, `Nav.svelte`, `Workspace.svelte`, `Site.svelte`, `figures.ts` (the
+  beats, the teams and their day, the addresses), `media.ts`, `plates.ts`, `site.css` verbatim; `Plate.svelte` gone.
+  The film's keyboard spec follows the loop: Pause and Play, the hand-over to the second clip, no Replay.
+- **Found on the way:** the kit's aurora ground paints over static content inside an embedded `AppRoot`, so the
+  phone's layout keeps its own stacking context; the pair of players is keyed on the theme, not on the clip list,
+  which Svelte rebuilt on mount and so interrupted the first autoplay; the day loop's first LTX render let the path
+  wander onto the godown's roof (re-rendered, seed 7833).
+- **Checks:** the gate passes (lint, check, tests: core 248, api 69, admin 17, console 3, workspace 35, demo 5).
+  design3 and the build were played through with Playwright at 1440 × 900 and 390 × 844, light and dark: no console
+  errors, the film chains and loops (the theme's own half first), the strip reads the beat, the device types its
+  address and plays its tabs, the pill hides over the hero and the section, a theme switch swaps the clips and the
+  plates under the loader in 2.3 s. The browser suites were not run (SC-55).
+- **AGENTS.md:** the loop rule now exempts the hero film under its Pause. **DESIGN.md:** the workspace line.
+- **Hosting:** the hosted landing page loads commit `3ba181c`; every pinned file was checked on jsDelivr and raw first.
