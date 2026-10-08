@@ -38,8 +38,12 @@ type Case = {
 		posted: boolean;
 	};
 	plan: { net: number; lines: { id: string; units: number }[] } | null;
+	writeOff: { total: number } | null;
 	actual: { net: number } | null;
-	docs: { id: string; type: string; no: string; status: string }[];
+	docs: { id: string; type: string; no: string; status: string; pdf: boolean }[];
+	moments: { van: { leavesAt: string | null } };
+	push: Record<string, { title: string }>;
+	feed: { key: string; text: string }[];
 	kiranas: { id: string; name: string }[];
 	realised: { lines: { id: string; units: number }[]; godown: number } | null;
 };
@@ -59,6 +63,8 @@ const ROLES: Record<string, string> = {
 };
 
 let run: Run;
+/** the van round's day, as the Van route and its push name it */
+let vanDay = '';
 
 /** the case as someone sees it, or null before the Watcher has flagged it */
 async function caseAs(who: string): Promise<Case | null> {
@@ -176,6 +182,15 @@ const STEPS: { id: string; title: string; run: (page: Page) => Promise<void> }[]
 			run.figure('Flagged phase', c.journey.phase);
 			await as(page, 'priya', `/command/${HERO}`, 'sees the chips flagged on the Command Center');
 			await expect(page.getByText('Masala Chips 150 g').first()).toBeVisible();
+			// what destroying it would cost, from Detect on, never ₹0 (SC-99)
+			story('Write-off at Detect', c.writeOff?.total, 26329.6);
+			await expect(page.locator('#main')).toContainText('if destroyed · 1,360 units at risk');
+			const card = await page.locator('#main').innerText();
+			story(
+				'Command Center card at Detect',
+				card.includes('26,330') ? '−₹26,330 if destroyed' : card,
+				'−₹26,330 if destroyed'
+			);
 			await run.done('Command Center: the chips at risk, Vision waiting for the label photo');
 		}
 	},
@@ -286,6 +301,14 @@ const STEPS: { id: string; title: string; run: (page: Page) => Promise<void> }[]
 				'772 packs at ₹14.2, token ₹1644'
 			);
 			await expect(page.getByText(/won|Lot won/i).first()).toBeVisible();
+			// the bill reads the award's own invoice from the win, before the papers (SC-96)
+			await expect(page.locator('#main')).toContainText('Invoice total');
+			const bill = (await page.locator('#main').innerText()).replace(/\s+/g, ' ');
+			story(
+				'Lot won bill',
+				bill.match(/Invoice total ₹[\d,.]+/)?.[0] ?? bill.slice(0, 120),
+				'Invoice total ₹11,510.00'
+			);
 			await run.done('Agrawal took the counter and paid the token');
 		}
 	},
@@ -311,15 +334,37 @@ const STEPS: { id: string; title: string; run: (page: Page) => Promise<void> }[]
 				(c) => c.journey.phase === 'settled' && c.docs.length > 0
 			);
 			for (const d of c.docs) run.figure(`Paper: ${d.type}`, `${d.no || '—'} (${d.status})`);
+			// every paper a person signs carries the PDF Paperwork rendered into the docs bucket (SC-100)
+			const pdfs = await until('Paperwork renders the PDFs', 'anita', (c) => c.docs.filter((d) => d.pdf).length >= 3);
+			story(
+				'Papers with their PDF',
+				pdfs.docs
+					.filter((d) => d.pdf)
+					.map((d) => d.id)
+					.join(', '),
+				'invoice, support, itc'
+			);
+			// one day for the van round: the Van route's and the push's (SC-97)
+			const leaves = c.moments.van.leavesAt ?? '';
+			vanDay = leaves
+				? new Date(leaves).toLocaleDateString('en-GB', { weekday: 'long', timeZone: 'Asia/Kolkata' })
+				: '';
+			story('Van round push', c.push.van?.title, `Van route for ${vanDay}`);
 			await as(page, 'rakesh', `/orders/${HERO}`, 'issues his invoice from Tally');
 			await page.getByRole('button', { name: 'Issue from Tally' }).click();
 			await expect(page.getByText('issued from Tally', { exact: true })).toBeVisible();
 			await run.done('Invoice issued from Tally');
 			await sidebar(page, 'Van route').click();
+			await expect(page.locator('#main')).toContainText(`${vanDay} round`);
 			const round = page.getByRole('button', { name: 'Start the round' });
 			await expect(round).toBeEnabled();
 			await round.click();
-			await until('the van round is done', 'rakesh', (c) => c.journey.van.status === 'done', 60_000);
+			const ran = await until('the van round is done', 'priya', (c) => c.journey.van.status === 'done', 60_000);
+			story(
+				'Van round in the timeline',
+				ran.feed.find((f) => f.key === 'van')?.text.split(':')[0],
+				`Ran the ${vanDay} round`
+			);
 			await run.done('The van round run: 31 kiranas delivered');
 		}
 	},
@@ -338,6 +383,15 @@ const STEPS: { id: string; title: string; run: (page: Page) => Promise<void> }[]
 				}
 				await card.click();
 				await page.waitForTimeout(600);
+				if (d.id === 'fssai' && d.status === 'not required') {
+					// a batch with no donation names no batch as donated (SC-98)
+					const paper = (await page.locator('#main').innerText()).replace(/\s+/g, ' ');
+					story(
+						'FSSAI paper',
+						/has its own checklist/.test(paper) ? 'names a batch as donated' : 'Nothing from this batch was donated.',
+						'Nothing from this batch was donated.'
+					);
+				}
 				await run.done(`Paper: ${d.type}${d.no ? ` ${d.no}` : ''}`);
 			}
 			// what Rakesh issued from Tally, as Finance reads it
