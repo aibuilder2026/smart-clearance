@@ -79,7 +79,7 @@
 		>{:else if ['approved', 'executing'].includes(s.hero.phase)}<Button
 			variant="primary"
 			iconRight="arrow-right"
-			onclick={() => router.go('execution')}>Watch execution</Button
+			onclick={() => router.go('execution', { ref: c.batch.id })}>Watch execution</Button
 		>{:else}<Button variant="primary" iconRight="arrow-right" onclick={openRoute}>Open Route Room</Button
 		>{/if}{/snippet}
 {#snippet money()}<div class="stack tight" style="gap: 2px">

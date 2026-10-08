@@ -812,14 +812,14 @@
     - the console's e2e, live and a11y specs follow the new end of New client, and a scan of the waiting card is added. The browser suites were not run (SC-55).
   - **Hosting:** the hosted console loads commit `76774dc`; every pinned file was checked on jsDelivr first, and the page renders the card. The hosted app page stays on its pinned commit.
 
-- **SC-89** (epic): the two-batch demo, live and dynamic: the Masala Chips (MF-2409-117, Rakesh Traders, Nagpur) and the Mango Drink (MF-2410-118, Lakshmi Agencies, Hyderabad) each run their own journey from day 0, and the console's Reset journey puts the data back to the story's start.
+- **SC-89** (epic, done): the two-batch demo, live and dynamic: the Masala Chips (MF-2409-117, Rakesh Traders, Nagpur) and the Mango Drink (MF-2410-118, Lakshmi Agencies, Hyderabad) each run their own journey from day 0, and the console's Reset journey puts the data back to the story's start.
   - **The request:** "I need Mango Drink batch and Masala chip batch to showcase demo … the logic has to be dynamic not stubbed or hardcoded", and Reset journey should "bring the dataset back to original state for me to redo the demo".
   - **The maintainer's answers (8 Oct):**
     - the staff sale: the distributor records it, after a design round;
     - kirana orders: by hand only; units no shop ordered are reported, not counted as sold;
     - the reset: the journey's data, keeping the client's configuration.
   - **The plan:** `/Users/arundutta/.claude/plans/now-i-want-to-federated-cookie.md`. Four stories, stacked in this order: SC-86, SC-85, SC-88, SC-87.
-- **SC-86** (In Review, branch `SC-86-any-plan-journey`): the live journey for any plan, with both demo batches from day 0.
+- **SC-86** (PR #70, merged): the live journey for any plan, with both demo batches from day 0.
   - **Every line runs** (`domain/journey.py` `line_done`, `lines_done`; one `_advance` in `steps.py`). A case reaches its papers once each line with units is done:
     - the kiranas' offer closed;
     - the ExpireSoon truck loaded, or the listing ended unsold (a `listing.close` timer at 9 days, which the console can fire);
@@ -840,7 +840,7 @@
   - **Checks:** backend-api, agents and the frontend gate pass.
   - **Live, locally, with Gemini:** both batches reached settled. The chips came to ₹21,152. The Mango Drink came to ₹16,917 with kirana 1,372, staff 150 and food bank 58.
   - **Found later (SC-87):** core's workspace types lacked the contract's `ended` listing and `declined` donation, which failed the workspace type check. Fixed on this branch and merged up the stack.
-- **SC-85** (In Review, branch `SC-85-screens-follow-plan`; bug): each batch's screens follow its own plan (design3 first, then core).
+- **SC-85** (PR #71, merged; bug): each batch's screens follow its own plan (design3 first, then core).
   - **Route Room:** a sentence per line.
   - **Execution:**
     - a card per line;
@@ -855,7 +855,7 @@
     - the focus holds;
     - no placeholder lines.
   - **Checks:** the goldens are unchanged, and new live tests draw the Mango's screens.
-- **SC-88** (In Review, branch `SC-88-reset-to-start`): Reset journey puts a synthetic workspace's journey data back to the story's start.
+- **SC-88** (PR #72, merged): Reset journey puts a synthetic workspace's journey data back to the story's start.
   - **Members:** back to their story status. Members invited in a demo leave the workspace (their accounts stay), except the approver.
   - **Document numbers:** back to the story's.
   - **Stock export:** the story's export, mapped (`exports.restore`).
@@ -864,7 +864,7 @@
   - **Files and ledgers:** the shelf file is named per case, and Impact's ledger id carries the journey's start.
   - **What stays:** the client's configuration (gates, overrides, guardrails, agents' settings, day length) and the audit log.
   - **Checks:** verified on the local console's Reset.
-- **SC-87** (In Review, branch `SC-87-staff-sale`): the staff sale and what is left at the godown, in the workspace.
+- **SC-87** (PR #73, merged): the staff sale and what is left at the godown, in the workspace.
   - **Design first:** three options on one board in app v3, `SC-87 design review.html`:
     - A, a card on Today;
     - B, a running tally;
@@ -891,7 +891,7 @@
   - **Locally:** migration 0007 is applied. The distributors' addresses arrive with the next `hydrate.sh --live-only`, which restarts the journey; until then the card leaves the code out.
   - **Hosting:** design3's `dist/` is rebuilt, and the hosted app page stays on its pinned commit.
 
-- **SC-90** (In Review, branch `SC-90-console-journey-clock`; bug): the console's live batches agree with the workspace, and every watchlist row opens something.
+- **SC-90** (PR #74, merged; bug): the console's live batches agree with the workspace, and every watchlist row opens something.
   - **Found by the maintainer** during the two-batch demo: the console's days left were 5 apart from the workspace's on every batch, and on the Command Center the chips (at risk) and every other row opened nothing.
   - **Days left:**
     - the console counted from today's real date, the workspace from the client's journey clock (a synthetic workspace replays the story's calendar);
@@ -907,4 +907,14 @@
     - the frontend gate passes: workspace 47 (2 new: the sheet from the quiet and the busy Command Center), core 248, api 77, admin 17, demo 5, console 3;
     - design3's sheet was opened from its watchlist in the prototype.
   - **Locally:** the API hung on a reload while the workspace's event stream was open, and was restarted.
+- **SC-91** (In Review, branch `SC-91-execution-focus`; bug): Execution keeps the batch in focus.
+  - **Found by the maintainer:** after approving the Masala Chips, Execution read "MF-2410-118 · no agents · Nothing is executing yet", though the chips' lot was live and the kiranas' offer sent.
+  - **The cause:** the workspace takes the batch in focus from the address. A screen opened without a batch fell back to the most urgent open case (`focusRef`): the Mango Drink, 22 days left against the chips' 47. The approve sheet, "Watch execution" on the Command Center and in the Route Room, and the sidebar all opened Execution without a batch.
+  - **The fix:**
+    - those buttons carry the batch in focus (`/execution/<ref>`), design3 `brand.jsx` first, then core;
+    - `RoleApp` keeps the batch in focus when a screen is opened without one, so the sidebar moves between the same batch's screens.
+  - **Checks:**
+    - the frontend gate passes: workspace 49 (2 new; the focus test fails without the fix, showing the Mango's Execution), core 248, api 77, admin 17, demo 5, console 3;
+    - the workspace e2e spec expects `/execution/MF-2409-117` after approving;
+    - the browser suites were not run.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

@@ -51,7 +51,7 @@ test("flows · Priya's day: signing in, Setup, the agents' plan, the one yes, an
 	await expect(placed).toBeVisible();
 	await placed.getByRole('button', { name: 'Watch execution' }).click();
 	await expect(title(page)).toHaveText('Execution');
-	await expect(page).toHaveURL(/\/execution$/);
+	await expect(page).toHaveURL(/\/execution\/MF-2409-117$/); // Execution keeps the batch approved (SC-91)
 
 	// the Lister, Outreach and the donation agent at work, then the kiranas' orders coming in
 	await expect(page.getByText('pickup booked')).toBeVisible({ timeout: 15_000 });

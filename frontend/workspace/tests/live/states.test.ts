@@ -541,3 +541,30 @@ describe('every watchlist row opens something (SC-90)', () => {
 		expect(go).toHaveBeenCalledWith('route', { replace: undefined, ref: MANGO });
 	});
 });
+
+describe('Execution keeps the batch in focus (SC-91)', () => {
+	it("Watch execution in the chips' Route Room opens the chips' Execution", async () => {
+		const go = vi.fn();
+		const s = source(fakeApi(moment('executing'), 'priya'));
+		const r = render(LiveHost, {
+			props: { source: s, screen: 'route', at: CHIPS, onnavigate: go }
+		}) as unknown as RenderResult<never>;
+		await waitFor(() => expect(s.case?.batch.id).toBe(CHIPS));
+		await fireEvent.click(await waitFor(() => r.getByRole('button', { name: 'Watch execution' })));
+		expect(go).toHaveBeenCalledWith('execution', { replace: undefined, ref: CHIPS });
+	});
+
+	it('a screen opened without a batch keeps the one in focus, not the most urgent', async () => {
+		const m = moment('executing');
+		expect(m.members.priya.snapshot.cases[0].ref).toBe(MANGO); // the most urgent case is the Mango Drink
+		const s = source(fakeApi(m, 'priya'));
+		const host = render(LiveHost, { props: { source: s, screen: 'route', at: CHIPS } });
+		const r = host as unknown as RenderResult<never>;
+		await waitFor(() => expect(s.case?.batch.id).toBe(CHIPS));
+		await host.rerender({ source: s, screen: 'execution', at: null });
+		await waitFor(() => expect(text(r)).toContain(`${CHIPS} · day 0 to`));
+		expect(s.case?.batch.id).toBe(CHIPS);
+		expect(text(r)).toContain('Lister · ExpireSoon');
+		expect(text(r)).not.toContain('Nothing is executing yet');
+	});
+});

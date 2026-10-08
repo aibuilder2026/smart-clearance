@@ -101,10 +101,11 @@
 		inside ? { name: ws.data.workspace.name, domain: ws.data.workspace.domain, open: () => (wsOpen = true) } : null
 	);
 	// the batch the address names, when it names one; the source decides what is in focus
-	// (only when the address changes: a tab on the Command Center puts another batch in focus without changing it)
+	// (only when the address changes: a tab on the Command Center puts another batch in focus without changing it). A
+	// screen opened without a batch keeps the one in focus, so the sidebar moves between its screens (SC-91)
 	$effect(() => {
 		const ref = route?.params?.ref ?? null;
-		untrack(() => ws.setFocus(ref));
+		if (ref) untrack(() => ws.setFocus(ref));
 	});
 
 	// a new screen starts at its top: the page scrolls inside #main
