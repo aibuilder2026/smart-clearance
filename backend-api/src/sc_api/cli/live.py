@@ -240,6 +240,7 @@ async def _members(ctx: Ctx, c: m.Client, j: dict[str, Any]) -> None:
                 user.email = login
             await users.ensure_account(ctx, user, x["name"], uid=synthetic_uid(login), reset=True)
             cm.workspace_role, cm.access_role_id, cm.member_class = x["role"], x["access"], member_class
+            cm.org = x["org"]  # the story's import may have named a partner's member by the person (SC-92)
             cm.provider = PROVIDER
             if x["status"] == "deactivated":
                 cm.status = "deactivated"

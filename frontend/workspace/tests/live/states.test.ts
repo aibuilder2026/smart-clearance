@@ -568,3 +568,22 @@ describe('Execution keeps the batch in focus (SC-91)', () => {
 		expect(text(r)).not.toContain('Nothing is executing yet');
 	});
 });
+
+describe("the buyer's listing (SC-92)", () => {
+	it('sends a message to the seller, and the counter names the token it takes', async () => {
+		const message = vi.fn(() => Promise.resolve({ seq: 1, case: null }));
+		const s = source(fakeApi(moment('executing'), 'agrawal', { message }));
+		const r = await draw(s, 'listing', CHIPS);
+		const box = await waitFor(() => r.getByRole('textbox', { name: 'Message the seller' }));
+		await fireEvent.input(box, { target: { value: '  Can you dispatch by Monday?  ' } });
+		await fireEvent.submit(box.closest('form')!);
+		await waitFor(() => expect(message).toHaveBeenCalledWith(CHIPS, 'Can you dispatch by Monday?'));
+		expect((box as HTMLInputElement).value).toBe('');
+		// 772 packs at the ₹14.20 counter, a 15% token: ₹1,644, as money.js's award has it
+		expect(text(r)).toContain('Accept ₹14.20 · pay ₹1,644 token');
+		// the buyer's own bubble carries his face, not a stand-in
+		const face = [...r.container.querySelectorAll('.avatar')].find((a) => a.closest('.row.end'));
+		expect(face).toBeTruthy();
+		expect(face!.textContent?.trim()).not.toBe('?');
+	});
+});
