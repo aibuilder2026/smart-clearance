@@ -107,6 +107,11 @@ lacks; its highlight gives the reader a place. B is the classic (Shopify's own);
 - Every page renders without console errors in Chromium at 1440 × 900 and 390 × 844, light and dark (the only
   errors are the 404s of plates and clips not yet rendered while the board was built).
 - The story strip's dim text is white at 66% over the film's shade, which is at least 7:1; its lit text is white.
+- **The clips** (LTX 2.5 Fast, 10 s each at 24 fps; day at 720p, night at 540p; 10 to 11.5 minutes each): A's loops end
+  within 2.2 (day) and 2.1 (night) of their first frame on a 0 to 255 scale (a frame-to-frame change is about 0.2),
+  so the loop has no visible seam. C's pair chain within 1.9 and 3.1. B's last frame is 58 from its first, which is
+  the dissolve's job. The day loop's first render (seed 7831) let the glowing path leave the road and trace the
+  godown's roof for about three seconds; it was rendered again (seed 7833) with the path told to stay on the road.
 - No browser suite was run (SC-55).
 
 ## The pick

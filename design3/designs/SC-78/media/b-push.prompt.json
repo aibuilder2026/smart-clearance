@@ -1,0 +1,18 @@
+{
+  "name": "b-push",
+  "model": "LTX 2.5 Fast (local)",
+  "ltx_desktop": "1.2.7",
+  "mode": "image-to-video from site/assets/plates/business.webp, fit pad to 16:9",
+  "prompt": "Exactly as in the image: a handmade miniature diorama of an Indian snack business seen from above in soft morning light, a pale factory with two brick chimneys and a small office at the left, a corrugated godown warehouse full of brown cartons in the middle, a lane of colourful kirana shops at the right, a highway climbing to a small warehouse on a hill at the back right, a community kitchen with a blue awning at the back, a fenced dump yard at the back left, and a thin softly glowing green path painted along the road. Over the clip the business works: the tiny yellow forklift carries a carton out of the godown and across the forecourt, the two workers at the table by the godown lift a carton between them, the small blue truck at the factory's loading bay pulls away along the road toward the godown and stops at its gate, tiny shoppers walk along the kirana lane and reach for packets at the shop fronts, the green auto-rickshaw drives slowly past the shops, the white van drives up the highway to the warehouse on the hill, people at the community kitchen move about, and the glowing green path brightens in one slow pulse from the godown along the road to the shops and up the hill, then settles. The camera starts on the whole business and glides slowly and smoothly forward and down toward the lane of kirana shops at the right, as if following a carton from the godown to the shops, and ends close on the shop fronts with their rows of colourful packets and the shoppers. Every building stays exactly where it is, with the same shape, size and colours; nothing new appears; no text appears anywhere. Slow steady dolly forward, no cuts, no shake. Soft even morning daylight, no lens flare.",
+  "seed": 7851,
+  "resolution": "720p",
+  "duration_s": 10,
+  "fps": 24,
+  "camera": "dolly_in",
+  "audio": false,
+  "minutes": 11.3,
+  "created": "2026-10-08",
+  "encode": "ffmpeg -an -c:v libx264 -preset slow -profile:v high -crf 25 -pix_fmt yuv420p -movflags +faststart (from LTX's own H.264)",
+  "use": "the hero film by day, option B: a slow push-in from the whole business to the kirana lane; a one-second dissolve back to the start",
+  "designed_in": "design3/designs/SC-78"
+}
