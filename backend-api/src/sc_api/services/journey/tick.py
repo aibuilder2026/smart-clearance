@@ -8,11 +8,12 @@
 3. a journey stalled on an agent for ten minutes (a message lost, an agent down) gets its event again;
 4. then the outbox goes out.
 
-A timer fires within a tick of its time: at one minute a day, within a journey day.
+A timer fires within a tick of its time: at one minute a day, within a journey day. The console fires a daily run or a
+timer at once through the same functions (`run_daily`, `ready`, `fire_timer`; controls.py, SC-79).
 """
 
 from contextlib import suppress
-from datetime import time, timedelta
+from datetime import date, datetime, time, timedelta
 from typing import Any
 
 from sqlalchemy import delete, select
@@ -57,35 +58,18 @@ async def _client(ctx: Ctx, client_id: str) -> dict[str, Any]:
     agents = await world.agent_settings(ctx, client_id)
     start = (c.journey_day0 or today) - timedelta(days=90)
 
-    data_time = _at(agents.get("data", {}).get("time", "08:30"))
+    data_time = _at(daily_time(agents, "data"))
     if daily.get("data") != today.isoformat() and now.time() >= data_time and agents.get("data", {}).get("on", True):
-        files = []
-        if doc.get("synthetic") and ctx.cloud is not None and ctx.settings.exports_bucket:
-            files = await dms.write_day(ctx, client_id, today, start=start)
-        daily["data"] = today.isoformat()
-        await ev.publish(
-            ctx,
-            J.Event(
-                J.STEP,
-                {"type": J.DUE, "client": client_id, "agent": "data", "day": today.isoformat(), "files": files},
-                client_id,
-            ),
-        )
+        await run_daily(ctx, c, "data", today, daily, doc, start=start)
         out["daily"].append("data")
-    watch_time = _at(agents.get("watcher", {}).get("time", "09:00"))
+    watch_time = _at(daily_time(agents, "watcher"))
     if (
         daily.get("watcher") != today.isoformat()
         and now.time() >= watch_time
         and c.setup_confirmed_at is not None
         and agents.get("watcher", {}).get("on", True)
     ):
-        daily["watcher"] = today.isoformat()
-        await ev.publish(
-            ctx,
-            J.Event(
-                J.STEP, {"type": J.DUE, "client": client_id, "agent": "watcher", "day": today.isoformat()}, client_id
-            ),
-        )
+        await run_daily(ctx, c, "watcher", today, daily, doc, start=start)
         out["daily"].append("watcher")
     if daily != doc.get("daily"):
         c.workspace_doc = {**doc, "daily": daily}
@@ -108,51 +92,11 @@ async def _client(ctx: Ctx, client_id: str) -> dict[str, Any]:
         if case is None or case.status != "open":
             t.fired_wall = wall
             continue
-        if t.kind == "offer.close":
-            t.fired_wall = wall
-            with suppress(steps.Noop):
-                await steps.close_offer(
-                    ctx, client_id, case.batch_ref, steps.Run("outreach", event_key=f"timer:{t.id}")
-                )
-        elif t.kind == "shelf.due":
-            if case.phase == "settled" and (case.van or {}).get("status") == "done":
-                t.fired_wall = wall
-                files = []
-                if doc.get("synthetic") and ctx.cloud is not None and ctx.settings.exports_bucket:
-                    story = (doc.get("story") or {}).get("shelf") if case.batch_ref == doc.get("heroRef") else None
-                    files = [await dms.write_shelf(ctx, client_id, case, today, story)]
-                await ev.publish(
-                    ctx,
-                    J.Event(
-                        J.STEP,
-                        {
-                            "type": J.TIMER,
-                            "kind": "shelf.due",
-                            "client": client_id,
-                            "ref": case.batch_ref,
-                            "files": files,
-                        },
-                        f"{client_id}:{case.batch_ref}",
-                    ),
-                )
-            else:  # not settled yet: look again a journey day later
-                t.due_at = t.due_at + timedelta(days=1)
-                t.due_wall = max(wall, ev.wall_of(c, t.due_at))
-        elif t.kind == "report.due":
-            ready = case.phase == "settled" and case.shelf and (case.van or {}).get("status") == "done"
-            if ready:
-                t.fired_wall = wall
-                await ev.publish(
-                    ctx,
-                    J.Event(
-                        J.STEP,
-                        {"type": J.TIMER, "kind": "report.due", "client": client_id, "ref": case.batch_ref},
-                        f"{client_id}:{case.batch_ref}",
-                    ),
-                )
-            else:
-                t.due_at = t.due_at + timedelta(days=1)
-                t.due_wall = max(wall, ev.wall_of(c, t.due_at))
+        if ready(t, case):
+            await fire_timer(ctx, c, t, case, doc, today)
+        else:  # not settled yet: look again a journey day later
+            t.due_at = t.due_at + timedelta(days=1)
+            t.due_wall = max(wall, ev.wall_of(c, t.due_at))
         out["timers"].append(f"{t.kind}:{case.batch_ref}")
 
     for case in (
@@ -170,6 +114,65 @@ async def _client(ctx: Ctx, client_id: str) -> dict[str, Any]:
             out["stalled"].append(case.batch_ref)
     await ctx.session.flush()
     return out
+
+
+DAILY_TIMES = {"data": "08:30", "watcher": "09:00"}
+
+
+def daily_time(agents: dict[str, Any], agent_id: str) -> str:
+    """the time of an agent's daily run, as the client's agent settings hold it"""
+    return agents.get(agent_id, {}).get("time", DAILY_TIMES[agent_id])
+
+
+async def run_daily(
+    ctx: Ctx,
+    c: m.Client,
+    agent_id: str,
+    today: date,
+    daily: dict[str, Any],
+    doc: dict[str, Any],
+    *,
+    start: date,
+) -> None:
+    """the Data agent's or the Watcher's run for `today`, marked done for the day (`daily`, which the caller saves):
+    for the Data agent, the day's synthetic DMS exports first, as a real distributor's would arrive"""
+    payload: dict[str, Any] = {"type": J.DUE, "client": c.id, "agent": agent_id, "day": today.isoformat()}
+    if agent_id == "data":
+        files = []
+        if doc.get("synthetic") and ctx.cloud is not None and ctx.settings.exports_bucket:
+            files = await dms.write_day(ctx, c.id, today, start=start)
+        payload["files"] = files
+    daily[agent_id] = today.isoformat()
+    await ev.publish(ctx, J.Event(J.STEP, payload, c.id))
+
+
+def ready(t: m.Timer, case: m.Case) -> bool:
+    """whether a timer can fire: the offer closes whenever it is due; the shelf check waits for the papers and the van
+    round, and the report for the shelf check too"""
+    van_done = (case.van or {}).get("status") == "done"
+    if t.kind == "shelf.due":
+        return case.phase == "settled" and van_done
+    if t.kind == "report.due":
+        return bool(case.phase == "settled" and case.shelf and van_done)
+    return True
+
+
+async def fire_timer(ctx: Ctx, c: m.Client, t: m.Timer, case: m.Case, doc: dict[str, Any], today: date) -> None:
+    """a timer that is ready, fired: the offer window closes here; the shelf check and the report go to the agents"""
+    wall: datetime = ctx.clock.now()
+    t.fired_wall = wall
+    if t.kind == "offer.close":
+        with suppress(steps.Noop):
+            await steps.close_offer(ctx, c.id, case.batch_ref, steps.Run("outreach", event_key=f"timer:{t.id}"))
+        return
+    payload: dict[str, Any] = {"type": J.TIMER, "kind": t.kind, "client": c.id, "ref": case.batch_ref}
+    if t.kind == "shelf.due":
+        files = []
+        if doc.get("synthetic") and ctx.cloud is not None and ctx.settings.exports_bucket:
+            story = (doc.get("story") or {}).get("shelf") if case.batch_ref == doc.get("heroRef") else None
+            files = [await dms.write_shelf(ctx, c.id, case, today, story)]
+        payload["files"] = files
+    await ev.publish(ctx, J.Event(J.STEP, payload, f"{c.id}:{case.batch_ref}"))
 
 
 def views_state(case: m.Case) -> dict[str, Any]:
