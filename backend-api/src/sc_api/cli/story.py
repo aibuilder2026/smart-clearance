@@ -231,6 +231,26 @@ class Story:
             await supply.add_integration(
                 ctx, c["id"], id=i["id"], name=i["name"], kind=i["kind"], status=i["status"], note=i["note"]
             )
+        # its first stock export, set up in the console and mapped (SC-84), so the workspace's Setup opens mapped
+        if fx := c.get("firstExport"):
+            row.setup_mapped = sum(1 for x in fx["columns"] if x["column"])
+            row.last_import = {
+                "at": self.when("1 Oct, 16:40").isoformat(),
+                "file": fx["file"],
+                "rows": fx["rows"],
+                "batches": fx["batches"],
+            }
+            row.workspace_doc = {
+                **(row.workspace_doc or {}),
+                "firstExport": {
+                    "export": "story",
+                    "file": fx["file"],
+                    "by": fx["by"],
+                    "at": fx["at"],
+                    "pending": False,
+                },
+                "exportColumns": [[x["field"], x["column"]] for x in fx["columns"] if x["column"]],
+            }
 
     async def history(self) -> None:
         ctx, c = self.ctx, self.client

@@ -23,6 +23,7 @@ from sc_api.schemas import (
     ClientPerson,
     DistributorOut,
     ExitState,
+    FirstExportOut,
     Gates,
     Integration,
     Mark,
@@ -122,9 +123,14 @@ async def client_out(ctx: Ctx, client_id: str) -> ClientOut:
         r.exit_id: r.on
         for r in (await s.execute(select(m.ClientExit).where(m.ClientExit.client_id == client_id))).scalars()
     }
-    distributors = (
-        await s.execute(select(m.Distributor).where(m.Distributor.client_id == client_id).order_by(m.Distributor.seq))
-    ).scalars()
+    dist_rows = list(
+        (
+            await s.execute(
+                select(m.Distributor).where(m.Distributor.client_id == client_id).order_by(m.Distributor.seq)
+            )
+        ).scalars()
+    )
+    distributors = dist_rows
     skus = (await s.execute(select(m.Sku).where(m.Sku.client_id == client_id).order_by(m.Sku.seq))).scalars()
     integrations = (
         await s.execute(
@@ -217,7 +223,15 @@ async def client_out(ctx: Ctx, client_id: str) -> ClientOut:
         batches=int(count),
         approver=c.approver_ref,
         agents=agent_json,
+        first_export=_first_export(c, len(dist_rows)),
     )
+
+
+def _first_export(c: m.Client, distributors: int) -> FirstExportOut | None:
+    from sc_api.services import exports  # exports locks clients through this module
+
+    x = exports.first_export(c, distributors)
+    return FirstExportOut.model_validate(x) if x else None
 
 
 async def client_ids(ctx: Ctx) -> list[str]:

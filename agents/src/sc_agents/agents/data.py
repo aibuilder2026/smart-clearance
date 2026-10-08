@@ -55,6 +55,18 @@ OPTIONAL = {
     "shelf": [],
 }
 DISTRIBUTOR = ("distributor_id", "distributor_name")
+# the Smart-Clearance field each stock column fills, as Setup and the console show the mapping (SC-84)
+FIELD = {
+    "distributor_id": "distributor",
+    "distributor_name": "distributor",
+    "item_code": "sku",
+    "batch_no": "batch",
+    "mfg_date": "mfg",
+    "bb_date": "best_before",
+    "closing_qty": "units",
+    "location": "godown",
+    "pin": "pincode",
+}
 TABLE = {"stock": "stock_snapshots", "sales": "secondary_sales", "shelf": "shelf_counts"}
 
 
@@ -417,12 +429,15 @@ async def _load(rc: RunCtx, state: dict[str, Any]) -> dict[str, Any]:
                     }
                 )
         days = await rc.deps.warehouse.sales_days(rc.msg.client)
+        stock = out["stock"][-1][0]
         body = {
             "batches": batches,
             "mapped": out["mapped"],
             "rows": out["rows"],
             "days": days,
-            "file": out["stock"][-1][0].name,
+            "file": stock.name,
+            # the stock file's map, field by field, for Setup and the console (SC-84)
+            "columns": [[FIELD.get(t, t), h] for t, h in stock.columns.items()],
         }
         await rc.report(AGENT, f"/internal/clients/{rc.msg.client}/exports", body)
     elif not out["files"]:

@@ -90,6 +90,8 @@ async def test_the_daily_run_loads_stock_and_sales_and_reports_the_stock(run, ba
     body = backend.report("/exports")
     assert body["run"]["agent"] == "data" and body["run"]["eventKey"] == "ev_d:data"
     assert body["mapped"] == 8 and body["rows"] == 9 and body["days"] == 91 and body["file"] == "stock-2026-10-02.csv"
+    assert body["columns"][:3] == [["distributor", "distributor_name"], ["sku", "item_code"], ["batch", "batch_no"]]
+    assert [f for f, _ in body["columns"]][3:] == ["mfg", "best_before", "units", "godown", "pincode"]
     hero = next(b for b in body["batches"] if b["ref"] == "MF-2409-117")
     assert hero == {
         "ref": "MF-2409-117",

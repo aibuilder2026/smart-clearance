@@ -674,6 +674,48 @@
   }
 
   /* ---------- supply chain ---------- */
+
+  /* ---------- a client's first stock export, set up by staff (SC-84, option B) ---------- */
+  // At the top of the client's Supply chain tab, above the distributors, SKUs and batches it brings: drop or choose the
+  // CSV, it uploads, the Data agent maps its fields, then the mapping with what the file brought and who uploaded it.
+  // The workspace's Setup then opens mapped, and the client's operator confirms the guardrails; the Data agent loads
+  // each day's export at 08:30, and a journey reset keeps the mapping.
+  const at = iso => { if (!iso) return null; const d = new Date(iso); return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }) + ", " + d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false }); };
+  function FirstExport({ c, me }) {
+    const reduce = useReducedMotion(); const fileRef = useRef(null); const [over, setOver] = useState(false); const [up, setUp] = useState(null);
+    const fx = c.firstExport;
+    const start = f => {
+      if (!f) return; const t0 = performance.now(); const ms = reduce ? 0 : 1400;
+      const tick = now => { const p = Math.min(1, (now - t0) / Math.max(1, ms)); setUp({ name: f.name, p }); if (p < 1) { requestAnimationFrame(tick); return; }
+        setUp(null);
+        P.update(d => P.exportUploaded(d, c.id, f.name, me.name, new Date().toISOString()), { who: me.name, client: c.id, text: P.exportLine(c, f.name) });
+        // the Data agent maps it (simulated here; backend-api hands the file to the agent)
+        setTimeout(() => P.update(d => P.exportMapped(d, c.id)), reduce ? 0 : 1800); };
+      requestAnimationFrame(tick);
+    };
+    const pick = e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; start(f); };
+    const choose = () => fileRef.current && fileRef.current.click();
+    const phase = up ? "uploading" : fx ? fx.status : "waiting";
+    const mapped = phase === "mapped", reading = phase === "mapping";
+    const status = mapped ? <Badge tone="green" icon="check">Mapped</Badge> : reading ? <Badge tone="blue" dot>Mapping</Badge> : up ? <Badge dot>Uploading</Badge> : <Badge dot>Not uploaded yet</Badge>;
+    const title = up ? up.name : fx ? fx.file : "First stock export";
+    const when = fx && at(fx.at); const cols = (fx && fx.columns) || []; const data = c.agents.data.settings;
+    const sub = mapped ? `${fmt.num(fx.rows)} rows · ${fx.distributors} distributors${fx.by ? ` · uploaded by ${fx.by}${when ? ", " + when : ""}` : ""}` : reading ? "The Data agent is reading its columns" : up ? "Uploading" : `A CSV from ${poss(c.name)} distributor management system: batches, best-before dates, stock on hand`;
+    return <Card className="stack snug">
+      <div className="card-head"><span className="row tight" style={{ minWidth: 0 }}><span className={cx("icontile", !mapped && "soft")}><Icon name="file-spreadsheet" size={17} stroke={2} /></span><span className="stack tight" style={{ gap: 0, minWidth: 0 }}><b style={{ overflowWrap: "anywhere" }}>{title}</b><span className="t-footnote subtle">{sub}</span></span></span><span className="row tight wrap">{mapped && <Button size="sm" icon="upload" onClick={choose}>Replace</Button>}{status}</span></div>
+      {phase === "waiting" ? <div className={cx("cs-drop", over && "over")} onDragOver={e => { e.preventDefault(); setOver(true); }} onDragLeave={() => setOver(false)} onDrop={e => { e.preventDefault(); setOver(false); start(e.dataTransfer.files && e.dataTransfer.files[0]); }}>
+          <span className="icontile soft" style={{ width: 44, height: 44, borderRadius: 13 }}><Icon name="upload" size={20} stroke={2} /></span>
+          <span className="t-subhead muted">Drop the export here. The Data agent maps its columns, then loads {data.backfillDays} days of sell-through.</span>
+          <span className="row tight wrap" style={{ justifyContent: "center" }}><Button variant="primary" icon="upload" onClick={choose}>Choose a CSV</Button><span className="t-footnote subtle">or drop it here</span></span>
+        </div>
+        : up ? <K.Progress value={up.p} label="Uploading the stock export" />
+        : <div className="table-wrap" style={{ boxShadow: "none" }} tabIndex={0} role="region" aria-label="Field mapping"><table className="table"><thead><tr><th>Smart-Clearance field</th><th>Column in the file</th><th>Status</th></tr></thead><tbody>
+          {cols.map(({ field, column }) => <tr key={field}><td className="strong">{field.replace("_", " ")}</td><td className={column ? "mono" : "subtle"}>{column || (mapped ? "not in the file" : "reading…")}</td><td>{column ? <Badge size="sm" tone="green" icon="check">mapped</Badge> : mapped ? <Badge size="sm">not mapped</Badge> : <Badge size="sm" tone="blue" dot>mapping</Badge>}</td></tr>)}
+        </tbody></table></div>}
+      <input ref={fileRef} type="file" accept=".csv,text/csv" className="sr-only" tabIndex={-1} aria-hidden="true" onChange={pick} />
+      <div className="row tight t-footnote muted"><K.Aura on={reading} className="icontile soft" style={{ width: 26, height: 26, borderRadius: 8 }}><Icon name="database" size={14} /></K.Aura>{mapped ? <span>The Data agent mapped {cols.filter(x => x.column).length} of {cols.length} fields. The workspace's Setup opens mapped; its operator reviews the guardrails and confirms. Each day's export loads at {data.time}.</span> : reading ? "The Data agent is matching the file's columns to these fields." : <span>After this, the Data agent loads each day's export at {data.time}, and the client can upload one from Setup.</span>}</div>
+    </Card>;
+  }
   function SupplyTab({ c, me }) {
     const s = usePlatform(); const app = useApp(); const { toast } = useNotice(); const [edit, setEdit] = useState(false); const [menu, setMenu] = useState(null); const [skuId, setSkuId] = useState(null);
     const differ = c.skus.filter(x => x.gates && (x.gates.blinkitDays != null || x.gates.qcomPct != null)).length;
@@ -691,6 +733,7 @@
     ];
     const ask = d => { P.update(() => {}, { who: me.name, client: c.id, text: `Asked ${d.name} again for its one-time permission` }); toast({ text: `Reminder sent to ${d.name}`, tone: "ok" }); };
     return <div className="stack" style={{ gap: 18 }}>
+      <div className="stack snug"><SectionTitle sub={c.firstExport ? `The distributors and SKUs below came with it; the Data agent loads each day's at ${c.agents.data.settings.time}` : "Its distributors, SKUs and batches arrive with it"}>First stock export</SectionTitle><FirstExport c={c} me={me} /></div>
       <Card className="wschain-card">
         <div className="wschain" role="img" aria-label={`${c.name} sells through ${c.distributors.length || "its"} distributors to ${kiranas || "the"} kiranas and the quick-commerce warehouses.`}>
           <Step icon="factory" t={c.name} sub={`${c.city} · ${c.profile.route === "distributors" ? "sells only to distributors" : P.optLabel("route", c.profile.route).toLowerCase()}`} />
@@ -981,7 +1024,7 @@
       const client = P.buildClient({ name: f.name.trim(), city: f.city.trim(), industry: f.industry, colour: f.colour, emailDomain: f.emailDomain.trim().toLowerCase(), signGoogle: f.signGoogle, signPhone: f.signPhone, route: f.route, owner: f.owner, expiry: f.expiry, preset: f.preset, adminName: f.adminName.trim(), adminEmail: f.adminEmail.trim().toLowerCase(), plan: f.plan });
       client.id = slug; client.domain = slug + ".smartclearance.com"; client.exits = exits;
       P.update(d => { d.clients.push(client); if (f.request) d.requests = (d.requests || []).map(r => r.id === f.request ? Object.assign({}, r, { status: "set up", client: slug }) : r); }, { who: me.name, client: slug, text: `Set up ${client.name} from its supply-chain profile: ${P.optLabel("route", f.route).toLowerCase()}, ${P.optLabel("owner", f.owner).toLowerCase()} owns the stock, ${P.optLabel("expiry", f.expiry).toLowerCase()}; invited ${client.people[0].name} as admin` });
-      toast({ text: `${client.name}'s workspace is set up`, tone: "ok" }); go("clients", slug, "agents", true);
+      toast({ text: `${client.name}'s workspace is set up`, tone: "ok" }); go("clients", slug, "supply", true); // the first stock export comes next (SC-84)
     };
     const preview = { id: slug || "new", name: f.name || "?", mark: { from: f.colour, to: f.colour, ink: "#ffffff" } };
     const body = [
@@ -1021,6 +1064,7 @@
           <ListRow title="Exits" sub={P.EXITS.filter(e => exits[e.id].on).map(e => e.name).join(", ")} />
           <ListRow title="Agents" sub={P.PRESETS.find(p => p.id === f.preset).label + "; the approval is always on"} />
           <ListRow title="Admin" sub={`${f.adminName} · ${f.adminEmail}`} />
+          <ListRow title="First stock export" sub="Next, on the client's Supply chain tab" />
         </List>
         <div className="stack" style={{ gap: 12 }}><SectionTitle sub="Prices on request">Plan</SectionTitle><Segmented label="Plan" options={P.PLANS.map(p => ({ id: p.id, label: p.name }))} value={f.plan} onChange={v => set({ plan: v })} /><Card><ul className="cs-scope">{P.PLANS.find(p => p.id === f.plan).scope.map(x => <li key={x}><Icon name="check" size={16} stroke={2.4} />{x}</li>)}</ul></Card></div>
       </div>,

@@ -21,6 +21,7 @@
 	import { clientBatchesQuery } from '#lib/api/queries.ts';
 	import { useConsole } from '#lib/console.svelte.ts';
 	import MoreMenu from '../MoreMenu.svelte';
+	import FirstExport from './FirstExport.svelte';
 	import GateValue from './GateValue.svelte';
 	import ProfileSheet from './ProfileSheet.svelte';
 	import SkuSheet from './SkuSheet.svelte';
@@ -91,6 +92,14 @@
 	>{/snippet}
 
 <div class="stack" style="gap: 18px">
+	<div class="stack snug">
+		<SectionTitle
+			sub={c.firstExport
+				? `The distributors and SKUs below came with it; the Data agent loads each day's at ${c.agents.data.settings.time}`
+				: 'Its distributors, SKUs and batches arrive with it'}>First stock export</SectionTitle
+		>
+		<FirstExport {c} />
+	</div>
 	<Card class="wschain-card">
 		<div
 			class="wschain"

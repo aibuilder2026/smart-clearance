@@ -2,6 +2,8 @@
 // with Firebase Authentication (the app's ConsoleAuth); every call carries the Firebase ID token.
 import { transport, type TransportOptions } from '../http';
 import { ApiError } from '../types/shared';
+import type { UploadLink } from '../types/workspace';
+import { putUpload } from '../workspace/upload';
 import type { Client, ConsoleApi, ConsoleAuth, Staff } from '../types/console';
 
 export function consoleHttp(
@@ -68,6 +70,15 @@ export function consoleHttp(
 		journey: (id) => call('GET', `${c(id)}/journey`),
 		fireTrigger: (id, trigger) => call('POST', `${c(id)}/journey/triggers/${encodeURIComponent(trigger)}`),
 		resetJourney: (id, input) => call('POST', `${c(id)}/journey/reset`, input ?? {}),
+		uploadExport: async (id, file, opts) => {
+			const link = await call<UploadLink>('POST', `${c(id)}/exports`, {
+				contentType: file.type || 'text/csv',
+				bytes: file.size,
+				fileName: file.name
+			});
+			await putUpload(link, file, opts);
+			return call<Client>('POST', `${c(id)}/exports/${encodeURIComponent(link.id)}`, { fileName: file.name });
+		},
 		clientBatches: (id, sku) => call('GET', `${c(id)}/batches` + (sku ? `?sku=${encodeURIComponent(sku)}` : '')),
 		saveSkuGates: (id, sku, gates) => call('PUT', `${c(id)}/skus/${encodeURIComponent(sku)}/gates`, { gates }),
 		overrideBatch: (id, ref, input) => call('PUT', `${c(id)}/batches/${encodeURIComponent(ref)}/override`, input),

@@ -415,3 +415,29 @@ describe("the Overview's dashboard (SC-48)", () => {
 		expect(row.updated).toMatch(/^\d\d:\d\d$|^\d+ \w{3}$/);
 	});
 });
+
+describe("a client's first stock export, set up by staff (SC-84)", () => {
+	const story = async () => (await api.client('munchly'))!.firstExport!;
+
+	it("starts Munchly mapped, by the story's own export and columns", async () => {
+		const fx = await story();
+		expect([fx.status, fx.file, fx.rows, fx.by]).toEqual(['mapped', 'dms_export_2026-10-01.csv', 312, 'Neha Kulkarni']);
+		expect(fx.columns[0]).toEqual({ field: 'distributor', column: 'distributor_name' });
+		expect(fx.columns.every((x) => x.column)).toBe(true);
+	});
+
+	it("uploads a new client's export, reports its progress, maps it, and writes the audit line", async () => {
+		const c = await api.createClient(kesari());
+		expect(c.firstExport).toBeNull();
+		const seen: number[] = [];
+		const file = new File(['distributor_name,item_code\n'], 'kesari_stock.csv', { type: 'text/csv' });
+		const out = await api.uploadExport('kesari', file, { onProgress: (p) => seen.push(p) });
+		expect(seen.at(-1)).toBe(1);
+		const fx = out.firstExport!;
+		expect([fx.status, fx.file, fx.by]).toEqual(['mapped', 'kesari_stock.csv', 'Neha Kulkarni']);
+		expect(fx.columns.map((x) => x.field)).toEqual((await story()).columns.map((x) => x.field));
+		expect((await lastAudit()).text).toBe(
+			"Uploaded Kesari Foods' stock export kesari_stock.csv; the Data agent maps and loads it"
+		);
+	});
+});

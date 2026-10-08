@@ -843,6 +843,49 @@
 				],
 				"recovered": 21152.4,
 				"batches": 9,
+				"firstExport": {
+					"status": "mapped",
+					"file": "dms_export_2026-10-01.csv",
+					"rows": 312,
+					"batches": 9,
+					"distributors": 4,
+					"by": "Neha Kulkarni",
+					"at": null,
+					"columns": [
+						{
+							"field": "distributor",
+							"column": "distributor_name"
+						},
+						{
+							"field": "sku",
+							"column": "item_code"
+						},
+						{
+							"field": "batch",
+							"column": "batch_no"
+						},
+						{
+							"field": "mfg",
+							"column": "mfg_date"
+						},
+						{
+							"field": "best_before",
+							"column": "bb_date"
+						},
+						{
+							"field": "units",
+							"column": "closing_qty"
+						},
+						{
+							"field": "godown",
+							"column": "location"
+						},
+						{
+							"field": "pincode",
+							"column": "pin"
+						}
+					]
+				},
 				"approver": "priya",
 				"agents": {
 					"data": {

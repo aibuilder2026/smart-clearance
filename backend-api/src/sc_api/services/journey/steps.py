@@ -18,7 +18,7 @@ from sc_api.domain import journey as J
 from sc_api.domain.clock import IST
 from sc_api.errors import ApiError, not_found
 from sc_api.services import agents as agent_runs
-from sc_api.services import audit, supply
+from sc_api.services import audit, exports, supply
 from sc_api.services.context import Ctx
 from sc_api.services.journey import events as ev
 from sc_api.services.journey import world
@@ -253,6 +253,8 @@ async def record_export(ctx: Ctx, client_id: str, body: dict[str, Any], run: Run
         "rows": int(body.get("rows") or 0),
         "batches": len(body.get("batches", [])),
     }
+    # the columns the stock file was mapped by, and an export staff uploaded marked mapped (SC-84)
+    exports.loaded(c, [body.get("file", ""), *(body.get("files") or [])], body.get("columns"))
     integration = await ctx.session.get(m.ClientIntegration, (client_id, "dms"), with_for_update=True)
     if integration is not None and integration.status == "waiting":
         integration.status, integration.note = "ok", "Stock exports arriving"

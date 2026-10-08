@@ -5,7 +5,7 @@
 (function () {
   const D = window.SC3_DATA, M = window.SC3_MONEY, AppStore = window.SC3_STORE;
   const R = M.RULES;
-  const KEY = "sc3-platform", VERSION = 5;
+  const KEY = "sc3-platform", VERSION = 6;
 
   /* ---------- Smart-Clearance's own people (fictional) ---------- */
   const STAFF = [
@@ -319,6 +319,8 @@
       signIn: W.signIn.map(s => ({ id: s.id, title: s.title, who: s.who, rule: s.rule, on: true })),
       distributors, skus, people, integrations: app.integrations.map(i => ({ id: i.id, name: i.name, kind: i.kind, status: i.status, note: i.note })),
       recovered: D.ACTUAL.net, batches: D.BATCHES.length,
+      // its first stock export, set up in the console by Neha and mapped by the Data agent (SC-84)
+      firstExport: { status: "mapped", file: D.SETUP.dms.file, rows: D.SETUP.dms.rows, batches: D.BATCHES.length, distributors: distributors.length, by: "Neha Kulkarni", at: null, columns: exportColumns(true) },
       approver: "priya",
     };
     client.agents = agentDefaults("standard", client);
@@ -406,6 +408,19 @@
   // the journey from day 0 again: nothing pending but the day's two runs, Setup to confirm again
   function resetJourney(draft, id) { draft.journeys[id] = { day0: D.DAY0, now: D.DAY0 + "T08:00:00+05:30", setupConfirmed: false, daily: {}, timers: [] }; }
   const resetLine = () => `started the journey again from ${D.DAY0}`;
+  // a client's stock export, uploaded by staff (SC-84): mapping until the Data agent has read it, then mapped with what
+  // the file brought (the prototype's export is the story's: its rows, batches and distributors)
+  // the Smart-Clearance fields a stock export fills, each with the file's column once the Data agent has mapped it
+  function exportColumns(mapped) { return D.SETUP.dms.columns.map(([field, column]) => ({ field, column: mapped ? column : null })); }
+  function exportUploaded(draft, id, file, who, at) {
+    const c = draft.clients.find(x => x.id === id);
+    c.firstExport = { status: "mapping", file, rows: 0, batches: 0, distributors: c.distributors.length, by: who, at, columns: exportColumns(false) };
+  }
+  function exportMapped(draft, id) {
+    const c = draft.clients.find(x => x.id === id);
+    if (c.firstExport) c.firstExport = Object.assign({}, c.firstExport, { status: "mapped", rows: D.SETUP.dms.rows, batches: D.BATCHES.length, distributors: Math.max(c.distributors.length, Object.keys(D.DISTRIBUTORS).length), columns: exportColumns(true) });
+  }
+  const exportLine = (c, file) => `Uploaded ${poss(c.name)} stock export ${file}; the Data agent maps and loads it`;
 
   function seed() {
     return { v: VERSION, journeys: { munchly: seedJourney() }, clients: [seedMunchly()], staff: STAFF.map(s => Object.assign({ status: "active" }, s)), runs: RUNS.slice(), tracks: TRACKS.slice(), batches: BATCHES.map(b => Object.assign({}, b, b.override ? { override: Object.assign({}, b.override) } : {})), audit: AUDIT.slice(), requests: [], seq: 1, nextAudit: 100 };
@@ -431,7 +446,7 @@
       plan: f.plan, status: "setting-up", since: null, region: "India", profile, gates: { blinkitDays: R.gates.blinkit.minDays, qcomPct: Math.round(R.gates.zepto.pctLife * 100) },
       territoryGuard: true, returnWindowDays: R.returnWindowDays, dayMinutes: DAY_MINUTES, exits: exitsFor(profile), rules: { reserve: R.negotiation.reservePerUnit, scheme: "2 free with every 10", staffCap: R.staffCap, tokenPct: Math.round(R.tokenPct * 100), offerWindowHours: 48, hindiOffers: true, requirePhoto: true },
       signIn: [{ id: "google", title: "Google Workspace", who: f.name + " staff", rule: f.emailDomain + " accounts only", on: f.signGoogle }, { id: "phone", title: "Mobile number and a one-time code", who: "Distributors and kirana owners", rule: "Numbers the client or its distributors invite", on: f.signPhone }],
-      distributors: [], skus: [], people: [admin], integrations: [], recovered: 0, batches: 0, approver: admin.id,
+      distributors: [], skus: [], people: [admin], integrations: [], recovered: 0, batches: 0, approver: admin.id, firstExport: null,
     };
     client.agents = agentDefaults(f.preset, client);
     Object.keys(client.agents).forEach(k => { client.agents[k].last = "not run yet"; client.agents[k].next = "after the first stock export"; });
@@ -452,6 +467,7 @@
     TODAY, GATE_BOUNDS, batchGates, gateText, skuGatesError, overrideError, skuGatesLine, overrideLine, clearOverrideLine,
     DAY_MINUTES, DAY_PRESETS, dayWords, spanWords, dayBadge, dayReadouts, dayHead, dayMinutesError, dayMinutesLine, poss,
     journey, fire, fireLine, resetJourney, resetLine,
+    exportUploaded, exportMapped, exportLine,
     STAFF, AUTONOMY, AGENTS, STAGE_NAME, FIELDS, PLANS, CONNECTORS, EXITS, PROFILE, PRESETS, seed,
   };
   window.SC3_PLATFORM = Platform;

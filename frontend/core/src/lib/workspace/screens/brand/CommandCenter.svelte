@@ -55,6 +55,9 @@
 
 	const live = useLive();
 	const on = $derived(!!live?.on);
+	// the stock export mapped (on the live workspace once the console or Setup has an export mapped; SC-84): what is
+	// left before the Watcher starts is the operator's yes to the guardrails
+	const ready = $derived(!on || s.setup.mapped > 0);
 	const dim = $derived(on && !!live?.down);
 	const offline = $derived(on && !!live?.offline);
 	// the batches in a journey, as tabs, when there is more than one; a batch picked is read before its card shows
@@ -93,7 +96,7 @@
 {#snippet emptyAction()}{#if !s.setup.confirmed}<Button
 			variant="primary"
 			iconRight="arrow-right"
-			onclick={() => router.go('setup')}>Open Setup</Button
+			onclick={() => router.go('setup')}>{ready ? 'Review and confirm' : 'Open Setup'}</Button
 		>{:else if !perm}<PlayAs who={cast.distributor.id} route="home"
 			>Give the permission as {cast.distributor.short}</PlayAs
 		>{/if}{/snippet}
@@ -144,12 +147,16 @@
 			><Empty
 				img="sprout-box"
 				title={!s.setup.confirmed
-					? 'Connect your stock data to start'
+					? ready
+						? 'Confirm Setup to start watching'
+						: 'Connect your stock data to start'
 					: !perm
 						? `Waiting for ${c.dist.name}' permission`
 						: 'Nothing at risk yet'}
 				body={!s.setup.confirmed
-					? `Upload the distributor export once and set the guardrails. It takes about ${ws.data.setup.minutes} minutes; the Watcher starts the next morning.`
+					? ready
+						? `Your distributors' stock export is mapped: ${fmt.num(rows)} batches from ${Object.keys(ws.data.distributors).length} distributors. Review the guardrails and confirm; the Watcher checks at ${watch} the next morning.`
+						: `Upload the distributor export once and set the guardrails. It takes about ${ws.data.setup.minutes} minutes; the Watcher starts the next morning.`
 					: !perm
 						? `${cast.distributor.short}'s stock is listed and offered in his name, so he gives a one-time permission in his app first. He can pause it at any time.`
 						: `The Watcher checks every batch against the quick-commerce gates and sell-through at ${watch}. You get a push the moment one cannot make it.`}

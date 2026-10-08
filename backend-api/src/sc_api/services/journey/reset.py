@@ -6,7 +6,8 @@ whether it closed as `reset` or as `cleared` (SC-81). The story's batches are da
 Traders' permission and the setup's confirmation go back to not yet given, and the client's clock moves forward to
 08:00 on day 0, just before the Data agent's 08:30 and the Watcher's 09:00. The Mango Drink batch comes back as the
 story has it: already approved, its kirana and staff-sale lines done, its donation still to book. A gate override
-set on a batch in the console stays: it is the client's configuration (SC-82).
+set on a batch in the console stays: it is the client's configuration (SC-82). So does the stock export's mapping and
+who uploaded it, so Setup opens mapped (SC-84).
 """
 
 from datetime import date, datetime, time, timedelta
@@ -90,8 +91,8 @@ async def reset(ctx: Ctx, client_id: str) -> dict[str, Any]:
         else:
             d.permission, d.permission_given_at, d.permission_by, d.permission_paused = "not-yet", None, None, False
     c.setup_confirmed_at = c.setup_confirmed_by = None
-    c.setup_mapped = 0
-    c.last_import = c.last_watch = None
+    # the export's mapping stays (SC-84): Setup opens mapped, and only its confirmation goes back to not given
+    c.last_watch = None
     c.journey_day0 = day0
     doc = dict(c.workspace_doc or {})
     doc["daily"] = {}

@@ -377,6 +377,11 @@ button.cs-aw-stop:hover { background: var(--fill); }
   .cs-in[data-kind="screen"] .pagebody > * > *, .cs-in[data-kind="tab"] > * > *, .cs-in[data-kind="screen"] .lt-sub, .cs-in[data-kind="screen"] .nb-actions { animation: none; }
 }
 
+/* a client's first stock export (SC-84): the place to drop the file, inside its card on the Supply chain tab */
+.cs-drop { display: grid; justify-items: center; gap: 10px; padding: 26px 20px; text-align: center; border-radius: 16px; background: var(--surface-sunken, var(--fill)); outline: 1.5px dashed color-mix(in oklab, var(--primary) 45%, var(--line-2)); outline-offset: -1.5px; transition: background-color var(--t-fast); }
+.cs-drop.over { background: var(--primary-soft); }
+.cs-drop .t-subhead { max-width: 52ch; }
+
 /* @splash · the console's splash (SC-51, option A, the shift): one surface for the first load, signing in and signing
    out, drawn by splash.js before React. The page behind it recedes and goes out of focus, and comes forward as the
    mark opens into a window onto it. The SvelteKit build inlines this block with the script */

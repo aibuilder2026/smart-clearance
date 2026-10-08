@@ -94,6 +94,11 @@ test('console · an agent, a menu, an alert and its toast, and a new client step
 	await page.getByLabel("Admin's work email").fill('ritu@kesari.in');
 	await next();
 	findings.push(...(await scan(page, 'new client · review')));
+	// it opens on its Supply chain tab, its first stock export still to upload (SC-84)
+	await page.getByRole('button', { name: 'Create workspace' }).click();
+	await expect(page.getByRole('button', { name: 'Choose a CSV' })).toBeVisible();
+	await page.waitForTimeout(700);
+	findings.push(...(await scan(page, 'new client · its first stock export')));
 	await report(testInfo, findings);
 });
 

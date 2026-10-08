@@ -67,4 +67,39 @@ The maintainer's answers:
 
 ## The pick
 
-Waiting for the maintainer.
+Picked by the maintainer on 8 Oct 2026: **B · On the Supply chain tab**.
+
+What the build carries:
+
+- **The console** (design3 first, then `frontend/console`):
+  - The client's Supply chain tab opens with the **First stock export** card, above the distributors, SKUs and
+    batches it brings. Its moments: waiting (drop or choose a CSV), uploading, the Data agent mapping, and mapped
+    (the file, its batches and distributors, who uploaded it, and Replace).
+  - New client's Review says the export comes next, on Supply chain, and the new client opens on that tab.
+- **backend-api:**
+  - Staff upload a client's export through the console's own routes.
+  - It takes the path the workspace's Setup upload takes (a signed link to the exports bucket, then the Data agent),
+    with the audit line in the staff member's name.
+  - The client carries its first export (file, who, when) and its mapping state.
+- **The reset keeps the mapping:**
+  - `journey/reset.py` no longer sets `setup_mapped` back to 0, so Setup opens mapped after a reset.
+  - Setup's confirmation still goes back to not given, and the journey still starts from day 0.
+- **The workspace's first card:** while Setup is not confirmed and the export is mapped, it reads "Confirm Setup to
+  start watching", with the export's batches and distributors, and "Review and confirm". With nothing mapped, it
+  reads as before.
+
+## The build (8 Oct 2026)
+
+- **The mapping is data, not copy.** design3 drew the field table from the story's Setup. The port may hold no business
+  data, so the export carries its own map: `FirstExport.columns`, each Smart-Clearance field with the file's column
+  (none while the Data agent reads it).
+  - The Data agent reports the map it used for the stock file, field by field (`data.FIELD`).
+  - backend-api keeps it with the client (`exportColumns`). The story's export is recorded with its own map.
+  - The card's "90 days of sell-through" and "at 08:30" come from the Data agent's settings (`backfillDays`, `time`).
+- **The mock** maps the upload 1.8 s after it lands when it has latency, as the prototype does, and at once without.
+  The card reads the client again every 1.5 s while it is mapping.
+- **Infrastructure:** the console uploads straight to the exports bucket through the signed link, so the exports
+  buckets' CORS gains the console's origins (prod: its two Hosting addresses; local: its dev and preview ports). The
+  photos buckets are unchanged. Planned, read in full: 0 to add, 2 to change in place, 0 to destroy; free.
+- **Stills** in `built/`: design3's card (`supply-munchly-*`), the port's (`port-*`), New client's Review row, a new
+  client waiting for its export, and the same client mapped after an upload.
