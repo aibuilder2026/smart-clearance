@@ -106,7 +106,7 @@
   // the first viewport is the batch, tracked like an order: tracker first, the agents beside it, the cluster under it
   function CommandCenter({ me, onOpenRoute }) {
     const s = useStore(); const { go } = useRoute(); const app = useApp(); const hm = heroModel(s); const phone = app.bp === "phone";
-    const [sel, setSel] = useState(null);
+    const [sel, setSel] = useState(null); const [sheet, setSheet] = useState(null);
     const views = useMemo(() => D.BATCHES.map(b => { const v = D.batchView(b); if (b.hero) v.phase = hm.view.phase; if (b.second) v.phase = "executing"; return v; }), [s.seq]);
     const watchlist = views.filter(v => !(v.hero && s.hero.phase === "watching")).sort((a, b) => (a.phase === "at-risk" || (!a.phase && a.assess.status === "at-risk") ? -1 : 0) - (b.phase === "at-risk" || (!b.phase && b.assess.status === "at-risk") ? -1 : 0) || a.daysLeft - b.daysLeft);
     const openRoute = () => (onOpenRoute ? onOpenRoute() : go("route"));
@@ -126,12 +126,13 @@
       <ClusterMap kiranas={D.KIRANAS} orderedCount={hm.ordered} route={routed} vanProgress={s.hero.van.status === "done" ? 1 : hm.ordered / SHOPS * 0.6} height={phone ? 220 : 280} />
     </Card>;
     const feed = <div className="stack snug"><SectionTitle sub="Every hand-off, as it happens">Agent activity</SectionTitle><Card>{s.feed.length ? <AgentFeed events={s.feed} people={D.PEOPLE} live={hm.agentLive ? s.feed.length - 1 : -1} max={phone ? 3 : 6} /> : <span className="t-footnote muted">The agents report here once the Watcher runs.</span>}</Card></div>;
-    const list = <div className="stack snug"><SectionTitle sub="Sorted by days to best-before; at-risk batches first">Watchlist</SectionTitle><div className="list">{watchlist.map(v => <BatchRow key={v.id} view={v} selected={sel === v.id} compact={phone} onOpen={() => { setSel(v.id); if (v.hero) openRoute(); }} />)}</div></div>;
+    const list = <div className="stack snug"><SectionTitle sub="Sorted by days to best-before; at-risk batches first">Watchlist</SectionTitle><div className="list">{watchlist.map(v => <BatchRow key={v.id} view={v} selected={sel === v.id} compact={phone} onOpen={() => { setSel(v.id); if (v.hero) openRoute(); else setSheet(v.id); }} />)}</div></div>;
     const live = S.useLive();
     if (live) return <LiveCommandCenter me={me} live={live} hm={hm} money={money} watchlist={watchlist} sel={sel} setSel={setSel} feed={feed} cluster={cluster} />;
     return <Screen me={me} title="Command Center" sub={flagged ? `${D.JOURNEY.today} · Watcher checked 312 batches at 09:00` : "Watcher runs daily at 09:00 across 312 batches"}>
       {app.bp === "desktop" ? <Columns sideWidth={340} main={<>{tracker}{cluster}{list}</>} side={feed} />
         : <div className="stack" style={{ gap: 20 }}>{tracker}{feed}{list}{cluster}</div>}
+      <BatchSheet view={watchlist.find(v => v.id === sheet)} onClose={() => setSheet(null)} />
     </Screen>;
   }
   // the Command Center on the live workspace (SC-73, SC-68 option B): the flagged batches as tabs over the tracker card,
@@ -139,17 +140,18 @@
   function LiveCommandCenter({ me, live, hm, money, watchlist, sel, setSel, feed, cluster }) {
     const s = useStore(); const { go } = useRoute(); const app = useApp(); const phone = app.bp === "phone"; const L = S.Live;
     const dim = L.down(live.conn); const offline = live.conn === "offline"; const items = L.flaggedItems(s, live);
-    const watch = s.rules.watchTime; const rows = D.SETUP.dms.rows;
+    const watch = s.rules.watchTime; const rows = D.SETUP.dms.rows; const [sheet, setSheet] = useState(null);
     const openRoute = ref => go("route", { ref });
     const primary = s.hero.phase === "planned" ? <Button variant="approve" icon="check" disabled={offline} onClick={() => openRoute(items[0].ref)}>Review and approve</Button> : ["approved", "executing"].includes(s.hero.phase) ? <Button variant="primary" iconRight="arrow-right" onClick={() => go("execution")}>Watch execution</Button> : <Button variant="primary" iconRight="arrow-right" onClick={() => openRoute(items[0].ref)}>Open Route Room</Button>;
     const hero = <L.Dim on={dim}><TrackerCard view={hm.view} done={hm.done} current={hm.current} eta={dim ? L.pausedWords(live) : hm.eta} etaTone={dim ? "gray" : hm.etaTone} agentLive={dim ? "" : hm.agentLive} primary={primary} money={money} /></L.Dim>;
     const top = live.quiet ? <L.Quiet /> : items.length > 1 ? <L.Flagged items={items}>{it => (it.hero ? hero : <L.MangoCard item={it} dim={dim} />)}</L.Flagged> : hero;
-    const list = <div className="stack snug"><SectionTitle sub={live.quiet ? "Every batch clears inside its date at today's sell-through" : "Flagged batches first, then by days to best-before"}>Watchlist</SectionTitle><div className="list">{watchlist.map(v => <BatchRow key={v.id} view={v} selected={sel === v.id} compact={phone} onOpen={() => { setSel(v.id); if (v.hero || v.second) openRoute(v.id); }} />)}</div></div>;
+    const list = <div className="stack snug"><SectionTitle sub={live.quiet ? "Every batch clears inside its date at today's sell-through" : "Flagged batches first, then by days to best-before"}>Watchlist</SectionTitle><div className="list">{watchlist.map(v => <BatchRow key={v.id} view={v} selected={sel === v.id} compact={phone} onOpen={() => { setSel(v.id); if (v.hero || v.second) openRoute(v.id); else setSheet(v.id); }} />)}</div></div>;
     const side = <L.Dim on={dim}>{feed}</L.Dim>;
     const map = !live.quiet && cluster;
     return <Screen me={me} title="Command Center" sub={`Watcher checked ${rows} batches at ${watch} · ${live.quiet ? "nothing flagged" : items.length + " flagged"}`}>
       {app.bp === "desktop" ? <Columns sideWidth={340} main={<>{top}{map}{list}</>} side={side} />
         : <div className="stack" style={{ gap: 20 }}>{top}{side}{list}{map}</div>}
+      <BatchSheet view={watchlist.find(v => v.id === sheet)} onClose={() => setSheet(null)} />
     </Screen>;
   }
 
@@ -391,7 +393,6 @@
     const s = useStore(); const app = useApp(); const { go } = useRoute(); const [open, setOpen] = useState(null); const hm = heroModel(s);
     const views = D.BATCHES.map(b => { const v = D.batchView(b); if (b.hero) v.phase = hm.view.phase; if (b.second) v.phase = "executing"; return v; });
     const sel = open && views.find(v => v.id === open);
-    const ML = id => D.MANGO_PLAN.lines.find(l => l.id === id) || { units: 0 };
     return <Screen me={me} title="Batches" sub="Every lot the Watcher sees, from the DMS export">
       {app.bp === "phone" ? <div className="list">{views.map(v => <BatchRow key={v.id} view={v} compact onOpen={() => (v.hero ? go("route") : setOpen(v.id))} />)}</div> :
       <DataTable label="Batches" rows={views.map(v => ({ ...v, name: v.skuObj.name }))} onRow={v => (v.hero ? go("route") : setOpen(v.id))} initialSort={["daysLeft", "asc"]} columns={[
@@ -402,13 +403,24 @@
         { key: "gates", label: "Quick-commerce gates", sortable: false, render: v => <GateChips gates={v.assess.gates} size="sm" /> },
         { key: "status", label: "Status", sortValue: v => v.phase || v.assess.status, render: v => <StatusBadge status={v.phase || v.assess.status} /> },
       ]} />}
-      <Sheet open={!!sel} onClose={() => setOpen(null)} title={sel ? sel.skuObj.name : ""}>{sel && <div className="stack">
-        <div className="row" style={{ gap: 14 }}><Product name={sel.skuObj.img} size={88} /><div className="stack tight"><DaysNum days={sel.daysLeft} life={sel.skuObj.lifeDays} size="l" /><span className="t-footnote subtle">days left · best before {fmt.date(sel.bestBefore)}</span></div></div>
-        <GateChips gates={sel.assess.gates} />
-        <List>{[["Batch", sel.id], ["Distributor", `${sel.dist.name}, ${sel.dist.city}`], ["Units", fmt.num(sel.units)], ["Sells", `${sel.sellPerDay} a day`], ["Will sell before the last week", fmt.num(sel.assess.willSell)], ["At risk", sel.assess.atRisk ? fmt.num(sel.assess.atRisk) : "none"]].map(([k, val]) => <ListRow key={k} title={k} value={val} />)}</List>
-        <p className="t-footnote muted">{sel.phase === "executing" ? `Routed yesterday: ${fmt.num(ML("kirana").units)} packs to Hyderabad kiranas, ${ML("staff").units} to the staff sale at Lakshmi's godown, ${D.MANGO_FB} to Feeding India.` : sel.assess.status === "gated" ? "Outside at least one quick-commerce gate, but real sell-through clears it in time. The Watcher checks again tomorrow at 09:00." : "Inside every gate and selling through. Nothing to do."}</p>
-      </div>}</Sheet>
+      <BatchSheet view={sel} onClose={() => setOpen(null)} />
     </Screen>;
+  }
+  // a batch the Watcher sees, in a sheet (the Batches screen's; on the Command Center since SC-90, for a watchlist row
+  // with no journey to open): its days, gates and figures, and what happens to it next. An at-risk batch the Watcher has
+  // not flagged says when it will be
+  function BatchSheet({ view: sel, onClose }) {
+    const s = useStore(); const ML = id => D.MANGO_PLAN.lines.find(l => l.id === id) || { units: 0 };
+    const next = !sel ? "" : sel.phase === "executing" ? `Routed yesterday: ${fmt.num(ML("kirana").units)} packs to Hyderabad kiranas, ${ML("staff").units} to the staff sale at Lakshmi's godown, ${D.MANGO_FB} to Feeding India.`
+      : sel.phase ? "In a journey: the agents are working it, and its Route Room shows where it stands."
+      : sel.assess.status === "at-risk" ? `At risk: ${fmt.num(sel.assess.atRisk)} packs will not sell before the last week. The Watcher checks every morning at ${s.rules.watchTime}, and flags it once Setup is confirmed and ${sel.dist.name} has given ${D.PLATFORM.name} permission to act.`
+      : sel.assess.status === "gated" ? `Outside at least one quick-commerce gate, but real sell-through clears it in time. The Watcher checks again tomorrow at ${s.rules.watchTime}.` : "Inside every gate and selling through. Nothing to do.";
+    return <Sheet open={!!sel} onClose={onClose} title={sel ? sel.skuObj.name : ""}>{sel && <div className="stack">
+      <div className="row" style={{ gap: 14 }}><Product name={sel.skuObj.img} size={88} /><div className="stack tight"><DaysNum days={sel.daysLeft} life={sel.skuObj.lifeDays} size="l" /><span className="t-footnote subtle">days left · best before {fmt.date(sel.bestBefore)}</span></div></div>
+      <GateChips gates={sel.assess.gates} />
+      <List>{[["Batch", sel.id], ["Distributor", `${sel.dist.name}, ${sel.dist.city}`], ["Units", fmt.num(sel.units)], ["Sells", `${sel.sellPerDay} a day`], ["Will sell before the last week", fmt.num(sel.assess.willSell)], ["At risk", sel.assess.atRisk ? fmt.num(sel.assess.atRisk) : "none"]].map(([k, val]) => <ListRow key={k} title={k} value={val} />)}</List>
+      <p className="t-footnote muted">{next}</p>
+    </div>}</Sheet>;
   }
 
   Object.assign(window.SC3_SCREENS, { Setup, CommandCenter, RouteRoom, Execution, Batches, ApproveSheet, LabelPhoto, LabelShot, Chat, ShelfCheck, permissionOf });

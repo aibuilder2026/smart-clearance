@@ -20,6 +20,7 @@ from sc_api.errors import ApiError, not_found
 from sc_api.schemas import BatchGates, BatchOverride, GateCheck, OverrideInput, SkuGates
 from sc_api.services import agents, audit
 from sc_api.services.context import Actor, Ctx
+from sc_api.services.journey.events import clock_of
 from sc_api.services.presenter import lock_client
 
 FIRST_EXPORT = {
@@ -206,12 +207,14 @@ async def client_batches(ctx: Ctx, client_id: str, sku_id: str | None = None) ->
     if sku_id is not None:
         q = q.where(m.Batch.sku_id == sku_id)
     today = ctx.clock.today()
+    # days left count from the client's own day: a live client's journey runs on its own calendar (SC-90)
+    day = clock_of(c).today(ctx.clock.now())
     default = {"blinkitDays": c.gate_blinkit_days, "qcomPct": c.gate_qcom_pct}
     out = []
     for b, x in (await ctx.session.execute(q)).all():
         assert b.best_before is not None
         e = rule.effective(default, _own(x), _override(b))
-        days = (b.best_before - today).days
+        days = (b.best_before - day).days
         override: Any = (
             BatchOverride(
                 **_override_fields(b),
