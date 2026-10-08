@@ -1,0 +1,35 @@
+/* SC-79's Setup mockup: before the first export is mapped. On the design system's tokens; nothing loops. */
+
+/* A and B: why Confirm waits, beside it and tied to it (aria-describedby) */
+.s79-why { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: var(--fg-2); }
+.s79-why .ic { color: var(--fg-3); }
+
+/* B: three steps to start watching */
+.s79-steps { list-style: none; margin: 0; padding: 14px 16px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+.s79-steps li { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: 10px; }
+.s79-steps b { font-size: 14px; font-weight: 650; }
+.s79-steps span span { font-size: 12.5px; color: var(--fg-3); }
+.s79-dot { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 99px; font-size: 13px; font-weight: 650; background: var(--fill-2); color: var(--fg-2); }
+.s79-steps li.now .s79-dot { background: var(--primary); color: var(--primary-fg); }
+.s79-steps li.done .s79-dot { background: var(--primary-soft); color: var(--primary-text); }
+.s79-steps li.now b { color: var(--fg); }
+.s79-steps li:not(.now):not(.done) b { color: var(--fg-2); }
+
+/* B: the export as a place to drop it */
+.s79-drop { display: grid; justify-items: center; gap: 10px; padding: 32px 24px; text-align: center; border-radius: 20px; background: var(--surface); box-shadow: none; outline: 1.5px dashed color-mix(in oklab, var(--primary) 45%, var(--line-2)); outline-offset: -1.5px; transition: background-color var(--t-fast); }
+.s79-drop.over { background: var(--primary-soft); }
+.s79-drop .t-subhead { max-width: 52ch; }
+.s79-wait { display: inline-flex; align-items: center; gap: 6px; }
+
+/* B: the confirm docked at the foot of the screen, with the step it is on */
+.s79-bar { position: sticky; bottom: 12px; z-index: 5; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 12px 14px 12px 18px; border-radius: 18px; background: color-mix(in oklab, var(--surface) 88%, transparent); backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.s79-bar b { font-size: 14.5px; font-weight: 650; }
+
+@container app (max-width: 767px) {
+  .s79-steps { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  /* on a phone the bar is one line, so it never covers the step it is waiting on */
+  .s79-bar { bottom: calc(76px + env(safe-area-inset-bottom)); flex-wrap: nowrap; gap: 10px; padding: 8px 8px 8px 14px; border-radius: 16px; }
+  .s79-bar b { font-size: 13.5px; }
+  .s79-bar .t-footnote { display: none; }
+  .s79-bar .btn { flex: none; }
+}

@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-79 Setup Waiting</title>
+<meta name="description" content="Two options for Setup before the Data agent has mapped the first stock export.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<style>
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px -6px rgb(17 41 30 / 0.1);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
+::selection { background: color-mix(in oklab, var(--green) 24%, transparent); }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 48px 16px 72px; }
+h1, h2, h3, h4 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+h2 { margin: 60px 0 14px; font-size: clamp(25px, 3vw, 32px); font-weight: 720; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 72, "wdth" 88; }
+h3 { font-size: 26px; font-weight: 720; letter-spacing: -0.018em; font-variation-settings: "opsz" 48, "wdth" 90; }
+h4 { margin: 26px 0 10px; font: 650 16px/1.35 var(--ui); letter-spacing: 0; }
+p { margin: 0 0 12px; max-width: 74ch; color: var(--ink-2); text-wrap: pretty; }
+p b, li b, td b { color: var(--ink); font-weight: 600; }
+.lede { font-size: 18px; margin-top: 14px; }
+blockquote { margin: 16px 0; padding: 16px 20px; border-radius: 14px; background: var(--sunken); color: var(--ink); font-size: 15.5px; max-width: 82ch; }
+blockquote ul { color: var(--ink); margin: 0; }
+ul { margin: 0 0 12px; padding-left: 20px; color: var(--ink-2); max-width: 80ch; display: grid; gap: 6px; }
+code { font: 500 0.9em/1 var(--mono); }
+figure { margin: 0; min-width: 0; }
+figure img, figure video { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+.four { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+@media (min-width: 900px) { .four { grid-template-columns: minmax(0, 2.6fr) minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); } }
+.phones { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+@media (min-width: 700px) { .phones { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .phones { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.desks { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 700px) { .desks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.card { padding: 22px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.shared { display: grid; gap: 18px; }
+@media (min-width: 900px) { .shared { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.shared h3.sub { margin: 0 0 6px; }
+h3.sub { font: 650 16px/1.35 var(--ui); letter-spacing: 0; font-variation-settings: normal; }
+.shared p, .shared li { font-size: 14.5px; }
+.opt { margin-top: 26px; display: grid; gap: 14px; padding: 26px 22px; border-radius: 28px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); scroll-margin-top: 20px; }
+.opt.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.opt header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.opt header p { margin: 0; flex-basis: 100%; font-size: 17px; color: var(--ink); max-width: 76ch; }
+.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 600 12.5px/1 var(--ui); color: var(--green-text); background: var(--green-soft); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+.btn.primary { background: var(--green); color: #fff; box-shadow: none; }
+:root[data-theme="dark"] .btn.primary { color: #03170d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #03170d; } }
+.states { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; }
+.states a { display: inline-flex; align-items: center; min-height: 32px; }
+.vid { display: grid; gap: 18px; }
+@media (min-width: 900px) { .vid { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: start; } }
+dl.facts { margin: 0; display: grid; gap: 12px; }
+dl.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); }
+dl.facts dd { margin: 2px 0 0; color: var(--ink-2); font-size: 14.5px; }
+dl.facts dd ul { margin-top: 4px; font-size: 14.5px; }
+.tablewrap { overflow-x: auto; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+table.cmp { border-collapse: collapse; width: 100%; min-width: 860px; font-size: 14px; color: var(--ink-2); }
+table.cmp th, table.cmp td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+table.cmp thead th { color: var(--ink); font-weight: 650; background: var(--sunken); }
+table.cmp tbody th { color: var(--ink); font-weight: 600; width: 14%; }
+table.cmp tr:last-child > * { border-bottom: 0; }
+.rec-box { padding: 22px; border-radius: 20px; background: var(--green-soft); }
+.rec-box p { color: var(--ink); }
+.q { padding: 20px 22px; border-radius: 20px; background: var(--amber-soft); }
+.q p, .q li { color: var(--ink); }
+.q h3 { font-size: 20px; margin-bottom: 8px; }
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
+</style>
+<body>
+<main class="wrap">
+<h1>Setup before the first export</h1>
+<p class="lede">SC-79 · Munchly's workspace · two options for the Setup screen before the Data agent has mapped a stock export: how a live workspace starts, and how a reset of its journey leaves it. Every company, person and figure is fictional.</p>
+<p>What the maintainer met (8 Oct), after starting Munchly's journey again:</p>
+<blockquote><ul><li>Setup said <b>Mapped · confirm below</b> and listed all eight fields as mapped, so “Confirm and start watching” looked ready.</li><li>Pressing it answered: “That didn't go through. The Data agent has not mapped a stock export yet.” backend-api was right; the screen was not.</li></ul></blockquote>
+<h2>Setup now</h2>
+<p>The live screen claims a mapping before there is one, here with an export still uploading above it.</p>
+<div class="four"><figure><img src="current/setup-light-1440.webp" width="1440" height="900" loading="lazy" alt="Setup today, live: an export uploading at 62%, and under it the DMS card saying Mapped · confirm below with every field mapped."><figcaption>Setup · light</figcaption></figure><figure><img src="current/setup-dark-1440.webp" width="1440" height="900" loading="lazy" alt="The same in dark."><figcaption>Setup · dark</figcaption></figure><figure><img src="current/setup-light-390.webp" width="780" height="1688" loading="lazy" alt="Setup today on a phone."><figcaption>Phone · light</figcaption></figure><figure><img src="current/setup-dark-390.webp" width="780" height="1688" loading="lazy" alt="Setup today on a phone, dark."><figcaption>Phone · dark</figcaption></figure></div>
+<h2>What both options share</h2><div class="shared">
+<div class="card"><h3 class="sub">Saying what is true</h3><ul><li>Until the Data agent has mapped an export, nothing says “mapped”: the screen says it is waiting for an export.</li><li>While the Data agent reads one, it says so (“Mapping”), with the agent's aura on.</li><li>Once mapped, the screen is the one designed in SC-73, unchanged.</li></ul></div>
+<div class="card"><h3 class="sub">Two ways forward</h3><ul><li><b>Upload an export</b> now: its progress shows, then the mapping.</li><li>Or wait: the Data agent maps the day's export at its own run at 08:30, journey time; the screen names when that is.</li></ul></div>
+<div class="card"><h3 class="sub">Confirm waits, and says why</h3><ul><li>“Confirm and start watching” is off until an export is mapped, with its reason beside it: “Confirm once the Data agent has mapped an export.”, tied to the button for screen readers.</li><li>Only a live workspace shows this; the demo's stub maps at once.</li></ul></div></div>
+<section class="opt rec" id="setup-a"><header><h3>Option A · Waiting in the export card</h3><span class="tag">Recommended</span>
+<p>The DMS card says <b>No stock export mapped yet</b>, keeps the eight fields the Data agent looks for with <b>waiting</b> beside each, and makes <b>Upload an export</b> its primary button. Under it: when the Data agent's own run will map the day's export. Confirm is off, with its reason beside it.</p></header>
+<dl class="facts"><dt>Where</dt><dd>The DMS card at the top of Setup, and the Confirm row at its foot.</dd><dt>Trade-offs</dt><dd>The smallest change to the approved screen: the same card in every moment, so nothing moves when the mapping lands. The fields list says what the export needs to hold. The reason for waiting is at the foot of a long screen, beside the button it explains.</dd><dt>What the build touches</dt><dd>design3 <code>screens/brand.jsx</code> (Setup, from <code>setup.mapped</code>); the frontend's <code>Setup.svelte</code> reading the live state's mapped count, which backend-api already sends; no contract change.</dd></dl>
+<div class="desks"><figure><img src="setup-a/waiting-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A: No stock export mapped yet, Upload an export, Waiting for an export, eight fields waiting, and the Data agent&#x27;s run at 08:30 tomorrow."><figcaption>Waiting · light</figcaption></figure><figure><img src="setup-a/waiting-dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option A waiting, dark."><figcaption>Waiting · dark</figcaption></figure><figure><img src="setup-a/uploading-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A while the export uploads."><figcaption>Uploading</figcaption></figure><figure><img src="setup-a/mapping-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A while the Data agent maps: the file&#x27;s name, Mapping, each field reading."><figcaption>Mapping</figcaption></figure><figure><img src="setup-a/mapped-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option A once mapped: the screen as designed."><figcaption>Mapped</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="setup-a/waiting-light-390.webp" width="780" height="1688" loading="lazy" alt="Option A on a phone."><figcaption>Phone · light</figcaption></figure><figure><img src="setup-a/waiting-dark-390.webp" width="780" height="1688" loading="lazy" alt="Option A on a phone, dark."><figcaption>Phone · dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="setup/mockup.html?state=upload-dms&amp;shot=1&amp;opt=a&amp;moment=waiting">Open option A</a><a class="btn" href="setup/mockup.html?state=upload-dms&amp;shot=1&amp;opt=a&amp;moment=uploading">Uploading</a><a class="btn" href="setup/mockup.html?state=upload-dms&amp;shot=1&amp;opt=a&amp;moment=mapping">Mapping</a><a class="btn" href="setup/mockup.html?state=upload-dms&amp;shot=1&amp;opt=a&amp;moment=mapped">Mapped</a></div></section>
+<section class="opt" id="setup-b"><header><h3>Option B · Three steps</h3>
+<p>Setup gains three steps across its top: <b>Your stock export</b>, <b>The column mapping</b>, <b>Rules, then confirm</b>. The first step is a place to drop the export, and Confirm docks at the foot of the screen with the step it is on.</p></header>
+<dl class="facts"><dt>Where</dt><dd>The top of Setup, and a bar docked at its foot (one line on phones).</dd><dt>Trade-offs</dt><dd>Guides a first setup most clearly, and the docked bar keeps the reason in view however far down the rules go. A bigger change to an approved screen for a moment that is rare; the docked bar covers part of the content as it scrolls, more so on phones.</dd><dt>What the build touches</dt><dd>As A, with the steps, the drop zone and a docked bar in <code>Setup</code>.</dd></dl>
+<div class="desks"><figure><img src="setup-b/waiting-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option B: three steps, the drop zone Your distributors&#x27; stock export with Choose a CSV, and the bar Step 1 of 3 · waiting for an export with Confirm off."><figcaption>Waiting · light</figcaption></figure><figure><img src="setup-b/waiting-dark-1440.webp" width="1440" height="900" loading="lazy" alt="Option B waiting, dark."><figcaption>Waiting · dark</figcaption></figure><figure><img src="setup-b/uploading-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option B while the export uploads."><figcaption>Uploading</figcaption></figure><figure><img src="setup-b/mapping-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option B while the Data agent maps."><figcaption>Mapping</figcaption></figure><figure><img src="setup-b/mapped-light-1440.webp" width="1440" height="900" loading="lazy" alt="Option B once mapped: step 3, Confirm on."><figcaption>Mapped</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="setup-b/waiting-light-390.webp" width="780" height="1688" loading="lazy" alt="Option B on a phone: the steps stacked, the drop zone, the one-line bar."><figcaption>Phone · light</figcaption></figure><figure><img src="setup-b/waiting-dark-390.webp" width="780" height="1688" loading="lazy" alt="Option B on a phone, dark."><figcaption>Phone · dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="setup/mockup.html?state=upload-dms&amp;shot=1&amp;opt=b&amp;moment=waiting">Open option B</a><a class="btn" href="setup/mockup.html?state=upload-dms&amp;shot=1&amp;opt=b&amp;moment=uploading">Uploading</a><a class="btn" href="setup/mockup.html?state=upload-dms&amp;shot=1&amp;opt=b&amp;moment=mapping">Mapping</a><a class="btn" href="setup/mockup.html?state=upload-dms&amp;shot=1&amp;opt=b&amp;moment=mapped">Mapped</a></div></section>
+<div class="rec-box" style="margin-top:28px"><p><b>Recommended: A.</b> It fixes what was wrong, a screen claiming a mapping it did not have, with the least change to a screen already approved: the same card says what is true at each moment, and Confirm waits with its reason. The moment is rare (a new workspace, or a reset), so it does not need its own structure; B is worth it if Setup grows more steps.</p></div>
+<footer>SC-79 · Smart-Clearance · Munchly's workspace · every company, person and figure is fictional · designs in <code>design3/designs/SC-79/</code></footer>
+</main>
+</body>
+</html>
