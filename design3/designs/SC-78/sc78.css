@@ -162,7 +162,7 @@
 .ws-c .isl-plate { max-width: none; top: -6%; height: 112%; will-change: transform;
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 10%, #000 86%, transparent 100%); mask-image: linear-gradient(to bottom, transparent 0, #000 10%, #000 86%, transparent 100%); }
 [data-theme="dark"] .ws-c .isl-plate { -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 22%, #000 84%, transparent 100%); mask-image: linear-gradient(to bottom, transparent 0, #000 22%, #000 84%, transparent 100%); }
-.ws-c .islands { overflow: hidden; }
+.ws-c .islands { overflow: visible; }
 .ws-c .isl-urls.on-plate .isd-tag { display: grid; }
 
 /* ---------- the review switcher ---------- */

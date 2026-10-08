@@ -568,8 +568,9 @@
     </>;
   }
   // an address on a stem, standing at its island's foot
-  function AddrTag({ a, x, y }) {
-    return <li className={cx("isd-tag", a.live && "live")} style={{ "--x": x, "--y": y }}><span className="body"><i aria-hidden="true" />{a.url}{a.live && <span className="isl-live"> · live</span>}</span><span className="stem" aria-hidden="true" /></li>;
+  function AddrTag({ a, x, y, below }) {
+    const body = <span className="body"><i aria-hidden="true" />{a.url}{a.live && <span className="isl-live"> · live</span>}</span>, stem = <span className="stem" aria-hidden="true" />;
+    return <li className={cx("isd-tag", below && "below", a.live && "live")} style={{ "--x": x, "--y": y }}>{below ? <>{stem}{body}</> : <>{body}{stem}</>}</li>;
   }
   // A · the islands in depth: a new 16:9 plate, three islands at three distances with their products drawn in, under
   // a sky that moves with the scroll (the plate, the clouds and the tags at three speeds). Everything on the plate is
@@ -680,14 +681,14 @@
   // C · the strip as it is, its products drawn into the plate instead of pasted on, the addresses on stems, and the
   // plate drifting under them with the scroll
   const ISLANDS = [
-    { id: "brand", x: 0.22, ly: 0.9 }, { id: "company", x: 0.575, ly: 0.88 }, { id: "group", x: 0.8, ly: 0.9 },
+    { id: "brand", x: 0.22, ly: 0.84 }, { id: "company", x: 0.575, ly: 0.79 }, { id: "group", x: 0.8, ly: 0.82 },
   ];
   const HUB = { x: 0.425, y: 0.69 }, ISL_AR = 3776 / 1120;
   function IslandsStrip() {
     const app = useApp(); const { resolved } = useTheme(); const reduce = useReducedMotion(); const swipe = app.bp === "phone"; const ref = useRef(null);
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
     const plateY = useTransform(scrollYProgress, [0, 1], reduce ? ["0%", "0%"] : ["-5%", "5%"]);
-    const urls = cls => <ul className={cx("isl-urls", cls)} aria-label="Workspace addresses">{ISLANDS.map(i => { const a = ADDR.find(x => x.id === i.id); return cls === "on-plate" ? <AddrTag key={i.id} a={a} x={i.x} y={i.ly} /> : <li key={i.id} className={cx("isl-url", a.live && "live")}><i aria-hidden="true" />{a.url}{a.live && <span className="isl-live"> · live</span>}</li>; })}</ul>;
+    const urls = cls => <ul className={cx("isl-urls", cls)} aria-label="Workspace addresses">{ISLANDS.map(i => { const a = ADDR.find(x => x.id === i.id); return cls === "on-plate" ? <AddrTag key={i.id} a={a} x={i.x} y={i.ly} below /> : <li key={i.id} className={cx("isl-url", a.live && "live")}><i aria-hidden="true" />{a.url}{a.live && <span className="isl-live"> · live</span>}</li>; })}</ul>;
     return <section id="teams" className="sec sec-ws ws-c" aria-labelledby="ws-h">
       <div className="wrap"><WsHead /></div>
       <div className="isl-pan" {...(swipe ? { tabIndex: 0, role: "region", "aria-label": "Workspaces, one island each; scroll sideways" } : {})}>
@@ -786,8 +787,9 @@
   function Site() {
     const [find, setFind] = useState(false); const [demo, setDemo] = useState(null); const [scrolled, setScrolled] = useState(false);
     const closeRef = useRef(null); const nearEnd = useInView(closeRef, { amount: 0.2 });
-    const [pastHero, setPastHero] = useState(false);
+    const [pastHero, setPastHero] = useState(false); const [onTeams, setOnTeams] = useState(false);
     useEffect(() => { const el = document.getElementById("top-hero"); if (!el) return; const io = new IntersectionObserver(([e]) => setPastHero(!e.isIntersecting), { threshold: 0.12 }); io.observe(el); return () => io.disconnect(); }, []);
+    useEffect(() => { const el = document.getElementById("teams"); if (!el) return; const io = new IntersectionObserver(([e]) => setOnTeams(e.isIntersecting), { threshold: 0.2 }); io.observe(el); return () => io.disconnect(); }, []);
     useEffect(() => { document.title = "Smart-Clearance · SC-78 option " + OPT.hero.toUpperCase(); if (window.SC3_LOADER) window.SC3_LOADER.mark("app"); }, []);
     useEffect(() => { const f = () => setScrolled(window.scrollY > 40); f(); window.addEventListener("scroll", f, { passive: true }); return () => window.removeEventListener("scroll", f); }, []);
     const onDemo = plan => setDemo({ plan: typeof plan === "string" ? plan : null });
@@ -804,7 +806,7 @@
         <Close onDemo={onDemo} closeRef={closeRef} />
       </main>
       <Footer onFind={() => setFind(true)} />
-      <DemoPill hidden={nearEnd || !pastHero} />
+      <DemoPill hidden={nearEnd || !pastHero || onTeams} />
       <Switcher />
       <S.FindWorkspace open={find} onClose={() => setFind(false)} onUse={() => { setFind(false); open(LINKS.app); }} note="One manufacturer's workspace is set up in this prototype." />
       <DemoSheet open={!!demo} plan={demo && demo.plan} onClose={() => setDemo(null)} />

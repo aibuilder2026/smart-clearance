@@ -596,8 +596,9 @@
   function WsTail({ urls }) {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, urls, /* @__PURE__ */ React.createElement("ul", { className: "teams", "aria-label": "What each team gets" }, TEAMS.map((t) => /* @__PURE__ */ React.createElement("li", { key: t.t, className: "team" }, /* @__PURE__ */ React.createElement(Icon, { name: t.icon, size: 26 }), /* @__PURE__ */ React.createElement("b", null, t.t), /* @__PURE__ */ React.createElement("p", null, t.d)))), /* @__PURE__ */ React.createElement("div", { className: "conn" }, /* @__PURE__ */ React.createElement("ul", { className: "conn-list", "aria-label": "Works with" }, CONN.map((c) => /* @__PURE__ */ React.createElement("li", { key: c.id }, c.name, c.status === "soon" && /* @__PURE__ */ React.createElement("span", { className: "soon" }, " · soon"))))));
   }
-  function AddrTag({ a, x, y }) {
-    return /* @__PURE__ */ React.createElement("li", { className: cx("isd-tag", a.live && "live"), style: { "--x": x, "--y": y } }, /* @__PURE__ */ React.createElement("span", { className: "body" }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }), a.url, a.live && /* @__PURE__ */ React.createElement("span", { className: "isl-live" }, " · live")), /* @__PURE__ */ React.createElement("span", { className: "stem", "aria-hidden": "true" }));
+  function AddrTag({ a, x, y, below }) {
+    const body = /* @__PURE__ */ React.createElement("span", { className: "body" }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }), a.url, a.live && /* @__PURE__ */ React.createElement("span", { className: "isl-live" }, " · live")), stem = /* @__PURE__ */ React.createElement("span", { className: "stem", "aria-hidden": "true" });
+    return /* @__PURE__ */ React.createElement("li", { className: cx("isd-tag", below && "below", a.live && "live"), style: { "--x": x, "--y": y } }, below ? /* @__PURE__ */ React.createElement(React.Fragment, null, stem, body) : /* @__PURE__ */ React.createElement(React.Fragment, null, body, stem));
   }
   const ISD_AR = 2752 / 1536;
   const ISD = { brand: { x: 0.21, y: 0.775 }, company: { x: 0.53, y: 0.565 }, group: { x: 0.83, y: 0.475 }, hub: { x: 0.51, y: 0.905 } };
@@ -714,9 +715,9 @@
     return /* @__PURE__ */ React.createElement("section", { id: "teams", className: "sec sec-ws ws-b", "aria-labelledby": "ws-h" }, /* @__PURE__ */ React.createElement("div", { className: "wrap" }, /* @__PURE__ */ React.createElement(WsHead, null)), /* @__PURE__ */ React.createElement("div", { className: "wsd-stage", ref }, /* @__PURE__ */ React.createElement("div", { className: "wsd-ground", "aria-hidden": "true" }), phone ? /* @__PURE__ */ React.createElement("div", { className: "wsd-phone", style: { height: 868 * ps } }, /* @__PURE__ */ React.createElement("div", { className: "wsd-phone-in", style: { transform: `scale(${ps})` } }, /* @__PURE__ */ React.createElement(PhoneFrame, { time: "09:41" }, /* @__PURE__ */ React.createElement("div", { className: "wsd phone" }, /* @__PURE__ */ React.createElement("div", { className: "wsd-addr" }, /* @__PURE__ */ React.createElement(Icon, { name: "lock", size: 11, stroke: 2.2 }), host || "·", ".smartclearance.com"), rail, main)))) : /* @__PURE__ */ React.createElement(WindowFrame, { url, style: { width: "100%" } }, /* @__PURE__ */ React.createElement("div", { className: "wsd" }, rail, main))), /* @__PURE__ */ React.createElement("div", { className: "wrap" }, /* @__PURE__ */ React.createElement(WsTail, { urls: /* @__PURE__ */ React.createElement("ul", { className: "isl-urls below", "aria-label": "Workspace addresses" }, ADDR.map((a) => /* @__PURE__ */ React.createElement("li", { key: a.id, className: cx("isl-url", a.live && "live") }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }), a.url, a.live && /* @__PURE__ */ React.createElement("span", { className: "isl-live" }, " · live")))) })));
   }
   const ISLANDS = [
-    { id: "brand", x: 0.22, ly: 0.9 },
-    { id: "company", x: 0.575, ly: 0.88 },
-    { id: "group", x: 0.8, ly: 0.9 }
+    { id: "brand", x: 0.22, ly: 0.84 },
+    { id: "company", x: 0.575, ly: 0.79 },
+    { id: "group", x: 0.8, ly: 0.82 }
   ];
   const HUB = { x: 0.425, y: 0.69 }, ISL_AR = 3776 / 1120;
   function IslandsStrip() {
@@ -729,7 +730,7 @@
     const plateY = useTransform(scrollYProgress, [0, 1], reduce ? ["0%", "0%"] : ["-5%", "5%"]);
     const urls = (cls) => /* @__PURE__ */ React.createElement("ul", { className: cx("isl-urls", cls), "aria-label": "Workspace addresses" }, ISLANDS.map((i) => {
       const a = ADDR.find((x) => x.id === i.id);
-      return cls === "on-plate" ? /* @__PURE__ */ React.createElement(AddrTag, { key: i.id, a, x: i.x, y: i.ly }) : /* @__PURE__ */ React.createElement("li", { key: i.id, className: cx("isl-url", a.live && "live") }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }), a.url, a.live && /* @__PURE__ */ React.createElement("span", { className: "isl-live" }, " · live"));
+      return cls === "on-plate" ? /* @__PURE__ */ React.createElement(AddrTag, { key: i.id, a, x: i.x, y: i.ly, below: true }) : /* @__PURE__ */ React.createElement("li", { key: i.id, className: cx("isl-url", a.live && "live") }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }), a.url, a.live && /* @__PURE__ */ React.createElement("span", { className: "isl-live" }, " · live"));
     }));
     return /* @__PURE__ */ React.createElement("section", { id: "teams", className: "sec sec-ws ws-c", "aria-labelledby": "ws-h" }, /* @__PURE__ */ React.createElement("div", { className: "wrap" }, /* @__PURE__ */ React.createElement(WsHead, null)), /* @__PURE__ */ React.createElement("div", { className: "isl-pan", ...swipe ? { tabIndex: 0, role: "region", "aria-label": "Workspaces, one island each; scroll sideways" } : {} }, /* @__PURE__ */ React.createElement("figure", { className: "islands", style: { "--ar": ISL_AR }, ref }, /* @__PURE__ */ React.createElement(motion.img, { className: "isl-plate", style: { y: plateY }, src: IMG78 + (resolved === "dark" ? "islands-packs-night.webp" : "islands-packs.webp"), alt: "", loading: "lazy" }), /* @__PURE__ */ React.createElement("span", { className: "isl-hub", style: { "--x": HUB.x, "--y": HUB.y }, "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Mark, { size: 52 })), urls("on-plate"), /* @__PURE__ */ React.createElement("figcaption", { className: "sr-only" }, "Three islands over a miniature town, each a manufacturer's workspace with its own product, joined to Smart-Clearance by green paths."))), /* @__PURE__ */ React.createElement("div", { className: "wrap" }, /* @__PURE__ */ React.createElement(WsTail, { urls: urls("below") })));
   }
@@ -815,10 +816,18 @@
     const closeRef = useRef(null);
     const nearEnd = useInView(closeRef, { amount: 0.2 });
     const [pastHero, setPastHero] = useState(false);
+    const [onTeams, setOnTeams] = useState(false);
     useEffect(() => {
       const el = document.getElementById("top-hero");
       if (!el) return;
       const io = new IntersectionObserver(([e]) => setPastHero(!e.isIntersecting), { threshold: 0.12 });
+      io.observe(el);
+      return () => io.disconnect();
+    }, []);
+    useEffect(() => {
+      const el = document.getElementById("teams");
+      if (!el) return;
+      const io = new IntersectionObserver(([e]) => setOnTeams(e.isIntersecting), { threshold: 0.2 });
       io.observe(el);
       return () => io.disconnect();
     }, []);
@@ -833,7 +842,7 @@
       return () => window.removeEventListener("scroll", f);
     }, []);
     const onDemo = (plan) => setDemo({ plan: typeof plan === "string" ? plan : null });
-    return /* @__PURE__ */ React.createElement("div", { className: cx("site", scrolled && "scrolled", "sc78", "nav-" + OPT.nav + "-page", "hero-" + OPT.hero + "-page"), id: "top" }, /* @__PURE__ */ React.createElement(Nav, { onFind: () => setFind(true), onDemo }), /* @__PURE__ */ React.createElement("main", null, /* @__PURE__ */ React.createElement(Hero, { onDemo }), /* @__PURE__ */ React.createElement(Statement, { id: "how", text: "Short-dated stock that quick commerce sent back. Priced to every exit, the bin included. Sold in the days it has left." }), /* @__PURE__ */ React.createElement(Table, null), /* @__PURE__ */ React.createElement(Chapters, null), /* @__PURE__ */ React.createElement(Ledger, null), /* @__PURE__ */ React.createElement(Workspace, null), /* @__PURE__ */ React.createElement(Plans, { onDemo }), /* @__PURE__ */ React.createElement(Close, { onDemo, closeRef })), /* @__PURE__ */ React.createElement(Footer, { onFind: () => setFind(true) }), /* @__PURE__ */ React.createElement(DemoPill, { hidden: nearEnd || !pastHero }), /* @__PURE__ */ React.createElement(Switcher, null), /* @__PURE__ */ React.createElement(S.FindWorkspace, { open: find, onClose: () => setFind(false), onUse: () => {
+    return /* @__PURE__ */ React.createElement("div", { className: cx("site", scrolled && "scrolled", "sc78", "nav-" + OPT.nav + "-page", "hero-" + OPT.hero + "-page"), id: "top" }, /* @__PURE__ */ React.createElement(Nav, { onFind: () => setFind(true), onDemo }), /* @__PURE__ */ React.createElement("main", null, /* @__PURE__ */ React.createElement(Hero, { onDemo }), /* @__PURE__ */ React.createElement(Statement, { id: "how", text: "Short-dated stock that quick commerce sent back. Priced to every exit, the bin included. Sold in the days it has left." }), /* @__PURE__ */ React.createElement(Table, null), /* @__PURE__ */ React.createElement(Chapters, null), /* @__PURE__ */ React.createElement(Ledger, null), /* @__PURE__ */ React.createElement(Workspace, null), /* @__PURE__ */ React.createElement(Plans, { onDemo }), /* @__PURE__ */ React.createElement(Close, { onDemo, closeRef })), /* @__PURE__ */ React.createElement(Footer, { onFind: () => setFind(true) }), /* @__PURE__ */ React.createElement(DemoPill, { hidden: nearEnd || !pastHero || onTeams }), /* @__PURE__ */ React.createElement(Switcher, null), /* @__PURE__ */ React.createElement(S.FindWorkspace, { open: find, onClose: () => setFind(false), onUse: () => {
       setFind(false);
       open(LINKS.app);
     }, note: "One manufacturer's workspace is set up in this prototype." }), /* @__PURE__ */ React.createElement(DemoSheet, { open: !!demo, plan: demo && demo.plan, onClose: () => setDemo(null) }));
