@@ -129,6 +129,9 @@ https://claude.ai/design/p/976c5462-c3c3-4621-80b5-29b3cdda8326?file=SC-78+desig
 - `sc78.jsx` (compiled to `sc78.js`) and `sc78.css`: the options' code, on the real kit, over `site/site.css`.
 - `src/`: the PNG originals, the LTX renders, the generation scripts (`gen.sh`, `ltx-run.py`) and `publish.py`; local only.
 
-## The pick
+## The pick (8 Oct 2026)
 
-_Pending._
+The maintainer picked, part by part: **the film C, One day** ("I like option C main hero really good"); **the day scene A,
+Re-lit**; **the workspace section B, The workspace itself**; and **the bar B, structured** ("the top header selection
+should be like B"; the structured answer had said A, and B was confirmed when asked). The page that is built is
+`option-c/mockup.html?scene=a&ws=b&nav=b`. Only this combination is built.
