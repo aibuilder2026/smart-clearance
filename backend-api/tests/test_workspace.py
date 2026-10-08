@@ -160,6 +160,10 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     assert await detect(api) == [HERO, MANGO]
     c = await case(api, PRIYA)
     assert c["journey"]["phase"] == "at-risk" and c["batch"]["assess"]["atRisk"] == 1360
+    # what destroying the 1,360 would cost is known from Detect, before the Valuer prices them (SC-99); a partner never
+    # sees it
+    assert c["plan"] is None and c["writeOff"]["total"] == 26329.6 and c["writeOff"]["units"] == 1360
+    assert (await case(api, RAKESH))["writeOff"] is None
     assert [f["key"] for f in c["feed"]] == ["watch"]
     assert c["push"]["detect"]["title"] == "Masala Chips 150 g · Nagpur"
     published = [p["topic"] for p in cloud.publisher.sent]
@@ -187,6 +191,7 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     want = flow("decide")
     assert c["journey"]["phase"] == "planned"
     assert c["plan"]["net"] == 21770 and round(c["plan"]["swing"]) == 26340
+    assert c["writeOff"] == c["plan"]["writeOff"]  # the plan's write-off is the one shown before it
     assert [(ln["id"], ln["units"]) for ln in c["plan"]["lines"]] == [("kirana", 588), ("expiresoon", 772)]
     assert [f["key"] for f in c["feed"]][-2:] == ["route", "notify"] == [f["key"] for f in want["feed"]]
     assert c["plan"]["explanation"] == next(e for e in J["copy"]["events"] if e["key"] == "route")["text"]

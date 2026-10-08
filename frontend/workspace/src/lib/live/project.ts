@@ -350,7 +350,10 @@ export function caseOf(
 	const today = snap.clock.now;
 	const j = detail.journey;
 	const day0 = detail.moments.day0;
-	const plan = planOf(detail.plan, detail.batch.units);
+	// before the Valuer prices the batch, its write-off is still known: the Watcher's assessment (SC-99)
+	const plan = detail.plan
+		? planOf(detail.plan, detail.batch.units)
+		: { ...emptyPlan(detail.batch.units), writeOff: detail.writeOff ?? { ...EMPTY_WRITE_OFF } };
 	const names = Object.fromEntries(snap.channels.map((c) => [c.id, c.name]));
 	const lines = detail.plan?.lines ?? [];
 	const returnBy = detail.returnBy ?? '';

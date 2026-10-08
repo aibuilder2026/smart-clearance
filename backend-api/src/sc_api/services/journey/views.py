@@ -642,6 +642,14 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
         else:
             plan["rows"] = [{**r, "note": None} for r in plan["rows"]]
 
+    # what destroying the packs at risk would cost, from the Watcher's assessment: known from Detect on, before the
+    # Valuer has priced the batch (SC-99), for those who may see Munchly's figures
+    write_off = (
+        money.jsonable(money.write_off(case.assess["atRisk"], world.sku_obj(x), rules=rules))
+        if money_ok and case.assess
+        else None
+    )
+
     counter = None
     if listing and bids and (mine or role in ("distributor", "buyer")):
         last = bids[-1]
@@ -775,6 +783,7 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
         "journey": journey,
         "feed": [feed_out(f) for f in feed],
         "plan": plan,
+        "writeOff": write_off,
         "counter": counter,
         # the buyer's bill reads the award's invoice from the moment the lot is won, before the papers (SC-96)
         "award": (

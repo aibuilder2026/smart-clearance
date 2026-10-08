@@ -735,6 +735,9 @@ export type CaseDetail = {
 	feed: WsFeedEvent[];
 	/** null for those who may not see Munchly's figures */
 	plan: WsPlan | null;
+	/** what destroying the packs at risk would cost, from the Watcher's assessment: from Detect on, before the plan
+	 *  (SC-99); null for those who may not see Munchly's figures */
+	writeOff: WsWriteOff | null;
 	counter: { action: 'accept' | 'counter'; price: number; below: boolean } | null;
 	award: WsAward | null;
 	actual: WsActual | null;
