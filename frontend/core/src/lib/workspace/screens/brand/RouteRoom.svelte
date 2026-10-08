@@ -56,8 +56,22 @@
 	const approved = $derived(isRouted(h.phase));
 	const v = $derived(hm.view);
 	const sku = $derived(v.skuObj);
-	const staff = $derived(c.plan.rows.find((r) => r.id === 'staff')!);
 	const foodbank = $derived(c.plan.rows.find((r) => r.id === 'foodbank')!);
+	// the exits the Router left out (SC-85): one that pays, but less than the last it chose, and one that may not take the
+	// batch, with its reason; the food bank and the write-off are the floor, not left out
+	const leftOut = $derived(
+		c.plan.rows.filter(
+			(r) =>
+				r.id !== 'writeoff' &&
+				r.id !== 'foodbank' &&
+				!c.plan.lines.some((l) => l.id === r.id) &&
+				(!r.eligible || r.net > 0)
+		)
+	);
+	const lowest = $derived(
+		[...c.plan.lines].filter((l) => l.id !== 'writeoff').sort((a, b) => a.net / a.units - b.net / b.units)[0]?.short ??
+			''
+	);
 	const chosen = $derived(planned ? c.plan.lines.map((l) => l.id) : []);
 	const cast = $derived(castOf(s, c));
 	const approver = $derived(ws.data.people[(h.plan && h.plan.by) || cast.operator.id]);
@@ -153,41 +167,49 @@
 			<Card class="stack snug"
 				><SplitBar plan={c.plan} />
 				<div class="stack tight t-subhead" style="margin-top: 4px">
-					<div class="row top" style="gap: 10px">
-						<span class="dotmark" style="background: var(--ch-kirana)"></span><span
-							><b>{c.lines.kirana.units} units to the kirana cluster at ₹{c.lines.kirana.price} effective</b>
-							({fmt.rate(c.lines.kirana.packPrice!)} a pack, {c.scheme.free} free with every {c.scheme.buy}). The best
-							price, and it keeps stock inside {W.short}'s own trade. Capped by what {c.offered}
-							kiranas can move in {ws.data.rules.kiranaWindowDays} days with the scheme, on top of the {v.sellPerDay} a day
-							they already sell.</span
-						>
-					</div>
-					<div class="row top" style="gap: 10px">
-						<span class="dotmark" style="background: var(--ch-expiresoon)"></span><span
-							><b>{c.lines.expiresoon.units} units to ExpireSoon at ₹{c.lines.expiresoon.price}</b> (reserve {fmt.rate(
-								ws.data.rules.negotiation.reservePerUnit
-							)}), listed in {c.dist.name}' name and hidden from buyers inside {W.short}'s territories: unlimited depth,
-							5 to 9 days, the buyer pays freight.</span
-						>
-					</div>
-					<div class="row top muted" style="gap: 10px">
-						<span class="dotmark" style="background: var(--fill-3)"></span><span
-							>The {staff.name} is eligible but pays less a unit than ExpireSoon, so it gets nothing this time.</span
-						>
-					</div>
+					{#each c.plan.lines as ln (ln.id)}<div class="row top" style="gap: 10px">
+							<span class="dotmark" style="background: var(--ch-{ln.id})"></span>{#if ln.id === 'kirana'}<span
+									><b>{c.lines.kirana.units} units to the kirana cluster at ₹{c.lines.kirana.price} effective</b>
+									({fmt.rate(c.lines.kirana.packPrice ?? 0)} a pack, {c.scheme.free} free with every {c.scheme.buy}).
+									The best price, and it keeps stock inside {W.short}'s own trade. Capped by what {c.dist.kiranas}
+									kiranas can move in {ws.data.rules.kiranaWindowDays} days with the scheme, on top of the {v.sellPerDay}
+									a day they already sell.</span
+								>{:else if ln.id === 'expiresoon'}<span
+									><b>{c.lines.expiresoon.units} units to ExpireSoon at ₹{c.lines.expiresoon.price}</b> (reserve {fmt.rate(
+										ws.data.rules.negotiation.reservePerUnit
+									)}), listed in {c.dist.name}' name and hidden from buyers inside {W.short}'s territories: unlimited
+									depth, 5 to 9 days, the buyer pays freight.</span
+								>{:else if ln.id === 'staff'}<span
+									><b>{ln.units} units to the {ln.name} at ₹{ln.price}</b>, at {c.dist.godown}: {c.dist.short} sells them
+									to staff and records what sold.</span
+								>{:else if ln.id === 'foodbank'}<span
+									><b>{ln.units} units to a food bank</b>, the last of the batch, booked with a partner whose rules it
+									meets; the credit on a gift is reversed.</span
+								>{:else}<span><b>{ln.units} units written off</b>: no exit takes them in time.</span>{/if}
+						</div>
+						<!-- eslint-disable-next-line svelte/no-useless-mustaches -- a space Svelte would trim at the block's edge, between one line and the next -->
+						{' '}
+					{/each}
+					{#each leftOut as r (r.id)}<div class="row top muted" style="gap: 10px">
+							<span class="dotmark" style="background: var(--fill-3)"></span><span
+								>{#if r.eligible}The {r.name} is eligible but pays less a unit than {lowest}, so it gets nothing this
+									time.{:else}{r.short} is left out ({r.reason}).{/if}</span
+							>
+						</div>
+					{/each}
 				</div>
 			</Card>
-			<Card class="row wrap" style="gap: 14px; background: var(--surface-2)"
-				><span class="icontile soft"><Icon name="git-branch" size={17} /></span>
-				<div class="grow">
-					<b>Alternative considered: {c.plan.alt.label}</b>
-					<div class="t-footnote muted">
-						Net {fmt.inr(c.plan.alt.net)}: {fmt.inr(c.plan.net - c.plan.alt.net)} less, and nothing stays in {W.short}'s
-						own trade.
+			{#if c.plan.alt}<Card class="row wrap" style="gap: 14px; background: var(--surface-2)"
+					><span class="icontile soft"><Icon name="git-branch" size={17} /></span>
+					<div class="grow">
+						<b>Alternative considered: {c.plan.alt.label}</b>
+						<div class="t-footnote muted">
+							Net {fmt.inr(c.plan.alt.net)}: {fmt.inr(c.plan.net - c.plan.alt.net)} less, and nothing stays in {W.short}'s
+							own trade.
+						</div>
 					</div>
-				</div>
-				<Badge>not chosen</Badge></Card
-			>
+					<Badge>not chosen</Badge></Card
+				>{/if}
 			<MoneyPanel plan={c.plan} sku={c.sku} rules={ws.data.rules} compact={app.bp !== 'desktop'} />
 		</div>{:else}<Locked
 			icon="split"

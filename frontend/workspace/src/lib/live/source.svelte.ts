@@ -107,18 +107,24 @@ export class LiveSource implements WorkspaceSource {
 
 	/* ---------- what the screens read ---------- */
 
+	/** the batch whose donation the screens show: the one in focus, when its plan has a food bank (SC-85) */
+	readonly #donor = $derived.by((): CaseDetail | null => {
+		const snap = this.#snap;
+		const f = this.#focus;
+		return snap && f && donationRef(snap, f.ref) === f.ref ? f : null;
+	});
 	readonly #data = $derived.by((): WorkspaceData | null => {
 		const snap = this.#snap;
 		if (!snap) return null;
-		return dataOf(snap, this.#quarter, { ref: this.#focus?.ref ?? null, second: this.#second?.ref ?? null });
+		return dataOf(snap, this.#quarter, { ref: this.#focus?.ref ?? null, second: this.#donor?.ref ?? null });
 	});
 	readonly #emptyData = $derived(emptyData(this.#public));
 	readonly #emptyState = emptyState();
 	readonly #state = $derived.by((): State | null =>
-		this.#snap ? stateOf(this.#snap, this.#focus, this.#second, this.#audit) : null
+		this.#snap ? stateOf(this.#snap, this.#focus, this.#donor, this.#audit) : null
 	);
 	readonly #case = $derived.by((): CaseData | null =>
-		this.#snap && this.#focus && this.#data ? caseOf(this.#snap, this.#focus, this.#second, this.#data) : null
+		this.#snap && this.#focus && this.#data ? caseOf(this.#snap, this.#focus, this.#donor, this.#data) : null
 	);
 	readonly #me = $derived.by((): User | null =>
 		this.#member && this.#snap ? userOf(this.#member, this.#snap.clock.now) : null
@@ -167,15 +173,12 @@ export class LiveSource implements WorkspaceSource {
 			? { now: c.now, dayMinutes: c.dayMinutes, compressed: c.compressed, day: c.day, read: this.#readAt }
 			: null;
 	}
-	/** the batches in a journey a screen can put in focus, most urgent first: those not going to a food bank (for a food
-	 *  bank, its own) */
+	/** the batches in a journey a screen can put in focus, most urgent first: every one the member sees, each its own
+	 *  journey (SC-85) */
 	get cases(): readonly CaseTab[] {
 		const snap = this.#snap;
 		if (!snap) return [];
-		const own = snap.me.role === 'foodbank';
-		return snap.cases
-			.filter((c) => own || c.donation == null)
-			.map((c) => ({ ref: c.ref, sku: c.sku, stage: c.stage, phase: c.phase }));
+		return snap.cases.map((c) => ({ ref: c.ref, sku: c.sku, stage: c.stage, phase: c.phase }));
 	}
 	/** whether the workspace and the member's data have loaded */
 	get ready(): boolean {
@@ -451,7 +454,7 @@ export class LiveSource implements WorkspaceSource {
 		if (o?.feel) await new Promise((r) => setTimeout(r, o.feel));
 		const api = this.#api;
 		const ref = this.#focus?.ref ?? '';
-		const second = this.#second?.ref ?? '';
+		const second = this.#donor?.ref ?? '';
 		const focus = () => this.#focus;
 		switch (name) {
 			case 'connect':

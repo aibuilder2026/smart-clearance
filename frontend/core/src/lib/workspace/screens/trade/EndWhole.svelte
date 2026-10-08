@@ -8,13 +8,21 @@
 	let { settled }: { settled?: boolean } = $props();
 	const ws = useWorkspace();
 	const c = $derived(ws.case!);
-	const recv = $derived(c.lines.kirana.gross + c.award.gross + c.support.total);
 	const paid = $derived(c.plan.units * c.sku.dp! + c.support.van + c.support.fee);
+	// what each line of the plan brings him (SC-85): the kiranas, the buyer, his staff sale; then the credit note
 	const rows: [string, number][] = $derived([
-		[`From ${c.kiranas.length} kiranas (${c.lines.kirana.units} packets)`, c.lines.kirana.gross],
-		[`From ${c.buyer.name} (${c.lines.expiresoon.units} packets)`, c.award.gross],
+		...c.plan.lines.flatMap((l): [string, number][] =>
+			l.id === 'kirana'
+				? [[`From ${c.kiranas.length} kiranas (${c.lines.kirana.units} packets)`, c.lines.kirana.gross]]
+				: l.id === 'expiresoon'
+					? [[`From ${c.buyer.name} (${c.lines.expiresoon.units} packets)`, c.award.gross]]
+					: l.id === 'staff'
+						? [[`From your staff sale (${l.units} packets)`, l.gross]]
+						: []
+		),
 		[`Price-support credit note from ${ws.data.workspace.short}`, c.support.total]
 	]);
+	const recv = $derived(rows.reduce((t, [, v]) => t + v, 0));
 </script>
 
 <Card class="stack snug">

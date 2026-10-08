@@ -76,21 +76,33 @@
 		return () => a.cancel();
 	};
 
-	const STEPS: [IconName, string][] = $derived([
+	// what the tap sets going, one step for each line of the plan (SC-85)
+	const line = (id: string) => c.plan.lines.find((l) => l.id === id && l.units > 0);
+	const STEPS: [IconName, string][] = $derived(
 		[
-			'shopping-bag',
-			`Lister posts ${es.units} units on ExpireSoon at ₹${es.price} in ${c.dist.name}' name, with the label photo and dates; reserve ${fmt.rate(ws.data.rules.negotiation.reservePerUnit)}, hidden from buyers inside ${ws.data.workspace.short}'s territories.`
-		],
-		[
-			'send',
-			`Outreach pushes the Hindi scheme to ${c.offered} kiranas: ${kl.units} units at ${fmt.rate(kl.packPrice!)} a pack, ${c.scheme.free} free with every ${c.scheme.buy}, for ${ws.state.rules.offerWindowHours} hours.`
-		],
-		['smartphone', `${cast.distributor.short} gets the same plan in his app and can pause it.`],
-		[
-			'shield-check',
-			'Nothing is listed, messaged or shipped before this tap. The approval is logged with who, when and device.'
-		]
-	]);
+			line('expiresoon') && [
+				'shopping-bag',
+				`Lister posts ${es.units} units on ExpireSoon at ₹${es.price} in ${c.dist.name}' name, with the label photo and dates; reserve ${fmt.rate(ws.data.rules.negotiation.reservePerUnit)}, hidden from buyers inside ${ws.data.workspace.short}'s territories.`
+			],
+			line('kirana') && [
+				'send',
+				`Outreach pushes the Hindi scheme to ${c.dist.kiranas} kiranas: ${kl.units} units at ${fmt.rate(kl.packPrice ?? 0)} a pack, ${c.scheme.free} free with every ${c.scheme.buy}, for ${ws.state.rules.offerWindowHours} hours.`
+			],
+			line('staff') && [
+				'users',
+				`${c.dist.short} runs the staff sale at ${c.dist.godown}: ${line('staff')!.units} units at ₹${line('staff')!.price}, and records what sold.`
+			],
+			line('foodbank') && [
+				'heart-handshake',
+				`The Donation agent books a food bank for the last ${line('foodbank')!.units} units, with the FSSAI checklist.`
+			],
+			['smartphone', `${cast.distributor.short} gets the same plan in his app and can pause it.`],
+			[
+				'shield-check',
+				'Nothing is listed, messaged or shipped before this tap. The approval is logged with who, when and device.'
+			]
+		].filter((x): x is [IconName, string] => !!x)
+	);
 </script>
 
 {#snippet footer()}{#if placed}<Button

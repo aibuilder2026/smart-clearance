@@ -234,7 +234,8 @@ export type Plan = {
 	itcRetained: number;
 	itcReversed: number;
 	disposalAvoided: number;
-	alt: { id: string; short: string; label: string; net: number };
+	/** the best single exit the Router weighed against its split; none when no exit could take the whole batch */
+	alt: { id: string; short: string; label: string; net: number } | null;
 	kg: number;
 	co2: number;
 	meals: number;
@@ -442,7 +443,7 @@ export type State = {
 	workspace: string;
 	setup: { confirmed: boolean; mapped: number; permission: null | { by: string; at: string; paused: boolean } };
 	hero: Hero;
-	mango: { id: string; phase: string; donation: null | 'booked' | 'confirmed' | 'collected' };
+	mango: { id: string; phase: string; donation: null | 'booked' | 'confirmed' | 'collected' | 'declined' };
 	feed: FeedEvent[];
 	notifications: Notification[];
 	audit: AuditRow[];

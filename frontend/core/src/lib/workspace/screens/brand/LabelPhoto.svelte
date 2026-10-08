@@ -29,7 +29,7 @@
 <div
 	role="img"
 	aria-label={status === 'verified'
-		? `Carton label on shelf ${c.batch.shelf}: batch ${c.batch.id}, MFG ${fmt.date(c.batch.mfg)}, best before ${fmt.date(c.batch.bestBefore)}, MRP ${fmt.rate(c.sku.mrp)}`
+		? `Carton label${c.batch.shelf ? ` on shelf ${c.batch.shelf}` : ''}: batch ${c.batch.id}, MFG ${fmt.date(c.batch.mfg)}, best before ${fmt.date(c.batch.bestBefore)}, MRP ${fmt.rate(c.sku.mrp)}`
 		: 'Carton label, not yet photographed'}
 	style="position: relative; width: 100%; border-radius: 16px; overflow: hidden; background: var(--surface-sunken)"
 >
@@ -50,7 +50,7 @@
 					>{status === 'requested' ? `Waiting for ${who.short}'s photo` : 'No label photo yet'}</b
 				><span class="t-footnote muted"
 					>{status === 'requested'
-						? `Asked at ${asked} · one carton on shelf ${c.batch.shelf}`
+						? `Asked at ${asked} · one carton${c.batch.shelf ? ` on shelf ${c.batch.shelf}` : ''}`
 						: 'Vision asks the godown before quoting any price'}</span
 				>{#if status === 'requested'}<PlayAs who={who.id} route="photo">Take the photo as {who.short}</PlayAs>{/if}
 			</div>

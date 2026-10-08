@@ -161,24 +161,24 @@ describe('the projection', () => {
 	it("puts the API's journey on the screens' shapes", () => {
 		const seen = moment('executing').members.priya;
 		const snap = seen.snapshot;
+		// the chips, in focus: a plan with no food bank, so no donation beside it (SC-85: each batch is its own journey)
 		const focus = snap.cases.find((c) => c.donation == null)!.ref;
-		const second = snap.cases.find((c) => c.donation != null)!.ref;
-		const data = dataOf(snap, seen.quarter, { ref: focus, second });
-		const state = stateOf(snap, seen.cases[focus], seen.cases[second], seen.audit);
-		const c = caseOf(snap, seen.cases[focus], seen.cases[second], data);
+		const data = dataOf(snap, seen.quarter, { ref: focus, second: null });
+		const state = stateOf(snap, seen.cases[focus], null, seen.audit);
+		const c = caseOf(snap, seen.cases[focus], null, data);
 
 		expect(state.hero.id).toBe(focus);
 		expect(state.hero.phase).toBe('executing');
 		expect(state.hero.orders).toHaveLength(5);
 		expect(state.hero.bids.at(-1)?.status).toBe('countered');
-		expect(state.mango).toEqual({ id: second, phase: 'executing', donation: 'booked' });
+		expect(state.mango).toEqual({ id: '', phase: 'watching', donation: null });
 		expect(state.setup.permission?.by).toBe('rakesh');
 		expect(state.users.every((u) => u.provider === 'password')).toBe(true);
 		expect(state.feed.length).toBeGreaterThan(5);
 		expect(state.feed.every((f, i) => i === 0 || f.min >= 0)).toBe(true);
 
 		expect(data.batches.find((b) => b.id === focus)?.hero).toBe(true);
-		expect(data.batches.find((b) => b.id === second)?.second).toBe(true);
+		expect(data.batches.some((b) => b.second)).toBe(false);
 		expect(data.workspace.emailDomain).toBe('munchly.example');
 		expect(data.market.lots.length).toBeGreaterThan(0);
 
@@ -188,11 +188,18 @@ describe('the projection', () => {
 		expect(c.listing.url).toContain(c.listing.id);
 		expect(c.van.leaves).toMatch(/^\d\d:\d\d$/);
 		expect(c.van.day).toMatch(/day$/);
-		expect(c.donation.units).toBeGreaterThan(0);
-		expect(c.donation.day).toMatch(/day$/);
-		expect(c.donation.slots).toHaveLength(3);
-		expect(c.donation.asked).toBe('Day 0');
+		expect(c.donation.units).toBe(0);
 		expect(c.counter.action).toBe('counter');
+
+		// the Mango Drink, in focus, carries its own donation
+		const mango = snap.cases.find((x) => x.donation != null)!.ref;
+		const md = seen.cases[mango];
+		expect(stateOf(snap, md, md, seen.audit).mango).toEqual({ id: mango, phase: 'executing', donation: 'booked' });
+		const mc = caseOf(snap, md, md, dataOf(snap, seen.quarter, { ref: mango, second: mango }));
+		expect(mc.donation.units).toBe(58);
+		expect(mc.donation.day).toMatch(/day$/);
+		expect(mc.donation.slots).toHaveLength(3);
+		expect(mc.donation.asked).toMatch(/^Day \d+$/);
 	});
 
 	it('gives a batch not planned yet empty figures, never the story', () => {

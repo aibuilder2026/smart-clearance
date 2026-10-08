@@ -218,7 +218,8 @@ export function dataOf(
 			acts: snap.setup.acts
 		},
 		stages: snap.stages as Stage[],
-		batches: snap.batches.map((b) => batchOf(b, { hero: b.id === focus.ref, second: b.id === focus.second })),
+		// each batch in a journey is its own (SC-85): none is the story's second batch, shown beside the one in focus
+		batches: snap.batches.map((b) => batchOf(b, { hero: b.id === focus.ref, second: false })),
 		quarter: quarterOf(quarter),
 		market: { ...snap.market, lots: snap.market.lots.map((l) => ({ ...l, icon: icon(l.icon) })) }
 	};
@@ -246,7 +247,7 @@ function emptyPlan(units: number): Plan {
 		itcRetained: 0,
 		itcReversed: 0,
 		disposalAvoided: 0,
-		alt: { id: '', short: '', label: '', net: 0 },
+		alt: null,
 		kg: 0,
 		co2: 0,
 		meals: 0,
@@ -262,7 +263,7 @@ function planOf(p: WsPlan | null, units: number): Plan {
 	return {
 		...rest,
 		rows: rows.map(({ note: _n, ...r }): ChannelRow => ({ ...r, icon: r.icon as IconName })),
-		alt: alt ?? { id: '', short: '', label: '', net: 0 }
+		alt: alt ?? null
 	};
 }
 
@@ -593,20 +594,16 @@ export function stateOf(
 	};
 }
 
-/** the batch the workspace puts first: the one a screen asked for, else the most urgent open journey; none when only a
- *  donation is under way */
+/** the batch the workspace puts first: the one a screen asked for, else the most urgent open journey. Every batch in a
+ *  journey is its own (SC-85): one going to a food bank is as much in focus as any other */
 export function focusRef(snap: WorkspaceSnapshot, asked: string | null): string | null {
 	if (asked && snap.cases.some((c) => c.ref === asked)) return asked;
-	// a batch going to a food bank is shown beside the one in focus, never as it; but for the food bank it is the one
-	if (snap.me.role === 'foodbank') return snap.cases[0]?.ref ?? null;
-	return snap.cases.find((c) => c.donation == null)?.ref ?? null;
+	return snap.cases[0]?.ref ?? null;
 }
 
-/** the batch going to a food bank, if one is: the screens show it beside the batch in focus */
+/** the batch whose donation the screens show: the one in focus, when its plan has a food bank (SC-85) */
 export const donationRef = (snap: WorkspaceSnapshot, focus: string | null): string | null =>
-	snap.cases.find((c) => c.donation != null && c.ref !== focus)?.ref ??
-	snap.cases.find((c) => c.donation != null)?.ref ??
-	null;
+	snap.cases.some((c) => c.ref === focus && c.donation != null) ? focus : null;
 
 /* ---------- before the workspace has loaded ---------- */
 

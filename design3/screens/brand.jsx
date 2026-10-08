@@ -209,7 +209,11 @@
     const planned = ["planned", "approved", "executing", "dispatched", "settled", "cleared"].includes(h.phase);
     const approved = ["approved", "executing", "dispatched", "settled", "cleared"].includes(h.phase);
     const v = hm.view; const sku = v.skuObj;
-    const staff = D.PLAN.rows.find(r => r.id === "staff");
+    // the split, one sentence per line of the plan (SC-85); then the exits the Router left out: one that pays, but less
+    // than the last it chose, and one that may not take the batch, with its reason (the food bank and write-off are the floor)
+    const heroDist = D.DISTRIBUTORS[D.BATCHES.find(b => b.hero).distributor];
+    const leftOut = D.PLAN.rows.filter(r => r.id !== "writeoff" && r.id !== "foodbank" && !D.PLAN.lines.some(l => l.id === r.id) && (!r.eligible || r.net > 0));
+    const lowest = (D.PLAN.lines.filter(l => l.id !== "writeoff").sort((a, b) => a.net / a.units - b.net / b.units)[0] || {}).short || "";
     useEffect(() => { const f = () => setSheet(true); window.addEventListener("sc3:approve-open", f); return () => window.removeEventListener("sc3:approve-open", f); }, []);
     // live (SC-73): each flagged batch has its own Route Room (#/route/<batch>), with the batches as tabs under the
     // title; updates paused grey the tracker, and offline the approval waits for a connection
@@ -249,12 +253,16 @@
             {planned ? <div className="stack" style={{ gap: 16 }}>
               <Card className="stack snug"><SplitBar plan={D.PLAN} sku={sku} />
                 <div className="stack tight t-subhead" style={{ marginTop: 4 }}>
-                  <div className="row top" style={{ gap: 10 }}><span className="dotmark" style={{ background: "var(--ch-kirana)" }} /><span><b>{KL.units} units to the kirana cluster at ₹18 effective</b> (₹{KL.packPrice.toFixed(2)} a pack, 2 free with every 10). The best price, and it keeps stock inside Munchly's own trade. Capped by what {D.OFFERED} kiranas can move in 14 days with the scheme, on top of the {v.sellPerDay} a day they already sell.</span></div>
-                  <div className="row top" style={{ gap: 10 }}><span className="dotmark" style={{ background: "var(--ch-expiresoon)" }} /><span><b>{ES.units} units to ExpireSoon at ₹15</b> (reserve ₹13.50), listed in Rakesh Traders' name and hidden from buyers inside Munchly's territories: unlimited depth, 5 to 9 days, the buyer pays freight.</span></div>
-                  <div className="row top muted" style={{ gap: 10 }}><span className="dotmark" style={{ background: "var(--fill-3)" }} /><span>The {staff.name} is eligible but pays less a unit than ExpireSoon, so it gets nothing this time.</span></div>
+                  {D.PLAN.lines.map(ln => <div key={ln.id} className="row top" style={{ gap: 10 }}><span className="dotmark" style={{ background: `var(--ch-${ln.id})` }} />{
+                    ln.id === "kirana" ? <span><b>{KL.units} units to the kirana cluster at ₹{KL.price} effective</b> (₹{KL.packPrice.toFixed(2)} a pack, 2 free with every 10). The best price, and it keeps stock inside Munchly's own trade. Capped by what {heroDist.kiranas} kiranas can move in 14 days with the scheme, on top of the {v.sellPerDay} a day they already sell.</span>
+                    : ln.id === "expiresoon" ? <span><b>{ES.units} units to ExpireSoon at ₹{ES.price}</b> (reserve ₹13.50), listed in Rakesh Traders' name and hidden from buyers inside Munchly's territories: unlimited depth, 5 to 9 days, the buyer pays freight.</span>
+                    : ln.id === "staff" ? <span><b>{ln.units} units to the {ln.name} at ₹{ln.price}</b>, at {heroDist.godown}: {heroDist.short} sells them to staff and records what sold.</span>
+                    : ln.id === "foodbank" ? <span><b>{ln.units} units to a food bank</b>, the last of the batch, booked with a partner whose rules it meets; the credit on a gift is reversed.</span>
+                    : <span><b>{ln.units} units written off</b>: no exit takes them in time.</span>}</div>)}
+                  {leftOut.map(r => <div key={r.id} className="row top muted" style={{ gap: 10 }}><span className="dotmark" style={{ background: "var(--fill-3)" }} /><span>{r.eligible ? `The ${r.name} is eligible but pays less a unit than ${lowest}, so it gets nothing this time.` : `${r.short} is left out (${r.reason}).`}</span></div>)}
                 </div>
               </Card>
-              <Card className="row wrap" style={{ gap: 14, background: "var(--surface-2)" }}><span className="icontile soft"><Icon name="git-branch" size={17} /></span><div className="grow"><b>Alternative considered: {D.PLAN.alt.label}</b><div className="t-footnote muted">Net {fmt.inr(D.PLAN.alt.net)}: {fmt.inr(D.PLAN.net - D.PLAN.alt.net)} less, and nothing stays in Munchly's own trade.</div></div><Badge>not chosen</Badge></Card>
+              {D.PLAN.alt && <Card className="row wrap" style={{ gap: 14, background: "var(--surface-2)" }}><span className="icontile soft"><Icon name="git-branch" size={17} /></span><div className="grow"><b>Alternative considered: {D.PLAN.alt.label}</b><div className="t-footnote muted">Net {fmt.inr(D.PLAN.alt.net)}: {fmt.inr(D.PLAN.net - D.PLAN.alt.net)} less, and nothing stays in Munchly's own trade.</div></div><Badge>not chosen</Badge></Card>}
               <MoneyPanel plan={D.PLAN} compact={app.bp !== "desktop"} />
             </div> : <Locked icon="split" agent="Router Agent" live={h.phase === "valued"} text={h.phase === "valued" ? "Filling the best-paying channel to its cap, then the next." : "Proposes a split once the channels are priced."} />}
             {approved && <Card className="row wrap" style={{ gap: 14 }}><Avatar person={D.PEOPLE[(h.plan && h.plan.by) || "priya"]} size="lg" /><div className="grow"><b>Approved by {D.PEOPLE[(h.plan && h.plan.by) || "priya"].short} · 09:40 · phone</b><div className="t-footnote muted">Logged with who, when and device. The agents are executing; Rakesh bhai has the same plan in his app.</div></div><Button variant="primary" iconRight="arrow-right" onClick={() => go("execution")}>Watch execution</Button></Card>}
@@ -303,18 +311,24 @@
     const units = h.orders.reduce((t, o) => t + o.units, 0);
     const lastBid = h.bids[h.bids.length - 1];
     const ML = id => D.MANGO_PLAN.lines.find(l => l.id === id) || { units: 0 };
+    // the cards follow the case's own plan (SC-85): a channel the Router left out says why, and its agent stands by
+    const hasLine = id => D.PLAN.lines.some(l => l.id === id && l.units > 0);
+    const esRow = D.PLAN.rows.find(r => r.id === "expiresoon");
     const req = `POST /v1/listings\n{\n  "seller": "Rakesh Traders, Nagpur",\n  "on_behalf": "one-time permission · inside Munchly floors",\n  "sku": "MF-MC-150",\n  "batch": "MF-2409-117",\n  "units": ${ES.units},\n  "price": 15.00,\n  "reserve": 13.50,\n  "mrp": 30.00,\n  "best_before": "2026-11-18",\n  "hide_from_pincodes": ["440", "441", "442", "411", "412", "452", "453", "500", "501"],\n  "label_photo": "gs://smart-clearance/labels/MF-2409-117.jpg"\n}`;
     const res = h.listing ? `HTTP/1.1 201 Created\n{\n  "id": "${D.JOURNEY.listing.id}",\n  "status": "${h.listing.status}",\n  "url": "${D.JOURNEY.listing.url}"\n}` : "";
     return <Screen me={me} title="Execution" sub="MF-2409-117 · day 0 to 14 · four agents" back="Route Room">
       {!started ? <Card><Empty icon="sparkles" title="Nothing is executing yet" body="Listing, outreach, negotiation and the food-bank booking start the moment the plan is approved." /></Card> :
       <Columns sideWidth={340}
         main={<div style={{ display: "grid", gap: 20, gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 340px), 1fr))", alignItems: "start" }}>
-          <Card className="stack snug">
+          {hasLine("expiresoon") ? <Card className="stack snug">
             <div className="card-head"><span className="row tight"><Aura on={!h.listing} className="icontile violet" style={{ borderRadius: 9 }}><Icon name="shopping-bag" size={17} stroke={2} /></Aura><span className="card-title">Lister · ExpireSoon</span></span>{h.listing ? <Badge tone={h.listing.status === "awarded" ? "green" : "violet"} dot live={h.listing.status === "live"}>{h.listing.status}</Badge> : <Badge>queued</Badge>}</div>
             <CodeBlock code={req} label="ExpireSoon request" />{h.listing && <CodeBlock code={res} label="ExpireSoon response" />}
             <span className="t-footnote subtle">The marketplace is mocked; the request and response are what a partner API returns. Buyers in Munchly's territories never see the lot.</span>
             {h.listing && <Button variant="outline" icon="external-link" onClick={() => (onOpenListing ? onOpenListing() : setSheet(true))}>Open on ExpireSoon</Button>}
-          </Card>
+          </Card> : <Card className="stack snug">
+            <div className="card-head"><span className="row tight"><span className="icontile gray" style={{ borderRadius: 9 }}><Icon name="shopping-bag" size={17} stroke={2} /></span><span className="card-title">Lister · ExpireSoon</span></span><Badge>not in this plan</Badge></div>
+            <span className="t-footnote muted">{esRow && !esRow.eligible ? `ExpireSoon is left out of this plan (${esRow.reason}).` : "The Router gave ExpireSoon nothing: the other exits pay more a unit."} The Lister has nothing to list.</span>
+          </Card>}
           <Card className="stack snug">
             <div className="card-head"><span className="row tight"><Aura on={h.offer && units < KL.units} className="icontile" style={{ borderRadius: 9 }}><Icon name="send" size={17} stroke={2} /></Aura><span className="card-title">Outreach · {D.OFFERED} kiranas</span></span><Badge tone="blue" icon="bell">push · Hindi</Badge></div>
             {h.offer && <div className="banner" style={{ boxShadow: "none", background: "var(--fill)", gridTemplateColumns: "28px minmax(0,1fr)" }}><K.Mark size={28} /><span className="hi t-subhead" lang="hi" style={{ lineHeight: 1.45 }}>{D.PUSH.offer.body}</span></div>}

@@ -204,7 +204,12 @@
 	);
 </script>
 
-<Screen {me} title="Label photo" sub={`Batch ${c.batch.id} · shelf ${c.batch.shelf}`} back="Today">
+<Screen
+	{me}
+	title="Label photo"
+	sub={`Batch ${c.batch.id}${c.batch.shelf ? ` · shelf ${c.batch.shelf}` : ''}`}
+	back="Today"
+>
 	<div class="stack" style="gap: 16px; max-width: 560px; margin: 0 auto; width: 100%">
 		<!-- svelte-ignore a11y_no_static_element_interactions (dropping a photo is a shortcut; Upload a photo does the same) -->
 		<div

@@ -45,7 +45,7 @@
 					</div>
 					<Money value={c.award.gross} size="s" decimals /></Card
 				>{/if}
-			{#if h.docs}<InvoiceDraft {h} />{/if}
+			{#if h.docs && c.docs.some((d) => d.id === 'invoice')}<InvoiceDraft {h} />{/if}
 			{#if rows.length}<div class="list">
 					{#each rows as o (o.id)}<div class="list-row" style="grid-template-columns: minmax(0,1fr) auto">
 							<span class="stack tight" style="gap: 0"
