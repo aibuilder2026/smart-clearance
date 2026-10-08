@@ -401,13 +401,15 @@ export function caseOf(
 		supportPlan: supportOf(detail.supportPlan),
 		claim: detail.claim ?? { units: 0, credit: 0, disposal: 0, epr: 0, itc: 0, total: 0 },
 		docs,
+		// before Paperwork drafts the paper, the award's own invoice figures, so the buyer's bill reads from the win (SC-96)
 		invoice: docs.find((x) => x.id === 'invoice') ?? {
 			id: 'invoice',
 			type: '',
 			owner: dist.name,
 			no: '',
 			status: 'drafted',
-			amount: 0
+			amount: detail.award?.invoice.total ?? 0,
+			...detail.award?.invoice
 		},
 		realised: detail.realised,
 		expiry: detail.expiry ?? null,

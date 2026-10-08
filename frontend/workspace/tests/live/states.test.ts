@@ -669,4 +669,23 @@ describe("the buyer's listing (SC-92)", () => {
 		expect(face).toBeTruthy();
 		expect(face!.textContent?.trim()).not.toBe('?');
 	});
+
+	it("once the lot is won, the bill reads the award's invoice before Paperwork drafts it (SC-96)", async () => {
+		const m = moment('executing');
+		const detail = structuredClone(m.members.agrawal.cases[CHIPS]);
+		const invoice = { taxable: 10962.4, igst: 548, gstPct: 5, roundOff: -0.4, total: 11510 };
+		const award = { units: 772, price: 14.2, gross: 10962.4, token: 1644, balance: 9318.4 };
+		detail.award = { ...award, invoice };
+		detail.journey.award = { ...award, at: detail.journey.bids.at(-1)!.at, buyer: 'Agrawal Wholesale', status: 'won' };
+		detail.docs = [];
+		const s = source(fakeApi(m, 'agrawal', { case: () => Promise.resolve(structuredClone(detail)) }));
+		const r = await draw(s, 'listing', CHIPS);
+		await waitFor(() => expect(text(r)).toContain('Lot won at ₹14.20'));
+		const t = text(r);
+		expect(t).not.toMatch(/NaN|undefined/);
+		expect(t).toContain('₹548 IGST due');
+		expect(t).toContain('772 × ₹14.20₹10,962.40');
+		expect(t).toContain('IGST 5%');
+		expect(t).toContain('Invoice total₹11,510.00');
+	});
 });

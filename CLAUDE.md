@@ -1009,4 +1009,14 @@
       - "₹0 if destroyed" on the Command Center before the Valuer prices;
       - the invoice reads "drafted" for Finance after Rakesh issues it, as in the prototype.
   - **Checks:** backend-api 467 passed (2 new); the frontend gate passes (core 248, api 77, workspace 55, admin 17, demo 5, console 3).
+- **SC-96** (In Review, branch `SC-96-lot-won-bill`, stacked on SC-95; bug found by Munchly Chips E2E): ExpireSoon's Lot won bill read ₹NaN and "IGST undefined%" from the award until Paperwork drafted the invoice.
+  - **The cause:** before the papers, the live projection's invoice was a placeholder with no figures.
+  - **The fix:**
+    - backend-api's award carries its invoice (`award.invoice`: taxable, IGST, rate, round-off, total) from money.py's new `invoice()`, which `documents()` now drafts the paper from, so the bill and the paper agree;
+    - the contract's `WsAward.invoice`;
+    - the projection falls back to it until the paper exists.
+  - **Checks:**
+    - backend-api 467 passed; the story's journey test checks the buyer's bill before the papers, and that the paper matches it;
+    - the frontend gate passes, with workspace at 56: a new live test draws the Lot won bill before the papers, and fails without the fix;
+    - the live fixtures were regenerated.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

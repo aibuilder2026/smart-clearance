@@ -599,7 +599,16 @@ export type WsPlan = {
 	explanation: string | null;
 };
 
-export type WsAward = { units: number; price: number; gross: number; token: number; balance: number };
+export type WsAward = {
+	units: number;
+	price: number;
+	gross: number;
+	token: number;
+	balance: number;
+	/** the buyer's tax invoice for the lot, as Paperwork will draft it, from the moment it is won (SC-96) */
+	invoice: WsInvoiceFigures;
+};
+export type WsInvoiceFigures = { taxable: number; igst: number; gstPct: number; roundOff: number; total: number };
 export type WsActual = {
 	net: number;
 	delta: number;

@@ -776,7 +776,15 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
         "feed": [feed_out(f) for f in feed],
         "plan": plan,
         "counter": counter,
-        "award": {k: case.award[k] for k in ("units", "price", "gross", "token", "balance")} if award else None,
+        # the buyer's bill reads the award's invoice from the moment the lot is won, before the papers (SC-96)
+        "award": (
+            {
+                **{k: case.award[k] for k in ("units", "price", "gross", "token", "balance")},
+                "invoice": money.jsonable(money.invoice(case.award["units"], case.award["price"], world.sku_obj(x))),
+            }
+            if award
+            else None
+        ),
         "actual": actual,
         "support": support,
         "supportPlan": support_plan,

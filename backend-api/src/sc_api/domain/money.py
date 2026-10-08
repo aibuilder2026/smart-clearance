@@ -654,6 +654,23 @@ def award(units: float, price: float, *, rules: Obj = RULES) -> dict[str, Any]:
     return {"units": units, "price": price, "gross": gross, "token": token, "balance": r2(gross - token)}
 
 
+def invoice(units: float, price: float, sku: Obj) -> dict[str, Any]:
+    """the buyer's tax invoice for an ExpireSoon award, as the papers draft it (documents): the taxable value, the IGST
+    rounded to the rupee (CGST s.170), its rate, the round-off line and the total. The buyer's bill shows it from the
+    award on, before Paperwork has drafted the paper (SC-96)."""
+    taxable = r2(units * price)
+    igst = js_round(taxable * _get(sku, "gst"))
+    exact = r2(taxable + igst)
+    total = js_round(exact)
+    return {
+        "taxable": taxable,
+        "igst": igst,
+        "gstPct": js_round(_get(sku, "gst") * 100),
+        "roundOff": r2(total - exact),
+        "total": total,
+    }
+
+
 def actual_net(p: Obj, award_price: float) -> dict[str, Any]:
     """the plan's net once the ExpireSoon lot is awarded at its price"""
     es = next((ln for ln in p["lines"] if ln["id"] == "expiresoon"), None)
@@ -752,10 +769,8 @@ def documents(
     docs: list[dict[str, Any]] = []
     if es is not None and aw:
         # tax is rounded to the rupee (CGST s.170); the invoice total takes a round-off line
-        taxable = r2(aw["units"] * aw["price"])
-        igst = js_round(taxable * _get(sku, "gst"))
-        exact = r2(taxable + igst)
-        total = js_round(exact)
+        inv = invoice(aw["units"], aw["price"], sku)
+        total = inv["total"]
         docs.append(
             {
                 "id": "invoice",
@@ -764,16 +779,16 @@ def documents(
                 "no": numbers["invoice"],
                 "status": "drafted",
                 "amount": total,
-                "taxable": taxable,
-                "igst": igst,
-                "roundOff": r2(total - exact),
+                "taxable": inv["taxable"],
+                "igst": inv["igst"],
+                "roundOff": inv["roundOff"],
                 "total": total,
                 "units": aw["units"],
                 "price": aw["price"],
                 "from": seller,
                 "to": parties["buyer"],
                 "hsn": sku.get("hsn"),
-                "gstPct": js_round(_get(sku, "gst") * 100),
+                "gstPct": inv["gstPct"],
                 "note": f"Drafted for {seller.get('short') or seller['name']} to issue from Tally.",
             }
         )
