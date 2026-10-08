@@ -214,24 +214,34 @@ test('keyboard · a saved appearance applies before the first paint', async ({ b
 test.describe('the film and the table, with motion on (SC-60)', () => {
 	test.use({ contextOptions: { reducedMotion: 'no-preference' } });
 
-	test('keyboard · the film pauses, plays and replays, and the heading rests on "chance"', async ({ page }) => {
+	test('keyboard · the film pauses and plays, hands over to its second half without a cut, and the heading rests on "chance"', async ({
+		page
+	}) => {
 		await openSite(page);
 		const ctl = page.locator('.film-ctl').getByRole('button');
 		await expect(ctl).toHaveText(/Pause/);
 		await ctl.focus();
 		await page.keyboard.press('Enter');
 		await expect(ctl, 'one button, so focus stays on it').toHaveText(/Play/);
-		expect(await page.evaluate(() => document.querySelector('video')!.paused)).toBe(true);
+		expect(await page.evaluate(() => document.querySelector<HTMLVideoElement>('video.front')!.paused)).toBe(true);
 		await page.keyboard.press('Enter');
 		await expect(ctl).toHaveText(/Pause/);
-		await page.evaluate(() => {
-			const v = document.querySelector('video')!;
+		// the first clip ends: the second takes the front and plays on, the strip turns to the night, and the film,
+		// which loops under its Pause (SC-78), still offers Pause
+		const first = await page.evaluate(() => {
+			const v = document.querySelector<HTMLVideoElement>('video.front')!;
 			v.currentTime = v.duration - 0.2;
+			return v.currentSrc;
 		});
-		await expect(ctl, 'the film ends and offers Replay').toHaveText(/Replay/, { timeout: 4000 });
-		await page.keyboard.press('Enter');
+		await expect
+			.poll(() => page.evaluate(() => document.querySelector<HTMLVideoElement>('video.front')!.currentSrc), {
+				timeout: 6000
+			})
+			.not.toBe(first);
+		expect(await page.evaluate(() => document.querySelector<HTMLVideoElement>('video.front')!.paused)).toBe(false);
+		await expect(page.locator('.film-story')).toHaveAttribute('aria-label', 'The night, hour by hour');
 		await expect(ctl).toHaveText(/Pause/);
-		// the word on screen, not the one leaving (inert while it fades out); the turns take 4.5 s, slower on a busy machine
+		// the word on screen, not the one leaving (inert while it fades out); the turns take 5 s, slower on a busy machine
 		await expect(page.locator('.film-word [aria-hidden]:not([inert])')).toHaveText('chance', { timeout: 15000 });
 	});
 

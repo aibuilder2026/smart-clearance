@@ -1,12 +1,13 @@
-// Smart-Clearance v3 · smartclearance.com: the product's own landing page, independent of any client (SC-60). The
-// miniature business alive on film under the heading; a statement that fills in as it is read; the agents at work on
-// the table, one in focus at a time; the product's moments as chapters; Impact's ledger; a workspace per manufacturer;
-// plans and the close. In the manner of shopify.com/uk, in the design system's own grammar.
+// Smart-Clearance v3 · smartclearance.com: the product's own landing page, independent of any client (SC-60, refined in
+// SC-78). The miniature business through one day on film under the heading, a strip reading the hours of the story;
+// a statement that fills in as it is read; the agents at work on the table, one in focus at a time; the product's
+// moments as chapters; Impact's ledger; the workspace itself on a device, one tab per team; plans and the close. In
+// the manner of shopify.com/uk, in the design system's own grammar.
 (function () {
   const { useState, useEffect, useLayoutEffect, useRef, useMemo } = React;
   const { useReducedMotion, motion, useScroll, useTransform, useInView, AnimatePresence, animate } = Motion;
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, S = window.SC3_SCREENS, P = window.SC3_PLATFORM; const fmt = M.fmt;
-  const { cx, Icon, IconButton, Button, Badge, Sheet, Field, Input, Select, Textarea, Menu, Mark, Wordmark, Money, Roll, GateChips, Product, Segmented, ModeMenuButton, ThemeProvider, AppRoot, NoticeHost, useApp, useTheme } = K;
+  const { cx, Icon, IconButton, Button, Badge, Sheet, Field, Input, Select, Textarea, Menu, Mark, Wordmark, Money, Roll, GateChips, Product, Segmented, ModeMenuButton, ThemeProvider, AppRoot, NoticeHost, useApp, useTheme, WindowFrame, PhoneFrame, WorkspaceMark } = K;
   const IMG = window.SC3_SITE_IMG || "assets/plates/", MEDIA = window.SC3_SITE_MEDIA || "assets/media/";
   // where the other pages live: relative next to each other here, the claude.ai/design links on the hosted pages
   const LINKS = Object.assign({ demo: "../demo/Smart-Clearance%20demo%20v3.html", app: "../app/Smart-Clearance%20app%20v3.html", console: "../console/Smart-Clearance%20console%20v3.html" }, window.SC3_LINKS || {});
@@ -22,14 +23,12 @@
   const SHOPS = D.KIRANAS.length, BIN = D.PLAN.writeOff.total, ES_NET = AW.gross - ESL.cost, N = D.RISK.atRisk;
   const row = id => D.PLAN.rows.find(r => r.id === id);
   const planned = id => D.PLAN.lines.some(l => l.id === id);
-  const rate = v => Math.abs(v % 1) < 1e-9 ? fmt.inr(v) : fmt.inr2(v); // ₹12 a pack, ₹14.20 a pack
-  const SCHEME = M.RULES.scheme, BID = 13; // the buyer's opening bid, as core/data.js counters it
-  // the kirana offer as Outreach sends it, with no client in it: the landing page names none (SC-28)
+  const rate = v => Math.abs(v % 1) < 1e-9 ? fmt.inr(v) : fmt.inr2(v);
+  const SCHEME = M.RULES.scheme, BID = 13;
   const BEST_BEFORE = new Date(BATCH.bestBefore + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
   const OFFER = { title: D.PUSH.offer.title, body: `नमस्ते! ${SKU.name} पर आज खास ऑफर: ${SCHEME.buy} पैकेट लो, ${SCHEME.free} मुफ़्त. Best before ${BEST_BEFORE}. सिर्फ़ 48 घंटे. ऑर्डर के लिए टैप करें.` };
   const EASE = [0.22, 1, 0.36, 1];
   const agentsAt = (...stages) => P.AGENTS.filter(a => !a.gate && stages.includes(a.stage)).map(a => a.name);
-  // the agents, with what each did for this batch; the person who says yes is "You", the manufacturer's own team
   const DID = {
     data: `${fmt.num(BATCH.units)} packs in stock, selling ${BATCH.sellPerDay} a day`,
     watcher: `${fmt.num(N)} packs won't sell in the ${BATCH.daysLeft} days left`,
@@ -47,15 +46,12 @@
   const AGENT = Object.fromEntries(AGENTS.map(a => [a.id, a]));
 
   /* ---------- small shared pieces ---------- */
-  // a card rises once it comes into view, then its rows follow it in turn, about a second and a half, once; under
-  // reduced motion it is in place from the start
   function useRise(amount = 0.3) {
     const ref = useRef(null); const reduce = useReducedMotion();
     const inView = useInView(ref, { once: true, amount }); const shown = reduce || inView;
     const move = (y, delay) => ({ initial: reduce ? false : { opacity: 0, y }, animate: shown ? { opacity: 1, y: 0 } : undefined, transition: { duration: 0.42, delay: reduce ? 0 : delay, ease: EASE } });
     return { shown, card: { ref, ...move(16, 0) }, rise: i => move(10, 0.16 + i * 0.11) };
   }
-  // n things light in turn once `on`: the first after `first` ms, then one every `every` ms; all at once under reduced motion
   function useLit(on, n, first, every) {
     const reduce = useReducedMotion(); const [k, setK] = useState(reduce ? n : 0);
     useEffect(() => {
@@ -68,13 +64,29 @@
   function AgentChips({ who, lit, person }) {
     return <span className="agents">{who.map((w, j) => <span key={w} className={cx("chip-agent", (lit == null || j < lit) && "on", person && j === 0 && "person")}><i aria-hidden="true" />{w}</span>)}</span>;
   }
+  // which section the reader is in: the last one whose top has passed 45% of the window
+  function useActiveSection(ids) {
+    const [active, setActive] = useState(null);
+    useEffect(() => {
+      const f = () => { const line = window.innerHeight * 0.45; let cur = null; for (const id of ids) { const el = document.getElementById(id); if (el && el.getBoundingClientRect().top <= line) cur = id; } setActive(cur); };
+      f(); window.addEventListener("scroll", f, { passive: true }); window.addEventListener("resize", f); return () => { window.removeEventListener("scroll", f); window.removeEventListener("resize", f); };
+    }, []);
+    return active;
+  }
 
-  /* ---------- the bar: the product, its sections, the ways in ---------- */
-  // no client is named on this page: a manufacturer finds its own workspace (SC-28)
+  /* ---------- the bar: the product, its sections, the ways in (SC-78) ---------- */
+  // no client is named on this page: a manufacturer finds its own workspace (SC-28). The bar is in three parts: the
+  // brand, the links centred with a dot under the section the reader is in, the actions; a progress line runs along
+  // its foot once the page has scrolled
   const SECTIONS = [["how", "How it works"], ["agents", "Agents"], ["teams", "For teams"], ["pricing", "Pricing"]];
   const goTo = id => { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); };
+  function NavLinks({ active }) {
+    return <nav className="nav-links" aria-label="Sections">{SECTIONS.map(([id, t]) => <a key={id} href={"#" + id} className={cx(active === id && "on")} aria-current={active === id ? "location" : undefined}><span className="nav-t">{t}</span></a>)}</nav>;
+  }
   function Nav({ onFind, onDemo }) {
-    const app = useApp(); const [menu, setMenu] = useState(false); const [sheet, setSheet] = useState(false);
+    const app = useApp(); const [menu, setMenu] = useState(false); const [sheet, setSheet] = useState(false); const desk = app.bp === "desktop";
+    const active = useActiveSection(SECTIONS.map(s => s[0]));
+    const { scrollYProgress } = useScroll(); const reduce = useReducedMotion();
     const signInItems = [
       { label: "Sign in to", heading: true },
       { label: "Find your workspace", icon: "search", onClick: onFind },
@@ -82,12 +94,16 @@
       { label: "Smart-Clearance staff", icon: "shield", onClick: () => open(LINKS.console) },
     ];
     return <header className="site-nav">
-      <a className="nav-brand" href="#top" aria-label="Smart-Clearance, back to the top"><span className="nav-mark"><Mark size={36} /></span><Wordmark size={15} /></a>
-      {app.bp === "desktop" && <nav className="nav-links" aria-label="Sections">{SECTIONS.map(([id, t]) => <a key={id} href={"#" + id}>{t}</a>)}</nav>}
-      <span className="grow" />
-      <span className="nav-mode"><ModeMenuButton /></span>
-      <span className="nav-signin"><button type="button" className="nav-text" aria-haspopup="menu" aria-expanded={menu} onClick={() => setMenu(m => !m)}>Sign in</button><Menu open={menu} onClose={() => setMenu(false)} items={signInItems} width={268} label="Sign in to" /></span>
-      {app.bp !== "phone" ? <Button variant="primary" pill className="nav-demo" onClick={() => onDemo()}>Book a demo</Button> : <IconButton icon="menu" label="Menu" onClick={() => setSheet(true)} />}
+      <div className="nav-in">
+        <a className="nav-brand" href="#top" aria-label="Smart-Clearance, back to the top"><span className="nav-mark"><Mark size={30} /></span><Wordmark size={16} /></a>
+        {desk && <NavLinks active={active} />}
+        <span className="nav-actions">
+          <span className="nav-mode"><ModeMenuButton /></span>
+          <span className="nav-signin"><button type="button" className="nav-text" aria-haspopup="menu" aria-expanded={menu} onClick={() => setMenu(m => !m)}>Sign in</button><Menu open={menu} onClose={() => setMenu(false)} items={signInItems} width={268} label="Sign in to" /></span>
+          {app.bp !== "phone" ? <Button variant="primary" pill className="nav-demo" onClick={() => onDemo()}>Book a demo</Button> : <IconButton icon="menu" label="Menu" onClick={() => setSheet(true)} />}
+        </span>
+      </div>
+      <motion.span className="nav-progress" aria-hidden="true" style={{ scaleX: reduce ? 0 : scrollYProgress }} />
       <Sheet open={sheet} onClose={() => setSheet(false)} title="Smart-Clearance" side="bottom" detent="medium">
         <div className="stack">
           <div className="list">{SECTIONS.map(([id, t]) => <button type="button" key={id} className="list-row" onClick={() => { setSheet(false); setTimeout(() => goTo(id), 60); }}><span className="lr-main"><span className="lr-title">{t}</span></span><Icon name="chevron-right" size={18} className="chev" /></button>)}</div>
@@ -97,16 +113,55 @@
     </header>;
   }
 
-  /* ---------- 1. the first viewport: the miniature business alive on film, under the heading (SC-60, option A) ---------- */
-  // the last word turns once, through what a carton gets, and rests on "chance"; the film plays once (8 s by day, 6 s
-  // by night) over its plate, with Pause, since it runs longer than five seconds (WCAG 2.2.2)
+  /* ---------- 1. the first viewport: one day at the business, on film, under the heading (SC-78) ---------- */
+  // Two ten-second clips chained without a cut: morning to night, then night to morning, each ending on the frame the
+  // other begins on (LTX's last-frame conditioning). The light theme starts in the morning, the dark one at night. The
+  // film loops under its Pause control (WCAG 2.2.2) and drifts with the scroll, not the clock; the strip under the
+  // copy reads the hours of the story. The heading's last word turns once, through what a carton gets, and rests on
+  // "chance". Under reduced motion: the plate, the final word, the last beat.
+  const DAY_BEATS = [
+    { at: "09:00", who: "The Watcher", t: `flags ${fmt.num(N)} packs at risk` },
+    { at: "09:40", who: "You", t: `say yes once, ${fmt.inr(D.PLAN.net)} on screen`, human: true },
+    { at: "13:00", who: "Outreach", t: `${SHOPS} kiranas order ${fmt.num(KL.units)} packs` },
+    { at: "17:30", who: "The Negotiator", t: `closes a buyer at ${rate(AW.price)} a pack` },
+  ];
+  const NIGHT_BEATS = [
+    { at: "21:00", who: "Paperwork", t: "drafts the invoice and the credit note" },
+    { at: "23:30", who: "The kiranas", t: `sell on; ${fmt.num(D.PLAN.soldUnits)} packs on tax invoices` },
+    { at: "05:00", who: "Impact", t: `posts ${fmt.num(D.PLAN.kg)} kg kept out of landfill` },
+    { at: "09:00", who: "The Watcher", t: "runs again, on the next batch" },
+  ];
+  const CLIPS = { day: "day-to-night.mp4", night: "night-to-day.mp4" };
   const WORDS = ["buyer", "shelf", "invoice", "ledger line", "chance"];
+  // the film drifts with the scroll, not with the clock: a slow rise and a touch of scale as the page is read
+  function useFilmDrift() {
+    const reduce = useReducedMotion();
+    const { scrollY } = useScroll();
+    const y = useTransform(scrollY, [0, 900], [0, reduce ? 0 : 120]);
+    const scale = useTransform(scrollY, [0, 900], [1, reduce ? 1 : 1.06]);
+    return { y, scale };
+  }
+  // the strip under the copy: the beat the film is on, with a line that fills through it; the person's beat in amber
+  function Story({ beats, i, p, label }) {
+    return <div className="film-story" aria-label={label} role="group">
+      {beats.map((b, j) => <span key={j} className={cx("fs", j === i && "now", j < i && "done", b.human && "human")}><span className="fs-at">{b.at}</span><span className="fs-t"><b>{b.who}</b> {b.t}</span><i className="fs-bar" aria-hidden="true" style={j === i ? { transform: `scaleX(${p})` } : undefined} /></span>)}
+    </div>;
+  }
+  // the film's clock: which beat a time falls in (n beats across a clip), and how far through it
+  const beatAt = (t, dur, n) => { const seg = dur / n; const i = Math.min(n - 1, Math.floor(t / seg)); return { i, p: Math.min(1, (t - i * seg) / seg) }; };
+  function useClock(vid, playing, n) {
+    const [clk, setClk] = useState({ i: 0, p: 0 });
+    useEffect(() => {
+      if (!playing) return; let raf;
+      const tick = () => { const v = vid.current; if (v && v.duration) setClk(beatAt(v.currentTime, v.duration, n)); raf = requestAnimationFrame(tick); };
+      raf = requestAnimationFrame(tick); return () => cancelAnimationFrame(raf);
+    }, [playing, n]);
+    return clk;
+  }
   function Hero({ onDemo }) {
-    const night = useTheme().resolved === "dark"; const reduce = useReducedMotion(); const vid = useRef(null);
-    const [state, setState] = useState(reduce ? "still" : "playing");
-    const [w, setW] = useState(reduce ? WORDS.length - 1 : 0);
-    useEffect(() => { if (reduce || w >= WORDS.length - 1) return; const t = setTimeout(() => setW(w + 1), w === 0 ? 1500 : 1000); return () => clearTimeout(t); }, [w, reduce]);
-    const src = MEDIA + (night ? "town-night.mp4" : "town.mp4"), poster = IMG + (night ? "business-night.webp" : "business.webp");
+    const night = useTheme().resolved === "dark"; const reduce = useReducedMotion();
+    const poster = IMG + (night ? "business-night.webp" : "business.webp");
+    const drift = useFilmDrift();
     // the loader's handshake (SC-35): the plate is in once the film's poster has decoded, for each theme
     useEffect(() => {
       const L = window.SC3_LOADER; if (!L) return; let live = true;
@@ -115,13 +170,25 @@
       (im.decode ? im.decode() : new Promise(r => { im.onload = r; im.onerror = r; })).then(done, done);
       return () => { live = false; };
     }, [poster, night]);
-    useEffect(() => { setState(reduce ? "still" : "playing"); }, [src, reduce]);
-    const toggle = () => { const v = vid.current; if (!v) return; if (state === "playing") { v.pause(); setState("paused"); } else { if (state === "ended") v.currentTime = 0; v.play(); setState("playing"); } };
+    const [w, setW] = useState(reduce ? WORDS.length - 1 : 0);
+    useEffect(() => { if (reduce || w >= WORDS.length - 1) return; const t = setTimeout(() => setW(w + 1), w === 0 ? 1600 : 1100); return () => clearTimeout(t); }, [w, reduce]);
+    // the two clips, chained: the theme's own first, then the other, then round again
+    const order = night ? [CLIPS.night, CLIPS.day] : [CLIPS.day, CLIPS.night];
+    const va = useRef(null), vb = useRef(null); const [front, setFront] = useState(0); const [playing, setPlaying] = useState(!reduce);
+    useEffect(() => { setFront(0); setPlaying(!reduce); }, [night, reduce]);
+    const onEnded = () => { const o = (front === 0 ? vb : va).current; if (!o) return; o.currentTime = 0; o.play(); setFront(f => 1 - f); };
+    const toggle = () => { const v = (front === 0 ? va : vb).current; if (!v) return; if (playing) { v.pause(); setPlaying(false); } else { v.play(); setPlaying(true); } };
+    const clk = useClock(front === 0 ? va : vb, playing && !reduce, 4);
+    // which half of the day the clip in front shows
+    const dayHalf = (front === 0) !== night; const beats = dayHalf ? DAY_BEATS : NIGHT_BEATS;
     return <section className="hero film" id="top-hero" aria-labelledby="hero-h">
-      <div className="film-media" aria-hidden="true">
-        {reduce ? <img src={poster} alt="" /> : <video key={src} ref={vid} src={src} poster={poster} muted playsInline autoPlay preload="auto" onEnded={() => setState("ended")} />}
+      <motion.div className="film-media" aria-hidden="true" style={{ y: drift.y, scale: drift.scale }}>
+        {reduce ? <img src={poster} alt="" /> : <>
+          <video key={order[0] + "a"} ref={va} className={cx("fx", front === 0 && "front")} src={MEDIA + order[0]} poster={poster} muted playsInline autoPlay preload="auto" onEnded={front === 0 ? onEnded : undefined} />
+          <video key={order[1] + "b"} ref={vb} className={cx("fx", front === 1 && "front")} src={MEDIA + order[1]} muted playsInline preload="auto" onEnded={front === 1 ? onEnded : undefined} />
+        </>}
         <div className="film-shade" />
-      </div>
+      </motion.div>
       <div className="film-copy">
         <h1 id="hero-h" className="film-h">Every near-expiry carton gets a second <span className="film-word"><span className="sr-only">chance</span>
           <AnimatePresence mode="popLayout" initial={false}>
@@ -130,11 +197,12 @@
         <p className="film-sub">AI agents find the best exit for short-dated stock, and do the running around. You say yes once.</p>
         <div className="film-ctas"><Button variant="primary" size="lg" pill onClick={() => onDemo()}>Book a demo</Button><a className="btn btn-lg btn-pill film-ghost" {...linkProps(LINKS.demo)}><i aria-hidden="true"><Icon name="play" size={12} stroke={2.6} /></i>Watch the 6-minute demo</a></div>
       </div>
-      {!reduce && <div className="film-ctl"><button type="button" onClick={toggle}><Icon name={state === "playing" ? "pause" : state === "ended" ? "rotate-ccw" : "play"} size={16} />{state === "playing" ? "Pause" : state === "ended" ? "Replay" : "Play"}</button></div>}
+      <Story beats={beats} i={reduce ? 3 : clk.i} p={reduce ? 1 : clk.p} label={dayHalf ? "The day, hour by hour" : "The night, hour by hour"} />
+      {!reduce && <div className="film-ctl"><button type="button" onClick={toggle} aria-pressed={!playing}><Icon name={playing ? "pause" : "play"} size={16} />{playing ? "Pause" : "Play"}</button></div>}
     </section>;
   }
 
-  /* ---------- 2. the statement: its words fill in from the tertiary ink to the full ink as it is read ---------- */
+  /* ---------- 2. the statement ---------- */
   function Word({ p, a, b, text, reduce }) {
     const o = useTransform(p, [a, b], [0, 1]);
     return <span className="sw">{text}<motion.span className="lit" aria-hidden="true" style={{ opacity: reduce ? 1 : o }}>{text}</motion.span></span>;
@@ -150,9 +218,8 @@
 
   /* ---------- 3. the agents at work on the table, one in focus at a time (SC-60, round 2 option 2) ---------- */
   // where everything stands on the table plate (fractions of its width and height): the phone's screen, each agent's
-  // post, the places' tags, and where the packs land
+  // post, the places' tags, and where the packs land. The day plate was re-lit in SC-78 as an edit of itself, so these hold
   const TAB_AR = 2752 / 1536;
-  // measured on the plate (fractions of its width and height): the phone's screen, and every post
   const PHONE = { x: 0.633, y: 0.152, w: 0.097, h: 0.398 };
   const POST = { data: { x: 0.14, y: 0.62, side: "left" }, watcher: { x: 0.25, y: 0.47 }, vision: { x: 0.33, y: 0.66 }, valuer: { x: 0.16, y: 0.74, side: "left" }, router: { x: 0.37, y: 0.77 },
     you: { x: 0.615, y: 0.4, side: "left" }, outreach: { x: 0.47, y: 0.58 }, lister: { x: 0.6, y: 0.64 }, negotiator: { x: 0.635, y: 0.77, side: "left" }, paperwork: { x: 0.755, y: 0.58 }, impact: { x: 0.91, y: 0.79, side: "left" } };
@@ -163,13 +230,11 @@
     { id: "dump", at: { x: 0.84, y: 0.72 }, name: "Landfill", line: (got, done) => done ? `${fmt.num(D.PLAN.kg)} kg kept out` : `the bin would cost ${fmt.inr(-BIN)}` },
   ];
   const DROP = { kirana: { x: 0.49, y: 0.63 }, expiresoon: { x: 0.67, y: 0.71 } };
-  // the agents in the order they work; the person's yes holds longest
   const ORDER = ["data", "watcher", "vision", "valuer", "router", "you", "outreach", "lister", "negotiator", "paperwork", "impact"];
   const NS = ORDER.length, YES = ORDER.indexOf("you"), OUT = ORDER.indexOf("outreach"), LIST = ORDER.indexOf("lister");
   const PACE = { agent: 1400, you: 1800 };
   const AFTER = ["outreach", "lister", "negotiator", "paperwork", "impact"], BEFORE = ORDER.slice(0, YES), ROUTER = ORDER.indexOf("router");
   const curve = (a, b, lift) => `M${a.x} ${a.y} Q${(a.x + b.x) / 2} ${Math.min(a.y, b.y) - lift} ${b.x} ${b.y}`;
-  // where the plate is drawn inside a stage that covers it (object-fit: cover), so what stands on it follows it
   function useCover(stageRef, ar, pan = 0.5, panY = 0.5) {
     const [fit, setFit] = useState(null);
     useLayoutEffect(() => {
@@ -179,9 +244,8 @@
     }, [ar, pan, panY]);
     return fit;
   }
-  const at = (fit, p) => ({ left: fit.x + p.x * fit.pw, top: fit.y + p.y * fit.ph }); // in the stage, for the camera
-  const on = (fit, p) => ({ left: p.x * fit.pw, top: p.y * fit.ph }); // on the plate's layer, which already sits at the plate's offset
-  // what each agent is doing, live, for the card in focus
+  const at = (fit, p) => ({ left: fit.x + p.x * fit.pw, top: fit.y + p.y * fit.ph });
+  const on = (fit, p) => ({ left: p.x * fit.pw, top: p.y * fit.ph });
   function Frag({ id }) {
     switch (id) {
       case "data": return <><Product name="pack-snack-plain" size={56} /><span className="k">{fmt.num(BATCH.units)} packs · selling <b>{BATCH.sellPerDay}</b> a day · <b>{BATCH.daysLeft}</b> days to the date</span></>;
@@ -198,8 +262,6 @@
       default: return null;
     }
   }
-  // the plan on the phone's screen: waiting, then placed, then the agents at work as they work
-  // the phone's screen: the plan being built while the first agents work, the plan waiting for the yes, then placed
   function PhoneScreen({ phase, lit }) {
     const list = phase === "placed" ? AFTER : BEFORE;
     return <div className="ps" aria-hidden="true">
@@ -217,29 +279,22 @@
     const night = useTheme().resolved === "dark"; const reduce = useReducedMotion(); const app = useApp(); const desk = app.bp === "desktop";
     const stage = useRef(null); const fit = useCover(stage, TAB_AR, desk ? 0.5 : 0.42, 0.5);
     const seen = useInView(stage, { amount: 0.6 });
-    // s: -1 before the tour, 0 to NS - 1 the agent at work, NS done. The tour sets off once the table is in view, and
-    // holds while Pause is down or the table is out of view
     const [s, setS] = useState(reduce ? NS : -1); const [hold, setHold] = useState(false); const [run, setRun] = useState(0);
     useEffect(() => { if (reduce) return; if (s === -1 && seen) setS(0); }, [seen, reduce, s]);
     useEffect(() => { if (reduce || hold || !seen || s < 0 || s >= NS) return; const t = setTimeout(() => setS(s + 1), ORDER[s] === "you" ? PACE.you : PACE.agent); return () => clearTimeout(t); }, [s, hold, seen, reduce]);
     const go = i => { setHold(true); setS(i); };
     const replay = () => { setHold(false); setGot({ kirana: 0, expiresoon: 0 }); setRun(r => r + 1); setS(0); };
     const agent = s >= 0 && s < NS ? ORDER[s] : null; const done = s >= NS; const working = agent != null;
-    // the camera: the whole table at rest; towards the agent at work, its post in the clear part of the stage above the card
     const W = 1000, H = Math.round(W / TAB_AR);
     let cam = { tx: 0, ty: 0, sc: 1 };
     if (fit && working) {
-      // on phones the person's stop frames the phone's screen, since its post and the screen cannot both fit
       const sc = desk ? 1.6 : 1.45; const f = at(fit, !desk && agent === "you" ? { x: 0.66, y: PHONE.y + PHONE.h / 2 } : POST[agent]);
       const cx0 = fit.w * 0.5, cy0 = fit.h * 0.42;
-      // the plate overflows the stage on both sides, so the camera may travel as far as the plate's own edges
       let tx = cx0 - f.left * sc, ty = cy0 - f.top * sc;
       tx = Math.min(-fit.x * sc, Math.max(fit.w - (fit.x + fit.pw) * sc, tx)); ty = Math.min(-fit.y * sc, Math.max(fit.h - (fit.y + fit.ph) * sc, ty));
       cam = { tx, ty, sc };
     }
     const iz = 1 / cam.sc;
-    // the packs leave the phone for the shops as Outreach works, and for the buyer's truck as the Lister works; a dot is
-    // about 50 packs. They run on until they arrive, whoever is working by then; Replay stops them
     const dots = useRef([]), paths = useRef({}); const [got, setGot] = useState(reduce ? { kirana: KL.units, expiresoon: AW.units } : { kirana: 0, expiresoon: 0 });
     const from = { x: (PHONE.x + PHONE.w / 2) * W, y: (PHONE.y + PHONE.h / 2) * H };
     const routes = { kirana: curve(from, { x: DROP.kirana.x * W, y: DROP.kirana.y * H }, 40), expiresoon: curve(from, { x: DROP.expiresoon.x * W, y: DROP.expiresoon.y * H }, 30) };
@@ -269,7 +324,7 @@
       <header className="tb-head"><h2 id="tb-h" className="sec-h plain">Five exits, one batch. Ten agents at work.</h2><p className="sec-sub">{fmt.num(N)} packs of masala chips that won't sell in the {BATCH.daysLeft} days they have left, on the table. The agents work the batch stop by stop; a person says yes once; the packs leave for the kiranas and a buyer, and nothing goes to the bin.</p></header>
       <div className={cx("tb-stage", working && "working")} ref={stage}>
         <div className="tb-world" style={{ transform: `translate(${cam.tx}px, ${cam.ty}px) scale(${cam.sc})` }}>
-          <img className="tb-plate" style={fit ? { left: fit.x, top: fit.y, width: fit.pw, height: fit.ph } : { objectPosition: `${(desk ? 0.5 : 0.42) * 100}% 50%` }} src={IMG + (night ? "table-night.webp" : "table.webp")} alt={`A ${night ? "lamp-lit evening" : "morning"} table by a window: a hand holds a phone over a handmade miniature of a snack trade, a tiny godown full of cartons, a lane of kirana shops, a wholesale warehouse with a blue truck, a community kitchen, a closed dump yard in the far corner, a steel tumbler of chai, and a thin glowing green path along the table.`} />
+          <img className="tb-plate" style={fit ? { left: fit.x, top: fit.y, width: fit.pw, height: fit.ph } : { objectPosition: `${(desk ? 0.5 : 0.42) * 100}% 50%` }} src={IMG + (night ? "table-night.webp" : "table.webp")} alt={`A ${night ? "lamp-lit evening" : "late-morning"} table by a window: a hand holds a phone over a handmade miniature of a snack trade, a tiny godown full of cartons, a lane of kirana shops, a wholesale warehouse with a blue truck, a community kitchen, a closed dump yard in the far corner, a steel tumbler of chai, and a thin glowing green path along the table.`} />
           {fit && <div className="tb-layer" style={{ left: fit.x, top: fit.y, width: fit.pw, height: fit.ph }}>
             <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden="true">
               {Object.entries(routes).map(([id, d]) => <path key={id} ref={el => { paths.current[id] = el; }} className="tb-path" d={d} />)}
@@ -289,7 +344,7 @@
     </section>;
   }
 
-  /* ---------- 4. the chapters: the moments each team actually sees, each in a colour field (SC-28's cards, SC-60's fields) ---------- */
+  /* ---------- 4. the chapters, as they are ---------- */
   function Chapter({ id, tone, title, lede, who, person, children, wide }) {
     const { card, rise } = useRise(0.2);
     return <motion.section id={id} className={cx("ch", "tone-" + tone)} aria-labelledby={id + "-h"} {...card}>
@@ -303,7 +358,6 @@
       </div>
     </motion.section>;
   }
-  // 1 · the Watcher's alert. Its figure rolls in as its row arrives; the spoken figure is the final one throughout
   function AlertCard() {
     const { shown, card, rise } = useRise(); const rolled = useLit(shown, 1, 490, 0) > 0;
     return <motion.div className="m-card" role="group" aria-label="The Watcher's alert" {...card}>
@@ -313,7 +367,6 @@
       <motion.div className="m-big" {...rise(3)}><span className="num"><Roll key={rolled ? "on" : "off"} value={N} from={rolled ? 0 : undefined} /></span><span>packs won't sell in the {BATCH.daysLeft} days they have left</span></motion.div>
     </motion.div>;
   }
-  // 2 · the Valuer's price for every exit, net a pack, and the Router's split
   const PRICED = [
     { id: "kirana", name: "Kiranas", s: `up to ${fmt.num(row("kirana").capacity)} packs in ${M.RULES.kiranaWindowDays} days` },
     { id: "expiresoon", name: "ExpireSoon", s: "no limit; listed in the distributor's name" },
@@ -335,10 +388,8 @@
       </motion.div>
     </motion.div>;
   }
-  // 3 · the plan, waiting for one yes, and the agents it releases, lighting in turn. The button is the plan's own,
-  // pictured: it does nothing here
   const RELEASED = agentsAt("execute", "settle", "report");
-  function PlanCard() {
+  function PlanCard({ still }) {
     const { shown, card, rise } = useRise(); const rolled = useLit(shown, 1, 270, 0) > 0; const lit = useLit(shown, RELEASED.length, 900, 220);
     return <motion.div className="m-card yes" role="group" aria-label="The plan, waiting for one yes" {...card}>
       <motion.div className="m-head" {...rise(0)}><b>Approve the plan</b><Badge tone="amber" dot>Waiting for you</Badge></motion.div>
@@ -349,7 +400,14 @@
       <motion.div className="m-after" {...rise(5)}>{RELEASED.map((w, i) => <span key={w} className={cx("chip-agent", i < lit && "on")}><i aria-hidden="true" />{w}</span>)}</motion.div>
     </motion.div>;
   }
-  // 4 · the agents at work after the yes: the kirana offer in Hindi, the lot in the distributor's name, the paperwork
+  function PaperCard({ lit = true, rise }) {
+    const Tag = rise ? motion.div : "div";
+    return <Tag className="m-card" role="group" aria-label="Paperwork: the documents, drafted" {...(rise || {})}>
+      <div className="m-head"><span className={cx("chip-agent", lit && "on")}><i aria-hidden="true" />Paperwork</span><Badge tone="gray">drafted</Badge></div>
+      <div className="m-batch"><Product name="documents" size={52} /><span><b>Everything finance needs, drafted</b><span>each on paper, with who keeps what</span></span></div>
+      {[["The distributor's invoice to the buyer", "IGST 5%"], ["The brand's price-support credit note", fmt.inr(D.SUPPORT.total)], ["GST input credit memo", fmt.inr(D.PLAN.itcRetained)]].map(([k, v]) => <div key={k} className="m-row"><span className="k">{k}</span><span className="v">{v}</span></div>)}
+    </Tag>;
+  }
   function WorkCards() {
     const { shown, card, rise } = useRise(0.2); const lit = useLit(shown, 3, 300, 420); const p0 = OFFER;
     return <motion.div className="ch-row three" {...card}>
@@ -366,11 +424,7 @@
         <div className="m-row"><span className="k">Countered, accepted</span><span className="v">{rate(AW.price)} a pack</span></div>
         <div className="m-row"><span className="k">Token paid</span><span className="v">{fmt.inr(AW.token)}</span></div>
       </motion.div>
-      <motion.div className="m-card" role="group" aria-label="Paperwork: the documents, drafted" {...rise(2)}>
-        <div className="m-head"><span className={cx("chip-agent", lit > 2 && "on")}><i aria-hidden="true" />Paperwork</span><Badge tone="gray">drafted</Badge></div>
-        <div className="m-batch"><Product name="documents" size={52} /><span><b>Everything finance needs, drafted</b><span>each on paper, with who keeps what</span></span></div>
-        {[["The distributor's invoice to the buyer", "IGST 5%"], ["The brand's price-support credit note", fmt.inr(D.SUPPORT.total)], ["GST input credit memo", fmt.inr(D.PLAN.itcRetained)]].map(([k, v]) => <div key={k} className="m-row"><span className="k">{k}</span><span className="v">{v}</span></div>)}
-      </motion.div>
+      <PaperCard lit={lit > 2} rise={rise(2)} />
     </motion.div>;
   }
   function Chapters() {
@@ -382,16 +436,17 @@
     </>;
   }
 
-  /* ---------- 5. the ledger: Impact's own document for one batch, its lines filling in ---------- */
+  /* ---------- 5. the ledger, as it is ---------- */
+  const LEDGER_LINES = rolled => [
+    { k: "Recovered, net", s: `${fmt.inr(KL.net)} from ${SHOPS} kiranas after the van, ${fmt.inr(ES_NET)} from a marketplace buyer after the fee`, v: <Money value={D.ACTUAL.net} roll={rolled} from={rolled ? 0 : undefined} /> },
+    { k: "Better than the bin", s: `against ${fmt.inr(-BIN)} to destroy the stock: the goods, the GST credit, disposal and EPR`, v: <Money value={D.ACTUAL.swing} roll={rolled} from={rolled ? 0 : undefined} /> },
+    { k: "GST input credit kept", s: "goods supplied under tax invoices, so the Section 17(5)(h) reversal does not apply", v: <Money value={D.PLAN.itcRetained} roll={rolled} from={rolled ? 0 : undefined} /> },
+    { k: "Kept out of landfill", s: `${fmt.num(D.PLAN.co2)} kg CO₂e, indicative`, v: <span className="num"><Roll value={D.PLAN.kg} from={rolled ? 0 : undefined} /> kg</span> },
+    { k: "Cartons destroyed", s: `${fmt.num(D.PLAN.soldUnits)} packs sold on tax invoices`, v: <span className="num">0</span>, zero: true },
+  ];
   function Ledger() {
     const { shown, card, rise } = useRise(0.3); const rolled = useLit(shown, 1, 300, 0) > 0;
-    const lines = [
-      { k: "Recovered, net", s: `${fmt.inr(KL.net)} from ${SHOPS} kiranas after the van, ${fmt.inr(ES_NET)} from a marketplace buyer after the fee`, v: <Money value={D.ACTUAL.net} roll={rolled} from={rolled ? 0 : undefined} /> },
-      { k: "Better than the bin", s: `against ${fmt.inr(-BIN)} to destroy the stock: the goods, the GST credit, disposal and EPR`, v: <Money value={D.ACTUAL.swing} roll={rolled} from={rolled ? 0 : undefined} /> },
-      { k: "GST input credit kept", s: "goods supplied under tax invoices, so the Section 17(5)(h) reversal does not apply", v: <Money value={D.PLAN.itcRetained} roll={rolled} from={rolled ? 0 : undefined} /> },
-      { k: "Kept out of landfill", s: `${fmt.num(D.PLAN.co2)} kg CO₂e, indicative`, v: <span className="num"><Roll value={D.PLAN.kg} from={rolled ? 0 : undefined} /> kg</span> },
-      { k: "Cartons destroyed", s: `${fmt.num(D.PLAN.soldUnits)} packs sold on tax invoices`, v: <span className="num">0</span>, zero: true },
-    ];
+    const lines = LEDGER_LINES(rolled);
     return <section className="sec-ledger" id="ledger" aria-labelledby="ledger-h">
       <motion.div className="ledger" role="group" aria-labelledby="ledger-h" {...card}>
         <motion.div className="ledger-head" {...rise(0)}><b><i aria-hidden="true"><Icon name="leaf" size={14} stroke={2.2} /></i><span id="ledger-h">Impact · the ledger for one batch</span></b><span>posted after the return window</span></motion.div>
@@ -401,8 +456,6 @@
       <p className="ledger-note">An illustrative batch. Every figure is worked out from the journey map.</p>
     </section>;
   }
-
-  /* ---------- the way into the demo, always at hand; gone at the close ---------- */
   function DemoPill({ hidden }) {
     return <a className={cx("pill", hidden && "off")} {...linkProps(LINKS.demo)} aria-label="Watch the 6-minute demo">
       <span className="thumb" aria-hidden="true"><img src={(window.SC3_IMG || "system/img/").replace(/img\/$/, "media/") + "carton-loop-poster.webp"} alt="" /><i><Icon name="play" size={12} stroke={2.6} /></i></span>
@@ -410,39 +463,91 @@
     </a>;
   }
 
-  /* ---------- 6. a workspace per manufacturer: the board's comp L5 (SC-28) ---------- */
-  // x and y: where each island's flat top sits on the plate, as a share of its width and height; ly: its address label.
-  // One product a manufacturer, none of them a client's.
-  const ISLANDS = [
-    { id: "brand", x: 0.22, y: 0.6, ly: 0.86, product: "pack-snack-plain", url: "your-brand.smartclearance.com", live: true },
-    { id: "company", x: 0.575, y: 0.59, ly: 0.84, product: "pack-carton-plain", url: "your-company.smartclearance.com" },
-    { id: "group", x: 0.8, y: 0.61, ly: 0.87, product: "bottle-oil-plain", url: "your-group.smartclearance.com" },
-  ];
-  const HUB = { x: 0.425, y: 0.69 }, ISL_AR = 3776 / 1120;
-  // inside a workspace, each team gets its own part of the same batch
+  /* ---------- 6. a workspace per manufacturer: the workspace itself, on a device (SC-78) ---------- */
+  // the product on a browser window (a phone on phones), its address typed in as the section comes into view, and the
+  // four teams as its navigation, each showing what it sees of the same batch. The tabs play through once, 2.4 s
+  // each, and the rail takes over on a click. No client is named: the workspace is "Your brand"
   const TEAMS = [
-    { icon: "route", t: "Supply chain", d: "One tap to approve a plan, with the money on screen." },
-    { icon: "receipt", t: "Finance", d: "The invoice, credit note and GST memo, drafted." },
-    { icon: "leaf", t: "Sustainability", d: "A BRSR line an auditor can follow back to the batch." },
-    { icon: "handshake", t: "Distributors", d: "Nothing listed in their name without their permission." },
+    { id: "supply", icon: "route", t: "Supply chain", route: "route", d: "One tap to approve a plan, with the money on screen." },
+    { id: "finance", icon: "receipt", t: "Finance", route: "paperwork", d: "The invoice, credit note and GST memo, drafted." },
+    { id: "impact", icon: "leaf", t: "Sustainability", route: "report", d: "A BRSR line an auditor can follow back to the batch." },
+    { id: "dist", icon: "handshake", t: "Distributors", route: "permissions", d: "Nothing listed in their name without their permission." },
   ];
+  const TEAM_FEED = {
+    supply: [["09:00", "watcher"], ["09:12", "vision"], ["09:31", "router"]],
+    finance: [["09:40", "you"], ["14:05", "negotiator"], ["18:20", "paperwork"]],
+    impact: [["18:20", "paperwork"], ["Day 7", "impact"], ["Day 7", "data"]],
+    dist: [["09:00", "data"], ["09:41", "outreach"], ["11:30", "lister"]],
+  };
   const CONN = ["dms", "tally", "bq", "sso", "expiresoon", "irp", "whatsapp"].map(id => P.CONNECTORS.find(c => c.id === id)).filter(Boolean);
+  const ADDR = [
+    { id: "brand", url: "your-brand.smartclearance.com", live: true },
+    { id: "company", url: "your-company.smartclearance.com" },
+    { id: "group", url: "your-group.smartclearance.com" },
+  ];
+  const YOURS = { id: "yours", name: "Your brand", mark: { from: "#2fbf7f", to: "#0d5a3e", ink: "#ffffff" } };
+  function useTyped(text, on, ms = 70) {
+    const reduce = useReducedMotion(); const [n, setN] = useState(reduce ? text.length : 0);
+    useEffect(() => { if (reduce || !on || n >= text.length) return; const t = setTimeout(() => setN(n + 1), n === 0 ? 400 : ms); return () => clearTimeout(t); }, [on, n, reduce, text]);
+    return text.slice(0, n);
+  }
+  function useWidth(ref) {
+    const [w, setW] = useState(0);
+    useLayoutEffect(() => { const el = ref.current; if (!el) return; const m = () => setW(el.clientWidth); m(); const ro = new ResizeObserver(m); ro.observe(el); return () => ro.disconnect(); }, []);
+    return w;
+  }
+  function PermissionCard() {
+    return <div className="m-card" role="group" aria-label="The distributor's permission">
+      <div className="m-head"><b>The distributor's permission</b><Badge tone="green" icon="check">given once</Badge></div>
+      <div className="m-batch"><span className="wsd-avatar" aria-hidden="true"><Icon name="handshake" size={22} /></span><span><b>Asked on the distributor's own phone, once</b><span>nothing is listed or offered in their name before it</span></span></div>
+      {[["List short-dated stock on ExpireSoon in our name", "allowed"], ["Send kirana offers from our godown's stock", "allowed"], ["Share our stock export every morning", "allowed"], ["Sell below the reserve", "never"]].map(([k, v]) => <div key={k} className="m-row"><span className="k">{k}</span><span className={cx("v", v === "never" && "red")}>{v}</span></div>)}
+    </div>;
+  }
+  function LedgerCard() {
+    const lines = LEDGER_LINES(false).slice(0, 4);
+    return <div className="m-card" role="group" aria-label="Impact's ledger for the batch">
+      <div className="m-head"><span className="chip-agent on"><i aria-hidden="true" />Impact</span><Badge tone="gray">BRSR Principle 6</Badge></div>
+      {lines.map(l => <div key={l.k} className="m-row"><span className="k">{l.k}</span><span className="v">{l.v}</span></div>)}
+    </div>;
+  }
+  function TeamFeed({ id }) {
+    return <aside className="wsd-side" aria-label="Today, for this team"><b>Today</b>{TEAM_FEED[id].map(([at, a]) => { const ag = AGENT[a]; return <span key={at + a} className="wsd-line"><i aria-hidden="true"><Icon name={ag.icon} size={12} stroke={2.4} /></i><span><b>{ag.name}</b> · {ag.did}</span><span className="at">{at}</span></span>; })}</aside>;
+  }
+  function TeamScreen({ id }) {
+    switch (id) {
+      case "supply": return <PlanCard />;
+      case "finance": return <PaperCard />;
+      case "impact": return <LedgerCard />;
+      default: return <PermissionCard />;
+    }
+  }
   function Workspace() {
-    const app = useApp(); const { resolved } = useTheme(); const swipe = app.bp === "phone";
-    const urls = cls => <ul className={cx("isl-urls", cls)} aria-label="Workspace addresses">{ISLANDS.map(i => <li key={i.id} className={cx("isl-url", i.live && "live")} style={{ "--x": i.x, "--y": i.ly }}><i aria-hidden="true" />{i.url}{i.live && <span className="isl-live"> · live</span>}</li>)}</ul>;
+    const app = useApp(); const reduce = useReducedMotion(); const ref = useRef(null); const seen = useInView(ref, { amount: 0.4, once: true });
+    const stageW = useWidth(ref); const ps = Math.min(1, Math.max(0.5, (stageW - 32) / 414));
+    const [tab, setTab] = useState(0); const [auto, setAuto] = useState(true);
+    const host = useTyped("your-brand", seen); const typed = host.length >= 10;
+    // once the address is typed, the tabs play through once, 2.4 s each, unless the reader takes the rail
+    useEffect(() => { if (reduce || !auto || !typed || tab >= TEAMS.length - 1) return; const t = setTimeout(() => setTab(tab + 1), 2400); return () => clearTimeout(t); }, [typed, tab, auto, reduce]);
+    const pick = i => { setAuto(false); setTab(i); };
+    const team = TEAMS[tab]; const phone = app.bp === "phone";
+    const rail = <div className="wsd-rail" role="tablist" aria-label="Teams">
+      <span className="who"><WorkspaceMark ws={YOURS} size={28} /><span>Your brand</span></span>
+      {TEAMS.map((t, i) => <button key={t.id} type="button" role="tab" aria-selected={i === tab} onClick={() => pick(i)}><Icon name={t.icon} size={18} />{t.t}</button>)}
+    </div>;
+    const main = <div className="wsd-main" role="tabpanel">
+      <div className="wsd-title"><h3>{team.t}</h3><p>{team.d}</p></div>
+      <AnimatePresence mode="wait"><motion.div key={team.id} className="wsd-body" initial={reduce ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.28, ease: EASE }}><TeamScreen id={team.id} />{!phone && <TeamFeed id={team.id} />}</motion.div></AnimatePresence>
+    </div>;
+    const url = `https://${host || "·"}.smartclearance.com/${team.route}`;
     return <section id="teams" className="sec sec-ws" aria-labelledby="ws-h">
       <div className="wrap"><header className="sec-head"><h2 id="ws-h" className="sec-h plain">Your own workspace, set up for your supply chain.</h2><p className="sec-sub">Each manufacturer gets its own address, configured for how its stock really moves.</p></header></div>
-      <div className="isl-pan" {...(swipe ? { tabIndex: 0, role: "region", "aria-label": "Workspaces, one island each; scroll sideways" } : {})}>
-        <figure className="islands" style={{ "--ar": ISL_AR }}>
-          <img className="isl-plate" src={IMG + (resolved === "dark" ? "islands-night.webp" : "islands.webp")} alt="" loading="lazy" />
-          {ISLANDS.map(i => <span key={i.id} className="isl-packs" style={{ "--x": i.x, "--y": i.y }} aria-hidden="true"><Product name={i.product} size={160} className="isl-pack" /></span>)}
-          <span className="isl-hub" style={{ "--x": HUB.x, "--y": HUB.y }} aria-hidden="true"><Mark size={52} /></span>
-          {urls("on-plate")}
-          <figcaption className="sr-only">Three islands over a miniature town, each a manufacturer's workspace with its own products, joined to Smart-Clearance by green paths.</figcaption>
-        </figure>
+      <div className="wsd-stage" ref={ref}>
+        <div className="wsd-ground" aria-hidden="true" />
+        {phone ? <div className="wsd-phone" style={{ height: 868 * ps }}><div className="wsd-phone-in" style={{ transform: `scale(${ps})` }}><PhoneFrame time="09:41"><div className="wsd phone"><div className="wsd-addr"><Icon name="lock" size={11} stroke={2.2} />{host || "·"}.smartclearance.com</div>{rail}{main}</div></PhoneFrame></div></div>
+          : <WindowFrame url={url} style={{ width: "100%" }}><div className="wsd">{rail}{main}</div></WindowFrame>}
       </div>
       <div className="wrap">
-        {urls("below")}
+        <ul className="isl-urls below" aria-label="Workspace addresses">{ADDR.map(a => <li key={a.id} className={cx("isl-url", a.live && "live")}><i aria-hidden="true" />{a.url}{a.live && <span className="isl-live"> · live</span>}</li>)}</ul>
         <ul className="teams" aria-label="What each team gets">{TEAMS.map(t => <li key={t.t} className="team"><Icon name={t.icon} size={26} /><b>{t.t}</b><p>{t.d}</p></li>)}</ul>
         <div className="conn"><ul className="conn-list" aria-label="Works with">{CONN.map(c => <li key={c.id}>{c.name}{c.status === "soon" && <span className="soon"> · soon</span>}</li>)}</ul></div>
       </div>
@@ -463,7 +568,6 @@
     </section>;
   }
   function Close({ onDemo, closeRef }) {
-    // the heading and the buttons sit in the dusk plate's own sky
     return <section className="close" aria-labelledby="close-h" ref={closeRef}>
       <div className="close-copy">
         <h2 id="close-h" className="close-h">Give your next batch a second chance.</h2>
@@ -489,13 +593,10 @@
       </div>
     </footer>;
   }
-
-  /* ---------- book a demo: the request lands in the console ---------- */
   function DemoSheet({ open: isOpen, plan, onClose }) {
     const app = useApp(); const blank = { name: "", company: "", email: "", makes: "Snacks and drinks", note: "" };
     const [f, setF] = useState(blank); const [err, setErr] = useState({}); const [sent, setSent] = useState(null);
     useEffect(() => { if (isOpen) { setSent(null); setErr({}); } }, [isOpen]);
-    // each problem is said under its own field
     const edit = k => e => { setF({ ...f, [k]: e.target.value }); if (err[k]) setErr({ ...err, [k]: null }); };
     const send = () => {
       const e = { name: !f.name.trim() && "Enter your name.", company: !f.company.trim() && "Enter your company's name.", email: !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.trim()) && "Enter a work email address, like name@company.in." };
@@ -526,7 +627,12 @@
   function Site() {
     const [find, setFind] = useState(false); const [demo, setDemo] = useState(null); const [scrolled, setScrolled] = useState(false);
     const closeRef = useRef(null); const nearEnd = useInView(closeRef, { amount: 0.2 });
+    // the demo pill keeps clear of the hero, which carries its own way into the demo, of the workspace section, whose
+    // cards it would cover, and of the close
+    const [pastHero, setPastHero] = useState(false); const [onTeams, setOnTeams] = useState(false);
     useEffect(() => { document.title = "Smart-Clearance"; if (window.SC3_LOADER) window.SC3_LOADER.mark("app"); }, []);
+    useEffect(() => { const el = document.getElementById("top-hero"); if (!el) return; const io = new IntersectionObserver(([e]) => setPastHero(!e.isIntersecting), { threshold: 0.12 }); io.observe(el); return () => io.disconnect(); }, []);
+    useEffect(() => { const el = document.getElementById("teams"); if (!el) return; const io = new IntersectionObserver(([e]) => setOnTeams(e.isIntersecting), { threshold: 0.2 }); io.observe(el); return () => io.disconnect(); }, []);
     // the bar is clear over the film, and takes its glass once the page has scrolled
     useEffect(() => { const f = () => setScrolled(window.scrollY > 40); f(); window.addEventListener("scroll", f, { passive: true }); return () => window.removeEventListener("scroll", f); }, []);
     const onDemo = plan => setDemo({ plan: typeof plan === "string" ? plan : null });
@@ -543,7 +649,7 @@
         <Close onDemo={onDemo} closeRef={closeRef} />
       </main>
       <Footer onFind={() => setFind(true)} />
-      <DemoPill hidden={nearEnd} />
+      <DemoPill hidden={nearEnd || !pastHero || onTeams} />
       <S.FindWorkspace open={find} onClose={() => setFind(false)} onUse={() => { setFind(false); open(LINKS.app); }} note="One manufacturer's workspace is set up in this prototype." />
       <DemoSheet open={!!demo} plan={demo && demo.plan} onClose={() => setDemo(null)} />
     </div>;

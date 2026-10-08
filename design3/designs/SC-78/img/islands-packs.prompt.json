@@ -1,0 +1,15 @@
+{
+  "name": "islands-packs",
+  "model": "Qwen-Image-2.1 bf16 (local), qwen_image_bf16_mac.py",
+  "steps": 40,
+  "created": "2026-10-08",
+  "designed_in": "design3/designs/SC-78",
+  "postprocess": "cwebp -q 82; the PNG originals stay local in src/",
+  "mode": "edit_image: the approved islands strip (design3/site/assets/plates/src/islands.png, SC-28) as the condition image",
+  "size": 2048,
+  "output": "3776x1120",
+  "seed": 7821,
+  "edit_of": "islands.png",
+  "prompt": "Keep everything exactly as it is: the same three floating islands in the same places, the same town, the same tiny people, trees and buildings, the same glowing green paths on the ground, the same framing. Add one giant product standing upright on the flat grassy top of each island, like a monument among the tiny people, lit by the same soft morning light and casting a soft shadow on the grass: on the left island a giant plain orange snack packet with no lettering; on the middle island a giant plain white and teal drink carton with no lettering; on the right island a giant plain glass bottle of golden oil with a blank label. No lettering, no words or numbers, no logos, no faces.",
+  "use": "Your own workspace: the strip with its products drawn in, by day (SC-78 part 3, option C)"
+}

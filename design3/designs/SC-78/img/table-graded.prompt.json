@@ -1,0 +1,9 @@
+{
+  "name": "table-graded",
+  "model": "none: the approved day plate (design3/site/assets/plates/table.webp, SC-60) graded in ffmpeg",
+  "created": "2026-10-08",
+  "designed_in": "design3/designs/SC-78",
+  "filter": "eq=contrast=1.16:brightness=-0.04:saturation=1.22,colorbalance=rs=0.05:gs=0.01:bs=-0.06:rm=0.035:gm=0.005:bm=-0.045:rh=0.02:bh=-0.04,curves=master='0/0 0.25/0.21 0.5/0.47 0.8/0.8 1/0.985'",
+  "postprocess": "cwebp -q 82",
+  "use": "the agents' table scene by day, graded (SC-78 part 2, option B); exact geometry"
+}

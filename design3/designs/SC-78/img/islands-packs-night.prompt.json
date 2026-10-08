@@ -1,0 +1,15 @@
+{
+  "name": "islands-packs-night",
+  "model": "Qwen-Image-2.1 bf16 (local), qwen_image_bf16_mac.py",
+  "steps": 40,
+  "created": "2026-10-08",
+  "designed_in": "design3/designs/SC-78",
+  "postprocess": "cwebp -q 82; the PNG originals stay local in src/",
+  "mode": "edit_image: islands-packs.png as the condition image",
+  "size": 2048,
+  "output": "3776x1120",
+  "seed": 7822,
+  "edit_of": "islands-packs.png",
+  "prompt": "Make it night. A deep navy night sky, the town lit by warm street lamps and small windows, the tiny buildings on the islands lit from inside, the giant products lit softly by cool moonlight, and the green paths on the ground glowing brightly in the dark. Everything else stays exactly as it is: the same three floating islands and giant products in the same places, the same town and people, the same framing.",
+  "use": "Your own workspace: the strip with its products drawn in, by night (SC-78 part 3, option C, dark mode)"
+}
