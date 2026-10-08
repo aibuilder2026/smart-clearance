@@ -70,4 +70,15 @@ On a laptop, should Take a photo open the laptop's camera (A and C as drawn), or
 
 ## The pick
 
-Waiting for the maintainer.
+Picked by the maintainer on 8 Oct 2026: **A · Two ways under the frame** ("Go for A implement it").
+
+- The open question was not answered separately, so A is built as drawn: on a laptop, Take a photo opens the laptop's
+  camera in the frame.
+- The states the build adds:
+  - **The camera unavailable on a laptop.** It may be refused, or there may be none. A line under the buttons says so
+    and points to Upload; the frame goes back to the example.
+  - **A file that cannot be sent.** That is a file that is not a JPEG, PNG or WebP, or a photo of 8 MB or more. It is
+    refused before it goes, with the reason as an alert.
+- The stub and the guided demo keep the simulated photo. On the live workspace, the laptop's camera is the browser's
+  (`getUserMedia`, the rear camera where there is one). A frame from it is sent as a JPEG, and the stream stops when
+  the photo is taken or the step is left.

@@ -39,7 +39,7 @@
       beats: [
         { text: "Vision asks Rakesh bhai for one label photo before any price is quoted", agent: "Vision", focus: "desk", time: "09:05", done: s => s.hero.photo.status !== "none", phone: { lock: { key: "l2", who: "rakesh", push: null } } },
         { text: "Rakesh bhai opens the push at the godown", who: "rakesh", focus: "phone", time: "09:05", ui: "l2", hint: "Tap the notification", phone: { lock: { key: "l2", who: "rakesh", push: D.PUSH.verify } } },
-        { text: "He photographs one carton on shelf B4 and sends it", who: "rakesh", focus: "phone", time: "09:19", done: s => ["reading", "verified"].includes(s.hero.photo.status), run: () => Flow.act("sendPhoto"), hint: "Tap the shutter, then Send photo" },
+        { text: "He photographs one carton on shelf B4 and sends it", who: "rakesh", focus: "phone", time: "09:19", done: s => ["reading", "verified"].includes(s.hero.photo.status), run: () => Flow.act("sendPhoto"), hint: "Tap Take a photo, then Send photo" },
         { text: "Gemini reads batch, dates and MRP; they match the DMS record", agent: "Vision", focus: "desk", time: "09:20", done: s => s.hero.photo.status === "verified" },
       ] },
     { date: "Friday 2 October", desk: { who: "priya", route: "route", anchor: "channels" }, phone: { who: "priya", route: "route", anchor: "channels" },
