@@ -670,6 +670,15 @@ describe("the buyer's listing (SC-92)", () => {
 		expect(face!.textContent?.trim()).not.toBe('?');
 	});
 
+	it('before the Valuer prices a flagged batch, its card says what destroying it would cost, never ₹0 (SC-99)', async () => {
+		const s = source(fakeApi(moment('at-risk'), 'priya'));
+		const r = await draw(s, 'command', CHIPS);
+		await waitFor(() => expect(text(r)).toContain('if destroyed · 1,360 units at risk'));
+		const t = text(r);
+		expect(t).toContain('26,330');
+		expect(t).not.toMatch(/₹\s?0\s?if destroyed/);
+	});
+
 	it('the FSSAI checklist of a batch with no donation says only that, naming no batch as donated (SC-98)', async () => {
 		const s = source(fakeApi(moment('cleared'), 'anita'));
 		const r = await draw(s, 'paperwork', CHIPS);

@@ -1050,4 +1050,15 @@
   - **The cause:** the sentence pointing at the donated batch fell back to the batch itself.
   - **The fix** (`Paper.svelte`): it points at another batch only when that batch was donated. The prototype and the stub, where the Mango Drink is, read as before (core's goldens unchanged), so design3 needs no change.
   - **Checks:** core 248 passed; workspace 57 (1 new: Anita's chips paper on the cleared moment, which fails without the fix).
+- **SC-99** (In Review, branch `SC-99-write-off-before-plan`, stacked on SC-98; bug found by Munchly Chips E2E): the Command Center's "if destroyed" before the plan.
+  - **Found:** from Detect until the Valuer priced the batch, the live card read "₹0 if destroyed · 1,360 units at risk". The prototype shows −₹26,330 there.
+  - **The cause:** the live projection used an empty plan until there was one.
+  - **The fix:**
+    - backend-api's case carries `writeOff`, money.py's write-off of the Watcher's at-risk packs, from Detect on, for those who may see Munchly's figures;
+    - the contract's `CaseDetail.writeOff`;
+    - the projection's plan carries it until the plan exists.
+  - **Checks:**
+    - backend-api 468 passed; the story's journey test checks −₹26,329.60 at Detect, nothing for a partner, and the same write-off in the plan;
+    - the frontend gate passes, with workspace at 58: a new live test draws the card at Detect, and fails without the fix;
+    - the live fixtures were regenerated.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
