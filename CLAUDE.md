@@ -907,7 +907,7 @@
     - the frontend gate passes: workspace 47 (2 new: the sheet from the quiet and the busy Command Center), core 248, api 77, admin 17, demo 5, console 3;
     - design3's sheet was opened from its watchlist in the prototype.
   - **Locally:** the API hung on a reload while the workspace's event stream was open, and was restarted.
-- **SC-91** (In Review, branch `SC-91-execution-focus`; bug): Execution keeps the batch in focus.
+- **SC-91** (PR #75, merged; bug): Execution keeps the batch in focus.
   - **Found by the maintainer:** after approving the Masala Chips, Execution read "MF-2410-118 · no agents · Nothing is executing yet", though the chips' lot was live and the kiranas' offer sent.
   - **The cause:** the workspace takes the batch in focus from the address. A screen opened without a batch fell back to the most urgent open case (`focusRef`): the Mango Drink, 22 days left against the chips' 47. The approve sheet, "Watch execution" on the Command Center and in the Route Room, and the sidebar all opened Execution without a batch.
   - **The fix:**
@@ -917,7 +917,7 @@
     - the frontend gate passes: workspace 49 (2 new; the focus test fails without the fix, showing the Mango's Execution), core 248, api 77, admin 17, demo 5, console 3;
     - the workspace e2e spec expects `/execution/MF-2409-117` after approving;
     - the browser suites were not run.
-- **SC-92** (In Review, branch `SC-92-buyer-chat`; bug): the buyer's chat sends, the counter names its token, and the buyer has his face.
+- **SC-92** (PR #76, merged; bug): the buyer's chat sends, the counter names its token, and the buyer has his face.
   - **Found by the maintainer** on Agrawal ji's listing: "This chat does not work as expected... no way for users to communicate".
   - **What was wrong:**
     - the chat box only cleared itself (`ListingView.svelte`, the prototype's decorative form), though the live source has `message` and the Negotiator answers it;
@@ -948,4 +948,39 @@
     - the frontend gate passes: core 248 (6 goldens updated, each only losing the shelf card, its feed line or its push), api 77, workspace 50, admin 17, demo 5, console 3;
     - the live fixtures were regenerated;
     - the browser suites were not run.
+- **SC-94** (In Review, branch `SC-94-expiry-day`, on SC-93's): Report now is expiry day, and the packs left at the godown settle by the client's expiry policy.
+  - **The request:** "Impact report is not running even on clicking report now"; food left at the godown should follow full credit or price support, "as per client setting"; Report now "should be treated as Food is being expired and full journey should be realized and completed". The maintainer's answers:
+    - price support only: the gap is paid, and the stock stays with the distributor, who destroys it;
+    - Report now closes the journey as it stands;
+    - the report falls due at best-before.
+  - **Why Report now did nothing:** the report's timer was ready only once the case was settled and the van round done, which a batch with packs left never reached.
+  - **Expiry day** (`steps.expire`, run by Report now and by the report's timer; migration `0008`, `cases.expired_at`):
+    - open lines close as they stand: orders placed, an accepted lot, a recorded staff sale and a confirmed pickup count, and the rest expires at the godown;
+    - the papers follow, drafted then if they weren't yet;
+    - Impact's report settles the packs left by `clients.expiry` (Munchly: full credit).
+  - **The settlement** (money.js `expirySettlement`, `domain/money.py`):
+    - full credit: the packs come back for the dealer price, and the client destroys them, paying disposal and EPR and reversing the GST credit;
+    - price support only: the distributor is paid the gap to the dealer price, and destroys them;
+    - no returns: the distributor's loss.
+  - **The paper:** an "Expiry credit note", "Price support at expiry" or "Expiry notice", numbered from the credit-note sequence when there is a credit. The destruction certificate counts the packs the client destroys, the GST memo reverses their credit, the ledger carries the settlement, and the closing push says how it settled.
+  - **The report's timer** is set at approval, due at best-before (10:00), and fires once a plan is approved. The console's trigger reads "Expiry day · report" and asks "Expire it and report now?".
+  - **Design first:** three options on one board in app v3, `SC-94 design review.html`:
+    - A, the card settles (recommended);
+    - B, a settlement card;
+    - C, on the paper only.
+
+    The maintainer picked **B**, and added a dealer price of ₹14.50 for the Mango Drink (fictional, at the chips' ratio to MRP). Designs, stills and the decision are in `design3/designs/SC-94/`.
+  - **The build:** the Expiry settlement card after "Left at the godown" on Execution (the policy, the credit, who destroys the packs, the client's other costs, the sentence, Open the paper); Paperwork opens on the expiry paper. design3 first (`brand.jsx`, `finance.jsx`), then core (`ExpirySettlement.svelte`, `Paper.svelte`, `Paperwork.svelte`); the contract gains `CaseDetail.expiry` and the paper's fields.
+  - **Found on the way:**
+    - Who keeps what and You end whole added the plan's gross for each line, not what each line took. Both now read the credit note's rows and add the expiry settlement; the story's figures are unchanged.
+    - A distributor is not sent the plan, so its You end whole had no lines and the batch's 2,000 packs; it now works from the credit note's rows.
+    - design3's Paperwork had lost its sheet's state to a comment.
+  - **Known gap:** Who keeps what's caption ("the same swing as the ledger") holds for the chips; for the Mango Drink, Munchly's cash view leaves out the food bank's costs, about ₹61 apart, as before.
+  - **Checks:**
+    - backend-api 465 passed (11 new: expiry day, each policy, the timer, the Mango's papers);
+    - agents 190 passed;
+    - the frontend gate passes: workspace 55 (5 new: the card, the paper, Who keeps what, You end whole, none on the chips), core 248 (goldens unchanged), api 77, admin 17, demo 5, console 3;
+    - the live fixtures were regenerated;
+    - the browser suites were not run.
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

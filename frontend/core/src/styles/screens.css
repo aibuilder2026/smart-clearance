@@ -61,6 +61,8 @@
 .pp-table td { padding: 8px 4px; border-bottom: 1px solid #ebeeea; vertical-align: top; font-variant-numeric: tabular-nums; }
 .pp-table th:nth-child(n+2), .pp-table td:nth-child(n+2) { text-align: right; }
 .pp-line { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; font-variant-numeric: tabular-nums; }
+/* a sub-heading inside a paper: the client's own costs on destroying expired packs (SC-94) */
+.pp-sub { margin: 10px 0 2px; font-size: 12px; font-weight: 650; color: #5d6762; }
 .pp-strong { font-weight: 700; font-size: 15px; }
 .pp-line:has(.pp-strong) { border-top: 1px solid #d9ded9; padding-top: 8px; margin-top: 2px; }
 .pp-note { margin: 6px 0 0; font-size: 12.5px; color: #4b5550; }

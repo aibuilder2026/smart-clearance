@@ -783,6 +783,8 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
         "realised": realised_out,
         "claim": claim,
         "docs": docs,
+        # expiry day's settlement of the packs left at the godown, once the report has run (SC-94)
+        "expiry": (case.ledger or {}).get("expiry") if case.ledger and (mine or role == "distributor") else None,
         "kiranas": kiranas,
         "offered": int((case.offer or {}).get("shops", 0)),
         "donation": (

@@ -7,10 +7,15 @@
 	const ws = useWorkspace();
 	const c = $derived(ws.case!);
 
-	// the same batch read from each side: the distributor ends whole, and Munchly pays less than a claim
+	// the same batch read from each side: the distributor ends whole, and Munchly pays less than a claim. What the
+	// distributor receives is what each channel took, at its price (the credit note's rows), so a line that took less
+	// counts less; on expiry day the packs left at the godown add their settlement on both sides (SC-94)
 	// (screens/finance.jsx KeepsWhat)
 	const dp = $derived(c.sku.dp!);
-	const recv = $derived(c.lines.kirana.gross + c.award.gross + c.support.total);
+	const x = $derived(c.expiry && c.expiry.units > 0 ? c.expiry : null);
+	const credit = $derived(x?.credit ?? 0);
+	const settled = $derived(x?.total ?? 0);
+	const recv = $derived(c.support.rows.reduce((t, r) => t + r.units * r.price, 0) + c.support.total);
 	const paid = $derived(c.plan.units * dp + c.support.van + c.support.fee);
 	const W = $derived(ws.data.workspace);
 </script>
@@ -21,13 +26,18 @@
 		<div class="row between">
 			<span>{c.dist.name} receives</span><span class="tnum">{fmt.inr(recv)}</span>
 		</div>
+		{#if x && credit > 0}<div class="row between">
+				<span>and the expiry credit for {fmt.num(x.units)} packs</span><span class="tnum">{fmt.inr(credit)}</span>
+			</div>{/if}
 		<div class="row between">
 			<span>and paid {fmt.num(c.plan.units)} × ₹{dp}, the van and the fee</span><span class="tnum"
 				>{fmt.inr(-paid)}</span
 			>
 		</div>
 		<div class="row between">
-			<b>He ends whole</b><span class="tnum strong">{fmt.inr(Math.round(recv - paid))}</span>
+			<b>{x && !credit ? 'Its loss on the expired packs' : 'He ends whole'}</b><span class="tnum strong"
+				>{fmt.inr(Math.round(recv + credit - paid))}</span
+			>
 		</div>
 		<div class="hairline" style="margin: 4px 0"></div>
 		<div class="row between">
@@ -36,9 +46,14 @@
 		<div class="row between">
 			<span>Price support it pays instead</span><span class="tnum neg">{fmt.inr(-c.support.total)}</span>
 		</div>
+		{#if x && settled > 0}<div class="row between">
+				<span>and the expiry settlement for {fmt.num(x.units)} packs</span><span class="tnum neg"
+					>{fmt.inr(-settled)}</span
+				>
+			</div>{/if}
 		<div class="row between">
 			<b>Better for {W.short}</b><Money
-				value={c.claim.total - c.support.total}
+				value={c.claim.total - c.support.total - settled}
 				size="s"
 				style="color: var(--primary-text); font-size: 22px"
 			/>

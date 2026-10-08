@@ -190,6 +190,7 @@
 			"category": "beverages",
 			"hsn": "2202",
 			"mrp": 20,
+			"dp": 14.5,
 			"cost": 11,
 			"gst": 0.05,
 			"perCarton": 27,

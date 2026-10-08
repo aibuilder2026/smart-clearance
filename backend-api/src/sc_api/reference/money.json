@@ -371,6 +371,7 @@
 				"category": "beverages",
 				"hsn": "2202",
 				"mrp": 20,
+				"dp": 14.5,
 				"cost": 11,
 				"gst": 0.05,
 				"perCarton": 27,
@@ -3598,6 +3599,7 @@
 				"category": "beverages",
 				"hsn": "2202",
 				"mrp": 20,
+				"dp": 14.5,
 				"cost": 11,
 				"gst": 0.05,
 				"perCarton": 27,
@@ -5778,6 +5780,7 @@
 				"category": "beverages",
 				"hsn": "2202",
 				"mrp": 20,
+				"dp": 14.5,
 				"cost": 11,
 				"gst": 0.05,
 				"perCarton": 27,
@@ -6171,6 +6174,7 @@
 				"category": "beverages",
 				"hsn": "2202",
 				"mrp": 20,
+				"dp": 14.5,
 				"cost": 11,
 				"gst": 0.05,
 				"perCarton": 27,
@@ -6564,6 +6568,7 @@
 				"category": "beverages",
 				"hsn": "2202",
 				"mrp": 20,
+				"dp": 14.5,
 				"cost": 11,
 				"gst": 0.05,
 				"perCarton": 27,
@@ -7619,6 +7624,7 @@
 				"category": "beverages",
 				"hsn": "2202",
 				"mrp": 20,
+				"dp": 14.5,
 				"cost": 11,
 				"gst": 0.05,
 				"perCarton": 27,
@@ -7634,30 +7640,30 @@
 						"short": "Kirana cluster",
 						"units": 1372,
 						"price": 12,
-						"gap": null,
-						"amount": null
+						"gap": 2.5,
+						"amount": 3430
 					},
 					{
 						"id": "staff",
 						"short": "Staff sale",
 						"units": 150,
 						"price": 8,
-						"gap": null,
-						"amount": null
+						"gap": 6.5,
+						"amount": 975
 					},
 					{
 						"id": "foodbank",
 						"short": "Food bank",
 						"units": 58,
 						"price": 0,
-						"gap": null,
-						"amount": null
+						"gap": 14.5,
+						"amount": 841
 					}
 				],
-				"gap": null,
+				"gap": 5246,
 				"van": 686,
 				"fee": 0,
-				"total": null
+				"total": 5932
 			}
 		}
 	],
@@ -7828,6 +7834,7 @@
 				"category": "beverages",
 				"hsn": "2202",
 				"mrp": 20,
+				"dp": 14.5,
 				"cost": 11,
 				"gst": 0.05,
 				"perCarton": 27,
@@ -7839,13 +7846,13 @@
 			"out": {
 				"policy": "full-credit",
 				"units": 1318,
-				"credit": null,
+				"credit": 19111,
 				"destroyedBy": "client",
 				"kg": 283.37,
 				"disposal": 1977,
 				"epr": 1700.22,
 				"itc": 724.9,
-				"total": 4402.12
+				"total": 23513.12
 			}
 		},
 		{
@@ -7858,6 +7865,7 @@
 				"category": "beverages",
 				"hsn": "2202",
 				"mrp": 20,
+				"dp": 14.5,
 				"cost": 11,
 				"gst": 0.05,
 				"perCarton": 27,
@@ -7869,13 +7877,13 @@
 			"out": {
 				"policy": "price-support",
 				"units": 1318,
-				"credit": null,
+				"credit": 19111,
 				"destroyedBy": "distributor",
 				"kg": 283.37,
 				"disposal": 0,
 				"epr": 0,
 				"itc": 0,
-				"total": 0
+				"total": 19111
 			}
 		},
 		{
@@ -8492,6 +8500,7 @@
 				"category": "beverages",
 				"hsn": "2202",
 				"mrp": 20,
+				"dp": 14.5,
 				"cost": 11,
 				"gst": 0.05,
 				"perCarton": 27,
@@ -8507,30 +8516,30 @@
 						"short": "Kirana cluster",
 						"units": 1372,
 						"price": 12,
-						"gap": null,
-						"amount": null
+						"gap": 2.5,
+						"amount": 3430
 					},
 					{
 						"id": "staff",
 						"short": "Staff sale",
 						"units": 150,
 						"price": 8,
-						"gap": null,
-						"amount": null
+						"gap": 6.5,
+						"amount": 975
 					},
 					{
 						"id": "foodbank",
 						"short": "Food bank",
 						"units": 58,
 						"price": 0,
-						"gap": null,
-						"amount": null
+						"gap": 14.5,
+						"amount": 841
 					}
 				],
-				"gap": null,
+				"gap": 5246,
 				"van": 686,
 				"fee": 0,
-				"total": null
+				"total": 5932
 			},
 			"parties": {
 				"seller": {
@@ -8586,33 +8595,33 @@
 					"owner": "Munchly Foods",
 					"no": "CN/0117",
 					"status": "generated",
-					"amount": null,
-					"exact": null,
-					"roundOff": null,
+					"amount": 5932,
+					"exact": 5932,
+					"roundOff": 0,
 					"rows": [
 						{
 							"id": "kirana",
 							"short": "Kirana cluster",
 							"units": 1372,
 							"price": 12,
-							"gap": null,
-							"amount": null
+							"gap": 2.5,
+							"amount": 3430
 						},
 						{
 							"id": "staff",
 							"short": "Staff sale",
 							"units": 150,
 							"price": 8,
-							"gap": null,
-							"amount": null
+							"gap": 6.5,
+							"amount": 975
 						},
 						{
 							"id": "foodbank",
 							"short": "Food bank",
 							"units": 58,
 							"price": 0,
-							"gap": null,
-							"amount": null
+							"gap": 14.5,
+							"amount": 841
 						}
 					],
 					"van": 686,

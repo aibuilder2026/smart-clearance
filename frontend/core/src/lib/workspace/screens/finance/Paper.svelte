@@ -150,6 +150,31 @@
 			1 October 2023, 17(5)(fa) on CSR donations.
 		</p>
 	</div>
+{:else if id === 'expiry' && d}
+	{@const C = ws.data.client.short}
+	<div class="paper pp">
+		{#if d.policy === 'none'}{@render head('Expiry notice', `${c.batch.id} · ${R.name}`, 'NO RETURNS')}
+			{@render line('Packs expired at the godown', fmt.num(d.units ?? 0), true)}
+			{@render line(`Credit from ${C}`, 'none')}
+		{:else}{@render head(d.type, `${d.no} · ${C} → ${R.name}`, 'NO GST ADJ.', true)}
+			{@render line(
+				`${fmt.num(d.units ?? 0)} packs expired at the godown`,
+				d.amount != null ? fmt.inr2(d.amount) : '—',
+				false,
+				'at the dealer price'
+			)}
+			{@render line(`Credit to ${R.name}`, d.amount != null ? fmt.inr2(d.amount) : '—', true)}
+			{#if d.policy === 'full-credit'}<div class="pp-sub">{C}'s own costs, on destroying them</div>
+				{@render line('Disposal', fmt.inr2(d.disposal ?? 0))}
+				{@render line('EPR on the packaging', fmt.inr2(d.epr ?? 0))}
+				{@render line('Input GST reversed', fmt.inr2(d.itc ?? 0), false, 'section 17(5)(h)')}
+				{@render line(
+					'Expiry, all in',
+					fmt.inr2((d.amount ?? 0) + (d.disposal ?? 0) + (d.epr ?? 0) + (d.itc ?? 0)),
+					true
+				)}{/if}{/if}
+		<p class="pp-note">{d.note}</p>
+	</div>
 {:else if id === 'fssai'}
 	<div class="paper pp">
 		{#if d?.status === 'generated'}{@render head('FSSAI surplus-food checklist', c.batch.id, 'GENERATED', true)}

@@ -303,7 +303,13 @@ function docOf(d: WsDoc): Doc {
 		price: opt(d.price),
 		gstPct: opt(d.gstPct),
 		exact: opt(d.exact),
-		date: opt(d.date)
+		date: opt(d.date),
+		policy: opt(d.policy),
+		destroyedBy: d.destroyedBy,
+		disposal: opt(d.disposal),
+		epr: opt(d.epr),
+		itc: opt(d.itc),
+		reversed: opt(d.reversed)
 	};
 }
 
@@ -404,6 +410,7 @@ export function caseOf(
 			amount: 0
 		},
 		realised: detail.realised,
+		expiry: detail.expiry ?? null,
 		returnBy,
 		push: pushesOf(detail, today),
 		today: dayLabel(day0),

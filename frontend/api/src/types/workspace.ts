@@ -637,6 +637,31 @@ export type WsDoc = {
 	date: string | null;
 	/** whether a PDF can be downloaded (GET …/documents/{id}) */
 	pdf: boolean;
+	/** the expiry paper's settlement (SC-94): the client's policy, who destroys the packs, and the client's own costs */
+	policy?: ExpiryPolicy;
+	destroyedBy?: 'client' | 'distributor' | null;
+	disposal?: number;
+	epr?: number;
+	itc?: number;
+	/** the GST memo's reversal on expiry day */
+	reversed?: number;
+};
+
+/** a client's expiry policy: what happens to packs that expire at the distributor's godown (SC-94) */
+export type ExpiryPolicy = 'full-credit' | 'price-support' | 'none';
+
+/** expiry day's settlement of the packs left at the godown (money.js expirySettlement): the credit is null for an SKU
+ *  without its dealer price */
+export type ExpirySettlement = {
+	policy: ExpiryPolicy;
+	units: number;
+	credit: number | null;
+	destroyedBy: 'client' | 'distributor' | null;
+	kg: number;
+	disposal: number;
+	epr: number;
+	itc: number;
+	total: number;
 };
 
 /** a shop the scheme was offered to, with its cap and what it ordered */
@@ -709,6 +734,8 @@ export type CaseDetail = {
 	/** what each finished line took (ordered, awarded, sold to staff, collected), and the packs no channel took, left at
 	 *  the godown (SC-86); for staff and the distributor, once a line has finished */
 	realised: { lines: { id: string; units: number }[]; godown: number } | null;
+	/** expiry day's settlement, once the report has run (SC-94) */
+	expiry: ExpirySettlement | null;
 	claim: WsClaim | null;
 	docs: WsDoc[];
 	kiranas: KiranaOffer[];

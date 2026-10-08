@@ -132,7 +132,8 @@ async def test_write_the_live_fixtures(api, munchly, cloud):
     assert (await api.post(f"{WS}/cases/{HERO}/dispatches", json={"kind": "van"}, headers=RAKESH)).status_code == 200
     await agent(api, f"/cases/{HERO}/report", "impact", "impact")
     # the Mango Drink to its report too (SC-86): three of Lakshmi Agencies' kiranas order, the scheme closes, the staff
-    # sale is recorded, and its papers (no invoice, no credit note) follow the last of its lines
+    # sale is recorded, and its papers (no invoice) follow the last of its lines; at its report the packs left at the
+    # godown settle by Munchly's expiry policy, full credit (SC-94)
     hyd = [k for k in J["kiranas"] if k["distributor"] == "lakshmi"][:3]
     for k in hyd:
         member = next(x for x in J["members"] if x["id"] == k["member"])

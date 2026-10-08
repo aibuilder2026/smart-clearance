@@ -217,7 +217,7 @@ async def test_report_now_is_expiry_day_and_the_journey_closes_as_it_stands(api,
     want = money.jsonable(money.expiry_settlement(godown, J["skus"]["chips"], "full-credit"))
     assert out["ledger"]["godown"] == godown and out["ledger"]["expiry"] == want
     c = await case(api, PRIYA)
-    assert c["journey"]["phase"] == "cleared"
+    assert c["journey"]["phase"] == "cleared" and c["expiry"] == want  # what the settlement card reads
     docs = {d["id"]: d for d in c["docs"]}
     assert (docs["expiry"]["type"], docs["expiry"]["amount"], docs["expiry"]["destroyedBy"]) == (
         "Expiry credit note",
