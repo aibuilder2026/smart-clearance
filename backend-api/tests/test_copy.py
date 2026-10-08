@@ -222,7 +222,7 @@ def test_the_closing_push_names_what_the_godown_holds():
     closed = copy.push_closed(
         net=14469.4, itc=0, kg=290.5, cartons=0, planned=16917.1, godown=222, at="Begum Bazaar godown"
     )
-    assert closed["title"] == "Batch closed · 222 packs left at the godown"
+    assert closed["title"] == "Batch closed · 222 packs expired at the godown"
     assert closed["body"].startswith("₹14,469 recovered of ₹16,917 planned, ₹0 GST credit kept")
     assert closed["body"].endswith("222 packs no channel took are at Begum Bazaar godown.")
 

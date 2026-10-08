@@ -394,8 +394,12 @@ async def test_the_mango_drinks_journey_end_to_end(api, munchly, cloud, ctx):
     assert batch.outcome == "cleared" and round(batch.recovered, 2) == want["net"]
     # the close tells Priya what the godown still holds (SC-87), and Lakshmi Agencies' staff pay to its own address
     closed = (await case(api, PRIYA, MANGO))["push"]["closed"]
-    assert closed["title"] == f"Batch closed · {money.fmt.num(left)} packs left at the godown"
-    assert closed["body"].endswith(f"{money.fmt.num(left)} packs no channel took are at Begum Bazaar godown.")
+    assert closed["title"] == f"Batch closed · {money.fmt.num(left)} packs expired at the godown"
+    # settled by Munchly's expiry policy, full credit (SC-94); the Mango has no dealer price to put a figure on it
+    assert closed["body"].endswith(
+        f"The {money.fmt.num(left)} packs that expired at Begum Bazaar godown come back to Munchly for full credit at "
+        "the dealer price, and Munchly destroys them."
+    )
     snap = (await api.get(f"{WS}/snapshot", headers=LAKSHMI)).json()
     assert snap["distributors"]["lakshmi"]["upi"] == J["distributors"]["lakshmi"]["upi"]
 

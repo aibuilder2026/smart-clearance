@@ -1,6 +1,8 @@
 """The console's demo controls (SC-79): a client's scheduled runs and journey timers, each fired at once by staff
 through what the tick itself runs, and its journey started again at a day length chosen then."""
 
+import pytest
+
 from tests.test_workspace import HERO, INVOKER, MANGO, PRIYA, agent, case, detect, setup, to_plan
 
 C = "/v1/console/clients"
@@ -72,8 +74,9 @@ async def test_a_timer_fires_now_when_it_is_ready_and_says_why_when_not(api, mun
     offer = next(t for t in triggers if t["key"] == "offer.close")
     assert (offer["agent"], offer["kind"], offer["ref"], offer["blocked"]) == ("outreach", "timer", HERO, None)
     assert offer["dueWall"]
-    # no day-7 shelf check any more (SC-93): the offer leaves its window closing, and nothing else yet
-    assert [t["key"] for t in triggers if t["kind"] == "timer"] == ["offer.close"]
+    # no day-7 shelf check any more (SC-93): the offer leaves its window closing, and the approval set the report's
+    # timer, expiry day (SC-94)
+    assert [t["key"] for t in triggers if t["kind"] == "timer"] == ["offer.close", "report.due"]
     r = await api.post(f"{C}/munchly/journey/triggers/{offer['id']}", headers=neha)
     assert r.status_code == 200, r.text
     assert offer["id"] not in {t["id"] for t in r.json()["triggers"]}
@@ -174,3 +177,85 @@ async def test_a_retired_shelf_check_timer_is_put_away_unsent(api, munchly, ctx,
     await ctx.session.refresh(old)
     assert old.fired_wall is not None
     assert not [p for p in cloud.publisher.sent[n:] if p["payload"].get("kind") == "shelf.due"]
+
+
+async def _report_now(api, neha):
+    triggers = (await api.get(f"{C}/munchly/journey", headers=neha)).json()["triggers"]
+    report = next(t for t in triggers if t["key"] == "report.due")
+    assert report["blocked"] is None  # expiry day can come any time once the plan is approved
+    r = await api.post(f"{C}/munchly/journey/triggers/{report['id']}", headers=neha)
+    assert r.status_code == 200, r.text
+
+
+async def test_report_now_is_expiry_day_and_the_journey_closes_as_it_stands(api, munchly, neha, cloud):
+    """SC-94: Report now in the middle of the chips' journey. The scheme closes with the two shops' orders, the lot no
+    buyer accepted ends unsold, the papers follow, and the packs no channel took expire: under Munchly's full-credit
+    policy they come back for the dealer price and Munchly destroys them"""
+    from sc_api.domain import money
+    from tests.conftest import token
+    from tests.test_workspace import J
+
+    await to_plan(api, cloud)
+    assert (
+        await api.post(f"/v1/workspaces/munchly/cases/{HERO}/approval", json={"device": "phone"}, headers=PRIYA)
+    ).status_code == 200
+    await agent(api, f"/cases/{HERO}/listing", "lister", "lister")
+    await agent(api, f"/cases/{HERO}/offer", "outreach", "outreach")
+    shops = [k for k in J["kiranas"] if k["distributor"] == "rakesh" and k["orders"]][:2]
+    for k in shops:
+        login = next(x for x in J["members"] if x["id"] == k["member"])["login"]
+        r = await api.post(
+            f"/v1/workspaces/munchly/cases/{HERO}/orders", json={"units": k["orders"]}, headers=token(login)
+        )
+        assert r.status_code == 200, r.text
+    await _report_now(api, neha)
+    j = (await case(api, PRIYA))["journey"]
+    assert (j["offer"]["status"], j["listing"]["status"], j["phase"]) == ("closed", "ended", "settled")
+    assert any(p["payload"].get("kind") == "report.due" for p in cloud.publisher.sent)  # Impact's turn
+    out = await agent(api, f"/cases/{HERO}/report", "impact", "impact")
+    godown = 1360 - sum(k["orders"] for k in shops)
+    want = money.jsonable(money.expiry_settlement(godown, J["skus"]["chips"], "full-credit"))
+    assert out["ledger"]["godown"] == godown and out["ledger"]["expiry"] == want
+    c = await case(api, PRIYA)
+    assert c["journey"]["phase"] == "cleared"
+    docs = {d["id"]: d for d in c["docs"]}
+    assert (docs["expiry"]["type"], docs["expiry"]["amount"], docs["expiry"]["destroyedBy"]) == (
+        "Expiry credit note",
+        godown * 22,
+        "client",
+    )
+    assert docs["expiry"]["no"].startswith("CN/")
+    assert docs["destruction"]["units"] == godown and docs["destruction"]["status"] == "generated"
+    assert docs["itc"]["reversed"] == want["itc"] > 0
+
+
+@pytest.mark.parametrize(
+    ("policy", "paper", "credit", "destroyed_by"),
+    [
+        ("full-credit", "Expiry credit note", 1360 * 22, "client"),
+        ("price-support", "Price support at expiry", 1360 * 22, "distributor"),
+        ("none", "Expiry notice", 0, "distributor"),
+    ],
+)
+async def test_the_expired_packs_settle_by_the_clients_expiry_policy(
+    api, munchly, neha, ctx, cloud, policy, paper, credit, destroyed_by
+):
+    """SC-94: Report now straight after the approval: nothing was listed, offered or sold, so all 1,360 packs expire
+    at the godown and settle by the client's expiry policy"""
+    from sc_api import models as m
+
+    c = await ctx.session.get(m.Client, "munchly")
+    c.expiry = policy
+    await ctx.session.flush()
+    await to_plan(api, cloud)
+    assert (
+        await api.post(f"/v1/workspaces/munchly/cases/{HERO}/approval", json={"device": "phone"}, headers=PRIYA)
+    ).status_code == 200
+    await _report_now(api, neha)
+    out = await agent(api, f"/cases/{HERO}/report", "impact", "impact")
+    assert (out["ledger"]["godown"], out["ledger"]["expiry"]["destroyedBy"]) == (1360, destroyed_by)
+    docs = {d["id"]: d for d in (await case(api, PRIYA))["docs"]}
+    assert (docs["expiry"]["type"], docs["expiry"]["amount"]) == (paper, credit)
+    assert docs["expiry"]["status"] == ("not required" if policy == "none" else "generated")
+    assert bool(docs["expiry"]["no"]) == (credit > 0)
+    assert (docs["destruction"]["status"] == "generated") == (destroyed_by == "client")

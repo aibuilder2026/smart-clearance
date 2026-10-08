@@ -678,7 +678,7 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
     docs = []
     if case.docs and (mine or role == "distributor"):
         for d_ in case.docs:
-            if role == "distributor" and d_["id"] not in ("invoice", "eway", "support"):
+            if role == "distributor" and d_["id"] not in ("invoice", "eway", "support", "expiry"):
                 continue
             docs.append(
                 {
@@ -703,6 +703,8 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
                             "date",
                         )
                     },
+                    # the expiry paper's settlement, and the GST memo's reversal on expiry day (SC-94)
+                    **{k: d_[k] for k in ("policy", "destroyedBy", "disposal", "epr", "itc", "reversed") if k in d_},
                     "pdf": bool(d_.get("pdf")),
                 }
             )

@@ -697,6 +697,29 @@ def price_support(p: Obj, sku: Obj, award_price: float | None = None, *, rules: 
     return {"rows": rows, "gap": gap, "van": van, "fee": fee, "total": r2(gap + van + fee)}
 
 
+def expiry_settlement(units: float, sku: Obj, policy: str, *, rules: Obj = RULES) -> dict[str, Any]:
+    """the packs left at the godown on expiry day, settled by the client's expiry policy (SC-94; money.js
+    expirySettlement). Full credit: they come back for the dealer price, and the client destroys them, paying disposal
+    and EPR and reversing the GST credit. Price support: the client pays the distributor the gap to what he paid (they
+    fetched nothing, so the dealer price), and he destroys them. No returns: the distributor's loss"""
+    wo = write_off(units, sku, rules=rules)
+    dp = _get(sku, "dp")
+    credit: Any = 0 if policy == "none" or not units else (None if dp is None or _nan(dp) else r2(units * dp))
+    ours = policy == "full-credit" and units > 0
+    disposal, epr, itc = (wo["disposal"], wo["epr"], wo["itc"]) if ours else (0, 0, 0)
+    return {
+        "policy": policy,
+        "units": units,
+        "credit": credit,
+        "destroyedBy": ("client" if ours else "distributor") if units else None,
+        "kg": wo["kg"],
+        "disposal": disposal,
+        "epr": epr,
+        "itc": itc,
+        "total": r2((credit or 0) + disposal + epr + itc),
+    }
+
+
 def expiry_claim(units: float, sku: Obj, *, rules: Obj = RULES) -> dict[str, Any]:
     """what the distributor would claim at expiry, and what destroying it then costs the manufacturer on top"""
     wo = write_off(units, sku, rules=rules)

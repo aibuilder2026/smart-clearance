@@ -588,6 +588,8 @@ class Case(Base):
     donation: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     # the plan's staff sale at the distributor's godown, once approved (SC-86): open, then recorded with what sold
     staff: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    # expiry day (SC-94): every plan line not yet run then counts as done, with nothing taken
+    expired_at: Mapped[datetime | None] = mapped_column(TS)
     escalated: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     updated_wall: Mapped[datetime] = mapped_column(TS)
     seq: Mapped[int] = seq()

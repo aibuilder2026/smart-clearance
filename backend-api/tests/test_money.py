@@ -128,6 +128,11 @@ def test_price_support(case):
     same(m.price_support(case["plan"], case["sku"], case["awardPrice"]), case["out"])
 
 
+@pytest.mark.parametrize("case", F["expirySettlement"], ids=lambda c: f"{c['units']}x{c['sku']['id']}-{c['policy']}")
+def test_expiry_settlement(case):
+    same(m.expiry_settlement(case["units"], case["sku"], case["policy"]), case["out"])
+
+
 @pytest.mark.parametrize("case", F["expiryClaim"], ids=lambda c: f"{c['units']}x{c['sku']['id']}")
 def test_expiry_claim(case):
     same(m.expiry_claim(case["units"], case["sku"]), case["out"])

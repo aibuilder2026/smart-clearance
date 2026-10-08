@@ -207,11 +207,8 @@ describe('every change is logged in the words the prototype uses', () => {
 		const next = j.triggers.find((t) => t.id === 'data')!.due;
 		expect((await api.fireTrigger('munchly', 'data')).triggers.find((t) => t.id === 'data')!.due).toBe(next);
 		expect((await lastAudit()).text).toBe("Ran the Data agent's daily load now for Munchly Foods");
-		// a timer: refused with its reason until it is ready, gone once fired
-		await expect(api.fireTrigger('munchly', 'timer-3')).rejects.toMatchObject({
-			status: 409,
-			message: 'After the papers and the van round'
-		});
+		// a timer, gone once fired; the report is expiry day, ready once the plan is approved (SC-94)
+		expect(j.triggers.find((t) => t.id === 'timer-3')).toMatchObject({ key: 'report.due', blocked: null });
 		const fired = await api.fireTrigger('munchly', 'timer-1');
 		expect(fired.triggers.map((t) => t.id)).not.toContain('timer-1');
 		expect((await lastAudit()).text).toBe(

@@ -375,7 +375,7 @@
   const TIMER_WORDS = { "offer.close": "closed the offer window", "listing.close": "closed the unsold lot", "report.due": "wrote the report" };
   const JOURNEY_TIMERS = [
     { id: "timer-1", agent: "outreach", key: "offer.close", ref: "MF-2409-117", due: "2026-10-04T12:40:00+05:30" },
-    { id: "timer-3", agent: "impact", key: "report.due", ref: "MF-2409-117", due: "2026-10-30T10:00:00+05:30", blocked: "After the papers and the van round" },
+    { id: "timer-3", agent: "impact", key: "report.due", ref: "MF-2409-117", due: "2026-11-18T10:00:00+05:30", blocked: null },
   ];
   const seedJourney = () => ({ day0: D.DAY0, now: D.addDays(D.DAY0, 1) + "T10:15:00+05:30", setupConfirmed: true, daily: { data: D.addDays(D.DAY0, 1), watcher: D.addDays(D.DAY0, 1) }, timers: JOURNEY_TIMERS.map(t => Object.assign({}, t)) });
   const ms = iso => Date.parse(iso);

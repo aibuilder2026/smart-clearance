@@ -4,8 +4,8 @@ falls due, fired at once on a staff member's word; and its journey started again
 The schedule is the tick's own (tick.py): the Data agent's daily load and the Watcher's daily check on journey time,
 and the timers an offer leaves (its window closing, an unsold lot closing, the report). Firing one runs what the tick
 would run, through the same functions, so a demo shows the real thing; the schedule does not move (a daily run fired
-early is that day's run). A timer that is not ready yet (the report before the papers and the van round) says why and is
-refused. Every fire and the reset write an audit line in the staff
+early is that day's run). A timer that is not ready yet says why and is refused. The report is expiry day: fired
+early, it takes the journey to its end as it stands (SC-94). Every fire and the reset write an audit line in the staff
 member's name. A client whose workspace is not live has no journey: its two daily runs can still be run now, as before
 (agents.run_now).
 """
@@ -35,7 +35,7 @@ TIMERS = {
     "report.due": ("impact", "wrote the report"),
 }
 BLOCKED = {
-    "report.due": "After the papers and the van round",
+    "report.due": "Once the plan is approved",
 }
 
 

@@ -7718,6 +7718,200 @@
 			}
 		}
 	],
+	"expirySettlement": [
+		{
+			"units": 564,
+			"sku": {
+				"id": "chips",
+				"code": "MF-MC-150",
+				"brand": "Munchly",
+				"name": "Masala Chips 150 g",
+				"category": "snacks",
+				"hsn": "2005",
+				"mrp": 30,
+				"dp": 22,
+				"cost": 16,
+				"gst": 0.05,
+				"itcPerUnit": 0.9,
+				"perCarton": 24,
+				"lifeDays": 180,
+				"kgPerUnit": 0.16,
+				"img": "pack-chips",
+				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
+			},
+			"policy": "full-credit",
+			"out": {
+				"policy": "full-credit",
+				"units": 564,
+				"credit": 12408,
+				"destroyedBy": "client",
+				"kg": 90.24,
+				"disposal": 846,
+				"epr": 541.44,
+				"itc": 507.6,
+				"total": 14303.04
+			}
+		},
+		{
+			"units": 564,
+			"sku": {
+				"id": "chips",
+				"code": "MF-MC-150",
+				"brand": "Munchly",
+				"name": "Masala Chips 150 g",
+				"category": "snacks",
+				"hsn": "2005",
+				"mrp": 30,
+				"dp": 22,
+				"cost": 16,
+				"gst": 0.05,
+				"itcPerUnit": 0.9,
+				"perCarton": 24,
+				"lifeDays": 180,
+				"kgPerUnit": 0.16,
+				"img": "pack-chips",
+				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
+			},
+			"policy": "price-support",
+			"out": {
+				"policy": "price-support",
+				"units": 564,
+				"credit": 12408,
+				"destroyedBy": "distributor",
+				"kg": 90.24,
+				"disposal": 0,
+				"epr": 0,
+				"itc": 0,
+				"total": 12408
+			}
+		},
+		{
+			"units": 564,
+			"sku": {
+				"id": "chips",
+				"code": "MF-MC-150",
+				"brand": "Munchly",
+				"name": "Masala Chips 150 g",
+				"category": "snacks",
+				"hsn": "2005",
+				"mrp": 30,
+				"dp": 22,
+				"cost": 16,
+				"gst": 0.05,
+				"itcPerUnit": 0.9,
+				"perCarton": 24,
+				"lifeDays": 180,
+				"kgPerUnit": 0.16,
+				"img": "pack-chips",
+				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
+			},
+			"policy": "none",
+			"out": {
+				"policy": "none",
+				"units": 564,
+				"credit": 0,
+				"destroyedBy": "distributor",
+				"kg": 90.24,
+				"disposal": 0,
+				"epr": 0,
+				"itc": 0,
+				"total": 0
+			}
+		},
+		{
+			"units": 1318,
+			"sku": {
+				"id": "mango",
+				"code": "MF-MD-200",
+				"brand": "Munchly",
+				"name": "Mango Drink 200 ml",
+				"category": "beverages",
+				"hsn": "2202",
+				"mrp": 20,
+				"cost": 11,
+				"gst": 0.05,
+				"perCarton": 27,
+				"lifeDays": 180,
+				"kgPerUnit": 0.215,
+				"img": "pack-mango"
+			},
+			"policy": "full-credit",
+			"out": {
+				"policy": "full-credit",
+				"units": 1318,
+				"credit": null,
+				"destroyedBy": "client",
+				"kg": 283.37,
+				"disposal": 1977,
+				"epr": 1700.22,
+				"itc": 724.9,
+				"total": 4402.12
+			}
+		},
+		{
+			"units": 1318,
+			"sku": {
+				"id": "mango",
+				"code": "MF-MD-200",
+				"brand": "Munchly",
+				"name": "Mango Drink 200 ml",
+				"category": "beverages",
+				"hsn": "2202",
+				"mrp": 20,
+				"cost": 11,
+				"gst": 0.05,
+				"perCarton": 27,
+				"lifeDays": 180,
+				"kgPerUnit": 0.215,
+				"img": "pack-mango"
+			},
+			"policy": "price-support",
+			"out": {
+				"policy": "price-support",
+				"units": 1318,
+				"credit": null,
+				"destroyedBy": "distributor",
+				"kg": 283.37,
+				"disposal": 0,
+				"epr": 0,
+				"itc": 0,
+				"total": 0
+			}
+		},
+		{
+			"units": 0,
+			"sku": {
+				"id": "chips",
+				"code": "MF-MC-150",
+				"brand": "Munchly",
+				"name": "Masala Chips 150 g",
+				"category": "snacks",
+				"hsn": "2005",
+				"mrp": 30,
+				"dp": 22,
+				"cost": 16,
+				"gst": 0.05,
+				"itcPerUnit": 0.9,
+				"perCarton": 24,
+				"lifeDays": 180,
+				"kgPerUnit": 0.16,
+				"img": "pack-chips",
+				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
+			},
+			"policy": "full-credit",
+			"out": {
+				"policy": "full-credit",
+				"units": 0,
+				"credit": 0,
+				"destroyedBy": null,
+				"kg": 0,
+				"disposal": 0,
+				"epr": 0,
+				"itc": 0,
+				"total": 0
+			}
+		}
+	],
 	"documents": [
 		{
 			"plan": {

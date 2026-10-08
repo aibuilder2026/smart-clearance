@@ -461,21 +461,56 @@ def push_report(*, ref: str, kg: float) -> dict[str, Any]:
 
 
 def push_closed(
-    *, net: float, itc: float, kg: float, cartons: int, planned: float | None = None, godown: int = 0, at: str = ""
+    *,
+    net: float,
+    itc: float,
+    kg: float,
+    cartons: int,
+    planned: float | None = None,
+    godown: int = 0,
+    at: str = "",
+    settled: str = "",
 ) -> dict[str, Any]:
-    """the batch closed: what it recovered; when some packs were left at the godown (SC-87), what the plan expected and
-    where they wait"""
+    """the batch closed: what it recovered; when some packs were left at the godown (SC-87), what the plan expected,
+    and how the expired packs were settled (SC-94)"""
     if not godown:
         return {
             "title": f"Batch closed · {cartons} cartons destroyed",
             "body": f"{fmt.inr(net)} recovered, {fmt.inr(itc)} GST credit kept, {fmt.kg(kg)} kept out of landfill.",
         }
     packs, are = ("pack", "is") if godown == 1 else ("packs", "are")
+    rest = settled or f"{fmt.num(godown)} {packs} no channel took {are} at {at}."
     return {
-        "title": f"Batch closed · {fmt.num(godown)} {packs} left at the godown",
+        "title": f"Batch closed · {fmt.num(godown)} {packs} expired at the godown",
         "body": f"{fmt.inr(net)} recovered of {fmt.inr(planned or 0)} planned, {fmt.inr(itc)} GST credit kept, "
-        f"{fmt.kg(kg)} kept out of landfill. {fmt.num(godown)} {packs} no channel took {are} at {at}.",
+        f"{fmt.kg(kg)} kept out of landfill. {rest}",
     }
+
+
+def expired_event(*, units: int, godown: str) -> str:
+    """expiry day (SC-94): the journey closed as it stood"""
+    if not units:
+        return "Expiry day: the journey closed as it stood, with every pack gone."
+    packs = "pack" if units == 1 else "packs"
+    return f"Expiry day: the journey closed as it stood. {fmt.num(units)} {packs} no channel took expired at {godown}."
+
+
+def expiry_settled(*, policy: str, units: int, credit: float | None, client: str, distributor: str, godown: str) -> str:
+    """how the expired packs settle, by the client's expiry policy (SC-94)"""
+    packs, them = ("pack", "it") if units == 1 else ("packs", "them")
+    lead = f"The {fmt.num(units)} {packs} that expired at {godown}"
+    amount = f" ({fmt.inr(credit)})" if credit else ""
+    if policy == "full-credit":
+        return (
+            f"{lead} come back to {client} for full credit{amount or ' at the dealer price'}, and {client} destroys "
+            f"{them}."
+        )
+    if policy == "price-support":
+        return (
+            f"{lead} stay with {distributor}, which destroys {them}; {client} pays {distributor} the gap to its "
+            f"price{amount}."
+        )
+    return f"{lead} are {possessive(distributor)} loss: with no returns, {distributor} destroys {them}."
 
 
 def push_pickup(*, sku_name: str, units: int, days_left: int, godown: str) -> dict[str, Any]:
