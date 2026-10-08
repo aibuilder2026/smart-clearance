@@ -237,6 +237,8 @@ export type WsChannel = {
 
 export type WsRules = {
 	watchTime: string;
+	/** the Data agent's daily run, which Setup names while it waits for the first export (SC-79) */
+	dataTime: string;
 	floors: Record<string, number>;
 	approvalTaps: number;
 	hindiOffers: boolean;

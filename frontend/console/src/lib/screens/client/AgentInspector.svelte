@@ -1,12 +1,23 @@
 <script lang="ts">
-	import type { Agent, AgentSettings, Autonomy, Client } from '@smart-clearance/api/console';
+	import type { Agent, AgentSettings, Autonomy, Client, Journey, JourneyTrigger } from '@smart-clearance/api/console';
 	import { Button, cx, Icon, List, ListRow, Segmented, Switch, type IconName } from '@smart-clearance/core';
 	import { api } from '#lib/api/client.ts';
 	import { useConsole } from '#lib/console.svelte.ts';
+	import { EVENT_OF } from './journey.ts';
 	import SettingField from './SettingField.svelte';
+	import TrigRow from './TrigRow.svelte';
 
-	type Props = { c: Client; id: string; onautonomy: (a: Agent, v: Autonomy) => void };
-	let { c, id, onautonomy }: Props = $props();
+	type Props = {
+		c: Client;
+		id: string;
+		onautonomy: (a: Agent, v: Autonomy) => void;
+		/** the client's runs and timers (SC-79): this agent's own, fired from here too */
+		journey?: Journey;
+		just?: Record<string, boolean>;
+		onask?: (t: JourneyTrigger) => void;
+	};
+	let { c, id, onautonomy, journey, just = {}, onask = () => {} }: Props = $props();
+	const mine = $derived(journey?.triggers.filter((t) => t.agent === id) ?? []);
 	const k = useConsole();
 	const a = $derived(k.agent(id));
 	const cfg = $derived(c.agents[id]);
@@ -21,7 +32,6 @@
 	const save = () =>
 		k.act(() => api.updateAgent(c.id, id, { settings: $state.snapshot(draft) }), `${a.name} saved for ${c.name}`);
 	const toggle = (on: boolean) => k.act(() => api.updateAgent(c.id, id, { on }));
-	const runNow = () => k.act(() => api.runAgent(c.id, id), `${a.name} ran for ${c.name}: nothing new`);
 </script>
 
 {#snippet onSwitch()}<Switch checked={cfg.on} onchange={toggle} label="{a.name} on for {c.name}" />{/snippet}
@@ -71,14 +81,21 @@
 					onchange={(v) => (draft = { ...draft, [f.key]: v })}
 				/>{/each}
 		</div>{/if}
-	<List
-		><ListRow title="Last run" sub={cfg.last || 'not run yet'} /><ListRow
-			title="Next run"
-			sub={cfg.next || 'not scheduled'}
-		/></List
-	>
+	{#if !a.gate && journey}{#if mine.length}<div class="stack tight" style="gap: 8px">
+				<span class="t-footnote strong">Scheduled runs and timers</span>{#each mine as t (t.id)}<TrigRow
+						{c}
+						{t}
+						just={!!just[t.id]}
+						{onask}
+					/>{/each}
+			</div>{:else}<List
+				><ListRow
+					title="When it runs"
+					sub={EVENT_OF[id] ? `When ${EVENT_OF[id]}; nothing to run now` : 'On its own events'}
+				/></List
+			>{/if}{/if}
+	<List><ListRow title="Last run" sub={cfg.last || 'not run yet'} /></List>
 	<div class="row tight wrap">
-		{#if !a.gate}<Button variant="secondary" size="sm" icon="play" disabled={!cfg.on} onclick={runNow}>Run now</Button
-			>{/if}<span class="grow"></span><Button variant="primary" size="sm" disabled={!dirty} onclick={save}>Save</Button>
+		<span class="grow"></span><Button variant="primary" size="sm" disabled={!dirty} onclick={save}>Save</Button>
 	</div>
 </div>

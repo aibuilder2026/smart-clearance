@@ -73,4 +73,18 @@ The maintainer's answers to two questions:
 
 ## The pick
 
-Pending.
+Picked by the maintainer on 8 Oct 2026, in four answers:
+
+- **The console: A · On each agent.**
+  - Each trigger sits under its agent's stop on the Agents tab, and the inspector lists the agent's own.
+  - Reset journey… sits in the client's actions menu.
+- **Setup: A · Waiting in the export card.**
+- **Timers: they ask first.**
+  - A timer fired early asks before it runs, because closing the kirana offer early cannot be undone for that offer.
+  - The daily runs still fire at once.
+- **The reset offers a day length.**
+  - Its confirmation also offers a day length for the journey that starts: Real time, Rehearsal (60 minutes),
+    Demo (5 minutes) or Fast (1 minute).
+  - It starts on the client's current setting.
+
+The build follows the picked options, with these two answers folded in, design3 first.

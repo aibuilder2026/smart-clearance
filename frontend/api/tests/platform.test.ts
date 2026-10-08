@@ -16,6 +16,11 @@ import {
 	dayWords,
 	spanWords,
 	exitsFor,
+	fireLine,
+	journeyFromStart,
+	journeyOf,
+	resetLine,
+	type MockJourney,
 	overrideError,
 	overrideLine,
 	skuGatesError,
@@ -218,5 +223,33 @@ describe("the Overview's dashboard (SC-48) matches platform.js", () => {
 	it('refuses a range or a page size it does not offer', () => {
 		expect(() => dashboard(P.seed(), { days: 10, today: seed.today })).toThrow('Show 7, 30 or 90 days.');
 		expect(() => batchPage(P.seed(), { size: 10 }, seed.today)).toThrow('Show 8, 16 or 32 rows a page.');
+	});
+});
+
+describe("a client's journey, driven from the console (SC-79), matches platform.js", () => {
+	const journeys = (seed.state as unknown as { journeys: Record<string, MockJourney> }).journeys;
+	const wall = Date.parse('2026-10-08T06:00:00Z');
+	it('lists the same runs and timers, in time order, at every length of a journey day', () => {
+		for (const dayMinutes of [1440, 60, 5, 1]) {
+			const c = { ...munchly, dayMinutes };
+			expect(journeyOf(c, journeys.munchly, wall)).toEqual(P.journey({ clients: [c], journeys }, 'munchly', wall));
+		}
+	});
+	it('gives a client with no live journey its two daily runs, on request', () => {
+		expect(journeyOf(munchly, undefined, wall)).toEqual(
+			P.journey({ clients: [munchly], journeys: {} }, 'munchly', wall)
+		);
+	});
+	it('writes the audit lines platform.js writes', () => {
+		for (const t of journeyOf(munchly, journeys.munchly, wall).triggers)
+			expect(fireLine(munchly, t, catalog.agents)).toBe(P.fireLine(munchly, t));
+		for (const t of journeyOf(munchly, undefined, wall).triggers)
+			expect(fireLine(munchly, t, catalog.agents)).toBe(P.fireLine(munchly, t));
+		expect(resetLine(journeys.munchly.day0)).toBe(P.resetLine());
+	});
+	it('starts the journey again where platform.js does', () => {
+		const draft = { journeys: structuredClone(journeys) };
+		P.resetJourney(draft, 'munchly');
+		expect(journeyFromStart(journeys.munchly.day0)).toEqual(draft.journeys.munchly);
 	});
 });

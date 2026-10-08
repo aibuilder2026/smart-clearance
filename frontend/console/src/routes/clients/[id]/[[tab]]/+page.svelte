@@ -5,7 +5,7 @@
 	import { afterNavigate, beforeNavigate, goto } from '$app/navigation';
 	import { navigating, page } from '$app/state';
 	import { api } from '#lib/api/client.ts';
-	import { clientQuery } from '#lib/api/queries.ts';
+	import { clientQuery, journeyQuery } from '#lib/api/queries.ts';
 	import { useConsole } from '#lib/console.svelte.ts';
 	import { href, LINKS } from '#lib/links.ts';
 	import AuditList from '#lib/screens/AuditList.svelte';
@@ -15,6 +15,7 @@
 	import JourneyDaySheet from '#lib/screens/client/JourneyDaySheet.svelte';
 	import PeopleTab from '#lib/screens/client/PeopleTab.svelte';
 	import PlanTab from '#lib/screens/client/PlanTab.svelte';
+	import ResetJourneySheet from '#lib/screens/client/ResetJourneySheet.svelte';
 	import RulesTab from '#lib/screens/client/RulesTab.svelte';
 	import SupplyTab from '#lib/screens/client/SupplyTab.svelte';
 	import ClientStatus from '#lib/screens/ClientStatus.svelte';
@@ -38,6 +39,9 @@
 	const k = useConsole();
 	const id = $derived(page.params.id!);
 	const query = createQuery(() => clientQuery(id));
+	// whether the client's journey is live, which offers its reset (SC-79)
+	const journey = createQuery(() => journeyQuery(id));
+	let reset = $state(false);
 	const c = $derived(query.data);
 	const tab = $derived<ClientTab>(TABS.find((t) => t.id === page.params.tab)?.id ?? 'agents');
 	const allOff = $derived(c ? k.agentsOn(c) === 0 : false);
@@ -83,7 +87,24 @@
 					c.status !== 'live' ? { label: 'Go live', icon: 'circle-play' as const, onclick: goLive } : null,
 					allOff
 						? { label: 'Resume every agent', icon: 'play' as const, onclick: () => setAll(true) }
-						: { label: 'Pause every agent', icon: 'pause' as const, danger: true, onclick: () => (pause = true) }
+						: {
+								label: 'Pause every agent',
+								icon: 'pause' as const,
+								danger: true,
+								onclick: (): void => {
+									pause = true;
+								}
+							},
+					journey.data?.live
+						? {
+								label: 'Reset journey…',
+								icon: 'rotate-ccw' as const,
+								danger: true,
+								onclick: (): void => {
+									reset = true;
+								}
+							}
+						: null
 				]
 			: []
 	);
@@ -141,6 +162,7 @@
 			</div>
 		</div>
 		<JourneyDaySheet bind:open={clock} {c} />
+		<ResetJourneySheet bind:open={reset} {c} />
 		<Alert
 			bind:open={pause}
 			title="Pause every agent for {c.name}?"

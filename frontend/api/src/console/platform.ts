@@ -6,6 +6,8 @@
 import { isEmail } from '@smart-clearance/core/identity';
 import type { Agent } from '../types/shared';
 import type {
+	Journey,
+	JourneyTrigger,
 	AgentConfig,
 	BatchOverride,
 	BatchPage,
@@ -599,3 +601,116 @@ export function setupErrors(f: SetupAnswers, taken: (slug: string) => boolean): 
 		null
 	];
 }
+
+/* ---------- a client's journey, driven from the console (SC-79) ---------- */
+// design3/core/platform.js's journey, as backend-api answers GET …/journey: the Data agent's daily load and the
+// Watcher's daily check, and the timers an offer leaves, each with when it falls due in journey time and the wall time
+// it fires. A daily run fired now is that day's; a timer fired goes; a reset puts the journey back at day 0, 08:00.
+
+/** a live client's journey, as the mock keeps it */
+export type MockJourney = {
+	day0: string;
+	now: string;
+	setupConfirmed: boolean;
+	daily: Record<string, string>;
+	timers: { id: string; agent: string; key: JourneyTrigger['key']; ref: string; due: string; blocked?: string }[];
+};
+const DAILY = [
+	{ id: 'data', name: 'Data agent', time: '08:30', what: 'daily load' },
+	{ id: 'watcher', name: 'Watcher', time: '09:00', what: 'daily check' }
+] as const;
+const TIMER_WORDS: Record<string, string> = {
+	'offer.close': 'closed the offer window',
+	'shelf.due': 'ran the day-7 shelf check',
+	'report.due': 'wrote the report'
+};
+const DAY_MS = 864e5;
+const addDay = (iso: string) => new Date(Date.parse(iso + 'T00:00:00Z') + DAY_MS).toISOString().slice(0, 10);
+
+/** what is coming for a client, in time order: its daily runs, then its pending timers */
+export function journeyOf(c: Client, j: MockJourney | undefined, wall = Date.now()): Journey {
+	const off = (a: (typeof DAILY)[number]) => (c.agents[a.id] && !c.agents[a.id].on ? `The ${a.name} is off` : null);
+	if (!j)
+		return {
+			live: false,
+			clock: null,
+			triggers: DAILY.map((a) => ({
+				id: a.id,
+				agent: a.id,
+				kind: 'run' as const,
+				key: `${a.id}.daily` as JourneyTrigger['key'],
+				ref: null,
+				due: null,
+				dueWall: null,
+				time: a.time,
+				blocked: off(a)
+			}))
+		};
+	const today = j.now.slice(0, 10);
+	// a journey day lasts dayMinutes of wall time while a batch is at risk, as backend-api's clock runs
+	const wallOf = (at: string) =>
+		new Date(wall + ((Date.parse(at) - Date.parse(j.now)) * c.dayMinutes) / DAY_MINUTES).toISOString();
+	const runs: JourneyTrigger[] = DAILY.map((a) => {
+		const due = `${j.daily[a.id] === today ? addDay(today) : today}T${a.time}:00+05:30`;
+		return {
+			id: a.id,
+			agent: a.id,
+			kind: 'run',
+			key: `${a.id}.daily` as JourneyTrigger['key'],
+			ref: null,
+			due,
+			dueWall: wallOf(due),
+			time: a.time,
+			blocked: off(a) ?? (a.id === 'watcher' && !j.setupConfirmed ? 'After Setup is confirmed' : null)
+		};
+	});
+	const timers: JourneyTrigger[] = j.timers.map((t) => ({
+		id: t.id,
+		agent: t.agent,
+		kind: 'timer',
+		key: t.key,
+		ref: t.ref,
+		due: t.due,
+		dueWall: wallOf(t.due),
+		time: null,
+		blocked: t.blocked ?? null
+	}));
+	const day = Math.round((Date.parse(today + 'T00:00:00Z') - Date.parse(j.day0 + 'T00:00:00Z')) / DAY_MS);
+	return {
+		live: true,
+		clock: { now: j.now, day, day0: j.day0, dayMinutes: c.dayMinutes, compressed: c.dayMinutes < DAY_MINUTES },
+		triggers: [...runs, ...timers].sort((a, b) => Date.parse(a.due!) - Date.parse(b.due!))
+	};
+}
+
+/** the audit line a fire writes, in backend-api's words */
+export function fireLine(c: Client, t: JourneyTrigger, agents: Agent[]): string {
+	if (t.kind === 'run') {
+		const a = DAILY.find((x) => x.id === t.id)!;
+		return t.due
+			? `Ran the ${a.name}'s ${a.what} now for ${c.name}`
+			: `Ran the ${a.id === 'data' ? 'Data' : a.name} agent now for ${c.name}`;
+	}
+	const agent = agents.find((a) => a.id === t.agent);
+	return `Fired the ${agent?.name ?? t.agent} agent's timer now for ${c.name}: ${TIMER_WORDS[t.key]} for ${t.ref}`;
+}
+
+/** a fire, on the mock's journey: a daily run becomes that day's, a timer goes; and the line it adds to today's runs */
+export function fireOn(j: MockJourney | undefined, t: JourneyTrigger): string {
+	if (t.kind === 'run') {
+		if (j) j.daily[t.id] = j.now.slice(0, 10);
+		return j ? `ran the ${DAILY.find((x) => x.id === t.id)!.what} on request` : 'ran on request; nothing new';
+	}
+	if (j) j.timers = j.timers.filter((x) => x.id !== t.id);
+	return `${TIMER_WORDS[t.key]} for ${t.ref}, on request`;
+}
+
+/** the journey from day 0 again: nothing pending but the day's two runs, Setup to confirm again */
+export const journeyFromStart = (day0: string): MockJourney => ({
+	day0,
+	now: `${day0}T08:00:00+05:30`,
+	setupConfirmed: false,
+	daily: {},
+	timers: []
+});
+export const resetLine = (day0: string) => `started the journey again from ${day0}`;

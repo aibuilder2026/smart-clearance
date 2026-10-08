@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { useApp } from '../../../app.svelte';
+	import { cx } from '../../../cx';
 	import Aura from '../../../components/Aura.svelte';
 	import Badge from '../../../components/Badge.svelte';
 	import Button from '../../../components/Button.svelte';
@@ -14,6 +15,7 @@
 	import { useRoute } from '../../context';
 	import { addDays, castOf, fmt, permissionOf } from '../../model';
 	import ExportUpload from '../live/ExportUpload.svelte';
+	import { useLive } from '../../live.svelte';
 	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import PlayAs from '../common/PlayAs.svelte';
@@ -82,13 +84,24 @@
 		if (!f || !ws.uploadExport) return;
 		picked = { name: f.name, size: f.size };
 		void ws.uploadExport(f).then(() => {
-			if (!ws.failed) notices.toast({ text: 'Export uploaded · the Data agent is mapping its columns', tone: 'ok' });
+			if (ws.failed) return;
+			reading = true;
+			notices.toast({ text: 'Export uploaded · the Data agent is mapping its columns', tone: 'ok' });
 		});
 	};
+	// SC-79: a live workspace starts (and a reset leaves it) with no export mapped. Until the Data agent has mapped one,
+	// the card says so, keeps the fields it looks for, offers the upload and names its next run; Confirm waits
+	const live = useLive();
+	let reading = $state(false);
+	const mapped = $derived(done || !live?.on || s.setup.mapped > 0);
+	const phase = $derived(mapped ? 'mapped' : sending != null ? 'uploading' : reading ? 'mapping' : 'waiting');
+	const nextRun = $derived(`${s.rules.dataTime} ${live?.time && live.time < s.rules.dataTime ? 'today' : 'tomorrow'}`);
+	const n = $derived(dms.columns.length);
 </script>
 
-{#snippet status()}{#if done}<Badge tone="green" icon="check">Loaded into BigQuery</Badge>{:else}<Badge dot
+{#snippet status()}{#if done}<Badge tone="green" icon="check">Loaded into BigQuery</Badge>{:else if mapped}<Badge dot
 			>Mapped · confirm below</Badge
+		>{:else if phase === 'mapping'}<Badge tone="blue" dot>Mapping</Badge>{:else}<Badge dot>Waiting for an export</Badge
 		>{/if}{/snippet}
 {#snippet guard()}<Switch bind:checked={() => s.rules.territoryGuard, noop} label="Territory guard" />{/snippet}
 {#snippet tapsValue()}<Stepper bind:value={taps} min={1} max={50} label="routes" />{/snippet}
@@ -128,49 +141,72 @@
 				p={sending}
 				oncancel={ws.cancelUpload ? () => ws.cancelUpload?.('export') : undefined}
 			/>{/if}
-		<Card class="stack snug">
-			<div class="card-head">
-				<span class="row tight"
-					><span class="icontile"><Icon name="file-spreadsheet" size={17} stroke={2} /></span><span
-						class="stack tight"
-						style="gap: 0"
-						><b>{dms.file}</b><span class="t-footnote subtle"
-							>Bizom-style DMS export · {dms.rows} batches · {ws.data.client.distributors} distributors</span
+		{#if phase !== 'uploading'}<Card class="stack snug">
+				<div class="card-head">
+					<span class="row tight" style="min-width: 0"
+						><span class={cx('icontile', !mapped && 'soft')}><Icon name="file-spreadsheet" size={17} stroke={2} /></span
+						><span class="stack tight" style="gap: 0; min-width: 0"
+							><b style="overflow-wrap: anywhere"
+								>{mapped
+									? dms.file
+									: phase === 'mapping'
+										? (picked?.name ?? dms.file)
+										: 'No stock export mapped yet'}</b
+							><span class="t-footnote subtle"
+								>{#if mapped}Bizom-style DMS export · {dms.rows} batches · {ws.data.client.distributors} distributors{:else if phase === 'mapping'}The
+									Data agent is reading its columns{:else}The Data agent maps your distributors' first export, then
+									loads {dms.salesDays}
+									days of sell-through{/if}</span
+							></span
 						></span
-					></span
-				>{#if ws.uploadExport}<span class="row tight wrap"
-						>{#if sending == null}<Button size="sm" icon="upload" onclick={() => file?.click()}>Upload an export</Button
-							><input
-								bind:this={file}
-								type="file"
-								accept=".csv,text/csv"
-								class="sr-only"
-								tabindex={-1}
-								aria-hidden="true"
-								onchange={pick}
-							/>{/if}{@render status()}</span
-					>{:else}{@render status()}{/if}
-			</div>
-			<!-- svelte-ignore a11y_no_noninteractive_tabindex (the region scrolls, so the keyboard must reach it) -->
-			<div class="table-wrap" style="box-shadow: none" tabindex="0" role="region" aria-label="Field mapping">
-				<table class="table">
-					<thead><tr><th>Smart-Clearance field</th><th>Column in your file</th><th>Status</th></tr></thead>
-					<tbody>
-						{#each ws.data.setup.dms.columns as [f, c] (f)}<tr
-								><td class="strong">{f.replace('_', ' ')}</td><td class="mono">{c}</td><td
-									><Badge size="sm" tone="green" icon="check">mapped</Badge></td
-								></tr
-							>{/each}
-					</tbody>
-				</table>
-			</div>
-			<div class="row tight t-footnote muted">
-				<Aura on={!done} class="icontile soft" style="width: 26px; height: 26px; border-radius: 8px"
-					><Icon name="database" size={14} /></Aura
-				>Data Agent mapped {dms.columns.length} of {dms.columns.length} columns and back-filled {dms.salesDays} days of sell-through
-				by pincode and by shop.
-			</div>
-		</Card>
+					>{#if ws.uploadExport}<span class="row tight wrap"
+							>{#if sending == null && phase !== 'mapping'}<Button
+									size="sm"
+									variant={phase === 'waiting' ? 'primary' : undefined}
+									icon="upload"
+									onclick={() => file?.click()}>Upload an export</Button
+								><input
+									bind:this={file}
+									type="file"
+									accept=".csv,text/csv"
+									class="sr-only"
+									tabindex={-1}
+									aria-hidden="true"
+									onchange={pick}
+								/>{/if}{@render status()}</span
+						>{:else}{@render status()}{/if}
+				</div>
+				<!-- svelte-ignore a11y_no_noninteractive_tabindex (the region scrolls, so the keyboard must reach it) -->
+				<div class="table-wrap" style="box-shadow: none" tabindex="0" role="region" aria-label="Field mapping">
+					<table class="table">
+						<thead><tr><th>Smart-Clearance field</th><th>Column in your file</th><th>Status</th></tr></thead>
+						<tbody>
+							{#each ws.data.setup.dms.columns as [f, c] (f)}<tr
+									><td class="strong">{f.replace('_', ' ')}</td><td class={mapped ? 'mono' : 'subtle'}
+										>{mapped ? c : phase === 'mapping' ? 'reading…' : 'not mapped yet'}</td
+									><td
+										>{#if mapped}<Badge size="sm" tone="green" icon="check">mapped</Badge
+											>{:else if phase === 'mapping'}<Badge size="sm" tone="blue" dot>mapping</Badge>{:else}<Badge
+												size="sm"
+												dot>waiting</Badge
+											>{/if}</td
+									></tr
+								>{/each}
+						</tbody>
+					</table>
+				</div>
+				<div class="row tight t-footnote muted">
+					<Aura
+						on={!done && phase !== 'waiting'}
+						class="icontile soft"
+						style="width: 26px; height: 26px; border-radius: 8px"><Icon name="database" size={14} /></Aura
+					>{#if mapped}Data Agent mapped {n} of {n} columns and back-filled {dms.salesDays} days of sell-through by pincode
+						and by shop.{:else if phase === 'mapping'}Data Agent is matching the file's columns to these fields.{:else}<span
+							>Upload an export now, or the Data Agent maps the day's export at its run at <b class="tnum">{nextRun}</b
+							>.</span
+						>{/if}
+				</div>
+			</Card>{/if}
 		<div
 			style="display: grid; gap: 20px; grid-template-columns: {app.bp === 'desktop'
 				? 'repeat(2, minmax(0,1fr))'
@@ -338,9 +374,17 @@
 					variant="primary"
 					iconRight="arrow-right"
 					onclick={() => router.go('command')}>Open Command Center</Button
-				>{:else}<Button variant="primary" size="lg" icon="check" loading={busy} onclick={confirm}
-					>Confirm and start watching</Button
-				>{/if}
+				>{:else}<Button
+					variant="primary"
+					size="lg"
+					icon="check"
+					loading={busy}
+					disabled={!mapped}
+					aria-describedby={mapped ? undefined : 'setup-why'}
+					onclick={confirm}>Confirm and start watching</Button
+				>{#if !mapped}<span id="setup-why" class="setup-why"
+						><Icon name="info" size={15} stroke={2.2} />Confirm once the Data agent has mapped an export.</span
+					>{/if}{/if}
 		</div>
 	</div>
 </Screen>

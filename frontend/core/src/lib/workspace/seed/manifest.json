@@ -3,13 +3,13 @@
 	"sources": {
 		"design3/core/money.js": "c6ad0a4d6d2edfaf",
 		"design3/core/data.js": "4f3d664c57808b11",
-		"design3/core/store.js": "2b6b85628a795539",
-		"design3/core/platform.js": "cacce6c5bf929895",
+		"design3/core/store.js": "a20f5029867446c7",
+		"design3/core/platform.js": "a201423473de2445",
 		"design3/screens/admin.jsx": "5ad6b5d3bfc25dea",
 		"design3/system/product.jsx": "0cb832b183ab3576",
 		"design3/core/flow.js": "ed189a2e26749783"
 	},
 	"files": {
-		"workspace.json": "7eb9e94668ef93b1"
+		"workspace.json": "b17b4e113642ba22"
 	}
 }

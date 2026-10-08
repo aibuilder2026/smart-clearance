@@ -60,6 +60,8 @@ def ws_rules(c: m.Client, agents: dict[str, dict[str, Any]]) -> dict[str, Any]:
     """the workspace's guardrails, as its Rules screen edits them"""
     return {
         "watchTime": agents.get("watcher", {}).get("time", "09:00"),
+        # the Data agent's daily run, which Setup names while it waits for the first export (SC-79)
+        "dataTime": agents.get("data", {}).get("time", "08:30"),
         "floors": floors_pct(c),
         "approvalTaps": c.approval_taps,
         "hindiOffers": c.hindi_offers,

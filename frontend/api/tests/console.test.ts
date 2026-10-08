@@ -198,6 +198,59 @@ describe('every change is logged in the words the prototype uses', () => {
 			});
 		await expect(api.setDayMinutes('nope', 5)).rejects.toMatchObject({ status: 404 });
 	});
+	it("a client's runs and timers fired now, and its journey started again (SC-79)", async () => {
+		const j = await api.journey('munchly');
+		expect(j.live).toBe(true);
+		expect(j.clock).toMatchObject({ day: 1, day0: '2026-10-02', dayMinutes: 1440 });
+		expect(j.triggers.map((t) => t.id)).toEqual(['data', 'watcher', 'timer-1', 'timer-2', 'timer-3']);
+		// today's daily load has run: a run now looks again, and the next is still tomorrow's
+		const next = j.triggers.find((t) => t.id === 'data')!.due;
+		expect((await api.fireTrigger('munchly', 'data')).triggers.find((t) => t.id === 'data')!.due).toBe(next);
+		expect((await lastAudit()).text).toBe("Ran the Data agent's daily load now for Munchly Foods");
+		// a timer: refused with its reason until it is ready, gone once fired
+		await expect(api.fireTrigger('munchly', 'timer-2')).rejects.toMatchObject({
+			status: 409,
+			message: 'After the van round: the papers come first'
+		});
+		const fired = await api.fireTrigger('munchly', 'timer-1');
+		expect(fired.triggers.map((t) => t.id)).not.toContain('timer-1');
+		expect((await lastAudit()).text).toBe(
+			"Fired the Outreach agent's timer now for Munchly Foods: closed the offer window for MF-2409-117"
+		);
+		await expect(api.fireTrigger('munchly', 'timer-1')).rejects.toMatchObject({ status: 404 });
+		// the reset, at a day length chosen then: both lines, and only the day's two runs to come
+		const reset = await api.resetJourney('munchly', { dayMinutes: 5 });
+		expect(reset.clock).toMatchObject({ day: 0, dayMinutes: 5, now: '2026-10-02T08:00:00+05:30' });
+		expect(reset.triggers.map((t) => [t.id, t.blocked])).toEqual([
+			['data', null],
+			['watcher', 'After Setup is confirmed']
+		]);
+		const [last, prev] = await api.audit();
+		expect([prev.text, last.text]).toEqual([
+			'Set the length of a journey day for Munchly Foods to 5 minutes (was a day)',
+			'started the journey again from 2026-10-02'
+		]);
+		// day 0's load, early: it is that day's run, so the next is the day after
+		expect(reset.triggers[0].due).toBe('2026-10-02T08:30:00+05:30');
+		const early = await api.fireTrigger('munchly', 'data');
+		expect(early.triggers.find((t) => t.id === 'data')!.due).toBe('2026-10-03T08:30:00+05:30');
+		await expect(api.resetJourney('munchly', { dayMinutes: 0 })).rejects.toMatchObject({ status: 422 });
+	});
+	it('a client with no live journey runs its daily agents on request, and has no journey to reset', async () => {
+		await api.createClient(kesari());
+		const j = await api.journey('kesari');
+		expect(j.live).toBe(false);
+		expect(j.triggers.map((t) => [t.id, t.due])).toEqual([
+			['data', null],
+			['watcher', null]
+		]);
+		await api.fireTrigger('kesari', 'data');
+		expect((await lastAudit()).text).toBe('Ran the Data agent now for Kesari Foods');
+		await expect(api.resetJourney('kesari')).rejects.toMatchObject({
+			status: 409,
+			message: "Kesari Foods' workspace isn't live, so it has no journey to start again."
+		});
+	});
 	it('a reminder to a distributor, the plan, and going live', async () => {
 		await api.remindDistributor('munchly', 'patil');
 		expect((await lastAudit()).text).toBe('Asked Patil Distributors again for its one-time permission');
