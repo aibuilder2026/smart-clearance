@@ -71,6 +71,7 @@ export const COVERAGE: Record<string, Coverage> = {
 	Skeleton: built,
 	Tile: built,
 	Countdown: built,
+	SellBar: built,
 	TrackerCard: built,
 	StatusBadge: built,
 	BatchRow: built,

@@ -54,4 +54,23 @@ at risk. The sell-out day and the margin come from the batch's own data, and eve
 
 ## The pick
 
-Waiting for the maintainer.
+Picked by the maintainer on 8 Oct 2026: **C · The projection drawn**.
+
+What the build carries, from the option and its remaining states:
+
+- **Which batches:** only a gated batch that sells through (not in a journey, status `gated`, nothing at risk). An
+  at-risk, safe or in-journey row is as it was.
+- **The bar** (the kit's `SellBar`, beside `Countdown`):
+  - the green part is the days the packs take to sell at today's rate (packs ÷ sales a day, rounded up);
+  - the hatched end is the last week retailers will not take the batch (money.js's `projectionStopDays`), drawn to the
+    days left;
+  - its accessible name: "Sells out in 48 days; retailers take it for 54 more days".
+- **The line** says how many days before retailers stop:
+  - "Sells out 6 days before retailers stop";
+  - "1 day before" for one day;
+  - "Sells out the day retailers stop" for none.
+- **Red means risk:** a failed gate is red only while the batch is at risk (`GateChips`' `quiet`), and neutral on a
+  batch selling through, in motion or cleared.
+- **From the data:** every figure comes from the batch's packs, sales a day and days left, and money.js's usable days.
+  Nothing is typed, and money.js is unchanged.
+- **The phone:** the line takes its own row under the bar, by the row's container rule at 380 px.

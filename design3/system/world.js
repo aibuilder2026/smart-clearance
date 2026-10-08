@@ -35,12 +35,16 @@
     const u = Math.max(0, Math.min(1, 1 - days / life));
     return /* @__PURE__ */ React.createElement("span", { className: cx("num", size, className), style: { "--wdth": Math.round(76 + 24 * u), "--wght": Math.round(620 + 180 * u), ...style } }, roll ? /* @__PURE__ */ React.createElement(Roll, { value: days, from: 0 }) : days);
   }
-  function GateChips({ gates, size }) {
-    return /* @__PURE__ */ React.createElement("span", { className: "row tight wrap" }, gates.map((g) => /* @__PURE__ */ React.createElement("span", { key: g.id, className: cx("gate", g.pass ? "pass" : "fail"), title: `${g.app}: ${g.rule}, has ${g.has}` }, /* @__PURE__ */ React.createElement(Icon, { name: g.pass ? "check" : "x", size: 13, stroke: 2.6 }), g.app, size !== "sm" && /* @__PURE__ */ React.createElement("span", { style: { fontWeight: 500 } }, g.has, "/", g.need))));
+  function GateChips({ gates, size, quiet }) {
+    return /* @__PURE__ */ React.createElement("span", { className: "row tight wrap" }, gates.map((g) => /* @__PURE__ */ React.createElement("span", { key: g.id, className: cx("gate", g.pass ? "pass" : "fail", !g.pass && quiet && "quiet"), title: `${g.app}: ${g.rule}, has ${g.has}` }, /* @__PURE__ */ React.createElement(Icon, { name: g.pass ? "check" : "x", size: 13, stroke: 2.6 }), g.app, size !== "sm" && /* @__PURE__ */ React.createElement("span", { style: { fontWeight: 500 } }, g.has, "/", g.need))));
   }
   function Countdown({ days, life, status, label }) {
     const p = Math.max(0.025, Math.min(1, days / life));
     return /* @__PURE__ */ React.createElement("div", { className: cx("countdown", status === "at-risk" ? "risk" : status === "gated" ? "gated" : ""), role: "img", "aria-label": label || `${days} of ${life} days of shelf life left` }, /* @__PURE__ */ React.createElement("i", { style: { "--p": p } }));
+  }
+  function SellBar({ days, sell, usable }) {
+    const span = Math.max(days, 1);
+    return /* @__PURE__ */ React.createElement("div", { className: "sellbar", role: "img", "aria-label": `Sells out in ${sell} ${sell === 1 ? "day" : "days"}; retailers take it for ${usable} more ${usable === 1 ? "day" : "days"}` }, /* @__PURE__ */ React.createElement("i", { style: { "--p": Math.min(1, sell / span) } }), /* @__PURE__ */ React.createElement("b", { style: { "--at": Math.min(1, usable / span) } }));
   }
   function Tile({ label, icon, children, foot, live, className, style }) {
     return /* @__PURE__ */ React.createElement("div", { className: cx("tile", live && "live", className), style }, /* @__PURE__ */ React.createElement("span", { className: "tl-label" }, icon && /* @__PURE__ */ React.createElement(Icon, { name: icon, size: 15 }), label), /* @__PURE__ */ React.createElement("span", { className: "tl-value" }, children), foot && /* @__PURE__ */ React.createElement("span", { className: "tl-foot" }, foot));
@@ -217,5 +221,5 @@
     const cut = u.indexOf("/");
     return /* @__PURE__ */ React.createElement("div", { className: "device-window", style }, /* @__PURE__ */ React.createElement("div", { className: "chrome" }, /* @__PURE__ */ React.createElement("span", { className: "lights", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("i", null), /* @__PURE__ */ React.createElement("i", null), /* @__PURE__ */ React.createElement("i", null)), u ? /* @__PURE__ */ React.createElement("span", { className: "addr" }, /* @__PURE__ */ React.createElement(Icon, { name: "lock", size: 12, stroke: 2.2 }), /* @__PURE__ */ React.createElement("span", { className: "host" }, cut < 0 ? u : u.slice(0, cut)), cut >= 0 && /* @__PURE__ */ React.createElement("span", { className: "path" }, u.slice(cut))) : /* @__PURE__ */ React.createElement("span", { className: "wtitle" }, title)), /* @__PURE__ */ React.createElement("div", { style: { position: "relative", minHeight: 0 } }, children));
   }
-  Object.assign(window.SC3, { Roll, Money, DaysNum, GateChips, Countdown, Tile, Aura, Tracker, VTracker, AgentFeed, ClusterMap, HaulLine, ChannelBars, TrendChart, MixBar, CodeBlock, StatusBar, PhoneFrame, WindowFrame, CH_ORDER });
+  Object.assign(window.SC3, { Roll, Money, DaysNum, GateChips, Countdown, SellBar, Tile, Aura, Tracker, VTracker, AgentFeed, ClusterMap, HaulLine, ChannelBars, TrendChart, MixBar, CodeBlock, StatusBar, PhoneFrame, WindowFrame, CH_ORDER });
 })();
