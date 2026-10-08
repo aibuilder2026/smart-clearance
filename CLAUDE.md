@@ -694,6 +694,8 @@
     - agents 187 pass;
     - played through on the console's mock build (`frontend-console-mock`, :4196): a timer asked and fired; the reset at Demo, with both audit lines;
     - the browser suites were not run (SC-55).
-  - **Hosting:** see the hosted pages' commit below.
+  - **Hosting:**
+    - the hosted console loads commit `99483d5`: re-pinned from `0384e24`, so it also carries SC-68's journey-day badge; it was checked to render with the triggers;
+    - the hosted app page stays on `58c6874`: re-pinning it waits on SC-75's note about live mode's files, and Setup's waiting state shows only in live mode.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
