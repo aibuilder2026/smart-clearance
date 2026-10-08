@@ -1,0 +1,6 @@
+/* SC-84's console mockup: the client's first stock export, on the design system's tokens; nothing loops. */
+
+/* the place to drop the export, inside the card */
+.s84-drop { display: grid; justify-items: center; gap: 10px; padding: 26px 20px; text-align: center; border-radius: 16px; background: var(--surface-sunken, var(--fill)); outline: 1.5px dashed color-mix(in oklab, var(--primary) 45%, var(--line-2)); outline-offset: -1.5px; transition: background-color var(--t-fast); }
+.s84-drop.over { background: var(--primary-soft); }
+.s84-drop .t-subhead { max-width: 52ch; }
