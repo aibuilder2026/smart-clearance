@@ -32,6 +32,9 @@ type Seen = {
 type Moment = { public: WorkspacePublic; members: Record<string, Seen> };
 const MOMENTS = import.meta.glob<Moment>('./fixtures/*.json', { eager: true, import: 'default' });
 const moment = (name: string): Moment => structuredClone(MOMENTS[`./fixtures/${name}.json`]);
+// the two batches the story's journey runs (SC-86): each its own case
+const CHIPS = 'MF-2409-117';
+const MANGO = 'MF-2410-118';
 
 /** backend-api as one member sees it; any route can be answered otherwise */
 function fakeApi(m: Moment, who: string, over: Partial<Record<keyof WorkspaceApi, unknown>> = {}): WorkspaceApi {
@@ -172,7 +175,8 @@ describe('live, and the journey clock', () => {
 		const m = moment('planned');
 		const st = stream();
 		const s = source(fakeApi(m, 'priya'), st.events);
-		const r = await draw(s, 'route');
+		const r = await draw(s, 'route', CHIPS);
+		await waitFor(() => expect(s.case?.batch.id).toBe(CHIPS));
 		st.set('reconnecting');
 		await waitFor(() => expect(text(r)).toContain('Reconnecting…'));
 		expect(text(r)).toContain('Updates paused at 08:00');
@@ -191,8 +195,9 @@ describe('live, and the journey clock', () => {
 
 describe('Setup before the first export is mapped (SC-79)', () => {
 	it("says it is waiting, keeps the fields, names the Data agent's run, and holds Confirm with its reason", async () => {
+		// a workspace whose first export no one has mapped yet (the story's comes mapped, SC-84)
 		const m = moment('start');
-		expect(m.members.priya.snapshot.setup.mapped).toBe(0);
+		Object.assign(m.members.priya.snapshot.setup, { mapped: 0, lastImport: null });
 		const r = await draw(source(fakeApi(m, 'priya')), 'setup');
 		await waitFor(() => expect(text(r)).toContain('No stock export mapped yet'));
 		expect(text(r)).toContain('Waiting for an export');
@@ -225,7 +230,8 @@ describe('a step that did not go through', () => {
 			tries++ ? Promise.resolve({ seq: 1, case: null }) : Promise.reject(new ApiError(500, NO))
 		);
 		const s = source(fakeApi(m, 'priya', { approve }));
-		const r = await draw(s, 'route');
+		const r = await draw(s, 'route', CHIPS);
+		await waitFor(() => expect(s.case?.batch.id).toBe(CHIPS));
 		window.dispatchEvent(new Event('sc3:approve-open'));
 		await waitFor(() => expect(r.getByRole('button', { name: 'Approve · release the agents' })).toBeTruthy());
 		await fireEvent.click(r.getByRole('button', { name: 'Approve · release the agents' }));
@@ -257,16 +263,10 @@ describe('a step that did not go through', () => {
 });
 
 describe('the flagged batches', () => {
-	// a second batch in a journey beside the chips: the Mango Drink batch, flagged and not going to a food bank
+	// the Watcher flags the chips and the Mango Drink, each its own journey (SC-86): the Mango waits for its label, the
+	// chips' plan for Priya's yes
 	function twoFlagged() {
-		const m = moment('planned');
-		const seen = m.members.priya;
-		const mango = seen.snapshot.cases.find((c) => c.donation != null)!;
-		mango.donation = null;
-		mango.stage = 2;
-		mango.phase = 'at-risk';
-		seen.cases[mango.ref].donation = null;
-		return { m, mango: mango.ref, chips: seen.snapshot.cases.find((c) => c.ref !== mango.ref)!.ref };
+		return { m: moment('planned'), mango: MANGO, chips: CHIPS };
 	}
 
 	it('are tabs over the Command Center tracker card, and a tab puts its batch in focus', async () => {
@@ -394,24 +394,65 @@ describe('the label photo, taken or uploaded (SC-80)', () => {
 	});
 });
 
-describe('the quiet Command Center (SC-82)', () => {
-	it('opens a batch in a journey from the watchlist: the one going to a food bank, in its Route Room', async () => {
-		const m = moment('start');
-		const mango = m.members.priya.snapshot.cases[0].ref;
+describe('the Command Center (SC-82)', () => {
+	it('opens a batch in a journey from the watchlist, each in its Route Room', async () => {
+		const m = moment('executing');
 		const s = source(fakeApi(m, 'priya'));
 		const go = vi.fn();
 		const r = render(LiveHost, {
 			props: { source: s, screen: 'command', at: null, onnavigate: go }
 		}) as unknown as RenderResult<never>;
 		await waitFor(() => expect(s.status.phase).toBe('ready'));
-		await waitFor(() => expect(text(r)).toContain('Nothing at risk today'));
-		const row = [...r.container.querySelectorAll('button.batchrow')].find((b) => b.textContent?.includes(mango))!;
-		await fireEvent.click(row);
-		expect(go).toHaveBeenCalledWith('route', { replace: undefined, ref: mango });
+		await waitFor(() => expect(r.container.querySelector('button.batchrow')).toBeTruthy());
+		const rows = [...r.container.querySelectorAll('button.batchrow')];
+		await fireEvent.click(rows.find((b) => b.textContent?.includes(CHIPS))!);
+		expect(go).toHaveBeenCalledWith('route', { replace: undefined, ref: CHIPS });
 		// a batch in no journey stays where it is
 		go.mockClear();
-		const other = [...r.container.querySelectorAll('button.batchrow')].find((b) => !b.textContent?.includes(mango))!;
+		const other = rows.find((b) => ![CHIPS, MANGO].some((ref) => b.textContent?.includes(ref)))!;
 		await fireEvent.click(other);
 		expect(go).not.toHaveBeenCalled();
+	});
+});
+
+describe("each batch's screens follow its own plan (SC-85)", () => {
+	it("the Mango Drink's Route Room and Execution say only what its plan holds", async () => {
+		const m = moment('executing');
+		const s = source(fakeApi(m, 'priya'));
+		const r = await draw(s, 'route', MANGO);
+		await waitFor(() => expect(s.case?.batch.id).toBe(MANGO));
+		await waitFor(() => expect(text(r)).toContain('Recommended split'));
+		const route = text(r);
+		// a sentence for each line of its plan, and the exit it left out with its reason
+		expect(route).toContain('1372 units to the kirana cluster');
+		expect(route).toContain('Capped by what 58 kiranas can move');
+		expect(route).toContain('150 units to the Hyderabad staff sale');
+		expect(route).toContain('58 units to a food bank');
+		expect(route).toContain('ExpireSoon is left out (needs 30+ days, has 22)');
+		expect(route).not.toContain('units to ExpireSoon at ₹0');
+		expect(route).not.toContain('gets nothing this time');
+		expect(route).not.toContain('Alternative considered'); // no single exit could take it all
+		const r2 = await draw(s, 'execution', MANGO);
+		await waitFor(() => expect(text(r2)).toContain('Lister · ExpireSoon'));
+		const ex = text(r2);
+		expect(ex).toContain('not in this plan');
+		expect(ex).not.toContain('ExpireSoon request');
+		expect(ex).not.toContain('Negotiator');
+		expect(ex).toContain('Outreach · 58 kiranas');
+		// its own cluster on the map: Lakshmi Agencies' godown and shops, not Nagpur's
+		const map = r2.container.querySelector('.map[role="img"]')!;
+		expect(map.getAttribute('aria-label')).toMatch(/^Hyderabad cluster: Begum Bazaar godown and 58 kiranas/);
+		expect(norm(map.textContent)).not.toContain('Itwari');
+		expect(ex).toContain('Donation · Mango Drink');
+		expect(ex).toContain('two agents');
+	});
+
+	it("the chips' Execution has no donation card: its plan has no food bank", async () => {
+		const s = source(fakeApi(moment('executing'), 'priya'));
+		const r = await draw(s, 'execution', CHIPS);
+		await waitFor(() => expect(s.case?.batch.id).toBe(CHIPS));
+		await waitFor(() => expect(text(r)).toContain('Negotiator'));
+		expect(text(r)).not.toContain('Donation ·');
+		expect(text(r)).toContain('three agents');
 	});
 });

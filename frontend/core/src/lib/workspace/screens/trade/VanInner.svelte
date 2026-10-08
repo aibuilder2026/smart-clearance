@@ -16,7 +16,7 @@
 	import { prefersReducedMotion } from '../../../motion';
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
-	import { cartons, fmt } from '../../model';
+	import { cartons, clusterOf, fmt } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import ShelfCheck from '../brand/ShelfCheck.svelte';
@@ -74,6 +74,7 @@
 		{#snippet main()}
 			<Card pad={false} style="overflow: hidden"
 				><ClusterMap
+					{...clusterOf(c.dist)}
 					kiranas={c.kiranas}
 					orderedCount={h.orders.length}
 					route={h.orders.length > 0}

@@ -17,7 +17,7 @@
 	import Icon from '../../../icons/Icon.svelte';
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
-	import { castOf, first, fmt, heroModel, isRouted, productName } from '../../model';
+	import { castOf, clusterOf, first, fmt, heroModel, isRouted, productName } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import PlayAs from '../common/PlayAs.svelte';
@@ -61,6 +61,15 @@
 		['Net, planned', '', fmt.inr(c.plan.net)],
 		['Net, actual', `−${fmt.inr(c.actual.delta)} on the counter`, fmt.inr(c.actual.net)]
 	]);
+	// the cards follow the case's own plan (SC-85): the Lister and the Negotiator for an ExpireSoon line, Outreach for a
+	// kirana line, the donation for a food bank; a channel the Router left out says why
+	const has = (id: string) => c.plan.lines.some((l) => l.id === id && l.units > 0);
+	const hasES = $derived(has('expiresoon'));
+	const hasKirana = $derived(has('kirana'));
+	const esRow = $derived(c.plan.rows.find((r) => r.id === 'expiresoon'));
+	const giving = $derived(c.donation.units > 0);
+	const at = $derived([hasES, hasKirana, hasES, giving].filter(Boolean).length);
+	const COUNT = ['no agents', 'one agent', 'two agents', 'three agents', 'four agents'];
 	const STAGES = ['approve', 'execute', 'settle', 'report'];
 	const timeline = $derived(s.feed.filter((e) => STAGES.includes(e.stage)));
 </script>
@@ -70,154 +79,168 @@
 {#snippet main()}<div
 		style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); align-items: start"
 	>
-		<Card class="stack snug">
-			<div class="card-head">
-				<span class="row tight"
-					><Aura on={!h.listing} class="icontile violet" style="border-radius: 9px"
-						><Icon name="shopping-bag" size={17} stroke={2} /></Aura
-					><span class="card-title">Lister · ExpireSoon</span></span
-				>{#if h.listing}<Badge
-						tone={h.listing.status === 'awarded' ? 'green' : 'violet'}
-						dot
-						live={h.listing.status === 'live'}>{h.listing.status}</Badge
-					>{:else}<Badge>queued</Badge>{/if}
-			</div>
-			<CodeBlock code={req} label="ExpireSoon request" />{#if h.listing}<CodeBlock
-					code={res}
-					label="ExpireSoon response"
-				/>{/if}
-			<span class="t-footnote subtle"
-				>The marketplace is mocked; the request and response are what a partner API returns. Buyers in {W.short}'s
-				territories never see the lot.</span
-			>
-			{#if h.listing}<Button variant="outline" icon="external-link" onclick={() => (sheet = true)}
-					>Open on ExpireSoon</Button
-				>{/if}
-		</Card>
-		<Card class="stack snug">
-			<div class="card-head">
-				<span class="row tight"
-					><Aura on={!!h.offer && units < c.lines.kirana.units} class="icontile" style="border-radius: 9px"
-						><Icon name="send" size={17} stroke={2} /></Aura
-					><span class="card-title">Outreach · {c.offered} kiranas</span></span
-				><Badge tone="blue" icon="bell">push · Hindi</Badge>
-			</div>
-			{#if h.offer}<div
-					class="banner"
-					style="box-shadow: none; background: var(--fill); grid-template-columns: 28px minmax(0,1fr)"
+		{#if hasES}<Card class="stack snug">
+				<div class="card-head">
+					<span class="row tight"
+						><Aura on={!h.listing} class="icontile violet" style="border-radius: 9px"
+							><Icon name="shopping-bag" size={17} stroke={2} /></Aura
+						><span class="card-title">Lister · ExpireSoon</span></span
+					>{#if h.listing}<Badge
+							tone={h.listing.status === 'awarded' ? 'green' : 'violet'}
+							dot
+							live={h.listing.status === 'live'}>{h.listing.status}</Badge
+						>{:else}<Badge>queued</Badge>{/if}
+				</div>
+				<CodeBlock code={req} label="ExpireSoon request" />{#if h.listing}<CodeBlock
+						code={res}
+						label="ExpireSoon response"
+					/>{/if}
+				<span class="t-footnote subtle"
+					>The marketplace is mocked; the request and response are what a partner API returns. Buyers in {W.short}'s
+					territories never see the lot.</span
 				>
-					<Mark size={28} /><span class="hi t-subhead" lang="hi" style="line-height: 1.45">{c.push.offer.body}</span>
-				</div>{/if}
-			<div class="row wrap" style="gap: 18px">
-				<div class="stack tight" style="gap: 0">
-					<span class="num m"
-						><Roll value={h.orders.length} /><span class="subtle" style="font-size: 0.45em">{` / ${c.offered}`}</span
-						></span
-					><span class="t-footnote subtle">kiranas ordered</span>
-				</div>
-				<div class="stack tight" style="gap: 0">
-					<span class="num m"
-						><Roll value={units} /><span class="subtle" style="font-size: 0.45em">{` / ${c.lines.kirana.units}`}</span
-						></span
-					><span class="t-footnote subtle">units</span>
-				</div>
-			</div>
-			<Progress value={units / c.lines.kirana.units} label="Units ordered" />
-			{#if h.offer && !h.orders.some((o) => o.id === c.kiranas[0].id)}<PlayAs who={cast.kirana.id} route="offer"
-					>Order as {cast.kirana.short}</PlayAs
-				>{/if}
-			<ClusterMap kiranas={c.kiranas} orderedCount={h.orders.length} route height={200} />
-			<div class="stack tight">
-				{#each h.orders.slice(-3).reverse() as o (o.id)}{@const k = c.kiranas.find((x) => x.id === o.id)!}
-					<div class="row between t-subhead">
-						<span>{k.name} <span class="subtle t-footnote">{k.area}</span></span><span class="tnum strong"
-							>{o.units} <span class="subtle t-caption">{o.at}</span></span
-						>
-					</div>{/each}{#if !h.orders.length}<span class="t-footnote muted"
-						>Orders arrive as shops tap the offer. No shop can order more than {ws.data.rules.shopCapTimes}× its own
-						{ws.data.rules.kiranaWindowDays}-day sales.</span
+				{#if h.listing}<Button variant="outline" icon="external-link" onclick={() => (sheet = true)}
+						>Open on ExpireSoon</Button
 					>{/if}
-			</div>
-		</Card>
-		<Card class="stack snug">
-			<div class="card-head">
-				<span class="row tight"
-					><Aura on={!!lastBid && lastBid.status === 'placed'} class="icontile gray" style="border-radius: 9px"
-						><Icon name="messages-square" size={17} stroke={2} /></Aura
-					><span class="card-title">Negotiator</span></span
-				>{#if h.award}<Badge tone="green" icon="check">awarded · ₹{c.counter.price.toFixed(2)}</Badge>{:else}<Badge
-						>reserve {fmt.rate(reserve)} · hidden</Badge
-					>{/if}
-			</div>
-			{#if h.chat.length}<Chat chat={h.chat} typing={!!lastBid && lastBid.status === 'placed'} />{:else}<span
-					class="t-footnote muted"
-					>Waiting for a bid from outside {W.short}'s territories. The agent counters anything under the reserve and
-					promises only what {first(cast.distributor.short)}'s calendar can keep.</span
-				>{/if}
-			{#if h.listing && !h.award && (!lastBid || lastBid.status === 'countered')}<PlayAs
-					who={cast.buyer.id}
-					route="listing"
-					>{lastBid ? `Answer the counter as ${cast.buyer.short}` : `Bid as ${cast.buyer.short} on ExpireSoon`}</PlayAs
-				>{/if}
-			{#if h.award}<List
-					>{#each AWARD as [k, sub, val] (k)}{#snippet value()}<span class="tnum strong">{val}</span>{/snippet}<ListRow
-							title={k}
-							sub={sub || undefined}
-							{value}
-						/>{/each}</List
-				>{/if}
-			{#if h.award}<Badge tone="green" icon="badge-check"
-					>Token {fmt.inr(c.award.token)} received · balance {fmt.inr(c.award.balance)} plus IGST in {ws.data.market
-						.balanceHours} h</Badge
-				>{/if}
-			{#if h.award && all && h.truck.status !== 'dispatched'}<PlayAs who={cast.distributor.id} route="van"
-					>Load the buyer's truck as {cast.distributor.short}</PlayAs
-				>{/if}
-		</Card>
-		<Card class="stack snug">
-			<div class="card-head">
-				<span class="row tight"
-					><Aura on={!s.mango.donation} class="icontile red" style="border-radius: 9px"
-						><Icon name="heart-handshake" size={17} stroke={2} /></Aura
-					><span class="card-title">Donation · {productName(c.donation.sku)}</span></span
-				>{#if s.mango.donation}<Badge tone="green" icon="check"
-						>{s.mango.donation === 'collected'
-							? 'collected'
-							: s.mango.donation === 'confirmed'
-								? 'pickup confirmed'
-								: 'pickup booked'}</Badge
-					>{:else}<Badge>matching partners</Badge>{/if}
-			</div>
-			<div class="row" style="gap: 14px">
-				<Product name={c.donation.sku.img} size={72} />
-				<div class="stack tight" style="gap: 2px">
-					<b>{c.donation.batch.id} · {c.donation.batch.daysLeft} days left</b><span class="t-footnote muted"
-						>{c.donation.dist.name}, {c.donation.dist.city}: {fmt.num(ML('kirana').units)} packs to her kiranas, {ML(
-							'staff'
-						).units} to her staff sale, {c.donation.units} left for a food bank. Too few days for ExpireSoon.</span
+			</Card>{:else}<Card class="stack snug">
+				<div class="card-head">
+					<span class="row tight"
+						><span class="icontile gray" style="border-radius: 9px"
+							><Icon name="shopping-bag" size={17} stroke={2} /></span
+						><span class="card-title">Lister · ExpireSoon</span></span
+					><Badge>not in this plan</Badge>
+				</div>
+				<span class="t-footnote muted"
+					>{#if esRow && !esRow.eligible}ExpireSoon is left out of this plan ({esRow.reason}).{:else}The Router gave
+						ExpireSoon nothing: the other exits pay more a unit.{/if} The Lister has nothing to list.</span
+				>
+			</Card>{/if}
+		{#if hasKirana}<Card class="stack snug">
+				<div class="card-head">
+					<span class="row tight"
+						><Aura on={!!h.offer && units < c.lines.kirana.units} class="icontile" style="border-radius: 9px"
+							><Icon name="send" size={17} stroke={2} /></Aura
+						><span class="card-title">Outreach · {c.offered} kiranas</span></span
+					><Badge tone="blue" icon="bell">push · Hindi</Badge>
+				</div>
+				{#if h.offer}<div
+						class="banner"
+						style="box-shadow: none; background: var(--fill); grid-template-columns: 28px minmax(0,1fr)"
 					>
+						<Mark size={28} /><span class="hi t-subhead" lang="hi" style="line-height: 1.45">{c.push.offer.body}</span>
+					</div>{/if}
+				<div class="row wrap" style="gap: 18px">
+					<div class="stack tight" style="gap: 0">
+						<span class="num m"
+							><Roll value={h.orders.length} /><span class="subtle" style="font-size: 0.45em">{` / ${c.offered}`}</span
+							></span
+						><span class="t-footnote subtle">kiranas ordered</span>
+					</div>
+					<div class="stack tight" style="gap: 0">
+						<span class="num m"
+							><Roll value={units} /><span class="subtle" style="font-size: 0.45em">{` / ${c.lines.kirana.units}`}</span
+							></span
+						><span class="t-footnote subtle">units</span>
+					</div>
 				</div>
-			</div>
-			<List
-				>{#each ws.data.setup.partners as p (p.name)}{@const fits =
-						c.donation.batch.daysLeft >= p.minDays && c.donation.units >= p.minUnits}<ListRow
-						icon={fits ? 'circle-check' : 'circle-x'}
-						iconTone={fits ? undefined : 'gray'}
-						title={p.name}
-						sub={fits
-							? `${p.minDays}+ days, ${p.minUnits}+ units · ${p.pickup}`
-							: `needs ${p.minDays}+ days and ${p.minUnits}+ units`}
-						value={fits ? matches : short}
-					/>{/each}</List
-			>
-			<span class="t-footnote subtle"
-				>The GST credit on donated packs is reversed: section 17(5)(h) blocks it on gifts, and since 1 October 2023
-				section 17(5)(fa) blocks it on CSR donations too.</span
-			>
-			{#if s.mango.donation === 'booked'}<PlayAs who={cast.foodbank.id} route="pickups"
-					>Confirm as {cast.foodbank.short}</PlayAs
-				>{/if}
-		</Card>
+				<Progress value={units / c.lines.kirana.units} label="Units ordered" />
+				{#if h.offer && c.kiranas[0] && !h.orders.some((o) => o.id === c.kiranas[0].id)}<PlayAs
+						who={cast.kirana.id}
+						route="offer">Order as {cast.kirana.short}</PlayAs
+					>{/if}
+				<ClusterMap {...clusterOf(c.dist)} kiranas={c.kiranas} orderedCount={h.orders.length} route height={200} />
+				<div class="stack tight">
+					{#each h.orders.slice(-3).reverse() as o (o.id)}{@const k = c.kiranas.find((x) => x.id === o.id)!}
+						<div class="row between t-subhead">
+							<span>{k.name} <span class="subtle t-footnote">{k.area}</span></span><span class="tnum strong"
+								>{o.units} <span class="subtle t-caption">{o.at}</span></span
+							>
+						</div>{/each}{#if !h.orders.length}<span class="t-footnote muted"
+							>Orders arrive as shops tap the offer. No shop can order more than {ws.data.rules.shopCapTimes}× its own
+							{ws.data.rules.kiranaWindowDays}-day sales.</span
+						>{/if}
+				</div>
+			</Card>{/if}
+		{#if hasES}<Card class="stack snug">
+				<div class="card-head">
+					<span class="row tight"
+						><Aura on={!!lastBid && lastBid.status === 'placed'} class="icontile gray" style="border-radius: 9px"
+							><Icon name="messages-square" size={17} stroke={2} /></Aura
+						><span class="card-title">Negotiator</span></span
+					>{#if h.award}<Badge tone="green" icon="check">awarded · ₹{c.counter.price.toFixed(2)}</Badge>{:else}<Badge
+							>reserve {fmt.rate(reserve)} · hidden</Badge
+						>{/if}
+				</div>
+				{#if h.chat.length}<Chat chat={h.chat} typing={!!lastBid && lastBid.status === 'placed'} />{:else}<span
+						class="t-footnote muted"
+						>Waiting for a bid from outside {W.short}'s territories. The agent counters anything under the reserve and
+						promises only what {first(cast.distributor.short)}'s calendar can keep.</span
+					>{/if}
+				{#if h.listing && !h.award && (!lastBid || lastBid.status === 'countered')}<PlayAs
+						who={cast.buyer.id}
+						route="listing"
+						>{lastBid
+							? `Answer the counter as ${cast.buyer.short}`
+							: `Bid as ${cast.buyer.short} on ExpireSoon`}</PlayAs
+					>{/if}
+				{#if h.award}<List
+						>{#each AWARD as [k, sub, val] (k)}{#snippet value()}<span class="tnum strong">{val}</span
+								>{/snippet}<ListRow title={k} sub={sub || undefined} {value} />{/each}</List
+					>{/if}
+				{#if h.award}<Badge tone="green" icon="badge-check"
+						>Token {fmt.inr(c.award.token)} received · balance {fmt.inr(c.award.balance)} plus IGST in {ws.data.market
+							.balanceHours} h</Badge
+					>{/if}
+				{#if h.award && all && h.truck.status !== 'dispatched'}<PlayAs who={cast.distributor.id} route="van"
+						>Load the buyer's truck as {cast.distributor.short}</PlayAs
+					>{/if}
+			</Card>{/if}
+		{#if giving}<Card class="stack snug">
+				<div class="card-head">
+					<span class="row tight"
+						><Aura on={!s.mango.donation} class="icontile red" style="border-radius: 9px"
+							><Icon name="heart-handshake" size={17} stroke={2} /></Aura
+						><span class="card-title">Donation · {productName(c.donation.sku)}</span></span
+					>{#if s.mango.donation}<Badge tone="green" icon="check"
+							>{s.mango.donation === 'collected'
+								? 'collected'
+								: s.mango.donation === 'confirmed'
+									? 'pickup confirmed'
+									: s.mango.donation === 'declined'
+										? 'not taken'
+										: 'pickup booked'}</Badge
+						>{:else}<Badge>matching partners</Badge>{/if}
+				</div>
+				<div class="row" style="gap: 14px">
+					<Product name={c.donation.sku.img} size={72} />
+					<div class="stack tight" style="gap: 2px">
+						<b>{c.donation.batch.id} · {c.donation.batch.daysLeft} days left</b><span class="t-footnote muted"
+							>{c.donation.dist.name}, {c.donation.dist.city}: {fmt.num(ML('kirana').units)} packs to her kiranas, {ML(
+								'staff'
+							).units} to her staff sale, {c.donation.units} left for a food bank. Too few days for ExpireSoon.</span
+						>
+					</div>
+				</div>
+				<List
+					>{#each ws.data.setup.partners as p (p.name)}{@const fits =
+							c.donation.batch.daysLeft >= p.minDays && c.donation.units >= p.minUnits}<ListRow
+							icon={fits ? 'circle-check' : 'circle-x'}
+							iconTone={fits ? undefined : 'gray'}
+							title={p.name}
+							sub={fits
+								? `${p.minDays}+ days, ${p.minUnits}+ units · ${p.pickup}`
+								: `needs ${p.minDays}+ days and ${p.minUnits}+ units`}
+							value={fits ? matches : short}
+						/>{/each}</List
+				>
+				<span class="t-footnote subtle"
+					>The GST credit on donated packs is reversed: section 17(5)(h) blocks it on gifts, and since 1 October 2023
+					section 17(5)(fa) blocks it on CSR donations too.</span
+				>
+				{#if s.mango.donation === 'booked'}<PlayAs who={cast.foodbank.id} route="pickups"
+						>Confirm as {cast.foodbank.short}</PlayAs
+					>{/if}
+			</Card>{/if}
 		{#if h.van.status === 'done' || h.shelf}<ShelfCheck shelf={h.shelf} />{/if}
 	</div>{/snippet}
 {#snippet side()}<SectionTitle>Agent timeline</SectionTitle><Card
@@ -227,7 +250,7 @@
 <Screen
 	{me}
 	title="Execution"
-	sub={`${c.batch.id} · day 0 to ${ws.data.rules.kiranaWindowDays} · four agents`}
+	sub={`${c.batch.id} · day 0 to ${ws.data.rules.kiranaWindowDays} · ${COUNT[at]}`}
 	back="Route Room"
 >
 	{#if !started}<Card

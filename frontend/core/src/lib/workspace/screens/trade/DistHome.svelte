@@ -39,6 +39,9 @@
 	const units = $derived(h.orders.reduce((t, o) => t + o.units, 0));
 	const approved = $derived(isRouted(h.phase));
 	const settled = $derived(['settled', 'cleared'].includes(h.phase));
+	// the lines of the plan this distributor runs (SC-85): the van round for a kirana scheme, the lot for ExpireSoon
+	const hasKirana = $derived(c.plan.lines.some((l) => l.id === 'kirana' && l.units > 0));
+	const hasES = $derived(c.plan.lines.some((l) => l.id === 'expiresoon' && l.units > 0));
 	const toVan = (e: KeyboardEvent) => {
 		if (e.key === 'Enter' || e.key === ' ') {
 			e.preventDefault();
@@ -73,7 +76,8 @@
 						<p class="t-body" style="margin: 0">{c.push.verify.body}</p>
 						<div class="row" style="gap: 12px">
 							<Product name="phone-scan" size={72} /><span class="t-footnote muted"
-								>Shelf {c.batch.shelf} · one carton of {c.sku.name} · batch {c.batch.id}</span
+								>{c.batch.shelf ? `Shelf ${c.batch.shelf} · one` : 'One'} carton of {c.sku.name} · batch {c.batch
+									.id}</span
 							>
 						</div>
 						<Button variant="primary" size="lg" icon="camera" block onclick={() => go('photo')}>Open camera</Button>
@@ -103,75 +107,93 @@
 						>
 					</div>
 					<div class="stack tight t-subhead">
-						<div class="row top" style="gap: 10px">
-							<span class="dotmark" style="background: var(--ch-kirana)"></span><span
-								><b>{c.lines.kirana.units} packets to your kiranas</b> on the scheme: {fmt.rate(
-									c.lines.kirana.packPrice!
-								)} a pack,
-								{c.scheme.free} free with every {c.scheme.buy}, delivered on your {c.van.day} round.</span
-							>
-						</div>
-						<div class="row top" style="gap: 10px">
-							<span class="dotmark" style="background: var(--ch-expiresoon)"></span><span
-								><b>{c.lines.expiresoon.units} on ExpireSoon in your name</b> at ₹{c.lines.expiresoon.price}, hidden
-								from buyers in
-								{W.short}'s territories. The buyer collects with his own truck.</span
-							>
-						</div>
+						{#each c.plan.lines as ln (ln.id)}<div class="row top" style="gap: 10px">
+								<span class="dotmark" style="background: var(--ch-{ln.id})"></span>{#if ln.id === 'kirana'}<span
+										><b>{c.lines.kirana.units} packets to your kiranas</b> on the scheme: {fmt.rate(
+											c.lines.kirana.packPrice ?? 0
+										)} a pack,
+										{c.scheme.free} free with every {c.scheme.buy}, delivered on your {c.van.day} round.</span
+									>{:else if ln.id === 'expiresoon'}<span
+										><b>{c.lines.expiresoon.units} on ExpireSoon in your name</b> at ₹{c.lines.expiresoon.price}, hidden
+										from buyers in
+										{W.short}'s territories. The buyer collects with his own truck.</span
+									>{:else if ln.id === 'staff'}<span
+										><b>{ln.units} packets for your staff sale</b> at ₹{ln.price}, at {dist.godown}: sell them to your
+										staff and record what sold.</span
+									>{:else if ln.id === 'foodbank'}<span
+										><b>{ln.units} packets to a food bank</b>: the Donation agent books the pickup from your godown.</span
+									>{:else}<span><b>{ln.units} packets written off</b>: no exit takes them in time.</span>{/if}
+							</div>
+							<!-- eslint-disable-next-line svelte/no-useless-mustaches -- a space Svelte would trim at the block's edge, between one line and the next -->
+							{' '}{/each}
 					</div>
 				</Card>{/if}
-			{#if hero && approved}<div
-					style="display: grid; gap: 16px; grid-template-columns: {app.bp === 'phone'
+			{#if hero && approved && (hasKirana || hasES)}<div
+					style="display: grid; gap: 16px; grid-template-columns: {app.bp === 'phone' || !(hasKirana && hasES)
 						? 'minmax(0,1fr)'
 						: 'repeat(2, minmax(0,1fr))'}"
 				>
-					<Card interactive class="stack snug" onclick={() => go('van')} role="button" tabindex={0} onkeydown={toVan}>
-						<div class="card-head">
-							<span class="row tight"
-								><span class="icontile"><Icon name="truck" size={17} stroke={2} /></span><span class="card-title"
-									>{c.van.day} van round</span
-								></span
-							><Icon name="chevron-right" size={18} class="subtle" />
-						</div>
-						<div class="row base" style="gap: 8px">
-							<span class="num m"><Roll value={h.orders.length} /></span><span class="muted"
-								>shops · {cartons(units, c.sku.perCarton)}</span
-							>
-						</div>
-						<span class="t-footnote subtle"
-							>{h.van.status === 'done'
-								? `Delivered · all ${c.kiranas.length} shops`
-								: h.orders.length
-									? `Orders from the ${productName(c.sku)} scheme join this round`
-									: 'Scheme orders will appear here'}</span
+					{#if hasKirana}<Card
+							interactive
+							class="stack snug"
+							onclick={() => go('van')}
+							role="button"
+							tabindex={0}
+							onkeydown={toVan}
 						>
-					</Card>
-					<Card interactive class="stack snug" onclick={() => go('van')} role="button" tabindex={0} onkeydown={toVan}>
-						<div class="card-head">
-							<span class="row tight"
-								><span class="icontile violet"><Icon name="package" size={17} stroke={2} /></span><span
-									class="card-title">{c.buyer.city} lot · ExpireSoon</span
-								></span
-							><Icon name="chevron-right" size={18} class="subtle" />
-						</div>
-						<div class="row base" style="gap: 8px">
-							<span class="num m">{c.lines.expiresoon.units}</span><span class="muted"
-								>units · {cartons(c.lines.expiresoon.units, c.sku.perCarton)}</span
+							<div class="card-head">
+								<span class="row tight"
+									><span class="icontile"><Icon name="truck" size={17} stroke={2} /></span><span class="card-title"
+										>{c.van.day} van round</span
+									></span
+								><Icon name="chevron-right" size={18} class="subtle" />
+							</div>
+							<div class="row base" style="gap: 8px">
+								<span class="num m"><Roll value={h.orders.length} /></span><span class="muted"
+									>shops · {cartons(units, c.sku.perCarton)}</span
+								>
+							</div>
+							<span class="t-footnote subtle"
+								>{h.van.status === 'done'
+									? `Delivered · all ${c.kiranas.length} shops`
+									: h.orders.length
+										? `Orders from the ${productName(c.sku)} scheme join this round`
+										: 'Scheme orders will appear here'}</span
 							>
-						</div>
-						<span class="t-footnote subtle"
-							>{h.truck.status === 'dispatched'
-								? `Collected by ${c.buyer.name}'s truck`
-								: h.award
-									? `Sold at ₹${c.counter.price.toFixed(2)} · token ${fmt.inr(c.award.token)} paid`
-									: h.listing
-										? `Listed at ₹${c.lines.expiresoon.price} in your name · waiting for a buyer`
-										: 'Not listed'}</span
+						</Card>{/if}
+					{#if hasES}<Card
+							interactive
+							class="stack snug"
+							onclick={() => go('van')}
+							role="button"
+							tabindex={0}
+							onkeydown={toVan}
 						>
-					</Card>
+							<div class="card-head">
+								<span class="row tight"
+									><span class="icontile violet"><Icon name="package" size={17} stroke={2} /></span><span
+										class="card-title">{c.buyer.city} lot · ExpireSoon</span
+									></span
+								><Icon name="chevron-right" size={18} class="subtle" />
+							</div>
+							<div class="row base" style="gap: 8px">
+								<span class="num m">{c.lines.expiresoon.units}</span><span class="muted"
+									>units · {cartons(c.lines.expiresoon.units, c.sku.perCarton)}</span
+								>
+							</div>
+							<span class="t-footnote subtle"
+								>{h.truck.status === 'dispatched'
+									? `Collected by ${c.buyer.name}'s truck`
+									: h.award
+										? `Sold at ₹${c.counter.price.toFixed(2)} · token ${fmt.inr(c.award.token)} paid`
+										: h.listing
+											? `Listed at ₹${c.lines.expiresoon.price} in your name · waiting for a buyer`
+											: 'Not listed'}</span
+							>
+						</Card>{/if}
 				</div>{/if}
-			{#if hero && settled}<InvoiceDraft {h} />{/if}
-			{#if hero && approved}<EndWhole {settled} />{/if}
+			{#if hero && settled && c.docs.some((d) => d.id === 'invoice')}<InvoiceDraft {h} />{/if}
+			{#if hero && approved && c.sku.dp}<EndWhole {settled} />{/if}
 			<SectionTitle sub="From your nightly DMS export">Your stock</SectionTitle>
 			<div class="list">
 				{#each mine as v (v.id)}<BatchRow view={v} compact={app.bp === 'phone'} onopen={() => {}} />{/each}

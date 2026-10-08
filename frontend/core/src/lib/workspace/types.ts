@@ -234,7 +234,8 @@ export type Plan = {
 	itcRetained: number;
 	itcReversed: number;
 	disposalAvoided: number;
-	alt: { id: string; short: string; label: string; net: number };
+	/** the best single exit the Router weighed against its split; none when no exit could take the whole batch */
+	alt: { id: string; short: string; label: string; net: number } | null;
 	kg: number;
 	co2: number;
 	meals: number;

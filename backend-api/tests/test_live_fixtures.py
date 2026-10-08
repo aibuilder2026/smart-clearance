@@ -43,6 +43,7 @@ WHO = {
     "anita": ANITA,
     "vikram": VIKRAM,
     "arjun": ARJUN,
+    "lakshmi-owner": LAKSHMI,
 }
 
 
@@ -136,4 +137,21 @@ async def test_write_the_live_fixtures(api, munchly, cloud):
     ]
     await agent(api, f"/cases/{HERO}/shelf-check", "shelf", "outreach", counts=counts)
     await agent(api, f"/cases/{HERO}/report", "impact", "impact")
-    await _write(api, "cleared", ["priya", "rakesh", "anita", "vikram", "arjun", "meera"])
+    # the Mango Drink to its report too (SC-86): three of Lakshmi Agencies' kiranas order, the scheme closes, the staff
+    # sale is recorded, and its papers (no invoice, no credit note) follow the last of its lines
+    hyd = [k for k in J["kiranas"] if k["distributor"] == "lakshmi"][:3]
+    for k in hyd:
+        member = next(x for x in J["members"] if x["id"] == k["member"])
+        r = await api.post(
+            f"{WS}/cases/{MANGO}/orders", json={"units": 4 * k["sales14"]}, headers=token(member["login"])
+        )
+        assert r.status_code == 200, r.text
+    await agent(api, f"/cases/{MANGO}/offer/close", "close-m", "outreach")
+    r = await api.post(f"{WS}/cases/{MANGO}/staff-sale", json={"sold": 120}, headers=LAKSHMI)
+    assert r.status_code == 200, r.text
+    await agent(api, f"/cases/{MANGO}/documents", "paperwork-m", "paperwork")
+    assert (await api.post(f"{WS}/cases/{MANGO}/dispatches", json={"kind": "van"}, headers=LAKSHMI)).status_code == 200
+    counts = [{"kirana": k["id"], "left": k["sales14"]} for k in hyd]
+    await agent(api, f"/cases/{MANGO}/shelf-check", "shelf-m", "outreach", counts=counts)
+    await agent(api, f"/cases/{MANGO}/report", "impact-m", "impact")
+    await _write(api, "cleared", ["priya", "rakesh", "anita", "vikram", "arjun", "meera", "lakshmi-owner"])

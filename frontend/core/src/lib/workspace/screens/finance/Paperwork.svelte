@@ -30,7 +30,7 @@
 	const c = $derived(ws.case!);
 	const app = useApp();
 	const { toast } = useNotice();
-	const DOC = (id: string) => c.docs.find((d) => d.id === id)!;
+	const DOC = (id: string) => c.docs.find((d) => d.id === id);
 
 	const h = $derived(ws.state.hero);
 	const cast = $derived(castOf(ws.state, c));
@@ -38,12 +38,16 @@
 	const his = $derived(first(cast.distributor.short));
 	const W = $derived(ws.data.workspace);
 	const ready = $derived(!!h.docs);
-	let sel = $state('invoice');
+	// the pack opens on its first paper (SC-85: a batch with no buyer has no invoice)
+	let picked = $state<string | null>(null);
+	const sel = $derived(picked && DOC(picked) ? picked : (c.docs[0]?.id ?? 'invoice'));
 	let sheet = $state(false);
 	const doc = $derived(DOC(sel));
+	const invoice = $derived(DOC('invoice'));
+	const support = $derived(DOC('support'));
 
 	const open = (id: string) => {
-		sel = id;
+		picked = id;
 		if (app.bp !== 'desktop') sheet = true;
 	};
 	const exportPack = () => {
@@ -77,17 +81,17 @@
 			</div>{/each}
 	</div>
 	<KeepsWhat />
-	<Card class="row top" style="gap: 14px; background: var(--surface-2)"
-		><span class="icontile"><Icon name="quote" size={17} /></span>
-		<div>
-			<p class="t-body" style="margin: 0">
-				Credit note, GST memo, and {his}'s invoice attached as evidence. First batch this year with nothing for me to
-				chase.
-			</p>
-			<span class="t-footnote subtle">{cast.finance.short} · finance</span>
-		</div></Card
-	>{/snippet}
-{#snippet side()}{#if app.bp === 'desktop'}<SectionTitle
+	{#if invoice && support}<Card class="row top" style="gap: 14px; background: var(--surface-2)"
+			><span class="icontile"><Icon name="quote" size={17} /></span>
+			<div>
+				<p class="t-body" style="margin: 0">
+					Credit note, GST memo, and {his}'s invoice attached as evidence. First batch this year with nothing for me to
+					chase.
+				</p>
+				<span class="t-footnote subtle">{cast.finance.short} · finance</span>
+			</div></Card
+		>{/if}{/snippet}
+{#snippet side()}{#if app.bp === 'desktop' && doc}<SectionTitle
 			sub={doc.owner === ws.data.client.short ? `Issued by ${W.short}` : `Drafted for ${c.dist.name}`}
 			>{doc.type}</SectionTitle
 		>{#key sel}<div in:rise={{ y: 6, duration: 180 }}><Paper id={sel} /></div>{/key}{/if}{/snippet}
@@ -118,10 +122,10 @@
 	{:else}
 		<div class="stack" style="gap: 20px">
 			<div class="row wrap" style="gap: 12px">
-				<Tile label="{his}'s invoice" icon="receipt"><Money value={DOC('invoice').total!} size="s" /></Tile>
-				<Tile label="Price support" icon="hand-coins"><Money value={DOC('support').amount} size="s" /></Tile>
+				{#if invoice}<Tile label="{his}'s invoice" icon="receipt"><Money value={invoice.total!} size="s" /></Tile>{/if}
+				{#if support}<Tile label="Price support" icon="hand-coins"><Money value={support.amount} size="s" /></Tile>{/if}
 				<Tile label="GST credit kept" icon="badge-check"
-					><Money value={DOC('itc').amount} size="s" style="color: var(--primary-text)" /></Tile
+					><Money value={DOC('itc')?.amount ?? 0} size="s" style="color: var(--primary-text)" /></Tile
 				>
 				<Tile label="Things to chase" icon="list-checks"><span class="num s">0</span></Tile>
 			</div>

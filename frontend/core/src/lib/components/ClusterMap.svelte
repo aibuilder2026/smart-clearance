@@ -30,22 +30,37 @@
 		return out;
 	})();
 
+	type Area = [number, number];
+	/** a cluster's areas on the map (SC-85): Nagpur's as drawn; any other's spread round the ring road in the order its
+	 *  shops name them, the godown where Kalamna's is (the map is schematic) */
+	function areasOf(kiranas: Kirana[], godown: string): Record<string, Area> {
+		if (godown === 'Kalamna') return AREAS;
+		const names = [...new Set(kiranas.map((k) => k.area))];
+		const out: Record<string, Area> = {};
+		names.forEach((n, i) => {
+			const a = Math.PI * (0.15 + (1.7 * (i + 0.5)) / Math.max(names.length, 1));
+			out[n] = [Math.round(330 - Math.cos(a) * 190), Math.round(212 - Math.sin(a) * 125)];
+		});
+		return out;
+	}
+
 	type Point = { id: string; x: number; y: number; ordered: boolean; k?: Kirana };
 	/** the ordered kiranas round their areas, then the rest of the cluster's shops scattered (the kit's useKiranaPoints) */
-	function kiranaPoints(kiranas: Kirana[], total: number): Point[] {
+	function kiranaPoints(kiranas: Kirana[], total: number, areas: Record<string, Area>): Point[] {
 		const r = rnd(7);
 		const pts: Point[] = [];
 		const used: Record<string, number> = {};
+		const names = Object.keys(areas).filter((a) => a !== 'Kalamna');
+		const centre: Area = [330, 212];
 		kiranas.forEach((k, i) => {
-			const c = AREAS[k.area] || AREAS.Itwari;
+			const c = areas[k.area] || areas.Itwari || centre;
 			used[k.area] = (used[k.area] || 0) + 1;
 			const ang = used[k.area] * 2.4 + i;
 			const rad = 14 + used[k.area] * 9;
 			pts.push({ id: k.id, x: c[0] + Math.cos(ang) * rad, y: c[1] + Math.sin(ang) * rad * 0.8, ordered: true, k });
 		});
-		const names = Object.keys(AREAS).filter((a) => a !== 'Kalamna');
 		for (let i = pts.length; i < total; i++) {
-			const c = AREAS[names[i % names.length]];
+			const c = names.length ? areas[names[i % names.length]] : centre;
 			pts.push({ id: 'x' + i, x: c[0] + (r() - 0.5) * 92, y: c[1] + (r() - 0.5) * 70, ordered: false });
 		}
 		return pts;
@@ -68,6 +83,8 @@
 		title?: string;
 		/** the shops in the cluster, ordered or not */
 		total?: number;
+		/** the distributor's godown, by its area (SC-85): Kalamna is Nagpur's, drawn as the kit has it */
+		godown?: string;
 	};
 	let {
 		kiranas = [],
@@ -76,13 +93,16 @@
 		vanProgress,
 		height = 300,
 		title = 'Nagpur cluster',
-		total = 38
+		total = 38,
+		godown = 'Kalamna'
 	}: Props = $props();
 
-	// the kit's ClusterMap: the Kalamna godown and the cluster's kiranas on a schematic map, the ordered ones lit and
+	// the kit's ClusterMap: the distributor's godown and the cluster's kiranas on a schematic map, the ordered ones lit and
 	// pinging twice; the van's round draws itself once (1.6 s), and reduced motion shows it drawn
 	const reduce = $derived(prefersReducedMotion.current);
-	const pts = $derived(kiranaPoints(kiranas, total));
+	const areas = $derived(areasOf(kiranas, godown));
+	const labels = $derived(godown === 'Kalamna' ? LABELS : Object.entries(areas));
+	const pts = $derived(kiranaPoints(kiranas, total, areas));
 	const ordered = $derived(pts.filter((p) => p.ordered));
 	const g = AREAS.Kalamna;
 	const routeD = $derived.by(() => {
@@ -118,7 +138,7 @@
 	class="map"
 	style="height: {height}px"
 	role="img"
-	aria-label="{title}: Kalamna godown and {total} kiranas, {orderedCount} ordered"
+	aria-label="{title}: {godown} godown and {total} kiranas, {orderedCount} ordered"
 >
 	<svg viewBox="0 0 640 400" preserveAspectRatio="xMidYMid meet" style="overflow: visible">
 		<rect x="-640" y="-400" width="1920" height="1200" fill="var(--map-ground)" />
@@ -192,14 +212,14 @@
 			</g>
 		{/if}
 		<!-- labels last, haloed in the ground colour, so routes and dots never strike through them -->
-		{#each LABELS as [n, [x, y]] (n)}<text
+		{#each labels as [n, [x, y]] (n)}<text
 				class="pin-label"
 				{x}
 				y={y - 22}
 				text-anchor="middle"
 				style="font-size: 10.5px">{n}</text
 			>{/each}
-		<text class="pin-label" x={g[0]} y={g[1] - 22} text-anchor="middle">Kalamna godown</text>
+		<text class="pin-label" x={g[0]} y={g[1] - 22} text-anchor="middle">{godown} godown</text>
 	</svg>
 	<span class="note">Schematic map · not to scale</span>
 </div>

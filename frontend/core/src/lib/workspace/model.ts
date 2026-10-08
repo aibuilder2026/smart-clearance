@@ -96,10 +96,17 @@ export function heroModel(s: State, data: Pick<WorkspaceData, 'skus' | 'distribu
 		eta = 'Waiting for your approval';
 		etaTone = 'amber';
 	} else if (h.phase === 'approved' || h.phase === 'executing') {
-		eta = h.award
-			? `Awarded at ${fmt.rate(c.counter.price)} · ${ordered} of ${c.kiranas.length} kiranas ordered`
-			: `Listing live · ${ordered} of ${c.kiranas.length} kiranas ordered`;
-		agentLive = h.award && ordered === c.kiranas.length ? '' : 'Lister, Outreach and Negotiator at work';
+		// what is under way follows the plan's lines (SC-85): the lot and the scheme, or the scheme and the donation
+		const has = (id: string) => c.plan.lines.some((l) => l.id === id && l.units > 0);
+		const shops = `${ordered} of ${c.kiranas.length} kiranas ordered`;
+		if (has('expiresoon')) {
+			eta = h.award ? `Awarded at ${fmt.rate(c.counter.price)} · ${shops}` : `Listing live · ${shops}`;
+			agentLive = h.award && ordered === c.kiranas.length ? '' : 'Lister, Outreach and Negotiator at work';
+		} else {
+			eta = has('kirana') ? `Scheme open · ${shops}` : 'Carrying out the plan';
+			const at = [has('kirana') && 'Outreach', has('foodbank') && 'Donation'].filter(Boolean);
+			agentLive = at.length ? `${at.join(' and ')} at work` : '';
+		}
 	} else if (h.phase === 'dispatched') {
 		eta = 'Paperwork in progress';
 		agentLive = 'Paperwork is drafting the pack';
@@ -212,6 +219,14 @@ export function castOf(s: State, c: Pick<CaseData, 'dist' | 'kiranas' | 'buyer' 
 }
 /** the first word of a name, as people say it: Rakesh, of Rakesh bhai; Lakshmi, of Lakshmi Agencies */
 export const first = (name: string) => name.split(' ')[0];
+/** a godown's area, as the cluster map names it (SC-85): "Kalamna Market godown" is Kalamna */
+export const godownArea = (godown: string) => godown.replace(/\s*(market\s+)?godown$/i, '');
+/** the cluster map's facts for a distributor: its title, its godown and its shops */
+export const clusterOf = (d: { city: string; godown: string; kiranas: number }) => ({
+	title: `${d.city} cluster`,
+	godown: godownArea(d.godown),
+	total: d.kiranas
+});
 const SIZE = /\s+(\d[\d.]*\s?(?:g|ml|kg|L))$/;
 /** a product's name without its pack size (Masala Chips), and the size (150 g) */
 export const productName = (sku: Pick<Sku, 'name'>) => sku.name.replace(SIZE, '');

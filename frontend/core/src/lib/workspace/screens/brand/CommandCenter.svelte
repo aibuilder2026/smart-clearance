@@ -14,7 +14,7 @@
 	import Skeleton from '../../../components/Skeleton.svelte';
 	import { useRoute } from '../../context';
 	import { useLive } from '../../live.svelte';
-	import { batchViews, castOf, fmt, heroModel, isRouted } from '../../model';
+	import { batchViews, castOf, clusterOf, fmt, heroModel, isRouted } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { BatchView, User } from '../../types';
 	import PlayAs from '../common/PlayAs.svelte';
@@ -178,10 +178,11 @@
 				>
 			</div>
 			<ClusterMap
+				{...clusterOf(c.dist)}
 				kiranas={c.kiranas}
 				orderedCount={hm.ordered}
 				route={routed}
-				vanProgress={s.hero.van.status === 'done' ? 1 : (hm.ordered / c.kiranas.length) * 0.6}
+				vanProgress={s.hero.van.status === 'done' ? 1 : c.kiranas.length ? (hm.ordered / c.kiranas.length) * 0.6 : 0}
 				height={phone ? 220 : 280}
 			/>
 		</Card>{/if}{/snippet}

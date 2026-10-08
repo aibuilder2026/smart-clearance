@@ -99,25 +99,34 @@
   /* ---------- the Nagpur cluster map (schematic) ---------- */
   const AREAS = { Itwari: [392, 196], Mahal: [338, 238], Sitabuldi: [292, 206], Sadar: [300, 150], Dharampeth: [226, 184], Kamptee: [486, 82], "Wardha Road": [208, 304], Wardha: [128, 352], Kalamna: [522, 214] };
   const rnd = seed => () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
-  function useKiranaPoints(kiranas, total = 38) {
-    return useMemo(() => {
-      const r = rnd(7); const pts = []; const used = {};
-      kiranas.forEach((k, i) => { const c = AREAS[k.area] || AREAS.Itwari; used[k.area] = (used[k.area] || 0) + 1; const ang = (used[k.area] * 2.4) + i; const rad = 14 + used[k.area] * 9; pts.push({ id: k.id, x: c[0] + Math.cos(ang) * rad, y: c[1] + Math.sin(ang) * rad * 0.8, ordered: true, k }); });
-      const names = Object.keys(AREAS).filter(a => a !== "Kalamna");
-      for (let i = pts.length; i < total; i++) { const c = AREAS[names[i % names.length]]; pts.push({ id: "x" + i, x: c[0] + (r() - 0.5) * 92, y: c[1] + (r() - 0.5) * 70, ordered: false }); }
-      return pts;
-    }, [kiranas.length, total]);
+  // a cluster's areas (SC-85): Nagpur's as drawn; any other's spread round the ring road in the order its shops name
+  // them, the godown where Kalamna's is (the map is schematic)
+  function areasOf(kiranas, godown) {
+    if (godown === "Kalamna") return AREAS;
+    const names = [...new Set(kiranas.map(k => k.area))]; const out = {};
+    names.forEach((n, i) => { const a = Math.PI * (0.15 + 1.7 * (i + 0.5) / Math.max(names.length, 1)); out[n] = [Math.round(330 - Math.cos(a) * 190), Math.round(212 - Math.sin(a) * 125)]; });
+    return out;
   }
-  function ClusterMap({ kiranas = [], orderedCount = 0, route, vanProgress, height = 300, title = "Nagpur cluster", total = 38, focus }) {
+  function useKiranaPoints(kiranas, total = 38, areas = AREAS) {
+    return useMemo(() => {
+      const r = rnd(7); const pts = []; const used = {}; const centre = [330, 212];
+      kiranas.forEach((k, i) => { const c = areas[k.area] || areas.Itwari || centre; used[k.area] = (used[k.area] || 0) + 1; const ang = (used[k.area] * 2.4) + i; const rad = 14 + used[k.area] * 9; pts.push({ id: k.id, x: c[0] + Math.cos(ang) * rad, y: c[1] + Math.sin(ang) * rad * 0.8, ordered: true, k }); });
+      const names = Object.keys(areas).filter(a => a !== "Kalamna");
+      for (let i = pts.length; i < total; i++) { const c = names.length ? areas[names[i % names.length]] : centre; pts.push({ id: "x" + i, x: c[0] + (r() - 0.5) * 92, y: c[1] + (r() - 0.5) * 70, ordered: false }); }
+      return pts;
+    }, [kiranas.length, total, areas]);
+  }
+  function ClusterMap({ kiranas = [], orderedCount = 0, route, vanProgress, height = 300, title = "Nagpur cluster", total = 38, godown = "Kalamna", focus }) {
     const reduce = useReducedMotion();
-    const pts = useKiranaPoints(kiranas, total);
+    const areas = useMemo(() => areasOf(kiranas, godown), [kiranas, godown]);
+    const pts = useKiranaPoints(kiranas, total, areas);
     const ordered = pts.filter(p => p.ordered);
     const g = AREAS.Kalamna;
     const routeD = useMemo(() => { const left = ordered.map(p => [p.x, p.y]); const seq = [g]; let cur = g; while (left.length) { let bi = 0, bd = 1e9; left.forEach((p, i) => { const d = (p[0] - cur[0]) ** 2 + (p[1] - cur[1]) ** 2; if (d < bd) { bd = d; bi = i; } }); cur = left.splice(bi, 1)[0]; seq.push(cur); } seq.push(g); return "M" + seq.map(p => p.map(v => v.toFixed(1)).join(" ")).join(" L"); }, [ordered.length]);
     // the ground runs past the frame so any card shape shows the whole cluster ("meet") without bare bands
     const blocks = useMemo(() => { const r = rnd(3); const out = []; for (let y = -398; y < 800; y += 34) for (let x = -626; x < 1270; x += 44) { if (r() < 0.62) out.push([x + r() * 6, y + r() * 6, 30 + r() * 8, 22 + r() * 6]); } return out; }, []);
-    const labels = Object.entries(AREAS).filter(([n]) => n !== "Kalamna");
-    return <div className="map" style={{ height }} role="img" aria-label={`${title}: Kalamna godown and ${total} kiranas, ${orderedCount} ordered`}>
+    const labels = Object.entries(areas).filter(([n]) => n !== "Kalamna");
+    return <div className="map" style={{ height }} role="img" aria-label={`${title}: ${godown} godown and ${total} kiranas, ${orderedCount} ordered`}>
       <svg viewBox="0 0 640 400" preserveAspectRatio="xMidYMid meet" style={{ overflow: "visible" }}>
         <rect x="-640" y="-400" width="1920" height="1200" fill="var(--map-ground)" />
         {blocks.map(([x, y, w, h], i) => <rect key={i} x={x} y={y} width={w} height={h} rx="5" fill="var(--map-block)" />)}
@@ -150,7 +159,7 @@
         </motion.g>}
         {/* labels last, haloed in the ground colour, so routes and dots never strike through them */}
         {labels.map(([n, [x, y]]) => <text key={n} className="pin-label" x={x} y={y - 22} textAnchor="middle" style={{ fontSize: 10.5 }}>{n}</text>)}
-        <text className="pin-label" x={g[0]} y={g[1] - 22} textAnchor="middle">Kalamna godown</text>
+        <text className="pin-label" x={g[0]} y={g[1] - 22} textAnchor="middle">{godown} godown</text>
       </svg>
       <span className="note">Schematic map · not to scale</span>
     </div>;
