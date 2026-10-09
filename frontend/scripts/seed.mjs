@@ -417,7 +417,6 @@ const journey = {
 	stages: workspaceSeed.stages,
 	setup: D.SETUP,
 	returnBy: D.RETURN_BY,
-	quarter: D.QUARTER,
 	rules: Store.seed().rules,
 	moneyRules: M.RULES,
 	channels: M.CHANNELS,

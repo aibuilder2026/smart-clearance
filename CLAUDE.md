@@ -1308,5 +1308,22 @@
     - the frontend gate passes (goldens: "since 1 Jul 2026");
     - the seeds and live fixtures regenerated.
   - **Locally:** hydrated with the history; all twelve batches cleared to money.js's figures, and the local Paperwork agent laid out every paper's PDF (invoices, credit notes, ITC memos, FSSAI checklists and both receipts). The day is back at 24 hours.
+- **SC-124** (In Review, branch `SC-124-live-figures`, stacked on SC-123): Finance & ESG's figures computed live from the cleared batches' ledgers, replacing the story's constant quarter.
+  - **Found:** `/quarter` was data.js's `QUARTER` (23 batches, a weekly split, a mix, BRSR rows and 14.25 t of CO₂e, all fixed) plus this journey's ledgers, so the story's chips counted twice and nothing but four totals ever moved. backend-api never told the screens when a ledger posted.
+  - **`GET …/ledger`** (`services/journey/ledger.py`, `views.ledger`; `report.read`: the operator, Finance, ESG and the admin):
+    - every cleared batch in view (the history and this journey's), as its posted ledger: net, swing, P&L, the write-off it avoided, input credit kept and reversed, kilos resold, donated and destroyed, CO₂e, meals, the expiry credit and the price support, what each channel took, its papers with their numbers and PDFs, and who reviewed it;
+    - its outcome: sold through, left at the godown, or donated;
+    - the periods: each quarter of the Indian financial year from the first batch cleared to today's (`fy27-q2`, `fy27-q3`), then each year so far (`fy27`, "This year"). Each has its totals, its months, a quarter's 13 weeks, the channel mix in whole percent, and BRSR Principle 6's food-waste row with its evidence counted from the papers. CO₂e is the kilos × the factor;
+    - the batches still out, with their stop.
+  - **The case detail** carries its batch's ledger row, for Munchly's own staff.
+  - **The stream:** a `ledger` event, heard by the roles that read it, when a ledger posts or a cleared batch's papers move on (a review, an invoice, a PDF).
+  - **The contract:** `WsLedger` and its parts replace `WsQuarter`; `WorkspaceApi.ledger()`; `CaseDetail.ledger`; the event type `ledger`. `contracts.sh` re-exported the OpenAPI. journey.json drops `quarter`, and the workspace doc no longer carries it.
+  - **Until SC-121's build:** the live projection fills today's Finance & ESG screen from the ledger's current quarter once a batch has cleared in it, else the latest quarter that has one (locally, Q2 FY27). The stub keeps data.js's `QUARTER`.
+  - **Not modelled:** the SKUs carry no packaging weight, so BRSR's plastic packaging (EPR) row is left out rather than invented.
+  - **Checks:**
+    - backend-api 514 passed, 1 skipped; `test_ledger.py` (5) holds each history batch to money.js, each period to its batches, the roles, and the case's ledger; the story's journey test sees the chips post into Q3 and the `ledger` event reach Anita and not Rakesh;
+    - the frontend gate passes (workspace 68: a live test reads Finance & ESG from the ledger on the cleared moment);
+    - the live fixtures regenerated;
+    - locally, Munchly's ledger reads Q2 FY27 as 12 batches (7 sold through, 3 left at the godown, 2 donated): ₹2,20,383.58 recovered, ₹15,854.78 of input credit kept and ₹1,981.93 reversed, 1,959.51 kg kept out of landfill, 872 meals, 15 credit notes and 10 invoices.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

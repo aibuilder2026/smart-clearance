@@ -6363,6 +6363,55 @@
         ]
       }
     },
+    "/v1/workspaces/{ws}/ledger": {
+      "get": {
+        "operationId": "ledger_v1_workspaces__ws__ledger_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Ledger V1 Workspaces  Ws  Ledger Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The Finance & ESG ledger: every batch cleared, by quarter and year",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
     "/v1/workspaces/{ws}/members": {
       "post": {
         "operationId": "invite_v1_workspaces__ws__members_post",
@@ -6650,55 +6699,6 @@
           }
         ],
         "summary": "A distributor's one-time permission for the agents to act in its name",
-        "tags": [
-          "workspace"
-        ]
-      }
-    },
-    "/v1/workspaces/{ws}/quarter": {
-      "get": {
-        "operationId": "quarter_v1_workspaces__ws__quarter_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "ws",
-            "required": true,
-            "schema": {
-              "title": "Ws",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": true,
-                  "title": "Response Quarter V1 Workspaces  Ws  Quarter Get",
-                  "type": "object"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "The Finance & ESG report",
         "tags": [
           "workspace"
         ]

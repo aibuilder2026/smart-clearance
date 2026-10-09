@@ -309,6 +309,15 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     story = [e["key"] for e in J["copy"]["events"] if e["key"] not in ("permit", "donate")]
     # the same entries as design3's timeline (here every kirana ordered before the bid, so two swap places)
     assert sorted(keys) == sorted(story) and keys[:9] == story[:9]
+    # the ledger takes the batch into the story's quarter, and tells those who read it (SC-124)
+    ledger = (await api.get(f"{WS}/ledger", headers=ANITA)).json()
+    q3 = next(p for p in ledger["periods"] if p["id"] == "fy27-q3")
+    assert [b["ref"] for b in ledger["batches"]] == [HERO] and q3["current"] and q3["totals"]["batches"] == 1
+    assert q3["totals"]["net"] == c["ledger"]["figures"]["net"] == out["ledger"]["net"]
+    heard = (await api.get(f"{WS}/events?after=0", headers=ANITA)).json()["events"]
+    assert any(e["type"] == "ledger" and e["ref"] == HERO for e in heard)
+    rakesh = (await api.get(f"{WS}/events?after=0", headers=RAKESH)).json()["events"]
+    assert not [e for e in rakesh if e["type"] == "ledger"]
 
 
 def shops(distributor: str) -> list[dict]:
