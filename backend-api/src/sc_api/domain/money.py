@@ -587,13 +587,22 @@ def meals_of(units: float, sku: Obj, rule: Obj | None = None) -> Any:
 
 
 def realised(
-    p: Obj, sku: Obj, done: Mapping[str, float] | None, meals_rule: Obj | None = None, *, rules: Obj = RULES
+    p: Obj,
+    sku: Obj,
+    done: Mapping[str, float] | None,
+    meals_rule: Obj | None = None,
+    policy: str = "full-credit",
+    *,
+    rules: Obj = RULES,
 ) -> dict[str, Any]:
     """what a plan came to once its lines were done (SC-86): each line on the units its channel actually took (`done`:
     ordered by kiranas, awarded on ExpireSoon, sold to staff, collected by the food bank; a channel not in `done` took
     what was planned). What no channel took is left at the godown: nothing recovered, and it still faces the
     write-off. A plan done as planned comes back as it was. Its meals are counted by the rule of the food bank that
-    collected (`meals_rule`, SC-110)."""
+    collected (`meals_rule`, SC-110). The packs left at the godown follow the client's expiry `policy` (SC-122): under
+    full credit they come back and the client destroys them, so their input credit is reversed and their disposal is
+    the client's; otherwise the distributor destroys his own stock, and the client keeps its credit and avoids the
+    disposal."""
 
     def took(ln: Obj) -> Any:
         if ln["id"] != "writeoff" and done and done.get(ln["id"]) is not None:
@@ -601,7 +610,7 @@ def realised(
         return ln["units"]
 
     if all(took(ln) == ln["units"] for ln in p["lines"]):
-        return {**p, "godown": 0, "meals": meals_of(p["donated"], sku, meals_rule)}
+        return {**p, "godown": 0, "destroyed": p["leftover"], "meals": meals_of(p["donated"], sku, meals_rule)}
     lines = [
         ln
         if took(ln) == ln["units"]
@@ -625,6 +634,10 @@ def realised(
     pnl = r2(net - p["bookCost"] - left_cost)
     kg = r2((p["units"] - left) * _get(sku, "kgPerUnit"))
     itc = itc_of(sku)
+    # what the client itself destroys: the plan's own write-off, and under full credit the packs that came back
+    ours = policy == "full-credit"
+    destroyed = p["leftover"] + (godown if ours else 0)
+    spared = p["units"] - destroyed
     return {
         **p,
         "lines": lines,
@@ -635,14 +648,19 @@ def realised(
         "pctMRP": js_round(_div(net, p["units"] * _get(sku, "mrp")) * 100),
         "pnl": pnl,
         "swing": r2(pnl + wo["total"]),
-        "itcRetained": r2(sold_units * itc),
-        "itcReversed": r2((donated + p["leftover"]) * itc),
+        "itcRetained": r2((sold_units + (0 if ours else godown)) * itc),
+        "itcReversed": r2((donated + destroyed) * itc),
+        "cashAvoided": r2(wo["total"] - wo["stock"] - destroyed * (wo["perUnit"] - _get(sku, "cost"))),
+        "disposalAvoided": r2(
+            spared * rules["disposalPerUnit"] + r2(spared * _get(sku, "kgPerUnit")) * rules["eprPerKg"]
+        ),
         "kg": kg,
         "co2": r2(kg * rules["co2PerKg"]),
         "meals": meals_of(donated, sku, meals_rule),
         "soldUnits": sold_units,
         "donated": donated,
         "godown": godown,
+        "destroyed": destroyed,
     }
 
 
@@ -652,10 +670,12 @@ def counter(ask: float, bid: float, *, rules: Obj = RULES) -> dict[str, Any]:
     n = rules["negotiation"]
     if bid >= ask:
         return {"action": "accept", "price": bid}
-    price = _max(n["reservePerUnit"], math.floor(ask * n["counterPctOfAsk"] * 10) / 10)
+    # the reserve is the client's, a price a pack; on a lot asking less than it, the counter is the ask (SC-122)
+    reserve = _min(n["reservePerUnit"], ask)
+    price = _max(reserve, math.floor(ask * n["counterPctOfAsk"] * 10) / 10)
     if bid >= price:
         return {"action": "accept", "price": bid}
-    return {"action": "counter", "price": price, "below": bid < n["reservePerUnit"]}
+    return {"action": "counter", "price": price, "below": bid < reserve}
 
 
 def award(units: float, price: float, *, rules: Obj = RULES) -> dict[str, Any]:
@@ -686,7 +706,7 @@ def actual_net(p: Obj, award_price: float) -> dict[str, Any]:
     """the plan's net once the ExpireSoon lot is awarded at its price"""
     es = next((ln for ln in p["lines"] if ln["id"] == "expiresoon"), None)
     if es is None:
-        return {"net": p["net"], "delta": 0, "swing": p["swing"]}
+        return {"net": p["net"], "delta": 0, "swing": p["swing"], "pnl": p["pnl"]}
     delta = r2(es["units"] * (es["price"] - award_price))
     return {
         "net": r2(p["net"] - delta),
@@ -870,6 +890,8 @@ def documents(
             "note": f"{client['short']} to {seller['name']}: a financial credit note, no GST adjustment.",
         }
     )
+    # the credit kept on what was sold under tax invoices, and reversed on what was given away or destroyed (SC-122)
+    away = p["donated"] + (p["destroyed"] if p.get("destroyed") is not None else p["leftover"])
     docs.append(
         {
             "id": "itc",
@@ -878,10 +900,20 @@ def documents(
             "no": "s.17(5)(h)",
             "status": "generated",
             "amount": p["itcRetained"],
-            "note": "Goods supplied under tax invoices, so the Section 17(5)(h) reversal does not apply.",
+            "reversed": p.get("itcReversed") or 0,
+            "units": p["soldUnits"],
+            "away": away,
+            "note": (
+                f"Kept on the {to_locale(p['soldUnits'])} packs sold under tax invoices; reversed under Section "
+                f"17(5)(h) on the {to_locale(away)} given away or destroyed, in GSTR-3B Table 4(B)(1)."
+                if _truthy(p.get("itcReversed"))
+                else "Goods supplied under tax invoices, so the Section 17(5)(h) reversal does not apply."
+            ),
         }
     )
-    donated, leftover = p["donated"], p["leftover"]
+    donated = p["donated"]
+    # the packs the client destroys: the plan's write-off, and under full credit those left at the godown (SC-122)
+    destroyed = p["destroyed"] if p.get("destroyed") is not None else p["leftover"]
     docs.append(
         {
             "id": "fssai",
@@ -899,9 +931,10 @@ def documents(
             "id": "destruction",
             "type": "Destruction certificate",
             "owner": client["short"],
-            "no": f"{js_str(leftover)} units" if _truthy(leftover) else "0 units left",
-            "status": "generated" if _truthy(leftover) else "not required",
+            "no": f"{js_str(destroyed)} units" if _truthy(destroyed) else "0 units left",
+            "status": "generated" if _truthy(destroyed) else "not required",
             "amount": 0,
+            "units": destroyed,
         }
     )
     return docs

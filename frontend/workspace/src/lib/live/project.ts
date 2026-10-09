@@ -46,7 +46,7 @@ import type {
 	WsPlan,
 	WsPlanLine,
 	WsSplitLine,
-	WsQuarter,
+	WsLedger,
 	WsSku,
 	WsSupport,
 	WsWorkspace
@@ -155,30 +155,52 @@ const EMPTY_ASSESS: Assess = {
 	urgency: 0
 };
 
-function quarterOf(q: WsQuarter | null): Quarter {
-	return q
-		? { ...q }
-		: {
-				label: '',
-				period: '',
-				recovered: 0,
-				itc: 0,
-				kg: 0,
-				meals: 0,
-				batches: 0,
-				weeks: [],
-				mix: [],
-				mixNames: {},
-				brsr: [],
-				writeOffAvoided: 0,
-				co2: 0
-			};
+/** the Finance & ESG screen's quarter, from the ledger (SC-124): the current quarter once a batch has cleared in it,
+ *  else the latest quarter that has one */
+function quarterOf(l: WsLedger | null): Quarter {
+	const quarters = (l?.periods ?? []).filter((p) => p.kind === 'quarter');
+	const q =
+		quarters.find((p) => p.current && p.totals.batches) ??
+		quarters.filter((p) => p.totals.batches).at(-1) ??
+		quarters.find((p) => p.current);
+	if (!q)
+		return {
+			label: '',
+			period: '',
+			recovered: 0,
+			itc: 0,
+			kg: 0,
+			meals: 0,
+			batches: 0,
+			weeks: [],
+			mix: [],
+			mixNames: {},
+			brsr: [],
+			writeOffAvoided: 0,
+			co2: 0
+		};
+	const t = q.totals;
+	return {
+		label: q.label,
+		period: q.long,
+		recovered: t.net,
+		itc: t.itcKept,
+		kg: t.kg,
+		meals: t.meals,
+		batches: t.batches,
+		weeks: q.weeks,
+		mix: q.mix,
+		mixNames: q.mixNames,
+		brsr: q.brsr,
+		writeOffAvoided: t.writeOff,
+		co2: t.co2
+	};
 }
 
-/** the workspace's own data, from the snapshot (and the quarter, for those who see it) */
+/** the workspace's own data, from the snapshot (and the ledger, for those who see it) */
 export function dataOf(
 	snap: WorkspaceSnapshot,
-	quarter: WsQuarter | null,
+	ledger: WsLedger | null,
 	focus: { ref: string | null; second: string | null }
 ): WorkspaceData {
 	const today = snap.clock.now;
@@ -219,7 +241,7 @@ export function dataOf(
 		stages: snap.stages as Stage[],
 		// each batch in a journey is its own (SC-85): none is the story's second batch, shown beside the one in focus
 		batches: snap.batches.map((b) => batchOf(b, { hero: b.id === focus.ref, second: false })),
-		quarter: quarterOf(quarter),
+		quarter: quarterOf(ledger),
 		market: { ...snap.market, lots: snap.market.lots.map((l) => ({ ...l, icon: icon(l.icon) })) }
 	};
 }
@@ -311,6 +333,7 @@ function docOf(d: WsDoc): Doc {
 		epr: opt(d.epr),
 		itc: opt(d.itc),
 		reversed: opt(d.reversed),
+		away: opt(d.away),
 		// the food bank's receipt (SC-110)
 		...(d.id === 'receipt'
 			? {

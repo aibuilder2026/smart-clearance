@@ -20,6 +20,7 @@ from sc_api.domain.clock import IST
 from sc_api.errors import ApiError, not_found
 from sc_api.services.context import Actor, Ctx
 from sc_api.services.journey import events as ev
+from sc_api.services.journey import ledger as ledger_
 from sc_api.services.journey import world
 
 STAFF_ROLES = world.STAFF_ROLES
@@ -207,8 +208,8 @@ def journey_from(c: m.Client | None) -> datetime | None:
 async def _open_cases(ctx: Ctx, client_id: str) -> dict[str, m.Case]:
     q = select(m.Case).where(m.Case.client_id == client_id)
     since = journey_from(await ctx.session.get(m.Client, client_id))
-    if since is not None:
-        q = q.where(m.Case.opened_wall >= since)
+    if since is not None:  # this journey's cases, and the client's history (SC-123)
+        q = q.where(or_(m.Case.opened_wall >= since, m.Case.history.is_(True)))
     rows = (await ctx.session.execute(q.order_by(m.Case.seq.desc()))).scalars()
     out: dict[str, m.Case] = {}
     for case in rows:  # the latest case of each batch in this journey: open, or the last one closed
@@ -662,7 +663,7 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
     lines_state = {"offer": case.offer, "award": case.award, "listing": case.listing}
     lines_state |= {"staff": case.staff, "donation": case.donation}
     done = J.done_units(lines_state, sum(o.units for o in orders_all))
-    real = money.realised(case.plan, world.sku_obj(x), done, rules=rules) if case.plan else None
+    real = money.realised(case.plan, world.sku_obj(x), done, None, c.expiry, rules=rules) if case.plan else None
     settled = case.phase in ("dispatched", "settled", "cleared")
     es = copy.line(case.plan or {}, "expiresoon")
     actual = None
@@ -788,6 +789,8 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
         "feed": [feed_out(f) for f in feed],
         "plan": plan,
         "writeOff": write_off,
+        # the ledger Impact posted, as the Finance & ESG ledger reads it (SC-124), for those who see Munchly's figures
+        "ledger": ledger_.row(case, world.sku_obj(x), d) if money_ok and case.ledger else None,
         "counter": counter,
         # the buyer's bill reads the award's invoice from the moment the lot is won, before the papers (SC-96)
         "award": (
@@ -856,27 +859,40 @@ def _moments(c: m.Client, case: m.Case, d: m.Distributor, listing: dict[str, Any
     }
 
 
-# --- the quarter and the audit log ----------------------------------------------------------------------------------
+# --- the ledger and the audit log ------------------------------------------------------------------------------------
 
 
-async def quarter(ctx: Ctx, client_id: str) -> dict[str, Any]:
-    """the Finance & ESG report: the quarter so far, from this journey's cleared batches' ledgers, on top of the
-    quarter's history hydrate imported (workspace_doc.quarter)"""
+async def _all(ctx: Ctx, model: Any, client_id: str) -> list[Any]:
+    return list((await ctx.session.execute(select(model).where(model.client_id == client_id))).scalars())
+
+
+async def ledger(ctx: Ctx, client_id: str) -> dict[str, Any]:
+    """the Finance & ESG ledger (SC-124): every batch cleared in view (the client's history and this journey's), as
+    its posted ledger, the periods they fall in with their totals, and the batches still out"""
     c = await world.client(ctx, client_id)
-    base = dict((c.workspace_doc or {}).get("quarter") or {})
-    q = select(m.Case).where(m.Case.client_id == client_id, m.Case.status == "cleared", m.Case.ledger.is_not(None))
-    if (since := journey_from(c)) is not None:  # this journey's batches, on top of the history (SC-88)
-        q = q.where(m.Case.opened_wall >= since)
-    cleared = (await ctx.session.execute(q)).scalars().all()
-    for case in cleared:
-        ledger = case.ledger or {}
-        base["recovered"] = round(base.get("recovered", 0) + float(ledger.get("net", 0)))
-        base["kg"] = round(base.get("kg", 0) + float(ledger.get("kg", 0)), 1)
-        base["itc"] = round(base.get("itc", 0) + float(ledger.get("itc", 0)))
-        base["meals"] = base.get("meals", 0) + int(ledger.get("meals", 0))
-        base["batches"] = base.get("batches", 0) + 1
-    base.setdefault("co2", round(base.get("kg", 0) * money.RULES["co2PerKg"], 1))
-    return base
+    cases = await _open_cases(ctx, client_id)
+    skus = {x.id: world.sku_obj(x) for x in await _all(ctx, m.Sku, client_id)}
+    dists = {d.id: d for d in await _all(ctx, m.Distributor, client_id)}
+    cleared, out = [], []
+    for case in cases.values():
+        if case.status == "reset":
+            continue
+        sku, dist = skus[case.sku_id], dists[case.distributor_id]
+        if case.status == "cleared" and case.ledger:
+            cleared.append(ledger_.row(case, sku, dist))
+        elif case.status != "cleared":
+            out.append(ledger_.open_row(case, sku, dist))
+    cleared.sort(key=lambda r: (r["cleared"], r["ref"]))
+    out.sort(key=lambda r: (r["flagged"], r["ref"]))
+    today = ev.now(ctx, c).astimezone(IST).date()
+    return {
+        "since": _workspace(c)["since"],
+        "today": today.isoformat(),
+        "co2PerKg": money.RULES["co2PerKg"],
+        "periods": ledger_.periods(cleared, today),
+        "batches": cleared,
+        "inFlight": out,
+    }
 
 
 async def audit_page(ctx: Ctx, client_id: str, before: str | None, limit: int = 100) -> dict[str, Any]:

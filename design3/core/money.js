@@ -146,10 +146,12 @@
   // ordered by kiranas, awarded on ExpireSoon, sold to staff, collected by the food bank; a channel not in `done` took
   // what was planned). What no channel took is left at the godown: nothing recovered, and it still faces the write-off.
   // A plan done as planned comes back as it was. Its meals are counted by the rule of the food bank that collected
-  // (`mealsRule`, SC-110).
-  function realised(p, sku, done, mealsRule) {
+  // (`mealsRule`, SC-110). The packs left at the godown follow the client's expiry policy (SC-122): under full credit
+  // they come back and the client destroys them, so their input credit is reversed and their disposal is the client's;
+  // otherwise the distributor destroys his own stock, and the client keeps its credit and avoids the disposal.
+  function realised(p, sku, done, mealsRule, policy = "full-credit") {
     const took = l => (l.id !== "writeoff" && done && done[l.id] != null ? Math.max(0, done[l.id]) : l.units);
-    if (p.lines.every(l => took(l) === l.units)) return { ...p, godown: 0, meals: mealsOf(p.donated, sku, mealsRule) };
+    if (p.lines.every(l => took(l) === l.units)) return { ...p, godown: 0, destroyed: p.leftover, meals: mealsOf(p.donated, sku, mealsRule) };
     const lines = p.lines.map(l => (took(l) === l.units ? l : lineOf(p.rows.find(r => r.id === l.id), took(l), sku)));
     const sum = k => r2(lines.reduce((t, l) => t + l[k], 0));
     const units = (pred) => lines.filter(pred).reduce((t, l) => t + l.units, 0);
@@ -161,23 +163,32 @@
     const left = p.leftover + godown;
     const pnl = r2(net - p.bookCost - (left ? r2(left * (p.writeOff.perUnit - sku.cost)) : 0));
     const kg = r2((p.units - left) * sku.kgPerUnit);
+    // what the client itself destroys: the plan's own write-off, and under full credit the packs that came back
+    const ours = policy === "full-credit";
+    const destroyed = p.leftover + (ours ? godown : 0);
+    const spared = p.units - destroyed;
     return {
       ...p, lines, gross, costs, itcLoss, net, pctMRP: Math.round((net / (p.units * sku.mrp)) * 100), pnl, swing: r2(pnl + p.writeOff.total),
-      itcRetained: r2(soldUnits * itcOf(sku)), itcReversed: r2((donated + p.leftover) * itcOf(sku)), kg, co2: r2(kg * RULES.co2PerKg), meals: mealsOf(donated, sku, mealsRule), soldUnits, donated, godown,
+      itcRetained: r2((soldUnits + (ours ? 0 : godown)) * itcOf(sku)), itcReversed: r2((donated + destroyed) * itcOf(sku)),
+      cashAvoided: r2(p.writeOff.total - p.writeOff.stock - destroyed * (p.writeOff.perUnit - sku.cost)),
+      disposalAvoided: r2(spared * RULES.disposalPerUnit + r2(spared * sku.kgPerUnit) * RULES.eprPerKg),
+      kg, co2: r2(kg * RULES.co2PerKg), meals: mealsOf(donated, sku, mealsRule), soldUnits, donated, godown, destroyed,
     };
   }
 
   function counter(ask, bid) {
     const n = RULES.negotiation;
     if (bid >= ask) return { action: "accept", price: bid };
-    const counter = Math.max(n.reservePerUnit, Math.floor(ask * n.counterPctOfAsk * 10) / 10);
+    // the reserve is the client's, a price a pack; on a lot asking less than it, the counter is the ask (SC-122)
+    const reserve = Math.min(n.reservePerUnit, ask);
+    const counter = Math.max(reserve, Math.floor(ask * n.counterPctOfAsk * 10) / 10);
     if (bid >= counter) return { action: "accept", price: bid };
-    return { action: "counter", price: counter, below: bid < n.reservePerUnit };
+    return { action: "counter", price: counter, below: bid < reserve };
   }
   function award(units, price) { const gross = r2(units * price); const token = Math.round(gross * RULES.tokenPct); return { units, price, gross, token, balance: r2(gross - token) }; }
   function actualNet(p, awardPrice) {
     const es = p.lines.find(l => l.id === "expiresoon");
-    if (!es) return { net: p.net, delta: 0, swing: p.swing };
+    if (!es) return { net: p.net, delta: 0, swing: p.swing, pnl: p.pnl };
     const delta = r2(es.units * (es.price - awardPrice));
     return { net: r2(p.net - delta), delta, swing: r2(p.swing - delta), pnl: r2(p.pnl - delta), esPlanned: es.gross, esActual: r2(es.units * awardPrice) };
   }
@@ -240,10 +251,15 @@
     }
     const exact = support.total, total = Math.round(exact);
     docs.push({ id: "support", type: "Price-support credit note", owner: parties.client.short, no: "CN/0117", status: "generated", amount: total, exact, roundOff: r2(total - exact), rows: support.rows, van: support.van, fee: support.fee, note: `${parties.client.short} to ${parties.seller.name}: a financial credit note, no GST adjustment.` });
-    docs.push({ id: "itc", type: "GST ITC memo", owner: parties.client.short, no: "s.17(5)(h)", status: "generated", amount: p.itcRetained, note: "Goods supplied under tax invoices, so the Section 17(5)(h) reversal does not apply." });
+    // the credit kept on what was sold under tax invoices, and reversed on what was given away or destroyed (SC-122)
+    const away = p.donated + (p.destroyed != null ? p.destroyed : p.leftover);
+    docs.push({ id: "itc", type: "GST ITC memo", owner: parties.client.short, no: "s.17(5)(h)", status: "generated", amount: p.itcRetained, reversed: p.itcReversed || 0, units: p.soldUnits, away,
+      note: p.itcReversed ? `Kept on the ${p.soldUnits.toLocaleString("en-IN")} packs sold under tax invoices; reversed under Section 17(5)(h) on the ${away.toLocaleString("en-IN")} given away or destroyed, in GSTR-3B Table 4(B)(1).` : "Goods supplied under tax invoices, so the Section 17(5)(h) reversal does not apply." });
     docs.push({ id: "fssai", type: "FSSAI surplus-food checklist", owner: parties.client.short, no: p.donated ? `${p.donated} units` : "no donation", status: p.donated ? "generated" : "not required", amount: 0 });
     if (rcpt) docs.push(rcpt);
-    docs.push({ id: "destruction", type: "Destruction certificate", owner: parties.client.short, no: p.leftover ? `${p.leftover} units` : "0 units left", status: p.leftover ? "generated" : "not required", amount: 0 });
+    // the packs the client destroys: the plan's write-off, and under full credit those left at the godown (SC-122)
+    const destroyed = p.destroyed != null ? p.destroyed : p.leftover;
+    docs.push({ id: "destruction", type: "Destruction certificate", owner: parties.client.short, no: destroyed ? `${destroyed} units` : "0 units left", status: destroyed ? "generated" : "not required", amount: 0, units: destroyed });
     return docs;
   }
 

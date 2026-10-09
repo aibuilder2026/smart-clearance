@@ -1246,4 +1246,84 @@
   - **The fix** (`copy.ledger_event`, given the day the report posts): a report posted before the return window closes reads "Expiry day called on 2 Oct, before the return window would close on 29 Oct. Posted the ledger: …". A report on or after that day keeps the story's line, so the fixtures are unchanged.
   - **Checks:** backend-api 492 passed, 1 skipped. A copy test covers both lines, and the Report now test reads the early one; it fails without the fix.
 
+- **SC-120** (epic): Finance & ESG on real data, batch based, live, with a history of cleared batches.
+  - **The request (9 Oct):** "redesign the finance and ESG view. It should be batch based, calculations looks off for ITC and others, the dashboard for ESG and finance should live and based on real data", with past batches cleared with mixed outcomes and their GST and tax papers completed.
+  - **The maintainer's answers:**
+    - Munchly has been live since 1 Jul 2026, and its pilot quarter (Q2 FY27) holds 12 cleared batches: 7 sold through, 3 left at the godown at full credit, 2 donated;
+    - the six SKUs without a cost sheet are priced at the chips' ratios;
+    - the full-credit expiry note stays without GST;
+    - the Mango Drink's input GST stays ₹0.55, labelled estimated;
+    - Priya gets the same design.
+  - **The stories:** SC-121 (the design, then its build), SC-122 (the figures), SC-123 (the history), SC-124 (the live figures).
+- **SC-121** (In Progress, branch `SC-121-finance-esg-redesign`; design): three options on one board in app v3, `SC-121 design review.html`:
+  - A, one ledger;
+  - B, close the quarter;
+  - C, the year as a timeline.
+
+  The maintainer picked **A**, with Paperwork as it is (the batch's Papers tab), invoices and receipts as downloadable PDFs, the BRSR export and the reports, and every figure at batch, quarter and year level. Designs, the history's figures (`sc121-data.js`) and the decision are in `design3/designs/SC-121/`.
+- **SC-122** (In Review, branch `SC-122-realised-figures`): the figures follow what happened.
+  - **Found by the audit of 9 Oct:**
+    - after the leftover run the screens read the plan: ₹1,224 kept and 217.6 kg, where the ledger has ₹1,094.40 and 194.56 kg;
+    - the ITC memo was stamped "ITC KEPT" with nothing reversed, and the destruction certificate counted 0;
+    - `realised` left the packs left at the godown out of the ITC reversal and kept the plan's costs avoided;
+    - the ledger's lines carried the plan's ExpireSoon price, and a batch with no lot had no swing;
+    - "Better for Munchly" left out a donation's own costs (₹60.90 on the Mango Drink).
+  - **The rules** (money.js and money.py, held by fixtures):
+    - `realised(…, policy)`: under full credit the client destroys the packs that came back, so their credit is reversed and the costs avoided leave them out; under price support or no returns the distributor destroys his own, and the client keeps its credit;
+    - `destroyed` counts what the client destroys;
+    - `actualNet` always gives a swing and a P&L;
+    - `documents`: the ITC memo carries `reversed`, the packs sold and those given away or destroyed, and says so; the destruction certificate counts what the client destroys.
+  - **backend-api:**
+    - `steps.realised` and the case view pass the client's expiry policy;
+    - the ledger carries `swing`, `pnl`, `itcReversed` and `destroyed`, its lines with the ExpireSoon lot at its award price (`atAward`), adding up to the net;
+    - the expiry settlement brings the drafted memo and certificate up to date.
+  - **agents:** Impact takes a line at its award price as it is.
+  - **The papers** (design3 first, then core):
+    - the memo reads the paper's own figures, stamps "ITC PART REVERSED" when credit was reversed, and says an SKU without a cost sheet has its credit estimated;
+    - the certificate counts the packs destroyed, with their credit reversed;
+    - Who keeps what takes a donation's handling and credit off "Better for Munchly", so it is the ledger's swing.
+  - **The Negotiator's counter** never goes above the asking price. The reserve is the client's, one price a pack (₹13.50, set for the chips), so on a cheaper lot (the Mango Drink's ₹10, the chikki's ₹12.50) it countered above the ask. On a lot asking less than the reserve, the counter is now the ask (`counter`, money.js and money.py; fixtures for an ask of ₹10).
+  - **Checks:**
+    - backend-api 505 passed, 1 skipped (a new test of the leftover ledger, and the counter's new cases);
+    - agents 194 (a new test of a line at its award price);
+    - the frontend gate passes: core 249 (the memo's golden, "Input GST kept"), api 77, workspace 67, admin 17, demo 5, console 3;
+    - the live fixtures and the seeds were regenerated.
+
+- **SC-123** (In Review, branch `SC-123-history`, stacked on SC-122): Munchly's history, the twelve batches its workspace cleared in its pilot quarter (Q2 FY27, Jul to Sep 2026), built through the journey's own steps.
+  - **design3** (`core/data.js`):
+    - Munchly has been live since 1 Jul 2026;
+    - the six other SKUs have their cost sheets at the chips' ratios: biscuits ₹29 and ₹1.24, chikki ₹18 and ₹0.73, poha ₹40 and ₹1.74, oats ₹47.50 and ₹2.03, face wash ₹88 and ₹11.75, hair oil ₹110 and ₹4.05. The Mango Drink keeps ₹0.55, estimated;
+    - `HISTORY`: the 12 batches (7 sold through, 3 with packs left at the godown at full credit, 2 donated to the first food bank that takes them), each step's day and time (`HISTORY_AT`), what money.js makes of each, and the papers' numbers in the order they were issued, back from the story's: INV/26-27/0921–0930, CN/0102–0116, ES-24107–24116, FI/…/26-27/0415–0416. Every report falls due on the batch's best-before (SC-94), so each clears by 30 Sep.
+  - **backend-api:**
+    - migration 0009 adds `cases.history` and `batches.history`;
+    - `services/journey/history.py` builds each batch at its time through the services: opened, flagged by the Watcher (`detect(…, only=)`, so the story's batches are not judged), the label read, valued, planned, approved by Priya, listed, offered, booked, ordered by the kiranas, the counter taken by Agrawal, collected, the staff sale, the truck, the papers, the invoice issued, the van, reviewed by Anita, expired and reported on its best-before;
+    - the agents' part runs in process on backend-api's templates. Nothing reaches a person or an agent (the history's messages marked sent, pushes none, timers fired), except the Paperwork events that lay out its PDFs;
+    - `live.build` (hydrate, `--reset` and `--live-only`) builds it once, before the story's reset;
+    - the views keep history in view whenever the journey starts again, and Reset journey leaves its batches alone;
+    - `documents` and `document_pdf` take a cleared batch's case, so a batch's PDFs land after it cleared (also Report now's race);
+    - the history runs at real time (a day a day) whatever the client's day length, so a short day left by a test never hurries it;
+    - `hydrate.sh --day-minutes munchly=1440` sets a client's journey day, as the console's control does. The maintainer asked that it go back to 24 hours after every test run (the browser-suites skill and the journey README say so).
+  - **Checks:**
+    - backend-api 509 passed, 1 skipped; `test_history.py` holds each ledger to money.js's figures, each paper to its number, the story's numbers following on, nothing pending but the PDFs, and the history in view through a reset;
+    - the frontend gate passes (goldens: "since 1 Jul 2026");
+    - the seeds and live fixtures regenerated.
+  - **Locally:** hydrated with the history; all twelve batches cleared to money.js's figures, and the local Paperwork agent laid out every paper's PDF (invoices, credit notes, ITC memos, FSSAI checklists and both receipts). The day is back at 24 hours.
+- **SC-124** (In Review, branch `SC-124-live-figures`, stacked on SC-123): Finance & ESG's figures computed live from the cleared batches' ledgers, replacing the story's constant quarter.
+  - **Found:** `/quarter` was data.js's `QUARTER` (23 batches, a weekly split, a mix, BRSR rows and 14.25 t of CO₂e, all fixed) plus this journey's ledgers, so the story's chips counted twice and nothing but four totals ever moved. backend-api never told the screens when a ledger posted.
+  - **`GET …/ledger`** (`services/journey/ledger.py`, `views.ledger`; `report.read`: the operator, Finance, ESG and the admin):
+    - every cleared batch in view (the history and this journey's), as its posted ledger: net, swing, P&L, the write-off it avoided, input credit kept and reversed, kilos resold, donated and destroyed, CO₂e, meals, the expiry credit and the price support, what each channel took, its papers with their numbers and PDFs, and who reviewed it;
+    - its outcome: sold through, left at the godown, or donated;
+    - the periods: each quarter of the Indian financial year from the first batch cleared to today's (`fy27-q2`, `fy27-q3`), then each year so far (`fy27`, "This year"). Each has its totals, its months, a quarter's 13 weeks, the channel mix in whole percent, and BRSR Principle 6's food-waste row with its evidence counted from the papers. CO₂e is the kilos × the factor;
+    - the batches still out, with their stop.
+  - **The case detail** carries its batch's ledger row, for Munchly's own staff.
+  - **The stream:** a `ledger` event, heard by the roles that read it, when a ledger posts or a cleared batch's papers move on (a review, an invoice, a PDF).
+  - **The contract:** `WsLedger` and its parts replace `WsQuarter`; `WorkspaceApi.ledger()`; `CaseDetail.ledger`; the event type `ledger`. `contracts.sh` re-exported the OpenAPI. journey.json drops `quarter`, and the workspace doc no longer carries it.
+  - **Until SC-121's build:** the live projection fills today's Finance & ESG screen from the ledger's current quarter once a batch has cleared in it, else the latest quarter that has one (locally, Q2 FY27). The stub keeps data.js's `QUARTER`.
+  - **Not modelled:** the SKUs carry no packaging weight, so BRSR's plastic packaging (EPR) row is left out rather than invented.
+  - **Checks:**
+    - backend-api 514 passed, 1 skipped; `test_ledger.py` (5) holds each history batch to money.js, each period to its batches, the roles, and the case's ledger; the story's journey test sees the chips post into Q3 and the `ledger` event reach Anita and not Rakesh;
+    - the frontend gate passes (workspace 68: a live test reads Finance & ESG from the ledger on the cleared moment);
+    - the live fixtures regenerated;
+    - locally, Munchly's ledger reads Q2 FY27 as 12 batches (7 sold through, 3 left at the godown, 2 donated): ₹2,20,383.58 recovered, ₹15,854.78 of input credit kept and ₹1,981.93 reversed, 1,959.51 kg kept out of landfill, 872 meals, 15 credit notes and 10 invoices.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

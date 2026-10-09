@@ -11,7 +11,7 @@ import type {
 	WorkspacePublic,
 	WorkspaceSnapshot,
 	WsAuditRow,
-	WsQuarter
+	WsLedger
 } from '@smart-clearance/api/workspace';
 import { ApiError } from '@smart-clearance/api/workspace';
 import { LiveSource } from '../../src/lib/live/source.svelte';
@@ -25,7 +25,7 @@ import LiveHost from './LiveHost.svelte';
 type Seen = {
 	snapshot: WorkspaceSnapshot;
 	cases: Record<string, CaseDetail>;
-	quarter: WsQuarter | null;
+	ledger: WsLedger | null;
 	audit: WsAuditRow[];
 };
 type Moment = { public: WorkspacePublic; members: Record<string, Seen> };
@@ -44,7 +44,7 @@ function fakeApi(m: Moment, who: string): WorkspaceApi {
 				me: () => Promise.resolve(seen.snapshot.me),
 				snapshot: () => Promise.resolve(structuredClone(seen.snapshot)),
 				case: (ref: string) => (seen.cases[ref] ? Promise.resolve(structuredClone(seen.cases[ref])) : none(404)),
-				quarter: () => (seen.quarter ? Promise.resolve(seen.quarter) : none(403)),
+				ledger: () => (seen.ledger ? Promise.resolve(seen.ledger) : none(403)),
 				audit: () => Promise.resolve({ rows: seen.audit, before: null }),
 				events: () => Promise.resolve({ seq: seen.snapshot.seq, events: [], reset: false })
 			})[name as string] ?? done
@@ -163,7 +163,7 @@ describe('the projection', () => {
 		const snap = seen.snapshot;
 		// the chips, in focus: a plan with no food bank, so no donation beside it (SC-85: each batch is its own journey)
 		const focus = snap.cases.find((c) => c.donation == null)!.ref;
-		const data = dataOf(snap, seen.quarter, { ref: focus, second: null });
+		const data = dataOf(snap, seen.ledger, { ref: focus, second: null });
 		const state = stateOf(snap, seen.cases[focus], null, seen.audit);
 		const c = caseOf(snap, seen.cases[focus], null, data);
 
@@ -195,7 +195,7 @@ describe('the projection', () => {
 		const mango = snap.cases.find((x) => x.donation != null)!.ref;
 		const md = seen.cases[mango];
 		expect(stateOf(snap, md, md, seen.audit).mango).toEqual({ id: mango, phase: 'executing', donation: 'booked' });
-		const mc = caseOf(snap, md, md, dataOf(snap, seen.quarter, { ref: mango, second: mango }));
+		const mc = caseOf(snap, md, md, dataOf(snap, seen.ledger, { ref: mango, second: mango }));
 		expect(mc.donation.units).toBe(58);
 		expect(mc.donation.day).toMatch(/day$/);
 		expect(mc.donation.slots).toHaveLength(3);
@@ -206,11 +206,31 @@ describe('the projection', () => {
 		const seen = moment('at-risk').members.priya;
 		const snap = seen.snapshot;
 		const focus = snap.cases.find((c) => c.donation == null)!.ref;
-		const data = dataOf(snap, seen.quarter, { ref: focus, second: null });
+		const data = dataOf(snap, seen.ledger, { ref: focus, second: null });
 		const c = caseOf(snap, seen.cases[focus], null, data);
 		expect(c.plan.net).toBe(0);
 		expect(c.award.price).toBe(0);
 		expect(c.kiranas).toEqual([]);
 		expect(c.invoice.no).toBe('');
+	});
+
+	it('reads Finance & ESG from the ledger, the batches cleared and nothing else (SC-124)', () => {
+		const seen = moment('cleared').members.anita;
+		const ledger = seen.ledger!;
+		const q3 = ledger.periods.find((p) => p.id === 'fy27-q3')!;
+		const q = dataOf(seen.snapshot, ledger, { ref: null, second: null }).quarter;
+		const sum = (k: 'net' | 'kg' | 'itcKept') => ledger.batches.reduce((t, b) => t + b.figures[k], 0);
+		expect(ledger.batches.map((b) => b.ref).sort()).toEqual(['MF-2409-117', 'MF-2410-118']);
+		expect([q.label, q.batches]).toEqual(['Q3 FY27', 2]);
+		expect(q.recovered).toBeCloseTo(sum('net'), 2);
+		expect(q.itc).toBeCloseTo(sum('itcKept'), 2);
+		expect(q.co2).toBeCloseTo(q.kg * ledger.co2PerKg, 2);
+		expect(q.weeks).toHaveLength(13);
+		expect(q.mix.reduce((t, [, p]) => t + p, 0)).toBe(100);
+		expect(q.brsr[0].diverted).toBe(q3.totals.kg);
+		// a cleared batch's case carries the same row (the case detail's ledger)
+		expect(seen.cases['MF-2409-117'].ledger).toEqual(ledger.batches.find((b) => b.ref === 'MF-2409-117'));
+		// the partners never read it
+		expect(moment('cleared').members.rakesh.ledger).toBeNull();
 	});
 });

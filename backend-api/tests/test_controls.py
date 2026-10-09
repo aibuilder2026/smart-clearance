@@ -300,3 +300,43 @@ async def test_a_pack_drafted_on_expiry_day_is_reviewed_and_its_invoice_issued_o
         ("Rakesh bhai", "issued the invoice from Tally"),
         ("Anita Rao", "reviewed Munchly's credit note and GST memo"),
     ]
+
+
+async def test_the_leftover_ledger_reverses_the_credit_of_the_packs_it_destroyed(api, munchly, neha, cloud):
+    """SC-122: the leftover run's ledger. Under Munchly's full credit the packs left at the godown come back and are
+    destroyed, so their input credit is reversed, the costs avoided leave them out, the memo and the destruction
+    certificate count them, the ledger's lines add up to its net, and every ledger carries its swing"""
+    from sc_api.domain import money
+    from tests.conftest import token
+    from tests.test_workspace import AGRAWAL, J
+
+    ws = "/v1/workspaces/munchly"
+    await to_plan(api, cloud)
+    assert (await api.post(f"{ws}/cases/{HERO}/approval", json={"device": "phone"}, headers=PRIYA)).status_code == 200
+    await agent(api, f"/cases/{HERO}/listing", "lister", "lister")
+    await agent(api, f"/cases/{HERO}/offer", "outreach", "outreach")
+    shops = [k for k in J["kiranas"] if k["distributor"] == "rakesh" and k["orders"]][:3]
+    for k in shops:
+        login = next(x for x in J["members"] if x["id"] == k["member"])["login"]
+        r = await api.post(f"{ws}/cases/{HERO}/orders", json={"units": k["orders"]}, headers=token(login))
+        assert r.status_code == 200, r.text
+    r = await api.post(f"{ws}/cases/{HERO}/bids", json={"price": 13}, headers=AGRAWAL)
+    bid = r.json()["case"]["journey"]["bids"][-1]
+    await agent(api, f"/cases/{HERO}/bids/{bid['id']}/answer", "negotiator-1", "negotiator")
+    assert (await api.post(f"{ws}/cases/{HERO}/bids/{bid['id']}/accept", headers=AGRAWAL)).status_code == 200
+    await _report_now(api, neha)
+    out = await agent(api, f"/cases/{HERO}/report", "impact", "impact")
+    ledger = out["ledger"]
+    ordered = sum(k["orders"] for k in shops)
+    godown = 588 - ordered
+    itc = J["skus"]["chips"]["itcPerUnit"]
+    assert (ledger["godown"], ledger["destroyed"]) == (godown, godown)
+    assert ledger["itcReversed"] == money.r2(godown * itc)
+    assert ledger["itc"] == money.r2((ordered + 772) * itc)
+    assert money.r2(sum(ln["net"] for ln in ledger["lines"])) == ledger["net"]
+    assert ledger["lines"][-1]["atAward"] if ledger["lines"][-1]["id"] == "expiresoon" else True
+    assert ledger["swing"] == ledger["actual"]["swing"] and "pnl" in ledger
+    docs = {d["id"]: d for d in (await case(api, PRIYA))["docs"]}
+    assert (docs["itc"]["amount"], docs["itc"]["reversed"]) == (ledger["itc"], ledger["itcReversed"])
+    assert docs["itc"]["note"].startswith(f"Kept on the {ordered + 772:,} packs sold under tax invoices")
+    assert docs["destruction"]["units"] == godown

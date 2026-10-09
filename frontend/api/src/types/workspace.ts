@@ -652,8 +652,10 @@ export type WsDoc = {
 	disposal?: number;
 	epr?: number;
 	itc?: number;
-	/** the GST memo's reversal on expiry day */
+	/** the GST memo's credit reversed under s.17(5)(h), and the packs given away or destroyed it is reversed on
+	 *  (SC-122); `units` is then the packs sold under tax invoices */
 	reversed?: number;
+	away?: number;
 } & Partial<ReceiptFields>;
 
 /** the food bank's receipt for the packs it collected (SC-110, money.js receipt): issued in its name as it collects,
@@ -768,6 +770,8 @@ export type CaseDetail = {
 	/** what destroying the packs at risk would cost, from the Watcher's assessment: from Detect on, before the plan
 	 *  (SC-99); null for those who may not see Munchly's figures */
 	writeOff: WsWriteOff | null;
+	/** the ledger Impact posted, for those who see Munchly's figures (SC-124) */
+	ledger: WsLedgerBatch | null;
 	counter: { action: 'accept' | 'counter'; price: number; below: boolean } | null;
 	award: WsAward | null;
 	actual: WsActual | null;
@@ -797,24 +801,147 @@ export type WsSplitLine = Pick<
 	'id' | 'name' | 'short' | 'units' | 'price' | 'packPrice' | 'charged' | 'cartons'
 >;
 
-/* ---------- the quarter and the audit log ---------- */
+/* ---------- the ledger and the audit log ---------- */
 
-export type WsQuarter = {
-	label: string;
-	/** the months it covers */
-	period: string;
-	/** each channel of the mix, by name */
-	mixNames: Record<string, string>;
-	recovered: number;
-	itc: number;
+/** a cleared batch's figures, as Impact posted them (money.js realised, settled by the expiry policy) */
+export type WsLedgerFigures = {
+	/** recovered, after price support and costs */
+	net: number;
+	/** better than destroying the batch */
+	swing: number;
+	/** the effect on the P&L, against −writeOff */
+	pnl: number;
+	/** what destroying the packs at risk would have cost */
+	writeOff: number;
+	/** input GST kept on the packs sold under tax invoices */
+	itcKept: number;
+	/** reversed under s.17(5)(h) on the packs donated or destroyed */
+	itcReversed: number;
+	/** kept out of landfill: resold and donated */
 	kg: number;
-	meals: number;
-	batches: number;
-	weeks: [string, number, number][];
-	mix: [string, number][];
-	brsr: { cat: string; diverted: number; resold: number; donated: number; disposed: number; evidence: string }[];
-	writeOffAvoided: number;
+	/** CO₂e avoided, kg × the factor (indicative) */
 	co2: number;
+	meals: number;
+	/** the batch's packs at risk, and what became of them */
+	units: number;
+	sold: number;
+	donated: number;
+	godown: number;
+	destroyed: number;
+	resoldKg: number;
+	donatedKg: number;
+	destroyedKg: number;
+	/** the expiry credit for the packs left at the godown, by the client's policy */
+	credit: number;
+	/** the price-support credit note to the distributor */
+	support: number;
+};
+
+export type WsLedgerOutcome = 'sold' | 'leftover' | 'donation';
+
+/** a paper in a cleared batch's pack */
+export type WsLedgerPaper = {
+	id: string;
+	type: string;
+	no: string;
+	status: string;
+	date: string | null;
+	amount: number | null;
+	pdf: boolean;
+};
+
+/** GET /ledger's row for a cleared batch, and CaseDetail.ledger */
+export type WsLedgerBatch = {
+	ref: string;
+	sku: string;
+	name: string;
+	img: string;
+	distributor: string;
+	distributorName: string;
+	city: string;
+	/** the day the Watcher flagged it, and the day its ledger posted */
+	flagged: string;
+	cleared: string;
+	outcome: WsLedgerOutcome;
+	/** cleared before the story's journey (SC-123) */
+	history: boolean;
+	figures: WsLedgerFigures;
+	/** what each channel took */
+	lines: { id: string; short: string; units: number; price: number; gross: number }[];
+	papers: WsLedgerPaper[];
+	reviewed: { by: string; at: string | null } | null;
+};
+
+/** a batch still out */
+export type WsLedgerOpen = {
+	ref: string;
+	sku: string;
+	name: string;
+	img: string;
+	distributor: string;
+	distributorName: string;
+	city: string;
+	flagged: string;
+	phase: Phase;
+	/** the stop it is at (STAGES' id) */
+	stage: string;
+};
+
+export type WsLedgerTotals = WsLedgerFigures & {
+	batches: number;
+	outcomes: Record<WsLedgerOutcome, number>;
+	invoices: number;
+	/** price-support and expiry credit notes */
+	creditNotes: number;
+	receipts: number;
+	reviewed: number;
+};
+
+export type WsBrsrRow = {
+	cat: string;
+	diverted: number;
+	resold: number;
+	donated: number;
+	disposed: number;
+	evidence: string;
+};
+
+/** a quarter of the Indian financial year, or a year so far, with its batches' totals */
+export type WsLedgerPeriod = {
+	/** fy27-q2, fy27 */
+	id: string;
+	kind: 'quarter' | 'year';
+	/** Q2 FY27, This year */
+	label: string;
+	/** Jul to Sep 2026; Oct to Dec 2026 · so far; FY 2026-27 so far */
+	long: string;
+	from: string;
+	to: string;
+	/** today falls in it */
+	current: boolean;
+	totals: WsLedgerTotals;
+	/** the months with batches cleared, oldest first */
+	months: { month: string; label: string; totals: WsLedgerTotals }[];
+	/** a quarter's 13 weeks: [label, recovered, the write-off avoided] */
+	weeks: [string, number, number][];
+	/** the share of the packs each channel took, in whole percent */
+	mix: [string, number][];
+	mixNames: Record<string, string>;
+	/** BRSR Principle 6's waste rows, in kg */
+	brsr: WsBrsrRow[];
+};
+
+/** GET /ledger (SC-124): every batch cleared in view, by quarter and by year, and the batches still out */
+export type WsLedger = {
+	/** when the workspace went live, as its people read it */
+	since: string;
+	/** the journey's today */
+	today: string;
+	co2PerKg: number;
+	periods: WsLedgerPeriod[];
+	/** cleared, in the order they cleared */
+	batches: WsLedgerBatch[];
+	inFlight: WsLedgerOpen[];
 };
 
 export type WsAuditRow = { id: string; who: string; what: string; target: string; at: string };
@@ -836,7 +963,7 @@ export type DeviceInput = { token: string; userAgent: string };
 
 /* ---------- live updates ---------- */
 
-export type WorkspaceEventType = 'case' | 'workspace' | 'feed' | 'notification' | 'audit' | 'quarter' | 'reset';
+export type WorkspaceEventType = 'case' | 'workspace' | 'feed' | 'notification' | 'audit' | 'ledger' | 'reset';
 
 /** one event on the member's stream. `case` and `workspace` mean "read again"; `feed` and `notification` carry the
  *  entry; `reset` means the stream cannot resume from `after`, so read everything again */
@@ -869,8 +996,8 @@ export interface WorkspaceApi {
 	snapshot(): Promise<WorkspaceSnapshot>;
 	/** GET /cases/{ref} */
 	case(ref: string): Promise<CaseDetail>;
-	/** GET /quarter */
-	quarter(): Promise<WsQuarter>;
+	/** GET /ledger */
+	ledger(): Promise<WsLedger>;
 	/** GET /audit?before= */
 	audit(before?: string | null): Promise<WsAuditPage>;
 	/** GET /documents/{ref}/{doc}: a 5-minute signed link to the PDF */

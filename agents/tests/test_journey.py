@@ -360,6 +360,21 @@ def test_impact_keeps_a_row_for_the_packs_left_at_the_godown():
     assert rows["staff"]["recovered_inr"] == 960 and rows["godown"]["write_off_avoided_inr"] == 0.0
 
 
+def test_impact_takes_a_lot_at_its_award_price_as_it_is():
+    """SC-122: backend-api's ledger carries the ExpireSoon lot at its award price (atAward), so its line adds up to the
+    net; Impact's row takes it as it is, where an older ledger's lot at the plan's price is corrected by the delta"""
+    from sc_agents.agents import impact
+
+    case_ = {"ref": "MF-2409-117", "sku": {"id": "chips", "kgPerUnit": 0.16}, "writeOff": {"perUnit": 19.36}}
+    at_award = {"id": "expiresoon", "units": 772, "net": 10862.4, "atAward": True}
+    planned = {"id": "expiresoon", "units": 772, "net": 11480}
+    for line, want in ((at_award, 10862.4), (planned, 10862.4)):
+        ledger = {"net": 10862.4, "kg": 123.52, "co2": 308.8, "meals": 0, "lines": [line], "godown": 0}
+        ledger |= {"at": "2026-10-30", "actual": {"delta": 617.6}}
+        rows = impact.rows("munchly", case_, ledger, journey="j", recorded="2026-10-30T10:00")
+        assert rows[0]["recovered_inr"] == want
+
+
 def test_a_journey_started_again_keeps_its_own_ledger_rows():
     """SC-88: a replay of the story's calendar is a journey of its own, so its ledger rows never stand in for an earlier
     run's"""

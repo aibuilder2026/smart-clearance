@@ -14,15 +14,19 @@
     revenue: "₹640 crore", skus: 8, distributors: 4, kiranas: 195, shortDatedPerQuarter: 1800000, destroyedToday: 0.7,
   };
 
+  // the SKUs' cost sheets: the chips' and the Mango Drink's dealer price are the story's; the other six take the chips'
+  // ratios (SC-123, the maintainer's call: fictional): a dealer price of 22/30 of the MRP, to the ₹0.50 below, and input
+  // GST of the chips' ₹0.90 on ₹16 of cost, at the SKU's own rate. The Mango Drink has no cost sheet of its own, so its
+  // input GST is cost × GST, labelled estimated (money.js itcOf)
   const SKUS = {
     chips:    { id: "chips", code: "MF-MC-150", brand: "Munchly", name: "Masala Chips 150 g", category: "snacks", hsn: "2005", mrp: 30, dp: 22, cost: 16, gst: 0.05, itcPerUnit: 0.9, perCarton: 24, lifeDays: 180, kgPerUnit: 0.16, img: "pack-chips" },
-    biscuits: { id: "biscuits", code: "MF-CC-200", brand: "Munchly", name: "Choco Cream Biscuits 200 g", category: "biscuits", hsn: "1905", mrp: 40, cost: 22, gst: 0.05, perCarton: 24, lifeDays: 270, kgPerUnit: 0.215, img: "pack-biscuits" },
-    chikki:   { id: "chikki", code: "MF-PC-100", brand: "Munchly", name: "Peanut Chikki 100 g", category: "snacks", hsn: "1704", mrp: 25, cost: 13, gst: 0.05, perCarton: 30, lifeDays: 180, kgPerUnit: 0.11, img: "pack-chikki" },
-    poha:     { id: "poha", code: "MF-IP-250", brand: "Munchly", name: "Instant Poha 250 g", category: "staples", hsn: "1904", mrp: 55, cost: 31, gst: 0.05, perCarton: 20, lifeDays: 270, kgPerUnit: 0.27, img: "pack-poha" },
-    oats:     { id: "oats", code: "MF-MO-200", brand: "Munchly", name: "Masala Oats 200 g", category: "staples", hsn: "2106", mrp: 65, cost: 36, gst: 0.05, perCarton: 20, lifeDays: 270, kgPerUnit: 0.22, img: "pack-oats" },
+    biscuits: { id: "biscuits", code: "MF-CC-200", brand: "Munchly", name: "Choco Cream Biscuits 200 g", category: "biscuits", hsn: "1905", mrp: 40, dp: 29, cost: 22, gst: 0.05, itcPerUnit: 1.24, perCarton: 24, lifeDays: 270, kgPerUnit: 0.215, img: "pack-biscuits" },
+    chikki:   { id: "chikki", code: "MF-PC-100", brand: "Munchly", name: "Peanut Chikki 100 g", category: "snacks", hsn: "1704", mrp: 25, dp: 18, cost: 13, gst: 0.05, itcPerUnit: 0.73, perCarton: 30, lifeDays: 180, kgPerUnit: 0.11, img: "pack-chikki" },
+    poha:     { id: "poha", code: "MF-IP-250", brand: "Munchly", name: "Instant Poha 250 g", category: "staples", hsn: "1904", mrp: 55, dp: 40, cost: 31, gst: 0.05, itcPerUnit: 1.74, perCarton: 20, lifeDays: 270, kgPerUnit: 0.27, img: "pack-poha" },
+    oats:     { id: "oats", code: "MF-MO-200", brand: "Munchly", name: "Masala Oats 200 g", category: "staples", hsn: "2106", mrp: 65, dp: 47.5, cost: 36, gst: 0.05, itcPerUnit: 2.03, perCarton: 20, lifeDays: 270, kgPerUnit: 0.22, img: "pack-oats" },
     mango:    { id: "mango", code: "MF-MD-200", brand: "Munchly", name: "Mango Drink 200 ml", category: "beverages", hsn: "2202", mrp: 20, dp: 14.5, cost: 11, gst: 0.05, perCarton: 27, lifeDays: 180, kgPerUnit: 0.215, img: "pack-mango" },
-    facewash: { id: "facewash", code: "GL-AF-100", brand: "Glowra", name: "Aloe Face Wash 100 ml", category: "personal-care", hsn: "3401", mrp: 120, cost: 58, gst: 0.18, perCarton: 12, lifeDays: 730, kgPerUnit: 0.12, img: "pack-facewash" },
-    hairoil:  { id: "hairoil", code: "GL-CO-200", brand: "Glowra", name: "Coconut Hair Oil 200 ml", category: "personal-care", hsn: "3305", mrp: 150, cost: 72, gst: 0.05, perCarton: 12, lifeDays: 730, kgPerUnit: 0.23, img: "pack-hairoil" },
+    facewash: { id: "facewash", code: "GL-AF-100", brand: "Glowra", name: "Aloe Face Wash 100 ml", category: "personal-care", hsn: "3401", mrp: 120, dp: 88, cost: 58, gst: 0.18, itcPerUnit: 11.75, perCarton: 12, lifeDays: 730, kgPerUnit: 0.12, img: "pack-facewash" },
+    hairoil:  { id: "hairoil", code: "GL-CO-200", brand: "Glowra", name: "Coconut Hair Oil 200 ml", category: "personal-care", hsn: "3305", mrp: 150, dp: 110, cost: 72, gst: 0.05, itcPerUnit: 4.05, perCarton: 12, lifeDays: 730, kgPerUnit: 0.23, img: "pack-hairoil" },
   };
 
   // each territory is matched by pincode for the territory guard; a godown may set its own staff-sale cap. `upi` is the
@@ -63,7 +67,8 @@
   ].map(([name, area, units], i) => ({ id: "k" + i, name, area, units, at: ["09:52", "09:58", "10:01", "10:04", "10:08", "10:11", "10:15", "10:19", "10:22", "10:26", "10:30", "10:33", "10:37", "10:41", "10:44", "10:48", "10:52", "10:55", "10:59", "11:02", "11:06", "11:10", "11:14", "11:17", "11:21", "11:24", "11:27", "11:31", "11:34", "11:38", "11:41"][i] }));
   const OFFERED = 38;
 
-  // day 0 of the demo is Friday 2 Oct 2026, the Watcher's first run after Munchly's workspace went live,
+  // day 0 of the demo is Friday 2 Oct 2026, the Watcher's first run of the story's journey (Munchly has been live since
+  // 1 Jul, SC-123),
   // 47 days before the chips batch's best-before date
   const DAY0 = "2026-10-02";
   const addDays = (iso, n) => { const d = new Date(iso + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
@@ -108,7 +113,7 @@
     id: "munchly", name: "Munchly Foods", short: "Munchly", domain: "munchly." + PLATFORM.domain, emailDomain: "munchly.in",
     // the client's own colours live inside its mark and nowhere else in the interface
     mark: { from: "#f68d3e", to: "#d6461e", ink: "#ffffff" },
-    since: "1 Oct 2026", plan: "Pilot", region: "India, Mumbai region",
+    since: "1 Jul 2026", plan: "Pilot", region: "India, Mumbai region",
     signIn: [
       { id: "google", icon: "google", title: "Google Workspace", who: "Munchly staff", rule: "munchly.in accounts only" },
       { id: "phone", icon: "smartphone", title: "Mobile number and a one-time code", who: "Distributors and kirana owners", rule: "Numbers Munchly or their distributor invited" },
@@ -303,6 +308,88 @@
     ],
   };
 
+  // Munchly's history (SC-123): the twelve batches its workspace cleared in its pilot quarter, Q2 FY27 (Jul to Sep
+  // 2026), before the story's journey on 2 Oct. The Watcher flagged each on the day given, with its packs, days left
+  // and sales a day, and money.js plans it as the agents would. What happened is the history's own: sold through; packs
+  // left at the godown when the kiranas ordered fewer (settled at full credit on expiry day); or a donation, to the
+  // first food bank that takes it, as the Donation step books. backend-api builds it through the journey's own steps on this schedule (services/journey/history.py), so
+  // its papers carry these numbers and its ledgers these figures. Every company, person and figure is fictional.
+  const HISTORY_BATCHES = [
+    // ref, SKU, distributor, packs, days left, sales a day, flagged on, what happened, and the kiranas' orders when fewer
+    ["MF-2406-105", "biscuits", "rakesh", 1400, 42, 10, "2026-07-03", "sold"],
+    ["MF-2406-106", "chikki", "lakshmi", 1600, 38, 14, "2026-07-08", "sold"],
+    ["MF-2406-107", "oats", "lakshmi", 800, 40, 5, "2026-07-14", "leftover", { kirana: 180 }],
+    ["MF-2406-108", "poha", "rakesh", 900, 45, 6, "2026-07-21", "sold"],
+    ["MF-2406-109", "poha", "lakshmi", 1100, 26, 8, "2026-07-28", "donation"],
+    ["MF-2407-110", "facewash", "rakesh", 520, 48, 3, "2026-08-04", "sold"],
+    ["MF-2407-111", "mango", "rakesh", 1700, 36, 16, "2026-08-10", "leftover", { kirana: 600 }],
+    ["MF-2407-112", "hairoil", "lakshmi", 480, 44, 3, "2026-08-17", "sold"],
+    ["MF-2407-113", "chips", "lakshmi", 1500, 40, 13, "2026-08-18", "sold"],
+    ["MF-2407-114", "oats", "rakesh", 900, 22, 6, "2026-08-24", "donation"],
+    ["MF-2407-115", "biscuits", "lakshmi", 1300, 34, 11, "2026-08-25", "sold"],
+    ["MF-2407-116", "chikki", "rakesh", 1500, 31, 12, "2026-08-27", "leftover", { kirana: 456 }],
+  ];
+  // each step's day after the flag and its time (IST); the report falls due at 10:00 on the best-before (SC-94). A step
+  // a batch's plan has no line for is left out; the scheme closes when it fills, else when its 48 hours are up
+  const HISTORY_AT = {
+    open: [0, "08:30"], detect: [0, "09:00"], photo: [0, "11:00"], read: [0, "11:05"], value: [0, "11:10"], route: [0, "11:15"],
+    approve: [0, "12:00"], listing: [0, "12:05"], offer: [0, "12:10"], donation: [0, "12:15"], pickup: [1, "09:30"],
+    orders: [1, "10:00"], bid: [1, "15:00"], counter: [1, "15:05"], accept: [1, "15:30"], collect: [2, "10:00"],
+    closeOffer: [2, "12:10"], staff: [2, "18:00"], truck: [3, "10:00"], papers: [3, "10:30"], invoice: [3, "11:00"],
+    van: [4, "09:00"], review: [4, "15:00"],
+  };
+  const HISTORY = (() => {
+    const at = (day, k) => { const [n, t] = HISTORY_AT[k]; return addDays(day, n) + "T" + t; };
+    const parties = d => ({ client: CLIENT, seller: d, buyer: BUYER });
+    const list = HISTORY_BATCHES.map(([ref, skuId, distId, units, daysLeft, sellPerDay, flagged, outcome, x = {}]) => {
+      const sku = SKUS[skuId], d = DISTRIBUTORS[distId], bestBefore = addDays(flagged, daysLeft);
+      const batch = { id: ref, sku: skuId, distributor: distId, units, daysLeft, sellPerDay, bestBefore, mfg: addDays(bestBefore, -sku.lifeDays), city: d.city, staffCap: d.staffCap };
+      const plan = M.plan(batch, sku);
+      const line = id => plan.lines.find(l => l.id === id && l.units > 0) || null;
+      const es = line("expiresoon"), kl = line("kirana"), st = line("staff"), fb = line("foodbank");
+      // the buyer bids 87% of the ask, and takes the Negotiator's counter
+      const bid = es ? Math.floor(es.price * 0.87 * 10) / 10 : null;
+      const price = es ? M.counter(es.price, bid).price : null;
+      // the first food bank that takes the line, as backend-api's Donation step books it
+      const partner = fb ? SETUP.partners.find(p => daysLeft >= p.minDays && fb.units >= p.minUnits) || null : null;
+      const done = kl && x.kirana != null ? { kirana: x.kirana } : null;
+      const realised = M.realised(plan, sku, done, partner && partner.meals, "full-credit");
+      const actual = M.actualNet(realised, price != null ? price : 0);
+      const award = es ? M.award(es.units, price) : null;
+      const support = M.priceSupport(realised, sku, price != null ? price : undefined);
+      const expiry = realised.godown ? M.expirySettlement(realised.godown, sku, "full-credit") : null;
+      const steps = ["open", "detect", "photo", "read", "value", "route", "approve"]
+        .concat(es ? ["listing"] : [], kl ? ["offer"] : [], fb ? ["donation", "pickup"] : [], kl ? ["orders"] : [], es ? ["bid", "counter", "accept"] : [])
+        .concat(fb ? ["collect"] : [], kl && realised.godown ? ["closeOffer"] : [], st ? ["staff"] : [], es ? ["truck"] : [], ["papers"])
+        .concat(es ? ["invoice"] : [], kl ? ["van"] : [], ["review"])
+        .map(k => ({ step: k, at: at(flagged, k) }))
+        .concat([{ step: "report", at: bestBefore + "T10:00" }]);
+      return { ref, sku: skuId, distributor: distId, units, daysLeft, sellPerDay, flagged, bestBefore, mfg: batch.mfg, outcome, plan, bid, price, award, partner: partner && partner.name,
+        kirana: kl ? { planned: kl.units, ordered: x.kirana != null ? x.kirana : kl.units } : null, staff: st ? st.units : null, realised, actual, support, expiry, steps, parties: parties(d) };
+    });
+    // the papers, numbered back from the story's (INV/26-27/0931, CN/0117, ES-24117, FI/HYD/26-27/0417,
+    // IFBN/ACK/26-27/0112) in the order they were issued: the listing, the receipt as the food bank collects, the
+    // invoice then the credit note as the papers are drafted, the expiry credit note on expiry day
+    const issued = [];
+    list.forEach(b => b.steps.forEach(({ step, at: when }) => {
+      if (step === "listing") issued.push({ b, when, series: "listing" });
+      if (step === "collect") issued.push({ b, when, series: b.partner === "Feeding India" ? "receipt.feeding-india" : "receipt.india-foodbanking-network" });
+      if (step === "papers") { if (b.award) issued.push({ b, when, series: "invoice" }); issued.push({ b, when: when + ":1", series: "support", kind: "support" }); }
+      if (step === "report" && b.expiry && b.expiry.credit) issued.push({ b, when, series: "support", kind: "expiry" });
+    }));
+    issued.sort((a, z) => (a.when < z.when ? -1 : a.when > z.when ? 1 : a.b.ref < z.b.ref ? -1 : 1));
+    const SERIES = { invoice: ["INV/26-27/", 931, 4], support: ["CN/", 117, 4], listing: ["ES-", 24117, 5], "receipt.feeding-india": ["FI/{city}/26-27/", 417, 4], "receipt.india-foodbanking-network": ["IFBN/ACK/26-27/", 112, 4] };
+    const count = {}; issued.forEach(i => (count[i.series] = (count[i.series] || 0) + 1));
+    const used = {};
+    issued.forEach(i => {
+      const [prefix, next, width] = SERIES[i.series];
+      const n = next - count[i.series] + (used[i.series] = (used[i.series] || 0) + 1) - 1;
+      const no = prefix.replace("{city}", i.b.parties.seller.city.slice(0, 3).toUpperCase()) + String(n).padStart(width, "0");
+      i.b.numbers = Object.assign(i.b.numbers || {}, { [i.kind || i.series.replace(/^receipt\..*/, "receipt")]: no });
+    });
+    return { batches: list, start: Object.fromEntries(Object.entries(count).map(([k, n]) => [k, SERIES[k][1] - n])) };
+  })();
+
   // someone exploring the prototype steps into the story's people, by where they stand: inside Munchly, invited in, or
   // outside the workspace. The one-time code every invited number gets, and the accounts the sign-in suggests
   const EXPLORE = {
@@ -316,6 +403,6 @@
   };
 
   window.SC3_DATA = { DAY0, addDays, PLATFORM, WORKSPACE, CLIENT, SKUS, DISTRIBUTORS, BUYER, PEOPLE, KIRANAS, OFFERED, BATCHES, STAGES, PUSH, CHAT, EVENTS, EV, QUARTER, SETUP,
-    RISK, PLAN, ASK, COUNTER, AWARD, ACTUAL, SUPPORT, SUPPORT_PLAN, CLAIM, DOCS, INVOICE, MANGO_PLAN, MANGO_FB, MANGO_RECEIPT, RETURN_BY, IMG, JOURNEY, MARKET, EXPLORE,
+    RISK, PLAN, ASK, COUNTER, AWARD, ACTUAL, SUPPORT, SUPPORT_PLAN, CLAIM, DOCS, INVOICE, MANGO_PLAN, MANGO_FB, MANGO_RECEIPT, RETURN_BY, IMG, JOURNEY, MARKET, EXPLORE, HISTORY, HISTORY_AT,
     batchView: b => { const sku = SKUS[b.sku]; return { ...b, skuObj: sku, dist: DISTRIBUTORS[b.distributor], assess: M.assess(b, sku) }; } };
 })();

@@ -175,7 +175,7 @@ async def _story(ctx: Ctx, c: m.Client, j: dict[str, Any], day0: date) -> None:
         exports.restore(c, fx, datetime.combine(day0 - timedelta(days=1), time(16, 40), IST))
     ours = {x["id"] for x in j["batches"]}
     for b in (await ctx.session.execute(select(m.Batch).where(m.Batch.client_id == c.id).with_for_update())).scalars():
-        if b.ref in ours:
+        if b.ref in ours or b.history:  # the story's batches, and the client's history (SC-123), stay
             continue
         used = await ctx.session.execute(select(m.Case.id).where(m.Case.client_id == c.id, m.Case.batch_ref == b.ref))
         if used.first() is None:

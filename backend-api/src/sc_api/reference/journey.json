@@ -29,7 +29,7 @@
 			"to": "#d6461e",
 			"ink": "#ffffff"
 		},
-		"since": "1 Oct 2026",
+		"since": "1 Jul 2026",
 		"plan": "Pilot",
 		"region": "India, Mumbai region",
 		"signIn": [
@@ -130,8 +130,10 @@
 			"category": "biscuits",
 			"hsn": "1905",
 			"mrp": 40,
+			"dp": 29,
 			"cost": 22,
 			"gst": 0.05,
+			"itcPerUnit": 1.24,
 			"perCarton": 24,
 			"lifeDays": 270,
 			"kgPerUnit": 0.215,
@@ -145,8 +147,10 @@
 			"category": "snacks",
 			"hsn": "1704",
 			"mrp": 25,
+			"dp": 18,
 			"cost": 13,
 			"gst": 0.05,
+			"itcPerUnit": 0.73,
 			"perCarton": 30,
 			"lifeDays": 180,
 			"kgPerUnit": 0.11,
@@ -160,8 +164,10 @@
 			"category": "staples",
 			"hsn": "1904",
 			"mrp": 55,
+			"dp": 40,
 			"cost": 31,
 			"gst": 0.05,
+			"itcPerUnit": 1.74,
 			"perCarton": 20,
 			"lifeDays": 270,
 			"kgPerUnit": 0.27,
@@ -175,8 +181,10 @@
 			"category": "staples",
 			"hsn": "2106",
 			"mrp": 65,
+			"dp": 47.5,
 			"cost": 36,
 			"gst": 0.05,
+			"itcPerUnit": 2.03,
 			"perCarton": 20,
 			"lifeDays": 270,
 			"kgPerUnit": 0.22,
@@ -206,8 +214,10 @@
 			"category": "personal-care",
 			"hsn": "3401",
 			"mrp": 120,
+			"dp": 88,
 			"cost": 58,
 			"gst": 0.18,
+			"itcPerUnit": 11.75,
 			"perCarton": 12,
 			"lifeDays": 730,
 			"kgPerUnit": 0.12,
@@ -221,8 +231,10 @@
 			"category": "personal-care",
 			"hsn": "3305",
 			"mrp": 150,
+			"dp": 110,
 			"cost": 72,
 			"gst": 0.05,
+			"itcPerUnit": 4.05,
 			"perCarton": 12,
 			"lifeDays": 730,
 			"kgPerUnit": 0.23,
@@ -3628,131 +3640,6 @@
 		]
 	},
 	"returnBy": "2026-10-29",
-	"quarter": {
-		"label": "Q3 FY27",
-		"period": "Oct to Dec 2026",
-		"recovered": 630000,
-		"itc": 79000,
-		"kg": 5700,
-		"meals": 3700,
-		"batches": 23,
-		"weeks": [
-			[
-				"W1",
-				21152,
-				26330
-			],
-			[
-				"W2",
-				38400,
-				45100
-			],
-			[
-				"W3",
-				41200,
-				49800
-			],
-			[
-				"W4",
-				52600,
-				60300
-			],
-			[
-				"W5",
-				47900,
-				55200
-			],
-			[
-				"W6",
-				55800,
-				63900
-			],
-			[
-				"W7",
-				49300,
-				58400
-			],
-			[
-				"W8",
-				60100,
-				68700
-			],
-			[
-				"W9",
-				51800,
-				60400
-			],
-			[
-				"W10",
-				57900,
-				66100
-			],
-			[
-				"W11",
-				53400,
-				62800
-			],
-			[
-				"W12",
-				53448,
-				61980
-			],
-			[
-				"W13",
-				47000,
-				54500
-			]
-		],
-		"mix": [
-			[
-				"kirana",
-				42
-			],
-			[
-				"expiresoon",
-				38
-			],
-			[
-				"staff",
-				5
-			],
-			[
-				"foodbank",
-				12
-			],
-			[
-				"writeoff",
-				3
-			]
-		],
-		"mixNames": {
-			"kirana": "Kirana scheme",
-			"expiresoon": "ExpireSoon",
-			"staff": "Staff sale",
-			"foodbank": "Food bank",
-			"writeoff": "Write-off"
-		},
-		"brsr": [
-			{
-				"cat": "Food waste: packaged food past quick-commerce gates",
-				"diverted": 4840,
-				"resold": 4260,
-				"donated": 580,
-				"disposed": 60,
-				"evidence": "Tax invoices, ExpireSoon listing IDs, in-app order logs, food-bank receipts"
-			},
-			{
-				"cat": "Plastic packaging (EPR)",
-				"diverted": 860,
-				"resold": 770,
-				"donated": 90,
-				"disposed": 10,
-				"evidence": "Packaging weights per SKU, EPR factor, the same invoices"
-			}
-		],
-		"writeOffAvoided": 733510,
-		"co2": 14250
-	},
 	"rules": {
 		"watchTime": "09:00",
 		"dataTime": "08:30",
@@ -4554,5 +4441,1510 @@
 				]
 			]
 		}
-	]
+	],
+	"history": {
+		"at": {
+			"open": [
+				0,
+				"08:30"
+			],
+			"detect": [
+				0,
+				"09:00"
+			],
+			"photo": [
+				0,
+				"11:00"
+			],
+			"read": [
+				0,
+				"11:05"
+			],
+			"value": [
+				0,
+				"11:10"
+			],
+			"route": [
+				0,
+				"11:15"
+			],
+			"approve": [
+				0,
+				"12:00"
+			],
+			"listing": [
+				0,
+				"12:05"
+			],
+			"offer": [
+				0,
+				"12:10"
+			],
+			"donation": [
+				0,
+				"12:15"
+			],
+			"pickup": [
+				1,
+				"09:30"
+			],
+			"orders": [
+				1,
+				"10:00"
+			],
+			"bid": [
+				1,
+				"15:00"
+			],
+			"counter": [
+				1,
+				"15:05"
+			],
+			"accept": [
+				1,
+				"15:30"
+			],
+			"collect": [
+				2,
+				"10:00"
+			],
+			"closeOffer": [
+				2,
+				"12:10"
+			],
+			"staff": [
+				2,
+				"18:00"
+			],
+			"truck": [
+				3,
+				"10:00"
+			],
+			"papers": [
+				3,
+				"10:30"
+			],
+			"invoice": [
+				3,
+				"11:00"
+			],
+			"van": [
+				4,
+				"09:00"
+			],
+			"review": [
+				4,
+				"15:00"
+			]
+		},
+		"start": {
+			"listing": 24107,
+			"invoice": 921,
+			"support": 102,
+			"receipt.feeding-india": 415
+		},
+		"batches": [
+			{
+				"ref": "MF-2406-105",
+				"sku": "biscuits",
+				"distributor": "rakesh",
+				"units": 1400,
+				"daysLeft": 42,
+				"sellPerDay": 10,
+				"flagged": "2026-07-03",
+				"bestBefore": "2026-08-14",
+				"mfg": "2025-11-17",
+				"outcome": "sold",
+				"bid": 17.4,
+				"price": 19,
+				"partner": null,
+				"kirana": {
+					"planned": 490,
+					"ordered": 490
+				},
+				"staff": null,
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-07-03T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-07-03T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-07-03T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-07-03T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-07-03T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-07-03T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-07-03T12:00"
+					},
+					{
+						"step": "listing",
+						"at": "2026-07-03T12:05"
+					},
+					{
+						"step": "offer",
+						"at": "2026-07-03T12:10"
+					},
+					{
+						"step": "orders",
+						"at": "2026-07-04T10:00"
+					},
+					{
+						"step": "bid",
+						"at": "2026-07-04T15:00"
+					},
+					{
+						"step": "counter",
+						"at": "2026-07-04T15:05"
+					},
+					{
+						"step": "accept",
+						"at": "2026-07-04T15:30"
+					},
+					{
+						"step": "truck",
+						"at": "2026-07-06T10:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-07-06T10:30"
+					},
+					{
+						"step": "invoice",
+						"at": "2026-07-06T11:00"
+					},
+					{
+						"step": "van",
+						"at": "2026-07-07T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-07-07T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-08-14T10:00"
+					}
+				],
+				"numbers": {
+					"listing": "ES-24107",
+					"invoice": "INV/26-27/0921",
+					"support": "CN/0102"
+				},
+				"expect": {
+					"net": 22055,
+					"swing": 26286.5,
+					"pnl": -1045,
+					"itc": 1302,
+					"itcReversed": 0,
+					"kg": 225.75,
+					"co2": 564.38,
+					"meals": 0,
+					"godown": 0,
+					"destroyed": 0,
+					"support": 8395,
+					"credit": 0
+				}
+			},
+			{
+				"ref": "MF-2406-106",
+				"sku": "chikki",
+				"distributor": "lakshmi",
+				"units": 1600,
+				"daysLeft": 38,
+				"sellPerDay": 14,
+				"flagged": "2026-07-08",
+				"bestBefore": "2026-08-15",
+				"mfg": "2026-02-16",
+				"outcome": "sold",
+				"bid": 10.8,
+				"price": 12.5,
+				"partner": null,
+				"kirana": {
+					"planned": 686,
+					"ordered": 686
+				},
+				"staff": null,
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-07-08T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-07-08T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-07-08T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-07-08T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-07-08T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-07-08T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-07-08T12:00"
+					},
+					{
+						"step": "listing",
+						"at": "2026-07-08T12:05"
+					},
+					{
+						"step": "offer",
+						"at": "2026-07-08T12:10"
+					},
+					{
+						"step": "orders",
+						"at": "2026-07-09T10:00"
+					},
+					{
+						"step": "bid",
+						"at": "2026-07-09T15:00"
+					},
+					{
+						"step": "counter",
+						"at": "2026-07-09T15:05"
+					},
+					{
+						"step": "accept",
+						"at": "2026-07-09T15:30"
+					},
+					{
+						"step": "truck",
+						"at": "2026-07-11T10:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-07-11T10:30"
+					},
+					{
+						"step": "invoice",
+						"at": "2026-07-11T11:00"
+					},
+					{
+						"step": "van",
+						"at": "2026-07-12T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-07-12T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-08-15T10:00"
+					}
+				],
+				"numbers": {
+					"listing": "ES-24108",
+					"invoice": "INV/26-27/0922",
+					"support": "CN/0103"
+				},
+				"expect": {
+					"net": 15847,
+					"swing": 19216.74,
+					"pnl": 689,
+					"itc": 851.18,
+					"itcReversed": 0,
+					"kg": 128.26,
+					"co2": 320.65,
+					"meals": 0,
+					"godown": 0,
+					"destroyed": 0,
+					"support": 5141,
+					"credit": 0
+				}
+			},
+			{
+				"ref": "MF-2406-107",
+				"sku": "oats",
+				"distributor": "lakshmi",
+				"units": 800,
+				"daysLeft": 40,
+				"sellPerDay": 5,
+				"flagged": "2026-07-14",
+				"bestBefore": "2026-08-23",
+				"mfg": "2025-11-26",
+				"outcome": "leftover",
+				"bid": 28.2,
+				"price": 30.8,
+				"partner": null,
+				"kirana": {
+					"planned": 245,
+					"ordered": 180
+				},
+				"staff": null,
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-07-14T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-07-14T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-07-14T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-07-14T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-07-14T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-07-14T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-07-14T12:00"
+					},
+					{
+						"step": "listing",
+						"at": "2026-07-14T12:05"
+					},
+					{
+						"step": "offer",
+						"at": "2026-07-14T12:10"
+					},
+					{
+						"step": "orders",
+						"at": "2026-07-15T10:00"
+					},
+					{
+						"step": "bid",
+						"at": "2026-07-15T15:00"
+					},
+					{
+						"step": "counter",
+						"at": "2026-07-15T15:05"
+					},
+					{
+						"step": "accept",
+						"at": "2026-07-15T15:30"
+					},
+					{
+						"step": "closeOffer",
+						"at": "2026-07-16T12:10"
+					},
+					{
+						"step": "truck",
+						"at": "2026-07-17T10:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-07-17T10:30"
+					},
+					{
+						"step": "invoice",
+						"at": "2026-07-17T11:00"
+					},
+					{
+						"step": "van",
+						"at": "2026-07-18T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-07-18T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-08-23T10:00"
+					}
+				],
+				"numbers": {
+					"listing": "ES-24109",
+					"invoice": "INV/26-27/0923",
+					"support": "CN/0104",
+					"expiry": "CN/0111"
+				},
+				"expect": {
+					"net": 18842,
+					"swing": 21606.5,
+					"pnl": -4333.25,
+					"itc": 1157.1,
+					"itcReversed": 131.95,
+					"kg": 125.4,
+					"co2": 313.5,
+					"meals": 0,
+					"godown": 65,
+					"destroyed": 65,
+					"support": 8233,
+					"credit": 3087.5
+				}
+			},
+			{
+				"ref": "MF-2406-108",
+				"sku": "poha",
+				"distributor": "rakesh",
+				"units": 900,
+				"daysLeft": 45,
+				"sellPerDay": 6,
+				"flagged": "2026-07-21",
+				"bestBefore": "2026-09-04",
+				"mfg": "2025-12-08",
+				"outcome": "sold",
+				"bid": 23.9,
+				"price": 26.1,
+				"partner": null,
+				"kirana": {
+					"planned": 294,
+					"ordered": 294
+				},
+				"staff": null,
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-07-21T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-07-21T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-07-21T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-07-21T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-07-21T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-07-21T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-07-21T12:00"
+					},
+					{
+						"step": "listing",
+						"at": "2026-07-21T12:05"
+					},
+					{
+						"step": "offer",
+						"at": "2026-07-21T12:10"
+					},
+					{
+						"step": "orders",
+						"at": "2026-07-22T10:00"
+					},
+					{
+						"step": "bid",
+						"at": "2026-07-22T15:00"
+					},
+					{
+						"step": "counter",
+						"at": "2026-07-22T15:05"
+					},
+					{
+						"step": "accept",
+						"at": "2026-07-22T15:30"
+					},
+					{
+						"step": "truck",
+						"at": "2026-07-24T10:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-07-24T10:30"
+					},
+					{
+						"step": "invoice",
+						"at": "2026-07-24T11:00"
+					},
+					{
+						"step": "van",
+						"at": "2026-07-25T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-07-25T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-09-04T10:00"
+					}
+				],
+				"numbers": {
+					"listing": "ES-24110",
+					"invoice": "INV/26-27/0924",
+					"support": "CN/0105"
+				},
+				"expect": {
+					"net": 19320.8,
+					"swing": 22586.72,
+					"pnl": -1511.2,
+					"itc": 1169.28,
+					"itcReversed": 0,
+					"kg": 181.44,
+					"co2": 453.6,
+					"meals": 0,
+					"godown": 0,
+					"destroyed": 0,
+					"support": 7559.2,
+					"credit": 0
+				}
+			},
+			{
+				"ref": "MF-2406-109",
+				"sku": "poha",
+				"distributor": "lakshmi",
+				"units": 1100,
+				"daysLeft": 26,
+				"sellPerDay": 8,
+				"flagged": "2026-07-28",
+				"bestBefore": "2026-08-23",
+				"mfg": "2025-11-26",
+				"outcome": "donation",
+				"bid": null,
+				"price": null,
+				"partner": "Feeding India",
+				"kirana": {
+					"planned": 392,
+					"ordered": 392
+				},
+				"staff": 150,
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-07-28T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-07-28T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-07-28T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-07-28T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-07-28T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-07-28T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-07-28T12:00"
+					},
+					{
+						"step": "offer",
+						"at": "2026-07-28T12:10"
+					},
+					{
+						"step": "donation",
+						"at": "2026-07-28T12:15"
+					},
+					{
+						"step": "pickup",
+						"at": "2026-07-29T09:30"
+					},
+					{
+						"step": "orders",
+						"at": "2026-07-29T10:00"
+					},
+					{
+						"step": "collect",
+						"at": "2026-07-30T10:00"
+					},
+					{
+						"step": "staff",
+						"at": "2026-07-30T18:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-07-31T10:30"
+					},
+					{
+						"step": "van",
+						"at": "2026-08-01T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-08-01T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-08-23T10:00"
+					}
+				],
+				"numbers": {
+					"receipt": "FI/HYD/26-27/0415",
+					"support": "CN/0106"
+				},
+				"expect": {
+					"net": 15130.56,
+					"swing": 19737.84,
+					"pnl": -14257.44,
+					"itc": 943.08,
+					"itcReversed": 706.44,
+					"kg": 255.96,
+					"co2": 639.9,
+					"meals": 406,
+					"godown": 0,
+					"destroyed": 0,
+					"support": 21880,
+					"credit": 0
+				}
+			},
+			{
+				"ref": "MF-2407-110",
+				"sku": "facewash",
+				"distributor": "rakesh",
+				"units": 520,
+				"daysLeft": 48,
+				"sellPerDay": 3,
+				"flagged": "2026-08-04",
+				"bestBefore": "2026-09-21",
+				"mfg": "2024-09-21",
+				"outcome": "sold",
+				"bid": 52.2,
+				"price": 57,
+				"partner": null,
+				"kirana": {
+					"planned": 147,
+					"ordered": 147
+				},
+				"staff": null,
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-08-04T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-08-04T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-08-04T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-08-04T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-08-04T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-08-04T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-08-04T12:00"
+					},
+					{
+						"step": "listing",
+						"at": "2026-08-04T12:05"
+					},
+					{
+						"step": "offer",
+						"at": "2026-08-04T12:10"
+					},
+					{
+						"step": "orders",
+						"at": "2026-08-05T10:00"
+					},
+					{
+						"step": "bid",
+						"at": "2026-08-05T15:00"
+					},
+					{
+						"step": "counter",
+						"at": "2026-08-05T15:05"
+					},
+					{
+						"step": "accept",
+						"at": "2026-08-05T15:30"
+					},
+					{
+						"step": "truck",
+						"at": "2026-08-07T10:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-08-07T10:30"
+					},
+					{
+						"step": "invoice",
+						"at": "2026-08-07T11:00"
+					},
+					{
+						"step": "van",
+						"at": "2026-08-08T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-08-08T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-09-21T10:00"
+					}
+				],
+				"numbers": {
+					"listing": "ES-24111",
+					"invoice": "INV/26-27/0925",
+					"support": "CN/0107"
+				},
+				"expect": {
+					"net": 24660.5,
+					"swing": 30206.59,
+					"pnl": 1634.5,
+					"itc": 4664.75,
+					"itcReversed": 0,
+					"kg": 47.64,
+					"co2": 119.1,
+					"meals": 0,
+					"godown": 0,
+					"destroyed": 0,
+					"support": 10275.5,
+					"credit": 0
+				}
+			},
+			{
+				"ref": "MF-2407-111",
+				"sku": "mango",
+				"distributor": "rakesh",
+				"units": 1700,
+				"daysLeft": 36,
+				"sellPerDay": 16,
+				"flagged": "2026-08-10",
+				"bestBefore": "2026-09-15",
+				"mfg": "2026-03-19",
+				"outcome": "leftover",
+				"bid": 8.7,
+				"price": 10,
+				"partner": null,
+				"kirana": {
+					"planned": 784,
+					"ordered": 600
+				},
+				"staff": null,
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-08-10T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-08-10T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-08-10T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-08-10T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-08-10T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-08-10T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-08-10T12:00"
+					},
+					{
+						"step": "listing",
+						"at": "2026-08-10T12:05"
+					},
+					{
+						"step": "offer",
+						"at": "2026-08-10T12:10"
+					},
+					{
+						"step": "orders",
+						"at": "2026-08-11T10:00"
+					},
+					{
+						"step": "bid",
+						"at": "2026-08-11T15:00"
+					},
+					{
+						"step": "counter",
+						"at": "2026-08-11T15:05"
+					},
+					{
+						"step": "accept",
+						"at": "2026-08-11T15:30"
+					},
+					{
+						"step": "closeOffer",
+						"at": "2026-08-12T12:10"
+					},
+					{
+						"step": "truck",
+						"at": "2026-08-13T10:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-08-13T10:30"
+					},
+					{
+						"step": "invoice",
+						"at": "2026-08-13T11:00"
+					},
+					{
+						"step": "van",
+						"at": "2026-08-14T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-08-14T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-09-15T10:00"
+					}
+				],
+				"numbers": {
+					"listing": "ES-24112",
+					"invoice": "INV/26-27/0926",
+					"support": "CN/0108",
+					"expiry": "CN/0115"
+				},
+				"expect": {
+					"net": 11320,
+					"swing": 14833.68,
+					"pnl": -2890.56,
+					"itc": 578.6,
+					"itcReversed": 101.2,
+					"kg": 226.18,
+					"co2": 565.45,
+					"meals": 0,
+					"godown": 184,
+					"destroyed": 184,
+					"support": 3934,
+					"credit": 2668
+				}
+			},
+			{
+				"ref": "MF-2407-112",
+				"sku": "hairoil",
+				"distributor": "lakshmi",
+				"units": 480,
+				"daysLeft": 44,
+				"sellPerDay": 3,
+				"flagged": "2026-08-17",
+				"bestBefore": "2026-09-30",
+				"mfg": "2024-09-30",
+				"outcome": "sold",
+				"bid": 65.2,
+				"price": 71.2,
+				"partner": null,
+				"kirana": {
+					"planned": 147,
+					"ordered": 147
+				},
+				"staff": null,
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-08-17T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-08-17T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-08-17T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-08-17T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-08-17T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-08-17T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-08-17T12:00"
+					},
+					{
+						"step": "listing",
+						"at": "2026-08-17T12:05"
+					},
+					{
+						"step": "offer",
+						"at": "2026-08-17T12:10"
+					},
+					{
+						"step": "orders",
+						"at": "2026-08-18T10:00"
+					},
+					{
+						"step": "bid",
+						"at": "2026-08-18T15:00"
+					},
+					{
+						"step": "counter",
+						"at": "2026-08-18T15:05"
+					},
+					{
+						"step": "accept",
+						"at": "2026-08-18T15:30"
+					},
+					{
+						"step": "truck",
+						"at": "2026-08-20T10:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-08-20T10:30"
+					},
+					{
+						"step": "invoice",
+						"at": "2026-08-20T11:00"
+					},
+					{
+						"step": "van",
+						"at": "2026-08-21T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-08-21T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-09-30T10:00"
+					}
+				],
+				"numbers": {
+					"listing": "ES-24113",
+					"invoice": "INV/26-27/0927",
+					"support": "CN/0109"
+				},
+				"expect": {
+					"net": 28862.9,
+					"swing": 31420.07,
+					"pnl": 2294.9,
+					"itc": 1494.45,
+					"itcReversed": 0,
+					"kg": 84.87,
+					"co2": 212.18,
+					"meals": 0,
+					"godown": 0,
+					"destroyed": 0,
+					"support": 11727.1,
+					"credit": 0
+				}
+			},
+			{
+				"ref": "MF-2407-113",
+				"sku": "chips",
+				"distributor": "lakshmi",
+				"units": 1500,
+				"daysLeft": 40,
+				"sellPerDay": 13,
+				"flagged": "2026-08-18",
+				"bestBefore": "2026-09-27",
+				"mfg": "2026-03-31",
+				"outcome": "sold",
+				"bid": 13,
+				"price": 14.2,
+				"partner": null,
+				"kirana": {
+					"planned": 637,
+					"ordered": 637
+				},
+				"staff": null,
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-08-18T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-08-18T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-08-18T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-08-18T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-08-18T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-08-18T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-08-18T12:00"
+					},
+					{
+						"step": "listing",
+						"at": "2026-08-18T12:05"
+					},
+					{
+						"step": "offer",
+						"at": "2026-08-18T12:10"
+					},
+					{
+						"step": "orders",
+						"at": "2026-08-19T10:00"
+					},
+					{
+						"step": "bid",
+						"at": "2026-08-19T15:00"
+					},
+					{
+						"step": "counter",
+						"at": "2026-08-19T15:05"
+					},
+					{
+						"step": "accept",
+						"at": "2026-08-19T15:30"
+					},
+					{
+						"step": "truck",
+						"at": "2026-08-21T10:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-08-21T10:30"
+					},
+					{
+						"step": "invoice",
+						"at": "2026-08-21T11:00"
+					},
+					{
+						"step": "van",
+						"at": "2026-08-22T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-08-22T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-09-27T10:00"
+					}
+				],
+				"numbers": {
+					"listing": "ES-24114",
+					"invoice": "INV/26-27/0928",
+					"support": "CN/0110"
+				},
+				"expect": {
+					"net": 17210.3,
+					"swing": 20808.86,
+					"pnl": 74.3,
+					"itc": 963.9,
+					"itcReversed": 0,
+					"kg": 171.36,
+					"co2": 428.4,
+					"meals": 0,
+					"godown": 0,
+					"destroyed": 0,
+					"support": 6351.7,
+					"credit": 0
+				}
+			},
+			{
+				"ref": "MF-2407-114",
+				"sku": "oats",
+				"distributor": "rakesh",
+				"units": 900,
+				"daysLeft": 22,
+				"sellPerDay": 6,
+				"flagged": "2026-08-24",
+				"bestBefore": "2026-09-15",
+				"mfg": "2025-12-19",
+				"outcome": "donation",
+				"bid": null,
+				"price": null,
+				"partner": "Feeding India",
+				"kirana": {
+					"planned": 294,
+					"ordered": 294
+				},
+				"staff": 50,
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-08-24T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-08-24T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-08-24T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-08-24T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-08-24T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-08-24T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-08-24T12:00"
+					},
+					{
+						"step": "offer",
+						"at": "2026-08-24T12:10"
+					},
+					{
+						"step": "donation",
+						"at": "2026-08-24T12:15"
+					},
+					{
+						"step": "pickup",
+						"at": "2026-08-25T09:30"
+					},
+					{
+						"step": "orders",
+						"at": "2026-08-25T10:00"
+					},
+					{
+						"step": "collect",
+						"at": "2026-08-26T10:00"
+					},
+					{
+						"step": "staff",
+						"at": "2026-08-26T18:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-08-27T10:30"
+					},
+					{
+						"step": "van",
+						"at": "2026-08-28T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-08-28T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-09-15T10:00"
+					}
+				],
+				"numbers": {
+					"receipt": "FI/NAG/26-27/0416",
+					"support": "CN/0112"
+				},
+				"expect": {
+					"net": 11440.02,
+					"swing": 15368.52,
+					"pnl": -17719.98,
+					"itc": 698.32,
+					"itcReversed": 945.98,
+					"kg": 178.2,
+					"co2": 445.5,
+					"meals": 466,
+					"godown": 0,
+					"destroyed": 0,
+					"support": 25856,
+					"credit": 0
+				}
+			},
+			{
+				"ref": "MF-2407-115",
+				"sku": "biscuits",
+				"distributor": "lakshmi",
+				"units": 1300,
+				"daysLeft": 34,
+				"sellPerDay": 11,
+				"flagged": "2026-08-25",
+				"bestBefore": "2026-09-28",
+				"mfg": "2026-01-01",
+				"outcome": "sold",
+				"bid": 17.4,
+				"price": 19,
+				"partner": null,
+				"kirana": {
+					"planned": 539,
+					"ordered": 539
+				},
+				"staff": null,
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-08-25T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-08-25T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-08-25T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-08-25T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-08-25T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-08-25T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-08-25T12:00"
+					},
+					{
+						"step": "listing",
+						"at": "2026-08-25T12:05"
+					},
+					{
+						"step": "offer",
+						"at": "2026-08-25T12:10"
+					},
+					{
+						"step": "orders",
+						"at": "2026-08-26T10:00"
+					},
+					{
+						"step": "bid",
+						"at": "2026-08-26T15:00"
+					},
+					{
+						"step": "counter",
+						"at": "2026-08-26T15:05"
+					},
+					{
+						"step": "accept",
+						"at": "2026-08-26T15:30"
+					},
+					{
+						"step": "truck",
+						"at": "2026-08-28T10:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-08-28T10:30"
+					},
+					{
+						"step": "invoice",
+						"at": "2026-08-28T11:00"
+					},
+					{
+						"step": "van",
+						"at": "2026-08-29T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-08-29T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-09-28T10:00"
+					}
+				],
+				"numbers": {
+					"listing": "ES-24115",
+					"invoice": "INV/26-27/0929",
+					"support": "CN/0113"
+				},
+				"expect": {
+					"net": 21382.5,
+					"swing": 25424.62,
+					"pnl": -683.5,
+					"itc": 1243.72,
+					"itcReversed": 0,
+					"kg": 215.65,
+					"co2": 539.13,
+					"meals": 0,
+					"godown": 0,
+					"destroyed": 0,
+					"support": 7704.5,
+					"credit": 0
+				}
+			},
+			{
+				"ref": "MF-2407-116",
+				"sku": "chikki",
+				"distributor": "rakesh",
+				"units": 1500,
+				"daysLeft": 31,
+				"sellPerDay": 12,
+				"flagged": "2026-08-27",
+				"bestBefore": "2026-09-27",
+				"mfg": "2026-03-31",
+				"outcome": "leftover",
+				"bid": 10.8,
+				"price": 12.5,
+				"partner": null,
+				"kirana": {
+					"planned": 588,
+					"ordered": 456
+				},
+				"staff": null,
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-08-27T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-08-27T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-08-27T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-08-27T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-08-27T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-08-27T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-08-27T12:00"
+					},
+					{
+						"step": "listing",
+						"at": "2026-08-27T12:05"
+					},
+					{
+						"step": "offer",
+						"at": "2026-08-27T12:10"
+					},
+					{
+						"step": "orders",
+						"at": "2026-08-28T10:00"
+					},
+					{
+						"step": "bid",
+						"at": "2026-08-28T15:00"
+					},
+					{
+						"step": "counter",
+						"at": "2026-08-28T15:05"
+					},
+					{
+						"step": "accept",
+						"at": "2026-08-28T15:30"
+					},
+					{
+						"step": "closeOffer",
+						"at": "2026-08-29T12:10"
+					},
+					{
+						"step": "truck",
+						"at": "2026-08-30T10:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-08-30T10:30"
+					},
+					{
+						"step": "invoice",
+						"at": "2026-08-30T11:00"
+					},
+					{
+						"step": "van",
+						"at": "2026-08-31T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-08-31T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-09-27T10:00"
+					}
+				],
+				"numbers": {
+					"listing": "ES-24116",
+					"invoice": "INV/26-27/0930",
+					"support": "CN/0114",
+					"expiry": "CN/0116"
+				},
+				"expect": {
+					"net": 14312,
+					"swing": 17433.2,
+					"pnl": -1825.48,
+					"itc": 788.4,
+					"itcReversed": 96.36,
+					"kg": 118.8,
+					"co2": 297,
+					"meals": 0,
+					"godown": 132,
+					"destroyed": 132,
+					"support": 5128,
+					"credit": 2376
+				}
+			}
+		]
+	}
 }

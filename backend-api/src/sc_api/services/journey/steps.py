@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 
 from sc_api import models as m
 from sc_api.domain import copy, money
@@ -94,8 +94,8 @@ async def scene(ctx: Ctx, client_id: str, ref: str, *, cleared: bool = False) ->
     q = select(m.Case).where(m.Case.client_id == client_id, m.Case.batch_ref == ref)
     if cleared:
         since = views.journey_from(c)
-        if since is not None:
-            q = q.where(m.Case.opened_wall >= since)
+        if since is not None:  # this journey's cases, and the client's history (SC-123)
+            q = q.where(or_(m.Case.opened_wall >= since, m.Case.history.is_(True)))
         q = q.order_by(m.Case.seq.desc()).limit(1)
     else:
         q = q.where(m.Case.status == "open")
@@ -156,6 +156,8 @@ async def _save(ctx: Ctx, s: Scene, *, note: str | None = None) -> None:
     await ctx.session.flush()
     await ev.apply_speed(ctx, c)
     await ev.changed(ctx, c, s.ref)
+    if case.ledger is not None:  # posted, or a cleared batch's papers moved on: the ledger reads it again (SC-124)
+        await ev.ledger_changed(ctx, c, s.ref)
 
 
 async def _advance(ctx: Ctx, s: Scene) -> None:
@@ -172,11 +174,13 @@ async def _orders(ctx: Ctx, s: Scene) -> list[m.CaseOrder]:
 
 async def realised(ctx: Ctx, s: Scene) -> dict[str, Any]:
     """the plan as its finished lines came to (money.realised): what was ordered, awarded, sold and collected, with
-    the meals counted by the rule of the food bank that collected (SC-110)"""
+    the meals counted by the rule of the food bank that collected (SC-110), and the packs left at the godown settled
+    by the client's expiry policy (SC-122)"""
     ordered = sum(o.units for o in await _orders(ctx, s))
     bank = await _bank(ctx, s)
     rule = bank.details.get("meals") if bank else None
-    return money.realised(s.case.plan or {}, s.sku_obj(), J.done_units(_state(s.case), ordered), rule, rules=s.rules)
+    done = J.done_units(_state(s.case), ordered)
+    return money.realised(s.case.plan or {}, s.sku_obj(), done, rule, s.c.expiry, rules=s.rules)
 
 
 async def _bank(ctx: Ctx, s: Scene) -> m.Partner | None:
@@ -444,9 +448,12 @@ def _client_short(c: m.Client) -> str:
 # --- detect -----------------------------------------------------------------------------------------------------------
 
 
-async def detect(ctx: Ctx, client_id: str, body: dict[str, Any], run: Run | None) -> list[str]:
+async def detect(
+    ctx: Ctx, client_id: str, body: dict[str, Any], run: Run | None, *, only: set[str] | None = None
+) -> list[str]:
     """the Watcher's daily run: every open batch judged by its gates and how fast it sells; a batch at risk, whose
-    distributor has given the agents permission, opens a case. Returns the batches flagged"""
+    distributor has given the agents permission, opens a case. Returns the batches flagged. The history (SC-123)
+    judges only its batch of the day (`only`)"""
     c = await lock_client(ctx, client_id)
     await once(ctx, run)
     today = _today(ctx, c)
@@ -475,6 +482,8 @@ async def detect(ctx: Ctx, client_id: str, body: dict[str, Any], run: Run | None
     )
     flagged = []
     for b in batches:
+        if only is not None and b.ref not in only:
+            continue
         if selling.get(b.ref) is not None:
             b.sell_per_day = selling[b.ref]
         d, x = dists[b.distributor_id], skus[b.sku_id]
@@ -1610,8 +1619,9 @@ async def dispatch(ctx: Ctx, client_id: str, ref: str, kind: str) -> None:
 
 async def documents(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> None:
     """Paperwork drafts the distributor's invoice and checks the e-way bill rule, and issues the client's price-support
-    credit note, the ITC memo and the FSSAI checklist (money.py documents, numbered in sequence)"""
-    s = await scene(ctx, client_id, ref)
+    credit note, the ITC memo and the FSSAI checklist (money.py documents, numbered in sequence). A batch already
+    cleared has its papers (a noop), and Paperwork goes on to lay out the PDFs it lacks"""
+    s = await scene(ctx, client_id, ref, cleared=True)
     await once(ctx, run)
     if s.case.phase != "dispatched" or s.case.docs:
         raise Noop()
@@ -1720,8 +1730,9 @@ async def documents(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> None
 
 
 async def document_pdf(ctx: Ctx, client_id: str, ref: str, doc_id: str, name: str, run: Run | None) -> None:
-    """the PDF the Paperwork agent rendered into the docs bucket"""
-    s = await scene(ctx, client_id, ref)
+    """the PDF the Paperwork agent rendered into the docs bucket: kept on a batch cleared before it arrived too
+    (Report now clears a batch as its papers are drafted), and on the client's history (SC-123)"""
+    s = await scene(ctx, client_id, ref, cleared=True)
     # a new dict for the paper, not the stored one changed in place: the column is then a value that differs from what
     # was loaded, so it is written (SC-100: in place, the PDF was never kept)
     s.case.docs = [{**d, "pdf": name} if d["id"] == doc_id else d for d in s.case.docs or []]
@@ -1730,6 +1741,8 @@ async def document_pdf(ctx: Ctx, client_id: str, ref: str, doc_id: str, name: st
         s.case.donation = {**s.case.donation, "receipt": {**rcpt, "pdf": name}}
     await ctx.session.flush()
     await ev.changed(ctx, s.c, ref)
+    if s.case.ledger is not None:
+        await ev.ledger_changed(ctx, s.c, ref)
 
 
 async def issue_invoice(ctx: Ctx, client_id: str, ref: str) -> None:
@@ -1869,12 +1882,13 @@ async def _settle_expiry(ctx: Ctx, s: Scene, plan_: dict[str, Any]) -> dict[str,
         "date": _today(ctx, s.c).isoformat(),
     }
     docs = [dict(d) for d in (s.case.docs or [])]
+    # the papers drafted before expiry day count again what the client destroys and the credit it reverses (SC-122)
+    destroyed = int(plan_.get("destroyed", plan_.get("leftover", 0)))
     for d in docs:
-        if d["id"] == "destruction" and settle["destroyedBy"] == "client":
-            n = int(plan_.get("leftover", 0)) + godown
-            d.update({"no": f"{n} units", "status": "generated", "units": n})
-        if d["id"] == "itc" and settle["itc"]:
-            d["reversed"] = settle["itc"]
+        if d["id"] == "destruction" and destroyed:
+            d.update({"no": f"{destroyed} units", "status": "generated", "units": destroyed})
+        if d["id"] == "itc":
+            d.update({"amount": plan_["itcRetained"], "reversed": plan_["itcReversed"]})
     s.case.docs = money.jsonable([*docs, paper])
     return settle
 
@@ -1889,17 +1903,30 @@ async def report(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> dict[st
     plan_ = await realised(ctx, s)  # what the lines came to; what no channel took stays at the godown
     settle = await _settle_expiry(ctx, s, plan_)  # and expires, settled by the client's expiry policy (SC-94)
     award = s.case.award
-    actual = money.actual_net(plan_, award["price"]) if award else {"net": plan_.get("net", 0)}
+    # every batch's ledger carries its swing and P&L, with or without an ExpireSoon lot (SC-122)
+    actual = money.actual_net(plan_, award["price"]) if award else money.actual_net(plan_, 0)
     at = ev.now(ctx, s.c)
     return_by = (s.batch.best_before - timedelta(days=s.c.return_window_days)).isoformat()
+
+    # the lines as they came to, the ExpireSoon lot at its award price, so they add up to the net (SC-122)
+    def at_award(ln: dict[str, Any]) -> dict[str, Any]:
+        if ln["id"] != "expiresoon" or not award:
+            return ln
+        gross = money.r2(ln["units"] * award["price"])
+        return {**ln, "price": award["price"], "gross": gross, "net": money.r2(gross - ln["cost"]), "atAward": True}
+
     ledger = money.jsonable(
         {
             "net": actual["net"],
+            "swing": actual["swing"],
+            "pnl": actual["pnl"],
             "kg": plan_.get("kg", 0),
             "co2": plan_.get("co2", 0),
             "meals": plan_.get("meals", 0),
             "itc": plan_.get("itcRetained", 0),
-            "lines": plan_.get("lines", []),
+            "itcReversed": plan_.get("itcReversed", 0),
+            "destroyed": plan_.get("destroyed", plan_.get("leftover", 0)),
+            "lines": [at_award(ln) for ln in plan_.get("lines", [])],
             "planned": (s.case.plan or {}).get("lines", []),
             "godown": plan_.get("godown", 0),
             "expiry": settle,

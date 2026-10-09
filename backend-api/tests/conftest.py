@@ -188,6 +188,6 @@ async def munchly(ctx: Ctx):
     """Munchly's live workspace (cli/live.py), with its journey at day 0"""
     from sc_api.cli import live
 
-    out = await live.build(ctx)
+    out = await live.build(ctx, with_history=False)  # the history has its own tests (test_history.py)
     await ctx.session.commit()
     return out

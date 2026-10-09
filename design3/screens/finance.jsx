@@ -49,7 +49,11 @@
         <Line k={`Credit to ${R.name}`} v={fmt.inr2(d.amount)} strong />
         <p className="pp-note">A financial credit note, with no GST adjustment, so {R.name} ends whole at the ₹{CHIPS.dp} it paid. It covers the buy-10-get-2 scheme too, so no separate scheme note is needed. Munchly pays this instead of an expiry claim of {fmt.inr(D.CLAIM.total)}. Trued up after the return window closes on {fmt.day(D.RETURN_BY)}.</p>
       </div>; }
-    if (id === "itc") return <div className="paper pp">{head("GST ITC memo", `Section 17(5)(h) · ${D.CLIENT.short}`, <span className="pp-stamp ok">ITC KEPT</span>)}<Line k="Packets sold under tax invoices" v={fmt.num(D.PLAN.soldUnits)} /><Line k="Destroyed, gifted or lost" v="0" /><Line k="Input GST on the stock" sub={`₹${CHIPS.itcPerUnit.toFixed(2)} a pack, from the cost sheet`} v={fmt.inr2(d.amount)} strong /><Line k="Reversal in GSTR-3B, Table 4(B)(1)" v="none" /><p className="pp-note">Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. These packs were sold under tax invoices, so it does not apply. The credit would be reversed only if the stock came back under the expiry claim and Munchly destroyed it. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since 1 October 2023, 17(5)(fa) on CSR donations.</p></div>;
+    // the credit kept on what was sold under tax invoices, and reversed on what was given away or destroyed (SC-122);
+    // an SKU with no cost sheet of its own has its credit worked out as cost × GST, so it is estimated
+    if (id === "itc") { const away = d.away || 0, rev = d.reversed || 0, sold = d.units != null ? d.units : D.PLAN.soldUnits, from = CHIPS.itcPerUnit == null ? "estimated from the cost and the GST rate" : "from the cost sheet";
+      return <div className="paper pp">{head("GST ITC memo", `Section 17(5)(h) · ${D.CLIENT.short}`, <span className={cx("pp-stamp", !rev && "ok")}>{rev ? "ITC PART REVERSED" : "ITC KEPT"}</span>)}<Line k="Packets sold under tax invoices" v={fmt.num(sold)} /><Line k="Destroyed, gifted or lost" v={fmt.num(away)} /><Line k="Input GST kept" sub={`₹${M.itcOf(CHIPS).toFixed(2)} a pack, ${from}`} v={fmt.inr2(d.amount)} strong /><Line k="Reversal in GSTR-3B, Table 4(B)(1)" v={rev ? fmt.inr2(rev) : "none"} />
+        <p className="pp-note">{rev ? `Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. The ${fmt.num(away)} packs of this batch given away or destroyed have their credit reversed; the ${fmt.num(sold)} sold under tax invoices keep theirs. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since 1 October 2023, 17(5)(fa) on CSR donations.` : "Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. These packs were sold under tax invoices, so it does not apply. The credit would be reversed only if the stock came back under the expiry claim and Munchly destroyed it. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since 1 October 2023, 17(5)(fa) on CSR donations."}</p></div>; }
     if (id === "expiry") { const C = D.CLIENT.short, x = d;
       if (x.policy === "none") return <div className="paper pp">{head("Expiry notice", `${D.BATCHES.find(b => b.hero).id} · ${R.name}`, <span className="pp-stamp">NO RETURNS</span>)}<Line k="Packs expired at the godown" v={fmt.num(x.units)} strong /><Line k={`Credit from ${C}`} v="none" /><p className="pp-note">{x.note}</p></div>;
       return <div className="paper pp">{head(x.type, `${x.no} · ${C} → ${R.name}`, <span className="pp-stamp ok">NO GST ADJ.</span>)}
@@ -59,7 +63,9 @@
         <p className="pp-note">{x.note}</p></div>; }
     if (id === "receipt" && d) { const b = D.BATCHES.find(x => x.hero); return <Receipt doc={d} batch={b} sku={D.SKUS[b.sku]} dist={D.DISTRIBUTORS[b.distributor]} />; }
     if (id === "fssai") return <div className="paper pp">{head("FSSAI surplus-food checklist", "MF-2409-117", <span className="pp-stamp">NOT REQUIRED</span>)}<p className="pp-note">Nothing from this batch was donated. The Mango Drink batch MF-2410-118 has its own checklist: {D.MANGO_FB} packs to Feeding India, Hyderabad.</p></div>;
-    return <div className="paper pp">{head("Destruction certificate", "MF-2409-117", <span className="pp-stamp">NOT REQUIRED</span>)}<Line k="Units left to destroy" v="0" strong /><p className="pp-note">Issued only when units remain, with the ITC reversal entry pre-filled so finance is never surprised.</p></div>;
+    // the packs the client destroys (SC-122: those that came back for full credit included), with their credit reversed
+    const n = (d && d.units) || 0;
+    return <div className="paper pp">{head("Destruction certificate", "MF-2409-117", <span className={cx("pp-stamp", n && "ok")}>{n ? "GENERATED" : "NOT REQUIRED"}</span>)}<Line k={n ? "Units destroyed" : "Units left to destroy"} v={fmt.num(n)} strong />{n ? <Line k="Input GST reversed" sub="section 17(5)(h), GSTR-3B Table 4(B)(1)" v={fmt.inr2(n * M.itcOf(CHIPS))} /> : null}<p className="pp-note">Issued only when units remain, with the ITC reversal entry pre-filled so finance is never surprised.</p></div>;
   }
 
   // the same batch read from each side: the distributor ends whole, and Munchly pays less than a claim. What the
@@ -69,6 +75,8 @@
     const h = useStore().hero; const x = h.expiry && h.expiry.units > 0 ? h.expiry : null;
     const took = D.SUPPORT.rows.reduce((t, r) => t + r.units * r.price, 0), credit = (x && x.credit) || 0, settled = x ? x.total : 0;
     const recv = took + D.SUPPORT.total; const paid = D.PLAN.units * CHIPS.dp + D.SUPPORT.van + D.SUPPORT.fee; const ends = Math.round(recv + credit - paid);
+    // a donation costs Munchly its handling and the credit given away with it, as the ledger's swing counts (SC-122)
+    const gift = D.PLAN.lines.find(l => l.id === "foodbank" && l.units > 0), given = gift ? gift.cost + gift.itcLoss : 0;
     return <Card className="stack snug">
       <span className="card-title">Who keeps what</span>
       <div className="stack tight t-subhead">
@@ -80,7 +88,8 @@
         <div className="row between"><span>Expiry claim Munchly avoids</span><span className="tnum">{fmt.inr(D.CLAIM.total)}</span></div>
         <div className="row between"><span>Price support it pays instead</span><span className="tnum neg">{fmt.inr(-D.SUPPORT.total)}</span></div>
         {settled > 0 && <div className="row between"><span>and the expiry settlement for {fmt.num(x.units)} packs</span><span className="tnum neg">{fmt.inr(-settled)}</span></div>}
-        <div className="row between"><b>Better for Munchly</b><Money value={D.CLAIM.total - D.SUPPORT.total - settled} size="s" style={{ color: "var(--primary-text)", fontSize: 22 }} /></div>
+        {given > 0 && <div className="row between"><span>and the donation's handling and credit, {fmt.num(gift.units)} packs</span><span className="tnum neg">{fmt.inr(-given)}</span></div>}
+        <div className="row between"><b>Better for Munchly</b><Money value={D.CLAIM.total - D.SUPPORT.total - settled - given} size="s" style={{ color: "var(--primary-text)", fontSize: 22 }} /></div>
       </div>
       <span className="t-caption subtle">The same {fmt.inr(D.ACTUAL.swing)} swing as the ledger, seen from Munchly's cash: the ₹{CHIPS.dp} credit Rakesh would have claimed and the ₹{CHIPS.dp} he paid cancel out. At plan prices it is {fmt.inr(D.SUPPORT_PLAN.total)} of support and a {fmt.inr(D.PLAN.swing)} swing.</span>
     </Card>;

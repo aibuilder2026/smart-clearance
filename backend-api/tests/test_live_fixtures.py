@@ -2,7 +2,7 @@
 live-source test (frontend/workspace/tests/live/), so the screens are drawn on real answers rather than hand-made ones.
 
 It runs only when asked: scripts/live-fixtures.sh sets LIVE_FIXTURES_OUT and runs this file alone. Each moment's file
-holds the public workspace, and for each person the snapshot, the cases they see, the quarter and the audit log, exactly
+holds the public workspace, and for each person the snapshot, the cases they see, the ledger and the audit log, exactly
 as the API answered them."""
 
 import json
@@ -57,12 +57,12 @@ async def _write(api, moment: str, people: list[str]) -> None:
             r = await api.get(f"{WS}/cases/{c['ref']}", headers=h)
             if r.status_code == 200:
                 cases[c["ref"]] = r.json()
-        q = await api.get(f"{WS}/quarter", headers=h)
+        q = await api.get(f"{WS}/ledger", headers=h)
         a = await api.get(f"{WS}/audit", headers=h)
         out["members"][who] = {
             "snapshot": snap,
             "cases": cases,
-            "quarter": q.json() if q.status_code == 200 else None,
+            "ledger": q.json() if q.status_code == 200 else None,
             "audit": a.json()["rows"] if a.status_code == 200 else [],
         }
     path = Path(OUT) / f"{moment}.json"

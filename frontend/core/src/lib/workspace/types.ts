@@ -288,7 +288,9 @@ export type Doc = {
 	disposal?: number;
 	epr?: number;
 	itc?: number;
+	/** the GST memo's credit reversed, and the packs given away or destroyed (SC-122) */
 	reversed?: number;
+	away?: number;
 	/** the food bank's receipt (SC-110, money.js receipt) */
 	paper?: string;
 	stamp?: string;

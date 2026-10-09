@@ -12,7 +12,7 @@ import type {
 	WorkspacePublic,
 	WorkspaceSnapshot,
 	WsAuditRow,
-	WsQuarter
+	WsLedger
 } from '@smart-clearance/api/workspace';
 import { ApiError, NotAMember } from '@smart-clearance/api/workspace';
 import { LiveSource } from '../../src/lib/live/source.svelte';
@@ -26,7 +26,7 @@ import LiveHost from './LiveHost.svelte';
 type Seen = {
 	snapshot: WorkspaceSnapshot;
 	cases: Record<string, CaseDetail>;
-	quarter: WsQuarter | null;
+	ledger: WsLedger | null;
 	audit: WsAuditRow[];
 };
 type Moment = { public: WorkspacePublic; members: Record<string, Seen> };
@@ -46,7 +46,7 @@ function fakeApi(m: Moment, who: string, over: Partial<Record<keyof WorkspaceApi
 		me: () => Promise.resolve(seen.snapshot.me),
 		snapshot: () => Promise.resolve(structuredClone(seen.snapshot)),
 		case: (ref: string) => (seen.cases[ref] ? Promise.resolve(structuredClone(seen.cases[ref])) : none(404)),
-		quarter: () => (seen.quarter ? Promise.resolve(seen.quarter) : none(403)),
+		ledger: () => (seen.ledger ? Promise.resolve(seen.ledger) : none(403)),
 		audit: () => Promise.resolve({ rows: seen.audit, before: null }),
 		events: () => Promise.resolve({ seq: seen.snapshot.seq, events: [], reset: false })
 	};
@@ -585,7 +585,11 @@ describe("expiry day's settlement (SC-94)", () => {
 		expect(t).toContain(`and the expiry credit for ${x.units.toLocaleString('en-IN')} packs${inr(x.credit!)}`);
 		expect(t).toContain('He ends whole₹0');
 		expect(t).toContain(`and the expiry settlement for ${x.units.toLocaleString('en-IN')} packs−${inr(x.total)}`);
-		expect(t).toContain(`Better for Munchly${inr(c.claim!.total - c.support!.total - x.total)}`);
+		// the donation's handling and the credit given away with it, as the ledger's swing counts them (SC-122)
+		const gift = c.plan!.lines.find((l) => l.id === 'foodbank')!;
+		const given = gift.cost + gift.itcLoss;
+		expect(t).toContain(`and the donation's handling and credit, ${gift.units} packs−${inr(given)}`);
+		expect(t).toContain(`Better for Munchly${inr(c.claim!.total - c.support!.total - x.total - given)}`);
 	});
 });
 
@@ -796,9 +800,10 @@ describe("the buyer's listing (SC-92)", () => {
 		const m = moment('cleared');
 		const r = await draw(source(fakeApi(m, 'anita')), 'paperwork', MANGO);
 		await fireEvent.click(await waitFor(() => r.getByRole('button', { name: /GST ITC memo/ })));
-		// the Mango's SKU has no itcPerUnit of its own: ₹11 at cost × 5% GST, as money.js works it out
+		// the Mango's SKU has no itcPerUnit of its own: ₹11 at cost × 5% GST, as money.js works it out, so the memo says
+		// it is estimated (SC-122, the maintainer's call)
 		expect(m.members.anita.cases[MANGO].sku.itcPerUnit ?? null).toBeNull();
-		await waitFor(() => expect(text(r)).toContain('₹0.55 a pack, from the cost sheet'));
+		await waitFor(() => expect(text(r)).toContain('₹0.55 a pack, estimated from the cost and the GST rate'));
 		expect(text(r)).not.toMatch(/NaN|undefined/);
 		expect(r.getByRole('button', { name: /FSSAI surplus-food checklist/ })).toBeTruthy();
 	});
