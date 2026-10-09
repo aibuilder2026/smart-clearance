@@ -243,9 +243,11 @@ export function storyMoments(
 	permit: boolean
 ): PtMoment[] {
 	const ordered = h.orders.reduce((t, o) => t + o.units, 0);
+	// the packs the Watcher flagged: the plan's, or (a partner is not sent the plan) the batch's own at risk
+	const flagged = c.plan.lines.length ? c.plan.units : c.risk.atRisk || c.plan.units;
 	const MOMENTS: [string, string, string][] = [
 		...(permit ? ([['permit', 'handshake', 'You gave the one-time permission']] as [string, string, string][]) : []),
-		['watch', 'radar', `The Watcher flagged ${num(c.plan.units)} packs at risk`],
+		['watch', 'radar', `The Watcher flagged ${num(flagged)} packs at risk`],
 		['ask', 'scan-line', 'Vision asked you for a label photo'],
 		['photo', 'camera', 'You sent the label photo'],
 		['read', 'scan-line', 'Vision read the label'],

@@ -767,7 +767,7 @@ export type PartnerCase = {
 	cleared: string | null;
 	/** each step and when it happened, in the client's time (2026-08-27T09:00) */
 	steps: { step: string; at: string }[];
-	batch: { daysLeft: number; bestBefore: string };
+	batch: { daysLeft: number; bestBefore: string; mfg?: string | null };
 	plan: {
 		units: number;
 		lines: { id: string; short: string; units: number; price: number; packPrice: number | null }[];

@@ -124,6 +124,8 @@ describe('every screen, on what backend-api answered', () => {
 					expect(out.route).toContain('Nothing to route');
 				}
 				if (who === 'rakesh') {
+					// before any batch is flagged, he gives the one-time permission on Today (SC-133)
+					expect(out.home).toContain('Let Smart-Clearance act for Rakesh Traders');
 					expect(out.home).toContain('No batch in a journey');
 					expect(out.home).toContain('Nothing asks for you today');
 					expect(out.photo).toContain('No label photo asked for now');

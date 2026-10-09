@@ -677,7 +677,8 @@ export function photoOf(
 		sent,
 		read: stepAt(c, 'read'),
 		bestBefore: bb,
-		mfg: sku.lifeDays ? addDays(bb, -sku.lifeDays) : null,
+		// the day it was made, as its label reads; else worked out from its shelf life
+		mfg: c.batch.mfg ?? (sku.lifeDays ? addDays(bb, -sku.lifeDays) : null),
 		mrp: sku.mrp
 	};
 }

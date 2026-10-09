@@ -26,8 +26,9 @@
 	const dist = $derived(distOfMe(ws, me));
 	const W = $derived(ws.data.workspace);
 	const perm = $derived(s.setup.permission);
-	// the one-time permission is the distributor's whose batch is in focus, or his own once given
-	const asked = $derived(ws.case ? ws.case.dist.id === dist.id : !!perm);
+	// the one-time permission: the distributor's whose batch is in focus, else (the live workspace's quiet day, before
+	// any batch is flagged) his own, which he gives before the Watcher may flag one
+	const asked = $derived(ws.case ? ws.case.dist.id === dist.id : true);
 	const js = $derived(
 		distJourneysOf(ws, dist.id)
 			.map((x) => x.j)

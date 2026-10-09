@@ -119,7 +119,12 @@ def facts(
             "flagged": flagged.isoformat(),
             "cleared": _day(L["at"]).isoformat() if L else None,
             "steps": steps_of(case, orders, feed),
-            "batch": {"daysLeft": (bb - flagged).days if bb else 0, "bestBefore": bb.isoformat() if bb else ""},
+            "batch": {
+                "daysLeft": (bb - flagged).days if bb else 0,
+                "bestBefore": bb.isoformat() if bb else "",
+                # the day it was made, as its label reads (the label photo's earlier reads, SC-133)
+                "mfg": batch.mfg.isoformat() if batch.mfg else None,
+            },
             "plan": {
                 # before the Router plans it, the packs the Watcher flagged (a distributor reads a batch from its flag)
                 "units": int(plan.get("units", 0)) or int((case.assess or {}).get("atRisk", 0)),

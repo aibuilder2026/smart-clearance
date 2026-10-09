@@ -9,7 +9,7 @@
 		"design3/system/product.jsx": "7c15ae9678f0aa97",
 		"design3/core/world.js": "5dae63f47252c9c8",
 		"design3/core/flow.js": "b0b1d40127a09038",
-		"design3/core/ledger.js": "650c2c5f0fedd1d1"
+		"design3/core/ledger.js": "95a11f5ce3600439"
 	},
 	"files": {
 		"showcase.json": "63b023d5b4f9e4b4",
@@ -17,7 +17,7 @@
 		"directory.json": "50395a35b7b6e357",
 		"console.json": "31b6332aba728a4d",
 		"rules.json": "15aa21d38b11cb49",
-		"journey.json": "06e460243f2f8615",
+		"journey.json": "6e0078b2126d74e1",
 		"money.json": "412a18419ca50bc8",
 		"flow.json": "06793dc2d3108be3"
 	}

@@ -497,7 +497,7 @@
     w = w || WORLD;
     const sent = stepAt(c, "photo"); if (!sent) return null;
     const sku = w.skus[c.sku], bb = c.batch.bestBefore;
-    return { ref: c.ref, sku, sent, read: stepAt(c, "read"), bestBefore: bb, mfg: sku.lifeDays ? D.addDays(bb, -sku.lifeDays) : null, mrp: sku.mrp };
+    return { ref: c.ref, sku, sent, read: stepAt(c, "read"), bestBefore: bb, mfg: c.batch.mfg || (sku.lifeDays ? D.addDays(bb, -sku.lifeDays) : null), mrp: sku.mrp };
   }
   // the stub's world: what the texts name
   const WORLD = { skus: D.SKUS, distributors: D.DISTRIBUTORS, buyer: D.BUYER, scheme: M.RULES.scheme, short: C };

@@ -972,6 +972,18 @@ describe("a distributor's portal, batch by batch (SC-133)", () => {
 		await waitFor(() => expect(issueInvoice).toHaveBeenCalledWith(other.ref, 'invoice'));
 	});
 
+	it("his batch's page counts the packs flagged at risk, and his label photo the day the label says it was made", async () => {
+		// a partner is not sent the plan: the Watcher's at-risk packs, not the whole batch's 1,840; the label's 18 May,
+		// not a day worked out from the shelf life
+		const m = moment('cleared');
+		const r = await draw(source(fakeApi(m, 'rakesh')), 'batches', CHIPS);
+		await waitFor(() => expect(text(r)).toContain('The Watcher flagged 1,360 packs at risk'));
+		expect(text(r)).not.toContain('1,840 packs');
+		const p = await draw(source(fakeApi(m, 'rakesh')), 'photo');
+		await waitFor(() => expect(text(p)).toContain('Earlier label photos'));
+		expect(text(p)).toContain(`Vision read batch ${CHIPS}, made 18 May 2026, best before 18 Nov 2026, MRP ₹30.00`);
+	});
+
 	it("Orders lists each batch's orders under it, with the paper each sold on", async () => {
 		const m = moment('cleared');
 		const r = await draw(source(fakeApi(m, 'rakesh')), 'orders');

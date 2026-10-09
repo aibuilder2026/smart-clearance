@@ -1,5 +1,5 @@
 import { expect, type Page } from '@playwright/test';
-import type { WsLedger } from '@smart-clearance/api/workspace';
+import type { WsLedger, WsPartner } from '@smart-clearance/api/workspace';
 import { readFileSync } from 'node:fs';
 import { api } from './auth.ts';
 import {
@@ -72,7 +72,11 @@ const kgOf = (n: number) =>
 
 /** what a screen or an export shows, held to the ledger: each part (or one of its spellings) must be in the text */
 function shows(name: string, text: string, parts: (string | string[])[]) {
-	const missing = parts.filter((p) => !(Array.isArray(p) ? p : [p]).some((x) => text.includes(x)));
+	// a screen's text breaks its lines where its layout does: compared with and without its spaces
+	const flat = (x: string) => x.replace(/\s+/g, '');
+	const missing = parts.filter(
+		(p) => !(Array.isArray(p) ? p : [p]).some((x) => text.includes(x) || flat(text).includes(flat(x)))
+	);
 	running().figure(name, missing.length ? `missing ${missing.map((p) => [p].flat()[0]).join('; ')}` : 'as posted');
 	if (missing.length)
 		running().find('warning', HERO, `${name} does not read ${missing.map((p) => `"${[p].flat()[0]}"`).join(', ')}`);
@@ -315,6 +319,140 @@ export function esgStep(story_?: TaxEsg): Step {
 	};
 }
 
+/** Rakesh reads his portal back once Impact has posted (SC-133): Today with nothing left for him on the chips; the
+ *  batch's page (what happened, how he ended whole, his papers and their PDFs); Orders, with the paper each sold on;
+ *  Deliveries, the round and the truck; his label photos. Each held to the ledger row, his partner facts and the story */
+export function distributorStep(): Step {
+	return {
+		id: 'distributor',
+		title: "Rakesh reads his portal: Today, the batch's page and papers, Orders, Deliveries and his label photos",
+		async run(page) {
+			const { row, paper } = await posted();
+			const F = row.figures;
+			const view = await api<WsPartner>('workspace', 'rakesh', `${WS}/partner`);
+			const mine = view.cases.find((c) => c.ref === HERO);
+			if (!mine) throw new Error(`${HERO} is not in Rakesh's partner view`);
+			const c = (await caseAs('rakesh'))!;
+			const leaves = c.moments.van.leavesAt ?? '';
+			const day =
+				vanDay ||
+				(leaves ? new Date(leaves).toLocaleDateString('en-GB', { weekday: 'long', timeZone: 'Asia/Kolkata' }) : '');
+			const main = page.locator('#main');
+			const text = async () => norm(await main.innerText());
+			const invoice = paper('invoice');
+			const support = paper('support');
+			const rupees = (n: number) => `₹${n.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+
+			// Today: the chips cleared and his invoice issued, so nothing on them is left for him
+			await as(page, 'rakesh', '/home', 'opens Today once the chips have cleared');
+			await expect(main).toContainText('Your other stock and the batches you cleared are on');
+			const card = await page.locator(`#batch-${HERO}`).count();
+			story(
+				'Today: the chips',
+				card ? 'a card still asks for something' : 'nothing left for him',
+				'nothing left for him'
+			);
+			await running().done('Today: nothing left for him on the chips');
+
+			// the batch's page: what happened, how he ended whole, his papers
+			await as(page, 'rakesh', `/batches/${HERO}`, "reads the chips' page: what happened, his money, his papers");
+			await expect(main).toContainText('You sent the label photo');
+			shows('His batch: what happened', await text(), [
+				'The Watcher flagged 1,360 packs at risk',
+				'You sent the label photo',
+				'772 listed on ExpireSoon in your name',
+				'The scheme went to 38 of your kiranas',
+				'Agrawal Wholesale took the counter at ₹14.20',
+				'31 kiranas ordered 588 packets',
+				"You loaded Agrawal Wholesale's truck",
+				'The Paperwork agent drafted your papers',
+				`Your ${day} van round delivered the scheme`,
+				'Settled: you ended whole'
+			]);
+			await running().done('His batch: what happened');
+			await page.locator('.bh-tabs').getByRole('button', { name: 'Money' }).click();
+			await expect(main).toContainText('You end whole');
+			const money = await text();
+			shows('His batch: money', money, [
+				'From your kiranas',
+				'From Agrawal Wholesale',
+				'Price-support credit note',
+				[rupees(F.support), rupees(Math.round(F.support))],
+				'Your gain or loss ₹0'
+			]);
+			story(
+				'His gain or loss',
+				/Your gain or loss ?₹0\b/.test(money) ? 0 : money.match(/Your gain or loss ?(\S+)/)?.[1],
+				0
+			);
+			await running().done('His batch: he ends whole');
+			await page.locator('.bh-tabs').getByRole('button', { name: 'Papers' }).click();
+			await expect(main).toContainText('Your papers');
+			shows(
+				'His batch: papers',
+				await text(),
+				[invoice?.no, support?.no, 'You issue it'].filter((x): x is string => !!x)
+			);
+			if (support) {
+				await page
+					.getByRole('button', { name: /Price-support credit note/ })
+					.first()
+					.click();
+				await expect(page.getByRole('button', { name: 'Download PDF' })).toBeVisible();
+				await running().done(`His papers: ${support.no}, with Download PDF`);
+				await page.keyboard.press('Escape');
+			}
+			// his papers' PDFs, from the links his Download PDF opens
+			for (const d of [invoice, support].filter((x) => !!x)) {
+				const { url } = await api<{ url: string }>('workspace', 'rakesh', `${WS}/documents/${HERO}/${d!.id}`);
+				const pdf = await fetch(url);
+				const head = new TextDecoder().decode(new Uint8Array(await pdf.arrayBuffer()).slice(0, 4));
+				same(
+					`His ${d!.no} PDF`,
+					`${pdf.status} ${pdf.headers.get('content-type')} ${head}`,
+					'200 application/pdf %PDF'
+				);
+			}
+			same('His credit: the price support', mine.support?.total, F.support);
+			story('His credit note', support?.no, 'CN/0117');
+
+			// Orders: who bought what, for how much, on which paper
+			await as(page, 'rakesh', '/orders', 'reads his orders, batch by batch, with the paper each sold on');
+			await expect(main).toContainText('sold from Munchly');
+			shows('His orders', await text(), [
+				`lot ${c.journey.listing?.id} · 772 × ₹14.20`,
+				...(invoice ? [`${invoice.no} issued from Tally`] : []),
+				'31 kiranas · 588 packets at ₹21.60, 2 free with every 10',
+				'₹10,962',
+				'₹10,584'
+			]);
+			await running().done('Orders: the lot and the scheme, each on its paper');
+
+			// Deliveries: the round delivered, the truck collected, then the earlier ones
+			await as(page, 'rakesh', `/van/${HERO}`, "reads the chips' deliveries, then the earlier ones");
+			await expect(main).toContainText('van round');
+			shows('His deliveries', await text(), [
+				`${day} van round`,
+				'delivered',
+				"The buyer's truck · ExpireSoon",
+				'collected',
+				'Stops',
+				'Earlier deliveries'
+			]);
+			await running().done('Deliveries: the round delivered, the truck collected');
+
+			// the label photos he sent, and what Vision read
+			await as(page, 'rakesh', '/photo', 'reads his label photos and what Vision read from each');
+			await expect(main).toContainText('Earlier label photos');
+			shows('His label photos', await text(), [
+				'No label photo asked for now',
+				`Vision read batch ${HERO}, made 18 May 2026, best before 18 Nov 2026, MRP ₹30.00`
+			]);
+			await running().done('Label photo: every photo he sent');
+		}
+	};
+}
+
 /** the journey's steps, in order: each acts in the UI, then waits for what follows from it */
 export const CHIPS: Step[] = [
 	{
@@ -547,8 +685,11 @@ export const CHIPS: Step[] = [
 				: '';
 			story('Van round push', c.push.van?.title, `Van route for ${vanDay}`);
 			await as(page, 'rakesh', `/orders/${HERO}`, 'issues his invoice from Tally');
-			await page.getByRole('button', { name: 'Issue from Tally' }).click();
-			await expect(page.getByText('issued from Tally', { exact: true })).toBeVisible();
+			// the chips' order on the ExpireSoon lot, on its invoice; Orders lists his cleared batches' too (SC-133)
+			const invoiceNo = c.docs.find((d) => d.id === 'invoice')?.no ?? '';
+			const sold = page.locator('.dist-order').filter({ hasText: invoiceNo });
+			await sold.getByRole('button', { name: 'Issue from Tally' }).click();
+			await expect(sold.getByText('issued from Tally', { exact: true })).toBeVisible();
 			await running().done('Invoice issued from Tally');
 			await sidebar(page, 'Deliveries').click();
 			await expect(page.locator('#main')).toContainText(`${vanDay} van round`);
@@ -629,6 +770,7 @@ export const CHIPS: Step[] = [
 	},
 	taxStep(CHIPS_TAX_ESG),
 	esgStep(CHIPS_TAX_ESG),
+	distributorStep(),
 	{
 		id: 'close',
 		title: "Priya reads the batch's money in the ledger, and sees the batch through",
