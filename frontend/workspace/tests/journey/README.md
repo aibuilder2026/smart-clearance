@@ -31,7 +31,7 @@ if destroyed on the Command Center at Detect, the Lot won bill's total of ₹11,
 signs, one day for the van round on Deliveries, in its push and in the timeline, and an FSSAI paper that names no
 batch as donated.
 
-Its run of 9 Oct, with Priya's tax and ESG (SC-128), is in `runs/2026-10-09/`; the run of 8 Oct, after SC-96 to SC-100, is
+Its run of 9 Oct with Rakesh's portal (SC-133) is in `runs/2026-10-09-distributor/`; the one with Priya's tax and ESG (SC-128) is in `runs/2026-10-09/`; the run of 8 Oct, after SC-96 to SC-100, is
 in `runs/2026-10-08/`.
 
 ## Munchly Mango E2E

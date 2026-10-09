@@ -463,7 +463,7 @@
           : <Card><Empty img="van" title="No orders yet" body="When a batch's scheme, lot or staff sale sells, each order shows here under its batch." /></Card>}
         {book.map(b => <Card key={b.ref} className="stack snug">
           <div className="row between wrap" style={{ gap: 12 }}>
-            <BatchLine sku={b.sku} id={b.ref} size={44} badge={b.live ? stopBadge(b.j) : <S.OutcomeBadge o={b.outcome} size="sm" />} sub={b.live ? (b.rows.length ? "orders so far" : "no orders yet") : `cleared ${day(b.cleared)}`} />
+            <BatchLine sku={b.sku} id={b.ref} size={44} badge={b.live ? stopBadge(b.j) : <S.OutcomeBadge o={b.outcome} size="sm" />} sub={b.live ? (b.j.phase === "cleared" ? "cleared · every order" : b.rows.length ? "orders so far" : "no orders yet") : `cleared ${day(b.cleared)}`} />
             <span className="row tight">{b.rows.length > 0 && <span className="tnum strong">{fmt.inr(sum(b.rows))}</span>}<Button variant="ghost" size="sm" iconRight="chevron-right" onClick={() => go("batches", { ref: b.ref })}>Papers</Button></span>
           </div>
           {b.rows.length ? <div className="dist-orders">{b.rows.map(o => <OrderRow key={o.id} o={o} />)}</div>

@@ -91,7 +91,13 @@
 						sku={b.sku}
 						id={b.ref}
 						size={44}
-						sub={b.j ? (b.rows.length ? 'orders so far' : 'no orders yet') : `cleared ${day(b.cleared!)}`}
+						sub={b.j
+							? b.j.phase === 'cleared'
+								? 'cleared · every order'
+								: b.rows.length
+									? 'orders so far'
+									: 'no orders yet'
+							: `cleared ${day(b.cleared!)}`}
 						>{#snippet badge()}{#if b.j}<DistStopBadge j={b.j} />{:else if b.outcome}<OutcomeBadge
 									o={b.outcome}
 									size="sm"

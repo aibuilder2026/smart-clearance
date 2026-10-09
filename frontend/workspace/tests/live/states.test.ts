@@ -582,10 +582,12 @@ describe("expiry day's settlement (SC-94)", () => {
 		const x = c.expiry!;
 		const t = text(r);
 		expect(t).toContain('You end wholesettled');
-		expect(t).toContain('From your kiranas84 packets on the scheme₹1,008'); // what the kiranas ordered, at ₹12
-		expect(t).toContain('Your staff sale120 packs₹960');
-		expect(t).toContain(`Price-support credit notefrom Munchly${inr(c.support!.total)}`);
-		expect(t).toContain(`Expiry credit note for ${x.units.toLocaleString('en-IN')} packsfrom Munchly${inr(x.credit!)}`);
+		expect(t).toContain('From your kiranas 84 packets on the scheme₹1,008'); // what the kiranas ordered, at ₹12
+		expect(t).toContain('Your staff sale 120 packs₹960');
+		expect(t).toContain(`Price-support credit note from Munchly${inr(c.support!.total)}`);
+		expect(t).toContain(
+			`Expiry credit note for ${x.units.toLocaleString('en-IN')} packs from Munchly${inr(x.credit!)}`
+		);
 		expect(t).toContain('Your gain or loss₹0');
 	});
 

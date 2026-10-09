@@ -413,7 +413,8 @@ export function distributorStep(): Step {
 					'200 application/pdf %PDF'
 				);
 			}
-			same('His credit: the price support', mine.support?.total, F.support);
+			// the price support exactly (₹8,767.60), which his credit note rounds to the rupee (₹8,768) as the ledger does
+			same('His credit: the price support, to the rupee', Math.round(mine.support?.total ?? 0), F.support);
 			story('His credit note', support?.no, 'CN/0117');
 
 			// Orders: who bought what, for how much, on which paper

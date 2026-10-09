@@ -1555,10 +1555,21 @@
   - **Gone:** the old Today's plan card, You end whole and the stock list (on the batch's page and Batches), `VanInner`, `EndWhole`, `InvoiceDraft`, the live `DistQuiet`.
   - **Checks:**
     - backend-api 526 passed, 1 skipped, in two full runs after the orders' fix (a new partner test: his batch from its flag, with the photo asked);
-    - the frontend gate passes: core 258 (22 new in `dist.test.ts`; the distributors' goldens updated), api 77, workspace 77 (3 new live tests: Today with two batches and a step on its own batch, Orders, Deliveries waiting on a batch not yet in focus), admin 17, demo 5, console 3;
+    - the frontend gate passes: core 258 (22 new in `dist.test.ts`; the distributors' goldens updated), api 77, workspace 78 (4 new live tests: Today with two batches and a step on its own batch, Orders, Deliveries waiting on a batch not yet in focus, his batch's flagged packs and his photo's made date), admin 17, demo 5, console 3;
     - the live fixtures and seeds were regenerated; design3's `dist/` is rebuilt;
     - played through on the stub in dark: design3 at 1440 and 390 (the photo request and camera, the truck, Issue from Tally, the van round, Lakshmi's staff sale recorded) and the port's build at 1440 (Today, Issue from Tally, Deliveries);
     - the a11y spec gains Lakshmi's Today, Deliveries and Orders, and the journey suites follow Deliveries; the browser suites were not run (SC-55).
-  - **Hosting:** the hosted app page stays on its pinned commit.
+  - **Munchly Chips E2E, asked for by the maintainer** ("Run munchly e2e journey automation, Check the finance and esg and for rakesh distributor check reports on his portal"; then "fix your test cases and make one complete end to end happy path run"):
+    - **The suite gains a step** (`distributorStep`, 16 of 17): after Priya's tax and ESG, Rakesh reads his portal back: Today with nothing left on the chips; the batch's page (what happened, he ends whole, his papers, each with Download PDF, and their PDFs from their links); Orders, each on its paper; Deliveries; his label photos. Each is held to the ledger row, his partner facts and the story. The text checks compare with and without spaces, since a screen breaks its lines where its layout does.
+    - **The run of 9 Oct** (`frontend/workspace/tests/journey/runs/2026-10-09-distributor/REPORT.md`; the 6 min 46 s recording stays local): **passed** in 6 min 45 s, 77 steps, from a reset. Every figure is the story's: ₹21,770 planned; 31 kiranas ordered 588; 772 at ₹14.20; INV/26-27/0931 (₹11,510), CN/0117 (₹8,768) and the ITC memo, each with its PDF; actual ₹21,152.40. Priya's tax (₹1,224 kept, none reversed) and ESG (217.6 kg, 544 kg CO₂e, 8.16 kg of packaging) as posted. Rakesh ends whole at ₹0, his two papers' PDFs serve as `application/pdf`, and his photo reads made 18 May, best before 18 Nov.
+    - **Found by the attempts before it, all fixed:**
+      - a quiet Today (no batch flagged yet, as after a reset) showed no permission card, so Rakesh could not give it: he now gives his own there (a live test holds it);
+      - his batch's "What happened" said the Watcher flagged 1,840 packs (the whole batch; a partner is not sent the plan): it reads the 1,360 at risk;
+      - his label photos were dated from the shelf life (made 22 May): the partner facts carry each batch's own made date (`batch.mfg`; backend-api, the seed, the contract), so 18 May, as the label reads (a live test holds both);
+      - a money line's note ran into its name ("From your kiranas588 packets"): `PtLine` keeps the space Svelte trimmed;
+      - Orders called a cleared batch's orders "orders so far": "cleared · every order" (design3 first);
+      - the suite's own checks: "issued from Tally" now also reads on his cleared batches' orders, so it reads the chips' own; the price support exactly (₹8,767.60) against the credit note's rupees (₹8,768), now to the rupee.
+    - **The only finding:** the old note that Priya's pack reads the invoice "drafted" after Rakesh issues it, as in the prototype.
+    - **After it:** the journey day is back to 24 hours; the journey is left as the run ended.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
