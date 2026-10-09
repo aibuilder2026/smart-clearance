@@ -295,20 +295,13 @@ export const role = (r: RoleId, roles: Record<RoleId, string>) => (roles[r] || r
 /* ---------- each role's navigation (screens/roles.jsx) ---------- */
 
 export const NAV: Record<RoleId, NavItem[]> = {
+	// the workspace's own places; RoleApp adds the batches in a journey between Setup and Reports, and a batch's
+	// screens are tabs on its page (SC-112)
 	operator: [
 		{ id: 'command', label: 'Command Center', short: 'Today', icon: 'layout-dashboard' },
-		{ id: 'route', label: 'Route Room', short: 'Route', icon: 'route' },
-		{ id: 'execution', label: 'Execution', short: 'Live', icon: 'activity' },
 		{ id: 'batches', label: 'Batches', icon: 'boxes' },
 		{ id: 'setup', label: 'Setup', icon: 'sliders-horizontal', phoneHidden: true },
-		{
-			id: 'report',
-			label: 'Finance & ESG',
-			short: 'Reports',
-			icon: 'chart-line',
-			section: 'Reports',
-			phoneHidden: true
-		}
+		{ id: 'report', label: 'Finance & ESG', short: 'Reports', icon: 'chart-line', section: 'Reports' }
 	],
 	distributor: [
 		{ id: 'home', label: 'Today', icon: 'house' },
@@ -343,10 +336,10 @@ export const NAV: Record<RoleId, NavItem[]> = {
 		{ id: 'audit', label: 'Audit log', short: 'Audit', icon: 'scroll-text' }
 	]
 };
-/** the screen each role reads a batch on, which a batch in a journey opens from Batches: the operator its Route Room,
- *  finance its Paperwork, sustainability its report (SC-103); a role with none opens the batch's sheet */
+/** the screen each role reads a batch on, which a batch in a journey opens from Batches: finance its Paperwork,
+ *  sustainability its report (SC-103); a role with none opens the batch's sheet. The operator opens the batch's own
+ *  page (SC-112) */
 export const BATCH_SCREEN: Partial<Record<RoleId, string>> = {
-	operator: 'route',
 	finance: 'paperwork',
 	sustainability: 'report'
 };
@@ -368,9 +361,98 @@ const ALWAYS = ['inbox', 'profile'];
 export const routesFor = (r: RoleId) =>
 	NAV[r]
 		.map((n) => n.id)
-		.concat(ALWAYS, r === 'buyer' ? ['listing'] : r === 'retailer' ? ['offer'] : r === 'operator' ? ['paperwork'] : []);
+		.concat(
+			ALWAYS,
+			r === 'buyer'
+				? ['listing']
+				: r === 'retailer'
+					? ['offer']
+					: r === 'operator'
+						? ['journey', 'route', 'execution', 'paperwork']
+						: []
+		);
 /** every screen name the app knows, across the roles */
 export const SCREENS = Array.from(new Set((Object.keys(NAV) as RoleId[]).flatMap(routesFor)));
+
+/* ---------- a batch's page (SC-112, screens/brand.jsx) ---------- */
+
+/** the operator reads the workspace top down: the workspace, then a batch, then the batch's screens, each a tab under
+ *  the batch's head; each is where the batch stands from one stop to another */
+export type BatchPart = {
+	id: 'journey' | 'route' | 'execution' | 'paperwork';
+	label: string;
+	short: string;
+	icon: IconName;
+	from: number;
+	to: number;
+	/** when a screen the batch has not reached yet starts */
+	ahead: string;
+};
+export const BATCH_PARTS: BatchPart[] = [
+	{ id: 'journey', label: 'Journey', short: 'Journey', icon: 'radar', from: 1, to: 1, ahead: '' },
+	{ id: 'route', label: 'Route Room', short: 'Route', icon: 'route', from: 2, to: 5, ahead: 'from Verify' },
+	{
+		id: 'execution',
+		label: 'Execution',
+		short: 'Execution',
+		icon: 'activity',
+		from: 6,
+		to: 6,
+		ahead: 'starts on approval'
+	},
+	{
+		id: 'paperwork',
+		label: 'Paperwork',
+		short: 'Papers',
+		icon: 'file-text',
+		from: 7,
+		to: 7,
+		ahead: 'after the lines close'
+	}
+];
+export const BATCH_PART_IDS: string[] = BATCH_PARTS.map((p) => p.id);
+
+/** a batch in a journey: its view, the stage it is at (0 to 8, or 9 once cleared), its stop's name and whether that
+ *  stop waits for a person */
+export type JourneyItem = { ref: string; view: BatchView; stage: number; stop: string; human: boolean };
+
+/** the batches in a journey, most urgent first: on the live workspace its cases (SC-73); on the stub the batch in focus
+ *  once the Watcher has flagged it */
+export function journeysOf(
+	s: State,
+	data: WorkspaceData,
+	cases: readonly { ref: string; stage: number }[] | undefined,
+	c: CaseData | null
+): JourneyItem[] {
+	const views = batchViews(s, data);
+	const item = (ref: string, stage: number): JourneyItem | null => {
+		const view = views.find((v) => v.id === ref);
+		const st = data.stages[stage];
+		return view ? { ref, view, stage, stop: st ? st.title : 'Cleared', human: !!st?.human } : null;
+	};
+	if (cases) return cases.map((x) => item(x.ref, x.stage)).filter((x): x is JourneyItem => !!x);
+	if (!c || s.hero.phase === 'watching') return [];
+	const one = item(c.batch.id, stageAt(s, c.kiranas.length));
+	return one ? [one] : [];
+}
+/** where a batch opens: the screen for the stage it is at; its journey before Verify, once it has cleared, and for a
+ *  batch in no journey */
+export const partAt = (it: JourneyItem | null | undefined): BatchPart['id'] =>
+	it
+		? (BATCH_PARTS.find((p) => p.id !== 'journey' && it.stage >= p.from && it.stage <= p.to) ?? BATCH_PARTS[0]).id
+		: 'journey';
+/** a screen of the batch as its tab says it: where the batch stands (needing a person's yes, or not), done, or not yet */
+export function partState(
+	it: JourneyItem,
+	p: BatchPart
+): { here?: boolean; human?: boolean; ahead?: boolean; words: string } {
+	if (p.id === 'journey') return { words: '' };
+	if (p.id === partAt(it))
+		return { here: true, human: it.human, words: it.human ? 'needs your yes' : 'where the batch is' };
+	return it.stage < p.from ? { ahead: true, words: p.ahead } : { words: 'done' };
+}
+/** a product's name without its pack size, as the sidebar lists it */
+export const shortName = (sku: Pick<Sku, 'name'>) => sku.name.replace(/\s+\d+(\.\d+)?\s?(g|ml|kg|l)$/i, '');
 
 /* ---------- exports ---------- */
 

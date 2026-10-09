@@ -114,7 +114,10 @@ export async function scanHeld(page: Page, state: string) {
 }
 
 /** the screen's large title */
-export const title = (page: Page) => page.locator('.largetitle h1');
+/** the page's large title; on the operator's batch page, the batch's name in its head (SC-112) */
+export const title = (page: Page) => page.locator('.largetitle h1, .bhead h1');
+/** the batch's screen shown, its tab under the batch's head (SC-112) */
+export const batchTab = (page: Page) => page.locator('.bh-tab[aria-current="page"]');
 
 export const isPhone = (page: Page) => (page.viewportSize()?.width ?? 1440) < 768;
 export const isDesktop = (page: Page) => (page.viewportSize()?.width ?? 1440) >= 1100;

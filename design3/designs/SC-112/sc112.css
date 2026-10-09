@@ -1,0 +1,159 @@
+/* SC-112's mockups: the operator's workspace, batch first. Only the way between screens is styled here; every screen's
+   body keeps the kit's and screens.css's styles. Tokens only (tokens.css), light and dark. */
+
+/* ---------- the sidebar's middle (A and B) ---------- */
+.sc112-side { overflow: hidden; }
+.sc112-menu { position: relative; display: grid; align-content: start; gap: 2px; min-height: 0; overflow-y: auto; overflow-x: hidden; margin: 0 -6px; padding: 0 6px 8px; scrollbar-width: thin; }
+.sc112-menu .sb-label { padding-top: 16px; }
+
+/* a batch in a journey (A): its product, short name and stop; amber while it waits for a yes */
+.sb-batch { height: 42px; gap: 10px; padding-left: 8px; }
+.sbb-pic { display: grid; place-items: center; flex: 0 0 26px; width: 26px; height: 26px; border-radius: 8px; background: var(--fill); overflow: hidden; }
+.sbb-pic img { width: 24px; height: 24px; object-fit: contain; }
+.sbb-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 550; }
+.sbb-stop { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--fg-3); white-space: nowrap; }
+.sbb-stop i { width: 7px; height: 7px; border-radius: 50%; background: var(--primary); }
+.sbb-stop.human { color: var(--amber-text); }
+.sbb-stop.human i { background: var(--amber); }
+.sbb-yes { margin-left: auto; display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--amber); color: var(--amber-fg, #2a1d00); font-size: 11.5px; font-weight: 700; }
+.sbb-yes + .ic, .sb-item .sb-n + .ic { margin-left: 2px; }
+
+/* ---------- the batch's head (A and C) ---------- */
+.sc-head { padding: 4px 16px 18px; max-width: 1320px; }
+.sc-id { display: flex; align-items: center; gap: 18px; }
+.sc-pic { display: grid; place-items: center; flex: 0 0 auto; width: 88px; height: 88px; border-radius: 24px; background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+[data-theme="dark"] .sc-pic { background: var(--fill-2); box-shadow: none; }
+.sc-tt { min-width: 0; }
+.sc-head h1 { font-family: var(--font-display); font-weight: 750; font-size: 34px; line-height: 1.06; letter-spacing: -0.028em; font-variation-settings: "opsz" 72; }
+.sc-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-top: 7px; font-size: 14px; color: var(--fg-3); }
+.sc-meta .mono { font-size: 13px; color: var(--fg-2); }
+.sc-meta .sep { color: var(--fg-3); }
+.sc-meta .lv-line { margin: 0; }
+@container app (min-width: 768px) {
+  .sc-head { padding: 6px 16px 20px; }
+  .sc-id, .c-title, .c-head > .sc-meta { padding-left: 12px; }
+  .sc-head h1 { font-size: 38px; }
+}
+@container app (max-width: 767px) {
+  .sc-id { gap: 14px; align-items: flex-start; }
+  .sc-pic { width: 56px; height: 56px; border-radius: 16px; }
+  .sc-head h1 { font-size: 28px; }
+}
+
+/* A: the batch's screens as tabs, the kit's pill tabs at page size, with a dot where the batch stands */
+.sc-tabs { display: flex; gap: 2px; width: max-content; max-width: 100%; margin-top: 20px; padding: 4px; border-radius: 15px; background: var(--fill-2); overflow-x: auto; scrollbar-width: none; }
+.sc-tabs::-webkit-scrollbar { display: none; }
+.sc-tab { position: relative; isolation: isolate; flex: 0 0 auto; display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border-radius: 11px; font-size: 14.5px; font-weight: 550; color: var(--fg-2); white-space: nowrap; transition: color var(--t-fast); }
+.sc-tab:hover { color: var(--fg); }
+.sc-tab.ahead .ic { opacity: 0.5; }
+.sc-tab[aria-current="page"] { color: var(--fg); font-weight: 650; }
+.sc-tab[aria-current="page"] .ic { color: var(--primary-text); }
+.sc-tab:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+.sc-tab-thumb { position: absolute; inset: 0; z-index: -1; border-radius: 11px; background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+[data-theme="dark"] .sc-tab-thumb { background: rgb(255 255 255 / 0.12); box-shadow: none; }
+.sc-here { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 22%, transparent); }
+.sc-here.human { background: var(--amber); box-shadow: 0 0 0 3px color-mix(in srgb, var(--amber) 28%, transparent); }
+@container app (max-width: 767px) { .sc-tabs { width: auto; margin-top: 16px; } .sc-tab { height: 40px; padding: 0 13px; font-size: 14px; } }
+@media (pointer: coarse) { .sc-tab { height: 44px; } }
+
+/* a screen inside a batch comes in as the screen changes; the head stays where it is */
+.sc-frame .pagebody { animation: sc-in 220ms var(--ease) both; }
+.c-frame.go-on .pagebody { animation-name: sc-on; animation-duration: 280ms; }
+.c-frame.go-back .pagebody { animation-name: sc-back; animation-duration: 280ms; }
+@keyframes sc-in { from { opacity: 0; transform: translateY(6px); } }
+@keyframes sc-on { from { opacity: 0; transform: translateY(26px); } }
+@keyframes sc-back { from { opacity: 0; transform: translateY(-26px); } }
+@media (prefers-reduced-motion: reduce) { .sc-frame .pagebody { animation: none; } }
+
+/* ---------- B: the batch rail ---------- */
+.rl-pane { display: grid; align-content: start; gap: 2px; }
+.rl-back { color: var(--primary-text); }
+.rl-back:hover { color: var(--primary-text); }
+.rl-title { padding: 8px 10px 6px; font-family: var(--font-display); font-size: 22px; font-weight: 750; letter-spacing: -0.02em; }
+.rl-group { display: grid; gap: 2px; }
+.rl-b { display: grid; }
+.rl-row { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: center; gap: 10px; width: 100%; min-height: 52px; padding: 7px 10px 7px 8px; border-radius: 12px; text-align: left; color: var(--fg-2); transition: background-color var(--t-fast); }
+.rl-row:hover { background: var(--fill); }
+.rl-row:focus-visible, .rl-part:focus-visible { outline: 3px solid var(--ring); outline-offset: 1px; }
+.rl-b.open > .rl-row { background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); color: var(--fg); }
+[data-theme="dark"] .rl-b.open > .rl-row { background: var(--fill-2); box-shadow: none; }
+.rl-pic { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--fill); overflow: hidden; }
+.rl-pic img { width: 30px; height: 30px; object-fit: contain; }
+.rl-t { display: grid; min-width: 0; }
+.rl-t b { font-size: 14px; font-weight: 650; color: var(--fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rl-t > span { font-size: 12px; color: var(--fg-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rl-t .mono { font-size: 11.5px; }
+.rl-stop { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; }
+.rl-stop i { flex: 0 0 auto; width: 7px; height: 7px; border-radius: 50%; background: var(--primary); }
+.rl-stop .mono { font-weight: 400; }
+.rl-stop.human { color: var(--amber-text); }
+.rl-stop.human i { background: var(--amber); }
+.rl-days { font-size: 11px; color: var(--fg-3); white-space: nowrap; }
+.rl-days b { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--fg); font-variant-numeric: tabular-nums; margin-right: 1px; }
+.rl-days.risk b { color: var(--red-text); }
+.rl-parts { position: relative; display: grid; gap: 1px; overflow: hidden; padding: 4px 0 8px 26px; }
+.rl-parts::before { content: ""; position: absolute; left: 25px; top: 4px; bottom: 12px; width: 1.5px; border-radius: 1px; background: var(--line-2); }
+.rl-part { position: relative; display: flex; align-items: center; gap: 9px; width: 100%; height: 36px; padding: 0 10px 0 14px; border-radius: 9px; font-size: 13.5px; font-weight: 500; color: var(--fg-2); text-align: left; transition: background-color var(--t-fast), color var(--t-fast); }
+.rl-part:hover { background: var(--fill); color: var(--fg); }
+.rl-part.ahead .ic { opacity: 0.5; }
+.rl-part[aria-current="page"] { background: var(--fill-2); color: var(--fg); font-weight: 650; }
+.rl-part[aria-current="page"]::before { content: ""; position: absolute; left: -2.5px; top: 9px; bottom: 9px; width: 3px; border-radius: 2px; background: var(--primary); }
+.rl-part[aria-current="page"] .ic { color: var(--primary-text); }
+.rl-here { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 650; color: var(--primary-text); }
+.rl-here i { width: 7px; height: 7px; border-radius: 50%; background: var(--primary); }
+.rl-here.human { color: var(--amber-text); }
+.rl-here.human i { background: var(--amber); }
+@media (pointer: coarse) { .rl-part { height: 44px; } }
+
+/* ---------- C: the stops lead ---------- */
+.c-title { position: relative; }
+.c-switch { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; margin-left: -8px; padding: 0 8px; border-radius: 14px; font: inherit; color: inherit; letter-spacing: inherit; text-align: left; transition: background-color var(--t-fast); }
+.c-switch:hover { background: var(--fill); }
+.c-switch:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+.c-switch .ic { color: var(--fg-3); flex: 0 0 auto; }
+.c-mstop { font-size: 12px; font-weight: 600; color: var(--fg-3); }
+.c-mstop.human { color: var(--amber-text); }
+.c-head .c-card { margin-top: 18px; }
+/* the tracker, each stop a button; the pill marks the stop being read, the fill where the batch is */
+.c-stops .c-stop { position: relative; isolation: isolate; padding-bottom: 8px; }
+.c-stops .c-stop:hover .st-label { color: var(--fg); }
+.c-stops .c-stop:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+.c-stops .c-view { position: absolute; left: 6px; right: 6px; top: 26px; bottom: -2px; z-index: -1; border-radius: 10px; background: var(--fill-2); }
+.c-stops .c-view::after { content: ""; position: absolute; left: 50%; bottom: 3px; width: 18px; height: 3px; margin-left: -9px; border-radius: 2px; background: var(--fg); }
+.c-stops .c-stop[aria-current="page"] .st-label { color: var(--fg); font-weight: 700; }
+.c-stops .c-stop[aria-current="page"] .st-time { color: var(--fg-2); }
+.c-stops .c-fixed { display: grid; justify-items: center; align-content: start; gap: 6px; width: 100%; padding-bottom: 8px; }
+/* the same stops as chips: a phone's, and the strip that stays under the bar */
+.c-strip { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 3px; margin: -3px; }
+.c-strip::-webkit-scrollbar { display: none; }
+.c-chip { position: relative; isolation: isolate; flex: 0 0 auto; display: inline-flex; align-items: center; gap: 7px; height: 40px; padding: 0 14px 0 10px; border-radius: 999px; background: var(--fill); font-size: 13.5px; font-weight: 600; color: var(--fg-2); white-space: nowrap; transition: background-color var(--t-fast); }
+.c-chip:hover { background: var(--fill-2); }
+.c-chip:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+.c-chip[aria-current="page"] { background: transparent; color: var(--fg); }
+.c-chip-on { position: absolute; inset: 0; z-index: -1; border-radius: 999px; background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 2px var(--primary); }
+.c-dot { display: grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: var(--surface); box-shadow: inset 0 0 0 2px var(--line-2); color: var(--primary-fg); }
+.c-chip.done .c-dot { background: var(--primary); box-shadow: none; }
+.c-chip.now .c-dot { box-shadow: inset 0 0 0 2px var(--primary); background: radial-gradient(circle, var(--primary) 0 3.5px, var(--surface) 4px); }
+.c-chip.now.human .c-dot { box-shadow: inset 0 0 0 2px var(--amber); background: radial-gradient(circle, var(--amber) 0 3.5px, var(--surface) 4px); }
+@media (pointer: coarse) { .c-chip { height: 44px; } }
+.c-head .c-strip { margin-top: 2px; }
+/* once the card has scrolled away its stops stay under the bar, in the bar's glass */
+.c-stick { position: sticky; top: calc(var(--navbar-h) + var(--safe-top)); z-index: 4; height: 0; }
+.c-stick > .c-strip { position: absolute; left: 0; right: 0; top: 0; margin: 0; padding: 8px 16px; background: var(--glass); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); box-shadow: 0 var(--hair) 0 var(--line); opacity: 0; transform: translateY(-8px); pointer-events: none; transition: opacity var(--t-fast), transform var(--t-fast); }
+.c-stick.on > .c-strip { opacity: 1; transform: none; pointer-events: auto; }
+@container app (min-width: 768px) { .c-stick > .c-strip { padding: 8px 28px; } }
+@media (prefers-reduced-motion: reduce) { .c-stick > .c-strip { transition: none; } }
+/* the side column's sticky top clears the strip */
+.c-frame .pagebody div[style*="top: 72px"] { top: 128px !important; }
+/* the Route Room's first card is the head's now: it shows once, above every screen of the batch */
+.c-frame .pagebody > .stack > .card:first-child:has(.tracker, .tk-compact) { display: none; }
+
+/* ---------- the review's moment switcher (not part of any option) ---------- */
+.sc112-moments { position: fixed; left: 12px; bottom: 12px; z-index: 60; display: grid; gap: 6px; justify-items: start; font: 600 13px/1.2 var(--font-ui, system-ui); }
+.sc112-moments > button { display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 14px 0 11px; border-radius: 999px; background: var(--glass-strong); color: var(--fg); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+.sc112-moments nav { order: -1; display: grid; padding: 6px; border-radius: 14px; background: var(--glass-strong); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+.sc112-moments a { padding: 8px 12px; border-radius: 9px; color: var(--fg-2); text-decoration: none; }
+.sc112-moments a:hover { background: var(--fill); color: var(--fg); }
+.sc112-moments a[aria-current="page"] { color: var(--primary-text); }
+@container app (max-width: 767px) { .sc112-moments { bottom: calc(var(--tabbar-h, 64px) + 12px); } }
+@media (max-width: 767px) { .sc112-moments { bottom: 84px; } }

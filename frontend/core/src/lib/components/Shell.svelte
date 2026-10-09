@@ -15,6 +15,12 @@
 		count?: number;
 		/** a heading above this item in the sidebar */
 		section?: string;
+		/** a batch (SC-112): its pack's render in place of the icon, the stop it is at on the right (amber while it waits
+		 *  for a person's yes), and its name, id and stop in words for a screen reader */
+		product?: string;
+		stop?: string;
+		human?: boolean;
+		aria?: string;
 	};
 </script>
 
@@ -22,8 +28,10 @@
 	import type { Snippet } from 'svelte';
 	import { useApp } from '../app.svelte';
 	import Icon from '../icons/Icon.svelte';
+	import { cx } from '../cx';
 	import Avatar, { type Person } from './Avatar.svelte';
 	import Mark from './Mark.svelte';
+	import Product from './Product.svelte';
 	import Wordmark from './Wordmark.svelte';
 	import WorkspaceMark, { type Workspace } from './WorkspaceMark.svelte';
 
@@ -94,11 +102,17 @@
 					title="{ws.name} · {ws.domain}"><WorkspaceMark {ws} size={30} /></button
 				>{/if}
 			{#each nav as n (n.id)}
-				{#snippet body()}<Icon name={n.icon} size={21} />{#if n.badge}<span
+				{#snippet body()}{#if n.product}<span class="sbb-pic" aria-hidden="true"
+							><Product name={n.product} size={26} /></span
+						>{:else}<Icon name={n.icon} size={21} />{/if}{#if n.badge}<span
 							class="badge-count"
 							style="position: absolute; top: 3px; right: 6px">{n.badge}</span
 						>{/if}{/snippet}
-				{@render item(n, 'sb-item', body, { title: n.label, 'aria-label': n.label, style: 'position: relative' })}
+				{@render item(n, cx('sb-item', n.product && 'sb-batch'), body, {
+					title: n.label,
+					'aria-label': n.aria || n.label,
+					style: 'position: relative'
+				})}
 			{/each}
 			<div class="sb-foot">
 				{#if user}<button
@@ -130,10 +144,15 @@
 				>{/if}
 			{#each nav as n (n.id)}
 				{#if n.section}<div class="sb-label">{n.section}</div>{/if}
-				{#snippet body()}<Icon name={n.icon} size={19} /><span>{n.label}</span>{#if n.badge}<span class="badge-count"
-							>{n.badge}</span
-						>{:else if n.count != null}<span class="sb-n">{n.count}</span>{/if}{/snippet}
-				{@render item(n, 'sb-item', body)}
+				{#snippet body()}{#if n.product}<span class="sbb-pic" aria-hidden="true"
+							><Product name={n.product} size={24} /></span
+						>{:else}<Icon name={n.icon} size={19} />{/if}<span class={n.product ? 'sbb-name' : undefined}
+						>{n.label}</span
+					>{#if n.stop}<span class={cx('sbb-stop', n.human && 'human')} aria-hidden="true"><i></i>{n.stop}</span
+						>{:else if n.badge}<span class="badge-count">{n.badge}</span>{:else if n.count != null}<span class="sb-n"
+							>{n.count}</span
+						>{/if}{/snippet}
+				{@render item(n, cx('sb-item', n.product && 'sb-batch'), body, n.aria ? { 'aria-label': n.aria } : {})}
 			{/each}
 			<div class="sb-foot">
 				{@render footer?.()}{#if user}<button

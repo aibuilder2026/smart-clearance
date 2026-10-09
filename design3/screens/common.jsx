@@ -52,8 +52,15 @@
   // screen changes there. Its pieces are screens/live.jsx's (window.SC3_SCREENS.Live)
   const LiveCtx = createContext(null);
   const useLive = () => useContext(LiveCtx);
+  // a screen of a batch (SC-112): the operator's batch page gives each of its screens the batch's head (its pack, name,
+  // id, distributor and state, then its screens as tabs) in place of the screen's own title and the row under it, with
+  // the screen's own line under the tabs, and a back link to where the batch was opened from. RoleApp provides it; the
+  // screens' bodies are as they were
+  const BatchCtx = createContext(null);
   // below: a row under the large title (the Route Room's batch tabs)
   function Screen({ me, title, sub, back, children, actions, wide, hideLarge, below }) {
+    const frame = useContext(BatchCtx);
+    if (frame) { title = frame.title; back = frame.back; below = <>{frame.head}{sub ? <div className="bh-sub">{sub}</div> : null}</>; hideLarge = true; sub = null; }
     const { back: goBack } = useRoute(); const app = useApp(); const ws = useContext(WorkspaceCtx); const live = useLive(); const L = live && window.SC3_SCREENS.Live;
     const lead = app.bp === "phone" && ws ? <button type="button" className="ws-lead" onClick={ws.open} aria-label={`${ws.name} workspace, on Smart-Clearance`}><K.Mark size={24} still /><span className="ws-sep" aria-hidden="true" /><K.WorkspaceMark ws={D.WORKSPACE} size={26} /></button> : null;
     // live: every page says under its title whether it is live and what journey time it is; a dropped stream is a band
@@ -104,5 +111,5 @@
 
   const PEOPLE_BY_ID = id => D.PEOPLE[id] || (Store.get().users.find(u => u.id === id) || { name: id });
 
-  window.SC3_SCREENS = Object.assign(window.SC3_SCREENS || {}, { LockScreen, AccountCtx, WorkspaceCtx, LiveCtx, useLive, PlayAs, PushBanners, useStore, Router, useRoute, heroModel, unreadFor, TopActions, Screen, Columns, SectionTitle, Locked, PEOPLE_BY_ID, PHASE_STATUS });
+  window.SC3_SCREENS = Object.assign(window.SC3_SCREENS || {}, { LockScreen, AccountCtx, WorkspaceCtx, LiveCtx, BatchCtx, useLive, PlayAs, PushBanners, useStore, Router, useRoute, heroModel, unreadFor, TopActions, Screen, Columns, SectionTitle, Locked, PEOPLE_BY_ID, PHASE_STATUS });
 })();

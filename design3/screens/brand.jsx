@@ -106,10 +106,12 @@
   // the first viewport is the batch, tracked like an order: tracker first, the agents beside it, the cluster under it
   function CommandCenter({ me, onOpenRoute }) {
     const s = useStore(); const { go } = useRoute(); const app = useApp(); const hm = heroModel(s); const phone = app.bp === "phone";
-    const [sel, setSel] = useState(null); const [sheet, setSheet] = useState(null);
+    const [sel, setSel] = useState(null);
     const views = useMemo(() => D.BATCHES.map(b => { const v = D.batchView(b); if (b.hero) v.phase = hm.view.phase; if (b.second) v.phase = "executing"; return v; }), [s.seq]);
     const watchlist = views.filter(v => !(v.hero && s.hero.phase === "watching")).sort((a, b) => (a.phase === "at-risk" || (!a.phase && a.assess.status === "at-risk") ? -1 : 0) - (b.phase === "at-risk" || (!b.phase && b.assess.status === "at-risk") ? -1 : 0) || a.daysLeft - b.daysLeft);
     const openRoute = () => (onOpenRoute ? onOpenRoute() : go("route"));
+    // every row opens its batch's page (SC-112), on the screen for where the batch stands
+    const journeys = journeyItems(s, null); const openBatch = ref => { const it = journeys.find(i => i.ref === ref); go(partAt(it), { ref }); };
     const primary = s.hero.phase === "planned" ? <Button variant="approve" icon="check" onClick={openRoute}>Review and approve</Button> : ["approved", "executing"].includes(s.hero.phase) ? <Button variant="primary" iconRight="arrow-right" onClick={() => go("execution", { ref: s.hero.id })}>Watch execution</Button> : <Button variant="primary" iconRight="arrow-right" onClick={openRoute}>Open Route Room</Button>;
     const flagged = s.hero.phase !== "watching" && s.setup.confirmed;
     const routed = ["approved", "executing", "dispatched", "settled", "cleared"].includes(s.hero.phase);
@@ -126,13 +128,12 @@
       <ClusterMap kiranas={D.KIRANAS} orderedCount={hm.ordered} route={routed} vanProgress={s.hero.van.status === "done" ? 1 : hm.ordered / SHOPS * 0.6} height={phone ? 220 : 280} />
     </Card>;
     const feed = <div className="stack snug"><SectionTitle sub="Every hand-off, as it happens">Agent activity</SectionTitle><Card>{s.feed.length ? <AgentFeed events={s.feed} people={D.PEOPLE} live={hm.agentLive ? s.feed.length - 1 : -1} max={phone ? 3 : 6} /> : <span className="t-footnote muted">The agents report here once the Watcher runs.</span>}</Card></div>;
-    const list = <div className="stack snug"><SectionTitle sub="Sorted by days to best-before; at-risk batches first">Watchlist</SectionTitle><div className="list">{watchlist.map(v => <BatchRow key={v.id} view={v} selected={sel === v.id} compact={phone} onOpen={() => { setSel(v.id); if (v.hero) openRoute(); else setSheet(v.id); }} />)}</div></div>;
+    const list = <div className="stack snug"><SectionTitle sub="Sorted by days to best-before; at-risk batches first">Watchlist</SectionTitle><div className="list">{watchlist.map(v => <BatchRow key={v.id} view={v} selected={sel === v.id} compact={phone} onOpen={() => { setSel(v.id); openBatch(v.id); }} />)}</div></div>;
     const live = S.useLive();
     if (live) return <LiveCommandCenter me={me} live={live} hm={hm} money={money} watchlist={watchlist} sel={sel} setSel={setSel} feed={feed} cluster={cluster} />;
     return <Screen me={me} title="Command Center" sub={flagged ? `${D.JOURNEY.today} · Watcher checked 312 batches at 09:00` : "Watcher runs daily at 09:00 across 312 batches"}>
       {app.bp === "desktop" ? <Columns sideWidth={340} main={<>{tracker}{cluster}{list}</>} side={feed} />
         : <div className="stack" style={{ gap: 20 }}>{tracker}{feed}{list}{cluster}</div>}
-      <BatchSheet view={watchlist.find(v => v.id === sheet)} onClose={() => setSheet(null)} />
     </Screen>;
   }
   // the Command Center on the live workspace (SC-73, SC-68 option B): the flagged batches as tabs over the tracker card,
@@ -140,18 +141,17 @@
   function LiveCommandCenter({ me, live, hm, money, watchlist, sel, setSel, feed, cluster }) {
     const s = useStore(); const { go } = useRoute(); const app = useApp(); const phone = app.bp === "phone"; const L = S.Live;
     const dim = L.down(live.conn); const offline = live.conn === "offline"; const items = L.flaggedItems(s, live);
-    const watch = s.rules.watchTime; const rows = D.SETUP.dms.rows; const [sheet, setSheet] = useState(null);
+    const watch = s.rules.watchTime; const rows = D.SETUP.dms.rows;
     const openRoute = ref => go("route", { ref });
     const primary = s.hero.phase === "planned" ? <Button variant="approve" icon="check" disabled={offline} onClick={() => openRoute(items[0].ref)}>Review and approve</Button> : ["approved", "executing"].includes(s.hero.phase) ? <Button variant="primary" iconRight="arrow-right" onClick={() => go("execution", { ref: s.hero.id })}>Watch execution</Button> : <Button variant="primary" iconRight="arrow-right" onClick={() => openRoute(items[0].ref)}>Open Route Room</Button>;
     const hero = <L.Dim on={dim}><TrackerCard view={hm.view} done={hm.done} current={hm.current} eta={dim ? L.pausedWords(live) : hm.eta} etaTone={dim ? "gray" : hm.etaTone} agentLive={dim ? "" : hm.agentLive} primary={primary} money={money} /></L.Dim>;
     const top = live.quiet ? <L.Quiet /> : items.length > 1 ? <L.Flagged items={items}>{it => (it.hero ? hero : <L.MangoCard item={it} dim={dim} />)}</L.Flagged> : hero;
-    const list = <div className="stack snug"><SectionTitle sub={live.quiet ? "Every batch clears inside its date at today's sell-through" : "Flagged batches first, then by days to best-before"}>Watchlist</SectionTitle><div className="list">{watchlist.map(v => <BatchRow key={v.id} view={v} selected={sel === v.id} compact={phone} onOpen={() => { setSel(v.id); if (v.hero || v.second) openRoute(v.id); else setSheet(v.id); }} />)}</div></div>;
+    const list = <div className="stack snug"><SectionTitle sub={live.quiet ? "Every batch clears inside its date at today's sell-through" : "Flagged batches first, then by days to best-before"}>Watchlist</SectionTitle><div className="list">{watchlist.map(v => <BatchRow key={v.id} view={v} selected={sel === v.id} compact={phone} onOpen={() => { setSel(v.id); const it = journeyItems(s, live).find(i => i.ref === v.id); go(partAt(it), { ref: v.id }); }} />)}</div></div>;
     const side = <L.Dim on={dim}>{feed}</L.Dim>;
     const map = !live.quiet && cluster;
     return <Screen me={me} title="Command Center" sub={`Watcher checked ${rows} batches at ${watch} · ${live.quiet ? "nothing flagged" : items.length + " flagged"}`}>
       {app.bp === "desktop" ? <Columns sideWidth={340} main={<>{top}{map}{list}</>} side={side} />
         : <div className="stack" style={{ gap: 20 }}>{top}{side}{list}{map}</div>}
-      <BatchSheet view={watchlist.find(v => v.id === sheet)} onClose={() => setSheet(null)} />
     </Screen>;
   }
 
@@ -225,7 +225,8 @@
     if (item && !item.hero) return <L.MangoRoom me={me} item={item} below={below} />;
     const dim = !!live && L.down(live.conn); const offline = !!live && live.conn === "offline";
     const Dim = live ? L.Dim : Pass;
-    return <Screen me={me} title="Route Room" sub={below ? null : `${v.id} · ${sku.brand} ${sku.name} · ${v.dist.name}, ${v.dist.city}`} back="Command Center" below={below}>
+    const framed = React.useContext(S.BatchCtx); // on a batch's page its head names the batch (SC-112)
+    return <Screen me={me} title="Route Room" sub={below || framed ? null : `${v.id} · ${sku.brand} ${sku.name} · ${v.dist.name}, ${v.dist.city}`} back="Command Center" below={below}>
       <div className="stack" style={{ gap: 20, paddingBottom: h.phase === "planned" ? 96 : 0 }}>
         <Card className="stack" style={{ gap: 16 }}>
           <div className="row wrap" style={{ gap: 16 }}>
@@ -393,15 +394,124 @@
   }
   const all = h => h.orders.length === D.KIRANAS.length;
 
+  /* ---------- a batch's page (SC-112) ---------- */
+  // the operator reads the workspace top down: the workspace, then a batch, then the batch's screens. A batch's page
+  // gives each of its screens one head (its pack, name, id, distributor and where it stands) with the screens as tabs
+  // under it; each screen's body is as it was. A batch the Watcher only watches has its Journey alone
+  const BATCH_PARTS = [
+    { id: "journey", label: "Journey", short: "Journey", icon: "radar", from: 1, to: 1, ahead: "" },
+    { id: "route", label: "Route Room", short: "Route", icon: "route", from: 2, to: 5, ahead: "from Verify" },
+    { id: "execution", label: "Execution", short: "Execution", icon: "activity", from: 6, to: 6, ahead: "starts on approval" },
+    { id: "paperwork", label: "Paperwork", short: "Papers", icon: "file-text", from: 7, to: 7, ahead: "after the lines close" },
+  ];
+  const BATCH_PART_IDS = BATCH_PARTS.map(p => p.id);
+  const stopOf = it => (it.current >= 0 ? it.current : 9);
+  // where a batch opens: the screen for the stop it is at; its journey before Verify, once it has cleared, and for a
+  // batch in no journey
+  const partAt = it => (it ? (BATCH_PARTS.find(p => p.id !== "journey" && stopOf(it) >= p.from && stopOf(it) <= p.to) || BATCH_PARTS[0]).id : "journey");
+  // a screen of the batch, as its tab says it: where the batch stands (amber while it waits for a yes), done, or not yet
+  function partState(it, p) {
+    if (p.id === "journey") return {};
+    if (p.id === partAt(it)) return { here: true, human: it.human, words: it.human ? "needs your yes" : "where the batch is" };
+    return stopOf(it) < p.from ? { ahead: true, words: p.ahead } : { done: true, words: "done" };
+  }
+  const shortName = sku => sku.name.replace(/\s+\d+(\.\d+)?\s?(g|ml|kg|l)$/i, "");
+  // the batches in a journey, most urgent first, each with its view, its stop and whether it waits for a person: the
+  // chips once the Watcher has flagged them, and on the live workspace the batches it flagged (screens/live.jsx)
+  function journeyItems(s, live) {
+    const hm = heroModel(s); const stage = D.STAGES[hm.current];
+    const items = live && S.Live ? S.Live.flaggedItems(s, live) : [{ ref: D.BATCHES[0].id, hero: true, view: hm.view, done: hm.done, current: hm.current, stop: stage ? stage.title : "Cleared", human: !!(stage && stage.human) }];
+    return items.filter(it => !it.hero || s.hero.phase !== "watching");
+  }
+  // any batch's view, as the Command Center shows it
+  function viewOf(s, ref, live) {
+    const b = D.BATCHES.find(x => x.id === ref); if (!b) return null;
+    if (b.hero) return heroModel(s).view;
+    const v = D.batchView(b); if (b.second && !live) v.phase = "executing"; return v;
+  }
+  // the batch's state in its head: the agents' ETA for the batch the store follows; the Mango Drink waits on its photo
+  function stateOf(it, s) {
+    if (it.hero) { const hm = heroModel(s); return { text: hm.eta, tone: hm.etaTone, live: !!hm.agentLive }; }
+    return { text: `Vision is waiting for ${it.view.dist.name}' label photo`, tone: "green", live: true };
+  }
+  // the head every screen of a batch shares: its pack, its name, its id and distributor, where it stands, its screens
+  function BatchHead({ it, v, part, onPart }) {
+    const s = useStore(); const app = useApp(); const phone = app.bp === "phone"; const live = S.useLive(); const sku = v.skuObj; const st = it && stateOf(it, s);
+    return <div className="bhead">
+      <div className="bh-id">
+        <span className="bh-pic" aria-hidden="true"><Product name={sku.img} size={phone ? 46 : 72} alt="" /></span>
+        <div className="bh-tt">
+          <h1>{sku.name}</h1>
+          <div className="bh-meta"><span className="mono">{v.id}</span><span className="sep" aria-hidden="true">·</span><span>{v.dist.name}, {v.dist.city}</span></div>
+          <div className="bh-meta">{st ? <Badge tone={st.tone} dot live={st.live}>{st.text}</Badge> : <><StatusBadge status={v.phase || v.assess.status} /><span>The Watcher checks it every morning at {s.rules.watchTime}</span></>}{live && <S.Live.Line />}</div>
+        </div>
+      </div>
+      {it && <BatchTabs it={it} part={part} onPart={onPart} />}
+    </div>;
+  }
+  // the batch's screens as tabs: a pill track with a sliding thumb (the kit's tabs at page size); the tab for where the
+  // batch stands carries a dot, amber while it waits for a yes; a screen it has not reached dims its icon and says when
+  function BatchTabs({ it, part, onPart }) {
+    const phone = useApp().bp === "phone";
+    return <nav className="bh-tabs" aria-label={`${it.view.skuObj.name}, ${it.ref}`}>
+      {BATCH_PARTS.map(p => { const st = partState(it, p); const on = part === p.id;
+        return <button key={p.id} type="button" className={cx("bh-tab", st.ahead && "ahead")} aria-current={on ? "page" : undefined} onClick={() => onPart(p.id)} title={st.words || undefined}>
+          {on && <motion.span layoutId="bh-tab-thumb" className="bh-tab-thumb" transition={{ type: "spring", stiffness: 500, damping: 40 }} />}
+          {!phone && <Icon name={p.icon} size={16} />}<span>{phone ? p.short : p.label}</span>
+          {st.here && <i className={cx("bh-here", st.human && "human")} aria-hidden="true" />}
+          {st.words && <span className="sr-only">, {st.words}</span>}
+        </button>; })}
+    </nav>;
+  }
+  // a screen of a batch the batch has not reached (the Mango Drink's on the live workspace), in the screen's own words
+  function NotYet({ me, title, icon, head, body }) { return <Screen me={me} title={title}><Card><Empty icon={icon} title={head} body={body} /></Card></Screen>; }
+  // the Mango Drink batch's agents on the live workspace, as its Route Room tells them
+  function mangoFeed(v) {
+    return [
+      { id: "m1", stage: "detect", agent: "Watcher", icon: "radar", at: D.PUSH.detect.at, min: 0, text: `${v.id} fails all three quick-commerce gates; ${fmt.num(v.assess.atRisk)} of ${fmt.num(v.units)} units will not sell by ${fmt.date(v.bestBefore).replace(/ \d{4}$/, "")}.`, calls: [["gates.check", v.assess.gates.map(g => `${g.app} ${g.has}/${g.need}`).join(" · "), "bad"], ["pubsub.publish", "batch.at_risk", "ok"]] },
+      { id: "m2", stage: "verify", agent: "Vision", icon: "scan-line", at: D.PUSH.verify.at, min: 5, text: `Asked ${v.dist.name} for one label photo before quoting any price.`, calls: [["fcm.send", v.dist.name, "ok"]] },
+    ];
+  }
+  // the batch's Journey: the Command Center's pieces for this batch alone (its tracker card, its cluster, its agents);
+  // a batch in no journey shows what the Watcher sees of it and what happens next
+  function BatchJourney({ me, it, v }) {
+    const s = useStore(); const app = useApp(); const { go } = useRoute(); const hm = heroModel(s); const h = s.hero; const phone = app.bp === "phone"; const live = S.useLive();
+    if (!it) return <Screen me={me} title="Journey"><Columns sideWidth={340} main={<Card className="stack"><BatchFacts view={v} /></Card>} side={<div className="stack snug"><SectionTitle sub="Every hand-off on this batch, as it happens">Agent activity</SectionTitle><Card><span className="t-footnote muted">The agents report here once the Watcher flags this batch.</span></Card></div>} /></Screen>;
+    const routed = ["approved", "executing", "dispatched", "settled", "cleared"].includes(h.phase); const SHOPS = D.KIRANAS.length;
+    let card;
+    if (it.hero) {
+      const primary = h.phase === "planned" ? <Button variant="approve" icon="check" onClick={() => go("route", { ref: it.ref })}>Review and approve</Button> : ["approved", "executing"].includes(h.phase) ? <Button variant="primary" iconRight="arrow-right" onClick={() => go("execution", { ref: it.ref })}>Watch execution</Button> : <Button variant="primary" iconRight="arrow-right" onClick={() => go("route", { ref: it.ref })}>Open Route Room</Button>;
+      const money = h.plan ? <div className="stack tight" style={{ gap: 2 }}><Money value={h.posted ? D.ACTUAL.net : D.PLAN.net} size={phone ? "s" : "m"} roll style={{ color: "var(--primary-text)" }} /><span className="t-footnote subtle">{h.posted ? "recovered, after the negotiation" : routed ? "on plan · settles day 3–7" : "net recovered on the plan"} · swing {fmt.inr(h.posted ? D.ACTUAL.swing : D.PLAN.swing)}</span></div> : undefined;
+      card = <TrackerCard view={hm.view} done={hm.done} current={hm.current} eta={hm.eta} etaTone={hm.etaTone} agentLive={hm.agentLive} primary={primary} money={money} />;
+    } else card = <S.Live.MangoCard item={it} dim={!!live && S.Live.down(live.conn)} />;
+    const cluster = it.hero && <Card pad={false} className="stack" style={{ overflow: "hidden", gap: 0 }}>
+      <div className="card-head" style={{ padding: "14px 16px 10px" }}><span className="card-title">{v.dist.city} cluster</span><Badge size="sm" tone={hm.ordered ? "green" : undefined} dot={!!hm.ordered}>{hm.ordered ? `${hm.ordered} of ${D.OFFERED} kiranas ordered` : h.offer ? `${D.OFFERED} kiranas messaged` : `${D.OFFERED} kiranas`}</Badge></div>
+      <ClusterMap kiranas={D.KIRANAS} orderedCount={hm.ordered} route={routed} vanProgress={h.van.status === "done" ? 1 : hm.ordered / SHOPS * 0.6} height={phone ? 220 : 280} />
+    </Card>;
+    const events = it.hero ? s.feed : mangoFeed(v);
+    const feed = <div className="stack snug"><SectionTitle sub="Every hand-off on this batch, as it happens">Agent activity</SectionTitle><Card>{events.length ? <AgentFeed events={events} people={D.PEOPLE} live={it.hero && hm.agentLive ? s.feed.length - 1 : -1} max={phone ? 4 : 8} /> : <span className="t-footnote muted">The agents report here as they work this batch.</span>}</Card></div>;
+    return <Screen me={me} title="Journey"><Columns sideWidth={340} main={<>{card}{cluster}</>} side={feed} /></Screen>;
+  }
+  // one screen of a batch's page
+  function BatchPart({ me, it, v, part }) {
+    if (!it || part === "journey") return <BatchJourney me={me} it={it} v={v} />;
+    if (part === "route") return <RouteRoom me={me} />;
+    if (part === "execution") return it.hero ? <Execution me={me} /> : <NotYet me={me} title="Execution" icon="sparkles" head="Nothing is executing yet" body="Listing, outreach, negotiation and the food-bank booking start the moment the plan is approved." />;
+    return it.hero ? <S.Paperwork me={me} /> : <NotYet me={me} title="Paperwork" icon="file-text" head="The pack follows the last of its lines" body={`Munchly's price-support credit note, the ITC memo and the FSSAI checklist, drafted by the Paperwork agent once every line of ${it.ref}'s plan is done.`} />;
+  }
+
   /* ---------- Batches ---------- */
-  // the screen each role reads a batch on, which a batch in a journey opens from Batches: the operator its Route Room,
-  // finance its Paperwork, sustainability its report (SC-103); a role with none opens the batch's sheet
-  const BATCH_SCREEN = { operator: "route", finance: "paperwork", sustainability: "report" };
+  // the screen each role reads a batch on, which a batch in a journey opens from Batches: finance its Paperwork,
+  // sustainability its report (SC-103); a role with none opens the batch's sheet. The operator opens the batch's own
+  // page (SC-112)
+  const BATCH_SCREEN = { finance: "paperwork", sustainability: "report" };
   function Batches({ me }) {
     const s = useStore(); const app = useApp(); const { go } = useRoute(); const [open, setOpen] = useState(null); const hm = heroModel(s);
     const views = D.BATCHES.map(b => { const v = D.batchView(b); if (b.hero) v.phase = hm.view.phase; if (b.second) v.phase = "executing"; return v; });
     const sel = open && views.find(v => v.id === open);
-    const openRow = v => (v.hero && BATCH_SCREEN[me.role] ? go(BATCH_SCREEN[me.role]) : setOpen(v.id));
+    // the operator's rows open the batch's page (SC-112); finance and sustainability open the screen they read a batch on
+    const live = S.useLive();
+    const openRow = v => (me.role === "operator" ? go(partAt(journeyItems(s, live).find(i => i.ref === v.id)), { ref: v.id }) : v.hero && BATCH_SCREEN[me.role] ? go(BATCH_SCREEN[me.role]) : setOpen(v.id));
     return <Screen me={me} title="Batches" sub="Every lot the Watcher sees, from the DMS export">
       {app.bp === "phone" ? <div className="list">{views.map(v => <BatchRow key={v.id} view={v} compact onOpen={() => openRow(v)} />)}</div> :
       <DataTable label="Batches" rows={views.map(v => ({ ...v, name: v.skuObj.name }))} onRow={openRow} initialSort={["daysLeft", "asc"]} columns={[
@@ -419,18 +529,22 @@
   // with no journey to open): its days, gates and figures, and what happens to it next. An at-risk batch the Watcher has
   // not flagged says when it will be
   function BatchSheet({ view: sel, onClose }) {
+    return <Sheet open={!!sel} onClose={onClose} title={sel ? sel.skuObj.name : ""}>{sel && <BatchFacts view={sel} />}</Sheet>;
+  }
+  // what the Watcher sees of a batch: the sheet's body, and a watched batch's Journey on the operator's batch page
+  function BatchFacts({ view: sel }) {
     const s = useStore(); const ML = id => D.MANGO_PLAN.lines.find(l => l.id === id) || { units: 0 };
     const next = !sel ? "" : sel.phase === "executing" ? `Routed yesterday: ${fmt.num(ML("kirana").units)} packs to Hyderabad kiranas, ${ML("staff").units} to the staff sale at Lakshmi's godown, ${D.MANGO_FB} to Feeding India.`
-      : sel.phase ? "In a journey: the agents are working it, and its Route Room shows where it stands."
+      : sel.phase && sel.phase !== "watching" ? "In a journey: the agents are working it, and its Route Room shows where it stands."
       : sel.assess.status === "at-risk" ? `At risk: ${fmt.num(sel.assess.atRisk)} packs will not sell before the last week. The Watcher checks every morning at ${s.rules.watchTime}, and flags it once Setup is confirmed and ${sel.dist.name} has given ${D.PLATFORM.name} permission to act.`
       : sel.assess.status === "gated" ? `Outside at least one quick-commerce gate, but real sell-through clears it in time. The Watcher checks again tomorrow at ${s.rules.watchTime}.` : "Inside every gate and selling through. Nothing to do.";
-    return <Sheet open={!!sel} onClose={onClose} title={sel ? sel.skuObj.name : ""}>{sel && <div className="stack">
+    return <div className="stack">
       <div className="row" style={{ gap: 14 }}><Product name={sel.skuObj.img} size={88} /><div className="stack tight"><DaysNum days={sel.daysLeft} life={sel.skuObj.lifeDays} size="l" /><span className="t-footnote subtle">days left · best before {fmt.date(sel.bestBefore)}</span></div></div>
       <GateChips gates={sel.assess.gates} />
       <List>{[["Batch", sel.id], ["Distributor", `${sel.dist.name}, ${sel.dist.city}`], ["Units", fmt.num(sel.units)], ["Sells", `${sel.sellPerDay} a day`], ["Will sell before the last week", fmt.num(sel.assess.willSell)], ["At risk", sel.assess.atRisk ? fmt.num(sel.assess.atRisk) : "none"]].map(([k, val]) => <ListRow key={k} title={k} value={val} />)}</List>
       <p className="t-footnote muted">{next}</p>
-    </div>}</Sheet>;
+    </div>;
   }
 
-  Object.assign(window.SC3_SCREENS, { Setup, CommandCenter, RouteRoom, Execution, Batches, ApproveSheet, LabelPhoto, LabelShot, Chat, permissionOf });
+  Object.assign(window.SC3_SCREENS, { Setup, CommandCenter, RouteRoom, Execution, Batches, ApproveSheet, LabelPhoto, LabelShot, Chat, permissionOf, BATCH_PARTS, BATCH_PART_IDS, partAt, journeyItems, viewOf, shortName, BatchHead, BatchPart, BatchFacts });
 })();

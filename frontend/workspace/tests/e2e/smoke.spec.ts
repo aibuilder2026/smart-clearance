@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { openWorkspace, title } from './workspace';
+import { batchTab, openWorkspace, title } from './workspace';
 
 // The workspace app in Firefox and WebKit (desktop, tablet and phone): Priya signs in, her screens render without
 // errors, and a change lands with its toast
@@ -17,7 +17,8 @@ test('smoke · the workspace app works', async ({ page }) => {
 	await expect(title(page)).toHaveText('Command Center');
 	await expect(page.getByText('Cleared · 0 cartons destroyed')).toBeVisible();
 	await page.goto('/route');
-	await expect(title(page)).toHaveText('Route Room');
+	await expect(title(page)).toHaveText('Masala Chips 150 g');
+	await expect(batchTab(page)).toContainText(/^Route/);
 	await expect(page.getByText(/Approved by Priya/)).toBeVisible();
 	await page.getByRole('button', { name: 'Profile and settings' }).click();
 	await page.getByRole('button', { name: /^Reset demo data/ }).click();
