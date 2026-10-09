@@ -1,0 +1,167 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/home",
+  "out": "current/rakesh-today-executing-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1100,
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(7)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/home",
+  "out": "current/rakesh-today-cleared-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1100,
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/home",
+  "out": "current/rakesh-today-cleared-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2200,
+  "height": 1100,
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/home",
+  "out": "current/rakesh-today-cleared-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2200,
+  "height": 2600,
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/orders",
+  "out": "current/rakesh-orders-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1300,
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/home",
+  "out": "current/ganesh-offers-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1000,
+  "ls": {
+   "sc3-session": {
+    "uid": "ganesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(7)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/home",
+  "out": "current/ganesh-offers-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1900,
+  "ls": {
+   "sc3-session": {
+    "uid": "ganesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(7)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/orders",
+  "out": "current/ganesh-orders-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 700,
+  "ls": {
+   "sc3-session": {
+    "uid": "ganesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/pickups",
+  "out": "current/meera-pickups-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 900,
+  "ls": {
+   "sc3-session": {
+    "uid": "meera",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/pickups",
+  "out": "current/meera-pickups-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2200,
+  "height": 900,
+  "ls": {
+   "sc3-session": {
+    "uid": "meera",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/pickups",
+  "out": "current/meera-pickups-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2200,
+  "height": 2200,
+  "ls": {
+   "sc3-session": {
+    "uid": "meera",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)"
+ }
+]
