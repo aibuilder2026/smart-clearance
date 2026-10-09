@@ -11,7 +11,9 @@ nothing is staged ahead (the Mango Drink was, until SC-86).
 A synthetic workspace replaying the story goes back to the story's own start (SC-88): its members' statuses (and any
 member added in a demo leaves the workspace), its document numbers, its stock export as the story maps it, and no batch
 but the story's. What stays is the client's configuration: a gate override set on a batch (SC-82), the SKUs' gates,
-the guardrails, the agents' settings and the day length.
+the guardrails, the agents' settings and the day length. A workspace built before something the story gained also
+gains it, without losing what it set itself (SC-114): a number series the story numbers and it lacks (the food banks'
+receipts, SC-110), and a food bank's receipt and meals rule.
 """
 
 from datetime import date, datetime, time, timedelta
@@ -149,6 +151,25 @@ async def _story(ctx: Ctx, c: m.Client, j: dict[str, Any], day0: date) -> None:
         row = await ctx.session.get(m.DocumentNumber, (c.id, kind), with_for_update=True)
         if row is not None:
             row.next = n["next"]
+        else:  # a series the story numbers and the workspace lacks: the food banks' receipts, before SC-110 (SC-114)
+            ctx.session.add(
+                m.DocumentNumber(client_id=c.id, kind=kind, prefix=n["prefix"], next=n["next"], width=n["width"])
+            )
+    # the story's food banks issue their receipts (SC-110): one set up before then gains its receipt and meals rule
+    # (SC-114), and one that has its own keeps it
+    for p in j["setup"]["partners"]:
+        bank = (
+            await ctx.session.execute(
+                select(m.Partner)
+                .where(m.Partner.client_id == c.id, m.Partner.kind == "foodbank", m.Partner.name == p["name"])
+                .with_for_update()
+            )
+        ).scalar_one_or_none()
+        if bank is None:
+            continue
+        missing = {k: p[k] for k in ("receipt", "meals") if p.get(k) and not (bank.details or {}).get(k)}
+        if missing:  # a new dict, so the change is written
+            bank.details = {**(bank.details or {}), **missing}
     fx = next((x.get("firstExport") for x in load("console.json")["state"]["clients"] if x["id"] == c.id), None)
     if fx:  # the story's own stock export, mapped (SC-84)
         exports.restore(c, fx, datetime.combine(day0 - timedelta(days=1), time(16, 40), IST))

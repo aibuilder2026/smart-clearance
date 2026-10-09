@@ -1187,5 +1187,14 @@
   - **The port:** `Shell.svelte`, `RoleApp.svelte`, `Screen.svelte`, `context.ts` (`provideBatchFrame`), `model.ts` (`BATCH_PARTS`, `journeysOf`, `partAt`), new `BatchHead`, `BatchJourney` and `BatchFacts`; `CommandCenter`, `CommandQuiet`, `Batches` and `RouteRoom` follow; `components.css` and `screens.css` verbatim. Finance and Sustainability are unchanged.
   - **Checks:** the frontend gate passes (core 249, api 77, workspace 66, admin 17, demo 5, console 3); the operator's goldens were updated (the sidebar, the head, the tabs); the workspace live tests follow the batch page (watched batches open their Journey). design3 and the port were checked side by side on the stub at 1440, 820 and 390, light and dark, with no console errors. The e2e and a11y specs follow (a scan of a batch's Journey and a watched batch is added); the browser suites were not run (SC-55).
   - **Hosting:** design3's `dist/` is rebuilt; the hosted app page stays on its pinned commit.
+- **SC-114** (In Review, branch `SC-114-receipt-on-reset`; bug found by Munchly Mango E2E): a workspace built before SC-110 never issued a donation receipt.
+  - **Found:** Meera collected the Mango Drink's 58 packs, and no receipt was issued. The local database's food banks had no receipt form or meals rule, and the workspace numbered no `receipt.*` series. Only `hydrate.sh --live-only` set them, and it restarts the journey; production, last hydrated in SC-75, is the same.
+  - **The fix** (`services/journey/reset.py` `_story`): a synthetic workspace's Reset journey also gives it what the story has and it lacks, keeping what it set itself:
+    - each number series the story numbers (the food banks' receipts among them);
+    - each of the story's food banks' receipt form and meals rule.
+
+    The console's Reset journey (or `hydrate.sh --journey-reset`) now brings a workspace from before SC-110 up to date, locally and in production, with no separate hydrate.
+  - **Checks:** backend-api 490 passed. The new test fails without the fix, with the receipt series missing.
+  - **Locally:** Munchly's journey was reset with the fix; both food banks have their receipt and the two series are numbered from the story's.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
