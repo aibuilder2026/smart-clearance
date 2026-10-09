@@ -895,3 +895,24 @@ describe("the buyer's listing (SC-92)", () => {
 		expect(t).toContain('Invoice total₹11,510.00');
 	});
 });
+
+describe("the buyer's truck waits for the kirana scheme (SC-118)", () => {
+	it('with the lot won and the scheme still open, Rakesh is told the truck loads once it closes', async () => {
+		const m = moment('executing');
+		const won = moment('cleared').members.rakesh.cases[CHIPS];
+		const c = m.members.rakesh.cases[CHIPS];
+		Object.assign(c, { award: won.award });
+		Object.assign(c.journey, { award: won.journey.award, listing: won.journey.listing });
+		const r = await draw(source(fakeApi(m, 'rakesh')), 'van', CHIPS);
+		// backend-api refuses the truck until the scheme is over, so the button says so before it is pressed
+		const wait = await r.findByRole('button', { name: 'Load once the scheme closes' });
+		expect(wait.hasAttribute('disabled')).toBe(true);
+		expect(r.queryByRole('button', { name: "Load the buyer's truck" })).toBeNull();
+
+		// once the scheme has closed, the truck loads
+		Object.assign(c.journey.offer!, { status: 'closed' });
+		const r2 = await draw(source(fakeApi(m, 'rakesh')), 'van', CHIPS);
+		const load = await r2.findByRole('button', { name: "Load the buyer's truck" });
+		expect(load.hasAttribute('disabled')).toBe(false);
+	});
+});

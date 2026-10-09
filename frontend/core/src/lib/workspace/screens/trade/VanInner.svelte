@@ -31,6 +31,8 @@
 	const h = $derived(ws.state.hero);
 	const units = $derived(h.orders.reduce((t, o) => t + o.units, 0));
 	const full = $derived(h.orders.length === c.kiranas.length);
+	// the truck loads once the kirana scheme is over: closed, or every shop has ordered (SC-118)
+	const schemeOpen = $derived(!!h.offer && h.offer.status === 'sent' && !full);
 	const done = $derived(h.van.status === 'done');
 	let p = $state(ws.state.hero.van.status === 'done' ? 1 : 0);
 	let running = $state(false);
@@ -166,8 +168,13 @@
 						variant="primary"
 						size="lg"
 						icon="truck"
-						disabled={!h.award}
-						onclick={dispatch}>{h.award ? "Load the buyer's truck" : 'Load after the award'}</Button
+						disabled={!h.award || schemeOpen}
+						onclick={dispatch}
+						>{!h.award
+							? 'Load after the award'
+							: schemeOpen
+								? 'Load once the scheme closes'
+								: "Load the buyer's truck"}</Button
 					>{/if}
 				<span class="t-caption subtle">Your staff load it as normal godown work, once the balance lands.</span>
 			</Card>

@@ -245,6 +245,8 @@
   function VanInner({ me }) {
     const s = useStore(); const h = s.hero; const app = useApp(); const reduce = useReducedMotion(); const { toast } = useNotice();
     const units = h.orders.reduce((t, o) => t + o.units, 0); const full = all(h);
+    // the truck loads once the kirana scheme is over: closed, or every shop has ordered (SC-118)
+    const schemeOpen = !!h.offer && h.offer.status === "sent" && !full;
     const [p, setP] = useState(h.van.status === "done" ? 1 : 0); const [running, setRunning] = useState(false);
     useEffect(() => { if (h.van.status === "done" && !running) setP(1); }, [h.van.status]);
     const start = () => { setRunning(true); const t0 = performance.now(), dur = reduce ? 10 : 3600; const step = now => { const k = Math.min(1, (now - t0) / dur); setP(k); if (k < 1) requestAnimationFrame(step); else { setRunning(false); Flow.act("vanRound"); toast({ text: `Round done · ${SHOPS} shops, ${cartons(units)}`, tone: "ok" }); } }; requestAnimationFrame(step); };
@@ -271,7 +273,7 @@
             <div className="card-head"><span className="row tight"><span className="icontile violet"><Icon name="package" size={17} stroke={2} /></span><span className="card-title">{D.BUYER.city} lot</span></span><Badge tone={h.truck.status === "dispatched" ? "blue" : h.award ? "green" : "violet"}>{h.truck.status === "dispatched" ? "collected" : h.award ? "sold" : h.listing ? "listed" : "not listed"}</Badge></div>
             <HaulLine progress={h.truck.status === "dispatched" ? (h.phase === "cleared" || h.phase === "settled" ? 1 : 0.55) : 0} />
             <List>{[["Buyer", h.award ? `${D.BUYER.name}, ${D.BUYER.city}` : "—"], ["Units", `${ES.units} · ${cartons(ES.units)}`], ["Price", h.award ? `₹${D.COUNTER.price.toFixed(2)} a packet` : "₹15.00 asked"], ["Token", h.award ? fmt.inr(D.AWARD.token) + " received" : "—"], ["Freight", "the buyer's own truck"]].map(([k, v]) => <ListRow key={k} title={k} value={v} />)}</List>
-            {h.truck.status !== "dispatched" && <Button variant="primary" size="lg" icon="truck" disabled={!h.award} onClick={dispatch}>{h.award ? "Load the buyer's truck" : "Load after the award"}</Button>}
+            {h.truck.status !== "dispatched" && <Button variant="primary" size="lg" icon="truck" disabled={!h.award || schemeOpen} onClick={dispatch}>{!h.award ? "Load after the award" : schemeOpen ? "Load once the scheme closes" : "Load the buyer's truck"}</Button>}
             <span className="t-caption subtle">Your staff load it as normal godown work, once the balance lands.</span>
           </Card>
           <div className="stack snug"><SectionTitle sub="In the order they were placed">Stops</SectionTitle>

@@ -1236,4 +1236,9 @@
   - **Checks:** backend-api 491 passed, 1 skipped. The new test (`test_controls.py`) takes the leftover run's shape (an awarded lot, a short scheme, Report now): Anita reviews and Rakesh issues his invoice on the cleared batch, each with its audit line. It fails without the fix, with the 404.
   - **Locally:** the dev API reloads, so the chips batch the leftover run cleared can be reviewed now.
 
+- **SC-118** (In Review, branch `SC-118-truck-waits-for-scheme`, stacked on SC-117; bug found by Munchly Chips Leftover E2E): Rakesh's Van route says the truck waits for the kirana scheme.
+  - **Found:** with the lot won and the scheme still open, "Load the buyer's truck" was a live button, refused only once pressed ("That didn't go through. The kirana scheme is still open until 04 Oct, 08:36.").
+  - **The fix** (design3 `trade.jsx` first, then core's `VanInner.svelte`): as "Load after the award" does before the award, the button is disabled and reads "Load once the scheme closes" while the scheme is open. The scheme is over once it is closed, or once every kirana has ordered (the stub never closes it).
+  - **Checks:** the frontend gate passes (core 249 with goldens unchanged, api 77, workspace 67, admin 17, demo 5, console 3). A new live test draws Rakesh's Van route with the lot won and the scheme open, then closed, and fails without the fix. design3's `dist/` is rebuilt.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
