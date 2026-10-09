@@ -654,7 +654,35 @@ export type WsDoc = {
 	itc?: number;
 	/** the GST memo's reversal on expiry day */
 	reversed?: number;
+} & Partial<ReceiptFields>;
+
+/** the food bank's receipt for the packs it collected (SC-110, money.js receipt): issued in its name as it collects,
+ *  numbered in its own series, in its own form (Feeding India's in-app receipt, India FoodBanking Network's
+ *  acknowledgement) */
+export type ReceiptFields = {
+	/** the food bank's kind of paper, as its setup names it */
+	paper: string;
+	/** RECEIVED or ACKNOWLEDGED */
+	stamp: string;
+	kg: number;
+	/** the meals, by the food bank's own rule */
+	meals: number;
+	mealsRule: string;
+	/** on a CSR acknowledgement: the packs' value at the donor's cost (indicative), and the CSR activity */
+	value: number | null;
+	csr: string | null;
+	/** the journey time it was collected (HH:MM), and by whom */
+	at: string;
+	by: string;
+	donor: string;
+	fssai: string;
+	/** the distributor it came through, and from where */
+	via: string;
+	from: string;
+	/** where the food bank serves it */
+	spot: string | null;
 };
+export type WsReceipt = WsDoc & ReceiptFields;
 
 /** a client's expiry policy: what happens to packs that expire at the distributor's godown (SC-94) */
 export type ExpiryPolicy = 'full-credit' | 'price-support' | 'none';
@@ -705,6 +733,8 @@ export type Donation = {
 	reply: string | null;
 	/** why the line went untaken, when declined */
 	reason: string | null;
+	/** the food bank's receipt, issued as it collected (SC-110); null before, or from a food bank set up without one */
+	receipt: WsReceipt | null;
 };
 
 /** the moments of a batch's journey its screens state, as facts on the journey clock */

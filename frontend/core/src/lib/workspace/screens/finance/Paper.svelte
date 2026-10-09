@@ -2,9 +2,11 @@
 	import { cx } from '../../../cx';
 	import { cartons, fmt, productName } from '../../model';
 	import { useWorkspace } from '../../source';
+	import Receipt from './Receipt.svelte';
 
 	// a document of the pack, set on paper (screens/finance.jsx Paper): the invoice Rakesh Traders issues, the e-way bill
-	// check, Munchly's price-support credit note, the ITC memo, the FSSAI checklist and the destruction certificate
+	// check, Munchly's price-support credit note, the ITC memo, the FSSAI checklist, the food bank's receipt (SC-110) and
+	// the destruction certificate
 	let { id }: { id: string } = $props();
 	const ws = useWorkspace();
 	const c = $derived(ws.case!);
@@ -177,6 +179,8 @@
 				)}{/if}{/if}
 		<p class="pp-note">{d.note}</p>
 	</div>
+{:else if id === 'receipt' && d}
+	<Receipt doc={d} batch={c.batch} sku={c.sku} dist={c.dist} />
 {:else if id === 'fssai'}
 	<div class="paper pp">
 		{#if d?.status === 'generated'}{@render head('FSSAI surplus-food checklist', c.batch.id, 'GENERATED', true)}

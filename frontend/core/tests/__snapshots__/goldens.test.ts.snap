@@ -1936,6 +1936,13 @@ exports[`the parts a tap opens > the approval, before and after 1`] = `
 ]
 `;
 
+exports[`the parts a tap opens > the food bank's receipt, from the collected pickup (SC-110) 1`] = `
+[
+  "Smart‑Clearance Munchly Foodsmunchly.smartclearance.com Pickups MeeraFood-bank partner · Feeding India Pickups Pickups Feeding India · Hyderabad Donation agent · Munchly Foods · Day 0 58 packs of Mango Drink 22 days leftBegum BazaarFSSAI checklist 58 packs of Mango Drink, 22 days left, with the FSSAI checklist. Pickup Tuesday 10 am from Begum Bazaar? Tuesday works. We'll serve them at the Charminar hunger spot this week. Meera · Day 1 Pickupcollected Requested by the donation agent Day 0 Confirmed by Meera Day 1 Collected from Begum Bazaar Day 4 Served at the Charminar hunger spot this week Donation receipt FI/HYD/26-27/041758 packs · 58 meals · shared with Munchly for its BRSR tableView FSSAI surplus-food checklist Sealed, undamaged packsBest before 24 Oct 2026, 22 days leftAmbient storage, away from sunlightBatch MF-2410-118 on every cartonDonor: Munchly Foods via Lakshmi Agencies Your intake rules Days left15 or moreMinimum lot50 unitsLogisticsvolunteer pickup in 48 h ⟨Main | Munchly Foods workspace, munchly.smartclearance.com | Meera · Food-bank partner · Feeding India | Appearance | Appearance | Notifications | Notifications | Profile and settings⟩",
+  "Donation receipt Donation receipt FI/HYD/26-27/0417 · in-app · 6 Oct 2026 RECEIVED DonorMunchly Foods Ltdthrough Lakshmi Agencies, Begum Bazaar godown, HyderabadFSSAI 10019022001234 Received byFeeding IndiaHyderabadIn-app receipt GoodsPacksWeightMunchly Mango Drink 200 mlBatch MF-2410-118 · best before 24 Oct 20265812.5 kg Collected by Meera6 Oct, 10:00 Served atthe Charminar hunger spot Meals a meal for each pack served, indicative58 Issued in the app by Feeding India as the packs were collected: the donor's evidence for BRSR Principle 6, not a tax certificate.The same paper is in Munchly's document pack for MF-2410-118. ⟨Close | Close⟩",
+]
+`;
+
 exports[`the parts a tap opens > the invite sheet 1`] = `"Invite someone Name or organisation Email RoleSupply-chain operatorDistributorKirana retailerFinance & GSTSustainability & BRSRFood-bank partnerWorkspace admin Munchly staff need a munchly.in address; partners use any address. They sign in with it and the default password, which you hand over. Nothing is sent by email. Invite ⟨Close | Close | Shree Sai Kirana | name@munchly.in⟩"`;
 
 exports[`the parts a tap opens > the lot as the operator sees it 1`] = `

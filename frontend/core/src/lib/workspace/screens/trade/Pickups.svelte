@@ -19,9 +19,10 @@
 	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import Screen from '../common/Screen.svelte';
+	import Receipt from '../finance/Receipt.svelte';
 
-	// Meera at Feeding India: the donation agent's request for the Mango Drink, her yes, the pickup and the receipt, beside
-	// the FSSAI checklist and her intake rules
+	// Meera at Feeding India: the donation agent's request for the Mango Drink, her yes, the pickup and the receipt she
+	// issues as she collects (SC-110, opened in a sheet), beside the FSSAI checklist and her intake rules
 	let { me }: { me: User } = $props();
 	const ws = useWorkspace();
 	const c = $derived(ws.case!);
@@ -29,6 +30,7 @@
 	const { toast } = useNotice();
 	const d = $derived(ws.state.mango.donation);
 	let later = $state(false);
+	let paper = $state(false);
 	// the donation: its batch, its partner (the food bank this person is with) and the pickup's schedule
 	const dn = $derived(c.donation);
 	const n = $derived(dn.units);
@@ -43,15 +45,29 @@
 		`Donor: ${ws.data.client.short} via ${dn.dist.name}`
 	]);
 	const slots = $derived(dn.slots);
-	const collect = () => {
-		void ws.act('collect');
-		toast({ text: `Receipt issued · ${n} drinks`, tone: 'ok' });
+	// the receipt the food bank issues as it collects (SC-110); its PDF, on the live workspace, once Paperwork has laid it
+	// out
+	const receipt = $derived(d === 'collected' ? dn.receipt : null);
+	const collect = async () => {
+		await ws.act('collect');
+		const r = ws.case?.donation.receipt;
+		toast({ text: r ? `${r.type} ${r.no} issued` : `Receipt issued · ${n} drinks`, tone: 'ok' });
+	};
+	const pdf = async () => {
+		try {
+			window.open(await ws.documentUrl!('receipt'), '_blank', 'noopener');
+		} catch {
+			toast({ text: 'The PDF could not be opened. Try again in a moment.', tone: 'err' });
+		}
 	};
 	const suggest = () => {
 		later = false;
 		toast({ text: `Sent · the agent will confirm with ${dn.dist.name}` });
 	};
 </script>
+
+{#snippet pdfFooter()}<Button variant="secondary" block icon="download" onclick={pdf}>Download the PDF</Button
+	>{/snippet}
 
 <Screen {me} title="Pickups" sub={`${me.org} · ${me.city}`}>
 	{#if !d}<Card style="max-width: 640px"
@@ -124,14 +140,21 @@
 						{#if d === 'confirmed'}<Button variant="primary" size="lg" icon="package-check" onclick={collect}
 								>Mark collected</Button
 							>{/if}
-						{#if d === 'collected'}<div
+						{#if receipt}<button type="button" class="receipt-row" onclick={() => (paper = true)}
+								><Icon name="receipt" size={20} /><span class="grow"
+									><b>{receipt.type} {receipt.no}</b><span class="t-footnote"
+										>{fmt.num(receipt.units!)} packs · {fmt.num(receipt.meals!)} meals · shared with {ws.data.workspace
+											.short} for its BRSR table</span
+									></span
+								><span class="receipt-view">View<Icon name="chevron-right" size={16} /></span></button
+							>{:else if d === 'collected'}<div
 								class="row"
 								style="gap: 12px; padding: 12px 14px; border-radius: 14px; background: var(--primary-soft)"
 							>
 								<Icon name="receipt" size={20} /><span class="grow"
-									><b>In-app receipt issued</b>
+									><b>Collected</b>
 									<div class="t-footnote muted">
-										{n} drinks served · shared with {ws.data.workspace.short} for its BRSR table
+										{n} packs · {dn.partner.name} issues no receipt in the app
 									</div></span
 								>
 							</div>{/if}
@@ -153,6 +176,17 @@
 				>
 			{/snippet}
 		</Columns>{/if}
+	{#if receipt}<Sheet
+			bind:open={paper}
+			title={receipt.type}
+			footer={receipt.pdf && ws.documentUrl ? pdfFooter : undefined}
+		>
+			<div class="stack snug">
+				<Receipt doc={receipt} batch={dn.batch} sku={dn.sku} dist={dn.dist} /><span class="t-footnote muted"
+					>The same paper is in {ws.data.workspace.short}'s document pack for {dn.batch.id}.</span
+				>
+			</div>
+		</Sheet>{/if}
 	<Sheet bind:open={later} title="Suggest another time" detent="medium"
 		>{#snippet footer()}<Button variant="primary" block onclick={suggest}>Send</Button>{/snippet}
 		<div class="stack snug">

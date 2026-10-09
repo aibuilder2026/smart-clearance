@@ -77,7 +77,9 @@ export const kase: CaseData = Object.freeze({
 		dist: D.distributors[second.distributor],
 		plan: D.mangoPlan,
 		units: D.mangoFb,
-		partner: D.setup.partners.find((p) => p.name === D.journey.donation.partner)!
+		partner: D.setup.partners.find((p) => p.name === D.journey.donation.partner)!,
+		// the receipt Feeding India issues as the packs are collected (SC-110); the screens show it once they are
+		receipt: D.mangoReceipt
 	}
 });
 

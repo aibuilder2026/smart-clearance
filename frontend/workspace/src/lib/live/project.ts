@@ -310,7 +310,27 @@ function docOf(d: WsDoc): Doc {
 		disposal: opt(d.disposal),
 		epr: opt(d.epr),
 		itc: opt(d.itc),
-		reversed: opt(d.reversed)
+		reversed: opt(d.reversed),
+		// the food bank's receipt (SC-110)
+		...(d.id === 'receipt'
+			? {
+					paper: opt(d.paper),
+					stamp: opt(d.stamp),
+					kg: opt(d.kg),
+					meals: opt(d.meals),
+					mealsRule: opt(d.mealsRule),
+					value: d.value ?? null,
+					csr: d.csr ?? null,
+					at: opt(d.at),
+					by: opt(d.by),
+					donor: opt(d.donor),
+					fssai: opt(d.fssai),
+					via: opt(d.via),
+					from: opt(d.from),
+					spot: d.spot ?? null,
+					pdf: d.pdf
+				}
+			: {})
 	};
 }
 
@@ -449,7 +469,8 @@ export function caseOf(
 			confirmed: d?.confirmedAt ? dayN(d.confirmedAt, dday0) : '',
 			collected: d?.collectedAt ? dayN(d.collectedAt, dday0) : '',
 			slots: (d?.slots ?? []).map((s) => `${weekday(s)} ${hhmm(s)}`),
-			reply: d?.reply ?? ''
+			reply: d?.reply ?? '',
+			receipt: d?.receipt ? docOf(d.receipt) : null
 		}
 	};
 }
