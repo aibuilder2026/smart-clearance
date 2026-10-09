@@ -1246,4 +1246,46 @@
   - **The fix** (`copy.ledger_event`, given the day the report posts): a report posted before the return window closes reads "Expiry day called on 2 Oct, before the return window would close on 29 Oct. Posted the ledger: …". A report on or after that day keeps the story's line, so the fixtures are unchanged.
   - **Checks:** backend-api 492 passed, 1 skipped. A copy test covers both lines, and the Report now test reads the early one; it fails without the fix.
 
+- **SC-120** (epic): Finance & ESG on real data, batch based, live, with a history of cleared batches.
+  - **The request (9 Oct):** "redesign the finance and ESG view. It should be batch based, calculations looks off for ITC and others, the dashboard for ESG and finance should live and based on real data", with past batches cleared with mixed outcomes and their GST and tax papers completed.
+  - **The maintainer's answers:**
+    - Munchly has been live since 1 Jul 2026, and its pilot quarter (Q2 FY27) holds 12 cleared batches: 7 sold through, 3 left at the godown at full credit, 2 donated;
+    - the six SKUs without a cost sheet are priced at the chips' ratios;
+    - the full-credit expiry note stays without GST;
+    - the Mango Drink's input GST stays ₹0.55, labelled estimated;
+    - Priya gets the same design.
+  - **The stories:** SC-121 (the design, then its build), SC-122 (the figures), SC-123 (the history), SC-124 (the live figures).
+- **SC-121** (In Progress, branch `SC-121-finance-esg-redesign`; design): three options on one board in app v3, `SC-121 design review.html`:
+  - A, one ledger;
+  - B, close the quarter;
+  - C, the year as a timeline.
+
+  The maintainer picked **A**, with Paperwork as it is (the batch's Papers tab), invoices and receipts as downloadable PDFs, the BRSR export and the reports, and every figure at batch, quarter and year level. Designs, the history's figures (`sc121-data.js`) and the decision are in `design3/designs/SC-121/`.
+- **SC-122** (In Review, branch `SC-122-realised-figures`): the figures follow what happened.
+  - **Found by the audit of 9 Oct:**
+    - after the leftover run the screens read the plan: ₹1,224 kept and 217.6 kg, where the ledger has ₹1,094.40 and 194.56 kg;
+    - the ITC memo was stamped "ITC KEPT" with nothing reversed, and the destruction certificate counted 0;
+    - `realised` left the packs left at the godown out of the ITC reversal and kept the plan's costs avoided;
+    - the ledger's lines carried the plan's ExpireSoon price, and a batch with no lot had no swing;
+    - "Better for Munchly" left out a donation's own costs (₹60.90 on the Mango Drink).
+  - **The rules** (money.js and money.py, held by fixtures):
+    - `realised(…, policy)`: under full credit the client destroys the packs that came back, so their credit is reversed and the costs avoided leave them out; under price support or no returns the distributor destroys his own, and the client keeps its credit;
+    - `destroyed` counts what the client destroys;
+    - `actualNet` always gives a swing and a P&L;
+    - `documents`: the ITC memo carries `reversed`, the packs sold and those given away or destroyed, and says so; the destruction certificate counts what the client destroys.
+  - **backend-api:**
+    - `steps.realised` and the case view pass the client's expiry policy;
+    - the ledger carries `swing`, `pnl`, `itcReversed` and `destroyed`, its lines with the ExpireSoon lot at its award price (`atAward`), adding up to the net;
+    - the expiry settlement brings the drafted memo and certificate up to date.
+  - **agents:** Impact takes a line at its award price as it is.
+  - **The papers** (design3 first, then core):
+    - the memo reads the paper's own figures, stamps "ITC PART REVERSED" when credit was reversed, and says an SKU without a cost sheet has its credit estimated;
+    - the certificate counts the packs destroyed, with their credit reversed;
+    - Who keeps what takes a donation's handling and credit off "Better for Munchly", so it is the ledger's swing.
+  - **Checks:**
+    - backend-api 497 passed, 1 skipped (a new test of the leftover ledger);
+    - agents 194 (a new test of a line at its award price);
+    - the frontend gate passes: core 249 (the memo's golden, "Input GST kept"), api 77, workspace 67, admin 17, demo 5, console 3;
+    - the live fixtures and the seeds were regenerated.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

@@ -662,7 +662,7 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
     lines_state = {"offer": case.offer, "award": case.award, "listing": case.listing}
     lines_state |= {"staff": case.staff, "donation": case.donation}
     done = J.done_units(lines_state, sum(o.units for o in orders_all))
-    real = money.realised(case.plan, world.sku_obj(x), done, rules=rules) if case.plan else None
+    real = money.realised(case.plan, world.sku_obj(x), done, None, c.expiry, rules=rules) if case.plan else None
     settled = case.phase in ("dispatched", "settled", "cleared")
     es = copy.line(case.plan or {}, "expiresoon")
     actual = None

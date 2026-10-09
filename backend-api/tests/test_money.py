@@ -54,8 +54,8 @@ def test_rules_and_channels_are_money_js():
 def test_every_case_is_here():
     assert len(F["plans"]) == 15
     assert {c["plan"]["batch"] for c in F["plans"][:9]} == {b["id"] for b in load("journey.json")["batches"]}
-    assert (len(F["counter"]), len(F["writeOff"]), len(F["award"]), len(F["realised"])) == (24, 3, 3, 9)
-    assert (len(F["mealsOf"]), len(F["receipt"]), len(F["documents"])) == (12, 2, 3)
+    assert (len(F["counter"]), len(F["writeOff"]), len(F["award"]), len(F["realised"])) == (24, 3, 3, 12)
+    assert (len(F["mealsOf"]), len(F["receipt"]), len(F["documents"])) == (12, 2, 4)
     assert {k: len(v) for k, v in F["fmt"].items()} == {
         "num": 6,
         "inr": 8,
@@ -113,10 +113,15 @@ def test_actual_net(case):
 
 
 @pytest.mark.parametrize(
-    "case", F["realised"], ids=lambda c: f"{c['plan']['batch']}:{c['done']}:{(c.get('mealsRule') or {}).get('rule')}"
+    "case",
+    F["realised"],
+    ids=lambda c: f"{c['plan']['batch']}:{c['done']}:{(c.get('mealsRule') or {}).get('rule')}:{c.get('policy')}",
 )
 def test_realised(case):
-    same(m.realised(case["plan"], case["sku"], case["done"], case.get("mealsRule")), case["out"])
+    same(
+        m.realised(case["plan"], case["sku"], case["done"], case.get("mealsRule"), case.get("policy") or "full-credit"),
+        case["out"],
+    )
 
 
 def test_a_plan_done_as_planned_is_the_plan():
@@ -124,7 +129,7 @@ def test_a_plan_done_as_planned_is_the_plan():
     that collected counts by its own rule (SC-110)"""
     for case in F["realised"]:
         if case["out"]["godown"] == 0:
-            skip = {"godown", "meals"} if case.get("mealsRule") else {"godown"}
+            skip = {"godown", "destroyed", "meals"} if case.get("mealsRule") else {"godown", "destroyed"}
             assert {k: v for k, v in case["out"].items() if k not in skip} == {
                 k: v for k, v in case["plan"].items() if k not in skip
             }

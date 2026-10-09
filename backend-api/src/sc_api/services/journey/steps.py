@@ -172,11 +172,13 @@ async def _orders(ctx: Ctx, s: Scene) -> list[m.CaseOrder]:
 
 async def realised(ctx: Ctx, s: Scene) -> dict[str, Any]:
     """the plan as its finished lines came to (money.realised): what was ordered, awarded, sold and collected, with
-    the meals counted by the rule of the food bank that collected (SC-110)"""
+    the meals counted by the rule of the food bank that collected (SC-110), and the packs left at the godown settled
+    by the client's expiry policy (SC-122)"""
     ordered = sum(o.units for o in await _orders(ctx, s))
     bank = await _bank(ctx, s)
     rule = bank.details.get("meals") if bank else None
-    return money.realised(s.case.plan or {}, s.sku_obj(), J.done_units(_state(s.case), ordered), rule, rules=s.rules)
+    done = J.done_units(_state(s.case), ordered)
+    return money.realised(s.case.plan or {}, s.sku_obj(), done, rule, s.c.expiry, rules=s.rules)
 
 
 async def _bank(ctx: Ctx, s: Scene) -> m.Partner | None:
@@ -1869,12 +1871,13 @@ async def _settle_expiry(ctx: Ctx, s: Scene, plan_: dict[str, Any]) -> dict[str,
         "date": _today(ctx, s.c).isoformat(),
     }
     docs = [dict(d) for d in (s.case.docs or [])]
+    # the papers drafted before expiry day count again what the client destroys and the credit it reverses (SC-122)
+    destroyed = int(plan_.get("destroyed", plan_.get("leftover", 0)))
     for d in docs:
-        if d["id"] == "destruction" and settle["destroyedBy"] == "client":
-            n = int(plan_.get("leftover", 0)) + godown
-            d.update({"no": f"{n} units", "status": "generated", "units": n})
-        if d["id"] == "itc" and settle["itc"]:
-            d["reversed"] = settle["itc"]
+        if d["id"] == "destruction" and destroyed:
+            d.update({"no": f"{destroyed} units", "status": "generated", "units": destroyed})
+        if d["id"] == "itc":
+            d.update({"amount": plan_["itcRetained"], "reversed": plan_["itcReversed"]})
     s.case.docs = money.jsonable([*docs, paper])
     return settle
 
@@ -1889,17 +1892,30 @@ async def report(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> dict[st
     plan_ = await realised(ctx, s)  # what the lines came to; what no channel took stays at the godown
     settle = await _settle_expiry(ctx, s, plan_)  # and expires, settled by the client's expiry policy (SC-94)
     award = s.case.award
-    actual = money.actual_net(plan_, award["price"]) if award else {"net": plan_.get("net", 0)}
+    # every batch's ledger carries its swing and P&L, with or without an ExpireSoon lot (SC-122)
+    actual = money.actual_net(plan_, award["price"]) if award else money.actual_net(plan_, 0)
     at = ev.now(ctx, s.c)
     return_by = (s.batch.best_before - timedelta(days=s.c.return_window_days)).isoformat()
+
+    # the lines as they came to, the ExpireSoon lot at its award price, so they add up to the net (SC-122)
+    def at_award(ln: dict[str, Any]) -> dict[str, Any]:
+        if ln["id"] != "expiresoon" or not award:
+            return ln
+        gross = money.r2(ln["units"] * award["price"])
+        return {**ln, "price": award["price"], "gross": gross, "net": money.r2(gross - ln["cost"]), "atAward": True}
+
     ledger = money.jsonable(
         {
             "net": actual["net"],
+            "swing": actual["swing"],
+            "pnl": actual["pnl"],
             "kg": plan_.get("kg", 0),
             "co2": plan_.get("co2", 0),
             "meals": plan_.get("meals", 0),
             "itc": plan_.get("itcRetained", 0),
-            "lines": plan_.get("lines", []),
+            "itcReversed": plan_.get("itcReversed", 0),
+            "destroyed": plan_.get("destroyed", plan_.get("leftover", 0)),
+            "lines": [at_award(ln) for ln in plan_.get("lines", [])],
             "planned": (s.case.plan or {}).get("lines", []),
             "godown": plan_.get("godown", 0),
             "expiry": settle,

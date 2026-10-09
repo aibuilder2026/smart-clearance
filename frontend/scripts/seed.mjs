@@ -505,8 +505,13 @@ const moneyFixtures = (() => {
 				sku: D.SKUS.mango,
 				done: { kirana: 240, staff: 120, foodbank: 58 },
 				mealsRule: D.SETUP.partners[1].meals
-			}
-		].map((c) => ({ ...c, out: M.realised(c.plan, c.sku, c.done, c.mealsRule) })),
+			},
+			// SC-122: the packs left at the godown under each expiry policy: under full credit the client destroys them and
+			// reverses their credit; otherwise the distributor destroys his own, and the client keeps its credit
+			{ plan: heroPlan, sku: D.SKUS.chips, done: { kirana: 444, expiresoon: 772 }, policy: 'full-credit' },
+			{ plan: heroPlan, sku: D.SKUS.chips, done: { kirana: 444, expiresoon: 772 }, policy: 'price-support' },
+			{ plan: heroPlan, sku: D.SKUS.chips, done: { kirana: 444, expiresoon: 772 }, policy: 'none' }
+		].map((c) => ({ ...c, out: M.realised(c.plan, c.sku, c.done, c.mealsRule, c.policy) })),
 		// SC-110: each food bank's meals rule, and its receipt for what it collected
 		mealsOf: [
 			[58, 'mango'],
@@ -566,6 +571,19 @@ const moneyFixtures = (() => {
 		// money.js numbers the story's invoice and credit note itself; the port takes the numbers as arguments
 		documents: [
 			{ plan: heroPlan, sku: D.SKUS.chips, award, support, parties },
+			// SC-122: the leftover run's pack: 144 packs came back for full credit, so the memo reverses their credit and
+			// the destruction certificate counts them
+			{
+				plan: M.realised(heroPlan, D.SKUS.chips, { kirana: 444, expiresoon: 772 }),
+				sku: D.SKUS.chips,
+				award,
+				support: M.priceSupport(
+					M.realised(heroPlan, D.SKUS.chips, { kirana: 444, expiresoon: 772 }),
+					D.SKUS.chips,
+					14.2
+				),
+				parties
+			},
 			{ plan: mangoPlan, sku: D.SKUS.mango, award: null, support: M.priceSupport(mangoPlan, D.SKUS.mango), parties },
 			// SC-110: a donated batch's pack carries the food bank's receipt
 			{

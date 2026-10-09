@@ -16,6 +16,10 @@
 	const credit = $derived(x?.credit ?? 0);
 	const settled = $derived(x?.total ?? 0);
 	const recv = $derived(c.support.rows.reduce((t, r) => t + r.units * r.price, 0) + c.support.total);
+	// a donation costs the client its handling and the credit given away with it, which the ledger's swing counts too
+	// (SC-122: the Mango Drink's ₹60.90)
+	const gift = $derived(c.plan.lines.find((l) => l.id === 'foodbank' && l.units > 0));
+	const given = $derived(gift ? gift.cost + gift.itcLoss : 0);
 	const paid = $derived(c.plan.units * dp + c.support.van + c.support.fee);
 	const W = $derived(ws.data.workspace);
 </script>
@@ -51,9 +55,14 @@
 					>{fmt.inr(-settled)}</span
 				>
 			</div>{/if}
+		{#if gift && given > 0}<div class="row between">
+				<span>and the donation's handling and credit, {fmt.num(gift.units)} packs</span><span class="tnum neg"
+					>{fmt.inr(-given)}</span
+				>
+			</div>{/if}
 		<div class="row between">
 			<b>Better for {W.short}</b><Money
-				value={c.claim.total - c.support.total - settled}
+				value={c.claim.total - c.support.total - settled - given}
 				size="s"
 				style="color: var(--primary-text); font-size: 22px"
 			/>
