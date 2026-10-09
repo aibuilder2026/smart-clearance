@@ -11,6 +11,7 @@ from sqlalchemy import select
 from sc_api import models as m
 from sc_api.domain import copy
 from sc_api.domain.clock import IST
+from sc_api.services.journey import views
 from sc_api.services.reference import load
 from tests.conftest import NEHA, token
 
@@ -23,8 +24,6 @@ HERO = "MF-2409-117"
 MANGO = "MF-2410-118"
 
 PRIYA = token("priya.deshmukh@munchly.example")
-ANITA = token("anita.rao@munchly.example")
-VIKRAM = token("vikram.sethi@munchly.example")
 ARJUN = token("arjun.nair@munchly.example")
 RAKESH = token("rakesh-traders@google.example")
 GANESH = token("shree-ganesh-kirana@google.example")
@@ -124,6 +123,22 @@ async def test_the_workspace_signs_its_members_in(api, munchly):
     assert (await api.get(f"{WS}/snapshot")).status_code == 401
 
 
+async def test_a_member_whose_role_went_is_not_signed_in(api, munchly, ctx):
+    """SC-127: production's Anita and Vikram keep their Finance and ESG roles, which have no permissions any more, until
+    a Reset journey takes them out of the workspace; until then they are refused, as anyone not a member is"""
+    arjun = (
+        await ctx.session.execute(
+            select(m.ClientMember).where(m.ClientMember.client_id == "munchly", m.ClientMember.ref == "arjun")
+        )
+    ).scalar_one()
+    arjun.workspace_role = "finance"
+    await ctx.session.commit()
+    r = await api.post(f"{WS}/session", headers=ARJUN)
+    assert r.status_code == 403 and r.json()["message"] == views.NOT_A_MEMBER
+    assert (await api.get(f"{WS}/snapshot", headers=ARJUN)).status_code == 403
+    assert (await api.post(f"{WS}/session", headers=PRIYA)).status_code == 200
+
+
 async def test_every_member_is_on_email_and_the_right_domain(ctx, munchly):
     rows = (
         await ctx.session.execute(
@@ -196,8 +211,8 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     assert [f["key"] for f in c["feed"]][-2:] == ["route", "notify"] == [f["key"] for f in want["feed"]]
     assert c["plan"]["explanation"] == next(e for e in J["copy"]["events"] if e["key"] == "route")["text"]
 
-    # approve: only the approver, once
-    assert (await api.post(f"{WS}/cases/{HERO}/approval", json={"device": "phone"}, headers=ANITA)).status_code == 403
+    # approve: only the approver, once (the workspace's admin may not)
+    assert (await api.post(f"{WS}/cases/{HERO}/approval", json={"device": "phone"}, headers=ARJUN)).status_code == 403
     r = await api.post(f"{WS}/cases/{HERO}/approval", json={"device": "phone"}, headers=PRIYA)
     assert r.status_code == 200 and r.json()["case"]["journey"]["plan"]["status"] == "approved"
     assert (await api.post(f"{WS}/cases/{HERO}/approval", json={"device": "phone"}, headers=PRIYA)).status_code == 409
@@ -272,10 +287,10 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
         headers=AGENT,
     )
     assert r.status_code == 200, r.text
-    c = await case(api, ANITA)
+    c = await case(api, PRIYA)
     docs = {d["id"]: d for d in c["docs"]}
     assert docs["invoice"]["pdf"] is True and docs["support"]["pdf"] is False
-    assert (await api.get(f"{WS}/documents/{HERO}/invoice", headers=ANITA)).status_code == 200
+    assert (await api.get(f"{WS}/documents/{HERO}/invoice", headers=PRIYA)).status_code == 200
     assert docs["invoice"]["no"] == "INV/26-27/0931" and docs["invoice"]["total"] == 11510
     assert {k: docs["invoice"][k] for k in invoice} == invoice  # the paper is the bill the buyer saw
     assert docs["support"]["no"] == "CN/0117" and docs["support"]["amount"] == 8768
@@ -291,7 +306,7 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     assert van.date() == papers + timedelta(days=1) and van < window  # the scheme filled early: not the window's day
     assert seen["push"]["van"]["title"] == f"Van route for {van:%A}"
     assert (await api.post(f"{WS}/cases/{HERO}/documents/invoice/issue", headers=RAKESH)).status_code == 200
-    assert (await api.post(f"{WS}/cases/{HERO}/review", headers=ANITA)).status_code == 200
+    assert (await api.post(f"{WS}/cases/{HERO}/review", headers=PRIYA)).status_code == 200
     assert (await api.post(f"{WS}/cases/{HERO}/dispatches", json={"kind": "van"}, headers=RAKESH)).status_code == 200
     # and in the timeline, once it has run
     ran = next(f for f in (await case(api, PRIYA))["feed"] if f["key"] == "van")
@@ -309,12 +324,12 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     story = [e["key"] for e in J["copy"]["events"] if e["key"] not in ("permit", "donate")]
     # the same entries as design3's timeline (here every kirana ordered before the bid, so two swap places)
     assert sorted(keys) == sorted(story) and keys[:9] == story[:9]
-    # the ledger takes the batch into the story's quarter, and tells those who read it (SC-124)
-    ledger = (await api.get(f"{WS}/ledger", headers=ANITA)).json()
+    # the ledger takes the batch into the story's quarter, and tells those who read it (SC-124): the operator (SC-127)
+    ledger = (await api.get(f"{WS}/ledger", headers=PRIYA)).json()
     q3 = next(p for p in ledger["periods"] if p["id"] == "fy27-q3")
     assert [b["ref"] for b in ledger["batches"]] == [HERO] and q3["current"] and q3["totals"]["batches"] == 1
     assert q3["totals"]["net"] == c["ledger"]["figures"]["net"] == out["ledger"]["net"]
-    heard = (await api.get(f"{WS}/events?after=0", headers=ANITA)).json()["events"]
+    heard = (await api.get(f"{WS}/events?after=0", headers=PRIYA)).json()["events"]
     assert any(e["type"] == "ledger" and e["ref"] == HERO for e in heard)
     rakesh = (await api.get(f"{WS}/events?after=0", headers=RAKESH)).json()["events"]
     assert not [e for e in rakesh if e["type"] == "ledger"]
@@ -504,9 +519,9 @@ async def test_the_food_bank_issues_its_receipt_as_it_collects(api, munchly, clo
     r = await api.post(f"{WS}/cases/{MANGO}/staff-sale", json={"sold": 150}, headers=LAKSHMI)
     assert r.json()["case"]["journey"]["phase"] == "dispatched"
     await agent(api, f"/cases/{MANGO}/documents", "paperwork-m", "paperwork")
-    ids = [d["id"] for d in (await case(api, ANITA, MANGO))["docs"]]
+    ids = [d["id"] for d in (await case(api, PRIYA, MANGO))["docs"]]
     assert ids[ids.index("fssai") + 1] == "receipt"
-    paper = next(d for d in (await case(api, ANITA, MANGO))["docs"] if d["id"] == "receipt")
+    paper = next(d for d in (await case(api, PRIYA, MANGO))["docs"] if d["id"] == "receipt")
     assert (paper["no"], paper["date"], paper["pdf"], paper["meals"]) == (mine["no"], mine["date"], True, 58)
     # each sees its own cut: the food bank its receipt, the distributor none
     assert [d["id"] for d in (await case(api, MEERA, MANGO))["docs"]] == ["receipt"]

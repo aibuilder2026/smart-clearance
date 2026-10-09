@@ -1,7 +1,7 @@
 // Smart-Clearance v3 · Finance & ESG (SC-121, option A): one ledger with three readings, Money, GST and Impact, for a
 // quarter or the year so far, and each cleared batch's own page with its money, its papers as Paperwork drafted them
-// and its impact. Anita opens on the GST reading, Vikram on Impact, Priya on Money. The papers (S5 Paperwork) are the
-// batch page's Papers tab; the operator's batch page keeps Paperwork as one of its screens (SC-112)
+// and its impact. Priya reads it all (SC-127). The papers (S5 Paperwork) are the batch page's Papers tab; the
+// operator's batch page keeps Paperwork as one of its screens (SC-112)
 (function () {
   const { useState, useEffect, useMemo, useRef, Fragment } = React;
   const { motion, AnimatePresence, useReducedMotion } = Motion;
@@ -157,7 +157,7 @@
           main={<><SectionTitle sub="Generated, drafted or not required, each with its reason" right={<span className="row tight"><Button variant="secondary" size="sm" icon="download" onClick={exportPack}>Export</Button>{h.reviewed ? <Badge tone="green" icon="check">reviewed</Badge> : <Button variant="primary" size="sm" icon="check" onClick={() => { Flow.act("review"); toast({ text: "Pack reviewed · logged", tone: "ok" }); }}>Mark reviewed</Button>}</span>}>Document pack</SectionTitle>
             <div className="docgrid">{c.docs.map(d => <div key={d.id} className={cx("docpick", sel === d.id && app.bp === "desktop" && "on")}><DocCard doc={d} onOpen={() => open(d.id)} /></div>)}</div>
             <KeepsWhat c={c} />
-            {!c.history && invoice && support && <Card className="row top" style={{ gap: 14, background: "var(--surface-2)" }}><span className="icontile"><Icon name="quote" size={17} /></span><div><p className="t-body" style={{ margin: 0 }}>Credit note, GST memo, and {his}'s invoice attached as evidence. First batch this year with nothing for me to chase.</p><span className="t-footnote subtle">Anita · finance</span></div></Card>}</>}
+</>}
           side={app.bp === "desktop" && doc ? <><SectionTitle sub={doc.owner === D.CLIENT.short ? `Issued by ${W.short}` : `Drafted for ${c.dist.name}`} right={pdfButton(paperRef)}>{doc.type}</SectionTitle><AnimatePresence mode="wait"><motion.div key={sel} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}><div ref={paperRef}><Paper id={sel} c={c} /></div></motion.div></AnimatePresence></> : null} />
       </div>}
       <Sheet open={sheet} onClose={() => setSheet(false)} title={doc ? doc.type : ""} footer={pdfButton(sheetRef)}><div ref={sheetRef}><Paper id={sel} c={c} /></div></Sheet>
@@ -172,7 +172,6 @@
 
   /* ---------- the ledger ---------- */
   const READINGS = [{ id: "money", label: "Money", icon: "coins" }, { id: "gst", label: "GST", icon: "badge-check" }, { id: "impact", label: "Impact", icon: "leaf" }];
-  const START = { finance: "gst", sustainability: "impact" };
   const OUTCOME = { sold: { label: "Sold through", tone: "green", icon: "check" }, leftover: { label: "Left at the godown", icon: "warehouse" }, donation: { label: "Donated", icon: "heart-handshake" } };
   const OutcomeBadge = ({ o, size }) => { const x = OUTCOME[o]; return x ? <Badge size={size} tone={x.tone} icon={x.icon}>{x.label}</Badge> : null; };
   const valueOf = (r, reading) => (reading === "money" ? r.figures.net : reading === "gst" ? r.figures.itcKept : r.figures.kg);
@@ -283,7 +282,7 @@
     const book = useMemo(() => LG().ledger(s), [s.hero.posted, s.hero.phase, s.mango.phase]);
     const year = book.periods.find(x => x.kind === "year" && x.current) || book.periods[book.periods.length - 1];
     const [pid, setPid] = useState(year.id); const p = book.periods.find(x => x.id === pid) || year;
-    const [reading, setReading] = useState(START[me.role] || "money");
+    const [reading, setReading] = useState("money");
     const list = book.batches.filter(r => r.cleared >= p.from && r.cleared <= p.to);
     const open = r => go("report", { ref: r.ref });
     const flying = p.current ? book.inFlight : [];
@@ -311,7 +310,6 @@
 
   /* ---------- a batch's own page ---------- */
   const TABS = [{ id: "money", label: "Money", icon: "coins" }, { id: "papers", label: "Papers", icon: "file-text" }, { id: "impact", label: "Impact", icon: "leaf" }];
-  const FIRST = { finance: "papers", sustainability: "impact" };
   const Row = ({ k, sub, v, tone, strong }) => <div className={cx("lg-line", strong && "strong")}><span>{k}{sub && <em> {sub}</em>}</span><span className={cx("tnum", tone)}>{v}</span></div>;
   const NotPosted = ({ h }) => <Locked icon="book-open-check" agent="Impact agent" live={h.phase === "settled" && h.van && h.van.status === "done"} text={`Posts the batch to the ledger once the return window closes on ${fmt.day(D.RETURN_BY)}, and writes the BRSR row with evidence links.`} />;
 
@@ -372,7 +370,7 @@
     const s = useStore(); const app = useApp(); const phone = app.bp === "phone";
     const c = LG().caseOf(at);
     const story = !c.history, h = story ? s.hero : CLEARED, row = !story || s.hero.posted ? LG().rowOf(c) : null;
-    const [tab, setTab] = useState(tab0 || FIRST[me.role] || "money");
+    const [tab, setTab] = useState(tab0 || "money");
     const head = <div className="bhead">
       <div className="bh-id"><span className="bh-pic" aria-hidden="true"><Product name={c.sku.img} size={phone ? 46 : 72} alt="" /></span>
         <div className="bh-tt"><h1>{c.sku.name}</h1>

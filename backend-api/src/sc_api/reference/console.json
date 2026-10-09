@@ -304,7 +304,7 @@
 				"title": "Connect",
 				"human": false,
 				"time": "once",
-				"who": "Priya and Anita set the guardrails; Rakesh bhai gives a one-time permission"
+				"who": "Priya sets the guardrails; Rakesh bhai gives a one-time permission"
 			},
 			{
 				"id": "detect",
@@ -353,14 +353,14 @@
 				"title": "Settle",
 				"human": false,
 				"time": "day 3⁠–⁠7",
-				"who": "Rakesh bhai issues his invoice and dispatches; Anita reviews Munchly's papers"
+				"who": "Rakesh bhai issues his invoice and dispatches; Priya reviews Munchly's papers"
 			},
 			{
 				"id": "report",
 				"title": "Report",
 				"human": false,
 				"time": "after 29 Oct",
-				"who": "Vikram, Anita and the CFO"
+				"who": "Priya and the CFO"
 			}
 		],
 		"defaults": {
@@ -624,32 +624,6 @@
 						"img": "sc3img:/people/p-ganesh.webp",
 						"email": "",
 						"phone": "+91 98230 55120"
-					},
-					{
-						"id": "anita",
-						"name": "Anita Rao",
-						"org": "Munchly Foods",
-						"role": "Finance & GST",
-						"kind": "Finance & GST",
-						"access": "Member",
-						"provider": "Google",
-						"status": "active",
-						"img": "sc3img:/people/p-anita.webp",
-						"email": "anita.rao@munchly.in",
-						"phone": ""
-					},
-					{
-						"id": "vikram",
-						"name": "Vikram Sethi",
-						"org": "Munchly Foods",
-						"role": "Sustainability & BRSR",
-						"kind": "Sustainability & BRSR",
-						"access": "Member",
-						"provider": "Google",
-						"status": "active",
-						"img": "sc3img:/people/p-vikram.webp",
-						"email": "vikram.sethi@munchly.in",
-						"phone": ""
 					},
 					{
 						"id": "meera",

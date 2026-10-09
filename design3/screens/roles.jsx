@@ -12,17 +12,13 @@
     distributor: [{ id: "home", label: "Today", icon: "house" }, { id: "photo", label: "Label photo", short: "Photo", icon: "camera" }, { id: "van", label: "Van route", short: "Van", icon: "truck" }, { id: "orders", label: "Orders", icon: "clipboard-list" }],
     retailer: [{ id: "home", label: "Offers", icon: "tag" }, { id: "orders", label: "Orders", icon: "shopping-basket" }],
     buyer: [{ id: "market", label: "Marketplace", short: "Market", icon: "store" }, { id: "bids", label: "My bids", short: "Bids", icon: "gavel" }],
-    // Finance & ESG (SC-121): the ledger, where each cleared batch opens its own page with its papers
-    finance: [{ id: "report", label: "Ledger", icon: "book-open" }, { id: "batches", label: "Batches", icon: "boxes" }],
-    sustainability: [{ id: "report", label: "Ledger", icon: "book-open" }, { id: "batches", label: "Batches", icon: "boxes" }],
     foodbank: [{ id: "pickups", label: "Pickups", icon: "heart-handshake" }],
     admin: [{ id: "workspace", label: "Workspace", icon: "building-2" }, { id: "users", label: "Users", icon: "users" }, { id: "rules", label: "Guardrails", icon: "shield" }, { id: "integrations", label: "Integrations", short: "Apps", icon: "plug", phoneHidden: true }, { id: "audit", label: "Audit log", short: "Audit", icon: "scroll-text" }],
   };
-  const HOME = { operator: "command", distributor: "home", retailer: "home", buyer: "market", finance: "report", sustainability: "report", foodbank: "pickups", admin: "workspace" };
+  const HOME = { operator: "command", distributor: "home", retailer: "home", buyer: "market", foodbank: "pickups", admin: "workspace" };
   const PARENT = { listing: "market", offer: "home" };
   const ALWAYS = ["inbox", "profile"];
-  // finance and sustainability keep `paperwork`, the story's batch's papers, for the pushes and the guided demo
-  const routesFor = role => NAV[role].map(n => n.id).concat(ALWAYS, role === "buyer" ? ["listing"] : role === "retailer" ? ["offer"] : role === "operator" ? ["journey", "route", "execution", "paperwork"] : role === "finance" || role === "sustainability" ? ["paperwork"] : []);
+  const routesFor = role => NAV[role].map(n => n.id).concat(ALWAYS, role === "buyer" ? ["listing"] : role === "retailer" ? ["offer"] : role === "operator" ? ["journey", "route", "execution", "paperwork"] : []);
   // the batches in a journey the sidebar lists by name and stop, before "N more" takes the rest to Batches
   const SIDEBAR_BATCHES = 5;
   const WHERE = { command: "Command Center", batches: "Batches", inbox: "Inbox", report: "Ledger", setup: "Setup", profile: "Profile" };
@@ -36,7 +32,7 @@
       case "batches": return <X.Batches me={me} />;
       case "setup": return <X.Setup me={me} />;
       case "report": return <X.Report me={me} />;
-      case "paperwork": return r === "operator" ? <X.Paperwork me={me} /> : <X.Report me={me} at={{ ref: (opts && opts.ref) || D.BATCHES[0].id, tab: "papers" }} />;
+      case "paperwork": return <X.Paperwork me={me} />;
       case "home": return r === "retailer" ? <X.RetailHome me={me} /> : <X.DistHome me={me} />;
       case "photo": return <X.CameraScreen me={me} realCamera={opts && opts.realCamera} />;
       case "van": return <X.VanRoute me={me} />;
@@ -104,7 +100,7 @@
     const body = <Shell nav={nav} current={current} onNav={onNav} user={display} onUser={() => onGo({ name: "profile" })} ws={inside ? W : null} onWorkspace={() => setWsOpen(true)} brand={me.role === "buyer" ? <EsBrand /> : undefined} brandMark={me.role === "buyer" ? <span className="es-logo" style={{ width: 36, height: 36, borderRadius: 11 }}><Icon name="hourglass" size={18} stroke={2.2} /></span> : undefined}>
       {pushStep ? <S.Live.PushStep me={me} home={(nav.find(n => n.id === HOME[me.role]) || nav[0]).label} {...pushStep} /> : <AnimatePresence mode="wait" initial={false}>
         <motion.div key={bp.inBatch ? "batch:" + bp.v.id : safe + (ref || "")} ref={top} className={bp.inBatch ? "bpage" : undefined} initial={reduce ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={reduce ? undefined : { opacity: 0 }} transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}>
-          {bp.inBatch ? <S.BatchCtx.Provider value={frame}><S.BatchPart me={me} it={bp.it} v={bp.v} part={bp.part} /></S.BatchCtx.Provider> : screenFor(me, safe, { realCamera, ref })}
+          {bp.inBatch ? <S.BatchCtx.Provider value={frame}><S.BatchPart me={me} it={bp.it} v={bp.v} part={bp.part} /></S.BatchCtx.Provider> : screenFor(me, safe, { realCamera })}
         </motion.div>
       </AnimatePresence>}
     </Shell>;

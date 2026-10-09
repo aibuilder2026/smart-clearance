@@ -18,13 +18,11 @@ Smart-Clearance is sold to manufacturers as software as a service. Each client g
 
 ## Users
 
-- **Priya Deshmukh**, supply chain at Munchly Foods, Pune. On her phone at 09:00 with chai, or at her desk. Job: decide what happens to short-dated stock before it is too late, with the money in front of her. Approves plans with one tap.
+- **Priya Deshmukh**, supply chain at Munchly Foods, Pune. On her phone at 09:00 with chai, or at her desk. Job: decide what happens to short-dated stock before it is too late, with the money in front of her. Approves plans with one tap. Reviews the papers the Paperwork agent drafts, and reads the ledger: the money, the GST credit and the BRSR line, batch by batch, quarter and year (SC-127: one operator does it all).
 - **Rakesh bhai**, owner of Rakesh Traders, Nagpur (distributor). He owns the stock he bought at ₹22 and supplies his kiranas and the Blinkit, Zepto and Instamart warehouses in Nagpur. Runs the godown and the van from his phone and signs in with his phone number. Job: give a one-time permission for the agent to act in his name (and pause it when he wants), send one label photo, run the van and load the buyer's truck, issue the drafted invoice, and end whole through Munchly's price support.
 - **Ganesh ji** and 37 other kirana owners (retailers, Nagpur cluster). Job: accept a Hindi scheme from a notification with one tap and see the order.
 - **Agrawal ji**, Agrawal Wholesale, Raipur (ExpireSoon buyer, outside every Munchly territory). Job: see dates and the label photo, bid, get a fair counter, pay a token. *(ExpireSoon is a mocked marketplace; buyers never sign in to the client's workspace.)*
-- **Anita Rao**, finance and GST at Munchly. Job: Munchly's price-support credit note and GST memo without chasing, with Rakesh's invoice as evidence.
-- **Vikram Sethi**, sustainability at Munchly. Job: a BRSR waste line with evidence an auditor can follow.
-- **Arjun Nair**, workspace admin at Munchly. Job: see how Munchly's workspace is set up (sign-in, supply-chain profile, branding), invite and deactivate people, set the guardrails the agents run by, watch the integrations and the audit log. The eighth demo account.
+- **Arjun Nair**, workspace admin at Munchly. Job: see how Munchly's workspace is set up (sign-in, supply-chain profile, branding), invite and deactivate people, set the guardrails the agents run by, watch the integrations and the audit log.
 - **Hackathon judges**: sign in as any role in demo mode and follow one batch end to end in about six minutes.
 
 ## Product Purpose
@@ -41,7 +39,7 @@ The only tool that combines the quick-commerce shelf-life gates (Blinkit 90+ day
 - Recommended split: 588 packets (24½ cartons) to the kirana cluster at ₹18 effective (₹21.60 a pack, 2 free with every 10), ordered by 31 of 38 shops; 772 packets (32 cartons + 4) on ExpireSoon at ₹15 in Rakesh Traders' name, reserve ₹13.50, hidden from buyers inside Munchly's territories; net ₹21,770 (53% of MRP), P&L +₹10, ₹26,340 better than the bin; GST credit ₹1,224 kept. Negotiation: Agrawal Wholesale bids ₹13, counter ₹14.20, accepted; 15% token ₹1,644; actual ₹21,152 net, a ₹25,722 swing. Rakesh's invoice to Raipur: IGST 5% ₹548, ₹11,510 in all. Munchly's price support to Rakesh: ₹8,768 instead of a ₹34,490 expiry claim. Day-7 shelf check; scheme returns until 29 Oct.
 - Second batch: Mango Drink, 22 days left, Lakshmi Agencies Hyderabad; 1,372 packs to her kiranas, 150 to her staff sale, 58 to Feeding India.
 - Workflow stages: connect (data, guardrails, the distributor's one-time permission), detect risk (daily 09:00 Watcher), verify (label photo read by Gemini), value (five exits including the bin), route (greedy allocation under caps), approve (one tap), execute (list in the distributor's name, push offer in Hindi, negotiate, book pickup), settle (the distributor's invoice draft, e-way bill check, price-support credit note, ITC memo, FSSAI checklist), report (ledger after the return window: ₹ recovered, ITC retained, kg diverted, CO₂e, meals; BRSR Principle 6 rows).
-- Devices: phones for Priya, Rakesh bhai and the retailers; laptops for Anita and Vikram; any browser for judges. Push notifications are the trigger for every human moment; WhatsApp is future scope.
+- Devices: phones for Priya, Rakesh bhai and the retailers; Priya's laptop for the papers and the ledger; any browser for judges. Push notifications are the trigger for every human moment; WhatsApp is future scope.
 - Languages: English, Hindi, Marathi strings (Paraglide). Retailer offers go out in Hindi.
 
 ## Capabilities and Constraints
@@ -52,7 +50,7 @@ The only tool that combines the quick-commerce shelf-life gates (Blinkit 90+ day
   - Distributor: Today (one-time permission with pause, the plan, the van, the Raipur lot, the invoice draft, ending whole), label photo camera, van route, orders.
   - Kirana: offers in Hindi with an English toggle, offer and order with margin, orders.
   - ExpireSoon buyer, in ExpireSoon's own violet look and outside the workspace: marketplace, lot ES-24117 with bid panel and seller chat, my bids (S4).
-  - Food bank: pickups with the FSSAI checklist. Finance: Paperwork with each document on paper and "who keeps what" (S5). Sustainability: Finance & ESG with BRSR export (S6).
+  - Food bank: pickups with the FSSAI checklist. The papers and the ledger are the operator's: Paperwork with each document on paper and "who keeps what" (S5), and the Ledger with the BRSR export (S6).
   - Admin: Workspace (sign-in, supply-chain profile, distributors, branding), users, guardrails, integrations, audit. Every role: inbox and profile.
   - The guided demo plays the nine journey stages as beats on a laptop (its address bar at munchly.smartclearance.com) and a phone running these screens, with both sign-ins in stage 1, lock-screen pushes and narration; the app adds sign-in, a person switcher and agents that run live.
 - Screens in design v2 (design2/, superseded): the sheet (Today), batch detail tabs, Approvals, Orders, Partners, Reports and the role surfaces of the label world.
@@ -88,7 +86,7 @@ Portraits of the people and the admin exist in docs/story-img/p-*.jpg and, cropp
 1. Show the money before asking for the yes; every number carries its working.
 2. One human tap releases execution; the agents do the running around and show their work as a timeline.
 3. Verify from the shelf, not the spreadsheet: the label photo is the source of truth.
-4. Every rupee, credit and kilo lands in one ledger that finance and sustainability both read.
+4. Every rupee, credit and kilo lands in one ledger, with the paper behind each, that the operator reads for the money, the GST and the BRSR line.
 5. Phone-first for the trade: the distributor and the retailer act from a notification in one tap, in their language, and nothing happens in the distributor's name without his permission.
 6. One product, many manufacturers: each client's workspace is set up for its own supply chain, and the client's brand never overrides the product's.
 

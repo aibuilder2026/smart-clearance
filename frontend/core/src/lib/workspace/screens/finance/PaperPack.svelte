@@ -10,12 +10,11 @@
 	import Skeleton from '../../../components/Skeleton.svelte';
 	import Tile from '../../../components/Tile.svelte';
 	import { cx } from '../../../cx';
-	import Icon from '../../../icons/Icon.svelte';
 	import { rise } from '../../../motion/transitions';
 	import { useNotice } from '../../../notice.svelte';
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
-	import { castOf, csv, download, first } from '../../model';
+	import { csv, download, first } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { CaseData, Hero } from '../../types';
 	import Locked from '../common/Locked.svelte';
@@ -40,7 +39,6 @@
 	const his = $derived(first(c.dist.short));
 	const W = $derived(ws.data.workspace);
 	const ready = $derived(!!h.docs);
-	const story = $derived(ws.case?.batch.id === c.batch.id);
 	// the pack opens on its first paper (SC-85: a batch with no buyer has no invoice); once a batch has expired, on its
 	// expiry paper (SC-94)
 	let picked = $state<string | null>(null);
@@ -111,17 +109,7 @@
 				<DocCard doc={d} onopen={() => open(d.id)} />
 			</div>{/each}
 	</div>
-	<KeepsWhat {c} />
-	{#if story && invoice && support}<Card class="row top" style="gap: 14px; background: var(--surface-2)"
-			><span class="icontile"><Icon name="quote" size={17} /></span>
-			<div>
-				<p class="t-body" style="margin: 0">
-					Credit note, GST memo, and {his}'s invoice attached as evidence. First batch this year with nothing for me to
-					chase.
-				</p>
-				<span class="t-footnote subtle">{castOf(ws.state, c).finance.short} · finance</span>
-			</div></Card
-		>{/if}{/snippet}
+	<KeepsWhat {c} />{/snippet}
 {#snippet sideRight()}{@render pdfButton(side)}{/snippet}
 {#snippet aside()}{#if app.bp === 'desktop' && doc}<SectionTitle
 			sub={doc.owner === ws.data.client.short ? `Issued by ${W.short}` : `Drafted for ${c.dist.name}`}

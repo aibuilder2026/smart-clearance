@@ -21,7 +21,7 @@ import { Run } from './record.ts';
 // Munchly Mango E2E (SC-104): the Mango Drink 200 ml batch (MF-2410-118, Lakshmi Agencies, Hyderabad) taken on from
 // wherever its journey stands to Impact's report, on the happy path, every person acting in the real UI in turn:
 // Lakshmi Agencies (the distributor), Priya (Supply Chain), each ordering Hyderabad kirana, Meera of Feeding India (the
-// food bank), Anita (Finance), Neha in the console and Vikram (ESG). The agents do the rest on live Gemini.
+// food bank), Neha in the console, and Priya again for the papers and the ledger (SC-127). The agents do the rest on live Gemini.
 //
 // It never resets the journey: each step reads the case first and is skipped when it is done, so the flow can be run
 // on a journey at any stage, and again after a failure. Its plan has three lines and no ExpireSoon lot (22 days left is
@@ -270,7 +270,7 @@ const STEPS: { id: string; title: string; run: (page: Page) => Promise<void> }[]
 			// before the others' (SC-115)
 			const pdfs = await until(
 				'Paperwork renders the PDFs',
-				'anita',
+				'priya',
 				(c) => c.docs.length > 0 && c.docs.filter((d) => d.status !== 'not required').every((d) => d.pdf)
 			);
 			for (const d of pdfs.docs) run.figure(`Paper: ${d.type}`, `${d.no || '—'} (${d.status}${d.pdf ? ', PDF' : ''})`);
@@ -305,10 +305,10 @@ const STEPS: { id: string; title: string; run: (page: Page) => Promise<void> }[]
 	},
 	{
 		id: 'review',
-		title: 'Anita reviews the pack: the credit note, the GST ITC memo and the FSSAI checklist',
+		title: 'Priya reviews the pack: the credit note, the GST ITC memo and the FSSAI checklist',
 		async run(page) {
-			const c = (await caseAs('anita'))!;
-			await as(page, 'anita', `/paperwork/${HERO}`, 'reads each paper, then marks the pack reviewed');
+			const c = (await caseAs('priya'))!;
+			await as(page, 'priya', `/paperwork/${HERO}`, 'reads each paper, then marks the pack reviewed');
 			for (const d of c.docs) {
 				const card = page.getByRole('button', { name: new RegExp(d.type) }).first();
 				if (!(await card.count())) {
@@ -322,7 +322,7 @@ const STEPS: { id: string; title: string; run: (page: Page) => Promise<void> }[]
 			if (c.journey.reviewed) return skip('the pack was reviewed');
 			await page.getByRole('button', { name: 'Mark reviewed' }).click();
 			await expect(page.getByText('reviewed', { exact: true })).toBeVisible();
-			await until('the review is recorded', 'anita', (c) => c.journey.reviewed, 30_000);
+			await until('the review is recorded', 'priya', (c) => c.journey.reviewed, 30_000);
 			await run.done('Pack reviewed');
 		}
 	},
@@ -355,22 +355,22 @@ const STEPS: { id: string; title: string; run: (page: Page) => Promise<void> }[]
 	},
 	{
 		id: 'esg',
-		title: "Vikram reads the Mango Drink's page in the ledger, and the year so far",
+		title: "Priya reads the Mango Drink's page in the ledger, and the year so far",
 		async run(page) {
-			// the batch's own page in the ledger, which Vikram opens on its impact (SC-121)
-			await as(page, 'vikram', `/report/${HERO}`, "reads the Mango Drink's page in the ledger: its BRSR line");
+			// the batch's own page in the ledger (SC-121), on its impact
+			await as(page, 'priya', `/report/${HERO}`, "reads the Mango Drink's page in the ledger: its BRSR line");
 			await expect(page.getByText('BRSR line')).toBeVisible();
 			await expect(page.getByText(/^posted · /)).toBeVisible();
 			await run.done('ESG: the batch posted to the ledger');
 			await page.mouse.wheel(0, 900);
 			await page.waitForTimeout(500);
 			await run.done('ESG: the BRSR line, the meals and the evidence');
-			await as(page, 'vikram', '/report', 'reads the ledger, the year so far');
+			await as(page, 'priya', '/report', 'reads the ledger, the year so far');
 			await expect(page.getByText('kept out of landfill')).toBeVisible();
 			await run.done('ESG: the ledger, the year in its Impact reading');
 			const l = await api<{ periods: { kind: string; current: boolean; totals: LedgerTotals }[] }>(
 				'workspace',
-				'vikram',
+				'priya',
 				`${WS}/ledger`
 			);
 			const y = l.periods.find((p) => p.kind === 'year' && p.current)!.totals;
@@ -383,13 +383,19 @@ const STEPS: { id: string; title: string; run: (page: Page) => Promise<void> }[]
 	},
 	{
 		id: 'close',
-		title: 'Anita finds the cleared batch on Batches and opens its papers; Priya sees it through',
+		title: 'Priya finds the cleared batch on Batches, opens its papers, and sees it through',
 		async run(page) {
-			await as(page, 'anita', '/batches', 'finds the Mango Drink cleared and opens its papers');
+			await as(page, 'priya', '/batches', 'finds the Mango Drink cleared and opens its papers');
 			const row = page.locator('tbody tr', { hasText: HERO });
 			await expect(row).toContainText('Cleared');
 			await run.done('Batches: the Mango Drink cleared');
+			// its page opens on its Journey, its papers a tab away (SC-112)
 			await row.click();
+			await expect(page).toHaveURL(new RegExp(`/journey/${HERO}`));
+			await page
+				.locator('.bh-tabs')
+				.getByRole('button', { name: /Paperwork|Papers/ })
+				.click();
 			await expect(page).toHaveURL(new RegExp(`/paperwork/${HERO}`));
 			await expect(page.getByText('reviewed', { exact: true })).toBeVisible();
 			await run.done("The Mango Drink's papers, processed");
@@ -412,7 +418,7 @@ test('Munchly Mango E2E: the Mango Drink batch, from where it stands, every pers
 		batch: 'MF-2410-118, Mango Drink 200 ml, Lakshmi Agencies, Hyderabad'
 	});
 	begin(run, HERO);
-	mint(['neha', 'priya', DIST, 'meera', 'anita', 'vikram', ...kiranasOf('lakshmi').map((k) => k.member)]);
+	mint(['neha', 'priya', DIST, 'meera', ...kiranasOf('lakshmi').map((k) => k.member)]);
 	const from = process.env.E2E_FROM ? STEPS.findIndex((s) => s.id === process.env.E2E_FROM) : 0;
 	const to = process.env.E2E_UNTIL ? STEPS.findIndex((s) => s.id === process.env.E2E_UNTIL) : STEPS.length - 1;
 	let error: string | undefined;

@@ -38,8 +38,6 @@ const SCREENS: [string, string][] = [
 	['agrawal', 'market'],
 	['agrawal', 'listing'],
 	['agrawal', 'bids'],
-	['anita', 'paperwork'],
-	['vikram', 'report'],
 	['meera', 'pickups'],
 	['arjun', 'workspace'],
 	['arjun', 'users'],

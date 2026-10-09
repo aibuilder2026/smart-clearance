@@ -2945,7 +2945,7 @@
 					"body": "Invoice draft to Agrawal Wholesale, Raipur: 772 × ₹14.20, IGST 5%, ₹11,510. Issue it from Tally. Munchly's price support of ₹8,768 is on its way."
 				},
 				{
-					"to": "anita",
+					"to": "priya",
 					"read": false,
 					"link": "paperwork",
 					"at": "Mon 5 Oct",
@@ -2959,7 +2959,7 @@
 			"stage": "settle",
 			"action": "review",
 			"arg": null,
-			"human": "anita",
+			"human": "priya",
 			"stageOf": 7,
 			"setup": {
 				"confirmed": true,
@@ -3238,7 +3238,7 @@
 			"notifications": [],
 			"audit": [
 				{
-					"who": "anita",
+					"who": "priya",
 					"what": "reviewed Munchly's credit note and GST memo",
 					"target": "MF-2409-117",
 					"at": "Mon 5 Oct"
@@ -3848,14 +3848,6 @@
 			],
 			"notifications": [
 				{
-					"to": "vikram",
-					"read": false,
-					"link": "report",
-					"at": "30 Oct",
-					"title": "Ledger posted · MF-2409-117",
-					"body": "217.6 kg diverted from disposal with invoices behind every kilo. The BRSR row is ready."
-				},
-				{
 					"to": "priya",
 					"read": false,
 					"link": "command",
@@ -3866,7 +3858,7 @@
 			],
 			"audit": [
 				{
-					"who": "vikram",
+					"who": "priya",
 					"what": "signed off the BRSR row",
 					"target": "MF-2409-117",
 					"at": "30 Oct"

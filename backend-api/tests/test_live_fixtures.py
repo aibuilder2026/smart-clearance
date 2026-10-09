@@ -13,7 +13,6 @@ import pytest
 
 from tests.test_workspace import (
     AGRAWAL,
-    ANITA,
     ARJUN,
     GANESH,
     HERO,
@@ -22,7 +21,6 @@ from tests.test_workspace import (
     MEERA,
     PRIYA,
     RAKESH,
-    VIKRAM,
     WS,
     J,
     agent,
@@ -40,8 +38,6 @@ WHO = {
     "ganesh": GANESH,
     "agrawal": AGRAWAL,
     "meera": MEERA,
-    "anita": ANITA,
-    "vikram": VIKRAM,
     "arjun": ARJUN,
     "lakshmi-owner": LAKSHMI,
 }
@@ -89,7 +85,7 @@ async def test_write_the_live_fixtures(api, munchly, cloud):
     )
     await agent(api, f"/cases/{HERO}/valuation", "valuer", "valuer")
     await agent(api, f"/cases/{HERO}/plan", "router", "router")
-    await _write(api, "planned", ["priya", "rakesh", "anita"])
+    await _write(api, "planned", ["priya", "rakesh"])
 
     assert (await api.post(f"{WS}/cases/{HERO}/approval", json={"device": "phone"}, headers=PRIYA)).status_code == 200
     await agent(api, f"/cases/{HERO}/listing", "lister", "lister")
@@ -128,7 +124,7 @@ async def test_write_the_live_fixtures(api, munchly, cloud):
     assert (await api.post(f"{WS}/cases/{HERO}/dispatches", json={"kind": "truck"}, headers=RAKESH)).status_code == 200
     await agent(api, f"/cases/{HERO}/documents", "paperwork", "paperwork")
     assert (await api.post(f"{WS}/cases/{HERO}/documents/invoice/issue", headers=RAKESH)).status_code == 200
-    assert (await api.post(f"{WS}/cases/{HERO}/review", headers=ANITA)).status_code == 200
+    assert (await api.post(f"{WS}/cases/{HERO}/review", headers=PRIYA)).status_code == 200
     assert (await api.post(f"{WS}/cases/{HERO}/dispatches", json={"kind": "van"}, headers=RAKESH)).status_code == 200
     await agent(api, f"/cases/{HERO}/report", "impact", "impact")
     # the Mango Drink to its report too (SC-86): three of Lakshmi Agencies' kiranas order, the scheme closes, the staff
@@ -147,4 +143,4 @@ async def test_write_the_live_fixtures(api, munchly, cloud):
     await agent(api, f"/cases/{MANGO}/documents", "paperwork-m", "paperwork")
     assert (await api.post(f"{WS}/cases/{MANGO}/dispatches", json={"kind": "van"}, headers=LAKSHMI)).status_code == 200
     await agent(api, f"/cases/{MANGO}/report", "impact-m", "impact")
-    await _write(api, "cleared", ["priya", "rakesh", "anita", "vikram", "arjun", "meera", "lakshmi-owner"])
+    await _write(api, "cleared", ["priya", "rakesh", "arjun", "meera", "lakshmi-owner"])

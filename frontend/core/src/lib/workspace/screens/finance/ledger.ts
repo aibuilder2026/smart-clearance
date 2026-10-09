@@ -16,8 +16,6 @@ export const READINGS: { id: Reading; label: string; icon: IconName }[] = [
 	{ id: 'gst', label: 'GST', icon: 'badge-check' },
 	{ id: 'impact', label: 'Impact', icon: 'leaf' }
 ];
-/** the reading each role opens on: Anita GST, Vikram Impact, everyone else Money */
-export const START: Partial<Record<string, Reading>> = { finance: 'gst', sustainability: 'impact' };
 export const OUTCOME: Record<LedgerOutcome, { label: string; tone?: 'green'; icon: IconName }> = {
 	sold: { label: 'Sold through', tone: 'green', icon: 'check' },
 	leftover: { label: 'Left at the godown', icon: 'warehouse' },

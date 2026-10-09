@@ -82,9 +82,9 @@ afterEach(() => vi.restoreAllMocks());
 
 const CASES: [string, string[]][] = [
 	['at-risk', ['priya', 'rakesh']],
-	['planned', ['priya', 'rakesh', 'anita']],
+	['planned', ['priya', 'rakesh']],
 	['executing', ['priya', 'rakesh', 'ganesh', 'agrawal', 'meera']],
-	['cleared', ['priya', 'rakesh', 'anita', 'vikram', 'arjun', 'meera']]
+	['cleared', ['priya', 'rakesh', 'arjun', 'meera']]
 ];
 
 /** every screen a member has, drawn through the workspace app on one moment: each one's text, and any error */
@@ -216,8 +216,8 @@ describe('the projection', () => {
 
 	it("reads Finance & ESG from backend-api's ledger, and a cleared batch's own page (SC-121, SC-124)", async () => {
 		const m = moment('cleared');
-		const seen = m.members.anita;
-		const s = source(m, 'anita');
+		const seen = m.members.priya;
+		const s = source(m, 'priya');
 		const r = render(LiveHost, { props: { source: s, screen: 'report' } });
 		await until(() => s.status.phase === 'ready' && !!s.ledger);
 		expect(s.ledger).toEqual(seen.ledger);

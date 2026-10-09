@@ -174,7 +174,7 @@
   function NeedsNet({ id }) {
     return /* @__PURE__ */ React.createElement("span", { id, className: "t-footnote lv-needs" }, /* @__PURE__ */ React.createElement(Icon, { name: "wifi-off", size: 14 }), "Approving needs a connection");
   }
-  const LEAD_PUSH = { operator: "plan", distributor: "verify", retailer: "offer", finance: "papers", sustainability: "report" };
+  const LEAD_PUSH = { operator: "plan", distributor: "verify", retailer: "offer" };
   const myPush = (me) => {
     const lead = D.PUSH[LEAD_PUSH[me.role]];
     return lead && lead.title ? lead : Object.values(D.PUSH).find((p) => p.to === me.id && p.title);

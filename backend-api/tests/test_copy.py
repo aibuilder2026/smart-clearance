@@ -210,8 +210,6 @@ def test_the_pushes_read_as_design3():
         support=SUPPORT["total"],
     )
     assert (invoice["title"], invoice["body"]) == (PUSH["invoice"]["title"], PUSH["invoice"]["body"])
-    report = copy.push_report(ref=HERO["id"], kg=PLAN["kg"])
-    assert (report["title"], report["body"]) == (PUSH["report"]["title"], PUSH["report"]["body"])
     actual = money.actual_net(PLAN, COUNTER["price"])
     closed = copy.push_closed(net=actual["net"], itc=PLAN["itcRetained"], kg=PLAN["kg"], cartons=0)
     assert (closed["title"], closed["body"]) == (PUSH["closed"]["title"], PUSH["closed"]["body"])

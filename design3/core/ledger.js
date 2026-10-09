@@ -1,4 +1,4 @@
-// Smart-Clearance v3 · the ledger (SC-121, SC-124): every batch Munchly has cleared, as Finance & ESG reads it.
+// Smart-Clearance v3 · the ledger (SC-121, SC-124): every batch Munchly has cleared, as Priya reads it.
 //
 // Each batch Munchly cleared before the story (data.js HISTORY, SC-123) gets its case here, in the shape the screens
 // read a batch in (core's CaseData): its papers as money.js drafts them, numbered and dated as backend-api's history
@@ -75,7 +75,7 @@
       kiranas: orders, offered: kl ? W.KIRANAS.filter(k => k.distributor === h.distributor).length : 0, scheme: M.RULES.scheme,
       kirana: h.kirana, staff: h.staff, partner,
       donation: partner ? { batch, sku, dist, partner, units: fb.units, from: dist.godown, spot: spotOf(partner.name, dist.city), receipt } : null,
-      issued: when("invoice"), reviewed: { by: "anita", at: when("review") },
+      issued: when("invoice"), reviewed: { by: "priya", at: when("review") },
     };
   }
   const HISTORY = D.HISTORY.batches.map(historyCase);
@@ -223,7 +223,7 @@
       listing: D.JOURNEY.listing, kiranas: D.KIRANAS, offered: D.OFFERED, scheme: M.RULES.scheme, kirana: null, staff: null, partner: null,
       // the batch the same agents donate, which the FSSAI checklist points to (data.js MANGO_*)
       donation: { batch: SECOND, sku: D.SKUS[SECOND.sku], dist: D.DISTRIBUTORS[SECOND.distributor], units: D.MANGO_FB, partner: D.SETUP.partners.find(p => p.name === D.JOURNEY.donation.partner) },
-      issued: null, reviewed: { by: "anita", at: null },
+      issued: null, reviewed: { by: "priya", at: null },
     };
   }
   // a batch's case by its ref: the history's, or the story's chips batch

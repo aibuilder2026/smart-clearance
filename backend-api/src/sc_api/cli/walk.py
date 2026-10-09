@@ -8,7 +8,7 @@ through Pub/Sub, BigQuery and Cloud Storage. It checks the whole loop the worksp
   confirms it, Rakesh gives the one-time permission, Run now starts the Watcher, which flags the chips and the Mango
   Drink; Rakesh and Lakshmi Agencies each send their label photo to Cloud Storage, Priya approves both, each cluster's
   kiranas order, Agrawal bids and takes the counter, Lakshmi Agencies records the staff sale, Meera collects the
-  donation, Rakesh loads the truck, issues the invoice and runs his van, Lakshmi Agencies runs hers, Anita reviews the
+  donation, Rakesh loads the truck, issues the invoice and runs his van, Lakshmi Agencies runs hers, Priya reviews the
   papers. Meanwhile Priya's SSE stream is read, and counted.
 - It reads no database: the people's uids are the ones hydrate gives them (identity.synthetic_uid), and the stock export
   is the story's batches as the journey stages them (reference/journey.json, the story's own calendar).
@@ -325,14 +325,14 @@ async def steps(walk: Walk, w: dict[str, Any], hero: str, mango: str, day_minute
     say("Rakesh loaded the buyer's truck")
 
     async def papers():
-        c = await walk.case("anita", hero)
+        c = await walk.case("priya", hero)
         return c if c and c["docs"] else None
 
     c = await walk.until("Paperwork drafted the papers", papers)
     say("  " + ", ".join(f"{d['type']} {d['no']}" for d in c["docs"] if d["no"]))
 
     async def mango_papers():
-        c = await walk.case("anita", mango)
+        c = await walk.case("priya", mango)
         return c if c and c["docs"] else None
 
     c = await walk.until("Paperwork drafted the Mango Drink's papers", mango_papers)
@@ -340,12 +340,12 @@ async def steps(walk: Walk, w: dict[str, Any], hero: str, mango: str, day_minute
     if stop < 9:
         return
 
-    # 9. the papers: Rakesh issues his invoice, Anita reviews, the van round runs
+    # 9. the papers: Rakesh issues his invoice, Priya reviews, the van round runs
     await walk.call("rakesh", "POST", f"{WS}/cases/{hero}/documents/invoice/issue")
-    await walk.call("anita", "POST", f"{WS}/cases/{hero}/review")
+    await walk.call("priya", "POST", f"{WS}/cases/{hero}/review")
     await walk.call("rakesh", "POST", f"{WS}/cases/{hero}/dispatches", {"kind": "van"})
     c = await walk.case("priya", hero)
-    say(f"Rakesh issued the invoice, Anita reviewed the pack, the van ran; the batch is {c['journey']['phase']}")
+    say(f"Rakesh issued the invoice, Priya reviewed the pack, the van ran; the batch is {c['journey']['phase']}")
     say(f"  actual net ₹{(c['actual'] or {}).get('net', 0):,.0f}; the report follows on journey time")
     await walk.call(LAKSHMI, "POST", f"{WS}/cases/{mango}/dispatches", {"kind": "van"})
     c = await walk.case("priya", mango)

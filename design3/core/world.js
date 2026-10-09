@@ -69,7 +69,7 @@
   // each of the 38 shops (Shree Ganesh Kirana's is Ganesh ji's, Jai Durga Stores' and Shree Sai Kirana's are the
   // prototype's). Roles are the workspace app's; access is the console's (Approver, Admin, Member, Partner).
   const users = window.SC3_STORE.seed().users;
-  const ACCESS = { priya: "approver", arjun: "admin", anita: "member", vikram: "member" };
+  const ACCESS = { priya: "approver", arjun: "admin" };
   const MEMBERS = users.map(u => ({
     id: u.id, name: u.name, short: u.short, org: u.org, role: u.role, kind: u.kind === "staff" ? "staff" : u.kind === "external" ? "external" : "partner",
     access: ACCESS[u.id] || "partner", status: u.status, invitedBy: u.invitedBy || null, city: u.city || null, lang: u.lang || null, img: u.img || null,

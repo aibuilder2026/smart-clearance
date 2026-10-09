@@ -5989,7 +5989,7 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "Finance has reviewed the papers",
+        "summary": "The operator has reviewed the papers",
         "tags": [
           "workspace"
         ]
@@ -6406,7 +6406,7 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "The Finance & ESG ledger: every batch cleared, by quarter and year",
+        "summary": "The ledger: every batch cleared, by quarter and year",
         "tags": [
           "workspace"
         ]

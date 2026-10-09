@@ -588,7 +588,7 @@
 							<Field label="One-time code"><OTP bind:value={otp} /></Field>
 							<Field
 								label="Floor price, snacks"
-								error="The floor cannot go below 30% of MRP. Raise it or ask Anita to change the rule."
+								error="The floor cannot go below 30% of MRP. Raise it or ask Priya to change the rule."
 								htmlFor="fl"><Input id="fl" value="25%" /></Field
 							>
 							<Field label="Search batches"

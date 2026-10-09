@@ -11,8 +11,8 @@
   const ordered = (s, id) => s.hero.orders.some(o => o.id === id);
   const ES = D.PLAN.lines.find(l => l.id === "expiresoon"), KL = D.PLAN.lines.find(l => l.id === "kirana");
   const ML = id => D.MANGO_PLAN.lines.find(l => l.id === id) || { units: 0 };
-  const DEVICE = { priya: "Priya's", rakesh: "Rakesh bhai's", ganesh: "Ganesh ji's", agrawal: "Agrawal ji's", anita: "Anita's", vikram: "Vikram's", meera: "Meera's" };
-  const PLACE = { priya: "Munchly Foods, Pune", rakesh: "Kalamna godown, Nagpur", ganesh: "Shree Ganesh Kirana, Itwari", agrawal: "Agrawal Wholesale, Raipur", anita: "Finance, Pune", vikram: "Sustainability, Pune", meera: "Feeding India, Hyderabad" };
+  const DEVICE = { priya: "Priya's", rakesh: "Rakesh bhai's", ganesh: "Ganesh ji's", agrawal: "Agrawal ji's", meera: "Meera's" };
+  const PLACE = { priya: "Munchly Foods, Pune", rakesh: "Kalamna godown, Nagpur", ganesh: "Shree Ganesh Kirana, Itwari", agrawal: "Agrawal Wholesale, Raipur", meera: "Feeding India, Hyderabad" };
   // who signs in with what, for the two sign-ins in stage 1
   const PREFILL = { priya: D.PEOPLE.priya.email, rakesh: D.PEOPLE.rakesh.phone.replace("+91 ", "") };
   const INVITE = { app: "Messages", icon: "message-circle", title: "Munchly Foods", body: `Munchly Foods has added Rakesh Traders to its Smart-Clearance workspace. Sign in at ${WS.domain} with this number.` };
@@ -71,15 +71,15 @@
         { text: `Agrawal ji accepts and pays the ${fmt.inr(D.AWARD.token)} token`, who: "agrawal", focus: "phone", time: "11:09", done: s => !!s.hero.award, run: () => Flow.act("accept"), hint: "Tap Accept", phone: { who: "agrawal", route: "listing" } },
         { text: "Meera at Feeding India confirms Tuesday's pickup", who: "meera", focus: "phone", time: "12:30", done: s => ["confirmed", "collected"].includes(s.mango.donation), run: () => Flow.act("confirmPickup"), hint: "Tap Confirm", phone: { who: "meera", route: "pickups" } },
       ] },
-    { date: "Monday 5 October", desk: { who: "anita", route: "paperwork" }, phone: { who: "rakesh", route: "van" },
+    { date: "Monday 5 October", desk: { who: "priya", route: "paperwork" }, phone: { who: "rakesh", route: "van" },
       figures: [{ label: `Rakesh's invoice to ${D.BUYER.city}`, value: D.INVOICE.total }, { label: "Price support to Rakesh", value: D.SUPPORT.total }, { label: "GST credit kept", value: D.PLAN.itcRetained, tone: "green" }],
       beats: [
         { text: `The balance lands; Rakesh bhai's staff load ${D.BUYER.name}'s truck for ${D.BUYER.city}`, who: "rakesh", focus: "phone", time: "10:15", done: s => s.hero.truck.status === "dispatched", run: () => Flow.act("dispatch"), hint: "Tap Load the buyer's truck", phone: { anchor: "lot" } },
         { text: "Paperwork drafts Rakesh's invoice, checks the e-way bill rule, issues Munchly's price-support credit note and writes the GST memo", agent: "Paperwork", focus: "desk", time: "10:16", done: s => !!s.hero.docs },
-        { text: "Anita reviews Munchly's papers: nothing to chase", who: "anita", focus: "desk", time: "10:30", done: s => !!s.hero.reviewed, run: () => Flow.act("review"), hint: "Tap Mark reviewed" },
+        { text: "Priya reviews Munchly's papers: nothing to chase", who: "priya", focus: "desk", time: "10:30", done: s => !!s.hero.reviewed, run: () => Flow.act("review"), hint: "Tap Mark reviewed" },
         { text: `Tuesday: the van takes the scheme orders to ${D.KIRANAS.length} shops`, who: "rakesh", focus: "phone", date: "Tuesday 6 October", time: "07:30", done: s => s.hero.van.status === "done", run: () => Flow.act("vanRound"), hint: "Tap Start the round" },
       ] },
-    { date: "Friday 30 October", desk: { who: "vikram", route: "report" }, phone: { who: "priya", route: "command" },
+    { date: "Friday 30 October", desk: { who: "priya", route: "report" }, phone: { who: "priya", route: "command" },
       figures: [{ label: "Recovered", value: D.ACTUAL.net, tone: "green" }, { label: "Better than the bin", value: D.ACTUAL.swing }],
       beats: [
         { text: "The return window has closed; Impact posts the ledger and writes the BRSR row, with evidence", agent: "Impact", focus: "desk", time: "18:00", done: s => s.hero.posted, phone: { lock: { key: "l8", who: "priya", push: null } } },

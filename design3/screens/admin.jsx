@@ -8,12 +8,12 @@
   const { useStore, useRoute, Screen, Columns, SectionTitle } = S;
   const WS = D.WORKSPACE;
 
-  const ROLES = { operator: "Supply-chain operator", distributor: "Distributor", retailer: "Kirana retailer", buyer: "Marketplace buyer", finance: "Finance & GST", sustainability: "Sustainability & BRSR", foodbank: "Food-bank partner", admin: "Workspace admin" };
+  const ROLES = { operator: "Supply-chain operator", distributor: "Distributor", retailer: "Kirana retailer", buyer: "Marketplace buyer", foodbank: "Food-bank partner", admin: "Workspace admin" };
   const PROVIDERS = { google: "Google", phone: "Phone code", expiresoon: "ExpireSoon sign-in" };
   const KINDS = { staff: "Munchly staff", partner: "Invited partner", external: "Outside the workspace" };
   const STATUS_TONE = { active: "green", invited: "blue", deactivated: undefined };
   // the roles the client's own staff hold; the others are its partners' (the invitation's address rule)
-  const STAFF_ROLES = ["operator", "finance", "sustainability", "admin"];
+  const STAFF_ROLES = ["operator", "admin"];
   const audit = (who, what, target) => Store.update(s => { s.audit.unshift({ id: "a-" + Date.now().toString(36), who, what, target, at: "now" }); });
   const providerOf = u => u.provider === "google" ? (u.kind === "staff" ? "Google Workspace" : "Google, invited") : PROVIDERS[u.provider];
 
@@ -187,14 +187,14 @@
     const { mode, setMode } = useTheme(); const acc = useContext(AccountCtx); const app = useApp(); const { toast } = useNotice(); const { go } = useRoute(); const s = useStore();
     const lkey = "sc3-lang-" + me.id; const [lang, setLang] = useState(() => { try { return localStorage.getItem(lkey) || (["rakesh", "ganesh"].includes(me.id) ? "hi" : "en"); } catch (e) { return "en"; } });
     const setL = v => { setLang(v); try { localStorage.setItem(lkey, v); } catch (e) {} };
-    const [push, setPush] = useState(true); const [digest, setDigest] = useState(me.role === "finance" || me.role === "sustainability");
+    const [push, setPush] = useState(true); const [digest, setDigest] = useState(false);
     const perm = s.setup.permission; const inside = me.role !== "buyer";
     return <Screen me={me} title="Profile" sub={ROLES[me.role]}>
       <div className="stack" style={{ gap: 20, maxWidth: 680 }}>
         <Card className="row" style={{ gap: 16 }}><Avatar person={me} size="xl" ring /><div className="stack tight" style={{ gap: 2, minWidth: 0 }}><div className="t-title2">{me.name}</div><span className="muted">{ROLES[me.role]} · {me.org}</span><span className="t-footnote subtle row tight"><Icon name={me.provider === "google" ? "google" : me.provider === "phone" ? "smartphone" : "hourglass"} size={14} />{providerOf(me)}{me.email ? " · " + me.email : me.phone ? " · " + me.phone : ""}</span></div></Card>
         {inside && <List head="Workspace"><ListRow leading={<WorkspaceMark ws={WS} size={32} />} title={WS.name} sub={WS.domain} value={<Badge size="sm" tone="green">{KINDS[me.kind] || "member"}</Badge>} />{me.role === "admin" && <ListRow icon="building-2" title="Workspace settings" sub="Sign-in, supply-chain profile, branding" chevron onClick={() => go("workspace")} />}</List>}
         {me.id === "rakesh" && perm && <List head="Acting for Rakesh Traders" foot="Inside Munchly's floors: listings, scheme offers, invoice drafts and dispatch slots in your name."><ListRow icon={perm.paused ? "circle-pause" : "handshake"} title={perm.paused ? "Paused" : "On since " + perm.at} value={<Switch checked={!perm.paused} onChange={v => { Flow.act("pause", !v); toast({ text: v ? "Resumed" : "Paused · nothing more happens in your name", tone: "ok" }); }} label="Let Smart-Clearance act for you" />} /></List>}
-        {me.role === "operator" && <List head="Your work"><ListRow icon="sliders-horizontal" title="Setup and guardrails" sub="DMS mapping, floors, territory guard, permissions" chevron onClick={() => go("setup")} /><ListRow icon="chart-line" title="Finance & ESG" sub="Ledger, BRSR export" chevron onClick={() => go("report")} /></List>}
+        {me.role === "operator" && <List head="Your work"><ListRow icon="sliders-horizontal" title="Setup and guardrails" sub="DMS mapping, floors, territory guard, permissions" chevron onClick={() => go("setup")} /><ListRow icon="book-open" title="Ledger" sub="Money, GST and impact by quarter; BRSR and GST exports" chevron onClick={() => go("report")} /></List>}
         <List head="Appearance"><ListRow title="Theme" value={<Segmented options={[{ id: "light", label: "Light" }, { id: "dark", label: "Dark" }, { id: "system", label: "Auto" }]} value={mode} onChange={setMode} label="Theme" size="sm" />} /></List>
         <List head="Notifications" foot="Offers to the trade go out in the language each person picks."><ListRow title="Language" value={<Segmented options={[{ id: "en", label: "English" }, { id: "hi", label: "हिन्दी" }]} value={lang} onChange={setL} label="Notification language" size="sm" />} /><ListRow title="Push notifications" value={<Switch checked={push} onChange={setPush} label="Push notifications" />} /><ListRow title="Weekly digest by email" value={<Switch checked={digest} onChange={setDigest} label="Weekly digest" />} /></List>
         {acc.install !== undefined && <List head="This device"><ListRow icon="download" title="Install Smart-Clearance" sub={acc.install ? "Opens full screen, works offline, gets pushes" : acc.standalone ? "Installed on this device" : "In Safari, tap Share, then Add to Home Screen"} value={acc.install ? <Button variant="secondary" size="sm" onClick={acc.install}>Install</Button> : null} /></List>}

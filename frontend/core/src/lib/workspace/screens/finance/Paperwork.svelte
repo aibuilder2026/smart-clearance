@@ -4,8 +4,8 @@
 	import Screen from '../common/Screen.svelte';
 	import PaperPack from './PaperPack.svelte';
 
-	// S5 Paperwork: the batch in focus's pack, one of the operator's batch screens (SC-112); Finance & ESG read each
-	// cleared batch's pack on its page in the ledger (SC-121) (screens/finance.jsx Paperwork)
+	// S5 Paperwork: the batch in focus's pack, one of the operator's batch screens (SC-112); a cleared batch's
+	// pack is on its page in the ledger too (SC-121) (screens/finance.jsx Paperwork)
 	let { me }: { me: User } = $props();
 	const ws = useWorkspace();
 	const c = $derived(ws.case!);

@@ -37,24 +37,6 @@
 			"img": "sc3img:/people/p-agrawal.webp"
 		},
 		{
-			"id": "anita",
-			"name": "Anita Rao",
-			"short": "Anita",
-			"role": "Finance & GST",
-			"org": "Munchly Foods",
-			"city": "Pune",
-			"img": "sc3img:/people/p-anita.webp"
-		},
-		{
-			"id": "vikram",
-			"name": "Vikram Sethi",
-			"short": "Vikram",
-			"role": "Sustainability & BRSR",
-			"org": "Munchly Foods",
-			"city": "Pune",
-			"img": "sc3img:/people/p-vikram.webp"
-		},
-		{
 			"id": "meera",
 			"name": "Meera",
 			"short": "Meera",

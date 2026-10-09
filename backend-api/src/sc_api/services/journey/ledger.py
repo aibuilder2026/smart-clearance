@@ -1,7 +1,7 @@
 """The ledger (SC-124): every batch the workspace has cleared, read from the ledger Impact posted and the papers it
 carries, and the periods those batches fall in: each quarter of the Indian financial year, from the first batch
 cleared to today's, and each year so far. Every figure and total is worked out here, from what each batch came to
-(money.realised); the screens only show it. The operator, Finance, ESG and the admin read it (`report.read`)."""
+(money.realised); the screens only show it. The operator and the admin read it (`report.read`)."""
 
 from collections import Counter
 from datetime import date, datetime, timedelta

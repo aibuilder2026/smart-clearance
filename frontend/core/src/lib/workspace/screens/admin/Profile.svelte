@@ -54,8 +54,7 @@
 		unsupported: 'This browser cannot take pushes'
 	};
 	const pushSub = $derived(acc.push ? PUSH_SAYS[acc.push.state] : undefined);
-	// svelte-ignore state_referenced_locally (the app keys the screens by person, so the default is read once)
-	let digest = $state(me.role === 'finance' || me.role === 'sustainability');
+	let digest = $state(false);
 	const perm = $derived(ws.state.setup.permission);
 	const inside = $derived(me.role !== 'buyer');
 	const signInIcon = $derived<IconName>(PROVIDER_ICONS[me.provider]);
@@ -152,9 +151,9 @@
 					chevron
 					onclick={() => router.go('setup')}
 				/><ListRow
-					icon="chart-line"
-					title="Finance & ESG"
-					sub="Ledger, BRSR export"
+					icon="book-open"
+					title="Ledger"
+					sub="Money, GST and impact by quarter; BRSR and GST exports"
 					chevron
 					onclick={() => router.go('report')}
 				/></List

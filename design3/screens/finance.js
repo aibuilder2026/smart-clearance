@@ -143,7 +143,7 @@
         main: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(SectionTitle, { sub: "Generated, drafted or not required, each with its reason", right: /* @__PURE__ */ React.createElement("span", { className: "row tight" }, /* @__PURE__ */ React.createElement(Button, { variant: "secondary", size: "sm", icon: "download", onClick: exportPack }, "Export"), h.reviewed ? /* @__PURE__ */ React.createElement(Badge, { tone: "green", icon: "check" }, "reviewed") : /* @__PURE__ */ React.createElement(Button, { variant: "primary", size: "sm", icon: "check", onClick: () => {
           Flow.act("review");
           toast({ text: "Pack reviewed · logged", tone: "ok" });
-        } }, "Mark reviewed")) }, "Document pack"), /* @__PURE__ */ React.createElement("div", { className: "docgrid" }, c.docs.map((d) => /* @__PURE__ */ React.createElement("div", { key: d.id, className: cx("docpick", sel === d.id && app.bp === "desktop" && "on") }, /* @__PURE__ */ React.createElement(DocCard, { doc: d, onOpen: () => open(d.id) })))), /* @__PURE__ */ React.createElement(KeepsWhat, { c }), !c.history && invoice && support && /* @__PURE__ */ React.createElement(Card, { className: "row top", style: { gap: 14, background: "var(--surface-2)" } }, /* @__PURE__ */ React.createElement("span", { className: "icontile" }, /* @__PURE__ */ React.createElement(Icon, { name: "quote", size: 17 })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "t-body", style: { margin: 0 } }, "Credit note, GST memo, and ", his, "'s invoice attached as evidence. First batch this year with nothing for me to chase."), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, "Anita · finance")))),
+        } }, "Mark reviewed")) }, "Document pack"), /* @__PURE__ */ React.createElement("div", { className: "docgrid" }, c.docs.map((d) => /* @__PURE__ */ React.createElement("div", { key: d.id, className: cx("docpick", sel === d.id && app.bp === "desktop" && "on") }, /* @__PURE__ */ React.createElement(DocCard, { doc: d, onOpen: () => open(d.id) })))), /* @__PURE__ */ React.createElement(KeepsWhat, { c })),
         side: app.bp === "desktop" && doc ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(SectionTitle, { sub: doc.owner === D.CLIENT.short ? `Issued by ${W.short}` : `Drafted for ${c.dist.name}`, right: pdfButton(paperRef) }, doc.type), /* @__PURE__ */ React.createElement(AnimatePresence, { mode: "wait" }, /* @__PURE__ */ React.createElement(motion.div, { key: sel, initial: { opacity: 0, y: 6 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0 }, transition: { duration: 0.18 } }, /* @__PURE__ */ React.createElement("div", { ref: paperRef }, /* @__PURE__ */ React.createElement(Paper, { id: sel, c }))))) : null
       }
     )), /* @__PURE__ */ React.createElement(Sheet, { open: sheet, onClose: () => setSheet(false), title: doc ? doc.type : "", footer: pdfButton(sheetRef) }, /* @__PURE__ */ React.createElement("div", { ref: sheetRef }, /* @__PURE__ */ React.createElement(Paper, { id: sel, c }))));
@@ -155,7 +155,6 @@
     return /* @__PURE__ */ React.createElement(Screen, { me, title: "Paperwork", sub: `${c.batch.id} · prepared by the Paperwork agent ${awarded ? "at the award" : "once every line was done"}` }, /* @__PURE__ */ React.createElement(PaperPack, { me, c, h: s.hero }));
   }
   const READINGS = [{ id: "money", label: "Money", icon: "coins" }, { id: "gst", label: "GST", icon: "badge-check" }, { id: "impact", label: "Impact", icon: "leaf" }];
-  const START = { finance: "gst", sustainability: "impact" };
   const OUTCOME = { sold: { label: "Sold through", tone: "green", icon: "check" }, leftover: { label: "Left at the godown", icon: "warehouse" }, donation: { label: "Donated", icon: "heart-handshake" } };
   const OutcomeBadge = ({ o, size }) => {
     const x = OUTCOME[o];
@@ -293,7 +292,7 @@
     const year = book.periods.find((x) => x.kind === "year" && x.current) || book.periods[book.periods.length - 1];
     const [pid, setPid] = useState(year.id);
     const p = book.periods.find((x) => x.id === pid) || year;
-    const [reading, setReading] = useState(START[me.role] || "money");
+    const [reading, setReading] = useState("money");
     const list = book.batches.filter((r) => r.cleared >= p.from && r.cleared <= p.to);
     const open = (r) => go("report", { ref: r.ref });
     const flying = p.current ? book.inFlight : [];
@@ -314,7 +313,6 @@
     )))), /* @__PURE__ */ React.createElement("p", { className: "t-footnote subtle" }, "Every figure is the batch's posted ledger, as money.js works it out. CO₂e, disposal and EPR are indicative. The companies and people are fictional.")));
   }
   const TABS = [{ id: "money", label: "Money", icon: "coins" }, { id: "papers", label: "Papers", icon: "file-text" }, { id: "impact", label: "Impact", icon: "leaf" }];
-  const FIRST = { finance: "papers", sustainability: "impact" };
   const Row = ({ k, sub, v, tone, strong }) => /* @__PURE__ */ React.createElement("div", { className: cx("lg-line", strong && "strong") }, /* @__PURE__ */ React.createElement("span", null, k, sub && /* @__PURE__ */ React.createElement("em", null, " ", sub)), /* @__PURE__ */ React.createElement("span", { className: cx("tnum", tone) }, v));
   const NotPosted = ({ h }) => /* @__PURE__ */ React.createElement(Locked, { icon: "book-open-check", agent: "Impact agent", live: h.phase === "settled" && h.van && h.van.status === "done", text: `Posts the batch to the ledger once the return window closes on ${fmt.day(D.RETURN_BY)}, and writes the BRSR row with evidence links.` });
   function MoneyTab({ c, row, h }) {
@@ -351,7 +349,7 @@
     const phone = app.bp === "phone";
     const c = LG().caseOf(at);
     const story = !c.history, h = story ? s.hero : CLEARED, row = !story || s.hero.posted ? LG().rowOf(c) : null;
-    const [tab, setTab] = useState(tab0 || FIRST[me.role] || "money");
+    const [tab, setTab] = useState(tab0 || "money");
     const head = /* @__PURE__ */ React.createElement("div", { className: "bhead" }, /* @__PURE__ */ React.createElement("div", { className: "bh-id" }, /* @__PURE__ */ React.createElement("span", { className: "bh-pic", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Product, { name: c.sku.img, size: phone ? 46 : 72, alt: "" })), /* @__PURE__ */ React.createElement("div", { className: "bh-tt" }, /* @__PURE__ */ React.createElement("h1", null, c.sku.name), /* @__PURE__ */ React.createElement("div", { className: "bh-meta" }, /* @__PURE__ */ React.createElement("span", { className: "mono" }, c.batch.id), /* @__PURE__ */ React.createElement("span", { className: "sep", "aria-hidden": "true" }, "·"), /* @__PURE__ */ React.createElement("span", null, c.dist.name, ", ", c.dist.city)), /* @__PURE__ */ React.createElement("div", { className: "bh-meta" }, row ? /* @__PURE__ */ React.createElement(OutcomeBadge, { o: row.outcome }) : /* @__PURE__ */ React.createElement(Badge, { tone: "blue", dot: true, live: true }, "In flight"), /* @__PURE__ */ React.createElement("span", null, "Flagged ", dayOf(c.flagged), row ? ` · cleared ${dayOf(row.cleared)}` : "")))), /* @__PURE__ */ React.createElement("nav", { className: "bh-tabs", "aria-label": `${c.sku.name}, ${c.batch.id}` }, TABS.map((t) => /* @__PURE__ */ React.createElement("button", { key: t.id, type: "button", className: "bh-tab", "aria-current": tab === t.id ? "page" : void 0, onClick: () => setTab(t.id) }, tab === t.id && /* @__PURE__ */ React.createElement(motion.span, { layoutId: "lg-tab-thumb", className: "bh-tab-thumb", transition: { type: "spring", stiffness: 500, damping: 40 } }), !phone && /* @__PURE__ */ React.createElement(Icon, { name: t.icon, size: 16 }), /* @__PURE__ */ React.createElement("span", null, t.label)))));
     return /* @__PURE__ */ React.createElement(Screen, { me, title: c.sku.name, back: "Ledger", hideLarge: true, below: head }, /* @__PURE__ */ React.createElement(AnimatePresence, { mode: "wait" }, /* @__PURE__ */ React.createElement(motion.div, { key: tab, initial: { opacity: 0, y: 6 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0 }, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } }, tab === "money" ? /* @__PURE__ */ React.createElement(MoneyTab, { c, row, h }) : tab === "papers" ? /* @__PURE__ */ React.createElement(PaperPack, { me, c, h }) : /* @__PURE__ */ React.createElement(ImpactTab, { c, row, h }))));
   }

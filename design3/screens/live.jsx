@@ -210,7 +210,7 @@
 
   /* ---------- the first sign-in ends on one step: notifications, before the home ---------- */
   // the push this person gets, as their lock screen shows it
-  const LEAD_PUSH = { operator: "plan", distributor: "verify", retailer: "offer", finance: "papers", sustainability: "report" };
+  const LEAD_PUSH = { operator: "plan", distributor: "verify", retailer: "offer" };
   const myPush = me => { const lead = D.PUSH[LEAD_PUSH[me.role]]; return lead && lead.title ? lead : Object.values(D.PUSH).find(p => p.to === me.id && p.title); };
   function PushPreview({ me, blocked }) {
     const live = useLive(); const p = myPush(me); const time = p && /^\d\d:\d\d$/.test(p.at) ? p.at : live.clock.time;

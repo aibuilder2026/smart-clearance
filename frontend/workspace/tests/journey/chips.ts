@@ -27,7 +27,7 @@ const PRESETS: Record<number, RegExp> = { 1440: /Real time/, 60: /Rehearsal/, 5:
 // the story's kiranas for Rakesh's cluster: their own orders fill the scheme to the packet
 export const KIRANAS = kiranasOf('rakesh');
 /** the people a chips flow signs in */
-export const PEOPLE = ['neha', 'priya', 'rakesh', 'agrawal', 'anita', 'vikram', ...KIRANAS.map((k) => k.member)];
+export const PEOPLE = ['neha', 'priya', 'rakesh', 'agrawal', ...KIRANAS.map((k) => k.member)];
 
 /** the van round's day, as the Van route and its push name it */
 let vanDay = '';
@@ -248,7 +248,7 @@ export const CHIPS: Step[] = [
 			);
 			for (const d of c.docs) running().figure(`Paper: ${d.type}`, `${d.no || '—'} (${d.status})`);
 			// every paper a person signs carries the PDF Paperwork rendered into the docs bucket (SC-100)
-			const pdfs = await until('Paperwork renders the PDFs', 'anita', (c) => c.docs.filter((d) => d.pdf).length >= 3);
+			const pdfs = await until('Paperwork renders the PDFs', 'priya', (c) => c.docs.filter((d) => d.pdf).length >= 3);
 			story(
 				'Papers with their PDF',
 				pdfs.docs
@@ -283,11 +283,11 @@ export const CHIPS: Step[] = [
 	},
 	{
 		id: 'review',
-		title: 'Anita reviews the pack: the tax invoice, the credit note and the GST ITC memo',
+		title: 'Priya reviews the pack: the tax invoice, the credit note and the GST ITC memo',
 		async run(page) {
-			await as(page, 'anita', `/paperwork/${HERO}`, 'reads each paper, then marks the pack reviewed');
+			await as(page, 'priya', `/paperwork/${HERO}`, 'reads each paper, then marks the pack reviewed');
 			await expect(page.getByRole('button', { name: 'Mark reviewed' })).toBeVisible();
-			const c = (await caseAs('anita'))!;
+			const c = (await caseAs('priya'))!;
 			for (const d of c.docs) {
 				const card = page.getByRole('button', { name: new RegExp(d.type) }).first();
 				if (!(await card.count())) {
@@ -316,7 +316,7 @@ export const CHIPS: Step[] = [
 				);
 			await page.getByRole('button', { name: 'Mark reviewed' }).click();
 			await expect(page.getByText('reviewed', { exact: true })).toBeVisible();
-			await until('the review is recorded', 'anita', (c) => c.journey.reviewed, 30_000);
+			await until('the review is recorded', 'priya', (c) => c.journey.reviewed, 30_000);
 			await running().done('Pack reviewed');
 		}
 	},
@@ -346,10 +346,10 @@ export const CHIPS: Step[] = [
 	},
 	{
 		id: 'esg',
-		title: "Vikram reads the batch's page in the ledger, and the year so far",
+		title: "Priya reads the batch's page in the ledger, and the year so far",
 		async run(page) {
-			// the batch's own page in the ledger, which Vikram opens on its impact (SC-121)
-			await as(page, 'vikram', `/report/${HERO}`, "reads the batch's page in the ledger: its BRSR line and evidence");
+			// the batch's own page in the ledger (SC-121), on its impact
+			await as(page, 'priya', `/report/${HERO}`, "reads the batch's page in the ledger: its BRSR line and evidence");
 			await expect(page.getByText('BRSR line')).toBeVisible();
 			await expect(page.getByText(/^posted · /)).toBeVisible();
 			await running().done('ESG: the batch posted to the ledger');
@@ -357,12 +357,12 @@ export const CHIPS: Step[] = [
 			await page.waitForTimeout(500);
 			await running().done('ESG: the BRSR line and its evidence');
 			// the ledger: the year so far in its Impact reading, Munchly's history and this batch
-			await as(page, 'vikram', '/report', 'reads the ledger, the year so far');
+			await as(page, 'priya', '/report', 'reads the ledger, the year so far');
 			await expect(page.getByText('kept out of landfill')).toBeVisible();
 			await running().done('ESG: the ledger, the year in its Impact reading');
 			const l = await api<{ periods: { kind: string; current: boolean; totals: LedgerTotals }[] }>(
 				'workspace',
-				'vikram',
+				'priya',
 				`${WS}/ledger`
 			);
 			const y = l.periods.find((p) => p.kind === 'year' && p.current)!.totals;
@@ -375,10 +375,10 @@ export const CHIPS: Step[] = [
 	},
 	{
 		id: 'close',
-		title: 'Anita reads the finance report, and Priya sees the batch through',
+		title: "Priya reads the batch's money in the ledger, and sees the batch through",
 		async run(page) {
-			await as(page, 'anita', `/report/${HERO}`, 'reads the finance side of the report');
-			await running().done('Finance & ESG report, as Anita');
+			await as(page, 'priya', `/report/${HERO}`, "reads the batch's money in the ledger");
+			await running().done("The ledger: the batch's money");
 			await as(page, 'priya', `/execution/${HERO}`, 'sees the batch through on Execution');
 			await running().done('Execution: every line done');
 			await sidebar(page, 'Command Center').click();

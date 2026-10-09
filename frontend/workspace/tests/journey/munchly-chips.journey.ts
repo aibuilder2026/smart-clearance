@@ -6,8 +6,8 @@ import { Run } from './record.ts';
 
 // Munchly Chips E2E (SC-95): the Masala Chips 150 g batch (MF-2409-117, Rakesh Traders, Nagpur) from a fresh journey to
 // Impact's report, on the happy path, every person acting in the real UI in turn: Neha in the console, Priya (Supply
-// Chain), Rakesh (the distributor), each of his kiranas, Agrawal Wholesale on ExpireSoon, Anita (Finance) and Vikram
-// (ESG). The agents do the rest on live Gemini, through the local pull worker. The steps follow backend-api's walk
+// Chain), Rakesh (the distributor), each of his kiranas, Agrawal Wholesale on ExpireSoon, and Priya again for the
+// papers and the ledger (SC-127). The agents do the rest on live Gemini, through the local pull worker. The steps follow backend-api's walk
 // (src/sc_api/cli/walk.py), which takes the same journey over HTTP. The Mango Drink is flagged too and is left where
 // the agents take it: this flow is the chips'.
 //

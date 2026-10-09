@@ -38,11 +38,11 @@
     collect: s => { s.mango.donation = "collected"; audit(s, "meera", `collected ${D.MANGO_FB} packs and issued ${D.MANGO_RECEIPT.type.toLowerCase()} ${D.MANGO_RECEIPT.no}`, "MF-2410-118", "Day 4"); },
     // Monday: the buyer's balance lands and his own transporter collects the lot from the godown
     dispatch: s => { s.hero.truck = { status: "dispatched", at: "Mon 5 Oct" }; if (s.hero.award) s.hero.award.status = "paid"; s.hero.phase = "dispatched"; feed(s, E("dispatch")); audit(s, "rakesh", `loaded ${D.BUYER.name}'s truck`, `ES-24117 · ${D.BUYER.city}`, "Mon 5 Oct"); },
-    settle: s => { s.hero.phase = "settled"; s.hero.docs = D.DOCS.map(d => ({ id: d.id, status: d.status })); feed(s, E("papers")); notify(s, "anita", Object.assign({ link: "paperwork" }, D.PUSH.papers)); notify(s, "rakesh", Object.assign({ link: "orders" }, D.PUSH.invoice)); notify(s, "rakesh", Object.assign({ link: "van" }, D.PUSH.van)); },
+    settle: s => { s.hero.phase = "settled"; s.hero.docs = D.DOCS.map(d => ({ id: d.id, status: d.status })); feed(s, E("papers")); notify(s, "priya", Object.assign({ link: "paperwork" }, D.PUSH.papers)); notify(s, "rakesh", Object.assign({ link: "orders" }, D.PUSH.invoice)); notify(s, "rakesh", Object.assign({ link: "van" }, D.PUSH.van)); },
     issueInvoice: s => { s.hero.invoiceIssued = true; audit(s, "rakesh", "issued the invoice from Tally", D.INVOICE.no + " · " + D.BUYER.name, "Mon 5 Oct"); },
-    review: s => { s.hero.reviewed = true; audit(s, "anita", "reviewed Munchly's credit note and GST memo", "MF-2409-117", "Mon 5 Oct"); },
+    review: s => { s.hero.reviewed = true; audit(s, "priya", "reviewed Munchly's credit note and GST memo", "MF-2409-117", "Mon 5 Oct"); },
     vanRound: s => { s.hero.van = { status: "done", done: D.KIRANAS.length }; feed(s, E("van")); audit(s, "rakesh", `ran the Tuesday round: ${D.KIRANAS.length} drops`, "Nagpur cluster", "Tue 6 Oct"); },
-    report: s => { s.hero.phase = "cleared"; s.hero.posted = true; feed(s, E("ledger")); notify(s, "priya", Object.assign({ link: "command" }, D.PUSH.closed)); notify(s, "vikram", Object.assign({ link: "report" }, D.PUSH.report)); audit(s, "vikram", "signed off the BRSR row", "MF-2409-117", "30 Oct"); },
+    report: s => { s.hero.phase = "cleared"; s.hero.posted = true; feed(s, E("ledger")); notify(s, "priya", Object.assign({ link: "command" }, D.PUSH.closed)); audit(s, "priya", "signed off the BRSR row", "MF-2409-117", "30 Oct"); },
   };
 
   // the order in which the journey happens, grouped by the stage each step belongs to
@@ -52,7 +52,7 @@
     ["verify", "requestPhoto"], ["verify", "sendPhoto", { human: "rakesh" }], ["verify", "verify"],
     ["value", "value"], ["decide", "decide"], ["approve", "approve", { human: "priya" }],
     ["execute", "list"], ["execute", "outreach"], ["execute", "donate"], ["execute", "order", { arg: "k0", human: "ganesh" }], ["execute", "allOrders"], ["execute", "bid", { arg: 13, human: "agrawal" }], ["execute", "counter"], ["execute", "accept", { human: "agrawal" }], ["execute", "confirmPickup", { human: "meera" }],
-    ["settle", "dispatch", { human: "rakesh" }], ["settle", "settle"], ["settle", "review", { human: "anita" }], ["settle", "vanRound", { human: "rakesh" }],
+    ["settle", "dispatch", { human: "rakesh" }], ["settle", "settle"], ["settle", "review", { human: "priya" }], ["settle", "vanRound", { human: "rakesh" }],
     ["report", "report"],
   ];
   const STAGE_IDS = D.STAGES.map(s => s.id);

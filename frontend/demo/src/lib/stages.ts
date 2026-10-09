@@ -47,8 +47,6 @@ export const DEVICE: Record<string, string> = {
 	rakesh: "Rakesh bhai's",
 	ganesh: "Ganesh ji's",
 	agrawal: "Agrawal ji's",
-	anita: "Anita's",
-	vikram: "Vikram's",
 	meera: "Meera's"
 };
 export const PLACE: Record<string, string> = {
@@ -56,8 +54,6 @@ export const PLACE: Record<string, string> = {
 	rakesh: 'Kalamna godown, Nagpur',
 	ganesh: 'Shree Ganesh Kirana, Itwari',
 	agrawal: 'Agrawal Wholesale, Raipur',
-	anita: 'Finance, Pune',
-	vikram: 'Sustainability, Pune',
 	meera: 'Feeding India, Hyderabad'
 };
 /** who signs in with what, for the two sign-ins in stage 1 */
@@ -376,7 +372,7 @@ export const STAGES: Stage[] = [
 	},
 	{
 		date: 'Monday 5 October',
-		desk: { who: 'anita', route: 'paperwork' },
+		desk: { who: 'priya', route: 'paperwork' },
 		phone: { who: 'rakesh', route: 'van' },
 		figures: [
 			{ label: `Rakesh's invoice to ${D.buyer.city}`, value: INVOICE.total! },
@@ -402,8 +398,8 @@ export const STAGES: Stage[] = [
 				done: (s) => !!s.hero.docs
 			},
 			{
-				text: "Anita reviews Munchly's papers: nothing to chase",
-				who: 'anita',
+				text: "Priya reviews Munchly's papers: nothing to chase",
+				who: 'priya',
 				focus: 'desk',
 				time: '10:30',
 				done: (s) => !!s.hero.reviewed,
@@ -424,7 +420,7 @@ export const STAGES: Stage[] = [
 	},
 	{
 		date: 'Friday 30 October',
-		desk: { who: 'vikram', route: 'report' },
+		desk: { who: 'priya', route: 'report' },
 		phone: { who: 'priya', route: 'command' },
 		figures: [
 			{ label: 'Recovered', value: D.actual.net, tone: 'green' },

@@ -64,7 +64,7 @@ export type LiveOptions = {
 /** the roles that read the ledger, and the audit log */
 type Wanted = { snapshot: boolean; cases: string[]; ledger: boolean; audit: boolean };
 
-const LEDGER: RoleId[] = ['operator', 'finance', 'sustainability', 'admin'];
+const LEDGER: RoleId[] = ['operator', 'admin'];
 const AUDIT: RoleId[] = ['admin'];
 
 const phone = () =>
@@ -155,7 +155,7 @@ export class LiveSource implements WorkspaceSource {
 	get case(): CaseData | null {
 		return this.#case;
 	}
-	/** Finance & ESG's ledger, as backend-api works it out (SC-124), for those who read it */
+	/** the ledger, as backend-api works it out (SC-124), for those who read it */
 	get ledger(): Ledger | null {
 		return this.#ledger;
 	}

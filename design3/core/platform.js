@@ -296,14 +296,14 @@
   }
 
   /* ---------- Munchly Foods, from the app's own seed ---------- */
-  const ROLE_LABEL = { operator: "Supply chain", distributor: "Distributor", retailer: "Kirana", finance: "Finance & GST", sustainability: "Sustainability & BRSR", foodbank: "Food bank", admin: "Workspace admin" };
+  const ROLE_LABEL = { operator: "Supply chain", distributor: "Distributor", retailer: "Kirana", foodbank: "Food bank", admin: "Workspace admin" };
   function seedMunchly() {
     const app = AppStore.seed(); const W = D.WORKSPACE;
     const people = app.users.filter(u => u.role !== "buyer").map(u => {
       const staff = u.kind === "staff" || (!u.kind && u.provider === "google" && !u.extra && u.org === "Munchly Foods");
       const access = u.id === "priya" ? "Approver" : u.role === "admin" ? "Admin" : staff ? "Member" : "Partner";
       const provider = u.provider === "phone" ? "Phone and code" : staff ? "Google" : "Google, invited";
-      const role = u.extra ? (u.invitedBy ? `invited by ${u.invitedBy}` : ROLE_LABEL[u.role]) : (u.role === "operator" || u.role === "finance" || u.role === "sustainability" || u.role === "admin" ? u.role === "admin" ? "Workspace admin" : (D.PEOPLE[u.id] && D.PEOPLE[u.id].role) || ROLE_LABEL[u.role] : u.org);
+      const role = u.extra ? (u.invitedBy ? `invited by ${u.invitedBy}` : ROLE_LABEL[u.role]) : (u.role === "operator" || u.role === "admin" ? u.role === "admin" ? "Workspace admin" : (D.PEOPLE[u.id] && D.PEOPLE[u.id].role) || ROLE_LABEL[u.role] : u.org);
       return { id: u.id, name: u.name, org: u.org || W.name, role, kind: ROLE_LABEL[u.role], access, provider, status: u.status, img: u.img || null, email: u.email || "", phone: u.phone || "" };
     });
     const permission = { rakesh: "given", lakshmi: "given", patil: "not-yet", gupta: "not-yet" };

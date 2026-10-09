@@ -7,14 +7,14 @@ import pytest
 from sc_api.domain import money
 from sc_api.services.reference import load
 from tests.test_history import REFS, H, with_history  # noqa: F401
-from tests.test_workspace import ANITA, LAKSHMI, PRIYA, RAKESH, VIKRAM, WS, case
+from tests.test_workspace import ARJUN, LAKSHMI, PRIYA, RAKESH, WS, case
 
 pytestmark = pytest.mark.usefixtures("with_history")
 SAME = {"net": "net", "swing": "swing", "pnl": "pnl", "itcKept": "itc", "itcReversed": "itcReversed", "kg": "kg"}
 SAME |= {"co2": "co2", "meals": "meals", "godown": "godown", "destroyed": "destroyed"}
 
 
-async def _ledger(api, who=ANITA) -> dict:
+async def _ledger(api, who=PRIYA) -> dict:
     r = await api.get(f"{WS}/ledger", headers=who)
     assert r.status_code == 200, r.text
     return r.json()
@@ -74,7 +74,7 @@ async def test_the_periods_add_up_their_batches(api):
 
 
 async def test_only_those_who_read_the_report_see_the_ledger(api):
-    for who in (PRIYA, ANITA, VIKRAM):
+    for who in (PRIYA, ARJUN):
         assert (await api.get(f"{WS}/ledger", headers=who)).status_code == 200
     for who in (RAKESH, LAKSHMI):
         assert (await api.get(f"{WS}/ledger", headers=who)).status_code == 403
@@ -84,7 +84,7 @@ async def test_a_cleared_batch_carries_its_ledger(api):
     ledger = await _ledger(api)
     leftover = next(b for b in H["batches"] if b["outcome"] == "leftover")
     row = next(b for b in ledger["batches"] if b["ref"] == leftover["ref"])
-    assert (await case(api, ANITA, leftover["ref"]))["ledger"] == row
+    assert (await case(api, PRIYA, leftover["ref"]))["ledger"] == row
     holder = {"rakesh": RAKESH, "lakshmi": LAKSHMI}[leftover["distributor"]]
     assert (await case(api, holder, leftover["ref"]))["ledger"] is None
 

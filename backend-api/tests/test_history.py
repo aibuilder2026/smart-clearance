@@ -8,7 +8,7 @@ from sqlalchemy import select
 
 from sc_api import models as m
 from sc_api.services.reference import load
-from tests.test_workspace import ANITA, WS, case
+from tests.test_workspace import PRIYA, WS, case
 
 H = load("journey.json")["history"]
 REFS = {b["ref"] for b in H["batches"]}
@@ -76,7 +76,7 @@ async def test_the_history_stays_in_view_through_a_journey_reset(api, with_histo
 
     await reset.reset(ctx, "munchly")
     await ctx.session.commit()
-    snap = (await api.get(f"{WS}/snapshot", headers=ANITA)).json()
+    snap = (await api.get(f"{WS}/snapshot", headers=PRIYA)).json()
     # cleared and past their best-before: in the ledger, neither on Batches (SC-126) nor among the batches in a journey
     # (SC-121)
     assert not {b["id"] for b in snap["batches"]} & REFS
@@ -84,7 +84,7 @@ async def test_the_history_stays_in_view_through_a_journey_reset(api, with_histo
     # the story's own batches, still inside their best-before, stay
     assert {b["id"] for b in snap["batches"]} >= {b["id"] for b in load("journey.json")["batches"]}
     leftover = next(b for b in H["batches"] if b["outcome"] == "leftover")
-    c = await case(api, ANITA, leftover["ref"])
+    c = await case(api, PRIYA, leftover["ref"])
     assert c["journey"]["phase"] == "cleared"
     docs = {d["id"]: d for d in c["docs"]}
     assert docs["expiry"]["no"] == leftover["numbers"]["expiry"]

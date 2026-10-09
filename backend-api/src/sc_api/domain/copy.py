@@ -462,13 +462,6 @@ def push_invoice(
     }
 
 
-def push_report(*, ref: str, kg: float) -> dict[str, Any]:
-    return {
-        "title": f"Ledger posted · {ref}",
-        "body": f"{fmt.kg(kg)} diverted from disposal with invoices behind every kilo. The BRSR row is ready.",
-    }
-
-
 def push_closed(
     *,
     net: float,

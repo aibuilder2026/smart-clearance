@@ -14,7 +14,7 @@ from sc_api.domain import money
 from sc_api.errors import ApiError, not_found
 from sc_api.services.context import Ctx
 
-STAFF_ROLES = ("operator", "finance", "sustainability", "admin")
+STAFF_ROLES = ("operator", "admin")
 SCHEME = re.compile(r"(\d+)\s+free with every\s+(\d+)")
 DEFAULT_FLOORS = {"snacks": 35, "biscuits": 35, "staples": 40, "beverages": 30, "personal-care": 40}
 
