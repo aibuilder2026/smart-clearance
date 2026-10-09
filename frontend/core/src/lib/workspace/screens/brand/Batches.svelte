@@ -6,7 +6,7 @@
 	import Product from '../../../components/Product.svelte';
 	import StatusBadge from '../../../components/StatusBadge.svelte';
 	import { useRoute } from '../../context';
-	import { BATCH_SCREEN, batchViews, fmt } from '../../model';
+	import { BATCH_SCREEN, batchViews, fmt, journeysOf, partAt } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { BatchView, User } from '../../types';
 	import Screen from '../common/Screen.svelte';
@@ -27,8 +27,14 @@
 	const rows = $derived<Row[]>(views.map((v) => ({ ...v, name: v.skuObj.name })));
 	const sel = $derived(openId ? views.find((v) => v.id === openId) : undefined);
 	const target = $derived(BATCH_SCREEN[me.role]);
+	// the operator's rows open the batch's page, on the screen for where it stands (SC-112)
+	const journeys = $derived(me.role === 'operator' ? journeysOf(ws.state, ws.data, ws.cases, ws.case) : []);
 	const openRow = (v: BatchView) =>
-		target && (v.hero || v.journey) ? router.go(target, { ref: v.id }) : (openId = v.id);
+		me.role === 'operator'
+			? router.go(partAt(journeys.find((i) => i.ref === v.id)), { ref: v.id })
+			: target && (v.hero || v.journey)
+				? router.go(target, { ref: v.id })
+				: (openId = v.id);
 </script>
 
 {#snippet product(v: Row)}<span class="row tight"

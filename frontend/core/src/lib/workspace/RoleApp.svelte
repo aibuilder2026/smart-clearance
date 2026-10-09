@@ -3,12 +3,25 @@
 	import Card from '../components/Card.svelte';
 	import Shell from '../components/Shell.svelte';
 	import Skeleton from '../components/Skeleton.svelte';
+	import { useApp } from '../app.svelte';
 	import Icon from '../icons/Icon.svelte';
 	import { rise } from '../motion/transitions';
 	import { useNotice } from '../notice.svelte';
-	import { provideRoute, provideWorkspaceLead, type Route } from './context';
+	import type { NavItem } from '../components/Shell.svelte';
+	import { provideBatchFrame, provideRoute, provideWorkspaceLead, type Route } from './context';
 	import { LiveView, provideLive, type PushControl } from './live.svelte';
-	import { HOME, NAV, PARENT, routesFor } from './model';
+	import {
+		BATCH_PARTS,
+		BATCH_PART_IDS,
+		HOME,
+		NAV,
+		PARENT,
+		batchViews,
+		journeysOf,
+		partAt,
+		routesFor,
+		shortName
+	} from './model';
 	import { useWorkspace } from './source';
 	import type { Notification, User } from './types';
 	import WorkspaceSheet from './screens/auth/WorkspaceSheet.svelte';
@@ -16,6 +29,8 @@
 	import PushBanners from './screens/common/PushBanners.svelte';
 	import Screen from './screens/common/Screen.svelte';
 	import PushStep from './screens/live/PushStep.svelte';
+	import BatchHead from './screens/brand/BatchHead.svelte';
+	import BatchJourney from './screens/brand/BatchJourney.svelte';
 	import Batches from './screens/brand/Batches.svelte';
 	import CommandCenter from './screens/brand/CommandCenter.svelte';
 	import Execution from './screens/brand/Execution.svelte';
@@ -63,9 +78,107 @@
 	const allowed = $derived(routesFor(me.role));
 	const name = $derived(route?.name || HOME[me.role]);
 	const safe = $derived(allowed.includes(name) ? name : HOME[me.role]);
-	const current = $derived(PARENT[safe] || safe);
 	const inside = $derived(me.role !== 'buyer');
 	const ws = useWorkspace();
+	const app = useApp();
+
+	// the operator reads the workspace top down (SC-112, screens/roles.jsx): the workspace's own places, then a batch, then
+	// the batch's screens as tabs under its head. A batch screen names its batch (a screen opened without one keeps the
+	// batch it was on, else the first in a journey); a batch in no journey has its Journey alone; its back link goes to
+	// where the batch was opened from. The sidebar lists the batches still in a journey, by name and stop
+	const operator = $derived(me.role === 'operator');
+	const items = $derived(operator ? journeysOf(ws.state, ws.data, ws.cases, ws.case) : []);
+	const batchRoute = $derived(operator && BATCH_PART_IDS.includes(safe));
+	let lastRef = $state<string | null>(null);
+	const wantRef = $derived(route?.params?.ref ?? (batchRoute ? lastRef : null));
+	const it = $derived(batchRoute ? ((wantRef ? items.find((i) => i.ref === wantRef) : items[0]) ?? null) : null);
+	const bv = $derived(
+		batchRoute
+			? it
+				? it.view
+				: (batchViews(ws.state, ws.data).find((v) => v.id === (wantRef ?? ws.case?.batch.id)) ?? null)
+			: null
+	);
+	const inBatch = $derived(!!bv);
+	const part = $derived(it ? safe : 'journey');
+	$effect(() => {
+		if (bv) untrack(() => (lastRef = bv.id));
+	});
+	const WHERE: Record<string, string> = {
+		command: 'Command Center',
+		batches: 'Batches',
+		inbox: 'Inbox',
+		report: 'Finance & ESG',
+		setup: 'Setup',
+		profile: 'Profile'
+	};
+	let from = $state('command');
+	let partBefore = $state<string | null>(null);
+	let prev = untrack(() => safe);
+	$effect.pre(() => {
+		const n = safe;
+		untrack(() => {
+			if (n === prev) return;
+			if (BATCH_PART_IDS.includes(n) && !BATCH_PART_IDS.includes(prev) && WHERE[prev]) from = prev;
+			partBefore = BATCH_PART_IDS.includes(prev) ? prev : null;
+			prev = n;
+		});
+	});
+	const SIDEBAR_BATCHES = 5;
+	const open = $derived(items.filter((i) => i.stage < 9));
+	const nav = $derived.by((): NavItem[] => {
+		if (!operator) return NAV[me.role];
+		const shown = open.slice(0, open.length > SIDEBAR_BATCHES + 1 ? SIDEBAR_BATCHES : open.length);
+		const batches: NavItem[] = shown.map((b, i) => ({
+			id: 'batch:' + b.ref,
+			label: shortName(b.view.skuObj),
+			icon: 'boxes',
+			product: b.view.skuObj.img,
+			stop: b.stop,
+			human: b.human,
+			phoneHidden: true,
+			section: i === 0 ? `In a journey · ${open.length}` : undefined,
+			aria: `${b.view.skuObj.name}, ${b.ref}, at ${b.stop}${b.human ? ', needs your yes' : ''}`
+		}));
+		if (open.length > shown.length)
+			batches.push({
+				id: 'more',
+				label: `${open.length - shown.length} more in Batches`,
+				icon: 'ellipsis',
+				phoneHidden: true
+			});
+		const ops = NAV.operator;
+		return [ops[0], ops[1], ops[2], ...batches, ...ops.slice(3)];
+	});
+	const current = $derived(
+		inBatch
+			? app.bp !== 'phone' && it && open.some((o) => o.ref === it.ref)
+				? 'batch:' + it.ref
+				: from
+			: PARENT[safe] || safe
+	);
+	function onnav(id: string) {
+		if (id === 'more') return ongo({ name: 'batches' });
+		if (id.startsWith('batch:')) {
+			const ref = id.slice(6);
+			return ongo({ name: partAt(items.find((i) => i.ref === ref)), params: { ref } });
+		}
+		ongo({ name: id, replace: true });
+	}
+	provideBatchFrame({
+		get on() {
+			return inBatch;
+		},
+		get title() {
+			return bv ? `${shortName(bv.skuObj)} · ${BATCH_PARTS.find((p) => p.id === part)?.label}` : '';
+		},
+		get back() {
+			return WHERE[from] ?? WHERE.command;
+		},
+		get head() {
+			return batchHead;
+		}
+	});
 	const display = $derived({ ...me, role: ws.data.roles[me.role] });
 	let wsOpen = $state(false);
 	const { toast } = useNotice();
@@ -91,7 +204,7 @@
 
 	provideRoute({
 		get route() {
-			return { name: safe, params: route?.params };
+			return inBatch && bv ? { name: part, params: { ref: bv.id } } : { name: safe, params: route?.params };
 		},
 		go: (n, params) => ongo({ name: n, params }),
 		back: () => onback()
@@ -132,11 +245,19 @@
 		><Icon name="hourglass" size={18} stroke={2.2} /></span
 	>{/snippet}
 
+{#snippet batchHead()}{#if bv}<BatchHead
+			{it}
+			v={bv}
+			{part}
+			from={partBefore}
+			onpart={(p) => ongo({ name: p, params: { ref: bv.id }, replace: true })}
+		/>{/if}{/snippet}
+
 {#snippet shell()}
 	<Shell
-		nav={NAV[me.role]}
+		{nav}
 		{current}
-		onnav={(id) => ongo({ name: id, replace: true })}
+		{onnav}
 		user={display}
 		onuser={() => ongo({ name: 'profile' })}
 		ws={inside ? ws.data.workspace : null}
@@ -144,9 +265,20 @@
 		brand={me.role === 'buyer' ? esBrand : undefined}
 		brandMark={me.role === 'buyer' ? esMark : undefined}
 	>
-		{#key safe}
-			<div in:rise={{ y: 6, duration: 180 }}>
+		{#key inBatch && bv ? 'batch:' + bv.id : safe}
+			<div in:rise={{ y: 6, duration: 180 }} class={inBatch ? 'bpage' : undefined}>
 				{#if pushStep}<PushStep {me} push={pushStep.push} ondone={pushStep.done} />
+				{:else if inBatch && bv}{#if !it || part === 'journey'}<BatchJourney
+							{me}
+							{it}
+							v={bv}
+						/>{:else if part === 'route'}<RouteRoom {me} />{:else if ws.case?.batch.id !== it.ref}<Screen
+							{me}
+							title={bv.skuObj.name}
+							><Card class="stack" style="gap: 14px" aria-busy="true"
+								>{#each [0, 1, 2] as i (i)}<Skeleton h={i ? 18 : 44} r={i ? 6 : 12} />{/each}</Card
+							></Screen
+						>{:else if part === 'execution'}<Execution {me} />{:else}<Paperwork {me} />{/if}
 				{:else if reading}<Screen {me} title={ABOUT_A_BATCH[safe].name}
 						><Card class="stack" style="gap: 14px" aria-busy="true"
 							>{#each [0, 1, 2] as i (i)}<Skeleton h={i ? 18 : 44} r={i ? 6 : 12} />{/each}</Card

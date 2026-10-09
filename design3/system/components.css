@@ -151,11 +151,21 @@ button.list-row:hover, a.list-row:hover { background: var(--fill); }
 [data-theme="dark"] .sb-item[aria-current="page"] { background: var(--fill-2); box-shadow: none; }
 .sb-item .sb-n { margin-left: auto; font-size: 12px; color: var(--fg-3); font-variant-numeric: tabular-nums; }
 .sb-item .badge-count { margin-left: auto; box-shadow: none; }
+/* a batch in the sidebar (SC-112): its pack, its short name, the stop it is at; amber while it waits for a yes */
+.sb-batch { height: 42px; padding-left: 8px; }
+.sbb-pic { display: grid; place-items: center; flex: 0 0 26px; width: 26px; height: 26px; border-radius: 8px; background: var(--fill); overflow: hidden; }
+.sbb-pic img { width: 24px; height: 24px; object-fit: contain; }
+.sbb-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 550; }
+.sbb-stop { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--fg-3); white-space: nowrap; }
+.sbb-stop i { width: 7px; height: 7px; border-radius: 50%; background: var(--primary); }
+.sbb-stop.human { color: var(--amber-text); }
+.sbb-stop.human i { background: var(--amber); }
 .sb-foot { margin-top: auto; padding-top: 10px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; min-width: 0; }
 .sb-user { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 12px; text-align: left; width: 100%; }
 .sb-user:hover { background: var(--fill); }
 .sb-user .who { min-width: 0; flex: 1; } .sb-user b { display: block; font-size: 14px; font-weight: 600; } .sb-user span { display: block; font-size: 12px; color: var(--fg-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.rail-compact .sb-item span:not(.badge-count), .rail-compact .sb-label, .rail-compact .sb-brand .wordmark, .rail-compact .sb-user .who { display: none; }
+.rail-compact .sb-item span:not(.badge-count, .sbb-pic), .rail-compact .sb-label, .rail-compact .sb-brand .wordmark, .rail-compact .sb-user .who { display: none; }
+.rail-compact .sbb-pic { width: 30px; height: 30px; flex-basis: 30px; }
 .rail-compact .sb-item { justify-content: center; padding: 0; height: 44px; }
 /* the client workspace under the product's mark: a surface pill on desktop, the bare mark on the rail */
 .sb-ws { display: flex; align-items: center; gap: 10px; width: 100%; margin: -4px 0 12px; padding: 8px 10px 8px 8px; border-radius: 14px; text-align: left; background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); transition: box-shadow var(--t-fast); }

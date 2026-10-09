@@ -8,6 +8,12 @@
 	};
 	/** the screens that are about the batch in focus, and what each says on a day with none (SC-68's quiet day) */
 	export const ABOUT_A_BATCH: Record<string, Quiet> = {
+		journey: {
+			name: 'Journey',
+			img: 'sprout-box',
+			title: 'No batch in a journey',
+			body: 'When the Watcher flags a batch, its journey opens here: its tracker, its cluster and what its agents do.'
+		},
 		route: {
 			name: 'Route Room',
 			img: 'sprout-box',

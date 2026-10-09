@@ -416,6 +416,9 @@
   /* ---------- the shell: tab bar on phones, a compact rail on tablets, a sidebar on desktops ---------- */
   // ws: the client workspace the person is in. The product's mark leads the sidebar and the workspace sits under it;
   // on a phone the workspace is the button at the left of each page's navigation bar (see Page's lead).
+  // A nav item with a product is a batch (SC-112): its pack in place of the icon, its short name, and the stop it is at
+  // on the right, amber while it waits for a person's yes; aria says it all in words.
+  const NavPic = ({ n, size }) => <span className="sbb-pic" aria-hidden="true"><Product name={n.product} size={size} alt="" /></span>;
   function Shell({ nav, current, onNav, user, onUser, footer, brandRight, brand, brandMark, ws, onWorkspace, children }) {
     const app = useApp();
     if (app.bp === "phone") return <div className="layer" style={{ position: "absolute", inset: 0 }}>
@@ -426,7 +429,7 @@
       <nav className="sidebar rail-compact" aria-label="Main" style={{ padding: "14px 10px" }}>
         <div className="sb-brand" style={{ justifyContent: "center", padding: "2px 0 8px" }}>{brandMark || <Mark size={36} />}</div>
         {ws && <button type="button" className="sb-ws-rail" onClick={onWorkspace} aria-label={`${ws.name} workspace`} title={`${ws.name} · ${ws.domain}`}><WorkspaceMark ws={ws} size={30} /></button>}
-        {nav.map(n => <button key={n.id} type="button" className="sb-item" title={n.label} aria-label={n.label} aria-current={current === n.id ? "page" : undefined} onClick={() => onNav(n.id)} style={{ position: "relative" }}><Icon name={n.icon} size={21} />{n.badge ? <span className="badge-count" style={{ position: "absolute", top: 3, right: 6 }}>{n.badge}</span> : null}</button>)}
+        {nav.map(n => <button key={n.id} type="button" className={cx("sb-item", n.product && "sb-batch")} title={n.label} aria-label={n.aria || n.label} aria-current={current === n.id ? "page" : undefined} onClick={() => onNav(n.id)} style={{ position: "relative" }}>{n.product ? <NavPic n={n} size={26} /> : <Icon name={n.icon} size={21} />}{n.badge ? <span className="badge-count" style={{ position: "absolute", top: 3, right: 6 }}>{n.badge}</span> : null}</button>)}
         <div className="sb-foot">{user && <button type="button" className="sb-user" style={{ justifyContent: "center", padding: 6 }} onClick={onUser} aria-label={user.name}><Avatar person={user} size="sm" /></button>}</div>
       </nav>
       <div className="scroll" style={{ position: "relative", minWidth: 0 }} id="main">{children}</div>
@@ -435,7 +438,7 @@
       <nav className="sidebar" aria-label="Main">
         <div className="sb-brand">{brand || <><Mark size={32} /><Wordmark size={18} /></>}{brandRight}</div>
         {ws && <button type="button" className="sb-ws" onClick={onWorkspace} aria-label={`${ws.name} workspace, ${ws.domain}`}><WorkspaceMark ws={ws} size={30} /><span className="who"><span className="ws-name"><b>{ws.name}</b><Icon name="chevron-down" size={15} className="subtle" /></span><span className="ws-dom">{ws.domain}</span></span></button>}
-        {nav.map((n, i) => <Fragment key={n.id}>{n.section && <div className="sb-label">{n.section}</div>}<button type="button" className="sb-item" aria-current={current === n.id ? "page" : undefined} onClick={() => onNav(n.id)}><Icon name={n.icon} size={19} /><span>{n.label}</span>{n.badge ? <span className="badge-count">{n.badge}</span> : n.count != null ? <span className="sb-n">{n.count}</span> : null}</button></Fragment>)}
+        {nav.map((n, i) => <Fragment key={n.id}>{n.section && <div className="sb-label">{n.section}</div>}<button type="button" className={cx("sb-item", n.product && "sb-batch")} aria-label={n.aria} aria-current={current === n.id ? "page" : undefined} onClick={() => onNav(n.id)}>{n.product ? <NavPic n={n} size={24} /> : <Icon name={n.icon} size={19} />}<span className={n.product ? "sbb-name" : undefined}>{n.label}</span>{n.stop ? <span className={cx("sbb-stop", n.human && "human")} aria-hidden="true"><i />{n.stop}</span> : n.badge ? <span className="badge-count">{n.badge}</span> : n.count != null ? <span className="sb-n">{n.count}</span> : null}</button></Fragment>)}
         <div className="sb-foot">{footer}{user && <button type="button" className="sb-user" onClick={onUser} title={`${user.name} · ${user.role}${user.org ? " · " + user.org : ""}`}><Avatar person={user} size="sm" /><span className="who"><b>{user.name}</b><span>{user.role}{user.org ? " · " + user.org : ""}</span></span><Icon name="ellipsis" size={18} className="subtle" /></button>}</div>
       </nav>
       <div className="scroll" style={{ position: "relative", minWidth: 0 }} id="main">{children}</div>

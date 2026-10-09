@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { openWorkspace, title } from './workspace';
+import { batchTab, isPhone, openWorkspace, title } from './workspace';
 
 // The workspace app's journey on its stub, driven as the people in the story drive it: each step lands, the agents
 // carry the batch on by themselves, and partners nobody is playing answer on their own (SC-65)
@@ -40,7 +40,9 @@ test("flows · Priya's day: signing in, Setup, the agents' plan, the one yes, an
 	// Priya hears of it in an in-app banner, as a push
 	await expect(page.locator('.banners .banner').last()).toBeVisible();
 	await review.click();
-	await expect(title(page)).toHaveText('Route Room');
+	// the batch's page, on its Route Room (SC-112)
+	await expect(title(page)).toHaveText('Masala Chips 150 g');
+	await expect(batchTab(page)).toContainText(/^Route/);
 	await expect(page.getByText('Recommended split')).toBeVisible();
 
 	// the one yes
@@ -50,7 +52,7 @@ test("flows · Priya's day: signing in, Setup, the agents' plan, the one yes, an
 	const placed = page.getByRole('dialog', { name: 'Plan placed' });
 	await expect(placed).toBeVisible();
 	await placed.getByRole('button', { name: 'Watch execution' }).click();
-	await expect(title(page)).toHaveText('Execution');
+	await expect(batchTab(page)).toContainText('Execution');
 	await expect(page).toHaveURL(/\/execution\/MF-2409-117$/); // Execution keeps the batch approved (SC-91)
 
 	// the Lister, Outreach and the donation agent at work, then the kiranas' orders coming in
@@ -59,7 +61,9 @@ test("flows · Priya's day: signing in, Setup, the agents' plan, the one yes, an
 	await expect
 		.poll(async () => Number(await units.getAttribute('aria-valuenow')), { timeout: 20_000 })
 		.toBeGreaterThan(0);
-	await page.getByRole('button', { name: 'Back to Route Room' }).click();
+	// the batch's Route Room again, from its tabs; back goes where the batch was opened from
+	await expect(page.getByRole('button', { name: 'Back to Command Center' })).toBeVisible();
+	await page.locator('.bh-tab', { hasText: /^Route/ }).click();
 	await expect(page.getByText(/Approved by Priya · 09:40/)).toBeVisible();
 });
 
@@ -141,10 +145,20 @@ test('flows · switching person from the profile', async ({ page }) => {
 });
 
 test('flows · the shell: navigating, then back and forward', async ({ page }) => {
-	await openWorkspace(page, '/command');
+	await openWorkspace(page, '/command', { stage: 5 });
+	// a batch in a journey is in the sidebar by name and stop, and opens its page where it stands (SC-112)
+	if (!isPhone(page)) {
+		await nav(page)
+			.getByRole('button', { name: /^Masala Chips 150 g, MF-2409-117, at Approve/ })
+			.click();
+		await expect(title(page)).toHaveText('Masala Chips 150 g');
+		await expect(page).toHaveURL(/\/route\/MF-2409-117$/);
+		await expect(
+			nav(page).getByRole('button', { name: /^Masala Chips 150 g/ }),
+			'the batch is marked current'
+		).toHaveAttribute('aria-current', 'page');
+	}
 	for (const [name, path, heading] of [
-		['Route Room', '/route', 'Route Room'],
-		['Execution', '/execution', 'Execution'],
 		['Batches', '/batches', 'Batches'],
 		['Finance & ESG', '/report', 'Finance & ESG']
 	]) {

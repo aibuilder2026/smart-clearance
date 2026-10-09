@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SC-112 option A · The batch page</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Munchly Foods' workspace, batch first. Option A: a batch is a page of its own, with one head and its screens as tabs; the batches in a journey sit in the sidebar. Every screen's own design is the app's. Every company, person and figure is fictional.">
+<link rel="icon" href="../../../system/img/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../../system/tokens.css">
+<link rel="stylesheet" href="../../../system/base.css">
+<link rel="stylesheet" href="../../../system/components.css">
+<link rel="stylesheet" href="../../../screens/screens.css">
+<link rel="stylesheet" href="../../../app/app.css">
+<link rel="stylesheet" href="../sc112.css">
+<style>.lv-review { display: none; }</style>
+<script>
+  // the workspace as it runs live, signed in as Priya with two batches flagged (SC-68's "live" moment); ?stage= moves
+  // the Masala Chips on (5 Approve, 6 Execute, 7 Settle, 9 cleared), ?theme= picks light or dark
+  (function () {
+    var q = new URLSearchParams(location.search);
+    if (!q.has("state")) { q.set("state", "live"); history.replaceState(null, "", location.pathname + "?" + q.toString() + location.hash); }
+    try { if (q.get("theme")) localStorage.setItem("sc3-theme", q.get("theme")); } catch (e) {}
+    window.SC112_OPT = "a";
+  })();
+</script>
+<script>window.SC3_IMG = /claudeusercontent\.com$/.test(location.hostname) ? "https://raw.githubusercontent.com/aibuilder2026/smart-clearance/__IMG_SHA__/design3/system/img/" : "../../../system/img/";</script>
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/framer-motion@11.18.2/dist/framer-motion.js"></script>
+<script src="../../../system/icons.js"></script>
+<script src="../../../core/money.js"></script>
+<script src="../../../core/data.js"></script>
+<script src="../../../core/store.js"></script>
+<script src="../../../core/flow.js"></script>
+<script src="../../../core/world.js"></script>
+</head>
+<body>
+<script>window.SC3_LIVE = true; window.SC3_SPLASH_MANUAL = true;</script>
+<script src="../../../console/splash.js"></script>
+<div id="root"></div>
+<script src="../../../system/kit.js"></script>
+<script src="../../../system/world.js"></script>
+<script src="../../../system/product.js"></script>
+<script src="../../../screens/common.js"></script>
+<script src="../sc112-pre.js"></script>
+<script src="../../../screens/live.js"></script>
+<script src="../../../screens/brand.js"></script>
+<script src="../../../screens/trade.js"></script>
+<script src="../../../screens/finance.js"></script>
+<script src="../../../screens/admin.js"></script>
+<script src="../../../screens/auth.js"></script>
+<script src="../../../screens/roles.js"></script>
+<script src="../sc112.js"></script>
+<script src="opt.js"></script>
+<script src="../../../app/app.js"></script>
+<script src="../sc112-moments.js"></script>
+</body>
+</html>
