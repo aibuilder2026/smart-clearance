@@ -1,0 +1,163 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-121/option-a/mockup.html?who=anita",
+  "out": "option-a/ledger-anita-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "height": 1700
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-121/option-a/mockup.html?who=anita",
+  "out": "option-a/ledger-anita-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2600,
+  "height": 1700
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-121/option-a/mockup.html?who=vikram",
+  "out": "option-a/ledger-vikram-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "height": 1700
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-121/option-a/mockup.html?who=anita#/report/MF-2407-114",
+  "out": "option-a/batch-papers-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "height": 1000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-121/option-a/mockup.html?who=anita#/report/MF-2407-114",
+  "out": "option-a/batch-money-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "height": 1100,
+  "click": [
+   "button.bh-tab:has-text('Money')"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-121/option-a/mockup.html?who=anita",
+  "out": "option-a/ledger-anita-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2600,
+  "height": 2600
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-121/option-a/mockup.html?who=anita#/report/MF-2407-114",
+  "out": "option-a/batch-papers-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2600,
+  "height": 2200
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-121/option-b/mockup.html?who=anita",
+  "out": "option-b/close-anita-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "height": 1900
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-121/option-b/mockup.html?who=anita",
+  "out": "option-b/close-anita-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2600,
+  "height": 1900
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-121/option-b/mockup.html?who=vikram",
+  "out": "option-b/brsr-vikram-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "height": 1500
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-121/option-b/mockup.html?who=vikram#/report/MF-2407-114",
+  "out": "option-b/batch-impact-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "height": 1000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-121/option-b/mockup.html?who=anita",
+  "out": "option-b/close-anita-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2600,
+  "height": 3200
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-121/option-b/mockup.html?who=vikram",
+  "out": "option-b/brsr-vikram-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2600,
+  "height": 2400
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-121/option-c/mockup.html?who=anita",
+  "out": "option-c/timeline-anita-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "height": 1000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-121/option-c/mockup.html?who=anita",
+  "out": "option-c/timeline-anita-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2600,
+  "height": 1000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-121/option-c/mockup.html?who=vikram",
+  "out": "option-c/timeline-vikram-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "height": 1000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-121/option-c/mockup.html?who=anita",
+  "out": "option-c/timeline-money-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "height": 1000,
+  "click": [
+   "button.seg:has-text('Money')"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-121/option-c/mockup.html?who=anita",
+  "out": "option-c/timeline-anita-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2600,
+  "height": 1500
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-121/option-c/mockup.html?who=anita",
+  "out": "option-c/inspector-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2600,
+  "height": 900,
+  "click": [
+   "button.sc121-bar >> nth=9"
+  ]
+ }
+]

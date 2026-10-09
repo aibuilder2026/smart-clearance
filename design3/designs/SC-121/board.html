@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-121 Finance & ESG</title>
+<meta name="description" content="Three ways to make Munchly's Finance and ESG batch based and live on real data, with the history of twelve cleared batches the options read and the figures the audit found off.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<style>
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber: #f0b429; --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px -6px rgb(17 41 30 / 0.1);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber: #f7c04a; --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber: #f7c04a; --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 48px 16px 72px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+h2 { margin: 60px 0 14px; font-size: clamp(25px, 3vw, 32px); font-weight: 720; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 72, "wdth" 88; }
+h3 { font-size: 26px; font-weight: 720; letter-spacing: -0.018em; font-variation-settings: "opsz" 48, "wdth" 90; }
+h3.sub { font: 650 16px/1.35 var(--ui); letter-spacing: 0; font-variation-settings: normal; margin: 0 0 6px; }
+p { margin: 0 0 12px; max-width: 74ch; color: var(--ink-2); text-wrap: pretty; }
+p b, li b, td b { color: var(--ink); font-weight: 600; }
+.lede { font-size: 18px; margin-top: 14px; }
+blockquote { margin: 16px 0; padding: 16px 20px; border-radius: 14px; background: var(--sunken); color: var(--ink); font-size: 15.5px; max-width: 82ch; }
+blockquote p { color: var(--ink); margin: 0 0 8px; }
+blockquote p:last-child { margin: 0; }
+ul, ol { margin: 0 0 12px; padding-left: 20px; color: var(--ink-2); max-width: 80ch; display: grid; gap: 6px; }
+code { font: 500 0.9em/1 var(--mono); }
+figure { margin: 0; min-width: 0; }
+figure img, figure video { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+.desks { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 700px) { .desks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.phones { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+@media (min-width: 700px) { .phones { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .phones { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.card { padding: 22px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.shared { display: grid; gap: 18px; }
+@media (min-width: 900px) { .shared { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.shared p, .shared li { font-size: 14.5px; }
+.opt { margin-top: 26px; display: grid; gap: 16px; padding: 26px 22px; border-radius: 28px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); scroll-margin-top: 20px; }
+.opt.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.opt header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.opt header p { margin: 0; flex-basis: 100%; font-size: 17px; color: var(--ink); max-width: 78ch; }
+.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 600 12.5px/1 var(--ui); color: var(--green-text); background: var(--green-soft); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+.btn.primary { background: var(--green); color: #fff; box-shadow: none; }
+:root[data-theme="dark"] .btn.primary { color: #03170d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #03170d; } }
+.vid { display: grid; gap: 18px; }
+@media (min-width: 900px) { .vid { grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); align-items: start; } }
+dl.facts { margin: 0; display: grid; gap: 12px; }
+dl.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); }
+dl.facts dd { margin: 2px 0 0; color: var(--ink-2); font-size: 14.5px; }
+dl.facts dd ul { margin-top: 4px; font-size: 14.5px; }
+.tablewrap { overflow-x: auto; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+table.cmp { border-collapse: collapse; width: 100%; min-width: 900px; font-size: 14px; color: var(--ink-2); }
+table.cmp th, table.cmp td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+table.cmp thead th { color: var(--ink); font-weight: 650; background: var(--sunken); }
+table.cmp tbody th { color: var(--ink); font-weight: 600; width: 15%; }
+table.cmp tr:last-child > * { border-bottom: 0; }
+.rec-box { padding: 22px; border-radius: 20px; background: var(--green-soft); }
+.rec-box p { color: var(--ink); }
+.q { padding: 20px 22px; border-radius: 20px; background: var(--amber-soft); }
+.q p, .q li { color: var(--ink); }
+.q h3 { font-size: 20px; margin-bottom: 8px; }
+.diagram { margin-top: 8px; padding: 18px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); overflow-x: auto; }
+.diagram svg { display: block; width: 100%; min-width: 820px; height: auto; }
+.diagram .t { fill: var(--ink); font: 600 14px var(--ui); }
+.diagram .t2 { fill: var(--ink-2); font: 400 13px var(--ui); }
+.diagram .h { fill: var(--ink-3); font: 650 12px var(--ui); letter-spacing: 0.02em; }
+.diagram .box { fill: var(--sunken); stroke: var(--line-2); }
+.diagram .box.on { fill: var(--surface); stroke: var(--green); stroke-width: 2; }
+.diagram .box.odd { fill: var(--amber-soft); stroke: var(--amber); }
+.diagram .ln { stroke: var(--line-2); stroke-width: 1.5; fill: none; }
+.diagram .ln.g { stroke: var(--green); stroke-width: 2; }
+.diagram .dash { stroke: var(--amber); stroke-width: 1.5; stroke-dasharray: 4 4; fill: none; }
+.diagram .dot { fill: var(--green); }
+.diagram .dot.a { fill: var(--amber); }
+table.cmp td.n, table.cmp th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.cmp tr.tot > * { background: var(--sunken); color: var(--ink); font-weight: 600; }
+.mono { font-family: var(--mono); font-size: 12.5px; }
+.phones img { aspect-ratio: 390 / 844; object-fit: cover; object-position: top; }
+.tall img { max-height: 1100px; object-fit: cover; object-position: top; }
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
+</style>
+
+<body>
+<main class="wrap">
+<h1>Finance &amp; ESG on real data</h1>
+<p class="lede">SC-121 · Munchly's workspace · three ways to make Anita's and Vikram's views batch based, on figures worked from the batches Munchly has actually cleared. Every company, person and figure is fictional; every figure is money.js's.</p>
+<p>The maintainer (9 Oct):</p>
+<blockquote><p>“I want to redesign the finance and ESG view. It should be batch based, calculations looks off for ITC and others, the dashboard for ESG and finance should live and based on real data.”</p><p>“Create some actual data if needed for batches that cleared in the past for munchly with mixed things, like all units sold, vs some were not sold like the left over scenario. Same for GST and tax things, some previous batches should be shown with completed so that when anita and others log in they see proper data.”</p></blockquote>
+
+<h2>What is off today</h2>
+<ul>
+<li><b>The quarter is a sample.</b> Its own note says so: the totals are the walkthrough's, and the weekly split, the channel mix and the BRSR rows are illustrative constants. Its CO₂e never moves, it counts the story's chips batch twice, and nothing on it changes when a ledger posts.</li>
+<li><b>A batch's figures read the plan, not what happened.</b> After the leftover run (444 of 588 packets ordered, 144 packs left at the godown) the batch view said ₹1,224 of credit kept and 217.6 kg diverted; the ledger has ₹1,094.40 and 194.56 kg. The ITC memo was stamped "ITC KEPT" with nothing reversed, though ₹129.60 was; the destruction certificate said 0; the money panel's lines did not add up to its net, and it said the kiranas "came in as planned".</li>
+<li><b>Two rules miss the packs left at the godown.</b> money.js's <code>realised</code> leaves them out of the ITC reversal and keeps the plan's costs avoided. money.js and backend-api agree with each other; both are fixed in SC-122. Everything else (the plan, the write-off, the invoice, the price support, the expiry settlement, who keeps what) checks out.</li>
+<li><b>Finance and ESG are not batch based.</b> Paperwork shows one batch in focus; Finance &amp; ESG opens on the quarter; neither has a way to move between batches.</li>
+</ul>
+<div class="desks tall"><figure><img src="current/finance-esg-quarter-1440-light.webp" width="1440" height="2600" loading="lazy" alt="Today: Finance and ESG's quarter view, with tiles and an illustrative weekly chart."><figcaption>Today · Finance &amp; ESG, the quarter: illustrative splits</figcaption></figure><figure><img src="current/finance-esg-batch-1440-light.webp" width="1440" height="2600" loading="lazy" alt="Today: the This batch view with the plan's figures."><figcaption>Today · This batch: the plan's figures</figcaption></figure><figure><img src="current/anita-paperwork-1440-light.webp" width="1440" height="2600" loading="lazy" alt="Today: Paperwork for the one batch in focus."><figcaption>Today · Paperwork: one batch in focus</figcaption></figure><figure><img src="current/anita-batches-1440-light.webp" width="1440" height="1100" loading="lazy" alt="Today: the Batches table as Anita sees it."><figcaption>Today · Batches</figcaption></figure></div>
+
+<h2>The data every option reads</h2>
+<p>Your answers: Munchly has been live since <b>1 Jul 2026</b>, and its pilot quarter (Q2 FY27) cleared <b>12 batches</b>, 7 sold through, 3 with packs left at the godown and settled at full credit, 2 with a donation. Each one below is planned by money.js from its own packs, days left and sales, as the agents would; the kiranas' shortfall and the counter are the history's. The papers number back from the story's: INV/26-27/0921–0930, CN/0102–0116, before the story's INV/26-27/0931 and CN/0117.</p>
+<div class="tablewrap"><table class="cmp"><thead><tr><th>Batch</th><th>Distributor</th><th>What happened</th><th>Flagged → cleared</th><th class="n">Recovered</th><th class="n">If destroyed</th><th class="n">Credit kept</th><th class="n">Reversed</th><th class="n">Diverted</th><th>Papers</th></tr></thead><tbody>
+<tr><th>Choco Cream Biscuits 200 g<br><span class="mono">MF-2406-105</span></th><td>Rakesh Traders</td><td>Sold through</td><td>3 Jul → 25 Jul</td><td class="n">₹22,055</td><td class="n">₹27,332</td><td class="n">₹1,302.00</td><td class="n">₹0.00</td><td class="n">225.8 kg</td><td class="mono">INV/26-27/0921<br>CN/0102</td></tr>
+<tr><th>Peanut Chikki 100 g<br><span class="mono">MF-2406-106</span></th><td>Lakshmi Agencies</td><td>Sold through</td><td>8 Jul → 26 Jul</td><td class="n">₹15,511</td><td class="n">₹18,528</td><td class="n">₹851.18</td><td class="n">₹0.00</td><td class="n">128.3 kg</td><td class="mono">INV/26-27/0922<br>CN/0103</td></tr>
+<tr><th>Masala Oats 200 g<br><span class="mono">MF-2406-107</span></th><td>Lakshmi Agencies</td><td>Left at the godown · 65 packs left</td><td>14 Jul → 23 Aug</td><td class="n">₹18,842</td><td class="n">₹25,940</td><td class="n">₹1,157.10</td><td class="n">₹131.95</td><td class="n">125.4 kg</td><td class="mono">INV/26-27/0923<br>CN/0104<br>CN/0109</td></tr>
+<tr><th>Instant Poha 250 g<br><span class="mono">MF-2406-108</span></th><td>Rakesh Traders</td><td>Sold through</td><td>21 Jul → 15 Aug</td><td class="n">₹19,321</td><td class="n">₹24,098</td><td class="n">₹1,169.28</td><td class="n">₹0.00</td><td class="n">181.4 kg</td><td class="mono">INV/26-27/0924<br>CN/0105</td></tr>
+<tr><th>Instant Poha 250 g<br><span class="mono">MF-2406-109</span></th><td>Lakshmi Agencies</td><td>Donated · 406 to Feeding India</td><td>28 Jul → 7 Aug</td><td class="n">₹15,131</td><td class="n">₹33,995</td><td class="n">₹943.08</td><td class="n">₹706.44</td><td class="n">256 kg</td><td class="mono">CN/0106<br>FI/HYD/26-27/0416</td></tr>
+<tr><th>Aloe Face Wash 100 ml<br><span class="mono">MF-2407-110</span></th><td>Rakesh Traders</td><td>Sold through</td><td>4 Aug → 1 Sept</td><td class="n">₹24,661</td><td class="n">₹28,572</td><td class="n">₹4,664.75</td><td class="n">₹0.00</td><td class="n">47.6 kg</td><td class="mono">INV/26-27/0925<br>CN/0107</td></tr>
+<tr><th>Mango Drink 200 ml<br><span class="mono">MF-2407-111</span></th><td>Rakesh Traders</td><td>Left at the godown · 184 packs left</td><td>10 Aug → 15 Sept</td><td class="n">₹11,094</td><td class="n">₹17,811</td><td class="n">₹652.24</td><td class="n">₹114.08</td><td class="n">226.2 kg</td><td class="mono">INV/26-27/0926<br>CN/0108<br>CN/0114</td></tr>
+<tr><th>Coconut Hair Oil 200 ml<br><span class="mono">MF-2407-112</span></th><td>Lakshmi Agencies</td><td>Sold through</td><td>17 Aug → 10 Sept</td><td class="n">₹28,863</td><td class="n">₹29,125</td><td class="n">₹1,494.45</td><td class="n">₹0.00</td><td class="n">84.9 kg</td><td class="mono">INV/26-27/0927<br>CN/0110</td></tr>
+<tr><th>Masala Oats 200 g<br><span class="mono">MF-2407-113</span></th><td>Rakesh Traders</td><td>Donated · 466 to India FoodBanking Network</td><td>24 Aug → 3 Sept</td><td class="n">₹11,440</td><td class="n">₹33,089</td><td class="n">₹698.32</td><td class="n">₹945.98</td><td class="n">178.2 kg</td><td class="mono">CN/0111<br>IFBN/ACK/26-27/0111</td></tr>
+<tr><th>Peanut Chikki 100 g<br><span class="mono">MF-2407-114</span></th><td>Rakesh Traders</td><td>Left at the godown · 132 packs left</td><td>27 Aug → 27 Sept</td><td class="n">₹13,875</td><td class="n">₹19,259</td><td class="n">₹788.40</td><td class="n">₹96.36</td><td class="n">118.8 kg</td><td class="mono">INV/26-27/0928<br>CN/0112<br>CN/0116</td></tr>
+<tr><th>Masala Chips 150 g<br><span class="mono">MF-2407-115</span></th><td>Lakshmi Agencies</td><td>Sold through</td><td>31 Aug → 20 Sept</td><td class="n">₹17,210</td><td class="n">₹20,735</td><td class="n">₹963.90</td><td class="n">₹0.00</td><td class="n">171.4 kg</td><td class="mono">INV/26-27/0929<br>CN/0113</td></tr>
+<tr><th>Choco Cream Biscuits 200 g<br><span class="mono">MF-2408-116</span></th><td>Lakshmi Agencies</td><td>Sold through</td><td>7 Sept → 21 Sept</td><td class="n">₹21,383</td><td class="n">₹26,108</td><td class="n">₹1,243.72</td><td class="n">₹0.00</td><td class="n">215.7 kg</td><td class="mono">INV/26-27/0930<br>CN/0115</td></tr>
+<tr class="tot"><th>Q2 FY27</th><td>12 batches</td><td>7 sold through · 3 left · 2 donated</td><td>1 Jul → 30 Sep</td><td class="n">₹2,19,385</td><td class="n">₹3,04,590</td><td class="n">₹15,928.42</td><td class="n">₹1,994.81</td><td class="n">1.96 t</td><td>10 invoices · 15 credit notes</td></tr>
+</tbody></table></div>
+<p style="margin-top:14px">The six SKUs without a cost sheet, priced at the chips' ratios (a dealer price of 22/30 of the MRP, to the ₹0.50 below; input GST of the chips' ₹0.90 on ₹16 of cost, at the SKU's own rate). The Mango Drink's dealer price is yours (SC-94); its input GST today is cost × 5% (₹0.55); the mockups take the ratio's ₹0.62 for the one past Mango batch. See the question at the end.</p>
+<div class="tablewrap"><table class="cmp" style="min-width:640px"><thead><tr><th>SKU</th><th class="n">MRP</th><th class="n">Cost</th><th class="n">Dealer price</th><th class="n">GST</th><th class="n">Input GST a pack</th></tr></thead><tbody>
+<tr><th>Choco Cream Biscuits 200 g</th><td class="n">₹40</td><td class="n">₹22</td><td class="n">₹29.00</td><td class="n">5%</td><td class="n">₹1.24</td></tr>
+<tr><th>Peanut Chikki 100 g</th><td class="n">₹25</td><td class="n">₹13</td><td class="n">₹18.00</td><td class="n">5%</td><td class="n">₹0.73</td></tr>
+<tr><th>Instant Poha 250 g</th><td class="n">₹55</td><td class="n">₹31</td><td class="n">₹40.00</td><td class="n">5%</td><td class="n">₹1.74</td></tr>
+<tr><th>Masala Oats 200 g</th><td class="n">₹65</td><td class="n">₹36</td><td class="n">₹47.50</td><td class="n">5%</td><td class="n">₹2.03</td></tr>
+<tr><th>Aloe Face Wash 100 ml</th><td class="n">₹120</td><td class="n">₹58</td><td class="n">₹88.00</td><td class="n">18%</td><td class="n">₹11.75</td></tr>
+<tr><th>Coconut Hair Oil 200 ml</th><td class="n">₹150</td><td class="n">₹72</td><td class="n">₹110.00</td><td class="n">5%</td><td class="n">₹4.05</td></tr>
+<tr><th>Mango Drink 200 ml <span class="mono">(an open question)</span></th><td class="n">₹20</td><td class="n">₹11</td><td class="n">₹14.50</td><td class="n">5%</td><td class="n">₹0.62 at the ratio · ₹0.55 today</td></tr>
+</tbody></table></div>
+
+<h2>What all three share</h2>
+<div class="shared">
+<div class="card"><h3 class="sub">A batch's own page</h3><p>The operator's batch head from SC-112 (the pack, the name, the id, the distributor, how it ended), with three tabs: <b>Money</b> (what happened against what destroying it would have cost), <b>Papers</b> (the GST on the batch, then the document pack, each with its number) and <b>Impact</b> (the BRSR line and its evidence). Paperwork becomes the Papers tab; Anita opens on Papers, Vikram on Impact.</p></div>
+<div class="card"><h3 class="sub">What happened, not the plan</h3><p>Every batch figure is its posted ledger: credit kept on the packs sold under tax invoices, reversed on the packs destroyed or given away; kilos diverted, resold or donated, and destroyed; the costs avoided only on what was not destroyed (SC-122).</p></div>
+<div class="card"><h3 class="sub">Live, by period</h3><p>Q2 FY27, Q3 FY27 or this year so far, summed from the cleared batches' ledgers (SC-124), and read again when a ledger posts. A batch still out is listed as out, never as a figure.</p></div>
+</div>
+
+<section class="opt rec" id="option-a">
+<header><h3>A · One ledger</h3><span class="tag">Recommended</span><p>Finance and ESG share one page, the ledger. The period, a reading (Money, GST, Impact), the period's one figure with its working, the period drawn as its batches (each as wide as its figure, the bin hatched), and the batches by month. Every row is a batch; it opens the batch's page.</p></header>
+<div class="links"><a class="btn primary" href="option-a/mockup.html?who=anita">Open as Anita</a><a class="btn" href="option-a/mockup.html?who=vikram">Open as Vikram</a><a class="btn" href="option-a/mockup.html?who=anita#/report/MF-2407-114">A batch with packs left</a></div>
+<div class="desks"><figure><img src="option-a/ledger-anita-1440-light.webp" width="1440" height="1700" loading="lazy" alt="Option A: the ledger in the GST reading, its figure, the batch strip and the batches by month."><figcaption>Anita · the ledger, GST reading</figcaption></figure><figure><img src="option-a/ledger-vikram-1440-light.webp" width="1440" height="1700" loading="lazy" alt="Option A: the ledger in the Impact reading."><figcaption>Vikram · the Impact reading</figcaption></figure><figure><img src="option-a/batch-papers-1440-light.webp" width="1440" height="1000" loading="lazy" alt="Option A: a batch's page, the Papers tab: credit kept and reversed, then the document pack."><figcaption>A batch with packs left · Papers</figcaption></figure><figure><img src="option-a/batch-money-1440-light.webp" width="1440" height="1100" loading="lazy" alt="Option A: the batch's Money tab, what happened against the write-off."><figcaption>The same batch · Money</figcaption></figure><figure><img src="option-a/ledger-anita-1440-dark.webp" width="1440" height="1700" loading="lazy" alt="Option A in dark."><figcaption>The ledger · dark</figcaption></figure></div>
+<div class="phones"><figure><img src="option-a/ledger-anita-390-light.webp" width="780" height="5200" loading="lazy" alt="Option A on a phone."><figcaption>Phone · the ledger</figcaption></figure><figure><img src="option-a/batch-papers-390-light.webp" width="780" height="4400" loading="lazy" alt="Option A on a phone: a batch's papers."><figcaption>Phone · a batch's papers</figcaption></figure></div>
+<div class="shared"><div><h3 class="sub">Why</h3><ul><li><b>Batch based by construction:</b> the period is its batches, drawn and listed; nothing is a total without its rows.</li><li><b>One ledger, two readings</b> (PRODUCT.md's fourth principle): Anita opens on GST, Vikram on Impact, on the same rows.</li><li><b>Leads with one figure and its working,</b> not tiles over a table (DESIGN.md).</li></ul></div><div><h3 class="sub">Trade-offs</h3><ul><li>The GST return's own lines (Table 4(A)(5), 4(B)(1)) are in the GST reading's working and on each batch, not laid out as a return.</li><li>No to-do list of its own: an open batch sits at the top as still out.</li></ul></div><div><h3 class="sub">What the build touches</h3><p>Report.svelte becomes the ledger and the batch page (Money, Papers, Impact); Paperwork moves into the Papers tab; the Finance and ESG navigation becomes Ledger and Batches. backend-api: a ledger route by period (SC-124).</p></div></div>
+</section>
+<section class="opt" id="option-b">
+<header><h3>B · Close the quarter</h3><p>Each role gets the home its job asks for. Anita's is the quarter's close: its batches through four stops (papers drafted, invoices issued, reviewed, in the GST return), what is left to chase, the return's own figures, and the batches as cards by month. Vikram's is the BRSR builder: Principle 6's rows worked from the batches, each opening on the batches that make it.</p></header>
+<div class="links"><a class="btn primary" href="option-b/mockup.html?who=anita">Open as Anita</a><a class="btn" href="option-b/mockup.html?who=vikram">Open as Vikram</a><a class="btn" href="option-b/mockup.html?who=anita#/report/MF-2407-114">A batch with packs left</a></div>
+<div class="desks"><figure><img src="option-b/close-anita-1440-light.webp" width="1440" height="1900" loading="lazy" alt="Option B: the quarter's close, its four stops, things to chase, the GST return's figures and the batch cards."><figcaption>Anita · the Q2 close</figcaption></figure><figure><img src="option-b/brsr-vikram-1440-light.webp" width="1440" height="1500" loading="lazy" alt="Option B: the BRSR builder, each row opening on its batches."><figcaption>Vikram · BRSR Principle 6</figcaption></figure><figure><img src="option-b/batch-impact-1440-light.webp" width="1440" height="1000" loading="lazy" alt="Option B: a batch's Impact tab."><figcaption>A batch · Impact</figcaption></figure><figure><img src="option-b/close-anita-1440-dark.webp" width="1440" height="1900" loading="lazy" alt="Option B in dark."><figcaption>The close · dark</figcaption></figure></div>
+<div class="phones"><figure><img src="option-b/close-anita-390-light.webp" width="780" height="6400" loading="lazy" alt="Option B on a phone."><figcaption>Phone · the close</figcaption></figure><figure><img src="option-b/brsr-vikram-390-light.webp" width="780" height="4800" loading="lazy" alt="Option B on a phone: BRSR."><figcaption>Phone · BRSR</figcaption></figure></div>
+<div class="shared"><div><h3 class="sub">Why</h3><ul><li><b>Task first:</b> Anita sees at once whether the quarter is closed, and the GSTR-3B lines she files.</li><li><b>Vikram's rows are the BRSR form's own,</b> each traced to its batches and their papers.</li></ul></div><div><h3 class="sub">Trade-offs</h3><ul><li>Two homes to build and keep in step; the money reading (recovered, better than the bin) is only on the cards and the batch page.</li><li>Cards are bulkier than rows: a long quarter scrolls further.</li></ul></div><div><h3 class="sub">What the build touches</h3><p>Report.svelte becomes two screens by role (Close, BRSR) and the batch page; a GST return summary and BRSR rows from backend-api (SC-124).</p></div></div>
+</section>
+<section class="opt" id="option-c">
+<header><h3>C · The year as a timeline</h3><p>Finance and ESG read the same chart: every cleared batch a bar on the day it cleared, in the reading chosen (recovered against what destroying it would have cost, credit kept against reversed, kilos diverted against destroyed), with the months summed under it. A bar opens the batch beside the chart (a sheet on phones), then its own page.</p></header>
+<div class="links"><a class="btn primary" href="option-c/mockup.html?who=anita">Open as Anita</a><a class="btn" href="option-c/mockup.html?who=vikram">Open as Vikram</a><a class="btn" href="option-c/mockup.html?who=anita#/report/MF-2407-114">A batch with packs left</a></div>
+<div class="desks"><figure><img src="option-c/timeline-anita-1440-light.webp" width="1440" height="1000" loading="lazy" alt="Option C: the timeline in the GST reading with a batch open beside it."><figcaption>Anita · GST reading, a batch beside the chart</figcaption></figure><figure><img src="option-c/timeline-money-1440-light.webp" width="1440" height="1000" loading="lazy" alt="Option C: the Money reading, each bar against its write-off."><figcaption>Money reading · the write-off behind each bar</figcaption></figure><figure><img src="option-c/timeline-vikram-1440-light.webp" width="1440" height="1000" loading="lazy" alt="Option C: the Impact reading."><figcaption>Vikram · Impact reading</figcaption></figure><figure><img src="option-c/timeline-anita-1440-dark.webp" width="1440" height="1000" loading="lazy" alt="Option C in dark."><figcaption>The timeline · dark</figcaption></figure></div>
+<div class="phones"><figure><img src="option-c/timeline-anita-390-light.webp" width="780" height="3000" loading="lazy" alt="Option C on a phone."><figcaption>Phone · the timeline</figcaption></figure><figure><img src="option-c/inspector-390-light.webp" width="780" height="1800" loading="lazy" alt="Option C on a phone: a batch in a sheet."><figcaption>Phone · a batch in a sheet</figcaption></figure></div>
+<div class="shared"><div><h3 class="sub">Why</h3><ul><li><b>Time and size at a glance:</b> which months cleared most, and which batches were big.</li><li><b>The would-be write-off sits behind every bar</b> in the Money reading.</li></ul></div><div><h3 class="sub">Trade-offs</h3><ul><li>The batch is reached by aiming at a bar; a list of batches by name lives only in Batches.</li><li>Bars cleared close together stand side by side, so the day is approximate; dense quarters crowd.</li></ul></div><div><h3 class="sub">What the build touches</h3><p>Report.svelte becomes the chart, the inspector and the batch page; a ledger route by period with each batch's cleared day (SC-124).</p></div></div>
+</section>
+<h2>Side by side</h2>
+<div class="tablewrap"><table class="cmp"><thead><tr><th></th><th>A · One ledger</th><th>B · Close the quarter</th><th>C · The year as a timeline</th></tr></thead><tbody>
+<tr><th>Home</th><td>One ledger for both roles, three readings</td><td>Anita: the close · Vikram: BRSR rows</td><td>One chart for both roles, three readings</td></tr>
+<tr><th>How a batch is reached</th><td>Its row, or its segment in the strip</td><td>Its card, or a BRSR row's batches</td><td>Its bar, then the panel</td></tr>
+<tr><th>Best at</th><td>Every batch and its figure in one read</td><td>Closing the quarter, filing the return</td><td>Seeing the year's rhythm</td></tr>
+<tr><th>Weakest at</th><td>No return or BRSR form laid out as such</td><td>The money reading sits on the cards only</td><td>Finding a batch by name</td></tr>
+<tr><th>Phone</th><td>Rows and the strip, as on desktop</td><td>Cards and rows</td><td>The chart narrows; a batch opens in a sheet</td></tr>
+</tbody></table></div>
+
+<div class="rec-box" style="margin-top:22px"><h3 class="sub">Recommended: A · One ledger</h3><p>It is batch based by construction (the period is drawn and listed as its batches), it reads the same rows three ways for the two people who share one ledger, and it leads with one figure and its working rather than tiles over a table. B's close and BRSR form could come later as views of the same ledger.</p></div>
+
+<div class="q" style="margin-top:22px"><h3>Open questions</h3><ul>
+<li><b>The Mango Drink's input GST.</b> It is ₹0.55 a pack today, cost × 5%, while the memo says "from the cost sheet". At the chips' ratio it would be ₹0.62. Keep ₹0.55 and label it estimated, or take ₹0.62?</li>
+<li><b>Priya's Finance &amp; ESG.</b> The operator has Finance &amp; ESG under Reports too; should she get the picked design as well (recommended), or keep the quarter view?</li>
+</ul></div>
+
+<footer>SC-121 · design3/designs/SC-121/ · the history in sc121-data.js, every figure by core/money.js with SC-122's realised · the mockups run the app prototype with each option's screens.</footer>
+</main>
+</body>
+</html>
