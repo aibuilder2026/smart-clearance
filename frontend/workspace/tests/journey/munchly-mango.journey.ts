@@ -265,7 +265,13 @@ const STEPS: { id: string; title: string; run: (page: Page) => Promise<void> }[]
 		title: 'Paperwork drafts the pack, with its PDFs; Lakshmi Agencies runs the van round',
 		async run(page) {
 			const c = await until('Paperwork drafts the papers', DIST, (c) => past(c, 'dispatched') && c.docs.length > 0);
-			const pdfs = await until('Paperwork renders the PDFs', 'anita', (c) => c.docs.filter((d) => d.pdf).length >= 3);
+			// every paper the pack needs carries its PDF; the donation receipt's is asked for at the collection, so it lands
+			// before the others' (SC-115)
+			const pdfs = await until(
+				'Paperwork renders the PDFs',
+				'anita',
+				(c) => c.docs.length > 0 && c.docs.filter((d) => d.status !== 'not required').every((d) => d.pdf)
+			);
 			for (const d of pdfs.docs) run.figure(`Paper: ${d.type}`, `${d.no || '—'} (${d.status}${d.pdf ? ', PDF' : ''})`);
 			story(
 				'Papers with their PDF',
@@ -273,7 +279,7 @@ const STEPS: { id: string; title: string; run: (page: Page) => Promise<void> }[]
 					.filter((d) => d.pdf)
 					.map((d) => d.id)
 					.join(', '),
-				'support, itc, fssai'
+				'support, itc, fssai, receipt'
 			);
 			const leaves = c.moments.van.leavesAt ?? '';
 			vanDay = leaves
