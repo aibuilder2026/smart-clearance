@@ -1,5 +1,6 @@
 // Smart-Clearance v3 · smartclearance.com: the product's own landing page, independent of any client (SC-60, refined in
-// SC-78). The miniature business through one day on film under the heading, a strip reading the hours of the story;
+// SC-78, SC-111). The journey through one day at the miniature business on film under the heading, in four acts, with a
+// strip reading its chapters;
 // a statement that fills in as it is read; the agents at work on the table, one in focus at a time; the product's
 // moments as chapters; Impact's ledger; the workspace itself on a device, one tab per team; plans and the close. In
 // the manner of shopify.com/uk, in the design system's own grammar.
@@ -113,25 +114,27 @@
     </header>;
   }
 
-  /* ---------- 1. the first viewport: one day at the business, on film, under the heading (SC-78) ---------- */
-  // Two ten-second clips chained without a cut: morning to night, then night to morning, each ending on the frame the
-  // other begins on (LTX's last-frame conditioning). The light theme starts in the morning, the dark one at night. The
-  // film loops under its Pause control (WCAG 2.2.2) and drifts with the scroll, not the clock; the strip under the
-  // copy reads the hours of the story. The heading's last word turns once, through what a carton gets, and rests on
-  // "chance". Under reduced motion: the plate, the final word, the last beat.
-  const DAY_BEATS = [
-    { at: "09:00", who: "The Watcher", t: `flags ${fmt.num(N)} packs at risk` },
-    { at: "09:40", who: "You", t: `say yes once, ${fmt.inr(D.PLAN.net)} on screen`, human: true },
-    { at: "13:00", who: "Outreach", t: `${SHOPS} kiranas order ${fmt.num(KL.units)} packs` },
-    { at: "17:30", who: "The Negotiator", t: `closes a buyer at ${rate(AW.price)} a pack` },
+  /* ---------- 1. the first viewport: the journey through one day on film, under the heading (SC-111) ---------- */
+  // One film of four acts in one town, looping under its Pause control (WCAG 2.2.2): sunrise at the factory's bay, the
+  // brand and the distributor; a high sun at the community kitchen, the food bank; a violet dusk at the kirana lane
+  // and the staff-sale table; an indigo-violet night in the office, Paperwork; then dawn, and round. Four plates edited
+  // from the approved town plate, four LTX clips chained through quarter-second dissolves, 14.2 s. The light theme
+  // starts in the morning, the dark one at the night. The page's own camera leans in on each act's place; the film
+  // drifts with the scroll, not the clock; the strip under the copy reads the chapters. The heading's last word turns
+  // once, through what a carton gets, and rests on "chance". Under reduced motion: the plate, the final word, the last
+  // chapter.
+  const FOODBANK = M.CHANNELS.find(c => c.id === "foodbank");
+  const CHAPTERS = [
+    { at: "09:00", who: "The brand and the distributor", t: `${fmt.num(N)} packs flagged; one yes, ${fmt.inr(D.PLAN.net)} on screen`, human: true },
+    { at: "13:00", who: "The food bank", t: `packs with ${FOODBANK.minDays}+ days left go as meals, on the FSSAI checklist` },
+    { at: "18:30", who: "The kiranas and the staff sale", t: `${SHOPS} shops order ${fmt.num(KL.units)} packs; the godown's own staff buy up to ${fmt.num(row("staff").capacity)}` },
+    { at: "22:00", who: "Paperwork", t: `the tax invoice and the credit note drafted; ${fmt.inr(D.PLAN.itcRetained)} of GST credit kept` },
   ];
-  const NIGHT_BEATS = [
-    { at: "21:00", who: "Paperwork", t: "drafts the invoice and the credit note" },
-    { at: "23:30", who: "The kiranas", t: `sell on; ${fmt.num(D.PLAN.soldUnits)} packs on tax invoices` },
-    { at: "05:00", who: "Impact", t: `posts ${fmt.num(D.PLAN.kg)} kg kept out of landfill` },
-    { at: "09:00", who: "The Watcher", t: "runs again, on the next batch" },
-  ];
-  const CLIPS = { day: "day-to-night.mp4", night: "night-to-day.mp4" };
+  // the film: where each chapter begins (seconds), where the night starts, its frame, and where each act's place is
+  // on the plate, for the camera to lean on
+  const FILM = { src: "one-day.mp4", bounds: [0, 3.28, 6.84, 10.41], night: 10.5, ar: 1920 / 1088, lean: 1.5,
+    at: [{ x: 0.37, y: 0.67 }, { x: 0.575, y: 0.42 }, { x: 0.64, y: 0.66 }, { x: 0.14, y: 0.64 }] };
+  const POSTER = { day: "town-morning.webp", night: "town-night.webp" };
   const WORDS = ["buyer", "shelf", "invoice", "ledger line", "chance"];
   // the film drifts with the scroll, not with the clock: a slow rise and a touch of scale as the page is read
   function useFilmDrift() {
@@ -141,27 +144,42 @@
     const scale = useTransform(scrollY, [0, 900], [1, reduce ? 1 : 1.06]);
     return { y, scale };
   }
-  // the strip under the copy: the beat the film is on, with a line that fills through it; the person's beat in amber
+  // the strip under the copy: the chapter the film is on, with a line that fills through it; the person's chapter in amber
   function Story({ beats, i, p, label }) {
     return <div className="film-story" aria-label={label} role="group">
       {beats.map((b, j) => <span key={j} className={cx("fs", j === i && "now", j < i && "done", b.human && "human")}><span className="fs-at">{b.at}</span><span className="fs-t"><b>{b.who}</b> {b.t}</span><i className="fs-bar" aria-hidden="true" style={j === i ? { transform: `scaleX(${p})` } : undefined} /></span>)}
     </div>;
   }
-  // the film's clock: which beat a time falls in (n beats across a clip), and how far through it
-  const beatAt = (t, dur, n) => { const seg = dur / n; const i = Math.min(n - 1, Math.floor(t / seg)); return { i, p: Math.min(1, (t - i * seg) / seg) }; };
-  function useClock(vid, playing, n) {
+  // the film's clock: which chapter a time falls in, by the chapters' starts, and how far through it
+  const chapterAt = (t, bounds, dur) => { let i = 0; while (i + 1 < bounds.length && t >= bounds[i + 1]) i++; const a = bounds[i], b = i + 1 < bounds.length ? bounds[i + 1] : dur; return { i, p: Math.max(0, Math.min(1, (t - a) / (b - a))) }; };
+  function useClock(vid, playing, bounds) {
     const [clk, setClk] = useState({ i: 0, p: 0 });
     useEffect(() => {
       if (!playing) return; let raf;
-      const tick = () => { const v = vid.current; if (v && v.duration) setClk(beatAt(v.currentTime, v.duration, n)); raf = requestAnimationFrame(tick); };
+      const tick = () => { const v = vid.current; if (v && v.duration) setClk(chapterAt(v.currentTime, bounds, v.duration)); raf = requestAnimationFrame(tick); };
       raf = requestAnimationFrame(tick); return () => cancelAnimationFrame(raf);
-    }, [playing, n]);
+    }, [playing, bounds]);
     return clk;
+  }
+  // the page's camera: the film leans in on the act's place, as far as its scale allows. The player is the stage's
+  // own box (object-fit crops inside it), so the act's place lands in the clear part of the stage: right of the copy
+  // on desktops, above it on phones
+  function useLean(stageRef, at, s, ar, reduce) {
+    const [box, setBox] = useState({ w: 0, h: 0 });
+    useLayoutEffect(() => { const el = stageRef.current; if (!el) return; const ro = new ResizeObserver(([e]) => setBox({ w: e.contentRect.width, h: e.contentRect.height })); ro.observe(el); return () => ro.disconnect(); }, [stageRef]);
+    return useMemo(() => {
+      if (!at || reduce || !box.w) return { scale: 1, x: 0, y: 0 };
+      const { w: W, h: H } = box; const k = Math.max(W / ar, H); const dw = k * ar, dh = k; // object-fit: cover
+      const px = W >= 1024 ? 0.5 : 0.44, py = W >= 1024 ? 0.54 : 0.56; const ox = (W - dw) * px, oy = (H - dh) * py;
+      const P = { x: ox + at.x * dw, y: oy + at.y * dh }, C = { x: W / 2, y: H / 2 }, T = { x: W >= 1024 ? W * 0.68 : W * 0.5, y: W >= 1024 ? H * 0.5 : H * 0.4 };
+      let tx = T.x - (C.x + (P.x - C.x) * s), ty = T.y - (C.y + (P.y - C.y) * s);
+      tx = Math.min((s - 1) * C.x, Math.max(-(s - 1) * C.x, tx)); ty = Math.min((s - 1) * C.y, Math.max(-(s - 1) * C.y, ty));
+      return { scale: s, x: tx, y: ty };
+    }, [at, s, ar, reduce, box]);
   }
   function Hero({ onDemo }) {
     const night = useTheme().resolved === "dark"; const reduce = useReducedMotion();
-    const poster = IMG + (night ? "business-night.webp" : "business.webp");
-    const drift = useFilmDrift();
+    const poster = IMG + (night ? POSTER.night : POSTER.day);
     // the loader's handshake (SC-35): the plate is in once the film's poster has decoded, for each theme
     useEffect(() => {
       const L = window.SC3_LOADER; if (!L) return; let live = true;
@@ -172,21 +190,19 @@
     }, [poster, night]);
     const [w, setW] = useState(reduce ? WORDS.length - 1 : 0);
     useEffect(() => { if (reduce || w >= WORDS.length - 1) return; const t = setTimeout(() => setW(w + 1), w === 0 ? 1600 : 1100); return () => clearTimeout(t); }, [w, reduce]);
-    // the two clips, chained: the theme's own first, then the other, then round again
-    const order = night ? [CLIPS.night, CLIPS.day] : [CLIPS.day, CLIPS.night];
-    const va = useRef(null), vb = useRef(null); const [front, setFront] = useState(0); const [playing, setPlaying] = useState(!reduce);
-    useEffect(() => { setFront(0); setPlaying(!reduce); }, [night, reduce]);
-    const onEnded = () => { const o = (front === 0 ? vb : va).current; if (!o) return; o.currentTime = 0; o.play(); setFront(f => 1 - f); };
-    const toggle = () => { const v = (front === 0 ? va : vb).current; if (!v) return; if (playing) { v.pause(); setPlaying(false); } else { v.play(); setPlaying(true); } };
-    const clk = useClock(front === 0 ? va : vb, playing && !reduce, 4);
-    // which half of the day the clip in front shows
-    const dayHalf = (front === 0) !== night; const beats = dayHalf ? DAY_BEATS : NIGHT_BEATS;
+    const drift = useFilmDrift(); const stage = useRef(null); const vid = useRef(null);
+    const [playing, setPlaying] = useState(!reduce);
+    // the theme's own hour first: the morning by day, the night act in the dark
+    useEffect(() => { setPlaying(!reduce); const v = vid.current; if (v) { v.currentTime = night ? FILM.night : 0; if (!reduce) v.play().catch(() => {}); } }, [night, reduce]);
+    const onMeta = () => { const v = vid.current; if (v && night && v.currentTime < 0.5) v.currentTime = FILM.night; };
+    const toggle = () => { const v = vid.current; if (!v) return; if (playing) { v.pause(); setPlaying(false); } else { v.play(); setPlaying(true); } };
+    const clk = useClock(vid, playing && !reduce, FILM.bounds);
+    const cam = useLean(stage, FILM.at[clk.i], FILM.lean, FILM.ar, reduce);
     return <section className="hero film" id="top-hero" aria-labelledby="hero-h">
-      <motion.div className="film-media" aria-hidden="true" style={{ y: drift.y, scale: drift.scale }}>
-        {reduce ? <img src={poster} alt="" /> : <>
-          <video key={order[0] + "a"} ref={va} className={cx("fx", front === 0 && "front")} src={MEDIA + order[0]} poster={poster} muted playsInline autoPlay preload="auto" onEnded={front === 0 ? onEnded : undefined} />
-          <video key={order[1] + "b"} ref={vb} className={cx("fx", front === 1 && "front")} src={MEDIA + order[1]} muted playsInline preload="auto" onEnded={front === 1 ? onEnded : undefined} />
-        </>}
+      <motion.div className="film-media" aria-hidden="true" style={{ y: drift.y, scale: drift.scale }} ref={stage}>
+        <motion.div className="film-lean" animate={cam} transition={{ duration: 1.8, ease: EASE }}>
+          {reduce ? <img src={poster} alt="" /> : <video ref={vid} className="fx front" src={MEDIA + FILM.src} poster={poster} muted playsInline autoPlay loop preload="auto" onLoadedMetadata={onMeta} />}
+        </motion.div>
         <div className="film-shade" />
       </motion.div>
       <div className="film-copy">
@@ -197,7 +213,7 @@
         <p className="film-sub">AI agents find the best exit for short-dated stock, and do the running around. You say yes once.</p>
         <div className="film-ctas"><Button variant="primary" size="lg" pill onClick={() => onDemo()}>Book a demo</Button><a className="btn btn-lg btn-pill film-ghost" {...linkProps(LINKS.demo)}><i aria-hidden="true"><Icon name="play" size={12} stroke={2.6} /></i>Watch the 6-minute demo</a></div>
       </div>
-      <Story beats={beats} i={reduce ? 3 : clk.i} p={reduce ? 1 : clk.p} label={dayHalf ? "The day, hour by hour" : "The night, hour by hour"} />
+      <Story beats={CHAPTERS} i={reduce ? 3 : clk.i} p={reduce ? 1 : clk.p} label="The journey, through one day" />
       {!reduce && <div className="film-ctl"><button type="button" onClick={toggle} aria-pressed={!playing}><Icon name={playing ? "pause" : "play"} size={16} />{playing ? "Pause" : "Play"}</button></div>}
     </section>;
   }

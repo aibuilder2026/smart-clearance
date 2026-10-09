@@ -211,10 +211,10 @@ test('keyboard · a saved appearance applies before the first paint', async ({ b
 	await context.close();
 });
 
-test.describe('the film and the table, with motion on (SC-60)', () => {
+test.describe('the film and the table, with motion on (SC-60, SC-111)', () => {
 	test.use({ contextOptions: { reducedMotion: 'no-preference' } });
 
-	test('keyboard · the film pauses and plays, hands over to its second half without a cut, and the heading rests on "chance"', async ({
+	test('keyboard · the film pauses and plays, loops without a cut, reads the journey\'s chapters, and the heading rests on "chance"', async ({
 		page
 	}) => {
 		await openSite(page);
@@ -226,20 +226,20 @@ test.describe('the film and the table, with motion on (SC-60)', () => {
 		expect(await page.evaluate(() => document.querySelector<HTMLVideoElement>('video.front')!.paused)).toBe(true);
 		await page.keyboard.press('Enter');
 		await expect(ctl).toHaveText(/Pause/);
-		// the first clip ends: the second takes the front and plays on, the strip turns to the night, and the film,
-		// which loops under its Pause (SC-78), still offers Pause
-		const first = await page.evaluate(() => {
+		// near its end the film runs back into its first frame and plays on (SC-111), still under Pause; the strip reads
+		// the four chapters of the journey's day
+		await page.evaluate(() => {
 			const v = document.querySelector<HTMLVideoElement>('video.front')!;
 			v.currentTime = v.duration - 0.2;
-			return v.currentSrc;
 		});
 		await expect
-			.poll(() => page.evaluate(() => document.querySelector<HTMLVideoElement>('video.front')!.currentSrc), {
+			.poll(() => page.evaluate(() => document.querySelector<HTMLVideoElement>('video.front')!.currentTime), {
 				timeout: 6000
 			})
-			.not.toBe(first);
+			.toBeLessThan(2);
 		expect(await page.evaluate(() => document.querySelector<HTMLVideoElement>('video.front')!.paused)).toBe(false);
-		await expect(page.locator('.film-story')).toHaveAttribute('aria-label', 'The night, hour by hour');
+		await expect(page.locator('.film-story')).toHaveAttribute('aria-label', 'The journey, through one day');
+		await expect(page.locator('.film-story .fs')).toHaveCount(4);
 		await expect(ctl).toHaveText(/Pause/);
 		// the word on screen, not the one leaving (inert while it fades out); the turns take 5 s, slower on a busy machine
 		await expect(page.locator('.film-word [aria-hidden]:not([inert])')).toHaveText('chance', { timeout: 15000 });

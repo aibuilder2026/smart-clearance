@@ -1,0 +1,14 @@
+{
+  "name": "shot-office",
+  "model": "Qwen-Image-2.1 bf16 (local)",
+  "mode": "none (generate_image, 16:9)",
+  "prompt": "Tilt-shift photograph of a handmade miniature diorama like an architect's model on a table, seen from above at a gentle three-quarter angle, shallow depth of field, tiny model people, warm sand, terracotta and sage-green palette. Close on a small two-storey office at night, seen from outside through its wide lit ground-floor window: a desk lamp lights a desk with a laptop, a calculator and neat stacks of blank paper, where a tiny woman in a kurta and a tiny man in a checked shirt raise small steel tumblers of chai to each other, both laughing, and a tiny third person claps. Outside, the night sky is deep indigo and violet with a soft purple glow low at the horizon and a few small stars, the balcony and a street lamp glow warm, and a thin softly glowing green painted path runs along the road below the window. No lettering, no words or numbers on any sign, paper or screen, no logos.",
+  "seed": 8114,
+  "size": 2048,
+  "steps": 40,
+  "output": "2752x1536",
+  "created": "2026-10-09",
+  "postprocess": "WebP q82; the PNG original stays local in src/",
+  "use": "smartclearance.com's hero film (SC-111): a plate of the journey's day, and a poster for the film",
+  "designed_in": "design3/designs/SC-111"
+}

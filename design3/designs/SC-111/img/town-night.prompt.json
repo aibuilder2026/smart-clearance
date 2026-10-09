@@ -1,0 +1,14 @@
+{
+  "name": "town-night",
+  "model": "Qwen-Image-2.1 bf16 (local)",
+  "mode": "site/assets/plates/business-night.webp (edit_image)",
+  "prompt": "Make the night richer and more visible, changing only the light. The sky is a deep indigo and violet night with a soft purple glow low at the horizon above the hills and a few small stars; cool moonlight lifts the ground so the roads, roofs and trees read clearly in blue. Warm golden light pours from the office window, where two tiny people stand at the desk, from the factory's loading bay, the godown's open doors, every kirana shop front and the community kitchen; the street lamps along the road glow warm with soft halos; the thin green path glows brightly along the whole road. Keep everything exactly as it is: the same camera and framing, the same composition, every building, road, tree, fence and the thin softly glowing green painted path in the same place with the same shape, size and colours. No lettering anywhere, no words or numbers on any sign, no logos.",
+  "seed": 8104,
+  "size": 2048,
+  "steps": 40,
+  "output": "2752x1536",
+  "created": "2026-10-09",
+  "postprocess": "WebP q82; the PNG original stays local in src/",
+  "use": "smartclearance.com's hero film (SC-111): a plate of the journey's day, and a poster for the film",
+  "designed_in": "design3/designs/SC-111"
+}

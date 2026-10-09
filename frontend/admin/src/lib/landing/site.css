@@ -1,5 +1,5 @@
 /* Smart-Clearance v3 · smartclearance.com, the product's own landing page (SC-60, refined in SC-78): the miniature
-   business through one day on film under the heading, with a strip reading the hours of the story; a statement that
+   business through one day on film under the heading, in four acts with a strip reading its chapters (SC-111); a statement that
    fills in as it is read; the agents at work on the table, one in focus at a time; the product's moments as chapters
    in colour fields; Impact's ledger; the workspace itself on a device, one tab per team; plans and the close. The page
    scrolls the window, as the SvelteKit build does, so its sticky bar and scroll-driven motion work the same way in
@@ -36,10 +36,12 @@ html, body { overflow-x: clip; }
 .site.scrolled .nav-progress { opacity: 1; }
 .site-nav a:focus-visible, .site-nav button:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
 
-/* ---------- 1 · the first viewport: one day at the business on film, enormous type over it, the hours under it ---------- */
+/* ---------- 1 · the first viewport: the journey's day at the business on film, enormous type over it, the chapters under it ---------- */
 .hero.film { position: relative; display: grid; align-items: end; align-content: end; min-height: max(560px, 100svh); isolation: isolate; overflow: hidden; color: #fff; background: #0b1a14; }
-/* the film drifts with the scroll, not the clock (site.jsx moves it); the two players cross-fade as one hands to the other */
+/* the film drifts with the scroll, not the clock (site.jsx moves it), and the page's camera leans in on each act's place
+   inside it (SC-111) */
 .film-media { position: absolute; inset: 0; z-index: -1; overflow: hidden; will-change: transform; transform-origin: 50% 40%; }
+.film-lean { position: absolute; inset: 0; will-change: transform; transform-origin: 50% 50%; }
 .film-media video, .film-media img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 44% 56%; }
 .film-media .fx { position: absolute; inset: 0; opacity: 0; transition: opacity 1000ms linear; }
 .film-media .fx.front { opacity: 1; }
@@ -63,8 +65,8 @@ html, body { overflow-x: clip; }
 .film-ctl button { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px 0 10px; border: 0; border-radius: 999px; font: 600 13px/1 var(--font-ui); color: #fff; background: rgb(5 12 9 / 0.5); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); cursor: pointer; }
 .film-ctl button:hover { background: rgb(5 12 9 / 0.68); }
 .film-ctl button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
-/* the strip under the copy: the four beats of the half-day the film is on, the one it is at lit with a line filling
-   through it, the person's in amber. On phones only the beat it is at shows */
+/* the strip under the copy: the four chapters of the journey's day, the one the film is at lit with a line filling
+   through it, the person's in amber. On phones only the chapter it is at shows */
 .film-story { position: relative; z-index: 1; width: 100%; max-width: 1344px; margin: 0 auto; padding: 0 16px 16px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; color: #fff; }
 .fs { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 10px; align-items: baseline; padding: 11px 0 0; font-size: 13px; line-height: 1.35; color: rgb(255 255 255 / 0.66); transition: color 240ms var(--ease); }
 .fs::before { content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 2px; border-radius: 1px; background: rgb(255 255 255 / 0.22); }
