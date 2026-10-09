@@ -8,7 +8,7 @@
   const feed = (s, ev) => { s.feed.push(Object.assign({ id: id("ev") }, ev)); };
   const notify = (s, to, n) => { s.notifications.unshift(Object.assign({ id: id("n"), to, read: false }, n)); };
   const audit = (s, who, what, target, at) => { s.audit.unshift({ id: id("a"), who, what, target, at: at || "now" }); };
-  const all = s => s.hero.orders.length === D.KIRANAS.length;
+  const all = s => s.hero.orders.length >= D.KIRANAS.length;
 
   // each action mutates a draft of the store; names follow the journey map
   const A = {
@@ -26,7 +26,22 @@
     approve: (s, by) => { s.hero.phase = "approved"; s.hero.plan = { status: "approved", at: "09:40", by: by || "priya", device: "phone" }; feed(s, E("approved")); audit(s, by || "priya", "approved the plan", "MF-2409-117 · net " + fmt.inr(PLAN.net), "09:40"); notify(s, "rakesh", Object.assign({ link: "home" }, D.PUSH.approved)); },
     list: s => { s.hero.phase = "executing"; s.hero.listing = { id: "ES-24117", status: "live", units: 772, price: 15, reserve: 13.5, at: "09:41" }; feed(s, E("list")); },
     outreach: s => { s.hero.offer = { status: "sent", at: "09:41", shops: D.OFFERED }; feed(s, E("outreach")); notify(s, "ganesh", Object.assign({ link: "offer" }, D.PUSH.offer)); },
-    order: (s, kid) => { const k = D.KIRANAS.find(x => x.id === kid) || D.KIRANAS[s.hero.orders.length]; if (!k || s.hero.orders.some(o => o.id === k.id)) return; s.hero.orders.push({ id: k.id, units: k.units, at: k.at }); if (k.id === "k0") audit(s, "ganesh", "ordered " + k.units + " packets", "Masala Chips scheme", k.at); if (all(s)) feed(s, E("orders")); },
+    // a story shop orders its own share; another of Rakesh's shops (an invited one, world.js) its cap, while the scheme
+    // has room: a full scheme takes no more orders (SC-130)
+    order: (s, kid) => {
+      const W = window.SC3_WORLD, w = !D.KIRANAS.some(x => x.id === kid) && W && W.KIRANAS.find(x => x.id === kid);
+      const k = D.KIRANAS.find(x => x.id === kid) || (w ? { id: w.id, units: w.sales14 * M.RULES.shopCapTimes, at: "10:15" } : null) || D.KIRANAS[s.hero.orders.length];
+      if (!k || s.hero.orders.some(o => o.id === k.id)) return;
+      const room = PLAN.lines.find(l => l.id === "kirana").units - s.hero.orders.reduce((t, o) => t + o.units, 0);
+      if (k.units > room) return;
+      if (s.hero.declined) delete s.hero.declined[k.id];
+      s.hero.orders.push({ id: k.id, units: k.units, at: k.at }); if (k.id === "k0") audit(s, "ganesh", "ordered " + k.units + " packets", "Masala Chips scheme", k.at); if (all(s)) feed(s, E("orders"));
+    },
+    // Not this time (SC-130): a shop declines the open scheme; it stays open for its 48 hours if the shop changes its mind
+    decline: (s, kid) => {
+      const W = window.SC3_WORLD, w = W && W.KIRANAS.find(x => x.id === kid); if (!w || s.hero.orders.some(o => o.id === kid)) return;
+      s.hero.declined = Object.assign({}, s.hero.declined, { [kid]: { at: "10:12" } }); audit(s, w.member, "declined the scheme", "Masala Chips scheme", "10:12");
+    },
     allOrders: s => { D.KIRANAS.forEach(k => A.order(s, k.id)); },
     bid: (s, price) => { const p = price || 13; if (s.hero.bids.some(b => b.status === "placed" || b.status === "countered")) return; s.hero.bids.push({ id: "b" + (s.hero.bids.length + 1), price: p, at: "11:02", by: "agrawal", status: "placed" }); s.hero.chat.push(Object.assign({}, D.CHAT[0], { text: `Can you do ₹${p % 1 ? p.toFixed(2) : p} for all 772?` })); audit(s, "agrawal", "bid ₹" + p.toFixed(2), "ES-24117", "11:02"); },
     counter: s => { const b = s.hero.bids[s.hero.bids.length - 1]; if (b) { b.status = "countered"; b.counter = D.COUNTER.price; } s.hero.chat.push(D.CHAT[1]); feed(s, E("counter")); },

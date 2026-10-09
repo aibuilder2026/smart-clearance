@@ -10,6 +10,7 @@ import type {
 	CaseTab,
 	JourneyClock,
 	Ledger,
+	PartnerView,
 	LedgerPage,
 	ExploreGroup,
 	HumanAction,
@@ -47,6 +48,9 @@ export interface WorkspaceSource {
 	/** the ledger (SC-121, SC-124): every batch cleared, by quarter and by year, and the batches still out;
 	 *  null until it has been read, and for a role that does not read it */
 	readonly ledger: Ledger | null;
+	/** the partner's own history (SC-130): the batches a distributor, a kirana or a food bank took part in, each cut to
+	 *  its part; null until read, and for a role that is not a partner */
+	readonly partners: PartnerView | null;
 	/** a batch's own page in the ledger, once it has been read (openPage asks the live source to read it) */
 	ledgerPage(ref: string): LedgerPage | null;
 	/** the live source only: read a batch's page for the ledger, and keep it up to date while it is open */

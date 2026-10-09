@@ -1,8 +1,9 @@
 // Munchly Foods' workspace as the prototype sets it up (design3/core/data.js), read from the seed frontend/scripts/
 // seed.mjs writes from design3: every figure was worked out by money.js, and none is typed here. The app's stub until
 // backend-api serves the workspace (SC-62).
+import history from './seed/history.json';
 import seed from './seed/workspace.json';
-import type { Batch, BatchView, FeedEvent, PlanLine, WorkspaceSeed } from './types';
+import type { Batch, BatchView, FeedEvent, PlanLine, Shop, WorkspaceSeed } from './types';
 
 export const D = seed as unknown as WorkspaceSeed;
 
@@ -11,6 +12,8 @@ export const PLAN = D.plan;
 export const CHIPS = D.skus.chips;
 /** the kiranas that ordered, and how many got the offer */
 export const SHOPS = D.kiranas.length;
+/** every shop a distributor's scheme goes to (world.js, SC-130) */
+export const SHOPS_ALL = history.shops as Shop[];
 const line = (id: string): PlanLine => PLAN.lines.find((l) => l.id === id)!;
 /** the Router's two lines for the chips batch: the kirana scheme and the ExpireSoon lot */
 export const KL = line('kirana');

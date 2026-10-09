@@ -3,7 +3,7 @@
 // makes the stub the default source of every workspace screen.
 import { D } from './data';
 
-export { stubSource, data, kase } from './stub.svelte';
+export { stubSource, data, kase, HISTORY_CASES } from './stub.svelte';
 export { store, seedState } from './store.svelte';
 export { A, SCRIPT, act, run, fastForward, stageOf, Agents, type ActionName } from './flow';
 export { D, WS, PLAN, KL, ES, INVOICE, CHIPS, SHOPS, EV, batchView } from './data';

@@ -1,0 +1,266 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/batches",
+  "out": "build/dist-batches-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1120,
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(7)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/batches/MF-2407-116",
+  "out": "build/dist-batch-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1100,
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(7)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/batches/MF-2409-117",
+  "out": "build/dist-present-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1000,
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(7)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/batches/MF-2407-114",
+  "out": "build/dist-batch-papers-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 800,
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(7)",
+  "click": [
+   "nav.bh-tabs button:nth-child(3)"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/home",
+  "out": "build/kirana-open-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1000,
+  "ls": {
+   "sc3-session": {
+    "uid": "shreesai",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(6); window.SC3_FLOW.act('list'); window.SC3_FLOW.act('outreach'); window.SC3_STORE.update(s => { const u = s.users.find(x => x.id === 'shreesai'); if (u) u.status = 'active'; })"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/home",
+  "out": "build/kirana-declined-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1000,
+  "ls": {
+   "sc3-session": {
+    "uid": "shreesai",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(6); window.SC3_FLOW.act('list'); window.SC3_FLOW.act('outreach'); window.SC3_STORE.update(s => { const u = s.users.find(x => x.id === 'shreesai'); if (u) u.status = 'active'; })",
+  "click": [
+   "text=Not this time"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/home",
+  "out": "build/kirana-filled-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1000,
+  "ls": {
+   "sc3-session": {
+    "uid": "shreesai",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(7); window.SC3_STORE.update(s => { const u = s.users.find(x => x.id === 'shreesai'); if (u) u.status = 'active'; })"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/offer/MF-2407-116",
+  "out": "build/kirana-expired-48h-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 700,
+  "ls": {
+   "sc3-session": {
+    "uid": "shreesai",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(7); window.SC3_STORE.update(s => { const u = s.users.find(x => x.id === 'shreesai'); if (u) u.status = 'active'; })"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/orders",
+  "out": "build/kirana-orders-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 860,
+  "ls": {
+   "sc3-session": {
+    "uid": "ganesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(7)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/home",
+  "out": "build/ganesh-offers-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1300,
+  "ls": {
+   "sc3-session": {
+    "uid": "ganesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(7)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/pickups",
+  "out": "build/fb-pickups-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1400,
+  "ls": {
+   "sc3-session": {
+    "uid": "meera",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/pickups/MF-2406-109",
+  "out": "build/fb-pickup-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 640,
+  "ls": {
+   "sc3-session": {
+    "uid": "meera",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/home",
+  "out": "build/dist-today-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1300,
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(7)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/batches",
+  "out": "build/dist-batches-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2400,
+  "height": 2400,
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(7)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/batches/MF-2407-116",
+  "out": "build/dist-batch-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2400,
+  "height": 1100,
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(7)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/home",
+  "out": "build/kirana-declined-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2400,
+  "height": 1000,
+  "ls": {
+   "sc3-session": {
+    "uid": "shreesai",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(6); window.SC3_FLOW.act('list'); window.SC3_FLOW.act('outreach'); window.SC3_STORE.update(s => { const u = s.users.find(x => x.id === 'shreesai'); if (u) u.status = 'active'; })",
+  "click": [
+   "text=Not this time"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/pickups/MF-2406-109",
+  "out": "build/fb-pickup-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2400,
+  "height": 640,
+  "ls": {
+   "sc3-session": {
+    "uid": "meera",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)"
+ }
+]

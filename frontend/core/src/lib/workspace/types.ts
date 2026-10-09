@@ -399,6 +399,8 @@ export type Hero = {
 	};
 	offer: null | { status: string; at: string; shops: number };
 	orders: { id: string; units: number; at: string }[];
+	/** the shops that said not this time to the open scheme (SC-130); an order after all takes its shop off */
+	declined?: Record<string, { at: string }>;
 	bids: Bid[];
 	chat: ChatMessage[];
 	award: null | (Award & { at: string; buyer: string; status: string });
@@ -675,6 +677,8 @@ export type WorkspaceData = {
 	batches: Batch[];
 	/** the marketplace the workspace lists on */
 	market: Market;
+	/** every shop a distributor's scheme goes to, the 31 that order in the story and the rest (the stub's, SC-130) */
+	shops?: Shop[];
 };
 
 /** the batch in focus, and everything its screens read about it: its product and distributor, the kiranas and the
@@ -729,6 +733,108 @@ export type CaseData = {
 			/** the food bank's receipt, once it has collected (SC-110) */
 			receipt: Doc | null;
 		};
+};
+
+/* ---------- the partners' own history (SC-130; design3/core/ledger.js partners) ---------- */
+
+/** a shop a distributor's scheme goes to (world.js): every kirana in its cluster, the 31 that order in the story and
+ *  the rest, each with the member who runs it */
+export type Shop = {
+	id: string;
+	name: string;
+	area: string;
+	sales14: number;
+	distributor: string;
+	member: string | null;
+};
+/** a batch a partner took part in, as the partner's own pages read it: when each step happened, the plan and what
+ *  each line took, the deal and the papers, cut to the partner's part. The stub reads the history's cases from the
+ *  seed; the live workspace reads backend-api's (GET …/partner) */
+export type PartnerCase = {
+	ref: string;
+	/** the SKU and the distributor, by id */
+	sku: string;
+	dist: string;
+	outcome: LedgerOutcome | null;
+	/** the day the Watcher flagged it, and the day it cleared (null while it is in a journey) */
+	flagged: string;
+	cleared: string | null;
+	/** each step and when it happened, in the client's time (2026-08-27T09:00) */
+	steps: { step: string; at: string }[];
+	batch: { daysLeft: number; bestBefore: string };
+	plan: {
+		units: number;
+		lines: { id: string; short: string; units: number; price: number; packPrice: number | null }[];
+	};
+	/** what each line took, and the packs left at the godown; once the lines are done */
+	realised: { lines: { id: string; units: number; gross: number; price: number }[]; godown: number } | null;
+	listing: { id: string } | null;
+	/** how many shops the scheme went to, the shops that ordered (a kirana sees its own), and the scheme's count */
+	offered: number;
+	kiranas: { kirana: string; units: number; at?: string }[];
+	kirana: { planned: number; ordered: number } | null;
+	/** the scheme while it runs, and the shops that said not this time (a kirana is sent its own); the live workspace's */
+	offer?: { status: 'open' | 'closed'; closesAt: string | null; closedAt?: string | null } | null;
+	declined?: Record<string, { at: string }>;
+	award: { price: number; token: number } | null;
+	partner: { name: string } | null;
+	donation: { units: number; spot: string } | null;
+	receipt: Doc | null;
+	support: { total: number; van: number; fee: number } | null;
+	expiry: { units: number; credit: number } | null;
+	docs: Doc[];
+};
+/** what a partner reads of its own history with the client: the batches it took part in, the buyer they name, and a
+ *  kirana's own shop */
+export type PartnerView = { buyer: { name: string; city: string }; shop: Shop | null; cases: PartnerCase[] };
+/** a moment of a batch, on its What happened tab; one still to come has no time */
+export type PtMoment = { k: string; at?: string; icon: string; title: string; sub?: string; ahead?: boolean };
+/** how a distributor ended whole: what he received against what he paid */
+export type PtWhole = {
+	rows: { k: string; sub?: string; v: number; paper?: string }[];
+	recv: number;
+	paid: number;
+	gain: number;
+	dp: number;
+	units: number;
+};
+/** an offer a kirana was sent, and what came of it */
+export type PtOffer = {
+	ref: string;
+	story?: boolean;
+	open?: boolean;
+	sku: Sku;
+	dist: Distributor;
+	sent: string;
+	closed: string;
+	share: number;
+	pack: number;
+	mrp: number;
+	bestBefore: string;
+	status: 'open' | 'ordered' | 'declined' | 'expired';
+	why: 'filled' | 'time' | null;
+	declinedAt?: string | null;
+	units: number;
+	orderedAt: string | null;
+	van: string | null;
+	m: { n: number; free: number; paid: number; pay: number; sell: number; margin: number } | null;
+};
+/** a donation a food bank collected, with its receipt */
+export type PtPickup = {
+	ref: string;
+	sku: Sku;
+	dist: Distributor;
+	units: number;
+	kg: number;
+	meals: number;
+	receipt: Doc;
+	spot: string;
+	from: string;
+	asked: string | null;
+	confirmed: string | null;
+	collected: string;
+	bestBefore: string;
+	daysLeft: number;
 };
 
 /* ---------- the ledger (SC-121, SC-124; design3/core/ledger.js) ---------- */
@@ -864,6 +970,8 @@ export type ActionArgs = {
 	approve: string;
 	/** a kirana's order, and how many packets when it differs from its share */
 	order: { kirana: string; units?: number };
+	/** a kirana says not this time to the open scheme (SC-130) */
+	decline: string;
 	/** the bid, a packet */
 	bid: number;
 	accept: undefined;

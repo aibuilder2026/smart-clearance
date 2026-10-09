@@ -14,7 +14,8 @@ import type {
 	WorkspacePublic,
 	WorkspaceSnapshot,
 	WsAuditPage,
-	WsLedger
+	WsLedger,
+	WsPartner
 } from '../types/workspace';
 
 export type WorkspaceHttpOptions = Omit<TransportOptions, 'token'> & {
@@ -149,6 +150,7 @@ export function workspaceHttp(
 		snapshot: () => call<WorkspaceSnapshot>('GET', '/snapshot'),
 		case: (ref) => call<CaseDetail>('GET', c(ref)),
 		ledger: () => call<WsLedger>('GET', '/ledger'),
+		partner: () => call<WsPartner>('GET', '/partner'),
 		audit: (before) => call<WsAuditPage>('GET', '/audit' + (before ? `?before=${enc(before)}` : '')),
 		documentUrl: (ref, doc) => call('GET', `/documents/${enc(ref)}/${enc(doc)}`),
 
@@ -162,6 +164,7 @@ export function workspaceHttp(
 		photoSent: (ref, id) => change('POST', `${c(ref)}/photos/${enc(id)}`),
 		approve: (ref, device) => change('POST', `${c(ref)}/approval`, { device }),
 		order: (ref, units) => change('POST', `${c(ref)}/orders`, { units }),
+		declineOffer: (ref) => change('POST', `${c(ref)}/offer/decline`),
 		bid: (ref, price) => change('POST', `${c(ref)}/bids`, { price }),
 		message: (ref, text) => change('POST', `${c(ref)}/messages`, { text }),
 		accept: (ref, bid) => change('POST', `${c(ref)}/bids/${enc(bid)}/accept`),

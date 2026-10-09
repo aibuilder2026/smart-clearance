@@ -393,6 +393,7 @@
 .lg-legend i.bin { background: repeating-linear-gradient(135deg, var(--red) 0 2px, color-mix(in srgb, var(--red) 35%, transparent) 2px 4px); }
 /* a batch's figure in the ledger */
 .lg-val { display: inline-grid; justify-items: end; gap: 1px; }
+.list-row .lr-value:has(> .lg-val) { flex: none; }
 .lg-val b { font-size: 15.5px; font-weight: 650; color: var(--fg); }
 .lg-val em { font-style: normal; font-size: 12.5px; color: var(--fg-3); }
 /* a batch's page */
@@ -403,3 +404,31 @@
 .lg-note { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; background: var(--fill); font-size: 13.5px; line-height: 1.45; color: var(--fg-2); }
 .lg-note .ic { flex: 0 0 auto; margin-top: 2px; color: var(--fg-2); }
 .lg-brsr { padding: 12px 14px; border-radius: 12px; background: var(--fill); font-size: 13px; line-height: 1.55; color: var(--fg); }
+
+/* ---------- a partner's own history (SC-130): the distributor's batches, the kirana's offers, the food bank's pickups ---------- */
+.pt-body { max-width: 820px; margin-top: 4px; }
+.pt-head { margin: 4px 0 8px; font-size: 13px; font-weight: 600; color: var(--fg-2); }
+.pt-papers { background: var(--surface); border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+.pt-paper { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; padding: 12px 16px; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: background-color var(--t-fast) var(--ease); }
+.pt-paper + .pt-paper::before { content: ""; position: absolute; top: 0; left: 60px; right: 0; height: var(--hair); background: var(--line); }
+.pt-paper:hover { background: var(--fill); }
+.pt-paper:focus-visible { outline: 3px solid var(--ring); outline-offset: -3px; border-radius: var(--r-lg); }
+.pt-paper > .grow { display: grid; gap: 2px; min-width: 0; }
+.pt-paper .mono { font-family: var(--font-mono); font-size: 12.5px; }
+.pt-moments { display: grid; }
+.pt-moment { position: relative; display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 12px; padding: 0 0 18px; }
+.pt-moment:last-child { padding-bottom: 0; }
+.pt-moment::before { content: ""; position: absolute; left: 17px; top: 36px; bottom: 0; width: 2px; background: var(--line); }
+.pt-moment:last-child::before { display: none; }
+.pt-moment .icontile { width: 36px; height: 36px; border-radius: 11px; }
+.pt-moment b { display: block; font-size: 15px; font-weight: 600; }
+.pt-moment .sub { display: block; margin-top: 2px; font-size: 13.5px; color: var(--fg-3); }
+.pt-moment time { padding-top: 2px; font-family: var(--font-mono); font-size: 12px; color: var(--fg-3); white-space: nowrap; }
+.pt-moment.ahead b { color: var(--fg-3); font-weight: 550; }
+.pt-moment.ahead .icontile { background: var(--fill-2); color: var(--fg-3); }
+.pt-line { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; }
+.pt-line em { font-style: normal; color: var(--fg-3); font-size: 13.5px; }
+.pt-line.strong { font-weight: 650; }
+.pt-line .tnum { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pt-link { padding: 0; border: 0; background: none; color: var(--primary-text); font: inherit; font-weight: 600; cursor: pointer; }
+.pt-link:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; border-radius: 6px; }

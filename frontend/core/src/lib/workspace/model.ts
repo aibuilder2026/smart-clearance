@@ -11,6 +11,7 @@ import type {
 	CaseData,
 	Distributor,
 	Kirana,
+	Shop,
 	Phase,
 	RoleId,
 	Sku,
@@ -240,9 +241,25 @@ export const distOf = (
 	data: Pick<WorkspaceData, 'distributors'>,
 	c: Pick<CaseData, 'dist'>
 ): Distributor => Object.values(data.distributors).find((d) => d.name === me?.org) || c.dist;
-/** the kirana a person runs; the first that ordered unless they run another */
-export const kOf = (me: { org?: string } | null | undefined, c: Pick<CaseData, 'kiranas'>): Kirana =>
-	c.kiranas.find((k) => k.name === me?.org) || c.kiranas[0];
+/** the kirana a person runs: one of the batch's shops, else their own shop the scheme also went to (SC-130, its share
+ *  its 14 days' sales `cap` times), else the first that ordered */
+export const kOf = (
+	me: { org?: string } | null | undefined,
+	c: Pick<CaseData, 'kiranas'>,
+	shop?: Pick<Shop, 'id' | 'name' | 'area' | 'sales14'> | null,
+	cap = 4
+): Kirana =>
+	c.kiranas.find((k) => k.name === me?.org) ||
+	(shop && shop.name === me?.org
+		? { id: shop.id, name: shop.name, area: shop.area, units: shop.sales14 * cap, at: '' }
+		: c.kiranas[0]);
+/** a shop by an order's id: one of the batch's shops, else another its scheme went to (SC-130) */
+export const shopById = (
+	id: string,
+	c: Pick<CaseData, 'kiranas'>,
+	shops?: readonly Shop[]
+): Pick<Kirana, 'id' | 'name' | 'area'> =>
+	c.kiranas.find((k) => k.id === id) ?? shops?.find((k) => k.id === id) ?? { id, name: id, area: '' };
 /** packets as cartons of `per` */
 export const cartons = (u: number, per: number) => {
 	const c = Math.floor(u / per);
@@ -300,9 +317,12 @@ export const NAV: Record<RoleId, NavItem[]> = {
 		{ id: 'setup', label: 'Setup', icon: 'sliders-horizontal', phoneHidden: true },
 		{ id: 'report', label: 'Ledger', icon: 'book-open', section: 'Reports' }
 	],
+	// the distributor's Batches (SC-130): every batch of his, in a journey or cleared, each with its own page; the label
+	// photo is opened from its request, so it leaves the phone's four tabs
 	distributor: [
 		{ id: 'home', label: 'Today', icon: 'house' },
-		{ id: 'photo', label: 'Label photo', short: 'Photo', icon: 'camera' },
+		{ id: 'batches', label: 'Batches', icon: 'boxes' },
+		{ id: 'photo', label: 'Label photo', short: 'Photo', icon: 'camera', phoneHidden: true },
 		{ id: 'van', label: 'Van route', short: 'Van', icon: 'truck' },
 		{ id: 'orders', label: 'Orders', icon: 'clipboard-list' }
 	],

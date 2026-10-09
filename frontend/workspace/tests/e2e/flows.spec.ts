@@ -111,6 +111,35 @@ test('flows · a first-time invitee joins: Shree Sai Kirana', async ({ page }) =
 	await expect(page.getByText("joined Munchly Foods' workspace").first()).toBeVisible();
 });
 
+test("flows · Rakesh bhai's batches: one he cleared, how he ended whole, and its papers with a copy (SC-130)", async ({
+	page
+}) => {
+	await openWorkspace(page, '/batches', { as: 'rakesh' });
+	await expect(title(page)).toHaveText('Batches');
+	await expect(page.getByText('Cleared · September 2026')).toBeVisible();
+	await page
+		.getByRole('button', { name: /Masala Oats 200 g/ })
+		.first()
+		.click();
+	await expect(page.locator('.bhead h1')).toHaveText('Masala Oats 200 g');
+	await expect(page.getByText('Feeding India collected 466 packs')).toBeVisible();
+	await page.locator('.bh-tabs').getByRole('button', { name: 'Money' }).click();
+	await expect(page.getByText('Your gain or loss')).toBeVisible();
+	await page.locator('.bh-tabs').getByRole('button', { name: 'Papers' }).click();
+	await expect(page.getByText('Copies for your records')).toBeVisible();
+	await page.getByRole('button', { name: /Donation receipt/ }).click();
+	await expect(page.getByRole('dialog', { name: 'Donation receipt' })).toBeVisible();
+});
+
+test('flows · a kirana says Not this time, then orders after all (SC-130)', async ({ page }) => {
+	await openWorkspace(page, '/home', { as: 'ganesh', stage: 6, after: ['list', 'outreach'] });
+	await page.getByRole('button', { name: 'Not this time' }).click();
+	await expect(page.getByText('You said not this time')).toBeVisible();
+	await page.getByRole('button', { name: 'Order after all' }).click();
+	await page.getByRole('button', { name: /ऑर्डर करें/ }).click();
+	await expect(page.getByText('ऑर्डर हो गया')).toBeVisible();
+});
+
 test('flows · Agrawal ji on ExpireSoon: a bid, the counter, and accepting it', async ({ page }) => {
 	// stage 6: the plan approved; the Lister puts the lot on ExpireSoon within a second
 	await openWorkspace(page, '/market', { as: 'agrawal', stage: 6 });

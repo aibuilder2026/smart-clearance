@@ -55,11 +55,14 @@ async def _write(api, moment: str, people: list[str]) -> None:
                 cases[c["ref"]] = r.json()
         q = await api.get(f"{WS}/ledger", headers=h)
         a = await api.get(f"{WS}/audit", headers=h)
+        p = await api.get(f"{WS}/partner", headers=h)
         out["members"][who] = {
             "snapshot": snap,
             "cases": cases,
             "ledger": q.json() if q.status_code == 200 else None,
             "audit": a.json()["rows"] if a.status_code == 200 else [],
+            # a partner's own history (SC-130)
+            "partner": p.json() if p.status_code == 200 else None,
         }
     path = Path(OUT) / f"{moment}.json"
     path.write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":"), sort_keys=True) + "\n")

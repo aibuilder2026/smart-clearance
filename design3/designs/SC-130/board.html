@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-130 Partner portals</title>
+<meta name="description" content="Three ways for Munchly's distributors, kiranas and food banks to see their own batches, offers, pickups and papers, past and present.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<style>
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber: #f0b429; --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px -6px rgb(17 41 30 / 0.1);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber: #f7c04a; --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber: #f7c04a; --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 48px 16px 72px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+h2 { margin: 60px 0 14px; font-size: clamp(25px, 3vw, 32px); font-weight: 720; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 72, "wdth" 88; }
+h3 { font-size: 26px; font-weight: 720; letter-spacing: -0.018em; font-variation-settings: "opsz" 48, "wdth" 90; }
+h3.sub { font: 650 16px/1.35 var(--ui); letter-spacing: 0; font-variation-settings: normal; margin: 0 0 6px; }
+p { margin: 0 0 12px; max-width: 74ch; color: var(--ink-2); text-wrap: pretty; }
+p b, li b, td b { color: var(--ink); font-weight: 600; }
+.lede { font-size: 18px; margin-top: 14px; }
+blockquote { margin: 16px 0; padding: 16px 20px; border-radius: 14px; background: var(--sunken); color: var(--ink); font-size: 15.5px; max-width: 82ch; }
+blockquote p { color: var(--ink); margin: 0 0 8px; }
+blockquote p:last-child { margin: 0; }
+ul, ol { margin: 0 0 12px; padding-left: 20px; color: var(--ink-2); max-width: 80ch; display: grid; gap: 6px; }
+code { font: 500 0.9em/1 var(--mono); }
+figure { margin: 0; min-width: 0; }
+figure img, figure video { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+.desks { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 700px) { .desks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.phones { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+@media (min-width: 700px) { .phones { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .phones { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.card { padding: 22px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.shared { display: grid; gap: 18px; }
+@media (min-width: 900px) { .shared { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.shared p, .shared li { font-size: 14.5px; }
+.opt { margin-top: 26px; display: grid; gap: 16px; padding: 26px 22px; border-radius: 28px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); scroll-margin-top: 20px; }
+.opt.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.opt header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.opt header p { margin: 0; flex-basis: 100%; font-size: 17px; color: var(--ink); max-width: 78ch; }
+.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 600 12.5px/1 var(--ui); color: var(--green-text); background: var(--green-soft); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+.btn.primary { background: var(--green); color: #fff; box-shadow: none; }
+:root[data-theme="dark"] .btn.primary { color: #03170d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #03170d; } }
+.vid { display: grid; gap: 18px; }
+@media (min-width: 900px) { .vid { grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); align-items: start; } }
+dl.facts { margin: 0; display: grid; gap: 12px; }
+dl.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); }
+dl.facts dd { margin: 2px 0 0; color: var(--ink-2); font-size: 14.5px; }
+dl.facts dd ul { margin-top: 4px; font-size: 14.5px; }
+.tablewrap { overflow-x: auto; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+table.cmp { border-collapse: collapse; width: 100%; min-width: 900px; font-size: 14px; color: var(--ink-2); }
+table.cmp th, table.cmp td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+table.cmp thead th { color: var(--ink); font-weight: 650; background: var(--sunken); }
+table.cmp tbody th { color: var(--ink); font-weight: 600; width: 15%; }
+table.cmp tr:last-child > * { border-bottom: 0; }
+.rec-box { padding: 22px; border-radius: 20px; background: var(--green-soft); }
+.rec-box p { color: var(--ink); }
+.q { padding: 20px 22px; border-radius: 20px; background: var(--amber-soft); }
+.q p, .q li { color: var(--ink); }
+.q h3 { font-size: 20px; margin-bottom: 8px; }
+.diagram { margin-top: 8px; padding: 18px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); overflow-x: auto; }
+.diagram svg { display: block; width: 100%; min-width: 820px; height: auto; }
+.diagram .t { fill: var(--ink); font: 600 14px var(--ui); }
+.diagram .t2 { fill: var(--ink-2); font: 400 13px var(--ui); }
+.diagram .h { fill: var(--ink-3); font: 650 12px var(--ui); letter-spacing: 0.02em; }
+.diagram .box { fill: var(--sunken); stroke: var(--line-2); }
+.diagram .box.on { fill: var(--surface); stroke: var(--green); stroke-width: 2; }
+.diagram .box.odd { fill: var(--amber-soft); stroke: var(--amber); }
+.diagram .ln { stroke: var(--line-2); stroke-width: 1.5; fill: none; }
+.diagram .ln.g { stroke: var(--green); stroke-width: 2; }
+.diagram .dash { stroke: var(--amber); stroke-width: 1.5; stroke-dasharray: 4 4; fill: none; }
+.diagram .dot { fill: var(--green); }
+.diagram .dot.a { fill: var(--amber); }
+table.cmp td.n, table.cmp th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.cmp tr.tot > * { background: var(--sunken); color: var(--ink); font-weight: 600; }
+.mono { font-family: var(--mono); font-size: 12.5px; }
+.phones img { aspect-ratio: 390 / 844; object-fit: cover; object-position: top; }
+.tall img { max-height: 1100px; object-fit: cover; object-position: top; }
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
+.who { display: grid; gap: 14px; }
+.who h3 { margin-top: 10px; }
+</style>
+<body>
+<main class="wrap">
+<h1>Partner portals</h1>
+<p class="lede">SC-130 · Munchly's workspace · three ways for the distributor, the kirana and the food bank to see their own history and their papers. Every company, person and figure is fictional; every figure is money.js's.</p>
+<p>The maintainer (9 Oct):</p>
+<blockquote><p>“Distributors UI needs some change, they should be able to see Batch level information of what happened for past and present events, based on the stocks they that are at risk or were at risk and got cleared, They should see GST invoices, creditnote and other finance documents on their portal too.”</p><p>“Kiranas should be able to see offers and past order, where they were accepted or declined/expired on their portal.”</p><p>“Food bank partners also should be able to see past pickups, and donation receipts /certificates.”</p></blockquote>
+
+<h2>What they see today</h2>
+<ul>
+<li><b>Rakesh bhai</b> sees only the batch in a journey now. Today carries its plan, invoice draft and how he ends whole; Orders lists this scheme's orders. Nothing tells him what happened to the six batches he has already cleared, and none of their papers reach him.</li>
+<li><b>A kirana</b> sees the open offer, or "No offers today", and one order. Nothing records the schemes it let expire, and there is no way to decline one.</li>
+<li><b>Meera</b> sees the pickup in front of her. Her two earlier pickups for Munchly, and their receipts, are nowhere.</li>
+</ul>
+<div class="desks"><figure><img src="current/rakesh-today-cleared-1440-light.webp" width="1440" height="1100" loading="lazy" alt="Today · Rakesh: only this batch"><figcaption>Today · Rakesh: only this batch</figcaption></figure><figure><img src="current/rakesh-orders-1440-light.webp" width="1440" height="1300" loading="lazy" alt="Today · Rakesh&#x27;s Orders: this scheme only"><figcaption>Today · Rakesh's Orders: this scheme only</figcaption></figure><figure><img src="current/ganesh-offers-1440-light.webp" width="1440" height="1000" loading="lazy" alt="Today · a kirana&#x27;s Offers"><figcaption>Today · a kirana's Offers</figcaption></figure><figure><img src="current/meera-pickups-1440-light.webp" width="1440" height="900" loading="lazy" alt="Today · Meera&#x27;s Pickups: this pickup only"><figcaption>Today · Meera's Pickups: this pickup only</figcaption></figure></div>
+
+<h2>The data every option reads</h2>
+<div class="shared">
+<div class="card"><h3 class="sub">Rakesh Traders</h3><p>The six batches Munchly cleared at his godown in its pilot quarter (Q2 FY27, SC-123): three sold through, two with packs left at the godown at full credit, one donated. The Masala Chips are in a journey now. His papers: <b>5 tax invoices</b> he issued to Agrawal Wholesale, <b>8 credit notes</b> from Munchly (₹61,148 of price support and ₹5,044 of expiry credit), and copies of what concerns his packs. On every batch he ended whole, to the rupee.</p></div>
+<div class="card"><h3 class="sub">The kiranas</h3><p>Every scheme Rakesh offered his 38 shops since July: six in the history and the chips now. <b>Shree Sai Kirana</b> shows the mix: it ordered once (the Mango Drink, 12 packets), and five expired: one when its 48 hours ended, four when the scheme filled before it ordered. <b>Ganesh ji</b> ordered all seven, for ₹3,408 of margin at MRP.</p></div>
+<div class="card"><h3 class="sub">Feeding India</h3><p>Two pickups collected for Munchly (406 packs of poha in Hyderabad and 466 of oats in Nagpur), each with its donation receipt (FI/HYD/26-27/0415, FI/NAG/26-27/0416) and FSSAI checklist: <b>872 meals</b>. The Mango Drink is coming.</p></div>
+</div>
+
+<h2>What all three share</h2>
+<div class="shared">
+<div class="card"><h3 class="sub">Each sees only its own</h3><p>A distributor sees the batches at his godown, the papers he issues (his tax invoice and its e-way bill check) and those issued to him (Munchly's price-support and expiry credit notes), plus copies of what concerns his packs (the food bank's receipt, the destruction certificate). Munchly's GST ITC memo and FSSAI checklist stay Munchly's. A kirana sees its own offers and orders; a food bank its own pickups and receipts.</p></div>
+<div class="card"><h3 class="sub">Declined, and expired with its reason</h3><p>A new <b>Not this time</b> under the open offer declines it (the offer stays open for the 48 hours if the shop changes its mind). An offer the shop did not answer <b>expired</b>, and says why: the scheme filled first, or its 48 hours ended. The history's shops that did not order count as expired.</p></div>
+<div class="card"><h3 class="sub">Every paper on paper</h3><p>Each paper opens as the operator sees it (the same paper components), with <b>Download PDF</b>: the Paperwork agent's own PDF on the live workspace, the paper printed in the prototype.</p></div>
+</div>
+
+<section class="opt rec" id="option-a">
+<header><h3>A · Batch by batch</h3><span class="tag">Recommended</span><p>Every partner reads its own batches, offers and pickups the way Priya reads hers (SC-112, SC-121): a list of what was and is at stake, each opening its own page. Rakesh gets <b>Batches</b> (in a journey now, everything he cleared by month under one figure, the stock the Watcher reads), and each batch's page has <b>What happened</b>, <b>Money</b> (how he ended whole) and <b>Papers</b>. A kirana's <b>Offers</b> lists every earlier offer under the open one, each opening on what was offered and what came of it; <b>Orders</b> says what each order earned. A food bank's <b>Pickups</b> lists the coming then the collected, each opening on its tracker, its receipt and its FSSAI checklist.</p></header>
+<div class="links"><a class="btn primary" href="option-a/mockup.html?who=rakesh#/batches">Open as Rakesh bhai</a><a class="btn" href="option-a/mockup.html?who=rakesh#/batches/MF-2407-116">A batch with packs left</a><a class="btn" href="option-a/mockup.html?who=shreesai&fresh#/home">Open as Shree Sai Kirana</a><a class="btn" href="option-a/mockup.html?who=ganesh#/orders">Open as Ganesh ji</a><a class="btn" href="option-a/mockup.html?who=meera&stage=9#/pickups">Open as Meera</a></div>
+<div class="desks"><figure><img src="option-a/dist-batches-1440-light.webp" width="1440" height="1120" loading="lazy" alt="Rakesh · Batches"><figcaption>Rakesh · Batches</figcaption></figure><figure><img src="option-a/dist-batch-what-1440-light.webp" width="1440" height="1120" loading="lazy" alt="A batch with packs left · What happened"><figcaption>A batch with packs left · What happened</figcaption></figure><figure><img src="option-a/dist-batch-money-1440-light.webp" width="1440" height="700" loading="lazy" alt="The same batch · Money: he ended whole"><figcaption>The same batch · Money: he ended whole</figcaption></figure><figure><img src="option-a/dist-batch-papers-1440-light.webp" width="1440" height="760" loading="lazy" alt="The same batch · Papers"><figcaption>The same batch · Papers</figcaption></figure><figure><img src="option-a/dist-paper-sheet-1440-light.webp" width="1440" height="1000" loading="lazy" alt="A credit note, on paper, with its PDF"><figcaption>A credit note, on paper, with its PDF</figcaption></figure><figure><img src="option-a/dist-present-1440-light.webp" width="1440" height="1000" loading="lazy" alt="The chips, in a journey now: so far, and next"><figcaption>The chips, in a journey now: so far, and next</figcaption></figure><figure><img src="option-a/kirana-offers-1440-light.webp" width="1440" height="1000" loading="lazy" alt="Shree Sai Kirana · the open offer, Not this time, earlier offers"><figcaption>Shree Sai Kirana · the open offer, Not this time, earlier offers</figcaption></figure><figure><img src="option-a/kirana-declined-1440-light.webp" width="1440" height="1000" loading="lazy" alt="After Not this time"><figcaption>After Not this time</figcaption></figure><figure><img src="option-a/kirana-offer-expired-1440-light.webp" width="1440" height="640" loading="lazy" alt="An offer that expired: the scheme filled first"><figcaption>An offer that expired: the scheme filled first</figcaption></figure><figure><img src="option-a/kirana-offer-ordered-1440-light.webp" width="1440" height="900" loading="lazy" alt="Ganesh ji · an offer he ordered from"><figcaption>Ganesh ji · an offer he ordered from</figcaption></figure><figure><img src="option-a/kirana-orders-1440-light.webp" width="1440" height="820" loading="lazy" alt="Ganesh ji · Orders"><figcaption>Ganesh ji · Orders</figcaption></figure><figure><img src="option-a/fb-pickups-1440-light.webp" width="1440" height="640" loading="lazy" alt="Meera · Pickups"><figcaption>Meera · Pickups</figcaption></figure><figure><img src="option-a/fb-pickup-1440-light.webp" width="1440" height="560" loading="lazy" alt="A collected pickup"><figcaption>A collected pickup</figcaption></figure><figure><img src="option-a/fb-receipt-1440-light.webp" width="1440" height="1000" loading="lazy" alt="Its receipt, with its PDF"><figcaption>Its receipt, with its PDF</figcaption></figure><figure><img src="option-a/dist-batches-1440-dark.webp" width="1440" height="1120" loading="lazy" alt="Batches · dark"><figcaption>Batches · dark</figcaption></figure><figure><img src="option-a/kirana-offers-1440-dark.webp" width="1440" height="1000" loading="lazy" alt="Offers · dark"><figcaption>Offers · dark</figcaption></figure><figure><img src="option-a/fb-pickups-1440-dark.webp" width="1440" height="640" loading="lazy" alt="Pickups · dark"><figcaption>Pickups · dark</figcaption></figure></div>
+<div class="phones"><figure><img src="option-a/dist-batches-390-light.webp" width="780" height="5400" loading="lazy" alt="Phone · Batches (Today, Batches, Van, Orders)"><figcaption>Phone · Batches (Today, Batches, Van, Orders)</figcaption></figure><figure><img src="option-a/dist-batch-papers-390-light.webp" width="780" height="3400" loading="lazy" alt="Phone · a batch&#x27;s papers"><figcaption>Phone · a batch's papers</figcaption></figure><figure><img src="option-a/kirana-offers-390-light.webp" width="780" height="4200" loading="lazy" alt="Phone · Offers"><figcaption>Phone · Offers</figcaption></figure><figure><img src="option-a/fb-pickups-390-light.webp" width="780" height="3000" loading="lazy" alt="Phone · Pickups"><figcaption>Phone · Pickups</figcaption></figure></div>
+<div class="shared"><div><h3 class="sub">Why</h3><ul><li><b>Batch level, as asked:</b> each batch is one place with what happened, the money and the papers, past or present.</li><li><b>One way of reading for everyone:</b> the same list-to-page pattern Priya has (SC-112, SC-121), so the build reuses the batch head, the tabs and the paper sheet.</li><li><b>Phone first:</b> a list, then a page; the distributor's four tabs stay four (Label photo stays on the desktop sidebar and is opened from its request).</li></ul></div><div><h3 class="sub">Trade-offs</h3><ul><li>Finding one paper means knowing its batch; there is no register of every credit note.</li><li>The kirana's offers and orders are two lists over the same offers.</li></ul></div><div><h3 class="sub">What the build touches</h3><p>design3 <code>trade.jsx</code> first (DistBatches and the batch page, Offers with Not this time, the offer page, Orders, Pickups and the pickup page), then core's trade screens and the live projection. backend-api: partner-scoped reads (a distributor's batches with their cases and papers, a shop's offers with their outcome, a food bank's pickups with their receipts) and the decline step.</p></div></div>
+</section>
+
+<section class="opt" id="option-b">
+<header><h3>B · One timeline</h3><p>Each partner gets one <b>History</b>: everything that happened to it, newest first, by month, down one rail. Each batch, offer or pickup is a card with its outcome, one line of what came of it and its papers as chips; <b>What happened</b> opens it in place. A filter narrows the rail by outcome. The kirana's orders live in its History (Offers keeps the open offer with Not this time); the food bank's receipts and checklists are chips on each pickup.</p></header>
+<div class="links"><a class="btn primary" href="option-b/mockup.html?who=rakesh#/report">Open as Rakesh bhai</a><a class="btn" href="option-b/mockup.html?who=shreesai&fresh#/report">Open as Shree Sai Kirana</a><a class="btn" href="option-b/mockup.html?who=meera&stage=9#/report">Open as Meera</a></div>
+<div class="desks"><figure><img src="option-b/dist-history-1440-light.webp" width="1440" height="1500" loading="lazy" alt="Rakesh · History, a batch opened in place"><figcaption>Rakesh · History, a batch opened in place</figcaption></figure><figure><img src="option-b/dist-paper-sheet-1440-light.webp" width="1440" height="1000" loading="lazy" alt="A paper chip opens the paper"><figcaption>A paper chip opens the paper</figcaption></figure><figure><img src="option-b/kirana-history-1440-light.webp" width="1440" height="1250" loading="lazy" alt="Shree Sai Kirana · History"><figcaption>Shree Sai Kirana · History</figcaption></figure><figure><img src="option-b/kirana-bill-1440-light.webp" width="1440" height="900" loading="lazy" alt="Ganesh ji · an order&#x27;s bill, opened in place"><figcaption>Ganesh ji · an order's bill, opened in place</figcaption></figure><figure><img src="option-b/kirana-offers-1440-light.webp" width="1440" height="900" loading="lazy" alt="Offers: the open one, Not this time"><figcaption>Offers: the open one, Not this time</figcaption></figure><figure><img src="option-b/fb-history-1440-light.webp" width="1440" height="900" loading="lazy" alt="Meera · History"><figcaption>Meera · History</figcaption></figure><figure><img src="option-b/fb-checklist-1440-light.webp" width="1440" height="900" loading="lazy" alt="A pickup&#x27;s FSSAI checklist"><figcaption>A pickup's FSSAI checklist</figcaption></figure><figure><img src="option-b/dist-history-1440-dark.webp" width="1440" height="1300" loading="lazy" alt="History · dark"><figcaption>History · dark</figcaption></figure><figure><img src="option-b/fb-history-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Meera · dark"><figcaption>Meera · dark</figcaption></figure></div>
+<div class="phones"><figure><img src="option-b/dist-history-390-light.webp" width="780" height="5200" loading="lazy" alt="Phone · Rakesh&#x27;s History"><figcaption>Phone · Rakesh's History</figcaption></figure><figure><img src="option-b/kirana-history-390-light.webp" width="780" height="4800" loading="lazy" alt="Phone · a kirana&#x27;s History"><figcaption>Phone · a kirana's History</figcaption></figure><figure><img src="option-b/fb-history-390-light.webp" width="780" height="4000" loading="lazy" alt="Phone · Meera&#x27;s History"><figcaption>Phone · Meera's History</figcaption></figure></div>
+<div class="shared"><div><h3 class="sub">Why</h3><ul><li><b>The story in order:</b> past and present on one rail, each batch's moments a tap away.</li><li><b>One new screen per role,</b> the same for all three, with the papers as chips beside what they record.</li></ul></div><div><h3 class="sub">Trade-offs</h3><ul><li>Long: a busy distributor scrolls through months of cards; a batch's money is one line, not a statement.</li><li>Cards opened in place make a long page longer; there is no page to link a batch to.</li></ul></div><div><h3 class="sub">What the build touches</h3><p>design3 <code>trade.jsx</code>: a History screen per role (the rail, the cards, in-place disclosure, the filter), Offers' Not this time; then core and the live projection. backend-api: the same partner-scoped reads as A, with each batch's moments, and the decline step.</p></div></div>
+</section>
+
+<section class="opt" id="option-c">
+<header><h3>C · Statement and papers</h3><p>Each partner gets a <b>register</b>, led by the one figure that matters to it, a row a paper (or a scheme, or a receipt), with the batch on every row and an export. Rakesh's <b>Account</b> is a statement with Munchly: what Munchly credited him since July, every paper by date with its amount, or <b>by batch</b> with how each ended. A kirana's <b>Schemes</b> lists every scheme with its share, status, what it paid and its margin. A food bank's <b>Receipts</b> lists every receipt with packs, kilos and meals, for its own annual report.</p></header>
+<div class="links"><a class="btn primary" href="option-c/mockup.html?who=rakesh#/report">Open as Rakesh bhai</a><a class="btn" href="option-c/mockup.html?who=shreesai&fresh#/report">Open as Shree Sai Kirana</a><a class="btn" href="option-c/mockup.html?who=meera&stage=9#/report">Open as Meera</a></div>
+<div class="desks"><figure><img src="option-c/dist-account-1440-light.webp" width="1440" height="1500" loading="lazy" alt="Rakesh · Account, by date"><figcaption>Rakesh · Account, by date</figcaption></figure><figure><img src="option-c/dist-account-batch-1440-light.webp" width="1440" height="1500" loading="lazy" alt="Account, by batch"><figcaption>Account, by batch</figcaption></figure><figure><img src="option-c/kirana-schemes-1440-light.webp" width="1440" height="880" loading="lazy" alt="Shree Sai Kirana · Schemes"><figcaption>Shree Sai Kirana · Schemes</figcaption></figure><figure><img src="option-c/kirana-scheme-sheet-1440-light.webp" width="1440" height="900" loading="lazy" alt="Ganesh ji · a scheme he ordered from"><figcaption>Ganesh ji · a scheme he ordered from</figcaption></figure><figure><img src="option-c/fb-receipts-1440-light.webp" width="1440" height="640" loading="lazy" alt="Meera · Receipts"><figcaption>Meera · Receipts</figcaption></figure><figure><img src="option-c/fb-receipt-1440-light.webp" width="1440" height="1000" loading="lazy" alt="A receipt, with its PDF"><figcaption>A receipt, with its PDF</figcaption></figure><figure><img src="option-c/dist-account-1440-dark.webp" width="1440" height="1300" loading="lazy" alt="Account · dark"><figcaption>Account · dark</figcaption></figure><figure><img src="option-c/fb-receipts-1440-dark.webp" width="1440" height="640" loading="lazy" alt="Receipts · dark"><figcaption>Receipts · dark</figcaption></figure></div>
+<div class="phones"><figure><img src="option-c/dist-account-390-light.webp" width="780" height="6000" loading="lazy" alt="Phone · Account"><figcaption>Phone · Account</figcaption></figure><figure><img src="option-c/kirana-schemes-390-light.webp" width="780" height="3800" loading="lazy" alt="Phone · Schemes"><figcaption>Phone · Schemes</figcaption></figure><figure><img src="option-c/fb-receipts-390-light.webp" width="780" height="2800" loading="lazy" alt="Phone · Receipts"><figcaption>Phone · Receipts</figcaption></figure></div>
+<div class="shared"><div><h3 class="sub">Why</h3><ul><li><b>Finance first:</b> every GST invoice and credit note in one place, with the total Munchly credited, ready to reconcile in Tally and to export.</li><li><b>The food bank's register</b> is what it files: receipts, packs, kilos, meals.</li></ul></div><div><h3 class="sub">Trade-offs</h3><ul><li>What happened to a batch is a footnote (how it ended), not its story; the present batch lives only on Today.</li><li>Tables are dense on a phone; the columns fold to two.</li></ul></div><div><h3 class="sub">What the build touches</h3><p>design3 <code>trade.jsx</code>: Account, Schemes and Receipts registers with their exports, Offers' Not this time; then core and the live projection. backend-api: the partner-scoped reads, a statement of a distributor's papers by date, and the decline step.</p></div></div>
+</section>
+
+<h2>Side by side</h2>
+<div class="tablewrap"><table class="cmp"><thead><tr><th></th><th>A · Batch by batch</th><th>B · One timeline</th><th>C · Statement and papers</th></tr></thead><tbody>
+<tr><th>New on the distributor</th><td>Batches, each with its page</td><td>History</td><td>Account</td></tr>
+<tr><th>New on the kirana</th><td>Earlier offers under Offers; Orders with margins</td><td>History (orders inside it)</td><td>Schemes</td></tr>
+<tr><th>New on the food bank</th><td>Past pickups under Pickups, each with its page</td><td>History</td><td>Receipts</td></tr>
+<tr><th>A batch's story</th><td>Its page: What happened, Money, Papers</td><td>Its card, opened in place</td><td>One line under its papers</td></tr>
+<tr><th>Finding a paper</th><td>Through its batch</td><td>A chip on its batch</td><td>Every paper in one register, filtered, exported</td></tr>
+<tr><th>Phone</th><td>List, then page</td><td>One long rail</td><td>Registers fold to two columns</td></tr>
+</tbody></table></div>
+
+<div class="rec-box" style="margin-top:22px"><h3 class="sub">Recommended: A · Batch by batch</h3><p>It answers the request at the batch level, past and present, with each batch's story, money and papers in one place. It gives the three partners the same way of reading that Priya already has, so the build reuses the batch head, the tabs and the paper sheet. And it stays a list then a page on a phone, where partners work. C's statement could come later as an export from Batches.</p></div>
+
+<div class="q" style="margin-top:22px"><h3>Open questions</h3><ul>
+<li><b>The distributor's copies.</b> Should Rakesh see copies of the food bank's receipt and the destruction certificate for his packs (shown in every option, as "a copy for you")? Munchly's GST ITC memo and FSSAI checklist stay Munchly's in every option.</li>
+<li><b>Not this time.</b> Every option adds a decline to the kirana's open offer, a new step (backend-api records it, and the distributor's scheme no longer waits on that shop). Keep it, or show only ordered and expired?</li>
+</ul></div>
+
+<footer>SC-130 · design3/designs/SC-130/ · the partners' history from core/ledger.js (SC-123's twelve batches) and the story's store, every figure by core/money.js · the mockups run the app prototype with each option's screens (sc130-kit.js, option-*/opt.js).</footer>
+</main>
+</body>
+</html>

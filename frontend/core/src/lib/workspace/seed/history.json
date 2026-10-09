@@ -11,6 +11,84 @@
 				"invoice": "INV/26-27/0921",
 				"support": "CN/0102"
 			},
+			"steps": [
+				{
+					"step": "open",
+					"at": "2026-07-03T08:30"
+				},
+				{
+					"step": "detect",
+					"at": "2026-07-03T09:00"
+				},
+				{
+					"step": "photo",
+					"at": "2026-07-03T11:00"
+				},
+				{
+					"step": "read",
+					"at": "2026-07-03T11:05"
+				},
+				{
+					"step": "value",
+					"at": "2026-07-03T11:10"
+				},
+				{
+					"step": "route",
+					"at": "2026-07-03T11:15"
+				},
+				{
+					"step": "approve",
+					"at": "2026-07-03T12:00"
+				},
+				{
+					"step": "listing",
+					"at": "2026-07-03T12:05"
+				},
+				{
+					"step": "offer",
+					"at": "2026-07-03T12:10"
+				},
+				{
+					"step": "orders",
+					"at": "2026-07-04T10:00"
+				},
+				{
+					"step": "bid",
+					"at": "2026-07-04T15:00"
+				},
+				{
+					"step": "counter",
+					"at": "2026-07-04T15:05"
+				},
+				{
+					"step": "accept",
+					"at": "2026-07-04T15:30"
+				},
+				{
+					"step": "truck",
+					"at": "2026-07-06T10:00"
+				},
+				{
+					"step": "papers",
+					"at": "2026-07-06T10:30"
+				},
+				{
+					"step": "invoice",
+					"at": "2026-07-06T11:00"
+				},
+				{
+					"step": "van",
+					"at": "2026-07-07T09:00"
+				},
+				{
+					"step": "review",
+					"at": "2026-07-07T15:00"
+				},
+				{
+					"step": "report",
+					"at": "2026-08-14T10:00"
+				}
+			],
 			"batch": {
 				"id": "MF-2406-105",
 				"sku": "biscuits",
@@ -827,6 +905,84 @@
 				"invoice": "INV/26-27/0922",
 				"support": "CN/0103"
 			},
+			"steps": [
+				{
+					"step": "open",
+					"at": "2026-07-08T08:30"
+				},
+				{
+					"step": "detect",
+					"at": "2026-07-08T09:00"
+				},
+				{
+					"step": "photo",
+					"at": "2026-07-08T11:00"
+				},
+				{
+					"step": "read",
+					"at": "2026-07-08T11:05"
+				},
+				{
+					"step": "value",
+					"at": "2026-07-08T11:10"
+				},
+				{
+					"step": "route",
+					"at": "2026-07-08T11:15"
+				},
+				{
+					"step": "approve",
+					"at": "2026-07-08T12:00"
+				},
+				{
+					"step": "listing",
+					"at": "2026-07-08T12:05"
+				},
+				{
+					"step": "offer",
+					"at": "2026-07-08T12:10"
+				},
+				{
+					"step": "orders",
+					"at": "2026-07-09T10:00"
+				},
+				{
+					"step": "bid",
+					"at": "2026-07-09T15:00"
+				},
+				{
+					"step": "counter",
+					"at": "2026-07-09T15:05"
+				},
+				{
+					"step": "accept",
+					"at": "2026-07-09T15:30"
+				},
+				{
+					"step": "truck",
+					"at": "2026-07-11T10:00"
+				},
+				{
+					"step": "papers",
+					"at": "2026-07-11T10:30"
+				},
+				{
+					"step": "invoice",
+					"at": "2026-07-11T11:00"
+				},
+				{
+					"step": "van",
+					"at": "2026-07-12T09:00"
+				},
+				{
+					"step": "review",
+					"at": "2026-07-12T15:00"
+				},
+				{
+					"step": "report",
+					"at": "2026-08-15T10:00"
+				}
+			],
 			"batch": {
 				"id": "MF-2406-106",
 				"sku": "chikki",
@@ -1648,6 +1804,88 @@
 				"support": "CN/0104",
 				"expiry": "CN/0111"
 			},
+			"steps": [
+				{
+					"step": "open",
+					"at": "2026-07-14T08:30"
+				},
+				{
+					"step": "detect",
+					"at": "2026-07-14T09:00"
+				},
+				{
+					"step": "photo",
+					"at": "2026-07-14T11:00"
+				},
+				{
+					"step": "read",
+					"at": "2026-07-14T11:05"
+				},
+				{
+					"step": "value",
+					"at": "2026-07-14T11:10"
+				},
+				{
+					"step": "route",
+					"at": "2026-07-14T11:15"
+				},
+				{
+					"step": "approve",
+					"at": "2026-07-14T12:00"
+				},
+				{
+					"step": "listing",
+					"at": "2026-07-14T12:05"
+				},
+				{
+					"step": "offer",
+					"at": "2026-07-14T12:10"
+				},
+				{
+					"step": "orders",
+					"at": "2026-07-15T10:00"
+				},
+				{
+					"step": "bid",
+					"at": "2026-07-15T15:00"
+				},
+				{
+					"step": "counter",
+					"at": "2026-07-15T15:05"
+				},
+				{
+					"step": "accept",
+					"at": "2026-07-15T15:30"
+				},
+				{
+					"step": "closeOffer",
+					"at": "2026-07-16T12:10"
+				},
+				{
+					"step": "truck",
+					"at": "2026-07-17T10:00"
+				},
+				{
+					"step": "papers",
+					"at": "2026-07-17T10:30"
+				},
+				{
+					"step": "invoice",
+					"at": "2026-07-17T11:00"
+				},
+				{
+					"step": "van",
+					"at": "2026-07-18T09:00"
+				},
+				{
+					"step": "review",
+					"at": "2026-07-18T15:00"
+				},
+				{
+					"step": "report",
+					"at": "2026-08-23T10:00"
+				}
+			],
 			"batch": {
 				"id": "MF-2406-107",
 				"sku": "oats",
@@ -2380,6 +2618,84 @@
 				"invoice": "INV/26-27/0924",
 				"support": "CN/0105"
 			},
+			"steps": [
+				{
+					"step": "open",
+					"at": "2026-07-21T08:30"
+				},
+				{
+					"step": "detect",
+					"at": "2026-07-21T09:00"
+				},
+				{
+					"step": "photo",
+					"at": "2026-07-21T11:00"
+				},
+				{
+					"step": "read",
+					"at": "2026-07-21T11:05"
+				},
+				{
+					"step": "value",
+					"at": "2026-07-21T11:10"
+				},
+				{
+					"step": "route",
+					"at": "2026-07-21T11:15"
+				},
+				{
+					"step": "approve",
+					"at": "2026-07-21T12:00"
+				},
+				{
+					"step": "listing",
+					"at": "2026-07-21T12:05"
+				},
+				{
+					"step": "offer",
+					"at": "2026-07-21T12:10"
+				},
+				{
+					"step": "orders",
+					"at": "2026-07-22T10:00"
+				},
+				{
+					"step": "bid",
+					"at": "2026-07-22T15:00"
+				},
+				{
+					"step": "counter",
+					"at": "2026-07-22T15:05"
+				},
+				{
+					"step": "accept",
+					"at": "2026-07-22T15:30"
+				},
+				{
+					"step": "truck",
+					"at": "2026-07-24T10:00"
+				},
+				{
+					"step": "papers",
+					"at": "2026-07-24T10:30"
+				},
+				{
+					"step": "invoice",
+					"at": "2026-07-24T11:00"
+				},
+				{
+					"step": "van",
+					"at": "2026-07-25T09:00"
+				},
+				{
+					"step": "review",
+					"at": "2026-07-25T15:00"
+				},
+				{
+					"step": "report",
+					"at": "2026-09-04T10:00"
+				}
+			],
 			"batch": {
 				"id": "MF-2406-108",
 				"sku": "poha",
@@ -3123,6 +3439,76 @@
 				"receipt": "FI/HYD/26-27/0415",
 				"support": "CN/0106"
 			},
+			"steps": [
+				{
+					"step": "open",
+					"at": "2026-07-28T08:30"
+				},
+				{
+					"step": "detect",
+					"at": "2026-07-28T09:00"
+				},
+				{
+					"step": "photo",
+					"at": "2026-07-28T11:00"
+				},
+				{
+					"step": "read",
+					"at": "2026-07-28T11:05"
+				},
+				{
+					"step": "value",
+					"at": "2026-07-28T11:10"
+				},
+				{
+					"step": "route",
+					"at": "2026-07-28T11:15"
+				},
+				{
+					"step": "approve",
+					"at": "2026-07-28T12:00"
+				},
+				{
+					"step": "offer",
+					"at": "2026-07-28T12:10"
+				},
+				{
+					"step": "donation",
+					"at": "2026-07-28T12:15"
+				},
+				{
+					"step": "pickup",
+					"at": "2026-07-29T09:30"
+				},
+				{
+					"step": "orders",
+					"at": "2026-07-29T10:00"
+				},
+				{
+					"step": "collect",
+					"at": "2026-07-30T10:00"
+				},
+				{
+					"step": "staff",
+					"at": "2026-07-30T18:00"
+				},
+				{
+					"step": "papers",
+					"at": "2026-07-31T10:30"
+				},
+				{
+					"step": "van",
+					"at": "2026-08-01T09:00"
+				},
+				{
+					"step": "review",
+					"at": "2026-08-01T15:00"
+				},
+				{
+					"step": "report",
+					"at": "2026-08-23T10:00"
+				}
+			],
 			"batch": {
 				"id": "MF-2406-109",
 				"sku": "poha",
@@ -4054,6 +4440,84 @@
 				"invoice": "INV/26-27/0925",
 				"support": "CN/0107"
 			},
+			"steps": [
+				{
+					"step": "open",
+					"at": "2026-08-04T08:30"
+				},
+				{
+					"step": "detect",
+					"at": "2026-08-04T09:00"
+				},
+				{
+					"step": "photo",
+					"at": "2026-08-04T11:00"
+				},
+				{
+					"step": "read",
+					"at": "2026-08-04T11:05"
+				},
+				{
+					"step": "value",
+					"at": "2026-08-04T11:10"
+				},
+				{
+					"step": "route",
+					"at": "2026-08-04T11:15"
+				},
+				{
+					"step": "approve",
+					"at": "2026-08-04T12:00"
+				},
+				{
+					"step": "listing",
+					"at": "2026-08-04T12:05"
+				},
+				{
+					"step": "offer",
+					"at": "2026-08-04T12:10"
+				},
+				{
+					"step": "orders",
+					"at": "2026-08-05T10:00"
+				},
+				{
+					"step": "bid",
+					"at": "2026-08-05T15:00"
+				},
+				{
+					"step": "counter",
+					"at": "2026-08-05T15:05"
+				},
+				{
+					"step": "accept",
+					"at": "2026-08-05T15:30"
+				},
+				{
+					"step": "truck",
+					"at": "2026-08-07T10:00"
+				},
+				{
+					"step": "papers",
+					"at": "2026-08-07T10:30"
+				},
+				{
+					"step": "invoice",
+					"at": "2026-08-07T11:00"
+				},
+				{
+					"step": "van",
+					"at": "2026-08-08T09:00"
+				},
+				{
+					"step": "review",
+					"at": "2026-08-08T15:00"
+				},
+				{
+					"step": "report",
+					"at": "2026-09-21T10:00"
+				}
+			],
 			"batch": {
 				"id": "MF-2407-110",
 				"sku": "facewash",
@@ -4769,6 +5233,88 @@
 				"support": "CN/0108",
 				"expiry": "CN/0115"
 			},
+			"steps": [
+				{
+					"step": "open",
+					"at": "2026-08-10T08:30"
+				},
+				{
+					"step": "detect",
+					"at": "2026-08-10T09:00"
+				},
+				{
+					"step": "photo",
+					"at": "2026-08-10T11:00"
+				},
+				{
+					"step": "read",
+					"at": "2026-08-10T11:05"
+				},
+				{
+					"step": "value",
+					"at": "2026-08-10T11:10"
+				},
+				{
+					"step": "route",
+					"at": "2026-08-10T11:15"
+				},
+				{
+					"step": "approve",
+					"at": "2026-08-10T12:00"
+				},
+				{
+					"step": "listing",
+					"at": "2026-08-10T12:05"
+				},
+				{
+					"step": "offer",
+					"at": "2026-08-10T12:10"
+				},
+				{
+					"step": "orders",
+					"at": "2026-08-11T10:00"
+				},
+				{
+					"step": "bid",
+					"at": "2026-08-11T15:00"
+				},
+				{
+					"step": "counter",
+					"at": "2026-08-11T15:05"
+				},
+				{
+					"step": "accept",
+					"at": "2026-08-11T15:30"
+				},
+				{
+					"step": "closeOffer",
+					"at": "2026-08-12T12:10"
+				},
+				{
+					"step": "truck",
+					"at": "2026-08-13T10:00"
+				},
+				{
+					"step": "papers",
+					"at": "2026-08-13T10:30"
+				},
+				{
+					"step": "invoice",
+					"at": "2026-08-13T11:00"
+				},
+				{
+					"step": "van",
+					"at": "2026-08-14T09:00"
+				},
+				{
+					"step": "review",
+					"at": "2026-08-14T15:00"
+				},
+				{
+					"step": "report",
+					"at": "2026-09-15T10:00"
+				}
+			],
 			"batch": {
 				"id": "MF-2407-111",
 				"sku": "mango",
@@ -5653,6 +6199,84 @@
 				"invoice": "INV/26-27/0927",
 				"support": "CN/0109"
 			},
+			"steps": [
+				{
+					"step": "open",
+					"at": "2026-08-17T08:30"
+				},
+				{
+					"step": "detect",
+					"at": "2026-08-17T09:00"
+				},
+				{
+					"step": "photo",
+					"at": "2026-08-17T11:00"
+				},
+				{
+					"step": "read",
+					"at": "2026-08-17T11:05"
+				},
+				{
+					"step": "value",
+					"at": "2026-08-17T11:10"
+				},
+				{
+					"step": "route",
+					"at": "2026-08-17T11:15"
+				},
+				{
+					"step": "approve",
+					"at": "2026-08-17T12:00"
+				},
+				{
+					"step": "listing",
+					"at": "2026-08-17T12:05"
+				},
+				{
+					"step": "offer",
+					"at": "2026-08-17T12:10"
+				},
+				{
+					"step": "orders",
+					"at": "2026-08-18T10:00"
+				},
+				{
+					"step": "bid",
+					"at": "2026-08-18T15:00"
+				},
+				{
+					"step": "counter",
+					"at": "2026-08-18T15:05"
+				},
+				{
+					"step": "accept",
+					"at": "2026-08-18T15:30"
+				},
+				{
+					"step": "truck",
+					"at": "2026-08-20T10:00"
+				},
+				{
+					"step": "papers",
+					"at": "2026-08-20T10:30"
+				},
+				{
+					"step": "invoice",
+					"at": "2026-08-20T11:00"
+				},
+				{
+					"step": "van",
+					"at": "2026-08-21T09:00"
+				},
+				{
+					"step": "review",
+					"at": "2026-08-21T15:00"
+				},
+				{
+					"step": "report",
+					"at": "2026-09-30T10:00"
+				}
+			],
 			"batch": {
 				"id": "MF-2407-112",
 				"sku": "hairoil",
@@ -6353,6 +6977,84 @@
 				"invoice": "INV/26-27/0928",
 				"support": "CN/0110"
 			},
+			"steps": [
+				{
+					"step": "open",
+					"at": "2026-08-18T08:30"
+				},
+				{
+					"step": "detect",
+					"at": "2026-08-18T09:00"
+				},
+				{
+					"step": "photo",
+					"at": "2026-08-18T11:00"
+				},
+				{
+					"step": "read",
+					"at": "2026-08-18T11:05"
+				},
+				{
+					"step": "value",
+					"at": "2026-08-18T11:10"
+				},
+				{
+					"step": "route",
+					"at": "2026-08-18T11:15"
+				},
+				{
+					"step": "approve",
+					"at": "2026-08-18T12:00"
+				},
+				{
+					"step": "listing",
+					"at": "2026-08-18T12:05"
+				},
+				{
+					"step": "offer",
+					"at": "2026-08-18T12:10"
+				},
+				{
+					"step": "orders",
+					"at": "2026-08-19T10:00"
+				},
+				{
+					"step": "bid",
+					"at": "2026-08-19T15:00"
+				},
+				{
+					"step": "counter",
+					"at": "2026-08-19T15:05"
+				},
+				{
+					"step": "accept",
+					"at": "2026-08-19T15:30"
+				},
+				{
+					"step": "truck",
+					"at": "2026-08-21T10:00"
+				},
+				{
+					"step": "papers",
+					"at": "2026-08-21T10:30"
+				},
+				{
+					"step": "invoice",
+					"at": "2026-08-21T11:00"
+				},
+				{
+					"step": "van",
+					"at": "2026-08-22T09:00"
+				},
+				{
+					"step": "review",
+					"at": "2026-08-22T15:00"
+				},
+				{
+					"step": "report",
+					"at": "2026-09-27T10:00"
+				}
+			],
 			"batch": {
 				"id": "MF-2407-113",
 				"sku": "chips",
@@ -7160,6 +7862,76 @@
 				"receipt": "FI/NAG/26-27/0416",
 				"support": "CN/0112"
 			},
+			"steps": [
+				{
+					"step": "open",
+					"at": "2026-08-24T08:30"
+				},
+				{
+					"step": "detect",
+					"at": "2026-08-24T09:00"
+				},
+				{
+					"step": "photo",
+					"at": "2026-08-24T11:00"
+				},
+				{
+					"step": "read",
+					"at": "2026-08-24T11:05"
+				},
+				{
+					"step": "value",
+					"at": "2026-08-24T11:10"
+				},
+				{
+					"step": "route",
+					"at": "2026-08-24T11:15"
+				},
+				{
+					"step": "approve",
+					"at": "2026-08-24T12:00"
+				},
+				{
+					"step": "offer",
+					"at": "2026-08-24T12:10"
+				},
+				{
+					"step": "donation",
+					"at": "2026-08-24T12:15"
+				},
+				{
+					"step": "pickup",
+					"at": "2026-08-25T09:30"
+				},
+				{
+					"step": "orders",
+					"at": "2026-08-25T10:00"
+				},
+				{
+					"step": "collect",
+					"at": "2026-08-26T10:00"
+				},
+				{
+					"step": "staff",
+					"at": "2026-08-26T18:00"
+				},
+				{
+					"step": "papers",
+					"at": "2026-08-27T10:30"
+				},
+				{
+					"step": "van",
+					"at": "2026-08-28T09:00"
+				},
+				{
+					"step": "review",
+					"at": "2026-08-28T15:00"
+				},
+				{
+					"step": "report",
+					"at": "2026-09-15T10:00"
+				}
+			],
 			"batch": {
 				"id": "MF-2407-114",
 				"sku": "oats",
@@ -8081,6 +8853,84 @@
 				"invoice": "INV/26-27/0929",
 				"support": "CN/0113"
 			},
+			"steps": [
+				{
+					"step": "open",
+					"at": "2026-08-25T08:30"
+				},
+				{
+					"step": "detect",
+					"at": "2026-08-25T09:00"
+				},
+				{
+					"step": "photo",
+					"at": "2026-08-25T11:00"
+				},
+				{
+					"step": "read",
+					"at": "2026-08-25T11:05"
+				},
+				{
+					"step": "value",
+					"at": "2026-08-25T11:10"
+				},
+				{
+					"step": "route",
+					"at": "2026-08-25T11:15"
+				},
+				{
+					"step": "approve",
+					"at": "2026-08-25T12:00"
+				},
+				{
+					"step": "listing",
+					"at": "2026-08-25T12:05"
+				},
+				{
+					"step": "offer",
+					"at": "2026-08-25T12:10"
+				},
+				{
+					"step": "orders",
+					"at": "2026-08-26T10:00"
+				},
+				{
+					"step": "bid",
+					"at": "2026-08-26T15:00"
+				},
+				{
+					"step": "counter",
+					"at": "2026-08-26T15:05"
+				},
+				{
+					"step": "accept",
+					"at": "2026-08-26T15:30"
+				},
+				{
+					"step": "truck",
+					"at": "2026-08-28T10:00"
+				},
+				{
+					"step": "papers",
+					"at": "2026-08-28T10:30"
+				},
+				{
+					"step": "invoice",
+					"at": "2026-08-28T11:00"
+				},
+				{
+					"step": "van",
+					"at": "2026-08-29T09:00"
+				},
+				{
+					"step": "review",
+					"at": "2026-08-29T15:00"
+				},
+				{
+					"step": "report",
+					"at": "2026-09-28T10:00"
+				}
+			],
 			"batch": {
 				"id": "MF-2407-115",
 				"sku": "biscuits",
@@ -8872,6 +9722,88 @@
 				"support": "CN/0114",
 				"expiry": "CN/0116"
 			},
+			"steps": [
+				{
+					"step": "open",
+					"at": "2026-08-27T08:30"
+				},
+				{
+					"step": "detect",
+					"at": "2026-08-27T09:00"
+				},
+				{
+					"step": "photo",
+					"at": "2026-08-27T11:00"
+				},
+				{
+					"step": "read",
+					"at": "2026-08-27T11:05"
+				},
+				{
+					"step": "value",
+					"at": "2026-08-27T11:10"
+				},
+				{
+					"step": "route",
+					"at": "2026-08-27T11:15"
+				},
+				{
+					"step": "approve",
+					"at": "2026-08-27T12:00"
+				},
+				{
+					"step": "listing",
+					"at": "2026-08-27T12:05"
+				},
+				{
+					"step": "offer",
+					"at": "2026-08-27T12:10"
+				},
+				{
+					"step": "orders",
+					"at": "2026-08-28T10:00"
+				},
+				{
+					"step": "bid",
+					"at": "2026-08-28T15:00"
+				},
+				{
+					"step": "counter",
+					"at": "2026-08-28T15:05"
+				},
+				{
+					"step": "accept",
+					"at": "2026-08-28T15:30"
+				},
+				{
+					"step": "closeOffer",
+					"at": "2026-08-29T12:10"
+				},
+				{
+					"step": "truck",
+					"at": "2026-08-30T10:00"
+				},
+				{
+					"step": "papers",
+					"at": "2026-08-30T10:30"
+				},
+				{
+					"step": "invoice",
+					"at": "2026-08-30T11:00"
+				},
+				{
+					"step": "van",
+					"at": "2026-08-31T09:00"
+				},
+				{
+					"step": "review",
+					"at": "2026-08-31T15:00"
+				},
+				{
+					"step": "report",
+					"at": "2026-09-27T10:00"
+				}
+			],
 			"batch": {
 				"id": "MF-2407-116",
 				"sku": "chikki",
@@ -11194,5 +12126,775 @@
 			}
 		},
 		"cleared": "2026-10-30"
-	}
+	},
+	"shops": [
+		{
+			"id": "k0",
+			"name": "Shree Ganesh Kirana",
+			"area": "Itwari",
+			"sales14": 6,
+			"distributor": "rakesh",
+			"member": "ganesh"
+		},
+		{
+			"id": "k1",
+			"name": "Jai Durga Stores",
+			"area": "Kamptee",
+			"sales14": 6,
+			"distributor": "rakesh",
+			"member": "jaidurga"
+		},
+		{
+			"id": "k2",
+			"name": "Om Sai Provision",
+			"area": "Wardha Road",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-om-sai-provision"
+		},
+		{
+			"id": "k3",
+			"name": "Maa Bhavani Kirana",
+			"area": "Itwari",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-maa-bhavani-kirana"
+		},
+		{
+			"id": "k4",
+			"name": "New Sagar Stores",
+			"area": "Kamptee",
+			"sales14": 9,
+			"distributor": "rakesh",
+			"member": "kirana-new-sagar-stores"
+		},
+		{
+			"id": "k5",
+			"name": "Gurukripa Traders",
+			"area": "Mahal",
+			"sales14": 6,
+			"distributor": "rakesh",
+			"member": "kirana-gurukripa-traders"
+		},
+		{
+			"id": "k6",
+			"name": "Mahalaxmi Kirana",
+			"area": "Sitabuldi",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-mahalaxmi-kirana"
+		},
+		{
+			"id": "k7",
+			"name": "Shiv Shakti Store",
+			"area": "Wardha",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-shiv-shakti-store"
+		},
+		{
+			"id": "k8",
+			"name": "Patel Provision",
+			"area": "Dharampeth",
+			"sales14": 6,
+			"distributor": "rakesh",
+			"member": "kirana-patel-provision"
+		},
+		{
+			"id": "k9",
+			"name": "Annapurna Stores",
+			"area": "Sadar",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-annapurna-stores"
+		},
+		{
+			"id": "k10",
+			"name": "Sahyog Kirana",
+			"area": "Kamptee",
+			"sales14": 12,
+			"distributor": "rakesh",
+			"member": "kirana-sahyog-kirana"
+		},
+		{
+			"id": "k11",
+			"name": "Raj Super Mart",
+			"area": "Mahal",
+			"sales14": 9,
+			"distributor": "rakesh",
+			"member": "kirana-raj-super-mart"
+		},
+		{
+			"id": "k12",
+			"name": "Vaishnavi Stores",
+			"area": "Itwari",
+			"sales14": 6,
+			"distributor": "rakesh",
+			"member": "kirana-vaishnavi-stores"
+		},
+		{
+			"id": "k13",
+			"name": "Sai Kripa Kirana",
+			"area": "Dharampeth",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-sai-kripa-kirana"
+		},
+		{
+			"id": "k14",
+			"name": "Shree Ram Provision",
+			"area": "Sitabuldi",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-shree-ram-provision"
+		},
+		{
+			"id": "k15",
+			"name": "Hanuman General Store",
+			"area": "Wardha Road",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-hanuman-general-store"
+		},
+		{
+			"id": "k16",
+			"name": "Gajanan Kirana",
+			"area": "Wardha",
+			"sales14": 6,
+			"distributor": "rakesh",
+			"member": "kirana-gajanan-kirana"
+		},
+		{
+			"id": "k17",
+			"name": "Kamal Provision Store",
+			"area": "Mahal",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-kamal-provision-store"
+		},
+		{
+			"id": "k18",
+			"name": "Navkar Stores",
+			"area": "Itwari",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-navkar-stores"
+		},
+		{
+			"id": "k19",
+			"name": "Siddhivinayak Kirana",
+			"area": "Sadar",
+			"sales14": 6,
+			"distributor": "rakesh",
+			"member": "kirana-siddhivinayak-kirana"
+		},
+		{
+			"id": "k20",
+			"name": "Jyoti General Store",
+			"area": "Kamptee",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-jyoti-general-store"
+		},
+		{
+			"id": "k21",
+			"name": "Laxmi Narayan Stores",
+			"area": "Wardha",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-laxmi-narayan-stores"
+		},
+		{
+			"id": "k22",
+			"name": "Bharat Kirana",
+			"area": "Sitabuldi",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-bharat-kirana"
+		},
+		{
+			"id": "k23",
+			"name": "Shubham Provision",
+			"area": "Dharampeth",
+			"sales14": 9,
+			"distributor": "rakesh",
+			"member": "kirana-shubham-provision"
+		},
+		{
+			"id": "k24",
+			"name": "Mauli Kirana",
+			"area": "Wardha Road",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-mauli-kirana"
+		},
+		{
+			"id": "k25",
+			"name": "Ekta Super Bazaar",
+			"area": "Sadar",
+			"sales14": 6,
+			"distributor": "rakesh",
+			"member": "kirana-ekta-super-bazaar"
+		},
+		{
+			"id": "k26",
+			"name": "Pooja Provision",
+			"area": "Itwari",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-pooja-provision"
+		},
+		{
+			"id": "k27",
+			"name": "Tulsi Kirana",
+			"area": "Kamptee",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-tulsi-kirana"
+		},
+		{
+			"id": "k28",
+			"name": "Vithal Stores",
+			"area": "Mahal",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-vithal-stores"
+		},
+		{
+			"id": "k29",
+			"name": "Anand General Store",
+			"area": "Dharampeth",
+			"sales14": 6,
+			"distributor": "rakesh",
+			"member": "kirana-anand-general-store"
+		},
+		{
+			"id": "k30",
+			"name": "Sainath Kirana",
+			"area": "Wardha",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-sainath-kirana"
+		},
+		{
+			"id": "k31",
+			"name": "Shree Sai Kirana",
+			"area": "Mahal",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "shreesai"
+		},
+		{
+			"id": "k32",
+			"name": "Balaji Provision",
+			"area": "Sadar",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-balaji-provision"
+		},
+		{
+			"id": "k33",
+			"name": "Rameshwar Stores",
+			"area": "Wardha Road",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-rameshwar-stores"
+		},
+		{
+			"id": "k34",
+			"name": "Ganga Kirana",
+			"area": "Kamptee",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-ganga-kirana"
+		},
+		{
+			"id": "k35",
+			"name": "Navratna General Store",
+			"area": "Dharampeth",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-navratna-general-store"
+		},
+		{
+			"id": "k36",
+			"name": "Sant Tukaram Kirana",
+			"area": "Wardha",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-sant-tukaram-kirana"
+		},
+		{
+			"id": "k37",
+			"name": "Mohan Stores",
+			"area": "Itwari",
+			"sales14": 3,
+			"distributor": "rakesh",
+			"member": "kirana-mohan-stores"
+		},
+		{
+			"id": "h0",
+			"name": "Sri Lakshmi Ganapathi Kirana",
+			"area": "Begum Bazaar",
+			"sales14": 6,
+			"distributor": "lakshmi",
+			"member": "kirana-sri-lakshmi-ganapathi-kirana"
+		},
+		{
+			"id": "h1",
+			"name": "Al-Noor Provision Store",
+			"area": "Charminar",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-al-noor-provision-store"
+		},
+		{
+			"id": "h2",
+			"name": "Deccan General Stores",
+			"area": "Abids",
+			"sales14": 8,
+			"distributor": "lakshmi",
+			"member": "kirana-deccan-general-stores"
+		},
+		{
+			"id": "h3",
+			"name": "Sai Krishna Kirana",
+			"area": "Koti",
+			"sales14": 5,
+			"distributor": "lakshmi",
+			"member": "kirana-sai-krishna-kirana"
+		},
+		{
+			"id": "h4",
+			"name": "Hussaini Provision",
+			"area": "Dabeerpura",
+			"sales14": 9,
+			"distributor": "lakshmi",
+			"member": "kirana-hussaini-provision"
+		},
+		{
+			"id": "h5",
+			"name": "Bhavani Kirana",
+			"area": "Malakpet",
+			"sales14": 6,
+			"distributor": "lakshmi",
+			"member": "kirana-bhavani-kirana"
+		},
+		{
+			"id": "h6",
+			"name": "Golconda Stores",
+			"area": "Afzal Gunj",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-golconda-stores"
+		},
+		{
+			"id": "h7",
+			"name": "Moazzam Kirana",
+			"area": "Charminar",
+			"sales14": 4,
+			"distributor": "lakshmi",
+			"member": "kirana-moazzam-kirana"
+		},
+		{
+			"id": "h8",
+			"name": "Anjaneya Provision Store",
+			"area": "Sultan Bazar",
+			"sales14": 8,
+			"distributor": "lakshmi",
+			"member": "kirana-anjaneya-provision-store"
+		},
+		{
+			"id": "h9",
+			"name": "Shalimar General Store",
+			"area": "Nampally",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-shalimar-general-store"
+		},
+		{
+			"id": "h10",
+			"name": "Ravi Teja Kirana",
+			"area": "Chaderghat",
+			"sales14": 6,
+			"distributor": "lakshmi",
+			"member": "kirana-ravi-teja-kirana"
+		},
+		{
+			"id": "h11",
+			"name": "Madina Provision",
+			"area": "Charminar",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-madina-provision"
+		},
+		{
+			"id": "h12",
+			"name": "Sri Durga Bhavani Stores",
+			"area": "Begum Bazaar",
+			"sales14": 8,
+			"distributor": "lakshmi",
+			"member": "kirana-sri-durga-bhavani-stores"
+		},
+		{
+			"id": "h13",
+			"name": "Hyderabadi Kirana",
+			"area": "Abids",
+			"sales14": 5,
+			"distributor": "lakshmi",
+			"member": "kirana-hyderabadi-kirana"
+		},
+		{
+			"id": "h14",
+			"name": "Gulzar House Stores",
+			"area": "Charminar",
+			"sales14": 9,
+			"distributor": "lakshmi",
+			"member": "kirana-gulzar-house-stores"
+		},
+		{
+			"id": "h15",
+			"name": "Padmavathi Kirana",
+			"area": "Koti",
+			"sales14": 6,
+			"distributor": "lakshmi",
+			"member": "kirana-padmavathi-kirana"
+		},
+		{
+			"id": "h16",
+			"name": "Asif Nagar Provisions",
+			"area": "Nampally",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-asif-nagar-provisions"
+		},
+		{
+			"id": "h17",
+			"name": "Ramakrishna General Store",
+			"area": "Malakpet",
+			"sales14": 4,
+			"distributor": "lakshmi",
+			"member": "kirana-ramakrishna-general-store"
+		},
+		{
+			"id": "h18",
+			"name": "Taj Kirana",
+			"area": "Dabeerpura",
+			"sales14": 8,
+			"distributor": "lakshmi",
+			"member": "kirana-taj-kirana"
+		},
+		{
+			"id": "h19",
+			"name": "Sitara Provision Store",
+			"area": "Afzal Gunj",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-sitara-provision-store"
+		},
+		{
+			"id": "h20",
+			"name": "Vinayaka Stores",
+			"area": "Sultan Bazar",
+			"sales14": 6,
+			"distributor": "lakshmi",
+			"member": "kirana-vinayaka-stores"
+		},
+		{
+			"id": "h21",
+			"name": "Nizam Kirana",
+			"area": "Charminar",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-nizam-kirana"
+		},
+		{
+			"id": "h22",
+			"name": "Annapurna Provisions",
+			"area": "Chaderghat",
+			"sales14": 8,
+			"distributor": "lakshmi",
+			"member": "kirana-annapurna-provisions"
+		},
+		{
+			"id": "h23",
+			"name": "Musi River Stores",
+			"area": "Afzal Gunj",
+			"sales14": 5,
+			"distributor": "lakshmi",
+			"member": "kirana-musi-river-stores"
+		},
+		{
+			"id": "h24",
+			"name": "Kothi Kirana",
+			"area": "Koti",
+			"sales14": 9,
+			"distributor": "lakshmi",
+			"member": "kirana-kothi-kirana"
+		},
+		{
+			"id": "h25",
+			"name": "Siddiq General Store",
+			"area": "Dabeerpura",
+			"sales14": 6,
+			"distributor": "lakshmi",
+			"member": "kirana-siddiq-general-store"
+		},
+		{
+			"id": "h26",
+			"name": "Lalitha Provision",
+			"area": "Malakpet",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-lalitha-provision"
+		},
+		{
+			"id": "h27",
+			"name": "Mehboob Kirana",
+			"area": "Begum Bazaar",
+			"sales14": 4,
+			"distributor": "lakshmi",
+			"member": "kirana-mehboob-kirana"
+		},
+		{
+			"id": "h28",
+			"name": "Srinivasa Stores",
+			"area": "Abids",
+			"sales14": 8,
+			"distributor": "lakshmi",
+			"member": "kirana-srinivasa-stores"
+		},
+		{
+			"id": "h29",
+			"name": "Zam Zam Provisions",
+			"area": "Charminar",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-zam-zam-provisions"
+		},
+		{
+			"id": "h30",
+			"name": "Pochamma Kirana",
+			"area": "Chaderghat",
+			"sales14": 6,
+			"distributor": "lakshmi",
+			"member": "kirana-pochamma-kirana"
+		},
+		{
+			"id": "h31",
+			"name": "Rahmat General Store",
+			"area": "Nampally",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-rahmat-general-store"
+		},
+		{
+			"id": "h32",
+			"name": "Krishnaveni Provisions",
+			"area": "Sultan Bazar",
+			"sales14": 8,
+			"distributor": "lakshmi",
+			"member": "kirana-krishnaveni-provisions"
+		},
+		{
+			"id": "h33",
+			"name": "Shah Ali Kirana",
+			"area": "Dabeerpura",
+			"sales14": 5,
+			"distributor": "lakshmi",
+			"member": "kirana-shah-ali-kirana"
+		},
+		{
+			"id": "h34",
+			"name": "Mahalakshmi Stores",
+			"area": "Malakpet",
+			"sales14": 9,
+			"distributor": "lakshmi",
+			"member": "kirana-mahalakshmi-stores"
+		},
+		{
+			"id": "h35",
+			"name": "Banjara Provision Store",
+			"area": "Abids",
+			"sales14": 6,
+			"distributor": "lakshmi",
+			"member": "kirana-banjara-provision-store"
+		},
+		{
+			"id": "h36",
+			"name": "Ghouse Kirana",
+			"area": "Charminar",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-ghouse-kirana"
+		},
+		{
+			"id": "h37",
+			"name": "Sri Rama Stores",
+			"area": "Koti",
+			"sales14": 4,
+			"distributor": "lakshmi",
+			"member": "kirana-sri-rama-stores"
+		},
+		{
+			"id": "h38",
+			"name": "Patel Market Kirana",
+			"area": "Afzal Gunj",
+			"sales14": 8,
+			"distributor": "lakshmi",
+			"member": "kirana-patel-market-kirana"
+		},
+		{
+			"id": "h39",
+			"name": "Yadamma Provisions",
+			"area": "Chaderghat",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-yadamma-provisions"
+		},
+		{
+			"id": "h40",
+			"name": "Darussalam Stores",
+			"area": "Nampally",
+			"sales14": 6,
+			"distributor": "lakshmi",
+			"member": "kirana-darussalam-stores"
+		},
+		{
+			"id": "h41",
+			"name": "Gowri Kirana",
+			"area": "Begum Bazaar",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-gowri-kirana"
+		},
+		{
+			"id": "h42",
+			"name": "Irani Gali Provisions",
+			"area": "Charminar",
+			"sales14": 8,
+			"distributor": "lakshmi",
+			"member": "kirana-irani-gali-provisions"
+		},
+		{
+			"id": "h43",
+			"name": "Satyanarayana Stores",
+			"area": "Sultan Bazar",
+			"sales14": 5,
+			"distributor": "lakshmi",
+			"member": "kirana-satyanarayana-stores"
+		},
+		{
+			"id": "h44",
+			"name": "Farhan General Store",
+			"area": "Dabeerpura",
+			"sales14": 9,
+			"distributor": "lakshmi",
+			"member": "kirana-farhan-general-store"
+		},
+		{
+			"id": "h45",
+			"name": "Sunanda Kirana",
+			"area": "Malakpet",
+			"sales14": 6,
+			"distributor": "lakshmi",
+			"member": "kirana-sunanda-kirana"
+		},
+		{
+			"id": "h46",
+			"name": "Mir Alam Provisions",
+			"area": "Afzal Gunj",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-mir-alam-provisions"
+		},
+		{
+			"id": "h47",
+			"name": "Jyothi Stores",
+			"area": "Koti",
+			"sales14": 4,
+			"distributor": "lakshmi",
+			"member": "kirana-jyothi-stores"
+		},
+		{
+			"id": "h48",
+			"name": "Purani Haveli Kirana",
+			"area": "Charminar",
+			"sales14": 8,
+			"distributor": "lakshmi",
+			"member": "kirana-purani-haveli-kirana"
+		},
+		{
+			"id": "h49",
+			"name": "Narayana Provision Store",
+			"area": "Abids",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-narayana-provision-store"
+		},
+		{
+			"id": "h50",
+			"name": "Bilal Stores",
+			"area": "Nampally",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-bilal-stores"
+		},
+		{
+			"id": "h51",
+			"name": "Saraswathi Kirana",
+			"area": "Chaderghat",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-saraswathi-kirana"
+		},
+		{
+			"id": "h52",
+			"name": "Osman Gunj Provisions",
+			"area": "Begum Bazaar",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-osman-gunj-provisions"
+		},
+		{
+			"id": "h53",
+			"name": "Vijaya Stores",
+			"area": "Sultan Bazar",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-vijaya-stores"
+		},
+		{
+			"id": "h54",
+			"name": "Akbar Kirana",
+			"area": "Dabeerpura",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-akbar-kirana"
+		},
+		{
+			"id": "h55",
+			"name": "Manjula Provisions",
+			"area": "Malakpet",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-manjula-provisions"
+		},
+		{
+			"id": "h56",
+			"name": "Laad Bazaar Stores",
+			"area": "Charminar",
+			"sales14": 7,
+			"distributor": "lakshmi",
+			"member": "kirana-laad-bazaar-stores"
+		},
+		{
+			"id": "h57",
+			"name": "Sri Venu Kirana",
+			"area": "Afzal Gunj",
+			"sales14": 8,
+			"distributor": "lakshmi",
+			"member": "kirana-sri-venu-kirana"
+		}
+	]
 }

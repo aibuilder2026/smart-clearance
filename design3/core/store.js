@@ -20,7 +20,7 @@
       workspace: D.WORKSPACE.id,
       // permission: Rakesh Traders' one-time permission for the agent to act in his name; paused stops every agent step
       setup: { confirmed: false, mapped: 0, permission: null },
-      hero: { id: "MF-2409-117", phase: "watching", photo: { status: "none" }, plan: null, listing: null, offer: null, orders: [], bids: [], chat: [], award: null, van: { status: "idle", done: 0 }, truck: { status: "idle" }, docs: null, invoiceIssued: false, posted: false },
+      hero: { id: "MF-2409-117", phase: "watching", photo: { status: "none" }, plan: null, listing: null, offer: null, orders: [], declined: {}, bids: [], chat: [], award: null, van: { status: "idle", done: 0 }, truck: { status: "idle" }, docs: null, invoiceIssued: false, posted: false },
       mango: { id: "MF-2410-118", phase: "executing", donation: null },
       feed: [], notifications: [], audit: [], users,
       rules: { watchTime: "09:00", dataTime: "08:30", floors: { snacks: 35, biscuits: 35, staples: 40, beverages: 30, "personal-care": 40 }, approvalTaps: 10, hindiOffers: true, requirePhoto: true, offerWindowHours: 48, tokenPct: 15, disposalPerUnit: 1.5, eprPerKg: 6, territoryGuard: true, returnWindowDays: 20, kiranaUplift: 3.5, vanPerUnit: 0.5 },

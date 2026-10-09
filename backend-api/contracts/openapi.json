@@ -5734,6 +5734,64 @@
         ]
       }
     },
+    "/v1/workspaces/{ws}/cases/{ref}/offer/decline": {
+      "post": {
+        "operationId": "decline_v1_workspaces__ws__cases__ref__offer_decline_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Decline V1 Workspaces  Ws  Cases  Ref  Offer Decline Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "A kirana says not this time to the scheme",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
     "/v1/workspaces/{ws}/cases/{ref}/orders": {
       "post": {
         "operationId": "order_v1_workspaces__ws__cases__ref__orders_post",
@@ -6593,6 +6651,55 @@
           }
         ],
         "summary": "Mark notifications read: some, or all",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/partner": {
+      "get": {
+        "operationId": "partner_v1_workspaces__ws__partner_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Partner V1 Workspaces  Ws  Partner Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "A partner's own history: the batches a distributor, kirana or food bank took part in",
         "tags": [
           "workspace"
         ]

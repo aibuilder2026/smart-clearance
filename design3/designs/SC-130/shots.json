@@ -1,0 +1,394 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-a/mockup.html?who=rakesh&theme=light#/batches",
+  "out": "option-a/dist-batches-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1120
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-a/mockup.html?who=rakesh&theme=dark#/batches",
+  "out": "option-a/dist-batches-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2400,
+  "height": 1120
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-a/mockup.html?who=rakesh&theme=light#/batches",
+  "out": "option-a/dist-batches-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2400,
+  "height": 2700
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-a/mockup.html?who=rakesh&theme=light#/batches/MF-2407-116",
+  "out": "option-a/dist-batch-what-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1120
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-a/mockup.html?who=rakesh&theme=light#/batches/MF-2407-116",
+  "out": "option-a/dist-batch-money-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 700,
+  "click": [
+   "nav.bh-tabs button:nth-child(2)"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-a/mockup.html?who=rakesh&theme=light#/batches/MF-2407-116",
+  "out": "option-a/dist-batch-papers-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 760,
+  "click": [
+   "nav.bh-tabs button:nth-child(3)"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-a/mockup.html?who=rakesh&theme=light#/batches/MF-2407-116",
+  "out": "option-a/dist-paper-sheet-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1000,
+  "click": [
+   "nav.bh-tabs button:nth-child(3)",
+   ".sc130-paper:nth-child(3)"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-a/mockup.html?who=rakesh&theme=light#/batches/MF-2407-116",
+  "out": "option-a/dist-batch-papers-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1700,
+  "click": [
+   "nav.bh-tabs button:nth-child(3)"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-a/mockup.html?who=rakesh&theme=light#/batches/MF-2409-117",
+  "out": "option-a/dist-present-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-a/mockup.html?who=shreesai&fresh&theme=light#/home",
+  "out": "option-a/kirana-offers-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-a/mockup.html?who=shreesai&fresh&theme=light#/home",
+  "out": "option-a/kirana-offers-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2400,
+  "height": 2100
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-a/mockup.html?who=shreesai&fresh&theme=dark#/home",
+  "out": "option-a/kirana-offers-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2400,
+  "height": 1000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-a/mockup.html?who=shreesai&fresh&theme=light#/home",
+  "out": "option-a/kirana-declined-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1000,
+  "click": [
+   "text=Not this time"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-a/mockup.html?who=shreesai&theme=light#/offer/MF-2406-108",
+  "out": "option-a/kirana-offer-expired-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 640
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-a/mockup.html?who=ganesh&theme=light#/offer/MF-2407-116",
+  "out": "option-a/kirana-offer-ordered-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 900
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-a/mockup.html?who=ganesh&theme=light#/orders",
+  "out": "option-a/kirana-orders-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 820
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-a/mockup.html?who=meera&stage=9&theme=light#/pickups",
+  "out": "option-a/fb-pickups-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 640
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-a/mockup.html?who=meera&stage=9&theme=dark#/pickups",
+  "out": "option-a/fb-pickups-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2400,
+  "height": 640
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-a/mockup.html?who=meera&stage=9&theme=light#/pickups",
+  "out": "option-a/fb-pickups-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1500
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-a/mockup.html?who=meera&stage=9&theme=light#/pickups/MF-2407-114",
+  "out": "option-a/fb-pickup-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 560
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-a/mockup.html?who=meera&stage=9&theme=light#/pickups/MF-2407-114",
+  "out": "option-a/fb-receipt-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1000,
+  "click": [
+   ".receipt-row"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-b/mockup.html?who=rakesh&theme=light#/report",
+  "out": "option-b/dist-history-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1500,
+  "click": [
+   "section:nth-of-type(2) .sc130-more"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-b/mockup.html?who=rakesh&theme=dark#/report",
+  "out": "option-b/dist-history-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2400,
+  "height": 1300
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-b/mockup.html?who=rakesh&theme=light#/report",
+  "out": "option-b/dist-history-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2400,
+  "height": 2600
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-b/mockup.html?who=rakesh&theme=light#/report",
+  "out": "option-b/dist-paper-sheet-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1000,
+  "click": [
+   "section:nth-of-type(2) .sc130-chip"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-b/mockup.html?who=shreesai&fresh&theme=light#/report",
+  "out": "option-b/kirana-history-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1250
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-b/mockup.html?who=shreesai&fresh&theme=light#/report",
+  "out": "option-b/kirana-history-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2400,
+  "height": 2400
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-b/mockup.html?who=ganesh&theme=light#/report",
+  "out": "option-b/kirana-bill-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 900,
+  "click": [
+   ".sc130-more"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-b/mockup.html?who=shreesai&fresh&theme=light#/home",
+  "out": "option-b/kirana-offers-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 900
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-b/mockup.html?who=meera&stage=9&theme=light#/report",
+  "out": "option-b/fb-history-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 900
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-b/mockup.html?who=meera&stage=9&theme=dark#/report",
+  "out": "option-b/fb-history-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2400,
+  "height": 900
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-b/mockup.html?who=meera&stage=9&theme=light#/report",
+  "out": "option-b/fb-history-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2400,
+  "height": 2000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-b/mockup.html?who=meera&stage=9&theme=light#/report",
+  "out": "option-b/fb-checklist-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 900,
+  "click": [
+   "text=FSSAI checklist"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-c/mockup.html?who=rakesh&theme=light#/report",
+  "out": "option-c/dist-account-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1500
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-c/mockup.html?who=rakesh&theme=dark#/report",
+  "out": "option-c/dist-account-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2400,
+  "height": 1300
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-c/mockup.html?who=rakesh&theme=light#/report",
+  "out": "option-c/dist-account-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2400,
+  "height": 3000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-c/mockup.html?who=rakesh&theme=light#/report",
+  "out": "option-c/dist-account-batch-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1500,
+  "click": [
+   "[aria-label=View] button:nth-child(2)"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-c/mockup.html?who=shreesai&fresh&theme=light#/report",
+  "out": "option-c/kirana-schemes-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 880
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-c/mockup.html?who=shreesai&fresh&theme=light#/report",
+  "out": "option-c/kirana-schemes-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1900
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-c/mockup.html?who=ganesh&theme=light#/report",
+  "out": "option-c/kirana-scheme-sheet-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 900,
+  "click": [
+   ".sc130-reg-row:nth-child(3)"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-c/mockup.html?who=meera&stage=9&theme=light#/report",
+  "out": "option-c/fb-receipts-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 640
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-c/mockup.html?who=meera&stage=9&theme=dark#/report",
+  "out": "option-c/fb-receipts-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2400,
+  "height": 640
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-c/mockup.html?who=meera&stage=9&theme=light#/report",
+  "out": "option-c/fb-receipts-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1400
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-130/option-c/mockup.html?who=meera&stage=9&theme=light#/report",
+  "out": "option-c/fb-receipt-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1000,
+  "click": [
+   ".sc130-reg-row"
+  ]
+ }
+]

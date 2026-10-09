@@ -19,6 +19,7 @@ import type {
 	Kirana,
 	Notification,
 	Partner,
+	PartnerView,
 	Plan,
 	PlanLine,
 	Push,
@@ -42,6 +43,7 @@ import type {
 	WsDistributor,
 	WsDoc,
 	WsFeedEvent,
+	WsPartner,
 	WsPlan,
 	WsPlanLine,
 	WsSplitLine,
@@ -493,6 +495,8 @@ function heroOf(detail: CaseDetail | null, today: string): Hero {
 			: null,
 		offer: j.offer ? { status: j.offer.status, at: at(j.offer.at), shops: j.offer.shops } : null,
 		orders: j.orders.map((o) => ({ id: o.id, units: o.units, at: at(o.at) })),
+		// the shops that said not this time (SC-130): a kirana is told its own
+		declined: Object.fromEntries(Object.entries(j.offer?.declined ?? {}).map(([k, v]) => [k, { at: at(v.at) }])),
 		bids: j.bids.map((b) => ({
 			id: b.id,
 			price: b.price,
@@ -680,3 +684,12 @@ export const emptyState = (): State => ({
 	integrations: [],
 	seq: 0
 });
+
+/** a partner's own history (SC-130): what backend-api sent, with its papers as the screens read them */
+export function partnerOf(p: WsPartner): PartnerView {
+	return {
+		buyer: p.buyer,
+		shop: p.shop,
+		cases: p.cases.map((c) => ({ ...c, docs: c.docs.map(docOf), receipt: c.receipt ? docOf(c.receipt) : null }))
+	};
+}

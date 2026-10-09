@@ -17,7 +17,7 @@
 	import Icon from '../../../icons/Icon.svelte';
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
-	import { castOf, clusterOf, first, fmt, heroModel, isRouted, productName } from '../../model';
+	import { castOf, clusterOf, first, fmt, heroModel, isRouted, productName, shopById } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import PlayAs from '../common/PlayAs.svelte';
@@ -155,7 +155,7 @@
 					>{/if}
 				<ClusterMap {...clusterOf(c.dist)} kiranas={c.kiranas} orderedCount={h.orders.length} route height={200} />
 				<div class="stack tight">
-					{#each h.orders.slice(-3).reverse() as o (o.id)}{@const k = c.kiranas.find((x) => x.id === o.id)!}
+					{#each h.orders.slice(-3).reverse() as o (o.id)}{@const k = shopById(o.id, c, ws.data.shops)}
 						<div class="row between t-subhead">
 							<span>{k.name} <span class="subtle t-footnote">{k.area}</span></span><span class="tnum strong"
 								>{o.units} <span class="subtle t-caption">{o.at}</span></span

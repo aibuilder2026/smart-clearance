@@ -1030,6 +1030,12 @@ async def order(ctx: Ctx, client_id: str, ref: str, units: int) -> None:
     ctx.session.add(
         m.CaseOrder(case_id=s.case.id, kirana_id=kirana_id, units=units, at=at, wall=ctx.clock.now(), member_ref=me.ref)
     )
+    # an order after Not this time takes the shop off the declined (SC-130)
+    if kirana_id in (s.case.offer.get("declined") or {}):
+        s.case.offer = {
+            **s.case.offer,
+            "declined": {k: v for k, v in s.case.offer["declined"].items() if k != kirana_id},
+        }
     await ctx.session.flush()
     await audit.record(
         ctx,
@@ -1040,6 +1046,34 @@ async def order(ctx: Ctx, client_id: str, ref: str, units: int) -> None:
     )
     if units == left:  # the scheme is full: it closes now
         await _close_offer(ctx, s)
+    await _save(ctx, s)
+
+
+async def decline(ctx: Ctx, client_id: str, ref: str) -> None:
+    """a kirana says not this time to the scheme (SC-130): the offer stays open to it for its window, and an order after
+    all takes the shop off the declined"""
+    ctx.require("offer.order", "Only a kirana answers the scheme.")
+    s = await scene(ctx, client_id, ref)
+    _guard(s, "order")
+    me = await world.member(ctx, client_id, _member(ctx))
+    kirana_id = me.org_ref or ""
+    if kirana_id not in (s.case.offer or {}).get("caps", {}):
+        raise ApiError(403, "This scheme was not offered to your shop.")
+    taken = (await ctx.session.execute(select(m.CaseOrder).where(m.CaseOrder.case_id == s.case.id))).scalars().all()
+    if any(o.kirana_id == kirana_id for o in taken):
+        raise stale("Your shop has already ordered.")
+    declined = dict(s.case.offer.get("declined") or {})
+    if kirana_id in declined:
+        return
+    declined[kirana_id] = {"at": ev.now(ctx, s.c).isoformat(), "by": me.ref}
+    s.case.offer = {**s.case.offer, "declined": declined}
+    await audit.record(
+        ctx,
+        s.c.id,
+        "offer.decline",
+        "declined the scheme",
+        {"member": me.ref, "target": f"{copy.base(s.sku.name)} scheme", "batch": ref},
+    )
     await _save(ctx, s)
 
 

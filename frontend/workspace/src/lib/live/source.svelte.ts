@@ -22,6 +22,7 @@ import {
 	type WorkspaceSnapshot,
 	type WsAuditRow,
 	type WsLedger,
+	type WsPartner,
 	type WsRules
 } from '@smart-clearance/api/workspace';
 import type {
@@ -30,6 +31,7 @@ import type {
 	CaseTab,
 	Ledger,
 	LedgerPage,
+	PartnerView,
 	Failure,
 	HumanAction,
 	InviteInput,
@@ -44,7 +46,18 @@ import type {
 	WorkspacePublic,
 	WorkspaceSource
 } from '@smart-clearance/core/workspace/app';
-import { caseOf, dataOf, donationRef, emptyData, emptyState, focusRef, publicOf, stateOf, userOf } from './project';
+import {
+	caseOf,
+	dataOf,
+	donationRef,
+	emptyData,
+	emptyState,
+	focusRef,
+	partnerOf,
+	publicOf,
+	stateOf,
+	userOf
+} from './project';
 
 export type LiveOptions = {
 	api: WorkspaceApi;
@@ -62,10 +75,13 @@ export type LiveOptions = {
 };
 
 /** the roles that read the ledger, and the audit log */
-type Wanted = { snapshot: boolean; cases: string[]; ledger: boolean; audit: boolean };
+type Wanted = { snapshot: boolean; cases: string[]; ledger: boolean; audit: boolean; partner: boolean };
 
 const LEDGER: RoleId[] = ['operator', 'admin'];
 const AUDIT: RoleId[] = ['admin'];
+/** the roles that read their own history with the client (SC-130) */
+const PARTNER: RoleId[] = ['distributor', 'retailer', 'foodbank'];
+const NONE: Wanted = { snapshot: false, cases: [], ledger: false, audit: false, partner: false };
 
 const phone = () =>
 	typeof matchMedia !== 'undefined' && matchMedia('(max-width: 767px)').matches ? 'phone' : 'desktop';
@@ -81,6 +97,9 @@ export class LiveSource implements WorkspaceSource {
 	#focus = $state<CaseDetail | null>(null);
 	#second = $state<CaseDetail | null>(null);
 	#ledger = $state<WsLedger | null>(null);
+	/** a partner's own history, as backend-api answered it (SC-130) */
+	#partner = $state<WsPartner | null>(null);
+	readonly #partners = $derived(this.#partner ? partnerOf(this.#partner) : null);
 	/** the ledger's batch pages asked for (SC-121), and what backend-api answered for each */
 	#paged = new SvelteSet<string>();
 	#pages = new SvelteMap<string, CaseDetail>();
@@ -102,7 +121,7 @@ export class LiveSource implements WorkspaceSource {
 	#stream: EventsHandle | null = null;
 	#settle: ReturnType<typeof setTimeout> | null = null;
 	/** what to read next: the snapshot, the cases by ref, the ledger, the audit log (bookkeeping, not state) */
-	#wanted: Wanted = { snapshot: false, cases: [], ledger: false, audit: false };
+	#wanted: Wanted = { ...NONE, cases: [] };
 	#reading: Promise<void> | null = null;
 
 	constructor(o: LiveOptions) {
@@ -154,6 +173,10 @@ export class LiveSource implements WorkspaceSource {
 	}
 	get case(): CaseData | null {
 		return this.#case;
+	}
+	/** a distributor's, kirana's or food bank's own history (SC-130) */
+	get partners(): PartnerView | null {
+		return this.#partners;
 	}
 	/** the ledger, as backend-api works it out (SC-124), for those who read it */
 	get ledger(): Ledger | null {
@@ -299,13 +322,22 @@ export class LiveSource implements WorkspaceSource {
 		}
 		// a batch page open in the ledger reads its batch again when it changes (SC-121)
 		if (e.ref && this.#paged.has(e.ref) && (e.type === 'case' || e.type === 'ledger')) void this.#readPage(e.ref);
-		if (e.type === 'ledger') return this.#want({ ledger: true });
+		// a partner's history moves with its batches: an order, a pickup, a paper (SC-130)
+		if (e.type === 'ledger') return this.#want({ ledger: true, partner: true });
 		if (e.type === 'audit') return this.#want({ audit: true });
-		this.#want({ snapshot: true, ref: e.ref });
+		this.#want({ snapshot: true, ref: e.ref, partner: true });
 	}
 
-	#want(w: { snapshot?: boolean; ref?: string | null; all?: boolean; ledger?: boolean; audit?: boolean }) {
+	#want(w: {
+		snapshot?: boolean;
+		ref?: string | null;
+		all?: boolean;
+		ledger?: boolean;
+		audit?: boolean;
+		partner?: boolean;
+	}) {
 		if (w.snapshot) this.#wanted.snapshot = true;
+		if (w.partner || w.all) this.#wanted.partner = true;
 		if (w.ref && !this.#wanted.cases.includes(w.ref)) this.#wanted.cases.push(w.ref);
 		if (w.all) {
 			this.#wanted.ledger = this.#wanted.audit = true;
@@ -325,12 +357,12 @@ export class LiveSource implements WorkspaceSource {
 	async #read(): Promise<void> {
 		if (this.#reading) {
 			await this.#reading;
-			if (this.#wanted.snapshot || this.#wanted.cases.length || this.#wanted.ledger || this.#wanted.audit)
-				return this.#read();
+			const n = this.#wanted;
+			if (n.snapshot || n.cases.length || n.ledger || n.audit || n.partner) return this.#read();
 			return;
 		}
 		const w = this.#wanted;
-		this.#wanted = { snapshot: false, cases: [], ledger: false, audit: false };
+		this.#wanted = { ...NONE, cases: [] };
 		this.#reading = (async () => {
 			try {
 				if (w.snapshot) await this.#readSnapshot();
@@ -339,6 +371,8 @@ export class LiveSource implements WorkspaceSource {
 				if (w.ledger && role && LEDGER.includes(role)) this.#ledger = await this.#api.ledger().catch(() => null);
 				if (w.audit && role && AUDIT.includes(role))
 					this.#audit = (await this.#api.audit().catch(() => ({ rows: [] }))).rows;
+				if (w.partner && role && PARTNER.includes(role))
+					this.#partner = await this.#api.partner().catch(() => this.#partner);
 			} catch (e) {
 				if (refusalOf(e) === 'signed-out' || refusalOf(e) === 'not-a-member') return this.#signedOut();
 				this.#error = e;
@@ -350,7 +384,7 @@ export class LiveSource implements WorkspaceSource {
 	}
 
 	async #readAll() {
-		this.#wanted = { snapshot: true, cases: [], ledger: true, audit: true };
+		this.#wanted = { snapshot: true, cases: [], ledger: true, audit: true, partner: true };
 		await this.#read();
 		for (const ref of this.#paged) void this.#readPage(ref);
 		if (!this.#snap) throw this.#error ?? new Error('The workspace did not load.');
@@ -447,7 +481,7 @@ export class LiveSource implements WorkspaceSource {
 	#clear() {
 		this.#member = null;
 		this.#snap = null;
-		this.#focus = this.#second = this.#ledger = null;
+		this.#focus = this.#second = this.#ledger = this.#partner = null;
 		this.#paged.clear();
 		this.#pages.clear();
 		this.#audit = [];
@@ -524,6 +558,21 @@ export class LiveSource implements WorkspaceSource {
 							...c.journey.orders,
 							{ id: kirana, units: n, at: this.#now(), by: this.#member?.id ?? '' }
 						];
+					})
+				);
+			}
+			case 'decline': {
+				// Not this time (SC-130): the shop's own answer, shown at once
+				const kirana = arg as string;
+				return this.#send(
+					name,
+					() => api.declineOffer(ref),
+					this.#show((c) => {
+						if (c.journey.offer)
+							c.journey.offer = {
+								...c.journey.offer,
+								declined: { ...c.journey.offer.declined, [kirana]: { at: this.#now() } }
+							};
 					})
 				);
 			}

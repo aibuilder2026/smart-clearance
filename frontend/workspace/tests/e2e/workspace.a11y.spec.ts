@@ -11,7 +11,7 @@ import { go, hold, isDesktop, openWorkspace, release, scanHeld } from './workspa
 /** each person in the story, and every screen their role opens (core's NAV and routesFor) */
 const PEOPLE: [string, string[]][] = [
 	['priya', ['command', 'route', 'execution', 'batches', 'setup', 'report', 'paperwork', 'inbox', 'profile']],
-	['rakesh', ['home', 'photo', 'van', 'orders', 'inbox', 'profile']],
+	['rakesh', ['home', 'batches', 'photo', 'van', 'orders', 'inbox', 'profile']],
 	['ganesh', ['home', 'offer', 'orders', 'inbox', 'profile']],
 	['agrawal', ['market', 'listing', 'bids', 'inbox', 'profile']],
 	['meera', ['pickups', 'inbox', 'profile']],
@@ -274,6 +274,46 @@ test("the ledger: its readings, its periods, its exports, and a batch's page in 
 		findings.push(...(await scan(page, `a batch's page · ${tab}`)));
 	}
 	await report(testInfo, findings);
+});
+
+test("a distributor's batch he cleared: what happened, the money, his papers and a copy (SC-130)", async ({
+	page
+}, testInfo) => {
+	const findings: Finding[] = [];
+	await openWorkspace(page, '/batches/MF-2407-114', { as: 'rakesh' });
+	await expect(page.locator('.bhead h1')).toHaveText('Masala Oats 200 g');
+	for (const tab of ['What happened', 'Money', 'Papers']) {
+		await page.locator('.bh-tabs').getByRole('button', { name: tab }).click();
+		await page.waitForTimeout(400);
+		findings.push(...(await scan(page, `a distributor's batch · ${tab}`)));
+	}
+	await page.getByRole('button', { name: /Donation receipt/ }).click();
+	await settled(page);
+	findings.push(...(await scan(page, "a distributor's batch · a copy of the receipt")));
+	await report(testInfo, findings);
+});
+
+test("a kirana's earlier offer, ordered (SC-130)", async ({ page }, testInfo) => {
+	await openWorkspace(page, '/offer/MF-2407-116', { as: 'ganesh' });
+	await expect(page.locator('.bhead h1')).toHaveText('Peanut Chikki 100 g');
+	await report(testInfo, await scan(page, "a kirana's earlier offer · ordered"));
+});
+
+test("a food bank's pickup it collected, and its receipt (SC-130)", async ({ page }, testInfo) => {
+	await openWorkspace(page, '/pickups/MF-2407-114', { as: 'meera' });
+	await expect(page.locator('.bhead h1')).toHaveText('Masala Oats 200 g');
+	const findings: Finding[] = [...(await scan(page, "a food bank's pickup"))];
+	await page.getByRole('button', { name: /Donation receipt/ }).click();
+	await settled(page);
+	findings.push(...(await scan(page, "a food bank's pickup · its receipt")));
+	await report(testInfo, findings);
+});
+
+test('a kirana says Not this time to the open scheme (SC-130)', async ({ page }, testInfo) => {
+	await openWorkspace(page, '/home', { as: 'ganesh', stage: 6, after: ['list', 'outreach'] });
+	await page.getByRole('button', { name: 'Not this time' }).click();
+	await expect(page.getByText('You said not this time')).toBeVisible();
+	await report(testInfo, await scan(page, 'Offers · after Not this time'));
 });
 
 // a label photo for the camera on touch screens, where Take a photo opens the phone's own camera (a file chooser here)

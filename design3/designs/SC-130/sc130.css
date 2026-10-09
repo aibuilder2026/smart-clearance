@@ -1,0 +1,75 @@
+/* SC-130's mockups: the partners' history, papers, timelines and registers, on design system v3's tokens */
+
+/* a partner's papers: one row each, in an inset grouped list */
+.sc130-papers { background: var(--surface); border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+.sc130-paper { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; padding: 12px 16px; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: background-color var(--t-fast) var(--ease); }
+.sc130-paper + .sc130-paper::before { content: ""; position: absolute; top: 0; left: 60px; right: 0; height: var(--hair); background: var(--line); }
+.sc130-paper:hover { background: var(--fill); }
+.sc130-paper:focus-visible { outline: 3px solid var(--ring); outline-offset: -3px; border-radius: var(--r-lg); }
+.sc130-paper > .grow { display: grid; gap: 2px; min-width: 0; }
+.sc130-paper .mono { font-family: var(--font-mono); font-size: 12.5px; }
+.sc130-head { display: grid; gap: 4px; margin: 4px 0 8px; font-size: 13px; font-weight: 600; color: var(--fg-2); }
+
+/* what happened: the batch's moments down a spine, each with its icon tile, words and time */
+.sc130-moments { position: relative; display: grid; gap: 0; }
+.sc130-moment { position: relative; display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 12px; padding: 0 0 18px; }
+.sc130-moment:last-child { padding-bottom: 0; }
+.sc130-moment::before { content: ""; position: absolute; left: 17px; top: 36px; bottom: 0; width: 2px; background: var(--line); }
+.sc130-moment:last-child::before { display: none; }
+.sc130-moment .icontile { width: 36px; height: 36px; border-radius: 11px; }
+.sc130-moment b { display: block; font-size: 15px; font-weight: 600; }
+.sc130-moment span.sub { display: block; margin-top: 2px; font-size: 13.5px; color: var(--fg-3); }
+.sc130-moment time { padding-top: 2px; font-family: var(--font-mono); font-size: 12px; color: var(--fg-3); white-space: nowrap; }
+.sc130-moment.ahead b { color: var(--fg-3); font-weight: 550; }
+.sc130-moment.ahead .icontile { background: var(--fill-2); color: var(--fg-3); }
+
+/* the money, line by line */
+.sc130-line { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; }
+.sc130-line em { font-style: normal; color: var(--fg-3); font-size: 13.5px; }
+.sc130-line.strong { font-weight: 650; }
+.sc130-line .tnum { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sc130-line .neg { color: var(--fg-2); }
+
+/* the page's tabs, as the operator's batch page draws them (SC-112) */
+.sc130-tabs { margin-top: 18px; }
+
+/* option B: one timeline, by month, a rail down the left: a dot on the rail, the day above each card */
+.sc130-tl { display: grid; gap: 0; }
+.sc130-tl-month { margin: 8px 0 12px 34px; font-size: 13px; font-weight: 650; color: var(--fg-2); }
+.sc130-tl-item { position: relative; display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 14px; padding-bottom: 18px; }
+.sc130-tl-item::before { content: ""; position: absolute; left: 9px; top: 14px; bottom: -14px; width: 2px; background: var(--line); }
+.sc130-tl section:last-child .sc130-tl-item:last-child::before { display: none; }
+.sc130-tl-rail { padding-top: 4px; }
+.sc130-tl-when { margin: 0 0 6px; font-size: 13px; color: var(--fg-3); }
+.sc130-tl-when b { font-weight: 650; color: var(--fg-2); }
+.sc130-tl-when .mono { font-family: var(--font-mono); font-size: 12px; }
+.sc130-tl-dot { display: block; width: 12px; height: 12px; margin-left: 4px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 0 4px var(--bg), 0 0 0 5px var(--line); position: relative; z-index: 1; }
+.sc130-tl-dot.muted { background: var(--fg-4); }
+.sc130-tl-dot.now { background: var(--blue); }
+.sc130-fit { width: max-content; max-width: 100%; }
+.sc130-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.sc130-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 12px; border: 0; border-radius: var(--r-full); background: var(--fill); color: var(--fg); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; transition: background-color var(--t-fast) var(--ease); }
+.sc130-chip:hover { background: var(--fill-2); }
+.sc130-chip:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+.sc130-chip .mono { font-family: var(--font-mono); font-size: 12px; font-weight: 500; color: var(--fg-2); }
+.sc130-more { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--primary-text); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.sc130-more:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; border-radius: 8px; }
+
+/* option C: a register, a row a paper (or an offer, or a receipt), columns on desktops, stacked on phones */
+.sc130-reg { background: var(--surface); border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+.sc130-reg-head, .sc130-reg-row { display: grid; grid-template-columns: var(--cols); gap: 12px; align-items: center; padding: 12px 16px; }
+.sc130-reg-head { font-size: 12.5px; font-weight: 600; color: var(--fg-3); background: var(--surface-2); }
+.sc130-reg-row { position: relative; width: 100%; min-height: 56px; border: 0; background: transparent; color: inherit; font: inherit; font-size: 14.5px; text-align: left; cursor: pointer; transition: background-color var(--t-fast) var(--ease); }
+.sc130-reg-row + .sc130-reg-row::before { content: ""; position: absolute; top: 0; left: 16px; right: 0; height: var(--hair); background: var(--line); }
+.sc130-reg-row:hover { background: var(--fill); }
+.sc130-reg-row:focus-visible { outline: 3px solid var(--ring); outline-offset: -3px; }
+.sc130-reg .n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sc130-reg .mono { font-family: var(--font-mono); font-size: 12.5px; }
+.sc130-reg .sub { display: block; font-size: 12.5px; color: var(--fg-3); }
+.sc130-reg-foot { display: grid; grid-template-columns: var(--cols); gap: 12px; padding: 12px 16px; font-weight: 650; background: var(--surface-2); }
+@container app (max-width: 767px) {
+  .sc130-reg-head { display: none; }
+  .sc130-reg-row, .sc130-reg-foot { grid-template-columns: minmax(0, 1fr) auto; }
+  .sc130-reg .wide-only { display: none; }
+}
+.sc130-plus { color: var(--primary-text); }

@@ -523,9 +523,11 @@ async def test_the_food_bank_issues_its_receipt_as_it_collects(api, munchly, clo
     assert ids[ids.index("fssai") + 1] == "receipt"
     paper = next(d for d in (await case(api, PRIYA, MANGO))["docs"] if d["id"] == "receipt")
     assert (paper["no"], paper["date"], paper["pdf"], paper["meals"]) == (mine["no"], mine["date"], True, 58)
-    # each sees its own cut: the food bank its receipt, the distributor none
+    # each sees its own cut: the food bank its receipt; the distributor a copy of it (SC-130), and none of the client's
+    # GST memo or FSSAI checklist
     assert [d["id"] for d in (await case(api, MEERA, MANGO))["docs"]] == ["receipt"]
-    assert "receipt" not in [d["id"] for d in (await case(api, LAKSHMI, MANGO))["docs"]]
+    theirs = [d["id"] for d in (await case(api, LAKSHMI, MANGO))["docs"]]
+    assert "receipt" in theirs and not {"itc", "fssai"} & set(theirs)
 
 
 async def test_a_food_banks_own_rule_counts_the_meals(api, munchly, cloud, ctx):
