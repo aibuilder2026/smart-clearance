@@ -303,7 +303,7 @@
 
   // a switch: cover the page as it is, change the theme underneath, wait for the new plates, part into the page
   function preload(to) {
-    var base = W.SC3_SITE_IMG || "assets/plates/", list = [["business" + (to === "dark" ? "-night" : "") + ".webp", true]];
+    var base = W.SC3_SITE_IMG || "assets/plates/", list = [["town-" + (to === "dark" ? "night" : "morning") + ".webp", true]];
     // the table too, when it is on screen or close to it
     [[".tb-plate", "table"]].forEach(function (q) {
       var n = D.querySelector(q[0]); if (!n) return; var r = n.getBoundingClientRect();

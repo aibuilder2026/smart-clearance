@@ -1,0 +1,66 @@
+{
+  "name": "one-day",
+  "model": "LTX 2.5 Fast (local)",
+  "ltx_desktop": "1.2.7",
+  "duration_s": 14.22,
+  "clips": [
+    {
+      "name": "a-1-morning",
+      "prompt": "Exactly as in the image: a handmade miniature diorama of an Indian snack business seen from above, a pale factory with two brick chimneys and a small office at the left, a corrugated godown warehouse full of brown cartons in the middle, a lane of colourful kirana shops at the right, a highway climbing to a small warehouse on a hill at the back right, a community kitchen with a blue awning at the back, a fenced dump yard at the back left, and a thin softly glowing green path painted along the road, in low golden morning light. Over the clip the morning turns to early afternoon: the sun climbs, the shadows shorten and the sky deepens to a clear blue. At the factory's loading bay the tiny workers finish loading cartons onto the small blue truck, the tiny woman from the office and the tiny distributor shake hands and step back, and the blue truck pulls away along the road to the godown's gate and stops, where the two workers begin to unload it; the white van drives down from the hill along the highway to the community kitchen and stops beside it. The clip ends exactly on the last image. Every building stays exactly where it is, with the same shape, size and colours; nothing new appears; no text appears anywhere. Locked-off camera, no camera movement, no zoom. No flicker.",
+      "seed": 8201,
+      "resolution": "720p",
+      "duration_s": 5,
+      "fps": 24,
+      "camera": "static",
+      "loras": [],
+      "image": "town-morning.png",
+      "last_image": "town-noon.png",
+      "minutes": 8.9
+    },
+    {
+      "name": "a-2-noon",
+      "prompt": "Exactly as in the image: a handmade miniature diorama of an Indian snack business seen from above, a pale factory with two brick chimneys and a small office at the left, a corrugated godown warehouse full of brown cartons in the middle, a lane of colourful kirana shops at the right, a highway climbing to a small warehouse on a hill at the back right, a community kitchen with a blue awning at the back, a fenced dump yard at the back left, and a thin softly glowing green path painted along the road, under a high afternoon sun. Over the clip the afternoon turns to a surreal violet dusk: the sun lowers to the left, the shadows lengthen, the sky turns through gold to violet, magenta and deep purple, the street lamps come on one by one and the kirana shop fronts light up. Tiny volunteers carry the last cartons from the white van into the community kitchen and hand food to the queue; then the van pulls away and climbs the highway to the warehouse on the hill. At the godown's gate the two workers set up a folding table under a tarpaulin and stack it with packets, and a queue of workers forms; tiny shoppers gather at the kirana lane and reach for packets, and the green auto-rickshaw drives in and stops by the shops. The glowing green path brightens as the dusk comes. The clip ends exactly on the last image. Every building stays exactly where it is, with the same shape, size and colours; nothing new appears; no text appears anywhere. Locked-off camera, no camera movement, no zoom. No flicker.",
+      "seed": 8202,
+      "resolution": "720p",
+      "duration_s": 5,
+      "fps": 24,
+      "camera": "static",
+      "loras": [],
+      "image": "town-noon.png",
+      "last_image": "town-dusk.png",
+      "minutes": 9.1
+    },
+    {
+      "name": "a-3-dusk",
+      "prompt": "Exactly as in the image: a handmade miniature diorama of an Indian snack business seen from above, a pale factory with two brick chimneys and a small office at the left, a corrugated godown warehouse full of brown cartons in the middle, a lane of colourful kirana shops at the right, a highway climbing to a small warehouse on a hill at the back right, a community kitchen with a blue awning at the back, a fenced dump yard at the back left, and a thin softly glowing green path painted along the road, at a violet dusk. Over the clip the dusk deepens into a rich indigo and violet night with a purple glow at the horizon and a few stars: the last gold fades behind the hills, every window and shop front glows warm, the street lamps glow with soft halos, and the green path glows brightly along the whole road. At the staff-sale table by the godown's gate the queue of workers buys the last packets; the shoppers at the kirana lane carry their packets home and the auto-rickshaw drives off; in the office window two tiny people work at the desk under the lamp. The clip ends exactly on the last image. Every building stays exactly where it is, with the same shape, size and colours; nothing new appears; no text appears anywhere. Locked-off camera, no camera movement, no zoom. No flicker.",
+      "seed": 8203,
+      "resolution": "720p",
+      "duration_s": 5,
+      "fps": 24,
+      "camera": "static",
+      "loras": [],
+      "image": "town-dusk.png",
+      "last_image": "town-night.png",
+      "minutes": 9.0
+    },
+    {
+      "name": "a-4-night-v2",
+      "prompt": "Exactly as in the image: a handmade miniature diorama of an Indian snack business seen from above, a pale factory with two brick chimneys and a small office at the left, a corrugated godown warehouse full of brown cartons in the middle, a lane of colourful kirana shops at the right, a highway climbing to a small warehouse on a hill at the back right, a community kitchen with a blue awning at the back, a fenced dump yard at the back left, and a thin softly glowing green path painted along the road, at a rich indigo and violet night with a purple glow at the horizon, every window and shop front lit warm, the street lamps glowing with soft halos and the green path glowing brightly along the whole road. For most of the clip it stays deep night: in the office window the two tiny people work at the desk under the lamp and then raise their chai tumblers to each other, the last shoppers walk home along the lane, the auto-rickshaw waits by the shops, and the lamps and windows stay lit. Only in the last second does the night lift quickly into morning: the sky brightens from indigo through purple and rose to pale gold, the stars fade, the lamps and windows go dark, and low golden sunrise light reaches the town from the right with long shadows, where the workers load cartons onto the blue truck and the woman from the office and the distributor shake hands beside it. The glowing green path stays lit along the road throughout. The clip ends exactly on the last image. Every building stays exactly where it is, with the same shape, size and colours; nothing new appears; no text appears anywhere. Locked-off camera, no camera movement, no zoom. No flicker.",
+      "seed": 8205,
+      "resolution": "720p",
+      "duration_s": 5,
+      "fps": 24,
+      "camera": "static",
+      "loras": [],
+      "image": "town-night.png",
+      "last_image": "town-morning.png",
+      "minutes": 9.2
+    }
+  ],
+  "cut": "the four clips chained, each dissolving into the next over 0.25 s (each ends within LTX's reach of the frame the next begins on), the tail dissolving back into the first clip at 0.5 s, where the film begins, so it loops without a cut; retimed from 19 s to 14.2 s by keeping every frame at 32 fps; eq contrast 1.03, saturation 1.08",
+  "encode": "ffmpeg -an -c:v libx264 -preset slow -profile:v high -crf 22 -pix_fmt yuv420p -movflags +faststart (from LTX's own H.264)",
+  "audio": false,
+  "created": "2026-10-09",
+  "use": "smartclearance.com's hero film (SC-111): one day of the journey in four acts, looping; the dark theme starts it at the night act (10.5 s)",
+  "designed_in": "design3/designs/SC-111"
+}
