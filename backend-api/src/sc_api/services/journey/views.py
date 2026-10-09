@@ -273,8 +273,12 @@ async def snapshot(ctx: Ctx, client_id: str, cm: m.ClientMember) -> dict[str, An
                 continue
             d, x = dists[b.distributor_id], skus[b.sku_id]
             bo = world.batch_obj(b, d, today)
+            phase = _phase(cases.get(b.ref))
+            # a batch cleared and past its best-before is done with: the ledger has it, Batches does not (SC-126)
+            if phase == "cleared" and bo["daysLeft"] < 0:
+                continue
             a = money.assess(bo, world.sku_obj(x), gates=world.effective_gates(c, x, b), rules=rules)
-            batches.append({**_batch_out(bo), "assess": money.jsonable(a), "phase": _phase(cases.get(b.ref))})
+            batches.append({**_batch_out(bo), "assess": money.jsonable(a), "phase": phase})
 
     summaries = []
     for ref, case in cases.items():
