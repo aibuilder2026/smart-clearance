@@ -54,7 +54,8 @@ def test_rules_and_channels_are_money_js():
 def test_every_case_is_here():
     assert len(F["plans"]) == 15
     assert {c["plan"]["batch"] for c in F["plans"][:9]} == {b["id"] for b in load("journey.json")["batches"]}
-    assert (len(F["counter"]), len(F["writeOff"]), len(F["award"]), len(F["realised"])) == (24, 3, 3, 6)
+    assert (len(F["counter"]), len(F["writeOff"]), len(F["award"]), len(F["realised"])) == (24, 3, 3, 9)
+    assert (len(F["mealsOf"]), len(F["receipt"]), len(F["documents"])) == (12, 2, 3)
     assert {k: len(v) for k, v in F["fmt"].items()} == {
         "num": 6,
         "inr": 8,
@@ -111,16 +112,40 @@ def test_actual_net(case):
     same(m.actual_net(case["plan"], case["awardPrice"]), case["out"])
 
 
-@pytest.mark.parametrize("case", F["realised"], ids=lambda c: f"{c['plan']['batch']}:{c['done']}")
+@pytest.mark.parametrize(
+    "case", F["realised"], ids=lambda c: f"{c['plan']['batch']}:{c['done']}:{(c.get('mealsRule') or {}).get('rule')}"
+)
 def test_realised(case):
-    same(m.realised(case["plan"], case["sku"], case["done"]), case["out"])
+    same(m.realised(case["plan"], case["sku"], case["done"], case.get("mealsRule")), case["out"])
 
 
 def test_a_plan_done_as_planned_is_the_plan():
-    """the story's figures stand when every line is done as planned (SC-86)"""
+    """the story's figures stand when every line is done as planned (SC-86), but for the meals, which the food bank
+    that collected counts by its own rule (SC-110)"""
     for case in F["realised"]:
         if case["out"]["godown"] == 0:
-            assert {k: v for k, v in case["out"].items() if k != "godown"} == case["plan"]
+            skip = {"godown", "meals"} if case.get("mealsRule") else {"godown"}
+            assert {k: v for k, v in case["out"].items() if k not in skip} == {
+                k: v for k, v in case["plan"].items() if k not in skip
+            }
+
+
+@pytest.mark.parametrize("case", F["mealsOf"], ids=lambda c: f"{c['units']}x{c['sku']['id']}:{c['rule']}")
+def test_meals_of(case):
+    assert m.meals_of(case["units"], case["sku"], case["rule"]) == case["out"]
+
+
+@pytest.mark.parametrize("case", F["receipt"], ids=lambda c: c["partner"]["name"])
+def test_receipt(case):
+    same(m.receipt(case["units"], case["sku"], case["partner"], case["facts"]), case["out"])
+
+
+def test_each_food_bank_counts_its_own_meals():
+    """Feeding India counts a meal a pack; India FoodBanking Network a meal for every 400 g (SC-110), and only its
+    acknowledgement carries the value at the donor's cost"""
+    fi, ifbn = F["receipt"]
+    assert (fi["out"]["meals"], ifbn["out"]["meals"]) == (86, 46)
+    assert (fi["out"]["value"], ifbn["out"]["value"]) == (None, 946)
 
 
 @pytest.mark.parametrize("case", F["priceSupport"], ids=lambda c: f"{c['plan']['batch']}@{c['awardPrice']}")
@@ -141,7 +166,13 @@ def test_expiry_claim(case):
 @pytest.mark.parametrize("case", F["documents"], ids=lambda c: c["plan"]["batch"])
 def test_documents(case):
     got = m.documents(
-        case["plan"], case["sku"], case["award"], case["support"], case["parties"], numbers=case["numbers"]
+        case["plan"],
+        case["sku"],
+        case["award"],
+        case["support"],
+        case["parties"],
+        case.get("receipt"),
+        numbers=case["numbers"],
     )
     same(got, case["out"])
 

@@ -194,7 +194,9 @@ async def audit_log(ws: str, ctx: MemberCtx, before: str | None = None) -> dict[
 async def document(ws: str, ref: str, doc: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
     ctx.require("docs.read", "Your role can't see the papers.")
     detail = await views.case_detail(ctx, ws, ref, _member(request))
-    if not any(d["id"] == doc and d["pdf"] for d in detail["docs"]):
+    rcpt = (detail.get("donation") or {}).get("receipt") or {}
+    ready = any(d["id"] == doc and d["pdf"] for d in detail["docs"]) or (doc == "receipt" and rcpt.get("pdf"))
+    if not ready:
         raise ApiError(404, "That paper has no PDF yet.")
     name = await views.document_object(ctx, ws, ref, doc)
     assert ctx.cloud is not None and ctx.settings.docs_bucket and name

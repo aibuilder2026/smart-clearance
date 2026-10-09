@@ -438,6 +438,84 @@ async def test_the_mango_drinks_journey_end_to_end(api, munchly, cloud, ctx):
     assert snap["distributors"]["lakshmi"]["upi"] == J["distributors"]["lakshmi"]["upi"]
 
 
+async def _collected(api, ctx, cloud, meals: dict | None = None) -> None:
+    """the Mango Drink to the food bank's collection; with `meals`, Feeding India counts by another rule"""
+    if meals:
+        bank = await ctx.session.get(m.Partner, ("munchly", "feeding-india"))
+        bank.details = {**bank.details, "meals": meals}
+        await ctx.session.commit()
+    await mango_to_approved(api, cloud)
+    await agent(api, f"/cases/{MANGO}/offer", "outreach-m", "outreach")
+    await agent(api, f"/cases/{MANGO}/donation", "donation-m", "outreach")
+    assert (await api.post(f"{WS}/cases/{MANGO}/donation/confirm", headers=MEERA)).status_code == 200
+    assert (await api.post(f"{WS}/cases/{MANGO}/donation/collect", headers=MEERA)).status_code == 200
+
+
+async def test_the_food_bank_issues_its_receipt_as_it_collects(api, munchly, cloud, ctx):
+    """SC-110: Feeding India's in-app receipt, numbered in its own series as Meera marks the packs collected, with its
+    PDF from Paperwork straight away; the same paper then sits in the batch's pack beside the FSSAI checklist"""
+    await _collected(api, ctx, cloud)
+    mine = (await case(api, MEERA, MANGO))["donation"]["receipt"]
+    collected = (await case(api, MEERA, MANGO))["donation"]["collectedAt"]
+    assert {k: mine[k] for k in ("id", "type", "owner", "no", "paper", "stamp", "units", "meals", "value")} == {
+        "id": "receipt",
+        "type": "Donation receipt",
+        "owner": "Feeding India",
+        "no": "FI/HYD/26-27/0417",
+        "paper": "In-app receipt",
+        "stamp": "RECEIVED",
+        "units": 58,
+        "meals": 58,
+        "value": None,
+    }
+    assert (mine["kg"], mine["by"], mine["pdf"]) == (12.47, "Meera", False)
+    assert mine["date"] == datetime.fromisoformat(collected).astimezone(IST).date().isoformat()
+    assert mine["spot"] == J["moments"]["donation"]["story"]["spot"]
+    assert mine["from"] == f"{J['distributors']['lakshmi']['godown']}, Hyderabad"
+    line = (
+        await ctx.session.execute(select(m.AuditEntry).where(m.AuditEntry.action == "donation.collect"))
+    ).scalar_one()
+    assert line.text == "collected 58 packs and issued donation receipt FI/HYD/26-27/0417"
+    sent = (await ctx.session.execute(select(m.Outbox.payload))).scalars().all()
+    assert any(p.get("type") == "receipt" and p.get("ref") == MANGO for p in sent)
+
+    # Paperwork lays it out at once: Meera can open its PDF before the batch's papers exist
+    assert (await api.get(f"{WS}/documents/{MANGO}/receipt", headers=MEERA)).status_code == 404
+    r = await api.patch(
+        f"/internal/clients/munchly/cases/{MANGO}/documents/receipt",
+        json={"object": f"munchly/{MANGO}/receipt.pdf", "run": {"agent": "paperwork", "eventKey": "receipt-pdf"}},
+        headers=AGENT,
+    )
+    assert r.status_code == 200, r.text
+    assert (await case(api, MEERA, MANGO))["donation"]["receipt"]["pdf"] is True
+    assert (await api.get(f"{WS}/documents/{MANGO}/receipt", headers=MEERA)).status_code == 200
+
+    # the pack: the receipt is the paper after the FSSAI checklist, with its own day and its PDF
+    await agent(api, f"/cases/{MANGO}/offer/close", "close-m", "outreach")
+    r = await api.post(f"{WS}/cases/{MANGO}/staff-sale", json={"sold": 150}, headers=LAKSHMI)
+    assert r.json()["case"]["journey"]["phase"] == "dispatched"
+    await agent(api, f"/cases/{MANGO}/documents", "paperwork-m", "paperwork")
+    ids = [d["id"] for d in (await case(api, ANITA, MANGO))["docs"]]
+    assert ids[ids.index("fssai") + 1] == "receipt"
+    paper = next(d for d in (await case(api, ANITA, MANGO))["docs"] if d["id"] == "receipt")
+    assert (paper["no"], paper["date"], paper["pdf"], paper["meals"]) == (mine["no"], mine["date"], True, 58)
+    # each sees its own cut: the food bank its receipt, the distributor none
+    assert [d["id"] for d in (await case(api, MEERA, MANGO))["docs"]] == ["receipt"]
+    assert "receipt" not in [d["id"] for d in (await case(api, LAKSHMI, MANGO))["docs"]]
+
+
+async def test_a_food_banks_own_rule_counts_the_meals(api, munchly, cloud, ctx):
+    """SC-110: the meals on the receipt and in Impact's ledger are the food bank's own count, here a meal for every
+    400 g of food: 58 packs of 215 g make 31 meals, not 58"""
+    await _collected(api, ctx, cloud, {"kg": 0.4, "rule": "a meal for every 400 g of food, indicative"})
+    assert (await case(api, MEERA, MANGO))["donation"]["receipt"]["meals"] == 31
+    await agent(api, f"/cases/{MANGO}/offer/close", "close-m", "outreach")
+    await api.post(f"{WS}/cases/{MANGO}/staff-sale", json={"sold": 150}, headers=LAKSHMI)
+    await agent(api, f"/cases/{MANGO}/documents", "paperwork-m", "paperwork")  # no shop ordered: no van round
+    out = await agent(api, f"/cases/{MANGO}/report", "impact-m", "impact")
+    assert out["ledger"]["meals"] == 31
+
+
 async def test_a_food_bank_can_turn_the_pickup_down(api, munchly, cloud):
     """the food bank declines: the packs stay at the godown, the approver is told, and the case goes on without them"""
     await mango_to_approved(api, cloud)

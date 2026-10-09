@@ -117,7 +117,8 @@ async def build(ctx: Ctx, client_id: str = "munchly") -> dict[str, Any]:
             p["name"],
             p["name"],
             None,
-            {k: p[k] for k in ("minDays", "minUnits", "logistics", "paper")},
+            # its intake rules, and its receipt and meals rule (SC-110)
+            {k: p[k] for k in ("minDays", "minUnits", "logistics", "paper", "receipt", "meals")},
             _member_of(j, pid),
         )
 

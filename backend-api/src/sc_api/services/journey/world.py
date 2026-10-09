@@ -213,11 +213,17 @@ async def partners(ctx: Ctx, client_id: str, kind: str | None = None) -> list[m.
     return list((await ctx.session.execute(q.order_by(m.Partner.id))).scalars())
 
 
-async def next_number(ctx: Ctx, client_id: str, kind: str) -> str:
-    """the next number for a kind of paper (INV/26-27/0931, CN/0117, ES-24117), taken in the transaction"""
+async def next_number(ctx: Ctx, client_id: str, kind: str, *, city: str = "") -> str:
+    """the next number for a kind of paper (INV/26-27/0931, CN/0117, ES-24117, a food bank's FI/HYD/26-27/0417),
+    taken in the transaction; a series with `{city}` in its prefix takes the godown's city in three letters"""
     row = await ctx.session.get(m.DocumentNumber, (client_id, kind), with_for_update=True)
     if row is None:
         raise ApiError(422, f"The workspace has no numbering for {kind} papers.")
     n = row.next
     row.next = n + 1
-    return f"{row.prefix}{n:0{row.width}d}"
+    return f"{row.prefix.replace('{city}', city[:3].upper())}{n:0{row.width}d}"
+
+
+async def numbers(ctx: Ctx, client_id: str, kind: str) -> bool:
+    """whether the workspace numbers a kind of paper"""
+    return await ctx.session.get(m.DocumentNumber, (client_id, kind)) is not None

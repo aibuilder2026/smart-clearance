@@ -43,6 +43,7 @@ DUE = "agent.due"  # a daily run: the Data agent at 08:30, the Watcher at 09:00 
 TIMER = "timer"  # an offer closing, an unsold lot closing, the report
 RUN_NOW = "agent.run_now"  # the console's Run now
 RESET = "journey.reset"
+RECEIPT = "receipt"  # Paperwork lays out the food bank's receipt as a PDF, once it has collected (SC-110)
 
 
 @dataclass(frozen=True)

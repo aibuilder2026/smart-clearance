@@ -684,9 +684,11 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
     )
 
     docs = []
-    if case.docs and (mine or role == "distributor"):
+    if case.docs and (mine or role in ("distributor", "foodbank")):
         for d_ in case.docs:
             if role == "distributor" and d_["id"] not in ("invoice", "eway", "support", "expiry"):
+                continue
+            if role == "foodbank" and d_["id"] != "receipt":  # a food bank sees its own receipt (SC-110)
                 continue
             docs.append(
                 {
@@ -713,6 +715,8 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
                     },
                     # the expiry paper's settlement, and the GST memo's reversal on expiry day (SC-94)
                     **{k: d_[k] for k in ("policy", "destroyedBy", "disposal", "epr", "itc", "reversed") if k in d_},
+                    # the food bank's receipt (SC-110)
+                    **{k: d_[k] for k in RECEIPT_FIELDS if k in d_},
                     "pdf": bool(d_.get("pdf")),
                 }
             )
@@ -818,6 +822,8 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
                 "collectedAt": donation.get("collectedAt"),
                 "reply": donation.get("reply"),
                 "reason": donation.get("reason"),
+                # the food bank's receipt, issued as it collected (SC-110)
+                "receipt": receipt_out(donation.get("receipt")),
             }
             if donation
             else None
@@ -940,8 +946,26 @@ async def events_after(
 
 
 async def document_object(ctx: Ctx, client_id: str, ref: str, doc: str) -> str | None:
-    """where a document's PDF is, in the docs bucket"""
+    """where a document's PDF is, in the docs bucket; the food bank's receipt has its PDF before the pack (SC-110)"""
     case = (await _open_cases(ctx, client_id)).get(ref)
-    if case is None or not case.docs:
+    if case is None:
         return None
-    return next((d.get("pdf") for d in case.docs if d["id"] == doc), None)
+    rcpt = (case.donation or {}).get("receipt") or {}
+    if doc == "receipt" and rcpt.get("pdf"):
+        return rcpt["pdf"]
+    return next((d.get("pdf") for d in case.docs or [] if d["id"] == doc), None)
+
+
+# the food bank's receipt beyond a paper's own fields (SC-110, money.receipt)
+RECEIPT_FIELDS = (
+    *("paper", "stamp", "kg", "meals", "mealsRule", "value", "csr"),
+    *("at", "by", "donor", "fssai", "via", "from", "spot"),
+)
+
+
+def receipt_out(r: dict[str, Any] | None) -> dict[str, Any] | None:
+    """the food bank's receipt as the screens read it: a paper, with whether its PDF is ready"""
+    if not r:
+        return None
+    keys = ("id", "type", "owner", "no", "status", "amount", "note", "units", "date", *RECEIPT_FIELDS)
+    return {**{k: r.get(k) for k in keys}, "pdf": bool(r.get("pdf"))}

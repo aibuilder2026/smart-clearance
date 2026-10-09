@@ -260,10 +260,11 @@
 			"id": "ws-foodbank",
 			"scope": "workspace-role",
 			"name": "Food-bank partner",
-			"description": "Confirms and collects donations",
+			"description": "Confirms and collects donations, and reads its own receipts",
 			"permissions": [
 				"ws.read",
-				"pickup.manage"
+				"pickup.manage",
+				"docs.read"
 			]
 		},
 		{
