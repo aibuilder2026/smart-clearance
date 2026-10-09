@@ -17,7 +17,8 @@
 		"test:e2e": "vite build && playwright test --project=flows --project=firefox-desktop --project=webkit-tablet --project=webkit-phone",
 		"test:parity": "vite build && playwright test -c playwright.parity.config.ts",
 		"test:journey": "playwright test -c playwright.journey.config.ts --project=\"Munchly Chips E2E\"",
-		"test:journey:mango": "playwright test -c playwright.journey.config.ts --project=\"Munchly Mango E2E\""
+		"test:journey:mango": "playwright test -c playwright.journey.config.ts --project=\"Munchly Mango E2E\"",
+		"test:journey:leftover": "playwright test -c playwright.journey.config.ts --project=\"Munchly Chips Leftover E2E\""
 	},
 	"dependencies": {
 		"@smart-clearance/api": "workspace:*",

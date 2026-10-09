@@ -51,6 +51,32 @@ E2E_SLOWMO=120 corepack pnpm test:journey:mango --headed
 
 Its run of 9 Oct is in `runs/2026-10-09-mango/`.
 
+## Munchly Chips Leftover E2E
+
+The Masala Chips batch again, from a fresh journey, with food left at the godown (SC-116),
+`munchly-chips-leftover.journey.ts`. Its steps up to the scheme, and the ExpireSoon deal, are the chips flow's own
+(`chips.ts`, which both share). Then it parts:
+
+- **The kiranas:** the last `E2E_LEFTOVER` (8) of Rakesh's 31 ordering kiranas open the scheme and place no order: 23 order
+  444 packets and 144 are not taken, so the scheme stays open.
+- **No truck:** Agrawal Wholesale takes the lot, but the truck loads only once the scheme has closed (backend-api
+  refuses it before: "The kirana scheme is still open until …").
+- **Report now:** Neha fires expiry day's report in the console. The batch closes as it stands (SC-94): the scheme closes
+  with the orders placed, the accepted lot counts as collected, the papers are drafted, and Impact's report settles the
+  144 packs left at the godown by Munchly's expiry policy, full credit, with an Expiry credit note.
+- **What it reads back:** Anita's pack (it opens on the Expiry credit note) and her review; Priya's Execution, with Left
+  at the godown and the Expiry settlement, and the paper it opens; Vikram's ESG report; the Command Center.
+- **The figures:** the orders, the packs left, the settlement and the expiry paper, against the run's own shortfall.
+
+```sh
+E2E_SLOWMO=120 corepack pnpm test:journey:leftover --headed
+E2E_LEFTOVER=3 corepack pnpm test:journey:leftover       # fewer kiranas sit out
+```
+
+It resets Munchly's journey first, as Munchly Chips E2E does.
+
+Its run of 9 Oct is in `runs/2026-10-09-leftover/`.
+
 ## Before a run
 
 - backend-api on :8000 (`backend-api/scripts/dev.sh`), on a world with Munchly's live workspace (`hydrate.sh --reset`,

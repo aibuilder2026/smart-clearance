@@ -45,6 +45,10 @@ its `report.md`: the steps, the figures against the story's, and the findings, w
 **Munchly Mango E2E** (SC-104), `corepack pnpm test:journey:mango`, takes the Mango Drink on from wherever its journey
 stands and **never resets**: it is the one to run when the maintainer asks to continue a journey as it is.
 
+**Munchly Chips Leftover E2E** (SC-116), `corepack pnpm test:journey:leftover`, resets like the chips suite, then has
+`E2E_LEFTOVER` (8) of the ordering kiranas place no order and closes the batch with the console's Report now: the one to
+run when the maintainer asks to see food left at the godown and how it settles.
+
 ## Before running
 
 - **A build:** `test:a11y`, `test:e2e` and `test:parity` each build their app first, and serve the build on a preview

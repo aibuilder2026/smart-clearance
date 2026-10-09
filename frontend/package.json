@@ -41,6 +41,7 @@
 		"test:parity:demo": "corepack pnpm --filter @smart-clearance/demo test:parity",
 		"test:journey": "corepack pnpm --filter @smart-clearance/workspace test:journey",
 		"test:journey:mango": "corepack pnpm --filter @smart-clearance/workspace test:journey:mango",
+		"test:journey:leftover": "corepack pnpm --filter @smart-clearance/workspace test:journey:leftover",
 		"seed": "node scripts/seed.mjs",
 		"seed:check": "node scripts/seed.mjs --check",
 		"icons": "node scripts/icons.mjs",
