@@ -170,6 +170,12 @@ async def _story(ctx: Ctx, c: m.Client, j: dict[str, Any], day0: date) -> None:
         missing = {k: p[k] for k in ("receipt", "meals") if p.get(k) and not (bank.details or {}).get(k)}
         if missing:  # a new dict, so the change is written
             bank.details = {**(bank.details or {}), **missing}
+    # the story's SKUs carry their plastic packaging (SC-125): one set up before then gains it, and one with its own
+    # keeps it
+    for x in j["skus"].values():
+        sku = await ctx.session.get(m.Sku, (c.id, x["id"]), with_for_update=True)
+        if sku is not None and sku.pack_kg is None and x.get("packKg") is not None:
+            sku.pack_kg = x["packKg"]
     fx = next((x.get("firstExport") for x in load("console.json")["state"]["clients"] if x["id"] == c.id), None)
     if fx:  # the story's own stock export, mapped (SC-84)
         exports.restore(c, fx, datetime.combine(day0 - timedelta(days=1), time(16, 40), IST))

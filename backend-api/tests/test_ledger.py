@@ -57,10 +57,19 @@ async def test_the_periods_add_up_their_batches(api):
     assert [mo["month"] for mo in q2["months"]] == months and q2["months"][0]["label"].endswith(" 2026")
     assert len(q2["weeks"]) == 13 and sum(w[1] for w in q2["weeks"]) == pytest.approx(t["net"], abs=0.05)
     assert sum(p for _, p in q2["mix"]) == 100 and dict(q2["mix"])["writeoff"] >= 1
-    (row,) = q2["brsr"]
+    row, plastic = q2["brsr"]
     assert (row["diverted"], row["donated"], row["disposed"]) == (t["kg"], t["donatedKg"], t["destroyedKg"])
     assert row["resold"] + row["donated"] == pytest.approx(row["diverted"], abs=0.05)
     assert "2 food-bank receipts" in row["evidence"] and "3 destruction certificates" in row["evidence"]
+    # the plastic packaging goes where its pack goes (SC-125)
+    assert plastic["cat"] == "Plastic packaging (EPR)"
+    assert (plastic["resold"], plastic["donated"], plastic["disposed"]) == (
+        t["packResoldKg"],
+        t["packDonatedKg"],
+        t["packDestroyedKg"],
+    )
+    assert plastic["diverted"] == pytest.approx(plastic["resold"] + plastic["donated"], abs=0.01)
+    assert plastic["disposed"] > 0
     assert q3["brsr"] == [] and q3["mix"] == []
 
 
@@ -97,3 +106,29 @@ async def test_the_ledger_is_design3s(api):
         assert g["reviewed"]["by"] == w["reviewed"]["by"]
         rest = lambda r: {k: v for k, v in r.items() if k not in ("papers", "reviewed")}  # noqa: E731
         assert rest(g) == rest(w), g["ref"]
+
+
+async def test_paperwork_is_asked_only_for_the_pdfs_still_missing(ctx):
+    """SC-125: a paper drafted before its template existed (the expiry credit note), or whose PDF failed, is laid out
+    on request; a batch whose papers all have theirs, or lack one only for a record (the destruction certificate), is
+    left alone"""
+    from sqlalchemy import select
+
+    from sc_api import models as m
+    from sc_api.services.journey import steps
+
+    rows = await ctx.session.execute(select(m.Case).where(m.Case.client_id == "munchly", m.Case.history.is_(True)))
+    cases = {c.batch_ref: c for c in rows.scalars()}
+    leftover = next(b["ref"] for b in H["batches"] if b["outcome"] == "leftover")
+    done = cases[leftover]
+    pdf = lambda d: None if d["id"] == "destruction" else f"munchly/{leftover}/{d['id']}.pdf"  # noqa: E731
+    done.docs = [{**d, "pdf": pdf(d)} for d in done.docs]
+    await ctx.session.flush()
+    asked = await steps.lay_out_missing(ctx, "munchly")
+    assert set(asked) == REFS - {leftover}
+    sent = (await ctx.session.execute(select(m.Outbox).where(m.Outbox.published_wall.is_(None)))).scalars().all()
+    settles = [o.payload["ref"] for o in sent if o.payload.get("type") == "settle" and o.payload.get("ref") in asked]
+    assert sorted(set(settles)) == asked
+    # again: every paper afresh, the batch whose PDFs were all laid out too
+    assert set(await steps.lay_out_missing(ctx, "munchly", again=True)) == REFS
+    assert not any(d.get("pdf") for d in done.docs if d["id"] in steps.PDF_PAPERS)

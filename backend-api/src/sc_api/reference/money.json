@@ -132,6 +132,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -377,6 +378,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"assess": {
@@ -629,6 +631,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -844,6 +847,7 @@
 				"perCarton": 30,
 				"lifeDays": 180,
 				"kgPerUnit": 0.11,
+				"packKg": 0.004,
 				"img": "pack-chikki"
 			},
 			"assess": {
@@ -1058,6 +1062,7 @@
 				"perCarton": 20,
 				"lifeDays": 270,
 				"kgPerUnit": 0.22,
+				"packKg": 0.005,
 				"img": "pack-oats"
 			},
 			"assess": {
@@ -1272,6 +1277,7 @@
 				"perCarton": 24,
 				"lifeDays": 270,
 				"kgPerUnit": 0.215,
+				"packKg": 0.008,
 				"img": "pack-biscuits"
 			},
 			"assess": {
@@ -1487,6 +1493,7 @@
 				"perCarton": 20,
 				"lifeDays": 270,
 				"kgPerUnit": 0.27,
+				"packKg": 0.006,
 				"img": "pack-poha"
 			},
 			"assess": {
@@ -1702,6 +1709,7 @@
 				"perCarton": 12,
 				"lifeDays": 730,
 				"kgPerUnit": 0.12,
+				"packKg": 0.012,
 				"img": "pack-facewash"
 			},
 			"assess": {
@@ -1916,6 +1924,7 @@
 				"perCarton": 12,
 				"lifeDays": 730,
 				"kgPerUnit": 0.23,
+				"packKg": 0.02,
 				"img": "pack-hairoil"
 			},
 			"assess": {
@@ -2133,6 +2142,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -2375,6 +2385,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -2615,6 +2626,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -2860,6 +2872,7 @@
 				"perCarton": 12,
 				"lifeDays": 730,
 				"kgPerUnit": 0.12,
+				"packKg": 0.012,
 				"img": "pack-facewash"
 			},
 			"assess": {
@@ -3113,6 +3126,7 @@
 				"perCarton": 12,
 				"lifeDays": 730,
 				"kgPerUnit": 0.12,
+				"packKg": 0.012,
 				"img": "pack-facewash"
 			},
 			"assess": {
@@ -3354,6 +3368,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -3590,6 +3605,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -3621,6 +3637,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"out": {
@@ -3652,6 +3669,7 @@
 				"perCarton": 12,
 				"lifeDays": 730,
 				"kgPerUnit": 0.12,
+				"packKg": 0.012,
 				"img": "pack-facewash"
 			},
 			"out": {
@@ -4730,6 +4748,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -5108,6 +5127,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -5486,6 +5506,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -5872,6 +5893,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"done": {
@@ -6267,6 +6289,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"done": {
@@ -6662,6 +6685,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"done": null,
@@ -7053,6 +7077,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"done": {
@@ -7452,6 +7477,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"done": {
@@ -7851,6 +7877,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"done": {
@@ -8242,6 +8269,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -8621,6 +8649,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -9000,6 +9029,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -9205,6 +9235,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"rule": {
@@ -9229,6 +9260,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"rule": {
@@ -9253,6 +9285,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"rule": null,
@@ -9274,6 +9307,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"rule": {
@@ -9298,6 +9332,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"rule": {
@@ -9322,6 +9357,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"rule": null,
@@ -9343,6 +9379,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"rule": {
@@ -9367,6 +9404,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"rule": {
@@ -9391,6 +9429,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"rule": null,
@@ -9413,6 +9452,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -9439,6 +9479,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -9465,6 +9506,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -9489,6 +9531,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"partner": {
@@ -9567,6 +9610,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"partner": {
@@ -9824,6 +9868,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -10045,6 +10090,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -10266,6 +10312,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -10495,6 +10542,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"awardPrice": null,
@@ -10550,6 +10598,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -10579,6 +10628,7 @@
 				"perCarton": 12,
 				"lifeDays": 730,
 				"kgPerUnit": 0.12,
+				"packKg": 0.012,
 				"img": "pack-facewash"
 			},
 			"out": {
@@ -10609,6 +10659,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -10642,6 +10693,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -10675,6 +10727,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -10707,6 +10760,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"policy": "full-credit",
@@ -10738,6 +10792,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"policy": "price-support",
@@ -10770,6 +10825,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -10980,6 +11036,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -11371,6 +11428,7 @@
 				"perCarton": 24,
 				"lifeDays": 180,
 				"kgPerUnit": 0.16,
+				"packKg": 0.006,
 				"img": "pack-chips",
 				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 			},
@@ -11768,6 +11826,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"award": null,
@@ -12121,6 +12180,7 @@
 				"perCarton": 27,
 				"lifeDays": 180,
 				"kgPerUnit": 0.215,
+				"packKg": 0.002,
 				"img": "pack-mango"
 			},
 			"award": null,

@@ -8,6 +8,7 @@ import { D } from './data';
 import { stageOf } from './flow';
 import type {
 	Assess,
+	BrsrRow,
 	Batch,
 	CaseData,
 	Doc,
@@ -45,6 +46,9 @@ const FIGURES = [
 	'resoldKg',
 	'donatedKg',
 	'destroyedKg',
+	'packResoldKg',
+	'packDonatedKg',
+	'packDestroyedKg',
 	'credit',
 	'support'
 ] as const;
@@ -73,6 +77,33 @@ const MONTH_NAMES = [
 	'December'
 ];
 const FOOD = 'Food waste: packaged food past quick-commerce gates';
+const PLASTIC = 'Plastic packaging (EPR)';
+
+/** BRSR Principle 6's waste rows, in kilos: what was diverted from disposal (resold or donated) and what was destroyed,
+ *  of the food and of its plastic packaging (SC-125), which goes where its pack goes */
+function brsrOf(rows: LedgerBatch[], t: LedgerTotals): BrsrRow[] {
+	if (!rows.length) return [];
+	const out: BrsrRow[] = [
+		{
+			cat: FOOD,
+			diverted: t.kg,
+			resold: t.resoldKg,
+			donated: t.donatedKg,
+			disposed: t.destroyedKg,
+			evidence: evidence(rows, t)
+		}
+	];
+	if (t.packResoldKg + t.packDonatedKg + t.packDestroyedKg > 0)
+		out.push({
+			cat: PLASTIC,
+			diverted: r2(t.packResoldKg + t.packDonatedKg),
+			resold: t.packResoldKg,
+			donated: t.packDonatedKg,
+			disposed: t.packDestroyedKg,
+			evidence: `${new Set(rows.map((r) => r.sku)).size} SKUs' packaging weights (indicative), on the same papers`
+		});
+	return out;
+}
 const num = (n: number) => Math.round(n).toLocaleString('en-IN');
 const pad = (n: number, w = 2) => String(n).padStart(w, '0');
 const iso = (y: number, m: number, d: number) => `${y}-${pad(m)}-${pad(d)}`;
@@ -197,18 +228,7 @@ function period(
 		weeks: kind === 'quarter' ? weeksOf(inside, from) : [],
 		mix: mixOf(inside),
 		mixNames: MIX,
-		brsr: inside.length
-			? [
-					{
-						cat: FOOD,
-						diverted: t.kg,
-						resold: t.resoldKg,
-						donated: t.donatedKg,
-						disposed: t.destroyedKg,
-						evidence: evidence(inside, t)
-					}
-				]
-			: []
+		brsr: brsrOf(inside, t)
 	};
 }
 

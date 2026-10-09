@@ -81,7 +81,7 @@
   const HISTORY = D.HISTORY.batches.map(historyCase);
 
   /* ---------- the ledger's row for a cleared batch ---------- */
-  const FIGURES = ["net", "swing", "pnl", "writeOff", "itcKept", "itcReversed", "kg", "co2", "meals", "units", "sold", "donated", "godown", "destroyed", "resoldKg", "donatedKg", "destroyedKg", "credit", "support"];
+  const FIGURES = ["net", "swing", "pnl", "writeOff", "itcKept", "itcReversed", "kg", "co2", "meals", "units", "sold", "donated", "godown", "destroyed", "resoldKg", "donatedKg", "destroyedKg", "packResoldKg", "packDonatedKg", "packDestroyedKg", "credit", "support"];
   const SOLD = ["kirana", "expiresoon", "staff"];
   const outcomeOf = (godown, donated) => (godown ? "leftover" : donated ? "donation" : "sold");
 
@@ -91,7 +91,7 @@
     const took = id => (lines.find(l => l.id === id) || { units: 0 }).units;
     const sold = SOLD.reduce((t, id) => t + took(id), 0), donated = took("foodbank"), godown = r.godown || 0;
     const destroyed = r.destroyed != null ? r.destroyed : r.leftover;
-    const kg = c.sku.kgPerUnit, support = c.docs.find(d => d.id === "support");
+    const kg = c.sku.kgPerUnit, pack = c.sku.packKg || 0, support = c.docs.find(d => d.id === "support");
     const priceOf = l => (l.id === "expiresoon" && c.award ? c.award.price : l.price);
     return {
       ref: c.batch.id, sku: c.sku.id, name: c.sku.name, img: c.sku.img, distributor: c.dist.id, distributorName: c.dist.name, city: c.dist.city,
@@ -100,6 +100,8 @@
         net: c.actual.net, swing: c.actual.swing, pnl: c.actual.pnl, writeOff: c.plan.writeOff.total, itcKept: r.itcRetained, itcReversed: r.itcReversed,
         kg: r.kg, co2: r.co2, meals: r.meals, units: c.plan.units, sold, donated, godown, destroyed,
         resoldKg: r2(sold * kg), donatedKg: r2(donated * kg), destroyedKg: r2(destroyed * kg),
+        // the plastic packaging on those packs (SC-125): it goes where its pack goes
+        packResoldKg: r2(sold * pack), packDonatedKg: r2(donated * pack), packDestroyedKg: r2(destroyed * pack),
         credit: c.expiry && c.expiry.policy !== "none" ? c.expiry.credit || 0 : 0, support: support ? support.amount : 0,
       },
       lines: lines.filter(l => l.units).map(l => ({ id: l.id, short: l.short, units: l.units, price: priceOf(l), gross: l.id === "expiresoon" && c.award ? r2(l.units * c.award.price) : l.gross })),
@@ -112,7 +114,7 @@
   const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   const MIX = { kirana: "Kirana scheme", expiresoon: "ExpireSoon", staff: "Staff sale", foodbank: "Food bank", writeoff: "Destroyed" };
-  const FOOD = "Food waste: packaged food past quick-commerce gates";
+  const FOOD = "Food waste: packaged food past quick-commerce gates", PLASTIC = "Plastic packaging (EPR)";
   const iso = (y, m, d) => `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
   const fyOf = d => (+d.slice(5, 7) >= 4 ? +d.slice(0, 4) + 1 : +d.slice(0, 4));
   const quarterOf = d => Math.floor(((+d.slice(5, 7) - 4 + 12) % 12) / 3) + 1;
@@ -156,8 +158,16 @@
     return [t.invoices && `${t.invoices} tax invoices`, listings && `${listings} ExpireSoon listings`, orders && `kirana order logs for ${M.fmt.num(orders)} packs`,
       t.receipts && `${t.receipts} food-bank receipts`, destroyed && `${destroyed} destruction certificates`].filter(Boolean).join(", ");
   }
-  // BRSR Principle 6's waste row, in kilos: what was diverted from disposal (resold or donated) and what was destroyed
-  const brsr = (rows, t) => (rows.length ? [{ cat: FOOD, diverted: t.kg, resold: t.resoldKg, donated: t.donatedKg, disposed: t.destroyedKg, evidence: evidence(rows, t) }] : []);
+  // BRSR Principle 6's waste rows, in kilos: what was diverted from disposal (resold or donated) and what was destroyed,
+  // of the food and of its plastic packaging (SC-125), which goes where its pack goes
+  function brsr(rows, t) {
+    if (!rows.length) return [];
+    const out = [{ cat: FOOD, diverted: t.kg, resold: t.resoldKg, donated: t.donatedKg, disposed: t.destroyedKg, evidence: evidence(rows, t) }];
+    const skus = new Set(rows.map(r => r.sku)).size;
+    if (t.packResoldKg + t.packDonatedKg + t.packDestroyedKg > 0)
+      out.push({ cat: PLASTIC, diverted: r2(t.packResoldKg + t.packDonatedKg), resold: t.packResoldKg, donated: t.packDonatedKg, disposed: t.packDestroyedKg, evidence: `${skus} SKUs' packaging weights (indicative), on the same papers` });
+    return out;
+  }
 
   // the quarter's 13 weeks (the last takes its odd day or two): recovered, and what the same batches would have cost
   function weeksOf(rows, start) {

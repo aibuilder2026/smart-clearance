@@ -31,6 +31,9 @@ FIGURES = (
     "resoldKg",
     "donatedKg",
     "destroyedKg",
+    "packResoldKg",
+    "packDonatedKg",
+    "packDestroyedKg",
     "credit",
     "support",
 )
@@ -59,6 +62,7 @@ MONTH_NAMES = (
     "December",
 )
 FOOD = "Food waste: packaged food past quick-commerce gates"
+PLASTIC = "Plastic packaging (EPR)"
 
 
 def _day(at: datetime | str) -> date:
@@ -81,6 +85,7 @@ def row(case: m.Case, sku: dict[str, Any], dist: m.Distributor) -> dict[str, Any
     godown = int(L.get("godown", 0))
     destroyed = int(L.get("destroyed", 0))
     kg_unit = float(sku["kgPerUnit"])
+    pack = float(sku.get("packKg") or 0)
     docs = {d["id"]: d for d in case.docs or []}
     expiry = L.get("expiry") or {}
     figures = {
@@ -101,6 +106,10 @@ def row(case: m.Case, sku: dict[str, Any], dist: m.Distributor) -> dict[str, Any
         "resoldKg": money.r2(sold * kg_unit),
         "donatedKg": money.r2(donated * kg_unit),
         "destroyedKg": money.r2(destroyed * kg_unit),
+        # the plastic packaging on those packs (SC-125): it goes where its pack goes
+        "packResoldKg": money.r2(sold * pack),
+        "packDonatedKg": money.r2(donated * pack),
+        "packDestroyedKg": money.r2(destroyed * pack),
         "credit": expiry.get("credit", 0) if expiry.get("policy") != "none" else 0,
         "support": (docs.get("support") or {}).get("amount", 0),
     }
@@ -227,11 +236,12 @@ def _evidence(rows: list[dict[str, Any]], t: dict[str, Any]) -> str:
 
 
 def brsr(rows: list[dict[str, Any]], t: dict[str, Any]) -> list[dict[str, Any]]:
-    """BRSR Principle 6's waste row for the period, in kilos: what was diverted from disposal (resold or donated) and
-    what was destroyed when it expired at the godown"""
+    """BRSR Principle 6's waste rows for the period, in kilos: what was diverted from disposal (resold or donated) and
+    what was destroyed when it expired at the godown, of the food and of its plastic packaging (SC-125), which goes
+    where its pack goes"""
     if not rows:
         return []
-    return [
+    out = [
         {
             "cat": FOOD,
             "diverted": t["kg"],
@@ -241,6 +251,19 @@ def brsr(rows: list[dict[str, Any]], t: dict[str, Any]) -> list[dict[str, Any]]:
             "evidence": _evidence(rows, t),
         }
     ]
+    if t["packResoldKg"] + t["packDonatedKg"] + t["packDestroyedKg"] > 0:
+        skus = len({r["sku"] for r in rows})
+        out.append(
+            {
+                "cat": PLASTIC,
+                "diverted": money.r2(t["packResoldKg"] + t["packDonatedKg"]),
+                "resold": t["packResoldKg"],
+                "donated": t["packDonatedKg"],
+                "disposed": t["packDestroyedKg"],
+                "evidence": f"{skus} SKUs' packaging weights (indicative), on the same papers",
+            }
+        )
+    return out
 
 
 def _weeks(rows: list[dict[str, Any]], start: date) -> list[list[Any]]:

@@ -217,6 +217,11 @@ async def _open_cases(ctx: Ctx, client_id: str) -> dict[str, m.Case]:
     return out
 
 
+async def cases_in_view(ctx: Ctx, client_id: str) -> dict[str, m.Case]:
+    """each batch's case in view: this journey's, open or the last one closed, and the client's history"""
+    return await _open_cases(ctx, client_id)
+
+
 async def latest_case(ctx: Ctx, client_id: str, ref: str) -> m.Case | None:
     """a batch's case in the client's current journey: open, or the last one closed"""
     return (await _open_cases(ctx, client_id)).get(ref)

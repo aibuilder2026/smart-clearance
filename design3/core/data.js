@@ -18,15 +18,17 @@
   // ratios (SC-123, the maintainer's call: fictional): a dealer price of 22/30 of the MRP, to the ₹0.50 below, and input
   // GST of the chips' ₹0.90 on ₹16 of cost, at the SKU's own rate. The Mango Drink has no cost sheet of its own, so its
   // input GST is cost × GST, labelled estimated (money.js itcOf)
+  // packKg: the plastic packaging on a pack, in kg (fictional, indicative): the pouch, wrapper, tray, tube or bottle, and a
+  // drink carton's plastic layer and straw. BRSR's plastic packaging row counts it (SC-125); EPR's money stays on the kilos
   const SKUS = {
-    chips:    { id: "chips", code: "MF-MC-150", brand: "Munchly", name: "Masala Chips 150 g", category: "snacks", hsn: "2005", mrp: 30, dp: 22, cost: 16, gst: 0.05, itcPerUnit: 0.9, perCarton: 24, lifeDays: 180, kgPerUnit: 0.16, img: "pack-chips" },
-    biscuits: { id: "biscuits", code: "MF-CC-200", brand: "Munchly", name: "Choco Cream Biscuits 200 g", category: "biscuits", hsn: "1905", mrp: 40, dp: 29, cost: 22, gst: 0.05, itcPerUnit: 1.24, perCarton: 24, lifeDays: 270, kgPerUnit: 0.215, img: "pack-biscuits" },
-    chikki:   { id: "chikki", code: "MF-PC-100", brand: "Munchly", name: "Peanut Chikki 100 g", category: "snacks", hsn: "1704", mrp: 25, dp: 18, cost: 13, gst: 0.05, itcPerUnit: 0.73, perCarton: 30, lifeDays: 180, kgPerUnit: 0.11, img: "pack-chikki" },
-    poha:     { id: "poha", code: "MF-IP-250", brand: "Munchly", name: "Instant Poha 250 g", category: "staples", hsn: "1904", mrp: 55, dp: 40, cost: 31, gst: 0.05, itcPerUnit: 1.74, perCarton: 20, lifeDays: 270, kgPerUnit: 0.27, img: "pack-poha" },
-    oats:     { id: "oats", code: "MF-MO-200", brand: "Munchly", name: "Masala Oats 200 g", category: "staples", hsn: "2106", mrp: 65, dp: 47.5, cost: 36, gst: 0.05, itcPerUnit: 2.03, perCarton: 20, lifeDays: 270, kgPerUnit: 0.22, img: "pack-oats" },
-    mango:    { id: "mango", code: "MF-MD-200", brand: "Munchly", name: "Mango Drink 200 ml", category: "beverages", hsn: "2202", mrp: 20, dp: 14.5, cost: 11, gst: 0.05, perCarton: 27, lifeDays: 180, kgPerUnit: 0.215, img: "pack-mango" },
-    facewash: { id: "facewash", code: "GL-AF-100", brand: "Glowra", name: "Aloe Face Wash 100 ml", category: "personal-care", hsn: "3401", mrp: 120, dp: 88, cost: 58, gst: 0.18, itcPerUnit: 11.75, perCarton: 12, lifeDays: 730, kgPerUnit: 0.12, img: "pack-facewash" },
-    hairoil:  { id: "hairoil", code: "GL-CO-200", brand: "Glowra", name: "Coconut Hair Oil 200 ml", category: "personal-care", hsn: "3305", mrp: 150, dp: 110, cost: 72, gst: 0.05, itcPerUnit: 4.05, perCarton: 12, lifeDays: 730, kgPerUnit: 0.23, img: "pack-hairoil" },
+    chips:    { id: "chips", code: "MF-MC-150", brand: "Munchly", name: "Masala Chips 150 g", category: "snacks", hsn: "2005", mrp: 30, dp: 22, cost: 16, gst: 0.05, itcPerUnit: 0.9, perCarton: 24, lifeDays: 180, kgPerUnit: 0.16, packKg: 0.006, img: "pack-chips" },
+    biscuits: { id: "biscuits", code: "MF-CC-200", brand: "Munchly", name: "Choco Cream Biscuits 200 g", category: "biscuits", hsn: "1905", mrp: 40, dp: 29, cost: 22, gst: 0.05, itcPerUnit: 1.24, perCarton: 24, lifeDays: 270, kgPerUnit: 0.215, packKg: 0.008, img: "pack-biscuits" },
+    chikki:   { id: "chikki", code: "MF-PC-100", brand: "Munchly", name: "Peanut Chikki 100 g", category: "snacks", hsn: "1704", mrp: 25, dp: 18, cost: 13, gst: 0.05, itcPerUnit: 0.73, perCarton: 30, lifeDays: 180, kgPerUnit: 0.11, packKg: 0.004, img: "pack-chikki" },
+    poha:     { id: "poha", code: "MF-IP-250", brand: "Munchly", name: "Instant Poha 250 g", category: "staples", hsn: "1904", mrp: 55, dp: 40, cost: 31, gst: 0.05, itcPerUnit: 1.74, perCarton: 20, lifeDays: 270, kgPerUnit: 0.27, packKg: 0.006, img: "pack-poha" },
+    oats:     { id: "oats", code: "MF-MO-200", brand: "Munchly", name: "Masala Oats 200 g", category: "staples", hsn: "2106", mrp: 65, dp: 47.5, cost: 36, gst: 0.05, itcPerUnit: 2.03, perCarton: 20, lifeDays: 270, kgPerUnit: 0.22, packKg: 0.005, img: "pack-oats" },
+    mango:    { id: "mango", code: "MF-MD-200", brand: "Munchly", name: "Mango Drink 200 ml", category: "beverages", hsn: "2202", mrp: 20, dp: 14.5, cost: 11, gst: 0.05, perCarton: 27, lifeDays: 180, kgPerUnit: 0.215, packKg: 0.002, img: "pack-mango" },
+    facewash: { id: "facewash", code: "GL-AF-100", brand: "Glowra", name: "Aloe Face Wash 100 ml", category: "personal-care", hsn: "3401", mrp: 120, dp: 88, cost: 58, gst: 0.18, itcPerUnit: 11.75, perCarton: 12, lifeDays: 730, kgPerUnit: 0.12, packKg: 0.012, img: "pack-facewash" },
+    hairoil:  { id: "hairoil", code: "GL-CO-200", brand: "Glowra", name: "Coconut Hair Oil 200 ml", category: "personal-care", hsn: "3305", mrp: 150, dp: 110, cost: 72, gst: 0.05, itcPerUnit: 4.05, perCarton: 12, lifeDays: 730, kgPerUnit: 0.23, packKg: 0.02, img: "pack-hairoil" },
   };
 
   // each territory is matched by pincode for the territory guard; a godown may set its own staff-sale cap. `upi` is the

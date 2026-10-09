@@ -129,6 +129,7 @@
 			"perCarton": 24,
 			"lifeDays": 180,
 			"kgPerUnit": 0.16,
+			"packKg": 0.006,
 			"img": "pack-chips",
 			"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
 		},
@@ -147,6 +148,7 @@
 			"perCarton": 24,
 			"lifeDays": 270,
 			"kgPerUnit": 0.215,
+			"packKg": 0.008,
 			"img": "pack-biscuits"
 		},
 		"chikki": {
@@ -164,6 +166,7 @@
 			"perCarton": 30,
 			"lifeDays": 180,
 			"kgPerUnit": 0.11,
+			"packKg": 0.004,
 			"img": "pack-chikki"
 		},
 		"poha": {
@@ -181,6 +184,7 @@
 			"perCarton": 20,
 			"lifeDays": 270,
 			"kgPerUnit": 0.27,
+			"packKg": 0.006,
 			"img": "pack-poha"
 		},
 		"oats": {
@@ -198,6 +202,7 @@
 			"perCarton": 20,
 			"lifeDays": 270,
 			"kgPerUnit": 0.22,
+			"packKg": 0.005,
 			"img": "pack-oats"
 		},
 		"mango": {
@@ -214,6 +219,7 @@
 			"perCarton": 27,
 			"lifeDays": 180,
 			"kgPerUnit": 0.215,
+			"packKg": 0.002,
 			"img": "pack-mango"
 		},
 		"facewash": {
@@ -231,6 +237,7 @@
 			"perCarton": 12,
 			"lifeDays": 730,
 			"kgPerUnit": 0.12,
+			"packKg": 0.012,
 			"img": "pack-facewash"
 		},
 		"hairoil": {
@@ -248,6 +255,7 @@
 			"perCarton": 12,
 			"lifeDays": 730,
 			"kgPerUnit": 0.23,
+			"packKg": 0.02,
 			"img": "pack-hairoil"
 		}
 	},

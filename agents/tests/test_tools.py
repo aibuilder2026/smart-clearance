@@ -205,6 +205,9 @@ def test_the_expiry_credit_note_lays_out_the_settlement():
         "pdf": None,
     }
     page = pdf.html(doc, c, today="2026-11-18")
+    assert "No. CN/0118 · 18 Nov 2026" in page  # no date of its own: the day it is laid out
+    # a paper is dated by its own date, not the day it is laid out (the history's, laid out later, SC-125)
+    assert "No. CN/0118 · 23 Aug 2026" in pdf.html({**doc, "date": "2026-08-23"}, c, today="2026-10-02")
     for text in ("Expiry credit note", "CN/0118", "₹3,087.50", "₹97.50", "₹85.80", "₹131.95", "₹3,402.75", "17(5)(h)"):
         assert text in page, text
     assert pdf.needs_pdf(doc) and not pdf.needs_pdf({**doc, "status": "not required"})
