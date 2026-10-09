@@ -1911,6 +1911,7 @@ async def report(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> dict[st
     s.case.ledger, s.case.phase = ledger, "cleared"
     e = copy.ledger_event(
         return_by=return_by,
+        on=at.astimezone(IST).date().isoformat(),
         kg=float(plan_.get("kg", 0)),
         co2=float(plan_.get("co2", 0)),
         meals=int(plan_.get("meals", 0)),

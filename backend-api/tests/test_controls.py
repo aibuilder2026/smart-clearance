@@ -227,6 +227,9 @@ async def test_report_now_is_expiry_day_and_the_journey_closes_as_it_stands(api,
     assert docs["expiry"]["no"].startswith("CN/")
     assert docs["destruction"]["units"] == godown and docs["destruction"]["status"] == "generated"
     assert docs["itc"]["reversed"] == want["itc"] > 0
+    # Report now on day 0, weeks before the return window closes: Impact's line says so (SC-119)
+    line = next(f["text"] for f in c["feed"] if f["key"] == "ledger")
+    assert line.startswith("Expiry day called on 2 Oct, before the return window would close on ")
 
 
 @pytest.mark.parametrize(

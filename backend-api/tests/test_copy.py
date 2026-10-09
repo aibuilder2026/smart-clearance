@@ -264,3 +264,15 @@ def test_a_small_sum_of_money_is_a_figure():
     assert not copy.check_numbers("We can do ₹5 a packet.", [14.2])
     assert not copy.check_numbers("We can do Rs 5 a packet.", [14.2])
     assert copy.check_numbers("We can do ₹14.20 a packet.", [14.2])
+
+
+def test_the_ledger_line_says_when_expiry_day_came_early():
+    """SC-119: Report now can call expiry day before the return window closes; Impact's line then says so, and a report
+    on or after the window keeps the story's line"""
+    made = lambda on: copy.ledger_event(return_by="2026-10-29", on=on, kg=194.6, co2=486.4, meals=0, net=0)["text"]  # noqa: E731
+    assert made("2026-10-02") == (
+        "Expiry day called on 2 Oct, before the return window would close on 29 Oct. Posted the ledger: 194.6 kg "
+        "diverted, 486.4 kg CO₂e avoided (indicative), 0 meals. BRSR row written."
+    )
+    for on in ("2026-10-29", "2026-11-18", None):
+        assert made(on).startswith("The return window closed on 29 Oct. Posted the ledger:")

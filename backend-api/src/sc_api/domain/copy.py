@@ -335,9 +335,18 @@ def van_event(*, day: str, shops: int, units: int) -> str:
     return f"Ran the {day} round: {shops} drops, {fmt.num(units)} packets."
 
 
-def ledger_event(*, return_by: str, kg: float, co2: float, meals: int, net: float) -> dict[str, Any]:
+def ledger_event(
+    *, return_by: str, kg: float, co2: float, meals: int, net: float, on: str | None = None
+) -> dict[str, Any]:
+    """Impact's line as it posts the ledger on `on`: after the return window, as the story has it, or, when expiry
+    day was called from the console before the window closed, saying so (SC-119)"""
+    when = (
+        f"Expiry day called on {fmt.day(on)}, before the return window would close on {fmt.day(return_by)}."
+        if on is not None and on < return_by
+        else f"The return window closed on {fmt.day(return_by)}."
+    )
     return {
-        "text": f"The return window closed on {fmt.day(return_by)}. Posted the ledger: {fmt.kg(kg)} diverted, "
+        "text": f"{when} Posted the ledger: {fmt.kg(kg)} diverted, "
         f"{fmt.kg(co2)} CO₂e avoided (indicative), {meals} meals. BRSR row written.",
         "calls": [["ledger.post", fmt.inr(net), "ok"], ["brsr.rows", "Principle 6", "ok"]],
     }
