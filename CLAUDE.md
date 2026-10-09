@@ -1520,7 +1520,7 @@
     - a certificate drafted before has it worked out from the batch's plan as it is read (`views.with_reversed`), for the case detail and the partner route.
   - **Example:** MF-2407-111's 184 packs read ₹101.20 (₹0.55 a pack), MF-2407-116's 132 read ₹96.36.
   - **Checks:**
-    - backend-api: the partner test holds each copy's figure to design3's, and a new test covers an older certificate;
+    - backend-api 525 passed, 1 skipped: the partner test holds each copy's figure to design3's, and a new test covers an older certificate;
     - the frontend gate passes (core 236, api 77, workspace 74, admin 17, demo 5, console 3);
     - the seeds were regenerated; design3's `dist/` is rebuilt.
 
