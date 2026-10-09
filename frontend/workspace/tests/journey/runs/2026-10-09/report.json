@@ -1,0 +1,714 @@
+{
+	"flow": "Munchly Chips E2E",
+	"status": "passed",
+	"took": 504,
+	"steps": [
+		{
+			"n": 1,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Journey reset to day 0, 08:00",
+			"at": "2026-10-09T17:29:53.326Z",
+			"ms": 10258,
+			"shot": "steps/01-Journey-reset-to-day-0-08-00.png"
+		},
+		{
+			"n": 2,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Setup: the export mapped, 8 of 8 columns",
+			"at": "2026-10-09T17:29:57.938Z",
+			"ms": 4612,
+			"shot": "steps/02-Setup-the-export-mapped-8-of-8-columns.png"
+		},
+		{
+			"n": 3,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Setup confirmed: the Watcher starts at 09:00",
+			"at": "2026-10-09T17:30:00.854Z",
+			"ms": 2916,
+			"shot": "steps/03-Setup-confirmed-the-Watcher-starts-at-09-00.png"
+		},
+		{
+			"n": 4,
+			"who": "Rakesh bhai",
+			"role": "Distributor",
+			"did": "Permission given",
+			"at": "2026-10-09T17:30:06.445Z",
+			"ms": 5591,
+			"shot": "steps/04-Permission-given.png"
+		},
+		{
+			"n": 5,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Watcher run from the console",
+			"at": "2026-10-09T17:30:10.974Z",
+			"ms": 4529,
+			"shot": "steps/05-Watcher-run-from-the-console.png"
+		},
+		{
+			"n": 6,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Command Center: the chips at risk, Vision waiting for the label photo",
+			"at": "2026-10-09T17:30:25.468Z",
+			"ms": 14494,
+			"shot": "steps/06-Command-Center-the-chips-at-risk-Vision-waiting-.png"
+		},
+		{
+			"n": 7,
+			"who": "Rakesh bhai",
+			"role": "Distributor",
+			"did": "The label photo chosen",
+			"at": "2026-10-09T17:30:29.912Z",
+			"ms": 4444,
+			"shot": "steps/07-The-label-photo-chosen.png"
+		},
+		{
+			"n": 8,
+			"who": "Rakesh bhai",
+			"role": "Distributor",
+			"did": "Vision read the label",
+			"at": "2026-10-09T17:31:08.960Z",
+			"ms": 39048,
+			"shot": "steps/08-Vision-read-the-label.png"
+		},
+		{
+			"n": 9,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Route Room: the plan, waiting for a yes",
+			"at": "2026-10-09T17:32:39.050Z",
+			"ms": 90090,
+			"shot": "steps/09-Route-Room-the-plan-waiting-for-a-yes.png"
+		},
+		{
+			"n": 10,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "The approve sheet",
+			"at": "2026-10-09T17:32:40.509Z",
+			"ms": 1459,
+			"shot": "steps/10-The-approve-sheet.png"
+		},
+		{
+			"n": 11,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Plan placed",
+			"at": "2026-10-09T17:32:43.247Z",
+			"ms": 2738,
+			"shot": "steps/11-Plan-placed.png"
+		},
+		{
+			"n": 12,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Execution: the lot listed, the scheme sent",
+			"at": "2026-10-09T17:32:52.343Z",
+			"ms": 9096,
+			"shot": "steps/12-Execution-the-lot-listed-the-scheme-sent.png"
+		},
+		{
+			"n": 13,
+			"who": "Ganesh ji",
+			"role": "Kirana · Shree Ganesh Kirana",
+			"did": "Shree Ganesh Kirana ordered 24 packets",
+			"at": "2026-10-09T17:32:57.901Z",
+			"ms": 5558,
+			"shot": "steps/13-Shree-Ganesh-Kirana-ordered-24-packets.png"
+		},
+		{
+			"n": 14,
+			"who": "Jai Durga Stores",
+			"role": "Kirana · Jai Durga Stores",
+			"did": "Jai Durga Stores ordered 24 packets",
+			"at": "2026-10-09T17:33:03.308Z",
+			"ms": 5407,
+			"shot": "steps/14-Jai-Durga-Stores-ordered-24-packets.png"
+		},
+		{
+			"n": 15,
+			"who": "Om Sai Provision",
+			"role": "Kirana · Om Sai Provision",
+			"did": "Om Sai Provision ordered 12 packets",
+			"at": "2026-10-09T17:33:08.809Z",
+			"ms": 5501,
+			"shot": "steps/15-Om-Sai-Provision-ordered-12-packets.png"
+		},
+		{
+			"n": 16,
+			"who": "Maa Bhavani Kirana",
+			"role": "Kirana · Maa Bhavani Kirana",
+			"did": "Maa Bhavani Kirana ordered 12 packets",
+			"at": "2026-10-09T17:33:14.396Z",
+			"ms": 5587,
+			"shot": "steps/16-Maa-Bhavani-Kirana-ordered-12-packets.png"
+		},
+		{
+			"n": 17,
+			"who": "New Sagar Stores",
+			"role": "Kirana · New Sagar Stores",
+			"did": "New Sagar Stores ordered 36 packets",
+			"at": "2026-10-09T17:33:21.471Z",
+			"ms": 7075,
+			"shot": "steps/17-New-Sagar-Stores-ordered-36-packets.png"
+		},
+		{
+			"n": 18,
+			"who": "Gurukripa Traders",
+			"role": "Kirana · Gurukripa Traders",
+			"did": "Gurukripa Traders ordered 24 packets",
+			"at": "2026-10-09T17:33:27.372Z",
+			"ms": 5901,
+			"shot": "steps/18-Gurukripa-Traders-ordered-24-packets.png"
+		},
+		{
+			"n": 19,
+			"who": "Mahalaxmi Kirana",
+			"role": "Kirana · Mahalaxmi Kirana",
+			"did": "Mahalaxmi Kirana ordered 12 packets",
+			"at": "2026-10-09T17:33:33.329Z",
+			"ms": 5957,
+			"shot": "steps/19-Mahalaxmi-Kirana-ordered-12-packets.png"
+		},
+		{
+			"n": 20,
+			"who": "Shiv Shakti Store",
+			"role": "Kirana · Shiv Shakti Store",
+			"did": "Shiv Shakti Store ordered 12 packets",
+			"at": "2026-10-09T17:33:38.767Z",
+			"ms": 5438,
+			"shot": "steps/20-Shiv-Shakti-Store-ordered-12-packets.png"
+		},
+		{
+			"n": 21,
+			"who": "Patel Provision",
+			"role": "Kirana · Patel Provision",
+			"did": "Patel Provision ordered 24 packets",
+			"at": "2026-10-09T17:33:44.305Z",
+			"ms": 5538,
+			"shot": "steps/21-Patel-Provision-ordered-24-packets.png"
+		},
+		{
+			"n": 22,
+			"who": "Annapurna Stores",
+			"role": "Kirana · Annapurna Stores",
+			"did": "Annapurna Stores ordered 12 packets",
+			"at": "2026-10-09T17:33:49.679Z",
+			"ms": 5374,
+			"shot": "steps/22-Annapurna-Stores-ordered-12-packets.png"
+		},
+		{
+			"n": 23,
+			"who": "Sahyog Kirana",
+			"role": "Kirana · Sahyog Kirana",
+			"did": "Sahyog Kirana ordered 48 packets",
+			"at": "2026-10-09T17:33:55.213Z",
+			"ms": 5534,
+			"shot": "steps/23-Sahyog-Kirana-ordered-48-packets.png"
+		},
+		{
+			"n": 24,
+			"who": "Raj Super Mart",
+			"role": "Kirana · Raj Super Mart",
+			"did": "Raj Super Mart ordered 36 packets",
+			"at": "2026-10-09T17:34:00.617Z",
+			"ms": 5404,
+			"shot": "steps/24-Raj-Super-Mart-ordered-36-packets.png"
+		},
+		{
+			"n": 25,
+			"who": "Vaishnavi Stores",
+			"role": "Kirana · Vaishnavi Stores",
+			"did": "Vaishnavi Stores ordered 24 packets",
+			"at": "2026-10-09T17:34:06.108Z",
+			"ms": 5491,
+			"shot": "steps/25-Vaishnavi-Stores-ordered-24-packets.png"
+		},
+		{
+			"n": 26,
+			"who": "Sai Kripa Kirana",
+			"role": "Kirana · Sai Kripa Kirana",
+			"did": "Sai Kripa Kirana ordered 12 packets",
+			"at": "2026-10-09T17:34:11.547Z",
+			"ms": 5439,
+			"shot": "steps/26-Sai-Kripa-Kirana-ordered-12-packets.png"
+		},
+		{
+			"n": 27,
+			"who": "Shree Ram Provision",
+			"role": "Kirana · Shree Ram Provision",
+			"did": "Shree Ram Provision ordered 12 packets",
+			"at": "2026-10-09T17:34:16.930Z",
+			"ms": 5383,
+			"shot": "steps/27-Shree-Ram-Provision-ordered-12-packets.png"
+		},
+		{
+			"n": 28,
+			"who": "Hanuman General Store",
+			"role": "Kirana · Hanuman General Store",
+			"did": "Hanuman General Store ordered 12 packets",
+			"at": "2026-10-09T17:34:22.553Z",
+			"ms": 5623,
+			"shot": "steps/28-Hanuman-General-Store-ordered-12-packets.png"
+		},
+		{
+			"n": 29,
+			"who": "Gajanan Kirana",
+			"role": "Kirana · Gajanan Kirana",
+			"did": "Gajanan Kirana ordered 24 packets",
+			"at": "2026-10-09T17:34:28.093Z",
+			"ms": 5540,
+			"shot": "steps/29-Gajanan-Kirana-ordered-24-packets.png"
+		},
+		{
+			"n": 30,
+			"who": "Kamal Provision Store",
+			"role": "Kirana · Kamal Provision Store",
+			"did": "Kamal Provision Store ordered 12 packets",
+			"at": "2026-10-09T17:34:33.544Z",
+			"ms": 5451,
+			"shot": "steps/30-Kamal-Provision-Store-ordered-12-packets.png"
+		},
+		{
+			"n": 31,
+			"who": "Navkar Stores",
+			"role": "Kirana · Navkar Stores",
+			"did": "Navkar Stores ordered 12 packets",
+			"at": "2026-10-09T17:34:39.085Z",
+			"ms": 5541,
+			"shot": "steps/31-Navkar-Stores-ordered-12-packets.png"
+		},
+		{
+			"n": 32,
+			"who": "Siddhivinayak Kirana",
+			"role": "Kirana · Siddhivinayak Kirana",
+			"did": "Siddhivinayak Kirana ordered 24 packets",
+			"at": "2026-10-09T17:34:44.573Z",
+			"ms": 5488,
+			"shot": "steps/32-Siddhivinayak-Kirana-ordered-24-packets.png"
+		},
+		{
+			"n": 33,
+			"who": "Jyoti General Store",
+			"role": "Kirana · Jyoti General Store",
+			"did": "Jyoti General Store ordered 12 packets",
+			"at": "2026-10-09T17:34:49.992Z",
+			"ms": 5419,
+			"shot": "steps/33-Jyoti-General-Store-ordered-12-packets.png"
+		},
+		{
+			"n": 34,
+			"who": "Laxmi Narayan Stores",
+			"role": "Kirana · Laxmi Narayan Stores",
+			"did": "Laxmi Narayan Stores ordered 12 packets",
+			"at": "2026-10-09T17:34:55.481Z",
+			"ms": 5489,
+			"shot": "steps/34-Laxmi-Narayan-Stores-ordered-12-packets.png"
+		},
+		{
+			"n": 35,
+			"who": "Bharat Kirana",
+			"role": "Kirana · Bharat Kirana",
+			"did": "Bharat Kirana ordered 12 packets",
+			"at": "2026-10-09T17:35:00.887Z",
+			"ms": 5406,
+			"shot": "steps/35-Bharat-Kirana-ordered-12-packets.png"
+		},
+		{
+			"n": 36,
+			"who": "Shubham Provision",
+			"role": "Kirana · Shubham Provision",
+			"did": "Shubham Provision ordered 36 packets",
+			"at": "2026-10-09T17:35:06.471Z",
+			"ms": 5584,
+			"shot": "steps/36-Shubham-Provision-ordered-36-packets.png"
+		},
+		{
+			"n": 37,
+			"who": "Mauli Kirana",
+			"role": "Kirana · Mauli Kirana",
+			"did": "Mauli Kirana ordered 12 packets",
+			"at": "2026-10-09T17:35:14.832Z",
+			"ms": 8361,
+			"shot": "steps/37-Mauli-Kirana-ordered-12-packets.png"
+		},
+		{
+			"n": 38,
+			"who": "Ekta Super Bazaar",
+			"role": "Kirana · Ekta Super Bazaar",
+			"did": "Ekta Super Bazaar ordered 24 packets",
+			"at": "2026-10-09T17:35:20.252Z",
+			"ms": 5420,
+			"shot": "steps/38-Ekta-Super-Bazaar-ordered-24-packets.png"
+		},
+		{
+			"n": 39,
+			"who": "Pooja Provision",
+			"role": "Kirana · Pooja Provision",
+			"did": "Pooja Provision ordered 12 packets",
+			"at": "2026-10-09T17:35:25.890Z",
+			"ms": 5638,
+			"shot": "steps/39-Pooja-Provision-ordered-12-packets.png"
+		},
+		{
+			"n": 40,
+			"who": "Tulsi Kirana",
+			"role": "Kirana · Tulsi Kirana",
+			"did": "Tulsi Kirana ordered 12 packets",
+			"at": "2026-10-09T17:35:31.410Z",
+			"ms": 5520,
+			"shot": "steps/40-Tulsi-Kirana-ordered-12-packets.png"
+		},
+		{
+			"n": 41,
+			"who": "Vithal Stores",
+			"role": "Kirana · Vithal Stores",
+			"did": "Vithal Stores ordered 12 packets",
+			"at": "2026-10-09T17:35:36.765Z",
+			"ms": 5355,
+			"shot": "steps/41-Vithal-Stores-ordered-12-packets.png"
+		},
+		{
+			"n": 42,
+			"who": "Anand General Store",
+			"role": "Kirana · Anand General Store",
+			"did": "Anand General Store ordered 24 packets",
+			"at": "2026-10-09T17:35:42.386Z",
+			"ms": 5621,
+			"shot": "steps/42-Anand-General-Store-ordered-24-packets.png"
+		},
+		{
+			"n": 43,
+			"who": "Sainath Kirana",
+			"role": "Kirana · Sainath Kirana",
+			"did": "Sainath Kirana ordered 12 packets",
+			"at": "2026-10-09T17:35:47.805Z",
+			"ms": 5419,
+			"shot": "steps/43-Sainath-Kirana-ordered-12-packets.png"
+		},
+		{
+			"n": 44,
+			"who": "Agrawal ji",
+			"role": "Bidder on ExpireSoon",
+			"did": "The lot on ExpireSoon",
+			"at": "2026-10-09T17:35:52.110Z",
+			"ms": 4305,
+			"shot": "steps/44-The-lot-on-ExpireSoon.png"
+		},
+		{
+			"n": 45,
+			"who": "Agrawal ji",
+			"role": "Bidder on ExpireSoon",
+			"did": "Bid ₹13 a packet",
+			"at": "2026-10-09T17:35:53.538Z",
+			"ms": 1428,
+			"shot": "steps/45-Bid-13-a-packet.png"
+		},
+		{
+			"n": 46,
+			"who": "Agrawal ji",
+			"role": "Bidder on ExpireSoon",
+			"did": "The Negotiator countered",
+			"at": "2026-10-09T17:36:07.276Z",
+			"ms": 13738,
+			"shot": "steps/46-The-Negotiator-countered.png"
+		},
+		{
+			"n": 47,
+			"who": "Agrawal ji",
+			"role": "Bidder on ExpireSoon",
+			"did": "Agrawal took the counter and paid the token",
+			"at": "2026-10-09T17:36:08.898Z",
+			"ms": 1622,
+			"shot": "steps/47-Agrawal-took-the-counter-and-paid-the-token.png"
+		},
+		{
+			"n": 48,
+			"who": "Rakesh bhai",
+			"role": "Distributor",
+			"did": "The truck loaded",
+			"at": "2026-10-09T17:36:13.967Z",
+			"ms": 5069,
+			"shot": "steps/48-The-truck-loaded.png"
+		},
+		{
+			"n": 49,
+			"who": "Rakesh bhai",
+			"role": "Distributor",
+			"did": "Invoice issued from Tally",
+			"at": "2026-10-09T17:36:55.228Z",
+			"ms": 41261,
+			"shot": "steps/49-Invoice-issued-from-Tally.png"
+		},
+		{
+			"n": 50,
+			"who": "Rakesh bhai",
+			"role": "Distributor",
+			"did": "The van round run: 31 kiranas delivered",
+			"at": "2026-10-09T17:37:01.259Z",
+			"ms": 6031,
+			"shot": "steps/50-The-van-round-run-31-kiranas-delivered.png"
+		},
+		{
+			"n": 51,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Paper: Tax invoice INV/26-27/0931",
+			"at": "2026-10-09T17:37:06.415Z",
+			"ms": 5156,
+			"shot": "steps/51-Paper-Tax-invoice-INV-26-27-0931.png"
+		},
+		{
+			"n": 52,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Paper: E-way bill check MF-2409-117",
+			"at": "2026-10-09T17:37:08.475Z",
+			"ms": 2060,
+			"shot": "steps/52-Paper-E-way-bill-check-MF-2409-117.png"
+		},
+		{
+			"n": 53,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Paper: Price-support credit note CN/0117",
+			"at": "2026-10-09T17:37:10.533Z",
+			"ms": 2058,
+			"shot": "steps/53-Paper-Price-support-credit-note-CN-0117.png"
+		},
+		{
+			"n": 54,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Paper: GST ITC memo s.17(5)(h)",
+			"at": "2026-10-09T17:37:12.580Z",
+			"ms": 2047,
+			"shot": "steps/54-Paper-GST-ITC-memo-s-17-5-h-.png"
+		},
+		{
+			"n": 55,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Paper: FSSAI surplus-food checklist no donation",
+			"at": "2026-10-09T17:37:14.629Z",
+			"ms": 2049,
+			"shot": "steps/55-Paper-FSSAI-surplus-food-checklist-no-donation.png"
+		},
+		{
+			"n": 56,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Paper: Destruction certificate 0 units left",
+			"at": "2026-10-09T17:37:16.676Z",
+			"ms": 2047,
+			"shot": "steps/56-Paper-Destruction-certificate-0-units-left.png"
+		},
+		{
+			"n": 57,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Pack reviewed",
+			"at": "2026-10-09T17:37:18.462Z",
+			"ms": 1786,
+			"shot": "steps/57-Pack-reviewed.png"
+		},
+		{
+			"n": 58,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Report now: Expire it and report now?",
+			"at": "2026-10-09T17:37:23.064Z",
+			"ms": 4602,
+			"shot": "steps/58-Report-now-Expire-it-and-report-now-.png"
+		},
+		{
+			"n": 59,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Impact posted the ledger",
+			"at": "2026-10-09T17:37:25.414Z",
+			"ms": 2350,
+			"shot": "steps/59-Impact-posted-the-ledger.png"
+		},
+		{
+			"n": 60,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Tax: Q3 FY27 in the GST reading",
+			"at": "2026-10-09T17:37:30.728Z",
+			"ms": 5314,
+			"shot": "steps/60-Tax-Q3-FY27-in-the-GST-reading.png"
+		},
+		{
+			"n": 61,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Tax: the GST summary exported (GST-summary-Q3-FY27.csv)",
+			"at": "2026-10-09T17:37:32.394Z",
+			"ms": 1666,
+			"shot": "steps/61-Tax-the-GST-summary-exported-GST-summary-Q3-FY27.png"
+		},
+		{
+			"n": 62,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Tax: the GST ITC memo, with its PDF",
+			"at": "2026-10-09T17:37:40.238Z",
+			"ms": 7844,
+			"shot": "steps/62-Tax-the-GST-ITC-memo-with-its-PDF.png"
+		},
+		{
+			"n": 63,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Tax: the tax invoice INV/26-27/0931",
+			"at": "2026-10-09T17:37:42.294Z",
+			"ms": 2056,
+			"shot": "steps/63-Tax-the-tax-invoice-INV-26-27-0931.png"
+		},
+		{
+			"n": 64,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Tax: the price-support credit note CN/0117",
+			"at": "2026-10-09T17:37:44.319Z",
+			"ms": 2025,
+			"shot": "steps/64-Tax-the-price-support-credit-note-CN-0117.png"
+		},
+		{
+			"n": 65,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "ESG: Q3 FY27 in the Impact reading",
+			"at": "2026-10-09T17:37:49.593Z",
+			"ms": 5274,
+			"shot": "steps/65-ESG-Q3-FY27-in-the-Impact-reading.png"
+		},
+		{
+			"n": 66,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "ESG: the BRSR table exported (BRSR-P6-waste-Q3-FY27.csv)",
+			"at": "2026-10-09T17:37:51.293Z",
+			"ms": 1700,
+			"shot": "steps/66-ESG-the-BRSR-table-exported-BRSR-P6-waste-Q3-FY2.png"
+		},
+		{
+			"n": 67,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "ESG: the batch's BRSR line and its evidence",
+			"at": "2026-10-09T17:37:55.733Z",
+			"ms": 4440,
+			"shot": "steps/67-ESG-the-batch-s-BRSR-line-and-its-evidence.png"
+		},
+		{
+			"n": 68,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "The ledger: the batch's money",
+			"at": "2026-10-09T17:37:59.997Z",
+			"ms": 4264,
+			"shot": "steps/68-The-ledger-the-batch-s-money.png"
+		},
+		{
+			"n": 69,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Execution: every line done",
+			"at": "2026-10-09T17:38:04.365Z",
+			"ms": 4368,
+			"shot": "steps/69-Execution-every-line-done.png"
+		},
+		{
+			"n": 70,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Command Center at the end",
+			"at": "2026-10-09T17:38:06.633Z",
+			"ms": 2268,
+			"shot": "steps/70-Command-Center-at-the-end.png"
+		}
+	],
+	"figures": {
+		"Flagged phase": "at-risk",
+		"Write-off at Detect": 26329.6,
+		"Command Center card at Detect": "−₹26,330 if destroyed",
+		"Plan net": 21770,
+		"Plan line kirana": "588 packs",
+		"Plan line expiresoon": "772 packs",
+		"Kiranas offered the scheme": 38,
+		"ExpireSoon lot": "772 packs at ₹15",
+		"Kirana orders": "31 shops, 588 packets",
+		"Counter": "Accept ₹14.20 · pay ₹1,644 token",
+		"Award": "772 packs at ₹14.2, token ₹1644",
+		"Lot won bill": "Invoice total ₹11,510.00",
+		"Paper: Tax invoice": "INV/26-27/0931 (drafted)",
+		"Paper: E-way bill check": "MF-2409-117 (not required)",
+		"Paper: Price-support credit note": "CN/0117 (generated)",
+		"Papers with their PDF": "invoice, support, itc",
+		"Van round push": "Van route for Saturday",
+		"Van round in the timeline": "Ran the Saturday round",
+		"FSSAI paper": "Nothing from this batch was donated.",
+		"Phase before the report": "settled",
+		"Actual net": 21152.4,
+		"Left at the godown": 0,
+		"Phase after the report": "cleared",
+		"Paper: GST ITC memo": "s.17(5)(h) (generated)",
+		"Paper: FSSAI surplus-food checklist": "no donation (not required)",
+		"Paper: Destruction certificate": "0 units left (not required)",
+		"Ledger GST reading": "as posted",
+		"GST summary: tax invoice": "INV/26-27/0931",
+		"GST summary: invoice total": "11510",
+		"GST summary: credit note": "CN/0117",
+		"GST summary: price support": "8768",
+		"GST summary: input GST kept": "1224",
+		"GST summary: reversed, s.17(5)(h)": "0",
+		"ITC memo stamp": "ITC KEPT",
+		"ITC memo PDF": "200 application/pdf",
+		"ITC memo PDF starts": "%PDF",
+		"Tax invoice on paper": "as posted",
+		"Price-support credit note on paper": "as posted",
+		"Input GST kept": 1224,
+		"Input GST reversed": 0,
+		"Reviewed by": "priya",
+		"Tax invoice": "INV/26-27/0931",
+		"Tax invoice total": 11510,
+		"Price-support credit note": "CN/0117",
+		"Price support": 8768,
+		"Ledger Impact reading": "as posted",
+		"BRSR table: diverted (kg)": 217.6,
+		"BRSR table: resold (kg)": 217.6,
+		"BRSR table: donated (kg)": 0,
+		"BRSR table: disposed (kg)": 0,
+		"BRSR table: evidence": "as posted",
+		"BRSR table: Food waste: packaged food past quick-commerce gates, diverted (kg)": 217.6,
+		"BRSR table: Plastic packaging (EPR), diverted (kg)": 8.16,
+		"BRSR line": "as posted",
+		"BRSR evidence": "as posted",
+		"Kept out of landfill": "217.6 kg",
+		"CO₂e avoided": "544 kg",
+		"Plastic packaging resold": "8.2 kg",
+		"Kept out of landfill (kg)": 217.6,
+		"CO₂e avoided (kg)": 544,
+		"Meals": 0,
+		"Destroyed (kg)": 0,
+		"Plastic packaging resold (kg)": 8.16,
+		"The year: recovered": "₹2,41,535.98",
+		"The year: input GST kept": "₹17,078.78",
+		"The year: kept out of landfill": "2.18 t",
+		"The year: CO₂e avoided": "5.44 t",
+		"The year: batches": 13
+	},
+	"findings": [
+		{
+			"severity": "note",
+			"where": "/paperwork/MF-2409-117",
+			"what": "the tax invoice still reads \"drafted\" in Priya's pack after Rakesh issued it from Tally (as in the prototype)"
+		}
+	]
+}

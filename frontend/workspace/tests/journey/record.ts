@@ -60,6 +60,13 @@ export class Run {
 		this.figures[name] = value;
 	}
 
+	/** where the run keeps a file a person downloaded (an export), beside its report */
+	keep(name: string) {
+		const dir = this.info.outputPath('exports');
+		mkdirSync(dir, { recursive: true });
+		return join(dir, name);
+	}
+
 	/** who acts now and what they do: drawn on the recording until the next one */
 	async act(who: string, role: string, did: string) {
 		this.caption = { who, role, did };

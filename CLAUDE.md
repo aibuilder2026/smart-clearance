@@ -1414,4 +1414,20 @@
   - **Locally:** `hydrate.sh --reset` rebuilt the world: Munchly's staff are Priya and Arjun, the twelve history batches reviewed by Priya, and the Paperwork agent laid out all 41 of their papers' PDFs. The day is 24 hours.
   - **Production:** Anita and Vikram stay in Munchly's workspace, refused at sign-in once this deploys, until the console's Reset journey (or the hydrate job) takes them out.
 
+- **SC-128** (In Review, branch `SC-128-tax-esg-e2e`): Munchly Chips E2E verifies Priya's tax and ESG, and a recorded run, asked for by the maintainer ("it should include verifying the TAX and ESG by Priya … dont reset the journey leave it as it is. Record the journey for me too").
+  - **The suite** (`frontend/workspace/tests/journey/chips.ts`): the old `esg` step expected the ESG reading on opening, which SC-127 changed (Priya's pages open on Money). It is replaced by two steps, after Impact posts:
+    - **tax:** the ledger's GST reading for the quarter the batch cleared in; the GST summary she exports, read back as CSV; the batch's GST ITC memo (its stamp, and its PDF fetched from its signed link), the tax invoice and the credit note;
+    - **esg:** the ledger's Impact reading; the BRSR table she exports; the batch's BRSR line and its evidence; the year so far.
+
+    Each is held to the ledger row backend-api posted. Munchly Chips E2E also holds them to the story's figures (`CHIPS_TAX_ESG`). Munchly Chips Leftover E2E runs both steps against its own row (not run). The run keeps the exports beside its report (`Run.keep`).
+  - **The run of 9 Oct** (`runs/2026-10-09/REPORT.md`, the 8 min 25 s recording local): passed in 8 min 24 s, 70 steps, headed.
+    - Every figure is the story's.
+    - Tax: ₹1,224 of input GST kept and none reversed, INV/26-27/0931 for ₹11,510, CN/0117 for ₹8,768, the memo stamped ITC KEPT, its PDF served as `application/pdf`, reviewed by Priya.
+    - ESG: 217.6 kg kept out of landfill, all resold; 544 kg CO₂e; 8.16 kg of plastic packaging (EPR); the evidence INV/26-27/0931 · ES-24117 · 31 kirana order logs · CN/0117.
+    - The year so far: 13 batches, ₹2,41,535.98 recovered.
+    - The only finding is the old note: the invoice reads "drafted" in the pack after Rakesh issues it.
+    - An earlier attempt stopped on the suite's own selector (the recording's caption also reads "BRSR line"); the step now reads the page only.
+  - **The journey is left as the run ended** (the chips cleared, the Mango Drink waiting for its label photo); only the day went back to 24 hours.
+  - **Checks:** the frontend gate passes (core 217, api 77, workspace 67, admin 17, demo 5, console 3).
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

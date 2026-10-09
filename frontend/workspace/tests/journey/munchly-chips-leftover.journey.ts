@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { mint } from './auth.ts';
-import { chips, HERO, KIRANAS, PEOPLE } from './chips.ts';
+import { chips, esgStep, HERO, KIRANAS, PEOPLE, taxStep } from './chips.ts';
 import { as, begin, caseAs, inr, sidebar, staff, story, until, type Step } from './flow.ts';
 import { Run } from './record.ts';
 
@@ -191,7 +191,8 @@ const STEPS: Step[] = [
 			await run.done('The Expiry credit note, from Execution');
 		}
 	},
-	chips('esg'),
+	taxStep(),
+	esgStep(),
 	{
 		id: 'close',
 		title: "Priya reads the batch's money in the ledger, and the Command Center at the end",
