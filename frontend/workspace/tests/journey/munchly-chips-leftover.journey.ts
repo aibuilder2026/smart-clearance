@@ -6,10 +6,11 @@ import { Run } from './record.ts';
 
 // Munchly Chips Leftover E2E (SC-116): the Masala Chips batch (MF-2409-117) from a fresh journey, as Munchly Chips E2E
 // takes it, except that some of Rakesh's kiranas open the scheme and do not order. The scheme never fills, so packs are
-// left at the godown. Agrawal Wholesale still takes the ExpireSoon lot and Rakesh loads the truck; then Neha fires
-// expiry day's report from the console (Report now), which closes the batch as it stands (SC-94): the scheme closes
-// with the orders placed, the papers are drafted, and Impact's report settles the packs left by Munchly's expiry
-// policy, full credit. Anita reads the pack with its Expiry credit note, Priya reads Left at the godown and the Expiry
+// left at the godown. Agrawal Wholesale still takes the ExpireSoon lot, but its truck waits for the scheme to close
+// (backend-api refuses it while the scheme is open). Neha then fires expiry day's report from the console (Report now),
+// which closes the batch as it stands (SC-94): the scheme closes with the orders placed, the accepted lot counts as
+// collected, the papers are drafted, and Impact's report settles the packs left by Munchly's expiry policy, full
+// credit. Anita reads the pack with its Expiry credit note, Priya reads Left at the godown and the Expiry
 // settlement on Execution, and Vikram the ESG report.
 //
 // E2E_LEFTOVER (8): how many of the 31 ordering kiranas place no order, the last in the story's order.
@@ -85,8 +86,9 @@ const STEPS: Step[] = [
 			await run.done(`Execution: ${ORDERED} of ${planned} packets ordered, the scheme still open`);
 		}
 	},
+	// no truck: it loads only once the scheme has closed, which here is expiry day, when the accepted lot counts as
+	// collected
 	chips('deal'),
-	chips('truck'),
 	{
 		id: 'report',
 		title:
@@ -108,6 +110,7 @@ const STEPS: Step[] = [
 			planned ||= c.plan?.lines.find((l) => l.id === 'kirana')?.units ?? 0; // a run resumed after the orders
 			run.figure('Phase after the report', c.journey.phase);
 			story('Scheme after the report', c.journey.offer?.status, 'closed');
+			story("The buyer's truck", c.journey.truck.status, 'dispatched');
 			story('Left at the godown', c.realised?.godown, left());
 			for (const l of c.realised?.lines ?? []) run.figure(`Realised ${l.id}`, `${l.units} packs`);
 			run.figure('Actual net', inr(c.actual?.net));
