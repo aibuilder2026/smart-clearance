@@ -154,6 +154,15 @@ async def changed(ctx: Ctx, c: m.Client, ref: str | None = None) -> int:
     return await emit(ctx, c, "case" if ref else "workspace", ref=ref)
 
 
+# who reads the Finance & ESG ledger: the roles rbac.json gives report.read (SC-124)
+LEDGER = [role(r) for r in ("operator", "finance", "sustainability", "admin")]
+
+
+async def ledger_changed(ctx: Ctx, c: m.Client, ref: str) -> int:
+    """a cleared batch's ledger or papers changed: those who read the ledger read it again"""
+    return await emit(ctx, c, "ledger", ref=ref, audience=LEDGER)
+
+
 async def feed(
     ctx: Ctx,
     c: m.Client,

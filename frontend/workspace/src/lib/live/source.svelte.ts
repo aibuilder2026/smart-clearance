@@ -1,6 +1,6 @@
 // The live source (SC-73): Munchly's workspace on backend-api, behind the same WorkspaceSource the stub implements,
 // so every screen reads it unchanged. It holds the member's snapshot, the batch in focus, the batch being donated, the
-// quarter and the audit log; it reads them again when the member's stream says they changed (events.ts), and it takes
+// ledger and the audit log; it reads them again when the member's stream says they changed (events.ts), and it takes
 // each step a person makes through workspaceHttp, showing the step at once where it can and putting it back if the
 // API refuses it. The projection onto the screens' shapes is project.ts.
 import { SvelteSet, SvelteMap } from 'svelte/reactivity';
@@ -21,7 +21,7 @@ import {
 	type WorkspacePublic as ApiPublic,
 	type WorkspaceSnapshot,
 	type WsAuditRow,
-	type WsQuarter,
+	type WsLedger,
 	type WsRules
 } from '@smart-clearance/api/workspace';
 import type {
@@ -59,10 +59,10 @@ export type LiveOptions = {
 	events?: typeof workspaceEvents;
 };
 
-/** the roles that read the quarter, and the audit log */
-type Wanted = { snapshot: boolean; cases: string[]; quarter: boolean; audit: boolean };
+/** the roles that read the ledger, and the audit log */
+type Wanted = { snapshot: boolean; cases: string[]; ledger: boolean; audit: boolean };
 
-const QUARTER: RoleId[] = ['operator', 'finance', 'sustainability', 'admin'];
+const LEDGER: RoleId[] = ['operator', 'finance', 'sustainability', 'admin'];
 const AUDIT: RoleId[] = ['admin'];
 
 const phone = () =>
@@ -78,7 +78,7 @@ export class LiveSource implements WorkspaceSource {
 	#snap = $state<WorkspaceSnapshot | null>(null);
 	#focus = $state<CaseDetail | null>(null);
 	#second = $state<CaseDetail | null>(null);
-	#quarter = $state<WsQuarter | null>(null);
+	#ledger = $state<WsLedger | null>(null);
 	#audit = $state<WsAuditRow[]>([]);
 	#asked = $state<string | null>(null);
 	#phase = $state<SourceStatus['phase']>('loading');
@@ -96,8 +96,8 @@ export class LiveSource implements WorkspaceSource {
 	#readAt = $state(0);
 	#stream: EventsHandle | null = null;
 	#settle: ReturnType<typeof setTimeout> | null = null;
-	/** what to read next: the snapshot, the cases by ref, the quarter, the audit log (bookkeeping, not state) */
-	#wanted: Wanted = { snapshot: false, cases: [], quarter: false, audit: false };
+	/** what to read next: the snapshot, the cases by ref, the ledger, the audit log (bookkeeping, not state) */
+	#wanted: Wanted = { snapshot: false, cases: [], ledger: false, audit: false };
 	#reading: Promise<void> | null = null;
 
 	constructor(o: LiveOptions) {
@@ -116,7 +116,7 @@ export class LiveSource implements WorkspaceSource {
 	readonly #data = $derived.by((): WorkspaceData | null => {
 		const snap = this.#snap;
 		if (!snap) return null;
-		return dataOf(snap, this.#quarter, { ref: this.#focus?.ref ?? null, second: this.#donor?.ref ?? null });
+		return dataOf(snap, this.#ledger, { ref: this.#focus?.ref ?? null, second: this.#donor?.ref ?? null });
 	});
 	readonly #emptyData = $derived(emptyData(this.#public));
 	readonly #emptyState = emptyState();
@@ -266,20 +266,20 @@ export class LiveSource implements WorkspaceSource {
 			for (const c of [this.#focus, this.#second])
 				if (c && c.ref === e.ref && !c.feed.some((f) => f.id === e.feed!.id)) c.feed = [...c.feed, e.feed];
 		}
-		if (e.type === 'quarter') return this.#want({ quarter: true });
+		if (e.type === 'ledger') return this.#want({ ledger: true });
 		if (e.type === 'audit') return this.#want({ audit: true });
 		this.#want({ snapshot: true, ref: e.ref });
 	}
 
-	#want(w: { snapshot?: boolean; ref?: string | null; all?: boolean; quarter?: boolean; audit?: boolean }) {
+	#want(w: { snapshot?: boolean; ref?: string | null; all?: boolean; ledger?: boolean; audit?: boolean }) {
 		if (w.snapshot) this.#wanted.snapshot = true;
 		if (w.ref && !this.#wanted.cases.includes(w.ref)) this.#wanted.cases.push(w.ref);
 		if (w.all) {
-			this.#wanted.quarter = this.#wanted.audit = true;
+			this.#wanted.ledger = this.#wanted.audit = true;
 			for (const c of [this.#focus, this.#second])
 				if (c && !this.#wanted.cases.includes(c.ref)) this.#wanted.cases.push(c.ref);
 		}
-		if (w.quarter) this.#wanted.quarter = true;
+		if (w.ledger) this.#wanted.ledger = true;
 		if (w.audit) this.#wanted.audit = true;
 		if (this.#settle) return;
 		this.#settle = setTimeout(() => {
@@ -292,18 +292,18 @@ export class LiveSource implements WorkspaceSource {
 	async #read(): Promise<void> {
 		if (this.#reading) {
 			await this.#reading;
-			if (this.#wanted.snapshot || this.#wanted.cases.length || this.#wanted.quarter || this.#wanted.audit)
+			if (this.#wanted.snapshot || this.#wanted.cases.length || this.#wanted.ledger || this.#wanted.audit)
 				return this.#read();
 			return;
 		}
 		const w = this.#wanted;
-		this.#wanted = { snapshot: false, cases: [], quarter: false, audit: false };
+		this.#wanted = { snapshot: false, cases: [], ledger: false, audit: false };
 		this.#reading = (async () => {
 			try {
 				if (w.snapshot) await this.#readSnapshot();
 				await this.#readCases(w.cases);
 				const role = this.#member?.role;
-				if (w.quarter && role && QUARTER.includes(role)) this.#quarter = await this.#api.quarter().catch(() => null);
+				if (w.ledger && role && LEDGER.includes(role)) this.#ledger = await this.#api.ledger().catch(() => null);
 				if (w.audit && role && AUDIT.includes(role))
 					this.#audit = (await this.#api.audit().catch(() => ({ rows: [] }))).rows;
 			} catch (e) {
@@ -317,7 +317,7 @@ export class LiveSource implements WorkspaceSource {
 	}
 
 	async #readAll() {
-		this.#wanted = { snapshot: true, cases: [], quarter: true, audit: true };
+		this.#wanted = { snapshot: true, cases: [], ledger: true, audit: true };
 		await this.#read();
 		if (!this.#snap) throw this.#error ?? new Error('The workspace did not load.');
 	}
@@ -413,7 +413,7 @@ export class LiveSource implements WorkspaceSource {
 	#clear() {
 		this.#member = null;
 		this.#snap = null;
-		this.#focus = this.#second = this.#quarter = null;
+		this.#focus = this.#second = this.#ledger = null;
 		this.#audit = [];
 		this.#failed = null;
 		this.#pending.clear();

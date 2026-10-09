@@ -12,7 +12,7 @@ import type {
 	WorkspacePublic,
 	WorkspaceSnapshot,
 	WsAuditRow,
-	WsQuarter
+	WsLedger
 } from '@smart-clearance/api/workspace';
 import { ApiError, NotAMember } from '@smart-clearance/api/workspace';
 import { LiveSource } from '../../src/lib/live/source.svelte';
@@ -26,7 +26,7 @@ import LiveHost from './LiveHost.svelte';
 type Seen = {
 	snapshot: WorkspaceSnapshot;
 	cases: Record<string, CaseDetail>;
-	quarter: WsQuarter | null;
+	ledger: WsLedger | null;
 	audit: WsAuditRow[];
 };
 type Moment = { public: WorkspacePublic; members: Record<string, Seen> };
@@ -46,7 +46,7 @@ function fakeApi(m: Moment, who: string, over: Partial<Record<keyof WorkspaceApi
 		me: () => Promise.resolve(seen.snapshot.me),
 		snapshot: () => Promise.resolve(structuredClone(seen.snapshot)),
 		case: (ref: string) => (seen.cases[ref] ? Promise.resolve(structuredClone(seen.cases[ref])) : none(404)),
-		quarter: () => (seen.quarter ? Promise.resolve(seen.quarter) : none(403)),
+		ledger: () => (seen.ledger ? Promise.resolve(seen.ledger) : none(403)),
 		audit: () => Promise.resolve({ rows: seen.audit, before: null }),
 		events: () => Promise.resolve({ seq: seen.snapshot.seq, events: [], reset: false })
 	};

@@ -156,6 +156,8 @@ async def _save(ctx: Ctx, s: Scene, *, note: str | None = None) -> None:
     await ctx.session.flush()
     await ev.apply_speed(ctx, c)
     await ev.changed(ctx, c, s.ref)
+    if case.ledger is not None:  # posted, or a cleared batch's papers moved on: the ledger reads it again (SC-124)
+        await ev.ledger_changed(ctx, c, s.ref)
 
 
 async def _advance(ctx: Ctx, s: Scene) -> None:
@@ -1739,6 +1741,8 @@ async def document_pdf(ctx: Ctx, client_id: str, ref: str, doc_id: str, name: st
         s.case.donation = {**s.case.donation, "receipt": {**rcpt, "pdf": name}}
     await ctx.session.flush()
     await ev.changed(ctx, s.c, ref)
+    if s.case.ledger is not None:
+        await ev.ledger_changed(ctx, s.c, ref)
 
 
 async def issue_invoice(ctx: Ctx, client_id: str, ref: str) -> None:

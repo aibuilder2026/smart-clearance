@@ -178,10 +178,10 @@ async def case(ws: str, ref: str, request: Request, ctx: MemberCtx) -> dict[str,
     return await views.case_detail(ctx, ws, ref, _member(request))
 
 
-@router.get("/quarter", summary="The Finance & ESG report")
-async def quarter(ws: str, ctx: MemberCtx) -> dict[str, Any]:
-    ctx.require("report.read", "Your role can't see the report.")
-    return await views.quarter(ctx, ws)
+@router.get("/ledger", summary="The Finance & ESG ledger: every batch cleared, by quarter and year")
+async def ledger(ws: str, ctx: MemberCtx) -> dict[str, Any]:
+    ctx.require("report.read", "Your role can't see the ledger.")
+    return await views.ledger(ctx, ws)
 
 
 @router.get("/audit", summary="The workspace's audit log, newest first, a page at a time")

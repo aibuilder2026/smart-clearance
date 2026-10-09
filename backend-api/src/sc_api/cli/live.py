@@ -59,7 +59,6 @@ async def build(ctx: Ctx, client_id: str = "munchly", *, with_history: bool = Tr
             for g in j["explore"]
         ],
         "moments": {k: v for k, v in j["moments"].items()} | {"donation": _donation_rules(j["moments"]["donation"])},
-        "quarter": j["quarter"],
         "synthetic": True,
         "heroRef": next(b["id"] for b in j["batches"] if b.get("hero")),
     }

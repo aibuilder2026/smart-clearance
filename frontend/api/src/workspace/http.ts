@@ -14,7 +14,7 @@ import type {
 	WorkspacePublic,
 	WorkspaceSnapshot,
 	WsAuditPage,
-	WsQuarter
+	WsLedger
 } from '../types/workspace';
 
 export type WorkspaceHttpOptions = Omit<TransportOptions, 'token'> & {
@@ -148,7 +148,7 @@ export function workspaceHttp(
 
 		snapshot: () => call<WorkspaceSnapshot>('GET', '/snapshot'),
 		case: (ref) => call<CaseDetail>('GET', c(ref)),
-		quarter: () => call<WsQuarter>('GET', '/quarter'),
+		ledger: () => call<WsLedger>('GET', '/ledger'),
 		audit: (before) => call<WsAuditPage>('GET', '/audit' + (before ? `?before=${enc(before)}` : '')),
 		documentUrl: (ref, doc) => call('GET', `/documents/${enc(ref)}/${enc(doc)}`),
 

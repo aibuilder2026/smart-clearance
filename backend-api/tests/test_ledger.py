@@ -1,0 +1,84 @@
+"""The Finance & ESG ledger (SC-124): every batch cleared, read from the ledger Impact posted, by quarter and by year,
+with every total worked out on the server. On Munchly's history (SC-123) each batch's figures are money.js's, each
+period adds up its batches, and only those who read the report see it."""
+
+import pytest
+
+from sc_api.domain import money
+from sc_api.services.reference import load
+from tests.test_history import REFS, H, with_history  # noqa: F401
+from tests.test_workspace import ANITA, LAKSHMI, PRIYA, RAKESH, VIKRAM, WS, case
+
+pytestmark = pytest.mark.usefixtures("with_history")
+SAME = {"net": "net", "swing": "swing", "pnl": "pnl", "itcKept": "itc", "itcReversed": "itcReversed", "kg": "kg"}
+SAME |= {"co2": "co2", "meals": "meals", "godown": "godown", "destroyed": "destroyed"}
+
+
+async def _ledger(api, who=ANITA) -> dict:
+    r = await api.get(f"{WS}/ledger", headers=who)
+    assert r.status_code == 200, r.text
+    return r.json()
+
+
+async def test_each_batch_reads_as_its_posted_ledger(api):
+    ledger = await _ledger(api)
+    rows = {b["ref"]: b for b in ledger["batches"]}
+    assert set(rows) == REFS
+    for b in H["batches"]:
+        got = rows[b["ref"]]
+        assert {k: got["figures"][k] for k in SAME} == {k: b["expect"][v] for k, v in SAME.items()}, b["ref"]
+        assert got["outcome"] == b["outcome"] and got["history"] and got["reviewed"], b["ref"]
+        f = got["figures"]
+        assert f["sold"] + f["donated"] + f["godown"] <= f["units"]
+        assert {p["id"]: p["no"] for p in got["papers"]}["support"] == b["numbers"]["support"]
+    assert [b["cleared"] for b in ledger["batches"]] == sorted(b["cleared"] for b in ledger["batches"])
+
+
+async def test_the_periods_add_up_their_batches(api):
+    ledger = await _ledger(api)
+    periods = {p["id"]: p for p in ledger["periods"]}
+    assert list(periods) == ["fy27-q2", "fy27-q3", "fy27"]
+    q2, q3, year = periods["fy27-q2"], periods["fy27-q3"], periods["fy27"]
+    assert (q2["label"], q2["long"], q2["current"]) == ("Q2 FY27", "Jul to Sep 2026", False)
+    assert (q3["label"], q3["long"], q3["current"]) == ("Q3 FY27", "Oct to Dec 2026 · so far", True)
+    assert (year["label"], year["long"]) == ("This year", "FY 2026-27 so far")
+    assert (year["from"], year["to"]) == ("2026-04-01", "2027-03-31")
+    t = q2["totals"]
+    for k, v in SAME.items():
+        want = sum(b["expect"][v] for b in H["batches"])
+        assert t[k] == pytest.approx(want if k != "co2" else t["kg"] * money.RULES["co2PerKg"], abs=0.02), k
+    assert t["batches"] == 12 and t["outcomes"] == {"sold": 7, "leftover": 3, "donation": 2}
+    assert t["creditNotes"] == 15 and t["receipts"] == 2 and t["reviewed"] == 12
+    assert t["invoices"] == sum("invoice" in b["numbers"] for b in H["batches"])
+    assert year["totals"] == t and q3["totals"]["batches"] == 0
+    # the months, the weeks, the mix and BRSR's row, from the same batches
+    assert sum(mo["totals"]["batches"] for mo in q2["months"]) == 12
+    months = sorted({b["cleared"][:7] for b in ledger["batches"]})
+    assert [mo["month"] for mo in q2["months"]] == months and q2["months"][0]["label"].endswith(" 2026")
+    assert len(q2["weeks"]) == 13 and sum(w[1] for w in q2["weeks"]) == pytest.approx(t["net"], abs=0.05)
+    assert sum(p for _, p in q2["mix"]) == 100 and dict(q2["mix"])["writeoff"] >= 1
+    (row,) = q2["brsr"]
+    assert (row["diverted"], row["donated"], row["disposed"]) == (t["kg"], t["donatedKg"], t["destroyedKg"])
+    assert row["resold"] + row["donated"] == pytest.approx(row["diverted"], abs=0.05)
+    assert "2 food-bank receipts" in row["evidence"] and "3 destruction certificates" in row["evidence"]
+    assert q3["brsr"] == [] and q3["mix"] == []
+
+
+async def test_only_those_who_read_the_report_see_the_ledger(api):
+    for who in (PRIYA, ANITA, VIKRAM):
+        assert (await api.get(f"{WS}/ledger", headers=who)).status_code == 200
+    for who in (RAKESH, LAKSHMI):
+        assert (await api.get(f"{WS}/ledger", headers=who)).status_code == 403
+
+
+async def test_a_cleared_batch_carries_its_ledger(api):
+    ledger = await _ledger(api)
+    leftover = next(b for b in H["batches"] if b["outcome"] == "leftover")
+    row = next(b for b in ledger["batches"] if b["ref"] == leftover["ref"])
+    assert (await case(api, ANITA, leftover["ref"]))["ledger"] == row
+    holder = {"rakesh": RAKESH, "lakshmi": LAKSHMI}[leftover["distributor"]]
+    assert (await case(api, holder, leftover["ref"]))["ledger"] is None
+
+
+def test_the_constant_quarter_is_gone():
+    assert "quarter" not in load("journey.json")
