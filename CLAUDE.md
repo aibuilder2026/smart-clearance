@@ -1199,4 +1199,17 @@
 
 - **SC-113** (bug in Munchly Mango E2E): the donation step read Munchly's plan as the food bank, who is not shown it, and stopped right after the collection with "Cannot read properties of null (reading 'lines')". It now awaits the collection as Meera and reads the planned food-bank packs from Priya's case (`munchly-mango.journey.ts`). Lint and the workspace type check pass; the suite was not rerun (SC-55).
 
+- **SC-115** (In Review, branch `SC-115-mango-papers-step`; bug in Munchly Mango E2E): the papers step predated SC-110's donation receipt.
+  - **Found:** the run of 9 Oct (10:42 UTC) took the Mango Drink from its label photo to Vikram's ESG report in 7 min 15 s, but failed one soft check: "Papers with their PDF" read `support, itc, receipt` where it expected `support, itc, fssai`.
+  - **The cause:** the step waited for any three PDFs. The receipt's is asked for as soon as Meera collects, so it landed before the FSSAI checklist's. At Anita's review, a minute later, all four papers carried their PDF.
+  - **The fix** (`munchly-mango.journey.ts`): the step waits until every paper that is not "not required" has its PDF, and expects `support, itc, fssai, receipt`.
+  - **The rest of the run:**
+    - plan and actual ₹16,917.10, nothing left at the godown;
+    - 52 kiranas ordered 1,372 (Saraswathi Kirana and Bilal Stores 16 each, as before);
+    - CN/0117 and FI/HYD/26-27/0417, the receipt issued on a reset workspace (SC-114);
+    - the Saturday round in the push and the timeline.
+
+    The Mango was brought to Detect first with `walk.sh --day-minutes 60 --until detect`, since this suite never resets.
+  - **Checks:** lint, Prettier and the workspace type check pass; the suite was not rerun (SC-55).
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
