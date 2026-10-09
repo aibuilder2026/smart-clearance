@@ -79,4 +79,48 @@ opened, and each food bank's paper) with no page errors.
 
 ## The pick
 
-Waiting for the maintainer.
+The maintainer picked **A, a paper in the pack** (9 Oct), and answered the open questions:
+- **The numbering:** each food bank's own series, issued by the app on collection (FI/HYD/26-27/0417, IFBN/ACK/26-27/0112).
+- **The meals:** each food bank's own rule, not a pack a meal everywhere.
+- **The acknowledgement's value:** kept, at Munchly's cost, marked indicative, with the line that it is not a tax
+  certificate.
+
+## The build (option A)
+
+- **Each food bank's form, numbering and meals rule** live with its setup (`data.js` `SETUP.partners`):
+  - Feeding India: a Donation receipt, stamped RECEIVED, numbered `FI/{city}/26-27/0417` on, counting a meal for each
+    pack served.
+  - India FoodBanking Network: a Donation acknowledgement, stamped ACKNOWLEDGED, numbered `IFBN/ACK/26-27/0112` on,
+    counting a meal for every 400 g of food. It adds the value at the donor's cost and the CSR activity
+    (Schedule VII (i)), and says it is not a tax certificate.
+  - The series are `world.js` `NUMBERS` (`receipt.<food bank>`).
+  - The rules and numbers are fictional and marked indicative.
+- **money.js:**
+  - `mealsOf(units, sku, rule)`;
+  - `receipt(units, sku, partner, facts)`, the paper;
+  - `realised(…, mealsRule)`, which counts meals by the rule of the food bank that collected;
+  - `documents(…, receipt)`, which sets the receipt after the FSSAI checklist.
+- **The prototype:** Meera's collected pickup opens the receipt in a sheet. The pack's `Paper` sets it out
+  (`finance.jsx` `Receipt`). The story's receipt is `data.js` `MANGO_RECEIPT`: 58 packs, 12.47 kg, 58 meals,
+  FI/HYD/26-27/0417 on Tue 6 Oct.
+- **backend-api:**
+  - Collecting issues the receipt in the food bank's series. It is kept on the donation, and the audit line names it.
+  - A confirmed pickup on expiry day gets one too.
+  - Paperwork is asked to lay it out at once (`journey.step receipt`).
+  - The pack carries it, with its own day and PDF.
+  - The ledger counts the food bank's meals.
+  - A food bank reads its own receipt, and its PDF (`docs.read` for `ws-foodbank`).
+- **agents:** Paperwork's receipt pipeline and `receipt.html`.
+- **The port:**
+  - core's `Receipt.svelte`, used by `Paper` and `Pickups`;
+  - the PDF in Meera's sheet once it is laid out;
+  - Report's BRSR line and evidence from the receipt;
+  - the contract's `ReceiptFields`;
+  - the live projection.
+
+**The states:**
+- before collection there is no receipt;
+- collected, the receipt opens in a sheet;
+- once laid out, its PDF is offered;
+- a food bank set up without a receipt form says so;
+- a declined pickup has none.
