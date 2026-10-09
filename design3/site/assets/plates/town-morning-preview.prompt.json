@@ -1,0 +1,6 @@
+{
+  "use": "the hero's soft preview (SC-131): shown blurred under the film's poster until the poster arrives",
+  "derived_from": "town-morning.webp",
+  "post_process": "resized to 48 x 27 (Lanczos) and saved as WebP q60; the page blurs it",
+  "model": "none (derived from the plate above, whose own sidecar records its provenance)"
+}

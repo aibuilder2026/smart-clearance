@@ -135,6 +135,8 @@
   const FILM = { src: "one-day.mp4", bounds: [0, 3.28, 6.84, 10.41], night: 10.5, ar: 1920 / 1088, lean: 1.5,
     at: [{ x: 0.37, y: 0.67 }, { x: 0.575, y: 0.42 }, { x: 0.64, y: 0.66 }, { x: 0.14, y: 0.64 }] };
   const POSTER = { day: "town-morning.webp", night: "town-night.webp" };
+  // the posters' soft previews (SC-131): 48 px copies, under the film until its poster arrives
+  const PREVIEW = { day: "town-morning-preview.webp", night: "town-night-preview.webp" };
   const WORDS = ["buyer", "shelf", "invoice", "ledger line", "chance"];
   // the film drifts with the scroll, not with the clock: a slow rise and a touch of scale as the page is read
   function useFilmDrift() {
@@ -192,8 +194,11 @@
     useEffect(() => { if (reduce || w >= WORDS.length - 1) return; const t = setTimeout(() => setW(w + 1), w === 0 ? 1600 : 1100); return () => clearTimeout(t); }, [w, reduce]);
     const drift = useFilmDrift(); const stage = useRef(null); const vid = useRef(null);
     const [playing, setPlaying] = useState(!reduce);
+    // the film waits for the loader to lift, so the first screen's files have the line to themselves (SC-131)
+    const [go, setGo] = useState(() => !window.SC3_LOADER || !!window.SC3_LOADER.lifted);
+    useEffect(() => { if (go) return; const f = () => setGo(true); window.addEventListener("sc3:loader-lifted", f); return () => window.removeEventListener("sc3:loader-lifted", f); }, [go]);
     // the theme's own hour first: the morning by day, the night act in the dark
-    useEffect(() => { setPlaying(!reduce); const v = vid.current; if (v) { v.currentTime = night ? FILM.night : 0; if (!reduce) v.play().catch(() => {}); } }, [night, reduce]);
+    useEffect(() => { setPlaying(!reduce); const v = vid.current; if (v) { v.currentTime = night ? FILM.night : 0; if (!reduce && go) v.play().catch(() => {}); } }, [night, reduce, go]);
     const onMeta = () => { const v = vid.current; if (v && night && v.currentTime < 0.5) v.currentTime = FILM.night; };
     const toggle = () => { const v = vid.current; if (!v) return; if (playing) { v.pause(); setPlaying(false); } else { v.play(); setPlaying(true); } };
     const clk = useClock(vid, playing && !reduce, FILM.bounds);
@@ -201,7 +206,8 @@
     return <section className="hero film" id="top-hero" aria-labelledby="hero-h">
       <motion.div className="film-media" aria-hidden="true" style={{ y: drift.y, scale: drift.scale }} ref={stage}>
         <motion.div className="film-lean" animate={cam} transition={{ duration: 1.8, ease: EASE }}>
-          {reduce ? <img src={poster} alt="" /> : <video ref={vid} className="fx front" src={MEDIA + FILM.src} poster={poster} muted playsInline autoPlay loop preload="auto" onLoadedMetadata={onMeta} />}
+          <img className="film-preview" src={IMG + (night ? PREVIEW.night : PREVIEW.day)} alt="" />
+          {reduce ? <img src={poster} alt="" /> : <video ref={vid} className="fx front" src={MEDIA + FILM.src} poster={poster} muted playsInline loop preload={go ? "auto" : "none"} onLoadedMetadata={onMeta} />}
         </motion.div>
         <div className="film-shade" />
       </motion.div>
@@ -340,7 +346,7 @@
       <header className="tb-head"><h2 id="tb-h" className="sec-h plain">Five exits, one batch. Ten agents at work.</h2><p className="sec-sub">{fmt.num(N)} packs of masala chips that won't sell in the {BATCH.daysLeft} days they have left, on the table. The agents work the batch stop by stop; a person says yes once; the packs leave for the kiranas and a buyer, and nothing goes to the bin.</p></header>
       <div className={cx("tb-stage", working && "working")} ref={stage}>
         <div className="tb-world" style={{ transform: `translate(${cam.tx}px, ${cam.ty}px) scale(${cam.sc})` }}>
-          <img className="tb-plate" style={fit ? { left: fit.x, top: fit.y, width: fit.pw, height: fit.ph } : { objectPosition: `${(desk ? 0.5 : 0.42) * 100}% 50%` }} src={IMG + (night ? "table-night.webp" : "table.webp")} alt={`A ${night ? "lamp-lit evening" : "late-morning"} table by a window: a hand holds a phone over a handmade miniature of a snack trade, a tiny godown full of cartons, a lane of kirana shops, a wholesale warehouse with a blue truck, a community kitchen, a closed dump yard in the far corner, a steel tumbler of chai, and a thin glowing green path along the table.`} />
+          <img className="tb-plate" loading="lazy" style={fit ? { left: fit.x, top: fit.y, width: fit.pw, height: fit.ph } : { objectPosition: `${(desk ? 0.5 : 0.42) * 100}% 50%` }} src={IMG + (night ? "table-night.webp" : "table.webp")} alt={`A ${night ? "lamp-lit evening" : "late-morning"} table by a window: a hand holds a phone over a handmade miniature of a snack trade, a tiny godown full of cartons, a lane of kirana shops, a wholesale warehouse with a blue truck, a community kitchen, a closed dump yard in the far corner, a steel tumbler of chai, and a thin glowing green path along the table.`} />
           {fit && <div className="tb-layer" style={{ left: fit.x, top: fit.y, width: fit.pw, height: fit.ph }}>
             <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden="true">
               {Object.entries(routes).map(([id, d]) => <path key={id} ref={el => { paths.current[id] = el; }} className="tb-path" d={d} />)}

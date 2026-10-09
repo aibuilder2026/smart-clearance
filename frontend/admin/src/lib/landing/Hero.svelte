@@ -24,6 +24,14 @@
 	const night = $derived(app.mounted && theme.resolved === 'dark');
 	const reduce = $derived(app.mounted && prefersReducedMotion.current);
 	const poster = $derived(night ? PLATES.town.night : PLATES.town.day);
+	const preview = $derived(night ? PLATES.preview.night : PLATES.preview.day);
+	// the film waits for the loader to lift, so the first screen's files have the line to themselves (SC-131)
+	let go = $state(false);
+	onMount(() => {
+		const loader = window.SC3_LOADER;
+		if (!loader || loader.lifted) go = true;
+		else window.addEventListener('sc3:loader-lifted', () => (go = true), { once: true });
+	});
 
 	let w = $state(WORDS.length - 1);
 	let em = $state(96);
@@ -70,7 +78,7 @@
 		const v = vid;
 		if (!v) return;
 		v.currentTime = night ? FILM.night : 0;
-		if (!reduce) v.play().catch(() => {});
+		if (!reduce && go) v.play().catch(() => {});
 	});
 	const onloadedmetadata = () => {
 		if (vid && night && vid.currentTime < 0.5) vid.currentTime = FILM.night;
@@ -172,9 +180,16 @@
 	});
 </script>
 
+<!-- the first screen first (SC-131): the film's poster for the reader's theme, before anything else -->
+<svelte:head>
+	<link rel="preload" as="image" href={PLATES.town.day} media="(prefers-color-scheme: light)" fetchpriority="high" />
+	<link rel="preload" as="image" href={PLATES.town.night} media="(prefers-color-scheme: dark)" fetchpriority="high" />
+</svelte:head>
+
 <section class="hero film" id="top-hero" aria-labelledby="hero-h">
 	<div class="film-media" aria-hidden="true" bind:this={media}>
 		<div class="film-lean" bind:this={lean}>
+			<img class="film-preview" src={preview} alt="" />
 			{#if reduce}
 				<img src={poster} alt="" />
 			{:else}
@@ -185,9 +200,8 @@
 					{poster}
 					muted
 					playsinline
-					autoplay
 					loop
-					preload="auto"
+					preload={go ? 'auto' : 'none'}
 					{onloadedmetadata}
 				></video>
 			{/if}

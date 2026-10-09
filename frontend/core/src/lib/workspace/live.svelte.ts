@@ -143,7 +143,7 @@ export type PushControl = {
 	disable(): Promise<void>;
 };
 
-/** the console's splash (design3/console/splash.js, SC-51), in the workspace's words, as the host app inlines it */
+/** the console's splash (design3/console/splash.js, SC-51; SC-131), in the workspace's words, as the host app inlines it */
 export type SplashRead = { id: string; label: string };
 export type SplashControl = {
 	readonly active: 'boot' | 'enter' | 'leave' | null;
@@ -154,6 +154,8 @@ export type SplashControl = {
 		kind: 'enter' | 'leave',
 		opts: { who?: string; title?: string; from?: DOMRect | null; reads?: SplashRead[] }
 	): Promise<void>;
+	/** what the wait is on now: 'platform' once the app's code runs and its reads have gone out */
+	phase(name: 'code' | 'platform' | 'wake' | 'open'): void;
 	reads(list: SplashRead[]): void;
 	mark(id: string): void;
 	say(o: { title?: string; sub?: string; brand?: { id: string; name: string; mark?: unknown } | null }): void;

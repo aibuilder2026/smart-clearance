@@ -1163,8 +1163,9 @@
     </Sheet>;
   }
   const TITLES = { overview: "Overview", clients: "Clients", "new-client": "New client", agents: "Agents", connectors: "Connectors", plans: "Plans", staff: "Staff", audit: "Audit log" };
-  /* ---------- the console's three waits, through the splash (SC-51, option A) ---------- */
-  // splash.js covers the first load from the first paint; the console marks its reads as they land (simulated here, as
+  /* ---------- the console's three waits, through the splash (SC-51; SC-131, option B) ---------- */
+  // splash.js covers the first load from the first paint; once the console's code runs it says its reads have gone out,
+  // and marks them as they land (simulated here, as
   // the prototype's data is in the browser: ?boot=, ?enter= and ?leave= set how long each wait takes) and, with the page
   // behind it drawn, asks the splash to open onto it from the page's own mark
   const SP = window.SC3_SPLASH;
@@ -1191,6 +1192,7 @@
     useEffect(() => {
       if (!SP || SP.lifted) return;
       SP.animate = Motion.animate;
+      SP.phase("platform");
       simulateReads("boot", ["session", "config", "catalog"]).then(() => SP.open({ anchor: readSession() ? MARK_ANCHOR.console : MARK_ANCHOR.signin }));
     }, []);
     // signing in: after "Welcome", the card's mark grows into the splash; the console draws under the cover while its
