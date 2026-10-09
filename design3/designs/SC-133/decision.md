@@ -24,6 +24,11 @@ The board is `board.html`, published to app v3 as `SC-133 design review.html`. E
 - A batch shows only the lines its plan has: no lot or truck without an ExpireSoon line; the van round on the distributor's own cluster.
 - Orders carries every batch since July, each order with its buyer, packs, price and paper.
 
-## The pick
+## The pick (9 Oct 2026)
 
-(waiting for the maintainer)
+- **A · A card for each batch**, the recommended option, with the maintainer's additions:
+  - "deliveries, label photo should show current and past": Deliveries shows the batch in a journey's van round, truck, staff sale and pickup, then every earlier delivery; the label photo shows the one asked for now, then every earlier label photo with what Vision read;
+  - "today I can have 1 or more batch in process, UI should take care": Today lays out one card per batch in a journey, the one asking most first, with an index of the batches when there is more than one.
+- **The label photo** stays in the laptop sidebar (off the phone's tabs).
+
+Only option A is built: design3 first, then core and the live workspace.
