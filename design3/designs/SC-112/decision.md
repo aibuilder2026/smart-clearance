@@ -48,4 +48,21 @@ Each is the app itself (`option-x/mockup.html`): the app's scripts, with `sc112-
 
 ## The pick
 
-Waiting for the maintainer.
+9 Oct: the maintainer picked **A, the batch page**, with two answers:
+
+- **Other roles:** operator only for now. Finance and Sustainability keep today's navigation (SC-103's screens), and can follow in a later story.
+- **A batch not in a journey:** opens its own page, with only its Journey until the Watcher flags it (the sheet goes, on the Command Center's watchlist and on Batches).
+
+## What was built (option A)
+
+design3 first (`system/kit.jsx`, `system/components.css`, `screens/common.jsx`, `screens/brand.jsx`, `screens/live.jsx`, `screens/roles.jsx`, `screens/screens.css`), then the port (`frontend/core`):
+
+- **The operator's sidebar:** Command Center, Batches, Setup, then **In a journey · n**: each batch still in a journey with its pack, short name and stop (amber while it waits for a yes), at most five and then "n more in Batches", then Reports. The kit's `Shell` draws a nav item with a `product` as a batch (core `Shell.svelte`, `NavItem.product`, `stop`, `human`, `aria`). On phones the tab bar is Today, Batches, Reports.
+- **The batch's page:** one head for every screen of the batch (`BatchHead`): the pack, the product's name, the batch id and distributor, the batch's state and the live line; then its screens as tabs (Journey, Route Room, Execution, Paperwork) with the dot where it stands. `Screen` takes the head from the batch frame (design3 `BatchCtx`, core `provideBatchFrame`) in place of its own title and the row under it, and keeps its own line under the tabs: Execution's "day 0 to 14 · four agents", Paperwork's "prepared by the Paperwork agent at the award". The Route Room's line was only the batch's identity, which the head now carries, so it gives way.
+- **Journey:** a new screen, the Command Center's pieces for one batch (`BatchJourney`): its tracker card, its cluster and its agents; for a batch in no journey, what the Watcher sees of it (`BatchFacts`, the sheet's body, now shared with the sheet).
+- **Where a batch opens:** on the screen for the stop it is at (`partAt`): its Journey before Verify and once cleared, the Route Room from Verify to Approve, Execution at Execute, Paperwork at Settle. The Command Center's watchlist (busy and quiet) and the operator's Batches open every batch this way, a batch in no journey on its Journey (the maintainer's answer); Finance and Sustainability keep their screens and the sheet.
+- **The back link** goes to where the batch was opened from (Command Center, Batches, Inbox, Finance & ESG, Setup, Profile); tabs replace the history entry.
+- **Addresses** stay `/<screen>/<batch>` (`/route/MF-2409-117`, `/execution/…`, the new `/journey/…`), so every link and the journey suites keep working; the board's open question on `/batch/<ref>/<screen>` was not answered, so it is left for later.
+- **The guided demo** shares these screens: Priya's laptop and phone show the new sidebar and head.
+
+Stills of the build are in `build/` (design3 at 1440, 820 and 390, light and dark; the demo at stage 6; the port on the stub).

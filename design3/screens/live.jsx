@@ -113,7 +113,8 @@
   function MangoRoom({ me, item, below }) {
     const app = useApp(); const v = item.view; const sku = v.skuObj; const live = useLive(); const dim = live.conn !== "live";
     const stages = D.STAGES.map(x => ({ id: x.id, title: x.title, human: x.human }));
-    return <S.Screen me={me} title="Route Room" sub={below ? null : `${v.id} · ${sku.brand} ${sku.name} · ${v.dist.name}, ${v.dist.city}`} back="Command Center" below={below}>
+    const framed = React.useContext(S.BatchCtx); // on a batch's page its head names the batch (SC-112)
+    return <S.Screen me={me} title="Route Room" sub={below || framed ? null : `${v.id} · ${sku.brand} ${sku.name} · ${v.dist.name}, ${v.dist.city}`} back="Command Center" below={below}>
       <div className="stack" style={{ gap: 20 }}>
         <Card className="stack" style={{ gap: 16 }}>
           <div className="row wrap" style={{ gap: 16 }}>

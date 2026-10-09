@@ -179,6 +179,19 @@ test("admin · the guardrails' steppers and switches, changed", async ({ page },
 	await report(testInfo, await scan(page, 'guardrails · changed, not saved'));
 });
 
+test("a batch's page: its Journey, and a batch in no journey (SC-112)", async ({ page }, testInfo) => {
+	// the batch's head and its screens as tabs, on its Journey: the tracker card, its cluster and its agents
+	await openWorkspace(page, '/journey/MF-2409-117', { stage: 5 });
+	await expect(page.locator('.bh-tab[aria-current="page"]')).toContainText('Journey');
+	const findings: Finding[] = [...(await scan(page, "a batch's Journey · the plan waiting for a yes"))];
+	// a batch the Watcher only watches: its Journey alone, what the Watcher sees of it
+	await page.goto('/journey/MF-2408-311');
+	await expect(page.locator('.bhead h1')).toHaveText('Peanut Chikki 100 g');
+	await settled(page);
+	findings.push(...(await scan(page, 'a batch in no journey · its Journey')));
+	await report(testInfo, findings);
+});
+
 test('the plan waiting for a yes, and the approve sheet', async ({ page }, testInfo) => {
 	await openWorkspace(page, '/route', { stage: 5 });
 	const findings: Finding[] = [...(await scan(page, 'Route Room · the plan waiting for approval'))];

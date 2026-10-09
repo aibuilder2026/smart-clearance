@@ -89,7 +89,6 @@
     const hm = heroModel(s);
     const phone = app.bp === "phone";
     const [sel, setSel] = useState(null);
-    const [sheet, setSheet] = useState(null);
     const views = useMemo(() => D.BATCHES.map((b) => {
       const v = D.batchView(b);
       if (b.hero) v.phase = hm.view.phase;
@@ -98,6 +97,11 @@
     }), [s.seq]);
     const watchlist = views.filter((v) => !(v.hero && s.hero.phase === "watching")).sort((a, b) => (a.phase === "at-risk" || !a.phase && a.assess.status === "at-risk" ? -1 : 0) - (b.phase === "at-risk" || !b.phase && b.assess.status === "at-risk" ? -1 : 0) || a.daysLeft - b.daysLeft);
     const openRoute = () => onOpenRoute ? onOpenRoute() : go("route");
+    const journeys = journeyItems(s, null);
+    const openBatch = (ref) => {
+      const it = journeys.find((i) => i.ref === ref);
+      go(partAt(it), { ref });
+    };
     const primary = s.hero.phase === "planned" ? /* @__PURE__ */ React.createElement(Button, { variant: "approve", icon: "check", onClick: openRoute }, "Review and approve") : ["approved", "executing"].includes(s.hero.phase) ? /* @__PURE__ */ React.createElement(Button, { variant: "primary", iconRight: "arrow-right", onClick: () => go("execution", { ref: s.hero.id }) }, "Watch execution") : /* @__PURE__ */ React.createElement(Button, { variant: "primary", iconRight: "arrow-right", onClick: openRoute }, "Open Route Room");
     const flagged = s.hero.phase !== "watching" && s.setup.confirmed;
     const routed = ["approved", "executing", "dispatched", "settled", "cleared"].includes(s.hero.phase);
@@ -122,12 +126,11 @@
     const feed = /* @__PURE__ */ React.createElement("div", { className: "stack snug" }, /* @__PURE__ */ React.createElement(SectionTitle, { sub: "Every hand-off, as it happens" }, "Agent activity"), /* @__PURE__ */ React.createElement(Card, null, s.feed.length ? /* @__PURE__ */ React.createElement(AgentFeed, { events: s.feed, people: D.PEOPLE, live: hm.agentLive ? s.feed.length - 1 : -1, max: phone ? 3 : 6 }) : /* @__PURE__ */ React.createElement("span", { className: "t-footnote muted" }, "The agents report here once the Watcher runs.")));
     const list = /* @__PURE__ */ React.createElement("div", { className: "stack snug" }, /* @__PURE__ */ React.createElement(SectionTitle, { sub: "Sorted by days to best-before; at-risk batches first" }, "Watchlist"), /* @__PURE__ */ React.createElement("div", { className: "list" }, watchlist.map((v) => /* @__PURE__ */ React.createElement(BatchRow, { key: v.id, view: v, selected: sel === v.id, compact: phone, onOpen: () => {
       setSel(v.id);
-      if (v.hero) openRoute();
-      else setSheet(v.id);
+      openBatch(v.id);
     } }))));
     const live = S.useLive();
     if (live) return /* @__PURE__ */ React.createElement(LiveCommandCenter, { me, live, hm, money, watchlist, sel, setSel, feed, cluster });
-    return /* @__PURE__ */ React.createElement(Screen, { me, title: "Command Center", sub: flagged ? `${D.JOURNEY.today} · Watcher checked 312 batches at 09:00` : "Watcher runs daily at 09:00 across 312 batches" }, app.bp === "desktop" ? /* @__PURE__ */ React.createElement(Columns, { sideWidth: 340, main: /* @__PURE__ */ React.createElement(React.Fragment, null, tracker, cluster, list), side: feed }) : /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 20 } }, tracker, feed, list, cluster), /* @__PURE__ */ React.createElement(BatchSheet, { view: watchlist.find((v) => v.id === sheet), onClose: () => setSheet(null) }));
+    return /* @__PURE__ */ React.createElement(Screen, { me, title: "Command Center", sub: flagged ? `${D.JOURNEY.today} · Watcher checked 312 batches at 09:00` : "Watcher runs daily at 09:00 across 312 batches" }, app.bp === "desktop" ? /* @__PURE__ */ React.createElement(Columns, { sideWidth: 340, main: /* @__PURE__ */ React.createElement(React.Fragment, null, tracker, cluster, list), side: feed }) : /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 20 } }, tracker, feed, list, cluster));
   }
   function LiveCommandCenter({ me, live, hm, money, watchlist, sel, setSel, feed, cluster }) {
     const s = useStore();
@@ -140,19 +143,18 @@
     const items = L.flaggedItems(s, live);
     const watch = s.rules.watchTime;
     const rows = D.SETUP.dms.rows;
-    const [sheet, setSheet] = useState(null);
     const openRoute = (ref) => go("route", { ref });
     const primary = s.hero.phase === "planned" ? /* @__PURE__ */ React.createElement(Button, { variant: "approve", icon: "check", disabled: offline, onClick: () => openRoute(items[0].ref) }, "Review and approve") : ["approved", "executing"].includes(s.hero.phase) ? /* @__PURE__ */ React.createElement(Button, { variant: "primary", iconRight: "arrow-right", onClick: () => go("execution", { ref: s.hero.id }) }, "Watch execution") : /* @__PURE__ */ React.createElement(Button, { variant: "primary", iconRight: "arrow-right", onClick: () => openRoute(items[0].ref) }, "Open Route Room");
     const hero = /* @__PURE__ */ React.createElement(L.Dim, { on: dim }, /* @__PURE__ */ React.createElement(TrackerCard, { view: hm.view, done: hm.done, current: hm.current, eta: dim ? L.pausedWords(live) : hm.eta, etaTone: dim ? "gray" : hm.etaTone, agentLive: dim ? "" : hm.agentLive, primary, money }));
     const top = live.quiet ? /* @__PURE__ */ React.createElement(L.Quiet, null) : items.length > 1 ? /* @__PURE__ */ React.createElement(L.Flagged, { items }, (it) => it.hero ? hero : /* @__PURE__ */ React.createElement(L.MangoCard, { item: it, dim })) : hero;
     const list = /* @__PURE__ */ React.createElement("div", { className: "stack snug" }, /* @__PURE__ */ React.createElement(SectionTitle, { sub: live.quiet ? "Every batch clears inside its date at today's sell-through" : "Flagged batches first, then by days to best-before" }, "Watchlist"), /* @__PURE__ */ React.createElement("div", { className: "list" }, watchlist.map((v) => /* @__PURE__ */ React.createElement(BatchRow, { key: v.id, view: v, selected: sel === v.id, compact: phone, onOpen: () => {
       setSel(v.id);
-      if (v.hero || v.second) openRoute(v.id);
-      else setSheet(v.id);
+      const it = journeyItems(s, live).find((i) => i.ref === v.id);
+      go(partAt(it), { ref: v.id });
     } }))));
     const side = /* @__PURE__ */ React.createElement(L.Dim, { on: dim }, feed);
     const map = !live.quiet && cluster;
-    return /* @__PURE__ */ React.createElement(Screen, { me, title: "Command Center", sub: `Watcher checked ${rows} batches at ${watch} · ${live.quiet ? "nothing flagged" : items.length + " flagged"}` }, app.bp === "desktop" ? /* @__PURE__ */ React.createElement(Columns, { sideWidth: 340, main: /* @__PURE__ */ React.createElement(React.Fragment, null, top, map, list), side }) : /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 20 } }, top, side, list, map), /* @__PURE__ */ React.createElement(BatchSheet, { view: watchlist.find((v) => v.id === sheet), onClose: () => setSheet(null) }));
+    return /* @__PURE__ */ React.createElement(Screen, { me, title: "Command Center", sub: `Watcher checked ${rows} batches at ${watch} · ${live.quiet ? "nothing flagged" : items.length + " flagged"}` }, app.bp === "desktop" ? /* @__PURE__ */ React.createElement(Columns, { sideWidth: 340, main: /* @__PURE__ */ React.createElement(React.Fragment, null, top, map, list), side }) : /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 20 } }, top, side, list, map));
   }
   function LabelShot({ cover, dim, children }) {
     return /* @__PURE__ */ React.createElement("div", { className: cx("lshot", cover && "cover"), style: dim ? { filter: "saturate(0.85) brightness(0.94)" } : void 0 }, /* @__PURE__ */ React.createElement("img", { src: (window.SC3_IMG || "system/img/") + "label-shot.webp", alt: "" }), /* @__PURE__ */ React.createElement("div", { className: "lshot-label", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("b", null, "MUNCHLY"), /* @__PURE__ */ React.createElement("span", { className: "ls-prod" }, "Masala Chips 150 g"), /* @__PURE__ */ React.createElement("span", null, "BATCH  MF-2409-117"), /* @__PURE__ */ React.createElement("span", null, "MFG  18 MAY 2026"), /* @__PURE__ */ React.createElement("span", null, "BEST BEFORE  18 NOV 2026"), /* @__PURE__ */ React.createElement("span", null, "MRP ₹30.00 incl. of all taxes"), /* @__PURE__ */ React.createElement("span", null, "24 × 150 g")), children);
@@ -231,7 +233,8 @@
     const dim = !!live && L.down(live.conn);
     const offline = !!live && live.conn === "offline";
     const Dim = live ? L.Dim : Pass;
-    return /* @__PURE__ */ React.createElement(Screen, { me, title: "Route Room", sub: below ? null : `${v.id} · ${sku.brand} ${sku.name} · ${v.dist.name}, ${v.dist.city}`, back: "Command Center", below }, /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 20, paddingBottom: h.phase === "planned" ? 96 : 0 } }, /* @__PURE__ */ React.createElement(Card, { className: "stack", style: { gap: 16 } }, /* @__PURE__ */ React.createElement("div", { className: "row wrap", style: { gap: 16 } }, /* @__PURE__ */ React.createElement(Product, { name: sku.img, size: app.bp === "phone" ? 64 : 84 }), /* @__PURE__ */ React.createElement("div", { className: "grow" }, /* @__PURE__ */ React.createElement("div", { className: "row base", style: { gap: 10 } }, /* @__PURE__ */ React.createElement(DaysNum, { days: v.daysLeft, life: sku.lifeDays, size: "l", style: { color: approved ? "var(--fg)" : "var(--red-text)" } }), /* @__PURE__ */ React.createElement("span", { className: "stack tight", style: { gap: 0 } }, /* @__PURE__ */ React.createElement("b", null, "days left"), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, "best before ", fmt.date(v.bestBefore))))), /* @__PURE__ */ React.createElement("div", { className: "stack tight", style: { justifyItems: app.bp === "phone" ? "start" : "end" } }, /* @__PURE__ */ React.createElement(GateChips, { gates: v.assess.gates }), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, fmt.num(v.assess.atRisk), " of ", fmt.num(v.units), " units at risk · sells ", v.sellPerDay, " a day"))), /* @__PURE__ */ React.createElement(Dim, { on: dim }, app.bp === "phone" ? /* @__PURE__ */ React.createElement(TrackerCompact, { done: hm.done, current: hm.current }) : /* @__PURE__ */ React.createElement(Tracker, { stages, done: hm.done, current: hm.current, times: K.STAGE_TIMES }))), /* @__PURE__ */ React.createElement(
+    const framed = React.useContext(S.BatchCtx);
+    return /* @__PURE__ */ React.createElement(Screen, { me, title: "Route Room", sub: below || framed ? null : `${v.id} · ${sku.brand} ${sku.name} · ${v.dist.name}, ${v.dist.city}`, back: "Command Center", below }, /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 20, paddingBottom: h.phase === "planned" ? 96 : 0 } }, /* @__PURE__ */ React.createElement(Card, { className: "stack", style: { gap: 16 } }, /* @__PURE__ */ React.createElement("div", { className: "row wrap", style: { gap: 16 } }, /* @__PURE__ */ React.createElement(Product, { name: sku.img, size: app.bp === "phone" ? 64 : 84 }), /* @__PURE__ */ React.createElement("div", { className: "grow" }, /* @__PURE__ */ React.createElement("div", { className: "row base", style: { gap: 10 } }, /* @__PURE__ */ React.createElement(DaysNum, { days: v.daysLeft, life: sku.lifeDays, size: "l", style: { color: approved ? "var(--fg)" : "var(--red-text)" } }), /* @__PURE__ */ React.createElement("span", { className: "stack tight", style: { gap: 0 } }, /* @__PURE__ */ React.createElement("b", null, "days left"), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, "best before ", fmt.date(v.bestBefore))))), /* @__PURE__ */ React.createElement("div", { className: "stack tight", style: { justifyItems: app.bp === "phone" ? "start" : "end" } }, /* @__PURE__ */ React.createElement(GateChips, { gates: v.assess.gates }), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, fmt.num(v.assess.atRisk), " of ", fmt.num(v.units), " units at risk · sells ", v.sellPerDay, " a day"))), /* @__PURE__ */ React.createElement(Dim, { on: dim }, app.bp === "phone" ? /* @__PURE__ */ React.createElement(TrackerCompact, { done: hm.done, current: hm.current }) : /* @__PURE__ */ React.createElement(Tracker, { stages, done: hm.done, current: hm.current, times: K.STAGE_TIMES }))), /* @__PURE__ */ React.createElement(
       Columns,
       {
         sideWidth: 340,
@@ -314,7 +317,97 @@
     ), /* @__PURE__ */ React.createElement(Sheet, { open: sheet, onClose: () => setSheet(false), title: "ExpireSoon · as buyers see it" }, window.SC3_SCREENS.ListingView ? React.createElement(window.SC3_SCREENS.ListingView, { readOnly: true }) : null));
   }
   const all = (h) => h.orders.length === D.KIRANAS.length;
-  const BATCH_SCREEN = { operator: "route", finance: "paperwork", sustainability: "report" };
+  const BATCH_PARTS = [
+    { id: "journey", label: "Journey", short: "Journey", icon: "radar", from: 1, to: 1, ahead: "" },
+    { id: "route", label: "Route Room", short: "Route", icon: "route", from: 2, to: 5, ahead: "from Verify" },
+    { id: "execution", label: "Execution", short: "Execution", icon: "activity", from: 6, to: 6, ahead: "starts on approval" },
+    { id: "paperwork", label: "Paperwork", short: "Papers", icon: "file-text", from: 7, to: 7, ahead: "after the lines close" }
+  ];
+  const BATCH_PART_IDS = BATCH_PARTS.map((p) => p.id);
+  const stopOf = (it) => it.current >= 0 ? it.current : 9;
+  const partAt = (it) => it ? (BATCH_PARTS.find((p) => p.id !== "journey" && stopOf(it) >= p.from && stopOf(it) <= p.to) || BATCH_PARTS[0]).id : "journey";
+  function partState(it, p) {
+    if (p.id === "journey") return {};
+    if (p.id === partAt(it)) return { here: true, human: it.human, words: it.human ? "needs your yes" : "where the batch is" };
+    return stopOf(it) < p.from ? { ahead: true, words: p.ahead } : { done: true, words: "done" };
+  }
+  const shortName = (sku) => sku.name.replace(/\s+\d+(\.\d+)?\s?(g|ml|kg|l)$/i, "");
+  function journeyItems(s, live) {
+    const hm = heroModel(s);
+    const stage = D.STAGES[hm.current];
+    const items = live && S.Live ? S.Live.flaggedItems(s, live) : [{ ref: D.BATCHES[0].id, hero: true, view: hm.view, done: hm.done, current: hm.current, stop: stage ? stage.title : "Cleared", human: !!(stage && stage.human) }];
+    return items.filter((it) => !it.hero || s.hero.phase !== "watching");
+  }
+  function viewOf(s, ref, live) {
+    const b = D.BATCHES.find((x) => x.id === ref);
+    if (!b) return null;
+    if (b.hero) return heroModel(s).view;
+    const v = D.batchView(b);
+    if (b.second && !live) v.phase = "executing";
+    return v;
+  }
+  function stateOf(it, s) {
+    if (it.hero) {
+      const hm = heroModel(s);
+      return { text: hm.eta, tone: hm.etaTone, live: !!hm.agentLive };
+    }
+    return { text: `Vision is waiting for ${it.view.dist.name}' label photo`, tone: "green", live: true };
+  }
+  function BatchHead({ it, v, part, onPart }) {
+    const s = useStore();
+    const app = useApp();
+    const phone = app.bp === "phone";
+    const live = S.useLive();
+    const sku = v.skuObj;
+    const st = it && stateOf(it, s);
+    return /* @__PURE__ */ React.createElement("div", { className: "bhead" }, /* @__PURE__ */ React.createElement("div", { className: "bh-id" }, /* @__PURE__ */ React.createElement("span", { className: "bh-pic", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Product, { name: sku.img, size: phone ? 46 : 72, alt: "" })), /* @__PURE__ */ React.createElement("div", { className: "bh-tt" }, /* @__PURE__ */ React.createElement("h1", null, sku.name), /* @__PURE__ */ React.createElement("div", { className: "bh-meta" }, /* @__PURE__ */ React.createElement("span", { className: "mono" }, v.id), /* @__PURE__ */ React.createElement("span", { className: "sep", "aria-hidden": "true" }, "·"), /* @__PURE__ */ React.createElement("span", null, v.dist.name, ", ", v.dist.city)), /* @__PURE__ */ React.createElement("div", { className: "bh-meta" }, st ? /* @__PURE__ */ React.createElement(Badge, { tone: st.tone, dot: true, live: st.live }, st.text) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(StatusBadge, { status: v.phase || v.assess.status }), /* @__PURE__ */ React.createElement("span", null, "The Watcher checks it every morning at ", s.rules.watchTime)), live && /* @__PURE__ */ React.createElement(S.Live.Line, null)))), it && /* @__PURE__ */ React.createElement(BatchTabs, { it, part, onPart }));
+  }
+  function BatchTabs({ it, part, onPart }) {
+    const phone = useApp().bp === "phone";
+    return /* @__PURE__ */ React.createElement("nav", { className: "bh-tabs", "aria-label": `${it.view.skuObj.name}, ${it.ref}` }, BATCH_PARTS.map((p) => {
+      const st = partState(it, p);
+      const on = part === p.id;
+      return /* @__PURE__ */ React.createElement("button", { key: p.id, type: "button", className: cx("bh-tab", st.ahead && "ahead"), "aria-current": on ? "page" : void 0, onClick: () => onPart(p.id), title: st.words || void 0 }, on && /* @__PURE__ */ React.createElement(motion.span, { layoutId: "bh-tab-thumb", className: "bh-tab-thumb", transition: { type: "spring", stiffness: 500, damping: 40 } }), !phone && /* @__PURE__ */ React.createElement(Icon, { name: p.icon, size: 16 }), /* @__PURE__ */ React.createElement("span", null, phone ? p.short : p.label), st.here && /* @__PURE__ */ React.createElement("i", { className: cx("bh-here", st.human && "human"), "aria-hidden": "true" }), st.words && /* @__PURE__ */ React.createElement("span", { className: "sr-only" }, ", ", st.words));
+    }));
+  }
+  function NotYet({ me, title, icon, head, body }) {
+    return /* @__PURE__ */ React.createElement(Screen, { me, title }, /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement(Empty, { icon, title: head, body })));
+  }
+  function mangoFeed(v) {
+    return [
+      { id: "m1", stage: "detect", agent: "Watcher", icon: "radar", at: D.PUSH.detect.at, min: 0, text: `${v.id} fails all three quick-commerce gates; ${fmt.num(v.assess.atRisk)} of ${fmt.num(v.units)} units will not sell by ${fmt.date(v.bestBefore).replace(/ \d{4}$/, "")}.`, calls: [["gates.check", v.assess.gates.map((g) => `${g.app} ${g.has}/${g.need}`).join(" · "), "bad"], ["pubsub.publish", "batch.at_risk", "ok"]] },
+      { id: "m2", stage: "verify", agent: "Vision", icon: "scan-line", at: D.PUSH.verify.at, min: 5, text: `Asked ${v.dist.name} for one label photo before quoting any price.`, calls: [["fcm.send", v.dist.name, "ok"]] }
+    ];
+  }
+  function BatchJourney({ me, it, v }) {
+    const s = useStore();
+    const app = useApp();
+    const { go } = useRoute();
+    const hm = heroModel(s);
+    const h = s.hero;
+    const phone = app.bp === "phone";
+    const live = S.useLive();
+    if (!it) return /* @__PURE__ */ React.createElement(Screen, { me, title: "Journey" }, /* @__PURE__ */ React.createElement(Columns, { sideWidth: 340, main: /* @__PURE__ */ React.createElement(Card, { className: "stack" }, /* @__PURE__ */ React.createElement(BatchFacts, { view: v })), side: /* @__PURE__ */ React.createElement("div", { className: "stack snug" }, /* @__PURE__ */ React.createElement(SectionTitle, { sub: "Every hand-off on this batch, as it happens" }, "Agent activity"), /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement("span", { className: "t-footnote muted" }, "The agents report here once the Watcher flags this batch."))) }));
+    const routed = ["approved", "executing", "dispatched", "settled", "cleared"].includes(h.phase);
+    const SHOPS2 = D.KIRANAS.length;
+    let card;
+    if (it.hero) {
+      const primary = h.phase === "planned" ? /* @__PURE__ */ React.createElement(Button, { variant: "approve", icon: "check", onClick: () => go("route", { ref: it.ref }) }, "Review and approve") : ["approved", "executing"].includes(h.phase) ? /* @__PURE__ */ React.createElement(Button, { variant: "primary", iconRight: "arrow-right", onClick: () => go("execution", { ref: it.ref }) }, "Watch execution") : /* @__PURE__ */ React.createElement(Button, { variant: "primary", iconRight: "arrow-right", onClick: () => go("route", { ref: it.ref }) }, "Open Route Room");
+      const money = h.plan ? /* @__PURE__ */ React.createElement("div", { className: "stack tight", style: { gap: 2 } }, /* @__PURE__ */ React.createElement(Money, { value: h.posted ? D.ACTUAL.net : D.PLAN.net, size: phone ? "s" : "m", roll: true, style: { color: "var(--primary-text)" } }), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, h.posted ? "recovered, after the negotiation" : routed ? "on plan · settles day 3–7" : "net recovered on the plan", " · swing ", fmt.inr(h.posted ? D.ACTUAL.swing : D.PLAN.swing))) : void 0;
+      card = /* @__PURE__ */ React.createElement(TrackerCard, { view: hm.view, done: hm.done, current: hm.current, eta: hm.eta, etaTone: hm.etaTone, agentLive: hm.agentLive, primary, money });
+    } else card = /* @__PURE__ */ React.createElement(S.Live.MangoCard, { item: it, dim: !!live && S.Live.down(live.conn) });
+    const cluster = it.hero && /* @__PURE__ */ React.createElement(Card, { pad: false, className: "stack", style: { overflow: "hidden", gap: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "card-head", style: { padding: "14px 16px 10px" } }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, v.dist.city, " cluster"), /* @__PURE__ */ React.createElement(Badge, { size: "sm", tone: hm.ordered ? "green" : void 0, dot: !!hm.ordered }, hm.ordered ? `${hm.ordered} of ${D.OFFERED} kiranas ordered` : h.offer ? `${D.OFFERED} kiranas messaged` : `${D.OFFERED} kiranas`)), /* @__PURE__ */ React.createElement(ClusterMap, { kiranas: D.KIRANAS, orderedCount: hm.ordered, route: routed, vanProgress: h.van.status === "done" ? 1 : hm.ordered / SHOPS2 * 0.6, height: phone ? 220 : 280 }));
+    const events = it.hero ? s.feed : mangoFeed(v);
+    const feed = /* @__PURE__ */ React.createElement("div", { className: "stack snug" }, /* @__PURE__ */ React.createElement(SectionTitle, { sub: "Every hand-off on this batch, as it happens" }, "Agent activity"), /* @__PURE__ */ React.createElement(Card, null, events.length ? /* @__PURE__ */ React.createElement(AgentFeed, { events, people: D.PEOPLE, live: it.hero && hm.agentLive ? s.feed.length - 1 : -1, max: phone ? 4 : 8 }) : /* @__PURE__ */ React.createElement("span", { className: "t-footnote muted" }, "The agents report here as they work this batch.")));
+    return /* @__PURE__ */ React.createElement(Screen, { me, title: "Journey" }, /* @__PURE__ */ React.createElement(Columns, { sideWidth: 340, main: /* @__PURE__ */ React.createElement(React.Fragment, null, card, cluster), side: feed }));
+  }
+  function BatchPart({ me, it, v, part }) {
+    if (!it || part === "journey") return /* @__PURE__ */ React.createElement(BatchJourney, { me, it, v });
+    if (part === "route") return /* @__PURE__ */ React.createElement(RouteRoom, { me });
+    if (part === "execution") return it.hero ? /* @__PURE__ */ React.createElement(Execution, { me }) : /* @__PURE__ */ React.createElement(NotYet, { me, title: "Execution", icon: "sparkles", head: "Nothing is executing yet", body: "Listing, outreach, negotiation and the food-bank booking start the moment the plan is approved." });
+    return it.hero ? /* @__PURE__ */ React.createElement(S.Paperwork, { me }) : /* @__PURE__ */ React.createElement(NotYet, { me, title: "Paperwork", icon: "file-text", head: "The pack follows the last of its lines", body: `Munchly's price-support credit note, the ITC memo and the FSSAI checklist, drafted by the Paperwork agent once every line of ${it.ref}'s plan is done.` });
+  }
+  const BATCH_SCREEN = { finance: "paperwork", sustainability: "report" };
   function Batches({ me }) {
     const s = useStore();
     const app = useApp();
@@ -328,7 +421,8 @@
       return v;
     });
     const sel = open && views.find((v) => v.id === open);
-    const openRow = (v) => v.hero && BATCH_SCREEN[me.role] ? go(BATCH_SCREEN[me.role]) : setOpen(v.id);
+    const live = S.useLive();
+    const openRow = (v) => me.role === "operator" ? go(partAt(journeyItems(s, live).find((i) => i.ref === v.id)), { ref: v.id }) : v.hero && BATCH_SCREEN[me.role] ? go(BATCH_SCREEN[me.role]) : setOpen(v.id);
     return /* @__PURE__ */ React.createElement(Screen, { me, title: "Batches", sub: "Every lot the Watcher sees, from the DMS export" }, app.bp === "phone" ? /* @__PURE__ */ React.createElement("div", { className: "list" }, views.map((v) => /* @__PURE__ */ React.createElement(BatchRow, { key: v.id, view: v, compact: true, onOpen: () => openRow(v) }))) : /* @__PURE__ */ React.createElement(DataTable, { label: "Batches", rows: views.map((v) => ({ ...v, name: v.skuObj.name })), onRow: openRow, initialSort: ["daysLeft", "asc"], columns: [
       { key: "name", label: "Product", render: (v) => /* @__PURE__ */ React.createElement("span", { className: "row tight" }, /* @__PURE__ */ React.createElement(Product, { name: v.skuObj.img, size: 36 }), /* @__PURE__ */ React.createElement("span", { className: "stack tight", style: { gap: 0 } }, /* @__PURE__ */ React.createElement("b", null, v.skuObj.name), /* @__PURE__ */ React.createElement("span", { className: "mono subtle t-caption" }, v.id))) },
       { key: "dist", label: "Distributor", sortValue: (v) => v.dist.name, render: (v) => /* @__PURE__ */ React.createElement("span", null, v.dist.name, /* @__PURE__ */ React.createElement("div", { className: "t-caption subtle" }, v.dist.city)) },
@@ -340,10 +434,13 @@
     ] }), /* @__PURE__ */ React.createElement(BatchSheet, { view: sel, onClose: () => setOpen(null) }));
   }
   function BatchSheet({ view: sel, onClose }) {
+    return /* @__PURE__ */ React.createElement(Sheet, { open: !!sel, onClose, title: sel ? sel.skuObj.name : "" }, sel && /* @__PURE__ */ React.createElement(BatchFacts, { view: sel }));
+  }
+  function BatchFacts({ view: sel }) {
     const s = useStore();
     const ML = (id) => D.MANGO_PLAN.lines.find((l) => l.id === id) || { units: 0 };
-    const next = !sel ? "" : sel.phase === "executing" ? `Routed yesterday: ${fmt.num(ML("kirana").units)} packs to Hyderabad kiranas, ${ML("staff").units} to the staff sale at Lakshmi's godown, ${D.MANGO_FB} to Feeding India.` : sel.phase ? "In a journey: the agents are working it, and its Route Room shows where it stands." : sel.assess.status === "at-risk" ? `At risk: ${fmt.num(sel.assess.atRisk)} packs will not sell before the last week. The Watcher checks every morning at ${s.rules.watchTime}, and flags it once Setup is confirmed and ${sel.dist.name} has given ${D.PLATFORM.name} permission to act.` : sel.assess.status === "gated" ? `Outside at least one quick-commerce gate, but real sell-through clears it in time. The Watcher checks again tomorrow at ${s.rules.watchTime}.` : "Inside every gate and selling through. Nothing to do.";
-    return /* @__PURE__ */ React.createElement(Sheet, { open: !!sel, onClose, title: sel ? sel.skuObj.name : "" }, sel && /* @__PURE__ */ React.createElement("div", { className: "stack" }, /* @__PURE__ */ React.createElement("div", { className: "row", style: { gap: 14 } }, /* @__PURE__ */ React.createElement(Product, { name: sel.skuObj.img, size: 88 }), /* @__PURE__ */ React.createElement("div", { className: "stack tight" }, /* @__PURE__ */ React.createElement(DaysNum, { days: sel.daysLeft, life: sel.skuObj.lifeDays, size: "l" }), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, "days left · best before ", fmt.date(sel.bestBefore)))), /* @__PURE__ */ React.createElement(GateChips, { gates: sel.assess.gates }), /* @__PURE__ */ React.createElement(List, null, [["Batch", sel.id], ["Distributor", `${sel.dist.name}, ${sel.dist.city}`], ["Units", fmt.num(sel.units)], ["Sells", `${sel.sellPerDay} a day`], ["Will sell before the last week", fmt.num(sel.assess.willSell)], ["At risk", sel.assess.atRisk ? fmt.num(sel.assess.atRisk) : "none"]].map(([k, val]) => /* @__PURE__ */ React.createElement(ListRow, { key: k, title: k, value: val }))), /* @__PURE__ */ React.createElement("p", { className: "t-footnote muted" }, next)));
+    const next = !sel ? "" : sel.phase === "executing" ? `Routed yesterday: ${fmt.num(ML("kirana").units)} packs to Hyderabad kiranas, ${ML("staff").units} to the staff sale at Lakshmi's godown, ${D.MANGO_FB} to Feeding India.` : sel.phase && sel.phase !== "watching" ? "In a journey: the agents are working it, and its Route Room shows where it stands." : sel.assess.status === "at-risk" ? `At risk: ${fmt.num(sel.assess.atRisk)} packs will not sell before the last week. The Watcher checks every morning at ${s.rules.watchTime}, and flags it once Setup is confirmed and ${sel.dist.name} has given ${D.PLATFORM.name} permission to act.` : sel.assess.status === "gated" ? `Outside at least one quick-commerce gate, but real sell-through clears it in time. The Watcher checks again tomorrow at ${s.rules.watchTime}.` : "Inside every gate and selling through. Nothing to do.";
+    return /* @__PURE__ */ React.createElement("div", { className: "stack" }, /* @__PURE__ */ React.createElement("div", { className: "row", style: { gap: 14 } }, /* @__PURE__ */ React.createElement(Product, { name: sel.skuObj.img, size: 88 }), /* @__PURE__ */ React.createElement("div", { className: "stack tight" }, /* @__PURE__ */ React.createElement(DaysNum, { days: sel.daysLeft, life: sel.skuObj.lifeDays, size: "l" }), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, "days left · best before ", fmt.date(sel.bestBefore)))), /* @__PURE__ */ React.createElement(GateChips, { gates: sel.assess.gates }), /* @__PURE__ */ React.createElement(List, null, [["Batch", sel.id], ["Distributor", `${sel.dist.name}, ${sel.dist.city}`], ["Units", fmt.num(sel.units)], ["Sells", `${sel.sellPerDay} a day`], ["Will sell before the last week", fmt.num(sel.assess.willSell)], ["At risk", sel.assess.atRisk ? fmt.num(sel.assess.atRisk) : "none"]].map(([k, val]) => /* @__PURE__ */ React.createElement(ListRow, { key: k, title: k, value: val }))), /* @__PURE__ */ React.createElement("p", { className: "t-footnote muted" }, next));
   }
-  Object.assign(window.SC3_SCREENS, { Setup, CommandCenter, RouteRoom, Execution, Batches, ApproveSheet, LabelPhoto, LabelShot, Chat, permissionOf });
+  Object.assign(window.SC3_SCREENS, { Setup, CommandCenter, RouteRoom, Execution, Batches, ApproveSheet, LabelPhoto, LabelShot, Chat, permissionOf, BATCH_PARTS, BATCH_PART_IDS, partAt, journeyItems, viewOf, shortName, BatchHead, BatchPart, BatchFacts });
 })();

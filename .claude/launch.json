@@ -73,6 +73,15 @@
       "port": 4177
     },
     {
+      "name": "frontend-workspace-stub",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "cd frontend && PUBLIC_API_BASE= exec corepack pnpm --filter @smart-clearance/workspace exec vite dev --port 5185 --strictPort"
+      ],
+      "port": 5185
+    },
+    {
       "name": "frontend-demo",
       "runtimeExecutable": "sh",
       "runtimeArgs": [

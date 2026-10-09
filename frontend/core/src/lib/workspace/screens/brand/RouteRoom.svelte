@@ -22,7 +22,7 @@
 	import Icon from '../../../icons/Icon.svelte';
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
-	import { useRoute } from '../../context';
+	import { useBatchFrame, useRoute } from '../../context';
 	import { useLive } from '../../live.svelte';
 	import { castOf, fmt, heroModel, isRouted, packSize, stageTimes, track, trackTimed } from '../../model';
 	import { useWorkspace } from '../../source';
@@ -101,6 +101,9 @@
 	const named = $derived(router.route.params?.ref);
 	const asked = $derived(named && tabs.some((t) => t.ref === named) ? named : c.batch.id);
 	const switching = $derived(asked !== c.batch.id);
+	// on a batch's page its head names the batch (SC-112)
+	const frame = useBatchFrame();
+	const framed = $derived(!!frame?.on);
 
 	// the demo opens the approval from its own controls
 	$effect(() => {
@@ -258,7 +261,7 @@
 <Screen
 	{me}
 	title="Route Room"
-	sub={tabs.length > 1 ? null : `${v.id} · ${sku.brand} ${sku.name} · ${v.dist.name}, ${v.dist.city}`}
+	sub={tabs.length > 1 || framed ? null : `${v.id} · ${sku.brand} ${sku.name} · ${v.dist.name}, ${v.dist.city}`}
 	back="Command Center"
 	below={tabs.length > 1 ? switcher : undefined}
 >

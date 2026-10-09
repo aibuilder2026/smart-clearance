@@ -218,9 +218,10 @@ describe('the parts a tap opens', () => {
 	});
 	it("a batch's sheet", async () => {
 		fastForward(7);
+		// the sheet is Finance's and Sustainability's; the operator opens a batch's page (SC-112)
 		const r = show(
 			RoleApp as Part,
-			{ me: user('priya'), route: { name: 'batches' }, ongo: () => {}, onback: () => {} },
+			{ me: user('anita'), route: { name: 'batches' }, ongo: () => {}, onback: () => {} },
 			390
 		);
 		const out: string[] = [];
