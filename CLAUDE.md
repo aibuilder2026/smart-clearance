@@ -1199,7 +1199,7 @@
 
 - **SC-113** (bug in Munchly Mango E2E): the donation step read Munchly's plan as the food bank, who is not shown it, and stopped right after the collection with "Cannot read properties of null (reading 'lines')". It now awaits the collection as Meera and reads the planned food-bank packs from Priya's case (`munchly-mango.journey.ts`). Lint and the workspace type check pass; the suite was not rerun (SC-55).
 
-- **SC-115** (In Review, branch `SC-115-mango-papers-step`; bug in Munchly Mango E2E): the papers step predated SC-110's donation receipt.
+- **SC-115** (PR #98, merged; bug in Munchly Mango E2E): the papers step predated SC-110's donation receipt.
   - **Found:** the run of 9 Oct (10:42 UTC) took the Mango Drink from its label photo to Vikram's ESG report in 7 min 15 s, but failed one soft check: "Papers with their PDF" read `support, itc, receipt` where it expected `support, itc, fssai`.
   - **The cause:** the step waited for any three PDFs. The receipt's is asked for as soon as Meera collects, so it landed before the FSSAI checklist's. At Anita's review, a minute later, all four papers carried their PDF.
   - **The fix** (`munchly-mango.journey.ts`): the step waits until every paper that is not "not required" has its PDF, and expects `support, itc, fssai, receipt`.
@@ -1211,5 +1211,24 @@
 
     The Mango was brought to Detect first with `walk.sh --day-minutes 60 --until detect`, since this suite never resets.
   - **Checks:** lint, Prettier and the workspace type check pass; the suite was not rerun (SC-55).
+
+- **SC-116** (In Review, branch `SC-116-chips-leftover-e2e`): Munchly Chips Leftover E2E, a separate suite, asked for by the maintainer.
+  - **The request:** "execute Munchly Chips E2E in such a way that some kiranas will not buy and food will be left over at go down, and batch will be forced completed from console by clicking generated report which will show that", then "make this a separate suite".
+  - **The suite** (`munchly-chips-leftover.journey.ts`, its own Playwright project, `corepack pnpm test:journey:leftover`; it resets the journey):
+    - `E2E_LEFTOVER` (8) of Rakesh's 31 ordering kiranas open the scheme and place no order, so it never fills;
+    - Agrawal Wholesale takes the ExpireSoon lot. There is no truck: backend-api loads it only once the scheme has closed, and on expiry day the accepted lot counts as collected;
+    - Neha fires Report now in the console, which closes the batch as it stands (SC-94);
+    - then it reads back Anita's pack (the Expiry credit note first), Priya's Left at the godown and Expiry settlement and the paper they open, and Vikram's report;
+    - figures are checked against the run's own shortfall.
+  - **Shared steps:** the chips' steps moved unchanged into `chips.ts`. Munchly Chips E2E runs them as before, and the leftover suite takes those up to the scheme and the deal. `flow.ts` gains `Step`, `running()` and the case's `expiry`.
+  - **The run of 9 Oct** (`runs/2026-10-09-leftover/REPORT.md`, the 6 min recording local): passed in 6 min 0 s, 67 steps, headed, on the fourth run (the first three stopped on the suite: the truck, a check's case, SC-117).
+    - 23 kiranas ordered 444 of 588 packets, and 144 were left at Kalamna Market godown.
+    - Agrawal took 772 at ₹14.20.
+    - Net ₹18,632.40 of the ₹21,770 planned.
+    - Full credit: Expiry credit note CN/0118, ₹3,168 to Rakesh Traders, Munchly destroying the packs (disposal, EPR and GST reversed, ₹484), and a destruction certificate for 144 units.
+  - **Noted, not filed:** "Load the buyer's truck" is offered while the scheme is open and refused only once pressed; Impact's ledger line reads "The return window closed on 29 Oct" for a report fired on 2 Oct.
+  - **Checks:** lint, Prettier and the workspace type check pass; each journey project lists only its own suite.
+
+- **SC-117** (To Do; bug found by Munchly Chips Leftover E2E): a pack drafted on expiry day can never be reviewed. Report now drafts the papers and clears the batch at once; Paperwork still offers Mark reviewed, and backend-api answers 404 "No such batch in a journey", since `steps.scene` takes only an open case, though the review guard allows `cleared`. Rakesh's "Issue from Tally" is the same. The fix is the maintainer's call: review a cleared batch, or stop offering it.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

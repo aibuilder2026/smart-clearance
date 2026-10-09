@@ -75,6 +75,8 @@ E2E_LEFTOVER=3 corepack pnpm test:journey:leftover       # fewer kiranas sit out
 
 It resets Munchly's journey first, as Munchly Chips E2E does.
 
+Its run of 9 Oct is in `runs/2026-10-09-leftover/`.
+
 ## Before a run
 
 - backend-api on :8000 (`backend-api/scripts/dev.sh`), on a world with Munchly's live workspace (`hydrate.sh --reset`,
