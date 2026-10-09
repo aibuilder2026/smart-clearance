@@ -1512,4 +1512,16 @@
   - **The mark springs in on the design system's own spring** (`--ease-spring`, as in SC-35 and SC-51), written out in both scripts.
   - **Hosting:** the hosted landing page and console load commit `fa92724`; every pinned file was checked on jsDelivr first (two cached 403s purged).
 
+- **SC-132** (In Review, branch `SC-132-destruction-itc`; bug found by the maintainer): a distributor's copy of the destruction certificate read ₹0.00 of input GST reversed.
+  - **The cause:** the paper worked the reversal out as units × the plan's credit a pack, and a distributor is not sent Munchly's plan.
+  - **The fix:**
+    - the certificate carries the credit it reverses (`reversed`), drafted with the papers (money.js `documents`, money.py) and counted again on expiry day (`steps.expire`);
+    - the paper reads its own figure (design3 `finance.jsx`, core `Paper.svelte`);
+    - a certificate drafted before has it worked out from the batch's plan as it is read (`views.with_reversed`), for the case detail and the partner route.
+  - **Example:** MF-2407-111's 184 packs read ₹101.20 (₹0.55 a pack), MF-2407-116's 132 read ₹96.36.
+  - **Checks:**
+    - backend-api: the partner test holds each copy's figure to design3's, and a new test covers an older certificate;
+    - the frontend gate passes (core 236, api 77, workspace 74, admin 17, demo 5, console 3);
+    - the seeds were regenerated; design3's `dist/` is rebuilt.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
