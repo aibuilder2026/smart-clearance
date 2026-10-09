@@ -57,7 +57,7 @@
     });
     if (h.expiry && h.expiry.units) {
       const x = h.expiry, at = dist.godown || `${dist.city} godown`;
-      docs.push({ id: "expiry", type: "Expiry credit note", owner: C, no: n.expiry, status: "generated", amount: x.credit, units: x.units, policy: x.policy, destroyedBy: x.destroyedBy,
+      docs.push({ id: "expiry", type: "Expiry credit note", owner: D.CLIENT.short, no: n.expiry, status: "generated", amount: x.credit, units: x.units, policy: x.policy, destroyedBy: x.destroyedBy,
         disposal: x.disposal, epr: x.epr, itc: x.itc, date: h.bestBefore,
         note: `The ${M.fmt.num(x.units)} packs that expired at ${at} come back to ${C} for full credit (${M.fmt.inr(x.credit)}), and ${C} destroys them.` });
     }
@@ -71,9 +71,9 @@
       docs, invoice: docs.find(d => d.id === "invoice") || null, receipt,
       returnBy: D.addDays(h.bestBefore, -M.RULES.returnWindowDays), expiry: h.expiry,
       listing: n.listing ? { id: n.listing, units: es ? es.units : 0 } : null,
-      kiranas: orders, offered: kl ? W.KIRANAS.filter(k => k.distributor === h.distributor).length : 0,
+      kiranas: orders, offered: kl ? W.KIRANAS.filter(k => k.distributor === h.distributor).length : 0, scheme: M.RULES.scheme,
       kirana: h.kirana, staff: h.staff, partner,
-      donation: partner ? { partner, units: fb.units, from: dist.godown, spot: spotOf(partner.name, dist.city), receipt } : null,
+      donation: partner ? { batch, sku, dist, partner, units: fb.units, from: dist.godown, spot: spotOf(partner.name, dist.city), receipt } : null,
       issued: when("invoice"), reviewed: { by: "anita", at: when("review") },
     };
   }
@@ -209,7 +209,9 @@
       batch: HERO, sku, dist, buyer: D.BUYER, plan: D.PLAN, realised, actual: D.ACTUAL,
       lines: { kirana: D.PLAN.lines.find(l => l.id === "kirana"), expiresoon: D.PLAN.lines.find(l => l.id === "expiresoon") },
       award: D.AWARD, support: D.SUPPORT, supportPlan: D.SUPPORT_PLAN, claim: D.CLAIM, docs: D.DOCS, invoice: D.INVOICE, receipt: null, returnBy: D.RETURN_BY, expiry: null,
-      listing: D.JOURNEY.listing, kiranas: D.KIRANAS, offered: D.OFFERED, kirana: null, staff: null, partner: null, donation: null,
+      listing: D.JOURNEY.listing, kiranas: D.KIRANAS, offered: D.OFFERED, scheme: M.RULES.scheme, kirana: null, staff: null, partner: null,
+      // the batch the same agents donate, which the FSSAI checklist points to (data.js MANGO_*)
+      donation: { batch: SECOND, sku: D.SKUS[SECOND.sku], dist: D.DISTRIBUTORS[SECOND.distributor], units: D.MANGO_FB, partner: D.SETUP.partners.find(p => p.name === D.JOURNEY.donation.partner) },
       issued: null, reviewed: { by: "anita", at: null },
     };
   }

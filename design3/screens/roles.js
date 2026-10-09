@@ -6,21 +6,22 @@
   const NAV = {
     // the operator's batches (SC-112): the workspace's own places here, and the batches in a journey between Setup and
     // Reports (RoleApp adds them); a batch's screens are tabs on its page
-    operator: [{ id: "command", label: "Command Center", short: "Today", icon: "layout-dashboard" }, { id: "batches", label: "Batches", icon: "boxes" }, { id: "setup", label: "Setup", icon: "sliders-horizontal", phoneHidden: true }, { id: "report", label: "Finance & ESG", short: "Reports", icon: "chart-line", section: "Reports" }],
+    operator: [{ id: "command", label: "Command Center", short: "Today", icon: "layout-dashboard" }, { id: "batches", label: "Batches", icon: "boxes" }, { id: "setup", label: "Setup", icon: "sliders-horizontal", phoneHidden: true }, { id: "report", label: "Ledger", icon: "book-open", section: "Reports" }],
     distributor: [{ id: "home", label: "Today", icon: "house" }, { id: "photo", label: "Label photo", short: "Photo", icon: "camera" }, { id: "van", label: "Van route", short: "Van", icon: "truck" }, { id: "orders", label: "Orders", icon: "clipboard-list" }],
     retailer: [{ id: "home", label: "Offers", icon: "tag" }, { id: "orders", label: "Orders", icon: "shopping-basket" }],
     buyer: [{ id: "market", label: "Marketplace", short: "Market", icon: "store" }, { id: "bids", label: "My bids", short: "Bids", icon: "gavel" }],
-    finance: [{ id: "paperwork", label: "Paperwork", icon: "file-text" }, { id: "report", label: "Finance & ESG", short: "Reports", icon: "chart-line" }, { id: "batches", label: "Batches", icon: "boxes" }],
-    sustainability: [{ id: "report", label: "Finance & ESG", short: "Reports", icon: "chart-line" }, { id: "paperwork", label: "Evidence", icon: "file-text" }, { id: "batches", label: "Batches", icon: "boxes" }],
+    // Finance & ESG (SC-121): the ledger, where each cleared batch opens its own page with its papers
+    finance: [{ id: "report", label: "Ledger", icon: "book-open" }, { id: "batches", label: "Batches", icon: "boxes" }],
+    sustainability: [{ id: "report", label: "Ledger", icon: "book-open" }, { id: "batches", label: "Batches", icon: "boxes" }],
     foodbank: [{ id: "pickups", label: "Pickups", icon: "heart-handshake" }],
     admin: [{ id: "workspace", label: "Workspace", icon: "building-2" }, { id: "users", label: "Users", icon: "users" }, { id: "rules", label: "Guardrails", icon: "shield" }, { id: "integrations", label: "Integrations", short: "Apps", icon: "plug", phoneHidden: true }, { id: "audit", label: "Audit log", short: "Audit", icon: "scroll-text" }]
   };
-  const HOME = { operator: "command", distributor: "home", retailer: "home", buyer: "market", finance: "paperwork", sustainability: "report", foodbank: "pickups", admin: "workspace" };
+  const HOME = { operator: "command", distributor: "home", retailer: "home", buyer: "market", finance: "report", sustainability: "report", foodbank: "pickups", admin: "workspace" };
   const PARENT = { listing: "market", offer: "home" };
   const ALWAYS = ["inbox", "profile"];
-  const routesFor = (role) => NAV[role].map((n) => n.id).concat(ALWAYS, role === "buyer" ? ["listing"] : role === "retailer" ? ["offer"] : role === "operator" ? ["journey", "route", "execution", "paperwork"] : []);
+  const routesFor = (role) => NAV[role].map((n) => n.id).concat(ALWAYS, role === "buyer" ? ["listing"] : role === "retailer" ? ["offer"] : role === "operator" ? ["journey", "route", "execution", "paperwork"] : role === "finance" || role === "sustainability" ? ["paperwork"] : []);
   const SIDEBAR_BATCHES = 5;
-  const WHERE = { command: "Command Center", batches: "Batches", inbox: "Inbox", report: "Finance & ESG", setup: "Setup", profile: "Profile" };
+  const WHERE = { command: "Command Center", batches: "Batches", inbox: "Inbox", report: "Ledger", setup: "Setup", profile: "Profile" };
   function screenFor(me, name, opts) {
     const X = S, r = me.role;
     switch (name) {
@@ -37,7 +38,7 @@
       case "report":
         return /* @__PURE__ */ React.createElement(X.Report, { me });
       case "paperwork":
-        return /* @__PURE__ */ React.createElement(X.Paperwork, { me });
+        return r === "operator" ? /* @__PURE__ */ React.createElement(X.Paperwork, { me }) : /* @__PURE__ */ React.createElement(X.Report, { me, at: { ref: D.BATCHES[0].id, tab: "papers" } });
       case "home":
         return r === "retailer" ? /* @__PURE__ */ React.createElement(X.RetailHome, { me }) : /* @__PURE__ */ React.createElement(X.DistHome, { me });
       case "photo":

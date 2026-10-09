@@ -760,6 +760,10 @@
 				}
 			],
 			"offered": 38,
+			"scheme": {
+				"buy": 10,
+				"free": 2
+			},
 			"kirana": {
 				"planned": 490,
 				"ordered": 490
@@ -1539,6 +1543,10 @@
 				}
 			],
 			"offered": 58,
+			"scheme": {
+				"buy": 10,
+				"free": 2
+			},
 			"kirana": {
 				"planned": 686,
 				"ordered": 686
@@ -2155,7 +2163,7 @@
 				{
 					"id": "expiry",
 					"type": "Expiry credit note",
-					"owner": "Munchly",
+					"owner": "Munchly Foods",
 					"no": "CN/0111",
 					"status": "generated",
 					"amount": 3087.5,
@@ -2231,6 +2239,10 @@
 				}
 			],
 			"offered": 58,
+			"scheme": {
+				"buy": 10,
+				"free": 2
+			},
 			"kirana": {
 				"planned": 245,
 				"ordered": 180
@@ -2934,6 +2946,10 @@
 				}
 			],
 			"offered": 38,
+			"scheme": {
+				"buy": 10,
+				"free": 2
+			},
 			"kirana": {
 				"planned": 294,
 				"ordered": 294
@@ -3668,6 +3684,10 @@
 				}
 			],
 			"offered": 58,
+			"scheme": {
+				"buy": 10,
+				"free": 2
+			},
 			"kirana": {
 				"planned": 392,
 				"ordered": 392
@@ -3697,6 +3717,49 @@
 				}
 			},
 			"donation": {
+				"batch": {
+					"id": "MF-2406-109",
+					"sku": "poha",
+					"distributor": "lakshmi",
+					"units": 1100,
+					"daysLeft": 26,
+					"sellPerDay": 8,
+					"bestBefore": "2026-08-23",
+					"mfg": "2025-11-26",
+					"city": "Hyderabad",
+					"staffCap": 150
+				},
+				"sku": {
+					"id": "poha",
+					"code": "MF-IP-250",
+					"brand": "Munchly",
+					"name": "Instant Poha 250 g",
+					"category": "staples",
+					"hsn": "1904",
+					"mrp": 55,
+					"dp": 40,
+					"cost": 31,
+					"gst": 0.05,
+					"itcPerUnit": 1.74,
+					"perCarton": 20,
+					"lifeDays": 270,
+					"kgPerUnit": 0.27,
+					"img": "pack-poha"
+				},
+				"dist": {
+					"id": "lakshmi",
+					"name": "Lakshmi Agencies",
+					"short": "Lakshmi Agencies",
+					"city": "Hyderabad",
+					"state": "Telangana",
+					"godown": "Begum Bazaar godown",
+					"kiranas": 58,
+					"cluster": "Hyderabad old city",
+					"territory": "Hyderabad",
+					"pins": "500, 501",
+					"staffCap": 150,
+					"upi": "lakshmi-agencies@exampleupi"
+				},
 				"partner": {
 					"name": "Feeding India",
 					"minDays": 15,
@@ -4415,6 +4478,10 @@
 				}
 			],
 			"offered": 38,
+			"scheme": {
+				"buy": 10,
+				"free": 2
+			},
 			"kirana": {
 				"planned": 147,
 				"ordered": 147
@@ -5033,7 +5100,7 @@
 				{
 					"id": "expiry",
 					"type": "Expiry credit note",
-					"owner": "Munchly",
+					"owner": "Munchly Foods",
 					"no": "CN/0115",
 					"status": "generated",
 					"amount": 2668,
@@ -5259,6 +5326,10 @@
 				}
 			],
 			"offered": 38,
+			"scheme": {
+				"buy": 10,
+				"free": 2
+			},
 			"kirana": {
 				"planned": 784,
 				"ordered": 600
@@ -5918,6 +5989,10 @@
 				}
 			],
 			"offered": 58,
+			"scheme": {
+				"buy": 10,
+				"free": 2
+			},
 			"kirana": {
 				"planned": 147,
 				"ordered": 147
@@ -6685,6 +6760,10 @@
 				}
 			],
 			"offered": 58,
+			"scheme": {
+				"buy": 10,
+				"free": 2
+			},
 			"kirana": {
 				"planned": 637,
 				"ordered": 637
@@ -7407,6 +7486,10 @@
 				}
 			],
 			"offered": 38,
+			"scheme": {
+				"buy": 10,
+				"free": 2
+			},
 			"kirana": {
 				"planned": 294,
 				"ordered": 294
@@ -7436,6 +7519,51 @@
 				}
 			},
 			"donation": {
+				"batch": {
+					"id": "MF-2407-114",
+					"sku": "oats",
+					"distributor": "rakesh",
+					"units": 900,
+					"daysLeft": 22,
+					"sellPerDay": 6,
+					"bestBefore": "2026-09-15",
+					"mfg": "2025-12-19",
+					"city": "Nagpur",
+					"staffCap": 50
+				},
+				"sku": {
+					"id": "oats",
+					"code": "MF-MO-200",
+					"brand": "Munchly",
+					"name": "Masala Oats 200 g",
+					"category": "staples",
+					"hsn": "2106",
+					"mrp": 65,
+					"dp": 47.5,
+					"cost": 36,
+					"gst": 0.05,
+					"itcPerUnit": 2.03,
+					"perCarton": 20,
+					"lifeDays": 270,
+					"kgPerUnit": 0.22,
+					"img": "pack-oats"
+				},
+				"dist": {
+					"id": "rakesh",
+					"name": "Rakesh Traders",
+					"short": "Rakesh Traders",
+					"city": "Nagpur",
+					"state": "Maharashtra",
+					"godown": "Kalamna Market godown",
+					"address": "Kalamna Market, Nagpur, Maharashtra",
+					"gstin": "27AABCR1234F1Z5",
+					"kiranas": 38,
+					"cluster": "Nagpur, Wardha and Kamptee",
+					"territory": "Nagpur with Wardha and Kamptee",
+					"pins": "440, 441, 442",
+					"staffCap": 50,
+					"upi": "rakesh-traders@exampleupi"
+				},
 				"partner": {
 					"name": "Feeding India",
 					"minDays": 15,
@@ -8230,6 +8358,10 @@
 				}
 			],
 			"offered": 58,
+			"scheme": {
+				"buy": 10,
+				"free": 2
+			},
 			"kirana": {
 				"planned": 539,
 				"ordered": 539
@@ -8848,7 +8980,7 @@
 				{
 					"id": "expiry",
 					"type": "Expiry credit note",
-					"owner": "Munchly",
+					"owner": "Munchly Foods",
 					"no": "CN/0116",
 					"status": "generated",
 					"amount": 2376,
@@ -9026,6 +9158,10 @@
 				}
 			],
 			"offered": 38,
+			"scheme": {
+				"buy": 10,
+				"free": 2
+			},
 			"kirana": {
 				"planned": 588,
 				"ordered": 456

@@ -504,14 +504,14 @@
   // the screen each role reads a batch on, which a batch in a journey opens from Batches: finance its Paperwork,
   // sustainability its report (SC-103); a role with none opens the batch's sheet. The operator opens the batch's own
   // page (SC-112)
-  const BATCH_SCREEN = { finance: "paperwork", sustainability: "report" };
+  const BATCH_SCREEN = { finance: "report", sustainability: "report" };
   function Batches({ me }) {
     const s = useStore(); const app = useApp(); const { go } = useRoute(); const [open, setOpen] = useState(null); const hm = heroModel(s);
     const views = D.BATCHES.map(b => { const v = D.batchView(b); if (b.hero) v.phase = hm.view.phase; if (b.second) v.phase = "executing"; return v; });
     const sel = open && views.find(v => v.id === open);
     // the operator's rows open the batch's page (SC-112); finance and sustainability open the screen they read a batch on
     const live = S.useLive();
-    const openRow = v => (me.role === "operator" ? go(partAt(journeyItems(s, live).find(i => i.ref === v.id)), { ref: v.id }) : v.hero && BATCH_SCREEN[me.role] ? go(BATCH_SCREEN[me.role]) : setOpen(v.id));
+    const openRow = v => (me.role === "operator" ? go(partAt(journeyItems(s, live).find(i => i.ref === v.id)), { ref: v.id }) : v.hero && BATCH_SCREEN[me.role] ? go(BATCH_SCREEN[me.role], { ref: v.id }) : setOpen(v.id));
     return <Screen me={me} title="Batches" sub="Every lot the Watcher sees, from the DMS export">
       {app.bp === "phone" ? <div className="list">{views.map(v => <BatchRow key={v.id} view={v} compact onOpen={() => openRow(v)} />)}</div> :
       <DataTable label="Batches" rows={views.map(v => ({ ...v, name: v.skuObj.name }))} onRow={openRow} initialSort={["daysLeft", "asc"]} columns={[
