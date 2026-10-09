@@ -31,7 +31,7 @@ The board is `board.html`, published to app v3 as `SC-130 design review.html`. E
 
 ## Found on the way
 
-- **The ExpireSoon line's money:** the distributor's "what you receive" must take the price the buyer actually took (the Negotiator's counter), not the listed price. Taken at the listed price, four batches read as up to ₹844 ahead. At the award price, every batch in the history ends whole to the rupee.
+- **The ExpireSoon line's money:** the distributor's "what you receive" must take the price the buyer actually took (the Negotiator's counter), not the listed price. Taken at the listed price, seven batches read as ₹347 to ₹844 ahead. At the award price, every batch in the history ends whole to the rupee.
 
 ## The pick (9 Oct 2026)
 
@@ -40,3 +40,12 @@ The board is `board.html`, published to app v3 as `SC-130 design review.html`. E
 - **Not this time:** keep it. A shop can decline an open offer, and the offer stays open for its 48 hours.
 
 Only option A is built: design3 first, then core's trade screens, the live workspace, and backend-api's partner-scoped reads with the decline.
+
+## The build in design3
+
+- `core/ledger.js` gains `partners`: a distributor's batches (in a journey, cleared by month, watching), his papers and copies, a batch's moments and how he ended whole, a kirana's offers, a food bank's pickups.
+- `core/flow.js` gains `decline`, and an order from any shop the scheme went to; `core/store.js` keeps `hero.declined`.
+- `screens/trade.jsx`: Rakesh's Batches and a batch's page (What happened, Money, Papers), Offers with Not this time and the earlier offers, an offer's page, Orders with the margin, Pickups with the collected ones and a pickup's page with its receipt. `roles.jsx` gives the distributor Batches.
+- Found while checking the build (`build/`, from `build-shots.json`):
+  - a kirana's current offer was listed twice, at the top and under Earlier offers. It now joins the earlier offers once it is no longer open (an order stays at the top while it is on the round);
+  - on phones a batch's figure ran into its chevron (`.lr-value:has(> .lg-val)` no longer shrinks).

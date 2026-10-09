@@ -9,7 +9,9 @@
     // the operator's batches (SC-112): the workspace's own places here, and the batches in a journey between Setup and
     // Reports (RoleApp adds them); a batch's screens are tabs on its page
     operator: [{ id: "command", label: "Command Center", short: "Today", icon: "layout-dashboard" }, { id: "batches", label: "Batches", icon: "boxes" }, { id: "setup", label: "Setup", icon: "sliders-horizontal", phoneHidden: true }, { id: "report", label: "Ledger", icon: "book-open", section: "Reports" }],
-    distributor: [{ id: "home", label: "Today", icon: "house" }, { id: "photo", label: "Label photo", short: "Photo", icon: "camera" }, { id: "van", label: "Van route", short: "Van", icon: "truck" }, { id: "orders", label: "Orders", icon: "clipboard-list" }],
+    // the distributor's Batches (SC-130): every batch of his, in a journey or cleared, each with its own page; the label
+    // photo is opened from its request, so it leaves the phone's four tabs
+    distributor: [{ id: "home", label: "Today", icon: "house" }, { id: "batches", label: "Batches", icon: "boxes" }, { id: "photo", label: "Label photo", short: "Photo", icon: "camera", phoneHidden: true }, { id: "van", label: "Van route", short: "Van", icon: "truck" }, { id: "orders", label: "Orders", icon: "clipboard-list" }],
     retailer: [{ id: "home", label: "Offers", icon: "tag" }, { id: "orders", label: "Orders", icon: "shopping-basket" }],
     buyer: [{ id: "market", label: "Marketplace", short: "Market", icon: "store" }, { id: "bids", label: "My bids", short: "Bids", icon: "gavel" }],
     foodbank: [{ id: "pickups", label: "Pickups", icon: "heart-handshake" }],
@@ -29,7 +31,7 @@
       case "command": return <X.CommandCenter me={me} />;
       case "route": return <X.RouteRoom me={me} />;
       case "execution": return <X.Execution me={me} />;
-      case "batches": return <X.Batches me={me} />;
+      case "batches": return r === "distributor" ? <X.DistBatches me={me} /> : <X.Batches me={me} />;
       case "setup": return <X.Setup me={me} />;
       case "report": return <X.Report me={me} />;
       case "paperwork": return <X.Paperwork me={me} />;
