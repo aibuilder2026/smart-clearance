@@ -1444,6 +1444,7 @@
     - console, 3G: first paint 8.1 s → 2.6 s, the cover gone at 15.7 s → 16.0 s (bound by the console's code in waves; Firebase Hosting's HTTP/2 shortens those for both);
     - landing page, 3G: first paint 6.4 s → 2.4 s, lifted 14.6 s → 7.8 s; Slow 4G: 1.8 s → 0.7 s, 11.0 s → 3.3 s.
   - **Checks:** the frontend gate passes (core 222 with `firstpaint.test.ts`, api 77, workspace 67, admin 17, demo 5, console 3). design3 played through: the first load in light and dark, sign-in and sign-out, offline and silence failures with recovery, reduced motion, the landing page's lift and its theme switch. The browser suites were not run (SC-55).
-  - **Hosting:** the hosted landing page and console load commit `abed2ff`; every pinned file was checked on jsDelivr first.
+  - **The mark springs in on the design system's own spring** (`--ease-spring`, as in SC-35 and SC-51), written out in both scripts.
+  - **Hosting:** the hosted landing page and console load commit `fa92724`; every pinned file was checked on jsDelivr first (two cached 403s purged).
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
