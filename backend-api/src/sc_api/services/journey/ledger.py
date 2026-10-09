@@ -101,7 +101,7 @@ def row(case: m.Case, sku: dict[str, Any], dist: m.Distributor) -> dict[str, Any
         "resoldKg": money.r2(sold * kg_unit),
         "donatedKg": money.r2(donated * kg_unit),
         "destroyedKg": money.r2(destroyed * kg_unit),
-        "credit": expiry.get("credit", 0) if expiry.get("policy") != "no-returns" else 0,
+        "credit": expiry.get("credit", 0) if expiry.get("policy") != "none" else 0,
         "support": (docs.get("support") or {}).get("amount", 0),
     }
     papers = [

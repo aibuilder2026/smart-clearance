@@ -22,9 +22,9 @@ const SOURCES = [
 ];
 // the workspace app's seed reads one more file (only a literal in it); backend-api's reference data also runs the live
 // world (SC-66) and the journey itself, for the fixtures its Python ports are held to
-const WORLD_SOURCES = ['core/world.js', 'core/flow.js'];
+const WORLD_SOURCES = ['core/world.js', 'core/flow.js', 'core/ledger.js'];
 const SOURCES_OF = {
-	'core/src/lib/workspace/seed': [...SOURCES, 'core/flow.js'],
+	'core/src/lib/workspace/seed': [...SOURCES, ...WORLD_SOURCES],
 	'../backend-api/src/sc_api/reference': [...SOURCES, ...WORLD_SOURCES]
 };
 
@@ -370,7 +370,14 @@ const ruleFixtures = {
 for (const p of WORLD_SOURCES) vm.runInContext(read(p), sandbox, { filename: p });
 const W = window.SC3_WORLD,
 	F = window.SC3_FLOW,
-	M = window.SC3_MONEY;
+	M = window.SC3_MONEY,
+	L = window.SC3_LEDGER;
+
+/** the ledger of Munchly's history (design3/core/ledger.js, SC-121): each batch it cleared before the story as its case
+ *  (the stub's batch pages read them), and as the ledger reads it on the story's day 0, which backend-api's ledger.py
+ *  is held to */
+const historyRows = L.rowsOf(L.HISTORY);
+const historyLedger = { today: D.DAY0, batches: historyRows, periods: L.periods(historyRows, D.DAY0) };
 
 /** the world backend-api's hydrate builds Munchly from, and the story's copy the backend renders with live figures */
 /** the story's moments (data.js JOURNEY) as rules backend-api times a live journey by: how soon a plan follows the
@@ -467,7 +474,8 @@ const journey = {
 				support: b.support.total,
 				credit: b.expiry ? b.expiry.credit : 0
 			}
-		}))
+		})),
+		ledger: historyLedger
 	}
 };
 
@@ -695,7 +703,13 @@ const outputs = {
 		'console.json': json(consoleSeed)
 	},
 	'admin/src/lib/seed': { 'ds.json': json(ds) },
-	'core/src/lib/workspace/seed': { 'workspace.json': json(workspaceSeed) },
+	'core/src/lib/workspace/seed': {
+		'workspace.json': json(workspaceSeed),
+		// the SKU, distributor and buyer by id, as the stub looks them up; the invoice is the pack's own
+		'history.json': json({
+			cases: L.HISTORY.map(({ sku, dist, buyer: _b, invoice: _i, ...c }) => ({ ...c, sku: sku.id, dist: dist.id }))
+		})
+	},
 	// backend-api loads the same reference data into its database at migrate time, and imports the console's day
 	// (Munchly Foods) through its own services when it hydrates; its image builds from backend-api/ alone
 	'../backend-api/src/sc_api/reference': {

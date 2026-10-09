@@ -255,8 +255,12 @@ async def test_the_expired_packs_settle_by_the_clients_expiry_policy(
         await api.post(f"/v1/workspaces/munchly/cases/{HERO}/approval", json={"device": "phone"}, headers=PRIYA)
     ).status_code == 200
     await _report_now(api, neha)
+    settles = lambda: sum(p["payload"].get("type") == "settle" for p in cloud.publisher.sent)  # noqa: E731
+    before = settles()
     out = await agent(api, f"/cases/{HERO}/report", "impact", "impact")
     assert (out["ledger"]["godown"], out["ledger"]["expiry"]["destroyedBy"]) == (1360, destroyed_by)
+    # a credit note at expiry has Paperwork lay out its PDF (SC-121); a notice with no credit is not a paper
+    assert settles() == before + (policy != "none")
     docs = {d["id"]: d for d in (await case(api, PRIYA))["docs"]}
     assert (docs["expiry"]["type"], docs["expiry"]["amount"]) == (paper, credit)
     assert docs["expiry"]["status"] == ("not required" if policy == "none" else "generated")

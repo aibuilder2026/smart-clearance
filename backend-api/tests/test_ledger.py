@@ -82,3 +82,18 @@ async def test_a_cleared_batch_carries_its_ledger(api):
 
 def test_the_constant_quarter_is_gone():
     assert "quarter" not in load("journey.json")
+
+
+async def test_the_ledger_is_design3s(api):
+    """design3/core/ledger.js works the history's ledger out from money.js (seed.mjs writes it into journey.json):
+    backend-api's, read from the ledgers Impact posted, is the same, period by period and batch by batch"""
+    want = H["ledger"]
+    got = await _ledger(api)
+    assert got["today"] == want["today"]
+    assert got["periods"] == want["periods"]
+    keys = ("id", "type", "no", "status", "date", "amount")
+    for g, w in zip(got["batches"], want["batches"], strict=True):
+        assert [{k: p[k] for k in keys} for p in g["papers"]] == [{k: p[k] for k in keys} for p in w["papers"]]
+        assert g["reviewed"]["by"] == w["reviewed"]["by"]
+        rest = lambda r: {k: v for k, v in r.items() if k not in ("papers", "reviewed")}  # noqa: E731
+        assert rest(g) == rest(w), g["ref"]
