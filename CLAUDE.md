@@ -1212,7 +1212,7 @@
     The Mango was brought to Detect first with `walk.sh --day-minutes 60 --until detect`, since this suite never resets.
   - **Checks:** lint, Prettier and the workspace type check pass; the suite was not rerun (SC-55).
 
-- **SC-116** (In Review, branch `SC-116-chips-leftover-e2e`): Munchly Chips Leftover E2E, a separate suite, asked for by the maintainer.
+- **SC-116** (PR #99, merged): Munchly Chips Leftover E2E, a separate suite, asked for by the maintainer.
   - **The request:** "execute Munchly Chips E2E in such a way that some kiranas will not buy and food will be left over at go down, and batch will be forced completed from console by clicking generated report which will show that", then "make this a separate suite".
   - **The suite** (`munchly-chips-leftover.journey.ts`, its own Playwright project, `corepack pnpm test:journey:leftover`; it resets the journey):
     - `E2E_LEFTOVER` (8) of Rakesh's 31 ordering kiranas open the scheme and place no order, so it never fills;
@@ -1229,6 +1229,11 @@
   - **Noted, not filed:** "Load the buyer's truck" is offered while the scheme is open and refused only once pressed; Impact's ledger line reads "The return window closed on 29 Oct" for a report fired on 2 Oct.
   - **Checks:** lint, Prettier and the workspace type check pass; each journey project lists only its own suite.
 
-- **SC-117** (To Do; bug found by Munchly Chips Leftover E2E): a pack drafted on expiry day can never be reviewed. Report now drafts the papers and clears the batch at once; Paperwork still offers Mark reviewed, and backend-api answers 404 "No such batch in a journey", since `steps.scene` takes only an open case, though the review guard allows `cleared`. Rakesh's "Issue from Tally" is the same. The fix is the maintainer's call: review a cleared batch, or stop offering it.
+- **SC-117** (In Review, branch `SC-117-review-cleared-pack`; bug found by Munchly Chips Leftover E2E): a pack drafted on expiry day is reviewed and its invoice issued once cleared.
+  - **Found:** Report now drafts the papers and clears the batch at once, so there was never an open case to review. Paperwork still offered Mark reviewed, and backend-api answered 404, "No such batch in a journey". Rakesh's "Issue from Tally" was the same.
+  - **The cause:** `steps.scene` took only an open case, though the review guard allows `cleared`.
+  - **The fix** (the maintainer's "fix SC-117"; option 1, as the guard intends): `scene(…, cleared=True)` takes the batch's case in this journey, open or the last one closed, as the workspace shows it. The review and the invoice issue use it; every other step still needs an open case.
+  - **Checks:** backend-api 491 passed, 1 skipped. The new test (`test_controls.py`) takes the leftover run's shape (an awarded lot, a short scheme, Report now): Anita reviews and Rakesh issues his invoice on the cleared batch, each with its audit line. It fails without the fix, with the 404.
+  - **Locally:** the dev API reloads, so the chips batch the leftover run cleared can be reviewed now.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

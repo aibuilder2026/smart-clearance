@@ -21,7 +21,7 @@ from sc_api.services import agents as agent_runs
 from sc_api.services import audit, exports, supply
 from sc_api.services.context import Ctx
 from sc_api.services.journey import events as ev
-from sc_api.services.journey import world
+from sc_api.services.journey import views, world
 from sc_api.services.presenter import lock_client
 
 PHOTO_MAX_BYTES = 8 * 1024 * 1024
@@ -85,17 +85,21 @@ async def _world(ctx: Ctx, c: m.Client, batch: m.Batch) -> tuple[m.Sku, m.Distri
     return x, d, agents, world.money_rules(c, agents)
 
 
-async def scene(ctx: Ctx, client_id: str, ref: str) -> Scene:
+async def scene(ctx: Ctx, client_id: str, ref: str, *, cleared: bool = False) -> Scene:
     """a batch's open case, its client locked for the change (so the change, its stream position and its audit line
-    see one state)"""
+    see one state). With cleared, the batch's case in this journey as the workspace shows it, open or the last one
+    closed: a pack drafted on expiry day, which clears the batch at once, is still reviewed and its invoice issued
+    (SC-117)"""
     c = await lock_client(ctx, client_id)
-    case = (
-        await ctx.session.execute(
-            select(m.Case)
-            .where(m.Case.client_id == client_id, m.Case.batch_ref == ref, m.Case.status == "open")
-            .with_for_update()
-        )
-    ).scalar_one_or_none()
+    q = select(m.Case).where(m.Case.client_id == client_id, m.Case.batch_ref == ref)
+    if cleared:
+        since = views.journey_from(c)
+        if since is not None:
+            q = q.where(m.Case.opened_wall >= since)
+        q = q.order_by(m.Case.seq.desc()).limit(1)
+    else:
+        q = q.where(m.Case.status == "open")
+    case = (await ctx.session.execute(q.with_for_update())).scalar_one_or_none()
     if case is None:
         raise not_found("batch in a journey")
     batch = await ctx.session.get(m.Batch, (client_id, ref), with_for_update=True)
@@ -1730,7 +1734,7 @@ async def document_pdf(ctx: Ctx, client_id: str, ref: str, doc_id: str, name: st
 
 async def issue_invoice(ctx: Ctx, client_id: str, ref: str) -> None:
     ctx.require("invoice.issue", "Only the distributor issues his invoice.")
-    s = await scene(ctx, client_id, ref)
+    s = await scene(ctx, client_id, ref, cleared=True)
     _guard(s, "invoice")
     me = await world.member(ctx, client_id, _member(ctx))
     if me.org_ref != s.dist.id:
@@ -1753,7 +1757,7 @@ async def issue_invoice(ctx: Ctx, client_id: str, ref: str) -> None:
 
 async def review(ctx: Ctx, client_id: str, ref: str) -> None:
     ctx.require("docs.review", "Your role can't review the papers.")
-    s = await scene(ctx, client_id, ref)
+    s = await scene(ctx, client_id, ref, cleared=True)
     _guard(s, "review")
     if s.case.reviewed:
         return
