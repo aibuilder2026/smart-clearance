@@ -1,0 +1,130 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-b/mockup.html?who=rakesh&stage=7#/home",
+  "out": "option-b/today-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1200
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-b/mockup.html?who=rakesh&stage=7&theme=dark#/home",
+  "out": "option-b/today-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2200,
+  "height": 1200
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-b/mockup.html?who=rakesh&stage=7#/home",
+  "out": "option-b/today-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1700
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-b/mockup.html?who=rakesh&stage=7#/van",
+  "out": "option-b/deliveries-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1200
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-b/mockup.html?who=lakshmi-owner&stage=7#/van",
+  "out": "option-b/deliveries-lakshmi-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-b/mockup.html?who=rakesh&stage=8#/orders",
+  "out": "option-b/orders-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1300
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-b/mockup.html?who=rakesh&stage=8#/orders",
+  "out": "option-b/orders-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1800
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-c/mockup.html?who=rakesh&stage=7#/home",
+  "out": "option-c/today-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1200
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-c/mockup.html?who=rakesh&stage=7&theme=dark#/home",
+  "out": "option-c/today-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2200,
+  "height": 1200
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-c/mockup.html?who=rakesh&stage=7#/home",
+  "out": "option-c/today-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1700
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-c/mockup.html?who=rakesh&stage=7#/van",
+  "out": "option-c/deliveries-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1200
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-c/mockup.html?who=lakshmi-owner&stage=7#/van",
+  "out": "option-c/deliveries-lakshmi-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-c/mockup.html?who=rakesh&stage=8#/orders",
+  "out": "option-c/orders-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1300
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-c/mockup.html?who=rakesh&stage=8#/orders",
+  "out": "option-c/orders-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1800
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-a/mockup.html?who=rakesh&stage=7#/van/MF-2409-117",
+  "out": "option-a/deliveries-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1150
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-a/mockup.html?who=rakesh&stage=7#/home",
+  "out": "option-a/today-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1200
+ }
+]

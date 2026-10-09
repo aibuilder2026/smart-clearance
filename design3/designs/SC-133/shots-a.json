@@ -1,0 +1,82 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-a/mockup.html?who=rakesh&stage=7#/home",
+  "out": "option-a/today-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1200
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-a/mockup.html?who=rakesh&stage=7&theme=dark#/home",
+  "out": "option-a/today-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2200,
+  "height": 1200
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-a/mockup.html?who=rakesh&stage=4#/home",
+  "out": "option-a/today-photo-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 900
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-a/mockup.html?who=rakesh&stage=8#/home",
+  "out": "option-a/today-invoice-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 900
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-a/mockup.html?who=rakesh&stage=7#/home",
+  "out": "option-a/today-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1600
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-a/mockup.html?who=rakesh&stage=7#/van/MF-2409-117",
+  "out": "option-a/deliveries-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1150
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-a/mockup.html?who=lakshmi-owner&stage=7#/van/MF-2410-118",
+  "out": "option-a/deliveries-lakshmi-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 900
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-a/mockup.html?who=rakesh&stage=8#/orders",
+  "out": "option-a/orders-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1500
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-a/mockup.html?who=rakesh&stage=8&theme=dark#/orders",
+  "out": "option-a/orders-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2200,
+  "height": 1500
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-133/option-a/mockup.html?who=rakesh&stage=8#/orders",
+  "out": "option-a/orders-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2200,
+  "height": 2000
+ }
+]
