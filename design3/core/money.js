@@ -179,9 +179,11 @@
   function counter(ask, bid) {
     const n = RULES.negotiation;
     if (bid >= ask) return { action: "accept", price: bid };
-    const counter = Math.max(n.reservePerUnit, Math.floor(ask * n.counterPctOfAsk * 10) / 10);
+    // the reserve is the client's, a price a pack; on a lot asking less than it, the counter is the ask (SC-122)
+    const reserve = Math.min(n.reservePerUnit, ask);
+    const counter = Math.max(reserve, Math.floor(ask * n.counterPctOfAsk * 10) / 10);
     if (bid >= counter) return { action: "accept", price: bid };
-    return { action: "counter", price: counter, below: bid < n.reservePerUnit };
+    return { action: "counter", price: counter, below: bid < reserve };
   }
   function award(units, price) { const gross = r2(units * price); const token = Math.round(gross * RULES.tokenPct); return { units, price, gross, token, balance: r2(gross - token) }; }
   function actualNet(p, awardPrice) {

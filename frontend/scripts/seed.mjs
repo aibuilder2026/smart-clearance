@@ -471,7 +471,7 @@ const moneyFixtures = (() => {
 			[58, 'mango'],
 			[1, 'facewash']
 		].map(([units, id]) => ({ units, sku: D.SKUS[id], out: M.writeOff(units, D.SKUS[id]) })),
-		counter: [15, 14, 12.5].flatMap((ask) =>
+		counter: [15, 14, 12.5, 10].flatMap((ask) =>
 			[10, 13, 13.5, 14, 14.2, 14.25, 15, 16].map((bid) => ({ ask, bid, out: M.counter(ask, bid) }))
 		),
 		award: [

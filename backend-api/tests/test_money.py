@@ -54,7 +54,7 @@ def test_rules_and_channels_are_money_js():
 def test_every_case_is_here():
     assert len(F["plans"]) == 15
     assert {c["plan"]["batch"] for c in F["plans"][:9]} == {b["id"] for b in load("journey.json")["batches"]}
-    assert (len(F["counter"]), len(F["writeOff"]), len(F["award"]), len(F["realised"])) == (24, 3, 3, 12)
+    assert (len(F["counter"]), len(F["writeOff"]), len(F["award"]), len(F["realised"])) == (32, 3, 3, 12)
     assert (len(F["mealsOf"]), len(F["receipt"]), len(F["documents"])) == (12, 2, 4)
     assert {k: len(v) for k, v in F["fmt"].items()} == {
         "num": 6,

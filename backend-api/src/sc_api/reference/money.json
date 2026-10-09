@@ -3789,7 +3789,7 @@
 			"bid": 10,
 			"out": {
 				"action": "counter",
-				"price": 13.5,
+				"price": 12.5,
 				"below": true
 			}
 		},
@@ -3843,6 +3843,70 @@
 		},
 		{
 			"ask": 12.5,
+			"bid": 16,
+			"out": {
+				"action": "accept",
+				"price": 16
+			}
+		},
+		{
+			"ask": 10,
+			"bid": 10,
+			"out": {
+				"action": "accept",
+				"price": 10
+			}
+		},
+		{
+			"ask": 10,
+			"bid": 13,
+			"out": {
+				"action": "accept",
+				"price": 13
+			}
+		},
+		{
+			"ask": 10,
+			"bid": 13.5,
+			"out": {
+				"action": "accept",
+				"price": 13.5
+			}
+		},
+		{
+			"ask": 10,
+			"bid": 14,
+			"out": {
+				"action": "accept",
+				"price": 14
+			}
+		},
+		{
+			"ask": 10,
+			"bid": 14.2,
+			"out": {
+				"action": "accept",
+				"price": 14.2
+			}
+		},
+		{
+			"ask": 10,
+			"bid": 14.25,
+			"out": {
+				"action": "accept",
+				"price": 14.25
+			}
+		},
+		{
+			"ask": 10,
+			"bid": 15,
+			"out": {
+				"action": "accept",
+				"price": 15
+			}
+		},
+		{
+			"ask": 10,
 			"bid": 16,
 			"out": {
 				"action": "accept",

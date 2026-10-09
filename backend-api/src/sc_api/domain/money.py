@@ -670,10 +670,12 @@ def counter(ask: float, bid: float, *, rules: Obj = RULES) -> dict[str, Any]:
     n = rules["negotiation"]
     if bid >= ask:
         return {"action": "accept", "price": bid}
-    price = _max(n["reservePerUnit"], math.floor(ask * n["counterPctOfAsk"] * 10) / 10)
+    # the reserve is the client's, a price a pack; on a lot asking less than it, the counter is the ask (SC-122)
+    reserve = _min(n["reservePerUnit"], ask)
+    price = _max(reserve, math.floor(ask * n["counterPctOfAsk"] * 10) / 10)
     if bid >= price:
         return {"action": "accept", "price": bid}
-    return {"action": "counter", "price": price, "below": bid < n["reservePerUnit"]}
+    return {"action": "counter", "price": price, "below": bid < reserve}
 
 
 def award(units: float, price: float, *, rules: Obj = RULES) -> dict[str, Any]:

@@ -1282,8 +1282,9 @@
     - the memo reads the paper's own figures, stamps "ITC PART REVERSED" when credit was reversed, and says an SKU without a cost sheet has its credit estimated;
     - the certificate counts the packs destroyed, with their credit reversed;
     - Who keeps what takes a donation's handling and credit off "Better for Munchly", so it is the ledger's swing.
+  - **The Negotiator's counter** never goes above the asking price. The reserve is the client's, one price a pack (₹13.50, set for the chips), so on a cheaper lot (the Mango Drink's ₹10, the chikki's ₹12.50) it countered above the ask. On a lot asking less than the reserve, the counter is now the ask (`counter`, money.js and money.py; fixtures for an ask of ₹10).
   - **Checks:**
-    - backend-api 497 passed, 1 skipped (a new test of the leftover ledger);
+    - backend-api 505 passed, 1 skipped (a new test of the leftover ledger, and the counter's new cases);
     - agents 194 (a new test of a line at its award price);
     - the frontend gate passes: core 249 (the memo's golden, "Input GST kept"), api 77, workspace 67, admin 17, demo 5, console 3;
     - the live fixtures and the seeds were regenerated.
