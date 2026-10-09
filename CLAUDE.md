@@ -1174,4 +1174,14 @@
   - **Checks:** the gate passes (lint, check, tests: core 248, api 77, admin 17, console 3, workspace 64, demo 5). design3 and the build were played through with Playwright at 1440 × 900 and 390 × 844, light and dark: no console errors, the film plays and loops, the strip reads the chapter, the dark theme opens on the night. The browser suites were not run (SC-55).
   - **Hosting:** the hosted landing page and console load commit `9e0a247`.
 
+- **SC-114** (In Review, branch `SC-114-receipt-on-reset`; bug found by Munchly Mango E2E): a workspace built before SC-110 never issued a donation receipt.
+  - **Found:** Meera collected the Mango Drink's 58 packs, and no receipt was issued. The local database's food banks had no receipt form or meals rule, and the workspace numbered no `receipt.*` series. Only `hydrate.sh --live-only` set them, and it restarts the journey; production, last hydrated in SC-75, is the same.
+  - **The fix** (`services/journey/reset.py` `_story`): a synthetic workspace's Reset journey also gives it what the story has and it lacks, keeping what it set itself:
+    - each number series the story numbers (the food banks' receipts among them);
+    - each of the story's food banks' receipt form and meals rule.
+
+    The console's Reset journey (or `hydrate.sh --journey-reset`) now brings a workspace from before SC-110 up to date, locally and in production, with no separate hydrate.
+  - **Checks:** backend-api 490 passed. The new test fails without the fix, with the receipt series missing.
+  - **Locally:** Munchly's journey was reset with the fix; both food banks have their receipt and the two series are numbered from the story's.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

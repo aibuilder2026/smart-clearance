@@ -95,3 +95,43 @@ async def test_a_reset_keeps_the_clients_configuration(api, munchly, neha, ctx):
     await ctx.session.flush()
     await ctx.session.refresh(c)
     assert (c.day_minutes, c.offer_window_hours) == (30, 24)
+
+
+async def test_a_reset_gives_a_workspace_from_before_sc110_its_food_banks_receipts(api, munchly, ctx):
+    """a workspace built before SC-110 numbers no receipts and its food banks have no receipt, so collecting a donation
+    issued none (SC-114). A reset gives it the story's series and its food banks the story's receipt and meals rule,
+    and keeps a receipt a food bank already has"""
+    receipts = [k for k in J["numbers"] if k.startswith("receipt.")]
+    assert receipts
+    # before SC-110: no receipt series (the app's login may not delete a series, so each moves aside)
+    for kind in receipts:
+        row = await ctx.session.get(m.DocumentNumber, ("munchly", kind))
+        if row is not None:
+            row.kind = "before-sc110." + kind
+    banks = {
+        b.name: b
+        for b in (
+            await ctx.session.execute(
+                select(m.Partner).where(m.Partner.client_id == "munchly", m.Partner.kind == "foodbank")
+            )
+        ).scalars()
+    }
+    ifbn, fi = banks["India FoodBanking Network"], banks["Feeding India"]
+    ifbn.details = {k: v for k, v in ifbn.details.items() if k not in ("receipt", "meals")}
+    fi.details = {**fi.details, "receipt": {**fi.details["receipt"], "title": "Our own receipt"}}
+    await ctx.session.flush()
+
+    await reset.reset(ctx, "munchly")
+    await ctx.session.flush()
+
+    for kind in receipts:
+        row = await ctx.session.get(m.DocumentNumber, ("munchly", kind))
+        assert row is not None, kind
+        assert (row.prefix, row.next, row.width) == tuple(J["numbers"][kind][k] for k in ("prefix", "next", "width"))
+    await ctx.session.refresh(ifbn)
+    await ctx.session.refresh(fi)
+    story = {p["name"]: p for p in J["setup"]["partners"]}
+    assert ifbn.details["receipt"] == story["India FoodBanking Network"]["receipt"]
+    assert ifbn.details["meals"] == story["India FoodBanking Network"]["meals"]
+    assert ifbn.details["minDays"] == story["India FoodBanking Network"]["minDays"]  # its intake rules stay
+    assert fi.details["receipt"]["title"] == "Our own receipt"
