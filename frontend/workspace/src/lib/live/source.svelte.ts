@@ -28,6 +28,8 @@ import type {
 	ActionArg,
 	CaseData,
 	CaseTab,
+	Ledger,
+	LedgerPage,
 	Failure,
 	HumanAction,
 	InviteInput,
@@ -79,6 +81,9 @@ export class LiveSource implements WorkspaceSource {
 	#focus = $state<CaseDetail | null>(null);
 	#second = $state<CaseDetail | null>(null);
 	#ledger = $state<WsLedger | null>(null);
+	/** the ledger's batch pages asked for (SC-121), and what backend-api answered for each */
+	#paged = new SvelteSet<string>();
+	#pages = new SvelteMap<string, CaseDetail>();
 	#audit = $state<WsAuditRow[]>([]);
 	#asked = $state<string | null>(null);
 	#phase = $state<SourceStatus['phase']>('loading');
@@ -116,7 +121,7 @@ export class LiveSource implements WorkspaceSource {
 	readonly #data = $derived.by((): WorkspaceData | null => {
 		const snap = this.#snap;
 		if (!snap) return null;
-		return dataOf(snap, this.#ledger, { ref: this.#focus?.ref ?? null, second: this.#donor?.ref ?? null });
+		return dataOf(snap, { ref: this.#focus?.ref ?? null, second: this.#donor?.ref ?? null });
 	});
 	readonly #emptyData = $derived(emptyData(this.#public));
 	readonly #emptyState = emptyState();
@@ -149,6 +154,32 @@ export class LiveSource implements WorkspaceSource {
 	}
 	get case(): CaseData | null {
 		return this.#case;
+	}
+	/** Finance & ESG's ledger, as backend-api works it out (SC-124), for those who read it */
+	get ledger(): Ledger | null {
+		return this.#ledger;
+	}
+	/** a batch's page in the ledger: its case as the papers read it, its state and its ledger row (SC-121) */
+	ledgerPage(ref: string): LedgerPage | null {
+		const snap = this.#snap;
+		const data = this.#data;
+		const d = this.#pages.get(ref) ?? (this.#focus?.ref === ref ? this.#focus : null);
+		if (!snap || !data || !d) return null;
+		const donor = d.donation ? d : null;
+		return { c: caseOf(snap, d, donor, data), h: stateOf(snap, d, donor, this.#audit).hero, row: d.ledger };
+	}
+	openPage = (ref: string) => {
+		if (this.#paged.has(ref)) return;
+		this.#paged.add(ref);
+		void this.#readPage(ref);
+	};
+	async #readPage(ref: string) {
+		const d = await this.#api.case(ref).catch((e) => {
+			if (refusalOf(e) === 'not-found' || refusalOf(e) === 'forbidden') return null;
+			this.#error = e;
+			return null;
+		});
+		if (d && this.#paged.has(ref)) this.#pages.set(ref, d);
 	}
 	get focus(): string | null {
 		return this.#asked;
@@ -266,6 +297,8 @@ export class LiveSource implements WorkspaceSource {
 			for (const c of [this.#focus, this.#second])
 				if (c && c.ref === e.ref && !c.feed.some((f) => f.id === e.feed!.id)) c.feed = [...c.feed, e.feed];
 		}
+		// a batch page open in the ledger reads its batch again when it changes (SC-121)
+		if (e.ref && this.#paged.has(e.ref) && (e.type === 'case' || e.type === 'ledger')) void this.#readPage(e.ref);
 		if (e.type === 'ledger') return this.#want({ ledger: true });
 		if (e.type === 'audit') return this.#want({ audit: true });
 		this.#want({ snapshot: true, ref: e.ref });
@@ -319,6 +352,7 @@ export class LiveSource implements WorkspaceSource {
 	async #readAll() {
 		this.#wanted = { snapshot: true, cases: [], ledger: true, audit: true };
 		await this.#read();
+		for (const ref of this.#paged) void this.#readPage(ref);
 		if (!this.#snap) throw this.#error ?? new Error('The workspace did not load.');
 	}
 
@@ -414,6 +448,8 @@ export class LiveSource implements WorkspaceSource {
 		this.#member = null;
 		this.#snap = null;
 		this.#focus = this.#second = this.#ledger = null;
+		this.#paged.clear();
+		this.#pages.clear();
 		this.#audit = [];
 		this.#failed = null;
 		this.#pending.clear();
@@ -549,7 +585,8 @@ export class LiveSource implements WorkspaceSource {
 		return this.#send('bid', () => this.#api.message(ref, text));
 	};
 
-	documentUrl = async (doc: string) => (await this.#api.documentUrl(this.#focus?.ref ?? '', doc)).url;
+	documentUrl = async (doc: string, ref?: string) =>
+		(await this.#api.documentUrl(ref ?? this.#focus?.ref ?? '', doc)).url;
 
 	/** the label photo: a signed link, the file straight to Cloud Storage with its progress, then Vision reads it */
 	async #upload(ref: string, file: Blob | undefined) {

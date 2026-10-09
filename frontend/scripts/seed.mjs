@@ -168,7 +168,6 @@ const workspaceSeed = {
 	push: D.PUSH,
 	chat: D.CHAT,
 	events: D.EVENTS,
-	quarter: D.QUARTER,
 	setup: D.SETUP,
 	risk: D.RISK,
 	plan: D.PLAN,
@@ -707,7 +706,10 @@ const outputs = {
 		'workspace.json': json(workspaceSeed),
 		// the SKU, distributor and buyer by id, as the stub looks them up; the invoice is the pack's own
 		'history.json': json({
-			cases: L.HISTORY.map(({ sku, dist, buyer: _b, invoice: _i, ...c }) => ({ ...c, sku: sku.id, dist: dist.id }))
+			cases: L.HISTORY.map(({ sku, dist, buyer: _b, invoice: _i, ...c }) => ({ ...c, sku: sku.id, dist: dist.id })),
+			// the ledger's rows: the history's, and the story's chips batch once Impact posts it, on the day it clears
+			rows: historyRows,
+			story: { row: L.rowOf(L.storyCase()), cleared: L.STORY_CLEARED }
 		})
 	},
 	// backend-api loads the same reference data into its database at migrate time, and imports the console's day

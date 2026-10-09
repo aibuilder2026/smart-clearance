@@ -276,7 +276,7 @@
         exportGST(p, list);
         done("GST summary exported as CSV");
       } },
-      { label: "The ledger", icon: "table", right: /* @__PURE__ */ React.createElement("span", { className: "t-caption subtle" }, "CSV"), onClick: () => {
+      { label: "The ledger", icon: "file-spreadsheet", right: /* @__PURE__ */ React.createElement("span", { className: "t-caption subtle" }, "CSV"), onClick: () => {
         exportLedger(p, list);
         done("Ledger exported as CSV");
       } },
@@ -335,7 +335,7 @@
     if (!row) return /* @__PURE__ */ React.createElement(NotPosted, { h });
     const F = row.figures, no = (id) => (row.papers.find((x) => x.id === id && x.status !== "not required") || {}).no;
     const orders = row.lines.filter((l) => l.id === "kirana").reduce((t, l) => t + l.units, 0);
-    const ev = [no("invoice"), c.listing && c.lines.expiresoon.units ? c.listing.id : null, orders ? `${c.kiranas.length} kirana order logs` : null, no("support"), no("expiry"), no("receipt"), F.donated ? "FSSAI checklist" : null, F.destroyed ? "destruction certificate" : null].filter(Boolean);
+    const ev = [no("invoice"), c.listing && c.lines.expiresoon.units ? c.listing.id : null, orders ? `${c.kiranas.length} kirana order logs` : null, no("support"), no("expiry"), F.donated ? "FSSAI checklist" : null, no("receipt"), F.destroyed ? "destruction certificate" : null].filter(Boolean);
     return /* @__PURE__ */ React.createElement(
       Columns,
       {

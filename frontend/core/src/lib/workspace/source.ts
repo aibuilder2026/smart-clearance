@@ -9,6 +9,8 @@ import type {
 	CaseData,
 	CaseTab,
 	JourneyClock,
+	Ledger,
+	LedgerPage,
 	ExploreGroup,
 	HumanAction,
 	InviteInput,
@@ -42,6 +44,13 @@ export interface WorkspaceSource {
 	readonly focus: string | null;
 	/** the steps sent and not yet done */
 	readonly pending: ReadonlySet<string>;
+	/** Finance & ESG's ledger (SC-121, SC-124): every batch cleared, by quarter and by year, and the batches still out;
+	 *  null until it has been read, and for a role that does not read it */
+	readonly ledger: Ledger | null;
+	/** a batch's own page in the ledger, once it has been read (openPage asks the live source to read it) */
+	ledgerPage(ref: string): LedgerPage | null;
+	/** the live source only: read a batch's page for the ledger, and keep it up to date while it is open */
+	openPage?(ref: string): void;
 	/** the live source only: files on their way to the workspace (the label photo, a stock export), 0 to 1 */
 	readonly uploads?: ReadonlyMap<string, number>;
 	/** the live source only: the last step that did not go through, with what to tell the person and how to try again */
@@ -75,8 +84,8 @@ export interface WorkspaceSource {
 	act<N extends HumanAction>(name: N, arg?: ActionArg<N>, o?: { feel?: number }): Promise<void>;
 	/** the live source only: the buyer's message to the seller, which the Negotiator answers */
 	message?(text: string): Promise<void>;
-	/** the live source only: a link to a document's PDF, for a few minutes */
-	documentUrl?(doc: string): Promise<string>;
+	/** the live source only: a link to a document's PDF, for a few minutes; of the batch in focus, or the one named */
+	documentUrl?(doc: string, ref?: string): Promise<string>;
 	markRead(ids: string[] | 'all'): Promise<void>;
 	invite(i: InviteInput): Promise<void>;
 	setUserStatus(id: string, s: UserStatus): Promise<void>;

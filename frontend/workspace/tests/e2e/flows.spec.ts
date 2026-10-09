@@ -135,13 +135,14 @@ test('flows · switching person from the profile', async ({ page }) => {
 	const sheet = page.getByRole('dialog', { name: 'Switch person' });
 	await expect(sheet.getByRole('button', { name: /Priya Deshmukh/ })).toContainText('you');
 	await sheet.getByRole('button', { name: /Anita Rao/ }).click();
-	await expect(title(page)).toHaveText('Paperwork');
-	await expect(page).toHaveURL(/\/paperwork$/);
+	// finance starts on the ledger (SC-121)
+	await expect(title(page)).toHaveText('Ledger');
+	await expect(page).toHaveURL(/\/report$/);
 	await expect(page).toHaveTitle('Anita · Munchly Foods · Smart-Clearance');
 	await expect(nav(page).getByRole('button', { name: 'Route Room' }), 'finance has no Route Room').toHaveCount(0);
 	// a screen her role cannot open falls back to her home
 	await page.goto('/route');
-	await expect(title(page)).toHaveText('Paperwork');
+	await expect(title(page)).toHaveText('Ledger');
 });
 
 test('flows · the shell: navigating, then back and forward', async ({ page }) => {
@@ -160,7 +161,7 @@ test('flows · the shell: navigating, then back and forward', async ({ page }) =
 	}
 	for (const [name, path, heading] of [
 		['Batches', '/batches', 'Batches'],
-		['Finance & ESG', '/report', 'Finance & ESG']
+		['Ledger', '/report', 'Ledger']
 	]) {
 		await nav(page).getByRole('button', { name }).click();
 		await expect(title(page)).toHaveText(heading);
@@ -174,7 +175,7 @@ test('flows · the shell: navigating, then back and forward', async ({ page }) =
 	await page.getByRole('button', { name: 'Notifications' }).click();
 	await expect(title(page)).toHaveText('Inbox');
 	await page.goBack();
-	await expect(title(page)).toHaveText('Finance & ESG');
+	await expect(title(page)).toHaveText('Ledger');
 	await page.goForward();
 	await expect(title(page)).toHaveText('Inbox');
 	await page.getByRole('button', { name: 'Profile and settings' }).click();

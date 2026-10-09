@@ -1,11 +1,14 @@
 <script lang="ts">
 	import Card from '../../../components/Card.svelte';
 	import Money from '../../../components/Money.svelte';
-	import { castOf, first, fmt } from '../../model';
+	import { first, fmt } from '../../model';
 	import { useWorkspace } from '../../source';
+	import type { CaseData } from '../../types';
 
+	// the batch in focus, or the batch named (`c`, a batch's page in the ledger, SC-121)
+	let { c: named }: { c?: CaseData } = $props();
 	const ws = useWorkspace();
-	const c = $derived(ws.case!);
+	const c = $derived(named ?? ws.case!);
 
 	// the same batch read from each side: the distributor ends whole, and Munchly pays less than a claim. What the
 	// distributor receives is what each channel took, at its price (the credit note's rows), so a line that took less
@@ -70,7 +73,7 @@
 	</div>
 	<span class="t-caption subtle"
 		>The same {fmt.inr(c.actual.swing)} swing as the ledger, seen from {W.short}'s cash: the ₹{dp} credit {first(
-			castOf(ws.state, c).distributor.short
+			c.dist.short
 		)} would have claimed and the ₹{dp} he paid cancel out. At plan prices it is {fmt.inr(c.supportPlan.total)} of support
 		and a {fmt.inr(c.plan.swing)} swing.</span
 	>

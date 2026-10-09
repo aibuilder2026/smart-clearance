@@ -21,7 +21,44 @@
 				"bestBefore": "2026-08-14",
 				"mfg": "2025-11-17",
 				"city": "Nagpur",
-				"staffCap": 50
+				"staffCap": 50,
+				"assess": {
+					"gates": [
+						{
+							"id": "blinkit",
+							"app": "Blinkit",
+							"need": 90,
+							"has": 42,
+							"pass": false,
+							"rule": "needs 90+ days"
+						},
+						{
+							"id": "zepto",
+							"app": "Zepto",
+							"need": 162,
+							"has": 42,
+							"pass": false,
+							"rule": "needs 60% of a 270-day life (162 days)"
+						},
+						{
+							"id": "instamart",
+							"app": "Instamart",
+							"need": 162,
+							"has": 42,
+							"pass": false,
+							"rule": "needs 60% of a 270-day life (162 days)"
+						}
+					],
+					"life": 270,
+					"usableDays": 35,
+					"willSell": 350,
+					"atRisk": 1050,
+					"atRiskMRP": 42000,
+					"blocked": true,
+					"status": "at-risk",
+					"lifeUsedPct": 84,
+					"urgency": 0.8444444444444444
+				}
 			},
 			"plan": {
 				"batch": "MF-2406-105",
@@ -800,7 +837,44 @@
 				"bestBefore": "2026-08-15",
 				"mfg": "2026-02-16",
 				"city": "Hyderabad",
-				"staffCap": 150
+				"staffCap": 150,
+				"assess": {
+					"gates": [
+						{
+							"id": "blinkit",
+							"app": "Blinkit",
+							"need": 90,
+							"has": 38,
+							"pass": false,
+							"rule": "needs 90+ days"
+						},
+						{
+							"id": "zepto",
+							"app": "Zepto",
+							"need": 108,
+							"has": 38,
+							"pass": false,
+							"rule": "needs 60% of a 180-day life (108 days)"
+						},
+						{
+							"id": "instamart",
+							"app": "Instamart",
+							"need": 108,
+							"has": 38,
+							"pass": false,
+							"rule": "needs 60% of a 180-day life (108 days)"
+						}
+					],
+					"life": 180,
+					"usableDays": 31,
+					"willSell": 434,
+					"atRisk": 1166,
+					"atRiskMRP": 29150,
+					"blocked": true,
+					"status": "at-risk",
+					"lifeUsedPct": 79,
+					"urgency": 0.7888888888888889
+				}
 			},
 			"plan": {
 				"batch": "MF-2406-106",
@@ -1584,7 +1658,44 @@
 				"bestBefore": "2026-08-23",
 				"mfg": "2025-11-26",
 				"city": "Hyderabad",
-				"staffCap": 150
+				"staffCap": 150,
+				"assess": {
+					"gates": [
+						{
+							"id": "blinkit",
+							"app": "Blinkit",
+							"need": 90,
+							"has": 40,
+							"pass": false,
+							"rule": "needs 90+ days"
+						},
+						{
+							"id": "zepto",
+							"app": "Zepto",
+							"need": 162,
+							"has": 40,
+							"pass": false,
+							"rule": "needs 60% of a 270-day life (162 days)"
+						},
+						{
+							"id": "instamart",
+							"app": "Instamart",
+							"need": 162,
+							"has": 40,
+							"pass": false,
+							"rule": "needs 60% of a 270-day life (162 days)"
+						}
+					],
+					"life": 270,
+					"usableDays": 33,
+					"willSell": 165,
+					"atRisk": 635,
+					"atRiskMRP": 41275,
+					"blocked": true,
+					"status": "at-risk",
+					"lifeUsedPct": 85,
+					"urgency": 0.8518518518518519
+				}
 			},
 			"plan": {
 				"batch": "MF-2406-107",
@@ -2279,7 +2390,44 @@
 				"bestBefore": "2026-09-04",
 				"mfg": "2025-12-08",
 				"city": "Nagpur",
-				"staffCap": 50
+				"staffCap": 50,
+				"assess": {
+					"gates": [
+						{
+							"id": "blinkit",
+							"app": "Blinkit",
+							"need": 90,
+							"has": 45,
+							"pass": false,
+							"rule": "needs 90+ days"
+						},
+						{
+							"id": "zepto",
+							"app": "Zepto",
+							"need": 162,
+							"has": 45,
+							"pass": false,
+							"rule": "needs 60% of a 270-day life (162 days)"
+						},
+						{
+							"id": "instamart",
+							"app": "Instamart",
+							"need": 162,
+							"has": 45,
+							"pass": false,
+							"rule": "needs 60% of a 270-day life (162 days)"
+						}
+					],
+					"life": 270,
+					"usableDays": 38,
+					"willSell": 228,
+					"atRisk": 672,
+					"atRiskMRP": 36960,
+					"blocked": true,
+					"status": "at-risk",
+					"lifeUsedPct": 83,
+					"urgency": 0.8333333333333334
+				}
 			},
 			"plan": {
 				"batch": "MF-2406-108",
@@ -2985,7 +3133,44 @@
 				"bestBefore": "2026-08-23",
 				"mfg": "2025-11-26",
 				"city": "Hyderabad",
-				"staffCap": 150
+				"staffCap": 150,
+				"assess": {
+					"gates": [
+						{
+							"id": "blinkit",
+							"app": "Blinkit",
+							"need": 90,
+							"has": 26,
+							"pass": false,
+							"rule": "needs 90+ days"
+						},
+						{
+							"id": "zepto",
+							"app": "Zepto",
+							"need": 162,
+							"has": 26,
+							"pass": false,
+							"rule": "needs 60% of a 270-day life (162 days)"
+						},
+						{
+							"id": "instamart",
+							"app": "Instamart",
+							"need": 162,
+							"has": 26,
+							"pass": false,
+							"rule": "needs 60% of a 270-day life (162 days)"
+						}
+					],
+					"life": 270,
+					"usableDays": 19,
+					"willSell": 152,
+					"atRisk": 948,
+					"atRiskMRP": 52140,
+					"blocked": true,
+					"status": "at-risk",
+					"lifeUsedPct": 90,
+					"urgency": 0.9037037037037037
+				}
 			},
 			"plan": {
 				"batch": "MF-2406-109",
@@ -3727,7 +3912,44 @@
 					"bestBefore": "2026-08-23",
 					"mfg": "2025-11-26",
 					"city": "Hyderabad",
-					"staffCap": 150
+					"staffCap": 150,
+					"assess": {
+						"gates": [
+							{
+								"id": "blinkit",
+								"app": "Blinkit",
+								"need": 90,
+								"has": 26,
+								"pass": false,
+								"rule": "needs 90+ days"
+							},
+							{
+								"id": "zepto",
+								"app": "Zepto",
+								"need": 162,
+								"has": 26,
+								"pass": false,
+								"rule": "needs 60% of a 270-day life (162 days)"
+							},
+							{
+								"id": "instamart",
+								"app": "Instamart",
+								"need": 162,
+								"has": 26,
+								"pass": false,
+								"rule": "needs 60% of a 270-day life (162 days)"
+							}
+						],
+						"life": 270,
+						"usableDays": 19,
+						"willSell": 152,
+						"atRisk": 948,
+						"atRiskMRP": 52140,
+						"blocked": true,
+						"status": "at-risk",
+						"lifeUsedPct": 90,
+						"urgency": 0.9037037037037037
+					}
 				},
 				"sku": {
 					"id": "poha",
@@ -3841,7 +4063,44 @@
 				"bestBefore": "2026-09-21",
 				"mfg": "2024-09-21",
 				"city": "Nagpur",
-				"staffCap": 50
+				"staffCap": 50,
+				"assess": {
+					"gates": [
+						{
+							"id": "blinkit",
+							"app": "Blinkit",
+							"need": 90,
+							"has": 48,
+							"pass": false,
+							"rule": "needs 90+ days"
+						},
+						{
+							"id": "zepto",
+							"app": "Zepto",
+							"need": 438,
+							"has": 48,
+							"pass": false,
+							"rule": "needs 60% of a 730-day life (438 days)"
+						},
+						{
+							"id": "instamart",
+							"app": "Instamart",
+							"need": 438,
+							"has": 48,
+							"pass": false,
+							"rule": "needs 60% of a 730-day life (438 days)"
+						}
+					],
+					"life": 730,
+					"usableDays": 41,
+					"willSell": 123,
+					"atRisk": 397,
+					"atRiskMRP": 47640,
+					"blocked": true,
+					"status": "at-risk",
+					"lifeUsedPct": 93,
+					"urgency": 0.9342465753424658
+				}
 			},
 			"plan": {
 				"batch": "MF-2407-110",
@@ -4519,7 +4778,44 @@
 				"bestBefore": "2026-09-15",
 				"mfg": "2026-03-19",
 				"city": "Nagpur",
-				"staffCap": 50
+				"staffCap": 50,
+				"assess": {
+					"gates": [
+						{
+							"id": "blinkit",
+							"app": "Blinkit",
+							"need": 90,
+							"has": 36,
+							"pass": false,
+							"rule": "needs 90+ days"
+						},
+						{
+							"id": "zepto",
+							"app": "Zepto",
+							"need": 108,
+							"has": 36,
+							"pass": false,
+							"rule": "needs 60% of a 180-day life (108 days)"
+						},
+						{
+							"id": "instamart",
+							"app": "Instamart",
+							"need": 108,
+							"has": 36,
+							"pass": false,
+							"rule": "needs 60% of a 180-day life (108 days)"
+						}
+					],
+					"life": 180,
+					"usableDays": 29,
+					"willSell": 464,
+					"atRisk": 1236,
+					"atRiskMRP": 24720,
+					"blocked": true,
+					"status": "at-risk",
+					"lifeUsedPct": 80,
+					"urgency": 0.8
+				}
 			},
 			"plan": {
 				"batch": "MF-2407-111",
@@ -5366,7 +5662,44 @@
 				"bestBefore": "2026-09-30",
 				"mfg": "2024-09-30",
 				"city": "Hyderabad",
-				"staffCap": 150
+				"staffCap": 150,
+				"assess": {
+					"gates": [
+						{
+							"id": "blinkit",
+							"app": "Blinkit",
+							"need": 90,
+							"has": 44,
+							"pass": false,
+							"rule": "needs 90+ days"
+						},
+						{
+							"id": "zepto",
+							"app": "Zepto",
+							"need": 438,
+							"has": 44,
+							"pass": false,
+							"rule": "needs 60% of a 730-day life (438 days)"
+						},
+						{
+							"id": "instamart",
+							"app": "Instamart",
+							"need": 438,
+							"has": 44,
+							"pass": false,
+							"rule": "needs 60% of a 730-day life (438 days)"
+						}
+					],
+					"life": 730,
+					"usableDays": 37,
+					"willSell": 111,
+					"atRisk": 369,
+					"atRiskMRP": 55350,
+					"blocked": true,
+					"status": "at-risk",
+					"lifeUsedPct": 94,
+					"urgency": 0.9397260273972603
+				}
 			},
 			"plan": {
 				"batch": "MF-2407-112",
@@ -6029,7 +6362,44 @@
 				"bestBefore": "2026-09-27",
 				"mfg": "2026-03-31",
 				"city": "Hyderabad",
-				"staffCap": 150
+				"staffCap": 150,
+				"assess": {
+					"gates": [
+						{
+							"id": "blinkit",
+							"app": "Blinkit",
+							"need": 90,
+							"has": 40,
+							"pass": false,
+							"rule": "needs 90+ days"
+						},
+						{
+							"id": "zepto",
+							"app": "Zepto",
+							"need": 108,
+							"has": 40,
+							"pass": false,
+							"rule": "needs 60% of a 180-day life (108 days)"
+						},
+						{
+							"id": "instamart",
+							"app": "Instamart",
+							"need": 108,
+							"has": 40,
+							"pass": false,
+							"rule": "needs 60% of a 180-day life (108 days)"
+						}
+					],
+					"life": 180,
+					"usableDays": 33,
+					"willSell": 429,
+					"atRisk": 1071,
+					"atRiskMRP": 32130,
+					"blocked": true,
+					"status": "at-risk",
+					"lifeUsedPct": 78,
+					"urgency": 0.7777777777777778
+				}
 			},
 			"plan": {
 				"batch": "MF-2407-113",
@@ -6799,7 +7169,44 @@
 				"bestBefore": "2026-09-15",
 				"mfg": "2025-12-19",
 				"city": "Nagpur",
-				"staffCap": 50
+				"staffCap": 50,
+				"assess": {
+					"gates": [
+						{
+							"id": "blinkit",
+							"app": "Blinkit",
+							"need": 90,
+							"has": 22,
+							"pass": false,
+							"rule": "needs 90+ days"
+						},
+						{
+							"id": "zepto",
+							"app": "Zepto",
+							"need": 162,
+							"has": 22,
+							"pass": false,
+							"rule": "needs 60% of a 270-day life (162 days)"
+						},
+						{
+							"id": "instamart",
+							"app": "Instamart",
+							"need": 162,
+							"has": 22,
+							"pass": false,
+							"rule": "needs 60% of a 270-day life (162 days)"
+						}
+					],
+					"life": 270,
+					"usableDays": 15,
+					"willSell": 90,
+					"atRisk": 810,
+					"atRiskMRP": 52650,
+					"blocked": true,
+					"status": "at-risk",
+					"lifeUsedPct": 92,
+					"urgency": 0.9185185185185185
+				}
 			},
 			"plan": {
 				"batch": "MF-2407-114",
@@ -7529,7 +7936,44 @@
 					"bestBefore": "2026-09-15",
 					"mfg": "2025-12-19",
 					"city": "Nagpur",
-					"staffCap": 50
+					"staffCap": 50,
+					"assess": {
+						"gates": [
+							{
+								"id": "blinkit",
+								"app": "Blinkit",
+								"need": 90,
+								"has": 22,
+								"pass": false,
+								"rule": "needs 90+ days"
+							},
+							{
+								"id": "zepto",
+								"app": "Zepto",
+								"need": 162,
+								"has": 22,
+								"pass": false,
+								"rule": "needs 60% of a 270-day life (162 days)"
+							},
+							{
+								"id": "instamart",
+								"app": "Instamart",
+								"need": 162,
+								"has": 22,
+								"pass": false,
+								"rule": "needs 60% of a 270-day life (162 days)"
+							}
+						],
+						"life": 270,
+						"usableDays": 15,
+						"willSell": 90,
+						"atRisk": 810,
+						"atRiskMRP": 52650,
+						"blocked": true,
+						"status": "at-risk",
+						"lifeUsedPct": 92,
+						"urgency": 0.9185185185185185
+					}
 				},
 				"sku": {
 					"id": "oats",
@@ -7645,7 +8089,44 @@
 				"bestBefore": "2026-09-28",
 				"mfg": "2026-01-01",
 				"city": "Hyderabad",
-				"staffCap": 150
+				"staffCap": 150,
+				"assess": {
+					"gates": [
+						{
+							"id": "blinkit",
+							"app": "Blinkit",
+							"need": 90,
+							"has": 34,
+							"pass": false,
+							"rule": "needs 90+ days"
+						},
+						{
+							"id": "zepto",
+							"app": "Zepto",
+							"need": 162,
+							"has": 34,
+							"pass": false,
+							"rule": "needs 60% of a 270-day life (162 days)"
+						},
+						{
+							"id": "instamart",
+							"app": "Instamart",
+							"need": 162,
+							"has": 34,
+							"pass": false,
+							"rule": "needs 60% of a 270-day life (162 days)"
+						}
+					],
+					"life": 270,
+					"usableDays": 27,
+					"willSell": 297,
+					"atRisk": 1003,
+					"atRiskMRP": 40120,
+					"blocked": true,
+					"status": "at-risk",
+					"lifeUsedPct": 87,
+					"urgency": 0.8740740740740741
+				}
 			},
 			"plan": {
 				"batch": "MF-2407-115",
@@ -8399,7 +8880,44 @@
 				"bestBefore": "2026-09-27",
 				"mfg": "2026-03-31",
 				"city": "Nagpur",
-				"staffCap": 50
+				"staffCap": 50,
+				"assess": {
+					"gates": [
+						{
+							"id": "blinkit",
+							"app": "Blinkit",
+							"need": 90,
+							"has": 31,
+							"pass": false,
+							"rule": "needs 90+ days"
+						},
+						{
+							"id": "zepto",
+							"app": "Zepto",
+							"need": 108,
+							"has": 31,
+							"pass": false,
+							"rule": "needs 60% of a 180-day life (108 days)"
+						},
+						{
+							"id": "instamart",
+							"app": "Instamart",
+							"need": 108,
+							"has": 31,
+							"pass": false,
+							"rule": "needs 60% of a 180-day life (108 days)"
+						}
+					],
+					"life": 180,
+					"usableDays": 24,
+					"willSell": 288,
+					"atRisk": 1212,
+					"atRiskMRP": 30300,
+					"blocked": true,
+					"status": "at-risk",
+					"lifeUsedPct": 83,
+					"urgency": 0.8277777777777777
+				}
 			},
 			"plan": {
 				"batch": "MF-2407-116",
@@ -9177,5 +9695,1463 @@
 			"sku": "chikki",
 			"dist": "rakesh"
 		}
-	]
+	],
+	"rows": [
+		{
+			"ref": "MF-2406-105",
+			"sku": "biscuits",
+			"name": "Choco Cream Biscuits 200 g",
+			"img": "pack-biscuits",
+			"distributor": "rakesh",
+			"distributorName": "Rakesh Traders",
+			"city": "Nagpur",
+			"flagged": "2026-07-03",
+			"cleared": "2026-08-14",
+			"outcome": "sold",
+			"history": true,
+			"figures": {
+				"net": 22055,
+				"swing": 26286.5,
+				"pnl": -1045,
+				"writeOff": 27331.5,
+				"itcKept": 1302,
+				"itcReversed": 0,
+				"kg": 225.75,
+				"co2": 564.38,
+				"meals": 0,
+				"units": 1050,
+				"sold": 1050,
+				"donated": 0,
+				"godown": 0,
+				"destroyed": 0,
+				"resoldKg": 225.75,
+				"donatedKg": 0,
+				"destroyedKg": 0,
+				"credit": 0,
+				"support": 8395
+			},
+			"lines": [
+				{
+					"id": "kirana",
+					"short": "Kirana cluster",
+					"units": 490,
+					"price": 24,
+					"gross": 11760
+				},
+				{
+					"id": "expiresoon",
+					"short": "ExpireSoon",
+					"units": 560,
+					"price": 19,
+					"gross": 10640
+				}
+			],
+			"papers": [
+				{
+					"id": "invoice",
+					"type": "Tax invoice",
+					"no": "INV/26-27/0921",
+					"status": "drafted",
+					"date": "2026-07-06",
+					"amount": 11172,
+					"pdf": false
+				},
+				{
+					"id": "eway",
+					"type": "E-way bill check",
+					"no": "MF-2406-105",
+					"status": "not required",
+					"date": "2026-07-06",
+					"amount": 11172,
+					"pdf": false
+				},
+				{
+					"id": "support",
+					"type": "Price-support credit note",
+					"no": "CN/0102",
+					"status": "generated",
+					"date": "2026-07-06",
+					"amount": 8395,
+					"pdf": false
+				},
+				{
+					"id": "itc",
+					"type": "GST ITC memo",
+					"no": "s.17(5)(h)",
+					"status": "generated",
+					"date": "2026-07-06",
+					"amount": 1302,
+					"pdf": false
+				},
+				{
+					"id": "fssai",
+					"type": "FSSAI surplus-food checklist",
+					"no": "no donation",
+					"status": "not required",
+					"date": "2026-07-06",
+					"amount": 0,
+					"pdf": false
+				},
+				{
+					"id": "destruction",
+					"type": "Destruction certificate",
+					"no": "0 units left",
+					"status": "not required",
+					"date": "2026-07-06",
+					"amount": 0,
+					"pdf": false
+				}
+			],
+			"reviewed": {
+				"by": "anita",
+				"at": "2026-07-07T15:00"
+			}
+		},
+		{
+			"ref": "MF-2406-106",
+			"sku": "chikki",
+			"name": "Peanut Chikki 100 g",
+			"img": "pack-chikki",
+			"distributor": "lakshmi",
+			"distributorName": "Lakshmi Agencies",
+			"city": "Hyderabad",
+			"flagged": "2026-07-08",
+			"cleared": "2026-08-15",
+			"outcome": "sold",
+			"history": true,
+			"figures": {
+				"net": 15847,
+				"swing": 19216.74,
+				"pnl": 689,
+				"writeOff": 18527.74,
+				"itcKept": 851.18,
+				"itcReversed": 0,
+				"kg": 128.26,
+				"co2": 320.65,
+				"meals": 0,
+				"units": 1166,
+				"sold": 1166,
+				"donated": 0,
+				"godown": 0,
+				"destroyed": 0,
+				"resoldKg": 128.26,
+				"donatedKg": 0,
+				"destroyedKg": 0,
+				"credit": 0,
+				"support": 5141
+			},
+			"lines": [
+				{
+					"id": "kirana",
+					"short": "Kirana cluster",
+					"units": 686,
+					"price": 15,
+					"gross": 10290
+				},
+				{
+					"id": "expiresoon",
+					"short": "ExpireSoon",
+					"units": 480,
+					"price": 12.5,
+					"gross": 6000
+				}
+			],
+			"papers": [
+				{
+					"id": "invoice",
+					"type": "Tax invoice",
+					"no": "INV/26-27/0922",
+					"status": "drafted",
+					"date": "2026-07-11",
+					"amount": 6300,
+					"pdf": false
+				},
+				{
+					"id": "eway",
+					"type": "E-way bill check",
+					"no": "MF-2406-106",
+					"status": "not required",
+					"date": "2026-07-11",
+					"amount": 6300,
+					"pdf": false
+				},
+				{
+					"id": "support",
+					"type": "Price-support credit note",
+					"no": "CN/0103",
+					"status": "generated",
+					"date": "2026-07-11",
+					"amount": 5141,
+					"pdf": false
+				},
+				{
+					"id": "itc",
+					"type": "GST ITC memo",
+					"no": "s.17(5)(h)",
+					"status": "generated",
+					"date": "2026-07-11",
+					"amount": 851.18,
+					"pdf": false
+				},
+				{
+					"id": "fssai",
+					"type": "FSSAI surplus-food checklist",
+					"no": "no donation",
+					"status": "not required",
+					"date": "2026-07-11",
+					"amount": 0,
+					"pdf": false
+				},
+				{
+					"id": "destruction",
+					"type": "Destruction certificate",
+					"no": "0 units left",
+					"status": "not required",
+					"date": "2026-07-11",
+					"amount": 0,
+					"pdf": false
+				}
+			],
+			"reviewed": {
+				"by": "anita",
+				"at": "2026-07-12T15:00"
+			}
+		},
+		{
+			"ref": "MF-2406-107",
+			"sku": "oats",
+			"name": "Masala Oats 200 g",
+			"img": "pack-oats",
+			"distributor": "lakshmi",
+			"distributorName": "Lakshmi Agencies",
+			"city": "Hyderabad",
+			"flagged": "2026-07-14",
+			"cleared": "2026-08-23",
+			"outcome": "leftover",
+			"history": true,
+			"figures": {
+				"net": 18842,
+				"swing": 21606.5,
+				"pnl": -4333.25,
+				"writeOff": 25939.75,
+				"itcKept": 1157.1,
+				"itcReversed": 131.95,
+				"kg": 125.4,
+				"co2": 313.5,
+				"meals": 0,
+				"units": 635,
+				"sold": 570,
+				"donated": 0,
+				"godown": 65,
+				"destroyed": 65,
+				"resoldKg": 125.4,
+				"donatedKg": 0,
+				"destroyedKg": 14.3,
+				"credit": 3087.5,
+				"support": 8233
+			},
+			"lines": [
+				{
+					"id": "kirana",
+					"short": "Kirana cluster",
+					"units": 180,
+					"price": 39,
+					"gross": 7020
+				},
+				{
+					"id": "expiresoon",
+					"short": "ExpireSoon",
+					"units": 390,
+					"price": 30.8,
+					"gross": 12012
+				}
+			],
+			"papers": [
+				{
+					"id": "invoice",
+					"type": "Tax invoice",
+					"no": "INV/26-27/0923",
+					"status": "drafted",
+					"date": "2026-07-17",
+					"amount": 12613,
+					"pdf": false
+				},
+				{
+					"id": "eway",
+					"type": "E-way bill check",
+					"no": "MF-2406-107",
+					"status": "not required",
+					"date": "2026-07-17",
+					"amount": 12613,
+					"pdf": false
+				},
+				{
+					"id": "support",
+					"type": "Price-support credit note",
+					"no": "CN/0104",
+					"status": "generated",
+					"date": "2026-07-17",
+					"amount": 8233,
+					"pdf": false
+				},
+				{
+					"id": "itc",
+					"type": "GST ITC memo",
+					"no": "s.17(5)(h)",
+					"status": "generated",
+					"date": "2026-07-17",
+					"amount": 1157.1,
+					"pdf": false
+				},
+				{
+					"id": "fssai",
+					"type": "FSSAI surplus-food checklist",
+					"no": "no donation",
+					"status": "not required",
+					"date": "2026-07-17",
+					"amount": 0,
+					"pdf": false
+				},
+				{
+					"id": "destruction",
+					"type": "Destruction certificate",
+					"no": "65 units",
+					"status": "generated",
+					"date": "2026-07-17",
+					"amount": 0,
+					"pdf": false
+				},
+				{
+					"id": "expiry",
+					"type": "Expiry credit note",
+					"no": "CN/0111",
+					"status": "generated",
+					"date": "2026-08-23",
+					"amount": 3087.5,
+					"pdf": false
+				}
+			],
+			"reviewed": {
+				"by": "anita",
+				"at": "2026-07-18T15:00"
+			}
+		},
+		{
+			"ref": "MF-2406-109",
+			"sku": "poha",
+			"name": "Instant Poha 250 g",
+			"img": "pack-poha",
+			"distributor": "lakshmi",
+			"distributorName": "Lakshmi Agencies",
+			"city": "Hyderabad",
+			"flagged": "2026-07-28",
+			"cleared": "2026-08-23",
+			"outcome": "donation",
+			"history": true,
+			"figures": {
+				"net": 15130.56,
+				"swing": 19737.84,
+				"pnl": -14257.44,
+				"writeOff": 33995.28,
+				"itcKept": 943.08,
+				"itcReversed": 706.44,
+				"kg": 255.96,
+				"co2": 639.9,
+				"meals": 406,
+				"units": 948,
+				"sold": 542,
+				"donated": 406,
+				"godown": 0,
+				"destroyed": 0,
+				"resoldKg": 146.34,
+				"donatedKg": 109.62,
+				"destroyedKg": 0,
+				"credit": 0,
+				"support": 21880
+			},
+			"lines": [
+				{
+					"id": "kirana",
+					"short": "Kirana cluster",
+					"units": 392,
+					"price": 33,
+					"gross": 12936
+				},
+				{
+					"id": "staff",
+					"short": "Staff sale",
+					"units": 150,
+					"price": 22,
+					"gross": 3300
+				},
+				{
+					"id": "foodbank",
+					"short": "Food bank",
+					"units": 406,
+					"price": 0,
+					"gross": 0
+				}
+			],
+			"papers": [
+				{
+					"id": "support",
+					"type": "Price-support credit note",
+					"no": "CN/0106",
+					"status": "generated",
+					"date": "2026-07-31",
+					"amount": 21880,
+					"pdf": false
+				},
+				{
+					"id": "itc",
+					"type": "GST ITC memo",
+					"no": "s.17(5)(h)",
+					"status": "generated",
+					"date": "2026-07-31",
+					"amount": 943.08,
+					"pdf": false
+				},
+				{
+					"id": "fssai",
+					"type": "FSSAI surplus-food checklist",
+					"no": "406 units",
+					"status": "generated",
+					"date": "2026-07-31",
+					"amount": 0,
+					"pdf": false
+				},
+				{
+					"id": "receipt",
+					"type": "Donation receipt",
+					"no": "FI/HYD/26-27/0415",
+					"status": "generated",
+					"date": "2026-07-30",
+					"amount": 0,
+					"pdf": false
+				},
+				{
+					"id": "destruction",
+					"type": "Destruction certificate",
+					"no": "0 units left",
+					"status": "not required",
+					"date": "2026-07-31",
+					"amount": 0,
+					"pdf": false
+				}
+			],
+			"reviewed": {
+				"by": "anita",
+				"at": "2026-08-01T15:00"
+			}
+		},
+		{
+			"ref": "MF-2406-108",
+			"sku": "poha",
+			"name": "Instant Poha 250 g",
+			"img": "pack-poha",
+			"distributor": "rakesh",
+			"distributorName": "Rakesh Traders",
+			"city": "Nagpur",
+			"flagged": "2026-07-21",
+			"cleared": "2026-09-04",
+			"outcome": "sold",
+			"history": true,
+			"figures": {
+				"net": 19320.8,
+				"swing": 22586.72,
+				"pnl": -1511.2,
+				"writeOff": 24097.92,
+				"itcKept": 1169.28,
+				"itcReversed": 0,
+				"kg": 181.44,
+				"co2": 453.6,
+				"meals": 0,
+				"units": 672,
+				"sold": 672,
+				"donated": 0,
+				"godown": 0,
+				"destroyed": 0,
+				"resoldKg": 181.44,
+				"donatedKg": 0,
+				"destroyedKg": 0,
+				"credit": 0,
+				"support": 7559
+			},
+			"lines": [
+				{
+					"id": "kirana",
+					"short": "Kirana cluster",
+					"units": 294,
+					"price": 33,
+					"gross": 9702
+				},
+				{
+					"id": "expiresoon",
+					"short": "ExpireSoon",
+					"units": 378,
+					"price": 26.1,
+					"gross": 9865.8
+				}
+			],
+			"papers": [
+				{
+					"id": "invoice",
+					"type": "Tax invoice",
+					"no": "INV/26-27/0924",
+					"status": "drafted",
+					"date": "2026-07-24",
+					"amount": 10359,
+					"pdf": false
+				},
+				{
+					"id": "eway",
+					"type": "E-way bill check",
+					"no": "MF-2406-108",
+					"status": "not required",
+					"date": "2026-07-24",
+					"amount": 10359,
+					"pdf": false
+				},
+				{
+					"id": "support",
+					"type": "Price-support credit note",
+					"no": "CN/0105",
+					"status": "generated",
+					"date": "2026-07-24",
+					"amount": 7559,
+					"pdf": false
+				},
+				{
+					"id": "itc",
+					"type": "GST ITC memo",
+					"no": "s.17(5)(h)",
+					"status": "generated",
+					"date": "2026-07-24",
+					"amount": 1169.28,
+					"pdf": false
+				},
+				{
+					"id": "fssai",
+					"type": "FSSAI surplus-food checklist",
+					"no": "no donation",
+					"status": "not required",
+					"date": "2026-07-24",
+					"amount": 0,
+					"pdf": false
+				},
+				{
+					"id": "destruction",
+					"type": "Destruction certificate",
+					"no": "0 units left",
+					"status": "not required",
+					"date": "2026-07-24",
+					"amount": 0,
+					"pdf": false
+				}
+			],
+			"reviewed": {
+				"by": "anita",
+				"at": "2026-07-25T15:00"
+			}
+		},
+		{
+			"ref": "MF-2407-111",
+			"sku": "mango",
+			"name": "Mango Drink 200 ml",
+			"img": "pack-mango",
+			"distributor": "rakesh",
+			"distributorName": "Rakesh Traders",
+			"city": "Nagpur",
+			"flagged": "2026-08-10",
+			"cleared": "2026-09-15",
+			"outcome": "leftover",
+			"history": true,
+			"figures": {
+				"net": 11320,
+				"swing": 14833.68,
+				"pnl": -2890.56,
+				"writeOff": 17724.24,
+				"itcKept": 578.6,
+				"itcReversed": 101.2,
+				"kg": 226.18,
+				"co2": 565.45,
+				"meals": 0,
+				"units": 1236,
+				"sold": 1052,
+				"donated": 0,
+				"godown": 184,
+				"destroyed": 184,
+				"resoldKg": 226.18,
+				"donatedKg": 0,
+				"destroyedKg": 39.56,
+				"credit": 2668,
+				"support": 3934
+			},
+			"lines": [
+				{
+					"id": "kirana",
+					"short": "Kirana cluster",
+					"units": 600,
+					"price": 12,
+					"gross": 7200
+				},
+				{
+					"id": "expiresoon",
+					"short": "ExpireSoon",
+					"units": 452,
+					"price": 10,
+					"gross": 4520
+				}
+			],
+			"papers": [
+				{
+					"id": "invoice",
+					"type": "Tax invoice",
+					"no": "INV/26-27/0926",
+					"status": "drafted",
+					"date": "2026-08-13",
+					"amount": 4746,
+					"pdf": false
+				},
+				{
+					"id": "eway",
+					"type": "E-way bill check",
+					"no": "MF-2407-111",
+					"status": "not required",
+					"date": "2026-08-13",
+					"amount": 4746,
+					"pdf": false
+				},
+				{
+					"id": "support",
+					"type": "Price-support credit note",
+					"no": "CN/0108",
+					"status": "generated",
+					"date": "2026-08-13",
+					"amount": 3934,
+					"pdf": false
+				},
+				{
+					"id": "itc",
+					"type": "GST ITC memo",
+					"no": "s.17(5)(h)",
+					"status": "generated",
+					"date": "2026-08-13",
+					"amount": 578.6,
+					"pdf": false
+				},
+				{
+					"id": "fssai",
+					"type": "FSSAI surplus-food checklist",
+					"no": "no donation",
+					"status": "not required",
+					"date": "2026-08-13",
+					"amount": 0,
+					"pdf": false
+				},
+				{
+					"id": "destruction",
+					"type": "Destruction certificate",
+					"no": "184 units",
+					"status": "generated",
+					"date": "2026-08-13",
+					"amount": 0,
+					"pdf": false
+				},
+				{
+					"id": "expiry",
+					"type": "Expiry credit note",
+					"no": "CN/0115",
+					"status": "generated",
+					"date": "2026-09-15",
+					"amount": 2668,
+					"pdf": false
+				}
+			],
+			"reviewed": {
+				"by": "anita",
+				"at": "2026-08-14T15:00"
+			}
+		},
+		{
+			"ref": "MF-2407-114",
+			"sku": "oats",
+			"name": "Masala Oats 200 g",
+			"img": "pack-oats",
+			"distributor": "rakesh",
+			"distributorName": "Rakesh Traders",
+			"city": "Nagpur",
+			"flagged": "2026-08-24",
+			"cleared": "2026-09-15",
+			"outcome": "donation",
+			"history": true,
+			"figures": {
+				"net": 11440.02,
+				"swing": 15368.52,
+				"pnl": -17719.98,
+				"writeOff": 33088.5,
+				"itcKept": 698.32,
+				"itcReversed": 945.98,
+				"kg": 178.2,
+				"co2": 445.5,
+				"meals": 466,
+				"units": 810,
+				"sold": 344,
+				"donated": 466,
+				"godown": 0,
+				"destroyed": 0,
+				"resoldKg": 75.68,
+				"donatedKg": 102.52,
+				"destroyedKg": 0,
+				"credit": 0,
+				"support": 25856
+			},
+			"lines": [
+				{
+					"id": "kirana",
+					"short": "Kirana cluster",
+					"units": 294,
+					"price": 39,
+					"gross": 11466
+				},
+				{
+					"id": "staff",
+					"short": "Staff sale",
+					"units": 50,
+					"price": 26,
+					"gross": 1300
+				},
+				{
+					"id": "foodbank",
+					"short": "Food bank",
+					"units": 466,
+					"price": 0,
+					"gross": 0
+				}
+			],
+			"papers": [
+				{
+					"id": "support",
+					"type": "Price-support credit note",
+					"no": "CN/0112",
+					"status": "generated",
+					"date": "2026-08-27",
+					"amount": 25856,
+					"pdf": false
+				},
+				{
+					"id": "itc",
+					"type": "GST ITC memo",
+					"no": "s.17(5)(h)",
+					"status": "generated",
+					"date": "2026-08-27",
+					"amount": 698.32,
+					"pdf": false
+				},
+				{
+					"id": "fssai",
+					"type": "FSSAI surplus-food checklist",
+					"no": "466 units",
+					"status": "generated",
+					"date": "2026-08-27",
+					"amount": 0,
+					"pdf": false
+				},
+				{
+					"id": "receipt",
+					"type": "Donation receipt",
+					"no": "FI/NAG/26-27/0416",
+					"status": "generated",
+					"date": "2026-08-26",
+					"amount": 0,
+					"pdf": false
+				},
+				{
+					"id": "destruction",
+					"type": "Destruction certificate",
+					"no": "0 units left",
+					"status": "not required",
+					"date": "2026-08-27",
+					"amount": 0,
+					"pdf": false
+				}
+			],
+			"reviewed": {
+				"by": "anita",
+				"at": "2026-08-28T15:00"
+			}
+		},
+		{
+			"ref": "MF-2407-110",
+			"sku": "facewash",
+			"name": "Aloe Face Wash 100 ml",
+			"img": "pack-facewash",
+			"distributor": "rakesh",
+			"distributorName": "Rakesh Traders",
+			"city": "Nagpur",
+			"flagged": "2026-08-04",
+			"cleared": "2026-09-21",
+			"outcome": "sold",
+			"history": true,
+			"figures": {
+				"net": 24660.5,
+				"swing": 30206.59,
+				"pnl": 1634.5,
+				"writeOff": 28572.09,
+				"itcKept": 4664.75,
+				"itcReversed": 0,
+				"kg": 47.64,
+				"co2": 119.1,
+				"meals": 0,
+				"units": 397,
+				"sold": 397,
+				"donated": 0,
+				"godown": 0,
+				"destroyed": 0,
+				"resoldKg": 47.64,
+				"donatedKg": 0,
+				"destroyedKg": 0,
+				"credit": 0,
+				"support": 10276
+			},
+			"lines": [
+				{
+					"id": "kirana",
+					"short": "Kirana cluster",
+					"units": 147,
+					"price": 72,
+					"gross": 10584
+				},
+				{
+					"id": "expiresoon",
+					"short": "ExpireSoon",
+					"units": 250,
+					"price": 57,
+					"gross": 14250
+				}
+			],
+			"papers": [
+				{
+					"id": "invoice",
+					"type": "Tax invoice",
+					"no": "INV/26-27/0925",
+					"status": "drafted",
+					"date": "2026-08-07",
+					"amount": 16815,
+					"pdf": false
+				},
+				{
+					"id": "eway",
+					"type": "E-way bill check",
+					"no": "MF-2407-110",
+					"status": "not required",
+					"date": "2026-08-07",
+					"amount": 16815,
+					"pdf": false
+				},
+				{
+					"id": "support",
+					"type": "Price-support credit note",
+					"no": "CN/0107",
+					"status": "generated",
+					"date": "2026-08-07",
+					"amount": 10276,
+					"pdf": false
+				},
+				{
+					"id": "itc",
+					"type": "GST ITC memo",
+					"no": "s.17(5)(h)",
+					"status": "generated",
+					"date": "2026-08-07",
+					"amount": 4664.75,
+					"pdf": false
+				},
+				{
+					"id": "fssai",
+					"type": "FSSAI surplus-food checklist",
+					"no": "no donation",
+					"status": "not required",
+					"date": "2026-08-07",
+					"amount": 0,
+					"pdf": false
+				},
+				{
+					"id": "destruction",
+					"type": "Destruction certificate",
+					"no": "0 units left",
+					"status": "not required",
+					"date": "2026-08-07",
+					"amount": 0,
+					"pdf": false
+				}
+			],
+			"reviewed": {
+				"by": "anita",
+				"at": "2026-08-08T15:00"
+			}
+		},
+		{
+			"ref": "MF-2407-113",
+			"sku": "chips",
+			"name": "Masala Chips 150 g",
+			"img": "pack-chips",
+			"distributor": "lakshmi",
+			"distributorName": "Lakshmi Agencies",
+			"city": "Hyderabad",
+			"flagged": "2026-08-18",
+			"cleared": "2026-09-27",
+			"outcome": "sold",
+			"history": true,
+			"figures": {
+				"net": 17210.3,
+				"swing": 20808.86,
+				"pnl": 74.3,
+				"writeOff": 20734.56,
+				"itcKept": 963.9,
+				"itcReversed": 0,
+				"kg": 171.36,
+				"co2": 428.4,
+				"meals": 0,
+				"units": 1071,
+				"sold": 1071,
+				"donated": 0,
+				"godown": 0,
+				"destroyed": 0,
+				"resoldKg": 171.36,
+				"donatedKg": 0,
+				"destroyedKg": 0,
+				"credit": 0,
+				"support": 6352
+			},
+			"lines": [
+				{
+					"id": "kirana",
+					"short": "Kirana cluster",
+					"units": 637,
+					"price": 18,
+					"gross": 11466
+				},
+				{
+					"id": "expiresoon",
+					"short": "ExpireSoon",
+					"units": 434,
+					"price": 14.2,
+					"gross": 6162.8
+				}
+			],
+			"papers": [
+				{
+					"id": "invoice",
+					"type": "Tax invoice",
+					"no": "INV/26-27/0928",
+					"status": "drafted",
+					"date": "2026-08-21",
+					"amount": 6471,
+					"pdf": false
+				},
+				{
+					"id": "eway",
+					"type": "E-way bill check",
+					"no": "MF-2407-113",
+					"status": "not required",
+					"date": "2026-08-21",
+					"amount": 6471,
+					"pdf": false
+				},
+				{
+					"id": "support",
+					"type": "Price-support credit note",
+					"no": "CN/0110",
+					"status": "generated",
+					"date": "2026-08-21",
+					"amount": 6352,
+					"pdf": false
+				},
+				{
+					"id": "itc",
+					"type": "GST ITC memo",
+					"no": "s.17(5)(h)",
+					"status": "generated",
+					"date": "2026-08-21",
+					"amount": 963.9,
+					"pdf": false
+				},
+				{
+					"id": "fssai",
+					"type": "FSSAI surplus-food checklist",
+					"no": "no donation",
+					"status": "not required",
+					"date": "2026-08-21",
+					"amount": 0,
+					"pdf": false
+				},
+				{
+					"id": "destruction",
+					"type": "Destruction certificate",
+					"no": "0 units left",
+					"status": "not required",
+					"date": "2026-08-21",
+					"amount": 0,
+					"pdf": false
+				}
+			],
+			"reviewed": {
+				"by": "anita",
+				"at": "2026-08-22T15:00"
+			}
+		},
+		{
+			"ref": "MF-2407-116",
+			"sku": "chikki",
+			"name": "Peanut Chikki 100 g",
+			"img": "pack-chikki",
+			"distributor": "rakesh",
+			"distributorName": "Rakesh Traders",
+			"city": "Nagpur",
+			"flagged": "2026-08-27",
+			"cleared": "2026-09-27",
+			"outcome": "leftover",
+			"history": true,
+			"figures": {
+				"net": 14312,
+				"swing": 17433.2,
+				"pnl": -1825.48,
+				"writeOff": 19258.68,
+				"itcKept": 788.4,
+				"itcReversed": 96.36,
+				"kg": 118.8,
+				"co2": 297,
+				"meals": 0,
+				"units": 1212,
+				"sold": 1080,
+				"donated": 0,
+				"godown": 132,
+				"destroyed": 132,
+				"resoldKg": 118.8,
+				"donatedKg": 0,
+				"destroyedKg": 14.52,
+				"credit": 2376,
+				"support": 5128
+			},
+			"lines": [
+				{
+					"id": "kirana",
+					"short": "Kirana cluster",
+					"units": 456,
+					"price": 15,
+					"gross": 6840
+				},
+				{
+					"id": "expiresoon",
+					"short": "ExpireSoon",
+					"units": 624,
+					"price": 12.5,
+					"gross": 7800
+				}
+			],
+			"papers": [
+				{
+					"id": "invoice",
+					"type": "Tax invoice",
+					"no": "INV/26-27/0930",
+					"status": "drafted",
+					"date": "2026-08-30",
+					"amount": 8190,
+					"pdf": false
+				},
+				{
+					"id": "eway",
+					"type": "E-way bill check",
+					"no": "MF-2407-116",
+					"status": "not required",
+					"date": "2026-08-30",
+					"amount": 8190,
+					"pdf": false
+				},
+				{
+					"id": "support",
+					"type": "Price-support credit note",
+					"no": "CN/0114",
+					"status": "generated",
+					"date": "2026-08-30",
+					"amount": 5128,
+					"pdf": false
+				},
+				{
+					"id": "itc",
+					"type": "GST ITC memo",
+					"no": "s.17(5)(h)",
+					"status": "generated",
+					"date": "2026-08-30",
+					"amount": 788.4,
+					"pdf": false
+				},
+				{
+					"id": "fssai",
+					"type": "FSSAI surplus-food checklist",
+					"no": "no donation",
+					"status": "not required",
+					"date": "2026-08-30",
+					"amount": 0,
+					"pdf": false
+				},
+				{
+					"id": "destruction",
+					"type": "Destruction certificate",
+					"no": "132 units",
+					"status": "generated",
+					"date": "2026-08-30",
+					"amount": 0,
+					"pdf": false
+				},
+				{
+					"id": "expiry",
+					"type": "Expiry credit note",
+					"no": "CN/0116",
+					"status": "generated",
+					"date": "2026-09-27",
+					"amount": 2376,
+					"pdf": false
+				}
+			],
+			"reviewed": {
+				"by": "anita",
+				"at": "2026-08-31T15:00"
+			}
+		},
+		{
+			"ref": "MF-2407-115",
+			"sku": "biscuits",
+			"name": "Choco Cream Biscuits 200 g",
+			"img": "pack-biscuits",
+			"distributor": "lakshmi",
+			"distributorName": "Lakshmi Agencies",
+			"city": "Hyderabad",
+			"flagged": "2026-08-25",
+			"cleared": "2026-09-28",
+			"outcome": "sold",
+			"history": true,
+			"figures": {
+				"net": 21382.5,
+				"swing": 25424.62,
+				"pnl": -683.5,
+				"writeOff": 26108.12,
+				"itcKept": 1243.72,
+				"itcReversed": 0,
+				"kg": 215.65,
+				"co2": 539.13,
+				"meals": 0,
+				"units": 1003,
+				"sold": 1003,
+				"donated": 0,
+				"godown": 0,
+				"destroyed": 0,
+				"resoldKg": 215.65,
+				"donatedKg": 0,
+				"destroyedKg": 0,
+				"credit": 0,
+				"support": 7705
+			},
+			"lines": [
+				{
+					"id": "kirana",
+					"short": "Kirana cluster",
+					"units": 539,
+					"price": 24,
+					"gross": 12936
+				},
+				{
+					"id": "expiresoon",
+					"short": "ExpireSoon",
+					"units": 464,
+					"price": 19,
+					"gross": 8816
+				}
+			],
+			"papers": [
+				{
+					"id": "invoice",
+					"type": "Tax invoice",
+					"no": "INV/26-27/0929",
+					"status": "drafted",
+					"date": "2026-08-28",
+					"amount": 9257,
+					"pdf": false
+				},
+				{
+					"id": "eway",
+					"type": "E-way bill check",
+					"no": "MF-2407-115",
+					"status": "not required",
+					"date": "2026-08-28",
+					"amount": 9257,
+					"pdf": false
+				},
+				{
+					"id": "support",
+					"type": "Price-support credit note",
+					"no": "CN/0113",
+					"status": "generated",
+					"date": "2026-08-28",
+					"amount": 7705,
+					"pdf": false
+				},
+				{
+					"id": "itc",
+					"type": "GST ITC memo",
+					"no": "s.17(5)(h)",
+					"status": "generated",
+					"date": "2026-08-28",
+					"amount": 1243.72,
+					"pdf": false
+				},
+				{
+					"id": "fssai",
+					"type": "FSSAI surplus-food checklist",
+					"no": "no donation",
+					"status": "not required",
+					"date": "2026-08-28",
+					"amount": 0,
+					"pdf": false
+				},
+				{
+					"id": "destruction",
+					"type": "Destruction certificate",
+					"no": "0 units left",
+					"status": "not required",
+					"date": "2026-08-28",
+					"amount": 0,
+					"pdf": false
+				}
+			],
+			"reviewed": {
+				"by": "anita",
+				"at": "2026-08-29T15:00"
+			}
+		},
+		{
+			"ref": "MF-2407-112",
+			"sku": "hairoil",
+			"name": "Coconut Hair Oil 200 ml",
+			"img": "pack-hairoil",
+			"distributor": "lakshmi",
+			"distributorName": "Lakshmi Agencies",
+			"city": "Hyderabad",
+			"flagged": "2026-08-17",
+			"cleared": "2026-09-30",
+			"outcome": "sold",
+			"history": true,
+			"figures": {
+				"net": 28862.9,
+				"swing": 31420.07,
+				"pnl": 2294.9,
+				"writeOff": 29125.17,
+				"itcKept": 1494.45,
+				"itcReversed": 0,
+				"kg": 84.87,
+				"co2": 212.18,
+				"meals": 0,
+				"units": 369,
+				"sold": 369,
+				"donated": 0,
+				"godown": 0,
+				"destroyed": 0,
+				"resoldKg": 84.87,
+				"donatedKg": 0,
+				"destroyedKg": 0,
+				"credit": 0,
+				"support": 11727
+			},
+			"lines": [
+				{
+					"id": "kirana",
+					"short": "Kirana cluster",
+					"units": 147,
+					"price": 90,
+					"gross": 13230
+				},
+				{
+					"id": "expiresoon",
+					"short": "ExpireSoon",
+					"units": 222,
+					"price": 71.2,
+					"gross": 15806.4
+				}
+			],
+			"papers": [
+				{
+					"id": "invoice",
+					"type": "Tax invoice",
+					"no": "INV/26-27/0927",
+					"status": "drafted",
+					"date": "2026-08-20",
+					"amount": 16596,
+					"pdf": false
+				},
+				{
+					"id": "eway",
+					"type": "E-way bill check",
+					"no": "MF-2407-112",
+					"status": "not required",
+					"date": "2026-08-20",
+					"amount": 16596,
+					"pdf": false
+				},
+				{
+					"id": "support",
+					"type": "Price-support credit note",
+					"no": "CN/0109",
+					"status": "generated",
+					"date": "2026-08-20",
+					"amount": 11727,
+					"pdf": false
+				},
+				{
+					"id": "itc",
+					"type": "GST ITC memo",
+					"no": "s.17(5)(h)",
+					"status": "generated",
+					"date": "2026-08-20",
+					"amount": 1494.45,
+					"pdf": false
+				},
+				{
+					"id": "fssai",
+					"type": "FSSAI surplus-food checklist",
+					"no": "no donation",
+					"status": "not required",
+					"date": "2026-08-20",
+					"amount": 0,
+					"pdf": false
+				},
+				{
+					"id": "destruction",
+					"type": "Destruction certificate",
+					"no": "0 units left",
+					"status": "not required",
+					"date": "2026-08-20",
+					"amount": 0,
+					"pdf": false
+				}
+			],
+			"reviewed": {
+				"by": "anita",
+				"at": "2026-08-21T15:00"
+			}
+		}
+	],
+	"story": {
+		"row": {
+			"ref": "MF-2409-117",
+			"sku": "chips",
+			"name": "Masala Chips 150 g",
+			"img": "pack-chips",
+			"distributor": "rakesh",
+			"distributorName": "Rakesh Traders",
+			"city": "Nagpur",
+			"flagged": "2026-10-02",
+			"cleared": "2026-10-30",
+			"outcome": "sold",
+			"history": false,
+			"figures": {
+				"net": 21152.4,
+				"swing": 25722,
+				"pnl": -607.6,
+				"writeOff": 26329.6,
+				"itcKept": 1224,
+				"itcReversed": 0,
+				"kg": 217.6,
+				"co2": 544,
+				"meals": 0,
+				"units": 1360,
+				"sold": 1360,
+				"donated": 0,
+				"godown": 0,
+				"destroyed": 0,
+				"resoldKg": 217.6,
+				"donatedKg": 0,
+				"destroyedKg": 0,
+				"credit": 0,
+				"support": 8768
+			},
+			"lines": [
+				{
+					"id": "kirana",
+					"short": "Kirana cluster",
+					"units": 588,
+					"price": 18,
+					"gross": 10584
+				},
+				{
+					"id": "expiresoon",
+					"short": "ExpireSoon",
+					"units": 772,
+					"price": 14.2,
+					"gross": 10962.4
+				}
+			],
+			"papers": [
+				{
+					"id": "invoice",
+					"type": "Tax invoice",
+					"no": "INV/26-27/0931",
+					"status": "drafted",
+					"date": "2026-10-05",
+					"amount": 11510,
+					"pdf": false
+				},
+				{
+					"id": "eway",
+					"type": "E-way bill check",
+					"no": "MF-2409-117",
+					"status": "not required",
+					"date": null,
+					"amount": 11510,
+					"pdf": false
+				},
+				{
+					"id": "support",
+					"type": "Price-support credit note",
+					"no": "CN/0117",
+					"status": "generated",
+					"date": null,
+					"amount": 8768,
+					"pdf": false
+				},
+				{
+					"id": "itc",
+					"type": "GST ITC memo",
+					"no": "s.17(5)(h)",
+					"status": "generated",
+					"date": null,
+					"amount": 1224,
+					"pdf": false
+				},
+				{
+					"id": "fssai",
+					"type": "FSSAI surplus-food checklist",
+					"no": "no donation",
+					"status": "not required",
+					"date": null,
+					"amount": 0,
+					"pdf": false
+				},
+				{
+					"id": "destruction",
+					"type": "Destruction certificate",
+					"no": "0 units left",
+					"status": "not required",
+					"date": null,
+					"amount": 0,
+					"pdf": false
+				}
+			],
+			"reviewed": {
+				"by": "anita",
+				"at": null
+			}
+		},
+		"cleared": "2026-10-30"
+	}
 }

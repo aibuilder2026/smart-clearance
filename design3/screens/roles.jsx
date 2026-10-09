@@ -36,7 +36,7 @@
       case "batches": return <X.Batches me={me} />;
       case "setup": return <X.Setup me={me} />;
       case "report": return <X.Report me={me} />;
-      case "paperwork": return r === "operator" ? <X.Paperwork me={me} /> : <X.Report me={me} at={{ ref: D.BATCHES[0].id, tab: "papers" }} />;
+      case "paperwork": return r === "operator" ? <X.Paperwork me={me} /> : <X.Report me={me} at={{ ref: (opts && opts.ref) || D.BATCHES[0].id, tab: "papers" }} />;
       case "home": return r === "retailer" ? <X.RetailHome me={me} /> : <X.DistHome me={me} />;
       case "photo": return <X.CameraScreen me={me} realCamera={opts && opts.realCamera} />;
       case "van": return <X.VanRoute me={me} />;
@@ -104,7 +104,7 @@
     const body = <Shell nav={nav} current={current} onNav={onNav} user={display} onUser={() => onGo({ name: "profile" })} ws={inside ? W : null} onWorkspace={() => setWsOpen(true)} brand={me.role === "buyer" ? <EsBrand /> : undefined} brandMark={me.role === "buyer" ? <span className="es-logo" style={{ width: 36, height: 36, borderRadius: 11 }}><Icon name="hourglass" size={18} stroke={2.2} /></span> : undefined}>
       {pushStep ? <S.Live.PushStep me={me} home={(nav.find(n => n.id === HOME[me.role]) || nav[0]).label} {...pushStep} /> : <AnimatePresence mode="wait" initial={false}>
         <motion.div key={bp.inBatch ? "batch:" + bp.v.id : safe + (ref || "")} ref={top} className={bp.inBatch ? "bpage" : undefined} initial={reduce ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={reduce ? undefined : { opacity: 0 }} transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}>
-          {bp.inBatch ? <S.BatchCtx.Provider value={frame}><S.BatchPart me={me} it={bp.it} v={bp.v} part={bp.part} /></S.BatchCtx.Provider> : screenFor(me, safe, { realCamera })}
+          {bp.inBatch ? <S.BatchCtx.Provider value={frame}><S.BatchPart me={me} it={bp.it} v={bp.v} part={bp.part} /></S.BatchCtx.Provider> : screenFor(me, safe, { realCamera, ref })}
         </motion.div>
       </AnimatePresence>}
     </Shell>;

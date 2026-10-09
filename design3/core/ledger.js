@@ -38,6 +38,7 @@
     const when = k => (h.steps.find(s => s.step === k) || {}).at || null;
     const day = k => (when(k) || "").slice(0, 10) || null;
     const batch = { id: h.ref, sku: h.sku, distributor: h.distributor, units: h.units, daysLeft: h.daysLeft, sellPerDay: h.sellPerDay, bestBefore: h.bestBefore, mfg: h.mfg, city: dist.city, staffCap: dist.staffCap };
+    batch.assess = M.assess(batch, sku); // the Watcher's reading the day it flagged the batch
     const line = id => h.plan.lines.find(l => l.id === id && l.units > 0) || null;
     const kl = line("kirana"), es = line("expiresoon"), fb = line("foodbank");
     const partner = h.partner ? D.SETUP.partners.find(p => p.name === h.partner) : null;
@@ -232,5 +233,5 @@
     return { since: D.WORKSPACE.since, today, co2PerKg: M.RULES.co2PerKg, periods: periods(rows, today), batches: rows, inFlight };
   }
 
-  window.SC3_LEDGER = { HISTORY, historyCase, storyCase, caseOf, rowOf, rowsOf, totals, periods, ledger, ordersOf, outcomeOf, MIX };
+  window.SC3_LEDGER = { HISTORY, STORY_CLEARED, historyCase, storyCase, caseOf, rowOf, rowsOf, totals, periods, ledger, ordersOf, outcomeOf, MIX };
 })();

@@ -323,25 +323,6 @@ export type ExpirySettlement = {
 	total: number;
 };
 
-export type Quarter = {
-	label: string;
-	/** the months it covers */
-	period: string;
-	recovered: number;
-	itc: number;
-	kg: number;
-	meals: number;
-	batches: number;
-	/** [week, recovered, would-be write-off] */
-	weeks: [string, number, number][];
-	mix: [string, number][];
-	/** each channel of the mix, by name */
-	mixNames: Record<string, string>;
-	brsr: { cat: string; diverted: number; resold: number; donated: number; disposed: number; evidence: string }[];
-	writeOffAvoided: number;
-	co2: number;
-};
-
 export type Rules = {
 	watchTime: string;
 	/** the Data agent's daily run (SC-79) */
@@ -534,7 +515,6 @@ export type WorkspaceSeed = {
 	push: Record<string, Push>;
 	chat: ChatMessage[];
 	events: FeedEvent[];
-	quarter: Quarter;
 	setup: {
 		/** how long the setup takes, in minutes */
 		minutes: number;
@@ -677,7 +657,7 @@ export type CaseTab = {
 	phase: Phase;
 };
 
-/** the workspace's own data: who it is, its people and supply chain, the rules it plans by, its batches and quarter */
+/** the workspace's own data: who it is, its people and supply chain, the rules it plans by, and its batches */
 export type WorkspaceData = {
 	/** the day the workspace's story starts */
 	day0: string;
@@ -694,7 +674,6 @@ export type WorkspaceData = {
 	stages: Stage[];
 	/** every batch the Watcher sees */
 	batches: Batch[];
-	quarter: Quarter;
 	/** the marketplace the workspace lists on */
 	market: Market;
 };
@@ -752,6 +731,117 @@ export type CaseData = {
 			receipt: Doc | null;
 		};
 };
+
+/* ---------- the ledger (SC-121, SC-124; design3/core/ledger.js) ---------- */
+
+/** a cleared batch's figures, as Impact posted them (money.js realised, settled by the expiry policy) */
+export type LedgerFigures = {
+	net: number;
+	swing: number;
+	pnl: number;
+	writeOff: number;
+	itcKept: number;
+	itcReversed: number;
+	kg: number;
+	co2: number;
+	meals: number;
+	units: number;
+	sold: number;
+	donated: number;
+	godown: number;
+	destroyed: number;
+	resoldKg: number;
+	donatedKg: number;
+	destroyedKg: number;
+	credit: number;
+	support: number;
+};
+export type LedgerOutcome = 'sold' | 'leftover' | 'donation';
+export type LedgerPaper = {
+	id: string;
+	type: string;
+	no: string;
+	status: string;
+	date: string | null;
+	amount: number | null;
+	pdf: boolean;
+};
+/** a cleared batch in the ledger */
+export type LedgerBatch = {
+	ref: string;
+	sku: string;
+	name: string;
+	img: string;
+	distributor: string;
+	distributorName: string;
+	city: string;
+	flagged: string;
+	cleared: string;
+	outcome: LedgerOutcome;
+	history: boolean;
+	figures: LedgerFigures;
+	lines: { id: string; short: string; units: number; price: number; gross: number }[];
+	papers: LedgerPaper[];
+	reviewed: { by: string; at: string | null } | null;
+};
+/** a batch still out */
+export type LedgerOpen = {
+	ref: string;
+	sku: string;
+	name: string;
+	img: string;
+	distributor: string;
+	distributorName: string;
+	city: string;
+	flagged: string;
+	phase: string;
+	/** the stop it is at (a stage's id) */
+	stage: string;
+};
+export type LedgerTotals = LedgerFigures & {
+	batches: number;
+	outcomes: Record<LedgerOutcome, number>;
+	invoices: number;
+	creditNotes: number;
+	receipts: number;
+	reviewed: number;
+};
+export type BrsrRow = {
+	cat: string;
+	diverted: number;
+	resold: number;
+	donated: number;
+	disposed: number;
+	evidence: string;
+};
+/** a quarter of the Indian financial year, or a year so far */
+export type LedgerPeriod = {
+	id: string;
+	kind: 'quarter' | 'year';
+	label: string;
+	long: string;
+	from: string;
+	to: string;
+	current: boolean;
+	totals: LedgerTotals;
+	months: { month: string; label: string; totals: LedgerTotals }[];
+	weeks: [string, number, number][];
+	mix: [string, number][];
+	mixNames: Record<string, string>;
+	brsr: BrsrRow[];
+};
+/** Finance & ESG's ledger: every batch cleared, by quarter and by year, and the batches still out */
+export type Ledger = {
+	since: string;
+	today: string;
+	co2PerKg: number;
+	periods: LedgerPeriod[];
+	batches: LedgerBatch[];
+	inFlight: LedgerOpen[];
+};
+/** a batch's own page in the ledger: its case as the papers read it, its state (drafted, reviewed, posted) and, once
+ *  Impact has posted it, its row */
+export type LedgerPage = { c: CaseData; h: Hero; row: LedgerBatch | null };
 
 /** the people a visitor can step into in the stub, by where they stand */
 export type ExploreGroup = { group: string; note: string; ids: [string, string][] };

@@ -272,7 +272,7 @@
       <Menu open={open} onClose={() => setOpen(false)} width={260} label={`Export ${p.label}`} items={[{ label: `Export ${p.label}`, heading: true },
         { label: "BRSR table", icon: "leaf", right: <span className="t-caption subtle">CSV</span>, onClick: () => { exportBRSR(p, list); done("BRSR table exported as CSV"); } },
         { label: "GST summary", icon: "badge-check", right: <span className="t-caption subtle">CSV</span>, onClick: () => { exportGST(p, list); done("GST summary exported as CSV"); } },
-        { label: "The ledger", icon: "table", right: <span className="t-caption subtle">CSV</span>, onClick: () => { exportLedger(p, list); done("Ledger exported as CSV"); } },
+        { label: "The ledger", icon: "file-spreadsheet", right: <span className="t-caption subtle">CSV</span>, onClick: () => { exportLedger(p, list); done("Ledger exported as CSV"); } },
         "-", { label: "The report", icon: "file-text", right: <span className="t-caption subtle">PDF</span>, onClick: () => printReport(p, list, since) }]} /></span>;
   }
 
@@ -352,7 +352,7 @@
     if (!row) return <NotPosted h={h} />;
     const F = row.figures, no = id => (row.papers.find(x => x.id === id && x.status !== "not required") || {}).no;
     const orders = row.lines.filter(l => l.id === "kirana").reduce((t, l) => t + l.units, 0);
-    const ev = [no("invoice"), c.listing && c.lines.expiresoon.units ? c.listing.id : null, orders ? `${c.kiranas.length} kirana order logs` : null, no("support"), no("expiry"), no("receipt"), F.donated ? "FSSAI checklist" : null, F.destroyed ? "destruction certificate" : null].filter(Boolean);
+    const ev = [no("invoice"), c.listing && c.lines.expiresoon.units ? c.listing.id : null, orders ? `${c.kiranas.length} kirana order logs` : null, no("support"), no("expiry"), F.donated ? "FSSAI checklist" : null, no("receipt"), F.destroyed ? "destruction certificate" : null].filter(Boolean);
     return <Columns sideWidth={380}
       main={<div className="stack" style={{ gap: 16 }}>
         <Card className="stack snug"><div className="card-head"><span className="card-title">BRSR line</span><Badge size="sm" tone="green" icon="check">posted · {dayOf(row.cleared)}</Badge></div>

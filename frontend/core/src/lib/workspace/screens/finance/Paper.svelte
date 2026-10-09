@@ -2,14 +2,17 @@
 	import { cx } from '../../../cx';
 	import { cartons, fmt, productName } from '../../model';
 	import { useWorkspace } from '../../source';
+	import type { CaseData } from '../../types';
+	import { possessive } from './ledger';
 	import Receipt from './Receipt.svelte';
 
 	// a document of the pack, set on paper (screens/finance.jsx Paper): the invoice Rakesh Traders issues, the e-way bill
 	// check, Munchly's price-support credit note, the ITC memo, the FSSAI checklist, the food bank's receipt (SC-110) and
 	// the destruction certificate
-	let { id }: { id: string } = $props();
+	// a batch's paper: the batch in focus's, or the batch named (`c`, a batch's page in the ledger, SC-121)
+	let { id, c: given }: { id: string; c?: CaseData } = $props();
 	const ws = useWorkspace();
-	const c = $derived(ws.case!);
+	const c = $derived(given ?? ws.case!);
 
 	const DOC = (x: string) => c.docs.find((d) => d.id === x);
 	const d = $derived(DOC(id));
@@ -182,7 +185,7 @@
 				'at the dealer price'
 			)}
 			{@render line(`Credit to ${R.name}`, d.amount != null ? fmt.inr2(d.amount) : '—', true)}
-			{#if d.policy === 'full-credit'}<div class="pp-sub">{C}'s own costs, on destroying them</div>
+			{#if d.policy === 'full-credit'}<div class="pp-sub">{possessive(C)} own costs, on destroying them</div>
 				{@render line('Disposal', fmt.inr2(d.disposal ?? 0))}
 				{@render line('EPR on the packaging', fmt.inr2(d.epr ?? 0))}
 				{@render line('Input GST reversed', fmt.inr2(d.itc ?? 0), false, 'section 17(5)(h)')}

@@ -79,6 +79,8 @@ async def test_the_history_stays_in_view_through_a_journey_reset(api, with_histo
     snap = (await api.get(f"{WS}/snapshot", headers=ANITA)).json()
     listed = {b["id"] for b in snap["batches"]}
     assert listed >= REFS
+    # on Batches and in the ledger, but not among the batches in a journey (SC-121)
+    assert not {c["ref"] for c in snap["cases"]} & REFS
     leftover = next(b for b in H["batches"] if b["outcome"] == "leftover")
     c = await case(api, ANITA, leftover["ref"])
     assert c["journey"]["phase"] == "cleared"
