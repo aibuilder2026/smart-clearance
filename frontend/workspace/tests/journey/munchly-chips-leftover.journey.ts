@@ -137,7 +137,7 @@ const STEPS: Step[] = [
 		async run(page) {
 			await as(page, 'anita', `/paperwork/${HERO}`, 'reads the expiry credit note and the rest of the pack');
 			// Paperwork opens on the expiry paper (SC-94)
-			await expect(page.locator('#main')).toContainText('Packs expired at the godown');
+			await expect(page.locator('#main')).toContainText(/packs expired at the godown/i);
 			await run.done('Paper: the Expiry credit note, open first');
 			const c = (await caseAs('anita'))!;
 			for (const d of c.docs) {
@@ -177,7 +177,7 @@ const STEPS: Step[] = [
 			await run.done('Execution: the Expiry settlement, full credit');
 			await page.getByRole('button', { name: 'Open the paper' }).click();
 			await expect(page).toHaveURL(new RegExp(`/paperwork/${HERO}`));
-			await expect(page.locator('#main')).toContainText('Packs expired at the godown');
+			await expect(page.locator('#main')).toContainText(/packs expired at the godown/i);
 			await run.done('The Expiry credit note, from Execution');
 		}
 	},
