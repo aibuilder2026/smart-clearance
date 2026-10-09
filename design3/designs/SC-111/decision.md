@@ -100,7 +100,11 @@ with a dissolve for a loop; C is the most immersive camera and the riskiest, sin
 
 ## Published
 
-(the board and the three pages, in the platform v3 Claude Design project, pinned to the pushed commit)
+The board and the three pages are in the platform v3 Claude Design project, pinned to commit `4b63ddc`:
+https://claude.ai/design/p/976c5462-c3c3-4621-80b5-29b3cdda8326?file=SC-111+design+review.html (and `SC-111 option A.html`,
+`B`, `C`). The kit comes from jsDelivr, the plates and stills from GitHub raw, the films from jsDelivr (`src/publish.py`;
+one cached 403 on `product.js` purged). Played through the published copy: the film plays from jsDelivr, the dark theme
+opens on the night, no console errors.
 
 ## The pick
 
