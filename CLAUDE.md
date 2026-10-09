@@ -1414,7 +1414,7 @@
   - **Locally:** `hydrate.sh --reset` rebuilt the world: Munchly's staff are Priya and Arjun, the twelve history batches reviewed by Priya, and the Paperwork agent laid out all 41 of their papers' PDFs. The day is 24 hours.
   - **Production:** Anita and Vikram stay in Munchly's workspace, refused at sign-in once this deploys, until the console's Reset journey (or the hydrate job) takes them out.
 
-- **SC-128** (In Review, branch `SC-128-tax-esg-e2e`): Munchly Chips E2E verifies Priya's tax and ESG, and a recorded run, asked for by the maintainer ("it should include verifying the TAX and ESG by Priya … dont reset the journey leave it as it is. Record the journey for me too").
+- **SC-128** (PR #110, merged): Munchly Chips E2E verifies Priya's tax and ESG, and a recorded run, asked for by the maintainer ("it should include verifying the TAX and ESG by Priya … dont reset the journey leave it as it is. Record the journey for me too").
   - **The suite** (`frontend/workspace/tests/journey/chips.ts`): the old `esg` step expected the ESG reading on opening, which SC-127 changed (Priya's pages open on Money). It is replaced by two steps, after Impact posts:
     - **tax:** the ledger's GST reading for the quarter the batch cleared in; the GST summary she exports, read back as CSV; the batch's GST ITC memo (its stamp, and its PDF fetched from its signed link), the tax invoice and the credit note;
     - **esg:** the ledger's Impact reading; the BRSR table she exports; the batch's BRSR line and its evidence; the year so far.
@@ -1429,5 +1429,71 @@
     - An earlier attempt stopped on the suite's own selector (the recording's caption also reads "BRSR line"); the step now reads the page only.
   - **The journey is left as the run ended** (the chips cleared, the Mango Drink waiting for its label photo); only the day went back to 24 hours.
   - **Checks:** the frontend gate passes (core 217, api 77, workspace 67, admin 17, demo 5, console 3).
+
+- **SC-130** (In Review, branch `SC-130-partner-portals`): the partners' portals. Each partner reads its own history with Munchly.
+  - **The request:**
+    - distributors see each batch, past and present, that was or is at risk, with their GST invoices, credit notes and other finance papers;
+    - kiranas see their offers and past orders: accepted, declined or expired;
+    - food banks see their past pickups with the donation receipts.
+  - **Design first:** three options on one board in app v3, `SC-130 design review.html`:
+    - A, batch by batch (recommended);
+    - B, one timeline;
+    - C, statement and papers.
+
+    The maintainer picked **A**, with the distributor's copies of the food bank's receipt and the destruction certificate, and Not this time kept. Designs, stills, the build's stills and the decision are in `design3/designs/SC-130/`.
+  - **The distributor** (Rakesh, Lakshmi):
+    - **Batches** joins his sidebar. The label photo leaves the phone's tabs, since it opens from its request.
+    - The list: in a journey now; then every batch he cleared, by month, under one figure (what Munchly credited him, ₹66,192 for Rakesh since July, on 8 credit notes); then the stock the Watcher watches.
+    - A batch's page has the head and the tabs of SC-112's:
+      - **What happened:** each moment with its day and time;
+      - **Money:** how he ended whole, ₹0 on every batch, each credit note opening on paper;
+      - **Papers:** his own (the tax invoice, the e-way bill check, the price-support and expiry credit notes), then "Copies for your records" (the food bank's receipt, the destruction certificate), each in a sheet with Download PDF. Munchly's GST ITC memo and FSSAI checklist stay Munchly's.
+    - His batch in a journey reads its moments as they happen, the next three dimmed. Another distributor's batch is "Not one of your batches". On Today, a stock row in a journey opens its page.
+  - **The kirana** (Ganesh ji, Shree Sai Kirana):
+    - **Offers:** the open offer with **Not this time** (the scheme stays open to the shop for its 48 hours, and Order after all brings it back), or the order on its way; then every earlier offer, Ordered, Declined or Expired. An expired offer says why: the scheme filled first, or its 48 hours ended.
+    - Each offer opens its page: the order with its margin, or why nothing came of it, and what was offered.
+    - **Orders:** the margin at MRP over every order since July (₹3,408 for Ganesh ji), each opening its offer.
+  - **The food bank** (Meera at Feeding India):
+    - Pickups adds the meals made from Munchly's surplus (872) and every collected pickup, each with its receipt.
+    - A pickup's page: its tracker, the receipt in a sheet with its PDF, and the FSSAI checklist.
+    - The story's Mango Drink request goes to the food bank the plan names, so India FoodBanking Network sees its own history alone.
+  - **Found while building:**
+    - design3's distributor's "what you receive" took the ExpireSoon lot at the listed price. At the award price every history batch ends whole to the rupee.
+    - In design3:
+      - a kirana's current offer was listed twice;
+      - on phones a batch's figure ran into its chevron;
+      - a distributor could open another's batch by its address.
+    - In the port:
+      - the first `partners.ts` read the seed, which a live build must not carry (`no-seed.mjs`), so the stub's history moved into the stub;
+      - the stub served a kirana's history only to the signed-in person, which the goldens do not draw.
+    - In backend-api:
+      - a food bank was sent the shops' orders;
+      - the scheme's running status is `sent`.
+
+    All fixed.
+  - **The port:**
+    - design3 first (`ledger.js` partners, `flow.js` decline, `trade.jsx`, `roles.jsx`, `screens.css`);
+    - then core:
+      - `partners.ts`: the functions, held to ledger.js for every history batch, every shop of both distributors at four points of the journey, and Feeding India;
+      - the trade screens (`DistBatches`, `DistBatch`, `WholeCard`, `DistPapers`, `RetailHome`, `OfferPage`, `OfferDetail`/`OfferOrder`, `RetailOrders`, `Pickups`/`PickupsNow`/`PickupHistory`/`PickupPage`, and the `Pt*` pieces);
+      - the stub's `decline` and `hero.declined`;
+      - `screens.css` verbatim;
+      - the seed's history steps and every shop (`history.json` `shops`).
+  - **backend-api:**
+    - `GET …/partner` (`services/journey/partners.py`): each batch the member took part in, in view, as its facts: when each step happened (the case's stamps, and the feed's for the photo sent and the papers), the plan, what each line took, the deal and the papers. They are cut to the partner's part: a distributor's money and his papers with the copies, a kirana's own order and decline, a food bank's donation and receipt;
+    - `POST …/cases/{ref}/offer/decline` (`steps.decline`), with its audit line; an order after all clears it;
+    - the case detail tells a kirana its own decline, and gives a distributor the receipt and the destruction certificate as copies;
+    - `journey.json` `history.partners` (design3's facts) holds the route to ledger.js.
+  - **The live workspace:** reads `partner()` for a distributor, kirana or food bank, again on every change to a batch; sends Not this time; projects the scheme's declined.
+  - **The contract:** `WsPartner`, `WsPartnerCase`, the offer's `declined`, `WorkspaceApi.partner()` and `declineOffer()`; `contracts.sh` re-exported the OpenAPI.
+  - **Checks:**
+    - backend-api: 524 passed, 1 skipped (7 new in `test_partners.py`; SC-110's receipt test now expects the distributor's copy);
+    - the frontend gate passes: core 231 (14 new), api 77, workspace 74 (7 new live tests: Rakesh's Batches and pages, his batch in a journey, another's batch, Ganesh ji's offers, orders and an offer's page, Not this time, Meera's pickups), admin 17, demo 5, console 3;
+    - the goldens follow the new screens;
+    - the live fixtures were re-recorded with each member's partner view;
+    - design3's build was shot at 1440 and 390, light and dark (`build/`);
+    - the port was checked on the stub build in the browser;
+    - the a11y spec gains scans of a distributor's batch page and a copy, a kirana's earlier offer, a food bank's pickup and Not this time, and the e2e spec gains two flows; the browser suites were not run (SC-55).
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
