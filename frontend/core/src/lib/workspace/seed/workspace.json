@@ -2291,6 +2291,9 @@
 			"no": "s.17(5)(h)",
 			"status": "generated",
 			"amount": 1224,
+			"reversed": 0,
+			"units": 1360,
+			"away": 0,
 			"note": "Goods supplied under tax invoices, so the Section 17(5)(h) reversal does not apply."
 		},
 		{
@@ -2307,7 +2310,8 @@
 			"owner": "Munchly Foods",
 			"no": "0 units left",
 			"status": "not required",
-			"amount": 0
+			"amount": 0,
+			"units": 0
 		}
 	],
 	"mangoPlan": {

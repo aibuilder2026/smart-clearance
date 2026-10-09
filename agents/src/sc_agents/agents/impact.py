@@ -76,7 +76,8 @@ def rows(client: str, case: dict[str, Any], ledger: dict[str, Any], *, journey: 
                 units,
                 round(units * kg_per_unit, 3) if exits else 0.0,
                 int(ledger.get("meals") or 0) if ln["id"] == "foodbank" else 0,
-                float(ln.get("net") or 0) - (delta if ln["id"] == "expiresoon" else 0),
+                # a ledger from SC-122 on carries the lot at its award price (atAward); an older one at the plan's
+                float(ln.get("net") or 0) - (delta if ln["id"] == "expiresoon" and not ln.get("atAward") else 0),
                 units * per_unit_writeoff if exits else 0.0,
             )
         )

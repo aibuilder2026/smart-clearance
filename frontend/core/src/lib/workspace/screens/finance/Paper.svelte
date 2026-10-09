@@ -22,8 +22,18 @@
 	// the note's lines: the lot first, then the scheme, then any other exit the batch took (SC-85)
 	const ORDER = ['expiresoon', 'kirana', 'staff', 'foodbank'];
 	const rows = $derived([...sp.rows].sort((a, b) => ORDER.indexOf(a.id) - ORDER.indexOf(b.id)));
-	// what was destroyed or given away, and so lost its input credit (SC-85: a batch with a food bank gives some away)
-	const away = $derived((c.plan.donated ?? 0) + (c.plan.leftover ?? 0));
+	// what was destroyed or given away, and so lost its input credit (SC-85: a batch with a food bank gives some away),
+	// as the memo records it once the lines are done (SC-122: the packs that came back for full credit and were
+	// destroyed included); a memo drafted before then reads the plan's
+	const memo = $derived(DOC('itc'));
+	const away = $derived(memo?.away ?? (c.plan.donated ?? 0) + (c.plan.leftover ?? 0));
+	const sold = $derived(memo?.units ?? c.plan.soldUnits);
+	const reversed = $derived(memo?.reversed ?? (away ? c.plan.itcReversed : 0));
+	// an SKU with no cost sheet of its own has its credit worked out as cost × GST: estimated (SC-122, the Mango Drink)
+	const itcFrom = $derived(
+		c.sku.itcPerUnit == null ? 'estimated from the cost and the GST rate' : 'from the cost sheet'
+	);
+	const destroyed = $derived(d?.units ?? c.plan.leftover ?? 0);
 	const W = $derived(ws.data.workspace);
 	const kl = $derived(c.lines.kirana);
 </script>
@@ -136,22 +146,26 @@
 			`Section 17(5)(h) · ${ws.data.client.short}`,
 			away ? 'ITC PART REVERSED' : 'ITC KEPT',
 			!away
-		)}{@render line('Packets sold under tax invoices', fmt.num(c.plan.soldUnits))}{@render line(
+		)}{@render line('Packets sold under tax invoices', fmt.num(sold))}{@render line(
 			'Destroyed, gifted or lost',
 			fmt.num(away)
 		)}{@render line(
-			'Input GST on the stock',
+			'Input GST kept',
 			fmt.inr2(d?.amount ?? 0),
 			true,
-			// the plan's own figure, from the cost sheet: an SKU with no itcPerUnit of its own (the Mango Drink) has cost ×
-			// GST worked out by money.js and backend-api (SC-105)
-			`₹${c.plan.writeOff.itcPerUnit.toFixed(2)} a pack, from the cost sheet`
-		)}{@render line('Reversal in GSTR-3B, Table 4(B)(1)', away ? fmt.inr2(c.plan.itcReversed) : 'none')}
+			// the plan's own figure: an SKU with no itcPerUnit of its own (the Mango Drink) has cost × GST worked out by
+			// money.js and backend-api (SC-105), so it is estimated (SC-122)
+			`₹${c.plan.writeOff.itcPerUnit.toFixed(2)} a pack, ${itcFrom}`
+		)}{@render line('Reversal in GSTR-3B, Table 4(B)(1)', reversed ? fmt.inr2(reversed) : 'none')}
 		<p class="pp-note">
-			Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. These packs were sold
-			under tax invoices, so it does not apply. The credit would be reversed only if the stock came back under the
-			expiry claim and {W.short} destroyed it. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since
-			1 October 2023, 17(5)(fa) on CSR donations.
+			{#if reversed}Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. The {fmt.num(
+					away
+				)} packs of this batch given away or destroyed have their credit reversed; the {fmt.num(sold)} sold under tax invoices
+				keep theirs. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since 1 October 2023, 17(5)(fa)
+				on CSR donations.{:else}Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free.
+				These packs were sold under tax invoices, so it does not apply. The credit would be reversed only if the stock
+				came back under the expiry claim and {W.short} destroyed it. Credit on donated units is reversed: 17(5)(h) blocks
+				it on gifts and, since 1 October 2023, 17(5)(fa) on CSR donations.{/if}
 		</p>
 	</div>
 {:else if id === 'expiry' && d}
@@ -206,7 +220,16 @@
 			c.batch.id,
 			d?.status === 'generated' ? 'GENERATED' : 'NOT REQUIRED',
 			d?.status === 'generated'
-		)}{@render line('Units left to destroy', fmt.num(c.plan.leftover ?? 0), true)}
+		)}{@render line(
+			destroyed ? 'Units destroyed' : 'Units left to destroy',
+			fmt.num(destroyed),
+			true
+		)}{#if destroyed}{@render line(
+				'Input GST reversed',
+				fmt.inr2(destroyed * c.plan.writeOff.itcPerUnit),
+				false,
+				'section 17(5)(h), GSTR-3B Table 4(B)(1)'
+			)}{/if}
 		<p class="pp-note">
 			Issued only when units remain, with the ITC reversal entry pre-filled so finance is never surprised.
 		</p>

@@ -311,6 +311,7 @@ function docOf(d: WsDoc): Doc {
 		epr: opt(d.epr),
 		itc: opt(d.itc),
 		reversed: opt(d.reversed),
+		away: opt(d.away),
 		// the food bank's receipt (SC-110)
 		...(d.id === 'receipt'
 			? {

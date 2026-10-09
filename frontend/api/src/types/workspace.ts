@@ -652,8 +652,10 @@ export type WsDoc = {
 	disposal?: number;
 	epr?: number;
 	itc?: number;
-	/** the GST memo's reversal on expiry day */
+	/** the GST memo's credit reversed under s.17(5)(h), and the packs given away or destroyed it is reversed on
+	 *  (SC-122); `units` is then the packs sold under tax invoices */
 	reversed?: number;
+	away?: number;
 } & Partial<ReceiptFields>;
 
 /** the food bank's receipt for the packs it collected (SC-110, money.js receipt): issued in its name as it collects,
