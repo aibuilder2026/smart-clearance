@@ -71,7 +71,11 @@ screens and keeps the receipt a step away from its batch. A register can follow 
 
 ## The board
 
-`board.html`, published to the app v3 Claude Design project as `SC-110 design review.html`.
+`board.html`, published to the app v3 Claude Design project on 9 Oct as
+[`SC-110 design review.html`](https://claude.ai/design/p/78962e0f-7300-46e4-8be7-ee1cbd101839?file=SC-110+design+review.html),
+with each option's mockup as `SC-110 option A.html`, `B` and `C`, all pinned to `d372d58`. Every page was opened in a
+browser: the board's 24 stills load, and each option draws its five views (Meera's Pickups, the desk, the receipt
+opened, and each food bank's paper) with no page errors.
 
 ## The pick
 
