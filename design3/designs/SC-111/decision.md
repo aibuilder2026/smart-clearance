@@ -106,6 +106,9 @@ https://claude.ai/design/p/976c5462-c3c3-4621-80b5-29b3cdda8326?file=SC-111+desi
 one cached 403 on `product.js` purged). Played through the published copy: the film plays from jsDelivr, the dark theme
 opens on the night, no console errors.
 
-## The pick
+## The pick (9 Oct 2026)
 
-(pending)
+The maintainer picked **A, One town, four acts**, from the board's question. Only A is built: design3 first (the four
+plates as the hero's posters, the film in `site/assets/media/`, the hero in `site/site.jsx` with the chapters' clock
+and the page's camera), then the port in `frontend/admin`. For the build the four acts are rendered again at 1080p
+(5 s each, which LTX allows), so the camera's lean stays sharp; the 720p film stands in until they land.
