@@ -253,7 +253,9 @@ const STEPS: { id: string; title: string; run: (page: Page) => Promise<void> }[]
 			}
 			await page.getByRole('button', { name: 'Mark collected' }).click();
 			const r = await until('the donation is collected', 'meera', (c) => c.donation?.status === 'collected', 60_000);
-			const gift = r.plan!.lines.find((l) => l.id === 'foodbank')?.units;
+			// a food bank is not shown Munchly's plan, so the packs it was planned are read as Priya (SC-113)
+			const plan = (await caseAs('priya'))?.plan;
+			const gift = plan?.lines.find((l) => l.id === 'foodbank')?.units;
 			story('Donation', `${r.donation?.units} packs ${r.donation?.status}`, `${gift} packs collected`);
 			await run.done('Donation collected');
 		}

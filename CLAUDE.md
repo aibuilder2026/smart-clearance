@@ -1197,4 +1197,6 @@
   - **Checks:** backend-api 490 passed. The new test fails without the fix, with the receipt series missing.
   - **Locally:** Munchly's journey was reset with the fix; both food banks have their receipt and the two series are numbered from the story's.
 
+- **SC-113** (bug in Munchly Mango E2E): the donation step read Munchly's plan as the food bank, who is not shown it, and stopped right after the collection with "Cannot read properties of null (reading 'lines')". It now awaits the collection as Meera and reads the planned food-bank packs from Priya's case (`munchly-mango.journey.ts`). Lint and the workspace type check pass; the suite was not rerun (SC-55).
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
