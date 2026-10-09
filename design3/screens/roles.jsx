@@ -9,9 +9,10 @@
     // the operator's batches (SC-112): the workspace's own places here, and the batches in a journey between Setup and
     // Reports (RoleApp adds them); a batch's screens are tabs on its page
     operator: [{ id: "command", label: "Command Center", short: "Today", icon: "layout-dashboard" }, { id: "batches", label: "Batches", icon: "boxes" }, { id: "setup", label: "Setup", icon: "sliders-horizontal", phoneHidden: true }, { id: "report", label: "Ledger", icon: "book-open", section: "Reports" }],
-    // the distributor's Batches (SC-130): every batch of his, in a journey or cleared, each with its own page; the label
-    // photo is opened from its request, so it leaves the phone's four tabs
-    distributor: [{ id: "home", label: "Today", icon: "house" }, { id: "batches", label: "Batches", icon: "boxes" }, { id: "photo", label: "Label photo", short: "Photo", icon: "camera", phoneHidden: true }, { id: "van", label: "Van route", short: "Van", icon: "truck" }, { id: "orders", label: "Orders", icon: "clipboard-list" }],
+    // the distributor's portal, batch by batch (SC-133): Today, Batches (SC-130), each batch's Deliveries (the van round, the
+    // buyer's truck, the staff sale, the pickup, then the earlier ones), the label photo (opened from its request on a
+    // phone, so it leaves the phone's four tabs) and every batch's Orders
+    distributor: [{ id: "home", label: "Today", icon: "house" }, { id: "batches", label: "Batches", icon: "boxes" }, { id: "van", label: "Deliveries", short: "Deliveries", icon: "truck" }, { id: "photo", label: "Label photo", short: "Photo", icon: "camera", phoneHidden: true }, { id: "orders", label: "Orders", icon: "clipboard-list" }],
     retailer: [{ id: "home", label: "Offers", icon: "tag" }, { id: "orders", label: "Orders", icon: "shopping-basket" }],
     buyer: [{ id: "market", label: "Marketplace", short: "Market", icon: "store" }, { id: "bids", label: "My bids", short: "Bids", icon: "gavel" }],
     foodbank: [{ id: "pickups", label: "Pickups", icon: "heart-handshake" }],
