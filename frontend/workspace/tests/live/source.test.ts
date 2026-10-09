@@ -11,7 +11,8 @@ import type {
 	WorkspacePublic,
 	WorkspaceSnapshot,
 	WsAuditRow,
-	WsLedger
+	WsLedger,
+	WsPartner
 } from '@smart-clearance/api/workspace';
 import { ApiError } from '@smart-clearance/api/workspace';
 import { LiveSource } from '../../src/lib/live/source.svelte';
@@ -27,6 +28,7 @@ type Seen = {
 	cases: Record<string, CaseDetail>;
 	ledger: WsLedger | null;
 	audit: WsAuditRow[];
+	partner: WsPartner | null;
 };
 type Moment = { public: WorkspacePublic; members: Record<string, Seen> };
 const MOMENTS = import.meta.glob<Moment>('./fixtures/*.json', { eager: true, import: 'default' });
@@ -45,6 +47,7 @@ function fakeApi(m: Moment, who: string): WorkspaceApi {
 				snapshot: () => Promise.resolve(structuredClone(seen.snapshot)),
 				case: (ref: string) => (seen.cases[ref] ? Promise.resolve(structuredClone(seen.cases[ref])) : none(404)),
 				ledger: () => (seen.ledger ? Promise.resolve(seen.ledger) : none(403)),
+				partner: () => (seen.partner ? Promise.resolve(structuredClone(seen.partner)) : none(403)),
 				audit: () => Promise.resolve({ rows: seen.audit, before: null }),
 				events: () => Promise.resolve({ seq: seen.snapshot.seq, events: [], reset: false })
 			})[name as string] ?? done

@@ -12,9 +12,12 @@ import type {
 	WorkspacePublic,
 	WorkspaceSnapshot,
 	WsAuditRow,
-	WsLedger
+	WsLedger,
+	WsPartner
 } from '@smart-clearance/api/workspace';
 import { ApiError, NotAMember } from '@smart-clearance/api/workspace';
+import type { PartnerCase } from '@smart-clearance/core/workspace/app';
+import { HISTORY_CASES } from '@smart-clearance/core/workspace/stub';
 import { LiveSource } from '../../src/lib/live/source.svelte';
 import LiveHost from './LiveHost.svelte';
 
@@ -28,6 +31,7 @@ type Seen = {
 	cases: Record<string, CaseDetail>;
 	ledger: WsLedger | null;
 	audit: WsAuditRow[];
+	partner: WsPartner | null;
 };
 type Moment = { public: WorkspacePublic; members: Record<string, Seen> };
 const MOMENTS = import.meta.glob<Moment>('./fixtures/*.json', { eager: true, import: 'default' });
@@ -47,6 +51,7 @@ function fakeApi(m: Moment, who: string, over: Partial<Record<keyof WorkspaceApi
 		snapshot: () => Promise.resolve(structuredClone(seen.snapshot)),
 		case: (ref: string) => (seen.cases[ref] ? Promise.resolve(structuredClone(seen.cases[ref])) : none(404)),
 		ledger: () => (seen.ledger ? Promise.resolve(seen.ledger) : none(403)),
+		partner: () => (seen.partner ? Promise.resolve(structuredClone(seen.partner)) : none(403)),
 		audit: () => Promise.resolve({ rows: seen.audit, before: null }),
 		events: () => Promise.resolve({ seq: seen.snapshot.seq, events: [], reset: false })
 	};
@@ -961,5 +966,158 @@ describe('Finance & ESG, one ledger (SC-121)', () => {
 		);
 		expect(url).toHaveBeenCalledWith(CHIPS, 'invoice');
 		opened.mockRestore();
+	});
+});
+
+describe("the partners' own history (SC-130)", () => {
+	// the client's history as backend-api sends it to each partner: the seed's facts, cut as the partner route cuts them
+	const DIST = ['invoice', 'eway', 'support', 'expiry', 'receipt', 'destruction'];
+	const cut = {
+		rakesh: (c: PartnerCase) =>
+			c.dist === 'rakesh' ? { ...c, docs: c.docs.filter((d) => DIST.includes(d.id)) } : null,
+		ganesh: (c: PartnerCase) =>
+			c.dist === 'rakesh' && c.kirana
+				? {
+						...c,
+						kiranas: c.kiranas.filter((k) => k.kirana === 'k0'),
+						realised: null,
+						support: null,
+						award: null,
+						listing: null,
+						partner: null,
+						donation: null,
+						receipt: null,
+						expiry: null,
+						docs: []
+					}
+				: null,
+		meera: (c: PartnerCase) =>
+			c.partner?.name === 'Feeding India'
+				? {
+						...c,
+						kiranas: [],
+						kirana: null,
+						realised: null,
+						support: null,
+						award: null,
+						listing: null,
+						expiry: null,
+						docs: c.docs.filter((d) => d.id === 'receipt')
+					}
+				: null
+	};
+	const withHistory = (m: Moment, who: keyof typeof cut): WsPartner => {
+		const view = m.members[who].partner!;
+		const past = HISTORY_CASES.map(cut[who]).filter((c) => c !== null);
+		return { ...view, cases: [...view.cases, ...(past as unknown as WsPartner['cases'])] };
+	};
+	const partnerApi = (m: Moment, who: keyof typeof cut, over: Partial<Record<keyof WorkspaceApi, unknown>> = {}) =>
+		fakeApi(m, who, { partner: () => Promise.resolve(withHistory(m, who)), ...over });
+
+	it('Rakesh reads every batch of his: in a journey now, then those he cleared by month under what he was credited', async () => {
+		const m = moment('executing');
+		const r = await draw(source(partnerApi(m, 'rakesh')), 'batches');
+		await waitFor(() => expect(text(r)).toContain('Cleared · September 2026'));
+		const t = text(r);
+		expect(t).toContain('In a journey now');
+		expect(t).toContain('Masala Chips 150 g');
+		expect(t).toContain('₹66,192from Munchly since July');
+		expect(t).toContain('6 batches cleared at your godown');
+		expect(t).toContain('8 credit notes');
+		expect(t).toContain('Cleared · August 2026');
+		expect(t).not.toMatch(/NaN|undefined|Invalid Date/);
+		r.unmount();
+	});
+
+	it('a batch he cleared opens on what happened, how he ended whole, and his papers with the copies', async () => {
+		const m = moment('executing');
+		const r = await draw(source(partnerApi(m, 'rakesh')), 'batches', 'MF-2407-114');
+		await waitFor(() => expect(text(r)).toContain('What happened'));
+		let t = text(r);
+		expect(t).toContain('Masala Oats 200 g');
+		expect(t).toContain('Feeding India collected 466 packs');
+		expect(t).toContain('Receipt FI/NAG/26-27/0416');
+		await tab(r, 'Money');
+		await waitFor(() => expect(text(r)).toContain('You end whole'));
+		t = text(r);
+		expect(t).toContain('Your gain or loss₹0');
+		expect(t).toContain('Given to Feeding India');
+		await tab(r, 'Papers');
+		await waitFor(() => expect(text(r)).toContain('Copies for your records'));
+		t = text(r);
+		expect(t).toContain('Price-support credit note');
+		expect(t).toContain('Donation receipt');
+		expect(t).toContain('a copy for you');
+		expect(t).not.toContain('GST ITC memo');
+		expect(t).not.toContain('FSSAI surplus-food checklist');
+		r.unmount();
+	});
+
+	it('his batch in a journey reads its moments off the steps backend-api stamped, the next ones still to come', async () => {
+		const m = moment('executing');
+		const r = await draw(source(partnerApi(m, 'rakesh')), 'batches', CHIPS);
+		await waitFor(() => expect(text(r)).toContain('What happened'));
+		const t = text(r);
+		expect(t).toContain('You sent the label photo');
+		expect(t).toContain('Munchly approved the plan');
+		expect(t).toContain('772 listed on ExpireSoon in your name');
+		expect(t).toContain('next');
+		r.unmount();
+	});
+
+	it("another distributor's batch is not his", async () => {
+		const m = moment('executing');
+		const r = await draw(source(partnerApi(m, 'rakesh')), 'batches', 'MF-2406-109');
+		await waitFor(() => expect(text(r)).toContain('Not one of your batches'));
+		r.unmount();
+	});
+
+	it('Ganesh ji reads his order on top, every earlier offer and what each order earned', async () => {
+		const m = moment('executing');
+		let r = await draw(source(partnerApi(m, 'ganesh')), 'home');
+		await waitFor(() => expect(text(r)).toContain('Earlier offers'));
+		let t = text(r);
+		expect(t).toContain('Ordered · 24 packets');
+		expect(t).toContain('Peanut Chikki 100 g');
+		expect(t).not.toMatch(/NaN|undefined|Invalid Date/);
+		r.unmount();
+		r = await draw(source(partnerApi(m, 'ganesh')), 'orders');
+		await waitFor(() => expect(text(r)).toContain('your margin at MRP'));
+		t = text(r);
+		expect(t).toContain('7 orders since July');
+		r.unmount();
+		r = await draw(source(partnerApi(m, 'ganesh')), 'offer', 'MF-2407-116');
+		await waitFor(() => expect(text(r)).toContain('Your order'));
+		expect(text(r)).toContain('What was offered');
+		r.unmount();
+	});
+
+	it('a kirana that has not ordered can say Not this time', async () => {
+		const m = moment('executing');
+		const seen = m.members.ganesh;
+		seen.cases[CHIPS].journey.orders = [];
+		seen.partner!.cases = seen.partner!.cases.map((c) => (c.ref === CHIPS ? { ...c, kiranas: [] } : c));
+		const decline = vi.fn(() => Promise.resolve({ seq: seen.snapshot.seq, case: null }));
+		const r = await draw(source(partnerApi(m, 'ganesh', { declineOffer: decline })), 'home');
+		const no = await waitFor(() => r.getByRole('button', { name: 'Not this time' }));
+		await fireEvent.click(no);
+		await waitFor(() => expect(decline).toHaveBeenCalledWith(CHIPS));
+		r.unmount();
+	});
+
+	it('Meera reads the pickups she collected, each with the receipt she issued', async () => {
+		const m = moment('cleared');
+		let r = await draw(source(partnerApi(m, 'meera')), 'pickups');
+		await waitFor(() => expect(text(r)).toContain('Collected'));
+		const t = text(r);
+		expect(t).toContain('FI/NAG/26-27/0416');
+		expect(t).toContain('FI/HYD/26-27/0415');
+		expect(t).toContain("872meals from Munchly's surplus since July");
+		r.unmount();
+		r = await draw(source(partnerApi(m, 'meera')), 'pickups', 'MF-2407-114');
+		await waitFor(() => expect(text(r)).toContain('Confirmed by you'));
+		expect(text(r)).toContain('Donation receipt FI/NAG/26-27/0416');
+		expect(text(r)).toContain('FSSAI surplus-food checklist');
+		r.unmount();
 	});
 });

@@ -331,7 +331,9 @@ function offerOf(c: PartnerCase, shop: Shop, w: PartnerWorld): PtOffer {
 	const sent = stepAt(c, 'offer')!,
 		filled = !!c.kirana && c.kirana.ordered >= c.kirana.planned;
 	const open = !!c.offer && c.offer.status === 'open' && !filled;
-	const closed = filled ? stepAt(c, 'orders')! : stepAt(c, 'closeOffer') || c.offer?.closesAt || plusHours(sent, 48);
+	const closed = filled
+		? (c.offer?.closedAt ?? stepAt(c, 'orders')!)
+		: stepAt(c, 'closeOffer') || c.offer?.closesAt || plusHours(sent, 48);
 	const status = o ? 'ordered' : dec ? 'declined' : open ? 'open' : 'expired';
 	return {
 		ref: c.ref,

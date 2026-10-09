@@ -774,7 +774,7 @@ export type PartnerCase = {
 	kiranas: { kirana: string; units: number; at?: string }[];
 	kirana: { planned: number; ordered: number } | null;
 	/** the scheme while it runs, and the shops that said not this time (a kirana is sent its own); the live workspace's */
-	offer?: { status: 'open' | 'closed'; closesAt: string } | null;
+	offer?: { status: 'open' | 'closed'; closesAt: string | null; closedAt?: string | null } | null;
 	declined?: Record<string, { at: string }>;
 	award: { price: number; token: number } | null;
 	partner: { name: string } | null;

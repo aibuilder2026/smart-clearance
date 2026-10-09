@@ -5,7 +5,7 @@
 	import type { IconName } from '../../../icons/registry';
 	import { rise } from '../../../motion/transitions';
 	import { batchViews } from '../../model';
-	import { distPapers, feedOfSteps, moments, storyMoments } from '../../partners';
+	import { feedOfSteps, moments, storyMoments } from '../../partners';
 	import { useWorkspace } from '../../source';
 	import type { Distributor, User } from '../../types';
 	import Locked from '../common/Locked.svelte';
