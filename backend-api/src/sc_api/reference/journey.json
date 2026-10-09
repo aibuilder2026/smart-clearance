@@ -7791,6 +7791,3153 @@
 					]
 				}
 			]
-		}
+		},
+		"partners": [
+			{
+				"ref": "MF-2406-105",
+				"sku": "biscuits",
+				"dist": "rakesh",
+				"outcome": "sold",
+				"flagged": "2026-07-03",
+				"cleared": "2026-08-14",
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-07-03T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-07-03T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-07-03T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-07-03T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-07-03T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-07-03T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-07-03T12:00"
+					},
+					{
+						"step": "listing",
+						"at": "2026-07-03T12:05"
+					},
+					{
+						"step": "offer",
+						"at": "2026-07-03T12:10"
+					},
+					{
+						"step": "orders",
+						"at": "2026-07-04T10:00"
+					},
+					{
+						"step": "bid",
+						"at": "2026-07-04T15:00"
+					},
+					{
+						"step": "counter",
+						"at": "2026-07-04T15:05"
+					},
+					{
+						"step": "accept",
+						"at": "2026-07-04T15:30"
+					},
+					{
+						"step": "truck",
+						"at": "2026-07-06T10:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-07-06T10:30"
+					},
+					{
+						"step": "invoice",
+						"at": "2026-07-06T11:00"
+					},
+					{
+						"step": "van",
+						"at": "2026-07-07T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-07-07T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-08-14T10:00"
+					}
+				],
+				"batch": {
+					"daysLeft": 42,
+					"bestBefore": "2026-08-14"
+				},
+				"plan": {
+					"units": 1050,
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 490,
+							"price": 24,
+							"packPrice": 28.8
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 560,
+							"price": 20,
+							"packPrice": null
+						}
+					]
+				},
+				"realised": {
+					"lines": [
+						{
+							"id": "kirana",
+							"units": 490,
+							"gross": 11760,
+							"price": 24
+						},
+						{
+							"id": "expiresoon",
+							"units": 560,
+							"gross": 11200,
+							"price": 20
+						}
+					],
+					"godown": 0
+				},
+				"listing": {
+					"id": "ES-24107"
+				},
+				"offered": 38,
+				"kiranas": [
+					{
+						"kirana": "k0",
+						"units": 24
+					},
+					{
+						"kirana": "k1",
+						"units": 24
+					},
+					{
+						"kirana": "k2",
+						"units": 12
+					},
+					{
+						"kirana": "k3",
+						"units": 12
+					},
+					{
+						"kirana": "k4",
+						"units": 36
+					},
+					{
+						"kirana": "k5",
+						"units": 24
+					},
+					{
+						"kirana": "k6",
+						"units": 12
+					},
+					{
+						"kirana": "k7",
+						"units": 12
+					},
+					{
+						"kirana": "k8",
+						"units": 24
+					},
+					{
+						"kirana": "k9",
+						"units": 12
+					},
+					{
+						"kirana": "k10",
+						"units": 48
+					},
+					{
+						"kirana": "k11",
+						"units": 36
+					},
+					{
+						"kirana": "k12",
+						"units": 24
+					},
+					{
+						"kirana": "k13",
+						"units": 12
+					},
+					{
+						"kirana": "k14",
+						"units": 12
+					},
+					{
+						"kirana": "k15",
+						"units": 12
+					},
+					{
+						"kirana": "k16",
+						"units": 24
+					},
+					{
+						"kirana": "k17",
+						"units": 12
+					},
+					{
+						"kirana": "k18",
+						"units": 12
+					},
+					{
+						"kirana": "k19",
+						"units": 24
+					},
+					{
+						"kirana": "k20",
+						"units": 12
+					},
+					{
+						"kirana": "k21",
+						"units": 12
+					},
+					{
+						"kirana": "k22",
+						"units": 12
+					},
+					{
+						"kirana": "k23",
+						"units": 36
+					},
+					{
+						"kirana": "k24",
+						"units": 10
+					}
+				],
+				"kirana": {
+					"planned": 490,
+					"ordered": 490
+				},
+				"award": {
+					"price": 19,
+					"token": 1596
+				},
+				"partner": null,
+				"donation": null,
+				"receipt": null,
+				"support": {
+					"total": 8395,
+					"van": 245,
+					"fee": 100
+				},
+				"expiry": null,
+				"docs": [
+					{
+						"id": "invoice",
+						"no": "INV/26-27/0921",
+						"status": "drafted",
+						"amount": 11172
+					},
+					{
+						"id": "eway",
+						"no": "MF-2406-105",
+						"status": "not required",
+						"amount": 11172
+					},
+					{
+						"id": "support",
+						"no": "CN/0102",
+						"status": "generated",
+						"amount": 8395
+					},
+					{
+						"id": "itc",
+						"no": "s.17(5)(h)",
+						"status": "generated",
+						"amount": 1302
+					},
+					{
+						"id": "fssai",
+						"no": "no donation",
+						"status": "not required",
+						"amount": 0
+					},
+					{
+						"id": "destruction",
+						"no": "0 units left",
+						"status": "not required",
+						"amount": 0
+					}
+				]
+			},
+			{
+				"ref": "MF-2406-106",
+				"sku": "chikki",
+				"dist": "lakshmi",
+				"outcome": "sold",
+				"flagged": "2026-07-08",
+				"cleared": "2026-08-15",
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-07-08T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-07-08T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-07-08T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-07-08T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-07-08T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-07-08T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-07-08T12:00"
+					},
+					{
+						"step": "listing",
+						"at": "2026-07-08T12:05"
+					},
+					{
+						"step": "offer",
+						"at": "2026-07-08T12:10"
+					},
+					{
+						"step": "orders",
+						"at": "2026-07-09T10:00"
+					},
+					{
+						"step": "bid",
+						"at": "2026-07-09T15:00"
+					},
+					{
+						"step": "counter",
+						"at": "2026-07-09T15:05"
+					},
+					{
+						"step": "accept",
+						"at": "2026-07-09T15:30"
+					},
+					{
+						"step": "truck",
+						"at": "2026-07-11T10:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-07-11T10:30"
+					},
+					{
+						"step": "invoice",
+						"at": "2026-07-11T11:00"
+					},
+					{
+						"step": "van",
+						"at": "2026-07-12T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-07-12T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-08-15T10:00"
+					}
+				],
+				"batch": {
+					"daysLeft": 38,
+					"bestBefore": "2026-08-15"
+				},
+				"plan": {
+					"units": 1166,
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 686,
+							"price": 15,
+							"packPrice": 18
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 480,
+							"price": 12.5,
+							"packPrice": null
+						}
+					]
+				},
+				"realised": {
+					"lines": [
+						{
+							"id": "kirana",
+							"units": 686,
+							"gross": 10290,
+							"price": 15
+						},
+						{
+							"id": "expiresoon",
+							"units": 480,
+							"gross": 6000,
+							"price": 12.5
+						}
+					],
+					"godown": 0
+				},
+				"listing": {
+					"id": "ES-24108"
+				},
+				"offered": 58,
+				"kiranas": [
+					{
+						"kirana": "h0",
+						"units": 24
+					},
+					{
+						"kirana": "h1",
+						"units": 28
+					},
+					{
+						"kirana": "h2",
+						"units": 32
+					},
+					{
+						"kirana": "h3",
+						"units": 20
+					},
+					{
+						"kirana": "h4",
+						"units": 36
+					},
+					{
+						"kirana": "h5",
+						"units": 24
+					},
+					{
+						"kirana": "h6",
+						"units": 28
+					},
+					{
+						"kirana": "h7",
+						"units": 16
+					},
+					{
+						"kirana": "h8",
+						"units": 32
+					},
+					{
+						"kirana": "h9",
+						"units": 28
+					},
+					{
+						"kirana": "h10",
+						"units": 24
+					},
+					{
+						"kirana": "h11",
+						"units": 28
+					},
+					{
+						"kirana": "h12",
+						"units": 32
+					},
+					{
+						"kirana": "h13",
+						"units": 20
+					},
+					{
+						"kirana": "h14",
+						"units": 36
+					},
+					{
+						"kirana": "h15",
+						"units": 24
+					},
+					{
+						"kirana": "h16",
+						"units": 28
+					},
+					{
+						"kirana": "h17",
+						"units": 16
+					},
+					{
+						"kirana": "h18",
+						"units": 32
+					},
+					{
+						"kirana": "h19",
+						"units": 28
+					},
+					{
+						"kirana": "h20",
+						"units": 24
+					},
+					{
+						"kirana": "h21",
+						"units": 28
+					},
+					{
+						"kirana": "h22",
+						"units": 32
+					},
+					{
+						"kirana": "h23",
+						"units": 20
+					},
+					{
+						"kirana": "h24",
+						"units": 36
+					},
+					{
+						"kirana": "h25",
+						"units": 10
+					}
+				],
+				"kirana": {
+					"planned": 686,
+					"ordered": 686
+				},
+				"award": {
+					"price": 12.5,
+					"token": 900
+				},
+				"partner": null,
+				"donation": null,
+				"receipt": null,
+				"support": {
+					"total": 5141,
+					"van": 343,
+					"fee": 100
+				},
+				"expiry": null,
+				"docs": [
+					{
+						"id": "invoice",
+						"no": "INV/26-27/0922",
+						"status": "drafted",
+						"amount": 6300
+					},
+					{
+						"id": "eway",
+						"no": "MF-2406-106",
+						"status": "not required",
+						"amount": 6300
+					},
+					{
+						"id": "support",
+						"no": "CN/0103",
+						"status": "generated",
+						"amount": 5141
+					},
+					{
+						"id": "itc",
+						"no": "s.17(5)(h)",
+						"status": "generated",
+						"amount": 851.18
+					},
+					{
+						"id": "fssai",
+						"no": "no donation",
+						"status": "not required",
+						"amount": 0
+					},
+					{
+						"id": "destruction",
+						"no": "0 units left",
+						"status": "not required",
+						"amount": 0
+					}
+				]
+			},
+			{
+				"ref": "MF-2406-107",
+				"sku": "oats",
+				"dist": "lakshmi",
+				"outcome": "leftover",
+				"flagged": "2026-07-14",
+				"cleared": "2026-08-23",
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-07-14T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-07-14T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-07-14T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-07-14T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-07-14T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-07-14T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-07-14T12:00"
+					},
+					{
+						"step": "listing",
+						"at": "2026-07-14T12:05"
+					},
+					{
+						"step": "offer",
+						"at": "2026-07-14T12:10"
+					},
+					{
+						"step": "orders",
+						"at": "2026-07-15T10:00"
+					},
+					{
+						"step": "bid",
+						"at": "2026-07-15T15:00"
+					},
+					{
+						"step": "counter",
+						"at": "2026-07-15T15:05"
+					},
+					{
+						"step": "accept",
+						"at": "2026-07-15T15:30"
+					},
+					{
+						"step": "closeOffer",
+						"at": "2026-07-16T12:10"
+					},
+					{
+						"step": "truck",
+						"at": "2026-07-17T10:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-07-17T10:30"
+					},
+					{
+						"step": "invoice",
+						"at": "2026-07-17T11:00"
+					},
+					{
+						"step": "van",
+						"at": "2026-07-18T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-07-18T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-08-23T10:00"
+					}
+				],
+				"batch": {
+					"daysLeft": 40,
+					"bestBefore": "2026-08-23"
+				},
+				"plan": {
+					"units": 635,
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 245,
+							"price": 39,
+							"packPrice": 46.8
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 390,
+							"price": 32.5,
+							"packPrice": null
+						}
+					]
+				},
+				"realised": {
+					"lines": [
+						{
+							"id": "kirana",
+							"units": 180,
+							"gross": 7020,
+							"price": 39
+						},
+						{
+							"id": "expiresoon",
+							"units": 390,
+							"gross": 12675,
+							"price": 32.5
+						}
+					],
+					"godown": 65
+				},
+				"listing": {
+					"id": "ES-24109"
+				},
+				"offered": 58,
+				"kiranas": [
+					{
+						"kirana": "h0",
+						"units": 24
+					},
+					{
+						"kirana": "h1",
+						"units": 28
+					},
+					{
+						"kirana": "h2",
+						"units": 32
+					},
+					{
+						"kirana": "h3",
+						"units": 20
+					},
+					{
+						"kirana": "h4",
+						"units": 36
+					},
+					{
+						"kirana": "h5",
+						"units": 24
+					},
+					{
+						"kirana": "h6",
+						"units": 16
+					}
+				],
+				"kirana": {
+					"planned": 245,
+					"ordered": 180
+				},
+				"award": {
+					"price": 30.8,
+					"token": 1802
+				},
+				"partner": null,
+				"donation": null,
+				"receipt": null,
+				"support": {
+					"total": 8233,
+					"van": 90,
+					"fee": 100
+				},
+				"expiry": {
+					"units": 65,
+					"credit": 3087.5
+				},
+				"docs": [
+					{
+						"id": "invoice",
+						"no": "INV/26-27/0923",
+						"status": "drafted",
+						"amount": 12613
+					},
+					{
+						"id": "eway",
+						"no": "MF-2406-107",
+						"status": "not required",
+						"amount": 12613
+					},
+					{
+						"id": "support",
+						"no": "CN/0104",
+						"status": "generated",
+						"amount": 8233
+					},
+					{
+						"id": "itc",
+						"no": "s.17(5)(h)",
+						"status": "generated",
+						"amount": 1157.1
+					},
+					{
+						"id": "fssai",
+						"no": "no donation",
+						"status": "not required",
+						"amount": 0
+					},
+					{
+						"id": "destruction",
+						"no": "65 units",
+						"status": "generated",
+						"amount": 0
+					},
+					{
+						"id": "expiry",
+						"no": "CN/0111",
+						"status": "generated",
+						"amount": 3087.5
+					}
+				]
+			},
+			{
+				"ref": "MF-2406-108",
+				"sku": "poha",
+				"dist": "rakesh",
+				"outcome": "sold",
+				"flagged": "2026-07-21",
+				"cleared": "2026-09-04",
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-07-21T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-07-21T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-07-21T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-07-21T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-07-21T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-07-21T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-07-21T12:00"
+					},
+					{
+						"step": "listing",
+						"at": "2026-07-21T12:05"
+					},
+					{
+						"step": "offer",
+						"at": "2026-07-21T12:10"
+					},
+					{
+						"step": "orders",
+						"at": "2026-07-22T10:00"
+					},
+					{
+						"step": "bid",
+						"at": "2026-07-22T15:00"
+					},
+					{
+						"step": "counter",
+						"at": "2026-07-22T15:05"
+					},
+					{
+						"step": "accept",
+						"at": "2026-07-22T15:30"
+					},
+					{
+						"step": "truck",
+						"at": "2026-07-24T10:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-07-24T10:30"
+					},
+					{
+						"step": "invoice",
+						"at": "2026-07-24T11:00"
+					},
+					{
+						"step": "van",
+						"at": "2026-07-25T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-07-25T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-09-04T10:00"
+					}
+				],
+				"batch": {
+					"daysLeft": 45,
+					"bestBefore": "2026-09-04"
+				},
+				"plan": {
+					"units": 672,
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 294,
+							"price": 33,
+							"packPrice": 39.6
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 378,
+							"price": 27.5,
+							"packPrice": null
+						}
+					]
+				},
+				"realised": {
+					"lines": [
+						{
+							"id": "kirana",
+							"units": 294,
+							"gross": 9702,
+							"price": 33
+						},
+						{
+							"id": "expiresoon",
+							"units": 378,
+							"gross": 10395,
+							"price": 27.5
+						}
+					],
+					"godown": 0
+				},
+				"listing": {
+					"id": "ES-24110"
+				},
+				"offered": 38,
+				"kiranas": [
+					{
+						"kirana": "k0",
+						"units": 24
+					},
+					{
+						"kirana": "k1",
+						"units": 24
+					},
+					{
+						"kirana": "k2",
+						"units": 12
+					},
+					{
+						"kirana": "k3",
+						"units": 12
+					},
+					{
+						"kirana": "k4",
+						"units": 36
+					},
+					{
+						"kirana": "k5",
+						"units": 24
+					},
+					{
+						"kirana": "k6",
+						"units": 12
+					},
+					{
+						"kirana": "k7",
+						"units": 12
+					},
+					{
+						"kirana": "k8",
+						"units": 24
+					},
+					{
+						"kirana": "k9",
+						"units": 12
+					},
+					{
+						"kirana": "k10",
+						"units": 48
+					},
+					{
+						"kirana": "k11",
+						"units": 36
+					},
+					{
+						"kirana": "k12",
+						"units": 18
+					}
+				],
+				"kirana": {
+					"planned": 294,
+					"ordered": 294
+				},
+				"award": {
+					"price": 26.1,
+					"token": 1480
+				},
+				"partner": null,
+				"donation": null,
+				"receipt": null,
+				"support": {
+					"total": 7559.2,
+					"van": 147,
+					"fee": 100
+				},
+				"expiry": null,
+				"docs": [
+					{
+						"id": "invoice",
+						"no": "INV/26-27/0924",
+						"status": "drafted",
+						"amount": 10359
+					},
+					{
+						"id": "eway",
+						"no": "MF-2406-108",
+						"status": "not required",
+						"amount": 10359
+					},
+					{
+						"id": "support",
+						"no": "CN/0105",
+						"status": "generated",
+						"amount": 7559
+					},
+					{
+						"id": "itc",
+						"no": "s.17(5)(h)",
+						"status": "generated",
+						"amount": 1169.28
+					},
+					{
+						"id": "fssai",
+						"no": "no donation",
+						"status": "not required",
+						"amount": 0
+					},
+					{
+						"id": "destruction",
+						"no": "0 units left",
+						"status": "not required",
+						"amount": 0
+					}
+				]
+			},
+			{
+				"ref": "MF-2406-109",
+				"sku": "poha",
+				"dist": "lakshmi",
+				"outcome": "donation",
+				"flagged": "2026-07-28",
+				"cleared": "2026-08-23",
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-07-28T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-07-28T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-07-28T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-07-28T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-07-28T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-07-28T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-07-28T12:00"
+					},
+					{
+						"step": "offer",
+						"at": "2026-07-28T12:10"
+					},
+					{
+						"step": "donation",
+						"at": "2026-07-28T12:15"
+					},
+					{
+						"step": "pickup",
+						"at": "2026-07-29T09:30"
+					},
+					{
+						"step": "orders",
+						"at": "2026-07-29T10:00"
+					},
+					{
+						"step": "collect",
+						"at": "2026-07-30T10:00"
+					},
+					{
+						"step": "staff",
+						"at": "2026-07-30T18:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-07-31T10:30"
+					},
+					{
+						"step": "van",
+						"at": "2026-08-01T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-08-01T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-08-23T10:00"
+					}
+				],
+				"batch": {
+					"daysLeft": 26,
+					"bestBefore": "2026-08-23"
+				},
+				"plan": {
+					"units": 948,
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 392,
+							"price": 33,
+							"packPrice": 39.6
+						},
+						{
+							"id": "staff",
+							"short": "Staff sale",
+							"units": 150,
+							"price": 22,
+							"packPrice": null
+						},
+						{
+							"id": "foodbank",
+							"short": "Food bank",
+							"units": 406,
+							"price": 0,
+							"packPrice": null
+						}
+					]
+				},
+				"realised": {
+					"lines": [
+						{
+							"id": "kirana",
+							"units": 392,
+							"gross": 12936,
+							"price": 33
+						},
+						{
+							"id": "staff",
+							"units": 150,
+							"gross": 3300,
+							"price": 22
+						},
+						{
+							"id": "foodbank",
+							"units": 406,
+							"gross": 0,
+							"price": 0
+						}
+					],
+					"godown": 0
+				},
+				"listing": null,
+				"offered": 58,
+				"kiranas": [
+					{
+						"kirana": "h0",
+						"units": 24
+					},
+					{
+						"kirana": "h1",
+						"units": 28
+					},
+					{
+						"kirana": "h2",
+						"units": 32
+					},
+					{
+						"kirana": "h3",
+						"units": 20
+					},
+					{
+						"kirana": "h4",
+						"units": 36
+					},
+					{
+						"kirana": "h5",
+						"units": 24
+					},
+					{
+						"kirana": "h6",
+						"units": 28
+					},
+					{
+						"kirana": "h7",
+						"units": 16
+					},
+					{
+						"kirana": "h8",
+						"units": 32
+					},
+					{
+						"kirana": "h9",
+						"units": 28
+					},
+					{
+						"kirana": "h10",
+						"units": 24
+					},
+					{
+						"kirana": "h11",
+						"units": 28
+					},
+					{
+						"kirana": "h12",
+						"units": 32
+					},
+					{
+						"kirana": "h13",
+						"units": 20
+					},
+					{
+						"kirana": "h14",
+						"units": 20
+					}
+				],
+				"kirana": {
+					"planned": 392,
+					"ordered": 392
+				},
+				"award": null,
+				"partner": {
+					"name": "Feeding India"
+				},
+				"donation": {
+					"units": 406,
+					"spot": "the Charminar hunger spot"
+				},
+				"receipt": {
+					"no": "FI/HYD/26-27/0415",
+					"kg": 109.62,
+					"meals": 406
+				},
+				"support": {
+					"total": 21880,
+					"van": 196,
+					"fee": 0
+				},
+				"expiry": null,
+				"docs": [
+					{
+						"id": "support",
+						"no": "CN/0106",
+						"status": "generated",
+						"amount": 21880
+					},
+					{
+						"id": "itc",
+						"no": "s.17(5)(h)",
+						"status": "generated",
+						"amount": 943.08
+					},
+					{
+						"id": "fssai",
+						"no": "406 units",
+						"status": "generated",
+						"amount": 0
+					},
+					{
+						"id": "receipt",
+						"no": "FI/HYD/26-27/0415",
+						"status": "generated",
+						"amount": 0
+					},
+					{
+						"id": "destruction",
+						"no": "0 units left",
+						"status": "not required",
+						"amount": 0
+					}
+				]
+			},
+			{
+				"ref": "MF-2407-110",
+				"sku": "facewash",
+				"dist": "rakesh",
+				"outcome": "sold",
+				"flagged": "2026-08-04",
+				"cleared": "2026-09-21",
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-08-04T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-08-04T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-08-04T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-08-04T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-08-04T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-08-04T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-08-04T12:00"
+					},
+					{
+						"step": "listing",
+						"at": "2026-08-04T12:05"
+					},
+					{
+						"step": "offer",
+						"at": "2026-08-04T12:10"
+					},
+					{
+						"step": "orders",
+						"at": "2026-08-05T10:00"
+					},
+					{
+						"step": "bid",
+						"at": "2026-08-05T15:00"
+					},
+					{
+						"step": "counter",
+						"at": "2026-08-05T15:05"
+					},
+					{
+						"step": "accept",
+						"at": "2026-08-05T15:30"
+					},
+					{
+						"step": "truck",
+						"at": "2026-08-07T10:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-08-07T10:30"
+					},
+					{
+						"step": "invoice",
+						"at": "2026-08-07T11:00"
+					},
+					{
+						"step": "van",
+						"at": "2026-08-08T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-08-08T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-09-21T10:00"
+					}
+				],
+				"batch": {
+					"daysLeft": 48,
+					"bestBefore": "2026-09-21"
+				},
+				"plan": {
+					"units": 397,
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 147,
+							"price": 72,
+							"packPrice": 86.4
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 250,
+							"price": 60,
+							"packPrice": null
+						}
+					]
+				},
+				"realised": {
+					"lines": [
+						{
+							"id": "kirana",
+							"units": 147,
+							"gross": 10584,
+							"price": 72
+						},
+						{
+							"id": "expiresoon",
+							"units": 250,
+							"gross": 15000,
+							"price": 60
+						}
+					],
+					"godown": 0
+				},
+				"listing": {
+					"id": "ES-24111"
+				},
+				"offered": 38,
+				"kiranas": [
+					{
+						"kirana": "k0",
+						"units": 24
+					},
+					{
+						"kirana": "k1",
+						"units": 24
+					},
+					{
+						"kirana": "k2",
+						"units": 12
+					},
+					{
+						"kirana": "k3",
+						"units": 12
+					},
+					{
+						"kirana": "k4",
+						"units": 36
+					},
+					{
+						"kirana": "k5",
+						"units": 24
+					},
+					{
+						"kirana": "k6",
+						"units": 12
+					},
+					{
+						"kirana": "k7",
+						"units": 3
+					}
+				],
+				"kirana": {
+					"planned": 147,
+					"ordered": 147
+				},
+				"award": {
+					"price": 57,
+					"token": 2138
+				},
+				"partner": null,
+				"donation": null,
+				"receipt": null,
+				"support": {
+					"total": 10275.5,
+					"van": 73.5,
+					"fee": 100
+				},
+				"expiry": null,
+				"docs": [
+					{
+						"id": "invoice",
+						"no": "INV/26-27/0925",
+						"status": "drafted",
+						"amount": 16815
+					},
+					{
+						"id": "eway",
+						"no": "MF-2407-110",
+						"status": "not required",
+						"amount": 16815
+					},
+					{
+						"id": "support",
+						"no": "CN/0107",
+						"status": "generated",
+						"amount": 10276
+					},
+					{
+						"id": "itc",
+						"no": "s.17(5)(h)",
+						"status": "generated",
+						"amount": 4664.75
+					},
+					{
+						"id": "fssai",
+						"no": "no donation",
+						"status": "not required",
+						"amount": 0
+					},
+					{
+						"id": "destruction",
+						"no": "0 units left",
+						"status": "not required",
+						"amount": 0
+					}
+				]
+			},
+			{
+				"ref": "MF-2407-111",
+				"sku": "mango",
+				"dist": "rakesh",
+				"outcome": "leftover",
+				"flagged": "2026-08-10",
+				"cleared": "2026-09-15",
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-08-10T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-08-10T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-08-10T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-08-10T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-08-10T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-08-10T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-08-10T12:00"
+					},
+					{
+						"step": "listing",
+						"at": "2026-08-10T12:05"
+					},
+					{
+						"step": "offer",
+						"at": "2026-08-10T12:10"
+					},
+					{
+						"step": "orders",
+						"at": "2026-08-11T10:00"
+					},
+					{
+						"step": "bid",
+						"at": "2026-08-11T15:00"
+					},
+					{
+						"step": "counter",
+						"at": "2026-08-11T15:05"
+					},
+					{
+						"step": "accept",
+						"at": "2026-08-11T15:30"
+					},
+					{
+						"step": "closeOffer",
+						"at": "2026-08-12T12:10"
+					},
+					{
+						"step": "truck",
+						"at": "2026-08-13T10:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-08-13T10:30"
+					},
+					{
+						"step": "invoice",
+						"at": "2026-08-13T11:00"
+					},
+					{
+						"step": "van",
+						"at": "2026-08-14T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-08-14T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-09-15T10:00"
+					}
+				],
+				"batch": {
+					"daysLeft": 36,
+					"bestBefore": "2026-09-15"
+				},
+				"plan": {
+					"units": 1236,
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 784,
+							"price": 12,
+							"packPrice": 14.4
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 452,
+							"price": 10,
+							"packPrice": null
+						}
+					]
+				},
+				"realised": {
+					"lines": [
+						{
+							"id": "kirana",
+							"units": 600,
+							"gross": 7200,
+							"price": 12
+						},
+						{
+							"id": "expiresoon",
+							"units": 452,
+							"gross": 4520,
+							"price": 10
+						}
+					],
+					"godown": 184
+				},
+				"listing": {
+					"id": "ES-24112"
+				},
+				"offered": 38,
+				"kiranas": [
+					{
+						"kirana": "k0",
+						"units": 24
+					},
+					{
+						"kirana": "k1",
+						"units": 24
+					},
+					{
+						"kirana": "k2",
+						"units": 12
+					},
+					{
+						"kirana": "k3",
+						"units": 12
+					},
+					{
+						"kirana": "k4",
+						"units": 36
+					},
+					{
+						"kirana": "k5",
+						"units": 24
+					},
+					{
+						"kirana": "k6",
+						"units": 12
+					},
+					{
+						"kirana": "k7",
+						"units": 12
+					},
+					{
+						"kirana": "k8",
+						"units": 24
+					},
+					{
+						"kirana": "k9",
+						"units": 12
+					},
+					{
+						"kirana": "k10",
+						"units": 48
+					},
+					{
+						"kirana": "k11",
+						"units": 36
+					},
+					{
+						"kirana": "k12",
+						"units": 24
+					},
+					{
+						"kirana": "k13",
+						"units": 12
+					},
+					{
+						"kirana": "k14",
+						"units": 12
+					},
+					{
+						"kirana": "k15",
+						"units": 12
+					},
+					{
+						"kirana": "k16",
+						"units": 24
+					},
+					{
+						"kirana": "k17",
+						"units": 12
+					},
+					{
+						"kirana": "k18",
+						"units": 12
+					},
+					{
+						"kirana": "k19",
+						"units": 24
+					},
+					{
+						"kirana": "k20",
+						"units": 12
+					},
+					{
+						"kirana": "k21",
+						"units": 12
+					},
+					{
+						"kirana": "k22",
+						"units": 12
+					},
+					{
+						"kirana": "k23",
+						"units": 36
+					},
+					{
+						"kirana": "k24",
+						"units": 12
+					},
+					{
+						"kirana": "k25",
+						"units": 24
+					},
+					{
+						"kirana": "k26",
+						"units": 12
+					},
+					{
+						"kirana": "k27",
+						"units": 12
+					},
+					{
+						"kirana": "k28",
+						"units": 12
+					},
+					{
+						"kirana": "k29",
+						"units": 24
+					},
+					{
+						"kirana": "k30",
+						"units": 12
+					},
+					{
+						"kirana": "k31",
+						"units": 12
+					}
+				],
+				"kirana": {
+					"planned": 784,
+					"ordered": 600
+				},
+				"award": {
+					"price": 10,
+					"token": 678
+				},
+				"partner": null,
+				"donation": null,
+				"receipt": null,
+				"support": {
+					"total": 3934,
+					"van": 300,
+					"fee": 100
+				},
+				"expiry": {
+					"units": 184,
+					"credit": 2668
+				},
+				"docs": [
+					{
+						"id": "invoice",
+						"no": "INV/26-27/0926",
+						"status": "drafted",
+						"amount": 4746
+					},
+					{
+						"id": "eway",
+						"no": "MF-2407-111",
+						"status": "not required",
+						"amount": 4746
+					},
+					{
+						"id": "support",
+						"no": "CN/0108",
+						"status": "generated",
+						"amount": 3934
+					},
+					{
+						"id": "itc",
+						"no": "s.17(5)(h)",
+						"status": "generated",
+						"amount": 578.6
+					},
+					{
+						"id": "fssai",
+						"no": "no donation",
+						"status": "not required",
+						"amount": 0
+					},
+					{
+						"id": "destruction",
+						"no": "184 units",
+						"status": "generated",
+						"amount": 0
+					},
+					{
+						"id": "expiry",
+						"no": "CN/0115",
+						"status": "generated",
+						"amount": 2668
+					}
+				]
+			},
+			{
+				"ref": "MF-2407-112",
+				"sku": "hairoil",
+				"dist": "lakshmi",
+				"outcome": "sold",
+				"flagged": "2026-08-17",
+				"cleared": "2026-09-30",
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-08-17T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-08-17T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-08-17T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-08-17T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-08-17T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-08-17T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-08-17T12:00"
+					},
+					{
+						"step": "listing",
+						"at": "2026-08-17T12:05"
+					},
+					{
+						"step": "offer",
+						"at": "2026-08-17T12:10"
+					},
+					{
+						"step": "orders",
+						"at": "2026-08-18T10:00"
+					},
+					{
+						"step": "bid",
+						"at": "2026-08-18T15:00"
+					},
+					{
+						"step": "counter",
+						"at": "2026-08-18T15:05"
+					},
+					{
+						"step": "accept",
+						"at": "2026-08-18T15:30"
+					},
+					{
+						"step": "truck",
+						"at": "2026-08-20T10:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-08-20T10:30"
+					},
+					{
+						"step": "invoice",
+						"at": "2026-08-20T11:00"
+					},
+					{
+						"step": "van",
+						"at": "2026-08-21T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-08-21T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-09-30T10:00"
+					}
+				],
+				"batch": {
+					"daysLeft": 44,
+					"bestBefore": "2026-09-30"
+				},
+				"plan": {
+					"units": 369,
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 147,
+							"price": 90,
+							"packPrice": 108
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 222,
+							"price": 75,
+							"packPrice": null
+						}
+					]
+				},
+				"realised": {
+					"lines": [
+						{
+							"id": "kirana",
+							"units": 147,
+							"gross": 13230,
+							"price": 90
+						},
+						{
+							"id": "expiresoon",
+							"units": 222,
+							"gross": 16650,
+							"price": 75
+						}
+					],
+					"godown": 0
+				},
+				"listing": {
+					"id": "ES-24113"
+				},
+				"offered": 58,
+				"kiranas": [
+					{
+						"kirana": "h0",
+						"units": 24
+					},
+					{
+						"kirana": "h1",
+						"units": 28
+					},
+					{
+						"kirana": "h2",
+						"units": 32
+					},
+					{
+						"kirana": "h3",
+						"units": 20
+					},
+					{
+						"kirana": "h4",
+						"units": 36
+					},
+					{
+						"kirana": "h5",
+						"units": 7
+					}
+				],
+				"kirana": {
+					"planned": 147,
+					"ordered": 147
+				},
+				"award": {
+					"price": 71.2,
+					"token": 2371
+				},
+				"partner": null,
+				"donation": null,
+				"receipt": null,
+				"support": {
+					"total": 11727.1,
+					"van": 73.5,
+					"fee": 100
+				},
+				"expiry": null,
+				"docs": [
+					{
+						"id": "invoice",
+						"no": "INV/26-27/0927",
+						"status": "drafted",
+						"amount": 16596
+					},
+					{
+						"id": "eway",
+						"no": "MF-2407-112",
+						"status": "not required",
+						"amount": 16596
+					},
+					{
+						"id": "support",
+						"no": "CN/0109",
+						"status": "generated",
+						"amount": 11727
+					},
+					{
+						"id": "itc",
+						"no": "s.17(5)(h)",
+						"status": "generated",
+						"amount": 1494.45
+					},
+					{
+						"id": "fssai",
+						"no": "no donation",
+						"status": "not required",
+						"amount": 0
+					},
+					{
+						"id": "destruction",
+						"no": "0 units left",
+						"status": "not required",
+						"amount": 0
+					}
+				]
+			},
+			{
+				"ref": "MF-2407-113",
+				"sku": "chips",
+				"dist": "lakshmi",
+				"outcome": "sold",
+				"flagged": "2026-08-18",
+				"cleared": "2026-09-27",
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-08-18T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-08-18T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-08-18T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-08-18T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-08-18T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-08-18T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-08-18T12:00"
+					},
+					{
+						"step": "listing",
+						"at": "2026-08-18T12:05"
+					},
+					{
+						"step": "offer",
+						"at": "2026-08-18T12:10"
+					},
+					{
+						"step": "orders",
+						"at": "2026-08-19T10:00"
+					},
+					{
+						"step": "bid",
+						"at": "2026-08-19T15:00"
+					},
+					{
+						"step": "counter",
+						"at": "2026-08-19T15:05"
+					},
+					{
+						"step": "accept",
+						"at": "2026-08-19T15:30"
+					},
+					{
+						"step": "truck",
+						"at": "2026-08-21T10:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-08-21T10:30"
+					},
+					{
+						"step": "invoice",
+						"at": "2026-08-21T11:00"
+					},
+					{
+						"step": "van",
+						"at": "2026-08-22T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-08-22T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-09-27T10:00"
+					}
+				],
+				"batch": {
+					"daysLeft": 40,
+					"bestBefore": "2026-09-27"
+				},
+				"plan": {
+					"units": 1071,
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 637,
+							"price": 18,
+							"packPrice": 21.6
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 434,
+							"price": 15,
+							"packPrice": null
+						}
+					]
+				},
+				"realised": {
+					"lines": [
+						{
+							"id": "kirana",
+							"units": 637,
+							"gross": 11466,
+							"price": 18
+						},
+						{
+							"id": "expiresoon",
+							"units": 434,
+							"gross": 6510,
+							"price": 15
+						}
+					],
+					"godown": 0
+				},
+				"listing": {
+					"id": "ES-24114"
+				},
+				"offered": 58,
+				"kiranas": [
+					{
+						"kirana": "h0",
+						"units": 24
+					},
+					{
+						"kirana": "h1",
+						"units": 28
+					},
+					{
+						"kirana": "h2",
+						"units": 32
+					},
+					{
+						"kirana": "h3",
+						"units": 20
+					},
+					{
+						"kirana": "h4",
+						"units": 36
+					},
+					{
+						"kirana": "h5",
+						"units": 24
+					},
+					{
+						"kirana": "h6",
+						"units": 28
+					},
+					{
+						"kirana": "h7",
+						"units": 16
+					},
+					{
+						"kirana": "h8",
+						"units": 32
+					},
+					{
+						"kirana": "h9",
+						"units": 28
+					},
+					{
+						"kirana": "h10",
+						"units": 24
+					},
+					{
+						"kirana": "h11",
+						"units": 28
+					},
+					{
+						"kirana": "h12",
+						"units": 32
+					},
+					{
+						"kirana": "h13",
+						"units": 20
+					},
+					{
+						"kirana": "h14",
+						"units": 36
+					},
+					{
+						"kirana": "h15",
+						"units": 24
+					},
+					{
+						"kirana": "h16",
+						"units": 28
+					},
+					{
+						"kirana": "h17",
+						"units": 16
+					},
+					{
+						"kirana": "h18",
+						"units": 32
+					},
+					{
+						"kirana": "h19",
+						"units": 28
+					},
+					{
+						"kirana": "h20",
+						"units": 24
+					},
+					{
+						"kirana": "h21",
+						"units": 28
+					},
+					{
+						"kirana": "h22",
+						"units": 32
+					},
+					{
+						"kirana": "h23",
+						"units": 17
+					}
+				],
+				"kirana": {
+					"planned": 637,
+					"ordered": 637
+				},
+				"award": {
+					"price": 14.2,
+					"token": 924
+				},
+				"partner": null,
+				"donation": null,
+				"receipt": null,
+				"support": {
+					"total": 6351.7,
+					"van": 318.5,
+					"fee": 100
+				},
+				"expiry": null,
+				"docs": [
+					{
+						"id": "invoice",
+						"no": "INV/26-27/0928",
+						"status": "drafted",
+						"amount": 6471
+					},
+					{
+						"id": "eway",
+						"no": "MF-2407-113",
+						"status": "not required",
+						"amount": 6471
+					},
+					{
+						"id": "support",
+						"no": "CN/0110",
+						"status": "generated",
+						"amount": 6352
+					},
+					{
+						"id": "itc",
+						"no": "s.17(5)(h)",
+						"status": "generated",
+						"amount": 963.9
+					},
+					{
+						"id": "fssai",
+						"no": "no donation",
+						"status": "not required",
+						"amount": 0
+					},
+					{
+						"id": "destruction",
+						"no": "0 units left",
+						"status": "not required",
+						"amount": 0
+					}
+				]
+			},
+			{
+				"ref": "MF-2407-114",
+				"sku": "oats",
+				"dist": "rakesh",
+				"outcome": "donation",
+				"flagged": "2026-08-24",
+				"cleared": "2026-09-15",
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-08-24T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-08-24T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-08-24T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-08-24T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-08-24T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-08-24T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-08-24T12:00"
+					},
+					{
+						"step": "offer",
+						"at": "2026-08-24T12:10"
+					},
+					{
+						"step": "donation",
+						"at": "2026-08-24T12:15"
+					},
+					{
+						"step": "pickup",
+						"at": "2026-08-25T09:30"
+					},
+					{
+						"step": "orders",
+						"at": "2026-08-25T10:00"
+					},
+					{
+						"step": "collect",
+						"at": "2026-08-26T10:00"
+					},
+					{
+						"step": "staff",
+						"at": "2026-08-26T18:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-08-27T10:30"
+					},
+					{
+						"step": "van",
+						"at": "2026-08-28T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-08-28T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-09-15T10:00"
+					}
+				],
+				"batch": {
+					"daysLeft": 22,
+					"bestBefore": "2026-09-15"
+				},
+				"plan": {
+					"units": 810,
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 294,
+							"price": 39,
+							"packPrice": 46.8
+						},
+						{
+							"id": "staff",
+							"short": "Staff sale",
+							"units": 50,
+							"price": 26,
+							"packPrice": null
+						},
+						{
+							"id": "foodbank",
+							"short": "Food bank",
+							"units": 466,
+							"price": 0,
+							"packPrice": null
+						}
+					]
+				},
+				"realised": {
+					"lines": [
+						{
+							"id": "kirana",
+							"units": 294,
+							"gross": 11466,
+							"price": 39
+						},
+						{
+							"id": "staff",
+							"units": 50,
+							"gross": 1300,
+							"price": 26
+						},
+						{
+							"id": "foodbank",
+							"units": 466,
+							"gross": 0,
+							"price": 0
+						}
+					],
+					"godown": 0
+				},
+				"listing": null,
+				"offered": 38,
+				"kiranas": [
+					{
+						"kirana": "k0",
+						"units": 24
+					},
+					{
+						"kirana": "k1",
+						"units": 24
+					},
+					{
+						"kirana": "k2",
+						"units": 12
+					},
+					{
+						"kirana": "k3",
+						"units": 12
+					},
+					{
+						"kirana": "k4",
+						"units": 36
+					},
+					{
+						"kirana": "k5",
+						"units": 24
+					},
+					{
+						"kirana": "k6",
+						"units": 12
+					},
+					{
+						"kirana": "k7",
+						"units": 12
+					},
+					{
+						"kirana": "k8",
+						"units": 24
+					},
+					{
+						"kirana": "k9",
+						"units": 12
+					},
+					{
+						"kirana": "k10",
+						"units": 48
+					},
+					{
+						"kirana": "k11",
+						"units": 36
+					},
+					{
+						"kirana": "k12",
+						"units": 18
+					}
+				],
+				"kirana": {
+					"planned": 294,
+					"ordered": 294
+				},
+				"award": null,
+				"partner": {
+					"name": "Feeding India"
+				},
+				"donation": {
+					"units": 466,
+					"spot": "Feeding India's serving point in Nagpur"
+				},
+				"receipt": {
+					"no": "FI/NAG/26-27/0416",
+					"kg": 102.52,
+					"meals": 466
+				},
+				"support": {
+					"total": 25856,
+					"van": 147,
+					"fee": 0
+				},
+				"expiry": null,
+				"docs": [
+					{
+						"id": "support",
+						"no": "CN/0112",
+						"status": "generated",
+						"amount": 25856
+					},
+					{
+						"id": "itc",
+						"no": "s.17(5)(h)",
+						"status": "generated",
+						"amount": 698.32
+					},
+					{
+						"id": "fssai",
+						"no": "466 units",
+						"status": "generated",
+						"amount": 0
+					},
+					{
+						"id": "receipt",
+						"no": "FI/NAG/26-27/0416",
+						"status": "generated",
+						"amount": 0
+					},
+					{
+						"id": "destruction",
+						"no": "0 units left",
+						"status": "not required",
+						"amount": 0
+					}
+				]
+			},
+			{
+				"ref": "MF-2407-115",
+				"sku": "biscuits",
+				"dist": "lakshmi",
+				"outcome": "sold",
+				"flagged": "2026-08-25",
+				"cleared": "2026-09-28",
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-08-25T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-08-25T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-08-25T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-08-25T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-08-25T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-08-25T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-08-25T12:00"
+					},
+					{
+						"step": "listing",
+						"at": "2026-08-25T12:05"
+					},
+					{
+						"step": "offer",
+						"at": "2026-08-25T12:10"
+					},
+					{
+						"step": "orders",
+						"at": "2026-08-26T10:00"
+					},
+					{
+						"step": "bid",
+						"at": "2026-08-26T15:00"
+					},
+					{
+						"step": "counter",
+						"at": "2026-08-26T15:05"
+					},
+					{
+						"step": "accept",
+						"at": "2026-08-26T15:30"
+					},
+					{
+						"step": "truck",
+						"at": "2026-08-28T10:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-08-28T10:30"
+					},
+					{
+						"step": "invoice",
+						"at": "2026-08-28T11:00"
+					},
+					{
+						"step": "van",
+						"at": "2026-08-29T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-08-29T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-09-28T10:00"
+					}
+				],
+				"batch": {
+					"daysLeft": 34,
+					"bestBefore": "2026-09-28"
+				},
+				"plan": {
+					"units": 1003,
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 539,
+							"price": 24,
+							"packPrice": 28.8
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 464,
+							"price": 20,
+							"packPrice": null
+						}
+					]
+				},
+				"realised": {
+					"lines": [
+						{
+							"id": "kirana",
+							"units": 539,
+							"gross": 12936,
+							"price": 24
+						},
+						{
+							"id": "expiresoon",
+							"units": 464,
+							"gross": 9280,
+							"price": 20
+						}
+					],
+					"godown": 0
+				},
+				"listing": {
+					"id": "ES-24115"
+				},
+				"offered": 58,
+				"kiranas": [
+					{
+						"kirana": "h0",
+						"units": 24
+					},
+					{
+						"kirana": "h1",
+						"units": 28
+					},
+					{
+						"kirana": "h2",
+						"units": 32
+					},
+					{
+						"kirana": "h3",
+						"units": 20
+					},
+					{
+						"kirana": "h4",
+						"units": 36
+					},
+					{
+						"kirana": "h5",
+						"units": 24
+					},
+					{
+						"kirana": "h6",
+						"units": 28
+					},
+					{
+						"kirana": "h7",
+						"units": 16
+					},
+					{
+						"kirana": "h8",
+						"units": 32
+					},
+					{
+						"kirana": "h9",
+						"units": 28
+					},
+					{
+						"kirana": "h10",
+						"units": 24
+					},
+					{
+						"kirana": "h11",
+						"units": 28
+					},
+					{
+						"kirana": "h12",
+						"units": 32
+					},
+					{
+						"kirana": "h13",
+						"units": 20
+					},
+					{
+						"kirana": "h14",
+						"units": 36
+					},
+					{
+						"kirana": "h15",
+						"units": 24
+					},
+					{
+						"kirana": "h16",
+						"units": 28
+					},
+					{
+						"kirana": "h17",
+						"units": 16
+					},
+					{
+						"kirana": "h18",
+						"units": 32
+					},
+					{
+						"kirana": "h19",
+						"units": 28
+					},
+					{
+						"kirana": "h20",
+						"units": 3
+					}
+				],
+				"kirana": {
+					"planned": 539,
+					"ordered": 539
+				},
+				"award": {
+					"price": 19,
+					"token": 1322
+				},
+				"partner": null,
+				"donation": null,
+				"receipt": null,
+				"support": {
+					"total": 7704.5,
+					"van": 269.5,
+					"fee": 100
+				},
+				"expiry": null,
+				"docs": [
+					{
+						"id": "invoice",
+						"no": "INV/26-27/0929",
+						"status": "drafted",
+						"amount": 9257
+					},
+					{
+						"id": "eway",
+						"no": "MF-2407-115",
+						"status": "not required",
+						"amount": 9257
+					},
+					{
+						"id": "support",
+						"no": "CN/0113",
+						"status": "generated",
+						"amount": 7705
+					},
+					{
+						"id": "itc",
+						"no": "s.17(5)(h)",
+						"status": "generated",
+						"amount": 1243.72
+					},
+					{
+						"id": "fssai",
+						"no": "no donation",
+						"status": "not required",
+						"amount": 0
+					},
+					{
+						"id": "destruction",
+						"no": "0 units left",
+						"status": "not required",
+						"amount": 0
+					}
+				]
+			},
+			{
+				"ref": "MF-2407-116",
+				"sku": "chikki",
+				"dist": "rakesh",
+				"outcome": "leftover",
+				"flagged": "2026-08-27",
+				"cleared": "2026-09-27",
+				"steps": [
+					{
+						"step": "open",
+						"at": "2026-08-27T08:30"
+					},
+					{
+						"step": "detect",
+						"at": "2026-08-27T09:00"
+					},
+					{
+						"step": "photo",
+						"at": "2026-08-27T11:00"
+					},
+					{
+						"step": "read",
+						"at": "2026-08-27T11:05"
+					},
+					{
+						"step": "value",
+						"at": "2026-08-27T11:10"
+					},
+					{
+						"step": "route",
+						"at": "2026-08-27T11:15"
+					},
+					{
+						"step": "approve",
+						"at": "2026-08-27T12:00"
+					},
+					{
+						"step": "listing",
+						"at": "2026-08-27T12:05"
+					},
+					{
+						"step": "offer",
+						"at": "2026-08-27T12:10"
+					},
+					{
+						"step": "orders",
+						"at": "2026-08-28T10:00"
+					},
+					{
+						"step": "bid",
+						"at": "2026-08-28T15:00"
+					},
+					{
+						"step": "counter",
+						"at": "2026-08-28T15:05"
+					},
+					{
+						"step": "accept",
+						"at": "2026-08-28T15:30"
+					},
+					{
+						"step": "closeOffer",
+						"at": "2026-08-29T12:10"
+					},
+					{
+						"step": "truck",
+						"at": "2026-08-30T10:00"
+					},
+					{
+						"step": "papers",
+						"at": "2026-08-30T10:30"
+					},
+					{
+						"step": "invoice",
+						"at": "2026-08-30T11:00"
+					},
+					{
+						"step": "van",
+						"at": "2026-08-31T09:00"
+					},
+					{
+						"step": "review",
+						"at": "2026-08-31T15:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-09-27T10:00"
+					}
+				],
+				"batch": {
+					"daysLeft": 31,
+					"bestBefore": "2026-09-27"
+				},
+				"plan": {
+					"units": 1212,
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 588,
+							"price": 15,
+							"packPrice": 18
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 624,
+							"price": 12.5,
+							"packPrice": null
+						}
+					]
+				},
+				"realised": {
+					"lines": [
+						{
+							"id": "kirana",
+							"units": 456,
+							"gross": 6840,
+							"price": 15
+						},
+						{
+							"id": "expiresoon",
+							"units": 624,
+							"gross": 7800,
+							"price": 12.5
+						}
+					],
+					"godown": 132
+				},
+				"listing": {
+					"id": "ES-24116"
+				},
+				"offered": 38,
+				"kiranas": [
+					{
+						"kirana": "k0",
+						"units": 24
+					},
+					{
+						"kirana": "k1",
+						"units": 24
+					},
+					{
+						"kirana": "k2",
+						"units": 12
+					},
+					{
+						"kirana": "k3",
+						"units": 12
+					},
+					{
+						"kirana": "k4",
+						"units": 36
+					},
+					{
+						"kirana": "k5",
+						"units": 24
+					},
+					{
+						"kirana": "k6",
+						"units": 12
+					},
+					{
+						"kirana": "k7",
+						"units": 12
+					},
+					{
+						"kirana": "k8",
+						"units": 24
+					},
+					{
+						"kirana": "k9",
+						"units": 12
+					},
+					{
+						"kirana": "k10",
+						"units": 48
+					},
+					{
+						"kirana": "k11",
+						"units": 36
+					},
+					{
+						"kirana": "k12",
+						"units": 24
+					},
+					{
+						"kirana": "k13",
+						"units": 12
+					},
+					{
+						"kirana": "k14",
+						"units": 12
+					},
+					{
+						"kirana": "k15",
+						"units": 12
+					},
+					{
+						"kirana": "k16",
+						"units": 24
+					},
+					{
+						"kirana": "k17",
+						"units": 12
+					},
+					{
+						"kirana": "k18",
+						"units": 12
+					},
+					{
+						"kirana": "k19",
+						"units": 24
+					},
+					{
+						"kirana": "k20",
+						"units": 12
+					},
+					{
+						"kirana": "k21",
+						"units": 12
+					},
+					{
+						"kirana": "k22",
+						"units": 12
+					},
+					{
+						"kirana": "k23",
+						"units": 12
+					}
+				],
+				"kirana": {
+					"planned": 588,
+					"ordered": 456
+				},
+				"award": {
+					"price": 12.5,
+					"token": 1170
+				},
+				"partner": null,
+				"donation": null,
+				"receipt": null,
+				"support": {
+					"total": 5128,
+					"van": 228,
+					"fee": 100
+				},
+				"expiry": {
+					"units": 132,
+					"credit": 2376
+				},
+				"docs": [
+					{
+						"id": "invoice",
+						"no": "INV/26-27/0930",
+						"status": "drafted",
+						"amount": 8190
+					},
+					{
+						"id": "eway",
+						"no": "MF-2407-116",
+						"status": "not required",
+						"amount": 8190
+					},
+					{
+						"id": "support",
+						"no": "CN/0114",
+						"status": "generated",
+						"amount": 5128
+					},
+					{
+						"id": "itc",
+						"no": "s.17(5)(h)",
+						"status": "generated",
+						"amount": 788.4
+					},
+					{
+						"id": "fssai",
+						"no": "no donation",
+						"status": "not required",
+						"amount": 0
+					},
+					{
+						"id": "destruction",
+						"no": "132 units",
+						"status": "generated",
+						"amount": 0
+					},
+					{
+						"id": "expiry",
+						"no": "CN/0116",
+						"status": "generated",
+						"amount": 2376
+					}
+				]
+			}
+		]
 	}
 }

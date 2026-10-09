@@ -488,7 +488,14 @@ export type Journey = {
 		title: string;
 		description: string;
 	};
-	offer: null | { status: 'sent' | 'closed'; at: string; shops: number; closesAt: string };
+	offer: null | {
+		status: 'sent' | 'closed';
+		at: string;
+		shops: number;
+		closesAt: string;
+		/** the shops that said not this time (SC-130), by kirana; a kirana is told its own */
+		declined: Record<string, { at: string }>;
+	};
 	orders: { id: string; units: number; at: string; by: string }[];
 	bids: WsBid[];
 	chat: WsChatMessage[];
@@ -982,6 +989,58 @@ export type WorkspaceEvent = {
 /** GET …/events?after=: the polling fallback, and what the stream sends one at a time */
 export type EventsPage = { seq: number; events: WorkspaceEvent[]; reset: boolean };
 
+/* ---------- a partner's own history (SC-130) ---------- */
+
+/** a time in the client's zone, to the minute (2026-08-27T12:10) */
+export type LocalTime = string;
+/** a batch a partner took part in, as its own pages read it (design3/core/ledger.js partners), cut to its part: a
+ *  distributor reads the plan, what each line took, the price support, his papers and copies of the food bank's
+ *  receipt and the destruction certificate; a kirana, the scheme with its own order or Not this time; a food bank, the
+ *  donation with its receipt */
+export type WsPartnerCase = {
+	ref: string;
+	sku: string;
+	dist: string;
+	outcome: WsLedgerOutcome | null;
+	/** the day the Watcher flagged it, and the day it cleared (null while it is in a journey) */
+	flagged: string;
+	cleared: string | null;
+	/** each step and when it happened: detect, ask, photo, read, approve, listing, offer, donation, pickup, orders (the
+	 *  first), accept, collect, closeOffer (a scheme closed on its clock), staff, truck, papers, invoice, van, review,
+	 *  report */
+	steps: { step: string; at: LocalTime }[];
+	batch: { daysLeft: number; bestBefore: string };
+	plan: {
+		units: number;
+		lines: { id: string; short: string; units: number; price: number; packPrice: number | null }[];
+	};
+	/** what each line took (the ExpireSoon lot at the price the buyer took), and the packs left at the godown; a
+	 *  distributor's, once cleared */
+	realised: { lines: { id: string; units: number; gross: number; price: number }[]; godown: number } | null;
+	listing: { id: string } | null;
+	offered: number;
+	/** the shops' orders: a distributor's every one, a kirana its own */
+	kiranas: { kirana: string; units: number; at: LocalTime }[];
+	kirana: { planned: number; ordered: number } | null;
+	offer: { status: 'open' | 'closed'; closesAt: LocalTime | null; closedAt: LocalTime | null } | null;
+	/** a kirana's own Not this time */
+	declined: Record<string, { at: LocalTime }>;
+	award: { price: number; token: number } | null;
+	partner: { name: string } | null;
+	donation: { units: number; spot: string } | null;
+	receipt: WsReceipt | null;
+	support: { total: number; van: number; fee: number } | null;
+	expiry: { units: number; credit: number } | null;
+	docs: WsDoc[];
+};
+/** what a partner reads of its own history with the client: the batches it took part in, newest first, the buyer they
+ *  name, and a kirana's own shop */
+export type WsPartner = {
+	buyer: { name: string; city: string };
+	shop: { id: string; name: string; area: string; sales14: number; distributor: string; member: string | null } | null;
+	cases: WsPartnerCase[];
+};
+
 /* ---------- the API ---------- */
 
 /** backend-api's workspace routes, relative to /v1/workspaces/{ws} */
@@ -1001,6 +1060,8 @@ export interface WorkspaceApi {
 	case(ref: string): Promise<CaseDetail>;
 	/** GET /ledger */
 	ledger(): Promise<WsLedger>;
+	/** GET /partner: a distributor's, kirana's or food bank's own history (SC-130) */
+	partner(): Promise<WsPartner>;
 	/** GET /audit?before= */
 	audit(before?: string | null): Promise<WsAuditPage>;
 	/** GET /documents/{ref}/{doc}: a 5-minute signed link to the PDF */
@@ -1022,6 +1083,8 @@ export interface WorkspaceApi {
 	approve(ref: string, device: 'phone' | 'desktop'): Promise<ActionResult>;
 	/** POST /cases/{ref}/orders {units}: a kirana orders under the scheme, within its cap */
 	order(ref: string, units: number): Promise<ActionResult>;
+	/** POST /cases/{ref}/offer/decline: a kirana says not this time; an order after all takes it back (SC-130) */
+	declineOffer(ref: string): Promise<ActionResult>;
 	/** POST /cases/{ref}/bids {price}; POST /cases/{ref}/messages {text}; POST /cases/{ref}/bids/{bid}/accept */
 	bid(ref: string, price: number): Promise<ActionResult>;
 	message(ref: string, text: string): Promise<ActionResult>;

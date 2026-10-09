@@ -21,7 +21,7 @@ from sc_api.domain import journey as J
 from sc_api.errors import ApiError
 from sc_api.schemas import Shape
 from sc_api.services.context import Ctx
-from sc_api.services.journey import admin, steps, views, world
+from sc_api.services.journey import admin, partners, steps, views, world
 from sc_api.services.journey import events as ev
 from sc_api.services.journey.outbox import drain
 
@@ -184,6 +184,11 @@ async def ledger(ws: str, ctx: MemberCtx) -> dict[str, Any]:
     return await views.ledger(ctx, ws)
 
 
+@router.get("/partner", summary="A partner's own history: the batches a distributor, kirana or food bank took part in")
+async def partner(ws: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    return await partners.partner(ctx, ws, _member(request))
+
+
 @router.get("/audit", summary="The workspace's audit log, newest first, a page at a time")
 async def audit_log(ws: str, ctx: MemberCtx, before: str | None = None) -> dict[str, Any]:
     ctx.require("ws.audit", "Your role can't read the audit log.")
@@ -297,6 +302,14 @@ async def order(ws: str, ref: str, data: OrderInput, request: Request, ctx: Memb
     if (replay := await _replay(ctx, request, ws, ref)) is not None:
         return replay
     await steps.order(ctx, ws, ref, data.units)
+    return await _done(ctx, request, ws, ref)
+
+
+@router.post(CASE + "/offer/decline", summary="A kirana says not this time to the scheme")
+async def decline(ws: str, ref: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws, ref)) is not None:
+        return replay
+    await steps.decline(ctx, ws, ref)
     return await _done(ctx, request, ws, ref)
 
 

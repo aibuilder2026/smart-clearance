@@ -474,7 +474,37 @@ const journey = {
 				credit: b.expiry ? b.expiry.credit : 0
 			}
 		})),
-		ledger: historyLedger
+		ledger: historyLedger,
+		// what a partner's pages read of each batch (SC-130, ledger.js partners), for backend-api's partner route
+		partners: L.HISTORY.map((c) => ({
+			ref: c.ref,
+			sku: c.sku.id,
+			dist: c.dist.id,
+			outcome: c.outcome,
+			flagged: c.flagged,
+			cleared: c.cleared,
+			steps: c.steps,
+			batch: { daysLeft: c.batch.daysLeft, bestBefore: c.batch.bestBefore },
+			plan: {
+				units: c.plan.units,
+				lines: c.plan.lines.map(({ id, short, units, price, packPrice }) => ({ id, short, units, price, packPrice }))
+			},
+			realised: {
+				lines: c.realised.lines.map(({ id, units, gross, price }) => ({ id, units, gross, price })),
+				godown: c.realised.godown
+			},
+			listing: c.listing ? { id: c.listing.id } : null,
+			offered: c.offered,
+			kiranas: c.kiranas.map(({ kirana, units }) => ({ kirana, units })),
+			kirana: c.kirana,
+			award: c.award ? { price: c.award.price, token: c.award.token } : null,
+			partner: c.partner ? { name: c.partner.name } : null,
+			donation: c.donation ? { units: c.donation.units, spot: c.donation.spot } : null,
+			receipt: c.receipt ? { no: c.receipt.no, kg: c.receipt.kg, meals: c.receipt.meals } : null,
+			support: { total: c.support.total, van: c.support.van, fee: c.support.fee },
+			expiry: c.expiry && c.expiry.units ? { units: c.expiry.units, credit: c.expiry.credit } : null,
+			docs: c.docs.map(({ id, no, status, amount }) => ({ id, no, status, amount }))
+		}))
 	}
 };
 
@@ -711,7 +741,14 @@ const outputs = {
 			rows: historyRows,
 			story: { row: L.rowOf(L.storyCase()), cleared: L.STORY_CLEARED },
 			// every shop a distributor's scheme goes to (world.js), as a kirana's portal finds its own (SC-130)
-			shops: W.KIRANAS.map(({ id, name, area, sales14, distributor, member }) => ({ id, name, area, sales14, distributor, member }))
+			shops: W.KIRANAS.map(({ id, name, area, sales14, distributor, member }) => ({
+				id,
+				name,
+				area,
+				sales14,
+				distributor,
+				member
+			}))
 		})
 	},
 	// backend-api loads the same reference data into its database at migrate time, and imports the console's day

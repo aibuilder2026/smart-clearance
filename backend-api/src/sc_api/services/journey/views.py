@@ -600,6 +600,12 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
                 "at": case.offer["at"],
                 "shops": case.offer["shops"],
                 "closesAt": case.offer["closesAt"],
+                # the shops that said not this time (SC-130): a kirana is told its own
+                "declined": {
+                    k: {"at": v.get("at")}
+                    for k, v in (case.offer.get("declined") or {}).items()
+                    if role != "retailer" or k == cm.org_ref
+                },
             }
             if case.offer and role != "buyer"
             else None
@@ -701,40 +707,13 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
     docs = []
     if case.docs and (mine or role in ("distributor", "foodbank")):
         for d_ in case.docs:
-            if role == "distributor" and d_["id"] not in ("invoice", "eway", "support", "expiry"):
+            # a distributor sees his papers, and copies of the food bank's receipt and the destruction certificate
+            # (SC-130); the client's ITC memo and FSSAI checklist stay its own
+            if role == "distributor" and d_["id"] not in DIST_DOCS:
                 continue
             if role == "foodbank" and d_["id"] != "receipt":  # a food bank sees its own receipt (SC-110)
                 continue
-            docs.append(
-                {
-                    **{
-                        k: d_.get(k)
-                        for k in (
-                            "id",
-                            "type",
-                            "owner",
-                            "no",
-                            "status",
-                            "amount",
-                            "note",
-                            "taxable",
-                            "igst",
-                            "roundOff",
-                            "total",
-                            "units",
-                            "price",
-                            "gstPct",
-                            "exact",
-                            "date",
-                        )
-                    },
-                    # the expiry paper's settlement, and the GST memo's reversal on expiry day (SC-94)
-                    **{k: d_[k] for k in ("policy", "destroyedBy", "disposal", "epr", "itc", "reversed") if k in d_},
-                    # the food bank's receipt (SC-110)
-                    **{k: d_[k] for k in RECEIPT_FIELDS if k in d_},
-                    "pdf": bool(d_.get("pdf")),
-                }
-            )
+            docs.append(doc_out(d_))
 
     kiranas = []
     if case.offer and (mine or role == "distributor" or role == "retailer"):
@@ -987,6 +966,42 @@ async def document_object(ctx: Ctx, client_id: str, ref: str, doc: str) -> str |
 
 
 # the food bank's receipt beyond a paper's own fields (SC-110, money.receipt)
+# the papers a distributor sees: his own, and copies of what concerns his packs (SC-130)
+DIST_DOCS = ("invoice", "eway", "support", "expiry", "receipt", "destruction")
+DOC_FIELDS = (
+    *("id", "type", "owner", "no", "status", "amount", "note", "taxable", "igst", "roundOff", "total"),
+    *("units", "price", "gstPct", "exact", "date"),
+)
+
+
+def doc_out(d_: dict[str, Any]) -> dict[str, Any]:
+    """a paper as the screens read it, with whether its PDF is ready"""
+    return {
+        **{k: d_.get(k) for k in DOC_FIELDS},
+        # the expiry paper's settlement, and the GST memo's reversal on expiry day (SC-94)
+        **{k: d_[k] for k in ("policy", "destroyedBy", "disposal", "epr", "itc", "reversed") if k in d_},
+        # the food bank's receipt (SC-110)
+        **{k: d_[k] for k in RECEIPT_FIELDS if k in d_},
+        "pdf": bool(d_.get("pdf")),
+    }
+
+
+def support_of(
+    case: m.Case, c: m.Client, x: m.Sku, orders: list[m.CaseOrder], rules: dict[str, Any]
+) -> dict[str, Any] | None:
+    """the price support a batch's distributor is paid, once the buyer took the lot or the batch settled: what each
+    finished line took, priced as it was sold (case_detail's support)"""
+    if not case.plan:
+        return None
+    award_price = float(case.award["price"]) if case.award else None
+    state = {"offer": case.offer, "award": case.award, "listing": case.listing, "staff": case.staff}
+    done = J.done_units(state | {"donation": case.donation}, sum(o.units for o in orders))
+    real = money.realised(case.plan, world.sku_obj(x), done, None, c.expiry, rules=rules)
+    if award_price is None and case.phase not in ("dispatched", "settled", "cleared"):
+        return None
+    return money.jsonable(money.price_support(real, world.sku_obj(x), award_price, rules=rules))
+
+
 RECEIPT_FIELDS = (
     *("paper", "stamp", "kg", "meals", "mealsRule", "value", "csr"),
     *("at", "by", "donor", "fssai", "via", "from", "spot"),
