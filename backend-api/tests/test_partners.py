@@ -70,6 +70,9 @@ async def test_a_distributor_reads_every_batch_of_his_as_design3_has_it(api, wit
             for d in x["docs"]:
                 if d["id"] in docs:
                     assert (docs[d["id"]]["no"], docs[d["id"]]["status"]) == (d["no"], d["status"]), (ref, d["id"])
+                    # the destruction certificate carries the credit reversed on its packs, on his copy too (SC-132)
+                    if d["id"] == "destruction" and d.get("units", d.get("reversed")):
+                        assert docs["destruction"]["reversed"] == d["reversed"] > 0, ref
             assert "itc" not in docs and "fssai" not in docs
             if x["receipt"]:
                 assert (c["receipt"]["no"], c["receipt"]["meals"]) == (x["receipt"]["no"], x["receipt"]["meals"])
@@ -143,3 +146,16 @@ async def test_a_kirana_says_not_this_time_and_may_order_after_all(api, munchly,
         assert [o["units"] for o in mine["journey"]["orders"]] == [12]
         r = await api.post(f"{WS}/cases/{HERO}/offer/decline", headers=SHREESAI)
         assert r.status_code == 409, r.text
+
+
+def test_an_older_destruction_certificate_gets_its_credit_from_the_plan():
+    """a certificate drafted before SC-132 carries no credit reversed: the copy works it out from the batch's plan"""
+    from types import SimpleNamespace
+
+    from sc_api.services.journey import views
+
+    case = SimpleNamespace(plan={"writeOff": {"itcPerUnit": 0.55}})
+    old = {"id": "destruction", "units": 184, "status": "generated"}
+    assert views.with_reversed(case, old)["reversed"] == 101.2
+    assert views.with_reversed(case, {**old, "reversed": 99})["reversed"] == 99
+    assert "reversed" not in views.with_reversed(case, {"id": "destruction", "units": 0})

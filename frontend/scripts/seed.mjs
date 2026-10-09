@@ -503,7 +503,13 @@ const journey = {
 			receipt: c.receipt ? { no: c.receipt.no, kg: c.receipt.kg, meals: c.receipt.meals } : null,
 			support: { total: c.support.total, van: c.support.van, fee: c.support.fee },
 			expiry: c.expiry && c.expiry.units ? { units: c.expiry.units, credit: c.expiry.credit } : null,
-			docs: c.docs.map(({ id, no, status, amount }) => ({ id, no, status, amount }))
+			docs: c.docs.map(({ id, no, status, amount, reversed }) => ({
+				id,
+				no,
+				status,
+				amount,
+				...(reversed != null ? { reversed } : {})
+			}))
 		}))
 	}
 };

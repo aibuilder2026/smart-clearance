@@ -2176,7 +2176,8 @@
 			"no": "0 units left",
 			"status": "not required",
 			"amount": 0,
-			"units": 0
+			"units": 0,
+			"reversed": 0
 		}
 	],
 	"mangoPlan": {

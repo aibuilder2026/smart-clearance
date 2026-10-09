@@ -106,7 +106,7 @@ def facts(
     docs = []
     for x in case.docs or []:
         if (dist and x["id"] in DIST_DOCS) or (role == "foodbank" and x["id"] == "receipt"):
-            docs.append(views.doc_out(x))
+            docs.append(views.doc_out(views.with_reversed(case, x)))
     receipt = views.receipt_out((d or {}).get("receipt")) if role in ("distributor", "foodbank") else None
     bb = batch.best_before
     flagged = _day(case.opened_at)

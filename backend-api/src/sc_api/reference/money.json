@@ -11230,7 +11230,8 @@
 					"no": "0 units left",
 					"status": "not required",
 					"amount": 0,
-					"units": 0
+					"units": 0,
+					"reversed": 0
 				}
 			]
 		},
@@ -11622,7 +11623,8 @@
 					"no": "144 units",
 					"status": "generated",
 					"amount": 0,
-					"units": 144
+					"units": 144,
+					"reversed": 129.6
 				}
 			]
 		},
@@ -11976,7 +11978,8 @@
 					"no": "0 units left",
 					"status": "not required",
 					"amount": 0,
-					"units": 0
+					"units": 0,
+					"reversed": 0
 				}
 			]
 		},
@@ -12380,7 +12383,8 @@
 					"no": "0 units left",
 					"status": "not required",
 					"amount": 0,
-					"units": 0
+					"units": 0,
+					"reversed": 0
 				}
 			]
 		}

@@ -259,7 +259,9 @@
     if (rcpt) docs.push(rcpt);
     // the packs the client destroys: the plan's write-off, and under full credit those left at the godown (SC-122)
     const destroyed = p.destroyed != null ? p.destroyed : p.leftover;
-    docs.push({ id: "destruction", type: "Destruction certificate", owner: parties.client.short, no: destroyed ? `${destroyed} units` : "0 units left", status: destroyed ? "generated" : "not required", amount: 0, units: destroyed });
+    // with the input credit reversed on them, so every copy of the paper carries its own figure (SC-132)
+    const reversed = destroyed ? r2(destroyed * ((p.writeOff && p.writeOff.itcPerUnit) || 0)) : 0;
+    docs.push({ id: "destruction", type: "Destruction certificate", owner: parties.client.short, no: destroyed ? `${destroyed} units` : "0 units left", status: destroyed ? "generated" : "not required", amount: 0, units: destroyed, reversed });
     return docs;
   }
 
