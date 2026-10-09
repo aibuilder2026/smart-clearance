@@ -3966,6 +3966,7 @@
 					"perCarton": 20,
 					"lifeDays": 270,
 					"kgPerUnit": 0.27,
+					"packKg": 0.006,
 					"img": "pack-poha"
 				},
 				"dist": {
@@ -7990,6 +7991,7 @@
 					"perCarton": 20,
 					"lifeDays": 270,
 					"kgPerUnit": 0.22,
+					"packKg": 0.005,
 					"img": "pack-oats"
 				},
 				"dist": {
@@ -9727,6 +9729,9 @@
 				"resoldKg": 225.75,
 				"donatedKg": 0,
 				"destroyedKg": 0,
+				"packResoldKg": 8.4,
+				"packDonatedKg": 0,
+				"packDestroyedKg": 0,
 				"credit": 0,
 				"support": 8395
 			},
@@ -9837,6 +9842,9 @@
 				"resoldKg": 128.26,
 				"donatedKg": 0,
 				"destroyedKg": 0,
+				"packResoldKg": 4.66,
+				"packDonatedKg": 0,
+				"packDestroyedKg": 0,
 				"credit": 0,
 				"support": 5141
 			},
@@ -9947,6 +9955,9 @@
 				"resoldKg": 125.4,
 				"donatedKg": 0,
 				"destroyedKg": 14.3,
+				"packResoldKg": 2.85,
+				"packDonatedKg": 0,
+				"packDestroyedKg": 0.33,
 				"credit": 3087.5,
 				"support": 8233
 			},
@@ -10066,6 +10077,9 @@
 				"resoldKg": 146.34,
 				"donatedKg": 109.62,
 				"destroyedKg": 0,
+				"packResoldKg": 3.25,
+				"packDonatedKg": 2.44,
+				"packDestroyedKg": 0,
 				"credit": 0,
 				"support": 21880
 			},
@@ -10174,6 +10188,9 @@
 				"resoldKg": 181.44,
 				"donatedKg": 0,
 				"destroyedKg": 0,
+				"packResoldKg": 4.03,
+				"packDonatedKg": 0,
+				"packDestroyedKg": 0,
 				"credit": 0,
 				"support": 7559
 			},
@@ -10284,6 +10301,9 @@
 				"resoldKg": 226.18,
 				"donatedKg": 0,
 				"destroyedKg": 39.56,
+				"packResoldKg": 2.1,
+				"packDonatedKg": 0,
+				"packDestroyedKg": 0.37,
 				"credit": 2668,
 				"support": 3934
 			},
@@ -10403,6 +10423,9 @@
 				"resoldKg": 75.68,
 				"donatedKg": 102.52,
 				"destroyedKg": 0,
+				"packResoldKg": 1.72,
+				"packDonatedKg": 2.33,
+				"packDestroyedKg": 0,
 				"credit": 0,
 				"support": 25856
 			},
@@ -10511,6 +10534,9 @@
 				"resoldKg": 47.64,
 				"donatedKg": 0,
 				"destroyedKg": 0,
+				"packResoldKg": 4.76,
+				"packDonatedKg": 0,
+				"packDestroyedKg": 0,
 				"credit": 0,
 				"support": 10276
 			},
@@ -10621,6 +10647,9 @@
 				"resoldKg": 171.36,
 				"donatedKg": 0,
 				"destroyedKg": 0,
+				"packResoldKg": 6.43,
+				"packDonatedKg": 0,
+				"packDestroyedKg": 0,
 				"credit": 0,
 				"support": 6352
 			},
@@ -10731,6 +10760,9 @@
 				"resoldKg": 118.8,
 				"donatedKg": 0,
 				"destroyedKg": 14.52,
+				"packResoldKg": 4.32,
+				"packDonatedKg": 0,
+				"packDestroyedKg": 0.53,
 				"credit": 2376,
 				"support": 5128
 			},
@@ -10850,6 +10882,9 @@
 				"resoldKg": 215.65,
 				"donatedKg": 0,
 				"destroyedKg": 0,
+				"packResoldKg": 8.02,
+				"packDonatedKg": 0,
+				"packDestroyedKg": 0,
 				"credit": 0,
 				"support": 7705
 			},
@@ -10960,6 +10995,9 @@
 				"resoldKg": 84.87,
 				"donatedKg": 0,
 				"destroyedKg": 0,
+				"packResoldKg": 7.38,
+				"packDonatedKg": 0,
+				"packDestroyedKg": 0,
 				"credit": 0,
 				"support": 11727
 			},
@@ -11072,6 +11110,9 @@
 				"resoldKg": 217.6,
 				"donatedKg": 0,
 				"destroyedKg": 0,
+				"packResoldKg": 8.16,
+				"packDonatedKg": 0,
+				"packDestroyedKg": 0,
 				"credit": 0,
 				"support": 8768
 			},

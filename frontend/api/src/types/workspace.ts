@@ -831,6 +831,10 @@ export type WsLedgerFigures = {
 	resoldKg: number;
 	donatedKg: number;
 	destroyedKg: number;
+	/** the plastic packaging on those packs, which goes where its pack goes (SC-125) */
+	packResoldKg: number;
+	packDonatedKg: number;
+	packDestroyedKg: number;
 	/** the expiry credit for the packs left at the godown, by the client's policy */
 	credit: number;
 	/** the price-support credit note to the distributor */

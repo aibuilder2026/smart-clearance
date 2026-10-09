@@ -96,6 +96,7 @@ def sku_obj(x: m.Sku) -> dict[str, Any]:
         "perCarton": x.per_carton or 24,
         "lifeDays": x.life_days,
         "kgPerUnit": float(x.kg_per_unit) if x.kg_per_unit is not None else 0.2,
+        "packKg": float(x.pack_kg) if x.pack_kg is not None else 0,
         "img": x.img or "",
         "dp": float(x.dp) if x.dp is not None else None,
         "itcPerUnit": float(x.itc_per_unit) if x.itc_per_unit is not None else None,

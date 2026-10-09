@@ -33,7 +33,7 @@ from sc_api.identity import provider
 from sc_api.services import reference
 from sc_api.services.context import SYSTEM, Ctx
 from sc_api.services.journey import events as ev
-from sc_api.services.journey import reset
+from sc_api.services.journey import reset, steps
 from sc_api.settings import get_settings
 
 
@@ -64,6 +64,12 @@ async def run(args: argparse.Namespace) -> None:
             await ev.set_day_minutes(ctx, client, int(minutes))
             await session.commit()
             print(f"sc-hydrate: {client}'s journey day is {minutes} minutes")
+            return
+        if args.papers:  # the PDFs a client's papers still lack, laid out by the Paperwork agent (SC-125)
+            asked = await steps.lay_out_missing(ctx, args.papers, again=args.again)
+            await session.commit()
+            await _publish(ctx)
+            print(f"sc-hydrate: Paperwork lays out the missing PDFs of {len(asked)} batch(es): {', '.join(asked)}")
             return
         if args.journey_reset:
             out = await reset.reset(replace(ctx, ids=Ids()), args.journey_reset)
@@ -154,6 +160,8 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--tick", action="store_true")
     p.add_argument("--no-live", action="store_true", help="leave Munchly's live workspace out (SC-66)")
     p.add_argument("--journey-reset", metavar="CLIENT", help="start a client's live journey again (SC-66)")
+    p.add_argument("--papers", metavar="CLIENT", help="have Paperwork lay out the PDFs a client's papers lack (SC-125)")
+    p.add_argument("--again", action="store_true", help="with --papers: lay out every paper's PDF afresh")
     p.add_argument(
         "--day-minutes", metavar="CLIENT=MINUTES", help="set a client's journey day, 1 to 1440 (1440 is real time)"
     )

@@ -1364,4 +1364,26 @@
     - the live fixtures regenerated;
     - locally, Munchly's ledger reads Q2 FY27 as 12 batches (7 sold through, 3 left at the godown, 2 donated): ₹2,20,383.58 recovered, ₹15,854.78 of input credit kept and ₹1,981.93 reversed, 1,959.51 kg kept out of landfill, 872 meals, 15 credit notes and 10 invoices.
 
+- **SC-125** (In Review, branch `SC-125-brsr-packaging-and-pdfs`, stacked on SC-121): the two gaps SC-121 to SC-124 left, which the maintainer asked to fix.
+  - **BRSR's plastic packaging row:**
+    - each SKU carries its plastic packaging, in kg a pack (`packKg` in design3's `data.js`; fictional, indicative): chips 6 g, biscuits 8 g, chikki 4 g, poha 6 g, oats 5 g, the Mango Drink's carton layer and straw 2 g, face wash 12 g, hair oil 20 g;
+    - backend-api stores it (migration 0010, `skus.pack_kg`), set by the live build. Reset journey tops up a SKU without one, as SC-114 did for the receipts;
+    - each ledger row carries the packaging resold, donated and destroyed, which goes where its pack goes. BRSR's table gains "Plastic packaging (EPR)" in the exports and the printed report: 62.69 kg diverted and 1.23 kg destroyed in Q2 FY27;
+    - design3's `ledger.js`, `ledger.py` and core's stub ledger agree, row for row. EPR's money stays on the product's kilos, as money.js has it.
+  - **The PDFs a workspace lacks:**
+    - `hydrate.sh --papers CLIENT` asks the Paperwork agent for every paper in view, the journey's and the history's, that has no PDF yet; `--again` lays out every paper afresh;
+    - Paperwork dated every paper by the day it laid it out, so the history's PDFs read 2 Oct. A paper now carries its own date (`base.html`): the invoice 17 Jul, the expiry credit note 23 Aug, the receipt 30 Jul.
+  - **Locally:**
+    - the agents' worker was restarted;
+    - Munchly's journey was reset at day 0 (no batch was open), which topped up its SKUs;
+    - `--papers munchly` laid out the three expiry credit notes, then `--again` relaid all twelve batches' papers with their own dates;
+    - the day is 24 hours.
+  - **Checks:**
+    - backend-api 516 passed, 1 skipped;
+    - agents 195 passed;
+    - the frontend gate passes (core 254, api 77, workspace 70, admin 17, demo 5, console 3);
+    - the live fixtures and the seeds were regenerated;
+    - the browser suites were not run (SC-55).
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

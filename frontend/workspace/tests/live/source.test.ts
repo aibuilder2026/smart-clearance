@@ -222,6 +222,13 @@ describe('the projection', () => {
 		await until(() => s.status.phase === 'ready' && !!s.ledger);
 		expect(s.ledger).toEqual(seen.ledger);
 		expect(s.ledger!.batches.map((b) => b.ref).sort()).toEqual(['MF-2409-117', 'MF-2410-118']);
+		// BRSR's two rows: the food, and its plastic packaging (SC-125)
+		const year = s.ledger!.periods.find((p) => p.kind === 'year')!;
+		expect(year.brsr.map((r) => r.cat)).toEqual([
+			'Food waste: packaged food past quick-commerce gates',
+			'Plastic packaging (EPR)'
+		]);
+		expect(year.brsr[1].diverted).toBeGreaterThan(0);
 		// a cleared batch's page: its case as the papers read it, cleared, with the row its ledger posted
 		s.openPage!('MF-2409-117');
 		await until(() => !!s.ledgerPage('MF-2409-117'));

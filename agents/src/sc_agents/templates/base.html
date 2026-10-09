@@ -29,7 +29,7 @@
 <header>
   <div>
     <h1>{{ doc.type }}</h1>
-    <div class="muted">No. {{ doc.no }}{% if today %} · {{ today|date }}{% endif %}</div>
+    <div class="muted">No. {{ doc.no }}{% if doc.date %} · {{ doc.date|date }}{% elif today %} · {{ today|date }}{% endif %}</div>
   </div>
   <div style="text-align: right">
     <div class="status">{{ doc.stamp or doc.status }}</div>

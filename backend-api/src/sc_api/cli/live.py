@@ -81,6 +81,7 @@ async def build(ctx: Ctx, client_id: str = "munchly", *, with_history: bool = Tr
             continue
         s.category, s.hsn, s.cost, s.per_carton = x["category"], x["hsn"], x["cost"], x["perCarton"]
         s.dp, s.itc_per_unit, s.kg_per_unit, s.img = x.get("dp"), x.get("itcPerUnit"), x["kgPerUnit"], x["img"]
+        s.pack_kg = x.get("packKg")
 
     for x in j["distributors"].values():
         d = await ctx.session.get(m.Distributor, (client_id, x["id"]))

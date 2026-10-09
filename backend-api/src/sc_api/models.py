@@ -376,6 +376,8 @@ class Sku(Base):
     itc_per_unit: Mapped[float | None] = mapped_column(MONEY)
     per_carton: Mapped[int | None] = mapped_column(Integer)
     kg_per_unit: Mapped[float | None] = mapped_column(Numeric(8, 4, asdecimal=False))
+    # the plastic packaging on a pack, in kg (SC-125)
+    pack_kg: Mapped[float | None] = mapped_column(Numeric(8, 4, asdecimal=False))
     img: Mapped[str | None] = mapped_column(Text)
     seq: Mapped[int] = seq()
 

@@ -753,6 +753,10 @@ export type LedgerFigures = {
 	resoldKg: number;
 	donatedKg: number;
 	destroyedKg: number;
+	/** the plastic packaging on those packs (SC-125) */
+	packResoldKg: number;
+	packDonatedKg: number;
+	packDestroyedKg: number;
 	credit: number;
 	support: number;
 };

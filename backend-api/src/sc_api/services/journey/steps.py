@@ -1745,6 +1745,28 @@ async def document_pdf(ctx: Ctx, client_id: str, ref: str, doc_id: str, name: st
         await ev.ledger_changed(ctx, s.c, ref)
 
 
+# the papers the Paperwork agent lays out as PDFs (agents: tools/pdf.py PAPERS)
+PDF_PAPERS = frozenset({"invoice", "support", "itc", "fssai", "receipt", "expiry"})
+
+
+async def lay_out_missing(ctx: Ctx, client_id: str, *, again: bool = False) -> list[str]:
+    """asks the Paperwork agent for every paper in view, the journey's and the history's, that has no PDF yet: one
+    drafted before its template existed (the expiry credit note, SC-125), or one whose PDF failed. It lays out only what
+    lacks one; `again` lays out every paper afresh (a template that changed). Returns the batches asked for"""
+    asked = []
+    for ref, case in (await views.cases_in_view(ctx, client_id)).items():
+        if case.status == "reset":
+            continue
+        if again and case.docs:  # a new list, so the change is written
+            case.docs = [{**d, "pdf": None} if d["id"] in PDF_PAPERS else d for d in case.docs]
+        docs = case.docs or []
+        if any(d["id"] in PDF_PAPERS and d.get("status") != "not required" and not d.get("pdf") for d in docs):
+            settle = {"type": J.SETTLE, "client": client_id, "ref": ref}
+            await ev.publish(ctx, J.Event(J.STEP, settle, f"{client_id}:{ref}"))
+            asked.append(ref)
+    return sorted(asked)
+
+
 async def issue_invoice(ctx: Ctx, client_id: str, ref: str) -> None:
     ctx.require("invoice.issue", "Only the distributor issues his invoice.")
     s = await scene(ctx, client_id, ref, cleared=True)
