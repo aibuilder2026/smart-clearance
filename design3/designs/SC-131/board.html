@@ -8,128 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Noto+Sans+Devanagari:wght@600&display=swap">
 
-<style>
-/* the review board: the request, the apps as they are on a slow line, the options, and the pick. */
-:root {
-  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
-  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
-  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
-  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
-  --amber-text: #8a5a00; --amber-soft: #fff3d4;
-  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px -6px rgb(17 41 30 / 0.1);
-  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
-  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
-  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  color-scheme: light;
-}
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
-  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
-  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
-  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
-  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
-  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
-  color-scheme: dark } }
-:root[data-theme="dark"] {
-  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
-  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
-  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
-  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
-  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
-  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
-  color-scheme: dark }
-
-* { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
-body { margin: 0; background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); -webkit-font-smoothing: antialiased; }
-a { color: var(--green-text); text-underline-offset: 3px; }
-:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
-::selection { background: color-mix(in oklab, var(--green) 24%, transparent); }
-.wrap { max-width: 1200px; margin: 0 auto; padding: 48px 16px 72px; }
-h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
-h1 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
-h2 { margin: 56px 0 14px; font-size: clamp(25px, 3vw, 32px); font-weight: 720; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 72, "wdth" 88; }
-h3 { font-size: 24px; font-weight: 720; letter-spacing: -0.018em; font-variation-settings: "opsz" 48, "wdth" 90; }
-p { margin: 0 0 12px; max-width: 72ch; color: var(--ink-2); text-wrap: pretty; }
-p b, li b { color: var(--ink); font-weight: 600; }
-.lede { font-size: 18px; margin-top: 14px; }
-blockquote { margin: 16px 0; padding: 14px 18px; border-radius: 14px; background: var(--sunken); color: var(--ink); font-size: 16.5px; max-width: 70ch; }
-ul { margin: 0 0 12px; padding-left: 20px; color: var(--ink-2); max-width: 76ch; display: grid; gap: 6px; }
-code { font: 500 0.9em/1 var(--mono); }
-
-.grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
-.pair { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
-@media (min-width: 900px) { .pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
-.frames { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-@media (min-width: 900px) { .frames { grid-template-columns: minmax(0, 2.6fr) minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); align-items: start; } }
-figure { margin: 0; min-width: 0; }
-figure img, figure video { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
-figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
-
-.card { padding: 22px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
-.shared { display: grid; gap: 18px; }
-@media (min-width: 900px) { .shared { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-.shared h3 { font: 650 16px/1.35 var(--ui); letter-spacing: 0; margin-bottom: 6px; }
-.shared p, .shared li { font-size: 14.5px; }
-
-.opt { margin-top: 22px; display: grid; gap: 18px; padding: 24px 22px; border-radius: 28px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); scroll-margin-top: 20px; }
-.opt.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
-.opt header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
-.opt header p { margin: 0; flex-basis: 100%; font-size: 17px; color: var(--ink); max-width: 70ch; }
-.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 600 12.5px/1 var(--ui); color: var(--green-text); background: var(--green-soft); }
-.links { display: flex; flex-wrap: wrap; gap: 10px; }
-.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
-.btn.primary { background: var(--green); color: #fff; box-shadow: none; }
-:root[data-theme="dark"] .btn.primary { color: #03170d; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #03170d; } }
-.motion-row { display: grid; gap: 18px; }
-@media (min-width: 900px) { .motion-row { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: start; } }
-dl.facts { margin: 0; display: grid; gap: 12px; }
-dl.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); }
-dl.facts dd { margin: 2px 0 0; color: var(--ink-2); font-size: 14.5px; }
-dl.facts dd ul { margin-top: 4px; font-size: 14.5px; }
-.timing { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13.5px; color: var(--ink-3); }
-.timing b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
-.rec-box { padding: 22px; border-radius: 20px; background: var(--green-soft); }
-.rec-box p { color: var(--ink); }
-footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
-.wide { margin-top: 4px; }
-.wide img { max-height: none; }
-.frames.three { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-@media (min-width: 900px) { .frames.three { grid-template-columns: minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); } }
-.state { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); }
-@media (min-width: 900px) { .state { grid-template-columns: minmax(0, 2.6fr) minmax(0, 0.95fr); align-items: start; } }
-.tall { max-height: 980px; overflow: hidden; border-radius: 14px; box-shadow: 0 0 0 1px var(--line); }
-.tall img { box-shadow: none; border-radius: 0; }
-table.facts-t { border-collapse: collapse; font-size: 14.5px; color: var(--ink-2); margin: 6px 0 12px; }
-table.facts-t th, table.facts-t td { text-align: left; padding: 6px 14px 6px 0; vertical-align: top; border-bottom: 1px solid var(--line); }
-table.facts-t th { color: var(--ink); font-weight: 600; }
-
-.vid { display: grid; gap: 18px; }
-@media (min-width: 900px) { .vid { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); align-items: start; } }
-.four { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-@media (min-width: 900px) { .four { grid-template-columns: minmax(0, 2.6fr) minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); align-items: start; } }
-.states { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-@media (min-width: 900px) { .states { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-.q { padding: 18px 22px; border-radius: 20px; background: var(--amber-soft); }
-.q p { color: var(--ink); margin: 0; }
-.strip { display: grid; gap: 10px; margin: 12px 0 20px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 168px), 1fr)); }
-.opt header { display: grid; gap: 8px; }
-.opt header .hd { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
-.opt header h2 { margin: 0; }
-.opt h3 { margin-top: 6px; }
-.strip figcaption b { color: var(--ink); font-variant-numeric: tabular-nums; }
-.motion { margin: 0; }
-.motion img { border-radius: 14px; }
-.stills { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-@media (min-width: 900px) { .stills { grid-template-columns: minmax(0, 2.6fr) minmax(0, 0.75fr) minmax(0, 2.6fr) minmax(0, 0.75fr); align-items: start; } }
-.cmp { width: 100%; border-collapse: collapse; font-size: 14.5px; color: var(--ink-2); }
-.cmp th, .cmp td { text-align: left; padding: 10px 14px 10px 0; vertical-align: top; border-bottom: 1px solid var(--line); }
-.cmp th { color: var(--ink); font-weight: 600; }
-.cmp td b { color: var(--ink); font-weight: 600; }
-.scroll-x { overflow-x: auto; }
-.num { font-variant-numeric: tabular-nums; }
-</style>
+<link rel="stylesheet" href="board.css">
 
 <body>
 <main class="wrap">
@@ -141,9 +20,19 @@ table.facts-t th { color: var(--ink); font-weight: 600; }
 
 <h2>The console now, on a slow line</h2>
 <p>Measured on the live console on 9 Oct, cold cache, 1280 × 800, on Chrome's 3G (400 kbps, 2 s round trips), dark:</p>
-<div class="strip"><figure><img src="current/console-3g-dark-02.7s.webp" width="960" height="600" loading="lazy" alt="The live console on 3G at 2.7 s: Blank: the page has arrived, but the splash sits behind the app's stylesheet."><figcaption><b>2.7 s</b> · Blank: the page has arrived, but the splash sits behind the app's stylesheet</figcaption></figure><figure><img src="current/console-3g-dark-07.9s.webp" width="960" height="600" loading="lazy" alt="The live console on 3G at 7.9 s: The splash, at last; "Connecting" while the code downloads."><figcaption><b>7.9 s</b> · The splash, at last; "Connecting" while the code downloads</figcaption></figure><figure><img src="current/console-3g-dark-14.6s.webp" width="960" height="600" loading="lazy" alt="The live console on 3G at 14.6 s: "Waking the platform up…": the platform is not the wait."><figcaption><b>14.6 s</b> · "Waking the platform up…": the platform is not the wait</figcaption></figure><figure><img src="current/console-3g-dark-15.4s.webp" width="960" height="600" loading="lazy" alt="The live console on 3G at 15.4 s: "The console did not answer", with Try again."><figcaption><b>15.4 s</b> · "The console did not answer", with Try again</figcaption></figure><figure><img src="current/console-3g-dark-16.2s.webp" width="960" height="600" loading="lazy" alt="The live console on 3G at 16.2 s: Still saying it, as it opens anyway."><figcaption><b>16.2 s</b> · Still saying it, as it opens anyway</figcaption></figure><figure><img src="current/console-3g-dark-17.7s.webp" width="960" height="600" loading="lazy" alt="The live console on 3G at 17.7 s: The sign-in; its plate still on its way."><figcaption><b>17.7 s</b> · The sign-in; its plate still on its way</figcaption></figure></div>
+<div class="strip">
+<figure><img src="current/console-3g-dark-02.7s.webp" width="960" height="600" loading="lazy" alt="The live console on 3G at 2.7 s: Blank: the page has arrived, but the splash sits behind the app's stylesheet."><figcaption><b>2.7 s</b> · Blank: the page has arrived, but the splash sits behind the app's stylesheet</figcaption></figure>
+<figure><img src="current/console-3g-dark-07.9s.webp" width="960" height="600" loading="lazy" alt="The live console on 3G at 7.9 s: The splash, at last; "Connecting" while the code downloads."><figcaption><b>7.9 s</b> · The splash, at last; "Connecting" while the code downloads</figcaption></figure>
+<figure><img src="current/console-3g-dark-14.6s.webp" width="960" height="600" loading="lazy" alt="The live console on 3G at 14.6 s: "Waking the platform up…": the platform is not the wait."><figcaption><b>14.6 s</b> · "Waking the platform up…": the platform is not the wait</figcaption></figure>
+<figure><img src="current/console-3g-dark-15.4s.webp" width="960" height="600" loading="lazy" alt="The live console on 3G at 15.4 s: "The console did not answer", with Try again."><figcaption><b>15.4 s</b> · "The console did not answer", with Try again</figcaption></figure>
+<figure><img src="current/console-3g-dark-16.2s.webp" width="960" height="600" loading="lazy" alt="The live console on 3G at 16.2 s: Still saying it, as it opens anyway."><figcaption><b>16.2 s</b> · Still saying it, as it opens anyway</figcaption></figure>
+<figure><img src="current/console-3g-dark-17.7s.webp" width="960" height="600" loading="lazy" alt="The live console on 3G at 17.7 s: The sign-in; its plate still on its way."><figcaption><b>17.7 s</b> · The sign-in; its plate still on its way</figcaption></figure></div>
 <p>On Slow 4G (1.6 Mbps, 560 ms) it is quicker but the same shape: blank to 2.7 s, then the three green stops filling one by one, then the sign-in at 7.4 s.</p>
-<div class="strip"><figure><img src="current/console-slow4g-light-02.7s.webp" width="960" height="600" loading="lazy" alt="The live console on Slow 4G at 2.7 s."><figcaption><b>2.7 s</b></figcaption></figure><figure><img src="current/console-slow4g-light-04.5s.webp" width="960" height="600" loading="lazy" alt="The live console on Slow 4G at 4.5 s."><figcaption><b>4.5 s</b></figcaption></figure><figure><img src="current/console-slow4g-light-05.7s.webp" width="960" height="600" loading="lazy" alt="The live console on Slow 4G at 5.7 s."><figcaption><b>5.7 s</b></figcaption></figure><figure><img src="current/console-slow4g-light-07.4s.webp" width="960" height="600" loading="lazy" alt="The live console on Slow 4G at 7.4 s."><figcaption><b>7.4 s</b></figcaption></figure></div>
+<div class="strip">
+<figure><img src="current/console-slow4g-light-02.7s.webp" width="960" height="600" loading="lazy" alt="The live console on Slow 4G at 2.7 s."><figcaption><b>2.7 s</b></figcaption></figure>
+<figure><img src="current/console-slow4g-light-04.5s.webp" width="960" height="600" loading="lazy" alt="The live console on Slow 4G at 4.5 s."><figcaption><b>4.5 s</b></figcaption></figure>
+<figure><img src="current/console-slow4g-light-05.7s.webp" width="960" height="600" loading="lazy" alt="The live console on Slow 4G at 5.7 s."><figcaption><b>5.7 s</b></figcaption></figure>
+<figure><img src="current/console-slow4g-light-07.4s.webp" width="960" height="600" loading="lazy" alt="The live console on Slow 4G at 7.4 s."><figcaption><b>7.4 s</b></figcaption></figure></div>
 <dl class="facts"><dt>Why it fails on a slow line</dt><dd><ul>
 <li><b>Blank until the app's stylesheet arrives.</b> The splash's script is inlined first in the page, but after the app's render-blocking stylesheet, so nothing paints until that is in: 7.9 s on 3G, 2.7 s on Slow 4G (the page itself is in at 2.2 s).</li>
 <li><b>It needs the app's stylesheet anyway:</b> its tokens, the kit's tracker and the wordmark come from it, so it cannot stand on its own before it.</li>
@@ -152,7 +41,13 @@ table.facts-t th { color: var(--ink); font-weight: 600; }
 <li><b>Waiting on things it does not need:</b> three fonts (Bricolage alone is 129 KB) and the sign-in's 181 KB plate download beside the code.</li></ul></dd></dl>
 
 <h2>The landing page now, on a slow line</h2>
-<div class="strip"><figure><img src="current/site-slow4g-light-01.2s.webp" width="960" height="600" loading="lazy" alt="1.2 s · blank"><figcaption><b>1.2 s</b> · blank</figcaption></figure><figure><img src="current/site-slow4g-light-02.7s.webp" width="960" height="600" loading="lazy" alt="2.7 s · the loader"><figcaption><b>2.7 s</b> · the loader</figcaption></figure><figure><img src="current/site-slow4g-light-07.9s.webp" width="960" height="600" loading="lazy" alt="7.9 s · the route still drawing, waiting on a 369 KB plate"><figcaption><b>7.9 s</b> · the route still drawing, waiting on a 369 KB plate</figcaption></figure><figure><img src="current/site-slow4g-light-11.7s.webp" width="960" height="600" loading="lazy" alt="11.7 s · the page"><figcaption><b>11.7 s</b> · the page</figcaption></figure><figure><img src="current/site-3g-light-14.9s.webp" width="960" height="600" loading="lazy" alt="3G, 14.9 s · the route stuck halfway"><figcaption><b>3G, 14.9 s</b> · the route stuck halfway</figcaption></figure><figure><img src="current/site-3g-light-19.7s.webp" width="960" height="600" loading="lazy" alt="3G, 19.7 s · lifted on its 8 s cap: no plate, the heading in a fallback face, its words overlapping"><figcaption><b>3G, 19.7 s</b> · lifted on its 8 s cap: no plate, the heading in a fallback face, its words overlapping</figcaption></figure></div>
+<div class="strip">
+<figure><img src="current/site-slow4g-light-01.2s.webp" width="960" height="600" loading="lazy" alt="1.2 s · blank"><figcaption><b>1.2 s</b> · blank</figcaption></figure>
+<figure><img src="current/site-slow4g-light-02.7s.webp" width="960" height="600" loading="lazy" alt="2.7 s · the loader"><figcaption><b>2.7 s</b> · the loader</figcaption></figure>
+<figure><img src="current/site-slow4g-light-07.9s.webp" width="960" height="600" loading="lazy" alt="7.9 s · the route still drawing, waiting on a 369 KB plate"><figcaption><b>7.9 s</b> · the route still drawing, waiting on a 369 KB plate</figcaption></figure>
+<figure><img src="current/site-slow4g-light-11.7s.webp" width="960" height="600" loading="lazy" alt="11.7 s · the page"><figcaption><b>11.7 s</b> · the page</figcaption></figure>
+<figure><img src="current/site-3g-light-14.9s.webp" width="960" height="600" loading="lazy" alt="3G, 14.9 s · the route stuck halfway"><figcaption><b>3G, 14.9 s</b> · the route stuck halfway</figcaption></figure>
+<figure><img src="current/site-3g-light-19.7s.webp" width="960" height="600" loading="lazy" alt="3G, 19.7 s · lifted on its 8 s cap: no plate, the heading in a fallback face, its words overlapping"><figcaption><b>3G, 19.7 s</b> · lifted on its 8 s cap: no plate, the heading in a fallback face, its words overlapping</figcaption></figure></div>
 <dl class="facts"><dt>Why it is slow</dt><dd><ul>
 <li><b>Blank until the stylesheets arrive</b> (6.9 s on 3G), for the same reason as the console.</li>
 <li><b>It waits for the hero's 369 KB plate</b> (half its progress), while the table's 240 KB plate (far below the fold), the 6.5 MB film (<code>preload="auto"</code>) and 393 KB of fonts (118 KB of Devanagari for the loader's one Hindi line) download beside it: 11.7 s on Slow 4G.</li>
@@ -179,11 +74,26 @@ table.facts-t th { color: var(--ink); font-weight: 600; }
 <header><div class="hd"><h2>Option A · The heartbeat</h2><span class="tag">Recommended</span></div><p>The mark is the loader. Drawn whole from the first paint, it beats while anything is still on its way: two pulses a beat (strong, then soft) every 1.3 s, and a ring of its own outline ripples out on the strong pulse. Everything in, the beat settles on a spring, the pin pings once, and the mark opens into the window onto the page.</p></header>
 <figure class="motion"><img src="option-a/motion-light.webp" width="1642" height="200" loading="lazy" alt="Eight frames of option A's mark on the light ground."><figcaption>One beat, the strong pulse to 1.08 then the soft one to 1.045, at 0.13 s a frame. The ring is the mark's outline in the brand green, a line, never a glow.</figcaption></figure>
 <figure class="motion"><img src="option-a/motion-dark.webp" width="1642" height="200" loading="lazy" alt="The same eight frames on the dark ground."><figcaption>The same, dark</figcaption></figure>
-<div class="stills"><figure><img src="option-a/console-light-1440.webp" width="1152" height="720" loading="lazy" alt="Option A, the console's first load on 3G at 6.4 s, light, desktop: the mark, Opening the console, Loading the console, and the slow-connection line."><figcaption>The console on 3G at 6.4 s, light</figcaption></figure><figure><img src="option-a/console-dark-390.webp" width="333" height="720" loading="lazy" alt="The same on a phone, dark."><figcaption>Phone, dark</figcaption></figure><figure><img src="option-a/site-dark-1440.webp" width="1152" height="720" loading="lazy" alt="Option A, the landing page's cover on 3G at 4.2 s, dark, desktop: the mark, the wordmark and the Hindi line."><figcaption>The landing page on 3G at 4.2 s, dark</figcaption></figure><figure><img src="option-a/site-light-390.webp" width="333" height="720" loading="lazy" alt="The same on a phone, light."><figcaption>Phone, light</figcaption></figure></div>
+<div class="stills">
+<figure><img src="option-a/console-light-1440.webp" width="1152" height="720" loading="lazy" alt="Option A, the console's first load on 3G at 6.4 s, light, desktop: the mark, Opening the console, Loading the console, and the slow-connection line."><figcaption>The console on 3G at 6.4 s, light</figcaption></figure>
+<figure><img src="option-a/console-dark-390.webp" width="333" height="720" loading="lazy" alt="The same on a phone, dark."><figcaption>Phone, dark</figcaption></figure>
+<figure><img src="option-a/site-dark-1440.webp" width="1152" height="720" loading="lazy" alt="Option A, the landing page's cover on 3G at 4.2 s, dark, desktop: the mark, the wordmark and the Hindi line."><figcaption>The landing page on 3G at 4.2 s, dark</figcaption></figure>
+<figure><img src="option-a/site-light-390.webp" width="333" height="720" loading="lazy" alt="The same on a phone, light."><figcaption>Phone, light</figcaption></figure></div>
 <h3>The console's first load on 3G</h3>
-<div class="strip"><figure><img src="option-a/strip-console-1.5.webp" width="1152" height="720" loading="lazy" alt="Option A at 1.5 s on 3G."><figcaption><b>1.5 s</b> · nothing has arrived</figcaption></figure><figure><img src="option-a/strip-console-3.5.webp" width="1152" height="720" loading="lazy" alt="Option A at 3.5 s on 3G."><figcaption><b>3.5 s</b> · the cover, with the page's first bytes</figcaption></figure><figure><img src="option-a/strip-console-7.0.webp" width="1152" height="720" loading="lazy" alt="Option A at 7.0 s on 3G."><figcaption><b>7.0 s</b> · loading the console; the slow line</figcaption></figure><figure><img src="option-a/strip-console-10.5.webp" width="1152" height="720" loading="lazy" alt="Option A at 10.5 s on 3G."><figcaption><b>10.5 s</b> · connecting to the platform</figcaption></figure><figure><img src="option-a/strip-console-11.9.webp" width="1152" height="720" loading="lazy" alt="Option A at 11.9 s on 3G."><figcaption><b>11.9 s</b> · everything in: to the card's mark</figcaption></figure><figure><img src="option-a/strip-console-13.4.webp" width="1152" height="720" loading="lazy" alt="Option A at 13.4 s on 3G."><figcaption><b>13.4 s</b> · the sign-in</figcaption></figure></div>
+<div class="strip">
+<figure><img src="option-a/strip-console-1.5.webp" width="1152" height="720" loading="lazy" alt="Option A at 1.5 s on 3G."><figcaption><b>1.5 s</b> · nothing has arrived</figcaption></figure>
+<figure><img src="option-a/strip-console-3.5.webp" width="1152" height="720" loading="lazy" alt="Option A at 3.5 s on 3G."><figcaption><b>3.5 s</b> · the cover, with the page's first bytes</figcaption></figure>
+<figure><img src="option-a/strip-console-7.0.webp" width="1152" height="720" loading="lazy" alt="Option A at 7.0 s on 3G."><figcaption><b>7.0 s</b> · loading the console; the slow line</figcaption></figure>
+<figure><img src="option-a/strip-console-10.5.webp" width="1152" height="720" loading="lazy" alt="Option A at 10.5 s on 3G."><figcaption><b>10.5 s</b> · connecting to the platform</figcaption></figure>
+<figure><img src="option-a/strip-console-11.9.webp" width="1152" height="720" loading="lazy" alt="Option A at 11.9 s on 3G."><figcaption><b>11.9 s</b> · everything in: to the card's mark</figcaption></figure>
+<figure><img src="option-a/strip-console-13.4.webp" width="1152" height="720" loading="lazy" alt="Option A at 13.4 s on 3G."><figcaption><b>13.4 s</b> · the sign-in</figcaption></figure></div>
 <h3>The landing page on 3G</h3>
-<div class="strip"><figure><img src="option-a/strip-site-1.5.webp" width="1152" height="720" loading="lazy" alt="Option A's landing page at 1.5 s on 3G."><figcaption><b>1.5 s</b> · nothing has arrived</figcaption></figure><figure><img src="option-a/strip-site-3.5.webp" width="1152" height="720" loading="lazy" alt="Option A's landing page at 3.5 s on 3G."><figcaption><b>3.5 s</b> · the cover</figcaption></figure><figure><img src="option-a/strip-site-5.6.webp" width="1152" height="720" loading="lazy" alt="Option A's landing page at 5.6 s on 3G."><figcaption><b>5.6 s</b> · the first screen can be read: the window opens</figcaption></figure><figure><img src="option-a/strip-site-8.0.webp" width="1152" height="720" loading="lazy" alt="Option A's landing page at 8.0 s on 3G."><figcaption><b>8.0 s</b> · the page on the plate's soft preview</figcaption></figure><figure><img src="option-a/strip-site-13.2.webp" width="1152" height="720" loading="lazy" alt="Option A's landing page at 13.2 s on 3G."><figcaption><b>13.2 s</b> · the plate sharpens in place; the film follows</figcaption></figure></div>
+<div class="strip">
+<figure><img src="option-a/strip-site-1.5.webp" width="1152" height="720" loading="lazy" alt="Option A's landing page at 1.5 s on 3G."><figcaption><b>1.5 s</b> · nothing has arrived</figcaption></figure>
+<figure><img src="option-a/strip-site-3.5.webp" width="1152" height="720" loading="lazy" alt="Option A's landing page at 3.5 s on 3G."><figcaption><b>3.5 s</b> · the cover</figcaption></figure>
+<figure><img src="option-a/strip-site-5.6.webp" width="1152" height="720" loading="lazy" alt="Option A's landing page at 5.6 s on 3G."><figcaption><b>5.6 s</b> · the first screen can be read: the window opens</figcaption></figure>
+<figure><img src="option-a/strip-site-8.0.webp" width="1152" height="720" loading="lazy" alt="Option A's landing page at 8.0 s on 3G."><figcaption><b>8.0 s</b> · the page on the plate's soft preview</figcaption></figure>
+<figure><img src="option-a/strip-site-13.2.webp" width="1152" height="720" loading="lazy" alt="Option A's landing page at 13.2 s on 3G."><figcaption><b>13.2 s</b> · the plate sharpens in place; the film follows</figcaption></figure></div>
 <dl class="facts"><dt>Why it works</dt><dd><ul><li><b>Throbs, as asked.</b> The design system's own breathing (<code>aura-breathe</code>) made a heartbeat, on the mark itself.</li><li><b>Never stutters.</b> Transform and opacity only, in CSS: the compositor runs it, so it keeps time while the browser is busy reading the app's code, exactly when today's script-drawn progress freezes.</li><li><b>Honest without numbers.</b> It says it is alive and what it is waiting for, in words; it does not claim how far along it is.</li><li><b>The same beat everywhere:</b> the first load, signing in and out, the landing page, and the workspace app's live splash, which shares the console's script.</li></ul></dd><dt>Trade-offs</dt><dd><ul><li>It shows no amount of progress; on a very slow line the words carry it.</li></ul></dd><dt>Why recommended</dt><dd>The calmest and the cheapest to run; the one that answers the request most directly; works the same on every wait and every phone.</dd><dt>Reduced motion</dt><dd>The mark stands still and full; the words carry the wait, and the cover leaves as soon as everything is in. <a href="option-a/reduced-light-1440.webp">The still frame</a>.</dd></dl>
 <div class="links"><a class="btn primary" href="option-a/mockup.html?surface=boot&amp;line=3g">Play option A on 3G</a><a class="btn" href="option-a/mockup.html?surface=enter&amp;line=slow4g">Signing in on Slow 4G</a><a class="btn" href="option-a/mockup.html?surface=site&amp;line=3g">The landing page on 3G</a></div>
 </section>
@@ -191,11 +101,26 @@ table.facts-t th { color: var(--ink); font-weight: 600; }
 <header><div class="hd"><h2>Option B · The route runs</h2></div><p>The mark's S is the loader. The route stands faint, and a bright stretch of it runs from the godown dot to the pin, a lap every 1.15 s; as each lap arrives the amber pin throbs. A delivery in transit until everything is in: then the last lap draws the whole route and stays, the pin pings once, and the mark opens into the window.</p></header>
 <figure class="motion"><img src="option-b/motion-light.webp" width="1642" height="200" loading="lazy" alt="Eight frames of option B's mark on the light ground."><figcaption>One lap, three tenths of the route easing out of the dot and into the pin, which throbs as it arrives; 0.14 s a frame.</figcaption></figure>
 <figure class="motion"><img src="option-b/motion-dark.webp" width="1642" height="200" loading="lazy" alt="The same eight frames on the dark ground."><figcaption>The same, dark</figcaption></figure>
-<div class="stills"><figure><img src="option-b/console-light-1440.webp" width="1152" height="720" loading="lazy" alt="Option B, the console's first load on 3G at 6.4 s, light, desktop: the mark, Opening the console, Loading the console, and the slow-connection line."><figcaption>The console on 3G at 6.4 s, light</figcaption></figure><figure><img src="option-b/console-dark-390.webp" width="333" height="720" loading="lazy" alt="The same on a phone, dark."><figcaption>Phone, dark</figcaption></figure><figure><img src="option-b/site-dark-1440.webp" width="1152" height="720" loading="lazy" alt="Option B, the landing page's cover on 3G at 4.2 s, dark, desktop: the mark, the wordmark and the Hindi line."><figcaption>The landing page on 3G at 4.2 s, dark</figcaption></figure><figure><img src="option-b/site-light-390.webp" width="333" height="720" loading="lazy" alt="The same on a phone, light."><figcaption>Phone, light</figcaption></figure></div>
+<div class="stills">
+<figure><img src="option-b/console-light-1440.webp" width="1152" height="720" loading="lazy" alt="Option B, the console's first load on 3G at 6.4 s, light, desktop: the mark, Opening the console, Loading the console, and the slow-connection line."><figcaption>The console on 3G at 6.4 s, light</figcaption></figure>
+<figure><img src="option-b/console-dark-390.webp" width="333" height="720" loading="lazy" alt="The same on a phone, dark."><figcaption>Phone, dark</figcaption></figure>
+<figure><img src="option-b/site-dark-1440.webp" width="1152" height="720" loading="lazy" alt="Option B, the landing page's cover on 3G at 4.2 s, dark, desktop: the mark, the wordmark and the Hindi line."><figcaption>The landing page on 3G at 4.2 s, dark</figcaption></figure>
+<figure><img src="option-b/site-light-390.webp" width="333" height="720" loading="lazy" alt="The same on a phone, light."><figcaption>Phone, light</figcaption></figure></div>
 <h3>The console's first load on 3G</h3>
-<div class="strip"><figure><img src="option-b/strip-console-1.5.webp" width="1152" height="720" loading="lazy" alt="Option B at 1.5 s on 3G."><figcaption><b>1.5 s</b> · nothing has arrived</figcaption></figure><figure><img src="option-b/strip-console-3.5.webp" width="1152" height="720" loading="lazy" alt="Option B at 3.5 s on 3G."><figcaption><b>3.5 s</b> · the cover, with the page's first bytes</figcaption></figure><figure><img src="option-b/strip-console-7.0.webp" width="1152" height="720" loading="lazy" alt="Option B at 7.0 s on 3G."><figcaption><b>7.0 s</b> · loading the console; the slow line</figcaption></figure><figure><img src="option-b/strip-console-10.5.webp" width="1152" height="720" loading="lazy" alt="Option B at 10.5 s on 3G."><figcaption><b>10.5 s</b> · connecting to the platform</figcaption></figure><figure><img src="option-b/strip-console-11.9.webp" width="1152" height="720" loading="lazy" alt="Option B at 11.9 s on 3G."><figcaption><b>11.9 s</b> · everything in: to the card's mark</figcaption></figure><figure><img src="option-b/strip-console-13.4.webp" width="1152" height="720" loading="lazy" alt="Option B at 13.4 s on 3G."><figcaption><b>13.4 s</b> · the sign-in</figcaption></figure></div>
+<div class="strip">
+<figure><img src="option-b/strip-console-1.5.webp" width="1152" height="720" loading="lazy" alt="Option B at 1.5 s on 3G."><figcaption><b>1.5 s</b> · nothing has arrived</figcaption></figure>
+<figure><img src="option-b/strip-console-3.5.webp" width="1152" height="720" loading="lazy" alt="Option B at 3.5 s on 3G."><figcaption><b>3.5 s</b> · the cover, with the page's first bytes</figcaption></figure>
+<figure><img src="option-b/strip-console-7.0.webp" width="1152" height="720" loading="lazy" alt="Option B at 7.0 s on 3G."><figcaption><b>7.0 s</b> · loading the console; the slow line</figcaption></figure>
+<figure><img src="option-b/strip-console-10.5.webp" width="1152" height="720" loading="lazy" alt="Option B at 10.5 s on 3G."><figcaption><b>10.5 s</b> · connecting to the platform</figcaption></figure>
+<figure><img src="option-b/strip-console-11.9.webp" width="1152" height="720" loading="lazy" alt="Option B at 11.9 s on 3G."><figcaption><b>11.9 s</b> · everything in: to the card's mark</figcaption></figure>
+<figure><img src="option-b/strip-console-13.4.webp" width="1152" height="720" loading="lazy" alt="Option B at 13.4 s on 3G."><figcaption><b>13.4 s</b> · the sign-in</figcaption></figure></div>
 <h3>The landing page on 3G</h3>
-<div class="strip"><figure><img src="option-b/strip-site-1.5.webp" width="1152" height="720" loading="lazy" alt="Option B's landing page at 1.5 s on 3G."><figcaption><b>1.5 s</b> · nothing has arrived</figcaption></figure><figure><img src="option-b/strip-site-3.5.webp" width="1152" height="720" loading="lazy" alt="Option B's landing page at 3.5 s on 3G."><figcaption><b>3.5 s</b> · the cover</figcaption></figure><figure><img src="option-b/strip-site-5.6.webp" width="1152" height="720" loading="lazy" alt="Option B's landing page at 5.6 s on 3G."><figcaption><b>5.6 s</b> · the first screen can be read: the window opens</figcaption></figure><figure><img src="option-b/strip-site-8.0.webp" width="1152" height="720" loading="lazy" alt="Option B's landing page at 8.0 s on 3G."><figcaption><b>8.0 s</b> · the page on the plate's soft preview</figcaption></figure><figure><img src="option-b/strip-site-13.2.webp" width="1152" height="720" loading="lazy" alt="Option B's landing page at 13.2 s on 3G."><figcaption><b>13.2 s</b> · the plate sharpens in place; the film follows</figcaption></figure></div>
+<div class="strip">
+<figure><img src="option-b/strip-site-1.5.webp" width="1152" height="720" loading="lazy" alt="Option B's landing page at 1.5 s on 3G."><figcaption><b>1.5 s</b> · nothing has arrived</figcaption></figure>
+<figure><img src="option-b/strip-site-3.5.webp" width="1152" height="720" loading="lazy" alt="Option B's landing page at 3.5 s on 3G."><figcaption><b>3.5 s</b> · the cover</figcaption></figure>
+<figure><img src="option-b/strip-site-5.6.webp" width="1152" height="720" loading="lazy" alt="Option B's landing page at 5.6 s on 3G."><figcaption><b>5.6 s</b> · the first screen can be read: the window opens</figcaption></figure>
+<figure><img src="option-b/strip-site-8.0.webp" width="1152" height="720" loading="lazy" alt="Option B's landing page at 8.0 s on 3G."><figcaption><b>8.0 s</b> · the page on the plate's soft preview</figcaption></figure>
+<figure><img src="option-b/strip-site-13.2.webp" width="1152" height="720" loading="lazy" alt="Option B's landing page at 13.2 s on 3G."><figcaption><b>13.2 s</b> · the plate sharpens in place; the film follows</figcaption></figure></div>
 <dl class="facts"><dt>Why it works</dt><dd><ul><li><b>Tells the product's story:</b> a carton on its way, the route the landing page and the console already draw.</li><li><b>The pin throbs,</b> so the logo still beats, in its smallest part.</li></ul></dd><dt>Trade-offs</dt><dd><ul><li>A stroke animation is painted, not composited: a long task in the app's code can hold a frame of it on a slow phone, the stutter this request is about.</li><li>The lap reads as progress that repeats, which can feel like going round in circles on a 15 s wait.</li></ul></dd><dt>Reduced motion</dt><dd>The mark stands still and full; the words carry the wait, and the cover leaves as soon as everything is in. <a href="option-b/reduced-light-1440.webp">The still frame</a>.</dd></dl>
 <div class="links"><a class="btn primary" href="option-b/mockup.html?surface=boot&amp;line=3g">Play option B on 3G</a><a class="btn" href="option-b/mockup.html?surface=enter&amp;line=slow4g">Signing in on Slow 4G</a><a class="btn" href="option-b/mockup.html?surface=site&amp;line=3g">The landing page on 3G</a></div>
 </section>
@@ -203,11 +128,26 @@ table.facts-t th { color: var(--ink); font-weight: 600; }
 <header><div class="hd"><h2>Option C · The mark fills</h2></div><p>Real progress inside the mark. The squircle starts as its outline and a faint route; the brand green rises in it as the first screen's files and reads arrive, by their bytes, and the white route shows wherever the green has reached. When the downloads are in and it waits on the platform (a cold start), the mark breathes gently. Full, the pin lands and pings once, and the mark opens into the window.</p></header>
 <figure class="motion"><img src="option-c/motion-light.webp" width="1642" height="200" loading="lazy" alt="Eight frames of option C's mark on the light ground."><figcaption>The level on a 3G first load: the code's bytes fill it to seven tenths (3.0 to 9.0 s), then the mark breathes while the platform answers (9.0 to 11.2 s).</figcaption></figure>
 <figure class="motion"><img src="option-c/motion-dark.webp" width="1642" height="200" loading="lazy" alt="The same eight frames on the dark ground."><figcaption>The same, dark</figcaption></figure>
-<div class="stills"><figure><img src="option-c/console-light-1440.webp" width="1152" height="720" loading="lazy" alt="Option C, the console's first load on 3G at 6.4 s, light, desktop: the mark, Opening the console, Loading the console, and the slow-connection line."><figcaption>The console on 3G at 6.4 s, light</figcaption></figure><figure><img src="option-c/console-dark-390.webp" width="333" height="720" loading="lazy" alt="The same on a phone, dark."><figcaption>Phone, dark</figcaption></figure><figure><img src="option-c/site-dark-1440.webp" width="1152" height="720" loading="lazy" alt="Option C, the landing page's cover on 3G at 4.2 s, dark, desktop: the mark, the wordmark and the Hindi line."><figcaption>The landing page on 3G at 4.2 s, dark</figcaption></figure><figure><img src="option-c/site-light-390.webp" width="333" height="720" loading="lazy" alt="The same on a phone, light."><figcaption>Phone, light</figcaption></figure></div>
+<div class="stills">
+<figure><img src="option-c/console-light-1440.webp" width="1152" height="720" loading="lazy" alt="Option C, the console's first load on 3G at 6.4 s, light, desktop: the mark, Opening the console, Loading the console, and the slow-connection line."><figcaption>The console on 3G at 6.4 s, light</figcaption></figure>
+<figure><img src="option-c/console-dark-390.webp" width="333" height="720" loading="lazy" alt="The same on a phone, dark."><figcaption>Phone, dark</figcaption></figure>
+<figure><img src="option-c/site-dark-1440.webp" width="1152" height="720" loading="lazy" alt="Option C, the landing page's cover on 3G at 4.2 s, dark, desktop: the mark, the wordmark and the Hindi line."><figcaption>The landing page on 3G at 4.2 s, dark</figcaption></figure>
+<figure><img src="option-c/site-light-390.webp" width="333" height="720" loading="lazy" alt="The same on a phone, light."><figcaption>Phone, light</figcaption></figure></div>
 <h3>The console's first load on 3G</h3>
-<div class="strip"><figure><img src="option-c/strip-console-1.5.webp" width="1152" height="720" loading="lazy" alt="Option C at 1.5 s on 3G."><figcaption><b>1.5 s</b> · nothing has arrived</figcaption></figure><figure><img src="option-c/strip-console-3.5.webp" width="1152" height="720" loading="lazy" alt="Option C at 3.5 s on 3G."><figcaption><b>3.5 s</b> · the cover, with the page's first bytes</figcaption></figure><figure><img src="option-c/strip-console-7.0.webp" width="1152" height="720" loading="lazy" alt="Option C at 7.0 s on 3G."><figcaption><b>7.0 s</b> · loading the console; the slow line</figcaption></figure><figure><img src="option-c/strip-console-10.5.webp" width="1152" height="720" loading="lazy" alt="Option C at 10.5 s on 3G."><figcaption><b>10.5 s</b> · connecting to the platform</figcaption></figure><figure><img src="option-c/strip-console-11.9.webp" width="1152" height="720" loading="lazy" alt="Option C at 11.9 s on 3G."><figcaption><b>11.9 s</b> · everything in: to the card's mark</figcaption></figure><figure><img src="option-c/strip-console-13.4.webp" width="1152" height="720" loading="lazy" alt="Option C at 13.4 s on 3G."><figcaption><b>13.4 s</b> · the sign-in</figcaption></figure></div>
+<div class="strip">
+<figure><img src="option-c/strip-console-1.5.webp" width="1152" height="720" loading="lazy" alt="Option C at 1.5 s on 3G."><figcaption><b>1.5 s</b> · nothing has arrived</figcaption></figure>
+<figure><img src="option-c/strip-console-3.5.webp" width="1152" height="720" loading="lazy" alt="Option C at 3.5 s on 3G."><figcaption><b>3.5 s</b> · the cover, with the page's first bytes</figcaption></figure>
+<figure><img src="option-c/strip-console-7.0.webp" width="1152" height="720" loading="lazy" alt="Option C at 7.0 s on 3G."><figcaption><b>7.0 s</b> · loading the console; the slow line</figcaption></figure>
+<figure><img src="option-c/strip-console-10.5.webp" width="1152" height="720" loading="lazy" alt="Option C at 10.5 s on 3G."><figcaption><b>10.5 s</b> · connecting to the platform</figcaption></figure>
+<figure><img src="option-c/strip-console-11.9.webp" width="1152" height="720" loading="lazy" alt="Option C at 11.9 s on 3G."><figcaption><b>11.9 s</b> · everything in: to the card's mark</figcaption></figure>
+<figure><img src="option-c/strip-console-13.4.webp" width="1152" height="720" loading="lazy" alt="Option C at 13.4 s on 3G."><figcaption><b>13.4 s</b> · the sign-in</figcaption></figure></div>
 <h3>The landing page on 3G</h3>
-<div class="strip"><figure><img src="option-c/strip-site-1.5.webp" width="1152" height="720" loading="lazy" alt="Option C's landing page at 1.5 s on 3G."><figcaption><b>1.5 s</b> · nothing has arrived</figcaption></figure><figure><img src="option-c/strip-site-3.5.webp" width="1152" height="720" loading="lazy" alt="Option C's landing page at 3.5 s on 3G."><figcaption><b>3.5 s</b> · the cover</figcaption></figure><figure><img src="option-c/strip-site-5.6.webp" width="1152" height="720" loading="lazy" alt="Option C's landing page at 5.6 s on 3G."><figcaption><b>5.6 s</b> · the first screen can be read: the window opens</figcaption></figure><figure><img src="option-c/strip-site-8.0.webp" width="1152" height="720" loading="lazy" alt="Option C's landing page at 8.0 s on 3G."><figcaption><b>8.0 s</b> · the page on the plate's soft preview</figcaption></figure><figure><img src="option-c/strip-site-13.2.webp" width="1152" height="720" loading="lazy" alt="Option C's landing page at 13.2 s on 3G."><figcaption><b>13.2 s</b> · the plate sharpens in place; the film follows</figcaption></figure></div>
+<div class="strip">
+<figure><img src="option-c/strip-site-1.5.webp" width="1152" height="720" loading="lazy" alt="Option C's landing page at 1.5 s on 3G."><figcaption><b>1.5 s</b> · nothing has arrived</figcaption></figure>
+<figure><img src="option-c/strip-site-3.5.webp" width="1152" height="720" loading="lazy" alt="Option C's landing page at 3.5 s on 3G."><figcaption><b>3.5 s</b> · the cover</figcaption></figure>
+<figure><img src="option-c/strip-site-5.6.webp" width="1152" height="720" loading="lazy" alt="Option C's landing page at 5.6 s on 3G."><figcaption><b>5.6 s</b> · the first screen can be read: the window opens</figcaption></figure>
+<figure><img src="option-c/strip-site-8.0.webp" width="1152" height="720" loading="lazy" alt="Option C's landing page at 8.0 s on 3G."><figcaption><b>8.0 s</b> · the page on the plate's soft preview</figcaption></figure>
+<figure><img src="option-c/strip-site-13.2.webp" width="1152" height="720" loading="lazy" alt="Option C's landing page at 13.2 s on 3G."><figcaption><b>13.2 s</b> · the plate sharpens in place; the film follows</figcaption></figure></div>
 <dl class="facts"><dt>Why it works</dt><dd><ul><li><b>Shows how far along it is,</b> by bytes the build knows from its own list of the first screen's files.</li><li><b>Breathes on the platform's wait,</b> so a cold start never looks frozen.</li></ul></dd><dt>Trade-offs</dt><dd><ul><li>A level driven by script, like today's progress, so it can step on a busy phone.</li><li>The empty mark is a new drawing of the brand (its outline), shown on every load.</li><li>The build has to keep a byte list of the first screen's files up to date, or the level lies.</li></ul></dd><dt>Reduced motion</dt><dd>The mark stands still, its level stepping with the progress; the words carry the wait, and the cover leaves as soon as everything is in. <a href="option-c/reduced-light-1440.webp">The still frame</a>.</dd></dl>
 <div class="links"><a class="btn primary" href="option-c/mockup.html?surface=boot&amp;line=3g">Play option C on 3G</a><a class="btn" href="option-c/mockup.html?surface=enter&amp;line=slow4g">Signing in on Slow 4G</a><a class="btn" href="option-c/mockup.html?surface=site&amp;line=3g">The landing page on 3G</a></div>
 </section>
