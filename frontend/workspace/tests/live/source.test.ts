@@ -163,7 +163,7 @@ describe('the projection', () => {
 		const snap = seen.snapshot;
 		// the chips, in focus: a plan with no food bank, so no donation beside it (SC-85: each batch is its own journey)
 		const focus = snap.cases.find((c) => c.donation == null)!.ref;
-		const data = dataOf(snap, seen.ledger, { ref: focus, second: null });
+		const data = dataOf(snap, { ref: focus, second: null });
 		const state = stateOf(snap, seen.cases[focus], null, seen.audit);
 		const c = caseOf(snap, seen.cases[focus], null, data);
 
@@ -195,7 +195,7 @@ describe('the projection', () => {
 		const mango = snap.cases.find((x) => x.donation != null)!.ref;
 		const md = seen.cases[mango];
 		expect(stateOf(snap, md, md, seen.audit).mango).toEqual({ id: mango, phase: 'executing', donation: 'booked' });
-		const mc = caseOf(snap, md, md, dataOf(snap, seen.ledger, { ref: mango, second: mango }));
+		const mc = caseOf(snap, md, md, dataOf(snap, { ref: mango, second: mango }));
 		expect(mc.donation.units).toBe(58);
 		expect(mc.donation.day).toMatch(/day$/);
 		expect(mc.donation.slots).toHaveLength(3);
@@ -206,7 +206,7 @@ describe('the projection', () => {
 		const seen = moment('at-risk').members.priya;
 		const snap = seen.snapshot;
 		const focus = snap.cases.find((c) => c.donation == null)!.ref;
-		const data = dataOf(snap, seen.ledger, { ref: focus, second: null });
+		const data = dataOf(snap, { ref: focus, second: null });
 		const c = caseOf(snap, seen.cases[focus], null, data);
 		expect(c.plan.net).toBe(0);
 		expect(c.award.price).toBe(0);
@@ -214,23 +214,23 @@ describe('the projection', () => {
 		expect(c.invoice.no).toBe('');
 	});
 
-	it('reads Finance & ESG from the ledger, the batches cleared and nothing else (SC-124)', () => {
-		const seen = moment('cleared').members.anita;
-		const ledger = seen.ledger!;
-		const q3 = ledger.periods.find((p) => p.id === 'fy27-q3')!;
-		const q = dataOf(seen.snapshot, ledger, { ref: null, second: null }).quarter;
-		const sum = (k: 'net' | 'kg' | 'itcKept') => ledger.batches.reduce((t, b) => t + b.figures[k], 0);
-		expect(ledger.batches.map((b) => b.ref).sort()).toEqual(['MF-2409-117', 'MF-2410-118']);
-		expect([q.label, q.batches]).toEqual(['Q3 FY27', 2]);
-		expect(q.recovered).toBeCloseTo(sum('net'), 2);
-		expect(q.itc).toBeCloseTo(sum('itcKept'), 2);
-		expect(q.co2).toBeCloseTo(q.kg * ledger.co2PerKg, 2);
-		expect(q.weeks).toHaveLength(13);
-		expect(q.mix.reduce((t, [, p]) => t + p, 0)).toBe(100);
-		expect(q.brsr[0].diverted).toBe(q3.totals.kg);
-		// a cleared batch's case carries the same row (the case detail's ledger)
-		expect(seen.cases['MF-2409-117'].ledger).toEqual(ledger.batches.find((b) => b.ref === 'MF-2409-117'));
+	it("reads Finance & ESG from backend-api's ledger, and a cleared batch's own page (SC-121, SC-124)", async () => {
+		const m = moment('cleared');
+		const seen = m.members.anita;
+		const s = source(m, 'anita');
+		const r = render(LiveHost, { props: { source: s, screen: 'report' } });
+		await until(() => s.status.phase === 'ready' && !!s.ledger);
+		expect(s.ledger).toEqual(seen.ledger);
+		expect(s.ledger!.batches.map((b) => b.ref).sort()).toEqual(['MF-2409-117', 'MF-2410-118']);
+		// a cleared batch's page: its case as the papers read it, cleared, with the row its ledger posted
+		s.openPage!('MF-2409-117');
+		await until(() => !!s.ledgerPage('MF-2409-117'));
+		const page = s.ledgerPage('MF-2409-117')!;
+		expect(page.row).toEqual(seen.ledger!.batches.find((b) => b.ref === 'MF-2409-117'));
+		expect(page.h.phase).toBe('cleared');
+		expect(page.c.docs.find((d) => d.id === 'invoice')?.no).toBe('INV/26-27/0931');
+		r.unmount();
 		// the partners never read it
-		expect(moment('cleared').members.rakesh.ledger).toBeNull();
+		expect(m.members.rakesh.ledger).toBeNull();
 	});
 });

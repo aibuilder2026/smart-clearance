@@ -22,7 +22,6 @@ import type {
 	Plan,
 	PlanLine,
 	Push,
-	Quarter,
 	Sku,
 	Stage,
 	State,
@@ -46,7 +45,6 @@ import type {
 	WsPlan,
 	WsPlanLine,
 	WsSplitLine,
-	WsLedger,
 	WsSku,
 	WsSupport,
 	WsWorkspace
@@ -155,54 +153,8 @@ const EMPTY_ASSESS: Assess = {
 	urgency: 0
 };
 
-/** the Finance & ESG screen's quarter, from the ledger (SC-124): the current quarter once a batch has cleared in it,
- *  else the latest quarter that has one */
-function quarterOf(l: WsLedger | null): Quarter {
-	const quarters = (l?.periods ?? []).filter((p) => p.kind === 'quarter');
-	const q =
-		quarters.find((p) => p.current && p.totals.batches) ??
-		quarters.filter((p) => p.totals.batches).at(-1) ??
-		quarters.find((p) => p.current);
-	if (!q)
-		return {
-			label: '',
-			period: '',
-			recovered: 0,
-			itc: 0,
-			kg: 0,
-			meals: 0,
-			batches: 0,
-			weeks: [],
-			mix: [],
-			mixNames: {},
-			brsr: [],
-			writeOffAvoided: 0,
-			co2: 0
-		};
-	const t = q.totals;
-	return {
-		label: q.label,
-		period: q.long,
-		recovered: t.net,
-		itc: t.itcKept,
-		kg: t.kg,
-		meals: t.meals,
-		batches: t.batches,
-		weeks: q.weeks,
-		mix: q.mix,
-		mixNames: q.mixNames,
-		brsr: q.brsr,
-		writeOffAvoided: t.writeOff,
-		co2: t.co2
-	};
-}
-
-/** the workspace's own data, from the snapshot (and the ledger, for those who see it) */
-export function dataOf(
-	snap: WorkspaceSnapshot,
-	ledger: WsLedger | null,
-	focus: { ref: string | null; second: string | null }
-): WorkspaceData {
+/** the workspace's own data, from the snapshot */
+export function dataOf(snap: WorkspaceSnapshot, focus: { ref: string | null; second: string | null }): WorkspaceData {
 	const today = snap.clock.now;
 	// the distributors that have given the one-time permission, and when, as the setup states it
 	const permissions = Object.fromEntries(
@@ -241,7 +193,6 @@ export function dataOf(
 		stages: snap.stages as Stage[],
 		// each batch in a journey is its own (SC-85): none is the story's second batch, shown beside the one in focus
 		batches: snap.batches.map((b) => batchOf(b, { hero: b.id === focus.ref, second: false })),
-		quarter: quarterOf(ledger),
 		market: { ...snap.market, lots: snap.market.lots.map((l) => ({ ...l, icon: icon(l.icon) })) }
 	};
 }
@@ -334,6 +285,8 @@ function docOf(d: WsDoc): Doc {
 		itc: opt(d.itc),
 		reversed: opt(d.reversed),
 		away: opt(d.away),
+		// every paper the Paperwork agent laid out has its PDF to download (SC-100, SC-121)
+		pdf: d.pdf,
 		// the food bank's receipt (SC-110)
 		...(d.id === 'receipt'
 			? {
@@ -350,8 +303,7 @@ function docOf(d: WsDoc): Doc {
 					fssai: opt(d.fssai),
 					via: opt(d.via),
 					from: opt(d.from),
-					spot: d.spot ?? null,
-					pdf: d.pdf
+					spot: d.spot ?? null
 				}
 			: {})
 	};
@@ -709,7 +661,6 @@ export function emptyData(pub: ApiPublic | null): WorkspaceData {
 		},
 		stages: [],
 		batches: [],
-		quarter: quarterOf(null),
 		market: { dispatchHours: 0, balanceHours: 0, minOrder: 0, lots: [] }
 	};
 }

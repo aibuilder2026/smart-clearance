@@ -273,7 +273,8 @@ async def snapshot(ctx: Ctx, client_id: str, cm: m.ClientMember) -> dict[str, An
 
     summaries = []
     for ref, case in cases.items():
-        if case.status == "reset" or not visible(cm, case):
+        # the client's history is in the ledger and on Batches, not among the batches in a journey (SC-121)
+        if case.status == "reset" or case.history or not visible(cm, case):
             continue
         summaries.append(
             {

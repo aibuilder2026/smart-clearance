@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="parties">
+  <div>
+    <div class="label">From</div>
+    <strong>{{ doc.owner }}</strong>
+  </div>
+  <div>
+    <div class="label">To</div>
+    <strong>{{ case.distributor.name }}</strong><br>
+    {{ case.distributor.godown or case.distributor.city }}
+  </div>
+</div>
+<table>
+  <thead>
+    <tr><th>Expired at the godown</th><th class="n">Packs</th><th class="n">Credit</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{{ case.sku.brand }} {{ case.sku.name }}, at the dealer price</td>
+      <td class="n">{{ doc.units|num }}</td>
+      <td class="n">{{ doc.amount|inr(true) if doc.amount is not none else "—" }}</td>
+    </tr>
+    <tr class="total"><td colspan="2">Credit to {{ case.distributor.name }}</td><td class="n">{{ doc.amount|inr(true) if doc.amount is not none else "—" }}</td></tr>
+  </tbody>
+</table>
+{% if doc.policy == "full-credit" %}
+<table>
+  <thead>
+    <tr><th colspan="2">{{ doc.owner }}'s own costs, on destroying them</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Disposal</td><td class="n">{{ doc.disposal|inr(true) }}</td></tr>
+    <tr><td>EPR on the packaging</td><td class="n">{{ doc.epr|inr(true) }}</td></tr>
+    <tr><td>Input GST reversed, section 17(5)(h)</td><td class="n">{{ doc.itc|inr(true) }}</td></tr>
+    <tr class="total"><td>Expiry, all in</td><td class="n">{{ ((doc.amount or 0) + doc.disposal + doc.epr + doc.itc)|inr(true) }}</td></tr>
+  </tbody>
+</table>
+{% endif %}
+<p class="muted">A financial credit note, with no GST adjustment.</p>
+{% if doc.note %}<div class="note">{{ doc.note }}</div>{% endif %}
+{% endblock %}

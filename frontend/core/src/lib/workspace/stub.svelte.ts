@@ -5,6 +5,7 @@
 // outside any provider (the guided demo, the design-system page) reads it.
 import { CHIPS, D, ES, INVOICE, KL } from './data';
 import { A, act as run, Agents, type ActionName } from './flow';
+import { stubLedger, stubPage } from './ledger';
 import { setDefaultSource, type WorkspaceSource } from './source';
 import { store } from './store.svelte';
 import type {
@@ -39,7 +40,6 @@ export const data: WorkspaceData = Object.freeze({
 	setup: D.setup,
 	stages: D.stages,
 	batches: D.batches,
-	quarter: D.quarter,
 	market: D.market
 });
 
@@ -131,6 +131,14 @@ class StubSource implements WorkspaceSource {
 
 	get pending(): ReadonlySet<string> {
 		return this.#pending;
+	}
+	// the ledger follows the journey: the chips batch joins once Impact has posted it (design3/core/ledger.js)
+	readonly #ledger = $derived(stubLedger(store.state));
+	get ledger() {
+		return this.#ledger;
+	}
+	ledgerPage(ref: string) {
+		return stubPage(ref, data, kase, store.state);
 	}
 	get state(): State {
 		return store.state;

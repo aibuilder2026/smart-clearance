@@ -226,7 +226,8 @@ test('Execution with every order in and the lot awarded', async ({ page }, testI
 	await report(testInfo, await scanHeld(page, 'Execution · every order in, the lot awarded'));
 });
 
-test('Paperwork: a document opened, and the pack before it is drafted', async ({ page }, testInfo) => {
+test("a batch's papers: a document opened, and the pack before it is drafted", async ({ page }, testInfo) => {
+	// Anita reads the story's batch's papers on its page in the ledger (SC-121)
 	await openWorkspace(page, '/paperwork', { as: 'anita' });
 	// on desktops the document opens beside the pack; on tablets and phones, in a sheet
 	await page.locator('.docpick > button.card').nth(2).click();
@@ -256,15 +257,32 @@ test('Batches: a batch opened in its sheet', async ({ page }, testInfo) => {
 	await report(testInfo, await scan(page, 'Batches · a batch in its sheet'));
 });
 
-test("Report: the quarter and this batch's view", async ({ page }, testInfo) => {
+test("the ledger: its readings, its periods, its exports, and a batch's page in each tab (SC-121)", async ({
+	page
+}, testInfo) => {
 	await openWorkspace(page, '/report', { as: 'vikram' });
 	const findings: Finding[] = [];
-	await page.getByRole('button', { name: 'This batch' }).click();
-	await page.waitForTimeout(400);
-	findings.push(...(await scan(page, "Report · this batch's view")));
-	await page.getByRole('button', { name: 'Quarter' }).click();
-	await page.waitForTimeout(400);
-	findings.push(...(await scan(page, "Report · the quarter's view")));
+	// Vikram opens on the Impact reading of the year so far
+	await expect(page.getByText('kept out of landfill')).toBeVisible();
+	await page.waitForTimeout(700);
+	findings.push(...(await scan(page, 'Ledger · the year, Impact')));
+	await page.getByRole('button', { name: 'GST', exact: true }).click();
+	await page.getByRole('button', { name: 'Q2 FY27', exact: true }).click();
+	await page.waitForTimeout(700);
+	findings.push(...(await scan(page, 'Ledger · Q2 FY27, GST')));
+	await page.getByRole('button', { name: 'Export', exact: true }).click();
+	await expect(page.getByRole('menu')).toBeVisible();
+	await settled(page);
+	findings.push(...(await scan(page, "Ledger · the period's exports")));
+	await page.keyboard.press('Escape');
+	// a batch of the history that was left at the godown: its money, its papers and its impact
+	await page.getByRole('button', { name: /^Masala Oats 200 g, MF-2406-107: / }).click();
+	await expect(page.locator('.bhead h1')).toHaveText('Masala Oats 200 g');
+	for (const tab of ['Money', 'Papers', 'Impact']) {
+		await page.locator('.bh-tabs').getByRole('button', { name: tab }).click();
+		await page.waitForTimeout(400);
+		findings.push(...(await scan(page, `a batch's page · ${tab}`)));
+	}
 	await report(testInfo, findings);
 });
 

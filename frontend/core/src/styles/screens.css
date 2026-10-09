@@ -414,3 +414,46 @@
 .bpage .pagebody { animation: bh-in 220ms var(--ease) both; }
 @keyframes bh-in { from { opacity: 0; transform: translateY(6px); } }
 @media (prefers-reduced-motion: reduce) { .bpage .pagebody { animation: none; } }
+
+/* ---------- the ledger (SC-121, option A): one ledger, three readings; red only for the bin (the packs destroyed, the
+   credit reversed), green for what was recovered and kept ---------- */
+.lg-head { display: grid; gap: 8px; }
+.lg-fig { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 14px; }
+.lg-fig .num { color: var(--fg); }
+.lg-fig .money .cur { font-size: 0.5em; }
+.lg-unit { align-self: flex-end; font-size: 0.42em; font-weight: 600; margin-left: 0.18em; margin-bottom: 0.18em; letter-spacing: 0; }
+.lg-what { font-size: 17px; font-weight: 600; color: var(--fg-2); }
+.lg-working { margin: 0; max-width: 72ch; font-size: 15px; line-height: 1.5; color: var(--fg-2); }
+.lg-working b { color: var(--fg); font-weight: 650; }
+/* the period as its batches */
+.lg-stripwrap { display: grid; gap: 8px; }
+.lg-strip { display: flex; gap: 3px; height: 48px; }
+.lg-seg { position: relative; flex-basis: 0; min-width: 6px; border-radius: 8px; overflow: hidden; transform-origin: left center; background: var(--primary); cursor: pointer; transition: filter var(--t-fast); }
+.lg-seg:hover { filter: brightness(1.08); }
+.lg-seg:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+.lg-seg.leftover { background: color-mix(in srgb, var(--primary) 72%, var(--surface)); }
+.lg-seg.donation { background: var(--ch-foodbank); }
+.lg-bin { position: absolute; top: 0; right: 0; bottom: 0; background: repeating-linear-gradient(135deg, var(--red) 0 3px, color-mix(in srgb, var(--red) 35%, transparent) 3px 6px); }
+.lg-seglabel { position: absolute; left: 8px; bottom: 6px; font-size: 11.5px; font-weight: 650; color: #fff; white-space: nowrap; pointer-events: none; text-shadow: 0 1px 2px rgb(0 0 0 / 0.25); }
+[data-theme="dark"] .lg-seglabel { color: var(--primary-fg); text-shadow: none; }
+.lg-seg.donation .lg-seglabel { color: #fff; }
+.lg-ticks { position: relative; height: 16px; font-size: 12px; color: var(--fg-3); }
+.lg-ticks span { position: absolute; top: 0; white-space: nowrap; padding-left: 6px; border-left: 1px solid var(--line-2); }
+.lg-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--fg-2); }
+.lg-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.lg-legend i { width: 12px; height: 12px; border-radius: 3px; background: var(--primary); }
+.lg-legend i.leftover { background: color-mix(in srgb, var(--primary) 72%, var(--surface)); }
+.lg-legend i.donation { background: var(--ch-foodbank); }
+.lg-legend i.bin { background: repeating-linear-gradient(135deg, var(--red) 0 2px, color-mix(in srgb, var(--red) 35%, transparent) 2px 4px); }
+/* a batch's figure in the ledger */
+.lg-val { display: inline-grid; justify-items: end; gap: 1px; }
+.lg-val b { font-size: 15.5px; font-weight: 650; color: var(--fg); }
+.lg-val em { font-style: normal; font-size: 12.5px; color: var(--fg-3); }
+/* a batch's page */
+.lg-line { display: flex; justify-content: space-between; gap: 16px; padding: 7px 0; font-size: 14.5px; border-top: var(--hair) solid var(--line); }
+.lg-line:first-of-type { border-top: 0; }
+.lg-line em { font-style: normal; font-size: 12.5px; color: var(--fg-3); }
+.lg-line.strong { font-weight: 650; padding-top: 10px; border-top: 1px solid var(--line-2); }
+.lg-note { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; background: var(--fill); font-size: 13.5px; line-height: 1.45; color: var(--fg-2); }
+.lg-note .ic { flex: 0 0 auto; margin-top: 2px; color: var(--fg-2); }
+.lg-brsr { padding: 12px 14px; border-radius: 12px; background: var(--fill); font-size: 13px; line-height: 1.55; color: var(--fg); }

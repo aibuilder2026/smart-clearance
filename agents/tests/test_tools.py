@@ -186,6 +186,30 @@ def test_each_food_bank_issues_its_own_paper():
     assert "not a tax certificate" in page and pdf.needs_pdf(RECEIPT) and not pdf.needs_pdf({**RECEIPT, "pdf": True})
 
 
+def test_the_expiry_credit_note_lays_out_the_settlement():
+    """SC-121: the packs left at the godown come back for full credit, on a credit note of their own (SC-94)"""
+    _, c = paper("support")
+    doc = {
+        "id": "expiry",
+        "type": "Expiry credit note",
+        "owner": "Munchly",
+        "no": "CN/0118",
+        "status": "generated",
+        "amount": 3087.5,
+        "units": 65,
+        "policy": "full-credit",
+        "disposal": 97.5,
+        "epr": 85.8,
+        "itc": 131.95,
+        "note": "The 65 packs that expired at Kalamna Market godown come back to Munchly for full credit.",
+        "pdf": None,
+    }
+    page = pdf.html(doc, c, today="2026-11-18")
+    for text in ("Expiry credit note", "CN/0118", "₹3,087.50", "₹97.50", "₹85.80", "₹131.95", "₹3,402.75", "17(5)(h)"):
+        assert text in page, text
+    assert pdf.needs_pdf(doc) and not pdf.needs_pdf({**doc, "status": "not required"})
+
+
 @pytest.mark.skipif(not pdf.available(), reason="WeasyPrint's system libraries (Pango) are not installed")
 def test_weasyprint_renders_a_paper():
     doc, c = paper("invoice")

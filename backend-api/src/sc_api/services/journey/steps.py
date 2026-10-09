@@ -1890,6 +1890,8 @@ async def _settle_expiry(ctx: Ctx, s: Scene, plan_: dict[str, Any]) -> dict[str,
         if d["id"] == "itc":
             d.update({"amount": plan_["itcRetained"], "reversed": plan_["itcReversed"]})
     s.case.docs = money.jsonable([*docs, paper])
+    if paper["status"] == "generated":  # Paperwork lays out the credit note's PDF (SC-121)
+        await ev.publish(ctx, J.Event(J.STEP, {"type": J.SETTLE, "client": s.c.id, "ref": s.ref}, f"{s.c.id}:{s.ref}"))
     return settle
 
 

@@ -301,7 +301,7 @@ export const NAV: Record<RoleId, NavItem[]> = {
 		{ id: 'command', label: 'Command Center', short: 'Today', icon: 'layout-dashboard' },
 		{ id: 'batches', label: 'Batches', icon: 'boxes' },
 		{ id: 'setup', label: 'Setup', icon: 'sliders-horizontal', phoneHidden: true },
-		{ id: 'report', label: 'Finance & ESG', short: 'Reports', icon: 'chart-line', section: 'Reports' }
+		{ id: 'report', label: 'Ledger', icon: 'book-open', section: 'Reports' }
 	],
 	distributor: [
 		{ id: 'home', label: 'Today', icon: 'house' },
@@ -317,14 +317,13 @@ export const NAV: Record<RoleId, NavItem[]> = {
 		{ id: 'market', label: 'Marketplace', short: 'Market', icon: 'store' },
 		{ id: 'bids', label: 'My bids', short: 'Bids', icon: 'gavel' }
 	],
+	// Finance & ESG (SC-121): the ledger, where each cleared batch opens its own page with its papers
 	finance: [
-		{ id: 'paperwork', label: 'Paperwork', icon: 'file-text' },
-		{ id: 'report', label: 'Finance & ESG', short: 'Reports', icon: 'chart-line' },
+		{ id: 'report', label: 'Ledger', icon: 'book-open' },
 		{ id: 'batches', label: 'Batches', icon: 'boxes' }
 	],
 	sustainability: [
-		{ id: 'report', label: 'Finance & ESG', short: 'Reports', icon: 'chart-line' },
-		{ id: 'paperwork', label: 'Evidence', icon: 'file-text' },
+		{ id: 'report', label: 'Ledger', icon: 'book-open' },
 		{ id: 'batches', label: 'Batches', icon: 'boxes' }
 	],
 	foodbank: [{ id: 'pickups', label: 'Pickups', icon: 'heart-handshake' }],
@@ -336,11 +335,11 @@ export const NAV: Record<RoleId, NavItem[]> = {
 		{ id: 'audit', label: 'Audit log', short: 'Audit', icon: 'scroll-text' }
 	]
 };
-/** the screen each role reads a batch on, which a batch in a journey opens from Batches: finance its Paperwork,
- *  sustainability its report (SC-103); a role with none opens the batch's sheet. The operator opens the batch's own
+/** the screen each role reads a batch on, which a batch in a journey opens from Batches: finance and sustainability
+ *  its page in the ledger (SC-103, SC-121); a role with none opens the batch's sheet. The operator opens the batch's own
  *  page (SC-112) */
 export const BATCH_SCREEN: Partial<Record<RoleId, string>> = {
-	finance: 'paperwork',
+	finance: 'report',
 	sustainability: 'report'
 };
 /** where each role starts */
@@ -349,7 +348,7 @@ export const HOME: Record<RoleId, string> = {
 	distributor: 'home',
 	retailer: 'home',
 	buyer: 'market',
-	finance: 'paperwork',
+	finance: 'report',
 	sustainability: 'report',
 	foodbank: 'pickups',
 	admin: 'workspace'
@@ -369,7 +368,10 @@ export const routesFor = (r: RoleId) =>
 					? ['offer']
 					: r === 'operator'
 						? ['journey', 'route', 'execution', 'paperwork']
-						: []
+						: // finance and sustainability keep the story's batch's papers, for the pushes and the guided demo
+							r === 'finance' || r === 'sustainability'
+							? ['paperwork']
+							: []
 		);
 /** every screen name the app knows, across the roles */
 export const SCREENS = Array.from(new Set((Object.keys(NAV) as RoleId[]).flatMap(routesFor)));

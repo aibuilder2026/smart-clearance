@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import type { WsLedgerTotals as LedgerTotals } from '@smart-clearance/api/workspace';
 import { api, mint } from './auth.ts';
 import {
 	AGENT_WAIT,
@@ -354,36 +355,30 @@ const STEPS: { id: string; title: string; run: (page: Page) => Promise<void> }[]
 	},
 	{
 		id: 'esg',
-		title: "Vikram reads the Mango Drink's ESG report and the quarter's BRSR",
+		title: "Vikram reads the Mango Drink's page in the ledger, and the year so far",
 		async run(page) {
-			await as(page, 'vikram', `/report/${HERO}`, "reads the Mango Drink's ESG report and the quarter's BRSR");
-			await page
-				.getByRole('radio', { name: 'This batch' })
-				.or(page.getByRole('button', { name: 'This batch' }))
-				.first()
-				.click();
-			await expect(page.getByText('posted to the ledger')).toBeVisible();
+			// the batch's own page in the ledger, which Vikram opens on its impact (SC-121)
+			await as(page, 'vikram', `/report/${HERO}`, "reads the Mango Drink's page in the ledger: its BRSR line");
+			await expect(page.getByText('BRSR line')).toBeVisible();
+			await expect(page.getByText(/^posted · /)).toBeVisible();
 			await run.done('ESG: the batch posted to the ledger');
 			await page.mouse.wheel(0, 900);
 			await page.waitForTimeout(500);
 			await run.done('ESG: the BRSR line, the meals and the evidence');
-			await page
-				.getByRole('radio', { name: 'Quarter' })
-				.or(page.getByRole('button', { name: 'Quarter' }))
-				.first()
-				.click();
-			await expect(page.getByText('BRSR Core')).toBeVisible();
-			await run.done('ESG: the quarter, BRSR Core');
-			const q = await api<{ recovered: number; itc: number; kg: number; co2: number; meals: number; batches: number }>(
+			await as(page, 'vikram', '/report', 'reads the ledger, the year so far');
+			await expect(page.getByText('kept out of landfill')).toBeVisible();
+			await run.done('ESG: the ledger, the year in its Impact reading');
+			const l = await api<{ periods: { kind: string; current: boolean; totals: LedgerTotals }[] }>(
 				'workspace',
 				'vikram',
-				`${WS}/quarter`
+				`${WS}/ledger`
 			);
-			run.figure('Quarter: recovered', inr(q.recovered));
-			run.figure('Quarter: GST credit protected', inr(q.itc));
-			run.figure('Quarter: kept out of landfill', `${q.kg} kg`);
-			run.figure('Quarter: meals', q.meals);
-			run.figure('Quarter: batches', q.batches);
+			const y = l.periods.find((p) => p.kind === 'year' && p.current)!.totals;
+			run.figure('The year: recovered', inr(y.net));
+			run.figure('The year: input GST kept', inr(y.itcKept));
+			run.figure('The year: kept out of landfill', `${y.kg} kg`);
+			run.figure('The year: meals', y.meals);
+			run.figure('The year: batches', y.batches);
 		}
 	},
 	{

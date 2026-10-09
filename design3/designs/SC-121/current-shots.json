@@ -1,0 +1,161 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/paperwork",
+  "out": "current/anita-paperwork-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 2600,
+  "ls": {
+   "sc3-session": {
+    "uid": "anita",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/report",
+  "out": "current/finance-esg-quarter-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 2600,
+  "ls": {
+   "sc3-session": {
+    "uid": "anita",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/report",
+  "out": "current/finance-esg-batch-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 2600,
+  "ls": {
+   "sc3-session": {
+    "uid": "vikram",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)",
+  "click": [
+   "button:has-text('This batch')"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/paperwork",
+  "out": "current/anita-paperwork-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2200,
+  "height": 2600,
+  "ls": {
+   "sc3-session": {
+    "uid": "anita",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/report",
+  "out": "current/finance-esg-quarter-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2200,
+  "height": 2600,
+  "ls": {
+   "sc3-session": {
+    "uid": "anita",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/report",
+  "out": "current/finance-esg-batch-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2200,
+  "height": 2600,
+  "ls": {
+   "sc3-session": {
+    "uid": "vikram",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)",
+  "click": [
+   "button:has-text('This batch')"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/batches",
+  "out": "current/anita-batches-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1100,
+  "ls": {
+   "sc3-session": {
+    "uid": "anita",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/paperwork",
+  "out": "current/anita-paperwork-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2200,
+  "height": 3400,
+  "ls": {
+   "sc3-session": {
+    "uid": "anita",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/report",
+  "out": "current/finance-esg-quarter-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2200,
+  "height": 3400,
+  "ls": {
+   "sc3-session": {
+    "uid": "vikram",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/report",
+  "out": "current/finance-esg-batch-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2200,
+  "height": 3400,
+  "ls": {
+   "sc3-session": {
+    "uid": "vikram",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)",
+  "click": [
+   "button:has-text('This batch')"
+  ]
+ }
+]

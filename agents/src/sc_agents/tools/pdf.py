@@ -10,15 +10,16 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from sc_agents import fmt
 
 TEMPLATES = Path(__file__).resolve().parent.parent / "templates"
-# what gets a PDF: the invoice draft, the price-support credit note, the ITC memo, the FSSAI checklist and the food
-# bank's receipt (SC-110); the e-way bill check and the destruction certificate are records on the case, not papers
-# anyone signs
+# what gets a PDF: the invoice draft, the price-support credit note, the ITC memo, the FSSAI checklist, the food
+# bank's receipt (SC-110) and the expiry credit note for the packs left at the godown (SC-121); the e-way bill check
+# and the destruction certificate are records on the case, not papers anyone signs
 PAPERS = {
     "invoice": "invoice.html",
     "support": "credit_note.html",
     "itc": "itc_memo.html",
     "fssai": "fssai.html",
     "receipt": "receipt.html",
+    "expiry": "expiry_note.html",
 }
 
 _env = Environment(loader=FileSystemLoader(TEMPLATES), autoescape=select_autoescape(["html"]))

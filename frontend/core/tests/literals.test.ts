@@ -3,6 +3,7 @@ import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'svelte/compiler';
 import { describe, expect, it } from 'vitest';
+import history from '../src/lib/workspace/seed/history.json';
 import seed from '../src/lib/workspace/seed/workspace.json';
 import { ALLOW } from './literals.allow';
 
@@ -84,7 +85,12 @@ strings(obj('docs'), ['no'])
 strings(obj('setup'), ['name']).forEach((v) => add(v));
 strings(obj('shelf'), ['shop', 'area', 'round']).forEach((v) => add(v));
 strings((obj('initial') as Record<string, Json>).users, ['name', 'org', 'email', 'phone']).forEach((v) => add(v, true));
-add((obj('quarter') as Record<string, Json>).label as string);
+// the history's papers (SC-121): their numbers are the ledger's data, never the UI's
+for (const c of history.cases as unknown as { docs: { no: string }[] }[])
+	c.docs
+		.map((d) => d.no)
+		.filter((v) => /^[A-Z]{2,}[/-]/.test(v))
+		.forEach((v) => add(v));
 // places the stub's journey names that its seed does not
 ['Charminar'].forEach((v) => add(v));
 

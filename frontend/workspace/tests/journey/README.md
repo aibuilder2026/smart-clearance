@@ -19,7 +19,7 @@ live Gemini through the local pull worker. One page drives everyone, so the whol
 | 11  | Paperwork drafts the pack; the invoice issued from Tally; the van round                                                        | Rakesh                        | `/orders`, `/van`                   |
 | 12  | Every paper read (tax invoice, e-way bill check, credit note, GST ITC memo, FSSAI, destruction certificate); the pack reviewed | Anita, Finance                | `/paperwork/MF-2409-117`            |
 | 13  | Expiry day's report fired; Impact posts the ledger                                                                             | Neha                          | console, Impact · Report now        |
-| 14  | The batch's ESG report, its BRSR line and evidence, the quarter's BRSR Core                                                    | Vikram, ESG                   | `/report/MF-2409-117`               |
+| 14  | The batch's page in the ledger, its BRSR line and evidence; the ledger, the year so far                                        | Vikram, ESG                   | `/report/MF-2409-117`, `/report`    |
 | 15  | The report as Finance; Execution and the Command Center at the end                                                             | Anita, Priya                  | `/report`, `/execution`             |
 
 The story's figures are checked as it goes (softly, so the run reaches the end): a plan of ₹21,770 net (588 to kiranas,

@@ -5945,6 +5945,1843 @@
 					"credit": 2376
 				}
 			}
-		]
+		],
+		"ledger": {
+			"today": "2026-10-02",
+			"batches": [
+				{
+					"ref": "MF-2406-105",
+					"sku": "biscuits",
+					"name": "Choco Cream Biscuits 200 g",
+					"img": "pack-biscuits",
+					"distributor": "rakesh",
+					"distributorName": "Rakesh Traders",
+					"city": "Nagpur",
+					"flagged": "2026-07-03",
+					"cleared": "2026-08-14",
+					"outcome": "sold",
+					"history": true,
+					"figures": {
+						"net": 22055,
+						"swing": 26286.5,
+						"pnl": -1045,
+						"writeOff": 27331.5,
+						"itcKept": 1302,
+						"itcReversed": 0,
+						"kg": 225.75,
+						"co2": 564.38,
+						"meals": 0,
+						"units": 1050,
+						"sold": 1050,
+						"donated": 0,
+						"godown": 0,
+						"destroyed": 0,
+						"resoldKg": 225.75,
+						"donatedKg": 0,
+						"destroyedKg": 0,
+						"credit": 0,
+						"support": 8395
+					},
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 490,
+							"price": 24,
+							"gross": 11760
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 560,
+							"price": 19,
+							"gross": 10640
+						}
+					],
+					"papers": [
+						{
+							"id": "invoice",
+							"type": "Tax invoice",
+							"no": "INV/26-27/0921",
+							"status": "drafted",
+							"date": "2026-07-06",
+							"amount": 11172,
+							"pdf": false
+						},
+						{
+							"id": "eway",
+							"type": "E-way bill check",
+							"no": "MF-2406-105",
+							"status": "not required",
+							"date": "2026-07-06",
+							"amount": 11172,
+							"pdf": false
+						},
+						{
+							"id": "support",
+							"type": "Price-support credit note",
+							"no": "CN/0102",
+							"status": "generated",
+							"date": "2026-07-06",
+							"amount": 8395,
+							"pdf": false
+						},
+						{
+							"id": "itc",
+							"type": "GST ITC memo",
+							"no": "s.17(5)(h)",
+							"status": "generated",
+							"date": "2026-07-06",
+							"amount": 1302,
+							"pdf": false
+						},
+						{
+							"id": "fssai",
+							"type": "FSSAI surplus-food checklist",
+							"no": "no donation",
+							"status": "not required",
+							"date": "2026-07-06",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "destruction",
+							"type": "Destruction certificate",
+							"no": "0 units left",
+							"status": "not required",
+							"date": "2026-07-06",
+							"amount": 0,
+							"pdf": false
+						}
+					],
+					"reviewed": {
+						"by": "anita",
+						"at": "2026-07-07T15:00"
+					}
+				},
+				{
+					"ref": "MF-2406-106",
+					"sku": "chikki",
+					"name": "Peanut Chikki 100 g",
+					"img": "pack-chikki",
+					"distributor": "lakshmi",
+					"distributorName": "Lakshmi Agencies",
+					"city": "Hyderabad",
+					"flagged": "2026-07-08",
+					"cleared": "2026-08-15",
+					"outcome": "sold",
+					"history": true,
+					"figures": {
+						"net": 15847,
+						"swing": 19216.74,
+						"pnl": 689,
+						"writeOff": 18527.74,
+						"itcKept": 851.18,
+						"itcReversed": 0,
+						"kg": 128.26,
+						"co2": 320.65,
+						"meals": 0,
+						"units": 1166,
+						"sold": 1166,
+						"donated": 0,
+						"godown": 0,
+						"destroyed": 0,
+						"resoldKg": 128.26,
+						"donatedKg": 0,
+						"destroyedKg": 0,
+						"credit": 0,
+						"support": 5141
+					},
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 686,
+							"price": 15,
+							"gross": 10290
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 480,
+							"price": 12.5,
+							"gross": 6000
+						}
+					],
+					"papers": [
+						{
+							"id": "invoice",
+							"type": "Tax invoice",
+							"no": "INV/26-27/0922",
+							"status": "drafted",
+							"date": "2026-07-11",
+							"amount": 6300,
+							"pdf": false
+						},
+						{
+							"id": "eway",
+							"type": "E-way bill check",
+							"no": "MF-2406-106",
+							"status": "not required",
+							"date": "2026-07-11",
+							"amount": 6300,
+							"pdf": false
+						},
+						{
+							"id": "support",
+							"type": "Price-support credit note",
+							"no": "CN/0103",
+							"status": "generated",
+							"date": "2026-07-11",
+							"amount": 5141,
+							"pdf": false
+						},
+						{
+							"id": "itc",
+							"type": "GST ITC memo",
+							"no": "s.17(5)(h)",
+							"status": "generated",
+							"date": "2026-07-11",
+							"amount": 851.18,
+							"pdf": false
+						},
+						{
+							"id": "fssai",
+							"type": "FSSAI surplus-food checklist",
+							"no": "no donation",
+							"status": "not required",
+							"date": "2026-07-11",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "destruction",
+							"type": "Destruction certificate",
+							"no": "0 units left",
+							"status": "not required",
+							"date": "2026-07-11",
+							"amount": 0,
+							"pdf": false
+						}
+					],
+					"reviewed": {
+						"by": "anita",
+						"at": "2026-07-12T15:00"
+					}
+				},
+				{
+					"ref": "MF-2406-107",
+					"sku": "oats",
+					"name": "Masala Oats 200 g",
+					"img": "pack-oats",
+					"distributor": "lakshmi",
+					"distributorName": "Lakshmi Agencies",
+					"city": "Hyderabad",
+					"flagged": "2026-07-14",
+					"cleared": "2026-08-23",
+					"outcome": "leftover",
+					"history": true,
+					"figures": {
+						"net": 18842,
+						"swing": 21606.5,
+						"pnl": -4333.25,
+						"writeOff": 25939.75,
+						"itcKept": 1157.1,
+						"itcReversed": 131.95,
+						"kg": 125.4,
+						"co2": 313.5,
+						"meals": 0,
+						"units": 635,
+						"sold": 570,
+						"donated": 0,
+						"godown": 65,
+						"destroyed": 65,
+						"resoldKg": 125.4,
+						"donatedKg": 0,
+						"destroyedKg": 14.3,
+						"credit": 3087.5,
+						"support": 8233
+					},
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 180,
+							"price": 39,
+							"gross": 7020
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 390,
+							"price": 30.8,
+							"gross": 12012
+						}
+					],
+					"papers": [
+						{
+							"id": "invoice",
+							"type": "Tax invoice",
+							"no": "INV/26-27/0923",
+							"status": "drafted",
+							"date": "2026-07-17",
+							"amount": 12613,
+							"pdf": false
+						},
+						{
+							"id": "eway",
+							"type": "E-way bill check",
+							"no": "MF-2406-107",
+							"status": "not required",
+							"date": "2026-07-17",
+							"amount": 12613,
+							"pdf": false
+						},
+						{
+							"id": "support",
+							"type": "Price-support credit note",
+							"no": "CN/0104",
+							"status": "generated",
+							"date": "2026-07-17",
+							"amount": 8233,
+							"pdf": false
+						},
+						{
+							"id": "itc",
+							"type": "GST ITC memo",
+							"no": "s.17(5)(h)",
+							"status": "generated",
+							"date": "2026-07-17",
+							"amount": 1157.1,
+							"pdf": false
+						},
+						{
+							"id": "fssai",
+							"type": "FSSAI surplus-food checklist",
+							"no": "no donation",
+							"status": "not required",
+							"date": "2026-07-17",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "destruction",
+							"type": "Destruction certificate",
+							"no": "65 units",
+							"status": "generated",
+							"date": "2026-07-17",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "expiry",
+							"type": "Expiry credit note",
+							"no": "CN/0111",
+							"status": "generated",
+							"date": "2026-08-23",
+							"amount": 3087.5,
+							"pdf": false
+						}
+					],
+					"reviewed": {
+						"by": "anita",
+						"at": "2026-07-18T15:00"
+					}
+				},
+				{
+					"ref": "MF-2406-109",
+					"sku": "poha",
+					"name": "Instant Poha 250 g",
+					"img": "pack-poha",
+					"distributor": "lakshmi",
+					"distributorName": "Lakshmi Agencies",
+					"city": "Hyderabad",
+					"flagged": "2026-07-28",
+					"cleared": "2026-08-23",
+					"outcome": "donation",
+					"history": true,
+					"figures": {
+						"net": 15130.56,
+						"swing": 19737.84,
+						"pnl": -14257.44,
+						"writeOff": 33995.28,
+						"itcKept": 943.08,
+						"itcReversed": 706.44,
+						"kg": 255.96,
+						"co2": 639.9,
+						"meals": 406,
+						"units": 948,
+						"sold": 542,
+						"donated": 406,
+						"godown": 0,
+						"destroyed": 0,
+						"resoldKg": 146.34,
+						"donatedKg": 109.62,
+						"destroyedKg": 0,
+						"credit": 0,
+						"support": 21880
+					},
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 392,
+							"price": 33,
+							"gross": 12936
+						},
+						{
+							"id": "staff",
+							"short": "Staff sale",
+							"units": 150,
+							"price": 22,
+							"gross": 3300
+						},
+						{
+							"id": "foodbank",
+							"short": "Food bank",
+							"units": 406,
+							"price": 0,
+							"gross": 0
+						}
+					],
+					"papers": [
+						{
+							"id": "support",
+							"type": "Price-support credit note",
+							"no": "CN/0106",
+							"status": "generated",
+							"date": "2026-07-31",
+							"amount": 21880,
+							"pdf": false
+						},
+						{
+							"id": "itc",
+							"type": "GST ITC memo",
+							"no": "s.17(5)(h)",
+							"status": "generated",
+							"date": "2026-07-31",
+							"amount": 943.08,
+							"pdf": false
+						},
+						{
+							"id": "fssai",
+							"type": "FSSAI surplus-food checklist",
+							"no": "406 units",
+							"status": "generated",
+							"date": "2026-07-31",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "receipt",
+							"type": "Donation receipt",
+							"no": "FI/HYD/26-27/0415",
+							"status": "generated",
+							"date": "2026-07-30",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "destruction",
+							"type": "Destruction certificate",
+							"no": "0 units left",
+							"status": "not required",
+							"date": "2026-07-31",
+							"amount": 0,
+							"pdf": false
+						}
+					],
+					"reviewed": {
+						"by": "anita",
+						"at": "2026-08-01T15:00"
+					}
+				},
+				{
+					"ref": "MF-2406-108",
+					"sku": "poha",
+					"name": "Instant Poha 250 g",
+					"img": "pack-poha",
+					"distributor": "rakesh",
+					"distributorName": "Rakesh Traders",
+					"city": "Nagpur",
+					"flagged": "2026-07-21",
+					"cleared": "2026-09-04",
+					"outcome": "sold",
+					"history": true,
+					"figures": {
+						"net": 19320.8,
+						"swing": 22586.72,
+						"pnl": -1511.2,
+						"writeOff": 24097.92,
+						"itcKept": 1169.28,
+						"itcReversed": 0,
+						"kg": 181.44,
+						"co2": 453.6,
+						"meals": 0,
+						"units": 672,
+						"sold": 672,
+						"donated": 0,
+						"godown": 0,
+						"destroyed": 0,
+						"resoldKg": 181.44,
+						"donatedKg": 0,
+						"destroyedKg": 0,
+						"credit": 0,
+						"support": 7559
+					},
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 294,
+							"price": 33,
+							"gross": 9702
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 378,
+							"price": 26.1,
+							"gross": 9865.8
+						}
+					],
+					"papers": [
+						{
+							"id": "invoice",
+							"type": "Tax invoice",
+							"no": "INV/26-27/0924",
+							"status": "drafted",
+							"date": "2026-07-24",
+							"amount": 10359,
+							"pdf": false
+						},
+						{
+							"id": "eway",
+							"type": "E-way bill check",
+							"no": "MF-2406-108",
+							"status": "not required",
+							"date": "2026-07-24",
+							"amount": 10359,
+							"pdf": false
+						},
+						{
+							"id": "support",
+							"type": "Price-support credit note",
+							"no": "CN/0105",
+							"status": "generated",
+							"date": "2026-07-24",
+							"amount": 7559,
+							"pdf": false
+						},
+						{
+							"id": "itc",
+							"type": "GST ITC memo",
+							"no": "s.17(5)(h)",
+							"status": "generated",
+							"date": "2026-07-24",
+							"amount": 1169.28,
+							"pdf": false
+						},
+						{
+							"id": "fssai",
+							"type": "FSSAI surplus-food checklist",
+							"no": "no donation",
+							"status": "not required",
+							"date": "2026-07-24",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "destruction",
+							"type": "Destruction certificate",
+							"no": "0 units left",
+							"status": "not required",
+							"date": "2026-07-24",
+							"amount": 0,
+							"pdf": false
+						}
+					],
+					"reviewed": {
+						"by": "anita",
+						"at": "2026-07-25T15:00"
+					}
+				},
+				{
+					"ref": "MF-2407-111",
+					"sku": "mango",
+					"name": "Mango Drink 200 ml",
+					"img": "pack-mango",
+					"distributor": "rakesh",
+					"distributorName": "Rakesh Traders",
+					"city": "Nagpur",
+					"flagged": "2026-08-10",
+					"cleared": "2026-09-15",
+					"outcome": "leftover",
+					"history": true,
+					"figures": {
+						"net": 11320,
+						"swing": 14833.68,
+						"pnl": -2890.56,
+						"writeOff": 17724.24,
+						"itcKept": 578.6,
+						"itcReversed": 101.2,
+						"kg": 226.18,
+						"co2": 565.45,
+						"meals": 0,
+						"units": 1236,
+						"sold": 1052,
+						"donated": 0,
+						"godown": 184,
+						"destroyed": 184,
+						"resoldKg": 226.18,
+						"donatedKg": 0,
+						"destroyedKg": 39.56,
+						"credit": 2668,
+						"support": 3934
+					},
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 600,
+							"price": 12,
+							"gross": 7200
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 452,
+							"price": 10,
+							"gross": 4520
+						}
+					],
+					"papers": [
+						{
+							"id": "invoice",
+							"type": "Tax invoice",
+							"no": "INV/26-27/0926",
+							"status": "drafted",
+							"date": "2026-08-13",
+							"amount": 4746,
+							"pdf": false
+						},
+						{
+							"id": "eway",
+							"type": "E-way bill check",
+							"no": "MF-2407-111",
+							"status": "not required",
+							"date": "2026-08-13",
+							"amount": 4746,
+							"pdf": false
+						},
+						{
+							"id": "support",
+							"type": "Price-support credit note",
+							"no": "CN/0108",
+							"status": "generated",
+							"date": "2026-08-13",
+							"amount": 3934,
+							"pdf": false
+						},
+						{
+							"id": "itc",
+							"type": "GST ITC memo",
+							"no": "s.17(5)(h)",
+							"status": "generated",
+							"date": "2026-08-13",
+							"amount": 578.6,
+							"pdf": false
+						},
+						{
+							"id": "fssai",
+							"type": "FSSAI surplus-food checklist",
+							"no": "no donation",
+							"status": "not required",
+							"date": "2026-08-13",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "destruction",
+							"type": "Destruction certificate",
+							"no": "184 units",
+							"status": "generated",
+							"date": "2026-08-13",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "expiry",
+							"type": "Expiry credit note",
+							"no": "CN/0115",
+							"status": "generated",
+							"date": "2026-09-15",
+							"amount": 2668,
+							"pdf": false
+						}
+					],
+					"reviewed": {
+						"by": "anita",
+						"at": "2026-08-14T15:00"
+					}
+				},
+				{
+					"ref": "MF-2407-114",
+					"sku": "oats",
+					"name": "Masala Oats 200 g",
+					"img": "pack-oats",
+					"distributor": "rakesh",
+					"distributorName": "Rakesh Traders",
+					"city": "Nagpur",
+					"flagged": "2026-08-24",
+					"cleared": "2026-09-15",
+					"outcome": "donation",
+					"history": true,
+					"figures": {
+						"net": 11440.02,
+						"swing": 15368.52,
+						"pnl": -17719.98,
+						"writeOff": 33088.5,
+						"itcKept": 698.32,
+						"itcReversed": 945.98,
+						"kg": 178.2,
+						"co2": 445.5,
+						"meals": 466,
+						"units": 810,
+						"sold": 344,
+						"donated": 466,
+						"godown": 0,
+						"destroyed": 0,
+						"resoldKg": 75.68,
+						"donatedKg": 102.52,
+						"destroyedKg": 0,
+						"credit": 0,
+						"support": 25856
+					},
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 294,
+							"price": 39,
+							"gross": 11466
+						},
+						{
+							"id": "staff",
+							"short": "Staff sale",
+							"units": 50,
+							"price": 26,
+							"gross": 1300
+						},
+						{
+							"id": "foodbank",
+							"short": "Food bank",
+							"units": 466,
+							"price": 0,
+							"gross": 0
+						}
+					],
+					"papers": [
+						{
+							"id": "support",
+							"type": "Price-support credit note",
+							"no": "CN/0112",
+							"status": "generated",
+							"date": "2026-08-27",
+							"amount": 25856,
+							"pdf": false
+						},
+						{
+							"id": "itc",
+							"type": "GST ITC memo",
+							"no": "s.17(5)(h)",
+							"status": "generated",
+							"date": "2026-08-27",
+							"amount": 698.32,
+							"pdf": false
+						},
+						{
+							"id": "fssai",
+							"type": "FSSAI surplus-food checklist",
+							"no": "466 units",
+							"status": "generated",
+							"date": "2026-08-27",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "receipt",
+							"type": "Donation receipt",
+							"no": "FI/NAG/26-27/0416",
+							"status": "generated",
+							"date": "2026-08-26",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "destruction",
+							"type": "Destruction certificate",
+							"no": "0 units left",
+							"status": "not required",
+							"date": "2026-08-27",
+							"amount": 0,
+							"pdf": false
+						}
+					],
+					"reviewed": {
+						"by": "anita",
+						"at": "2026-08-28T15:00"
+					}
+				},
+				{
+					"ref": "MF-2407-110",
+					"sku": "facewash",
+					"name": "Aloe Face Wash 100 ml",
+					"img": "pack-facewash",
+					"distributor": "rakesh",
+					"distributorName": "Rakesh Traders",
+					"city": "Nagpur",
+					"flagged": "2026-08-04",
+					"cleared": "2026-09-21",
+					"outcome": "sold",
+					"history": true,
+					"figures": {
+						"net": 24660.5,
+						"swing": 30206.59,
+						"pnl": 1634.5,
+						"writeOff": 28572.09,
+						"itcKept": 4664.75,
+						"itcReversed": 0,
+						"kg": 47.64,
+						"co2": 119.1,
+						"meals": 0,
+						"units": 397,
+						"sold": 397,
+						"donated": 0,
+						"godown": 0,
+						"destroyed": 0,
+						"resoldKg": 47.64,
+						"donatedKg": 0,
+						"destroyedKg": 0,
+						"credit": 0,
+						"support": 10276
+					},
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 147,
+							"price": 72,
+							"gross": 10584
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 250,
+							"price": 57,
+							"gross": 14250
+						}
+					],
+					"papers": [
+						{
+							"id": "invoice",
+							"type": "Tax invoice",
+							"no": "INV/26-27/0925",
+							"status": "drafted",
+							"date": "2026-08-07",
+							"amount": 16815,
+							"pdf": false
+						},
+						{
+							"id": "eway",
+							"type": "E-way bill check",
+							"no": "MF-2407-110",
+							"status": "not required",
+							"date": "2026-08-07",
+							"amount": 16815,
+							"pdf": false
+						},
+						{
+							"id": "support",
+							"type": "Price-support credit note",
+							"no": "CN/0107",
+							"status": "generated",
+							"date": "2026-08-07",
+							"amount": 10276,
+							"pdf": false
+						},
+						{
+							"id": "itc",
+							"type": "GST ITC memo",
+							"no": "s.17(5)(h)",
+							"status": "generated",
+							"date": "2026-08-07",
+							"amount": 4664.75,
+							"pdf": false
+						},
+						{
+							"id": "fssai",
+							"type": "FSSAI surplus-food checklist",
+							"no": "no donation",
+							"status": "not required",
+							"date": "2026-08-07",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "destruction",
+							"type": "Destruction certificate",
+							"no": "0 units left",
+							"status": "not required",
+							"date": "2026-08-07",
+							"amount": 0,
+							"pdf": false
+						}
+					],
+					"reviewed": {
+						"by": "anita",
+						"at": "2026-08-08T15:00"
+					}
+				},
+				{
+					"ref": "MF-2407-113",
+					"sku": "chips",
+					"name": "Masala Chips 150 g",
+					"img": "pack-chips",
+					"distributor": "lakshmi",
+					"distributorName": "Lakshmi Agencies",
+					"city": "Hyderabad",
+					"flagged": "2026-08-18",
+					"cleared": "2026-09-27",
+					"outcome": "sold",
+					"history": true,
+					"figures": {
+						"net": 17210.3,
+						"swing": 20808.86,
+						"pnl": 74.3,
+						"writeOff": 20734.56,
+						"itcKept": 963.9,
+						"itcReversed": 0,
+						"kg": 171.36,
+						"co2": 428.4,
+						"meals": 0,
+						"units": 1071,
+						"sold": 1071,
+						"donated": 0,
+						"godown": 0,
+						"destroyed": 0,
+						"resoldKg": 171.36,
+						"donatedKg": 0,
+						"destroyedKg": 0,
+						"credit": 0,
+						"support": 6352
+					},
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 637,
+							"price": 18,
+							"gross": 11466
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 434,
+							"price": 14.2,
+							"gross": 6162.8
+						}
+					],
+					"papers": [
+						{
+							"id": "invoice",
+							"type": "Tax invoice",
+							"no": "INV/26-27/0928",
+							"status": "drafted",
+							"date": "2026-08-21",
+							"amount": 6471,
+							"pdf": false
+						},
+						{
+							"id": "eway",
+							"type": "E-way bill check",
+							"no": "MF-2407-113",
+							"status": "not required",
+							"date": "2026-08-21",
+							"amount": 6471,
+							"pdf": false
+						},
+						{
+							"id": "support",
+							"type": "Price-support credit note",
+							"no": "CN/0110",
+							"status": "generated",
+							"date": "2026-08-21",
+							"amount": 6352,
+							"pdf": false
+						},
+						{
+							"id": "itc",
+							"type": "GST ITC memo",
+							"no": "s.17(5)(h)",
+							"status": "generated",
+							"date": "2026-08-21",
+							"amount": 963.9,
+							"pdf": false
+						},
+						{
+							"id": "fssai",
+							"type": "FSSAI surplus-food checklist",
+							"no": "no donation",
+							"status": "not required",
+							"date": "2026-08-21",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "destruction",
+							"type": "Destruction certificate",
+							"no": "0 units left",
+							"status": "not required",
+							"date": "2026-08-21",
+							"amount": 0,
+							"pdf": false
+						}
+					],
+					"reviewed": {
+						"by": "anita",
+						"at": "2026-08-22T15:00"
+					}
+				},
+				{
+					"ref": "MF-2407-116",
+					"sku": "chikki",
+					"name": "Peanut Chikki 100 g",
+					"img": "pack-chikki",
+					"distributor": "rakesh",
+					"distributorName": "Rakesh Traders",
+					"city": "Nagpur",
+					"flagged": "2026-08-27",
+					"cleared": "2026-09-27",
+					"outcome": "leftover",
+					"history": true,
+					"figures": {
+						"net": 14312,
+						"swing": 17433.2,
+						"pnl": -1825.48,
+						"writeOff": 19258.68,
+						"itcKept": 788.4,
+						"itcReversed": 96.36,
+						"kg": 118.8,
+						"co2": 297,
+						"meals": 0,
+						"units": 1212,
+						"sold": 1080,
+						"donated": 0,
+						"godown": 132,
+						"destroyed": 132,
+						"resoldKg": 118.8,
+						"donatedKg": 0,
+						"destroyedKg": 14.52,
+						"credit": 2376,
+						"support": 5128
+					},
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 456,
+							"price": 15,
+							"gross": 6840
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 624,
+							"price": 12.5,
+							"gross": 7800
+						}
+					],
+					"papers": [
+						{
+							"id": "invoice",
+							"type": "Tax invoice",
+							"no": "INV/26-27/0930",
+							"status": "drafted",
+							"date": "2026-08-30",
+							"amount": 8190,
+							"pdf": false
+						},
+						{
+							"id": "eway",
+							"type": "E-way bill check",
+							"no": "MF-2407-116",
+							"status": "not required",
+							"date": "2026-08-30",
+							"amount": 8190,
+							"pdf": false
+						},
+						{
+							"id": "support",
+							"type": "Price-support credit note",
+							"no": "CN/0114",
+							"status": "generated",
+							"date": "2026-08-30",
+							"amount": 5128,
+							"pdf": false
+						},
+						{
+							"id": "itc",
+							"type": "GST ITC memo",
+							"no": "s.17(5)(h)",
+							"status": "generated",
+							"date": "2026-08-30",
+							"amount": 788.4,
+							"pdf": false
+						},
+						{
+							"id": "fssai",
+							"type": "FSSAI surplus-food checklist",
+							"no": "no donation",
+							"status": "not required",
+							"date": "2026-08-30",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "destruction",
+							"type": "Destruction certificate",
+							"no": "132 units",
+							"status": "generated",
+							"date": "2026-08-30",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "expiry",
+							"type": "Expiry credit note",
+							"no": "CN/0116",
+							"status": "generated",
+							"date": "2026-09-27",
+							"amount": 2376,
+							"pdf": false
+						}
+					],
+					"reviewed": {
+						"by": "anita",
+						"at": "2026-08-31T15:00"
+					}
+				},
+				{
+					"ref": "MF-2407-115",
+					"sku": "biscuits",
+					"name": "Choco Cream Biscuits 200 g",
+					"img": "pack-biscuits",
+					"distributor": "lakshmi",
+					"distributorName": "Lakshmi Agencies",
+					"city": "Hyderabad",
+					"flagged": "2026-08-25",
+					"cleared": "2026-09-28",
+					"outcome": "sold",
+					"history": true,
+					"figures": {
+						"net": 21382.5,
+						"swing": 25424.62,
+						"pnl": -683.5,
+						"writeOff": 26108.12,
+						"itcKept": 1243.72,
+						"itcReversed": 0,
+						"kg": 215.65,
+						"co2": 539.13,
+						"meals": 0,
+						"units": 1003,
+						"sold": 1003,
+						"donated": 0,
+						"godown": 0,
+						"destroyed": 0,
+						"resoldKg": 215.65,
+						"donatedKg": 0,
+						"destroyedKg": 0,
+						"credit": 0,
+						"support": 7705
+					},
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 539,
+							"price": 24,
+							"gross": 12936
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 464,
+							"price": 19,
+							"gross": 8816
+						}
+					],
+					"papers": [
+						{
+							"id": "invoice",
+							"type": "Tax invoice",
+							"no": "INV/26-27/0929",
+							"status": "drafted",
+							"date": "2026-08-28",
+							"amount": 9257,
+							"pdf": false
+						},
+						{
+							"id": "eway",
+							"type": "E-way bill check",
+							"no": "MF-2407-115",
+							"status": "not required",
+							"date": "2026-08-28",
+							"amount": 9257,
+							"pdf": false
+						},
+						{
+							"id": "support",
+							"type": "Price-support credit note",
+							"no": "CN/0113",
+							"status": "generated",
+							"date": "2026-08-28",
+							"amount": 7705,
+							"pdf": false
+						},
+						{
+							"id": "itc",
+							"type": "GST ITC memo",
+							"no": "s.17(5)(h)",
+							"status": "generated",
+							"date": "2026-08-28",
+							"amount": 1243.72,
+							"pdf": false
+						},
+						{
+							"id": "fssai",
+							"type": "FSSAI surplus-food checklist",
+							"no": "no donation",
+							"status": "not required",
+							"date": "2026-08-28",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "destruction",
+							"type": "Destruction certificate",
+							"no": "0 units left",
+							"status": "not required",
+							"date": "2026-08-28",
+							"amount": 0,
+							"pdf": false
+						}
+					],
+					"reviewed": {
+						"by": "anita",
+						"at": "2026-08-29T15:00"
+					}
+				},
+				{
+					"ref": "MF-2407-112",
+					"sku": "hairoil",
+					"name": "Coconut Hair Oil 200 ml",
+					"img": "pack-hairoil",
+					"distributor": "lakshmi",
+					"distributorName": "Lakshmi Agencies",
+					"city": "Hyderabad",
+					"flagged": "2026-08-17",
+					"cleared": "2026-09-30",
+					"outcome": "sold",
+					"history": true,
+					"figures": {
+						"net": 28862.9,
+						"swing": 31420.07,
+						"pnl": 2294.9,
+						"writeOff": 29125.17,
+						"itcKept": 1494.45,
+						"itcReversed": 0,
+						"kg": 84.87,
+						"co2": 212.18,
+						"meals": 0,
+						"units": 369,
+						"sold": 369,
+						"donated": 0,
+						"godown": 0,
+						"destroyed": 0,
+						"resoldKg": 84.87,
+						"donatedKg": 0,
+						"destroyedKg": 0,
+						"credit": 0,
+						"support": 11727
+					},
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 147,
+							"price": 90,
+							"gross": 13230
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 222,
+							"price": 71.2,
+							"gross": 15806.4
+						}
+					],
+					"papers": [
+						{
+							"id": "invoice",
+							"type": "Tax invoice",
+							"no": "INV/26-27/0927",
+							"status": "drafted",
+							"date": "2026-08-20",
+							"amount": 16596,
+							"pdf": false
+						},
+						{
+							"id": "eway",
+							"type": "E-way bill check",
+							"no": "MF-2407-112",
+							"status": "not required",
+							"date": "2026-08-20",
+							"amount": 16596,
+							"pdf": false
+						},
+						{
+							"id": "support",
+							"type": "Price-support credit note",
+							"no": "CN/0109",
+							"status": "generated",
+							"date": "2026-08-20",
+							"amount": 11727,
+							"pdf": false
+						},
+						{
+							"id": "itc",
+							"type": "GST ITC memo",
+							"no": "s.17(5)(h)",
+							"status": "generated",
+							"date": "2026-08-20",
+							"amount": 1494.45,
+							"pdf": false
+						},
+						{
+							"id": "fssai",
+							"type": "FSSAI surplus-food checklist",
+							"no": "no donation",
+							"status": "not required",
+							"date": "2026-08-20",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "destruction",
+							"type": "Destruction certificate",
+							"no": "0 units left",
+							"status": "not required",
+							"date": "2026-08-20",
+							"amount": 0,
+							"pdf": false
+						}
+					],
+					"reviewed": {
+						"by": "anita",
+						"at": "2026-08-21T15:00"
+					}
+				}
+			],
+			"periods": [
+				{
+					"id": "fy27-q2",
+					"kind": "quarter",
+					"label": "Q2 FY27",
+					"long": "Jul to Sep 2026",
+					"from": "2026-07-01",
+					"to": "2026-09-30",
+					"current": false,
+					"totals": {
+						"net": 220383.58,
+						"swing": 264929.84,
+						"pnl": -39573.71,
+						"writeOff": 304503.55,
+						"itcKept": 15854.78,
+						"itcReversed": 1981.93,
+						"kg": 1959.51,
+						"co2": 4898.77,
+						"meals": 872,
+						"units": 10569,
+						"sold": 9316,
+						"donated": 872,
+						"godown": 381,
+						"destroyed": 381,
+						"resoldKg": 1747.37,
+						"donatedKg": 212.14,
+						"destroyedKg": 68.38,
+						"credit": 8131.5,
+						"support": 122186,
+						"batches": 12,
+						"outcomes": {
+							"sold": 7,
+							"leftover": 3,
+							"donation": 2
+						},
+						"invoices": 10,
+						"creditNotes": 15,
+						"receipts": 2,
+						"reviewed": 12
+					},
+					"months": [
+						{
+							"month": "2026-08",
+							"label": "August 2026",
+							"totals": {
+								"net": 71874.56,
+								"swing": 86847.58,
+								"pnl": -18946.69,
+								"writeOff": 105794.27,
+								"itcKept": 4253.36,
+								"itcReversed": 838.39,
+								"kg": 735.37,
+								"co2": 1838.43,
+								"meals": 406,
+								"units": 3799,
+								"sold": 3328,
+								"donated": 406,
+								"godown": 65,
+								"destroyed": 65,
+								"resoldKg": 625.75,
+								"donatedKg": 109.62,
+								"destroyedKg": 14.3,
+								"credit": 3087.5,
+								"support": 43649,
+								"batches": 4,
+								"outcomes": {
+									"sold": 2,
+									"leftover": 1,
+									"donation": 1
+								},
+								"invoices": 3,
+								"creditNotes": 5,
+								"receipts": 1,
+								"reviewed": 4
+							}
+						},
+						{
+							"month": "2026-09",
+							"label": "September 2026",
+							"totals": {
+								"net": 148509.02,
+								"swing": 178082.26,
+								"pnl": -20627.02,
+								"writeOff": 198709.28,
+								"itcKept": 11601.42,
+								"itcReversed": 1143.54,
+								"kg": 1224.14,
+								"co2": 3060.35,
+								"meals": 466,
+								"units": 6770,
+								"sold": 5988,
+								"donated": 466,
+								"godown": 316,
+								"destroyed": 316,
+								"resoldKg": 1121.62,
+								"donatedKg": 102.52,
+								"destroyedKg": 54.08,
+								"credit": 5044,
+								"support": 78537,
+								"batches": 8,
+								"outcomes": {
+									"sold": 5,
+									"leftover": 2,
+									"donation": 1
+								},
+								"invoices": 7,
+								"creditNotes": 10,
+								"receipts": 1,
+								"reviewed": 8
+							}
+						}
+					],
+					"weeks": [
+						[
+							"W1",
+							0,
+							0
+						],
+						[
+							"W2",
+							0,
+							0
+						],
+						[
+							"W3",
+							0,
+							0
+						],
+						[
+							"W4",
+							0,
+							0
+						],
+						[
+							"W5",
+							0,
+							0
+						],
+						[
+							"W6",
+							0,
+							0
+						],
+						[
+							"W7",
+							37902,
+							45859.24
+						],
+						[
+							"W8",
+							33972.56,
+							59935.03
+						],
+						[
+							"W9",
+							0,
+							0
+						],
+						[
+							"W10",
+							19320.8,
+							24097.92
+						],
+						[
+							"W11",
+							22760.02,
+							50812.74
+						],
+						[
+							"W12",
+							24660.5,
+							28572.09
+						],
+						[
+							"W13",
+							81767.7,
+							95226.53
+						]
+					],
+					"mix": [
+						[
+							"kirana",
+							46
+						],
+						[
+							"expiresoon",
+							40
+						],
+						[
+							"staff",
+							2
+						],
+						[
+							"foodbank",
+							8
+						],
+						[
+							"writeoff",
+							4
+						]
+					],
+					"mixNames": {
+						"kirana": "Kirana scheme",
+						"expiresoon": "ExpireSoon",
+						"staff": "Staff sale",
+						"foodbank": "Food bank",
+						"writeoff": "Destroyed"
+					},
+					"brsr": [
+						{
+							"cat": "Food waste: packaged food past quick-commerce gates",
+							"diverted": 1959.51,
+							"resold": 1747.37,
+							"donated": 212.14,
+							"disposed": 68.38,
+							"evidence": "10 tax invoices, 10 ExpireSoon listings, kirana order logs for 4,862 packs, 2 food-bank receipts, 3 destruction certificates"
+						}
+					]
+				},
+				{
+					"id": "fy27-q3",
+					"kind": "quarter",
+					"label": "Q3 FY27",
+					"long": "Oct to Dec 2026 · so far",
+					"from": "2026-10-01",
+					"to": "2026-12-31",
+					"current": true,
+					"totals": {
+						"net": 0,
+						"swing": 0,
+						"pnl": 0,
+						"writeOff": 0,
+						"itcKept": 0,
+						"itcReversed": 0,
+						"kg": 0,
+						"co2": 0,
+						"meals": 0,
+						"units": 0,
+						"sold": 0,
+						"donated": 0,
+						"godown": 0,
+						"destroyed": 0,
+						"resoldKg": 0,
+						"donatedKg": 0,
+						"destroyedKg": 0,
+						"credit": 0,
+						"support": 0,
+						"batches": 0,
+						"outcomes": {
+							"sold": 0,
+							"leftover": 0,
+							"donation": 0
+						},
+						"invoices": 0,
+						"creditNotes": 0,
+						"receipts": 0,
+						"reviewed": 0
+					},
+					"months": [],
+					"weeks": [
+						[
+							"W1",
+							0,
+							0
+						],
+						[
+							"W2",
+							0,
+							0
+						],
+						[
+							"W3",
+							0,
+							0
+						],
+						[
+							"W4",
+							0,
+							0
+						],
+						[
+							"W5",
+							0,
+							0
+						],
+						[
+							"W6",
+							0,
+							0
+						],
+						[
+							"W7",
+							0,
+							0
+						],
+						[
+							"W8",
+							0,
+							0
+						],
+						[
+							"W9",
+							0,
+							0
+						],
+						[
+							"W10",
+							0,
+							0
+						],
+						[
+							"W11",
+							0,
+							0
+						],
+						[
+							"W12",
+							0,
+							0
+						],
+						[
+							"W13",
+							0,
+							0
+						]
+					],
+					"mix": [],
+					"mixNames": {
+						"kirana": "Kirana scheme",
+						"expiresoon": "ExpireSoon",
+						"staff": "Staff sale",
+						"foodbank": "Food bank",
+						"writeoff": "Destroyed"
+					},
+					"brsr": []
+				},
+				{
+					"id": "fy27",
+					"kind": "year",
+					"label": "This year",
+					"long": "FY 2026-27 so far",
+					"from": "2026-04-01",
+					"to": "2027-03-31",
+					"current": true,
+					"totals": {
+						"net": 220383.58,
+						"swing": 264929.84,
+						"pnl": -39573.71,
+						"writeOff": 304503.55,
+						"itcKept": 15854.78,
+						"itcReversed": 1981.93,
+						"kg": 1959.51,
+						"co2": 4898.77,
+						"meals": 872,
+						"units": 10569,
+						"sold": 9316,
+						"donated": 872,
+						"godown": 381,
+						"destroyed": 381,
+						"resoldKg": 1747.37,
+						"donatedKg": 212.14,
+						"destroyedKg": 68.38,
+						"credit": 8131.5,
+						"support": 122186,
+						"batches": 12,
+						"outcomes": {
+							"sold": 7,
+							"leftover": 3,
+							"donation": 2
+						},
+						"invoices": 10,
+						"creditNotes": 15,
+						"receipts": 2,
+						"reviewed": 12
+					},
+					"months": [
+						{
+							"month": "2026-08",
+							"label": "August 2026",
+							"totals": {
+								"net": 71874.56,
+								"swing": 86847.58,
+								"pnl": -18946.69,
+								"writeOff": 105794.27,
+								"itcKept": 4253.36,
+								"itcReversed": 838.39,
+								"kg": 735.37,
+								"co2": 1838.43,
+								"meals": 406,
+								"units": 3799,
+								"sold": 3328,
+								"donated": 406,
+								"godown": 65,
+								"destroyed": 65,
+								"resoldKg": 625.75,
+								"donatedKg": 109.62,
+								"destroyedKg": 14.3,
+								"credit": 3087.5,
+								"support": 43649,
+								"batches": 4,
+								"outcomes": {
+									"sold": 2,
+									"leftover": 1,
+									"donation": 1
+								},
+								"invoices": 3,
+								"creditNotes": 5,
+								"receipts": 1,
+								"reviewed": 4
+							}
+						},
+						{
+							"month": "2026-09",
+							"label": "September 2026",
+							"totals": {
+								"net": 148509.02,
+								"swing": 178082.26,
+								"pnl": -20627.02,
+								"writeOff": 198709.28,
+								"itcKept": 11601.42,
+								"itcReversed": 1143.54,
+								"kg": 1224.14,
+								"co2": 3060.35,
+								"meals": 466,
+								"units": 6770,
+								"sold": 5988,
+								"donated": 466,
+								"godown": 316,
+								"destroyed": 316,
+								"resoldKg": 1121.62,
+								"donatedKg": 102.52,
+								"destroyedKg": 54.08,
+								"credit": 5044,
+								"support": 78537,
+								"batches": 8,
+								"outcomes": {
+									"sold": 5,
+									"leftover": 2,
+									"donation": 1
+								},
+								"invoices": 7,
+								"creditNotes": 10,
+								"receipts": 1,
+								"reviewed": 8
+							}
+						}
+					],
+					"weeks": [],
+					"mix": [
+						[
+							"kirana",
+							46
+						],
+						[
+							"expiresoon",
+							40
+						],
+						[
+							"staff",
+							2
+						],
+						[
+							"foodbank",
+							8
+						],
+						[
+							"writeoff",
+							4
+						]
+					],
+					"mixNames": {
+						"kirana": "Kirana scheme",
+						"expiresoon": "ExpireSoon",
+						"staff": "Staff sale",
+						"foodbank": "Food bank",
+						"writeoff": "Destroyed"
+					},
+					"brsr": [
+						{
+							"cat": "Food waste: packaged food past quick-commerce gates",
+							"diverted": 1959.51,
+							"resold": 1747.37,
+							"donated": 212.14,
+							"disposed": 68.38,
+							"evidence": "10 tax invoices, 10 ExpireSoon listings, kirana order logs for 4,862 packs, 2 food-bank receipts, 3 destruction certificates"
+						}
+					]
+				}
+			]
+		}
 	}
 }

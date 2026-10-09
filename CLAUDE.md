@@ -1254,13 +1254,51 @@
     - the full-credit expiry note stays without GST;
     - the Mango Drink's input GST stays ₹0.55, labelled estimated;
     - Priya gets the same design.
-  - **The stories:** SC-121 (the design, then its build), SC-122 (the figures), SC-123 (the history), SC-124 (the live figures).
-- **SC-121** (In Progress, branch `SC-121-finance-esg-redesign`; design): three options on one board in app v3, `SC-121 design review.html`:
-  - A, one ledger;
-  - B, close the quarter;
-  - C, the year as a timeline.
+  - **The stories:** SC-121 (the design, then its build), SC-122 (the figures), SC-123 (the history), SC-124 (the live figures), stacked in the order SC-122, SC-123, SC-124, SC-121.
+- **SC-121** (In Review, branch `SC-121-finance-esg-redesign`, stacked on SC-124): Finance & ESG, one ledger (option A), designed then built.
+  - **Design first:** three options on one board in app v3, `SC-121 design review.html`:
+    - A, one ledger;
+    - B, close the quarter;
+    - C, the year as a timeline.
 
-  The maintainer picked **A**, with Paperwork as it is (the batch's Papers tab), invoices and receipts as downloadable PDFs, the BRSR export and the reports, and every figure at batch, quarter and year level. Designs, the history's figures (`sc121-data.js`) and the decision are in `design3/designs/SC-121/`.
+    The maintainer picked **A**, with Paperwork as it is (the batch's Papers tab), invoices and receipts as downloadable PDFs, the BRSR export and the reports, and every figure at batch, quarter and year level. Designs, the history's figures and the decision are in `design3/designs/SC-121/`.
+  - **The ledger** (design3 `screens/finance.jsx`, then core `screens/finance/`), Finance's and ESG's home and the operator's Reports:
+    - the period: each quarter from the first batch cleared to today's, and the year so far;
+    - three readings of one ledger, Money, GST and Impact. Anita opens on GST, Vikram on Impact, Priya on Money;
+    - the period's figure with its working (recovered against the would-be write-off; credit kept and reversed under s.17(5)(h), the invoices and credit notes; kilos resold, donated and destroyed, CO₂e, meals);
+    - the period drawn as its batches, one segment a batch as wide as its figure, the bin hatched;
+    - the batches still out;
+    - the batches by month, each opening its page.
+  - **Exports**, for the period chosen: the BRSR table, the GST summary and the ledger as CSV, and the report printed to a PDF.
+  - **A batch's page:** SC-112's head, with three tabs:
+    - Money: what each channel took and came to, the van and fee, the credit given away, what destroying it would have cost, and Munchly's credit notes and the distributor's invoice;
+    - Papers: Paperwork as it is (`PaperPack`), each paper with **Download PDF**. On the live workspace this is the Paperwork agent's own PDF, from a five-minute link; on the stub it is the paper printed;
+    - Impact: the BRSR line with its evidence, and where the kilos went.
+
+    Anita opens a page on its papers, Vikram on its impact.
+  - **Navigation:** Finance and ESG have Ledger and Batches; Batches opens a batch's page; `paperwork` stays for the pushes and the guided demo, opening the batch's papers.
+  - **design3's ledger** (`core/ledger.js`, bundled into `dist/sc3-core.js` with `core/world.js`):
+    - each history batch's case, its papers numbered and dated as backend-api's history issues them, and the kiranas' orders placed as it places them;
+    - the rows and periods. seed.mjs writes them for core's stub (`seed/history.json`) and for backend-api (`journey.json` `history.ledger`).
+
+    backend-api's `ledger.py` is held to them period by period and batch by batch, and core's stub ledger at stages 0, 6 and 9.
+  - **The live workspace:**
+    - the ledger is backend-api's (SC-124);
+    - a batch's page is read on its own (`openPage`, `ledgerPage`) and again when its batch changes;
+    - every paper keeps its PDF flag (only the receipt's was projected);
+    - `documentUrl` takes the batch.
+  - **Found on the way:**
+    - the snapshot listed the history's 12 cleared cases among the batches in a journey, so the live workspace would have put a history batch in focus and its tabs on the tracker; the history is now on Batches and in the ledger only;
+    - the expiry credit note had no PDF: Paperwork now lays it out (`expiry_note.html`), asked for as the packs settle;
+    - "Munchly Foods's own costs" on the expiry paper.
+  - **Gone:** the constant quarter (`WsQuarter`, core's `Quarter`, `/quarter`, data.js `QUARTER` in the workspace seed), the old Report and `Lakh`. BRSR's plastic packaging row is not modelled (no packaging weight per SKU).
+  - **Checks:**
+    - backend-api 515 passed, 1 skipped; agents 195 passed;
+    - the frontend gate passes (core 254, api 77, workspace 70, admin 17, demo 5, console 3). The goldens follow the Ledger and the batch page;
+    - new live tests: each role's reading, a paper's PDF from its link, the live ledger and a batch's page;
+    - design3 and the port were checked in the browser: Anita, Vikram and Priya at 1440, a phone in light, the exports and PDFs captured, and the guided demo's stages 8 and 9 on the port;
+    - the a11y, e2e and journey specs follow the new screens; the browser suites were not run (SC-55).
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 - **SC-122** (In Review, branch `SC-122-realised-figures`): the figures follow what happened.
   - **Found by the audit of 9 Oct:**
     - after the leftover run the screens read the plan: ₹1,224 kept and 217.6 kg, where the ledger has ₹1,094.40 and 194.56 kg;
