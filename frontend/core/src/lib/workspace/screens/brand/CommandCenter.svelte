@@ -14,14 +14,13 @@
 	import Skeleton from '../../../components/Skeleton.svelte';
 	import { useRoute } from '../../context';
 	import { useLive } from '../../live.svelte';
-	import { batchViews, castOf, clusterOf, fmt, heroModel, isRouted } from '../../model';
+	import { batchViews, castOf, clusterOf, fmt, heroModel, isRouted, journeysOf, partAt } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { BatchView, User } from '../../types';
 	import PlayAs from '../common/PlayAs.svelte';
 	import Screen from '../common/Screen.svelte';
 	import BatchTabs, { tabsOf } from '../live/BatchTabs.svelte';
 	import CommandQuiet from '../live/CommandQuiet.svelte';
-	import BatchSheet from './BatchSheet.svelte';
 
 	// S1 Command Center: the first viewport is the batch, tracked like an order: tracker first, the agents beside it, the
 	// cluster under it (screens/brand.jsx CommandCenter). On the live workspace (SC-73, SC-68 option B) the batches in a
@@ -36,8 +35,10 @@
 	const hm = $derived(heroModel(s, ws.data, c));
 	const phone = $derived(app.bp === 'phone');
 	let sel = $state<string | null>(null);
-	// a watchlist row with no journey to open shows its batch in a sheet (SC-90)
-	let sheet = $state<string | null>(null);
+	// every watchlist row opens its batch's page (SC-112), on the screen for where the batch stands; a batch in no
+	// journey opens its Journey
+	const journeys = $derived(journeysOf(ws.state, ws.data, ws.cases, ws.case));
+	const openBatch = (ref: string) => router.go(partAt(journeys.find((i) => i.ref === ref)), { ref });
 
 	const views = $derived(batchViews(s, ws.data));
 	const atRisk = (v: BatchView) => (v.phase === 'at-risk' || (!v.phase && v.assess.status === 'at-risk') ? -1 : 0);
@@ -215,9 +216,7 @@
 					compact={phone}
 					onopen={() => {
 						sel = v.id;
-						if (v.hero) openRoute();
-						else if ((on && v.second) || tabs.some((t) => t.ref === v.id)) router.go('route', { ref: v.id });
-						else sheet = v.id;
+						openBatch(v.id);
 					}}
 				/>{/each}
 		</div>
@@ -236,5 +235,4 @@
 		{#if app.bp === 'desktop'}<Columns sideWidth={340} {main} side={feed} />{:else}<div class="stack" style="gap: 20px">
 				{@render tracker()}{@render feed()}{@render list()}{@render cluster()}
 			</div>{/if}
-		<BatchSheet view={watchlist.find((v) => v.id === sheet)} onclose={() => (sheet = null)} />
 	</Screen>{/if}

@@ -6,11 +6,10 @@
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
 	import { useRoute } from '../../context';
-	import { batchViews } from '../../model';
+	import { batchViews, journeysOf, partAt } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { BatchView, User } from '../../types';
 	import Screen from '../common/Screen.svelte';
-	import BatchSheet from '../brand/BatchSheet.svelte';
 	import QuietCard from './QuietCard.svelte';
 
 	// S1 Command Center on a day with no batch at risk (screens/live.jsx Quiet, SC-68 option B; the live workspace with
@@ -25,8 +24,8 @@
 	const watch = $derived(s.rules.watchTime);
 	const rows = $derived(ws.data.setup.dms.rows);
 	const views = $derived(batchViews(s, ws.data).sort((a: BatchView, b: BatchView) => a.daysLeft - b.daysLeft));
-	// a row with no journey to open shows its batch in a sheet (SC-90)
-	let sheet = $state<string | null>(null);
+	// every row opens its batch's page (SC-112), on the screen for where the batch stands; one in no journey its Journey
+	const journeys = $derived(journeysOf(s, ws.data, ws.cases, ws.case));
 </script>
 
 {#snippet card()}<QuietCard
@@ -41,10 +40,7 @@
 			{#each views as v (v.id)}<BatchRow
 					view={v}
 					compact={app.bp === 'phone'}
-					onopen={() => {
-						if (v.phase) router.go('route', { ref: v.id });
-						else sheet = v.id;
-					}}
+					onopen={() => router.go(partAt(journeys.find((i) => i.ref === v.id)), { ref: v.id })}
 				/>{/each}
 		</div>
 	</div>{/snippet}
@@ -59,5 +55,4 @@
 	{#if app.bp === 'desktop'}<Columns sideWidth={340} {main} side={feed} />{:else}<div class="stack" style="gap: 20px">
 			{@render card()}{@render feed()}{@render list()}
 		</div>{/if}
-	<BatchSheet view={views.find((v) => v.id === sheet)} onclose={() => (sheet = null)} />
 </Screen>

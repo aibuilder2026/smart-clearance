@@ -1174,6 +1174,19 @@
   - **Checks:** the gate passes (lint, check, tests: core 248, api 77, admin 17, console 3, workspace 64, demo 5). design3 and the build were played through with Playwright at 1440 × 900 and 390 × 844, light and dark: no console errors, the film plays and loops, the strip reads the chapter, the dark theme opens on the night. The browser suites were not run (SC-55).
   - **Hosting:** the hosted landing page and console load commit `9e0a247`.
 
+- **SC-112** (In Review, branch `SC-112-batch-first-nav`): the workspace app, batch first. The operator reads the workspace top down: its own places, then a batch, then the batch's screens.
+  - **The request:** "The design of the individual pages are perfect, no change is needed. The navigability seems a bit odd, everything starts from monitoring of a batch which can be in different states. I need a top down approach starting with batch as the 1st point."
+  - **Design first:** three options on one board in app v3, `SC-112 design review.html`, each the app itself with only the navigation changed:
+    - A, the batch page (recommended);
+    - B, the batch rail;
+    - C, the stops lead.
+
+    The maintainer picked **A**, for the operator only for now, with a batch in no journey opening its own page. Designs, stills, clips and the decision are in `design3/designs/SC-112/`.
+  - **The sidebar:** Command Center, Batches, Setup, then "In a journey · n", each batch by its pack, name and stop (amber while it waits for a yes), then Reports. Route Room and Execution leave it; the phone's tab bar is Today, Batches, Reports. The kit's `Shell` draws a nav item with a `product` as a batch.
+  - **The batch's page:** one head for every screen of a batch (the pack, name, id, distributor, state, the live line) with its screens as tabs: Journey, Route Room, Execution, Paperwork. The dot marks where it stands; each screen keeps its own body and its own line under the tabs. Journey is new: the batch's tracker card, cluster and agents; a batch in no journey shows what the Watcher sees of it. A batch opens on the screen for its stop, from the Command Center (busy and quiet), Batches and the sidebar. Back goes to where it was opened from. Addresses stay `/<screen>/<batch>`.
+  - **The port:** `Shell.svelte`, `RoleApp.svelte`, `Screen.svelte`, `context.ts` (`provideBatchFrame`), `model.ts` (`BATCH_PARTS`, `journeysOf`, `partAt`), new `BatchHead`, `BatchJourney` and `BatchFacts`; `CommandCenter`, `CommandQuiet`, `Batches` and `RouteRoom` follow; `components.css` and `screens.css` verbatim. Finance and Sustainability are unchanged.
+  - **Checks:** the frontend gate passes (core 249, api 77, workspace 66, admin 17, demo 5, console 3); the operator's goldens were updated (the sidebar, the head, the tabs); the workspace live tests follow the batch page (watched batches open their Journey). design3 and the port were checked side by side on the stub at 1440, 820 and 390, light and dark, with no console errors. The e2e and a11y specs follow (a scan of a batch's Journey and a watched batch is added); the browser suites were not run (SC-55).
+  - **Hosting:** design3's `dist/` is rebuilt; the hosted app page stays on its pinned commit.
 - **SC-114** (In Review, branch `SC-114-receipt-on-reset`; bug found by Munchly Mango E2E): a workspace built before SC-110 never issued a donation receipt.
   - **Found:** Meera collected the Mango Drink's 58 packs, and no receipt was issued. The local database's food banks had no receipt form or meals rule, and the workspace numbered no `receipt.*` series. Only `hydrate.sh --live-only` set them, and it restarts the journey; production, last hydrated in SC-75, is the same.
   - **The fix** (`services/journey/reset.py` `_story`): a synthetic workspace's Reset journey also gives it what the story has and it lacks, keeping what it set itself:

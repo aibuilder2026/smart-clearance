@@ -1,0 +1,259 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-a/mockup.html?shot=1",
+  "out": "option-a/command-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2500
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-a/mockup.html?shot=1",
+  "out": "option-a/route-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2500,
+  "js": "location.hash='#/route/MF-2409-117'"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-a/mockup.html?shot=1",
+  "out": "option-a/route-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2500,
+  "js": "location.hash='#/route/MF-2409-117'"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-a/mockup.html?stage=6",
+  "out": "option-a/execution-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 9000,
+  "js": "location.hash='#/execution/MF-2409-117'",
+  "css": ".sc112-moments{display:none!important}"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-a/mockup.html?shot=1",
+  "out": "option-a/route-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2500,
+  "js": "location.hash='#/route/MF-2409-117'"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-a/mockup.html?shot=1",
+  "out": "option-a/route-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 2500,
+  "js": "location.hash='#/route/MF-2409-117'"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-a/mockup.html?stage=6",
+  "out": "option-a/execution-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 9000,
+  "js": "location.hash='#/execution/MF-2409-117'",
+  "css": ".sc112-moments{display:none!important}"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-b/mockup.html?shot=1",
+  "out": "option-b/command-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2500
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-b/mockup.html?shot=1",
+  "out": "option-b/route-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2500,
+  "js": "location.hash='#/route/MF-2409-117'"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-b/mockup.html?shot=1",
+  "out": "option-b/route-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2500,
+  "js": "location.hash='#/route/MF-2409-117'"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-b/mockup.html?stage=6",
+  "out": "option-b/execution-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 9000,
+  "js": "location.hash='#/execution/MF-2409-117'",
+  "css": ".sc112-moments{display:none!important}"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-b/mockup.html?shot=1",
+  "out": "option-b/route-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2500,
+  "js": "location.hash='#/route/MF-2409-117'"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-b/mockup.html?shot=1",
+  "out": "option-b/route-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 2500,
+  "js": "location.hash='#/route/MF-2409-117'"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-b/mockup.html?stage=6",
+  "out": "option-b/execution-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 9000,
+  "js": "location.hash='#/execution/MF-2409-117'",
+  "css": ".sc112-moments{display:none!important}"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-c/mockup.html?shot=1",
+  "out": "option-c/command-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2500
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-c/mockup.html?shot=1",
+  "out": "option-c/route-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2500,
+  "js": "location.hash='#/route/MF-2409-117'"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-c/mockup.html?shot=1",
+  "out": "option-c/route-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2500,
+  "js": "location.hash='#/route/MF-2409-117'"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-c/mockup.html?stage=6",
+  "out": "option-c/execution-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 9000,
+  "js": "location.hash='#/execution/MF-2409-117'",
+  "css": ".sc112-moments{display:none!important}"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-c/mockup.html?shot=1",
+  "out": "option-c/route-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2500,
+  "js": "location.hash='#/route/MF-2409-117'"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-c/mockup.html?shot=1",
+  "out": "option-c/route-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 2500,
+  "js": "location.hash='#/route/MF-2409-117'"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-c/mockup.html?stage=6",
+  "out": "option-c/execution-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 9000,
+  "js": "location.hash='#/execution/MF-2409-117'",
+  "css": ".sc112-moments{display:none!important}"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-a/mockup.html?shot=1",
+  "out": "option-a/journey-mango-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2500,
+  "js": "location.hash='#/journey/MF-2410-118'"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-a/mockup.html?shot=1",
+  "out": "option-a/journey-mango-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 2500,
+  "js": "location.hash='#/journey/MF-2410-118'"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-b/mockup.html?shot=1",
+  "out": "option-b/batches-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2500,
+  "js": "location.hash='#/batches'"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-b/mockup.html?shot=1",
+  "out": "option-b/mango-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2500,
+  "js": "location.hash='#/route/MF-2410-118'"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-b/mockup.html?shot=1",
+  "out": "option-b/batches-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2500,
+  "js": "location.hash='#/batches'"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-b/mockup.html?shot=1",
+  "out": "option-b/batch-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2500,
+  "js": "location.hash='#/batch/MF-2409-117'"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-b/mockup.html?shot=1",
+  "out": "option-b/batch-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 2500,
+  "js": "location.hash='#/batch/MF-2409-117'"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-c/mockup.html?shot=1",
+  "out": "option-c/value-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2500,
+  "js": "location.hash='#/route/MF-2409-117'",
+  "click": [
+   ".c-stops button[aria-label^=Value]"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-c/mockup.html?shot=1",
+  "out": "option-c/mango-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2500,
+  "js": "location.hash='#/route/MF-2410-118'"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-112/option-c/mockup.html?shot=1",
+  "out": "option-c/switch-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2500,
+  "js": "location.hash='#/route/MF-2409-117'",
+  "click": [
+   ".c-switch"
+  ]
+ }
+]

@@ -289,14 +289,15 @@ describe('the flagged batches', () => {
 		await waitFor(() => expect(s.case?.batch.id).toBe(mango));
 	});
 
-	it("are tabs under the Route Room's title, each its own Route Room", async () => {
+	it("each has its own page: the batch's head, with its screens as tabs in place of the Route Room's batch tabs (SC-112)", async () => {
 		const { m, mango } = twoFlagged();
 		const s = source(fakeApi(m, 'priya'));
 		const r = await draw(s, 'route', mango);
 		await waitFor(() => expect(s.case?.batch.id).toBe(mango));
-		await waitFor(() =>
-			expect(r.container.querySelector(`#lv-tab-${mango}`)?.getAttribute('aria-current')).toBe('page')
-		);
+		await waitFor(() => expect(norm(r.container.querySelector('.bhead h1')?.textContent)).toBe('Mango Drink 200 ml'));
+		expect(norm(r.container.querySelector('.bhead')?.textContent)).toContain(mango);
+		expect(r.container.querySelector('.bh-tab[aria-current="page"]')?.textContent).toContain('Route');
+		expect(r.container.querySelector(`#lv-tab-${mango}`)).toBeNull();
 	});
 });
 
@@ -395,7 +396,7 @@ describe('the label photo, taken or uploaded (SC-80)', () => {
 });
 
 describe('the Command Center (SC-82)', () => {
-	it('opens a batch in a journey from the watchlist, each in its Route Room', async () => {
+	it("opens every batch's page from the watchlist: one in a journey where it stands, one in no journey its Journey (SC-112)", async () => {
 		const m = moment('executing');
 		const s = source(fakeApi(m, 'priya'));
 		const go = vi.fn();
@@ -406,12 +407,11 @@ describe('the Command Center (SC-82)', () => {
 		await waitFor(() => expect(r.container.querySelector('button.batchrow')).toBeTruthy());
 		const rows = [...r.container.querySelectorAll('button.batchrow')];
 		await fireEvent.click(rows.find((b) => b.textContent?.includes(CHIPS))!);
-		expect(go).toHaveBeenCalledWith('route', { replace: undefined, ref: CHIPS });
-		// a batch in no journey stays where it is
+		expect(go).toHaveBeenCalledWith('execution', { replace: undefined, ref: CHIPS });
+		// a batch in no journey opens its own page, on its Journey
 		go.mockClear();
-		const other = rows.find((b) => ![CHIPS, MANGO].some((ref) => b.textContent?.includes(ref)))!;
-		await fireEvent.click(other);
-		expect(go).not.toHaveBeenCalled();
+		await fireEvent.click(rows.find((b) => b.textContent?.includes('MF-2408-311'))!);
+		expect(go).toHaveBeenCalledWith('journey', { replace: undefined, ref: 'MF-2408-311' });
 	});
 });
 
@@ -590,15 +590,25 @@ describe("expiry day's settlement (SC-94)", () => {
 });
 
 describe('every watchlist row opens something (SC-90)', () => {
-	it('an at-risk batch the Watcher has not flagged opens its sheet, saying when it will be', async () => {
+	it('an at-risk batch the Watcher has not flagged opens its own page, its Journey saying when it will be (SC-112)', async () => {
+		const go = vi.fn();
 		const s = source(fakeApi(moment('start'), 'priya'));
-		const r = await draw(s, 'command');
+		const r = render(LiveHost, {
+			props: { source: s, screen: 'command', at: null, onnavigate: go }
+		}) as unknown as RenderResult<never>;
+		await waitFor(() => expect(s.status.phase).toBe('ready'));
 		await waitFor(() => expect(r.container.querySelector('button.batchrow')).toBeTruthy());
 		const row = [...r.container.querySelectorAll('button.batchrow')].find((b) => b.textContent?.includes(CHIPS))!;
 		await fireEvent.click(row);
-		const sheet = await waitFor(() => r.getByRole('dialog'));
-		const t = norm(sheet.textContent);
-		expect(t).toContain('Masala Chips 150 g');
+		expect(go).toHaveBeenCalledWith('journey', { replace: undefined, ref: CHIPS });
+		r.unmount();
+		const page = await draw(source(fakeApi(moment('start'), 'priya')), 'journey', CHIPS);
+		await waitFor(() =>
+			expect(norm(page.container.querySelector('.bhead h1')?.textContent)).toBe('Masala Chips 150 g')
+		);
+		// a batch in no journey has its Journey alone: no tabs
+		expect(page.container.querySelector('.bh-tabs')).toBeNull();
+		const t = text(page);
 		expect(t).toContain(CHIPS);
 		expect(t).toMatch(/At risk: [\d,]+ packs will not sell before the last week\./);
 		expect(t).toContain(
@@ -606,7 +616,7 @@ describe('every watchlist row opens something (SC-90)', () => {
 		);
 	});
 
-	it('on the busy Command Center, a batch in no journey opens its sheet, and one in a journey its Route Room', async () => {
+	it('on the busy Command Center, a batch in no journey opens its Journey, and one in a journey its page where it stands (SC-112)', async () => {
 		const go = vi.fn();
 		const s = source(fakeApi(moment('executing'), 'priya'));
 		const r = render(LiveHost, {
@@ -616,12 +626,14 @@ describe('every watchlist row opens something (SC-90)', () => {
 		await waitFor(() => expect(r.container.querySelector('button.batchrow')).toBeTruthy());
 		const rows = () => [...r.container.querySelectorAll('button.batchrow')];
 		await fireEvent.click(rows().find((b) => b.textContent?.includes('MF-2408-311'))!);
-		const sheet = await waitFor(() => r.getByRole('dialog'));
-		expect(norm(sheet.textContent)).toContain('Peanut Chikki 100 g');
-		expect(norm(sheet.textContent)).toContain('Outside at least one quick-commerce gate');
-		expect(go).not.toHaveBeenCalled();
+		expect(go).toHaveBeenCalledWith('journey', { replace: undefined, ref: 'MF-2408-311' });
+		expect(r.queryByRole('dialog')).toBeNull();
 		await fireEvent.click(rows().find((b) => b.textContent?.includes(MANGO))!);
-		expect(go).toHaveBeenCalledWith('route', { replace: undefined, ref: MANGO });
+		expect(go).toHaveBeenCalledWith('execution', { replace: undefined, ref: MANGO });
+		// the Peanut Chikki's Journey: what the Watcher sees of it
+		const page = await draw(source(fakeApi(moment('executing'), 'priya')), 'journey', 'MF-2408-311');
+		await waitFor(() => expect(text(page)).toContain('Outside at least one quick-commerce gate'));
+		expect(norm(page.container.querySelector('.bhead h1')?.textContent)).toBe('Peanut Chikki 100 g');
 	});
 });
 

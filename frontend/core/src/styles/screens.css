@@ -376,3 +376,41 @@
   .lv-conn-spin .ic { animation: none; }
   .lv-fill-on { transition: none; }
 }
+
+/* ---------- a batch's page (SC-112): its head, shared by each of its screens, and its screens as tabs ---------- */
+.bhead { padding: 4px 16px 18px; max-width: 1320px; }
+.bh-id { display: flex; align-items: center; gap: 18px; }
+.bh-pic { display: grid; place-items: center; flex: 0 0 auto; width: 88px; height: 88px; border-radius: 24px; background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+[data-theme="dark"] .bh-pic { background: var(--fill-2); box-shadow: none; }
+.bh-tt { min-width: 0; }
+.bhead h1 { font-family: var(--font-display); font-weight: 750; font-size: 34px; line-height: 1.06; letter-spacing: -0.028em; font-variation-settings: "opsz" 72; }
+.bh-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-top: 7px; font-size: 14px; color: var(--fg-3); }
+.bh-meta .mono { font-size: 13px; color: var(--fg-2); }
+.bh-meta .lv-line { margin: 0; }
+.bh-tabs { display: flex; gap: 2px; width: max-content; max-width: 100%; margin-top: 20px; padding: 4px; border-radius: 15px; background: var(--fill-2); overflow-x: auto; scrollbar-width: none; }
+.bh-tabs::-webkit-scrollbar { display: none; }
+.bh-tab { position: relative; isolation: isolate; flex: 0 0 auto; display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border-radius: 11px; font-size: 14.5px; font-weight: 550; color: var(--fg-2); white-space: nowrap; transition: color var(--t-fast); }
+.bh-tab:hover { color: var(--fg); }
+.bh-tab.ahead .ic { opacity: 0.5; }
+.bh-tab[aria-current="page"] { color: var(--fg); font-weight: 650; }
+.bh-tab[aria-current="page"] .ic { color: var(--primary-text); }
+.bh-tab:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+.bh-tab-thumb { position: absolute; inset: 0; z-index: -1; border-radius: 11px; background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+[data-theme="dark"] .bh-tab-thumb { background: rgb(255 255 255 / 0.12); box-shadow: none; }
+.bh-here { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 22%, transparent); }
+.bh-here.human { background: var(--amber); box-shadow: 0 0 0 3px color-mix(in srgb, var(--amber) 28%, transparent); }
+@container app (min-width: 768px) { .bhead { padding: 6px 16px 20px; } .bh-id { padding-left: 12px; } .bhead h1 { font-size: 38px; } }
+@container app (max-width: 767px) {
+  .bh-id { gap: 14px; align-items: flex-start; }
+  .bh-pic { width: 56px; height: 56px; border-radius: 16px; }
+  .bhead h1 { font-size: 28px; }
+  .bh-tabs { width: auto; margin-top: 16px; }
+  .bh-tab { height: 40px; padding: 0 13px; font-size: 14px; }
+}
+@media (pointer: coarse) { .bh-tab { height: 44px; } }
+/* the screen's own line, under the batch's tabs */
+.bh-sub { max-width: 1320px; padding: 0 16px 16px; margin-top: -6px; font-size: 14px; color: var(--fg-3); }
+/* a batch's screens come in under its head, which stays where it is */
+.bpage .pagebody { animation: bh-in 220ms var(--ease) both; }
+@keyframes bh-in { from { opacity: 0; transform: translateY(6px); } }
+@media (prefers-reduced-motion: reduce) { .bpage .pagebody { animation: none; } }

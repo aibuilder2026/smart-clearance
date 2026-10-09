@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-112 Batch First</title>
+<meta name="description" content="Three ways to navigate Munchly's workspace top down, starting with the batch: the Command Center, the Route Room and Execution as one batch's screens, each screen's design kept.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<style>
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber: #f0b429; --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px -6px rgb(17 41 30 / 0.1);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber: #f7c04a; --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber: #f7c04a; --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 48px 16px 72px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+h2 { margin: 60px 0 14px; font-size: clamp(25px, 3vw, 32px); font-weight: 720; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 72, "wdth" 88; }
+h3 { font-size: 26px; font-weight: 720; letter-spacing: -0.018em; font-variation-settings: "opsz" 48, "wdth" 90; }
+h3.sub { font: 650 16px/1.35 var(--ui); letter-spacing: 0; font-variation-settings: normal; margin: 0 0 6px; }
+p { margin: 0 0 12px; max-width: 74ch; color: var(--ink-2); text-wrap: pretty; }
+p b, li b, td b { color: var(--ink); font-weight: 600; }
+.lede { font-size: 18px; margin-top: 14px; }
+blockquote { margin: 16px 0; padding: 16px 20px; border-radius: 14px; background: var(--sunken); color: var(--ink); font-size: 15.5px; max-width: 82ch; }
+blockquote p { color: var(--ink); margin: 0 0 8px; }
+blockquote p:last-child { margin: 0; }
+ul, ol { margin: 0 0 12px; padding-left: 20px; color: var(--ink-2); max-width: 80ch; display: grid; gap: 6px; }
+code { font: 500 0.9em/1 var(--mono); }
+figure { margin: 0; min-width: 0; }
+figure img, figure video { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+.desks { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 700px) { .desks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.phones { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+@media (min-width: 700px) { .phones { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .phones { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.card { padding: 22px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.shared { display: grid; gap: 18px; }
+@media (min-width: 900px) { .shared { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.shared p, .shared li { font-size: 14.5px; }
+.opt { margin-top: 26px; display: grid; gap: 16px; padding: 26px 22px; border-radius: 28px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); scroll-margin-top: 20px; }
+.opt.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.opt header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.opt header p { margin: 0; flex-basis: 100%; font-size: 17px; color: var(--ink); max-width: 78ch; }
+.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 600 12.5px/1 var(--ui); color: var(--green-text); background: var(--green-soft); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+.btn.primary { background: var(--green); color: #fff; box-shadow: none; }
+:root[data-theme="dark"] .btn.primary { color: #03170d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #03170d; } }
+.vid { display: grid; gap: 18px; }
+@media (min-width: 900px) { .vid { grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); align-items: start; } }
+dl.facts { margin: 0; display: grid; gap: 12px; }
+dl.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); }
+dl.facts dd { margin: 2px 0 0; color: var(--ink-2); font-size: 14.5px; }
+dl.facts dd ul { margin-top: 4px; font-size: 14.5px; }
+.tablewrap { overflow-x: auto; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+table.cmp { border-collapse: collapse; width: 100%; min-width: 900px; font-size: 14px; color: var(--ink-2); }
+table.cmp th, table.cmp td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+table.cmp thead th { color: var(--ink); font-weight: 650; background: var(--sunken); }
+table.cmp tbody th { color: var(--ink); font-weight: 600; width: 15%; }
+table.cmp tr:last-child > * { border-bottom: 0; }
+.rec-box { padding: 22px; border-radius: 20px; background: var(--green-soft); }
+.rec-box p { color: var(--ink); }
+.q { padding: 20px 22px; border-radius: 20px; background: var(--amber-soft); }
+.q p, .q li { color: var(--ink); }
+.q h3 { font-size: 20px; margin-bottom: 8px; }
+.diagram { margin-top: 8px; padding: 18px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); overflow-x: auto; }
+.diagram svg { display: block; width: 100%; min-width: 820px; height: auto; }
+.diagram .t { fill: var(--ink); font: 600 14px var(--ui); }
+.diagram .t2 { fill: var(--ink-2); font: 400 13px var(--ui); }
+.diagram .h { fill: var(--ink-3); font: 650 12px var(--ui); letter-spacing: 0.02em; }
+.diagram .box { fill: var(--sunken); stroke: var(--line-2); }
+.diagram .box.on { fill: var(--surface); stroke: var(--green); stroke-width: 2; }
+.diagram .box.odd { fill: var(--amber-soft); stroke: var(--amber); }
+.diagram .ln { stroke: var(--line-2); stroke-width: 1.5; fill: none; }
+.diagram .ln.g { stroke: var(--green); stroke-width: 2; }
+.diagram .dash { stroke: var(--amber); stroke-width: 1.5; stroke-dasharray: 4 4; fill: none; }
+.diagram .dot { fill: var(--green); }
+.diagram .dot.a { fill: var(--amber); }
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
+</style>
+
+<body>
+<main class="wrap">
+<h1>Batch first</h1>
+<p class="lede">SC-112 · Munchly's workspace · three ways to navigate the Command Center, the Route Room and Execution from the top down, starting with the batch. Every screen's own design stays as it is: only the way between them changes. Every company, person and figure is fictional.</p>
+<p>The maintainer (9 Oct):</p>
+<blockquote><p>“I need you to think a bit on the design and navigation of command center, route room and execution. 1. The design of the individual pages are perfect, no change is needed. 2. The navigability seems a bit odd, everything starts from monitoring of a batch which can be in different states.”</p><p>“I need a top down approach starting with batch as the 1st point, think hard and come up with aesthetically pleasing approach.”</p></blockquote>
+
+<h2>Why it feels odd today</h2>
+<ul>
+<li><b>Two kinds of place in one list.</b> The sidebar puts Route Room and Execution beside the Command Center and Batches, as if they were places of their own. They are screens of one batch.</li>
+<li><b>The batch is hidden.</b> Which batch Route Room or Execution opens is a "batch in focus" you cannot see: whichever was opened last (SC-91 had to keep it). On a phone, Route and Live in the tab bar work the same way.</li>
+<li><b>The state picks the screen.</b> The Command Center's one button becomes Open Route Room, Review and approve, or Watch execution, depending on the batch's state, so the same card leads to different places.</li>
+<li><b>Switching batch half works.</b> The batch tabs (SC-68) sit on the Command Center and the Route Room, but not on Execution, and Paperwork is not in the operator's menu at all.</li>
+<li><b>Back is fixed by stage.</b> Execution always goes back to the Route Room, and the Route Room to the Command Center, wherever the person came from.</li>
+</ul>
+<div class="desks"><figure><img src="current/command-1440-light.webp" width="1440" height="900" loading="lazy" alt="Today: the Command Center with the flagged batches as tabs and Route Room and Execution in the sidebar."><figcaption>Today · Command Center</figcaption></figure><figure><img src="current/route-1440-light.webp" width="1440" height="900" loading="lazy" alt="Today: the Route Room with the batch tabs under its title."><figcaption>Today · Route Room, the batch tabs under the title</figcaption></figure><figure><img src="current/execution-1440-light.webp" width="1440" height="900" loading="lazy" alt="Today: Execution, with no batch tabs and its back link fixed to the Route Room."><figcaption>Today · Execution: no batch tabs, back to the Route Room</figcaption></figure><figure><img src="current/route-mango-1440-light.webp" width="1440" height="900" loading="lazy" alt="Today: the Mango Drink's Route Room."><figcaption>Today · the Mango Drink's Route Room</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="current/command-390-light.webp" width="780" height="1688" loading="lazy" alt="Today on a phone: the Command Center, with Today, Route, Live and Batches in the tab bar."><figcaption>Today · phone: Route and Live open the hidden batch</figcaption></figure><figure><img src="current/route-390-light.webp" width="780" height="1688" loading="lazy" alt="Today on a phone: the Route Room."><figcaption>Today · phone · Route Room</figcaption></figure><figure><img src="current/execution-390-light.webp" width="780" height="1688" loading="lazy" alt="Today on a phone: Execution."><figcaption>Today · phone · Execution</figcaption></figure></div>
+
+<h2>The shape all three share</h2>
+<p>The workspace holds the batches; a batch holds its screens. Route Room and Execution stop being places in the sidebar and become two of a batch's screens, next to its journey and its papers.</p>
+<div class="diagram" role="img" aria-label="Today, the sidebar lists Command Center, Route Room, Execution and Batches side by side, and a hidden batch in focus decides what Route Room and Execution show. Batch first, the workspace lists Command Center, Batches, Setup and Finance and ESG; a batch, such as Masala Chips MF-2409-117 at Approve, holds its Journey, Route Room, Execution and Paperwork.">
+<svg viewBox="0 0 1180 300" aria-hidden="true">
+  <text class="h" x="12" y="22">TODAY</text>
+  <rect class="box" x="12" y="36" width="190" height="38" rx="10"/><text class="t" x="28" y="60">Command Center</text>
+  <rect class="box odd" x="12" y="84" width="190" height="38" rx="10"/><text class="t" x="28" y="108">Route Room</text>
+  <rect class="box odd" x="12" y="132" width="190" height="38" rx="10"/><text class="t" x="28" y="156">Execution</text>
+  <rect class="box" x="12" y="180" width="190" height="38" rx="10"/><text class="t" x="28" y="204">Batches</text>
+  <rect class="box" x="12" y="228" width="190" height="38" rx="10"/><text class="t" x="28" y="252">Setup · Finance &amp; ESG</text>
+  <path class="dash" d="M202 103 C 250 103, 250 150, 286 150 M202 151 L286 151"/>
+  <rect class="box odd" x="286" y="122" width="216" height="58" rx="10"/><text class="t" x="302" y="147">The batch in focus</text><text class="t2" x="302" y="166">hidden: the last one opened</text>
+  <line class="ln" x1="560" y1="20" x2="560" y2="282"/>
+  <text class="h" x="610" y="22">BATCH FIRST</text>
+  <text class="t2" x="610" y="48">The workspace</text>
+  <rect class="box" x="610" y="60" width="170" height="38" rx="10"/><text class="t" x="626" y="84">Command Center</text>
+  <rect class="box on" x="610" y="108" width="170" height="38" rx="10"/><text class="t" x="626" y="132">Batches</text>
+  <rect class="box" x="610" y="156" width="170" height="38" rx="10"/><text class="t" x="626" y="180">Setup</text>
+  <rect class="box" x="610" y="204" width="170" height="38" rx="10"/><text class="t" x="626" y="228">Finance &amp; ESG</text>
+  <path class="ln g" d="M780 127 L806 127"/>
+  <text class="t2" x="806" y="48">A batch</text>
+  <rect class="box on" x="806" y="94" width="204" height="66" rx="12"/><text class="t" x="822" y="120">Masala Chips 150 g</text><circle class="dot a" cx="826" cy="139" r="4"/><text class="t2" x="836" y="143">MF-2409-117 · Approve</text>
+  <path class="ln g" d="M1010 127 C 1028 127, 1028 74, 1044 74 M1010 127 C 1028 127, 1028 122, 1044 122 M1010 127 C 1028 127, 1028 170, 1044 170 M1010 127 C 1028 127, 1028 218, 1044 218"/>
+  <text class="t2" x="1044" y="48">Its screens</text>
+  <rect class="box" x="1044" y="56" width="126" height="36" rx="10"/><text class="t" x="1060" y="79">Journey</text>
+  <rect class="box on" x="1044" y="104" width="126" height="36" rx="10"/><text class="t" x="1060" y="127">Route Room</text>
+  <rect class="box" x="1044" y="152" width="126" height="36" rx="10"/><text class="t" x="1060" y="175">Execution</text>
+  <rect class="box" x="1044" y="200" width="126" height="36" rx="10"/><text class="t" x="1060" y="223">Paperwork</text>
+  <text class="t2" x="806" y="268">The batch's state says which screen it opens on.</text>
+</svg>
+</div>
+<div class="shared" style="margin-top:18px">
+<div class="card"><h3 class="sub">The same in A, B and C</h3><ul><li>Route Room and Execution leave the sidebar; on phones the tab bar becomes <b>Today, Batches, Reports</b>.</li><li>Every screen of a batch names its batch in its address, so nothing is hidden.</li><li>Back goes to where the batch was opened from (Command Center, Batches, Inbox), not to a fixed screen.</li></ul></div>
+<div class="card"><h3 class="sub">Where a batch opens</h3><ul><li>On the screen for where it stands: before Verify its journey; Verify to Approve the Route Room; Execute its Execution; Settle its papers; cleared, its journey again.</li><li>The Command Center's cards and rows, the sidebar and the Batches screen all open the batch the same way.</li></ul></div>
+<div class="card"><h3 class="sub">What does not change</h3><ul><li>The Command Center, Batches, Setup, Finance &amp; ESG, and every screen's body: the Route Room's card, label, channels and split, Execution's cards, Paperwork.</li><li>A batch not in a journey still opens its sheet (see the open questions).</li><li>New in A and B: a <b>Journey</b> view, the Command Center's tracker card, cluster and agents for one batch.</li></ul></div>
+</div>
+
+<h2>The options</h2>
+<p>Each option is the workspace app itself, live, signed in as Priya, with the Masala Chips at Approve and the Mango Drink at Verify. Click anything; the pill at the bottom left moves the chips to Execute, Settle or Cleared.</p>
+
+<section class="opt rec" id="option-a"><header><h3>Option A · The batch page</h3><span class="tag">Recommended</span>
+<p>A batch is a page of its own, the way an order is. One head for every screen about it (its product, name, id, distributor and where it stands), and its screens as tabs under the head: <b>Journey, Route Room, Execution, Paperwork</b>. The tab for where the batch stands carries a dot, amber while it waits for your yes. The batches in a journey sit in the sidebar by name and stop.</p></header>
+<div class="vid"><figure><video src="option-a/motion.mp4" poster="option-a/motion-poster.webp" width="1440" height="900" controls muted playsinline preload="none"></video><figcaption>Played through: a batch from the sidebar, its four tabs, the Mango Drink, back (17 s, no sound)</figcaption></figure>
+<dl class="facts"><dt>How you move</dt><dd><ul><li><b>Desktop:</b> Command Center, Batches and Setup, then <b>In a journey</b>: each batch with its product and stop. A batch opens its page; its tabs move between its screens.</li><li><b>Phone:</b> the head, then the tabs as a pill row (Journey, Route, Execution, Papers); the tab bar is Today, Batches, Reports.</li></ul></dd>
+<dt>Trade-offs</dt><dd><ul><li>The plainest top-down shape: workspace, batch, screen, each a level you can see.</li><li>Tabs are a pattern everyone knows, and every screen keeps its full width.</li><li>The Route Room shows the product twice (the head, then its own first card).</li><li>On a phone, switching batch means going back to Today or Batches.</li></ul></dd>
+<dt>Motion</dt><dd>The tab's thumb slides (the kit's tabs spring, 500/40); the screen under the head rises 6 px in 220 ms; the head stays still. Under reduced motion it lands at once.</dd>
+<dt>What the build touches</dt><dd>A batch frame in core's <code>RoleApp</code> (the head and the tabs), routes <code>/batch/&lt;ref&gt;/&lt;screen&gt;</code>, the sidebar's batches, the Journey view from the Command Center's pieces; the screens' bodies unchanged. The smallest build of the three.</dd></dl></div>
+<div class="desks"><figure><img src="option-a/route-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option A: the Masala Chips' page on its Route Room tab, the batches in a journey in the sidebar."><figcaption>The chips at Approve · Route Room tab</figcaption></figure><figure><img src="option-a/execution-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option A: the chips' Execution tab while the agents work."><figcaption>Execute · Execution tab</figcaption></figure><figure><img src="option-a/journey-mango-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option A: the Mango Drink's Journey tab, its tracker card and agents."><figcaption>The Mango Drink · Journey tab</figcaption></figure><figure><img src="option-a/route-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option A: the chips' Route Room tab, dark."><figcaption>Route Room tab · dark</figcaption></figure><figure><img src="option-a/command-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option A: the Command Center as today, with the batches in a journey in the sidebar."><figcaption>The Command Center, as today</figcaption></figure></div>
+<div class="phones"><figure><img src="option-a/route-390-light.webp" width="780" height="1688" loading="lazy" alt="Option A on a phone: the batch's head and its tabs."><figcaption>Phone · Route tab</figcaption></figure><figure><img src="option-a/execution-390-light.webp" width="780" height="1688" loading="lazy" alt="Option A on a phone: Execution tab."><figcaption>Phone · Execution tab</figcaption></figure><figure><img src="option-a/route-390-dark.webp" width="780" height="1688" loading="lazy" alt="Option A on a phone, dark."><figcaption>Phone · dark</figcaption></figure><figure><img src="option-a/journey-mango-390-dark.webp" width="780" height="1688" loading="lazy" alt="Option A on a phone: the Mango Drink's Journey tab, dark."><figcaption>Phone · Mango · Journey · dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="option-a/mockup.html#/route/MF-2409-117">Open option A</a><a class="btn" href="option-a/mockup.html?stage=6#/execution/MF-2409-117">At Execute</a><a class="btn" href="option-a/mockup.html#/journey/MF-2410-118">The Mango Drink</a></div></section>
+
+<section class="opt" id="option-b"><header><h3>Option B · The batch rail</h3>
+<p>The batches are a place of their own. Opening Batches, or any batch, turns the sidebar into the <b>batch rail</b>: every batch grouped by where it stands (<b>Needs your yes, In a journey, Watching</b>), and the open batch unfolds its screens under it. The sidebar keeps its width, so every screen keeps its own. On a phone the same tree is a stack: Batches, then a batch with its screens as rows, then the screen.</p></header>
+<div class="vid"><figure><video src="option-b/motion.mp4" poster="option-b/motion-poster.webp" width="1440" height="900" controls muted playsinline preload="none"></video><figcaption>Played through: Batches drills in, the chips unfold, Execution, Journey, the Mango Drink, back out (16 s, no sound)</figcaption></figure>
+<dl class="facts"><dt>How you move</dt><dd><ul><li><b>Desktop:</b> the workspace's menu (Command Center, Batches with an amber count, Setup, Finance &amp; ESG); Batches or any batch drills into the rail; <b>‹ Command Center</b> at its top drills out.</li><li><b>Phone:</b> Batches lists every batch by group; a batch shows its screens as rows with their state, over its tracker card.</li></ul></dd>
+<dt>Trade-offs</dt><dd><ul><li>The fastest switching: every batch, and how close each is to its date, in view while you work one.</li><li>The page keeps its own title (Route Room), with the batch in the line under it.</li><li>The sidebar has two modes, which takes a moment to learn.</li><li>On a phone a screen is three steps from Today.</li></ul></dd>
+<dt>Motion</dt><dd>The sidebar drills: the rail enters from the right and the menu leaves left (28 px, 240 ms), and back the other way; the open batch unfolds its screens on the sheet spring (420/40/0.9). Under reduced motion it lands at once.</dd>
+<dt>What the build touches</dt><dd>A second sidebar mode in the kit's <code>Shell</code> (the rail), its groups from the workspace's batches, routes as A, a phone Batches list and batch page, the Journey view; the screens' bodies unchanged.</dd></dl></div>
+<div class="desks"><figure><img src="option-b/route-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option B: the batch rail with the chips unfolded on Route Room."><figcaption>The chips at Approve · Route Room</figcaption></figure><figure><img src="option-b/execution-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option B: the chips' Execution with the rail."><figcaption>Execute · Execution</figcaption></figure><figure><img src="option-b/batches-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option B: All batches, the rail grouped by state beside the Batches table."><figcaption>All batches · the rail grouped by state</figcaption></figure><figure><img src="option-b/route-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option B: Route Room with the rail, dark."><figcaption>Route Room · dark</figcaption></figure><figure><img src="option-b/mango-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option B: the Mango Drink's Route Room with the rail, dark."><figcaption>The Mango Drink · dark</figcaption></figure><figure><img src="option-b/command-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option B: the Command Center as today, with the workspace's menu."><figcaption>The Command Center, as today</figcaption></figure></div>
+<div class="phones"><figure><img src="option-b/batches-390-light.webp" width="780" height="1688" loading="lazy" alt="Option B on a phone: Batches grouped by state."><figcaption>Phone · Batches</figcaption></figure><figure><img src="option-b/batch-390-light.webp" width="780" height="1688" loading="lazy" alt="Option B on a phone: the batch with its screens as rows."><figcaption>Phone · the batch</figcaption></figure><figure><img src="option-b/route-390-light.webp" width="780" height="1688" loading="lazy" alt="Option B on a phone: Route Room, back to the batch."><figcaption>Phone · Route Room</figcaption></figure><figure><img src="option-b/execution-390-light.webp" width="780" height="1688" loading="lazy" alt="Option B on a phone: Execution."><figcaption>Phone · Execution</figcaption></figure><figure><img src="option-b/batch-390-dark.webp" width="780" height="1688" loading="lazy" alt="Option B on a phone: the batch, dark."><figcaption>Phone · the batch · dark</figcaption></figure><figure><img src="option-b/route-390-dark.webp" width="780" height="1688" loading="lazy" alt="Option B on a phone: Route Room, dark."><figcaption>Phone · dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="option-b/mockup.html#/batches">Open option B</a><a class="btn" href="option-b/mockup.html?stage=6#/execution/MF-2409-117">At Execute</a><a class="btn" href="option-b/mockup.html#/route/MF-2410-118">The Mango Drink</a></div></section>
+
+<section class="opt" id="option-c"><header><h3>Option C · The stops lead</h3>
+<p>A batch is headed by its own tracker, the card the Route Room opens with, and the tracker's <b>stops are the way through it</b>: Detect opens its journey; Verify, Value, Decide and Approve open the Route Room at that part; Execute its Execution; Settle its papers; Report its line in the ledger. The fill says where the batch is; the pill says where you are. Once the card scrolls away the stops stay under the bar. The batch's name switches batch.</p></header>
+<div class="vid"><figure><video src="option-c/motion.mp4" poster="option-c/motion-poster.webp" width="1440" height="900" controls muted playsinline preload="none"></video><figcaption>Played through: from Review and approve, Verify, Value and Decide down the Route Room, Execute rises, Detect drops, the Mango Drink from the name (21 s, no sound)</figcaption></figure>
+<dl class="facts"><dt>How you move</dt><dd><ul><li><b>Desktop:</b> the nine stops, each a button (Connect is the workspace's, set once in Setup); scrolling the Route Room moves the pill from Verify to Approve.</li><li><b>Phone:</b> the stops as chips under the card, and kept under the bar once it scrolls away.</li></ul></dd>
+<dt>Trade-offs</dt><dd><ul><li>The most our own: the tracker, the product's signature, becomes how you read a batch, top to bottom.</li><li>Execution and Paperwork gain the Route Room's card, so every screen of a batch shows its days and gates.</li><li>The tracker shows two things at once (where the batch is, where you are), which needs a careful eye.</li><li>Four stops share the Route Room, so some stops scroll and others change screen.</li></ul></dd>
+<dt>Motion</dt><dd>The pill slides along the stops (500/40); going on down the journey the screen rises from below (26 px, 280 ms), going back it drops from above; the kept strip fades in under the bar. Under reduced motion it lands at once.</dd>
+<dt>What the build touches</dt><dd>A batch frame with the Route Room's first card moved into it (the Route Room loses its own copy), the tracker's stops as buttons, the scroll-linked pill, the strip under the bar, routes per stop, the name's menu; the other screens' bodies unchanged. The largest build of the three.</dd></dl></div>
+<div class="desks"><figure><img src="option-c/route-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option C: the chips' page headed by its tracker, the pill on Approve."><figcaption>The chips at Approve · the pill on Approve</figcaption></figure><figure><img src="option-c/value-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option C: Value chosen, the Route Room scrolled to the channels, the stops kept under the bar."><figcaption>Value · the stops kept under the bar</figcaption></figure><figure><img src="option-c/execution-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option C: Execute, the chips' Execution under the batch's tracker."><figcaption>Execute · Execution under the tracker</figcaption></figure><figure><img src="option-c/switch-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option C: the batch's name opens the batches in a journey."><figcaption>The name switches batch</figcaption></figure><figure><img src="option-c/route-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option C: the chips at Approve, dark."><figcaption>Approve · dark</figcaption></figure><figure><img src="option-c/mango-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option C: the Mango Drink at Verify, dark."><figcaption>The Mango Drink at Verify · dark</figcaption></figure></div>
+<div class="phones"><figure><img src="option-c/route-390-light.webp" width="780" height="1688" loading="lazy" alt="Option C on a phone: the stops as chips in the card."><figcaption>Phone · Approve</figcaption></figure><figure><img src="option-c/execution-390-light.webp" width="780" height="1688" loading="lazy" alt="Option C on a phone: Execute."><figcaption>Phone · Execute</figcaption></figure><figure><img src="option-c/route-390-dark.webp" width="780" height="1688" loading="lazy" alt="Option C on a phone, dark."><figcaption>Phone · dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="option-c/mockup.html#/route/MF-2409-117">Open option C</a><a class="btn" href="option-c/mockup.html?stage=6#/execution/MF-2409-117">At Execute</a><a class="btn" href="option-c/mockup.html#/route/MF-2410-118">The Mango Drink</a></div></section>
+
+<h2>Side by side</h2>
+<div class="tablewrap"><table class="cmp">
+<thead><tr><th scope="col"></th><th scope="col">A · The batch page</th><th scope="col">B · The batch rail</th><th scope="col">C · The stops lead</th></tr></thead>
+<tbody>
+<tr><th scope="row">A batch's screens</th><td>Tabs under the batch's head</td><td>Under the batch in the sidebar</td><td>The batch's tracker, stop by stop</td></tr>
+<tr><th scope="row">The page's head</th><td>The batch: product, name, id, distributor, state</td><td>The screen's title, the batch in the line under it</td><td>The batch's name, then the Route Room's first card</td></tr>
+<tr><th scope="row">Switching batch</th><td>The sidebar's In a journey; on phones, Today or Batches</td><td>The rail, every batch by state; on phones, Batches</td><td>The batch's name opens a menu</td></tr>
+<tr><th scope="row">The sidebar</th><td>One menu, the batches in a journey added</td><td>Two modes: the workspace's menu, the batch rail</td><td>One menu, as today without Route Room and Execution</td></tr>
+<tr><th scope="row">Phone</th><td>Pill tabs under the head</td><td>A stack: Batches, the batch, the screen</td><td>The stops as chips, kept under the bar</td></tr>
+<tr><th scope="row">Best when</th><td>Most of the time: one batch at a time, read in full</td><td>Many batches run at once</td><td>A batch is read as a story, stop by stop</td></tr>
+<tr><th scope="row">Build</th><td>Smallest</td><td>Middle</td><td>Largest</td></tr>
+</tbody></table></div>
+
+<div class="rec-box" style="margin-top:28px"><p><b>Recommended: A, the batch page.</b> It gives the plainest top-down shape, workspace then batch then screen, with nothing new to learn: a batch gets a head and an address, its screens are tabs, and the batches in a journey are the first thing in the sidebar after the workspace's own places. Every screen keeps its design and its width. It also carries over: Finance's Paperwork and Sustainability's report can become tabs of the same batch page. B is the better switcher when many batches run at once, at the price of a sidebar with two modes. C is the most our own, but asks the tracker to show where the batch is and where you are at the same time, and its stops crowd a phone.</p></div>
+
+<div class="q" style="margin-top:18px"><h3>Open questions</h3><ol>
+<li>A batch not in a journey opens its sheet in all three, as today (SC-90). Should it open a page too, with only its Journey?</li>
+<li>Should Finance and Sustainability get the same batch page, with their screens as its tabs (SC-103's Paperwork for Anita, the report for Vikram)? Rakesh's batch screens (Today, Label photo, Van route) could follow later.</li>
+<li>The addresses in the build: <code>/batch/MF-2409-117/route</code> and so on, with today's <code>/route/MF-2409-117</code> and <code>/execution/MF-2409-117</code> sent there. (The mockups keep today's addresses.)</li>
+</ol></div>
+<footer>SC-112 · Smart-Clearance · Munchly's workspace · every company, person and figure is fictional · designs in <code>design3/designs/SC-112/</code></footer>
+</main>
+</body>
+</html>

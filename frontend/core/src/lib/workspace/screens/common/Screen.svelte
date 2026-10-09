@@ -7,7 +7,7 @@
 	import ModeMenuButton from '../../../components/ModeMenuButton.svelte';
 	import Page from '../../../components/Page.svelte';
 	import WorkspaceMark from '../../../components/WorkspaceMark.svelte';
-	import { useRoute, useWorkspaceLead } from '../../context';
+	import { useBatchFrame, useRoute, useWorkspaceLead } from '../../context';
 	import { useLive } from '../../live.svelte';
 	import { unreadFor } from '../../model';
 	import { useWorkspace } from '../../source';
@@ -42,6 +42,10 @@
 	const n = $derived(unreadFor(ws.state, me));
 	const live = useLive();
 	const on = $derived(!!live?.on);
+	// a screen of a batch (SC-112): the batch's head in place of the screen's title and the row under it, with the
+	// screen's own line under the batch's tabs, and the back link to where the batch was opened from
+	const frame = useBatchFrame();
+	const framed = $derived(!!frame?.on);
 </script>
 
 {#snippet leading()}{#if app.bp === 'phone' && lead}<button
@@ -71,18 +75,21 @@
 		>{#if typeof sub === 'string'}{sub}{:else if sub}{@render sub()}{/if}</span
 	>{#if live}<LiveLine {live} />{/if}{/snippet}
 {#snippet band()}{#if live}<LiveBand {live} />{/if}{/snippet}
+{#snippet framedBelow()}{@render frame?.head()}{#if sub}<div class="bh-sub">
+			{#if typeof sub === 'string'}{sub}{:else}{@render sub()}{/if}
+		</div>{/if}{/snippet}
 {#snippet barSub()}{#if live}<LiveLine {live} short />{/if}{/snippet}
 
 <Page
-	{title}
-	sub={on ? liveSub : sub}
-	{back}
+	title={framed && frame ? frame.title : title}
+	sub={framed ? undefined : on ? liveSub : sub}
+	back={framed && frame ? frame.back : back}
 	onback={router.back}
 	lead={leading}
 	actions={bar}
 	{wide}
-	{hideLarge}
+	hideLarge={framed || hideLarge}
 	top={on ? band : undefined}
-	{below}
+	below={framed ? framedBelow : below}
 	barSub={on ? barSub : undefined}>{@render children?.()}</Page
 >
