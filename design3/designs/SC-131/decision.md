@@ -73,4 +73,21 @@ Open questions on the board: does the workspace app's live splash, which shares 
 
 ## The pick
 
-Waiting for the maintainer.
+**B · The route runs**, picked by the maintainer on 9 Oct 2026 from the board (`SC-131 design review.html` in platform
+v3). The open question was answered **yes**: the workspace app's live splash, which shares the console's script, changes
+with it.
+
+What the build carries:
+
+- **The mark is the loader.** The route stands at 30% white; a stretch of it, three tenths long, runs the S from the
+  godown dot to the pin, a lap every 1.15 s; the pin throbs to 1.38 as the stretch arrives. Ready: the last lap draws the
+  whole route (380 ms) and stays, the pin pings once, and the mark opens into the window (and flies to the page's mark
+  first, in the console). Under reduced motion the route is drawn whole and still.
+- **No green dots.** The console's tracker goes; one title and one line say what the cover waits for.
+- **Every fix the board shared:** the cover paints with the page's first bytes; it fails only on a refused read, an
+  offline line or a read silent for 20 s; "Slow connection · still loading" after 3 s; the API's connection opened early
+  and the console's code fetched while the person types; the landing page's first screen first, lifting once it can be
+  read on the plate's soft preview.
+- **Where:** the console's splash (design3 `console/splash.js` and its `@splash` block, then `frontend/console`), the
+  workspace app's live splash (the same script, in its own words), and the landing page's loader (design3
+  `site/loader.js` and its block, then `frontend/admin`).
