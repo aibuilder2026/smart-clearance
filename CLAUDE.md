@@ -1551,10 +1551,10 @@
     - a distributor is not sent Munchly's plan, so the batch in focus takes its lines from his partner facts;
     - its batch page's Money tab read the story's figures for a live partner (Lakshmi's cleared Mango Drink: −₹27,169); `storyWhole` now works from the credit note's rows, with the expiry credit, as SC-94's card did (₹0);
     - the stub records the Mango Drink's staff sale at Lakshmi Agencies (design3 `flow.js`, core `flow.ts`).
-  - **backend-api:** a distributor's partner facts carry a batch of his from the Watcher's flag, before any plan (the packs at risk, the photo asked), so a request on any of his batches shows on Today. A step names its batch (`act(…, { ref })`).
+  - **backend-api:** a distributor's partner facts carry a batch of his from the Watcher's flag, before any plan (the packs at risk, the photo asked), so a request on any of his batches shows on Today. A step names its batch (`act(…, { ref })`). The partner route reads the shops' orders in the order they were placed: it had no order, so Postgres sometimes returned another, and SC-130's distributor test failed in about half of the full runs.
   - **Gone:** the old Today's plan card, You end whole and the stock list (on the batch's page and Batches), `VanInner`, `EndWhole`, `InvoiceDraft`, the live `DistQuiet`.
   - **Checks:**
-    - backend-api 526 passed, 1 skipped (a new partner test: his batch from its flag, with the photo asked);
+    - backend-api 526 passed, 1 skipped, in two full runs after the orders' fix (a new partner test: his batch from its flag, with the photo asked);
     - the frontend gate passes: core 258 (22 new in `dist.test.ts`; the distributors' goldens updated), api 77, workspace 77 (3 new live tests: Today with two batches and a step on its own batch, Orders, Deliveries waiting on a batch not yet in focus), admin 17, demo 5, console 3;
     - the live fixtures and seeds were regenerated; design3's `dist/` is rebuilt;
     - played through on the stub in dark: design3 at 1440 and 390 (the photo request and camera, the truck, Issue from Tally, the van round, Lakshmi's staff sale recorded) and the port's build at 1440 (Today, Issue from Tally, Deliveries);

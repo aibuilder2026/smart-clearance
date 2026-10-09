@@ -205,7 +205,9 @@ async def partner(ctx: Ctx, client_id: str, cm: m.ClientMember) -> dict[str, Any
         return out
     ids = [x.id for x in cases]
     orders: dict[str, list[m.CaseOrder]] = {i: [] for i in ids}
-    for o in (await ctx.session.execute(select(m.CaseOrder).where(m.CaseOrder.case_id.in_(ids)))).scalars():
+    # the shops' orders in the order they were placed, as the case's own view reads them
+    q_orders = select(m.CaseOrder).where(m.CaseOrder.case_id.in_(ids)).order_by(m.CaseOrder.id)
+    for o in (await ctx.session.execute(q_orders)).scalars():
         orders[o.case_id].append(o)
     feed: dict[str, dict[str, datetime]] = {i: {} for i in ids}
     q = select(m.FeedEvent).where(m.FeedEvent.case_id.in_(ids), m.FeedEvent.key.in_(list(FEED_STEPS)))
