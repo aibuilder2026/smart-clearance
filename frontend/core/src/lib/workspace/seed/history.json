@@ -712,6 +712,7 @@
 					"status": "not required",
 					"amount": 0,
 					"units": 0,
+					"reversed": 0,
 					"date": "2026-07-06"
 				}
 			],
@@ -1604,6 +1605,7 @@
 					"status": "not required",
 					"amount": 0,
 					"units": 0,
+					"reversed": 0,
 					"date": "2026-07-11"
 				}
 			],
@@ -2507,6 +2509,7 @@
 					"status": "generated",
 					"amount": 0,
 					"units": 65,
+					"reversed": 131.95,
 					"date": "2026-07-17"
 				},
 				{
@@ -3319,6 +3322,7 @@
 					"status": "not required",
 					"amount": 0,
 					"units": 0,
+					"reversed": 0,
 					"date": "2026-07-24"
 				}
 			],
@@ -4131,6 +4135,7 @@
 					"status": "not required",
 					"amount": 0,
 					"units": 0,
+					"reversed": 0,
 					"date": "2026-07-31"
 				}
 			],
@@ -5141,6 +5146,7 @@
 					"status": "not required",
 					"amount": 0,
 					"units": 0,
+					"reversed": 0,
 					"date": "2026-08-07"
 				}
 			],
@@ -5938,6 +5944,7 @@
 					"status": "generated",
 					"amount": 0,
 					"units": 184,
+					"reversed": 101.2,
 					"date": "2026-08-13"
 				},
 				{
@@ -6898,6 +6905,7 @@
 					"status": "not required",
 					"amount": 0,
 					"units": 0,
+					"reversed": 0,
 					"date": "2026-08-20"
 				}
 			],
@@ -7676,6 +7684,7 @@
 					"status": "not required",
 					"amount": 0,
 					"units": 0,
+					"reversed": 0,
 					"date": "2026-08-21"
 				}
 			],
@@ -8554,6 +8563,7 @@
 					"status": "not required",
 					"amount": 0,
 					"units": 0,
+					"reversed": 0,
 					"date": "2026-08-27"
 				}
 			],
@@ -9552,6 +9562,7 @@
 					"status": "not required",
 					"amount": 0,
 					"units": 0,
+					"reversed": 0,
 					"date": "2026-08-28"
 				}
 			],
@@ -10427,6 +10438,7 @@
 					"status": "generated",
 					"amount": 0,
 					"units": 132,
+					"reversed": 96.36,
 					"date": "2026-08-30"
 				},
 				{

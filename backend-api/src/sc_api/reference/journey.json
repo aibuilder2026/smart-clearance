@@ -8064,7 +8064,8 @@
 						"id": "itc",
 						"no": "s.17(5)(h)",
 						"status": "generated",
-						"amount": 1302
+						"amount": 1302,
+						"reversed": 0
 					},
 					{
 						"id": "fssai",
@@ -8076,7 +8077,8 @@
 						"id": "destruction",
 						"no": "0 units left",
 						"status": "not required",
-						"amount": 0
+						"amount": 0,
+						"reversed": 0
 					}
 				]
 			},
@@ -8355,7 +8357,8 @@
 						"id": "itc",
 						"no": "s.17(5)(h)",
 						"status": "generated",
-						"amount": 851.18
+						"amount": 851.18,
+						"reversed": 0
 					},
 					{
 						"id": "fssai",
@@ -8367,7 +8370,8 @@
 						"id": "destruction",
 						"no": "0 units left",
 						"status": "not required",
-						"amount": 0
+						"amount": 0,
+						"reversed": 0
 					}
 				]
 			},
@@ -8577,7 +8581,8 @@
 						"id": "itc",
 						"no": "s.17(5)(h)",
 						"status": "generated",
-						"amount": 1157.1
+						"amount": 1157.1,
+						"reversed": 131.95
 					},
 					{
 						"id": "fssai",
@@ -8589,7 +8594,8 @@
 						"id": "destruction",
 						"no": "65 units",
 						"status": "generated",
-						"amount": 0
+						"amount": 0,
+						"reversed": 131.95
 					},
 					{
 						"id": "expiry",
@@ -8822,7 +8828,8 @@
 						"id": "itc",
 						"no": "s.17(5)(h)",
 						"status": "generated",
-						"amount": 1169.28
+						"amount": 1169.28,
+						"reversed": 0
 					},
 					{
 						"id": "fssai",
@@ -8834,7 +8841,8 @@
 						"id": "destruction",
 						"no": "0 units left",
 						"status": "not required",
-						"amount": 0
+						"amount": 0,
+						"reversed": 0
 					}
 				]
 			},
@@ -9066,7 +9074,8 @@
 						"id": "itc",
 						"no": "s.17(5)(h)",
 						"status": "generated",
-						"amount": 943.08
+						"amount": 943.08,
+						"reversed": 706.44
 					},
 					{
 						"id": "fssai",
@@ -9084,7 +9093,8 @@
 						"id": "destruction",
 						"no": "0 units left",
 						"status": "not required",
-						"amount": 0
+						"amount": 0,
+						"reversed": 0
 					}
 				]
 			},
@@ -9291,7 +9301,8 @@
 						"id": "itc",
 						"no": "s.17(5)(h)",
 						"status": "generated",
-						"amount": 4664.75
+						"amount": 4664.75,
+						"reversed": 0
 					},
 					{
 						"id": "fssai",
@@ -9303,7 +9314,8 @@
 						"id": "destruction",
 						"no": "0 units left",
 						"status": "not required",
-						"amount": 0
+						"amount": 0,
+						"reversed": 0
 					}
 				]
 			},
@@ -9613,7 +9625,8 @@
 						"id": "itc",
 						"no": "s.17(5)(h)",
 						"status": "generated",
-						"amount": 578.6
+						"amount": 578.6,
+						"reversed": 101.2
 					},
 					{
 						"id": "fssai",
@@ -9625,7 +9638,8 @@
 						"id": "destruction",
 						"no": "184 units",
 						"status": "generated",
-						"amount": 0
+						"amount": 0,
+						"reversed": 101.2
 					},
 					{
 						"id": "expiry",
@@ -9830,7 +9844,8 @@
 						"id": "itc",
 						"no": "s.17(5)(h)",
 						"status": "generated",
-						"amount": 1494.45
+						"amount": 1494.45,
+						"reversed": 0
 					},
 					{
 						"id": "fssai",
@@ -9842,7 +9857,8 @@
 						"id": "destruction",
 						"no": "0 units left",
 						"status": "not required",
-						"amount": 0
+						"amount": 0,
+						"reversed": 0
 					}
 				]
 			},
@@ -10113,7 +10129,8 @@
 						"id": "itc",
 						"no": "s.17(5)(h)",
 						"status": "generated",
-						"amount": 963.9
+						"amount": 963.9,
+						"reversed": 0
 					},
 					{
 						"id": "fssai",
@@ -10125,7 +10142,8 @@
 						"id": "destruction",
 						"no": "0 units left",
 						"status": "not required",
-						"amount": 0
+						"amount": 0,
+						"reversed": 0
 					}
 				]
 			},
@@ -10349,7 +10367,8 @@
 						"id": "itc",
 						"no": "s.17(5)(h)",
 						"status": "generated",
-						"amount": 698.32
+						"amount": 698.32,
+						"reversed": 945.98
 					},
 					{
 						"id": "fssai",
@@ -10367,7 +10386,8 @@
 						"id": "destruction",
 						"no": "0 units left",
 						"status": "not required",
-						"amount": 0
+						"amount": 0,
+						"reversed": 0
 					}
 				]
 			},
@@ -10626,7 +10646,8 @@
 						"id": "itc",
 						"no": "s.17(5)(h)",
 						"status": "generated",
-						"amount": 1243.72
+						"amount": 1243.72,
+						"reversed": 0
 					},
 					{
 						"id": "fssai",
@@ -10638,7 +10659,8 @@
 						"id": "destruction",
 						"no": "0 units left",
 						"status": "not required",
-						"amount": 0
+						"amount": 0,
+						"reversed": 0
 					}
 				]
 			},
@@ -10916,7 +10938,8 @@
 						"id": "itc",
 						"no": "s.17(5)(h)",
 						"status": "generated",
-						"amount": 788.4
+						"amount": 788.4,
+						"reversed": 96.36
 					},
 					{
 						"id": "fssai",
@@ -10928,7 +10951,8 @@
 						"id": "destruction",
 						"no": "132 units",
 						"status": "generated",
-						"amount": 0
+						"amount": 0,
+						"reversed": 96.36
 					},
 					{
 						"id": "expiry",

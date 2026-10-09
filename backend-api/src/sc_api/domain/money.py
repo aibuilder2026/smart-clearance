@@ -935,6 +935,8 @@ def documents(
             "status": "generated" if _truthy(destroyed) else "not required",
             "amount": 0,
             "units": destroyed,
+            # with the input credit reversed on them, so every copy carries its own figure (SC-132)
+            "reversed": r2(destroyed * float((p.get("writeOff") or {}).get("itcPerUnit") or 0)) if destroyed else 0,
         }
     )
     return docs

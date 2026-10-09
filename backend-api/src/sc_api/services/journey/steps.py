@@ -1943,7 +1943,9 @@ async def _settle_expiry(ctx: Ctx, s: Scene, plan_: dict[str, Any]) -> dict[str,
     destroyed = int(plan_.get("destroyed", plan_.get("leftover", 0)))
     for d in docs:
         if d["id"] == "destruction" and destroyed:
+            per = float((plan_.get("writeOff") or {}).get("itcPerUnit") or 0)
             d.update({"no": f"{destroyed} units", "status": "generated", "units": destroyed})
+            d["reversed"] = money.r2(destroyed * per)
         if d["id"] == "itc":
             d.update({"amount": plan_["itcRetained"], "reversed": plan_["itcReversed"]})
     s.case.docs = money.jsonable([*docs, paper])

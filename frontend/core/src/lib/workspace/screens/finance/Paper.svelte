@@ -229,7 +229,7 @@
 			true
 		)}{#if destroyed}{@render line(
 				'Input GST reversed',
-				fmt.inr2(destroyed * c.plan.writeOff.itcPerUnit),
+				fmt.inr2(d?.reversed ?? destroyed * c.plan.writeOff.itcPerUnit),
 				false,
 				'section 17(5)(h), GSTR-3B Table 4(B)(1)'
 			)}{/if}

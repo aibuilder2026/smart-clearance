@@ -713,7 +713,7 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
                 continue
             if role == "foodbank" and d_["id"] != "receipt":  # a food bank sees its own receipt (SC-110)
                 continue
-            docs.append(doc_out(d_))
+            docs.append(doc_out(with_reversed(case, d_)))
 
     kiranas = []
     if case.offer and (mine or role == "distributor" or role == "retailer"):
@@ -972,6 +972,15 @@ DOC_FIELDS = (
     *("id", "type", "owner", "no", "status", "amount", "note", "taxable", "igst", "roundOff", "total"),
     *("units", "price", "gstPct", "exact", "date"),
 )
+
+
+def with_reversed(case: m.Case, d_: dict[str, Any]) -> dict[str, Any]:
+    """a destruction certificate drafted before SC-132 carries no credit reversed: worked out from the batch's own plan,
+    so a copy read by someone not shown the plan (the distributor) still has its figure"""
+    if d_.get("id") != "destruction" or "reversed" in d_ or not d_.get("units"):
+        return d_
+    per = float(((case.plan or {}).get("writeOff") or {}).get("itcPerUnit") or 0)
+    return {**d_, "reversed": money.r2(int(d_["units"]) * per)}
 
 
 def doc_out(d_: dict[str, Any]) -> dict[str, Any]:
