@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 
 from sc_api import models as m
 from sc_api.domain import copy, money
@@ -94,8 +94,8 @@ async def scene(ctx: Ctx, client_id: str, ref: str, *, cleared: bool = False) ->
     q = select(m.Case).where(m.Case.client_id == client_id, m.Case.batch_ref == ref)
     if cleared:
         since = views.journey_from(c)
-        if since is not None:
-            q = q.where(m.Case.opened_wall >= since)
+        if since is not None:  # this journey's cases, and the client's history (SC-123)
+            q = q.where(or_(m.Case.opened_wall >= since, m.Case.history.is_(True)))
         q = q.order_by(m.Case.seq.desc()).limit(1)
     else:
         q = q.where(m.Case.status == "open")
@@ -446,9 +446,12 @@ def _client_short(c: m.Client) -> str:
 # --- detect -----------------------------------------------------------------------------------------------------------
 
 
-async def detect(ctx: Ctx, client_id: str, body: dict[str, Any], run: Run | None) -> list[str]:
+async def detect(
+    ctx: Ctx, client_id: str, body: dict[str, Any], run: Run | None, *, only: set[str] | None = None
+) -> list[str]:
     """the Watcher's daily run: every open batch judged by its gates and how fast it sells; a batch at risk, whose
-    distributor has given the agents permission, opens a case. Returns the batches flagged"""
+    distributor has given the agents permission, opens a case. Returns the batches flagged. The history (SC-123)
+    judges only its batch of the day (`only`)"""
     c = await lock_client(ctx, client_id)
     await once(ctx, run)
     today = _today(ctx, c)
@@ -477,6 +480,8 @@ async def detect(ctx: Ctx, client_id: str, body: dict[str, Any], run: Run | None
     )
     flagged = []
     for b in batches:
+        if only is not None and b.ref not in only:
+            continue
         if selling.get(b.ref) is not None:
             b.sell_per_day = selling[b.ref]
         d, x = dists[b.distributor_id], skus[b.sku_id]
@@ -1612,8 +1617,9 @@ async def dispatch(ctx: Ctx, client_id: str, ref: str, kind: str) -> None:
 
 async def documents(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> None:
     """Paperwork drafts the distributor's invoice and checks the e-way bill rule, and issues the client's price-support
-    credit note, the ITC memo and the FSSAI checklist (money.py documents, numbered in sequence)"""
-    s = await scene(ctx, client_id, ref)
+    credit note, the ITC memo and the FSSAI checklist (money.py documents, numbered in sequence). A batch already
+    cleared has its papers (a noop), and Paperwork goes on to lay out the PDFs it lacks"""
+    s = await scene(ctx, client_id, ref, cleared=True)
     await once(ctx, run)
     if s.case.phase != "dispatched" or s.case.docs:
         raise Noop()
@@ -1722,8 +1728,9 @@ async def documents(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> None
 
 
 async def document_pdf(ctx: Ctx, client_id: str, ref: str, doc_id: str, name: str, run: Run | None) -> None:
-    """the PDF the Paperwork agent rendered into the docs bucket"""
-    s = await scene(ctx, client_id, ref)
+    """the PDF the Paperwork agent rendered into the docs bucket: kept on a batch cleared before it arrived too
+    (Report now clears a batch as its papers are drafted), and on the client's history (SC-123)"""
+    s = await scene(ctx, client_id, ref, cleared=True)
     # a new dict for the paper, not the stored one changed in place: the column is then a value that differs from what
     # was loaded, so it is written (SC-100: in place, the PDF was never kept)
     s.case.docs = [{**d, "pdf": name} if d["id"] == doc_id else d for d in s.case.docs or []]

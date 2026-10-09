@@ -1289,4 +1289,21 @@
     - the frontend gate passes: core 249 (the memo's golden, "Input GST kept"), api 77, workspace 67, admin 17, demo 5, console 3;
     - the live fixtures and the seeds were regenerated.
 
+- **SC-123** (In Review, branch `SC-123-history`, stacked on SC-122): Munchly's history, the twelve batches its workspace cleared in its pilot quarter (Q2 FY27, Jul to Sep 2026), built through the journey's own steps.
+  - **design3** (`core/data.js`):
+    - Munchly has been live since 1 Jul 2026;
+    - the six other SKUs have their cost sheets at the chips' ratios: biscuits ₹29 and ₹1.24, chikki ₹18 and ₹0.73, poha ₹40 and ₹1.74, oats ₹47.50 and ₹2.03, face wash ₹88 and ₹11.75, hair oil ₹110 and ₹4.05. The Mango Drink keeps ₹0.55, estimated;
+    - `HISTORY`: the 12 batches (7 sold through, 3 with packs left at the godown at full credit, 2 donated to the first food bank that takes them), each step's day and time (`HISTORY_AT`), what money.js makes of each, and the papers' numbers in the order they were issued, back from the story's: INV/26-27/0921–0930, CN/0102–0116, ES-24107–24116, FI/…/26-27/0415–0416. Every report falls due on the batch's best-before (SC-94), so each clears by 30 Sep.
+  - **backend-api:**
+    - migration 0009 adds `cases.history` and `batches.history`;
+    - `services/journey/history.py` builds each batch at its time through the services: opened, flagged by the Watcher (`detect(…, only=)`, so the story's batches are not judged), the label read, valued, planned, approved by Priya, listed, offered, booked, ordered by the kiranas, the counter taken by Agrawal, collected, the staff sale, the truck, the papers, the invoice issued, the van, reviewed by Anita, expired and reported on its best-before;
+    - the agents' part runs in process on backend-api's templates. Nothing reaches a person or an agent (the history's messages marked sent, pushes none, timers fired), except the Paperwork events that lay out its PDFs;
+    - `live.build` (hydrate, `--reset` and `--live-only`) builds it once, before the story's reset;
+    - the views keep history in view whenever the journey starts again, and Reset journey leaves its batches alone;
+    - `documents` and `document_pdf` take a cleared batch's case, so a batch's PDFs land after it cleared (also Report now's race).
+  - **Checks:**
+    - backend-api 509 passed, 1 skipped; `test_history.py` holds each ledger to money.js's figures, each paper to its number, the story's numbers following on, nothing pending but the PDFs, and the history in view through a reset;
+    - the frontend gate passes (goldens: "since 1 Jul 2026");
+    - the seeds and live fixtures regenerated.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
