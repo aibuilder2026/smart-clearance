@@ -39,14 +39,19 @@ export type Case = {
 	plan: { net: number; lines: { id: string; units: number }[] } | null;
 	writeOff: { total: number } | null;
 	actual: { net: number } | null;
-	docs: { id: string; type: string; no: string; status: string; pdf: boolean }[];
+	docs: { id: string; type: string; no: string; status: string; pdf: boolean; units?: number | null }[];
 	donation: { status: string; partner: string | null; units: number } | null;
 	moments: { van: { leavesAt: string | null } };
 	push: Record<string, { title: string }>;
 	feed: { key: string; text: string }[];
 	kiranas: { id: string; name: string }[];
 	realised: { lines: { id: string; units: number }[]; godown: number } | null;
+	/** expiry day's settlement of the packs left at the godown (SC-94) */
+	expiry: { policy: string; units: number; credit: number | null; destroyedBy: string | null } | null;
 };
+
+/** one step of a flow: it acts in the UI, then waits for what follows from it */
+export type Step = { id: string; title: string; run: (page: Page) => Promise<void> };
 
 export const STORY = JSON.parse(
 	readFileSync(new URL('../../../../backend-api/src/sc_api/reference/journey.json', import.meta.url), 'utf8')
@@ -76,6 +81,8 @@ const now = () => {
 	if (!here) throw new Error('call begin(run, ref) first');
 	return here;
 };
+/** the run under way, for steps shared between flows (chips.ts) */
+export const running = () => now().run;
 
 /** the batch's case as someone sees it, or null before the Watcher has flagged it */
 export async function caseAs(who: string): Promise<Case | null> {

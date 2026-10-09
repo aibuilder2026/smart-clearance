@@ -8,6 +8,8 @@ import { defineConfig } from '@playwright/test';
 //
 //   corepack pnpm test:journey                      Munchly Chips E2E, headless, recorded (it resets the journey)
 //   corepack pnpm test:journey:mango                Munchly Mango E2E (SC-104), from where the journey stands
+//   corepack pnpm test:journey:leftover             Munchly Chips Leftover E2E (SC-116): kiranas that do not order,
+//                                                   closed by Report now (it resets the journey)
 //   corepack pnpm test:journey --headed             watch it run (E2E_SLOWMO=250 slows each action, in ms)
 //   corepack pnpm test:journey --ui                 Playwright's UI mode, step by step
 //
@@ -37,9 +39,10 @@ export default defineConfig({
 		actionTimeout: 20_000,
 		launchOptions: { slowMo: Number(process.env.E2E_SLOWMO ?? 0) }
 	},
-	// one project a flow, so running one never starts the other (the chips flow resets the journey; the Mango's never does)
+	// one project a flow, so running one never starts another (the chips flows reset the journey; the Mango's never does)
 	projects: [
 		{ name: 'Munchly Chips E2E', testMatch: /munchly-chips\.journey\.ts/ },
-		{ name: 'Munchly Mango E2E', testMatch: /munchly-mango\.journey\.ts/ }
+		{ name: 'Munchly Mango E2E', testMatch: /munchly-mango\.journey\.ts/ },
+		{ name: 'Munchly Chips Leftover E2E', testMatch: /munchly-chips-leftover\.journey\.ts/ }
 	]
 });
