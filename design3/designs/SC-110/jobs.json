@@ -1,0 +1,170 @@
+[
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=a&view=paper&bank=fi",
+  "out": "option-a/paper-feeding-india-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "el": ".s110"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=a&view=paper&bank=ifbn",
+  "out": "option-a/paper-ifbn-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "el": ".s110"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=a&view=meera",
+  "out": "option-a/meera-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=a&view=meera",
+  "out": "option-a/meera-390-light",
+  "width": 390,
+  "theme": "light",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=a&view=meera",
+  "out": "option-a/meera-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=a&view=open",
+  "out": "option-a/opened-390-light",
+  "width": 390,
+  "theme": "light",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=a&view=desk",
+  "out": "option-a/desk-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=a&view=desk",
+  "out": "option-a/desk-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=b&view=paper&bank=fi",
+  "out": "option-b/paper-feeding-india-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "el": ".s110"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=b&view=paper&bank=ifbn",
+  "out": "option-b/paper-ifbn-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "el": ".s110"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=b&view=meera",
+  "out": "option-b/meera-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=b&view=meera",
+  "out": "option-b/meera-390-light",
+  "width": 390,
+  "theme": "light",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=b&view=meera",
+  "out": "option-b/meera-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=b&view=open",
+  "out": "option-b/opened-390-light",
+  "width": 390,
+  "theme": "light",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=b&view=desk",
+  "out": "option-b/desk-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=b&view=desk",
+  "out": "option-b/desk-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=c&view=paper&bank=fi",
+  "out": "option-c/paper-feeding-india-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "el": ".s110"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=c&view=paper&bank=ifbn",
+  "out": "option-c/paper-ifbn-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "el": ".s110"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=c&view=meera",
+  "out": "option-c/meera-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=c&view=meera",
+  "out": "option-c/meera-390-light",
+  "width": 390,
+  "theme": "light",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=c&view=meera",
+  "out": "option-c/meera-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=c&view=open",
+  "out": "option-c/opened-390-light",
+  "width": 390,
+  "theme": "light",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=c&view=desk",
+  "out": "option-c/desk-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-110/receipt/mockup.html?opt=c&view=desk",
+  "out": "option-c/desk-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "full": true
+ }
+]

@@ -66,6 +66,11 @@
 .pp-strong { font-weight: 700; font-size: 15px; }
 .pp-line:has(.pp-strong) { border-top: 1px solid #d9ded9; padding-top: 8px; margin-top: 2px; }
 .pp-note { margin: 6px 0 0; font-size: 12.5px; color: #4b5550; }
+/* the food bank's receipt, opened from the pickup it records (SC-110) */
+.receipt-row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 12px 14px; border: 0; border-radius: 14px; background: var(--primary-soft); color: inherit; font: inherit; text-align: left; cursor: pointer; transition: background-color var(--t-fast) var(--ease); }
+.receipt-row:hover { background: color-mix(in oklab, var(--primary) 20%, var(--surface)); }
+.receipt-row > .grow { display: grid; gap: 1px; min-width: 0; }
+.receipt-view { display: inline-flex; align-items: center; gap: 2px; font-weight: 600; color: var(--primary-text); white-space: nowrap; }
 
 /* ---------- ExpireSoon: another company's marketplace, violet, dates on everything ---------- */
 .esw { --primary: var(--violet); --primary-hover: var(--violet-hover); --primary-fg: var(--violet-fg); --primary-text: var(--violet-text); --primary-soft: var(--violet-soft); --glow: color-mix(in oklab, var(--violet) 70%, white); display: contents; }

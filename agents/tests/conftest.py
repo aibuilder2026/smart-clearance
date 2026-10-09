@@ -65,6 +65,50 @@ def dist(did: str = "rakesh") -> dict[str, Any]:
     return {**STORY["distributors"][did], "permission": {"by": did, "at": "2026-10-02T08:10:00+05:30", "paused": False}}
 
 
+# the receipt Feeding India issues as it collects the Mango Drink (SC-110: design3 data.js MANGO_RECEIPT), as
+# backend-api's case detail gives it, and the same paper as India FoodBanking Network's acknowledgement
+RECEIPT = {
+    "id": "receipt",
+    "type": "Donation receipt",
+    "owner": "Feeding India",
+    "no": "FI/HYD/26-27/0417",
+    "status": "generated",
+    "amount": 0,
+    "note": "Issued in the app by Feeding India as the packs were collected: the donor's evidence for BRSR Principle 6, "
+    "not a tax certificate.",
+    "units": 58,
+    "date": "2026-10-06",
+    "paper": "In-app receipt",
+    "stamp": "RECEIVED",
+    "kg": 12.47,
+    "meals": 58,
+    "mealsRule": "a meal for each pack served, indicative",
+    "value": None,
+    "csr": None,
+    "at": "10:00",
+    "by": "Meera",
+    "donor": "Munchly Foods Ltd",
+    "fssai": "10019022001234",
+    "via": "Lakshmi Agencies",
+    "from": "Begum Bazaar godown, Hyderabad",
+    "spot": "the Charminar hunger spot",
+    "pdf": False,
+}
+ACKNOWLEDGEMENT = {
+    **RECEIPT,
+    "type": "Donation acknowledgement",
+    "owner": "India FoodBanking Network",
+    "no": "IFBN/ACK/26-27/0112",
+    "paper": "Donation acknowledgement (CSR / 80G, indicative)",
+    "stamp": "ACKNOWLEDGED",
+    "meals": 31,
+    "mealsRule": "a meal for every 400 g of food, indicative",
+    "value": 638,
+    "csr": "Schedule VII (i), eradicating hunger",
+    "note": "An acknowledgement for the donor's CSR records, indicative. Section 80G covers gifts of money, so this is "
+    "not a tax certificate.",
+}
+
 LISTING = {"id": "ES-24117", "status": "live", "units": 772, "price": 15, "reserve": RESERVE, "at": "2026-10-03"}
 
 

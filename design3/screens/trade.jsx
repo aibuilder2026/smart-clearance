@@ -425,8 +425,10 @@
 
   /* ======================= Meera · Feeding India ======================= */
   function Pickups({ me }) {
-    const s = useStore(); const d = s.mango.donation; const app = useApp(); const [later, setLater] = useState(false); const { toast } = useNotice(); const n = D.MANGO_FB; const DN = D.JOURNEY.donation;
+    const s = useStore(); const d = s.mango.donation; const app = useApp(); const [later, setLater] = useState(false); const [paper, setPaper] = useState(false); const { toast } = useNotice(); const n = D.MANGO_FB; const DN = D.JOURNEY.donation;
     const bb = fmt.date(D.BATCHES[1].bestBefore);
+    // the receipt Feeding India issued as the packs were collected (SC-110): opened from the pickup, in a sheet
+    const R = D.MANGO_RECEIPT, mb = D.BATCHES[1];
     return <Screen me={me} title="Pickups" sub="Feeding India · Hyderabad">
       {!d ? <Card style={{ maxWidth: 640 }}><Empty img="donation-crate" title="No pickup requests" body="Brands' donation agents send surplus food here when it fits your intake rules: 15+ days left, 50+ units." /></Card> :
       <Columns sideWidth={340}
@@ -440,12 +442,13 @@
           </div></div>
           {d !== "booked" && <Card className="stack snug"><div className="card-head"><span className="card-title">Pickup</span><Badge tone="green" icon={d === "collected" ? "check" : "calendar"}>{d === "collected" ? "collected" : `${DN.date} · ${DN.time}`}</Badge></div>
             <K.VTracker items={[{ id: "req", title: "Requested by the donation agent", time: DN.asked }, { id: "conf", title: "Confirmed by Meera", time: DN.confirmed }, { id: "col", title: `Collected from ${DN.from}`, time: d === "collected" ? DN.collected : `${DN.date.split(" ")[0]} ${DN.time}` }, { id: "serve", title: `Served at ${DN.spot}`, time: "this week" }]} done={d === "collected" ? 3 : 2} current={d === "collected" ? 3 : 2} />
-            {d === "confirmed" && <Button variant="primary" size="lg" icon="package-check" onClick={() => { Flow.act("collect"); toast({ text: `Receipt issued · ${n} drinks`, tone: "ok" }); }}>Mark collected</Button>}
-            {d === "collected" && <div className="row" style={{ gap: 12, padding: "12px 14px", borderRadius: 14, background: "var(--primary-soft)" }}><Icon name="receipt" size={20} /><span className="grow"><b>In-app receipt issued</b><div className="t-footnote muted">{n} drinks served · shared with Munchly for its BRSR table</div></span></div>}
+            {d === "confirmed" && <Button variant="primary" size="lg" icon="package-check" onClick={() => { Flow.act("collect"); toast({ text: `${R.type} ${R.no} issued`, tone: "ok" }); }}>Mark collected</Button>}
+            {d === "collected" && <button type="button" className="receipt-row" onClick={() => setPaper(true)}><Icon name="receipt" size={20} /><span className="grow"><b>{R.type} {R.no}</b><span className="t-footnote">{fmt.num(R.units)} packs · {fmt.num(R.meals)} meals · shared with Munchly for its BRSR table</span></span><span className="receipt-view">View<Icon name="chevron-right" size={16} /></span></button>}
           </Card>}
         </>}
         side={<><SectionTitle>FSSAI surplus-food checklist</SectionTitle><Card className="paper stack tight" style={{ padding: 18 }}>{["Sealed, undamaged packs", `Best before ${bb}, 22 days left`, "Ambient storage, away from sunlight", "Batch MF-2410-118 on every carton", "Donor: Munchly Foods via Lakshmi Agencies"].map(t => <div key={t} className="row top" style={{ gap: 8 }}><Icon name="square-check" size={17} style={{ color: "#167a52", marginTop: 1 }} /><span className="t-subhead">{t}</span></div>)}</Card>
           <List head="Your intake rules"><ListRow title="Days left" value="15 or more" /><ListRow title="Minimum lot" value="50 units" /><ListRow title="Logistics" value={D.SETUP.partners[0].pickup} /></List></>} />}
+      <Sheet open={paper} onClose={() => setPaper(false)} title={R.type} footer={R.pdf ? <Button variant="secondary" block icon="download">Download the PDF</Button> : null}><div className="stack snug"><S.Receipt doc={R} batch={mb} sku={D.SKUS[mb.sku]} dist={D.DISTRIBUTORS[mb.distributor]} /><span className="t-footnote muted">The same paper is in Munchly's document pack for {mb.id}.</span></div></Sheet>
       <Sheet open={later} onClose={() => setLater(false)} title="Suggest another time" detent="medium" footer={<Button variant="primary" block onClick={() => { setLater(false); toast({ text: "Sent · the agent will confirm with Lakshmi Agencies" }); }}>Send</Button>}><div className="stack snug">{DN.slots.map(t => <label key={t} className="list-row" style={{ gridTemplateColumns: "auto 1fr", cursor: "pointer" }}><input type="radio" name="slot" defaultChecked={t === DN.slots[0]} /> {t}</label>)}</div></Sheet>
     </Screen>;
   }

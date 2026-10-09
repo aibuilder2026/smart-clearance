@@ -35,7 +35,7 @@
     confirmPickup: s => { if (s.mango.donation !== "booked") return; s.mango.donation = "confirmed"; audit(s, "meera", "confirmed the pickup, Tuesday 10:00", `MF-2410-118 · ${D.MANGO_FB} packs`, "Day 1"); notify(s, "priya", { title: "Feeding India confirmed", body: `${D.MANGO_FB} packs of Mango Drink, pickup Tuesday 10:00 from Begum Bazaar. Served at the Charminar hunger spot.`, at: "Day 1", link: "execution" }); },
     // the staff sale, recorded once by the distributor (SC-87); the story's stub opens none
     recordStaffSale: (s, sold) => { const st = s.hero.staff; if (!st || st.status !== "open") return; Object.assign(st, { status: "recorded", sold, left: st.units - sold }); },
-    collect: s => { s.mango.donation = "collected"; audit(s, "meera", `collected ${D.MANGO_FB} packs and issued the receipt`, "MF-2410-118", "Day 4"); },
+    collect: s => { s.mango.donation = "collected"; audit(s, "meera", `collected ${D.MANGO_FB} packs and issued ${D.MANGO_RECEIPT.type.toLowerCase()} ${D.MANGO_RECEIPT.no}`, "MF-2410-118", "Day 4"); },
     // Monday: the buyer's balance lands and his own transporter collects the lot from the godown
     dispatch: s => { s.hero.truck = { status: "dispatched", at: "Mon 5 Oct" }; if (s.hero.award) s.hero.award.status = "paid"; s.hero.phase = "dispatched"; feed(s, E("dispatch")); audit(s, "rakesh", `loaded ${D.BUYER.name}'s truck`, `ES-24117 · ${D.BUYER.city}`, "Mon 5 Oct"); },
     settle: s => { s.hero.phase = "settled"; s.hero.docs = D.DOCS.map(d => ({ id: d.id, status: d.status })); feed(s, E("papers")); notify(s, "anita", Object.assign({ link: "paperwork" }, D.PUSH.papers)); notify(s, "rakesh", Object.assign({ link: "orders" }, D.PUSH.invoice)); notify(s, "rakesh", Object.assign({ link: "van" }, D.PUSH.van)); },

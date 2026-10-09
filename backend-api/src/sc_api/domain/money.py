@@ -571,18 +571,29 @@ def plan(batch: Obj, sku: Obj, *, floors: Obj | None = None, rules: Obj = RULES)
         "alt": alt,
         "kg": kg,
         "co2": r2(kg * rules["co2PerKg"]),
-        "meals": donated,
+        "meals": meals_of(donated, sku),
         "soldUnits": sold_units,
         "donated": donated,
         "leftover": leftover,
     }
 
 
-def realised(p: Obj, sku: Obj, done: Mapping[str, float] | None, *, rules: Obj = RULES) -> dict[str, Any]:
+def meals_of(units: float, sku: Obj, rule: Obj | None = None) -> Any:
+    """the meals a donation makes, by the food bank's own rule (SC-110, data.js SETUP.partners): a meal for every so
+    many packs served, or for every so many kilos of food; without a rule, a pack a meal"""
+    if rule and _truthy(rule.get("kg")):
+        return math.floor(r2(units * _get(sku, "kgPerUnit")) / rule["kg"])
+    return math.floor(units / ((rule or {}).get("packs") or 1))
+
+
+def realised(
+    p: Obj, sku: Obj, done: Mapping[str, float] | None, meals_rule: Obj | None = None, *, rules: Obj = RULES
+) -> dict[str, Any]:
     """what a plan came to once its lines were done (SC-86): each line on the units its channel actually took (`done`:
     ordered by kiranas, awarded on ExpireSoon, sold to staff, collected by the food bank; a channel not in `done` took
     what was planned). What no channel took is left at the godown: nothing recovered, and it still faces the
-    write-off. A plan done as planned comes back as it was."""
+    write-off. A plan done as planned comes back as it was. Its meals are counted by the rule of the food bank that
+    collected (`meals_rule`, SC-110)."""
 
     def took(ln: Obj) -> Any:
         if ln["id"] != "writeoff" and done and done.get(ln["id"]) is not None:
@@ -590,7 +601,7 @@ def realised(p: Obj, sku: Obj, done: Mapping[str, float] | None, *, rules: Obj =
         return ln["units"]
 
     if all(took(ln) == ln["units"] for ln in p["lines"]):
-        return {**p, "godown": 0}
+        return {**p, "godown": 0, "meals": meals_of(p["donated"], sku, meals_rule)}
     lines = [
         ln
         if took(ln) == ln["units"]
@@ -628,7 +639,7 @@ def realised(p: Obj, sku: Obj, done: Mapping[str, float] | None, *, rules: Obj =
         "itcReversed": r2((donated + p["leftover"]) * itc),
         "kg": kg,
         "co2": r2(kg * rules["co2PerKg"]),
-        "meals": donated,
+        "meals": meals_of(donated, sku, meals_rule),
         "soldUnits": sold_units,
         "donated": donated,
         "godown": godown,
@@ -751,19 +762,55 @@ def expiry_claim(units: float, sku: Obj, *, rules: Obj = RULES) -> dict[str, Any
     }
 
 
+def receipt(units: float, sku: Obj, partner: Obj, facts: Obj) -> dict[str, Any]:
+    """the food bank's receipt for the packs it collected (SC-110), in its own form (data.js SETUP.partners: Feeding
+    India's in-app receipt, India FoodBanking Network's acknowledgement): the packs, their weight and the meals by its
+    own rule, and on a CSR acknowledgement their value at the donor's cost (indicative). `facts` are the collection's:
+    the number from the food bank's series, the day (ISO) and the time, who collected, the donor and its FSSAI licence,
+    the distributor it came through and from where, and where it is served"""
+    r = partner["receipt"]
+    return {
+        "id": "receipt",
+        "type": r["title"],
+        "owner": partner["name"],
+        "no": facts["no"],
+        "status": "generated",
+        "amount": 0,
+        "paper": partner["paper"],
+        "stamp": r["stamp"],
+        "units": units,
+        "kg": r2(units * _get(sku, "kgPerUnit")),
+        "meals": meals_of(units, sku, partner["meals"]),
+        "mealsRule": partner["meals"]["rule"],
+        "value": r2(units * _get(sku, "cost")) if _truthy(r.get("csr")) else None,
+        "csr": r.get("csr") or None,
+        "date": facts.get("date"),
+        "at": facts.get("at"),
+        "by": facts.get("by"),
+        "donor": facts.get("donor"),
+        "fssai": facts.get("fssai"),
+        "via": facts.get("via"),
+        "from": facts.get("from"),
+        "spot": facts.get("spot"),
+        "note": r["note"],
+    }
+
+
 def documents(
     p: Obj,
     sku: Obj,
     aw: Obj | None,
     support: Obj,
     parties: Obj,
+    rcpt: Obj | None = None,
     *,
     numbers: Mapping[str, str],
     rules: Obj = RULES,
 ) -> list[dict[str, Any]]:
     """the batch's paperwork: the buyer's tax invoice and the e-way bill check (once ExpireSoon is awarded), the
-    price-support credit note, the ITC memo, the FSSAI checklist and the destruction certificate. money.js numbers
-    the story's invoice and credit note itself; here they are `numbers["invoice"]` and `numbers["support"]`."""
+    price-support credit note, the ITC memo, the FSSAI checklist, the food bank's receipt for a donated batch (SC-110)
+    and the destruction certificate. money.js numbers the story's invoice and credit note itself; here they are
+    `numbers["invoice"]` and `numbers["support"]`."""
     es = next((ln for ln in p["lines"] if ln["id"] == "expiresoon"), None)
     seller, client = parties["seller"], parties["client"]
     docs: list[dict[str, Any]] = []
@@ -845,6 +892,8 @@ def documents(
             "amount": 0,
         }
     )
+    if rcpt:
+        docs.append(dict(rcpt))
     docs.append(
         {
             "id": "destruction",

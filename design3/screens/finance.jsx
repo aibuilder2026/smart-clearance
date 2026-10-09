@@ -15,6 +15,21 @@
 
   /* ---------- the documents, set on paper ---------- */
   const Line = ({ k, v, strong, sub }) => <div className="pp-line"><span>{k}{sub && <em> {sub}</em>}</span><span className={strong ? "pp-strong" : ""}>{v}</span></div>;
+  // the food bank's receipt for the packs it collected (SC-110), in its own form: Feeding India's in-app receipt, India
+  // FoodBanking Network's acknowledgement, which adds the value at the donor's cost for its CSR records. The same paper
+  // in the batch's pack and on the food bank's pickup
+  function Receipt({ doc: r, batch, sku, dist }) {
+    return <div className="paper pp">
+      <div className="pp-head"><div><div className="pp-title">{r.type}</div><div className="pp-no">{r.no} · {r.paper === "In-app receipt" ? "in-app" : "acknowledgement"} · {fmt.date(r.date)}</div></div><span className="pp-stamp ok">{r.stamp}</span></div>
+      <div className="pp-parties"><div><em>Donor</em><b>{r.donor}</b><span>through {r.via}, {r.from}</span><span className="pp-mono">FSSAI {r.fssai}</span></div><div><em>Received by</em><b>{r.owner}</b><span>{dist.city}</span><span className="pp-mono">{r.paper}</span></div></div>
+      <table className="pp-table"><thead><tr><th>Goods</th><th>Packs</th><th>Weight</th></tr></thead><tbody><tr><td>{sku.brand} {sku.name}<br /><em>Batch {batch.id} · best before {fmt.date(batch.bestBefore)}</em></td><td>{fmt.num(r.units)}</td><td>{fmt.kg(r.kg)}</td></tr></tbody></table>
+      <Line k="Collected" sub={`by ${r.by}`} v={`${fmt.day(r.date)}, ${r.at}`} />
+      <Line k="Served at" v={r.spot} />
+      <Line k="Meals" sub={r.mealsRule} v={fmt.num(r.meals)} />
+      {r.value != null && <><div className="pp-sub">For the donor's CSR records</div><Line k="Value at the donor's cost" sub={`${fmt.num(r.units)} × ₹${sku.cost}, indicative`} v={fmt.inr2(r.value)} /><Line k="CSR activity" v={r.csr} /></>}
+      <p className="pp-note">{r.note}</p>
+    </div>;
+  }
   function Paper({ id }) {
     const d = DOC(id); const inv = DOC("invoice"); const R = D.DISTRIBUTORS.rakesh, B = D.BUYER;
     const head = (title, no, right) => <div className="pp-head"><div><div className="pp-title">{title}</div><div className="pp-no">{no}</div></div>{right}</div>;
@@ -42,6 +57,7 @@
         <Line k={`Credit to ${R.name}`} v={x.amount != null ? fmt.inr2(x.amount) : "—"} strong />
         {x.policy === "full-credit" && <><div className="pp-sub">{C}'s own costs, on destroying them</div><Line k="Disposal" v={fmt.inr2(x.disposal)} /><Line k="EPR on the packaging" v={fmt.inr2(x.epr)} /><Line k="Input GST reversed" sub="section 17(5)(h)" v={fmt.inr2(x.itc)} /><Line k="Expiry, all in" v={fmt.inr2((x.amount || 0) + x.disposal + x.epr + x.itc)} strong /></>}
         <p className="pp-note">{x.note}</p></div>; }
+    if (id === "receipt" && d) { const b = D.BATCHES.find(x => x.hero); return <Receipt doc={d} batch={b} sku={D.SKUS[b.sku]} dist={D.DISTRIBUTORS[b.distributor]} />; }
     if (id === "fssai") return <div className="paper pp">{head("FSSAI surplus-food checklist", "MF-2409-117", <span className="pp-stamp">NOT REQUIRED</span>)}<p className="pp-note">Nothing from this batch was donated. The Mango Drink batch MF-2410-118 has its own checklist: {D.MANGO_FB} packs to Feeding India, Hyderabad.</p></div>;
     return <div className="paper pp">{head("Destruction certificate", "MF-2409-117", <span className="pp-stamp">NOT REQUIRED</span>)}<Line k="Units left to destroy" v="0" strong /><p className="pp-note">Issued only when units remain, with the ITC reversal entry pre-filled so finance is never surprised.</p></div>;
   }
@@ -142,5 +158,5 @@
     </Screen>;
   }
 
-  Object.assign(window.SC3_SCREENS, { Paperwork, Report, Paper, KeepsWhat, download, csv });
+  Object.assign(window.SC3_SCREENS, { Paperwork, Report, Paper, Receipt, KeepsWhat, download, csv });
 })();

@@ -289,6 +289,23 @@ export type Doc = {
 	epr?: number;
 	itc?: number;
 	reversed?: number;
+	/** the food bank's receipt (SC-110, money.js receipt) */
+	paper?: string;
+	stamp?: string;
+	kg?: number;
+	meals?: number;
+	mealsRule?: string;
+	value?: number | null;
+	csr?: string | null;
+	at?: string;
+	by?: string;
+	donor?: string;
+	fssai?: string;
+	via?: string;
+	from?: string;
+	spot?: string | null;
+	/** whether its PDF can be downloaded (the live source) */
+	pdf?: boolean;
 };
 
 /** expiry day's settlement of the packs left at the godown (SC-94, money.js expirySettlement) */
@@ -540,6 +557,8 @@ export type WorkspaceSeed = {
 	docs: Doc[];
 	mangoPlan: Plan;
 	mangoFb: number;
+	/** the receipt Feeding India issues as the Mango Drink is collected (SC-110) */
+	mangoReceipt: Doc;
 	returnBy: string;
 	rules: MoneyRules;
 	roles: Record<RoleId, string>;
@@ -559,6 +578,15 @@ export type Partner = {
 	/** how it collects, in short */
 	pickup?: string;
 	paper: string;
+	/** its own receipt for what it collects, and its own rule for the meals a donation makes (SC-110) */
+	receipt?: {
+		title: string;
+		stamp: string;
+		series: { prefix: string; next: number; width: number };
+		csr: string | null;
+		note: string;
+	};
+	meals?: { packs?: number; kg?: number; rule: string };
 };
 
 /** the moments of the batch's journey the screens state beyond its timeline */
@@ -717,7 +745,10 @@ export type CaseData = {
 	donation: { batch: Batch; sku: Sku; dist: Distributor; plan: Plan; units: number; partner: Partner } & Omit<
 		Journey['donation'],
 		'partner'
-	>;
+	> & {
+			/** the food bank's receipt, once it has collected (SC-110) */
+			receipt: Doc | null;
+		};
 };
 
 /** the people a visitor can step into in the stub, by where they stand */

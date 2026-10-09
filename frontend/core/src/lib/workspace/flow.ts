@@ -186,7 +186,13 @@ export const A = {
 	},
 	collect: (s: State) => {
 		s.mango.donation = 'collected';
-		audit(s, 'meera', `collected ${D.mangoFb} packs and issued the receipt`, 'MF-2410-118', 'Day 4');
+		audit(
+			s,
+			'meera',
+			`collected ${D.mangoFb} packs and issued ${D.mangoReceipt.type.toLowerCase()} ${D.mangoReceipt.no}`,
+			'MF-2410-118',
+			'Day 4'
+		);
 	},
 	// Monday: the buyer's balance lands and his own transporter collects the lot from the godown
 	dispatch: (s: State) => {

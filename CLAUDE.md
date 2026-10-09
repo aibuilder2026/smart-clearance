@@ -1131,6 +1131,34 @@
   - **Found:** the subtitle read "prepared by the Paperwork agent at the award" for the Mango Drink, which had no award. Before its papers, the waiting card also promised a tax invoice, an e-way bill check and the buyer's truck.
   - **The fix** (`Paperwork.svelte`): a batch with no ExpireSoon line reads "prepared by the Paperwork agent once every line was done". Its waiting card says the pack follows the last of its lines, and lists only the papers it gets. The chips are unchanged.
   - **Checks:** the frontend gate passes, with workspace at 64 and core's goldens unchanged. A new live test reads both subtitles and the Mango's waiting state, and fails without the fix.
+- **SC-110** (In Review, branch `SC-110-donation-receipt`): the food bank's donation receipt, a real paper, per food bank.
+  - **The request:** "I dont see any receipts in the app for donations....": Meera's pickup said "In-app receipt issued", but no receipt existed. Per food bank, as the Journey Map has it.
+  - **Design first:** three options on one board in app v3, `SC-110 design review.html`:
+    - A, a paper in the pack (recommended);
+    - B, one donation paper;
+    - C, a receipts register.
+
+    The maintainer picked **A**, with each food bank's own numbering series, each food bank's own meals rule, and the value kept on India FoodBanking Network's acknowledgement. Designs, stills and the decision are in `design3/designs/SC-110/`.
+  - **The paper:** Feeding India issues a Donation receipt (RECEIVED; `FI/{city}/26-27/0417` on; a meal for each pack served). India FoodBanking Network issues a Donation acknowledgement (ACKNOWLEDGED; `IFBN/ACK/26-27/0112` on; a meal for every 400 g), which adds the value at the donor's cost and the CSR activity, and is not a tax certificate. Each food bank's form, series and rule sit in `data.js` `SETUP.partners`, and the series in `world.js` `NUMBERS`. money.js gains `mealsOf`, `receipt`, `realised(…, mealsRule)` and `documents(…, receipt)`, held by fixtures.
+  - **Where it shows:**
+    - Meera's collected pickup opens it in a sheet, with its PDF once laid out;
+    - the batch's pack sets it after the FSSAI checklist;
+    - Vikram's BRSR line takes its meals, and the evidence names its number.
+  - **backend-api:**
+    - collecting issues it in the food bank's series (a confirmed pickup on expiry day too), kept on the donation, with the audit line naming it;
+    - `journey.step receipt` asks Paperwork for its PDF at once, and the pack carries it with its own day and PDF;
+    - the ledger counts the food bank's meals;
+    - `ws-foodbank` gains `docs.read` for its own receipt.
+  - **agents:** Paperwork's receipt pipeline and `receipt.html`.
+  - **Checks:**
+    - backend-api 489 passed (money fixtures, the receipt end to end, a food bank's own meals rule);
+    - agents 193 passed;
+    - the frontend gate passes: core 249 (a golden of the collected pickup and its receipt), api 77, workspace 66 (2 new live tests), admin 17, demo 5, console 3;
+    - the live fixtures were regenerated;
+    - design3's sheet was shot in the prototype, and both PDFs were rendered with WeasyPrint;
+    - the browser suites were not run.
+  - **Locally:** a database hydrated before SC-110 has no receipt series or meals rules until `hydrate.sh --live-only`, which restarts the journey. Until then collecting issues no receipt, and Meera's pickup says so.
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 - **SC-111** (In Review, branch `SC-111-hero-story-film`): the hero film tells the journey through one surreal day.
   - **The request:** the film should tell the story: brands and distributors, the donation, the kiranas and the staff sale, the tax savings; 10 to 15 s, engaging, the day-to-night-to-day light with the violet sky kept and the night more visible; LTX, Qwen and ffmpeg.
   - **Design first:** three options on one board in platform v3, `SC-111 design review.html`, each a complete hero on the real kit with its clips rendered:

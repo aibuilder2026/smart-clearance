@@ -245,6 +245,21 @@ describe('the parts a tap opens', () => {
 		flushSync();
 		expect(text(r.container.querySelector('[role="dialog"]')!)).toMatchSnapshot();
 	});
+	it("the food bank's receipt, from the collected pickup (SC-110)", async () => {
+		fastForward(9);
+		W.act('collect');
+		const r = show(RoleApp as Part, {
+			me: user('meera'),
+			route: { name: 'pickups' },
+			ongo: () => {},
+			onback: () => {}
+		});
+		const out = [text(r.container)];
+		await fireEvent.click(r.container.querySelector('.receipt-row')!);
+		flushSync();
+		out.push(text(r.container.querySelector('[role="dialog"]')!));
+		expect(out).toMatchSnapshot();
+	});
 	it('another pickup time', async () => {
 		STATES.find(([n]) => n === 'donation booked')![1]();
 		const r = show(RoleApp as Part, {

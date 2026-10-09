@@ -167,9 +167,49 @@ async def _orders(ctx: Ctx, s: Scene) -> list[m.CaseOrder]:
 
 
 async def realised(ctx: Ctx, s: Scene) -> dict[str, Any]:
-    """the plan as its finished lines came to (money.realised): what was ordered, awarded, sold and collected"""
+    """the plan as its finished lines came to (money.realised): what was ordered, awarded, sold and collected, with
+    the meals counted by the rule of the food bank that collected (SC-110)"""
     ordered = sum(o.units for o in await _orders(ctx, s))
-    return money.realised(s.case.plan or {}, s.sku_obj(), J.done_units(_state(s.case), ordered), rules=s.rules)
+    bank = await _bank(ctx, s)
+    rule = bank.details.get("meals") if bank else None
+    return money.realised(s.case.plan or {}, s.sku_obj(), J.done_units(_state(s.case), ordered), rule, rules=s.rules)
+
+
+async def _bank(ctx: Ctx, s: Scene) -> m.Partner | None:
+    """the food bank the donation is booked with"""
+    pid = (s.case.donation or {}).get("partner")
+    return await ctx.session.get(m.Partner, (s.c.id, pid)) if pid else None
+
+
+async def _receipt(ctx: Ctx, s: Scene, at: datetime, by: str) -> dict[str, Any] | None:
+    """the food bank's receipt for the packs it collected (SC-110): issued in its name as it collects, numbered in its
+    own series, in its own form (money.receipt). A food bank set up without a receipt or a series issues none"""
+    bank = await _bank(ctx, s)
+    kind = f"receipt.{bank.id}" if bank else ""
+    if bank is None or not bank.details.get("receipt") or not await world.numbers(ctx, s.c.id, kind):
+        return None
+    facts = {
+        "no": await world.next_number(ctx, s.c.id, kind, city=s.dist.city or ""),
+        "date": at.astimezone(IST).date().isoformat(),
+        "at": at.astimezone(IST).strftime("%H:%M"),
+        "by": by,
+        "donor": s.c.name,
+        "fssai": (s.c.workspace_doc or {}).get("fssai", ""),
+        "via": s.dist.name,
+        "from": f"{s.dist.godown}, {s.dist.city}" if s.dist.godown else s.dist.city,
+        "spot": (s.case.donation or {}).get("spot"),
+    }
+    partner = {"name": bank.name, **bank.details}
+    return money.jsonable({**money.receipt(s.case.donation["units"], s.sku_obj(), partner, facts), "pdf": None})
+
+
+async def _issue_receipt(ctx: Ctx, s: Scene, at: datetime, by: str) -> dict[str, Any] | None:
+    """the donation collected, with the food bank's receipt; Paperwork lays the receipt out as a PDF"""
+    rcpt = await _receipt(ctx, s, at, by)
+    s.case.donation = {**s.case.donation, "status": "collected", "collectedAt": at.isoformat(), "receipt": rcpt}
+    if rcpt:
+        await ev.publish(ctx, J.Event(J.STEP, {"type": J.RECEIPT, "client": s.c.id, "ref": s.ref}, f"{s.c.id}:{s.ref}"))
+    return rcpt
 
 
 async def _run(ctx: Ctx, s: Scene | None, client_id: str, run: Run | None, text: str, *, status: str = "done") -> None:
@@ -1371,12 +1411,13 @@ async def collect(ctx: Ctx, client_id: str, ref: str) -> None:
     me = await world.member(ctx, client_id, _member(ctx))
     if me.org_ref != s.case.donation.get("partner"):
         raise ApiError(403, "This donation is booked with another food bank.")
-    s.case.donation = {**s.case.donation, "status": "collected", "collectedAt": ev.now(ctx, s.c).isoformat()}
+    rcpt = await _issue_receipt(ctx, s, ev.now(ctx, s.c), me.name)
     await audit.record(
         ctx,
         s.c.id,
         "donation.collect",
-        f"collected {s.case.donation['units']} packs and issued the receipt",
+        f"collected {s.case.donation['units']} packs and issued "
+        + (f"{rcpt['type'].lower()} {rcpt['no']}" if rcpt else "the receipt"),
         {"member": me.ref, "target": ref, "batch": ref},
     )
     await _advance(ctx, s)
@@ -1589,18 +1630,20 @@ async def documents(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> None
     # without the distributor's own price (dp) there is no gap to support, so no credit note: a number is drawn only for
     # a paper that is issued, so the sequence has no gaps
     blank = {"support": "", "invoice": ""}
-    draft = money.documents(plan_, sku, awarded, support, parties, numbers=blank, rules=s.rules)
+    # a donated batch's pack carries the food bank's receipt, as it was issued at collection (SC-110)
+    rcpt = (s.case.donation or {}).get("receipt") if (s.case.donation or {}).get("status") == "collected" else None
+    draft = money.documents(plan_, sku, awarded, support, parties, rcpt, numbers=blank, rules=s.rules)
     # a credit note is issued only for a gap to support (an SKU with its dealer price, and something sold below it)
     issues_support = any(d["id"] == "support" and (money.jsonable(d.get("amount")) or 0) > 0 for d in draft)
     numbers = {
         "support": await world.next_number(ctx, client_id, "support") if issues_support else "",
         "invoice": await world.next_number(ctx, client_id, "invoice") if award and _line(s, "expiresoon") else "",
     }
-    docs = money.documents(plan_, sku, awarded, support, parties, numbers=numbers, rules=s.rules)
+    docs = money.documents(plan_, sku, awarded, support, parties, rcpt, numbers=numbers, rules=s.rules)
     docs = [d for d in docs if not (d["id"] == "support" and not issues_support)]
-    # the papers are dated the journey day the Paperwork agent drafts them
+    # the papers are dated the journey day the Paperwork agent drafts them; the receipt keeps its own day and PDF
     dated = _today(ctx, s.c).isoformat()
-    s.case.docs = money.jsonable([{**d, "pdf": None, "date": dated} for d in docs])
+    s.case.docs = money.jsonable([{**d, "pdf": d.get("pdf"), "date": d.get("date") or dated} for d in docs])
     s.case.phase = "settled"
     orders = await _orders(ctx, s)
     if not orders:  # nothing went to the kiranas: no van round
@@ -1678,6 +1721,9 @@ async def document_pdf(ctx: Ctx, client_id: str, ref: str, doc_id: str, name: st
     # a new dict for the paper, not the stored one changed in place: the column is then a value that differs from what
     # was loaded, so it is written (SC-100: in place, the PDF was never kept)
     s.case.docs = [{**d, "pdf": name} if d["id"] == doc_id else d for d in s.case.docs or []]
+    rcpt = (s.case.donation or {}).get("receipt")
+    if doc_id == "receipt" and rcpt:  # the food bank's receipt, laid out as it collected (SC-110)
+        s.case.donation = {**s.case.donation, "receipt": {**rcpt, "pdf": name}}
     await ctx.session.flush()
     await ev.changed(ctx, s.c, ref)
 
@@ -1756,8 +1802,9 @@ async def expire(ctx: Ctx, client_id: str, ref: str) -> None:
             "onExpiry": True,
         }
     d = s.case.donation or {}
-    if d.get("status") == "confirmed":
-        s.case.donation = {**d, "status": "collected", "collectedAt": at, "onExpiry": True}
+    if d.get("status") == "confirmed":  # the confirmed pickup counts as collected, with its receipt (SC-110)
+        await _issue_receipt(ctx, s, datetime.fromisoformat(at), d.get("partnerName") or "")
+        s.case.donation = {**s.case.donation, "onExpiry": True}
     elif d and d.get("status") not in ("collected", "declined"):
         await _decline(ctx, s, "the batch expired before the pickup", agent="Donation")
     await _advance(ctx, s)

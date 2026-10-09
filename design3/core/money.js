@@ -131,17 +131,25 @@
       batch: batch.id, units, rows, lines, gross, costs, itcLoss, net, pctMRP: Math.round((net / (units * sku.mrp)) * 100),
       writeOff: wo, bookCost, pnl, swing: r2(pnl + wo.total), cashAvoided: r2(wo.total - wo.stock),
       itcRetained: r2(soldUnits * itcOf(sku)), itcReversed: r2((donated + leftover) * itcOf(sku)),
-      disposalAvoided: r2(wo.disposal + wo.epr), alt, kg, co2: r2(kg * RULES.co2PerKg), meals: donated, soldUnits, donated, leftover,
+      disposalAvoided: r2(wo.disposal + wo.epr), alt, kg, co2: r2(kg * RULES.co2PerKg), meals: mealsOf(donated, sku), soldUnits, donated, leftover,
     };
+  }
+
+  // the meals a donation makes, by the food bank's own rule (SC-110, data.js SETUP.partners): a meal for every so many
+  // packs served, or for every so many kilos of food; without a rule, a pack a meal
+  function mealsOf(units, sku, rule) {
+    if (rule && rule.kg) return Math.floor(r2(units * sku.kgPerUnit) / rule.kg);
+    return Math.floor(units / ((rule && rule.packs) || 1));
   }
 
   // what a plan came to once its lines were done (SC-86): each line on the units its channel actually took (`done`:
   // ordered by kiranas, awarded on ExpireSoon, sold to staff, collected by the food bank; a channel not in `done` took
   // what was planned). What no channel took is left at the godown: nothing recovered, and it still faces the write-off.
-  // A plan done as planned comes back as it was.
-  function realised(p, sku, done) {
+  // A plan done as planned comes back as it was. Its meals are counted by the rule of the food bank that collected
+  // (`mealsRule`, SC-110).
+  function realised(p, sku, done, mealsRule) {
     const took = l => (l.id !== "writeoff" && done && done[l.id] != null ? Math.max(0, done[l.id]) : l.units);
-    if (p.lines.every(l => took(l) === l.units)) return { ...p, godown: 0 };
+    if (p.lines.every(l => took(l) === l.units)) return { ...p, godown: 0, meals: mealsOf(p.donated, sku, mealsRule) };
     const lines = p.lines.map(l => (took(l) === l.units ? l : lineOf(p.rows.find(r => r.id === l.id), took(l), sku)));
     const sum = k => r2(lines.reduce((t, l) => t + l[k], 0));
     const units = (pred) => lines.filter(pred).reduce((t, l) => t + l.units, 0);
@@ -155,7 +163,7 @@
     const kg = r2((p.units - left) * sku.kgPerUnit);
     return {
       ...p, lines, gross, costs, itcLoss, net, pctMRP: Math.round((net / (p.units * sku.mrp)) * 100), pnl, swing: r2(pnl + p.writeOff.total),
-      itcRetained: r2(soldUnits * itcOf(sku)), itcReversed: r2((donated + p.leftover) * itcOf(sku)), kg, co2: r2(kg * RULES.co2PerKg), meals: donated, soldUnits, donated, godown,
+      itcRetained: r2(soldUnits * itcOf(sku)), itcReversed: r2((donated + p.leftover) * itcOf(sku)), kg, co2: r2(kg * RULES.co2PerKg), meals: mealsOf(donated, sku, mealsRule), soldUnits, donated, godown,
     };
   }
 
@@ -205,7 +213,23 @@
     return { policy, units, credit, destroyedBy: units ? (ours ? "client" : "distributor") : null, kg: wo.kg, disposal, epr, itc, total: r2((credit || 0) + disposal + epr + itc) };
   }
 
-  function documents(p, sku, aw, support, parties) {
+  // the food bank's receipt for the packs it collected (SC-110), in its own form (data.js SETUP.partners: Feeding
+  // India's in-app receipt, India FoodBanking Network's acknowledgement): the packs, their weight and the meals by its
+  // own rule, and on a CSR acknowledgement their value at the donor's cost (indicative). `facts` are the collection's:
+  // the number from the food bank's series, the day (ISO) and the time, who collected, the donor and its FSSAI licence,
+  // the distributor it came through and from where, and where it is served
+  function receipt(units, sku, partner, facts) {
+    const r = partner.receipt;
+    return {
+      id: "receipt", type: r.title, owner: partner.name, no: facts.no, status: "generated", amount: 0, paper: partner.paper, stamp: r.stamp,
+      units, kg: r2(units * sku.kgPerUnit), meals: mealsOf(units, sku, partner.meals), mealsRule: partner.meals.rule,
+      value: r.csr ? r2(units * sku.cost) : null, csr: r.csr || null,
+      date: facts.date, at: facts.at, by: facts.by, donor: facts.donor, fssai: facts.fssai, via: facts.via, from: facts.from, spot: facts.spot, note: r.note,
+    };
+  }
+
+  // the batch's document pack; a donated batch's carries the food bank's receipt beside the FSSAI checklist (SC-110)
+  function documents(p, sku, aw, support, parties, rcpt) {
     const es = p.lines.find(l => l.id === "expiresoon");
     const docs = [];
     if (es && aw) {
@@ -218,6 +242,7 @@
     docs.push({ id: "support", type: "Price-support credit note", owner: parties.client.short, no: "CN/0117", status: "generated", amount: total, exact, roundOff: r2(total - exact), rows: support.rows, van: support.van, fee: support.fee, note: `${parties.client.short} to ${parties.seller.name}: a financial credit note, no GST adjustment.` });
     docs.push({ id: "itc", type: "GST ITC memo", owner: parties.client.short, no: "s.17(5)(h)", status: "generated", amount: p.itcRetained, note: "Goods supplied under tax invoices, so the Section 17(5)(h) reversal does not apply." });
     docs.push({ id: "fssai", type: "FSSAI surplus-food checklist", owner: parties.client.short, no: p.donated ? `${p.donated} units` : "no donation", status: p.donated ? "generated" : "not required", amount: 0 });
+    if (rcpt) docs.push(rcpt);
     docs.push({ id: "destruction", type: "Destruction certificate", owner: parties.client.short, no: p.leftover ? `${p.leftover} units` : "0 units left", status: p.leftover ? "generated" : "not required", amount: 0 });
     return docs;
   }
@@ -236,5 +261,5 @@
     day: iso => new Date(iso + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" }),
   };
 
-  window.SC3_MONEY = { RULES, CHANNELS, lifeOf, itcOf, gates, assess, writeOff, channelTable, allocate, plan, counter, award, actualNet, realised, priceSupport, expiryClaim, expirySettlement, documents, fmt };
+  window.SC3_MONEY = { RULES, CHANNELS, lifeOf, itcOf, gates, assess, writeOff, channelTable, allocate, plan, counter, award, actualNet, realised, mealsOf, receipt, priceSupport, expiryClaim, expirySettlement, documents, fmt };
 })();

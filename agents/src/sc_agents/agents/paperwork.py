@@ -9,6 +9,9 @@
 
 A redelivered event renders whatever has no PDF yet. Gemini Flash may write a one-line cover note for the footer: no
 figures, nothing to check against, and the PDF is complete without it.
+
+The food bank's receipt (SC-110) is issued as it collects, before the batch's pack: `journey.step receipt` lays it out
+at once, as `{client}/{ref}/receipt.pdf`, and the pack then carries it with its PDF.
 """
 
 import asyncio
@@ -61,6 +64,31 @@ def _parts(state: dict[str, Any]) -> list[types.Part]:
     return [types.Part(text="THE PAPERS:\n" + json.dumps(facts, ensure_ascii=False))]
 
 
+async def _file(rc: RunCtx, case: dict[str, Any], doc: dict[str, Any], *, note: str | None, today: str) -> bool:
+    """one paper laid out, rendered, put in the docs bucket and reported; False when this host cannot render PDFs"""
+    run = rc.run(AGENT)
+    bucket = case.get("docsBucket") or rc.settings.docs_bucket
+    if not bucket:
+        raise RuntimeError("no docs bucket (DOCS_BUCKET)")
+    page = pdf.html(doc, case, note=note, today=today)
+    try:
+        data = await asyncio.to_thread(rc.deps.render_pdf, page)
+    except OSError as e:  # WeasyPrint's system libraries are missing: a deployment to fix, not a retry
+        log.error("paperwork: cannot render PDFs here (%s); the papers stay without them", e)
+        run.note = "no PDF renderer"
+        return False
+    name = f"{rc.msg.client}/{case['ref']}/{doc['id']}.pdf"
+    await rc.deps.store.write(bucket, name, data, "application/pdf")
+    await rc.report(
+        AGENT,
+        case_path(rc.msg.client, rc.msg.ref or "", f"documents/{doc['id']}"),
+        {"object": name},
+        method="PATCH",
+    )
+    run.status = "done"  # a redelivered event's drafting was a noop, but its PDFs were made now
+    return True
+
+
 async def _render(rc: RunCtx, state: dict[str, Any]) -> dict[str, Any]:
     run = rc.run(AGENT)
     case = state["case"]
@@ -68,30 +96,27 @@ async def _render(rc: RunCtx, state: dict[str, Any]) -> dict[str, Any]:
     if note and (len(note) > NOTE_MAX or checks.figures(note)):
         run.fell_back("note left out")
         note = ""
-    bucket = case.get("docsBucket") or rc.settings.docs_bucket
-    if not bucket:
-        raise RuntimeError("no docs bucket (DOCS_BUCKET)")
     today = (state.get("settings") or {}).get("today", "")
     for doc in case["docs"]:
-        if doc["id"] not in state["papers"]:
-            continue
-        page = pdf.html(doc, case, note=note or None, today=today)
-        try:
-            data = await asyncio.to_thread(rc.deps.render_pdf, page)
-        except OSError as e:  # WeasyPrint's system libraries are missing: a deployment to fix, not a retry
-            log.error("paperwork: cannot render PDFs here (%s); the papers stay without them", e)
-            run.note = "no PDF renderer"
+        if doc["id"] in state["papers"] and not await _file(rc, case, doc, note=note or None, today=today):
             return {}
-        name = f"{rc.msg.client}/{case['ref']}/{doc['id']}.pdf"
-        await rc.deps.store.write(bucket, name, data, "application/pdf")
-        await rc.report(
-            AGENT,
-            case_path(rc.msg.client, rc.msg.ref or "", f"documents/{doc['id']}"),
-            {"object": name},
-            method="PATCH",
-        )
-        run.status = "done"  # a redelivered event's drafting was a noop, but its PDFs were made now
     return {}
+
+
+async def _receipt(rc: RunCtx, state: dict[str, Any]) -> dict[str, Any]:
+    """the food bank's receipt, laid out as it collected (SC-110), dated the day it was issued"""
+    run = rc.run(AGENT)
+    case = cut_case(await rc.deps.backend.case(rc.msg.client, rc.msg.ref or ""))
+    doc = (case.get("donation") or {}).get("receipt")
+    if not doc or doc.get("pdf"):  # none issued, or a redelivered event
+        run.status = "noop"
+        return halt()
+    await _file(rc, case, doc, note=None, today=doc.get("date") or "")
+    return {}
+
+
+def receipt(rc: RunCtx) -> list:
+    return [step(rc, "paperwork_receipt", _receipt, agent=AGENT, when=_on)]
 
 
 def settle(rc: RunCtx) -> list:

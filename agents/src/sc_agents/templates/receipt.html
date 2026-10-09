@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="parties">
+  <div>
+    <p class="label">Donor</p>
+    <strong>{{ doc.donor }}</strong><br>
+    through {{ doc.via }}, {{ doc["from"] }}<br>
+    <span class="muted">FSSAI {{ doc.fssai }}</span>
+  </div>
+  <div>
+    <p class="label">Received by</p>
+    <strong>{{ doc.owner }}</strong><br>
+    {{ case.distributor.city }}<br>
+    <span class="muted">{{ doc.paper }}</span>
+  </div>
+</div>
+<table>
+  <thead><tr><th>Goods</th><th class="n">Packs</th><th class="n">Weight</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>{{ case.sku.brand }} {{ case.sku.name }}<br><span class="muted">Batch {{ case.ref }} · best before {{ case.batch.bestBefore|date }}</span></td>
+      <td class="n">{{ doc.units|num }}</td>
+      <td class="n">{{ doc.kg }} kg</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <tbody>
+    <tr><th>Collected</th><td>{{ doc.date|date }}, {{ doc.at }}, by {{ doc.by }}</td></tr>
+    <tr><th>Served at</th><td>{{ doc.spot }}</td></tr>
+    <tr><th>Meals</th><td>{{ doc.meals|num }} ({{ doc.mealsRule }})</td></tr>
+  </tbody>
+</table>
+{% if doc.value is not none %}
+<p class="label">For the donor's CSR records</p>
+<table>
+  <tbody>
+    <tr><th>Value at the donor's cost</th><td class="n">{{ doc.value|inr(True) }} (indicative)</td></tr>
+    <tr><th>CSR activity</th><td>{{ doc.csr }}</td></tr>
+  </tbody>
+</table>
+{% endif %}
+<p class="note">{{ doc.note }}</p>
+{% endblock %}
+{% block issued %}Issued by {{ doc.owner }} as the packs were collected, and laid out by Smart-Clearance's Paperwork agent from the batch's record.{% endblock %}

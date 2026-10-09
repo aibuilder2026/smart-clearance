@@ -32,14 +32,14 @@
     <div class="muted">No. {{ doc.no }}{% if today %} · {{ today|date }}{% endif %}</div>
   </div>
   <div style="text-align: right">
-    <div class="status">{{ doc.status }}</div>
+    <div class="status">{{ doc.stamp or doc.status }}</div>
     <div class="muted" style="margin-top: 4pt">{{ doc.owner }}</div>
   </div>
 </header>
 {% block body %}{% endblock %}
 <footer>
   Batch {{ case.ref }} · {{ case.sku.brand }} {{ case.sku.name }} · best before {{ case.batch.bestBefore|date }}.
-  Drafted by Smart-Clearance's Paperwork agent from the figures on the batch's record; a person issues and signs it.
+  {% block issued %}Drafted by Smart-Clearance's Paperwork agent from the figures on the batch's record; a person issues and signs it.{% endblock %}
   {% if note %}<div style="margin-top: 4pt">{{ note }}</div>{% endif %}
 </footer>
 </body>

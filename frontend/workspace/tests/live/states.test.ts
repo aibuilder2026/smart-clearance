@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { dayLabel } from '../../src/lib/live/when';
-import { fireEvent, render, waitFor, type RenderResult } from '@testing-library/svelte';
+import { fireEvent, render, waitFor, within, type RenderResult } from '@testing-library/svelte';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type {
 	CaseDetail,
@@ -704,9 +704,60 @@ describe("the buyer's listing (SC-92)", () => {
 		// the Mango Drink: no ExpireSoon lot, so no invoice; its donation's FSSAI checklist
 		const mango = await evidence(MANGO);
 		expect(mango).not.toMatch(/· ·|Evidence: ·/);
-		expect(mango).toMatch(/^Evidence: \d+ kirana order logs · CN\/0118 · FSSAI checklist$/);
+		expect(mango).toMatch(/^Evidence: \d+ kirana order logs · CN\/0118 · FSSAI checklist · FI\/HYD\/26-27\/0417$/);
 		// the chips keep their invoice and lot
 		expect(await evidence(CHIPS)).toMatch(/^Evidence: INV\/26-27\/0931 · ES-24117 · \d+ kirana order logs · CN\/0117$/);
+	});
+
+	it('Meera opens the receipt Feeding India issued as she collected, and its PDF once it is laid out (SC-110)', async () => {
+		const m = moment('cleared');
+		const open = async (mm: Moment, over: Partial<Record<keyof WorkspaceApi, unknown>> = {}) => {
+			const r = await draw(source(fakeApi(mm, 'meera', over)), 'pickups', MANGO);
+			const row = await waitFor(() => r.container.querySelector<HTMLElement>('.receipt-row')!);
+			expect(norm(row.textContent)).toContain('Donation receipt FI/HYD/26-27/0417');
+			expect(norm(row.textContent)).toContain('58 packs · 58 meals · shared with Munchly for its BRSR table');
+			await fireEvent.click(row);
+			return { r, sheet: await waitFor(() => r.getByRole('dialog')) };
+		};
+		const { r, sheet } = await open(m);
+		const t = norm(sheet.textContent);
+		for (const bit of [
+			'FI/HYD/26-27/0417 · in-app',
+			'RECEIVED',
+			'through Lakshmi Agencies, Begum Bazaar godown, Hyderabad',
+			'Feeding India',
+			'Batch MF-2410-118',
+			'Meals a meal for each pack served, indicative58',
+			`The same paper is in Munchly's document pack for ${MANGO}.`
+		])
+			expect(t).toContain(bit);
+		// Paperwork has not laid it out yet: no PDF to offer
+		expect(t).not.toContain('Download the PDF');
+		r.unmount();
+
+		// once it has, the PDF opens from a five-minute link
+		const laid = moment('cleared');
+		laid.members.meera.cases[MANGO].donation!.receipt!.pdf = true;
+		const url = vi.fn(() => Promise.resolve({ url: 'https://storage.example/receipt.pdf', expiresAt: '' }));
+		const opened = vi.spyOn(window, 'open').mockImplementation(() => null);
+		const again = await open(laid, { documentUrl: url });
+		await fireEvent.click(within(again.sheet).getByRole('button', { name: 'Download the PDF' }));
+		await waitFor(() =>
+			expect(opened).toHaveBeenCalledWith('https://storage.example/receipt.pdf', '_blank', 'noopener')
+		);
+		expect(url).toHaveBeenCalledWith(MANGO, 'receipt');
+		opened.mockRestore();
+		again.r.unmount();
+	});
+
+	it("the receipt is the Mango Drink's paper after the FSSAI checklist, set out as Meera's is (SC-110)", async () => {
+		const r = await draw(source(fakeApi(moment('cleared'), 'anita')), 'paperwork', MANGO);
+		await waitFor(() => expect(text(r)).toContain(`${MANGO} · prepared by the Paperwork agent`));
+		const cards = [...r.container.querySelectorAll('.docgrid .docpick')].map((x) => norm(x.textContent));
+		const at = cards.findIndex((x) => x.includes('FSSAI surplus-food checklist'));
+		expect(cards[at + 1]).toContain('Donation receipt');
+		expect(cards[at + 1]).toContain('FI/HYD/26-27/0417');
+		r.unmount();
 	});
 
 	it('Paperwork says "at the award" only for a batch with an award; one without waits on its lines (SC-108)', async () => {

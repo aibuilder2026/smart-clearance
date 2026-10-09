@@ -34,27 +34,34 @@
 	const { toast } = useNotice();
 	const Q = $derived(ws.data.quarter);
 	const R = $derived(ws.data.rules);
+	// the food bank's receipt for what the batch donated, once it has collected (SC-110): in the pack, or before it on the
+	// donation
+	const receipt = $derived(
+		c.docs.find((d) => d.id === 'receipt') ?? (c.donation.batch.id === c.batch.id ? c.donation.receipt : null)
+	);
 	// the evidence behind the batch's BRSR row, only what the batch has (SC-107): the invoice and the ExpireSoon lot, the
-	// shops' orders, the credit note, and the FSSAI checklist of what it donated
+	// shops' orders, the credit note, the FSSAI checklist of what it donated and the food bank's receipt for it
 	const EVIDENCE = $derived(
 		[
 			c.invoice.no,
 			c.listing.id,
 			c.kiranas.length ? `${c.kiranas.length} kirana order logs` : '',
 			c.docs.find((d) => d.id === 'support')?.no ?? '',
-			c.plan.donated > 0 ? 'FSSAI checklist' : ''
+			c.plan.donated > 0 ? 'FSSAI checklist' : '',
+			receipt?.no ?? ''
 		]
 			.filter(Boolean)
 			.join(' · ')
 	);
-	// what the batch gave to food banks and the meals that made, for its BRSR line and row (SC-106): a batch that
-	// donated nothing says so, as the chips do
+	// what the batch gave to food banks and the meals that made, for its BRSR line and row (SC-106): the food bank's own
+	// count on its receipt (SC-110), else the plan's; a batch that donated nothing says so, as the chips do
+	const gave = $derived(receipt?.units ?? c.plan.donated);
 	const MEALS = $derived(
-		c.plan.donated > 0
-			? `${fmt.num(c.plan.meals)} meals (${fmt.num(c.plan.donated)} packs donated)`
+		gave > 0
+			? `${fmt.num(receipt?.meals ?? c.plan.meals)} meals (${fmt.num(gave)} packs donated)`
 			: '0 meals (nothing donated)'
 	);
-	const donatedKg = $derived(Math.round(c.plan.donated * c.sku.kgPerUnit * 100) / 100);
+	const donatedKg = $derived(receipt?.kg ?? Math.round(c.plan.donated * c.sku.kgPerUnit * 100) / 100);
 	const tonnes = $derived((Q.kg / 1000).toFixed(1));
 	const PERIODS: { id: 'quarter' | 'batch'; label: string }[] = [
 		{ id: 'quarter', label: 'Quarter' },
