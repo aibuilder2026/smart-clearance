@@ -132,7 +132,7 @@
   ];
   // the film: where each chapter begins (seconds), where the night starts, its frame, and where each act's place is
   // on the plate, for the camera to lean on
-  const FILM = { src: "one-day.mp4", bounds: [0, 3.28, 6.84, 10.41], night: 10.5, ar: 1280 / 704, lean: 1.5,
+  const FILM = { src: "one-day.mp4", bounds: [0, 3.28, 6.84, 10.41], night: 10.5, ar: 1920 / 1088, lean: 1.5,
     at: [{ x: 0.37, y: 0.67 }, { x: 0.575, y: 0.42 }, { x: 0.64, y: 0.66 }, { x: 0.14, y: 0.64 }] };
   const POSTER = { day: "town-morning.webp", night: "town-night.webp" };
   const WORDS = ["buyer", "shelf", "invoice", "ledger line", "chance"];

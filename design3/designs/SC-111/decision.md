@@ -112,3 +112,24 @@ The maintainer picked **A, One town, four acts**, from the board's question. Onl
 plates as the hero's posters, the film in `site/assets/media/`, the hero in `site/site.jsx` with the chapters' clock
 and the page's camera), then the port in `frontend/admin`. For the build the four acts are rendered again at 1080p
 (5 s each, which LTX allows), so the camera's lean stays sharp; the 720p film stands in until they land.
+
+## The build (9 Oct 2026)
+
+- **design3** (`site/site.jsx`, `site.css`, `loader.js`): the hero as one looping player with the four chapters' clock
+  and the page's camera (`useLean`), the dark theme starting at the night act; the four plates in
+  `site/assets/plates/town-*.webp` (the morning and the night as the posters), the film in
+  `site/assets/media/one-day.mp4`; the loader preloads the new posters; `business.webp`, `business-night.webp` and the
+  orphaned `business-depth.webp` retired with the two SC-78 clips. `dist/` rebuilt.
+- **The film for the build:** the four acts rendered again at 1080p (`src/ltx-run3.py`, 1920 × 1088, about 12 minutes
+  each), the night act twice more until it held (`src/ltx-run4.py`, seed 8206: about 2.5 s of night before the dawn);
+  cut as the 720p one (`src/assemble-1080.sh`, crf 25): 14.2 s, 455 frames at 32 fps, 6.5 MB; the loop's step 4.1 on
+  a 0 to 255 scale against a median frame-to-frame change of 1.4 and a first-second maximum of 3.4. `media/a-day-1080.mp4`
+  keeps a copy beside the 720p film the round was picked on.
+- **The port** (`frontend/admin`): `Hero.svelte` (one player, the chapters' clock, the lean on motion's `animate`),
+  `figures.ts` (`story`), `media.ts` (the film, its chapters' starts, its frame and the camera's targets), `plates.ts`,
+  `site.css` verbatim; the keyboard spec follows the loop and the chapters, the loader spec the posters.
+- **Checks:** the gate passes (lint, check, tests: core 248, api 77, admin 17, console 3, workspace 64, demo 5). design3
+  and the build played through with Playwright at 1440 × 900 and 390 × 844, light and dark, on both films: no console
+  errors, the film plays and loops, the strip reads the chapter, the dark theme opens on the night. The browser suites
+  were not run (SC-55).
+- **Docs:** AGENTS.md's loop rule names the film; CLAUDE.md records the ticket.

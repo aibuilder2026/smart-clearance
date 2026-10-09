@@ -28,7 +28,7 @@ export const FILM = {
 	src: url(clips, 'one-day.mp4'),
 	bounds: [0, 3.28, 6.84, 10.41],
 	night: 10.5,
-	ar: 1280 / 704,
+	ar: 1920 / 1088,
 	lean: 1.5,
 	at: [
 		{ x: 0.37, y: 0.67 },
