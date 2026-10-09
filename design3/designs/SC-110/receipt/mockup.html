@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SC-110 Donation receipt · options</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../../../system/img/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../../system/tokens.css">
+<link rel="stylesheet" href="../../../system/base.css">
+<link rel="stylesheet" href="../../../system/components.css">
+<link rel="stylesheet" href="../../../screens/screens.css">
+<style>
+  /* SC-110's mockups: the donation receipt, Meera's Pickups and the desk view, each on the real kit */
+  /* above the kit's ground (AppRoot's background layer, positioned) */
+  .s110 { position: relative; z-index: 1; padding: 28px; max-width: 1320px; }
+  .s110.v-paper { padding: 24px; }
+  .s110.v-open { padding: 16px; max-width: 620px; }
+  .s110-cols { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) 420px; align-items: start; }
+  .s110-cols.one { grid-template-columns: minmax(0, 1fr); }
+  /* a sub-heading inside a paper */
+  .pp-sub { margin: 12px 0 4px; font-size: 12px; font-weight: 650; color: #5d6762; }
+  @media (max-width: 900px) { .s110 { padding: 16px; } .s110-cols { grid-template-columns: minmax(0, 1fr); } }
+</style>
+<script>window.SC3_IMG = "../../../system/img/";</script>
+<script>
+  (function () { var q = new URLSearchParams(location.search).get("theme"); try { if (q) localStorage.setItem("sc3-theme", q); } catch (e) {} })();
+</script>
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/framer-motion@11.18.2/dist/framer-motion.js"></script>
+<script src="../../../system/icons.js"></script>
+<script src="../../../core/money.js"></script>
+<script src="../../../core/data.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script src="../../../system/kit.js"></script>
+<script src="../../../system/world.js"></script>
+<script src="../../../system/product.js"></script>
+<script src="receipt110.js"></script>
+</body>
+</html>
