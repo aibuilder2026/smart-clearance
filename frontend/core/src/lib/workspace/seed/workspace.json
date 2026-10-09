@@ -2629,6 +2629,7 @@
 			"listing": null,
 			"offer": null,
 			"orders": [],
+			"declined": {},
 			"bids": [],
 			"chat": [],
 			"award": null,

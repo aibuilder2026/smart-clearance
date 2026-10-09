@@ -203,7 +203,12 @@
 			{#if hero && approved && c.sku.dp}<EndWhole {settled} />{/if}
 			<SectionTitle sub="From your nightly DMS export">Your stock</SectionTitle>
 			<div class="list">
-				{#each mine as v (v.id)}<BatchRow view={v} compact={app.bp === 'phone'} onopen={() => {}} />{/each}
+				<!-- a batch in a journey opens its page under Batches (SC-130) -->
+				{#each mine as v (v.id)}<BatchRow
+						view={v}
+						compact={app.bp === 'phone'}
+						onopen={() => (v.phase && v.phase !== 'watching' ? go('batches', { ref: v.id }) : undefined)}
+					/>{/each}
 			</div>
 		</div>
 	</Screen>{/if}

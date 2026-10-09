@@ -709,7 +709,9 @@ const outputs = {
 			cases: L.HISTORY.map(({ sku, dist, buyer: _b, invoice: _i, ...c }) => ({ ...c, sku: sku.id, dist: dist.id })),
 			// the ledger's rows: the history's, and the story's chips batch once Impact posts it, on the day it clears
 			rows: historyRows,
-			story: { row: L.rowOf(L.storyCase()), cleared: L.STORY_CLEARED }
+			story: { row: L.rowOf(L.storyCase()), cleared: L.STORY_CLEARED },
+			// every shop a distributor's scheme goes to (world.js), as a kirana's portal finds its own (SC-130)
+			shops: W.KIRANAS.map(({ id, name, area, sales14, distributor, member }) => ({ id, name, area, sales14, distributor, member }))
 		})
 	},
 	// backend-api loads the same reference data into its database at migrate time, and imports the console's day

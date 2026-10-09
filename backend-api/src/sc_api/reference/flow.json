@@ -32,6 +32,7 @@
 				"listing": null,
 				"offer": null,
 				"orders": [],
+				"declined": {},
 				"bids": [],
 				"chat": [],
 				"award": null,
@@ -108,6 +109,7 @@
 				"listing": null,
 				"offer": null,
 				"orders": [],
+				"declined": {},
 				"bids": [],
 				"chat": [],
 				"award": null,
@@ -181,6 +183,7 @@
 				"listing": null,
 				"offer": null,
 				"orders": [],
+				"declined": {},
 				"bids": [],
 				"chat": [],
 				"award": null,
@@ -266,6 +269,7 @@
 				"listing": null,
 				"offer": null,
 				"orders": [],
+				"declined": {},
 				"bids": [],
 				"chat": [],
 				"award": null,
@@ -342,6 +346,7 @@
 				"listing": null,
 				"offer": null,
 				"orders": [],
+				"declined": {},
 				"bids": [],
 				"chat": [],
 				"award": null,
@@ -408,6 +413,7 @@
 				"listing": null,
 				"offer": null,
 				"orders": [],
+				"declined": {},
 				"bids": [],
 				"chat": [],
 				"award": null,
@@ -480,6 +486,7 @@
 				"listing": null,
 				"offer": null,
 				"orders": [],
+				"declined": {},
 				"bids": [],
 				"chat": [],
 				"award": null,
@@ -565,6 +572,7 @@
 				"listing": null,
 				"offer": null,
 				"orders": [],
+				"declined": {},
 				"bids": [],
 				"chat": [],
 				"award": null,
@@ -655,6 +663,7 @@
 				"listing": null,
 				"offer": null,
 				"orders": [],
+				"declined": {},
 				"bids": [],
 				"chat": [],
 				"award": null,
@@ -743,6 +752,7 @@
 				},
 				"offer": null,
 				"orders": [],
+				"declined": {},
 				"bids": [],
 				"chat": [],
 				"award": null,
@@ -826,6 +836,7 @@
 					"shops": 38
 				},
 				"orders": [],
+				"declined": {},
 				"bids": [],
 				"chat": [],
 				"award": null,
@@ -920,6 +931,7 @@
 					"shops": 38
 				},
 				"orders": [],
+				"declined": {},
 				"bids": [],
 				"chat": [],
 				"award": null,
@@ -1018,6 +1030,7 @@
 						"at": "09:52"
 					}
 				],
+				"declined": {},
 				"bids": [],
 				"chat": [],
 				"award": null,
@@ -1247,6 +1260,7 @@
 						"at": "11:41"
 					}
 				],
+				"declined": {},
 				"bids": [],
 				"chat": [],
 				"award": null,
@@ -1486,6 +1500,7 @@
 						"at": "11:41"
 					}
 				],
+				"declined": {},
 				"bids": [
 					{
 						"id": "b1",
@@ -1729,6 +1744,7 @@
 						"at": "11:41"
 					}
 				],
+				"declined": {},
 				"bids": [
 					{
 						"id": "b1",
@@ -1988,6 +2004,7 @@
 						"at": "11:41"
 					}
 				],
+				"declined": {},
 				"bids": [
 					{
 						"id": "b1",
@@ -2270,6 +2287,7 @@
 						"at": "11:41"
 					}
 				],
+				"declined": {},
 				"bids": [
 					{
 						"id": "b1",
@@ -2542,6 +2560,7 @@
 						"at": "11:41"
 					}
 				],
+				"declined": {},
 				"bids": [
 					{
 						"id": "b1",
@@ -2815,6 +2834,7 @@
 						"at": "11:41"
 					}
 				],
+				"declined": {},
 				"bids": [
 					{
 						"id": "b1",
@@ -3154,6 +3174,7 @@
 						"at": "11:41"
 					}
 				],
+				"declined": {},
 				"bids": [
 					{
 						"id": "b1",
@@ -3444,6 +3465,7 @@
 						"at": "11:41"
 					}
 				],
+				"declined": {},
 				"bids": [
 					{
 						"id": "b1",
@@ -3743,6 +3765,7 @@
 						"at": "11:41"
 					}
 				],
+				"declined": {},
 				"bids": [
 					{
 						"id": "b1",

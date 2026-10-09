@@ -3,9 +3,11 @@
 // the workspace's data and the batch in focus are the seed's, built once, and each step a person takes is flow.ts's
 // action, made as today's screens made it. Importing this module makes it the default source, so a screen drawn
 // outside any provider (the guided demo, the design-system page) reads it.
-import { CHIPS, D, ES, INVOICE, KL } from './data';
+import { CHIPS, D, ES, INVOICE, KL, SHOPS_ALL } from './data';
 import { A, act as run, Agents, type ActionName } from './flow';
 import { stubLedger, stubPage } from './ledger';
+import history from './seed/history.json';
+import type { PartnerWorld } from './partners';
 import { setDefaultSource, type WorkspaceSource } from './source';
 import { store } from './store.svelte';
 import type {
@@ -13,6 +15,8 @@ import type {
 	CaseData,
 	HumanAction,
 	InviteInput,
+	PartnerCase,
+	PartnerView,
 	RoleId,
 	Rules,
 	SourceStatus,
@@ -27,6 +31,18 @@ const hero = D.batches.find((b) => b.hero)!;
 const second = D.batches.find((b) => b.second)!;
 
 /** the workspace's data, as the screens read it */
+/** the history's batches as the partners' pages read them (SC-130) */
+export const HISTORY_CASES = history.cases as unknown as PartnerCase[];
+/** the stub's world for the partners' pages: the prototype's */
+export const STUB_WORLD: PartnerWorld = {
+	skus: D.skus,
+	distributors: D.distributors,
+	buyer: D.buyer,
+	client: D.client.name,
+	short: D.workspace.short,
+	capTimes: D.rules.shopCapTimes
+};
+
 export const data: WorkspaceData = Object.freeze({
 	day0: D.day0,
 	platform: D.platform,
@@ -40,7 +56,8 @@ export const data: WorkspaceData = Object.freeze({
 	setup: D.setup,
 	stages: D.stages,
 	batches: D.batches,
-	market: D.market
+	market: D.market,
+	shops: SHOPS_ALL
 });
 
 /** the batch in focus: the chips batch the story follows, and the Mango Drink batch the same agents donate */
@@ -140,6 +157,13 @@ class StubSource implements WorkspaceSource {
 	ledgerPage(ref: string) {
 		return stubPage(ref, data, kase, store.state);
 	}
+	// a partner's own history (SC-130): the client's history; each partner's screens take their own part of it, a
+	// kirana its shop among every shop the schemes go to (data.shops)
+	readonly partners: PartnerView = Object.freeze({
+		buyer: { name: D.buyer.name, city: D.buyer.city },
+		shop: null,
+		cases: HISTORY_CASES
+	});
 	get state(): State {
 		return store.state;
 	}

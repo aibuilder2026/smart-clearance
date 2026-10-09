@@ -3,7 +3,7 @@
 	"sources": {
 		"design3/core/money.js": "10d34b608a75aade",
 		"design3/core/data.js": "642341145802ee81",
-		"design3/core/store.js": "4dc1447e07bca06c",
+		"design3/core/store.js": "dbd508afbccbd956",
 		"design3/core/platform.js": "92a4bd53f094f427",
 		"design3/screens/admin.jsx": "6540326d10681d19",
 		"design3/system/product.jsx": "7c15ae9678f0aa97"

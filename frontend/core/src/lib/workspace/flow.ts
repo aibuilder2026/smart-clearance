@@ -2,7 +2,7 @@
 // agents run live: after every change the reconciler works out the next thing an agent would do (or a partner the
 // person is not playing) and schedules it once.
 import { fmt } from '../format';
-import { D, EV, PLAN } from './data';
+import { D, EV, PLAN, SHOPS_ALL } from './data';
 import { stageAt } from './model';
 import { store } from './store.svelte';
 import type { State } from './types';
@@ -14,7 +14,7 @@ const notify = (s: State, to: string, n: Omit<State['notifications'][number], 'i
 	void s.notifications.unshift({ id: id('n'), to, read: false, ...n });
 const audit = (s: State, who: string, what: string, target: string, at?: string) =>
 	void s.audit.unshift({ id: id('a'), who, what, target, at: at || 'now' });
-const all = (s: State) => s.hero.orders.length === D.kiranas.length;
+const all = (s: State) => s.hero.orders.length >= D.kiranas.length;
 const P = D.push;
 
 // each action changes a draft of the store; names follow the journey map
@@ -121,12 +121,28 @@ export const A = {
 		feed(s, EV('outreach'));
 		notify(s, 'ganesh', { link: 'offer', ...P.offer });
 	},
+	// a shop's order: one of the story's 31, else another shop the scheme went to (world.js, SC-130), its share, while
+	// the scheme has room; an order after Not this time takes the shop off the declined
 	order: (s: State, kid?: string) => {
-		const k = D.kiranas.find((x) => x.id === kid) || D.kiranas[s.hero.orders.length];
+		const w = !D.kiranas.some((x) => x.id === kid) && SHOPS_ALL.find((x) => x.id === kid);
+		const k =
+			D.kiranas.find((x) => x.id === kid) ||
+			(w ? { id: w.id, units: w.sales14 * D.rules.shopCapTimes, at: '10:15' } : null) ||
+			D.kiranas[s.hero.orders.length];
 		if (!k || s.hero.orders.some((o) => o.id === k.id)) return;
+		const room = PLAN.lines.find((l) => l.id === 'kirana')!.units - s.hero.orders.reduce((t, o) => t + o.units, 0);
+		if (k.units > room) return;
+		if (s.hero.declined) delete s.hero.declined[k.id];
 		s.hero.orders.push({ id: k.id, units: k.units, at: k.at });
 		if (k.id === 'k0') audit(s, 'ganesh', 'ordered ' + k.units + ' packets', 'Masala Chips scheme', k.at);
 		if (all(s)) feed(s, EV('orders'));
+	},
+	// Not this time (SC-130): a shop declines the open scheme; it stays open for its 48 hours if the shop changes its mind
+	decline: (s: State, kid?: string) => {
+		const w = SHOPS_ALL.find((x) => x.id === kid);
+		if (!w || s.hero.orders.some((o) => o.id === kid)) return;
+		s.hero.declined = { ...s.hero.declined, [w.id]: { at: '10:12' } };
+		audit(s, w.member ?? w.id, 'declined the scheme', 'Masala Chips scheme', '10:12');
 	},
 	allOrders: (s: State) => {
 		D.kiranas.forEach((k) => A.order(s, k.id));

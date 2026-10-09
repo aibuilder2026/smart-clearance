@@ -37,6 +37,7 @@
 	import RouteRoom from './screens/brand/RouteRoom.svelte';
 	import Setup from './screens/brand/Setup.svelte';
 	import CameraScreen from './screens/trade/CameraScreen.svelte';
+	import DistBatches from './screens/trade/DistBatches.svelte';
 	import DistHome from './screens/trade/DistHome.svelte';
 	import DistOrders from './screens/trade/DistOrders.svelte';
 	import Listing from './screens/trade/Listing.svelte';
@@ -199,7 +200,13 @@
 		});
 	});
 	// a screen about the batch in focus, on a day with none: empty, or a moment while the batch asked for is read
-	const noBatch = $derived(!ws.case && !!ABOUT_A_BATCH[safe]);
+	// a partner's own history reads without a batch in a journey (SC-130): a kirana's orders and an earlier offer, a food
+	// bank's pickups
+	const ownHistory = $derived(
+		(me.role === 'retailer' && (safe === 'orders' || (safe === 'offer' && !!route?.params?.ref))) ||
+			(me.role === 'foodbank' && safe === 'pickups')
+	);
+	const noBatch = $derived(!ws.case && !!ABOUT_A_BATCH[safe] && !ownHistory);
 	const reading = $derived(noBatch && (ws.cases?.length ?? 0) > 0);
 
 	provideRoute({
@@ -288,7 +295,7 @@
 				{:else if safe === 'command'}<CommandCenter {me} />
 				{:else if safe === 'route'}<RouteRoom {me} />
 				{:else if safe === 'execution'}<Execution {me} />
-				{:else if safe === 'batches'}<Batches {me} />
+				{:else if safe === 'batches'}{#if me.role === 'distributor'}<DistBatches {me} />{:else}<Batches {me} />{/if}
 				{:else if safe === 'setup'}<Setup {me} />
 				{:else if safe === 'report'}<Report {me} />
 				{:else if safe === 'paperwork'}<Paperwork {me} />

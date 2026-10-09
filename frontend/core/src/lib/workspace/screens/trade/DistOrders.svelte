@@ -3,7 +3,7 @@
 	import Empty from '../../../components/Empty.svelte';
 	import Money from '../../../components/Money.svelte';
 	import Icon from '../../../icons/Icon.svelte';
-	import { cartons, distOf, fmt } from '../../model';
+	import { cartons, distOf, fmt, shopById } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import Screen from '../common/Screen.svelte';
@@ -19,7 +19,7 @@
 		h.orders
 			.slice()
 			.reverse()
-			.map((o) => ({ ...o, k: c.kiranas.find((k) => k.id === o.id)! }))
+			.map((o) => ({ ...o, k: shopById(o.id, c, ws.data.shops) }))
 	);
 </script>
 
