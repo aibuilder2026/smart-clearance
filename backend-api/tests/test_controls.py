@@ -259,3 +259,41 @@ async def test_the_expired_packs_settle_by_the_clients_expiry_policy(
     assert docs["expiry"]["status"] == ("not required" if policy == "none" else "generated")
     assert bool(docs["expiry"]["no"]) == (credit > 0)
     assert (docs["destruction"]["status"] == "generated") == (destroyed_by == "client")
+
+
+async def test_a_pack_drafted_on_expiry_day_is_reviewed_and_its_invoice_issued_once_cleared(api, munchly, neha, cloud):
+    """SC-117: the leftover run (SC-116). The lot is awarded but the scheme is short, so Report now drafts the papers
+    and Impact clears the batch at once. Anita still reviews the pack and Rakesh still issues his invoice: both find
+    the batch's case in this journey, cleared, where they found only an open one"""
+    from tests.conftest import token
+    from tests.test_workspace import AGRAWAL, ANITA, RAKESH, J
+
+    ws = "/v1/workspaces/munchly"
+    await to_plan(api, cloud)
+    assert (await api.post(f"{ws}/cases/{HERO}/approval", json={"device": "phone"}, headers=PRIYA)).status_code == 200
+    await agent(api, f"/cases/{HERO}/listing", "lister", "lister")
+    await agent(api, f"/cases/{HERO}/offer", "outreach", "outreach")
+    k = next(k for k in J["kiranas"] if k["distributor"] == "rakesh" and k["orders"])
+    login = next(x for x in J["members"] if x["id"] == k["member"])["login"]
+    r = await api.post(f"{ws}/cases/{HERO}/orders", json={"units": k["orders"]}, headers=token(login))
+    assert r.status_code == 200, r.text
+    r = await api.post(f"{ws}/cases/{HERO}/bids", json={"price": 13}, headers=AGRAWAL)
+    bid = r.json()["case"]["journey"]["bids"][-1]
+    await agent(api, f"/cases/{HERO}/bids/{bid['id']}/answer", "negotiator-1", "negotiator")
+    assert (await api.post(f"{ws}/cases/{HERO}/bids/{bid['id']}/accept", headers=AGRAWAL)).status_code == 200
+    await _report_now(api, neha)
+    await agent(api, f"/cases/{HERO}/report", "impact", "impact")
+    c = await case(api, PRIYA)
+    assert c["journey"]["phase"] == "cleared" and not c["journey"]["reviewed"]
+    assert {d["id"] for d in c["docs"]} >= {"invoice", "expiry"}
+
+    r = await api.post(f"{ws}/cases/{HERO}/review", headers=ANITA)
+    assert r.status_code == 200, r.text
+    r = await api.post(f"{ws}/cases/{HERO}/documents/invoice/issue", headers=RAKESH)
+    assert r.status_code == 200, r.text
+    j = (await case(api, ANITA))["journey"]
+    assert j["reviewed"] and j["invoiceIssued"] and j["phase"] == "cleared"
+    assert [(a["who"], a["text"]) for a in await last_audit(api, neha, 2)] == [
+        ("Rakesh bhai", "issued the invoice from Tally"),
+        ("Anita Rao", "reviewed Munchly's credit note and GST memo"),
+    ]
