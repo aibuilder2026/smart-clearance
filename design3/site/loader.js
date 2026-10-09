@@ -37,6 +37,8 @@
   var UI = '"Geist Variable", "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif';
   var HI = '"Noto Sans Devanagari Variable", "Noto Sans Devanagari", "Kohinoor Devanagari", system-ui, sans-serif';
   var EASE = "cubic-bezier(.22,1,.36,1)";
+  // the design system's spring (tokens.css --ease-spring, one 10% overshoot): the mark springs in on it, as in SC-35 and SC-51
+  var SPRING = "linear(0, 0.009, 0.035 2.1%, 0.141 4.4%, 0.723 12.9%, 0.938 16.7%, 1.017 19.4%, 1.067, 1.099 24.3%, 1.108 26%, 1.1, 1.074 31.1%, 1.008 38.1%, 0.983 42.5%, 0.979 45.6%, 0.985 50%, 1.001 59.9%, 1.002 70.2%, 1)";
   var CSS = [
     // the loader sits over the whole window, outside the app, so it is sized by the window, not the app's container
     ".loader{position:fixed;inset:0;z-index:90;overflow:hidden;contain:strict;-webkit-tap-highlight-color:transparent;font:400 15px/1.5 " + UI + ";-webkit-font-smoothing:antialiased}",
@@ -48,7 +50,7 @@
     ".loader-route .lr-cover{position:absolute;inset:0;background:radial-gradient(48% 46% at 18% 4%,var(--lr-a1),transparent 70%),radial-gradient(42% 40% at 84% 0%,var(--lr-a2),transparent 70%),var(--lr-bg)}",
     ".loader-route .lr-lock{position:absolute;left:50%;top:50%;translate:-50% -50%;display:grid;justify-items:center;gap:18px;text-align:center}",
     ".loader-route .mk{width:112px;height:112px;will-change:transform}",
-    ".loader-route .mk .mk-sq{animation:loader-pop 560ms cubic-bezier(.34,1.56,.64,1) backwards}.loader-route .mk .mk-dot{animation:loader-pop 420ms cubic-bezier(.34,1.56,.64,1) 180ms backwards}",
+    ".loader-route .mk .mk-sq{animation:loader-pop 560ms " + SPRING + " backwards}.loader-route .mk .mk-dot{animation:loader-pop 420ms " + SPRING + " 180ms backwards}",
     // the route runs: three tenths of it, from the godown dot to the pin, a lap every 1.15 s; the pin throbs as it arrives
     ".loader-route .mk .mk-ghost{opacity:.3}.loader-route .mk .mk-route{stroke-dasharray:.3 1.4;stroke-dashoffset:.3}",
     ".loader-route.running .mk .mk-route{animation:loader-run 1.15s cubic-bezier(.45,0,.55,1) 320ms infinite}",

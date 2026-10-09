@@ -35,6 +35,8 @@
   /* ---------- its own styles: design system v3's inks and faces, written out, so nothing waits for a stylesheet ---------- */
   var DISPLAY = '"Bricolage Grotesque Variable", "Bricolage Grotesque", "Geist Variable", "Geist", system-ui, sans-serif';
   var UI = '"Geist Variable", "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif';
+  // the design system's spring (tokens.css --ease-spring, one 10% overshoot): the mark springs in on it, as in SC-35 and SC-51
+  var SPRING = "linear(0, 0.009, 0.035 2.1%, 0.141 4.4%, 0.723 12.9%, 0.938 16.7%, 1.017 19.4%, 1.067, 1.099 24.3%, 1.108 26%, 1.1, 1.074 31.1%, 1.008 38.1%, 0.983 42.5%, 0.979 45.6%, 0.985 50%, 1.001 59.9%, 1.002 70.2%, 1)";
   var CSS = [
     ".cs-splash{--sp-bg:#f2f6f3;--sp-a1:#d9f0e3;--sp-a2:#e2eef7;--sp-fg:#0d1c15;--sp-fg2:#45554d;--sp-fg3:#5f6e67;--sp-fill:rgb(17 41 30/.075);--sp-green:#167a52;--sp-on-green:#fff;",
     "position:fixed;inset:0;z-index:80;display:grid;place-items:center;overflow:hidden;color:var(--sp-fg);font:400 15px/1.5 " + UI + ";-webkit-font-smoothing:antialiased;opacity:0;transition:opacity 320ms linear}",
@@ -55,7 +57,7 @@
     ".cs-splash.drawn .cs-sp-mk .ghost{opacity:0;transition:opacity 380ms linear}",
     ".cs-sp-mk .ping{opacity:0}.cs-splash.landed .cs-sp-mk .ping{animation:cs-sp-ping 900ms ease-out both}",
     "@keyframes cs-sp-ping{from{opacity:.9;transform:scale(.6)}to{opacity:0;transform:scale(2.3)}}",
-    ".cs-splash.boot .cs-sp-mkbox{animation:cs-sp-pop 560ms cubic-bezier(.34,1.56,.64,1) backwards}",
+    ".cs-splash.boot .cs-sp-mkbox{animation:cs-sp-pop 560ms " + SPRING + " backwards}",
     "@keyframes cs-sp-pop{from{opacity:0;transform:scale(.55)}}",
     // the words: the brand, a title that holds, one line that says what it waits for, and the slow line
     ".cs-sp-words{display:grid;justify-items:center;gap:8px}",
