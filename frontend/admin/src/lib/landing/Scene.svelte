@@ -247,6 +247,7 @@
 			     its edges -->
 			<img
 				class="tb-plate"
+				loading="lazy"
 				style={fit
 					? `left: ${fit.x}px; top: ${fit.y}px; width: ${fit.pw}px; height: ${fit.ph}px`
 					: `object-position: ${(desk ? 0.5 : 0.42) * 100}% 50%`}

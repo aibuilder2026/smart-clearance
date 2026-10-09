@@ -1,0 +1,55 @@
+/* SC-131 · the cover every option shares: its own inks, faces and ground, so it paints with the page's first bytes and
+   needs nothing from the app's stylesheet (today's splash leans on the app's tokens and the kit's tracker, so it waits
+   for them). The light and dark inks are design system v3's (tokens.css), written out. */
+.scv {
+  --g: #f2f6f3; --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67; --fill: rgb(17 41 30 / 0.07); --green: #167a52;
+  --aur-1: rgb(47 191 127 / 0.16); --aur-2: rgb(56 189 248 / 0.09);
+  position: absolute; inset: 0; z-index: 50; display: grid; place-items: center; overflow: hidden; color: var(--ink);
+  container-type: size; opacity: 0; transition: opacity 320ms linear;
+  font: 400 15px/1.5 "Geist", -apple-system, system-ui, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased;
+}
+.scv[data-theme="dark"] {
+  --g: #070b09; --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a; --fill: rgb(214 255 232 / 0.09); --green: #3ccb8a;
+  --aur-1: rgb(47 191 127 / 0.13); --aur-2: rgb(56 189 248 / 0.07);
+}
+.scv.in, .scv.still { opacity: 1; }
+.scv.boot, .scv.load, .scv.still { transition: none; }
+.scv-ground { position: absolute; inset: 0; background: radial-gradient(55% 45% at 8% 0%, var(--aur-1), transparent 72%), radial-gradient(45% 38% at 92% 0%, var(--aur-2), transparent 72%), var(--g); }
+.scv-lock { position: relative; z-index: 1; display: grid; justify-items: center; gap: 26px; width: min(560px, calc(100% - 40px)); text-align: center; }
+.scv-mkbox { display: grid; will-change: transform; }
+.scv-mkmove { display: grid; transform-origin: 50% 50%; will-change: transform; }
+.scv-mk { display: block; width: 112px; height: 112px; overflow: visible; }
+.scv-mk .sq, .scv-mk circle, .scv-mk .ring { transform-box: fill-box; transform-origin: center; }
+.scv-mk .ping { opacity: 0; }
+.scv.landed .scv-mk .ping { animation: scv-ping 900ms ease-out both; }
+@keyframes scv-ping { from { opacity: 0.9; transform: scale(0.6); } to { opacity: 0; transform: scale(2.3); } }
+.scv.boot .scv-mkbox, .scv.load .scv-mkbox { animation: scv-pop 560ms cubic-bezier(0.34, 1.56, 0.64, 1) backwards; }
+@keyframes scv-pop { from { opacity: 0; transform: scale(0.55); } }
+
+.scv-words { display: grid; justify-items: center; gap: 8px; }
+.scv.go .scv-words { animation: scv-rise 420ms cubic-bezier(0.22, 1, 0.36, 1) 120ms backwards; }
+@keyframes scv-rise { from { opacity: 0; transform: translateY(10px); } }
+.scv-brand { display: inline-flex; align-items: baseline; gap: 10px; color: var(--ink-2); }
+.scv-wm { font: 750 24px/1 "Bricolage Grotesque", "Geist", system-ui, sans-serif; letter-spacing: -0.02em; color: var(--ink); }
+.scv-wm.big { font-size: 34px; }
+.scv-hi { font: 600 17px/1.3 "Noto Sans Devanagari", system-ui, sans-serif; color: var(--ink-2); }
+.scv-tag { font: 600 12.5px/1 "Geist", system-ui, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); padding: 5px 8px 4px; border-radius: 999px; background: var(--fill); }
+.scv-title { margin: 4px 0 0; font: 760 clamp(30px, 3.1cqw, 44px)/1.04 "Bricolage Grotesque", "Geist", system-ui, sans-serif; letter-spacing: -0.03em; color: var(--ink); text-wrap: balance; }
+.scv-sub { margin: 0; min-height: 1.5em; font-size: 15.5px; color: var(--ink-2); text-wrap: balance; }
+/* the slow line: one quiet sentence, only once the wait has run past 3 s; it never says the platform failed */
+.scv-slow { margin: 6px 0 0; display: inline-flex; align-items: center; gap: 8px; min-height: 30px; padding: 0 12px; border-radius: 999px; background: var(--fill); font-size: 13.5px; color: var(--ink-2); opacity: 0; transform: translateY(6px); transition: opacity 240ms linear, transform 240ms cubic-bezier(0.22, 1, 0.36, 1); }
+.scv.is-slow .scv-slow { opacity: 1; transform: none; }
+.scv-slow-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); }
+.scv[data-phase="open"] .scv-slow, .scv.landed .scv-slow { opacity: 0; }
+.scv-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.scv.failed .scv-slow { display: none; }
+
+@container (max-width: 599px) {
+  .scv-mk { width: 84px; height: 84px; }
+  .scv-lock { gap: 20px; }
+  .scv-wm { font-size: 20px; }
+  .scv-wm.big { font-size: 28px; }
+  .scv-title { font-size: 30px; }
+}
+.scv.still *, .scv.still { animation: none !important; transition: none !important; }
+.scv.still .scv-words { opacity: 1; }

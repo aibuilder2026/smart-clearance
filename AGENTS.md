@@ -225,7 +225,7 @@ Local pages:
   - The landing page's two longer motions are the hero's film (SC-111: the journey's day at the business in four acts, one 14 s film that runs back into its first frame, looping; Pause and Play; the page's camera leans in on each act; a strip under the copy reads the four chapters) and the table's tour (SC-60: 15.8 s; Pause and Play, a rail to jump between the agents, Replay). The tour plays once and holds, also while the table is out of view. The film drifts with the scroll, never on its own clock.
   - The landing page's loader (SC-35) is a loading indicator: it moves only while the page, or a new theme's plates, load.
   - The console's loader (SC-49), the route and its placeholders' green wash, is a loading indicator too: it moves only while a screen or tab is read. The Overview moves only when a reading changes something, and Pause updates stops the readings.
-  - The console's splash (SC-51, `design3/console/splash.js`) is a loading indicator: it covers the first load, signing in and signing out only while their reads are out, and leaves once the page behind it is drawn.
+  - The console's splash (SC-51, `design3/console/splash.js`) is a loading indicator: it covers the first load, signing in and signing out only while their code and reads are out, and leaves once the page behind it is drawn. Its route runs lap after lap only while it waits (SC-131).
 - Measure text contrast against the background it actually sits on, including fills, tinted chips and chat bubbles, after any opacity.
 
 **Data and assets**
@@ -344,7 +344,8 @@ From the Claude desktop app:
 - Cloud Run scales to zero: the first request after a quiet spell waits a few seconds. Cloud SQL is `db-f1-micro`, a shared core without an SLA.
 - `frontend/console` runs on its in-browser mock: sign-in is a stand-in for Google and a passkey, changes stay in that browser (`sc-console`), and two fictional demo requests stand in for the landing page's. Both apps are live on Firebase Hosting's own addresses (SC-39), with no custom domain yet.
 - The landing page ships about 159 kB of JavaScript, gzipped (`frontend/README.md`, Known gaps).
-- In design3 the loader's styles come with the page's stylesheets, so on a slow connection its first paint waits for them (the Google Fonts import included). The SvelteKit build puts the loader first in the prerendered page.
+- In design3 the pages' stylesheets still block the first paint (the Google Fonts import included); the loader and the splash bring their own styles (SC-131), and the SvelteKit builds load the stylesheets without blocking (`@smart-clearance/core/firstpaint`), so there the cover paints with the page's first bytes.
+- The console's first load on a slow line is bound by its code: about 17 files in waves, each a round trip (SC-131 measured it locally over HTTP/1.1; Firebase Hosting serves HTTP/2). Preloading the first route's code or bundling the app differently would shorten it.
 - `.claude/jira-flow.json` names `.github/pull_request_template.md`, which is not in the repo.
 - Terraform runs from a workstation, as a person: CI checks the configuration but never plans or applies.
 - The `chrome-devtools` MCP server starts only in a new session, after a one-time approval.

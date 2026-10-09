@@ -45,6 +45,8 @@ html, body { overflow-x: clip; }
 .film-media video, .film-media img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 44% 56%; }
 .film-media .fx { position: absolute; inset: 0; opacity: 0; transition: opacity 1000ms linear; }
 .film-media .fx.front { opacity: 1; }
+/* the plate's soft preview (SC-131): a 48 px copy of the poster, blurred, under the film until its poster arrives */
+.film-media .film-preview { position: absolute; inset: 0; z-index: -1; filter: blur(18px) saturate(1.08); transform: scale(1.08); }
 @media (prefers-reduced-motion: reduce) { .film-media .fx { transition: none; } }
 .film-shade { position: absolute; inset: 0; background: linear-gradient(to top, rgb(5 12 9 / 0.82) 0, rgb(5 12 9 / 0.5) 34%, rgb(5 12 9 / 0.14) 64%, rgb(5 12 9 / 0.1) 100%), linear-gradient(to right, rgb(5 12 9 / 0.45) 0, transparent 58%); }
 .film-copy { position: relative; z-index: 1; width: 100%; max-width: 1344px; margin: 0 auto; padding: 120px 16px 14px; display: grid; gap: 16px; justify-items: start; }
@@ -499,56 +501,3 @@ html, body { overflow-x: clip; }
 /* book a demo: the sent state */
 .sd-done { display: grid; place-items: center; width: 76px; height: 76px; border-radius: 28px; background: var(--primary-soft); color: var(--primary-text); }
 
-/* the loader (SC-35, loader.js): every load of the page plays the route, every change of theme plays dusk or dawn. It
-   sits over the whole window, outside the app, so it is sized by the window, not the app's container */
-.loader { position: fixed; inset: 0; z-index: 90; overflow: hidden; color: var(--fg); contain: strict; -webkit-tap-highlight-color: transparent; }
-.loader .sr-only { position: absolute; }
-.loader .mk { flex: none; display: block; overflow: visible; }
-.loader .mk .mk-sq, .loader .mk circle { transform-box: fill-box; transform-origin: center; }
-.loader .mk .mk-route { stroke-dasharray: 1 1; stroke-dashoffset: 1; opacity: 0; }
-/* the route: the mark on the page's own ground; its entrances fill backwards only, so once they end Framer Motion's
-   exit owns the same properties */
-.loader-route .lr-cover, .loader-route .lr-cover .ground { position: absolute; inset: 0; }
-.loader-route .lr-lock { position: absolute; left: 50%; top: 50%; translate: -50% -50%; display: grid; justify-items: center; gap: 18px; text-align: center; }
-.loader-route .mk { width: 112px; height: 112px; will-change: transform; }
-.loader-route .mk .mk-sq { animation: loader-pop 560ms var(--ease-spring) backwards; }
-.loader-route .mk .mk-dot { animation: loader-pop 420ms var(--ease-spring) 180ms backwards; }
-.loader-route .lr-word { display: inline-flex; overflow: hidden; padding-block: 2px; font-size: 34px; line-height: 1.1; }
-.loader-route .lr-word > span { display: inline-block; }
-.loader-route .lr-hi { margin-top: -6px; font: 600 17px/1.5 var(--font-hi); color: var(--fg); }
-/* the words rise once their faces are in (loader.js adds .go), so they never swap fonts mid-motion */
-.loader-route .lr-lock:not(.go) .lr-word > span, .loader-route .lr-lock:not(.go) .lr-hi { opacity: 0; }
-.loader-route .lr-lock.go .lr-word > span { animation: loader-rise 620ms var(--ease) backwards; animation-delay: calc(120ms + var(--i) * 28ms); }
-.loader-route .lr-lock.go .lr-hi { animation: loader-fade 520ms var(--ease) 620ms backwards; }
-@media (max-width: 599px) { .loader-route .mk { width: 84px; height: 84px; } .loader-route .lr-word { font-size: 30px; } .loader-route .lr-hi { font-size: 15px; } }
-@keyframes loader-pop { from { opacity: 0; transform: scale(0.55); } }
-@keyframes loader-rise { from { opacity: 0; transform: translateY(105%); } }
-@keyframes loader-fade { from { opacity: 0; transform: translateY(6px); } }
-/* dusk and dawn: the town's skyline in three paper layers under a sky that turns with the load; the sun or the moon
-   climbs, and the windows light at night. A switch starts from the page it covers: the sky clear, the town below the
-   window, until the cover plays (or, under reduced motion, at once) */
-.loader-sky { --lit: #f4e8c8; }
-.loader-sky .ls-sky { position: absolute; inset: 0; background: linear-gradient(to bottom, var(--sky-0) 0%, var(--sky-1) 52%, var(--sky-2) 100%); }
-.loader-sky .ls-stars { position: absolute; left: 0; top: 0; width: 100%; height: 65%; }
-.loader-sky .ls-stars g { opacity: var(--stars, 0); }
-.loader-sky .ls-stars circle { fill: #ecf2ee; }
-.loader-sky .ls-orbs { position: absolute; inset: 0; }
-.loader-sky .ls-sun, .loader-sky .ls-moon { position: absolute; left: 0; top: 0; border-radius: 50%; will-change: transform; pointer-events: none; }
-.loader-sky .ls-sun { width: 68px; height: 68px; margin: -34px 0 0 -34px; background: radial-gradient(circle at 42% 38%, #fffdf6, #f8ecd0 72%); }
-.loader-sky .ls-moon { width: 46px; height: 46px; margin: -23px 0 0 -23px; box-shadow: inset -13px 5px 0 0 #e7eee9; }
-.loader-sky .ls-land { position: absolute; left: 50%; bottom: 0; height: max(34vh, calc(100vw * 300 / 1600)); aspect-ratio: 1600 / 300; translate: -50% 0; }
-.loader-sky .ls-layer { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; transform-origin: 50% 100%; will-change: transform; }
-.loader-sky .ls-back { fill: var(--l-0); }
-.loader-sky .ls-mid { fill: var(--l-1); filter: drop-shadow(0 -3px 6px rgb(0 0 0 / 0.1)); }
-.loader-sky .ls-front { fill: var(--l-2); filter: drop-shadow(0 -3px 7px rgb(0 0 0 / 0.14)); }
-.loader-sky .ls-back .w { fill: var(--w-0); }
-.loader-sky .ls-mid .w { fill: var(--w-1); }
-.loader-sky .ls-front .w { fill: var(--w-2); }
-.loader-sky .w { transition: fill 360ms var(--ease); }
-.loader-sky .w.on { fill: var(--lit); }
-.loader-sky .ls-sky, .loader-sky .ls-stars, .loader-sky .ls-orbs { opacity: 0; }
-.loader-sky .ls-layer { transform: translateY(100%); }
-.loader-sky.is-still .ls-sky, .loader-sky.is-still .ls-stars, .loader-sky.is-still .ls-orbs { opacity: 1; }
-.loader-sky.is-still .ls-layer { transform: none; }
-@media (max-width: 599px) { .loader-sky .ls-sun { width: 52px; height: 52px; margin: -26px 0 0 -26px; } .loader-sky .ls-moon { width: 38px; height: 38px; margin: -19px 0 0 -19px; box-shadow: inset -11px 4px 0 0 #e7eee9; } }
-@media (prefers-reduced-motion: reduce) { .loader *, .loader *::before, .loader *::after { animation: none !important; transition: none !important; } }

@@ -1276,6 +1276,7 @@
     useEffect(() => {
       if (!SP || SP.lifted) return;
       SP.animate = Motion.animate;
+      SP.phase("platform");
       simulateReads("boot", ["session", "config", "catalog"]).then(() => SP.open({ anchor: readSession() ? MARK_ANCHOR.console : MARK_ANCHOR.signin }));
     }, []);
     const onIn = (uid) => {

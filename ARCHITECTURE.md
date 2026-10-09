@@ -263,7 +263,7 @@ flowchart TB
 | `core` | `ThemeProvider` (with the loader's gate), `Shell`, `Page`, `DataTable`, `Sheet`, `Menu`, `Tracker` and its variants, `Splash`, `Roll`, money and day formatting identical to `money.js`, the icon registry, the springs (`SPRINGS`: `tick`, `dot`, `token`), `coverage.ts` listing the kit pieces still to build |
 | `api` | `@smart-clearance/api` (types, `ApiError`, `transport()`), `/site` (`SiteApi`), `/console` (`ConsoleApi` and the platform's rules), `/seed/*` |
 | `admin` | `src/lib/landing/`: `Nav`, `Hero` with `Town` (`town/camera.ts`, `depth.ts`, `geo.ts`, `gestures.ts`, `graph.ts`), `How`, `Exits`, `Workspace`, `Plans`, `Close`, `Footer`, `DemoSheet`; `figures.ts` derives every figure and line of copy from the API; `hooks.server.ts` inlines design3's `loader.js` |
-| `console` | `src/routes/` one per screen; `src/lib/screens/` (overview, client, loading placeholders); `src/lib/api/` with `firebase.ts`; `hooks.server.ts` inlines design3's `splash.js` and its CSS |
+| `console` | `src/routes/` one per screen; `src/lib/screens/` (overview, client, loading placeholders); `src/lib/api/` with `firebase.ts`; `hooks.server.ts` inlines design3's `splash.js`, which brings its own styles, ahead of non-blocking stylesheets (`core/firstpaint`) |
 | `testing` | `a11y.ts` (the axe scan and report, and the components each scan had on screen), `a11y-coverage.ts` (every core component an app uses, scanned), `parity.ts` (pixelmatch against the prototype), `design3-server.py` (design3 for parity) |
 
 ### Rendering and data
@@ -531,7 +531,7 @@ sequenceDiagram
   C->>A: GET /v1/console/dashboard?days=30
   A->>D: aggregate batches, agent_runs, clients
   A-->>C: figures, recovered by day, Agents at work
-  Note over C: the splash's stops land, and the mark opens onto the page
+  Note over C: the reads land under the splash's running route, and the mark opens onto the page
   loop every 30 s and on focus, unless paused
     C->>A: GET /v1/console/dashboard
   end
@@ -569,7 +569,7 @@ sequenceDiagram
   participant C as Console Overview
 
   V->>L: opens smartclearance.web.app
-  Note over L: the loader draws the route while scripts, fonts and the town's plate load
+  Note over L: the loader's route runs until the first screen can be read, and the plate sharpens in place
   V->>L: Book a demo (company, contact, plan)
   L->>A: POST /v1/demo-requests
   A->>D: INSERT demo_requests (422 names each field's problem)

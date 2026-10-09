@@ -8,11 +8,11 @@ declare global {
 		// interface Platform {}
 	}
 	interface Window {
-		/** the landing page's loader (design3/site/loader.js, SC-35), put first in <body> by hooks.server.ts */
+		/** the landing page's loader (design3/site/loader.js, SC-35; SC-131), put first in <body> by hooks.server.ts */
 		SC3_LOADER?: {
 			lifted: boolean;
 			busy: boolean;
-			/** the animate() its exits run on: motion's, given by the page */
+			/** the animate() a theme switch's exits run on: motion's, given by the page (a load's route needs none) */
 			animate?: (...args: never[]) => unknown;
 			mark: (milestone: string, share?: number) => void;
 			depthIn: () => void;

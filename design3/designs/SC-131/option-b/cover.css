@@ -1,0 +1,16 @@
+/* SC-131 · option B, the route runs. The route stands at 30% white; a stretch of it, three tenths long, runs the
+   S from the godown dot to the pin in 1.15 s (ease in and out, as a van leaves and arrives), and the pin throbs to
+   1.38 as the stretch reaches it. The run is a stroke-dashoffset animation: CSS, but painted, so a long task in the
+   app's code can hold a frame of it (the heartbeat's transform cannot be held). */
+.scv .b-ghost { opacity: 0.3; }
+.scv .b-run { stroke-dasharray: 0.3 1.4; stroke-dashoffset: 0.3; }
+.scv.running .b-run { animation: b-run 1.15s cubic-bezier(0.45, 0, 0.55, 1) 320ms infinite; }
+.scv.running .pin { animation: b-pin 1.15s cubic-bezier(0.45, 0, 0.55, 1) 320ms infinite; }
+.scv.drawn .b-ghost { opacity: 0; transition: opacity 380ms linear; }
+@keyframes b-run { from { stroke-dashoffset: 0.3; } to { stroke-dashoffset: -1; } }
+@keyframes b-pin {
+  0%, 70% { transform: scale(1); }
+  82% { transform: scale(1.38); }
+  100% { transform: scale(1); }
+}
+.scv.still .b-run { stroke-dasharray: 1 1; stroke-dashoffset: 0; }
