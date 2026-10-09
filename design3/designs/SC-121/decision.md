@@ -48,6 +48,26 @@ All three share:
 - **The batch's own page:** SC-112's head, with Money, Papers and Impact as tabs. Paperwork becomes its Papers tab.
 - **The history**, worked out by money.js, with SC-122's `realised`.
 
-## The pick
+## The pick (9 Oct)
 
-Waiting for the maintainer.
+**A · One ledger**, in the maintainer's words:
+
+> I will go with A, also I need the paperworks to be shown as is, invoices and receipts should downloadable pdfs in the
+> paperwork. BRSR export and reports seems missing include that. Overall i need to see all at batch level and overall
+> at quarter and year level as in A
+
+What it means for the build:
+- **Paperwork as it is:** the batch page's Papers tab is today's Paperwork, every paper on its page with who keeps what, on the batch's realised figures.
+- **PDFs to download:** every invoice and receipt (and every other paper that has one) carries **Download PDF**: the Paperwork agent's PDF on the live workspace (SC-100), and the paper printed to PDF on the stub.
+- **Exports:** the ledger exports, for the period chosen:
+  - the BRSR rows (Principle 6, from the batches);
+  - the GST summary (credit kept and reversed, the credit notes, the distributors' invoices);
+  - the ledger itself, a row a batch;
+  - the report.
+
+  Each batch keeps its own document pack export.
+- **Batch, quarter and year:** the ledger reads a batch, a quarter (Q2 FY27, Q3 FY27) or the year so far.
+
+The other answers:
+- **The Mango Drink's input GST:** keep **₹0.55**, labelled **estimated** (cost × GST, no cost sheet). The six other SKUs take the chips' ratio, as decided.
+- **Priya's Finance & ESG:** **the same design**. She opens on the Money reading, Anita on GST and Vikram on Impact.
