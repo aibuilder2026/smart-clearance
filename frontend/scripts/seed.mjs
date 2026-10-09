@@ -430,7 +430,46 @@ const journey = {
 	moments: moments(D.JOURNEY),
 	market: D.MARKET,
 	// the people a judge may sign in as, by where they stand (data.js EXPLORE): the live sign-in's chips fill their address
-	explore: D.EXPLORE.groups
+	explore: D.EXPLORE.groups,
+	// Munchly's history (SC-123): the batches cleared in its pilot quarter, on the schedule backend-api builds them by
+	// (services/journey/history.py), each with what money.js makes of it for the tests to hold the build to
+	history: {
+		at: D.HISTORY_AT,
+		start: D.HISTORY.start,
+		batches: D.HISTORY.batches.map((b) => ({
+			ref: b.ref,
+			sku: b.sku,
+			distributor: b.distributor,
+			units: b.units,
+			daysLeft: b.daysLeft,
+			sellPerDay: b.sellPerDay,
+			flagged: b.flagged,
+			bestBefore: b.bestBefore,
+			mfg: b.mfg,
+			outcome: b.outcome,
+			bid: b.bid,
+			price: b.price,
+			partner: b.partner,
+			kirana: b.kirana,
+			staff: b.staff,
+			steps: b.steps,
+			numbers: b.numbers,
+			expect: {
+				net: b.actual.net,
+				swing: b.actual.swing,
+				pnl: b.actual.pnl,
+				itc: b.realised.itcRetained,
+				itcReversed: b.realised.itcReversed,
+				kg: b.realised.kg,
+				co2: b.realised.co2,
+				meals: b.realised.meals,
+				godown: b.realised.godown,
+				destroyed: b.realised.destroyed,
+				support: b.support.total,
+				credit: b.expiry ? b.expiry.credit : 0
+			}
+		}))
+	}
 };
 
 /** money.js's own answers, for backend-api's domain/money.py: every case carries its inputs */

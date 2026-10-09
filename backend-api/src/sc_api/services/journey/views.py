@@ -207,8 +207,8 @@ def journey_from(c: m.Client | None) -> datetime | None:
 async def _open_cases(ctx: Ctx, client_id: str) -> dict[str, m.Case]:
     q = select(m.Case).where(m.Case.client_id == client_id)
     since = journey_from(await ctx.session.get(m.Client, client_id))
-    if since is not None:
-        q = q.where(m.Case.opened_wall >= since)
+    if since is not None:  # this journey's cases, and the client's history (SC-123)
+        q = q.where(or_(m.Case.opened_wall >= since, m.Case.history.is_(True)))
     rows = (await ctx.session.execute(q.order_by(m.Case.seq.desc()))).scalars()
     out: dict[str, m.Case] = {}
     for case in rows:  # the latest case of each batch in this journey: open, or the last one closed

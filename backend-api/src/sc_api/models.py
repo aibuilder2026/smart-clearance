@@ -487,6 +487,8 @@ class Batch(Base):
     mfg: Mapped[date | None] = mapped_column(Date)
     sell_per_day: Mapped[float | None] = mapped_column(Numeric(10, 2, asdecimal=False))
     shelf: Mapped[str | None] = mapped_column(Text)
+    # a batch of the client's history (SC-123): Reset journey leaves it be
+    history: Mapped[bool] = mapped_column(Boolean, server_default=sql("false"))
     seq: Mapped[int] = seq()
 
 
@@ -590,6 +592,8 @@ class Case(Base):
     staff: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     # expiry day (SC-94): every plan line not yet run then counts as done, with nothing taken
     expired_at: Mapped[datetime | None] = mapped_column(TS)
+    # a case of the client's history (SC-123): in view whenever the journey starts again
+    history: Mapped[bool] = mapped_column(Boolean, server_default=sql("false"))
     escalated: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     updated_wall: Mapped[datetime] = mapped_column(TS)
     seq: Mapped[int] = seq()

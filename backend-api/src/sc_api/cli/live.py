@@ -17,13 +17,13 @@ from sc_api import models as m
 from sc_api.identity import synthetic_uid
 from sc_api.services import people, users
 from sc_api.services.context import Ctx
-from sc_api.services.journey import reset
+from sc_api.services.journey import history, reset
 from sc_api.services.reference import load
 
 PROVIDER = people.EMAIL_AND_PASSWORD
 
 
-async def build(ctx: Ctx, client_id: str = "munchly") -> dict[str, Any]:
+async def build(ctx: Ctx, client_id: str = "munchly", *, with_history: bool = True) -> dict[str, Any]:
     j = load("journey.json")
     c = await ctx.session.get(m.Client, client_id, with_for_update=True)
     if c is None:
@@ -149,11 +149,13 @@ async def build(ctx: Ctx, client_id: str = "munchly") -> dict[str, Any]:
             )
     c.floors = None
     await ctx.session.flush()
+    # its history (SC-123): the batches it cleared before the story's journey, built once through the journey's steps
+    cleared = await history.build(ctx, client_id) if with_history else 0
     started = await reset.reset(ctx, client_id)
     members = (
         (await ctx.session.execute(select(m.ClientMember).where(m.ClientMember.client_id == client_id))).scalars().all()
     )
-    return {"members": len(members), "kiranas": len(j["kiranas"]), **started}
+    return {"members": len(members), "kiranas": len(j["kiranas"]), "history": cleared, **started}
 
 
 def _donation_rules(d: dict[str, Any]) -> dict[str, Any]:
