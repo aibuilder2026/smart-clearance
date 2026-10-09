@@ -16,7 +16,7 @@ export type Agent = {
 	/** what it did for this batch */
 	did: string;
 };
-/** a beat of the film's half-day: the hour, who, and what they did (the figures money.js's) */
+/** a chapter of the film's day: the hour, who, and what happened (the figures money.js's) */
 export type Beat = { at: string; who: string; t: string; human?: boolean };
 /** a team of the manufacturer's, as a tab of its workspace */
 export type Team = {
@@ -281,21 +281,31 @@ export function figures(s: Showcase, c: Catalog) {
 		}
 	];
 
-	// 1 · the film's story: the hours of one day, four beats to each half (SC-78)
-	const beats: { day: Beat[]; night: Beat[] } = {
-		day: [
-			{ at: '09:00', who: 'The Watcher', t: `flags ${fmt.num(N)} packs at risk` },
-			{ at: '09:40', who: 'You', t: `say yes once, ${fmt.inr(s.plan.net)} on screen`, human: true },
-			{ at: '13:00', who: 'Outreach', t: `${SHOPS} kiranas order ${fmt.num(KL.units)} packs` },
-			{ at: '17:30', who: 'The Negotiator', t: `closes a buyer at ${rate(AW.price)} a pack` }
-		],
-		night: [
-			{ at: '21:00', who: 'Paperwork', t: 'drafts the invoice and the credit note' },
-			{ at: '23:30', who: 'The kiranas', t: `sell on; ${fmt.num(s.plan.soldUnits)} packs on tax invoices` },
-			{ at: '05:00', who: 'Impact', t: `posts ${fmt.num(s.plan.kg)} kg kept out of landfill` },
-			{ at: '09:00', who: 'The Watcher', t: 'runs again, on the next batch' }
-		]
-	};
+	// 1 · the film's story: the four chapters of the journey's day (SC-111); the person's chapter in amber
+	const staffCap = row('staff').capacity;
+	const story: Beat[] = [
+		{
+			at: '09:00',
+			who: 'The brand and the distributor',
+			t: `${fmt.num(N)} packs flagged; one yes, ${fmt.inr(s.plan.net)} on screen`,
+			human: true
+		},
+		{
+			at: '13:00',
+			who: 'The food bank',
+			t: `packs with ${s.rules.foodbankMinDays}+ days left go as meals, on the FSSAI checklist`
+		},
+		{
+			at: '18:30',
+			who: 'The kiranas and the staff sale',
+			t: `${SHOPS} shops order ${fmt.num(KL.units)} packs; the godown's own staff buy ${staffCap === null ? 'the rest' : `up to ${fmt.num(staffCap)}`}`
+		},
+		{
+			at: '22:00',
+			who: 'Paperwork',
+			t: `the tax invoice and the credit note drafted; ${fmt.inr(s.plan.itcRetained)} of GST credit kept`
+		}
+	];
 
 	// 6 · the workspace itself, on a device (SC-78): the four teams as its tabs, each with what it sees of the batch
 	// and what the agents did for it today; the connectors the comp shows, in its order
@@ -372,7 +382,7 @@ export function figures(s: Showcase, c: Catalog) {
 		chapters,
 		how,
 		ledger,
-		beats,
+		story,
 		teams,
 		addresses,
 		plans: c.plans.map((p) => ({ ...p, scope: p.scope.map((x) => x.replace(/^The client's /, 'Your ')) })),

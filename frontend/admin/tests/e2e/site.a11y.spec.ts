@@ -82,7 +82,7 @@ test('site · the loader, on a load and on a change of theme', async ({ page }, 
 	// the film's poster held back, so the loader is still up to be scanned
 	let release: () => void = () => {};
 	const held = new Promise<void>((r) => (release = r));
-	await page.route(/business(-night)?\.[\w-]+\.webp$|business(-night)?\.webp$/, async (route) => {
+	await page.route(/town-(morning|night)\.[\w-]+\.webp$|town-(morning|night)\.webp$/, async (route) => {
 		await held;
 		await route.continue();
 	});

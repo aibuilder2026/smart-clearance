@@ -1,0 +1,14 @@
+{
+  "name": "town-morning",
+  "model": "Qwen-Image-2.1 bf16 (local)",
+  "mode": "site/assets/plates/business.webp (edit_image)",
+  "prompt": "Change only the light and what the tiny people are doing. It is early morning: low golden sunrise light comes from the right and rakes across the town with long soft shadows, under a sky of pale rose and gold fading to a soft violet above. The office window glows warm. At the factory's loading bay the tiny workers load brown cartons onto the small blue truck, and beside the truck a tiny woman from the office holding a phone and a tiny man in a checked shirt, the distributor, shake hands. Everyone else is at their post as before. Keep everything exactly as it is: the same camera and framing, the same composition, every building, road, tree, fence and the thin softly glowing green painted path in the same place with the same shape, size and colours. No lettering anywhere, no words or numbers on any sign, no logos.",
+  "seed": 8101,
+  "size": 2048,
+  "steps": 40,
+  "output": "2752x1536",
+  "created": "2026-10-09",
+  "postprocess": "WebP q82; the PNG original stays local in src/",
+  "use": "smartclearance.com's hero (SC-111): one hour of the journey's day, a plate of the film and, for the morning and the night, its poster in each theme",
+  "designed_in": "design3/designs/SC-111"
+}

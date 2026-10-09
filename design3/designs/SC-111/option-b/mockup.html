@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f2f6f3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#070b09" media="(prefers-color-scheme: dark)">
+<title>SC-111 Option B · Follow the carton</title>
+<meta name="description" content="The hero film tells the journey through one day: option B.">
+<script>
+  // the reader's appearance before the first paint (sc3-theme, as the site), or ?theme= from the board
+  (function () {
+    var q = new URLSearchParams(location.search).get("theme"), mode = null;
+    try { if (q === "dark" || q === "light") localStorage.setItem("sc3-theme", q); mode = localStorage.getItem("sc3-theme"); } catch (e) { mode = q; }
+    var dark = mode === "dark" || (mode !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+  })();
+</script>
+<link rel="icon" href="../../../system/img/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../../system/tokens.css">
+<link rel="stylesheet" href="../../../system/base.css">
+<link rel="stylesheet" href="../../../system/components.css">
+<link rel="stylesheet" href="../../../screens/screens.css">
+<link rel="stylesheet" href="../../../site/site.css">
+<link rel="stylesheet" href="../sc111.css">
+<script>window.SC3_IMG = "../../../system/img/"; window.SC3_SITE_IMG = "../../../site/assets/plates/"; window.SC3_SITE_MEDIA = "../../../site/assets/media/"; window.SC111_IMG = "../img/"; window.SC111_MEDIA = "../media/"; window.SC111 = { hero: "b" };</script>
+</head>
+<body>
+<div id="root"></div>
+<noscript>Smart-Clearance routes near-expiry stock to the channel that recovers the most, with one human approval. This page needs JavaScript to run.</noscript>
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/framer-motion@11.18.2/dist/framer-motion.js"></script>
+<script src="../../../system/icons.js"></script>
+<script src="../../../core/money.js"></script>
+<script src="../../../core/data.js"></script>
+<script src="../../../core/store.js"></script>
+<script src="../../../core/flow.js"></script>
+<script src="../../../core/platform.js"></script>
+<script src="../../../system/kit.js"></script>
+<script src="../../../system/world.js"></script>
+<script src="../../../system/product.js"></script>
+<script src="../../../screens/common.js"></script>
+<script src="../../../screens/brand.js"></script>
+<script src="../../../screens/trade.js"></script>
+<script src="../../../screens/finance.js"></script>
+<script src="../../../screens/admin.js"></script>
+<script src="../../../screens/auth.js"></script>
+<script src="../../../screens/roles.js"></script>
+<script src="../sc111.js"></script>
+</body>
+</html>

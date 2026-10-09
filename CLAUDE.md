@@ -1159,4 +1159,19 @@
     - the browser suites were not run.
   - **Locally:** a database hydrated before SC-110 has no receipt series or meals rules until `hydrate.sh --live-only`, which restarts the journey. Until then collecting issues no receipt, and Meera's pickup says so.
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
+- **SC-111** (In Review, branch `SC-111-hero-story-film`): the hero film tells the journey through one surreal day.
+  - **The request:** the film should tell the story: brands and distributors, the donation, the kiranas and the staff sale, the tax savings; 10 to 15 s, engaging, the day-to-night-to-day light with the violet sky kept and the night more visible; LTX, Qwen and ffmpeg.
+  - **Design first:** three options on one board in platform v3, `SC-111 design review.html`, each a complete hero on the real kit with its clips rendered:
+    - A, One town, four acts (recommended);
+    - B, Follow the carton;
+    - C, One flight.
+
+    The maintainer picked **A**. Designs, plates, clips, stills, recordings and the decision are in `design3/designs/SC-111/`.
+  - **The film:** one day in four acts, 14.2 s, looping without a cut: sunrise at the factory's bay (the brand and the distributor shake hands); a high sun at the community kitchen (the van's cartons to the food bank); a violet dusk at the kirana lane and the staff-sale table; an indigo-violet night in the office (Paperwork), then dawn. Four plates edited from the approved town plate by Qwen so the geometry holds (`site/assets/plates/town-*.webp`), four 5 s LTX clips conditioned to end on the next plate, chained through quarter-second dissolves and retimed to 32 fps in ffmpeg (`site/assets/media/one-day.mp4`); for the build the four acts were rendered again at 1080p (1920 × 1088, 6.5 MB), the night act twice more until it held about 2.5 s. The light theme starts in the morning, the dark one at the night act.
+  - **The hero:** one looping player; the strip reads the four chapters (`CHAPTERS`, every figure money.js's); the page's camera leans in 1.5× on each act's place, as far as the player's box allows; the film drifts with the scroll; Pause and Play; under reduced motion the plate and the last chapter. The loader preloads the film's posters.
+  - **Found on the way:** LTX's last-frame conditioning lands near a plate, not on it, so chained clips need a short dissolve; LTX hurries out of the night unless told to hold it (the night act was rendered twice); python's `http.server` serves no byte ranges, so a film cannot seek locally and the dark theme's night start looked broken in every capture until design3 was served with `npx http-server`; the page's camera can only move as far as its scale allows, since `object-fit` crops inside the player's box.
+  - **The port** (`frontend/admin`): `Hero.svelte` (one player, the chapters' clock, the lean on motion's `animate`), `figures.ts` (`story`), `media.ts` (the film and its chapters' starts), `plates.ts` (the posters), `site.css` verbatim; the keyboard spec follows the loop and the chapters, the loader spec the posters. `business.webp`, `business-night.webp` and `business-depth.webp` are retired.
+  - **Checks:** the gate passes (lint, check, tests: core 248, api 77, admin 17, console 3, workspace 64, demo 5). design3 and the build were played through with Playwright at 1440 × 900 and 390 × 844, light and dark: no console errors, the film plays and loops, the strip reads the chapter, the dark theme opens on the night. The browser suites were not run (SC-55).
+  - **Hosting:** the hosted landing page and console load commit `9e0a247`.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
