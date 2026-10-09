@@ -1386,4 +1386,9 @@
     - the browser suites were not run (SC-55).
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 
+- **SC-126** (In Review, branch `SC-126-cleared-off-batches`, stacked on SC-125): a batch cleared and past its best-before is in the ledger, not on Batches.
+  - **The request:** "The batches which have cleared and are in -ve on days left need not be shown under batches, just aggregated calculations under ledger is enough". The history's twelve batches read Cleared on Batches with −2 to −28 days left, every gate crossed out.
+  - **The rule** (backend-api's snapshot, `views.snapshot`): a batch whose journey has cleared and whose best-before has passed leaves the workspace's batches, so Batches and every screen built from them drop it. Its page in the ledger (Money, Papers, Impact) still opens, read from its case. A cleared batch still inside its best-before stays, as the story's chips do. No design changes; design3's stub holds no such batch.
+  - **Checks:** backend-api 516 passed, 1 skipped (`test_history.py`: the history out of the snapshot's batches, the story's batches in). The frontend is unchanged. Locally, Anita's Batches lists the story's nine batches; the ledger still has the twelve.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
