@@ -1856,14 +1856,44 @@
 				"minUnits": 50,
 				"logistics": "Volunteer pickup within 48 h, hunger spots in 100+ cities",
 				"pickup": "volunteer pickup in 48 h",
-				"paper": "In-app receipt"
+				"paper": "In-app receipt",
+				"receipt": {
+					"title": "Donation receipt",
+					"stamp": "RECEIVED",
+					"series": {
+						"prefix": "FI/{city}/26-27/",
+						"next": 417,
+						"width": 4
+					},
+					"csr": null,
+					"note": "Issued in the app by Feeding India as the packs were collected: the donor's evidence for BRSR Principle 6, not a tax certificate."
+				},
+				"meals": {
+					"packs": 1,
+					"rule": "a meal for each pack served, indicative"
+				}
 			},
 			{
 				"name": "India FoodBanking Network",
 				"minDays": 21,
 				"minUnits": 100,
 				"logistics": "Drop at a member warehouse or a scheduled pickup",
-				"paper": "Donation acknowledgement (CSR / 80G, indicative)"
+				"paper": "Donation acknowledgement (CSR / 80G, indicative)",
+				"receipt": {
+					"title": "Donation acknowledgement",
+					"stamp": "ACKNOWLEDGED",
+					"series": {
+						"prefix": "IFBN/ACK/26-27/",
+						"next": 112,
+						"width": 4
+					},
+					"csr": "Schedule VII (i), eradicating hunger",
+					"note": "An acknowledgement for the donor's CSR records, indicative. Section 80G covers gifts of money, so this is not a tax certificate."
+				},
+				"meals": {
+					"kg": 0.4,
+					"rule": "a meal for every 400 g of food, indicative"
+				}
 			}
 		],
 		"approval": "The first 10 routes per channel need a tap; after that the agent runs inside the guardrails and reports.",
@@ -2466,6 +2496,31 @@
 		"leftover": 0
 	},
 	"mangoFb": 58,
+	"mangoReceipt": {
+		"id": "receipt",
+		"type": "Donation receipt",
+		"owner": "Feeding India",
+		"no": "FI/HYD/26-27/0417",
+		"status": "generated",
+		"amount": 0,
+		"paper": "In-app receipt",
+		"stamp": "RECEIVED",
+		"units": 58,
+		"kg": 12.47,
+		"meals": 58,
+		"mealsRule": "a meal for each pack served, indicative",
+		"value": null,
+		"csr": null,
+		"date": "2026-10-06",
+		"at": "10:00",
+		"by": "Meera",
+		"donor": "Munchly Foods Ltd",
+		"fssai": "10019022001234",
+		"via": "Lakshmi Agencies",
+		"from": "Begum Bazaar godown, Hyderabad",
+		"spot": "the Charminar hunger spot",
+		"note": "Issued in the app by Feeding India as the packs were collected: the donor's evidence for BRSR Principle 6, not a tax certificate."
+	},
 	"returnBy": "2026-10-29",
 	"rules": {
 		"projectionStopDays": 7,

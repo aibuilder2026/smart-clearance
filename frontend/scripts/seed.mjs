@@ -181,6 +181,8 @@ const workspaceSeed = {
 	docs: D.DOCS,
 	mangoPlan: D.MANGO_PLAN,
 	mangoFb: D.MANGO_FB,
+	// the receipt Feeding India issues as the Mango Drink is collected (SC-110)
+	mangoReceipt: D.MANGO_RECEIPT,
 	returnBy: D.RETURN_BY,
 	rules: window.SC3_MONEY.RULES,
 	roles: ROLES,
@@ -490,8 +492,49 @@ const moneyFixtures = (() => {
 			{ plan: heroPlan, sku: D.SKUS.chips, done: { kirana: 588, expiresoon: 0 } },
 			{ plan: mangoPlan, sku: D.SKUS.mango, done: { kirana: 1372, staff: 150, foodbank: 58 } },
 			{ plan: mangoPlan, sku: D.SKUS.mango, done: { kirana: 240, staff: 120, foodbank: 0 } },
-			{ plan: mangoPlan, sku: D.SKUS.mango, done: null }
-		].map((c) => ({ ...c, out: M.realised(c.plan, c.sku, c.done) })),
+			{ plan: mangoPlan, sku: D.SKUS.mango, done: null },
+			// SC-110: the meals counted by the rule of the food bank that collected
+			...D.SETUP.partners.map((p) => ({
+				plan: mangoPlan,
+				sku: D.SKUS.mango,
+				done: { kirana: 1372, staff: 150, foodbank: 58 },
+				mealsRule: p.meals
+			})),
+			{
+				plan: mangoPlan,
+				sku: D.SKUS.mango,
+				done: { kirana: 240, staff: 120, foodbank: 58 },
+				mealsRule: D.SETUP.partners[1].meals
+			}
+		].map((c) => ({ ...c, out: M.realised(c.plan, c.sku, c.done, c.mealsRule) })),
+		// SC-110: each food bank's meals rule, and its receipt for what it collected
+		mealsOf: [
+			[58, 'mango'],
+			[86, 'mango'],
+			[1, 'mango'],
+			[200, 'chips']
+		].flatMap(([units, id]) =>
+			[...D.SETUP.partners.map((p) => p.meals), null].map((rule) => ({
+				units,
+				sku: D.SKUS[id],
+				rule,
+				out: M.mealsOf(units, D.SKUS[id], rule ?? undefined)
+			}))
+		),
+		receipt: D.SETUP.partners.map((partner, i) => {
+			const facts = {
+				no: ['FI/HYD/26-27/0417', 'IFBN/ACK/26-27/0112'][i],
+				date: '2026-10-06',
+				at: '10:00',
+				by: 'Meera',
+				donor: D.CLIENT.name,
+				fssai: D.CLIENT.fssai,
+				via: 'Lakshmi Agencies',
+				from: 'Begum Bazaar godown, Hyderabad',
+				spot: 'the Charminar hunger spot'
+			};
+			return { units: 86, sku: D.SKUS.mango, partner, facts, out: M.receipt(86, D.SKUS.mango, partner, facts) };
+		}),
 		priceSupport: [
 			{
 				plan: M.realised(heroPlan, D.SKUS.chips, { kirana: 500, expiresoon: 772 }),
@@ -523,11 +566,20 @@ const moneyFixtures = (() => {
 		// money.js numbers the story's invoice and credit note itself; the port takes the numbers as arguments
 		documents: [
 			{ plan: heroPlan, sku: D.SKUS.chips, award, support, parties },
-			{ plan: mangoPlan, sku: D.SKUS.mango, award: null, support: M.priceSupport(mangoPlan, D.SKUS.mango), parties }
+			{ plan: mangoPlan, sku: D.SKUS.mango, award: null, support: M.priceSupport(mangoPlan, D.SKUS.mango), parties },
+			// SC-110: a donated batch's pack carries the food bank's receipt
+			{
+				plan: mangoPlan,
+				sku: D.SKUS.mango,
+				award: null,
+				support: M.priceSupport(mangoPlan, D.SKUS.mango),
+				parties,
+				receipt: D.MANGO_RECEIPT
+			}
 		].map((c) => ({
 			...c,
 			numbers: { invoice: 'INV/26-27/0931', support: 'CN/0117' },
-			out: M.documents(c.plan, c.sku, c.award, c.support, c.parties)
+			out: M.documents(c.plan, c.sku, c.award, c.support, c.parties, c.receipt)
 		})),
 		fmt: {
 			num: [0, 7, 1360, 21770.4, 123456789, -1840],

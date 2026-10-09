@@ -3574,14 +3574,44 @@
 				"minUnits": 50,
 				"logistics": "Volunteer pickup within 48 h, hunger spots in 100+ cities",
 				"pickup": "volunteer pickup in 48 h",
-				"paper": "In-app receipt"
+				"paper": "In-app receipt",
+				"receipt": {
+					"title": "Donation receipt",
+					"stamp": "RECEIVED",
+					"series": {
+						"prefix": "FI/{city}/26-27/",
+						"next": 417,
+						"width": 4
+					},
+					"csr": null,
+					"note": "Issued in the app by Feeding India as the packs were collected: the donor's evidence for BRSR Principle 6, not a tax certificate."
+				},
+				"meals": {
+					"packs": 1,
+					"rule": "a meal for each pack served, indicative"
+				}
 			},
 			{
 				"name": "India FoodBanking Network",
 				"minDays": 21,
 				"minUnits": 100,
 				"logistics": "Drop at a member warehouse or a scheduled pickup",
-				"paper": "Donation acknowledgement (CSR / 80G, indicative)"
+				"paper": "Donation acknowledgement (CSR / 80G, indicative)",
+				"receipt": {
+					"title": "Donation acknowledgement",
+					"stamp": "ACKNOWLEDGED",
+					"series": {
+						"prefix": "IFBN/ACK/26-27/",
+						"next": 112,
+						"width": 4
+					},
+					"csr": "Schedule VII (i), eradicating hunger",
+					"note": "An acknowledgement for the donor's CSR records, indicative. Section 80G covers gifts of money, so this is not a tax certificate."
+				},
+				"meals": {
+					"kg": 0.4,
+					"rule": "a meal for every 400 g of food, indicative"
+				}
 			}
 		],
 		"approval": "The first 10 routes per channel need a tap; after that the agent runs inside the guardrails and reports.",
@@ -3927,6 +3957,16 @@
 			"prefix": "ES-",
 			"next": 24117,
 			"width": 5
+		},
+		"receipt.feeding-india": {
+			"prefix": "FI/{city}/26-27/",
+			"next": 417,
+			"width": 4
+		},
+		"receipt.india-foodbanking-network": {
+			"prefix": "IFBN/ACK/26-27/",
+			"next": 112,
+			"width": 4
 		}
 	},
 	"label": {

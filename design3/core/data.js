@@ -257,8 +257,14 @@
     allowList: [["snacks", ["expiresoon", "kirana", "staff", "foodbank"]], ["biscuits", ["expiresoon", "kirana", "staff", "foodbank"]], ["staples", ["expiresoon", "kirana", "staff", "foodbank"]], ["beverages", ["expiresoon", "kirana", "staff", "foodbank"]], ["personal-care", ["expiresoon", "kirana", "staff"]]],
     brandSafety: ["Personal care never goes to food banks", "Premium gift packs never go to a staff sale"],
     partners: [
-      { name: "Feeding India", minDays: 15, minUnits: 50, logistics: "Volunteer pickup within 48 h, hunger spots in 100+ cities", pickup: "volunteer pickup in 48 h", paper: "In-app receipt" },
-      { name: "India FoodBanking Network", minDays: 21, minUnits: 100, logistics: "Drop at a member warehouse or a scheduled pickup", paper: "Donation acknowledgement (CSR / 80G, indicative)" },
+      // each food bank's own paper for what it collects (SC-110), numbered in its own series ({city}: the godown's city
+      // in three letters), and its own rule for the meals a donation makes; the numbers and rules are fictional
+      { name: "Feeding India", minDays: 15, minUnits: 50, logistics: "Volunteer pickup within 48 h, hunger spots in 100+ cities", pickup: "volunteer pickup in 48 h", paper: "In-app receipt",
+        receipt: { title: "Donation receipt", stamp: "RECEIVED", series: { prefix: "FI/{city}/26-27/", next: 417, width: 4 }, csr: null, note: "Issued in the app by Feeding India as the packs were collected: the donor's evidence for BRSR Principle 6, not a tax certificate." },
+        meals: { packs: 1, rule: "a meal for each pack served, indicative" } },
+      { name: "India FoodBanking Network", minDays: 21, minUnits: 100, logistics: "Drop at a member warehouse or a scheduled pickup", paper: "Donation acknowledgement (CSR / 80G, indicative)",
+        receipt: { title: "Donation acknowledgement", stamp: "ACKNOWLEDGED", series: { prefix: "IFBN/ACK/26-27/", next: 112, width: 4 }, csr: "Schedule VII (i), eradicating hunger", note: "An acknowledgement for the donor's CSR records, indicative. Section 80G covers gifts of money, so this is not a tax certificate." },
+        meals: { kg: 0.4, rule: "a meal for every 400 g of food, indicative" } },
     ],
     approval: "The first 10 routes per channel need a tap; after that the agent runs inside the guardrails and reports.",
     // the distributors' one-time permissions; Rakesh Traders gives his in stage 1 of the demo
@@ -276,6 +282,15 @@
     donation: { partner: "Feeding India", from: "Begum Bazaar", spot: "the Charminar hunger spot", day: "Tuesday", date: "Tue 6 Oct", time: "10:00", hour: "10 am", asked: "Day 0", confirmed: "Day 1", collected: "Day 4", slots: ["Wednesday 10:00", "Wednesday 16:00", "Thursday 11:00"] },
   };
   JOURNEY.donation.reply = `${JOURNEY.donation.day} works. We'll serve them at ${JOURNEY.donation.spot} this week.`;
+  // the receipt Feeding India issues as Meera marks the Mango Drink collected (SC-110): the first number of its series,
+  // on the day of the collection
+  const FOODBANK = SETUP.partners.find(p => p.name === JOURNEY.donation.partner);
+  const series = FOODBANK.receipt.series, MANGO_DIST = DISTRIBUTORS[BATCHES[1].distributor];
+  const MANGO_RECEIPT = M.receipt(MANGO_FB, SKUS.mango, FOODBANK, {
+    no: series.prefix.replace("{city}", MANGO_DIST.city.slice(0, 3).toUpperCase()) + String(series.next).padStart(series.width, "0"),
+    date: addDays(DAY0, Number(JOURNEY.donation.collected.replace("Day ", ""))), at: JOURNEY.donation.time, by: PEOPLE.meera.name,
+    donor: CLIENT.name, fssai: CLIENT.fssai, via: MANGO_DIST.name, from: `${MANGO_DIST.godown}, ${MANGO_DIST.city}`, spot: JOURNEY.donation.spot,
+  });
 
   // ExpireSoon, another company's marketplace: its terms, and the other lots on it (illustrative)
   const MARKET = {
@@ -301,6 +316,6 @@
   };
 
   window.SC3_DATA = { DAY0, addDays, PLATFORM, WORKSPACE, CLIENT, SKUS, DISTRIBUTORS, BUYER, PEOPLE, KIRANAS, OFFERED, BATCHES, STAGES, PUSH, CHAT, EVENTS, EV, QUARTER, SETUP,
-    RISK, PLAN, ASK, COUNTER, AWARD, ACTUAL, SUPPORT, SUPPORT_PLAN, CLAIM, DOCS, INVOICE, MANGO_PLAN, MANGO_FB, RETURN_BY, IMG, JOURNEY, MARKET, EXPLORE,
+    RISK, PLAN, ASK, COUNTER, AWARD, ACTUAL, SUPPORT, SUPPORT_PLAN, CLAIM, DOCS, INVOICE, MANGO_PLAN, MANGO_FB, MANGO_RECEIPT, RETURN_BY, IMG, JOURNEY, MARKET, EXPLORE,
     batchView: b => { const sku = SKUS[b.sku]; return { ...b, skuObj: sku, dist: DISTRIBUTORS[b.distributor], assess: M.assess(b, sku) }; } };
 })();

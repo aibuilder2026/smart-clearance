@@ -120,6 +120,8 @@
     invoice: { prefix: "INV/26-27/", next: 931, width: 4 },
     support: { prefix: "CN/", next: 117, width: 4 },
     listing: { prefix: "ES-", next: 24117, width: 5 },
+    // each food bank's own series for the receipts the app issues in its name (SC-110)
+    ...Object.fromEntries(D.SETUP.partners.map(p => ["receipt." + slug(p.name), p.receipt.series])),
   };
 
   // the label printed on each demo batch, as the Vision agent should read it (the Mango Drink's from SC-86)
