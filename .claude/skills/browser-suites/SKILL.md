@@ -83,6 +83,9 @@ corepack pnpm --filter @smart-clearance/console exec playwright test console.a11
 corepack pnpm --filter @smart-clearance/console exec playwright test --project=flows
 ```
 
+After any journey suite (or `walk.sh`), set Munchly's journey day back to 24 hours, as the maintainer asked:
+`backend-api/scripts/hydrate.sh --day-minutes munchly=1440`. The Chips suites leave it at the reset's 60 minutes.
+
 ## Reporting
 
 Report what ran and the counts, in the form CLAUDE.md's records use:

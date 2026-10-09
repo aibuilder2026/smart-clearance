@@ -87,15 +87,27 @@ async def build(ctx: Ctx, client_id: str) -> int:
     for d in (await world.distributors(ctx, client_id)).values():
         if d.id in {b["distributor"] for b in batches.values()}:
             d.permission, d.permission_paused, d.permission_given_at = "given", False, first
-    # the client's clock runs at real time from the history's first morning: a step's journey time is its own
+    # the client's clock runs at real time from the history's first morning, whatever day length the client runs its
+    # journey at (a step's save applies it while a case is open): a step's journey time is its own
+    day_minutes = c.day_minutes
+    c.day_minutes = DAY_MINUTES
     c.clock_anchor_wall, c.clock_anchor_journey, c.clock_speed = first, first, DAY_MINUTES
     await ctx.session.flush()
 
     bids: dict[str, str] = {}
     for when, ref, _, step in timeline:
         b, at = batches[ref], _at(when)
-        await _step(as_, hx, storage, client_id, b, step, at, bids, members, j)
+        try:
+            await _step(as_, hx, storage, client_id, b, step, at, bids, members, j)
+        except steps.Noop:  # a step that had nothing to do: the history no longer matches this workspace's setup
+            case = await _case(hx, client_id, ref)
+            lines = [(ln["id"], ln["units"]) for ln in (case.plan or {}).get("lines", [])]
+            raise RuntimeError(
+                f"history: {ref}'s {step} at {when} had nothing to do (phase {case.phase}, plan {lines})"
+            ) from None
     await _quiet(ctx, client_id, set(batches))
+    c.day_minutes = day_minutes  # the client's own day length again: its configuration
+    await ctx.session.flush()
     return len(batches)
 
 

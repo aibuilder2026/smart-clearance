@@ -89,6 +89,12 @@ Its run of 9 Oct is in `runs/2026-10-09-leftover/`.
 
 ## Running it
 
+Once a run is done, set Munchly's journey day back to 24 hours: the Chips suites leave it at the reset's 60 minutes.
+
+```sh
+backend-api/scripts/hydrate.sh --day-minutes munchly=1440
+```
+
 From `frontend/`, on request only, like every browser suite (SC-55):
 
 ```sh

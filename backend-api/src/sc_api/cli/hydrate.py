@@ -32,6 +32,7 @@ from sc_api.domain.clock import FixedClock, Ids, SeededIds
 from sc_api.identity import provider
 from sc_api.services import reference
 from sc_api.services.context import SYSTEM, Ctx
+from sc_api.services.journey import events as ev
 from sc_api.services.journey import reset
 from sc_api.settings import get_settings
 
@@ -57,6 +58,12 @@ async def run(args: argparse.Namespace) -> None:
         # a journey started on a world already built takes fresh ids: the seeded ones would repeat that world's own
         if args.live_only:
             await _live_only(replace(ctx, ids=Ids()))
+            return
+        if args.day_minutes:  # a client's journey day, as the console sets it (e.g. back to 24 hours after a test run)
+            client, _, minutes = args.day_minutes.partition("=")
+            await ev.set_day_minutes(ctx, client, int(minutes))
+            await session.commit()
+            print(f"sc-hydrate: {client}'s journey day is {minutes} minutes")
             return
         if args.journey_reset:
             out = await reset.reset(replace(ctx, ids=Ids()), args.journey_reset)
@@ -147,6 +154,9 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--tick", action="store_true")
     p.add_argument("--no-live", action="store_true", help="leave Munchly's live workspace out (SC-66)")
     p.add_argument("--journey-reset", metavar="CLIENT", help="start a client's live journey again (SC-66)")
+    p.add_argument(
+        "--day-minutes", metavar="CLIENT=MINUTES", help="set a client's journey day, 1 to 1440 (1440 is real time)"
+    )
     p.add_argument(
         "--live-only", action="store_true", help="Munchly's live workspace on a database that has its story (SC-75)"
     )
