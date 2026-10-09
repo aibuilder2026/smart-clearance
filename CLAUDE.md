@@ -1241,4 +1241,9 @@
   - **The fix** (design3 `trade.jsx` first, then core's `VanInner.svelte`): as "Load after the award" does before the award, the button is disabled and reads "Load once the scheme closes" while the scheme is open. The scheme is over once it is closed, or once every kirana has ordered (the stub never closes it).
   - **Checks:** the frontend gate passes (core 249 with goldens unchanged, api 77, workspace 67, admin 17, demo 5, console 3). A new live test draws Rakesh's Van route with the lot won and the scheme open, then closed, and fails without the fix. design3's `dist/` is rebuilt.
 
+- **SC-119** (In Review, branch `SC-119-ledger-line-early-report`, stacked on SC-118; bug found by Munchly Chips Leftover E2E): Impact's ledger line says when expiry day came early.
+  - **Found:** Neha fired Report now on journey day 0 (2 Oct), and the timeline read "The return window closed on 29 Oct. Posted the ledger: …".
+  - **The fix** (`copy.ledger_event`, given the day the report posts): a report posted before the return window closes reads "Expiry day called on 2 Oct, before the return window would close on 29 Oct. Posted the ledger: …". A report on or after that day keeps the story's line, so the fixtures are unchanged.
+  - **Checks:** backend-api 492 passed, 1 skipped. A copy test covers both lines, and the Report now test reads the early one; it fails without the fix.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
