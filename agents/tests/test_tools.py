@@ -14,7 +14,7 @@ from sc_agents.errors import Permanent, Stale, Transient
 from sc_agents.gcp import FixedToken
 from sc_agents.logs import CloudJson
 from sc_agents.tools import pdf
-from tests.conftest import HERO, STORY, case
+from tests.conftest import ACKNOWLEDGEMENT, HERO, RECEIPT, STORY, case
 
 
 def test_figures_are_held_to_the_computed_ones():
@@ -161,6 +161,29 @@ def test_each_paper_lays_out_backend_apis_figures():
     assert "₹1,224.00" in pdf.html(doc, c) and "17(5)(h)" in pdf.html(doc, c)
     assert [d["id"] for d in STORY["docs"] if pdf.needs_pdf(d)] == ["invoice", "support", "itc"]
     assert HERO in page
+
+
+def test_each_food_bank_issues_its_own_paper():
+    """SC-110: Feeding India's in-app receipt, and India FoodBanking Network's acknowledgement with the value at the
+    donor's cost for its CSR records"""
+    from sc_agents.agents.common import cut_case
+
+    c = cut_case(case(phase="executing", photo="verified", which="mango"))
+    page = pdf.html(RECEIPT, c, today=RECEIPT["date"])
+    for text in (
+        "Donation receipt",
+        "FI/HYD/26-27/0417",
+        "RECEIVED",
+        "Munchly Foods Ltd",
+        "Lakshmi Agencies",
+        "12.47 kg",
+    ):
+        assert text in page, text
+    assert "the Charminar hunger spot" in page and "a meal for each pack served" in page and "CSR" not in page
+    page = pdf.html(ACKNOWLEDGEMENT, c, today=RECEIPT["date"])
+    for text in ("Donation acknowledgement", "IFBN/ACK/26-27/0112", "ACKNOWLEDGED", "₹638.00", "Schedule VII (i)"):
+        assert text in page, text
+    assert "not a tax certificate" in page and pdf.needs_pdf(RECEIPT) and not pdf.needs_pdf({**RECEIPT, "pdf": True})
 
 
 @pytest.mark.skipif(not pdf.available(), reason="WeasyPrint's system libraries (Pango) are not installed")

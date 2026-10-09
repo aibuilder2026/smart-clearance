@@ -10,6 +10,7 @@ from tests.conftest import (
     LISTING,
     MANGO,
     PHOTO,
+    RECEIPT,
     STORY,
     C,
     case,
@@ -291,6 +292,27 @@ async def test_paperwork_redelivered_renders_only_what_is_missing(run, backend):
         f"/cases/{HERO}/documents/itc",
     ]
     assert outcome == "done"
+
+
+async def test_paperwork_lays_out_the_food_banks_receipt_as_it_collects(run, backend, store):
+    """SC-110: the receipt's PDF follows the collection at once, before the batch's pack, and no model is asked"""
+    donation = {"status": "collected", "partner": "Feeding India", "units": 58, "receipt": RECEIPT}
+    backend["GET", f"{C}/cases/{MANGO}"] = case(phase="executing", photo="verified", which="mango", donation=donation)
+    outcome, rc = await run(message(STEP, {"type": "receipt", "ref": MANGO}, event_id="ev_r"))
+    assert outcome == "done"
+    assert [(m, p, b["object"]) for m, p, b in backend.reports()] == [
+        ("PATCH", f"/cases/{MANGO}/documents/receipt", f"munchly/{MANGO}/receipt.pdf")
+    ]
+    run_of(backend.reports()[0][2], "paperwork", "ev_r:paperwork")
+    page = store.objects[("docs-test", f"munchly/{MANGO}/receipt.pdf")].decode()
+    assert "FI/HYD/26-27/0417" in page and "RECEIVED" in page and "Issued by Feeding India" in page
+    assert rc.requests == []
+
+    # redelivered once the PDF is there: nothing to do
+    backend.routes["GET", f"{C}/cases/{MANGO}"]["donation"]["receipt"] = {**RECEIPT, "pdf": True}
+    backend.calls.clear()
+    outcome, _ = await run(message(STEP, {"type": "receipt", "ref": MANGO}, event_id="ev_r"))
+    assert outcome == "noop" and backend.reports() == []
 
 
 async def test_impact_posts_the_report_and_appends_the_ledger(run, backend, warehouse):
