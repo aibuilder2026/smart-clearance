@@ -318,60 +318,6 @@
 .lv-ia-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; font-size: 15px; color: var(--fg-2); }
 .lv-ia-row + .lv-ia-row { box-shadow: inset 0 var(--hair) 0 var(--line); }
 .lv-ia-row.on { background: var(--blue-soft); color: var(--blue-text); font-weight: 650; }
-/* @splash-ws · the first load and signing in: the console's splash (SC-51, console/splash.js) in the workspace's words,
-   as SC-68 option B shows it: the mark, the workspace, the greeting and the reads as a list. Every rule is scoped to the
-   workspace's cover (.cs-splash.ws), so the console's own splash is untouched; the SvelteKit build inlines this block */
-.cs-splash.ws { position: fixed; inset: 0; z-index: var(--z-splash); display: grid; place-items: center; overflow: hidden; color: var(--fg); opacity: 0; transition: opacity 320ms linear; }
-.cs-splash.ws.in, .cs-splash.ws.still { opacity: 1; }
-.cs-splash.ws.still { transition: none; }
-.cs-splash.ws .sr-only { position: absolute; }
-.cs-splash.ws .cs-sp-cover, .cs-splash.ws .cs-sp-cover .ground { position: absolute; inset: 0; }
-.cs-splash.ws .cs-sp-cover { background: var(--bg); }
-.cs-splash.ws .cs-sp-lock { position: relative; z-index: 1; display: grid; justify-items: center; gap: 14px; width: min(420px, calc(100% - 40px)); text-align: center; }
-.cs-splash.ws .cs-sp-mkbox { display: grid; will-change: transform, opacity; }
-.cs-splash.ws .cs-sp-mk { display: block; width: 104px; height: 104px; overflow: visible; }
-.cs-splash.ws .cs-sp-mk .sq, .cs-splash.ws .cs-sp-mk circle { transform-box: fill-box; transform-origin: center; }
-.cs-splash.ws .cs-sp-mk .route { stroke-dasharray: 1 1; stroke-dashoffset: 1; opacity: 0; }
-.cs-splash.ws .cs-sp-mk .pin { opacity: 0; transform: translateY(-16px) scale(0.6); }
-.cs-splash.ws.landed .cs-sp-mk .pin { opacity: 1; transform: none; transition: opacity 120ms linear, transform 520ms var(--ease-spring); }
-.cs-splash.ws .cs-sp-mk .ping { opacity: 0; }
-.cs-splash.ws.landed .cs-sp-mk .ping { animation: ws-sp-ping 900ms ease-out 120ms both; }
-@keyframes ws-sp-ping { from { opacity: 0.9; transform: scale(0.6); } to { opacity: 0; transform: scale(2.2); } }
-.cs-splash.ws .cs-sp-words { display: grid; justify-items: center; gap: 10px; margin-top: 4px; }
-.cs-splash.ws .cs-sp-brand { display: inline-flex; align-items: center; gap: 8px; min-height: 22px; font-size: 14px; font-weight: 600; color: var(--fg-2); }
-.cs-splash.ws .cs-sp-brand svg { flex: none; }
-.cs-splash.ws .cs-sp-title { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 30px; line-height: 1.1; letter-spacing: -0.025em; font-variation-settings: "opsz" 60; color: var(--fg); text-wrap: balance; }
-.cs-splash.ws .cs-sp-sub { margin: 0; font-size: 15px; color: var(--fg-2); text-wrap: balance; }
-.cs-splash.ws .cs-sp-sub:empty { display: none; }
-/* the reads as a list: a dot, the read, the time it took */
-.cs-splash.ws .cs-sp-tracker { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; width: min(300px, 82vw); margin-top: 8px; text-align: left; }
-.cs-splash.ws .cs-sp-tracker .rail { display: none; }
-.cs-splash.ws .cs-sp-tracker .stop { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; justify-items: start; align-items: center; gap: 10px; padding: 0; text-align: left; }
-.cs-splash.ws .cs-sp-tracker .dot { width: 12px; height: 12px; box-shadow: inset 0 0 0 2px var(--fill-3); background: transparent; }
-.cs-splash.ws .cs-sp-tracker .dot svg { display: none; }
-.cs-splash.ws .cs-sp-tracker .stop.done .dot { background: var(--primary); box-shadow: none; }
-.cs-splash.ws .cs-sp-tracker .stop.now .dot { box-shadow: inset 0 0 0 2px var(--primary); }
-.cs-splash.ws .cs-sp-tracker .stop.now .dot::before { inset: 3px; }
-.cs-splash.ws .cs-sp-tracker .stop.now .dot::after { inset: -3px; animation-iteration-count: 1; }
-.cs-splash.ws .cs-sp-tracker .st-label { font-size: 14.5px; font-weight: 600; color: var(--fg-3); }
-.cs-splash.ws .cs-sp-tracker .stop.done .st-label, .cs-splash.ws .cs-sp-tracker .stop.now .st-label { color: var(--fg); }
-.cs-splash.ws .cs-sp-tracker .st-time { justify-self: end; font-size: 12px; color: var(--fg-2); }
-/* the words and the list rise once the title's face is in; the mark springs in on a first load */
-.cs-splash.ws:not(.go) .cs-sp-words, .cs-splash.ws:not(.go) .cs-sp-tracker { opacity: 0; }
-.cs-splash.ws.go .cs-sp-words { animation: ws-sp-rise 420ms var(--ease) backwards; }
-.cs-splash.ws.go .cs-sp-tracker { animation: ws-sp-rise 420ms var(--ease) 100ms backwards; }
-.cs-splash.ws.boot .cs-sp-mk .sq { animation: ws-sp-pop 560ms var(--ease-spring) backwards; }
-@keyframes ws-sp-rise { from { opacity: 0; transform: translateY(10px); } }
-@keyframes ws-sp-pop { from { opacity: 0; transform: scale(0.55); } }
-.cs-splash.ws .cs-sp-retry { margin-top: 10px; }
-.cs-splash.ws.failed .cs-sp-tracker { display: none; }
-@media (max-width: 599px) { .cs-splash.ws .cs-sp-mk { width: 84px; height: 84px; } }
-@media (prefers-reduced-motion: reduce) {
-  .cs-splash.ws .cs-sp-words, .cs-splash.ws .cs-sp-tracker, .cs-splash.ws .cs-sp-mk .sq, .cs-splash.ws .cs-sp-mk .ping { animation: none; }
-  .cs-splash.ws:not(.go) .cs-sp-words, .cs-splash.ws:not(.go) .cs-sp-tracker { opacity: 1; }
-  .cs-splash.ws .cs-sp-mk .pin { transition: none; }
-}
-/* @splash-ws-end */
 @media (prefers-reduced-motion: reduce) {
   .lv-conn-spin .ic { animation: none; }
   .lv-fill-on { transition: none; }

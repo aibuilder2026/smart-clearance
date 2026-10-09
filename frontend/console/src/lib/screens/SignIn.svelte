@@ -1,5 +1,7 @@
 <script lang="ts">
 	import plate from '$design3/site/assets/plates/scene.webp';
+	import { onMount } from 'svelte';
+	import { preloadCode } from '$app/navigation';
 	import {
 		Field,
 		FindWorkspace,
@@ -32,6 +34,8 @@
 	let find = $state(false);
 	const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 	const say = (err: unknown) => (err instanceof ApiError || err instanceof Error ? err.message : SIGN_IN_FAILED);
+	// the console's code is fetched while the person types, so signing in waits only on the platform's reads (SC-131)
+	onMount(() => void preloadCode('/').catch(() => undefined));
 
 	// a wrong sign-in shakes the button, then says so; the welcome holds for a moment, under reduced motion too (it is
 	// a state, not a movement)
@@ -74,7 +78,7 @@
 				<h2 class="cs-si-title">Console</h2>
 				<p class="cs-si-lede">Set up and run every client's workspace: its agents, its supply chain, its people.</p>
 			</div>
-			<img class="cs-si-plate" src={plate} alt="" width="1376" height="752" />
+			<img class="cs-si-plate" src={plate} alt="" width="1376" height="752" fetchpriority="low" decoding="async" />
 		</div>{/if}
 	<div class="si-panel">
 		<div class="si-card">

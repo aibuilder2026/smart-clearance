@@ -1,12 +1,16 @@
-// Smart-Clearance v3 · smartclearance.com's loader (SC-35). Plain ES2019, loaded first in <body>, before React, so it
-// is on screen from the first paint. It follows the page's real loading: the scripts as each arrives, the fonts, the
-// first render, and the hero's plate once the film's poster has decoded.
-//   · Every load of the page, reloads included, plays the route: the mark draws its S from the godown dot as the page
-//     loads; once the town is in, the amber pin lands and the mark opens into a window onto the page.
+// Smart-Clearance v3 · smartclearance.com's loader (SC-35; SC-131, option B, the route runs). Plain ES2019, loaded
+// first in <body>, before React, and self-contained: it brings its own styles, so it paints with the page's first
+// bytes, before any stylesheet has arrived.
+//   · Every load of the page, reloads included, plays the route: the mark's route stands faint and a bright stretch of
+//     it runs from the godown dot to the pin, a lap every 1.15 s, the pin throbbing as each lap arrives. It lifts once
+//     the first screen can be read (the page's stylesheets in, its faces in or 2.5 s gone, and the hero's soft preview
+//     under the film's poster), never waiting for the plate itself, which sharpens in place: the last lap draws the
+//     whole route, the pin pings once, and the mark opens into a window onto the page. Past 3 s a quiet line says the
+//     connection is slow.
 //   · Every change of theme plays dusk or dawn: the town's skyline in paper layers rises under a sky that turns from day
 //     to night (or back) while the new plates load; the theme changes underneath, and the layers part into the page.
 // Its exits run on Framer Motion's animate() (motion's in the SvelteKit build); if the scripts never arrive it steps
-// aside on its own after eight seconds. Only the loader moves, and only while the page loads (WCAG 2.2.2); under
+// aside on its own after twelve seconds. Only the loader moves, and only while the page loads (WCAG 2.2.2); under
 // reduced motion it is a still frame that leaves as soon as the page is ready. The town and the theme talk to it
 // through window.SC3_LOADER.
 (function () {
@@ -28,25 +32,99 @@
     H.setAttribute("data-theme", dark ? "dark" : "light");
   })();
 
-  /* ---------- the progress: real milestones, weighted, shown smoothly and never backwards ---------- */
+  /* ---------- its own styles: design system v3's inks and faces, written out, so nothing waits for a stylesheet ---------- */
+  var DISPLAY = '"Bricolage Grotesque Variable", "Bricolage Grotesque", "Geist Variable", "Geist", system-ui, sans-serif';
+  var UI = '"Geist Variable", "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif';
+  var HI = '"Noto Sans Devanagari Variable", "Noto Sans Devanagari", "Kohinoor Devanagari", system-ui, sans-serif';
+  var EASE = "cubic-bezier(.22,1,.36,1)";
+  // the design system's spring (tokens.css --ease-spring, one 10% overshoot): the mark springs in on it, as in SC-35 and SC-51
+  var SPRING = "linear(0, 0.009, 0.035 2.1%, 0.141 4.4%, 0.723 12.9%, 0.938 16.7%, 1.017 19.4%, 1.067, 1.099 24.3%, 1.108 26%, 1.1, 1.074 31.1%, 1.008 38.1%, 0.983 42.5%, 0.979 45.6%, 0.985 50%, 1.001 59.9%, 1.002 70.2%, 1)";
+  var CSS = [
+    // the loader sits over the whole window, outside the app, so it is sized by the window, not the app's container
+    ".loader{position:fixed;inset:0;z-index:90;overflow:hidden;contain:strict;-webkit-tap-highlight-color:transparent;font:400 15px/1.5 " + UI + ";-webkit-font-smoothing:antialiased}",
+    ".loader .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}",
+    ".loader .mk{flex:none;display:block;overflow:visible}.loader .mk .mk-sq,.loader .mk circle{transform-box:fill-box;transform-origin:center}",
+    // the route: the page's own ground and aurora, the mark, the wordmark and the Hindi line
+    ".loader-route{--lr-bg:#f2f6f3;--lr-a1:#d9f0e3;--lr-a2:#e2eef7;--lr-fg:#0d1c15;--lr-fg2:#45554d;--lr-fg3:#5f6e67;--lr-fill:rgb(17 41 30/.075);color:var(--lr-fg)}",
+    ".loader-route[data-theme=dark]{--lr-bg:#070b09;--lr-a1:rgb(22 122 82/.34);--lr-a2:rgb(16 112 150/.22);--lr-fg:#ecf2ee;--lr-fg2:#a7b4ad;--lr-fg3:#82908a;--lr-fill:rgb(214 255 232/.08)}",
+    ".loader-route .lr-cover{position:absolute;inset:0;background:radial-gradient(48% 46% at 18% 4%,var(--lr-a1),transparent 70%),radial-gradient(42% 40% at 84% 0%,var(--lr-a2),transparent 70%),var(--lr-bg)}",
+    ".loader-route .lr-lock{position:absolute;left:50%;top:50%;translate:-50% -50%;display:grid;justify-items:center;gap:18px;text-align:center}",
+    ".loader-route .mk{width:112px;height:112px;will-change:transform}",
+    ".loader-route .mk .mk-sq{animation:loader-pop 560ms " + SPRING + " backwards}.loader-route .mk .mk-dot{animation:loader-pop 420ms " + SPRING + " 180ms backwards}",
+    // the route runs: three tenths of it, from the godown dot to the pin, a lap every 1.15 s; the pin throbs as it arrives
+    ".loader-route .mk .mk-ghost{opacity:.3}.loader-route .mk .mk-route{stroke-dasharray:.3 1.4;stroke-dashoffset:.3}",
+    ".loader-route.running .mk .mk-route{animation:loader-run 1.15s cubic-bezier(.45,0,.55,1) 320ms infinite}",
+    ".loader-route.running .mk .mk-pin{animation:loader-throb 1.15s cubic-bezier(.45,0,.55,1) 320ms infinite}",
+    "@keyframes loader-run{from{stroke-dashoffset:.3}to{stroke-dashoffset:-1}}",
+    "@keyframes loader-throb{0%,70%{transform:scale(1)}82%{transform:scale(1.38)}100%{transform:scale(1)}}",
+    ".loader-route.drawn .mk .mk-ghost{opacity:0;transition:opacity 380ms linear}",
+    ".loader-route.landed .mk .mk-ping{animation:loader-ping 900ms ease-out both}@keyframes loader-ping{from{opacity:.9;transform:scale(.6)}to{opacity:0;transform:scale(2.2)}}",
+    ".loader-route.landed .lr-word,.loader-route.landed .lr-hi,.loader-route.landed .lr-slow{opacity:0;transform:translateY(8px);transition:opacity 240ms cubic-bezier(.55,0,1,.45),transform 240ms cubic-bezier(.55,0,1,.45)}",
+    ".loader-route.opening .mk .mk-sq{opacity:0;transition:opacity 240ms linear}",
+    ".loader-route .lr-word{display:inline-flex;overflow:hidden;padding-block:2px;font:750 34px/1.1 " + DISPLAY + ";letter-spacing:-.03em;font-variation-settings:'opsz' 48;white-space:nowrap;color:var(--lr-fg)}",
+    ".loader-route .lr-word>span{display:inline-block}",
+    ".loader-route .lr-hi{margin-top:-6px;font:600 17px/1.5 " + HI + ";color:var(--lr-fg)}",
+    ".loader-route .lr-slow{margin-top:6px;display:inline-flex;align-items:center;gap:8px;min-height:30px;padding:0 12px;border-radius:999px;background:var(--lr-fill);font-size:13.5px;color:var(--lr-fg2);opacity:0;transform:translateY(6px);transition:opacity 240ms linear,transform 240ms " + EASE + "}",
+    ".loader-route .lr-slow i{width:7px;height:7px;border-radius:50%;background:var(--lr-fg3)}",
+    ".loader-route.slow .lr-slow{opacity:1;transform:none}.loader-route.leaving .lr-slow{opacity:0}",
+    // the words rise once their faces are in, or after a third of a second, so a slow face never holds them back
+    ".loader-route .lr-lock:not(.go) .lr-word>span,.loader-route .lr-lock:not(.go) .lr-hi{opacity:0}",
+    ".loader-route .lr-lock.go .lr-word>span{animation:loader-rise 620ms " + EASE + " backwards;animation-delay:calc(120ms + var(--i) * 28ms)}",
+    ".loader-route .lr-lock.go .lr-hi{animation:loader-fade 520ms " + EASE + " 620ms backwards}",
+    "@media (max-width:599px){.loader-route .mk{width:84px;height:84px}.loader-route .lr-word{font-size:30px}.loader-route .lr-hi{font-size:15px}}",
+    "@keyframes loader-pop{from{opacity:0;transform:scale(.55)}}@keyframes loader-rise{from{opacity:0;transform:translateY(105%)}}@keyframes loader-fade{from{opacity:0;transform:translateY(6px)}}",
+    // dusk and dawn: the town's skyline in three paper layers under a sky that turns with the load; the sun or the moon
+    // climbs, and the windows light at night. A switch starts from the page it covers: the sky clear, the town below the
+    // window, until the cover plays (or, under reduced motion, at once)
+    ".loader-sky{--lit:#f4e8c8}",
+    ".loader-sky .ls-sky{position:absolute;inset:0;background:linear-gradient(to bottom,var(--sky-0) 0%,var(--sky-1) 52%,var(--sky-2) 100%)}",
+    ".loader-sky .ls-stars{position:absolute;left:0;top:0;width:100%;height:65%}.loader-sky .ls-stars g{opacity:var(--stars,0)}.loader-sky .ls-stars circle{fill:#ecf2ee}",
+    ".loader-sky .ls-orbs{position:absolute;inset:0}",
+    ".loader-sky .ls-sun,.loader-sky .ls-moon{position:absolute;left:0;top:0;border-radius:50%;will-change:transform;pointer-events:none}",
+    ".loader-sky .ls-sun{width:68px;height:68px;margin:-34px 0 0 -34px;background:radial-gradient(circle at 42% 38%,#fffdf6,#f8ecd0 72%)}",
+    ".loader-sky .ls-moon{width:46px;height:46px;margin:-23px 0 0 -23px;box-shadow:inset -13px 5px 0 0 #e7eee9}",
+    ".loader-sky .ls-land{position:absolute;left:50%;bottom:0;height:max(34vh,calc(100vw * 300 / 1600));aspect-ratio:1600/300;translate:-50% 0}",
+    ".loader-sky .ls-layer{position:absolute;inset:0;width:100%;height:100%;overflow:visible;transform-origin:50% 100%;will-change:transform}",
+    ".loader-sky .ls-back{fill:var(--l-0)}.loader-sky .ls-mid{fill:var(--l-1);filter:drop-shadow(0 -3px 6px rgb(0 0 0/.1))}.loader-sky .ls-front{fill:var(--l-2);filter:drop-shadow(0 -3px 7px rgb(0 0 0/.14))}",
+    ".loader-sky .ls-back .w{fill:var(--w-0)}.loader-sky .ls-mid .w{fill:var(--w-1)}.loader-sky .ls-front .w{fill:var(--w-2)}",
+    ".loader-sky .w{transition:fill 360ms " + EASE + "}.loader-sky .w.on{fill:var(--lit)}",
+    ".loader-sky .ls-sky,.loader-sky .ls-stars,.loader-sky .ls-orbs{opacity:0}.loader-sky .ls-layer{transform:translateY(100%)}",
+    ".loader-sky.is-still .ls-sky,.loader-sky.is-still .ls-stars,.loader-sky.is-still .ls-orbs{opacity:1}.loader-sky.is-still .ls-layer{transform:none}",
+    "@media (max-width:599px){.loader-sky .ls-sun{width:52px;height:52px;margin:-26px 0 0 -26px}.loader-sky .ls-moon{width:38px;height:38px;margin:-19px 0 0 -19px;box-shadow:inset -11px 4px 0 0 #e7eee9}}",
+    "@media (prefers-reduced-motion:reduce){.loader *,.loader *::before,.loader *::after{animation:none!important;transition:none!important}.loader-route .mk .mk-route{stroke-dasharray:1 1;stroke-dashoffset:0}.loader-route .mk .mk-ghost{opacity:0}}"
+  ].join("");
+  if (!D.getElementById("sc3-loader-css")) { var st = el("style"); st.id = "sc3-loader-css"; st.textContent = CSS; (D.head || H).appendChild(st); }
+
+  /* ---------- what it waits for: on a load, the first screen; on a switch, the new plates, weighted, never backwards ---------- */
   var LOAD = W.SC3_LOADER = { lifted: false, busy: false, reduce: reduce, weights: null, marks: {} };
-  // a load: the page's scripts (counted as each arrives), the fonts, the first render, and the town's depth map and
-  // plate as the town draws them. A switch: the cover, the new plates decoded, the town's plate redrawn.
-  var FIRST = { doc: 0.28, fonts: 0.1, app: 0.06, depth: 0.06, plate: 0.5 };
+  // a load waits for what the first screen needs to be read: the page's stylesheets, its faces (or 2.5 s), and the
+  // document; the app, the depth map and the plate are noted as they come but never waited for. A switch: the cover,
+  // the new plates decoded, the town's plate redrawn.
+  var FIRST = { doc: 0.4, fonts: 0.3, sheets: 0.3, app: 0, depth: 0, plate: 0 };
   var SWITCH = { cover: 0.3, plate: 0.5, drawn: 0.2 };
+  var FACES = 2500;
   function begin(kind, weights, opts) {
     LOAD.kind = kind; LOAD.weights = weights; LOAD.marks = {}; LOAD.target = 0; LOAD.shown = 0;
     LOAD.t0 = LOAD.last = now(); LOAD.done = false; LOAD.opts = opts || {};
   }
   LOAD.mark = function (name, frac) {
     var w = LOAD.weights; if (!w || !(name in w) || LOAD.done) return;
+    if (LOAD.kind === "load" && name === "plate") LOAD.plateIn = true;
     var prev = LOAD.marks[name] || 0, next = frac == null ? 1 : clamp(frac, 0, 1);
     if (next <= prev) return;
     LOAD.marks[name] = next; LOAD.last = now();
     var t = 0; for (var k in w) t += w[k] * (LOAD.marks[k] || 0);
     LOAD.target = Math.min(1, t);
   };
-  LOAD.complete = function () { var w = LOAD.weights; if (!w) return false; for (var k in w) if ((LOAD.marks[k] || 0) < 1) return false; return true; };
+  LOAD.complete = function () { var w = LOAD.weights; if (!w) return false; for (var k in w) if (w[k] > 0 && (LOAD.marks[k] || 0) < 1) return false; return true; };
+  // the page's stylesheets: in once each has its sheet, or has failed to arrive
+  function sheetsIn() {
+    // a stylesheet still on its way may be a preload that becomes a stylesheet once it has loaded (SC-131)
+    var links = D.querySelectorAll('link[rel~="stylesheet"], link[rel="preload"][as="style"]');
+    for (var i = 0; i < links.length; i++) if (!(links[i].rel.indexOf("stylesheet") >= 0 && links[i].sheet) && !links[i].dataset.failed) return false;
+    return true;
+  }
+  D.addEventListener("error", function (e) { var t = e.target; if (t && t.tagName === "LINK") t.dataset.failed = "1"; }, true);
   // the town's handshake: its depth map is in; it has drawn the plate for a theme
   LOAD.depthIn = function () { if (LOAD.kind === "load") LOAD.mark("depth"); };
   LOAD.plateDrawn = function (dark) {
@@ -59,10 +137,11 @@
     '<linearGradient id="ld-mg" x1="8" y1="4" x2="58" y2="62" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#2fbf7f"/><stop offset="0.55" stop-color="#178258"/><stop offset="1" stop-color="#0d5a3e"/></linearGradient>' +
     '<linearGradient id="ld-mh" x1="32" y1="2" x2="32" y2="34" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity="0.28"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>' +
     '<g class="mk-sq"><path d="M32 2C9.5 2 2 9.5 2 32s7.5 30 30 30 30-7.5 30-30S54.5 2 32 2Z" fill="url(#ld-mg)"/><path d="M32 3C10.5 3 3 10.5 3 31.5 10 22 22 18 32 18s22 4 29 13.5C61 10.5 53.5 3 32 3Z" fill="url(#ld-mh)"/></g>' +
+    '<path class="mk-ghost" d="M43.5 19H27a7 7 0 0 0 0 14h10a7 7 0 0 1 0 14H20.5" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>' +
     '<path class="mk-route" d="M43.5 19H27a7 7 0 0 0 0 14h10a7 7 0 0 1 0 14H20.5" pathLength="1" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>' +
     '<circle class="mk-dot" cx="43.5" cy="19" r="3.4" fill="#0d5a3e" stroke="#fff" stroke-width="2.6"/>' +
     '<circle class="mk-ping" cx="20.5" cy="47" r="5" fill="none" stroke="#f7c04a" stroke-width="2" opacity="0"/>' +
-    '<circle class="mk-pin" cx="20.5" cy="47" r="5.2" fill="#f7c04a" stroke="#fff" stroke-width="2.2" opacity="0"/></svg>';
+    '<circle class="mk-pin" cx="20.5" cy="47" r="5.2" fill="#f7c04a" stroke="#fff" stroke-width="2.2"/></svg>';
   // the mark's squircle as four absolute cubics, centred on (cx, cy) at k px a unit (the mark is 60 units across)
   var SQ = [[32, 2], [9.5, 2], [2, 9.5], [2, 32], [2, 54.5], [9.5, 62], [32, 62], [54.5, 62], [62, 54.5], [62, 32], [62, 9.5], [54.5, 2], [32, 2]];
   function squircle(cx, cy, k) {
@@ -74,48 +153,62 @@
     var w = vw(), h = vh();
     return Math.max(Math.hypot(cx, cy), Math.hypot(w - cx, cy), Math.hypot(cx, h - cy), Math.hypot(w - cx, h - cy)) / 30 * 1.04;
   }
+  // a tween of its own on a cubic bezier, so the route's exit needs nothing from the page's scripts (on a slow line
+  // the loader can lift before they arrive)
+  function bezier(x1, y1, x2, y2) {
+    var cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx, cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+    var X = function (t) { return ((ax * t + bx) * t + cx) * t; }, Y = function (t) { return ((ay * t + by) * t + cy) * t; }, dX = function (t) { return (3 * ax * t + 2 * bx) * t + cx; };
+    return function (x) {
+      var t = x; for (var i = 0; i < 6; i++) { var e = X(t) - x, d = dX(t); if (Math.abs(e) < 1e-4 || !d) break; t -= e / d; }
+      return Y(clamp(t, 0, 1));
+    };
+  }
+  function tween(ms, ease, onUpdate, onDone) {
+    var t0 = now();
+    var step = function () { var p = clamp((now() - t0) / ms, 0, 1); onUpdate(ease(p)); if (p < 1) W.requestAnimationFrame(step); else if (onDone) onDone(); };
+    W.requestAnimationFrame(step);
+  }
   // wait for a face before setting words in it, so the loader never swaps fonts mid-motion (at most ms)
   function face(spec, ms) {
     return new Promise(function (res) { var t = setTimeout(res, ms); if (D.fonts && D.fonts.load) D.fonts.load(spec).then(function () { clearTimeout(t); res(); }, res); else res(); });
   }
 
   /* ---------- a load: the route ---------- */
-  // On the page's own ground and aurora the squircle springs in and the route draws with the load, keeping its last
-  // stretch, into the pin, for the town. Then the pin lands and pings once in amber, and the squircle grows from the
-  // mark until it is the whole window: the mark opens onto the page.
+  // On the page's own ground and aurora the squircle springs in and its route runs, lap after lap, while the first
+  // screen loads. Then the last lap draws the whole route and stays, the pin pings once in amber, and the squircle grows
+  // from the mark until it is the whole window: the mark opens onto the page.
   function Route(theme) {
-    var root = el("div", "loader-route");
+    var root = el("div", "loader-route" + (reduce ? "" : " running"));
     root.setAttribute("data-theme", theme);
-    root.innerHTML = '<div class="lr-cover"><div class="ground"></div></div><div class="lr-lock" aria-hidden="true">' + MARK +
-      '<span class="wordmark lr-word">' + "Smart‑Clearance".split("").map(function (ch, i) { return '<span style="--i:' + i + '">' + ch + "</span>"; }).join("") + "</span>" +
-      '<span class="lr-hi" lang="hi">हर कार्टन को दूसरा मौका</span></div>';
+    root.innerHTML = '<div class="lr-cover"></div><div class="lr-lock" aria-hidden="true">' + MARK +
+      '<span class="lr-word">' + "Smart‑Clearance".split("").map(function (ch, i) { return '<span style="--i:' + i + '">' + ch + "</span>"; }).join("") + "</span>" +
+      '<span class="lr-hi" lang="hi">हर कार्टन को दूसरा मौका</span><span class="lr-slow"><i></i>Slow connection · the page is on its way</span></div>';
     var cover = root.querySelector(".lr-cover"), lock = root.querySelector(".lr-lock"), mk = root.querySelector(".mk"), route = root.querySelector(".mk-route");
-    var I = { el: root, minRun: 900, minShow: 1250, maxWait: 8000, drawn: 0 };
-    // the wordmark and the Hindi line rise once their faces are in
-    Promise.all([face('750 34px "Bricolage Grotesque"', 450), face('600 17px "Noto Sans Devanagari"', 450)]).then(function () { lock.classList.add("go"); });
-    var drawTo = function (q) { I.drawn = q; route.style.strokeDashoffset = String(1 - q); route.style.opacity = q > 0.004 ? "1" : "0"; };
-    I.render = function (p) { drawTo(LOAD.complete() ? p : Math.min(p, 0.88)); };
+    var I = { el: root, minShow: 1250, maxWait: 12000 };
+    // the wordmark and the Hindi line rise once their faces are in, or after a third of a second
+    Promise.all([face('750 34px "Bricolage Grotesque Variable", "Bricolage Grotesque"', 320), face('600 17px "Noto Sans Devanagari Variable", "Noto Sans Devanagari"', 320)]).then(function () { lock.classList.add("go"); });
+    I.render = function () {};
+    I.slow = function () { root.classList.add("slow"); };
     I.exit = function (M, done) {
-      root.style.pointerEvents = "none";
-      var pin = root.querySelector(".mk-pin"), ping = root.querySelector(".mk-ping");
-      // the route runs into the pin's place, the pin lands and pings once (the mark's own springs: 520 and 14)
-      M.animate(I.drawn, 1, { duration: 0.2, ease: "easeOut", onUpdate: drawTo });
-      M.animate(pin, { opacity: [0, 1], y: [-16, 0], scale: [0.6, 1] }, { delay: 0.12, type: "spring", stiffness: 520, damping: 14 });
-      M.animate(ping, { opacity: [0.9, 0], scale: [0.6, 2.2] }, { delay: 0.24, duration: 0.9, ease: "easeOut" });
-      M.animate(root.querySelectorAll(".lr-word, .lr-hi"), { opacity: 0, y: 8 }, { delay: 0.2, duration: 0.24, ease: [0.55, 0, 1, 0.45] });
+      root.style.pointerEvents = "none"; root.classList.add("leaving");
+      // the last lap: the whole route draws from the godown dot and stays, then the pin pings once and the words go
+      root.classList.remove("running");
+      route.style.strokeDasharray = "1 1"; route.style.strokeDashoffset = "1";
+      void route.getBoundingClientRect();
+      route.style.transition = "stroke-dashoffset 380ms cubic-bezier(0.22, 1, 0.36, 1)"; route.style.strokeDashoffset = "0";
+      root.classList.add("drawn");
+      setTimeout(function () { root.classList.add("landed"); }, 380);
       setTimeout(function () {
         var r = mk.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2, k0 = r.width / 64, K = coverK(cx, cy), w = vw(), h = vh();
-        M.animate(root.querySelector(".mk-sq"), { opacity: 0 }, { duration: 0.24, ease: "linear" });
+        root.classList.add("opening");
         // the window: the ground keeps everything outside the mark's squircle as it grows from the mark
-        M.animate(0, 1, { duration: 0.74, ease: [0.7, 0, 0.2, 1],
-          onUpdate: function (v) {
-            var k = k0 * Math.pow(K / k0, v);
-            cover.style.clipPath = 'path(evenodd, "M0 0H' + w + "V" + h + "H0Z" + squircle(cx, cy, k) + '")';
-            mk.style.transform = "scale(" + (k / k0).toFixed(3) + ")";
-            mk.style.opacity = String(1 - clamp((v - 0.18) / 0.44, 0, 1));
-          },
-          onComplete: done });
-      }, 460);
+        tween(740, bezier(0.7, 0, 0.2, 1), function (v) {
+          var k = k0 * Math.pow(K / k0, v);
+          cover.style.clipPath = 'path(evenodd, "M0 0H' + w + "V" + h + "H0Z" + squircle(cx, cy, k) + '")';
+          mk.style.transform = "scale(" + (k / k0).toFixed(3) + ")";
+          mk.style.opacity = String(1 - clamp((v - 0.18) / 0.44, 0, 1));
+        }, done);
+      }, 640);
     };
     return I;
   }
@@ -259,6 +352,16 @@
   function loop(t) {
     raf = 0; if (!L || L.leaving) return;
     var dt = L.lastT ? Math.min(64, t - L.lastT) : 16; L.lastT = t;
+    var age = t - LOAD.t0;
+    if (L.kind === "load") {
+      // the first screen can be read: the document and its stylesheets in, and its faces (or 2.5 s)
+      if (!LOAD.marks.sheets && sheetsIn()) LOAD.mark("sheets");
+      if (!LOAD.marks.fonts && age > FACES) LOAD.mark("fonts");
+      if (!L.slowed && age > 3000 && !LOAD.complete()) { L.slowed = true; L.slow(); }
+      if (!LOAD.done && ((LOAD.complete() && (reduce || age >= L.minShow)) || age > L.maxWait)) finish();
+      if (L && !L.leaving) raf = W.requestAnimationFrame(loop);
+      return;
+    }
     var done = LOAD.complete(), aim;
     if (done) aim = 1;
     else {
@@ -272,7 +375,6 @@
     if (aim >= 1 && aim - s < 0.01) s = 1;
     if (s > LOAD.shown) LOAD.shown = s;
     L.render(reduce ? 1 : LOAD.shown);
-    var age = t - LOAD.t0;
     if (!LOAD.done && ((LOAD.shown >= 1 && (reduce || age >= L.minShow)) || age > L.maxWait)) finish();
     if (L && !L.leaving) raf = W.requestAnimationFrame(loop);
   }
@@ -291,6 +393,7 @@
     var M = motion();
     // under reduced motion the page is simply there; without an animate() (the scripts never came) the loader fades out
     if (reduce) { end(); return; }
+    if (I.kind === "load") { I.exit(M, end); return; }
     if (!M) { I.el.style.transition = "opacity 240ms ease"; I.el.style.opacity = "0"; setTimeout(end, 260); return; }
     I.exit(M, end);
   }
@@ -342,22 +445,18 @@
   begin("load", FIRST);
   LOAD.busy = true;
   mount(Route(themeNow()), "load");
-  if (again) { L.minRun *= 0.5; L.minShow *= 0.5; }
+  if (again) L.minShow *= 0.5;
   run();
 
-  // what the page tells the loader as it loads: each script as it arrives, then the fonts the page sets its words in
-  var seen = 0;
-  D.addEventListener("load", function (e) {
-    var t = e.target; if (!t || t.tagName !== "SCRIPT" || LOAD.kind !== "load") return;
-    seen += 1; LOAD.mark("doc", Math.min(0.96, seen / (W.SC3_LOADER_SCRIPTS || 20)));
-  }, true);
+  // what the page tells the loader as it loads: the document, then the faces the first screen sets its words in
   var ready = function () {
     LOAD.mark("doc");
     // the page is busy until the loader lifts: the app's root, as the site or the SvelteKit build names it
     var root = D.getElementById("root") || D.querySelector(".site-root");
     if (root && !LOAD.lifted) { root.setAttribute("aria-busy", "true"); root.setAttribute("data-loader-busy", ""); }
   };
-  D.readyState === "loading" ? D.addEventListener("DOMContentLoaded", ready) : ready();
-  var fonts = D.fonts && D.fonts.load ? Promise.all(['780 62px "Bricolage Grotesque"', '400 15px Geist', '600 15px Geist'].map(function (f) { return D.fonts.load(f); })) : Promise.resolve();
+  if (D.readyState === "loading") D.addEventListener("readystatechange", function once() { if (D.readyState !== "loading") { D.removeEventListener("readystatechange", once); ready(); } });
+  else ready();
+  var fonts = D.fonts && D.fonts.load ? Promise.all(['780 62px "Bricolage Grotesque Variable", "Bricolage Grotesque"', '400 15px "Geist Variable", Geist', '600 15px "Geist Variable", Geist'].map(function (f) { return D.fonts.load(f); })) : Promise.resolve();
   fonts.then(function () { LOAD.mark("fonts"); }, function () { LOAD.mark("fonts"); });
 })();

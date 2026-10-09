@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-131 Option A</title>
+<meta name="description" content="The mark is the loader: drawn whole from the first paint, it beats while anything is still on its way, two pulses a beat every 1.3 s, with a ring of its own outline rippling out on the strong pulse. The beat runs on the compositor, so it keeps time while the browser is busy with the app's code.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Noto+Sans+Devanagari:wght@600&display=swap">
+<link rel="stylesheet" href="../sim/sim.css">
+<link rel="stylesheet" href="../sim/cover-base.css">
+<link rel="stylesheet" href="cover.css">
+<link rel="icon" href="../../../system/img/icon.svg" type="image/svg+xml">
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/framer-motion@11.18.2/dist/framer-motion.js"></script>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a href="../board.html">SC-131 design review</a>
+    <h1>Option A · The heartbeat</h1>
+    <p>The mark is the loader: drawn whole from the first paint, it beats while anything is still on its way, two pulses a beat every 1.3 s, with a ring of its own outline rippling out on the strong pulse. The beat runs on the compositor, so it keeps time while the browser is busy with the app's code.</p>
+  </header>
+  <main id="sim"></main>
+  <section class="notes">
+    <h2>What to look at</h2>
+    <ul>
+      <li><b>The beat:</b> a strong pulse to 1.08, a dip, a soft pulse to 1.045, then rest; a 1.3 s beat. The ring is the mark's outline in the brand green, a line, never a glow.</li>
+      <li><b>Ready:</b> the beat settles on a spring wherever it is (about 220 ms), the pin pings once in amber, and the mark opens into the window.</li>
+      <li><b>3G, Console · first load:</b> the cover paints at 2.4 s with the page's first bytes (today: blank until 7.9 s), says it is loading the console, then connecting to the platform, adds "Slow connection · still loading" at 5.4 s, and opens at 11.6 s with no false "did not answer" (today: at 15.4 s, then it opens anyway at 17.7 s).</li>
+      <li><b>3G, Landing page:</b> the cover at 2.4 s (today 6.9 s) lifts at 5.0 s, once the first screen can be read on the plate's soft preview; the plate sharpens in place at 12.5 s and the film starts after it (today the loader gives up at 15.2 s onto a page with no plate).</li>
+      <li><b>No green dots.</b> The tracker under the splash is gone; the words say what it is waiting for.</li>
+      <li>Every timeline is an estimate from the 9 Oct measurements with the shared fixes in; the build measures the real ones.</li>
+    </ul>
+  </section>
+</div>
+<script src="../sim/cover-base.js"></script>
+<script src="mark.js"></script>
+<script src="../sim/sim.js"></script>
+</body>
+</html>

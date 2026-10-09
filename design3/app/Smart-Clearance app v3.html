@@ -42,10 +42,12 @@
     window.SC3_SPLASH_SETUP = {
       cls: "ws", brand: { id: W.id, name: W.name, mark: W.mark },
       words: {
-        boot: { title: "Opening your workspace", sub: "", late: "Waking the workspace up…", say: "Opening the workspace." },
-        enter: { title: function (who) { return who ? "Welcome, " + who : "Welcome"; }, sub: "", say: function (who) { return "Signed in. Opening the workspace" + (who ? " for " + who : "") + "."; } },
-        leave: { sub: "" },
-        fail: { title: "The workspace did not answer", text: "It is taking too long. Check the connection, then try again." }
+        boot: { title: "Opening your workspace", line: { code: "Loading your workspace", platform: "Connecting to your workspace", wake: "Waking the workspace up…", open: "Opening" }, say: "Opening the workspace." },
+        enter: { title: function (who) { return who ? "Welcome, " + who : "Welcome"; }, line: { platform: "Opening your workspace" }, say: function (who) { return "Signed in. Opening the workspace" + (who ? " for " + who : "") + "."; } },
+        leave: { line: { platform: "" } },
+        fail: { title: "The workspace did not answer", text: "Nothing has come back from the workspace for {silent} s. Check the connection, then try again.",
+          offline: { title: "No connection", text: "This device has gone offline. Check the connection, then try again." },
+          broken: { title: "The workspace did not load", text: "Part of it did not arrive. Check the connection, then try again." } }
       },
       reads: { boot: [{ id: "workspace", label: W.name + "' workspace" }, { id: "session", label: "Signed in" }] }
     };

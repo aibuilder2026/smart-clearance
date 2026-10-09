@@ -24,6 +24,7 @@
 			"svelte": "./src/lib/workspace/stub.ts",
 			"default": "./src/lib/workspace/stub.ts"
 		},
+		"./firstpaint": "./src/lib/firstpaint.ts",
 		"./identity": "./src/lib/identity.ts",
 		"./format": "./src/lib/format.ts",
 		"./styles/*": "./src/styles/*"

@@ -58,20 +58,22 @@ Until a staff member is signed in, every route shows the sign-in in place, and t
 
 ### The splash (SC-51)
 
-The console's three waits go through design3's splash (`design3/console/splash.js`, option A of the SC-51 review), one
-surface that follows the reads as they land and opens onto the page from its mark:
+The console's three waits go through design3's splash (`design3/console/splash.js`, option A of the SC-51 review; the
+mark as the loader, option B of SC-131), one surface that says what it waits for and opens onto the page from its mark:
 
-- **The first load.** `hooks.server.ts` puts the script and its block of `console.css` first in the page's `<body>`, so
-  the cover is up from the first paint, before the app's scripts; `+layout.ts` marks the session, the config and the
-  catalog as they answer, and `App.svelte` asks the splash to open onto whatever it has drawn.
+- **The first load.** `hooks.server.ts` puts the script first in the page's `<body>` (`firstPaint`): it brings its
+  own styles, the app's stylesheets no longer block the first paint, and the connection to backend-api opens early, so
+  the cover is up with the page's first bytes. `+layout.ts` tells it the code is running and the reads have gone out,
+  marks the session, the config and the catalog as they answer (or fails it if one is refused), and `App.svelte` asks
+  the splash to open onto whatever it has drawn. The sign-in fetches the Overview's code while the person types.
 - **Signing in.** After "Welcome, <name>", `App.svelte` begins the splash from the card's mark, then refreshes; the
-  page's `prefetch` names its reads as the splash's stops and marks each as it lands; the splash opens from the
-  sidebar's mark.
+  page's `prefetch` names its reads and marks each as it lands; the splash opens from the sidebar's mark.
 - **Signing out.** Two stops: backend-api closes the session, then Firebase signs out (`firebase.ts` marks both); the
   sign-in takes the console's place and the splash opens onto it.
 
-Its motion runs on motion's `animate()`; under reduced motion it is a still frame. After 8 s without an answer it says
-so, with Try again.
+Its exit runs on motion's `animate()`; under reduced motion it is a still frame. It says the console did not answer,
+with Try again, only on a refused read, an offline device, a file that failed to load, or 20 s with nothing arriving;
+a slow download is never a failure (SC-131).
 
 ### Shared, not copied
 
