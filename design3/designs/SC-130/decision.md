@@ -33,6 +33,10 @@ The board is `board.html`, published to app v3 as `SC-130 design review.html`. E
 
 - **The ExpireSoon line's money:** the distributor's "what you receive" must take the price the buyer actually took (the Negotiator's counter), not the listed price. Taken at the listed price, four batches read as up to ₹844 ahead. At the award price, every batch in the history ends whole to the rupee.
 
-## The pick
+## The pick (9 Oct 2026)
 
-Waiting for the maintainer.
+- **A · Batch by batch**, the recommended option.
+- **The distributor's copies:** yes, as copies. The food bank's receipt and the destruction certificate show under "Copies for your records".
+- **Not this time:** keep it. A shop can decline an open offer, and the offer stays open for its 48 hours.
+
+Only option A is built: design3 first, then core's trade screens, the live workspace, and backend-api's partner-scoped reads with the decline.
