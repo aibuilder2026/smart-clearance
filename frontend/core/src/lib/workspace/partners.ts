@@ -298,8 +298,10 @@ export function storyMoments(
 	return items;
 }
 /** the batch in a journey's money, on the plan: the kiranas, the buyer (the price he took once he has) and the price
- *  support make up what he paid */
-export function storyWhole(c: CaseData, h: Pick<Hero, 'award'>, short: string): PtWhole {
+ *  support make up what he paid. A partner is not sent the client's plan (the live workspace, SC-94): his lines are the
+ *  credit note's rows, on the plan until it settles, then what each line took, with the expiry credit on expiry day */
+export function storyWhole(c: CaseData, h: Pick<Hero, 'award' | 'phase'>, short: string): PtWhole {
+	if (!c.plan.lines.length) return rowsWhole(c, h, short);
 	const KL = c.lines.kirana,
 		ES = c.lines.expiresoon;
 	const sp = c.support ?? c.supportPlan;
@@ -311,6 +313,31 @@ export function storyWhole(c: CaseData, h: Pick<Hero, 'award'>, short: string): 
 	const recv = rows.reduce((t, r) => t + r.v, 0),
 		paid = c.plan.units * c.sku.dp! + sp.van + sp.fee;
 	return { rows, recv, paid, gain: Math.round(recv - paid), dp: c.sku.dp!, units: c.plan.units };
+}
+function rowsWhole(c: CaseData, h: Pick<Hero, 'phase'>, short: string): PtWhole {
+	const settled = h.phase === 'settled' || h.phase === 'cleared';
+	const sp = settled || c.support.rows.length ? c.support : c.supportPlan;
+	const label: Record<string, (n: number) => Pick<PtWhole['rows'][number], 'k' | 'sub'>> = {
+		kirana: (n) => ({ k: 'From your kiranas', sub: `${num(n)} packets on the scheme` }),
+		expiresoon: (n) => ({ k: `From ${c.buyer.name}`, sub: `${num(n)} packets` }),
+		staff: (n) => ({ k: 'Your staff sale', sub: `${num(n)} packs` })
+	};
+	const rows: PtWhole['rows'] = sp.rows
+		.filter((r) => label[r.id] && r.units > 0)
+		.map((r) => ({ ...label[r.id](r.units), v: r2(r.units * r.price) }));
+	rows.push({ k: 'Price-support credit note', sub: `from ${short}`, v: sp.total, paper: 'support' });
+	const x = settled && c.expiry && c.expiry.units > 0 && c.expiry.credit ? c.expiry : null;
+	if (x)
+		rows.push({
+			k: `Expiry credit note for ${num(x.units)} packs`,
+			sub: `from ${short}`,
+			v: x.credit!,
+			paper: 'expiry'
+		});
+	const units = sp.rows.reduce((t, r) => t + r.units, 0) + (settled ? (c.realised?.godown ?? 0) : 0);
+	const recv = r2(rows.reduce((t, r) => t + r.v, 0));
+	const paid = r2(units * c.sku.dp! + sp.van + sp.fee);
+	return { rows, recv, paid, gain: Math.round(recv - paid), dp: c.sku.dp!, units };
 }
 
 /* ---------- a kirana ---------- */

@@ -32,24 +32,6 @@
 			title: 'No papers yet',
 			body: "A batch's document pack appears here once it has been routed."
 		},
-		photo: {
-			name: 'Label photo',
-			img: 'phone-scan',
-			title: 'No photo requests',
-			body: 'When a batch needs checking, Vision asks for one picture of a carton label here.'
-		},
-		van: {
-			name: 'Van route',
-			img: 'van',
-			title: 'No scheme orders on the van',
-			body: 'Orders from Smart-Clearance offers join your next round automatically.'
-		},
-		orders: {
-			name: 'Orders',
-			img: 'kirana',
-			title: 'No orders yet',
-			body: 'Orders from Smart-Clearance offers appear here.'
-		},
 		offer: {
 			name: 'Offer',
 			img: 'kirana',

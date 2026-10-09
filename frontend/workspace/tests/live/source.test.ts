@@ -124,8 +124,10 @@ describe('every screen, on what backend-api answered', () => {
 					expect(out.route).toContain('Nothing to route');
 				}
 				if (who === 'rakesh') {
-					expect(out.home).toContain('Nothing for you today');
-					expect(out.photo).toContain('No photo requests');
+					expect(out.home).toContain('No batch in a journey');
+					expect(out.home).toContain('Nothing asks for you today');
+					expect(out.photo).toContain('No label photo asked for now');
+					expect(out.van).toContain('Nothing goes out now');
 				}
 				// the journey clock is under every title, and never the prototype's dates
 				expect(out[routesFor(moment('start').members[who].snapshot.me.role)[0]]).toContain('Live');

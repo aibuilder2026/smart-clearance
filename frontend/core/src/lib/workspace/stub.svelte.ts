@@ -230,7 +230,7 @@ class StubSource implements WorkspaceSource {
 		return Promise.resolve();
 	};
 
-	act = <N extends HumanAction>(name: N, arg?: ActionArg<N>, o?: { feel?: number }) => {
+	act = <N extends HumanAction>(name: N, arg?: ActionArg<N>, o?: { feel?: number; ref?: string }) => {
 		const step = () => {
 			if (name === 'order' && arg && typeof arg === 'object') {
 				// a kirana's order with its own count, as the offer screen made it: one change

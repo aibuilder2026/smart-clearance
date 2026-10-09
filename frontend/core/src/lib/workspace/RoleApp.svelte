@@ -201,10 +201,11 @@
 	});
 	// a screen about the batch in focus, on a day with none: empty, or a moment while the batch asked for is read
 	// a partner's own history reads without a batch in a journey (SC-130): a kirana's orders and an earlier offer, a food
-	// bank's pickups
+	// bank's pickups, and every screen of a distributor's, batch by batch (SC-133)
 	const ownHistory = $derived(
 		(me.role === 'retailer' && (safe === 'orders' || (safe === 'offer' && !!route?.params?.ref))) ||
-			(me.role === 'foodbank' && safe === 'pickups')
+			(me.role === 'foodbank' && safe === 'pickups') ||
+			me.role === 'distributor'
 	);
 	const noBatch = $derived(!ws.case && !!ABOUT_A_BATCH[safe] && !ownHistory);
 	const reading = $derived(noBatch && (ws.cases?.length ?? 0) > 0);

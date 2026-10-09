@@ -17,6 +17,21 @@ const PEOPLE: [string, string[]][] = [
 	['meera', ['pickups', 'inbox', 'profile']],
 	['arjun', ['workspace', 'users', 'rules', 'integrations', 'audit', 'inbox', 'profile']]
 ];
+// Lakshmi Agencies' portal while the Mango Drink executes (SC-133): Today asks for the staff sale, Deliveries has the
+// van round, the staff sale with its UPI code and the food bank's pickup, Orders every batch she cleared
+test("workspace · Lakshmi Agencies' Today, Deliveries and Orders, the Mango Drink executing", async ({
+	page
+}, testInfo) => {
+	const findings: Finding[] = [];
+	await openWorkspace(page, '/home', { as: 'lakshmi-owner', stage: 7 });
+	findings.push(...(await scan(page, 'lakshmi · /home, the staff sale asked for')));
+	await go(page, '/van');
+	findings.push(...(await scan(page, 'lakshmi · /van, the staff sale and the pickup')));
+	await go(page, '/orders');
+	findings.push(...(await scan(page, 'lakshmi · /orders')));
+	await report(testInfo, findings);
+});
+
 for (const [who, screens] of PEOPLE)
 	test(`workspace · ${who}'s screens, the batch cleared`, async ({ page }, testInfo) => {
 		const findings: Finding[] = [];

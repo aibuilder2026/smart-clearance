@@ -30,7 +30,7 @@ export const KIRANAS = kiranasOf('rakesh');
 /** the people a chips flow signs in */
 export const PEOPLE = ['neha', 'priya', 'rakesh', 'agrawal', ...KIRANAS.map((k) => k.member)];
 
-/** the van round's day, as the Van route and its push name it */
+/** the van round's day, as Deliveries and its push name it */
 let vanDay = '';
 
 /** the chips' tax and ESG figures in the story (design3 ledger.js STORY_CLEARED): what Munchly Chips E2E holds Priya's
@@ -540,7 +540,7 @@ export const CHIPS: Step[] = [
 					.join(', '),
 				'invoice, support, itc'
 			);
-			// one day for the van round: the Van route's and the push's (SC-97)
+			// one day for the van round: Deliveries' and the push's (SC-97)
 			const leaves = c.moments.van.leavesAt ?? '';
 			vanDay = leaves
 				? new Date(leaves).toLocaleDateString('en-GB', { weekday: 'long', timeZone: 'Asia/Kolkata' })
@@ -550,8 +550,8 @@ export const CHIPS: Step[] = [
 			await page.getByRole('button', { name: 'Issue from Tally' }).click();
 			await expect(page.getByText('issued from Tally', { exact: true })).toBeVisible();
 			await running().done('Invoice issued from Tally');
-			await sidebar(page, 'Van route').click();
-			await expect(page.locator('#main')).toContainText(`${vanDay} round`);
+			await sidebar(page, 'Deliveries').click();
+			await expect(page.locator('#main')).toContainText(`${vanDay} van round`);
 			const round = page.getByRole('button', { name: 'Start the round' });
 			await expect(round).toBeEnabled();
 			await round.click();

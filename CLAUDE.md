@@ -1430,7 +1430,7 @@
   - **The journey is left as the run ended** (the chips cleared, the Mango Drink waiting for its label photo); only the day went back to 24 hours.
   - **Checks:** the frontend gate passes (core 217, api 77, workspace 67, admin 17, demo 5, console 3).
 
-- **SC-130** (In Review, branch `SC-130-partner-portals`): the partners' portals. Each partner reads its own history with Munchly.
+- **SC-130** (PR #112, merged): the partners' portals. Each partner reads its own history with Munchly.
   - **The request:**
     - distributors see each batch, past and present, that was or is at risk, with their GST invoices, credit notes and other finance papers;
     - kiranas see their offers and past orders: accepted, declined or expired;
@@ -1512,7 +1512,7 @@
   - **The mark springs in on the design system's own spring** (`--ease-spring`, as in SC-35 and SC-51), written out in both scripts.
   - **Hosting:** the hosted landing page and console load commit `fa92724`; every pinned file was checked on jsDelivr first (two cached 403s purged).
 
-- **SC-132** (In Review, branch `SC-132-destruction-itc`; bug found by the maintainer): a distributor's copy of the destruction certificate read ₹0.00 of input GST reversed.
+- **SC-132** (PR #113, merged; bug found by the maintainer): a distributor's copy of the destruction certificate read ₹0.00 of input GST reversed.
   - **The cause:** the paper worked the reversal out as units × the plan's credit a pack, and a distributor is not sent Munchly's plan.
   - **The fix:**
     - the certificate carries the credit it reverses (`reversed`), drafted with the papers (money.js `documents`, money.py) and counted again on expiry day (`steps.expire`);
@@ -1523,5 +1523,42 @@
     - backend-api 525 passed, 1 skipped: the partner test holds each copy's figure to design3's, and a new test covers an older certificate;
     - the frontend gate passes (core 236, api 77, workspace 74, admin 17, demo 5, console 3);
     - the seeds were regenerated; design3's `dist/` is rebuilt.
+
+- **SC-133** (In Review, branch `SC-133-distributor-portal`): the distributor's portal, batch by batch.
+  - **The request** (with three screenshots of the live app): the Van route "seems odd", and its Raipur lot looked stubbed; it should be per batch; Orders should show past orders, and "does not look logical, I cannot understand what is for what"; Today "seems misleading, the batch is all that is tracked for distributors in the app"; "Think of proper design for Distributors". Batches (SC-130) "is fine". The ₹0 reversed on the destruction certificate went to SC-132.
+  - **Design first:** three options on one board in app v3, `SC-133 design review.html`:
+    - A, a card for each batch (recommended);
+    - B, one job list;
+    - C, a batch in focus.
+
+    The maintainer picked **A**, with Deliveries and the label photo showing current and past, and Today taking one or more batches in a journey; the label photo stays on laptops (off the phone's tabs). Designs, stills and the decision are in `design3/designs/SC-133/`.
+  - **Today:** a card for each batch of Munchly's at his godown in a journey, the one asking most of him first:
+    - the batch (pack, name, id, packs at risk, the day it was flagged) and where it stands ("2 for you", else its stop);
+    - his next steps, each with one button: the label photo, the staff sale, the buyer's truck, Issue from Tally, the van round. A step that needs its screen opens it on the batch; Issue from Tally acts at once, on that batch;
+    - else what it waits for ("The scheme is open: 12 of 38 shops have ordered");
+    - its lines (the scheme, the lot, the staff sale, the food bank), each where it stands, opening its Deliveries;
+    - with more than one batch, an index over them; a cleared batch stays only while something is left for him;
+    - the way to the rest of his stock and the batches he cleared, on Batches.
+  - **Deliveries** (was the Van route): a batch at a time under its head, with a switch between batches; only the lines its plan has:
+    - the van round on the batch's own cluster, with its stops in the order they ordered; Start the round once the papers are drafted, as backend-api allows (SC-97);
+    - the buyer's truck with the lot's buyer, price, token and balance (SC-118's rule);
+    - the staff sale (SC-87's card) and the food bank's pickup;
+    - then **Earlier deliveries**, batch by batch: each cleared batch's van round, truck, staff sale and pickup, with its day.
+  - **Label photo:** the photo Vision asks for now (SC-80's camera), then **Earlier label photos**: every photo he sent, and what Vision read (the batch, made, best before, MRP).
+  - **Orders:** every batch's orders, in a journey and cleared, under the batch: who bought what, for how much, on which paper (the invoice, with Issue from Tally while it is a draft), and each scheme's shops on request; what sold since 1 Jul 2026 at the top.
+  - **The logic** is design3's `core/ledger.js` partners (`distNow`, `journeyOf`, `ordersNow`, `ordersPast`, `deliveriesPast`, `photoOf`), and core's `workspace/dist.ts`, held to it at every stage for both distributors (`core/tests/dist.test.ts`). The batch in focus reads the journey's state; the stub's Mango Drink its own; on the live workspace every other batch its partner facts.
+  - **Found on the way:**
+    - a distributor is not sent Munchly's plan, so the batch in focus takes its lines from his partner facts;
+    - its batch page's Money tab read the story's figures for a live partner (Lakshmi's cleared Mango Drink: −₹27,169); `storyWhole` now works from the credit note's rows, with the expiry credit, as SC-94's card did (₹0);
+    - the stub records the Mango Drink's staff sale at Lakshmi Agencies (design3 `flow.js`, core `flow.ts`).
+  - **backend-api:** a distributor's partner facts carry a batch of his from the Watcher's flag, before any plan (the packs at risk, the photo asked), so a request on any of his batches shows on Today. A step names its batch (`act(…, { ref })`).
+  - **Gone:** the old Today's plan card, You end whole and the stock list (on the batch's page and Batches), `VanInner`, `EndWhole`, `InvoiceDraft`, the live `DistQuiet`.
+  - **Checks:**
+    - backend-api 526 passed, 1 skipped (a new partner test: his batch from its flag, with the photo asked);
+    - the frontend gate passes: core 258 (22 new in `dist.test.ts`; the distributors' goldens updated), api 77, workspace 77 (3 new live tests: Today with two batches and a step on its own batch, Orders, Deliveries waiting on a batch not yet in focus), admin 17, demo 5, console 3;
+    - the live fixtures and seeds were regenerated; design3's `dist/` is rebuilt;
+    - played through on the stub in dark: design3 at 1440 and 390 (the photo request and camera, the truck, Issue from Tally, the van round, Lakshmi's staff sale recorded) and the port's build at 1440 (Today, Issue from Tally, Deliveries);
+    - the a11y spec gains Lakshmi's Today, Deliveries and Orders, and the journey suites follow Deliveries; the browser suites were not run (SC-55).
+  - **Hosting:** the hosted app page stays on its pinned commit.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

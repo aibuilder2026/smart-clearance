@@ -27,7 +27,7 @@ The story's figures are checked as it goes (softly, so the run reaches the end):
 772 to ExpireSoon), 38 kiranas offered, 31 ordering 588 packets, an award of 772 at ₹14.20 with a ₹1,644 token, an
 actual net of ₹21,152.40 and nothing left at the godown; and Priya's tax and ESG (SC-128): ₹1,224 of input GST kept and none reversed, INV/26-27/0931 for ₹11,510, CN/0117 for ₹8,768, 217.6 kg kept out of landfill, 544 kg CO₂e and 8.16 kg of plastic packaging resold, each read on screen and in the GST summary and BRSR table she exports, against the ledger backend-api posted. It also holds the fixes its first run led to (SC-96 to SC-100): −₹26,330
 if destroyed on the Command Center at Detect, the Lot won bill's total of ₹11,510.00, a PDF on each paper a person
-signs, one day for the van round on the Van route, in its push and in the timeline, and an FSSAI paper that names no
+signs, one day for the van round on Deliveries, in its push and in the timeline, and an FSSAI paper that names no
 batch as donated.
 
 Its run of 9 Oct, with Priya's tax and ESG (SC-128), is in `runs/2026-10-09/`; the run of 8 Oct, after SC-96 to SC-100, is

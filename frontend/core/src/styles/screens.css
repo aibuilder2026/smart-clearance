@@ -432,3 +432,76 @@
 .pt-line .tnum { font-variant-numeric: tabular-nums; white-space: nowrap; }
 .pt-link { padding: 0; border: 0; background: none; color: var(--primary-text); font: inherit; font-weight: 600; cursor: pointer; }
 .pt-link:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; border-radius: 6px; }
+
+/* ---------- a distributor's portal, batch by batch (SC-133, option A): Today, Deliveries, Label photo, Orders ---------- */
+/* a batch in a journey, as one card: the batch, its next step for him, its lines */
+.dist-batch { display: grid; gap: 14px; padding: 18px; scroll-margin-top: 84px; }
+.dist-batch:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+.dist-step { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 14px; background: var(--fill); }
+.dist-step.primary { padding: 14px; background: var(--primary-soft); }
+.dist-step .icontile { flex: none; }
+.dist-wait { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: var(--fill); flex-wrap: wrap; }
+.dist-wait .t-subhead { flex: 1 1 220px; }
+/* a step on a phone: its words, then its button the width of the card */
+@media (max-width: 640px) {
+  .dist-step { flex-wrap: wrap; }
+  .dist-step > .grow { flex: 1 1 calc(100% - 60px); }
+  .dist-step > .btn { flex: 1 1 100%; }
+}
+/* a channel's mark, in its own ink */
+.dist-chan { flex: none; display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; color: var(--ch); background: color-mix(in srgb, var(--ch) 14%, transparent); }
+/* a line of a batch's plan: the channel, what the plan has, where it stands */
+.dist-lines { display: grid; border-top: var(--hair) solid var(--line); }
+.dist-line { display: grid; grid-template-columns: 32px minmax(0, 1fr) minmax(0, auto) 16px; align-items: center; gap: 4px 12px; width: 100%; padding: 12px 2px; border: 0; border-bottom: var(--hair) solid var(--line); background: transparent; color: inherit; font: inherit; text-align: left; }
+.dist-line:last-child { border-bottom: 0; }
+button.dist-line { cursor: pointer; border-radius: 10px; transition: background-color var(--t-fast) var(--ease); }
+button.dist-line:hover { background: var(--fill); }
+button.dist-line:focus-visible { outline: 3px solid var(--ring); outline-offset: -3px; }
+.dist-state { display: inline-flex; align-items: center; justify-content: flex-end; gap: 6px; max-width: 46ch; font-size: 13.5px; color: var(--fg-2); text-align: right; }
+.dist-state.live::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 99px; background: var(--blue); }
+.dist-state.done { color: var(--primary-text); }
+/* on a phone: where a line stands goes under what the plan has */
+@media (max-width: 640px) {
+  .dist-line { grid-template-columns: 32px minmax(0, 1fr) 16px; }
+  .dist-line > .dist-chan { grid-row: 1 / span 2; align-self: start; }
+  .dist-state { grid-column: 2; grid-row: 2; justify-content: flex-start; max-width: none; text-align: left; }
+  .dist-line > svg:last-child { grid-column: 3; grid-row: 1 / span 2; }
+}
+/* more than one batch in a journey: each a tap away */
+.dist-index { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
+.dist-index button { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 8px 12px 8px 8px; border: var(--hair) solid var(--line); border-radius: 14px; background: var(--surface); color: inherit; font: inherit; text-align: left; cursor: pointer; transition: background-color var(--t-fast) var(--ease); }
+.dist-index button:hover { background: var(--fill); }
+.dist-index button:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+.dist-index b { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dist-index .mono { font-family: var(--font-mono); font-size: 12px; color: var(--fg-2); }
+/* the way to the rest of his stock */
+.dist-more { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 48px; padding: 14px 16px; border: 0; border-radius: var(--r-lg); background: var(--fill); color: var(--fg-2); font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
+.dist-more:hover { background: var(--fill-2); }
+.dist-more:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+/* the van round's map, and its stops */
+.dist-map { border-radius: 14px; overflow: hidden; }
+.dist-stop { width: 24px; height: 24px; border-radius: 99px; background: var(--primary); color: var(--primary-fg); }
+/* what left his godown, a batch at a time */
+.dist-rows { display: grid; border-top: var(--hair) solid var(--line); }
+.dist-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: var(--hair) solid var(--line); }
+.dist-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.dist-row time { white-space: nowrap; }
+@media (max-width: 640px) {
+  .dist-row { flex-wrap: wrap; }
+  .dist-row time { flex: 1 1 100%; padding-left: 44px; }
+}
+/* a label photo he sent, and what Vision read */
+.dist-photo { grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; }
+/* an order: who bought what, for how much, on which paper */
+.dist-orders { display: grid; border-top: var(--hair) solid var(--line); }
+.dist-order { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: var(--hair) solid var(--line); }
+.dist-order:last-child { border-bottom: 0; padding-bottom: 0; }
+.dist-order > .tnum { white-space: nowrap; padding-top: 2px; }
+.dist-paper { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; width: fit-content; margin-top: 4px; padding: 3px 9px; border-radius: 99px; background: var(--fill); font-size: 12.5px; color: var(--fg-2); }
+.dist-paper .mono { font-family: var(--font-mono); font-size: 12px; color: var(--fg); white-space: nowrap; }
+.dist-toggle { justify-self: start; width: fit-content; min-height: 24px; text-align: left; }
+.dist-shops { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 4px 16px; margin-top: 6px; padding: 10px 12px; border-radius: 12px; background: var(--fill); }
+.dist-shops > span { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 8px; font-size: 13px; }
+.dist-shops b { font-weight: 550; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dist-shops em { grid-row: 2; font-style: normal; font-size: 12px; color: var(--fg-2); }
+.dist-shops .tnum { grid-column: 2; grid-row: 1 / span 2; align-self: center; }

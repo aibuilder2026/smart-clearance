@@ -476,7 +476,13 @@ export type State = {
 	workspace: string;
 	setup: { confirmed: boolean; mapped: number; permission: null | { by: string; at: string; paused: boolean } };
 	hero: Hero;
-	mango: { id: string; phase: string; donation: null | 'booked' | 'confirmed' | 'collected' | 'declined' };
+	mango: {
+		id: string;
+		phase: string;
+		donation: null | 'booked' | 'confirmed' | 'collected' | 'declined';
+		/** the stub's staff sale for the second batch, once recorded (SC-133) */
+		staff?: { status: 'open' | 'recorded'; units: number; sold: number | null; left: number | null } | null;
+	};
 	feed: FeedEvent[];
 	notifications: Notification[];
 	audit: AuditRow[];

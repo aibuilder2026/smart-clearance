@@ -440,7 +440,7 @@
       <span className="grow stack tight" style={{ gap: 2, minWidth: 0 }}>
         <span className="t-subhead"><b>{o.who}</b> · {o.what}</span>
         <span className="t-footnote muted">{CH[o.id].name}{o.at ? ` · ${when(o.at)}` : ""}{o.sub ? ` · ${o.sub}` : ""}</span>
-        {o.paper && <span className="row tight wrap" style={{ gap: 8 }}><span className="dist-paper"><Icon name="file-text" size={13} /><span className="mono">{o.paper.no}</span>{o.paper.label}</span>{o.paper.issue && <Button variant="secondary" size="sm" icon="check" loading={busy} onClick={issue}>Issue from Tally</Button>}</span>}
+        {o.paper && <span className="row tight wrap" style={{ gap: 8 }}><span className="dist-paper"><Icon name="file-text" size={13} /><span className="mono">{o.paper.no}</span><span>{o.paper.label}</span></span>{o.paper.issue && <Button variant="secondary" size="sm" icon="check" loading={busy} onClick={issue}>Issue from Tally</Button>}</span>}
         {o.shops && o.shops.length > 0 && <button type="button" className="pt-link t-footnote dist-toggle" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? "Hide" : "Show"} the {o.shops.length} shops' orders</button>}
         {open && <div className="dist-shops">{o.shops.map(k => <span key={k.name}><b>{k.name}</b>{k.at && <em>{when(k.at)}</em>}<span className="tnum">{k.units}</span></span>)}</div>}
       </span>
