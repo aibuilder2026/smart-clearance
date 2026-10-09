@@ -1300,10 +1300,13 @@
     - the agents' part runs in process on backend-api's templates. Nothing reaches a person or an agent (the history's messages marked sent, pushes none, timers fired), except the Paperwork events that lay out its PDFs;
     - `live.build` (hydrate, `--reset` and `--live-only`) builds it once, before the story's reset;
     - the views keep history in view whenever the journey starts again, and Reset journey leaves its batches alone;
-    - `documents` and `document_pdf` take a cleared batch's case, so a batch's PDFs land after it cleared (also Report now's race).
+    - `documents` and `document_pdf` take a cleared batch's case, so a batch's PDFs land after it cleared (also Report now's race);
+    - the history runs at real time (a day a day) whatever the client's day length, so a short day left by a test never hurries it;
+    - `hydrate.sh --day-minutes munchly=1440` sets a client's journey day, as the console's control does. The maintainer asked that it go back to 24 hours after every test run (the browser-suites skill and the journey README say so).
   - **Checks:**
     - backend-api 509 passed, 1 skipped; `test_history.py` holds each ledger to money.js's figures, each paper to its number, the story's numbers following on, nothing pending but the PDFs, and the history in view through a reset;
     - the frontend gate passes (goldens: "since 1 Jul 2026");
     - the seeds and live fixtures regenerated.
+  - **Locally:** hydrated with the history; all twelve batches cleared to money.js's figures, and the local Paperwork agent laid out every paper's PDF (invoices, credit notes, ITC memos, FSSAI checklists and both receipts). The day is back at 24 hours.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
