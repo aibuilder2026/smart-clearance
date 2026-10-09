@@ -18,8 +18,7 @@
 	import PaperPack from './PaperPack.svelte';
 
 	// a batch's own page in the ledger (SC-121, screens/finance.jsx BatchPage): the operator's batch head (SC-112), with
-	// the batch's Money, its Papers as the Paperwork agent drafted them, and its Impact as tabs. Anita opens on its
-	// papers, Vikram on its impact, everyone else on its money
+	// the batch's Money, its Papers as the Paperwork agent drafted them, and its Impact as tabs, opening on its money
 	let { me, at, tab: first }: { me: User; at: string; tab?: string } = $props();
 	const ws = useWorkspace();
 	const app = useApp();
@@ -32,9 +31,8 @@
 		{ id: 'papers', label: 'Papers', icon: 'file-text' },
 		{ id: 'impact', label: 'Impact', icon: 'leaf' }
 	];
-	const FIRST: Partial<Record<string, string>> = { finance: 'papers', sustainability: 'impact' };
 	// svelte-ignore state_referenced_locally (the page opens on its first tab, then the reader moves between them)
-	let tab = $state(first ?? FIRST[me.role] ?? 'money');
+	let tab = $state(first ?? 'money');
 	let before = $state<string | null>(null);
 	let track: HTMLElement | undefined = $state();
 	$effect(() => {

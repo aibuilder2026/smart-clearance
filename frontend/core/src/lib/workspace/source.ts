@@ -44,7 +44,7 @@ export interface WorkspaceSource {
 	readonly focus: string | null;
 	/** the steps sent and not yet done */
 	readonly pending: ReadonlySet<string>;
-	/** Finance & ESG's ledger (SC-121, SC-124): every batch cleared, by quarter and by year, and the batches still out;
+	/** the ledger (SC-121, SC-124): every batch cleared, by quarter and by year, and the batches still out;
 	 *  null until it has been read, and for a role that does not read it */
 	readonly ledger: Ledger | null;
 	/** a batch's own page in the ledger, once it has been read (openPage asks the live source to read it) */

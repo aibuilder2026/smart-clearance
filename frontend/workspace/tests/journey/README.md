@@ -17,10 +17,10 @@ live Gemini through the local pull worker. One page drives everyone, so the whol
 | 9   | A bid at ₹13, the Negotiator's counter, the counter taken                                                                      | Agrawal Wholesale, ExpireSoon | `/market`, `/listing`               |
 | 10  | The buyer's truck loaded                                                                                                       | Rakesh                        | `/van`                              |
 | 11  | Paperwork drafts the pack; the invoice issued from Tally; the van round                                                        | Rakesh                        | `/orders`, `/van`                   |
-| 12  | Every paper read (tax invoice, e-way bill check, credit note, GST ITC memo, FSSAI, destruction certificate); the pack reviewed | Anita, Finance                | `/paperwork/MF-2409-117`            |
+| 12  | Every paper read (tax invoice, e-way bill check, credit note, GST ITC memo, FSSAI, destruction certificate); the pack reviewed | Priya, Supply Chain           | `/paperwork/MF-2409-117`            |
 | 13  | Expiry day's report fired; Impact posts the ledger                                                                             | Neha                          | console, Impact · Report now        |
-| 14  | The batch's page in the ledger, its BRSR line and evidence; the ledger, the year so far                                        | Vikram, ESG                   | `/report/MF-2409-117`, `/report`    |
-| 15  | The report as Finance; Execution and the Command Center at the end                                                             | Anita, Priya                  | `/report`, `/execution`             |
+| 14  | The batch's page in the ledger, its BRSR line and evidence; the ledger, the year so far                                        | Priya, Supply Chain           | `/report/MF-2409-117`, `/report`    |
+| 15  | The batch's money in the ledger; Execution and the Command Center at the end                                                   | Priya                         | `/report`, `/execution`             |
 
 The story's figures are checked as it goes (softly, so the run reaches the end): a plan of ₹21,770 net (588 to kiranas,
 772 to ExpireSoon), 38 kiranas offered, 31 ordering 588 packets, an award of 772 at ₹14.20 with a ₹1,644 token, an
@@ -38,7 +38,7 @@ batch on from wherever it stands, and can be run again after a failure.
 - **Its plan:** three lines and no ExpireSoon lot (22 days left is under ExpireSoon's 30): the kiranas' scheme, the
   staff sale at the godown, and the food-bank donation.
 - **Its people:** Lakshmi Agencies (photo, staff sale, van round), Priya (approval), each ordering Hyderabad kirana,
-  Meera of Feeding India (pickup), Anita (review), Neha (report) and Vikram (ESG).
+  Meera of Feeding India (pickup), Priya (review), Neha (report) and Priya (the ledger).
 - **The kirana orders:** the offer screen orders in twelves from a shop's share down to 12. A story order it cannot
   place (Saraswathi Kirana's 4) is ordered at the nearest it can, and as many twelves are taken off a later shop, so
   the scheme still fills to the packet. The report says which shops ordered other than the story.
@@ -64,8 +64,8 @@ The Masala Chips batch again, from a fresh journey, with food left at the godown
 - **Report now:** Neha fires expiry day's report in the console. The batch closes as it stands (SC-94): the scheme closes
   with the orders placed, the accepted lot counts as collected, the papers are drafted, and Impact's report settles the
   144 packs left at the godown by Munchly's expiry policy, full credit, with an Expiry credit note.
-- **What it reads back:** Anita's pack (it opens on the Expiry credit note) and her review; Priya's Execution, with Left
-  at the godown and the Expiry settlement, and the paper it opens; Vikram's ESG report; the Command Center.
+- **What it reads back:** the pack (it opens on the Expiry credit note) and Priya's review; her Execution, with Left at
+  the godown and the Expiry settlement, and the paper it opens; the batch's page in the ledger; the Command Center.
 - **The figures:** the orders, the packs left, the settlement and the expiry paper, against the run's own shortfall.
 
 ```sh

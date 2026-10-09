@@ -3,8 +3,7 @@
 // limit (Infinity in money.js) is null here.
 import type { IconName } from '../icons/registry';
 
-export type RoleId =
-	'operator' | 'distributor' | 'retailer' | 'buyer' | 'finance' | 'sustainability' | 'foodbank' | 'admin';
+export type RoleId = 'operator' | 'distributor' | 'retailer' | 'buyer' | 'foodbank' | 'admin';
 
 export type Workspace = {
 	id: string;
@@ -834,7 +833,7 @@ export type LedgerPeriod = {
 	mixNames: Record<string, string>;
 	brsr: BrsrRow[];
 };
-/** Finance & ESG's ledger: every batch cleared, by quarter and by year, and the batches still out */
+/** the ledger: every batch cleared, by quarter and by year, and the batches still out */
 export type Ledger = {
 	since: string;
 	today: string;

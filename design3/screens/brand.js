@@ -407,12 +407,10 @@
     if (part === "execution") return it.hero ? /* @__PURE__ */ React.createElement(Execution, { me }) : /* @__PURE__ */ React.createElement(NotYet, { me, title: "Execution", icon: "sparkles", head: "Nothing is executing yet", body: "Listing, outreach, negotiation and the food-bank booking start the moment the plan is approved." });
     return it.hero ? /* @__PURE__ */ React.createElement(S.Paperwork, { me }) : /* @__PURE__ */ React.createElement(NotYet, { me, title: "Paperwork", icon: "file-text", head: "The pack follows the last of its lines", body: `Munchly's price-support credit note, the ITC memo and the FSSAI checklist, drafted by the Paperwork agent once every line of ${it.ref}'s plan is done.` });
   }
-  const BATCH_SCREEN = { finance: "report", sustainability: "report" };
   function Batches({ me }) {
     const s = useStore();
     const app = useApp();
     const { go } = useRoute();
-    const [open, setOpen] = useState(null);
     const hm = heroModel(s);
     const views = D.BATCHES.map((b) => {
       const v = D.batchView(b);
@@ -420,9 +418,8 @@
       if (b.second) v.phase = "executing";
       return v;
     });
-    const sel = open && views.find((v) => v.id === open);
     const live = S.useLive();
-    const openRow = (v) => me.role === "operator" ? go(partAt(journeyItems(s, live).find((i) => i.ref === v.id)), { ref: v.id }) : v.hero && BATCH_SCREEN[me.role] ? go(BATCH_SCREEN[me.role], { ref: v.id }) : setOpen(v.id);
+    const openRow = (v) => go(partAt(journeyItems(s, live).find((i) => i.ref === v.id)), { ref: v.id });
     return /* @__PURE__ */ React.createElement(Screen, { me, title: "Batches", sub: "Every lot the Watcher sees, from the DMS export" }, app.bp === "phone" ? /* @__PURE__ */ React.createElement("div", { className: "list" }, views.map((v) => /* @__PURE__ */ React.createElement(BatchRow, { key: v.id, view: v, compact: true, onOpen: () => openRow(v) }))) : /* @__PURE__ */ React.createElement(DataTable, { label: "Batches", rows: views.map((v) => ({ ...v, name: v.skuObj.name })), onRow: openRow, initialSort: ["daysLeft", "asc"], columns: [
       { key: "name", label: "Product", render: (v) => /* @__PURE__ */ React.createElement("span", { className: "row tight" }, /* @__PURE__ */ React.createElement(Product, { name: v.skuObj.img, size: 36 }), /* @__PURE__ */ React.createElement("span", { className: "stack tight", style: { gap: 0 } }, /* @__PURE__ */ React.createElement("b", null, v.skuObj.name), /* @__PURE__ */ React.createElement("span", { className: "mono subtle t-caption" }, v.id))) },
       { key: "dist", label: "Distributor", sortValue: (v) => v.dist.name, render: (v) => /* @__PURE__ */ React.createElement("span", null, v.dist.name, /* @__PURE__ */ React.createElement("div", { className: "t-caption subtle" }, v.dist.city)) },
@@ -431,10 +428,7 @@
       { key: "risk", label: "At risk", num: true, sortValue: (v) => v.assess.atRisk, render: (v) => v.assess.atRisk ? /* @__PURE__ */ React.createElement("span", { className: "neg strong" }, fmt.num(v.assess.atRisk)) : "—" },
       { key: "gates", label: "Quick-commerce gates", sortable: false, render: (v) => /* @__PURE__ */ React.createElement(GateChips, { gates: v.assess.gates, size: "sm" }) },
       { key: "status", label: "Status", sortValue: (v) => v.phase || v.assess.status, render: (v) => /* @__PURE__ */ React.createElement(StatusBadge, { status: v.phase || v.assess.status }) }
-    ] }), /* @__PURE__ */ React.createElement(BatchSheet, { view: sel, onClose: () => setOpen(null) }));
-  }
-  function BatchSheet({ view: sel, onClose }) {
-    return /* @__PURE__ */ React.createElement(Sheet, { open: !!sel, onClose, title: sel ? sel.skuObj.name : "" }, sel && /* @__PURE__ */ React.createElement(BatchFacts, { view: sel }));
+    ] }));
   }
   function BatchFacts({ view: sel }) {
     const s = useStore();

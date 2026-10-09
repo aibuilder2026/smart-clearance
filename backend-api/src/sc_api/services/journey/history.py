@@ -4,7 +4,7 @@ journey's own steps on the schedule design3 gives them (data.js HISTORY, referen
 Each batch is opened on its day, judged by the Watcher, its label read, valued, planned and approved by Priya; then the
 listing, the scheme, the donation and the staff sale run as the plan has them, the kiranas order (fewer, when the
 history says so), the buyer takes the Negotiator's counter, the food bank collects, the distributor loads the truck,
-issues his invoice and runs his van, Paperwork drafts the pack, Finance reviews it, and on its best-before the report
+issues his invoice and runs his van, Paperwork drafts the pack, Priya reviews it, and on its best-before the report
 settles what is left and posts the ledger. Every step is the service the live journey runs, at its time: the clock is
 the history's, real time, so each paper carries its own day and the numbers follow in the order they were issued.
 
@@ -200,7 +200,7 @@ async def _step(
     elif step == "van":
         await steps.dispatch(await as_(dist, at), client_id, ref, "van")
     elif step == "review":
-        await steps.review(await as_("anita", at), client_id, ref)
+        await steps.review(await as_("priya", at), client_id, ref)
     elif step == "report":  # expiry day: what is left settles, then Impact posts the ledger (SC-94)
         x = await as_("system", at)
         await steps.expire(x, client_id, ref)

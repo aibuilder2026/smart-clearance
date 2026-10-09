@@ -50,7 +50,7 @@
 		toast({ text: `${u.short || u.name} ${status === 'deactivated' ? 'deactivated' : 'reactivated'}`, tone: 'ok' });
 	};
 	// the roles the client's own staff hold; the others are its partners'
-	const STAFF: RoleId[] = ['operator', 'finance', 'sustainability', 'admin'];
+	const STAFF: RoleId[] = ['operator', 'admin'];
 	const domain = $derived(ws.data.workspace.emailDomain);
 	let err = $state('');
 	const send = () => {

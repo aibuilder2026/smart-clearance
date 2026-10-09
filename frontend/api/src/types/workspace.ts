@@ -13,8 +13,7 @@
 
 /* ---------- people ---------- */
 
-export type WsRole =
-	'operator' | 'distributor' | 'retailer' | 'buyer' | 'finance' | 'sustainability' | 'foodbank' | 'admin';
+export type WsRole = 'operator' | 'distributor' | 'retailer' | 'buyer' | 'foodbank' | 'admin';
 /** the console's access levels: Approver, Admin, Member, Partner */
 export type WsAccess = 'approver' | 'admin' | 'member' | 'partner';
 export type MemberKind = 'staff' | 'partner' | 'external';
@@ -1036,7 +1035,7 @@ export interface WorkspaceApi {
 	dispatch(ref: string, kind: 'truck' | 'van'): Promise<ActionResult>;
 	/** POST /cases/{ref}/documents/{doc}/issue: the distributor issues his invoice from Tally */
 	issueInvoice(ref: string, doc: string): Promise<ActionResult>;
-	/** POST /cases/{ref}/review: finance has reviewed the papers */
+	/** POST /cases/{ref}/review: the operator has reviewed the papers */
 	review(ref: string): Promise<ActionResult>;
 
 	/** POST /notifications/read {ids} or {all: true} */

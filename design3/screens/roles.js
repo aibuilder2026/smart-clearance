@@ -10,16 +10,13 @@
     distributor: [{ id: "home", label: "Today", icon: "house" }, { id: "photo", label: "Label photo", short: "Photo", icon: "camera" }, { id: "van", label: "Van route", short: "Van", icon: "truck" }, { id: "orders", label: "Orders", icon: "clipboard-list" }],
     retailer: [{ id: "home", label: "Offers", icon: "tag" }, { id: "orders", label: "Orders", icon: "shopping-basket" }],
     buyer: [{ id: "market", label: "Marketplace", short: "Market", icon: "store" }, { id: "bids", label: "My bids", short: "Bids", icon: "gavel" }],
-    // Finance & ESG (SC-121): the ledger, where each cleared batch opens its own page with its papers
-    finance: [{ id: "report", label: "Ledger", icon: "book-open" }, { id: "batches", label: "Batches", icon: "boxes" }],
-    sustainability: [{ id: "report", label: "Ledger", icon: "book-open" }, { id: "batches", label: "Batches", icon: "boxes" }],
     foodbank: [{ id: "pickups", label: "Pickups", icon: "heart-handshake" }],
     admin: [{ id: "workspace", label: "Workspace", icon: "building-2" }, { id: "users", label: "Users", icon: "users" }, { id: "rules", label: "Guardrails", icon: "shield" }, { id: "integrations", label: "Integrations", short: "Apps", icon: "plug", phoneHidden: true }, { id: "audit", label: "Audit log", short: "Audit", icon: "scroll-text" }]
   };
-  const HOME = { operator: "command", distributor: "home", retailer: "home", buyer: "market", finance: "report", sustainability: "report", foodbank: "pickups", admin: "workspace" };
+  const HOME = { operator: "command", distributor: "home", retailer: "home", buyer: "market", foodbank: "pickups", admin: "workspace" };
   const PARENT = { listing: "market", offer: "home" };
   const ALWAYS = ["inbox", "profile"];
-  const routesFor = (role) => NAV[role].map((n) => n.id).concat(ALWAYS, role === "buyer" ? ["listing"] : role === "retailer" ? ["offer"] : role === "operator" ? ["journey", "route", "execution", "paperwork"] : role === "finance" || role === "sustainability" ? ["paperwork"] : []);
+  const routesFor = (role) => NAV[role].map((n) => n.id).concat(ALWAYS, role === "buyer" ? ["listing"] : role === "retailer" ? ["offer"] : role === "operator" ? ["journey", "route", "execution", "paperwork"] : []);
   const SIDEBAR_BATCHES = 5;
   const WHERE = { command: "Command Center", batches: "Batches", inbox: "Inbox", report: "Ledger", setup: "Setup", profile: "Profile" };
   function screenFor(me, name, opts) {
@@ -38,7 +35,7 @@
       case "report":
         return /* @__PURE__ */ React.createElement(X.Report, { me });
       case "paperwork":
-        return r === "operator" ? /* @__PURE__ */ React.createElement(X.Paperwork, { me }) : /* @__PURE__ */ React.createElement(X.Report, { me, at: { ref: opts && opts.ref || D.BATCHES[0].id, tab: "papers" } });
+        return /* @__PURE__ */ React.createElement(X.Paperwork, { me });
       case "home":
         return r === "retailer" ? /* @__PURE__ */ React.createElement(X.RetailHome, { me }) : /* @__PURE__ */ React.createElement(X.DistHome, { me });
       case "photo":
@@ -132,7 +129,7 @@
     const inside = me.role !== "buyer";
     const W = D.WORKSPACE;
     const ws = inside ? { name: W.name, domain: W.domain, open: () => setWsOpen(true) } : null;
-    const body = /* @__PURE__ */ React.createElement(Shell, { nav, current, onNav, user: display, onUser: () => onGo({ name: "profile" }), ws: inside ? W : null, onWorkspace: () => setWsOpen(true), brand: me.role === "buyer" ? /* @__PURE__ */ React.createElement(EsBrand, null) : void 0, brandMark: me.role === "buyer" ? /* @__PURE__ */ React.createElement("span", { className: "es-logo", style: { width: 36, height: 36, borderRadius: 11 } }, /* @__PURE__ */ React.createElement(Icon, { name: "hourglass", size: 18, stroke: 2.2 })) : void 0 }, pushStep ? /* @__PURE__ */ React.createElement(S.Live.PushStep, { me, home: (nav.find((n) => n.id === HOME[me.role]) || nav[0]).label, ...pushStep }) : /* @__PURE__ */ React.createElement(AnimatePresence, { mode: "wait", initial: false }, /* @__PURE__ */ React.createElement(motion.div, { key: bp.inBatch ? "batch:" + bp.v.id : safe + (ref || ""), ref: top, className: bp.inBatch ? "bpage" : void 0, initial: reduce ? false : { opacity: 0, y: 6 }, animate: { opacity: 1, y: 0 }, exit: reduce ? void 0 : { opacity: 0 }, transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] } }, bp.inBatch ? /* @__PURE__ */ React.createElement(S.BatchCtx.Provider, { value: frame }, /* @__PURE__ */ React.createElement(S.BatchPart, { me, it: bp.it, v: bp.v, part: bp.part })) : screenFor(me, safe, { realCamera, ref }))));
+    const body = /* @__PURE__ */ React.createElement(Shell, { nav, current, onNav, user: display, onUser: () => onGo({ name: "profile" }), ws: inside ? W : null, onWorkspace: () => setWsOpen(true), brand: me.role === "buyer" ? /* @__PURE__ */ React.createElement(EsBrand, null) : void 0, brandMark: me.role === "buyer" ? /* @__PURE__ */ React.createElement("span", { className: "es-logo", style: { width: 36, height: 36, borderRadius: 11 } }, /* @__PURE__ */ React.createElement(Icon, { name: "hourglass", size: 18, stroke: 2.2 })) : void 0 }, pushStep ? /* @__PURE__ */ React.createElement(S.Live.PushStep, { me, home: (nav.find((n) => n.id === HOME[me.role]) || nav[0]).label, ...pushStep }) : /* @__PURE__ */ React.createElement(AnimatePresence, { mode: "wait", initial: false }, /* @__PURE__ */ React.createElement(motion.div, { key: bp.inBatch ? "batch:" + bp.v.id : safe + (ref || ""), ref: top, className: bp.inBatch ? "bpage" : void 0, initial: reduce ? false : { opacity: 0, y: 6 }, animate: { opacity: 1, y: 0 }, exit: reduce ? void 0 : { opacity: 0 }, transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] } }, bp.inBatch ? /* @__PURE__ */ React.createElement(S.BatchCtx.Provider, { value: frame }, /* @__PURE__ */ React.createElement(S.BatchPart, { me, it: bp.it, v: bp.v, part: bp.part })) : screenFor(me, safe, { realCamera }))));
     const openNote = (n) => {
       window.SC3_STORE.update((st) => {
         const x = st.notifications.find((y) => y.id === n.id);

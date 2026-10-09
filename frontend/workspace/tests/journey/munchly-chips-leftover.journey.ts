@@ -10,8 +10,8 @@ import { Run } from './record.ts';
 // (backend-api refuses it while the scheme is open). Neha then fires expiry day's report from the console (Report now),
 // which closes the batch as it stands (SC-94): the scheme closes with the orders placed, the accepted lot counts as
 // collected, the papers are drafted, and Impact's report settles the packs left by Munchly's expiry policy, full
-// credit. Anita reads the pack with its Expiry credit note, Priya reads Left at the godown and the Expiry
-// settlement on Execution, and Vikram the ESG report.
+// credit. Priya reads the pack with its Expiry credit note, Left at the godown and the Expiry settlement on
+// Execution, and the batch's page in the ledger (SC-127).
 //
 // E2E_LEFTOVER (8): how many of the 31 ordering kiranas place no order, the last in the story's order.
 // E2E_DAY_MINUTES (60, Rehearsal): the journey day the reset starts; the 48-hour scheme is open 2 hours of real time,
@@ -133,13 +133,13 @@ const STEPS: Step[] = [
 	},
 	{
 		id: 'papers',
-		title: 'Anita reads the pack, the Expiry credit note first, and marks it reviewed',
+		title: 'Priya reads the pack, the Expiry credit note first, and marks it reviewed',
 		async run(page) {
-			await as(page, 'anita', `/paperwork/${HERO}`, 'reads the expiry credit note and the rest of the pack');
+			await as(page, 'priya', `/paperwork/${HERO}`, 'reads the expiry credit note and the rest of the pack');
 			// Paperwork opens on the expiry paper (SC-94)
 			await expect(page.locator('#main')).toContainText(/packs expired at the godown/i);
 			await run.done('Paper: the Expiry credit note, open first');
-			const c = (await caseAs('anita'))!;
+			const c = (await caseAs('priya'))!;
 			for (const d of c.docs) {
 				const card = page.getByRole('button', { name: new RegExp(d.type) }).first();
 				if (!(await card.count())) {
@@ -163,7 +163,7 @@ const STEPS: Step[] = [
 					run.find('warning', `/paperwork/${HERO}`, `Mark reviewed on a batch Report now cleared: "${why}" (SC-117)`);
 					await run.done('Mark reviewed, refused on the cleared batch (SC-117)');
 				} else {
-					await until('the review is recorded', 'anita', (c) => c.journey.reviewed, 30_000);
+					await until('the review is recorded', 'priya', (c) => c.journey.reviewed, 30_000);
 					await run.done('Pack reviewed');
 				}
 			}
@@ -194,10 +194,10 @@ const STEPS: Step[] = [
 	chips('esg'),
 	{
 		id: 'close',
-		title: 'Anita reads the finance report, and Priya the Command Center at the end',
+		title: "Priya reads the batch's money in the ledger, and the Command Center at the end",
 		async run(page) {
-			await as(page, 'anita', `/report/${HERO}`, 'reads the finance side of the report');
-			await run.done('Finance & ESG report, as Anita');
+			await as(page, 'priya', `/report/${HERO}`, "reads the batch's money in the ledger");
+			await run.done("The ledger: the batch's money");
 			await as(page, 'priya', '/command', 'sees the Command Center at the end');
 			await expect(sidebar(page, 'Command Center')).toBeVisible();
 			await page.waitForTimeout(800);

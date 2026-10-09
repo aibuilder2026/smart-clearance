@@ -18,8 +18,6 @@ from sc_api.services.presenter import lock_client
 
 ROLE_ACCESS = {
     "operator": "member",
-    "finance": "member",
-    "sustainability": "member",
     "admin": "admin",
     "distributor": "partner",
     "retailer": "partner",

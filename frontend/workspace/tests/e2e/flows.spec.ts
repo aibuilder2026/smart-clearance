@@ -134,15 +134,15 @@ test('flows · switching person from the profile', async ({ page }) => {
 	await page.getByRole('button', { name: /^Switch person/ }).click();
 	const sheet = page.getByRole('dialog', { name: 'Switch person' });
 	await expect(sheet.getByRole('button', { name: /Priya Deshmukh/ })).toContainText('you');
-	await sheet.getByRole('button', { name: /Anita Rao/ }).click();
-	// finance starts on the ledger (SC-121)
-	await expect(title(page)).toHaveText('Ledger');
-	await expect(page).toHaveURL(/\/report$/);
-	await expect(page).toHaveTitle('Anita · Munchly Foods · Smart-Clearance');
-	await expect(nav(page).getByRole('button', { name: 'Route Room' }), 'finance has no Route Room').toHaveCount(0);
-	// a screen her role cannot open falls back to her home
+	await sheet.getByRole('button', { name: /Arjun Nair/ }).click();
+	// the workspace's admin starts on the workspace
+	await expect(title(page)).toHaveText('Workspace');
+	await expect(page).toHaveURL(/\/workspace$/);
+	await expect(page).toHaveTitle('Arjun · Munchly Foods · Smart-Clearance');
+	await expect(nav(page).getByRole('button', { name: 'Route Room' }), 'the admin has no Route Room').toHaveCount(0);
+	// a screen his role cannot open falls back to his home
 	await page.goto('/route');
-	await expect(title(page)).toHaveText('Ledger');
+	await expect(title(page)).toHaveText('Workspace');
 });
 
 test('flows · the shell: navigating, then back and forward', async ({ page }) => {

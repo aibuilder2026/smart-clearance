@@ -206,7 +206,7 @@ export const A = {
 		s.hero.phase = 'settled';
 		s.hero.docs = D.docs.map((d) => ({ id: d.id, status: d.status }));
 		feed(s, EV('papers'));
-		notify(s, 'anita', { link: 'paperwork', ...P.papers });
+		notify(s, 'priya', { link: 'paperwork', ...P.papers });
 		notify(s, 'rakesh', { link: 'orders', ...P.invoice });
 		notify(s, 'rakesh', { link: 'van', ...P.van });
 	},
@@ -217,7 +217,7 @@ export const A = {
 	},
 	review: (s: State) => {
 		s.hero.reviewed = true;
-		audit(s, 'anita', "reviewed Munchly's credit note and GST memo", 'MF-2409-117', 'Mon 5 Oct');
+		audit(s, 'priya', "reviewed Munchly's credit note and GST memo", 'MF-2409-117', 'Mon 5 Oct');
 	},
 	vanRound: (s: State) => {
 		s.hero.van = { status: 'done', done: D.kiranas.length };
@@ -229,8 +229,7 @@ export const A = {
 		s.hero.posted = true;
 		feed(s, EV('ledger'));
 		notify(s, 'priya', { link: 'command', ...P.closed });
-		notify(s, 'vikram', { link: 'report', ...P.report });
-		audit(s, 'vikram', 'signed off the BRSR row', 'MF-2409-117', '30 Oct');
+		audit(s, 'priya', 'signed off the BRSR row', 'MF-2409-117', '30 Oct');
 	}
 };
 
@@ -259,7 +258,7 @@ export const SCRIPT: [string, ActionName, { arg?: Arg; human?: string }?][] = [
 	['execute', 'confirmPickup', { human: 'meera' }],
 	['settle', 'dispatch', { human: 'rakesh' }],
 	['settle', 'settle'],
-	['settle', 'review', { human: 'anita' }],
+	['settle', 'review', { human: 'priya' }],
 	['settle', 'vanRound', { human: 'rakesh' }],
 	['report', 'report']
 ];

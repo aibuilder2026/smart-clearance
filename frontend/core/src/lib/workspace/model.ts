@@ -192,8 +192,7 @@ export const addDays = (iso: string, n: number) => {
 /* ---------- the people and the products of the story ---------- */
 
 /** who plays each part in the batch's story, from the workspace's members: the operator who approves, the batch's
- *  distributor, the first kirana that orders, the buyer, the food bank that takes the donation, finance and
- *  sustainability */
+ *  distributor, the first kirana that orders, the buyer and the food bank that takes the donation */
 /** someone the member cannot see, or nobody yet: an account with no name, so a screen still draws */
 const nobody = (role: RoleId): User => ({
 	id: '',
@@ -215,9 +214,7 @@ export function castOf(s: State, c: Pick<CaseData, 'dist' | 'kiranas' | 'buyer' 
 		distributor: by('distributor', c ? c.dist.name : null),
 		kirana: by('retailer', c?.kiranas[0]?.name ?? null),
 		buyer: by('buyer', c?.buyer.name || null),
-		foodbank: by('foodbank', c?.donation.partner?.name || null),
-		finance: by('finance'),
-		sustainability: by('sustainability')
+		foodbank: by('foodbank', c?.donation.partner?.name || null)
 	};
 }
 /** the first word of a name, as people say it: Rakesh, of Rakesh bhai; Lakshmi, of Lakshmi Agencies */
@@ -317,15 +314,6 @@ export const NAV: Record<RoleId, NavItem[]> = {
 		{ id: 'market', label: 'Marketplace', short: 'Market', icon: 'store' },
 		{ id: 'bids', label: 'My bids', short: 'Bids', icon: 'gavel' }
 	],
-	// Finance & ESG (SC-121): the ledger, where each cleared batch opens its own page with its papers
-	finance: [
-		{ id: 'report', label: 'Ledger', icon: 'book-open' },
-		{ id: 'batches', label: 'Batches', icon: 'boxes' }
-	],
-	sustainability: [
-		{ id: 'report', label: 'Ledger', icon: 'book-open' },
-		{ id: 'batches', label: 'Batches', icon: 'boxes' }
-	],
 	foodbank: [{ id: 'pickups', label: 'Pickups', icon: 'heart-handshake' }],
 	admin: [
 		{ id: 'workspace', label: 'Workspace', icon: 'building-2' },
@@ -335,21 +323,12 @@ export const NAV: Record<RoleId, NavItem[]> = {
 		{ id: 'audit', label: 'Audit log', short: 'Audit', icon: 'scroll-text' }
 	]
 };
-/** the screen each role reads a batch on, which a batch in a journey opens from Batches: finance and sustainability
- *  its page in the ledger (SC-103, SC-121); a role with none opens the batch's sheet. The operator opens the batch's own
- *  page (SC-112) */
-export const BATCH_SCREEN: Partial<Record<RoleId, string>> = {
-	finance: 'report',
-	sustainability: 'report'
-};
 /** where each role starts */
 export const HOME: Record<RoleId, string> = {
 	operator: 'command',
 	distributor: 'home',
 	retailer: 'home',
 	buyer: 'market',
-	finance: 'report',
-	sustainability: 'report',
 	foodbank: 'pickups',
 	admin: 'workspace'
 };
@@ -368,10 +347,7 @@ export const routesFor = (r: RoleId) =>
 					? ['offer']
 					: r === 'operator'
 						? ['journey', 'route', 'execution', 'paperwork']
-						: // finance and sustainability keep the story's batch's papers, for the pushes and the guided demo
-							r === 'finance' || r === 'sustainability'
-							? ['paperwork']
-							: []
+						: []
 		);
 /** every screen name the app knows, across the roles */
 export const SCREENS = Array.from(new Set((Object.keys(NAV) as RoleId[]).flatMap(routesFor)));

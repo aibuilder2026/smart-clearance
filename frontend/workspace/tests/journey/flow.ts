@@ -67,9 +67,7 @@ export const ROLES: Record<string, string> = {
 	rakesh: 'Distributor',
 	'lakshmi-owner': 'Distributor',
 	agrawal: 'Bidder on ExpireSoon',
-	meera: 'Food bank',
-	anita: 'Finance',
-	vikram: 'ESG'
+	meera: 'Food bank'
 };
 
 let here: { run: Run; ref: string } | null = null;

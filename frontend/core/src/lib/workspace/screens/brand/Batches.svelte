@@ -6,35 +6,23 @@
 	import Product from '../../../components/Product.svelte';
 	import StatusBadge from '../../../components/StatusBadge.svelte';
 	import { useRoute } from '../../context';
-	import { BATCH_SCREEN, batchViews, fmt, journeysOf, partAt } from '../../model';
+	import { batchViews, fmt, journeysOf, partAt } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { BatchView, User } from '../../types';
 	import Screen from '../common/Screen.svelte';
-	import BatchSheet from './BatchSheet.svelte';
 
-	// Batches: every lot the Watcher sees, from the DMS export (screens/brand.jsx Batches). A batch in a journey opens
-	// the screen the person reads a batch on, with it in focus: the operator's Route Room, finance's Paperwork,
-	// sustainability's report (SC-103); any other batch opens its sheet. On the live workspace every batch in a journey
-	// has its own (SC-102), so a cleared batch opens its processed papers for Finance
+	// Batches: every lot the Watcher sees, from the DMS export (screens/brand.jsx Batches), the operator's (SC-127): each
+	// row opens the batch's page, on the screen for where it stands (SC-112)
 	let { me }: { me: User } = $props();
 	const ws = useWorkspace();
 	const app = useApp();
 	const router = useRoute();
-	let openId = $state<string | null>(null);
 
 	type Row = BatchView & { name: string };
 	const views = $derived(batchViews(ws.state, ws.data));
 	const rows = $derived<Row[]>(views.map((v) => ({ ...v, name: v.skuObj.name })));
-	const sel = $derived(openId ? views.find((v) => v.id === openId) : undefined);
-	const target = $derived(BATCH_SCREEN[me.role]);
-	// the operator's rows open the batch's page, on the screen for where it stands (SC-112)
-	const journeys = $derived(me.role === 'operator' ? journeysOf(ws.state, ws.data, ws.cases, ws.case) : []);
-	const openRow = (v: BatchView) =>
-		me.role === 'operator'
-			? router.go(partAt(journeys.find((i) => i.ref === v.id)), { ref: v.id })
-			: target && (v.hero || v.journey)
-				? router.go(target, { ref: v.id })
-				: (openId = v.id);
+	const journeys = $derived(journeysOf(ws.state, ws.data, ws.cases, ws.case));
+	const openRow = (v: BatchView) => router.go(partAt(journeys.find((i) => i.ref === v.id)), { ref: v.id });
 </script>
 
 {#snippet product(v: Row)}<span class="row tight"
@@ -70,5 +58,4 @@
 				{ key: 'status', label: 'Status', sortValue: (v) => v.phase || v.assess.status, cell: status }
 			] satisfies Column<Row>[]}
 		/>{/if}
-	<BatchSheet view={sel} onclose={() => (openId = null)} />
 </Screen>

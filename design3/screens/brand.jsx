@@ -501,17 +501,12 @@
   }
 
   /* ---------- Batches ---------- */
-  // the screen each role reads a batch on, which a batch in a journey opens from Batches: finance its Paperwork,
-  // sustainability its report (SC-103); a role with none opens the batch's sheet. The operator opens the batch's own
-  // page (SC-112)
-  const BATCH_SCREEN = { finance: "report", sustainability: "report" };
   function Batches({ me }) {
-    const s = useStore(); const app = useApp(); const { go } = useRoute(); const [open, setOpen] = useState(null); const hm = heroModel(s);
+    const s = useStore(); const app = useApp(); const { go } = useRoute(); const hm = heroModel(s);
     const views = D.BATCHES.map(b => { const v = D.batchView(b); if (b.hero) v.phase = hm.view.phase; if (b.second) v.phase = "executing"; return v; });
-    const sel = open && views.find(v => v.id === open);
-    // the operator's rows open the batch's page (SC-112); finance and sustainability open the screen they read a batch on
+    // each row opens the batch's page (SC-112): Batches is the operator's (SC-127)
     const live = S.useLive();
-    const openRow = v => (me.role === "operator" ? go(partAt(journeyItems(s, live).find(i => i.ref === v.id)), { ref: v.id }) : v.hero && BATCH_SCREEN[me.role] ? go(BATCH_SCREEN[me.role], { ref: v.id }) : setOpen(v.id));
+    const openRow = v => go(partAt(journeyItems(s, live).find(i => i.ref === v.id)), { ref: v.id });
     return <Screen me={me} title="Batches" sub="Every lot the Watcher sees, from the DMS export">
       {app.bp === "phone" ? <div className="list">{views.map(v => <BatchRow key={v.id} view={v} compact onOpen={() => openRow(v)} />)}</div> :
       <DataTable label="Batches" rows={views.map(v => ({ ...v, name: v.skuObj.name }))} onRow={openRow} initialSort={["daysLeft", "asc"]} columns={[
@@ -522,16 +517,10 @@
         { key: "gates", label: "Quick-commerce gates", sortable: false, render: v => <GateChips gates={v.assess.gates} size="sm" /> },
         { key: "status", label: "Status", sortValue: v => v.phase || v.assess.status, render: v => <StatusBadge status={v.phase || v.assess.status} /> },
       ]} />}
-      <BatchSheet view={sel} onClose={() => setOpen(null)} />
     </Screen>;
   }
-  // a batch the Watcher sees, in a sheet (the Batches screen's; on the Command Center since SC-90, for a watchlist row
-  // with no journey to open): its days, gates and figures, and what happens to it next. An at-risk batch the Watcher has
-  // not flagged says when it will be
-  function BatchSheet({ view: sel, onClose }) {
-    return <Sheet open={!!sel} onClose={onClose} title={sel ? sel.skuObj.name : ""}>{sel && <BatchFacts view={sel} />}</Sheet>;
-  }
-  // what the Watcher sees of a batch: the sheet's body, and a watched batch's Journey on the operator's batch page
+  // what the Watcher sees of a batch, on a watched batch's Journey on the operator's batch page: its days, gates and
+  // figures, and what happens to it next. An at-risk batch the Watcher has not flagged says when it will be
   function BatchFacts({ view: sel }) {
     const s = useStore(); const ML = id => D.MANGO_PLAN.lines.find(l => l.id === id) || { units: 0 };
     const next = !sel ? "" : sel.phase === "executing" ? `Routed yesterday: ${fmt.num(ML("kirana").units)} packs to Hyderabad kiranas, ${ML("staff").units} to the staff sale at Lakshmi's godown, ${D.MANGO_FB} to Feeding India.`

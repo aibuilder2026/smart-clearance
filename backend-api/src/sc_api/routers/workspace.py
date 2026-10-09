@@ -178,7 +178,7 @@ async def case(ws: str, ref: str, request: Request, ctx: MemberCtx) -> dict[str,
     return await views.case_detail(ctx, ws, ref, _member(request))
 
 
-@router.get("/ledger", summary="The Finance & ESG ledger: every batch cleared, by quarter and year")
+@router.get("/ledger", summary="The ledger: every batch cleared, by quarter and year")
 async def ledger(ws: str, ctx: MemberCtx) -> dict[str, Any]:
     ctx.require("report.read", "Your role can't see the ledger.")
     return await views.ledger(ctx, ws)
@@ -374,7 +374,7 @@ async def issue_invoice(ws: str, ref: str, doc: str, request: Request, ctx: Memb
     return await _done(ctx, request, ws, ref)
 
 
-@router.post(CASE + "/review", summary="Finance has reviewed the papers")
+@router.post(CASE + "/review", summary="The operator has reviewed the papers")
 async def review(ws: str, ref: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
     if (replay := await _replay(ctx, request, ws, ref)) is not None:
         return replay

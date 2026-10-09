@@ -291,13 +291,7 @@
 				{:else if safe === 'batches'}<Batches {me} />
 				{:else if safe === 'setup'}<Setup {me} />
 				{:else if safe === 'report'}<Report {me} />
-				{:else if safe === 'paperwork'}{#if me.role === 'operator'}<Paperwork {me} />{:else}<Report
-							{me}
-							at={{
-								ref: route?.params?.ref ?? ws.data.batches.find((b) => b.hero)?.id ?? ws.case?.batch.id ?? '',
-								tab: 'papers'
-							}}
-						/>{/if}
+				{:else if safe === 'paperwork'}<Paperwork {me} />
 				{:else if safe === 'home'}{#if me.role === 'retailer'}<RetailHome {me} />{:else}<DistHome {me} />{/if}
 				{:else if safe === 'photo'}<CameraScreen {me} {realCamera} />
 				{:else if safe === 'van'}<VanRoute {me} />

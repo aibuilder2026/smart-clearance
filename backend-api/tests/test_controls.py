@@ -273,7 +273,7 @@ async def test_a_pack_drafted_on_expiry_day_is_reviewed_and_its_invoice_issued_o
     and Impact clears the batch at once. Anita still reviews the pack and Rakesh still issues his invoice: both find
     the batch's case in this journey, cleared, where they found only an open one"""
     from tests.conftest import token
-    from tests.test_workspace import AGRAWAL, ANITA, RAKESH, J
+    from tests.test_workspace import AGRAWAL, PRIYA, RAKESH, J
 
     ws = "/v1/workspaces/munchly"
     await to_plan(api, cloud)
@@ -294,15 +294,15 @@ async def test_a_pack_drafted_on_expiry_day_is_reviewed_and_its_invoice_issued_o
     assert c["journey"]["phase"] == "cleared" and not c["journey"]["reviewed"]
     assert {d["id"] for d in c["docs"]} >= {"invoice", "expiry"}
 
-    r = await api.post(f"{ws}/cases/{HERO}/review", headers=ANITA)
+    r = await api.post(f"{ws}/cases/{HERO}/review", headers=PRIYA)
     assert r.status_code == 200, r.text
     r = await api.post(f"{ws}/cases/{HERO}/documents/invoice/issue", headers=RAKESH)
     assert r.status_code == 200, r.text
-    j = (await case(api, ANITA))["journey"]
+    j = (await case(api, PRIYA))["journey"]
     assert j["reviewed"] and j["invoiceIssued"] and j["phase"] == "cleared"
     assert [(a["who"], a["text"]) for a in await last_audit(api, neha, 2)] == [
         ("Rakesh bhai", "issued the invoice from Tally"),
-        ("Anita Rao", "reviewed Munchly's credit note and GST memo"),
+        ("Priya Deshmukh", "reviewed Munchly's credit note and GST memo"),
     ]
 
 

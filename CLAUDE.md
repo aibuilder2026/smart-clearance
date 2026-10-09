@@ -1391,4 +1391,27 @@
   - **The rule** (backend-api's snapshot, `views.snapshot`): a batch whose journey has cleared and whose best-before has passed leaves the workspace's batches, so Batches and every screen built from them drop it. Its page in the ledger (Money, Papers, Impact) still opens, read from its case. A cleared batch still inside its best-before stays, as the story's chips do. No design changes; design3's stub holds no such batch.
   - **Checks:** backend-api 516 passed, 1 skipped (`test_history.py`: the history out of the snapshot's batches, the story's batches in). The frontend is unchanged. Locally, Anita's Batches lists the story's nine batches; the ledger still has the twelve.
 
+- **SC-127** (In Review, branch `SC-127-one-operator`, stacked on SC-126): one operator. The Finance & GST and Sustainability & BRSR roles go, with Anita and Vikram; Priya reviews the papers and reads the ledger.
+  - **The request:** "I dont need Anita and Vikram roles, Priya can do it all". No design round: Priya's screens were already SC-121's (the Ledger in her sidebar under Reports, each batch's page with Money, Papers and Impact) and SC-112's (Paperwork on the batch's page), so nothing new is drawn.
+  - **design3** (`data.js`, `world.js`, `flow.js`, `store.js`, `ledger.js`, `roles.jsx`, `brand.jsx`, `finance.jsx`, `admin.jsx`, `live.jsx`, `ds.jsx`, the demo's `director.jsx`):
+    - Anita and Vikram leave the people, the explore sheet, the members and the invite sheet's roles; Munchly's staff are Priya and Arjun;
+    - the papers' push and the review are Priya's ("Priya reviews Munchly's papers"); the ledger's push goes, and Priya signs off the BRSR row in the audit;
+    - the journey's stages name Priya at Settle and Report ("S6 Ledger");
+    - Batches is the operator's alone, every row opening its batch's page (SC-112), so the batch sheet goes; what the Watcher sees of a batch stays on a watched batch's Journey;
+    - the ledger and a batch's page open on Money for everyone;
+    - the guided demo's stage 8 puts the review on Priya's desk, and stage 9 the ledger.
+  - **backend-api:**
+    - `rbac.json`: `ws-operator` gains `docs.review`; `ws-finance` and `ws-sustainability` go. A role that has gone keeps its row at migrate but none of its permissions, and its members are refused as not members (`views._member`) until a Reset journey takes them out of the workspace;
+    - the papers' push goes to the operator; the ledger's push to ESG goes; the ledger's stream reaches the operator and the admin;
+    - the history's twelve batches are reviewed by Priya; walk.sh reviews as Priya.
+  - **The frontend:** core's roles, the explore sheet, the users and invite sheet, Batches (`BatchSheet.svelte` deleted), the ledger's readings and a batch page's first tab, the demo's stages; the goldens lose Anita's and Vikram's 36 screens and the batch sheet; the workspace's live tests, e2e, a11y and parity specs, and the three journey suites, review as Priya and read the ledger as Priya.
+  - **Docs:** PRODUCT.md's users and principles, and the workspace README's roles.
+  - **Checks:**
+    - backend-api 517 passed, 1 skipped (a new test: a member whose role went is refused; it fails without the guard);
+    - the frontend gate passes: core 217, api 77, workspace 67, admin 17, demo 5, console 3;
+    - the seeds, the contract and the live fixtures were regenerated; design3's `dist/` is rebuilt;
+    - the browser suites were not run (SC-55).
+  - **Locally:** `hydrate.sh --reset` rebuilt the world: Munchly's staff are Priya and Arjun, the twelve history batches reviewed by Priya, and the Paperwork agent laid out all 41 of their papers' PDFs. The day is 24 hours.
+  - **Production:** Anita and Vikram stay in Munchly's workspace, refused at sign-in once this deploys, until the console's Reset journey (or the hydrate job) takes them out.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

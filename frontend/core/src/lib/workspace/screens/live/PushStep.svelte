@@ -87,9 +87,7 @@
 	const LEAD: Partial<Record<User['role'], string>> = {
 		operator: 'plan',
 		distributor: 'verify',
-		retailer: 'offer',
-		finance: 'papers',
-		sustainability: 'report'
+		retailer: 'offer'
 	};
 	const shown = $derived.by((): Push | null => {
 		const pushes = ws.case?.push;

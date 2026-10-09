@@ -183,7 +183,7 @@
 			"id": "ws-operator",
 			"scope": "workspace-role",
 			"name": "Supply-chain operator",
-			"description": "Watches the batches, approves plans (as the client's approver) and sets the guardrails",
+			"description": "Watches the batches, approves plans (as the client's approver), sets the guardrails, reviews the papers and reads the ledger",
 			"permissions": [
 				"ws.read",
 				"ws.money",
@@ -192,6 +192,7 @@
 				"setup.upload",
 				"plan.approve",
 				"docs.read",
+				"docs.review",
 				"report.read"
 			]
 		},
@@ -229,31 +230,6 @@
 			"permissions": [
 				"ws.read",
 				"listing.bid"
-			]
-		},
-		{
-			"id": "ws-finance",
-			"scope": "workspace-role",
-			"name": "Finance & GST",
-			"description": "Reviews the papers and reads the report",
-			"permissions": [
-				"ws.read",
-				"ws.money",
-				"ws.audit",
-				"docs.read",
-				"docs.review",
-				"report.read"
-			]
-		},
-		{
-			"id": "ws-sustainability",
-			"scope": "workspace-role",
-			"name": "Sustainability & BRSR",
-			"description": "Reads the report and the impact ledger",
-			"permissions": [
-				"ws.read",
-				"ws.money",
-				"report.read"
 			]
 		},
 		{

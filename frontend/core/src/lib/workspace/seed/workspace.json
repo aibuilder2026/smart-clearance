@@ -379,30 +379,6 @@
 			"sign": "ExpireSoon",
 			"kind": "external"
 		},
-		"anita": {
-			"id": "anita",
-			"name": "Anita Rao",
-			"short": "Anita",
-			"role": "Finance & GST",
-			"org": "Munchly Foods",
-			"city": "Pune",
-			"img": "sc3img:/people/p-anita.webp",
-			"email": "anita.rao@munchly.in",
-			"sign": "Google",
-			"kind": "staff"
-		},
-		"vikram": {
-			"id": "vikram",
-			"name": "Vikram Sethi",
-			"short": "Vikram",
-			"role": "Sustainability & BRSR",
-			"org": "Munchly Foods",
-			"city": "Pune",
-			"img": "sc3img:/people/p-vikram.webp",
-			"email": "vikram.sethi@munchly.in",
-			"sign": "Google",
-			"kind": "staff"
-		},
 		"meera": {
 			"id": "meera",
 			"name": "Meera",
@@ -1095,7 +1071,7 @@
 			"n": 1,
 			"title": "Connect",
 			"when": "once · 15 min",
-			"who": "Priya and Anita set the guardrails; Rakesh bhai gives a one-time permission",
+			"who": "Priya sets the guardrails; Rakesh bhai gives a one-time permission",
 			"screen": "S0 Setup",
 			"role": "brand",
 			"view": "setup",
@@ -1214,9 +1190,9 @@
 			"n": 8,
 			"title": "Settle",
 			"when": "day 3 – 7 · true-up 29 Oct",
-			"who": "Rakesh bhai issues his invoice and dispatches; Anita reviews Munchly's papers",
+			"who": "Rakesh bhai issues his invoice and dispatches; Priya reviews Munchly's papers",
 			"screen": "S5 Paperwork",
-			"role": "finance",
+			"role": "brand",
 			"view": "paperwork",
 			"sees": "The document pack: Rakesh's invoice drafted for him to issue, the e-way bill check, Munchly's price-support credit note and the ITC memo.",
 			"agents": "Paperwork drafts Rakesh's invoice, checks the e-way bill threshold, issues the price-support credit note, writes the ITC memo and the FSSAI checklist.",
@@ -1231,11 +1207,11 @@
 			"n": 9,
 			"title": "Report",
 			"when": "after 29 Oct · quarterly",
-			"who": "Vikram, Anita and the CFO",
-			"screen": "S6 Finance & ESG",
-			"role": "sustainability",
+			"who": "Priya and the CFO",
+			"screen": "S6 Ledger",
+			"role": "brand",
 			"view": "report",
-			"sees": "The Finance & ESG dashboard; one click exports the BRSR waste table and the GST memo.",
+			"sees": "The ledger, by quarter and year; one click exports the BRSR waste table and the GST summary.",
 			"agents": "Impact Agent posts the ledger once the return window closes and builds the BRSR Principle 6 rows with evidence links.",
 			"money": "217.6 kg diverted · 544 kg CO₂e avoided (indicative) · 0 meals: one line in the BRSR report.",
 			"pain": "We have no waste number",
@@ -1296,7 +1272,7 @@
 			"body": "Van route for Tuesday updated: 31 kiranas, 588 packets. The Raipur lot (772) is collected by the buyer's truck once the balance lands."
 		},
 		"papers": {
-			"to": "anita",
+			"to": "priya",
 			"at": "Mon 5 Oct",
 			"title": "Document pack ready · MF-2409-117",
 			"body": "Papers ready for MF-2409-117: Rakesh's invoice draft, e-way bill check, price-support credit note, GST memo. Nothing to chase."
@@ -1306,12 +1282,6 @@
 			"at": "Mon 5 Oct",
 			"title": "Invoice draft ready",
 			"body": "Invoice draft to Agrawal Wholesale, Raipur: 772 × ₹14.20, IGST 5%, ₹11,510. Issue it from Tally. Munchly's price support of ₹8,768 is on its way."
-		},
-		"report": {
-			"to": "vikram",
-			"at": "30 Oct",
-			"title": "Ledger posted · MF-2409-117",
-			"body": "217.6 kg diverted from disposal with invoices behind every kilo. The BRSR row is ready."
 		},
 		"closed": {
 			"to": "priya",
@@ -2471,8 +2441,6 @@
 		"distributor": "Distributor",
 		"retailer": "Kirana retailer",
 		"buyer": "Marketplace buyer",
-		"finance": "Finance & GST",
-		"sustainability": "Sustainability & BRSR",
 		"foodbank": "Food-bank partner",
 		"admin": "Workspace admin"
 	},
@@ -2586,15 +2554,7 @@
 				"ids": [
 					[
 						"priya",
-						"Approve the plan for the chips batch"
-					],
-					[
-						"anita",
-						"Review Munchly's credit note and GST memo"
-					],
-					[
-						"vikram",
-						"Export the BRSR table"
+						"Approve the plan, review the papers, read the ledger"
 					],
 					[
 						"arjun",
@@ -2751,36 +2711,6 @@
 				"sign": "ExpireSoon",
 				"kind": "external",
 				"provider": "expiresoon",
-				"status": "active",
-				"lastSeen": null
-			},
-			{
-				"id": "anita",
-				"name": "Anita Rao",
-				"short": "Anita",
-				"role": "finance",
-				"org": "Munchly Foods",
-				"city": "Pune",
-				"img": "sc3img:/people/p-anita.webp",
-				"email": "anita.rao@munchly.in",
-				"sign": "Google",
-				"kind": "staff",
-				"provider": "google",
-				"status": "active",
-				"lastSeen": null
-			},
-			{
-				"id": "vikram",
-				"name": "Vikram Sethi",
-				"short": "Vikram",
-				"role": "sustainability",
-				"org": "Munchly Foods",
-				"city": "Pune",
-				"img": "sc3img:/people/p-vikram.webp",
-				"email": "vikram.sethi@munchly.in",
-				"sign": "Google",
-				"kind": "staff",
-				"provider": "google",
 				"status": "active",
 				"lastSeen": null
 			},

@@ -8,7 +8,6 @@
     const users = [
       { id: "priya", role: "operator", provider: "google", status: "active" }, { id: "rakesh", role: "distributor", provider: "phone", status: "active" },
       { id: "ganesh", role: "retailer", provider: "phone", status: "active" }, { id: "agrawal", role: "buyer", provider: "expiresoon", status: "active" },
-      { id: "anita", role: "finance", provider: "google", status: "active" }, { id: "vikram", role: "sustainability", provider: "google", status: "active" },
       { id: "meera", role: "foodbank", provider: "google", status: "active" }, { id: "arjun", role: "admin", provider: "google", status: "active" },
     ].map(u => Object.assign({}, P[u.id], u, { lastSeen: null }));
     // the other distributors' and retailers' accounts exist as organisations, not invented people

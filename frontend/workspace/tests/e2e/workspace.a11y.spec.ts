@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { report, scan, type Finding } from '@smart-clearance/testing/a11y';
 import { fileURLToPath } from 'node:url';
-import { go, hold, isDesktop, isPhone, openWorkspace, release, scanHeld } from './workspace';
+import { go, hold, isDesktop, openWorkspace, release, scanHeld } from './workspace';
 
 // The workspace app's build (SC-65): every role's every screen with the batch cleared, the sign-in and each of its
 // sheets, the splash, the sheets, menus, toasts and banners inside the app, and the states that exist only on the way
@@ -14,8 +14,6 @@ const PEOPLE: [string, string[]][] = [
 	['rakesh', ['home', 'photo', 'van', 'orders', 'inbox', 'profile']],
 	['ganesh', ['home', 'offer', 'orders', 'inbox', 'profile']],
 	['agrawal', ['market', 'listing', 'bids', 'inbox', 'profile']],
-	['anita', ['paperwork', 'report', 'batches', 'inbox', 'profile']],
-	['vikram', ['report', 'paperwork', 'batches', 'inbox', 'profile']],
 	['meera', ['pickups', 'inbox', 'profile']],
 	['arjun', ['workspace', 'users', 'rules', 'integrations', 'audit', 'inbox', 'profile']]
 ];
@@ -227,8 +225,8 @@ test('Execution with every order in and the lot awarded', async ({ page }, testI
 });
 
 test("a batch's papers: a document opened, and the pack before it is drafted", async ({ page }, testInfo) => {
-	// Anita reads the story's batch's papers on its page in the ledger (SC-121)
-	await openWorkspace(page, '/paperwork', { as: 'anita' });
+	// Priya reads the story's batch's papers (SC-127)
+	await openWorkspace(page, '/paperwork', { as: 'priya' });
 	// on desktops the document opens beside the pack; on tablets and phones, in a sheet
 	await page.locator('.docpick > button.card').nth(2).click();
 	if (!isDesktop(page)) {
@@ -239,30 +237,22 @@ test("a batch's papers: a document opened, and the pack before it is drafted", a
 });
 
 test('Paperwork before the award: the pack not drafted yet', async ({ page }, testInfo) => {
-	await openWorkspace(page, '/paperwork', { as: 'anita', stage: 7, clock: true });
+	await openWorkspace(page, '/paperwork', { as: 'priya', stage: 7, clock: true });
 	await hold(page);
 	await expect(page.locator('.skeleton').first()).toBeVisible();
 	await report(testInfo, await scanHeld(page, 'Paperwork · not drafted yet'));
 });
 
-test('Batches: a batch opened in its sheet', async ({ page }, testInfo) => {
-	await openWorkspace(page, '/batches');
-	await (
-		isPhone(page)
-			? page.getByRole('button', { name: /^Peanut Chikki 100 g/ })
-			: page.getByRole('row', { name: /Peanut Chikki 100 g/ })
-	).click();
-	await expect(dialog(page, 'Peanut Chikki 100 g')).toBeVisible();
-	await settled(page);
-	await report(testInfo, await scan(page, 'Batches · a batch in its sheet'));
-});
-
 test("the ledger: its readings, its periods, its exports, and a batch's page in each tab (SC-121)", async ({
 	page
 }, testInfo) => {
-	await openWorkspace(page, '/report', { as: 'vikram' });
+	await openWorkspace(page, '/report', { as: 'priya' });
 	const findings: Finding[] = [];
-	// Vikram opens on the Impact reading of the year so far
+	// Priya opens on the Money reading of the year so far, then Impact
+	await expect(page.getByText('recovered', { exact: true })).toBeVisible();
+	await page.waitForTimeout(700);
+	findings.push(...(await scan(page, 'Ledger · the year, Money')));
+	await page.getByRole('button', { name: 'Impact', exact: true }).click();
 	await expect(page.getByText('kept out of landfill')).toBeVisible();
 	await page.waitForTimeout(700);
 	findings.push(...(await scan(page, 'Ledger · the year, Impact')));

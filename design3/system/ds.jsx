@@ -206,7 +206,7 @@
               <Spec>
                 <Field label="Phone number" help="We send a 6-digit code by SMS." htmlFor="ph"><Input id="ph" icon="phone" inputMode="tel" defaultValue="+91 98230 44118" /></Field>
                 <Field label="One-time code"><OTP value={otp} onChange={setOtp} /></Field>
-                <Field label="Floor price, snacks" error="The floor cannot go below 30% of MRP. Raise it or ask Anita to change the rule." htmlFor="fl"><Input id="fl" defaultValue="25%" aria-invalid="true" /></Field>
+                <Field label="Floor price, snacks" error="The floor cannot go below 30% of MRP. Raise it or ask Priya to change the rule." htmlFor="fl"><Input id="fl" defaultValue="25%" aria-invalid="true" /></Field>
                 <Field label="Search batches"><SearchField value={q} onChange={setQ} placeholder="Batch, product, distributor" /></Field>
               </Spec>
               <Spec>

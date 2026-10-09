@@ -80,6 +80,12 @@ async function draw(s: LiveSource, screen: string | null, at: string | null = nu
 	return r;
 }
 
+/** a tab of a batch's page in the ledger (SC-121): Money, Papers or Impact */
+async function tab(r: RenderResult<never>, name: string) {
+	const nav = await waitFor(() => r.container.querySelector<HTMLElement>('.bh-tabs')!);
+	await fireEvent.click(within(nav).getByRole('button', { name }));
+}
+
 afterEach(() => vi.restoreAllMocks());
 
 describe('the sign-in, on email and password', () => {
@@ -540,12 +546,12 @@ describe("expiry day's settlement (SC-94)", () => {
 		expect(text(r)).not.toContain('Expiry settlement');
 	});
 
-	it("Anita's Paperwork opens on the expiry credit note, with Munchly's own costs", async () => {
+	it("Priya's Paperwork opens on the expiry credit note, with Munchly's own costs", async () => {
 		vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1440); // a desktop: the paper open beside the pack
-		const s = source(fakeApi(moment('cleared'), 'anita'));
+		const s = source(fakeApi(moment('cleared'), 'priya'));
 		const r = await draw(s, 'paperwork', MANGO);
 		await waitFor(() => expect(text(r)).toContain('Expiry credit note'));
-		const d = moment('cleared').members.anita.cases[MANGO].docs.find((x) => x.id === 'expiry')!;
+		const d = moment('cleared').members.priya.cases[MANGO].docs.find((x) => x.id === 'expiry')!;
 		const t = text(r);
 		expect(t).toContain(`${d.no} · Munchly → Lakshmi Agencies`);
 		expect(t).toContain(`${d.units!.toLocaleString('en-IN')} packs expired at the godown`);
@@ -573,11 +579,11 @@ describe("expiry day's settlement (SC-94)", () => {
 		expect(t).toContain('Your gain or loss₹0');
 	});
 
-	it("Anita's Who keeps what counts what each line took, and the settlement on both sides", async () => {
-		const s = source(fakeApi(moment('cleared'), 'anita'));
+	it("Priya's Who keeps what counts what each line took, and the settlement on both sides", async () => {
+		const s = source(fakeApi(moment('cleared'), 'priya'));
 		const r = await draw(s, 'paperwork', MANGO);
 		await waitFor(() => expect(text(r)).toContain('Who keeps what'));
-		const c = moment('cleared').members.anita.cases[MANGO];
+		const c = moment('cleared').members.priya.cases[MANGO];
 		const x = c.expiry!;
 		const took = c.support!.rows.reduce((t, row) => t + row.units * row.price, 0); // 84 at ₹12, 120 at ₹8, 58 donated
 		const t = text(r);
@@ -689,8 +695,9 @@ describe("the buyer's listing (SC-92)", () => {
 	it("a batch's BRSR line says what it donated and the meals that made, or that it donated nothing (SC-106)", async () => {
 		const m = moment('cleared');
 		const batchLine = async (ref: string) => {
-			// the batch's own page in the ledger, which Vikram opens on its impact (SC-121)
-			const r = await draw(source(fakeApi(m, 'vikram')), 'report', ref);
+			// the batch's own page in the ledger (SC-121), on its impact
+			const r = await draw(source(fakeApi(m, 'priya')), 'report', ref);
+			await tab(r, 'Impact');
 			await waitFor(() => expect(text(r)).toContain('BRSR line'));
 			expect(text(r)).toContain(ref);
 			const t = text(r);
@@ -708,7 +715,8 @@ describe("the buyer's listing (SC-92)", () => {
 	it("a batch's evidence names only what it has: no empty slots for an invoice or a lot it never had (SC-107)", async () => {
 		const m = moment('cleared');
 		const evidence = async (ref: string) => {
-			const r = await draw(source(fakeApi(m, 'vikram')), 'report', ref);
+			const r = await draw(source(fakeApi(m, 'priya')), 'report', ref);
+			await tab(r, 'Impact');
 			const line = await waitFor(() => r.getByText(/^Evidence:/));
 			const t = norm(line.textContent);
 			r.unmount();
@@ -767,8 +775,9 @@ describe("the buyer's listing (SC-92)", () => {
 	});
 
 	it("the receipt is the Mango Drink's paper after the FSSAI checklist, set out as Meera's is (SC-110)", async () => {
-		// Anita reads a batch's papers on its page in the ledger (SC-121)
-		const r = await draw(source(fakeApi(moment('cleared'), 'anita')), 'report', MANGO);
+		// a batch's papers on its page in the ledger (SC-121)
+		const r = await draw(source(fakeApi(moment('cleared'), 'priya')), 'report', MANGO);
+		await tab(r, 'Papers');
 		await waitFor(() => expect(text(r)).toContain('Document pack'));
 		const cards = [...r.container.querySelectorAll('.docgrid .docpick')].map((x) => norm(x.textContent));
 		const at = cards.findIndex((x) => x.includes('FSSAI surplus-food checklist'));
@@ -800,62 +809,51 @@ describe("the buyer's listing (SC-92)", () => {
 
 	it("the Mango Drink's GST ITC memo reads its input credit from the plan, and Paperwork stays up (SC-105)", async () => {
 		const m = moment('cleared');
-		const r = await draw(source(fakeApi(m, 'anita')), 'paperwork', MANGO);
+		const r = await draw(source(fakeApi(m, 'priya')), 'paperwork', MANGO);
 		await fireEvent.click(await waitFor(() => r.getByRole('button', { name: /GST ITC memo/ })));
 		// the Mango's SKU has no itcPerUnit of its own: ₹11 at cost × 5% GST, as money.js works it out, so the memo says
 		// it is estimated (SC-122, the maintainer's call)
-		expect(m.members.anita.cases[MANGO].sku.itcPerUnit ?? null).toBeNull();
+		expect(m.members.priya.cases[MANGO].sku.itcPerUnit ?? null).toBeNull();
 		await waitFor(() => expect(text(r)).toContain('₹0.55 a pack, estimated from the cost and the GST rate'));
 		expect(text(r)).not.toMatch(/NaN|undefined/);
 		expect(r.getByRole('button', { name: /FSSAI surplus-food checklist/ })).toBeTruthy();
 	});
 
-	it("from Batches, a batch in a journey opens the person's own screen for it: Finance its processed papers (SC-103)", async () => {
+	it("from Batches, Priya's rows open the batch's page, and a cleared batch's papers are processed (SC-103, SC-127)", async () => {
 		const m = moment('cleared');
-		const open = async (who: string) => {
-			const go = vi.fn();
-			const s = source(fakeApi(m, who));
-			const r = render(LiveHost, {
-				props: { source: s, screen: 'batches', at: null, onnavigate: go }
-			}) as unknown as RenderResult<never>;
-			await waitFor(() => expect(s.status.phase).toBe('ready'));
-			const row = (ref: string) =>
-				[...r.container.querySelectorAll('tbody tr')].find((tr) => tr.textContent?.includes(ref))!;
-			await waitFor(() => expect(row(CHIPS)).toBeTruthy());
-			return { go, r, row };
-		};
-		// Anita: the cleared chips are not her batch in focus, and open their page in the ledger (SC-121)
-		const anita = await open('anita');
-		await fireEvent.click(anita.row(CHIPS));
-		expect(anita.go).toHaveBeenCalledWith('report', { replace: undefined, ref: CHIPS });
-		// a batch in no journey opens its sheet, and goes nowhere
-		anita.go.mockClear();
-		await fireEvent.click(anita.row('MF-2408-311'));
-		expect(anita.go).not.toHaveBeenCalled();
-		anita.r.unmount();
-		// Vikram: the same page, on its impact
-		const vikram = await open('vikram');
-		await fireEvent.click(vikram.row(CHIPS));
-		expect(vikram.go).toHaveBeenCalledWith('report', { replace: undefined, ref: CHIPS });
-		vikram.r.unmount();
-		// and the chips' papers, as Anita lands on them: processed, the pack reviewed
-		const r = await draw(source(fakeApi(m, 'anita')), 'report', CHIPS);
-		await waitFor(() => expect(text(r)).toContain('INV/26-27/0931'));
-		expect(text(r)).toContain('CN/0117');
-		expect(text(r)).toContain('GST ITC memo');
-		expect(r.getByText('reviewed', { exact: true })).toBeTruthy();
-		expect(r.queryByRole('button', { name: 'Mark reviewed' })).toBeNull();
+		const go = vi.fn();
+		const s = source(fakeApi(m, 'priya'));
+		const r = render(LiveHost, {
+			props: { source: s, screen: 'batches', at: null, onnavigate: go }
+		}) as unknown as RenderResult<never>;
+		await waitFor(() => expect(s.status.phase).toBe('ready'));
+		const row = (ref: string) =>
+			[...r.container.querySelectorAll('tbody tr')].find((tr) => tr.textContent?.includes(ref))!;
+		await waitFor(() => expect(row(CHIPS)).toBeTruthy());
+		// a cleared batch opens its page on its Journey, its papers a tab away (SC-112), as a batch in no journey does
+		await fireEvent.click(row(CHIPS));
+		expect(go).toHaveBeenCalledWith('journey', { replace: undefined, ref: CHIPS });
+		await fireEvent.click(row('MF-2408-311'));
+		expect(go).toHaveBeenCalledWith('journey', { replace: undefined, ref: 'MF-2408-311' });
+		r.unmount();
+		// and the chips' papers, as Priya lands on them: processed, the pack reviewed
+		const page = await draw(source(fakeApi(m, 'priya')), 'paperwork', CHIPS);
+		await waitFor(() => expect(text(page)).toContain('INV/26-27/0931'));
+		expect(text(page)).toContain('CN/0117');
+		expect(text(page)).toContain('GST ITC memo');
+		expect(page.getByText('reviewed', { exact: true })).toBeTruthy();
+		expect(page.queryByRole('button', { name: 'Mark reviewed' })).toBeNull();
 	});
 
 	it('Batches shows every batch at its own journey: a cleared batch reads Cleared, in focus or not (SC-102)', async () => {
 		const m = moment('cleared');
-		const s = source(fakeApi(m, 'anita'));
+		const s = source(fakeApi(m, 'priya'));
 		const r = await draw(s, 'batches');
 		const row = (ref: string) =>
 			[...r.container.querySelectorAll('tr')].find((tr) => tr.textContent?.includes(ref))?.textContent ?? '';
 		await waitFor(() => expect(row(CHIPS)).not.toBe(''));
-		// Anita's batch in focus is not the chips: both batches' journeys cleared
-		expect(m.members.anita.snapshot.batches.find((b) => b.id === CHIPS)?.phase).toBe('cleared');
+		// both batches' journeys cleared, whichever is in focus
+		expect(m.members.priya.snapshot.batches.find((b) => b.id === CHIPS)?.phase).toBe('cleared');
 		for (const ref of [CHIPS, MANGO]) {
 			expect(norm(row(ref))).toContain('Cleared');
 			expect(norm(row(ref))).not.toContain('At risk');
@@ -874,7 +872,7 @@ describe("the buyer's listing (SC-92)", () => {
 	});
 
 	it('the FSSAI checklist of a batch with no donation says only that, naming no batch as donated (SC-98)', async () => {
-		const s = source(fakeApi(moment('cleared'), 'anita'));
+		const s = source(fakeApi(moment('cleared'), 'priya'));
 		const r = await draw(s, 'paperwork', CHIPS);
 		await fireEvent.click(await waitFor(() => r.getByRole('button', { name: /FSSAI surplus-food checklist/ })));
 		await waitFor(() => expect(text(r)).toContain('Nothing from this batch was donated.'));
@@ -925,40 +923,36 @@ describe("the buyer's truck waits for the kirana scheme (SC-118)", () => {
 });
 
 describe('Finance & ESG, one ledger (SC-121)', () => {
-	it('each role opens the ledger on its own reading, every figure the ledger backend-api posted', async () => {
+	it('Priya reads the ledger in its three readings, every figure the ledger backend-api posted (SC-127)', async () => {
 		const m = moment('cleared');
-		const ledger = m.members.anita.ledger!;
+		const ledger = m.members.priya.ledger!;
 		const year = ledger.periods.find((p) => p.kind === 'year')!;
-		const open = async (who: string) => {
-			const r = await draw(source(fakeApi(m, who)), 'report');
-			await waitFor(() => expect(text(r)).toContain('One ledger, three readings'));
-			return r;
-		};
-		// Anita on GST: the credit kept, and what was reversed
-		const anita = await open('anita');
-		await waitFor(() => expect(text(anita)).toContain('of input credit kept'));
-		expect(text(anita)).toContain(`${year.totals.creditNotes} credit notes`);
-		const seg = anita.getByRole('button', { name: new RegExp(`^Masala Chips 150 g, ${CHIPS}: `) });
+		const r = await draw(source(fakeApi(m, 'priya')), 'report');
+		await waitFor(() => expect(text(r)).toContain('One ledger, three readings'));
+		// Money first: what was recovered against the bin
+		await waitFor(() => expect(text(r)).toContain('recovered'));
+		expect(text(r)).toContain(`From ${year.totals.batches} batches`);
+		// GST: the credit kept, and what was reversed
+		await fireEvent.click(r.getByRole('button', { name: 'GST' }));
+		await waitFor(() => expect(text(r)).toContain('of input credit kept'));
+		expect(text(r)).toContain(`${year.totals.creditNotes} credit notes`);
+		const seg = r.getByRole('button', { name: new RegExp(`^Masala Chips 150 g, ${CHIPS}: `) });
 		expect(seg.getAttribute('aria-label')).toContain('Sold through');
-		anita.unmount();
-		// Vikram on Impact, Priya on Money
-		const vikram = await open('vikram');
-		await waitFor(() => expect(text(vikram)).toContain('kept out of landfill'));
-		vikram.unmount();
-		const priya = await open('priya');
-		await waitFor(() => expect(text(priya)).toContain('recovered'));
-		expect(text(priya)).toContain(`From ${year.totals.batches} batches`);
-		expect(text(priya)).not.toMatch(/NaN|undefined/);
-		priya.unmount();
+		// Impact: the kilos kept out of landfill
+		await fireEvent.click(r.getByRole('button', { name: 'Impact' }));
+		await waitFor(() => expect(text(r)).toContain('kept out of landfill'));
+		expect(text(r)).not.toMatch(/NaN|undefined/);
+		r.unmount();
 	});
 
 	it("a paper's PDF opens from the Paperwork agent's own, on the batch's page", async () => {
 		const m = moment('cleared');
-		const detail = m.members.anita.cases[CHIPS];
+		const detail = m.members.priya.cases[CHIPS];
 		detail.docs = detail.docs.map((d) => (d.id === 'invoice' ? { ...d, pdf: true } : d));
 		const url = vi.fn(() => Promise.resolve({ url: 'https://storage.example/invoice.pdf', expiresAt: '' }));
 		const opened = vi.spyOn(window, 'open').mockImplementation(() => null);
-		const r = await draw(source(fakeApi(m, 'anita', { documentUrl: url })), 'report', CHIPS);
+		const r = await draw(source(fakeApi(m, 'priya', { documentUrl: url })), 'report', CHIPS);
+		await tab(r, 'Papers');
 		await fireEvent.click(await waitFor(() => r.getByRole('button', { name: /Tax invoice/ })));
 		const sheet = await waitFor(() => r.getByRole('dialog'));
 		await fireEvent.click(within(sheet).getByRole('button', { name: 'Download Tax invoice as a PDF' }));

@@ -154,8 +154,8 @@ async def changed(ctx: Ctx, c: m.Client, ref: str | None = None) -> int:
     return await emit(ctx, c, "case" if ref else "workspace", ref=ref)
 
 
-# who reads the Finance & ESG ledger: the roles rbac.json gives report.read (SC-124)
-LEDGER = [role(r) for r in ("operator", "finance", "sustainability", "admin")]
+# who reads the ledger: the roles rbac.json gives report.read (SC-124; the operator and the admin since SC-127)
+LEDGER = [role(r) for r in ("operator", "admin")]
 
 
 async def ledger_changed(ctx: Ctx, c: m.Client, ref: str) -> int:

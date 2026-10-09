@@ -1,7 +1,7 @@
 """What a signed-in member sees (frontend/api/src/types/workspace.ts): who they are, the workspace's snapshot, a batch's
 case, the quarter, the audit log, and their stream. Everything is cut to their role here, on the server:
 
-- Munchly's own people (operator, finance, sustainability, admin) see every batch and the figures;
+- Munchly's own people (the operator and the admin) see every batch and the figures;
 - a distributor sees his own batches' journeys, without Munchly's P&L;
 - a kirana sees the scheme offered to its shop, and its own order;
 - the buyer sees the lots listed for him (never the reserve), his bids, the chat, and his award;
@@ -56,6 +56,10 @@ async def signed_in(ctx: Ctx, client_id: str, uid: str, *, activate: bool = Fals
     if activate:
         user.last_sign_in_at = ctx.clock.now()
     perms = await _permissions(ctx, cm.workspace_role)
+    # a role the workspace no longer has keeps its row but none of its permissions (Finance and ESG, SC-127): its
+    # members are refused until a Reset journey takes them out of the workspace
+    if cm.workspace_role and not perms:
+        raise ApiError(403, NOT_A_MEMBER)
     actor = Actor(
         name=cm.name,
         user_id=cm.user_id,
@@ -799,7 +803,7 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
         "feed": [feed_out(f) for f in feed],
         "plan": plan,
         "writeOff": write_off,
-        # the ledger Impact posted, as the Finance & ESG ledger reads it (SC-124), for those who see Munchly's figures
+        # the ledger Impact posted, as the ledger reads it (SC-124), for those who see Munchly's figures
         "ledger": ledger_.row(case, world.sku_obj(x), d) if money_ok and case.ledger else None,
         "counter": counter,
         # the buyer's bill reads the award's invoice from the moment the lot is won, before the papers (SC-96)

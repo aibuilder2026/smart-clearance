@@ -1674,7 +1674,8 @@ async def documents(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> None
     await ev.feed(
         ctx, s.c, s.case, "papers", "settle", e["text"], calls=e["calls"], agent="Paperwork", icon="file-check"
     )
-    for p in await _people(ctx, s.c, role="finance"):
+    # the operator reviews the papers (SC-127)
+    for p in await _people(ctx, s.c, role="operator"):
         await ev.notify(
             ctx,
             s.c,
@@ -1989,16 +1990,6 @@ async def report(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> dict[st
                 at=s.dist.godown or f"{s.dist.city} godown",
                 settled=next((d["note"] for d in s.case.docs or [] if d["id"] == "expiry"), ""),
             ),
-        )
-    for p in await _people(ctx, s.c, role="sustainability"):
-        await ev.notify(
-            ctx,
-            s.c,
-            p.ref,
-            "report",
-            link="report",
-            case=s.case,
-            **copy.push_report(ref=ref, kg=float(plan_.get("kg", 0))),
         )
     await audit.record(ctx, s.c.id, "ledger.post", "posted the ledger and the BRSR row", {"target": ref, "batch": ref})
     await _run(ctx, s, client_id, run, f"posted {ref}'s ledger: {money.fmt.inr(actual['net'])} recovered")

@@ -16,11 +16,11 @@
 	import LedgerHeadline from './LedgerHeadline.svelte';
 	import LedgerStrip from './LedgerStrip.svelte';
 	import OutcomeBadge from './OutcomeBadge.svelte';
-	import { figure, kg, READINGS, second, START, type Reading } from './ledger';
+	import { figure, kg, READINGS, second, type Reading } from './ledger';
 
 	// Finance & ESG (SC-121, option A; screens/finance.jsx Ledger): one ledger with three readings. The period (a quarter,
 	// or the year so far), a reading, the period's figure with its working, the period drawn as its batches, the batches
-	// still out, and the batches by month; each opens its own page. Anita opens on GST, Vikram on Impact, Priya on Money
+	// still out, and the batches by month; each opens its own page. Priya reads it all (SC-127), opening on Money
 	let { me, book }: { me: User; book: Ledger } = $props();
 	const ws = useWorkspace();
 	const app = useApp();
@@ -31,8 +31,7 @@
 	);
 	let picked = $state<string | null>(null);
 	const p = $derived(book.periods.find((x) => x.id === picked) ?? year);
-	// svelte-ignore state_referenced_locally (each role starts on its own reading)
-	let reading = $state<Reading>(START[me.role] ?? 'money');
+	let reading = $state<Reading>('money');
 	const list = $derived(book.batches.filter((r) => r.cleared >= p.from && r.cleared <= p.to));
 	const flying = $derived(p.current ? book.inFlight : []);
 	const months = $derived(

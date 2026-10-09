@@ -44,7 +44,7 @@ const DESKTOP = 1440;
 const PHONE: [string, number][] = [['phone', 390]];
 const PHONE_STATES = ['stage 0', 'stage 5', 'stage 7', 'stage 9'];
 // one person for each role, and two who see a screen's other branch (another distributor, another kirana)
-const PEOPLE = ['priya', 'rakesh', 'ganesh', 'agrawal', 'anita', 'vikram', 'meera', 'arjun', 'patil-owner', 'jaidurga'];
+const PEOPLE = ['priya', 'rakesh', 'ganesh', 'agrawal', 'meera', 'arjun', 'patil-owner', 'jaidurga'];
 
 // what a person reads: the text, then the words that are not text (placeholders, labels, titles, alternatives, values)
 const ATTRS = ['placeholder', 'aria-label', 'title', 'alt'];
@@ -213,23 +213,6 @@ describe('the parts a tap opens', () => {
 			const r = show(part('trade/ListingView'), { readOnly: true });
 			out.push(text(r.container));
 			r.unmount();
-		}
-		expect(out).toMatchSnapshot();
-	});
-	it("a batch's sheet", async () => {
-		fastForward(7);
-		// the sheet is Finance's and Sustainability's; the operator opens a batch's page (SC-112)
-		const r = show(
-			RoleApp as Part,
-			{ me: user('anita'), route: { name: 'batches' }, ongo: () => {}, onback: () => {} },
-			390
-		);
-		const out: string[] = [];
-		const rows = [...r.container.querySelectorAll('.list > *')];
-		for (const i of [1, 2, 6]) {
-			await fireEvent.click(rows[i].querySelector('button') ?? rows[i]);
-			flushSync();
-			out.push(text(r.container.querySelector('[role="dialog"]') ?? r.container));
 		}
 		expect(out).toMatchSnapshot();
 	});

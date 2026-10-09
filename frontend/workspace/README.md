@@ -39,8 +39,6 @@ in. A screen the person's role cannot open falls back to their home.
 | Distributor (Rakesh bhai)                  | `/home`, `/photo`, `/van`, `/orders`                                              |
 | Kirana retailer (Ganesh ji)                | `/home`, `/offer`, `/orders`                                                      |
 | Marketplace buyer (Agrawal ji, ExpireSoon) | `/market`, `/listing`, `/bids`                                                    |
-| Finance & GST (Anita)                      | `/paperwork`, `/report`, `/batches`                                               |
-| Sustainability & BRSR (Vikram)             | `/report`, `/paperwork`, `/batches`                                               |
 | Food-bank partner (Meera)                  | `/pickups`                                                                        |
 | Workspace admin (Arjun)                    | `/workspace`, `/users`, `/rules`, `/integrations`, `/audit`                       |
 | Everyone                                   | `/inbox`, `/profile`                                                              |

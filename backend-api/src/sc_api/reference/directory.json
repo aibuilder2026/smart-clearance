@@ -18,8 +18,6 @@
 		"distributor": "Distributor",
 		"retailer": "Kirana retailer",
 		"buyer": "Marketplace buyer",
-		"finance": "Finance & GST",
-		"sustainability": "Sustainability & BRSR",
 		"foodbank": "Food-bank partner",
 		"admin": "Workspace admin"
 	},
@@ -59,24 +57,6 @@
 			"role": "buyer",
 			"status": "active",
 			"kind": "external"
-		},
-		{
-			"workspace": "munchly",
-			"id": "anita",
-			"name": "Anita Rao",
-			"email": "anita.rao@munchly.in",
-			"role": "finance",
-			"status": "active",
-			"kind": "staff"
-		},
-		{
-			"workspace": "munchly",
-			"id": "vikram",
-			"name": "Vikram Sethi",
-			"email": "vikram.sethi@munchly.in",
-			"role": "sustainability",
-			"status": "active",
-			"kind": "staff"
 		},
 		{
 			"workspace": "munchly",

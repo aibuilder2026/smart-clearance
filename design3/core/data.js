@@ -49,8 +49,6 @@
     rakesh:  { id: "rakesh", name: "Rakesh bhai", short: "Rakesh bhai", role: "Owner, distributor", org: "Rakesh Traders", city: "Nagpur", img: PEOPLE_IMG + "p-rakesh.webp", phone: "+91 98230 44118", sign: "Phone OTP", lang: "hi", kind: "partner" },
     ganesh:  { id: "ganesh", name: "Ganesh ji", short: "Ganesh ji", role: "Owner, kirana", org: "Shree Ganesh Kirana", city: "Itwari, Nagpur", img: PEOPLE_IMG + "p-ganesh.webp", phone: "+91 98230 55120", sign: "Phone OTP", lang: "hi", kind: "partner" },
     agrawal: { id: "agrawal", name: "Agrawal ji", short: "Agrawal ji", role: "Buyer", org: "Agrawal Wholesale", city: "Raipur", img: PEOPLE_IMG + "p-agrawal.webp", email: "orders@agrawalwholesale.example", sign: "ExpireSoon", kind: "external" },
-    anita:   { id: "anita", name: "Anita Rao", short: "Anita", role: "Finance & GST", org: "Munchly Foods", city: "Pune", img: PEOPLE_IMG + "p-anita.webp", email: "anita.rao@munchly.in", sign: "Google", kind: "staff" },
-    vikram:  { id: "vikram", name: "Vikram Sethi", short: "Vikram", role: "Sustainability & BRSR", org: "Munchly Foods", city: "Pune", img: PEOPLE_IMG + "p-vikram.webp", email: "vikram.sethi@munchly.in", sign: "Google", kind: "staff" },
     meera:   { id: "meera", name: "Meera", short: "Meera", role: "City lead", org: "Feeding India", city: "Hyderabad", img: PEOPLE_IMG + "p-meera.webp", email: "meera@feedingindia.example", sign: "Google", kind: "partner" },
     arjun:   { id: "arjun", name: "Arjun Nair", short: "Arjun", role: "Workspace admin", org: "Munchly Foods", city: "Pune", img: PEOPLE_IMG + "p-arjun.webp", email: "arjun.nair@munchly.in", sign: "Google", kind: "staff" },
   };
@@ -144,7 +142,7 @@
 
   // the nine stages, as the journey map lays them out lane by lane
   const STAGES = [
-    { id: "connect", n: 1, title: "Connect", when: "once · 15 min", who: "Priya and Anita set the guardrails; Rakesh bhai gives a one-time permission", screen: "S0 Setup", role: "brand", view: "setup",
+    { id: "connect", n: 1, title: "Connect", when: "once · 15 min", who: "Priya sets the guardrails; Rakesh bhai gives a one-time permission", screen: "S0 Setup", role: "brand", view: "setup",
       sees: "Priya signs in to Munchly's workspace, connects the distributor stock export and sets the allow-list, the floors, the donation partners, the territory guard and the return window. Rakesh bhai signs in with his phone and lets the agent act in his name.",
       agents: "Data Agent maps the DMS columns, loads BigQuery and back-fills 90 days of sell-through by pincode and by shop.",
       money: `The true cost of a write-off is shown before any batch is routed: stock at cost + ITC reversal + disposal + EPR, ${fmt.inr2(-PLAN.writeOff.perUnit)} a packet of chips.`,
@@ -179,13 +177,13 @@
       agents: "Lister posts to ExpireSoon in Rakesh Traders' name, hidden from buyers inside Munchly's territories; Outreach pushes a Hindi offer to 38 kiranas; Negotiator handles the bid; Donation books Feeding India for the Mango Drink batch.",
       money: `Planned against actual as the bid lands: ₹15 → ₹${COUNTER.price.toFixed(2)} a unit on the ExpireSoon lot, ${inr(PLAN.net)} → ${inr(ACTUAL.net)} net.`,
       pain: "Listing and chasing takes days", relief: "Live in minutes, the agent chases" },
-    { id: "settle", n: 8, title: "Settle", when: "day 3 – 7 · true-up 29 Oct", who: "Rakesh bhai issues his invoice and dispatches; Anita reviews Munchly's papers", screen: "S5 Paperwork", role: "finance", view: "paperwork",
+    { id: "settle", n: 8, title: "Settle", when: "day 3 – 7 · true-up 29 Oct", who: "Rakesh bhai issues his invoice and dispatches; Priya reviews Munchly's papers", screen: "S5 Paperwork", role: "brand", view: "paperwork",
       sees: "The document pack: Rakesh's invoice drafted for him to issue, the e-way bill check, Munchly's price-support credit note and the ITC memo.",
       agents: "Paperwork drafts Rakesh's invoice, checks the e-way bill threshold, issues the price-support credit note, writes the ITC memo and the FSSAI checklist.",
       money: `No ITC reversal under s.17(5)(h); no e-way bill under ₹50,000. Price support to Rakesh: ${inr(SUPPORT.total)}, the ${inr(SUPPORT.van + SUPPORT.fee)} van and listing fee included, instead of a ${inr(CLAIM.total)} expiry claim.`,
       pain: "Finance finds out at month end", relief: "Papers ready at the award" },
-    { id: "report", n: 9, title: "Report", when: "after 29 Oct · quarterly", who: "Vikram, Anita and the CFO", screen: "S6 Finance & ESG", role: "sustainability", view: "report",
-      sees: "The Finance & ESG dashboard; one click exports the BRSR waste table and the GST memo.",
+    { id: "report", n: 9, title: "Report", when: "after 29 Oct · quarterly", who: "Priya and the CFO", screen: "S6 Ledger", role: "brand", view: "report",
+      sees: "The ledger, by quarter and year; one click exports the BRSR waste table and the GST summary.",
       agents: "Impact Agent posts the ledger once the return window closes and builds the BRSR Principle 6 rows with evidence links.",
       money: `${fmt.kg(PLAN.kg)} diverted · ${fmt.kg(PLAN.co2)} CO₂e avoided (indicative) · 0 meals: one line in the BRSR report.`,
       pain: "We have no waste number", relief: "A BRSR line with evidence" },
@@ -200,9 +198,8 @@
     award: { to: "priya", at: "11:09", title: "Awarded on ExpireSoon", body: `${ES.units} units at ₹${COUNTER.price.toFixed(2)} to ${BUYER.name}, ${BUYER.city}. Token ${inr(AWARD.token)} received; balance ${inr(AWARD.balance)} due in 48 h.` },
     won: { to: "rakesh", at: "11:09", title: "Buyer mil gaya · ExpireSoon", body: `Rakesh bhai, ${BUYER.name} (${BUYER.city}) ne ${ES.units} packets ₹${COUNTER.price.toFixed(2)} par le liye. Token ${inr(AWARD.token)} aa gaya.` },
     van: { to: "rakesh", at: "Mon 18:00", title: "Van route for Tuesday", body: `Van route for Tuesday updated: ${shops} kiranas, ${KL.units} packets. The ${BUYER.city} lot (${ES.units}) is collected by the buyer's truck once the balance lands.` },
-    papers: { to: "anita", at: "Mon 5 Oct", title: "Document pack ready · MF-2409-117", body: "Papers ready for MF-2409-117: Rakesh's invoice draft, e-way bill check, price-support credit note, GST memo. Nothing to chase." },
+    papers: { to: "priya", at: "Mon 5 Oct", title: "Document pack ready · MF-2409-117", body: "Papers ready for MF-2409-117: Rakesh's invoice draft, e-way bill check, price-support credit note, GST memo. Nothing to chase." },
     invoice: { to: "rakesh", at: "Mon 5 Oct", title: "Invoice draft ready", body: `Invoice draft to ${BUYER.name}, ${BUYER.city}: ${ES.units} × ₹${COUNTER.price.toFixed(2)}, IGST ${INVOICE.gstPct}%, ${inr(INVOICE.total)}. Issue it from Tally. Munchly's price support of ${inr(SUPPORT.total)} is on its way.` },
-    report: { to: "vikram", at: "30 Oct", title: "Ledger posted · MF-2409-117", body: `${fmt.kg(PLAN.kg)} diverted from disposal with invoices behind every kilo. The BRSR row is ready.` },
     closed: { to: "priya", at: "30 Oct", title: "Batch closed · 0 cartons destroyed", body: `${inr(ACTUAL.net)} recovered, ${inr(PLAN.itcRetained)} GST credit kept, ${fmt.kg(PLAN.kg)} kept out of landfill.` },
   };
 
@@ -396,7 +393,7 @@
   // outside the workspace. The one-time code every invited number gets, and the accounts the sign-in suggests
   const EXPLORE = {
     groups: [
-      { group: WORKSPACE.name, note: "staff · Google Workspace", ids: [["priya", "Approve the plan for the chips batch"], ["anita", `Review ${WORKSPACE.short}'s credit note and GST memo`], ["vikram", "Export the BRSR table"], ["arjun", "The workspace, its people and the guardrails"]] },
+      { group: WORKSPACE.name, note: "staff · Google Workspace", ids: [["priya", "Approve the plan, review the papers, read the ledger"], ["arjun", "The workspace, its people and the guardrails"]] },
       { group: "Invited partners", note: "a one-time code or Google", ids: [["rakesh", "Give the permission, send the photo, run the van"], ["ganesh", "Order from the Hindi offer"], ["meera", "Confirm a food-bank pickup"]] },
       { group: "Outside the workspace", note: "ExpireSoon, another company's marketplace", ids: [["agrawal", `Bid on the lot from ${BUYER.city}`]] },
     ],
