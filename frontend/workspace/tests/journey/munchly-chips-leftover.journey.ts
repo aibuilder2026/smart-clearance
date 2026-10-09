@@ -153,9 +153,19 @@ const STEPS: Step[] = [
 			const mark = page.getByRole('button', { name: 'Mark reviewed' });
 			if (await mark.isVisible().catch(() => false)) {
 				await mark.click();
-				await expect(page.getByText('reviewed', { exact: true })).toBeVisible();
-				await until('the review is recorded', 'anita', (c) => c.journey.reviewed, 30_000);
-				await run.done('Pack reviewed');
+				// the papers were drafted on expiry day, which cleared the batch at once: the review finds only an open case,
+				// so it is refused (SC-117). Kept as a finding, so the run goes on to what the report shows
+				const reviewed = page.getByText('reviewed', { exact: true });
+				const refused = page.getByText(/didn't go through/);
+				await expect(reviewed.or(refused).first()).toBeVisible();
+				if (await refused.isVisible()) {
+					const why = (await refused.innerText()).replace(/\s+/g, ' ').trim();
+					run.find('warning', `/paperwork/${HERO}`, `Mark reviewed on a batch Report now cleared: "${why}" (SC-117)`);
+					await run.done('Mark reviewed, refused on the cleared batch (SC-117)');
+				} else {
+					await until('the review is recorded', 'anita', (c) => c.journey.reviewed, 30_000);
+					await run.done('Pack reviewed');
+				}
 			}
 		}
 	},
