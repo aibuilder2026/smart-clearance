@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-131 Option B</title>
+<meta name="description" content="The mark's S is the loader: the route stands faint, and a bright stretch of it runs from the godown dot to the pin, a lap every 1.15 s; as each lap arrives the amber pin throbs. A delivery in transit until everything is in, when the last lap draws the whole route and stays.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Noto+Sans+Devanagari:wght@600&display=swap">
+<link rel="stylesheet" href="../sim/sim.css">
+<link rel="stylesheet" href="../sim/cover-base.css">
+<link rel="stylesheet" href="cover.css">
+<link rel="icon" href="../../../system/img/icon.svg" type="image/svg+xml">
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/framer-motion@11.18.2/dist/framer-motion.js"></script>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a href="../board.html">SC-131 design review</a>
+    <h1>Option B · The route runs</h1>
+    <p>The mark's S is the loader: the route stands faint, and a bright stretch of it runs from the godown dot to the pin, a lap every 1.15 s; as each lap arrives the amber pin throbs. A delivery in transit until everything is in, when the last lap draws the whole route and stays.</p>
+  </header>
+  <main id="sim"></main>
+  <section class="notes">
+    <h2>What to look at</h2>
+    <ul>
+      <li><b>The run:</b> three tenths of the route, 1.15 s a lap, easing out of the dot and into the pin; the pin throbs to 1.38 as the stretch arrives.</li>
+      <li><b>Ready:</b> the last lap draws the whole route (380 ms) and stays, the pin pings once, and the mark opens into the window.</li>
+      <li><b>Trade-off:</b> the run is a stroke animation, painted, so a long task in the app's code can hold a frame of it on a slow phone.</li>
+      <li><b>3G, Console · first load:</b> the cover paints at 2.4 s with the page's first bytes (today: blank until 7.9 s), says it is loading the console, then connecting to the platform, adds "Slow connection · still loading" at 5.4 s, and opens at 11.6 s with no false "did not answer" (today: at 15.4 s, then it opens anyway at 17.7 s).</li>
+      <li><b>3G, Landing page:</b> the cover at 2.4 s (today 6.9 s) lifts at 5.0 s, once the first screen can be read on the plate's soft preview; the plate sharpens in place at 12.5 s and the film starts after it (today the loader gives up at 15.2 s onto a page with no plate).</li>
+      <li><b>No green dots.</b> The tracker under the splash is gone; the words say what it is waiting for.</li>
+      <li>Every timeline is an estimate from the 9 Oct measurements with the shared fixes in; the build measures the real ones.</li>
+    </ul>
+  </section>
+</div>
+<script src="../sim/cover-base.js"></script>
+<script src="mark.js"></script>
+<script src="../sim/sim.js"></script>
+</body>
+</html>

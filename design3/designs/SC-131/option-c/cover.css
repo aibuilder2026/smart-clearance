@@ -1,0 +1,10 @@
+/* SC-131 · option C, the mark fills. The empty mark is its outline (1.6 units of the brand green at 55%) and the route
+   at 22%; the fill is the mark itself, revealed from the bottom by the level. Waiting on the platform it breathes,
+   0.97 to 1.035 every 1.6 s; the pin lands only when the mark is full. */
+.scv .sq-line { stroke: var(--green); opacity: 0.55; }
+.scv .c-ghost { stroke: var(--green); opacity: 0.22; }
+.scv .pin { opacity: 0; transform: translateY(-14px) scale(0.6); }
+.scv.full .pin { opacity: 1; transform: none; transition: opacity 120ms linear, transform 520ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+.scv.full .sq-line { opacity: 0; transition: opacity 240ms linear; }
+.scv.waiting .scv-mkmove { animation: c-breathe 1.6s cubic-bezier(0.37, 0, 0.63, 1) infinite; }
+@keyframes c-breathe { 0%, 100% { transform: scale(0.97); } 50% { transform: scale(1.035); } }
