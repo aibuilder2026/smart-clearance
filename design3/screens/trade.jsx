@@ -91,27 +91,6 @@
     const flip = () => { Flow.act("pause", !p.paused); toast({ text: p.paused ? "Resumed · the agents carry on" : "Paused · nothing more happens in your name", tone: "ok" }); };
     return <Card className="row wrap" style={{ gap: 12 }}><span className={cx("icontile", p.paused ? "amber" : "")} style={{ width: 40, height: 40, borderRadius: 12 }}><Icon name={p.paused ? "circle-pause" : "handshake"} size={19} /></span><div className="grow" style={{ minWidth: 0 }}><b>{p.paused ? "Paused: nothing happens in your name" : "Smart-Clearance acts for you"}</b><div className="t-footnote muted">{p.paused ? "Listings, offers and invoice drafts wait until you resume." : `Inside Munchly's floors · since ${p.at} · listings, scheme offers, invoice drafts, dispatch slots`}</div></div><Button variant={p.paused ? "primary" : "secondary"} size="sm" icon={p.paused ? "play" : "pause"} onClick={flip}>{p.paused ? "Resume" : "Pause"}</Button></Card>;
   }
-  // what he receives and what he paid: the price support makes the two equal
-  // on expiry day, the expiry credit for the packs left at the godown joins what he receives (SC-94)
-  function EndWhole({ settled }) {
-    const h = useStore().hero; const x = settled && h.expiry && h.expiry.units > 0 && h.expiry.credit ? h.expiry : null;
-    const recv = KL.gross + D.AWARD.gross + D.SUPPORT.total + (x ? x.credit : 0); const paid = D.PLAN.units * CHIPS.dp + D.SUPPORT.van + D.SUPPORT.fee;
-    return <Card className="stack snug">
-      <div className="card-head"><span className="card-title">You end whole</span><Badge tone={settled ? "green" : undefined} icon={settled ? "check" : "clock"}>{settled ? "credit note issued" : "on the plan"}</Badge></div>
-      <div className="stack tight t-subhead">
-        {[[`From ${SHOPS} kiranas (${KL.units} packets)`, KL.gross], [`From ${D.BUYER.name} (${ES.units} packets)`, D.AWARD.gross], ["Price-support credit note from Munchly", D.SUPPORT.total], ...(x ? [[`Expiry credit note for ${fmt.num(x.units)} packs from Munchly`, x.credit]] : [])].map(([k, v]) => <div key={k} className="row between"><span>{k}</span><span className="tnum">{fmt.inr(v)}</span></div>)}
-        <div className="hairline" style={{ margin: "4px 0" }} />
-        <div className="row between"><b>What you receive</b><span className="tnum strong">{fmt.inr(recv)}</span></div>
-        <div className="row between"><span>What you paid: {fmt.num(D.PLAN.units)} × ₹{CHIPS.dp}, the van and the listing fee</span><span className="tnum">{fmt.inr(-paid)}</span></div>
-        <div className="row between"><b>Your gain or loss</b><span className="tnum strong">{fmt.inr(Math.round(recv - paid))}</span></div>
-      </div>
-      <span className="t-caption subtle">Instead of waiting weeks for an expiry claim, with no claim paperwork.</span>
-    </Card>;
-  }
-  function InvoiceDraft({ h }) {
-    const inv = D.INVOICE; const { toast } = useNotice();
-    return <Card className="row wrap" style={{ gap: 14 }}><span className="icontile"><Icon name="receipt" size={17} stroke={2} /></span><div className="grow" style={{ minWidth: 0 }}><b>Invoice {inv.no} to {D.BUYER.name}</b><div className="t-footnote muted">{ES.units} × ₹{D.COUNTER.price.toFixed(2)} + IGST {inv.gstPct}% · {fmt.inr(inv.total)} · drafted by the Paperwork agent for you</div></div>{h.invoiceIssued ? <Badge tone="green" icon="check">issued from Tally</Badge> : <Button variant="primary" size="sm" icon="check" onClick={() => { Flow.act("issueInvoice"); toast({ text: "Marked issued from Tally", tone: "ok" }); }}>Issue from Tally</Button>}</Card>;
-  }
   // the staff sale at the godown (SC-87, option A): the packs and the price, the distributor's UPI address to show staff,
   // and one count to record what sold, once, when the sale is over. The code beside the address is an illustration drawn
   // from it, not a payment code: nothing scans it
@@ -151,61 +130,214 @@
     </Card>;
   }
 
+  /* ======================= a distributor's portal, batch by batch (SC-133, option A) ======================= */
+  // Every screen of his is told batch by batch, since a batch of Munchly's at his godown is all the app tracks for him:
+  //   Today: a card for each batch in a journey, with its next step for him and its one button, and its lines (the
+  //   scheme, the lot, the staff sale, the pickup), each where it stands; an index over them when there is more than one;
+  //   Deliveries: a batch's van round, the buyer's truck, the staff sale and the pickup, only the lines its plan has, then
+  //   what left his godown for the batches he cleared;
+  //   Label photo: the photo Vision asks for now, then every photo he sent and what Vision read from it;
+  //   Orders: every batch's orders, in a journey and cleared: who bought what, for how much, on which paper.
+  // Batches (SC-130) stays as it is. Every line, step and order is ledger.js's partners (journeyOf, ordersNow, …)
+  const HERO = D.BATCHES.find(b => b.hero);
+  const CH = { kirana: { icon: "store", name: "Kirana scheme" }, expiresoon: { icon: "shopping-bag", name: "ExpireSoon lot" }, staff: { icon: "users", name: "Staff sale" }, foodbank: { icon: "heart-handshake", name: "Food bank" } };
+  const num = n => fmt.num(n), rate = n => "₹" + n.toFixed(2);
+  const shortName = sku => sku.name.replace(/ \d+ ?(g|ml|kg|L)$/, "");
+  const Chan = ({ id, icon }) => <span className="dist-chan" style={{ "--ch": `var(--ch-${id})` }} aria-hidden="true"><Icon name={icon || CH[id].icon} size={16} stroke={2} /></span>;
+  const stopBadge = j => <Badge size="sm" tone={j.todo.length ? "amber" : j.phase === "cleared" ? "green" : "blue"} dot live={!j.todo.length && j.phase !== "cleared"}>{j.todo.length ? `${j.todo.length} for you` : j.stop}</Badge>;
+  // a batch as one line: its pack, its name and id, and where it stands
+  function BatchLine({ sku, id, badge, sub, size = 48 }) {
+    return <div className="row dist-bl" style={{ gap: 12 }}>
+      <Product name={sku.img} size={size} alt="" />
+      <div className="grow stack tight" style={{ gap: 2, minWidth: 0 }}>
+        <span className="row tight wrap" style={{ gap: 8 }}><b className="t-headline">{sku.name}</b>{badge}</span>
+        <span className="t-footnote subtle"><span className="mono">{id}</span>{sub ? ` · ${sub}` : ""}</span>
+      </div>
+    </div>;
+  }
+  // a line of a batch's plan: the channel, what the plan has, where it stands; it opens the batch's deliveries
+  function LineRow({ line, onOpen }) {
+    const inner = <><Chan id={line.id} />
+      <span className="grow stack tight" style={{ gap: 1, minWidth: 0 }}><b className="t-subhead">{CH[line.id].name}</b><span className="t-footnote muted">{line.plan}</span></span>
+      <span className={cx("dist-state", line.done && "done", line.live && "live")}>{line.done && <Icon name="check" size={14} stroke={2.4} />}{line.state}</span>
+      {onOpen && <Icon name="chevron-right" size={16} className="subtle" />}</>;
+    return onOpen ? <button type="button" className="dist-line" onClick={onOpen}>{inner}</button> : <div className="dist-line">{inner}</div>;
+  }
+  // a step of his: what, the one button. A step that needs its screen opens it on the batch; the invoice is one tap
+  const DONE = { issueInvoice: "Marked issued from Tally" };
+  function Step({ t, j, primary }) {
+    const { go } = useRoute(); const { toast } = useNotice(); const [busy, setBusy] = useState(false);
+    const run = () => {
+      if (t.route) { go(t.route, { ref: j.ref }); return; }
+      setBusy(true); setTimeout(() => { setBusy(false); Flow.act(t.act); toast({ text: DONE[t.act] || "Done", tone: "ok" }); }, 400);
+    };
+    return <div className={cx("dist-step", primary && "primary")}>
+      <span className="icontile" style={{ width: primary ? 44 : 36, height: primary ? 44 : 36, borderRadius: 12 }}><Icon name={t.icon} size={primary ? 20 : 17} stroke={2} /></span>
+      <span className="grow stack tight" style={{ gap: 2, minWidth: 0 }}><b className={primary ? "t-headline" : "t-subhead"}>{t.title}</b><span className="t-footnote muted">{t.sub}</span></span>
+      <Button variant={primary ? "primary" : "secondary"} size={primary ? "md" : "sm"} icon={t.icon} loading={busy} onClick={run}>{t.cta}</Button>
+    </div>;
+  }
+  // a batch in a journey, as one card: the batch, its next step for him, its lines
+  function BatchCard({ j }) {
+    const { go } = useRoute(); const phone = useApp().bp === "phone"; const reduce = useReducedMotion();
+    return <motion.section id={`batch-${j.ref}`} tabIndex={-1} aria-label={`${j.sku.name}, batch ${j.ref}`} className="card dist-batch" initial={reduce ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}>
+      <div className="row between wrap" style={{ gap: 12 }}>
+        <BatchLine sku={j.sku} id={j.ref} badge={stopBadge(j)} sub={`${num(j.units)} packs at risk · flagged ${day(j.flagged)}`} size={phone ? 44 : 56} />
+        <Button variant="ghost" size="sm" iconRight="chevron-right" onClick={() => go("batches", { ref: j.ref })}>The batch</Button>
+      </div>
+      {j.todo.length ? <div className="stack" style={{ gap: 8 }}>{j.todo.map((t, i) => <Step key={t.id} t={t} j={j} primary={i === 0} />)}</div>
+        : <div className="dist-wait"><Aura on={j.phase !== "cleared"} className="icontile soft" style={{ width: 36, height: 36, borderRadius: 11 }}><Icon name={j.phase === "cleared" ? "badge-check" : "sparkles"} size={17} /></Aura><span className="t-subhead">{j.waiting}</span><span className="t-footnote subtle">Nothing for you now</span></div>}
+      {j.lines.length > 0 && <div className="dist-lines">{j.lines.map(l => <LineRow key={l.id} line={l} onOpen={() => go("van", { ref: j.ref })} />)}</div>}
+    </motion.section>;
+  }
+  // more than one batch in a journey: each by its pack and what it asks, a tap away
+  function BatchIndex({ js }) {
+    const reduce = useReducedMotion();
+    const jump = ref => { const el = document.getElementById(`batch-${ref}`); if (el) { el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }); el.focus({ preventScroll: true }); } };
+    return <nav className="dist-index" aria-label="Your batches in a journey">{js.map(j => <button key={j.ref} type="button" onClick={() => jump(j.ref)}>
+      <Product name={j.sku.img} size={32} alt="" /><span className="grow stack tight" style={{ gap: 0, minWidth: 0 }}><b>{shortName(j.sku)}</b><span className="mono">{j.ref}</span></span>{stopBadge(j)}</button>)}</nav>;
+  }
   function DistHome({ me }) {
-    const s = useStore(); const h = s.hero; const { go } = useRoute(); const app = useApp();
-    const dist = distOf(me); const hero = dist.id === "rakesh"; const perm = s.setup.permission;
-    const mine = D.BATCHES.filter(b => b.distributor === dist.id).map(b => { const v = D.batchView(b); if (b.hero) v.phase = heroModel(s).view.phase; if (b.second) v.phase = "executing"; return v; });
-    const units = h.orders.reduce((t, o) => t + o.units, 0);
-    const approved = ["approved", "executing", "dispatched", "settled", "cleared"].includes(h.phase);
-    const settled = ["settled", "cleared"].includes(h.phase);
-    // live (SC-73): a day with nothing asked of the distributor
-    const live = S.useLive();
-    if (live && live.quiet) return <S.Live.DistQuiet me={me} dist={dist} perm={hero ? (perm ? <ActingFor p={perm} /> : <PermissionCard />) : null} />;
+    const s = useStore(); const { go } = useRoute();
+    const dist = distOf(me), perm = s.setup.permission, asked = dist.id === HERO.distributor;
+    // a cleared batch stays on Today only while something is left for him (an invoice to issue)
+    const js = P().journeys(dist.id, s).filter(j => j.phase !== "cleared" || j.todo.length);
+    const b = P().distBatches(dist.id, s);
     return <Screen me={me} title="Today" sub={`${dist.name} · ${dist.godown}, ${dist.city}`}>
-      <div className="stack" style={{ gap: 16 }}>
-        {hero && !perm && <PermissionCard />}
-        {hero && perm && <ActingFor p={perm} />}
-        {!hero && <Card className="row wrap" style={{ gap: 14 }}><Product name="godown" size={72} /><div className="grow"><b>Nothing to do today</b><div className="t-footnote muted">No photo requests, scheme orders or marketplace lots for {dist.name} right now. The Watcher checks your stock every morning at 09:00.</div></div></Card>}
-        {hero && h.photo.status === "requested" && <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bezel"><div className="card raised stack snug" style={{ padding: 20 }}>
-          <div className="row tight"><Mark size={30} /><span className="t-footnote subtle strong">Smart-Clearance · {D.PUSH.verify.at}</span></div>
-          <div className="t-title3">{D.PUSH.verify.title}</div>
-          <p className="t-body" style={{ margin: 0 }}>{D.PUSH.verify.body}</p>
-          <div className="row" style={{ gap: 12 }}><Product name="phone-scan" size={72} /><span className="t-footnote muted">Shelf B4 · one carton of Masala Chips 150 g · batch MF-2409-117</span></div>
-          <Button variant="primary" size="lg" icon="camera" block onClick={() => go("photo")}>Open camera</Button>
-        </div></motion.div>}
-        {hero && ["reading", "verified"].includes(h.photo.status) && !approved && <Card className="row" style={{ gap: 14 }}><Aura on={h.photo.status === "reading"} className="icontile" style={{ borderRadius: 12, width: 40, height: 40 }}><Icon name={h.photo.status === "verified" ? "check" : "scan-line"} size={19} stroke={2.2} /></Aura><div className="grow"><b>{h.photo.status === "verified" ? "Label verified · thank you" : "Photo sent · reading the label"}</b><div className="t-footnote muted">{h.photo.status === "verified" ? "Batch, dates and MRP match your DMS record. Munchly gets a plan in a few minutes." : "Sent at 09:19. Nothing else needed from you."}</div></div></Card>}
-        {hero && approved && !settled && <Card className="stack snug">
-          <div className="card-head"><span className="card-title">Munchly's plan for your Masala Chips</span><Badge tone="green" icon="check">approved 09:40</Badge></div>
-          <div className="stack tight t-subhead">
-            <div className="row top" style={{ gap: 10 }}><span className="dotmark" style={{ background: "var(--ch-kirana)" }} /><span><b>{KL.units} packets to your kiranas</b> on the scheme: ₹{KL.packPrice.toFixed(2)} a pack, 2 free with every 10, delivered on your {D.JOURNEY.van.day} round.</span></div>
-            <div className="row top" style={{ gap: 10 }}><span className="dotmark" style={{ background: "var(--ch-expiresoon)" }} /><span><b>{ES.units} on ExpireSoon in your name</b> at ₹15, hidden from buyers in Munchly's territories. The buyer collects with his own truck.</span></div>
-          </div>
-        </Card>}
-        {hero && h.staff && <StaffSale staff={h.staff} dist={dist} product={CHIPS.name.replace(/ \d.*$/, "")} clears={(M.CHANNELS.find(x => x.id === "staff") || {}).clears} />}
-        {hero && approved && <div style={{ display: "grid", gap: 16, gridTemplateColumns: app.bp === "phone" ? "minmax(0,1fr)" : "repeat(2, minmax(0,1fr))" }}>
-          <Card interactive className="stack snug" onClick={() => go("van")} role="button" tabIndex={0} onKeyDown={e => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), go("van"))}>
-            <div className="card-head"><span className="row tight"><span className="icontile"><Icon name="truck" size={17} stroke={2} /></span><span className="card-title">{D.JOURNEY.van.day} van round</span></span><Icon name="chevron-right" size={18} className="subtle" /></div>
-            <div className="row base" style={{ gap: 8 }}><span className="num m"><Roll value={h.orders.length} /></span><span className="muted">shops · {cartons(units)}</span></div>
-            <span className="t-footnote subtle">{h.van.status === "done" ? `Delivered · all ${SHOPS} shops` : h.orders.length ? "Orders from the Masala Chips scheme join this round" : "Scheme orders will appear here"}</span>
-          </Card>
-          <Card interactive className="stack snug" onClick={() => go("van")} role="button" tabIndex={0} onKeyDown={e => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), go("van"))}>
-            <div className="card-head"><span className="row tight"><span className="icontile violet"><Icon name="package" size={17} stroke={2} /></span><span className="card-title">{D.BUYER.city} lot · ExpireSoon</span></span><Icon name="chevron-right" size={18} className="subtle" /></div>
-            <div className="row base" style={{ gap: 8 }}><span className="num m">{ES.units}</span><span className="muted">units · {cartons(ES.units)}</span></div>
-            <span className="t-footnote subtle">{h.truck.status === "dispatched" ? `Collected by ${D.BUYER.name}'s truck` : h.award ? `Sold at ₹${D.COUNTER.price.toFixed(2)} · token ${fmt.inr(D.AWARD.token)} paid` : h.listing ? "Listed at ₹15 in your name · waiting for a buyer" : "Not listed"}</span>
-          </Card>
-        </div>}
-        {hero && settled && <InvoiceDraft h={h} />}
-        {hero && approved && <EndWhole settled={settled} />}
-        <SectionTitle sub="From your nightly DMS export">Your stock</SectionTitle>
-        <div className="list">{mine.map(v => <BatchRow key={v.id} view={v} compact={app.bp === "phone"} onOpen={() => (v.phase && v.phase !== "watching" ? go("batches", { ref: v.id }) : null)} />)}</div>
+      <div className="stack" style={{ gap: 16, maxWidth: 960 }}>
+        {asked && (perm ? <ActingFor p={perm} /> : <PermissionCard />)}
+        <SectionTitle sub={`${D.WORKSPACE.short}'s batches at your godown: what each needs from you, and where each line stands`}>{js.length ? `${js.length} ${js.length === 1 ? "batch" : "batches"} in a journey` : "No batch in a journey"}</SectionTitle>
+        {js.length > 1 && <BatchIndex js={js} />}
+        {js.length ? js.map(j => <BatchCard key={j.ref} j={j} />)
+          : <Card><Empty img="godown" title="Nothing asks for you today" body={`When the Watcher flags a batch at ${dist.godown}, it opens here with what it needs from you. It checks your stock every morning at ${s.rules.watchTime}.`} /></Card>}
+        <button type="button" className="dist-more" onClick={() => go("batches")}><Icon name="boxes" size={17} /><span className="grow">Your other stock and the batches you cleared are on <b>Batches</b>: {b.watching.length} the Watcher reads, {b.past.length} cleared since {D.WORKSPACE.since}</span><Icon name="chevron-right" size={16} className="subtle" /></button>
       </div>
     </Screen>;
   }
 
-  function CameraScreen({ me, realCamera }) {
-    if (distOf(me).id !== "rakesh") return <Screen me={me} title="Label photo" sub="Requests from the Vision agent"><Card style={{ maxWidth: 560 }}><Empty img="phone-scan" title="No photo requests" body="When a batch needs checking, Vision asks for one picture of a carton label here." /></Card></Screen>;
-    return <CameraInner me={me} realCamera={realCamera} />;
+  /* ---------- Deliveries: a batch's van round, the buyer's truck, the staff sale and the pickup ---------- */
+  function Switcher({ js, value, onChange }) {
+    if (js.length < 2) return null;
+    return <nav className="bh-tabs" aria-label="Batches in a journey">{js.map(j => { const on = j.ref === value;
+      return <button key={j.ref} type="button" className="bh-tab" aria-current={on ? "page" : undefined} onClick={() => onChange(j.ref)}>{on && <motion.span layoutId="dist-thumb" className="bh-tab-thumb" transition={{ type: "spring", stiffness: 500, damping: 40 }} />}<Product name={j.sku.img} size={22} alt="" /><span>{shortName(j.sku)}</span></button>; })}</nav>;
   }
+  // the van round that takes the scheme's orders: the batch's own cluster, the shops on it, and Start the round once the
+  // papers are drafted (the van runs once the batch is settled, SC-97)
+  function VanCard({ j, n }) {
+    const app = useApp(); const reduce = useReducedMotion(); const { toast } = useNotice();
+    const story = j.ref === HERO.id;
+    const kir = story ? D.KIRANAS : WK().filter(k => k.distributor === j.dist.id).map(k => ({ id: k.id, name: k.name, area: k.area, units: k.sales14 * M.RULES.shopCapTimes }));
+    const o = n.offer || { open: false, offered: kir.length, shops: 0, units: 0 };
+    const [p, setP] = useState(n.van ? 1 : 0); const [running, setRunning] = useState(false);
+    useEffect(() => { if (n.van && !running) setP(1); }, [n.van]);
+    const can = n.papers && o.shops > 0 && !n.van;
+    const start = () => { setRunning(true); const t0 = performance.now(), dur = reduce ? 10 : 3600; const step = now => { const k = Math.min(1, (now - t0) / dur); setP(k); if (k < 1) requestAnimationFrame(step); else { setRunning(false); Flow.act("vanRound"); toast({ text: `Round done · ${o.shops} shops, ${cartons(o.units)}`, tone: "ok" }); } }; requestAnimationFrame(step); };
+    const godown = j.dist.godown.replace(/ godown$/, "").replace(/ Market$/, "");
+    return <Card className="stack snug">
+      <div className="card-head"><span className="row tight"><Chan id="kirana" icon="route" /><span className="card-title">{n.round ? `${n.round.day} van round` : "Van round"}</span></span><Badge tone={n.van ? "green" : undefined} icon={n.van ? "check" : "calendar"}>{n.van ? "delivered" : n.round ? `${n.round.date} · from ${n.round.leaves}` : o.open ? "once the scheme closes" : "once the papers are drafted"}</Badge></div>
+      <div className="dist-map"><ClusterMap kiranas={kir} orderedCount={o.shops} route={o.shops > 0} vanProgress={p} height={app.bp === "phone" ? 220 : 320} {...(story ? {} : { title: j.dist.cluster, total: o.offered, godown })} /></div>
+      <div className="row wrap" style={{ gap: 24 }}>
+        <div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={o.shops} /><span className="subtle" style={{ fontSize: "0.45em" }}> / {o.offered}</span></span><span className="t-footnote subtle">shops on the round</span></div>
+        <div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={o.units} /></span><span className="t-footnote subtle">packets · {cartons(o.units)}</span></div>
+      </div>
+      {!n.van && <Button variant="primary" size="lg" icon="navigation" loading={running} disabled={!can || running} onClick={start}>{can ? "Start the round" : o.open ? `Waiting for orders · ${o.shops} of ${o.offered}` : !o.shops ? "No shop ordered" : "Runs once the papers are drafted"}</Button>}
+      <span className="t-caption subtle">₹{M.RULES.vanPerUnit.toFixed(2)} a packet for the van, repaid by {D.WORKSPACE.short} in the price support.</span>
+    </Card>;
+  }
+  // the shops on the round, in the order they ordered
+  function Stops({ n }) {
+    if (!n.shops.length) return null;
+    const stops = n.shops.slice().sort((a, z) => ((a.at || "") < (z.at || "") ? -1 : 1));
+    return <div className="stack snug"><SectionTitle sub="In the order they were placed">Stops</SectionTitle>
+      <div className="list">{stops.map((o, i) => { const k = shopById(o.kirana) || { name: o.kirana, area: "" };
+        return <div key={o.kirana} className="list-row" style={{ gridTemplateColumns: "28px minmax(0,1fr) auto" }}><span className="center t-caption strong dist-stop">{i + 1}</span><span className="stack tight" style={{ gap: 0 }}><b className="t-subhead">{k.name}</b><span className="t-caption subtle">{k.area}{o.at ? ` · ordered ${when(o.at)}` : ""}</span></span><span className="tnum strong t-subhead">{o.units}</span></div>; })}</div>
+    </div>;
+  }
+  // the ExpireSoon lot and the buyer's truck: it loads once the buyer has won the lot and the scheme is over (SC-118)
+  function TruckCard({ j, n }) {
+    const { toast } = useNotice(); const es = n.lines.find(l => l.id === "expiresoon");
+    const kl = n.lines.some(l => l.id === "kirana"), schemeOpen = kl && (!n.offer || n.offer.open);
+    const dispatch = () => { Flow.act("dispatch"); toast({ text: `${D.BUYER.city} lot on the buyer's truck · invoice draft next`, tone: "ok" }); };
+    const balance = n.award ? Math.round((es.units * n.award.price - n.award.token) * 100) / 100 : 0;
+    return <><div data-anchor="lot" /><Card className="stack snug">
+      <div className="card-head"><span className="row tight"><Chan id="expiresoon" icon="truck" /><span className="card-title">The buyer's truck · ExpireSoon</span></span><Badge tone={n.truck ? "blue" : n.award ? "green" : "violet"}>{n.truck ? "collected" : n.award ? "sold" : n.listing ? "listed" : "not listed yet"}</Badge></div>
+      <HaulLine progress={n.truck ? (["settled", "cleared"].includes(n.phase) ? 1 : 0.55) : 0} />
+      <List>{[["Buyer", n.award ? `${D.BUYER.name}, ${D.BUYER.city}` : "whoever takes the lot"], ["Lot", `${n.listing ? `${n.listing.id} · ` : ""}${num(es.units)} packs · ${cartons(es.units)}`], ["Price", n.award ? `${rate(n.award.price)} a pack, the counter he took` : `${rate(es.price)} asked`], ["Token", n.award ? `${fmt.inr(n.award.token)} received` : "paid when a buyer takes it"], ["Balance", n.award ? `${fmt.inr(balance)} before loading` : "paid before loading"], ["Freight", "the buyer's own truck"]].map(([k, v]) => <ListRow key={k} title={k} value={v} />)}</List>
+      {!n.truck && <Button variant="primary" size="lg" icon="truck" disabled={!n.award || schemeOpen} onClick={dispatch}>{!n.award ? "Load after the award" : schemeOpen ? "Load once the scheme closes" : "Load the buyer's truck"}</Button>}
+      <span className="t-caption subtle">Your staff load it as normal godown work, once the balance lands.</span>
+    </Card></>;
+  }
+  // the food bank collects from his godown: nothing goes on his van
+  function PickupCard({ j, n }) {
+    const fb = n.lines.find(l => l.id === "foodbank"), d = n.donation;
+    return <Card className="stack snug">
+      <div className="card-head"><span className="row tight"><Chan id="foodbank" /><span className="card-title">{d ? `${d.partner} collects` : "The food bank's pickup"}</span></span><Badge tone={d && d.status === "collected" ? "green" : undefined} icon={d && d.status === "collected" ? "check" : "calendar"}>{!d ? "being booked" : d.status === "collected" ? "collected" : d.status === "declined" ? "declined" : d.date ? `${d.date}${d.time ? ` · ${d.time}` : ""}` : d.status === "confirmed" ? "confirmed" : "booked"}</Badge></div>
+      <span className="t-subhead">{num(fb.units)} packs from {j.dist.godown}, with the FSSAI checklist. {d && d.status === "declined" ? "The food bank declined, so the packs stay at your godown." : "Their volunteers collect; nothing goes on your van."}</span>
+    </Card>;
+  }
+  // what left his godown for the batches he cleared, batch by batch, newest first
+  function EarlierDeliveries({ dist, s }) {
+    const { go } = useRoute();
+    const past = P().distBatches(dist.id, s).past.map(c => ({ c, rows: P().deliveriesPast(P().historyFacts(c)) })).filter(x => x.rows.length);
+    if (!past.length) return null;
+    return <section className="stack snug" aria-label="Earlier deliveries"><SectionTitle sub="What left your godown for the batches you cleared, newest first">Earlier deliveries</SectionTitle>
+      <div className="stack" style={{ gap: 12 }}>{past.map(({ c, rows }) => <Card key={c.ref} className="stack snug">
+        <div className="row between wrap" style={{ gap: 12 }}><BatchLine sku={c.sku} id={c.ref} size={40} badge={<S.OutcomeBadge o={c.outcome} size="sm" />} sub={`cleared ${day(c.cleared)}`} /><Button variant="ghost" size="sm" iconRight="chevron-right" onClick={() => go("batches", { ref: c.ref })}>The batch</Button></div>
+        <div className="dist-rows">{rows.map(r => <div key={r.id} className="dist-row"><Chan id={r.id} icon={r.id === "kirana" ? "route" : r.id === "expiresoon" ? "truck" : undefined} /><span className="grow stack tight" style={{ gap: 1, minWidth: 0 }}><b className="t-subhead">{r.title}</b><span className="t-footnote muted">{r.sub}</span></span><time className="t-footnote subtle">{when(r.at)}</time></div>)}</div>
+      </Card>)}</div>
+    </section>;
+  }
+  function VanRoute({ me }) {
+    const s = useStore(); const { route, go } = useRoute();
+    const dist = distOf(me), js = P().journeys(dist.id, s), ns = P().distNow(dist.id, s);
+    const ref = route && route.params && route.params.ref;
+    const j = js.find(x => x.ref === ref) || js[0], n = j && ns.find(x => x.ref === j.ref);
+    const past = <EarlierDeliveries dist={dist} s={s} />;
+    if (!j) return <Screen me={me} title="Deliveries" sub={`${dist.name} · ${dist.cluster}`}>
+      <div className="stack" style={{ gap: 20 }}><Card style={{ maxWidth: 560 }}><Empty img="van" title="Nothing goes out now" body="While a batch is in a journey, its van round, the buyer's truck, the staff sale and the pickup show here." /></Card>{past}</div>
+    </Screen>;
+    const has = id => j.lines.some(l => l.id === id);
+    const head = <PtHead sku={j.sku} id={j.ref} where={`${dist.godown}, ${dist.city}`} badge={stopBadge(j)} line="What leaves your godown for this batch, line by line"><Switcher js={js} value={j.ref} onChange={r => go("van", { ref: r })} /></PtHead>;
+    const staff = has("staff") && n.staff ? <StaffSale staff={Object.assign({}, n.staff, { godown: dist.godown, left: n.staff.sold == null ? 0 : n.staff.units - n.staff.sold })} dist={dist} product={shortName(j.sku)} clears={(M.CHANNELS.find(x => x.id === "staff") || {}).clears} /> : null;
+    const side = [has("expiresoon") && <TruckCard key="truck" j={j} n={n} />, staff && <Fragment key="staff">{staff}</Fragment>, has("foodbank") && <PickupCard key="pickup" j={j} n={n} />].filter(Boolean);
+    const main = has("kirana") ? <><VanCard j={j} n={n} /><Stops n={n} /></> : null;
+    return <Screen me={me} title="Deliveries" hideLarge below={head}>
+      <div className="stack" style={{ gap: 24 }}>
+        {!n.approved ? <Card style={{ maxWidth: 560 }}><Empty img="van" title="Nothing leaves yet" body={`Once ${D.WORKSPACE.short} says yes to the plan for this batch, its van round, the buyer's truck, the staff sale and the pickup show here, each as its plan has it.`} /></Card>
+          : main && side.length ? <Columns sideWidth={380} main={main} side={side} />
+          : <div className="stack" style={{ gap: 16, maxWidth: 720 }}>{main}{side}</div>}
+        {past}
+      </div>
+    </Screen>;
+  }
+
+  /* ---------- Label photo: the photo Vision asks for now, and every photo he sent ---------- */
+  function CameraScreen({ me, realCamera }) {
+    const s = useStore(); const dist = distOf(me);
+    const ns = P().distNow(dist.id, s);
+    // the photo asked for now (or just sent, until the plan has its yes)
+    const cur = ns.find(n => n.photo === "requested" || n.photo === "reading" || (n.photo === "verified" && !n.approved));
+    // every photo he sent: the batches in a journey once their plan is approved, then the batches he cleared
+    const story = ns.filter(n => n !== cur && n.ref === HERO.id && s.hero.photo.at).map(n => ({ ref: n.ref, sku: D.SKUS[n.sku], sent: `${D.DAY0}T${s.hero.photo.at}`, bestBefore: HERO.bestBefore, mfg: HERO.mfg, mrp: D.SKUS[n.sku].mrp }));
+    const earlier = story.concat(P().distBatches(dist.id, s).past.map(c => P().photoOf(P().historyFacts(c))).filter(Boolean));
+    return <Screen me={me} title="Label photo" sub={cur ? `Batch ${cur.ref}${cur.shelf ? ` · shelf ${cur.shelf}` : ""}` : "Requests from the Vision agent"} back="Today">
+      <div className="stack" style={{ gap: 24 }}>
+        {cur ? <CameraInner realCamera={realCamera} n={cur} />
+          : <Card style={{ maxWidth: 560, margin: "0 auto", width: "100%" }}><Empty img="phone-scan" title="No label photo asked for now" body="When a batch needs checking, Vision asks here for one picture of a carton label." /></Card>}
+        {earlier.length > 0 && <section className="stack snug" aria-label="Earlier label photos" style={{ maxWidth: 720, margin: "0 auto", width: "100%" }}><SectionTitle sub="Every label photo you sent, and what Vision read from it">Earlier label photos</SectionTitle>
+          <div className="list">{earlier.map(r => <div key={r.ref} className="list-row dist-photo">
+            <Product name={r.sku.img} size={40} alt="" />
+            <span className="stack tight" style={{ gap: 1, minWidth: 0 }}><b className="t-subhead">{r.sku.name} <span className="mono subtle">{r.ref}</span></b>
+              <span className="t-footnote muted">Vision read batch {r.ref}{r.mfg ? `, made ${fmt.date(r.mfg)}` : ""}, best before {fmt.date(r.bestBefore)}, MRP {rate(r.mrp)}</span>
+              <span className="t-caption subtle">Sent {when(r.sent)}</span></span>
+            <Badge size="sm" tone="green" icon="check">verified</Badge>
+          </div>)}</div>
+        </section>}
+      </div>
+    </Screen>;
+  }
+
+
   // the label photo (SC-80, option A): the frame shows what Vision needs, and under it the two ways, Take a photo and
   // Upload a photo, the primary following the device. A phone takes the photo with its own camera app; on the live
   // workspace a laptop opens its camera in the frame. A photo in hand shows whole before it goes. What is sent is what
@@ -214,8 +346,10 @@
   const PHOTO_RULE = `JPEG, PNG or WebP, under ${PHOTO_MAX_MB}\u00a0MB`;
   const CAM_BLOCKED = "The camera is blocked for this page. Allow it in the browser's site settings, or upload a photo.";
   const CAM_NONE = "No camera was found. Upload a photo instead.";
-  function CameraInner({ me, realCamera }) {
+  // the photo asked for now, for the batch n (in the stub, the story's chips)
+  function CameraInner({ realCamera, n }) {
     const s = useStore(); const h = s.hero; const { go } = useRoute(); const reduce = useReducedMotion(); const app = useApp();
+    const sku = D.SKUS[n.sku], batch = D.BATCHES.find(b => b.id === n.ref) || HERO;
     const phoneCam = useRef(null), files = useRef(null), video = useRef(null), stream = useRef(null);
     const [shot, setShot] = useState(null); const [flash, setFlash] = useState(false); const [sending, setSending] = useState(false);
     const [camOn, setCamOn] = useState(false); const [camLive, setCamLive] = useState(null); const [over, setOver] = useState(false);
@@ -263,8 +397,7 @@
     const busy = sent || uploading;
     const photo = shot && !shot.demo;
     const caption = shot ? "Check that you can read the batch, both dates and the MRP." : camOn ? "Hold the label flat to the camera, close enough to read." : desk ? `${PHOTO_RULE}. Or drop a photo on the frame.` : `Take a photo opens your camera. ${PHOTO_RULE}.`;
-    return <Screen me={me} title="Label photo" sub="Batch MF-2409-117 · shelf B4" back="Today">
-      <div className="stack" style={{ gap: 16, maxWidth: 560, margin: "0 auto", width: "100%" }}>
+    return <div className="stack" style={{ gap: 16, maxWidth: 560, margin: "0 auto", width: "100%" }}>
         <div className={cx("cam", camOn && "landscape")} style={photo && ratio ? { aspectRatio: String(ratio) } : undefined} {...drop}>
           {photo ? <motion.img key={shot.url} className="cam-feed whole" src={shot.url} alt="Your photo of the carton label" onLoad={e => setRatio(Math.max(0.75, Math.min(1.5, e.target.naturalWidth / e.target.naturalHeight)))} initial={reduce ? false : { opacity: 0, scale: 1.02 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }} />
             : camOn ? <video ref={feed} className="cam-feed" playsInline muted aria-label="The laptop's camera" />
@@ -280,7 +413,7 @@
         </div>
         {sent ? <Card className="stack snug">
           <div className="row" style={{ gap: 12 }}><Aura on={h.photo.status === "reading"} className="icontile" style={{ borderRadius: 12, width: 40, height: 40 }}><Icon name={h.photo.status === "verified" ? "badge-check" : "scan-line"} size={19} /></Aura><div className="grow"><b>{h.photo.status === "verified" ? "Done. Dhanyavaad, Rakesh bhai." : "Reading batch, dates and MRP"}</b><div className="t-footnote muted">{h.photo.status === "verified" ? "The plan for this batch will reach Priya in a few minutes." : "This takes a few seconds."}</div></div></div>
-          {h.photo.status === "verified" && <List>{[["Batch", "MF-2409-117"], ["Best before", "18 Nov 2026"], ["MRP", "₹30.00"]].map(([k, v]) => <ListRow key={k} title={k} value={v} />)}</List>}
+          {h.photo.status === "verified" && <List>{[["Batch", n.ref], ["Best before", fmt.date(batch.bestBefore)], ["MRP", rate(sku.mrp)]].map(([k, v]) => <ListRow key={k} title={k} value={v} />)}</List>}
           <Button variant="secondary" block onClick={() => go("home")}>Back to today</Button>
         </Card> : uploading ? <S.Live.SendFill p={live.uploads.photo} onCancel={() => live.cancelUpload("photo")} />
           : <AnimatePresence mode="wait" initial={false}>
@@ -293,64 +426,49 @@
         {err && !busy ? <p className="cam-alert" role="alert"><Icon name="triangle-alert" size={15} />{err}</p>
           : uploading ? <p className="t-caption subtle" style={{ textAlign: "center", margin: 0 }}>A slow connection only slows the send.</p>
           : !sent && realCamera && <p className="t-caption subtle" style={{ textAlign: "center", margin: 0 }}>{live ? caption : `${caption} In this prototype a stub stands in for Gemini vision and returns the batch record.`}</p>}
-      </div>
-    </Screen>;
+    </div>;
   }
 
-  function VanRoute({ me }) {
-    if (distOf(me).id !== "rakesh") return <Screen me={me} title="Van route" sub={distOf(me).cluster}><Card style={{ maxWidth: 560 }}><Empty img="van" title="No scheme orders on the van" body="Orders from Smart-Clearance offers join your next round automatically." /></Card></Screen>;
-    return <VanInner me={me} />;
+  /* ---------- Orders: every batch's orders, past and present ---------- */
+  // an order: who bought what, for how much, on which paper (the invoice he issues, and Issue from Tally while it is a
+  // draft); the scheme's shops on request
+  function OrderRow({ o }) {
+    const [open, setOpen] = useState(false); const [busy, setBusy] = useState(false); const { toast } = useNotice();
+    const issue = () => { setBusy(true); setTimeout(() => { setBusy(false); Flow.act("issueInvoice"); toast({ text: DONE.issueInvoice, tone: "ok" }); }, 400); };
+    return <div className="dist-order">
+      <Chan id={o.id} />
+      <span className="grow stack tight" style={{ gap: 2, minWidth: 0 }}>
+        <span className="t-subhead"><b>{o.who}</b> · {o.what}</span>
+        <span className="t-footnote muted">{CH[o.id].name}{o.at ? ` · ${when(o.at)}` : ""}{o.sub ? ` · ${o.sub}` : ""}</span>
+        {o.paper && <span className="row tight wrap" style={{ gap: 8 }}><span className="dist-paper"><Icon name="file-text" size={13} /><span className="mono">{o.paper.no}</span><span>{o.paper.label}</span></span>{o.paper.issue && <Button variant="secondary" size="sm" icon="check" loading={busy} onClick={issue}>Issue from Tally</Button>}</span>}
+        {o.shops && o.shops.length > 0 && <button type="button" className="pt-link t-footnote dist-toggle" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? "Hide" : "Show"} the {o.shops.length} shops' orders</button>}
+        {open && <div className="dist-shops">{o.shops.map(k => <span key={k.name}><b>{k.name}</b>{k.at && <em>{when(k.at)}</em>}<span className="tnum">{k.units}</span></span>)}</div>}
+      </span>
+      <span className="tnum strong">{o.amount ? fmt.inr(o.amount) : "given"}</span>
+    </div>;
   }
-  function VanInner({ me }) {
-    const s = useStore(); const h = s.hero; const app = useApp(); const reduce = useReducedMotion(); const { toast } = useNotice();
-    const units = h.orders.reduce((t, o) => t + o.units, 0); const full = all(h);
-    // the truck loads once the kirana scheme is over: closed, or every shop has ordered (SC-118)
-    const schemeOpen = !!h.offer && h.offer.status === "sent" && !full;
-    const [p, setP] = useState(h.van.status === "done" ? 1 : 0); const [running, setRunning] = useState(false);
-    useEffect(() => { if (h.van.status === "done" && !running) setP(1); }, [h.van.status]);
-    const start = () => { setRunning(true); const t0 = performance.now(), dur = reduce ? 10 : 3600; const step = now => { const k = Math.min(1, (now - t0) / dur); setP(k); if (k < 1) requestAnimationFrame(step); else { setRunning(false); Flow.act("vanRound"); toast({ text: `Round done · ${SHOPS} shops, ${cartons(units)}`, tone: "ok" }); } }; requestAnimationFrame(step); };
-    const dispatch = () => { Flow.act("dispatch"); toast({ text: `${D.BUYER.city} lot on the buyer's truck · invoice draft next`, tone: "ok" }); };
-    const stops = D.KIRANAS.map(k => ({ ...k, ordered: h.orders.find(o => o.id === k.id) }));
-    return <Screen me={me} title="Van route" sub={`${D.JOURNEY.van.depot} · Nagpur, Wardha and Kamptee`} back="Today">
-      <Columns sideWidth={380}
-        main={<>
-          <Card pad={false} style={{ overflow: "hidden" }}><ClusterMap kiranas={D.KIRANAS} orderedCount={h.orders.length} route={h.orders.length > 0} vanProgress={p} height={app.bp === "phone" ? 260 : 380} /></Card>
-          <Card className="stack snug">
-            <div className="card-head"><span className="card-title">{D.JOURNEY.van.day} round</span><Badge tone={h.van.status === "done" ? "green" : undefined} icon={h.van.status === "done" ? "check" : "calendar"}>{h.van.status === "done" ? "delivered" : `${D.JOURNEY.van.date} · from ${D.JOURNEY.van.leaves}`}</Badge></div>
-            <div className="row wrap" style={{ gap: 20 }}><div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={h.orders.length} /><span className="subtle" style={{ fontSize: "0.45em" }}> / {SHOPS}</span></span><span className="t-footnote subtle">shops on the round</span></div><div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={units} /></span><span className="t-footnote subtle">packets · {cartons(units)}</span></div></div>
-            {h.van.status !== "done" && <Button variant="primary" size="lg" icon="navigation" loading={running} disabled={!full || running} onClick={start}>{full ? "Start the round" : `Waiting for orders · ${h.orders.length} of ${SHOPS}`}</Button>}
-            <span className="t-caption subtle">₹{M.RULES.vanPerUnit.toFixed(2)} a packet for the van, repaid by Munchly in the price support.</span>
-            <div className="feed" style={{ gap: 10 }}>
-              <div className="row top" style={{ gap: 10 }}><Mark size={28} /><div className="t-subhead" style={{ padding: "9px 12px", borderRadius: 16, borderTopLeftRadius: 6, background: "var(--fill-2)" }}>{D.PUSH.van.body}<div className="t-caption muted">Outreach agent · Mon 18:00</div></div></div>
-              <div className="row top" style={{ gap: 10, justifyContent: "flex-end" }}><div className="t-subhead" style={{ padding: "9px 12px", borderRadius: 16, borderTopRightRadius: 6, background: "var(--primary)", color: "var(--primary-fg)" }}>{D.JOURNEY.van.reply}<div className="t-caption" style={{ opacity: 0.9 }}>Rakesh bhai · {D.JOURNEY.van.replyAt}</div></div><Avatar person={D.PEOPLE.rakesh} size="sm" /></div>
-            </div>
-          </Card>
-        </>}
-        side={<>
-          <div data-anchor="lot" />
-          <Card className="stack snug">
-            <div className="card-head"><span className="row tight"><span className="icontile violet"><Icon name="package" size={17} stroke={2} /></span><span className="card-title">{D.BUYER.city} lot</span></span><Badge tone={h.truck.status === "dispatched" ? "blue" : h.award ? "green" : "violet"}>{h.truck.status === "dispatched" ? "collected" : h.award ? "sold" : h.listing ? "listed" : "not listed"}</Badge></div>
-            <HaulLine progress={h.truck.status === "dispatched" ? (h.phase === "cleared" || h.phase === "settled" ? 1 : 0.55) : 0} />
-            <List>{[["Buyer", h.award ? `${D.BUYER.name}, ${D.BUYER.city}` : "—"], ["Units", `${ES.units} · ${cartons(ES.units)}`], ["Price", h.award ? `₹${D.COUNTER.price.toFixed(2)} a packet` : "₹15.00 asked"], ["Token", h.award ? fmt.inr(D.AWARD.token) + " received" : "—"], ["Freight", "the buyer's own truck"]].map(([k, v]) => <ListRow key={k} title={k} value={v} />)}</List>
-            {h.truck.status !== "dispatched" && <Button variant="primary" size="lg" icon="truck" disabled={!h.award || schemeOpen} onClick={dispatch}>{!h.award ? "Load after the award" : schemeOpen ? "Load once the scheme closes" : "Load the buyer's truck"}</Button>}
-            <span className="t-caption subtle">Your staff load it as normal godown work, once the balance lands.</span>
-          </Card>
-          <div className="stack snug"><SectionTitle sub="In the order they were placed">Stops</SectionTitle>
-            <div className="list">{stops.map((k, i) => <div key={k.id} className="list-row" style={{ gridTemplateColumns: "28px minmax(0,1fr) auto" }}><span className="center t-caption strong" style={{ width: 24, height: 24, borderRadius: 99, background: k.ordered ? "var(--primary)" : "var(--fill-2)", color: k.ordered ? "var(--primary-fg)" : "var(--fg-2)" }}>{i + 1}</span><span className="stack tight" style={{ gap: 0 }}><b className="t-subhead">{k.name}</b><span className="t-caption subtle">{k.area}{k.ordered ? ` · ordered ${k.ordered.at}` : " · not yet"}</span></span><span className="tnum strong t-subhead">{k.ordered ? k.units : "—"}</span></div>)}</div>
-          </div>
-        </>} />
-    </Screen>;
-  }
-
   function DistOrders({ me }) {
-    const s = useStore(); const h = s.hero; const hero = distOf(me).id === "rakesh";
-    if (!hero) return <Screen me={me} title="Orders" sub="Scheme orders and marketplace sales"><Card style={{ maxWidth: 560 }}><Empty img="van" title="No orders yet" body="Kirana orders from offers and marketplace awards for your stock appear here." /></Card></Screen>;
-    const rows = h.orders.slice().reverse().map(o => ({ ...o, k: shopById(o.id) }));
-    return <Screen me={me} title="Orders" sub="Scheme orders and marketplace sales">
-      <div className="stack" style={{ gap: 16 }}>
-        {h.award && <Card className="row wrap" style={{ gap: 14 }}><span className="icontile violet"><Icon name="shopping-bag" size={17} stroke={2} /></span><div className="grow"><b>{D.BUYER.name}, {D.BUYER.city} · ExpireSoon</b><div className="t-footnote muted">{ES.units} × ₹{D.COUNTER.price.toFixed(2)} · token {fmt.inr(D.AWARD.token)} · balance {fmt.inr(D.AWARD.balance)}, plus {fmt.inr(D.INVOICE.igst)} IGST on your invoice</div></div><Money value={D.AWARD.gross} size="s" decimals /></Card>}
-        {h.docs && <InvoiceDraft h={h} />}
-        {rows.length ? <div className="list">{rows.map(o => <div key={o.id} className="list-row" style={{ gridTemplateColumns: "minmax(0,1fr) auto" }}><span className="stack tight" style={{ gap: 0 }}><b className="t-subhead">{o.k.name}</b><span className="t-caption subtle">{o.k.area} · {o.at} · buy 10 get 2</span></span><span className="stack tight" style={{ gap: 0, justifyItems: "end" }}><span className="tnum strong">{o.units} packets</span><span className="t-caption subtle">{cartons(o.units)}</span></span></div>)}</div> : <Card><Empty img="van" title="No scheme orders yet" body="When a kirana taps the offer, the order lands here and joins your next van round." /></Card>}
+    const s = useStore(); const { go } = useRoute(); const Px = P();
+    const dist = distOf(me);
+    const now = Px.distNow(dist.id, s).map(n => { const j = Px.journeyOf(n); return { ref: n.ref, sku: j.sku, live: true, j, rows: Px.ordersNow(n, Px.shopName) }; });
+    const past = Px.distBatches(dist.id, s).past.map(c => ({ ref: c.ref, sku: c.sku, live: false, outcome: c.outcome, cleared: c.cleared, rows: Px.ordersPast(Px.historyFacts(c), Px.shopName) })).filter(b => b.rows.length);
+    const book = now.concat(past);
+    const all = book.flatMap(b => b.rows), total = Math.round(all.reduce((t, o) => t + o.amount, 0) * 100) / 100;
+    const shops = all.filter(o => o.id === "kirana").reduce((t, o) => t + o.shops.length, 0), lots = all.filter(o => o.id === "expiresoon").length, sales = all.filter(o => o.id === "staff").length;
+    const sum = rows => Math.round(rows.reduce((t, o) => t + o.amount, 0) * 100) / 100;
+    return <Screen me={me} title="Orders" sub={`${dist.name} · what sold from each of ${D.WORKSPACE.short}'s batches, to whom, on which paper`}>
+      <div className="stack" style={{ gap: 16, maxWidth: 960 }}>
+        {all.length ? <Card className="stack" style={{ gap: 8 }}><div className="lg-fig"><Money value={total} size="l" /><span className="lg-what">sold from {D.WORKSPACE.short}'s batches since {D.WORKSPACE.since}</span></div>
+          <p className="lg-working">{book.length} {book.length === 1 ? "batch" : "batches"} · {shops} kiranas' scheme orders · {lots} ExpireSoon {lots === 1 ? "lot" : "lots"} · {sales} staff {sales === 1 ? "sale" : "sales"}. The price support is on each batch's papers.</p></Card>
+          : <Card><Empty img="van" title="No orders yet" body="When a batch's scheme, lot or staff sale sells, each order shows here under its batch." /></Card>}
+        {book.map(b => <Card key={b.ref} className="stack snug">
+          <div className="row between wrap" style={{ gap: 12 }}>
+            <BatchLine sku={b.sku} id={b.ref} size={44} badge={b.live ? stopBadge(b.j) : <S.OutcomeBadge o={b.outcome} size="sm" />} sub={b.live ? (b.j.phase === "cleared" ? "cleared · every order" : b.rows.length ? "orders so far" : "no orders yet") : `cleared ${day(b.cleared)}`} />
+            <span className="row tight">{b.rows.length > 0 && <span className="tnum strong">{fmt.inr(sum(b.rows))}</span>}<Button variant="ghost" size="sm" iconRight="chevron-right" onClick={() => go("batches", { ref: b.ref })}>Papers</Button></span>
+          </div>
+          {b.rows.length ? <div className="dist-orders">{b.rows.map(o => <OrderRow key={o.id} o={o} />)}</div>
+            : <p className="t-footnote muted" style={{ margin: 0 }}>{b.j.waiting || "Its orders show here as they come in."}</p>}
+        </Card>)}
       </div>
     </Screen>;
   }

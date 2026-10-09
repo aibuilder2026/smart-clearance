@@ -520,10 +520,15 @@ export class LiveSource implements WorkspaceSource {
 		}
 	}
 
-	act = async <N extends HumanAction>(name: N, arg?: ActionArg<N>, o?: { feel?: number }): Promise<void> => {
+	act = async <N extends HumanAction>(
+		name: N,
+		arg?: ActionArg<N>,
+		o?: { feel?: number; ref?: string }
+	): Promise<void> => {
 		if (o?.feel) await new Promise((r) => setTimeout(r, o.feel));
 		const api = this.#api;
-		const ref = this.#focus?.ref ?? '';
+		// the batch it acts on: the one named (a distributor's Today, SC-133), else the batch in focus
+		const ref = o?.ref ?? this.#focus?.ref ?? '';
 		const second = this.#donor?.ref ?? '';
 		const focus = () => this.#focus;
 		switch (name) {

@@ -1,0 +1,77 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/home",
+  "out": "current/today-rakesh-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1100,
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(7)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/van",
+  "out": "current/van-rakesh-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1100,
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(7)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/orders",
+  "out": "current/orders-rakesh-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1100,
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(8)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/van",
+  "out": "current/van-lakshmi-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1100,
+  "ls": {
+   "sc3-session": {
+    "uid": "lakshmi-owner",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(7)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/home",
+  "out": "current/today-lakshmi-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "height": 1100,
+  "ls": {
+   "sc3-session": {
+    "uid": "lakshmi-owner",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(7)"
+ }
+]

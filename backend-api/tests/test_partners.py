@@ -8,7 +8,21 @@ import pytest
 from sc_api.services.reference import load
 from tests.conftest import token
 from tests.test_history import with_history  # noqa: F401 (the fixture)
-from tests.test_workspace import ARJUN, GANESH, HERO, LAKSHMI, MEERA, PRIYA, RAKESH, WS, agent, case, to_plan
+from tests.test_workspace import (
+    ARJUN,
+    GANESH,
+    HERO,
+    LAKSHMI,
+    MEERA,
+    PRIYA,
+    RAKESH,
+    WS,
+    agent,
+    case,
+    detect,
+    setup,
+    to_plan,
+)
 
 H = load("journey.json")["history"]
 FACTS = {x["ref"]: x for x in H["partners"]}
@@ -116,6 +130,22 @@ async def test_a_food_bank_reads_the_donations_it_collected_with_their_receipts(
 
 async def test_staff_have_no_partner_history(api, with_history):  # noqa: F811
     assert (await partner(api, PRIYA))["cases"] == []
+
+
+async def test_a_distributor_reads_his_batch_from_the_flag_with_its_photo_asked_before_any_plan(api, munchly, cloud):
+    """his portal is told batch by batch (SC-133): a batch of his asking for its label photo is his before the Router
+    plans it, with the packs the Watcher flagged; the other partners read it once it has a plan"""
+    await setup(api)
+    await detect(api)
+    await agent(api, f"/cases/{HERO}/photo-request", "vision-ask", "vision")
+    hero = next(c for c in (await partner(api, RAKESH))["cases"] if c["ref"] == HERO)
+    assert [s["step"] for s in hero["steps"]] == ["detect", "ask"]
+    flagged = (await case(api, PRIYA))["batch"]["assess"]["atRisk"]
+    assert hero["plan"] == {"units": flagged, "lines": []} == {"units": 1360, "lines": []}
+    assert hero["cleared"] is None and hero["award"] is None and hero["docs"] == []
+    # Lakshmi Agencies' Mango Drink is hers, not his; a kirana reads neither before a plan
+    assert HERO not in {c["ref"] for c in (await partner(api, LAKSHMI))["cases"]}
+    assert HERO not in {c["ref"] for c in (await partner(api, GANESH))["cases"]}
 
 
 @pytest.mark.parametrize("after_all", [False, True])

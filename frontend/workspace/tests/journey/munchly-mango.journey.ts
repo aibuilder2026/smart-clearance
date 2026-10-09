@@ -230,7 +230,7 @@ const STEPS: { id: string; title: string; run: (page: Page) => Promise<void> }[]
 		async run(page) {
 			const c = await until('the staff sale is open', DIST, (c) => Boolean(c.journey.staff));
 			if (c.journey.staff?.status === 'recorded') return skip('the staff sale was recorded');
-			await as(page, DIST, '/home', `records the staff sale: ${c.journey.staff?.units} packs at the godown`);
+			await as(page, DIST, `/van/${HERO}`, `records the staff sale: ${c.journey.staff?.units} packs at the godown`);
 			const record = page.getByRole('button', { name: 'Record the sale' });
 			await record.scrollIntoViewIfNeeded();
 			await run.done('The staff sale card, every pack to start');
@@ -289,7 +289,7 @@ const STEPS: { id: string; title: string; run: (page: Page) => Promise<void> }[]
 			story('Van round push', c.push.van?.title, `Van route for ${vanDay}`);
 			if (c.journey.van.status === 'done') return skip('the van round ran');
 			await as(page, DIST, `/van/${HERO}`, "runs the van round to Hyderabad's kiranas");
-			await expect(page.locator('#main')).toContainText(`${vanDay} round`);
+			await expect(page.locator('#main')).toContainText(`${vanDay} van round`);
 			const round = page.getByRole('button', { name: 'Start the round' });
 			await expect(round).toBeEnabled();
 			await run.done(`The ${vanDay} round, every shop's order on it`);

@@ -484,7 +484,7 @@ const journey = {
 			flagged: c.flagged,
 			cleared: c.cleared,
 			steps: c.steps,
-			batch: { daysLeft: c.batch.daysLeft, bestBefore: c.batch.bestBefore },
+			batch: { daysLeft: c.batch.daysLeft, bestBefore: c.batch.bestBefore, mfg: c.batch.mfg },
 			plan: {
 				units: c.plan.units,
 				lines: c.plan.lines.map(({ id, short, units, price, packPrice }) => ({ id, short, units, price, packPrice }))

@@ -1,0 +1,102 @@
+/* The distributor's portal, batch by batch: the mockups' own pieces, on design system v3's tokens */
+
+/* a batch in a journey, as one card */
+.dk-batch { display: grid; gap: 14px; padding: 18px; }
+.dk-step { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 14px; background: var(--fill); }
+.dk-step.primary { padding: 14px; background: var(--primary-soft); }
+.dk-step .icontile { flex: none; }
+.dk-wait { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: var(--fill); flex-wrap: wrap; }
+.dk-wait .t-subhead { flex: 1 1 220px; }
+
+/* a line of a batch's plan: the channel, what the plan has, where it stands */
+.dk-lines { display: grid; border-top: var(--hair) solid var(--line); }
+.dk-line { display: grid; grid-template-columns: 32px minmax(0, 1fr) minmax(0, auto) 16px; align-items: center; gap: 4px 12px; width: 100%; padding: 12px 2px; border: 0; border-bottom: var(--hair) solid var(--line); background: transparent; color: inherit; font: inherit; text-align: left; }
+.dk-line:last-child { border-bottom: 0; }
+button.dk-line { cursor: pointer; border-radius: 10px; transition: background-color var(--t-fast) var(--ease); }
+button.dk-line:hover { background: var(--fill); }
+button.dk-line:focus-visible { outline: 3px solid var(--ring); outline-offset: -3px; }
+.dk-chan { flex: none; display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; color: var(--ch); background: color-mix(in srgb, var(--ch) 14%, transparent); }
+.dk-state { display: inline-flex; align-items: center; justify-content: flex-end; gap: 6px; max-width: 46ch; font-size: 13.5px; color: var(--fg-2); text-align: right; }
+.dk-state.live::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 99px; background: var(--blue); }
+.dk-state.done { color: var(--primary-text); }
+/* on a phone, and in a narrow column: where a line stands goes under what the plan has */
+@media (max-width: 640px) {
+  .dk-line { grid-template-columns: 32px minmax(0, 1fr) 16px; }
+  .dk-line > .dk-chan { grid-row: 1 / span 2; align-self: start; }
+  .dk-state { grid-column: 2; grid-row: 2; justify-content: flex-start; max-width: none; text-align: left; }
+  .dk-line > svg:last-child { grid-column: 3; grid-row: 1 / span 2; }
+}
+.dk-lines.stacked .dk-line { grid-template-columns: 32px minmax(0, 1fr) 16px; }
+.dk-lines.stacked .dk-line > .dk-chan { grid-row: 1 / span 2; align-self: start; }
+.dk-lines.stacked .dk-state { grid-column: 2; grid-row: 2; justify-content: flex-start; max-width: none; text-align: left; }
+.dk-lines.stacked .dk-line > svg:last-child { grid-column: 3; grid-row: 1 / span 2; }
+/* a step on a phone: its words, then its button the width of the card */
+@media (max-width: 640px) {
+  .dk-step { flex-wrap: wrap; }
+  .dk-step > .grow { flex: 1 1 calc(100% - 60px); }
+  .dk-step > .btn { flex: 1 1 100%; }
+}
+
+/* the way to the rest of his stock */
+.dk-more { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 16px; border: 0; border-radius: var(--r-lg); background: var(--fill); color: var(--fg-2); font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
+.dk-more:hover { background: var(--fill-2); }
+.dk-more:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+
+/* the buyer's truck: from the godown to the buyer */
+.dk-haul { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; }
+.dk-haul b { display: block; font-size: 14px; }
+.dk-haul em { display: block; font-style: normal; font-size: 12.5px; color: var(--fg-3); }
+
+/* an order: who bought what, for how much, on which paper */
+.dk-orders { display: grid; border-top: var(--hair) solid var(--line); }
+.dk-order { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: var(--hair) solid var(--line); }
+.dk-order:last-child { border-bottom: 0; padding-bottom: 0; }
+.dk-order > .tnum { white-space: nowrap; padding-top: 2px; }
+.dk-paper { display: inline-flex; align-items: center; gap: 6px; width: fit-content; margin-top: 4px; padding: 3px 9px; border-radius: 99px; background: var(--fill); font-size: 12.5px; color: var(--fg-2); }
+.dk-paper .mono { font-family: var(--font-mono); font-size: 12px; color: var(--fg); }
+.dk-shops { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 4px 16px; margin-top: 6px; padding: 10px 12px; border-radius: 12px; background: var(--fill); }
+.dk-shops > span { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 8px; font-size: 13px; }
+.dk-shops b { font-weight: 550; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dk-shops em { grid-row: 2; font-style: normal; font-size: 12px; color: var(--fg-3); }
+.dk-shops .tnum { grid-row: 1 / span 2; align-self: center; }
+
+/* option B: one job list, and the ledger of orders */
+.dk-jobs { display: grid; background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); overflow: hidden; }
+.dk-job { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: var(--hair) solid var(--line); }
+.dk-job:last-child { border-bottom: 0; }
+.dk-job.done { opacity: 1; color: var(--fg-3); }
+.dk-job.done b { color: var(--fg-2); font-weight: 550; }
+.dk-chip { justify-self: start; width: fit-content; display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px 2px 3px; border-radius: 99px; background: var(--fill); font-size: 12.5px; color: var(--fg-2); }
+.dk-chip .product { border-radius: 6px; }
+.dk-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.dk-table th { padding: 10px 12px; font-size: 12.5px; font-weight: 600; color: var(--fg-3); text-align: left; border-bottom: var(--hair) solid var(--line); white-space: nowrap; }
+.dk-table td { padding: 12px; border-bottom: var(--hair) solid var(--line); vertical-align: top; }
+.dk-table td.dk-n, .dk-table th.dk-n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dk-table tr.group td { padding: 14px 12px 8px; border-bottom: 0; font-size: 12.5px; font-weight: 600; color: var(--fg-2); background: var(--fill); }
+.dk-filters { display: flex; flex-wrap: wrap; gap: 8px; }
+.dk-filter { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border: 0; border-radius: 99px; background: var(--fill); color: var(--fg-2); font: inherit; font-size: 13.5px; cursor: pointer; }
+.dk-filter[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+.dk-filter:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+.dk-day { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: var(--hair) solid var(--line); }
+.dk-day:last-child { border-bottom: 0; }
+.dk-day time { font-size: 13px; font-weight: 600; color: var(--fg-2); }
+.dk-day time b { display: block; font-size: 22px; font-weight: 650; color: var(--fg); }
+
+/* option C: a batch in focus, its run sheet */
+.dk-focus { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; }
+.dk-focus button { display: inline-flex; align-items: center; gap: 8px; flex: none; padding: 6px 12px 6px 6px; border: var(--hair) solid var(--line); border-radius: 99px; background: var(--surface); color: inherit; font: inherit; font-size: 14px; cursor: pointer; }
+.dk-focus button[aria-current="true"] { border-color: transparent; background: var(--fg); color: var(--bg); }
+.dk-focus button:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+.dk-run { display: grid; }
+.dk-run > div { position: relative; display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 12px; padding: 0 0 18px; }
+.dk-run > div:last-child { padding-bottom: 0; }
+.dk-run > div::before { content: ""; position: absolute; left: 17px; top: 36px; bottom: 0; width: 2px; background: var(--line); }
+.dk-run > div:last-child::before { display: none; }
+.dk-run .icontile { width: 36px; height: 36px; border-radius: 11px; }
+.dk-run .ahead .icontile { background: var(--fill-2); color: var(--fg-3); }
+.dk-run .ahead b { color: var(--fg-3); font-weight: 550; }
+.dk-run .yours .icontile { background: var(--amber-soft); color: var(--amber-text); }
+.dk-run time { padding-top: 2px; font-family: var(--font-mono); font-size: 12px; color: var(--fg-3); white-space: nowrap; }
+.dk-paper { flex-wrap: wrap; row-gap: 2px; }
+.dk-paper .mono { white-space: nowrap; }
+.dk-order .pt-link { justify-self: start; width: fit-content; text-align: left; }

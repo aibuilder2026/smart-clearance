@@ -119,9 +119,15 @@ def facts(
             "flagged": flagged.isoformat(),
             "cleared": _day(L["at"]).isoformat() if L else None,
             "steps": steps_of(case, orders, feed),
-            "batch": {"daysLeft": (bb - flagged).days if bb else 0, "bestBefore": bb.isoformat() if bb else ""},
+            "batch": {
+                "daysLeft": (bb - flagged).days if bb else 0,
+                "bestBefore": bb.isoformat() if bb else "",
+                # the day it was made, as its label reads (the label photo's earlier reads, SC-133)
+                "mfg": batch.mfg.isoformat() if batch.mfg else None,
+            },
             "plan": {
-                "units": int(plan.get("units", 0)),
+                # before the Router plans it, the packs the Watcher flagged (a distributor reads a batch from its flag)
+                "units": int(plan.get("units", 0)) or int((case.assess or {}).get("atRisk", 0)),
                 "lines": [_line(ln) for ln in lines if role != "foodbank" or ln["id"] == "foodbank"],
             },
             "realised": (
@@ -193,16 +199,20 @@ async def partner(ctx: Ctx, client_id: str, cm: m.ClientMember) -> dict[str, Any
                     "distributor": k.distributor_id,
                     "member": k.member_ref,
                 }
+    # a distributor reads a batch of his from the Watcher's flag on, its label photo before any plan (SC-133); the
+    # others once it has a plan
     cases = [
         x
         for x in (await views.cases_in_view(ctx, client_id)).values()
-        if x.status != "reset" and x.plan and views.visible(cm, x)
+        if x.status != "reset" and (x.plan or role == "distributor") and views.visible(cm, x)
     ]
     if not cases:
         return out
     ids = [x.id for x in cases]
     orders: dict[str, list[m.CaseOrder]] = {i: [] for i in ids}
-    for o in (await ctx.session.execute(select(m.CaseOrder).where(m.CaseOrder.case_id.in_(ids)))).scalars():
+    # the shops' orders in the order they were placed, as the case's own view reads them
+    q_orders = select(m.CaseOrder).where(m.CaseOrder.case_id.in_(ids)).order_by(m.CaseOrder.id)
+    for o in (await ctx.session.execute(q_orders)).scalars():
         orders[o.case_id].append(o)
     feed: dict[str, dict[str, datetime]] = {i: {} for i in ids}
     q = select(m.FeedEvent).where(m.FeedEvent.case_id.in_(ids), m.FeedEvent.key.in_(list(FEED_STEPS)))

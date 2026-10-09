@@ -124,8 +124,12 @@ describe('every screen, on what backend-api answered', () => {
 					expect(out.route).toContain('Nothing to route');
 				}
 				if (who === 'rakesh') {
-					expect(out.home).toContain('Nothing for you today');
-					expect(out.photo).toContain('No photo requests');
+					// before any batch is flagged, he gives the one-time permission on Today (SC-133)
+					expect(out.home).toContain('Let Smart-Clearance act for Rakesh Traders');
+					expect(out.home).toContain('No batch in a journey');
+					expect(out.home).toContain('Nothing asks for you today');
+					expect(out.photo).toContain('No label photo asked for now');
+					expect(out.van).toContain('Nothing goes out now');
 				}
 				// the journey clock is under every title, and never the prototype's dates
 				expect(out[routesFor(moment('start').members[who].snapshot.me.role)[0]]).toContain('Live');

@@ -1009,7 +1009,8 @@ export type WsPartnerCase = {
 	 *  first), accept, collect, closeOffer (a scheme closed on its clock), staff, truck, papers, invoice, van, review,
 	 *  report */
 	steps: { step: string; at: LocalTime }[];
-	batch: { daysLeft: number; bestBefore: string };
+	/** mfg: the day it was made, as its label reads (SC-133) */
+	batch: { daysLeft: number; bestBefore: string; mfg: string | null };
 	plan: {
 		units: number;
 		lines: { id: string; short: string; units: number; price: number; packPrice: number | null }[];

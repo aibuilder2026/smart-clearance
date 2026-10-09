@@ -476,7 +476,13 @@ export type State = {
 	workspace: string;
 	setup: { confirmed: boolean; mapped: number; permission: null | { by: string; at: string; paused: boolean } };
 	hero: Hero;
-	mango: { id: string; phase: string; donation: null | 'booked' | 'confirmed' | 'collected' | 'declined' };
+	mango: {
+		id: string;
+		phase: string;
+		donation: null | 'booked' | 'confirmed' | 'collected' | 'declined';
+		/** the stub's staff sale for the second batch, once recorded (SC-133) */
+		staff?: { status: 'open' | 'recorded'; units: number; sold: number | null; left: number | null } | null;
+	};
 	feed: FeedEvent[];
 	notifications: Notification[];
 	audit: AuditRow[];
@@ -761,7 +767,7 @@ export type PartnerCase = {
 	cleared: string | null;
 	/** each step and when it happened, in the client's time (2026-08-27T09:00) */
 	steps: { step: string; at: string }[];
-	batch: { daysLeft: number; bestBefore: string };
+	batch: { daysLeft: number; bestBefore: string; mfg?: string | null };
 	plan: {
 		units: number;
 		lines: { id: string; short: string; units: number; price: number; packPrice: number | null }[];

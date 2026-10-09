@@ -469,10 +469,15 @@ describe("each batch's screens follow its own plan (SC-85)", () => {
 });
 
 describe('the staff sale and what is left at the godown (SC-87)', () => {
-	it("Lakshmi Agencies records the Mango Drink's staff sale on her Today, once", async () => {
+	it("Lakshmi Agencies' Today asks for the Mango Drink's staff sale, and her Deliveries records it, once (SC-133)", async () => {
+		const home = await draw(source(fakeApi(moment('executing'), 'lakshmi-owner')), 'home');
+		await waitFor(() => expect(text(home)).toContain('Record the staff sale'));
+		expect(text(home)).toContain('150 packs at ₹8.00 · count what sold, once');
+		expect(text(home)).toContain('Staff sale150 packs to your staff at ₹8.00, at Begum Bazaar godown');
+		home.unmount();
 		const staffSale = vi.fn(() => Promise.resolve({ seq: 1, case: null }));
 		const s = source(fakeApi(moment('executing'), 'lakshmi-owner', { staffSale }));
-		const r = await draw(s, 'home');
+		const r = await draw(s, 'van', MANGO);
 		await waitFor(() => expect(text(r)).toContain('Staff sale · Mango Drink'));
 		const t = text(r);
 		expect(t).toContain('150 packs for your staff at ₹8 a pack, at Begum Bazaar godown');
@@ -567,16 +572,18 @@ describe("expiry day's settlement (SC-94)", () => {
 		expect(t).toContain(d.note);
 	});
 
-	it("Lakshmi Agencies' You end whole counts what each line took, and the expiry credit", async () => {
+	it("Lakshmi Agencies' You end whole, on the batch's page, counts what each line took, and the expiry credit", async () => {
+		// a partner is not sent the plan: what each line took is the credit note's rows (SC-94, SC-133)
 		const s = source(fakeApi(moment('cleared'), 'lakshmi-owner'));
-		const r = await draw(s, 'home', MANGO);
+		const r = await draw(s, 'batches', MANGO);
+		await tab(r, 'Money');
 		await waitFor(() => expect(text(r)).toContain('You end whole'));
 		const c = moment('cleared').members['lakshmi-owner'].cases[MANGO];
 		const x = c.expiry!;
 		const t = text(r);
-		expect(t).toContain('credit note issued');
-		expect(t).toContain('(84 packets)₹1,008'); // what the kiranas ordered, at ₹12
-		expect(t).toContain('From your staff sale (120 packets)₹960');
+		expect(t).toContain('You end wholesettled');
+		expect(t).toContain('From your kiranas 84 packets on the scheme₹1,008'); // what the kiranas ordered, at ₹12
+		expect(t).toContain('Your staff sale 120 packs₹960');
 		expect(t).toContain(`Price-support credit note from Munchly${inr(c.support!.total)}`);
 		expect(t).toContain(
 			`Expiry credit note for ${x.units.toLocaleString('en-IN')} packs from Munchly${inr(x.credit!)}`
@@ -924,6 +931,82 @@ describe("the buyer's truck waits for the kirana scheme (SC-118)", () => {
 		const r2 = await draw(source(fakeApi(m, 'rakesh')), 'van', CHIPS);
 		const load = await r2.findByRole('button', { name: "Load the buyer's truck" });
 		expect(load.hasAttribute('disabled')).toBe(false);
+	});
+});
+
+describe("a distributor's portal, batch by batch (SC-133)", () => {
+	// another batch of Rakesh Traders' in a journey beside the chips, as backend-api's partner facts send it: a history
+	// batch as it stood once its papers were drafted, its invoice not yet issued
+	const another = (): PartnerCase => {
+		const c = structuredClone(
+			HISTORY_CASES.find((x) => x.dist === 'rakesh' && x.award && x.docs.some((d) => d.id === 'invoice'))!
+		);
+		const i = c.steps.findIndex((x) => x.step === 'papers');
+		return {
+			...c,
+			cleared: null,
+			outcome: null,
+			realised: null,
+			offer: { status: 'closed', closesAt: null },
+			steps: c.steps.slice(0, i + 1).filter((x) => x.step !== 'invoice' && x.step !== 'van')
+		};
+	};
+
+	it('Today with two batches in a journey: an index over a card each, and a step acts on its own batch', async () => {
+		const m = moment('executing');
+		const other = another();
+		m.members.rakesh.partner!.cases.push(other as never);
+		const issueInvoice = vi.fn(() => Promise.resolve({ seq: 1, case: null }));
+		const r = await draw(source(fakeApi(m, 'rakesh', { issueInvoice })), 'home');
+		await waitFor(() => expect(text(r)).toContain('2 batches in a journey'));
+		const index = r.getByRole('navigation', { name: 'Your batches in a journey' });
+		expect(within(index).getAllByRole('button')).toHaveLength(2);
+		// the batch asking most of him first: the other one's invoice and van round, then the chips' scheme
+		const cards = r.container.querySelectorAll<HTMLElement>('section.dist-batch');
+		expect([...cards].map((c) => c.id)).toEqual([`batch-${other.ref}`, `batch-${CHIPS}`]);
+		const inv = other.docs.find((d) => d.id === 'invoice')!;
+		const card = within(cards[0]);
+		expect(card.getByText(`Issue ${inv.no} from Tally`)).toBeTruthy();
+		expect(card.getByText('Run the van round')).toBeTruthy();
+		expect(text(r)).toContain('2 for you');
+		// Issue from Tally on that card names that batch, not the chips in focus
+		await fireEvent.click(card.getByRole('button', { name: 'Issue from Tally' }));
+		await waitFor(() => expect(issueInvoice).toHaveBeenCalledWith(other.ref, 'invoice'));
+	});
+
+	it("his batch's page counts the packs flagged at risk, and his label photo the day the label says it was made", async () => {
+		// a partner is not sent the plan: the Watcher's at-risk packs, not the whole batch's 1,840; the label's 18 May,
+		// not a day worked out from the shelf life
+		const m = moment('cleared');
+		const r = await draw(source(fakeApi(m, 'rakesh')), 'batches', CHIPS);
+		await waitFor(() => expect(text(r)).toContain('The Watcher flagged 1,360 packs at risk'));
+		expect(text(r)).not.toContain('1,840 packs');
+		const p = await draw(source(fakeApi(m, 'rakesh')), 'photo');
+		await waitFor(() => expect(text(p)).toContain('Earlier label photos'));
+		expect(text(p)).toContain(`Vision read batch ${CHIPS}, made 18 May 2026, best before 18 Nov 2026, MRP ₹30.00`);
+	});
+
+	it("Orders lists each batch's orders under it, with the paper each sold on", async () => {
+		const m = moment('cleared');
+		const r = await draw(source(fakeApi(m, 'rakesh')), 'orders');
+		await waitFor(() => expect(text(r)).toContain('Agrawal Wholesale, Raipur'));
+		const t = text(r);
+		const c = m.members.rakesh.cases[CHIPS];
+		expect(t).toContain(`lot ${c.journey.listing!.id} · 772 × ₹14.20`);
+		expect(t).toContain('INV/26-27/0931');
+		expect(t).toContain('31 kiranas · 588 packets at ₹21.60, 2 free with every 10');
+		expect(t).toContain("Show the 31 shops' orders");
+	});
+
+	it('Deliveries waits on a batch the app has yet to put in focus, then reads it', async () => {
+		const m = moment('executing');
+		const other = another();
+		m.members.rakesh.partner!.cases.push(other as never);
+		const r = await draw(source(fakeApi(m, 'rakesh')), 'van', other.ref);
+		// the other batch has no case in this moment: its head, and the page waits for it
+		await waitFor(() => expect(r.container.querySelector('.bhead h1')?.textContent).toBeTruthy());
+		expect(r.container.querySelector('.bhead .mono')?.textContent).toBe(other.ref);
+		expect(text(r)).not.toContain('Start the round');
 	});
 });
 

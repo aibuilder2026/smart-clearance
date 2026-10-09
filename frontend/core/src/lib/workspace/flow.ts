@@ -194,11 +194,26 @@ export const A = {
 			link: 'execution'
 		});
 	},
-	// the staff sale, recorded once by the distributor (SC-87); the story's stub opens none
+	// the staff sale, recorded once by the distributor (SC-87): the chips' plan opens none, the Mango Drink's has one at
+	// Lakshmi Agencies (SC-133)
 	recordStaffSale: (s: State, sold?: Arg) => {
+		if (typeof sold !== 'number') return;
 		const st = s.hero.staff;
-		if (!st || st.status !== 'open' || typeof sold !== 'number') return;
-		Object.assign(st, { status: 'recorded', sold, left: st.units - sold });
+		if (st && st.status === 'open') {
+			Object.assign(st, { status: 'recorded', sold, left: st.units - sold });
+			return;
+		}
+		const line = D.mangoPlan.lines.find((l) => l.id === 'staff');
+		const m = s.mango;
+		if (!line || !m.phase || m.phase === 'watching' || m.staff?.status === 'recorded') return;
+		m.staff = { status: 'recorded', units: line.units, sold, left: line.units - sold };
+		audit(
+			s,
+			'lakshmi-owner',
+			`recorded the staff sale: ${sold} of ${line.units} packs`,
+			`${m.id} · ${D.distributors.lakshmi.godown}`,
+			'Day 1'
+		);
 	},
 	collect: (s: State) => {
 		s.mango.donation = 'collected';

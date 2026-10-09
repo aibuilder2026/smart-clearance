@@ -8,8 +8,9 @@
 
 <div class={cx('pt-line', strong && 'strong')}>
 	<span
-		>{k}{#if sub}<em>
-				{#if onclick}<button type="button" class="pt-link" {onclick}>{sub}</button>{:else}{sub}{/if}</em
+		>{k}{#if sub}<em
+				><!-- eslint-disable-next-line svelte/no-useless-mustaches -- the space Svelte would trim at the start of the note -->
+				{' '}{#if onclick}<button type="button" class="pt-link" {onclick}>{sub}</button>{:else}{sub}{/if}</em
 			>{/if}</span
 	><span class="tnum">{v}</span>
 </div>

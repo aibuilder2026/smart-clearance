@@ -7880,7 +7880,8 @@
 				],
 				"batch": {
 					"daysLeft": 42,
-					"bestBefore": "2026-08-14"
+					"bestBefore": "2026-08-14",
+					"mfg": "2025-11-17"
 				},
 				"plan": {
 					"units": 1050,
@@ -8169,7 +8170,8 @@
 				],
 				"batch": {
 					"daysLeft": 38,
-					"bestBefore": "2026-08-15"
+					"bestBefore": "2026-08-15",
+					"mfg": "2026-02-16"
 				},
 				"plan": {
 					"units": 1166,
@@ -8466,7 +8468,8 @@
 				],
 				"batch": {
 					"daysLeft": 40,
-					"bestBefore": "2026-08-23"
+					"bestBefore": "2026-08-23",
+					"mfg": "2025-11-26"
 				},
 				"plan": {
 					"units": 635,
@@ -8692,7 +8695,8 @@
 				],
 				"batch": {
 					"daysLeft": 45,
-					"bestBefore": "2026-09-04"
+					"bestBefore": "2026-09-04",
+					"mfg": "2025-12-08"
 				},
 				"plan": {
 					"units": 672,
@@ -8925,7 +8929,8 @@
 				],
 				"batch": {
 					"daysLeft": 26,
-					"bestBefore": "2026-08-23"
+					"bestBefore": "2026-08-23",
+					"mfg": "2025-11-26"
 				},
 				"plan": {
 					"units": 948,
@@ -9185,7 +9190,8 @@
 				],
 				"batch": {
 					"daysLeft": 48,
-					"bestBefore": "2026-09-21"
+					"bestBefore": "2026-09-21",
+					"mfg": "2024-09-21"
 				},
 				"plan": {
 					"units": 397,
@@ -9410,7 +9416,8 @@
 				],
 				"batch": {
 					"daysLeft": 36,
-					"bestBefore": "2026-09-15"
+					"bestBefore": "2026-09-15",
+					"mfg": "2026-03-19"
 				},
 				"plan": {
 					"units": 1236,
@@ -9736,7 +9743,8 @@
 				],
 				"batch": {
 					"daysLeft": 44,
-					"bestBefore": "2026-09-30"
+					"bestBefore": "2026-09-30",
+					"mfg": "2024-09-30"
 				},
 				"plan": {
 					"units": 369,
@@ -9949,7 +9957,8 @@
 				],
 				"batch": {
 					"daysLeft": 40,
-					"bestBefore": "2026-09-27"
+					"bestBefore": "2026-09-27",
+					"mfg": "2026-03-31"
 				},
 				"plan": {
 					"units": 1071,
@@ -10226,7 +10235,8 @@
 				],
 				"batch": {
 					"daysLeft": 22,
-					"bestBefore": "2026-09-15"
+					"bestBefore": "2026-09-15",
+					"mfg": "2025-12-19"
 				},
 				"plan": {
 					"units": 810,
@@ -10478,7 +10488,8 @@
 				],
 				"batch": {
 					"daysLeft": 34,
-					"bestBefore": "2026-09-28"
+					"bestBefore": "2026-09-28",
+					"mfg": "2026-01-01"
 				},
 				"plan": {
 					"units": 1003,
@@ -10755,7 +10766,8 @@
 				],
 				"batch": {
 					"daysLeft": 31,
-					"bestBefore": "2026-09-27"
+					"bestBefore": "2026-09-27",
+					"mfg": "2026-03-31"
 				},
 				"plan": {
 					"units": 1212,

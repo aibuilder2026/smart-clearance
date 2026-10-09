@@ -365,7 +365,148 @@
   }
   const fssaiItems = p => ["Sealed, undamaged packs", `Best before ${M.fmt.date(p.bestBefore)}, ${p.daysLeft} days left when booked`, "Ambient storage, away from sunlight", `Batch ${p.ref} on every carton`, `Donor: ${D.CLIENT.name} via ${p.dist.name}`];
 
-  const partners = { distBatches, distPapers, moments, whole, storyMoments, storyWhole, scheme, offersFor, pickupsFor, fssaiItems, stepAt, plusHours };
+  /* ---------- a distributor's portal, batch by batch (SC-133, option A) ---------- */
+  // Every batch of Munchly's at his godown in a journey, as where it stands now: its plan's lines, the label photo, the
+  // scheme, the lot, the staff sale, the pickup, the papers. The stub's two story batches come from the journey's state
+  // (the chips from the hero, the Mango Drink from the second); the live workspace's from its partner facts (core's
+  // dist.ts). From these: the batch's lines and where each stands, the steps that are his, and what it waits for
+  const STOP = { "at-risk": "Verify", verified: "Value", valued: "Decide", planned: "Approve", approved: "Execute", executing: "Execute", dispatched: "Settle", settled: "Settle", cleared: "Cleared" };
+  const ROUTED = ["approved", "executing", "dispatched", "settled", "cleared"];
+  const inr = n => M.fmt.inr(n);
+  const cartons = (u, per) => { const c = Math.floor(u / per), r = u % per; return r * 2 === per ? `${c}½ cartons` : r ? `${c} cartons + ${r}` : `${c} carton${c === 1 ? "" : "s"}`; };
+  const linesOf = plan => plan.lines.filter(l => l.units > 0 && l.id !== "writeoff").map(l => ({ id: l.id, units: l.units, price: l.price, packPrice: l.packPrice || null }));
+  function nowOfHero(state) {
+    const h = state.hero, units = h.orders.reduce((t, o) => t + o.units, 0);
+    return { ref: HERO.id, sku: HERO.sku, dist: HERO.distributor, flagged: D.DAY0, phase: h.phase, units: D.PLAN.units, shelf: HERO.shelf || null,
+      photo: h.photo.status, approved: ROUTED.includes(h.phase), lines: h.plan ? linesOf(D.PLAN) : [],
+      offer: h.offer ? { open: h.offer.status === "sent" && units < D.PLAN.lines.find(l => l.id === "kirana").units, offered: D.OFFERED, shops: h.orders.length, units } : null,
+      shops: h.orders.map(o => ({ kirana: o.id, units: o.units, at: `${D.DAY0}T${o.at}` })),
+      listing: h.listing ? { id: D.JOURNEY.listing.id } : null, award: h.award ? { price: D.COUNTER.price, token: D.AWARD.token } : null, awardAt: h.award && h.award.at ? `${D.DAY0}T${h.award.at}` : null,
+      truck: h.truck.status === "dispatched", van: h.van.status === "done", papers: !!h.docs,
+      invoice: h.docs ? { no: D.INVOICE.no, total: D.INVOICE.total, issued: !!h.invoiceIssued } : null,
+      staff: h.staff ? { status: h.staff.status, units: h.staff.units, price: h.staff.price, sold: h.staff.sold == null ? null : h.staff.sold } : null,
+      donation: null, round: { day: D.JOURNEY.van.day, date: D.JOURNEY.van.date, leaves: D.JOURNEY.van.leaves } };
+  }
+  // the Mango Drink, executing from the story's start: the scheme open to Lakshmi's shops, the staff sale, the pickup
+  function nowOfSecond(state) {
+    const m = state.mango, DN = D.JOURNEY.donation, st = D.MANGO_PLAN.lines.find(l => l.id === "staff");
+    return { ref: SECOND.id, sku: SECOND.sku, dist: SECOND.distributor, flagged: D.DAY0, phase: m.phase, units: D.MANGO_PLAN.units, shelf: SECOND.shelf || null,
+      photo: "verified", approved: ROUTED.includes(m.phase), lines: linesOf(D.MANGO_PLAN),
+      offer: { open: true, offered: W.KIRANAS.filter(k => k.distributor === SECOND.distributor).length, shops: 0, units: 0 }, shops: [],
+      listing: null, award: null, awardAt: null, truck: false, van: false, papers: false, invoice: null,
+      staff: st ? (m.staff ? { status: m.staff.status, units: m.staff.units, price: st.price, sold: m.staff.sold } : { status: "open", units: st.units, price: st.price, sold: null }) : null,
+      donation: m.donation ? { status: m.donation, partner: DN.partner, units: D.MANGO_FB, date: DN.date, time: DN.time } : null, round: null };
+  }
+  // his batches in a journey now, as the stub has them
+  function distNow(distId, state) {
+    const out = [];
+    if (HERO.distributor === distId && state.hero.phase && state.hero.phase !== "watching") out.push(nowOfHero(state));
+    if (SECOND.distributor === distId && state.mango.phase && state.mango.phase !== "watching") out.push(nowOfSecond(state));
+    return out;
+  }
+  // a batch in a journey from where he stands: each line of its plan and where it stands, his steps, what it waits for
+  function journeyOf(n, w) {
+    w = w || WORLD;
+    const sku = w.skus[n.sku], dist = w.distributors[n.dist], buyer = w.buyer, sc = w.scheme;
+    const line = id => n.lines.find(l => l.id === id) || null;
+    const kl = line("kirana"), es = line("expiresoon"), st = line("staff"), fb = line("foodbank");
+    const o = n.offer, filled = !!o && (o.shops >= o.offered || (!!kl && o.units >= kl.units)), over = !!o && (!o.open || filled);
+    const day = n.round ? `the ${n.round.day} round` : "the van round";
+    const lines = [];
+    if (kl) lines.push({ id: "kirana", plan: `${num(kl.units)} packets to your kiranas at ${rate(kl.packPrice)}, ${sc.free} free with every ${sc.buy}`,
+      state: !n.approved ? "goes out once the plan has its yes" : n.van ? `delivered on ${day}` : !o ? "the scheme goes out next" : over ? `${o.shops} ${o.shops === 1 ? "shop" : "shops"} · ${num(o.units)} packets · on ${day}` : `${o.shops} of ${o.offered} shops · ${num(o.units)} packets ordered`,
+      done: n.van, live: !!o && !over && n.approved });
+    if (es) lines.push({ id: "expiresoon", plan: `${num(es.units)} packs on ExpireSoon in your name, the buyer's own truck`,
+      state: n.truck ? `collected by ${buyer.name}'s truck` : n.award ? `${buyer.name} took it at ${rate(n.award.price)} · token ${inr(n.award.token)} paid` : n.listing ? `lot ${n.listing.id} listed at ${rate(es.price)} · waiting for a buyer` : !n.approved ? "listed once the plan has its yes" : "listing now",
+      done: n.truck, live: !!n.listing && !n.award });
+    if (st) lines.push({ id: "staff", plan: `${num(st.units)} packs to your staff at ${rate(st.price)}, at ${dist.godown}`,
+      state: !n.approved ? "opens once the plan has its yes" : n.staff && n.staff.status === "recorded" ? (n.staff.sold == null ? "recorded" : `${num(n.staff.sold)} of ${num(st.units)} sold`) : "open: record what sold when the sale is over",
+      done: !!n.staff && n.staff.status === "recorded", live: false });
+    if (fb) { const d = n.donation, who = d ? d.partner : "a food bank";
+      lines.push({ id: "foodbank", plan: `${num(fb.units)} packs to ${who}, collected from your godown`,
+        state: !n.approved ? "booked once the plan has its yes" : !d ? "the Donation agent is booking a food bank" : d.status === "collected" ? `collected by ${d.partner}` : d.status === "declined" ? `${d.partner} declined: the packs stay at your godown` : d.status === "confirmed" ? (d.date ? `${d.partner} collects ${d.date}${d.time ? `, ${d.time}` : ""}` : `${d.partner} confirmed the pickup`) : `booked · waiting for ${d.partner}`,
+        done: !!d && d.status === "collected", live: !!d && d.status === "booked" }); }
+    const todo = [];
+    if (n.photo === "requested") todo.push({ id: "photo", icon: "camera", title: "Send one photo of the carton label", sub: `${n.shelf ? `Shelf ${n.shelf} · one` : "One"} carton of ${sku.name}, batch ${n.ref}`, cta: "Open camera", route: "photo" });
+    if (st && n.approved && !(n.staff && n.staff.status === "recorded")) todo.push({ id: "staff", icon: "users", title: "Record the staff sale", sub: `${num(st.units)} packs at ${rate(st.price)} · count what sold, once`, cta: "Record what sold", route: "van" });
+    if (es && n.award && !n.truck && (!kl || over)) todo.push({ id: "truck", icon: "truck", title: `Load ${buyer.name}'s truck`, sub: `${num(es.units)} packs · ${cartons(es.units, sku.perCarton || 24)} · the balance has landed`, cta: "Load the truck", route: "van" });
+    if (n.invoice && !n.invoice.issued) todo.push({ id: "invoice", icon: "receipt", title: `Issue ${n.invoice.no} from Tally`, sub: `${inr(n.invoice.total)} to ${buyer.name}, drafted by the Paperwork agent`, cta: "Issue from Tally", act: "issueInvoice" });
+    if (kl && n.papers && o && o.shops > 0 && !n.van) todo.push({ id: "van", icon: "route", title: n.round ? `Run the ${n.round.day} van round` : "Run the van round", sub: `${o.shops} ${o.shops === 1 ? "shop" : "shops"} · ${num(o.units)} packets${n.round ? ` · leaves the godown ${n.round.leaves}` : ""}`, cta: "Start the round", route: "van" });
+    const waiting = todo.length ? null
+      : n.photo === "reading" ? "Vision is reading your label photo"
+      : n.phase === "at-risk" && n.photo === "none" ? "The Watcher flagged it: Vision checks the batch first, and may ask you for one label photo"
+      : !n.approved ? `${w.short} is deciding the plan: nothing moves in your name until it says yes`
+      : n.phase === "cleared" ? "Settled: you ended whole"
+      : o && !over && n.approved ? `The scheme is open: ${o.shops} of ${o.offered} shops have ordered`
+      : n.listing && !n.award ? "The lot waits for a buyer on ExpireSoon"
+      : n.donation && n.donation.status !== "collected" && n.donation.status !== "declined" ? `${n.donation.partner} collects from your godown`
+      : n.approved && !n.papers ? "The Paperwork agent drafts your papers next"
+      : "The agents are on it";
+    return { ref: n.ref, sku, dist, phase: n.phase, stop: STOP[n.phase] || "Detect", flagged: n.flagged, units: n.units, lines, todo, waiting };
+  }
+  // the order he asks most of first, then by the batch
+  const byAsk = (a, z) => z.todo.length - a.todo.length || (a.ref < z.ref ? -1 : 1);
+  const journeys = (distId, state) => distNow(distId, state).map(n => journeyOf(n)).sort(byAsk);
+
+  // what a batch in a journey has sold so far: the buyer's lot, the kiranas' orders, the staff sale, the food bank
+  function ordersNow(n, shopName, w) {
+    w = w || WORLD;
+    const shops = n.shops.map(k => ({ name: shopName(k.kirana), units: k.units, at: k.at || null }));
+    const sku = w.skus[n.sku], dist = w.distributors[n.dist], out = [], o = n.offer;
+    const line = id => n.lines.find(l => l.id === id) || null;
+    const kl = line("kirana"), es = line("expiresoon"), st = line("staff"), fb = line("foodbank");
+    if (es && n.award) out.push({ id: "expiresoon", units: es.units, who: `${w.buyer.name}, ${w.buyer.city}`, what: `lot ${n.listing ? n.listing.id : ""} · ${num(es.units)} × ${rate(n.award.price)}`,
+      sub: `token ${inr(n.award.token)} · balance ${inr(Math.round((es.units * n.award.price - n.award.token) * 100) / 100)} · ${n.truck ? "collected by the buyer's truck" : "the buyer's truck collects"}`,
+      amount: Math.round(es.units * n.award.price * 100) / 100, at: n.awardAt || null, paper: n.invoice ? { no: n.invoice.no, label: n.invoice.issued ? "issued from Tally" : "drafted by the Paperwork agent", issue: !n.invoice.issued } : null });
+    if (kl && o && o.shops) out.push({ id: "kirana", units: o.units, who: `${o.shops} ${o.shops === 1 ? "kirana" : "kiranas"}`, what: `${num(o.units)} packets at ${rate(kl.packPrice)}, ${w.scheme.free} free with every ${w.scheme.buy}`,
+      sub: n.van ? `delivered on ${n.round ? `the ${n.round.day} round` : "the van round"}` : n.round ? `on the ${n.round.day} round, ${n.round.date}` : "on the van round once the papers are drafted",
+      amount: Math.round(shops.reduce((t, k) => t + scheme(k.units, kl.packPrice, sku.mrp).pay, 0) * 100) / 100, at: shops.reduce((t, k) => (k.at && (!t || k.at > t) ? k.at : t), null), shops });
+    if (st && n.staff && n.staff.status === "recorded" && n.staff.sold) out.push({ id: "staff", units: n.staff.sold, who: "Your staff sale", what: `${num(n.staff.sold)} packs at ${rate(st.price)}`, sub: `at ${dist.godown}`, amount: Math.round(n.staff.sold * st.price * 100) / 100, at: null });
+    if (fb && n.donation && n.donation.status === "collected") out.push({ id: "foodbank", units: fb.units, who: n.donation.partner, what: `${num(fb.units)} packs given`, sub: "the receipt is in the batch's papers", amount: 0, at: null });
+    return out;
+  }
+  // a cleared batch's orders: the lot the buyer took, the kiranas' scheme, the staff sale, what went to the food bank
+  function ordersPast(c, shopName, w) {
+    w = w || WORLD;
+    const out = [], es = took(c, "expiresoon"), kl = took(c, "kirana"), st = took(c, "staff"), fb = took(c, "foodbank");
+    const inv = c.docs.find(d => d.id === "invoice" && d.status !== "not required");
+    const issued = !!stepAt(c, "invoice");
+    if (es) out.push({ id: "expiresoon", units: es.units, who: `${w.buyer.name}, ${w.buyer.city}`, what: `lot ${c.listing ? c.listing.id : ""} · ${num(es.units)} × ${rate(c.award.price)}`,
+      sub: `token ${inr(c.award.token)} · balance ${inr(Math.round((es.units * c.award.price - c.award.token) * 100) / 100)} · collected by the buyer's truck`,
+      amount: Math.round(es.units * c.award.price * 100) / 100, at: stepAt(c, "accept"), paper: inv ? { no: inv.no, label: issued ? "issued from Tally" : "drafted" } : null });
+    if (kl) out.push({ id: "kirana", units: kl.units, who: `${c.kiranas.length} ${c.kiranas.length === 1 ? "kirana" : "kiranas"}`, what: `${num(kl.units)} packets at ${rate(planned(c, "kirana").packPrice)}, ${w.scheme.free} free with every ${w.scheme.buy}`,
+      sub: `${c.kirana && c.kirana.ordered < c.kirana.planned ? `of ${num(c.kirana.planned)} offered · ` : ""}${stepAt(c, "van") ? `delivered on the ${weekday(stepAt(c, "van"))} round` : "delivered on the van round"}`,
+      amount: kl.gross, at: stepAt(c, "orders"), shops: c.kiranas.map(k => ({ name: shopName(k.kirana), units: k.units, at: k.at || null })) });
+    if (st) out.push({ id: "staff", units: st.units, who: "Your staff sale", what: `${num(st.units)} packs at ${rate(st.price)}`, sub: `at ${w.distributors[c.dist].godown}`, amount: st.gross, at: stepAt(c, "staff") });
+    if (fb) out.push({ id: "foodbank", units: fb.units, who: c.partner ? c.partner.name : "The food bank", what: `${num(fb.units)} packs given`, sub: c.receipt ? `receipt ${c.receipt.no} · a copy in the batch's papers` : "", amount: 0, at: stepAt(c, "collect") });
+    return out;
+  }
+  // what left a cleared batch's godown, each with its day: the van round, the buyer's truck, the staff sale, the pickup
+  function deliveriesPast(c, w) {
+    w = w || WORLD;
+    const out = [], es = took(c, "expiresoon"), kl = took(c, "kirana"), st = took(c, "staff"), fb = took(c, "foodbank");
+    const at = k => stepAt(c, k);
+    if (kl && at("van")) out.push({ id: "kirana", at: at("van"), title: `${weekday(at("van"))} van round`, sub: `${c.kiranas.length} ${c.kiranas.length === 1 ? "shop" : "shops"} · ${num(kl.units)} packets` });
+    if (es && at("truck")) out.push({ id: "expiresoon", at: at("truck"), title: `${w.buyer.name}'s truck`, sub: `lot ${c.listing ? c.listing.id : ""} · ${num(es.units)} packs to ${w.buyer.city}` });
+    if (st && at("staff")) out.push({ id: "staff", at: at("staff"), title: "Staff sale recorded", sub: `${num(st.units)} packs sold at ${rate(st.price)}` });
+    if (fb && at("collect")) out.push({ id: "foodbank", at: at("collect"), title: `${c.partner ? c.partner.name : "The food bank"} collected`, sub: `${num(fb.units)} packs${c.receipt ? ` · receipt ${c.receipt.no}` : ""}` });
+    return out.sort((a, z) => (a.at < z.at ? 1 : -1));
+  }
+  // a label photo he sent, and what Vision read from it: the batch, the dates and the MRP
+  function photoOf(c, w) {
+    w = w || WORLD;
+    const sent = stepAt(c, "photo"); if (!sent) return null;
+    const sku = w.skus[c.sku], bb = c.batch.bestBefore;
+    return { ref: c.ref, sku, sent, read: stepAt(c, "read"), bestBefore: bb, mfg: c.batch.mfg || (sku.lifeDays ? D.addDays(bb, -sku.lifeDays) : null), mrp: sku.mrp };
+  }
+  // the stub's world: what the texts name
+  const WORLD = { skus: D.SKUS, distributors: D.DISTRIBUTORS, buyer: D.BUYER, scheme: M.RULES.scheme, short: C };
+  // the history's cases as partner facts name them: a shop by its id
+  const shopName = id => (D.KIRANAS.find(k => k.id === id) || W.KIRANAS.find(k => k.id === id) || { name: id }).name;
+  const historyFacts = c => Object.assign({}, c, { sku: c.sku.id || c.sku, dist: c.dist.id || c.dist, kiranas: c.kiranas.map(k => ({ kirana: k.kirana, units: k.units, at: k.at })) });
+
+  const partners = { distBatches, distPapers, moments, whole, storyMoments, storyWhole, scheme, offersFor, pickupsFor, fssaiItems, stepAt, plusHours,
+    STOP, distNow, journeyOf, journeys, ordersNow, ordersPast, deliveriesPast, photoOf, shopName, historyFacts, WORLD };
 
   window.SC3_LEDGER = { HISTORY, STORY_CLEARED, historyCase, storyCase, caseOf, rowOf, rowsOf, totals, periods, ledger, ordersOf, outcomeOf, MIX, partners };
 })();

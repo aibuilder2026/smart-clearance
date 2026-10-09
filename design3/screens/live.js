@@ -3,7 +3,7 @@
   const { motion, AnimatePresence, useReducedMotion } = Motion;
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, Store = window.SC3_STORE, Flow = window.SC3_FLOW, S = window.SC3_SCREENS;
   const fmt = M.fmt;
-  const { cx, Icon, Avatar, Badge, Button, Card, List, ListRow, Field, Input, Product, Mark, WorkspaceMark, PoweredBy, DaysNum, GateChips, Tracker, TrackerCompact, AgentFeed, Skeleton, TrackerCard, Money, BatchRow, useApp, useNotice } = K;
+  const { cx, Icon, Avatar, Badge, Button, Card, List, ListRow, Field, Input, Product, Mark, WorkspaceMark, PoweredBy, DaysNum, GateChips, Tracker, TrackerCompact, AgentFeed, Skeleton, TrackerCard, Money, useApp, useNotice } = K;
   const WS = D.WORKSPACE;
   const EASE = [0.22, 1, 0.36, 1];
   const S_PATH = "M43.5 19 H27 a7 7 0 0 0 0 14 h10 a7 7 0 0 1 0 14 H20.5";
@@ -151,13 +151,6 @@
     const cleared = s.hero.phase === "cleared";
     return /* @__PURE__ */ React.createElement(Card, { className: "lv-quiet" }, /* @__PURE__ */ React.createElement("div", { className: "lv-quiet-in" }, /* @__PURE__ */ React.createElement(Product, { name: "sprout-box", size: app.bp === "phone" ? 96 : 120, alt: "" }), /* @__PURE__ */ React.createElement("div", { className: "stack tight", style: { gap: 6 } }, /* @__PURE__ */ React.createElement("div", { className: "t-title3" }, "Nothing at risk today"), /* @__PURE__ */ React.createElement("p", { className: "t-subhead muted", style: { margin: 0 } }, "The Watcher checked ", D.SETUP.dms.rows, " batches at ", watch, ". Every one sells through inside its date, so nothing needs you. The next check is tomorrow at ", watch, ", ", nextCheck(live.clock), " from now at this pace."), cleared && /* @__PURE__ */ React.createElement("div", { className: "row tight wrap", style: { marginTop: 6 } }, /* @__PURE__ */ React.createElement(Badge, { tone: "green", icon: "check" }, "Last cleared · ", D.BATCHES[0].id), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, fmt.inr(D.ACTUAL.net), " recovered, 0 cartons destroyed")))));
   }
-  function DistQuiet({ me, dist, perm }) {
-    const app = useApp();
-    const s = S.useStore();
-    const mine = D.BATCHES.filter((b) => b.distributor === dist.id && !b.hero && !b.second).map((b) => D.batchView(b));
-    return /* @__PURE__ */ React.createElement(S.Screen, { me, title: "Today", sub: `${dist.name} · ${dist.godown}, ${dist.city}` }, /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 16 } }, perm, /* @__PURE__ */ React.createElement(Card, { className: "lv-quiet" }, /* @__PURE__ */ React.createElement("div", { className: "lv-quiet-in" }, /* @__PURE__ */ React.createElement(Product, { name: "godown", size: app.bp === "phone" ? 92 : 112, alt: "" }), /* @__PURE__ */ React.createElement("div", { className: "stack tight", style: { gap: 6 } }, /* @__PURE__ */ React.createElement("div", { className: "t-title3" }, "Nothing for you today"), /* @__PURE__ */ React.createElement("p", { className: "t-subhead muted", style: { margin: 0 } }, "No photo requests, scheme orders or marketplace lots. The Watcher checks your stock every morning at ", s.rules.watchTime, "; when it needs you, it sends a push."), s.hero.phase === "cleared" && /* @__PURE__ */ React.createElement("div", { className: "row tight wrap", style: { marginTop: 6 } }, /* @__PURE__ */ React.createElement(Badge, { tone: "green", icon: "check" }, D.SKUS[D.BATCHES[0].sku].name.replace(/ \d+ ?(g|ml)$/, ""), " cleared"), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, "credit note ", fmt.inr(D.SUPPORT.total), " from ", WS.short, " · you ended whole"))))), /* @__PURE__ */ React.createElement(S.SectionTitle, { sub: "From your nightly DMS export" }, "Your stock"), /* @__PURE__ */ React.createElement("div", { className: "list" }, mine.map((v) => /* @__PURE__ */ React.createElement(BatchRow, { key: v.id, view: v, compact: app.bp === "phone", onOpen: () => {
-    } })))));
-  }
   function SendFill({ p, onCancel }) {
     const pct = Math.round(p * 100);
     const label = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Icon, { name: "send", size: 18 }), "Sending · ", pct, "%");
@@ -297,5 +290,5 @@
       setErr("");
     } }));
   }
-  window.SC3_SCREENS.Live = { cue, cueLong, down, stateWord, ConnMark, Cue, Line, BarSub, Band, Dim, flaggedItems, BatchTabs, Flagged, Switcher, MangoCard, MangoRoom, pausedWords, Quiet, DistQuiet, SendFill, ExportUpload, ApproveFailed, NeedsNet, PushStep, SignInLive, SignInButton };
+  window.SC3_SCREENS.Live = { cue, cueLong, down, stateWord, ConnMark, Cue, Line, BarSub, Band, Dim, flaggedItems, BatchTabs, Flagged, Switcher, MangoCard, MangoRoom, pausedWords, Quiet, SendFill, ExportUpload, ApproveFailed, NeedsNet, PushStep, SignInLive, SignInButton };
 })();

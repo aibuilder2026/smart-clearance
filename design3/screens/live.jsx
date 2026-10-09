@@ -10,7 +10,7 @@
   const { useState, useEffect, useRef, Fragment } = React;
   const { motion, AnimatePresence, useReducedMotion } = Motion;
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, Store = window.SC3_STORE, Flow = window.SC3_FLOW, S = window.SC3_SCREENS; const fmt = M.fmt;
-  const { cx, Icon, Avatar, Badge, Button, Card, List, ListRow, Field, Input, Product, Mark, WorkspaceMark, PoweredBy, DaysNum, GateChips, Tracker, TrackerCompact, AgentFeed, Skeleton, TrackerCard, Money, BatchRow, useApp, useNotice } = K;
+  const { cx, Icon, Avatar, Badge, Button, Card, List, ListRow, Field, Input, Product, Mark, WorkspaceMark, PoweredBy, DaysNum, GateChips, Tracker, TrackerCompact, AgentFeed, Skeleton, TrackerCard, Money, useApp, useNotice } = K;
   const WS = D.WORKSPACE;
   const EASE = [0.22, 1, 0.36, 1];
   const S_PATH = "M43.5 19 H27 a7 7 0 0 0 0 14 h10 a7 7 0 0 1 0 14 H20.5";
@@ -156,24 +156,6 @@
       {cleared && <div className="row tight wrap" style={{ marginTop: 6 }}><Badge tone="green" icon="check">Last cleared · {D.BATCHES[0].id}</Badge><span className="t-footnote subtle">{fmt.inr(D.ACTUAL.net)} recovered, 0 cartons destroyed</span></div>}
     </div></div></Card>;
   }
-  // a partner's quiet day: nothing asked of them, and their own stock
-  function DistQuiet({ me, dist, perm }) {
-    const app = useApp(); const s = S.useStore();
-    const mine = D.BATCHES.filter(b => b.distributor === dist.id && !b.hero && !b.second).map(b => D.batchView(b));
-    return <S.Screen me={me} title="Today" sub={`${dist.name} · ${dist.godown}, ${dist.city}`}>
-      <div className="stack" style={{ gap: 16 }}>
-        {perm}
-        <Card className="lv-quiet"><div className="lv-quiet-in"><Product name="godown" size={app.bp === "phone" ? 92 : 112} alt="" /><div className="stack tight" style={{ gap: 6 }}>
-          <div className="t-title3">Nothing for you today</div>
-          <p className="t-subhead muted" style={{ margin: 0 }}>No photo requests, scheme orders or marketplace lots. The Watcher checks your stock every morning at {s.rules.watchTime}; when it needs you, it sends a push.</p>
-          {s.hero.phase === "cleared" && <div className="row tight wrap" style={{ marginTop: 6 }}><Badge tone="green" icon="check">{D.SKUS[D.BATCHES[0].sku].name.replace(/ \d+ ?(g|ml)$/, "")} cleared</Badge><span className="t-footnote subtle">credit note {fmt.inr(D.SUPPORT.total)} from {WS.short} · you ended whole</span></div>}
-        </div></div></Card>
-        <S.SectionTitle sub="From your nightly DMS export">Your stock</S.SectionTitle>
-        <div className="list">{mine.map(v => <BatchRow key={v.id} view={v} compact={app.bp === "phone"} onOpen={() => {}} />)}</div>
-      </div>
-    </S.Screen>;
-  }
-
   /* ---------- uploads: the label photo's Send fills as it goes; the DMS export shows its progress ---------- */
   function SendFill({ p, onCancel }) {
     const pct = Math.round(p * 100); const label = <><Icon name="send" size={18} />Sending · {pct}%</>;
@@ -339,5 +321,5 @@
     </div>;
   }
 
-  window.SC3_SCREENS.Live = { cue, cueLong, down, stateWord, ConnMark, Cue, Line, BarSub, Band, Dim, flaggedItems, BatchTabs, Flagged, Switcher, MangoCard, MangoRoom, pausedWords, Quiet, DistQuiet, SendFill, ExportUpload, ApproveFailed, NeedsNet, PushStep, SignInLive, SignInButton };
+  window.SC3_SCREENS.Live = { cue, cueLong, down, stateWord, ConnMark, Cue, Line, BarSub, Band, Dim, flaggedItems, BatchTabs, Flagged, Switcher, MangoCard, MangoRoom, pausedWords, Quiet, SendFill, ExportUpload, ApproveFailed, NeedsNet, PushStep, SignInLive, SignInButton };
 })();

@@ -84,8 +84,9 @@ export interface WorkspaceSource {
 	setFocus(ref: string | null): void;
 	signIn(i: { email: string; password: string } | { uid: string }): Promise<User>;
 	signOut(): Promise<void>;
-	/** a step a person takes; feel waits that long first, so a tap is felt before the journey moves */
-	act<N extends HumanAction>(name: N, arg?: ActionArg<N>, o?: { feel?: number }): Promise<void>;
+	/** a step a person takes; feel waits that long first, so a tap is felt before the journey moves. It acts on the
+	 *  batch in focus, or on the batch `ref` names (the live workspace; the stub has its story's batches only) */
+	act<N extends HumanAction>(name: N, arg?: ActionArg<N>, o?: { feel?: number; ref?: string }): Promise<void>;
 	/** the live source only: the buyer's message to the seller, which the Negotiator answers */
 	message?(text: string): Promise<void>;
 	/** the live source only: a link to a document's PDF, for a few minutes; of the batch in focus, or the one named */
