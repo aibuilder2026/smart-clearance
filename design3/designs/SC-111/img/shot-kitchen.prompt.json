@@ -1,0 +1,14 @@
+{
+  "name": "shot-kitchen",
+  "model": "Qwen-Image-2.1 bf16 (local)",
+  "mode": "none (generate_image, 16:9)",
+  "prompt": "Tilt-shift photograph of a handmade miniature diorama like an architect's model on a table, seen from above at a gentle three-quarter angle, shallow depth of field, tiny model people, warm sand, terracotta and sage-green palette. Close on a small community kitchen with a blue awning under a high warm midday sun, short shadows, a clear deep-blue sky. A white delivery van is parked beside it with its rear doors open, and tiny volunteers in aprons pass brown cardboard cartons hand to hand from the van to a long table under the awning, where a tiny cook ladles food onto plates for a short queue of tiny people, children among them. A thin softly glowing green painted path runs along the road up to the van. No lettering, no words or numbers on any sign, paper or screen, no logos.",
+  "seed": 8112,
+  "size": 2048,
+  "steps": 40,
+  "output": "2752x1536",
+  "created": "2026-10-09",
+  "postprocess": "WebP q82; the PNG original stays local in src/",
+  "use": "smartclearance.com's hero film (SC-111): a plate of the journey's day, and a poster for the film",
+  "designed_in": "design3/designs/SC-111"
+}

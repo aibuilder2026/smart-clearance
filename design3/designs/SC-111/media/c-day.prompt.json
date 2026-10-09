@@ -1,0 +1,29 @@
+{
+  "name": "c-day",
+  "model": "LTX 2.5 Fast (local)",
+  "ltx_desktop": "1.2.7",
+  "duration_s": 7.47,
+  "clips": [
+    {
+      "name": "c-1-day",
+      "prompt": "Exactly as in the image: a handmade miniature diorama of an Indian snack business seen from above, a pale factory with two brick chimneys and a small office at the left, a corrugated godown warehouse full of brown cartons in the middle, a lane of colourful kirana shops at the right, a highway climbing to a small warehouse on a hill at the back right, a community kitchen with a blue awning at the back, a fenced dump yard at the back left, and a thin softly glowing green path painted along the road, in low golden morning light. The camera lifts gently and flies one slow, smooth, steady loop over the town like a small drone: forward over the factory's chimneys and the blue truck at its loading bay, along the road over the godown's forecourt and its yellow forklift, out over the community kitchen's blue awning, back along the lane of colourful kirana shops, and climbs back up to exactly the opening view. While it flies a whole day passes: the sun climbs and lowers, the sky turns through gold to a surreal violet, magenta and deep purple dusk and on into a rich indigo night with a purple glow at the horizon, the windows, shop fronts and street lamps light up one by one, and the green path glows brighter. The tiny people and vehicles go about their work below. The clip ends exactly on the last image. Every building stays exactly where it is, with the same shape, size and colours; nothing new appears; no text appears anywhere. Smooth flight, no cuts, no shake, no flicker.",
+      "seed": 8221,
+      "resolution": "720p",
+      "duration_s": 10,
+      "fps": 24,
+      "camera": "none",
+      "loras": [
+        "fpv-motion:1"
+      ],
+      "image": "town-morning.png",
+      "last_image": "town-night.png",
+      "minutes": 11.7
+    }
+  ],
+  "cut": "retimed from 10 s to 7.5 s by keeping every frame at 32 fps; its last frame (the night plate, the next clip's first) dropped; eq contrast 1.03, saturation 1.08",
+  "encode": "ffmpeg -an -c:v libx264 -preset slow -profile:v high -crf 22 -pix_fmt yuv420p -movflags +faststart (from LTX's own H.264)",
+  "audio": false,
+  "created": "2026-10-09",
+  "use": "smartclearance.com's hero film (SC-111): option C, one flight: morning to night, chained with c-night.mp4 without a cut; the light theme starts here",
+  "designed_in": "design3/designs/SC-111"
+}

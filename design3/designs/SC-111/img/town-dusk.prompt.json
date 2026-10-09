@@ -1,0 +1,14 @@
+{
+  "name": "town-dusk",
+  "model": "Qwen-Image-2.1 bf16 (local)",
+  "mode": "site/assets/plates/business.webp (edit_image)",
+  "prompt": "Change only the time of day and what the tiny vehicles and people are doing. It is dusk just after sunset: the sky is a surreal, luminous gradient of violet, magenta and deep purple with a band of gold low behind the hills, the shadows are long and soft, the first street lamps along the road glow warm, and the kirana shop fronts are lit with warm light. The kirana lane is busy: tiny shoppers crowd the shop fronts and reach for packets, and the green auto-rickshaw waits by the shops. On the godown's forecourt, by its gate, stands a folding table under a small tarpaulin canopy stacked with snack packets, where a short queue of the godown's tiny workers in overalls buys packets from a tiny man with a cash box. The white van is back on the highway, climbing to the warehouse on the hill. The thin green path glows brighter in the dusk. Keep everything exactly as it is: the same camera and framing, the same composition, every building, road, tree, fence and the thin softly glowing green painted path in the same place with the same shape, size and colours. No lettering anywhere, no words or numbers on any sign, no logos.",
+  "seed": 8103,
+  "size": 2048,
+  "steps": 40,
+  "output": "2752x1536",
+  "created": "2026-10-09",
+  "postprocess": "WebP q82; the PNG original stays local in src/",
+  "use": "smartclearance.com's hero film (SC-111): a plate of the journey's day, and a poster for the film",
+  "designed_in": "design3/designs/SC-111"
+}

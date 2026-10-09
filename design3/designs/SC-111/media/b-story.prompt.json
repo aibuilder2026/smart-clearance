@@ -1,0 +1,66 @@
+{
+  "name": "b-story",
+  "model": "LTX 2.5 Fast (local)",
+  "ltx_desktop": "1.2.7",
+  "duration_s": 14.08,
+  "clips": [
+    {
+      "name": "b-1-bay",
+      "prompt": "Exactly as in the image: a handmade miniature diorama, close on a snack factory's loading bay in low golden morning light. The tiny workers pass brown cartons from the bay into the small blue truck one after another, the tiny woman with the phone and the tiny man in the checked shirt shake hands and she shows him her phone, a little smoke drifts from the chimneys, and the glowing green path pulses once from the bay out along the road. The camera pushes in very slowly and smoothly. Everything stays as in the image; no text appears anywhere. No flicker.",
+      "seed": 8211,
+      "resolution": "720p",
+      "duration_s": 5,
+      "fps": 24,
+      "camera": "dolly_in",
+      "loras": [],
+      "image": "shot-bay.png",
+      "last_image": null,
+      "minutes": 8.7
+    },
+    {
+      "name": "b-2-kitchen",
+      "prompt": "Exactly as in the image: a handmade miniature diorama, close on a community kitchen with a blue awning under a high warm midday sun. The tiny volunteers pass brown cartons hand to hand from the open white van to the table under the awning, the cook ladles food onto plates and hands them to the queue with the children at the front, and the glowing green path pulses once along the road to the van. The camera pushes in very slowly and smoothly. Everything stays as in the image; no text appears anywhere. No flicker.",
+      "seed": 8212,
+      "resolution": "720p",
+      "duration_s": 5,
+      "fps": 24,
+      "camera": "dolly_in",
+      "loras": [],
+      "image": "shot-kitchen.png",
+      "last_image": null,
+      "minutes": 9.0
+    },
+    {
+      "name": "b-3-lane",
+      "prompt": "Exactly as in the image: a handmade miniature diorama, close on a lane of kirana shops at a surreal violet dusk. The sky's violet and magenta deepen and the gold fades behind the hills, the shop fronts' warm lights and the street lamp brighten, tiny shoppers reach for packets and carry them off, the green auto-rickshaw's lamp comes on, and at the staff-sale table in the foreground the queue of workers moves up as the man with the cash box hands out packets. The camera pushes in very slowly and smoothly. Everything stays as in the image; no text appears anywhere. No flicker.",
+      "seed": 8213,
+      "resolution": "720p",
+      "duration_s": 5,
+      "fps": 24,
+      "camera": "dolly_in",
+      "loras": [],
+      "image": "shot-lane.png",
+      "last_image": null,
+      "minutes": 8.8
+    },
+    {
+      "name": "b-4-office",
+      "prompt": "Exactly as in the image: a handmade miniature diorama, close on a small office at night seen through its lit window under a deep indigo and violet sky. The tiny woman and the tiny man clink their chai tumblers and laugh, the third person claps, the desk lamp's warm light plays on the papers, the stars twinkle faintly, the purple glow at the horizon brightens as if dawn is near, and the glowing green path pulses once along the road below the window. The camera pushes in very slowly and smoothly. Everything stays as in the image; no text appears anywhere. No flicker.",
+      "seed": 8214,
+      "resolution": "720p",
+      "duration_s": 5,
+      "fps": 24,
+      "camera": "dolly_in",
+      "loras": [],
+      "image": "shot-office.png",
+      "last_image": null,
+      "minutes": 9.4
+    }
+  ],
+  "cut": "the shots trimmed (1.25-4.6 s, then 0.5-4.5 s) and dissolved into one another over 0.5 s; the tail dissolves back into the first shot and runs on to 1.25 s, where the film begins, so it loops without a cut: 14.1 s; eq contrast 1.03, saturation 1.06",
+  "encode": "ffmpeg -an -c:v libx264 -preset slow -profile:v high -crf 22 -pix_fmt yuv420p -movflags +faststart (from LTX's own H.264)",
+  "audio": false,
+  "created": "2026-10-09",
+  "use": "smartclearance.com's hero film (SC-111): option B, follow the carton: one looping film of four shots; the dark theme starts it at the office",
+  "designed_in": "design3/designs/SC-111"
+}
