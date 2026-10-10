@@ -1,0 +1,29 @@
+{
+  "name": "A-k2-yard-dusk-clean",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "edit",
+  "prompt": "Remove every sign and every letter from this photograph: the blue signboard on the gate pillar and the notice board on the wall at the left become plain surfaces. Change nothing else: the same people, the van, the table, the dusk light and the framing.",
+  "seed": 154015,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "source",
+      "file": "A-k2-yard-dusk.png",
+      "sha256": "3bac1629f8c9f60035f617794161bbb7432b0ac1b6a93bfcfafa863d59cf1121"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "latency_s": 40.4,
+  "use": "SC-154 option A keyframe 2, cleaned of signboards",
+  "model_text": null,
+  "status": "done",
+  "output": "A-k2-yard-dusk-clean.webp 2752x1536",
+  "postprocess": "WebP q82 from A-k2-yard-dusk-clean.png",
+  "derived_from": "A-k2-yard-dusk-clean.png"
+}

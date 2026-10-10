@@ -1,0 +1,23 @@
+{
+  "name": "cast-distributor",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "sheet",
+  "prompt": "A character reference sheet on a plain neutral grey studio background, soft even light, photographic, realistic skin and fabric: the same person three times side by side, full face front view, three-quarter view and profile, head and shoulders, the same clothes in every view, no text, no labels, no logos. The person: an Indian man in his mid-fifties, a distributor who owns a godown: short grey-flecked hair, a trimmed grey moustache, reading glasses pushed up on his head, a light blue checked short-sleeved shirt, a steel kada bracelet on his right wrist; a warm, weathered face",
+  "seed": 154002,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "latency_s": 19.0,
+  "use": "SC-154 cast: the distributor (fictional), the reference for every keyframe he is in",
+  "model_text": null,
+  "status": "done",
+  "output": "cast-distributor.webp 2752x1536",
+  "postprocess": "WebP q82 from cast-distributor.png",
+  "derived_from": "cast-distributor.png"
+}

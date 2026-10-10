@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-154 design review · The hero film, live action on Vertex AI</title>
+<meta name="description" content="Three options for a live-action hero film made on Vertex AI (Veo 3.1 and Nano Banana 2): the journey in four chapters, about 15 seconds, realistic people, looping.">
+<script>
+  (function () { var m = null; try { m = localStorage.getItem("sc3-theme"); } catch (e) {} var dark = m === "dark" || (m !== "light" && matchMedia("(prefers-color-scheme: dark)").matches); document.documentElement.setAttribute("data-theme", dark ? "dark" : "light"); })();
+</script>
+<link rel="icon" href="../../system/img/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../system/tokens.css">
+<link rel="stylesheet" href="../../system/base.css">
+<link rel="stylesheet" href="../../system/components.css">
+<style>
+  html, body { overflow: auto; height: auto; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--font-ui); }
+  .board { max-width: 1280px; margin: 0 auto; padding: 40px 24px 96px; display: grid; gap: 40px; }
+  .board h1 { margin: 0; font-family: var(--font-display); font-size: 40px; font-weight: 720; letter-spacing: -0.028em; line-height: 1.06; }
+  .board h2 { margin: 0; font-family: var(--font-display); font-size: 28px; font-weight: 680; letter-spacing: -0.02em; }
+  .board h3 { margin: 0; font-size: 18px; font-weight: 650; letter-spacing: -0.01em; }
+  .board p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--fg-2); max-width: 78ch; }
+  .board blockquote { margin: 0; padding: 14px 18px; border-left: 3px solid var(--primary); border-radius: 0 12px 12px 0; background: var(--surface); color: var(--fg); font-size: 15px; line-height: 1.5; white-space: pre-line; }
+  .head { display: grid; gap: 14px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 13px; color: var(--fg-3); }
+  .meta span { padding: 6px 10px; border-radius: 999px; background: var(--fill); }
+  .sec { display: grid; gap: 18px; padding-top: 28px; box-shadow: inset 0 var(--hair) 0 var(--line); }
+  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .shot { display: grid; gap: 8px; }
+  .shot img, .shot video { width: 100%; height: auto; border-radius: 14px; box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); background: var(--surface); }
+  .shot figcaption { font-size: 13px; color: var(--fg-3); }
+  .pair { display: grid; gap: 14px; grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); align-items: start; }
+  .opt { display: grid; gap: 16px; padding: 22px; border-radius: 22px; background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+  .opt.rec { box-shadow: var(--shadow-1), 0 0 0 2px var(--primary); }
+  .opt-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .tag { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 600; background: var(--fill-2); color: var(--fg); }
+  .tag.rec { background: var(--primary-soft); color: var(--primary-text); }
+  .tag.k { background: var(--amber-soft); color: var(--amber-text); }
+  .links { display: flex; flex-wrap: wrap; gap: 8px; }
+  .links a { display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 999px; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--primary-fg); background: var(--primary); }
+  .links a.sec { color: var(--fg); background: var(--fill-2); box-shadow: none; padding: 0 14px; display: inline-flex; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { padding: 10px 12px; text-align: left; vertical-align: top; box-shadow: inset 0 calc(-1 * var(--hair)) 0 var(--line); }
+  th { font-weight: 650; color: var(--fg-2); font-size: 13px; }
+  td b { font-weight: 650; }
+  ul.plain { margin: 0; padding-left: 18px; font-size: 15px; line-height: 1.5; color: var(--fg-2); }
+  .note { padding: 14px 18px; border-radius: 14px; background: var(--amber-soft); color: var(--amber-text); font-size: 14px; line-height: 1.5; }
+  .ask { display: grid; gap: 10px; padding: 22px; border-radius: 22px; background: var(--primary-soft); color: var(--fg); }
+  .ask b { color: var(--primary-text); }
+  @media (max-width: 760px) { .pair { grid-template-columns: 1fr; } .board h1 { font-size: 32px; } }
+</style>
+</head>
+<body>
+<main class="board">
+  <header class="head">
+    <div class="meta"><span>SC-154</span><span>Landing page · the hero</span><span>10 Oct 2026</span><span>Design review</span></div>
+    <h1>The hero film, live action: the brand and the distributor, the kiranas, the food bank and the staff sale, the paperwork, through one day, with real people.</h1>
+    <p>Three options for the film, each a complete hero on the real kit with a draft clip rendered on Google Vertex AI: character sheets and keyframes from Nano Banana 2, one 8-second Veo 3.1 Fast clip per option at 720p without audio (two takes, the better one on the page). The full 15-second film at 1080p is made for the pick only. Every option loops under its Pause control, reads the four chapters in the strip under the copy, and starts both themes on the same frame (no night act, as decided). Every person is fictional, every pack unbranded, and no client is named. The switcher at the foot of every page swaps the film, so comparing is a click; under the hero a review-only storyboard shows the option's four keyframes.</p>
+    <blockquote>I want to look at the hero animated movie of Landing page, I now you to use Google video/image generation plugins to come up with a really awesome video projecting the journey of the application in about 15 seconds. It should be using realistic human characters instead of cartoon, showing journey of brands/FMCG/Retailer/Distributor/kiranas/donations/Staff sale. Create a plan what Google Vertex AI models can be used and expected pricing
+It needs to professional and aesthetically pleasing</blockquote>
+    <div class="links">
+      <a href="option-a/mockup.html">Open option A</a><a href="option-b/mockup.html">Open option B</a><a href="option-c/mockup.html">Open option C</a>
+      <a class="sec" href="option-a/mockup.html?theme=dark">A, dark</a><a class="sec" href="option-b/mockup.html?theme=dark">B, dark</a><a class="sec" href="option-c/mockup.html?theme=dark">C, dark</a>
+    </div>
+  </header>
+
+  <section class="sec">
+    <h2>The hero as it is</h2>
+    <p>SC-111's film: a miniature town in four acts, 14.2 s, looping, the dark theme starting at its night. The maintainer asked for the same journey told with realistic human characters, made with Google's models.</p>
+    <div class="grid">
+      <figure class="shot"><img src="current/light-1440.webp" alt="The current hero at 1440, light: the miniature town by morning" loading="lazy"><figcaption>Light, 1440</figcaption></figure>
+      <figure class="shot"><img src="current/dark-1440.webp" alt="The current hero at 1440, dark: the town at night" loading="lazy"><figcaption>Dark, 1440</figcaption></figure>
+      <figure class="shot"><img src="current/light-390.webp" alt="The current hero on a phone" loading="lazy"><figcaption>A phone, light</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>The models, and what they cost</h2>
+    <p>Verified on Google's Vertex AI pricing page and the project's model registry on 10 Oct 2026, in USD. Veo is billed per second of output, and silent video is half the price, so the hero (which plays muted) is made without audio.</p>
+    <table>
+      <tr><th>Model</th><th>Serves at</th><th>Price</th><th>Used for</th></tr>
+      <tr><td><b>Veo 3.1</b> (veo-3.1-generate-001, GA)</td><td>us-central1</td><td>$0.20 a second without audio at 720p or 1080p ($0.40 with); $0.40 / $0.60 at 4K</td><td>the final film: four 8 s clips × 3 takes ≈ $19 (A or C), two clips ≈ $10 (B)</td></tr>
+      <tr><td><b>Veo 3.1 Fast</b> (GA)</td><td>us-central1</td><td>$0.08 a second at 720p, $0.10 at 1080p, without audio</td><td>the drafts on this board: six 8 s clips, $3.84</td></tr>
+      <tr><td>Veo 3.1 Lite (preview)</td><td>us-central1</td><td>$0.03 / $0.05 a second</td><td>not used</td></tr>
+      <tr><td><b>Nano Banana 2</b> (gemini-3.1-flash-image)</td><td>global only</td><td>$0.067 an image at 1K, $0.101 at 2K, $0.151 at 4K</td><td>3 character sheets, 12 keyframes, 3 cleaning edits: $1.81</td></tr>
+      <tr><td>Nano Banana Pro (gemini-3-pro-image)</td><td>global only</td><td>$0.134 at 1K–2K, $0.24 at 4K</td><td>not needed</td></tr>
+      <tr><td>Gemini Omni Flash (GA)</td><td>us-central1</td><td>about $0.10 a second at 720p, audio forced</td><td>the alternative not taken: 10 s at most, no first or last frame, no silent option</td></tr>
+    </table>
+    <p>Veo 3.1's rules shaped the plan: clips are 4, 6 or 8 s, and 1080p, reference images and a last frame all need 8 s; extension is 720p only, so a 1080p film is cut from clips; people need <code>allow_adult</code>; every frame carries a SynthID watermark. <b>This round cost $5.66 (£4.24)</b> against the $9 asked for. The scripts that made everything are tracked in <code>design3/tools/vertex-media/</code>, with a <code>.prompt.json</code> beside every asset.</p>
+  </section>
+
+  <section class="sec">
+    <h2>The cast and the chapters</h2>
+    <p>Three fictional people, each with a character sheet that every keyframe they are in takes as a reference: the brand's supply planner, the distributor, a kirana shop owner. No client, product or batch is named anywhere; the cartons are plain kraft with a sage-green band and the packets solid colours with no lettering (three keyframes came back with a sign or a printed packet and were cleaned before Veo saw them). No children. The strip reads the journey's order, and every figure is computed in core/money.js.</p>
+    <div class="grid">
+      <figure class="shot"><img src="img/cast-planner.webp" alt="Character sheet: the brand's supply planner" loading="lazy"><figcaption>The brand's supply planner</figcaption></figure>
+      <figure class="shot"><img src="img/cast-distributor.webp" alt="Character sheet: the distributor" loading="lazy"><figcaption>The distributor</figcaption></figure>
+      <figure class="shot"><img src="img/cast-kirana.webp" alt="Character sheet: the kirana shop owner" loading="lazy"><figcaption>The kirana shop owner</figcaption></figure>
+    </div>
+    <table>
+      <tr><th>Hour</th><th>Chapter</th><th>What the film shows</th><th>The strip reads</th></tr>
+      <tr><td>06:30</td><td><b>The brand and the distributor</b></td><td>Dawn at the factory's loading bay: the planner and the distributor over the plan on her phone, plain cartons onto the blue truck.</td><td>1,360 packs flagged; one yes, ₹21,770 on screen</td></tr>
+      <tr><td>11:00</td><td><b>The kiranas</b></td><td>High sun in the godown: the kirana owner lifts her crate at the counter while the distributor ticks his register.</td><td>31 shops order 588 packs, buy 10 get 2 free</td></tr>
+      <tr><td>18:00</td><td><b>The food bank and the staff sale</b></td><td>Violet dusk in the yard: the food bank's van loading at the left, the staff-sale table at the gate.</td><td>packs with 15+ days left go as meals; the godown's own staff buy up to 50</td></tr>
+      <tr><td>21:30</td><td><b>Paperwork</b></td><td>Evening in the office over the godown: the papers, the tablet, chai raised.</td><td>the tax invoice and the credit note drafted; ₹1,224 of GST credit kept</td></tr>
+    </table>
+  </section>
+
+  <section class="sec" id="options">
+    <h2>The three options</h2>
+    <p>Shared by all three: the same cast, the same four chapters, about 15 s at 1080p and 24 fps, looping under Pause, drifting with the scroll, both themes on the same first frame, the poster and the last chapter under reduced motion. What differs is how the camera tells it, and how the loop closes.</p>
+    <div class="grid">
+      <article class="opt rec">
+        <div class="opt-head"><h3>A · Four hours, four places</h3><span class="tag rec">Recommended</span><span class="tag">4 clips · dissolve loop</span></div>
+        <p>Four live-action chapters at four hours of one day, each one place and one action: the bay at dawn, the godown counter at noon, the yard at violet dusk (the van, then the table), the office in the evening. One 8 s clip a chapter, image to video from its keyframe, trimmed to about 4 s and chained through half-second dissolves; the tail dissolves into the head. The page's own camera leans 1.25× on each chapter's subject, as SC-111's did on each act's place.</p>
+        <figure class="shot"><video src="media/a-1-bay-dawn.mp4" poster="img/A-k0-bay-dawn-clean.webp" controls muted loop playsinline preload="metadata"></video><figcaption>The draft: chapter 1, the bay at dawn, the camera pushing in (Veo 3.1 Fast, 720p, 8 s)</figcaption></figure>
+        <div class="grid">
+          <figure class="shot"><img src="img/A-k0-bay-dawn-clean.webp" alt="Option A keyframe: the bay at dawn" loading="lazy"><figcaption>06:30 · the bay</figcaption></figure>
+          <figure class="shot"><img src="img/A-k1-godown-noon.webp" alt="Option A keyframe: the godown counter at noon" loading="lazy"><figcaption>11:00 · the counter</figcaption></figure>
+          <figure class="shot"><img src="img/A-k2-yard-dusk-clean.webp" alt="Option A keyframe: the yard at dusk, the van and the table" loading="lazy"><figcaption>18:00 · the van and the table</figcaption></figure>
+          <figure class="shot"><img src="img/A-k3-office-evening.webp" alt="Option A keyframe: the office in the evening" loading="lazy"><figcaption>21:30 · the office</figcaption></figure>
+        </div>
+        <div class="grid">
+          <figure class="shot"><img src="option-a/light-1440.webp" alt="Option A at 1440, light" loading="lazy"><figcaption>Light, 1440</figcaption></figure>
+          <figure class="shot"><img src="option-a/dark-1440.webp" alt="Option A at 1440, dark" loading="lazy"><figcaption>Dark, 1440</figcaption></figure>
+          <figure class="shot"><img src="option-a/light-390.webp" alt="Option A on a phone" loading="lazy"><figcaption>A phone</figcaption></figure>
+        </div>
+        <figure class="shot"><video src="option-a/motion.mp4" poster="option-a/motion.webp" controls muted playsinline preload="metadata"></video><figcaption>The page played through, ten seconds</figcaption></figure>
+        <p><b>Why A.</b> The clearest story and the safest to generate: each clip asks Veo for one place and one action, which is what it does best, and the faces hold because every clip starts on a keyframe made from the sheets. Cutting between places is ordinary film grammar; only the loop needs continuity, and a dissolve through the dawn frame gives it. <b>Trade-off:</b> the loop is a dissolve, not a match. <b>The build:</b> four clips at Veo 3.1 1080p (about $19 with retakes), the cut in <code>assemble.py</code>, posters from the film's own frames; <code>site.jsx</code>'s hero loses its night offset; the port's <code>Hero.svelte</code>, <code>figures.ts</code>, <code>media.ts</code> and <code>plates.ts</code> follow.</p>
+      </article>
+      <article class="opt">
+        <div class="opt-head"><h3>B · One carton, hand to hand</h3><span class="tag">2 clips · matched loop</span></div>
+        <p>One unbranded carton passed from hand to hand across the day, centred in the frame the whole way: the planner hands it to the distributor at dawn, he slides it across his counter to the kirana owner, it rides to the van and the staff table at dusk and rests on the desk in the evening, and comes back to the bay. Two 8 s clips chained by their last frames (the counter, then the bay again), so the film's final frame returns to its first: a true matched loop, no dissolve.</p>
+        <figure class="shot"><video src="media/b-1-handoff.mp4" poster="img/B-k0-bay-handoff-clean.webp" controls muted loop playsinline preload="metadata"></video><figcaption>The draft: clip 1, the carton from the bay to the counter, Veo's own dissolve between the places (Veo 3.1 Fast, 720p, 8 s)</figcaption></figure>
+        <div class="grid">
+          <figure class="shot"><img src="img/B-k0-bay-handoff-clean.webp" alt="Option B keyframe: the carton handed over at the bay" loading="lazy"><figcaption>06:30 · the bay</figcaption></figure>
+          <figure class="shot"><img src="img/B-kmid-counter-handoff.webp" alt="Option B keyframe: the carton across the counter" loading="lazy"><figcaption>11:00 · the counter</figcaption></figure>
+          <figure class="shot"><img src="img/B-k2-van-table.webp" alt="Option B keyframe: the carton at the van, the table behind" loading="lazy"><figcaption>18:00 · the van and the table</figcaption></figure>
+          <figure class="shot"><img src="img/B-k3-desk.webp" alt="Option B keyframe: the carton on the desk" loading="lazy"><figcaption>21:30 · the desk</figcaption></figure>
+        </div>
+        <div class="grid">
+          <figure class="shot"><img src="option-b/light-1440.webp" alt="Option B at 1440, light" loading="lazy"><figcaption>Light, 1440</figcaption></figure>
+          <figure class="shot"><img src="option-b/dark-1440.webp" alt="Option B at 1440, dark" loading="lazy"><figcaption>Dark, 1440</figcaption></figure>
+          <figure class="shot"><img src="option-b/light-390.webp" alt="Option B on a phone" loading="lazy"><figcaption>A phone</figcaption></figure>
+        </div>
+        <figure class="shot"><video src="option-b/motion.mp4" poster="option-b/motion.webp" controls muted playsinline preload="metadata"></video><figcaption>The page played through, ten seconds</figcaption></figure>
+        <p><b>Why B.</b> The most cinematic idea: one object carries the whole journey, and the loop closes exactly. <b>Trade-off:</b> the world has to change inside a shot. Asked to carry the carton from the bay into the godown, Veo renders a dissolve of its own (visible in the draft at about 4 s), and the people drift through it; a build would spend its retakes on that join. It is the cheapest to build (two clips, about $10). <b>The build:</b> two clips at 1080p chained by their last frames, the loop checked frame against frame by <code>seams.py</code>.</p>
+      </article>
+      <article class="opt">
+        <div class="opt-head"><h3>C · One yard, one day</h3><span class="tag">4 clips · the day turns</span></div>
+        <p>The live-action heir to SC-111's one town: a locked-off camera at the gate of the distributor's yard while a whole day passes in front of it. Dawn, the truck and the handshake; noon, the autorickshaws and the shopkeepers' crates; violet dusk, the van and the staff table; the blue hour, the yard quiet and the office window lit. Four 8 s clips, each starting on one keyframe and ending on the next (the three later ones are edits of the dawn frame, so the yard holds), the last ending on the first: the day turns without a cut.</p>
+        <figure class="shot"><video src="media/c-1-dawn-noon-t2.mp4" poster="img/C-k0-yard-dawn.webp" controls muted loop playsinline preload="metadata"></video><figcaption>The draft: dawn to noon in one locked-off shot (Veo 3.1 Fast, 720p, 8 s)</figcaption></figure>
+        <div class="grid">
+          <figure class="shot"><img src="img/C-k0-yard-dawn.webp" alt="Option C keyframe: the yard at dawn" loading="lazy"><figcaption>06:30 · dawn</figcaption></figure>
+          <figure class="shot"><img src="img/C-k1-yard-noon.webp" alt="Option C keyframe: the yard at noon" loading="lazy"><figcaption>11:00 · noon</figcaption></figure>
+          <figure class="shot"><img src="img/C-k2-yard-dusk.webp" alt="Option C keyframe: the yard at violet dusk" loading="lazy"><figcaption>18:00 · dusk</figcaption></figure>
+          <figure class="shot"><img src="img/C-k3-yard-evening.webp" alt="Option C keyframe: the yard in the blue hour" loading="lazy"><figcaption>21:30 · the blue hour</figcaption></figure>
+        </div>
+        <div class="grid">
+          <figure class="shot"><img src="option-c/light-1440.webp" alt="Option C at 1440, light" loading="lazy"><figcaption>Light, 1440</figcaption></figure>
+          <figure class="shot"><img src="option-c/dark-1440.webp" alt="Option C at 1440, dark" loading="lazy"><figcaption>Dark, 1440</figcaption></figure>
+          <figure class="shot"><img src="option-c/light-390.webp" alt="Option C on a phone" loading="lazy"><figcaption>A phone</figcaption></figure>
+        </div>
+        <figure class="shot"><video src="option-c/motion.mp4" poster="option-c/motion.webp" controls muted playsinline preload="metadata"></video><figcaption>The page played through, ten seconds</figcaption></figure>
+        <p><b>Why C.</b> It keeps what the maintainer liked in SC-111, the day turning and the violet dusk, with real people in a real yard, and the camera never moves, so the heading always has a calm ground. <b>Trade-off:</b> the people are small, so the story is in the strip rather than on faces; and in both drafts the truck leaves through the gate past the camera and fills the frame for a second (the build would have it reverse out of the far side). <b>The build:</b> four clips at 1080p, each with a first and a last frame (about $19 with retakes).</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Checks made</h2>
+    <ul class="plain" id="checks">
+      <li>Every page renders without console errors in Chromium at 1440 × 900 and 390 × 844, light and dark (<code>design3/tools/capture.mjs</code>).</li>
+      <li>The drafts' contact sheets were read frame by frame: no lettering or brand in A's and B's clips; C's take 2 keeps the yard's geometry to the noon keyframe; B's take 2 carries the carton through its dissolve to the counter's frame. A's take 2 shows a number plate for a moment, so take 1 is on the page.</li>
+      <li>Nothing was held back by Veo's safety filter (<code>rai_media_filtered</code> 0 on all six clips); each took about 70 s.</li>
+      <li>The image models' registry ids lie: the <code>-preview</code> ids answer 404, and only the GA ids serve, on the global endpoint, at a few images a minute. <code>veo.py doctor</code> now checks with a free call.</li>
+      <li>The round cost $5.66 (<code>cost.py</code>), against the $9 the maintainer allowed.</li>
+      <li>No browser suite was run (SC-55).</li>
+    </ul>
+  </section>
+
+  <section class="ask">
+    <h2>The ask</h2>
+    <p>One option: <b>A</b> (recommended), <b>B</b> or <b>C</b>, or none of these and what to change. A mixed answer works too ("A's chapters with C's dusk as the third"). Two things to say with the pick, if you have a view: the page's camera lean (1.25, or SC-111's 1.5), and whether the picked takes should be re-rendered at 4K for the build (about $13 more).</p>
+  </section>
+</main>
+</body>
+</html>
