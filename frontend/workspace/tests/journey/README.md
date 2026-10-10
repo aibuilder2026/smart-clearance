@@ -169,7 +169,7 @@ It resets production's Munchly journey first, as every chips suite does, and the
 Run. Afterwards, set production's journey day back to 24 hours from the console (the client's journey-day badge,
 Real time); `hydrate.sh --day-minutes` sets only the local database's.
 
-Its run of 10 Oct on production is in `runs/2026-10-10-prod/`.
+Its run of 10 Oct on production, after SC-137's deploy (SC-138), is in `runs/2026-10-10-prod/`.
 
 ## Signing in
 

@@ -1651,7 +1651,7 @@
   - **After it:** the two environments run on their own again; each one's tick and agents move its own copy on.
   - **Checks:** backend-api 529 passed, 1 skipped (3 new in `test_sync.py`); infra `check.sh` passes.
 
-- **SC-137** (In Review, branch `SC-137-chips-e2e-prod`): Munchly Chips E2E on production, recorded, asked for by the maintainer ("run the munchly chips end to end on production and record the session").
+- **SC-137** (PR #118, merged): Munchly Chips E2E on production, recorded, asked for by the maintainer ("run the munchly chips end to end on production and record the session").
   - **The production target:** `E2E_TARGET=prod` runs a journey suite on the deployed apps (munchly-smartclearance.web.app, smartclearance-console.web.app) and on backend-api and the agents on Cloud Run. Each app's API address and browser key come from its production build settings, the repository's variables, read with `gh` (`auth.ts`). People still sign in with custom tokens (`sessions.sh`), since the user pool is shared. Nothing local runs.
   - **Service workers blocked** in the suites' browser (`playwright.journey.config.ts`): the deployed workspace's service worker served its cached shell for the bare page a person is signed in from, so the first attempt stopped at the fifth kirana on the sign-in screen. The deployed app is unchanged; in-app notifications come over the live stream.
   - **The run of 10 Oct** (`runs/2026-10-10-prod/REPORT.md`, the 10 min 45 s recording local): passed in 10 min 33 s, 77 steps, from a reset, every figure the story's:
@@ -1668,5 +1668,14 @@
     - backend-api 530 passed, 1 skipped (a new steps test);
     - the frontend gate passes (core 258, api 77, workspace 82 with a new live test that fails without the fix, admin 17, demo 5, console 3);
     - the live fixtures were regenerated.
+
+- **SC-138** (In Review, branch `SC-138-chips-e2e-prod-rerun`): Munchly Chips E2E on production again once SC-137's build was deployed, recorded, asked for by the maintainer ("once new build is deployed I want to rerun the munchly chip e2e happy path and record the session").
+  - **The build:** CI for `a5b3626` passed every gate and deployed backend-api (revision `backend-api-00038-rkg`), the agents and Hosting.
+  - **The run** (`runs/2026-10-10-prod/REPORT.md`, replacing SC-137's record; the 9 min 47 s recording local): passed in 9 min 46 s, 77 steps, from a reset, with no soft failure.
+    - Every figure is the story's: ₹21,770 planned; 588 to 31 kiranas; 772 at ₹14.20; INV/26-27/0931, CN/0117 and the ITC memo with their PDFs; actual ₹21,152.40.
+    - The tax and the ESG are as posted.
+    - Rakesh's batch page reads "Your Saturday van round delivered the scheme".
+    - The only note is the old one: the invoice reads "drafted" in Priya's pack after Rakesh issues it.
+  - **After it:** production's journey day back at 24 hours; the chips cleared, the Mango Drink at day 0.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
