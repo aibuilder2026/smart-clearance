@@ -1141,7 +1141,8 @@
 				"current": 8,
 				"openedAt": "2026-10-02T09:00:00+05:30",
 				"stageAt": "2026-10-05T18:10:00+05:30",
-				"recovered": 21152.4
+				"recovered": 21152.4,
+				"kg": 0.16
 			},
 			{
 				"client": "munchly",
@@ -1154,7 +1155,8 @@
 				"current": 6,
 				"openedAt": "2026-10-02T09:00:00+05:30",
 				"stageAt": "2026-10-06T09:40:00+05:30",
-				"recovered": 0
+				"recovered": 0,
+				"kg": 0.215
 			},
 			{
 				"client": "munchly",
@@ -1167,7 +1169,8 @@
 				"current": 1,
 				"openedAt": "2026-10-02T09:00:00+05:30",
 				"stageAt": "2026-10-02T09:00:00+05:30",
-				"recovered": 0
+				"recovered": 0,
+				"kg": 0.16
 			},
 			{
 				"client": "munchly",
@@ -1180,7 +1183,8 @@
 				"current": 1,
 				"openedAt": "2026-10-02T09:00:00+05:30",
 				"stageAt": "2026-10-02T09:00:00+05:30",
-				"recovered": 0
+				"recovered": 0,
+				"kg": 0.11
 			},
 			{
 				"client": "munchly",
@@ -1193,7 +1197,8 @@
 				"current": 1,
 				"openedAt": "2026-10-02T09:00:00+05:30",
 				"stageAt": "2026-10-02T09:00:00+05:30",
-				"recovered": 0
+				"recovered": 0,
+				"kg": 0.22
 			},
 			{
 				"client": "munchly",
@@ -1207,6 +1212,7 @@
 				"openedAt": "2026-10-02T09:00:00+05:30",
 				"stageAt": "2026-10-02T09:00:00+05:30",
 				"recovered": 0,
+				"kg": 0.215,
 				"override": {
 					"qcomPct": 30,
 					"reason": "Zepto's Pune warehouse agreed to take this lot at 30% of its life",
@@ -1226,7 +1232,8 @@
 				"current": 1,
 				"openedAt": "2026-10-02T09:00:00+05:30",
 				"stageAt": "2026-10-02T09:00:00+05:30",
-				"recovered": 0
+				"recovered": 0,
+				"kg": 0.27
 			},
 			{
 				"client": "munchly",
@@ -1239,7 +1246,8 @@
 				"current": 1,
 				"openedAt": "2026-10-02T09:00:00+05:30",
 				"stageAt": "2026-10-02T09:00:00+05:30",
-				"recovered": 0
+				"recovered": 0,
+				"kg": 0.12
 			},
 			{
 				"client": "munchly",
@@ -1252,7 +1260,8 @@
 				"current": 1,
 				"openedAt": "2026-10-02T09:00:00+05:30",
 				"stageAt": "2026-10-02T09:00:00+05:30",
-				"recovered": 0
+				"recovered": 0,
+				"kg": 0.23
 			}
 		],
 		"audit": [

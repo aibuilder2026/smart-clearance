@@ -344,6 +344,19 @@ export type DayFigures = {
 	closed: number;
 	units: number;
 	runs: number;
+	/** the food the batches closed that day kept out of landfill (sold or given), and destroyed, in kilos (SC-149) */
+	keptKg: number;
+	destroyedKg: number;
+	/** the packs they destroyed */
+	destroyed: number;
+};
+/** the food closed batches kept out of landfill and destroyed over the range, and over the range before it (SC-149) */
+export type FoodFigures = {
+	keptKg: number;
+	destroyedKg: number;
+	destroyed: number;
+	keptKgBefore: number;
+	destroyedKgBefore: number;
 };
 /** the platform's figures over a range of days, every one an aggregate over the batches and runs when read */
 export type Dashboard = {
@@ -353,6 +366,7 @@ export type Dashboard = {
 	recovered: number;
 	recoveredBefore: number;
 	byDay: DayFigures[];
+	food: FoodFigures;
 	inFlight: number;
 	inFlightClients: number;
 	inFlightSeries: number[];

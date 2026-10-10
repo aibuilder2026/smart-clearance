@@ -1841,4 +1841,26 @@
     - with the photos held back mid-load, design3 (light and dark) and core's stub build each showed the shimmer placeholders with their tags, then the photos once they landed;
     - the frontend gate passes: core 270, api 78, workspace 92, admin 17, demo 5, console 3.
 
+- **SC-149** (In Review, branch `SC-149-overview-destroyed`): the console's Overview stops drawing what it recovered twice, and shows the food destroyed.
+  - **The request:** "Console dashboard graph across all clients seems to be duplicating the recovered graph, see if we can add destroyed food into the graphs too... Agents at work and other sections looks fine dont touch them". The Recovered figure's sparkline and the Recovered, by day card drew the same series under the same total, and nothing recorded what a closed batch destroyed.
+  - **Design first:** three options on one board in platform v3, `SC-149 design review.html`, each the console on a review world (Munchly and four fictional clients, 180 days of batches):
+    - A, food by day (recommended);
+    - B, recovered and written off;
+    - C, food so far.
+
+    The maintainer picked **A**. Designs, stills, the build's stills and the decision are in `design3/designs/SC-149/`.
+  - **The card, Food, by day:** each day's kilos kept out of landfill (sold or given) rise from one baseline in the console's green, and the kilos destroyed (no channel took them) hang under it, hatched in clay, on one scale; the headline gives both totals and the share saved, the tooltip and Show as a table add the packs destroyed, what the day recovered and the batches closed. The Recovered figure and its sparkline stay; Agents at work and the rest are unchanged.
+    - **Colours:** validated with the dataviz script on the card's surface: `#167a52` / `#c2410c` in light (CVD ΔE 9.1), `#34a571` / `#e0662c` in dark (9.0); the ledger's red failed against the green (protan ΔE 1.7). The destroyed figure's text 6.0:1 and 7.4:1; a 0 kg figure stays in the plain ink.
+    - **Motion:** the bars grow once (420 ms, a few ms apart), a reading moves them, and a day that keeps more shows what it kept over today's bar; at once under reduced motion.
+  - **The data:** a closed batch keeps the packs it destroyed, `sc.batches.destroyed` (migration 0012), from the journey's ledger (destroyed by the client or at the godown) and from the synthetic world's hydrate (about 4 in 10 batches leave 2 to 25%, seeded by the batch, so the rest of the world draws as before). Kilos come from each SKU's `kg_per_unit`: hydrate reads it from the pack size; the migration fills in a missing one from the SKU's name, and backfills a journey batch's packs from its latest cleared case's ledger.
+  - **The contract:** `DayFigures` gains `keptKg`, `destroyedKg` and `destroyed`; `Dashboard` gains `food` (`FoodFigures`, with the range before). `platform.js`, `platform.ts` and `dashboard.py` agree, held by the fixtures; `contracts.sh` re-exported the OpenAPI.
+  - **The port:** `FoodChart.svelte` replaces `RecoveredChart.svelte`; `+page.svelte`'s card; `overview.ts` (`kg`, `kgAxis`, `savedShare`); `console.css` verbatim. The console's e2e spec reads the table as Food, by day.
+  - **Checks:**
+    - backend-api 554 passed, 1 skipped (2 new: a closed batch's food, and no more destroyed than it holds);
+    - the frontend gate passes: core 273, api 79 (1 new), workspace 93, admin 17, demo 5, console 3;
+    - design3 and the console's mock build played through on the review world at 1440 and a phone, light and dark: the tooltip, the table, 90 days, no page errors;
+    - the browser suites were not run (SC-55).
+  - **Locally:** migrated to 0012: Munchly's three godown batches read 381 packs destroyed, and every SKU has its kilos. The synthetic clients' batches closed before read 0 destroyed until the next `hydrate.sh --reset`.
+  - **Hosting:** design3's `dist/` is rebuilt; the hosted console loads commit `4632839` (every pinned file checked on jsDelivr first); it renders, the card in its empty state on the prototype's seed.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

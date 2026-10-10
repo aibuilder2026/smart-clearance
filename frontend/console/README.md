@@ -122,7 +122,7 @@ caching for `/_app/immutable/`). Terraform in `../../infra` makes the console's 
 infra/scripts/deploy.sh console     # builds the console, then releases it to its site
 ```
 
-For a custom domain such as `console.smartclearance.com`, set the site's `custom_domain` in `infra/prod/terraform.tfvars` and apply. Then
+For a custom domain such as `smartclearance-console.web.app`, set the site's `custom_domain` in `infra/prod/terraform.tfvars` and apply. Then
 add the DNS records Terraform outputs (`../../infra/README.md`, Custom domains). Any static host works the same way, as
 long as it rewrites unknown paths to `/index.html`.
 

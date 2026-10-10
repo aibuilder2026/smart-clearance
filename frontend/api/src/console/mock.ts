@@ -55,7 +55,7 @@ import {
 /** where the mock keeps the platform's state, and who is signed in */
 export const CONSOLE_KEY = 'sc-console';
 export const SESSION_KEY = 'sc-console-session';
-const VERSION = 6;
+const VERSION = 7;
 
 type State = {
 	v: number;

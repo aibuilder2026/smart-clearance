@@ -397,6 +397,21 @@ class DayFigures(Shape):
     closed: int
     units: int
     runs: int
+    # the food the batches closed that day kept out of landfill (sold or given) and destroyed, in kilos, and the packs
+    # they destroyed (SC-149)
+    kept_kg: float
+    destroyed_kg: float
+    destroyed: int
+
+
+class FoodFigures(Shape):
+    """the food closed batches kept out of landfill and destroyed over the range, and over the range before (SC-149)"""
+
+    kept_kg: float
+    destroyed_kg: float
+    destroyed: int
+    kept_kg_before: float
+    destroyed_kg_before: float
 
 
 class Waiting(Shape):
@@ -431,6 +446,7 @@ class Dashboard(Shape):
     recovered: float
     recovered_before: float
     by_day: list[DayFigures]
+    food: FoodFigures
     in_flight: int
     in_flight_clients: int
     in_flight_series: list[int]

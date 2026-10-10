@@ -218,9 +218,8 @@
 @container app (min-width: 1100px) { .cs-ov-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .cs-ov-kpi { display: grid; gap: 4px; align-content: start; padding: 16px 18px 14px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); min-width: 0; }
 .cs-ov-kpi .k-label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--fg-3); }
-.cs-ov-kpi .k-value, .cs-ov-big { font: 700 30px/1.1 var(--font-display); letter-spacing: -0.02em; color: var(--fg); font-variant-numeric: tabular-nums; font-variation-settings: "opsz" 48, "wdth" 88; }
-.cs-ov-big { font-size: 26px; }
-.cs-ov-kpi .k-value .cur, .cs-ov-big .cur { font-size: 0.62em; vertical-align: 0.42em; margin-right: 1px; }
+.cs-ov-kpi .k-value { font: 700 30px/1.1 var(--font-display); letter-spacing: -0.02em; color: var(--fg); font-variant-numeric: tabular-nums; font-variation-settings: "opsz" 48, "wdth" 88; }
+.cs-ov-kpi .k-value .cur { font-size: 0.62em; vertical-align: 0.42em; margin-right: 1px; }
 .cs-ov-kpi.amber .k-value { color: var(--amber-text); }
 .cs-ov-kpi .k-foot { display: block; min-height: 18px; font-size: 12.5px; line-height: 1.4; color: var(--fg-3); }
 .cs-ov-kpi .k-foot .up, .cs-ov-kpi .k-foot .warn { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; font-weight: 600; vertical-align: bottom; }
@@ -229,7 +228,6 @@
 .cs-ov-sparkbox { width: 100%; }
 .cs-ov-spark { display: block; width: 100%; height: 36px; margin-top: 4px; overflow: visible; }
 @container app (max-width: 767px) { .cs-ov-kpi { padding: 14px 14px 12px; } .cs-ov-kpi .k-value { font-size: 25px; } .cs-ov-spark { height: 28px; } }
-.cs-ov-in { font: 500 13px var(--font-ui); letter-spacing: 0; color: var(--fg-3); }
 .cs-ov-card { padding: 18px 18px 14px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); min-width: 0; }
 .cs-ov-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 10px 14px; margin-bottom: 12px; }
 .cs-ov-head .t { font-size: 16px; font-weight: 650; letter-spacing: -0.01em; }
@@ -329,8 +327,32 @@
 .cs-si-lbl > span { grid-area: 1 / 1; white-space: nowrap; }
 .cs-si-prog { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; transform-origin: left center; background: color-mix(in oklab, var(--primary-fg) 72%, transparent); }
 
-/* recovered by day: what the last reading added, beside today's dot */
+/* food by day: what the last reading kept out of landfill, over today's bar */
 .cs-ov-chart .cs-ov-gain { position: absolute; z-index: 4; padding: 3px 8px; border-radius: var(--r-full); background: var(--primary-soft); color: var(--primary-text); font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap; pointer-events: none; }
+
+/* food by day (SC-149): kept out of landfill in the console's green, destroyed in clay with a hatch, so it never rests on
+   colour alone. Validated with the dataviz script on the card's surface: #167a52 / #c2410c in light (CVD ΔE 9.1),
+   #34a571 / #e0662c in dark (ΔE 9.0); the destroyed figure's text 6.0:1 and 7.4:1 */
+.cs-ov-card { --viz-kept: #167a52; --viz-gone: #c2410c; --viz-gone-soft: rgb(194 65 12 / 0.16); --viz-gone-text: #b13a0a; }
+[data-theme="dark"] .cs-ov-card { --viz-kept: #34a571; --viz-gone: #e0662c; --viz-gone-soft: rgb(224 102 44 / 0.2); --viz-gone-text: #f08a5a; }
+.cs-ov-food-big { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 18px; }
+.cs-ov-food-big .fig { display: inline-flex; align-items: baseline; gap: 6px; }
+.cs-ov-food-big .fig > b { font: 700 26px/1.1 var(--font-display); letter-spacing: -0.02em; color: var(--fg); font-variant-numeric: tabular-nums; font-variation-settings: "opsz" 48, "wdth" 88; }
+.cs-ov-food-big .fig > span { font-size: 13px; font-weight: 500; color: var(--fg-3); }
+.cs-ov-food-big .fig.gone > b { color: var(--viz-gone-text); }
+.cs-ov-food-big .share { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: var(--r-full); background: var(--primary-soft); color: var(--primary-text); font-size: 12.5px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.cs-ov-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 10px 0 0; padding: 0; list-style: none; font-size: 12.5px; color: var(--fg-2); }
+.cs-ov-legend li, .cs-ov-food .tip .tr span:first-child { display: inline-flex; align-items: center; gap: 6px; }
+.cs-ov-card .sw { display: inline-block; flex: none; width: 12px; height: 12px; border-radius: 3px; }
+.cs-ov-card .sw.kept { background: var(--viz-kept); }
+.cs-ov-card .sw.gone { background: repeating-linear-gradient(135deg, var(--viz-gone) 0 2px, var(--viz-gone-soft) 2px 4px); box-shadow: inset 0 0 0 1px var(--viz-gone); }
+.cs-ov-food .tip { min-width: 196px; }
+.cs-ov-food .tip .sw { width: 9px; height: 9px; border-radius: 2px; }
+.cs-ov-food .kept { fill: var(--viz-kept); }
+.cs-ov-food .gone { fill: url(#cs-ov-hatch); stroke: var(--viz-gone); stroke-width: 1; }
+.cs-ov-food .hatch-bg { fill: var(--viz-gone-soft); }
+.cs-ov-food .hatch-ln { stroke: var(--viz-gone); stroke-width: 2.6; }
+.cs-ov-food .col { fill: var(--fill); }
 
 /* Agents at work: the nine stops as a route, and Closed today at its end */
 .cs-aw .cs-ov-head { margin-bottom: 6px; }

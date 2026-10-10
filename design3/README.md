@@ -37,7 +37,7 @@ Smart-Clearance is sold to manufacturers as software as a service: each one gets
 
 The console is the platform's own surface, separate from every client workspace.
 
-- **Sign-in.** Staff only: a smartclearance.com Google account, then a passkey. Try "Use a passkey" as Neha Kulkarni.
+- **Sign-in.** Staff only: a smartclearance.web.app Google account, then a passkey. Try "Use a passkey" as Neha Kulkarni.
 - **A client's agents** are laid out as the stops they work, from Data to Impact. Each one is Suggest, Ask or Act, with its limits, schedule and last run in an inspector. The human approval between Router and Lister is a locked amber gate for every client.
 - **A new client** is set up in seven steps from its supply-chain profile (route to market, who owns the stock, expiry policy). The profile decides its exits, and a preset decides how far its agents go at first.
 - **Every change** persists in the browser (`sc3-platform`) and writes an audit line. "Reset prototype data" in the account sheet goes back to the seed. The console keeps its own copy of Munchly's setup; the app does not read it yet.
