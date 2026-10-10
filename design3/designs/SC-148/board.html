@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-148 GST papers</title>
+<meta name="description" content="Three ways for the tax invoices and credit notes of Munchly's batches to read as real GST papers, with valid GSTINs and every field the rules ask for.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<link rel="stylesheet" href="board.css">
+<body>
+<main class="wrap">
+<h1>GST papers</h1>
+<p class="lede">SC-148 · Munchly's workspace · three ways for the <b>tax invoices</b> and <b>credit notes</b> of every batch to read as real GST papers: valid GSTINs, both parties' addresses and state codes, the place of supply, the HSN summary, the amount in words and the signatory.</p>
+<p>The maintainer (10 Oct):</p>
+<blockquote><ul><li>“Same for GST bills and invoices, they should be proper with GST number and realistic as much as possible.”</li><li>“I need you to update all images and invoices as needed for all past and present batches.”</li></ul></blockquote>
+<p>The carton labels are the same request's first part, on their own board: <b>SC-147</b>.</p>
+
+<h2>What the papers show today</h2>
+<div class="desks">
+<figure><img src="current/paperwork-1440-light.webp" width="1440" height="1400" loading="lazy" alt="Today: Priya's Paperwork for the Masala Chips, the document pack."><figcaption>Priya · Paperwork · MF-2409-117</figcaption></figure>
+<figure><img src="current/invoice-sheet-1440-light.webp" width="1440" height="1100" loading="lazy" alt="Today: the tax invoice beside the pack, with its GSTINs, item, IGST and total."><figcaption>The tax invoice, today</figcaption></figure>
+</div>
+<div class="shared" style="margin-top:18px">
+<div class="card"><h3 class="sub">The GST numbers are not valid</h3><p>None passes a GSTIN's check character: Munchly's <code class="k">27AABCM1234F1Z5</code>, Rakesh Traders' <code class="k">27AABCR1234F1Z5</code>, Agrawal Wholesale's <code class="k">22AAGFA4821M1Z3</code>. Lakshmi Agencies, Patil Distributors and Gupta &amp; Sons have none, so a history invoice with Lakshmi Agencies as seller prints <b>“GSTIN undefined”</b>.</p></div>
+<div class="card"><h3 class="sub">Munchly's own papers lack it</h3><p>backend-api passes Paperwork the client's name only, so the PDFs Munchly issues (the credit notes, the ITC memo) never carry Munchly's GSTIN, PAN or address.</p></div>
+<div class="card"><h3 class="sub">The invoice misses what rule 46 asks</h3><p>No seller's address with its state and code, no place of supply, no reverse-charge line, no HSN summary, no amount in words, no signatory. The credit notes name no invoice they are against.</p></div>
+</div>
+
+<h2>In every option</h2>
+<div class="tablewrap"><table class="cmp" style="min-width:640px"><thead><tr><th>Party</th><th>State</th><th>GSTIN</th><th>PAN</th></tr></thead><tbody>
+<tr><th>Munchly Foods Ltd</th><td>Maharashtra (27)</td><td><code class="k">27AAKCM0000M1ZN</code></td><td><code class="k">AAKCM0000M</code>, a company</td></tr>
+<tr><th>Rakesh Traders</th><td>Maharashtra (27)</td><td><code class="k">27ABHPR0000K1ZW</code></td><td><code class="k">ABHPR0000K</code>, a proprietor</td></tr>
+<tr><th>Lakshmi Agencies</th><td>Telangana (36)</td><td><code class="k">36AAJFL0000L1ZM</code></td><td><code class="k">AAJFL0000L</code>, a firm</td></tr>
+<tr><th>Patil Distributors</th><td>Maharashtra (27)</td><td><code class="k">27AAKFP0000P1Z8</code></td><td><code class="k">AAKFP0000P</code>, a firm</td></tr>
+<tr><th>Gupta &amp; Sons</th><td>Madhya Pradesh (23)</td><td><code class="k">23AAHFG0000G1ZB</code></td><td><code class="k">AAHFG0000G</code>, a firm</td></tr>
+<tr><th>Agrawal Wholesale</th><td>Chhattisgarh (22)</td><td><code class="k">22AAGFA0000A1ZW</code></td><td><code class="k">AAGFA0000A</code>, a firm</td></tr>
+</tbody></table></div>
+<div class="shared" style="margin-top:18px">
+<div class="card"><h3 class="sub">Valid, and fictional</h3><p>Each GSTIN is built as the GST portal builds one: the state code, the PAN, the entity number, Z and its check character, which every one passes. Every PAN's four digits are <b>0000</b>, which the Income Tax Department never issues, so none is a real taxpayer's. Each party also gets an address, an FSSAI licence where it trades in food, and Munchly a CIN.</p></div>
+<div class="card"><h3 class="sub">Every paper of every batch</h3><p>The tax invoices, the price-support and expiry credit notes, the GST ITC memo, the destruction certificate and the receipts, for the 12 batches cleared since July and the two in the journey, in the app's sheet and in the PDF Paperwork lays out, then every PDF laid out again.</p></div>
+<div class="card"><h3 class="sub">The same figures</h3><p>Every figure stays money.js's: the chips' INV/26-27/0931, 772 × ₹14.20, taxable ₹10,962.40, IGST 5% ₹548, round off −₹0.40, <b>₹11,510</b>; CN/0117 <b>₹8,768</b>. Only what the paper says about them is added. A price-support credit note stays a financial note, not under section 34, so no GST is adjusted, and it says so.</p></div>
+</div>
+
+<h2>The options</h2>
+<p>Each shows the story's tax invoice, Rakesh Traders to Agrawal Wholesale (Maharashtra to Chhattisgarh, so IGST), and the price-support credit note, Munchly to Rakesh Traders.</p>
+<section class="opt" id="option-a"><header><h3>Option A · As Tally prints it</h3></header>
+<p>The invoice is drafted for Rakesh to issue from Tally, so it reads as Tally's tax invoice: the seller's block, the invoice number and dates, delivery and dispatch, consignee and buyer with their GSTINs, state codes and the place of supply, the goods with HSN, quantity, rate and per, the HSN summary with the integrated tax, the amounts in words, the PAN, the bank and the declaration, “for Rakesh Traders · Authorised Signatory”. The credit note follows the same layout from Munchly.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>The layout every Indian distributor and accountant knows on sight.</li><li>Every field rule 46 asks for, and Munchly's own identity on its notes.</li><li>No e-invoice: a business turning over more than ₹5 crore must report a B2B invoice to the Invoice Registration Portal.</li></ul></dd></dl>
+<div class="desks paper">
+<figure><img src="option-a/invoice.webp" width="1588" height="2210" loading="lazy" alt="Option A: a Tally-style tax invoice from Rakesh Traders to Agrawal Wholesale for ₹11,510."><figcaption>Tax invoice · INV/26-27/0931</figcaption></figure>
+<figure><img src="option-a/credit-note.webp" width="1588" height="1296" loading="lazy" alt="Option A: Munchly's price-support credit note to Rakesh Traders for ₹8,768, against its invoice."><figcaption>Credit note · CN/0117</figcaption></figure>
+</div>
+<div class="links"><a class="btn" href="option-a/invoice.html">Open the invoice</a><a class="btn" href="option-a/credit-note.html">The credit note</a></div>
+</section>
+<section class="opt rec" id="option-b"><header><h3>Option B · The e-invoice</h3><span class="tag">Recommended</span></header>
+<p>Option A, with what a distributor of Rakesh Traders' size has on a B2B invoice: the <b>IRN</b>, the acknowledgement number and date, and the <b>signed QR code</b> from the Invoice Registration Portal at the head. The credit note is as in A, and says why it is not reported to the portal (a financial note).</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>The most realistic: e-invoicing has applied to every business over ₹5 crore of turnover since August 2023.</li><li>The IRN is worked out as the portal does (a SHA-256 of the GSTIN, year, type and number); the QR scans to its fields. Its signature is illustrative, and says so.</li><li>One more thing to explain in a demo.</li></ul></dd></dl>
+<div class="desks paper">
+<figure><img src="option-b/invoice.webp" width="1588" height="2482" loading="lazy" alt="Option B: the same tax invoice with an e-invoice block, its IRN, acknowledgement and signed QR code."><figcaption>Tax invoice · e-invoice · IRN and signed QR</figcaption></figure>
+<figure><img src="option-b/credit-note.webp" width="1588" height="1296" loading="lazy" alt="Option B: the credit note, which says it is not reported to the portal."><figcaption>Credit note · CN/0117</figcaption></figure>
+</div>
+<div class="links"><a class="btn primary" href="option-b/invoice.html">Open the invoice</a><a class="btn" href="option-b/credit-note.html">The credit note</a></div>
+</section>
+<section class="opt" id="option-c"><header><h3>Option C · The app's paper, completed</h3></header>
+<p>The paper keeps the app's own look, as today, with every missing field added: the seller's address, GSTIN, PAN and FSSAI licence, the buyer's GSTIN, the place of supply and reverse charge, HSN with the quantity and rate, the amount in words, the e-way bill line, the bank and the signatory. The credit note names the invoice it is against.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>Changes least, and reads easily on a phone.</li><li>Looks like the app's summary of a paper, not the paper a distributor would file.</li></ul></dd></dl>
+<div class="desks paper">
+<figure><img src="option-c/invoice.webp" width="1200" height="936" loading="lazy" alt="Option C: the app's tax invoice with GSTINs, PAN, FSSAI, the place of supply and the amount in words."><figcaption>Tax invoice · INV/26-27/0931</figcaption></figure>
+<figure><img src="option-c/credit-note.webp" width="1200" height="980" loading="lazy" alt="Option C: the app's credit note, naming Munchly's invoice it is against."><figcaption>Credit note · CN/0117</figcaption></figure>
+</div>
+<div class="links"><a class="btn" href="option-c/invoice.html">Open the invoice</a><a class="btn" href="option-c/credit-note.html">The credit note</a></div>
+</section>
+
+<h2>Side by side</h2>
+<div class="tablewrap"><table class="cmp"><thead><tr><th></th><th>A · As Tally prints it</th><th>B · The e-invoice</th><th>C · The app's paper, completed</th></tr></thead><tbody>
+<tr><th>Layout</th><td>Tally's, in the sheet and the PDF</td><td>Tally's, with the e-invoice block</td><td>The app's, in the sheet and the PDF</td></tr>
+<tr><th>GSTINs, PAN, state codes</th><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+<tr><th>HSN summary, words</th><td>Yes</td><td>Yes</td><td>Words only</td></tr>
+<tr><th>IRN and signed QR</th><td>No</td><td>Yes, on the tax invoice</td><td>No</td></tr>
+<tr><th>On a phone</th><td>The page drawn to scale</td><td>The page drawn to scale</td><td>Reads as the app does</td></tr>
+</tbody></table></div>
+
+<h2>Recommended: option B</h2>
+<div class="rec-box"><p><b>The e-invoice</b> is the paper a distributor like Rakesh Traders actually issues to a business buyer today: Tally's layout with every field the rules ask for, and the IRN and signed QR the portal adds. Munchly's own credit notes carry its GSTIN, PAN and CIN, and say why they adjust no GST.</p></div>
+
+<div class="q" style="margin-top:20px"><h3>To decide</h3><ul><li>Which option to build.</li><li>The kiranas' orders: today each is an order log on the scheme. Should each shop's order also get its own tax invoice from the distributor (intra-state, CGST and SGST at 2.5% each; 31 for the chips, about 400 across the history), or stay an order log?</li></ul></div>
+
+<footer>Smart-Clearance · SC-148 · every company, person, GSTIN, PAN and number fictional · the figures are core/money.js's · mockups drawn by <code>papers.py</code>, at A4</footer>
+</main>
+</body>
+</html>
