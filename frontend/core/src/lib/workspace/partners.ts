@@ -13,6 +13,8 @@ import type {
 	PartnerCase,
 	PtMoment,
 	PtOffer,
+	PtSum,
+	PtSums,
 	PtPickup,
 	PtWhole,
 	Shop,
@@ -266,6 +268,28 @@ export function whole(c: PartnerCase, w: PartnerWorld): PtWhole {
 			(extra ? extra.reversal + extra.charges : 0)
 	);
 	return { rows, recv, paid, gain: Math.round(recv - paid), dp: sku.dp!, units: c.plan.units, extra };
+}
+
+/** a cleared batch's sum, as his Batches and Orders show it (SC-145, core/ledger.js sumOf): what he sold from it (whole's
+ *  rows from his buyers) and what the client credited him (its credit notes), which together are what it cost him */
+export function sumOf(c: PartnerCase, w: PartnerWorld): PtSum {
+	const x = whole(c, w);
+	return {
+		ref: c.ref,
+		sold: r2(x.rows.filter((r) => !r.paper).reduce((t, r) => t + r.v, 0)),
+		credit: r2(x.rows.filter((r) => r.paper).reduce((t, r) => t + r.v, 0)),
+		cost: x.paid
+	};
+}
+/** every batch he cleared, summed: the sales, the credit, the cost, and the credit notes that carried the credit */
+export function sumsOf(past: PartnerCase[], w: PartnerWorld): PtSums {
+	const batches = past.map((c) => sumOf(c, w));
+	const t = (k: 'sold' | 'credit' | 'cost') => r2(batches.reduce((a, x) => a + x[k], 0));
+	const notes = past.reduce(
+		(n, c) => n + c.docs.filter((d) => (d.id === 'support' || d.id === 'expiry') && d.status !== 'not required').length,
+		0
+	);
+	return { n: past.length, sold: t('sold'), credit: t('credit'), cost: t('cost'), notes, batches };
 }
 
 /** the batch in a journey: what has happened so far, by the journey's moments, then the next three still to come. The

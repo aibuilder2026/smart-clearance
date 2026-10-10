@@ -14,9 +14,6 @@
   const shopById = id => D.KIRANAS.find(k => k.id === id) || WK().find(k => k.id === id);
   // a partner's own history (SC-130): ledger.js's partners, and the pieces their pages share
   const P = () => window.SC3_LEDGER.partners;
-  // what a cleared batch credited him: the price support, and on expiry day the expiry credit note (under SC-139's
-  // route B with the GST he reverses and the agency's charges)
-  const creditOf = c => c.support.total + ((c.expiry && (c.expiry.at === "godown" && c.expiry.amount != null ? c.expiry.amount : c.expiry.credit)) || 0);
   const asDate = iso => new Date((iso.length > 10 ? iso : iso + "T00:00") + ":00+05:30");
   const day = iso => asDate(iso.slice(0, 10)).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
   const when = iso => (iso.length > 10 ? `${day(iso)}, ${iso.slice(11, 16)}` : day(iso));
@@ -530,26 +527,57 @@
       <span className="tnum strong">{o.amount ? fmt.inr(o.amount) : "given"}</span>
     </div>;
   }
+  /* ---------- how his figures add up (SC-145, option A) ---------- */
+  // Batches and Orders open with the same sum: what the batches he cleared cost him = what he sold (Orders) + what the
+  // client credited him (Batches). In whole rupees that add up as shown: the cost is the rounded sales plus the rounded
+  // credit. The page's own part is marked, the other links to its page, and a bar shows the split
+  const shown = x => { const sold = Math.round(x.sold), credit = Math.round(x.credit); return { sold, credit, cost: sold + credit }; };
+  function SumTerm({ v, what, sub, here, to }) {
+    const { go } = useRoute();
+    const body = <><Money value={v} size="m" /><span className="pt-term-what">{what}</span><span className="pt-term-sub">{here ? "this page" : sub}</span></>;
+    return to && !here ? <button type="button" className="pt-term link" onClick={() => go(to)}>{body}<Icon name="arrow-right" size={14} className="pt-term-go" /></button> : <span className={cx("pt-term", here && "here")}>{body}</span>;
+  }
+  function SumCard({ t, page, live, liveN }) {
+    const x = shown(t);
+    return <Card className="stack" style={{ gap: 14 }}>
+      <span className="card-title">How your {t.n} cleared {t.n === 1 ? "batch adds" : "batches add"} up</span>
+      <div className="pt-sum">
+        <SumTerm v={x.cost} what={t.n === 1 ? "what it cost you" : "what they cost you"} sub={`${fmt.num(t.n)} ${t.n === 1 ? "batch" : "batches"} at the dealer price`} />
+        <span className="pt-op" aria-hidden="true">=</span>
+        <SumTerm v={x.sold} what="you sold" sub="to your kiranas, buyers and staff · on Orders" here={page === "orders"} to="orders" />
+        <span className="pt-op" aria-hidden="true">+</span>
+        <SumTerm v={x.credit} what={`${D.WORKSPACE.short} credited you`} sub={`${t.notes} credit ${t.notes === 1 ? "note" : "notes"} · on Batches`} here={page === "batches"} to="batches" />
+      </div>
+      <span className="pt-split" role="img" aria-label={`${fmt.inr(x.sold)} sold and ${fmt.inr(x.credit)} credited, of ${fmt.inr(x.cost)}`}><i className="sold" style={{ width: `${(x.sold / (x.cost || 1)) * 100}%` }} /><i className="credit" style={{ width: `${(x.credit / (x.cost || 1)) * 100}%` }} /></span>
+      <p className="lg-working">So you ended whole on every batch: ₹0 gained or lost. Each batch below shows its own sum, and its Money tab every line of it.{page === "orders" && live ? ` The ${fmt.inr(live)} sold from ${liveN === 1 ? "the batch" : "the batches"} still in a journey joins the sum once ${liveN === 1 ? "it clears" : "they clear"}.` : ""}</p>
+    </Card>;
+  }
+  // a cleared batch's own sum, the page's part first: on Batches its credit, on Orders its sales
+  function SumLine({ x, lead }) {
+    const v = shown(x);
+    return <span className="lg-val">{lead === "credit" ? <><b className="tnum">{fmt.inr(v.credit)} credited</b><em>+ {fmt.inr(v.sold)} sold = {fmt.inr(v.cost)}</em></> : <><b className="tnum">{fmt.inr(v.sold)} sold</b><em>+ {fmt.inr(v.credit)} credited = {fmt.inr(v.cost)}</em></>}</span>;
+  }
   function DistOrders({ me }) {
     const s = useStore(); const { go } = useRoute(); const Px = P();
     const dist = distOf(me);
     const now = Px.distNow(dist.id, s).map(n => { const j = Px.journeyOf(n); return { ref: n.ref, sku: j.sku, live: true, j, rows: Px.ordersNow(n, Px.shopName) }; });
     const past = Px.distBatches(dist.id, s).past.map(c => ({ ref: c.ref, sku: c.sku, live: false, outcome: c.outcome, cleared: c.cleared, rows: Px.ordersPast(Px.historyFacts(c), Px.shopName) })).filter(b => b.rows.length);
     const book = now.concat(past);
-    // what the client credited him on the cleared batches, the figure Batches leads with (SC-141)
-    const credit = Math.round(P().distBatches(dist.id, s).past.reduce((t, c) => t + creditOf(c), 0));
+    // the batches he cleared, summed (SC-145): what they cost him = what he sold + what the client credited him
+    const sums = P().sumsOf(P().distBatches(dist.id, s).past);
     const all = book.flatMap(b => b.rows), total = Math.round(all.reduce((t, o) => t + o.amount, 0) * 100) / 100;
     const shops = all.filter(o => o.id === "kirana").reduce((t, o) => t + o.shops.length, 0), lots = all.filter(o => o.id === "expiresoon").length, sales = all.filter(o => o.id === "staff").length;
     const sum = rows => Math.round(rows.reduce((t, o) => t + o.amount, 0) * 100) / 100;
     return <Screen me={me} title="Orders" sub={`${dist.name} · what sold from each of ${D.WORKSPACE.short}'s batches, to whom, on which paper`}>
       <div className="stack" style={{ gap: 16, maxWidth: 960 }}>
-        {all.length ? <Card className="stack" style={{ gap: 8 }}><div className="lg-fig"><Money value={total} size="l" /><span className="lg-what">sold from {D.WORKSPACE.short}'s batches since {D.WORKSPACE.since}</span></div>
-          <p className="lg-working">{book.length} {book.length === 1 ? "batch" : "batches"} · {shops} kiranas' scheme orders · {lots} ExpireSoon {lots === 1 ? "lot" : "lots"} · {sales} staff {sales === 1 ? "sale" : "sales"}.{credit ? <> {D.WORKSPACE.short}'s credit notes on the cleared ones, {fmt.inr(credit)}, are on Batches.</> : " The price support is on each batch's papers."}</p></Card>
-          : <Card><Empty img="van" title="No orders yet" body="When a batch's scheme, lot or staff sale sells, each order shows here under its batch." /></Card>}
+        {!all.length ? <Card><Empty img="van" title="No orders yet" body="When a batch's scheme, lot or staff sale sells, each order shows here under its batch." /></Card>
+          : sums.n ? <SumCard t={sums} page="orders" live={Math.round(now.reduce((t, b) => t + sum(b.rows), 0))} liveN={now.filter(b => b.rows.length).length} />
+          : <Card className="stack" style={{ gap: 8 }}><div className="lg-fig"><Money value={total} size="l" /><span className="lg-what">sold from {D.WORKSPACE.short}'s batches since {D.WORKSPACE.since}</span></div>
+            <p className="lg-working">{book.length} {book.length === 1 ? "batch" : "batches"} · {shops} kiranas' scheme orders · {lots} ExpireSoon {lots === 1 ? "lot" : "lots"} · {sales} staff {sales === 1 ? "sale" : "sales"}. The price support is on each batch's papers.</p></Card>}
         {book.map(b => <Card key={b.ref} className="stack snug">
           <div className="row between wrap" style={{ gap: 12 }}>
             <BatchLine sku={b.sku} id={b.ref} size={44} badge={b.live ? stopBadge(b.j) : <S.OutcomeBadge o={b.outcome} size="sm" />} sub={b.live ? (b.j.phase === "cleared" ? "cleared · every order" : b.rows.length ? "orders so far" : "no orders yet") : `cleared ${day(b.cleared)}`} />
-            <span className="row tight">{b.rows.length > 0 && <span className="tnum strong">{fmt.inr(sum(b.rows))}</span>}<Button variant="ghost" size="sm" iconRight="chevron-right" onClick={() => go("batches", { ref: b.ref })}>Papers</Button></span>
+            <span className="row tight">{b.rows.length > 0 && (!b.live && sums.batches.find(x => x.ref === b.ref) ? <SumLine x={sums.batches.find(x => x.ref === b.ref)} lead="sold" /> : <span className="tnum strong">{fmt.inr(sum(b.rows))}</span>)}<Button variant="ghost" size="sm" iconRight="chevron-right" onClick={() => go("batches", { ref: b.ref })}>Papers</Button></span>
           </div>
           {b.rows.length ? <div className="dist-orders">{b.rows.map(o => <OrderRow key={o.id} o={o} />)}</div>
             : <p className="t-footnote muted" style={{ margin: 0 }}>{b.j.waiting || "Its orders show here as they come in."}</p>}
@@ -567,11 +595,8 @@
     const dist = distOf(me); const ref = route && route.params && route.params.ref;
     if (ref) return <DistBatch me={me} dist={dist} id={ref} />;
     const { journey, watching, past } = P().distBatches(dist.id, s);
-    const credit = past.reduce((t, c) => t + creditOf(c), 0);
-    // what the cleared batches cost him, and what he sold from them: the sales and the credit add up to the cost (SC-141)
-    const wholes = past.map(c => P().whole(c)), cost = wholes.reduce((t, w) => t + w.paid, 0);
-    const sold = wholes.reduce((t, w) => t + w.rows.filter(r => !r.paper).reduce((u, r) => u + r.v, 0), 0);
-    const notes = past.reduce((t, c) => t + c.docs.filter(d => (d.id === "support" || d.id === "expiry") && d.status !== "not required").length, 0);
+    // the batches he cleared, summed (SC-145): what they cost him = what he sold + what the client credited him
+    const sums = P().sumsOf(past);
     const months = []; past.forEach(c => { const m = c.cleared.slice(0, 7); let g = months.find(x => x.m === m); if (!g) months.push(g = { m, label: monthOf(c.cleared), items: [] }); g.items.push(c); });
     return <Screen me={me} title="Batches" sub={`${dist.name} · every batch of ${D.WORKSPACE.short}'s the Watcher flagged at your godown`}>
       <div className="stack" style={{ gap: 20 }}>
@@ -579,15 +604,12 @@
           return <ListRow key={b.id} chevron onClick={() => go("batches", { ref: b.id })} leading={<Product name={sku.img} size={40} />}
             title={<span className="row tight" style={{ gap: 8, flexWrap: "wrap" }}><span>{sku.name}</span><Badge size="sm" tone="blue" dot live>{stopOf(phase)}</Badge></span>}
             sub={`${b.id} · flagged ${day(D.DAY0)} · the agents act in your name`} value={phone ? null : `${fmt.num(b.hero ? D.PLAN.units : D.MANGO_PLAN.units)} packs`} />; })}</List> : null}
-        {past.length ? <Card className="stack" style={{ gap: 10 }}>
-          <div className="lg-fig"><Money value={credit} size="l" /><span className="lg-what">credited by {D.WORKSPACE.short} since July</span></div>
-          <p className="lg-working">{past.length} batches cleared at your godown. They cost you {fmt.inr(cost)}; you sold {fmt.inr(sold)} from them (on Orders), and the price support, with the expiry credit where packs expired, made up the rest, so you ended whole: <b>{notes} credit notes</b>, each in its batch's papers.</p>
-        </Card> : null}
-        {months.map(g => <List key={g.m} head={`Cleared · ${g.label}`}>{g.items.map(c => { const cr = creditOf(c); const p = P().distPapers(c);
+        {past.length ? <SumCard t={sums} page="batches" /> : null}
+        {months.map(g => <List key={g.m} head={`Cleared · ${g.label}`}>{g.items.map(c => {
           return <ListRow key={c.ref} chevron onClick={() => go("batches", { ref: c.ref })} leading={<Product name={c.sku.img} size={40} />}
             title={<span className="row tight" style={{ gap: 8, flexWrap: "wrap" }}><span>{c.sku.name}</span>{!phone && <S.OutcomeBadge o={c.outcome} size="sm" />}</span>}
             sub={`${c.ref} · flagged ${day(c.flagged)} · cleared ${day(c.cleared)}`}
-            value={<span className="lg-val"><b className="tnum">{fmt.inr(cr)}</b><em>{p.mine.filter(d => d.status !== "not required").length + p.copies.length} papers</em></span>} />; })}</List>)}
+            value={<SumLine x={sums.batches.find(x => x.ref === c.ref)} lead="credit" />} />; })}</List>)}
         {watching.length ? <><SectionTitle sub="From your nightly DMS export: nothing at risk">Watching</SectionTitle><div className="list">{watching.map(b => <BatchRow key={b.id} view={D.batchView(b)} compact={phone} onOpen={() => {}} />)}</div></> : null}
       </div>
     </Screen>;

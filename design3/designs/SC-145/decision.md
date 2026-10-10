@@ -32,6 +32,8 @@ On one board in app v3, `SC-145 design review.html`; the mockups override only t
 - **C · One figure on both pages:** both pages lead with what came back to him (the cost), split into sold and credited;
   every batch reads the same on both pages.
 
-## The pick
+## The pick (10 Oct)
 
-To be recorded.
+**Option A · The same sum on both pages.** Both pages open with one card: what the cleared batches cost him = what he
+sold (Orders) + what the client credited him (Batches), the page's own part marked and the other linking to its page, a
+bar for the split; every batch carries its own sum, the page's part first.

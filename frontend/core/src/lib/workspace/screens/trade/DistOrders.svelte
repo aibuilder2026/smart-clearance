@@ -6,7 +6,7 @@
 	import { useRoute } from '../../context';
 	import { ordersNow, ordersPast, type DistJourney, type DistOrder } from '../../dist';
 	import { fmt } from '../../model';
-	import { creditOf, distPast } from '../../partners';
+	import { sumsOf } from '../../partners';
 	import { useWorkspace } from '../../source';
 	import type { LedgerOutcome, Sku, User } from '../../types';
 	import Screen from '../common/Screen.svelte';
@@ -14,11 +14,13 @@
 	import DistBatchLine from './DistBatchLine.svelte';
 	import DistOrderRow from './DistOrderRow.svelte';
 	import DistStopBadge from './DistStopBadge.svelte';
-	import { day, distJourneysOf, distOfMe, distWorldOf, shopNameOf } from './pt';
+	import SumCard from './SumCard.svelte';
+	import SumLine from './SumLine.svelte';
+	import { clearedOf, day, distJourneysOf, distOfMe, distWorldOf, shopNameOf, worldOf } from './pt';
 
 	// his Orders, batch by batch (SC-133, option A; screens/trade.jsx DistOrders): what sold from each of the client's
 	// batches at his godown, in a journey and cleared: who bought what, for how much, on which paper; each batch's papers
-	// a tap away on its page
+	// a tap away on its page. It opens on how the cleared batches' figures add up, as Batches does (SC-145)
 	let { me }: { me: User } = $props();
 	const ws = useWorkspace();
 	const { go } = useRoute();
@@ -43,9 +45,11 @@
 			rows: ordersNow(n, shopName, w)
 		}))
 	);
+	// the batches he cleared, as Batches lists them, and their sum (SC-145)
+	const cleared = $derived(clearedOf(ws, dist.id).filter((c) => !now.some((x) => x.ref === c.ref)));
+	const sums = $derived(sumsOf(clearedOf(ws, dist.id), worldOf(ws)));
 	const past = $derived<Entry[]>(
-		distPast(ws.partners?.cases ?? [], dist.id)
-			.filter((c) => !now.some((x) => x.ref === c.ref))
+		cleared
 			.map((c) => ({
 				ref: c.ref,
 				sku: w.skus[c.sku],
@@ -57,29 +61,25 @@
 			.filter((b) => b.rows.length)
 	);
 	const book = $derived(now.concat(past));
-	// what the client credited him on the cleared batches, the figure Batches leads with (SC-141)
-	const credit = $derived(
-		Math.round(
-			distPast(ws.partners?.cases ?? [], dist.id)
-				.filter((c) => !now.some((x) => x.ref === c.ref))
-				.reduce((t, c) => t + creditOf(c), 0)
-		)
-	);
-	const tail = $derived(
-		credit
-			? ` ${w.short}'s credit notes on the cleared ones, ${fmt.inr(credit)}, are on Batches.`
-			: " The price support is on each batch's papers."
-	);
 	const all = $derived(book.flatMap((b) => b.rows));
 	const sum = (rows: DistOrder[]) => Math.round(rows.reduce((t, o) => t + o.amount, 0) * 100) / 100;
 	const shops = $derived(all.filter((o) => o.id === 'kirana').reduce((t, o) => t + (o.shops?.length ?? 0), 0));
 	const lots = $derived(all.filter((o) => o.id === 'expiresoon').length);
 	const sales = $derived(all.filter((o) => o.id === 'staff').length);
+	const live = $derived(Math.round(now.reduce((t, b) => t + sum(b.rows), 0)));
+	const liveN = $derived(now.filter((b) => b.rows.length).length);
+	const sumOf = (ref: string) => sums.batches.find((x) => x.ref === ref) ?? null;
 </script>
 
 <Screen {me} title="Orders" sub="{dist.name} · what sold from each of {w.short}'s batches, to whom, on which paper">
 	<div class="stack" style="gap: 16px; max-width: 960px">
-		{#if all.length}<Card class="stack" style="gap: 8px"
+		{#if all.length && sums.n}<SumCard
+				t={sums}
+				page="orders"
+				short={w.short}
+				{live}
+				{liveN}
+			/>{:else if all.length}<Card class="stack" style="gap: 8px"
 				><div class="lg-fig">
 					<Money value={sum(all)} size="l" /><span class="lg-what"
 						>sold from {w.short}'s batches since {ws.data.workspace.since}</span
@@ -89,7 +89,7 @@
 					{book.length}
 					{book.length === 1 ? 'batch' : 'batches'} · {shops} kiranas' scheme orders · {lots} ExpireSoon {lots === 1
 						? 'lot'
-						: 'lots'} · {sales} staff {sales === 1 ? 'sale' : 'sales'}.{tail}
+						: 'lots'} · {sales} staff {sales === 1 ? 'sale' : 'sales'}. The price support is on each batch's papers.
 				</p></Card
 			>{:else}<Card
 				><Empty
@@ -117,7 +117,9 @@
 								/>{/if}{/snippet}</DistBatchLine
 					>
 					<span class="row tight"
-						>{#if b.rows.length}<span class="tnum strong">{fmt.inr(sum(b.rows))}</span>{/if}<Button
+						>{#if b.rows.length}{@const x = b.j ? null : sumOf(b.ref)}{#if x}<SumLine {x} lead="sold" />{:else}<span
+									class="tnum strong">{fmt.inr(sum(b.rows))}</span
+								>{/if}{/if}<Button
 							variant="ghost"
 							size="sm"
 							iconRight="chevron-right"

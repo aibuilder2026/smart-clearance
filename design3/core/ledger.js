@@ -355,6 +355,18 @@
     const paid = Math.round((c.plan.units * c.sku.dp + c.support.van + c.support.fee + (extra ? extra.reversal + extra.charges : 0)) * 100) / 100;
     return { rows, recv, paid, gain: Math.round(recv - paid), dp: c.sku.dp, units: c.plan.units, extra };
   }
+  // a cleared batch's sum, as his Batches and Orders show it (SC-145): what he sold from it (whole's rows from his buyers)
+  // and what the client credited him (its credit notes), which together are what it cost him, so he ends whole
+  function sumOf(c) {
+    const w = whole(c), r2 = n => Math.round(n * 100) / 100;
+    return { ref: c.ref, sold: r2(w.rows.filter(r => !r.paper).reduce((t, r) => t + r.v, 0)), credit: r2(w.rows.filter(r => r.paper).reduce((t, r) => t + r.v, 0)), cost: w.paid };
+  }
+  // every batch he cleared, summed: the sales, the credit, the cost, and the credit notes that carried the credit
+  function sumsOf(past) {
+    const xs = past.map(sumOf), t = k => Math.round(xs.reduce((a, x) => a + x[k], 0) * 100) / 100;
+    const notes = past.reduce((n, c) => n + c.docs.filter(d => (d.id === "support" || d.id === "expiry") && d.status !== "not required").length, 0);
+    return { n: past.length, sold: t("sold"), credit: t("credit"), cost: t("cost"), notes, batches: xs };
+  }
   // the story's chips batch while in a journey: what has happened so far (the feed), the next three, and the plan's money
   const STORY_MOMENTS = [["permit", "handshake", "You gave the one-time permission"], ["watch", "radar", "The Watcher flagged 1,360 packs at risk"], ["ask", "scan-line", "Vision asked you for a label photo"], ["photo", "camera", "You sent the label photo"], ["read", "scan-line", "Vision read the label"],
     ["approved", "check", `${C} approved the plan`], ["list", "shopping-bag", "772 listed on ExpireSoon in your name"], ["outreach", "send", "The scheme went to 38 of your kiranas"], ["accepted", "handshake", `${D.BUYER.name} took the counter at ₹14.20`], ["orders", "store", "31 kiranas ordered 588 packets"],
@@ -651,7 +663,7 @@
   }
   const record = { recordOf, storyRecord, photosOf, storyPhotos, YES };
 
-  const partners = { distBatches, distPapers, moments, whole, storyMoments, storyWhole, scheme, offersFor, pickupsFor, fssaiItems, stepAt, plusHours,
+  const partners = { distBatches, distPapers, moments, whole, sumOf, sumsOf, storyMoments, storyWhole, scheme, offersFor, pickupsFor, fssaiItems, stepAt, plusHours,
     STOP, distNow, journeyOf, journeys, ordersNow, ordersPast, deliveriesPast, photoOf, shopName, historyFacts, WORLD };
 
   window.SC3_LEDGER = { HISTORY, STORY_CLEARED, historyCase, storyCase, caseOf, rowOf, rowsOf, totals, periods, ledger, ordersOf, outcomeOf, MIX, partners, record };

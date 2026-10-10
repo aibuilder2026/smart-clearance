@@ -916,6 +916,11 @@ export type PtWhole = {
 	/** destroyed at his godown (SC-139): the input GST he reverses on them and the agency's charges */
 	extra?: { reversal: number; charges: number } | null;
 };
+/** a cleared batch's sum, as his Batches and Orders show it (SC-145): what he sold from it, what the client credited him,
+ *  and what it cost him; the sold and the credited make the cost */
+export type PtSum = { ref: string; sold: number; credit: number; cost: number };
+/** every batch he cleared, summed, with the credit notes that carried the credit */
+export type PtSums = { n: number; sold: number; credit: number; cost: number; notes: number; batches: PtSum[] };
 /** an offer a kirana was sent, and what came of it */
 export type PtOffer = {
 	ref: string;

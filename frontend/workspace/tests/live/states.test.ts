@@ -1286,20 +1286,36 @@ describe("the partners' own history (SC-130)", () => {
 	const partnerApi = (m: Moment, who: keyof typeof cut, over: Partial<Record<keyof WorkspaceApi, unknown>> = {}) =>
 		fakeApi(m, who, { partner: () => Promise.resolve(withHistory(m, who)), ...over });
 
-	it('Rakesh reads every batch of his: in a journey now, then those he cleared by month under what he was credited', async () => {
+	it('Rakesh reads every batch of his: in a journey now, then those he cleared by month under how their figures add up', async () => {
 		const m = moment('executing');
 		const r = await draw(source(partnerApi(m, 'rakesh')), 'batches');
 		await waitFor(() => expect(text(r)).toContain('Cleared · September 2026'));
 		const t = text(r);
 		expect(t).toContain('In a journey now');
 		expect(t).toContain('Masala Chips 150 g');
-		// the price support and the expiry credit notes, under SC-139's route B with the GST he reverses and the agency's charges
-		expect(t).toContain('₹66,918credited by Munchly since July');
-		// what he sold and what he was credited add up to what the batches cost him (SC-141)
-		expect(t).toContain('They cost you ₹1,72,846; you sold ₹1,05,928 from them (on Orders)');
-		expect(t).toContain('6 batches cleared at your godown');
-		expect(t).toContain('8 credit notes');
+		// how his figures add up (SC-145): what the batches cost him = what he sold (Orders) + what Munchly credited him
+		// (the price support and the expiry credit notes, under SC-139's route B), this page's part marked
+		expect(t).toContain('How your 6 cleared batches add up');
+		expect(t).toContain('₹1,72,846what they cost you');
+		expect(t).toContain('₹1,05,928you soldto your kiranas, buyers and staff · on Orders');
+		expect(t).toContain('₹66,918Munchly credited youthis page');
+		// each batch its own sum, its credit first: the Peanut Chikki's ₹7,821 + ₹14,640 = ₹22,461
+		expect(t).toContain('₹7,821 credited+ ₹14,640 sold = ₹22,461');
+		expect(r.getByRole('button', { name: /you sold/ })).toBeTruthy();
 		expect(t).toContain('Cleared · August 2026');
+		expect(t).not.toMatch(/NaN|undefined|Invalid Date/);
+		r.unmount();
+	});
+
+	it('Orders opens on the same sum, what he sold marked, and each cleared batch with its sales first (SC-145)', async () => {
+		const m = moment('executing');
+		const r = await draw(source(partnerApi(m, 'rakesh')), 'orders');
+		await waitFor(() => expect(text(r)).toContain('How your 6 cleared batches add up'));
+		const t = text(r);
+		expect(t).toContain('₹1,05,928you soldthis page');
+		expect(t).toContain('₹66,918Munchly credited you8 credit notes · on Batches');
+		expect(t).toContain('₹14,640 sold+ ₹7,821 credited = ₹22,461');
+		expect(r.getByRole('button', { name: /Munchly credited you/ })).toBeTruthy();
 		expect(t).not.toMatch(/NaN|undefined|Invalid Date/);
 		r.unmount();
 	});
