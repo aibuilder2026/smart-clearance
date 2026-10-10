@@ -1,0 +1,11 @@
+{
+  "model": "Qwen-Image 2.1 (bf16), text to image, run locally (qwen-image-bf16 0.2.0)",
+  "seed": 14716,
+  "size": "1024 (4:3, 1184 x 896)",
+  "prompt": "A close-up photo of a blank white rectangular paper label on a brown corrugated carton on a concrete floor, the camera above and to the right, soft overcast daylight through an open godown door. nothing printed on the label, plain matte white paper with a thin glossy sheen, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours.",
+  "postProcessing": [
+    "cwebp -q 90",
+    "quad.py: the blank sticker found (bases.json quad, aspect)"
+  ],
+  "purpose": "SC-147: a base photo of a blank sticker on a carton, which the label maker prints a batch's label onto; fictional"
+}

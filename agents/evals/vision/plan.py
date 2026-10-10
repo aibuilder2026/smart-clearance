@@ -1,16 +1,20 @@
-"""The Vision eval's label photos (SC-72): base photos rendered by the local Qwen-Image model, and variants made from
-them with Pillow (blur, glare, an angle, compression, darkness, a covered line, an unreadable photo).
+"""The Vision eval's label photos (SC-72, relabelled in SC-147): every case is a carton label in the full statutory
+sticker's layout (design3/system/labels, option A of SC-147), printed onto a Qwen-Image base photo's blank sticker, in one
+of the print styles cartons in India carry (standard, bilingual Hindi, PKD and USE BY, two-digit years, month names).
 
-    python plan.py gen      # writes src/gen.sh; run it in the background (about 1.5 min a photo at 1024)
-    python plan.py build    # src/*.png → images/*.webp, a .prompt.json sidecar each, and cases.jsonl
+A hard case is made hard exactly, so its truth is exact too:
+- a cover over one line, in the label's own pixels (packing tape, a thumb, a tear), so that field is gone;
+- a change to the finished photo with Pillow (blur, glare, darkness, an angle, compression, a small photo, a smear).
 
-Each base photo asks Qwen for the label's exact words; its truth is what a person saw on the rendered photo (`SEEN`
-records where that differs from what was asked: Qwen printed every figure as asked, misprinted some product names,
-and ignored "make it hard", so the hard cases are made by post-processing, where the change and its truth are exact).
-The PNG originals stay in src/ (git-ignored); only the WebP ships.
+The story's own photos (story-clean, mango) are the label photos design3 keeps for MF-2409-117 and MF-2410-118, byte for
+byte, so what Rakesh and Lakshmi send in a walk or a journey suite is what the workspace shows.
+
+    python plan.py build    # the photos (design3/system/labels/make.py), images/*.webp, a sidecar each, cases.jsonl
+
+The PNGs it works on stay in src/ (git-ignored); only the WebP ships.
 
 Expectations, which the scorer holds each read to (sc_agents/evals/scorers.py):
-- exact: every field of the truth read exactly;
+- exact: every field of the truth read exactly (a field a tear took away is null in the truth);
 - no-date / no-batch: that field covered, so it must come back empty, with a confidence under 0.9 (a label without its
   date or batch must not verify);
 - unreadable: confidence under 0.9 and no field wrong (empty is right).
@@ -18,25 +22,27 @@ Expectations, which the scorer holds each read to (sc_agents/evals/scorers.py):
 
 import hashlib
 import json
+import shutil
 import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[2]
 SRC = HERE / "src"
 IMAGES = HERE / "images"
-QWEN = "$HOME/qwen-image-bf16/.venv/bin/python"
-QWEN_CLI = "$HOME/.claude/plugins/cache/qwen-bf16-local/qwen-image-bf16/0.2.0/server/qwen_image_bf16_mac.py"
-MODEL = "Qwen-Image-2.1 (bf16), run locally through the qwen-image-bf16 plugin 0.2.0 (its CLI)"
+MAKER = ROOT / "design3" / "system" / "labels"
+STORY = ROOT / "design3" / "system" / "img" / "labels"
+MODEL = "Qwen-Image 2.1 (bf16), text to image, run locally (qwen-image-bf16 0.2.0): the blank base photo"
 
 SKUS = {
-    "chips": ("MUNCHLY MASALA CHIPS 150 g", "Munchly Masala Chips 150 g", 30.0),
-    "mango": ("MUNCHLY MANGO DRINK 200 ml", "Munchly Mango Drink 200 ml", 20.0),
-    "chikki": ("MUNCHLY PEANUT CHIKKI 100 g", "Munchly Peanut Chikki 100 g", 25.0),
-    "oats": ("MUNCHLY MASALA OATS 200 g", "Munchly Masala Oats 200 g", 65.0),
-    "poha": ("MUNCHLY INSTANT POHA 250 g", "Munchly Instant Poha 250 g", 55.0),
-    "biscuits": ("MUNCHLY CHOCO CREAM BISCUITS 200 g", "Munchly Choco Cream Biscuits 200 g", 40.0),
-    "facewash": ("GLOWRA ALOE FACE WASH 100 ml", "Glowra Aloe Face Wash 100 ml", 120.0),
-    "hairoil": ("GLOWRA COCONUT HAIR OIL 200 ml", "Glowra Coconut Hair Oil 200 ml", 150.0),
+    "chips": ("Munchly Masala Chips 150 g", 30.0),
+    "mango": ("Munchly Mango Drink 200 ml", 20.0),
+    "chikki": ("Munchly Peanut Chikki 100 g", 25.0),
+    "oats": ("Munchly Masala Oats 200 g", 65.0),
+    "poha": ("Munchly Instant Poha 250 g", 55.0),
+    "biscuits": ("Munchly Choco Cream Biscuits 200 g", 40.0),
+    "facewash": ("Glowra Aloe Face Wash 100 ml", 120.0),
+    "hairoil": ("Glowra Coconut Hair Oil 200 ml", 150.0),
 }
 BATCHES = {
     "MF-2409-117": ("chips", "2026-05-18", "2026-11-18"),
@@ -50,171 +56,74 @@ BATCHES = {
     "GL-2410-044": ("facewash", "2026-01-05", "2028-01-05"),
     "GL-2410-012": ("hairoil", "2026-02-14", "2028-02-14"),
 }
-MONTHS = ("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC")
 
-
-def dmy(iso: str, style: str = "slash") -> str:
-    y, m, d = iso.split("-")
-    if style == "dot":
-        return f"{d}.{m}.{y}"
-    if style == "short":
-        return f"{d}-{m}-{y[2:]}"
-    if style == "month":
-        return f"{int(d):02d} {MONTHS[int(m) - 1]} {y}"
-    return f"{d}/{m}/{y}"
-
-
-def label_lines(batch: str, style: str = "standard") -> list[str]:
-    sku, mfg, best = BATCHES[batch]
-    title, _, mrp = SKUS[sku]
-    if style == "hindi":
-        return [
-            title,
-            f"बैच नं. / BATCH NO: {batch}",
-            f"निर्माण तिथि / MFG: {dmy(mfg)}",
-            f"इससे पहले उपयोग करें / BEST BEFORE: {dmy(best)}",
-            f"अधिकतम खुदरा मूल्य / MRP ₹{mrp:.2f}",
-        ]
-    if style == "pkd":
-        return [
-            title,
-            f"B.NO.: {batch}",
-            f"PKD: {dmy(mfg, 'dot')}",
-            f"USE BY: {dmy(best, 'dot')}",
-            f"M.R.P. Rs. {mrp:.0f}/-",
-        ]
-    if style == "short":
-        return [title, f"BATCH {batch}", f"MFD {dmy(mfg, 'short')}", f"BB {dmy(best, 'short')}", f"MRP ₹{mrp:.2f}"]
-    if style == "month":
-        return [
-            title,
-            f"LOT NO: {batch}",
-            f"MFG DATE: {dmy(mfg, 'month')}",
-            f"EXPIRY: {dmy(best, 'month')}",
-            f"MRP (INCL. OF ALL TAXES) ₹{mrp:.2f}",
-        ]
-    return [
-        title,
-        f"BATCH NO: {batch}",
-        f"MFG: {dmy(mfg)}",
-        f"BEST BEFORE: {dmy(best)}",
-        f"MRP ₹{mrp:.2f} (incl. of all taxes)",
-    ]
-
-
-def scene(lines: list[str], setting: str) -> str:
-    quoted = ", ".join(f'"{x}"' for x in lines)
-    return (
-        "A realistic close-up smartphone photo of a printed white label stuck on the side of a brown corrugated "
-        f"cardboard carton. The label is printed in bold black sans-serif type, one line each: {quoted}. {setting} "
-        "Photorealistic, natural colours, the label text crisp and legible."
-    )
-
-
-def truth(batch: str) -> dict:
-    sku, mfg, best = BATCHES[batch]
-    _, pack, mrp = SKUS[sku]
-    return {"batch": batch, "mfg": mfg, "bestBefore": best, "mrp": mrp, "pack": pack}
-
-
-# the base photos, as Qwen was asked for them: id → (batch, label style, setting, seed)
+# the base cases: id → batch, print style, the base photo (design3/system/labels/bases.json), and what makes it hard:
+# `covers` over a line in the label's pixels, `prep` Pillow steps on the finished photo, `expect` and the fields it
+# `hides`. `story` takes design3's own label photo for the batch, byte for byte.
 BASES = {
-    "story-clean": ("MF-2409-117", "standard", "Even daylight in a distributor's godown, the camera square on.", 11),
-    "story-hand": ("MF-2409-117", "standard", "A hand holds the carton up in a warehouse aisle; soft tube light.", 12),
-    "story-shelf": (
-        "MF-2409-117",
-        "standard",
-        "The carton sits on a steel godown rack marked B4, other cartons around it; even light.",
-        13,
-    ),
-    "story-glare": (
-        "MF-2409-117",
-        "standard",
-        "The label is glossy and a bright phone-flash glare spot sits over its upper half, but every line can still "
-        "be read.",
-        14,
-    ),
-    "story-angle": (
-        "MF-2409-117",
-        "standard",
-        "Photographed at a steep angle from the left, about 45 degrees, the label foreshortened.",
-        15,
-    ),
-    "story-blur": ("MF-2409-117", "standard", "Slight hand-shake motion blur, the text still readable.", 16),
-    "story-thumb": (
-        "MF-2409-117",
-        "standard",
-        "A thumb covers the whole BEST BEFORE line, so that date cannot be seen; the other lines are clear.",
-        17,
-    ),
-    "story-hindi": (
-        "MF-2409-117",
-        "hindi",
-        "Even light; the label is bilingual, Hindi in Devanagari above the English on each line.",
-        18,
-    ),
-    "story-low-light": (
-        "MF-2409-117",
-        "standard",
-        "A dim godown corner lit by one weak bulb, grainy, the text still readable.",
-        19,
-    ),
-    "wrong-batch": ("MF-2409-171", "standard", "Even daylight, the camera square on.", 21),
-    "other-sku-biscuits": ("MF-2409-204", "standard", "Even daylight, the camera square on.", 22),
-    "damaged": (
-        "MF-2409-117",
-        "standard",
-        "The carton is crushed and the label torn through its lower right corner, so the MRP line is torn away; the "
-        "batch and dates are intact.",
-        23,
-    ),
-    "story-dim": ("MF-2409-117", "standard", "Badly out of focus and very dark, the text an unreadable smudge.", 24),
-    "mango": ("MF-2410-118", "standard", "Even light in a Hyderabad godown.", 31),
-    "chikki": ("MF-2408-311", "standard", "Even light on a godown rack.", 32),
-    "oats": ("MF-2409-415", "standard", "Even light on a godown rack.", 33),
-    "poha": ("MF-2410-402", "standard", "Even light on a godown rack.", 34),
-    "facewash": ("GL-2410-044", "standard", "Even light on a shelf.", 35),
-    "hairoil": ("GL-2410-012", "standard", "Even light on a shelf.", 36),
-    "chips-gupta": ("MF-2408-209", "standard", "Even light in an Indore godown.", 37),
-    "mango-hindi": (
-        "MF-2410-118",
-        "hindi",
-        "Even light; bilingual label, Hindi in Devanagari above the English on each line.",
-        38,
-    ),
-    "oats-glare": (
-        "MF-2409-415",
-        "standard",
-        "A strip of reflected tube light crosses the glossy label, every line still readable.",
-        39,
-    ),
-    "poha-angle": (
-        "MF-2410-402",
-        "standard",
-        "Photographed from above at a steep angle, the label foreshortened.",
-        40,
-    ),
-    "story-tape": (
-        "MF-2409-117",
-        "standard",
-        "A strip of brown packing tape covers the BATCH NO line completely, so the batch cannot be read; the other "
-        "lines are clear.",
-        41,
-    ),
-    # the second round: the formats cartons in India print (PKD and USE BY, two-digit years, month names, Rs./-)
-    "story-pkd": ("MF-2409-117", "pkd", "Even daylight, the camera square on.", 51),
-    "story-short": ("MF-2409-117", "short", "Even tube light in a godown, the camera square on.", 52),
-    "story-month": ("MF-2409-117", "month", "Even daylight, the camera slightly to the right.", 53),
-    "mango-pkd": ("MF-2410-118", "pkd", "Even light in a Hyderabad godown.", 54),
-    "chikki-month": ("MF-2408-311", "month", "Even light on a godown rack.", 55),
-    "biscuits-hindi": (
-        "MF-2409-204",
-        "hindi",
-        "Even light; bilingual label, Hindi in Devanagari above the English on each line.",
-        56,
-    ),
-    "hairoil-short": ("GL-2410-012", "short", "Even light on a shelf.", 57),
-    "chips-gupta-month": ("MF-2408-209", "month", "Even light in an Indore godown.", 58),
+    "story-clean": {"batch": "MF-2409-117", "base": 14701, "story": True},
+    "story-hand": {"batch": "MF-2409-117", "base": 14720},
+    "story-shelf": {"batch": "MF-2409-117", "base": 14721},
+    "story-glare": {
+        "batch": "MF-2409-117",
+        "base": 14714,
+        "prep": [("glare", {"x": 0.52, "y": 0.36, "radius": 0.26, "strength": 0.62})],
+    },
+    "story-angle": {"batch": "MF-2409-117", "base": 14722},
+    "story-blur": {"batch": "MF-2409-117", "base": 14716, "prep": [("gaussian_blur", {"radius": 1.4})]},
+    "story-thumb": {
+        "batch": "MF-2409-117",
+        "base": 14711,
+        "covers": [{"on": ["mfg", "bb"], "kind": "thumb"}],
+        "expect": "no-date",
+        "hides": ["mfg", "bestBefore"],
+    },
+    "story-hindi": {"batch": "MF-2409-117", "base": 14710, "style": "hindi"},
+    "story-low-light": {
+        "batch": "MF-2409-117",
+        "base": 14724,
+        "prep": [("brightness", {"factor": 0.62}), ("noise", {"amount": 14})],
+    },
+    "wrong-batch": {"batch": "MF-2409-171", "base": 14717},
+    "other-sku-biscuits": {"batch": "MF-2409-204", "base": 14715},
+    "damaged": {"batch": "MF-2409-117", "base": 14723, "covers": [{"on": "mrp", "kind": "tear"}], "hides": ["mrp"]},
+    "story-dim": {
+        "batch": "MF-2409-117",
+        "base": 14713,
+        "prep": [("smear", {"radius": 7.0, "factor": 0.32})],
+        "expect": "unreadable",
+        "hides": ["batch", "mfg", "bestBefore", "mrp"],
+    },
+    "mango": {"batch": "MF-2410-118", "base": 14725, "story": True},
+    "chikki": {"batch": "MF-2408-311", "base": 14710},
+    "oats": {"batch": "MF-2409-415", "base": 14712},
+    "poha": {"batch": "MF-2410-402", "base": 14714},
+    "facewash": {"batch": "GL-2410-044", "base": 14726},
+    "hairoil": {"batch": "GL-2410-012", "base": 14717},
+    "chips-gupta": {"batch": "MF-2408-209", "base": 14711},
+    "mango-hindi": {"batch": "MF-2410-118", "base": 14701, "style": "hindi"},
+    "oats-glare": {
+        "batch": "MF-2409-415",
+        "base": 14726,
+        "prep": [("glare", {"x": 0.62, "y": 0.5, "radius": 0.3, "strength": 0.55})],
+    },
+    "poha-angle": {"batch": "MF-2410-402", "base": 14712, "prep": [("perspective", {"inset": 0.14})]},
+    "story-tape": {
+        "batch": "MF-2409-117",
+        "base": 14716,
+        "covers": [{"on": "batch", "kind": "tape"}],
+        "expect": "no-batch",
+        "hides": ["batch"],
+    },
+    # the formats cartons in India print: PKD and USE BY, two-digit years, month names, Rs./-
+    "story-pkd": {"batch": "MF-2409-117", "base": 14701, "style": "pkd"},
+    "story-short": {"batch": "MF-2409-117", "base": 14710, "style": "short"},
+    "story-month": {"batch": "MF-2409-117", "base": 14711, "style": "month"},
+    "mango-pkd": {"batch": "MF-2410-118", "base": 14725, "style": "pkd"},
+    "chikki-month": {"batch": "MF-2408-311", "base": 14714, "style": "month"},
+    "biscuits-hindi": {"batch": "MF-2409-204", "base": 14717, "style": "hindi"},
+    "hairoil-short": {"batch": "GL-2410-012", "base": 14712, "style": "short"},
+    "chips-gupta-month": {"batch": "MF-2408-209", "base": 14713, "style": "month"},
 }
 CLEAN = {
     "story-clean",
@@ -231,13 +140,6 @@ CLEAN = {
     "wrong-batch",
 }
 
-# what a person saw on each rendered photo where it is not what was asked (each looked at, 7 Oct 2026). `fields`
-# corrects the truth; `pack` is the product name as printed (the pack is reported, not scored)
-SEEN: dict[str, dict] = {}
-SEEN_FILE = HERE / "seen.json"
-if SEEN_FILE.exists():
-    SEEN = json.loads(SEEN_FILE.read_text())
-
 # Pillow's variants: name → (transform, parameters, expectation, the truth's fields it hides)
 VARIANTS = {
     "blur2": ("gaussian_blur", {"radius": 2.0}, "exact", []),
@@ -249,11 +151,12 @@ VARIANTS = {
     "small": ("downscale", {"width": 600}, "exact", []),
     "unreadable": ("smear", {"radius": 9.0, "factor": 0.3}, "unreadable", ["batch", "mfg", "bestBefore", "mrp"]),
 }
-# lines covered with packing tape, measured on the base photo: (left, top, right, bottom) as fractions of the frame
+# a line covered, in the label's own pixels: (base, expectation) → the cover and the fields it hides (a thumb holding
+# the carton covers both dates' figures)
 COVERS = {
-    ("story-clean", "no-date"): ((0.18, 0.592, 0.72, 0.662), "bestBefore"),
-    ("story-clean", "no-batch"): ((0.42, 0.425, 0.70, 0.497), "batch"),
-    ("story-shelf", "no-date"): ((0.47, 0.566, 0.735, 0.66), "bestBefore"),
+    ("story-clean", "no-date"): ({"on": "bb", "kind": "tape"}, ["bestBefore"]),
+    ("story-clean", "no-batch"): ({"on": "batch", "kind": "tape"}, ["batch"]),
+    ("story-shelf", "no-date"): ({"on": ["mfg", "bb"], "kind": "thumb"}, ["mfg", "bestBefore"]),
 }
 VARIANT_BASES = {
     "story-clean": ["blur2", "jpeg15", "tilt12", "keystone", "glare", "dark", "small", "unreadable"],
@@ -274,25 +177,18 @@ VARIANT_BASES = {
 HELD_OUT_EVERY = 3  # every third case is held out; the rest may be drawn on for the prompt's examples
 
 
-def gen() -> None:
-    SRC.mkdir(exist_ok=True)
-    lines = ["#!/usr/bin/env bash", "# generated by plan.py: the Vision eval's base photos, one at a time", "set -u"]
-    lines.append(f'cd "{SRC}"')
-    for cid, (batch, style, setting, seed) in BASES.items():
-        prompt = scene(label_lines(batch, style), setting)
-        lines.append(f'if [ ! -f "{cid}.png" ]; then')
-        lines.append(f'  echo "$(date +%T) {cid}"')
-        lines.append(
-            f"  {QWEN} {QWEN_CLI} {json.dumps(prompt, ensure_ascii=False)} --aspect 4:3 --size 1024 "
-            f'--seed {seed} --out "{cid}.png" || echo "$(date +%T) {cid} FAILED"'
-        )
-        lines.append("fi")
-    lines.append('echo "$(date +%T) done"')
-    (SRC / "gen.sh").write_text("\n".join(lines) + "\n")
-    print(f"wrote {SRC / 'gen.sh'}: {len(BASES)} photos")
+def truth(batch: str) -> dict:
+    sku, mfg, best = BATCHES[batch]
+    pack, mrp = SKUS[sku]
+    return {"batch": batch, "mfg": mfg, "bestBefore": best, "mrp": mrp, "pack": pack}
 
 
-# --- the variants ---------------------------------------------------------------------------------------------------
+def spec(batch: str, style: str) -> dict:
+    sku, mfg, best = BATCHES[batch]
+    return {"sku": sku, "batch": batch, "mfg": mfg, "bestBefore": best, "mrp": SKUS[sku][1], "style": style}
+
+
+# --- the photos -----------------------------------------------------------------------------------------------------
 
 
 def transform(img, kind: str, p: dict):
@@ -318,15 +214,13 @@ def transform(img, kind: str, p: dict):
         return Image.composite(Image.new("RGB", (w, h), (255, 255, 250)), img, glow)
     if kind == "brightness":
         return ImageEnhance.Brightness(img).enhance(p["factor"])
+    if kind == "noise":
+        grain = Image.effect_noise((w, h), p["amount"]).convert("RGB")
+        return Image.blend(img, Image.composite(grain, img, Image.new("L", (w, h), 255)), 0.18)
     if kind == "downscale":
         return img.resize((p["width"], round(h * p["width"] / w)), Image.Resampling.LANCZOS)
     if kind == "smear":
         return ImageEnhance.Brightness(img.filter(ImageFilter.GaussianBlur(p["radius"]))).enhance(p["factor"])
-    if kind == "cover":
-        out = img.copy()
-        x0, y0, x1, y1 = p["box"]
-        ImageDraw.Draw(out).rectangle((x0 * w, y0 * h, x1 * w, y1 * h), fill=(166, 124, 82))  # brown packing tape
-        return out.filter(ImageFilter.GaussianBlur(0.6))
     if kind == "jpeg":
         import io
 
@@ -340,51 +234,127 @@ def _sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()[:16]
 
 
+def compose() -> dict[str, Path]:
+    """every label photo a case starts from: the base cases and the covered ones, printed by the label maker"""
+    sys.path.insert(0, str(MAKER))
+    import make
+
+    SRC.mkdir(exist_ok=True)
+    jobs, names = [], []
+    for cid, b in BASES.items():
+        if b.get("story"):
+            continue
+        jobs.append(
+            {
+                "out": SRC / f"{cid}.png",
+                "png": SRC / f"{cid}.png",
+                "base": b["base"],
+                "spec": spec(b["batch"], b.get("style", "standard")),
+                "covers": b.get("covers", []),
+                "scan": not b.get("covers"),
+            }
+        )
+        names.append(cid)
+    for (cid, expect), (cover, _) in COVERS.items():
+        b = BASES[cid]
+        jobs.append(
+            {
+                "out": SRC / f"{cid}--{expect}.png",
+                "png": SRC / f"{cid}--{expect}.png",
+                "base": b["base"],
+                "spec": spec(b["batch"], b.get("style", "standard")),
+                "covers": [cover],
+                "scan": False,
+            }
+        )
+        names.append(f"{cid}--{expect}")
+    for line in make.photos(jobs, SRC / "work"):
+        print(line.replace(str(SRC) + "/", ""))
+    return {n: SRC / f"{n}.png" for n in names}
+
+
 def build() -> None:
     from PIL import Image
 
+    try:
+        import segno  # noqa: F401
+    except ImportError:
+        raise SystemExit(
+            "run it as: uv run --with segno --with pillow --with numpy --with scipy python plan.py build"
+        ) from None
+    made = compose()
+    bases = json.loads((MAKER / "bases.json").read_text())
     IMAGES.mkdir(exist_ok=True)
+    for old in IMAGES.glob("*"):
+        old.unlink()
     cases = []
 
-    def emit(cid: str, img, base: str, *, kind: str, expect: str, hides: list[str], post: list[dict]) -> None:
+    def emit(cid: str, img, base: str, *, kind: str, expect: str, hides: list[str], post: list[dict], copy=None):
         name = f"{cid}.webp"
-        img.save(IMAGES / name, "WEBP", quality=88, method=6)
-        batch, style, setting, seed = BASES[base]
-        t = truth(batch)
-        seen = SEEN.get(base, {})
-        t.update(seen.get("fields") or {})
-        if seen.get("pack"):
-            t["pack"] = seen["pack"]
+        if copy:
+            shutil.copyfile(copy, IMAGES / name)
+        else:
+            img.save(IMAGES / name, "WEBP", quality=88, method=6)
+        b = BASES[base]
+        seed = b["base"]
+        t = truth(b["batch"])
         for f in hides:
             t[f] = None
+        source = copy or MAKER / bases[str(seed)]["file"]
         sidecar = {
             "model": MODEL,
             "seed": seed,
             "size": "1024 (4:3, 1184 x 896)",
-            "prompt": scene(label_lines(batch, style), setting),
-            "postProcessing": [*post, {"step": "convert", "to": "WebP", "quality": 88}],
-            "source": f"src/{base}.png (sha256 {_sha(SRC / f'{base}.png')}, kept locally)",
-            "seen": seen.get("note"),
+            "prompt": bases[str(seed)]["prompt"],
+            "postProcessing": [
+                {
+                    "step": "label",
+                    "by": "design3/system/labels/label.py (SC-147, the full statutory sticker)",
+                    "batch": b["batch"],
+                    "style": b.get("style", "standard"),
+                },
+                {"step": "print", "by": "design3/system/labels/compose.mjs", "onto": bases[str(seed)]["file"]},
+                *post,
+                {"step": "convert", "to": "WebP", "quality": 86 if copy else 88},
+            ],
+            "source": f"{Path(source).relative_to(ROOT)} (sha256 {_sha(Path(source))})",
         }
         (IMAGES / f"{cid}.prompt.json").write_text(json.dumps(sidecar, ensure_ascii=False, indent=1) + "\n")
         cases.append({"id": cid, "image": f"images/{name}", "kind": kind, "expect": expect, "truth": t})
 
-    for base in BASES:
-        src = SRC / f"{base}.png"
-        if not src.exists():
-            print(f"skipped {base}: no src/{base}.png yet")
-            continue
-        img = Image.open(src).convert("RGB")
-        emit(base, img, base, kind="clean" if base in CLEAN else "hard", expect="exact", hides=[], post=[])
-        for v in VARIANT_BASES.get(base, []):
+    for cid, b in BASES.items():
+        copy = STORY / f"{b['batch']}.webp" if b.get("story") else None
+        img = Image.open(copy or made[cid]).convert("RGB")
+        post = [{"step": "cover", **c} for c in b.get("covers", [])]
+        for step, params in b.get("prep", []):
+            img = transform(img, step, params)
+            post.append({"step": step, **params})
+        emit(
+            cid,
+            img,
+            cid,
+            kind="clean" if cid in CLEAN else "hard",
+            expect=b.get("expect", "exact"),
+            hides=b.get("hides", []),
+            post=post,
+            copy=copy if not post else None,
+        )
+        for v in VARIANT_BASES.get(cid, []):
             t, params, expect, hides = VARIANTS[v]
             out = transform(img, t, params)
-            emit(f"{base}--{v}", out, base, kind="hard", expect=expect, hides=hides, post=[{"step": t, **params}])
-        for (b, expect), (box, field) in COVERS.items():
-            if b == base:
-                post = [{"step": "cover", "box": list(box), "what": field}]
-                out = transform(img, "cover", {"box": box})
-                emit(f"{base}--{expect}", out, base, kind="hard", expect=expect, hides=[field], post=post)
+            emit(f"{cid}--{v}", out, cid, kind="hard", expect=expect, hides=hides, post=[{"step": t, **params}])
+        for (base, expect), (cover, fields) in COVERS.items():
+            if base == cid:
+                out = Image.open(made[f"{cid}--{expect}"]).convert("RGB")
+                emit(
+                    f"{cid}--{expect}",
+                    out,
+                    cid,
+                    kind="hard",
+                    expect=expect,
+                    hides=fields,
+                    post=[{"step": "cover", **cover}],
+                )
     for i, c in enumerate(cases):
         c["split"] = "held-out" if i % HELD_OUT_EVERY == 0 else "train"
     (HERE / "cases.jsonl").write_text("".join(json.dumps(c, ensure_ascii=False) + "\n" for c in cases))
@@ -393,9 +363,7 @@ def build() -> None:
 
 
 if __name__ == "__main__":
-    if sys.argv[1:] == ["gen"]:
-        gen()
-    elif sys.argv[1:] == ["build"]:
+    if sys.argv[1:] == ["build"]:
         build()
     else:
         print(__doc__)

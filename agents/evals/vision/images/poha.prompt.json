@@ -1,15 +1,25 @@
 {
- "model": "Qwen-Image-2.1 (bf16), run locally through the qwen-image-bf16 plugin 0.2.0 (its CLI)",
- "seed": 34,
+ "model": "Qwen-Image 2.1 (bf16), text to image, run locally (qwen-image-bf16 0.2.0): the blank base photo",
+ "seed": 14714,
  "size": "1024 (4:3, 1184 x 896)",
- "prompt": "A realistic close-up smartphone photo of a printed white label stuck on the side of a brown corrugated cardboard carton. The label is printed in bold black sans-serif type, one line each: \"MUNCHLY INSTANT POHA 250 g\", \"BATCH NO: MF-2410-402\", \"MFG: 24/07/2026\", \"BEST BEFORE: 20/04/2027\", \"MRP ₹55.00 (incl. of all taxes)\". Even light on a godown rack. Photorealistic, natural colours, the label text crisp and legible.",
+ "prompt": "A close-up photo of a blank white rectangular paper label on a slightly scuffed brown corrugated carton, the camera tilted a few degrees, bright daylight from a window on the right, a stack of cartons behind. nothing printed on the label, plain matte white paper with a thin glossy sheen, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours.",
  "postProcessing": [
+  {
+   "step": "label",
+   "by": "design3/system/labels/label.py (SC-147, the full statutory sticker)",
+   "batch": "MF-2410-402",
+   "style": "standard"
+  },
+  {
+   "step": "print",
+   "by": "design3/system/labels/compose.mjs",
+   "onto": "bases/14714.webp"
+  },
   {
    "step": "convert",
    "to": "WebP",
    "quality": 88
   }
  ],
- "source": "src/poha.png (sha256 88e8222a5b3bb353, kept locally)",
- "seen": null
+ "source": "design3/system/labels/bases/14714.webp (sha256 3fda6f7687a5af21)"
 }

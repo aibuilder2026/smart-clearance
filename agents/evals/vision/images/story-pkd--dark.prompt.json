@@ -1,9 +1,20 @@
 {
- "model": "Qwen-Image-2.1 (bf16), run locally through the qwen-image-bf16 plugin 0.2.0 (its CLI)",
- "seed": 51,
+ "model": "Qwen-Image 2.1 (bf16), text to image, run locally (qwen-image-bf16 0.2.0): the blank base photo",
+ "seed": 14701,
  "size": "1024 (4:3, 1184 x 896)",
- "prompt": "A realistic close-up smartphone photo of a printed white label stuck on the side of a brown corrugated cardboard carton. The label is printed in bold black sans-serif type, one line each: \"MUNCHLY MASALA CHIPS 150 g\", \"B.NO.: MF-2409-117\", \"PKD: 18.05.2026\", \"USE BY: 18.11.2026\", \"M.R.P. Rs. 30/-\". Even daylight, the camera square on. Photorealistic, natural colours, the label text crisp and legible.",
+ "prompt": "A realistic close-up smartphone photo of a plain blank white rectangular paper label sticker stuck flat on the side of a brown corrugated cardboard carton, the label fills most of the frame with a margin of brown cardboard visible on every side, nothing printed on the label, the label slightly glossy with tiny creases at one corner, even daylight from a godown window, the camera square on to the carton, sharp focus, natural colours.",
  "postProcessing": [
+  {
+   "step": "label",
+   "by": "design3/system/labels/label.py (SC-147, the full statutory sticker)",
+   "batch": "MF-2409-117",
+   "style": "pkd"
+  },
+  {
+   "step": "print",
+   "by": "design3/system/labels/compose.mjs",
+   "onto": "bases/14701.webp"
+  },
   {
    "step": "brightness",
    "factor": 0.4
@@ -14,6 +25,5 @@
    "quality": 88
   }
  ],
- "source": "src/story-pkd.png (sha256 5b92a91ac524d222, kept locally)",
- "seen": null
+ "source": "design3/system/labels/bases/14701.webp (sha256 d1a16f9c838a7bdc)"
 }

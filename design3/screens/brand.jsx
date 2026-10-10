@@ -160,11 +160,16 @@
   }
 
   /* ---------- S2 Route Room ---------- */
-  // the carton on shelf B4, with its label printed in type so it stays legible at any size
-  function LabelShot({ cover, dim, children }) {
+  // the carton's label photo (SC-147): the batch's own photo, the full statutory sticker with its barcode, QR code and
+  // FSSAI licence (system/img/labels, made by system/labels); the carton on shelf B4 with its label set in type where a
+  // batch has no photo
+  const LABEL_PHOTOS = ["MF-2406-105", "MF-2406-106", "MF-2406-107", "MF-2406-108", "MF-2406-109", "MF-2407-110", "MF-2407-111", "MF-2407-112", "MF-2407-113", "MF-2407-114", "MF-2407-115", "MF-2407-116", "MF-2409-117", "MF-2410-118"];
+  function LabelShot({ cover, dim, batch = "MF-2409-117", children }) {
+    const img = window.SC3_IMG || "system/img/";
+    const photo = LABEL_PHOTOS.includes(batch);
     return <div className={cx("lshot", cover && "cover")} style={dim ? { filter: "saturate(0.85) brightness(0.94)" } : undefined}>
-      <img src={(window.SC3_IMG || "system/img/") + "label-shot.webp"} alt="" />
-      <div className="lshot-label" aria-hidden="true"><b>MUNCHLY</b><span className="ls-prod">Masala Chips 150 g</span><span>BATCH&nbsp; MF-2409-117</span><span>MFG&nbsp; 18 MAY 2026</span><span>BEST BEFORE&nbsp; 18 NOV 2026</span><span>MRP ₹30.00 incl. of all taxes</span><span>24 × 150 g</span></div>
+      <img src={photo ? img + "labels/" + batch + ".webp" : img + "label-shot.webp"} alt="" />
+      {!photo && <div className="lshot-label" aria-hidden="true"><b>MUNCHLY</b><span className="ls-prod">Masala Chips 150 g</span><span>BATCH&nbsp; MF-2409-117</span><span>MFG&nbsp; 18 MAY 2026</span><span>BEST BEFORE&nbsp; 18 NOV 2026</span><span>MRP ₹30.00 incl. of all taxes</span><span>24 × 150 g</span></div>}
       {children}
     </div>;
   }

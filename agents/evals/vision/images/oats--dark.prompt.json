@@ -1,9 +1,20 @@
 {
- "model": "Qwen-Image-2.1 (bf16), run locally through the qwen-image-bf16 plugin 0.2.0 (its CLI)",
- "seed": 33,
+ "model": "Qwen-Image 2.1 (bf16), text to image, run locally (qwen-image-bf16 0.2.0): the blank base photo",
+ "seed": 14712,
  "size": "1024 (4:3, 1184 x 896)",
- "prompt": "A realistic close-up smartphone photo of a printed white label stuck on the side of a brown corrugated cardboard carton. The label is printed in bold black sans-serif type, one line each: \"MUNCHLY MASALA OATS 200 g\", \"BATCH NO: MF-2409-415\", \"MFG: 21/03/2026\", \"BEST BEFORE: 16/12/2026\", \"MRP ₹65.00 (incl. of all taxes)\". Even light on a godown rack. Photorealistic, natural colours, the label text crisp and legible.",
+ "prompt": "A photo taken looking down at a blank white rectangular paper label on the top flap of a brown corrugated carton, the carton's packing tape across one edge, flat even light in a distributor's godown. nothing printed on the label, plain matte white paper with a thin glossy sheen, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours.",
  "postProcessing": [
+  {
+   "step": "label",
+   "by": "design3/system/labels/label.py (SC-147, the full statutory sticker)",
+   "batch": "MF-2409-415",
+   "style": "standard"
+  },
+  {
+   "step": "print",
+   "by": "design3/system/labels/compose.mjs",
+   "onto": "bases/14712.webp"
+  },
   {
    "step": "brightness",
    "factor": 0.4
@@ -14,6 +25,5 @@
    "quality": 88
   }
  ],
- "source": "src/oats.png (sha256 a4f29178f6baa63c, kept locally)",
- "seen": null
+ "source": "design3/system/labels/bases/14712.webp (sha256 ac725e023f593b7a)"
 }

@@ -1867,6 +1867,30 @@
     - with the photos held back mid-load, design3 (light and dark) and core's stub build each showed the shimmer placeholders with their tags, then the photos once they landed;
     - the frontend gate passes: core 270, api 78, workspace 92, admin 17, demo 5, console 3.
 
+- **SC-147** (In Review, branch `SC-147-label-codes`): every carton label photo carries a barcode, a QR code and the FSSAI licence, past and present.
+  - **The request:** "food labels uploaded should have FSSAI approved bar code and QR code on the cartons. this should updated for all past batches and orders on munchly", with a real snack label for reference. The GST papers, its second part, are SC-148.
+  - **Design first:** three options on one board in app v3, `SC-147 design review.html`:
+    - A, the full statutory sticker (recommended);
+    - B, the printed shipper carton;
+    - C, today's label with a coded foot.
+
+    The maintainer picked **A**, and answered the eval set's question with "Relabel all 73, everything in past and present to new format". Designs and the decision are in `design3/designs/SC-147/`.
+  - **The label:** the product in a band (the veg mark on food), the ingredients, the net quantity and MRP, the batch and its dates boxed, the maker and customer care, the FSSAI mark and licence `10019022001234` (a cosmetic, Glowra's face wash and hair oil: its manufacturing licence and "use before", no FSSAI), the pack's EAN-13 and the batch's QR code, the storage line.
+    - FSSAI asks for its mark and licence; the barcode is GS1's. Every number is fictional: GTINs under GS1 India's 890 with a company number no business holds (8900000), the QR a GS1 Digital Link on `id.munchly.example` (GTIN, batch, best-before), the fssai mark drawn here.
+    - The batch, dates and MRP print as each batch's record has them, so Vision's check still matches.
+  - **The label maker,** `design3/system/labels/` (`make.py labels`): `label.py` (the sticker as HTML, in five print styles), `codes.py` (EAN-13, ITF-14, the QR, GSTINs), `quad.py` (each base's blank sticker found), `compose.mjs` (the label warped onto the sticker in perspective, multiplied, any cover laid over a line, every code read back with Chromium's BarcodeDetector), `bases.sh` and 16 Qwen-Image base photos (`bases/`, with sidecars and `bases.json`).
+  - **Rebuilt:**
+    - the 14 label photos in `design3/system/img/labels/`: the history's twelve, the Masala Chips, and the Mango Drink's (new); `seed.mjs` copies the history's into backend-api;
+    - all 73 of Vision's eval photos (`agents/evals/vision/plan.py` on the label maker): the clean ones, the five print styles, and hard cases made exactly (tape over a line, a thumb over both dates, a tear over the MRP, Pillow's blur, glare, darkness, angles, compression, a smear). `story-clean` and `mango` are design3's own photos for MF-2409-117 and MF-2410-118, byte for byte. A thumb now hides what it covers, so story-thumb is no-date, story-tape no-batch, story-dim unreadable and damaged has no MRP; `seen.json` is gone;
+    - **LabelShot**, the example and the stub's photo (design3 `brand.jsx`, core `LabelShot.svelte`): the batch's own label photo; the typeset label where there is none, as on a live build. The workspace's live tests now leave the story's photos out, as a live build does.
+  - **Vision's prompt** knows USE BEFORE and EXPIRY, and never takes a field from the barcode, the licence or the QR code.
+  - **Not changed:** the five destruction "before" photos keep their large batch slips, which Vision's destruction check reads.
+  - **Checks:**
+    - the frontend gate passes: core 273 (30 goldens lose the typeset label), api 78, workspace 93, admin 17, demo 5, console 3; a live workspace build passes `no-seed.mjs`;
+    - backend-api 552 passed, 1 skipped; agents 202 passed;
+    - every visible barcode and QR code read back from its photo;
+    - the evals were not run on live Gemini (on request only, about GBP 1 to 2).
+
 - **SC-149** (In Review, branch `SC-149-overview-destroyed`): the console's Overview stops drawing what it recovered twice, and shows the food destroyed.
   - **The request:** "Console dashboard graph across all clients seems to be duplicating the recovered graph, see if we can add destroyed food into the graphs too... Agents at work and other sections looks fine dont touch them". The Recovered figure's sparkline and the Recovered, by day card drew the same series under the same total, and nothing recorded what a closed batch destroyed.
   - **Design first:** three options on one board in platform v3, `SC-149 design review.html`, each the console on a review world (Munchly and four fictional clients, 180 days of batches):
