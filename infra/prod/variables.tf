@@ -57,6 +57,17 @@ variable "operators" {
   }
 }
 
+variable "data_sync_until" {
+  description = "Until when (RFC 3339, UTC) the operators may act as sc-migrator, to replace production's data with local's (backend-api/scripts/sync.sh, SC-136). Empty: they may not."
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = var.data_sync_until == "" || can(regex("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$", var.data_sync_until))
+    error_message = "data_sync_until is empty or a UTC time such as 2026-10-12T12:00:00Z."
+  }
+}
+
 variable "console_dev_origins" {
   description = "Local origins the console runs on (its dev and preview servers), allowed to use its browser key."
   type        = list(string)

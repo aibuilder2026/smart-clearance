@@ -81,6 +81,23 @@ resource "google_service_account" "migrator" {
   description  = "Runs backend-api's schema setup and migrations. No key."
 }
 
+# The operators may act as sc-migrator only until data_sync_until (SC-136): long enough to replace production's data with
+# local's through the Cloud SQL connector (backend-api/scripts/sync.sh). The condition closes it on its own, with no
+# further apply; an empty data_sync_until removes it.
+resource "google_service_account_iam_member" "migrator_operators" {
+  for_each = var.backend_runtime && var.data_sync_until != "" ? toset(var.operators) : toset([])
+
+  service_account_id = google_service_account.migrator[0].name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = each.key
+
+  condition {
+    title       = "sc-data-sync"
+    description = "Replace production's data with local's (SC-136), until ${var.data_sync_until}"
+    expression  = "request.time < timestamp(\"${var.data_sync_until}\")"
+  }
+}
+
 resource "google_project_iam_member" "api" {
   for_each = var.backend_runtime ? toset([
     google_project_iam_custom_role.auth_users.id, # Firebase users

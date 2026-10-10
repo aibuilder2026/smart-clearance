@@ -90,6 +90,8 @@ backend-api/scripts/walk.sh [--day-minutes N]   # Munchly's journey walked over 
 backend-api/scripts/live-fixtures.sh        # what the API answers at five moments of the journey, for the workspace app's live tests
 backend-api/scripts/e2e.sh                  # the landing page and the console end to end on the local API and Firebase Auth
 backend-api/scripts/sessions.sh priya …     # Firebase custom tokens for the journey's people, for the Munchly Chips E2E suite (no password)
+backend-api/scripts/sync.sh                 # production's data against local's, read-only; --rehearse into a scratch local database
+backend-api/scripts/sync.sh --apply --allow-env prod   # production's data replaced with local's: a backup, the database, the buckets, BigQuery (SC-136; while infra's data_sync_until allows)
 cd backend-api && uv run ruff check . && scripts/test.sh   # the gate jira-flow runs
 ```
 
