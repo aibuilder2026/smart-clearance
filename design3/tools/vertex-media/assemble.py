@@ -74,11 +74,13 @@ def main():
         cur = f"[x{i}]"; total = round(total + clips[i]["len"] - X, 3)
     if L > 0:
         c0 = clips[0]
-        f.append(f"[0:v]trim=start={c0['in']}:end={round(c0['in'] + L + X, 3)},setpts=PTS-STARTPTS,fps={a.fps},"
+        pad = round(2 / a.fps, 4)  # two frames of pure head after the dissolve, so the last frame is not a blend
+        f.append(f"[0:v]trim=start={c0['in']}:end={round(c0['in'] + L + pad, 3)},setpts=PTS-STARTPTS,fps={a.fps},"
                  f"scale={W}:{H}:flags=lanczos:force_original_aspect_ratio=increase,crop={W}:{H},setsar=1[head]")
         f.append(f"{cur}[head]xfade=transition=fade:duration={L}:offset={round(total - L, 3)}[lp]")
-        # the loop dissolve lands on the head at time L; cut the first L seconds so frame 0 is that same frame
-        f.append(f"[lp]trim=start={L},setpts=PTS-STARTPTS[cut]")
+        # the head is the first clip's first L seconds and two frames more, so the dissolve ends and two pure frames follow;
+        # cutting the first L seconds and two frames makes the file's first frame the one its last frame is, so it loops
+        f.append(f"[lp]trim=start={round(L + pad, 4)},setpts=PTS-STARTPTS[cut]")
         cur = "[cut]"; total = round(total - L, 3)
     tail = []
     if a.speed != 1.0:

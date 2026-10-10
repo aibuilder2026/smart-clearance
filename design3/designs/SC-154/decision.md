@@ -105,4 +105,54 @@ keyframe touch-ups; 4K for the picked takes would add $12.80.
 
 ## The pick
 
-_Pending._
+**A, Four hours, four places**, picked by the maintainer on 10 Oct 2026 from the board, with the page's camera lean at
+**1.25** and the build at **Veo 3.1 1080p without audio** (no 4K pass), with a stop at $30.
+
+## The build
+
+- **The clips:** four 8 s Veo 3.1 clips at 1080p without audio, image to video from the keyframes, with their prompts
+  in `prompts/A-clip*.txt`: the bay at dawn (the camera pushing in on the pair), the godown counter at noon (she lifts
+  the crate and turns for the door), the yard at dusk (a slow slide from the van to the table), the office in the
+  evening. Each took about 130 s.
+- **The maintainer's three notes on the first cut,** and the retakes they led to (about $5 more, within the build's
+  stop):
+  1. the distributor wore two pairs of glasses in chapter 1 (Veo added a pair to his face on top of the pair on his
+     head): the keyframe was edited to take the glasses off his head, and the clip retaken. The second take had him
+     put a pair on and off; the third, told his hands stay low and he points once at her phone, is in the film;
+  2. in chapter 3 the payment and the packets ran together at the staff-sale table: the keyframe was edited to a packet
+     handed over and a clipboard in his other hand, and the clip retaken with no money anywhere;
+  3. the chai toast in chapter 4 did not look like an office: a new keyframe puts the two of them side by side reading
+     a green dashboard on a monitor (no readable words), the tumblers set aside, and the clip has her trace a rising
+     chart with her pen while he nods.
+
+  Chapter 4's very first take was held back by Veo's safety filter (the toast; not charged) and came through
+  rephrased before the note made it moot. Clip 1 shows a number plate after 6 s in every take and is used up to 4.5 s;
+  clip 3's gate board comes back as a blank blue panel, with no lettering.
+- **The cut** (`assemble.py`): each clip trimmed to 4.3 s, chained through 0.5 s dissolves, the tail dissolving over
+  0.5 s into the first clip's head, which is then cut, so the last frame runs into the first; 24 fps, no retime,
+  contrast 1.03 and saturation 1.06, libx264 crf 27. `design3/site/assets/media/one-journey.mp4`: 15.21 s, 1920 × 1080,
+  365 frames, 6.18 MB, with its `.prompt.json` composed by `sidecar.py` from the clips' sidecars.
+- **The seams** (`seams.py`): the loop step is 2.9 against a median frame step of 2.3 (continuous); the joins step by
+  8.8, 6.4 and 11.5 inside their dissolves. The first cut's head ended on the dissolve's last frame, a blend, and the
+  loop stepped by 9.6; two frames of pure head after the dissolve fixed it.
+- **The posters** (`frames.py`): `hero-day.webp` and `hero-night.webp` are the film's first frame (156 KB each, q82),
+  with 48 px previews (about 400 B); both themes start on the same frame. The town posters and `one-day.mp4` are
+  retired.
+- **The hero** (`site.jsx`): the chapters at 06:30, 11:00, 18:00 and 21:30 in the journey's order; `FILM` with
+  `bounds` [0, 3.55, 7.35, 11.15], `ar` 16/9, `lean` 1.25 and each chapter's subject for the camera; the night offset
+  gone. `loader.js` and the page preload the new posters.
+- **The shade** (`site.css`): live action is brighter under the copy than the diorama was. Measured with the copy
+  hidden, white against the pixels under each element at two moments of every chapter, the heading's 90th percentile
+  fell to 2.4:1 on a phone at the noon chapter and the sub's 99th to 4.0:1. The shade's foot and left band are stronger,
+  and phones get a darker band behind the copy. After it: heading 5.5:1 at 1440, 4.6:1 at 390 (90th percentile, large
+  text); sub 12.0:1 and 8.9:1; strip 15.3:1 and 15.5:1; at 1024, 5.6:1, 10.9:1 and 14.5:1. On the final cut with the retakes: heading 5.6:1 at
+  1440 and 4.6:1 at 390, sub 11.6:1 and 8.9:1, strip 14.8:1 and 15.4:1.
+- **The port:** `media.ts`, `plates.ts` (`PLATES.hero`), `figures.ts` (`story`), `Hero.svelte` (no night offset),
+  `Site.svelte` (the loader's plate names, which still mapped the retired `business.webp`, so a theme switch's poster
+  preload had fallen back to a 404), `+page.svelte`'s `og:image`, `site.css` verbatim, the README, the loader spec's
+  poster names.
+- **Played through** (a Playwright script on design3 and the build, light and dark, 1440 and 390): no console errors;
+  the loader lifts and the film starts at 0.3 s; four chapters light in turn at their bounds; Pause and Play by
+  keyboard; a seek to the end runs back under 2 s. Stills in `build/`.
+- **Cost:** the final clips and their retakes $11.20 (seven clips at $1.60; the filtered one free), the keyframe edits
+  $0.30; the ticket in all **$18.76 (£14.07)**, against the $30 stop for the build and the $45 cap.

@@ -2,7 +2,7 @@
 // build: only the ones the page shows, so no other plate is copied into it. Two are composed twice, by day and by
 // night (never inverted); the dusk band is one in both themes.
 const files = import.meta.glob(
-	'$design3/site/assets/plates/{town-morning,town-night,town-morning-preview,town-night-preview,table,table-night,dusk}.webp',
+	'$design3/site/assets/plates/{hero-day,hero-night,hero-day-preview,hero-night-preview,table,table-night,dusk}.webp',
 	{
 		query: '?url',
 		import: 'default',
@@ -18,12 +18,12 @@ const url = (file: string) => {
 
 export type Plate = { day: string; night: string };
 export const PLATES = {
-	// the first viewport's town at sunrise and at night (SC-111): the film's poster in each theme, and what a reader
-	// who asks for less motion sees in its place
-	town: { day: url('town-morning.webp'), night: url('town-night.webp') },
+	// the first viewport's film at its first frame (SC-154), graded for each theme: the film's poster, and what a
+	// reader who asks for less motion sees in its place
+	hero: { day: url('hero-day.webp'), night: url('hero-night.webp') },
 	// the posters' soft previews (SC-131): 48 px copies, small enough to come inlined in the page, shown blurred under
 	// the film until its poster arrives
-	preview: { day: url('town-morning-preview.webp'), night: url('town-night-preview.webp') },
+	preview: { day: url('hero-day-preview.webp'), night: url('hero-night-preview.webp') },
 	// the table the agents work the batch on (SC-60; re-lit by day in SC-78)
 	table: { day: url('table.webp'), night: url('table-night.webp') },
 	dusk: { day: url('dusk.webp'), night: url('dusk.webp') }

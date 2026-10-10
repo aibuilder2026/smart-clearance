@@ -225,7 +225,7 @@ Local pages:
 
   These criteria still need a manual pass: 2.4.11, 2.5.7, 3.2.6, 3.3.7 and 3.3.8.
 - Nothing loops forever, except the landing page's hero film, which loops under its Pause control (SC-78): every other animation stops within five seconds (WCAG 2.2.2), and only loading indicators keep turning. `motion.a11y.spec.ts` fails on any endless CSS or web animation.
-  - The landing page's two longer motions are the hero's film (SC-111: the journey's day at the business in four acts, one 14 s film that runs back into its first frame, looping; Pause and Play; the page's camera leans in on each act; a strip under the copy reads the four chapters) and the table's tour (SC-60: 15.8 s; Pause and Play, a rail to jump between the agents, Replay). The tour plays once and holds, also while the table is out of view. The film drifts with the scroll, never on its own clock.
+  - The landing page's two longer motions are the hero's film (SC-154: one day of the journey with real people in four chapters, one 15 s film whose tail dissolves into its head, looping; Pause and Play; the page's camera leans in on each chapter's subject; a strip under the copy reads the four chapters) and the table's tour (SC-60: 15.8 s; Pause and Play, a rail to jump between the agents, Replay). The tour plays once and holds, also while the table is out of view. The film drifts with the scroll, never on its own clock.
   - The landing page's loader (SC-35) is a loading indicator: it moves only while the page, or a new theme's plates, load.
   - The console's loader (SC-49), the route and its placeholders' green wash, is a loading indicator too: it moves only while a screen or tab is read. The Overview moves only when a reading changes something, and Pause updates stops the readings.
   - The console's splash (SC-51, `design3/console/splash.js`) is a loading indicator: it covers the first load, signing in and signing out only while their code and reads are out, and leaves once the page behind it is drawn. Its route runs lap after lap only while it waits (SC-131).
@@ -241,6 +241,7 @@ Local pages:
   - Munchly Foods is a client; its details belong in its workspace, the demo and the console.
   - The landing page tells one illustrative batch, and its showcase API carries no client details.
 - Every generated image or clip ships with a `.prompt.json` sidecar recording its model, seed, prompt and post-processing. PNG originals stay local in `src/` folders; only the WebP ships.
+- Vertex AI's models (Veo 3.1 for clips, the Gemini image models for keyframes) are run through `design3/tools/vertex-media/`, whose scripts write the sidecars themselves and price every call before it is made (SC-154). Generation costs money, so a design round and a build each start with the maintainer's yes on a figure, and `cost.py` reports the spend against it.
 - Third-party Claude Code components are recorded in `.claude/third-party.md`. Read a component before using it; installing one needs the maintainer's yes.
 
 ## Tooling

@@ -1,0 +1,39 @@
+{
+  "name": "final-4-office-dashboard",
+  "model": "veo-3.1-generate-001",
+  "location": "us-central1",
+  "service": "Vertex AI",
+  "prompt": "Photorealistic cinematic live action, exactly as in the image: evening in the small office above the godown, the warm desk lamp on and the last blue light in the window. The planner in the navy pinstripe kurta and the distributor in the light blue checked shirt, no glasses, sit side by side reading the green-and-white dashboard on the monitor; she traces the rising line on a chart with her pen and glances at him, he nods slowly and leans in, then sits back, satisfied; the bars on the dashboard tick up a little as it refreshes. Nothing is picked up or drunk; the chai tumblers stay on their tray. The camera dollies in very slowly toward the screen and the two faces, a gentle push, no handheld shake. The light does not change over the shot. 35 mm, shallow depth of field, professional and calm. No readable text, numbers, logos or lettering anywhere, on the screen or the papers.",
+  "negative_prompt": "text, lettering, logo, brand name, label, watermark, subtitles, children",
+  "seed": 154224,
+  "enhance_prompt": true,
+  "resolution": "1080p",
+  "aspect": "16:9",
+  "duration_s": 8,
+  "fps": 24,
+  "generate_audio": false,
+  "person_generation": "allow_adult",
+  "inputs": [
+    {
+      "role": "first",
+      "file": "A-k3-office-dashboard.png",
+      "sha256": "665b657b4f3bd31095863998f82ec9df9f6ab04a1ea2ac072c7409427fb6f072"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 1.6,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "use": "SC-154 the film, chapter 4: the office, the two of them reading the dashboard (Veo 3.1, 1080p, take 3)",
+  "status": "done",
+  "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/ee1a7c63-94db-4b6b-9f60-ba59b3b23c48",
+  "latency_s": 133.9,
+  "rai_filtered": {
+    "count": 0,
+    "reasons": []
+  },
+  "files": [
+    "final-4-office-dashboard.mp4"
+  ],
+  "probe": "{\n    \"programs\": [\n\n    ],\n    \"stream_groups\": [\n\n    ],\n    \"streams\": [\n        {\n            \"width\": 1920,\n            \"height\": 1080,\n            \"r_frame_rate\": \"24/1\",\n            \"nb_frames\": \"192\"\n        }\n    ],\n    \"format\": {\n        \"duration\": \"8.000000\",\n        \"size\": \"11262807\"\n    }\n}"
+}

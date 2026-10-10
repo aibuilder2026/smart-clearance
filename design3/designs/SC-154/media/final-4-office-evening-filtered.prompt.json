@@ -1,0 +1,37 @@
+{
+  "name": "final-4-office-evening",
+  "model": "veo-3.1-generate-001",
+  "location": "us-central1",
+  "service": "Vertex AI",
+  "prompt": "Photorealistic cinematic live action, exactly as in the image: evening in the small office above the godown, the warm desk lamp on and the last blue light in the window. The planner in the navy pinstripe kurta and the distributor in the light blue checked shirt, glasses on, sit across the desk of neat papers and the tablet; they touch their steel chai tumblers together, smile, and each takes a sip; he sets his down and taps the tablet once; she leans back, relieved. The camera dollies in very slowly toward the two of them, a gentle push, no handheld shake. The light does not change over the shot. 35 mm, shallow depth of field, intimate. No text, no logos, no lettering anywhere; the papers and the tablet stay unreadable.",
+  "negative_prompt": "text, lettering, logo, brand name, label, watermark, subtitles, children",
+  "seed": 154204,
+  "enhance_prompt": true,
+  "resolution": "1080p",
+  "aspect": "16:9",
+  "duration_s": 8,
+  "fps": 24,
+  "generate_audio": false,
+  "person_generation": "allow_adult",
+  "inputs": [
+    {
+      "role": "first",
+      "file": "A-k3-office-evening.png",
+      "sha256": "b70701b315268e85c9ba3bf5605b57da319d349cdd46756fdd1e06654bb17dd2"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.0,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "use": "SC-154 the film, chapter 4: the office in the evening (Veo 3.1, 1080p, take 1)",
+  "status": "filtered",
+  "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/e6e52051-555d-489d-b82b-312070bee6ac",
+  "latency_s": 114.6,
+  "rai_filtered": {
+    "count": 1,
+    "reasons": [
+      "1 videos were filtered out because they violated Vertex AI's usage guidelines. You will not be charged for blocked videos. Try rephrasing the prompt. If you think this was an error, send feedback. Support codes: 15236754"
+    ]
+  }
+}

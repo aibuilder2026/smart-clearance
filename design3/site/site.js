@@ -110,21 +110,20 @@
   }
   const FOODBANK = M.CHANNELS.find((c) => c.id === "foodbank");
   const CHAPTERS = [
-    { at: "09:00", who: "The brand and the distributor", t: `${fmt.num(N)} packs flagged; one yes, ${fmt.inr(D.PLAN.net)} on screen`, human: true },
-    { at: "13:00", who: "The food bank", t: `packs with ${FOODBANK.minDays}+ days left go as meals, on the FSSAI checklist` },
-    { at: "18:30", who: "The kiranas and the staff sale", t: `${SHOPS} shops order ${fmt.num(KL.units)} packs; the godown's own staff buy up to ${fmt.num(row("staff").capacity)}` },
-    { at: "22:00", who: "Paperwork", t: `the tax invoice and the credit note drafted; ${fmt.inr(D.PLAN.itcRetained)} of GST credit kept` }
+    { at: "06:30", who: "The brand and the distributor", t: `${fmt.num(N)} packs flagged; one yes, ${fmt.inr(D.PLAN.net)} on screen`, human: true },
+    { at: "11:00", who: "The kiranas", t: `${SHOPS} shops order ${fmt.num(KL.units)} packs, buy ${SCHEME.buy} get ${SCHEME.free} free` },
+    { at: "18:00", who: "The food bank and the staff sale", t: `packs with ${FOODBANK.minDays}+ days left go as meals; the godown's own staff buy up to ${fmt.num(row("staff").capacity)}` },
+    { at: "21:30", who: "Paperwork", t: `the tax invoice and the credit note drafted; ${fmt.inr(D.PLAN.itcRetained)} of GST credit kept` }
   ];
   const FILM = {
-    src: "one-day.mp4",
-    bounds: [0, 3.28, 6.84, 10.41],
-    night: 10.5,
-    ar: 1920 / 1088,
-    lean: 1.5,
-    at: [{ x: 0.37, y: 0.67 }, { x: 0.575, y: 0.42 }, { x: 0.64, y: 0.66 }, { x: 0.14, y: 0.64 }]
+    src: "one-journey.mp4",
+    bounds: [0, 3.55, 7.35, 11.15],
+    ar: 16 / 9,
+    lean: 1.25,
+    at: [{ x: 0.62, y: 0.5 }, { x: 0.5, y: 0.55 }, { x: 0.72, y: 0.5 }, { x: 0.5, y: 0.5 }]
   };
-  const POSTER = { day: "town-morning.webp", night: "town-night.webp" };
-  const PREVIEW = { day: "town-morning-preview.webp", night: "town-night-preview.webp" };
+  const POSTER = { day: "hero-day.webp", night: "hero-night.webp" };
+  const PREVIEW = { day: "hero-day-preview.webp", night: "hero-night-preview.webp" };
   const WORDS = ["buyer", "shelf", "invoice", "ledger line", "chance"];
   function useFilmDrift() {
     const reduce = useReducedMotion();
@@ -222,16 +221,9 @@
     useEffect(() => {
       setPlaying(!reduce);
       const v = vid.current;
-      if (v) {
-        v.currentTime = night ? FILM.night : 0;
-        if (!reduce && go) v.play().catch(() => {
-        });
-      }
+      if (v && !reduce && go) v.play().catch(() => {
+      });
     }, [night, reduce, go]);
-    const onMeta = () => {
-      const v = vid.current;
-      if (v && night && v.currentTime < 0.5) v.currentTime = FILM.night;
-    };
     const toggle = () => {
       const v = vid.current;
       if (!v) return;
@@ -245,7 +237,7 @@
     };
     const clk = useClock(vid, playing && !reduce, FILM.bounds);
     const cam = useLean(stage, FILM.at[clk.i], FILM.lean, FILM.ar, reduce);
-    return /* @__PURE__ */ React.createElement("section", { className: "hero film", id: "top-hero", "aria-labelledby": "hero-h" }, /* @__PURE__ */ React.createElement(motion.div, { className: "film-media", "aria-hidden": "true", style: { y: drift.y, scale: drift.scale }, ref: stage }, /* @__PURE__ */ React.createElement(motion.div, { className: "film-lean", animate: cam, transition: { duration: 1.8, ease: EASE } }, /* @__PURE__ */ React.createElement("img", { className: "film-preview", src: IMG + (night ? PREVIEW.night : PREVIEW.day), alt: "" }), reduce ? /* @__PURE__ */ React.createElement("img", { src: poster, alt: "" }) : /* @__PURE__ */ React.createElement("video", { ref: vid, className: "fx front", src: MEDIA + FILM.src, poster, muted: true, playsInline: true, loop: true, preload: go ? "auto" : "none", onLoadedMetadata: onMeta })), /* @__PURE__ */ React.createElement("div", { className: "film-shade" })), /* @__PURE__ */ React.createElement("div", { className: "film-copy" }, /* @__PURE__ */ React.createElement("h1", { id: "hero-h", className: "film-h" }, "Every near-expiry carton gets a second ", /* @__PURE__ */ React.createElement("span", { className: "film-word" }, /* @__PURE__ */ React.createElement("span", { className: "sr-only" }, "chance"), /* @__PURE__ */ React.createElement(AnimatePresence, { mode: "popLayout", initial: false }, /* @__PURE__ */ React.createElement(motion.span, { key: WORDS[w], "aria-hidden": "true", initial: reduce ? false : { opacity: 0, y: "0.5em" }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: "-0.5em" }, transition: { duration: 0.42, ease: EASE } }, WORDS[w]))), "."), /* @__PURE__ */ React.createElement("p", { className: "film-sub" }, "AI agents find the best exit for short-dated stock, and do the running around. You say yes once."), /* @__PURE__ */ React.createElement("div", { className: "film-ctas" }, /* @__PURE__ */ React.createElement(Button, { variant: "primary", size: "lg", pill: true, onClick: () => onDemo() }, "Book a demo"), /* @__PURE__ */ React.createElement("a", { className: "btn btn-lg btn-pill film-ghost", ...linkProps(LINKS.demo) }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Icon, { name: "play", size: 12, stroke: 2.6 })), "Watch the 6-minute demo"))), /* @__PURE__ */ React.createElement(Story, { beats: CHAPTERS, i: reduce ? 3 : clk.i, p: reduce ? 1 : clk.p, label: "The journey, through one day" }), !reduce && /* @__PURE__ */ React.createElement("div", { className: "film-ctl" }, /* @__PURE__ */ React.createElement("button", { type: "button", onClick: toggle, "aria-pressed": !playing }, /* @__PURE__ */ React.createElement(Icon, { name: playing ? "pause" : "play", size: 16 }), playing ? "Pause" : "Play")));
+    return /* @__PURE__ */ React.createElement("section", { className: "hero film", id: "top-hero", "aria-labelledby": "hero-h" }, /* @__PURE__ */ React.createElement(motion.div, { className: "film-media", "aria-hidden": "true", style: { y: drift.y, scale: drift.scale }, ref: stage }, /* @__PURE__ */ React.createElement(motion.div, { className: "film-lean", animate: cam, transition: { duration: 1.8, ease: EASE } }, /* @__PURE__ */ React.createElement("img", { className: "film-preview", src: IMG + (night ? PREVIEW.night : PREVIEW.day), alt: "" }), reduce ? /* @__PURE__ */ React.createElement("img", { src: poster, alt: "" }) : /* @__PURE__ */ React.createElement("video", { ref: vid, className: "fx front", src: MEDIA + FILM.src, poster, muted: true, playsInline: true, loop: true, preload: go ? "auto" : "none" })), /* @__PURE__ */ React.createElement("div", { className: "film-shade" })), /* @__PURE__ */ React.createElement("div", { className: "film-copy" }, /* @__PURE__ */ React.createElement("h1", { id: "hero-h", className: "film-h" }, "Every near-expiry carton gets a second ", /* @__PURE__ */ React.createElement("span", { className: "film-word" }, /* @__PURE__ */ React.createElement("span", { className: "sr-only" }, "chance"), /* @__PURE__ */ React.createElement(AnimatePresence, { mode: "popLayout", initial: false }, /* @__PURE__ */ React.createElement(motion.span, { key: WORDS[w], "aria-hidden": "true", initial: reduce ? false : { opacity: 0, y: "0.5em" }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: "-0.5em" }, transition: { duration: 0.42, ease: EASE } }, WORDS[w]))), "."), /* @__PURE__ */ React.createElement("p", { className: "film-sub" }, "AI agents find the best exit for short-dated stock, and do the running around. You say yes once."), /* @__PURE__ */ React.createElement("div", { className: "film-ctas" }, /* @__PURE__ */ React.createElement(Button, { variant: "primary", size: "lg", pill: true, onClick: () => onDemo() }, "Book a demo"), /* @__PURE__ */ React.createElement("a", { className: "btn btn-lg btn-pill film-ghost", ...linkProps(LINKS.demo) }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Icon, { name: "play", size: 12, stroke: 2.6 })), "Watch the 6-minute demo"))), /* @__PURE__ */ React.createElement(Story, { beats: CHAPTERS, i: reduce ? 3 : clk.i, p: reduce ? 1 : clk.p, label: "The journey, through one day" }), !reduce && /* @__PURE__ */ React.createElement("div", { className: "film-ctl" }, /* @__PURE__ */ React.createElement("button", { type: "button", onClick: toggle, "aria-pressed": !playing }, /* @__PURE__ */ React.createElement(Icon, { name: playing ? "pause" : "play", size: 16 }), playing ? "Pause" : "Play")));
   }
   function Word({ p, a, b, text, reduce }) {
     const o = useTransform(p, [a, b], [0, 1]);

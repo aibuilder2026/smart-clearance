@@ -151,7 +151,7 @@ def _finish(client, op, out: pathlib.Path, record: dict, t0: float, timeout: int
                               "reasons": getattr(r, "rai_media_filtered_reasons", None) or []}
     vids = (r.generated_videos or []) if r else []
     if not vids:
-        record["status"] = "filtered"
+        record["status"] = "filtered"; record["cost_usd"] = 0.0  # Vertex does not charge for a video its filter held back
         _vx.write_sidecar(out, record)
         sys.exit(f"no video returned; RAI: {record['rai_filtered']}")
     saved = []
