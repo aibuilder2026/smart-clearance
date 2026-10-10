@@ -1,0 +1,110 @@
+[
+ {
+  "url": "http://127.0.0.1:8790/designs/SC-157/option-a/mockup.html?theme=light#/impact",
+  "out": "option-a/impact-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 3000,
+  "full": false,
+  "height": 2050
+ },
+ {
+  "url": "http://127.0.0.1:8790/designs/SC-157/option-a/mockup.html?theme=dark#/impact",
+  "out": "option-a/impact-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 3000,
+  "full": false,
+  "height": 2050
+ },
+ {
+  "url": "http://127.0.0.1:8790/designs/SC-157/option-a/mockup.html?theme=light#/impact",
+  "out": "option-a/impact-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 3000,
+  "full": false,
+  "height": 2650
+ },
+ {
+  "url": "http://127.0.0.1:8790/designs/SC-157/option-a/mockup.html?theme=dark#/impact",
+  "out": "option-a/impact-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 3000,
+  "full": false,
+  "height": 2650
+ },
+ {
+  "url": "http://127.0.0.1:8790/designs/SC-157/option-b/mockup.html?theme=light#/report",
+  "out": "option-b/impact-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 3000,
+  "full": false,
+  "height": 2350
+ },
+ {
+  "url": "http://127.0.0.1:8790/designs/SC-157/option-b/mockup.html?theme=dark#/report",
+  "out": "option-b/impact-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 3000,
+  "full": false,
+  "height": 2350
+ },
+ {
+  "url": "http://127.0.0.1:8790/designs/SC-157/option-b/mockup.html?theme=light#/report",
+  "out": "option-b/impact-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 3000,
+  "full": false,
+  "height": 2650
+ },
+ {
+  "url": "http://127.0.0.1:8790/designs/SC-157/option-b/mockup.html?theme=dark#/report",
+  "out": "option-b/impact-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 3000,
+  "full": false,
+  "height": 2650
+ },
+ {
+  "url": "http://127.0.0.1:8790/designs/SC-157/option-c/mockup.html?theme=light#/impact",
+  "out": "option-c/impact-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 3000,
+  "full": false,
+  "height": 2050
+ },
+ {
+  "url": "http://127.0.0.1:8790/designs/SC-157/option-c/mockup.html?theme=dark#/impact",
+  "out": "option-c/impact-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 3000,
+  "full": false,
+  "height": 2050
+ },
+ {
+  "url": "http://127.0.0.1:8790/designs/SC-157/option-c/mockup.html?theme=light#/impact",
+  "out": "option-c/impact-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 3000,
+  "full": false,
+  "height": 2650
+ },
+ {
+  "url": "http://127.0.0.1:8790/designs/SC-157/option-c/mockup.html?theme=dark#/impact",
+  "out": "option-c/impact-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 3000,
+  "full": false,
+  "height": 2650
+ }
+]

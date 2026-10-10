@@ -106,6 +106,31 @@
 
   /* ---------- S1 Command Center ---------- */
   // the first viewport is the batch, tracked like an order: tracker first, the agents beside it, the cluster under it
+  // the Impact card on the Command Center (SC-157): the quarter so far (or the latest with a batch cleared), its kilos
+  // kept out of landfill, CO₂e and meals, with its weeks as a sparkline, opening the Ledger on its Impact reading
+  function ImpactCard() {
+    const s = useStore(); const { go } = useRoute(); const L = window.SC3_LEDGER; // core/ledger.js (the design-system page loads no ledger)
+    const book = useMemo(() => (L ? L.ledger(s) : null), [s.hero.posted, s.hero.phase, s.mango.phase]);
+    const p = book && L.impactPeriod(book); const d = useMemo(() => (book ? L.dashboard(book, p.id) : null), [book, p && p.id]);
+    if (!book) return null;
+    const t = p.totals;
+    const kgOf = v => fmt.kg(Math.round(v * 100) / 100); // as the Ledger reads kilos
+    const max = Math.max(1, ...d.weeks.map(w => w.kept)), n = d.weeks.length;
+    const line = d.weeks.map((w, i) => (i ? "L" : "M") + (n > 1 ? (i / (n - 1)) * 120 : 60).toFixed(1) + " " + (26 - (w.kept / max) * 22).toFixed(1)).join(" ");
+    return <Card className="imc stack snug">
+      <div className="card-head"><span className="row tight"><span className="icontile" style={{ borderRadius: 9 }}><Icon name="leaf" size={17} stroke={2} /></span><span className="card-title">Impact · {p.label}</span></span>{d.share != null && <Badge size="sm" tone="green">{d.share}% saved</Badge>}</div>
+      {t.batches ? <>
+        <div className="imc-figs">
+          <div><b>{kgOf(t.kg)}</b><span>kept out of landfill</span></div>
+          <div><b>{kgOf(t.co2)}</b><span>CO₂e avoided</span></div>
+          <div><b>{fmt.num(t.meals)}</b><span>meals</span></div>
+        </div>
+        <svg className="imc-spark" viewBox="0 0 120 28" aria-hidden="true"><path className="a" d={`${line} L120 28 L0 28 Z`} /><path className="l" d={line} /></svg>
+        <span className="t-footnote subtle">{t.batches} {t.batches === 1 ? "batch" : "batches"} cleared{p.current ? " so far" : ""} · {kgOf(t.destroyedKg)} destroyed · CO₂e indicative</span>
+      </> : <span className="t-footnote muted">Nothing has cleared in {p.label} yet. Each batch joins the ledger when Impact posts it.</span>}
+      <Button variant="secondary" size="sm" icon="book-open" onClick={() => go("report", { reading: "impact" })}>Open the ledger</Button>
+    </Card>;
+  }
   function CommandCenter({ me, onOpenRoute }) {
     const s = useStore(); const { go } = useRoute(); const app = useApp(); const hm = heroModel(s); const phone = app.bp === "phone";
     const [sel, setSel] = useState(null); const [dz, setDz] = useState(false);
@@ -130,7 +155,7 @@
       <div className="card-head" style={{ padding: "14px 16px 10px" }}><span className="card-title">Nagpur cluster</span><Badge size="sm" tone={hm.ordered ? "green" : undefined} dot={!!hm.ordered} live={hm.ordered > 0 && hm.ordered < SHOPS}>{hm.ordered ? `${hm.ordered} of ${D.OFFERED} kiranas ordered` : s.hero.offer ? `${D.OFFERED} kiranas messaged` : `${D.OFFERED} kiranas`}</Badge></div>
       <ClusterMap kiranas={D.KIRANAS} orderedCount={hm.ordered} route={routed} vanProgress={s.hero.van.status === "done" ? 1 : hm.ordered / SHOPS * 0.6} height={phone ? 220 : 280} />
     </Card>;
-    const feed = <div className="stack snug"><SectionTitle sub="Every hand-off, as it happens">Agent activity</SectionTitle><Card>{s.feed.length ? <AgentFeed events={s.feed} people={D.PEOPLE} live={hm.agentLive ? s.feed.length - 1 : -1} max={phone ? 3 : 6} /> : <span className="t-footnote muted">The agents report here once the Watcher runs.</span>}</Card></div>;
+    const feed = <div className="stack snug"><SectionTitle sub="Every hand-off, as it happens">Agent activity</SectionTitle><Card>{s.feed.length ? <AgentFeed events={s.feed} people={D.PEOPLE} live={hm.agentLive ? s.feed.length - 1 : -1} max={phone ? 3 : 6} /> : <span className="t-footnote muted">The agents report here once the Watcher runs.</span>}</Card><ImpactCard /></div>;
     const list = <div className="stack snug"><SectionTitle sub="Sorted by days to best-before; at-risk batches first">Watchlist</SectionTitle><div className="list">{watchlist.map(v => <BatchRow key={v.id} view={v} selected={sel === v.id} compact={phone} onOpen={() => { setSel(v.id); openBatch(v.id); }} />)}</div></div>;
     const live = S.useLive();
     if (live) return <LiveCommandCenter me={me} live={live} hm={hm} money={money} watchlist={watchlist} sel={sel} setSel={setSel} feed={feed} cluster={cluster} />;

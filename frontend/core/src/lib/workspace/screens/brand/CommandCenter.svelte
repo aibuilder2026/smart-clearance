@@ -21,6 +21,7 @@
 	import Screen from '../common/Screen.svelte';
 	import BatchTabs, { tabsOf } from '../live/BatchTabs.svelte';
 	import CommandQuiet from '../live/CommandQuiet.svelte';
+	import ImpactCard from './ImpactCard.svelte';
 	import DestructionSheet from './DestructionSheet.svelte';
 
 	// S1 Command Center: the first viewport is the batch, tracked like an order: tracker first, the agents beside it, the
@@ -215,6 +216,7 @@
 					max={phone ? 3 : 6}
 				/>{:else}<span class="t-footnote muted">The agents report here once the Watcher runs.</span>{/if}</Card
 		>
+		<ImpactCard />
 	</div>{/snippet}
 {#snippet list()}<div class="stack snug">
 		<SectionTitle sub="Sorted by days to best-before; at-risk batches first">Watchlist</SectionTitle>

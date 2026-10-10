@@ -4,6 +4,7 @@
 	import BatchRow from '../../../components/BatchRow.svelte';
 	import Card from '../../../components/Card.svelte';
 	import Columns from '../../../patterns/Columns.svelte';
+	import ImpactCard from '../brand/ImpactCard.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
 	import { useRoute } from '../../context';
 	import { batchViews, journeysOf, partAt } from '../../model';
@@ -48,7 +49,7 @@
 			<SectionTitle sub="Every hand-off, as it happens">Agent activity</SectionTitle><Card
 				><AgentFeed events={s.feed} people={ws.data.people} live={-1} max={app.bp === 'phone' ? 3 : 6} /></Card
 			>
-		</div>{/if}{/snippet}
+		</div>{/if}<ImpactCard />{/snippet}
 {#snippet main()}{@render card()}{@render list()}{/snippet}
 
 <Screen {me} title="Command Center" sub={`Watcher checked ${rows} batches at ${watch} · nothing flagged`}>

@@ -1697,6 +1697,39 @@ describe("Execution's Outreach card says where the kirana scheme stands (SC-156)
 	});
 });
 
+describe("the Ledger's Impact reading is the dashboard, and the Command Center points at it (SC-157)", () => {
+	it("Priya's Impact reading draws the tiles, food by week, where the kilos went and by distributor", async () => {
+		const s = source(fakeApi(moment('cleared'), 'priya'));
+		const r = await draw(s, 'report');
+		await waitFor(() => expect(text(r)).toContain('One ledger, three readings'));
+		await fireEvent.click(r.getByRole('button', { name: 'Impact' }));
+		await waitFor(() => expect(text(r)).toContain('Food, by week'));
+		const t = text(r);
+		expect(t).toContain('Kept out of landfill');
+		expect(t).toContain('CO₂e avoided');
+		expect(t).toContain('Where the kilos went');
+		expect(t).toContain('Kirana scheme');
+		expect(t).toContain('By distributor');
+		expect(t).toContain('Rakesh Traders');
+		expect(r.getByRole('img', { name: /Food a week/ })).toBeTruthy();
+		await fireEvent.click(r.getByRole('button', { name: 'Show as a table' }));
+		await waitFor(() => expect(text(r)).toContain('Week of'));
+	});
+	it("the Command Center's Impact card reads the quarter and opens the ledger on Impact", async () => {
+		const s = source(fakeApi(moment('cleared'), 'priya'));
+		const go = vi.fn();
+		const r = render(LiveHost, {
+			props: { source: s, screen: 'command', at: null, onnavigate: go }
+		}) as unknown as RenderResult<never>;
+		await waitFor(() => expect(s.status.phase).toBe('ready'));
+		await waitFor(() => expect(text(r)).toContain('Impact · '));
+		expect(text(r)).toContain('kept out of landfill');
+		expect(text(r)).toContain('meals');
+		await fireEvent.click(r.getByRole('button', { name: 'Open the ledger' }));
+		expect(go).toHaveBeenCalledWith('report', expect.objectContaining({ reading: 'impact' }));
+	});
+});
+
 describe('the GST papers in Tally’s layout (SC-148)', () => {
 	it("an invoice Rakesh issued carries its e-invoice: the IRN from the parties' GSTINs, its acknowledgement and the signed QR", async () => {
 		vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1440);
