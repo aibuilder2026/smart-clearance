@@ -1,4 +1,4 @@
-// Smart-Clearance v3 · the console at console.smartclearance.com: where Smart-Clearance staff set up and run each
+// Smart-Clearance v3 · the console at smartclearance-console.web.app: where Smart-Clearance staff set up and run each
 // client's workspace. A client's agents are laid out as the stops they work, with the human approval as a locked amber
 // gate; setting up a client means deciding how far each agent may go before a person says yes.
 (function () {
@@ -142,7 +142,7 @@
         <img className="cs-si-plate" src={PLATE} alt="" width="1376" height="752" />
       </div>}
       <div className="si-panel"><div className="si-card">
-        <div className="si-ws"><Mark size={app.bp === "phone" ? 52 : 60} /><div className="si-ws-name">Smart-Clearance staff</div><span className="si-url"><Icon name="lock" size={12} stroke={2.2} />console.smartclearance.com</span></div>
+        <div className="si-ws"><Mark size={app.bp === "phone" ? 52 : 60} /><div className="si-ws-name">Smart-Clearance staff</div><span className="si-url"><Icon name="lock" size={12} stroke={2.2} />smartclearance-console.web.app</span></div>
         <div className="stack tight" style={{ gap: 6 }}><h1 className="si-title">Sign in</h1><p className="si-sub">Your smartclearance.com email address and your password.</p></div>
         <form className="si-form" noValidate onSubmit={submit}>
           <Field label="Work email" htmlFor="si-email"><Input id="si-email" icon="mail" type="email" value={email} onChange={edit(setEmail)} autoComplete="username" spellCheck={false} autoCapitalize="none" placeholder="name@smartclearance.com" /></Field>
@@ -152,8 +152,8 @@
           <p className="t-footnote muted cs-si-hint">New to the console? The platform team gives you your first password. Nothing is sent by email.</p>
         </form>
         <div className="si-foot">
-          <span className="t-footnote muted" style={{ maxWidth: "36ch" }}>Client teams sign in at their own workspace address, such as munchly.smartclearance.com.</span>
-          <span className="si-foot-row"><button type="button" className="btn btn-link btn-sm" onClick={() => setFind(true)}>Find a workspace</button><a className="btn btn-link btn-sm" href={LINKS.site}>smartclearance.com</a></span>
+          <span className="t-footnote muted" style={{ maxWidth: "36ch" }}>Client teams sign in at their own workspace address, such as munchly-smartclearance.web.app.</span>
+          <span className="si-foot-row"><button type="button" className="btn btn-link btn-sm" onClick={() => setFind(true)}>Find a workspace</button><a className="btn btn-link btn-sm" href={LINKS.site}>smartclearance.web.app</a></span>
           <span className="si-note">Prototype · every person and number is fictional</span>
         </div>
       </div></div>
@@ -396,10 +396,10 @@
     const lists = <>
       <div className="stack" style={{ gap: 12 }}><SectionTitle sub="Waiting on a person, or on a file">Needs attention</SectionTitle>
         {attention.length ? <List>{attention.map(x => <ListRow key={x.id} leading={<span className={cx("cs-att", x.tone)} aria-hidden="true" />} title={x.title} sub={`${x.c.name} · ${x.text}`} value={<Button size="sm" variant="secondary" onClick={x.run}>{x.act}</Button>} />)}</List> : <Card><Empty icon="circle-check" title="Nothing is waiting" body="Every client's partners have given their permissions." /></Card>}</div>
-      <div className="stack" style={{ gap: 12 }}><SectionTitle sub="From Book a demo on smartclearance.com">Demo requests</SectionTitle>
+      <div className="stack" style={{ gap: 12 }}><SectionTitle sub="From Book a demo on smartclearance.web.app">Demo requests</SectionTitle>
         {(s.requests || []).length ? <List>{s.requests.map(r => <ListRow key={r.id} icon="mail" iconTone="soft" title={r.company} sub={[r.name, r.email, r.makes, r.plan && `${r.plan} plan`, r.at].filter(Boolean).join(" · ")}
           value={r.status === "set up" ? <Badge size="sm" tone="green" icon="check">set up</Badge> : <Button size="sm" variant="secondary" onClick={() => startFrom(r)}>Set up</Button>} />)}</List>
-          : <Card><Empty icon="mail" title="No requests yet" body="When someone books a demo on smartclearance.com, the request lands here, ready to become a client." /></Card>}</div>
+          : <Card><Empty icon="mail" title="No requests yet" body="When someone books a demo on smartclearance.web.app, the request lands here, ready to become a client." /></Card>}</div>
       <div className="stack" style={{ gap: 12 }}><SectionTitle sub="The latest, as they land">Agent runs today</SectionTitle>
         {s.runs.length ? <List>{s.runs.slice(0, 5).map((r, i) => { const a = AGENT(r.agent); const c = client(r.client); return <ListRow key={i} leading={<span className="mono t-footnote cs-time">{r.at}</span>} title={`${a.name} · ${c ? c.name : r.client}`} sub={r.text} />; })}</List>
           : <Card><Empty icon="bot" title="No runs yet today" body="Each client's agents run on their own schedule." /></Card>}</div>
@@ -1013,7 +1013,7 @@
   function NewClient({ go, me }) {
     const s = usePlatform(); const app = useApp(); const { toast } = useNotice(); const top = useRef(null);
     const [step, setStep] = useState(0);
-    // a demo request from smartclearance.com can start the setup: its company, contact and plan come along
+    // a demo request from smartclearance.web.app can start the setup: its company, contact and plan come along
     const [f, setF] = useState(() => Object.assign({ name: "", city: "", industry: INDUSTRIES[0], colour: COLOURS[0][0], slug: "", slugTouched: false, emailDomain: "", signGoogle: true, signPhone: true, route: "distributors", owner: "distributor", expiry: "godown", exitOff: {}, preset: "standard", adminName: "", adminEmail: "", plan: "pilot", request: null }, s.draft || {}));
     useEffect(() => { if (s.draft) P.update(d => { delete d.draft; }); }, []);
     const set = patch => setF(x => ({ ...x, ...patch }));
@@ -1025,7 +1025,7 @@
     const adminOk = f.adminName.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.adminEmail.trim()) && f.adminEmail.trim().toLowerCase().endsWith("@" + f.emailDomain.trim().toLowerCase());
     const errs = [
       !f.name.trim() ? "Enter the company's name." : !f.city.trim() ? "Enter its home city." : null,
-      !/^[a-z0-9-]{2,24}$/.test(slug) ? "Use 2 to 24 lowercase letters, digits or hyphens." : taken ? `${slug}.smartclearance.com is taken.` : !domainOk ? "Enter the domain its staff email from, such as kesari.in." : !(f.signGoogle || f.signPhone) ? "Keep at least one way to sign in." : null,
+      !/^[a-z0-9-]{2,24}$/.test(slug) ? "Use 2 to 24 lowercase letters, digits or hyphens." : taken ? `${slug}-smartclearance.web.app is taken.` : !domainOk ? "Enter the domain its staff email from, such as kesari.in." : !(f.signGoogle || f.signPhone) ? "Keep at least one way to sign in." : null,
       null,
       Object.values(exits).some(x => x.on) ? null : "Keep at least one exit on.",
       null,
@@ -1038,7 +1038,7 @@
     useLayoutEffect(() => { const el = top.current; const sc = el && el.closest(".scroll"); if (sc) sc.scrollTop = 0; }, [step]);
     const create = () => {
       const client = P.buildClient({ name: f.name.trim(), city: f.city.trim(), industry: f.industry, colour: f.colour, emailDomain: f.emailDomain.trim().toLowerCase(), signGoogle: f.signGoogle, signPhone: f.signPhone, route: f.route, owner: f.owner, expiry: f.expiry, preset: f.preset, adminName: f.adminName.trim(), adminEmail: f.adminEmail.trim().toLowerCase(), plan: f.plan });
-      client.id = slug; client.domain = slug + ".smartclearance.com"; client.exits = exits;
+      client.id = slug; client.domain = slug + "-smartclearance.web.app"; client.exits = exits;
       P.update(d => { d.clients.push(client); if (f.request) d.requests = (d.requests || []).map(r => r.id === f.request ? Object.assign({}, r, { status: "set up", client: slug }) : r); }, { who: me.name, client: slug, text: `Set up ${client.name} from its supply-chain profile: ${P.optLabel("route", f.route).toLowerCase()}, ${P.optLabel("owner", f.owner).toLowerCase()} owns the stock, ${P.optLabel("expiry", f.expiry).toLowerCase()}; invited ${client.people[0].name} as admin` });
       toast({ text: `${client.name}'s workspace is set up`, tone: "ok" }); go("clients", slug, "supply", true); // the first stock export comes next (SC-84)
     };
@@ -1051,7 +1051,7 @@
         <fieldset className="cs-choice"><legend>Workspace mark</legend><div className="row wrap" style={{ gap: 14 }}><WorkspaceMark ws={preview} size={52} /><div className="cs-swatches">{COLOURS.map(([hex, name]) => <label key={hex} className={cx("cs-swatch", f.colour === hex && "on")} style={{ "--sw": hex }}><input type="radio" name="nc-colour" checked={f.colour === hex} onChange={() => set({ colour: hex })} /><span className="sr-only">{name}</span></label>)}</div></div><span className="t-footnote subtle">The client's colour stays inside its mark; the workspace keeps Smart-Clearance's theming.</span></fieldset>
       </div>,
       <div className="stack cs-form" style={{ gap: 14 }} key="workspace">
-        <Field label="Workspace address" htmlFor="nc-slug" help="Where its people sign in"><span className="cs-slug"><Input id="nc-slug" value={slug} onChange={e => set({ slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""), slugTouched: true })} spellCheck={false} /><span className="mono t-footnote subtle">.smartclearance.com</span></span></Field>
+        <Field label="Workspace address" htmlFor="nc-slug" help="Where its people sign in"><span className="cs-slug"><Input id="nc-slug" value={slug} onChange={e => set({ slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""), slugTouched: true })} spellCheck={false} /><span className="mono t-footnote subtle">-smartclearance.web.app</span></span></Field>
         <Field label="Staff email domain" htmlFor="nc-domain" help="Only addresses at this domain can sign in as staff"><Input id="nc-domain" value={f.emailDomain} onChange={e => set({ emailDomain: e.target.value })} spellCheck={false} autoCapitalize="none" placeholder="kesari.in" /></Field>
         <fieldset className="cs-choice"><legend>How people sign in</legend><div className="stack tight" style={{ gap: 8 }}><Check checked={f.signGoogle} onChange={v => set({ signGoogle: v })}>Google Workspace, for staff</Check><Check checked={f.signPhone} onChange={v => set({ signPhone: v })}>Mobile number and a one-time code, for invited distributors and kiranas</Check></div></fieldset>
       </div>,
@@ -1074,7 +1074,7 @@
       <div className="cs-two" key="review">
         <List head="Summary">
           <ListRow leading={<WorkspaceMark ws={preview} size={32} />} title={f.name} sub={`${f.city} · ${f.industry}`} />
-          <ListRow title="Address" value={<span className="mono t-footnote">{slug}.smartclearance.com</span>} />
+          <ListRow title="Address" value={<span className="mono t-footnote">{slug}-smartclearance.web.app</span>} />
           <ListRow title="Staff sign in with" sub={[f.signGoogle && `Google (${f.emailDomain})`, f.signPhone && "a one-time code, by invitation"].filter(Boolean).join("; ")} />
           <ListRow title="Supply chain" sub={`${P.optLabel("route", f.route)} · ${P.optLabel("owner", f.owner)} owns the stock · ${P.optLabel("expiry", f.expiry)}`} />
           <ListRow title="Exits" sub={P.EXITS.filter(e => exits[e.id].on).map(e => e.name).join(", ")} />

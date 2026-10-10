@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { report, scan, type Finding } from '@smart-clearance/testing/a11y';
-import { openSite } from './site';
+import { isPhone, openSite } from './site';
 
 // Behaviour axe-core cannot see, including what the port fixed in the prototype: menu buttons (APG), sheets taking, keeping
 // and returning focus, the demo form, links and the theme on load, and the film's and the table's controls (WCAG 2.2.2).
@@ -69,42 +69,35 @@ test('keyboard · the appearance menu opens on its button, moves with the arrows
 	await expect(menu).toBeVisible();
 	await page.keyboard.press('Tab');
 	await expect(menu, 'Tab closes the menu and moves on').toHaveCount(0);
-	expect(await focusedName(page), 'to the control after the menu button').toBe('Sign in');
+	expect(await focusedName(page), 'to the control after the menu button').toBe('Console');
 	await report(testInfo, findings);
 });
 
-test('keyboard · the sign-in menu: its links open another tab, Tab moves on, Escape gives focus back', async ({
+test('keyboard · the two ways in on the bar: Console and Workspace open another tab, in that order (SC-150)', async ({
 	page
 }) => {
-	const trigger = page.locator('.site-nav').getByRole('button', { name: 'Sign in' });
-	const menu = page.getByRole('menu', { name: 'Sign in to' });
-	await trigger.focus();
-	await page.keyboard.press('ArrowDown');
-	await expect(menu).toBeVisible();
-	await expect(menu.getByRole('menuitem', { name: 'Find your workspace' })).toBeFocused();
-	// the menu names no client: a manufacturer finds its own workspace (SC-28)
-	await expect(menu.getByRole('menuitem')).toHaveCount(2);
-	for (const name of ['Smart-Clearance staff']) {
-		const link = menu.getByRole('menuitem', { name: new RegExp(name) });
-		await expect(link).toHaveAttribute('target', '_blank');
-		await expect(link).toHaveAttribute('rel', 'noopener');
-	}
-	await page.keyboard.press('Escape');
-	await expect(trigger).toBeFocused();
-	await page.keyboard.press('Enter');
-	await expect(menu).toBeVisible();
+	const bar = page.locator('.site-nav');
+	await expect(bar.getByRole('button', { name: 'Sign in' }), 'no Sign in in the bar').toHaveCount(0);
+	await expect(bar.getByRole('button', { name: 'Book a demo' }), 'no Book a demo in the bar').toHaveCount(0);
+	const consoleLink = bar.getByRole('link', { name: 'Console' });
+	await expect(consoleLink).toHaveAttribute('href', 'https://smartclearance-console.web.app');
+	await expect(consoleLink).toHaveAttribute('target', '_blank');
+	await expect(consoleLink).toHaveAttribute('rel', 'noopener');
+	if (isPhone(page)) return; // a phone keeps Console in the bar and has Workspace in its menu
+	const workspaceLink = bar.getByRole('link', { name: 'Workspace' });
+	await expect(workspaceLink).toHaveAttribute('href', 'https://munchly-smartclearance.web.app');
+	await expect(workspaceLink).toHaveAttribute('target', '_blank');
+	await consoleLink.focus();
 	await page.keyboard.press('Tab');
-	await expect(menu).toHaveCount(0);
-	expect(await focusedName(page)).toBe('Book a demo');
+	expect(await focusedName(page)).toBe('Workspace');
 });
 
-test('keyboard · Find your workspace, from the menu: the sheet takes focus, keeps it and gives it back', async ({
+test('keyboard · Find your workspace, from the footer: the sheet takes focus, keeps it and gives it back', async ({
 	page
 }) => {
-	const trigger = page.locator('.site-nav').getByRole('button', { name: 'Sign in' });
+	const trigger = page.locator('.foot').getByRole('button', { name: 'Find your workspace' });
 	await trigger.focus();
 	await page.keyboard.press('Enter');
-	await page.keyboard.press('Enter'); // the first item: Find your workspace
 	await page.waitForTimeout(700);
 	expect.soft(await inDialog(page), 'focus moves into the sheet when it opens').toBe(true);
 	expect
@@ -122,7 +115,7 @@ test('keyboard · Find your workspace, from the menu: the sheet takes focus, kee
 	await page.keyboard.press('Escape');
 	await page.waitForTimeout(700);
 	expect.soft(await page.locator('[role="dialog"]').count(), 'Escape closes the sheet').toBe(0);
-	await expect(trigger, 'focus returns to the button that opened the menu').toBeFocused();
+	await expect(trigger, 'focus returns to the button that opened it').toBeFocused();
 });
 
 test('keyboard · Find your workspace finds members, invitees and nobody, and names the workspace only', async ({
@@ -137,7 +130,7 @@ test('keyboard · Find your workspace finds members, invitees and nobody, and na
 		return (await page.locator('[role="dialog"] .card').allInnerTexts()).join(' / ').replace(/\s+/g, ' ');
 	};
 	// the workspace only: never the person's role, or whether they were deactivated (SC-43)
-	const workspace = /^Munchly Foods munchly\.smartclearance\.com Open$/;
+	const workspace = /^Munchly Foods munchly-smartclearance\.web\.app Open$/;
 	expect(await results('priya.deshmukh@munchly.in')).toMatch(workspace);
 	expect(await results('98230 44118')).toMatch(workspace);
 	expect(await results('+91 98230 60013')).toMatch(workspace);
@@ -154,7 +147,7 @@ test('keyboard · Find your workspace finds members, invitees and nobody, and na
 test('keyboard · Book a demo: Enter sends, errors are tied to their fields, and the first takes focus', async ({
 	page
 }) => {
-	await page.locator('.site-nav').getByRole('button', { name: 'Book a demo' }).click();
+	await page.locator('.film-ctas').getByRole('button', { name: 'Book a demo' }).click();
 	const name = page.getByLabel('Your name');
 	await name.focus();
 	await page.keyboard.press('Enter');

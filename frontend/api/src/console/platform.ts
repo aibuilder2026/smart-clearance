@@ -595,7 +595,7 @@ export function setupErrors(f: SetupAnswers, taken: (slug: string) => boolean): 
 		!/^[a-z0-9-]{2,24}$/.test(f.slug)
 			? 'Use 2 to 24 lowercase letters, digits or hyphens.'
 			: taken(f.slug)
-				? `${f.slug}.smartclearance.com is taken.`
+				? `${f.slug}-smartclearance.web.app is taken.`
 				: !domainOk
 					? 'Enter the domain its staff email from, such as kesari.in.'
 					: !(f.signGoogle || f.signPhone)

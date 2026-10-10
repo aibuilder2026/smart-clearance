@@ -455,7 +455,7 @@
     const id = slug(f.name); const profile = { route: f.route, owner: f.owner, expiry: f.expiry };
     const admin = { id: "admin-" + id, name: f.adminName, org: f.name, role: "Workspace admin", kind: "Workspace admin", access: "Admin", provider: "Google", status: "invited", img: null, email: f.adminEmail, phone: "" };
     const client = {
-      id, name: f.name, legal: f.name, city: f.city, industry: f.industry, domain: id + ".smartclearance.com", emailDomain: f.emailDomain, mark: { from: f.colour, to: f.colour, ink: "#ffffff" },
+      id, name: f.name, legal: f.name, city: f.city, industry: f.industry, domain: id + "-smartclearance.web.app", emailDomain: f.emailDomain, mark: { from: f.colour, to: f.colour, ink: "#ffffff" },
       plan: f.plan, status: "setting-up", since: null, region: "India", profile, gates: { blinkitDays: R.gates.blinkit.minDays, qcomPct: Math.round(R.gates.zepto.pctLife * 100) },
       territoryGuard: true, returnWindowDays: R.returnWindowDays, dayMinutes: DAY_MINUTES, exits: exitsFor(profile), rules: { reserve: R.negotiation.reservePerUnit, scheme: "2 free with every 10", staffCap: R.staffCap, tokenPct: Math.round(R.tokenPct * 100), offerWindowHours: 48, hindiOffers: true, requirePhoto: true },
       destruction: destructionDefaults(),

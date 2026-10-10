@@ -472,7 +472,7 @@ components:
 
 # Design System: Smart-Clearance
 
-> Edition note: this file records design v3 (design3/), the product's current visual system. Design v2 (the Sivakasi label world, design2/) and design v1 (design/) remain in the repository as earlier editions for reference; their tokens are not part of this system. The product's own landing page (design3/site, smartclearance.com) is a v3 surface: it adds one material, the diorama plates, and the display steps, plate inks and idioms recorded below under "Landing page".
+> Edition note: this file records design v3 (design3/), the product's current visual system. Design v2 (the Sivakasi label world, design2/) and design v1 (design/) remain in the repository as earlier editions for reference; their tokens are not part of this system. The product's own landing page (design3/site, smartclearance.web.app) is a v3 surface: it adds one material, the diorama plates, and the display steps, plate inks and idioms recorded below under "Landing page".
 
 ## Overview
 
@@ -704,7 +704,7 @@ Wrapping a surface in the ExpireSoon scope re-points every brand role to violet 
 Approve is amber; the tap shows a loading spinner for 650ms, then the tracker fills to Execute, the van route draws across the map, the figures roll, and the sheet turns into "Plan placed": a green ring and tick draw in (600ms), the time of approval, and the ₹26,340 swing rolls up from zero. Under reduced motion every step lands in its final state at once.
 
 ### Client Workspace
-Each client runs in its own workspace (Munchly's is `munchly.smartclearance.com`). The rule is product first: the Smart-Clearance mark and theming lead every screen of a client's workspace, and the client's workspace sits under it.
+Each client runs in its own workspace (Munchly's is `munchly-smartclearance.web.app`). The rule is product first: the Smart-Clearance mark and theming lead every screen of a client's workspace, and the client's workspace sits under it.
 - **Desktop:** a surface pill under the sidebar lockup (14px radius, shadow-1 and a hairline ring, shadow-2 on hover; a fill with no shadow in dark): the client's 30px mark, its name (14px/650) and a chevron on one line, its address (11.5px, tertiary) on the next.
 - **Tablet rail:** the client's 30px mark under the product mark, in a 48px button.
 - **Phone:** one 40px button at the left of the navigation bar: the product mark, a one-device-pixel hairline and the client's mark. It opens the workspace sheet (the client's mark, name and address chip; who you are and how you signed in; your workspaces; "Powered by Smart-Clearance" at the foot).
@@ -737,7 +737,7 @@ Every money figure on screen is computed by `design3/core/money.js` from the jou
 
 ### Landing page
 
-The product's own page (smartclearance.com, `design3/site`) speaks in the same components and adds the plates and four idioms. It is independent of any client: Munchly appears only as the customer story.
+The product's own page (smartclearance.web.app, `design3/site`) speaks in the same components and adds the plates and four idioms. It is independent of any client: Munchly appears only as the customer story.
 
 - **Diorama plates (material):** tilt-shift photographs of a miniature Indian town (Qwen-Image 2.1, local), shallow depth of field, soft natural light, the carton the only giant thing, no lettering on signs. Each plate is composed twice, by day and by night, never inverted or filtered, and the page swaps them on the resolved theme (`scene`, `exits`, `islands`, each with `-night`; `approve` is kept for the earlier pages). The dusk plate closes the page in both themes. Every plate ships as WebP (q82) in `design3/site/assets/plates/` with a `.prompt.json` sidecar (model, reference, seed, size, attempts, post-process, use); the PNG original stays local in `src/`.
 - **Plate captions:** a plate carries the explanation in place of a feature-card grid: anchored chips on the plate, or one caption under it (16–18px, `ink-secondary` with the key words in `ink` 650). Captions never repeat the plate's alt text.

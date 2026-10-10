@@ -402,7 +402,7 @@
 					>{/if}
 			</div>
 			<div class="stack" style="gap: 12px">
-				<SectionTitle sub="From Book a demo on smartclearance.com">Demo requests</SectionTitle>
+				<SectionTitle sub="From Book a demo on smartclearance.web.app">Demo requests</SectionTitle>
 				{#if requests.data?.length}
 					<List>
 						{#each requests.data as r (r.id)}
@@ -421,7 +421,7 @@
 						><Empty
 							icon="mail"
 							title="No requests yet"
-							body="When someone books a demo on smartclearance.com, the request lands here, ready to become a client."
+							body="When someone books a demo on smartclearance.web.app, the request lands here, ready to become a client."
 						/></Card
 					>{/if}
 			</div>

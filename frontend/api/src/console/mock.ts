@@ -279,7 +279,7 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 			legal: f.name.trim(),
 			city: f.city.trim(),
 			industry: f.industry,
-			domain: id + '.smartclearance.com',
+			domain: id + '-smartclearance.web.app',
 			emailDomain: f.emailDomain.trim().toLowerCase(),
 			mark: { from: f.colour, to: f.colour, ink: '#ffffff' },
 			plan: f.plan,

@@ -55,7 +55,9 @@ test('live · Book a demo on the landing page becomes a client in the console', 
 	const find = page.getByRole('dialog', { name: 'Find your workspace' });
 	await find.getByLabel('Email or mobile number').fill('priya.deshmukh@munchly.example');
 	await find.getByRole('button', { name: 'Find workspaces' }).click();
-	await expect(find.locator('.card').first()).toHaveText(/^\s*Munchly Foods\s*munchly\.smartclearance\.com\s*Open\s*$/);
+	await expect(find.locator('.card').first()).toHaveText(
+		/^\s*Munchly Foods\s*munchly-smartclearance\.web\.app\s*Open\s*$/
+	);
 	await page.keyboard.press('Escape');
 	await page.locator('.site-nav').getByRole('button', { name: 'Book a demo' }).click();
 	await page.getByLabel('Your name').fill('Ritu Malhotra');

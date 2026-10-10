@@ -1,4 +1,4 @@
-/* Smart-Clearance v3 · smartclearance.com, the product's own landing page (SC-60, refined in SC-78): the miniature
+/* Smart-Clearance v3 · smartclearance.web.app, the product's own landing page (SC-60, refined in SC-78): the miniature
    business through one day on film under the heading, in four acts with a strip reading its chapters (SC-111); a statement that
    fills in as it is read; the agents at work on the table, one in focus at a time; the product's moments as chapters
    in colour fields; Impact's ledger; the workspace itself on a device, one tab per team; plans and the close. The page
@@ -29,9 +29,9 @@ html, body { overflow-x: clip; }
 .nav-text:hover { color: #cfeedd; }
 .site.scrolled .nav-text:hover { color: var(--primary-text); }
 .site-nav .iconbtn { color: inherit; }
-.nav-signin { position: relative; }
 .nav-mode { display: inline-flex; }
-.nav-demo { height: 40px; }
+/* the two ways in (SC-150): the staff console, and a client's workspace */
+.nav-go { height: 40px; }
 .nav-progress { display: block; height: 2px; transform-origin: 0 50%; background: var(--primary); opacity: 0; transition: opacity 240ms var(--ease); }
 .site.scrolled .nav-progress { opacity: 1; }
 .site-nav a:focus-visible, .site-nav button:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }

@@ -16,7 +16,7 @@
 	import { useWorkspace } from './source';
 	import type { User } from './types';
 
-	// a client's workspace at <client>.smartclearance.com (design3/app/app.jsx): the sign-in, then every role's app, on
+	// a client's workspace at <client>-smartclearance.web.app (design3/app/app.jsx): the sign-in, then every role's app, on
 	// the source the host provides: the stub, with the agents running live in this browser, or backend-api. The host
 	// app gives the screen the address names and how to change it; everything else lives here. On backend-api (SC-73,
 	// SC-68 option B) the sign-in is email and password, the console's splash covers the first load, signing in and

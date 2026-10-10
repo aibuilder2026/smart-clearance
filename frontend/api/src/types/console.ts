@@ -1,4 +1,4 @@
-// The staff console's part of the contract (console.smartclearance.com): the platform's own staff, every client
+// The staff console's part of the contract (smartclearance-console.web.app): the platform's own staff, every client
 // workspace (its supply chain, agents, exits and rules, people, integrations and plan), and the audit log. The shapes
 // are design3/core/platform.js's, the console prototype's mock backend. Shared shapes are in shared.ts.
 import type { Catalog, DemoRequest, Mark, PasswordAuth, WorkspaceMatch } from './shared';

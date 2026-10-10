@@ -24,7 +24,7 @@
 	import PeopleList from './PeopleList.svelte';
 	import Url from './Url.svelte';
 
-	// signing in to the client's workspace, munchly.smartclearance.com (screens/auth.jsx SignIn). Email or phone first:
+	// signing in to the client's workspace, munchly-smartclearance.web.app (screens/auth.jsx SignIn). Email or phone first:
 	// a munchly.in address goes to Munchly's Google Workspace, an invited number gets a one-time code, a first-time
 	// invitee joins the workspace, and anyone else is pointed to "Find your workspace". guided: the demo drives it (a
 	// prefilled identity, the SMS code filled in, no shortcuts)

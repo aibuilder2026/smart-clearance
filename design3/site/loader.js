@@ -1,4 +1,4 @@
-// Smart-Clearance v3 · smartclearance.com's loader (SC-35; SC-131, option B, the route runs). Plain ES2019, loaded
+// Smart-Clearance v3 · smartclearance.web.app's loader (SC-35; SC-131, option B, the route runs). Plain ES2019, loaded
 // first in <body>, before React, and self-contained: it brings its own styles, so it paints with the page's first
 // bytes, before any stylesheet has arrived.
 //   · Every load of the page, reloads included, plays the route: the mark's route stands faint and a bright stretch of
