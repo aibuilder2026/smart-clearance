@@ -12,14 +12,15 @@
 	import Screen from '../common/Screen.svelte';
 	import { offersOf, shopOf, weekday, when } from './pt';
 
-	// a kirana's orders (SC-130, screens/trade.jsx RetailOrders): what each order earned, each opening its offer's page
+	// a kirana's orders (SC-130, screens/trade.jsx RetailOrders): what each order earned, each naming its tax invoice
+	// (SC-153) and opening its offer's page
 	let { me }: { me: User } = $props();
 	const ws = useWorkspace();
 	const { go } = useRoute();
 	const list = $derived(offersOf(ws, me).filter((o) => o.status === 'ordered'));
 	const margin = $derived(list.reduce((t, o) => t + (o.m?.margin ?? 0), 0));
 	const packets = $derived(list.reduce((t, o) => t + o.units, 0));
-	const sc = $derived(ws.data.rules.scheme);
+	const paid = $derived(list.reduce((t, o) => t + (o.m?.pay ?? 0), 0));
 </script>
 
 <Screen {me} title="Orders" sub={shopOf(ws, me)?.name ?? me.org}>
@@ -28,8 +29,8 @@
 				><div class="lg-fig"><Money value={margin} size="l" /><span class="lg-what">your margin at MRP</span></div>
 				<p class="lg-working">
 					{list.length}
-					{list.length === 1 ? 'order' : 'orders'} since July, {fmt.num(packets)} packets, each delivered on the van with
-					{sc.free} free in every {sc.buy + sc.free}.
+					{list.length === 1 ? 'order' : 'orders'} since July, {fmt.num(packets)} packets, {fmt.inr(paid)} paid on {list.length}
+					tax {list.length === 1 ? 'invoice' : 'invoices'} from {list[0].dist.short}, GST included.
 				</p></Card
 			>
 			<List
@@ -37,9 +38,14 @@
 						chevron
 						onclick={() => go('offer', { ref: o.ref })}
 						title={`${o.sku.name} · ${o.units} packets`}
-						sub={`ordered ${o.orderedAt ? when(o.orderedAt) : ''}${o.van ? ` · ${weekday(o.van)}'s van` : ' · on the round'}`}
-						>{#snippet leading()}<Product name={o.sku.img} size={40} />{/snippet}{#snippet value()}<span class="lg-val"
-								><b class="tnum">{fmt.inr(o.m?.margin ?? 0)}</b><em>margin</em></span
+						>{#snippet sub()}{#if o.invoice}<span class="mono">{o.invoice.no}</span> ·
+							{/if}ordered {o.orderedAt ? when(o.orderedAt) : ''}{o.van
+								? ` · ${weekday(o.van)}'s van`
+								: ' · on the round'}{/snippet}{#snippet leading()}<Product
+								name={o.sku.img}
+								size={40}
+							/>{/snippet}{#snippet value()}<span class="lg-val"
+								><b class="tnum">{fmt.inr2(o.m?.margin ?? 0)}</b><em>margin</em></span
 							>{/snippet}</ListRow
 					>{/each}</List
 			>{:else}<Card

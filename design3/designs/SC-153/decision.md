@@ -37,6 +37,8 @@ On one board in app v3, `SC-153 design review.html`, each the app on its stub wi
   distributor's batch gains an Invoices tab; the register in the pack.
 - **C · As PDFs:** each invoice named where its order is, as a PDF to download; nothing drawn in the app.
 
-## The pick
+## The pick (10 Oct)
 
-Waiting for the maintainer.
+**Option A · With each order**, the recommended one: each invoice opens in a sheet from the order it bills (the kirana's
+order page, each shop on the distributor's Orders), the batch's sales register among the distributor's papers and as one
+card in Priya's pack, each number opening its invoice; the kirana's figures follow the invoice.

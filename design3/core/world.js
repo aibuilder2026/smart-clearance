@@ -122,6 +122,9 @@
     listing: { prefix: "ES-", next: 24117, width: 5 },
     // each food bank's own series for the receipts the app issues in its name (SC-110)
     ...Object.fromEntries(D.SETUP.partners.map(p => ["receipt." + slug(p.name), p.receipt.series])),
+    // each distributor's own sales series, for the tax invoice he issues each kirana's scheme order (SC-153); the story's
+    // orders take the next ones, the history's those before
+    ...Object.fromEntries(Object.values(D.DISTRIBUTORS).map(d => ["kirana." + d.id, d.series])),
   };
 
   // the label printed on each demo batch, as the Vision agent should read it (the Mango Drink's from SC-86)

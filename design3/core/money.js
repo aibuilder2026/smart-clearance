@@ -293,6 +293,17 @@
     return docs;
   }
 
+  // a kirana's scheme order as its distributor invoices it (SC-153): every packet at the pack price, less the scheme's
+  // discount (2 in every 12, so 16.67%), which leaves the taxable value the ledger counts, packets × the effective
+  // price; then CGST and SGST at half the SKU's rate each, a supply within the state to an unregistered shop; the total
+  // to the rupee, with a round-off line
+  function kiranaInvoice(units, line, sku) {
+    const { buy, free } = RULES.scheme;
+    const gross = r2(units * line.packPrice), taxable = r2(units * line.price), discount = r2(gross - taxable);
+    const cgst = r2((taxable * sku.gst) / 2), sgst = cgst, tax = r2(cgst + sgst), exact = r2(taxable + tax), total = Math.round(exact);
+    return { units, rate: line.packPrice, gross, discountPct: r2((free / (buy + free)) * 100), discount, taxable, gstPct: Math.round(sku.gst * 100), cgst, sgst, tax, roundOff: r2(total - exact), total, hsn: sku.hsn };
+  }
+
   // formatting: Indian digit grouping, rupees, lakhs
   const fmt = {
     num: n => Math.round(n).toLocaleString("en-IN"),
@@ -307,5 +318,5 @@
     day: iso => new Date(iso + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" }),
   };
 
-  window.SC3_MONEY = { RULES, CHANNELS, lifeOf, itcOf, gates, assess, writeOff, channelTable, allocate, plan, counter, award, actualNet, realised, mealsOf, receipt, priceSupport, expiryClaim, expirySettlement, documents, fmt };
+  window.SC3_MONEY = { RULES, CHANNELS, lifeOf, itcOf, gates, assess, writeOff, channelTable, allocate, plan, counter, award, actualNet, realised, mealsOf, receipt, priceSupport, expiryClaim, expirySettlement, documents, kiranaInvoice, fmt };
 })();

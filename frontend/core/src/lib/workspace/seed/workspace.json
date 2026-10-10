@@ -289,7 +289,12 @@
 			"territory": "Nagpur with Wardha and Kamptee",
 			"pins": "440, 441, 442",
 			"staffCap": 50,
-			"upi": "rakesh-traders@exampleupi"
+			"upi": "rakesh-traders@exampleupi",
+			"series": {
+				"prefix": "RT/26-27/",
+				"next": 1279,
+				"width": 4
+			}
 		},
 		"patil": {
 			"id": "patil",
@@ -313,7 +318,12 @@
 			"cluster": "Pune city",
 			"territory": "Pune",
 			"pins": "411, 412",
-			"upi": "patil-distributors@exampleupi"
+			"upi": "patil-distributors@exampleupi",
+			"series": {
+				"prefix": "PD/26-27/",
+				"next": 512,
+				"width": 4
+			}
 		},
 		"gupta": {
 			"id": "gupta",
@@ -337,7 +347,12 @@
 			"cluster": "Indore",
 			"territory": "Indore",
 			"pins": "452, 453",
-			"upi": "gupta-sons@exampleupi"
+			"upi": "gupta-sons@exampleupi",
+			"series": {
+				"prefix": "GS/26-27/",
+				"next": 2041,
+				"width": 4
+			}
 		},
 		"lakshmi": {
 			"id": "lakshmi",
@@ -362,7 +377,12 @@
 			"territory": "Hyderabad",
 			"pins": "500, 501",
 			"staffCap": 150,
-			"upi": "lakshmi-agencies@exampleupi"
+			"upi": "lakshmi-agencies@exampleupi",
+			"series": {
+				"prefix": "LA/26-27/",
+				"next": 972,
+				"width": 4
+			}
 		}
 	},
 	"buyer": {
@@ -2206,7 +2226,12 @@
 				"territory": "Nagpur with Wardha and Kamptee",
 				"pins": "440, 441, 442",
 				"staffCap": 50,
-				"upi": "rakesh-traders@exampleupi"
+				"upi": "rakesh-traders@exampleupi",
+				"series": {
+					"prefix": "RT/26-27/",
+					"next": 1279,
+					"width": 4
+				}
 			},
 			"to": {
 				"id": "agrawal",

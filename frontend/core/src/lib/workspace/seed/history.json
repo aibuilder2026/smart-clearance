@@ -633,7 +633,12 @@
 						"territory": "Nagpur with Wardha and Kamptee",
 						"pins": "440, 441, 442",
 						"staffCap": 50,
-						"upi": "rakesh-traders@exampleupi"
+						"upi": "rakesh-traders@exampleupi",
+						"series": {
+							"prefix": "RT/26-27/",
+							"next": 1279,
+							"width": 4
+						}
 					},
 					"to": {
 						"id": "agrawal",
@@ -741,151 +746,801 @@
 					"kirana": "k0",
 					"name": "Shree Ganesh Kirana",
 					"area": "Itwari",
-					"units": 24
+					"units": 24,
+					"at": "2026-07-04T10:00",
+					"invoice": {
+						"no": "RT/26-27/1164",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:00",
+						"kirana": "k0",
+						"shop": {
+							"id": "k0",
+							"name": "Shree Ganesh Kirana",
+							"area": "Itwari",
+							"pincode": "440002"
+						},
+						"units": 24,
+						"rate": 28.8,
+						"gross": 691.2,
+						"discountPct": 16.67,
+						"discount": 115.2,
+						"taxable": 576,
+						"gstPct": 5,
+						"cgst": 14.4,
+						"sgst": 14.4,
+						"tax": 28.8,
+						"roundOff": 0.2,
+						"total": 605,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k1",
 					"name": "Jai Durga Stores",
 					"area": "Kamptee",
-					"units": 24
+					"units": 24,
+					"at": "2026-07-04T10:02",
+					"invoice": {
+						"no": "RT/26-27/1165",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:02",
+						"kirana": "k1",
+						"shop": {
+							"id": "k1",
+							"name": "Jai Durga Stores",
+							"area": "Kamptee",
+							"pincode": "441001"
+						},
+						"units": 24,
+						"rate": 28.8,
+						"gross": 691.2,
+						"discountPct": 16.67,
+						"discount": 115.2,
+						"taxable": 576,
+						"gstPct": 5,
+						"cgst": 14.4,
+						"sgst": 14.4,
+						"tax": 28.8,
+						"roundOff": 0.2,
+						"total": 605,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k2",
 					"name": "Om Sai Provision",
 					"area": "Wardha Road",
-					"units": 12
+					"units": 12,
+					"at": "2026-07-04T10:04",
+					"invoice": {
+						"no": "RT/26-27/1166",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:04",
+						"kirana": "k2",
+						"shop": {
+							"id": "k2",
+							"name": "Om Sai Provision",
+							"area": "Wardha Road",
+							"pincode": "440015"
+						},
+						"units": 12,
+						"rate": 28.8,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k3",
 					"name": "Maa Bhavani Kirana",
 					"area": "Itwari",
-					"units": 12
+					"units": 12,
+					"at": "2026-07-04T10:06",
+					"invoice": {
+						"no": "RT/26-27/1167",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:06",
+						"kirana": "k3",
+						"shop": {
+							"id": "k3",
+							"name": "Maa Bhavani Kirana",
+							"area": "Itwari",
+							"pincode": "440002"
+						},
+						"units": 12,
+						"rate": 28.8,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k4",
 					"name": "New Sagar Stores",
 					"area": "Kamptee",
-					"units": 36
+					"units": 36,
+					"at": "2026-07-04T10:08",
+					"invoice": {
+						"no": "RT/26-27/1168",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:08",
+						"kirana": "k4",
+						"shop": {
+							"id": "k4",
+							"name": "New Sagar Stores",
+							"area": "Kamptee",
+							"pincode": "441001"
+						},
+						"units": 36,
+						"rate": 28.8,
+						"gross": 1036.8,
+						"discountPct": 16.67,
+						"discount": 172.8,
+						"taxable": 864,
+						"gstPct": 5,
+						"cgst": 21.6,
+						"sgst": 21.6,
+						"tax": 43.2,
+						"roundOff": -0.2,
+						"total": 907,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k5",
 					"name": "Gurukripa Traders",
 					"area": "Mahal",
-					"units": 24
+					"units": 24,
+					"at": "2026-07-04T10:10",
+					"invoice": {
+						"no": "RT/26-27/1169",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:10",
+						"kirana": "k5",
+						"shop": {
+							"id": "k5",
+							"name": "Gurukripa Traders",
+							"area": "Mahal",
+							"pincode": "440032"
+						},
+						"units": 24,
+						"rate": 28.8,
+						"gross": 691.2,
+						"discountPct": 16.67,
+						"discount": 115.2,
+						"taxable": 576,
+						"gstPct": 5,
+						"cgst": 14.4,
+						"sgst": 14.4,
+						"tax": 28.8,
+						"roundOff": 0.2,
+						"total": 605,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k6",
 					"name": "Mahalaxmi Kirana",
 					"area": "Sitabuldi",
-					"units": 12
+					"units": 12,
+					"at": "2026-07-04T10:12",
+					"invoice": {
+						"no": "RT/26-27/1170",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:12",
+						"kirana": "k6",
+						"shop": {
+							"id": "k6",
+							"name": "Mahalaxmi Kirana",
+							"area": "Sitabuldi",
+							"pincode": "440012"
+						},
+						"units": 12,
+						"rate": 28.8,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k7",
 					"name": "Shiv Shakti Store",
 					"area": "Wardha",
-					"units": 12
+					"units": 12,
+					"at": "2026-07-04T10:14",
+					"invoice": {
+						"no": "RT/26-27/1171",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:14",
+						"kirana": "k7",
+						"shop": {
+							"id": "k7",
+							"name": "Shiv Shakti Store",
+							"area": "Wardha",
+							"pincode": "442001"
+						},
+						"units": 12,
+						"rate": 28.8,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k8",
 					"name": "Patel Provision",
 					"area": "Dharampeth",
-					"units": 24
+					"units": 24,
+					"at": "2026-07-04T10:16",
+					"invoice": {
+						"no": "RT/26-27/1172",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:16",
+						"kirana": "k8",
+						"shop": {
+							"id": "k8",
+							"name": "Patel Provision",
+							"area": "Dharampeth",
+							"pincode": "440010"
+						},
+						"units": 24,
+						"rate": 28.8,
+						"gross": 691.2,
+						"discountPct": 16.67,
+						"discount": 115.2,
+						"taxable": 576,
+						"gstPct": 5,
+						"cgst": 14.4,
+						"sgst": 14.4,
+						"tax": 28.8,
+						"roundOff": 0.2,
+						"total": 605,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k9",
 					"name": "Annapurna Stores",
 					"area": "Sadar",
-					"units": 12
+					"units": 12,
+					"at": "2026-07-04T10:18",
+					"invoice": {
+						"no": "RT/26-27/1173",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:18",
+						"kirana": "k9",
+						"shop": {
+							"id": "k9",
+							"name": "Annapurna Stores",
+							"area": "Sadar",
+							"pincode": "440001"
+						},
+						"units": 12,
+						"rate": 28.8,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k10",
 					"name": "Sahyog Kirana",
 					"area": "Kamptee",
-					"units": 48
+					"units": 48,
+					"at": "2026-07-04T10:20",
+					"invoice": {
+						"no": "RT/26-27/1174",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:20",
+						"kirana": "k10",
+						"shop": {
+							"id": "k10",
+							"name": "Sahyog Kirana",
+							"area": "Kamptee",
+							"pincode": "441001"
+						},
+						"units": 48,
+						"rate": 28.8,
+						"gross": 1382.4,
+						"discountPct": 16.67,
+						"discount": 230.4,
+						"taxable": 1152,
+						"gstPct": 5,
+						"cgst": 28.8,
+						"sgst": 28.8,
+						"tax": 57.6,
+						"roundOff": 0.4,
+						"total": 1210,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k11",
 					"name": "Raj Super Mart",
 					"area": "Mahal",
-					"units": 36
+					"units": 36,
+					"at": "2026-07-04T10:22",
+					"invoice": {
+						"no": "RT/26-27/1175",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:22",
+						"kirana": "k11",
+						"shop": {
+							"id": "k11",
+							"name": "Raj Super Mart",
+							"area": "Mahal",
+							"pincode": "440032"
+						},
+						"units": 36,
+						"rate": 28.8,
+						"gross": 1036.8,
+						"discountPct": 16.67,
+						"discount": 172.8,
+						"taxable": 864,
+						"gstPct": 5,
+						"cgst": 21.6,
+						"sgst": 21.6,
+						"tax": 43.2,
+						"roundOff": -0.2,
+						"total": 907,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k12",
 					"name": "Vaishnavi Stores",
 					"area": "Itwari",
-					"units": 24
+					"units": 24,
+					"at": "2026-07-04T10:24",
+					"invoice": {
+						"no": "RT/26-27/1176",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:24",
+						"kirana": "k12",
+						"shop": {
+							"id": "k12",
+							"name": "Vaishnavi Stores",
+							"area": "Itwari",
+							"pincode": "440002"
+						},
+						"units": 24,
+						"rate": 28.8,
+						"gross": 691.2,
+						"discountPct": 16.67,
+						"discount": 115.2,
+						"taxable": 576,
+						"gstPct": 5,
+						"cgst": 14.4,
+						"sgst": 14.4,
+						"tax": 28.8,
+						"roundOff": 0.2,
+						"total": 605,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k13",
 					"name": "Sai Kripa Kirana",
 					"area": "Dharampeth",
-					"units": 12
+					"units": 12,
+					"at": "2026-07-04T10:26",
+					"invoice": {
+						"no": "RT/26-27/1177",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:26",
+						"kirana": "k13",
+						"shop": {
+							"id": "k13",
+							"name": "Sai Kripa Kirana",
+							"area": "Dharampeth",
+							"pincode": "440010"
+						},
+						"units": 12,
+						"rate": 28.8,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k14",
 					"name": "Shree Ram Provision",
 					"area": "Sitabuldi",
-					"units": 12
+					"units": 12,
+					"at": "2026-07-04T10:28",
+					"invoice": {
+						"no": "RT/26-27/1178",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:28",
+						"kirana": "k14",
+						"shop": {
+							"id": "k14",
+							"name": "Shree Ram Provision",
+							"area": "Sitabuldi",
+							"pincode": "440012"
+						},
+						"units": 12,
+						"rate": 28.8,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k15",
 					"name": "Hanuman General Store",
 					"area": "Wardha Road",
-					"units": 12
+					"units": 12,
+					"at": "2026-07-04T10:30",
+					"invoice": {
+						"no": "RT/26-27/1179",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:30",
+						"kirana": "k15",
+						"shop": {
+							"id": "k15",
+							"name": "Hanuman General Store",
+							"area": "Wardha Road",
+							"pincode": "440015"
+						},
+						"units": 12,
+						"rate": 28.8,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k16",
 					"name": "Gajanan Kirana",
 					"area": "Wardha",
-					"units": 24
+					"units": 24,
+					"at": "2026-07-04T10:32",
+					"invoice": {
+						"no": "RT/26-27/1180",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:32",
+						"kirana": "k16",
+						"shop": {
+							"id": "k16",
+							"name": "Gajanan Kirana",
+							"area": "Wardha",
+							"pincode": "442001"
+						},
+						"units": 24,
+						"rate": 28.8,
+						"gross": 691.2,
+						"discountPct": 16.67,
+						"discount": 115.2,
+						"taxable": 576,
+						"gstPct": 5,
+						"cgst": 14.4,
+						"sgst": 14.4,
+						"tax": 28.8,
+						"roundOff": 0.2,
+						"total": 605,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k17",
 					"name": "Kamal Provision Store",
 					"area": "Mahal",
-					"units": 12
+					"units": 12,
+					"at": "2026-07-04T10:34",
+					"invoice": {
+						"no": "RT/26-27/1181",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:34",
+						"kirana": "k17",
+						"shop": {
+							"id": "k17",
+							"name": "Kamal Provision Store",
+							"area": "Mahal",
+							"pincode": "440032"
+						},
+						"units": 12,
+						"rate": 28.8,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k18",
 					"name": "Navkar Stores",
 					"area": "Itwari",
-					"units": 12
+					"units": 12,
+					"at": "2026-07-04T10:36",
+					"invoice": {
+						"no": "RT/26-27/1182",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:36",
+						"kirana": "k18",
+						"shop": {
+							"id": "k18",
+							"name": "Navkar Stores",
+							"area": "Itwari",
+							"pincode": "440002"
+						},
+						"units": 12,
+						"rate": 28.8,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k19",
 					"name": "Siddhivinayak Kirana",
 					"area": "Sadar",
-					"units": 24
+					"units": 24,
+					"at": "2026-07-04T10:38",
+					"invoice": {
+						"no": "RT/26-27/1183",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:38",
+						"kirana": "k19",
+						"shop": {
+							"id": "k19",
+							"name": "Siddhivinayak Kirana",
+							"area": "Sadar",
+							"pincode": "440001"
+						},
+						"units": 24,
+						"rate": 28.8,
+						"gross": 691.2,
+						"discountPct": 16.67,
+						"discount": 115.2,
+						"taxable": 576,
+						"gstPct": 5,
+						"cgst": 14.4,
+						"sgst": 14.4,
+						"tax": 28.8,
+						"roundOff": 0.2,
+						"total": 605,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k20",
 					"name": "Jyoti General Store",
 					"area": "Kamptee",
-					"units": 12
+					"units": 12,
+					"at": "2026-07-04T10:40",
+					"invoice": {
+						"no": "RT/26-27/1184",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:40",
+						"kirana": "k20",
+						"shop": {
+							"id": "k20",
+							"name": "Jyoti General Store",
+							"area": "Kamptee",
+							"pincode": "441001"
+						},
+						"units": 12,
+						"rate": 28.8,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k21",
 					"name": "Laxmi Narayan Stores",
 					"area": "Wardha",
-					"units": 12
+					"units": 12,
+					"at": "2026-07-04T10:42",
+					"invoice": {
+						"no": "RT/26-27/1185",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:42",
+						"kirana": "k21",
+						"shop": {
+							"id": "k21",
+							"name": "Laxmi Narayan Stores",
+							"area": "Wardha",
+							"pincode": "442001"
+						},
+						"units": 12,
+						"rate": 28.8,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k22",
 					"name": "Bharat Kirana",
 					"area": "Sitabuldi",
-					"units": 12
+					"units": 12,
+					"at": "2026-07-04T10:44",
+					"invoice": {
+						"no": "RT/26-27/1186",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:44",
+						"kirana": "k22",
+						"shop": {
+							"id": "k22",
+							"name": "Bharat Kirana",
+							"area": "Sitabuldi",
+							"pincode": "440012"
+						},
+						"units": 12,
+						"rate": 28.8,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k23",
 					"name": "Shubham Provision",
 					"area": "Dharampeth",
-					"units": 36
+					"units": 36,
+					"at": "2026-07-04T10:46",
+					"invoice": {
+						"no": "RT/26-27/1187",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:46",
+						"kirana": "k23",
+						"shop": {
+							"id": "k23",
+							"name": "Shubham Provision",
+							"area": "Dharampeth",
+							"pincode": "440010"
+						},
+						"units": 36,
+						"rate": 28.8,
+						"gross": 1036.8,
+						"discountPct": 16.67,
+						"discount": 172.8,
+						"taxable": 864,
+						"gstPct": 5,
+						"cgst": 21.6,
+						"sgst": 21.6,
+						"tax": 43.2,
+						"roundOff": -0.2,
+						"total": 907,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "k24",
 					"name": "Mauli Kirana",
 					"area": "Wardha Road",
-					"units": 10
+					"units": 10,
+					"at": "2026-07-04T10:48",
+					"invoice": {
+						"no": "RT/26-27/1188",
+						"date": "2026-07-04",
+						"at": "2026-07-04T10:48",
+						"kirana": "k24",
+						"shop": {
+							"id": "k24",
+							"name": "Mauli Kirana",
+							"area": "Wardha Road",
+							"pincode": "440015"
+						},
+						"units": 10,
+						"rate": 28.8,
+						"gross": 288,
+						"discountPct": 16.67,
+						"discount": 48,
+						"taxable": 240,
+						"gstPct": 5,
+						"cgst": 6,
+						"sgst": 6,
+						"tax": 12,
+						"roundOff": 0,
+						"total": 252,
+						"hsn": "1905"
+					}
 				}
 			],
 			"offered": 38,
@@ -1541,7 +2196,12 @@
 						"territory": "Hyderabad",
 						"pins": "500, 501",
 						"staffCap": 150,
-						"upi": "lakshmi-agencies@exampleupi"
+						"upi": "lakshmi-agencies@exampleupi",
+						"series": {
+							"prefix": "LA/26-27/",
+							"next": 972,
+							"width": 4
+						}
 					},
 					"to": {
 						"id": "agrawal",
@@ -1649,157 +2309,833 @@
 					"kirana": "h0",
 					"name": "Sri Lakshmi Ganapathi Kirana",
 					"area": "Begum Bazaar",
-					"units": 24
+					"units": 24,
+					"at": "2026-07-09T10:00",
+					"invoice": {
+						"no": "LA/26-27/0873",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:00",
+						"kirana": "h0",
+						"shop": {
+							"id": "h0",
+							"name": "Sri Lakshmi Ganapathi Kirana",
+							"area": "Begum Bazaar",
+							"pincode": "500012"
+						},
+						"units": 24,
+						"rate": 18,
+						"gross": 432,
+						"discountPct": 16.67,
+						"discount": 72,
+						"taxable": 360,
+						"gstPct": 5,
+						"cgst": 9,
+						"sgst": 9,
+						"tax": 18,
+						"roundOff": 0,
+						"total": 378,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h1",
 					"name": "Al-Noor Provision Store",
 					"area": "Charminar",
-					"units": 28
+					"units": 28,
+					"at": "2026-07-09T10:02",
+					"invoice": {
+						"no": "LA/26-27/0874",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:02",
+						"kirana": "h1",
+						"shop": {
+							"id": "h1",
+							"name": "Al-Noor Provision Store",
+							"area": "Charminar",
+							"pincode": "500002"
+						},
+						"units": 28,
+						"rate": 18,
+						"gross": 504,
+						"discountPct": 16.67,
+						"discount": 84,
+						"taxable": 420,
+						"gstPct": 5,
+						"cgst": 10.5,
+						"sgst": 10.5,
+						"tax": 21,
+						"roundOff": 0,
+						"total": 441,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h2",
 					"name": "Deccan General Stores",
 					"area": "Abids",
-					"units": 32
+					"units": 32,
+					"at": "2026-07-09T10:04",
+					"invoice": {
+						"no": "LA/26-27/0875",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:04",
+						"kirana": "h2",
+						"shop": {
+							"id": "h2",
+							"name": "Deccan General Stores",
+							"area": "Abids",
+							"pincode": "500001"
+						},
+						"units": 32,
+						"rate": 18,
+						"gross": 576,
+						"discountPct": 16.67,
+						"discount": 96,
+						"taxable": 480,
+						"gstPct": 5,
+						"cgst": 12,
+						"sgst": 12,
+						"tax": 24,
+						"roundOff": 0,
+						"total": 504,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h3",
 					"name": "Sai Krishna Kirana",
 					"area": "Koti",
-					"units": 20
+					"units": 20,
+					"at": "2026-07-09T10:06",
+					"invoice": {
+						"no": "LA/26-27/0876",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:06",
+						"kirana": "h3",
+						"shop": {
+							"id": "h3",
+							"name": "Sai Krishna Kirana",
+							"area": "Koti",
+							"pincode": "500095"
+						},
+						"units": 20,
+						"rate": 18,
+						"gross": 360,
+						"discountPct": 16.67,
+						"discount": 60,
+						"taxable": 300,
+						"gstPct": 5,
+						"cgst": 7.5,
+						"sgst": 7.5,
+						"tax": 15,
+						"roundOff": 0,
+						"total": 315,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h4",
 					"name": "Hussaini Provision",
 					"area": "Dabeerpura",
-					"units": 36
+					"units": 36,
+					"at": "2026-07-09T10:08",
+					"invoice": {
+						"no": "LA/26-27/0877",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:08",
+						"kirana": "h4",
+						"shop": {
+							"id": "h4",
+							"name": "Hussaini Provision",
+							"area": "Dabeerpura",
+							"pincode": "500023"
+						},
+						"units": 36,
+						"rate": 18,
+						"gross": 648,
+						"discountPct": 16.67,
+						"discount": 108,
+						"taxable": 540,
+						"gstPct": 5,
+						"cgst": 13.5,
+						"sgst": 13.5,
+						"tax": 27,
+						"roundOff": 0,
+						"total": 567,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h5",
 					"name": "Bhavani Kirana",
 					"area": "Malakpet",
-					"units": 24
+					"units": 24,
+					"at": "2026-07-09T10:10",
+					"invoice": {
+						"no": "LA/26-27/0878",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:10",
+						"kirana": "h5",
+						"shop": {
+							"id": "h5",
+							"name": "Bhavani Kirana",
+							"area": "Malakpet",
+							"pincode": "500036"
+						},
+						"units": 24,
+						"rate": 18,
+						"gross": 432,
+						"discountPct": 16.67,
+						"discount": 72,
+						"taxable": 360,
+						"gstPct": 5,
+						"cgst": 9,
+						"sgst": 9,
+						"tax": 18,
+						"roundOff": 0,
+						"total": 378,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h6",
 					"name": "Golconda Stores",
 					"area": "Afzal Gunj",
-					"units": 28
+					"units": 28,
+					"at": "2026-07-09T10:12",
+					"invoice": {
+						"no": "LA/26-27/0879",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:12",
+						"kirana": "h6",
+						"shop": {
+							"id": "h6",
+							"name": "Golconda Stores",
+							"area": "Afzal Gunj",
+							"pincode": "500012"
+						},
+						"units": 28,
+						"rate": 18,
+						"gross": 504,
+						"discountPct": 16.67,
+						"discount": 84,
+						"taxable": 420,
+						"gstPct": 5,
+						"cgst": 10.5,
+						"sgst": 10.5,
+						"tax": 21,
+						"roundOff": 0,
+						"total": 441,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h7",
 					"name": "Moazzam Kirana",
 					"area": "Charminar",
-					"units": 16
+					"units": 16,
+					"at": "2026-07-09T10:14",
+					"invoice": {
+						"no": "LA/26-27/0880",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:14",
+						"kirana": "h7",
+						"shop": {
+							"id": "h7",
+							"name": "Moazzam Kirana",
+							"area": "Charminar",
+							"pincode": "500002"
+						},
+						"units": 16,
+						"rate": 18,
+						"gross": 288,
+						"discountPct": 16.67,
+						"discount": 48,
+						"taxable": 240,
+						"gstPct": 5,
+						"cgst": 6,
+						"sgst": 6,
+						"tax": 12,
+						"roundOff": 0,
+						"total": 252,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h8",
 					"name": "Anjaneya Provision Store",
 					"area": "Sultan Bazar",
-					"units": 32
+					"units": 32,
+					"at": "2026-07-09T10:16",
+					"invoice": {
+						"no": "LA/26-27/0881",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:16",
+						"kirana": "h8",
+						"shop": {
+							"id": "h8",
+							"name": "Anjaneya Provision Store",
+							"area": "Sultan Bazar",
+							"pincode": "500095"
+						},
+						"units": 32,
+						"rate": 18,
+						"gross": 576,
+						"discountPct": 16.67,
+						"discount": 96,
+						"taxable": 480,
+						"gstPct": 5,
+						"cgst": 12,
+						"sgst": 12,
+						"tax": 24,
+						"roundOff": 0,
+						"total": 504,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h9",
 					"name": "Shalimar General Store",
 					"area": "Nampally",
-					"units": 28
+					"units": 28,
+					"at": "2026-07-09T10:18",
+					"invoice": {
+						"no": "LA/26-27/0882",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:18",
+						"kirana": "h9",
+						"shop": {
+							"id": "h9",
+							"name": "Shalimar General Store",
+							"area": "Nampally",
+							"pincode": "500001"
+						},
+						"units": 28,
+						"rate": 18,
+						"gross": 504,
+						"discountPct": 16.67,
+						"discount": 84,
+						"taxable": 420,
+						"gstPct": 5,
+						"cgst": 10.5,
+						"sgst": 10.5,
+						"tax": 21,
+						"roundOff": 0,
+						"total": 441,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h10",
 					"name": "Ravi Teja Kirana",
 					"area": "Chaderghat",
-					"units": 24
+					"units": 24,
+					"at": "2026-07-09T10:20",
+					"invoice": {
+						"no": "LA/26-27/0883",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:20",
+						"kirana": "h10",
+						"shop": {
+							"id": "h10",
+							"name": "Ravi Teja Kirana",
+							"area": "Chaderghat",
+							"pincode": "500024"
+						},
+						"units": 24,
+						"rate": 18,
+						"gross": 432,
+						"discountPct": 16.67,
+						"discount": 72,
+						"taxable": 360,
+						"gstPct": 5,
+						"cgst": 9,
+						"sgst": 9,
+						"tax": 18,
+						"roundOff": 0,
+						"total": 378,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h11",
 					"name": "Madina Provision",
 					"area": "Charminar",
-					"units": 28
+					"units": 28,
+					"at": "2026-07-09T10:22",
+					"invoice": {
+						"no": "LA/26-27/0884",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:22",
+						"kirana": "h11",
+						"shop": {
+							"id": "h11",
+							"name": "Madina Provision",
+							"area": "Charminar",
+							"pincode": "500002"
+						},
+						"units": 28,
+						"rate": 18,
+						"gross": 504,
+						"discountPct": 16.67,
+						"discount": 84,
+						"taxable": 420,
+						"gstPct": 5,
+						"cgst": 10.5,
+						"sgst": 10.5,
+						"tax": 21,
+						"roundOff": 0,
+						"total": 441,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h12",
 					"name": "Sri Durga Bhavani Stores",
 					"area": "Begum Bazaar",
-					"units": 32
+					"units": 32,
+					"at": "2026-07-09T10:24",
+					"invoice": {
+						"no": "LA/26-27/0885",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:24",
+						"kirana": "h12",
+						"shop": {
+							"id": "h12",
+							"name": "Sri Durga Bhavani Stores",
+							"area": "Begum Bazaar",
+							"pincode": "500012"
+						},
+						"units": 32,
+						"rate": 18,
+						"gross": 576,
+						"discountPct": 16.67,
+						"discount": 96,
+						"taxable": 480,
+						"gstPct": 5,
+						"cgst": 12,
+						"sgst": 12,
+						"tax": 24,
+						"roundOff": 0,
+						"total": 504,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h13",
 					"name": "Hyderabadi Kirana",
 					"area": "Abids",
-					"units": 20
+					"units": 20,
+					"at": "2026-07-09T10:26",
+					"invoice": {
+						"no": "LA/26-27/0886",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:26",
+						"kirana": "h13",
+						"shop": {
+							"id": "h13",
+							"name": "Hyderabadi Kirana",
+							"area": "Abids",
+							"pincode": "500001"
+						},
+						"units": 20,
+						"rate": 18,
+						"gross": 360,
+						"discountPct": 16.67,
+						"discount": 60,
+						"taxable": 300,
+						"gstPct": 5,
+						"cgst": 7.5,
+						"sgst": 7.5,
+						"tax": 15,
+						"roundOff": 0,
+						"total": 315,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h14",
 					"name": "Gulzar House Stores",
 					"area": "Charminar",
-					"units": 36
+					"units": 36,
+					"at": "2026-07-09T10:28",
+					"invoice": {
+						"no": "LA/26-27/0887",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:28",
+						"kirana": "h14",
+						"shop": {
+							"id": "h14",
+							"name": "Gulzar House Stores",
+							"area": "Charminar",
+							"pincode": "500002"
+						},
+						"units": 36,
+						"rate": 18,
+						"gross": 648,
+						"discountPct": 16.67,
+						"discount": 108,
+						"taxable": 540,
+						"gstPct": 5,
+						"cgst": 13.5,
+						"sgst": 13.5,
+						"tax": 27,
+						"roundOff": 0,
+						"total": 567,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h15",
 					"name": "Padmavathi Kirana",
 					"area": "Koti",
-					"units": 24
+					"units": 24,
+					"at": "2026-07-09T10:30",
+					"invoice": {
+						"no": "LA/26-27/0888",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:30",
+						"kirana": "h15",
+						"shop": {
+							"id": "h15",
+							"name": "Padmavathi Kirana",
+							"area": "Koti",
+							"pincode": "500095"
+						},
+						"units": 24,
+						"rate": 18,
+						"gross": 432,
+						"discountPct": 16.67,
+						"discount": 72,
+						"taxable": 360,
+						"gstPct": 5,
+						"cgst": 9,
+						"sgst": 9,
+						"tax": 18,
+						"roundOff": 0,
+						"total": 378,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h16",
 					"name": "Asif Nagar Provisions",
 					"area": "Nampally",
-					"units": 28
+					"units": 28,
+					"at": "2026-07-09T10:32",
+					"invoice": {
+						"no": "LA/26-27/0889",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:32",
+						"kirana": "h16",
+						"shop": {
+							"id": "h16",
+							"name": "Asif Nagar Provisions",
+							"area": "Nampally",
+							"pincode": "500001"
+						},
+						"units": 28,
+						"rate": 18,
+						"gross": 504,
+						"discountPct": 16.67,
+						"discount": 84,
+						"taxable": 420,
+						"gstPct": 5,
+						"cgst": 10.5,
+						"sgst": 10.5,
+						"tax": 21,
+						"roundOff": 0,
+						"total": 441,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h17",
 					"name": "Ramakrishna General Store",
 					"area": "Malakpet",
-					"units": 16
+					"units": 16,
+					"at": "2026-07-09T10:34",
+					"invoice": {
+						"no": "LA/26-27/0890",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:34",
+						"kirana": "h17",
+						"shop": {
+							"id": "h17",
+							"name": "Ramakrishna General Store",
+							"area": "Malakpet",
+							"pincode": "500036"
+						},
+						"units": 16,
+						"rate": 18,
+						"gross": 288,
+						"discountPct": 16.67,
+						"discount": 48,
+						"taxable": 240,
+						"gstPct": 5,
+						"cgst": 6,
+						"sgst": 6,
+						"tax": 12,
+						"roundOff": 0,
+						"total": 252,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h18",
 					"name": "Taj Kirana",
 					"area": "Dabeerpura",
-					"units": 32
+					"units": 32,
+					"at": "2026-07-09T10:36",
+					"invoice": {
+						"no": "LA/26-27/0891",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:36",
+						"kirana": "h18",
+						"shop": {
+							"id": "h18",
+							"name": "Taj Kirana",
+							"area": "Dabeerpura",
+							"pincode": "500023"
+						},
+						"units": 32,
+						"rate": 18,
+						"gross": 576,
+						"discountPct": 16.67,
+						"discount": 96,
+						"taxable": 480,
+						"gstPct": 5,
+						"cgst": 12,
+						"sgst": 12,
+						"tax": 24,
+						"roundOff": 0,
+						"total": 504,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h19",
 					"name": "Sitara Provision Store",
 					"area": "Afzal Gunj",
-					"units": 28
+					"units": 28,
+					"at": "2026-07-09T10:38",
+					"invoice": {
+						"no": "LA/26-27/0892",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:38",
+						"kirana": "h19",
+						"shop": {
+							"id": "h19",
+							"name": "Sitara Provision Store",
+							"area": "Afzal Gunj",
+							"pincode": "500012"
+						},
+						"units": 28,
+						"rate": 18,
+						"gross": 504,
+						"discountPct": 16.67,
+						"discount": 84,
+						"taxable": 420,
+						"gstPct": 5,
+						"cgst": 10.5,
+						"sgst": 10.5,
+						"tax": 21,
+						"roundOff": 0,
+						"total": 441,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h20",
 					"name": "Vinayaka Stores",
 					"area": "Sultan Bazar",
-					"units": 24
+					"units": 24,
+					"at": "2026-07-09T10:40",
+					"invoice": {
+						"no": "LA/26-27/0893",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:40",
+						"kirana": "h20",
+						"shop": {
+							"id": "h20",
+							"name": "Vinayaka Stores",
+							"area": "Sultan Bazar",
+							"pincode": "500095"
+						},
+						"units": 24,
+						"rate": 18,
+						"gross": 432,
+						"discountPct": 16.67,
+						"discount": 72,
+						"taxable": 360,
+						"gstPct": 5,
+						"cgst": 9,
+						"sgst": 9,
+						"tax": 18,
+						"roundOff": 0,
+						"total": 378,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h21",
 					"name": "Nizam Kirana",
 					"area": "Charminar",
-					"units": 28
+					"units": 28,
+					"at": "2026-07-09T10:42",
+					"invoice": {
+						"no": "LA/26-27/0894",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:42",
+						"kirana": "h21",
+						"shop": {
+							"id": "h21",
+							"name": "Nizam Kirana",
+							"area": "Charminar",
+							"pincode": "500002"
+						},
+						"units": 28,
+						"rate": 18,
+						"gross": 504,
+						"discountPct": 16.67,
+						"discount": 84,
+						"taxable": 420,
+						"gstPct": 5,
+						"cgst": 10.5,
+						"sgst": 10.5,
+						"tax": 21,
+						"roundOff": 0,
+						"total": 441,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h22",
 					"name": "Annapurna Provisions",
 					"area": "Chaderghat",
-					"units": 32
+					"units": 32,
+					"at": "2026-07-09T10:44",
+					"invoice": {
+						"no": "LA/26-27/0895",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:44",
+						"kirana": "h22",
+						"shop": {
+							"id": "h22",
+							"name": "Annapurna Provisions",
+							"area": "Chaderghat",
+							"pincode": "500024"
+						},
+						"units": 32,
+						"rate": 18,
+						"gross": 576,
+						"discountPct": 16.67,
+						"discount": 96,
+						"taxable": 480,
+						"gstPct": 5,
+						"cgst": 12,
+						"sgst": 12,
+						"tax": 24,
+						"roundOff": 0,
+						"total": 504,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h23",
 					"name": "Musi River Stores",
 					"area": "Afzal Gunj",
-					"units": 20
+					"units": 20,
+					"at": "2026-07-09T10:46",
+					"invoice": {
+						"no": "LA/26-27/0896",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:46",
+						"kirana": "h23",
+						"shop": {
+							"id": "h23",
+							"name": "Musi River Stores",
+							"area": "Afzal Gunj",
+							"pincode": "500012"
+						},
+						"units": 20,
+						"rate": 18,
+						"gross": 360,
+						"discountPct": 16.67,
+						"discount": 60,
+						"taxable": 300,
+						"gstPct": 5,
+						"cgst": 7.5,
+						"sgst": 7.5,
+						"tax": 15,
+						"roundOff": 0,
+						"total": 315,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h24",
 					"name": "Kothi Kirana",
 					"area": "Koti",
-					"units": 36
+					"units": 36,
+					"at": "2026-07-09T10:48",
+					"invoice": {
+						"no": "LA/26-27/0897",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:48",
+						"kirana": "h24",
+						"shop": {
+							"id": "h24",
+							"name": "Kothi Kirana",
+							"area": "Koti",
+							"pincode": "500095"
+						},
+						"units": 36,
+						"rate": 18,
+						"gross": 648,
+						"discountPct": 16.67,
+						"discount": 108,
+						"taxable": 540,
+						"gstPct": 5,
+						"cgst": 13.5,
+						"sgst": 13.5,
+						"tax": 27,
+						"roundOff": 0,
+						"total": 567,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "h25",
 					"name": "Siddiq General Store",
 					"area": "Dabeerpura",
-					"units": 10
+					"units": 10,
+					"at": "2026-07-09T10:50",
+					"invoice": {
+						"no": "LA/26-27/0898",
+						"date": "2026-07-09",
+						"at": "2026-07-09T10:50",
+						"kirana": "h25",
+						"shop": {
+							"id": "h25",
+							"name": "Siddiq General Store",
+							"area": "Dabeerpura",
+							"pincode": "500023"
+						},
+						"units": 10,
+						"rate": 18,
+						"gross": 180,
+						"discountPct": 16.67,
+						"discount": 30,
+						"taxable": 150,
+						"gstPct": 5,
+						"cgst": 3.75,
+						"sgst": 3.75,
+						"tax": 7.5,
+						"roundOff": 0.5,
+						"total": 158,
+						"hsn": "1704"
+					}
 				}
 			],
 			"offered": 58,
@@ -2521,7 +3857,12 @@
 						"territory": "Hyderabad",
 						"pins": "500, 501",
 						"staffCap": 150,
-						"upi": "lakshmi-agencies@exampleupi"
+						"upi": "lakshmi-agencies@exampleupi",
+						"series": {
+							"prefix": "LA/26-27/",
+							"next": 972,
+							"width": 4
+						}
 					},
 					"to": {
 						"id": "agrawal",
@@ -2693,43 +4034,225 @@
 					"kirana": "h0",
 					"name": "Sri Lakshmi Ganapathi Kirana",
 					"area": "Begum Bazaar",
-					"units": 24
+					"units": 24,
+					"at": "2026-07-15T10:00",
+					"invoice": {
+						"no": "LA/26-27/0899",
+						"date": "2026-07-15",
+						"at": "2026-07-15T10:00",
+						"kirana": "h0",
+						"shop": {
+							"id": "h0",
+							"name": "Sri Lakshmi Ganapathi Kirana",
+							"area": "Begum Bazaar",
+							"pincode": "500012"
+						},
+						"units": 24,
+						"rate": 46.8,
+						"gross": 1123.2,
+						"discountPct": 16.67,
+						"discount": 187.2,
+						"taxable": 936,
+						"gstPct": 5,
+						"cgst": 23.4,
+						"sgst": 23.4,
+						"tax": 46.8,
+						"roundOff": 0.2,
+						"total": 983,
+						"hsn": "2106"
+					}
 				},
 				{
 					"kirana": "h1",
 					"name": "Al-Noor Provision Store",
 					"area": "Charminar",
-					"units": 28
+					"units": 28,
+					"at": "2026-07-15T10:02",
+					"invoice": {
+						"no": "LA/26-27/0900",
+						"date": "2026-07-15",
+						"at": "2026-07-15T10:02",
+						"kirana": "h1",
+						"shop": {
+							"id": "h1",
+							"name": "Al-Noor Provision Store",
+							"area": "Charminar",
+							"pincode": "500002"
+						},
+						"units": 28,
+						"rate": 46.8,
+						"gross": 1310.4,
+						"discountPct": 16.67,
+						"discount": 218.4,
+						"taxable": 1092,
+						"gstPct": 5,
+						"cgst": 27.3,
+						"sgst": 27.3,
+						"tax": 54.6,
+						"roundOff": 0.4,
+						"total": 1147,
+						"hsn": "2106"
+					}
 				},
 				{
 					"kirana": "h2",
 					"name": "Deccan General Stores",
 					"area": "Abids",
-					"units": 32
+					"units": 32,
+					"at": "2026-07-15T10:04",
+					"invoice": {
+						"no": "LA/26-27/0901",
+						"date": "2026-07-15",
+						"at": "2026-07-15T10:04",
+						"kirana": "h2",
+						"shop": {
+							"id": "h2",
+							"name": "Deccan General Stores",
+							"area": "Abids",
+							"pincode": "500001"
+						},
+						"units": 32,
+						"rate": 46.8,
+						"gross": 1497.6,
+						"discountPct": 16.67,
+						"discount": 249.6,
+						"taxable": 1248,
+						"gstPct": 5,
+						"cgst": 31.2,
+						"sgst": 31.2,
+						"tax": 62.4,
+						"roundOff": -0.4,
+						"total": 1310,
+						"hsn": "2106"
+					}
 				},
 				{
 					"kirana": "h3",
 					"name": "Sai Krishna Kirana",
 					"area": "Koti",
-					"units": 20
+					"units": 20,
+					"at": "2026-07-15T10:06",
+					"invoice": {
+						"no": "LA/26-27/0902",
+						"date": "2026-07-15",
+						"at": "2026-07-15T10:06",
+						"kirana": "h3",
+						"shop": {
+							"id": "h3",
+							"name": "Sai Krishna Kirana",
+							"area": "Koti",
+							"pincode": "500095"
+						},
+						"units": 20,
+						"rate": 46.8,
+						"gross": 936,
+						"discountPct": 16.67,
+						"discount": 156,
+						"taxable": 780,
+						"gstPct": 5,
+						"cgst": 19.5,
+						"sgst": 19.5,
+						"tax": 39,
+						"roundOff": 0,
+						"total": 819,
+						"hsn": "2106"
+					}
 				},
 				{
 					"kirana": "h4",
 					"name": "Hussaini Provision",
 					"area": "Dabeerpura",
-					"units": 36
+					"units": 36,
+					"at": "2026-07-15T10:08",
+					"invoice": {
+						"no": "LA/26-27/0903",
+						"date": "2026-07-15",
+						"at": "2026-07-15T10:08",
+						"kirana": "h4",
+						"shop": {
+							"id": "h4",
+							"name": "Hussaini Provision",
+							"area": "Dabeerpura",
+							"pincode": "500023"
+						},
+						"units": 36,
+						"rate": 46.8,
+						"gross": 1684.8,
+						"discountPct": 16.67,
+						"discount": 280.8,
+						"taxable": 1404,
+						"gstPct": 5,
+						"cgst": 35.1,
+						"sgst": 35.1,
+						"tax": 70.2,
+						"roundOff": -0.2,
+						"total": 1474,
+						"hsn": "2106"
+					}
 				},
 				{
 					"kirana": "h5",
 					"name": "Bhavani Kirana",
 					"area": "Malakpet",
-					"units": 24
+					"units": 24,
+					"at": "2026-07-15T10:10",
+					"invoice": {
+						"no": "LA/26-27/0904",
+						"date": "2026-07-15",
+						"at": "2026-07-15T10:10",
+						"kirana": "h5",
+						"shop": {
+							"id": "h5",
+							"name": "Bhavani Kirana",
+							"area": "Malakpet",
+							"pincode": "500036"
+						},
+						"units": 24,
+						"rate": 46.8,
+						"gross": 1123.2,
+						"discountPct": 16.67,
+						"discount": 187.2,
+						"taxable": 936,
+						"gstPct": 5,
+						"cgst": 23.4,
+						"sgst": 23.4,
+						"tax": 46.8,
+						"roundOff": 0.2,
+						"total": 983,
+						"hsn": "2106"
+					}
 				},
 				{
 					"kirana": "h6",
 					"name": "Golconda Stores",
 					"area": "Afzal Gunj",
-					"units": 16
+					"units": 16,
+					"at": "2026-07-15T10:12",
+					"invoice": {
+						"no": "LA/26-27/0905",
+						"date": "2026-07-15",
+						"at": "2026-07-15T10:12",
+						"kirana": "h6",
+						"shop": {
+							"id": "h6",
+							"name": "Golconda Stores",
+							"area": "Afzal Gunj",
+							"pincode": "500012"
+						},
+						"units": 16,
+						"rate": 46.8,
+						"gross": 748.8,
+						"discountPct": 16.67,
+						"discount": 124.8,
+						"taxable": 624,
+						"gstPct": 5,
+						"cgst": 15.6,
+						"sgst": 15.6,
+						"tax": 31.2,
+						"roundOff": -0.2,
+						"total": 655,
+						"hsn": "2106"
+					}
 				}
 			],
 			"offered": 58,
@@ -3385,7 +4908,12 @@
 						"territory": "Nagpur with Wardha and Kamptee",
 						"pins": "440, 441, 442",
 						"staffCap": 50,
-						"upi": "rakesh-traders@exampleupi"
+						"upi": "rakesh-traders@exampleupi",
+						"series": {
+							"prefix": "RT/26-27/",
+							"next": 1279,
+							"width": 4
+						}
 					},
 					"to": {
 						"id": "agrawal",
@@ -3493,79 +5021,417 @@
 					"kirana": "k0",
 					"name": "Shree Ganesh Kirana",
 					"area": "Itwari",
-					"units": 24
+					"units": 24,
+					"at": "2026-07-22T10:00",
+					"invoice": {
+						"no": "RT/26-27/1189",
+						"date": "2026-07-22",
+						"at": "2026-07-22T10:00",
+						"kirana": "k0",
+						"shop": {
+							"id": "k0",
+							"name": "Shree Ganesh Kirana",
+							"area": "Itwari",
+							"pincode": "440002"
+						},
+						"units": 24,
+						"rate": 39.6,
+						"gross": 950.4,
+						"discountPct": 16.67,
+						"discount": 158.4,
+						"taxable": 792,
+						"gstPct": 5,
+						"cgst": 19.8,
+						"sgst": 19.8,
+						"tax": 39.6,
+						"roundOff": 0.4,
+						"total": 832,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "k1",
 					"name": "Jai Durga Stores",
 					"area": "Kamptee",
-					"units": 24
+					"units": 24,
+					"at": "2026-07-22T10:02",
+					"invoice": {
+						"no": "RT/26-27/1190",
+						"date": "2026-07-22",
+						"at": "2026-07-22T10:02",
+						"kirana": "k1",
+						"shop": {
+							"id": "k1",
+							"name": "Jai Durga Stores",
+							"area": "Kamptee",
+							"pincode": "441001"
+						},
+						"units": 24,
+						"rate": 39.6,
+						"gross": 950.4,
+						"discountPct": 16.67,
+						"discount": 158.4,
+						"taxable": 792,
+						"gstPct": 5,
+						"cgst": 19.8,
+						"sgst": 19.8,
+						"tax": 39.6,
+						"roundOff": 0.4,
+						"total": 832,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "k2",
 					"name": "Om Sai Provision",
 					"area": "Wardha Road",
-					"units": 12
+					"units": 12,
+					"at": "2026-07-22T10:04",
+					"invoice": {
+						"no": "RT/26-27/1191",
+						"date": "2026-07-22",
+						"at": "2026-07-22T10:04",
+						"kirana": "k2",
+						"shop": {
+							"id": "k2",
+							"name": "Om Sai Provision",
+							"area": "Wardha Road",
+							"pincode": "440015"
+						},
+						"units": 12,
+						"rate": 39.6,
+						"gross": 475.2,
+						"discountPct": 16.67,
+						"discount": 79.2,
+						"taxable": 396,
+						"gstPct": 5,
+						"cgst": 9.9,
+						"sgst": 9.9,
+						"tax": 19.8,
+						"roundOff": 0.2,
+						"total": 416,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "k3",
 					"name": "Maa Bhavani Kirana",
 					"area": "Itwari",
-					"units": 12
+					"units": 12,
+					"at": "2026-07-22T10:06",
+					"invoice": {
+						"no": "RT/26-27/1192",
+						"date": "2026-07-22",
+						"at": "2026-07-22T10:06",
+						"kirana": "k3",
+						"shop": {
+							"id": "k3",
+							"name": "Maa Bhavani Kirana",
+							"area": "Itwari",
+							"pincode": "440002"
+						},
+						"units": 12,
+						"rate": 39.6,
+						"gross": 475.2,
+						"discountPct": 16.67,
+						"discount": 79.2,
+						"taxable": 396,
+						"gstPct": 5,
+						"cgst": 9.9,
+						"sgst": 9.9,
+						"tax": 19.8,
+						"roundOff": 0.2,
+						"total": 416,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "k4",
 					"name": "New Sagar Stores",
 					"area": "Kamptee",
-					"units": 36
+					"units": 36,
+					"at": "2026-07-22T10:08",
+					"invoice": {
+						"no": "RT/26-27/1193",
+						"date": "2026-07-22",
+						"at": "2026-07-22T10:08",
+						"kirana": "k4",
+						"shop": {
+							"id": "k4",
+							"name": "New Sagar Stores",
+							"area": "Kamptee",
+							"pincode": "441001"
+						},
+						"units": 36,
+						"rate": 39.6,
+						"gross": 1425.6,
+						"discountPct": 16.67,
+						"discount": 237.6,
+						"taxable": 1188,
+						"gstPct": 5,
+						"cgst": 29.7,
+						"sgst": 29.7,
+						"tax": 59.4,
+						"roundOff": -0.4,
+						"total": 1247,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "k5",
 					"name": "Gurukripa Traders",
 					"area": "Mahal",
-					"units": 24
+					"units": 24,
+					"at": "2026-07-22T10:10",
+					"invoice": {
+						"no": "RT/26-27/1194",
+						"date": "2026-07-22",
+						"at": "2026-07-22T10:10",
+						"kirana": "k5",
+						"shop": {
+							"id": "k5",
+							"name": "Gurukripa Traders",
+							"area": "Mahal",
+							"pincode": "440032"
+						},
+						"units": 24,
+						"rate": 39.6,
+						"gross": 950.4,
+						"discountPct": 16.67,
+						"discount": 158.4,
+						"taxable": 792,
+						"gstPct": 5,
+						"cgst": 19.8,
+						"sgst": 19.8,
+						"tax": 39.6,
+						"roundOff": 0.4,
+						"total": 832,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "k6",
 					"name": "Mahalaxmi Kirana",
 					"area": "Sitabuldi",
-					"units": 12
+					"units": 12,
+					"at": "2026-07-22T10:12",
+					"invoice": {
+						"no": "RT/26-27/1195",
+						"date": "2026-07-22",
+						"at": "2026-07-22T10:12",
+						"kirana": "k6",
+						"shop": {
+							"id": "k6",
+							"name": "Mahalaxmi Kirana",
+							"area": "Sitabuldi",
+							"pincode": "440012"
+						},
+						"units": 12,
+						"rate": 39.6,
+						"gross": 475.2,
+						"discountPct": 16.67,
+						"discount": 79.2,
+						"taxable": 396,
+						"gstPct": 5,
+						"cgst": 9.9,
+						"sgst": 9.9,
+						"tax": 19.8,
+						"roundOff": 0.2,
+						"total": 416,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "k7",
 					"name": "Shiv Shakti Store",
 					"area": "Wardha",
-					"units": 12
+					"units": 12,
+					"at": "2026-07-22T10:14",
+					"invoice": {
+						"no": "RT/26-27/1196",
+						"date": "2026-07-22",
+						"at": "2026-07-22T10:14",
+						"kirana": "k7",
+						"shop": {
+							"id": "k7",
+							"name": "Shiv Shakti Store",
+							"area": "Wardha",
+							"pincode": "442001"
+						},
+						"units": 12,
+						"rate": 39.6,
+						"gross": 475.2,
+						"discountPct": 16.67,
+						"discount": 79.2,
+						"taxable": 396,
+						"gstPct": 5,
+						"cgst": 9.9,
+						"sgst": 9.9,
+						"tax": 19.8,
+						"roundOff": 0.2,
+						"total": 416,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "k8",
 					"name": "Patel Provision",
 					"area": "Dharampeth",
-					"units": 24
+					"units": 24,
+					"at": "2026-07-22T10:16",
+					"invoice": {
+						"no": "RT/26-27/1197",
+						"date": "2026-07-22",
+						"at": "2026-07-22T10:16",
+						"kirana": "k8",
+						"shop": {
+							"id": "k8",
+							"name": "Patel Provision",
+							"area": "Dharampeth",
+							"pincode": "440010"
+						},
+						"units": 24,
+						"rate": 39.6,
+						"gross": 950.4,
+						"discountPct": 16.67,
+						"discount": 158.4,
+						"taxable": 792,
+						"gstPct": 5,
+						"cgst": 19.8,
+						"sgst": 19.8,
+						"tax": 39.6,
+						"roundOff": 0.4,
+						"total": 832,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "k9",
 					"name": "Annapurna Stores",
 					"area": "Sadar",
-					"units": 12
+					"units": 12,
+					"at": "2026-07-22T10:18",
+					"invoice": {
+						"no": "RT/26-27/1198",
+						"date": "2026-07-22",
+						"at": "2026-07-22T10:18",
+						"kirana": "k9",
+						"shop": {
+							"id": "k9",
+							"name": "Annapurna Stores",
+							"area": "Sadar",
+							"pincode": "440001"
+						},
+						"units": 12,
+						"rate": 39.6,
+						"gross": 475.2,
+						"discountPct": 16.67,
+						"discount": 79.2,
+						"taxable": 396,
+						"gstPct": 5,
+						"cgst": 9.9,
+						"sgst": 9.9,
+						"tax": 19.8,
+						"roundOff": 0.2,
+						"total": 416,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "k10",
 					"name": "Sahyog Kirana",
 					"area": "Kamptee",
-					"units": 48
+					"units": 48,
+					"at": "2026-07-22T10:20",
+					"invoice": {
+						"no": "RT/26-27/1199",
+						"date": "2026-07-22",
+						"at": "2026-07-22T10:20",
+						"kirana": "k10",
+						"shop": {
+							"id": "k10",
+							"name": "Sahyog Kirana",
+							"area": "Kamptee",
+							"pincode": "441001"
+						},
+						"units": 48,
+						"rate": 39.6,
+						"gross": 1900.8,
+						"discountPct": 16.67,
+						"discount": 316.8,
+						"taxable": 1584,
+						"gstPct": 5,
+						"cgst": 39.6,
+						"sgst": 39.6,
+						"tax": 79.2,
+						"roundOff": -0.2,
+						"total": 1663,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "k11",
 					"name": "Raj Super Mart",
 					"area": "Mahal",
-					"units": 36
+					"units": 36,
+					"at": "2026-07-22T10:22",
+					"invoice": {
+						"no": "RT/26-27/1200",
+						"date": "2026-07-22",
+						"at": "2026-07-22T10:22",
+						"kirana": "k11",
+						"shop": {
+							"id": "k11",
+							"name": "Raj Super Mart",
+							"area": "Mahal",
+							"pincode": "440032"
+						},
+						"units": 36,
+						"rate": 39.6,
+						"gross": 1425.6,
+						"discountPct": 16.67,
+						"discount": 237.6,
+						"taxable": 1188,
+						"gstPct": 5,
+						"cgst": 29.7,
+						"sgst": 29.7,
+						"tax": 59.4,
+						"roundOff": -0.4,
+						"total": 1247,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "k12",
 					"name": "Vaishnavi Stores",
 					"area": "Itwari",
-					"units": 18
+					"units": 18,
+					"at": "2026-07-22T10:24",
+					"invoice": {
+						"no": "RT/26-27/1201",
+						"date": "2026-07-22",
+						"at": "2026-07-22T10:24",
+						"kirana": "k12",
+						"shop": {
+							"id": "k12",
+							"name": "Vaishnavi Stores",
+							"area": "Itwari",
+							"pincode": "440002"
+						},
+						"units": 18,
+						"rate": 39.6,
+						"gross": 712.8,
+						"discountPct": 16.67,
+						"discount": 118.8,
+						"taxable": 594,
+						"gstPct": 5,
+						"cgst": 14.85,
+						"sgst": 14.85,
+						"tax": 29.7,
+						"roundOff": 0.3,
+						"total": 624,
+						"hsn": "1904"
+					}
 				}
 			],
 			"offered": 38,
@@ -4330,91 +6196,481 @@
 					"kirana": "h0",
 					"name": "Sri Lakshmi Ganapathi Kirana",
 					"area": "Begum Bazaar",
-					"units": 24
+					"units": 24,
+					"at": "2026-07-29T10:00",
+					"invoice": {
+						"no": "LA/26-27/0906",
+						"date": "2026-07-29",
+						"at": "2026-07-29T10:00",
+						"kirana": "h0",
+						"shop": {
+							"id": "h0",
+							"name": "Sri Lakshmi Ganapathi Kirana",
+							"area": "Begum Bazaar",
+							"pincode": "500012"
+						},
+						"units": 24,
+						"rate": 39.6,
+						"gross": 950.4,
+						"discountPct": 16.67,
+						"discount": 158.4,
+						"taxable": 792,
+						"gstPct": 5,
+						"cgst": 19.8,
+						"sgst": 19.8,
+						"tax": 39.6,
+						"roundOff": 0.4,
+						"total": 832,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "h1",
 					"name": "Al-Noor Provision Store",
 					"area": "Charminar",
-					"units": 28
+					"units": 28,
+					"at": "2026-07-29T10:02",
+					"invoice": {
+						"no": "LA/26-27/0907",
+						"date": "2026-07-29",
+						"at": "2026-07-29T10:02",
+						"kirana": "h1",
+						"shop": {
+							"id": "h1",
+							"name": "Al-Noor Provision Store",
+							"area": "Charminar",
+							"pincode": "500002"
+						},
+						"units": 28,
+						"rate": 39.6,
+						"gross": 1108.8,
+						"discountPct": 16.67,
+						"discount": 184.8,
+						"taxable": 924,
+						"gstPct": 5,
+						"cgst": 23.1,
+						"sgst": 23.1,
+						"tax": 46.2,
+						"roundOff": -0.2,
+						"total": 970,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "h2",
 					"name": "Deccan General Stores",
 					"area": "Abids",
-					"units": 32
+					"units": 32,
+					"at": "2026-07-29T10:04",
+					"invoice": {
+						"no": "LA/26-27/0908",
+						"date": "2026-07-29",
+						"at": "2026-07-29T10:04",
+						"kirana": "h2",
+						"shop": {
+							"id": "h2",
+							"name": "Deccan General Stores",
+							"area": "Abids",
+							"pincode": "500001"
+						},
+						"units": 32,
+						"rate": 39.6,
+						"gross": 1267.2,
+						"discountPct": 16.67,
+						"discount": 211.2,
+						"taxable": 1056,
+						"gstPct": 5,
+						"cgst": 26.4,
+						"sgst": 26.4,
+						"tax": 52.8,
+						"roundOff": 0.2,
+						"total": 1109,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "h3",
 					"name": "Sai Krishna Kirana",
 					"area": "Koti",
-					"units": 20
+					"units": 20,
+					"at": "2026-07-29T10:06",
+					"invoice": {
+						"no": "LA/26-27/0909",
+						"date": "2026-07-29",
+						"at": "2026-07-29T10:06",
+						"kirana": "h3",
+						"shop": {
+							"id": "h3",
+							"name": "Sai Krishna Kirana",
+							"area": "Koti",
+							"pincode": "500095"
+						},
+						"units": 20,
+						"rate": 39.6,
+						"gross": 792,
+						"discountPct": 16.67,
+						"discount": 132,
+						"taxable": 660,
+						"gstPct": 5,
+						"cgst": 16.5,
+						"sgst": 16.5,
+						"tax": 33,
+						"roundOff": 0,
+						"total": 693,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "h4",
 					"name": "Hussaini Provision",
 					"area": "Dabeerpura",
-					"units": 36
+					"units": 36,
+					"at": "2026-07-29T10:08",
+					"invoice": {
+						"no": "LA/26-27/0910",
+						"date": "2026-07-29",
+						"at": "2026-07-29T10:08",
+						"kirana": "h4",
+						"shop": {
+							"id": "h4",
+							"name": "Hussaini Provision",
+							"area": "Dabeerpura",
+							"pincode": "500023"
+						},
+						"units": 36,
+						"rate": 39.6,
+						"gross": 1425.6,
+						"discountPct": 16.67,
+						"discount": 237.6,
+						"taxable": 1188,
+						"gstPct": 5,
+						"cgst": 29.7,
+						"sgst": 29.7,
+						"tax": 59.4,
+						"roundOff": -0.4,
+						"total": 1247,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "h5",
 					"name": "Bhavani Kirana",
 					"area": "Malakpet",
-					"units": 24
+					"units": 24,
+					"at": "2026-07-29T10:10",
+					"invoice": {
+						"no": "LA/26-27/0911",
+						"date": "2026-07-29",
+						"at": "2026-07-29T10:10",
+						"kirana": "h5",
+						"shop": {
+							"id": "h5",
+							"name": "Bhavani Kirana",
+							"area": "Malakpet",
+							"pincode": "500036"
+						},
+						"units": 24,
+						"rate": 39.6,
+						"gross": 950.4,
+						"discountPct": 16.67,
+						"discount": 158.4,
+						"taxable": 792,
+						"gstPct": 5,
+						"cgst": 19.8,
+						"sgst": 19.8,
+						"tax": 39.6,
+						"roundOff": 0.4,
+						"total": 832,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "h6",
 					"name": "Golconda Stores",
 					"area": "Afzal Gunj",
-					"units": 28
+					"units": 28,
+					"at": "2026-07-29T10:12",
+					"invoice": {
+						"no": "LA/26-27/0912",
+						"date": "2026-07-29",
+						"at": "2026-07-29T10:12",
+						"kirana": "h6",
+						"shop": {
+							"id": "h6",
+							"name": "Golconda Stores",
+							"area": "Afzal Gunj",
+							"pincode": "500012"
+						},
+						"units": 28,
+						"rate": 39.6,
+						"gross": 1108.8,
+						"discountPct": 16.67,
+						"discount": 184.8,
+						"taxable": 924,
+						"gstPct": 5,
+						"cgst": 23.1,
+						"sgst": 23.1,
+						"tax": 46.2,
+						"roundOff": -0.2,
+						"total": 970,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "h7",
 					"name": "Moazzam Kirana",
 					"area": "Charminar",
-					"units": 16
+					"units": 16,
+					"at": "2026-07-29T10:14",
+					"invoice": {
+						"no": "LA/26-27/0913",
+						"date": "2026-07-29",
+						"at": "2026-07-29T10:14",
+						"kirana": "h7",
+						"shop": {
+							"id": "h7",
+							"name": "Moazzam Kirana",
+							"area": "Charminar",
+							"pincode": "500002"
+						},
+						"units": 16,
+						"rate": 39.6,
+						"gross": 633.6,
+						"discountPct": 16.67,
+						"discount": 105.6,
+						"taxable": 528,
+						"gstPct": 5,
+						"cgst": 13.2,
+						"sgst": 13.2,
+						"tax": 26.4,
+						"roundOff": -0.4,
+						"total": 554,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "h8",
 					"name": "Anjaneya Provision Store",
 					"area": "Sultan Bazar",
-					"units": 32
+					"units": 32,
+					"at": "2026-07-29T10:16",
+					"invoice": {
+						"no": "LA/26-27/0914",
+						"date": "2026-07-29",
+						"at": "2026-07-29T10:16",
+						"kirana": "h8",
+						"shop": {
+							"id": "h8",
+							"name": "Anjaneya Provision Store",
+							"area": "Sultan Bazar",
+							"pincode": "500095"
+						},
+						"units": 32,
+						"rate": 39.6,
+						"gross": 1267.2,
+						"discountPct": 16.67,
+						"discount": 211.2,
+						"taxable": 1056,
+						"gstPct": 5,
+						"cgst": 26.4,
+						"sgst": 26.4,
+						"tax": 52.8,
+						"roundOff": 0.2,
+						"total": 1109,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "h9",
 					"name": "Shalimar General Store",
 					"area": "Nampally",
-					"units": 28
+					"units": 28,
+					"at": "2026-07-29T10:18",
+					"invoice": {
+						"no": "LA/26-27/0915",
+						"date": "2026-07-29",
+						"at": "2026-07-29T10:18",
+						"kirana": "h9",
+						"shop": {
+							"id": "h9",
+							"name": "Shalimar General Store",
+							"area": "Nampally",
+							"pincode": "500001"
+						},
+						"units": 28,
+						"rate": 39.6,
+						"gross": 1108.8,
+						"discountPct": 16.67,
+						"discount": 184.8,
+						"taxable": 924,
+						"gstPct": 5,
+						"cgst": 23.1,
+						"sgst": 23.1,
+						"tax": 46.2,
+						"roundOff": -0.2,
+						"total": 970,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "h10",
 					"name": "Ravi Teja Kirana",
 					"area": "Chaderghat",
-					"units": 24
+					"units": 24,
+					"at": "2026-07-29T10:20",
+					"invoice": {
+						"no": "LA/26-27/0916",
+						"date": "2026-07-29",
+						"at": "2026-07-29T10:20",
+						"kirana": "h10",
+						"shop": {
+							"id": "h10",
+							"name": "Ravi Teja Kirana",
+							"area": "Chaderghat",
+							"pincode": "500024"
+						},
+						"units": 24,
+						"rate": 39.6,
+						"gross": 950.4,
+						"discountPct": 16.67,
+						"discount": 158.4,
+						"taxable": 792,
+						"gstPct": 5,
+						"cgst": 19.8,
+						"sgst": 19.8,
+						"tax": 39.6,
+						"roundOff": 0.4,
+						"total": 832,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "h11",
 					"name": "Madina Provision",
 					"area": "Charminar",
-					"units": 28
+					"units": 28,
+					"at": "2026-07-29T10:22",
+					"invoice": {
+						"no": "LA/26-27/0917",
+						"date": "2026-07-29",
+						"at": "2026-07-29T10:22",
+						"kirana": "h11",
+						"shop": {
+							"id": "h11",
+							"name": "Madina Provision",
+							"area": "Charminar",
+							"pincode": "500002"
+						},
+						"units": 28,
+						"rate": 39.6,
+						"gross": 1108.8,
+						"discountPct": 16.67,
+						"discount": 184.8,
+						"taxable": 924,
+						"gstPct": 5,
+						"cgst": 23.1,
+						"sgst": 23.1,
+						"tax": 46.2,
+						"roundOff": -0.2,
+						"total": 970,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "h12",
 					"name": "Sri Durga Bhavani Stores",
 					"area": "Begum Bazaar",
-					"units": 32
+					"units": 32,
+					"at": "2026-07-29T10:24",
+					"invoice": {
+						"no": "LA/26-27/0918",
+						"date": "2026-07-29",
+						"at": "2026-07-29T10:24",
+						"kirana": "h12",
+						"shop": {
+							"id": "h12",
+							"name": "Sri Durga Bhavani Stores",
+							"area": "Begum Bazaar",
+							"pincode": "500012"
+						},
+						"units": 32,
+						"rate": 39.6,
+						"gross": 1267.2,
+						"discountPct": 16.67,
+						"discount": 211.2,
+						"taxable": 1056,
+						"gstPct": 5,
+						"cgst": 26.4,
+						"sgst": 26.4,
+						"tax": 52.8,
+						"roundOff": 0.2,
+						"total": 1109,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "h13",
 					"name": "Hyderabadi Kirana",
 					"area": "Abids",
-					"units": 20
+					"units": 20,
+					"at": "2026-07-29T10:26",
+					"invoice": {
+						"no": "LA/26-27/0919",
+						"date": "2026-07-29",
+						"at": "2026-07-29T10:26",
+						"kirana": "h13",
+						"shop": {
+							"id": "h13",
+							"name": "Hyderabadi Kirana",
+							"area": "Abids",
+							"pincode": "500001"
+						},
+						"units": 20,
+						"rate": 39.6,
+						"gross": 792,
+						"discountPct": 16.67,
+						"discount": 132,
+						"taxable": 660,
+						"gstPct": 5,
+						"cgst": 16.5,
+						"sgst": 16.5,
+						"tax": 33,
+						"roundOff": 0,
+						"total": 693,
+						"hsn": "1904"
+					}
 				},
 				{
 					"kirana": "h14",
 					"name": "Gulzar House Stores",
 					"area": "Charminar",
-					"units": 20
+					"units": 20,
+					"at": "2026-07-29T10:28",
+					"invoice": {
+						"no": "LA/26-27/0920",
+						"date": "2026-07-29",
+						"at": "2026-07-29T10:28",
+						"kirana": "h14",
+						"shop": {
+							"id": "h14",
+							"name": "Gulzar House Stores",
+							"area": "Charminar",
+							"pincode": "500002"
+						},
+						"units": 20,
+						"rate": 39.6,
+						"gross": 792,
+						"discountPct": 16.67,
+						"discount": 132,
+						"taxable": 660,
+						"gstPct": 5,
+						"cgst": 16.5,
+						"sgst": 16.5,
+						"tax": 33,
+						"roundOff": 0,
+						"total": 693,
+						"hsn": "1904"
+					}
 				}
 			],
 			"offered": 58,
@@ -4541,7 +6797,12 @@
 					"territory": "Hyderabad",
 					"pins": "500, 501",
 					"staffCap": 150,
-					"upi": "lakshmi-agencies@exampleupi"
+					"upi": "lakshmi-agencies@exampleupi",
+					"series": {
+						"prefix": "LA/26-27/",
+						"next": 972,
+						"width": 4
+					}
 				},
 				"partner": {
 					"name": "Feeding India",
@@ -5236,7 +7497,12 @@
 						"territory": "Nagpur with Wardha and Kamptee",
 						"pins": "440, 441, 442",
 						"staffCap": 50,
-						"upi": "rakesh-traders@exampleupi"
+						"upi": "rakesh-traders@exampleupi",
+						"series": {
+							"prefix": "RT/26-27/",
+							"next": 1279,
+							"width": 4
+						}
 					},
 					"to": {
 						"id": "agrawal",
@@ -5344,49 +7610,257 @@
 					"kirana": "k0",
 					"name": "Shree Ganesh Kirana",
 					"area": "Itwari",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-05T10:00",
+					"invoice": {
+						"no": "RT/26-27/1202",
+						"date": "2026-08-05",
+						"at": "2026-08-05T10:00",
+						"kirana": "k0",
+						"shop": {
+							"id": "k0",
+							"name": "Shree Ganesh Kirana",
+							"area": "Itwari",
+							"pincode": "440002"
+						},
+						"units": 24,
+						"rate": 86.4,
+						"gross": 2073.6,
+						"discountPct": 16.67,
+						"discount": 345.6,
+						"taxable": 1728,
+						"gstPct": 18,
+						"cgst": 155.52,
+						"sgst": 155.52,
+						"tax": 311.04,
+						"roundOff": -0.04,
+						"total": 2039,
+						"hsn": "3401"
+					}
 				},
 				{
 					"kirana": "k1",
 					"name": "Jai Durga Stores",
 					"area": "Kamptee",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-05T10:02",
+					"invoice": {
+						"no": "RT/26-27/1203",
+						"date": "2026-08-05",
+						"at": "2026-08-05T10:02",
+						"kirana": "k1",
+						"shop": {
+							"id": "k1",
+							"name": "Jai Durga Stores",
+							"area": "Kamptee",
+							"pincode": "441001"
+						},
+						"units": 24,
+						"rate": 86.4,
+						"gross": 2073.6,
+						"discountPct": 16.67,
+						"discount": 345.6,
+						"taxable": 1728,
+						"gstPct": 18,
+						"cgst": 155.52,
+						"sgst": 155.52,
+						"tax": 311.04,
+						"roundOff": -0.04,
+						"total": 2039,
+						"hsn": "3401"
+					}
 				},
 				{
 					"kirana": "k2",
 					"name": "Om Sai Provision",
 					"area": "Wardha Road",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-05T10:04",
+					"invoice": {
+						"no": "RT/26-27/1204",
+						"date": "2026-08-05",
+						"at": "2026-08-05T10:04",
+						"kirana": "k2",
+						"shop": {
+							"id": "k2",
+							"name": "Om Sai Provision",
+							"area": "Wardha Road",
+							"pincode": "440015"
+						},
+						"units": 12,
+						"rate": 86.4,
+						"gross": 1036.8,
+						"discountPct": 16.67,
+						"discount": 172.8,
+						"taxable": 864,
+						"gstPct": 18,
+						"cgst": 77.76,
+						"sgst": 77.76,
+						"tax": 155.52,
+						"roundOff": 0.48,
+						"total": 1020,
+						"hsn": "3401"
+					}
 				},
 				{
 					"kirana": "k3",
 					"name": "Maa Bhavani Kirana",
 					"area": "Itwari",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-05T10:06",
+					"invoice": {
+						"no": "RT/26-27/1205",
+						"date": "2026-08-05",
+						"at": "2026-08-05T10:06",
+						"kirana": "k3",
+						"shop": {
+							"id": "k3",
+							"name": "Maa Bhavani Kirana",
+							"area": "Itwari",
+							"pincode": "440002"
+						},
+						"units": 12,
+						"rate": 86.4,
+						"gross": 1036.8,
+						"discountPct": 16.67,
+						"discount": 172.8,
+						"taxable": 864,
+						"gstPct": 18,
+						"cgst": 77.76,
+						"sgst": 77.76,
+						"tax": 155.52,
+						"roundOff": 0.48,
+						"total": 1020,
+						"hsn": "3401"
+					}
 				},
 				{
 					"kirana": "k4",
 					"name": "New Sagar Stores",
 					"area": "Kamptee",
-					"units": 36
+					"units": 36,
+					"at": "2026-08-05T10:08",
+					"invoice": {
+						"no": "RT/26-27/1206",
+						"date": "2026-08-05",
+						"at": "2026-08-05T10:08",
+						"kirana": "k4",
+						"shop": {
+							"id": "k4",
+							"name": "New Sagar Stores",
+							"area": "Kamptee",
+							"pincode": "441001"
+						},
+						"units": 36,
+						"rate": 86.4,
+						"gross": 3110.4,
+						"discountPct": 16.67,
+						"discount": 518.4,
+						"taxable": 2592,
+						"gstPct": 18,
+						"cgst": 233.28,
+						"sgst": 233.28,
+						"tax": 466.56,
+						"roundOff": 0.44,
+						"total": 3059,
+						"hsn": "3401"
+					}
 				},
 				{
 					"kirana": "k5",
 					"name": "Gurukripa Traders",
 					"area": "Mahal",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-05T10:10",
+					"invoice": {
+						"no": "RT/26-27/1207",
+						"date": "2026-08-05",
+						"at": "2026-08-05T10:10",
+						"kirana": "k5",
+						"shop": {
+							"id": "k5",
+							"name": "Gurukripa Traders",
+							"area": "Mahal",
+							"pincode": "440032"
+						},
+						"units": 24,
+						"rate": 86.4,
+						"gross": 2073.6,
+						"discountPct": 16.67,
+						"discount": 345.6,
+						"taxable": 1728,
+						"gstPct": 18,
+						"cgst": 155.52,
+						"sgst": 155.52,
+						"tax": 311.04,
+						"roundOff": -0.04,
+						"total": 2039,
+						"hsn": "3401"
+					}
 				},
 				{
 					"kirana": "k6",
 					"name": "Mahalaxmi Kirana",
 					"area": "Sitabuldi",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-05T10:12",
+					"invoice": {
+						"no": "RT/26-27/1208",
+						"date": "2026-08-05",
+						"at": "2026-08-05T10:12",
+						"kirana": "k6",
+						"shop": {
+							"id": "k6",
+							"name": "Mahalaxmi Kirana",
+							"area": "Sitabuldi",
+							"pincode": "440012"
+						},
+						"units": 12,
+						"rate": 86.4,
+						"gross": 1036.8,
+						"discountPct": 16.67,
+						"discount": 172.8,
+						"taxable": 864,
+						"gstPct": 18,
+						"cgst": 77.76,
+						"sgst": 77.76,
+						"tax": 155.52,
+						"roundOff": 0.48,
+						"total": 1020,
+						"hsn": "3401"
+					}
 				},
 				{
 					"kirana": "k7",
 					"name": "Shiv Shakti Store",
 					"area": "Wardha",
-					"units": 3
+					"units": 3,
+					"at": "2026-08-05T10:14",
+					"invoice": {
+						"no": "RT/26-27/1209",
+						"date": "2026-08-05",
+						"at": "2026-08-05T10:14",
+						"kirana": "k7",
+						"shop": {
+							"id": "k7",
+							"name": "Shiv Shakti Store",
+							"area": "Wardha",
+							"pincode": "442001"
+						},
+						"units": 3,
+						"rate": 86.4,
+						"gross": 259.2,
+						"discountPct": 16.67,
+						"discount": 43.2,
+						"taxable": 216,
+						"gstPct": 18,
+						"cgst": 19.44,
+						"sgst": 19.44,
+						"tax": 38.88,
+						"roundOff": 0.12,
+						"total": 255,
+						"hsn": "3401"
+					}
 				}
 			],
 			"offered": 38,
@@ -6108,7 +8582,12 @@
 						"territory": "Nagpur with Wardha and Kamptee",
 						"pins": "440, 441, 442",
 						"staffCap": 50,
-						"upi": "rakesh-traders@exampleupi"
+						"upi": "rakesh-traders@exampleupi",
+						"series": {
+							"prefix": "RT/26-27/",
+							"next": 1279,
+							"width": 4
+						}
 					},
 					"to": {
 						"id": "agrawal",
@@ -6280,193 +8759,1025 @@
 					"kirana": "k0",
 					"name": "Shree Ganesh Kirana",
 					"area": "Itwari",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-11T10:00",
+					"invoice": {
+						"no": "RT/26-27/1210",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:00",
+						"kirana": "k0",
+						"shop": {
+							"id": "k0",
+							"name": "Shree Ganesh Kirana",
+							"area": "Itwari",
+							"pincode": "440002"
+						},
+						"units": 24,
+						"rate": 14.4,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k1",
 					"name": "Jai Durga Stores",
 					"area": "Kamptee",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-11T10:02",
+					"invoice": {
+						"no": "RT/26-27/1211",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:02",
+						"kirana": "k1",
+						"shop": {
+							"id": "k1",
+							"name": "Jai Durga Stores",
+							"area": "Kamptee",
+							"pincode": "441001"
+						},
+						"units": 24,
+						"rate": 14.4,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k2",
 					"name": "Om Sai Provision",
 					"area": "Wardha Road",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-11T10:04",
+					"invoice": {
+						"no": "RT/26-27/1212",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:04",
+						"kirana": "k2",
+						"shop": {
+							"id": "k2",
+							"name": "Om Sai Provision",
+							"area": "Wardha Road",
+							"pincode": "440015"
+						},
+						"units": 12,
+						"rate": 14.4,
+						"gross": 172.8,
+						"discountPct": 16.67,
+						"discount": 28.8,
+						"taxable": 144,
+						"gstPct": 5,
+						"cgst": 3.6,
+						"sgst": 3.6,
+						"tax": 7.2,
+						"roundOff": -0.2,
+						"total": 151,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k3",
 					"name": "Maa Bhavani Kirana",
 					"area": "Itwari",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-11T10:06",
+					"invoice": {
+						"no": "RT/26-27/1213",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:06",
+						"kirana": "k3",
+						"shop": {
+							"id": "k3",
+							"name": "Maa Bhavani Kirana",
+							"area": "Itwari",
+							"pincode": "440002"
+						},
+						"units": 12,
+						"rate": 14.4,
+						"gross": 172.8,
+						"discountPct": 16.67,
+						"discount": 28.8,
+						"taxable": 144,
+						"gstPct": 5,
+						"cgst": 3.6,
+						"sgst": 3.6,
+						"tax": 7.2,
+						"roundOff": -0.2,
+						"total": 151,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k4",
 					"name": "New Sagar Stores",
 					"area": "Kamptee",
-					"units": 36
+					"units": 36,
+					"at": "2026-08-11T10:08",
+					"invoice": {
+						"no": "RT/26-27/1214",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:08",
+						"kirana": "k4",
+						"shop": {
+							"id": "k4",
+							"name": "New Sagar Stores",
+							"area": "Kamptee",
+							"pincode": "441001"
+						},
+						"units": 36,
+						"rate": 14.4,
+						"gross": 518.4,
+						"discountPct": 16.67,
+						"discount": 86.4,
+						"taxable": 432,
+						"gstPct": 5,
+						"cgst": 10.8,
+						"sgst": 10.8,
+						"tax": 21.6,
+						"roundOff": 0.4,
+						"total": 454,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k5",
 					"name": "Gurukripa Traders",
 					"area": "Mahal",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-11T10:10",
+					"invoice": {
+						"no": "RT/26-27/1215",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:10",
+						"kirana": "k5",
+						"shop": {
+							"id": "k5",
+							"name": "Gurukripa Traders",
+							"area": "Mahal",
+							"pincode": "440032"
+						},
+						"units": 24,
+						"rate": 14.4,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k6",
 					"name": "Mahalaxmi Kirana",
 					"area": "Sitabuldi",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-11T10:12",
+					"invoice": {
+						"no": "RT/26-27/1216",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:12",
+						"kirana": "k6",
+						"shop": {
+							"id": "k6",
+							"name": "Mahalaxmi Kirana",
+							"area": "Sitabuldi",
+							"pincode": "440012"
+						},
+						"units": 12,
+						"rate": 14.4,
+						"gross": 172.8,
+						"discountPct": 16.67,
+						"discount": 28.8,
+						"taxable": 144,
+						"gstPct": 5,
+						"cgst": 3.6,
+						"sgst": 3.6,
+						"tax": 7.2,
+						"roundOff": -0.2,
+						"total": 151,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k7",
 					"name": "Shiv Shakti Store",
 					"area": "Wardha",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-11T10:14",
+					"invoice": {
+						"no": "RT/26-27/1217",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:14",
+						"kirana": "k7",
+						"shop": {
+							"id": "k7",
+							"name": "Shiv Shakti Store",
+							"area": "Wardha",
+							"pincode": "442001"
+						},
+						"units": 12,
+						"rate": 14.4,
+						"gross": 172.8,
+						"discountPct": 16.67,
+						"discount": 28.8,
+						"taxable": 144,
+						"gstPct": 5,
+						"cgst": 3.6,
+						"sgst": 3.6,
+						"tax": 7.2,
+						"roundOff": -0.2,
+						"total": 151,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k8",
 					"name": "Patel Provision",
 					"area": "Dharampeth",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-11T10:16",
+					"invoice": {
+						"no": "RT/26-27/1218",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:16",
+						"kirana": "k8",
+						"shop": {
+							"id": "k8",
+							"name": "Patel Provision",
+							"area": "Dharampeth",
+							"pincode": "440010"
+						},
+						"units": 24,
+						"rate": 14.4,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k9",
 					"name": "Annapurna Stores",
 					"area": "Sadar",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-11T10:18",
+					"invoice": {
+						"no": "RT/26-27/1219",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:18",
+						"kirana": "k9",
+						"shop": {
+							"id": "k9",
+							"name": "Annapurna Stores",
+							"area": "Sadar",
+							"pincode": "440001"
+						},
+						"units": 12,
+						"rate": 14.4,
+						"gross": 172.8,
+						"discountPct": 16.67,
+						"discount": 28.8,
+						"taxable": 144,
+						"gstPct": 5,
+						"cgst": 3.6,
+						"sgst": 3.6,
+						"tax": 7.2,
+						"roundOff": -0.2,
+						"total": 151,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k10",
 					"name": "Sahyog Kirana",
 					"area": "Kamptee",
-					"units": 48
+					"units": 48,
+					"at": "2026-08-11T10:20",
+					"invoice": {
+						"no": "RT/26-27/1220",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:20",
+						"kirana": "k10",
+						"shop": {
+							"id": "k10",
+							"name": "Sahyog Kirana",
+							"area": "Kamptee",
+							"pincode": "441001"
+						},
+						"units": 48,
+						"rate": 14.4,
+						"gross": 691.2,
+						"discountPct": 16.67,
+						"discount": 115.2,
+						"taxable": 576,
+						"gstPct": 5,
+						"cgst": 14.4,
+						"sgst": 14.4,
+						"tax": 28.8,
+						"roundOff": 0.2,
+						"total": 605,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k11",
 					"name": "Raj Super Mart",
 					"area": "Mahal",
-					"units": 36
+					"units": 36,
+					"at": "2026-08-11T10:22",
+					"invoice": {
+						"no": "RT/26-27/1221",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:22",
+						"kirana": "k11",
+						"shop": {
+							"id": "k11",
+							"name": "Raj Super Mart",
+							"area": "Mahal",
+							"pincode": "440032"
+						},
+						"units": 36,
+						"rate": 14.4,
+						"gross": 518.4,
+						"discountPct": 16.67,
+						"discount": 86.4,
+						"taxable": 432,
+						"gstPct": 5,
+						"cgst": 10.8,
+						"sgst": 10.8,
+						"tax": 21.6,
+						"roundOff": 0.4,
+						"total": 454,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k12",
 					"name": "Vaishnavi Stores",
 					"area": "Itwari",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-11T10:24",
+					"invoice": {
+						"no": "RT/26-27/1222",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:24",
+						"kirana": "k12",
+						"shop": {
+							"id": "k12",
+							"name": "Vaishnavi Stores",
+							"area": "Itwari",
+							"pincode": "440002"
+						},
+						"units": 24,
+						"rate": 14.4,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k13",
 					"name": "Sai Kripa Kirana",
 					"area": "Dharampeth",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-11T10:26",
+					"invoice": {
+						"no": "RT/26-27/1223",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:26",
+						"kirana": "k13",
+						"shop": {
+							"id": "k13",
+							"name": "Sai Kripa Kirana",
+							"area": "Dharampeth",
+							"pincode": "440010"
+						},
+						"units": 12,
+						"rate": 14.4,
+						"gross": 172.8,
+						"discountPct": 16.67,
+						"discount": 28.8,
+						"taxable": 144,
+						"gstPct": 5,
+						"cgst": 3.6,
+						"sgst": 3.6,
+						"tax": 7.2,
+						"roundOff": -0.2,
+						"total": 151,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k14",
 					"name": "Shree Ram Provision",
 					"area": "Sitabuldi",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-11T10:28",
+					"invoice": {
+						"no": "RT/26-27/1224",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:28",
+						"kirana": "k14",
+						"shop": {
+							"id": "k14",
+							"name": "Shree Ram Provision",
+							"area": "Sitabuldi",
+							"pincode": "440012"
+						},
+						"units": 12,
+						"rate": 14.4,
+						"gross": 172.8,
+						"discountPct": 16.67,
+						"discount": 28.8,
+						"taxable": 144,
+						"gstPct": 5,
+						"cgst": 3.6,
+						"sgst": 3.6,
+						"tax": 7.2,
+						"roundOff": -0.2,
+						"total": 151,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k15",
 					"name": "Hanuman General Store",
 					"area": "Wardha Road",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-11T10:30",
+					"invoice": {
+						"no": "RT/26-27/1225",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:30",
+						"kirana": "k15",
+						"shop": {
+							"id": "k15",
+							"name": "Hanuman General Store",
+							"area": "Wardha Road",
+							"pincode": "440015"
+						},
+						"units": 12,
+						"rate": 14.4,
+						"gross": 172.8,
+						"discountPct": 16.67,
+						"discount": 28.8,
+						"taxable": 144,
+						"gstPct": 5,
+						"cgst": 3.6,
+						"sgst": 3.6,
+						"tax": 7.2,
+						"roundOff": -0.2,
+						"total": 151,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k16",
 					"name": "Gajanan Kirana",
 					"area": "Wardha",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-11T10:32",
+					"invoice": {
+						"no": "RT/26-27/1226",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:32",
+						"kirana": "k16",
+						"shop": {
+							"id": "k16",
+							"name": "Gajanan Kirana",
+							"area": "Wardha",
+							"pincode": "442001"
+						},
+						"units": 24,
+						"rate": 14.4,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k17",
 					"name": "Kamal Provision Store",
 					"area": "Mahal",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-11T10:34",
+					"invoice": {
+						"no": "RT/26-27/1227",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:34",
+						"kirana": "k17",
+						"shop": {
+							"id": "k17",
+							"name": "Kamal Provision Store",
+							"area": "Mahal",
+							"pincode": "440032"
+						},
+						"units": 12,
+						"rate": 14.4,
+						"gross": 172.8,
+						"discountPct": 16.67,
+						"discount": 28.8,
+						"taxable": 144,
+						"gstPct": 5,
+						"cgst": 3.6,
+						"sgst": 3.6,
+						"tax": 7.2,
+						"roundOff": -0.2,
+						"total": 151,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k18",
 					"name": "Navkar Stores",
 					"area": "Itwari",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-11T10:36",
+					"invoice": {
+						"no": "RT/26-27/1228",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:36",
+						"kirana": "k18",
+						"shop": {
+							"id": "k18",
+							"name": "Navkar Stores",
+							"area": "Itwari",
+							"pincode": "440002"
+						},
+						"units": 12,
+						"rate": 14.4,
+						"gross": 172.8,
+						"discountPct": 16.67,
+						"discount": 28.8,
+						"taxable": 144,
+						"gstPct": 5,
+						"cgst": 3.6,
+						"sgst": 3.6,
+						"tax": 7.2,
+						"roundOff": -0.2,
+						"total": 151,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k19",
 					"name": "Siddhivinayak Kirana",
 					"area": "Sadar",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-11T10:38",
+					"invoice": {
+						"no": "RT/26-27/1229",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:38",
+						"kirana": "k19",
+						"shop": {
+							"id": "k19",
+							"name": "Siddhivinayak Kirana",
+							"area": "Sadar",
+							"pincode": "440001"
+						},
+						"units": 24,
+						"rate": 14.4,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k20",
 					"name": "Jyoti General Store",
 					"area": "Kamptee",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-11T10:40",
+					"invoice": {
+						"no": "RT/26-27/1230",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:40",
+						"kirana": "k20",
+						"shop": {
+							"id": "k20",
+							"name": "Jyoti General Store",
+							"area": "Kamptee",
+							"pincode": "441001"
+						},
+						"units": 12,
+						"rate": 14.4,
+						"gross": 172.8,
+						"discountPct": 16.67,
+						"discount": 28.8,
+						"taxable": 144,
+						"gstPct": 5,
+						"cgst": 3.6,
+						"sgst": 3.6,
+						"tax": 7.2,
+						"roundOff": -0.2,
+						"total": 151,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k21",
 					"name": "Laxmi Narayan Stores",
 					"area": "Wardha",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-11T10:42",
+					"invoice": {
+						"no": "RT/26-27/1231",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:42",
+						"kirana": "k21",
+						"shop": {
+							"id": "k21",
+							"name": "Laxmi Narayan Stores",
+							"area": "Wardha",
+							"pincode": "442001"
+						},
+						"units": 12,
+						"rate": 14.4,
+						"gross": 172.8,
+						"discountPct": 16.67,
+						"discount": 28.8,
+						"taxable": 144,
+						"gstPct": 5,
+						"cgst": 3.6,
+						"sgst": 3.6,
+						"tax": 7.2,
+						"roundOff": -0.2,
+						"total": 151,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k22",
 					"name": "Bharat Kirana",
 					"area": "Sitabuldi",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-11T10:44",
+					"invoice": {
+						"no": "RT/26-27/1232",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:44",
+						"kirana": "k22",
+						"shop": {
+							"id": "k22",
+							"name": "Bharat Kirana",
+							"area": "Sitabuldi",
+							"pincode": "440012"
+						},
+						"units": 12,
+						"rate": 14.4,
+						"gross": 172.8,
+						"discountPct": 16.67,
+						"discount": 28.8,
+						"taxable": 144,
+						"gstPct": 5,
+						"cgst": 3.6,
+						"sgst": 3.6,
+						"tax": 7.2,
+						"roundOff": -0.2,
+						"total": 151,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k23",
 					"name": "Shubham Provision",
 					"area": "Dharampeth",
-					"units": 36
+					"units": 36,
+					"at": "2026-08-11T10:46",
+					"invoice": {
+						"no": "RT/26-27/1233",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:46",
+						"kirana": "k23",
+						"shop": {
+							"id": "k23",
+							"name": "Shubham Provision",
+							"area": "Dharampeth",
+							"pincode": "440010"
+						},
+						"units": 36,
+						"rate": 14.4,
+						"gross": 518.4,
+						"discountPct": 16.67,
+						"discount": 86.4,
+						"taxable": 432,
+						"gstPct": 5,
+						"cgst": 10.8,
+						"sgst": 10.8,
+						"tax": 21.6,
+						"roundOff": 0.4,
+						"total": 454,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k24",
 					"name": "Mauli Kirana",
 					"area": "Wardha Road",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-11T10:48",
+					"invoice": {
+						"no": "RT/26-27/1234",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:48",
+						"kirana": "k24",
+						"shop": {
+							"id": "k24",
+							"name": "Mauli Kirana",
+							"area": "Wardha Road",
+							"pincode": "440015"
+						},
+						"units": 12,
+						"rate": 14.4,
+						"gross": 172.8,
+						"discountPct": 16.67,
+						"discount": 28.8,
+						"taxable": 144,
+						"gstPct": 5,
+						"cgst": 3.6,
+						"sgst": 3.6,
+						"tax": 7.2,
+						"roundOff": -0.2,
+						"total": 151,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k25",
 					"name": "Ekta Super Bazaar",
 					"area": "Sadar",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-11T10:50",
+					"invoice": {
+						"no": "RT/26-27/1235",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:50",
+						"kirana": "k25",
+						"shop": {
+							"id": "k25",
+							"name": "Ekta Super Bazaar",
+							"area": "Sadar",
+							"pincode": "440001"
+						},
+						"units": 24,
+						"rate": 14.4,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k26",
 					"name": "Pooja Provision",
 					"area": "Itwari",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-11T10:52",
+					"invoice": {
+						"no": "RT/26-27/1236",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:52",
+						"kirana": "k26",
+						"shop": {
+							"id": "k26",
+							"name": "Pooja Provision",
+							"area": "Itwari",
+							"pincode": "440002"
+						},
+						"units": 12,
+						"rate": 14.4,
+						"gross": 172.8,
+						"discountPct": 16.67,
+						"discount": 28.8,
+						"taxable": 144,
+						"gstPct": 5,
+						"cgst": 3.6,
+						"sgst": 3.6,
+						"tax": 7.2,
+						"roundOff": -0.2,
+						"total": 151,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k27",
 					"name": "Tulsi Kirana",
 					"area": "Kamptee",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-11T10:54",
+					"invoice": {
+						"no": "RT/26-27/1237",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:54",
+						"kirana": "k27",
+						"shop": {
+							"id": "k27",
+							"name": "Tulsi Kirana",
+							"area": "Kamptee",
+							"pincode": "441001"
+						},
+						"units": 12,
+						"rate": 14.4,
+						"gross": 172.8,
+						"discountPct": 16.67,
+						"discount": 28.8,
+						"taxable": 144,
+						"gstPct": 5,
+						"cgst": 3.6,
+						"sgst": 3.6,
+						"tax": 7.2,
+						"roundOff": -0.2,
+						"total": 151,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k28",
 					"name": "Vithal Stores",
 					"area": "Mahal",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-11T10:56",
+					"invoice": {
+						"no": "RT/26-27/1238",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:56",
+						"kirana": "k28",
+						"shop": {
+							"id": "k28",
+							"name": "Vithal Stores",
+							"area": "Mahal",
+							"pincode": "440032"
+						},
+						"units": 12,
+						"rate": 14.4,
+						"gross": 172.8,
+						"discountPct": 16.67,
+						"discount": 28.8,
+						"taxable": 144,
+						"gstPct": 5,
+						"cgst": 3.6,
+						"sgst": 3.6,
+						"tax": 7.2,
+						"roundOff": -0.2,
+						"total": 151,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k29",
 					"name": "Anand General Store",
 					"area": "Dharampeth",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-11T10:58",
+					"invoice": {
+						"no": "RT/26-27/1239",
+						"date": "2026-08-11",
+						"at": "2026-08-11T10:58",
+						"kirana": "k29",
+						"shop": {
+							"id": "k29",
+							"name": "Anand General Store",
+							"area": "Dharampeth",
+							"pincode": "440010"
+						},
+						"units": 24,
+						"rate": 14.4,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k30",
 					"name": "Sainath Kirana",
 					"area": "Wardha",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-11T11:00",
+					"invoice": {
+						"no": "RT/26-27/1240",
+						"date": "2026-08-11",
+						"at": "2026-08-11T11:00",
+						"kirana": "k30",
+						"shop": {
+							"id": "k30",
+							"name": "Sainath Kirana",
+							"area": "Wardha",
+							"pincode": "442001"
+						},
+						"units": 12,
+						"rate": 14.4,
+						"gross": 172.8,
+						"discountPct": 16.67,
+						"discount": 28.8,
+						"taxable": 144,
+						"gstPct": 5,
+						"cgst": 3.6,
+						"sgst": 3.6,
+						"tax": 7.2,
+						"roundOff": -0.2,
+						"total": 151,
+						"hsn": "2202"
+					}
 				},
 				{
 					"kirana": "k31",
 					"name": "Shree Sai Kirana",
 					"area": "Mahal",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-11T11:02",
+					"invoice": {
+						"no": "RT/26-27/1241",
+						"date": "2026-08-11",
+						"at": "2026-08-11T11:02",
+						"kirana": "k31",
+						"shop": {
+							"id": "k31",
+							"name": "Shree Sai Kirana",
+							"area": "Mahal",
+							"pincode": "440032"
+						},
+						"units": 12,
+						"rate": 14.4,
+						"gross": 172.8,
+						"discountPct": 16.67,
+						"discount": 28.8,
+						"taxable": 144,
+						"gstPct": 5,
+						"cgst": 3.6,
+						"sgst": 3.6,
+						"tax": 7.2,
+						"roundOff": -0.2,
+						"total": 151,
+						"hsn": "2202"
+					}
 				}
 			],
 			"offered": 38,
@@ -7122,7 +10433,12 @@
 						"territory": "Hyderabad",
 						"pins": "500, 501",
 						"staffCap": 150,
-						"upi": "lakshmi-agencies@exampleupi"
+						"upi": "lakshmi-agencies@exampleupi",
+						"series": {
+							"prefix": "LA/26-27/",
+							"next": 972,
+							"width": 4
+						}
 					},
 					"to": {
 						"id": "agrawal",
@@ -7230,37 +10546,193 @@
 					"kirana": "h0",
 					"name": "Sri Lakshmi Ganapathi Kirana",
 					"area": "Begum Bazaar",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-18T10:00",
+					"invoice": {
+						"no": "LA/26-27/0921",
+						"date": "2026-08-18",
+						"at": "2026-08-18T10:00",
+						"kirana": "h0",
+						"shop": {
+							"id": "h0",
+							"name": "Sri Lakshmi Ganapathi Kirana",
+							"area": "Begum Bazaar",
+							"pincode": "500012"
+						},
+						"units": 24,
+						"rate": 108,
+						"gross": 2592,
+						"discountPct": 16.67,
+						"discount": 432,
+						"taxable": 2160,
+						"gstPct": 5,
+						"cgst": 54,
+						"sgst": 54,
+						"tax": 108,
+						"roundOff": 0,
+						"total": 2268,
+						"hsn": "3305"
+					}
 				},
 				{
 					"kirana": "h1",
 					"name": "Al-Noor Provision Store",
 					"area": "Charminar",
-					"units": 28
+					"units": 28,
+					"at": "2026-08-18T10:02",
+					"invoice": {
+						"no": "LA/26-27/0922",
+						"date": "2026-08-18",
+						"at": "2026-08-18T10:02",
+						"kirana": "h1",
+						"shop": {
+							"id": "h1",
+							"name": "Al-Noor Provision Store",
+							"area": "Charminar",
+							"pincode": "500002"
+						},
+						"units": 28,
+						"rate": 108,
+						"gross": 3024,
+						"discountPct": 16.67,
+						"discount": 504,
+						"taxable": 2520,
+						"gstPct": 5,
+						"cgst": 63,
+						"sgst": 63,
+						"tax": 126,
+						"roundOff": 0,
+						"total": 2646,
+						"hsn": "3305"
+					}
 				},
 				{
 					"kirana": "h2",
 					"name": "Deccan General Stores",
 					"area": "Abids",
-					"units": 32
+					"units": 32,
+					"at": "2026-08-18T10:04",
+					"invoice": {
+						"no": "LA/26-27/0923",
+						"date": "2026-08-18",
+						"at": "2026-08-18T10:04",
+						"kirana": "h2",
+						"shop": {
+							"id": "h2",
+							"name": "Deccan General Stores",
+							"area": "Abids",
+							"pincode": "500001"
+						},
+						"units": 32,
+						"rate": 108,
+						"gross": 3456,
+						"discountPct": 16.67,
+						"discount": 576,
+						"taxable": 2880,
+						"gstPct": 5,
+						"cgst": 72,
+						"sgst": 72,
+						"tax": 144,
+						"roundOff": 0,
+						"total": 3024,
+						"hsn": "3305"
+					}
 				},
 				{
 					"kirana": "h3",
 					"name": "Sai Krishna Kirana",
 					"area": "Koti",
-					"units": 20
+					"units": 20,
+					"at": "2026-08-18T10:06",
+					"invoice": {
+						"no": "LA/26-27/0924",
+						"date": "2026-08-18",
+						"at": "2026-08-18T10:06",
+						"kirana": "h3",
+						"shop": {
+							"id": "h3",
+							"name": "Sai Krishna Kirana",
+							"area": "Koti",
+							"pincode": "500095"
+						},
+						"units": 20,
+						"rate": 108,
+						"gross": 2160,
+						"discountPct": 16.67,
+						"discount": 360,
+						"taxable": 1800,
+						"gstPct": 5,
+						"cgst": 45,
+						"sgst": 45,
+						"tax": 90,
+						"roundOff": 0,
+						"total": 1890,
+						"hsn": "3305"
+					}
 				},
 				{
 					"kirana": "h4",
 					"name": "Hussaini Provision",
 					"area": "Dabeerpura",
-					"units": 36
+					"units": 36,
+					"at": "2026-08-18T10:08",
+					"invoice": {
+						"no": "LA/26-27/0925",
+						"date": "2026-08-18",
+						"at": "2026-08-18T10:08",
+						"kirana": "h4",
+						"shop": {
+							"id": "h4",
+							"name": "Hussaini Provision",
+							"area": "Dabeerpura",
+							"pincode": "500023"
+						},
+						"units": 36,
+						"rate": 108,
+						"gross": 3888,
+						"discountPct": 16.67,
+						"discount": 648,
+						"taxable": 3240,
+						"gstPct": 5,
+						"cgst": 81,
+						"sgst": 81,
+						"tax": 162,
+						"roundOff": 0,
+						"total": 3402,
+						"hsn": "3305"
+					}
 				},
 				{
 					"kirana": "h5",
 					"name": "Bhavani Kirana",
 					"area": "Malakpet",
-					"units": 7
+					"units": 7,
+					"at": "2026-08-18T10:10",
+					"invoice": {
+						"no": "LA/26-27/0926",
+						"date": "2026-08-18",
+						"at": "2026-08-18T10:10",
+						"kirana": "h5",
+						"shop": {
+							"id": "h5",
+							"name": "Bhavani Kirana",
+							"area": "Malakpet",
+							"pincode": "500036"
+						},
+						"units": 7,
+						"rate": 108,
+						"gross": 756,
+						"discountPct": 16.67,
+						"discount": 126,
+						"taxable": 630,
+						"gstPct": 5,
+						"cgst": 15.75,
+						"sgst": 15.75,
+						"tax": 31.5,
+						"roundOff": 0.5,
+						"total": 662,
+						"hsn": "3305"
+					}
 				}
 			],
 			"offered": 58,
@@ -7916,7 +11388,12 @@
 						"territory": "Hyderabad",
 						"pins": "500, 501",
 						"staffCap": 150,
-						"upi": "lakshmi-agencies@exampleupi"
+						"upi": "lakshmi-agencies@exampleupi",
+						"series": {
+							"prefix": "LA/26-27/",
+							"next": 972,
+							"width": 4
+						}
 					},
 					"to": {
 						"id": "agrawal",
@@ -8024,145 +11501,769 @@
 					"kirana": "h0",
 					"name": "Sri Lakshmi Ganapathi Kirana",
 					"area": "Begum Bazaar",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-19T10:00",
+					"invoice": {
+						"no": "LA/26-27/0927",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:00",
+						"kirana": "h0",
+						"shop": {
+							"id": "h0",
+							"name": "Sri Lakshmi Ganapathi Kirana",
+							"area": "Begum Bazaar",
+							"pincode": "500012"
+						},
+						"units": 24,
+						"rate": 21.6,
+						"gross": 518.4,
+						"discountPct": 16.67,
+						"discount": 86.4,
+						"taxable": 432,
+						"gstPct": 5,
+						"cgst": 10.8,
+						"sgst": 10.8,
+						"tax": 21.6,
+						"roundOff": 0.4,
+						"total": 454,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h1",
 					"name": "Al-Noor Provision Store",
 					"area": "Charminar",
-					"units": 28
+					"units": 28,
+					"at": "2026-08-19T10:02",
+					"invoice": {
+						"no": "LA/26-27/0928",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:02",
+						"kirana": "h1",
+						"shop": {
+							"id": "h1",
+							"name": "Al-Noor Provision Store",
+							"area": "Charminar",
+							"pincode": "500002"
+						},
+						"units": 28,
+						"rate": 21.6,
+						"gross": 604.8,
+						"discountPct": 16.67,
+						"discount": 100.8,
+						"taxable": 504,
+						"gstPct": 5,
+						"cgst": 12.6,
+						"sgst": 12.6,
+						"tax": 25.2,
+						"roundOff": -0.2,
+						"total": 529,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h2",
 					"name": "Deccan General Stores",
 					"area": "Abids",
-					"units": 32
+					"units": 32,
+					"at": "2026-08-19T10:04",
+					"invoice": {
+						"no": "LA/26-27/0929",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:04",
+						"kirana": "h2",
+						"shop": {
+							"id": "h2",
+							"name": "Deccan General Stores",
+							"area": "Abids",
+							"pincode": "500001"
+						},
+						"units": 32,
+						"rate": 21.6,
+						"gross": 691.2,
+						"discountPct": 16.67,
+						"discount": 115.2,
+						"taxable": 576,
+						"gstPct": 5,
+						"cgst": 14.4,
+						"sgst": 14.4,
+						"tax": 28.8,
+						"roundOff": 0.2,
+						"total": 605,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h3",
 					"name": "Sai Krishna Kirana",
 					"area": "Koti",
-					"units": 20
+					"units": 20,
+					"at": "2026-08-19T10:06",
+					"invoice": {
+						"no": "LA/26-27/0930",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:06",
+						"kirana": "h3",
+						"shop": {
+							"id": "h3",
+							"name": "Sai Krishna Kirana",
+							"area": "Koti",
+							"pincode": "500095"
+						},
+						"units": 20,
+						"rate": 21.6,
+						"gross": 432,
+						"discountPct": 16.67,
+						"discount": 72,
+						"taxable": 360,
+						"gstPct": 5,
+						"cgst": 9,
+						"sgst": 9,
+						"tax": 18,
+						"roundOff": 0,
+						"total": 378,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h4",
 					"name": "Hussaini Provision",
 					"area": "Dabeerpura",
-					"units": 36
+					"units": 36,
+					"at": "2026-08-19T10:08",
+					"invoice": {
+						"no": "LA/26-27/0931",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:08",
+						"kirana": "h4",
+						"shop": {
+							"id": "h4",
+							"name": "Hussaini Provision",
+							"area": "Dabeerpura",
+							"pincode": "500023"
+						},
+						"units": 36,
+						"rate": 21.6,
+						"gross": 777.6,
+						"discountPct": 16.67,
+						"discount": 129.6,
+						"taxable": 648,
+						"gstPct": 5,
+						"cgst": 16.2,
+						"sgst": 16.2,
+						"tax": 32.4,
+						"roundOff": -0.4,
+						"total": 680,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h5",
 					"name": "Bhavani Kirana",
 					"area": "Malakpet",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-19T10:10",
+					"invoice": {
+						"no": "LA/26-27/0932",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:10",
+						"kirana": "h5",
+						"shop": {
+							"id": "h5",
+							"name": "Bhavani Kirana",
+							"area": "Malakpet",
+							"pincode": "500036"
+						},
+						"units": 24,
+						"rate": 21.6,
+						"gross": 518.4,
+						"discountPct": 16.67,
+						"discount": 86.4,
+						"taxable": 432,
+						"gstPct": 5,
+						"cgst": 10.8,
+						"sgst": 10.8,
+						"tax": 21.6,
+						"roundOff": 0.4,
+						"total": 454,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h6",
 					"name": "Golconda Stores",
 					"area": "Afzal Gunj",
-					"units": 28
+					"units": 28,
+					"at": "2026-08-19T10:12",
+					"invoice": {
+						"no": "LA/26-27/0933",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:12",
+						"kirana": "h6",
+						"shop": {
+							"id": "h6",
+							"name": "Golconda Stores",
+							"area": "Afzal Gunj",
+							"pincode": "500012"
+						},
+						"units": 28,
+						"rate": 21.6,
+						"gross": 604.8,
+						"discountPct": 16.67,
+						"discount": 100.8,
+						"taxable": 504,
+						"gstPct": 5,
+						"cgst": 12.6,
+						"sgst": 12.6,
+						"tax": 25.2,
+						"roundOff": -0.2,
+						"total": 529,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h7",
 					"name": "Moazzam Kirana",
 					"area": "Charminar",
-					"units": 16
+					"units": 16,
+					"at": "2026-08-19T10:14",
+					"invoice": {
+						"no": "LA/26-27/0934",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:14",
+						"kirana": "h7",
+						"shop": {
+							"id": "h7",
+							"name": "Moazzam Kirana",
+							"area": "Charminar",
+							"pincode": "500002"
+						},
+						"units": 16,
+						"rate": 21.6,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h8",
 					"name": "Anjaneya Provision Store",
 					"area": "Sultan Bazar",
-					"units": 32
+					"units": 32,
+					"at": "2026-08-19T10:16",
+					"invoice": {
+						"no": "LA/26-27/0935",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:16",
+						"kirana": "h8",
+						"shop": {
+							"id": "h8",
+							"name": "Anjaneya Provision Store",
+							"area": "Sultan Bazar",
+							"pincode": "500095"
+						},
+						"units": 32,
+						"rate": 21.6,
+						"gross": 691.2,
+						"discountPct": 16.67,
+						"discount": 115.2,
+						"taxable": 576,
+						"gstPct": 5,
+						"cgst": 14.4,
+						"sgst": 14.4,
+						"tax": 28.8,
+						"roundOff": 0.2,
+						"total": 605,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h9",
 					"name": "Shalimar General Store",
 					"area": "Nampally",
-					"units": 28
+					"units": 28,
+					"at": "2026-08-19T10:18",
+					"invoice": {
+						"no": "LA/26-27/0936",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:18",
+						"kirana": "h9",
+						"shop": {
+							"id": "h9",
+							"name": "Shalimar General Store",
+							"area": "Nampally",
+							"pincode": "500001"
+						},
+						"units": 28,
+						"rate": 21.6,
+						"gross": 604.8,
+						"discountPct": 16.67,
+						"discount": 100.8,
+						"taxable": 504,
+						"gstPct": 5,
+						"cgst": 12.6,
+						"sgst": 12.6,
+						"tax": 25.2,
+						"roundOff": -0.2,
+						"total": 529,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h10",
 					"name": "Ravi Teja Kirana",
 					"area": "Chaderghat",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-19T10:20",
+					"invoice": {
+						"no": "LA/26-27/0937",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:20",
+						"kirana": "h10",
+						"shop": {
+							"id": "h10",
+							"name": "Ravi Teja Kirana",
+							"area": "Chaderghat",
+							"pincode": "500024"
+						},
+						"units": 24,
+						"rate": 21.6,
+						"gross": 518.4,
+						"discountPct": 16.67,
+						"discount": 86.4,
+						"taxable": 432,
+						"gstPct": 5,
+						"cgst": 10.8,
+						"sgst": 10.8,
+						"tax": 21.6,
+						"roundOff": 0.4,
+						"total": 454,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h11",
 					"name": "Madina Provision",
 					"area": "Charminar",
-					"units": 28
+					"units": 28,
+					"at": "2026-08-19T10:22",
+					"invoice": {
+						"no": "LA/26-27/0938",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:22",
+						"kirana": "h11",
+						"shop": {
+							"id": "h11",
+							"name": "Madina Provision",
+							"area": "Charminar",
+							"pincode": "500002"
+						},
+						"units": 28,
+						"rate": 21.6,
+						"gross": 604.8,
+						"discountPct": 16.67,
+						"discount": 100.8,
+						"taxable": 504,
+						"gstPct": 5,
+						"cgst": 12.6,
+						"sgst": 12.6,
+						"tax": 25.2,
+						"roundOff": -0.2,
+						"total": 529,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h12",
 					"name": "Sri Durga Bhavani Stores",
 					"area": "Begum Bazaar",
-					"units": 32
+					"units": 32,
+					"at": "2026-08-19T10:24",
+					"invoice": {
+						"no": "LA/26-27/0939",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:24",
+						"kirana": "h12",
+						"shop": {
+							"id": "h12",
+							"name": "Sri Durga Bhavani Stores",
+							"area": "Begum Bazaar",
+							"pincode": "500012"
+						},
+						"units": 32,
+						"rate": 21.6,
+						"gross": 691.2,
+						"discountPct": 16.67,
+						"discount": 115.2,
+						"taxable": 576,
+						"gstPct": 5,
+						"cgst": 14.4,
+						"sgst": 14.4,
+						"tax": 28.8,
+						"roundOff": 0.2,
+						"total": 605,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h13",
 					"name": "Hyderabadi Kirana",
 					"area": "Abids",
-					"units": 20
+					"units": 20,
+					"at": "2026-08-19T10:26",
+					"invoice": {
+						"no": "LA/26-27/0940",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:26",
+						"kirana": "h13",
+						"shop": {
+							"id": "h13",
+							"name": "Hyderabadi Kirana",
+							"area": "Abids",
+							"pincode": "500001"
+						},
+						"units": 20,
+						"rate": 21.6,
+						"gross": 432,
+						"discountPct": 16.67,
+						"discount": 72,
+						"taxable": 360,
+						"gstPct": 5,
+						"cgst": 9,
+						"sgst": 9,
+						"tax": 18,
+						"roundOff": 0,
+						"total": 378,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h14",
 					"name": "Gulzar House Stores",
 					"area": "Charminar",
-					"units": 36
+					"units": 36,
+					"at": "2026-08-19T10:28",
+					"invoice": {
+						"no": "LA/26-27/0941",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:28",
+						"kirana": "h14",
+						"shop": {
+							"id": "h14",
+							"name": "Gulzar House Stores",
+							"area": "Charminar",
+							"pincode": "500002"
+						},
+						"units": 36,
+						"rate": 21.6,
+						"gross": 777.6,
+						"discountPct": 16.67,
+						"discount": 129.6,
+						"taxable": 648,
+						"gstPct": 5,
+						"cgst": 16.2,
+						"sgst": 16.2,
+						"tax": 32.4,
+						"roundOff": -0.4,
+						"total": 680,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h15",
 					"name": "Padmavathi Kirana",
 					"area": "Koti",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-19T10:30",
+					"invoice": {
+						"no": "LA/26-27/0942",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:30",
+						"kirana": "h15",
+						"shop": {
+							"id": "h15",
+							"name": "Padmavathi Kirana",
+							"area": "Koti",
+							"pincode": "500095"
+						},
+						"units": 24,
+						"rate": 21.6,
+						"gross": 518.4,
+						"discountPct": 16.67,
+						"discount": 86.4,
+						"taxable": 432,
+						"gstPct": 5,
+						"cgst": 10.8,
+						"sgst": 10.8,
+						"tax": 21.6,
+						"roundOff": 0.4,
+						"total": 454,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h16",
 					"name": "Asif Nagar Provisions",
 					"area": "Nampally",
-					"units": 28
+					"units": 28,
+					"at": "2026-08-19T10:32",
+					"invoice": {
+						"no": "LA/26-27/0943",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:32",
+						"kirana": "h16",
+						"shop": {
+							"id": "h16",
+							"name": "Asif Nagar Provisions",
+							"area": "Nampally",
+							"pincode": "500001"
+						},
+						"units": 28,
+						"rate": 21.6,
+						"gross": 604.8,
+						"discountPct": 16.67,
+						"discount": 100.8,
+						"taxable": 504,
+						"gstPct": 5,
+						"cgst": 12.6,
+						"sgst": 12.6,
+						"tax": 25.2,
+						"roundOff": -0.2,
+						"total": 529,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h17",
 					"name": "Ramakrishna General Store",
 					"area": "Malakpet",
-					"units": 16
+					"units": 16,
+					"at": "2026-08-19T10:34",
+					"invoice": {
+						"no": "LA/26-27/0944",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:34",
+						"kirana": "h17",
+						"shop": {
+							"id": "h17",
+							"name": "Ramakrishna General Store",
+							"area": "Malakpet",
+							"pincode": "500036"
+						},
+						"units": 16,
+						"rate": 21.6,
+						"gross": 345.6,
+						"discountPct": 16.67,
+						"discount": 57.6,
+						"taxable": 288,
+						"gstPct": 5,
+						"cgst": 7.2,
+						"sgst": 7.2,
+						"tax": 14.4,
+						"roundOff": -0.4,
+						"total": 302,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h18",
 					"name": "Taj Kirana",
 					"area": "Dabeerpura",
-					"units": 32
+					"units": 32,
+					"at": "2026-08-19T10:36",
+					"invoice": {
+						"no": "LA/26-27/0945",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:36",
+						"kirana": "h18",
+						"shop": {
+							"id": "h18",
+							"name": "Taj Kirana",
+							"area": "Dabeerpura",
+							"pincode": "500023"
+						},
+						"units": 32,
+						"rate": 21.6,
+						"gross": 691.2,
+						"discountPct": 16.67,
+						"discount": 115.2,
+						"taxable": 576,
+						"gstPct": 5,
+						"cgst": 14.4,
+						"sgst": 14.4,
+						"tax": 28.8,
+						"roundOff": 0.2,
+						"total": 605,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h19",
 					"name": "Sitara Provision Store",
 					"area": "Afzal Gunj",
-					"units": 28
+					"units": 28,
+					"at": "2026-08-19T10:38",
+					"invoice": {
+						"no": "LA/26-27/0946",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:38",
+						"kirana": "h19",
+						"shop": {
+							"id": "h19",
+							"name": "Sitara Provision Store",
+							"area": "Afzal Gunj",
+							"pincode": "500012"
+						},
+						"units": 28,
+						"rate": 21.6,
+						"gross": 604.8,
+						"discountPct": 16.67,
+						"discount": 100.8,
+						"taxable": 504,
+						"gstPct": 5,
+						"cgst": 12.6,
+						"sgst": 12.6,
+						"tax": 25.2,
+						"roundOff": -0.2,
+						"total": 529,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h20",
 					"name": "Vinayaka Stores",
 					"area": "Sultan Bazar",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-19T10:40",
+					"invoice": {
+						"no": "LA/26-27/0947",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:40",
+						"kirana": "h20",
+						"shop": {
+							"id": "h20",
+							"name": "Vinayaka Stores",
+							"area": "Sultan Bazar",
+							"pincode": "500095"
+						},
+						"units": 24,
+						"rate": 21.6,
+						"gross": 518.4,
+						"discountPct": 16.67,
+						"discount": 86.4,
+						"taxable": 432,
+						"gstPct": 5,
+						"cgst": 10.8,
+						"sgst": 10.8,
+						"tax": 21.6,
+						"roundOff": 0.4,
+						"total": 454,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h21",
 					"name": "Nizam Kirana",
 					"area": "Charminar",
-					"units": 28
+					"units": 28,
+					"at": "2026-08-19T10:42",
+					"invoice": {
+						"no": "LA/26-27/0948",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:42",
+						"kirana": "h21",
+						"shop": {
+							"id": "h21",
+							"name": "Nizam Kirana",
+							"area": "Charminar",
+							"pincode": "500002"
+						},
+						"units": 28,
+						"rate": 21.6,
+						"gross": 604.8,
+						"discountPct": 16.67,
+						"discount": 100.8,
+						"taxable": 504,
+						"gstPct": 5,
+						"cgst": 12.6,
+						"sgst": 12.6,
+						"tax": 25.2,
+						"roundOff": -0.2,
+						"total": 529,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h22",
 					"name": "Annapurna Provisions",
 					"area": "Chaderghat",
-					"units": 32
+					"units": 32,
+					"at": "2026-08-19T10:44",
+					"invoice": {
+						"no": "LA/26-27/0949",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:44",
+						"kirana": "h22",
+						"shop": {
+							"id": "h22",
+							"name": "Annapurna Provisions",
+							"area": "Chaderghat",
+							"pincode": "500024"
+						},
+						"units": 32,
+						"rate": 21.6,
+						"gross": 691.2,
+						"discountPct": 16.67,
+						"discount": 115.2,
+						"taxable": 576,
+						"gstPct": 5,
+						"cgst": 14.4,
+						"sgst": 14.4,
+						"tax": 28.8,
+						"roundOff": 0.2,
+						"total": 605,
+						"hsn": "2005"
+					}
 				},
 				{
 					"kirana": "h23",
 					"name": "Musi River Stores",
 					"area": "Afzal Gunj",
-					"units": 17
+					"units": 17,
+					"at": "2026-08-19T10:46",
+					"invoice": {
+						"no": "LA/26-27/0950",
+						"date": "2026-08-19",
+						"at": "2026-08-19T10:46",
+						"kirana": "h23",
+						"shop": {
+							"id": "h23",
+							"name": "Musi River Stores",
+							"area": "Afzal Gunj",
+							"pincode": "500012"
+						},
+						"units": 17,
+						"rate": 21.6,
+						"gross": 367.2,
+						"discountPct": 16.67,
+						"discount": 61.2,
+						"taxable": 306,
+						"gstPct": 5,
+						"cgst": 7.65,
+						"sgst": 7.65,
+						"tax": 15.3,
+						"roundOff": -0.3,
+						"total": 321,
+						"hsn": "2005"
+					}
 				}
 			],
 			"offered": 58,
@@ -8927,79 +13028,417 @@
 					"kirana": "k0",
 					"name": "Shree Ganesh Kirana",
 					"area": "Itwari",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-25T10:00",
+					"invoice": {
+						"no": "RT/26-27/1242",
+						"date": "2026-08-25",
+						"at": "2026-08-25T10:00",
+						"kirana": "k0",
+						"shop": {
+							"id": "k0",
+							"name": "Shree Ganesh Kirana",
+							"area": "Itwari",
+							"pincode": "440002"
+						},
+						"units": 24,
+						"rate": 46.8,
+						"gross": 1123.2,
+						"discountPct": 16.67,
+						"discount": 187.2,
+						"taxable": 936,
+						"gstPct": 5,
+						"cgst": 23.4,
+						"sgst": 23.4,
+						"tax": 46.8,
+						"roundOff": 0.2,
+						"total": 983,
+						"hsn": "2106"
+					}
 				},
 				{
 					"kirana": "k1",
 					"name": "Jai Durga Stores",
 					"area": "Kamptee",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-25T10:02",
+					"invoice": {
+						"no": "RT/26-27/1243",
+						"date": "2026-08-25",
+						"at": "2026-08-25T10:02",
+						"kirana": "k1",
+						"shop": {
+							"id": "k1",
+							"name": "Jai Durga Stores",
+							"area": "Kamptee",
+							"pincode": "441001"
+						},
+						"units": 24,
+						"rate": 46.8,
+						"gross": 1123.2,
+						"discountPct": 16.67,
+						"discount": 187.2,
+						"taxable": 936,
+						"gstPct": 5,
+						"cgst": 23.4,
+						"sgst": 23.4,
+						"tax": 46.8,
+						"roundOff": 0.2,
+						"total": 983,
+						"hsn": "2106"
+					}
 				},
 				{
 					"kirana": "k2",
 					"name": "Om Sai Provision",
 					"area": "Wardha Road",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-25T10:04",
+					"invoice": {
+						"no": "RT/26-27/1244",
+						"date": "2026-08-25",
+						"at": "2026-08-25T10:04",
+						"kirana": "k2",
+						"shop": {
+							"id": "k2",
+							"name": "Om Sai Provision",
+							"area": "Wardha Road",
+							"pincode": "440015"
+						},
+						"units": 12,
+						"rate": 46.8,
+						"gross": 561.6,
+						"discountPct": 16.67,
+						"discount": 93.6,
+						"taxable": 468,
+						"gstPct": 5,
+						"cgst": 11.7,
+						"sgst": 11.7,
+						"tax": 23.4,
+						"roundOff": -0.4,
+						"total": 491,
+						"hsn": "2106"
+					}
 				},
 				{
 					"kirana": "k3",
 					"name": "Maa Bhavani Kirana",
 					"area": "Itwari",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-25T10:06",
+					"invoice": {
+						"no": "RT/26-27/1245",
+						"date": "2026-08-25",
+						"at": "2026-08-25T10:06",
+						"kirana": "k3",
+						"shop": {
+							"id": "k3",
+							"name": "Maa Bhavani Kirana",
+							"area": "Itwari",
+							"pincode": "440002"
+						},
+						"units": 12,
+						"rate": 46.8,
+						"gross": 561.6,
+						"discountPct": 16.67,
+						"discount": 93.6,
+						"taxable": 468,
+						"gstPct": 5,
+						"cgst": 11.7,
+						"sgst": 11.7,
+						"tax": 23.4,
+						"roundOff": -0.4,
+						"total": 491,
+						"hsn": "2106"
+					}
 				},
 				{
 					"kirana": "k4",
 					"name": "New Sagar Stores",
 					"area": "Kamptee",
-					"units": 36
+					"units": 36,
+					"at": "2026-08-25T10:08",
+					"invoice": {
+						"no": "RT/26-27/1246",
+						"date": "2026-08-25",
+						"at": "2026-08-25T10:08",
+						"kirana": "k4",
+						"shop": {
+							"id": "k4",
+							"name": "New Sagar Stores",
+							"area": "Kamptee",
+							"pincode": "441001"
+						},
+						"units": 36,
+						"rate": 46.8,
+						"gross": 1684.8,
+						"discountPct": 16.67,
+						"discount": 280.8,
+						"taxable": 1404,
+						"gstPct": 5,
+						"cgst": 35.1,
+						"sgst": 35.1,
+						"tax": 70.2,
+						"roundOff": -0.2,
+						"total": 1474,
+						"hsn": "2106"
+					}
 				},
 				{
 					"kirana": "k5",
 					"name": "Gurukripa Traders",
 					"area": "Mahal",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-25T10:10",
+					"invoice": {
+						"no": "RT/26-27/1247",
+						"date": "2026-08-25",
+						"at": "2026-08-25T10:10",
+						"kirana": "k5",
+						"shop": {
+							"id": "k5",
+							"name": "Gurukripa Traders",
+							"area": "Mahal",
+							"pincode": "440032"
+						},
+						"units": 24,
+						"rate": 46.8,
+						"gross": 1123.2,
+						"discountPct": 16.67,
+						"discount": 187.2,
+						"taxable": 936,
+						"gstPct": 5,
+						"cgst": 23.4,
+						"sgst": 23.4,
+						"tax": 46.8,
+						"roundOff": 0.2,
+						"total": 983,
+						"hsn": "2106"
+					}
 				},
 				{
 					"kirana": "k6",
 					"name": "Mahalaxmi Kirana",
 					"area": "Sitabuldi",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-25T10:12",
+					"invoice": {
+						"no": "RT/26-27/1248",
+						"date": "2026-08-25",
+						"at": "2026-08-25T10:12",
+						"kirana": "k6",
+						"shop": {
+							"id": "k6",
+							"name": "Mahalaxmi Kirana",
+							"area": "Sitabuldi",
+							"pincode": "440012"
+						},
+						"units": 12,
+						"rate": 46.8,
+						"gross": 561.6,
+						"discountPct": 16.67,
+						"discount": 93.6,
+						"taxable": 468,
+						"gstPct": 5,
+						"cgst": 11.7,
+						"sgst": 11.7,
+						"tax": 23.4,
+						"roundOff": -0.4,
+						"total": 491,
+						"hsn": "2106"
+					}
 				},
 				{
 					"kirana": "k7",
 					"name": "Shiv Shakti Store",
 					"area": "Wardha",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-25T10:14",
+					"invoice": {
+						"no": "RT/26-27/1249",
+						"date": "2026-08-25",
+						"at": "2026-08-25T10:14",
+						"kirana": "k7",
+						"shop": {
+							"id": "k7",
+							"name": "Shiv Shakti Store",
+							"area": "Wardha",
+							"pincode": "442001"
+						},
+						"units": 12,
+						"rate": 46.8,
+						"gross": 561.6,
+						"discountPct": 16.67,
+						"discount": 93.6,
+						"taxable": 468,
+						"gstPct": 5,
+						"cgst": 11.7,
+						"sgst": 11.7,
+						"tax": 23.4,
+						"roundOff": -0.4,
+						"total": 491,
+						"hsn": "2106"
+					}
 				},
 				{
 					"kirana": "k8",
 					"name": "Patel Provision",
 					"area": "Dharampeth",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-25T10:16",
+					"invoice": {
+						"no": "RT/26-27/1250",
+						"date": "2026-08-25",
+						"at": "2026-08-25T10:16",
+						"kirana": "k8",
+						"shop": {
+							"id": "k8",
+							"name": "Patel Provision",
+							"area": "Dharampeth",
+							"pincode": "440010"
+						},
+						"units": 24,
+						"rate": 46.8,
+						"gross": 1123.2,
+						"discountPct": 16.67,
+						"discount": 187.2,
+						"taxable": 936,
+						"gstPct": 5,
+						"cgst": 23.4,
+						"sgst": 23.4,
+						"tax": 46.8,
+						"roundOff": 0.2,
+						"total": 983,
+						"hsn": "2106"
+					}
 				},
 				{
 					"kirana": "k9",
 					"name": "Annapurna Stores",
 					"area": "Sadar",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-25T10:18",
+					"invoice": {
+						"no": "RT/26-27/1251",
+						"date": "2026-08-25",
+						"at": "2026-08-25T10:18",
+						"kirana": "k9",
+						"shop": {
+							"id": "k9",
+							"name": "Annapurna Stores",
+							"area": "Sadar",
+							"pincode": "440001"
+						},
+						"units": 12,
+						"rate": 46.8,
+						"gross": 561.6,
+						"discountPct": 16.67,
+						"discount": 93.6,
+						"taxable": 468,
+						"gstPct": 5,
+						"cgst": 11.7,
+						"sgst": 11.7,
+						"tax": 23.4,
+						"roundOff": -0.4,
+						"total": 491,
+						"hsn": "2106"
+					}
 				},
 				{
 					"kirana": "k10",
 					"name": "Sahyog Kirana",
 					"area": "Kamptee",
-					"units": 48
+					"units": 48,
+					"at": "2026-08-25T10:20",
+					"invoice": {
+						"no": "RT/26-27/1252",
+						"date": "2026-08-25",
+						"at": "2026-08-25T10:20",
+						"kirana": "k10",
+						"shop": {
+							"id": "k10",
+							"name": "Sahyog Kirana",
+							"area": "Kamptee",
+							"pincode": "441001"
+						},
+						"units": 48,
+						"rate": 46.8,
+						"gross": 2246.4,
+						"discountPct": 16.67,
+						"discount": 374.4,
+						"taxable": 1872,
+						"gstPct": 5,
+						"cgst": 46.8,
+						"sgst": 46.8,
+						"tax": 93.6,
+						"roundOff": 0.4,
+						"total": 1966,
+						"hsn": "2106"
+					}
 				},
 				{
 					"kirana": "k11",
 					"name": "Raj Super Mart",
 					"area": "Mahal",
-					"units": 36
+					"units": 36,
+					"at": "2026-08-25T10:22",
+					"invoice": {
+						"no": "RT/26-27/1253",
+						"date": "2026-08-25",
+						"at": "2026-08-25T10:22",
+						"kirana": "k11",
+						"shop": {
+							"id": "k11",
+							"name": "Raj Super Mart",
+							"area": "Mahal",
+							"pincode": "440032"
+						},
+						"units": 36,
+						"rate": 46.8,
+						"gross": 1684.8,
+						"discountPct": 16.67,
+						"discount": 280.8,
+						"taxable": 1404,
+						"gstPct": 5,
+						"cgst": 35.1,
+						"sgst": 35.1,
+						"tax": 70.2,
+						"roundOff": -0.2,
+						"total": 1474,
+						"hsn": "2106"
+					}
 				},
 				{
 					"kirana": "k12",
 					"name": "Vaishnavi Stores",
 					"area": "Itwari",
-					"units": 18
+					"units": 18,
+					"at": "2026-08-25T10:24",
+					"invoice": {
+						"no": "RT/26-27/1254",
+						"date": "2026-08-25",
+						"at": "2026-08-25T10:24",
+						"kirana": "k12",
+						"shop": {
+							"id": "k12",
+							"name": "Vaishnavi Stores",
+							"area": "Itwari",
+							"pincode": "440002"
+						},
+						"units": 18,
+						"rate": 46.8,
+						"gross": 842.4,
+						"discountPct": 16.67,
+						"discount": 140.4,
+						"taxable": 702,
+						"gstPct": 5,
+						"cgst": 17.55,
+						"sgst": 17.55,
+						"tax": 35.1,
+						"roundOff": -0.1,
+						"total": 737,
+						"hsn": "2106"
+					}
 				}
 			],
 			"offered": 38,
@@ -9126,7 +13565,12 @@
 					"territory": "Nagpur with Wardha and Kamptee",
 					"pins": "440, 441, 442",
 					"staffCap": 50,
-					"upi": "rakesh-traders@exampleupi"
+					"upi": "rakesh-traders@exampleupi",
+					"series": {
+						"prefix": "RT/26-27/",
+						"next": 1279,
+						"width": 4
+					}
 				},
 				"partner": {
 					"name": "Feeding India",
@@ -9821,7 +14265,12 @@
 						"territory": "Hyderabad",
 						"pins": "500, 501",
 						"staffCap": 150,
-						"upi": "lakshmi-agencies@exampleupi"
+						"upi": "lakshmi-agencies@exampleupi",
+						"series": {
+							"prefix": "LA/26-27/",
+							"next": 972,
+							"width": 4
+						}
 					},
 					"to": {
 						"id": "agrawal",
@@ -9929,127 +14378,673 @@
 					"kirana": "h0",
 					"name": "Sri Lakshmi Ganapathi Kirana",
 					"area": "Begum Bazaar",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-26T10:00",
+					"invoice": {
+						"no": "LA/26-27/0951",
+						"date": "2026-08-26",
+						"at": "2026-08-26T10:00",
+						"kirana": "h0",
+						"shop": {
+							"id": "h0",
+							"name": "Sri Lakshmi Ganapathi Kirana",
+							"area": "Begum Bazaar",
+							"pincode": "500012"
+						},
+						"units": 24,
+						"rate": 28.8,
+						"gross": 691.2,
+						"discountPct": 16.67,
+						"discount": 115.2,
+						"taxable": 576,
+						"gstPct": 5,
+						"cgst": 14.4,
+						"sgst": 14.4,
+						"tax": 28.8,
+						"roundOff": 0.2,
+						"total": 605,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "h1",
 					"name": "Al-Noor Provision Store",
 					"area": "Charminar",
-					"units": 28
+					"units": 28,
+					"at": "2026-08-26T10:02",
+					"invoice": {
+						"no": "LA/26-27/0952",
+						"date": "2026-08-26",
+						"at": "2026-08-26T10:02",
+						"kirana": "h1",
+						"shop": {
+							"id": "h1",
+							"name": "Al-Noor Provision Store",
+							"area": "Charminar",
+							"pincode": "500002"
+						},
+						"units": 28,
+						"rate": 28.8,
+						"gross": 806.4,
+						"discountPct": 16.67,
+						"discount": 134.4,
+						"taxable": 672,
+						"gstPct": 5,
+						"cgst": 16.8,
+						"sgst": 16.8,
+						"tax": 33.6,
+						"roundOff": 0.4,
+						"total": 706,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "h2",
 					"name": "Deccan General Stores",
 					"area": "Abids",
-					"units": 32
+					"units": 32,
+					"at": "2026-08-26T10:04",
+					"invoice": {
+						"no": "LA/26-27/0953",
+						"date": "2026-08-26",
+						"at": "2026-08-26T10:04",
+						"kirana": "h2",
+						"shop": {
+							"id": "h2",
+							"name": "Deccan General Stores",
+							"area": "Abids",
+							"pincode": "500001"
+						},
+						"units": 32,
+						"rate": 28.8,
+						"gross": 921.6,
+						"discountPct": 16.67,
+						"discount": 153.6,
+						"taxable": 768,
+						"gstPct": 5,
+						"cgst": 19.2,
+						"sgst": 19.2,
+						"tax": 38.4,
+						"roundOff": -0.4,
+						"total": 806,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "h3",
 					"name": "Sai Krishna Kirana",
 					"area": "Koti",
-					"units": 20
+					"units": 20,
+					"at": "2026-08-26T10:06",
+					"invoice": {
+						"no": "LA/26-27/0954",
+						"date": "2026-08-26",
+						"at": "2026-08-26T10:06",
+						"kirana": "h3",
+						"shop": {
+							"id": "h3",
+							"name": "Sai Krishna Kirana",
+							"area": "Koti",
+							"pincode": "500095"
+						},
+						"units": 20,
+						"rate": 28.8,
+						"gross": 576,
+						"discountPct": 16.67,
+						"discount": 96,
+						"taxable": 480,
+						"gstPct": 5,
+						"cgst": 12,
+						"sgst": 12,
+						"tax": 24,
+						"roundOff": 0,
+						"total": 504,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "h4",
 					"name": "Hussaini Provision",
 					"area": "Dabeerpura",
-					"units": 36
+					"units": 36,
+					"at": "2026-08-26T10:08",
+					"invoice": {
+						"no": "LA/26-27/0955",
+						"date": "2026-08-26",
+						"at": "2026-08-26T10:08",
+						"kirana": "h4",
+						"shop": {
+							"id": "h4",
+							"name": "Hussaini Provision",
+							"area": "Dabeerpura",
+							"pincode": "500023"
+						},
+						"units": 36,
+						"rate": 28.8,
+						"gross": 1036.8,
+						"discountPct": 16.67,
+						"discount": 172.8,
+						"taxable": 864,
+						"gstPct": 5,
+						"cgst": 21.6,
+						"sgst": 21.6,
+						"tax": 43.2,
+						"roundOff": -0.2,
+						"total": 907,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "h5",
 					"name": "Bhavani Kirana",
 					"area": "Malakpet",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-26T10:10",
+					"invoice": {
+						"no": "LA/26-27/0956",
+						"date": "2026-08-26",
+						"at": "2026-08-26T10:10",
+						"kirana": "h5",
+						"shop": {
+							"id": "h5",
+							"name": "Bhavani Kirana",
+							"area": "Malakpet",
+							"pincode": "500036"
+						},
+						"units": 24,
+						"rate": 28.8,
+						"gross": 691.2,
+						"discountPct": 16.67,
+						"discount": 115.2,
+						"taxable": 576,
+						"gstPct": 5,
+						"cgst": 14.4,
+						"sgst": 14.4,
+						"tax": 28.8,
+						"roundOff": 0.2,
+						"total": 605,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "h6",
 					"name": "Golconda Stores",
 					"area": "Afzal Gunj",
-					"units": 28
+					"units": 28,
+					"at": "2026-08-26T10:12",
+					"invoice": {
+						"no": "LA/26-27/0957",
+						"date": "2026-08-26",
+						"at": "2026-08-26T10:12",
+						"kirana": "h6",
+						"shop": {
+							"id": "h6",
+							"name": "Golconda Stores",
+							"area": "Afzal Gunj",
+							"pincode": "500012"
+						},
+						"units": 28,
+						"rate": 28.8,
+						"gross": 806.4,
+						"discountPct": 16.67,
+						"discount": 134.4,
+						"taxable": 672,
+						"gstPct": 5,
+						"cgst": 16.8,
+						"sgst": 16.8,
+						"tax": 33.6,
+						"roundOff": 0.4,
+						"total": 706,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "h7",
 					"name": "Moazzam Kirana",
 					"area": "Charminar",
-					"units": 16
+					"units": 16,
+					"at": "2026-08-26T10:14",
+					"invoice": {
+						"no": "LA/26-27/0958",
+						"date": "2026-08-26",
+						"at": "2026-08-26T10:14",
+						"kirana": "h7",
+						"shop": {
+							"id": "h7",
+							"name": "Moazzam Kirana",
+							"area": "Charminar",
+							"pincode": "500002"
+						},
+						"units": 16,
+						"rate": 28.8,
+						"gross": 460.8,
+						"discountPct": 16.67,
+						"discount": 76.8,
+						"taxable": 384,
+						"gstPct": 5,
+						"cgst": 9.6,
+						"sgst": 9.6,
+						"tax": 19.2,
+						"roundOff": -0.2,
+						"total": 403,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "h8",
 					"name": "Anjaneya Provision Store",
 					"area": "Sultan Bazar",
-					"units": 32
+					"units": 32,
+					"at": "2026-08-26T10:16",
+					"invoice": {
+						"no": "LA/26-27/0959",
+						"date": "2026-08-26",
+						"at": "2026-08-26T10:16",
+						"kirana": "h8",
+						"shop": {
+							"id": "h8",
+							"name": "Anjaneya Provision Store",
+							"area": "Sultan Bazar",
+							"pincode": "500095"
+						},
+						"units": 32,
+						"rate": 28.8,
+						"gross": 921.6,
+						"discountPct": 16.67,
+						"discount": 153.6,
+						"taxable": 768,
+						"gstPct": 5,
+						"cgst": 19.2,
+						"sgst": 19.2,
+						"tax": 38.4,
+						"roundOff": -0.4,
+						"total": 806,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "h9",
 					"name": "Shalimar General Store",
 					"area": "Nampally",
-					"units": 28
+					"units": 28,
+					"at": "2026-08-26T10:18",
+					"invoice": {
+						"no": "LA/26-27/0960",
+						"date": "2026-08-26",
+						"at": "2026-08-26T10:18",
+						"kirana": "h9",
+						"shop": {
+							"id": "h9",
+							"name": "Shalimar General Store",
+							"area": "Nampally",
+							"pincode": "500001"
+						},
+						"units": 28,
+						"rate": 28.8,
+						"gross": 806.4,
+						"discountPct": 16.67,
+						"discount": 134.4,
+						"taxable": 672,
+						"gstPct": 5,
+						"cgst": 16.8,
+						"sgst": 16.8,
+						"tax": 33.6,
+						"roundOff": 0.4,
+						"total": 706,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "h10",
 					"name": "Ravi Teja Kirana",
 					"area": "Chaderghat",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-26T10:20",
+					"invoice": {
+						"no": "LA/26-27/0961",
+						"date": "2026-08-26",
+						"at": "2026-08-26T10:20",
+						"kirana": "h10",
+						"shop": {
+							"id": "h10",
+							"name": "Ravi Teja Kirana",
+							"area": "Chaderghat",
+							"pincode": "500024"
+						},
+						"units": 24,
+						"rate": 28.8,
+						"gross": 691.2,
+						"discountPct": 16.67,
+						"discount": 115.2,
+						"taxable": 576,
+						"gstPct": 5,
+						"cgst": 14.4,
+						"sgst": 14.4,
+						"tax": 28.8,
+						"roundOff": 0.2,
+						"total": 605,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "h11",
 					"name": "Madina Provision",
 					"area": "Charminar",
-					"units": 28
+					"units": 28,
+					"at": "2026-08-26T10:22",
+					"invoice": {
+						"no": "LA/26-27/0962",
+						"date": "2026-08-26",
+						"at": "2026-08-26T10:22",
+						"kirana": "h11",
+						"shop": {
+							"id": "h11",
+							"name": "Madina Provision",
+							"area": "Charminar",
+							"pincode": "500002"
+						},
+						"units": 28,
+						"rate": 28.8,
+						"gross": 806.4,
+						"discountPct": 16.67,
+						"discount": 134.4,
+						"taxable": 672,
+						"gstPct": 5,
+						"cgst": 16.8,
+						"sgst": 16.8,
+						"tax": 33.6,
+						"roundOff": 0.4,
+						"total": 706,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "h12",
 					"name": "Sri Durga Bhavani Stores",
 					"area": "Begum Bazaar",
-					"units": 32
+					"units": 32,
+					"at": "2026-08-26T10:24",
+					"invoice": {
+						"no": "LA/26-27/0963",
+						"date": "2026-08-26",
+						"at": "2026-08-26T10:24",
+						"kirana": "h12",
+						"shop": {
+							"id": "h12",
+							"name": "Sri Durga Bhavani Stores",
+							"area": "Begum Bazaar",
+							"pincode": "500012"
+						},
+						"units": 32,
+						"rate": 28.8,
+						"gross": 921.6,
+						"discountPct": 16.67,
+						"discount": 153.6,
+						"taxable": 768,
+						"gstPct": 5,
+						"cgst": 19.2,
+						"sgst": 19.2,
+						"tax": 38.4,
+						"roundOff": -0.4,
+						"total": 806,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "h13",
 					"name": "Hyderabadi Kirana",
 					"area": "Abids",
-					"units": 20
+					"units": 20,
+					"at": "2026-08-26T10:26",
+					"invoice": {
+						"no": "LA/26-27/0964",
+						"date": "2026-08-26",
+						"at": "2026-08-26T10:26",
+						"kirana": "h13",
+						"shop": {
+							"id": "h13",
+							"name": "Hyderabadi Kirana",
+							"area": "Abids",
+							"pincode": "500001"
+						},
+						"units": 20,
+						"rate": 28.8,
+						"gross": 576,
+						"discountPct": 16.67,
+						"discount": 96,
+						"taxable": 480,
+						"gstPct": 5,
+						"cgst": 12,
+						"sgst": 12,
+						"tax": 24,
+						"roundOff": 0,
+						"total": 504,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "h14",
 					"name": "Gulzar House Stores",
 					"area": "Charminar",
-					"units": 36
+					"units": 36,
+					"at": "2026-08-26T10:28",
+					"invoice": {
+						"no": "LA/26-27/0965",
+						"date": "2026-08-26",
+						"at": "2026-08-26T10:28",
+						"kirana": "h14",
+						"shop": {
+							"id": "h14",
+							"name": "Gulzar House Stores",
+							"area": "Charminar",
+							"pincode": "500002"
+						},
+						"units": 36,
+						"rate": 28.8,
+						"gross": 1036.8,
+						"discountPct": 16.67,
+						"discount": 172.8,
+						"taxable": 864,
+						"gstPct": 5,
+						"cgst": 21.6,
+						"sgst": 21.6,
+						"tax": 43.2,
+						"roundOff": -0.2,
+						"total": 907,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "h15",
 					"name": "Padmavathi Kirana",
 					"area": "Koti",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-26T10:30",
+					"invoice": {
+						"no": "LA/26-27/0966",
+						"date": "2026-08-26",
+						"at": "2026-08-26T10:30",
+						"kirana": "h15",
+						"shop": {
+							"id": "h15",
+							"name": "Padmavathi Kirana",
+							"area": "Koti",
+							"pincode": "500095"
+						},
+						"units": 24,
+						"rate": 28.8,
+						"gross": 691.2,
+						"discountPct": 16.67,
+						"discount": 115.2,
+						"taxable": 576,
+						"gstPct": 5,
+						"cgst": 14.4,
+						"sgst": 14.4,
+						"tax": 28.8,
+						"roundOff": 0.2,
+						"total": 605,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "h16",
 					"name": "Asif Nagar Provisions",
 					"area": "Nampally",
-					"units": 28
+					"units": 28,
+					"at": "2026-08-26T10:32",
+					"invoice": {
+						"no": "LA/26-27/0967",
+						"date": "2026-08-26",
+						"at": "2026-08-26T10:32",
+						"kirana": "h16",
+						"shop": {
+							"id": "h16",
+							"name": "Asif Nagar Provisions",
+							"area": "Nampally",
+							"pincode": "500001"
+						},
+						"units": 28,
+						"rate": 28.8,
+						"gross": 806.4,
+						"discountPct": 16.67,
+						"discount": 134.4,
+						"taxable": 672,
+						"gstPct": 5,
+						"cgst": 16.8,
+						"sgst": 16.8,
+						"tax": 33.6,
+						"roundOff": 0.4,
+						"total": 706,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "h17",
 					"name": "Ramakrishna General Store",
 					"area": "Malakpet",
-					"units": 16
+					"units": 16,
+					"at": "2026-08-26T10:34",
+					"invoice": {
+						"no": "LA/26-27/0968",
+						"date": "2026-08-26",
+						"at": "2026-08-26T10:34",
+						"kirana": "h17",
+						"shop": {
+							"id": "h17",
+							"name": "Ramakrishna General Store",
+							"area": "Malakpet",
+							"pincode": "500036"
+						},
+						"units": 16,
+						"rate": 28.8,
+						"gross": 460.8,
+						"discountPct": 16.67,
+						"discount": 76.8,
+						"taxable": 384,
+						"gstPct": 5,
+						"cgst": 9.6,
+						"sgst": 9.6,
+						"tax": 19.2,
+						"roundOff": -0.2,
+						"total": 403,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "h18",
 					"name": "Taj Kirana",
 					"area": "Dabeerpura",
-					"units": 32
+					"units": 32,
+					"at": "2026-08-26T10:36",
+					"invoice": {
+						"no": "LA/26-27/0969",
+						"date": "2026-08-26",
+						"at": "2026-08-26T10:36",
+						"kirana": "h18",
+						"shop": {
+							"id": "h18",
+							"name": "Taj Kirana",
+							"area": "Dabeerpura",
+							"pincode": "500023"
+						},
+						"units": 32,
+						"rate": 28.8,
+						"gross": 921.6,
+						"discountPct": 16.67,
+						"discount": 153.6,
+						"taxable": 768,
+						"gstPct": 5,
+						"cgst": 19.2,
+						"sgst": 19.2,
+						"tax": 38.4,
+						"roundOff": -0.4,
+						"total": 806,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "h19",
 					"name": "Sitara Provision Store",
 					"area": "Afzal Gunj",
-					"units": 28
+					"units": 28,
+					"at": "2026-08-26T10:38",
+					"invoice": {
+						"no": "LA/26-27/0970",
+						"date": "2026-08-26",
+						"at": "2026-08-26T10:38",
+						"kirana": "h19",
+						"shop": {
+							"id": "h19",
+							"name": "Sitara Provision Store",
+							"area": "Afzal Gunj",
+							"pincode": "500012"
+						},
+						"units": 28,
+						"rate": 28.8,
+						"gross": 806.4,
+						"discountPct": 16.67,
+						"discount": 134.4,
+						"taxable": 672,
+						"gstPct": 5,
+						"cgst": 16.8,
+						"sgst": 16.8,
+						"tax": 33.6,
+						"roundOff": 0.4,
+						"total": 706,
+						"hsn": "1905"
+					}
 				},
 				{
 					"kirana": "h20",
 					"name": "Vinayaka Stores",
 					"area": "Sultan Bazar",
-					"units": 3
+					"units": 3,
+					"at": "2026-08-26T10:40",
+					"invoice": {
+						"no": "LA/26-27/0971",
+						"date": "2026-08-26",
+						"at": "2026-08-26T10:40",
+						"kirana": "h20",
+						"shop": {
+							"id": "h20",
+							"name": "Vinayaka Stores",
+							"area": "Sultan Bazar",
+							"pincode": "500095"
+						},
+						"units": 3,
+						"rate": 28.8,
+						"gross": 86.4,
+						"discountPct": 16.67,
+						"discount": 14.4,
+						"taxable": 72,
+						"gstPct": 5,
+						"cgst": 1.8,
+						"sgst": 1.8,
+						"tax": 3.6,
+						"roundOff": 0.4,
+						"total": 76,
+						"hsn": "1905"
+					}
 				}
 			],
 			"offered": 58,
@@ -10771,7 +15766,12 @@
 						"territory": "Nagpur with Wardha and Kamptee",
 						"pins": "440, 441, 442",
 						"staffCap": 50,
-						"upi": "rakesh-traders@exampleupi"
+						"upi": "rakesh-traders@exampleupi",
+						"series": {
+							"prefix": "RT/26-27/",
+							"next": 1279,
+							"width": 4
+						}
 					},
 					"to": {
 						"id": "agrawal",
@@ -10943,145 +15943,769 @@
 					"kirana": "k0",
 					"name": "Shree Ganesh Kirana",
 					"area": "Itwari",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-28T10:00",
+					"invoice": {
+						"no": "RT/26-27/1255",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:00",
+						"kirana": "k0",
+						"shop": {
+							"id": "k0",
+							"name": "Shree Ganesh Kirana",
+							"area": "Itwari",
+							"pincode": "440002"
+						},
+						"units": 24,
+						"rate": 18,
+						"gross": 432,
+						"discountPct": 16.67,
+						"discount": 72,
+						"taxable": 360,
+						"gstPct": 5,
+						"cgst": 9,
+						"sgst": 9,
+						"tax": 18,
+						"roundOff": 0,
+						"total": 378,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k1",
 					"name": "Jai Durga Stores",
 					"area": "Kamptee",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-28T10:02",
+					"invoice": {
+						"no": "RT/26-27/1256",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:02",
+						"kirana": "k1",
+						"shop": {
+							"id": "k1",
+							"name": "Jai Durga Stores",
+							"area": "Kamptee",
+							"pincode": "441001"
+						},
+						"units": 24,
+						"rate": 18,
+						"gross": 432,
+						"discountPct": 16.67,
+						"discount": 72,
+						"taxable": 360,
+						"gstPct": 5,
+						"cgst": 9,
+						"sgst": 9,
+						"tax": 18,
+						"roundOff": 0,
+						"total": 378,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k2",
 					"name": "Om Sai Provision",
 					"area": "Wardha Road",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-28T10:04",
+					"invoice": {
+						"no": "RT/26-27/1257",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:04",
+						"kirana": "k2",
+						"shop": {
+							"id": "k2",
+							"name": "Om Sai Provision",
+							"area": "Wardha Road",
+							"pincode": "440015"
+						},
+						"units": 12,
+						"rate": 18,
+						"gross": 216,
+						"discountPct": 16.67,
+						"discount": 36,
+						"taxable": 180,
+						"gstPct": 5,
+						"cgst": 4.5,
+						"sgst": 4.5,
+						"tax": 9,
+						"roundOff": 0,
+						"total": 189,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k3",
 					"name": "Maa Bhavani Kirana",
 					"area": "Itwari",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-28T10:06",
+					"invoice": {
+						"no": "RT/26-27/1258",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:06",
+						"kirana": "k3",
+						"shop": {
+							"id": "k3",
+							"name": "Maa Bhavani Kirana",
+							"area": "Itwari",
+							"pincode": "440002"
+						},
+						"units": 12,
+						"rate": 18,
+						"gross": 216,
+						"discountPct": 16.67,
+						"discount": 36,
+						"taxable": 180,
+						"gstPct": 5,
+						"cgst": 4.5,
+						"sgst": 4.5,
+						"tax": 9,
+						"roundOff": 0,
+						"total": 189,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k4",
 					"name": "New Sagar Stores",
 					"area": "Kamptee",
-					"units": 36
+					"units": 36,
+					"at": "2026-08-28T10:08",
+					"invoice": {
+						"no": "RT/26-27/1259",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:08",
+						"kirana": "k4",
+						"shop": {
+							"id": "k4",
+							"name": "New Sagar Stores",
+							"area": "Kamptee",
+							"pincode": "441001"
+						},
+						"units": 36,
+						"rate": 18,
+						"gross": 648,
+						"discountPct": 16.67,
+						"discount": 108,
+						"taxable": 540,
+						"gstPct": 5,
+						"cgst": 13.5,
+						"sgst": 13.5,
+						"tax": 27,
+						"roundOff": 0,
+						"total": 567,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k5",
 					"name": "Gurukripa Traders",
 					"area": "Mahal",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-28T10:10",
+					"invoice": {
+						"no": "RT/26-27/1260",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:10",
+						"kirana": "k5",
+						"shop": {
+							"id": "k5",
+							"name": "Gurukripa Traders",
+							"area": "Mahal",
+							"pincode": "440032"
+						},
+						"units": 24,
+						"rate": 18,
+						"gross": 432,
+						"discountPct": 16.67,
+						"discount": 72,
+						"taxable": 360,
+						"gstPct": 5,
+						"cgst": 9,
+						"sgst": 9,
+						"tax": 18,
+						"roundOff": 0,
+						"total": 378,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k6",
 					"name": "Mahalaxmi Kirana",
 					"area": "Sitabuldi",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-28T10:12",
+					"invoice": {
+						"no": "RT/26-27/1261",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:12",
+						"kirana": "k6",
+						"shop": {
+							"id": "k6",
+							"name": "Mahalaxmi Kirana",
+							"area": "Sitabuldi",
+							"pincode": "440012"
+						},
+						"units": 12,
+						"rate": 18,
+						"gross": 216,
+						"discountPct": 16.67,
+						"discount": 36,
+						"taxable": 180,
+						"gstPct": 5,
+						"cgst": 4.5,
+						"sgst": 4.5,
+						"tax": 9,
+						"roundOff": 0,
+						"total": 189,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k7",
 					"name": "Shiv Shakti Store",
 					"area": "Wardha",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-28T10:14",
+					"invoice": {
+						"no": "RT/26-27/1262",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:14",
+						"kirana": "k7",
+						"shop": {
+							"id": "k7",
+							"name": "Shiv Shakti Store",
+							"area": "Wardha",
+							"pincode": "442001"
+						},
+						"units": 12,
+						"rate": 18,
+						"gross": 216,
+						"discountPct": 16.67,
+						"discount": 36,
+						"taxable": 180,
+						"gstPct": 5,
+						"cgst": 4.5,
+						"sgst": 4.5,
+						"tax": 9,
+						"roundOff": 0,
+						"total": 189,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k8",
 					"name": "Patel Provision",
 					"area": "Dharampeth",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-28T10:16",
+					"invoice": {
+						"no": "RT/26-27/1263",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:16",
+						"kirana": "k8",
+						"shop": {
+							"id": "k8",
+							"name": "Patel Provision",
+							"area": "Dharampeth",
+							"pincode": "440010"
+						},
+						"units": 24,
+						"rate": 18,
+						"gross": 432,
+						"discountPct": 16.67,
+						"discount": 72,
+						"taxable": 360,
+						"gstPct": 5,
+						"cgst": 9,
+						"sgst": 9,
+						"tax": 18,
+						"roundOff": 0,
+						"total": 378,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k9",
 					"name": "Annapurna Stores",
 					"area": "Sadar",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-28T10:18",
+					"invoice": {
+						"no": "RT/26-27/1264",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:18",
+						"kirana": "k9",
+						"shop": {
+							"id": "k9",
+							"name": "Annapurna Stores",
+							"area": "Sadar",
+							"pincode": "440001"
+						},
+						"units": 12,
+						"rate": 18,
+						"gross": 216,
+						"discountPct": 16.67,
+						"discount": 36,
+						"taxable": 180,
+						"gstPct": 5,
+						"cgst": 4.5,
+						"sgst": 4.5,
+						"tax": 9,
+						"roundOff": 0,
+						"total": 189,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k10",
 					"name": "Sahyog Kirana",
 					"area": "Kamptee",
-					"units": 48
+					"units": 48,
+					"at": "2026-08-28T10:20",
+					"invoice": {
+						"no": "RT/26-27/1265",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:20",
+						"kirana": "k10",
+						"shop": {
+							"id": "k10",
+							"name": "Sahyog Kirana",
+							"area": "Kamptee",
+							"pincode": "441001"
+						},
+						"units": 48,
+						"rate": 18,
+						"gross": 864,
+						"discountPct": 16.67,
+						"discount": 144,
+						"taxable": 720,
+						"gstPct": 5,
+						"cgst": 18,
+						"sgst": 18,
+						"tax": 36,
+						"roundOff": 0,
+						"total": 756,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k11",
 					"name": "Raj Super Mart",
 					"area": "Mahal",
-					"units": 36
+					"units": 36,
+					"at": "2026-08-28T10:22",
+					"invoice": {
+						"no": "RT/26-27/1266",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:22",
+						"kirana": "k11",
+						"shop": {
+							"id": "k11",
+							"name": "Raj Super Mart",
+							"area": "Mahal",
+							"pincode": "440032"
+						},
+						"units": 36,
+						"rate": 18,
+						"gross": 648,
+						"discountPct": 16.67,
+						"discount": 108,
+						"taxable": 540,
+						"gstPct": 5,
+						"cgst": 13.5,
+						"sgst": 13.5,
+						"tax": 27,
+						"roundOff": 0,
+						"total": 567,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k12",
 					"name": "Vaishnavi Stores",
 					"area": "Itwari",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-28T10:24",
+					"invoice": {
+						"no": "RT/26-27/1267",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:24",
+						"kirana": "k12",
+						"shop": {
+							"id": "k12",
+							"name": "Vaishnavi Stores",
+							"area": "Itwari",
+							"pincode": "440002"
+						},
+						"units": 24,
+						"rate": 18,
+						"gross": 432,
+						"discountPct": 16.67,
+						"discount": 72,
+						"taxable": 360,
+						"gstPct": 5,
+						"cgst": 9,
+						"sgst": 9,
+						"tax": 18,
+						"roundOff": 0,
+						"total": 378,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k13",
 					"name": "Sai Kripa Kirana",
 					"area": "Dharampeth",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-28T10:26",
+					"invoice": {
+						"no": "RT/26-27/1268",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:26",
+						"kirana": "k13",
+						"shop": {
+							"id": "k13",
+							"name": "Sai Kripa Kirana",
+							"area": "Dharampeth",
+							"pincode": "440010"
+						},
+						"units": 12,
+						"rate": 18,
+						"gross": 216,
+						"discountPct": 16.67,
+						"discount": 36,
+						"taxable": 180,
+						"gstPct": 5,
+						"cgst": 4.5,
+						"sgst": 4.5,
+						"tax": 9,
+						"roundOff": 0,
+						"total": 189,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k14",
 					"name": "Shree Ram Provision",
 					"area": "Sitabuldi",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-28T10:28",
+					"invoice": {
+						"no": "RT/26-27/1269",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:28",
+						"kirana": "k14",
+						"shop": {
+							"id": "k14",
+							"name": "Shree Ram Provision",
+							"area": "Sitabuldi",
+							"pincode": "440012"
+						},
+						"units": 12,
+						"rate": 18,
+						"gross": 216,
+						"discountPct": 16.67,
+						"discount": 36,
+						"taxable": 180,
+						"gstPct": 5,
+						"cgst": 4.5,
+						"sgst": 4.5,
+						"tax": 9,
+						"roundOff": 0,
+						"total": 189,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k15",
 					"name": "Hanuman General Store",
 					"area": "Wardha Road",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-28T10:30",
+					"invoice": {
+						"no": "RT/26-27/1270",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:30",
+						"kirana": "k15",
+						"shop": {
+							"id": "k15",
+							"name": "Hanuman General Store",
+							"area": "Wardha Road",
+							"pincode": "440015"
+						},
+						"units": 12,
+						"rate": 18,
+						"gross": 216,
+						"discountPct": 16.67,
+						"discount": 36,
+						"taxable": 180,
+						"gstPct": 5,
+						"cgst": 4.5,
+						"sgst": 4.5,
+						"tax": 9,
+						"roundOff": 0,
+						"total": 189,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k16",
 					"name": "Gajanan Kirana",
 					"area": "Wardha",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-28T10:32",
+					"invoice": {
+						"no": "RT/26-27/1271",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:32",
+						"kirana": "k16",
+						"shop": {
+							"id": "k16",
+							"name": "Gajanan Kirana",
+							"area": "Wardha",
+							"pincode": "442001"
+						},
+						"units": 24,
+						"rate": 18,
+						"gross": 432,
+						"discountPct": 16.67,
+						"discount": 72,
+						"taxable": 360,
+						"gstPct": 5,
+						"cgst": 9,
+						"sgst": 9,
+						"tax": 18,
+						"roundOff": 0,
+						"total": 378,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k17",
 					"name": "Kamal Provision Store",
 					"area": "Mahal",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-28T10:34",
+					"invoice": {
+						"no": "RT/26-27/1272",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:34",
+						"kirana": "k17",
+						"shop": {
+							"id": "k17",
+							"name": "Kamal Provision Store",
+							"area": "Mahal",
+							"pincode": "440032"
+						},
+						"units": 12,
+						"rate": 18,
+						"gross": 216,
+						"discountPct": 16.67,
+						"discount": 36,
+						"taxable": 180,
+						"gstPct": 5,
+						"cgst": 4.5,
+						"sgst": 4.5,
+						"tax": 9,
+						"roundOff": 0,
+						"total": 189,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k18",
 					"name": "Navkar Stores",
 					"area": "Itwari",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-28T10:36",
+					"invoice": {
+						"no": "RT/26-27/1273",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:36",
+						"kirana": "k18",
+						"shop": {
+							"id": "k18",
+							"name": "Navkar Stores",
+							"area": "Itwari",
+							"pincode": "440002"
+						},
+						"units": 12,
+						"rate": 18,
+						"gross": 216,
+						"discountPct": 16.67,
+						"discount": 36,
+						"taxable": 180,
+						"gstPct": 5,
+						"cgst": 4.5,
+						"sgst": 4.5,
+						"tax": 9,
+						"roundOff": 0,
+						"total": 189,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k19",
 					"name": "Siddhivinayak Kirana",
 					"area": "Sadar",
-					"units": 24
+					"units": 24,
+					"at": "2026-08-28T10:38",
+					"invoice": {
+						"no": "RT/26-27/1274",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:38",
+						"kirana": "k19",
+						"shop": {
+							"id": "k19",
+							"name": "Siddhivinayak Kirana",
+							"area": "Sadar",
+							"pincode": "440001"
+						},
+						"units": 24,
+						"rate": 18,
+						"gross": 432,
+						"discountPct": 16.67,
+						"discount": 72,
+						"taxable": 360,
+						"gstPct": 5,
+						"cgst": 9,
+						"sgst": 9,
+						"tax": 18,
+						"roundOff": 0,
+						"total": 378,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k20",
 					"name": "Jyoti General Store",
 					"area": "Kamptee",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-28T10:40",
+					"invoice": {
+						"no": "RT/26-27/1275",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:40",
+						"kirana": "k20",
+						"shop": {
+							"id": "k20",
+							"name": "Jyoti General Store",
+							"area": "Kamptee",
+							"pincode": "441001"
+						},
+						"units": 12,
+						"rate": 18,
+						"gross": 216,
+						"discountPct": 16.67,
+						"discount": 36,
+						"taxable": 180,
+						"gstPct": 5,
+						"cgst": 4.5,
+						"sgst": 4.5,
+						"tax": 9,
+						"roundOff": 0,
+						"total": 189,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k21",
 					"name": "Laxmi Narayan Stores",
 					"area": "Wardha",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-28T10:42",
+					"invoice": {
+						"no": "RT/26-27/1276",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:42",
+						"kirana": "k21",
+						"shop": {
+							"id": "k21",
+							"name": "Laxmi Narayan Stores",
+							"area": "Wardha",
+							"pincode": "442001"
+						},
+						"units": 12,
+						"rate": 18,
+						"gross": 216,
+						"discountPct": 16.67,
+						"discount": 36,
+						"taxable": 180,
+						"gstPct": 5,
+						"cgst": 4.5,
+						"sgst": 4.5,
+						"tax": 9,
+						"roundOff": 0,
+						"total": 189,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k22",
 					"name": "Bharat Kirana",
 					"area": "Sitabuldi",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-28T10:44",
+					"invoice": {
+						"no": "RT/26-27/1277",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:44",
+						"kirana": "k22",
+						"shop": {
+							"id": "k22",
+							"name": "Bharat Kirana",
+							"area": "Sitabuldi",
+							"pincode": "440012"
+						},
+						"units": 12,
+						"rate": 18,
+						"gross": 216,
+						"discountPct": 16.67,
+						"discount": 36,
+						"taxable": 180,
+						"gstPct": 5,
+						"cgst": 4.5,
+						"sgst": 4.5,
+						"tax": 9,
+						"roundOff": 0,
+						"total": 189,
+						"hsn": "1704"
+					}
 				},
 				{
 					"kirana": "k23",
 					"name": "Shubham Provision",
 					"area": "Dharampeth",
-					"units": 12
+					"units": 12,
+					"at": "2026-08-28T10:46",
+					"invoice": {
+						"no": "RT/26-27/1278",
+						"date": "2026-08-28",
+						"at": "2026-08-28T10:46",
+						"kirana": "k23",
+						"shop": {
+							"id": "k23",
+							"name": "Shubham Provision",
+							"area": "Dharampeth",
+							"pincode": "440010"
+						},
+						"units": 12,
+						"rate": 18,
+						"gross": 216,
+						"discountPct": 16.67,
+						"discount": 36,
+						"taxable": 180,
+						"gstPct": 5,
+						"cgst": 4.5,
+						"sgst": 4.5,
+						"tax": 9,
+						"roundOff": 0,
+						"total": 189,
+						"hsn": "1704"
+					}
 				}
 			],
 			"offered": 38,
@@ -12607,6 +18231,7 @@
 			"id": "k0",
 			"name": "Shree Ganesh Kirana",
 			"area": "Itwari",
+			"pincode": "440002",
 			"sales14": 6,
 			"distributor": "rakesh",
 			"member": "ganesh"
@@ -12615,6 +18240,7 @@
 			"id": "k1",
 			"name": "Jai Durga Stores",
 			"area": "Kamptee",
+			"pincode": "441001",
 			"sales14": 6,
 			"distributor": "rakesh",
 			"member": "jaidurga"
@@ -12623,6 +18249,7 @@
 			"id": "k2",
 			"name": "Om Sai Provision",
 			"area": "Wardha Road",
+			"pincode": "440015",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-om-sai-provision"
@@ -12631,6 +18258,7 @@
 			"id": "k3",
 			"name": "Maa Bhavani Kirana",
 			"area": "Itwari",
+			"pincode": "440002",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-maa-bhavani-kirana"
@@ -12639,6 +18267,7 @@
 			"id": "k4",
 			"name": "New Sagar Stores",
 			"area": "Kamptee",
+			"pincode": "441001",
 			"sales14": 9,
 			"distributor": "rakesh",
 			"member": "kirana-new-sagar-stores"
@@ -12647,6 +18276,7 @@
 			"id": "k5",
 			"name": "Gurukripa Traders",
 			"area": "Mahal",
+			"pincode": "440032",
 			"sales14": 6,
 			"distributor": "rakesh",
 			"member": "kirana-gurukripa-traders"
@@ -12655,6 +18285,7 @@
 			"id": "k6",
 			"name": "Mahalaxmi Kirana",
 			"area": "Sitabuldi",
+			"pincode": "440012",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-mahalaxmi-kirana"
@@ -12663,6 +18294,7 @@
 			"id": "k7",
 			"name": "Shiv Shakti Store",
 			"area": "Wardha",
+			"pincode": "442001",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-shiv-shakti-store"
@@ -12671,6 +18303,7 @@
 			"id": "k8",
 			"name": "Patel Provision",
 			"area": "Dharampeth",
+			"pincode": "440010",
 			"sales14": 6,
 			"distributor": "rakesh",
 			"member": "kirana-patel-provision"
@@ -12679,6 +18312,7 @@
 			"id": "k9",
 			"name": "Annapurna Stores",
 			"area": "Sadar",
+			"pincode": "440001",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-annapurna-stores"
@@ -12687,6 +18321,7 @@
 			"id": "k10",
 			"name": "Sahyog Kirana",
 			"area": "Kamptee",
+			"pincode": "441001",
 			"sales14": 12,
 			"distributor": "rakesh",
 			"member": "kirana-sahyog-kirana"
@@ -12695,6 +18330,7 @@
 			"id": "k11",
 			"name": "Raj Super Mart",
 			"area": "Mahal",
+			"pincode": "440032",
 			"sales14": 9,
 			"distributor": "rakesh",
 			"member": "kirana-raj-super-mart"
@@ -12703,6 +18339,7 @@
 			"id": "k12",
 			"name": "Vaishnavi Stores",
 			"area": "Itwari",
+			"pincode": "440002",
 			"sales14": 6,
 			"distributor": "rakesh",
 			"member": "kirana-vaishnavi-stores"
@@ -12711,6 +18348,7 @@
 			"id": "k13",
 			"name": "Sai Kripa Kirana",
 			"area": "Dharampeth",
+			"pincode": "440010",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-sai-kripa-kirana"
@@ -12719,6 +18357,7 @@
 			"id": "k14",
 			"name": "Shree Ram Provision",
 			"area": "Sitabuldi",
+			"pincode": "440012",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-shree-ram-provision"
@@ -12727,6 +18366,7 @@
 			"id": "k15",
 			"name": "Hanuman General Store",
 			"area": "Wardha Road",
+			"pincode": "440015",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-hanuman-general-store"
@@ -12735,6 +18375,7 @@
 			"id": "k16",
 			"name": "Gajanan Kirana",
 			"area": "Wardha",
+			"pincode": "442001",
 			"sales14": 6,
 			"distributor": "rakesh",
 			"member": "kirana-gajanan-kirana"
@@ -12743,6 +18384,7 @@
 			"id": "k17",
 			"name": "Kamal Provision Store",
 			"area": "Mahal",
+			"pincode": "440032",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-kamal-provision-store"
@@ -12751,6 +18393,7 @@
 			"id": "k18",
 			"name": "Navkar Stores",
 			"area": "Itwari",
+			"pincode": "440002",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-navkar-stores"
@@ -12759,6 +18402,7 @@
 			"id": "k19",
 			"name": "Siddhivinayak Kirana",
 			"area": "Sadar",
+			"pincode": "440001",
 			"sales14": 6,
 			"distributor": "rakesh",
 			"member": "kirana-siddhivinayak-kirana"
@@ -12767,6 +18411,7 @@
 			"id": "k20",
 			"name": "Jyoti General Store",
 			"area": "Kamptee",
+			"pincode": "441001",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-jyoti-general-store"
@@ -12775,6 +18420,7 @@
 			"id": "k21",
 			"name": "Laxmi Narayan Stores",
 			"area": "Wardha",
+			"pincode": "442001",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-laxmi-narayan-stores"
@@ -12783,6 +18429,7 @@
 			"id": "k22",
 			"name": "Bharat Kirana",
 			"area": "Sitabuldi",
+			"pincode": "440012",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-bharat-kirana"
@@ -12791,6 +18438,7 @@
 			"id": "k23",
 			"name": "Shubham Provision",
 			"area": "Dharampeth",
+			"pincode": "440010",
 			"sales14": 9,
 			"distributor": "rakesh",
 			"member": "kirana-shubham-provision"
@@ -12799,6 +18447,7 @@
 			"id": "k24",
 			"name": "Mauli Kirana",
 			"area": "Wardha Road",
+			"pincode": "440015",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-mauli-kirana"
@@ -12807,6 +18456,7 @@
 			"id": "k25",
 			"name": "Ekta Super Bazaar",
 			"area": "Sadar",
+			"pincode": "440001",
 			"sales14": 6,
 			"distributor": "rakesh",
 			"member": "kirana-ekta-super-bazaar"
@@ -12815,6 +18465,7 @@
 			"id": "k26",
 			"name": "Pooja Provision",
 			"area": "Itwari",
+			"pincode": "440002",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-pooja-provision"
@@ -12823,6 +18474,7 @@
 			"id": "k27",
 			"name": "Tulsi Kirana",
 			"area": "Kamptee",
+			"pincode": "441001",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-tulsi-kirana"
@@ -12831,6 +18483,7 @@
 			"id": "k28",
 			"name": "Vithal Stores",
 			"area": "Mahal",
+			"pincode": "440032",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-vithal-stores"
@@ -12839,6 +18492,7 @@
 			"id": "k29",
 			"name": "Anand General Store",
 			"area": "Dharampeth",
+			"pincode": "440010",
 			"sales14": 6,
 			"distributor": "rakesh",
 			"member": "kirana-anand-general-store"
@@ -12847,6 +18501,7 @@
 			"id": "k30",
 			"name": "Sainath Kirana",
 			"area": "Wardha",
+			"pincode": "442001",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-sainath-kirana"
@@ -12855,6 +18510,7 @@
 			"id": "k31",
 			"name": "Shree Sai Kirana",
 			"area": "Mahal",
+			"pincode": "440032",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "shreesai"
@@ -12863,6 +18519,7 @@
 			"id": "k32",
 			"name": "Balaji Provision",
 			"area": "Sadar",
+			"pincode": "440001",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-balaji-provision"
@@ -12871,6 +18528,7 @@
 			"id": "k33",
 			"name": "Rameshwar Stores",
 			"area": "Wardha Road",
+			"pincode": "440015",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-rameshwar-stores"
@@ -12879,6 +18537,7 @@
 			"id": "k34",
 			"name": "Ganga Kirana",
 			"area": "Kamptee",
+			"pincode": "441001",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-ganga-kirana"
@@ -12887,6 +18546,7 @@
 			"id": "k35",
 			"name": "Navratna General Store",
 			"area": "Dharampeth",
+			"pincode": "440010",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-navratna-general-store"
@@ -12895,6 +18555,7 @@
 			"id": "k36",
 			"name": "Sant Tukaram Kirana",
 			"area": "Wardha",
+			"pincode": "442001",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-sant-tukaram-kirana"
@@ -12903,6 +18564,7 @@
 			"id": "k37",
 			"name": "Mohan Stores",
 			"area": "Itwari",
+			"pincode": "440002",
 			"sales14": 3,
 			"distributor": "rakesh",
 			"member": "kirana-mohan-stores"
@@ -12911,6 +18573,7 @@
 			"id": "h0",
 			"name": "Sri Lakshmi Ganapathi Kirana",
 			"area": "Begum Bazaar",
+			"pincode": "500012",
 			"sales14": 6,
 			"distributor": "lakshmi",
 			"member": "kirana-sri-lakshmi-ganapathi-kirana"
@@ -12919,6 +18582,7 @@
 			"id": "h1",
 			"name": "Al-Noor Provision Store",
 			"area": "Charminar",
+			"pincode": "500002",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-al-noor-provision-store"
@@ -12927,6 +18591,7 @@
 			"id": "h2",
 			"name": "Deccan General Stores",
 			"area": "Abids",
+			"pincode": "500001",
 			"sales14": 8,
 			"distributor": "lakshmi",
 			"member": "kirana-deccan-general-stores"
@@ -12935,6 +18600,7 @@
 			"id": "h3",
 			"name": "Sai Krishna Kirana",
 			"area": "Koti",
+			"pincode": "500095",
 			"sales14": 5,
 			"distributor": "lakshmi",
 			"member": "kirana-sai-krishna-kirana"
@@ -12943,6 +18609,7 @@
 			"id": "h4",
 			"name": "Hussaini Provision",
 			"area": "Dabeerpura",
+			"pincode": "500023",
 			"sales14": 9,
 			"distributor": "lakshmi",
 			"member": "kirana-hussaini-provision"
@@ -12951,6 +18618,7 @@
 			"id": "h5",
 			"name": "Bhavani Kirana",
 			"area": "Malakpet",
+			"pincode": "500036",
 			"sales14": 6,
 			"distributor": "lakshmi",
 			"member": "kirana-bhavani-kirana"
@@ -12959,6 +18627,7 @@
 			"id": "h6",
 			"name": "Golconda Stores",
 			"area": "Afzal Gunj",
+			"pincode": "500012",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-golconda-stores"
@@ -12967,6 +18636,7 @@
 			"id": "h7",
 			"name": "Moazzam Kirana",
 			"area": "Charminar",
+			"pincode": "500002",
 			"sales14": 4,
 			"distributor": "lakshmi",
 			"member": "kirana-moazzam-kirana"
@@ -12975,6 +18645,7 @@
 			"id": "h8",
 			"name": "Anjaneya Provision Store",
 			"area": "Sultan Bazar",
+			"pincode": "500095",
 			"sales14": 8,
 			"distributor": "lakshmi",
 			"member": "kirana-anjaneya-provision-store"
@@ -12983,6 +18654,7 @@
 			"id": "h9",
 			"name": "Shalimar General Store",
 			"area": "Nampally",
+			"pincode": "500001",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-shalimar-general-store"
@@ -12991,6 +18663,7 @@
 			"id": "h10",
 			"name": "Ravi Teja Kirana",
 			"area": "Chaderghat",
+			"pincode": "500024",
 			"sales14": 6,
 			"distributor": "lakshmi",
 			"member": "kirana-ravi-teja-kirana"
@@ -12999,6 +18672,7 @@
 			"id": "h11",
 			"name": "Madina Provision",
 			"area": "Charminar",
+			"pincode": "500002",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-madina-provision"
@@ -13007,6 +18681,7 @@
 			"id": "h12",
 			"name": "Sri Durga Bhavani Stores",
 			"area": "Begum Bazaar",
+			"pincode": "500012",
 			"sales14": 8,
 			"distributor": "lakshmi",
 			"member": "kirana-sri-durga-bhavani-stores"
@@ -13015,6 +18690,7 @@
 			"id": "h13",
 			"name": "Hyderabadi Kirana",
 			"area": "Abids",
+			"pincode": "500001",
 			"sales14": 5,
 			"distributor": "lakshmi",
 			"member": "kirana-hyderabadi-kirana"
@@ -13023,6 +18699,7 @@
 			"id": "h14",
 			"name": "Gulzar House Stores",
 			"area": "Charminar",
+			"pincode": "500002",
 			"sales14": 9,
 			"distributor": "lakshmi",
 			"member": "kirana-gulzar-house-stores"
@@ -13031,6 +18708,7 @@
 			"id": "h15",
 			"name": "Padmavathi Kirana",
 			"area": "Koti",
+			"pincode": "500095",
 			"sales14": 6,
 			"distributor": "lakshmi",
 			"member": "kirana-padmavathi-kirana"
@@ -13039,6 +18717,7 @@
 			"id": "h16",
 			"name": "Asif Nagar Provisions",
 			"area": "Nampally",
+			"pincode": "500001",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-asif-nagar-provisions"
@@ -13047,6 +18726,7 @@
 			"id": "h17",
 			"name": "Ramakrishna General Store",
 			"area": "Malakpet",
+			"pincode": "500036",
 			"sales14": 4,
 			"distributor": "lakshmi",
 			"member": "kirana-ramakrishna-general-store"
@@ -13055,6 +18735,7 @@
 			"id": "h18",
 			"name": "Taj Kirana",
 			"area": "Dabeerpura",
+			"pincode": "500023",
 			"sales14": 8,
 			"distributor": "lakshmi",
 			"member": "kirana-taj-kirana"
@@ -13063,6 +18744,7 @@
 			"id": "h19",
 			"name": "Sitara Provision Store",
 			"area": "Afzal Gunj",
+			"pincode": "500012",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-sitara-provision-store"
@@ -13071,6 +18753,7 @@
 			"id": "h20",
 			"name": "Vinayaka Stores",
 			"area": "Sultan Bazar",
+			"pincode": "500095",
 			"sales14": 6,
 			"distributor": "lakshmi",
 			"member": "kirana-vinayaka-stores"
@@ -13079,6 +18762,7 @@
 			"id": "h21",
 			"name": "Nizam Kirana",
 			"area": "Charminar",
+			"pincode": "500002",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-nizam-kirana"
@@ -13087,6 +18771,7 @@
 			"id": "h22",
 			"name": "Annapurna Provisions",
 			"area": "Chaderghat",
+			"pincode": "500024",
 			"sales14": 8,
 			"distributor": "lakshmi",
 			"member": "kirana-annapurna-provisions"
@@ -13095,6 +18780,7 @@
 			"id": "h23",
 			"name": "Musi River Stores",
 			"area": "Afzal Gunj",
+			"pincode": "500012",
 			"sales14": 5,
 			"distributor": "lakshmi",
 			"member": "kirana-musi-river-stores"
@@ -13103,6 +18789,7 @@
 			"id": "h24",
 			"name": "Kothi Kirana",
 			"area": "Koti",
+			"pincode": "500095",
 			"sales14": 9,
 			"distributor": "lakshmi",
 			"member": "kirana-kothi-kirana"
@@ -13111,6 +18798,7 @@
 			"id": "h25",
 			"name": "Siddiq General Store",
 			"area": "Dabeerpura",
+			"pincode": "500023",
 			"sales14": 6,
 			"distributor": "lakshmi",
 			"member": "kirana-siddiq-general-store"
@@ -13119,6 +18807,7 @@
 			"id": "h26",
 			"name": "Lalitha Provision",
 			"area": "Malakpet",
+			"pincode": "500036",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-lalitha-provision"
@@ -13127,6 +18816,7 @@
 			"id": "h27",
 			"name": "Mehboob Kirana",
 			"area": "Begum Bazaar",
+			"pincode": "500012",
 			"sales14": 4,
 			"distributor": "lakshmi",
 			"member": "kirana-mehboob-kirana"
@@ -13135,6 +18825,7 @@
 			"id": "h28",
 			"name": "Srinivasa Stores",
 			"area": "Abids",
+			"pincode": "500001",
 			"sales14": 8,
 			"distributor": "lakshmi",
 			"member": "kirana-srinivasa-stores"
@@ -13143,6 +18834,7 @@
 			"id": "h29",
 			"name": "Zam Zam Provisions",
 			"area": "Charminar",
+			"pincode": "500002",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-zam-zam-provisions"
@@ -13151,6 +18843,7 @@
 			"id": "h30",
 			"name": "Pochamma Kirana",
 			"area": "Chaderghat",
+			"pincode": "500024",
 			"sales14": 6,
 			"distributor": "lakshmi",
 			"member": "kirana-pochamma-kirana"
@@ -13159,6 +18852,7 @@
 			"id": "h31",
 			"name": "Rahmat General Store",
 			"area": "Nampally",
+			"pincode": "500001",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-rahmat-general-store"
@@ -13167,6 +18861,7 @@
 			"id": "h32",
 			"name": "Krishnaveni Provisions",
 			"area": "Sultan Bazar",
+			"pincode": "500095",
 			"sales14": 8,
 			"distributor": "lakshmi",
 			"member": "kirana-krishnaveni-provisions"
@@ -13175,6 +18870,7 @@
 			"id": "h33",
 			"name": "Shah Ali Kirana",
 			"area": "Dabeerpura",
+			"pincode": "500023",
 			"sales14": 5,
 			"distributor": "lakshmi",
 			"member": "kirana-shah-ali-kirana"
@@ -13183,6 +18879,7 @@
 			"id": "h34",
 			"name": "Mahalakshmi Stores",
 			"area": "Malakpet",
+			"pincode": "500036",
 			"sales14": 9,
 			"distributor": "lakshmi",
 			"member": "kirana-mahalakshmi-stores"
@@ -13191,6 +18888,7 @@
 			"id": "h35",
 			"name": "Banjara Provision Store",
 			"area": "Abids",
+			"pincode": "500001",
 			"sales14": 6,
 			"distributor": "lakshmi",
 			"member": "kirana-banjara-provision-store"
@@ -13199,6 +18897,7 @@
 			"id": "h36",
 			"name": "Ghouse Kirana",
 			"area": "Charminar",
+			"pincode": "500002",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-ghouse-kirana"
@@ -13207,6 +18906,7 @@
 			"id": "h37",
 			"name": "Sri Rama Stores",
 			"area": "Koti",
+			"pincode": "500095",
 			"sales14": 4,
 			"distributor": "lakshmi",
 			"member": "kirana-sri-rama-stores"
@@ -13215,6 +18915,7 @@
 			"id": "h38",
 			"name": "Patel Market Kirana",
 			"area": "Afzal Gunj",
+			"pincode": "500012",
 			"sales14": 8,
 			"distributor": "lakshmi",
 			"member": "kirana-patel-market-kirana"
@@ -13223,6 +18924,7 @@
 			"id": "h39",
 			"name": "Yadamma Provisions",
 			"area": "Chaderghat",
+			"pincode": "500024",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-yadamma-provisions"
@@ -13231,6 +18933,7 @@
 			"id": "h40",
 			"name": "Darussalam Stores",
 			"area": "Nampally",
+			"pincode": "500001",
 			"sales14": 6,
 			"distributor": "lakshmi",
 			"member": "kirana-darussalam-stores"
@@ -13239,6 +18942,7 @@
 			"id": "h41",
 			"name": "Gowri Kirana",
 			"area": "Begum Bazaar",
+			"pincode": "500012",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-gowri-kirana"
@@ -13247,6 +18951,7 @@
 			"id": "h42",
 			"name": "Irani Gali Provisions",
 			"area": "Charminar",
+			"pincode": "500002",
 			"sales14": 8,
 			"distributor": "lakshmi",
 			"member": "kirana-irani-gali-provisions"
@@ -13255,6 +18960,7 @@
 			"id": "h43",
 			"name": "Satyanarayana Stores",
 			"area": "Sultan Bazar",
+			"pincode": "500095",
 			"sales14": 5,
 			"distributor": "lakshmi",
 			"member": "kirana-satyanarayana-stores"
@@ -13263,6 +18969,7 @@
 			"id": "h44",
 			"name": "Farhan General Store",
 			"area": "Dabeerpura",
+			"pincode": "500023",
 			"sales14": 9,
 			"distributor": "lakshmi",
 			"member": "kirana-farhan-general-store"
@@ -13271,6 +18978,7 @@
 			"id": "h45",
 			"name": "Sunanda Kirana",
 			"area": "Malakpet",
+			"pincode": "500036",
 			"sales14": 6,
 			"distributor": "lakshmi",
 			"member": "kirana-sunanda-kirana"
@@ -13279,6 +18987,7 @@
 			"id": "h46",
 			"name": "Mir Alam Provisions",
 			"area": "Afzal Gunj",
+			"pincode": "500012",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-mir-alam-provisions"
@@ -13287,6 +18996,7 @@
 			"id": "h47",
 			"name": "Jyothi Stores",
 			"area": "Koti",
+			"pincode": "500095",
 			"sales14": 4,
 			"distributor": "lakshmi",
 			"member": "kirana-jyothi-stores"
@@ -13295,6 +19005,7 @@
 			"id": "h48",
 			"name": "Purani Haveli Kirana",
 			"area": "Charminar",
+			"pincode": "500002",
 			"sales14": 8,
 			"distributor": "lakshmi",
 			"member": "kirana-purani-haveli-kirana"
@@ -13303,6 +19014,7 @@
 			"id": "h49",
 			"name": "Narayana Provision Store",
 			"area": "Abids",
+			"pincode": "500001",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-narayana-provision-store"
@@ -13311,6 +19023,7 @@
 			"id": "h50",
 			"name": "Bilal Stores",
 			"area": "Nampally",
+			"pincode": "500001",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-bilal-stores"
@@ -13319,6 +19032,7 @@
 			"id": "h51",
 			"name": "Saraswathi Kirana",
 			"area": "Chaderghat",
+			"pincode": "500024",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-saraswathi-kirana"
@@ -13327,6 +19041,7 @@
 			"id": "h52",
 			"name": "Osman Gunj Provisions",
 			"area": "Begum Bazaar",
+			"pincode": "500012",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-osman-gunj-provisions"
@@ -13335,6 +19050,7 @@
 			"id": "h53",
 			"name": "Vijaya Stores",
 			"area": "Sultan Bazar",
+			"pincode": "500095",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-vijaya-stores"
@@ -13343,6 +19059,7 @@
 			"id": "h54",
 			"name": "Akbar Kirana",
 			"area": "Dabeerpura",
+			"pincode": "500023",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-akbar-kirana"
@@ -13351,6 +19068,7 @@
 			"id": "h55",
 			"name": "Manjula Provisions",
 			"area": "Malakpet",
+			"pincode": "500036",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-manjula-provisions"
@@ -13359,6 +19077,7 @@
 			"id": "h56",
 			"name": "Laad Bazaar Stores",
 			"area": "Charminar",
+			"pincode": "500002",
 			"sales14": 7,
 			"distributor": "lakshmi",
 			"member": "kirana-laad-bazaar-stores"
@@ -13367,6 +19086,7 @@
 			"id": "h57",
 			"name": "Sri Venu Kirana",
 			"area": "Afzal Gunj",
+			"pincode": "500012",
 			"sales14": 8,
 			"distributor": "lakshmi",
 			"member": "kirana-sri-venu-kirana"

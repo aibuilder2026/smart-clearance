@@ -91,6 +91,16 @@
 .tl-small { font-size: 10.5px; color: #4b5550; }
 .tl-sign { min-height: 44px; margin-top: 8px; text-align: right; }
 .tl-foot { text-align: center; font-size: 10px; color: #4b5550; margin-top: 8px !important; }
+/* a label in the items' description, right-aligned and wrapping (the kirana invoice's scheme discount, SC-153) */
+.tl-right { text-align: right; }
+/* the lines under an item (its discount, the taxes, the round-off) as Tally prints them: rows of their own, no rule between */
+.tl-items tr.tl-sub td { border-top-style: hidden; padding-top: 3px; padding-bottom: 3px; }
+/* the sales register of a batch's invoices to its kiranas: a number opens its invoice */
+.tl-reg .tl-table td, .tl-reg .tl-table th { white-space: nowrap; }
+.tl-reg .tl-table td:nth-child(3) { white-space: normal; min-width: 7em; }
+.tl-link { padding: 0; border: 0; background: none; font: inherit; color: #1f6f43; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.tl-link:focus-visible { outline: 2px solid #1f6f43; outline-offset: 2px; border-radius: 2px; }
+.tl-reg { overflow-x: auto; }
 @container (max-width: 520px) {
   .tl-two { grid-template-columns: minmax(0, 1fr); }
   .tl-tall { grid-row: auto; }
@@ -98,6 +108,7 @@
   .tl-table { font-size: 11px; }
   .tl-table th, .tl-table td { padding: 5px 3px; }
   .tl-items th:nth-child(6), .tl-items td:nth-child(6) { display: none; }
+  .tl-reg .tl-gst { display: none; }
   .tl-table td:nth-child(2) { min-width: 0; }
 }
 /* a phone's paper keeps its blocks inside its edges: a tighter inset, as a container cannot style itself */
@@ -541,6 +552,16 @@ button.dist-line:focus-visible { outline: 3px solid var(--ring); outline-offset:
 .dist-shops b { font-weight: 550; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dist-shops em { grid-row: 2; font-style: normal; font-size: 12px; color: var(--fg-2); }
 .dist-shops .tnum { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+/* each shop's order as a button, its tax invoice under it (SC-153, option A) */
+.dist-shops:has(> .dist-shop) { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 4px 12px; padding: 6px; }
+.dist-shop { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 8px; min-height: 44px; padding: 8px 10px; border: 0; border-radius: 10px; background: transparent; color: inherit; font: inherit; font-size: 13px; text-align: left; cursor: pointer; transition: background-color var(--t-fast) var(--ease); }
+.dist-shop:hover { background: var(--surface); }
+.dist-shop:focus-visible { outline: 3px solid var(--ring); outline-offset: -3px; }
+.dist-shop b { font-weight: 550; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dist-shop em { grid-row: 2; font-style: normal; font-size: 12px; color: var(--fg-2); }
+.dist-shop > .tnum { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+.dist-shop-no { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 8px; margin-top: 4px; padding-top: 4px; border-top: var(--hair) solid var(--line); font-size: 12px; color: var(--fg-2); }
+.dist-shop-no .mono { font-family: var(--font-mono); font-size: 11.5px; color: var(--primary-text); }
 /* ---------- packs destroyed at the distributor's godown (SC-139, option B): two photos, Vision's checks, the second yes ---------- */
 .dz-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .cam.dz-cam { aspect-ratio: 4 / 3; max-height: none; border-radius: 18px; box-shadow: none; }

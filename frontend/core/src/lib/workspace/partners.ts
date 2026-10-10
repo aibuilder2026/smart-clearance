@@ -5,6 +5,7 @@
 // from either. The batch in a journey reads the journey's own state, as the prototype does. Nothing here reads the
 // seed, so a live build carries none of it. core/tests/partners.test.ts holds them to ledger.js.
 import { fmt } from '../format';
+import { journeyInvoices, schemeOf } from './model';
 import type {
 	CaseData,
 	Distributor,
@@ -33,7 +34,10 @@ export type PartnerWorld = {
 	capTimes: number;
 	/** the client's people by id, for who approved a destruction (SC-139); a name the live workspace sends stands as it is */
 	people?: Record<string, { short: string }>;
+	/** the kirana scheme (2 free with every 10): its discount on a shop's invoice (SC-153) */
+	scheme?: { buy: number; free: number };
 };
+const SCHEME = { buy: 10, free: 2 };
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
 const num = fmt.num;
@@ -421,12 +425,14 @@ function rowsWhole(c: CaseData, h: Pick<Hero, 'phase'>, short: string): PtWhole 
 
 /* ---------- a kirana ---------- */
 
-/** a shop's scheme: pay the pack price for 10 of every 12, sell all 12 at MRP */
-export const scheme = (n: number, pack: number, mrp: number) => {
-	const free = Math.floor(n / 12) * 2,
-		paid = n - free;
-	return { n, free, paid, pay: r2(paid * pack), sell: n * mrp, margin: r2(n * mrp - paid * pack) };
-};
+/** a shop's order as its tax invoice has it (SC-153; ledger.js scheme): every packet at the pack price less the
+ *  scheme's discount, the GST on that, what the shop paid, and its margin selling them all at MRP */
+export const scheme = (
+	n: number,
+	line: { price: number; packPrice?: number | null },
+	sku: { gst: number; hsn?: string; mrp: number },
+	sc: { buy: number; free: number } = SCHEME
+) => schemeOf(n, line, sku, sc);
 /** a shop's offer from a batch's facts: ordered, declined (Not this time), open, or expired, when its 48 hours ended or
  *  the scheme filled before the shop ordered */
 function offerOf(c: PartnerCase, shop: Shop, w: PartnerWorld): PtOffer {
@@ -458,7 +464,8 @@ function offerOf(c: PartnerCase, shop: Shop, w: PartnerWorld): PtOffer {
 		units: o ? o.units : 0,
 		orderedAt: o ? (o.at ?? stepAt(c, 'orders')) : null,
 		van: o ? stepAt(c, 'van') : null,
-		m: o ? scheme(o.units, kl.packPrice!, sku.mrp) : null
+		m: o ? scheme(o.units, kl, sku, w.scheme) : null,
+		invoice: o?.invoice ?? null
 	};
 }
 /** every offer a shop was sent: the batch in a journey's first (the stub's, from the journey's state), then its
@@ -467,7 +474,8 @@ export function offersFor(
 	shop: Shop,
 	cases: readonly PartnerCase[],
 	w: PartnerWorld,
-	story: { c: CaseData; h: Hero; day0: string } | null
+	story: { c: CaseData; h: Hero; day0: string } | null,
+	shops?: readonly Shop[]
 ): PtOffer[] {
 	const past = cases
 		.filter(
@@ -503,7 +511,8 @@ export function offersFor(
 		units: o ? o.units : 0,
 		orderedAt: o ? `${day0}T${o.at}` : null,
 		van: o && h.van.status === 'done' ? addDaysIso(day0, 4) + 'T09:00' : null,
-		m: o ? scheme(o.units, KL.packPrice!, sku.mrp) : null
+		m: o ? scheme(o.units, KL, sku, c.scheme) : null,
+		invoice: o ? (journeyInvoices(c, h.orders, day0, shops ?? [shop]).find((x) => x.kirana === shop.id) ?? null) : null
 	};
 	return [mine, ...past];
 }

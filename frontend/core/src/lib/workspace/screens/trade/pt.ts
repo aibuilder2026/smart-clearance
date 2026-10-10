@@ -2,10 +2,21 @@
 // and who issued it, and the world the partner's moments name.
 import type { IconName } from '../../../icons/registry';
 import { distNows, journeyOf, byAsk, type DistNow, type DistWorld } from '../../dist';
-import { batchViews } from '../../model';
+import { batchViews, invoicesOfCase } from '../../model';
 import { distPast, offersFor, type PartnerWorld } from '../../partners';
 import type { WorkspaceSource } from '../../source';
-import type { BatchView, Distributor, Doc, PartnerCase, PtOffer, PtSum, Shop, User } from '../../types';
+import type {
+	BatchView,
+	Distributor,
+	Doc,
+	KiranaInvoice,
+	PartnerCase,
+	PtOffer,
+	PtSum,
+	Shop,
+	Sku,
+	User
+} from '../../types';
 
 // the client's days and times come as its own (2026-08-27, 2026-08-27T12:10): a day is read from its parts, so no
 // time zone moves it
@@ -47,7 +58,8 @@ export const PAPER_ICON: Record<string, IconName> = {
 	support: 'hand-coins',
 	expiry: 'warehouse',
 	receipt: 'heart-handshake',
-	destruction: 'trash-2'
+	destruction: 'trash-2',
+	kiranas: 'receipt'
 };
 /** who issued a paper, from the distributor's side */
 export const issuedBy = (c: Pick<PartnerCase, 'partner'>, d: Doc, short: string) =>
@@ -69,7 +81,8 @@ export const worldOf = (ws: WorkspaceSource): PartnerWorld => ({
 	client: ws.data.client.name,
 	short: ws.data.workspace.short,
 	capTimes: ws.data.rules.shopCapTimes,
-	people: ws.data.people
+	people: ws.data.people,
+	scheme: ws.case?.scheme ?? ws.data.rules.scheme
 });
 
 /** every offer the signed-in kirana's shop was sent: on the stub the batch in a journey's comes from the journey's state,
@@ -79,7 +92,7 @@ export function offersOf(ws: WorkspaceSource, me: { org?: string }): PtOffer[] {
 	if (!shop || !ws.partners) return [];
 	const c = ws.case;
 	const story = ws.kind === 'stub' && c ? { c, h: ws.state.hero, day0: ws.data.day0 } : null;
-	return offersFor(shop, ws.partners.cases, worldOf(ws), story).map((o) =>
+	return offersFor(shop, ws.partners.cases, worldOf(ws), story, ws.data.shops).map((o) =>
 		!o.story && c && o.ref === c.batch.id ? { ...o, story: true } : o
 	);
 }
@@ -147,3 +160,37 @@ export const shownSum = (x: Pick<PtSum, 'sold' | 'credit'>) => {
 		credit = Math.round(x.credit);
 	return { sold, credit, cost: sold + credit };
 };
+
+/* ---------- a batch's tax invoices to its kiranas (SC-153) ---------- */
+
+/** a batch's invoices to its shops by its ref, with what their papers name: the batch in focus's from the journey, any
+ *  other from its partner facts; and the scheme's effective price, which the register's taxable value is at */
+export function invoicesOfRef(
+	ws: WorkspaceSource,
+	ref: string
+): {
+	list: KiranaInvoice[];
+	batch: { id: string; bestBefore?: string | null };
+	sku: Sku;
+	dist: Distributor;
+	price: number;
+} | null {
+	const c = ws.case;
+	if (c && c.batch.id === ref)
+		return {
+			list: invoicesOfCase(c, ws.state.hero.orders, ws.data.day0, ws.data.shops),
+			batch: { id: ref, bestBefore: c.batch.bestBefore },
+			sku: c.sku,
+			dist: c.dist,
+			price: c.lines.kirana.price
+		};
+	const pc = ws.partners?.cases.find((x) => x.ref === ref);
+	if (!pc) return null;
+	return {
+		list: pc.kiranas.map((k) => k.invoice).filter((x): x is KiranaInvoice => !!x),
+		batch: { id: ref, bestBefore: pc.batch.bestBefore },
+		sku: ws.data.skus[pc.sku],
+		dist: ws.data.distributors[pc.dist],
+		price: pc.plan.lines.find((l) => l.id === 'kirana')?.price ?? 0
+	};
+}
