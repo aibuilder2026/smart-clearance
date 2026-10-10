@@ -386,6 +386,50 @@
     </Sheet>;
   }
 
+  // the Lister's lot on ExpireSoon (SC-151): the lot as buyers see it, what only the client sees, and where it stands;
+  // the raw call stays one tap away, closed, for the audit
+  const lotPrice = p => "₹" + (Number.isInteger(p) ? p : p.toFixed(2));
+  const andList = a => (a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1]);
+  function ApiCall({ lead, children }) {
+    const [open, setOpen] = useState(false);
+    return <div className="xcall"><div className="row between wrap" style={{ gap: 8 }}>{lead}<button type="button" className="xcall-btn" aria-expanded={open} onClick={() => setOpen(o => !o)}><Icon name="chevron-right" size={15} stroke={2.2} />The API call</button></div>{open && <div className="xcall-body stack tight">{children}</div>}</div>;
+  }
+  function ListerCard({ h, lot, sku, batch, dist, buyer, reserve, client, territories, req, res, onOpen }) {
+    const ended = !!h.listing && h.listing.status === "ended"; const last = h.bids[h.bids.length - 1];
+    const st = !h.listing ? 0 : h.truck.status === "dispatched" ? 4 : h.award ? 3 : h.bids.length ? 2 : 1;
+    const label = st === 4 ? "collected" : ended ? "ended unsold" : h.award ? "awarded" : last ? (last.status === "placed" ? "bid in" : "countered") : "live";
+    const badge = !h.listing ? <Badge>queued</Badge> : st === 4 ? <Badge tone="green" icon="check">collected</Badge> : ended ? <Badge>{label}</Badge> : <Badge tone={h.award ? "green" : "violet"} dot live={label === "live"}>{label}</Badge>;
+    const steps = [["Listed", h.listing && h.listing.at], ["Bid", h.bids[0] && h.bids[0].at], ["Won", h.award && h.award.at], ["Collected", h.truck.status === "dispatched" && h.truck.at]];
+    const nowAt = st >= 1 && st <= 3 && !ended ? st : -1;
+    const cities = territories.map(d => d.city), pins = territories.flatMap(d => d.pins.split(/,\s*/));
+    const per = sku.perCarton || 24, rest = lot.units % per, off = Math.round((1 - lot.price / sku.mrp) * 100);
+    return <Card className="stack snug">
+      <div className="card-head"><span className="row tight"><Aura on={!h.listing} className="icontile violet" style={{ borderRadius: 9 }}><Icon name="shopping-bag" size={17} stroke={2} /></Aura><span className="card-title">Lister · ExpireSoon</span></span>{badge}</div>
+      {!h.listing && <span className="t-footnote muted">Posting the lot now, in {possessive(dist.name)} name, with the label photo and dates.</span>}
+      <div className="esl" role="group" aria-label="The lot as buyers see it on ExpireSoon">
+        <div className="esl-top"><span className="es-logo" aria-hidden="true"><Icon name="hourglass" size={13} stroke={2.2} /></span><span className="es-word">ExpireSoon</span><span className="t-caption subtle">as buyers see it</span><span className="esl-id">{h.listing ? h.listing.id : "not posted yet"}</span></div>
+        <div className="esl-lot"><span className="esl-thumb"><Product name={sku.img} size={58} /></span>
+          <div className="stack tight" style={{ gap: 3 }}>
+            <b className="t-subhead">{sku.brand} {sku.name} · {fmt.num(lot.units)} units</b>
+            <span className="esl-price"><span className="es-price">{lotPrice(lot.price)}</span><span className="t-footnote muted">a packet · <s>MRP {lotPrice(sku.mrp)}</s> · {off}% off</span></span>
+            <span><span className="es-date">Best before {fmt.date(batch.bestBefore)} · {batch.daysLeft} days</span></span>
+            <span className="t-caption subtle">Sold by {dist.name}, {dist.city} · {Math.floor(lot.units / per)} cartons{rest ? ` + ${rest}` : ""}</span>
+          </div>
+        </div>
+        {h.award && <div className="esl-won"><Icon name="badge-check" size={17} /><span>Won by <b>{h.award.buyer}{buyer && buyer.name === h.award.buyer ? `, ${buyer.city}` : ""}</b> at <b className="tnum">₹{h.award.price.toFixed(2)}</b> · {fmt.inr(h.award.token)} token paid</span></div>}
+        {ended && <div className="esl-won"><Icon name="hourglass" size={17} /><span>Ended unsold on its deadline.</span></div>}
+      </div>
+      <div className="priv">
+        <span className="t-caption subtle">Only {client} sees</span>
+        <div className="priv-row"><Icon name="lock" size={16} /><span><b>Reserve ₹{reserve.toFixed(2)}</b> a packet. The Negotiator counters any bid under it; buyers never see it.</span></div>
+        <div className="priv-row"><Icon name="eye-off" size={16} /><span><b>Hidden in {territories.length} territories:</b> {andList(cities)} ({pins.length} pincode areas), so the lot never undercuts a {client} distributor.</span></div>
+      </div>
+      <ol className="esl-steps" aria-label="Where the lot stands">{steps.map(([k, t], i) => { const done = st > i && !!t; const now = i === nowAt; return <li key={k} className={cx(done && "done", now && "now")} aria-current={now ? "step" : undefined}><i /><b>{k}</b><span>{done ? t : now ? "waiting" : "\u00a0"}</span></li>; })}</ol>
+      <ApiCall lead={h.listing && <Button variant="outline" icon="external-link" onClick={onOpen}>Open on ExpireSoon</Button>}><CodeBlock code={req} label="ExpireSoon request" />{h.listing && <CodeBlock code={res} label="ExpireSoon response" />}</ApiCall>
+      <span className="t-footnote subtle">The marketplace is mocked: ExpireSoon's partner API is in talks, and the calls are what it would answer.</span>
+    </Card>;
+  }
+
   function Execution({ me, onOpenListing }) {
     const s = useStore(); const h = s.hero; const app = useApp(); const hm = heroModel(s); const [sheet, setSheet] = useState(false); const [dz, setDz] = useState(false);
     const started = ["approved", "executing", "dispatched", "settled", "cleared"].includes(h.phase);
@@ -401,12 +445,7 @@
       {!started ? <Card><Empty icon="sparkles" title="Nothing is executing yet" body="Listing, outreach, negotiation and the food-bank booking start the moment the plan is approved." /></Card> :
       <Columns sideWidth={340}
         main={<div style={{ display: "grid", gap: 20, gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 340px), 1fr))", alignItems: "start" }}>
-          {hasLine("expiresoon") ? <Card className="stack snug">
-            <div className="card-head"><span className="row tight"><Aura on={!h.listing} className="icontile violet" style={{ borderRadius: 9 }}><Icon name="shopping-bag" size={17} stroke={2} /></Aura><span className="card-title">Lister · ExpireSoon</span></span>{h.listing ? <Badge tone={h.listing.status === "awarded" ? "green" : "violet"} dot live={h.listing.status === "live"}>{h.listing.status}</Badge> : <Badge>queued</Badge>}</div>
-            <CodeBlock code={req} label="ExpireSoon request" />{h.listing && <CodeBlock code={res} label="ExpireSoon response" />}
-            <span className="t-footnote subtle">The marketplace is mocked; the request and response are what a partner API returns. Buyers in Munchly's territories never see the lot.</span>
-            {h.listing && <Button variant="outline" icon="external-link" onClick={() => (onOpenListing ? onOpenListing() : setSheet(true))}>Open on ExpireSoon</Button>}
-          </Card> : <Card className="stack snug">
+          {hasLine("expiresoon") ? <ListerCard h={h} lot={ES} sku={D.SKUS[HERO.sku]} batch={HERO} dist={D.DISTRIBUTORS[HERO.distributor]} buyer={D.BUYER} reserve={h.listing ? h.listing.reserve : 13.5} client={D.WORKSPACE.short} territories={Object.values(D.DISTRIBUTORS)} req={req} res={res} onOpen={() => (onOpenListing ? onOpenListing() : setSheet(true))} /> : <Card className="stack snug">
             <div className="card-head"><span className="row tight"><span className="icontile gray" style={{ borderRadius: 9 }}><Icon name="shopping-bag" size={17} stroke={2} /></span><span className="card-title">Lister · ExpireSoon</span></span><Badge>not in this plan</Badge></div>
             <span className="t-footnote muted">{esRow && !esRow.eligible ? `ExpireSoon is left out of this plan (${esRow.reason}).` : "The Router gave ExpireSoon nothing: the other exits pay more a unit."} The Lister has nothing to list.</span>
           </Card>}
