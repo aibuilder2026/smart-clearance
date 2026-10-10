@@ -1690,9 +1690,17 @@
   - **Lucidchart**, made through the Lucid connector once connected, in the maintainer's Lucid account (private until shared there):
     - [Smart-Clearance Architecture on Google Cloud](https://lucid.app/lucidchart/0e33214e-b46f-4cfb-9413-b2c40de7d1c6/view): the system, the agents' nine stops and CI/CD, on Google Cloud's own icon set (GCP 2021);
     - [Application Flow · the core loop](https://lucid.app/lucidchart/2965aa52-3190-4d68-8791-9c95c8fd7bbc/view) and [Application Flow · a batch's journey](https://lucid.app/lucidchart/c2efb94b-7aa2-4cc1-a6cc-af4980ff255f/view): Lucid sequence diagrams, every stop as a group, with no figures;
-    - a first version of the architecture, whose text rendered too small, is renamed "(superseded draft, safe to delete)"; the connector cannot delete;
+    - [Smart-Clearance Google Cloud and AI](https://lucid.app/lucidchart/631bbb66-9b43-4e20-abf0-f44fa6a68174/view), for the PDF: the services layer by layer, Cloud Run, Pub/Sub and Cloud Scheduler, where the data lives, who signs as whom, the agents and the Gemini models behind them, and a model call, bounded;
+    - two earlier drafts (the architecture's first, whose text rendered too small, and Google Cloud and AI's first, whose container tags overlapped their titles) are renamed "(superseded draft, safe to delete)"; the connector cannot delete;
     - `docs/smart-clearance-architecture.drawio` keeps the same three pages for Lucidchart's draw.io import.
-  - **The PDF:** `docs/smart-clearance-architecture.pdf`, A4 landscape, printed by headless Chrome from the page's print styles: the document, every flow stage on its own page, then the Lucidchart exports as an appendix (the batch's journey cut at its stage borders, with the lanes repeated). Chrome evaluates width media queries against a narrower page than `@page` sets, so the print styles fix each desktop layout.
-  - **Checks:** the page was played in a browser at 1440 × 900 and 390 × 844, with no console errors and no sideways scroll on a phone. The viewer's frame ignores bare anchors, so the page's section links scroll in script.
+  - **The PDF:** `docs/smart-clearance-architecture.pdf`, rewritten on the maintainer's ask: 24 pages, A4 landscape, every diagram a Lucidchart export (14 pages from the four documents), in Smart-Clearance's own theme (the brand bar and route, the night and morning town plates on the cover and the close, Bricolage Grotesque and Geist). It holds:
+    - Google Cloud: the system, the layers, every component with what it does and why, then Firebase (and why not Firestore), Cloud Run, Pub/Sub and Cloud Scheduler, data, identity, delivery, operations and cost;
+    - the AI: why Gemini on Vertex AI and why two tiers (Pro where a person decides on the words, Flash for reading and drafting), every agent with its model, why, and what happens if the call fails, the ADK pipelines, the guardrails and the evals;
+    - the core loop and a batch's journey, from the Lucid sequence diagrams.
+
+    It is printed by headless Chrome from its own fixed-page print source, kept outside the repo; it replaces the 39-page print of the artifact.
+  - **Checks:**
+    - the page was played in a browser at 1440 × 900 and 390 × 844, with no console errors and no sideways scroll on a phone. The viewer's frame ignores bare anchors, so the page's section links scroll in script;
+    - each of the PDF's 24 pages was rendered and looked at, and every Lucid page was exported and checked for overlaps; the figures on the AI and operations pages were checked against `agents/` and `infra/prod`.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
