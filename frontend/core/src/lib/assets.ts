@@ -1,14 +1,10 @@
-// Design system v3's imagery, referenced where design3 keeps it (never copied): the 3D renders, the portraits, the
-// destruction's evidence photos, the label photos and the app icon. Vite hashes each file into the build; a name that isn't here gets no URL, and the components fall back.
+import { storyPhotos } from './story-photos.ts';
+
+// Design system v3's imagery, referenced where design3 keeps it (never copied): the 3D renders, the portraits and the
+// app icon, and the story's photos (story-photos.ts: the evidence and label photos, which a live workspace build leaves
+// out). Vite hashes each file into the build; a name that isn't here gets no URL, and the components fall back.
 const files = import.meta.glob(
-	[
-		'../../../../design3/system/img/*.{webp,svg}',
-		'../../../../design3/system/img/people/*.webp',
-		// the destruction's evidence the stub and the history show (SC-139): before at the godown, after at the landfill
-		'../../../../design3/system/img/evidence/*.webp',
-		// the label photos the distributors sent (SC-142): the story's batch and each of the history's
-		'../../../../design3/system/img/labels/*.webp'
-	],
+	['../../../../design3/system/img/*.{webp,svg}', '../../../../design3/system/img/people/*.webp'],
 	{
 		query: '?url',
 		import: 'default',
@@ -16,7 +12,7 @@ const files = import.meta.glob(
 	}
 ) as Record<string, string>;
 
-const byName: Record<string, string> = {};
+const byName: Record<string, string> = { ...storyPhotos };
 for (const [path, url] of Object.entries(files)) byName[path.slice(path.indexOf('/img/') + 5)] = url;
 
 /** The URL of a design-system image by its path under design3/system/img ("pack-chips.webp", "people/p-priya.webp").
