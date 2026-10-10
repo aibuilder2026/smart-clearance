@@ -1758,7 +1758,7 @@
     - backend-api 547 passed, 1 skipped (only the seed manifest changed);
     - design3's `dist/` is rebuilt.
 
-- **SC-142** (In Review, branch `SC-142-batch-record`): a batch's record. Priya reads every batch, past ones too, with the photos sent for it, its yeses and every step; the distributor reads the photos he sent.
+- **SC-142** (PR #122, merged): a batch's record. Priya reads every batch, past ones too, with the photos sent for it, its yeses and every step; the distributor reads the photos he sent.
   - **The request:** "Both supply chain operator and distributor should be able to see the photos they have sent for batch and destruction evidence pictures"; "Supply chain operator should be able to see past batches under Batches section with details like what picture was sent, audit log of the everything that happened in that batch, photos of destruction and approval sent etc." (The third part, the distributor's figures, was SC-141.)
   - **Design first:** three options on one board in app v3, `SC-142 design review.html`:
     - A, the Record tab (recommended);
@@ -1787,5 +1787,11 @@
   - **Locally:** `hydrate.sh --photos munchly` put the twelve history label photos in the local photos bucket.
   - **Production:** the history's label photos go up with the hydrate job's `--photos,munchly,--allow-env,prod` once this is deployed; until then a past batch's label photo has no image there.
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
+
+- **SC-143** (In Review, branch `SC-143-ci-main-green`; bug): CI on `main` had failed since SC-139, so Hosting never deployed SC-139 to SC-142.
+  - **Found** after merging SC-142: the SC-139, SC-141 and SC-142 merges each failed CI. backend-api and the agents deployed, but Hosting's deploy depends on the build and was skipped. Production's four apps were still from before SC-139. The PRs had been merged before their checks finished.
+  - **The build:** `scripts/no-seed.mjs` refused the live workspace build. Core's image glob bundled every photo under `design3/system/img`, and SC-139's evidence photos and SC-142's label photos are named for their batches (`MF-2409-117-before.webp`). The names showed in a chunk and in `service-worker.js`. The story's photos now live in core's `story-photos.ts`, which the workspace's live build replaces with an empty module (`workspace/src/lib/no-story-photos.ts`), as it does the stub. A live workspace reads every photo from backend-api's links; the stub build and the guided demo keep all 23.
+  - **The secret scan:** gitleaks failed on SC-139's and SC-142's merges (112 findings on SC-139's) and passed on SC-141's, which left the fixtures alone. The likely cause is the fictional waste agencies' pollution-board authorisations (`"auth": "MPCB/SWM/NGP/0412"`) in the reference data and the regenerated live fixtures, which the generic-api-key rule reads as credentials. `.gitleaks.toml` extends gitleaks' own rules and allows only that shape. It was not run through gitleaks locally, which isn't installed here.
+  - **Checks:** the frontend gate passes (core 270, api 78, workspace 92, admin 17, demo 5, console 3); the full build passes `no-seed.mjs`.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

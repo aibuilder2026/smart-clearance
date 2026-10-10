@@ -199,7 +199,7 @@ Local pages:
 
 **The backend and secrets**
 
-- Every secret lives in Google Secret Manager, and only there. Scripts generate a secret and pipe it to `gcloud` on stdin. The API reads it by reference at runtime. No secret goes in a file, a command line, a log, Terraform state or git. Terraform makes the secret containers only. CI's secret scan (gitleaks) runs on every pull request.
+- Every secret lives in Google Secret Manager, and only there. Scripts generate a secret and pipe it to `gcloud` on stdin. The API reads it by reference at runtime. No secret goes in a file, a command line, a log, Terraform state or git. Terraform makes the secret containers only. CI's secret scan (gitleaks) runs on every pull request, on gitleaks' own rules and the one allowance in `.gitleaks.toml` (SC-143).
 - No key exists for any service account. A local backend impersonates `sc-api-local` in code from the developer's own credentials. Never use `gcloud auth application-default login --impersonate-service-account`: Terraform would run as it.
 - Only `backend-api`'s services write data, each change in one transaction with its audit line, in the acting person's name and the prototype's words (`frontend/api/src/console/mock.ts`). The audit log is append-only.
 - The API's login (`sc_app`) never changes the schema or the reference data. Migrations run as `sc_owner`.
