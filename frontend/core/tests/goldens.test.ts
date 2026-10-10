@@ -2,6 +2,9 @@ import { fireEvent, render } from '@testing-library/svelte';
 import { flushSync, type Component } from 'svelte';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import * as W from '../src/lib/workspace';
+import { stubPage } from '../src/lib/workspace/ledger';
+import { data, kase } from '../src/lib/workspace/stub.svelte';
+import { run } from './design3';
 import GoldenHost from './fixtures/GoldenHost.svelte';
 
 // The workspace app's golden texts (SC-67): every role's screens, rendered through RoleApp on the stub at stages 0, 5, 7
@@ -242,6 +245,69 @@ describe('the parts a tap opens', () => {
 		await fireEvent.click(r.container.querySelector('.receipt-row')!);
 		flushSync();
 		out.push(text(r.container.querySelector('[role="dialog"]')!));
+		expect(out).toMatchSnapshot();
+	});
+	// packs left at Rakesh's godown on expiry day, destroyed there (SC-139): the story clears every pack, so the stub
+	// has a destruction only when one is put in its store, as design3's prototype does. Each moment as the two people
+	// read it: asked, the evidence sent and checked, the review, and the batch closed on the yes
+	it('packs destroyed at the godown, from the request to the second yes (SC-139)', async () => {
+		const M = run('core/money.js').SC3_MONEY;
+		const hero = W.D.batches.find((b) => b.hero)!;
+		fastForward(8);
+		store.update((s) => {
+			s.hero.expiry = M.expirySettlement(144, W.D.skus[hero.sku], 'godown');
+			s.hero.destruction = { status: 'requested', units: 144 };
+		});
+		const screen = (id: string, name: string, width = DESKTOP) => {
+			const r = show(RoleApp as Part, { me: user(id), route: { name }, ongo: () => {}, onback: () => {} }, width);
+			const t = text(r.container);
+			r.unmount();
+			return t;
+		};
+		const out: Record<string, string> = {
+			'asked · rakesh · home': screen('rakesh', 'home'),
+			'asked · rakesh · destroy': screen('rakesh', 'destroy'),
+			'asked · rakesh · destroy · phone': screen('rakesh', 'destroy', 390),
+			'asked · priya · execution': screen('priya', 'execution')
+		};
+		W.act('sendDestruction');
+		out['checked · rakesh · destroy'] = screen('rakesh', 'destroy');
+		out['checked · priya · command'] = screen('priya', 'command');
+		const r = show(RoleApp as Part, {
+			me: user('priya'),
+			route: { name: 'command' },
+			ongo: () => {},
+			onback: () => {}
+		});
+		const b = [...r.container.querySelectorAll('button')].find((x) => text(x) === 'Review the destruction')!;
+		await fireEvent.click(b);
+		flushSync();
+		out['checked · priya · the review'] = text(r.container.querySelector('[role="dialog"]')!);
+		r.unmount();
+		W.act('askDestructionAgain', 'The batch label is not readable in the before photo');
+		out['asked again · rakesh · home'] = screen('rakesh', 'home');
+		W.act('sendDestruction');
+		W.act('approveDestruction');
+		W.act('report');
+		out['approved · priya · execution'] = screen('priya', 'execution');
+		out['approved · priya · command'] = screen('priya', 'command');
+		out['approved · rakesh · destroy'] = screen('rakesh', 'destroy');
+		expect(out).toMatchSnapshot();
+	});
+	// the papers of a batch of the history destroyed at its distributor's godown (SC-139): the expiry credit note's three
+	// lines, the agency's certificate, the memo keeping the client's credit; and the batch's Money note
+	it('the papers of a batch destroyed at the godown (SC-139)', () => {
+		fastForward(0);
+		const page = stubPage('MF-2407-111', data, kase, store.get())!;
+		const out: Record<string, string> = {};
+		for (const id of ['expiry', 'destruction', 'itc']) {
+			const r = show(part('finance/Paper'), { id, c: page.c });
+			out[id] = text(r.container);
+			r.unmount();
+		}
+		const r = show(part('finance/KeepsWhat'), { c: page.c });
+		out.keeps = text(r.container);
+		r.unmount();
 		expect(out).toMatchSnapshot();
 	});
 	it('another pickup time', async () => {

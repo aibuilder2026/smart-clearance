@@ -664,6 +664,16 @@
             "title": "Dayminutes",
             "type": "integer"
           },
+          "destruction": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DestructionConfig"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "distributors": {
             "items": {
               "$ref": "#/components/schemas/DistributorOut"
@@ -1269,6 +1279,171 @@
           "makes"
         ],
         "title": "DemoRequestInput",
+        "type": "object"
+      },
+      "DestructionAgency": {
+        "additionalProperties": false,
+        "properties": {
+          "auth": {
+            "maxLength": 80,
+            "title": "Auth",
+            "type": "string"
+          },
+          "city": {
+            "maxLength": 80,
+            "title": "City",
+            "type": "string"
+          },
+          "id": {
+            "maxLength": 40,
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 120,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "city",
+          "auth"
+        ],
+        "title": "DestructionAgency",
+        "type": "object"
+      },
+      "DestructionConfig": {
+        "additionalProperties": false,
+        "description": "how a client has expired packs destroyed at a distributor's godown (SC-139; Channels and rules)",
+        "properties": {
+          "agencies": {
+            "items": {
+              "$ref": "#/components/schemas/DestructionAgency"
+            },
+            "title": "Agencies",
+            "type": "array"
+          },
+          "chargesPerUnit": {
+            "title": "Chargesperunit",
+            "type": "number"
+          },
+          "grossUp": {
+            "title": "Grossup",
+            "type": "boolean"
+          },
+          "remindDays": {
+            "title": "Reminddays",
+            "type": "integer"
+          },
+          "reviewer": {
+            "maxLength": 80,
+            "title": "Reviewer",
+            "type": "string"
+          },
+          "visionCheck": {
+            "title": "Visioncheck",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "visionCheck",
+          "reviewer",
+          "remindDays",
+          "grossUp",
+          "chargesPerUnit",
+          "agencies"
+        ],
+        "title": "DestructionConfig",
+        "type": "object"
+      },
+      "DestructionInput": {
+        "additionalProperties": false,
+        "properties": {
+          "agency": {
+            "maxLength": 40,
+            "title": "Agency",
+            "type": "string"
+          },
+          "certificate": {
+            "maxLength": 40,
+            "title": "Certificate",
+            "type": "string"
+          },
+          "photos": {
+            "$ref": "#/components/schemas/DestructionPhotos"
+          }
+        },
+        "required": [
+          "agency",
+          "certificate",
+          "photos"
+        ],
+        "title": "DestructionInput",
+        "type": "object"
+      },
+      "DestructionPhotoInput": {
+        "additionalProperties": false,
+        "properties": {
+          "bytes": {
+            "exclusiveMinimum": 0.0,
+            "title": "Bytes",
+            "type": "integer"
+          },
+          "contentType": {
+            "maxLength": 100,
+            "title": "Contenttype",
+            "type": "string"
+          },
+          "fileName": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filename"
+          },
+          "which": {
+            "enum": [
+              "before",
+              "after"
+            ],
+            "title": "Which",
+            "type": "string"
+          }
+        },
+        "required": [
+          "contentType",
+          "bytes",
+          "which"
+        ],
+        "title": "DestructionPhotoInput",
+        "type": "object"
+      },
+      "DestructionPhotos": {
+        "additionalProperties": false,
+        "properties": {
+          "after": {
+            "maxLength": 40,
+            "title": "After",
+            "type": "string"
+          },
+          "before": {
+            "maxLength": 40,
+            "title": "Before",
+            "type": "string"
+          }
+        },
+        "required": [
+          "before",
+          "after"
+        ],
+        "title": "DestructionPhotos",
         "type": "object"
       },
       "DeviceInput": {
@@ -2220,6 +2395,7 @@
         "properties": {
           "expiry": {
             "enum": [
+              "godown",
               "full-credit",
               "price-support",
               "none"
@@ -2301,6 +2477,21 @@
         "title": "ReadInput",
         "type": "object"
       },
+      "ReasonInput": {
+        "additionalProperties": false,
+        "properties": {
+          "reason": {
+            "maxLength": 300,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "ReasonInput",
+        "type": "object"
+      },
       "Rules": {
         "additionalProperties": false,
         "properties": {
@@ -2348,6 +2539,16 @@
       "RulesInput": {
         "additionalProperties": false,
         "properties": {
+          "destruction": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DestructionConfig"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "exits": {
             "additionalProperties": {
               "$ref": "#/components/schemas/ExitState"
@@ -5352,6 +5553,268 @@
           }
         ],
         "summary": "The buyer takes the counter and pays the token",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/cases/{ref}/destruction": {
+      "post": {
+        "operationId": "send_destruction_v1_workspaces__ws__cases__ref__destruction_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DestructionInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Send Destruction V1 Workspaces  Ws  Cases  Ref  Destruction Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The destruction's evidence: the agency, its certificate, two photos",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/cases/{ref}/destruction/approve": {
+      "post": {
+        "operationId": "approve_destruction_v1_workspaces__ws__cases__ref__destruction_approve_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Approve Destruction V1 Workspaces  Ws  Cases  Ref  Destruction Approve Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The operator's second yes: the batch closes on it",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/cases/{ref}/destruction/ask": {
+      "post": {
+        "operationId": "ask_destruction_v1_workspaces__ws__cases__ref__destruction_ask_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReasonInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Ask Destruction V1 Workspaces  Ws  Cases  Ref  Destruction Ask Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Ask the distributor again for the destruction's evidence",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/cases/{ref}/destruction/photos": {
+      "post": {
+        "operationId": "destruction_photo_v1_workspaces__ws__cases__ref__destruction_photos_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DestructionPhotoInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Destruction Photo V1 Workspaces  Ws  Cases  Ref  Destruction Photos Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "A signed link for one of the destruction's two photos",
         "tags": [
           "workspace"
         ]

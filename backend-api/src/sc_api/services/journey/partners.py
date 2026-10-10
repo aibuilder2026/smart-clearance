@@ -32,13 +32,17 @@ def _local(at: datetime | str | None) -> str | None:
     """a time in the client's zone, to the minute (2026-08-27T12:10)"""
     if not at:
         return None
+    return _when(at).astimezone(IST).strftime("%Y-%m-%dT%H:%M")
+
+
+def _when(at: datetime | str) -> datetime:
+    """a time as stored: with its zone, or the client's local time (the destruction's moments, SC-139)"""
     when = datetime.fromisoformat(at) if isinstance(at, str) else at
-    return when.astimezone(IST).strftime("%Y-%m-%dT%H:%M")
+    return when if when.tzinfo is not None else when.replace(tzinfo=IST)
 
 
 def _day(at: datetime | str) -> date:
-    when = datetime.fromisoformat(at) if isinstance(at, str) else at
-    return when.astimezone(IST).date()
+    return _when(at).astimezone(IST).date()
 
 
 def steps_of(
@@ -76,6 +80,11 @@ def steps_of(
     add("invoice", case.invoice_issued_at)
     add("van", van.get("at") if van.get("status") == "done" else None)
     add("review", (case.reviewed or {}).get("at"))
+    # destroyed at his godown on expiry day (SC-139): asked, the evidence sent, the operator's yes
+    dz = case.destruction or {}
+    add("destroyAsk", dz.get("askedAt"))
+    add("destroySent", dz.get("sentAt"))
+    add("destroyApproved", dz.get("approvedAt"))
     add("report", (case.ledger or {}).get("at"))
     out.sort(key=lambda x: x[1])
     # the history's rounds are stamped on their own day already (design3's HISTORY_AT)
@@ -96,8 +105,10 @@ def facts(
     cm: m.ClientMember,
     support: dict[str, Any] | None,
     van_time: str = "07:00",
+    destruction: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """a batch as the partner's pages read it, cut to its part"""
+    """a batch as the partner's pages read it, cut to its part; a distributor's, with the packs destroyed at his
+    godown and their evidence (SC-139, `destruction` as views.destruction_out reads it)"""
     role = cm.workspace_role
     dist = role == "distributor"
     L = case.ledger if case.status == "cleared" else None
@@ -176,10 +187,20 @@ def facts(
                 {k: support.get(k, 0) for k in ("total", "van", "fee")} if dist and support is not None else None
             ),
             "expiry": (
-                {"units": int(expiry.get("units", 0)), "credit": expiry.get("credit", 0)}
+                {
+                    "units": int(expiry.get("units", 0)),
+                    "credit": expiry.get("credit", 0),
+                    # destroyed at his godown (SC-139): the note's amount, with the GST he reverses and the charges
+                    **(
+                        {k: expiry.get(k) for k in ("amount", "at", "reversal", "charges")}
+                        if expiry.get("at") == "godown"
+                        else {}
+                    ),
+                }
                 if dist and expiry.get("units")
                 else None
             ),
+            "destruction": destruction if dist else None,
             "docs": docs,
         }
     )
@@ -237,6 +258,7 @@ async def partner(ctx: Ctx, client_id: str, cm: m.ClientMember) -> dict[str, Any
         support = None
         if role == "distributor":
             support = views.support_of(case, c, skus[case.sku_id], orders[case.id], rules)
-        out["cases"].append(facts(case, batch, orders[case.id], feed[case.id], cm, support, world.van_time(c)))
+        dz = views.destruction_out(ctx, case.destruction) if role == "distributor" else None
+        out["cases"].append(facts(case, batch, orders[case.id], feed[case.id], cm, support, world.van_time(c), dz))
     out["cases"].sort(key=lambda x: (x["flagged"], x["ref"]), reverse=True)
     return out

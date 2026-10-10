@@ -11,8 +11,9 @@ from sc_agents import fmt
 
 TEMPLATES = Path(__file__).resolve().parent.parent / "templates"
 # what gets a PDF: the invoice draft, the price-support credit note, the ITC memo, the FSSAI checklist, the food
-# bank's receipt (SC-110) and the expiry credit note for the packs left at the godown (SC-121); the e-way bill check
-# and the destruction certificate are records on the case, not papers anyone signs
+# bank's receipt (SC-110), the expiry credit note for the packs left at the godown (SC-121), and the authorised
+# agency's certificate for packs destroyed at his godown (SC-139); the e-way bill check and the client's own
+# destruction record are records on the case, not papers anyone signs
 PAPERS = {
     "invoice": "invoice.html",
     "support": "credit_note.html",
@@ -20,6 +21,7 @@ PAPERS = {
     "fssai": "fssai.html",
     "receipt": "receipt.html",
     "expiry": "expiry_note.html",
+    "destruction": "destruction.html",
 }
 
 _env = Environment(loader=FileSystemLoader(TEMPLATES), autoescape=select_autoescape(["html"]))
@@ -27,7 +29,11 @@ _env.filters.update(inr=lambda v, paise=False: fmt.inr2(v) if paise else fmt.inr
 
 
 def needs_pdf(doc: dict[str, Any]) -> bool:
-    return doc.get("id") in PAPERS and doc.get("status") != "not required" and not doc.get("pdf")
+    """a paper to lay out: one with a template, issued (not awaiting another's, SC-139), and without its PDF yet; the
+    destruction certificate only as the agency's, for packs destroyed at his godown"""
+    if doc.get("id") == "destruction" and doc.get("at") != "godown":
+        return False
+    return doc.get("id") in PAPERS and doc.get("status") not in ("not required", "awaiting") and not doc.get("pdf")
 
 
 def html(doc: dict[str, Any], case: dict[str, Any], *, note: str | None = None, today: str = "") -> str:

@@ -526,24 +526,31 @@ describe("expiry day's settlement (SC-94)", () => {
 	const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
 	const inr2 = (n: number) => `₹${n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-	it("Priya's Execution settles the packs left at the godown by Munchly's policy, and opens the paper", async () => {
+	it("Priya's Execution settles the packs left at the godown under route B, and opens the paper (SC-139)", async () => {
 		const go = vi.fn();
 		const s = source(fakeApi(moment('cleared'), 'priya'));
 		const r = render(LiveHost, {
 			props: { source: s, screen: 'execution', at: MANGO, onnavigate: go }
 		}) as unknown as RenderResult<never>;
 		await waitFor(() => expect(text(r)).toContain('Expiry settlement'));
-		const x = moment('cleared').members.priya.cases[MANGO].expiry!;
-		expect(x.policy).toBe('full-credit');
+		const c = moment('cleared').members.priya.cases[MANGO];
+		const x = c.expiry!;
+		expect(x.policy).toBe('godown');
 		const t = text(r);
 		expect(t).toContain('Left at the godown'); // the card stays as it is, and the settlement follows it
-		expect(t).toContain('Full credit at expiry');
-		expect(t).toContain(`Credit to Lakshmi Agencies${inr(x.credit!)}`);
-		expect(t).toContain('Destroyed byMunchly');
-		expect(t).toContain(`Disposal, EPR, GST${inr(x.disposal + x.epr + x.itc)}`);
+		expect(t).toContain('Destroyed at the godown');
+		expect(t).toContain(`Credit to Lakshmi Agencies${inr(x.amount!)}`);
+		expect(t).toContain('Destroyed byLakshmi Agencies');
+		expect(t).toContain(`Of it: GST and charges${inr(x.gst! + x.charges!)}`);
 		expect(t).toContain(
-			`The ${x.units.toLocaleString('en-IN')} packs come back to Munchly for full credit (${inr(x.credit!)}), and Munchly destroys them.`
+			`The ${x.units.toLocaleString('en-IN')} packs are destroyed at Begum Bazaar godown through an authorised agency; Munchly credits Lakshmi Agencies the dealer price, the GST it reverses and the agency's charges (${inr(x.amount!)}).`
 		);
+		// the destruction itself: approved, with both photos
+		expect(t).toContain('Destruction at the godownapproved');
+		expect(t).toContain(
+			`Approved by ${c.destruction!.approvedBy}: the credit note and the agency's certificate are issued.`
+		);
+		expect(r.getAllByRole('img', { name: /landfill/ }).length).toBeGreaterThan(0);
 		await fireEvent.click(r.getByRole('button', { name: 'Open the paper' }));
 		expect(go).toHaveBeenCalledWith('paperwork', { replace: undefined, ref: MANGO });
 	});
@@ -554,9 +561,10 @@ describe("expiry day's settlement (SC-94)", () => {
 		await waitFor(() => expect(text(r)).toContain(`${CHIPS} · day 0 to`));
 		expect(moment('cleared').members.priya.cases[CHIPS].expiry!.units).toBe(0);
 		expect(text(r)).not.toContain('Expiry settlement');
+		expect(text(r)).not.toContain('Destruction at the godown');
 	});
 
-	it("Priya's Paperwork opens on the expiry credit note, with Munchly's own costs", async () => {
+	it("Priya's Paperwork opens on the expiry credit note's three lines, against the agency's certificate", async () => {
 		vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1440); // a desktop: the paper open beside the pack
 		const s = source(fakeApi(moment('cleared'), 'priya'));
 		const r = await draw(s, 'paperwork', MANGO);
@@ -564,15 +572,17 @@ describe("expiry day's settlement (SC-94)", () => {
 		const d = moment('cleared').members.priya.cases[MANGO].docs.find((x) => x.id === 'expiry')!;
 		const t = text(r);
 		expect(t).toContain(`${d.no} · Munchly → Lakshmi Agencies`);
-		expect(t).toContain(`${d.units!.toLocaleString('en-IN')} packs expired at the godown`);
+		expect(t).toContain(
+			`${d.units!.toLocaleString('en-IN')} packs destroyed at the godown at the ₹14.50 dealer price${inr2(d.credit!)}`
+		);
+		expect(t).toContain(`Input GST he reverses on them 5%, section 17(5)(h)${inr2(d.gst!)}`);
+		expect(t).toContain(`Destruction charges Deccan Green Waste Management, ₹1.50 a pack${inr2(d.charges!)}`);
 		expect(t).toContain(`Credit to Lakshmi Agencies${inr2(d.amount!)}`);
-		expect(t).toContain("Munchly's own costs, on destroying them");
-		expect(t).toContain(`Disposal${inr2(d.disposal!)}`);
-		expect(t).toContain(`Expiry, all in${inr2(d.amount! + d.disposal! + d.epr! + d.itc!)}`);
+		expect(t).not.toContain("Munchly's own costs, on destroying them");
 		expect(t).toContain(d.note);
 	});
 
-	it("the GST ITC memo counts the packs given away and destroyed, and the batch's head the packs destroyed (SC-135)", async () => {
+	it("the agency's certificate, and the GST ITC memo keeping Munchly's credit on the packs destroyed at his godown", async () => {
 		vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1440);
 		const s = source(fakeApi(moment('cleared'), 'priya'));
 		const r = await draw(s, 'paperwork', MANGO);
@@ -580,11 +590,22 @@ describe("expiry day's settlement (SC-94)", () => {
 		const c = moment('cleared').members.priya.cases[MANGO];
 		const memo = c.docs.find((x) => x.id === 'itc')!;
 		const units = c.expiry!.units;
-		expect(memo.away).toBe(units + c.donation!.units); // the packs Munchly destroyed, and the food bank's
-		expect(text(r)).toContain(`Cleared · ${units.toLocaleString('en-IN')} packs destroyed`);
+		expect(memo.away).toBe(c.donation!.units); // only the food bank's: his stock is his reversal
+		expect(memo.atGodown).toBe(units);
+		expect(text(r)).toContain(`Cleared · ${units.toLocaleString('en-IN')} packs destroyed at the godown`);
 		await fireEvent.click(r.getAllByRole('button', { name: /GST ITC memo/ })[0]);
 		await waitFor(() => expect(text(r)).toContain('ITC PART REVERSED'));
-		expect(text(r)).toContain(`Destroyed, gifted or lost${memo.away!.toLocaleString('en-IN')}`);
+		expect(text(r)).toContain(
+			`Destroyed at Lakshmi Agencies' godown his stock: he reverses their credit${units.toLocaleString('en-IN')}`
+		);
+		await fireEvent.click(r.getAllByRole('button', { name: /Destruction certificate/ })[0]);
+		await waitFor(() => expect(text(r)).toContain('DESTROYED'));
+		const cert = c.docs.find((x) => x.id === 'destruction')!;
+		const t = text(r);
+		expect(t).toContain(`${cert.no} · Deccan Green Waste Management`);
+		expect(t).toContain('For Lakshmi Agencies');
+		expect(t).toContain(`Evidence two photos · Vision's checks 4 of 4approved by ${c.destruction!.approvedBy}`);
+		expect(t).toContain(`Input GST he reverses section 17(5)(h), GSTR-3B Table 4(B)(1)${inr2(cert.reversed!)}`);
 	});
 
 	it("Lakshmi Agencies' You end whole, on the batch's page, counts what each line took, and the expiry credit", async () => {
@@ -604,8 +625,10 @@ describe("expiry day's settlement (SC-94)", () => {
 		expect(t).toContain('Given to Feeding India 58 packs₹0');
 		expect(t).toContain(`Price-support credit note ${no('support')}${inr(c.support!.total)}`);
 		expect(t).toContain(
-			`Expiry credit note for ${x.units.toLocaleString('en-IN')} packs ${no('expiry')}${inr(x.credit!)}`
+			`Expiry credit note for ${x.units.toLocaleString('en-IN')} packs ${no('expiry')}${inr(x.amount!)}`
 		);
+		// under route B she also reverses the GST on them and pays the agency, which the note makes good (SC-139)
+		expect(t).toContain("the van, the listing fee, the GST you reverse and the agency's charges");
 		expect(t).toContain('Your gain or loss₹0');
 	});
 
@@ -618,7 +641,8 @@ describe("expiry day's settlement (SC-94)", () => {
 		const took = c.support!.rows.reduce((t, row) => t + row.units * row.price, 0); // 84 at ₹12, 120 at ₹8, 58 donated
 		const t = text(r);
 		expect(t).toContain(`Lakshmi Agencies receives${inr(took + c.support!.total)}`);
-		expect(t).toContain(`and the expiry credit for ${x.units.toLocaleString('en-IN')} packs${inr(x.credit!)}`);
+		expect(t).toContain(`and the expiry credit for ${x.units.toLocaleString('en-IN')} packs${inr(x.amount!)}`);
+		expect(t).toContain(`and the GST he reverses on them and the agency's charges−${inr(x.reversal! + x.charges!)}`);
 		expect(t).toContain('He ends whole₹0');
 		expect(t).toContain(`and the expiry settlement for ${x.units.toLocaleString('en-IN')} packs−${inr(x.total)}`);
 		// the donation's handling and the credit given away with it, as the ledger's swing counts them (SC-122)
@@ -626,6 +650,125 @@ describe("expiry day's settlement (SC-94)", () => {
 		const given = gift.cost + gift.itcLoss;
 		expect(t).toContain(`and the donation's handling and credit, ${gift.units} packs−${inr(given)}`);
 		expect(t).toContain(`Better for Munchly${inr(c.claim!.total - c.support!.total - x.total - given)}`);
+	});
+});
+
+describe('packs destroyed at the godown, live (SC-139)', () => {
+	it("Lakshmi Agencies' Today asks her to destroy them first, and the screen takes the two photos", async () => {
+		const m = moment('destruction-asked');
+		const dz = m.members['lakshmi-owner'].cases[MANGO].destruction!;
+		expect(dz.status).toBe('requested');
+		const r = await draw(source(fakeApi(m, 'lakshmi-owner')), 'home');
+		await waitFor(() => expect(text(r)).toContain('Destroy'));
+		const t = text(r);
+		expect(t).toContain(`Destroy ${dz.units.toLocaleString('en-IN')} expired packs at your godown`);
+		expect(t).toContain("send the evidence: two photos and the agency's certificate");
+		r.unmount();
+		const d = await draw(source(fakeApi(m, 'lakshmi-owner')), 'destroy', MANGO);
+		await waitFor(() => expect(text(d)).toContain('Send to Munchly for approval'));
+		const u = text(d);
+		expect(u).toContain('Deccan Green Waste Management'); // Hyderabad's agency alone
+		expect(u).not.toContain('Orange City Enviro Services');
+		expect(u).toContain('Authorisation TSPCB/SWM/HYD/0287');
+		expect(d.getByRole('button', { name: 'Send to Munchly for approval' })).toHaveProperty('disabled', true);
+		// a live workspace shows no stand-in photo: the frame waits for hers
+		expect(d.queryAllByRole('img').filter((x) => /landfill|godown/.test(x.getAttribute('alt') ?? ''))).toEqual([]);
+	});
+
+	it('Priya, as it is asked for, reads that the batch waits for the evidence', async () => {
+		const m = moment('destruction-asked');
+		const r = await draw(source(fakeApi(m, 'priya')), 'execution', MANGO);
+		await waitFor(() => expect(text(r)).toContain('Destruction at the godown'));
+		expect(text(r)).toContain('waiting for the evidence');
+		expect(text(r)).toContain('Lakshmi Agencies is asked to destroy the');
+	});
+
+	it("Priya's Command Center asks for her yes, and the review states what the yes issues", async () => {
+		const m = moment('destruction-checked');
+		const c = m.members.priya.cases[MANGO];
+		const approveDestruction = vi.fn(() => Promise.resolve({ seq: m.members.priya.snapshot.seq, case: null }));
+		const s = source(fakeApi(m, 'priya', { approveDestruction }));
+		s.setFocus(MANGO);
+		const r = await draw(s, 'command');
+		await waitFor(() => expect(text(r)).toContain('Review the destruction'));
+		expect(text(r)).toContain('The destruction waits for your yes');
+		await fireEvent.click(r.getByRole('button', { name: 'Review the destruction' }));
+		const sheet = await waitFor(() => r.getByRole('dialog'));
+		const t = norm(sheet.textContent);
+		expect(t).toContain(`Batch ${MANGO} read on the carton label`);
+		expect(t).toContain("Deccan Green Waste Management is on Munchly's list");
+		expect(t).toContain(`Expiry credit note to Lakshmi Agencies`);
+		expect(t).toContain(`₹${c.expiry!.amount!.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`);
+		expect(sheet.querySelectorAll('img.cam-feed').length).toBe(2); // her two photos, from their links
+		await fireEvent.click(r.getByRole('button', { name: 'Approve · issue the papers' }));
+		await waitFor(() => expect(approveDestruction).toHaveBeenCalledWith(MANGO));
+	});
+
+	it('sends both photos to their links, then the evidence with the agency and its certificate', async () => {
+		const m = moment('destruction-asked');
+		class FakeXhr {
+			upload: { onprogress?: (e: { lengthComputable: boolean; loaded: number; total: number }) => void } = {};
+			status = 200;
+			onload?: () => void;
+			onerror?: () => void;
+			onabort?: () => void;
+			open() {}
+			setRequestHeader() {}
+			send() {
+				setTimeout(() => this.onload?.(), 0);
+			}
+			abort() {}
+		}
+		vi.stubGlobal('XMLHttpRequest', FakeXhr);
+		vi.stubGlobal('URL', Object.assign(URL, { createObjectURL: () => 'blob:evidence' }));
+		const links: string[] = [];
+		const destructionPhoto = vi.fn((_ref: string, which: string) => {
+			links.push(which);
+			return Promise.resolve({ id: `dz-${which}`, url: `http://storage/${which}`, headers: {}, expiresAt: '' });
+		});
+		const sendDestruction = vi.fn(() => Promise.resolve({ seq: m.members['lakshmi-owner'].snapshot.seq, case: null }));
+		const s = source(fakeApi(m, 'lakshmi-owner', { destructionPhoto, sendDestruction }));
+		const r = await draw(s, 'destroy', MANGO);
+		await waitFor(() => expect(text(r)).toContain('Send to Munchly for approval'));
+		const inputs = [...r.container.querySelectorAll<HTMLInputElement>('input[type="file"]:not([capture])')];
+		expect(inputs.length).toBe(2);
+		for (const [i, which] of ['before', 'after'].entries())
+			await fireEvent.change(inputs[i], {
+				target: { files: [new File([which], `${which}.jpg`, { type: 'image/jpeg' })] }
+			});
+		await fireEvent.input(r.getByLabelText("Agency's certificate number"), { target: { value: 'DGW/DC/26-27/0099' } });
+		await fireEvent.click(r.getByRole('button', { name: 'Send to Munchly for approval' }));
+		await waitFor(() => expect(sendDestruction).toHaveBeenCalled());
+		expect(links).toEqual(['before', 'after']);
+		expect(sendDestruction).toHaveBeenCalledWith(MANGO, {
+			agency: 'dgw',
+			certificate: 'DGW/DC/26-27/0099',
+			photos: { before: 'dz-before', after: 'dz-after' }
+		});
+		vi.unstubAllGlobals();
+	});
+
+	it("Lakshmi Agencies' screen says it went for approval, with her photos", async () => {
+		const m = moment('destruction-checked');
+		const r = await draw(source(fakeApi(m, 'lakshmi-owner')), 'destroy', MANGO);
+		await waitFor(() => expect(text(r)).toContain('Sent for approval'));
+		expect(r.getAllByRole('img').filter((x) => /godown|landfill/.test(x.getAttribute('alt') ?? '')).length).toBe(2);
+	});
+
+	it("Lakshmi Agencies' cleared Mango Drink tells every moment, the destruction's among them", async () => {
+		// the journey's own batch, once cleared, reads her partner facts as a batch she cleared before does (SC-135)
+		const m = moment('cleared');
+		const x = m.members.priya.cases[MANGO].expiry!;
+		const r = await draw(source(fakeApi(m, 'lakshmi-owner')), 'batches', MANGO);
+		await waitFor(() => expect(text(r)).toContain('You sent the label photo'));
+		const t = text(r);
+		expect(t).toContain('Your staff sale sold');
+		expect(t).toContain('Feeding India collected');
+		expect(t).toContain(`Asked to destroy ${x.units.toLocaleString('en-IN')} expired packs at your godown`);
+		expect(t).toContain("You sent the destruction's evidence");
+		expect(t).toContain('approved the destruction');
+		expect(t).toContain(`${x.units.toLocaleString('en-IN')} packs destroyed at your godown`);
+		expect(t).not.toContain('Settled: you ended whole');
 	});
 });
 
@@ -1018,19 +1161,6 @@ describe("a distributor's portal, batch by batch (SC-133)", () => {
 		expect(text(o)).toContain(`${gift} packs given`);
 	});
 
-	it("Lakshmi Agencies' cleared Mango Drink tells every moment: the staff sale, the pickup and what expired at her godown", async () => {
-		// the journey's own batch, once cleared, reads her partner facts as a batch she cleared before does (SC-135)
-		const m = moment('cleared');
-		const x = m.members.priya.cases[MANGO].expiry!;
-		const r = await draw(source(fakeApi(m, 'lakshmi-owner')), 'batches', MANGO);
-		await waitFor(() => expect(text(r)).toContain('You sent the label photo'));
-		const t = text(r);
-		expect(t).toContain('Your staff sale sold');
-		expect(t).toContain('Feeding India collected');
-		expect(t).toContain(`${x.units.toLocaleString('en-IN')} packs expired at your godown`);
-		expect(t).not.toContain('Settled: you ended whole');
-	});
-
 	it("Rakesh's cleared chips name the van round by the day it leaves, though it ran before then (SC-137)", async () => {
 		const m = moment('cleared');
 		const leaves = m.members.priya.cases[CHIPS].moments.van.leavesAt!;
@@ -1158,7 +1288,8 @@ describe("the partners' own history (SC-130)", () => {
 		const t = text(r);
 		expect(t).toContain('In a journey now');
 		expect(t).toContain('Masala Chips 150 g');
-		expect(t).toContain('₹66,192from Munchly since July');
+		// the price support and the expiry credit notes, under SC-139's route B with the GST he reverses and the agency's charges
+		expect(t).toContain('₹66,918from Munchly since July');
 		expect(t).toContain('6 batches cleared at your godown');
 		expect(t).toContain('8 credit notes');
 		expect(t).toContain('Cleared · August 2026');

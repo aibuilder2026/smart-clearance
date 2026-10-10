@@ -147,7 +147,7 @@ async def run_daily(
 
 
 # the timers the journey sets; one of a kind since retired (the day-7 shelf check, SC-93) is put away, not fired
-KINDS = ("offer.close", "listing.close", "report.due")
+KINDS = ("offer.close", "listing.close", "report.due", "destruction.remind")
 
 
 def ready(t: m.Timer, case: m.Case) -> bool:
@@ -169,6 +169,10 @@ async def fire_timer(ctx: Ctx, c: m.Client, t: m.Timer, case: m.Case, doc: dict[
     if t.kind == "listing.close":  # an ExpireSoon lot no buyer took closes unsold (SC-86)
         with suppress(steps.Noop):
             await steps.close_listing(ctx, c.id, case.batch_ref, steps.Run("lister", event_key=f"timer:{t.id}"))
+        return
+    if t.kind == "destruction.remind":  # the destruction's evidence, still asked for: he is reminded (SC-139)
+        with suppress(steps.Noop):
+            await steps.remind_destruction(ctx, c.id, case.batch_ref)
         return
     if t.kind == "report.due":  # expiry day: the journey closes as it stands, then Impact reports (SC-94)
         with suppress(steps.Noop):

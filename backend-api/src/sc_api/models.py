@@ -184,7 +184,7 @@ class Client(Base):
         CheckConstraint("status in ('setting-up','live')", name="status"),
         CheckConstraint("route in ('distributors','modern-trade','own')", name="route"),
         CheckConstraint("owner in ('distributor','manufacturer')", name="owner"),
-        CheckConstraint("expiry in ('full-credit','price-support','none')", name="expiry"),
+        CheckConstraint("expiry in ('godown','full-credit','price-support','none')", name="expiry"),
         CheckConstraint("gate_blinkit_days between 30 and 180", name="gate_blinkit_days"),
         CheckConstraint("gate_qcom_pct between 30 and 90", name="gate_qcom_pct"),
         CheckConstraint("return_window_days between 7 and 45", name="return_window_days"),
@@ -216,6 +216,9 @@ class Client(Base):
     route: Mapped[str] = mapped_column(Text)
     owner: Mapped[str] = mapped_column(Text)
     expiry: Mapped[str] = mapped_column(Text)
+    # how it has expired packs destroyed at a distributor's godown (SC-139): Vision's check, the reviewer, the reminder,
+    # the GST gross-up, the agency's charge a pack, the authorised agencies; null for a client whose policy does not
+    destruction: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     gate_blinkit_days: Mapped[int] = mapped_column(Integer)
     gate_qcom_pct: Mapped[int] = mapped_column(Integer)
     return_window_days: Mapped[int] = mapped_column(Integer)
@@ -594,6 +597,8 @@ class Case(Base):
     staff: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     # expiry day (SC-94): every plan line not yet run then counts as done, with nothing taken
     expired_at: Mapped[datetime | None] = mapped_column(TS)
+    # the packs left at the godown destroyed there (SC-139): asked for, the evidence sent, checked, approved
+    destruction: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     # a case of the client's history (SC-123): in view whenever the journey starts again
     history: Mapped[bool] = mapped_column(Boolean, server_default=sql("false"))
     escalated: Mapped[dict[str, Any] | None] = mapped_column(JSONB)

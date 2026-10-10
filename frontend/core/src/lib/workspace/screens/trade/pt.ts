@@ -55,7 +55,9 @@ export const issuedBy = (c: Pick<PartnerCase, 'partner'>, d: Doc, short: string)
 		: d.id === 'receipt'
 			? `${c.partner ? c.partner.name : 'The food bank'} issued it to ${short} · a copy for you`
 			: d.id === 'destruction'
-				? `${short} destroyed the packs · a copy for you`
+				? d.at === 'godown'
+					? `${d.agency || 'The agency'} destroyed them for you`
+					: `${short} destroyed the packs · a copy for you`
 				: `${short} issued it to you`;
 
 /** the world a partner's moments name: the workspace's products and distributors, the buyer, the client */
@@ -65,7 +67,8 @@ export const worldOf = (ws: WorkspaceSource): PartnerWorld => ({
 	buyer: ws.partners?.buyer ?? { name: ws.case?.buyer.name ?? '', city: ws.case?.buyer.city ?? '' },
 	client: ws.data.client.name,
 	short: ws.data.workspace.short,
-	capTimes: ws.data.rules.shopCapTimes
+	capTimes: ws.data.rules.shopCapTimes,
+	people: ws.data.people
 });
 
 /** every offer the signed-in kirana's shop was sent: on the stub the batch in a journey's comes from the journey's state,

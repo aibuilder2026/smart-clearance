@@ -65,8 +65,8 @@
 				"id": "expiry",
 				"icon": "undo-2",
 				"title": "Expiry policy",
-				"value": "full credit at expiry",
-				"text": "Expired stock comes back to Munchly for full credit and is destroyed, so Munchly acts before expiry and pays price support instead of a claim."
+				"value": "destroyed at the distributor's godown",
+				"text": "Packs left at a distributor's godown on expiry day are destroyed there by an authorised agency. Munchly approves the evidence and credits him the dealer price, the input GST he reverses and the agency's charges, so Munchly acts before expiry and pays price support instead of a claim."
 			},
 			{
 				"id": "gates",
@@ -1762,6 +1762,63 @@
 			}
 		],
 		"approval": "The first 10 routes per channel need a tap; after that the agent runs inside the guardrails and reports.",
+		"expiry": "godown",
+		"destruction": {
+			"evidence": [
+				[
+					"before",
+					"The packs at the godown, the carton's batch label in view"
+				],
+				[
+					"after",
+					"Slit open at the landfill, the slate with the batch, the count and the date in view"
+				]
+			],
+			"visionCheck": true,
+			"reviewer": "ws-operator",
+			"remindDays": 2,
+			"grossUp": true,
+			"chargesPerUnit": 1.5,
+			"method": "Slit open, buried and covered at the authorised municipal landfill",
+			"agencies": [
+				{
+					"id": "oce",
+					"name": "Orange City Enviro Services",
+					"city": "Nagpur",
+					"auth": "MPCB/SWM/NGP/0412",
+					"series": {
+						"prefix": "OCE/DC/26-27/",
+						"next": 219,
+						"width": 4
+					},
+					"site": "the municipal landfill, Nagpur"
+				},
+				{
+					"id": "vwc",
+					"name": "Vidarbha Waste Care",
+					"city": "Nagpur",
+					"auth": "MPCB/SWM/NGP/0538",
+					"series": {
+						"prefix": "VWC/DC/26-27/",
+						"next": 41,
+						"width": 4
+					},
+					"site": "the municipal landfill, Nagpur"
+				},
+				{
+					"id": "dgw",
+					"name": "Deccan Green Waste Management",
+					"city": "Hyderabad",
+					"auth": "TSPCB/SWM/HYD/0287",
+					"series": {
+						"prefix": "DGW/DC/26-27/",
+						"next": 86,
+						"width": 4
+					},
+					"site": "the municipal landfill, Hyderabad"
+				}
+			]
+		},
 		"permissions": {
 			"patil": "1 Oct",
 			"gupta": "1 Oct",
@@ -2159,6 +2216,7 @@
 			"reversed": 0,
 			"units": 1360,
 			"away": 0,
+			"atGodown": 0,
 			"note": "Goods supplied under tax invoices, so the Section 17(5)(h) reversal does not apply."
 		},
 		{
@@ -2435,6 +2493,11 @@
 		"negotiation": {
 			"reservePerUnit": 13.5,
 			"counterPctOfAsk": 0.95
+		},
+		"destruction": {
+			"chargesPerUnit": 1.5,
+			"grossUp": true,
+			"remindDays": 2
 		}
 	},
 	"roles": {

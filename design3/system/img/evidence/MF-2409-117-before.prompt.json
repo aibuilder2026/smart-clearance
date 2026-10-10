@@ -1,0 +1,9 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "prompt": "A smartphone photo taken inside a small Indian FMCG distributor's godown in Nagpur: on a grey concrete floor, a blue plastic crate overflowing with about a hundred and forty bright red foil snack packets of potato chips with an orange spice illustration and the word \"MUNCHLY\" printed on them, next to two opened brown cardboard cartons; a white printed sticker on the nearest carton reads \"BATCH MF-2409-117\" in bold black letters; steel racks with cartons in the background, flat fluorescent tube light, slightly tilted handheld framing, realistic, natural colours, no people",
+  "aspect": "4:3",
+  "size": 1024,
+  "seed": 1391,
+  "post": "cwebp -q 82, resized to 1024 wide",
+  "use": "SC-139: the destruction evidence photos (illustrative, fictional brand) · batch MF-2409-117"
+}

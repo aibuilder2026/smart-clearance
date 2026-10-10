@@ -31,8 +31,8 @@ const kesari = (patch: Partial<NewClientInput> = {}): NewClientInput => ({
 	emailDomain: 'kesari.in',
 	signGoogle: true,
 	signPhone: true,
-	profile: { route: 'distributors', owner: 'manufacturer', expiry: 'full-credit' },
-	exits: exitsFor({ route: 'distributors', owner: 'manufacturer', expiry: 'full-credit' }, 50),
+	profile: { route: 'distributors', owner: 'manufacturer', expiry: 'godown' },
+	exits: exitsFor({ route: 'distributors', owner: 'manufacturer', expiry: 'godown' }, 50),
 	preset: 'standard',
 	adminName: 'Ritu Malhotra',
 	adminEmail: 'ritu@kesari.in',
@@ -132,6 +132,22 @@ describe('every change is logged in the words the prototype uses', () => {
 		expect((await lastAudit()).text).toBe(
 			"Changed Munchly Foods's channels and rules: Food bank off; staff sale cap 60; Hindi offers off"
 		);
+	});
+	// packs destroyed at the distributor's godown (SC-139): its settings saved with the channels and rules, each change
+	// named, the agencies aside
+	it('the destruction at the godown, with the channels and rules', async () => {
+		const c = (await api.client('munchly'))!;
+		expect(c.profile.expiry).toBe('godown');
+		expect(c.destruction).toMatchObject({ visionCheck: true, grossUp: true, chargesPerUnit: 1.5, remindDays: 2 });
+		await api.saveRules('munchly', {
+			rules: c.rules,
+			exits: c.exits,
+			destruction: { ...c.destruction!, chargesPerUnit: 2, remindDays: 3 }
+		});
+		expect((await lastAudit()).text).toBe(
+			"Changed Munchly Foods's channels and rules: ask again after days 3; the agency's charges a pack 2"
+		);
+		expect((await api.client('munchly'))!.destruction).toMatchObject({ chargesPerUnit: 2, remindDays: 3 });
 	});
 	it('the supply-chain profile, which re-derives the exits and carries the gates to the Watcher', async () => {
 		const c = await api.saveProfile('munchly', {
@@ -268,13 +284,15 @@ describe('a new client', () => {
 		});
 		expect(c.agents.negotiator.autonomy).toBe('ask');
 		expect(c.agents.gate.settings.approver).toBe('admin-kesari');
+		// destroyed at the godown (SC-139): the platform's defaults
+		expect(c.destruction?.agencies.map((a) => a.id)).toEqual(['oce', 'vwc', 'dgw']);
 		expect(c.exits.d2c.on).toBe(true);
 		expect((await api.demoRequests()).find((r) => r.id === 'rq-kesari')).toMatchObject({
 			status: 'set up',
 			client: 'kesari'
 		});
 		expect((await lastAudit()).text).toBe(
-			'Set up Kesari Foods from its supply-chain profile: through distributors, the manufacturer owns the stock, full credit at expiry; invited Ritu Malhotra as admin'
+			"Set up Kesari Foods from its supply-chain profile: through distributors, the manufacturer owns the stock, destroyed at the distributor's godown; invited Ritu Malhotra as admin"
 		);
 		const { attention } = await api.overview();
 		expect(attention.find((a) => a.id === 'kesari-invite')?.text).toBe(

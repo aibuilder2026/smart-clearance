@@ -472,9 +472,10 @@ def push_closed(
     godown: int = 0,
     at: str = "",
     settled: str = "",
+    destroyed: bool = False,
 ) -> dict[str, Any]:
     """the batch closed: what it recovered; when some packs were left at the godown (SC-87), what the plan expected,
-    and how the expired packs were settled (SC-94)"""
+    and how the expired packs were settled (SC-94), destroyed there on the operator's yes (SC-139)"""
     if not godown:
         return {
             "title": f"Batch closed · {cartons} cartons destroyed",
@@ -483,7 +484,7 @@ def push_closed(
     packs, are = ("pack", "is") if godown == 1 else ("packs", "are")
     rest = settled or f"{fmt.num(godown)} {packs} no channel took {are} at {at}."
     return {
-        "title": f"Batch closed · {fmt.num(godown)} {packs} expired at the godown",
+        "title": f"Batch closed · {fmt.num(godown)} {packs} {'destroyed' if destroyed else 'expired'} at the godown",
         "body": f"{fmt.inr(net)} recovered of {fmt.inr(planned or 0)} planned, {fmt.inr(itc)} GST credit kept, "
         f"{fmt.kg(kg)} kept out of landfill. {rest}",
     }
@@ -497,11 +498,27 @@ def expired_event(*, units: int, godown: str) -> str:
     return f"Expiry day: the journey closed as it stood. {fmt.num(units)} {packs} no channel took expired at {godown}."
 
 
-def expiry_settled(*, policy: str, units: int, credit: float | None, client: str, distributor: str, godown: str) -> str:
-    """how the expired packs settle, by the client's expiry policy (SC-94)"""
+def expiry_settled(
+    *,
+    policy: str,
+    units: int,
+    credit: float | None,
+    client: str,
+    distributor: str,
+    godown: str,
+    certificate: str = "",
+) -> str:
+    """how the expired packs settle, by the client's expiry policy (SC-94); destroyed at his godown (SC-139), the
+    financial note against the agency's certificate"""
     packs, them = ("pack", "it") if units == 1 else ("packs", "them")
     lead = f"The {fmt.num(units)} {packs} that expired at {godown}"
     amount = f" ({fmt.inr(credit)})" if credit else ""
+    if policy == "godown":
+        return (
+            f"A financial credit note: no GST is charged or adjusted on it, and {possessive(client)} output tax on the "
+            f"original sale stands. Issued against destruction certificate {certificate}; adjusted against "
+            f"{possessive(distributor)} account."
+        )
     if policy == "full-credit":
         return (
             f"{lead} come back to {client} for full credit{amount or ' at the dealer price'}, and {client} destroys "
@@ -513,6 +530,79 @@ def expiry_settled(*, policy: str, units: int, credit: float | None, client: str
             f"price{amount}."
         )
     return f"{lead} are {possessive(distributor)} loss: with no returns, {distributor} destroys {them}."
+
+
+# --- destroyed at the distributor's godown (SC-139) ---------------------------------------------------------------
+
+
+def destroy_asked_event(*, units: int, godown: str, distributor: str) -> str:
+    """expiry day: the packs no channel took, to be destroyed at his godown against evidence"""
+    packs = "pack" if units == 1 else "packs"
+    return (
+        f"Asked {distributor} to destroy the {fmt.num(units)} {packs} left at {godown} through an authorised agency, "
+        "and to send two photos and the agency's certificate number."
+    )
+
+
+def push_destroy(*, person: str, sku_name: str, ref: str, units: int, godown: str, client: str) -> dict[str, Any]:
+    return {
+        "title": "Expired packs destroy karein",
+        "body": f"{person}, {compact(sku_name)} (batch {ref}) ke {fmt.num(units)} packs {godown} mein expire ho gaye. "
+        f"Authorised agency se destroy karwayein, aur do photo aur certificate number bhej dein. {client} credit note "
+        "dega.",
+    }
+
+
+def push_destroy_remind(*, person: str, sku_name: str, ref: str, units: int) -> dict[str, Any]:
+    return {
+        "title": "Yaad dilana: destruction ka saboot",
+        "body": f"{person}, {compact(sku_name)} (batch {ref}) ke {fmt.num(units)} expired packs ka saboot abhi nahi "
+        "aaya. Do photo aur agency ka certificate number bhej dein.",
+    }
+
+
+def push_destroy_again(*, person: str, sku_name: str, ref: str, reason: str) -> dict[str, Any]:
+    return {
+        "title": "Destruction ka saboot dobara",
+        "body": f"{person}, {compact(sku_name)} (batch {ref}): {reason}. Photo dobara bhej dein.",
+    }
+
+
+def destroy_sent_event(*, agency: str, certificate: str) -> str:
+    return f"Sent the destruction's evidence: two photos and {possessive(agency)} certificate {certificate}."
+
+
+def destroy_checked_event(*, ok: int, of: int) -> str:
+    if ok == of:
+        return f"Checked the destruction's evidence: all {of} checks pass. It waits for the operator's yes."
+    return f"Checked the destruction's evidence: {ok} of {of} checks pass. It waits for the operator's yes."
+
+
+def push_destroy_review(*, distributor: str, units: int, sku_name: str, godown: str) -> dict[str, Any]:
+    return {
+        "title": "The destruction waits for your yes",
+        "body": f"{distributor} destroyed {fmt.num(units)} packs of {base(sku_name)} at {godown}. Vision checked the "
+        "photos. Review them to issue the credit note.",
+    }
+
+
+def destroy_approved_event(*, units: int, godown: str) -> str:
+    return (
+        f"Approved the destruction of {fmt.num(units)} packs at {godown}: the expiry credit note and the agency's "
+        "certificate follow."
+    )
+
+
+def destroy_again_event(*, reason: str) -> str:
+    return f"Asked again for the destruction's evidence: {reason}."
+
+
+def push_destroy_approved(*, client: str, sku_name: str, amount: float | None) -> dict[str, Any]:
+    note = f" Expiry credit note of {fmt.inr(amount)} follows." if amount else " The expiry credit note follows."
+    return {
+        "title": f"Destruction approved · {base(sku_name)}",
+        "body": f"{client} approved your evidence.{note}",
+    }
 
 
 def push_pickup(*, sku_name: str, units: int, days_left: int, godown: str) -> dict[str, Any]:

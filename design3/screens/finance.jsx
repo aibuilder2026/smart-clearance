@@ -57,6 +57,7 @@
 
   // a paper of a batch's pack (`c`, the batch's case: the story's chips batch, or a batch from the history). Each
   // reads what its batch did: the lines it ran, the credit kept and reversed, the packs given away or destroyed
+  const stamp = t => (!t ? "" : t.length > 5 ? `${fmt.day(t.slice(0, 10))}, ${t.slice(11, 16)}` : t);
   function Paper({ id, c: given }) {
     const c = given || LG().storyCase();
     const DOC = x => c.docs.find(d => d.id === x); const d = DOC(id); const inv = c.invoice || DOC("invoice"); const R = c.dist, B = c.buyer, dp = c.sku.dp, sp = c.support;
@@ -82,10 +83,18 @@
     // an SKU with no cost sheet of its own has its credit worked out as cost × GST, so it is estimated
     if (id === "itc") { const away = d.away != null ? d.away : (c.plan.donated || 0) + (c.plan.leftover || 0), sold = d.units != null ? d.units : c.plan.soldUnits, rev = d.reversed != null ? d.reversed : away ? c.plan.itcReversed : 0;
       const from = c.sku.itcPerUnit == null ? "estimated from the cost and the GST rate" : "from the cost sheet";
-      return <div className="paper pp">{head("GST ITC memo", `Section 17(5)(h) · ${D.CLIENT.short}`, away ? "ITC PART REVERSED" : "ITC KEPT", !away)}<Line k="Packets sold under tax invoices" v={fmt.num(sold)} /><Line k="Destroyed, gifted or lost" v={fmt.num(away)} /><Line k="Input GST kept" sub={`₹${c.plan.writeOff.itcPerUnit.toFixed(2)} a pack, ${from}`} v={fmt.inr2(d.amount)} strong /><Line k="Reversal in GSTR-3B, Table 4(B)(1)" v={rev ? fmt.inr2(rev) : "none"} />
-        <p className="pp-note">{rev ? `Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. The ${fmt.num(away)} packs of this batch given away or destroyed have their credit reversed; the ${fmt.num(sold)} sold under tax invoices keep theirs. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since 1 October 2023, 17(5)(fa) on CSR donations.` : `Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. These packs were sold under tax invoices, so it does not apply. The credit would be reversed only if the stock came back under the expiry claim and ${W.short} destroyed it. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since 1 October 2023, 17(5)(fa) on CSR donations.`}</p></div>; }
+      return <div className="paper pp">{head("GST ITC memo", `Section 17(5)(h) · ${D.CLIENT.short}`, away ? "ITC PART REVERSED" : "ITC KEPT", !away)}<Line k="Packets sold under tax invoices" v={fmt.num(sold)} /><Line k="Destroyed, gifted or lost" v={fmt.num(away)} />{d.atGodown ? <Line k={`Destroyed at ${possessive(c.dist.name)} godown`} sub="his stock: he reverses their credit" v={fmt.num(d.atGodown)} /> : null}<Line k="Input GST kept" sub={`₹${c.plan.writeOff.itcPerUnit.toFixed(2)} a pack, ${from}`} v={fmt.inr2(d.amount)} strong /><Line k="Reversal in GSTR-3B, Table 4(B)(1)" v={rev ? fmt.inr2(rev) : "none"} />
+        <p className="pp-note">{rev ? `Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. The ${fmt.num(away)} packs of this batch given away or destroyed have their credit reversed; the ${fmt.num(sold)} sold under tax invoices keep theirs. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since 1 October 2023, 17(5)(fa) on CSR donations.` : `Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. These packs were sold under tax invoices, so it does not apply. The credit would be reversed only if the stock came back under the expiry claim and ${W.short} destroyed it. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since 1 October 2023, 17(5)(fa) on CSR donations.`}{d.atGodown ? ` The ${fmt.num(d.atGodown)} packs destroyed at ${possessive(c.dist.name)} godown were his stock, bought under tax invoice: he reverses their input credit, and ${D.CLIENT.short} keeps its own.` : ""}</p></div>; }
     if (id === "expiry" && d) { const C = D.CLIENT.short, x = d;
       if (x.policy === "none") return <div className="paper pp">{head("Expiry notice", `${c.batch.id} · ${R.name}`, "NO RETURNS")}<Line k="Packs expired at the godown" v={fmt.num(x.units)} strong /><Line k={`Credit from ${C}`} v="none" /><p className="pp-note">{x.note}</p></div>;
+      // destroyed at his godown (SC-139): a financial note, against the agency's certificate: the dealer price, the input
+      // GST he reverses on them (grossed up) and the agency's charges
+      if (x.policy === "godown") return <div className="paper pp">{head(x.type, `${x.no} · ${C} → ${R.name}`, "NO GST ADJ.", true)}
+        <Line k={`${fmt.num(x.units)} packs destroyed at the godown`} sub={`at the ${fmt.rate(x.dp != null ? x.dp : dp)} dealer price`} v={fmt.inr2(x.credit)} />
+        {x.gst ? <Line k="Input GST he reverses on them" sub={`${x.gstPct != null ? x.gstPct : Math.round(c.sku.gst * 100)}%, section 17(5)(h)`} v={fmt.inr2(x.gst)} /> : null}
+        {x.charges ? <Line k="Destruction charges" sub={`${x.agency || "the agency"}, ₹${(x.charges / x.units).toFixed(2)} a pack`} v={fmt.inr2(x.charges)} /> : null}
+        <Line k={`Credit to ${R.name}`} v={fmt.inr2(x.amount)} strong />
+        <p className="pp-note">{x.note}</p></div>;
       return <div className="paper pp">{head(x.type, `${x.no} · ${C} → ${R.name}`, "NO GST ADJ.", true)}
         <Line k={`${fmt.num(x.units)} packs expired at the godown`} sub="at the dealer price" v={x.amount != null ? fmt.inr2(x.amount) : "—"} />
         <Line k={`Credit to ${R.name}`} v={x.amount != null ? fmt.inr2(x.amount) : "—"} strong />
@@ -95,6 +104,20 @@
     if (id === "fssai") { const own = d && d.status === "generated" && c.donation; const other = !own && c.donation && c.donation.batch && c.donation.batch.id !== c.batch.id && c.donation.units > 0 ? c.donation : null;
       return <div className="paper pp">{own ? <>{head("FSSAI surplus-food checklist", c.batch.id, "GENERATED", true)}<Line k="Packs donated" v={fmt.num(c.plan.donated)} /><Line k="Food bank" v={c.donation.partner.name} /><p className="pp-note">The batch's own checklist for the surplus food: {c.donation.units} packs from {c.donation.from || c.dist.godown} to {c.donation.partner.name}, inside their best-before, with the label photo attached.</p></>
         : <>{head("FSSAI surplus-food checklist", c.batch.id, "NOT REQUIRED")}<p className="pp-note">Nothing from this batch was donated.{other ? ` The ${S.shortName(other.sku)} batch ${other.batch.id} has its own checklist: ${other.units} packs to ${other.partner.name}, ${other.dist.city}.` : ""}</p></>}</div>; }
+    // destroyed at his godown (SC-139): the authorised agency's certificate, for him, once the evidence is approved: the
+    // batch, the packs and kilos, the method, the agency and its authorisation, the evidence and who approved it, and the
+    // input GST he reverses; until then it waits
+    if (d && d.at === "godown") { const done = d.status === "generated";
+      return <div className="paper pp">{head("Destruction certificate", done ? `${d.no} · ${d.agency}` : `${c.batch.id} · ${R.name}`, done ? "DESTROYED" : "AWAITING", done)}
+        <div className="pp-sub">For {R.name}, {R.address} · GSTIN {R.gstin}</div>
+        <Line k={`${c.sku.brand} ${c.sku.name}`} sub={`HSN ${c.sku.hsn} · batch ${c.batch.id} · best before ${fmt.date(c.batch.bestBefore)}`} v={`${fmt.num(d.units)} packs`} strong />
+        {done ? <><Line k="Weight" sub="food and packaging" v={fmt.kg(d.kg)} />
+          <Line k="Method" sub={`${d.method.charAt(0).toLowerCase()}${d.method.slice(1)}`} v={stamp(d.destroyedAt)} />
+          <Line k="Agency" sub={`authorisation ${d.auth}`} v={d.agency} />
+          <Line k="Evidence" sub={`two photos · Vision's checks ${d.evidence.checks} of ${d.evidence.of}`} v={`approved by ${d.approvedBy}`} />
+          <Line k="Input GST he reverses" sub="section 17(5)(h), GSTR-3B Table 4(B)(1)" v={fmt.inr2(d.reversed)} /></>
+          : <Line k="Input GST he will reverse" sub="section 17(5)(h)" v={fmt.inr2(d.reversed)} />}
+        <p className="pp-note">{done ? d.note : `Issued by the authorised agency once ${W.short} approves the destruction's evidence: two photos and the agency's certificate number.`}</p></div>; }
     // the packs the client destroys (SC-122: those that came back for full credit included), with their credit reversed
     const n = (d && d.units) || 0;
     return <div className="paper pp">{head("Destruction certificate", c.batch.id, n ? "GENERATED" : "NOT REQUIRED", !!n)}<Line k={n ? "Units destroyed" : "Units left to destroy"} v={fmt.num(n)} strong />{n ? <Line k="Input GST reversed" sub="section 17(5)(h), GSTR-3B Table 4(B)(1)" v={fmt.inr2(d && d.reversed != null ? d.reversed : n * c.plan.writeOff.itcPerUnit)} /> : null}<p className="pp-note">Issued only when units remain, with the ITC reversal entry pre-filled so finance is never surprised.</p></div>;
@@ -106,8 +129,10 @@
   function KeepsWhat({ c: given }) {
     const s = useStore(); const c = given || LG().storyCase();
     const x0 = c.history ? c.expiry : s.hero.expiry; const x = x0 && x0.units > 0 ? x0 : null; const dp = c.sku.dp;
-    const took = c.support.rows.reduce((t, r) => t + r.units * r.price, 0), credit = (x && x.credit) || 0, settled = x ? x.total : 0;
-    const recv = took + c.support.total; const paid = c.plan.units * dp + c.support.van + c.support.fee; const ends = Math.round(recv + credit - paid);
+    // destroyed at his godown (SC-139): the note carries the GST he reverses and the agency's charges, which he pays out
+    const godown = x && x.policy === "godown", spent = godown ? (x.reversal || 0) + (x.charges || 0) : 0;
+    const took = c.support.rows.reduce((t, r) => t + r.units * r.price, 0), credit = (x && (godown ? x.amount : x.credit)) || 0, settled = x ? x.total : 0;
+    const recv = took + c.support.total; const paid = c.plan.units * dp + c.support.van + c.support.fee; const ends = Math.round(recv + credit - spent - paid);
     // a donation costs Munchly its handling and the credit given away with it, as the ledger's swing counts (SC-122)
     const gift = c.plan.lines.find(l => l.id === "foodbank" && l.units > 0), given2 = gift ? gift.cost + gift.itcLoss : 0;
     return <Card className="stack snug">
@@ -115,6 +140,7 @@
       <div className="stack tight t-subhead">
         <div className="row between"><span>{c.dist.name} receives</span><span className="tnum">{fmt.inr(recv)}</span></div>
         {credit > 0 && <div className="row between"><span>and the expiry credit for {fmt.num(x.units)} packs</span><span className="tnum">{fmt.inr(credit)}</span></div>}
+        {spent > 0 && <div className="row between"><span>and the GST he reverses on them and the agency's charges</span><span className="tnum">{fmt.inr(-spent)}</span></div>}
         <div className="row between"><span>and paid {fmt.num(c.plan.units)} × ₹{dp}, the van and the fee</span><span className="tnum">{fmt.inr(-paid)}</span></div>
         <div className="row between"><b>{x && !credit ? "Its loss on the expired packs" : "He ends whole"}</b><span className="tnum strong">{fmt.inr(ends)}</span></div>
         <div className="hairline" style={{ margin: "4px 0" }} />
@@ -326,7 +352,9 @@
           <Row k="Van, listing fee and handling" v={fmt.inr(-(r.costs || 0))} tone="neg" />
           {r.itcLoss ? <Row k="Input credit given away with the donation" sub="s.17(5)(h)" v={fmt.inr(-r.itcLoss)} tone="neg" /> : null}
           <Row k="Recovered" v={fmt.inr(F.net)} strong />
-          {F.godown ? <div className="lg-note"><Icon name="warehouse" size={16} /><span>{fmt.num(F.godown)} packs no channel took expired at {c.dist.godown}. They came back to {W.short} for full credit ({fmt.inr(F.credit)}) and {W.short} destroyed them: disposal, EPR and {fmt.inr2(c.expiry.itc)} of credit reversed.</span></div> : null}
+          {F.godown ? <div className="lg-note"><Icon name={c.expiry.policy === "godown" ? "recycle" : "warehouse"} size={16} /><span>{c.expiry.policy === "godown"
+            ? `${fmt.num(F.godown)} packs no channel took expired at ${c.dist.godown} and were destroyed there through ${c.destruction && c.destruction.agency ? c.destruction.agency.name : "an authorised agency"}, on ${c.destruction && D.PEOPLE[c.destruction.approvedBy] ? possessive(D.PEOPLE[c.destruction.approvedBy].short) : "the operator's"} yes. ${W.short} credited ${c.dist.short} ${fmt.inr2(F.credit)}: the dealer price, the ${fmt.inr2(c.expiry.gst)} of GST he reverses and ${fmt.inr2(c.expiry.charges)} of the agency's charges. ${possessive(W.short)} own input credit is kept.`
+            : `${fmt.num(F.godown)} packs no channel took expired at ${c.dist.godown}. They came back to ${W.short} for full credit (${fmt.inr(F.credit)}) and ${W.short} destroyed them: disposal, EPR and ${fmt.inr2(c.expiry.itc)} of credit reversed.`}</span></div> : null}
         </Card>
         <Card className="stack snug">
           <div className="card-head"><span className="card-title">If it had been destroyed</span><Badge size="sm" tone="red" icon="trash-2">write-off</Badge></div>

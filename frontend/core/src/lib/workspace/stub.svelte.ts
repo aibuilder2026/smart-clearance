@@ -40,7 +40,8 @@ export const STUB_WORLD: PartnerWorld = {
 	buyer: D.buyer,
 	client: D.client.name,
 	short: D.workspace.short,
-	capTimes: D.rules.shopCapTimes
+	capTimes: D.rules.shopCapTimes,
+	people: D.people
 };
 
 export const data: WorkspaceData = Object.freeze({
@@ -240,7 +241,7 @@ class StubSource implements WorkspaceSource {
 					const x = st.hero.orders.find((y) => y.id === kirana);
 					if (x && units != null) x.units = units;
 				});
-			} else run(name as ActionName, arg as string | number | boolean | undefined);
+			} else run(name as ActionName, arg as Parameters<typeof run>[1]);
 		};
 		if (!o?.feel) {
 			step();

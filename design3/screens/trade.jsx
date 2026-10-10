@@ -14,6 +14,9 @@
   const shopById = id => D.KIRANAS.find(k => k.id === id) || WK().find(k => k.id === id);
   // a partner's own history (SC-130): ledger.js's partners, and the pieces their pages share
   const P = () => window.SC3_LEDGER.partners;
+  // what a cleared batch credited him: the price support, and on expiry day the expiry credit note (under SC-139's
+  // route B with the GST he reverses and the agency's charges)
+  const creditOf = c => c.support.total + ((c.expiry && (c.expiry.at === "godown" && c.expiry.amount != null ? c.expiry.amount : c.expiry.credit)) || 0);
   const asDate = iso => new Date((iso.length > 10 ? iso : iso + "T00:00") + ":00+05:30");
   const day = iso => asDate(iso.slice(0, 10)).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
   const when = iso => (iso.length > 10 ? `${day(iso)}, ${iso.slice(11, 16)}` : day(iso));
@@ -57,7 +60,7 @@
     </Sheet>;
   }
   const PAPER_ICON = { invoice: "receipt", eway: "truck", support: "hand-coins", expiry: "warehouse", receipt: "heart-handshake", destruction: "trash-2" };
-  const issuedBy = (c, d) => (d.id === "invoice" || d.id === "eway" ? "You issue it" : d.id === "receipt" ? `${c.partner ? c.partner.name : "The food bank"} issued it to ${D.WORKSPACE.short} · a copy for you` : d.id === "destruction" ? `${D.WORKSPACE.short} destroyed the packs · a copy for you` : `${D.WORKSPACE.short} issued it to you`);
+  const issuedBy = (c, d) => (d.id === "invoice" || d.id === "eway" ? "You issue it" : d.id === "receipt" ? `${c.partner ? c.partner.name : "The food bank"} issued it to ${D.WORKSPACE.short} · a copy for you` : d.id === "destruction" ? (d.at === "godown" ? `${d.agency || "The agency"} destroyed them for you` : `${D.WORKSPACE.short} destroyed the packs · a copy for you`) : `${D.WORKSPACE.short} issued it to you`);
   // one paper as a row: its icon, type, number, who issued it, its amount
   function PaperRow({ c, d, onOpen }) {
     const amount = d.status === "not required" || d.id === "receipt" ? null : d.id === "invoice" ? d.total || d.amount : d.amount;
@@ -140,10 +143,10 @@
   //   Orders: every batch's orders, in a journey and cleared: who bought what, for how much, on which paper.
   // Batches (SC-130) stays as it is. Every line, step and order is ledger.js's partners (journeyOf, ordersNow, …)
   const HERO = D.BATCHES.find(b => b.hero);
-  const CH = { kirana: { icon: "store", name: "Kirana scheme" }, expiresoon: { icon: "shopping-bag", name: "ExpireSoon lot" }, staff: { icon: "users", name: "Staff sale" }, foodbank: { icon: "heart-handshake", name: "Food bank" } };
+  const CH = { kirana: { icon: "store", name: "Kirana scheme" }, expiresoon: { icon: "shopping-bag", name: "ExpireSoon lot" }, staff: { icon: "users", name: "Staff sale" }, foodbank: { icon: "heart-handshake", name: "Food bank" }, destroy: { icon: "recycle", name: "Destroyed at the godown", ch: "writeoff" } };
   const num = n => fmt.num(n), rate = n => "₹" + n.toFixed(2);
   const shortName = sku => sku.name.replace(/ \d+ ?(g|ml|kg|L)$/, "");
-  const Chan = ({ id, icon }) => <span className="dist-chan" style={{ "--ch": `var(--ch-${id})` }} aria-hidden="true"><Icon name={icon || CH[id].icon} size={16} stroke={2} /></span>;
+  const Chan = ({ id, icon }) => <span className="dist-chan" style={{ "--ch": `var(--ch-${(CH[id] && CH[id].ch) || id})` }} aria-hidden="true"><Icon name={icon || CH[id].icon} size={16} stroke={2} /></span>;
   const stopBadge = j => <Badge size="sm" tone={j.todo.length ? "amber" : j.phase === "cleared" ? "green" : "blue"} dot live={!j.todo.length && j.phase !== "cleared"}>{j.todo.length ? `${j.todo.length} for you` : j.stop}</Badge>;
   // a batch as one line: its pack, its name and id, and where it stands
   function BatchLine({ sku, id, badge, sub, size = 48 }) {
@@ -187,7 +190,7 @@
       </div>
       {j.todo.length ? <div className="stack" style={{ gap: 8 }}>{j.todo.map((t, i) => <Step key={t.id} t={t} j={j} primary={i === 0} />)}</div>
         : <div className="dist-wait"><Aura on={j.phase !== "cleared"} className="icontile soft" style={{ width: 36, height: 36, borderRadius: 11 }}><Icon name={j.phase === "cleared" ? "badge-check" : "sparkles"} size={17} /></Aura><span className="t-subhead">{j.waiting}</span><span className="t-footnote subtle">Nothing for you now</span></div>}
-      {j.lines.length > 0 && <div className="dist-lines">{j.lines.map(l => <LineRow key={l.id} line={l} onOpen={() => go("van", { ref: j.ref })} />)}</div>}
+      {j.lines.length > 0 && <div className="dist-lines">{j.lines.map(l => <LineRow key={l.id} line={l} onOpen={() => go(l.id === "destroy" ? "destroy" : "van", { ref: j.ref })} />)}</div>}
     </motion.section>;
   }
   // more than one batch in a journey: each by its pack and what it asks, a tap away
@@ -429,6 +432,86 @@
     </div>;
   }
 
+  /* ---------- destroying the packs left at his godown (SC-139, option B) ---------- */
+  // on expiry day the packs no channel took are destroyed at his godown through an authorised agency: two photos (before,
+  // at the godown with the batch label in view; after, at the landfill with the slate), the agency and its certificate.
+  // Vision checks them, the client's operator gives the second yes, and the credit note and the certificate follow
+  const DZ_SLOTS = [
+    { id: "before", n: 1, title: "Before", hint: "The packs at your godown, the batch label in view", alt: "The expired packs at the godown, the carton's batch label in view" },
+    { id: "after", n: 2, title: "After", hint: "Slit open at the landfill, the slate in view", alt: "The packs slit open in a landfill pit, a slate with the batch, the count and the date" },
+  ];
+  const DZ_SAY = { reading: ["scan-line", "Vision is checking your photos", "The batch on the label, the count in view, and the slate"],
+    checked: ["hourglass", "Sent for approval", "is reviewing your evidence. The credit note follows the yes."],
+    approved: ["badge-check", "Approved · you are credited", "The expiry credit note and the agency's certificate are in your papers."] };
+  function DzSlot({ slot, ref_, shot, busy, onTake, onUpload }) {
+    const example = `${IMG()}evidence/${ref_}-${slot.id}.webp`;
+    return <div className="stack tight dz-slot">
+      <div className="cam dz-cam">
+        <img className="cam-feed whole" src={shot ? (shot.url || example) : example} alt={shot ? slot.alt : ""} aria-hidden={shot ? undefined : "true"} style={shot ? undefined : { opacity: 0.55 }} />
+        {!shot && <><div className="cam-frame" aria-hidden="true"><i /><i /><i /><i /></div><span className="cam-tag">Example</span></>}
+        {shot && <span className="cam-tag">{slot.n} · {slot.title}</span>}
+        <div className="cam-hint">{slot.hint}</div>
+      </div>
+      {!busy && <div className="cam-two"><Button size="sm" variant={shot ? "ghost" : "secondary"} icon={shot ? "rotate-ccw" : "camera"} aria-label={`${shot ? "Retake" : "Take"} the ${slot.id} photo`} onClick={onTake}>{shot ? "Retake" : "Take"}</Button><Button size="sm" variant="ghost" icon="upload" aria-label={`Upload the ${slot.id} photo`} onClick={onUpload}>Upload</Button></div>}
+    </div>;
+  }
+  function DestroyScreen({ me }) {
+    const s = useStore(); const dist = distOf(me); const { route, go } = useRoute(); const live = S.useLive(); const reduce = useReducedMotion();
+    const ns = P().distNow(dist.id, s), ref = route.params && route.params.ref;
+    const n = ns.find(x => x.destruction && x.ref === ref) || ns.find(x => x.destruction);
+    const agencies = D.SETUP.destruction.agencies.filter(a => a.city === dist.city);
+    const [shots, setShots] = useState({}); const [agency, setAgency] = useState(agencies[0] ? agencies[0].id : ""); const [cert, setCert] = useState(""); const [err, setErr] = useState(null); const [sending, setSending] = useState(false);
+    const cam = useRef({}), pick = useRef({});
+    const C = D.CLIENT.short, op = D.PEOPLE.priya;
+    if (!n) return <Screen me={me} title="Destroy expired packs" sub="Requests from the client" back="Today"><Card style={{ maxWidth: 560, margin: "0 auto", width: "100%" }}><Empty img="godown" title="No destruction asked for now" body={`When packs expire at your godown and no channel took them, ${C} asks here for the evidence of their destruction.`} /></Card></Screen>;
+    const d = n.destruction, sku = D.SKUS[n.sku], due = d.status === "requested" || d.status === "asked";
+    const a = agencies.find(x => x.id === agency);
+    const his = Math.round(d.units * sku.dp * sku.gst * 100) / 100;
+    const use = (id, f, how) => {
+      if (!f) return;
+      if (!PHOTO_TYPES.includes(f.type)) { setErr("That file is not a photo Vision can read. Send a JPEG, PNG or WebP."); return; }
+      if (f.size >= PHOTO_MAX_MB * 1048576) { setErr(`That photo is ${(f.size / 1048576).toFixed(1)}\u00a0MB. Send one under ${PHOTO_MAX_MB}\u00a0MB.`); return; }
+      setErr(null); setShots(x => Object.assign({}, x, { [id]: { url: URL.createObjectURL(f), file: f, how } }));
+    };
+    const picked = id => e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; use(id, f, "upload"); };
+    // in the prototype a stand-in photo is the batch's own evidence; on the live workspace the phone's camera
+    const take = id => { setErr(null); if (live && cam.current[id]) cam.current[id].click(); else setShots(x => Object.assign({}, x, { [id]: { demo: true, how: "camera" } })); };
+    const upload = id => { setErr(null); if (pick.current[id]) pick.current[id].click(); };
+    const ready = shots.before && shots.after && a && cert.trim().length >= 4;
+    const send = () => {
+      if (!ready) return;
+      const x = { agency: a, certificate: cert.trim(), before: shots.before.file, after: shots.after.file };
+      if (live && live.destruction) { live.destruction("send", x); return; }
+      setSending(true); setTimeout(() => { setSending(false); setShots({}); setCert(""); Flow.act("sendDestruction", x); }, 700);
+    };
+    const say = DZ_SAY[d.status];
+    return <Screen me={me} title="Destroy expired packs" sub={`Batch ${n.ref} · ${dist.godown}`} back="Today">
+      <div className="stack" style={{ gap: 16, maxWidth: 640, margin: "0 auto", width: "100%" }}>
+        <BatchLine sku={sku} id={n.ref} badge={<Badge size="sm" tone={due ? "amber" : d.status === "approved" ? "green" : "blue"} dot={d.status !== "approved"}>{due ? "for you" : d.status === "approved" ? "approved" : "sent"}</Badge>} sub={`${fmt.num(d.units)} packs expired at ${dist.godown}`} />
+        {d.status === "asked" && <p className="cam-alert" role="alert"><Icon name="rotate-ccw" size={15} />{op.short} asked again: {d.reason}</p>}
+        {due ? <Card className="stack snug">
+          <span className="t-subhead">Destroy the {fmt.num(d.units)} packs through an authorised agency, then send the two photos and the agency's certificate number. {op.short} at {C} approves, and {C} credits you the dealer price, the GST you reverse and the agency's charges.</span>
+          <div className="dz-two">{DZ_SLOTS.map(sl => <DzSlot key={sl.id} slot={sl} ref_={n.ref} shot={shots[sl.id]} busy={sending} onTake={() => take(sl.id)} onUpload={() => upload(sl.id)} />)}</div>
+          {DZ_SLOTS.map(sl => <Fragment key={sl.id}><input ref={el => (cam.current[sl.id] = el)} type="file" accept={PHOTO_TYPES.join(",")} capture="environment" onChange={picked(sl.id)} className="sr-only" tabIndex={-1} aria-hidden="true" /><input ref={el => (pick.current[sl.id] = el)} type="file" accept={PHOTO_TYPES.join(",")} onChange={picked(sl.id)} className="sr-only" tabIndex={-1} aria-hidden="true" /></Fragment>)}
+          <div className="dz-fields">
+            <K.Field label="Agency" htmlFor="dz-agency" help={a ? `Authorisation ${a.auth}` : undefined}><K.Select id="dz-agency" value={agency} onChange={e => setAgency(e.target.value)}>{agencies.map(x => <option key={x.id} value={x.id}>{x.name}</option>)}</K.Select></K.Field>
+            <K.Field label="Agency's certificate number" htmlFor="dz-cert"><K.Input id="dz-cert" value={cert} onChange={e => setCert(e.target.value)} placeholder={a ? `${a.series.prefix}0000` : ""} spellCheck={false} autoCapitalize="characters" /></K.Field>
+          </div>
+          {err && <p className="cam-alert" role="alert"><Icon name="triangle-alert" size={15} />{err}</p>}
+          <Button variant="primary" size="lg" block icon="send" loading={sending} disabled={!ready} aria-describedby="dz-need" onClick={send}>Send to {C} for approval</Button>
+          <span id="dz-need" className="t-caption subtle">{ready ? `Then reverse ${fmt.inr2(his)} of input GST on these packs in your GSTR-3B (Table 4(B)(1)). ${possessive(C)} credit note makes it good.` : `Both photos and the certificate number are needed. ${PHOTO_RULE}.`}</span>
+        </Card>
+          : <Card className="stack snug">
+            <div className="row" style={{ gap: 12 }}><Aura on={d.status === "reading"} className="icontile" style={{ borderRadius: 12, width: 40, height: 40 }}><Icon name={say[0]} size={19} /></Aura><div className="grow"><b>{say[1]}</b><div className="t-footnote muted">{d.status === "checked" ? `${op.short} at ${C} ${say[2]}` : say[2]}</div></div></div>
+            <div className="dz-two">{DZ_SLOTS.map(sl => <div key={sl.id} className="cam dz-cam"><img className="cam-feed whole" src={`${IMG()}evidence/${n.ref}-${sl.id}.webp`} alt={sl.alt} /><span className="cam-tag">{sl.n} · {sl.title}</span></div>)}</div>
+            {d.status === "reading" && !reduce && <span className="sr-only" role="status">Vision is checking your photos</span>}
+            <Button variant="secondary" block onClick={() => go(d.status === "approved" ? "batches" : "home", d.status === "approved" ? { ref: n.ref } : undefined)}>{d.status === "approved" ? "Open the batch's papers" : "Back to today"}</Button>
+          </Card>}
+      </div>
+    </Screen>;
+  }
+  const possessive = n => (/s$/.test(n) ? `${n}'` : `${n}'s`);
+
   /* ---------- Orders: every batch's orders, past and present ---------- */
   // an order: who bought what, for how much, on which paper (the invoice he issues, and Issue from Tally while it is a
   // draft); the scheme's shops on request
@@ -482,7 +565,7 @@
     const dist = distOf(me); const ref = route && route.params && route.params.ref;
     if (ref) return <DistBatch me={me} dist={dist} id={ref} />;
     const { journey, watching, past } = P().distBatches(dist.id, s);
-    const credit = past.reduce((t, c) => t + c.support.total + ((c.expiry && c.expiry.credit) || 0), 0);
+    const credit = past.reduce((t, c) => t + creditOf(c), 0);
     const notes = past.reduce((t, c) => t + c.docs.filter(d => (d.id === "support" || d.id === "expiry") && d.status !== "not required").length, 0);
     const months = []; past.forEach(c => { const m = c.cleared.slice(0, 7); let g = months.find(x => x.m === m); if (!g) months.push(g = { m, label: monthOf(c.cleared), items: [] }); g.items.push(c); });
     return <Screen me={me} title="Batches" sub={`${dist.name} · every batch of ${D.WORKSPACE.short}'s the Watcher flagged at your godown`}>
@@ -495,7 +578,7 @@
           <div className="lg-fig"><Money value={credit} size="l" /><span className="lg-what">from {D.WORKSPACE.short} since July</span></div>
           <p className="lg-working">{past.length} batches cleared at your godown. On each, the price support (and on expiry day the expiry credit) made up the gap to the dealer price you paid, so you ended whole: <b>{notes} credit notes</b>, each in its batch's papers.</p>
         </Card> : null}
-        {months.map(g => <List key={g.m} head={`Cleared · ${g.label}`}>{g.items.map(c => { const cr = c.support.total + ((c.expiry && c.expiry.credit) || 0); const p = P().distPapers(c);
+        {months.map(g => <List key={g.m} head={`Cleared · ${g.label}`}>{g.items.map(c => { const cr = creditOf(c); const p = P().distPapers(c);
           return <ListRow key={c.ref} chevron onClick={() => go("batches", { ref: c.ref })} leading={<Product name={c.sku.img} size={40} />}
             title={<span className="row tight" style={{ gap: 8, flexWrap: "wrap" }}><span>{c.sku.name}</span>{!phone && <S.OutcomeBadge o={c.outcome} size="sm" />}</span>}
             sub={`${c.ref} · flagged ${day(c.flagged)} · cleared ${day(c.cleared)}`}
@@ -534,7 +617,7 @@
       <div className="stack tight">{w.rows.map(r => <PtLine key={r.k} k={r.k} sub={r.sub} v={fmt.inr(r.v)} onClick={r.paper && !story ? () => onPaper(r.paper) : null} />)}
         <div className="hairline" style={{ margin: "4px 0" }} />
         <PtLine k="What you receive" v={fmt.inr(w.recv)} strong />
-        <PtLine k="What you paid" sub={`${fmt.num(w.units)} × ₹${w.dp}, the van and the listing fee`} v={fmt.inr(-w.paid)} />
+        <PtLine k="What you paid" sub={w.extra ? `${fmt.num(w.units)} × ₹${w.dp}, the van, the listing fee, the GST you reverse and the agency's charges` : `${fmt.num(w.units)} × ₹${w.dp}, the van and the listing fee`} v={fmt.inr(-w.paid)} />
         <PtLine k="Your gain or loss" v={fmt.inr(w.gain)} strong /></div>
       <span className="t-caption subtle">Instead of waiting weeks for an expiry claim, with no claim paperwork.</span>
     </Card>;
@@ -800,5 +883,5 @@
     </Screen>;
   }
 
-  Object.assign(window.SC3_SCREENS, { distOf, kOf, shopOf, DistBatches, DistBatch, PaperSheet, PaperRow, PtHead, PtTabs, PtMoments, OfferStatus, OfferPage, OfferOrder, DistHome, CameraScreen, VanRoute, DistOrders, OfferCard, RetailHome, OfferDetail, RetailOrders, Market, Listing, ListingView, MyBids, Pickups, EsBar, offerMath, cartons, PermissionCard });
+  Object.assign(window.SC3_SCREENS, { distOf, kOf, shopOf, DistBatches, DistBatch, PaperSheet, PaperRow, PtHead, PtTabs, PtMoments, OfferStatus, OfferPage, OfferOrder, DistHome, CameraScreen, VanRoute, DistOrders, OfferCard, RetailHome, OfferDetail, RetailOrders, Market, Listing, ListingView, MyBids, Pickups, EsBar, offerMath, cartons, PermissionCard, DestroyScreen });
 })();

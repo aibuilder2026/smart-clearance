@@ -41,6 +41,32 @@ def floors_pct(c: m.Client) -> dict[str, int]:
     return {**DEFAULT_FLOORS, **(c.floors or {})}
 
 
+def destruction_settings(c: m.Client) -> dict[str, Any] | None:
+    """how the client has expired packs destroyed at a distributor's godown (SC-139): the workspace's setup (the
+    evidence asked for, the method, the authorised agencies with their series and landfill) with the console's settings
+    laid over it (Vision's check, the reviewer, the reminder, the GST gross-up, the agency's charge a pack, which
+    agencies). None for a client with neither"""
+    base = ((c.workspace_doc or {}).get("setup") or {}).get("destruction")
+    own = c.destruction
+    if not base and not own:
+        return None
+    out: dict[str, Any] = {**money.RULES["destruction"], **(base or {})}
+    for k in ("visionCheck", "reviewer", "remindDays", "grossUp", "chargesPerUnit"):
+        if own and k in own:
+            out[k] = own[k]
+    if own and own.get("agencies") is not None:  # the console names the agencies; the setup keeps their records
+        by = {a["id"]: a for a in out.get("agencies") or []}
+        out["agencies"] = [{**a, **by.get(a["id"], {})} for a in own["agencies"]]
+    return out
+
+
+def destruction_opts(c: m.Client) -> dict[str, Any]:
+    """what money.realised and money.expiry_settlement read of it: the charge a pack, the gross-up, the reminder"""
+    d = destruction_settings(c) or {}
+    base = money.RULES["destruction"]
+    return {k: d.get(k, base[k]) for k in ("chargesPerUnit", "grossUp", "remindDays")}
+
+
 def money_rules(c: m.Client, agents: dict[str, dict[str, Any]]) -> dict[str, Any]:
     """money.js's RULES with the client's own values laid over them"""
     lister, negotiator, outreach = agents.get("lister", {}), agents.get("negotiator", {}), agents.get("outreach", {})

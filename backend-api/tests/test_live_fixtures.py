@@ -1,4 +1,4 @@
-"""What the workspace app reads from backend-api at five moments of the story's journey, written out for the frontend's
+"""What the workspace app reads from backend-api at seven moments of the story's journey, written out for the frontend's
 live-source test (frontend/workspace/tests/live/), so the screens are drawn on real answers rather than hand-made ones.
 
 It runs only when asked: scripts/live-fixtures.sh sets LIVE_FIXTURES_OUT and runs this file alone. Each moment's file
@@ -24,6 +24,8 @@ from tests.test_workspace import (
     WS,
     J,
     agent,
+    case,
+    destroyed_at_godown,
     detect,
     put_photo,
     setup,
@@ -145,5 +147,13 @@ async def test_write_the_live_fixtures(api, munchly, cloud):
     assert r.status_code == 200, r.text
     await agent(api, f"/cases/{MANGO}/documents", "paperwork-m", "paperwork")
     assert (await api.post(f"{WS}/cases/{MANGO}/dispatches", json={"kind": "van"}, headers=LAKSHMI)).status_code == 200
+    # the packs left at Lakshmi Agencies' godown are destroyed there under Munchly's route B (SC-139): Impact asks for
+    # the evidence, Lakshmi Agencies sends it and Vision checks it, and Priya's yes has Impact report
     await agent(api, f"/cases/{MANGO}/report", "impact-m", "impact")
+    await _write(api, "destruction-asked", ["priya", "lakshmi-owner"])
+    left = (await case(api, LAKSHMI, MANGO))["destruction"]["units"]
+    await destroyed_at_godown(api, cloud, MANGO, LAKSHMI, agency="dgw", units=left)
+    await _write(api, "destruction-checked", ["priya", "lakshmi-owner"])
+    assert (await api.post(f"{WS}/cases/{MANGO}/destruction/approve", headers=PRIYA)).status_code == 200
+    await agent(api, f"/cases/{MANGO}/report", "impact-m2", "impact")
     await _write(api, "cleared", ["priya", "rakesh", "arjun", "meera", "lakshmi-owner"])

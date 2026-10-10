@@ -10,7 +10,8 @@
 		kirana: 'Kirana scheme',
 		expiresoon: 'ExpireSoon lot',
 		staff: 'Staff sale',
-		foodbank: 'Food bank'
+		foodbank: 'Food bank',
+		destroy: 'Destroyed at the godown'
 	};
 	let { line, onopen }: { line: DistStateLine; onopen?: () => void } = $props();
 </script>

@@ -628,6 +628,43 @@ export class LiveSource implements WorkspaceSource {
 				return this.#send(name, () => api.issueInvoice(ref, 'invoice'));
 			case 'review':
 				return this.#send(name, () => api.review(ref));
+			// packs destroyed at his godown (SC-139): both photos to their signed links, then the evidence for Vision
+			case 'sendDestruction': {
+				const x = arg as ActionArg<'sendDestruction'>;
+				return this.#send(name, async () => {
+					if (!x.before || !x.after) throw new ApiError(422, 'Take or upload both photos first.');
+					const photo = (which: 'before' | 'after', file: Blob) =>
+						this.#put_(`destruction:${which}:${ref}`, file, 'image/jpeg', {
+							link: (input) => api.destructionPhoto(ref, which, input),
+							done: async (id) => id
+						});
+					const before = await photo('before', x.before);
+					const after = await photo('after', x.after);
+					return api.sendDestruction(ref, {
+						agency: x.agency.id,
+						certificate: x.certificate,
+						photos: { before, after }
+					});
+				});
+			}
+			case 'approveDestruction':
+				return this.#send(
+					name,
+					() => api.approveDestruction(ref),
+					this.#show((c) => {
+						if (c.destruction) c.destruction = { ...c.destruction, status: 'approved', approvedAt: this.#now() };
+					})
+				);
+			case 'askDestructionAgain': {
+				const reason = arg as string;
+				return this.#send(
+					name,
+					() => api.askDestructionAgain(ref, reason),
+					this.#show((c) => {
+						if (c.destruction) c.destruction = { ...c.destruction, status: 'asked', reason };
+					})
+				);
+			}
 			case 'join':
 				// an invited member joins by signing in for the first time: nothing to send
 				return;
@@ -652,15 +689,15 @@ export class LiveSource implements WorkspaceSource {
 	}
 
 	/** a file to a signed link with its progress under its key, then the backend told it arrived; stoppable */
-	async #put_(
+	async #put_<T = ActionResult>(
 		key: string,
 		file: Blob,
 		type: string,
 		to: {
 			link: (i: { contentType: string; bytes: number; fileName?: string }) => Promise<UploadLink>;
-			done: (id: string) => Promise<ActionResult>;
+			done: (id: string) => Promise<T>;
 		}
-	) {
+	): Promise<T> {
 		const stop = new AbortController();
 		this.#aborts.set(key, stop);
 		this.#uploads.set(key, 0);

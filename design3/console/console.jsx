@@ -866,17 +866,22 @@
   }
   // a question answered by picking one card: native radios, so arrows move between them
   function Choice({ name, label, options, value, onChange }) {
-    return <fieldset className="cs-choice"><legend>{label}</legend><div className="cs-opts">{options.map(o => <label key={o.id} className={cx("cs-opt", value === o.id && "on")}><input type="radio" name={name} value={o.id} checked={value === o.id} onChange={() => onChange(o.id)} /><span>{o.label}</span>{value === o.id && <Icon name="check" size={16} stroke={2.4} />}</label>)}</div></fieldset>;
+    // an option not built yet (`soon`, SC-139's route A) shows with its note, and is not chosen unless it already is
+    return <fieldset className="cs-choice"><legend>{label}</legend><div className="cs-opts">{options.map(o => { const off = o.soon && value !== o.id; return <label key={o.id} className={cx("cs-opt", value === o.id && "on", off && "off")}><input type="radio" name={name} value={o.id} checked={value === o.id} disabled={off} onChange={() => onChange(o.id)} /><span className="stack tight" style={{ gap: 1 }}><span>{o.label}{o.soon && <Badge size="sm" style={{ marginLeft: 6 }}>coming</Badge>}</span>{o.note && <span className="t-caption subtle cs-note">{o.note}</span>}</span>{value === o.id && <Icon name="check" size={16} stroke={2.4} />}</label>; })}</div></fieldset>;
   }
 
   /* ---------- channels and rules ---------- */
   function RulesTab({ c, me }) {
-    const { toast } = useNotice(); const [r, setR] = useState(c.rules); const [ex, setEx] = useState(c.exits);
-    useEffect(() => { setR(c.rules); setEx(c.exits); }, [c.id, JSON.stringify(c.rules), JSON.stringify(c.exits)]);
-    const dirty = JSON.stringify(r) !== JSON.stringify(c.rules) || JSON.stringify(ex) !== JSON.stringify(c.exits);
+    const { toast } = useNotice(); const [r, setR] = useState(c.rules); const [ex, setEx] = useState(c.exits); const [dz, setDz] = useState(c.destruction);
+    useEffect(() => { setR(c.rules); setEx(c.exits); setDz(c.destruction); }, [c.id, JSON.stringify(c.rules), JSON.stringify(c.exits), JSON.stringify(c.destruction)]);
+    const dirty = JSON.stringify(r) !== JSON.stringify(c.rules) || JSON.stringify(ex) !== JSON.stringify(c.exits) || JSON.stringify(dz) !== JSON.stringify(c.destruction);
     const save = () => { const changed = []; P.EXITS.forEach(e => { if (ex[e.id].on !== c.exits[e.id].on) changed.push(`${e.name} ${ex[e.id].on ? "on" : "off"}`); }); Object.keys(r).forEach(k => { if (r[k] !== c.rules[k]) changed.push(`${RULE_LABEL[k] || k} ${typeof r[k] === "boolean" ? (r[k] ? "on" : "off") : r[k]}`); });
-      P.update(d => { const x = d.clients.find(y => y.id === c.id); x.rules = r; x.exits = ex; }, { who: me.name, client: c.id, text: `Changed ${c.name}'s channels and rules: ${changed.join("; ")}` }); toast({ text: "Channels and rules saved", tone: "ok" }); };
+      if (dz) Object.keys(dz).filter(k => k !== "agencies").forEach(k => { if (dz[k] !== c.destruction[k]) changed.push(`${RULE_LABEL[k] || k} ${typeof dz[k] === "boolean" ? (dz[k] ? "on" : "off") : dz[k]}`); });
+      P.update(d => { const x = d.clients.find(y => y.id === c.id); x.rules = r; x.exits = ex; if (dz) x.destruction = dz; }, { who: me.name, client: c.id, text: `Changed ${c.name}'s channels and rules: ${changed.join("; ")}` }); toast({ text: "Channels and rules saved", tone: "ok" }); };
     const set = (k, v) => setR({ ...r, [k]: v });
+    const setD = (k, v) => setDz({ ...dz, [k]: v });
+    // packs left at a distributor's godown on expiry day, destroyed there (SC-139): shown while that is the policy
+    const godown = c.profile.expiry === "godown" && dz;
     return <div className="stack" style={{ gap: 18 }}>
       <Columns sideWidth={460}
         main={<>
@@ -892,11 +897,22 @@
             <ListRow title="Kirana offers in Hindi first" sub="with an English toggle" value={<Switch checked={r.hindiOffers} onChange={v => set("hindiOffers", v)} label="Kirana offers in Hindi first" />} />
             <ListRow title="Label photo before any plan" sub="Vision reads the date off the shelf, not the spreadsheet" value={<Switch checked={r.requirePhoto} onChange={v => set("requirePhoto", v)} label="Label photo before any plan" />} />
           </List>
+          {godown && <><SectionTitle sub="Packs left at a distributor's godown on expiry day: destroyed there, and the batch closes on Supply Chain's yes">Destroyed at the godown</SectionTitle>
+            <List>
+              <ListRow title="Evidence" sub="Two photos, before and after, and the agency's certificate number" value={<Badge size="sm" tone="green">required</Badge>} />
+              <ListRow title="Vision checks the photos" sub="the batch number, the count, the slate, when and where" value={<Switch checked={dz.visionCheck} onChange={v => setD("visionCheck", v)} label="Vision checks the destruction photos" />} />
+              <ListRow title="Reviewed by" sub="the batch closes on this yes" value={<span>{dz.reviewer}</span>} />
+              <ListRow title="Authorised agencies" sub={dz.agencies.map(a => `${a.name}, ${a.city}`).join(" · ")} value={<Badge size="sm">{dz.agencies.length}</Badge>} />
+              <ListRow title="The GST he reverses" sub="made good on the credit note, so he ends whole" value={<Switch checked={dz.grossUp} onChange={v => setD("grossUp", v)} label="Make good the GST he reverses" />} />
+              <ListRow title="The agency's charges" sub="reimbursed a pack, on the credit note" value={<Stepper value={dz.chargesPerUnit} min={0} max={10} step={0.5} onChange={v => setD("chargesPerUnit", v)} label="the agency's charges a pack, in rupees" />} />
+              <ListRow title="Ask again" sub="journey days after the request, if no evidence has come in" value={<Stepper value={dz.remindDays} min={1} max={7} step={1} onChange={v => setD("remindDays", v)} label="days before he is asked again" />} />
+            </List></>}
         </>} />
-      <div className="row" style={{ justifyContent: "flex-end", gap: 10 }}><Button disabled={!dirty} onClick={() => { setR(c.rules); setEx(c.exits); }}>Discard</Button><Button variant="primary" disabled={!dirty} onClick={save}>Save changes</Button></div>
+      <div className="row" style={{ justifyContent: "flex-end", gap: 10 }}><Button disabled={!dirty} onClick={() => { setR(c.rules); setEx(c.exits); setDz(c.destruction); }}>Discard</Button><Button variant="primary" disabled={!dirty} onClick={save}>Save changes</Button></div>
     </div>;
   }
-  const RULE_LABEL = { staffCap: "staff sale cap", offerWindowHours: "offer window hours", hindiOffers: "Hindi offers", requirePhoto: "label photo first" };
+  const RULE_LABEL = { staffCap: "staff sale cap", offerWindowHours: "offer window hours", hindiOffers: "Hindi offers", requirePhoto: "label photo first",
+    visionCheck: "Vision checks the destruction photos", grossUp: "the GST he reverses made good", chargesPerUnit: "the agency's charges a pack", remindDays: "ask again after days" };
 
   /* ---------- people ---------- */
   const ACCESS = ["Approver", "Admin", "Member", "Partner"];
@@ -998,7 +1014,7 @@
     const s = usePlatform(); const app = useApp(); const { toast } = useNotice(); const top = useRef(null);
     const [step, setStep] = useState(0);
     // a demo request from smartclearance.com can start the setup: its company, contact and plan come along
-    const [f, setF] = useState(() => Object.assign({ name: "", city: "", industry: INDUSTRIES[0], colour: COLOURS[0][0], slug: "", slugTouched: false, emailDomain: "", signGoogle: true, signPhone: true, route: "distributors", owner: "distributor", expiry: "full-credit", exitOff: {}, preset: "standard", adminName: "", adminEmail: "", plan: "pilot", request: null }, s.draft || {}));
+    const [f, setF] = useState(() => Object.assign({ name: "", city: "", industry: INDUSTRIES[0], colour: COLOURS[0][0], slug: "", slugTouched: false, emailDomain: "", signGoogle: true, signPhone: true, route: "distributors", owner: "distributor", expiry: "godown", exitOff: {}, preset: "standard", adminName: "", adminEmail: "", plan: "pilot", request: null }, s.draft || {}));
     useEffect(() => { if (s.draft) P.update(d => { delete d.draft; }); }, []);
     const set = patch => setF(x => ({ ...x, ...patch }));
     const slug = f.slugTouched ? f.slug : P.slug(f.name);

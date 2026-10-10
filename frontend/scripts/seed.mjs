@@ -215,7 +215,9 @@ const consoleSeed = {
 			staffCap: R.staffCap,
 			tokenPct: Math.round(R.tokenPct * 100),
 			scheme: '2 free with every 10',
-			offerWindowHours: 48
+			offerWindowHours: 48,
+			// how a new client has expired packs destroyed at a godown (SC-139)
+			destruction: P.destructionDefaults()
 		}
 	},
 	state: {
@@ -245,7 +247,7 @@ const consoleSeed = {
 const PROFILES = [];
 for (const route of ['distributors', 'modern-trade', 'own'])
 	for (const owner of ['distributor', 'manufacturer'])
-		for (const expiry of ['full-credit', 'price-support', 'none']) PROFILES.push({ route, owner, expiry });
+		for (const expiry of ['godown', 'full-credit', 'price-support', 'none']) PROFILES.push({ route, owner, expiry });
 const SAMPLES = {
 	time: ['08:30', '21:05'],
 	number: [0.5, 0.9, 0.955, 14, 30, 90, 365],
@@ -459,6 +461,16 @@ const journey = {
 			staff: b.staff,
 			steps: b.steps,
 			numbers: b.numbers,
+			// destroyed at the godown on expiry day (SC-139): the agency, its certificate, when each photo was taken, and
+			// the slate's date
+			destruction: b.destruction
+				? {
+						agency: b.destruction.agency.id,
+						certificate: b.destruction.certificate,
+						photos: { before: b.destruction.photos.before.at, after: b.destruction.photos.after.at },
+						slate: `${b.bestBefore.slice(8, 10)}-${b.bestBefore.slice(5, 7)}-${b.bestBefore.slice(2, 4)}`
+					}
+				: null,
 			expect: {
 				net: b.actual.net,
 				swing: b.actual.swing,
@@ -470,8 +482,10 @@ const journey = {
 				meals: b.realised.meals,
 				godown: b.realised.godown,
 				destroyed: b.realised.destroyed,
+				atGodown: b.realised.atGodown || 0,
 				support: b.support.total,
-				credit: b.expiry ? b.expiry.credit : 0
+				credit: b.expiry ? b.expiry.credit : 0,
+				amount: b.expiry ? (b.expiry.amount ?? b.expiry.credit) : 0
 			}
 		})),
 		ledger: historyLedger,
@@ -502,7 +516,35 @@ const journey = {
 			donation: c.donation ? { units: c.donation.units, spot: c.donation.spot } : null,
 			receipt: c.receipt ? { no: c.receipt.no, kg: c.receipt.kg, meals: c.receipt.meals } : null,
 			support: { total: c.support.total, van: c.support.van, fee: c.support.fee },
-			expiry: c.expiry && c.expiry.units ? { units: c.expiry.units, credit: c.expiry.credit } : null,
+			expiry:
+				c.expiry && c.expiry.units
+					? {
+							units: c.expiry.units,
+							credit: c.expiry.credit,
+							// destroyed at his godown (SC-139): the note's amount, with the GST he reverses and the charges
+							...(c.expiry.at === 'godown'
+								? {
+										amount: c.expiry.amount,
+										at: c.expiry.at,
+										reversal: c.expiry.reversal,
+										charges: c.expiry.charges
+									}
+								: {})
+						}
+					: null,
+			// destroyed at his godown (SC-139): the evidence's moments, the agency and its certificate, and the yes
+			destruction: c.destruction
+				? {
+						status: c.destruction.status,
+						units: c.destruction.units,
+						agency: c.destruction.agency,
+						certificate: c.destruction.certificate,
+						askedAt: c.destruction.askedAt,
+						sentAt: c.destruction.sentAt,
+						approvedAt: c.destruction.approvedAt,
+						checks: c.destruction.checks
+					}
+				: null,
 			docs: c.docs.map(({ id, no, status, amount, reversed }) => ({
 				id,
 				no,
@@ -591,8 +633,18 @@ const moneyFixtures = (() => {
 			// reverses their credit; otherwise the distributor destroys his own, and the client keeps its credit
 			{ plan: heroPlan, sku: D.SKUS.chips, done: { kirana: 444, expiresoon: 772 }, policy: 'full-credit' },
 			{ plan: heroPlan, sku: D.SKUS.chips, done: { kirana: 444, expiresoon: 772 }, policy: 'price-support' },
-			{ plan: heroPlan, sku: D.SKUS.chips, done: { kirana: 444, expiresoon: 772 }, policy: 'none' }
-		].map((c) => ({ ...c, out: M.realised(c.plan, c.sku, c.done, c.mealsRule, c.policy) })),
+			{ plan: heroPlan, sku: D.SKUS.chips, done: { kirana: 444, expiresoon: 772 }, policy: 'none' },
+			// SC-139: destroyed at his godown: the client keeps its credit and pays his GST reversal, grossed up, and the
+			// agency's charges; and a client that does not gross the GST up, at another agency's charge
+			{ plan: heroPlan, sku: D.SKUS.chips, done: { kirana: 444, expiresoon: 772 }, policy: 'godown' },
+			{
+				plan: heroPlan,
+				sku: D.SKUS.chips,
+				done: { kirana: 444, expiresoon: 772 },
+				policy: 'godown',
+				opts: { ...M.RULES.destruction, grossUp: false, chargesPerUnit: 2 }
+			}
+		].map((c) => ({ ...c, out: M.realised(c.plan, c.sku, c.done, c.mealsRule, c.policy, c.opts) })),
 		// SC-110: each food bank's meals rule, and its receipt for what it collected
 		mealsOf: [
 			[58, 'mango'],
@@ -642,12 +694,18 @@ const moneyFixtures = (() => {
 			[564, 'chips', 'none'],
 			[1318, 'mango', 'full-credit'],
 			[1318, 'mango', 'price-support'],
-			[0, 'chips', 'full-credit']
-		].map(([units, id, policy]) => ({
+			[0, 'chips', 'full-credit'],
+			// SC-139: destroyed at his godown, with the GST gross-up and the agency's charges, or without the gross-up
+			[144, 'chips', 'godown'],
+			[184, 'mango', 'godown'],
+			[0, 'chips', 'godown'],
+			[144, 'chips', 'godown', { ...M.RULES.destruction, grossUp: false, chargesPerUnit: 2 }]
+		].map(([units, id, policy, opts]) => ({
 			units,
 			sku: D.SKUS[id],
 			policy,
-			out: M.expirySettlement(units, D.SKUS[id], policy)
+			...(opts ? { opts } : {}),
+			out: M.expirySettlement(units, D.SKUS[id], policy, opts)
 		})),
 		// money.js numbers the story's invoice and credit note itself; the port takes the numbers as arguments
 		documents: [
@@ -660,6 +718,19 @@ const moneyFixtures = (() => {
 				award,
 				support: M.priceSupport(
 					M.realised(heroPlan, D.SKUS.chips, { kirana: 444, expiresoon: 772 }),
+					D.SKUS.chips,
+					14.2
+				),
+				parties
+			},
+			// SC-139: the same run destroyed at his godown: the memo keeps the client's credit on them, and the certificate
+			// waits for the agency's
+			{
+				plan: M.realised(heroPlan, D.SKUS.chips, { kirana: 444, expiresoon: 772 }, undefined, 'godown'),
+				sku: D.SKUS.chips,
+				award,
+				support: M.priceSupport(
+					M.realised(heroPlan, D.SKUS.chips, { kirana: 444, expiresoon: 772 }, undefined, 'godown'),
 					D.SKUS.chips,
 					14.2
 				),
@@ -767,7 +838,16 @@ const outputs = {
 		'rules.json': json(ruleFixtures),
 		'journey.json': json(journey),
 		'money.json': json(moneyFixtures),
-		'flow.json': json(flowFixture)
+		'flow.json': json(flowFixture),
+		// the evidence of the history's packs destroyed at a godown (SC-139), which its build puts in the photos bucket
+		...Object.fromEntries(
+			L.HISTORY.filter((c) => c.destruction).flatMap((c) =>
+				['before', 'after'].map((w) => [
+					`evidence/${c.ref}-${w}.webp`,
+					readFileSync(join(design3, `system/img/evidence/${c.ref}-${w}.webp`))
+				])
+			)
+		)
 	}
 };
 for (const [dir, files] of Object.entries(outputs))
@@ -781,7 +861,8 @@ const all = Object.entries(outputs).flatMap(([dir, files]) =>
 	Object.entries(files).map(([f, s]) => [join(root, dir, f), `${dir}/${f}`, s])
 );
 if (process.argv.includes('--check')) {
-	const stale = all.filter(([path, , s]) => !existsSync(path) || readFileSync(path, 'utf8') !== s);
+	const same = (path, s) => (Buffer.isBuffer(s) ? readFileSync(path).equals(s) : readFileSync(path, 'utf8') === s);
+	const stale = all.filter(([path, , s]) => !existsSync(path) || !same(path, s));
 	if (stale.length) {
 		console.error(
 			`seed: out of date with design3: ${stale.map(([, name]) => name).join(', ')}. Run \`corepack pnpm seed\`.`
@@ -790,7 +871,7 @@ if (process.argv.includes('--check')) {
 	}
 	console.log(`seed: ${all.length} files, up to date with design3`);
 } else {
-	for (const dir of Object.keys(outputs)) mkdirSync(join(root, dir), { recursive: true });
+	for (const [path] of all) mkdirSync(dirname(path), { recursive: true });
 	for (const [path, , s] of all) writeFileSync(path, s);
 	console.log(`seed: wrote ${all.map(([, name]) => name).join(', ')}`);
 }

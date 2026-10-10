@@ -122,6 +122,7 @@ def _state(case: m.Case) -> dict[str, Any]:
         "docs": case.docs,
         "staff": case.staff,
         "expiredAt": case.expired_at.isoformat() if case.expired_at else None,
+        "destruction": case.destruction,
     }
 
 
@@ -180,7 +181,8 @@ async def realised(ctx: Ctx, s: Scene) -> dict[str, Any]:
     bank = await _bank(ctx, s)
     rule = bank.details.get("meals") if bank else None
     done = J.done_units(_state(s.case), ordered)
-    return money.realised(s.case.plan or {}, s.sku_obj(), done, rule, s.c.expiry, rules=s.rules)
+    opts = world.destruction_opts(s.c)  # destroyed at his godown (SC-139): the charge a pack and the gross-up
+    return money.realised(s.case.plan or {}, s.sku_obj(), done, rule, s.c.expiry, opts, rules=s.rules)
 
 
 async def _bank(ctx: Ctx, s: Scene) -> m.Partner | None:
@@ -1780,8 +1782,16 @@ async def document_pdf(ctx: Ctx, client_id: str, ref: str, doc_id: str, name: st
         await ev.ledger_changed(ctx, s.c, ref)
 
 
-# the papers the Paperwork agent lays out as PDFs (agents: tools/pdf.py PAPERS)
+# the papers the Paperwork agent lays out as PDFs (agents: tools/pdf.py PAPERS), and the agency's destruction
+# certificate for packs destroyed at his godown (SC-139); the client's own certificate is a record on the case
 PDF_PAPERS = frozenset({"invoice", "support", "itc", "fssai", "receipt", "expiry"})
+
+
+def printed(d: dict[str, Any]) -> bool:
+    """a paper Paperwork lays out as a PDF, once it is issued (not awaiting another's, SC-139): as agents' needs_pdf"""
+    if d.get("status") in ("not required", "awaiting"):
+        return False
+    return d["id"] in PDF_PAPERS or (d["id"] == "destruction" and d.get("at") == "godown")
 
 
 async def lay_out_missing(ctx: Ctx, client_id: str, *, again: bool = False) -> list[str]:
@@ -1793,9 +1803,9 @@ async def lay_out_missing(ctx: Ctx, client_id: str, *, again: bool = False) -> l
         if case.status == "reset":
             continue
         if again and case.docs:  # a new list, so the change is written
-            case.docs = [{**d, "pdf": None} if d["id"] in PDF_PAPERS else d for d in case.docs]
+            case.docs = [{**d, "pdf": None} if printed(d) else d for d in case.docs]
         docs = case.docs or []
-        if any(d["id"] in PDF_PAPERS and d.get("status") != "not required" and not d.get("pdf") for d in docs):
+        if any(printed(d) and not d.get("pdf") for d in docs):
             settle = {"type": J.SETTLE, "client": client_id, "ref": ref}
             await ev.publish(ctx, J.Event(J.STEP, settle, f"{client_id}:{ref}"))
             asked.append(ref)
@@ -1896,12 +1906,400 @@ async def expire(ctx: Ctx, client_id: str, ref: str) -> None:
         agent="Impact",
         icon="hourglass",
     )
-    await _save(ctx, s, note="expired")
+    # destroyed at his godown (SC-139): the packs no channel took wait for his evidence and the operator's yes
+    left = int(plan_.get("godown", 0))
+    if s.c.expiry == "godown" and left and not s.case.destruction:
+        await _ask_destruction(ctx, s, left)
+    await _save(ctx, s, note="waiting for the destruction's evidence" if s.case.destruction else "expired")
     if s.case.phase == "dispatched" and not s.case.docs:
         await documents(ctx, client_id, ref, None)
 
 
+# --- destroyed at the distributor's godown (SC-139, option B) -------------------------------------------------------
+# On expiry day under the client's route B, the packs no channel took are destroyed at the distributor's godown through
+# an authorised agency. He sends the evidence (a photo before, at the godown with the batch label in view; one after, at
+# the landfill with a slate; the agency and its certificate number), Vision checks it, and the client's operator gives
+# the second yes. Only then does Impact report: the expiry credit note (the dealer price, the GST he reverses, grossed
+# up, and the agency's charges) and the agency's certificate are issued, and the batch closes. Until the evidence comes
+# in he is reminded every few journey days.
+
+DZ_WHICH = ("before", "after")
+
+
+def _minute(at: datetime) -> str:
+    """a moment of the destruction, as its screens and papers read it: the client's local time to the minute"""
+    return at.astimezone(IST).strftime("%Y-%m-%dT%H:%M")
+
+
+def _godown(s: Scene) -> str:
+    return s.dist.godown or f"{s.dist.city} godown"
+
+
+async def _ask_destruction(ctx: Ctx, s: Scene, units: int) -> None:
+    settings = world.destruction_settings(s.c) or {}
+    at = ev.now(ctx, s.c)
+    remind = at + timedelta(days=int(world.destruction_opts(s.c)["remindDays"]))
+    s.case.destruction = {
+        "status": "requested",
+        "units": units,
+        "reason": None,
+        "agency": None,
+        "certificate": None,
+        "photos": None,
+        "askedAt": _minute(at),
+        "sentAt": None,
+        "checkedAt": None,
+        "checks": [],
+        "approvedAt": None,
+        "approvedBy": None,
+        "remindAt": _minute(remind),
+        "method": settings.get("method", ""),
+    }
+    await ev.timer(ctx, s.c, "destruction.remind", remind, case=s.case)
+    text = copy.destroy_asked_event(units=units, godown=_godown(s), distributor=s.dist.name)
+    await ev.feed(ctx, s.c, s.case, "destroyAsk", "report", text, agent="Impact", icon="recycle")
+    for p in await _people(ctx, s.c, org=s.dist.id):
+        push = copy.push_destroy(
+            person=p.name, sku_name=s.sku.name, ref=s.ref, units=units, godown=_godown(s), client=_client_short(s.c)
+        )
+        await ev.notify(ctx, s.c, p.ref, "destroy", link="destroy", case=s.case, **push)
+
+
+async def _holder(ctx: Ctx, s: Scene, client_id: str, what: str) -> m.ClientMember:
+    """the distributor holding the batch, who alone sends its destruction's evidence"""
+    ctx.require("destruction.send", f"Only the distributor sends {what}.")
+    me = await world.member(ctx, client_id, _member(ctx))
+    if me.org_ref != s.dist.id:
+        raise ApiError(403, f"Only the distributor holding this batch sends {what}.")
+    return me
+
+
+async def destruction_photo(
+    ctx: Ctx, client_id: str, ref: str, which: str, content_type: str, size: int
+) -> dict[str, Any]:
+    """a signed link for one of the destruction's two photos, straight into the photos bucket"""
+    s = await scene(ctx, client_id, ref)
+    me = await _holder(ctx, s, client_id, "the destruction's photos")
+    _guard(s, "destroy")
+    if which not in DZ_WHICH:
+        raise ApiError(422, "Say which photo: before or after.", {"which": "before or after"})
+    if not content_type.startswith("image/"):
+        raise ApiError(422, "Send a photo: a JPEG, PNG or WebP image.", {"contentType": "An image."})
+    if not 0 < size <= PHOTO_MAX_BYTES:
+        raise ApiError(422, "The photo must be under 8 MB.", {"bytes": "Under 8 MB."})
+    assert ctx.cloud is not None and ctx.settings.photos_bucket
+    pid = ctx.ids.new("dz", 10)
+    name = f"{client_id}/{ref}/destruction-{which}-{pid}"
+    ctx.session.add(
+        m.CasePhoto(
+            id=pid,
+            case_id=s.case.id,
+            object=name,
+            content_type=content_type,
+            bytes=size,
+            status="uploading",
+            by_ref=me.ref,
+            created_wall=ctx.clock.now(),
+        )
+    )
+    await ctx.session.flush()
+    link = ctx.cloud.storage.signed_put(ctx.settings.photos_bucket, name, content_type)
+    return {
+        "id": pid,
+        "url": link.url,
+        "headers": link.headers,
+        "expiresAt": (ctx.clock.now() + timedelta(minutes=10)).isoformat(),
+    }
+
+
+async def send_destruction(
+    ctx: Ctx, client_id: str, ref: str, agency_id: str, certificate: str, photos: dict[str, str]
+) -> None:
+    """his evidence: the agency on the client's list and its certificate number, and both photos arrived; Vision checks
+    it next (or, with Vision's check off, it goes straight to the operator)"""
+    s = await scene(ctx, client_id, ref)
+    me = await _holder(ctx, s, client_id, "the destruction's evidence")
+    _guard(s, "destroy")
+    settings = world.destruction_settings(s.c) or {}
+    agency = next((a for a in settings.get("agencies") or [] if a["id"] == agency_id), None)
+    if agency is None:
+        whose = copy.possessive(_client_short(s.c))
+        raise ApiError(422, f"Choose an agency on {whose} list.", {"agency": "Not on the list."})
+    if agency.get("city") and s.dist.city and agency["city"] != s.dist.city:
+        raise ApiError(422, f"{agency['name']} is not authorised in {s.dist.city}.", {"agency": "Not in this city."})
+    cert = (certificate or "").strip()
+    if not 4 <= len(cert) <= 40:
+        raise ApiError(422, "Enter the agency's certificate number.", {"certificate": "The number on it."})
+    assert ctx.cloud is not None and ctx.settings.photos_bucket
+    at = ev.now(ctx, s.c)
+    sent: dict[str, Any] = {}
+    for which in DZ_WHICH:
+        pid = (photos or {}).get(which) or ""
+        photo = await ctx.session.get(m.CasePhoto, pid, with_for_update=True) if pid else None
+        ok = photo is not None and photo.case_id == s.case.id and f"/destruction-{which}-" in photo.object
+        if not ok or photo is None or photo.status != "uploading":
+            raise not_found(f"{which} photo")
+        size = await ctx.cloud.storage.size(ctx.settings.photos_bucket, photo.object)
+        if not size:
+            raise ApiError(422, f"The {which} photo has not arrived yet. Send it again.")
+        photo.status, photo.sent_at, photo.bytes = "sent", at, size
+        taken = ev.clock_of(s.c).at(photo.created_wall)  # when he took it: its upload, in journey time
+        sent[which] = {"id": photo.id, "object": photo.object, "name": which, "at": _minute(taken)}
+    dz = s.case.destruction or {}
+    s.case.destruction = {
+        **dz,
+        "status": "reading",
+        "agency": {k: agency.get(k, "") for k in ("id", "name", "auth", "site")},
+        "certificate": cert,
+        "photos": sent,
+        "sentAt": _minute(at),
+        "reason": None,
+        "checks": [],
+    }
+    text = copy.destroy_sent_event(agency=agency["name"], certificate=cert)
+    await ev.feed(ctx, s.c, s.case, "destroySent", "report", text, person=me.ref, human=True, icon="camera")
+    await audit.record(
+        ctx,
+        s.c.id,
+        "destruction.send",
+        f"sent the destruction's evidence: {money.fmt.num(dz.get('units', 0))} packs, {agency['name']}",
+        {"member": me.ref, "target": ref, "batch": ref, "certificate": cert},
+    )
+    if settings.get("visionCheck", True):
+        objects = {w: sent[w]["object"] for w in DZ_WHICH}
+        await ev.publish(
+            ctx,
+            J.Event(J.STEP, {"type": J.DESTROY, "client": s.c.id, "ref": ref, "photos": objects}, f"{s.c.id}:{ref}"),
+        )
+    else:
+        await _destruction_checked(ctx, s, [])
+    await _save(ctx, s, note="checking the destruction's evidence")
+
+
+def destruction_checks(s: Scene, units: int, read: dict[str, Any]) -> list[dict[str, Any]]:
+    """Vision's read of the two photos, held to the batch: its label, the count in view, the slate, the landfill. A read
+    the model could not make fails its check; the operator decides on the yes"""
+    before, after = read.get("before") or {}, read.get("after") or {}
+    ref = s.ref
+    batch = checks_batch(before.get("batch"))
+    count = before.get("count")
+    slate = after.get("slate") or {}
+    out = [
+        {
+            "id": "batch",
+            "ok": batch == ref,
+            "label": (
+                f"Batch {ref} read on the carton label"
+                if batch == ref
+                else f"The carton label reads {batch}, not {ref}"
+                if batch
+                else "The batch label could not be read in the before photo"
+            ),
+        }
+    ]
+    if isinstance(count, int | float) and count > 0:
+        near = abs(count - units) <= max(5, units * 0.25)
+        about = int(round(count / 10) * 10) or int(count)
+        out.append(
+            {
+                "id": "count",
+                "ok": near,
+                "label": f"About {about} packs in view ({units} left)"
+                if near
+                else f"About {about} packs in view, against the {units} left",
+            }
+        )
+    else:
+        out.append({"id": "count", "ok": False, "label": "The packs in the before photo could not be counted"})
+    s_batch, s_count = checks_batch(slate.get("batch")), slate.get("count")
+    slate_ok = s_batch == ref and s_count == units
+    on = f" · {slate['date']}" if slate.get("date") else ""  # the day chalked on it, as read
+    out.append(
+        {
+            "id": "slate",
+            "ok": slate_ok,
+            "label": f"The slate reads {ref} · {units} packets{on}"
+            if slate_ok
+            else f"The slate reads {s_batch or 'no batch'} · "
+            f"{f'{s_count} packets' if s_count is not None else 'no count'}{on}, against the {units} left"
+            if (s_batch or s_count is not None)
+            else "The slate could not be read in the after photo",
+        }
+    )
+    shown = bool(after.get("landfill")) and bool(after.get("destroyed"))
+    day = "that day" if s.case.history else "today"
+    out.append(
+        {
+            "id": "when",
+            "ok": shown,
+            "label": f"Both photos taken {day}, at the godown and the landfill"
+            if shown
+            else "The after photo does not show the packs destroyed at a landfill",
+        }
+    )
+    return out
+
+
+def checks_batch(v: Any) -> str | None:
+    """a batch number as the DMS writes it (MF-2409-117), from what was read"""
+    if not v:
+        return None
+    t = str(v).strip().upper().replace(" ", "").replace("_", "-")
+    return t or None
+
+
+async def _destruction_checked(ctx: Ctx, s: Scene, checks: list[dict[str, Any]], read: Any = None) -> None:
+    dz = s.case.destruction or {}
+    s.case.destruction = {
+        **dz,
+        "status": "checked",
+        "checks": checks,
+        "checkedAt": _minute(ev.now(ctx, s.c)),
+        **({"read": read} if read else {}),
+    }
+    ok = sum(1 for c in checks if c["ok"])
+    if checks:
+        text = copy.destroy_checked_event(ok=ok, of=len(checks))
+        await ev.feed(ctx, s.c, s.case, "destroyChecked", "report", text, agent="Vision", icon="scan-line")
+    push = copy.push_destroy_review(
+        distributor=s.dist.name, units=int(dz.get("units", 0)), sku_name=s.sku.name, godown=_godown(s)
+    )
+    for ref_ in await _approver(ctx, s.c):
+        await ev.notify(ctx, s.c, ref_, "destroyReview", link="command", case=s.case, **push)
+
+
+async def destruction_checked(ctx: Ctx, client_id: str, ref: str, read: dict[str, Any], run: Run | None) -> None:
+    """Vision's checks on the evidence: it then waits for the operator's yes"""
+    s = await scene(ctx, client_id, ref)
+    await once(ctx, run)
+    dz = s.case.destruction or {}
+    if dz.get("status") != "reading":
+        raise Noop()
+    checks = destruction_checks(s, int(dz.get("units", 0)), read or {})
+    await _destruction_checked(ctx, s, checks, read)
+    ok = sum(1 for c in checks if c["ok"])
+    await _run(ctx, s, client_id, run, f"checked {ref}'s destruction evidence: {ok} of {len(checks)}")
+    await _save(ctx, s, note="the destruction waits for a yes")
+
+
+async def _reviewer(ctx: Ctx, client_id: str) -> m.ClientMember:
+    ctx.require("destruction.approve", "Only Supply Chain approves the destruction.")
+    return await world.member(ctx, client_id, _member(ctx))
+
+
+async def approve_destruction(ctx: Ctx, client_id: str, ref: str) -> None:
+    """the operator's second yes: Impact reports next, issuing the expiry credit note and the agency's certificate"""
+    s = await scene(ctx, client_id, ref)
+    me = await _reviewer(ctx, client_id)
+    _guard(s, "destroy-approve")
+    dz = s.case.destruction or {}
+    at = ev.now(ctx, s.c)
+    s.case.destruction = {**dz, "status": "approved", "approvedAt": _minute(at), "approvedBy": me.name}
+    units = int(dz.get("units", 0))
+    text = copy.destroy_approved_event(units=units, godown=_godown(s))
+    await ev.feed(ctx, s.c, s.case, "destroyApproved", "report", text, person=me.ref, human=True, icon="badge-check")
+    await audit.record(
+        ctx,
+        s.c.id,
+        "destruction.approve",
+        f"approved the destruction of {money.fmt.num(units)} packs at {_godown(s)}",
+        {"member": me.ref, "target": ref, "batch": ref, "certificate": dz.get("certificate")},
+    )
+    settle = money.expiry_settlement(units, s.sku_obj(), "godown", opts=world.destruction_opts(s.c), rules=s.rules)
+    for p in await _people(ctx, s.c, org=s.dist.id):
+        push = copy.push_destroy_approved(client=_client_short(s.c), sku_name=s.sku.name, amount=settle["amount"])
+        await ev.notify(ctx, s.c, p.ref, "destroyApproved", link="batches", case=s.case, **push)
+    # Impact reports now: the batch closes on this yes
+    payload = {"type": J.TIMER, "kind": "report.due", "client": s.c.id, "ref": ref}
+    await ev.publish(ctx, J.Event(J.STEP, payload, f"{s.c.id}:{ref}"))
+    await _save(ctx, s, note="approved: the report follows")
+
+
+async def ask_destruction_again(ctx: Ctx, client_id: str, ref: str, reason: str) -> None:
+    """the operator sends the evidence back, with the reason; he is asked again, and reminded"""
+    s = await scene(ctx, client_id, ref)
+    me = await _reviewer(ctx, client_id)
+    _guard(s, "destroy-ask")
+    why = (reason or "").strip()
+    if not 3 <= len(why) <= 300:
+        raise ApiError(422, "Say what he should send again.", {"reason": "A few words."})
+    dz = s.case.destruction or {}
+    at = ev.now(ctx, s.c)
+    remind = at + timedelta(days=int(world.destruction_opts(s.c)["remindDays"]))
+    s.case.destruction = {**dz, "status": "asked", "reason": why, "remindAt": _minute(remind)}
+    await ev.timer(ctx, s.c, "destruction.remind", remind, case=s.case)
+    text = copy.destroy_again_event(reason=why)
+    await ev.feed(ctx, s.c, s.case, "destroyAgain", "report", text, person=me.ref, human=True, icon="rotate-ccw")
+    await audit.record(
+        ctx,
+        s.c.id,
+        "destruction.ask",
+        f"asked again for the destruction's evidence: {why}",
+        {"member": me.ref, "target": ref, "batch": ref},
+    )
+    for p in await _people(ctx, s.c, org=s.dist.id):
+        push = copy.push_destroy_again(person=p.name, sku_name=s.sku.name, ref=ref, reason=why)
+        await ev.notify(ctx, s.c, p.ref, "destroyAgain", link="destroy", case=s.case, **push)
+    await _save(ctx, s, note="asked again for the destruction's evidence")
+
+
+async def remind_destruction(ctx: Ctx, client_id: str, ref: str) -> None:
+    """the reminder, while the evidence is still asked for; it sets the next one"""
+    s = await scene(ctx, client_id, ref)
+    dz = s.case.destruction or {}
+    if dz.get("status") not in ("requested", "asked"):
+        raise Noop()
+    at = ev.now(ctx, s.c)
+    remind = at + timedelta(days=int(world.destruction_opts(s.c)["remindDays"]))
+    s.case.destruction = {**dz, "remindAt": _minute(remind)}
+    await ev.timer(ctx, s.c, "destruction.remind", remind, case=s.case)
+    for p in await _people(ctx, s.c, org=s.dist.id):
+        push = copy.push_destroy_remind(person=p.name, sku_name=s.sku.name, ref=ref, units=int(dz.get("units", 0)))
+        await ev.notify(ctx, s.c, p.ref, "destroyRemind", link="destroy", case=s.case, **push)
+    await _save(ctx, s)
+
+
+def _certificate(s: Scene, dz: dict[str, Any], settle: dict[str, Any]) -> dict[str, Any]:
+    """the agency's destruction certificate, for him (ledger.js destructionDoc): the batch, the packs and their kilos,
+    the method and the site, the agency and its authorisation, the evidence and who approved it, and the input GST he
+    reverses on them"""
+    units, agency, checks = int(dz["units"]), dz.get("agency") or {}, dz.get("checks") or []
+    sku = s.sku_obj()
+    site = agency.get("site") or "the authorised landfill"
+    return {
+        "id": "destruction",
+        "type": "Destruction certificate",
+        "owner": agency.get("name", ""),
+        "no": dz.get("certificate") or "",
+        "status": "generated",
+        "amount": 0,
+        "units": units,
+        "kg": money.r2(units * float(sku.get("kgPerUnit") or 0)),
+        "packKg": money.r2(units * float(sku.get("packKg") or 0)),
+        "at": "godown",
+        "method": dz.get("method") or "",
+        "site": site,
+        "agency": agency.get("name", ""),
+        "auth": agency.get("auth", ""),
+        "for": {"name": s.dist.name, "address": s.dist.address, "gstin": s.dist.gstin},
+        "from": s.dist.godown,
+        "batch": s.ref,
+        "bestBefore": s.batch.best_before.isoformat() if s.batch.best_before else None,
+        "hsn": s.sku.hsn,
+        "destroyedAt": ((dz.get("photos") or {}).get("after") or {}).get("at"),
+        "evidence": {"photos": 2, "checks": sum(1 for c in checks if c.get("ok")), "of": len(checks)},
+        "approvedBy": dz.get("approvedBy"),
+        "approvedAt": dz.get("approvedAt"),
+        "reversed": settle.get("reversal") or 0,
+        "date": (dz.get("approvedAt") or "")[:10] or None,
+        "note": f"Destroyed at {site} on expiry day, from {_godown(s)}. {s.dist.name} reverses the input GST on these "
+        "packs in GSTR-3B Table 4(B)(1) under section 17(5)(h).",
+        "pdf": None,
+    }
+
+
 EXPIRY_PAPER = {
+    "godown": "Expiry credit note",
     "full-credit": "Expiry credit note",
     "price-support": "Price support at expiry",
     "none": "Expiry notice",
@@ -1913,19 +2311,22 @@ async def _settle_expiry(ctx: Ctx, s: Scene, plan_: dict[str, Any]) -> dict[str,
     paper; the destruction certificate counts them when the client destroys them, and the GST memo reverses their
     credit"""
     godown = int(plan_.get("godown", 0))
-    settle = money.jsonable(money.expiry_settlement(godown, s.sku_obj(), s.c.expiry, rules=s.rules))
+    opts = world.destruction_opts(s.c)
+    settle = money.jsonable(money.expiry_settlement(godown, s.sku_obj(), s.c.expiry, opts=opts, rules=s.rules))
     if not godown:
         return settle
     client, dist = _client_short(s.c), s.dist.name
     at = s.dist.godown or f"{s.dist.city} godown"
-    number = await world.next_number(ctx, s.c.id, "support") if (settle["credit"] or 0) > 0 else ""
+    dz = s.case.destruction if s.c.expiry == "godown" else None
+    amount = settle.get("amount") if settle.get("amount") is not None else settle["credit"]
+    number = await world.next_number(ctx, s.c.id, "support") if (amount or 0) > 0 else ""
     paper = {
         "id": "expiry",
         "type": EXPIRY_PAPER[s.c.expiry],
         "owner": client,
         "no": number,
         "status": "not required" if s.c.expiry == "none" else "generated",
-        "amount": settle["credit"],
+        "amount": amount,
         "units": godown,
         "policy": s.c.expiry,
         "destroyedBy": settle["destroyedBy"],
@@ -1933,21 +2334,45 @@ async def _settle_expiry(ctx: Ctx, s: Scene, plan_: dict[str, Any]) -> dict[str,
         "epr": settle["epr"],
         "itc": settle["itc"],
         "note": copy.expiry_settled(
-            policy=s.c.expiry, units=godown, credit=settle["credit"], client=client, distributor=dist, godown=at
+            policy=s.c.expiry,
+            units=godown,
+            credit=settle["credit"],
+            client=client,
+            distributor=dist,
+            godown=at,
+            certificate=(dz or {}).get("certificate") or "",
         ),
         "pdf": None,
-        "date": _today(ctx, s.c).isoformat(),
+        "date": ((dz or {}).get("approvedAt") or "")[:10] or _today(ctx, s.c).isoformat(),
     }
+    if dz:  # destroyed at his godown (SC-139): the note's three lines, against the agency's certificate
+        sku = s.sku_obj()
+        paper.update(
+            {
+                "credit": settle["credit"],
+                "gst": settle["gst"],
+                "charges": settle["charges"],
+                "reversal": settle["reversal"],
+                "dp": sku.get("dp"),
+                "gstPct": money.js_round(float(sku.get("gst") or 0) * 100),
+                "certificate": dz.get("certificate"),
+                "agency": (dz.get("agency") or {}).get("name"),
+                "at": "godown",
+            }
+        )
     docs = [dict(d) for d in (s.case.docs or [])]
     # the papers drafted before expiry day count again what the client destroys and the credit it reverses (SC-122)
     destroyed = int(plan_.get("destroyed", plan_.get("leftover", 0)))
-    for d in docs:
-        if d["id"] == "destruction" and destroyed:
+    for i, d in enumerate(docs):
+        if d["id"] == "destruction" and dz:  # the agency's certificate, on the operator's yes (SC-139)
+            docs[i] = _certificate(s, dz, settle)
+        elif d["id"] == "destruction" and destroyed:
             per = float((plan_.get("writeOff") or {}).get("itcPerUnit") or 0)
             d.update({"no": f"{destroyed} units", "status": "generated", "units": destroyed})
             d["reversed"] = money.r2(destroyed * per)
         if d["id"] == "itc":
             d.update({"amount": plan_["itcRetained"], "reversed": plan_["itcReversed"]})
+            d["atGodown"] = plan_.get("atGodown", 0)
     s.case.docs = money.jsonable([*docs, paper])
     if paper["status"] == "generated":  # Paperwork lays out the credit note's PDF (SC-121)
         await ev.publish(ctx, J.Event(J.STEP, {"type": J.SETTLE, "client": s.c.id, "ref": s.ref}, f"{s.c.id}:{s.ref}"))
@@ -1961,7 +2386,15 @@ async def report(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> dict[st
     await once(ctx, run)
     if s.case.phase != "settled" or (s.case.van or {}).get("status") != "done":
         raise Noop()
+    if s.case.destruction and s.case.destruction.get("status") != "approved":
+        raise Noop()  # destroyed at his godown (SC-139): the batch closes on the operator's yes
     plan_ = await realised(ctx, s)  # what the lines came to; what no channel took stays at the godown
+    left = int(plan_.get("godown", 0))
+    if s.c.expiry == "godown" and left and not s.case.destruction:
+        # packs left at his godown when the return window closes: destroyed there first, against his evidence (SC-139)
+        await _ask_destruction(ctx, s, left)
+        await _save(ctx, s, note="waiting for the destruction's evidence")
+        return {"destruction": "requested"}
     settle = await _settle_expiry(ctx, s, plan_)  # and expires, settled by the client's expiry policy (SC-94)
     award = s.case.award
     # every batch's ledger carries its swing and P&L, with or without an ExpireSoon lot (SC-122)
@@ -1987,6 +2420,8 @@ async def report(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> dict[st
             "itc": plan_.get("itcRetained", 0),
             "itcReversed": plan_.get("itcReversed", 0),
             "destroyed": plan_.get("destroyed", plan_.get("leftover", 0)),
+            # destroyed at his godown, at the client's cost (SC-139)
+            "atGodown": plan_.get("atGodown", 0),
             "lines": [at_award(ln) for ln in plan_.get("lines", [])],
             "planned": (s.case.plan or {}).get("lines", []),
             "godown": plan_.get("godown", 0),
@@ -2025,6 +2460,7 @@ async def report(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> dict[st
                 godown=int(plan_.get("godown", 0)),
                 at=s.dist.godown or f"{s.dist.city} godown",
                 settled=next((d["note"] for d in s.case.docs or [] if d["id"] == "expiry"), ""),
+                destroyed=bool(s.case.destruction),
             ),
         )
     await audit.record(ctx, s.c.id, "ledger.post", "posted the ledger and the BRSR row", {"target": ref, "batch": ref})

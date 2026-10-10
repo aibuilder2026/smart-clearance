@@ -18,6 +18,7 @@
   const shopOf = (me) => WK().find((k) => k.name === (me && me.org)) || WK()[0];
   const shopById = (id) => D.KIRANAS.find((k) => k.id === id) || WK().find((k) => k.id === id);
   const P = () => window.SC3_LEDGER.partners;
+  const creditOf = (c) => c.support.total + (c.expiry && (c.expiry.at === "godown" && c.expiry.amount != null ? c.expiry.amount : c.expiry.credit) || 0);
   const asDate = (iso) => /* @__PURE__ */ new Date((iso.length > 10 ? iso : iso + "T00:00") + ":00+05:30");
   const day = (iso) => asDate(iso.slice(0, 10)).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
   const when = (iso) => iso.length > 10 ? `${day(iso)}, ${iso.slice(11, 16)}` : day(iso);
@@ -48,7 +49,7 @@
     return /* @__PURE__ */ React.createElement(Sheet, { open: open && !!d, onClose, title: d ? d.type || "Donation receipt" : "", footer: d ? /* @__PURE__ */ React.createElement(Button, { variant: "secondary", block: true, icon: "download", onClick: pdf }, "Download PDF") : null }, d && /* @__PURE__ */ React.createElement("div", { ref, className: "stack snug" }, receipt ? /* @__PURE__ */ React.createElement(S.Receipt, { doc: receipt, batch: receipt.batch || c && c.batch, sku: receipt.sku || c && c.sku, dist: receipt.dist || c && c.dist }) : /* @__PURE__ */ React.createElement(S.Paper, { id, c })));
   }
   const PAPER_ICON = { invoice: "receipt", eway: "truck", support: "hand-coins", expiry: "warehouse", receipt: "heart-handshake", destruction: "trash-2" };
-  const issuedBy = (c, d) => d.id === "invoice" || d.id === "eway" ? "You issue it" : d.id === "receipt" ? `${c.partner ? c.partner.name : "The food bank"} issued it to ${D.WORKSPACE.short} · a copy for you` : d.id === "destruction" ? `${D.WORKSPACE.short} destroyed the packs · a copy for you` : `${D.WORKSPACE.short} issued it to you`;
+  const issuedBy = (c, d) => d.id === "invoice" || d.id === "eway" ? "You issue it" : d.id === "receipt" ? `${c.partner ? c.partner.name : "The food bank"} issued it to ${D.WORKSPACE.short} · a copy for you` : d.id === "destruction" ? d.at === "godown" ? `${d.agency || "The agency"} destroyed them for you` : `${D.WORKSPACE.short} destroyed the packs · a copy for you` : `${D.WORKSPACE.short} issued it to you`;
   function PaperRow({ c, d, onOpen }) {
     const amount = d.status === "not required" || d.id === "receipt" ? null : d.id === "invoice" ? d.total || d.amount : d.amount;
     return /* @__PURE__ */ React.createElement("button", { type: "button", className: "pt-paper", onClick: () => onOpen(d.id) }, /* @__PURE__ */ React.createElement("span", { className: "icontile" }, /* @__PURE__ */ React.createElement(Icon, { name: PAPER_ICON[d.id] || "file-text", size: 17, stroke: 2 })), /* @__PURE__ */ React.createElement("span", { className: "grow" }, /* @__PURE__ */ React.createElement("b", null, d.type), /* @__PURE__ */ React.createElement("span", { className: "t-footnote muted" }, /* @__PURE__ */ React.createElement("span", { className: "mono" }, d.no), " · ", issuedBy(c, d), d.status === "not required" ? " · not required" : "")), amount ? /* @__PURE__ */ React.createElement("span", { className: "tnum strong" }, fmt.inr(amount)) : null, /* @__PURE__ */ React.createElement(Icon, { name: "chevron-right", size: 16, className: "subtle" }));
@@ -116,10 +117,10 @@
     return /* @__PURE__ */ React.createElement(Card, { className: "stack snug" }, /* @__PURE__ */ React.createElement("div", { className: "card-head" }, /* @__PURE__ */ React.createElement("span", { className: "row tight" }, /* @__PURE__ */ React.createElement("span", { className: "icontile" }, /* @__PURE__ */ React.createElement(Icon, { name: "users", size: 17, stroke: 2 })), /* @__PURE__ */ React.createElement("span", { className: "card-title" }, "Staff sale · ", product)), open ? /* @__PURE__ */ React.createElement(Badge, { tone: "blue", dot: true }, "open") : /* @__PURE__ */ React.createElement(Badge, { tone: "green", icon: "check" }, "recorded")), open ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", { className: "t-subhead" }, fmt.num(staff.units), " packs for your staff at ", /* @__PURE__ */ React.createElement("b", null, "₹", staff.price), " a pack, at ", staff.godown, ". Staff pay you by UPI."), dist.upi && /* @__PURE__ */ React.createElement("div", { className: "row", style: { gap: 14 } }, /* @__PURE__ */ React.createElement(PayCode, { upi: dist.upi }), /* @__PURE__ */ React.createElement("div", { className: "stack tight", style: { gap: 2, minWidth: 0 } }, /* @__PURE__ */ React.createElement("b", { className: "mono t-footnote", style: { overflowWrap: "anywhere" } }, dist.upi), /* @__PURE__ */ React.createElement("span", { className: "t-footnote muted" }, "Your own UPI: staff pay you at the godown", clears ? `, over ${clears}` : "", "."))), /* @__PURE__ */ React.createElement("div", { className: "row wrap", style: { gap: 12 } }, /* @__PURE__ */ React.createElement(Stepper, { value: n, onChange: setN, min: 0, max: staff.units, label: "packs sold to staff" }), /* @__PURE__ */ React.createElement("span", { className: "t-subhead muted" }, "of ", fmt.num(staff.units), " packs sold")), /* @__PURE__ */ React.createElement(Button, { variant: "primary", size: "lg", block: true, icon: "check", loading: busy, onClick: record }, "Record the sale"), /* @__PURE__ */ React.createElement("span", { className: "t-caption subtle" }, "Record once, when the sale is over. What does not sell stays at the godown.")) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", { className: "t-subhead" }, /* @__PURE__ */ React.createElement("b", null, fmt.num(staff.sold), " of ", fmt.num(staff.units)), " sold to staff at ₹", staff.price, " a pack"), /* @__PURE__ */ React.createElement(K.Progress, { value: staff.sold / staff.units, label: "Staff packs sold" }), /* @__PURE__ */ React.createElement("span", { className: "t-footnote muted" }, staff.left ? `${fmt.num(staff.left)} ${staff.left === 1 ? "pack stays" : "packs stay"} at ${staff.godown}.` : "Every pack sold.")));
   }
   const HERO = D.BATCHES.find((b) => b.hero);
-  const CH = { kirana: { icon: "store", name: "Kirana scheme" }, expiresoon: { icon: "shopping-bag", name: "ExpireSoon lot" }, staff: { icon: "users", name: "Staff sale" }, foodbank: { icon: "heart-handshake", name: "Food bank" } };
+  const CH = { kirana: { icon: "store", name: "Kirana scheme" }, expiresoon: { icon: "shopping-bag", name: "ExpireSoon lot" }, staff: { icon: "users", name: "Staff sale" }, foodbank: { icon: "heart-handshake", name: "Food bank" }, destroy: { icon: "recycle", name: "Destroyed at the godown", ch: "writeoff" } };
   const num = (n) => fmt.num(n), rate = (n) => "₹" + n.toFixed(2);
   const shortName = (sku) => sku.name.replace(/ \d+ ?(g|ml|kg|L)$/, "");
-  const Chan = ({ id, icon }) => /* @__PURE__ */ React.createElement("span", { className: "dist-chan", style: { "--ch": `var(--ch-${id})` }, "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Icon, { name: icon || CH[id].icon, size: 16, stroke: 2 }));
+  const Chan = ({ id, icon }) => /* @__PURE__ */ React.createElement("span", { className: "dist-chan", style: { "--ch": `var(--ch-${CH[id] && CH[id].ch || id})` }, "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Icon, { name: icon || CH[id].icon, size: 16, stroke: 2 }));
   const stopBadge = (j) => /* @__PURE__ */ React.createElement(Badge, { size: "sm", tone: j.todo.length ? "amber" : j.phase === "cleared" ? "green" : "blue", dot: true, live: !j.todo.length && j.phase !== "cleared" }, j.todo.length ? `${j.todo.length} for you` : j.stop);
   function BatchLine({ sku, id, badge, sub, size = 48 }) {
     return /* @__PURE__ */ React.createElement("div", { className: "row dist-bl", style: { gap: 12 } }, /* @__PURE__ */ React.createElement(Product, { name: sku.img, size, alt: "" }), /* @__PURE__ */ React.createElement("div", { className: "grow stack tight", style: { gap: 2, minWidth: 0 } }, /* @__PURE__ */ React.createElement("span", { className: "row tight wrap", style: { gap: 8 } }, /* @__PURE__ */ React.createElement("b", { className: "t-headline" }, sku.name), badge), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, /* @__PURE__ */ React.createElement("span", { className: "mono" }, id), sub ? ` · ${sub}` : "")));
@@ -151,7 +152,7 @@
     const { go } = useRoute();
     const phone = useApp().bp === "phone";
     const reduce = useReducedMotion();
-    return /* @__PURE__ */ React.createElement(motion.section, { id: `batch-${j.ref}`, tabIndex: -1, "aria-label": `${j.sku.name}, batch ${j.ref}`, className: "card dist-batch", initial: reduce ? false : { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.24, ease: [0.22, 1, 0.36, 1] } }, /* @__PURE__ */ React.createElement("div", { className: "row between wrap", style: { gap: 12 } }, /* @__PURE__ */ React.createElement(BatchLine, { sku: j.sku, id: j.ref, badge: stopBadge(j), sub: `${num(j.units)} packs at risk · flagged ${day(j.flagged)}`, size: phone ? 44 : 56 }), /* @__PURE__ */ React.createElement(Button, { variant: "ghost", size: "sm", iconRight: "chevron-right", onClick: () => go("batches", { ref: j.ref }) }, "The batch")), j.todo.length ? /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 8 } }, j.todo.map((t, i) => /* @__PURE__ */ React.createElement(Step, { key: t.id, t, j, primary: i === 0 }))) : /* @__PURE__ */ React.createElement("div", { className: "dist-wait" }, /* @__PURE__ */ React.createElement(Aura, { on: j.phase !== "cleared", className: "icontile soft", style: { width: 36, height: 36, borderRadius: 11 } }, /* @__PURE__ */ React.createElement(Icon, { name: j.phase === "cleared" ? "badge-check" : "sparkles", size: 17 })), /* @__PURE__ */ React.createElement("span", { className: "t-subhead" }, j.waiting), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, "Nothing for you now")), j.lines.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "dist-lines" }, j.lines.map((l) => /* @__PURE__ */ React.createElement(LineRow, { key: l.id, line: l, onOpen: () => go("van", { ref: j.ref }) }))));
+    return /* @__PURE__ */ React.createElement(motion.section, { id: `batch-${j.ref}`, tabIndex: -1, "aria-label": `${j.sku.name}, batch ${j.ref}`, className: "card dist-batch", initial: reduce ? false : { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.24, ease: [0.22, 1, 0.36, 1] } }, /* @__PURE__ */ React.createElement("div", { className: "row between wrap", style: { gap: 12 } }, /* @__PURE__ */ React.createElement(BatchLine, { sku: j.sku, id: j.ref, badge: stopBadge(j), sub: `${num(j.units)} packs at risk · flagged ${day(j.flagged)}`, size: phone ? 44 : 56 }), /* @__PURE__ */ React.createElement(Button, { variant: "ghost", size: "sm", iconRight: "chevron-right", onClick: () => go("batches", { ref: j.ref }) }, "The batch")), j.todo.length ? /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 8 } }, j.todo.map((t, i) => /* @__PURE__ */ React.createElement(Step, { key: t.id, t, j, primary: i === 0 }))) : /* @__PURE__ */ React.createElement("div", { className: "dist-wait" }, /* @__PURE__ */ React.createElement(Aura, { on: j.phase !== "cleared", className: "icontile soft", style: { width: 36, height: 36, borderRadius: 11 } }, /* @__PURE__ */ React.createElement(Icon, { name: j.phase === "cleared" ? "badge-check" : "sparkles", size: 17 })), /* @__PURE__ */ React.createElement("span", { className: "t-subhead" }, j.waiting), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, "Nothing for you now")), j.lines.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "dist-lines" }, j.lines.map((l) => /* @__PURE__ */ React.createElement(LineRow, { key: l.id, line: l, onOpen: () => go(l.id === "destroy" ? "destroy" : "van", { ref: j.ref }) }))));
   }
   function BatchIndex({ js }) {
     const reduce = useReducedMotion();
@@ -406,6 +407,86 @@
       upload();
     } }, "Upload")) : /* @__PURE__ */ React.createElement(motion.div, { key: "two", className: "cam-two", initial: reduce ? false : { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.16 } }, /* @__PURE__ */ React.createElement(Button, { variant: desk ? "secondary" : "primary", size: "lg", icon: "camera", onClick: take }, "Take a photo"), /* @__PURE__ */ React.createElement(Button, { variant: desk ? "primary" : "secondary", size: "lg", icon: "upload", onClick: upload }, "Upload a photo"))), /* @__PURE__ */ React.createElement("input", { ref: phoneCam, type: "file", accept: PHOTO_TYPES.join(","), capture: "environment", onChange: picked("camera"), className: "sr-only", tabIndex: -1, "aria-hidden": "true" }), /* @__PURE__ */ React.createElement("input", { ref: files, type: "file", accept: PHOTO_TYPES.join(","), onChange: picked("upload"), className: "sr-only", tabIndex: -1, "aria-hidden": "true" }), err && !busy ? /* @__PURE__ */ React.createElement("p", { className: "cam-alert", role: "alert" }, /* @__PURE__ */ React.createElement(Icon, { name: "triangle-alert", size: 15 }), err) : uploading ? /* @__PURE__ */ React.createElement("p", { className: "t-caption subtle", style: { textAlign: "center", margin: 0 } }, "A slow connection only slows the send.") : !sent && realCamera && /* @__PURE__ */ React.createElement("p", { className: "t-caption subtle", style: { textAlign: "center", margin: 0 } }, live ? caption : `${caption} In this prototype a stub stands in for Gemini vision and returns the batch record.`));
   }
+  const DZ_SLOTS = [
+    { id: "before", n: 1, title: "Before", hint: "The packs at your godown, the batch label in view", alt: "The expired packs at the godown, the carton's batch label in view" },
+    { id: "after", n: 2, title: "After", hint: "Slit open at the landfill, the slate in view", alt: "The packs slit open in a landfill pit, a slate with the batch, the count and the date" }
+  ];
+  const DZ_SAY = {
+    reading: ["scan-line", "Vision is checking your photos", "The batch on the label, the count in view, and the slate"],
+    checked: ["hourglass", "Sent for approval", "is reviewing your evidence. The credit note follows the yes."],
+    approved: ["badge-check", "Approved · you are credited", "The expiry credit note and the agency's certificate are in your papers."]
+  };
+  function DzSlot({ slot, ref_, shot, busy, onTake, onUpload }) {
+    const example = `${IMG()}evidence/${ref_}-${slot.id}.webp`;
+    return /* @__PURE__ */ React.createElement("div", { className: "stack tight dz-slot" }, /* @__PURE__ */ React.createElement("div", { className: "cam dz-cam" }, /* @__PURE__ */ React.createElement("img", { className: "cam-feed whole", src: shot ? shot.url || example : example, alt: shot ? slot.alt : "", "aria-hidden": shot ? void 0 : "true", style: shot ? void 0 : { opacity: 0.55 } }), !shot && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "cam-frame", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("i", null), /* @__PURE__ */ React.createElement("i", null), /* @__PURE__ */ React.createElement("i", null), /* @__PURE__ */ React.createElement("i", null)), /* @__PURE__ */ React.createElement("span", { className: "cam-tag" }, "Example")), shot && /* @__PURE__ */ React.createElement("span", { className: "cam-tag" }, slot.n, " · ", slot.title), /* @__PURE__ */ React.createElement("div", { className: "cam-hint" }, slot.hint)), !busy && /* @__PURE__ */ React.createElement("div", { className: "cam-two" }, /* @__PURE__ */ React.createElement(Button, { size: "sm", variant: shot ? "ghost" : "secondary", icon: shot ? "rotate-ccw" : "camera", "aria-label": `${shot ? "Retake" : "Take"} the ${slot.id} photo`, onClick: onTake }, shot ? "Retake" : "Take"), /* @__PURE__ */ React.createElement(Button, { size: "sm", variant: "ghost", icon: "upload", "aria-label": `Upload the ${slot.id} photo`, onClick: onUpload }, "Upload")));
+  }
+  function DestroyScreen({ me }) {
+    const s = useStore();
+    const dist = distOf(me);
+    const { route, go } = useRoute();
+    const live = S.useLive();
+    const reduce = useReducedMotion();
+    const ns = P().distNow(dist.id, s), ref = route.params && route.params.ref;
+    const n = ns.find((x) => x.destruction && x.ref === ref) || ns.find((x) => x.destruction);
+    const agencies = D.SETUP.destruction.agencies.filter((a2) => a2.city === dist.city);
+    const [shots, setShots] = useState({});
+    const [agency, setAgency] = useState(agencies[0] ? agencies[0].id : "");
+    const [cert, setCert] = useState("");
+    const [err, setErr] = useState(null);
+    const [sending, setSending] = useState(false);
+    const cam = useRef({}), pick = useRef({});
+    const C = D.CLIENT.short, op = D.PEOPLE.priya;
+    if (!n) return /* @__PURE__ */ React.createElement(Screen, { me, title: "Destroy expired packs", sub: "Requests from the client", back: "Today" }, /* @__PURE__ */ React.createElement(Card, { style: { maxWidth: 560, margin: "0 auto", width: "100%" } }, /* @__PURE__ */ React.createElement(Empty, { img: "godown", title: "No destruction asked for now", body: `When packs expire at your godown and no channel took them, ${C} asks here for the evidence of their destruction.` })));
+    const d = n.destruction, sku = D.SKUS[n.sku], due = d.status === "requested" || d.status === "asked";
+    const a = agencies.find((x) => x.id === agency);
+    const his = Math.round(d.units * sku.dp * sku.gst * 100) / 100;
+    const use = (id, f, how) => {
+      if (!f) return;
+      if (!PHOTO_TYPES.includes(f.type)) {
+        setErr("That file is not a photo Vision can read. Send a JPEG, PNG or WebP.");
+        return;
+      }
+      if (f.size >= PHOTO_MAX_MB * 1048576) {
+        setErr(`That photo is ${(f.size / 1048576).toFixed(1)} MB. Send one under ${PHOTO_MAX_MB} MB.`);
+        return;
+      }
+      setErr(null);
+      setShots((x) => Object.assign({}, x, { [id]: { url: URL.createObjectURL(f), file: f, how } }));
+    };
+    const picked = (id) => (e) => {
+      const f = e.target.files && e.target.files[0];
+      e.target.value = "";
+      use(id, f, "upload");
+    };
+    const take = (id) => {
+      setErr(null);
+      if (live && cam.current[id]) cam.current[id].click();
+      else setShots((x) => Object.assign({}, x, { [id]: { demo: true, how: "camera" } }));
+    };
+    const upload = (id) => {
+      setErr(null);
+      if (pick.current[id]) pick.current[id].click();
+    };
+    const ready = shots.before && shots.after && a && cert.trim().length >= 4;
+    const send = () => {
+      if (!ready) return;
+      const x = { agency: a, certificate: cert.trim(), before: shots.before.file, after: shots.after.file };
+      if (live && live.destruction) {
+        live.destruction("send", x);
+        return;
+      }
+      setSending(true);
+      setTimeout(() => {
+        setSending(false);
+        setShots({});
+        setCert("");
+        Flow.act("sendDestruction", x);
+      }, 700);
+    };
+    const say = DZ_SAY[d.status];
+    return /* @__PURE__ */ React.createElement(Screen, { me, title: "Destroy expired packs", sub: `Batch ${n.ref} · ${dist.godown}`, back: "Today" }, /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 16, maxWidth: 640, margin: "0 auto", width: "100%" } }, /* @__PURE__ */ React.createElement(BatchLine, { sku, id: n.ref, badge: /* @__PURE__ */ React.createElement(Badge, { size: "sm", tone: due ? "amber" : d.status === "approved" ? "green" : "blue", dot: d.status !== "approved" }, due ? "for you" : d.status === "approved" ? "approved" : "sent"), sub: `${fmt.num(d.units)} packs expired at ${dist.godown}` }), d.status === "asked" && /* @__PURE__ */ React.createElement("p", { className: "cam-alert", role: "alert" }, /* @__PURE__ */ React.createElement(Icon, { name: "rotate-ccw", size: 15 }), op.short, " asked again: ", d.reason), due ? /* @__PURE__ */ React.createElement(Card, { className: "stack snug" }, /* @__PURE__ */ React.createElement("span", { className: "t-subhead" }, "Destroy the ", fmt.num(d.units), " packs through an authorised agency, then send the two photos and the agency's certificate number. ", op.short, " at ", C, " approves, and ", C, " credits you the dealer price, the GST you reverse and the agency's charges."), /* @__PURE__ */ React.createElement("div", { className: "dz-two" }, DZ_SLOTS.map((sl) => /* @__PURE__ */ React.createElement(DzSlot, { key: sl.id, slot: sl, ref_: n.ref, shot: shots[sl.id], busy: sending, onTake: () => take(sl.id), onUpload: () => upload(sl.id) }))), DZ_SLOTS.map((sl) => /* @__PURE__ */ React.createElement(Fragment, { key: sl.id }, /* @__PURE__ */ React.createElement("input", { ref: (el) => cam.current[sl.id] = el, type: "file", accept: PHOTO_TYPES.join(","), capture: "environment", onChange: picked(sl.id), className: "sr-only", tabIndex: -1, "aria-hidden": "true" }), /* @__PURE__ */ React.createElement("input", { ref: (el) => pick.current[sl.id] = el, type: "file", accept: PHOTO_TYPES.join(","), onChange: picked(sl.id), className: "sr-only", tabIndex: -1, "aria-hidden": "true" }))), /* @__PURE__ */ React.createElement("div", { className: "dz-fields" }, /* @__PURE__ */ React.createElement(K.Field, { label: "Agency", htmlFor: "dz-agency", help: a ? `Authorisation ${a.auth}` : void 0 }, /* @__PURE__ */ React.createElement(K.Select, { id: "dz-agency", value: agency, onChange: (e) => setAgency(e.target.value) }, agencies.map((x) => /* @__PURE__ */ React.createElement("option", { key: x.id, value: x.id }, x.name)))), /* @__PURE__ */ React.createElement(K.Field, { label: "Agency's certificate number", htmlFor: "dz-cert" }, /* @__PURE__ */ React.createElement(K.Input, { id: "dz-cert", value: cert, onChange: (e) => setCert(e.target.value), placeholder: a ? `${a.series.prefix}0000` : "", spellCheck: false, autoCapitalize: "characters" }))), err && /* @__PURE__ */ React.createElement("p", { className: "cam-alert", role: "alert" }, /* @__PURE__ */ React.createElement(Icon, { name: "triangle-alert", size: 15 }), err), /* @__PURE__ */ React.createElement(Button, { variant: "primary", size: "lg", block: true, icon: "send", loading: sending, disabled: !ready, "aria-describedby": "dz-need", onClick: send }, "Send to ", C, " for approval"), /* @__PURE__ */ React.createElement("span", { id: "dz-need", className: "t-caption subtle" }, ready ? `Then reverse ${fmt.inr2(his)} of input GST on these packs in your GSTR-3B (Table 4(B)(1)). ${possessive(C)} credit note makes it good.` : `Both photos and the certificate number are needed. ${PHOTO_RULE}.`)) : /* @__PURE__ */ React.createElement(Card, { className: "stack snug" }, /* @__PURE__ */ React.createElement("div", { className: "row", style: { gap: 12 } }, /* @__PURE__ */ React.createElement(Aura, { on: d.status === "reading", className: "icontile", style: { borderRadius: 12, width: 40, height: 40 } }, /* @__PURE__ */ React.createElement(Icon, { name: say[0], size: 19 })), /* @__PURE__ */ React.createElement("div", { className: "grow" }, /* @__PURE__ */ React.createElement("b", null, say[1]), /* @__PURE__ */ React.createElement("div", { className: "t-footnote muted" }, d.status === "checked" ? `${op.short} at ${C} ${say[2]}` : say[2]))), /* @__PURE__ */ React.createElement("div", { className: "dz-two" }, DZ_SLOTS.map((sl) => /* @__PURE__ */ React.createElement("div", { key: sl.id, className: "cam dz-cam" }, /* @__PURE__ */ React.createElement("img", { className: "cam-feed whole", src: `${IMG()}evidence/${n.ref}-${sl.id}.webp`, alt: sl.alt }), /* @__PURE__ */ React.createElement("span", { className: "cam-tag" }, sl.n, " · ", sl.title)))), d.status === "reading" && !reduce && /* @__PURE__ */ React.createElement("span", { className: "sr-only", role: "status" }, "Vision is checking your photos"), /* @__PURE__ */ React.createElement(Button, { variant: "secondary", block: true, onClick: () => go(d.status === "approved" ? "batches" : "home", d.status === "approved" ? { ref: n.ref } : void 0) }, d.status === "approved" ? "Open the batch's papers" : "Back to today"))));
+  }
+  const possessive = (n) => /s$/.test(n) ? `${n}'` : `${n}'s`;
   function OrderRow({ o }) {
     const [open, setOpen] = useState(false);
     const [busy, setBusy] = useState(false);
@@ -445,7 +526,7 @@
     const ref = route && route.params && route.params.ref;
     if (ref) return /* @__PURE__ */ React.createElement(DistBatch, { me, dist, id: ref });
     const { journey, watching, past } = P().distBatches(dist.id, s);
-    const credit = past.reduce((t, c) => t + c.support.total + (c.expiry && c.expiry.credit || 0), 0);
+    const credit = past.reduce((t, c) => t + creditOf(c), 0);
     const notes = past.reduce((t, c) => t + c.docs.filter((d) => (d.id === "support" || d.id === "expiry") && d.status !== "not required").length, 0);
     const months = [];
     past.forEach((c) => {
@@ -470,7 +551,7 @@
         }
       );
     })) : null, past.length ? /* @__PURE__ */ React.createElement(Card, { className: "stack", style: { gap: 10 } }, /* @__PURE__ */ React.createElement("div", { className: "lg-fig" }, /* @__PURE__ */ React.createElement(Money, { value: credit, size: "l" }), /* @__PURE__ */ React.createElement("span", { className: "lg-what" }, "from ", D.WORKSPACE.short, " since July")), /* @__PURE__ */ React.createElement("p", { className: "lg-working" }, past.length, " batches cleared at your godown. On each, the price support (and on expiry day the expiry credit) made up the gap to the dealer price you paid, so you ended whole: ", /* @__PURE__ */ React.createElement("b", null, notes, " credit notes"), ", each in its batch's papers.")) : null, months.map((g) => /* @__PURE__ */ React.createElement(List, { key: g.m, head: `Cleared · ${g.label}` }, g.items.map((c) => {
-      const cr = c.support.total + (c.expiry && c.expiry.credit || 0);
+      const cr = creditOf(c);
       const p = P().distPapers(c);
       return /* @__PURE__ */ React.createElement(
         ListRow,
@@ -521,7 +602,7 @@
   function WholeCard({ c, story, s, onPaper }) {
     const w = story ? P().storyWhole(s) : P().whole(c);
     const open = story && s.hero.phase !== "cleared";
-    return /* @__PURE__ */ React.createElement(Card, { className: "stack snug" }, /* @__PURE__ */ React.createElement("div", { className: "card-head" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, "You end whole"), /* @__PURE__ */ React.createElement(Badge, { tone: open ? void 0 : "green", icon: open ? "clock" : "check" }, open ? "on the plan" : "settled")), /* @__PURE__ */ React.createElement("div", { className: "stack tight" }, w.rows.map((r) => /* @__PURE__ */ React.createElement(PtLine, { key: r.k, k: r.k, sub: r.sub, v: fmt.inr(r.v), onClick: r.paper && !story ? () => onPaper(r.paper) : null })), /* @__PURE__ */ React.createElement("div", { className: "hairline", style: { margin: "4px 0" } }), /* @__PURE__ */ React.createElement(PtLine, { k: "What you receive", v: fmt.inr(w.recv), strong: true }), /* @__PURE__ */ React.createElement(PtLine, { k: "What you paid", sub: `${fmt.num(w.units)} × ₹${w.dp}, the van and the listing fee`, v: fmt.inr(-w.paid) }), /* @__PURE__ */ React.createElement(PtLine, { k: "Your gain or loss", v: fmt.inr(w.gain), strong: true })), /* @__PURE__ */ React.createElement("span", { className: "t-caption subtle" }, "Instead of waiting weeks for an expiry claim, with no claim paperwork."));
+    return /* @__PURE__ */ React.createElement(Card, { className: "stack snug" }, /* @__PURE__ */ React.createElement("div", { className: "card-head" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, "You end whole"), /* @__PURE__ */ React.createElement(Badge, { tone: open ? void 0 : "green", icon: open ? "clock" : "check" }, open ? "on the plan" : "settled")), /* @__PURE__ */ React.createElement("div", { className: "stack tight" }, w.rows.map((r) => /* @__PURE__ */ React.createElement(PtLine, { key: r.k, k: r.k, sub: r.sub, v: fmt.inr(r.v), onClick: r.paper && !story ? () => onPaper(r.paper) : null })), /* @__PURE__ */ React.createElement("div", { className: "hairline", style: { margin: "4px 0" } }), /* @__PURE__ */ React.createElement(PtLine, { k: "What you receive", v: fmt.inr(w.recv), strong: true }), /* @__PURE__ */ React.createElement(PtLine, { k: "What you paid", sub: w.extra ? `${fmt.num(w.units)} × ₹${w.dp}, the van, the listing fee, the GST you reverse and the agency's charges` : `${fmt.num(w.units)} × ₹${w.dp}, the van and the listing fee`, v: fmt.inr(-w.paid) }), /* @__PURE__ */ React.createElement(PtLine, { k: "Your gain or loss", v: fmt.inr(w.gain), strong: true })), /* @__PURE__ */ React.createElement("span", { className: "t-caption subtle" }, "Instead of waiting weeks for an expiry claim, with no claim paperwork."));
   }
   function DistPapers({ c, ready, onOpen }) {
     if (!ready) return /* @__PURE__ */ React.createElement(Locked, { icon: "file-text", agent: "Paperwork agent", text: "Drafts your tax invoice to the buyer and Munchly's price-support credit note to you once every line of the plan is done." });
@@ -734,5 +815,5 @@
       }
     ), /* @__PURE__ */ React.createElement(PaperSheet, { open, onClose: () => setOpen(false), c: p.c, receipt: p.receipt }));
   }
-  Object.assign(window.SC3_SCREENS, { distOf, kOf, shopOf, DistBatches, DistBatch, PaperSheet, PaperRow, PtHead, PtTabs, PtMoments, OfferStatus, OfferPage, OfferOrder, DistHome, CameraScreen, VanRoute, DistOrders, OfferCard, RetailHome, OfferDetail, RetailOrders, Market, Listing, ListingView, MyBids, Pickups, EsBar, offerMath, cartons, PermissionCard });
+  Object.assign(window.SC3_SCREENS, { distOf, kOf, shopOf, DistBatches, DistBatch, PaperSheet, PaperRow, PtHead, PtTabs, PtMoments, OfferStatus, OfferPage, OfferOrder, DistHome, CameraScreen, VanRoute, DistOrders, OfferCard, RetailHome, OfferDetail, RetailOrders, Market, Listing, ListingView, MyBids, Pickups, EsBar, offerMath, cartons, PermissionCard, DestroyScreen });
 })();

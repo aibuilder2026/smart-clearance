@@ -94,6 +94,18 @@ export const publicOf = (p: ApiPublic): WorkspacePublic => ({
 
 /* ---------- people ---------- */
 
+/** a client with no destruction at the godown set up (SC-139): no agencies, nothing asked */
+const NO_DESTRUCTION: WorkspaceData['setup']['destruction'] = {
+	evidence: [],
+	visionCheck: false,
+	reviewer: 'ws-operator',
+	remindDays: 2,
+	grossUp: false,
+	chargesPerUnit: 0,
+	method: '',
+	agencies: []
+};
+
 export function userOf(m: Member, today: string): User {
 	return {
 		id: m.id,
@@ -190,7 +202,10 @@ export function dataOf(snap: WorkspaceSnapshot, focus: { ref: string | null; sec
 			partners: snap.setup.partners.map(({ id: _id, ...p }) => p),
 			approval: snap.setup.approval,
 			permissions,
-			acts: snap.setup.acts
+			acts: snap.setup.acts,
+			// how packs left at a godown are destroyed there (SC-139); a client with none has no agencies
+			expiry: snap.setup.expiry ?? 'full-credit',
+			destruction: snap.setup.destruction ?? NO_DESTRUCTION
 		},
 		stages: snap.stages as Stage[],
 		// each batch in a journey is its own (SC-85): none is the story's second batch, shown beside the one in focus
@@ -287,8 +302,36 @@ function docOf(d: WsDoc): Doc {
 		itc: opt(d.itc),
 		reversed: opt(d.reversed),
 		away: opt(d.away),
+		atGodown: opt(d.atGodown),
 		// every paper the Paperwork agent laid out has its PDF to download (SC-100, SC-121)
 		pdf: d.pdf,
+		// destroyed at his godown (SC-139): the expiry note's three lines, and the agency's certificate
+		...((d.id === 'expiry' || d.id === 'destruction') && (d.at === 'godown' || d.policy === 'godown')
+			? {
+					at: 'godown',
+					credit: d.credit ?? null,
+					gst: opt(d.gst),
+					charges: opt(d.charges),
+					reversal: d.reversal ?? null,
+					dp: opt(d.dp),
+					certificate: opt(d.certificate),
+					agency: opt(d.agency),
+					auth: opt(d.auth),
+					method: opt(d.method),
+					site: opt(d.site),
+					for: opt(d.for),
+					from: opt(d.from),
+					batch: opt(d.batch),
+					bestBefore: opt(d.bestBefore),
+					hsn: opt(d.hsn),
+					destroyedAt: opt(d.destroyedAt),
+					kg: opt(d.kg),
+					packKg: opt(d.packKg),
+					evidence: opt(d.evidence),
+					approvedBy: opt(d.approvedBy),
+					approvedAt: opt(d.approvedAt)
+				}
+			: {}),
 		// the food bank's receipt (SC-110)
 		...(d.id === 'receipt'
 			? {
@@ -414,6 +457,8 @@ export function caseOf(
 		},
 		realised: detail.realised,
 		expiry: detail.expiry ?? null,
+		// packs destroyed at his godown (SC-139): the evidence, Vision's checks and the operator's yes
+		destruction: detail.destruction ?? null,
 		returnBy,
 		push: pushesOf(detail, today),
 		today: dayLabel(day0),
@@ -661,7 +706,9 @@ export function emptyData(pub: ApiPublic | null): WorkspaceData {
 			partners: [],
 			approval: '',
 			permissions: {},
-			acts: []
+			acts: [],
+			expiry: 'full-credit',
+			destruction: NO_DESTRUCTION
 		},
 		stages: [],
 		batches: [],

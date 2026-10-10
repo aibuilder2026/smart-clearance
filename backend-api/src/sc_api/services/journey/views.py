@@ -447,6 +447,9 @@ def _setup(c: m.Client, doc: dict[str, Any]) -> dict[str, Any]:
         "confirmed": c.setup_confirmed_at is not None,
         "mapped": c.setup_mapped,
         "lastImport": c.last_import,
+        # the client's expiry policy, and how it has packs left at a godown destroyed there (SC-139)
+        "expiry": c.expiry,
+        "destruction": world.destruction_settings(c),
     }
 
 
@@ -683,7 +686,11 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
     lines_state = {"offer": case.offer, "award": case.award, "listing": case.listing}
     lines_state |= {"staff": case.staff, "donation": case.donation}
     done = J.done_units(lines_state, sum(o.units for o in orders_all))
-    real = money.realised(case.plan, world.sku_obj(x), done, None, c.expiry, rules=rules) if case.plan else None
+    real = (
+        money.realised(case.plan, world.sku_obj(x), done, None, c.expiry, world.destruction_opts(c), rules=rules)
+        if case.plan
+        else None
+    )
     settled = case.phase in ("dispatched", "settled", "cleared")
     es = copy.line(case.plan or {}, "expiresoon")
     actual = None
@@ -800,8 +807,10 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
         "realised": realised_out,
         "claim": claim,
         "docs": docs,
-        # expiry day's settlement of the packs left at the godown, once the report has run (SC-94)
-        "expiry": (case.ledger or {}).get("expiry") if case.ledger and (mine or role == "distributor") else None,
+        # expiry day's settlement of the packs left at the godown, once the report has run (SC-94); destroyed at his
+        # godown (SC-139), from the moment it is asked for, so the review states what the yes issues
+        "expiry": expiry_of(case, c, x, rules) if (mine or role == "distributor") else None,
+        "destruction": destruction_out(ctx, case.destruction) if (mine or role == "distributor") else None,
         "kiranas": kiranas,
         "offered": int((case.offer or {}).get("shops", 0)),
         "donation": (
@@ -983,6 +992,18 @@ def with_reversed(case: m.Case, d_: dict[str, Any]) -> dict[str, Any]:
     return {**d_, "reversed": money.r2(int(d_["units"]) * per)}
 
 
+def expiry_of(case: m.Case, c: m.Client, x: m.Sku, rules: dict[str, Any]) -> dict[str, Any] | None:
+    """expiry day's settlement: the ledger's once posted; before then, packs destroyed at his godown (SC-139) as the
+    credit note will settle them"""
+    if case.ledger:
+        return (case.ledger or {}).get("expiry")
+    dz = case.destruction
+    if not dz:
+        return None
+    opts = world.destruction_opts(c)
+    return money.jsonable(money.expiry_settlement(int(dz["units"]), world.sku_obj(x), "godown", opts=opts, rules=rules))
+
+
 def doc_out(d_: dict[str, Any]) -> dict[str, Any]:
     """a paper as the screens read it, with whether its PDF is ready"""
     return {
@@ -992,6 +1013,8 @@ def doc_out(d_: dict[str, Any]) -> dict[str, Any]:
         **{k: d_[k] for k in ("policy", "destroyedBy", "disposal", "epr", "itc", "reversed", "away") if k in d_},
         # the food bank's receipt (SC-110)
         **{k: d_[k] for k in RECEIPT_FIELDS if k in d_},
+        # destroyed at his godown (SC-139): the expiry note's lines and the agency's certificate
+        **{k: d_[k] for k in DESTRUCTION_FIELDS if k in d_},
         "pdf": bool(d_.get("pdf")),
     }
 
@@ -1006,7 +1029,7 @@ def support_of(
     award_price = float(case.award["price"]) if case.award else None
     state = {"offer": case.offer, "award": case.award, "listing": case.listing, "staff": case.staff}
     done = J.done_units(state | {"donation": case.donation}, sum(o.units for o in orders))
-    real = money.realised(case.plan, world.sku_obj(x), done, None, c.expiry, rules=rules)
+    real = money.realised(case.plan, world.sku_obj(x), done, None, c.expiry, world.destruction_opts(c), rules=rules)
     if award_price is None and case.phase not in ("dispatched", "settled", "cleared"):
         return None
     return money.jsonable(money.price_support(real, world.sku_obj(x), award_price, rules=rules))
@@ -1016,6 +1039,35 @@ RECEIPT_FIELDS = (
     *("paper", "stamp", "kg", "meals", "mealsRule", "value", "csr"),
     *("at", "by", "donor", "fssai", "via", "from", "spot"),
 )
+DESTRUCTION_FIELDS = (
+    *("credit", "gst", "charges", "reversal", "dp", "certificate", "agency", "auth", "method", "site", "for"),
+    *("batch", "bestBefore", "hsn", "destroyedAt", "packKg", "evidence", "approvedBy", "approvedAt", "atGodown"),
+)
+
+
+def destruction_out(ctx: Ctx, dz: dict[str, Any] | None) -> dict[str, Any] | None:
+    """the packs destroyed at his godown (SC-139), as the operator and the distributor read it: each photo with a
+    short-lived link to it"""
+    if not dz:
+        return None
+    photos = None
+    if dz.get("photos"):
+        photos = {}
+        for w, p in dz["photos"].items():
+            url = None
+            if p.get("object") and ctx.cloud and ctx.settings.photos_bucket:
+                url = ctx.cloud.storage.signed_get(ctx.settings.photos_bucket, p["object"])
+            photos[w] = {"name": p.get("name") or w, "at": p.get("at"), "url": url}
+    keys = ("status", "units", "reason", "agency", "certificate", "askedAt", "sentAt", "checkedAt", "checks")
+    return {
+        **{k: dz.get(k) for k in keys},
+        "checks": dz.get("checks") or [],
+        "photos": photos,
+        "approvedAt": dz.get("approvedAt"),
+        "approvedBy": dz.get("approvedBy"),
+        "remindAt": dz.get("remindAt"),
+        "method": dz.get("method") or "",
+    }
 
 
 def receipt_out(r: dict[str, Any] | None) -> dict[str, Any] | None:

@@ -34,7 +34,12 @@
     else if (h.phase === "approved" || h.phase === "executing") { eta = h.award ? `Awarded at ₹${D.COUNTER.price.toFixed(2)} · ${ordered} of ${D.KIRANAS.length} kiranas ordered` : `Listing live · ${ordered} of ${D.KIRANAS.length} kiranas ordered`; agentLive = h.award && ordered === D.KIRANAS.length ? "" : "Lister, Outreach and Negotiator at work"; }
     else if (h.phase === "dispatched") { eta = "Paperwork in progress"; agentLive = "Paperwork is drafting the pack"; }
     else if (h.phase === "settled") { eta = "Papers ready · ledger next"; agentLive = "Impact is posting the ledger"; }
-    else if (h.phase === "cleared") { eta = "Cleared · 0 cartons destroyed"; }
+    else if (h.phase === "cleared") { eta = h.destruction ? `Cleared · ${h.destruction.units} packs destroyed at the godown` : "Cleared · 0 cartons destroyed"; }
+    // packs destroyed at the distributor's godown (SC-139): the batch waits on the evidence, then on the second yes
+    const dz = h.destruction && h.phase !== "cleared" ? h.destruction.status : null;
+    if (dz === "requested" || dz === "asked") { const who = D.DISTRIBUTORS[D.BATCHES[0].distributor].short; eta = `Waiting for ${who + (/s$/.test(who) ? "'" : "'s")} destruction evidence`; etaTone = "amber"; agentLive = ""; }
+    else if (dz === "reading") { eta = "Checking the destruction's evidence"; agentLive = "Vision is checking the evidence"; }
+    else if (dz === "checked") { eta = "The destruction waits for your yes"; etaTone = "amber"; agentLive = ""; }
     return { h, view, idx, done: Math.min(idx, 9), current: idx < 9 ? idx : -1, eta, etaTone, agentLive, ordered, orderedUnits, plan: D.PLAN };
   }
   const unreadFor = (s, me) => s.notifications.filter(n => n.to === (me && me.id) && !n.read).length;

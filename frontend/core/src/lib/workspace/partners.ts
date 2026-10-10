@@ -29,6 +29,8 @@ export type PartnerWorld = {
 	short: string;
 	/** a shop's share of the scheme: its sales over 14 days, this many times */
 	capTimes: number;
+	/** the client's people by id, for who approved a destruction (SC-139); a name the live workspace sends stands as it is */
+	people?: Record<string, { short: string }>;
 };
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
@@ -68,15 +70,23 @@ export const distPast = (cases: readonly PartnerCase[], distId: string) =>
 export function distPapers(c: Pick<PartnerCase, 'docs'>): { mine: Doc[]; copies: Doc[] } {
 	const has = (d: Doc | undefined): d is Doc => !!d && d.status !== 'not required';
 	const doc = (id: string) => c.docs.find((d) => d.id === id);
+	// packs destroyed at his own godown (SC-139): the agency's certificate is issued for him, so it is his paper
+	const his = (d: Doc | undefined) => !!d && d.id === 'destruction' && d.at === 'godown';
 	return {
-		mine: ['invoice', 'eway', 'support', 'expiry']
+		mine: ['invoice', 'eway', 'support', 'expiry', 'destruction']
 			.map(doc)
-			.filter((d): d is Doc => !!d && (d.status !== 'not required' || d.id === 'eway')),
-		copies: ['receipt', 'destruction'].map(doc).filter(has)
+			.filter(
+				(d): d is Doc =>
+					!!d && (d.id === 'destruction' ? his(d) && has(d) : d.status !== 'not required' || d.id === 'eway')
+			),
+		copies: ['receipt', 'destruction'].map(doc).filter((d): d is Doc => has(d) && !his(d))
 	};
 }
-/** what credit a cleared batch brought him: the price support, and on expiry day the expiry credit */
-export const creditOf = (c: PartnerCase) => (c.support?.total ?? 0) + (c.expiry?.credit ?? 0);
+/** what credit a cleared batch brought him: the price support, and on expiry day the expiry credit note (under SC-139's
+ *  route B with the GST he reverses and the agency's charges) */
+export const creditOf = (c: PartnerCase) =>
+	(c.support?.total ?? 0) +
+	(c.expiry ? ((c.expiry.at === 'godown' ? c.expiry.amount : c.expiry.credit) ?? c.expiry.credit ?? 0) : 0);
 
 /** what happened to a cleared batch, from where he stands: each moment with its day and time */
 export function moments(c: PartnerCase, w: PartnerWorld): PtMoment[] {
@@ -182,12 +192,41 @@ export function moments(c: PartnerCase, w: PartnerWorld): PtMoment[] {
 			`${c.kiranas.length} shops · ${num(kl.units)} packets`
 		);
 	const x = c.expiry && c.expiry.units ? c.expiry : null;
+	// destroyed at his godown on expiry day (SC-139): asked, the evidence sent, the operator's yes
+	const xd = c.destruction;
+	if (xd) {
+		add(
+			'destroyAsk',
+			'warehouse',
+			`Asked to destroy ${num(xd.units)} expired packs at your godown`,
+			'Through an authorised agency, with two photos and its certificate'
+		);
+		add(
+			'destroySent',
+			'camera',
+			"You sent the destruction's evidence",
+			`${xd.agency?.name ?? 'the agency'} · certificate ${xd.certificate ?? ''}`
+		);
+		add(
+			'destroyApproved',
+			'badge-check',
+			`${(xd.approvedBy && (w.people?.[xd.approvedBy]?.short ?? xd.approvedBy)) || w.short} approved the destruction`,
+			'Vision checked both photos'
+		);
+	}
+	const godown = x?.at === 'godown';
 	add(
 		'report',
 		x ? 'warehouse' : 'badge-check',
-		x ? `${num(x.units)} packs expired at your godown` : 'Settled: you ended whole',
 		x
-			? `${w.short} took them back for full credit: ${fmt.inr(x.credit)} on ${doc('expiry')?.no ?? ''}`
+			? godown
+				? `${num(x.units)} packs destroyed at your godown`
+				: `${num(x.units)} packs expired at your godown`
+			: 'Settled: you ended whole',
+		x
+			? godown
+				? `${w.short} credited the dealer price, the GST you reverse and the agency's charges: ${fmt.inr(x.amount ?? 0)} on ${doc('expiry')?.no ?? ''}`
+				: `${w.short} took them back for full credit: ${fmt.inr(x.credit)} on ${doc('expiry')?.no ?? ''}`
 			: `${fmt.inr(c.support?.total ?? 0)} price support on ${doc('support')?.no ?? ''}`
 	);
 	return out.sort((a, z) => (a.at! < z.at! ? -1 : 1));
@@ -217,8 +256,16 @@ export function whole(c: PartnerCase, w: PartnerWorld): PtWhole {
 		rows.push({ k: `Expiry credit note for ${num(c.expiry.units)} packs`, sub: ex.no, v: ex.amount, paper: 'expiry' });
 	const sku = w.skus[c.sku];
 	const recv = r2(rows.reduce((t, r) => t + r.v, 0));
-	const paid = r2(c.plan.units * sku.dp! + (c.support?.van ?? 0) + (c.support?.fee ?? 0));
-	return { rows, recv, paid, gain: Math.round(recv - paid), dp: sku.dp!, units: c.plan.units };
+	// destroyed at his godown (SC-139): he also reverses the input GST on them and pays the agency, which the note makes good
+	const g = c.expiry && c.expiry.at === 'godown' ? c.expiry : null;
+	const extra = g ? { reversal: g.reversal || 0, charges: g.charges || 0 } : null;
+	const paid = r2(
+		c.plan.units * sku.dp! +
+			(c.support?.van ?? 0) +
+			(c.support?.fee ?? 0) +
+			(extra ? extra.reversal + extra.charges : 0)
+	);
+	return { rows, recv, paid, gain: Math.round(recv - paid), dp: sku.dp!, units: c.plan.units, extra };
 }
 
 /** the batch in a journey: what has happened so far, by the journey's moments, then the next three still to come. The

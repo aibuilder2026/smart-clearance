@@ -65,8 +65,8 @@
 				"id": "expiry",
 				"icon": "undo-2",
 				"title": "Expiry policy",
-				"value": "full credit at expiry",
-				"text": "Expired stock comes back to Munchly for full credit and is destroyed, so Munchly acts before expiry and pays price support instead of a claim."
+				"value": "destroyed at the distributor's godown",
+				"text": "Packs left at a distributor's godown on expiry day are destroyed there by an authorised agency. Munchly approves the evidence and credits him the dealer price, the input GST he reverses and the agency's charges, so Munchly acts before expiry and pays price support instead of a claim."
 			},
 			{
 				"id": "gates",
@@ -3579,6 +3579,63 @@
 			}
 		],
 		"approval": "The first 10 routes per channel need a tap; after that the agent runs inside the guardrails and reports.",
+		"expiry": "godown",
+		"destruction": {
+			"evidence": [
+				[
+					"before",
+					"The packs at the godown, the carton's batch label in view"
+				],
+				[
+					"after",
+					"Slit open at the landfill, the slate with the batch, the count and the date in view"
+				]
+			],
+			"visionCheck": true,
+			"reviewer": "ws-operator",
+			"remindDays": 2,
+			"grossUp": true,
+			"chargesPerUnit": 1.5,
+			"method": "Slit open, buried and covered at the authorised municipal landfill",
+			"agencies": [
+				{
+					"id": "oce",
+					"name": "Orange City Enviro Services",
+					"city": "Nagpur",
+					"auth": "MPCB/SWM/NGP/0412",
+					"series": {
+						"prefix": "OCE/DC/26-27/",
+						"next": 219,
+						"width": 4
+					},
+					"site": "the municipal landfill, Nagpur"
+				},
+				{
+					"id": "vwc",
+					"name": "Vidarbha Waste Care",
+					"city": "Nagpur",
+					"auth": "MPCB/SWM/NGP/0538",
+					"series": {
+						"prefix": "VWC/DC/26-27/",
+						"next": 41,
+						"width": 4
+					},
+					"site": "the municipal landfill, Nagpur"
+				},
+				{
+					"id": "dgw",
+					"name": "Deccan Green Waste Management",
+					"city": "Hyderabad",
+					"auth": "TSPCB/SWM/HYD/0287",
+					"series": {
+						"prefix": "DGW/DC/26-27/",
+						"next": 86,
+						"width": 4
+					},
+					"site": "the municipal landfill, Hyderabad"
+				}
+			]
+		},
 		"permissions": {
 			"patil": "1 Oct",
 			"gupta": "1 Oct",
@@ -3657,6 +3714,11 @@
 		"negotiation": {
 			"reservePerUnit": 13.5,
 			"counterPctOfAsk": 0.95
+		},
+		"destruction": {
+			"chargesPerUnit": 1.5,
+			"grossUp": true,
+			"remindDays": 2
 		}
 	},
 	"channels": [
@@ -4582,6 +4644,7 @@
 					"invoice": "INV/26-27/0921",
 					"support": "CN/0102"
 				},
+				"destruction": null,
 				"expect": {
 					"net": 22055,
 					"swing": 26286.5,
@@ -4593,8 +4656,10 @@
 					"meals": 0,
 					"godown": 0,
 					"destroyed": 0,
+					"atGodown": 0,
 					"support": 8395,
-					"credit": 0
+					"credit": 0,
+					"amount": 0
 				}
 			},
 			{
@@ -4699,6 +4764,7 @@
 					"invoice": "INV/26-27/0922",
 					"support": "CN/0103"
 				},
+				"destruction": null,
 				"expect": {
 					"net": 15847,
 					"swing": 19216.74,
@@ -4710,8 +4776,10 @@
 					"meals": 0,
 					"godown": 0,
 					"destroyed": 0,
+					"atGodown": 0,
 					"support": 5141,
-					"credit": 0
+					"credit": 0,
+					"amount": 0
 				}
 			},
 			{
@@ -4811,8 +4879,20 @@
 						"at": "2026-07-18T15:00"
 					},
 					{
-						"step": "report",
+						"step": "destroyAsk",
 						"at": "2026-08-23T10:00"
+					},
+					{
+						"step": "destroySent",
+						"at": "2026-08-23T14:00"
+					},
+					{
+						"step": "destroyApproved",
+						"at": "2026-08-24T11:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-08-24T11:30"
 					}
 				],
 				"numbers": {
@@ -4821,19 +4901,30 @@
 					"support": "CN/0104",
 					"expiry": "CN/0111"
 				},
+				"destruction": {
+					"agency": "dgw",
+					"certificate": "DGW/DC/26-27/0085",
+					"photos": {
+						"before": "2026-08-23T11:40",
+						"after": "2026-08-23T13:20"
+					},
+					"slate": "23-08-26"
+				},
 				"expect": {
 					"net": 18842,
-					"swing": 21606.5,
-					"pnl": -4333.25,
-					"itc": 1157.1,
-					"itcReversed": 131.95,
+					"swing": 21669.87,
+					"pnl": -4269.88,
+					"itc": 1289.05,
+					"itcReversed": 0,
 					"kg": 125.4,
 					"co2": 313.5,
 					"meals": 0,
 					"godown": 65,
-					"destroyed": 65,
+					"destroyed": 0,
+					"atGodown": 65,
 					"support": 8233,
-					"credit": 3087.5
+					"credit": 3087.5,
+					"amount": 3339.38
 				}
 			},
 			{
@@ -4938,6 +5029,7 @@
 					"invoice": "INV/26-27/0924",
 					"support": "CN/0105"
 				},
+				"destruction": null,
 				"expect": {
 					"net": 19320.8,
 					"swing": 22586.72,
@@ -4949,8 +5041,10 @@
 					"meals": 0,
 					"godown": 0,
 					"destroyed": 0,
+					"atGodown": 0,
 					"support": 7559.2,
-					"credit": 0
+					"credit": 0,
+					"amount": 0
 				}
 			},
 			{
@@ -5046,6 +5140,7 @@
 					"receipt": "FI/HYD/26-27/0415",
 					"support": "CN/0106"
 				},
+				"destruction": null,
 				"expect": {
 					"net": 15130.56,
 					"swing": 19737.84,
@@ -5057,8 +5152,10 @@
 					"meals": 406,
 					"godown": 0,
 					"destroyed": 0,
+					"atGodown": 0,
 					"support": 21880,
-					"credit": 0
+					"credit": 0,
+					"amount": 0
 				}
 			},
 			{
@@ -5163,6 +5260,7 @@
 					"invoice": "INV/26-27/0925",
 					"support": "CN/0107"
 				},
+				"destruction": null,
 				"expect": {
 					"net": 24660.5,
 					"swing": 30206.59,
@@ -5174,8 +5272,10 @@
 					"meals": 0,
 					"godown": 0,
 					"destroyed": 0,
+					"atGodown": 0,
 					"support": 10275.5,
-					"credit": 0
+					"credit": 0,
+					"amount": 0
 				}
 			},
 			{
@@ -5275,8 +5375,20 @@
 						"at": "2026-08-14T15:00"
 					},
 					{
-						"step": "report",
+						"step": "destroyAsk",
 						"at": "2026-09-15T10:00"
+					},
+					{
+						"step": "destroySent",
+						"at": "2026-09-15T14:00"
+					},
+					{
+						"step": "destroyApproved",
+						"at": "2026-09-16T11:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-09-16T11:30"
 					}
 				],
 				"numbers": {
@@ -5285,19 +5397,30 @@
 					"support": "CN/0108",
 					"expiry": "CN/0115"
 				},
+				"destruction": {
+					"agency": "oce",
+					"certificate": "OCE/DC/26-27/0217",
+					"photos": {
+						"before": "2026-09-15T11:40",
+						"after": "2026-09-15T13:20"
+					},
+					"slate": "15-09-26"
+				},
 				"expect": {
 					"net": 11320,
-					"swing": 14833.68,
-					"pnl": -2890.56,
-					"itc": 578.6,
-					"itcReversed": 101.2,
+					"swing": 15038.84,
+					"pnl": -2685.4,
+					"itc": 679.8,
+					"itcReversed": 0,
 					"kg": 226.18,
 					"co2": 565.45,
 					"meals": 0,
 					"godown": 184,
-					"destroyed": 184,
+					"destroyed": 0,
+					"atGodown": 184,
 					"support": 3934,
-					"credit": 2668
+					"credit": 2668,
+					"amount": 3077.4
 				}
 			},
 			{
@@ -5402,6 +5525,7 @@
 					"invoice": "INV/26-27/0927",
 					"support": "CN/0109"
 				},
+				"destruction": null,
 				"expect": {
 					"net": 28862.9,
 					"swing": 31420.07,
@@ -5413,8 +5537,10 @@
 					"meals": 0,
 					"godown": 0,
 					"destroyed": 0,
+					"atGodown": 0,
 					"support": 11727.1,
-					"credit": 0
+					"credit": 0,
+					"amount": 0
 				}
 			},
 			{
@@ -5519,6 +5645,7 @@
 					"invoice": "INV/26-27/0928",
 					"support": "CN/0110"
 				},
+				"destruction": null,
 				"expect": {
 					"net": 17210.3,
 					"swing": 20808.86,
@@ -5530,8 +5657,10 @@
 					"meals": 0,
 					"godown": 0,
 					"destroyed": 0,
+					"atGodown": 0,
 					"support": 6351.7,
-					"credit": 0
+					"credit": 0,
+					"amount": 0
 				}
 			},
 			{
@@ -5627,6 +5756,7 @@
 					"receipt": "FI/NAG/26-27/0416",
 					"support": "CN/0112"
 				},
+				"destruction": null,
 				"expect": {
 					"net": 11440.02,
 					"swing": 15368.52,
@@ -5638,8 +5768,10 @@
 					"meals": 466,
 					"godown": 0,
 					"destroyed": 0,
+					"atGodown": 0,
 					"support": 25856,
-					"credit": 0
+					"credit": 0,
+					"amount": 0
 				}
 			},
 			{
@@ -5744,6 +5876,7 @@
 					"invoice": "INV/26-27/0929",
 					"support": "CN/0113"
 				},
+				"destruction": null,
 				"expect": {
 					"net": 21382.5,
 					"swing": 25424.62,
@@ -5755,8 +5888,10 @@
 					"meals": 0,
 					"godown": 0,
 					"destroyed": 0,
+					"atGodown": 0,
 					"support": 7704.5,
-					"credit": 0
+					"credit": 0,
+					"amount": 0
 				}
 			},
 			{
@@ -5856,8 +5991,20 @@
 						"at": "2026-08-31T15:00"
 					},
 					{
-						"step": "report",
+						"step": "destroyAsk",
 						"at": "2026-09-27T10:00"
+					},
+					{
+						"step": "destroySent",
+						"at": "2026-09-27T14:00"
+					},
+					{
+						"step": "destroyApproved",
+						"at": "2026-09-28T11:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-09-28T11:30"
 					}
 				],
 				"numbers": {
@@ -5866,19 +6013,30 @@
 					"support": "CN/0114",
 					"expiry": "CN/0116"
 				},
+				"destruction": {
+					"agency": "oce",
+					"certificate": "OCE/DC/26-27/0218",
+					"photos": {
+						"before": "2026-09-27T11:40",
+						"after": "2026-09-27T13:20"
+					},
+					"slate": "27-09-26"
+				},
 				"expect": {
 					"net": 14312,
-					"swing": 17433.2,
-					"pnl": -1825.48,
-					"itc": 788.4,
-					"itcReversed": 96.36,
+					"swing": 17497.88,
+					"pnl": -1760.8,
+					"itc": 884.76,
+					"itcReversed": 0,
 					"kg": 118.8,
 					"co2": 297,
 					"meals": 0,
 					"godown": 132,
-					"destroyed": 132,
+					"destroyed": 0,
+					"atGodown": 132,
 					"support": 5128,
-					"credit": 2376
+					"credit": 2376,
+					"amount": 2692.8
 				}
 			}
 		],
@@ -6112,128 +6270,6 @@
 					}
 				},
 				{
-					"ref": "MF-2406-107",
-					"sku": "oats",
-					"name": "Masala Oats 200 g",
-					"img": "pack-oats",
-					"distributor": "lakshmi",
-					"distributorName": "Lakshmi Agencies",
-					"city": "Hyderabad",
-					"flagged": "2026-07-14",
-					"cleared": "2026-08-23",
-					"outcome": "leftover",
-					"history": true,
-					"figures": {
-						"net": 18842,
-						"swing": 21606.5,
-						"pnl": -4333.25,
-						"writeOff": 25939.75,
-						"itcKept": 1157.1,
-						"itcReversed": 131.95,
-						"kg": 125.4,
-						"co2": 313.5,
-						"meals": 0,
-						"units": 635,
-						"sold": 570,
-						"donated": 0,
-						"godown": 65,
-						"destroyed": 65,
-						"resoldKg": 125.4,
-						"donatedKg": 0,
-						"destroyedKg": 14.3,
-						"packResoldKg": 2.85,
-						"packDonatedKg": 0,
-						"packDestroyedKg": 0.33,
-						"credit": 3087.5,
-						"support": 8233
-					},
-					"lines": [
-						{
-							"id": "kirana",
-							"short": "Kirana cluster",
-							"units": 180,
-							"price": 39,
-							"gross": 7020
-						},
-						{
-							"id": "expiresoon",
-							"short": "ExpireSoon",
-							"units": 390,
-							"price": 30.8,
-							"gross": 12012
-						}
-					],
-					"papers": [
-						{
-							"id": "invoice",
-							"type": "Tax invoice",
-							"no": "INV/26-27/0923",
-							"status": "drafted",
-							"date": "2026-07-17",
-							"amount": 12613,
-							"pdf": false
-						},
-						{
-							"id": "eway",
-							"type": "E-way bill check",
-							"no": "MF-2406-107",
-							"status": "not required",
-							"date": "2026-07-17",
-							"amount": 12613,
-							"pdf": false
-						},
-						{
-							"id": "support",
-							"type": "Price-support credit note",
-							"no": "CN/0104",
-							"status": "generated",
-							"date": "2026-07-17",
-							"amount": 8233,
-							"pdf": false
-						},
-						{
-							"id": "itc",
-							"type": "GST ITC memo",
-							"no": "s.17(5)(h)",
-							"status": "generated",
-							"date": "2026-07-17",
-							"amount": 1157.1,
-							"pdf": false
-						},
-						{
-							"id": "fssai",
-							"type": "FSSAI surplus-food checklist",
-							"no": "no donation",
-							"status": "not required",
-							"date": "2026-07-17",
-							"amount": 0,
-							"pdf": false
-						},
-						{
-							"id": "destruction",
-							"type": "Destruction certificate",
-							"no": "65 units",
-							"status": "generated",
-							"date": "2026-07-17",
-							"amount": 0,
-							"pdf": false
-						},
-						{
-							"id": "expiry",
-							"type": "Expiry credit note",
-							"no": "CN/0111",
-							"status": "generated",
-							"date": "2026-08-23",
-							"amount": 3087.5,
-							"pdf": false
-						}
-					],
-					"reviewed": {
-						"by": "priya",
-						"at": "2026-07-18T15:00"
-					}
-				},
-				{
 					"ref": "MF-2406-109",
 					"sku": "poha",
 					"name": "Instant Poha 250 g",
@@ -6342,6 +6378,128 @@
 					"reviewed": {
 						"by": "priya",
 						"at": "2026-08-01T15:00"
+					}
+				},
+				{
+					"ref": "MF-2406-107",
+					"sku": "oats",
+					"name": "Masala Oats 200 g",
+					"img": "pack-oats",
+					"distributor": "lakshmi",
+					"distributorName": "Lakshmi Agencies",
+					"city": "Hyderabad",
+					"flagged": "2026-07-14",
+					"cleared": "2026-08-24",
+					"outcome": "leftover",
+					"history": true,
+					"figures": {
+						"net": 18842,
+						"swing": 21669.87,
+						"pnl": -4269.88,
+						"writeOff": 25939.75,
+						"itcKept": 1289.05,
+						"itcReversed": 0,
+						"kg": 125.4,
+						"co2": 313.5,
+						"meals": 0,
+						"units": 635,
+						"sold": 570,
+						"donated": 0,
+						"godown": 65,
+						"destroyed": 65,
+						"resoldKg": 125.4,
+						"donatedKg": 0,
+						"destroyedKg": 14.3,
+						"packResoldKg": 2.85,
+						"packDonatedKg": 0,
+						"packDestroyedKg": 0.33,
+						"credit": 3339.38,
+						"support": 8233
+					},
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 180,
+							"price": 39,
+							"gross": 7020
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 390,
+							"price": 30.8,
+							"gross": 12012
+						}
+					],
+					"papers": [
+						{
+							"id": "invoice",
+							"type": "Tax invoice",
+							"no": "INV/26-27/0923",
+							"status": "drafted",
+							"date": "2026-07-17",
+							"amount": 12613,
+							"pdf": false
+						},
+						{
+							"id": "eway",
+							"type": "E-way bill check",
+							"no": "MF-2406-107",
+							"status": "not required",
+							"date": "2026-07-17",
+							"amount": 12613,
+							"pdf": false
+						},
+						{
+							"id": "support",
+							"type": "Price-support credit note",
+							"no": "CN/0104",
+							"status": "generated",
+							"date": "2026-07-17",
+							"amount": 8233,
+							"pdf": false
+						},
+						{
+							"id": "itc",
+							"type": "GST ITC memo",
+							"no": "s.17(5)(h)",
+							"status": "generated",
+							"date": "2026-07-17",
+							"amount": 1289.05,
+							"pdf": false
+						},
+						{
+							"id": "fssai",
+							"type": "FSSAI surplus-food checklist",
+							"no": "no donation",
+							"status": "not required",
+							"date": "2026-07-17",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "destruction",
+							"type": "Destruction certificate",
+							"no": "DGW/DC/26-27/0085",
+							"status": "generated",
+							"date": "2026-08-24",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "expiry",
+							"type": "Expiry credit note",
+							"no": "CN/0111",
+							"status": "generated",
+							"date": "2026-08-24",
+							"amount": 3339.38,
+							"pdf": false
+						}
+					],
+					"reviewed": {
+						"by": "priya",
+						"at": "2026-07-18T15:00"
 					}
 				},
 				{
@@ -6458,128 +6616,6 @@
 					}
 				},
 				{
-					"ref": "MF-2407-111",
-					"sku": "mango",
-					"name": "Mango Drink 200 ml",
-					"img": "pack-mango",
-					"distributor": "rakesh",
-					"distributorName": "Rakesh Traders",
-					"city": "Nagpur",
-					"flagged": "2026-08-10",
-					"cleared": "2026-09-15",
-					"outcome": "leftover",
-					"history": true,
-					"figures": {
-						"net": 11320,
-						"swing": 14833.68,
-						"pnl": -2890.56,
-						"writeOff": 17724.24,
-						"itcKept": 578.6,
-						"itcReversed": 101.2,
-						"kg": 226.18,
-						"co2": 565.45,
-						"meals": 0,
-						"units": 1236,
-						"sold": 1052,
-						"donated": 0,
-						"godown": 184,
-						"destroyed": 184,
-						"resoldKg": 226.18,
-						"donatedKg": 0,
-						"destroyedKg": 39.56,
-						"packResoldKg": 2.1,
-						"packDonatedKg": 0,
-						"packDestroyedKg": 0.37,
-						"credit": 2668,
-						"support": 3934
-					},
-					"lines": [
-						{
-							"id": "kirana",
-							"short": "Kirana cluster",
-							"units": 600,
-							"price": 12,
-							"gross": 7200
-						},
-						{
-							"id": "expiresoon",
-							"short": "ExpireSoon",
-							"units": 452,
-							"price": 10,
-							"gross": 4520
-						}
-					],
-					"papers": [
-						{
-							"id": "invoice",
-							"type": "Tax invoice",
-							"no": "INV/26-27/0926",
-							"status": "drafted",
-							"date": "2026-08-13",
-							"amount": 4746,
-							"pdf": false
-						},
-						{
-							"id": "eway",
-							"type": "E-way bill check",
-							"no": "MF-2407-111",
-							"status": "not required",
-							"date": "2026-08-13",
-							"amount": 4746,
-							"pdf": false
-						},
-						{
-							"id": "support",
-							"type": "Price-support credit note",
-							"no": "CN/0108",
-							"status": "generated",
-							"date": "2026-08-13",
-							"amount": 3934,
-							"pdf": false
-						},
-						{
-							"id": "itc",
-							"type": "GST ITC memo",
-							"no": "s.17(5)(h)",
-							"status": "generated",
-							"date": "2026-08-13",
-							"amount": 578.6,
-							"pdf": false
-						},
-						{
-							"id": "fssai",
-							"type": "FSSAI surplus-food checklist",
-							"no": "no donation",
-							"status": "not required",
-							"date": "2026-08-13",
-							"amount": 0,
-							"pdf": false
-						},
-						{
-							"id": "destruction",
-							"type": "Destruction certificate",
-							"no": "184 units",
-							"status": "generated",
-							"date": "2026-08-13",
-							"amount": 0,
-							"pdf": false
-						},
-						{
-							"id": "expiry",
-							"type": "Expiry credit note",
-							"no": "CN/0115",
-							"status": "generated",
-							"date": "2026-09-15",
-							"amount": 2668,
-							"pdf": false
-						}
-					],
-					"reviewed": {
-						"by": "priya",
-						"at": "2026-08-14T15:00"
-					}
-				},
-				{
 					"ref": "MF-2407-114",
 					"sku": "oats",
 					"name": "Masala Oats 200 g",
@@ -6688,6 +6724,128 @@
 					"reviewed": {
 						"by": "priya",
 						"at": "2026-08-28T15:00"
+					}
+				},
+				{
+					"ref": "MF-2407-111",
+					"sku": "mango",
+					"name": "Mango Drink 200 ml",
+					"img": "pack-mango",
+					"distributor": "rakesh",
+					"distributorName": "Rakesh Traders",
+					"city": "Nagpur",
+					"flagged": "2026-08-10",
+					"cleared": "2026-09-16",
+					"outcome": "leftover",
+					"history": true,
+					"figures": {
+						"net": 11320,
+						"swing": 15038.84,
+						"pnl": -2685.4,
+						"writeOff": 17724.24,
+						"itcKept": 679.8,
+						"itcReversed": 0,
+						"kg": 226.18,
+						"co2": 565.45,
+						"meals": 0,
+						"units": 1236,
+						"sold": 1052,
+						"donated": 0,
+						"godown": 184,
+						"destroyed": 184,
+						"resoldKg": 226.18,
+						"donatedKg": 0,
+						"destroyedKg": 39.56,
+						"packResoldKg": 2.1,
+						"packDonatedKg": 0,
+						"packDestroyedKg": 0.37,
+						"credit": 3077.4,
+						"support": 3934
+					},
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 600,
+							"price": 12,
+							"gross": 7200
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 452,
+							"price": 10,
+							"gross": 4520
+						}
+					],
+					"papers": [
+						{
+							"id": "invoice",
+							"type": "Tax invoice",
+							"no": "INV/26-27/0926",
+							"status": "drafted",
+							"date": "2026-08-13",
+							"amount": 4746,
+							"pdf": false
+						},
+						{
+							"id": "eway",
+							"type": "E-way bill check",
+							"no": "MF-2407-111",
+							"status": "not required",
+							"date": "2026-08-13",
+							"amount": 4746,
+							"pdf": false
+						},
+						{
+							"id": "support",
+							"type": "Price-support credit note",
+							"no": "CN/0108",
+							"status": "generated",
+							"date": "2026-08-13",
+							"amount": 3934,
+							"pdf": false
+						},
+						{
+							"id": "itc",
+							"type": "GST ITC memo",
+							"no": "s.17(5)(h)",
+							"status": "generated",
+							"date": "2026-08-13",
+							"amount": 679.8,
+							"pdf": false
+						},
+						{
+							"id": "fssai",
+							"type": "FSSAI surplus-food checklist",
+							"no": "no donation",
+							"status": "not required",
+							"date": "2026-08-13",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "destruction",
+							"type": "Destruction certificate",
+							"no": "OCE/DC/26-27/0217",
+							"status": "generated",
+							"date": "2026-09-16",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "expiry",
+							"type": "Expiry credit note",
+							"no": "CN/0115",
+							"status": "generated",
+							"date": "2026-09-16",
+							"amount": 3077.4,
+							"pdf": false
+						}
+					],
+					"reviewed": {
+						"by": "priya",
+						"at": "2026-08-14T15:00"
 					}
 				},
 				{
@@ -6917,128 +7075,6 @@
 					}
 				},
 				{
-					"ref": "MF-2407-116",
-					"sku": "chikki",
-					"name": "Peanut Chikki 100 g",
-					"img": "pack-chikki",
-					"distributor": "rakesh",
-					"distributorName": "Rakesh Traders",
-					"city": "Nagpur",
-					"flagged": "2026-08-27",
-					"cleared": "2026-09-27",
-					"outcome": "leftover",
-					"history": true,
-					"figures": {
-						"net": 14312,
-						"swing": 17433.2,
-						"pnl": -1825.48,
-						"writeOff": 19258.68,
-						"itcKept": 788.4,
-						"itcReversed": 96.36,
-						"kg": 118.8,
-						"co2": 297,
-						"meals": 0,
-						"units": 1212,
-						"sold": 1080,
-						"donated": 0,
-						"godown": 132,
-						"destroyed": 132,
-						"resoldKg": 118.8,
-						"donatedKg": 0,
-						"destroyedKg": 14.52,
-						"packResoldKg": 4.32,
-						"packDonatedKg": 0,
-						"packDestroyedKg": 0.53,
-						"credit": 2376,
-						"support": 5128
-					},
-					"lines": [
-						{
-							"id": "kirana",
-							"short": "Kirana cluster",
-							"units": 456,
-							"price": 15,
-							"gross": 6840
-						},
-						{
-							"id": "expiresoon",
-							"short": "ExpireSoon",
-							"units": 624,
-							"price": 12.5,
-							"gross": 7800
-						}
-					],
-					"papers": [
-						{
-							"id": "invoice",
-							"type": "Tax invoice",
-							"no": "INV/26-27/0930",
-							"status": "drafted",
-							"date": "2026-08-30",
-							"amount": 8190,
-							"pdf": false
-						},
-						{
-							"id": "eway",
-							"type": "E-way bill check",
-							"no": "MF-2407-116",
-							"status": "not required",
-							"date": "2026-08-30",
-							"amount": 8190,
-							"pdf": false
-						},
-						{
-							"id": "support",
-							"type": "Price-support credit note",
-							"no": "CN/0114",
-							"status": "generated",
-							"date": "2026-08-30",
-							"amount": 5128,
-							"pdf": false
-						},
-						{
-							"id": "itc",
-							"type": "GST ITC memo",
-							"no": "s.17(5)(h)",
-							"status": "generated",
-							"date": "2026-08-30",
-							"amount": 788.4,
-							"pdf": false
-						},
-						{
-							"id": "fssai",
-							"type": "FSSAI surplus-food checklist",
-							"no": "no donation",
-							"status": "not required",
-							"date": "2026-08-30",
-							"amount": 0,
-							"pdf": false
-						},
-						{
-							"id": "destruction",
-							"type": "Destruction certificate",
-							"no": "132 units",
-							"status": "generated",
-							"date": "2026-08-30",
-							"amount": 0,
-							"pdf": false
-						},
-						{
-							"id": "expiry",
-							"type": "Expiry credit note",
-							"no": "CN/0116",
-							"status": "generated",
-							"date": "2026-09-27",
-							"amount": 2376,
-							"pdf": false
-						}
-					],
-					"reviewed": {
-						"by": "priya",
-						"at": "2026-08-31T15:00"
-					}
-				},
-				{
 					"ref": "MF-2407-115",
 					"sku": "biscuits",
 					"name": "Choco Cream Biscuits 200 g",
@@ -7149,6 +7185,128 @@
 					"reviewed": {
 						"by": "priya",
 						"at": "2026-08-29T15:00"
+					}
+				},
+				{
+					"ref": "MF-2407-116",
+					"sku": "chikki",
+					"name": "Peanut Chikki 100 g",
+					"img": "pack-chikki",
+					"distributor": "rakesh",
+					"distributorName": "Rakesh Traders",
+					"city": "Nagpur",
+					"flagged": "2026-08-27",
+					"cleared": "2026-09-28",
+					"outcome": "leftover",
+					"history": true,
+					"figures": {
+						"net": 14312,
+						"swing": 17497.88,
+						"pnl": -1760.8,
+						"writeOff": 19258.68,
+						"itcKept": 884.76,
+						"itcReversed": 0,
+						"kg": 118.8,
+						"co2": 297,
+						"meals": 0,
+						"units": 1212,
+						"sold": 1080,
+						"donated": 0,
+						"godown": 132,
+						"destroyed": 132,
+						"resoldKg": 118.8,
+						"donatedKg": 0,
+						"destroyedKg": 14.52,
+						"packResoldKg": 4.32,
+						"packDonatedKg": 0,
+						"packDestroyedKg": 0.53,
+						"credit": 2692.8,
+						"support": 5128
+					},
+					"lines": [
+						{
+							"id": "kirana",
+							"short": "Kirana cluster",
+							"units": 456,
+							"price": 15,
+							"gross": 6840
+						},
+						{
+							"id": "expiresoon",
+							"short": "ExpireSoon",
+							"units": 624,
+							"price": 12.5,
+							"gross": 7800
+						}
+					],
+					"papers": [
+						{
+							"id": "invoice",
+							"type": "Tax invoice",
+							"no": "INV/26-27/0930",
+							"status": "drafted",
+							"date": "2026-08-30",
+							"amount": 8190,
+							"pdf": false
+						},
+						{
+							"id": "eway",
+							"type": "E-way bill check",
+							"no": "MF-2407-116",
+							"status": "not required",
+							"date": "2026-08-30",
+							"amount": 8190,
+							"pdf": false
+						},
+						{
+							"id": "support",
+							"type": "Price-support credit note",
+							"no": "CN/0114",
+							"status": "generated",
+							"date": "2026-08-30",
+							"amount": 5128,
+							"pdf": false
+						},
+						{
+							"id": "itc",
+							"type": "GST ITC memo",
+							"no": "s.17(5)(h)",
+							"status": "generated",
+							"date": "2026-08-30",
+							"amount": 884.76,
+							"pdf": false
+						},
+						{
+							"id": "fssai",
+							"type": "FSSAI surplus-food checklist",
+							"no": "no donation",
+							"status": "not required",
+							"date": "2026-08-30",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "destruction",
+							"type": "Destruction certificate",
+							"no": "OCE/DC/26-27/0218",
+							"status": "generated",
+							"date": "2026-09-28",
+							"amount": 0,
+							"pdf": false
+						},
+						{
+							"id": "expiry",
+							"type": "Expiry credit note",
+							"no": "CN/0116",
+							"status": "generated",
+							"date": "2026-09-28",
+							"amount": 2692.8,
+							"pdf": false
+						}
+					],
+					"reviewed": {
+						"by": "priya",
+						"at": "2026-08-31T15:00"
 					}
 				},
 				{
@@ -7276,11 +7434,11 @@
 					"current": false,
 					"totals": {
 						"net": 220383.58,
-						"swing": 264929.84,
-						"pnl": -39573.71,
+						"swing": 265263.05,
+						"pnl": -39240.5,
 						"writeOff": 304503.55,
-						"itcKept": 15854.78,
-						"itcReversed": 1981.93,
+						"itcKept": 16184.29,
+						"itcReversed": 1652.42,
 						"kg": 1959.51,
 						"co2": 4898.77,
 						"meals": 872,
@@ -7295,7 +7453,7 @@
 						"packResoldKg": 57.92,
 						"packDonatedKg": 4.77,
 						"packDestroyedKg": 1.23,
-						"credit": 8131.5,
+						"credit": 9109.58,
 						"support": 122186,
 						"batches": 12,
 						"outcomes": {
@@ -7314,11 +7472,11 @@
 							"label": "August 2026",
 							"totals": {
 								"net": 71874.56,
-								"swing": 86847.58,
-								"pnl": -18946.69,
+								"swing": 86910.95,
+								"pnl": -18883.32,
 								"writeOff": 105794.27,
-								"itcKept": 4253.36,
-								"itcReversed": 838.39,
+								"itcKept": 4385.31,
+								"itcReversed": 706.44,
 								"kg": 735.37,
 								"co2": 1838.43,
 								"meals": 406,
@@ -7333,7 +7491,7 @@
 								"packResoldKg": 19.16,
 								"packDonatedKg": 2.44,
 								"packDestroyedKg": 0.33,
-								"credit": 3087.5,
+								"credit": 3339.38,
 								"support": 43649,
 								"batches": 4,
 								"outcomes": {
@@ -7352,11 +7510,11 @@
 							"label": "September 2026",
 							"totals": {
 								"net": 148509.02,
-								"swing": 178082.26,
-								"pnl": -20627.02,
+								"swing": 178352.1,
+								"pnl": -20357.18,
 								"writeOff": 198709.28,
-								"itcKept": 11601.42,
-								"itcReversed": 1143.54,
+								"itcKept": 11798.98,
+								"itcReversed": 945.98,
 								"kg": 1224.14,
 								"co2": 3060.35,
 								"meals": 466,
@@ -7371,7 +7529,7 @@
 								"packResoldKg": 38.76,
 								"packDonatedKg": 2.33,
 								"packDestroyedKg": 0.9,
-								"credit": 5044,
+								"credit": 5770.2,
 								"support": 78537,
 								"batches": 8,
 								"outcomes": {
@@ -7439,13 +7597,13 @@
 						],
 						[
 							"W11",
-							22760.02,
-							50812.74
+							11440.02,
+							33088.5
 						],
 						[
 							"W12",
-							24660.5,
-							28572.09
+							35980.5,
+							46296.33
 						],
 						[
 							"W13",
@@ -7631,11 +7789,11 @@
 					"current": true,
 					"totals": {
 						"net": 220383.58,
-						"swing": 264929.84,
-						"pnl": -39573.71,
+						"swing": 265263.05,
+						"pnl": -39240.5,
 						"writeOff": 304503.55,
-						"itcKept": 15854.78,
-						"itcReversed": 1981.93,
+						"itcKept": 16184.29,
+						"itcReversed": 1652.42,
 						"kg": 1959.51,
 						"co2": 4898.77,
 						"meals": 872,
@@ -7650,7 +7808,7 @@
 						"packResoldKg": 57.92,
 						"packDonatedKg": 4.77,
 						"packDestroyedKg": 1.23,
-						"credit": 8131.5,
+						"credit": 9109.58,
 						"support": 122186,
 						"batches": 12,
 						"outcomes": {
@@ -7669,11 +7827,11 @@
 							"label": "August 2026",
 							"totals": {
 								"net": 71874.56,
-								"swing": 86847.58,
-								"pnl": -18946.69,
+								"swing": 86910.95,
+								"pnl": -18883.32,
 								"writeOff": 105794.27,
-								"itcKept": 4253.36,
-								"itcReversed": 838.39,
+								"itcKept": 4385.31,
+								"itcReversed": 706.44,
 								"kg": 735.37,
 								"co2": 1838.43,
 								"meals": 406,
@@ -7688,7 +7846,7 @@
 								"packResoldKg": 19.16,
 								"packDonatedKg": 2.44,
 								"packDestroyedKg": 0.33,
-								"credit": 3087.5,
+								"credit": 3339.38,
 								"support": 43649,
 								"batches": 4,
 								"outcomes": {
@@ -7707,11 +7865,11 @@
 							"label": "September 2026",
 							"totals": {
 								"net": 148509.02,
-								"swing": 178082.26,
-								"pnl": -20627.02,
+								"swing": 178352.1,
+								"pnl": -20357.18,
 								"writeOff": 198709.28,
-								"itcKept": 11601.42,
-								"itcReversed": 1143.54,
+								"itcKept": 11798.98,
+								"itcReversed": 945.98,
 								"kg": 1224.14,
 								"co2": 3060.35,
 								"meals": 466,
@@ -7726,7 +7884,7 @@
 								"packResoldKg": 38.76,
 								"packDonatedKg": 2.33,
 								"packDestroyedKg": 0.9,
-								"credit": 5044,
+								"credit": 5770.2,
 								"support": 78537,
 								"batches": 8,
 								"outcomes": {
@@ -8042,6 +8200,7 @@
 					"fee": 100
 				},
 				"expiry": null,
+				"destruction": null,
 				"docs": [
 					{
 						"id": "invoice",
@@ -8336,6 +8495,7 @@
 					"fee": 100
 				},
 				"expiry": null,
+				"destruction": null,
 				"docs": [
 					{
 						"id": "invoice",
@@ -8383,7 +8543,7 @@
 				"dist": "lakshmi",
 				"outcome": "leftover",
 				"flagged": "2026-07-14",
-				"cleared": "2026-08-23",
+				"cleared": "2026-08-24",
 				"steps": [
 					{
 						"step": "open",
@@ -8462,8 +8622,20 @@
 						"at": "2026-07-18T15:00"
 					},
 					{
-						"step": "report",
+						"step": "destroyAsk",
 						"at": "2026-08-23T10:00"
+					},
+					{
+						"step": "destroySent",
+						"at": "2026-08-23T14:00"
+					},
+					{
+						"step": "destroyApproved",
+						"at": "2026-08-24T11:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-08-24T11:30"
 					}
 				],
 				"batch": {
@@ -8559,7 +8731,47 @@
 				},
 				"expiry": {
 					"units": 65,
-					"credit": 3087.5
+					"credit": 3087.5,
+					"amount": 3339.38,
+					"at": "godown",
+					"reversal": 154.38,
+					"charges": 97.5
+				},
+				"destruction": {
+					"status": "approved",
+					"units": 65,
+					"agency": {
+						"id": "dgw",
+						"name": "Deccan Green Waste Management",
+						"auth": "TSPCB/SWM/HYD/0287",
+						"site": "the municipal landfill, Hyderabad"
+					},
+					"certificate": "DGW/DC/26-27/0085",
+					"askedAt": "2026-08-23T10:00",
+					"sentAt": "2026-08-23T14:00",
+					"approvedAt": "2026-08-24T11:00",
+					"checks": [
+						{
+							"id": "batch",
+							"label": "Batch MF-2406-107 read on the carton label",
+							"ok": true
+						},
+						{
+							"id": "count",
+							"label": "About 70 packs in view (65 left)",
+							"ok": true
+						},
+						{
+							"id": "slate",
+							"label": "The slate reads MF-2406-107 · 65 packets · 23-08-26",
+							"ok": true
+						},
+						{
+							"id": "when",
+							"label": "Both photos taken that day, at the godown and the landfill",
+							"ok": true
+						}
+					]
 				},
 				"docs": [
 					{
@@ -8584,8 +8796,8 @@
 						"id": "itc",
 						"no": "s.17(5)(h)",
 						"status": "generated",
-						"amount": 1157.1,
-						"reversed": 131.95
+						"amount": 1289.05,
+						"reversed": 0
 					},
 					{
 						"id": "fssai",
@@ -8595,16 +8807,16 @@
 					},
 					{
 						"id": "destruction",
-						"no": "65 units",
+						"no": "DGW/DC/26-27/0085",
 						"status": "generated",
 						"amount": 0,
-						"reversed": 131.95
+						"reversed": 154.38
 					},
 					{
 						"id": "expiry",
 						"no": "CN/0111",
 						"status": "generated",
-						"amount": 3087.5
+						"amount": 3339.38
 					}
 				]
 			},
@@ -8809,6 +9021,7 @@
 					"fee": 100
 				},
 				"expiry": null,
+				"destruction": null,
 				"docs": [
 					{
 						"id": "invoice",
@@ -9068,6 +9281,7 @@
 					"fee": 0
 				},
 				"expiry": null,
+				"destruction": null,
 				"docs": [
 					{
 						"id": "support",
@@ -9284,6 +9498,7 @@
 					"fee": 100
 				},
 				"expiry": null,
+				"destruction": null,
 				"docs": [
 					{
 						"id": "invoice",
@@ -9331,7 +9546,7 @@
 				"dist": "rakesh",
 				"outcome": "leftover",
 				"flagged": "2026-08-10",
-				"cleared": "2026-09-15",
+				"cleared": "2026-09-16",
 				"steps": [
 					{
 						"step": "open",
@@ -9410,8 +9625,20 @@
 						"at": "2026-08-14T15:00"
 					},
 					{
-						"step": "report",
+						"step": "destroyAsk",
 						"at": "2026-09-15T10:00"
+					},
+					{
+						"step": "destroySent",
+						"at": "2026-09-15T14:00"
+					},
+					{
+						"step": "destroyApproved",
+						"at": "2026-09-16T11:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-09-16T11:30"
 					}
 				],
 				"batch": {
@@ -9607,7 +9834,47 @@
 				},
 				"expiry": {
 					"units": 184,
-					"credit": 2668
+					"credit": 2668,
+					"amount": 3077.4,
+					"at": "godown",
+					"reversal": 133.4,
+					"charges": 276
+				},
+				"destruction": {
+					"status": "approved",
+					"units": 184,
+					"agency": {
+						"id": "oce",
+						"name": "Orange City Enviro Services",
+						"auth": "MPCB/SWM/NGP/0412",
+						"site": "the municipal landfill, Nagpur"
+					},
+					"certificate": "OCE/DC/26-27/0217",
+					"askedAt": "2026-09-15T10:00",
+					"sentAt": "2026-09-15T14:00",
+					"approvedAt": "2026-09-16T11:00",
+					"checks": [
+						{
+							"id": "batch",
+							"label": "Batch MF-2407-111 read on the carton label",
+							"ok": true
+						},
+						{
+							"id": "count",
+							"label": "About 180 packs in view (184 left)",
+							"ok": true
+						},
+						{
+							"id": "slate",
+							"label": "The slate reads MF-2407-111 · 184 packets · 15-09-26",
+							"ok": true
+						},
+						{
+							"id": "when",
+							"label": "Both photos taken that day, at the godown and the landfill",
+							"ok": true
+						}
+					]
 				},
 				"docs": [
 					{
@@ -9632,8 +9899,8 @@
 						"id": "itc",
 						"no": "s.17(5)(h)",
 						"status": "generated",
-						"amount": 578.6,
-						"reversed": 101.2
+						"amount": 679.8,
+						"reversed": 0
 					},
 					{
 						"id": "fssai",
@@ -9643,16 +9910,16 @@
 					},
 					{
 						"id": "destruction",
-						"no": "184 units",
+						"no": "OCE/DC/26-27/0217",
 						"status": "generated",
 						"amount": 0,
-						"reversed": 101.2
+						"reversed": 133.4
 					},
 					{
 						"id": "expiry",
 						"no": "CN/0115",
 						"status": "generated",
-						"amount": 2668
+						"amount": 3077.4
 					}
 				]
 			},
@@ -9829,6 +10096,7 @@
 					"fee": 100
 				},
 				"expiry": null,
+				"destruction": null,
 				"docs": [
 					{
 						"id": "invoice",
@@ -10115,6 +10383,7 @@
 					"fee": 100
 				},
 				"expiry": null,
+				"destruction": null,
 				"docs": [
 					{
 						"id": "invoice",
@@ -10366,6 +10635,7 @@
 					"fee": 0
 				},
 				"expiry": null,
+				"destruction": null,
 				"docs": [
 					{
 						"id": "support",
@@ -10634,6 +10904,7 @@
 					"fee": 100
 				},
 				"expiry": null,
+				"destruction": null,
 				"docs": [
 					{
 						"id": "invoice",
@@ -10681,7 +10952,7 @@
 				"dist": "rakesh",
 				"outcome": "leftover",
 				"flagged": "2026-08-27",
-				"cleared": "2026-09-27",
+				"cleared": "2026-09-28",
 				"steps": [
 					{
 						"step": "open",
@@ -10760,8 +11031,20 @@
 						"at": "2026-08-31T15:00"
 					},
 					{
-						"step": "report",
+						"step": "destroyAsk",
 						"at": "2026-09-27T10:00"
+					},
+					{
+						"step": "destroySent",
+						"at": "2026-09-27T14:00"
+					},
+					{
+						"step": "destroyApproved",
+						"at": "2026-09-28T11:00"
+					},
+					{
+						"step": "report",
+						"at": "2026-09-28T11:30"
 					}
 				],
 				"batch": {
@@ -10925,7 +11208,47 @@
 				},
 				"expiry": {
 					"units": 132,
-					"credit": 2376
+					"credit": 2376,
+					"amount": 2692.8,
+					"at": "godown",
+					"reversal": 118.8,
+					"charges": 198
+				},
+				"destruction": {
+					"status": "approved",
+					"units": 132,
+					"agency": {
+						"id": "oce",
+						"name": "Orange City Enviro Services",
+						"auth": "MPCB/SWM/NGP/0412",
+						"site": "the municipal landfill, Nagpur"
+					},
+					"certificate": "OCE/DC/26-27/0218",
+					"askedAt": "2026-09-27T10:00",
+					"sentAt": "2026-09-27T14:00",
+					"approvedAt": "2026-09-28T11:00",
+					"checks": [
+						{
+							"id": "batch",
+							"label": "Batch MF-2407-116 read on the carton label",
+							"ok": true
+						},
+						{
+							"id": "count",
+							"label": "About 130 packs in view (132 left)",
+							"ok": true
+						},
+						{
+							"id": "slate",
+							"label": "The slate reads MF-2407-116 · 132 packets · 27-09-26",
+							"ok": true
+						},
+						{
+							"id": "when",
+							"label": "Both photos taken that day, at the godown and the landfill",
+							"ok": true
+						}
+					]
 				},
 				"docs": [
 					{
@@ -10950,8 +11273,8 @@
 						"id": "itc",
 						"no": "s.17(5)(h)",
 						"status": "generated",
-						"amount": 788.4,
-						"reversed": 96.36
+						"amount": 884.76,
+						"reversed": 0
 					},
 					{
 						"id": "fssai",
@@ -10961,16 +11284,16 @@
 					},
 					{
 						"id": "destruction",
-						"no": "132 units",
+						"no": "OCE/DC/26-27/0218",
 						"status": "generated",
 						"amount": 0,
-						"reversed": 96.36
+						"reversed": 118.8
 					},
 					{
 						"id": "expiry",
 						"no": "CN/0116",
 						"status": "generated",
-						"amount": 2376
+						"amount": 2692.8
 					}
 				]
 			}

@@ -21,6 +21,7 @@ from sc_api.schemas import (
     AttentionAction,
     ClientOut,
     ClientPerson,
+    DestructionConfig,
     DistributorOut,
     ExitState,
     FirstExportOut,
@@ -224,6 +225,7 @@ async def client_out(ctx: Ctx, client_id: str) -> ClientOut:
         approver=c.approver_ref,
         agents=agent_json,
         first_export=_first_export(c, len(dist_rows)),
+        destruction=DestructionConfig.model_validate(c.destruction) if c.destruction else None,
     )
 
 

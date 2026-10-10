@@ -106,7 +106,7 @@
 		signPhone: true,
 		route: 'distributors',
 		owner: 'distributor',
-		expiry: 'full-credit',
+		expiry: 'godown',
 		exitOff: {},
 		preset: 'standard',
 		adminName: '',

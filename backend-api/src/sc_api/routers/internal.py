@@ -264,6 +264,17 @@ async def document_pdf(
     return await _step(ctx, request, steps.document_pdf, client_id, ref, doc, name, _run(data))
 
 
+@router.post(CASE + "/destruction/check")
+async def destruction_check(
+    client_id: str, ref: str, data: Report, request: Request, ctx: InternalCtx
+) -> dict[str, Any]:
+    """Vision's read of the destruction's two photos (SC-139); backend-api holds it to the batch"""
+    read = data.extra().get("read")
+    if not isinstance(read, dict):
+        raise ApiError(422, "The photos' read.")
+    return await _step(ctx, request, steps.destruction_checked, client_id, ref, read, _run(data))
+
+
 @router.post(CASE + "/report")
 async def report(client_id: str, ref: str, data: Report, request: Request, ctx: InternalCtx) -> dict[str, Any]:
     return await _step(ctx, request, steps.report, client_id, ref, _run(data))

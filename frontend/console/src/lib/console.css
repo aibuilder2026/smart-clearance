@@ -124,6 +124,11 @@
 .cs-opt input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
 .cs-opt.on { box-shadow: 0 0 0 2px var(--primary); color: var(--fg); }
 .cs-opt.on .ic { color: var(--primary-text); }
+/* an option not built yet (SC-139's route A): shown with its note, not chosen */
+.cs-opt.off { cursor: default; color: var(--fg-2); }
+.cs-opt .ic { flex: none; }
+.cs-opt:has(.cs-note) { align-items: flex-start; }
+.cs-opt.off input { cursor: default; }
 .cs-opt:has(input:focus-visible) { outline: 3px solid var(--ring); outline-offset: 2px; }
 .cs-swatches { display: flex; gap: 10px; flex-wrap: wrap; }
 .cs-swatch { position: relative; width: 36px; height: 36px; border-radius: 50%; background: var(--sw); box-shadow: 0 0 0 3px var(--surface), 0 0 0 4px var(--line-2); cursor: pointer; }

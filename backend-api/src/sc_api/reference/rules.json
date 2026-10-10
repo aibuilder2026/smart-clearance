@@ -4,6 +4,32 @@
 			"profile": {
 				"route": "distributors",
 				"owner": "distributor",
+				"expiry": "godown"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": true
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": false,
+					"locked": "Only for the manufacturer's own stock"
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "distributors",
+				"owner": "distributor",
 				"expiry": "full-credit"
 			},
 			"exits": {
@@ -75,6 +101,32 @@
 				"d2c": {
 					"on": false,
 					"locked": "Only for the manufacturer's own stock"
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "distributors",
+				"owner": "manufacturer",
+				"expiry": "godown"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": true
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": true,
+					"locked": null
 				}
 			}
 		},
@@ -160,6 +212,32 @@
 			"profile": {
 				"route": "modern-trade",
 				"owner": "distributor",
+				"expiry": "godown"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": false
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": false,
+					"locked": "Only for the manufacturer's own stock"
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "modern-trade",
+				"owner": "distributor",
 				"expiry": "full-credit"
 			},
 			"exits": {
@@ -231,6 +309,32 @@
 				"d2c": {
 					"on": false,
 					"locked": "Only for the manufacturer's own stock"
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "modern-trade",
+				"owner": "manufacturer",
+				"expiry": "godown"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": false
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": true,
+					"locked": null
 				}
 			}
 		},
@@ -316,6 +420,32 @@
 			"profile": {
 				"route": "own",
 				"owner": "distributor",
+				"expiry": "godown"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": true
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": true,
+					"locked": null
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "own",
+				"owner": "distributor",
 				"expiry": "full-credit"
 			},
 			"exits": {
@@ -369,6 +499,32 @@
 				"route": "own",
 				"owner": "distributor",
 				"expiry": "none"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": true
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": true,
+					"locked": null
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "own",
+				"owner": "manufacturer",
+				"expiry": "godown"
 			},
 			"exits": {
 				"expiresoon": {

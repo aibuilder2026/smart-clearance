@@ -143,6 +143,7 @@ class Story:
                 require_photo=c["rules"]["requirePhoto"],
                 day_minutes=c["dayMinutes"],
                 agents=agent_cfg,
+                destruction=c.get("destruction"),
             ),
             created_at=set_up,
         )

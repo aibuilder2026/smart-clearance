@@ -187,10 +187,11 @@ async def _report_now(api, neha):
     assert r.status_code == 200, r.text
 
 
-async def test_report_now_is_expiry_day_and_the_journey_closes_as_it_stands(api, munchly, neha, cloud):
+async def test_report_now_is_expiry_day_and_the_journey_closes_as_it_stands(api, munchly, neha, cloud, ctx):
     """SC-94: Report now in the middle of the chips' journey. The scheme closes with the two shops' orders, the lot no
-    buyer accepted ends unsold, the papers follow, and the packs no channel took expire: under Munchly's full-credit
-    policy they come back for the dealer price and Munchly destroys them"""
+    buyer accepted ends unsold, the papers follow, and the packs no channel took expire: under the full-credit policy
+    they come back for the dealer price and Munchly destroys them"""
+    await _policy(ctx, "full-credit")
     from sc_api.domain import money
     from tests.conftest import token
     from tests.test_workspace import J
@@ -232,6 +233,15 @@ async def test_report_now_is_expiry_day_and_the_journey_closes_as_it_stands(api,
     assert line.startswith("Expiry day called on 2 Oct, before the return window would close on ")
 
 
+async def _policy(ctx, policy: str) -> None:
+    """Munchly on another expiry policy than its route B (SC-139), for the tests of that policy"""
+    from sc_api import models as m
+
+    c = await ctx.session.get(m.Client, "munchly")
+    c.expiry = policy
+    await ctx.session.commit()
+
+
 @pytest.mark.parametrize(
     ("policy", "paper", "credit", "destroyed_by"),
     [
@@ -268,10 +278,13 @@ async def test_the_expired_packs_settle_by_the_clients_expiry_policy(
     assert (docs["destruction"]["status"] == "generated") == (destroyed_by == "client")
 
 
-async def test_a_pack_drafted_on_expiry_day_is_reviewed_and_its_invoice_issued_once_cleared(api, munchly, neha, cloud):
+async def test_a_pack_drafted_on_expiry_day_is_reviewed_and_its_invoice_issued_once_cleared(
+    api, munchly, neha, cloud, ctx
+):
     """SC-117: the leftover run (SC-116). The lot is awarded but the scheme is short, so Report now drafts the papers
-    and Impact clears the batch at once. Anita still reviews the pack and Rakesh still issues his invoice: both find
-    the batch's case in this journey, cleared, where they found only an open one"""
+    and Impact clears the batch at once (under full credit). Anita still reviews the pack and Rakesh still issues his
+    invoice: both find the batch's case in this journey, cleared, where they found only an open one"""
+    await _policy(ctx, "full-credit")
     from tests.conftest import token
     from tests.test_workspace import AGRAWAL, PRIYA, RAKESH, J
 
@@ -306,10 +319,11 @@ async def test_a_pack_drafted_on_expiry_day_is_reviewed_and_its_invoice_issued_o
     ]
 
 
-async def test_the_leftover_ledger_reverses_the_credit_of_the_packs_it_destroyed(api, munchly, neha, cloud):
-    """SC-122: the leftover run's ledger. Under Munchly's full credit the packs left at the godown come back and are
-    destroyed, so their input credit is reversed, the costs avoided leave them out, the memo and the destruction
-    certificate count them, the ledger's lines add up to its net, and every ledger carries its swing"""
+async def test_the_leftover_ledger_reverses_the_credit_of_the_packs_it_destroyed(api, munchly, neha, cloud, ctx):
+    """SC-122: the leftover run's ledger. Under full credit the packs left at the godown come back and are destroyed,
+    so their input credit is reversed, the costs avoided leave them out, the memo and the destruction certificate
+    count them, the ledger's lines add up to its net, and every ledger carries its swing"""
+    await _policy(ctx, "full-credit")
     from sc_api.domain import money
     from tests.conftest import token
     from tests.test_workspace import AGRAWAL, J

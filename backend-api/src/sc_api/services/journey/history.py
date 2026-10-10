@@ -15,6 +15,7 @@ the history is built, to lay out the PDFs of each batch's papers and its receipt
 from collections.abc import Awaitable, Callable
 from dataclasses import replace
 from datetime import date, datetime, timedelta
+from importlib import resources
 from typing import Any
 
 from sqlalchemy import select
@@ -31,6 +32,7 @@ from sc_api.services.presenter import lock_client
 from sc_api.services.reference import load
 
 PHOTO = b"\xff\xd8\xff\xe0 history label photo"
+EVIDENCE = resources.files("sc_api.reference").joinpath("evidence")
 As = Callable[[str, datetime], Awaitable[Ctx]]
 # the PDFs Paperwork lays out once the history is built: the pack (settle) and the food bank's receipt
 PAPERS = {"settle", "receipt"}
@@ -60,6 +62,8 @@ async def build(ctx: Ctx, client_id: str) -> int:
     batches = {b["ref"]: b for b in h["batches"]}
     timeline = sorted((s["at"], ref, i, s["step"]) for ref, b in batches.items() for i, s in enumerate(b["steps"]))
     first = _at(timeline[0][0])
+
+    real = ctx.cloud  # the history's evidence photos also go to the photos bucket, where the screens read them
 
     async def as_(who: str, at: datetime) -> Ctx:
         x = replace(hx, clock=FixedClock(at))
@@ -98,7 +102,7 @@ async def build(ctx: Ctx, client_id: str) -> int:
     for when, ref, _, step in timeline:
         b, at = batches[ref], _at(when)
         try:
-            await _step(as_, hx, storage, client_id, b, step, at, bids, members, j)
+            await _step(as_, hx, storage, client_id, b, step, at, bids, members, j, real)
         except steps.Noop:  # a step that had nothing to do: the history no longer matches this workspace's setup
             case = await _case(hx, client_id, ref)
             lines = [(ln["id"], ln["units"]) for ln in (case.plan or {}).get("lines", [])]
@@ -122,6 +126,7 @@ async def _step(
     bids: dict[str, str],
     members: dict[str, Any],
     j: dict[str, Any],
+    real: Cloud | None = None,
 ) -> None:
     ref = b["ref"]
     dist = next(
@@ -201,12 +206,53 @@ async def _step(
         await steps.dispatch(await as_(dist, at), client_id, ref, "van")
     elif step == "review":
         await steps.review(await as_("priya", at), client_id, ref)
+    # destroyed at the godown on expiry day (SC-139): asked, the evidence sent that afternoon and checked, and Priya's
+    # yes the next morning, before Impact reports
+    elif step == "destroyAsk":
+        await steps.expire(await as_("system", at), client_id, ref)
+    elif step == "destroySent":
+        await _destroy_sent(as_, hx, storage, client_id, b, dist, at, real)
+    elif step == "destroyApproved":
+        await steps.approve_destruction(await as_("priya", at), client_id, ref)
     elif step == "report":  # expiry day: what is left settles, then Impact posts the ledger (SC-94)
         x = await as_("system", at)
-        await steps.expire(x, client_id, ref)
+        if (await _case(x, client_id, ref)).expired_at is None:
+            await steps.expire(x, client_id, ref)
         await steps.report(x, client_id, ref, None)
     else:
         raise RuntimeError(f"history: no step {step!r}")
+
+
+async def _destroy_sent(
+    as_: As,
+    hx: Ctx,
+    storage: FakeStorage,
+    client_id: str,
+    b: dict[str, Any],
+    dist: str,
+    at: datetime,
+    real: Cloud | None,
+) -> None:
+    """his evidence: each photo taken at its time and sent with the agency's certificate, then Vision's read of them,
+    which holds to the batch"""
+    ref, dz = b["ref"], b["destruction"]
+    ids: dict[str, str] = {}
+    for which in steps.DZ_WHICH:
+        data = EVIDENCE.joinpath(f"{ref}-{which}.webp").read_bytes()
+        x = await as_(dist, _at(dz["photos"][which]))
+        link = await steps.destruction_photo(x, client_id, ref, which, "image/webp", len(data))
+        name = f"{client_id}/{ref}/destruction-{which}-{link['id']}"
+        storage.objects[(hx.settings.photos_bucket, name)] = data
+        if real is not None and hx.settings.photos_bucket:
+            await real.storage.write(hx.settings.photos_bucket, name, data, "image/webp")
+        ids[which] = link["id"]
+    await steps.send_destruction(await as_(dist, at), client_id, ref, dz["agency"], dz["certificate"], ids)
+    units = int(b["expect"]["atGodown"])
+    read = {
+        "before": {"batch": ref, "count": units, "confidence": 0.95},
+        "after": {"slate": {"batch": ref, "count": units, "date": dz["slate"]}, "landfill": True, "destroyed": True},
+    }
+    await steps.destruction_checked(await as_("system", at + timedelta(minutes=5)), client_id, ref, read, None)
 
 
 async def _bank(ctx: Ctx, client_id: str, b: dict[str, Any], members: dict[str, Any]) -> str:
