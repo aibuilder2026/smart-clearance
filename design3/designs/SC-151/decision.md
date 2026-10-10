@@ -30,4 +30,29 @@ The question on the board: should the raw call stay on the card, or move to the 
 
 ## The pick
 
-Waiting for the maintainer.
+10 Oct: the maintainer picked **A, the lot as listed**, and on the board's question, **keep the raw call on the card,
+closed**.
+
+## What was built (option A)
+
+- **The card** (design3 `brand.jsx` `ListerCard`, core `screens/brand/ListerCard.svelte`), on Execution in place of the two
+  code blocks:
+  - the lot as buyers see it: the pack, the price against MRP, best before, the seller and its cartons, the listing id;
+  - once won, the buyer, the price and the token inside the listing; a lot that ended unsold says so;
+  - what only the client sees: the reserve, and the territories the lot is hidden in, with their pincode areas;
+  - four steps (Listed, Bid, Won, Collected), each with the case's own time, the next one marked waiting;
+  - Open on ExpireSoon, and **The API call** (`aria-expanded`, 44 px), which opens the request and response under the
+    row.
+- **The badge** follows the lot: queued, live, bid in, countered, awarded, collected, or ended unsold.
+- **Styles:** `screens.css`'s `.esl`, `.priv`, `.esl-steps` and `.xcall` blocks, copied verbatim into core.
+- **No contract or backend change:** every figure is the case's (the plan's line, the SKU, the batch, the award, the
+  reserve, the distributors' pincodes).
+
+## Checks
+
+- The frontend gate passes: core 273 (9 goldens of Execution updated, only the card's text), api 79, workspace 93,
+  admin 17, demo 5, console 3.
+- design3's Execution and the port's stub build were shot at 1440 and 390, light and dark, with the call opened
+  (`build/`).
+- The a11y specs open the call: the workspace's Execution with the lot awarded, and the demo's stage 7 on Priya's
+  laptop, so CodeBlock stays covered. The browser suites were not run (SC-55).

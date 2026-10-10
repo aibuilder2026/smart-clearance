@@ -1897,4 +1897,22 @@
   - **Checks:** the frontend gate passes (core 273, api 79, workspace 93, admin 17, demo 5, console 3); backend-api 554 passed, 1 skipped; the landing page's build shows the bar at 1200 and on a phone, with no console errors. The admin's e2e, a11y and parity specs follow the new bar (unrun, SC-55).
   - **Hosting:** design3's `dist/` is rebuilt; the hosted Claude Design pages stay on their pinned commit.
 
+- **SC-151** (In Review, branch `SC-151-expiresoon-listing-card`): Execution's Lister · ExpireSoon card reads as a marketplace listing, not a raw HTTP call.
+  - **The request:** "Expire Soon UI work, currently showing HTTP API call, can we improve this marketplace integration piece".
+  - **Design first:** three options on one board in app v3, `SC-151 design review.html`, each in five states (queued, live, countered, awarded, collected):
+    - A, the lot as listed (recommended);
+    - B, the handshake;
+    - C, the terms.
+
+    The maintainer picked **A**, and kept the raw call on the card, closed. Designs, stills and the decision are in `design3/designs/SC-151/`.
+  - **The card** (design3 `brand.jsx` `ListerCard` first, then core's `ListerCard.svelte`):
+    - the lot as buyers see it on ExpireSoon: the pack, the price against MRP, best before, the seller, the listing id; once won, the buyer, the price and the token;
+    - what only the client sees: the reserve, and the territories it is hidden in;
+    - four steps with the case's own times: Listed, Bid, Won, Collected;
+    - Open on ExpireSoon, and **The API call**, which opens the request and response under it.
+
+    No contract or backend change.
+  - **Checks:** the frontend gate passes (core 273, with 9 Execution goldens updated; api 79, workspace 93, admin 17, demo 5, console 3). design3 and the port's stub build were shot at 1440 and 390, light and dark. The workspace's and the demo's a11y specs open the call; the browser suites were not run (SC-55).
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
