@@ -11,16 +11,44 @@ import { readFileSync } from 'node:fs';
 const REPO = new URL('../../../../', import.meta.url);
 
 export type App = 'workspace' | 'console';
+/** the stack a run takes: this machine's dev servers and local API (the default), or production's (E2E_TARGET=prod,
+ *  SC-137): the deployed apps on Firebase Hosting, backend-api on Cloud Run, the agents on Cloud Run */
+export const PROD = process.env.E2E_TARGET === 'prod';
 export const ORIGIN: Record<App, string> = {
-	workspace: process.env.E2E_WORKSPACE_URL ?? 'http://localhost:5175',
-	console: process.env.E2E_CONSOLE_URL ?? 'http://localhost:5174'
+	workspace:
+		process.env.E2E_WORKSPACE_URL ?? (PROD ? 'https://munchly-smartclearance.web.app' : 'http://localhost:5175'),
+	console: process.env.E2E_CONSOLE_URL ?? (PROD ? 'https://smartclearance-console.web.app' : 'http://localhost:5174')
 };
 
 export type Person = { uid: string; email: string; name: string; role: string; org: string; token: string };
 type Session = { idToken: string; refreshToken: string; expiresAt: number };
 
-/** what an app's .env.local names (backend-api/scripts/app-env.sh writes them) */
+/** production's build settings for an app, as CI builds it: the repository's variables (public values: the API's
+ *  address and the app's browser key), read once with gh */
+const PROD_VARS: Record<App, { PUBLIC_API_BASE: string; PUBLIC_FIREBASE_API_KEY: string }> = {
+	workspace: { PUBLIC_API_BASE: 'WORKSPACE_API_BASE', PUBLIC_FIREBASE_API_KEY: 'WORKSPACE_FIREBASE_API_KEY' },
+	console: { PUBLIC_API_BASE: 'PUBLIC_API_BASE', PUBLIC_FIREBASE_API_KEY: 'PUBLIC_FIREBASE_API_KEY' }
+};
+const prodEnv = new Map<App, Record<string, string>>();
+function prodSettings(app: App): Record<string, string> {
+	const had = prodEnv.get(app);
+	if (had) return had;
+	const vars = JSON.parse(
+		execFileSync('gh', ['variable', 'list', '--json', 'name,value'], { encoding: 'utf8', cwd: REPO.pathname })
+	) as { name: string; value: string }[];
+	const value = (name: string) => {
+		const v = vars.find((x) => x.name === name)?.value;
+		if (!v) throw new Error(`the repository has no ${name}: production's ${app} cannot be reached`);
+		return v;
+	};
+	const out = Object.fromEntries(Object.entries(PROD_VARS[app]).map(([k, name]) => [k, value(name)]));
+	prodEnv.set(app, out);
+	return out;
+}
+
+/** what an app's .env.local names (backend-api/scripts/app-env.sh writes them); on production, its build settings */
 export function appEnv(app: App): Record<string, string> {
+	if (PROD) return prodSettings(app);
 	const text = readFileSync(new URL(`frontend/${app}/.env.local`, REPO), 'utf8');
 	return Object.fromEntries(
 		text

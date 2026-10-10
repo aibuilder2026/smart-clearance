@@ -1628,7 +1628,7 @@
     - the live fixtures were regenerated;
     - the day is back at 24 hours.
 
-- **SC-136** (In Review, branch `SC-136-sync-prod-data`): production's data replaced with local's, asked for by the maintainer ("sync the local postgresql data and bigquery local data with cloud, so that i have exact same dataset on the application deployed on cloud run"; "bigquery and buckets need sync too").
+- **SC-136** (PR #117, merged): production's data replaced with local's, asked for by the maintainer ("sync the local postgresql data and bigquery local data with cloud, so that i have exact same dataset on the application deployed on cloud run"; "bigquery and buckets need sync too").
   - **The maintainer's answers:** a time-limited grant for the operators to act as sc-migrator; the audit log copied exactly (an on-demand backup first).
   - **infra/prod:** `migrator_operators`, a `roles/iam.serviceAccountTokenCreator` binding on sc-migrator for the operators, conditioned on `request.time < data_sync_until` (`terraform.tfvars`: `2026-10-12T12:00:00Z`), so it closes by itself; empty removes it. Applied on the maintainer's yes (plan read in full: 1 to add, 0 to change, 0 to destroy).
   - **`backend-api/scripts/sync.sh`** (`sc_api/cli/sync.py`):
@@ -1650,5 +1650,23 @@
     Read through the live API: the Mango Drink cleared (248 packs settled, ₹3,596), its papers with their PDFs from the prod docs bucket, the ledger's 13 batches, Lakshmi Agencies' 7 batches.
   - **After it:** the two environments run on their own again; each one's tick and agents move its own copy on.
   - **Checks:** backend-api 529 passed, 1 skipped (3 new in `test_sync.py`); infra `check.sh` passes.
+
+- **SC-137** (In Review, branch `SC-137-chips-e2e-prod`): Munchly Chips E2E on production, recorded, asked for by the maintainer ("run the munchly chips end to end on production and record the session").
+  - **The production target:** `E2E_TARGET=prod` runs a journey suite on the deployed apps (munchly-smartclearance.web.app, smartclearance-console.web.app) and on backend-api and the agents on Cloud Run. Each app's API address and browser key come from its production build settings, the repository's variables, read with `gh` (`auth.ts`). People still sign in with custom tokens (`sessions.sh`), since the user pool is shared. Nothing local runs.
+  - **Service workers blocked** in the suites' browser (`playwright.journey.config.ts`): the deployed workspace's service worker served its cached shell for the bare page a person is signed in from, so the first attempt stopped at the fifth kirana on the sign-in screen. The deployed app is unchanged; in-app notifications come over the live stream.
+  - **The run of 10 Oct** (`runs/2026-10-10-prod/REPORT.md`, the 10 min 45 s recording local): passed in 10 min 33 s, 77 steps, from a reset, every figure the story's:
+    - ₹21,770 planned; 31 kiranas ordered 588; 772 at ₹14.20;
+    - INV/26-27/0931 (₹11,510), CN/0117 (₹8,768) and the ITC memo, each with its PDF from the prod docs bucket;
+    - actual ₹21,152.40;
+    - the tax: ₹1,224 kept; the ESG: 217.6 kg, 544 kg CO₂e;
+    - the year: 13 batches, ₹2,41,535.98.
+  - **Found on Rakesh's batch page** (since SC-135 it reads his partner facts once cleared):
+    - the suites expected the journey state's wording, and now follow the facts': "Agrawal Wholesale's truck collected the lot", "From 31 kiranas";
+    - **a bug:** it named the Friday van round. The partner facts stamped the round when Rakesh ran it, before its Saturday morning in a compressed journey; the push, the timeline and Deliveries say Saturday (SC-97). The facts' van step now carries `leaves` (backend-api `partners.py`; not for the history, stamped on its own day), and his pages name the round by it (core `partners.ts` `vanDay`, `dist.ts`; the contract's step type). It reaches production with the next deploy.
+  - **After it:** production's journey day back at 24 hours (the console's clock, as Neha); the chips cleared, the Mango Drink back at day 0.
+  - **Checks:**
+    - backend-api 530 passed, 1 skipped (a new steps test);
+    - the frontend gate passes (core 258, api 77, workspace 82 with a new live test that fails without the fix, admin 17, demo 5, console 3);
+    - the live fixtures were regenerated.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

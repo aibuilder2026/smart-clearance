@@ -36,6 +36,12 @@ const num = fmt.num;
 const rate = fmt.rate;
 export const stepAt = (c: Pick<PartnerCase, 'steps'>, k: string) =>
 	(c.steps || []).find((s) => s.step === k)?.at ?? null;
+/** the van round's own day: when it leaves, where the facts say (a compressed journey runs it before then, SC-137),
+ *  else when it ran, as the history stamps it */
+export const vanDay = (c: Pick<PartnerCase, 'steps'>) => {
+	const s = (c.steps || []).find((x) => x.step === 'van');
+	return s ? weekday(s.leaves ?? s.at) : '';
+};
 const took = (c: PartnerCase, id: string) => c.realised?.lines.find((l) => l.id === id && l.units > 0) ?? null;
 const planned = (c: PartnerCase, id: string) => c.plan.lines.find((l) => l.id === id && l.units > 0) ?? null;
 /** the weekday of an IST day (2026-08-31 → Monday) */
@@ -172,7 +178,7 @@ export function moments(c: PartnerCase, w: PartnerWorld): PtMoment[] {
 		add(
 			'van',
 			'route',
-			`Your ${weekday(van)} van round delivered the scheme`,
+			`Your ${vanDay(c)} van round delivered the scheme`,
 			`${c.kiranas.length} shops · ${num(kl.units)} packets`
 		);
 	const x = c.expiry && c.expiry.units ? c.expiry : null;

@@ -39,7 +39,11 @@ export default defineConfig({
 		trace: process.env.E2E_TRACE === 'on' ? 'on' : 'retain-on-failure',
 		screenshot: 'only-on-failure',
 		actionTimeout: 20_000,
-		launchOptions: { slowMo: Number(process.env.E2E_SLOWMO ?? 0) }
+		launchOptions: { slowMo: Number(process.env.E2E_SLOWMO ?? 0) },
+		// a live build registers a service worker (the offline shell and pushes, SC-73): on production it would serve the
+		// app's cached shell for the bare page auth.ts signs a person in from, so the app's code would race the session
+		// put in place (SC-137). The dev servers register none
+		serviceWorkers: 'block'
 	},
 	// one project a flow, so running one never starts another (the chips flows reset the journey; the Mango's never does)
 	projects: [

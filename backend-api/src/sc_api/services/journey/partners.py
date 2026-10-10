@@ -14,6 +14,7 @@ from typing import Any
 from sqlalchemy import select
 
 from sc_api import models as m
+from sc_api.domain import journey as J
 from sc_api.domain import money
 from sc_api.domain.clock import IST
 from sc_api.services.context import Ctx
@@ -40,8 +41,12 @@ def _day(at: datetime | str) -> date:
     return when.astimezone(IST).date()
 
 
-def steps_of(case: m.Case, orders: list[m.CaseOrder], feed: dict[str, datetime]) -> list[dict[str, str]]:
-    """when each step of a batch happened, as design3's history stamps them (data.js HISTORY_AT)"""
+def steps_of(
+    case: m.Case, orders: list[m.CaseOrder], feed: dict[str, datetime], van_time: str = "07:00"
+) -> list[dict[str, str]]:
+    """when each step of a batch happened, as design3's history stamps them (data.js HISTORY_AT). The van round also
+    carries when it leaves (SC-97's one day for it): a compressed journey can run it before then, and his pages name the
+    round by its own day, as its push and the timeline do (SC-137)"""
     out: list[tuple[str, str]] = []
 
     def add(step: str, at: datetime | str | None) -> None:
@@ -73,7 +78,10 @@ def steps_of(case: m.Case, orders: list[m.CaseOrder], feed: dict[str, datetime])
     add("review", (case.reviewed or {}).get("at"))
     add("report", (case.ledger or {}).get("at"))
     out.sort(key=lambda x: x[1])
-    return [{"step": s, "at": t} for s, t in out]
+    # the history's rounds are stamped on their own day already (design3's HISTORY_AT)
+    done = van.get("status") == "done" and not case.history
+    leaves = _local(J.van_leaves(case.offer, case.docs, van_time)) if done else None
+    return [{"step": s, "at": t, **({"leaves": leaves} if s == "van" and leaves else {})} for s, t in out]
 
 
 def _line(ln: dict[str, Any]) -> dict[str, Any]:
@@ -87,6 +95,7 @@ def facts(
     feed: dict[str, datetime],
     cm: m.ClientMember,
     support: dict[str, Any] | None,
+    van_time: str = "07:00",
 ) -> dict[str, Any]:
     """a batch as the partner's pages read it, cut to its part"""
     role = cm.workspace_role
@@ -118,7 +127,7 @@ def facts(
             "outcome": ledger_.outcome(godown, donated) if L else None,
             "flagged": flagged.isoformat(),
             "cleared": _day(L["at"]).isoformat() if L else None,
-            "steps": steps_of(case, orders, feed),
+            "steps": steps_of(case, orders, feed, van_time),
             "batch": {
                 "daysLeft": (bb - flagged).days if bb else 0,
                 "bestBefore": bb.isoformat() if bb else "",
@@ -228,6 +237,6 @@ async def partner(ctx: Ctx, client_id: str, cm: m.ClientMember) -> dict[str, Any
         support = None
         if role == "distributor":
             support = views.support_of(case, c, skus[case.sku_id], orders[case.id], rules)
-        out["cases"].append(facts(case, batch, orders[case.id], feed[case.id], cm, support))
+        out["cases"].append(facts(case, batch, orders[case.id], feed[case.id], cm, support, world.van_time(c)))
     out["cases"].sort(key=lambda x: (x["flagged"], x["ref"]), reverse=True)
     return out

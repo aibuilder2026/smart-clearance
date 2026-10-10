@@ -765,8 +765,8 @@ export type PartnerCase = {
 	/** the day the Watcher flagged it, and the day it cleared (null while it is in a journey) */
 	flagged: string;
 	cleared: string | null;
-	/** each step and when it happened, in the client's time (2026-08-27T09:00) */
-	steps: { step: string; at: string }[];
+	/** each step and when it happened, in the client's time (2026-08-27T09:00); the van round also when it leaves */
+	steps: { step: string; at: string; leaves?: string }[];
 	batch: { daysLeft: number; bestBefore: string; mfg?: string | null };
 	plan: {
 		units: number;

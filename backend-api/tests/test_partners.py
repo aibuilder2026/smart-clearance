@@ -3,6 +3,8 @@ its part, with the facts design3's partners' pages read (reference/journey.json 
 each step happened, the plan and what each line took, the deal and the papers. A kirana can say not this time to the
 open scheme, and an order after all takes it back."""
 
+from datetime import datetime
+
 import pytest
 
 from sc_api.services.reference import load
@@ -189,3 +191,22 @@ def test_an_older_destruction_certificate_gets_its_credit_from_the_plan():
     assert views.with_reversed(case, old)["reversed"] == 101.2
     assert views.with_reversed(case, {**old, "reversed": 99})["reversed"] == 99
     assert "reversed" not in views.with_reversed(case, {"id": "destruction", "units": 0})
+
+
+def test_the_van_round_carries_the_day_it_leaves_when_it_ran_before_then():
+    """a compressed journey runs the round before its morning: his pages name it by its own day (SC-97, SC-137)"""
+    from sc_api import models as m
+    from sc_api.domain.clock import IST
+    from sc_api.services.journey.partners import steps_of
+
+    case = m.Case(
+        opened_at=datetime(2026, 10, 2, 8, 0, tzinfo=IST),
+        offer={"status": "closed", "at": "2026-10-02T09:08:00+05:30", "closedAt": "2026-10-02T09:14:00+05:30"},
+        docs=[{"id": "invoice", "date": "2026-10-02"}],
+        van={"status": "done", "at": "2026-10-02T11:14:00+05:30"},
+        history=False,
+    )
+    van = next(s for s in steps_of(case, [], {}, "07:00") if s["step"] == "van")
+    assert van == {"step": "van", "at": "2026-10-02T11:14", "leaves": "2026-10-03T07:00"}
+    case.history = True  # the history's rounds keep their own stamp
+    assert "leaves" not in next(s for s in steps_of(case, [], {}, "07:00") if s["step"] == "van")
