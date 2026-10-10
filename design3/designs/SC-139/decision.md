@@ -34,6 +34,18 @@ Qwen-Image renders (`evidence/`, with their sidecars): the packs in a crate at t
 and the packets slit open in a landfill pit with a JCB and a chalk slate reading "MF-2409-117 144 PKTS 03-10-26"
 (picked from two seeds, after the maintainer asked for a destruction as it is done today).
 
-## The pick
+## The pick (10 Oct)
 
-Waiting for the maintainer.
+- **Option B, A second yes.** Two photos (before at the godown with the batch label, after at the landfill with the
+  slate) and the agency's certificate number; Vision checks them; Priya approves from the Command Center's sheet, and
+  the batch closes only on that yes.
+- **Route A** ("Taken back by Munchly", a GST credit note under s.34 against Munchly's invoice): offered in the console,
+  built later.
+- **The credit:** the dealer price, the input GST the distributor reverses (grossed up) and the agency's charges. The
+  chips' 144 packs: ₹3,542.40.
+- **The history:** "Do A, and for all other distributors of munchly too past destruction should have proper documents
+  and pictures and approvals"; asked which, the maintainer chose **restate them under route B**. Munchly's three Q2
+  batches left at a godown (Lakshmi Agencies' Masala Oats, 65 packs; Rakesh Traders' Mango Drink, 184, and Peanut
+  Chikki, 132) are rebuilt as destroyed at their own distributor's godown, each with its before and after photos,
+  Priya's approval on its day, the agency's certificate and the financial credit note.
+- **If nothing comes in:** the distributor is asked again after two days, and the batch stays open until he sends it.

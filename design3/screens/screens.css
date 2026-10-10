@@ -505,3 +505,19 @@ button.dist-line:focus-visible { outline: 3px solid var(--ring); outline-offset:
 .dist-shops b { font-weight: 550; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dist-shops em { grid-row: 2; font-style: normal; font-size: 12px; color: var(--fg-2); }
 .dist-shops .tnum { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+/* ---------- packs destroyed at the distributor's godown (SC-139, option B): two photos, Vision's checks, the second yes ---------- */
+.dz-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.cam.dz-cam { aspect-ratio: 4 / 3; max-height: none; border-radius: 18px; box-shadow: none; }
+.dz-cam .cam-hint { font-size: 12px; }
+.dz-slot .cam-two .btn { min-height: 44px; }
+.dz-yes .list-row .lr-value:has(> .tnum) { flex: none; }
+.dz-yes .list-row .tnum { white-space: nowrap; text-align: right; }
+.dz-check { gap: 8px; align-items: flex-start; }
+.dz-ok { color: var(--primary-text); flex: none; margin-top: 2px; }
+.dz-warn { color: var(--amber-text); flex: none; margin-top: 2px; }
+.dz-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+@media (max-width: 760px) { .dz-fields { grid-template-columns: minmax(0, 1fr); } }
+.dz-foot { display: flex; gap: 10px; }
+.dz-foot > .btn:last-child { flex: 1; }
+@media (max-width: 520px) { .dz-foot { flex-direction: column-reverse; } }
+@media (max-width: 420px) { .dz-two:not(.dz-pair) { grid-template-columns: minmax(0, 1fr); } .dz-pair .cam-tag { font-size: 11px; } }

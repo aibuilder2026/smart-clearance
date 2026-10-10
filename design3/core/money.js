@@ -18,6 +18,10 @@
     floors: { snacks: 0.35, biscuits: 0.35, staples: 0.40, beverages: 0.30, "personal-care": 0.40 },
     ewayThreshold: 50000,
     negotiation: { reservePerUnit: 13.5, counterPctOfAsk: 0.95 },
+    // packs left at the distributor's godown on expiry day and destroyed there (SC-139, route B): the authorised agency's
+    // charge a pack, which the client reimburses on its credit note; whether the note makes good the input GST he
+    // reverses on them; and how many journey days he has to send the evidence before he is asked again
+    destruction: { chargesPerUnit: 1.5, grossUp: true, remindDays: 2 },
   };
   // the exits for a distributor's stock. Discount D2C is only for a manufacturer's own warehouse stock, so it is not here.
   const CHANNELS = [
@@ -149,7 +153,7 @@
   // (`mealsRule`, SC-110). The packs left at the godown follow the client's expiry policy (SC-122): under full credit
   // they come back and the client destroys them, so their input credit is reversed and their disposal is the client's;
   // otherwise the distributor destroys his own stock, and the client keeps its credit and avoids the disposal.
-  function realised(p, sku, done, mealsRule, policy = "full-credit") {
+  function realised(p, sku, done, mealsRule, policy = "full-credit", opts = RULES.destruction) {
     const took = l => (l.id !== "writeoff" && done && done[l.id] != null ? Math.max(0, done[l.id]) : l.units);
     if (p.lines.every(l => took(l) === l.units)) return { ...p, godown: 0, destroyed: p.leftover, meals: mealsOf(p.donated, sku, mealsRule) };
     const lines = p.lines.map(l => (took(l) === l.units ? l : lineOf(p.rows.find(r => r.id === l.id), took(l), sku)));
@@ -161,18 +165,25 @@
     const soldUnits = units(l => l.id !== "foodbank" && l.id !== "writeoff");
     const donated = units(l => l.id === "foodbank");
     const left = p.leftover + godown;
-    const pnl = r2(net - p.bookCost - (left ? r2(left * (p.writeOff.perUnit - sku.cost)) : 0));
+    // destroyed at the distributor's godown at the client's cost (SC-139): the client keeps its input credit on them, and
+    // pays his GST reversal (grossed up) and the agency's charges instead of its own disposal, EPR and reversal
+    const atGodown = policy === "godown" ? godown : 0;
+    // the GST gross-up and the agency's charges, as the expiry credit note carries them
+    const xs = atGodown ? expirySettlement(atGodown, sku, "godown", opts) : null;
+    const pnl = atGodown
+      ? r2(net - p.bookCost - (p.leftover ? r2(p.leftover * (p.writeOff.perUnit - sku.cost)) : 0) - r2(xs.gst + xs.charges))
+      : r2(net - p.bookCost - (left ? r2(left * (p.writeOff.perUnit - sku.cost)) : 0));
     const kg = r2((p.units - left) * sku.kgPerUnit);
     // what the client itself destroys: the plan's own write-off, and under full credit the packs that came back
     const ours = policy === "full-credit";
     const destroyed = p.leftover + (ours ? godown : 0);
-    const spared = p.units - destroyed;
+    const spared = p.units - destroyed - atGodown;
     return {
       ...p, lines, gross, costs, itcLoss, net, pctMRP: Math.round((net / (p.units * sku.mrp)) * 100), pnl, swing: r2(pnl + p.writeOff.total),
       itcRetained: r2((soldUnits + (ours ? 0 : godown)) * itcOf(sku)), itcReversed: r2((donated + destroyed) * itcOf(sku)),
       cashAvoided: r2(p.writeOff.total - p.writeOff.stock - destroyed * (p.writeOff.perUnit - sku.cost)),
       disposalAvoided: r2(spared * RULES.disposalPerUnit + r2(spared * sku.kgPerUnit) * RULES.eprPerKg),
-      kg, co2: r2(kg * RULES.co2PerKg), meals: mealsOf(donated, sku, mealsRule), soldUnits, donated, godown, destroyed,
+      kg, co2: r2(kg * RULES.co2PerKg), meals: mealsOf(donated, sku, mealsRule), soldUnits, donated, godown, destroyed, atGodown,
     };
   }
 
@@ -215,13 +226,24 @@
   // the packs left at the godown on expiry day, settled by the client's expiry policy (SC-94). Full credit: they come
   // back for the dealer price, and the client destroys them, paying disposal and EPR and reversing the GST credit.
   // Price support: the client pays the distributor the gap to what he paid (they fetched nothing, so the dealer price),
-  // and he destroys them. No returns: the distributor's loss. An SKU without its dealer price has no credit to work out
-  function expirySettlement(units, sku, policy) {
+  // and he destroys them. No returns: the distributor's loss. An SKU without its dealer price has no credit to work out.
+  // Destroyed at the godown (SC-139, route B): he destroys them there through an authorised agency, against evidence
+  // the client approves; a financial credit note pays him the dealer price, the input GST he reverses on them under
+  // section 17(5)(h) (grossed up, so he ends whole) and the agency's charges. The client destroys nothing: it keeps its
+  // own input credit and pays no disposal or EPR of its own. `amount` is what the paper credits him
+  function expirySettlement(units, sku, policy, opts = RULES.destruction) {
     const wo = writeOff(units, sku);
     const credit = policy === "none" || !units ? 0 : sku.dp == null ? null : r2(units * sku.dp);
+    if (policy === "godown") {
+      const reversal = credit == null ? null : r2(credit * sku.gst);
+      const gst = opts.grossUp && reversal != null ? reversal : 0;
+      const charges = units ? r2(units * opts.chargesPerUnit) : 0;
+      const amount = credit == null ? null : r2(credit + gst + charges);
+      return { policy, units, credit, gst, charges, reversal, amount, destroyedBy: units ? "distributor" : null, at: units ? "godown" : null, kg: wo.kg, disposal: 0, epr: 0, itc: 0, total: r2((credit || 0) + gst + charges) };
+    }
     const ours = policy === "full-credit" && units > 0;
     const disposal = ours ? wo.disposal : 0, epr = ours ? wo.epr : 0, itc = ours ? wo.itc : 0;
-    return { policy, units, credit, destroyedBy: units ? (ours ? "client" : "distributor") : null, kg: wo.kg, disposal, epr, itc, total: r2((credit || 0) + disposal + epr + itc) };
+    return { policy, units, credit, amount: credit, destroyedBy: units ? (ours ? "client" : "distributor") : null, kg: wo.kg, disposal, epr, itc, total: r2((credit || 0) + disposal + epr + itc) };
   }
 
   // the food bank's receipt for the packs it collected (SC-110), in its own form (data.js SETUP.partners: Feeding
@@ -254,14 +276,19 @@
     // the credit kept on what was sold under tax invoices, and reversed on what was given away or destroyed (SC-122)
     const away = p.donated + (p.destroyed != null ? p.destroyed : p.leftover);
     docs.push({ id: "itc", type: "GST ITC memo", owner: parties.client.short, no: "s.17(5)(h)", status: "generated", amount: p.itcRetained, reversed: p.itcReversed || 0, units: p.soldUnits, away,
-      note: p.itcReversed ? `Kept on the ${p.soldUnits.toLocaleString("en-IN")} packs sold under tax invoices; reversed under Section 17(5)(h) on the ${away.toLocaleString("en-IN")} given away or destroyed, in GSTR-3B Table 4(B)(1).` : "Goods supplied under tax invoices, so the Section 17(5)(h) reversal does not apply." });
+      note: (p.itcReversed ? `Kept on the ${p.soldUnits.toLocaleString("en-IN")} packs sold under tax invoices; reversed under Section 17(5)(h) on the ${away.toLocaleString("en-IN")} given away or destroyed, in GSTR-3B Table 4(B)(1).` : "Goods supplied under tax invoices, so the Section 17(5)(h) reversal does not apply.")
+        // destroyed at his godown (SC-139): his stock, so the reversal is his, and the client keeps its own credit on them
+        + (p.atGodown ? ` The ${p.atGodown.toLocaleString("en-IN")} packs destroyed at ${parties.seller.name}'s godown were his stock, bought under tax invoice: he reverses their input credit, and ${parties.client.short} keeps its own.` : "") });
     docs.push({ id: "fssai", type: "FSSAI surplus-food checklist", owner: parties.client.short, no: p.donated ? `${p.donated} units` : "no donation", status: p.donated ? "generated" : "not required", amount: 0 });
     if (rcpt) docs.push(rcpt);
     // the packs the client destroys: the plan's write-off, and under full credit those left at the godown (SC-122)
     const destroyed = p.destroyed != null ? p.destroyed : p.leftover;
     // with the input credit reversed on them, so every copy of the paper carries its own figure (SC-132)
     const reversed = destroyed ? r2(destroyed * ((p.writeOff && p.writeOff.itcPerUnit) || 0)) : 0;
-    docs.push({ id: "destruction", type: "Destruction certificate", owner: parties.client.short, no: destroyed ? `${destroyed} units` : "0 units left", status: destroyed ? "generated" : "not required", amount: 0, units: destroyed, reversed });
+    // destroyed at his godown (SC-139): the agency's certificate, for him, once the client has approved the evidence;
+    // until then it waits, with the input GST he will reverse on the packs
+    if (p.atGodown) docs.push({ id: "destruction", type: "Destruction certificate", owner: parties.seller.name, no: "awaiting destruction", status: "awaiting", amount: 0, units: p.atGodown, at: "godown", reversed: r2(p.atGodown * (sku.dp || 0) * sku.gst) });
+    else docs.push({ id: "destruction", type: "Destruction certificate", owner: parties.client.short, no: destroyed ? `${destroyed} units` : "0 units left", status: destroyed ? "generated" : "not required", amount: 0, units: destroyed, reversed });
     return docs;
   }
 

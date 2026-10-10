@@ -59,7 +59,20 @@
       eta = "Papers ready · ledger next";
       agentLive = "Impact is posting the ledger";
     } else if (h.phase === "cleared") {
-      eta = "Cleared · 0 cartons destroyed";
+      eta = h.destruction ? `Cleared · ${h.destruction.units} packs destroyed at the godown` : "Cleared · 0 cartons destroyed";
+    }
+    const dz = h.destruction && h.phase !== "cleared" ? h.destruction.status : null;
+    if (dz === "requested" || dz === "asked") {
+      eta = `Waiting for ${D.DISTRIBUTORS[D.BATCHES[0].distributor].short}'s destruction evidence`;
+      etaTone = "amber";
+      agentLive = "";
+    } else if (dz === "reading") {
+      eta = "Checking the destruction's evidence";
+      agentLive = "Vision is checking the evidence";
+    } else if (dz === "checked") {
+      eta = "The destruction waits for your yes";
+      etaTone = "amber";
+      agentLive = "";
     }
     return { h, view, idx, done: Math.min(idx, 9), current: idx < 9 ? idx : -1, eta, etaTone, agentLive, ordered, orderedUnits, plan: D.PLAN };
   }

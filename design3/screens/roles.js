@@ -19,7 +19,7 @@
   const HOME = { operator: "command", distributor: "home", retailer: "home", buyer: "market", foodbank: "pickups", admin: "workspace" };
   const PARENT = { listing: "market", offer: "home" };
   const ALWAYS = ["inbox", "profile"];
-  const routesFor = (role) => NAV[role].map((n) => n.id).concat(ALWAYS, role === "buyer" ? ["listing"] : role === "retailer" ? ["offer"] : role === "operator" ? ["journey", "route", "execution", "paperwork"] : []);
+  const routesFor = (role) => NAV[role].map((n) => n.id).concat(ALWAYS, role === "buyer" ? ["listing"] : role === "retailer" ? ["offer"] : role === "distributor" ? ["destroy"] : role === "operator" ? ["journey", "route", "execution", "paperwork"] : []);
   const SIDEBAR_BATCHES = 5;
   const WHERE = { command: "Command Center", batches: "Batches", inbox: "Inbox", report: "Ledger", setup: "Setup", profile: "Profile" };
   function screenFor(me, name, opts) {
@@ -45,6 +45,8 @@
         return /* @__PURE__ */ React.createElement(X.CameraScreen, { me, realCamera: opts && opts.realCamera });
       case "van":
         return /* @__PURE__ */ React.createElement(X.VanRoute, { me });
+      case "destroy":
+        return /* @__PURE__ */ React.createElement(X.DestroyScreen, { me });
       case "orders":
         return r === "retailer" ? /* @__PURE__ */ React.createElement(X.RetailOrders, { me }) : /* @__PURE__ */ React.createElement(X.DistOrders, { me });
       case "offer":

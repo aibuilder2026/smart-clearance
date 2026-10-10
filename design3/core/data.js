@@ -125,7 +125,7 @@
     profile: [
       { id: "route", icon: "factory", title: "Route to market", value: `${Object.keys(DISTRIBUTORS).length} distributors`, text: "Munchly sells only to its distributors. Each one supplies the kiranas on his salesman's beat and the Blinkit, Zepto and Instamart warehouses in his city." },
       { id: "owner", icon: "warehouse", title: "Who owns short-dated stock", value: "the distributor", text: `He bought it at ${fmt.rate(chips.dp)} a pack, so the agent lists, offers and invoices in his name, with his one-time permission.` },
-      { id: "expiry", icon: "undo-2", title: "Expiry policy", value: "full credit at expiry", text: "Expired stock comes back to Munchly for full credit and is destroyed, so Munchly acts before expiry and pays price support instead of a claim." },
+      { id: "expiry", icon: "undo-2", title: "Expiry policy", value: "destroyed at the distributor's godown", text: "Packs left at a distributor's godown on expiry day are destroyed there by an authorised agency. Munchly approves the evidence and credits him the dealer price, the input GST he reverses and the agency's charges, so Munchly acts before expiry and pays price support instead of a claim." },
       { id: "gates", icon: "shield", title: "Quick-commerce gates", value: `Blinkit ${M.RULES.gates.blinkit.minDays}+ days · Zepto, Instamart ${Math.round(M.RULES.gates.zepto.pctLife * 100)}% of life`, text: "A batch that misses a gate stays in the distributor's godown." },
       { id: "channels", icon: "route", title: "Exits for distributor stock", value: "four, and the bin as the baseline", text: "ExpireSoon, the kirana scheme, a staff sale at the godown and food banks. Discount D2C and the Pune plant staff sale apply only to Munchly's own warehouse stock." },
       { id: "territory", icon: "map-pin", title: "Territory guard", value: `${Object.keys(DISTRIBUTORS).length} territories`, text: "ExpireSoon listings are hidden from buyers inside Munchly's distributor territories, matched by pincode." },
@@ -271,6 +271,21 @@
         meals: { kg: 0.4, rule: "a meal for every 400 g of food, indicative" } },
     ],
     approval: "The first 10 routes per channel need a tap; after that the agent runs inside the guardrails and reports.",
+    // the client's expiry policy (SC-139, route B): packs left at a distributor's godown on expiry day are destroyed
+    // there, through an authorised agency, against evidence Supply Chain approves before the batch closes; a financial
+    // credit note pays him the dealer price, the input GST he reverses on them (grossed up) and the agency's charges.
+    // The agencies are fictional: the city corporation's authorised waste contractors, each with its own certificates
+    expiry: "godown",
+    destruction: {
+      evidence: [["before", "The packs at the godown, the carton's batch label in view"], ["after", "Slit open at the landfill, the slate with the batch, the count and the date in view"]],
+      visionCheck: true, reviewer: "ws-operator", remindDays: 2, grossUp: true, chargesPerUnit: 1.5,
+      method: "Slit open, buried and covered at the authorised municipal landfill",
+      agencies: [
+        { id: "oce", name: "Orange City Enviro Services", city: "Nagpur", auth: "MPCB/SWM/NGP/0412", series: { prefix: "OCE/DC/26-27/", next: 219, width: 4 }, site: "the municipal landfill, Nagpur" },
+        { id: "vwc", name: "Vidarbha Waste Care", city: "Nagpur", auth: "MPCB/SWM/NGP/0538", series: { prefix: "VWC/DC/26-27/", next: 41, width: 4 }, site: "the municipal landfill, Nagpur" },
+        { id: "dgw", name: "Deccan Green Waste Management", city: "Hyderabad", auth: "TSPCB/SWM/HYD/0287", series: { prefix: "DGW/DC/26-27/", next: 86, width: 4 }, site: "the municipal landfill, Hyderabad" },
+      ],
+    },
     // the distributors' one-time permissions; Rakesh Traders gives his in stage 1 of the demo
     permissions: { patil: "1 Oct", gupta: "1 Oct", lakshmi: "1 Oct" },
     acts: ["List your Munchly stock on ExpireSoon", "Send scheme offers to your kiranas", "Draft your invoices", "Book dispatch slots in your calendar"],
@@ -310,7 +325,8 @@
   // Munchly's history (SC-123): the twelve batches its workspace cleared in its pilot quarter, Q2 FY27 (Jul to Sep
   // 2026), before the story's journey on 2 Oct. The Watcher flagged each on the day given, with its packs, days left
   // and sales a day, and money.js plans it as the agents would. What happened is the history's own: sold through; packs
-  // left at the godown when the kiranas ordered fewer (settled at full credit on expiry day); or a donation, to the
+  // left at the godown when the kiranas ordered fewer (destroyed there on expiry day, against evidence Priya approved
+  // the day after, and settled by Munchly's policy, SC-139); or a donation, to the
   // first food bank that takes it, as the Donation step books. backend-api builds it through the journey's own steps on this schedule (services/journey/history.py), so
   // its papers carry these numbers and its ledgers these figures. Every company, person and figure is fictional.
   const HISTORY_BATCHES = [
@@ -352,19 +368,32 @@
       // the first food bank that takes the line, as backend-api's Donation step books it
       const partner = fb ? SETUP.partners.find(p => daysLeft >= p.minDays && fb.units >= p.minUnits) || null : null;
       const done = kl && x.kirana != null ? { kirana: x.kirana } : null;
-      const realised = M.realised(plan, sku, done, partner && partner.meals, "full-credit");
+      const realised = M.realised(plan, sku, done, partner && partner.meals, SETUP.expiry, SETUP.destruction);
       const actual = M.actualNet(realised, price != null ? price : 0);
       const award = es ? M.award(es.units, price) : null;
       const support = M.priceSupport(realised, sku, price != null ? price : undefined);
-      const expiry = realised.godown ? M.expirySettlement(realised.godown, sku, "full-credit") : null;
+      const expiry = realised.godown ? M.expirySettlement(realised.godown, sku, SETUP.expiry, SETUP.destruction) : null;
+      // destroyed at the godown on expiry day, through the city's authorised agency; the evidence went up that
+      // afternoon, Vision checked it, and Priya approved it the next morning, when Impact reported (SC-139)
+      const agency = expiry && expiry.at === "godown" ? SETUP.destruction.agencies.find(a => a.city === d.city) : null;
+      const destruction = agency ? {
+        status: "approved", units: realised.godown, agency: { id: agency.id, name: agency.name, auth: agency.auth, site: agency.site }, method: SETUP.destruction.method,
+        askedAt: bestBefore + "T10:00",
+        photos: { before: { name: `${ref}-before.webp`, at: bestBefore + "T11:40" }, after: { name: `${ref}-after.webp`, at: bestBefore + "T13:20" } },
+        sentAt: bestBefore + "T14:00", checkedAt: bestBefore + "T14:05",
+        checks: [["batch", `Batch ${ref} read on the carton label`], ["count", `About ${Math.round(realised.godown / 10) * 10} packs in view (${realised.godown} left)`], ["slate", `The slate reads ${ref} · ${realised.godown} packets · ${bestBefore.slice(8, 10)}-${bestBefore.slice(5, 7)}-${bestBefore.slice(2, 4)}`], ["when", "Both photos taken that day, at the godown and the landfill"]].map(([id, label]) => ({ id, label, ok: true })),
+        approvedAt: addDays(bestBefore, 1) + "T11:00", approvedBy: "priya",
+      } : null;
       const steps = ["open", "detect", "photo", "read", "value", "route", "approve"]
         .concat(es ? ["listing"] : [], kl ? ["offer"] : [], fb ? ["donation", "pickup"] : [], kl ? ["orders"] : [], es ? ["bid", "counter", "accept"] : [])
         .concat(fb ? ["collect"] : [], kl && realised.godown ? ["closeOffer"] : [], st ? ["staff"] : [], es ? ["truck"] : [], ["papers"])
         .concat(es ? ["invoice"] : [], kl ? ["van"] : [], ["review"])
         .map(k => ({ step: k, at: at(flagged, k) }))
-        .concat([{ step: "report", at: bestBefore + "T10:00" }]);
+        // on expiry day: destroyed at the godown, evidenced and approved before Impact reports (SC-139)
+        .concat(destruction ? [{ step: "destroyAsk", at: destruction.askedAt }, { step: "destroySent", at: destruction.sentAt }, { step: "destroyApproved", at: destruction.approvedAt }, { step: "report", at: addDays(bestBefore, 1) + "T11:30" }]
+          : [{ step: "report", at: bestBefore + "T10:00" }]);
       return { ref, sku: skuId, distributor: distId, units, daysLeft, sellPerDay, flagged, bestBefore, mfg: batch.mfg, outcome, plan, bid, price, award, partner: partner && partner.name,
-        kirana: kl ? { planned: kl.units, ordered: x.kirana != null ? x.kirana : kl.units } : null, staff: st ? st.units : null, realised, actual, support, expiry, steps, parties: parties(d) };
+        kirana: kl ? { planned: kl.units, ordered: x.kirana != null ? x.kirana : kl.units } : null, staff: st ? st.units : null, realised, actual, support, expiry, destruction, steps, parties: parties(d) };
     });
     // the papers, numbered back from the story's (INV/26-27/0931, CN/0117, ES-24117, FI/HYD/26-27/0417,
     // IFBN/ACK/26-27/0112) in the order they were issued: the listing, the receipt as the food bank collects, the
@@ -385,6 +414,15 @@
       const n = next - count[i.series] + (used[i.series] = (used[i.series] || 0) + 1) - 1;
       const no = prefix.replace("{city}", i.b.parties.seller.city.slice(0, 3).toUpperCase()) + String(n).padStart(width, "0");
       i.b.numbers = Object.assign(i.b.numbers || {}, { [i.kind || i.series.replace(/^receipt\..*/, "receipt")]: no });
+    });
+    // each destruction's certificate, in its agency's own series, numbered back from the agency's next (SC-139)
+    const agencyCount = {};
+    list.filter(b => b.destruction).forEach(b => (agencyCount[b.destruction.agency.id] = (agencyCount[b.destruction.agency.id] || 0) + 1));
+    const agencyUsed = {};
+    list.filter(b => b.destruction).sort((a, z) => (a.destruction.sentAt < z.destruction.sentAt ? -1 : 1)).forEach(b => {
+      const ag = SETUP.destruction.agencies.find(a => a.id === b.destruction.agency.id), sr = ag.series;
+      const n = sr.next - agencyCount[ag.id] + (agencyUsed[ag.id] = (agencyUsed[ag.id] || 0) + 1) - 1;
+      b.destruction.certificate = sr.prefix + String(n).padStart(sr.width, "0");
     });
     return { batches: list, start: Object.fromEntries(Object.entries(count).map(([k, n]) => [k, SERIES[k][1] - n])) };
   })();

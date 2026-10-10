@@ -917,17 +917,22 @@
     return /* @__PURE__ */ React.createElement(Card, { className: "cs-summary" }, /* @__PURE__ */ React.createElement("b", { className: "t-subhead" }, "What this profile sets up"), /* @__PURE__ */ React.createElement("ul", null, P.profileLines(profile).map((l, i) => /* @__PURE__ */ React.createElement("li", { key: i }, /* @__PURE__ */ React.createElement(Icon, { name: l.icon, size: 16, stroke: 2 }), /* @__PURE__ */ React.createElement("span", null, l.text)))), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, "Every plan still waits for one person's approval."));
   }
   function Choice({ name, label, options, value, onChange }) {
-    return /* @__PURE__ */ React.createElement("fieldset", { className: "cs-choice" }, /* @__PURE__ */ React.createElement("legend", null, label), /* @__PURE__ */ React.createElement("div", { className: "cs-opts" }, options.map((o) => /* @__PURE__ */ React.createElement("label", { key: o.id, className: cx("cs-opt", value === o.id && "on") }, /* @__PURE__ */ React.createElement("input", { type: "radio", name, value: o.id, checked: value === o.id, onChange: () => onChange(o.id) }), /* @__PURE__ */ React.createElement("span", null, o.label), value === o.id && /* @__PURE__ */ React.createElement(Icon, { name: "check", size: 16, stroke: 2.4 })))));
+    return /* @__PURE__ */ React.createElement("fieldset", { className: "cs-choice" }, /* @__PURE__ */ React.createElement("legend", null, label), /* @__PURE__ */ React.createElement("div", { className: "cs-opts" }, options.map((o) => {
+      const off = o.soon && value !== o.id;
+      return /* @__PURE__ */ React.createElement("label", { key: o.id, className: cx("cs-opt", value === o.id && "on", off && "off") }, /* @__PURE__ */ React.createElement("input", { type: "radio", name, value: o.id, checked: value === o.id, disabled: off, onChange: () => onChange(o.id) }), /* @__PURE__ */ React.createElement("span", { className: "stack tight", style: { gap: 1 } }, /* @__PURE__ */ React.createElement("span", null, o.label, o.soon && /* @__PURE__ */ React.createElement(Badge, { size: "sm", style: { marginLeft: 6 } }, "coming")), o.note && /* @__PURE__ */ React.createElement("span", { className: "t-caption subtle cs-note" }, o.note)), value === o.id && /* @__PURE__ */ React.createElement(Icon, { name: "check", size: 16, stroke: 2.4 }));
+    })));
   }
   function RulesTab({ c, me }) {
     const { toast } = useNotice();
     const [r, setR] = useState(c.rules);
     const [ex, setEx] = useState(c.exits);
+    const [dz, setDz] = useState(c.destruction);
     useEffect(() => {
       setR(c.rules);
       setEx(c.exits);
-    }, [c.id, JSON.stringify(c.rules), JSON.stringify(c.exits)]);
-    const dirty = JSON.stringify(r) !== JSON.stringify(c.rules) || JSON.stringify(ex) !== JSON.stringify(c.exits);
+      setDz(c.destruction);
+    }, [c.id, JSON.stringify(c.rules), JSON.stringify(c.exits), JSON.stringify(c.destruction)]);
+    const dirty = JSON.stringify(r) !== JSON.stringify(c.rules) || JSON.stringify(ex) !== JSON.stringify(c.exits) || JSON.stringify(dz) !== JSON.stringify(c.destruction);
     const save = () => {
       const changed = [];
       P.EXITS.forEach((e) => {
@@ -936,27 +941,42 @@
       Object.keys(r).forEach((k) => {
         if (r[k] !== c.rules[k]) changed.push(`${RULE_LABEL[k] || k} ${typeof r[k] === "boolean" ? r[k] ? "on" : "off" : r[k]}`);
       });
+      if (dz) Object.keys(dz).filter((k) => k !== "agencies").forEach((k) => {
+        if (dz[k] !== c.destruction[k]) changed.push(`${RULE_LABEL[k] || k} ${typeof dz[k] === "boolean" ? dz[k] ? "on" : "off" : dz[k]}`);
+      });
       P.update((d) => {
         const x = d.clients.find((y) => y.id === c.id);
         x.rules = r;
         x.exits = ex;
+        if (dz) x.destruction = dz;
       }, { who: me.name, client: c.id, text: `Changed ${c.name}'s channels and rules: ${changed.join("; ")}` });
       toast({ text: "Channels and rules saved", tone: "ok" });
     };
     const set = (k, v) => setR({ ...r, [k]: v });
+    const setD = (k, v) => setDz({ ...dz, [k]: v });
+    const godown = c.profile.expiry === "godown" && dz;
     return /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 18 } }, /* @__PURE__ */ React.createElement(
       Columns,
       {
         sideWidth: 460,
         main: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(SectionTitle, { sub: "The exits the agents may price and use; the bin is always the baseline" }, "Exits"), /* @__PURE__ */ React.createElement(List, null, P.EXITS.map((e) => /* @__PURE__ */ React.createElement(ListRow, { key: e.id, icon: e.icon, iconTone: "soft", title: e.name, sub: ex[e.id].locked || (e.id === "staff" ? `Up to ${r.staffCap} packs a godown` : null), value: /* @__PURE__ */ React.createElement(Switch, { checked: !!ex[e.id].on, disabled: !!ex[e.id].locked, onChange: (v) => setEx({ ...ex, [e.id]: { ...ex[e.id], on: v } }), label: `${e.name} for ${c.name}` }) })), /* @__PURE__ */ React.createElement(ListRow, { icon: "trash-2", iconTone: "red", title: "The bin", sub: "Priced every time, so every plan shows what it saves", value: /* @__PURE__ */ React.createElement(Badge, { size: "sm" }, "baseline") }))),
-        side: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(SectionTitle, { sub: "The limits every agent works inside" }, "Guardrails"), /* @__PURE__ */ React.createElement(List, null, /* @__PURE__ */ React.createElement(ListRow, { title: "Staff sale cap", sub: "packs per godown", value: /* @__PURE__ */ React.createElement(Stepper, { value: r.staffCap, min: 0, max: 500, step: 10, onChange: (v) => set("staffCap", v), label: "staff sale cap" }) }), /* @__PURE__ */ React.createElement(ListRow, { title: "Offer window", sub: "hours a kirana offer stays open", value: /* @__PURE__ */ React.createElement(Stepper, { value: r.offerWindowHours, min: 12, max: 96, step: 12, onChange: (v) => set("offerWindowHours", v), label: "offer window hours" }) }), /* @__PURE__ */ React.createElement(ListRow, { title: "Kirana offers in Hindi first", sub: "with an English toggle", value: /* @__PURE__ */ React.createElement(Switch, { checked: r.hindiOffers, onChange: (v) => set("hindiOffers", v), label: "Kirana offers in Hindi first" }) }), /* @__PURE__ */ React.createElement(ListRow, { title: "Label photo before any plan", sub: "Vision reads the date off the shelf, not the spreadsheet", value: /* @__PURE__ */ React.createElement(Switch, { checked: r.requirePhoto, onChange: (v) => set("requirePhoto", v), label: "Label photo before any plan" }) })))
+        side: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(SectionTitle, { sub: "The limits every agent works inside" }, "Guardrails"), /* @__PURE__ */ React.createElement(List, null, /* @__PURE__ */ React.createElement(ListRow, { title: "Staff sale cap", sub: "packs per godown", value: /* @__PURE__ */ React.createElement(Stepper, { value: r.staffCap, min: 0, max: 500, step: 10, onChange: (v) => set("staffCap", v), label: "staff sale cap" }) }), /* @__PURE__ */ React.createElement(ListRow, { title: "Offer window", sub: "hours a kirana offer stays open", value: /* @__PURE__ */ React.createElement(Stepper, { value: r.offerWindowHours, min: 12, max: 96, step: 12, onChange: (v) => set("offerWindowHours", v), label: "offer window hours" }) }), /* @__PURE__ */ React.createElement(ListRow, { title: "Kirana offers in Hindi first", sub: "with an English toggle", value: /* @__PURE__ */ React.createElement(Switch, { checked: r.hindiOffers, onChange: (v) => set("hindiOffers", v), label: "Kirana offers in Hindi first" }) }), /* @__PURE__ */ React.createElement(ListRow, { title: "Label photo before any plan", sub: "Vision reads the date off the shelf, not the spreadsheet", value: /* @__PURE__ */ React.createElement(Switch, { checked: r.requirePhoto, onChange: (v) => set("requirePhoto", v), label: "Label photo before any plan" }) })), godown && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(SectionTitle, { sub: "Packs left at a distributor's godown on expiry day: destroyed there, and the batch closes on Supply Chain's yes" }, "Destroyed at the godown"), /* @__PURE__ */ React.createElement(List, null, /* @__PURE__ */ React.createElement(ListRow, { title: "Evidence", sub: "Two photos, before and after, and the agency's certificate number", value: /* @__PURE__ */ React.createElement(Badge, { size: "sm", tone: "green" }, "required") }), /* @__PURE__ */ React.createElement(ListRow, { title: "Vision checks the photos", sub: "the batch number, the count, the slate, when and where", value: /* @__PURE__ */ React.createElement(Switch, { checked: dz.visionCheck, onChange: (v) => setD("visionCheck", v), label: "Vision checks the destruction photos" }) }), /* @__PURE__ */ React.createElement(ListRow, { title: "Reviewed by", sub: "the batch closes on this yes", value: /* @__PURE__ */ React.createElement("span", null, dz.reviewer) }), /* @__PURE__ */ React.createElement(ListRow, { title: "Authorised agencies", sub: dz.agencies.map((a) => `${a.name}, ${a.city}`).join(" · "), value: /* @__PURE__ */ React.createElement(Badge, { size: "sm" }, dz.agencies.length) }), /* @__PURE__ */ React.createElement(ListRow, { title: "The GST he reverses", sub: "made good on the credit note, so he ends whole", value: /* @__PURE__ */ React.createElement(Switch, { checked: dz.grossUp, onChange: (v) => setD("grossUp", v), label: "Make good the GST he reverses" }) }), /* @__PURE__ */ React.createElement(ListRow, { title: "The agency's charges", sub: "reimbursed a pack, on the credit note", value: /* @__PURE__ */ React.createElement(Stepper, { value: dz.chargesPerUnit, min: 0, max: 10, step: 0.5, onChange: (v) => setD("chargesPerUnit", v), label: "the agency's charges a pack, in rupees" }) }), /* @__PURE__ */ React.createElement(ListRow, { title: "Ask again", sub: "journey days after the request, if no evidence has come in", value: /* @__PURE__ */ React.createElement(Stepper, { value: dz.remindDays, min: 1, max: 7, step: 1, onChange: (v) => setD("remindDays", v), label: "days before he is asked again" }) }))))
       }
     ), /* @__PURE__ */ React.createElement("div", { className: "row", style: { justifyContent: "flex-end", gap: 10 } }, /* @__PURE__ */ React.createElement(Button, { disabled: !dirty, onClick: () => {
       setR(c.rules);
       setEx(c.exits);
     } }, "Discard"), /* @__PURE__ */ React.createElement(Button, { variant: "primary", disabled: !dirty, onClick: save }, "Save changes")));
   }
-  const RULE_LABEL = { staffCap: "staff sale cap", offerWindowHours: "offer window hours", hindiOffers: "Hindi offers", requirePhoto: "label photo first" };
+  const RULE_LABEL = {
+    staffCap: "staff sale cap",
+    offerWindowHours: "offer window hours",
+    hindiOffers: "Hindi offers",
+    requirePhoto: "label photo first",
+    visionCheck: "Vision checks the destruction photos",
+    grossUp: "the GST he reverses made good",
+    chargesPerUnit: "the agency's charges a pack",
+    remindDays: "ask again after days"
+  };
   const ACCESS = ["Approver", "Admin", "Member", "Partner"];
   function PeopleTab({ c, me }) {
     const app = useApp();
@@ -1085,7 +1105,7 @@
     const { toast } = useNotice();
     const top = useRef(null);
     const [step, setStep] = useState(0);
-    const [f, setF] = useState(() => Object.assign({ name: "", city: "", industry: INDUSTRIES[0], colour: COLOURS[0][0], slug: "", slugTouched: false, emailDomain: "", signGoogle: true, signPhone: true, route: "distributors", owner: "distributor", expiry: "full-credit", exitOff: {}, preset: "standard", adminName: "", adminEmail: "", plan: "pilot", request: null }, s.draft || {}));
+    const [f, setF] = useState(() => Object.assign({ name: "", city: "", industry: INDUSTRIES[0], colour: COLOURS[0][0], slug: "", slugTouched: false, emailDomain: "", signGoogle: true, signPhone: true, route: "distributors", owner: "distributor", expiry: "godown", exitOff: {}, preset: "standard", adminName: "", adminEmail: "", plan: "pilot", request: null }, s.draft || {}));
     useEffect(() => {
       if (s.draft) P.update((d) => {
         delete d.draft;

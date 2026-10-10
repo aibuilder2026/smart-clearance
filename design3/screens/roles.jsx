@@ -21,7 +21,7 @@
   const HOME = { operator: "command", distributor: "home", retailer: "home", buyer: "market", foodbank: "pickups", admin: "workspace" };
   const PARENT = { listing: "market", offer: "home" };
   const ALWAYS = ["inbox", "profile"];
-  const routesFor = role => NAV[role].map(n => n.id).concat(ALWAYS, role === "buyer" ? ["listing"] : role === "retailer" ? ["offer"] : role === "operator" ? ["journey", "route", "execution", "paperwork"] : []);
+  const routesFor = role => NAV[role].map(n => n.id).concat(ALWAYS, role === "buyer" ? ["listing"] : role === "retailer" ? ["offer"] : role === "distributor" ? ["destroy"] : role === "operator" ? ["journey", "route", "execution", "paperwork"] : []);
   // the batches in a journey the sidebar lists by name and stop, before "N more" takes the rest to Batches
   const SIDEBAR_BATCHES = 5;
   const WHERE = { command: "Command Center", batches: "Batches", inbox: "Inbox", report: "Ledger", setup: "Setup", profile: "Profile" };
@@ -39,6 +39,7 @@
       case "home": return r === "retailer" ? <X.RetailHome me={me} /> : <X.DistHome me={me} />;
       case "photo": return <X.CameraScreen me={me} realCamera={opts && opts.realCamera} />;
       case "van": return <X.VanRoute me={me} />;
+      case "destroy": return <X.DestroyScreen me={me} />;
       case "orders": return r === "retailer" ? <X.RetailOrders me={me} /> : <X.DistOrders me={me} />;
       case "offer": return <X.OfferDetail me={me} />;
       case "market": return <X.Market me={me} />;

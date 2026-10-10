@@ -3,6 +3,7 @@
 (function () {
   const D = window.SC3_DATA, Store = window.SC3_STORE, M = window.SC3_MONEY; const fmt = M.fmt;
   const E = D.EV; const PLAN = D.PLAN;
+  const HERO = D.BATCHES.find(b => b.hero); // the story's batch: the chips at Rakesh Traders
   const CONNECT_EV = { stage: "connect", agent: "Data", icon: "database", at: "Thu 16:30", min: 0, text: "Mapped 8 DMS columns, loaded 312 batches from 4 distributors and back-filled 90 days of sell-through by pincode and by shop into BigQuery.", calls: [["bigquery.load", "312 batches", "ok"], ["sellthrough.backfill", "90 days · by pincode, by shop", "ok"]] };
   let nid = 0; const id = p => p + "-" + Date.now().toString(36) + "-" + (++nid);
   const feed = (s, ev) => { s.feed.push(Object.assign({ id: id("ev") }, ev)); };
@@ -64,7 +65,25 @@
     issueInvoice: s => { s.hero.invoiceIssued = true; audit(s, "rakesh", "issued the invoice from Tally", D.INVOICE.no + " · " + D.BUYER.name, "Mon 5 Oct"); },
     review: s => { s.hero.reviewed = true; audit(s, "priya", "reviewed Munchly's credit note and GST memo", "MF-2409-117", "Mon 5 Oct"); },
     vanRound: s => { s.hero.van = { status: "done", done: D.KIRANAS.length }; feed(s, E("van")); audit(s, "rakesh", `ran the Tuesday round: ${D.KIRANAS.length} drops`, "Nagpur cluster", "Tue 6 Oct"); },
-    report: s => { s.hero.phase = "cleared"; s.hero.posted = true; feed(s, E("ledger")); notify(s, "priya", Object.assign({ link: "command" }, D.PUSH.closed)); audit(s, "priya", "signed off the BRSR row", "MF-2409-117", "30 Oct"); },
+    report: s => {
+      s.hero.phase = "cleared"; s.hero.posted = true; feed(s, E("ledger"));
+      // packs destroyed at his godown (SC-139): the push says how many, and that the credit note is issued
+      const d = s.hero.destruction, x = s.hero.expiry;
+      notify(s, "priya", Object.assign({ link: "command" }, D.PUSH.closed, d ? { title: `Batch closed · ${d.units} packs destroyed at the godown`, body: `On your yes: ${D.DISTRIBUTORS[HERO.distributor].short} credited ${M.fmt.inr2(x ? x.amount : 0)} against ${d.agency ? d.agency.name : "the agency"}'s certificate ${d.certificate}. Your input GST is kept.` } : null));
+      audit(s, "priya", "signed off the BRSR row", "MF-2409-117", "30 Oct");
+    },
+    // packs left at his godown on expiry day, destroyed there (SC-139): the story clears every pack, so these act only on
+    // a destruction put in the store (the live workspace has its own). Vision's checks land with the evidence
+    sendDestruction: (s, x) => {
+      const d = s.hero.destruction; if (!d || (d.status !== "requested" && d.status !== "asked")) return;
+      const agency = (x && x.agency) || D.SETUP.destruction.agencies[0];
+      Object.assign(d, { status: "checked", agency: { id: agency.id, name: agency.name, auth: agency.auth, site: agency.site }, certificate: (x && x.certificate) || agency.series.prefix + String(agency.series.next).padStart(agency.series.width, "0"), reason: null,
+        photos: { before: { name: "before", at: "11:40" }, after: { name: "after", at: "13:20" } }, sentAt: "14:00",
+        checks: [["batch", `Batch ${HERO.id} read on the carton label`], ["count", `About ${Math.round(d.units / 10) * 10} packs in view (${d.units} left)`], ["slate", `The slate reads ${HERO.id} · ${d.units} packets`], ["when", "Both photos taken today, at the godown and the landfill"]].map(([id, label]) => ({ id, label, ok: true })) });
+      audit(s, "rakesh", `sent the destruction's evidence: ${d.units} packs, ${d.agency.name}`, `${HERO.id} · ${d.certificate}`, "Expiry day");
+    },
+    approveDestruction: s => { const d = s.hero.destruction; if (!d || d.status !== "checked") return; Object.assign(d, { status: "approved", approvedBy: "priya", approvedAt: "11:00" }); audit(s, "priya", `approved the destruction of ${d.units} packs at ${D.DISTRIBUTORS[HERO.distributor].godown}`, `${HERO.id} · ${d.certificate}`, "Expiry day"); },
+    askDestructionAgain: (s, reason) => { const d = s.hero.destruction; if (!d || d.status !== "checked") return; Object.assign(d, { status: "asked", reason: reason || "the photos do not show the batch clearly" }); audit(s, "priya", `asked again for the destruction's evidence: ${d.reason}`, HERO.id, "Expiry day"); },
   };
 
   // the order in which the journey happens, grouped by the stage each step belongs to
@@ -138,6 +157,8 @@
       case "dispatched": return { name: "settle", delay: 1800 };
       case "settled": {
         if (h.van.status !== "done") return auto ? { name: "vanRound", delay: 9000, partner: "rakesh" } : null;
+        // packs destroyed at his godown (SC-139): Impact reports only once the operator has approved the evidence
+        if (h.destruction && h.destruction.status !== "approved") return null;
         return { name: "report", delay: 3500 };
       }
       default: return null;
