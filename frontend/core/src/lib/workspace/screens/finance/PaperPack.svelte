@@ -14,11 +14,13 @@
 	import { useNotice } from '../../../notice.svelte';
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
-	import { csv, download, first } from '../../model';
+	import { csv, download, first, invoicesOfCase } from '../../model';
 	import { useWorkspace } from '../../source';
-	import type { CaseData, Hero } from '../../types';
+	import type { CaseData, Doc, Hero, KiranaInvoice as Invoice } from '../../types';
 	import Locked from '../common/Locked.svelte';
 	import KeepsWhat from './KeepsWhat.svelte';
+	import KiranaInvoice from './KiranaInvoice.svelte';
+	import KiranaRegister from './KiranaRegister.svelte';
 	import Paper from './Paper.svelte';
 	import { issuedWhen, printPage } from './ledger';
 
@@ -41,10 +43,34 @@
 	const ready = $derived(!!h.docs);
 	// the pack opens on its first paper (SC-85: a batch with no buyer has no invoice); once a batch has expired, on its
 	// expiry paper (SC-94)
+	// the kiranas' tax invoices (SC-153): one card, the batch's sales register, each number opening its invoice. The
+	// batch in focus's from the journey's orders, a cleared batch's from its shops
+	const kiranas = $derived(
+		invoicesOfCase(c, ws.case?.batch.id === c.batch.id ? h.orders : null, ws.data.day0, ws.data.shops)
+	);
+	const register = $derived<Doc | null>(
+		kiranas.length
+			? {
+					id: 'kiranas',
+					type: 'Tax invoices to kiranas',
+					owner: c.dist.name,
+					no: `${kiranas.length} invoices`,
+					status: 'generated',
+					amount: Math.round(kiranas.reduce((t, x) => t + x.total, 0) * 100) / 100
+				}
+			: null
+	);
+	let inv = $state<Invoice | null>(null);
 	let picked = $state<string | null>(null);
-	const sel = $derived(picked && DOC(picked) ? picked : DOC('expiry') ? 'expiry' : (c.docs[0]?.id ?? 'invoice'));
+	const sel = $derived(
+		picked && (DOC(picked) || (register && picked === 'kiranas'))
+			? picked
+			: DOC('expiry')
+				? 'expiry'
+				: (c.docs[0]?.id ?? 'invoice')
+	);
 	let sheet = $state(false);
-	const doc = $derived(DOC(sel));
+	const doc = $derived(sel === 'kiranas' ? register : DOC(sel));
 	const invoice = $derived(DOC('invoice'));
 	const support = $derived(DOC('support'));
 	// an invoice issued from Tally reads issued, with its e-invoice (SC-148)
@@ -56,6 +82,7 @@
 
 	const open = (id: string) => {
 		picked = id;
+		inv = null;
 		if (app.bp !== 'desktop') sheet = true;
 	};
 	const exportPack = () => {
@@ -75,11 +102,20 @@
 	};
 	// a paper's PDF: the live workspace's own, laid out by the Paperwork agent; the stub's, the paper printed
 	const live = $derived(ws.kind === 'live');
-	const canPdf = $derived(!!doc && (live ? !!doc.pdf && !!ws.documentUrl : doc.status !== 'not required'));
+	// the register prints as it shows; an invoice in it is the Paperwork agent's PDF on the live workspace
+	const canPdf = $derived(
+		!!doc &&
+			(sel === 'kiranas'
+				? !inv || !live || (!!inv.pdf && !!ws.documentUrl)
+				: live
+					? !!doc.pdf && !!ws.documentUrl
+					: doc.status !== 'not required')
+	);
 	const pdf = async (node: HTMLElement | undefined) => {
 		if (!doc) return;
-		if (live && ws.documentUrl) {
-			window.open(await ws.documentUrl(doc.id, c.batch.id), '_blank', 'noopener');
+		const remote = sel === 'kiranas' ? (inv ? `kirana.${inv.kirana}` : null) : doc.id;
+		if (live && ws.documentUrl && remote) {
+			window.open(await ws.documentUrl(remote, c.batch.id), '_blank', 'noopener');
 			return;
 		}
 		if (node)
@@ -113,20 +149,36 @@
 		>Document pack</SectionTitle
 	>
 	<div class="docgrid">
-		{#each c.docs as d (d.id)}<div class={cx('docpick', sel === d.id && app.bp === 'desktop' && 'on')}>
+		{#each register ? [...c.docs, register] : c.docs as d (d.id)}<div
+				class={cx('docpick', sel === d.id && app.bp === 'desktop' && 'on')}
+			>
 				<DocCard doc={shown(d)} onopen={() => open(d.id)} />
 			</div>{/each}
 	</div>
 	<KeepsWhat {c} />{/snippet}
 {#snippet sideRight()}{@render pdfButton(side)}{/snippet}
+{#snippet paperOf()}{#if sel !== 'kiranas'}<Paper id={sel} {c} />{:else if inv}<div class="stack snug">
+			<button type="button" class="pt-link t-footnote" style="justify-self: start" onclick={() => (inv = null)}
+				>All {kiranas.length} invoices</button
+			><KiranaInvoice {inv} batch={c.batch} sku={c.sku} dist={c.dist} />
+		</div>{:else}<KiranaRegister
+			list={kiranas}
+			batch={c.batch}
+			sku={c.sku}
+			dist={c.dist}
+			price={c.lines.kirana.price}
+			onOpen={(x) => (inv = x)}
+		/>{/if}{/snippet}
 {#snippet aside()}{#if app.bp === 'desktop' && doc}<SectionTitle
-			sub={doc.owner === ws.data.client.short
-				? `Issued by ${W.short}`
-				: doc.id === 'invoice' && issued
-					? `Issued by ${c.dist.name} from Tally`
-					: `Drafted for ${c.dist.name}`}
+			sub={doc.id === 'kiranas'
+				? `Issued by ${c.dist.name} from Tally · one for each shop's order`
+				: doc.owner === ws.data.client.short
+					? `Issued by ${W.short}`
+					: doc.id === 'invoice' && issued
+						? `Issued by ${c.dist.name} from Tally`
+						: `Drafted for ${c.dist.name}`}
 			right={sideRight}>{doc.type}</SectionTitle
-		>{#key sel}<div in:rise={{ y: 6, duration: 180 }} bind:this={side}><Paper id={sel} {c} /></div>{/key}{/if}{/snippet}
+		>{#key sel}<div in:rise={{ y: 6, duration: 180 }} bind:this={side}>{@render paperOf()}</div>{/key}{/if}{/snippet}
 {#snippet sheetFoot()}{@render pdfButton(inSheet)}{/snippet}
 
 {#if !ready}
@@ -171,5 +223,5 @@
 	</div>
 {/if}
 <Sheet bind:open={sheet} title={doc ? doc.type : ''} footer={canPdf ? sheetFoot : undefined}
-	><div bind:this={inSheet}><Paper id={sel} {c} /></div></Sheet
+	><div bind:this={inSheet}>{@render paperOf()}</div></Sheet
 >

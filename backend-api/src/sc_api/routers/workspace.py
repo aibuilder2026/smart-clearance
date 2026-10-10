@@ -222,10 +222,17 @@ async def audit_log(ws: str, ctx: MemberCtx, before: str | None = None) -> dict[
 
 @router.get("/documents/{ref}/{doc}", summary="A 5-minute link to a document's PDF")
 async def document(ws: str, ref: str, doc: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
-    ctx.require("docs.read", "Your role can't see the papers.")
+    kirana = doc.removeprefix("kirana.") if doc.startswith("kirana.") else None
+    # a kirana order's tax invoice (SC-153): the shop reads its own, as the batch's staff and distributor read any
+    if kirana is None or "offer.order" not in ctx.actor.permissions:
+        ctx.require("docs.read", "Your role can't see the papers.")
     detail = await views.case_detail(ctx, ws, ref, _member(request))
     rcpt = (detail.get("donation") or {}).get("receipt") or {}
-    ready = any(d["id"] == doc and d["pdf"] for d in detail["docs"]) or (doc == "receipt" and rcpt.get("pdf"))
+    if kirana is not None:
+        mine = [o for o in detail["journey"].get("orders") or [] if o["id"] == kirana]
+        ready = any((o.get("invoice") or {}).get("pdf") for o in mine)
+    else:
+        ready = any(d["id"] == doc and d["pdf"] for d in detail["docs"]) or (doc == "receipt" and rcpt.get("pdf"))
     if not ready:
         raise ApiError(404, "That paper has no PDF yet.")
     name = await views.document_object(ctx, ws, ref, doc)

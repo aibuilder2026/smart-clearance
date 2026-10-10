@@ -1975,6 +1975,33 @@
   - **The workspace:** a step sent `inline` (`SendOptions`) rejects with the API's words instead of raising the band, and shows once it has gone through, never before. **The console:** `Console.act` resolves once saved (the console reads itself again without waiting) and rejects with the API's words; controls keep the value pressed; a menu item waits on its "…" button.
   - **Checks:** the frontend gate passes (core 278 with 5 new, api 79, admin 17, console 8 with 5 new, workspace 96 with 3 new, demo 5). The workspace's sign-in was pressed in a headless browser on the stub build; the console agent played its states in the browser pane on the mock build. The browser suites were not run (SC-55); the motion specs count `.btn-arc` as a loading indicator.
   - **Hosting:** the hosted landing page and console load commit `852020d`; every pinned file was checked on jsDelivr first, and both pages render. The app, demo and design-system pages stay on their pins; design3's design-system page crashes on load, which predates SC-152 (a task is offered for it).
+- **SC-153** (In Review, branch `SC-153-kirana-invoices`, stacked on SC-148): a tax invoice from the distributor for every kirana order, past and present.
+  - **The request:** SC-148's board asked whether each shop's order should get its own tax invoice; the maintainer answered **"An invoice per order"**, then **"Before GST"** (₹18.00 effective, plus CGST and SGST at 2.5% each, the shop paying the total) and **"Scheme discount"** (the packets at ₹21.60, less 16.67%, so every invoice equals what the ledger counts).
+  - **Design first:** three options on one board in app v3, `SC-153 design review.html`, each the app on its stub with only its screens changed:
+    - A, with each order (recommended);
+    - B, the bill book;
+    - C, as PDFs.
+
+    The maintainer picked **A**. Designs, the build's stills and the decision are in `design3/designs/SC-153/`.
+  - **The invoice** (money.js `kiranaInvoice`, money.py `kirana_invoice`, held by fixtures): Tally's tax invoice (SC-148's layout) for a B2C supply within the state: the distributor's identity, the shop as buyer (Unregistered) with its address and pincode, the place of supply, every packet at the pack price less the scheme's discount, CGST and SGST as rows of their own, the total to the rupee, the amounts in words; no IRN. Ganesh ji's 24 packets: ₹518.40 less ₹86.40 = ₹432.00, ₹10.80 + ₹10.80, round-off ₹0.40, **₹454**.
+  - **Numbered** in each distributor's own sales series (`data.js` `series`, `world.js` `NUMBERS` `kirana.<id>`): the history's 214 as they were placed, two minutes apart from each batch's orders step (Rakesh Traders `RT/26-27/1164` to `1278`, Lakshmi Agencies `LA/26-27/0873` to `0971`), then the story's from the series' next (the chips' 31: `RT/26-27/1279` to `1309`). Issued as the shop orders, dated then.
+  - **Where it shows** (design3 first, then core):
+    - the kirana's order page: its figures as the invoice has them (before GST, the GST, what he paid, his margin: ₹266 where it read ₹288) and "Tax invoice · RT/26-27/1279", opening in a sheet with its PDF; his Orders name each invoice; the ordering screen's figures follow it;
+    - the distributor's Orders: the scheme's row names its invoices and the GST he collected; each shop's order shows its invoice and total, and opens it; his batch's papers gain the sales register;
+    - Priya's pack: one card, "Tax invoices to kiranas", the register beside it, each number opening its invoice.
+  - **Also:** the order page's free packets ("2 in every 12") read more paid than the ledger counted on an order not in twelves (73 of the history's: Mauli Kirana's 10 packets read ₹288 where the ledger had ₹240); as a discount on the invoice every order equals the ledger.
+  - **backend-api:** migration 0015 (`case_orders.invoice`); `steps.order` issues it in the distributor's series and asks Paperwork for its PDF (`journey.step kirana`); the case detail, the shops' list and the partner facts carry it (a kirana its own); `GET …/documents/{ref}/kirana.{shop}` serves its PDF to the shop, its distributor and Munchly; `hydrate.sh --papers` lays out any that lack one; the history numbers them as ledger.js does, and Reset journey puts the series back.
+  - **agents:** Paperwork's `kirana_invoice.html`, laid out as `{client}/{ref}/kirana-{shop}.pdf`.
+  - **The contract:** `WsKiranaInvoice`, on the journey's orders, `KiranaOffer` and `WsPartnerCase.kiranas`; `contracts.sh` re-exported the OpenAPI.
+  - **Found on the way, fixed on SC-148:** on a phone the Tally papers' blocks ran past the paper's right edge; a narrow paper now keeps its one track to the paper's width and hides the items' per column, so every header stays whole.
+  - **Checks:**
+    - backend-api 567 passed, 1 skipped (the story's invoices numbered from RT/26-27/1279, who may open a PDF; the history's 214 held to ledger.js through the partner facts; `--papers` asking for the invoices without one);
+    - agents 207 passed (the kirana invoice laid out and reported);
+    - the frontend gate passes: core 285 (`invoices.test.ts`: money.js's figures, ledger.js's story and history invoices; the goldens follow), api 79, workspace 100 (3 new live tests: Ganesh ji's invoice and its PDF, Rakesh's shop and register, Priya's pack), admin 17, demo 5, console 8, after merging main (SC-149 to SC-152, SC-154);
+    - the live fixtures and the seeds were regenerated; design3's `dist/` is rebuilt;
+    - the browser suites were not run (SC-55).
+  - **Locally:** migrated to 0015, rebuilt with `hydrate.sh --reset`, and `--papers munchly` had Paperwork lay out the history's 214 kirana invoices. The day is 24 hours.
+  - **Hosting:** the hosted app page stays on its pinned commit.
 - **SC-154** (In Review, branch `SC-154-hero-film-vertex`): the hero film, live action on Vertex AI. The landing page's film tells the journey with real people, made with Google's models.
   - **The request:** "a really awesome video projecting the journey of the application in about 15 seconds", with "realistic human characters instead of cartoon", showing brands, distributors, kiranas, donations and the staff sale, made with Google's video and image models, with a plan of the Vertex AI models and their prices; professional and aesthetically pleasing.
   - **The maintainer's decisions (10 Oct):** tracked scripts rather than a plugin; the design round as storyboards plus one Veo 3.1 Fast draft clip per option at 720p without audio (about $8); the final on Veo 3.1 at 1080p without audio (the hero plays muted; silent video is half the price); no night act, both themes starting on the same frame; two money gates, each answered with a figure.

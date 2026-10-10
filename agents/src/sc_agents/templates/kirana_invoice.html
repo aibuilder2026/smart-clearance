@@ -1,0 +1,48 @@
+{% extends "tally.html" %}
+{# the tax invoice the distributor issues from Tally for one kirana's scheme order (SC-153): a B2C supply within the
+   state, so CGST and SGST and no IRN; every packet at the pack price, less the scheme's discount, which leaves the
+   taxable value the ledger counts (money.py kirana_invoice). The discount, the taxes and the round-off are rows of
+   their own, as Tally prints them. The same paper the workspace draws #}
+{% set R = case.distributor %}{% set k = doc.shop %}{% set half = doc.gstPct / 2 %}
+{% block body %}
+<div class="title">Tax Invoice</div>
+<div class="copy">(ORIGINAL FOR RECIPIENT)</div>
+<table>
+  <tr>
+    <td rowspan="3" style="width:52%"><b>{{ R.name }}</b><br>{{ R.address or R.city }}<br>GSTIN/UIN: {{ R.gstin }}<br>State Name: {{ R.state }}, Code: {{ R.stateCode }}{% if R.fssai %}<br>FSSAI Lic. No.: {{ R.fssai }}{% endif %}{% if R.email %}<br>E-Mail: {{ R.email }}{% endif %}</td>
+    <td><span class="k">Invoice No.</span><b>{{ doc.no }}</b></td><td><span class="k">Dated</span><b>{{ doc.date|dmy }}</b></td>
+  </tr>
+  <tr><td><span class="k">Buyer's Order No.</span>Scheme order, {{ doc.at[11:16] }}</td><td><span class="k">Mode/Terms of Payment</span>Cash on delivery</td></tr>
+  <tr><td><span class="k">Dispatched through</span>Own van, the scheme's round</td><td><span class="k">Destination</span>{{ k.area }}</td></tr>
+  <tr>
+    <td><span class="k">Buyer (Bill to and Ship to)</span><b>{{ k.name }}</b><br>{{ k.area }}, {{ R.city }}{% if k.pincode %} {{ k.pincode }}{% endif %}, {{ R.state }}<br>GSTIN/UIN: Unregistered<br>State Name: {{ R.state }}, Code: {{ R.stateCode }}<br>Place of Supply: {{ R.state }} ({{ R.stateCode }})</td>
+    <td colspan="2"><span class="k">Terms of Delivery</span>Door delivery on the van round<span class="k" style="margin-top:6pt">Reverse charge</span>No<span class="k" style="margin-top:6pt">E-way bill</span>Not required: within {{ R.city }}, under {{ case.ewayThreshold|inr }}</td>
+  </tr>
+</table>
+<table>
+  <tr><th style="width:4%">Sl</th><th>Description of Goods</th><th>HSN/SAC</th><th>Quantity</th><th>Rate</th><th>per</th><th>Amount</th></tr>
+  <tr>
+    <td>1</td>
+    <td><b>{{ case.sku.brand }} {{ case.sku.name }}</b><br><span class="small">Batch {{ case.ref }} · best before {{ case.batch.bestBefore|dmy }} · MRP {{ case.sku.mrp|inr(true) }} a pack, incl. of all taxes</span></td>
+    <td>{{ doc.hsn or case.sku.hsn }}</td><td class="n"><b>{{ doc.units|num }} PCS</b></td><td class="n">{{ "%.2f"|format(doc.rate) }}</td><td>PCS</td><td class="n">{{ doc.gross|n2 }}</td>
+  </tr>
+  <tr><td style="border-top:hidden"></td><td class="n" style="border-top:hidden"><b>Less: Scheme discount, buy {{ scheme.buy }} get {{ scheme.free }} free</b></td><td style="border-top:hidden"></td><td style="border-top:hidden"></td><td class="n" style="border-top:hidden">{{ doc.discountPct|n2 }}%</td><td style="border-top:hidden"></td><td class="n" style="border-top:hidden">{{ (0 - doc.discount)|n2 }}</td></tr>
+  <tr><td style="border-top:hidden"></td><td class="n" style="border-top:hidden"><b>CGST @ {{ half }}%</b></td><td style="border-top:hidden"></td><td style="border-top:hidden"></td><td style="border-top:hidden"></td><td style="border-top:hidden"></td><td class="n" style="border-top:hidden">{{ doc.cgst|n2 }}</td></tr>
+  <tr><td style="border-top:hidden"></td><td class="n" style="border-top:hidden"><b>SGST @ {{ half }}%</b></td><td style="border-top:hidden"></td><td style="border-top:hidden"></td><td style="border-top:hidden"></td><td style="border-top:hidden"></td><td class="n" style="border-top:hidden">{{ doc.sgst|n2 }}</td></tr>
+  <tr><td style="border-top:hidden"></td><td class="n" style="border-top:hidden"><b>Round off</b></td><td style="border-top:hidden"></td><td style="border-top:hidden"></td><td style="border-top:hidden"></td><td style="border-top:hidden"></td><td class="n" style="border-top:hidden">{{ (doc.roundOff or 0)|n2 }}</td></tr>
+  <tr><td></td><td class="n"><b>Total</b></td><td></td><td class="n"><b>{{ doc.units|num }} PCS</b></td><td></td><td></td><td class="n"><b>₹ {{ doc.total|n2 }}</b></td></tr>
+  <tr><td colspan="7">Amount Chargeable (in words)<br><b>{{ words(doc.total) }}</b></td></tr>
+</table>
+<table>
+  <tr><th>HSN/SAC</th><th>Taxable Value</th><th>CGST · Rate</th><th>Amount</th><th>SGST · Rate</th><th>Amount</th><th>Total Tax</th></tr>
+  <tr><td>{{ doc.hsn or case.sku.hsn }}</td><td class="n">{{ doc.taxable|n2 }}</td><td class="n">{{ half }}%</td><td class="n">{{ doc.cgst|n2 }}</td><td class="n">{{ half }}%</td><td class="n">{{ doc.sgst|n2 }}</td><td class="n">{{ doc.tax|n2 }}</td></tr>
+  <tr><td colspan="7">Tax Amount (in words): <b>{{ words(doc.tax) }}</b></td></tr>
+</table>
+<table>
+  <tr>
+    <td style="width:52%">Company's PAN: <b>{{ R.pan }}</b><span class="k" style="margin-top:6pt">Declaration</span>We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct. Sold under {{ (case.client or {}).get("short") or "the brand" }}'s scheme, within the best-before date.</td>
+    <td><span class="k">Company's Bank Details</span>{% if R.bank %}Bank Name: {{ R.bank.name }}<br>A/c No.: {{ R.bank.account }}<br>Branch &amp; IFS Code: {{ R.bank.ifsc }}{% endif %}<div class="sign">for <b>{{ R.name }}</b></div><div class="n">Authorised Signatory</div></td>
+  </tr>
+</table>
+<div class="foot">SUBJECT TO {{ (R.city or "")|upper }} JURISDICTION · This is a Computer Generated Invoice</div>
+{% endblock %}

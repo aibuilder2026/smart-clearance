@@ -621,6 +621,8 @@ class CaseOrder(Base):
     at: Mapped[datetime] = mapped_column(TS)
     wall: Mapped[datetime] = mapped_column(TS)
     member_ref: Mapped[str | None] = mapped_column(Text)
+    # the distributor's tax invoice for the order, and the PDF of it the Paperwork agent laid out (SC-153)
+    invoice: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
 
 
 class CaseBid(Base):

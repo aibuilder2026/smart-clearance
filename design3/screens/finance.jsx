@@ -111,6 +111,59 @@
       <div className="tl-foot">SUBJECT TO {(R.city || "").toUpperCase()} JURISDICTION · This is a Computer Generated Invoice</div>
     </div>;
   }
+  // the tax invoice the distributor issues from Tally for one shop's scheme order (SC-153): a B2C supply within the
+  // state, so CGST and SGST and no IRN; every packet at the pack price, less the scheme's discount (money.js
+  // kiranaInvoice). `inv` is the order's invoice with its shop; `c` the batch's case
+  function KiranaInvoice({ c, inv }) {
+    const R = c.dist, k = inv.shop, sku = c.sku, half = inv.gstPct / 2, sc = M.RULES.scheme;
+    const rows = [[`Less: Scheme discount, buy ${sc.buy} get ${sc.free} free`, `${n2(inv.discountPct)}%`, -inv.discount], [`CGST @ ${half}%`, "", inv.cgst], [`SGST @ ${half}%`, "", inv.sgst], ["Round off", "", inv.roundOff]];
+    return <div className="paper tl">
+      <div className="tl-title">Tax Invoice</div>
+      <div className="tl-copy">(ORIGINAL FOR RECIPIENT)</div>
+      <div className="tl-grid tl-two">
+        <Party p={R} extra={<>{R.fssai && <><br />FSSAI Lic. No.: {R.fssai}</>}{R.email && <><br />E-Mail: {R.email}</>}</>} />
+        <div className="tl-meta">
+          <Cell k="Invoice No."><b>{inv.no}</b></Cell><Cell k="Dated"><b>{dmy(inv.date)}</b></Cell>
+          <Cell k="Buyer's Order No.">Scheme order, {inv.at.slice(11, 16)}</Cell><Cell k="Mode/Terms of Payment">Cash on delivery</Cell>
+          <Cell k="Dispatched through">Own van, the scheme's round</Cell><Cell k="Destination">{k.area}</Cell>
+        </div>
+      </div>
+      <div className="tl-grid tl-two">
+        <Cell k="Buyer (Bill to and Ship to)"><b>{k.name}</b><br />{k.area}, {R.city}{k.pincode ? ` ${k.pincode}` : ""}, {R.state}<br />GSTIN/UIN: Unregistered<br />State Name: {R.state}, Code: {R.stateCode}<br />Place of Supply: {R.state} ({R.stateCode})</Cell>
+        <Cell k="Terms of Delivery">Door delivery on the van round<em style={{ marginTop: 8 }}>Reverse charge</em>No<em style={{ marginTop: 8 }}>E-way bill</em>Not required: within {R.city}, under ₹{M.fmt.num(M.RULES.ewayThreshold)}</Cell>
+      </div>
+      <table className="tl-table tl-items"><thead><tr><th>Sl</th><th>Description of Goods</th><th>HSN/SAC</th><th>Quantity</th><th>Rate</th><th>per</th><th>Amount</th></tr></thead><tbody>
+        <tr><td>1</td><td><b>{sku.brand} {sku.name}</b><br /><span className="tl-small">Batch {c.batch.id} · best before {dmy(c.batch.bestBefore)} · MRP ₹{sku.mrp.toFixed(2)} a pack, incl. of all taxes</span></td>
+          <td>{inv.hsn || sku.hsn}</td><td className="tl-num"><b>{M.fmt.num(inv.units)} PCS</b></td><td className="tl-num">{inv.rate.toFixed(2)}</td><td>PCS</td><td className="tl-num">{n2(inv.gross)}</td></tr>
+        {rows.map(([t, pct, v]) => <tr key={t} className="tl-sub"><td /><td className="tl-right"><b>{t}</b></td><td /><td /><td className="tl-num">{pct}</td><td /><td className="tl-num">{n2(v)}</td></tr>)}
+        <tr><td /><td className="tl-num"><b>Total</b></td><td /><td className="tl-num"><b>{M.fmt.num(inv.units)} PCS</b></td><td /><td /><td className="tl-num"><b>₹ {n2(inv.total)}</b></td></tr>
+        <tr><td colSpan={7}>Amount Chargeable (in words)<br /><b>{PA().words(inv.total)}</b></td></tr>
+      </tbody></table>
+      <table className="tl-table"><thead><tr><th>HSN/SAC</th><th>Taxable Value</th><th>CGST · Rate</th><th>Amount</th><th>SGST · Rate</th><th>Amount</th><th>Total Tax</th></tr></thead><tbody>
+        <tr><td>{inv.hsn || sku.hsn}</td><td className="tl-num">{n2(inv.taxable)}</td><td className="tl-num">{half}%</td><td className="tl-num">{n2(inv.cgst)}</td><td className="tl-num">{half}%</td><td className="tl-num">{n2(inv.sgst)}</td><td className="tl-num">{n2(inv.tax)}</td></tr>
+        <tr><td colSpan={7}>Tax Amount (in words): <b>{PA().words(inv.tax)}</b></td></tr>
+      </tbody></table>
+      <div className="tl-grid tl-two">
+        <Cell>Company's PAN: <b>{R.pan}</b><em style={{ marginTop: 8 }}>Declaration</em>We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct. Sold under {W.short}'s scheme, within the best-before date.</Cell>
+        <Cell k="Company's Bank Details">{R.bank ? <>Bank Name: {R.bank.name}<br />A/c No.: {R.bank.account}<br />Branch &amp; IFS Code: {R.bank.ifsc}</> : null}<div className="tl-sign">for <b>{R.name}</b></div><div className="tl-num">Authorised Signatory</div></Cell>
+      </div>
+      <div className="tl-foot">SUBJECT TO {(R.city || "").toUpperCase()} JURISDICTION · This is a Computer Generated Invoice</div>
+    </div>;
+  }
+  // a batch's invoices to its shops as Tally's sales register: a row each, its number opening the invoice, and the
+  // totals; the taxable value is what the scheme sold
+  function KiranaRegister({ c, list, onOpen }) {
+    const R = c.dist, add = k => r2(list.reduce((t, x) => t + x[k], 0)), kl = c.lines.kirana;
+    return <div className="paper tl tl-reg">
+      <div className="tl-title">Sales Register</div>
+      <div className="tl-copy">{R.name} · tax invoices to kiranas · {c.sku.brand} {c.sku.name}, batch {c.batch.id}</div>
+      <table className="tl-table"><thead><tr><th>Date</th><th>Invoice No.</th><th>Particulars</th><th>Packs</th><th>Taxable</th><th className="tl-gst">CGST</th><th className="tl-gst">SGST</th><th>Total</th></tr></thead><tbody>
+        {list.map(x => <tr key={x.no}><td className="tl-num">{dmy(x.date).slice(0, 5)}</td><td>{onOpen ? <button type="button" className="tl-link" onClick={() => onOpen(x)}>{x.no}</button> : x.no}</td><td>{x.shop.name}</td><td className="tl-num">{x.units}</td><td className="tl-num">{n2(x.taxable)}</td><td className="tl-num tl-gst">{n2(x.cgst)}</td><td className="tl-num tl-gst">{n2(x.sgst)}</td><td className="tl-num">{n2(x.total)}</td></tr>)}
+        <tr><td colSpan={3}><b>{list.length} {list.length === 1 ? "invoice" : "invoices"}</b></td><td className="tl-num"><b>{M.fmt.num(add("units"))}</b></td><td className="tl-num"><b>{n2(add("taxable"))}</b></td><td className="tl-num tl-gst"><b>{n2(add("cgst"))}</b></td><td className="tl-num tl-gst"><b>{n2(add("sgst"))}</b></td><td className="tl-num"><b>{n2(add("total"))}</b></td></tr>
+      </tbody></table>
+      <div className="tl-foot">The taxable value is what the scheme sold: {M.fmt.num(add("units"))} packets at ₹{kl.price.toFixed(2)} effective</div>
+    </div>;
+  }
   // Munchly's credit notes to the distributor, in the same layout: financial, so no GST is adjusted and nothing goes to
   // the IRP; against the invoice it billed the batch on (core/papers.js dispatchOf)
   function TallyCredit({ c, d, title, sub, reason, rows, note, after }) {
@@ -241,11 +294,16 @@
     const app = useApp(); const { toast } = useNotice(); const paperRef = useRef(null); const sheetRef = useRef(null);
     const DOC = id => c.docs.find(d => d.id === id);
     const ready = !!h.docs; const awarded = c.lines.expiresoon.units > 0; const his = first(c.dist.short);
-    const [picked, setPicked] = useState(null); const sel = picked && DOC(picked) ? picked : DOC("expiry") ? "expiry" : (c.docs[0] || { id: "invoice" }).id; const [sheet, setSheet] = useState(false);
-    const doc = DOC(sel), invoice = DOC("invoice"), support = DOC("support");
+    const st = useStore();
+    // the kiranas' tax invoices (SC-153): one card, the batch's sales register, each number opening its invoice
+    const kiranas = LG().invoicesOf(c, st), [inv, setInv] = useState(null);
+    const register = kiranas.length ? { id: "kiranas", type: "Tax invoices to kiranas", owner: c.dist.name, no: `${kiranas.length} invoices`, status: "generated", amount: r2(kiranas.reduce((t, x) => t + x.total, 0)) } : null;
+    const [picked, setPicked] = useState(null); const sel = picked && (DOC(picked) || (register && picked === "kiranas")) ? picked : DOC("expiry") ? "expiry" : (c.docs[0] || { id: "invoice" }).id; const [sheet, setSheet] = useState(false);
+    const doc = sel === "kiranas" ? register : DOC(sel), invoice = DOC("invoice"), support = DOC("support");
     // an invoice issued from Tally reads issued, with its e-invoice (SC-148)
-    const st = useStore(), issued = !!issuedWhen(c, invoice, st), shown = d => (issued && d.id === "invoice" ? Object.assign({}, d, { status: "issued" }) : d);
-    const open = id => { setPicked(id); if (app.bp !== "desktop") setSheet(true); };
+    const issued = !!issuedWhen(c, invoice, st), shown = d => (issued && d.id === "invoice" ? Object.assign({}, d, { status: "issued" }) : d);
+    const open = id => { setPicked(id); setInv(null); if (app.bp !== "desktop") setSheet(true); };
+    const paperOf = id => (id !== "kiranas" ? <Paper id={id} c={c} /> : inv ? <div className="stack snug"><button type="button" className="pt-link t-footnote" style={{ justifySelf: "start" }} onClick={() => setInv(null)}>All {kiranas.length} invoices</button><KiranaInvoice c={c} inv={inv} /></div> : <KiranaRegister c={c} list={kiranas} onOpen={setInv} />);
     const exportPack = () => { download(`${c.batch.id}-document-pack.csv`, csv([["Document", "Issued by", "Number", "Status", "Amount (₹)", "Note"], ...c.docs.map(d => [d.type, d.owner, d.no, d.status, d.amount ? d.amount.toFixed(2) : "", d.note || ""])])); toast({ text: "Document pack exported", tone: "ok" }); };
     // the stub's PDF is the paper printed: the browser saves it (on the live workspace, the Paperwork agent's own PDF)
     const pdf = node => () => { if (node.current) printPage(`${doc.type} ${doc.no || ""} · ${c.batch.id}`, `<div class="${node.current.className}">${node.current.innerHTML}</div>`, { styles: true }); };
@@ -261,12 +319,12 @@
         </div>
         <Columns sideWidth={460}
           main={<><SectionTitle sub="Generated, drafted or not required, each with its reason" right={<span className="row tight"><Button variant="secondary" size="sm" icon="download" onClick={exportPack}>Export</Button>{h.reviewed ? <Badge tone="green" icon="check">reviewed</Badge> : <Button variant="primary" size="sm" icon="check" action={() => { Flow.act("review"); toast({ text: "Pack reviewed · logged", tone: "ok" }); }} busy="Marking reviewed…" done="Reviewed">Mark reviewed</Button>}</span>}>Document pack</SectionTitle>
-            <div className="docgrid">{c.docs.map(d => <div key={d.id} className={cx("docpick", sel === d.id && app.bp === "desktop" && "on")}><DocCard doc={shown(d)} onOpen={() => open(d.id)} /></div>)}</div>
+            <div className="docgrid">{c.docs.concat(register ? [register] : []).map(d => <div key={d.id} className={cx("docpick", sel === d.id && app.bp === "desktop" && "on")}><DocCard doc={shown(d)} onOpen={() => open(d.id)} /></div>)}</div>
             <KeepsWhat c={c} />
 </>}
-          side={app.bp === "desktop" && doc ? <><SectionTitle sub={doc.owner === D.CLIENT.short ? `Issued by ${W.short}` : doc.id === "invoice" && issued ? `Issued by ${c.dist.name} from Tally` : `Drafted for ${c.dist.name}`} right={pdfButton(paperRef)}>{doc.type}</SectionTitle><AnimatePresence mode="wait"><motion.div key={sel} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}><div ref={paperRef}><Paper id={sel} c={c} /></div></motion.div></AnimatePresence></> : null} />
+          side={app.bp === "desktop" && doc ? <><SectionTitle sub={doc.id === "kiranas" ? `Issued by ${c.dist.name} from Tally · one for each shop's order` : doc.owner === D.CLIENT.short ? `Issued by ${W.short}` : doc.id === "invoice" && issued ? `Issued by ${c.dist.name} from Tally` : `Drafted for ${c.dist.name}`} right={pdfButton(paperRef)}>{doc.type}</SectionTitle><AnimatePresence mode="wait"><motion.div key={sel} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}><div ref={paperRef}>{paperOf(sel)}</div></motion.div></AnimatePresence></> : null} />
       </div>}
-      <Sheet open={sheet} onClose={() => setSheet(false)} title={doc ? doc.type : ""} footer={pdfButton(sheetRef)}><div ref={sheetRef}><Paper id={sel} c={c} /></div></Sheet>
+      <Sheet open={sheet} onClose={() => setSheet(false)} title={doc ? doc.type : ""} footer={pdfButton(sheetRef)}><div ref={sheetRef}>{paperOf(sel)}</div></Sheet>
     </>;
   }
 
@@ -586,5 +644,5 @@
     return ref && LG().caseOf(ref) ? <BatchPage key={ref} me={me} at={ref} tab={(at && at.tab) || p.tab} /> : <Ledger me={me} />;
   }
 
-  Object.assign(window.SC3_SCREENS, { RecordTab, RecordPhotos, PhotoSheet, PhotoFacts, Paperwork, PaperPack, Report, Ledger, BatchPage, Paper, Receipt, KeepsWhat, OutcomeBadge, printPage, download, csv });
+  Object.assign(window.SC3_SCREENS, { RecordTab, RecordPhotos, PhotoSheet, PhotoFacts, Paperwork, PaperPack, Report, Ledger, BatchPage, Paper, Receipt, KiranaInvoice, KiranaRegister, KeepsWhat, OutcomeBadge, printPage, download, csv });
 })();

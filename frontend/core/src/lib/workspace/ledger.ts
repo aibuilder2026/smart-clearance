@@ -8,6 +8,7 @@ import { D } from './data';
 import { stageOf } from './flow';
 import type {
 	Assess,
+	KiranaInvoice,
 	BrsrRow,
 	Batch,
 	CaseData,
@@ -311,7 +312,7 @@ type HistoryCase = {
 	/** destroyed at his godown (SC-139): the evidence he sent and the operator's yes */
 	destruction?: CaseData['destruction'];
 	listing: { id: string; units: number } | null;
-	kiranas: { kirana: string; name: string; area: string; units: number }[];
+	kiranas: { kirana: string; name: string; area: string; units: number; at?: string; invoice?: KiranaInvoice }[];
 	offered: number;
 	scheme: CaseData['scheme'];
 	partner: Partner | null;
@@ -389,7 +390,14 @@ function caseOf(x: HistoryCase, data: WorkspaceData): CaseData {
 		sku,
 		dist,
 		buyer: D.buyer,
-		kiranas: x.kiranas.map((k) => ({ id: k.kirana, name: k.name, area: k.area, units: k.units, at: '' })),
+		kiranas: x.kiranas.map((k) => ({
+			id: k.kirana,
+			name: k.name,
+			area: k.area,
+			units: k.units,
+			at: k.at ?? '',
+			invoice: k.invoice ?? null
+		})),
 		offered: x.offered,
 		scheme: x.scheme,
 		risk: x.batch.assess,

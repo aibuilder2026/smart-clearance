@@ -18,7 +18,7 @@
 	import PtMoments from './PtMoments.svelte';
 	import PtTabs from './PtTabs.svelte';
 	import WholeCard from './WholeCard.svelte';
-	import { day, stopOf, worldOf } from './pt';
+	import { day, invoicesOfRef, stopOf, worldOf } from './pt';
 
 	// a batch's own page (SC-130, screens/trade.jsx DistBatch): its head, then What happened, Money (how he ended whole),
 	// Papers and Photos (SC-142: the photos he sent for it). A batch he cleared reads its facts; the batch in a journey, the journey's own state; another batch
@@ -61,6 +61,8 @@
 					: storyMoments(pc ? feedOfSteps(pc) : [], story, s.hero, w, false)
 				: []
 	);
+	// his tax invoices to the batch's shops (SC-153): the batch's sales register
+	const reg = $derived(invoicesOfRef(ws, id));
 	const open = (pid: string) => {
 		paper = pid;
 		sheet = true;
@@ -101,11 +103,16 @@
 						c={past ?? { partner: null, docs: story!.docs }}
 						ready={!!past || !!s.hero.docs}
 						onopen={open}
+						kiranas={reg?.list ?? []}
 					/>{/if}
 			</div>{/key}
 	</Screen>
 	<!-- a cleared batch's paper is read from its case, which the live workspace reads as the page opens -->
-	{#if past && page}<PaperSheet bind:open={sheet} ref={id} c={page.c} id={paper} />{:else if story}<PaperSheet
+	{#if paper === 'kiranas' && reg}<PaperSheet
+			bind:open={sheet}
+			ref={id}
+			register={reg}
+		/>{:else if past && page}<PaperSheet bind:open={sheet} ref={id} c={page.c} id={paper} />{:else if story}<PaperSheet
 			bind:open={sheet}
 			ref={id}
 			c={story}

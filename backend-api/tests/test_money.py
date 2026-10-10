@@ -147,6 +147,26 @@ def test_meals_of(case):
     assert m.meals_of(case["units"], case["sku"], case["rule"]) == case["out"]
 
 
+@pytest.mark.parametrize("case", F["kiranaInvoice"], ids=lambda c: f"{c['units']}-{c['sku']['id']}")
+def test_kirana_invoice(case):
+    """SC-153: a kirana's order as its distributor invoices it, money.js's figures for every kirana line"""
+    assert m.kirana_invoice(case["units"], case["line"], case["sku"]) == case["out"]
+
+
+def test_a_kirana_invoice_is_what_the_ledger_counts_with_its_gst():
+    """Ganesh ji's 24 packets: ₹518.40 at the pack price, less 16.67%, is the ledger's ₹432; ₹21.60 of GST; ₹454 paid"""
+    inv = next(c["out"] for c in F["kiranaInvoice"] if c["units"] == 24 and c["sku"]["id"] == "chips")
+    assert (inv["gross"], inv["discount"], inv["taxable"], inv["cgst"], inv["tax"], inv["roundOff"], inv["total"]) == (
+        518.4,
+        86.4,
+        432,
+        10.8,
+        21.6,
+        0.4,
+        454,
+    )
+
+
 @pytest.mark.parametrize("case", F["receipt"], ids=lambda c: c["partner"]["name"])
 def test_receipt(case):
     same(m.receipt(case["units"], case["sku"], case["partner"], case["facts"]), case["out"])

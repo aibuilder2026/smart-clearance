@@ -1313,7 +1313,8 @@ describe('Finance & ESG, one ledger (SC-121)', () => {
 		const opened = vi.spyOn(window, 'open').mockImplementation(() => null);
 		const r = await draw(source(fakeApi(m, 'priya', { documentUrl: url })), 'report', CHIPS);
 		await tab(r, 'Papers');
-		await fireEvent.click(await waitFor(() => r.getByRole('button', { name: /Tax invoice/ })));
+		// the batch's own tax invoice, not the kiranas' register beside it (SC-153)
+		await fireEvent.click(await waitFor(() => r.getByRole('button', { name: /Tax invoice(?!s)/ })));
 		const sheet = await waitFor(() => r.getByRole('dialog'));
 		await fireEvent.click(within(sheet).getByRole('button', { name: 'Download Tax invoice as a PDF' }));
 		await waitFor(() =>
@@ -1463,6 +1464,73 @@ describe("the partners' own history (SC-130)", () => {
 		r = await draw(source(partnerApi(m, 'ganesh')), 'offer', 'MF-2407-116');
 		await waitFor(() => expect(text(r)).toContain('Your order'));
 		expect(text(r)).toContain('What was offered');
+		r.unmount();
+	});
+
+	it("Ganesh ji's order names its tax invoice, which opens with its PDF once laid out (SC-153)", async () => {
+		const m = moment('executing');
+		const seen = m.members.ganesh;
+		// the Paperwork agent has laid out the chips' invoice to his shop
+		seen.partner!.cases = seen.partner!.cases.map((c) =>
+			c.ref === CHIPS
+				? { ...c, kiranas: c.kiranas.map((k) => ({ ...k, invoice: k.invoice && { ...k.invoice, pdf: true } })) }
+				: c
+		);
+		const url = vi.fn(() => Promise.resolve({ url: 'https://storage.example/kirana-k0.pdf', expiresAt: '' }));
+		const opened = vi.spyOn(window, 'open').mockImplementation(() => null);
+		const r = await draw(source(partnerApi(m, 'ganesh', { documentUrl: url })), 'offer', CHIPS);
+		await waitFor(() => expect(text(r)).toContain('RT/26-27/1279'));
+		let t = text(r);
+		expect(t).toContain('Before GST');
+		expect(t).toContain('₹432.00');
+		expect(t).toContain('₹454');
+		expect(t).toContain('₹266.00');
+		await fireEvent.click(r.getByRole('button', { name: /Tax invoice/ }));
+		const sheet = await waitFor(() => r.getByRole('dialog'));
+		t = text(r);
+		expect(t).toContain('GSTIN/UIN: Unregistered');
+		expect(t).toContain('Place of Supply: Maharashtra (27)');
+		expect(t).toContain('₹ 454.00');
+		expect(t).not.toMatch(/NaN|undefined|Invalid Date/);
+		await fireEvent.click(within(sheet).getByRole('button', { name: 'Download PDF' }));
+		await waitFor(() =>
+			expect(opened).toHaveBeenCalledWith('https://storage.example/kirana-k0.pdf', '_blank', 'noopener')
+		);
+		expect(url).toHaveBeenCalledWith(CHIPS, 'kirana.k0');
+		opened.mockRestore();
+		r.unmount();
+	});
+
+	it("Rakesh opens a shop's tax invoice from his Orders, and the batch's register from its papers (SC-153)", async () => {
+		const m = moment('executing');
+		let r = await draw(source(partnerApi(m, 'rakesh')), 'orders');
+		// the scheme's orders so far, each with its invoice in Rakesh Traders' series from the story's next
+		await waitFor(() => expect(text(r)).toContain('RT/26-27/1279 to 1283'));
+		expect(text(r)).toContain('5 tax invoices');
+		await fireEvent.click(r.getAllByRole('button', { name: /shops' orders/ })[0]);
+		await fireEvent.click(await waitFor(() => r.getByRole('button', { name: /Shree Ganesh Kirana.*RT\/26-27\/1279/ })));
+		await waitFor(() => expect(text(r)).toContain('(ORIGINAL FOR RECIPIENT)'));
+		expect(text(r)).toContain('Invoice No.RT/26-27/1279');
+		expect(text(r)).toContain('Buyer (Bill to and Ship to)Shree Ganesh Kirana');
+		r.unmount();
+		r = await draw(source(partnerApi(m, 'rakesh')), 'batches', 'MF-2407-116');
+		await tab(r, 'Papers');
+		await fireEvent.click(await waitFor(() => r.getByRole('button', { name: /Tax invoices to kiranas · 24/ })));
+		await waitFor(() => expect(text(r)).toContain('Sales Register'));
+		expect(text(r)).toContain('RT/26-27/1255');
+		expect(text(r)).toContain('24 invoices');
+		r.unmount();
+	});
+
+	it("Priya's pack holds the batch's tax invoices to its kiranas, each opening from the register (SC-153)", async () => {
+		vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1440);
+		const r = await draw(source(fakeApi(moment('cleared'), 'priya')), 'paperwork', CHIPS);
+		await fireEvent.click(await waitFor(() => r.getByRole('button', { name: /Tax invoices to kiranas/ })));
+		await waitFor(() => expect(text(r)).toContain('Sales Register'));
+		expect(text(r)).toContain('31 invoices');
+		await fireEvent.click(r.getByRole('button', { name: 'RT/26-27/1279' }));
+		await waitFor(() => expect(text(r)).toContain('Shree Ganesh Kirana'));
+		expect(text(r)).toContain('Less: Scheme discount, buy 10 get 2 free');
 		r.unmount();
 	});
 

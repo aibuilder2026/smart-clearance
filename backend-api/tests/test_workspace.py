@@ -255,6 +255,34 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     c = await case(api, PRIYA)
     assert c["journey"]["offer"]["status"] == "closed" and sum(o["units"] for o in c["journey"]["orders"]) == 588
     assert "orders" in [f["key"] for f in c["feed"]]
+    # each order's tax invoice from Rakesh Traders (SC-153), numbered in his own series from the story's as the shops
+    # ordered, the pack price less the scheme's discount, CGST and SGST: as design3's ledger.js storyInvoices
+    first = c["journey"]["orders"][0]
+    assert (first["id"], first["invoice"]["no"], first["invoice"]["taxable"], first["invoice"]["total"]) == (
+        "k0",
+        "RT/26-27/1279",
+        432,
+        454,
+    )
+    assert [o["invoice"]["no"] for o in c["journey"]["orders"]] == [f"RT/26-27/{1279 + i}" for i in range(31)]
+    assert sum(o["invoice"]["taxable"] for o in c["journey"]["orders"]) == pytest.approx(588 * 18)
+    asked = [p["payload"] for p in cloud.publisher.sent if p["payload"].get("type") == "kirana"]
+    assert [a["kirana"] for a in asked] == [o["id"] for o in c["journey"]["orders"]]
+    # a kirana is told its own; its PDF, once laid out, opens to it, the batch's distributor and Munchly, not to another
+    mine = (await case(api, GANESH))["journey"]["orders"]
+    assert [(o["id"], o["invoice"]["no"], o["invoice"]["pdf"]) for o in mine] == [("k0", "RT/26-27/1279", False)]
+    assert (await api.get(f"{WS}/documents/{HERO}/kirana.k0", headers=GANESH)).status_code == 404
+    r = await api.patch(
+        f"/internal/clients/munchly/cases/{HERO}/documents/kirana.k0",
+        json={"object": f"munchly/{HERO}/kirana-k0.pdf", "run": {"agent": "paperwork", "eventKey": "kirana-k0"}},
+        headers=AGENT,
+    )
+    assert r.status_code == 200, r.text
+    for who in (GANESH, RAKESH, PRIYA):
+        assert (await api.get(f"{WS}/documents/{HERO}/kirana.k0", headers=who)).status_code == 200
+    jaidurga = token(next(x for x in J["members"] if x["id"] == "jaidurga")["login"])
+    assert (await api.get(f"{WS}/documents/{HERO}/kirana.k0", headers=jaidurga)).status_code == 404
+    assert (await api.get(f"{WS}/documents/{HERO}/kirana.k0", headers=MEERA)).status_code == 404
 
     # the bid, the counter, the award
     r = await api.post(f"{WS}/cases/{HERO}/bids", json={"price": 13}, headers=AGRAWAL)

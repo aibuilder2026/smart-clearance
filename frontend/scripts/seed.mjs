@@ -442,7 +442,8 @@ const journey = {
 	// (services/journey/history.py), each with what money.js makes of it for the tests to hold the build to
 	history: {
 		at: D.HISTORY_AT,
-		start: D.HISTORY.start,
+		// the papers' series where the history began; the kiranas' invoices, in each distributor's own (SC-153)
+		start: { ...D.HISTORY.start, ...L.KIRANA_START },
 		batches: D.HISTORY.batches.map((b) => ({
 			ref: b.ref,
 			sku: b.sku,
@@ -509,7 +510,8 @@ const journey = {
 			},
 			listing: c.listing ? { id: c.listing.id } : null,
 			offered: c.offered,
-			kiranas: c.kiranas.map(({ kirana, units }) => ({ kirana, units })),
+			// each shop's order with its time and the tax invoice its distributor issued it (SC-153)
+			kiranas: c.kiranas.map(({ kirana, units, at, invoice }) => ({ kirana, units, at, invoice })),
 			kirana: c.kirana,
 			award: c.award ? { price: c.award.price, token: c.award.token } : null,
 			partner: c.partner ? { name: c.partner.name } : null,
@@ -659,6 +661,20 @@ const moneyFixtures = (() => {
 				out: M.mealsOf(units, D.SKUS[id], rule ?? undefined)
 			}))
 		),
+		// SC-153: a kirana's scheme order as its distributor invoices it, every SKU's kirana line, in twelves and not
+		kiranaInvoice: [
+			[24, 'chips'],
+			[10, 'chips'],
+			[16, 'chips'],
+			[1, 'chips'],
+			[36, 'mango'],
+			[7, 'mango'],
+			...L.HISTORY.slice(0, 6).map((c) => [c.kiranas[c.kiranas.length - 1].units, c.sku.id, c.lines.kirana])
+		].map(([units, id, line]) => {
+			const l = line || (id === 'mango' ? mangoPlan : heroPlan).lines.find((x) => x.id === 'kirana');
+			const kl = { price: l.price, packPrice: l.packPrice };
+			return { units, line: kl, sku: D.SKUS[id], out: M.kiranaInvoice(units, kl, D.SKUS[id]) };
+		}),
 		receipt: D.SETUP.partners.map((partner, i) => {
 			const facts = {
 				no: ['FI/HYD/26-27/0417', 'IFBN/ACK/26-27/0112'][i],
@@ -818,10 +834,11 @@ const outputs = {
 			rows: historyRows,
 			story: { row: L.rowOf(L.storyCase()), cleared: L.STORY_CLEARED },
 			// every shop a distributor's scheme goes to (world.js), as a kirana's portal finds its own (SC-130)
-			shops: W.KIRANAS.map(({ id, name, area, sales14, distributor, member }) => ({
+			shops: W.KIRANAS.map(({ id, name, area, pincode, sales14, distributor, member }) => ({
 				id,
 				name,
 				area,
+				pincode,
 				sales14,
 				distributor,
 				member

@@ -48,15 +48,28 @@
     </div>)}</div>;
   }
   // a paper on its page, in a sheet, with its PDF (the Paperwork agent's own on the live workspace; printed here)
-  function PaperSheet({ open, onClose, c, id, receipt }) {
-    const ref = useRef(null);
-    const d = receipt || (c && id && c.docs.find(x => x.id === id));
+  // a kirana's tax invoice (SC-153), or a batch's register of them, each number opening its invoice in the same sheet
+  function PaperSheet({ open, onClose, c, id, receipt, invoice, register }) {
+    const ref = useRef(null); const [one, setOne] = useState(null);
+    const inv = invoice || one;
+    const d = inv ? { type: "Tax invoice", no: inv.no } : register ? { type: "Tax invoices to kiranas", no: c && c.batch.id } : receipt || (c && id && c.docs.find(x => x.id === id));
+    const close = () => { setOne(null); onClose(); };
     const pdf = () => { const n = ref.current; if (n && d) S.printPage(`${d.type || "Donation receipt"} ${d.no || ""}`, `<div class="${n.className}">${n.innerHTML}</div>`, { styles: true }); };
-    return <Sheet open={open && !!d} onClose={onClose} title={d ? d.type || "Donation receipt" : ""} footer={d ? <Button variant="secondary" block icon="download" action={pdf} busy="Opening the PDF…">Download PDF</Button> : null}>
-      {d && <div ref={ref} className="stack snug">{receipt ? <S.Receipt doc={receipt} batch={receipt.batch || (c && c.batch)} sku={receipt.sku || (c && c.sku)} dist={receipt.dist || (c && c.dist)} /> : <S.Paper id={id} c={c} />}</div>}
+    return <Sheet open={open && !!d} onClose={close} title={d ? d.type || "Donation receipt" : ""} footer={d ? <Button variant="secondary" block icon="download" action={pdf} busy="Opening the PDF…">Download PDF</Button> : null}>
+      {d && register && one && <button type="button" className="pt-link t-footnote" style={{ justifySelf: "start", marginBottom: 8 }} onClick={() => setOne(null)}>All {register.length} invoices</button>}
+      {d && <div ref={ref} className="stack snug">{inv ? <S.KiranaInvoice c={c} inv={inv} /> : register ? <S.KiranaRegister c={c} list={register} onOpen={setOne} /> : receipt ? <S.Receipt doc={receipt} batch={receipt.batch || (c && c.batch)} sku={receipt.sku || (c && c.sku)} dist={receipt.dist || (c && c.dist)} /> : <S.Paper id={id} c={c} />}</div>}
     </Sheet>;
   }
-  const PAPER_ICON = { invoice: "receipt", eway: "truck", support: "hand-coins", expiry: "warehouse", receipt: "heart-handshake", destruction: "trash-2" };
+  const PAPER_ICON = { invoice: "receipt", eway: "truck", support: "hand-coins", expiry: "warehouse", receipt: "heart-handshake", destruction: "trash-2", kiranas: "receipt" };
+  // the invoices of a batch's scheme as one row: how many, the first number to the last, the total (SC-153)
+  const lastNo = no => no.split("/").pop();
+  function RegisterRow({ list, onOpen, who }) {
+    return <button type="button" className="pt-paper" onClick={onOpen}>
+      <span className="icontile"><Icon name="receipt" size={17} stroke={2} /></span>
+      <span className="grow"><b>Tax invoices to kiranas · {list.length}</b><span className="t-footnote muted"><span className="mono">{list[0].no}{list.length > 1 ? ` to ${lastNo(list[list.length - 1].no)}` : ""}</span> · {who}</span></span>
+      <span className="tnum strong">{fmt.inr(list.reduce((t, x) => t + x.total, 0))}</span><Icon name="chevron-right" size={16} className="subtle" />
+    </button>;
+  }
   const issuedBy = (c, d) => (d.id === "invoice" || d.id === "eway" ? "You issue it" : d.id === "receipt" ? `${c.partner ? c.partner.name : "The food bank"} issued it to ${D.WORKSPACE.short} · a copy for you` : d.id === "destruction" ? (d.at === "godown" ? `${d.agency || "The agency"} destroyed them for you` : `${D.WORKSPACE.short} destroyed the packs · a copy for you`) : `${D.WORKSPACE.short} issued it to you`);
   // one paper as a row: its icon, type, number, who issued it, its amount
   function PaperRow({ c, d, onOpen }) {
@@ -514,7 +527,7 @@
   /* ---------- Orders: every batch's orders, past and present ---------- */
   // an order: who bought what, for how much, on which paper (the invoice he issues, and Issue from Tally while it is a
   // draft); the scheme's shops on request
-  function OrderRow({ o }) {
+  function OrderRow({ o, onInvoice }) {
     const [open, setOpen] = useState(false); const [busy, setBusy] = useState(false); const { toast } = useNotice();
     const issue = () => { setBusy(true); setTimeout(() => { setBusy(false); Flow.act("issueInvoice"); toast({ text: DONE.issueInvoice, tone: "ok" }); }, 400); };
     return <div className="dist-order">
@@ -523,8 +536,10 @@
         <span className="t-subhead"><b>{o.who}</b> · {o.what}</span>
         <span className="t-footnote muted">{CH[o.id].name}{o.at ? ` · ${when(o.at)}` : ""}{o.sub ? ` · ${o.sub}` : ""}</span>
         {o.paper && <span className="row tight wrap" style={{ gap: 8 }}><span className="dist-paper"><Icon name="file-text" size={13} /><span className="mono">{o.paper.no}</span><span>{o.paper.label}</span></span>{o.paper.issue && <Button variant="secondary" size="sm" icon="check" loading={busy} busy="Issuing…" done="Issued" onClick={issue}>Issue from Tally</Button>}</span>}
+        {o.invoices && <span className="row tight wrap" style={{ gap: 8 }}><span className="dist-paper"><Icon name="receipt" size={13} /><span className="mono">{o.invoices.first}{o.invoices.n > 1 ? ` to ${lastNo(o.invoices.last)}` : ""}</span><span>{o.invoices.n} tax {o.invoices.n === 1 ? "invoice" : "invoices"} · {fmt.inr2(o.invoices.tax)} GST collected</span></span></span>}
         {o.shops && o.shops.length > 0 && <button type="button" className="pt-link t-footnote dist-toggle" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? "Hide" : "Show"} the {o.shops.length} shops' orders</button>}
-        {open && <div className="dist-shops">{o.shops.map(k => <span key={k.name}><b>{k.name}</b>{k.at && <em>{when(k.at)}</em>}<span className="tnum">{k.units}</span></span>)}</div>}
+        {open && <div className="dist-shops">{o.shops.map(k => k.invoice && onInvoice ? <button key={k.name} type="button" className="dist-shop" onClick={() => onInvoice(k.invoice.no)}><b>{k.name}</b>{k.at && <em>{when(k.at)}</em>}<span className="tnum">{k.units}</span><span className="dist-shop-no"><span className="mono">{k.invoice.no}</span><span className="tnum">{fmt.inr(k.invoice.total)}</span></span></button>
+          : <span key={k.name}><b>{k.name}</b>{k.at && <em>{when(k.at)}</em>}<span className="tnum">{k.units}</span></span>)}</div>}
       </span>
       <span className="tnum strong">{o.amount ? fmt.inr(o.amount) : "given"}</span>
     </div>;
@@ -560,8 +575,10 @@
     return <span className="lg-val">{lead === "credit" ? <><b className="tnum">{fmt.inr(v.credit)} credited</b><em>+ {fmt.inr(v.sold)} sold = {fmt.inr(v.cost)}</em></> : <><b className="tnum">{fmt.inr(v.sold)} sold</b><em>+ {fmt.inr(v.credit)} credited = {fmt.inr(v.cost)}</em></>}</span>;
   }
   function DistOrders({ me }) {
-    const s = useStore(); const { go } = useRoute(); const Px = P();
+    const s = useStore(); const { go } = useRoute(); const Px = P(); const [inv, setInv] = useState(null);
     const dist = distOf(me);
+    // a shop's invoice, opened from its order: the batch's case and the invoice by its number (SC-153)
+    const invCase = inv && window.SC3_LEDGER.caseOf(inv.ref), invoice = invCase && window.SC3_LEDGER.invoicesOf(invCase, s).find(x => x.no === inv.no);
     const now = Px.distNow(dist.id, s).map(n => { const j = Px.journeyOf(n); return { ref: n.ref, sku: j.sku, live: true, j, rows: Px.ordersNow(n, Px.shopName) }; });
     const past = Px.distBatches(dist.id, s).past.map(c => ({ ref: c.ref, sku: c.sku, live: false, outcome: c.outcome, cleared: c.cleared, rows: Px.ordersPast(Px.historyFacts(c), Px.shopName) })).filter(b => b.rows.length);
     const book = now.concat(past);
@@ -581,10 +598,11 @@
             <BatchLine sku={b.sku} id={b.ref} size={44} badge={b.live ? stopBadge(b.j) : <S.OutcomeBadge o={b.outcome} size="sm" />} sub={b.live ? (b.j.phase === "cleared" ? "cleared · every order" : b.rows.length ? "orders so far" : "no orders yet") : `cleared ${day(b.cleared)}`} />
             <span className="row tight">{b.rows.length > 0 && (!b.live && sums.batches.find(x => x.ref === b.ref) ? <SumLine x={sums.batches.find(x => x.ref === b.ref)} lead="sold" /> : <span className="tnum strong">{fmt.inr(sum(b.rows))}</span>)}<Button variant="ghost" size="sm" iconRight="chevron-right" onClick={() => go("batches", { ref: b.ref })}>Papers</Button></span>
           </div>
-          {b.rows.length ? <div className="dist-orders">{b.rows.map(o => <OrderRow key={o.id} o={o} />)}</div>
+          {b.rows.length ? <div className="dist-orders">{b.rows.map(o => <OrderRow key={o.id} o={o} onInvoice={no => setInv({ ref: b.ref, no })} />)}</div>
             : <p className="t-footnote muted" style={{ margin: 0 }}>{b.j.waiting || "Its orders show here as they come in."}</p>}
         </Card>)}
       </div>
+      {invoice && <PaperSheet open onClose={() => setInv(null)} c={invCase} invoice={invoice} />}
     </Screen>;
   }
 
@@ -637,6 +655,7 @@
     const L = window.SC3_LEDGER; const past = P().distBatches(dist.id, s).past.find(c => c.ref === id);
     const mine = D.BATCHES.find(b => b.id === id && b.distributor === dist.id); const hero = mine && mine.hero ? mine : null, second = mine && mine.second ? mine : null;
     const c = past || (hero ? L.storyCase() : null);
+    const kiranas = c ? L.invoicesOf(c, s) : [];
     if (!c && !second) return <Screen me={me} title="Batches" back="Batches"><Card><Empty icon="boxes" title="Not one of your batches" body="This batch is not at your godown." /></Card></Screen>;
     const sku = c ? c.sku : D.SKUS[second.sku];
     const head = <PtHead sku={sku} id={id} where={`${dist.godown}, ${dist.city}`} badge={past ? <S.OutcomeBadge o={c.outcome} size="sm" /> : <Badge size="sm" tone="blue" dot live>{stopOf(hero ? s.hero.phase : s.mango.phase)}</Badge>}
@@ -647,10 +666,10 @@
     else if (tab === "what") body = <Card><PtMoments items={past ? P().moments(c) : P().storyMoments(s)} /></Card>;
     else if (tab === "money") body = <WholeCard c={c} story={!past} s={s} onPaper={setPaper} />;
     else if (tab === "photos") body = <DistPhotos c={c} story={!past} s={s} />;
-    else body = <DistPapers c={c} ready={!!past || !!s.hero.docs} onOpen={setPaper} />;
+    else body = <DistPapers c={c} ready={!!past || !!s.hero.docs} onOpen={setPaper} kiranas={kiranas} />;
     return <Screen me={me} title={sku.name} back="Batches" hideLarge below={head}>
       <motion.div key={tab} initial={reduce ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }} className="pt-body">{body}</motion.div>
-      {c && <PaperSheet open={!!paper} onClose={() => setPaper(null)} c={c} id={paper} receipt={paper === "receipt" ? c.receipt : null} />}
+      {c && <PaperSheet open={!!paper} onClose={() => setPaper(null)} c={c} id={paper} receipt={paper === "receipt" ? c.receipt : null} register={paper === "kiranas" ? kiranas : null} />}
     </Screen>;
   }
   // how he ended whole: what he received against what he paid
@@ -667,19 +686,23 @@
     </Card>;
   }
   // his papers, then copies of what concerns his packs
-  function DistPapers({ c, ready, onOpen }) {
-    if (!ready) return <Locked icon="file-text" agent="Paperwork agent" text="Drafts your tax invoice to the buyer and Munchly's price-support credit note to you once every line of the plan is done." />;
+  function DistPapers({ c, ready, onOpen, kiranas }) {
+    // his tax invoices to the scheme's shops, issued as they ordered (SC-153): the batch's sales register
+    const reg = kiranas && kiranas.length ? <RegisterRow list={kiranas} onOpen={() => onOpen("kiranas")} who="You issue them" /> : null;
+    if (!ready) return <div className="stack" style={{ gap: 16 }}><Locked icon="file-text" agent="Paperwork agent" text="Drafts your tax invoice to the buyer and Munchly's price-support credit note to you once every line of the plan is done." />
+      {reg && <div><div className="pt-head">Your invoices to kiranas</div><div className="pt-papers">{reg}</div></div>}</div>;
     const p = P().distPapers(c);
     return <div className="stack" style={{ gap: 16 }}>
-      <div><div className="pt-head">Your papers</div><div className="pt-papers">{p.mine.map(d => <PaperRow key={d.id} c={c} d={d} onOpen={onOpen} />)}</div></div>
+      <div><div className="pt-head">Your papers</div><div className="pt-papers">{p.mine.map(d => <PaperRow key={d.id} c={c} d={d} onOpen={onOpen} />)}{reg}</div></div>
       {p.copies.length ? <div><div className="pt-head">Copies for your records</div><div className="pt-papers">{p.copies.map(d => <PaperRow key={d.id} c={c} d={d} onOpen={onOpen} />)}</div></div> : null}
       <p className="t-footnote subtle" style={{ margin: 0 }}>Each opens on paper with its PDF. {D.WORKSPACE.short}'s own GST memo and FSSAI checklist stay with {D.WORKSPACE.short}.</p>
     </div>;
   }
 
   /* ======================= Ganesh ji · kirana ======================= */
-  // the scheme: pay the pack price for 10 of every 12, sell all 12 at MRP
-  const offerMath = n => { const free = Math.floor(n / 12) * 2, paid = n - free, pack = KL.packPrice; return { n, free, paid, pack, pay: paid * pack, sell: n * CHIPS.mrp, margin: n * CHIPS.mrp - paid * pack }; };
+  // the scheme as the invoice has it (SC-153): every packet at the pack price less the scheme's discount, the GST on
+  // that, what he pays, and his margin selling them all at MRP
+  const offerMath = n => P().scheme(n, KL, CHIPS);
   function OfferCard({ onOpen, compact, shop }) {
     const [en, setEn] = useState(false); const p0 = D.PUSH.offer; const name = shop || "Shree Ganesh Kirana";
     const p = Object.assign({}, p0, { body: p0.body.replace("Shree Ganesh Kirana", name) });
@@ -715,6 +738,7 @@
   }
   // an offer's own page: what came of it, and what was offered
   function OfferPage({ me, o }) {
+    const [open, setOpen] = useState(false); const c = o.invoice ? window.SC3_LEDGER.caseOf(o.ref) : null;
     const head = <PtHead sku={o.sku} id={o.ref} where={`From ${o.dist.short}`} badge={<OfferStatus o={o} size="sm" />} line={`Sent ${when(o.sent)}`} />;
     return <Screen me={me} title={o.sku.name} back="Offers" below={head} hideLarge>
       <div className="stack" style={{ gap: 16, maxWidth: 620 }}>
@@ -722,23 +746,29 @@
           <div className="card-head"><span className="card-title">Your order</span><Badge tone="green" icon="check">{o.van ? `delivered ${weekday(o.van)}` : "on the round"}</Badge></div>
           <div className="stack tight">
             <PtLine k={`You ordered ${o.units} packets`} sub={when(o.orderedAt)} v="" />
-            <PtLine k="You paid" sub={`${o.m.paid} × ₹${o.pack.toFixed(2)}`} v={fmt.inr(o.m.pay)} />
-            <PtLine k="Free packets" sub="2 with every 10" v={o.m.free} />
+            <PtLine k="Before GST" sub={`${o.units} × ₹${o.m.rate.toFixed(2)}, less the scheme's ${o.m.discountPct}%`} v={fmt.inr2(o.m.taxable)} />
+            <PtLine k="GST" sub={`CGST ${o.m.gstPct / 2}% + SGST ${o.m.gstPct / 2}%`} v={fmt.inr2(o.m.tax)} />
+            <PtLine k="You paid" sub="the invoice, to the rupee" v={fmt.inr(o.m.pay)} />
             <PtLine k="You sell at MRP" sub={`${o.units} × ₹${o.mrp}`} v={fmt.inr(o.m.sell)} />
             <div className="hairline" style={{ margin: "4px 0" }} />
-            <PtLine k="Your margin" v={fmt.inr(o.m.margin)} strong />
+            <PtLine k="Your margin" v={fmt.inr2(o.m.margin)} strong />
           </div>
+          {o.invoice && c && <div className="pt-papers"><button type="button" className="pt-paper" onClick={() => setOpen(true)}>
+            <span className="icontile"><Icon name="receipt" size={17} stroke={2} /></span>
+            <span className="grow"><b>Tax invoice</b><span className="t-footnote muted"><span className="mono">{o.invoice.no}</span> · {o.dist.short} issued it · paid on delivery</span></span>
+            <span className="tnum strong">{fmt.inr(o.invoice.total)}</span><Icon name="chevron-right" size={16} className="subtle" /></button></div>}
           {o.van && <span className="t-footnote subtle">Delivered on {weekday(o.van)}'s van, {day(o.van)} · paid on delivery to {o.dist.short}</span>}
         </Card> : <Card className="row top" style={{ gap: 14 }}><span className="icontile soft"><Icon name={o.status === "declined" ? "x" : "clock"} size={18} /></span>
           <div className="grow"><b>{o.status === "declined" ? "You said not this time" : "This offer expired"}</b><div className="t-footnote muted">{whyText(o)}. Nothing was ordered and nothing is owed.</div></div></Card>}
         <List head="What was offered">
-          <ListRow title="Price" value={`₹${o.pack.toFixed(2)} a packet · MRP ₹${o.mrp}`} />
-          <ListRow title="Scheme" value="Buy 10, get 2 free" />
+          <ListRow title="Price" value={`₹${o.pack.toFixed(2)} a packet, before GST · MRP ₹${o.mrp}`} />
+          <ListRow title="Scheme" value="Buy 10, get 2 free, as a discount on the invoice" />
           <ListRow title="Your share" value={`up to ${o.share} packets`} />
           <ListRow title="Open for" value="48 hours" />
           <ListRow title="Best before" value={fmt.date(o.bestBefore)} />
         </List>
       </div>
+      {o.invoice && c && <PaperSheet open={open} onClose={() => setOpen(false)} c={c} invoice={o.invoice} />}
     </Screen>;
   }
   // the offer route: an earlier offer by its ref opens its page; otherwise the open offer, to order from
@@ -757,12 +787,12 @@
         {!h.offer ? null : mine ? <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="card stack" style={{ padding: 22, justifyItems: "center", textAlign: "center" }}>
           <span className="icontile" style={{ width: 56, height: 56, borderRadius: 18 }}><Icon name="check" size={28} stroke={2.4} /></span>
           <div className="t-title2 hi" lang="hi">ऑर्डर हो गया</div>
-          <span className="muted">{mine.units} packets on {D.JOURNEY.van.day}'s van · pay on delivery</span>
+          <span className="muted">{mine.units} packets on {D.JOURNEY.van.day}'s van · pay {fmt.inr(offerMath(mine.units).pay)} on delivery, GST included</span>
           <Money value={offerMath(mine.units).margin} size="m" style={{ color: "var(--primary-text)" }} /><span className="t-footnote subtle">your margin at MRP on this order</span>
           <Button variant="secondary" onClick={() => go("home")}>Done</Button>
         </motion.div> : <Card className="stack" style={{ gap: 16 }}>
           <div className="row between"><div className="stack tight" style={{ gap: 0 }}><b>How many packets?</b><span className="t-footnote subtle">In twelves · your share is up to {k.units}</span></div><Stepper value={n} onChange={setN} min={12} max={k.units} step={12} label="Packets" /></div>
-          <div className="stack tight">{[["You pay", `${m.paid} × ₹${m.pack.toFixed(2)}`, fmt.inr(m.pay)], ["Free packets", "2 with every 10", `${m.free}`], ["You sell at MRP", `${n} × ₹${CHIPS.mrp}`, fmt.inr(m.sell)]].map(([k, sub, v]) => <div key={k} className="row between t-subhead"><span>{k} <span className="subtle t-footnote">{sub}</span></span><span className="tnum strong">{v}</span></div>)}</div>
+          <div className="stack tight">{[["Before GST", `${n} × ₹${m.rate.toFixed(2)}, less the scheme's ${m.discountPct}%`, fmt.inr2(m.taxable)], ["GST", `CGST ${m.gstPct / 2}% + SGST ${m.gstPct / 2}%`, fmt.inr2(m.tax)], ["You pay", "on the invoice, to the rupee", fmt.inr(m.pay)], ["You sell at MRP", `${n} × ₹${CHIPS.mrp}`, fmt.inr(m.sell)]].map(([k, sub, v]) => <div key={k} className="row between t-subhead"><span>{k} <span className="subtle t-footnote">{sub}</span></span><span className="tnum strong">{v}</span></div>)}</div>
           <div className="row between" style={{ padding: "12px 14px", borderRadius: 14, background: "var(--primary-soft)" }}><span className="stack tight" style={{ gap: 0 }}><b>Margin today</b><span className="t-footnote muted">₹{(m.pay / n).toFixed(2)} a packet in effect, sold at ₹{CHIPS.mrp}</span></span><Money value={m.margin} size="s" roll style={{ color: "var(--primary-text)" }} /></div>
           <Button variant="primary" size="xl" block loading={busy} busy={<span className="hi" lang="hi">ऑर्डर हो रहा है…</span>} done={<span className="hi" lang="hi">ऑर्डर हो गया</span>} onClick={order}><span className="hi" lang="hi">ऑर्डर करें</span> · {n} packets</Button>
           <span className="t-caption subtle" style={{ textAlign: "center" }}>Best before 18 Nov 2026 · 47 days on every packet · unsold packs go back to the salesman until {fmt.day(D.RETURN_BY)}</span>
@@ -773,11 +803,11 @@
   // the kirana's orders (SC-130): what each order earned, every one opening its offer's page
   function RetailOrders({ me }) {
     const s = useStore(); const { go } = useRoute(); const k = kOf(me); const list = P().offersFor(shopOf(me), s).filter(o => o.status === "ordered");
-    const margin = list.reduce((t, o) => t + o.m.margin, 0), packets = list.reduce((t, o) => t + o.units, 0);
+    const margin = list.reduce((t, o) => t + o.m.margin, 0), packets = list.reduce((t, o) => t + o.units, 0), paid = list.reduce((t, o) => t + o.m.pay, 0);
     return <Screen me={me} title="Orders" sub={k.name}>
       <div className="stack" style={{ gap: 16, maxWidth: 620 }}>
-        {list.length ? <><Card className="stack" style={{ gap: 8 }}><div className="lg-fig"><Money value={margin} size="l" /><span className="lg-what">your margin at MRP</span></div><p className="lg-working">{list.length} {list.length === 1 ? "order" : "orders"} since July, {fmt.num(packets)} packets, each delivered on the van with 2 free in every 12.</p></Card>
-          <List>{list.map(o => <ListRow key={o.ref} chevron onClick={() => go("offer", { ref: o.ref })} leading={<Product name={o.sku.img} size={40} />} title={`${o.sku.name} · ${o.units} packets`} sub={`ordered ${when(o.orderedAt)}${o.van ? ` · ${weekday(o.van)}'s van` : " · on the round"}`} value={<span className="lg-val"><b className="tnum">{fmt.inr(o.m.margin)}</b><em>margin</em></span>} />)}</List></>
+        {list.length ? <><Card className="stack" style={{ gap: 8 }}><div className="lg-fig"><Money value={margin} size="l" /><span className="lg-what">your margin at MRP</span></div><p className="lg-working">{list.length} {list.length === 1 ? "order" : "orders"} since July, {fmt.num(packets)} packets, {fmt.inr(paid)} paid on {list.length} tax {list.length === 1 ? "invoice" : "invoices"} from {list[0].dist.short}, GST included.</p></Card>
+          <List>{list.map(o => <ListRow key={o.ref} chevron onClick={() => go("offer", { ref: o.ref })} leading={<Product name={o.sku.img} size={40} />} title={`${o.sku.name} · ${o.units} packets`} sub={<span>{o.invoice ? <><span className="mono">{o.invoice.no}</span> · </> : null}ordered {when(o.orderedAt)}{o.van ? ` · ${weekday(o.van)}'s van` : " · on the round"}</span>} value={<span className="lg-val"><b className="tnum">{fmt.inr2(o.m.margin)}</b><em>margin</em></span>} />)}</List></>
           : <Card><Empty icon="shopping-basket" title="No orders yet" body="Orders you place from an offer show here with the van day." /></Card>}
       </div>
     </Screen>;
