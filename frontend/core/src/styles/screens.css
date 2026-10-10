@@ -68,7 +68,7 @@
 .pp-note { margin: 6px 0 0; font-size: 12.5px; color: #4b5550; }
 /* the GST papers in Tally's layout (SC-148): bordered blocks side by side where the paper has room, stacked on a phone;
    the PDF is the same paper on A4 */
-.tl { container-type: inline-size; padding: 18px 16px 16px; display: grid; font: 400 12px/1.45 var(--font-ui); color: #141816; }
+.tl { container-type: inline-size; padding: 18px 16px 16px; display: grid; grid-template-columns: minmax(0, 1fr); font: 400 12px/1.45 var(--font-ui); color: #141816; }
 .tl > * + * { margin-top: -1px; }
 .tl-title { text-align: center; font-weight: 700; font-size: 16px; letter-spacing: 0.02em; }
 .tl-copy { text-align: center; font-size: 10.5px; color: #4b5550; margin: 2px 0 10px !important; }
@@ -96,8 +96,12 @@
   .tl-tall { grid-row: auto; }
   .tl-einv svg { width: 116px; height: 116px; }
   .tl-table { font-size: 11px; }
-  .tl-table th, .tl-table td { padding: 5px 4px; }
+  .tl-table th, .tl-table td { padding: 5px 3px; }
+  .tl-table th { overflow-wrap: anywhere; }
+  .tl-table td:nth-child(2) { min-width: 0; }
 }
+/* a phone's paper keeps its blocks inside its edges: a tighter inset, as a container cannot style itself */
+@media (max-width: 560px) { .tl { padding: 14px 10px 12px; } }
 /* the food bank's receipt, opened from the pickup it records (SC-110) */
 .receipt-row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 12px 14px; border: 0; border-radius: 14px; background: var(--primary-soft); color: inherit; font: inherit; text-align: left; cursor: pointer; transition: background-color var(--t-fast) var(--ease); }
 .receipt-row:hover { background: color-mix(in oklab, var(--primary) 20%, var(--surface)); }
