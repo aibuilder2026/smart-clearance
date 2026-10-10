@@ -26,6 +26,8 @@ hosting_sites = {
 
 # Who may run backend-api locally as its service account, sc-api-local (backend.tf): the account Terraform runs as.
 operators = ["user:gilchristfan@gmail.com"]
+# the operators may act as sc-migrator until then, to replace production's data with local's (SC-136); empty to close it
+data_sync_until = "2026-10-12T12:00:00Z"
 
 # backend-api in the cloud (SC-50): Cloud SQL, Cloud Run, Cloud Build, Artifact Registry, monitoring and the budget.
 # About GBP 9 a month, nearly all Cloud SQL.
