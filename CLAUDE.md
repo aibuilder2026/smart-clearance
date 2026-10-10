@@ -1729,15 +1729,20 @@
     - "Rakesh Traders's" in two sentences;
     - the review sheet was too narrow at 1440, and its footer overflowed on phones;
     - the live projection dropped the godown fields, so the note read ₹0.00;
-    - a partner's times stored without a zone were read in the server's.
+    - a partner's times stored without a zone were read in the server's;
+    - `hydrate.sh --papers` (`steps.lay_out_missing`) did not count the agency's certificate as a printed paper, and counted an awaiting one as missing. It now follows the agents' `needs_pdf` (`steps.printed`).
   - **Checks:**
-    - backend-api 547 passed, 1 skipped (`test_destruction.py`, 4 new: the whole flow, the reminder, Vision off, the console's settings; the Mango's tests walk route B);
+    - backend-api 547 passed, 1 skipped (`test_destruction.py`, 4 new: the whole flow, the reminder, Vision off, the console's settings; the Mango's tests walk route B; `test_ledger.py`'s PDF test now asks for the agency's certificate and leaves an awaiting one, and fails without the fix);
     - agents 202 passed (4 new);
     - the frontend gate passes: core 260, api 78, workspace 87, admin 17, demo 5, console 3. The new goldens cover the request to the second yes, and a history batch's godown papers. The new live tests cover Today, the send with both uploads, Priya's review and the cleared moments;
     - the live fixtures were regenerated, with two new moments (`destruction-asked`, `destruction-checked`);
     - both PDFs were rendered and read;
     - the browser suites and the journey suites were not run (SC-55).
-  - **Locally:** migrated to 0011 and rebuilt (`hydrate.sh --reset`): Munchly on `godown`, the three history batches destroyed and approved, and Paperwork laying out their PDFs. The day is 24 hours.
+  - **Locally:**
+    - migrated to 0011, then rebuilt with `hydrate.sh --reset`;
+    - Munchly is on `godown`, and the three history batches are destroyed and approved by Priya;
+    - the agents' worker was restarted on the new code, and `--papers munchly` laid out the three agency certificates (OCE/DC/26-27/0218 reads 132 packs and ₹118.80 reversed by Rakesh Traders);
+    - the day is 24 hours.
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
