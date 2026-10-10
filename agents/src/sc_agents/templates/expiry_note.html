@@ -11,6 +11,26 @@
     {{ case.distributor.godown or case.distributor.city }}
   </div>
 </div>
+{% if doc.policy == "godown" %}
+{# destroyed at his godown (SC-139): the dealer price, the input GST he reverses on them (grossed up) and the agency's
+   charges, against the agency's certificate #}
+<table>
+  <thead>
+    <tr><th>Destroyed at the godown</th><th class="n">Packs</th><th class="n">Credit</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{{ case.sku.brand }} {{ case.sku.name }}, at the {{ doc.dp|inr(true) }} dealer price</td>
+      <td class="n">{{ doc.units|num }}</td>
+      <td class="n">{{ doc.credit|inr(true) if doc.credit is not none else "—" }}</td>
+    </tr>
+    {% if doc.gst %}<tr><td>Input GST he reverses on them, {{ doc.gstPct }}%, section 17(5)(h)</td><td></td><td class="n">{{ doc.gst|inr(true) }}</td></tr>{% endif %}
+    {% if doc.charges %}<tr><td>Destruction charges, {{ doc.agency or "the agency" }}</td><td></td><td class="n">{{ doc.charges|inr(true) }}</td></tr>{% endif %}
+    <tr class="total"><td colspan="2">Credit to {{ case.distributor.name }}</td><td class="n">{{ doc.amount|inr(true) if doc.amount is not none else "—" }}</td></tr>
+  </tbody>
+</table>
+{% if doc.certificate %}<p class="muted">Against destruction certificate {{ doc.certificate }}{% if doc.agency %} of {{ doc.agency }}{% endif %}.</p>{% endif %}
+{% else %}
 <table>
   <thead>
     <tr><th>Expired at the godown</th><th class="n">Packs</th><th class="n">Credit</th></tr>
@@ -24,6 +44,7 @@
     <tr class="total"><td colspan="2">Credit to {{ case.distributor.name }}</td><td class="n">{{ doc.amount|inr(true) if doc.amount is not none else "—" }}</td></tr>
   </tbody>
 </table>
+{% endif %}
 {% if doc.policy == "full-credit" %}
 <table>
   <thead>
@@ -37,6 +58,6 @@
   </tbody>
 </table>
 {% endif %}
-<p class="muted">A financial credit note, with no GST adjustment.</p>
+{% if doc.policy != "godown" %}<p class="muted">A financial credit note, with no GST adjustment.</p>{% endif %}
 {% if doc.note %}<div class="note">{{ doc.note }}</div>{% endif %}
 {% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{# the authorised agency's destruction certificate for packs destroyed at a distributor's godown on expiry day
+   (SC-139, route B), laid out from what the case records of it: issued by the agency, for the distributor #}
+{% block body %}
+<div class="parties">
+  <div>
+    <div class="label">Issued by</div>
+    <strong>{{ doc.agency }}</strong><br>
+    Authorisation {{ doc.auth }}
+  </div>
+  <div>
+    <div class="label">For</div>
+    <strong>{{ (doc.for or {}).name or case.distributor.name }}</strong><br>
+    {{ (doc.for or {}).address or case.distributor.city }}{% if (doc.for or {}).gstin %}<br>GSTIN {{ doc.for.gstin }}{% endif %}
+  </div>
+</div>
+<table>
+  <thead>
+    <tr><th>Destroyed</th><th class="n">Packs</th><th class="n">Weight</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{{ case.sku.brand }} {{ case.sku.name }}<br><span class="muted">HSN {{ doc.hsn or case.sku.hsn }} · batch {{ doc.batch or case.ref }} · best before {{ (doc.bestBefore or case.batch.bestBefore)|date }}</span></td>
+      <td class="n">{{ doc.units|num }}</td>
+      <td class="n">{{ "%.2f"|format(doc.kg or 0) }} kg</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <tbody>
+    <tr><th>From</th><td>{{ doc.from or case.distributor.godown or case.distributor.city }}</td></tr>
+    <tr><th>Method</th><td>{{ doc.method }}</td></tr>
+    <tr><th>Site</th><td>{{ doc.site }}</td></tr>
+    <tr><th>Destroyed</th><td>{{ (doc.destroyedAt or "")[:10]|date }}{% if doc.destroyedAt and doc.destroyedAt|length > 10 %}, {{ doc.destroyedAt[11:16] }}{% endif %}</td></tr>
+    <tr><th>Evidence</th><td>Two photos, before at the godown and after at the site; {{ (doc.evidence or {}).checks or 0 }} of {{ (doc.evidence or {}).of or 0 }} checks passed{% if doc.approvedBy %}; approved by {{ doc.approvedBy }}{% endif %}</td></tr>
+    <tr><th>Input GST reversed</th><td>{{ doc.reversed|inr(true) }} by {{ (doc.for or {}).name or case.distributor.name }}, section 17(5)(h), GSTR-3B Table 4(B)(1)</td></tr>
+  </tbody>
+</table>
+{% if doc.note %}<div class="note">{{ doc.note }}</div>{% endif %}
+{% endblock %}
+{% block issued %}Laid out by Smart-Clearance's Paperwork agent from the agency's certificate and the evidence on the batch's record.{% endblock %}
