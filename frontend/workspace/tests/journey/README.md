@@ -150,6 +150,27 @@ E2E_FROM=deal E2E_UNTIL=truck corepack pnpm test:journey      # part of it, on t
 - It resets Munchly's journey first, as the console's Reset journey does: the story's batches start again on day 0. The
   Mango Drink is flagged too and is left where the agents take it.
 
+## On production
+
+`E2E_TARGET=prod` runs a suite on production (SC-137) instead of this machine:
+
+- the deployed apps, munchly-smartclearance.web.app and smartclearance-console.web.app;
+- backend-api and the agents on Cloud Run.
+
+Each app's API address and browser key are its production build settings, the repository's variables, read with `gh`.
+Nothing local needs to run: no dev servers, no local API, no worker. The people still sign in with custom tokens from
+`sessions.sh`, since production shares the Firebase user pool.
+
+```sh
+E2E_TARGET=prod corepack pnpm test:journey
+```
+
+It resets production's Munchly journey first, as every chips suite does, and the agents call live Gemini on Cloud
+Run. Afterwards, set production's journey day back to 24 hours from the console (the client's journey-day badge,
+Real time); `hydrate.sh --day-minutes` sets only the local database's.
+
+Its run of 10 Oct on production is in `runs/2026-10-10-prod/`.
+
 ## Signing in
 
 Nobody's password is handled. `backend-api/scripts/sessions.sh` mints a Firebase custom token for each person, signed as

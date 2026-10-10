@@ -1007,8 +1007,8 @@ export type WsPartnerCase = {
 	cleared: string | null;
 	/** each step and when it happened: detect, ask, photo, read, approve, listing, offer, donation, pickup, orders (the
 	 *  first), accept, collect, closeOffer (a scheme closed on its clock), staff, truck, papers, invoice, van, review,
-	 *  report */
-	steps: { step: string; at: LocalTime }[];
+	 *  report. The van round also carries when it leaves (SC-97), which a compressed journey can run it before (SC-137) */
+	steps: { step: string; at: LocalTime; leaves?: LocalTime }[];
 	/** mfg: the day it was made, as its label reads (SC-133) */
 	batch: { daysLeft: number; bestBefore: string; mfg: string | null };
 	plan: {

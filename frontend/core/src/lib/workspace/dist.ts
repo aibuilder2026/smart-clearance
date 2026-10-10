@@ -7,7 +7,7 @@
 // facts. Nothing here reads the seed, so a live build carries none of it. core/tests/dist.test.ts holds them to
 // ledger.js.
 import { fmt } from '../format';
-import { scheme as schemeOf, stepAt, weekday } from './partners';
+import { scheme as schemeOf, stepAt, vanDay } from './partners';
 import type { CaseData, Distributor, Hero, PartnerCase, Phase, Shop, Sku, State } from './types';
 
 /** what the texts name: the products, the distributors, the buyer, the scheme, the client */
@@ -597,7 +597,7 @@ export function ordersPast(c: PartnerCase, shopName: (id: string) => string, w: 
 			units: kl.units,
 			who: `${c.kiranas.length} ${c.kiranas.length === 1 ? 'kirana' : 'kiranas'}`,
 			what: `${num(kl.units)} packets at ${rate(planned(c, 'kirana')?.packPrice ?? 0)}, ${w.scheme.free} free with every ${w.scheme.buy}`,
-			sub: `${c.kirana && c.kirana.ordered < c.kirana.planned ? `of ${num(c.kirana.planned)} offered · ` : ''}${van ? `delivered on the ${weekday(van)} round` : 'delivered on the van round'}`,
+			sub: `${c.kirana && c.kirana.ordered < c.kirana.planned ? `of ${num(c.kirana.planned)} offered · ` : ''}${van ? `delivered on the ${vanDay(c)} round` : 'delivered on the van round'}`,
 			amount: kl.gross,
 			at: stepAt(c, 'orders'),
 			shops: c.kiranas.map((k) => ({ name: shopName(k.kirana), units: k.units, at: k.at || null }))
@@ -641,7 +641,7 @@ export function deliveriesPast(c: PartnerCase, w: DistWorld): DistDelivery[] {
 		out.push({
 			id: 'kirana',
 			at: van,
-			title: `${weekday(van)} van round`,
+			title: `${vanDay(c)} van round`,
 			sub: `${c.kiranas.length} ${c.kiranas.length === 1 ? 'shop' : 'shops'} · ${num(kl.units)} packets`
 		});
 	if (es && truck)

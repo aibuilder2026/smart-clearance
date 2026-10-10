@@ -489,8 +489,9 @@ export const MANGO: Step[] = [
 			await page.locator('.bh-tabs').getByRole('button', { name: 'Money' }).click();
 			await expect(main).toContainText('You end whole');
 			const money = await text();
+			// a cleared batch reads her partner facts, as every batch she cleared before does (SC-135)
 			shows('Her batch: money', money, [
-				'From your kiranas',
+				`From ${shops} kiranas`,
 				'Your staff sale',
 				'Price-support credit note',
 				'Your gain or loss ₹0'

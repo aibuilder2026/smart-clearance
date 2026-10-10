@@ -1031,6 +1031,15 @@ describe("a distributor's portal, batch by batch (SC-133)", () => {
 		expect(t).not.toContain('Settled: you ended whole');
 	});
 
+	it("Rakesh's cleared chips name the van round by the day it leaves, though it ran before then (SC-137)", async () => {
+		const m = moment('cleared');
+		const leaves = m.members.priya.cases[CHIPS].moments.van.leavesAt!;
+		const day = new Date(leaves).toLocaleDateString('en-GB', { weekday: 'long', timeZone: 'Asia/Kolkata' });
+		const r = await draw(source(fakeApi(m, 'rakesh')), 'batches', CHIPS);
+		await waitFor(() => expect(text(r)).toContain('You sent the label photo'));
+		expect(text(r)).toContain(`Your ${day} van round delivered the scheme`);
+	});
+
 	it("Orders lists each batch's orders under it, with the paper each sold on", async () => {
 		const m = moment('cleared');
 		const r = await draw(source(fakeApi(m, 'rakesh')), 'orders');

@@ -96,7 +96,7 @@ export function distributorStep(): Step {
 				'The scheme went to 38 of your kiranas',
 				'Agrawal Wholesale took the counter at ₹14.20',
 				'31 kiranas ordered 588 packets',
-				"You loaded Agrawal Wholesale's truck",
+				"Agrawal Wholesale's truck collected the lot",
 				'The Paperwork agent drafted your papers',
 				`Your ${day} van round delivered the scheme`,
 				'Settled: you ended whole'
@@ -105,8 +105,9 @@ export function distributorStep(): Step {
 			await page.locator('.bh-tabs').getByRole('button', { name: 'Money' }).click();
 			await expect(main).toContainText('You end whole');
 			const money = await text();
+			// a cleared batch reads his partner facts, as every batch he cleared before does (SC-135)
 			shows('His batch: money', money, [
-				'From your kiranas',
+				`From ${c.journey.orders.length} kiranas`,
 				'From Agrawal Wholesale',
 				'Price-support credit note',
 				[rupees(F.support), rupees(Math.round(F.support))],
