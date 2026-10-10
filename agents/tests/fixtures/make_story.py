@@ -36,6 +36,17 @@ def main() -> None:
         "buyer": j["buyer"],
         "balanceHours": j["market"]["balanceHours"],
         "ewayThreshold": m["rules"]["ewayThreshold"],
+        "scheme": m["rules"]["scheme"],
+        # Shree Ganesh Kirana's tax invoice for the chips (SC-153), as backend-api issues it as the shop orders
+        "kiranaInvoice": {
+            "no": "RT/26-27/1279",
+            "date": "2026-10-02",
+            "at": "2026-10-02T09:52",
+            "kirana": "k0",
+            "shop": {"id": "k0", "name": "Shree Ganesh Kirana", "area": "Itwari", "pincode": "440002"},
+            **next(c["out"] for c in m["kiranaInvoice"] if c["units"] == 24 and c["sku"]["id"] == "chips"),
+            "pdf": False,
+        },
     }
     (HERE / "story.json").write_text(json.dumps(story, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print(f"wrote {HERE / 'story.json'}")

@@ -510,7 +510,8 @@ const journey = {
 			},
 			listing: c.listing ? { id: c.listing.id } : null,
 			offered: c.offered,
-			kiranas: c.kiranas.map(({ kirana, units }) => ({ kirana, units })),
+			// each shop's order with its time and the tax invoice its distributor issued it (SC-153)
+			kiranas: c.kiranas.map(({ kirana, units, at, invoice }) => ({ kirana, units, at, invoice })),
 			kirana: c.kirana,
 			award: c.award ? { price: c.award.price, token: c.award.token } : null,
 			partner: c.partner ? { name: c.partner.name } : null,

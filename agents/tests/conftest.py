@@ -124,6 +124,7 @@ def case(
     docs: list | None = None,
     which: str = "hero",
     issued: str | None = None,
+    orders: list | None = None,
 ) -> dict[str, Any]:
     """GET …/cases/{ref}: the case as Munchly's operator sees it, with what the agents need beside it"""
     s = STORY[which]
@@ -143,7 +144,7 @@ def case(
             "offer": offer,
             "chat": chat or [],
             "award": award,
-            "orders": [],
+            "orders": orders or [],
             "bids": [],
             "invoiceIssuedAt": issued,
         },
@@ -162,6 +163,7 @@ def case(
         "buyer": STORY["buyer"],
         "balanceHours": STORY["balanceHours"],
         "ewayThreshold": STORY["ewayThreshold"],
+        "scheme": STORY["scheme"],
     }
 
 

@@ -79,6 +79,8 @@ def build(rc: RunCtx) -> BaseAgent | None:
         return _seq("settle", settings, paperwork.settle(rc))
     if kind == "receipt":
         return _seq("receipt", settings, paperwork.receipt(rc))
+    if kind == "kirana":
+        return _seq("kirana", settings, paperwork.kirana(rc))
     if kind == "destruction":
         return _seq("destruction", settings, load_case(rc), vision.destruction(rc))
     if kind == "timer":

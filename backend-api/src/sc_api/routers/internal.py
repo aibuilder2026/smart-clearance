@@ -175,6 +175,8 @@ async def case_of(client_id: str, ref: str, ctx: InternalCtx) -> dict[str, Any]:
         "balanceHours": (doc.get("market") or {}).get("balanceHours"),
         # and the e-way bill's threshold, which its invoice names when none is needed
         "ewayThreshold": money.RULES["ewayThreshold"],
+        # the kirana scheme its kiranas' invoices discount (SC-153): the offer's own, as it was sent
+        "scheme": (case.offer or {}).get("scheme") or money.RULES["scheme"],
         "buyer": (
             {"name": buyer.name, "short": buyer.short, "city": buyer.city, **(buyer.details or {})} if buyer else None
         ),

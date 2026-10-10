@@ -18,6 +18,7 @@ import type {
 	Hero,
 	Integration,
 	Kirana,
+	KiranaInvoice,
 	Notification,
 	Partner,
 	PartnerView,
@@ -44,6 +45,7 @@ import type {
 	WsDistributor,
 	WsDoc,
 	WsFeedEvent,
+	WsKiranaInvoice,
 	WsPartner,
 	WsPlan,
 	WsPlanLine,
@@ -424,7 +426,14 @@ export function caseOf(
 	const closed = j.offer?.status === 'closed';
 	const kiranas: Kirana[] = detail.kiranas
 		.filter((k) => !closed || k.units > 0)
-		.map((k) => ({ id: k.id, name: k.name, area: k.area, units: k.units || k.cap, at: when(k.at, today) }));
+		.map((k) => ({
+			id: k.id,
+			name: k.name,
+			area: k.area,
+			units: k.units || k.cap,
+			at: when(k.at, today),
+			invoice: k.invoice ? invoiceOf(k.invoice) : null
+		}));
 	const sku = skuOf(detail.sku);
 	const dist = distOf(detail.distributor);
 	const vanAt = detail.moments.van.leavesAt;
@@ -563,7 +572,12 @@ function heroOf(detail: CaseDetail | null, today: string): Hero {
 				}
 			: null,
 		offer: j.offer ? { status: j.offer.status, at: at(j.offer.at), shops: j.offer.shops } : null,
-		orders: j.orders.map((o) => ({ id: o.id, units: o.units, at: at(o.at) })),
+		orders: j.orders.map((o) => ({
+			id: o.id,
+			units: o.units,
+			at: at(o.at),
+			invoice: o.invoice ? invoiceOf(o.invoice) : null
+		})),
 		// the shops that said not this time (SC-130): a kirana is told its own
 		declined: Object.fromEntries(Object.entries(j.offer?.declined ?? {}).map(([k, v]) => [k, { at: at(v.at) }])),
 		bids: j.bids.map((b) => ({
@@ -758,11 +772,19 @@ export const emptyState = (): State => ({
 });
 
 /** a partner's own history (SC-130): what backend-api sent, with its papers as the screens read them */
+/** a kirana order's tax invoice as the screens read it (SC-153): backend-api's, its HSN where it names one */
+export const invoiceOf = (x: WsKiranaInvoice): KiranaInvoice => ({ ...x, hsn: x.hsn ?? '' });
+
 export function partnerOf(p: WsPartner): PartnerView {
 	return {
 		buyer: p.buyer,
 		shop: p.shop,
-		cases: p.cases.map((c) => ({ ...c, docs: c.docs.map(docOf), receipt: c.receipt ? docOf(c.receipt) : null }))
+		cases: p.cases.map((c) => ({
+			...c,
+			kiranas: c.kiranas.map((k) => ({ ...k, invoice: k.invoice ? invoiceOf(k.invoice) : null })),
+			docs: c.docs.map(docOf),
+			receipt: c.receipt ? docOf(c.receipt) : null
+		}))
 	};
 }
 

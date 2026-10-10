@@ -315,6 +315,46 @@ async def test_paperwork_lays_out_the_food_banks_receipt_as_it_collects(run, bac
     assert outcome == "noop" and backend.reports() == []
 
 
+async def test_paperwork_lays_out_a_kiranas_tax_invoice_as_it_orders(run, backend, store):
+    """SC-153: the distributor's tax invoice for a shop's scheme order, laid out as the shop orders, no model asked: a
+    B2C supply within the state, the pack price less the scheme's discount, CGST and SGST"""
+    inv = STORY["kiranaInvoice"]
+    order = {"id": "k0", "units": 24, "at": "2026-10-02T09:52:00+05:30", "by": "ganesh", "invoice": inv}
+    backend["GET", f"{C}/cases/{HERO}"] = case(phase="executing", photo="verified", orders=[order])
+    outcome, rc = await run(message(STEP, {"type": "kirana", "ref": HERO, "kirana": "k0"}, event_id="ev_k"))
+    assert outcome == "done"
+    assert [(m, p, b["object"]) for m, p, b in backend.reports()] == [
+        ("PATCH", f"/cases/{HERO}/documents/kirana.k0", f"munchly/{HERO}/kirana-k0.pdf")
+    ]
+    page = store.objects[("docs-test", f"munchly/{HERO}/kirana-k0.pdf")].decode()
+    for text in (
+        "RT/26-27/1279",
+        "02/10/2026",
+        "Shree Ganesh Kirana",
+        "Itwari, Nagpur 440002, Maharashtra",
+        "GSTIN/UIN: Unregistered",
+        "GSTIN/UIN: 27ABHPR0000K1ZW",
+        "Place of Supply: Maharashtra (27)",
+        "Less: Scheme discount, buy 10 get 2 free",
+        "16.67%",
+        "518.40",
+        "-86.40",
+        "CGST @ 2.5%",
+        "10.80",
+        "₹ 454.00",
+        "INR Four Hundred Fifty Four Only",
+        "Scheme order, 09:52",
+    ):
+        assert text in page, text
+    assert "IRN" not in page and rc.requests == []
+
+    # redelivered once the PDF is there: nothing to do
+    backend.routes["GET", f"{C}/cases/{HERO}"]["journey"]["orders"] = [{**order, "invoice": {**inv, "pdf": True}}]
+    backend.calls.clear()
+    outcome, _ = await run(message(STEP, {"type": "kirana", "ref": HERO, "kirana": "k0"}, event_id="ev_k"))
+    assert outcome == "noop" and backend.reports() == []
+
+
 async def test_impact_posts_the_report_and_appends_the_ledger(run, backend, warehouse):
     plan = STORY["hero"]["plan"]
     ledger = {

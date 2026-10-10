@@ -514,7 +514,8 @@ export type Journey = {
 		/** the shops that said not this time (SC-130), by kirana; a kirana is told its own */
 		declined: Record<string, { at: string }>;
 	};
-	orders: { id: string; units: number; at: string; by: string }[];
+	/** each shop's order, with the tax invoice its distributor issued it as it ordered (SC-153) */
+	orders: { id: string; units: number; at: string; by: string; invoice: WsKiranaInvoice | null }[];
 	bids: WsBid[];
 	chat: WsChatMessage[];
 	award: null | {
@@ -822,6 +823,34 @@ export type KiranaOffer = {
 	units: number;
 	at: string | null;
 	member: string | null;
+	/** the tax invoice for its order, once it ordered (SC-153) */
+	invoice: WsKiranaInvoice | null;
+};
+
+/** a kirana's tax invoice from its distributor for one scheme order (SC-153; money.py kirana_invoice): every packet at
+ *  the pack price, less the scheme's discount, which leaves the taxable value the ledger counts; CGST and SGST within
+ *  the state; the total to the rupee. Numbered in the distributor's own series as the shop ordered, dated then; `pdf`
+ *  once the Paperwork agent has laid it out (`GET …/documents/{ref}/kirana.{shop}`) */
+export type WsKiranaInvoice = {
+	no: string;
+	date: string;
+	at: LocalTime;
+	kirana: string;
+	shop: { id: string; name: string; area: string; pincode: string };
+	units: number;
+	rate: number;
+	gross: number;
+	discountPct: number;
+	discount: number;
+	taxable: number;
+	gstPct: number;
+	cgst: number;
+	sgst: number;
+	tax: number;
+	roundOff: number;
+	total: number;
+	hsn?: string;
+	pdf: boolean;
 };
 
 export type Donation = {
@@ -1130,7 +1159,7 @@ export type WsPartnerCase = {
 	listing: { id: string } | null;
 	offered: number;
 	/** the shops' orders: a distributor's every one, a kirana its own */
-	kiranas: { kirana: string; units: number; at: LocalTime }[];
+	kiranas: { kirana: string; units: number; at: LocalTime; invoice: WsKiranaInvoice | null }[];
 	kirana: { planned: number; ordered: number } | null;
 	offer: { status: 'open' | 'closed'; closesAt: LocalTime | null; closedAt: LocalTime | null } | null;
 	/** a kirana's own Not this time */
