@@ -1,0 +1,10 @@
+[
+ {"url": "http://127.0.0.1:8790/app/Smart-Clearance%20app%20v3.html#/execution/MF-2409-117", "out": "current/execution-1440-light", "width": 1440, "theme": "light", "wait": 2200, "height": 1300,
+  "ls": {"sc3-session": {"uid": "priya", "at": 1800000000000}}, "js": "window.SC3_FLOW.fastForward(6); window.SC3_FLOW.act('list'); window.SC3_FLOW.act('outreach'); window.SC3_FLOW.act('order', 'k0')"},
+ {"url": "http://127.0.0.1:8790/app/Smart-Clearance%20app%20v3.html#/execution/MF-2409-117", "out": "current/execution-1440-dark", "width": 1440, "theme": "dark", "wait": 2200, "height": 1300,
+  "ls": {"sc3-session": {"uid": "priya", "at": 1800000000000}}, "js": "window.SC3_FLOW.fastForward(6); window.SC3_FLOW.act('list'); window.SC3_FLOW.act('outreach'); window.SC3_FLOW.act('order', 'k0')"},
+ {"url": "http://127.0.0.1:8790/app/Smart-Clearance%20app%20v3.html#/execution/MF-2409-117", "out": "current/execution-390-light", "width": 390, "theme": "light", "wait": 2200, "height": 1500,
+  "ls": {"sc3-session": {"uid": "priya", "at": 1800000000000}}, "js": "window.SC3_FLOW.fastForward(6); window.SC3_FLOW.act('list'); window.SC3_FLOW.act('outreach'); window.SC3_FLOW.act('order', 'k0')"},
+ {"url": "http://127.0.0.1:8790/app/Smart-Clearance%20app%20v3.html#/execution/MF-2409-117", "out": "current/outreach-card-done-light", "width": 1440, "theme": "light", "wait": 2200, "height": 1300,
+  "ls": {"sc3-session": {"uid": "priya", "at": 1800000000000}}, "js": "window.SC3_FLOW.fastForward(9)", "el": ".card:has(.card-title:has-text('Outreach'))"}
+]

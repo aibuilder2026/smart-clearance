@@ -1,0 +1,69 @@
+/* SC-156's options: Execution's Outreach card without the sample message, saying where the kirana scheme stands */
+.s156 { max-width: 1400px; margin: 0 auto; padding: 24px 20px 60px; display: grid; gap: 18px; }
+.s156-states { display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr)); align-items: start; }
+.s156-state { display: grid; gap: 8px; }
+
+/* the scheme as the shops see it (option A): a green-tinted panel, the kirana channel's own ink */
+.ks { display: grid; gap: 10px; padding: 12px 14px; border-radius: 14px; background: color-mix(in oklab, var(--ch-kirana) 8%, var(--surface)); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ch-kirana) 22%, transparent); }
+.ks-top { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.ks-word { font-weight: 650; font-size: 13.5px; color: var(--fg); }
+.ks-logo { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: var(--ch-kirana); color: #fff; }
+.ks-win { margin-left: auto; font-family: var(--font-mono); font-size: 11.5px; color: var(--fg-2); white-space: nowrap; }
+.ks-lot { display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 12px; align-items: center; }
+.ks-thumb { display: grid; place-items: center; width: 58px; height: 58px; border-radius: 12px; background: var(--surface); box-shadow: 0 0 0 1px var(--line); }
+.ks-price { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; }
+.ks-big { font-family: var(--font-display); font-weight: 760; font-size: 22px; letter-spacing: -0.02em; color: var(--fg); font-variant-numeric: tabular-nums; }
+.ks-date { display: inline-block; padding: 2px 8px; border-radius: 6px; background: color-mix(in oklab, var(--ch-kirana) 14%, transparent); color: var(--fg); font-family: var(--font-mono); font-size: 11.5px; }
+.ks-result { display: flex; gap: 8px; align-items: flex-start; padding: 8px 10px; border-radius: 10px; background: var(--surface); font-size: 13.5px; color: var(--fg); box-shadow: 0 0 0 1px var(--line); }
+.ks-result svg { flex: none; color: var(--primary-text); margin-top: 2px; }
+
+/* the offer window: the 48 hours as one line, filled by the time that has passed, with the orders ticked along it */
+.kwin { display: grid; gap: 6px; }
+.kwin-head { display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px; color: var(--fg-2); flex-wrap: wrap; }
+.kwin-head b { color: var(--fg); font-weight: 600; }
+.kwin-bar { position: relative; height: 10px; border-radius: 5px; background: var(--fill-2); overflow: hidden; }
+.kwin-bar > i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; background: var(--fill-3); }
+.kwin-bar > i.filled { background: var(--primary); }
+.kwin-bar > i.over { background: repeating-linear-gradient(135deg, var(--fill-3) 0 3px, transparent 3px 6px); }
+.kwin-bar > s { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--fg); opacity: 0.6; }
+.kwin-ticks { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 10.5px; color: var(--fg-3); }
+
+/* the steps: SC-151's rail in the kirana channel's green */
+.esl-steps.green li.done i { background: var(--ch-kirana); }
+.esl-steps.green li.now i { background: linear-gradient(90deg, var(--ch-kirana) 50%, var(--fill-2) 50%); }
+
+/* option B: the status line leads, then the window as a timeline of the orders */
+.kstat { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; line-height: 1.4; color: var(--fg); }
+.kstat .icontile { flex: none; }
+.kstat b { font-weight: 650; }
+.kstat small { display: block; font-size: 13px; color: var(--fg-2); }
+.ktl { display: grid; gap: 4px; }
+.ktl svg { width: 100%; height: auto; display: block; overflow: visible; }
+.ktl .ax { font-size: 11px; fill: var(--fg-3); font-family: var(--font-mono); }
+.ktl .lbl { font-size: 12px; fill: var(--fg-2); font-weight: 500; }
+.ktl .elapsed { fill: var(--fill-2); }
+.ktl .cum { fill: color-mix(in oklab, var(--ch-kirana) 18%, transparent); stroke: var(--ch-kirana); stroke-width: 2; stroke-linejoin: round; }
+.ktl .dot { fill: var(--ch-kirana); stroke: var(--surface); stroke-width: 1.5; }
+.ktl .close { stroke: var(--fg); stroke-width: 1.5; stroke-dasharray: 3 3; opacity: 0.6; }
+.ktl .now { stroke: var(--amber-text); stroke-width: 2; }
+
+/* option C: every shop as a cell */
+.kgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 6px; padding: 0; margin: 0; list-style: none; }
+.kgrid li { display: grid; gap: 2px; min-height: 44px; padding: 6px 7px; border-radius: 9px; font-size: 11px; line-height: 1.2; color: var(--fg-2); background: var(--fill); box-shadow: inset 0 0 0 1px transparent; }
+.kgrid li b { font-size: 12.5px; font-weight: 650; color: var(--fg); font-variant-numeric: tabular-nums; }
+.kgrid li.ordered { background: color-mix(in oklab, var(--ch-kirana) 14%, var(--surface)); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ch-kirana) 35%, transparent); }
+.kgrid li.declined { background: transparent; box-shadow: inset 0 0 0 1px var(--line-2); }
+.kgrid li.declined b { color: var(--fg-3); }
+.kgrid li.missed { background: repeating-linear-gradient(135deg, var(--fill-2) 0 3px, transparent 3px 6px); }
+.kgrid li.missed b, .kgrid li.waiting b { color: var(--fg-3); }
+.kgrid-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--fg-2); }
+.kgrid-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.kgrid-legend i { width: 12px; height: 12px; border-radius: 3px; background: var(--fill); box-shadow: inset 0 0 0 1px var(--line-2); }
+.kgrid-legend i.ordered { background: color-mix(in oklab, var(--ch-kirana) 14%, var(--surface)); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ch-kirana) 35%, transparent); }
+.kgrid-legend i.missed { background: repeating-linear-gradient(135deg, var(--fill-2) 0 3px, transparent 3px 6px); box-shadow: none; }
+.kgrid-legend i.waiting { background: var(--fill); box-shadow: none; }
+
+/* the push, as sent: one message to every shop, behind a button, as SC-151 keeps the raw call */
+.kpush { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: start; padding: 10px 12px; border-radius: 12px; background: var(--fill); }
+.kpush .hi { line-height: 1.45; }
+.kpush small { display: block; margin-top: 6px; font-size: 12px; color: var(--fg-3); }
