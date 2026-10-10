@@ -8,7 +8,7 @@
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, Flow = window.SC3_FLOW, S = window.SC3_SCREENS; const fmt = M.fmt;
   const { cx, Icon, Badge, Button, Card, List, ListRow, Segmented, Sheet, Product, Empty, Money, Roll, Tile, MoneyPanel, DocCard, Menu, Avatar, useApp, useNotice } = K;
   const { useStore, useRoute, Screen, Columns, SectionTitle, Locked } = S;
-  const LG = () => window.SC3_LEDGER; // core/ledger.js, read when a screen draws (the design-system page loads no ledger)
+  const LG = () => window.SC3_LEDGER; // core/ledger.js, read when a screen draws
   const r2 = n => Math.round(n * 100) / 100;
   const W = D.WORKSPACE;
   const first = name => String(name || "").split(" ")[0];
