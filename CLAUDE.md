@@ -1588,7 +1588,7 @@
   - **The journey is left as the run ended** (both batches cleared); the day is back at 24 hours.
   - **Checks:** the frontend gate passes (core 258, api 77, workspace 79, admin 17, demo 5, console 3).
 
-- **SC-135** (In Review, branch `SC-135-mango-leftover-e2e`): Munchly Mango Leftover E2E, asked for by the maintainer ("run the mango run with left order scenario (kiranas not buying all). I need you verify end to end all the screens and states including gst invoices and destruction certs and donation receipts. And financial and esg impacts").
+- **SC-135** (PR #116, merged): Munchly Mango Leftover E2E, asked for by the maintainer ("run the mango run with left order scenario (kiranas not buying all). I need you verify end to end all the screens and states including gst invoices and destruction certs and donation receipts. And financial and esg impacts").
   - **The suite** (`munchly-mango-leftover.journey.ts`, its own Playwright project, `corepack pnpm test:journey:mango-leftover`; it resets the journey):
     - Lakshmi Agencies' 52 ordering kiranas: the last `E2E_LEFTOVER` (10) do not buy; of those, `E2E_DECLINE` (2) press Not this time and the rest let the scheme go;
     - the staff sale is recorded, and Feeding India collects;
@@ -1627,5 +1627,28 @@
     - the frontend gate passes (core 258, api 77, workspace 81 with 2 new live tests, admin 17, demo 5, console 3);
     - the live fixtures were regenerated;
     - the day is back at 24 hours.
+
+- **SC-136** (In Review, branch `SC-136-sync-prod-data`): production's data replaced with local's, asked for by the maintainer ("sync the local postgresql data and bigquery local data with cloud, so that i have exact same dataset on the application deployed on cloud run"; "bigquery and buckets need sync too").
+  - **The maintainer's answers:** a time-limited grant for the operators to act as sc-migrator; the audit log copied exactly (an on-demand backup first).
+  - **infra/prod:** `migrator_operators`, a `roles/iam.serviceAccountTokenCreator` binding on sc-migrator for the operators, conditioned on `request.time < data_sync_until` (`terraform.tfvars`: `2026-10-12T12:00:00Z`), so it closes by itself; empty removes it. Applied on the maintainer's yes (plan read in full: 1 to add, 0 to change, 0 to destroy).
+  - **`backend-api/scripts/sync.sh`** (`sc_api/cli/sync.py`):
+    - read-only by default: the schema versions, which must match; each table's rows on both sides; what local still has to send; the buckets' objects; BigQuery's rows;
+    - `--rehearse`: the database's transaction into a scratch local database;
+    - `--apply --allow-env prod`, in order:
+      1. an on-demand Cloud SQL backup;
+      2. one transaction as sc_owner: the truncate guards lifted, every table of schema `sc` truncated, then copied (binary COPY) in the order of its non-deferrable keys, with the deferrable ones checked at commit. The sequences are set to local's, the guards put back, and the rows checked against local's before commit;
+      3. the photos, docs and exports buckets copied local to prod, same names (production-only objects kept for the backup; the 30-day lifecycle removes them);
+      4. BigQuery's seven tables truncated and filled from `smartclearance_local`, with `secondary_sales.source_file` pointed at the prod exports bucket;
+      5. the plan again.
+  - **Rehearsed** into a scratch local database: 37 tables, 9,268 rows, 19 sequences. The audit log, cases and stream checksums matched, and the restored guard refused a truncate.
+  - **Done in production (10 Oct):**
+    - the backup `1791624822523` (ON_DEMAND, 09:33 UTC);
+    - the database went from 2,585 rows to local's 9,268, with all 37 tables equal;
+    - photos, docs and exports copied;
+    - BigQuery's seven tables equal, 8,539 rows.
+
+    Read through the live API: the Mango Drink cleared (248 packs settled, ₹3,596), its papers with their PDFs from the prod docs bucket, the ledger's 13 batches, Lakshmi Agencies' 7 batches.
+  - **After it:** the two environments run on their own again; each one's tick and agents move its own copy on.
+  - **Checks:** backend-api 529 passed, 1 skipped (3 new in `test_sync.py`); infra `check.sh` passes.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
