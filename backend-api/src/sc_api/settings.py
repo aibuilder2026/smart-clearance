@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     default_password_secret: str | None = None
 
     staff_email_domain: str = "smartclearance.example"
-    workspace_domain: str = "smartclearance.com"
+    workspace_domain: str = "smartclearance.web.app"
     cors_origins: Annotated[list[str], NoDecode] = Field(
         default_factory=lambda: [
             "http://localhost:5173",

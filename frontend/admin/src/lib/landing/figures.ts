@@ -361,9 +361,9 @@ export function figures(s: Showcase, c: Catalog) {
 	];
 	// the addresses: one workspace each, none of them a client's (SC-28)
 	const addresses = [
-		{ id: 'brand', url: 'your-brand.smartclearance.com', live: true },
-		{ id: 'company', url: 'your-company.smartclearance.com', live: false },
-		{ id: 'group', url: 'your-group.smartclearance.com', live: false }
+		{ id: 'brand', url: 'your-brand-smartclearance.web.app', live: true },
+		{ id: 'company', url: 'your-company-smartclearance.web.app', live: false },
+		{ id: 'group', url: 'your-group-smartclearance.web.app', live: false }
 	];
 
 	const connectors = ['dms', 'tally', 'bq', 'sso', 'expiresoon', 'irp', 'whatsapp']

@@ -5,9 +5,9 @@ shared packages.
 
 | Package                                                            | What it is                                                                                                                                                                  |
 | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`admin/`](admin/README.md) (`@smart-clearance/admin`)             | The platform's own site: the smartclearance.com landing page, prerendered, and `/ds`.                                                                                       |
-| [`console/`](console/README.md) (`@smart-clearance/console`)       | The staff console, console.smartclearance.com: a client-side app behind a staff sign-in, where each manufacturer's workspace is set up and run (SC-37).                     |
-| [`workspace/`](workspace/README.md) (`@smart-clearance/workspace`) | A manufacturer's workspace, Munchly Foods' at munchly.smartclearance.com: a thin client-side host for core's workspace app, on the prototype's stub data (SC-62).           |
+| [`admin/`](admin/README.md) (`@smart-clearance/admin`)             | The platform's own site: the smartclearance.web.app landing page, prerendered, and `/ds`.                                                                                   |
+| [`console/`](console/README.md) (`@smart-clearance/console`)       | The staff console, smartclearance-console.web.app: a client-side app behind a staff sign-in, where each manufacturer's workspace is set up and run (SC-37).                 |
+| [`workspace/`](workspace/README.md) (`@smart-clearance/workspace`) | A manufacturer's workspace, Munchly Foods' at munchly-smartclearance.web.app: a thin client-side host for core's workspace app, on the prototype's stub data (SC-62).       |
 | [`demo/`](demo/README.md) (`@smart-clearance/demo`)                | The guided demo: nine stages of one batch on a laptop and a phone running the workspace app's real screens, with the narration, on the same stub data (SC-63).              |
 | [`core/`](core/README.md) (`@smart-clearance/core`)                | Design system v3 in Svelte 5: the tokens, component and screen CSS ported from design3, and the components. Every UI piece the apps share lives here.                       |
 | [`api/`](api/README.md) (`@smart-clearance/api`)                   | The frontend's side of backend-api: the contract, the HTTP transport, and an in-browser mock of each app's calls, seeded from design3. Each app imports only its own entry. |
@@ -94,12 +94,12 @@ The gate jira-flow runs for a change under `frontend/` is `corepack pnpm lint &&
 Each app is a static build, deployed on its own host name. `firebase.json` gives Firebase Hosting (the Tech Stack's
 choice) four targets:
 
-| Target      | Build             | Host name                                                         | Unknown paths |
-| ----------- | ----------------- | ----------------------------------------------------------------- | ------------- |
-| `site`      | `admin/build`     | smartclearance.com                                                | `/200.html`   |
-| `console`   | `console/build`   | console.smartclearance.com                                        | `/index.html` |
-| `workspace` | `workspace/build` | munchly-smartclearance.web.app (munchly.smartclearance.com later) | `/index.html` |
-| `demo`      | `demo/build`      | smartclearance-demo.web.app                                       | `/index.html` |
+| Target      | Build             | Host name                      | Unknown paths |
+| ----------- | ----------------- | ------------------------------ | ------------- |
+| `site`      | `admin/build`     | smartclearance.web.app         | `/200.html`   |
+| `console`   | `console/build`   | smartclearance-console.web.app | `/index.html` |
+| `workspace` | `workspace/build` | munchly-smartclearance.web.app | `/index.html` |
+| `demo`      | `demo/build`      | smartclearance-demo.web.app    | `/index.html` |
 
 All four cache `/_app/immutable/` for a year and everything else with `no-cache`; the console's, the workspace's and the
 demo's pages also carry `noindex`, `X-Frame-Options: DENY` and the referrer policy. Terraform in `../infra` makes a Hosting site

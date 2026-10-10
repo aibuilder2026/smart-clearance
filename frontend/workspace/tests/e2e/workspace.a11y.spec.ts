@@ -59,7 +59,7 @@ test('sign-in · the page, a wrong email, and Find your workspace', async ({ pag
 	await expect(sheet).toBeVisible();
 	await sheet.getByLabel('Email or mobile number').fill('priya.deshmukh@munchly.in');
 	await sheet.getByRole('button', { name: 'Find workspaces' }).click();
-	await expect(sheet.getByText('munchly.smartclearance.com').first()).toBeVisible();
+	await expect(sheet.getByText('munchly-smartclearance.web.app').first()).toBeVisible();
 	await settled(page);
 	findings.push(...(await scan(page, 'sign-in · Find your workspace')));
 	await report(testInfo, findings);

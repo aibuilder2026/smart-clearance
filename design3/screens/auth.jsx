@@ -1,4 +1,4 @@
-// Smart-Clearance v3 · signing in to a client's workspace (munchly.smartclearance.com), shared by the app and the
+// Smart-Clearance v3 · signing in to a client's workspace (munchly-smartclearance.web.app), shared by the app and the
 // guided demo. Email or phone first: a munchly.in address goes to Munchly's Google Workspace, an invited number gets
 // a one-time code, a first-time invitee joins the workspace, and anyone else is pointed to "Find your workspace".
 (function () {
