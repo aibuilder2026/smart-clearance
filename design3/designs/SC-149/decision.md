@@ -30,6 +30,15 @@ Colours, validated with the dataviz script against the card's surface: kept out 
 `#c2410c` / `#e0662c` with a hatch (CVD ΔE 9.1 light, 9.0 dark). The ledger's red failed against the green (protan
 ΔE 1.7). The destroyed figure's text: 6.04:1 light, 7.41:1 dark.
 
-## The pick
+## The pick (10 Oct)
 
-Waiting for the maintainer.
+**Option A · Food, by day.** The first figure stays the money, Recovered, with its sparkline. The card under Agents at
+work becomes Food, by day: each day's kilos kept out of landfill (sold or given) rising from the baseline, and the kilos
+destroyed (no channel took them) hatched under it, on one scale, with both totals and the share saved; the tooltip and
+the table add the packs destroyed, what the day recovered and the batches closed.
+
+Its other states, for the build:
+
+- **Nothing closed in the range:** the baseline and its axis, the headline at 0 kg, and "Nothing closed in this range".
+- **Nothing destroyed:** no bars under the baseline, the space one step deep; "Nothing destroyed in this range".
+- **A client's batches closed before this:** they read 0 destroyed until the next hydrate gives them their packs.

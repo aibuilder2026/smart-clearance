@@ -66,3 +66,19 @@ export function writePaused(paused: boolean) {
 		// storage blocked: the choice lasts until the page closes
 	}
 }
+
+/** the food as people say it (SC-149): 640 kg, 1.2 t, 154 t */
+export const kg = (v: number) =>
+	v >= 1000
+		? (v / 1000).toLocaleString('en-IN', { maximumFractionDigits: v >= 100_000 ? 0 : 1 }) + ' t'
+		: Math.round(v).toLocaleString('en-IN') + ' kg';
+/** a food axis's tick: 0, 250 kg, 2.5 t */
+export const kgAxis = (v: number) =>
+	!v
+		? '0'
+		: v >= 1000
+			? (v / 1000).toLocaleString('en-IN', { maximumFractionDigits: 1 }) + ' t'
+			: Math.round(v) + ' kg';
+/** the share of the food kept out of landfill, to a tenth of a percent; null when nothing closed */
+export const savedShare = (kept: number, destroyed: number) =>
+	kept + destroyed > 0 ? Math.round((kept / (kept + destroyed)) * 1000) / 10 : null;

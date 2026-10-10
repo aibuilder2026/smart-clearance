@@ -93,6 +93,41 @@ async def test_batches_filtered_searched_and_sorted(api, neha):
     assert (await api.get(f"{B}?status=lost", headers=neha)).status_code == 422
 
 
+async def test_the_food_a_closed_batch_kept_out_of_landfill_and_destroyed(api, neha, ctx):
+    """SC-149: a closed batch's food counts on the day it closed, the packs it destroyed and the rest kept out of
+    landfill, in kilos by its SKU's kilos a pack; an open batch counts none"""
+    from sc_api import models as m
+
+    d = (await api.get(f"{D}?days=7", headers=neha)).json()
+    assert d["food"] == {"keptKg": 0, "destroyedKg": 0, "destroyed": 0, "keptKgBefore": 0, "destroyedKgBefore": 0}
+    assert {(x["keptKg"], x["destroyedKg"], x["destroyed"]) for x in d["byDay"]} == {(0, 0, 0)}
+    await supply.close_batch(ctx, "munchly", "MF-2410-402", recovered=31_500, outcome="cleared", destroyed=200)
+    b = await ctx.session.get(m.Batch, ("munchly", "MF-2410-402"))
+    sku = await ctx.session.get(m.Sku, ("munchly", b.sku_id))
+    assert sku.kg_per_unit, "the story's SKUs carry their kilos a pack"
+    kept, gone = round((b.units - 200) * sku.kg_per_unit, 2), round(200 * sku.kg_per_unit, 2)
+    d = (await api.get(f"{D}?days=7", headers=neha)).json()
+    today = d["byDay"][-1]
+    assert (today["keptKg"], today["destroyedKg"], today["destroyed"]) == (kept, gone, 200)
+    assert d["food"] == {
+        "keptKg": kept,
+        "destroyedKg": gone,
+        "destroyed": 200,
+        "keptKgBefore": 0,
+        "destroyedKgBefore": 0,
+    }
+    assert (await api.get(f"{D}?days=7&client=nobody", headers=neha)).json()["food"]["keptKg"] == 0
+
+
+async def test_a_batch_cannot_destroy_more_than_it_holds(ctx):
+    import pytest
+
+    from sc_api.errors import ApiError
+
+    with pytest.raises(ApiError, match="can't have destroyed"):
+        await supply.close_batch(ctx, "munchly", "MF-2410-402", recovered=0, outcome="cleared", destroyed=99_999)
+
+
 async def test_a_closed_batch_lists_what_it_recovered(api, neha, ctx):
     await supply.close_batch(ctx, "munchly", "MF-2410-402", recovered=31_500, outcome="cleared")
     p = (await api.get(f"{B}?status=closed", headers=neha)).json()

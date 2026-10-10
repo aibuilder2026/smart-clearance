@@ -190,11 +190,15 @@ export type BatchRecord = {
 	recovered: number;
 	outcome?: string;
 	override?: BatchOverride & { setAt?: string };
+	/** the packs no channel took and that were destroyed, once it closed, and its SKU's kilos a pack (SC-149) */
+	destroyed?: number;
+	kg?: number;
 };
 
 /** the Overview's dashboard (SC-48). A batch's recovery counts on the day it closed, or, while it is still open past
  *  Settle, the day it was flagged. It is in flight from being flagged until it closes, and waits for a yes at Approve
- *  (the sixth stop). Days are India's */
+ *  (the sixth stop). Days are India's. Its food counts on the day it closed (SC-149): the packs no channel took and that
+ *  were destroyed, the rest kept out of landfill, in kilos by its SKU's kilos a pack */
 export const APPROVE = 5;
 export const RANGES = [7, 30, 90] as const;
 export const SIZES = [8, 16, 32] as const;
@@ -233,7 +237,9 @@ export function dashboard(
 		before = addDays(first, -days);
 	const range = Array.from({ length: days }, (_, i) => addDays(first, i));
 	const rec: Record<string, number> = {},
-		closed: Record<string, [number, number]> = {};
+		closed: Record<string, [number, number]> = {},
+		food: Record<string, { kept: number; destroyed: number; packs: number }> = {},
+		foodBefore = { kept: 0, destroyed: 0 };
 	let recoveredBefore = 0;
 	for (const b of bs) {
 		const d = istDay(b.closedAt || b.openedAt);
@@ -242,10 +248,21 @@ export function dashboard(
 			else if (d >= before && d < first) recoveredBefore += b.recovered;
 		}
 		if (b.closedAt) {
-			const c = istDay(b.closedAt);
+			const c = istDay(b.closedAt),
+				gone = b.destroyed || 0,
+				kg = b.kg || 0;
 			closed[c] ??= [0, 0];
 			closed[c][0] += 1;
 			closed[c][1] += b.units;
+			if (c >= first && c <= today) {
+				const f = (food[c] ??= { kept: 0, destroyed: 0, packs: 0 });
+				f.kept += (b.units - gone) * kg;
+				f.destroyed += gone * kg;
+				f.packs += gone;
+			} else if (c >= before && c < first) {
+				foodBefore.kept += (b.units - gone) * kg;
+				foodBefore.destroyed += gone * kg;
+			}
 		}
 	}
 	// the runs the mock keeps are today's
@@ -285,8 +302,18 @@ export function dashboard(
 			recovered: r2(rec[d] || 0),
 			closed: (closed[d] || [0])[0],
 			units: (closed[d] || [0, 0])[1],
-			runs: d === today ? runsToday : 0
+			runs: d === today ? runsToday : 0,
+			keptKg: r2(food[d]?.kept || 0),
+			destroyedKg: r2(food[d]?.destroyed || 0),
+			destroyed: food[d]?.packs || 0
 		})),
+		food: {
+			keptKg: r2(range.reduce((t, d) => t + (food[d]?.kept || 0), 0)),
+			destroyedKg: r2(range.reduce((t, d) => t + (food[d]?.destroyed || 0), 0)),
+			destroyed: range.reduce((t, d) => t + (food[d]?.packs || 0), 0),
+			keptKgBefore: r2(foodBefore.kept),
+			destroyedKgBefore: r2(foodBefore.destroyed)
+		},
 		inFlight: open.length,
 		inFlightClients: new Set(open.map((b) => b.client)).size,
 		inFlightSeries: range.map((d) => {

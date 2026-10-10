@@ -1063,6 +1063,9 @@
             "title": "Days",
             "type": "integer"
           },
+          "food": {
+            "$ref": "#/components/schemas/FoodFigures"
+          },
           "inFlight": {
             "title": "Inflight",
             "type": "integer"
@@ -1109,6 +1112,7 @@
           "recovered",
           "recoveredBefore",
           "byDay",
+          "food",
           "inFlight",
           "inFlightClients",
           "inFlightSeries",
@@ -1133,6 +1137,18 @@
             "title": "Date",
             "type": "string"
           },
+          "destroyed": {
+            "title": "Destroyed",
+            "type": "integer"
+          },
+          "destroyedKg": {
+            "title": "Destroyedkg",
+            "type": "number"
+          },
+          "keptKg": {
+            "title": "Keptkg",
+            "type": "number"
+          },
           "label": {
             "title": "Label",
             "type": "string"
@@ -1156,7 +1172,10 @@
           "recovered",
           "closed",
           "units",
-          "runs"
+          "runs",
+          "keptKg",
+          "destroyedKg",
+          "destroyed"
         ],
         "title": "DayFigures",
         "type": "object"
@@ -1716,6 +1735,41 @@
           "columns"
         ],
         "title": "FirstExportOut",
+        "type": "object"
+      },
+      "FoodFigures": {
+        "additionalProperties": false,
+        "description": "the food closed batches kept out of landfill and destroyed over the range, and over the range before (SC-149)",
+        "properties": {
+          "destroyed": {
+            "title": "Destroyed",
+            "type": "integer"
+          },
+          "destroyedKg": {
+            "title": "Destroyedkg",
+            "type": "number"
+          },
+          "destroyedKgBefore": {
+            "title": "Destroyedkgbefore",
+            "type": "number"
+          },
+          "keptKg": {
+            "title": "Keptkg",
+            "type": "number"
+          },
+          "keptKgBefore": {
+            "title": "Keptkgbefore",
+            "type": "number"
+          }
+        },
+        "required": [
+          "keptKg",
+          "destroyedKg",
+          "destroyed",
+          "keptKgBefore",
+          "destroyedKgBefore"
+        ],
+        "title": "FoodFigures",
         "type": "object"
       },
       "GateCheck": {

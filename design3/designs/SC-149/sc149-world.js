@@ -46,7 +46,7 @@
         for (var i = 0; i < count; i++) {
           var sku = pick(c.skus), dist = pick(c.distributors), units = int(300, 2400), takes = int(1, 6);
           var left = Math.max(4, Math.round(sku.lifeDays * (0.08 + rnd() * 0.22)));
-          var b = { client: c.id, ref: x.prefix + "-" + day.slice(2, 4) + day.slice(5, 7) + "-" + (++n), sku: sku.id, distributor: dist.id, units: units, bestBefore: addDays(day, left), openedAt: iso(day, int(8, 11), int(0, 59)), recovered: 0 };
+          var b = { client: c.id, ref: x.prefix + "-" + day.slice(2, 4) + day.slice(5, 7) + "-" + (++n), sku: sku.id, distributor: dist.id, units: units, kg: sku.kgPerUnit, bestBefore: addDays(day, left), openedAt: iso(day, int(8, 11), int(0, 59)), recovered: 0 };
           if (ago - takes >= 1) {
             // most batches clear whole; some leave packs no channel took, destroyed at the godown
             var share = rnd() < 0.42 ? 0.02 + rnd() * 0.23 : 0;
