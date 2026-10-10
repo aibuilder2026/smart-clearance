@@ -12,6 +12,7 @@ import type {
 	Ledger,
 	PartnerView,
 	LedgerPage,
+	BatchRecord,
 	ExploreGroup,
 	HumanAction,
 	InviteInput,
@@ -55,6 +56,11 @@ export interface WorkspaceSource {
 	ledgerPage(ref: string): LedgerPage | null;
 	/** the live source only: read a batch's page for the ledger, and keep it up to date while it is open */
 	openPage?(ref: string): void;
+	/** a batch's record (SC-142): the photos sent for it and every step, by the agent or the person who took it; null
+	 *  until read (openRecord asks the live source to read it), and for a role that does not read it */
+	record(ref: string): BatchRecord | null;
+	/** the live source only: read a batch's record, and again when its batch changes */
+	openRecord?(ref: string): void;
 	/** the live source only: files on their way to the workspace (the label photo, a stock export), 0 to 1 */
 	readonly uploads?: ReadonlyMap<string, number>;
 	/** the live source only: the last step that did not go through, with what to tell the person and how to try again */

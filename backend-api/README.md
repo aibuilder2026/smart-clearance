@@ -210,6 +210,13 @@ by the agents in `agents/`. The contract is `frontend/api/src/types/workspace.ts
   then the dealer price plus the input GST he reverses on the packs (grossed up) plus the agency's charges, and the
   destruction certificate is the agency's. The client keeps its own input GST. The history's three leftover batches
   were destroyed this way, with their photos (`reference/evidence/`).
+- **A batch's record** (SC-142, `services/journey/record.py`, `GET …/cases/{ref}/record`, for those who read the
+  ledger): every step of its case, the agents' runs from its feed and each person's decision from the audit log in
+  their name, the kiranas' orders folded into one row. The audit log keeps wall time, so the case's lines are the
+  batch's from when it opened (wall time) to its next case, and each person's step is placed on the journey's clock
+  between the feed's moments around it. The distributor's facts carry the label photo he sent (`views.label_out`).
+  `hydrate.sh --photos CLIENT` puts the history's label photos (`reference/labels/`) in the photos bucket for a
+  workspace built before them.
 - **The money is money.js's** (`domain/money.py`); an agent brings only words (a reason, an offer, a reply), held to the
   computed figures, and a template stands in for whatever it gets wrong (`domain/copy.py`).
 - **What a member sees** is cut to their role on the server (`services/journey/views.py`): the buyer never sees the

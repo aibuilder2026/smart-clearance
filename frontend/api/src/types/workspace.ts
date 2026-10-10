@@ -1134,8 +1134,33 @@ export type WsPartnerCase = {
 	} | null;
 	/** destroyed at his godown (SC-139): the evidence he sent and the client's yes */
 	destruction?: WsDestruction | null;
+	/** the label photo he sent (SC-142): a short-lived link to it, when he sent it, and what Vision read of it */
+	photo?: WsLabelPhoto | null;
 	docs: WsDoc[];
 };
+/** a label photo as it was sent (SC-142) */
+export type WsLabelPhoto = {
+	url: string | null;
+	at: string | null;
+	status: string | null;
+	read: LabelRead | null;
+};
+
+/** who took a step of a batch (SC-142): an agent, or a person in their name and for whom they act */
+export type WsRecordWho = { kind: 'agent' | 'person'; id: string | null; name: string; org: string | null };
+/** a step of a batch's record: an agent's run (its feed key), or a person's decision (its audit action); the shops'
+ *  orders folded into one step that holds them */
+export type WsRecordStep = {
+	key: string;
+	at: LocalTime;
+	who: WsRecordWho;
+	text: string;
+	/** only a person at the client could let it happen: the plan's approval, the papers' review, the destruction's */
+	yes: boolean;
+	items?: { who: WsRecordWho; text: string; at: LocalTime }[];
+};
+/** a batch's record (SC-142): every step, oldest first */
+export type WsRecord = { ref: string; steps: WsRecordStep[] };
 /** what a partner reads of its own history with the client: the batches it took part in, newest first, the buyer they
  *  name, and a kirana's own shop */
 export type WsPartner = {
@@ -1165,6 +1190,8 @@ export interface WorkspaceApi {
 	ledger(): Promise<WsLedger>;
 	/** GET /partner: a distributor's, kirana's or food bank's own history (SC-130) */
 	partner(): Promise<WsPartner>;
+	/** GET /cases/{ref}/record: a batch's record, every step by the agent or the person who took it (SC-142) */
+	record(ref: string): Promise<WsRecord>;
 	/** GET /audit?before= */
 	audit(before?: string | null): Promise<WsAuditPage>;
 	/** GET /documents/{ref}/{doc}: a 5-minute signed link to the PDF */

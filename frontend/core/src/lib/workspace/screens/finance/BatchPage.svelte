@@ -16,9 +16,11 @@
 	import MoneyTab from './MoneyTab.svelte';
 	import OutcomeBadge from './OutcomeBadge.svelte';
 	import PaperPack from './PaperPack.svelte';
+	import RecordTab from '../record/RecordTab.svelte';
 
 	// a batch's own page in the ledger (SC-121, screens/finance.jsx BatchPage): the operator's batch head (SC-112), with
-	// the batch's Money, its Papers as the Paperwork agent drafted them, and its Impact as tabs, opening on its money
+	// the batch's Money, its Papers as the Paperwork agent drafted them, its Impact and its Record (SC-142: the photos sent
+	// for it, the yeses and the audit trail) as tabs, opening on its money
 	let { me, at, tab: first }: { me: User; at: string; tab?: string } = $props();
 	const ws = useWorkspace();
 	const app = useApp();
@@ -29,10 +31,16 @@
 	const TABS: { id: string; label: string; icon: IconName }[] = [
 		{ id: 'money', label: 'Money', icon: 'coins' },
 		{ id: 'papers', label: 'Papers', icon: 'file-text' },
-		{ id: 'impact', label: 'Impact', icon: 'leaf' }
+		{ id: 'impact', label: 'Impact', icon: 'leaf' },
+		{ id: 'record', label: 'Record', icon: 'history' }
 	];
 	// svelte-ignore state_referenced_locally (the page opens on its first tab, then the reader moves between them)
 	let tab = $state(first ?? 'money');
+	// the record is read once its tab opens
+	$effect(() => {
+		if (tab === 'record') ws.openRecord?.(at);
+	});
+	const rec = $derived(tab === 'record' ? ws.record(at) : null);
 	let before = $state<string | null>(null);
 	let track: HTMLElement | undefined = $state();
 	$effect(() => {
@@ -91,7 +99,7 @@
 				{#if tab === 'money'}<MoneyTab {page} />{:else if tab === 'papers'}<PaperPack
 						c={page.c}
 						h={page.h}
-					/>{:else}<ImpactTab {page} />{/if}
+					/>{:else if tab === 'record'}<RecordTab batch={at} {rec} />{:else}<ImpactTab {page} />{/if}
 			</div>{/key}
 	</Screen>
 {/if}

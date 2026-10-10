@@ -21,7 +21,7 @@ from sc_api.domain import journey as J
 from sc_api.errors import ApiError
 from sc_api.schemas import Shape
 from sc_api.services.context import Ctx
-from sc_api.services.journey import admin, partners, steps, views, world
+from sc_api.services.journey import admin, partners, record, steps, views, world
 from sc_api.services.journey import events as ev
 from sc_api.services.journey.outbox import drain
 
@@ -195,6 +195,12 @@ async def snapshot(ws: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
 @router.get(CASE, summary="One batch's journey, cut to the member's role")
 async def case(ws: str, ref: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
     return await views.case_detail(ctx, ws, ref, _member(request))
+
+
+@router.get(CASE + "/record", summary="A batch's record: every step, by the agent or the person who took it")
+async def batch_record(ws: str, ref: str, ctx: MemberCtx) -> dict[str, Any]:
+    ctx.require("report.read", "Your role can't see a batch's record.")
+    return await record.record(ctx, ws, ref)
 
 
 @router.get("/ledger", summary="The ledger: every batch cleared, by quarter and year")

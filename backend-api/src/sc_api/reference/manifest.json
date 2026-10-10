@@ -9,7 +9,7 @@
 		"design3/system/product.jsx": "2f84d8524b6c54c3",
 		"design3/core/world.js": "5dae63f47252c9c8",
 		"design3/core/flow.js": "c6d209b32104c5b4",
-		"design3/core/ledger.js": "67dc58571c725565"
+		"design3/core/ledger.js": "d2e759806d4b3358"
 	},
 	"files": {
 		"showcase.json": "63b023d5b4f9e4b4",
@@ -20,6 +20,18 @@
 		"journey.json": "ea2781a91ab37c8c",
 		"money.json": "917ccd7357b40b9f",
 		"flow.json": "06793dc2d3108be3",
+		"labels/MF-2406-105.webp": "cb8897a7d35f9cd4",
+		"labels/MF-2406-106.webp": "ee3863345078ce6f",
+		"labels/MF-2406-107.webp": "42d577ce0d0c3e23",
+		"labels/MF-2406-108.webp": "2fcae0c73d20eddc",
+		"labels/MF-2406-109.webp": "186e960403c7c337",
+		"labels/MF-2407-110.webp": "c232d4b16c1c91e8",
+		"labels/MF-2407-111.webp": "bfe80fa13909b839",
+		"labels/MF-2407-112.webp": "18e52f17d5078465",
+		"labels/MF-2407-113.webp": "609a01678d9eaf3a",
+		"labels/MF-2407-114.webp": "4a4141260b6b6340",
+		"labels/MF-2407-115.webp": "08e65162ad2b9afb",
+		"labels/MF-2407-116.webp": "403c57b8ad152e9b",
 		"evidence/MF-2406-107-before.webp": "85035fcee2a4e7c2",
 		"evidence/MF-2406-107-after.webp": "9e6fa619a4db2454",
 		"evidence/MF-2407-111-before.webp": "04c9bf0db9561af3",

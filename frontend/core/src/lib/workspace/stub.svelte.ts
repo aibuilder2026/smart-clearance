@@ -6,6 +6,7 @@
 import { CHIPS, D, ES, INVOICE, KL, SHOPS_ALL } from './data';
 import { A, act as run, Agents, type ActionName } from './flow';
 import { stubLedger, stubPage } from './ledger';
+import { historyCase, recordOf, storyRecord } from './record';
 import history from './seed/history.json';
 import type { PartnerWorld } from './partners';
 import { setDefaultSource, type WorkspaceSource } from './source';
@@ -157,6 +158,14 @@ class StubSource implements WorkspaceSource {
 	}
 	ledgerPage(ref: string) {
 		return stubPage(ref, data, kase, store.state);
+	}
+	// a batch's record (SC-142): a history batch's from its own stamps, the story's from its feed and audit; the stub
+	// keeps no record of the Mango Drink, which it leaves at its label photo
+	record(ref: string) {
+		const c = historyCase(ref);
+		if (c) return recordOf(c);
+		if (ref === D.batches.find((b) => b.hero)?.id) return storyRecord(store.state);
+		return D.batches.some((b) => b.id === ref) ? { ref, steps: [], photos: [] } : null;
 	}
 	// a partner's own history (SC-130): the client's history; each partner's screens take their own part of it, a
 	// kirana its shop among every shop the schemes go to (data.shops)

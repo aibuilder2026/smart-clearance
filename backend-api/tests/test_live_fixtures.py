@@ -2,8 +2,8 @@
 live-source test (frontend/workspace/tests/live/), so the screens are drawn on real answers rather than hand-made ones.
 
 It runs only when asked: scripts/live-fixtures.sh sets LIVE_FIXTURES_OUT and runs this file alone. Each moment's file
-holds the public workspace, and for each person the snapshot, the cases they see, the ledger and the audit log, exactly
-as the API answered them."""
+holds the public workspace, and for each person the snapshot, the cases they see with each one's record where they read
+it, the ledger and the audit log, exactly as the API answered them."""
 
 import json
 import os
@@ -50,17 +50,22 @@ async def _write(api, moment: str, people: list[str]) -> None:
     for who in people:
         h = WHO[who]
         snap = (await api.get(f"{WS}/snapshot", headers=h)).json()
-        cases = {}
+        cases, records = {}, {}
         for c in snap["cases"]:
             r = await api.get(f"{WS}/cases/{c['ref']}", headers=h)
             if r.status_code == 200:
                 cases[c["ref"]] = r.json()
+            # a batch's record, for those who read it (SC-142)
+            r = await api.get(f"{WS}/cases/{c['ref']}/record", headers=h)
+            if r.status_code == 200:
+                records[c["ref"]] = r.json()
         q = await api.get(f"{WS}/ledger", headers=h)
         a = await api.get(f"{WS}/audit", headers=h)
         p = await api.get(f"{WS}/partner", headers=h)
         out["members"][who] = {
             "snapshot": snap,
             "cases": cases,
+            "records": records,
             "ledger": q.json() if q.status_code == 200 else None,
             "audit": a.json()["rows"] if a.status_code == 200 else [],
             # a partner's own history (SC-130)

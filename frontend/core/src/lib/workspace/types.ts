@@ -885,6 +885,19 @@ export type PartnerCase = {
 	} | null;
 	/** destroyed at his godown (SC-139): the evidence he sent and the client's yes */
 	destruction?: Destruction | null;
+	/** the label photo he sent (SC-142): a short-lived link to it on the live workspace, when, and what Vision read */
+	photo?: {
+		url: string | null;
+		at: string | null;
+		status: string | null;
+		read: {
+			batch: string | null;
+			mfg: string | null;
+			bestBefore: string | null;
+			mrp: number | null;
+			matches?: boolean;
+		} | null;
+	} | null;
 	docs: Doc[];
 };
 /** what a partner reads of its own history with the client: the batches it took part in, the buyer they name, and a
@@ -1056,6 +1069,40 @@ export type Ledger = {
 /** a batch's own page in the ledger: its case as the papers read it, its state (drafted, reviewed, posted) and, once
  *  Impact has posted it, its row */
 export type LedgerPage = { c: CaseData; h: Hero; row: LedgerBatch | null };
+
+/** who took a step of a batch (SC-142): an agent, or a person in their name and for whom they act */
+export type RecordWho = { kind: 'agent' | 'person'; id: string | null; name: string; org: string | null };
+/** a step of a batch's record: an agent's run, or a person's decision as the audit log keeps it; the shops' orders
+ *  folded into one step that holds them. `at` is an ISO day and time, or the stub's own for the story (09:19) */
+export type RecordStep = {
+	key: string;
+	at: string;
+	who: RecordWho;
+	text: string;
+	/** only a person at the client could let it happen: the plan's approval, the papers' review, the destruction's */
+	yes: boolean;
+	items?: { who: RecordWho; text: string; at: string }[];
+};
+/** a batch's record (SC-142): the photos sent for it, and every step, oldest first */
+export type BatchRecord = { ref: string; steps: RecordStep[]; photos: RecordPhoto[] };
+/** a photo sent for a batch (SC-142): its label photo with what Vision read, or the destruction's before or after with
+ *  Vision's checks. `src` is its link on the live workspace; `img` its file under design3's system/img/ in the stub */
+export type RecordPhoto = {
+	id: 'label' | 'before' | 'after';
+	src?: string | null;
+	img?: string;
+	at: string;
+	by: string;
+	read?: {
+		at: string | null;
+		batch: string | null;
+		mfg: string | null;
+		bestBefore: string | null;
+		mrp: number | null;
+		matches?: boolean;
+	} | null;
+	checks?: { id: string; label: string; ok: boolean }[];
+};
 
 /** the people a visitor can step into in the stub, by where they stand */
 export type ExploreGroup = { group: string; note: string; ids: [string, string][] };

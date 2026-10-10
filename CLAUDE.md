@@ -1678,7 +1678,7 @@
     - The only note is the old one: the invoice reads "drafted" in Priya's pack after Rakesh issues it.
   - **After it:** production's journey day back at 24 hours; the chips cleared, the Mango Drink at day 0.
 
-- **SC-139** (In Review, branch `SC-139-destroy-at-godown`): packs left at the godown destroyed there, against evidence and a second yes (route B).
+- **SC-139** (PR #120, merged): packs left at the godown destroyed there, against evidence and a second yes (route B).
   - **The request:** "If chips are destroyed at go down, ask for a photo and supply chain will need to review and approve it before the entire deal closes, destruction certificate, credit note and other stuffs should be properly generated and validated and realistic as much as possible"; the console's client configuration to match, and the GST papers and invoices to follow; then "I want the destruction image to be done as much reaslistic as possible as it is done today - like landfill etc."
   - **Design first:** three options on one board in app v3, `SC-139 design review.html`:
     - A, on Execution;
@@ -1745,7 +1745,7 @@
     - the day is 24 hours.
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 
-- **SC-141** (In Review, branch `SC-141-distributor-figures`; bug found by the maintainer): the distributor's Orders and Batches, figures that add up as written.
+- **SC-141** (PR #121, merged; bug found by the maintainer): the distributor's Orders and Batches, figures that add up as written.
   - **Found:** "calculations dont match" on Rakesh Traders' portal. Every one of his six cleared batches ends whole to the paisa, and both headlines were right. Batches' ₹66,918 is what Munchly credited him (8 credit notes); Orders' ₹1,05,928 is what he sold from the same batches. But:
     - a kirana row read "456 packets at ₹18.00, 2 free with every 10 · ₹6,840", which multiplies to ₹8,208. With 2 free in every 12, the packets came to ₹15.00 each;
     - the two headlines ("from Munchly since July", "sold from Munchly's batches") did not say which figure was which.
@@ -1757,5 +1757,35 @@
     - the frontend gate passes: core 260, with Rakesh's 18 goldens changing only those lines; api 78; workspace 87; admin 17; demo 5; console 3. The two live tests now hold the row's effective price and its ₹10,584, and the sentence's ₹1,72,846, and fail without the fix;
     - backend-api 547 passed, 1 skipped (only the seed manifest changed);
     - design3's `dist/` is rebuilt.
+
+- **SC-142** (In Review, branch `SC-142-batch-record`): a batch's record. Priya reads every batch, past ones too, with the photos sent for it, its yeses and every step; the distributor reads the photos he sent.
+  - **The request:** "Both supply chain operator and distributor should be able to see the photos they have sent for batch and destruction evidence pictures"; "Supply chain operator should be able to see past batches under Batches section with details like what picture was sent, audit log of the everything that happened in that batch, photos of destruction and approval sent etc." (The third part, the distributor's figures, was SC-141.)
+  - **Design first:** three options on one board in app v3, `SC-142 design review.html`:
+    - A, the Record tab (recommended);
+    - B, evidence on the timeline;
+    - C, the batch file.
+
+    The maintainer picked **A**, and "Yes, use them" for the history's label photos. Designs, the photos, the build's stills and the decision are in `design3/designs/SC-142/`.
+  - **The history's label photos:** the twelve pilot-quarter batches had none, so each has one printed with its own batch and dates (`design3/system/img/labels/`, Qwen-Image, with sidecars): Rakesh Traders' as edits of the Vision eval set's clean label, Lakshmi Agencies' rendered afresh. The story's chips use the eval set's own. `seed.mjs` copies them into backend-api's reference (`reference/labels/`), and the history uploads each as the photo its distributor sent.
+  - **Batches** (Priya's): under the batches in view ("In view · from the DMS export"), every batch that has cleared and passed its best-before, by month ("Cleared · September 2026"), with its outcome, the photos sent for it and what it recovered. Each opens its page on the Record.
+  - **The Record tab**, on a batch's page in the ledger (Money, Papers, Impact, Record) and on the operator's batch page (Journey, Route Room, Execution, Paperwork, Record):
+    - **the photos sent for it:** the label photo, with what Vision read and that it matched the export; destroyed at the godown, the before and after photos with Vision's four checks. Each opens whole in a sheet;
+    - **the audit trail**, day by day: each agent's run from the case's feed, in its words, and each person's decision as the audit log keeps it, in their name and for whom they act. The kiranas' orders fold into one row ("24 kiranas · Rakesh Traders' scheme, Ordered 456 packets"), opened on request. Filters for Everyone, People or Agents, and a CSV;
+    - **the yeses:** the plan's approval, the papers' review and the destruction's approval, each with who and when.
+  - **The distributor's batch page** gains **Photos**: his label photo with what Vision read, and the destruction's two with Vision's checks, then Priya's yes on them and the credit note it issued. On the live workspace it reads his own facts' links, never Munchly's audit log.
+  - **The clocks:** the audit log keeps wall time, the case and its feed the journey's. A case's lines are the batch's from the moment it opened (wall time) until its next case; the steps go in wall-time order, and each person's step is placed on the journey's clock between the feed's moments around it, so a compressed day, or a day length changed mid-journey, keeps them where they fell.
+  - **The build:** design3 first (`ledger.js` `record`, `finance.jsx` RecordTab and its pieces, `brand.jsx` Batches and BatchRecord, `trade.jsx` DistPhotos, `screens.css`'s `rec-*`), then core (`record.ts` for the stub, `photos.ts` for the live facts and the days in India's time, `screens/record/`, `DistPhotos`, `Batches`, `BatchPage`, `RoleApp`, `model.ts`'s record part, `screens.css` verbatim). The workspace's address takes `?tab=` (`/report/MF-2407-116?tab=record`).
+  - **The contract:** `WsRecord`, `WsRecordStep`, `WsRecordWho`, `WsLabelPhoto`, `WsPartnerCase.photo`, `WorkspaceApi.record()`; `contracts.sh` re-exported the OpenAPI.
+  - **backend-api:** `GET …/cases/{ref}/record` (`services/journey/record.py`, `report.read`); the distributor's facts carry his label photo (`views.label_out`, in the client's time); the history uploads each batch's label photo. `hydrate.sh --photos CLIENT` puts the history's label photos in the photos bucket for a workspace built before this (no reset).
+  - **Found on the way:** the photo times came back in UTC where the partner facts are in India time; "1 steps".
+  - **Checks:**
+    - backend-api 552 passed, 1 skipped (`test_record.py`, 5: the operator's record of a past batch, the roles, his photo, a compressed day keeping each step where it fell, and `--photos`);
+    - the frontend gate passes: core 270 (`record.test.ts`, 10 new, holding the stub's record to ledger.js for every history batch and the story at five stages; the operator's goldens gain the Record tab, Batches' cleared months and the record screen), api 78, workspace 92 (5 new live tests: Priya's Record, the ledger page's tab, the cleared months opening on the Record, Rakesh's and Lakshmi Agencies' photos), admin 17, demo 5, console 3;
+    - the live fixtures were regenerated, with each case's record;
+    - the stub build was played through in the browser at 1440 and 390: Batches' months, a past batch's Record with its three photos and 23 steps, Rakesh's Photos tab;
+    - the a11y spec gains the Record tab, its photo sheet and orders, and the distributor's Photos; the browser suites were not run (SC-55).
+  - **Locally:** `hydrate.sh --photos munchly` put the twelve history label photos in the local photos bucket.
+  - **Production:** the history's label photos go up with the hydrate job's `--photos,munchly,--allow-env,prod` once this is deployed; until then a past batch's label photo has no image there.
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

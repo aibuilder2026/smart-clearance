@@ -546,13 +546,11 @@
     const feed = <div className="stack snug"><SectionTitle sub="Every hand-off on this batch, as it happens">Agent activity</SectionTitle><Card>{events.length ? <AgentFeed events={events} people={D.PEOPLE} live={it.hero && hm.agentLive ? s.feed.length - 1 : -1} max={phone ? 4 : 8} /> : <span className="t-footnote muted">The agents report here as they work this batch.</span>}</Card></div>;
     return <Screen me={me} title="Journey"><Columns sideWidth={340} main={<>{card}{cluster}</>} side={feed} /></Screen>;
   }
-  // the Record of a batch in a journey (SC-142): the story's batch from its feed and audit; the Mango Drink, which the
-  // stub leaves at its label photo, from its agents' first runs
+  // the Record of a batch in a journey (SC-142): the story's batch from its feed and audit; the stub keeps no record of
+  // the Mango Drink, which it leaves at its label photo
   function BatchRecord({ me, it, v }) {
     const s = useStore(); const L = window.SC3_LEDGER.record;
-    const at = t => (/^\d\d:\d\d$/.test(t || "") ? `${D.DAY0}T${t}` : D.DAY0);
-    const steps = it.hero ? L.storyRecord(s).steps : mangoFeed(v).map(e => ({ key: e.id, at: at(e.at), who: { kind: "agent", id: e.agent.toLowerCase(), name: e.agent, org: null }, text: e.text, yes: false }));
-    return <Screen me={me} title="Record"><S.RecordTab batch={v.id} steps={steps} photos={it.hero ? L.storyPhotos(s) : []} /></Screen>;
+    return <Screen me={me} title="Record"><S.RecordTab batch={v.id} steps={it.hero ? L.storyRecord(s).steps : []} photos={it.hero ? L.storyPhotos(s) : []} /></Screen>;
   }
   // one screen of a batch's page
   function BatchPart({ me, it, v, part }) {

@@ -6458,6 +6458,64 @@
         ]
       }
     },
+    "/v1/workspaces/{ws}/cases/{ref}/record": {
+      "get": {
+        "operationId": "batch_record_v1_workspaces__ws__cases__ref__record_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Batch Record V1 Workspaces  Ws  Cases  Ref  Record Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "A batch's record: every step, by the agent or the person who took it",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
     "/v1/workspaces/{ws}/cases/{ref}/review": {
       "post": {
         "operationId": "review_v1_workspaces__ws__cases__ref__review_post",

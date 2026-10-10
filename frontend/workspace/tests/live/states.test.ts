@@ -13,7 +13,8 @@ import type {
 	WorkspaceSnapshot,
 	WsAuditRow,
 	WsLedger,
-	WsPartner
+	WsPartner,
+	WsRecord
 } from '@smart-clearance/api/workspace';
 import { ApiError, NotAMember } from '@smart-clearance/api/workspace';
 import type { PartnerCase } from '@smart-clearance/core/workspace/app';
@@ -29,6 +30,7 @@ import LiveHost from './LiveHost.svelte';
 type Seen = {
 	snapshot: WorkspaceSnapshot;
 	cases: Record<string, CaseDetail>;
+	records?: Record<string, WsRecord>;
 	ledger: WsLedger | null;
 	audit: WsAuditRow[];
 	partner: WsPartner | null;
@@ -50,6 +52,7 @@ function fakeApi(m: Moment, who: string, over: Partial<Record<keyof WorkspaceApi
 		me: () => Promise.resolve(seen.snapshot.me),
 		snapshot: () => Promise.resolve(structuredClone(seen.snapshot)),
 		case: (ref: string) => (seen.cases[ref] ? Promise.resolve(structuredClone(seen.cases[ref])) : none(404)),
+		record: (ref: string) => (seen.records?.[ref] ? Promise.resolve(structuredClone(seen.records[ref])) : none(404)),
 		ledger: () => (seen.ledger ? Promise.resolve(seen.ledger) : none(403)),
 		partner: () => (seen.partner ? Promise.resolve(structuredClone(seen.partner)) : none(403)),
 		audit: () => Promise.resolve({ rows: seen.audit, before: null }),
@@ -1390,6 +1393,111 @@ describe("the partners' own history (SC-130)", () => {
 		await waitFor(() => expect(text(r)).toContain('Confirmed by you'));
 		expect(text(r)).toContain('Donation receipt FI/NAG/26-27/0416');
 		expect(text(r)).toContain('FSSAI surplus-food checklist');
+		r.unmount();
+	});
+});
+
+describe("a batch's record (SC-142)", () => {
+	it("Priya's Record of a batch: the photo Rakesh sent, the yeses, and every step by the agent or the person who took it", async () => {
+		const m = moment('cleared');
+		const r = await draw(source(fakeApi(m, 'priya')), 'record', CHIPS);
+		await waitFor(() => expect(text(r)).toContain('Audit trail'));
+		const t = text(r);
+		expect(t).toContain('Photos sent for this batch');
+		expect(t).toContain('Label photo');
+		expect(t).toContain('Sent by Rakesh bhai · 2 Oct, 08:00');
+		expect(t).toContain('Vision read batch MF-2409-117');
+		// the yeses: the plan and the papers' review, each in Priya's name
+		expect(t).toContain('The yeses');
+		expect(t).toContain('Approved the plan · MF-2409-117 · net ₹21,770');
+		expect(t).toContain("Reviewed Munchly's credit note and GST memo");
+		// the shops' orders, one line a shop in the audit log, are one row holding them
+		expect(t).toContain('31 kiranas');
+		expect(t).toContain('Ordered 588 packets');
+		expect(t).toContain('Issued the invoice from Tally · INV/26-27/0931');
+		const img = r.container.querySelector<HTMLImageElement>('.rec-shot img')!;
+		expect(img.src).toBe(m.members.priya.cases[CHIPS].journey.photo.url);
+		// People: each person's step, none of the agents'
+		await fireEvent.click(r.getByRole('button', { name: 'People' }));
+		await waitFor(() => expect(text(r)).not.toContain('Watcher · agent'));
+		expect(text(r)).toContain('Agrawal ji · Agrawal Wholesale');
+		expect(text(r)).not.toMatch(/NaN|undefined|Invalid Date/);
+		r.unmount();
+	});
+
+	it("a cleared batch's page in the ledger has its Record as a tab", async () => {
+		const m = moment('cleared');
+		const r = await draw(source(fakeApi(m, 'priya')), 'report', CHIPS);
+		await tab(r, 'Record');
+		await waitFor(() => expect(text(r)).toContain('Audit trail'));
+		expect(text(r)).toContain('Approved the plan');
+		expect(text(r)).not.toMatch(/NaN|undefined|Invalid Date/);
+		r.unmount();
+	});
+
+	it('Batches lists a batch cleared and past its best-before by month, and opens its page on the Record', async () => {
+		const m = moment('cleared');
+		const ledger = m.members.priya.ledger!;
+		const chips = ledger.batches.find((b) => b.ref === CHIPS)!;
+		const past = {
+			...chips,
+			ref: 'MF-2407-116',
+			name: 'Peanut Chikki 100 g',
+			outcome: 'leftover' as const,
+			cleared: '2026-09-28',
+			history: true
+		};
+		const s = source(
+			fakeApi(m, 'priya', { ledger: () => Promise.resolve({ ...ledger, batches: [...ledger.batches, past] }) })
+		);
+		const went = vi.fn();
+		const r = render(LiveHost, {
+			props: { source: s, screen: 'batches', onnavigate: went }
+		}) as unknown as RenderResult<never>;
+		await waitFor(() => expect(text(r)).toContain('Cleared · September 2026'));
+		const t = text(r);
+		expect(t).toContain('In view · from the DMS export');
+		expect(t).toContain('MF-2407-116 · Rakesh Traders · flagged');
+		expect(t).toContain('3 photos');
+		// the story's batches stay in the table above, not under Cleared
+		expect(t.split('Cleared · September 2026')[1]).not.toContain(CHIPS);
+		await fireEvent.click(r.getByRole('button', { name: /Peanut Chikki 100 g/ }));
+		expect(went).toHaveBeenCalledWith('report', expect.objectContaining({ ref: 'MF-2407-116', tab: 'record' }));
+		r.unmount();
+	});
+
+	it('Rakesh reads the label photo he sent on his batch page, from its own link', async () => {
+		const m = moment('cleared');
+		const r = await draw(source(fakeApi(m, 'rakesh')), 'batches', CHIPS);
+		await tab(r, 'Photos');
+		await waitFor(() => expect(text(r)).toContain('Your photos for this batch'));
+		const t = text(r);
+		expect(t).toContain('Label photo');
+		expect(t).toContain('Sent by Rakesh bhai · 2 Oct, 08:00');
+		expect(t).toContain('Vision read batch MF-2409-117');
+		expect(t).not.toContain('Approved');
+		const pc = m.members.rakesh.partner!.cases.find((c) => c.ref === CHIPS)!;
+		expect(r.container.querySelector<HTMLImageElement>('.rec-shot img')!.src).toBe(pc.photo!.url);
+		expect(t).not.toMatch(/NaN|undefined|Invalid Date/);
+		r.unmount();
+	});
+
+	it("Lakshmi Agencies reads her destruction photos, Vision's checks and Priya's yes on them", async () => {
+		const m = moment('cleared');
+		const r = await draw(source(fakeApi(m, 'lakshmi-owner')), 'batches', MANGO);
+		await tab(r, 'Photos');
+		await waitFor(() => expect(text(r)).toContain('Your photos for this batch'));
+		const t = text(r);
+		expect(t).toContain('3 · tap to open');
+		expect(t).toContain('Before, at the godown');
+		expect(t).toContain('After, at the landfill');
+		expect(t).toContain('Batch MF-2410-118 read on the carton label');
+		expect(t).toContain('Approved');
+		expect(t).toContain('Priya Deshmukh');
+		expect(t).toMatch(/Approved the destruction of [\d,]+ packs at /);
+		expect(t).toContain('Munchly credited you on CN/0119 once it approved.');
+		expect(r.container.querySelectorAll('.rec-shot img')).toHaveLength(3);
+		expect(t).not.toMatch(/NaN|undefined|Invalid Date/);
 		r.unmount();
 	});
 });

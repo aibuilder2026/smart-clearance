@@ -443,9 +443,7 @@
   function BatchRecord({ me, it, v }) {
     const s = useStore();
     const L = window.SC3_LEDGER.record;
-    const at = (t) => /^\d\d:\d\d$/.test(t || "") ? `${D.DAY0}T${t}` : D.DAY0;
-    const steps = it.hero ? L.storyRecord(s).steps : mangoFeed(v).map((e) => ({ key: e.id, at: at(e.at), who: { kind: "agent", id: e.agent.toLowerCase(), name: e.agent, org: null }, text: e.text, yes: false }));
-    return /* @__PURE__ */ React.createElement(Screen, { me, title: "Record" }, /* @__PURE__ */ React.createElement(S.RecordTab, { batch: v.id, steps, photos: it.hero ? L.storyPhotos(s) : [] }));
+    return /* @__PURE__ */ React.createElement(Screen, { me, title: "Record" }, /* @__PURE__ */ React.createElement(S.RecordTab, { batch: v.id, steps: it.hero ? L.storyRecord(s).steps : [], photos: it.hero ? L.storyPhotos(s) : [] }));
   }
   function BatchPart({ me, it, v, part }) {
     if (it && part === "record") return /* @__PURE__ */ React.createElement(BatchRecord, { me, it, v });

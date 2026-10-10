@@ -458,8 +458,9 @@
     const people = steps.filter(x => x.who.kind !== "agent").length;
     const save = () => download(`${batch}-audit-trail.csv`, csv([["When", "Who", "As", "What", "Yes"]].concat(rows.flatMap(x => [[isIso(x.at) ? x.at.replace("T", " ") : x.at, x.who.name, x.who.kind === "agent" ? "agent" : x.who.org || "", upFirst(x.text), x.yes ? "yes" : ""]].concat((x.items || []).map(i => [i.at.replace("T", " "), i.who.name, "kirana", upFirst(i.text), ""]))))));
     return <Card className="stack snug">
-      <div className="card-head"><span className="card-title">Audit trail</span><span className="t-footnote subtle">{steps.length} steps · {people} by people</span></div>
+      <div className="card-head"><span className="card-title">Audit trail</span><span className="t-footnote subtle">{steps.length} {steps.length === 1 ? "step" : "steps"} · {people} by people</span></div>
       <div className="rec-filters" role="group" aria-label="Whose steps">{[["all", "Everyone"], ["people", "People"], ["agents", "Agents"]].map(([k, t]) => <button key={k} type="button" className="chip" aria-pressed={who === k} onClick={() => setWho(k)}>{t}</button>)}</div>
+      {!steps.length && <span className="t-footnote muted">The record fills as the agents and the people act on the batch.</span>}
       <div className="rec-trail">{days.map((g, gi) => <Fragment key={g.d + gi}>{(g.d || gi === 0) && <div className="rec-day">{g.d ? recDay(g.d) : "This journey"}</div>}
         {g.items.map((x, i) => <div key={x.key + x.at + i} className={cx("rec-row", i === g.items.length - 1 && "end")}>
           <Actor who={x.who} />

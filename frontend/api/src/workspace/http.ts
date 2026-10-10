@@ -15,7 +15,8 @@ import type {
 	WorkspaceSnapshot,
 	WsAuditPage,
 	WsLedger,
-	WsPartner
+	WsPartner,
+	WsRecord
 } from '../types/workspace';
 
 export type WorkspaceHttpOptions = Omit<TransportOptions, 'token'> & {
@@ -151,6 +152,7 @@ export function workspaceHttp(
 		case: (ref) => call<CaseDetail>('GET', c(ref)),
 		ledger: () => call<WsLedger>('GET', '/ledger'),
 		partner: () => call<WsPartner>('GET', '/partner'),
+		record: (ref) => call<WsRecord>('GET', `${c(ref)}/record`),
 		audit: (before) => call<WsAuditPage>('GET', '/audit' + (before ? `?before=${enc(before)}` : '')),
 		documentUrl: (ref, doc) => call('GET', `/documents/${enc(ref)}/${enc(doc)}`),
 

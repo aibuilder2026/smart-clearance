@@ -49,3 +49,17 @@ On one board in app v3, `SC-142 design review.html`.
   Photos tab on the distributor's batch page.
 - **The history's label photos:** "Yes, use them". Each of the twelve pilot-quarter batches keeps the label photo
   in `photos/` as the one its distributor sent.
+
+## The build (10 Oct)
+
+- design3 first: `core/ledger.js` (`record`: each batch's steps, its photos, the yeses), `screens/finance.jsx` (the
+  Record tab and its pieces), `screens/brand.jsx` (Batches' cleared months, the batch page's Record), `screens/trade.jsx`
+  (the distributor's Photos), `screens.css` (`rec-*`). Stills of the build are in `build/`.
+- Then the port: core's `screens/record/`, `record.ts` (the stub), `photos.ts` (the live facts), `DistPhotos`,
+  `Batches`, `BatchPage` and the operator's batch page; backend-api's `GET …/cases/{ref}/record` and the distributor's
+  label photo in his facts.
+- The stub keeps no record of the Mango Drink, which it leaves at its label photo: its Record says the record fills as
+  the agents and the people act.
+- Found while building: the audit log keeps wall time and the case the journey's clock, so the record windows and orders
+  the steps by wall time and places each person's step on the journey's clock from the feed around it; photo times came
+  back in UTC; "1 steps".

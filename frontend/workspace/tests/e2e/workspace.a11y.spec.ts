@@ -280,14 +280,21 @@ test("the ledger: its readings, its periods, its exports, and a batch's page in 
 	await settled(page);
 	findings.push(...(await scan(page, "Ledger · the period's exports")));
 	await page.keyboard.press('Escape');
-	// a batch of the history that was left at the godown: its money, its papers and its impact
+	// a batch of the history that was left at the godown: its money, its papers, its impact and its record (SC-142)
 	await page.getByRole('button', { name: /^Masala Oats 200 g, MF-2406-107: / }).click();
 	await expect(page.locator('.bhead h1')).toHaveText('Masala Oats 200 g');
-	for (const tab of ['Money', 'Papers', 'Impact']) {
+	for (const tab of ['Money', 'Papers', 'Impact', 'Record']) {
 		await page.locator('.bh-tabs').getByRole('button', { name: tab }).click();
 		await page.waitForTimeout(400);
 		findings.push(...(await scan(page, `a batch's page · ${tab}`)));
 	}
+	// the record's people only, its kiranas' orders opened, and a photo opened whole
+	await page.getByRole('button', { name: 'People', exact: true }).click();
+	await page.getByRole('button', { name: /^Show the \d+ orders$/ }).click();
+	findings.push(...(await scan(page, "a batch's record · people, the orders opened")));
+	await page.getByRole('button', { name: /^Before, at the godown, sent .*: open it$/ }).click();
+	await settled(page);
+	findings.push(...(await scan(page, "a batch's record · a photo opened")));
 	await report(testInfo, findings);
 });
 
@@ -297,15 +304,26 @@ test("a distributor's batch he cleared: what happened, the money, his papers and
 	const findings: Finding[] = [];
 	await openWorkspace(page, '/batches/MF-2407-114', { as: 'rakesh' });
 	await expect(page.locator('.bhead h1')).toHaveText('Masala Oats 200 g');
-	for (const tab of ['What happened', 'Money', 'Papers']) {
+	for (const tab of ['What happened', 'Money', 'Papers', 'Photos']) {
 		await page.locator('.bh-tabs').getByRole('button', { name: tab }).click();
 		await page.waitForTimeout(400);
 		findings.push(...(await scan(page, `a distributor's batch · ${tab}`)));
 	}
+	await page.locator('.bh-tabs').getByRole('button', { name: 'Papers' }).click();
 	await page.getByRole('button', { name: /Donation receipt/ }).click();
 	await settled(page);
 	findings.push(...(await scan(page, "a distributor's batch · a copy of the receipt")));
 	await report(testInfo, findings);
+});
+
+test("a distributor's photos of a batch destroyed at his godown, and the client's yes on them (SC-142)", async ({
+	page
+}, testInfo) => {
+	await openWorkspace(page, '/batches/MF-2407-116', { as: 'rakesh' });
+	await expect(page.locator('.bhead h1')).toHaveText('Peanut Chikki 100 g');
+	await page.locator('.bh-tabs').getByRole('button', { name: 'Photos' }).click();
+	await expect(page.getByText('Approved', { exact: true })).toBeVisible();
+	await report(testInfo, await scan(page, "a distributor's batch · Photos, destroyed at his godown"));
 });
 
 test("a kirana's earlier offer, ordered (SC-130)", async ({ page }, testInfo) => {

@@ -1045,6 +1045,21 @@ DESTRUCTION_FIELDS = (
 )
 
 
+def label_out(ctx: Ctx, case: m.Case) -> dict[str, Any] | None:
+    """the label photo the distributor sent for a batch (SC-142), as he reads it on his batch's page: a short-lived link
+    to it, when he sent it, and what Vision read of it"""
+    photo = case.photo or {}
+    if not photo.get("object"):
+        return None
+    url = None
+    if ctx.cloud and ctx.settings.photos_bucket:
+        url = ctx.cloud.storage.signed_get(ctx.settings.photos_bucket, photo["object"])
+    at = photo.get("at")
+    # in the client's zone, to the minute, as his facts' other moments
+    local = datetime.fromisoformat(at).astimezone(IST).strftime("%Y-%m-%dT%H:%M") if at else None
+    return {"url": url, "at": local, "status": photo.get("status"), "read": photo.get("read")}
+
+
 def destruction_out(ctx: Ctx, dz: dict[str, Any] | None) -> dict[str, Any] | None:
     """the packs destroyed at his godown (SC-139), as the operator and the distributor read it: each photo with a
     short-lived link to it"""
