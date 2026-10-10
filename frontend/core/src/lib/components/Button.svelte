@@ -134,7 +134,9 @@
 	const retry = $derived(action ? () => (begin(), void wait.run(action)) : onretry);
 </script>
 
-{#snippet words(w: Words | undefined)}{#if typeof w === 'function'}{@render w()}{:else if w}{w}{:else}{@render children?.()}{/if}{/snippet}
+{#snippet words(
+	w: Words | undefined
+)}{#if typeof w === 'function'}{@render w()}{:else if w}{w}{:else}{@render children?.()}{/if}{/snippet}
 
 <!-- the kit's Button; with href it is a link that looks like a button (the prototype's <a class="btn">) -->
 {#if href}
@@ -173,8 +175,21 @@
 						class="btn-face"
 						in:fly={{ y: 12, duration: motionMs(240), easing: ease }}
 						out:fly={{ y: -12, duration: motionMs(240), easing: ease }}
-						>{#if face === 'busy'}<svg class="btn-arc" width={iconSize} height={iconSize} viewBox="0 0 20 20" aria-hidden="true"
-								><circle cx="10" cy="10" r="7.5" fill="none" stroke="currentColor" stroke-opacity="0.28" stroke-width="2.25" /><path
+						>{#if face === 'busy'}<svg
+								class="btn-arc"
+								width={iconSize}
+								height={iconSize}
+								viewBox="0 0 20 20"
+								aria-hidden="true"
+								><circle
+									cx="10"
+									cy="10"
+									r="7.5"
+									fill="none"
+									stroke="currentColor"
+									stroke-opacity="0.28"
+									stroke-width="2.25"
+								/><path
 									d="M10 2.5a7.5 7.5 0 0 1 7.5 7.5"
 									fill="none"
 									stroke="currentColor"
@@ -196,7 +211,10 @@
 									stroke-linecap="round"
 									stroke-linejoin="round"
 								/></svg
-							>{@render words(done)}{:else}{#if icon}<Icon name={icon} size={iconSize} />{/if}{@render children?.()}{#if iconRight}<Icon
+							>{@render words(done)}{:else}{#if icon}<Icon
+									name={icon}
+									size={iconSize}
+								/>{/if}{@render children?.()}{#if iconRight}<Icon
 									name={iconRight}
 									size={size === 'sm' ? 16 : 18}
 								/>{/if}{/if}</span

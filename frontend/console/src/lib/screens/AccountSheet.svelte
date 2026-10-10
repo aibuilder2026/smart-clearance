@@ -37,6 +37,7 @@
 				{ label: 'Cancel' },
 				{
 					label: 'Reset',
+					busy: 'Resetting…',
 					danger: true,
 					strong: true,
 					onclick: async () => {

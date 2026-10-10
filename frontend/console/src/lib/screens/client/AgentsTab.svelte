@@ -22,22 +22,22 @@
 	let just = $state<Record<string, boolean>>({});
 	let asking = $state<JourneyTrigger | null>(null);
 	const question = $derived(asking?.due ? TRIG[asking.key].ask?.(asking, journeyTime(asking.due)) : undefined);
+	// a run's button and a timer's alert each wait on the platform (SC-152); the alert closes once it has fired
 	async function fire(t: JourneyTrigger) {
-		asking = null;
 		const a = k.agent(t.agent);
 		const what = TRIG[t.key].title.toLowerCase();
-		const done = await k.act(
+		await k.act(
 			() => api.fireTrigger(c.id, t.id),
 			t.kind === 'run' ? `${a.name} · ${what} running for ${c.name}` : `${a.name} · ${what}: fired for ${t.ref}`
 		);
-		if (done) just = { ...just, [t.id]: true };
+		just = { ...just, [t.id]: true };
 	}
-	const ask = (t: JourneyTrigger) => (t.kind === 'timer' ? (asking = t) : void fire(t));
+	const ask = (t: JourneyTrigger) => (t.kind === 'timer' ? void (asking = t) : fire(t));
 
-	function setAutonomy(a: Agent, v: Autonomy) {
-		if (c.agents[a.id].autonomy === v) return;
-		void k.act(() => api.updateAgent(c.id, a.id, { autonomy: v }), `${a.name}: ${k.level(v).label}, for ${c.name}`);
-	}
+	// the pipeline's and the inspector's autonomy each keep the level pressed and say Saving…, Saved, or why it went
+	// back (SC-152): they wait on this
+	const setAutonomy = (a: Agent, v: Autonomy) =>
+		k.act(() => api.updateAgent(c.id, a.id, { autonomy: v }), `${a.name}: ${k.level(v).label}, for ${c.name}`);
 </script>
 
 {#snippet legend()}<p class="t-footnote subtle cs-legend">
@@ -100,6 +100,11 @@
 	message={question?.message ?? ''}
 	actions={[
 		{ label: 'Cancel' },
-		{ label: asking ? TRIG[asking.key].act : '', strong: true, onclick: () => asking && fire(asking) }
+		{
+			label: asking ? TRIG[asking.key].act : '',
+			busy: asking ? TRIG[asking.key].busy : undefined,
+			strong: true,
+			onclick: () => asking && fire(asking)
+		}
 	]}
 />

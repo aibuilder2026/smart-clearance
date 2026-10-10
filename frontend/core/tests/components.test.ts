@@ -86,7 +86,14 @@ describe('a button that waits', () => {
 		// jsdom has no Web Animations; the faces' transitions ask for it
 		if (!Element.prototype.animate)
 			Element.prototype.animate = function () {
-				return { cancel() {}, finish() {}, play() {}, pause() {}, finished: Promise.resolve(), onfinish: null } as unknown as Animation;
+				return {
+					cancel() {},
+					finish() {},
+					play() {},
+					pause() {},
+					finished: Promise.resolve(),
+					onfinish: null
+				} as unknown as Animation;
 			};
 	});
 	afterEach(() => vi.useRealTimers());
@@ -164,4 +171,3 @@ describe('a button that waits', () => {
 		expect(w.phase).toBe('idle');
 	});
 });
-

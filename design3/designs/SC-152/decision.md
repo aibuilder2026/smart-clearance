@@ -64,3 +64,22 @@ calls the network keeps its size, says what it is doing with a spinner in the ic
 lands as a tick and the done word, or shakes and puts the reason under it with Try again; past 3 s a line says it is
 still working. Built design3 first (the kit's Button), then core's Button and one action helper, then every app's
 buttons.
+
+## The build (10 Oct)
+
+- **The kit and core:** Button takes `action` (the button waits on it; a rejection is the refusal), `busy` and `done`
+  words, `loading` and `error` for a screen that drives it, and `slow`; a button given none of them is the plain button.
+  Alert waits on an action that returns a promise. SaveNote and `useSaving` / `save()` for a control that saves.
+  `components.css` loses the transparent loading state; core's motion for it is in the `@port` block.
+- **The workspace:** every button that calls the network waits on its step. A step sent `inline` (SendOptions) rejects
+  with the API's words instead of raising the band, and is shown once it has gone through, never before (option A:
+  nothing reads done before the server says so). Sign-out says when it fails and stays signed in. A line runs along the
+  top of the app while a screen reads its batch (RouteLine).
+- **The console:** `Console.act` resolves once the change is saved (the console reads itself again without waiting) and
+  rejects with the API's words; `tell` toasts for the one caller with no button. Controls keep the value pressed
+  (`Saving`, SaveLine) until the console has read it back. A menu item waits on its "…" button (spinner, then a tick),
+  and a refusal comes as a toast; its words go to screen readers and the toast.
+- **The landing page:** Book a demo and Find your workspace have their words.
+- **design3 first** for every screen with a counterpart; the prototype runs its buttons at once, so words are what it
+  shows. Not in design3: the per-row SaveNote on Users and the chat box's wait (the prototype's are instant or
+  decorative).

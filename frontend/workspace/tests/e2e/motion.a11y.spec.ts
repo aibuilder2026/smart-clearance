@@ -11,7 +11,7 @@ test.beforeEach(async ({}, testInfo) => {
 	test.skip(testInfo.project.name !== 'desktop-light', 'motion checks run once, on desktop-light');
 });
 
-const LOADING = '.spinner, .skeleton, .spin';
+const LOADING = '.spinner, .skeleton, .spin, .btn-arc';
 const endless = (page: Page) =>
 	page.evaluate(
 		(loading) =>

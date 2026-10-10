@@ -52,7 +52,7 @@
     const ref = useRef(null);
     const d = receipt || (c && id && c.docs.find(x => x.id === id));
     const pdf = () => { const n = ref.current; if (n && d) S.printPage(`${d.type || "Donation receipt"} ${d.no || ""}`, `<div class="${n.className}">${n.innerHTML}</div>`, { styles: true }); };
-    return <Sheet open={open && !!d} onClose={onClose} title={d ? d.type || "Donation receipt" : ""} footer={d ? <Button variant="secondary" block icon="download" onClick={pdf}>Download PDF</Button> : null}>
+    return <Sheet open={open && !!d} onClose={onClose} title={d ? d.type || "Donation receipt" : ""} footer={d ? <Button variant="secondary" block icon="download" action={pdf} busy="Opening the PDF…">Download PDF</Button> : null}>
       {d && <div ref={ref} className="stack snug">{receipt ? <S.Receipt doc={receipt} batch={receipt.batch || (c && c.batch)} sku={receipt.sku || (c && c.sku)} dist={receipt.dist || (c && c.dist)} /> : <S.Paper id={id} c={c} />}</div>}
     </Sheet>;
   }
@@ -89,7 +89,7 @@
   function ActingFor({ p }) {
     const { toast } = useNotice();
     const flip = () => { Flow.act("pause", !p.paused); toast({ text: p.paused ? "Resumed · the agents carry on" : "Paused · nothing more happens in your name", tone: "ok" }); };
-    return <Card className="row wrap" style={{ gap: 12 }}><span className={cx("icontile", p.paused ? "amber" : "")} style={{ width: 40, height: 40, borderRadius: 12 }}><Icon name={p.paused ? "circle-pause" : "handshake"} size={19} /></span><div className="grow" style={{ minWidth: 0 }}><b>{p.paused ? "Paused: nothing happens in your name" : "Smart-Clearance acts for you"}</b><div className="t-footnote muted">{p.paused ? "Listings, offers and invoice drafts wait until you resume." : `Inside Munchly's floors · since ${p.at} · listings, scheme offers, invoice drafts, dispatch slots`}</div></div><Button variant={p.paused ? "primary" : "secondary"} size="sm" icon={p.paused ? "play" : "pause"} onClick={flip}>{p.paused ? "Resume" : "Pause"}</Button></Card>;
+    return <Card className="row wrap" style={{ gap: 12 }}><span className={cx("icontile", p.paused ? "amber" : "")} style={{ width: 40, height: 40, borderRadius: 12 }}><Icon name={p.paused ? "circle-pause" : "handshake"} size={19} /></span><div className="grow" style={{ minWidth: 0 }}><b>{p.paused ? "Paused: nothing happens in your name" : "Smart-Clearance acts for you"}</b><div className="t-footnote muted">{p.paused ? "Listings, offers and invoice drafts wait until you resume." : `Inside Munchly's floors · since ${p.at} · listings, scheme offers, invoice drafts, dispatch slots`}</div></div><Button variant={p.paused ? "primary" : "secondary"} size="sm" icon={p.paused ? "play" : "pause"} action={flip} busy={p.paused ? "Resuming…" : "Pausing…"}>{p.paused ? "Resume" : "Pause"}</Button></Card>;
   }
   // the staff sale at the godown (SC-87, option A): the packs and the price, the distributor's UPI address to show staff,
   // and one count to record what sold, once, when the sale is over. The code beside the address is an illustration drawn
@@ -265,7 +265,7 @@
       <div className="card-head"><span className="row tight"><Chan id="expiresoon" icon="truck" /><span className="card-title">The buyer's truck · ExpireSoon</span></span><Badge tone={n.truck ? "blue" : n.award ? "green" : "violet"}>{n.truck ? "collected" : n.award ? "sold" : n.listing ? "listed" : "not listed yet"}</Badge></div>
       <HaulLine progress={n.truck ? (["settled", "cleared"].includes(n.phase) ? 1 : 0.55) : 0} />
       <List>{[["Buyer", n.award ? `${D.BUYER.name}, ${D.BUYER.city}` : "whoever takes the lot"], ["Lot", `${n.listing ? `${n.listing.id} · ` : ""}${num(es.units)} packs · ${cartons(es.units)}`], ["Price", n.award ? `${rate(n.award.price)} a pack, the counter he took` : `${rate(es.price)} asked`], ["Token", n.award ? `${fmt.inr(n.award.token)} received` : "paid when a buyer takes it"], ["Balance", n.award ? `${fmt.inr(balance)} before loading` : "paid before loading"], ["Freight", "the buyer's own truck"]].map(([k, v]) => <ListRow key={k} title={k} value={v} />)}</List>
-      {!n.truck && <Button variant="primary" size="lg" icon="truck" disabled={!n.award || schemeOpen} onClick={dispatch}>{!n.award ? "Load after the award" : schemeOpen ? "Load once the scheme closes" : "Load the buyer's truck"}</Button>}
+      {!n.truck && <Button variant="primary" size="lg" icon="truck" disabled={!n.award || schemeOpen} action={dispatch} busy="Loading the truck…" done="Loaded">{!n.award ? "Load after the award" : schemeOpen ? "Load once the scheme closes" : "Load the buyer's truck"}</Button>}
       <span className="t-caption subtle">Your staff load it as normal godown work, once the balance lands.</span>
     </Card></>;
   }
@@ -522,7 +522,7 @@
       <span className="grow stack tight" style={{ gap: 2, minWidth: 0 }}>
         <span className="t-subhead"><b>{o.who}</b> · {o.what}</span>
         <span className="t-footnote muted">{CH[o.id].name}{o.at ? ` · ${when(o.at)}` : ""}{o.sub ? ` · ${o.sub}` : ""}</span>
-        {o.paper && <span className="row tight wrap" style={{ gap: 8 }}><span className="dist-paper"><Icon name="file-text" size={13} /><span className="mono">{o.paper.no}</span><span>{o.paper.label}</span></span>{o.paper.issue && <Button variant="secondary" size="sm" icon="check" loading={busy} onClick={issue}>Issue from Tally</Button>}</span>}
+        {o.paper && <span className="row tight wrap" style={{ gap: 8 }}><span className="dist-paper"><Icon name="file-text" size={13} /><span className="mono">{o.paper.no}</span><span>{o.paper.label}</span></span>{o.paper.issue && <Button variant="secondary" size="sm" icon="check" loading={busy} busy="Issuing…" done="Issued" onClick={issue}>Issue from Tally</Button>}</span>}
         {o.shops && o.shops.length > 0 && <button type="button" className="pt-link t-footnote dist-toggle" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? "Hide" : "Show"} the {o.shops.length} shops' orders</button>}
         {open && <div className="dist-shops">{o.shops.map(k => <span key={k.name}><b>{k.name}</b>{k.at && <em>{when(k.at)}</em>}<span className="tnum">{k.units}</span></span>)}</div>}
       </span>
@@ -702,7 +702,7 @@
     const after = () => { Store.update(st => { if (st.hero.declined) delete st.hero.declined[shop.id]; }); go("offer"); };
     return <Screen me={me} title="Offers" sub={`${k.name} · ${k.area}, ${dist.city}`}>
       <div className="stack" style={{ gap: 16, maxWidth: 620 }}>
-        {top && top.status === "open" ? <><OfferCard shop={k.name} onOpen={() => go("offer")} /><Button variant="ghost" size="lg" block onClick={no}>Not this time</Button></>
+        {top && top.status === "open" ? <><OfferCard shop={k.name} onOpen={() => go("offer")} /><Button variant="ghost" size="lg" block action={no} busy="Declining…">Not this time</Button></>
           : top && top.status === "ordered" ? <Card className="stack snug"><div className="row" style={{ gap: 14 }}><Product name={top.sku.img} size={64} /><div className="grow"><b>Ordered · {top.units} packets</b><div className="t-footnote muted">{top.sku.name} · placed {top.orderedAt.slice(11)} · comes on {D.JOURNEY.van.day}'s van</div></div><Badge tone="green" icon="check">confirmed</Badge></div></Card>
           : top && top.status === "declined" ? <Card className="stack snug"><div className="row" style={{ gap: 14 }}><Product name={top.sku.img} size={64} /><div className="grow"><b>You said not this time</b><div className="t-footnote muted">{top.sku.name} · declined {when(top.declinedAt)}. The offer stays open until {when(top.closed)} if you change your mind.</div></div></div><Button variant="secondary" block onClick={after}>Order after all</Button></Card>
           : <Card><Empty img="kirana" title="No open offer" body={`${dist.short}'s schemes arrive here as a notification, in Hindi, ready to order in one tap.`} /></Card>}
@@ -837,11 +837,11 @@
             <div className="card-head"><span className="card-title">Place a bid</span><span className="t-caption subtle">ask ₹15.00</span></div>
             <div className="row between"><span className="stack tight" style={{ gap: 0 }}><b>Your price a packet</b><span className="t-footnote subtle">for all {ES.units} units</span></span><Stepper value={price} onChange={setPrice} min={10} max={14} step={0.5} label="Bid price" format={v => "₹" + v.toFixed(2)} /></div>
             <div className="row between t-subhead"><span>15% token on your bid</span><span className="tnum strong">{fmt.inr2(token)}</span></div>
-            <Button variant="violet" size="lg" block icon="gavel" onClick={place}>Bid ₹{price.toFixed(2)} for {ES.units}</Button>
+            <Button variant="violet" size="lg" block icon="gavel" action={place} busy="Placing your bid…" done="Bid placed">Bid ₹{price.toFixed(2)} for {ES.units}</Button>
             <span className="t-caption subtle">Balance in {D.MARKET.balanceHours} h. The seller's agent replies in about a minute.</span>
           </Card> : <Card className="stack snug"><div className="card-head"><span className="card-title">Your bid</span><Badge tone={last.status === "countered" ? "violet" : undefined} dot live={last.status === "placed"}>{last.status === "placed" ? "waiting for the seller" : last.status}</Badge></div>
             <div className="row base" style={{ gap: 8 }}><span className="es-price lg">₹{last.price.toFixed(2)}</span><span className="muted">→ counter ₹{(last.counter || D.COUNTER.price).toFixed(2)}</span></div>
-            {last.status === "countered" && <Button variant="violet" size="lg" block icon="check" onClick={accept}>Accept ₹{D.COUNTER.price.toFixed(2)} · pay {fmt.inr(D.AWARD.token)} token</Button>}
+            {last.status === "countered" && <Button variant="violet" size="lg" block icon="check" action={accept} busy="Accepting…" done="Accepted">Accept ₹{D.COUNTER.price.toFixed(2)} · pay {fmt.inr(D.AWARD.token)} token</Button>}
           </Card>)}
         <Card className="stack snug"><div className="card-head"><span className="card-title">Chat with the seller</span><span className="t-caption subtle">answered by an agent</span></div>
           {h.chat.length ? <S.Chat chat={h.chat} typing={last && last.status === "placed"} /> : <span className="t-footnote muted">Ask about dates, dispatch or a lower price.</span>}
@@ -883,19 +883,19 @@
             <div className="row tight"><Mark size={28} /><span className="t-footnote subtle strong">Donation agent · Munchly Foods · {DN.asked}</span></div>
             <div className="row" style={{ gap: 16 }}><Product name="pack-mango" size={app.bp === "phone" ? 80 : 104} float /><div className="stack tight" style={{ gap: 4 }}><div className="t-title2">{n} packs of Mango Drink</div><span className="row tight wrap"><Badge icon="calendar">22 days left</Badge><Badge icon="map-pin">{DN.from}</Badge><Badge tone="green" icon="clipboard-check">FSSAI checklist</Badge></span></div></div>
             <p className="t-body" style={{ margin: 0 }}>{n} packs of Mango Drink, 22 days left, with the FSSAI checklist. Pickup {DN.day} {DN.hour} from {DN.from}?</p>
-            {d === "booked" ? <div className="row wrap" style={{ gap: 10 }}><Button variant="primary" size="lg" icon="check" onClick={() => Flow.act("confirmPickup")}>Confirm {DN.day} {DN.time}</Button><Button variant="secondary" size="lg" onClick={() => setLater(true)}>Suggest another time</Button></div>
+            {d === "booked" ? <div className="row wrap" style={{ gap: 10 }}><Button variant="primary" size="lg" icon="check" action={() => Flow.act("confirmPickup")} busy="Confirming…" done="Confirmed">Confirm {DN.day} {DN.time}</Button><Button variant="secondary" size="lg" onClick={() => setLater(true)}>Suggest another time</Button></div>
               : <div className="row top" style={{ gap: 10, justifyContent: "flex-end" }}><div className="t-subhead" style={{ padding: "9px 12px", borderRadius: 16, borderTopRightRadius: 6, background: "var(--primary)", color: "var(--primary-fg)", maxWidth: "85%" }}>{DN.reply}<div className="t-caption" style={{ opacity: 0.9 }}>Meera · {DN.confirmed}</div></div><Avatar person={D.PEOPLE.meera} size="sm" /></div>}
           </div></div>
           {d !== "booked" && <Card className="stack snug"><div className="card-head"><span className="card-title">Pickup</span><Badge tone="green" icon={d === "collected" ? "check" : "calendar"}>{d === "collected" ? "collected" : `${DN.date} · ${DN.time}`}</Badge></div>
             <K.VTracker items={[{ id: "req", title: "Requested by the donation agent", time: DN.asked }, { id: "conf", title: "Confirmed by Meera", time: DN.confirmed }, { id: "col", title: `Collected from ${DN.from}`, time: d === "collected" ? DN.collected : `${DN.date.split(" ")[0]} ${DN.time}` }, { id: "serve", title: `Served at ${DN.spot}`, time: "this week" }]} done={d === "collected" ? 3 : 2} current={d === "collected" ? 3 : 2} />
-            {d === "confirmed" && <Button variant="primary" size="lg" icon="package-check" onClick={() => { Flow.act("collect"); toast({ text: `${R.type} ${R.no} issued`, tone: "ok" }); }}>Mark collected</Button>}
+            {d === "confirmed" && <Button variant="primary" size="lg" icon="package-check" action={() => { Flow.act("collect"); toast({ text: `${R.type} ${R.no} issued`, tone: "ok" }); }} busy="Collecting…" done="Collected">Mark collected</Button>}
             {d === "collected" && <button type="button" className="receipt-row" onClick={() => setPaper(true)}><Icon name="receipt" size={20} /><span className="grow"><b>{R.type} {R.no}</b><span className="t-footnote">{fmt.num(R.units)} packs · {fmt.num(R.meals)} meals · shared with Munchly for its BRSR table</span></span><span className="receipt-view">View<Icon name="chevron-right" size={16} /></span></button>}
           </Card>}
           {history}
         </>}
         side={<><SectionTitle>FSSAI surplus-food checklist</SectionTitle><Card className="paper stack tight" style={{ padding: 18 }}>{["Sealed, undamaged packs", `Best before ${bb}, 22 days left`, "Ambient storage, away from sunlight", "Batch MF-2410-118 on every carton", "Donor: Munchly Foods via Lakshmi Agencies"].map(t => <div key={t} className="row top" style={{ gap: 8 }}><Icon name="square-check" size={17} style={{ color: "#167a52", marginTop: 1 }} /><span className="t-subhead">{t}</span></div>)}</Card>
           <List head="Your intake rules"><ListRow title="Days left" value="15 or more" /><ListRow title="Minimum lot" value="50 units" /><ListRow title="Logistics" value={D.SETUP.partners[0].pickup} /></List></>} />}
-      <Sheet open={paper} onClose={() => setPaper(false)} title={R.type} footer={R.pdf ? <Button variant="secondary" block icon="download">Download the PDF</Button> : null}><div className="stack snug"><S.Receipt doc={R} batch={mb} sku={D.SKUS[mb.sku]} dist={D.DISTRIBUTORS[mb.distributor]} /><span className="t-footnote muted">The same paper is in Munchly's document pack for {mb.id}.</span></div></Sheet>
+      <Sheet open={paper} onClose={() => setPaper(false)} title={R.type} footer={R.pdf ? <Button variant="secondary" block icon="download" busy="Opening the PDF…">Download the PDF</Button> : null}><div className="stack snug"><S.Receipt doc={R} batch={mb} sku={D.SKUS[mb.sku]} dist={D.DISTRIBUTORS[mb.distributor]} /><span className="t-footnote muted">The same paper is in Munchly's document pack for {mb.id}.</span></div></Sheet>
       <Sheet open={later} onClose={() => setLater(false)} title="Suggest another time" detent="medium" footer={<Button variant="primary" block onClick={() => { setLater(false); toast({ text: "Sent · the agent will confirm with Lakshmi Agencies" }); }}>Send</Button>}><div className="stack snug">{DN.slots.map(t => <label key={t} className="list-row" style={{ gridTemplateColumns: "auto 1fr", cursor: "pointer" }}><input type="radio" name="slot" defaultChecked={t === DN.slots[0]} /> {t}</label>)}</div></Sheet>
     </Screen>;
   }

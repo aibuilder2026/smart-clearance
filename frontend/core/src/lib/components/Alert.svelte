@@ -1,7 +1,13 @@
 <script lang="ts" module>
 	/** a button at the foot of an alert; any of them closes it, after its own action. An action that returns a promise
 	 *  keeps the alert open while it waits (SC-152), its button saying `busy`; a refusal stays in the alert */
-	export type AlertAction = { label: string; onclick?: () => unknown; busy?: string; danger?: boolean; strong?: boolean };
+	export type AlertAction = {
+		label: string;
+		onclick?: () => unknown;
+		busy?: string;
+		danger?: boolean;
+		strong?: boolean;
+	};
 </script>
 
 <script lang="ts">

@@ -9,7 +9,8 @@ import { stubLedger, stubPage } from './ledger';
 import { historyCase, recordOf, storyRecord } from './record';
 import history from './seed/history.json';
 import type { PartnerWorld } from './partners';
-import { setDefaultSource, type WorkspaceSource } from './source';
+import { SvelteSet } from 'svelte/reactivity';
+import { setDefaultSource, type SendOptions, type WorkspaceSource } from './source';
 import { store } from './store.svelte';
 import type {
 	ActionArg,
@@ -144,7 +145,8 @@ class StubSource implements WorkspaceSource {
 	/** the stub has one batch in focus, whatever a screen asks for */
 	readonly focus = null;
 	readonly explore = D.explore.groups;
-	#pending = new Set<string>();
+	// the steps waiting out their feel, so a screen can draw them waiting (SC-152)
+	#pending = new SvelteSet<string>();
 	#session = $state<Session | null>(null);
 	#splash = $state(true);
 
@@ -240,7 +242,8 @@ class StubSource implements WorkspaceSource {
 		return Promise.resolve();
 	};
 
-	act = <N extends HumanAction>(name: N, arg?: ActionArg<N>, o?: { feel?: number; ref?: string }) => {
+	// the stub never refuses a step, so `inline` changes nothing here
+	act = <N extends HumanAction>(name: N, arg?: ActionArg<N>, o?: { feel?: number; ref?: string } & SendOptions) => {
 		const step = () => {
 			if (name === 'order' && arg && typeof arg === 'object') {
 				// a kirana's order with its own count, as the offer screen made it: one change

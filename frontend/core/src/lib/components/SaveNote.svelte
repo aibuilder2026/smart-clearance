@@ -14,7 +14,15 @@
 			height="14"
 			viewBox="0 0 20 20"
 			aria-hidden="true"
-			><circle cx="10" cy="10" r="7.5" fill="none" stroke="currentColor" stroke-opacity="0.28" stroke-width="2.25" /><path
+			><circle
+				cx="10"
+				cy="10"
+				r="7.5"
+				fill="none"
+				stroke="currentColor"
+				stroke-opacity="0.28"
+				stroke-width="2.25"
+			/><path
 				d="M10 2.5a7.5 7.5 0 0 1 7.5 7.5"
 				fill="none"
 				stroke="currentColor"

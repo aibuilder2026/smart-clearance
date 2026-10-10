@@ -12,6 +12,7 @@
 	import Switch from '../../../components/Switch.svelte';
 	import Icon from '../../../icons/Icon.svelte';
 	import { useNotice } from '../../../notice.svelte';
+	import { refusal } from '../../../wait.svelte';
 	import { useRoute } from '../../context';
 	import { addDays, castOf, fmt, permissionOf } from '../../model';
 	import ExportUpload from '../live/ExportUpload.svelte';
@@ -47,18 +48,15 @@
 	// the guardrails as the store holds them; changes stay on this screen, as in the prototype
 	let floors = $state({ ...ws.state.rules.floors });
 	let taps = $state(ws.state.rules.approvalTaps);
-	let busy = $state(false);
 	let ret = $state(ws.state.rules.returnWindowDays);
 	let uplift = $state(ws.state.rules.kiranaUplift);
 	let van = $state(ws.state.rules.vanPerUnit);
 	const done = $derived(s.setup.confirmed);
 
-	const confirm = () => {
-		busy = true;
-		void ws.act('connect', undefined, { feel: 900 }).then(() => {
-			busy = false;
-			notices.toast({ text: `Setup confirmed · the Watcher starts at ${ws.state.rules.watchTime}`, tone: 'ok' });
-		});
+	// Confirm waits on the answer (SC-152): the toast only once it has gone through, else the reason under it
+	const confirm = async () => {
+		await ws.act('connect', undefined, { feel: 900, inline: true });
+		notices.toast({ text: `Setup confirmed · the Watcher starts at ${ws.state.rules.watchTime}`, tone: 'ok' });
 	};
 	const chans = $derived(ws.data.setup.channels);
 	const wo = $derived(c!.plan.writeOff);
@@ -77,17 +75,36 @@
 	let file: HTMLInputElement | null = $state(null);
 	let picked = $state<{ name: string; size: number } | null>(null);
 	const sending = $derived(ws.uploads?.get('export'));
+	// an export that did not go through says why under Upload an export, with Try again sending the same file (SC-152);
+	// one stopped on its way says nothing
+	let refused = $state<string | null>(null);
+	let last: File | null = null;
+	let stopped = false;
+	const send = async (f: File) => {
+		if (!ws.uploadExport) return;
+		last = f;
+		stopped = false;
+		refused = null;
+		picked = { name: f.name, size: f.size };
+		try {
+			await ws.uploadExport(f, { inline: true });
+		} catch (e) {
+			refused = refusal(e);
+			return;
+		}
+		if (stopped) return;
+		reading = true;
+		notices.toast({ text: 'Export uploaded · the Data agent is mapping its columns', tone: 'ok' });
+	};
 	const pick = (e: Event) => {
 		const input = e.currentTarget as HTMLInputElement;
 		const f = input.files?.[0];
 		input.value = '';
-		if (!f || !ws.uploadExport) return;
-		picked = { name: f.name, size: f.size };
-		void ws.uploadExport(f).then(() => {
-			if (ws.failed) return;
-			reading = true;
-			notices.toast({ text: 'Export uploaded · the Data agent is mapping its columns', tone: 'ok' });
-		});
+		if (f) void send(f);
+	};
+	const stop = () => {
+		stopped = true;
+		ws.cancelUpload?.('export');
 	};
 	// SC-79: a live workspace starts (and a reset leaves it) with no export mapped. Until the Data agent has mapped one,
 	// the card says so, keeps the fields it looks for, offers the upload and names its next run; Confirm waits
@@ -139,7 +156,7 @@
 				name={picked.name}
 				size={picked.size}
 				p={sending}
-				oncancel={ws.cancelUpload ? () => ws.cancelUpload?.('export') : undefined}
+				oncancel={ws.cancelUpload ? stop : undefined}
 			/>{/if}
 		{#if phase !== 'uploading'}<Card class="stack snug">
 				<div class="card-head">
@@ -164,6 +181,8 @@
 									size="sm"
 									variant={phase === 'waiting' ? 'primary' : undefined}
 									icon="upload"
+									error={refused}
+									onretry={() => last && void send(last)}
 									onclick={() => file?.click()}>Upload an export</Button
 								><input
 									bind:this={file}
@@ -378,10 +397,11 @@
 					variant="primary"
 					size="lg"
 					icon="check"
-					loading={busy}
 					disabled={!mapped}
 					aria-describedby={mapped ? undefined : 'setup-why'}
-					onclick={confirm}>Confirm and start watching</Button
+					action={confirm}
+					busy="Confirming…"
+					done="Confirmed">Confirm and start watching</Button
 				>{#if !mapped}<span id="setup-why" class="setup-why"
 						><Icon name="info" size={15} stroke={2.2} />Confirm once the Data agent has mapped an export.</span
 					>{/if}{/if}
