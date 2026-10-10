@@ -1,0 +1,9 @@
+{
+  "model": "Qwen-Image 2.1 (bf16), image edit, local (qwen-image-bf16 0.2.0)",
+  "input": "agents/evals/vision/images/chikki.webp (the Vision eval set's clean Peanut Chikki label)",
+  "seed": 1421,
+  "size": 1024,
+  "prompt": "Edit only the printed text on the white label, keeping everything else identical: the first line stays \"MUNCHLY PEANUT CHIKKI 100 g\"; the second line reads \"BATCH NO: MF-2407-116\"; the third line reads \"MFG: 31/03/2026\"; the fourth line reads \"BEST BEFORE: 27/09/2026\"; the last line stays \"MRP ₹25.00 (incl. of all taxes)\". Same bold black sans-serif font, same size and alignment, same carton, same lighting and background.",
+  "post": "cwebp -q 84 (1184 x 896)",
+  "purpose": "SC-142's mockups: the label photo Rakesh Traders sent for the history batch MF-2407-116 (Peanut Chikki 100 g, best before 27 Sep 2026)"
+}

@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-142 A batch's record</title>
+<meta name="description" content="Three options for a batch's record: the photos sent for it, the destruction's evidence and its approval, and the audit trail of everything that happened, for Supply Chain and for the distributor; and past batches on Batches.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<style>
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px -6px rgb(17 41 30 / 0.1);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
+::selection { background: color-mix(in oklab, var(--green) 24%, transparent); }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 48px 16px 72px; }
+h1, h2, h3, h4 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+h2 { margin: 60px 0 14px; font-size: clamp(25px, 3vw, 32px); font-weight: 720; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 72, "wdth" 88; }
+h3 { font-size: 26px; font-weight: 720; letter-spacing: -0.018em; font-variation-settings: "opsz" 48, "wdth" 90; }
+h4 { margin: 26px 0 10px; font: 650 16px/1.35 var(--ui); letter-spacing: 0; }
+p { margin: 0 0 12px; max-width: 74ch; color: var(--ink-2); text-wrap: pretty; }
+p b, li b, td b { color: var(--ink); font-weight: 600; }
+.lede { font-size: 18px; margin-top: 14px; }
+blockquote { margin: 16px 0; padding: 16px 20px; border-radius: 14px; background: var(--sunken); color: var(--ink); font-size: 15.5px; max-width: 82ch; }
+blockquote ul { color: var(--ink); margin: 0; }
+ul { margin: 0 0 12px; padding-left: 20px; color: var(--ink-2); max-width: 80ch; display: grid; gap: 6px; }
+code { font: 500 0.9em/1 var(--mono); }
+figure { margin: 0; min-width: 0; }
+figure img, figure video { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+.four { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+@media (min-width: 900px) { .four { grid-template-columns: minmax(0, 2.6fr) minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); } }
+.duo { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+@media (min-width: 900px) { .duo { grid-template-columns: minmax(0, 2.4fr) minmax(0, 2.4fr) minmax(0, 1fr) minmax(0, 1fr); } }
+.phones { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+@media (min-width: 700px) { .phones { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .phones { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.desks { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 700px) { .desks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.card { padding: 22px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.shared { display: grid; gap: 18px; }
+@media (min-width: 900px) { .shared { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.shared h3.sub { margin: 0 0 6px; }
+h3.sub { font: 650 16px/1.35 var(--ui); letter-spacing: 0; font-variation-settings: normal; }
+.shared p, .shared li { font-size: 14.5px; }
+.opt { margin-top: 26px; display: grid; gap: 14px; padding: 26px 22px; border-radius: 28px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); scroll-margin-top: 20px; }
+.opt.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.opt header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.opt header p { margin: 0; flex-basis: 100%; font-size: 17px; color: var(--ink); max-width: 76ch; }
+.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 600 12.5px/1 var(--ui); color: var(--green-text); background: var(--green-soft); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+.btn.primary { background: var(--green); color: #fff; box-shadow: none; }
+:root[data-theme="dark"] .btn.primary { color: #03170d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #03170d; } }
+.states { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; }
+.states a { display: inline-flex; align-items: center; min-height: 32px; }
+.vid { display: grid; gap: 18px; }
+@media (min-width: 900px) { .vid { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: start; } }
+dl.facts { margin: 0; display: grid; gap: 12px; }
+dl.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); }
+dl.facts dd { margin: 2px 0 0; color: var(--ink-2); font-size: 14.5px; }
+dl.facts dd ul { margin-top: 4px; font-size: 14.5px; }
+.tablewrap { overflow-x: auto; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+table.cmp { border-collapse: collapse; width: 100%; min-width: 860px; font-size: 14px; color: var(--ink-2); }
+table.cmp th, table.cmp td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+table.cmp thead th { color: var(--ink); font-weight: 650; background: var(--sunken); }
+table.cmp tbody th { color: var(--ink); font-weight: 600; width: 14%; }
+table.cmp tr:last-child > * { border-bottom: 0; }
+.rec-box { padding: 22px; border-radius: 20px; background: var(--green-soft); }
+.rec-box p { color: var(--ink); }
+.q { padding: 20px 22px; border-radius: 20px; background: var(--amber-soft); }
+.q p, .q li { color: var(--ink); }
+.q h3 { font-size: 20px; margin-bottom: 8px; }
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
+</style>
+<body>
+<main class="wrap">
+<h1>A batch's record</h1>
+<p class="lede">SC-142 · Munchly's workspace · three options for what a batch keeps: the photos sent for it, the destruction's evidence and Priya's yes, and an audit trail of everything that happened. Priya finds every past batch on Batches; Rakesh sees the photos he sent.</p>
+<p>The maintainer (10 Oct):</p>
+<blockquote><ul><li>“Both supply chain operator and distributor should be able to see the photos they have sent for batch and destruction evidence pictures.”</li><li>“Supply chain operator should be able to see past batches under Batches section with details like what picture was sent, audit log of the everything that happened in that batch, photos of destruction and approval sent etc.”</li></ul></blockquote>
+
+<h2>What the workspace shows today</h2>
+<p>Priya's <b>Batches</b> lists only the nine batches still in view (SC-126 moved a cleared batch past its best-before to the ledger). A past batch's page, from the Ledger, has <b>Money, Papers and Impact</b>: no photo, no step-by-step record. Rakesh's <b>Label photo</b> lists what Vision read from each earlier photo, as text, without the photo; his destruction photos show only on the Destroy screen while that batch is open.</p>
+<div class="desks">
+<figure><img src="current/batches-priya-1440-light.webp" width="1440" height="900" loading="lazy" alt="Today: Priya's Batches, the nine batches in view only."><figcaption>Priya · Batches</figcaption></figure>
+<figure><img src="current/past-batch-priya-1440-light.webp" width="1440" height="900" loading="lazy" alt="Today: a past batch's page from the Ledger, Money, Papers and Impact."><figcaption>Priya · a past batch, from the Ledger</figcaption></figure>
+<figure><img src="current/photo-rakesh-1440-light.webp" width="1440" height="900" loading="lazy" alt="Today: Rakesh's Label photo, earlier photos as text."><figcaption>Rakesh · Label photo</figcaption></figure>
+<figure><img src="current/past-batch-rakesh-1440-light.webp" width="1440" height="900" loading="lazy" alt="Today: Rakesh's past batch page, What happened, Money and Papers."><figcaption>Rakesh · a past batch</figcaption></figure>
+</div>
+
+<h2>In every option</h2>
+<div class="shared">
+<div class="card"><h3 class="sub">Past batches on Batches</h3><p>Every batch that has cleared joins Priya's <b>Batches</b>, beside the ones in view, each opening its page: the twelve of the pilot quarter, and the story's batches once they clear. The Ledger keeps its own way in.</p></div>
+<div class="card"><h3 class="sub">The photos, as they were sent</h3><p>The <b>label photo</b> the distributor sent, with what Vision read from it (the batch, made, best before, MRP) and that it matched the export. Destroyed at the godown, the <b>before</b> and <b>after</b> photos with Vision's four checks. Each opens whole. On the live workspace they are the photos in the photos bucket, through short-lived links.</p></div>
+<div class="card"><h3 class="sub">The yeses and the audit trail</h3><p>Every step of the batch, day by day, by the agent or the person who took it: the Watcher's flag, Vision's read, the split, <b>Priya's yes on the plan</b>, the scheme, the bids, the truck, the papers, the review, the destruction's evidence and <b>Priya's yes on it</b>, Impact's ledger. A person's step is their audit line, in their name. The distributor sees his own photos and moments only, never Munchly's audit log.</p></div>
+</div>
+<h4>The history's label photos (Qwen-Image, illustrative)</h4>
+<p>The pilot quarter's twelve batches had no label photos of their own. Each now has one printed with its own batch number and dates (<code>photos/</code>, each with its sidecar): Rakesh Traders' as edits of the Vision eval set's clean label for the product, Lakshmi Agencies' rendered afresh in the eval set's words. All fictional.</p>
+<div class="phones"><figure><img src="photos/label-MF-2407-116.webp" width="1184" height="896" loading="lazy" alt="The label photo of MF-2407-116, Peanut Chikki 100 g, best before 27/09/2026."><figcaption>MF-2407-116 · Peanut Chikki</figcaption></figure><figure><img src="photos/label-MF-2406-105.webp" width="1184" height="896" loading="lazy" alt="The label photo of MF-2406-105, Choco Cream Biscuits 200 g, best before 14/08/2026."><figcaption>MF-2406-105 · Choco Cream Biscuits</figcaption></figure></div>
+
+<h2>The options</h2>
+<section class="opt rec" id="option-a"><header><h3>Option A · The Record tab</h3><span class="tag">Recommended</span>
+<p>Batches lists the batches in view as today, then <b>every batch that has cleared</b>, by month, each with its photos counted and what it recovered. A batch's page gains a fourth tab, <b>Record</b>: the photos sent for it, together, with what Vision read; <b>the yeses</b> in a card of their own; and the <b>audit trail</b>, every step day by day by the agent or the person who took it, filtered to people or agents, with a CSV. Rakesh's batch page gains a <b>Photos</b> tab: the photos he sent, and Priya's yes on the destruction.</p></header>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>The record has one home, on every batch, in a journey or long cleared.</li><li>The photos lead, so what was sent is seen first; the trail answers who did what and when.</li><li>One tab more on two pages; Batches grows a long list once many batches clear (months group it).</li></ul></dd><dt>What the build touches</dt><dd>design3 first (<code>screens/brand.jsx</code> Batches, <code>finance.jsx</code> the batch page, <code>trade.jsx</code>), then core's screens; backend-api: each batch's photos with signed links (the label photo, the destruction's two) and its record (the case's steps and its audit lines) for the operator, and his own photos in the distributor's partner view; the contract; the history's label photos stored with its cases.</dd></dl>
+<div class="desks"><figure><img src="option-a/record-1440-light.webp" width="1440" height="2700" loading="lazy" alt="Option A: a past batch's record, light."><figcaption>Priya · a past batch · light</figcaption></figure><figure><img src="option-a/record-1440-dark.webp" width="1440" height="2700" loading="lazy" alt="Option A: a past batch's record, dark."><figcaption>Priya · a past batch · dark</figcaption></figure></div>
+<div class="desks"><figure><img src="option-a/batches-1440-light.webp" width="1440" height="1500" loading="lazy" alt="Option A: Priya's Batches with the cleared batches."><figcaption>Priya · Batches</figcaption></figure><figure><img src="option-a/dist-1440-light.webp" width="1440" height="1500" loading="lazy" alt="Option A: Rakesh's photos."><figcaption>Rakesh · his photos</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-a/record-390-light.webp" width="780" height="7200" loading="lazy" alt="Option A: the record on a phone."><figcaption>Record · phone</figcaption></figure><figure><img src="option-a/batches-390-light.webp" width="780" height="3400" loading="lazy" alt="Option A: Batches on a phone."><figcaption>Batches · phone</figcaption></figure><figure><img src="option-a/dist-390-dark.webp" width="780" height="4800" loading="lazy" alt="Option A: Rakesh's photos on a phone, dark."><figcaption>Rakesh · phone · dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="option-a/mockup.html?who=priya#/report/MF-2407-116">Open option A</a><a class="btn" href="option-a/mockup.html?who=priya#/batches">Batches</a><a class="btn" href="option-a/mockup.html?who=rakesh#/batches/MF-2407-116">Rakesh's side</a></div>
+</section>
+<section class="opt" id="option-b"><header><h3>Option B · Evidence on the timeline</h3>
+<p>Batches is one table, <b>In view</b> or <b>Cleared</b>; a cleared row shows its photos as thumbnails. A batch's page opens on its <b>Timeline</b>: every step day by day, the label photo where it was sent with what Vision read, the destruction's two photos where they were sent with Vision's checks, each yes in amber. <b>Audit lines</b> shows each person's step as the audit log keeps it (when, who, what, which batch). Rakesh's <b>What happened</b> carries his photos at the moments he sent them.</p></header>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>Tells the batch as a story: each photo next to what it led to.</li><li>The audit log and the story are one thing, with its raw lines a switch away.</li><li>A long page; to see just the photos, Priya scrolls.</li></ul></dd><dt>What the build touches</dt><dd>design3 first (<code>screens/brand.jsx</code> Batches, <code>finance.jsx</code> the batch page, <code>trade.jsx</code>), then core's screens; backend-api: each batch's photos with signed links (the label photo, the destruction's two) and its record (the case's steps and its audit lines) for the operator, and his own photos in the distributor's partner view; the contract; the history's label photos stored with its cases.</dd></dl>
+<div class="desks"><figure><img src="option-b/record-1440-light.webp" width="1440" height="2700" loading="lazy" alt="Option B: a past batch's record, light."><figcaption>Priya · a past batch · light</figcaption></figure><figure><img src="option-b/record-1440-dark.webp" width="1440" height="2700" loading="lazy" alt="Option B: a past batch's record, dark."><figcaption>Priya · a past batch · dark</figcaption></figure></div>
+<div class="desks"><figure><img src="option-b/batches-1440-light.webp" width="1440" height="1500" loading="lazy" alt="Option B: Priya's Batches with the cleared batches."><figcaption>Priya · Batches</figcaption></figure><figure><img src="option-b/dist-1440-light.webp" width="1440" height="1500" loading="lazy" alt="Option B: Rakesh's photos."><figcaption>Rakesh · his photos</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-b/record-390-light.webp" width="780" height="7200" loading="lazy" alt="Option B: the record on a phone."><figcaption>Record · phone</figcaption></figure><figure><img src="option-b/batches-390-light.webp" width="780" height="3400" loading="lazy" alt="Option B: Batches on a phone."><figcaption>Batches · phone</figcaption></figure><figure><img src="option-b/dist-390-dark.webp" width="780" height="4800" loading="lazy" alt="Option B: Rakesh's photos on a phone, dark."><figcaption>Rakesh · phone · dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="option-b/mockup.html?who=priya#/report/MF-2407-116">Open option B</a><a class="btn" href="option-b/mockup.html?who=priya#/batches">Batches</a><a class="btn" href="option-b/mockup.html?who=rakesh#/batches/MF-2407-116">Rakesh's side</a></div>
+</section>
+<section class="opt" id="option-c"><header><h3>Option C · The batch file</h3>
+<p>Batches switches between <b>In view</b> and <b>Cleared</b>; cleared batches are <b>files</b>, the label photo on each cover with its photo count. A batch's page leads with its <b>evidence</b>: every photo and every yes across the top, then Money, Papers, Impact and an <b>Audit log</b> tab, a table of when, who, as what, and what, filtered and exported as CSV. Rakesh's <b>Label photo</b> becomes <b>Photos</b>: every photo he sent Munchly, batch by batch, with what was made of each.</p></header>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>The strongest for an audit: the evidence and the log, nothing in between.</li><li>Rakesh finds every photo in one place.</li><li>Changes the most: Batches becomes a gallery when cleared, the page's head grows, the distributor's nav changes.</li></ul></dd><dt>What the build touches</dt><dd>design3 first (<code>screens/brand.jsx</code> Batches, <code>finance.jsx</code> the batch page, <code>trade.jsx</code>), then core's screens; backend-api: each batch's photos with signed links (the label photo, the destruction's two) and its record (the case's steps and its audit lines) for the operator, and his own photos in the distributor's partner view; the contract; the history's label photos stored with its cases.</dd></dl>
+<div class="desks"><figure><img src="option-c/record-1440-light.webp" width="1440" height="2700" loading="lazy" alt="Option C: a past batch's record, light."><figcaption>Priya · a past batch · light</figcaption></figure><figure><img src="option-c/record-1440-dark.webp" width="1440" height="2700" loading="lazy" alt="Option C: a past batch's record, dark."><figcaption>Priya · a past batch · dark</figcaption></figure></div>
+<div class="desks"><figure><img src="option-c/batches-1440-light.webp" width="1440" height="1500" loading="lazy" alt="Option C: Priya's Batches with the cleared batches."><figcaption>Priya · Batches</figcaption></figure><figure><img src="option-c/dist-1440-light.webp" width="1440" height="1500" loading="lazy" alt="Option C: Rakesh's photos."><figcaption>Rakesh · his photos</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-c/record-390-light.webp" width="780" height="7200" loading="lazy" alt="Option C: the record on a phone."><figcaption>Record · phone</figcaption></figure><figure><img src="option-c/batches-390-light.webp" width="780" height="3400" loading="lazy" alt="Option C: Batches on a phone."><figcaption>Batches · phone</figcaption></figure><figure><img src="option-c/dist-390-dark.webp" width="780" height="4800" loading="lazy" alt="Option C: Rakesh's photos on a phone, dark."><figcaption>Rakesh · phone · dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="option-c/mockup.html?who=priya#/report/MF-2407-116">Open option C</a><a class="btn" href="option-c/mockup.html?who=priya#/batches">Batches</a><a class="btn" href="option-c/mockup.html?who=rakesh#/photo">Rakesh's side</a></div>
+</section>
+
+<h2>Side by side</h2>
+<div class="tablewrap"><table class="cmp"><thead><tr><th></th><th>A · The Record tab</th><th>B · Evidence on the timeline</th><th>C · The batch file</th></tr></thead><tbody>
+<tr><th>Past batches on Batches</th><td>Below the batches in view, by month, each with its photos counted and what it recovered</td><td>The same table, In view or Cleared; a cleared row shows its photos as thumbnails</td><td>In view or Cleared; cleared batches as files, the label photo on each cover</td></tr>
+<tr><th>The photos</th><td>Together at the top of Record, with what Vision read</td><td>At the moment each was sent, in the timeline</td><td>Across the top of the page, above the tabs, with the yeses</td></tr>
+<tr><th>The audit trail</th><td>Record's trail, day by day, filtered to people or agents; CSV</td><td>The timeline itself; Audit lines shows each person's line as the log keeps it; CSV</td><td>An Audit log tab, a table: when, who, as what, what; CSV</td></tr>
+<tr><th>The yeses</th><td>A card of their own beside the trail</td><td>Amber in the timeline</td><td>Cards at the end of the evidence strip</td></tr>
+<tr><th>Rakesh</th><td>A Photos tab on each batch's page</td><td>His photos inside What happened</td><td>Label photo becomes Photos: every photo he sent, batch by batch</td></tr>
+<tr><th>What changes most</th><td>One new tab on two pages; Batches gains a section</td><td>The batch page's first tab; What happened carries photos</td><td>The batch page's head; the distributor's nav</td></tr>
+</tbody></table></div>
+
+<h2>Recommended: option A</h2>
+<div class="rec-box"><p><b>The Record tab</b> keeps the record apart from the money and the papers, where an operator or an auditor goes looking for it, and it reads the same on a batch in a journey and one long cleared. The photos lead, so “what picture was sent” is answered at a glance; the trail below answers “what happened, and who said yes”. Rakesh gets the same idea in his own words, a Photos tab on each batch. B tells the story better but buries the photos in a long page; C is the strongest for an auditor but changes the most and makes Batches a gallery.</p></div>
+
+<div class="q" style="margin-top:20px"><h3>To decide</h3><ul><li>Which option to build.</li><li>The history's label photos above are illustrative renders for the twelve pilot-quarter batches. Do they stand for the photos those batches would have had?</li></ul></div>
+
+<footer>Smart-Clearance · SC-142 · every company, person and figure fictional · the figures are core/money.js's, the steps the history's own (core/ledger.js) · mockups on design system v3, the workspace on its stub at the story's end</footer>
+</main>
+</body>
+</html>
