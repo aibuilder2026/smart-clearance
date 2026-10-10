@@ -1861,6 +1861,6 @@
     - design3 and the console's mock build played through on the review world at 1440 and a phone, light and dark: the tooltip, the table, 90 days, no page errors;
     - the browser suites were not run (SC-55).
   - **Locally:** migrated to 0012: Munchly's three godown batches read 381 packs destroyed, and every SKU has its kilos. The synthetic clients' batches closed before read 0 destroyed until the next `hydrate.sh --reset`.
-  - **Hosting:** design3's `dist/` is rebuilt; the hosted console is re-pinned (below).
+  - **Hosting:** design3's `dist/` is rebuilt; the hosted console loads commit `4632839` (every pinned file checked on jsDelivr first); it renders, the card in its empty state on the prototype's seed.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
