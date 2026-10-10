@@ -1915,6 +1915,6 @@
   - **Checks:** the frontend gate passes (lint, check, tests: core 273, api 79, admin 17, console 3, workspace, demo 5); design3 and the build played through at 1440 and 390, light and dark: no console errors, the loader lifts, the film plays from 0.3 s and loops, the four chapters light at their bounds, Pause and Play by keyboard. The browser suites were not run (SC-55).
   - **Cost:** $18.76 (£14.07) in all: the design round $5.66, seven final clips $11.20 (one more was filtered, free) and three keyframe edits, against the $45 cap.
   - **Docs:** AGENTS.md (the loop exemption names the new film; the Vertex rule), DESIGN.md (the hero film's material), this file's tool list.
-  - **Hosting:** design3's `dist/` is rebuilt; the hosted landing page and console are re-pinned to the branch's commit (see the issue).
+  - **Hosting:** design3's `dist/` is rebuilt; the hosted landing page and console load commit `f529af0` (every pinned file checked on jsDelivr and GitHub raw first; the landing page plays the film from it with no console errors).
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
