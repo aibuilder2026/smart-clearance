@@ -1,0 +1,174 @@
+[
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-a/mockup.html?who=ganesh#/offer/MF-2409-117",
+  "out": "option-a/kirana-offer-390-light",
+  "width": 390,
+  "theme": "light",
+  "full": true,
+  "wait": 5200
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-a/mockup.html?who=ganesh#/orders",
+  "out": "option-a/kirana-orders-390-light",
+  "width": 390,
+  "theme": "light",
+  "full": true,
+  "wait": 5200
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-a/mockup.html?who=rakesh#/orders",
+  "out": "option-a/dist-orders-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "click": [
+   ".dist-toggle >> nth=1"
+  ],
+  "js": "document.querySelectorAll('.dist-toggle')[1].scrollIntoView({block:'center'})"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-a/mockup.html?who=rakesh#/batches/MF-2409-117",
+  "out": "option-a/dist-batch-1440-light",
+  "width": 1440,
+  "theme": "light"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-a/mockup.html?who=priya&open=kirana#/paperwork/MF-2409-117",
+  "out": "option-a/pack-1440-light",
+  "width": 1440,
+  "theme": "light"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-a/mockup.html?who=priya&open=kirana#/paperwork/MF-2409-117",
+  "out": "option-a/pack-1440-dark",
+  "width": 1440,
+  "theme": "dark"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-a/mockup.html?who=ganesh#/offer/MF-2409-117",
+  "out": "option-a/kirana-offer-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 5200
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-b/mockup.html?who=ganesh#/offer/MF-2409-117",
+  "out": "option-b/kirana-offer-390-light",
+  "width": 390,
+  "theme": "light",
+  "full": true,
+  "wait": 5200
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-b/mockup.html?who=ganesh#/orders",
+  "out": "option-b/kirana-orders-390-light",
+  "width": 390,
+  "theme": "light",
+  "full": true,
+  "wait": 5200
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-b/mockup.html?who=rakesh#/orders",
+  "out": "option-b/dist-orders-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "click": [
+   ".dist-toggle >> nth=1"
+  ],
+  "js": "document.querySelectorAll('.dist-toggle')[1].scrollIntoView({block:'center'})"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-b/mockup.html?who=rakesh#/batches/MF-2409-117",
+  "out": "option-b/dist-batch-1440-light",
+  "width": 1440,
+  "theme": "light"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-b/mockup.html?who=priya&open=kirana#/paperwork/MF-2409-117",
+  "out": "option-b/pack-1440-light",
+  "width": 1440,
+  "theme": "light"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-b/mockup.html?who=priya&open=kirana#/paperwork/MF-2409-117",
+  "out": "option-b/pack-1440-dark",
+  "width": 1440,
+  "theme": "dark"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-b/mockup.html?who=ganesh#/offer/MF-2409-117",
+  "out": "option-b/kirana-offer-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 5200
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-c/mockup.html?who=ganesh#/offer/MF-2409-117",
+  "out": "option-c/kirana-offer-390-light",
+  "width": 390,
+  "theme": "light",
+  "full": true,
+  "wait": 5200
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-c/mockup.html?who=ganesh#/orders",
+  "out": "option-c/kirana-orders-390-light",
+  "width": 390,
+  "theme": "light",
+  "full": true,
+  "wait": 5200
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-c/mockup.html?who=rakesh#/orders",
+  "out": "option-c/dist-orders-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "click": [
+   ".dist-toggle >> nth=1"
+  ],
+  "js": "document.querySelectorAll('.dist-toggle')[1].scrollIntoView({block:'center'})"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-c/mockup.html?who=rakesh#/batches/MF-2409-117",
+  "out": "option-c/dist-batch-1440-light",
+  "width": 1440,
+  "theme": "light"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-c/mockup.html?who=priya&open=kirana#/paperwork/MF-2409-117",
+  "out": "option-c/pack-1440-light",
+  "width": 1440,
+  "theme": "light"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-c/mockup.html?who=priya&open=kirana#/paperwork/MF-2409-117",
+  "out": "option-c/pack-1440-dark",
+  "width": 1440,
+  "theme": "dark"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-c/mockup.html?who=ganesh#/offer/MF-2409-117",
+  "out": "option-c/kirana-offer-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 5200
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-a/mockup.html?who=ganesh#/offer/MF-2409-117",
+  "out": "option-a/kirana-invoice-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 5200,
+  "click": [
+   "button.pt-paper"
+  ]
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-153/option-a/mockup.html?who=rakesh#/batches/MF-2409-117",
+  "out": "option-a/dist-register-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "click": [
+   "button.pt-paper:has-text('Tax invoices to kiranas')"
+  ]
+ }
+]
