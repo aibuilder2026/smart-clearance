@@ -20,7 +20,7 @@
 	import Locked from '../common/Locked.svelte';
 	import KeepsWhat from './KeepsWhat.svelte';
 	import Paper from './Paper.svelte';
-	import { printPage } from './ledger';
+	import { issuedWhen, printPage } from './ledger';
 
 	// a batch's pack of papers (screens/finance.jsx PaperPack): the papers the Paperwork agent drafted, each with its
 	// reason, one open on paper beside them (in a sheet on phones and tablets), each with its PDF to download, and who
@@ -47,6 +47,10 @@
 	const doc = $derived(DOC(sel));
 	const invoice = $derived(DOC('invoice'));
 	const support = $derived(DOC('support'));
+	// an invoice issued from Tally reads issued, with its e-invoice (SC-148)
+	const issued = $derived(!!issuedWhen(c, invoice, h));
+	const shown = (d: CaseData['docs'][number]) =>
+		issued && d.id === 'invoice' ? { ...d, status: 'issued' as const } : d;
 	let side: HTMLElement | undefined = $state();
 	let inSheet: HTMLElement | undefined = $state();
 
@@ -106,13 +110,17 @@
 	>
 	<div class="docgrid">
 		{#each c.docs as d (d.id)}<div class={cx('docpick', sel === d.id && app.bp === 'desktop' && 'on')}>
-				<DocCard doc={d} onopen={() => open(d.id)} />
+				<DocCard doc={shown(d)} onopen={() => open(d.id)} />
 			</div>{/each}
 	</div>
 	<KeepsWhat {c} />{/snippet}
 {#snippet sideRight()}{@render pdfButton(side)}{/snippet}
 {#snippet aside()}{#if app.bp === 'desktop' && doc}<SectionTitle
-			sub={doc.owner === ws.data.client.short ? `Issued by ${W.short}` : `Drafted for ${c.dist.name}`}
+			sub={doc.owner === ws.data.client.short
+				? `Issued by ${W.short}`
+				: doc.id === 'invoice' && issued
+					? `Issued by ${c.dist.name} from Tally`
+					: `Drafted for ${c.dist.name}`}
 			right={sideRight}>{doc.type}</SectionTitle
 		>{#key sel}<div in:rise={{ y: 6, duration: 180 }} bind:this={side}><Paper id={sel} {c} /></div>{/key}{/if}{/snippet}
 {#snippet sheetFoot()}{@render pdfButton(inSheet)}{/snippet}

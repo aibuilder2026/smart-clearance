@@ -54,6 +54,13 @@ export type Distributor = {
 	godown: string;
 	address?: string;
 	gstin?: string;
+	/** the identity its papers carry (SC-148): every GSTIN fictional, on a PAN no one holds */
+	stateCode?: string;
+	pan?: string;
+	fssai?: string;
+	email?: string;
+	/** where a buyer pays his invoice */
+	bank?: { name: string; account: string; ifsc: string } | null;
 	kiranas: number;
 	cluster: string;
 	territory: string;
@@ -72,6 +79,7 @@ export type Buyer = {
 	stateCode: string;
 	address: string;
 	gstin: string;
+	pan?: string;
 	kind: string;
 };
 
@@ -269,7 +277,7 @@ export type Doc = {
 	owner: string;
 	no: string;
 	/** awaiting: another's paper still to come (the agency's destruction certificate, SC-139) */
-	status: 'generated' | 'drafted' | 'awaiting' | 'not required';
+	status: 'generated' | 'drafted' | 'issued' | 'awaiting' | 'not required';
 	amount: number;
 	note?: string;
 	taxable?: number;
@@ -282,6 +290,8 @@ export type Doc = {
 	exact?: number;
 	/** when the document is dated (the invoice) */
 	date?: string;
+	/** when the distributor issued the invoice from Tally (SC-148) */
+	issuedAt?: string | null;
 	/** the expiry paper's settlement (SC-94) */
 	policy?: ExpiryPolicy;
 	destroyedBy?: 'client' | 'distributor' | null;
@@ -486,6 +496,8 @@ export type Hero = {
 	truck: { status: 'idle' | 'dispatched'; at?: string };
 	docs: null | { id: string; status: string }[];
 	invoiceIssued: boolean;
+	/** when, on the journey's clock (SC-148) */
+	invoiceIssuedAt?: string | null;
 	posted: boolean;
 	reviewed?: boolean;
 	/** the plan's staff sale at the distributor's godown (SC-86), open once approved, then recorded with what sold; the
@@ -586,6 +598,13 @@ export type WorkspaceSeed = {
 		listed: string;
 		gstin: string;
 		fssai: string;
+		/** the identity its own papers carry (SC-148) */
+		pan?: string;
+		cin?: string;
+		address?: string;
+		state?: string;
+		stateCode?: string;
+		email?: string;
 		revenue: string;
 		skus: number;
 		distributors: number;
@@ -797,6 +816,9 @@ export type CaseData = {
 	docs: Doc[];
 	/** the invoice the distributor issues to the buyer */
 	invoice: Doc;
+	/** when he issued it from Tally (SC-148): its e-invoice is worked out from it; a history batch's, or a page's in the
+	 *  ledger (the batch in focus reads the hero's) */
+	invoiceIssuedAt?: string | null;
 	/** scheme packs may come back until this day */
 	returnBy: string;
 	/** the pushes of the case, by moment */

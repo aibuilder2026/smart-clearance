@@ -595,6 +595,7 @@
 				"itc": 1302,
 				"total": 34681.5
 			},
+			"invoiceIssuedAt": "2026-07-06T11:00",
 			"docs": [
 				{
 					"id": "invoice",
@@ -615,9 +616,18 @@
 						"short": "Rakesh Traders",
 						"city": "Nagpur",
 						"state": "Maharashtra",
+						"stateCode": "27",
 						"godown": "Kalamna Market godown",
-						"address": "Kalamna Market, Nagpur, Maharashtra",
-						"gstin": "27AABCR1234F1Z5",
+						"address": "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra",
+						"gstin": "27ABHPR0000K1ZW",
+						"pan": "ABHPR0000K",
+						"fssai": "21526000000117",
+						"email": "accounts@rakeshtraders.example",
+						"bank": {
+							"name": "Example Co-operative Bank, Itwari, Nagpur",
+							"account": "0000 0117 2409",
+							"ifsc": "EXMP0000117"
+						},
 						"kiranas": 38,
 						"cluster": "Nagpur, Wardha and Kamptee",
 						"territory": "Nagpur with Wardha and Kamptee",
@@ -632,8 +642,9 @@
 						"city": "Raipur",
 						"state": "Chhattisgarh",
 						"stateCode": "22",
-						"address": "Ganj Mandi, Raipur, Chhattisgarh",
-						"gstin": "22AAGFA4821M1Z3",
+						"address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+						"gstin": "22AAGFA0000A1ZW",
+						"pan": "AAGFA0000A",
 						"kind": "Kirana wholesaler · ExpireSoon buyer"
 					},
 					"hsn": "1905",
@@ -1492,6 +1503,7 @@
 				"itc": 851.18,
 				"total": 24357.74
 			},
+			"invoiceIssuedAt": "2026-07-11T11:00",
 			"docs": [
 				{
 					"id": "invoice",
@@ -1512,7 +1524,18 @@
 						"short": "Lakshmi Agencies",
 						"city": "Hyderabad",
 						"state": "Telangana",
+						"stateCode": "36",
 						"godown": "Begum Bazaar godown",
+						"address": "4-2-118 Begum Bazaar, Hyderabad 500012, Telangana",
+						"gstin": "36AAJFL0000L1ZM",
+						"pan": "AAJFL0000L",
+						"fssai": "23626000000118",
+						"email": "accounts@lakshmiagencies.example",
+						"bank": {
+							"name": "Example Co-operative Bank, Begum Bazaar, Hyderabad",
+							"account": "0000 0118 2410",
+							"ifsc": "EXMP0000118"
+						},
 						"kiranas": 58,
 						"cluster": "Hyderabad old city",
 						"territory": "Hyderabad",
@@ -1527,8 +1550,9 @@
 						"city": "Raipur",
 						"state": "Chhattisgarh",
 						"stateCode": "22",
-						"address": "Ganj Mandi, Raipur, Chhattisgarh",
-						"gstin": "22AAGFA4821M1Z3",
+						"address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+						"gstin": "22AAGFA0000A1ZW",
+						"pan": "AAGFA0000A",
 						"kind": "Kirana wholesaler · ExpireSoon buyer"
 					},
 					"hsn": "1704",
@@ -2459,6 +2483,7 @@
 				"itc": 1289.05,
 				"total": 33242.25
 			},
+			"invoiceIssuedAt": "2026-07-17T11:00",
 			"docs": [
 				{
 					"id": "invoice",
@@ -2479,7 +2504,18 @@
 						"short": "Lakshmi Agencies",
 						"city": "Hyderabad",
 						"state": "Telangana",
+						"stateCode": "36",
 						"godown": "Begum Bazaar godown",
+						"address": "4-2-118 Begum Bazaar, Hyderabad 500012, Telangana",
+						"gstin": "36AAJFL0000L1ZM",
+						"pan": "AAJFL0000L",
+						"fssai": "23626000000118",
+						"email": "accounts@lakshmiagencies.example",
+						"bank": {
+							"name": "Example Co-operative Bank, Begum Bazaar, Hyderabad",
+							"account": "0000 0118 2410",
+							"ifsc": "EXMP0000118"
+						},
 						"kiranas": 58,
 						"cluster": "Hyderabad old city",
 						"territory": "Hyderabad",
@@ -2494,8 +2530,9 @@
 						"city": "Raipur",
 						"state": "Chhattisgarh",
 						"stateCode": "22",
-						"address": "Ganj Mandi, Raipur, Chhattisgarh",
-						"gstin": "22AAGFA4821M1Z3",
+						"address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+						"gstin": "22AAGFA0000A1ZW",
+						"pan": "AAGFA0000A",
 						"kind": "Kirana wholesaler · ExpireSoon buyer"
 					},
 					"hsn": "2106",
@@ -2584,7 +2621,9 @@
 					"agency": "Deccan Green Waste Management",
 					"auth": "TSPCB/SWM/HYD/0287",
 					"for": {
-						"name": "Lakshmi Agencies"
+						"name": "Lakshmi Agencies",
+						"address": "4-2-118 Begum Bazaar, Hyderabad 500012, Telangana",
+						"gstin": "36AAJFL0000L1ZM"
 					},
 					"from": "Begum Bazaar godown",
 					"batch": "MF-2406-107",
@@ -3308,6 +3347,7 @@
 				"itc": 1169.28,
 				"total": 30145.92
 			},
+			"invoiceIssuedAt": "2026-07-24T11:00",
 			"docs": [
 				{
 					"id": "invoice",
@@ -3328,9 +3368,18 @@
 						"short": "Rakesh Traders",
 						"city": "Nagpur",
 						"state": "Maharashtra",
+						"stateCode": "27",
 						"godown": "Kalamna Market godown",
-						"address": "Kalamna Market, Nagpur, Maharashtra",
-						"gstin": "27AABCR1234F1Z5",
+						"address": "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra",
+						"gstin": "27ABHPR0000K1ZW",
+						"pan": "ABHPR0000K",
+						"fssai": "21526000000117",
+						"email": "accounts@rakeshtraders.example",
+						"bank": {
+							"name": "Example Co-operative Bank, Itwari, Nagpur",
+							"account": "0000 0117 2409",
+							"ifsc": "EXMP0000117"
+						},
 						"kiranas": 38,
 						"cluster": "Nagpur, Wardha and Kamptee",
 						"territory": "Nagpur with Wardha and Kamptee",
@@ -3345,8 +3394,9 @@
 						"city": "Raipur",
 						"state": "Chhattisgarh",
 						"stateCode": "22",
-						"address": "Ganj Mandi, Raipur, Chhattisgarh",
-						"gstin": "22AAGFA4821M1Z3",
+						"address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+						"gstin": "22AAGFA0000A1ZW",
+						"pan": "AAGFA0000A",
 						"kind": "Kirana wholesaler · ExpireSoon buyer"
 					},
 					"hsn": "1904",
@@ -4145,6 +4195,7 @@
 				"itc": 1649.52,
 				"total": 42527.28
 			},
+			"invoiceIssuedAt": null,
 			"docs": [
 				{
 					"id": "support",
@@ -4473,7 +4524,18 @@
 					"short": "Lakshmi Agencies",
 					"city": "Hyderabad",
 					"state": "Telangana",
+					"stateCode": "36",
 					"godown": "Begum Bazaar godown",
+					"address": "4-2-118 Begum Bazaar, Hyderabad 500012, Telangana",
+					"gstin": "36AAJFL0000L1ZM",
+					"pan": "AAJFL0000L",
+					"fssai": "23626000000118",
+					"email": "accounts@lakshmiagencies.example",
+					"bank": {
+						"name": "Example Co-operative Bank, Begum Bazaar, Hyderabad",
+						"account": "0000 0118 2410",
+						"ifsc": "EXMP0000118"
+					},
 					"kiranas": 58,
 					"cluster": "Hyderabad old city",
 					"territory": "Hyderabad",
@@ -5136,6 +5198,7 @@
 				"itc": 4664.75,
 				"total": 40482.09
 			},
+			"invoiceIssuedAt": "2026-08-07T11:00",
 			"docs": [
 				{
 					"id": "invoice",
@@ -5156,9 +5219,18 @@
 						"short": "Rakesh Traders",
 						"city": "Nagpur",
 						"state": "Maharashtra",
+						"stateCode": "27",
 						"godown": "Kalamna Market godown",
-						"address": "Kalamna Market, Nagpur, Maharashtra",
-						"gstin": "27AABCR1234F1Z5",
+						"address": "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra",
+						"gstin": "27ABHPR0000K1ZW",
+						"pan": "ABHPR0000K",
+						"fssai": "21526000000117",
+						"email": "accounts@rakeshtraders.example",
+						"bank": {
+							"name": "Example Co-operative Bank, Itwari, Nagpur",
+							"account": "0000 0117 2409",
+							"ifsc": "EXMP0000117"
+						},
 						"kiranas": 38,
 						"cluster": "Nagpur, Wardha and Kamptee",
 						"territory": "Nagpur with Wardha and Kamptee",
@@ -5173,8 +5245,9 @@
 						"city": "Raipur",
 						"state": "Chhattisgarh",
 						"stateCode": "22",
-						"address": "Ganj Mandi, Raipur, Chhattisgarh",
-						"gstin": "22AAGFA4821M1Z3",
+						"address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+						"gstin": "22AAGFA0000A1ZW",
+						"pan": "AAGFA0000A",
 						"kind": "Kirana wholesaler · ExpireSoon buyer"
 					},
 					"hsn": "3401",
@@ -5997,6 +6070,7 @@
 				"itc": 679.8,
 				"total": 22050.24
 			},
+			"invoiceIssuedAt": "2026-08-13T11:00",
 			"docs": [
 				{
 					"id": "invoice",
@@ -6017,9 +6091,18 @@
 						"short": "Rakesh Traders",
 						"city": "Nagpur",
 						"state": "Maharashtra",
+						"stateCode": "27",
 						"godown": "Kalamna Market godown",
-						"address": "Kalamna Market, Nagpur, Maharashtra",
-						"gstin": "27AABCR1234F1Z5",
+						"address": "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra",
+						"gstin": "27ABHPR0000K1ZW",
+						"pan": "ABHPR0000K",
+						"fssai": "21526000000117",
+						"email": "accounts@rakeshtraders.example",
+						"bank": {
+							"name": "Example Co-operative Bank, Itwari, Nagpur",
+							"account": "0000 0117 2409",
+							"ifsc": "EXMP0000117"
+						},
 						"kiranas": 38,
 						"cluster": "Nagpur, Wardha and Kamptee",
 						"territory": "Nagpur with Wardha and Kamptee",
@@ -6034,8 +6117,9 @@
 						"city": "Raipur",
 						"state": "Chhattisgarh",
 						"stateCode": "22",
-						"address": "Ganj Mandi, Raipur, Chhattisgarh",
-						"gstin": "22AAGFA4821M1Z3",
+						"address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+						"gstin": "22AAGFA0000A1ZW",
+						"pan": "AAGFA0000A",
 						"kind": "Kirana wholesaler · ExpireSoon buyer"
 					},
 					"hsn": "2202",
@@ -6125,8 +6209,8 @@
 					"auth": "MPCB/SWM/NGP/0412",
 					"for": {
 						"name": "Rakesh Traders",
-						"address": "Kalamna Market, Nagpur, Maharashtra",
-						"gstin": "27AABCR1234F1Z5"
+						"address": "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra",
+						"gstin": "27ABHPR0000K1ZW"
 					},
 					"from": "Kalamna Market godown",
 					"batch": "MF-2407-111",
@@ -7000,6 +7084,7 @@
 				"itc": 1494.45,
 				"total": 43147.17
 			},
+			"invoiceIssuedAt": "2026-08-20T11:00",
 			"docs": [
 				{
 					"id": "invoice",
@@ -7020,7 +7105,18 @@
 						"short": "Lakshmi Agencies",
 						"city": "Hyderabad",
 						"state": "Telangana",
+						"stateCode": "36",
 						"godown": "Begum Bazaar godown",
+						"address": "4-2-118 Begum Bazaar, Hyderabad 500012, Telangana",
+						"gstin": "36AAJFL0000L1ZM",
+						"pan": "AAJFL0000L",
+						"fssai": "23626000000118",
+						"email": "accounts@lakshmiagencies.example",
+						"bank": {
+							"name": "Example Co-operative Bank, Begum Bazaar, Hyderabad",
+							"account": "0000 0118 2410",
+							"ifsc": "EXMP0000118"
+						},
 						"kiranas": 58,
 						"cluster": "Hyderabad old city",
 						"territory": "Hyderabad",
@@ -7035,8 +7131,9 @@
 						"city": "Raipur",
 						"state": "Chhattisgarh",
 						"stateCode": "22",
-						"address": "Ganj Mandi, Raipur, Chhattisgarh",
-						"gstin": "22AAGFA4821M1Z3",
+						"address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+						"gstin": "22AAGFA0000A1ZW",
+						"pan": "AAGFA0000A",
 						"kind": "Kirana wholesaler · ExpireSoon buyer"
 					},
 					"hsn": "3305",
@@ -7781,6 +7878,7 @@
 				"itc": 963.9,
 				"total": 27160.56
 			},
+			"invoiceIssuedAt": "2026-08-21T11:00",
 			"docs": [
 				{
 					"id": "invoice",
@@ -7801,7 +7899,18 @@
 						"short": "Lakshmi Agencies",
 						"city": "Hyderabad",
 						"state": "Telangana",
+						"stateCode": "36",
 						"godown": "Begum Bazaar godown",
+						"address": "4-2-118 Begum Bazaar, Hyderabad 500012, Telangana",
+						"gstin": "36AAJFL0000L1ZM",
+						"pan": "AAJFL0000L",
+						"fssai": "23626000000118",
+						"email": "accounts@lakshmiagencies.example",
+						"bank": {
+							"name": "Example Co-operative Bank, Begum Bazaar, Hyderabad",
+							"account": "0000 0118 2410",
+							"ifsc": "EXMP0000118"
+						},
 						"kiranas": 58,
 						"cluster": "Hyderabad old city",
 						"territory": "Hyderabad",
@@ -7816,8 +7925,9 @@
 						"city": "Raipur",
 						"state": "Chhattisgarh",
 						"stateCode": "22",
-						"address": "Ganj Mandi, Raipur, Chhattisgarh",
-						"gstin": "22AAGFA4821M1Z3",
+						"address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+						"gstin": "22AAGFA0000A1ZW",
+						"pan": "AAGFA0000A",
 						"kind": "Kirana wholesaler · ExpireSoon buyer"
 					},
 					"hsn": "2005",
@@ -8682,6 +8792,7 @@
 				"itc": 1644.3,
 				"total": 42403.5
 			},
+			"invoiceIssuedAt": null,
 			"docs": [
 				{
 					"id": "support",
@@ -8998,9 +9109,18 @@
 					"short": "Rakesh Traders",
 					"city": "Nagpur",
 					"state": "Maharashtra",
+					"stateCode": "27",
 					"godown": "Kalamna Market godown",
-					"address": "Kalamna Market, Nagpur, Maharashtra",
-					"gstin": "27AABCR1234F1Z5",
+					"address": "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra",
+					"gstin": "27ABHPR0000K1ZW",
+					"pan": "ABHPR0000K",
+					"fssai": "21526000000117",
+					"email": "accounts@rakeshtraders.example",
+					"bank": {
+						"name": "Example Co-operative Bank, Itwari, Nagpur",
+						"account": "0000 0117 2409",
+						"ifsc": "EXMP0000117"
+					},
 					"kiranas": 38,
 					"cluster": "Nagpur, Wardha and Kamptee",
 					"territory": "Nagpur with Wardha and Kamptee",
@@ -9663,6 +9783,7 @@
 				"itc": 1243.72,
 				"total": 33129.12
 			},
+			"invoiceIssuedAt": "2026-08-28T11:00",
 			"docs": [
 				{
 					"id": "invoice",
@@ -9683,7 +9804,18 @@
 						"short": "Lakshmi Agencies",
 						"city": "Hyderabad",
 						"state": "Telangana",
+						"stateCode": "36",
 						"godown": "Begum Bazaar godown",
+						"address": "4-2-118 Begum Bazaar, Hyderabad 500012, Telangana",
+						"gstin": "36AAJFL0000L1ZM",
+						"pan": "AAJFL0000L",
+						"fssai": "23626000000118",
+						"email": "accounts@lakshmiagencies.example",
+						"bank": {
+							"name": "Example Co-operative Bank, Begum Bazaar, Hyderabad",
+							"account": "0000 0118 2410",
+							"ifsc": "EXMP0000118"
+						},
 						"kiranas": 58,
 						"cluster": "Hyderabad old city",
 						"territory": "Hyderabad",
@@ -9698,8 +9830,9 @@
 						"city": "Raipur",
 						"state": "Chhattisgarh",
 						"stateCode": "22",
-						"address": "Ganj Mandi, Raipur, Chhattisgarh",
-						"gstin": "22AAGFA4821M1Z3",
+						"address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+						"gstin": "22AAGFA0000A1ZW",
+						"pan": "AAGFA0000A",
 						"kind": "Kirana wholesaler · ExpireSoon buyer"
 					},
 					"hsn": "1905",
@@ -10600,6 +10733,7 @@
 				"itc": 884.76,
 				"total": 25318.68
 			},
+			"invoiceIssuedAt": "2026-08-30T11:00",
 			"docs": [
 				{
 					"id": "invoice",
@@ -10620,9 +10754,18 @@
 						"short": "Rakesh Traders",
 						"city": "Nagpur",
 						"state": "Maharashtra",
+						"stateCode": "27",
 						"godown": "Kalamna Market godown",
-						"address": "Kalamna Market, Nagpur, Maharashtra",
-						"gstin": "27AABCR1234F1Z5",
+						"address": "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra",
+						"gstin": "27ABHPR0000K1ZW",
+						"pan": "ABHPR0000K",
+						"fssai": "21526000000117",
+						"email": "accounts@rakeshtraders.example",
+						"bank": {
+							"name": "Example Co-operative Bank, Itwari, Nagpur",
+							"account": "0000 0117 2409",
+							"ifsc": "EXMP0000117"
+						},
 						"kiranas": 38,
 						"cluster": "Nagpur, Wardha and Kamptee",
 						"territory": "Nagpur with Wardha and Kamptee",
@@ -10637,8 +10780,9 @@
 						"city": "Raipur",
 						"state": "Chhattisgarh",
 						"stateCode": "22",
-						"address": "Ganj Mandi, Raipur, Chhattisgarh",
-						"gstin": "22AAGFA4821M1Z3",
+						"address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+						"gstin": "22AAGFA0000A1ZW",
+						"pan": "AAGFA0000A",
 						"kind": "Kirana wholesaler · ExpireSoon buyer"
 					},
 					"hsn": "1704",
@@ -10728,8 +10872,8 @@
 					"auth": "MPCB/SWM/NGP/0412",
 					"for": {
 						"name": "Rakesh Traders",
-						"address": "Kalamna Market, Nagpur, Maharashtra",
-						"gstin": "27AABCR1234F1Z5"
+						"address": "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra",
+						"gstin": "27ABHPR0000K1ZW"
 					},
 					"from": "Kalamna Market godown",
 					"batch": "MF-2407-116",

@@ -15,7 +15,8 @@ export const read = (path: string) => readFileSync(design3(path), 'utf8');
 export function run(...paths: string[]): Record<string, any> {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const window: Record<string, any> = { SC3_IMG: 'sc3img:/' };
-	const sandbox = vm.createContext({ window, console, Date, Intl, Math, JSON });
+	// btoa, unescape and encodeURIComponent: papers.js (SC-148) encodes the signed QR's text as a browser does
+	const sandbox = vm.createContext({ window, console, Date, Intl, Math, JSON, btoa, unescape, encodeURIComponent });
 	for (const p of paths) vm.runInContext(read(p), sandbox, { filename: design3(p) });
 	return window;
 }

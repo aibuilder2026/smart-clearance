@@ -53,7 +53,7 @@ const strings = (o: Json, keys: string[]) =>
 const obj = (k: string) => S[k];
 // words of a name that name nothing on their own
 const COMMON = new Set(
-	'Market Yard godown Bazaar with and city Road Foods Traders Stores Store Kirana Provision General Super Mart Sons Agencies Distributors Wholesale Network India Ltd Bhandar Shree Sai'.split(
+	'Market Yard godown Bazaar with and city Road Foods Traders Stores Store Kirana Provision General Super Mart Sons Agencies Distributors Wholesale Network India Ltd Bhandar Shree Sai Bank Example Co-operative Main'.split(
 		' '
 	)
 );
