@@ -39,10 +39,12 @@ export const KIRANAS = kiranasOf('lakshmi');
 export const PEOPLE = ['neha', 'priya', DIST, 'meera', ...KIRANAS.map((k) => k.member)];
 export const STEP = 12; // the offer screen orders in twelves (buy 10, get 2), from a shop's own share down to 12
 const DAY0_PLAN = 16917.1; // the story's plan, made on day 0 (money.js, reference/money.json)
-/** the papers the Paperwork agent lays out as PDFs (agents/src/sc_agents/tools/pdf.py): the e-way bill check and the
- *  destruction certificate are records on the case, with no PDF */
+/** the papers the Paperwork agent lays out as PDFs (agents/src/sc_agents/tools/pdf.py): the e-way bill check is a
+ *  record on the case, and so is the client's own destruction certificate; the agency's, for packs destroyed at the
+ *  distributor's godown, is laid out (SC-139) */
 export const PRINTED = ['invoice', 'support', 'itc', 'fssai', 'receipt', 'expiry'];
-export const printed = (d: { id: string; status: string }) => d.status !== 'not required' && PRINTED.includes(d.id);
+export const printed = (d: { id: string; status: string; at?: string | null }) =>
+	d.status !== 'not required' && (PRINTED.includes(d.id) || (d.id === 'destruction' && d.at === 'godown'));
 
 /** the van round's day, as Deliveries and its push name it */
 let vanDay = '';

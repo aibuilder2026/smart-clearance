@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { mint } from './auth.ts';
 import { chips, HERO, KIRANAS, PEOPLE } from './chips.ts';
+import { approveDestructionStep, destroyStep } from './destruction.ts';
 import { esgStep, taxStep } from './ledger.ts';
 import { as, begin, caseAs, inr, sidebar, staff, story, until, type Step } from './flow.ts';
 import { Run } from './record.ts';
@@ -10,9 +11,11 @@ import { Run } from './record.ts';
 // left at the godown. Agrawal Wholesale still takes the ExpireSoon lot, but its truck waits for the scheme to close
 // (backend-api refuses it while the scheme is open). Neha then fires expiry day's report from the console (Report now),
 // which closes the batch as it stands (SC-94): the scheme closes with the orders placed, the accepted lot counts as
-// collected, the papers are drafted, and Impact's report settles the packs left by Munchly's expiry policy, full
-// credit. Priya reads the pack with its Expiry credit note, Left at the godown and the Expiry settlement on
-// Execution, and the batch's page in the ledger (SC-127).
+// collected and the papers are drafted. Munchly's expiry policy destroys the packs left at Rakesh's godown (SC-139,
+// route B): he sends the two photos and the agency's certificate number, Vision checks them, and Priya approves them
+// from her Command Center; only then does Impact report, issuing the Expiry credit note (the dealer price, the GST he
+// reverses and the agency's charges) and the agency's certificate. Priya reads the pack with its Expiry credit note,
+// Left at the godown and the Expiry settlement on Execution, and the batch's page in the ledger (SC-127).
 //
 // E2E_LEFTOVER (8): how many of the 31 ordering kiranas place no order, the last in the story's order.
 // E2E_DAY_MINUTES (60, Rehearsal): the journey day the reset starts; the 48-hour scheme is open 2 hours of real time,
@@ -93,7 +96,7 @@ const STEPS: Step[] = [
 	{
 		id: 'report',
 		title:
-			"Neha fires expiry day's report from the console: the batch closes as it stands, and Impact settles what is left",
+			"Neha fires expiry day's report from the console: the batch closes as it stands, and Rakesh is asked to destroy what is left",
 		async run(page) {
 			const before = (await caseAs('priya'))!;
 			run.figure('Phase before the report', before.journey.phase);
@@ -107,8 +110,11 @@ const STEPS: Step[] = [
 			await run.done('Report now: Expire it and report now?');
 			await alert.getByRole('button', { name: 'Report now' }).click();
 			await expect(alert).toBeHidden();
-			const c = await until('Impact posts the ledger', 'priya', (c) => c.journey.posted);
+			// packs are left, so Impact waits for their destruction's evidence and Priya's yes (SC-139)
+			const c = await until('the destruction is asked for', 'priya', (c) => !!c.destruction);
 			planned ||= c.plan?.lines.find((l) => l.id === 'kirana')?.units ?? 0; // a run resumed after the orders
+			story('Ledger posted before the yes', String(c.journey.posted), 'false');
+			story('Destruction', c.destruction?.status, 'requested');
 			run.figure('Phase after the report', c.journey.phase);
 			story('Scheme after the report', c.journey.offer?.status, 'closed');
 			story("The buyer's truck", c.journey.truck.status, 'dispatched');
@@ -118,27 +124,25 @@ const STEPS: Step[] = [
 			story(
 				'Expiry settlement',
 				c.expiry ? `${c.expiry.units} packs, ${c.expiry.policy}` : '(none)',
-				`${left()} packs, full-credit`
+				`${left()} packs, godown`
 			);
-			run.figure('Expiry credit', inr(c.expiry?.credit ?? undefined));
-			run.figure('Packs destroyed by', c.expiry?.destroyedBy ?? '(none)');
-			const paper = c.docs.find((d) => d.id === 'expiry');
-			story(
-				'Expiry paper',
-				paper ? `${paper.type}, ${paper.units} packs` : '(none)',
-				`Expiry credit note, ${left()} packs`
-			);
+			run.figure('Expiry credit (dealer price)', inr(c.expiry?.credit ?? undefined));
+			run.figure('Expiry credit note on the yes', inr(c.expiry?.amount ?? undefined));
+			story('Packs destroyed by', c.expiry?.destroyedBy ?? '(none)', 'distributor');
+			story('Destruction certificate', c.docs.find((d) => d.id === 'destruction')?.status, 'awaiting');
 			for (const d of c.docs) run.figure(`Paper: ${d.type}`, `${d.no || '—'} (${d.status})`);
-			await run.done('Impact posted the ledger, with the packs left settled');
+			await run.done('Expiry day: the papers drafted, the destruction asked of Rakesh');
 		}
 	},
+	destroyStep({ who: 'rakesh', agency: 'Orange City Enviro Services', certificate: 'OCE/DC/26-27/0219' }),
+	approveDestructionStep(),
 	{
 		id: 'papers',
 		title: 'Priya reads the pack, the Expiry credit note first, and marks it reviewed',
 		async run(page) {
 			await as(page, 'priya', `/paperwork/${HERO}`, 'reads the expiry credit note and the rest of the pack');
 			// Paperwork opens on the expiry paper (SC-94)
-			await expect(page.locator('#main')).toContainText(/packs expired at the godown/i);
+			await expect(page.locator('#main')).toContainText(/packs destroyed at the godown/i);
 			await run.done('Paper: the Expiry credit note, open first');
 			const c = (await caseAs('priya'))!;
 			for (const d of c.docs) {
@@ -184,11 +188,11 @@ const STEPS: Step[] = [
 			await settleCard.scrollIntoViewIfNeeded();
 			await expect(settleCard).toBeVisible();
 			const main = (await page.locator('#main').innerText()).replace(/\s+/g, ' ');
-			run.figure('Settlement sentence', main.match(/The [\d,]+ packs come back[^.]*\./)?.[0] ?? '(none)');
-			await run.done('Execution: the Expiry settlement, full credit');
+			run.figure('Settlement sentence', main.match(/The [\d,]+ packs are destroyed at [^.]*\./)?.[0] ?? '(none)');
+			await run.done('Execution: the Expiry settlement, destroyed at the godown');
 			await page.getByRole('button', { name: 'Open the paper' }).click();
 			await expect(page).toHaveURL(new RegExp(`/paperwork/${HERO}`));
-			await expect(page.locator('#main')).toContainText(/packs expired at the godown/i);
+			await expect(page.locator('#main')).toContainText(/packs destroyed at the godown/i);
 			await run.done('The Expiry credit note, from Execution');
 		}
 	},
