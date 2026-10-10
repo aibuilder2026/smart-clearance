@@ -1,0 +1,10 @@
+[
+ {"url": "http://127.0.0.1:8790/app/Smart-Clearance%20app%20v3.html#/report", "out": "current/ledger-impact-1440-light", "width": 1440, "theme": "light", "wait": 2400, "height": 1500,
+  "ls": {"sc3-session": {"uid": "priya", "at": 1800000000000}}, "js": "window.SC3_FLOW.fastForward(9)", "click": ["button:has-text('Impact')"]},
+ {"url": "http://127.0.0.1:8790/app/Smart-Clearance%20app%20v3.html#/report", "out": "current/ledger-impact-1440-dark", "width": 1440, "theme": "dark", "wait": 2400, "height": 1500,
+  "ls": {"sc3-session": {"uid": "priya", "at": 1800000000000}}, "js": "window.SC3_FLOW.fastForward(9)", "click": ["button:has-text('Impact')"]},
+ {"url": "http://127.0.0.1:8790/app/Smart-Clearance%20app%20v3.html#/report", "out": "current/ledger-impact-390-light", "width": 390, "theme": "light", "wait": 2400, "height": 1700,
+  "ls": {"sc3-session": {"uid": "priya", "at": 1800000000000}}, "js": "window.SC3_FLOW.fastForward(9)", "click": ["button:has-text('Impact')"]},
+ {"url": "http://127.0.0.1:8790/app/Smart-Clearance%20app%20v3.html#/command", "out": "current/command-1440-light", "width": 1440, "theme": "light", "wait": 2400, "height": 1300,
+  "ls": {"sc3-session": {"uid": "priya", "at": 1800000000000}}, "js": "window.SC3_FLOW.fastForward(9)"}
+]
