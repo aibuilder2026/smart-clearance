@@ -1795,7 +1795,7 @@
   - **Checks:** the frontend gate passes (core 270, api 78, workspace 92, admin 17, demo 5, console 3); the full build passes `no-seed.mjs`.
 
   - **After the merge:** CI on `main` passed and deployed backend-api, the agents and Hosting, so production runs SC-139 to SC-143. The history's label photos reach production's photos bucket only with the hydrate job's `--photos,munchly,--allow-env,prod`, which has not been run.
-- **SC-144** (In Review, branch `SC-144-photo-loaders`): every photo loads under the kit's Skeleton shimmer, then fades in.
+- **SC-144** (PR #124, merged): every photo loads under the kit's Skeleton shimmer, then fades in.
   - **The request:** "all pictures loading must have hydration effect loader as we have for other sections of the app, reusue dont need to desigm". No design round, on the maintainer's word: the kit's own Skeleton, reused.
   - **The build:** design3 first, then the port.
     - `screens/common.jsx` `Photo`, and core's `screens/common/Photo.svelte`: the Skeleton fills the photo's frame until the photo has loaded, then the photo fades in (240 ms; at once under reduced motion). A photo that fails reads "The photo did not load" (`.photo-failed`).
@@ -1806,7 +1806,7 @@
     - the frontend gate passes: core 270 (four goldens gain a space between the photos' tags), api 78, workspace 92, admin 17, demo 5, console 3;
     - on the stub build, every photo starts under its skeleton, which goes once the photo has loaded (opacity 1), and a photo pointed at a missing file reads "The photo did not load";
     - the motion spec counts `.skeleton` as a loading indicator. The browser suites were not run (SC-55).
-- **SC-145** (In Progress, branch `SC-145-dist-figures`): the distributor's Batches and Orders show how their figures add up.
+- **SC-145** (In Review, branch `SC-145-dist-figures`): the distributor's Batches and Orders show how their figures add up.
   - **The request:** "For batches and order, this value is differing for distributors please check this and fix", then "if they are correct or not triage it, if all good leave it... but UI should have a way to know what the calculations show".
   - **The triage: the figures are correct.** Every cleared batch ends whole to the paisa: sold + credited = cost.
     - Batches leads with the credit: ₹66,918, and ₹7,821 for MF-2407-116.
@@ -1814,6 +1814,23 @@
     - Together they make the cost: ₹1,72,846, and ₹22,461 for MF-2407-116.
 
     Neither page showed the sum. The values stay.
-  - **Design first:** three options on one board in app v3, `SC-145 design review.html`: A, the same sum on both pages (recommended); B, how this adds up, on request; C, one figure on both pages. Designs are in `design3/designs/SC-145/`. Waiting for the pick.
+  - **Design first:** three options on one board in app v3, `SC-145 design review.html`:
+    - A, the same sum on both pages (recommended);
+    - B, how this adds up, on request;
+    - C, one figure on both pages.
+
+    The maintainer picked **A**. Designs, the build's stills and the decision are in `design3/designs/SC-145/`.
+  - **The build** (design3 first, then core):
+    - **The card:** both pages open with "How your 6 cleared batches add up": what they cost you = you sold + Munchly credited you. The page's own part is marked "this page"; the other is a button to its page. A bar shows the split, and a line says he ended whole.
+    - **Each cleared batch** carries its own sum, the page's part first: on Batches "₹7,821 credited + ₹14,640 sold = ₹22,461", on Orders "₹14,640 sold + ₹7,821 credited = ₹22,461".
+    - **Batches in a journey:** on Orders they keep their sales so far, which join the sum once they clear.
+    - **Rounding:** the figures are whole rupees that add up as shown: the cost is the rounded sales plus the rounded credit. Where the paise round apart, that can sit a rupee from the Money tab's "What you paid" (Lakshmi Agencies' MF-2407-112: ₹40,763, against ₹40,763.50 paid).
+    - **Where:** design3's `ledger.js` partners `sumOf` and `sumsOf`, and `trade.jsx` `SumCard`, `SumTerm` and `SumLine`; core's `partners.ts` `sumOf` and `sumsOf`, `SumCard.svelte` and `SumLine.svelte`, and `pt.ts` `clearedOf`, so both pages sum the same cleared batches.
+  - **Checks:**
+    - backend-api 552 passed, 1 skipped;
+    - the frontend gate passes: core 273, with `partners.test.ts` holding both distributors' sums to ledger.js and Rakesh Traders' to the board's; api 78; workspace 93, with a new live test of Orders' sum; admin 17; demo 5; console 3;
+    - design3's build was shot at 1440 and 390, light and dark, for both distributors (`build/`);
+    - the browser suites were not run (SC-55).
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
