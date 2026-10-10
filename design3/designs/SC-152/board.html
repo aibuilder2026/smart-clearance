@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-152 Buttons that wait</title>
+<meta name="description" content="Three ways for a button that calls the network to show it is working, in every app: says what it's doing, the fill, act at once.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<link rel="stylesheet" href="board.css">
+<body>
+<main class="wrap">
+<h1>Buttons that wait</h1>
+<p class="lede">SC-152 · every app (the workspace, the console, the landing page, and the guided demo on the workspace's screens) · three ways for a button that calls backend-api to show it is working, from the press to the answer. Each option is the same lab of real buttons from the four apps, with the network simulated: open one and press anything, then try <b>Slow</b> and <b>Refused</b>.</p>
+<p>The maintainer (10 Oct):</p>
+<blockquote><ul><li>“UI/UX glitches, especially on button clicks across all apps when it makes network calls, there should some animation on buttons to make the user experience seamless, currently it just becomes blank or hangs for sometime.”</li></ul></blockquote>
+
+<h2>Why it goes blank, and why it hangs</h2>
+<div class="shared">
+<div class="card"><h3 class="sub">Blank: the spinner is invisible</h3><p>The kit's <code>loading</code> button hides its label (<code>color: transparent !important</code>) and centres a spinner whose colour is <code>inherit</code>, so the spinner inherits the transparent ink. Every button that waits this way is an empty pill, in design3 and in every app (<code>components.css</code> lines 40–43).</p></div>
+<div class="card"><h3 class="sub">Hangs: most buttons show nothing</h3><p>Of about 71 buttons that call the network, <b>45 show nothing</b> until the answer lands: the workspace 24 of 39, the console 21 of 30. Nothing locks them, so a second press sends again.</p></div>
+<div class="card"><h3 class="sub">And what follows the press</h3><ul><li>13 workspace screens say it worked before the answer, so a refusal still reads “done”: the live source never tells them it failed.</li><li>The console waits for every query to be read again before a button lets go, and its switches and segmented controls jump back to the old value until then.</li><li>The workspace has no loading line between screens; the console has one (SC-49).</li><li>Signing out has no error path in either app.</li></ul></div>
+</div>
+
+<h2>Today</h2>
+<div class="desks">
+<figure><img src="current/pending-1440-light.webp" width="1440" height="1085" loading="lazy" alt="Today: every waiting button with a loading state is an empty pill: the approve button, Issue from Tally, Record the sale and Send request; the rest look untouched."><figcaption>Every button pressed, waiting · the four with a loading state are empty pills, the rest look untouched</figcaption></figure>
+</div>
+<div class="desks" style="margin-top:12px"><figure><img src="current/pending-1440-dark.webp" width="1440" height="1085" loading="lazy" alt="Today, in dark: the same empty pills."><figcaption>Dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="current/mockup.html">Open today's behaviour</a></div>
+
+<h2>In every option</h2>
+<div class="shared">
+<div class="card"><h3 class="sub">One button, every app</h3><p>The waiting lives in core's <code>Button</code> (and the kit's), driven by one action helper in each app, so the 71 buttons get it by passing their action, not by each screen keeping its own <code>busy</code>. The spinner shows in the button's own ink on every variant.</p></div>
+<div class="card"><h3 class="sub">The same timings</h3><ul><li>The press answers at once (the kit's 0.97 press), and the button locks, keyboard included: no second send.</li><li>Nothing shows for an answer under 100 ms; a shown wait stays at least 400 ms, so nothing flickers.</li><li>Past 3 s it says it is still working (Cloud Run wakes from zero).</li><li>Under reduced motion every step lands at once; only the spinner turns, as a loading indicator.</li></ul></div>
+<div class="card"><h3 class="sub">Honest answers</h3><ul><li>Success is said only on success; a refusal says why and offers Try again.</li><li>Console controls keep the value pressed, and the button lets go once the change is saved; the page reads itself again in place.</li><li>The workspace gets the console's route line while a screen opens, and sign-out says when it fails.</li></ul></div>
+</div>
+
+<h2>The options</h2>
+<section class="opt rec" id="option-a"><header><h3>Option A · Says what it's doing</h3><span class="tag">Recommended</span></header>
+<p>The console's Sign in (SC-49), for <b>every button</b>: it keeps its size and says what it is doing (“Approving the plan…”, “Recording…”), a spinner turns in the icon's place and a line creeps along its foot. The answer lands as a <b>tick and the done word</b> (“Plan approved”); a refusal shakes once and puts <b>the reason under the button</b>, with Try again. Past 3 s a quiet line under it says it is still working. Controls take their new value at once and say Saving… on their own line, then Saved, or put it back with why.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>Reads at a glance and to a screen reader: every phase is a word, said once.</li><li>The answer stays where the press was, next to the thing it is about.</li><li>Already approved once, on Sign in; the same motion on every button.</li><li>Each button needs its waiting and done words, about 70 short phrases.</li></ul></dd></dl>
+<div class="desks"><figure><img src="option-a/pending-1440-light.webp" width="1440" height="1110" loading="lazy" alt="Option A: every button saying what it is doing, with a spinner and a line along its foot."><figcaption>Waiting · light</figcaption></figure><figure><img src="option-a/done-1440-light.webp" width="1440" height="1089" loading="lazy" alt="Option A: every button with a tick and its done word."><figcaption>Answered · the tick and the done word</figcaption></figure></div>
+<div class="desks"><figure><img src="option-a/error-1440-light.webp" width="1440" height="1299" loading="lazy" alt="Option A: each refusal under its own button, with Try again; the controls put back with why."><figcaption>Refused · the reason under the button</figcaption></figure><figure><img src="option-a/slow-1440-light.webp" width="1440" height="1299" loading="lazy" alt="Option A: past 3 seconds, a line under each button says it is still working."><figcaption>Past 3 s · still working</figcaption></figure></div>
+<div class="desks"><figure><img src="option-a/pending-1440-dark.webp" width="1440" height="1110" loading="lazy" alt="Option A in dark."><figcaption>Waiting · dark</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-a/pending-390-light.webp" width="780" height="5210" loading="lazy" alt="Option A on a phone."><figcaption>Waiting · phone</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="option-a/mockup.html">Open option A</a><a class="btn" href="option-a/mockup.html?lat=slow">On a slow line</a><a class="btn" href="option-a/mockup.html?lat=refused">Refused</a></div>
+</section>
+
+<section class="opt" id="option-b"><header><h3>Option B · The fill</h3></header>
+<p>The button is <b>its own progress bar</b>. Its words never change: its ground fills from the left in a deeper tone of its own colour (lighter where its ink is dark), creeping to 90% while it waits, with a sheen passing over the filled part. The answer completes the fill and a tick takes the icon's place; a refusal drains the fill back with a shake, and the reason, or a long wait, comes <b>as a toast</b>, so nothing on the page moves. Controls take their new value at once, with a line filling under their row.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>No words to write: every button keeps its label.</li><li>The most visible on a large button; on a small grey one the fill is faint.</li><li>The fill looks like real progress, and it is not: it creeps and waits.</li><li>A refusal is told away from its button, and toasts stack when several fail.</li><li>The label sits over two tones, each to be measured at 4.5:1 per variant and theme.</li></ul></dd></dl>
+<div class="desks"><figure><img src="option-b/pending-1440-light.webp" width="1440" height="1079" loading="lazy" alt="Option B: each button's ground filling from the left while it waits."><figcaption>Waiting · light</figcaption></figure><figure><img src="option-b/pending-1440-dark.webp" width="1440" height="1079" loading="lazy" alt="Option B in dark: the fill lighter behind dark ink."><figcaption>Waiting · dark</figcaption></figure></div>
+<div class="desks"><figure><img src="option-b/error-1440-light.webp" width="1440" height="1079" loading="lazy" alt="Option B: the refusals as toasts at the foot of the window."><figcaption>Refused · toasts</figcaption></figure><figure><img src="option-b/done-1440-light.webp" width="1440" height="1079" loading="lazy" alt="Option B: the fill complete, a tick in the icon's place."><figcaption>Answered</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-b/pending-390-light.webp" width="780" height="5150" loading="lazy" alt="Option B on a phone."><figcaption>Waiting · phone</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="option-b/mockup.html">Open option B</a><a class="btn" href="option-b/mockup.html?lat=slow">On a slow line</a><a class="btn" href="option-b/mockup.html?lat=refused">Refused</a></div>
+</section>
+
+<section class="opt" id="option-c"><header><h3>Option C · Act at once</h3></header>
+<p>The button <b>never waits</b>. The press shows its result straight away: the button turns to its done word with a tick, and the screen's state changes (Approved, Collected, Saved). <b>One saving chip</b> at the foot of the window carries every call in flight (“Saving · 3 changes”) and turns to Saved. A refusal <b>puts the screen back</b> as it was, and its chip turns red with the reason and Try again. What can't be shown before the answer (Fire now and Send request here; sign-in, uploads, the label photo and opening a PDF) waits in the button, with its words and a spinner.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>The fastest feel: nothing waits on the network.</li><li>A refusal undoes something the person already saw done, which is a shock on an approval or a payment-like step.</li><li>Figures the server works out (the plan's money, a counter, the papers' numbers) can't be shown before they arrive.</li><li>The most work: each of about 50 actions needs its result drawn before the answer, and its undo.</li><li>Two kinds of button, which wait differently.</li></ul></dd></dl>
+<div class="desks"><figure><img src="option-c/pending-1440-light.webp" width="1440" height="1089" loading="lazy" alt="Option C: every button already done, one chip saying Saving 7 changes, Fire now and Send request waiting in their buttons."><figcaption>Just pressed · done at once, one chip</figcaption></figure><figure><img src="option-c/error-1440-light.webp" width="1440" height="1134" loading="lazy" alt="Option C: the screens put back, two refusal chips with Try again."><figcaption>Refused · put back, the chip turns red</figcaption></figure></div>
+<div class="desks"><figure><img src="option-c/pending-1440-dark.webp" width="1440" height="1089" loading="lazy" alt="Option C in dark."><figcaption>Just pressed · dark</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-c/pending-390-light.webp" width="780" height="5128" loading="lazy" alt="Option C on a phone."><figcaption>Just pressed · phone</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="option-c/mockup.html">Open option C</a><a class="btn" href="option-c/mockup.html?lat=slow">On a slow line</a><a class="btn" href="option-c/mockup.html?lat=refused">Refused</a></div>
+</section>
+
+<h2>Side by side</h2>
+<div class="tablewrap"><table class="cmp"><thead><tr><th></th><th>A · Says what it's doing</th><th>B · The fill</th><th>C · Act at once</th></tr></thead><tbody>
+<tr><th>While it waits</th><td>Its words change, a spinner and a line along its foot</td><td>Its ground fills, words unchanged</td><td>Already done; one chip carries the call</td></tr>
+<tr><th>On the answer</th><td>A tick and the done word</td><td>The fill completes, a tick</td><td>The chip says Saved</td></tr>
+<tr><th>On a refusal</th><td>A shake, the reason under the button, Try again</td><td>The fill drains, a toast with the reason</td><td>The screen put back, a red chip, Try again</td></tr>
+<tr><th>Past 3 s</th><td>A line under the button</td><td>A toast</td><td>The chip says Still saving</td></tr>
+<tr><th>Copy to write</th><td>About 70 short phrases</td><td>None</td><td>About 50 done words</td></tr>
+<tr><th>Build</th><td>Core's Button and one helper per app</td><td>Core's Button and one helper per app; contrast per variant</td><td>Both, plus each action's result drawn early and undone</td></tr>
+</tbody></table></div>
+
+<h2>Recommended: option A</h2>
+<div class="rec-box"><p><b>Says what it's doing</b> fixes both complaints at the button itself: it is never blank (its words and spinner are in its own ink) and never silent (every press shows within 100 ms, and a long wait says so). The answer, good or bad, lands where the person is looking, it is the pattern already approved for Sign in, and it is honest: nothing reads done before the server says so, which matters on the approve and money steps.</p></div>
+
+<div class="q" style="margin-top:20px"><h3>To decide</h3><ul><li>Which option to build.</li><li>Whether to put the blank-spinner fix out first on its own, ahead of the rest (one line of CSS in the kit and core).</li></ul></div>
+
+<footer>Smart-Clearance · SC-152 · every company, person and figure fictional · the figures are the story's (core/money.js) · mockups on design system v3, the network simulated · inventory of every button that calls the network: decision.md</footer>
+</main>
+</body>
+</html>

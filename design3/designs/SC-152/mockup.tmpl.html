@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SC-152 @NAME@</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Buttons that call the network, in every app. @DESC@">
+<link rel="icon" href="../../../system/img/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../../system/tokens.css">
+<link rel="stylesheet" href="../../../system/base.css">
+<link rel="stylesheet" href="../../../system/components.css">
+<link rel="stylesheet" href="../lab.css">
+<link rel="stylesheet" href="opt.css">
+<script>
+  (function () {
+    var q = new URLSearchParams(location.search);
+    try { if (q.get("theme")) localStorage.setItem("sc3-theme", q.get("theme")); } catch (e) {}
+  })();
+</script>
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/framer-motion@11.18.2/dist/framer-motion.js"></script>
+<script src="../../../system/icons.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script src="../../../system/kit.js"></script>
+<script src="../lab.js"></script>
+<script src="opt.js"></script>
+<script>ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(window.SC152_LAB));</script>
+</body>
+</html>
