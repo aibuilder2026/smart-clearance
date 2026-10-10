@@ -10,6 +10,8 @@ import { defineConfig } from '@playwright/test';
 //   corepack pnpm test:journey:mango                Munchly Mango E2E (SC-104), from where the journey stands
 //   corepack pnpm test:journey:leftover             Munchly Chips Leftover E2E (SC-116): kiranas that do not order,
 //                                                   closed by Report now (it resets the journey)
+//   corepack pnpm test:journey:mango-leftover       Munchly Mango Leftover E2E (SC-135): the Mango Drink with kiranas
+//                                                   that do not buy, settled on expiry day (it resets the journey)
 //   corepack pnpm test:journey --headed             watch it run (E2E_SLOWMO=250 slows each action, in ms)
 //   corepack pnpm test:journey --ui                 Playwright's UI mode, step by step
 //
@@ -43,6 +45,7 @@ export default defineConfig({
 	projects: [
 		{ name: 'Munchly Chips E2E', testMatch: /munchly-chips\.journey\.ts/ },
 		{ name: 'Munchly Mango E2E', testMatch: /munchly-mango\.journey\.ts/ },
-		{ name: 'Munchly Chips Leftover E2E', testMatch: /munchly-chips-leftover\.journey\.ts/ }
+		{ name: 'Munchly Chips Leftover E2E', testMatch: /munchly-chips-leftover\.journey\.ts/ },
+		{ name: 'Munchly Mango Leftover E2E', testMatch: /munchly-mango-leftover\.journey\.ts/ }
 	]
 });

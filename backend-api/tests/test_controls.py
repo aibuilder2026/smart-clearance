@@ -343,4 +343,6 @@ async def test_the_leftover_ledger_reverses_the_credit_of_the_packs_it_destroyed
     docs = {d["id"]: d for d in (await case(api, PRIYA))["docs"]}
     assert (docs["itc"]["amount"], docs["itc"]["reversed"]) == (ledger["itc"], ledger["itcReversed"])
     assert docs["itc"]["note"].startswith(f"Kept on the {ordered + 772:,} packs sold under tax invoices")
+    # the memo's own counts, which the screen reads: sold, and given away or destroyed (SC-135)
+    assert (docs["itc"]["units"], docs["itc"]["away"]) == (ordered + 772, godown)
     assert docs["destruction"]["units"] == godown

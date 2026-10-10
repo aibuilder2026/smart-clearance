@@ -41,7 +41,16 @@ export type Case = {
 	batch: { assess?: { atRisk: number } | null };
 	writeOff: { total: number } | null;
 	actual: { net: number } | null;
-	docs: { id: string; type: string; no: string; status: string; pdf: boolean; units?: number | null }[];
+	docs: {
+		id: string;
+		type: string;
+		no: string;
+		status: string;
+		pdf: boolean;
+		units?: number | null;
+		amount?: number | null;
+		reversed?: number | null;
+	}[];
 	donation: { status: string; partner: string | null; units: number } | null;
 	moments: { van: { leavesAt: string | null } };
 	push: Record<string, { title: string }>;
@@ -81,8 +90,10 @@ const now = () => {
 	if (!here) throw new Error('call begin(run, ref) first');
 	return here;
 };
-/** the run under way, for steps shared between flows (chips.ts) */
+/** the run under way, for steps shared between flows (chips.ts, mango.ts, ledger.ts) */
 export const running = () => now().run;
+/** the batch the run takes */
+export const hero = () => now().ref;
 
 /** the batch's case as someone sees it, or null before the Watcher has flagged it */
 export async function caseAs(who: string): Promise<Case | null> {
