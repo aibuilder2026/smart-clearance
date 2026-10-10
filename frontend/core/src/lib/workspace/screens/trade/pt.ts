@@ -2,9 +2,10 @@
 // and who issued it, and the world the partner's moments name.
 import type { IconName } from '../../../icons/registry';
 import { distNows, journeyOf, byAsk, type DistNow, type DistWorld } from '../../dist';
-import { offersFor, type PartnerWorld } from '../../partners';
+import { batchViews } from '../../model';
+import { distPast, offersFor, type PartnerWorld } from '../../partners';
 import type { WorkspaceSource } from '../../source';
-import type { Distributor, Doc, PartnerCase, PtOffer, Shop, User } from '../../types';
+import type { BatchView, Distributor, Doc, PartnerCase, PtOffer, PtSum, Shop, User } from '../../types';
 
 // the client's days and times come as its own (2026-08-27, 2026-08-27T12:10): a day is read from its parts, so no
 // time zone moves it
@@ -127,3 +128,22 @@ export const distJourneysOf = (ws: WorkspaceSource, distId: string) =>
 	distNowsOf(ws, distId)
 		.map((n) => ({ n, j: journeyOf(n, distWorldOf(ws)) }))
 		.sort((a, z) => byAsk(a.j, z.j));
+
+/** a batch of his is in a journey from the Watcher's flag on: the batch in focus by the journey's state, the batch the
+ *  same agents donate (the stub's second) by its own, any other by the phase backend-api sends with it */
+export const phaseOfView = (ws: WorkspaceSource, v: BatchView) =>
+	v.hero ? ws.state.hero.phase : v.second ? ws.state.mango.phase || null : (v.journey ?? null);
+/** the batches he cleared, as Batches lists them: every cleared batch of his not in a journey now. Orders sums the same
+ *  batches, so both pages' sums agree (SC-145) */
+export function clearedOf(ws: WorkspaceSource, distId: string): PartnerCase[] {
+	const journey = batchViews(ws.state, ws.data).filter(
+		(v) => v.distributor === distId && (phaseOfView(ws, v) ?? 'watching') !== 'watching'
+	);
+	return distPast(ws.partners?.cases ?? [], distId).filter((c) => !journey.some((v) => v.id === c.ref));
+}
+/** a sum in whole rupees that add up as shown (SC-145): the cost is the rounded sales plus the rounded credit */
+export const shownSum = (x: Pick<PtSum, 'sold' | 'credit'>) => {
+	const sold = Math.round(x.sold),
+		credit = Math.round(x.credit);
+	return { sold, credit, cost: sold + credit };
+};
