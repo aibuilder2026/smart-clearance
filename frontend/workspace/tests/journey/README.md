@@ -82,6 +82,41 @@ It resets Munchly's journey first, as Munchly Chips E2E does.
 
 Its run of 9 Oct is in `runs/2026-10-09-leftover/`.
 
+## Munchly Mango Leftover E2E
+
+The Mango Drink again, from a fresh journey, with kiranas that do not buy (SC-135), `munchly-mango-leftover.journey.ts`.
+Its steps up to the scheme, the staff sale, the donation and the pack with its van round are the Mango flow's own
+(`mango.ts`, which both share); the reset and Setup are the chips flow's. Then it parts:
+
+- **Lakshmi Agencies gives her permission**, and Neha runs the Watcher if the 09:00 check has not flagged the Mango yet.
+- **The kiranas:** of her 52 ordering kiranas, the last `E2E_LEFTOVER` (10) do not buy. The first `E2E_DECLINE` (2) of
+  those press Not this time on their Offers; the rest read the scheme and let it go.
+- **The window:** Neha closes the scheme's offer window from the console, short of its packets. With no ExpireSoon lot
+  open, what was not ordered stays at the godown. The pack is then drafted, and the van round takes the orders placed.
+- **Report now:** expiry day settles the packs left at the godown by Munchly's expiry policy, full credit. Lakshmi
+  Agencies is credited the dealer price on an Expiry credit note, and Munchly destroys the packs, reversing their input
+  GST on the ITC memo and the destruction certificate.
+- **What it reads back:**
+  - Priya's review;
+  - Execution's Left at the godown and Expiry settlement;
+  - every paper in the pack, on its page. Each PDF is kept beside the report and read back as text with `pypdf`, when
+    python3 has it;
+  - the ledger's GST and Impact readings, with the GST summary and the BRSR table (`ledger.ts`, shared with the chips
+    flows);
+  - one kirana's offer for each outcome: ordered, declined and expired;
+  - Meera's pickup and receipt;
+  - Lakshmi Agencies' portal, with her credit notes and her copies of the receipt and the destruction certificate.
+- **No tax invoice:** the Mango's plan has no ExpireSoon lot, so its GST papers are the two credit notes and the ITC memo.
+
+```sh
+E2E_SLOWMO=120 corepack pnpm test:journey:mango-leftover --headed
+E2E_LEFTOVER=6 E2E_DECLINE=1 corepack pnpm test:journey:mango-leftover
+```
+
+It resets Munchly's journey first, as the chips suites do.
+
+Its run of 10 Oct is in `runs/2026-10-10-mango-leftover/`.
+
 ## Before a run
 
 - backend-api on :8000 (`backend-api/scripts/dev.sh`), on a world with Munchly's live workspace (`hydrate.sh --reset`,

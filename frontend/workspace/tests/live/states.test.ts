@@ -572,21 +572,39 @@ describe("expiry day's settlement (SC-94)", () => {
 		expect(t).toContain(d.note);
 	});
 
+	it("the GST ITC memo counts the packs given away and destroyed, and the batch's head the packs destroyed (SC-135)", async () => {
+		vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1440);
+		const s = source(fakeApi(moment('cleared'), 'priya'));
+		const r = await draw(s, 'paperwork', MANGO);
+		await waitFor(() => expect(text(r)).toContain('Expiry credit note'));
+		const c = moment('cleared').members.priya.cases[MANGO];
+		const memo = c.docs.find((x) => x.id === 'itc')!;
+		const units = c.expiry!.units;
+		expect(memo.away).toBe(units + c.donation!.units); // the packs Munchly destroyed, and the food bank's
+		expect(text(r)).toContain(`Cleared · ${units.toLocaleString('en-IN')} packs destroyed`);
+		await fireEvent.click(r.getAllByRole('button', { name: /GST ITC memo/ })[0]);
+		await waitFor(() => expect(text(r)).toContain('ITC PART REVERSED'));
+		expect(text(r)).toContain(`Destroyed, gifted or lost${memo.away!.toLocaleString('en-IN')}`);
+	});
+
 	it("Lakshmi Agencies' You end whole, on the batch's page, counts what each line took, and the expiry credit", async () => {
-		// a partner is not sent the plan: what each line took is the credit note's rows (SC-94, SC-133)
+		// a partner is not sent the plan: what each line took is in her partner facts, which the journey's own batch
+		// reads once it has cleared, as a batch she cleared before does (SC-94, SC-133, SC-135)
 		const s = source(fakeApi(moment('cleared'), 'lakshmi-owner'));
 		const r = await draw(s, 'batches', MANGO);
 		await tab(r, 'Money');
 		await waitFor(() => expect(text(r)).toContain('You end whole'));
 		const c = moment('cleared').members['lakshmi-owner'].cases[MANGO];
 		const x = c.expiry!;
+		const no = (id: string) => c.docs.find((d) => d.id === id)!.no;
 		const t = text(r);
 		expect(t).toContain('You end wholesettled');
-		expect(t).toContain('From your kiranas 84 packets on the scheme₹1,008'); // what the kiranas ordered, at ₹12
+		expect(t).toMatch(/From \d+ kiranas 84 packets₹1,008/); // what the kiranas ordered, at ₹12
 		expect(t).toContain('Your staff sale 120 packs₹960');
-		expect(t).toContain(`Price-support credit note from Munchly${inr(c.support!.total)}`);
+		expect(t).toContain('Given to Feeding India 58 packs₹0');
+		expect(t).toContain(`Price-support credit note ${no('support')}${inr(c.support!.total)}`);
 		expect(t).toContain(
-			`Expiry credit note for ${x.units.toLocaleString('en-IN')} packs from Munchly${inr(x.credit!)}`
+			`Expiry credit note for ${x.units.toLocaleString('en-IN')} packs ${no('expiry')}${inr(x.credit!)}`
 		);
 		expect(t).toContain('Your gain or loss₹0');
 	});
@@ -998,6 +1016,19 @@ describe("a distributor's portal, batch by batch (SC-133)", () => {
 		const o = await draw(source(fakeApi(m, 'lakshmi-owner')), 'orders');
 		await waitFor(() => expect(text(o)).toContain('Mango Drink'));
 		expect(text(o)).toContain(`${gift} packs given`);
+	});
+
+	it("Lakshmi Agencies' cleared Mango Drink tells every moment: the staff sale, the pickup and what expired at her godown", async () => {
+		// the journey's own batch, once cleared, reads her partner facts as a batch she cleared before does (SC-135)
+		const m = moment('cleared');
+		const x = m.members.priya.cases[MANGO].expiry!;
+		const r = await draw(source(fakeApi(m, 'lakshmi-owner')), 'batches', MANGO);
+		await waitFor(() => expect(text(r)).toContain('You sent the label photo'));
+		const t = text(r);
+		expect(t).toContain('Your staff sale sold');
+		expect(t).toContain('Feeding India collected');
+		expect(t).toContain(`${x.units.toLocaleString('en-IN')} packs expired at your godown`);
+		expect(t).not.toContain('Settled: you ended whole');
 	});
 
 	it("Orders lists each batch's orders under it, with the paper each sold on", async () => {

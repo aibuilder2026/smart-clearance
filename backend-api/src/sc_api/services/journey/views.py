@@ -987,8 +987,9 @@ def doc_out(d_: dict[str, Any]) -> dict[str, Any]:
     """a paper as the screens read it, with whether its PDF is ready"""
     return {
         **{k: d_.get(k) for k in DOC_FIELDS},
-        # the expiry paper's settlement, and the GST memo's reversal on expiry day (SC-94)
-        **{k: d_[k] for k in ("policy", "destroyedBy", "disposal", "epr", "itc", "reversed") if k in d_},
+        # the expiry paper's settlement, and the GST memo's reversal on expiry day (SC-94), with the packs given away or
+        # destroyed it is reversed on (SC-135: without them the memo counted the plan's donation only)
+        **{k: d_[k] for k in ("policy", "destroyedBy", "disposal", "epr", "itc", "reversed", "away") if k in d_},
         # the food bank's receipt (SC-110)
         **{k: d_[k] for k in RECEIPT_FIELDS if k in d_},
         "pdf": bool(d_.get("pdf")),

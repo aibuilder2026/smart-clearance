@@ -1572,7 +1572,7 @@
     - **The only finding:** the old note that Priya's pack reads the invoice "drafted" after Rakesh issues it, as in the prototype.
     - **After it:** the journey day is back to 24 hours; the journey is left as the run ended.
 
-- **SC-134** (In Review, branch `SC-134-mango-e2e`): Munchly Mango E2E on the new UI (SC-127's one operator, SC-133's distributor portal), asked for by the maintainer ("Run mango drink e2e journey, fix anything if needed as per new ui we build").
+- **SC-134** (PR #115, merged): Munchly Mango E2E on the new UI (SC-127's one operator, SC-133's distributor portal), asked for by the maintainer ("Run mango drink e2e journey, fix anything if needed as per new ui we build").
   - **The suite** (`munchly-mango.journey.ts`):
     - Lakshmi's label photo, staff sale and van round start on Today and press the button on the Mango's own card (`#batch-MF-2410-118`), by its exact name;
     - ESG opens the batch page's Impact tab and the ledger's Impact reading (since SC-127 pages open on Money);
@@ -1587,5 +1587,45 @@
     - The only finding left is the known one: Saraswathi Kirana and Bilal Stores order 16 each, in the offer screen's twelves.
   - **The journey is left as the run ended** (both batches cleared); the day is back at 24 hours.
   - **Checks:** the frontend gate passes (core 258, api 77, workspace 79, admin 17, demo 5, console 3).
+
+- **SC-135** (In Review, branch `SC-135-mango-leftover-e2e`): Munchly Mango Leftover E2E, asked for by the maintainer ("run the mango run with left order scenario (kiranas not buying all). I need you verify end to end all the screens and states including gst invoices and destruction certs and donation receipts. And financial and esg impacts").
+  - **The suite** (`munchly-mango-leftover.journey.ts`, its own Playwright project, `corepack pnpm test:journey:mango-leftover`; it resets the journey):
+    - Lakshmi Agencies' 52 ordering kiranas: the last `E2E_LEFTOVER` (10) do not buy; of those, `E2E_DECLINE` (2) press Not this time and the rest let the scheme go;
+    - the staff sale is recorded, and Feeding India collects;
+    - Neha closes the offer window early from the console, so the unordered packets stay at the godown;
+    - the pack is drafted and the van round runs;
+    - Neha fires expiry day, which settles the packs left by Munchly's policy (full credit).
+  - **What it reads back**, held to the ledger row:
+    - every paper in Priya's pack, with each PDF kept beside the report and read back as text (`pypdf`);
+    - Execution's Left at the godown and Expiry settlement;
+    - the ledger's GST and Impact readings, with both exports;
+    - one kirana for each outcome (ordered, declined, expired);
+    - Meera's pickup and receipt;
+    - Lakshmi Agencies' portal, with her copies.
+  - **Shared steps:** the Mango's steps moved into `mango.ts`, and Munchly Mango E2E runs them as before. Priya's tax and ESG steps moved into `ledger.ts`, for whichever batch a run takes; they now also check the expiry credit note and the receipt. `flow.ts` gains `hero()`.
+  - **Fixed in the app:**
+    - the GST ITC memo read "Destroyed, gifted or lost: 58" beside a reversal for 306 packs: backend-api's case view dropped its `away` count (`views.doc_out`; its PDF was right);
+    - the batch's head read "Cleared · 0 cartons destroyed" for every batch: it counts what expired ("Cleared · 248 packs destroyed"; core `model.ts`);
+    - once cleared, the journey's own batch read the journey's state on the distributor's page, with no staff sale, pickup, unordered packets or expiry. It now reads her partner facts, as earlier cleared batches do (core `DistBatch.svelte`).
+
+    The prototype's stub never leaves packs at the godown, so design3 reads as before.
+  - **The run of 10 Oct** (`runs/2026-10-10-mango-leftover/REPORT.md`, the recording local): passed in 10 min 1 s, 122 steps, from a reset, on the fourth attempt (the earlier three found the fixes above, and one selector).
+    - The scheme: 42 of 52 ordered 1,124 of 1,372 packets; 248 were left at the godown.
+    - The papers:
+      - CN/0117 (₹5,188) and CN/0118 (₹3,596 for 248 packs at ₹14.50);
+      - the ITC memo, part reversed: ₹700.70 kept, ₹168.30 reversed on 306 packs;
+      - the destruction certificate: 248 units, ₹136.40 reversed;
+      - the FSSAI checklist and FI/HYD/26-27/0417 (58 packs, 58 meals).
+
+      Every paper Paperwork lays out has its PDF. The destruction certificate has none: it is a record on the case.
+    - No tax invoice: the Mango's plan has no ExpireSoon lot.
+    - The money: net ₹14,065.10 of ₹16,917.10 planned; swing ₹18,513.98; P&L −₹4,143.22 against −₹22,657.20. Lakshmi Agencies ends whole at ₹0.
+    - The ESG: 286.38 kg kept out of landfill (273.91 resold, 12.47 donated), 53.32 kg destroyed, 716 kg CO₂e, 2.67 kg of packaging diverted.
+    - Notes left: an expired offer reads "Its 48 hours ended", and her page "The scheme closed after 48 hours", though Neha closed the window early.
+  - **Checks:**
+    - backend-api 526 passed, 1 skipped;
+    - the frontend gate passes (core 258, api 77, workspace 81 with 2 new live tests, admin 17, demo 5, console 3);
+    - the live fixtures were regenerated;
+    - the day is back at 24 hours.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

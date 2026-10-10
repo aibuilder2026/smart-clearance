@@ -38,8 +38,10 @@
 	const phase = $derived(v ? (v.hero ? s.hero.phase : v.second ? s.mango.phase || null : (v.journey ?? null)) : null);
 	const inJourney = $derived(!!phase && phase !== 'watching');
 	const pc = $derived(ws.partners?.cases.find((x) => x.ref === id && x.dist === dist.id) ?? null);
-	// a batch he cleared: its facts, and its case for the papers (the live workspace reads it as the page opens)
-	const past = $derived(pc?.cleared && !inJourney ? pc : null);
+	// a batch he cleared: its facts, and its case for the papers (the live workspace reads it as the page opens). The
+	// journey's own batch reads them too once it has cleared (SC-135): they carry every moment (the staff sale, the
+	// pickup, the packets not ordered, what expired at his godown), which the journey's state does not
+	const past = $derived(pc?.cleared && (!inJourney || phase === 'cleared') ? pc : null);
 	$effect(() => {
 		if (past) ws.openPage?.(id);
 	});

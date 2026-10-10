@@ -114,7 +114,12 @@ export function heroModel(s: State, data: Pick<WorkspaceData, 'skus' | 'distribu
 	} else if (h.phase === 'settled') {
 		eta = 'Papers ready · ledger next';
 		agentLive = 'Impact is posting the ledger';
-	} else if (h.phase === 'cleared') eta = 'Cleared · 0 cartons destroyed';
+	} else if (h.phase === 'cleared') {
+		// the packs that expired at the godown and were destroyed (SC-94, the live source); the story's batch destroys
+		// none (SC-135: the line read 0 for every batch)
+		const gone = c.expiry?.units ?? 0;
+		eta = gone ? `Cleared · ${fmt.num(gone)} packs destroyed` : 'Cleared · 0 cartons destroyed';
+	}
 	return {
 		h,
 		view,
