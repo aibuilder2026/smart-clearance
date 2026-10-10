@@ -366,6 +366,82 @@ table.matrix { border-collapse: collapse; width: 100%; min-width: 860px; font-si
 .lucid-head b { font: 680 18px/1.2 var(--font-display); }
 .lucid-head span { font-size: 13.5px; color: var(--fg-3); }
 
+/* ---------- print: A4 landscape, every flow stage on its own page ---------- */
+.print-flows, .print-only { display: none; }
+@media print {
+  @page { size: A4 landscape; margin: 11mm 12mm; }
+  html { scroll-behavior: auto; }
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .bar, .motion-btn, .scroll-hint, .flow, .d .pulse { display: none !important; }
+  .print-flows, .print-only { display: block; }
+  .fig-scroll, .matrix-wrap { overflow: visible; }
+  .fig-scroll svg { min-width: 0 !important; }
+  .wf { min-width: 0; }
+  table.matrix { min-width: 0; }
+  .fig, .stack { box-shadow: none; }
+  .hero { padding-block: 6mm 0; }
+  section { padding-block: 0; break-before: page; }
+  section + section { border-top: 0; }
+  .sec-head { margin-bottom: 18px; }
+  .cat-label { position: static; }
+  h2, h3, .sec-head { break-after: avoid; }
+  figure, .card, .sp, .tst, .guard, .kl, .matrix-wrap, .lucid a { break-inside: avoid; }
+  .pf { break-before: page; break-inside: avoid; display: grid; gap: 10px; }
+  .pf h3 { font-size: 22px; }
+  .pf p { color: var(--fg-2); max-width: 110ch; font-size: 14px; }
+  .pf .fig svg { max-height: 122mm; width: auto; max-width: 100%; margin: 0 auto; }
+  .print-key { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--fg-3); margin-top: 10px; }
+  .print-stages { margin: 12px 0 0; padding-left: 18px; columns: 2; font-size: 15px; color: var(--fg-2); }
+  footer { break-before: avoid; padding-block: 18px 0; }
+  .ap { break-before: page; break-inside: avoid; display: grid; gap: 8px; }
+  .ap h3 { font-size: 20px; }
+  .ap p { font-size: 13px; color: var(--fg-3); }
+  .ap img { display: block; width: 100%; max-height: 166mm; object-fit: contain; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+  .hero .wrap { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr) !important; gap: 34px !important; }
+  .hero h1 { font-size: 40px; }
+  .hero-copy { gap: 14px; }
+  .hero-links a { padding: 5px 10px; font-size: 12.5px; }
+  .stack-head { padding: 8px 12px 6px; }
+  .layer { padding: 6px 12px; }
+  .chip { font-size: 11.5px; padding: 5px 8px; }
+  h2 { font-size: 26px; }
+  .sec-head { gap: 8px; }
+  .lede { font-size: 14.5px; }
+  .spot { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 14px; }
+  .sp { padding: 18px; gap: 10px; }
+  .sp li { font-size: 13.5px; }
+  .why { font-size: 13px; }
+  .cat { display: block; }
+  .cat-group { grid-template-columns: 190px minmax(0, 1fr) !important; gap: 18px !important; margin-bottom: 16px; }
+  .cards { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  .guards { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  .obs-points { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+  .tests { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  .kl { grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr) 28px minmax(0, 1.3fr) !important; }
+  .kl > svg { transform: none !important; }
+  .kl-head { display: grid !important; }
+  .fig svg { max-height: 112mm; }
+  #system .fig svg { max-height: 100mm; }
+  #cicd .fig svg { max-height: 96mm; }
+  figcaption { padding: 8px 16px 10px; font-size: 12.5px; }
+  .kl { gap: 6px; }
+  .kl > div { padding: 7px 12px; font-size: 12.5px; }
+  .kl > div b { font-size: 13px; }
+  .keyless { gap: 7px; }
+  .tests { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; gap: 10px; }
+  .tst { padding: 14px; gap: 7px; }
+  .tst p, .tst ul { font-size: 12.5px; }
+  .tst-head b { font-size: 16px; }
+  .guard { padding: 12px; }
+  .guard p { font-size: 13px; }
+  .guards, .obs-points { margin-top: 12px; gap: 10px; }
+  .wf { gap: 3px; padding: 14px 18px 4px; }
+  .wf-track { height: 14px; }
+  .wf-bar { height: 10px; }
+  .lucid-head, .lucid, footer { display: none !important; }
+}
+
 /* ---------- footer ---------- */
 footer { border-top: 1px solid var(--line); padding-block: 44px 64px; }
 footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; align-items: flex-start; }
@@ -427,6 +503,7 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
         <a href="https://smartclearance-demo.web.app" target="_blank" rel="noopener"><span class="dot"></span>Guided demo</a>
         <a href="https://github.com/aibuilder2026/smart-clearance" target="_blank" rel="noopener">Source on GitHub</a>
       </div>
+      <p class="print-only muted" style="font-size:13px">Source: github.com/aibuilder2026/smart-clearance · Live: smartclearance.web.app, munchly-smartclearance.web.app, smartclearance-console.web.app, smartclearance-demo.web.app. Every company, person and figure in Smart-Clearance is fictional; Munchly Foods is the demo client.</p>
     </div>
 
     <div class="stack" role="group" aria-label="The stack, layer by layer">
@@ -925,6 +1002,12 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
         <p class="flow-note">The same flow is in Lucidchart as two sequence diagrams: <a href="https://lucid.app/lucidchart/2965aa52-3190-4d68-8791-9c95c8fd7bbc/view" target="_blank" rel="noopener">the core loop</a> and <a href="https://lucid.app/lucidchart/c2efb94b-7aa2-4cc1-a6cc-af4980ff255f/view" target="_blank" rel="noopener">a batch’s journey</a>.</p>
       </div>
     </div>
+    <div class="print-only">
+      <p class="lede">The pages that follow take each stage in turn: the core loop and signing in first, then a batch's journey from Connect to Report.</p>
+      <ol class="print-stages"><li>The core loop</li><li>Signing in</li><li>Connect · Data agent</li><li>Detect · Watcher</li><li>Verify · Vision</li><li>Value · Valuer</li><li>Decide · Router</li><li>Approve · a person</li><li>Execute · Lister, Outreach, Donation, Negotiator</li><li>Settle · Paperwork</li><li>Report · Impact</li></ol>
+      <div class="print-key"><span><b>Solid grey</b>: a request</span><span><b>Dashed grey</b>: a reply</span><span><b style="color:var(--primary-text)">Dashed green</b>: an event, push or stream</span><span><b style="color:var(--ai)">Teal</b>: a Gemini call</span><span><b style="color:var(--amber-text)">Amber</b>: a person's yes</span></div>
+    </div>
+    <div class="print-flows" id="print-flows" aria-hidden="true"></div>
   </div>
 </section>
 
@@ -1514,8 +1597,33 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
     note.textContent = s.note || '';
     render(s);
   }
+  // the printed page shows every stage: each is rendered into the live diagram, measured, and cloned
+  var printHost = document.getElementById('print-flows');
+  function buildPrint() {
+    printHost.innerHTML = '';
+    STAGES.forEach(function (s) {
+      render(s);
+      var pf = document.createElement('div'); pf.className = 'pf';
+      var h = document.createElement('h3'); h.textContent = s.agent ? s.name + ' \u00b7 ' + s.agent : s.name; pf.appendChild(h);
+      var lp = document.createElement('p'); lp.textContent = s.lead; pf.appendChild(lp);
+      var chips = document.createElement('div'); chips.className = 'gcp-used';
+      s.gcp.forEach(function (n) { var c = document.createElement('span'); c.className = 'chip ' + (/Vertex|Gemini/.test(n) ? 'ai' : 'g'); c.textContent = n; chips.appendChild(c); });
+      pf.appendChild(chips);
+      var fig = document.createElement('figure'); fig.className = 'fig';
+      var copy = svg.cloneNode(true), suf = '-p' + s.id; copy.removeAttribute('id');
+      Array.prototype.forEach.call(copy.querySelectorAll('[id]'), function (n) { n.id = n.id + suf; });
+      Array.prototype.forEach.call(copy.querySelectorAll('[marker-end],[stroke]'), function (n) {
+        ['marker-end', 'stroke'].forEach(function (a) { var v = n.getAttribute(a); if (v && v.indexOf('url(#') === 0) n.setAttribute(a, v.slice(0, -1) + suf + ')'); });
+      });
+      fig.appendChild(copy); pf.appendChild(fig);
+      if (s.note) { var np = document.createElement('p'); np.textContent = s.note; pf.appendChild(np); }
+      printHost.appendChild(pf);
+    });
+    render(STAGES[current]);
+  }
   select(0, false);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { render(STAGES[current]); });
+  buildPrint();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { buildPrint(); });
 })();
 </script>
 </body>

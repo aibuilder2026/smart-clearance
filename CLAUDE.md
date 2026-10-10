@@ -1692,6 +1692,7 @@
     - [Application Flow · the core loop](https://lucid.app/lucidchart/2965aa52-3190-4d68-8791-9c95c8fd7bbc/view) and [Application Flow · a batch's journey](https://lucid.app/lucidchart/c2efb94b-7aa2-4cc1-a6cc-af4980ff255f/view): Lucid sequence diagrams, every stop as a group, with no figures;
     - a first version of the architecture, whose text rendered too small, is renamed "(superseded draft, safe to delete)"; the connector cannot delete;
     - `docs/smart-clearance-architecture.drawio` keeps the same three pages for Lucidchart's draw.io import.
+  - **The PDF:** `docs/smart-clearance-architecture.pdf`, A4 landscape, printed by headless Chrome from the page's print styles: the document, every flow stage on its own page, then the Lucidchart exports as an appendix (the batch's journey cut at its stage borders, with the lanes repeated). Chrome evaluates width media queries against a narrower page than `@page` sets, so the print styles fix each desktop layout.
   - **Checks:** the page was played in a browser at 1440 × 900 and 390 × 844, with no console errors and no sideways scroll on a phone. The viewer's frame ignores bare anchors, so the page's section links scroll in script.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

@@ -29,7 +29,7 @@ The production code starts in `frontend/` (SC-27): design system v3 in Svelte, t
 | `infra/` | Terraform for the Google Cloud project, and the scripts that run it:<ul><li>`bootstrap/`, the state bucket;</li><li>`prod/`, the billing link, Firebase, a Hosting site per app, and CI's keyless deployer with the repository's `prod` environment;</li><li>`scripts/`, bootstrap, the Terraform wrapper, the deploy and the gate.</li></ul>Start with `infra/README.md`. |
 | `.github/` | GitHub Actions (SC-40): `workflows/ci.yml` lints, type-checks, tests and builds the frontend and checks `infra/` on every pull request, then deploys the apps from `main`. `actions/setup-frontend` is the shared Node, pnpm and cache setup. |
 | `design2/`, `design/` | Earlier rounds, superseded by v3. Reference only. |
-| `docs/` | Story pages: `dobara-journey-map.html` (Journey Map v4.1, the source of every figure), the story, the tech stack (the 2 Oct plan), the technical architecture as built (`smart-clearance-architecture.html`, with `smart-clearance-architecture.drawio` for Lucidchart; SC-140) and the walkthrough. |
+| `docs/` | Story pages: `dobara-journey-map.html` (Journey Map v4.1, the source of every figure), the story, the tech stack (the 2 Oct plan), the technical architecture as built (`smart-clearance-architecture.html`, its PDF with the Lucidchart diagrams, and `smart-clearance-architecture.drawio` for Lucidchart; SC-140) and the walkthrough. |
 | `video/` | The narrated walkthrough. `build.py` builds the page and `record.mjs` records it with Playwright; `recorder/` is a local voice-recording page. |
 | `PRODUCT.md`, `DESIGN.md` | Product context, and the design system of record. |
 | `PLAN.md` | The product plan (2 Oct 2026). |
