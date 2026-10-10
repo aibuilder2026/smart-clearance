@@ -68,9 +68,10 @@ export class Wait {
 		}, hold);
 	}
 
-	/** run an action and wait on it; a press while it waits, or while it shows its done word, does nothing */
-	async run(action: () => unknown) {
-		if (this.phase !== 'idle' && this.phase !== 'error') return;
+	/** run an action and wait on it; a press while it waits, or while it shows its done word, does nothing (again lets a
+	 *  control that saves change once more while it says Saved) */
+	async run(action: () => unknown, again = false) {
+		if (this.working || (this.phase === 'done' && !again)) return;
 		this.begin();
 		try {
 			await action();
@@ -88,4 +89,19 @@ export class Wait {
 			this.phase = 'error';
 		} else if (this.phase === 'error') this.phase = 'idle';
 	}
+}
+
+/** A control that saves (a Switch, a Segmented; the kit's useSaving): it shows `next` at once and waits on `run`, its
+ *  SaveNote saying Saving…, then Saved; a refusal puts `before` back and says why. */
+export function save<T>(wait: Wait, o: { next: T; before: T; set: (v: T) => void; run: (v: T) => unknown }) {
+	if (wait.working) return;
+	o.set(o.next);
+	void wait.run(async () => {
+		try {
+			await o.run(o.next);
+		} catch (e) {
+			o.set(o.before);
+			throw e;
+		}
+	}, true);
 }

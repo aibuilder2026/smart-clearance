@@ -284,6 +284,11 @@ button.list-row:hover, a.list-row:hover { background: var(--fill); }
 .alert .al-actions button[aria-busy="true"] { display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: progress; }
 .alert .al-actions button:disabled { opacity: 0.45; cursor: not-allowed; }
 .alert .al-err { color: var(--red-text); }
+/* the line beside a control that saves (SC-152): Saving…, Saved, or the reason it was put back */
+.save-note { display: inline-flex; align-items: center; gap: 6px; min-height: 18px; font-size: 12.5px; line-height: 1.4; color: var(--fg-2); }
+.save-note .ic { flex: none; }
+.save-note .save-ok { display: inline-grid; color: var(--primary-text); }
+.save-note.err { color: var(--red-text); }
 .menu { position: absolute; z-index: calc(var(--z-sheet) + 3); min-width: 220px; padding: 6px; border-radius: 14px; background: var(--glass-strong); -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%); box-shadow: var(--shadow-3), 0 0 0 var(--hair) var(--line); }
 .menu .mi { display: flex; align-items: center; gap: 10px; width: 100%; height: 38px; padding: 0 10px; border-radius: 9px; font-size: 14.5px; text-align: left; color: var(--fg); }
 .menu .mi:hover, .menu .mi:focus-visible { background: var(--fill-2); outline: none; }

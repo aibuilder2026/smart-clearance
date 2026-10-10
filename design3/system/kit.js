@@ -111,7 +111,7 @@
   }
   const WAIT = { show: 100, least: 400, slow: 3e3, hold: 1200 };
   const SHAKE = { x: [0, -8, 8, -5, 5, -2, 0] };
-  function useWait({ action, loading, error, done }) {
+  function useWait({ action, loading, error, done, again }) {
     const [phase, setPhase] = useState(loading ? "wait" : error ? "error" : "idle");
     const [err, setErr] = useState(error || null);
     const t = useRef({ timers: [], shown: 0 });
@@ -162,7 +162,7 @@
       } else setPhase((p) => p === "error" ? "idle" : p);
     }, [error]);
     const go = async (e) => {
-      if (phase !== "idle" && phase !== "error") return;
+      if (phase !== "idle" && phase !== "error" && !(again && phase === "done")) return;
       begin();
       try {
         await action(e);
@@ -256,6 +256,24 @@
       p === "slow" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Icon, { name: "cloud", size: 14 }), /* @__PURE__ */ React.createElement("span", null, slow || "Still working. The platform can take a few seconds to wake.")) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Icon, { name: "circle-alert", size: 14 }), /* @__PURE__ */ React.createElement("span", null, err), retry && /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-link btn-sm", onClick: retry }, "Try again"))
     )));
   });
+  function useSaving(run) {
+    const job = useRef(null);
+    const { phase, err, go } = useWait({ action: () => job.current(), done: true, again: true });
+    const change = (next, before, set) => {
+      if (phase === "wait" || phase === "busy" || phase === "slow") return;
+      set(next);
+      job.current = () => Promise.resolve(run(next)).catch((e) => {
+        set(before);
+        throw e;
+      });
+      go();
+    };
+    return { phase, error: err, change };
+  }
+  function SaveNote({ phase, error }) {
+    const working = phase === "busy" || phase === "slow";
+    return /* @__PURE__ */ React.createElement("span", { className: cx("save-note", phase === "error" && "err"), role: phase === "error" ? "alert" : "status" }, working ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Arc, { size: 14 }), phase === "slow" ? "Still saving. The platform can take a few seconds to wake." : "Saving…") : phase === "done" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", { className: "save-ok" }, /* @__PURE__ */ React.createElement(Icon, { name: "check", size: 14, stroke: 2.4 })), "Saved") : phase === "error" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Icon, { name: "circle-alert", size: 14 }), error, " Put back as it was.") : null);
+  }
   function IconButton({ icon, label, round, badge, className, size = 20, ...rest }) {
     return /* @__PURE__ */ React.createElement("button", { type: "button", className: cx("iconbtn", round && "round", className), "aria-label": label, title: label, ...rest }, /* @__PURE__ */ React.createElement(Icon, { name: icon, size: round ? 16 : size }), badge ? /* @__PURE__ */ React.createElement("span", { className: "badge-count" }, badge) : null);
   }
@@ -753,6 +771,8 @@
     Alert,
     Menu,
     NoticeHost,
+    SaveNote,
+    useSaving,
     useNotice,
     Mark,
     Wordmark,

@@ -18,6 +18,8 @@ export const COVERAGE: Record<string, Coverage> = {
 	// controls and containers the landing page uses
 	Spinner: built,
 	Button: built,
+	SaveNote: built,
+	useSaving: { status: 'api', as: 'save() with a Wait (wait.svelte.ts)' },
 	IconButton: built,
 	Badge: built,
 	Card: built,

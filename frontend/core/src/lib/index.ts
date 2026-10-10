@@ -21,13 +21,14 @@ export { CH_ORDER, chColor } from './channels';
 export { ICONS, type IconName, type IconNode } from './icons/registry';
 export { COVERAGE, type Coverage } from './coverage';
 export { Notices, useNotice, provideNotice, type Toast, type Banner } from './notice.svelte';
-export { Wait, WAIT, refusal, type WaitPhase } from './wait.svelte';
+export { Wait, WAIT, refusal, save, type WaitPhase } from './wait.svelte';
 
 export { default as Icon } from './icons/Icon.svelte';
 export { default as ThemeProvider } from './components/ThemeProvider.svelte';
 export { default as AppRoot } from './components/AppRoot.svelte';
 export { default as Spinner } from './components/Spinner.svelte';
 export { default as Button } from './components/Button.svelte';
+export { default as SaveNote } from './components/SaveNote.svelte';
 export { default as IconButton } from './components/IconButton.svelte';
 export { default as Badge } from './components/Badge.svelte';
 export { default as Card } from './components/Card.svelte';

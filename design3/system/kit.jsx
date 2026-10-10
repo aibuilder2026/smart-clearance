@@ -101,7 +101,7 @@
   // `slow` words the 3 s line, or false when the wait is not the network. A button given none of these is the plain one
   const WAIT = { show: 100, least: 400, slow: 3000, hold: 1200 };
   const SHAKE = { x: [0, -8, 8, -5, 5, -2, 0] };
-  function useWait({ action, loading, error, done }) {
+  function useWait({ action, loading, error, done, again }) {
     const [phase, setPhase] = useState(loading ? "wait" : error ? "error" : "idle");
     const [err, setErr] = useState(error || null);
     const t = useRef({ timers: [], shown: 0 });
@@ -127,7 +127,7 @@
     useEffect(() => { if (action || !!loading === was.current) return; was.current = !!loading; loading ? begin() : end(error || null); }, [loading]);
     useEffect(() => { if (action || loading) return; if (error) { setErr(error); setPhase("error"); } else setPhase(p => (p === "error" ? "idle" : p)); }, [error]);
     const go = async e => {
-      if (phase !== "idle" && phase !== "error") return;
+      if (phase !== "idle" && phase !== "error" && !(again && phase === "done")) return;
       begin();
       try { await action(e); end(null); } catch (x) { end((x && x.message) || "That didn't go through. Try again."); }
     };
@@ -184,6 +184,28 @@
       </motion.span>}</AnimatePresence>
     </span>;
   });
+  // A control that saves (a Switch, a Segmented) takes its new value at once (SC-152); its line says Saving…, then
+  // Saved, or puts the value back with the reason. useSaving(run) gives the line's state and a change that saves:
+  // change(next, before, set) shows next at once and puts before back on a refusal
+  function useSaving(run) {
+    const job = useRef(null);
+    const { phase, err, go } = useWait({ action: () => job.current(), done: true, again: true });
+    const change = (next, before, set) => {
+      if (phase === "wait" || phase === "busy" || phase === "slow") return;
+      set(next);
+      job.current = () => Promise.resolve(run(next)).catch(e => { set(before); throw e; });
+      go();
+    };
+    return { phase, error: err, change };
+  }
+  function SaveNote({ phase, error }) {
+    const working = phase === "busy" || phase === "slow";
+    return <span className={cx("save-note", phase === "error" && "err")} role={phase === "error" ? "alert" : "status"}>
+      {working ? <><Arc size={14} />{phase === "slow" ? "Still saving. The platform can take a few seconds to wake." : "Saving…"}</>
+        : phase === "done" ? <><span className="save-ok"><Icon name="check" size={14} stroke={2.4} /></span>Saved</>
+          : phase === "error" ? <><Icon name="circle-alert" size={14} />{error} Put back as it was.</> : null}
+    </span>;
+  }
   function IconButton({ icon, label, round, badge, className, size = 20, ...rest }) {
     return <button type="button" className={cx("iconbtn", round && "round", className)} aria-label={label} title={label} {...rest}><Icon name={icon} size={round ? 16 : size} />{badge ? <span className="badge-count">{badge}</span> : null}</button>;
   }
@@ -572,6 +594,6 @@
   window.SC3 = Object.assign(window.SC3 || {}, {
     cx, ThemeProvider, useTheme, AppRoot, useApp, Portal, Icon, Spinner, Button, IconButton, Badge, Chip, Kbd, Card, List, ListRow,
     Segmented, Switch, Field, Input, SearchField, Select, Textarea, Stepper, OTP, Tabs, Check, DataTable, Skeleton, Progress, Empty, Avatar, Product,
-    Sheet, Alert, Menu, NoticeHost, useNotice, Mark, Wordmark, WorkspaceMark, PoweredBy, Splash, Shell, Page, ModeMenuButton,
+    Sheet, Alert, Menu, NoticeHost, SaveNote, useSaving, useNotice, Mark, Wordmark, WorkspaceMark, PoweredBy, Splash, Shell, Page, ModeMenuButton,
   });
 })();
