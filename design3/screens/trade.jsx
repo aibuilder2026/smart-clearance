@@ -14,6 +14,9 @@
   const shopById = id => D.KIRANAS.find(k => k.id === id) || WK().find(k => k.id === id);
   // a partner's own history (SC-130): ledger.js's partners, and the pieces their pages share
   const P = () => window.SC3_LEDGER.partners;
+  // what a cleared batch credited him: the price support, and on expiry day the expiry credit note (under SC-139's
+  // route B with the GST he reverses and the agency's charges)
+  const creditOf = c => c.support.total + ((c.expiry && (c.expiry.at === "godown" && c.expiry.amount != null ? c.expiry.amount : c.expiry.credit)) || 0);
   const asDate = iso => new Date((iso.length > 10 ? iso : iso + "T00:00") + ":00+05:30");
   const day = iso => asDate(iso.slice(0, 10)).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
   const when = iso => (iso.length > 10 ? `${day(iso)}, ${iso.slice(11, 16)}` : day(iso));
@@ -57,7 +60,7 @@
     </Sheet>;
   }
   const PAPER_ICON = { invoice: "receipt", eway: "truck", support: "hand-coins", expiry: "warehouse", receipt: "heart-handshake", destruction: "trash-2" };
-  const issuedBy = (c, d) => (d.id === "invoice" || d.id === "eway" ? "You issue it" : d.id === "receipt" ? `${c.partner ? c.partner.name : "The food bank"} issued it to ${D.WORKSPACE.short} · a copy for you` : d.id === "destruction" ? `${D.WORKSPACE.short} destroyed the packs · a copy for you` : `${D.WORKSPACE.short} issued it to you`);
+  const issuedBy = (c, d) => (d.id === "invoice" || d.id === "eway" ? "You issue it" : d.id === "receipt" ? `${c.partner ? c.partner.name : "The food bank"} issued it to ${D.WORKSPACE.short} · a copy for you` : d.id === "destruction" ? (d.at === "godown" ? `${d.agency || "The agency"} destroyed them for you` : `${D.WORKSPACE.short} destroyed the packs · a copy for you`) : `${D.WORKSPACE.short} issued it to you`);
   // one paper as a row: its icon, type, number, who issued it, its amount
   function PaperRow({ c, d, onOpen }) {
     const amount = d.status === "not required" || d.id === "receipt" ? null : d.id === "invoice" ? d.total || d.amount : d.amount;
@@ -460,7 +463,7 @@
     const [shots, setShots] = useState({}); const [agency, setAgency] = useState(agencies[0] ? agencies[0].id : ""); const [cert, setCert] = useState(""); const [err, setErr] = useState(null); const [sending, setSending] = useState(false);
     const cam = useRef({}), pick = useRef({});
     const C = D.CLIENT.short, op = D.PEOPLE.priya;
-    if (!n) return <Screen me={me} title="Destroy expired packs" sub="Requests from the client" back="Today"><Card style={{ maxWidth: 560, margin: "0 auto", width: "100%" }}><Empty img="godown" title="No destruction asked for now" body={`When packs of ${possessive(C)} expire at your godown with nothing left to sell them, ${C} asks here for their destruction's evidence.`} /></Card></Screen>;
+    if (!n) return <Screen me={me} title="Destroy expired packs" sub="Requests from the client" back="Today"><Card style={{ maxWidth: 560, margin: "0 auto", width: "100%" }}><Empty img="godown" title="No destruction asked for now" body={`When packs expire at your godown and no channel took them, ${C} asks here for the evidence of their destruction.`} /></Card></Screen>;
     const d = n.destruction, sku = D.SKUS[n.sku], due = d.status === "requested" || d.status === "asked";
     const a = agencies.find(x => x.id === agency);
     const his = Math.round(d.units * sku.dp * sku.gst * 100) / 100;
@@ -562,7 +565,7 @@
     const dist = distOf(me); const ref = route && route.params && route.params.ref;
     if (ref) return <DistBatch me={me} dist={dist} id={ref} />;
     const { journey, watching, past } = P().distBatches(dist.id, s);
-    const credit = past.reduce((t, c) => t + c.support.total + ((c.expiry && c.expiry.credit) || 0), 0);
+    const credit = past.reduce((t, c) => t + creditOf(c), 0);
     const notes = past.reduce((t, c) => t + c.docs.filter(d => (d.id === "support" || d.id === "expiry") && d.status !== "not required").length, 0);
     const months = []; past.forEach(c => { const m = c.cleared.slice(0, 7); let g = months.find(x => x.m === m); if (!g) months.push(g = { m, label: monthOf(c.cleared), items: [] }); g.items.push(c); });
     return <Screen me={me} title="Batches" sub={`${dist.name} · every batch of ${D.WORKSPACE.short}'s the Watcher flagged at your godown`}>
@@ -575,7 +578,7 @@
           <div className="lg-fig"><Money value={credit} size="l" /><span className="lg-what">from {D.WORKSPACE.short} since July</span></div>
           <p className="lg-working">{past.length} batches cleared at your godown. On each, the price support (and on expiry day the expiry credit) made up the gap to the dealer price you paid, so you ended whole: <b>{notes} credit notes</b>, each in its batch's papers.</p>
         </Card> : null}
-        {months.map(g => <List key={g.m} head={`Cleared · ${g.label}`}>{g.items.map(c => { const cr = c.support.total + ((c.expiry && c.expiry.credit) || 0); const p = P().distPapers(c);
+        {months.map(g => <List key={g.m} head={`Cleared · ${g.label}`}>{g.items.map(c => { const cr = creditOf(c); const p = P().distPapers(c);
           return <ListRow key={c.ref} chevron onClick={() => go("batches", { ref: c.ref })} leading={<Product name={c.sku.img} size={40} />}
             title={<span className="row tight" style={{ gap: 8, flexWrap: "wrap" }}><span>{c.sku.name}</span>{!phone && <S.OutcomeBadge o={c.outcome} size="sm" />}</span>}
             sub={`${c.ref} · flagged ${day(c.flagged)} · cleared ${day(c.cleared)}`}

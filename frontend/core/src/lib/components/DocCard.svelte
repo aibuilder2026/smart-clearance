@@ -29,7 +29,7 @@
 	<div class="row between">
 		<span class={ready ? 'icontile' : 'icontile soft'}><Icon name={icon} size={17} stroke={2} /></span><Badge
 			size="sm"
-			tone={doc.status === 'generated' ? 'green' : undefined}>{doc.status}</Badge
+			tone={doc.status === 'generated' ? 'green' : doc.status === 'awaiting' ? 'amber' : undefined}>{doc.status}</Badge
 		>
 	</div>
 	<div>

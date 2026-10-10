@@ -1,7 +1,12 @@
-// Design system v3's imagery, referenced where design3 keeps it (never copied): the 3D renders, the portraits and the
-// app icon. Vite hashes each file into the build; a name that isn't here gets no URL, and the components fall back.
+// Design system v3's imagery, referenced where design3 keeps it (never copied): the 3D renders, the portraits, the
+// destruction's evidence photos and the app icon. Vite hashes each file into the build; a name that isn't here gets no URL, and the components fall back.
 const files = import.meta.glob(
-	['../../../../design3/system/img/*.{webp,svg}', '../../../../design3/system/img/people/*.webp'],
+	[
+		'../../../../design3/system/img/*.{webp,svg}',
+		'../../../../design3/system/img/people/*.webp',
+		// the destruction's evidence the stub and the history show (SC-139): before at the godown, after at the landfill
+		'../../../../design3/system/img/evidence/*.webp'
+	],
 	{
 		query: '?url',
 		import: 'default',

@@ -85,7 +85,20 @@
 						'neg'
 					)}{/if}
 				{@render line('Recovered', fmt.inr(F.net), undefined, undefined, true)}
-				{#if F.godown && c.expiry}<div class="lg-note">
+				{#if F.godown && c.expiry && c.expiry.policy === 'godown'}{@const xd = c.destruction}
+					<div class="lg-note">
+						<!-- destroyed at his godown (SC-139), on the operator's yes -->
+						<Icon name="recycle" size={16} /><span
+							>{fmt.num(F.godown)} packs no channel took expired at {c.dist.godown} and were destroyed there through {xd?.agency
+								? xd.agency.name
+								: 'an authorised agency'}, on {xd?.approvedBy
+								? possessive(ws.data.people[xd.approvedBy]?.short ?? xd.approvedBy)
+								: "the operator's"} yes. {W.short} credited {c.dist.short}
+							{fmt.inr2(F.credit)}: the dealer price, the {fmt.inr2(c.expiry.gst ?? 0)} of GST he reverses and {fmt.inr2(
+								c.expiry.charges ?? 0
+							)} of the agency's charges. {possessive(W.short)} own input credit is kept.</span
+						>
+					</div>{:else if F.godown && c.expiry}<div class="lg-note">
 						<Icon name="warehouse" size={16} /><span
 							>{fmt.num(F.godown)} packs no channel took expired at {c.dist.godown}. They came back to {W.short} for full
 							credit ({fmt.inr(F.credit)}) and {W.short} destroyed them: disposal, EPR and {fmt.inr2(c.expiry.itc)} of credit

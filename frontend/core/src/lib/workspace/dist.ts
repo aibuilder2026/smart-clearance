@@ -8,7 +8,18 @@
 // ledger.js.
 import { fmt } from '../format';
 import { scheme as schemeOf, stepAt, vanDay } from './partners';
-import type { CaseData, Distributor, Hero, PartnerCase, Phase, Shop, Sku, State } from './types';
+import type {
+	CaseData,
+	Destruction,
+	DestructionStatus,
+	Distributor,
+	Hero,
+	PartnerCase,
+	Phase,
+	Shop,
+	Sku,
+	State
+} from './types';
 
 /** what the texts name: the products, the distributors, the buyer, the scheme, the client */
 export type DistWorld = {
@@ -51,6 +62,8 @@ export type DistNow = {
 	} | null;
 	/** the van round that takes the scheme's orders, where the journey names it */
 	round: { day: string; date: string; leaves: string } | null;
+	/** the packs left at his godown on expiry day, destroyed there against evidence the client approves (SC-139) */
+	destruction: { status: DestructionStatus; units: number; reason: string | null } | null;
 	/** where it was read from: the batch in focus's state, the stub's second batch's, or the live workspace's partner
 	 *  facts (a batch the app puts in focus before its screens act on it) */
 	from: 'focus' | 'second' | 'facts';
@@ -58,11 +71,11 @@ export type DistNow = {
 export type DistStateLine = { id: string; plan: string; state: string; done: boolean; live: boolean };
 export type DistTodo = {
 	id: string;
-	icon: 'camera' | 'users' | 'truck' | 'receipt' | 'route';
+	icon: 'camera' | 'users' | 'truck' | 'receipt' | 'route' | 'recycle';
 	title: string;
 	sub: string;
 	cta: string;
-	route?: 'photo' | 'van';
+	route?: 'photo' | 'van' | 'destroy';
 	act?: 'issueInvoice';
 };
 export type DistJourney = {
@@ -150,6 +163,10 @@ const donationOf = (pc: PartnerCase): DistNow['donation'] =>
 			}
 		: null;
 
+/** where the destruction of the packs left at his godown stands, as his Today reads it (SC-139) */
+const destructionOf = (d: Destruction | null | undefined): DistNow['destruction'] =>
+	d ? { status: d.status, units: d.units, reason: d.reason ?? null } : null;
+
 /** the batch in focus, from the journey's state; its donation's status where the state names it as its own. A partner
  *  is not sent the client's plan (the live workspace), so its lines, and the papers, come from his facts when the case
  *  has none */
@@ -210,6 +227,7 @@ export function nowOfFocus(
 				}
 			: given,
 		round: plain(c.van),
+		destruction: destructionOf(h.destruction ?? c.destruction ?? facts?.destruction),
 		from: 'focus'
 	};
 }
@@ -252,6 +270,7 @@ export function nowOfSecond(
 			? { status: m.donation, partner: dn.partner.name, units: dn.units, date: dn.date ?? null, time: dn.time ?? null }
 			: null,
 		round: null,
+		destruction: null,
 		from: 'second'
 	};
 }
@@ -289,6 +308,7 @@ export function nowOfFacts(pc: PartnerCase, phase: Phase | string | null | undef
 		staff: st ? { status: has('staff') ? 'recorded' : 'open', units: st.units, price: st.price, sold } : null,
 		donation: donationOf(pc),
 		round: null,
+		destruction: destructionOf(pc.destruction),
 		from: 'facts'
 	};
 }
@@ -455,6 +475,20 @@ export function journeyOf(n: DistNow, w: DistWorld): DistJourney {
 			cta: 'Issue from Tally',
 			act: 'issueInvoice'
 		});
+	// destroyed at his godown on expiry day (SC-139): the evidence first, and again if the client asked for it again
+	const xd = n.destruction;
+	if (xd && (xd.status === 'requested' || xd.status === 'asked'))
+		todo.unshift({
+			id: 'destroy',
+			icon: 'recycle',
+			title: `Destroy ${num(xd.units)} expired ${xd.units === 1 ? 'pack' : 'packs'} at your godown`,
+			sub:
+				xd.status === 'asked' && xd.reason
+					? `${w.short} asked again: ${xd.reason}`
+					: 'Through an authorised agency · two photos and its certificate',
+			cta: 'Send the evidence',
+			route: 'destroy'
+		});
 	if (kl && n.papers && o && o.shops > 0 && !n.van)
 		todo.push({
 			id: 'van',
@@ -466,23 +500,42 @@ export function journeyOf(n: DistNow, w: DistWorld): DistJourney {
 		});
 	const waiting = todo.length
 		? null
-		: n.photo === 'reading'
-			? 'Vision is reading your label photo'
-			: n.phase === 'at-risk' && n.photo === 'none'
-				? 'The Watcher flagged it: Vision checks the batch first, and may ask you for one label photo'
-				: !n.approved
-					? `${w.short} is deciding the plan: nothing moves in your name until it says yes`
-					: n.phase === 'cleared'
-						? 'Settled: you ended whole'
-						: o && !over && n.approved
-							? `The scheme is open: ${o.shops} of ${o.offered} shops have ordered`
-							: n.listing && !n.award
-								? 'The lot waits for a buyer on ExpireSoon'
-								: n.donation && n.donation.status !== 'collected' && n.donation.status !== 'declined'
-									? `${n.donation.partner} collects from your godown`
-									: n.approved && !n.papers
-										? 'The Paperwork agent drafts your papers next'
-										: 'The agents are on it';
+		: xd && xd.status === 'reading'
+			? 'Vision is checking your destruction photos'
+			: xd && xd.status === 'checked'
+				? `${w.short} is reviewing your destruction evidence before it credits you`
+				: n.photo === 'reading'
+					? 'Vision is reading your label photo'
+					: n.phase === 'at-risk' && n.photo === 'none'
+						? 'The Watcher flagged it: Vision checks the batch first, and may ask you for one label photo'
+						: !n.approved
+							? `${w.short} is deciding the plan: nothing moves in your name until it says yes`
+							: n.phase === 'cleared'
+								? 'Settled: you ended whole'
+								: o && !over && n.approved
+									? `The scheme is open: ${o.shops} of ${o.offered} shops have ordered`
+									: n.listing && !n.award
+										? 'The lot waits for a buyer on ExpireSoon'
+										: n.donation && n.donation.status !== 'collected' && n.donation.status !== 'declined'
+											? `${n.donation.partner} collects from your godown`
+											: n.approved && !n.papers
+												? 'The Paperwork agent drafts your papers next'
+												: 'The agents are on it';
+	if (xd)
+		lines.push({
+			id: 'destroy',
+			plan: `${num(xd.units)} ${xd.units === 1 ? 'pack' : 'packs'} expired at your godown, destroyed there`,
+			state:
+				{
+					requested: "send the evidence: two photos and the agency's certificate",
+					asked: 'asked again: send the evidence',
+					reading: 'Vision is checking the photos',
+					checked: `waiting for ${w.short}'s yes`,
+					approved: `approved by ${w.short} · the credit note follows`
+				}[xd.status] ?? xd.status,
+			done: xd.status === 'approved',
+			live: xd.status === 'reading' || xd.status === 'checked'
+		});
 	return {
 		ref: n.ref,
 		sku,

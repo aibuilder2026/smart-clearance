@@ -37,6 +37,7 @@
 	import RouteRoom from './screens/brand/RouteRoom.svelte';
 	import Setup from './screens/brand/Setup.svelte';
 	import CameraScreen from './screens/trade/CameraScreen.svelte';
+	import DestroyScreen from './screens/trade/DestroyScreen.svelte';
 	import DistBatches from './screens/trade/DistBatches.svelte';
 	import DistHome from './screens/trade/DistHome.svelte';
 	import DistOrders from './screens/trade/DistOrders.svelte';
@@ -303,6 +304,7 @@
 				{:else if safe === 'home'}{#if me.role === 'retailer'}<RetailHome {me} />{:else}<DistHome {me} />{/if}
 				{:else if safe === 'photo'}<CameraScreen {me} {realCamera} />
 				{:else if safe === 'van'}<VanRoute {me} />
+				{:else if safe === 'destroy'}<DestroyScreen {me} />
 				{:else if safe === 'orders'}{#if me.role === 'retailer'}<RetailOrders {me} />{:else}<DistOrders {me} />{/if}
 				{:else if safe === 'offer'}<OfferDetail {me} />
 				{:else if safe === 'market'}<Market {me} />

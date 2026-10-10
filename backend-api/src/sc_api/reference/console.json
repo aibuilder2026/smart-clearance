@@ -267,16 +267,25 @@
 				"label": "Expiry policy",
 				"options": [
 					{
+						"id": "godown",
+						"label": "Destroyed at the distributor's godown",
+						"note": "A financial credit note: the dealer price, the input GST he reverses and the agency's charges"
+					},
+					{
 						"id": "full-credit",
-						"label": "Full credit at expiry"
+						"label": "Taken back by the client",
+						"note": "A GST credit note under s.34 against the client's invoice. Coming: needs the client's sales invoices",
+						"soon": true
 					},
 					{
 						"id": "price-support",
-						"label": "Price support only"
+						"label": "Price support only",
+						"note": "He keeps and destroys them; the client pays the gap to the dealer price"
 					},
 					{
 						"id": "none",
-						"label": "No returns"
+						"label": "No returns",
+						"note": "His loss; he destroys them under his own records"
 					}
 				]
 			}
@@ -373,7 +382,34 @@
 			"staffCap": 50,
 			"tokenPct": 15,
 			"scheme": "2 free with every 10",
-			"offerWindowHours": 48
+			"offerWindowHours": 48,
+			"destruction": {
+				"visionCheck": true,
+				"reviewer": "Supply Chain",
+				"remindDays": 2,
+				"grossUp": true,
+				"chargesPerUnit": 1.5,
+				"agencies": [
+					{
+						"id": "oce",
+						"name": "Orange City Enviro Services",
+						"city": "Nagpur",
+						"auth": "MPCB/SWM/NGP/0412"
+					},
+					{
+						"id": "vwc",
+						"name": "Vidarbha Waste Care",
+						"city": "Nagpur",
+						"auth": "MPCB/SWM/NGP/0538"
+					},
+					{
+						"id": "dgw",
+						"name": "Deccan Green Waste Management",
+						"city": "Hyderabad",
+						"auth": "TSPCB/SWM/HYD/0287"
+					}
+				]
+			}
 		}
 	},
 	"state": {
@@ -398,7 +434,7 @@
 				"profile": {
 					"route": "distributors",
 					"owner": "distributor",
-					"expiry": "full-credit"
+					"expiry": "godown"
 				},
 				"gates": {
 					"blinkitDays": 90,
@@ -861,6 +897,33 @@
 					]
 				},
 				"approver": "priya",
+				"destruction": {
+					"visionCheck": true,
+					"reviewer": "Supply Chain",
+					"remindDays": 2,
+					"grossUp": true,
+					"chargesPerUnit": 1.5,
+					"agencies": [
+						{
+							"id": "oce",
+							"name": "Orange City Enviro Services",
+							"city": "Nagpur",
+							"auth": "MPCB/SWM/NGP/0412"
+						},
+						{
+							"id": "vwc",
+							"name": "Vidarbha Waste Care",
+							"city": "Nagpur",
+							"auth": "MPCB/SWM/NGP/0538"
+						},
+						{
+							"id": "dgw",
+							"name": "Deccan Green Waste Management",
+							"city": "Hyderabad",
+							"auth": "TSPCB/SWM/HYD/0287"
+						}
+					]
+				},
 				"agents": {
 					"data": {
 						"on": true,
@@ -1198,7 +1261,7 @@
 				"at": "30 Sep, 17:05",
 				"who": "Neha Kulkarni",
 				"client": "munchly",
-				"text": "Set up Munchly Foods from its supply-chain profile: through 4 distributors, the distributor owns the stock, full credit at expiry"
+				"text": "Set up Munchly Foods from its supply-chain profile: through 4 distributors, the distributor owns the stock, destroyed at the distributor's godown"
 			},
 			{
 				"id": "a2",

@@ -268,7 +268,8 @@ export type Doc = {
 	type: string;
 	owner: string;
 	no: string;
-	status: 'generated' | 'drafted' | 'not required';
+	/** awaiting: another's paper still to come (the agency's destruction certificate, SC-139) */
+	status: 'generated' | 'drafted' | 'awaiting' | 'not required';
 	amount: number;
 	note?: string;
 	taxable?: number;
@@ -282,7 +283,7 @@ export type Doc = {
 	/** when the document is dated (the invoice) */
 	date?: string;
 	/** the expiry paper's settlement (SC-94) */
-	policy?: 'full-credit' | 'price-support' | 'none';
+	policy?: ExpiryPolicy;
 	destroyedBy?: 'client' | 'distributor' | null;
 	disposal?: number;
 	epr?: number;
@@ -290,6 +291,8 @@ export type Doc = {
 	/** the GST memo's credit reversed, and the packs given away or destroyed (SC-122) */
 	reversed?: number;
 	away?: number;
+	/** the GST memo: packs destroyed at the distributor's godown, his stock, so his reversal (SC-139) */
+	atGodown?: number;
 	/** the food bank's receipt (SC-110, money.js receipt) */
 	paper?: string;
 	stamp?: string;
@@ -307,19 +310,94 @@ export type Doc = {
 	spot?: string | null;
 	/** whether its PDF can be downloaded (the live source) */
 	pdf?: boolean;
+	/** destroyed at his godown (SC-139): the expiry note's dealer price, the GST he reverses (grossed up) and the
+	 *  agency's charges, against the agency's certificate; the certificate's agency, authorisation, method, site, the
+	 *  packs' batch, the evidence and who approved it */
+	credit?: number | null;
+	gst?: number;
+	charges?: number;
+	reversal?: number | null;
+	dp?: number;
+	certificate?: string;
+	agency?: string;
+	auth?: string;
+	method?: string;
+	site?: string;
+	for?: { name: string; address?: string; gstin?: string };
+	batch?: string;
+	bestBefore?: string;
+	hsn?: string;
+	destroyedAt?: string;
+	packKg?: number;
+	evidence?: { photos: number; checks: number; of: number };
+	approvedBy?: string;
+	approvedAt?: string;
 };
 
+/** what becomes of the packs left at a distributor's godown on expiry day (SC-94): destroyed there through an
+ *  authorised agency against evidence the client approves (SC-139), taken back for full credit, the gap paid, or none */
+export type ExpiryPolicy = 'godown' | 'full-credit' | 'price-support' | 'none';
 /** expiry day's settlement of the packs left at the godown (SC-94, money.js expirySettlement) */
 export type ExpirySettlement = {
-	policy: 'full-credit' | 'price-support' | 'none';
+	policy: ExpiryPolicy;
 	units: number;
 	credit: number | null;
+	/** the credit note's amount: the credit, and under route B the GST gross-up and the agency's charges */
+	amount?: number | null;
+	gst?: number;
+	charges?: number;
+	reversal?: number | null;
+	at?: 'godown' | null;
 	destroyedBy: 'client' | 'distributor' | null;
 	kg: number;
 	disposal: number;
 	epr: number;
 	itc: number;
 	total: number;
+};
+
+/** an authorised agency a distributor destroys expired packs through (SC-139): its authorisation from the state's
+ *  pollution control board, its certificates' series, and the landfill it takes them to */
+export type DestructionAgency = {
+	id: string;
+	name: string;
+	city: string;
+	auth: string;
+	series: { prefix: string; next: number; width: number };
+	site: string;
+};
+/** how the client has packs destroyed at a distributor's godown (SC-139, the console's Channels and rules): the evidence
+ *  asked for, Vision's check, who approves, the reminder, the GST gross-up and the agency's charge a pack */
+export type DestructionSettings = {
+	evidence: [string, string][];
+	visionCheck: boolean;
+	reviewer: string;
+	remindDays: number;
+	grossUp: boolean;
+	chargesPerUnit: number;
+	method: string;
+	agencies: DestructionAgency[];
+};
+/** packs destroyed at a distributor's godown on expiry day (SC-139, option B): he is asked for the evidence (two
+ *  photos and the agency's certificate number), Vision checks it, and the client's operator gives the second yes, on
+ *  which the expiry credit note and the agency's certificate are issued and the batch closes */
+export type DestructionStatus = 'requested' | 'asked' | 'reading' | 'checked' | 'approved';
+export type DestructionPhoto = { name?: string; at: string; url?: string | null };
+export type Destruction = {
+	status: DestructionStatus;
+	units: number;
+	/** why the operator asked again */
+	reason?: string | null;
+	agency?: { id: string; name: string; auth: string; site: string } | null;
+	certificate?: string | null;
+	photos?: { before: DestructionPhoto; after: DestructionPhoto } | null;
+	askedAt?: string | null;
+	sentAt?: string | null;
+	checkedAt?: string | null;
+	checks?: { id: string; label: string; ok: boolean }[];
+	approvedAt?: string | null;
+	approvedBy?: string | null;
+	method?: string;
 };
 
 export type Rules = {
@@ -413,6 +491,10 @@ export type Hero = {
 	/** the plan's staff sale at the distributor's godown (SC-86), open once approved, then recorded with what sold; the
 	 *  story's stub opens none */
 	staff?: StaffSale | null;
+	/** the packs left at his godown on expiry day and their settlement, destroyed there against evidence (SC-139); the
+	 *  story clears every pack, so the stub has these only when they are put in its store */
+	expiry?: ExpirySettlement | null;
+	destruction?: Destruction | null;
 };
 
 export type StaffSale = {
@@ -534,6 +616,9 @@ export type WorkspaceSeed = {
 		approval: string;
 		permissions: Record<string, string>;
 		acts: string[];
+		/** the client's expiry policy, and how packs left at a godown are destroyed there (SC-139) */
+		expiry: ExpiryPolicy;
+		destruction: DestructionSettings;
 	};
 	risk: Assess;
 	plan: Plan;
@@ -731,6 +816,8 @@ export type CaseData = {
 	realised?: { lines: { id: string; units: number }[]; godown: number } | null;
 	/** expiry day's settlement, once the report has run (SC-94); the live source only */
 	expiry?: ExpirySettlement | null;
+	/** the packs destroyed at his godown, while the evidence is asked for, checked and approved (SC-139) */
+	destruction?: Destruction | null;
 	/** the batch the same agents donate: how many packs go to the food bank, which partner takes them, and when */
 	donation: { batch: Batch; sku: Sku; dist: Distributor; plan: Plan; units: number; partner: Partner } & Omit<
 		Journey['donation'],
@@ -787,7 +874,17 @@ export type PartnerCase = {
 	donation: { units: number; spot: string } | null;
 	receipt: Doc | null;
 	support: { total: number; van: number; fee: number } | null;
-	expiry: { units: number; credit: number } | null;
+	expiry: {
+		units: number;
+		credit: number;
+		/** destroyed at his godown (SC-139): the note's amount, with the GST he reverses and the agency's charges */
+		amount?: number | null;
+		at?: 'godown' | null;
+		reversal?: number | null;
+		charges?: number;
+	} | null;
+	/** destroyed at his godown (SC-139): the evidence he sent and the client's yes */
+	destruction?: Destruction | null;
 	docs: Doc[];
 };
 /** what a partner reads of its own history with the client: the batches it took part in, the buyer they name, and a
@@ -803,6 +900,8 @@ export type PtWhole = {
 	gain: number;
 	dp: number;
 	units: number;
+	/** destroyed at his godown (SC-139): the input GST he reverses on them and the agency's charges */
+	extra?: { reversal: number; charges: number } | null;
 };
 /** an offer a kirana was sent, and what came of it */
 export type PtOffer = {
@@ -989,6 +1088,11 @@ export type ActionArgs = {
 	issueInvoice: undefined;
 	review: undefined;
 	vanRound: undefined;
+	/** packs destroyed at his godown (SC-139): the agency and its certificate, and on the live workspace the two photos */
+	sendDestruction: { agency: DestructionAgency; certificate: string; before?: Blob; after?: Blob };
+	approveDestruction: undefined;
+	/** what the operator asks him to send again */
+	askDestructionAgain: string;
 	/** who joins */
 	join: string;
 };

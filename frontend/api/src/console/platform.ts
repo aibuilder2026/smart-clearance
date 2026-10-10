@@ -471,7 +471,12 @@ export function profileLines(profile: Profile, exits: ExitDef[], staffCap: numbe
 			text: "Agents list, offer and invoice in the distributor's name, after his one-time permission"
 		});
 	else lines.push({ icon: 'warehouse', text: "Agents list, offer and invoice in the manufacturer's own name" });
-	if (profile.expiry === 'full-credit')
+	if (profile.expiry === 'godown')
+		lines.push({
+			icon: 'recycle',
+			text: "Expired packs are destroyed at the distributor's godown against evidence the client approves; a financial credit note makes him whole"
+		});
+	else if (profile.expiry === 'full-credit')
 		lines.push({
 			icon: 'hand-coins',
 			text: 'Price support is offered before stock expires, so it never comes back for full credit'

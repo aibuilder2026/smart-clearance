@@ -63,7 +63,8 @@
     }
     const dz = h.destruction && h.phase !== "cleared" ? h.destruction.status : null;
     if (dz === "requested" || dz === "asked") {
-      eta = `Waiting for ${D.DISTRIBUTORS[D.BATCHES[0].distributor].short}'s destruction evidence`;
+      const who = D.DISTRIBUTORS[D.BATCHES[0].distributor].short;
+      eta = `Waiting for ${who + (/s$/.test(who) ? "'" : "'s")} destruction evidence`;
       etaTone = "amber";
       agentLive = "";
     } else if (dz === "reading") {

@@ -18,6 +18,7 @@
   const shopOf = (me) => WK().find((k) => k.name === (me && me.org)) || WK()[0];
   const shopById = (id) => D.KIRANAS.find((k) => k.id === id) || WK().find((k) => k.id === id);
   const P = () => window.SC3_LEDGER.partners;
+  const creditOf = (c) => c.support.total + (c.expiry && (c.expiry.at === "godown" && c.expiry.amount != null ? c.expiry.amount : c.expiry.credit) || 0);
   const asDate = (iso) => /* @__PURE__ */ new Date((iso.length > 10 ? iso : iso + "T00:00") + ":00+05:30");
   const day = (iso) => asDate(iso.slice(0, 10)).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
   const when = (iso) => iso.length > 10 ? `${day(iso)}, ${iso.slice(11, 16)}` : day(iso);
@@ -48,7 +49,7 @@
     return /* @__PURE__ */ React.createElement(Sheet, { open: open && !!d, onClose, title: d ? d.type || "Donation receipt" : "", footer: d ? /* @__PURE__ */ React.createElement(Button, { variant: "secondary", block: true, icon: "download", onClick: pdf }, "Download PDF") : null }, d && /* @__PURE__ */ React.createElement("div", { ref, className: "stack snug" }, receipt ? /* @__PURE__ */ React.createElement(S.Receipt, { doc: receipt, batch: receipt.batch || c && c.batch, sku: receipt.sku || c && c.sku, dist: receipt.dist || c && c.dist }) : /* @__PURE__ */ React.createElement(S.Paper, { id, c })));
   }
   const PAPER_ICON = { invoice: "receipt", eway: "truck", support: "hand-coins", expiry: "warehouse", receipt: "heart-handshake", destruction: "trash-2" };
-  const issuedBy = (c, d) => d.id === "invoice" || d.id === "eway" ? "You issue it" : d.id === "receipt" ? `${c.partner ? c.partner.name : "The food bank"} issued it to ${D.WORKSPACE.short} · a copy for you` : d.id === "destruction" ? `${D.WORKSPACE.short} destroyed the packs · a copy for you` : `${D.WORKSPACE.short} issued it to you`;
+  const issuedBy = (c, d) => d.id === "invoice" || d.id === "eway" ? "You issue it" : d.id === "receipt" ? `${c.partner ? c.partner.name : "The food bank"} issued it to ${D.WORKSPACE.short} · a copy for you` : d.id === "destruction" ? d.at === "godown" ? `${d.agency || "The agency"} destroyed them for you` : `${D.WORKSPACE.short} destroyed the packs · a copy for you` : `${D.WORKSPACE.short} issued it to you`;
   function PaperRow({ c, d, onOpen }) {
     const amount = d.status === "not required" || d.id === "receipt" ? null : d.id === "invoice" ? d.total || d.amount : d.amount;
     return /* @__PURE__ */ React.createElement("button", { type: "button", className: "pt-paper", onClick: () => onOpen(d.id) }, /* @__PURE__ */ React.createElement("span", { className: "icontile" }, /* @__PURE__ */ React.createElement(Icon, { name: PAPER_ICON[d.id] || "file-text", size: 17, stroke: 2 })), /* @__PURE__ */ React.createElement("span", { className: "grow" }, /* @__PURE__ */ React.createElement("b", null, d.type), /* @__PURE__ */ React.createElement("span", { className: "t-footnote muted" }, /* @__PURE__ */ React.createElement("span", { className: "mono" }, d.no), " · ", issuedBy(c, d), d.status === "not required" ? " · not required" : "")), amount ? /* @__PURE__ */ React.createElement("span", { className: "tnum strong" }, fmt.inr(amount)) : null, /* @__PURE__ */ React.createElement(Icon, { name: "chevron-right", size: 16, className: "subtle" }));
@@ -435,7 +436,7 @@
     const [sending, setSending] = useState(false);
     const cam = useRef({}), pick = useRef({});
     const C = D.CLIENT.short, op = D.PEOPLE.priya;
-    if (!n) return /* @__PURE__ */ React.createElement(Screen, { me, title: "Destroy expired packs", sub: "Requests from the client", back: "Today" }, /* @__PURE__ */ React.createElement(Card, { style: { maxWidth: 560, margin: "0 auto", width: "100%" } }, /* @__PURE__ */ React.createElement(Empty, { img: "godown", title: "No destruction asked for now", body: `When packs of ${possessive(C)} expire at your godown with nothing left to sell them, ${C} asks here for their destruction's evidence.` })));
+    if (!n) return /* @__PURE__ */ React.createElement(Screen, { me, title: "Destroy expired packs", sub: "Requests from the client", back: "Today" }, /* @__PURE__ */ React.createElement(Card, { style: { maxWidth: 560, margin: "0 auto", width: "100%" } }, /* @__PURE__ */ React.createElement(Empty, { img: "godown", title: "No destruction asked for now", body: `When packs expire at your godown and no channel took them, ${C} asks here for the evidence of their destruction.` })));
     const d = n.destruction, sku = D.SKUS[n.sku], due = d.status === "requested" || d.status === "asked";
     const a = agencies.find((x) => x.id === agency);
     const his = Math.round(d.units * sku.dp * sku.gst * 100) / 100;
@@ -525,7 +526,7 @@
     const ref = route && route.params && route.params.ref;
     if (ref) return /* @__PURE__ */ React.createElement(DistBatch, { me, dist, id: ref });
     const { journey, watching, past } = P().distBatches(dist.id, s);
-    const credit = past.reduce((t, c) => t + c.support.total + (c.expiry && c.expiry.credit || 0), 0);
+    const credit = past.reduce((t, c) => t + creditOf(c), 0);
     const notes = past.reduce((t, c) => t + c.docs.filter((d) => (d.id === "support" || d.id === "expiry") && d.status !== "not required").length, 0);
     const months = [];
     past.forEach((c) => {
@@ -550,7 +551,7 @@
         }
       );
     })) : null, past.length ? /* @__PURE__ */ React.createElement(Card, { className: "stack", style: { gap: 10 } }, /* @__PURE__ */ React.createElement("div", { className: "lg-fig" }, /* @__PURE__ */ React.createElement(Money, { value: credit, size: "l" }), /* @__PURE__ */ React.createElement("span", { className: "lg-what" }, "from ", D.WORKSPACE.short, " since July")), /* @__PURE__ */ React.createElement("p", { className: "lg-working" }, past.length, " batches cleared at your godown. On each, the price support (and on expiry day the expiry credit) made up the gap to the dealer price you paid, so you ended whole: ", /* @__PURE__ */ React.createElement("b", null, notes, " credit notes"), ", each in its batch's papers.")) : null, months.map((g) => /* @__PURE__ */ React.createElement(List, { key: g.m, head: `Cleared · ${g.label}` }, g.items.map((c) => {
-      const cr = c.support.total + (c.expiry && c.expiry.credit || 0);
+      const cr = creditOf(c);
       const p = P().distPapers(c);
       return /* @__PURE__ */ React.createElement(
         ListRow,

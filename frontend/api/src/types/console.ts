@@ -43,10 +43,27 @@ export type Exits = Record<ExitId, ExitState>;
 export type Profile = {
 	route: 'distributors' | 'modern-trade' | 'own';
 	owner: 'distributor' | 'manufacturer';
-	expiry: 'full-credit' | 'price-support' | 'none';
+	/** godown: destroyed at the distributor's godown through an authorised agency, against evidence the client approves
+	 *  (SC-139); full-credit (taken back by the client) is offered as coming */
+	expiry: 'godown' | 'full-credit' | 'price-support' | 'none';
 };
 export type ProfileQuestion = keyof Profile;
-export type ProfileQuestionDef = { label: string; options: { id: string; label: string }[] };
+export type ProfileQuestionDef = {
+	label: string;
+	options: { id: string; label: string; note?: string; soon?: boolean }[];
+};
+
+/** how a client has expired packs destroyed at a distributor's godown (SC-139; Channels and rules): Vision's check on
+ *  the two photos, who gives the second yes, when the distributor is asked again, whether the credit note grosses up the
+ *  GST he reverses, the agency's charge a pack, and the authorised agencies */
+export type DestructionConfig = {
+	visionCheck: boolean;
+	reviewer: string;
+	remindDays: number;
+	grossUp: boolean;
+	chargesPerUnit: number;
+	agencies: { id: string; name: string; city: string; auth: string }[];
+};
 
 export type PresetId = 'cautious' | 'standard' | 'trusted';
 /** how far a new client's agents go at first */
@@ -175,6 +192,8 @@ export type Client = {
 	dayMinutes: number;
 	exits: Exits;
 	rules: Rules;
+	/** how expired packs left at a godown are destroyed there (SC-139); null for a client whose policy does not */
+	destruction: DestructionConfig | null;
 	signIn: SignInMethod[];
 	distributors: Distributor[];
 	skus: Sku[];
@@ -266,6 +285,8 @@ export type ConsoleDefaults = {
 	tokenPct: number;
 	scheme: string;
 	offerWindowHours: number;
+	/** how a new client has expired packs destroyed at a godown (SC-139) */
+	destruction: DestructionConfig;
 };
 /** GET /v1/console/config: how the console describes agents, exits, the supply-chain profile and the presets */
 export type ConsoleConfig = {
@@ -281,7 +302,8 @@ export type ConsoleConfig = {
 
 export type AgentPatch = { on?: boolean; autonomy?: Autonomy; settings?: AgentSettings };
 export type ProfileInput = { profile: Profile; gates: Gates; returnWindowDays: number };
-export type RulesInput = { rules: Rules; exits: Exits };
+/** the channels and rules saved together; `destruction` with them for a client destroying at the godown (SC-139) */
+export type RulesInput = { rules: Rules; exits: Exits; destruction?: DestructionConfig | null };
 /** an invitation to a client's workspace: `contact` is an email address (SC-68); the person signs in with it and the
  *  default password */
 export type InviteInput = { name: string; contact: string; access: Access };

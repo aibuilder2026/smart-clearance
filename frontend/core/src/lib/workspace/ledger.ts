@@ -308,6 +308,8 @@ type HistoryCase = {
 	receipt: Doc | null;
 	returnBy: string;
 	expiry: CaseData['expiry'];
+	/** destroyed at his godown (SC-139): the evidence he sent and the operator's yes */
+	destruction?: CaseData['destruction'];
 	listing: { id: string; units: number } | null;
 	kiranas: { kirana: string; name: string; area: string; units: number }[];
 	offered: number;
@@ -417,6 +419,7 @@ function caseOf(x: HistoryCase, data: WorkspaceData): CaseData {
 		van: D.journey.van,
 		realised: { lines: x.realised.lines.map((l) => ({ id: l.id, units: l.units })), godown: x.realised.godown },
 		expiry: x.expiry,
+		destruction: x.destruction ?? null,
 		donation: {
 			...story,
 			batch,

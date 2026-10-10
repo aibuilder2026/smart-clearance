@@ -908,7 +908,7 @@
               <ListRow title="Ask again" sub="journey days after the request, if no evidence has come in" value={<Stepper value={dz.remindDays} min={1} max={7} step={1} onChange={v => setD("remindDays", v)} label="days before he is asked again" />} />
             </List></>}
         </>} />
-      <div className="row" style={{ justifyContent: "flex-end", gap: 10 }}><Button disabled={!dirty} onClick={() => { setR(c.rules); setEx(c.exits); }}>Discard</Button><Button variant="primary" disabled={!dirty} onClick={save}>Save changes</Button></div>
+      <div className="row" style={{ justifyContent: "flex-end", gap: 10 }}><Button disabled={!dirty} onClick={() => { setR(c.rules); setEx(c.exits); setDz(c.destruction); }}>Discard</Button><Button variant="primary" disabled={!dirty} onClick={save}>Save changes</Button></div>
     </div>;
   }
   const RULE_LABEL = { staffCap: "staff sale cap", offerWindowHours: "offer window hours", hindiOffers: "Hindi offers", requirePhoto: "label photo first",

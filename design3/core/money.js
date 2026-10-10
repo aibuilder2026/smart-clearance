@@ -275,7 +275,7 @@
     docs.push({ id: "support", type: "Price-support credit note", owner: parties.client.short, no: "CN/0117", status: "generated", amount: total, exact, roundOff: r2(total - exact), rows: support.rows, van: support.van, fee: support.fee, note: `${parties.client.short} to ${parties.seller.name}: a financial credit note, no GST adjustment.` });
     // the credit kept on what was sold under tax invoices, and reversed on what was given away or destroyed (SC-122)
     const away = p.donated + (p.destroyed != null ? p.destroyed : p.leftover);
-    docs.push({ id: "itc", type: "GST ITC memo", owner: parties.client.short, no: "s.17(5)(h)", status: "generated", amount: p.itcRetained, reversed: p.itcReversed || 0, units: p.soldUnits, away,
+    docs.push({ id: "itc", type: "GST ITC memo", owner: parties.client.short, no: "s.17(5)(h)", status: "generated", amount: p.itcRetained, reversed: p.itcReversed || 0, units: p.soldUnits, away, atGodown: p.atGodown || 0,
       note: (p.itcReversed ? `Kept on the ${p.soldUnits.toLocaleString("en-IN")} packs sold under tax invoices; reversed under Section 17(5)(h) on the ${away.toLocaleString("en-IN")} given away or destroyed, in GSTR-3B Table 4(B)(1).` : "Goods supplied under tax invoices, so the Section 17(5)(h) reversal does not apply.")
         // destroyed at his godown (SC-139): his stock, so the reversal is his, and the client keeps its own credit on them
         + (p.atGodown ? ` The ${p.atGodown.toLocaleString("en-IN")} packs destroyed at ${parties.seller.name}'s godown were his stock, bought under tax invoice: he reverses their input credit, and ${parties.client.short} keeps its own.` : "") });
@@ -287,7 +287,8 @@
     const reversed = destroyed ? r2(destroyed * ((p.writeOff && p.writeOff.itcPerUnit) || 0)) : 0;
     // destroyed at his godown (SC-139): the agency's certificate, for him, once the client has approved the evidence;
     // until then it waits, with the input GST he will reverse on the packs
-    if (p.atGodown) docs.push({ id: "destruction", type: "Destruction certificate", owner: parties.seller.name, no: "awaiting destruction", status: "awaiting", amount: 0, units: p.atGodown, at: "godown", reversed: r2(p.atGodown * (sku.dp || 0) * sku.gst) });
+    if (p.atGodown) docs.push({ id: "destruction", type: "Destruction certificate", owner: parties.seller.name, no: "awaiting destruction", status: "awaiting", amount: 0, units: p.atGodown, at: "godown", reversed: r2(p.atGodown * (sku.dp || 0) * sku.gst),
+      note: "Issued by the authorised agency once the destruction's evidence is approved" });
     else docs.push({ id: "destruction", type: "Destruction certificate", owner: parties.client.short, no: destroyed ? `${destroyed} units` : "0 units left", status: destroyed ? "generated" : "not required", amount: 0, units: destroyed, reversed });
     return docs;
   }

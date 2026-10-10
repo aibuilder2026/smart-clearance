@@ -305,6 +305,9 @@ export type WsSetup = {
 	mapped: number;
 	/** the last DMS export the Data agent loaded */
 	lastImport: { at: string; file: string; rows: number; batches: number } | null;
+	/** the client's expiry policy, and how packs left at a godown are destroyed there (SC-139) */
+	expiry: ExpiryPolicy;
+	destruction: WsDestructionSettings | null;
 };
 
 /** the Watcher's last run */
@@ -637,7 +640,8 @@ export type WsDoc = {
 	type: string;
 	owner: string;
 	no: string;
-	status: 'generated' | 'drafted' | 'not required';
+	/** awaiting: another's paper still to come (the agency's destruction certificate, SC-139) */
+	status: 'generated' | 'drafted' | 'awaiting' | 'not required';
 	amount: number;
 	note: string | null;
 	taxable: number | null;
@@ -662,7 +666,37 @@ export type WsDoc = {
 	 *  (SC-122); `units` is then the packs sold under tax invoices */
 	reversed?: number;
 	away?: number;
-} & Partial<ReceiptFields>;
+	/** the GST memo: packs destroyed at the distributor's godown, his stock, so his reversal (SC-139) */
+	atGodown?: number;
+} & Partial<ReceiptFields> &
+	Partial<DestructionDocFields>;
+
+/** packs destroyed at the distributor's godown (SC-139): the expiry credit note's lines (the dealer price, the GST he
+ *  reverses, grossed up, and the agency's charges) against the agency's certificate; the certificate's agency, its
+ *  authorisation, the method and the site, the packs' batch, the evidence and who approved it. `at` is "godown" */
+export type DestructionDocFields = {
+	credit: number | null;
+	gst: number;
+	charges: number;
+	reversal: number | null;
+	dp: number;
+	certificate: string;
+	agency: string;
+	auth: string;
+	method: string;
+	site: string;
+	for: { name: string; address?: string; gstin?: string };
+	batch: string;
+	bestBefore: string;
+	hsn: string;
+	/** when the packs were destroyed, in the client's time (2026-10-03T13:20) */
+	destroyedAt: string;
+	packKg: number;
+	evidence: { photos: number; checks: number; of: number };
+	/** the member who approved it, by name, and when */
+	approvedBy: string;
+	approvedAt: string;
+};
 
 /** the food bank's receipt for the packs it collected (SC-110, money.js receipt): issued in its name as it collects,
  *  numbered in its own series, in its own form (Feeding India's in-app receipt, India FoodBanking Network's
@@ -692,8 +726,10 @@ export type ReceiptFields = {
 };
 export type WsReceipt = WsDoc & ReceiptFields;
 
-/** a client's expiry policy: what happens to packs that expire at the distributor's godown (SC-94) */
-export type ExpiryPolicy = 'full-credit' | 'price-support' | 'none';
+/** a client's expiry policy: what happens to packs that expire at the distributor's godown (SC-94): destroyed there
+ *  through an authorised agency against evidence the client approves (SC-139), taken back for full credit, the gap
+ *  paid, or none */
+export type ExpiryPolicy = 'godown' | 'full-credit' | 'price-support' | 'none';
 
 /** expiry day's settlement of the packs left at the godown (money.js expirySettlement): the credit is null for an SKU
  *  without its dealer price */
@@ -701,12 +737,63 @@ export type ExpirySettlement = {
 	policy: ExpiryPolicy;
 	units: number;
 	credit: number | null;
+	/** the credit note's amount: the credit, and under SC-139's route B the GST gross-up and the agency's charges */
+	amount: number | null;
+	gst?: number;
+	charges?: number;
+	reversal?: number | null;
+	at?: 'godown' | null;
 	destroyedBy: 'client' | 'distributor' | null;
 	kg: number;
 	disposal: number;
 	epr: number;
 	itc: number;
 	total: number;
+};
+
+/** packs destroyed at the distributor's godown on expiry day (SC-139, option B): he is asked for the evidence (two
+ *  photos and the agency's certificate number), Vision checks it, and the client's operator gives the second yes, on
+ *  which the expiry credit note and the agency's certificate are issued and the batch closes */
+export type WsDestruction = {
+	status: 'requested' | 'asked' | 'reading' | 'checked' | 'approved';
+	units: number;
+	/** why the operator asked again */
+	reason: string | null;
+	agency: { id: string; name: string; auth: string; site: string } | null;
+	certificate: string | null;
+	/** each photo as sent: when (the client's time), and a short-lived link to it */
+	photos: { before: WsDestructionPhoto; after: WsDestructionPhoto } | null;
+	askedAt: string | null;
+	sentAt: string | null;
+	checkedAt: string | null;
+	/** Vision's checks on the photos: the batch on the label, the count in view, the slate, when and where */
+	checks: { id: string; label: string; ok: boolean }[];
+	/** the member who approved it, by name, and when */
+	approvedAt: string | null;
+	approvedBy: string | null;
+	/** when the distributor is reminded, while the evidence is still asked for */
+	remindAt: string | null;
+	method: string;
+};
+export type WsDestructionPhoto = { name: string; at: string; url: string | null };
+/** how a client has packs destroyed at a distributor's godown (SC-139; the console's Channels and rules) */
+export type WsDestructionAgency = {
+	id: string;
+	name: string;
+	city: string;
+	auth: string;
+	series: { prefix: string; next: number; width: number };
+	site: string;
+};
+export type WsDestructionSettings = {
+	evidence: [string, string][];
+	visionCheck: boolean;
+	reviewer: string;
+	remindDays: number;
+	grossUp: boolean;
+	chargesPerUnit: number;
+	method: string;
+	agencies: WsDestructionAgency[];
 };
 
 /** a shop the scheme was offered to, with its cap and what it ordered */
@@ -788,6 +875,9 @@ export type CaseDetail = {
 	realised: { lines: { id: string; units: number }[]; godown: number } | null;
 	/** expiry day's settlement, once the report has run (SC-94) */
 	expiry: ExpirySettlement | null;
+	/** the packs destroyed at his godown, while the evidence is asked for, checked and approved (SC-139); for staff and
+	 *  the distributor */
+	destruction: WsDestruction | null;
 	claim: WsClaim | null;
 	docs: WsDoc[];
 	kiranas: KiranaOffer[];
@@ -965,6 +1055,8 @@ export type ActionResult = { seq: number; case: CaseDetail | null };
 /** a signed upload link: PUT the file to `url` with the given headers, then confirm with its `id` */
 export type UploadLink = { id: string; url: string; headers: Record<string, string>; expiresAt: string };
 export type UploadRequest = { contentType: string; bytes: number; fileName?: string };
+/** the destruction's evidence (SC-139): the agency by id, its certificate number, and the two photos uploaded */
+export type DestructionInput = { agency: string; certificate: string; photos: { before: string; after: string } };
 
 export type WsInviteInput = { name: string; email: string; role: WsRole; org?: string };
 export type MemberPatch = { status?: MemberStatus; role?: WsRole };
@@ -1031,7 +1123,17 @@ export type WsPartnerCase = {
 	donation: { units: number; spot: string } | null;
 	receipt: WsReceipt | null;
 	support: { total: number; van: number; fee: number } | null;
-	expiry: { units: number; credit: number } | null;
+	expiry: {
+		units: number;
+		credit: number;
+		/** destroyed at his godown (SC-139): the note's amount, with the GST he reverses and the agency's charges */
+		amount?: number | null;
+		at?: 'godown' | null;
+		reversal?: number | null;
+		charges?: number;
+	} | null;
+	/** destroyed at his godown (SC-139): the evidence he sent and the client's yes */
+	destruction?: WsDestruction | null;
 	docs: WsDoc[];
 };
 /** what a partner reads of its own history with the client: the batches it took part in, newest first, the buyer they
@@ -1101,6 +1203,13 @@ export interface WorkspaceApi {
 	issueInvoice(ref: string, doc: string): Promise<ActionResult>;
 	/** POST /cases/{ref}/review: the operator has reviewed the papers */
 	review(ref: string): Promise<ActionResult>;
+	/** packs destroyed at his godown (SC-139): POST /cases/{ref}/destruction/photos {which}, PUT each photo, then
+	 *  POST /cases/{ref}/destruction {agency, certificate, photos} sends the evidence for Vision to check */
+	destructionPhoto(ref: string, which: 'before' | 'after', input: UploadRequest): Promise<UploadLink>;
+	sendDestruction(ref: string, input: DestructionInput): Promise<ActionResult>;
+	/** POST /cases/{ref}/destruction/approve: the operator's second yes; /destruction/ask {reason}: send it back */
+	approveDestruction(ref: string): Promise<ActionResult>;
+	askDestructionAgain(ref: string, reason: string): Promise<ActionResult>;
 
 	/** POST /notifications/read {ids} or {all: true} */
 	markRead(ids: string[] | 'all'): Promise<ActionResult>;

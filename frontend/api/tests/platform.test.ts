@@ -47,7 +47,8 @@ const R = config.defaults;
 const profiles: Profile[] = [];
 for (const route of ['distributors', 'modern-trade', 'own'] as const)
 	for (const owner of ['distributor', 'manufacturer'] as const)
-		for (const expiry of ['full-credit', 'price-support', 'none'] as const) profiles.push({ route, owner, expiry });
+		for (const expiry of ['godown', 'full-credit', 'price-support', 'none'] as const)
+			profiles.push({ route, owner, expiry });
 
 describe("the platform's rules match platform.js", () => {
 	it('reads the seed as platform.js seeds it', () => {

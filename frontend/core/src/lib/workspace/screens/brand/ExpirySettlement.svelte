@@ -17,22 +17,38 @@
 		batch
 	}: { settle: ExpirySettlement; dist: Distributor; client: string; batch: string } = $props();
 	const router = useRoute();
-	const POLICY = { 'full-credit': 'Full credit at expiry', 'price-support': 'Price support only', none: 'No returns' };
+	const POLICY = {
+		godown: 'Destroyed at the godown',
+		'full-credit': 'Full credit at expiry',
+		'price-support': 'Price support only',
+		none: 'No returns'
+	};
 	const whose = (n: string) => n + (/s$/.test(n) ? "'" : "'s");
-	const figures = $derived<[string, string][]>([
-		[
-			`Credit to ${dist.short}`,
-			x.policy === 'none' ? '—' : x.credit != null ? fmt.inr(x.credit) : 'at the dealer price'
-		],
-		['Destroyed by', x.destroyedBy === 'client' ? client : dist.short],
-		[
-			x.policy === 'full-credit' ? 'Disposal, EPR, GST' : "Client's other costs",
-			x.policy === 'full-credit' ? fmt.inr(x.disposal + x.epr + x.itc) : '—'
-		]
-	]);
+	// destroyed at his godown (SC-139): the note's amount, he destroys them, and of it the GST and the agency's charges
+	const figures = $derived<[string, string][]>(
+		x.policy === 'godown'
+			? [
+					[`Credit to ${dist.short}`, x.amount != null ? fmt.inr(x.amount) : 'at the dealer price'],
+					['Destroyed by', dist.short],
+					['Of it: GST and charges', fmt.inr((x.gst ?? 0) + (x.charges ?? 0))]
+				]
+			: [
+					[
+						`Credit to ${dist.short}`,
+						x.policy === 'none' ? '—' : x.credit != null ? fmt.inr(x.credit) : 'at the dealer price'
+					],
+					['Destroyed by', x.destroyedBy === 'client' ? client : dist.short],
+					[
+						x.policy === 'full-credit' ? 'Disposal, EPR, GST' : "Client's other costs",
+						x.policy === 'full-credit' ? fmt.inr(x.disposal + x.epr + x.itc) : '—'
+					]
+				]
+	);
 	const sentence = $derived.by(() => {
 		const n = fmt.num(x.units);
 		const amount = x.credit != null ? ` (${fmt.inr(x.credit)})` : '';
+		if (x.policy === 'godown')
+			return `The ${n} packs are destroyed at ${dist.godown} through an authorised agency; ${client} credits ${dist.name} the dealer price, the GST it reverses and the agency's charges${x.amount != null ? ` (${fmt.inr(x.amount)})` : ''}.`;
 		if (x.policy === 'full-credit')
 			return `The ${n} packs come back to ${client} for full credit${amount || ' at the dealer price'}, and ${client} destroys them.`;
 		if (x.policy === 'price-support')

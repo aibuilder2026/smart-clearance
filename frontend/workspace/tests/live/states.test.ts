@@ -1158,7 +1158,8 @@ describe("the partners' own history (SC-130)", () => {
 		const t = text(r);
 		expect(t).toContain('In a journey now');
 		expect(t).toContain('Masala Chips 150 g');
-		expect(t).toContain('₹66,192from Munchly since July');
+		// the price support and the expiry credit notes, under SC-139's route B with the GST he reverses and the agency's charges
+		expect(t).toContain('₹66,918from Munchly since July');
 		expect(t).toContain('6 batches cleared at your godown');
 		expect(t).toContain('8 credit notes');
 		expect(t).toContain('Cleared · August 2026');

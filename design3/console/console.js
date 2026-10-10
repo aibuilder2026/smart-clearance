@@ -965,6 +965,7 @@
     ), /* @__PURE__ */ React.createElement("div", { className: "row", style: { justifyContent: "flex-end", gap: 10 } }, /* @__PURE__ */ React.createElement(Button, { disabled: !dirty, onClick: () => {
       setR(c.rules);
       setEx(c.exits);
+      setDz(c.destruction);
     } }, "Discard"), /* @__PURE__ */ React.createElement(Button, { variant: "primary", disabled: !dirty, onClick: save }, "Save changes")));
   }
   const RULE_LABEL = {

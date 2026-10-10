@@ -117,8 +117,24 @@ export function heroModel(s: State, data: Pick<WorkspaceData, 'skus' | 'distribu
 	} else if (h.phase === 'cleared') {
 		// the packs that expired at the godown and were destroyed (SC-94, the live source); the story's batch destroys
 		// none (SC-135: the line read 0 for every batch)
-		const gone = c.expiry?.units ?? 0;
-		eta = gone ? `Cleared · ${fmt.num(gone)} packs destroyed` : 'Cleared · 0 cartons destroyed';
+		const gone = c.expiry?.units ?? h.expiry?.units ?? 0;
+		eta = gone
+			? `Cleared · ${fmt.num(gone)} packs destroyed${(c.destruction ?? h.destruction) ? ' at the godown' : ''}`
+			: 'Cleared · 0 cartons destroyed';
+	}
+	// packs destroyed at the distributor's godown (SC-139): the batch waits on the evidence, then on the second yes
+	const dz = h.phase !== 'cleared' ? (c.destruction ?? h.destruction)?.status : null;
+	if (dz === 'requested' || dz === 'asked') {
+		eta = `Waiting for ${c.dist.short + (/s$/.test(c.dist.short) ? "'" : "'s")} destruction evidence`;
+		etaTone = 'amber';
+		agentLive = '';
+	} else if (dz === 'reading') {
+		eta = "Checking the destruction's evidence";
+		agentLive = 'Vision is checking the evidence';
+	} else if (dz === 'checked') {
+		eta = 'The destruction waits for your yes';
+		etaTone = 'amber';
+		agentLive = '';
 	}
 	return {
 		h,
@@ -371,9 +387,11 @@ export const routesFor = (r: RoleId) =>
 				? ['listing']
 				: r === 'retailer'
 					? ['offer']
-					: r === 'operator'
-						? ['journey', 'route', 'execution', 'paperwork']
-						: []
+					: r === 'distributor'
+						? ['destroy']
+						: r === 'operator'
+							? ['journey', 'route', 'execution', 'paperwork']
+							: []
 		);
 /** every screen name the app knows, across the roles */
 export const SCREENS = Array.from(new Set((Object.keys(NAV) as RoleId[]).flatMap(routesFor)));

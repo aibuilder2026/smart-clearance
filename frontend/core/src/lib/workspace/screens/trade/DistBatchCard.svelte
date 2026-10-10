@@ -47,6 +47,9 @@
 			><span class="t-subhead">{j.waiting}</span><span class="t-footnote subtle">Nothing for you now</span>
 		</div>{/if}
 	{#if j.lines.length}<div class="dist-lines">
-			{#each j.lines as l (l.id)}<DistLineRow line={l} onopen={() => go('van', { ref: j.ref })} />{/each}
+			{#each j.lines as l (l.id)}<DistLineRow
+					line={l}
+					onopen={() => go(l.id === 'destroy' ? 'destroy' : 'van', { ref: j.ref })}
+				/>{/each}
 		</div>{/if}
 </section>

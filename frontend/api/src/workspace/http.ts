@@ -169,6 +169,11 @@ export function workspaceHttp(
 		message: (ref, text) => change('POST', `${c(ref)}/messages`, { text }),
 		accept: (ref, bid) => change('POST', `${c(ref)}/bids/${enc(bid)}/accept`),
 		staffSale: (ref, sold) => change('POST', `${c(ref)}/staff-sale`, { sold }),
+		destructionPhoto: (ref, which, input) =>
+			change<UploadLink>('POST', `${c(ref)}/destruction/photos`, { which, ...input }),
+		sendDestruction: (ref, input) => change('POST', `${c(ref)}/destruction`, input),
+		approveDestruction: (ref) => change('POST', `${c(ref)}/destruction/approve`, {}),
+		askDestructionAgain: (ref, reason) => change('POST', `${c(ref)}/destruction/ask`, { reason }),
 		confirmPickup: (ref) => change('POST', `${c(ref)}/donation/confirm`),
 		collect: (ref) => change('POST', `${c(ref)}/donation/collect`),
 		dispatch: (ref, kind) => change('POST', `${c(ref)}/dispatches`, { kind }),

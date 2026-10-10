@@ -125,7 +125,11 @@ const RULE_LABEL: Record<string, string> = {
 	staffCap: 'staff sale cap',
 	offerWindowHours: 'offer window hours',
 	hindiOffers: 'Hindi offers',
-	requirePhoto: 'label photo first'
+	requirePhoto: 'label photo first',
+	visionCheck: 'Vision checks the destruction photos',
+	grossUp: 'the GST he reverses made good',
+	chargesPerUnit: "the agency's charges a pack",
+	remindDays: 'ask again after days'
 };
 
 export function consoleMock({ latency = 0, storage = browserStorage }: MockOptions = {}): ConsoleApi {
@@ -317,6 +321,8 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 			skus: [],
 			people: [admin],
 			integrations: [],
+			// destroyed at the godown (SC-139): the platform's defaults, for a client whose expiry policy destroys there
+			destruction: f.profile.expiry === 'godown' ? structuredClone(config.defaults.destruction) : null,
 			firstExport: null,
 			recovered: 0,
 			batches: 0,
@@ -516,7 +522,7 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 		},
 		async saveRules(id, sent) {
 			await wait();
-			const { rules, exits } = wire(sent);
+			const { rules, exits, destruction } = wire(sent);
 			const c = clientOf(id);
 			const changed: string[] = [];
 			for (const e of config.exits)
@@ -525,11 +531,19 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 				const v = rules[k];
 				if (v !== c.rules[k]) changed.push(`${RULE_LABEL[k] || k} ${typeof v === 'boolean' ? (v ? 'on' : 'off') : v}`);
 			}
+			// destroyed at the godown (SC-139): each setting changed, the agencies aside
+			if (destruction && c.destruction)
+				for (const k of Object.keys(destruction) as (keyof typeof destruction)[]) {
+					const v = destruction[k];
+					if (k !== 'agencies' && v !== c.destruction[k])
+						changed.push(`${RULE_LABEL[k] || k} ${typeof v === 'boolean' ? (v ? 'on' : 'off') : v}`);
+				}
 			return change(
 				id,
 				(x) => {
 					x.rules = rules;
 					x.exits = exits;
+					if (destruction) x.destruction = destruction;
 				},
 				`Changed ${c.name}'s channels and rules: ${changed.join('; ')}`
 			);
