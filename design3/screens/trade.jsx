@@ -536,13 +536,15 @@
     const now = Px.distNow(dist.id, s).map(n => { const j = Px.journeyOf(n); return { ref: n.ref, sku: j.sku, live: true, j, rows: Px.ordersNow(n, Px.shopName) }; });
     const past = Px.distBatches(dist.id, s).past.map(c => ({ ref: c.ref, sku: c.sku, live: false, outcome: c.outcome, cleared: c.cleared, rows: Px.ordersPast(Px.historyFacts(c), Px.shopName) })).filter(b => b.rows.length);
     const book = now.concat(past);
+    // what the client credited him on the cleared batches, the figure Batches leads with (SC-141)
+    const credit = Math.round(P().distBatches(dist.id, s).past.reduce((t, c) => t + creditOf(c), 0));
     const all = book.flatMap(b => b.rows), total = Math.round(all.reduce((t, o) => t + o.amount, 0) * 100) / 100;
     const shops = all.filter(o => o.id === "kirana").reduce((t, o) => t + o.shops.length, 0), lots = all.filter(o => o.id === "expiresoon").length, sales = all.filter(o => o.id === "staff").length;
     const sum = rows => Math.round(rows.reduce((t, o) => t + o.amount, 0) * 100) / 100;
     return <Screen me={me} title="Orders" sub={`${dist.name} · what sold from each of ${D.WORKSPACE.short}'s batches, to whom, on which paper`}>
       <div className="stack" style={{ gap: 16, maxWidth: 960 }}>
         {all.length ? <Card className="stack" style={{ gap: 8 }}><div className="lg-fig"><Money value={total} size="l" /><span className="lg-what">sold from {D.WORKSPACE.short}'s batches since {D.WORKSPACE.since}</span></div>
-          <p className="lg-working">{book.length} {book.length === 1 ? "batch" : "batches"} · {shops} kiranas' scheme orders · {lots} ExpireSoon {lots === 1 ? "lot" : "lots"} · {sales} staff {sales === 1 ? "sale" : "sales"}. The price support is on each batch's papers.</p></Card>
+          <p className="lg-working">{book.length} {book.length === 1 ? "batch" : "batches"} · {shops} kiranas' scheme orders · {lots} ExpireSoon {lots === 1 ? "lot" : "lots"} · {sales} staff {sales === 1 ? "sale" : "sales"}.{credit ? <> {D.WORKSPACE.short}'s credit notes on the cleared ones, {fmt.inr(credit)}, are on Batches.</> : " The price support is on each batch's papers."}</p></Card>
           : <Card><Empty img="van" title="No orders yet" body="When a batch's scheme, lot or staff sale sells, each order shows here under its batch." /></Card>}
         {book.map(b => <Card key={b.ref} className="stack snug">
           <div className="row between wrap" style={{ gap: 12 }}>
@@ -566,6 +568,9 @@
     if (ref) return <DistBatch me={me} dist={dist} id={ref} />;
     const { journey, watching, past } = P().distBatches(dist.id, s);
     const credit = past.reduce((t, c) => t + creditOf(c), 0);
+    // what the cleared batches cost him, and what he sold from them: the sales and the credit add up to the cost (SC-141)
+    const wholes = past.map(c => P().whole(c)), cost = wholes.reduce((t, w) => t + w.paid, 0);
+    const sold = wholes.reduce((t, w) => t + w.rows.filter(r => !r.paper).reduce((u, r) => u + r.v, 0), 0);
     const notes = past.reduce((t, c) => t + c.docs.filter(d => (d.id === "support" || d.id === "expiry") && d.status !== "not required").length, 0);
     const months = []; past.forEach(c => { const m = c.cleared.slice(0, 7); let g = months.find(x => x.m === m); if (!g) months.push(g = { m, label: monthOf(c.cleared), items: [] }); g.items.push(c); });
     return <Screen me={me} title="Batches" sub={`${dist.name} · every batch of ${D.WORKSPACE.short}'s the Watcher flagged at your godown`}>
@@ -575,8 +580,8 @@
             title={<span className="row tight" style={{ gap: 8, flexWrap: "wrap" }}><span>{sku.name}</span><Badge size="sm" tone="blue" dot live>{stopOf(phase)}</Badge></span>}
             sub={`${b.id} · flagged ${day(D.DAY0)} · the agents act in your name`} value={phone ? null : `${fmt.num(b.hero ? D.PLAN.units : D.MANGO_PLAN.units)} packs`} />; })}</List> : null}
         {past.length ? <Card className="stack" style={{ gap: 10 }}>
-          <div className="lg-fig"><Money value={credit} size="l" /><span className="lg-what">from {D.WORKSPACE.short} since July</span></div>
-          <p className="lg-working">{past.length} batches cleared at your godown. On each, the price support (and on expiry day the expiry credit) made up the gap to the dealer price you paid, so you ended whole: <b>{notes} credit notes</b>, each in its batch's papers.</p>
+          <div className="lg-fig"><Money value={credit} size="l" /><span className="lg-what">credited by {D.WORKSPACE.short} since July</span></div>
+          <p className="lg-working">{past.length} batches cleared at your godown. They cost you {fmt.inr(cost)}; you sold {fmt.inr(sold)} from them (on Orders), and the price support, with the expiry credit where packs expired, made up the rest, so you ended whole: <b>{notes} credit notes</b>, each in its batch's papers.</p>
         </Card> : null}
         {months.map(g => <List key={g.m} head={`Cleared · ${g.label}`}>{g.items.map(c => { const cr = creditOf(c); const p = P().distPapers(c);
           return <ListRow key={c.ref} chevron onClick={() => go("batches", { ref: c.ref })} leading={<Product name={c.sku.img} size={40} />}

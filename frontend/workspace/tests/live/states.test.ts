@@ -1178,7 +1178,9 @@ describe("a distributor's portal, batch by batch (SC-133)", () => {
 		const c = m.members.rakesh.cases[CHIPS];
 		expect(t).toContain(`lot ${c.journey.listing!.id} · 772 × ₹14.20`);
 		expect(t).toContain('INV/26-27/0931');
-		expect(t).toContain('31 kiranas · 588 packets at ₹21.60, 2 free with every 10');
+		// the row multiplies out to its amount: 588 at ₹18.00 effective is ₹10,584 (SC-141)
+		expect(t).toContain('31 kiranas · 588 packets at ₹18.00 effective (₹21.60 a pack, 2 free with every 10)');
+		expect(t).toContain("Show the 31 shops' orders ₹10,584");
 		expect(t).toContain("Show the 31 shops' orders");
 	});
 
@@ -1289,7 +1291,9 @@ describe("the partners' own history (SC-130)", () => {
 		expect(t).toContain('In a journey now');
 		expect(t).toContain('Masala Chips 150 g');
 		// the price support and the expiry credit notes, under SC-139's route B with the GST he reverses and the agency's charges
-		expect(t).toContain('₹66,918from Munchly since July');
+		expect(t).toContain('₹66,918credited by Munchly since July');
+		// what he sold and what he was credited add up to what the batches cost him (SC-141)
+		expect(t).toContain('They cost you ₹1,72,846; you sold ₹1,05,928 from them (on Orders)');
 		expect(t).toContain('6 batches cleared at your godown');
 		expect(t).toContain('8 credit notes');
 		expect(t).toContain('Cleared · August 2026');

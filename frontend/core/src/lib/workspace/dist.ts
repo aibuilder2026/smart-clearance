@@ -129,6 +129,10 @@ const num = fmt.num;
 const rate = fmt.rate;
 const inr = fmt.inr;
 const r2 = (n: number) => Math.round(n * 100) / 100;
+/** a scheme's packets at what each came to, so the row multiplies out to its amount: 2 free in every 12 bring the
+ *  effective price under the pack's (SC-141) */
+const schemeWhat = (units: number, amount: number, pack: number, sc: { buy: number; free: number }) =>
+	`${num(units)} packets at ${rate(units ? r2(amount / units) : 0)} effective (${rate(pack)} a pack, ${sc.free} free with every ${sc.buy})`;
 const cartons = (u: number, per: number) => {
 	const c = Math.floor(u / per);
 	const r = u % per;
@@ -584,21 +588,23 @@ export function ordersNow(n: DistNow, shopName: (id: string) => string, w: DistW
 					}
 				: null
 		});
-	if (kl && o && o.shops)
+	if (kl && o && o.shops) {
+		const amount = r2(shops.reduce((t, k) => t + schemeOf(k.units, kl.packPrice ?? 0, sku.mrp).pay, 0));
 		out.push({
 			id: 'kirana',
 			units: o.units,
 			who: `${o.shops} ${o.shops === 1 ? 'kirana' : 'kiranas'}`,
-			what: `${num(o.units)} packets at ${rate(kl.packPrice ?? 0)}, ${w.scheme.free} free with every ${w.scheme.buy}`,
+			what: schemeWhat(o.units, amount, kl.packPrice ?? 0, w.scheme),
 			sub: n.van
 				? `delivered on ${n.round ? `the ${n.round.day} round` : 'the van round'}`
 				: n.round
 					? `on the ${n.round.day} round, ${n.round.date}`
 					: 'on the van round once the papers are drafted',
-			amount: r2(shops.reduce((t, k) => t + schemeOf(k.units, kl.packPrice ?? 0, sku.mrp).pay, 0)),
+			amount,
 			at: shops.reduce<string | null>((t, k) => (k.at && (!t || k.at > t) ? k.at : t), null),
 			shops
 		});
+	}
 	if (st && n.staff && n.staff.status === 'recorded' && n.staff.sold)
 		out.push({
 			id: 'staff',
@@ -649,7 +655,7 @@ export function ordersPast(c: PartnerCase, shopName: (id: string) => string, w: 
 			id: 'kirana',
 			units: kl.units,
 			who: `${c.kiranas.length} ${c.kiranas.length === 1 ? 'kirana' : 'kiranas'}`,
-			what: `${num(kl.units)} packets at ${rate(planned(c, 'kirana')?.packPrice ?? 0)}, ${w.scheme.free} free with every ${w.scheme.buy}`,
+			what: schemeWhat(kl.units, kl.gross, planned(c, 'kirana')?.packPrice ?? 0, w.scheme),
 			sub: `${c.kirana && c.kirana.ordered < c.kirana.planned ? `of ${num(c.kirana.planned)} offered · ` : ''}${van ? `delivered on the ${vanDay(c)} round` : 'delivered on the van round'}`,
 			amount: kl.gross,
 			at: stepAt(c, 'orders'),
