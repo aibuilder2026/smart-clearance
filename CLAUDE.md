@@ -1678,4 +1678,16 @@
     - The only note is the old one: the invoice reads "drafted" in Priya's pack after Rakesh issues it.
   - **After it:** production's journey day back at 24 hours; the chips cleared, the Mango Drink at day 0.
 
+- **SC-140** (In Review, branch `SC-140-architecture`): the technical architecture for the hackathon submission, documentation only, asked for by the maintainer.
+  - **The artifact:** [Smart-Clearance Architecture](https://claude.ai/artifact/MCFr2c1AVzX9xXKqcYVu47), in design system v3's tokens and mark, light and dark. It holds:
+    - the system in one diagram;
+    - Firebase, Cloud Run and Gemini as the brief asks, and why Firestore is not in the build (Cloud SQL holds the record);
+    - every Google Cloud component, what it does here and why;
+    - the agents' nine stops with their Gemini tier, and one ADK run;
+    - the application flow, interactive and with no figures: the core loop, signing in, and each stop as a sequence across the apps, Firebase, backend-api, Cloud SQL, Pub/Sub, the agents, Gemini, BigQuery and Cloud Storage;
+    - keyless identity, CI/CD (GitHub Actions, Workload Identity Federation, Cloud Build), the testing (gates, a11y, e2e, parity, live, journey, evals) and one trace.
+  - **The copy:** `docs/smart-clearance-architecture.html`.
+  - **Lucidchart:** the Lucid connector was not connected, so `docs/smart-clearance-architecture.drawio` holds three pages (the system, the agents' stops, CI/CD) for Lucidchart's draw.io import.
+  - **Checks:** the page was played in a browser at 1440 × 900 and 390 × 844, with no console errors and no sideways scroll on a phone. The viewer's frame ignores bare anchors, so the page's section links scroll in script.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

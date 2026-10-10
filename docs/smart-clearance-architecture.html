@@ -1,0 +1,1503 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Smart-Clearance Architecture</title>
+<meta name="description" content="How Smart-Clearance is built on Google Cloud: Firebase, Cloud Run, Gemini on Vertex AI, Pub/Sub, Cloud SQL and BigQuery, delivered by GitHub Actions and Cloud Build.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Geist:wght@300..800&family=Geist+Mono:wght@400..600&display=swap">
+<style>
+/* Layout: a route map. The page follows the brand's own route, from the godown dot to the amber pin:
+   the system first, then the parts, then a batch's journey through them, then how it ships and is proven.
+   Colour encodes what a box is: green = Smart-Clearance's own code, blue = a managed Google service,
+   the aura = AI, amber = a person's yes. Tokens follow design system v3 (design3/system/tokens.css). */
+:root {
+  --bg: #f2f6f3;
+  --surface: #ffffff;
+  --surface-2: #f8faf9;
+  --sunken: #eaf0ec;
+  --fg: #0d1c15;
+  --fg-2: #45554d;
+  --fg-3: #5f6e67;
+  --fg-4: #a1aca6;
+  --line: rgb(17 41 30 / 0.1);
+  --line-2: rgb(17 41 30 / 0.17);
+  --primary: #167a52;
+  --primary-text: #12704a;
+  --primary-soft: #e3f4ea;
+  --glow: #1f9563;
+  --amber: #f2b437;
+  --amber-line: #b07a06;
+  --amber-text: #8a5a00;
+  --amber-soft: #fff3d4;
+  --g: #0a7ae0;
+  --g-text: #0b66bc;
+  --g-soft: #eef5fd;
+  --g-line: rgb(10 122 224 / 0.38);
+  --ai: #0d9488;
+  --ai-soft: #e6f7f4;
+  --red-text: #c42a30;
+  --shadow: 0 1px 2px rgb(13 28 21 / 0.06), 0 8px 24px -12px rgb(13 28 21 / 0.18);
+  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-ui: "Geist", "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --aura: linear-gradient(120deg, #34d399, #2dd4bf 35%, #38bdf8 70%, #a3e635);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #070b09; --surface: #101613; --surface-2: #141b17; --sunken: #0a0f0c;
+    --fg: #ecf2ee; --fg-2: #a7b4ad; --fg-3: #8d9a94; --fg-4: #56625c;
+    --line: rgb(214 255 232 / 0.09); --line-2: rgb(214 255 232 / 0.16);
+    --primary: #3ccb8a; --primary-text: #5fdca2; --primary-soft: rgb(60 203 138 / 0.13); --glow: #5eeab4;
+    --amber: #f7c04a; --amber-line: #f7c04a; --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.13);
+    --g: #5aa9ff; --g-text: #8cc4ff; --g-soft: rgb(59 158 255 / 0.09); --g-line: rgb(90 169 255 / 0.42);
+    --ai: #2dd4bf; --ai-soft: rgb(45 212 191 / 0.1); --red-text: #ff8f8d;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -14px rgb(0 0 0 / 0.7);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #070b09; --surface: #101613; --surface-2: #141b17; --sunken: #0a0f0c;
+  --fg: #ecf2ee; --fg-2: #a7b4ad; --fg-3: #8d9a94; --fg-4: #56625c;
+  --line: rgb(214 255 232 / 0.09); --line-2: rgb(214 255 232 / 0.16);
+  --primary: #3ccb8a; --primary-text: #5fdca2; --primary-soft: rgb(60 203 138 / 0.13); --glow: #5eeab4;
+  --amber: #f7c04a; --amber-line: #f7c04a; --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.13);
+  --g: #5aa9ff; --g-text: #8cc4ff; --g-soft: rgb(59 158 255 / 0.09); --g-line: rgb(90 169 255 / 0.42);
+  --ai: #2dd4bf; --ai-soft: rgb(45 212 191 / 0.1); --red-text: #ff8f8d;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -14px rgb(0 0 0 / 0.7);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font: 400 16px/1.6 var(--font-ui); -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01", "cv11";
+}
+a { color: var(--primary-text); text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 6px; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-inline: 20px; }
+
+/* ---------- the bar ---------- */
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: color-mix(in srgb, var(--bg) 84%, transparent);
+  backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+.bar .wrap { display: flex; align-items: center; gap: 20px; min-height: 60px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--fg); flex: none; }
+.wordmark { font: 700 17px/1 var(--font-display); letter-spacing: -0.02em; }
+.brand small { font: 500 11px/1 var(--font-mono); color: var(--fg-3); letter-spacing: 0.06em; text-transform: uppercase; padding-left: 10px; border-left: 1px solid var(--line-2); }
+.nav { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; flex: 1; min-width: 0; }
+.nav::-webkit-scrollbar { display: none; }
+.nav a { color: var(--fg-2); text-decoration: none; font-size: 14px; font-weight: 500; padding: 7px 11px; border-radius: 999px; white-space: nowrap; }
+.nav a:hover { background: var(--line); color: var(--fg); }
+.nav a.on { color: var(--primary-text); background: var(--primary-soft); }
+.motion-btn {
+  flex: none; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+  font: 500 13px/1 var(--font-ui); color: var(--fg-2); background: var(--surface);
+  border: 1px solid var(--line-2); border-radius: 999px; padding: 8px 12px;
+}
+.motion-btn:hover { color: var(--fg); }
+.motion-btn svg { width: 14px; height: 14px; }
+@media (max-width: 760px) { .brand small, .motion-btn span { display: none; } }
+
+/* ---------- type ---------- */
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; letter-spacing: -0.025em; }
+h1 { font-size: clamp(38px, 5.6vw, 66px); line-height: 1.02; font-weight: 750; font-variation-settings: "opsz" 96; }
+h2 { font-size: clamp(28px, 3.4vw, 40px); line-height: 1.08; font-weight: 720; font-variation-settings: "opsz" 72; }
+h3 { font-size: 20px; line-height: 1.2; font-weight: 680; letter-spacing: -0.015em; }
+p { margin: 0; }
+.eyebrow { font: 500 12px/1.2 var(--font-mono); letter-spacing: 0.09em; text-transform: uppercase; color: var(--primary-text); }
+.lede { font-size: 19px; line-height: 1.55; color: var(--fg-2); max-width: 64ch; }
+.mono { font-family: var(--font-mono); font-size: 0.9em; }
+.muted { color: var(--fg-3); }
+
+/* ---------- hero ---------- */
+.hero { padding-block: 64px 40px; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 56px; align-items: center; }
+@media (max-width: 960px) { .hero .wrap { grid-template-columns: 1fr; gap: 36px; } }
+.hero-copy { display: grid; gap: 22px; min-width: 0; }
+.hero-mark { display: flex; align-items: center; gap: 14px; }
+.hero-mark .wordmark { font-size: 26px; }
+.hero h1 em { font-style: normal; color: var(--primary-text); }
+.hero-links { display: flex; flex-wrap: wrap; gap: 10px; }
+.hero-links a {
+  display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-size: 14px; font-weight: 500;
+  color: var(--fg); background: var(--surface); border: 1px solid var(--line-2); border-radius: 999px; padding: 8px 14px;
+}
+.hero-links a:hover { border-color: var(--primary); }
+.hero-links a .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+
+.stack { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow); padding: 8px; display: grid; gap: 2px; min-width: 0; }
+.stack-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px 10px; flex-wrap: wrap; }
+.stack-head b { font: 650 15px/1.2 var(--font-display); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--fg-3); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.legend .k-ours { background: var(--primary-soft); border: 1.5px solid var(--primary); }
+.legend .k-g { background: var(--g-soft); border: 1.5px solid var(--g-line); }
+.legend .k-ai { background: var(--aura); }
+.legend .k-yes { background: var(--amber); }
+.layer { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 12px; align-items: center; padding: 11px 14px; border-radius: 14px; background: var(--surface-2); }
+.layer > span { font: 500 11px/1.3 var(--font-mono); letter-spacing: 0.07em; text-transform: uppercase; color: var(--fg-3); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 13px; font-weight: 500; line-height: 1; padding: 7px 10px; border-radius: 9px; white-space: nowrap; border: 1px solid; }
+.chip.g { color: var(--g-text); background: var(--g-soft); border-color: var(--g-line); }
+.chip.ours { color: var(--primary-text); background: var(--primary-soft); border-color: color-mix(in srgb, var(--primary) 45%, transparent); }
+.chip.ai { color: var(--fg); background: linear-gradient(var(--surface), var(--surface)) padding-box, var(--aura) border-box; border: 1.5px solid transparent; }
+.chip.ext { color: var(--fg-2); background: var(--surface); border-color: var(--line-2); }
+@media (max-width: 520px) { .layer { grid-template-columns: 1fr; gap: 8px; } }
+
+/* the mark: the S is a route from the godown dot to the amber pin; it draws once */
+.mk .route { stroke-dasharray: 80; stroke-dashoffset: 0; }
+.mk .pin { transform-box: fill-box; transform-origin: center; }
+.mk.play .route { animation: draw 0.9s 0.25s cubic-bezier(.65,0,.35,1) both; }
+.mk.play .pin { animation: drop 0.55s 1.05s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes draw { from { stroke-dashoffset: 80; } }
+@keyframes drop { from { transform: translateY(-14px) scale(.6); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .mk.play .route, .mk.play .pin { animation: none; } }
+
+/* ---------- sections ---------- */
+section { padding-block: 72px; }
+section + section { border-top: 1px solid var(--line); }
+.sec-head { display: grid; gap: 14px; margin-bottom: 36px; max-width: 820px; }
+figure { margin: 0; }
+.fig { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow); overflow: hidden; }
+.fig-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.fig svg { display: block; width: 100%; height: auto; }
+.fig-scroll svg { min-width: 980px; }
+figcaption { padding: 14px 20px 18px; border-top: 1px solid var(--line); font-size: 14px; color: var(--fg-3); display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: center; justify-content: space-between; }
+figcaption p { max-width: 70ch; }
+.scroll-hint { display: none; font: 500 11px/1 var(--font-mono); color: var(--fg-3); padding: 10px 20px 0; }
+@media (max-width: 980px) { .scroll-hint { display: block; } }
+
+/* ---------- SVG diagram ink ---------- */
+.d text { font-family: var(--font-ui); }
+.d .col { font: 500 11px var(--font-mono); letter-spacing: 0.08em; fill: var(--fg-3); text-transform: uppercase; }
+.d .h { font-size: 13.5px; font-weight: 640; fill: var(--fg); }
+.d .hb { font: 700 16px var(--font-display); fill: var(--fg); letter-spacing: -0.01em; }
+.d .s { font-size: 11.5px; fill: var(--fg-3); }
+.d .r { font-size: 12px; font-weight: 500; fill: var(--fg-2); }
+.d .m { font: 400 11px var(--font-mono); fill: var(--g-text); }
+.d .e { font: 500 10.5px var(--font-mono); fill: var(--fg-3); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+.d .band { font-size: 12.5px; font-weight: 500; fill: var(--fg-2); }
+.d .stop { font: 700 15px var(--font-display); fill: var(--fg); letter-spacing: -0.01em; }
+.d .grp { fill: var(--surface-2); stroke: var(--line-2); stroke-width: 1; }
+.d .tile { fill: var(--surface); stroke: var(--line-2); stroke-width: 1; }
+.d .tile.stub { stroke-dasharray: 4 4; }
+.d .ng { fill: var(--g-soft); stroke: var(--g-line); stroke-width: 1.3; }
+.d .ours { fill: var(--surface); stroke: var(--primary); stroke-width: 1.8; }
+.d .row { fill: var(--primary-soft); stroke: none; }
+.d .ai { fill: var(--surface); stroke-width: 2.2; }
+.d .gem { fill: var(--ai-soft); stroke-width: 1.8; }
+.d .bandbox { fill: var(--surface-2); stroke: var(--line); }
+.d .edge { fill: none; stroke: var(--fg-3); stroke-width: 1.5; }
+.d .edge.ret { stroke-dasharray: 5 4; }
+.d .edge.evt { stroke: var(--primary); }
+.d .edge.ai-e { stroke: var(--ai); }
+.d .ah { fill: var(--fg-3); }
+.d .ahg { fill: var(--primary); }
+.d .aha { fill: var(--ai); }
+.d .ahy { fill: var(--amber-line); }
+.d .pulse { fill: none; stroke: var(--glow); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 3 24; animation: run 1.5s linear infinite; }
+.d .pulse.ai-p { stroke: var(--ai); }
+@keyframes run { to { stroke-dashoffset: -27; } }
+.paused .d .pulse { animation-play-state: paused; opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .d .pulse { animation: none; opacity: 0; } }
+.d .route-line { stroke: var(--primary); stroke-width: 4; fill: none; stroke-linecap: round; }
+.d .node { fill: var(--surface); stroke: var(--primary); stroke-width: 3.5; }
+.d .node.yes { fill: var(--amber); stroke: var(--surface); stroke-width: 3; }
+.d .card { fill: var(--surface); stroke: var(--line-2); }
+.d .card.yes { fill: var(--amber-soft); stroke: var(--amber-line); }
+.d .tier { stroke-width: 1.2; }
+.d .tier.flash { fill: var(--ai-soft); stroke: var(--ai); }
+.d .tier.pro { fill: var(--ai); stroke: var(--ai); }
+.d .tier.none { fill: var(--surface-2); stroke: var(--line-2); }
+.d .tier.person { fill: var(--amber); stroke: var(--amber-line); }
+.d .tier.opt { stroke-dasharray: 3 2.5; }
+.d .tt { font: 600 10.5px var(--font-mono); letter-spacing: 0.02em; }
+.d .tt.flash { fill: var(--ai); }
+.d .tt.pro { fill: var(--surface); }
+.d .tt.none { fill: var(--fg-3); }
+.d .tt.person { fill: #2a1c00; }
+
+/* ---------- the four the brief asks about ---------- */
+.spot { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 860px) { .spot { grid-template-columns: 1fr; } }
+.sp { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 26px; display: grid; gap: 16px; align-content: start; min-width: 0; }
+.sp-head { display: flex; align-items: center; gap: 14px; }
+.sp-head .gl { width: 44px; height: 44px; flex: none; border-radius: 13px; display: grid; place-items: center; }
+.sp-head .gl svg { width: 24px; height: 24px; }
+.gl.g { background: var(--g-soft); color: var(--g); border: 1px solid var(--g-line); }
+.gl.ai { background: linear-gradient(var(--surface), var(--surface)) padding-box, var(--aura) border-box; border: 1.5px solid transparent; color: var(--ai); }
+.gl.off { background: var(--surface-2); color: var(--fg-3); border: 1px dashed var(--line-2); }
+.sp-head h3 { font-size: 22px; }
+.sp-head p { font-size: 13px; color: var(--fg-3); }
+.sp ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.sp li { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 10px; font-size: 15px; color: var(--fg-2); line-height: 1.5; }
+.sp li::before { content: ""; width: 7px; height: 7px; margin-top: 8px; border-radius: 50%; background: var(--primary); justify-self: center; }
+.sp li b { color: var(--fg); font-weight: 600; }
+.why { font-size: 14.5px; color: var(--fg-2); background: var(--surface-2); border-radius: 12px; padding: 12px 14px; }
+.why b { font: 600 11px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary-text); margin-right: 6px; }
+.sp.firestore { background: var(--surface-2); border-style: dashed; border-color: var(--line-2); }
+.badge { display: inline-block; font: 600 11px/1 var(--font-mono); letter-spacing: 0.04em; padding: 5px 8px; border-radius: 6px; vertical-align: 2px; margin-left: 8px; }
+.badge.off { color: var(--fg-2); background: var(--surface); border: 1px solid var(--line-2); }
+
+/* ---------- component catalogue ---------- */
+.cat { display: grid; gap: 34px; }
+.cat-group { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 24px; }
+@media (max-width: 900px) { .cat-group { grid-template-columns: 1fr; gap: 14px; } }
+.cat-label { display: grid; gap: 6px; align-content: start; position: sticky; top: 84px; }
+@media (max-width: 900px) { .cat-label { position: static; } }
+.cat-label b { font: 680 19px/1.2 var(--font-display); letter-spacing: -0.01em; }
+.cat-label span { font-size: 14px; color: var(--fg-3); }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.card-head { display: flex; align-items: center; gap: 11px; }
+.card-head .gl { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; flex: none; }
+.card-head .gl svg { width: 19px; height: 19px; }
+.card-head b { font-size: 15.5px; font-weight: 640; line-height: 1.25; }
+.card p { font-size: 14px; color: var(--fg-2); line-height: 1.55; }
+.card p.w { color: var(--fg-3); }
+.card p.w::before { content: "Why  "; font: 600 10.5px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary-text); }
+.card code, .sp code, .tst code, .flow-note code { font: 400 0.86em var(--font-mono); color: var(--fg); background: var(--sunken); padding: 1px 5px; border-radius: 5px; overflow-wrap: anywhere; }
+
+/* ---------- agents ---------- */
+.guards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-top: 22px; }
+.guard { border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: 16px; display: grid; gap: 6px; }
+.guard b { font-size: 15px; font-weight: 640; }
+.guard p { font-size: 14px; color: var(--fg-2); }
+.split { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; margin-top: 18px; }
+
+/* ---------- application flow ---------- */
+.flow { display: grid; gap: 18px; }
+.stages { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 10px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 18px; }
+.stages .grp-t { font: 500 11px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-3); padding: 0 6px 0 8px; }
+.stages .grp-t + .stage { margin-left: 0; }
+.stages .grp-t:not(:first-child) { margin-left: 10px; padding-left: 16px; border-left: 1px solid var(--line-2); }
+@media (max-width: 700px) { .stages .grp-t { width: 100%; padding: 6px 4px 2px; } .stages .grp-t:not(:first-child) { margin-left: 0; border-left: 0; } }
+.stage {
+  position: relative; display: inline-flex; align-items: center; gap: 9px; text-align: left; cursor: pointer;
+  font: 500 14.5px/1.2 var(--font-ui); color: var(--fg-2); background: transparent;
+  border: 1px solid transparent; border-radius: 999px; padding: 8px 13px 8px 11px; white-space: nowrap;
+}
+.stage:hover { color: var(--fg); background: var(--surface); }
+.stage[aria-selected="true"] { color: var(--fg); background: var(--surface); border-color: var(--line-2); box-shadow: var(--shadow); font-weight: 600; }
+.stage .pt { width: 11px; height: 11px; border-radius: 50%; border: 2.5px solid var(--primary); background: var(--surface); flex: none; }
+.stage[aria-selected="true"] .pt { background: var(--primary); }
+.stage.yes .pt { border-color: var(--amber-line); }
+.stage.yes[aria-selected="true"] .pt { background: var(--amber); }
+.stage.loop .pt { border-radius: 3px; }
+.flow-panel { display: grid; gap: 14px; min-width: 0; }
+.flow-head { display: grid; gap: 10px; }
+.flow-head h3 { font-size: 26px; }
+.flow-head p { color: var(--fg-2); max-width: 74ch; }
+.gcp-used { display: flex; flex-wrap: wrap; gap: 6px; }
+.flow-key { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 12.5px; color: var(--fg-3); }
+.flow-key span { display: inline-flex; align-items: center; gap: 7px; }
+.flow-key svg { width: 26px; height: 8px; }
+.flow-note { font-size: 14px; color: var(--fg-3); }
+
+/* ---------- identity ---------- */
+.keyless { display: grid; gap: 10px; }
+.kl { display: grid; grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr) 28px minmax(0, 1.3fr); align-items: center; gap: 8px; }
+.kl > div { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14px; color: var(--fg-2); min-width: 0; }
+.kl > div b { display: block; color: var(--fg); font-size: 14.5px; font-weight: 620; margin-bottom: 2px; }
+.kl > div.sa { border-color: var(--g-line); background: var(--g-soft); }
+.kl > div.sa b { font-family: var(--font-mono); font-size: 13px; color: var(--g-text); overflow-wrap: anywhere; }
+.kl > svg { width: 28px; height: 14px; color: var(--fg-3); justify-self: center; }
+.kl-head { font: 500 11px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-3); }
+.kl-head > div { background: none; border: 0; padding: 0 2px; }
+@media (max-width: 760px) { .kl { grid-template-columns: 1fr; } .kl > svg { transform: rotate(90deg); } .kl-head { display: none; } }
+
+/* ---------- testing ---------- */
+.tests { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 14px; }
+.tst { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.tst-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.tst-head b { font: 680 19px/1.2 var(--font-display); letter-spacing: -0.01em; }
+.when { font: 600 10.5px/1 var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; padding: 5px 8px; border-radius: 6px; white-space: nowrap; }
+.when.pr { color: var(--primary-text); background: var(--primary-soft); }
+.when.ask { color: var(--amber-text); background: var(--amber-soft); }
+.tst .tool { font: 400 12.5px/1.4 var(--font-mono); color: var(--g-text); }
+.tst p { font-size: 14.5px; color: var(--fg-2); }
+.tst ul { margin: 0; padding-left: 18px; font-size: 14px; color: var(--fg-2); display: grid; gap: 4px; }
+.matrix-wrap { overflow-x: auto; margin-top: 28px; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; }
+table.matrix { border-collapse: collapse; width: 100%; min-width: 860px; font-size: 14px; }
+.matrix th, .matrix td { padding: 11px 10px; text-align: center; border-bottom: 1px solid var(--line); }
+.matrix thead th { font: 500 11px/1.3 var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--fg-3); vertical-align: bottom; }
+.matrix tbody th { text-align: left; font-weight: 600; color: var(--fg); padding-left: 20px; white-space: nowrap; }
+.matrix tbody tr:last-child > * { border-bottom: 0; }
+.matrix tbody tr:hover { background: var(--surface-2); }
+.dot { display: inline-block; width: 13px; height: 13px; border-radius: 50%; vertical-align: middle; }
+.dot.full { background: var(--primary); }
+.dot.rec { background: linear-gradient(90deg, var(--primary) 50%, transparent 50%); border: 1.5px solid var(--primary); }
+.matrix-key { display: flex; flex-wrap: wrap; gap: 18px; padding: 14px 20px; border-top: 1px solid var(--line); font-size: 13px; color: var(--fg-3); }
+.matrix-key span { display: inline-flex; align-items: center; gap: 8px; }
+
+/* ---------- observability waterfall ---------- */
+.wf { padding: 22px 22px 8px; display: grid; gap: 7px; min-width: 760px; }
+.wf-row { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 16px; align-items: center; }
+.wf-row > span { font: 400 12.5px/1.2 var(--font-mono); color: var(--fg-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wf-row > span.in { padding-left: 18px; color: var(--fg-3); }
+.wf-track { position: relative; height: 18px; background: repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 10%); border-radius: 4px; }
+.wf-bar { position: absolute; top: 2px; height: 14px; border-radius: 4px; }
+.wf-bar.api { background: var(--primary); }
+.wf-bar.sql { background: var(--g); }
+.wf-bar.fb { background: color-mix(in srgb, var(--g) 55%, var(--surface)); }
+.wf-bar.ps { background: color-mix(in srgb, var(--primary) 45%, var(--surface)); }
+.wf-bar.ag { background: color-mix(in srgb, var(--ai) 35%, var(--surface)); border: 1.5px solid var(--ai); }
+.wf-bar.gem { background: var(--aura); }
+.wf-bar.dat { background: color-mix(in srgb, var(--g) 75%, var(--fg)); }
+.obs-points { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; margin-top: 18px; }
+
+/* ---------- footer ---------- */
+footer { border-top: 1px solid var(--line); padding-block: 44px 64px; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; align-items: flex-start; }
+footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
+.foot-links { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<!-- the brand mark, defined once; the bar and the hero reuse it -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="mk-g" x1="8" y1="4" x2="58" y2="62" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#2fbf7f"/><stop offset=".55" stop-color="#178258"/><stop offset="1" stop-color="#0d5a3e"/></linearGradient>
+    <linearGradient id="mk-h" x1="32" y1="2" x2="32" y2="34" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  </defs>
+</svg>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Smart-Clearance architecture, back to the top">
+      <svg class="mk" width="30" height="30" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 2C9.5 2 2 9.5 2 32s7.5 30 30 30 30-7.5 30-30S54.5 2 32 2Z" fill="url(#mk-g)"/><path d="M32 3C10.5 3 3 10.5 3 31.5 10 22 22 18 32 18s22 4 29 13.5C61 10.5 53.5 3 32 3Z" fill="url(#mk-h)"/><path class="route" d="M43.5 19H27a7 7 0 0 0 0 14h10a7 7 0 0 1 0 14H20.5" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="43.5" cy="19" r="3.4" fill="#0d5a3e" stroke="#fff" stroke-width="2.6"/><circle class="pin" cx="20.5" cy="47" r="5.2" fill="#f7c04a" stroke="#fff" stroke-width="2.2"/></svg>
+      <span class="wordmark">Smart&#8209;Clearance</span>
+      <small>Architecture</small>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#system">System</a>
+      <a href="#brief">Firebase, Cloud Run, Gemini</a>
+      <a href="#gcp">Google Cloud</a>
+      <a href="#agents">Agents</a>
+      <a href="#flow">Application flow</a>
+      <a href="#cicd">CI/CD</a>
+      <a href="#testing">Testing</a>
+      <a href="#observe">Observability</a>
+    </nav>
+    <button class="motion-btn" id="motion" type="button" aria-pressed="false">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="3" width="3" height="10" rx="1" fill="currentColor"/><rect x="9.5" y="3" width="3" height="10" rx="1" fill="currentColor"/></svg>
+      <span>Pause motion</span>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ================= HERO ================= -->
+<div class="hero">
+  <div class="wrap">
+    <div class="hero-copy">
+      <div class="hero-mark">
+        <svg class="mk play" width="56" height="56" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 2C9.5 2 2 9.5 2 32s7.5 30 30 30 30-7.5 30-30S54.5 2 32 2Z" fill="url(#mk-g)"/><path d="M32 3C10.5 3 3 10.5 3 31.5 10 22 22 18 32 18s22 4 29 13.5C61 10.5 53.5 3 32 3Z" fill="url(#mk-h)"/><path class="route" d="M43.5 19H27a7 7 0 0 0 0 14h10a7 7 0 0 1 0 14H20.5" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="43.5" cy="19" r="3.4" fill="#0d5a3e" stroke="#fff" stroke-width="2.6"/><circle class="pin" cx="20.5" cy="47" r="5.2" fill="#f7c04a" stroke="#fff" stroke-width="2.2"/></svg>
+        <span class="wordmark">Smart&#8209;Clearance</span>
+      </div>
+      <p class="eyebrow">Google AI Hackathon 2026 · Retail &amp; Commerce · Technical architecture</p>
+      <h1>Every near-expiry carton gets a second chance, <em>routed by agents on Google Cloud.</em></h1>
+      <p class="lede">Smart-Clearance finds an FMCG brand's stock that will not sell before its date, reads the carton's label, prices every way out, and waits for one person's yes. Then agents list the lot, offer it to kiranas, answer buyers, draft the GST papers and post the impact ledger. This page shows how it is built: Firebase at the edge, Cloud Run for the API and the agents, Gemini on Vertex AI for the words, Pub/Sub for the events, Cloud SQL as the system of record and BigQuery for the analytics.</p>
+      <div class="hero-links">
+        <a href="https://smartclearance.web.app" target="_blank" rel="noopener"><span class="dot"></span>Landing page</a>
+        <a href="https://munchly-smartclearance.web.app" target="_blank" rel="noopener"><span class="dot"></span>Workspace app</a>
+        <a href="https://smartclearance-console.web.app" target="_blank" rel="noopener"><span class="dot"></span>Staff console</a>
+        <a href="https://smartclearance-demo.web.app" target="_blank" rel="noopener"><span class="dot"></span>Guided demo</a>
+        <a href="https://github.com/aibuilder2026/smart-clearance" target="_blank" rel="noopener">Source on GitHub</a>
+      </div>
+    </div>
+
+    <div class="stack" role="group" aria-label="The stack, layer by layer">
+      <div class="stack-head">
+        <b>The stack at a glance</b>
+        <div class="legend"><span><i class="k-g"></i>Google Cloud</span><span><i class="k-ours"></i>Our code</span><span><i class="k-ai"></i>AI</span></div>
+      </div>
+      <div class="layer"><span>Experience</span><div class="chips"><span class="chip ours">SvelteKit apps</span><span class="chip g">Firebase Hosting</span><span class="chip g">Firebase Auth</span><span class="chip g">Cloud Messaging</span></div></div>
+      <div class="layer"><span>Services</span><div class="chips"><span class="chip ours">backend-api · FastAPI</span><span class="chip g">Cloud Run</span><span class="chip g">Cloud Run jobs</span></div></div>
+      <div class="layer"><span>Intelligence</span><div class="chips"><span class="chip ai">Gemini on Vertex AI</span><span class="chip ai">Agent Development Kit</span><span class="chip ours">agents service</span></div></div>
+      <div class="layer"><span>Events</span><div class="chips"><span class="chip g">Pub/Sub</span><span class="chip g">Cloud Scheduler</span><span class="chip ours">transactional outbox</span><span class="chip ours">SSE stream</span></div></div>
+      <div class="layer"><span>Data</span><div class="chips"><span class="chip g">Cloud SQL · PostgreSQL</span><span class="chip g">BigQuery</span><span class="chip g">Cloud Storage</span></div></div>
+      <div class="layer"><span>Trust</span><div class="chips"><span class="chip g">Secret Manager</span><span class="chip g">IAM, no keys</span><span class="chip g">Workload Identity Federation</span></div></div>
+      <div class="layer"><span>Delivery</span><div class="chips"><span class="chip ext">GitHub Actions</span><span class="chip g">Cloud Build</span><span class="chip g">Artifact Registry</span><span class="chip ext">Terraform</span></div></div>
+      <div class="layer"><span>Operations</span><div class="chips"><span class="chip g">Cloud Logging</span><span class="chip g">Cloud Trace</span><span class="chip g">Cloud Monitoring</span><span class="chip g">Error Reporting</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= SYSTEM ================= -->
+<section id="system">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">The system</p>
+      <h2>One picture of everything that runs</h2>
+      <p class="lede">Static apps on Firebase Hosting call one API on Cloud Run. The API is the only writer: every change commits in one transaction with its audit line and its outgoing events, then Pub/Sub carries the events to a stateless agents service that asks Gemini for words and reports back. Pushes reach phones through Firebase Cloud Messaging; screens move on over a live stream.</p>
+    </div>
+
+    <figure class="fig">
+      <p class="scroll-hint">Scroll sideways to see the whole diagram</p>
+      <div class="fig-scroll">
+      <svg class="d" viewBox="0 0 1400 760" role="img" aria-label="Architecture: browsers and phones load four apps from Firebase Hosting, sign in with Firebase Authentication and call backend-api on Cloud Run with an ID token. backend-api writes to Cloud SQL, reads Secret Manager, signs Cloud Storage URLs, sends pushes through Firebase Cloud Messaging and publishes events to Pub/Sub after commit. Pub/Sub pushes to the agents service on Cloud Run, which calls Gemini on Vertex AI, reads and writes BigQuery and Cloud Storage, and reports back to backend-api. Cloud Scheduler ticks backend-api.">
+        <defs>
+          <marker id="o-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ah"/></marker>
+          <marker id="o-ahg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ahg"/></marker>
+          <marker id="o-aha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="aha"/></marker>
+          <linearGradient id="o-aura" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#34d399"/><stop offset=".45" stop-color="#2dd4bf"/><stop offset=".75" stop-color="#38bdf8"/><stop offset="1" stop-color="#a3e635"/></linearGradient>
+        </defs>
+
+        <!-- column heads -->
+        <text class="col" x="110" y="40" text-anchor="middle">People and apps</text>
+        <text class="col" x="390" y="40" text-anchor="middle">Firebase</text>
+        <text class="col" x="1015" y="160" text-anchor="middle">Events</text>
+        <text class="col" x="1280" y="40" text-anchor="middle">Intelligence</text>
+
+        <!-- people and apps -->
+        <rect class="grp" x="20" y="56" width="180" height="392" rx="18"/>
+        <rect class="tile" x="32" y="68" width="156" height="78" rx="12"/>
+        <text class="h" x="46" y="96">Landing page</text><text class="s" x="46" y="114">visitors, prerendered</text><text class="s" x="46" y="130">SvelteKit</text>
+        <rect class="tile" x="32" y="156" width="156" height="78" rx="12"/>
+        <text class="h" x="46" y="184">Staff console</text><text class="s" x="46" y="202">Smart-Clearance staff</text><text class="s" x="46" y="218">SvelteKit</text>
+        <rect class="tile" x="32" y="244" width="156" height="78" rx="12"/>
+        <text class="h" x="46" y="272">Workspace app</text><text class="s" x="46" y="290">brand team, partners</text><text class="s" x="46" y="306">installable PWA</text>
+        <rect class="tile stub" x="32" y="332" width="156" height="78" rx="12"/>
+        <text class="h" x="46" y="360">Guided demo</text><text class="s" x="46" y="378">in-browser stub</text><text class="s" x="46" y="394">no backend calls</text>
+
+        <!-- firebase -->
+        <rect class="ng" x="290" y="56" width="200" height="124" rx="14"/>
+        <text class="h" x="306" y="84">Firebase Hosting</text><text class="s" x="306" y="104">a site per app</text><text class="s" x="306" y="121">global CDN, rewrites</text><text class="s" x="306" y="138">security headers</text><text class="m" x="306" y="162">*.web.app</text>
+        <rect class="ng" x="290" y="204" width="200" height="92" rx="14"/>
+        <text class="h" x="306" y="232">Firebase Auth</text><text class="s" x="306" y="252">Identity Platform</text><text class="s" x="306" y="269">email and password</text><text class="m" x="306" y="286">ID tokens</text>
+        <rect class="ng" x="290" y="316" width="200" height="84" rx="14"/>
+        <text class="h" x="306" y="344">Cloud Messaging</text><text class="s" x="306" y="364">Firebase web push</text><text class="s" x="306" y="381">phones and browsers</text>
+
+        <!-- scheduler -->
+        <rect class="ng" x="600" y="56" width="220" height="60" rx="12"/>
+        <text class="h" x="616" y="82">Cloud Scheduler</text><text class="s" x="616" y="100">the journey's tick</text>
+
+        <!-- backend-api -->
+        <rect class="ours" x="580" y="150" width="260" height="300" rx="18"/>
+        <text class="hb" x="598" y="180">backend-api</text><text class="s" x="598" y="198">FastAPI on Cloud Run</text>
+        <rect class="row" x="596" y="210" width="228" height="30" rx="8"/><text class="r" x="610" y="230">REST API for every app</text>
+        <rect class="row" x="596" y="248" width="228" height="30" rx="8"/><text class="r" x="610" y="268">Live stream, server-sent events</text>
+        <rect class="row" x="596" y="286" width="228" height="30" rx="8"/><text class="r" x="610" y="306">Money rules, papers, ledger</text>
+        <rect class="row" x="596" y="324" width="228" height="30" rx="8"/><text class="r" x="610" y="344">Transactional outbox</text>
+        <rect class="row" x="596" y="362" width="228" height="30" rx="8"/><text class="r" x="610" y="382">/internal routes for agents</text>
+        <rect class="row" x="596" y="400" width="228" height="30" rx="8"/><text class="r" x="610" y="420">Append-only audit log</text>
+
+        <!-- pub/sub -->
+        <rect class="ng" x="930" y="176" width="170" height="196" rx="14"/>
+        <text class="h" x="946" y="202">Cloud Pub/Sub</text><text class="s" x="946" y="220">push in production</text>
+        <text class="m" x="946" y="246">batch.at_risk</text><text class="m" x="946" y="264">offer.received</text><text class="m" x="946" y="282">deal.closed</text><text class="m" x="946" y="300">journey.step</text><text class="m" x="946" y="318">notify</text><text class="m" x="946" y="336">dead-letter</text>
+
+        <!-- agents and gemini -->
+        <rect class="ai" x="1190" y="150" width="180" height="170" rx="18" stroke="url(#o-aura)"/>
+        <text class="hb" x="1208" y="180">agents</text><text class="s" x="1208" y="198">ADK on Cloud Run</text>
+        <rect class="row" x="1206" y="210" width="148" height="28" rx="8"/><text class="r" x="1218" y="229">a pipeline per event</text>
+        <rect class="row" x="1206" y="244" width="148" height="28" rx="8"/><text class="r" x="1218" y="263">stateless, idempotent</text>
+        <rect class="row" x="1206" y="278" width="148" height="28" rx="8"/><text class="r" x="1218" y="297">words, never figures</text>
+        <rect class="gem" x="1190" y="350" width="180" height="88" rx="14" stroke="url(#o-aura)"/>
+        <text class="hb" x="1208" y="378">Gemini</text><text class="s" x="1208" y="396">Vertex AI, global</text><text class="s" x="1208" y="413">Pro and Flash tiers</text>
+
+        <!-- data row -->
+        <rect class="ng" x="290" y="500" width="200" height="80" rx="14"/>
+        <text class="h" x="306" y="528">Secret Manager</text><text class="s" x="306" y="548">read by reference</text><text class="s" x="306" y="565">never in a file</text>
+        <rect class="ng" x="640" y="500" width="180" height="80" rx="14"/>
+        <text class="h" x="656" y="528">Cloud SQL</text><text class="s" x="656" y="548">PostgreSQL</text><text class="s" x="656" y="565">system of record</text>
+        <rect class="ng" x="930" y="500" width="170" height="80" rx="14"/>
+        <text class="h" x="946" y="528">Cloud Storage</text><text class="s" x="946" y="548">label photos, exports</text><text class="s" x="946" y="565">paper PDFs</text>
+        <rect class="ng" x="1190" y="500" width="180" height="80" rx="14"/>
+        <text class="h" x="1206" y="528">BigQuery</text><text class="s" x="1206" y="548">sell-through, prices</text><text class="s" x="1206" y="565">impact, agent runs</text>
+
+        <!-- edges -->
+        <path class="edge" d="M200 118H290" marker-end="url(#o-ah)"/><text class="e" x="245" y="110" text-anchor="middle">loads</text>
+        <path class="edge" d="M200 238H290" marker-end="url(#o-ah)"/><text class="e" x="245" y="230" text-anchor="middle">signs in</text>
+        <path class="edge ret" d="M290 262H200" marker-end="url(#o-ah)"/><text class="e" x="245" y="280" text-anchor="middle">ID token</text>
+        <path class="edge evt" d="M290 358H200" marker-end="url(#o-ahg)"/><text class="e" x="245" y="350" text-anchor="middle">pushes</text>
+        <path class="edge" d="M200 424H580" marker-end="url(#o-ah)"/><text class="e" x="390" y="417" text-anchor="middle">REST + ID token · live SSE stream</text>
+        <path class="edge" d="M580 232H490" marker-end="url(#o-ah)"/><text class="e" x="535" y="224" text-anchor="middle">verifies</text>
+        <path class="edge evt" d="M580 360H490" marker-end="url(#o-ahg)"/><text class="e" x="535" y="352" text-anchor="middle">sends</text>
+        <path class="edge evt" d="M710 116V150" marker-end="url(#o-ahg)"/><text class="e" x="718" y="138">tick · OIDC</text>
+        <path class="edge evt" d="M840 262H930" marker-end="url(#o-ahg)"/><text class="e" x="885" y="254" text-anchor="middle">publishes</text>
+        <path class="edge evt" d="M1100 262H1190" marker-end="url(#o-ahg)"/><text class="e" x="1145" y="254" text-anchor="middle">push · OIDC</text>
+        <path class="edge" d="M1280 150V132H800V150" marker-end="url(#o-ah)"/><text class="e" x="1040" y="125" text-anchor="middle">reads and reports on /internal · Google ID token</text>
+        <path class="edge ai-e" d="M1280 320V350" marker-end="url(#o-aha)"/><text class="e" x="1288" y="339">prompt, JSON back</text>
+        <path class="edge" d="M1190 296H1150V540H1190" marker-end="url(#o-ah)"/>
+        <path class="edge" d="M1150 540H1100" marker-end="url(#o-ah)"/>
+        <text class="e" x="1144" y="470" text-anchor="end">load jobs, queries, files</text>
+        <path class="edge" d="M730 450V500" marker-end="url(#o-ah)"/><text class="e" x="738" y="480">IAM login</text>
+        <path class="edge" d="M600 450V540H490" marker-end="url(#o-ah)"/><text class="e" x="545" y="532" text-anchor="middle">secrets</text>
+        <path class="edge" d="M840 410H880V540H930" marker-end="url(#o-ah)"/><text class="e" x="886" y="470">signs URLs</text>
+        <path class="edge" d="M110 448V602H1015V580" marker-end="url(#o-ah)"/><text class="e" x="560" y="596" text-anchor="middle">photos and exports upload straight to signed URLs</text>
+
+        <!-- traffic -->
+        <path class="pulse" d="M200 424H580"/>
+        <path class="pulse" d="M840 262H930"/>
+        <path class="pulse" d="M1100 262H1190"/>
+        <path class="pulse" d="M1280 150V132H800V150"/>
+        <path class="pulse ai-p" d="M1280 320V350"/>
+        <path class="pulse" d="M290 358H200"/>
+        <path class="pulse" d="M710 116V150"/>
+
+        <!-- bands -->
+        <rect class="bandbox" x="20" y="624" width="1360" height="54" rx="14"/>
+        <text class="col" x="40" y="656">Operations</text>
+        <text class="band" x="200" y="656">Cloud Logging, JSON lines with the trace · Error Reporting · Cloud Trace over OTLP · Cloud Monitoring uptime, alerts, dashboard · Billing budget</text>
+        <rect class="bandbox" x="20" y="690" width="1360" height="54" rx="14"/>
+        <text class="col" x="40" y="722">Delivery, trust</text>
+        <text class="band" x="200" y="722">GitHub Actions · Workload Identity Federation · Cloud Build · Artifact Registry · a service account per job, no keys · Terraform for every resource</text>
+      </svg>
+      </div>
+      <figcaption>
+        <p>Blue boxes are managed Google Cloud and Firebase services; green outlines are Smart-Clearance's own code; the gradient outline is AI. Green arrows are events and pushes, grey arrows are requests, dashed arrows are replies.</p>
+        <div class="legend"><span><i class="k-g"></i>Google Cloud</span><span><i class="k-ours"></i>Our code</span><span><i class="k-ai"></i>AI</span></div>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ================= THE BRIEF ================= -->
+<section id="brief">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">What the brief asks about</p>
+      <h2>Firebase, Cloud Run and Gemini, and why Firestore is not here</h2>
+      <p class="lede">Each Google product was picked for a job the product has to do. Where one would have been a poor fit, we said so and used the one that fits.</p>
+    </div>
+    <div class="spot">
+      <article class="sp">
+        <div class="sp-head">
+          <span class="gl g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></svg></span>
+          <div><h3>Firebase</h3><p>Hosting, Authentication, Cloud Messaging, web apps</p></div>
+        </div>
+        <ul>
+          <li><span><b>Hosting</b> serves each SvelteKit app as a static build on its own site: the prerendered landing page, the staff console, Munchly's workspace PWA and the guided demo. Deep links rewrite to the app, hashed assets cache as immutable, and the private apps send <code>noindex</code>, frame-denial and referrer headers.</span></li>
+          <li><span><b>Authentication</b> (Identity Platform) signs everyone in with email and password from one user pool. Sign-up is off, so only backend-api creates accounts; a password policy and email-enumeration protection are on. The API verifies each ID token with <code>firebase-admin</code>.</span></li>
+          <li><span><b>Cloud Messaging</b> carries the Notifier's pushes to members' phones and browsers through the PWA's service worker, so a distributor hears about a label photo request and an approver about a plan waiting.</span></li>
+          <li><span><b>Web apps and restricted keys</b>: each app has its Firebase web app config, written by Terraform, and a browser key limited to the identity APIs from that app's own origins.</span></li>
+        </ul>
+        <p class="why"><b>Why</b>The apps are static over an API, so the whole frontend lives on Google's CDN with no server to run, and identity and push come from the same project with no password store or push service of our own.</p>
+      </article>
+
+      <article class="sp">
+        <div class="sp-head">
+          <span class="gl g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="4"/><path d="m10 9 5 3-5 3z" fill="currentColor"/></svg></span>
+          <div><h3>Cloud Run</h3><p>Two services, two jobs</p></div>
+        </div>
+        <ul>
+          <li><span><b>backend-api</b>, FastAPI on Python, is the public API and the system's only writer. It serves the REST routes, the live stream, the agents' <code>/internal</code> routes and the tick.</span></li>
+          <li><span><b>agents</b>, Google ADK on Python, takes internal traffic only. Cloud Run's IAM lets in one identity, <code>sc-invoker</code>, which Pub/Sub's push subscriptions sign as.</span></li>
+          <li><span><b>Jobs</b> on the same image: <code>backend-api-migrate</code> runs Alembic as the schema owner, and <code>backend-api-hydrate</code> builds a synthetic world through the services. Cloud Build runs the migration before every deploy.</span></li>
+          <li><span>Each runs as its own service account with an IAM database login, writes JSON logs that carry the trace, scales to zero, and rolls out one revision at a time behind a readiness check.</span></li>
+        </ul>
+        <p class="why"><b>Why</b>Containers without servers: the same image runs on a laptop and in the cloud, service-to-service calls are signed with OIDC instead of shared secrets, and a quiet prototype costs next to nothing.</p>
+      </article>
+
+      <article class="sp">
+        <div class="sp-head">
+          <span class="gl ai"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c.6 4.8 3.2 7.4 8 8-4.8.6-7.4 3.2-8 8-.6-4.8-3.2-7.4-8-8 4.8-.6 7.4-3.2 8-8z"/><circle cx="19" cy="19" r="1.6"/></svg></span>
+          <div><h3>Gemini on Vertex AI</h3><p>Two tiers, through the Agent Development Kit</p></div>
+        </div>
+        <ul>
+          <li><span><b>Gemini Pro</b> (<code>gemini-3.1-pro-preview</code>) writes where judgement shows: the Valuer's note on each exit, the Router's explanation of the split, the Negotiator's reply to a bid, and the evals' judge.</span></li>
+          <li><span><b>Gemini Flash</b> (<code>gemini-3.8-flash</code>) reads and drafts: Vision reads the printed label from a distributor's photo, the Data agent maps an unfamiliar DMS export, and the Lister, Outreach (offers in Hindi, English and Marathi), Paperwork and Impact write their copy.</span></li>
+          <li><span>Called through <code>google-genai</code> on Vertex AI's global endpoint with the service account's own credentials: no API key exists. Every call asks for structured output against a schema.</span></li>
+          <li><span>Gemini supplies words only. backend-api computes every rupee, the words are checked against those figures, and a template stands in for any reply that fails.</span></li>
+        </ul>
+        <p class="why"><b>Why</b>A multimodal model reads a crumpled carton label as printed, writes fluent shop offers in Indian languages, and runs under the project's own IAM, quotas and audit logs.</p>
+      </article>
+
+      <article class="sp firestore">
+        <div class="sp-head">
+          <span class="gl off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg></span>
+          <div><h3>Firestore <span class="badge off">Not used, by design</span></h3><p>Cloud SQL for PostgreSQL holds the record instead</p></div>
+        </div>
+        <ul>
+          <li><span>The workspace is a ledger: money worked out by one set of rules, papers numbered in series, credit notes per line, and an audit log nobody may edit. That needs transactions across tables, constraints, triggers and SQL.</span></li>
+          <li><span><b>Live updates</b>, the usual reason to reach for Firestore, come from PostgreSQL itself: a change NOTIFYs as it commits, and members read it as server-sent events, cut to their role on the server.</span></li>
+          <li><span><b>Events leave only after commit</b>: each change writes its Pub/Sub messages to an outbox in the same transaction, so an agent never acts on a change that rolled back.</span></li>
+          <li><span>The same PostgreSQL runs on a laptop in Docker, so every test runs against a real database, never a mock.</span></li>
+        </ul>
+        <p class="why"><b>Why</b>Firebase does what it is best at here (hosting, sign-in and push), and the record lives where transactions, joins and an append-only audit log come built in.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GOOGLE CLOUD CATALOGUE ================= -->
+<section id="gcp">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Every Google Cloud component</p>
+      <h2>What each service does here, and why we chose it</h2>
+      <p class="lede">All of it lives in one Google Cloud project, written in Terraform. Nothing is made by hand in a console, and no service account has a key.</p>
+    </div>
+
+    <div class="cat">
+      <div class="cat-group">
+        <div class="cat-label"><b>Edge and identity</b><span>Where people meet the product</span></div>
+        <div class="cards">
+          <div class="card"><div class="card-head"><span class="gl g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg></span><b>Firebase Hosting</b></div>
+            <p>A site per app, released by <code>firebase-tools</code>: the landing page prerendered with its data, and the console, workspace and demo as single-page apps with deep-link rewrites and immutable caching for hashed assets.</p>
+            <p class="w">Static builds on a global CDN, each app with its own address, release and rollback.</p></div>
+          <div class="card"><div class="card-head"><span class="gl g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M16 7l3 3M14 9l2 2"/></svg></span><b>Firebase Authentication</b></div>
+            <p>Identity Platform with email and password only, sign-up disabled, a password policy and email-enumeration protection. backend-api verifies ID tokens and makes accounts under a custom role limited to user management.</p>
+            <p class="w">Managed sign-in with standard ID tokens, and no password store of our own.</p></div>
+          <div class="card"><div class="card-head"><span class="gl g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></span><b>Firebase Cloud Messaging</b></div>
+            <p>The Notifier sends each notification to the member's registered devices through the workspace PWA's service worker. backend-api holds a custom role that may only send messages.</p>
+            <p class="w">One push channel for Android, installed iOS web apps and desktop browsers.</p></div>
+        </div>
+      </div>
+
+      <div class="cat-group">
+        <div class="cat-label"><b>Compute</b><span>Containers, no servers</span></div>
+        <div class="cards">
+          <div class="card"><div class="card-head"><span class="gl g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="4"/><path d="m10 9 5 3-5 3z" fill="currentColor"/></svg></span><b>Cloud Run services</b></div>
+            <p><code>backend-api</code> takes public traffic from the apps. <code>agents</code> takes internal traffic only, and only from <code>sc-invoker</code>, the identity Pub/Sub signs its pushes with.</p>
+            <p class="w">Scale to zero, a revision per release, service-to-service auth with OIDC tokens.</p></div>
+          <div class="card"><div class="card-head"><span class="gl g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="4"/><path d="M8 10h8M8 14h5"/></svg></span><b>Cloud Run jobs</b></div>
+            <p><code>backend-api-migrate</code> runs Alembic as the schema owner's IAM login; <code>backend-api-hydrate</code> builds the synthetic world through the services. Both use the API's image.</p>
+            <p class="w">One-off work with the same image and identity model, and no bastion host.</p></div>
+        </div>
+      </div>
+
+      <div class="cat-group">
+        <div class="cat-label"><b>Intelligence</b><span>Gemini writes; the rules decide</span></div>
+        <div class="cards">
+          <div class="card"><div class="card-head"><span class="gl ai"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c.6 4.8 3.2 7.4 8 8-4.8.6-7.4 3.2-8 8-.6-4.8-3.2-7.4-8-8 4.8-.6 7.4-3.2 8-8z"/></svg></span><b>Vertex AI, Gemini</b></div>
+            <p>Pro for the Valuer, Router, Negotiator's bids and the evals' judge; Flash for Vision's multimodal label read, the Data agent's column mapping, the Lister, Outreach, Paperwork and Impact. Global endpoint, structured output, retries with backoff on quota and server errors.</p>
+            <p class="w">Multimodal reading, Indian-language copy, and enterprise IAM and quotas in the same project.</p></div>
+          <div class="card"><div class="card-head"><span class="gl ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="8.5" y="14" width="7" height="7" rx="2"/><path d="M6.5 10v2h11v-2M12 12v2"/></svg></span><b>Agent Development Kit</b></div>
+            <p>Each event runs one pipeline: <code>SequentialAgent</code> where a step needs the last one's result, <code>ParallelAgent</code> where it does not, <code>LlmAgent</code> with an <code>output_schema</code> for each model call, and custom steps for the deterministic work.</p>
+            <p class="w">Google's framework for Gemini agents: composable, traced, and testable on recorded responses.</p></div>
+        </div>
+      </div>
+
+      <div class="cat-group">
+        <div class="cat-label"><b>Events and time</b><span>Decoupling a tap from the work</span></div>
+        <div class="cards">
+          <div class="card"><div class="card-head"><span class="gl g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="5" cy="12" r="2.4"/><circle cx="19" cy="5" r="2.4"/><circle cx="19" cy="12" r="2.4"/><circle cx="19" cy="19" r="2.4"/><path d="M7.4 12h9.2M7 11l9.8-5M7 13l9.8 5"/></svg></span><b>Pub/Sub</b></div>
+            <p>Topics per environment for the agents' events and the Notifier, ordered by batch, with dead-letter topics. Production pushes to Cloud Run with an OIDC token; a laptop pulls the local subscriptions. Each message carries its <code>traceparent</code>.</p>
+            <p class="w">At-least-once delivery with retries, ordering that keeps a batch's steps in sequence, and the same code locally with no emulator.</p></div>
+          <div class="card"><div class="card-head"><span class="gl g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><b>Cloud Scheduler</b></div>
+            <p>The journey's clock: <code>sc-tick</code> calls backend-api's tick every minute with an OIDC token. It runs the daily agents on the journey's own time, fires due timers, re-sends stalled events and flushes the outbox.</p>
+            <p class="w">A managed clock with the same keyless auth, so a compressed demo day and a real one run on one mechanism.</p></div>
+        </div>
+      </div>
+
+      <div class="cat-group">
+        <div class="cat-label"><b>Data</b><span>Record, analytics, files</span></div>
+        <div class="cards">
+          <div class="card"><div class="card-head"><span class="gl g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg></span><b>Cloud SQL for PostgreSQL 18</b></div>
+            <p>The system of record: clients, members, batches, cases, papers, the ledger and the audit log. IAM logins only, through the connector, over TLS; the app's login has data access only, the audit log refuses edits by trigger; backups and point-in-time recovery.</p>
+            <p class="w">A ledger needs transactions and constraints, and LISTEN/NOTIFY gives the live stream for free.</p></div>
+          <div class="card"><div class="card-head"><span class="gl g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 20V10M9 20V4M14 20v-7"/><circle cx="18" cy="15" r="3"/><path d="m20.2 17.2 2 2"/></svg></span><b>BigQuery</b></div>
+            <p>The agents' analytics: stock snapshots and secondary sales loaded from DMS exports, channel prices, the impact ledger, one row per agent run (model, latency, fallback, trace), and the evals' results.</p>
+            <p class="w">Sell-through across distributors and pincodes is an analytical query; load jobs never load a file twice.</p></div>
+          <div class="card"><div class="card-head"><span class="gl g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16l-1.5 12.5a2 2 0 0 1-2 1.5h-9a2 2 0 0 1-2-1.5z"/><path d="M3 7h18M9 3h6l1 4H8z"/></svg></span><b>Cloud Storage</b></div>
+            <p>Buckets for label photos, DMS exports and Paperwork's PDFs, per environment. Phones upload straight to short-lived signed URLs, and papers open through signed links. Build sources and Terraform state live here too.</p>
+            <p class="w">Files never pass through the API, and lifecycle rules tidy what is no longer needed.</p></div>
+        </div>
+      </div>
+
+      <div class="cat-group">
+        <div class="cat-label"><b>Trust</b><span>No keys, no secrets in files</span></div>
+        <div class="cards">
+          <div class="card"><div class="card-head"><span class="gl g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><b>Secret Manager</b></div>
+            <p>The few secrets there are, such as the default password new accounts start on. Scripts generate them and pipe them in on stdin; services read them by reference at runtime.</p>
+            <p class="w">Nothing secret in a file, a command line, a log, Terraform state or git.</p></div>
+          <div class="card"><div class="card-head"><span class="gl g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v6c0 4.5 3.2 7.8 7.5 9 4.3-1.2 7.5-4.5 7.5-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span><b>IAM and service accounts</b></div>
+            <p>An account per job: the API, the agents, the migrator, the invoker, the builder and two CI deployers. Developers impersonate a local account in code from their own credentials. Custom roles for user management and messaging.</p>
+            <p class="w">Least privilege, and every action in the audit logs under the identity that did it.</p></div>
+          <div class="card"><div class="card-head"><span class="gl g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></span><b>Workload Identity Federation</b></div>
+            <p>GitHub Actions trades its OIDC token for short-lived Google credentials, accepted only from this repository's ids and the protected <code>prod</code> environment, which only <code>main</code> may deploy to.</p>
+            <p class="w">CI deploys with no stored credential at all.</p></div>
+        </div>
+      </div>
+
+      <div class="cat-group">
+        <div class="cat-label"><b>Delivery</b><span>From a merge to a revision</span></div>
+        <div class="cards">
+          <div class="card"><div class="card-head"><span class="gl g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg></span><b>Cloud Build</b></div>
+            <p>Builds each image with the last one's layers as cache, pushes it, runs the migration job on it, deploys the service and checks it answers ready. CI starts it as <code>sc-builder</code>, an account that may do only that.</p>
+            <p class="w">Builds run inside Google's network, next to the registry and Cloud Run.</p></div>
+          <div class="card"><div class="card-head"><span class="gl g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg></span><b>Artifact Registry</b></div>
+            <p>A private Docker repository for the API's and the agents' images, each tagged with its commit, with a cleanup policy. Cloud Build owns the images; Terraform ignores them.</p>
+            <p class="w">In-region, private, and every running revision traceable to a commit.</p></div>
+        </div>
+      </div>
+
+      <div class="cat-group">
+        <div class="cat-label"><b>Operations</b><span>Seeing a request end to end</span></div>
+        <div class="cards">
+          <div class="card"><div class="card-head"><span class="gl g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 10h10M4 14h16M4 18h8"/></svg></span><b>Cloud Logging and Error Reporting</b></div>
+            <p>Every service writes one JSON object a line with severity, source and the request's trace, so Logs Explorer groups a request's lines and Error Reporting groups stack traces.</p>
+            <p class="w">One place to read a request, from either service.</p></div>
+          <div class="card"><div class="card-head"><span class="gl g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 5h9M6 10h11M9 15h7M12 20h9"/></svg></span><b>Cloud Trace, Telemetry API</b></div>
+            <p>OpenTelemetry spans over OTLP: each route, SQL statement and token check in the API, and each ADK agent, Gemini call and BigQuery job in the agents, all under the trace the browser started.</p>
+            <p class="w">Google's recommended route into Cloud Trace, joined to Cloud Run's own sampled requests.</p></div>
+          <div class="card"><div class="card-head"><span class="gl g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg></span><b>Cloud Monitoring and budgets</b></div>
+            <p>An uptime check on the API's readiness, alert policies for downtime, errors, latency, the database, dead letters, agent errors and fallbacks and push failures, log-based metrics, a dashboard and a billing budget.</p>
+            <p class="w">Alerts reach the operator by email before a person notices.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= AGENTS ================= -->
+<section id="agents">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">The agents</p>
+      <h2>Ten agents along nine stops, and one person's yes</h2>
+      <p class="lede">A batch at risk moves through the same stops every time. Agents do the reading, the writing and the chasing; backend-api does the arithmetic; and nothing leaves the godown until the approver says yes.</p>
+    </div>
+
+    <figure class="fig">
+      <p class="scroll-hint">Scroll sideways to see every stop</p>
+      <div class="fig-scroll">
+      <svg class="d" viewBox="0 0 1240 300" role="img" aria-label="The nine stops of a batch: Connect by the Data agent, Detect by the Watcher, Verify by Vision, Value by the Valuer, Decide by the Router, Approve by a person, Execute by the Lister, Outreach, Donation and the Negotiator, Settle by Paperwork, and Report by Impact, each with the Gemini tier it uses.">
+        <path class="route-line" d="M70 96H1170"/>
+        <path class="pulse" d="M70 96H1170"/>
+        <g font-family="var(--font-ui)">
+        <!-- connect -->
+        <text class="stop" x="70" y="66" text-anchor="middle">Connect</text><circle class="node" cx="70" cy="96" r="11"/>
+        <rect class="card" x="8" y="128" width="124" height="150" rx="12"/><text class="h" x="20" y="152">Data</text>
+        <rect class="tier flash opt" x="20" y="162" width="56" height="20" rx="5"/><text class="tt flash" x="48" y="176" text-anchor="middle">Flash</text>
+        <text class="s" x="20" y="204">maps DMS exports</text><text class="s" x="20" y="220">into BigQuery;</text><text class="s" x="20" y="236">Flash only for</text><text class="s" x="20" y="252">a new layout</text>
+        <!-- detect -->
+        <text class="stop" x="208" y="66" text-anchor="middle">Detect</text><circle class="node" cx="208" cy="96" r="11"/>
+        <rect class="card" x="146" y="128" width="124" height="150" rx="12"/><text class="h" x="158" y="152">Watcher</text>
+        <rect class="tier none" x="158" y="162" width="72" height="20" rx="5"/><text class="tt none" x="194" y="176" text-anchor="middle">no model</text>
+        <text class="s" x="158" y="204">sell-through in</text><text class="s" x="158" y="220">BigQuery; flags</text><text class="s" x="158" y="236">what will not</text><text class="s" x="158" y="252">sell in time</text>
+        <!-- verify -->
+        <text class="stop" x="345" y="66" text-anchor="middle">Verify</text><circle class="node" cx="345" cy="96" r="11"/>
+        <rect class="card" x="283" y="128" width="124" height="150" rx="12"/><text class="h" x="295" y="152">Vision</text>
+        <rect class="tier flash" x="295" y="162" width="56" height="20" rx="5"/><text class="tt flash" x="323" y="176" text-anchor="middle">Flash</text>
+        <text class="s" x="295" y="204">asks for a label</text><text class="s" x="295" y="220">photo and reads</text><text class="s" x="295" y="236">what is printed</text>
+        <!-- value -->
+        <text class="stop" x="483" y="66" text-anchor="middle">Value</text><circle class="node" cx="483" cy="96" r="11"/>
+        <rect class="card" x="421" y="128" width="124" height="150" rx="12"/><text class="h" x="433" y="152">Valuer</text>
+        <rect class="tier pro" x="433" y="162" width="44" height="20" rx="5"/><text class="tt pro" x="455" y="176" text-anchor="middle">Pro</text>
+        <text class="s" x="433" y="204">prices each exit</text><text class="s" x="433" y="220">by the money</text><text class="s" x="433" y="236">rules, then Pro</text><text class="s" x="433" y="252">notes on each</text>
+        <!-- decide -->
+        <text class="stop" x="620" y="66" text-anchor="middle">Decide</text><circle class="node" cx="620" cy="96" r="11"/>
+        <rect class="card" x="558" y="128" width="124" height="150" rx="12"/><text class="h" x="570" y="152">Router</text>
+        <rect class="tier pro" x="570" y="162" width="44" height="20" rx="5"/><text class="tt pro" x="592" y="176" text-anchor="middle">Pro</text>
+        <text class="s" x="570" y="204">the split across</text><text class="s" x="570" y="220">exits; Pro says</text><text class="s" x="570" y="236">why, in plain</text><text class="s" x="570" y="252">words</text>
+        <!-- approve -->
+        <text class="stop" x="758" y="66" text-anchor="middle">Approve</text><circle class="node yes" cx="758" cy="96" r="13"/>
+        <rect class="card yes" x="696" y="128" width="124" height="150" rx="12"/><text class="h" x="708" y="152">The approver</text>
+        <rect class="tier person" x="708" y="162" width="70" height="20" rx="5"/><text class="tt person" x="743" y="176" text-anchor="middle">a person</text>
+        <text class="s" x="708" y="204">one yes in the</text><text class="s" x="708" y="220">workspace app;</text><text class="s" x="708" y="236">nothing executes</text><text class="s" x="708" y="252">before it</text>
+        <!-- execute -->
+        <text class="stop" x="895" y="66" text-anchor="middle">Execute</text><circle class="node" cx="895" cy="96" r="11"/>
+        <rect class="card" x="833" y="128" width="124" height="150" rx="12"/><text class="h" x="845" y="152">Four agents</text>
+        <rect class="tier flash" x="845" y="162" width="46" height="20" rx="5"/><text class="tt flash" x="868" y="176" text-anchor="middle">Flash</text>
+        <rect class="tier pro" x="895" y="162" width="40" height="20" rx="5"/><text class="tt pro" x="915" y="176" text-anchor="middle">Pro</text>
+        <text class="s" x="845" y="204">Lister, Outreach</text><text class="s" x="845" y="220">and Donation in</text><text class="s" x="845" y="236">parallel; the</text><text class="s" x="845" y="252">Negotiator</text><text class="s" x="845" y="268">answers bids</text>
+        <!-- settle -->
+        <text class="stop" x="1033" y="66" text-anchor="middle">Settle</text><circle class="node" cx="1033" cy="96" r="11"/>
+        <rect class="card" x="971" y="128" width="124" height="150" rx="12"/><text class="h" x="983" y="152">Paperwork</text>
+        <rect class="tier flash opt" x="983" y="162" width="56" height="20" rx="5"/><text class="tt flash" x="1011" y="176" text-anchor="middle">Flash</text>
+        <text class="s" x="983" y="204">the API drafts</text><text class="s" x="983" y="220">the papers; PDFs</text><text class="s" x="983" y="236">rendered into</text><text class="s" x="983" y="252">Cloud Storage</text>
+        <!-- report -->
+        <text class="stop" x="1170" y="66" text-anchor="middle">Report</text><circle class="node" cx="1170" cy="96" r="11"/>
+        <rect class="card" x="1108" y="128" width="124" height="150" rx="12"/><text class="h" x="1120" y="152">Impact</text>
+        <rect class="tier flash opt" x="1120" y="162" width="56" height="20" rx="5"/><text class="tt flash" x="1148" y="176" text-anchor="middle">Flash</text>
+        <text class="s" x="1120" y="204">posts the ledger</text><text class="s" x="1120" y="220">to the workspace</text><text class="s" x="1120" y="236">and BigQuery's</text><text class="s" x="1120" y="252">impact table</text>
+        </g>
+      </svg>
+      </div>
+      <figcaption>
+        <p>Each stop's agent and the Gemini tier it calls. A dashed tier is called only when needed (an export layout the Data agent has not seen, an optional cover note); the amber stop is a person.</p>
+      </figcaption>
+    </figure>
+
+    <div class="split">
+      <figure class="fig">
+        <p class="scroll-hint">Scroll sideways to see the whole pipeline</p>
+        <div class="fig-scroll">
+        <svg class="d" viewBox="0 0 1240 250" role="img" aria-label="Inside one agent run: a Pub/Sub push reaches the agents service, which runs an ADK SequentialAgent: read the case and skip what is done, an LlmAgent calls Gemini with a schema, the words are checked against the computed figures, and the report goes back to backend-api with its event key. At Execute a ParallelAgent runs the Lister, Outreach and Donation together. Words that fail a check are replaced by a template and the run is flagged.">
+          <defs>
+            <marker id="p-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ah"/></marker>
+            <marker id="p-ahg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ahg"/></marker>
+            <linearGradient id="p-aura" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#34d399"/><stop offset=".45" stop-color="#2dd4bf"/><stop offset=".75" stop-color="#38bdf8"/><stop offset="1" stop-color="#a3e635"/></linearGradient>
+          </defs>
+          <rect class="ng" x="20" y="80" width="130" height="64" rx="12"/><text class="h" x="34" y="106">Pub/Sub push</text><text class="s" x="34" y="125">signed with OIDC</text>
+          <rect class="ours" x="180" y="80" width="140" height="64" rx="12"/><text class="h" x="194" y="106">POST /pubsub</text><text class="s" x="194" y="125">one run an event</text>
+          <rect class="grp" x="350" y="24" width="700" height="210" rx="18"/>
+          <text class="col" x="370" y="52">ADK pipeline · SequentialAgent</text>
+          <rect class="ours" x="370" y="80" width="150" height="64" rx="12"/><text class="h" x="384" y="106">Read the case</text><text class="s" x="384" y="125">skip what is done</text>
+          <rect class="ai" x="545" y="80" width="150" height="64" rx="12" stroke="url(#p-aura)"/><text class="h" x="559" y="106">LlmAgent</text><text class="s" x="559" y="125">Gemini and a schema</text>
+          <rect class="ours" x="720" y="80" width="150" height="64" rx="12"/><text class="h" x="734" y="106">Check the words</text><text class="s" x="734" y="125">figures and length</text>
+          <rect class="ours" x="895" y="80" width="140" height="64" rx="12"/><text class="h" x="909" y="106">Report</text><text class="s" x="909" y="125">with its event key</text>
+          <rect class="ai" x="545" y="166" width="230" height="52" rx="12" stroke="url(#p-aura)" stroke-dasharray="5 4"/><text class="h" x="559" y="188">ParallelAgent at Execute</text><text class="s" x="559" y="206">Lister ‖ Outreach ‖ Donation</text>
+          <rect class="tile" x="800" y="166" width="235" height="52" rx="12"/><text class="h" x="814" y="188">A check fails</text><text class="s" x="814" y="206">template stands in, run flagged</text>
+          <rect class="ours" x="1080" y="80" width="140" height="64" rx="12"/><text class="h" x="1094" y="106">backend-api</text><text class="s" x="1094" y="125">acts once per key</text>
+          <path class="edge evt" d="M150 112H180" marker-end="url(#p-ahg)"/>
+          <path class="edge" d="M320 112H370" marker-end="url(#p-ah)"/>
+          <path class="edge" d="M520 112H545" marker-end="url(#p-ah)"/>
+          <path class="edge" d="M695 112H720" marker-end="url(#p-ah)"/>
+          <path class="edge" d="M870 112H895" marker-end="url(#p-ah)"/>
+          <path class="edge" d="M1035 112H1080" marker-end="url(#p-ah)"/>
+          <path class="edge ret" d="M445 144V192H545" marker-end="url(#p-ah)"/>
+          <path class="edge ret" d="M775 192H785V156H760V144" marker-end="url(#p-ah)"/>
+          <path class="edge ret" d="M845 144V166" marker-end="url(#p-ah)"/>
+          <path class="edge ret" d="M1000 166V144" marker-end="url(#p-ah)"/>
+          <path class="pulse" d="M150 112H180"/>
+        </svg>
+        </div>
+        <figcaption><p>Inside one run. A redelivered event reads the case first and resumes where the last run stopped; backend-api answers a repeated event key with a no-op, so nothing happens twice.</p></figcaption>
+      </figure>
+    </div>
+
+    <div class="guards">
+      <div class="guard"><b>Figures are computed, never generated</b><p>backend-api works out every price, split, credit note and ledger line by one set of money rules. The agents read previews of those figures and write words around them.</p></div>
+      <div class="guard"><b>The reserve never reaches a prompt</b><p>The lowest price a buyer may get is cut from every case and preview an agent reads, and tests try hostile buyer messages to prove it.</p></div>
+      <div class="guard"><b>A buyer's words are data</b><p>Messages go into the Negotiator's prompt between delimiters they cannot forge, as quoted text, never as instructions.</p></div>
+      <div class="guard"><b>Every word is checked</b><p>Each figure in the copy must be one of the computed ones, a reply to a bid states the decided price and nothing else, and offers keep their shop placeholder and push length.</p></div>
+      <div class="guard"><b>Structured output Gemini can fill</b><p>Every schema field is required, with null meaning absent, and no schema holds a free-keyed map, after the first live eval run showed how those come back.</p></div>
+      <div class="guard"><b>Bounded calls</b><p>Each model call has a deadline, retries quota and server errors with backoff, and counts against a per-run budget; past it, the template stands in.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= APPLICATION FLOW ================= -->
+<section id="flow">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Application flow</p>
+      <h2>A batch's journey, request by request</h2>
+      <p class="lede">Pick a stage to see which component calls which, in order. The core loop is the same at every stop: a person or a clock acts, backend-api commits, Pub/Sub carries the event, an agent works and reports, and every member's screen moves on.</p>
+    </div>
+
+    <div class="flow">
+      <div class="stages" role="tablist" aria-orientation="horizontal" aria-label="Stages of the flow" id="stages"></div>
+      <div class="flow-panel" role="tabpanel" id="flow-panel" aria-labelledby="">
+        <div class="flow-head">
+          <h3 id="flow-title">The core loop</h3>
+          <p id="flow-lead"></p>
+          <div class="gcp-used" id="flow-gcp"></div>
+        </div>
+        <figure class="fig">
+          <p class="scroll-hint">Scroll sideways to see every lane</p>
+          <div class="fig-scroll"><svg class="d" id="flow-svg" role="img" aria-label=""></svg></div>
+          <figcaption>
+            <div class="flow-key">
+              <span><svg viewBox="0 0 26 8" aria-hidden="true"><path d="M1 4H20" stroke="var(--fg-2)" stroke-width="1.6"/><path d="M19 1l5 3-5 3z" fill="var(--fg-2)"/></svg>request</span>
+              <span><svg viewBox="0 0 26 8" aria-hidden="true"><path d="M1 4H20" stroke="var(--fg-3)" stroke-width="1.6" stroke-dasharray="4 3"/><path d="M19 1l5 3-5 3z" fill="var(--fg-3)"/></svg>reply</span>
+              <span><svg viewBox="0 0 26 8" aria-hidden="true"><path d="M1 4H20" stroke="var(--primary)" stroke-width="1.8" stroke-dasharray="5 3"/><path d="M19 1l5 3-5 3z" fill="var(--primary)"/></svg>event, push or stream</span>
+              <span><svg viewBox="0 0 26 8" aria-hidden="true"><path d="M1 4H20" stroke="var(--ai)" stroke-width="1.8"/><path d="M19 1l5 3-5 3z" fill="var(--ai)"/></svg>Gemini</span>
+              <span><svg viewBox="0 0 26 8" aria-hidden="true"><path d="M1 4H20" stroke="var(--amber-line)" stroke-width="2.4"/><path d="M19 1l5 3-5 3z" fill="var(--amber-line)"/></svg>a person's yes</span>
+            </div>
+          </figcaption>
+        </figure>
+        <p class="flow-note" id="flow-note"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= IDENTITY ================= -->
+<section id="identity">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Identity and security</p>
+      <h2>Every caller signs as someone, and nobody holds a key</h2>
+      <p class="lede">People sign in with Firebase; machines sign with OIDC tokens Google mints for a service account. Each account may do one job, and the database accepts IAM logins only.</p>
+    </div>
+    <div class="keyless">
+      <div class="kl kl-head"><div>Who acts</div><span></span><div>Signs as</div><span></span><div>May</div></div>
+      <div class="kl"><div><b>A member in an app</b>Firebase email and password</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div class="sa"><b>Firebase ID token</b>verified by backend-api</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div><b>See a view cut to their role</b>a buyer never sees the reserve, a kirana sees its own offer, partners never see the brand's margins</div></div>
+      <div class="kl"><div><b>Cloud Scheduler, Pub/Sub</b>the clock and the event bus</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div class="sa"><b>sc-invoker</b>OIDC token for a fixed audience</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div><b>Call the tick and the agents</b>Cloud Run's IAM lets nobody else into the agents service</div></div>
+      <div class="kl"><div><b>The agents service</b>on Cloud Run</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div class="sa"><b>sc-agents</b>Google ID token to backend-api</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div><b>Read facts, report words</b>Vertex AI, BigQuery, Cloud Storage and <span class="mono">/internal</span>; never the database</div></div>
+      <div class="kl"><div><b>backend-api and its jobs</b>Cloud Run service and jobs</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div class="sa"><b>sc-api, sc-migrator</b>IAM database logins</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div><b>Write the record</b>data access as the app, schema changes only as the migrator; the audit log refuses edits even to its owner</div></div>
+      <div class="kl"><div><b>GitHub Actions</b>on <span class="mono">main</span>, environment <span class="mono">prod</span></div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div class="sa"><b>github-backend, github-deployer</b>Workload Identity Federation</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div><b>Start Cloud Build as sc-builder, release Hosting</b>nothing else</div></div>
+      <div class="kl"><div><b>A developer's laptop</b>their own gcloud login</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div class="sa"><b>sc-api-local, sc-agents-local</b>impersonated in code</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div><b>Run the real stack locally</b>the same Firebase pool, secrets, topics and buckets, on a local PostgreSQL</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CI/CD ================= -->
+<section id="cicd">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">CI/CD</p>
+      <h2>GitHub Actions gates every change; Cloud Build ships it to Cloud Run</h2>
+      <p class="lede">A pull request runs five gates in parallel and builds the apps once. A merge to <code class="mono">main</code> signs in to Google with Workload Identity Federation, has Cloud Build build, migrate and deploy backend-api and then the agents, and releases the apps' build to Firebase Hosting.</p>
+    </div>
+
+    <figure class="fig">
+      <p class="scroll-hint">Scroll sideways to see the whole pipeline</p>
+      <div class="fig-scroll">
+      <svg class="d" viewBox="0 0 1240 530" role="img" aria-label="CI/CD: on a pull request GitHub Actions runs the frontend, infra, backend and agents gates and a secret scan, and builds every app once as an artifact. On a merge to main, the prod environment signs in through Workload Identity Federation; Cloud Build builds and pushes the backend-api image to Artifact Registry, runs the migrate job, updates the hydrate job, deploys the service and checks readiness; then Cloud Build builds and deploys the agents; then firebase-tools releases the apps' artifact to each Firebase Hosting site. Terraform changes are planned to a file, read in full and applied by a person.">
+        <defs>
+          <marker id="c-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ah"/></marker>
+          <marker id="c-ahg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ahg"/></marker>
+        </defs>
+        <text class="col" x="20" y="28">Every pull request</text>
+        <rect class="tile" x="20" y="60" width="150" height="70" rx="12"/><text class="h" x="36" y="90">Pull request</text><text class="s" x="36" y="110">to main</text>
+        <rect class="grp" x="210" y="40" width="720" height="110" rx="16"/>
+        <text class="col" x="228" y="64">GitHub Actions · gates in parallel</text>
+        <rect class="ours" x="226" y="78" width="132" height="56" rx="10"/><text class="h" x="238" y="100">Frontend gate</text><text class="s" x="238" y="120">lint, types, unit</text>
+        <rect class="ours" x="367" y="78" width="132" height="56" rx="10"/><text class="h" x="379" y="100">Infra gate</text><text class="s" x="379" y="120">fmt, validate</text>
+        <rect class="ours" x="508" y="78" width="132" height="56" rx="10"/><text class="h" x="520" y="100">Backend gate</text><text class="s" x="520" y="120">pytest, PostgreSQL</text>
+        <rect class="ours" x="649" y="78" width="132" height="56" rx="10"/><text class="h" x="661" y="100">Agents gate</text><text class="s" x="661" y="120">pytest, stub tier</text>
+        <rect class="ours" x="790" y="78" width="132" height="56" rx="10"/><text class="h" x="802" y="100">Secret scan</text><text class="s" x="802" y="120">gitleaks</text>
+        <rect class="tile" x="970" y="60" width="250" height="70" rx="12"/><text class="h" x="986" y="90">Build every app once</text><text class="s" x="986" y="110">kept as an artifact for the deploy</text>
+        <path class="edge" d="M170 95H210" marker-end="url(#c-ah)"/>
+        <path class="edge" d="M930 95H970" marker-end="url(#c-ah)"/>
+
+        <text class="col" x="20" y="186">A merge to main</text>
+        <rect class="tile" x="20" y="208" width="150" height="70" rx="12"/><text class="h" x="36" y="238">Merge to main</text><text class="s" x="36" y="258">prod environment</text>
+        <rect class="ng" x="210" y="208" width="180" height="70" rx="12"/><text class="h" x="226" y="238">Workload Identity</text><text class="s" x="226" y="258">GitHub OIDC, no keys</text>
+        <path class="edge" d="M170 243H210" marker-end="url(#c-ah)"/>
+
+        <text class="col" x="430" y="200">backend-api · Cloud Build as sc-builder</text>
+        <rect class="grp" x="430" y="208" width="790" height="60" rx="14"/>
+        <rect class="ng" x="442" y="218" width="118" height="40" rx="9"/><text class="r" x="454" y="243">Build image</text>
+        <rect class="ng" x="568" y="218" width="150" height="40" rx="9"/><text class="r" x="580" y="243">Artifact Registry</text>
+        <rect class="ng" x="726" y="218" width="118" height="40" rx="9"/><text class="r" x="738" y="243">Migrate job</text>
+        <rect class="ng" x="852" y="218" width="118" height="40" rx="9"/><text class="r" x="864" y="243">Hydrate job</text>
+        <rect class="ng" x="978" y="218" width="118" height="40" rx="9"/><text class="r" x="990" y="243">Deploy service</text>
+        <rect class="ours" x="1104" y="218" width="104" height="40" rx="9"/><text class="r" x="1116" y="243">Ready check</text>
+        <path class="edge" d="M560 238H568M718 238H726M844 238H852M970 238H978M1096 238H1104"/>
+
+        <text class="col" x="430" y="302">agents · Cloud Build as sc-builder</text>
+        <rect class="grp" x="430" y="310" width="790" height="60" rx="14"/>
+        <rect class="ng" x="442" y="320" width="118" height="40" rx="9"/><text class="r" x="454" y="345">Build image</text>
+        <rect class="ng" x="568" y="320" width="150" height="40" rx="9"/><text class="r" x="580" y="345">Artifact Registry</text>
+        <rect class="ng" x="726" y="320" width="244" height="40" rx="9"/><text class="r" x="738" y="345">Deploy service, internal ingress</text>
+        <path class="edge" d="M560 340H568M718 340H726"/>
+
+        <text class="col" x="430" y="404">apps · firebase-tools as github-deployer</text>
+        <rect class="grp" x="430" y="412" width="790" height="60" rx="14"/>
+        <rect class="tile" x="442" y="422" width="150" height="40" rx="9"/><text class="r" x="454" y="447">Fetch the artifact</text>
+        <rect class="ng" x="600" y="422" width="230" height="40" rx="9"/><text class="r" x="612" y="447">Release each Hosting site</text>
+        <rect class="ours" x="838" y="422" width="190" height="40" rx="9"/><text class="r" x="850" y="447">Check each site answers</text>
+        <path class="edge" d="M592 442H600M830 442H838"/>
+
+        <path class="edge evt" d="M390 243H410V238H430" marker-end="url(#c-ahg)"/>
+        <path class="edge evt" d="M410 243V340H430" marker-end="url(#c-ahg)"/>
+        <path class="edge evt" d="M410 340V442H430" marker-end="url(#c-ahg)"/>
+        <path class="edge ret" d="M1160 268V310" marker-end="url(#c-ah)"/><text class="e" x="1168" y="294">then</text>
+        <path class="edge ret" d="M1160 370V412" marker-end="url(#c-ah)"/><text class="e" x="1168" y="396">then</text>
+        <path class="pulse" d="M170 243H210"/>
+
+        <rect class="bandbox" x="20" y="490" width="1200" height="34" rx="10"/>
+        <text class="col" x="36" y="512">Infrastructure</text>
+        <text class="band" x="180" y="512">Terraform, run by a person: plan to a file, read the whole plan, apply that file. CI checks the configuration but never applies it.</text>
+      </svg>
+      </div>
+      <figcaption><p>Jobs wait for the gates they need, and deploys queue instead of overlapping. Every action is pinned to a commit SHA, the workflow token is read-only, and only the deploying jobs may request an identity token.</p></figcaption>
+    </figure>
+
+    <div class="guards">
+      <div class="guard"><b>Path-aware</b><p>A merge rebuilds backend-api only when <code>backend-api/</code> changed and the agents only when <code>agents/</code> changed; the apps release on every merge that touches the frontend, the designs or the infrastructure.</p></div>
+      <div class="guard"><b>Migrate before deploy</b><p>Cloud Build runs the migration job on the new image before the service moves to it, so the schema is always ahead of the code reading it.</p></div>
+      <div class="guard"><b>Ordered releases</b><p>backend-api deploys first, then the agents that call it, then the apps that read it, because the landing page prerenders against the live API.</p></div>
+      <div class="guard"><b>Images owned by the build</b><p>Cloud Build tags each image with its commit; Terraform owns the service's configuration and ignores the image, so neither undoes the other.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TESTING ================= -->
+<section id="testing">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Testing</p>
+      <h2>Proven at every layer, from a pixel to a live Gemini reply</h2>
+      <p class="lede">Fast gates run on every pull request. The browser suites (accessibility, end to end, parity, live and journey) and the live-model evals run when we ask for them, on a real machine, against real builds and real services.</p>
+    </div>
+
+    <div class="tests">
+      <article class="tst">
+        <div class="tst-head"><b>Gates</b><span class="when pr">Every pull request</span></div>
+        <p class="tool">Vitest · pytest · ruff · ESLint · svelte-check · gitleaks</p>
+        <ul>
+          <li>Frontend: unit tests, drift tests that hold ported CSS to the design, golden texts of every role's screens, seed and icon checks.</li>
+          <li>Backend: pytest on a real PostgreSQL service container, the live journey walked over HTTP with in-memory Pub/Sub, Storage and Cloud Messaging.</li>
+          <li>Agents: every pipeline on recorded Gemini responses, its exact requests, its fallbacks, and the reserve never reaching a model.</li>
+          <li>Contracts: the money rules exist in JavaScript, TypeScript and Python, and shared fixtures hold all three to the same answers.</li>
+        </ul>
+      </article>
+      <article class="tst">
+        <div class="tst-head"><b>Accessibility</b><span class="when ask">On request</span></div>
+        <p class="tool">Playwright · @axe-core/playwright · WCAG 2.2 AA</p>
+        <p>Each app's production build, scanned in desktop, tablet and phone viewports, light and dark, with zero violations. Keyboard specs cover focus in sheets and alerts, the menu-button pattern and sign-in by keyboard; a motion spec fails any endless animation. A coverage check fails the run if an app uses a design-system component that no scan had on screen.</p>
+      </article>
+      <article class="tst">
+        <div class="tst-head"><b>End to end</b><span class="when ask">On request</span></div>
+        <p class="tool">Playwright · Chromium · Firefox · WebKit</p>
+        <p>The console's flows, the workspace journey on its stub, and the guided demo played beat by beat, on each app's build. Smoke runs in Firefox and in WebKit on iPad and iPhone profiles.</p>
+      </article>
+      <article class="tst">
+        <div class="tst-head"><b>Parity</b><span class="when ask">On request</span></div>
+        <p class="tool">Playwright · pixelmatch</p>
+        <p>Each app's build is compared with its approved design3 prototype, pixel by pixel, at desktop, tablet and phone sizes in both themes. The port cannot drift from the design that was signed off.</p>
+      </article>
+      <article class="tst">
+        <div class="tst-head"><b>Live</b><span class="when ask">On request</span></div>
+        <p class="tool">Vitest + jsdom · Playwright · Firebase Auth</p>
+        <p>The workspace's live tests draw its screens on what backend-api actually answered at moments of the journey, recorded from the running API. The live end-to-end suite drives the landing page and the console against the real API and real Firebase sign-in, and reads each change back from the audit log under its own trace.</p>
+      </article>
+      <article class="tst">
+        <div class="tst-head"><b>Journey</b><span class="when ask">On request</span></div>
+        <p class="tool">Playwright · Firebase custom tokens · live Gemini</p>
+        <p>Munchly Chips, Munchly Mango and their leftover variants. From a console reset to the impact report, every person acts in the real UI in turn: the operator, the distributor, each ordering kirana, the buyer and the food bank, with the agents on live Gemini. Sign-in uses custom tokens minted by an impersonated service account, so no password is handled. Each run records a video, a still per step and a report of findings, against the local stack or production.</p>
+      </article>
+      <article class="tst">
+        <div class="tst-head"><b>Evals</b><span class="when ask">On request</span></div>
+        <p class="tool">live Gemini · deterministic scorers · Gemini Pro judge</p>
+        <p>Every agent's eval set runs through the same writer the pipeline calls: label photos rendered with blur, glare and tape for Vision, odd DMS headers for the Data agent, hostile buyer messages for the Negotiator. Scorers check the hard rules, a judge scores the words on a rubric, and results land in BigQuery.</p>
+      </article>
+    </div>
+
+    <div class="matrix-wrap">
+      <table class="matrix">
+        <caption class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Which layers each test suite exercises</caption>
+        <thead><tr><th scope="col" style="text-align:left;padding-left:20px">Suite</th><th scope="col">Design prototype</th><th scope="col">App code</th><th scope="col">Real browser</th><th scope="col">backend-api</th><th scope="col">PostgreSQL</th><th scope="col">Firebase Auth</th><th scope="col">Pub/Sub, Storage</th><th scope="col">Agents</th><th scope="col">Gemini</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Frontend gate</th><td><span class="dot full" role="img" aria-label="exercised"></span></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><th scope="row">Backend gate</th><td></td><td></td><td></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td><span class="dot rec" role="img" aria-label="faked"></span></td><td><span class="dot rec" role="img" aria-label="in memory"></span></td><td></td><td></td></tr>
+          <tr><th scope="row">Agents gate</th><td></td><td></td><td></td><td><span class="dot rec" role="img" aria-label="mocked"></span></td><td></td><td></td><td><span class="dot rec" role="img" aria-label="faked"></span></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td><span class="dot rec" role="img" aria-label="recorded"></span></td></tr>
+          <tr><th scope="row">Accessibility</th><td></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><th scope="row">End to end</th><td></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><th scope="row">Parity</th><td><span class="dot full" role="img" aria-label="exercised"></span></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><th scope="row">Live</th><td></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td></td><td></td><td></td></tr>
+          <tr><th scope="row">Journey</th><td></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td><span class="dot full" role="img" aria-label="exercised"></span></td></tr>
+          <tr><th scope="row">Evals</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td><span class="dot full" role="img" aria-label="exercised"></span></td><td><span class="dot full" role="img" aria-label="exercised"></span></td></tr>
+        </tbody>
+      </table>
+      <div class="matrix-key"><span><span class="dot full"></span>the real thing</span><span><span class="dot rec"></span>recorded, faked or in memory</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= OBSERVABILITY ================= -->
+<section id="observe">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Observability</p>
+      <h2>One trace, from a tap to an agent's report</h2>
+      <p class="lede">The apps send a <code class="mono">traceparent</code> with every call. Cloud Run keeps it, backend-api continues it into its spans, log lines and audit rows, and the outbox hands it to Pub/Sub, so the agents' run and its Gemini calls land in the same trace.</p>
+    </div>
+    <figure class="fig">
+      <div class="fig-scroll">
+        <div class="wf" role="img" aria-label="A trace waterfall: the approval request in backend-api with its token check and SQL statements, the publish to Pub/Sub, then the agents' execute pipeline with its read of the case, two Gemini calls in parallel, a BigQuery write and its report, followed by the API's SQL and the push.">
+          <div class="wf-row"><span>POST approve · backend-api</span><div class="wf-track"><i class="wf-bar api" style="left:0;width:24%"></i></div></div>
+          <div class="wf-row"><span class="in">verify ID token · Firebase</span><div class="wf-track"><i class="wf-bar fb" style="left:1.5%;width:6%"></i></div></div>
+          <div class="wf-row"><span class="in">SQL · approve the plan</span><div class="wf-track"><i class="wf-bar sql" style="left:8.5%;width:4%"></i></div></div>
+          <div class="wf-row"><span class="in">SQL · audit line, outbox</span><div class="wf-track"><i class="wf-bar sql" style="left:13%;width:4%"></i></div></div>
+          <div class="wf-row"><span class="in">publish · Pub/Sub</span><div class="wf-track"><i class="wf-bar ps" style="left:18%;width:5%"></i></div></div>
+          <div class="wf-row"><span>agents · execute pipeline</span><div class="wf-track"><i class="wf-bar ag" style="left:26%;width:60%"></i></div></div>
+          <div class="wf-row"><span class="in">read the case · /internal</span><div class="wf-track"><i class="wf-bar api" style="left:27.5%;width:6%"></i></div></div>
+          <div class="wf-row"><span class="in">Gemini Flash · listing</span><div class="wf-track"><i class="wf-bar gem" style="left:35%;width:22%"></i></div></div>
+          <div class="wf-row"><span class="in">Gemini Flash · offers</span><div class="wf-track"><i class="wf-bar gem" style="left:35%;width:28%"></i></div></div>
+          <div class="wf-row"><span class="in">BigQuery · channel price</span><div class="wf-track"><i class="wf-bar dat" style="left:64%;width:6%"></i></div></div>
+          <div class="wf-row"><span class="in">report · /internal</span><div class="wf-track"><i class="wf-bar api" style="left:72%;width:12%"></i></div></div>
+          <div class="wf-row"><span class="in">SQL · offers sent, audit line</span><div class="wf-track"><i class="wf-bar sql" style="left:75%;width:4%"></i></div></div>
+          <div class="wf-row"><span>push · Cloud Messaging</span><div class="wf-track"><i class="wf-bar fb" style="left:87%;width:9%"></i></div></div>
+        </div>
+      </div>
+      <figcaption><p>An illustrative trace as Cloud Trace draws it. Bars show order and nesting; their lengths are illustrative.</p></figcaption>
+    </figure>
+    <div class="obs-points">
+      <div class="guard"><b>Logs carry the trace</b><p>Every JSON line written during a request names its trace and span, so Logs Explorer shows it under Cloud Run's own request line.</p></div>
+      <div class="guard"><b>Audit rows carry the trace</b><p>Each change's audit row keeps the trace of the request that made it, so a line in the console leads back to its request.</p></div>
+      <div class="guard"><b>Agent runs carry the trace</b><p>Each run's report and its BigQuery row hold its trace id, with model, latency and whether it fell back.</p></div>
+      <div class="guard"><b>Sampled where it counts</b><p>A request Cloud Run sampled is always kept, a share of the rest is sampled, and every request keeps its trace id in its logs regardless.</p></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div style="display:grid;gap:12px">
+      <a class="brand" href="#top"><svg class="mk" width="26" height="26" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 2C9.5 2 2 9.5 2 32s7.5 30 30 30 30-7.5 30-30S54.5 2 32 2Z" fill="url(#mk-g)"/><path class="route" d="M43.5 19H27a7 7 0 0 0 0 14h10a7 7 0 0 1 0 14H20.5" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="43.5" cy="19" r="3.4" fill="#0d5a3e" stroke="#fff" stroke-width="2.6"/><circle cx="20.5" cy="47" r="5.2" fill="#f7c04a" stroke="#fff" stroke-width="2.2"/></svg><span class="wordmark">Smart&#8209;Clearance</span></a>
+      <p>Built for the Google AI Hackathon 2026, Retail &amp; Commerce track. Every company, person and figure in Smart-Clearance is fictional; Munchly Foods is the demo client.</p>
+    </div>
+    <div class="foot-links">
+      <a href="https://github.com/aibuilder2026/smart-clearance" target="_blank" rel="noopener">GitHub repository</a>
+      <a href="https://smartclearance.web.app" target="_blank" rel="noopener">smartclearance.web.app</a>
+      <a href="https://munchly-smartclearance.web.app" target="_blank" rel="noopener">munchly-smartclearance.web.app</a>
+      <a href="https://smartclearance-console.web.app" target="_blank" rel="noopener">smartclearance-console.web.app</a>
+      <a href="https://smartclearance-demo.web.app" target="_blank" rel="noopener">smartclearance-demo.web.app</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  /* ---------- motion: one control pauses every moving line on the page (WCAG 2.2.2) ---------- */
+  var root = document.documentElement, btn = document.getElementById('motion');
+  function setPaused(p) {
+    root.classList.toggle('paused', p);
+    btn.setAttribute('aria-pressed', String(p));
+    btn.querySelector('span').textContent = p ? 'Play motion' : 'Pause motion';
+    btn.querySelector('svg').innerHTML = p
+      ? '<path d="M4 2.5v11l9-5.5z" fill="currentColor"/>'
+      : '<rect x="3.5" y="3" width="3" height="10" rx="1" fill="currentColor"/><rect x="9.5" y="3" width="3" height="10" rx="1" fill="currentColor"/>';
+    try { localStorage.setItem('sc-arch-paused', p ? '1' : '0'); } catch (e) {}
+  }
+  var saved = null; try { saved = localStorage.getItem('sc-arch-paused'); } catch (e) {}
+  setPaused(saved === '1');
+  btn.addEventListener('click', function () { setPaused(!root.classList.contains('paused')); });
+
+  /* ---------- in-page links scroll in script, since the viewer's frame does not follow a bare anchor ---------- */
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  Array.prototype.slice.call(document.querySelectorAll('a[href^="#"]')).forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var id = a.getAttribute('href').slice(1), t = id ? document.getElementById(id) : null;
+      if (!t) return;
+      e.preventDefault();
+      var y = t.getBoundingClientRect().top + window.pageYOffset - (id === 'top' ? 0 : 70);
+      window.scrollTo({ top: Math.max(0, y), behavior: reduce ? 'auto' : 'smooth' });
+    });
+  });
+
+  /* ---------- the bar marks the section being read ---------- */
+  var links = Array.prototype.slice.call(document.querySelectorAll('.nav a'));
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        links.forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#' + en.target.id); });
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    links.forEach(function (a) { var s = document.querySelector(a.getAttribute('href')); if (s) io.observe(s); });
+  }
+
+  /* ---------- the application flow: lanes and messages per stage ---------- */
+  var LANES = [
+    { id: 'app', name: 'Apps', sub: 'browser, PWA', k: 'app' },
+    { id: 'fb', name: 'Firebase', sub: 'Auth, Messaging', k: 'g' },
+    { id: 'api', name: 'backend-api', sub: 'Cloud Run', k: 'ours' },
+    { id: 'sql', name: 'Cloud SQL', sub: 'PostgreSQL', k: 'g' },
+    { id: 'ps', name: 'Pub/Sub', sub: 'and Scheduler', k: 'g' },
+    { id: 'ag', name: 'Agents', sub: 'ADK, Cloud Run', k: 'ai' },
+    { id: 'gem', name: 'Gemini', sub: 'Vertex AI', k: 'ai' },
+    { id: 'dat', name: 'BigQuery', sub: 'and Cloud Storage', k: 'g' }
+  ];
+  // [from, to, label, kind]: kind is call (default), ret, evt, ai or yes
+  var STAGES = [
+    { id: 'loop', name: 'The core loop', group: 'How every step runs', cls: 'loop',
+      lead: 'Every stop of the journey runs on this loop. A person acts in an app or the clock ticks; backend-api checks who it is, commits the change with its audit line and its outgoing events in one transaction, streams the change to every member, and publishes the events once the commit has landed. An agent picks the event up, gathers facts, asks Gemini for words, and reports back; the report is itself a change, so the loop turns again.',
+      gcp: ['Firebase Authentication', 'Cloud Run', 'Cloud SQL', 'Pub/Sub', 'Vertex AI', 'BigQuery', 'Cloud Messaging'],
+      note: 'Each report names the event it answers. A redelivered event finds its work done, and backend-api answers the repeat with a no-op.',
+      msgs: [
+        ['app', 'api', 'an action, with ID token, idempotency key and traceparent'],
+        ['api', 'fb', 'verify the ID token'],
+        ['api', 'sql', 'one transaction: change, timeline, audit line, outbox'],
+        ['sql', 'api', 'commit, then NOTIFY the stream', 'ret'],
+        ['api', 'app', 'server-sent event to every member, cut to their role', 'evt'],
+        ['api', 'ps', 'publish the outbox, in order per batch', 'evt'],
+        ['ps', 'ag', 'push, signed with OIDC', 'evt'],
+        ['ag', 'api', 'read the case on /internal, Google ID token'],
+        ['ag', 'dat', 'read the facts it needs'],
+        ['ag', 'gem', 'prompt with the facts, ask for a schema', 'ai'],
+        ['gem', 'ag', 'structured words', 'ret'],
+        ['ag', 'ag', 'check every figure against the computed ones'],
+        ['ag', 'api', 'report, with the event key'],
+        ['api', 'sql', 'the next change, its audit line, the next event'],
+        ['api', 'fb', 'push to the members it concerns', 'evt'],
+        ['fb', 'app', 'notification on phone or browser', 'evt']
+      ] },
+    { id: 'signin', name: 'Signing in', group: 'How every step runs', cls: 'loop',
+      lead: 'Everyone signs in with email and password through Firebase Authentication. The browser holds the ID token, the Firebase SDK refreshes it, and every call to backend-api carries it. The API verifies the token, finds the active member and their role, and from then on every answer is cut to what that role may see.',
+      gcp: ['Firebase Authentication', 'Identity Platform', 'Cloud Run', 'Cloud SQL'],
+      note: 'Sign-up is disabled, so only backend-api creates accounts. Email enumeration protection gives every wrong sign-in the same answer. A Firebase account that is not a member of this workspace is signed out again.',
+      msgs: [
+        ['app', 'fb', 'email and password'],
+        ['fb', 'app', 'ID token, refreshed by the SDK', 'ret'],
+        ['app', 'api', 'open the session, Bearer ID token'],
+        ['api', 'fb', 'verify the token with firebase-admin'],
+        ['api', 'sql', 'find the active member and their role'],
+        ['api', 'app', 'the member, the workspace, what they may do', 'ret'],
+        ['app', 'api', 'open the live stream with the same token'],
+        ['api', 'app', 'events as they commit, or polling as the fallback', 'evt'],
+        ['app', 'fb', 'register this device for pushes', 'evt']
+      ] },
+    { id: 'connect', name: 'Connect', group: 'A batch’s journey', agent: 'Data agent',
+      lead: 'The brand’s distributor management system exports stock and secondary sales as CSV. The file goes straight from the browser to Cloud Storage on a signed URL, never through the API. The Data agent reads it, maps its columns (with a saved layout, or Gemini Flash for headers it has not seen), and loads it into BigQuery with a load job.',
+      gcp: ['Cloud Storage', 'Pub/Sub', 'Cloud Run', 'Vertex AI', 'BigQuery'],
+      note: 'A load job never loads the same file twice. Staff can map a client’s first export from the console, so the workspace opens already connected.',
+      msgs: [
+        ['app', 'api', 'ask for an upload link for the export'],
+        ['api', 'dat', 'sign a short-lived Cloud Storage URL'],
+        ['api', 'app', 'the signed URL', 'ret'],
+        ['app', 'dat', 'upload the CSV straight to the exports bucket'],
+        ['app', 'api', 'the export has arrived'],
+        ['api', 'sql', 'record it, write the audit line and the event'],
+        ['api', 'ps', 'the export event', 'evt'],
+        ['ps', 'ag', 'push to the Data agent', 'evt'],
+        ['ag', 'dat', 'read the CSV from the bucket'],
+        ['ag', 'gem', 'map a header layout it has not seen', 'ai'],
+        ['ag', 'dat', 'load stock and sell-through into BigQuery'],
+        ['ag', 'api', 'report the column map'],
+        ['api', 'app', 'Setup shows the export mapped', 'evt']
+      ] },
+    { id: 'detect', name: 'Detect', group: 'A batch’s journey', agent: 'Watcher',
+      lead: 'Cloud Scheduler ticks backend-api, which runs each client’s daily jobs on the journey’s own clock. The Watcher reads each open batch’s sell-through from BigQuery and reports which batches will not sell before retailers stop taking them. backend-api opens a case for each and tells the operator.',
+      gcp: ['Cloud Scheduler', 'Pub/Sub', 'Cloud Run', 'BigQuery', 'Cloud SQL', 'Cloud Messaging'],
+      note: 'The Watcher needs no model: sell-through is a query. It flags a batch only once Setup is confirmed and the distributor has given its permission.',
+      msgs: [
+        ['ps', 'api', 'Cloud Scheduler ticks, signed with OIDC', 'evt'],
+        ['api', 'sql', 'whose daily run is due on journey time'],
+        ['api', 'ps', 'the Watcher is due', 'evt'],
+        ['ps', 'ag', 'push to the Watcher', 'evt'],
+        ['ag', 'api', 'open batches, SKUs, distributors'],
+        ['ag', 'dat', 'query sell-through by distributor and SKU'],
+        ['ag', 'api', 'report the batches at risk'],
+        ['api', 'sql', 'open a case per batch, audit line, outbox'],
+        ['api', 'ps', 'batch at risk', 'evt'],
+        ['api', 'fb', 'push to the operator', 'evt'],
+        ['api', 'app', 'the Command Center shows the batch', 'evt']
+      ] },
+    { id: 'verify', name: 'Verify', group: 'A batch’s journey', agent: 'Vision',
+      lead: 'Before anything is priced, the batch is checked on the shelf. Vision asks the distributor for one photo of the carton’s label; the phone uploads it straight to Cloud Storage; Gemini Flash reads what is printed, without being shown the record it is checked against. backend-api compares the read with the batch.',
+      gcp: ['Cloud Messaging', 'Cloud Storage', 'Pub/Sub', 'Vertex AI', 'Cloud Run', 'Cloud SQL'],
+      note: 'A label that cannot be read, or reads differently from the record, asks for another photo with the reason. A read Vision could not make is retried by Pub/Sub before it gives up.',
+      msgs: [
+        ['ps', 'ag', 'batch at risk, push to Vision', 'evt'],
+        ['ag', 'api', 'ask the distributor for a label photo'],
+        ['api', 'fb', 'push to the distributor', 'evt'],
+        ['app', 'api', 'Take a photo: ask for an upload link'],
+        ['api', 'dat', 'sign a Cloud Storage URL'],
+        ['app', 'dat', 'upload the photo to the photos bucket'],
+        ['app', 'api', 'the photo is sent'],
+        ['api', 'ps', 'the journey moves to decide', 'evt'],
+        ['ps', 'ag', 'push to Vision', 'evt'],
+        ['ag', 'dat', 'read the photo'],
+        ['ag', 'gem', 'read the printed label, multimodal', 'ai'],
+        ['gem', 'ag', 'batch, dates, price, pack, confidence', 'ret'],
+        ['ag', 'api', 'report the read'],
+        ['api', 'sql', 'compare with the batch, record the result']
+      ] },
+    { id: 'value', name: 'Value', group: 'A batch’s journey', agent: 'Valuer',
+      lead: 'backend-api prices every way out for the batch with the money rules: kiranas, the quick-commerce marketplace, a staff sale, a food bank, or the bin. The Valuer reads that table and the SKU’s recent prices in BigQuery, and Gemini Pro writes one note per exit saying why it suits this batch now.',
+      gcp: ['Pub/Sub', 'Cloud Run', 'BigQuery', 'Vertex AI', 'Cloud SQL'],
+      note: 'The table comes from backend-api, never from the model. A note that quotes a figure not in the table is dropped, and the template stands in.',
+      msgs: [
+        ['ps', 'ag', 'push to the Valuer', 'evt'],
+        ['ag', 'api', 'the valuation preview, worked out by the money rules'],
+        ['ag', 'dat', 'the SKU’s recent channel prices'],
+        ['ag', 'gem', 'one note per exit, from the table', 'ai'],
+        ['gem', 'ag', 'notes as a list of pairs', 'ret'],
+        ['ag', 'ag', 'drop any note quoting a figure not in the table'],
+        ['ag', 'api', 'report the notes'],
+        ['api', 'sql', 'save the valuation and its audit line']
+      ] },
+    { id: 'decide', name: 'Decide', group: 'A batch’s journey', agent: 'Router',
+      lead: 'backend-api splits the batch across the exits by the client’s gates and guardrails. The Router reads the plan and Gemini Pro explains it in plain words for the approver, quoting only the plan’s own figures. The plan then waits for a person.',
+      gcp: ['Pub/Sub', 'Cloud Run', 'Vertex AI', 'Cloud SQL', 'Cloud Messaging'],
+      note: 'If the explanation fails a check, the approver still sees the plan, explained by the template.',
+      msgs: [
+        ['ps', 'ag', 'push to the Router', 'evt'],
+        ['ag', 'api', 'the plan preview: the split by exit'],
+        ['ag', 'gem', 'explain the split in plain words', 'ai'],
+        ['gem', 'ag', 'the explanation', 'ret'],
+        ['ag', 'ag', 'check it quotes only the plan’s figures'],
+        ['ag', 'api', 'report the explanation'],
+        ['api', 'sql', 'the plan waits for a yes'],
+        ['api', 'fb', 'push to the approver', 'evt'],
+        ['api', 'app', 'the Route Room shows the plan', 'evt']
+      ] },
+    { id: 'approve', name: 'Approve', group: 'A batch’s journey', cls: 'yes', agent: 'a person',
+      lead: 'The approval is a person, never an agent. The approver reads the plan, the notes and the explanation, and says yes in the workspace app. backend-api checks the role, records the yes in the approver’s name, and only then sends the event that starts execution.',
+      gcp: ['Firebase Authentication', 'Cloud Run', 'Cloud SQL', 'Pub/Sub'],
+      note: 'The yes carries an idempotency key, so a second tap on a slow network approves once.',
+      msgs: [
+        ['app', 'api', 'Approve, with ID token and idempotency key', 'yes'],
+        ['api', 'fb', 'verify the token'],
+        ['api', 'sql', 'check the role: the client’s approver'],
+        ['api', 'sql', 'plan approved, audit line in the approver’s name'],
+        ['api', 'app', 'every member’s screen moves on', 'evt'],
+        ['api', 'ps', 'the journey moves to execute', 'evt']
+      ] },
+    { id: 'execute', name: 'Execute', group: 'A batch’s journey', agent: 'Lister, Outreach, Donation, Negotiator',
+      lead: 'One event starts three agents at once in an ADK ParallelAgent: the Lister writes the marketplace listing, Outreach writes the kiranas’ offer in Hindi, English and Marathi, and Donation books the food bank. Kiranas order in the app; a buyer bids, backend-api decides the counter, and the Negotiator words the reply.',
+      gcp: ['Pub/Sub', 'Cloud Run', 'Vertex AI', 'Cloud Messaging', 'BigQuery', 'Cloud SQL'],
+      note: 'The reserve price never reaches a prompt, and a buyer’s message is quoted between delimiters as data. A reply to a bid must state the decided price and nothing else.',
+      msgs: [
+        ['ps', 'ag', 'execute, push to the pipeline', 'evt'],
+        ['ag', 'gem', 'Lister, Outreach in parallel: listing and offers', 'ai'],
+        ['ag', 'api', 'listing, offers, the food bank booked'],
+        ['api', 'fb', 'offers pushed to each kirana', 'evt'],
+        ['app', 'api', 'kiranas order, a buyer bids'],
+        ['api', 'ps', 'an offer received', 'evt'],
+        ['ps', 'ag', 'push to the Negotiator', 'evt'],
+        ['ag', 'api', 'the bid preview: backend-api decides the counter'],
+        ['ag', 'gem', 'word the reply, the reserve left out', 'ai'],
+        ['ag', 'api', 'the reply, stating the decided price'],
+        ['api', 'app', 'the buyer sees the counter', 'evt'],
+        ['app', 'api', 'the buyer accepts', 'yes'],
+        ['api', 'ps', 'the deal closed', 'evt'],
+        ['ag', 'dat', 'the award price into BigQuery']
+      ] },
+    { id: 'settle', name: 'Settle', group: 'A batch’s journey', agent: 'Paperwork',
+      lead: 'Once every line of the plan is done, backend-api drafts the papers, numbered in their series: the tax invoice, the credit notes, the GST input-credit memo, the food bank’s receipt. Paperwork renders each as a PDF with WeasyPrint into Cloud Storage, and members open them through short-lived signed links.',
+      gcp: ['Cloud SQL', 'Pub/Sub', 'Cloud Run', 'Vertex AI', 'Cloud Storage'],
+      note: 'The figures on every paper are backend-api’s. Gemini Flash may add a one-line cover note; if it fails, the paper ships without it.',
+      msgs: [
+        ['api', 'sql', 'draft the papers, numbered in series'],
+        ['api', 'ps', 'the journey moves to settle', 'evt'],
+        ['ps', 'ag', 'push to Paperwork', 'evt'],
+        ['ag', 'api', 'the drafted papers'],
+        ['ag', 'gem', 'an optional cover note', 'ai'],
+        ['ag', 'dat', 'render each PDF into the docs bucket'],
+        ['ag', 'api', 'each paper keeps its PDF'],
+        ['app', 'api', 'open a paper'],
+        ['api', 'dat', 'sign a short-lived link'],
+        ['api', 'app', 'the PDF’s link', 'ret'],
+        ['app', 'api', 'the operator reviews the pack, the distributor issues the invoice']
+      ] },
+    { id: 'report', name: 'Report', group: 'A batch’s journey', agent: 'Impact',
+      lead: 'When the batch’s report falls due, or the console calls expiry day, backend-api closes what is left by the client’s expiry policy. Impact posts the ledger: what each exit recovered, the input credit kept and reversed, the kilos kept out of landfill, the meals. The rows go to BigQuery’s impact table and to the workspace’s ledger.',
+      gcp: ['Cloud Scheduler', 'Pub/Sub', 'Cloud Run', 'Cloud SQL', 'BigQuery'],
+      note: 'The ledger reads by batch, by quarter of the Indian financial year and by year, and exports the BRSR table, the GST summary and the ledger itself.',
+      msgs: [
+        ['ps', 'api', 'Cloud Scheduler ticks: the report is due', 'evt'],
+        ['api', 'sql', 'settle what is left by the expiry policy'],
+        ['api', 'ps', 'the report is due', 'evt'],
+        ['ps', 'ag', 'push to Impact', 'evt'],
+        ['ag', 'api', 'the case and its realised figures'],
+        ['ag', 'dat', 'one impact ledger row per exit'],
+        ['ag', 'api', 'post the report'],
+        ['api', 'sql', 'ledger posted, the case cleared'],
+        ['api', 'app', 'the ledger event to the operator', 'evt'],
+        ['app', 'api', 'the ledger by batch, quarter and year, with exports']
+      ] }
+  ];
+
+  var NS = 'http://www.w3.org/2000/svg';
+  var W = 1080, X0 = 70, STEP = (W - 2 * X0) / (LANES.length - 1), ROW = 40, TOP = 96;
+  var svg = document.getElementById('flow-svg');
+  function el(name, attrs, text) {
+    var n = document.createElementNS(NS, name);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function laneX(id) { for (var i = 0; i < LANES.length; i++) if (LANES[i].id === id) return X0 + i * STEP; return X0; }
+  var EDGE = { call: 'edge', ret: 'edge ret', evt: 'edge evt', ai: 'edge ai-e', yes: 'edge yes-e' };
+  var MARK = { call: 'f-ah', ret: 'f-ah', evt: 'f-ahg', ai: 'f-aha', yes: 'f-ahy' };
+
+  function render(stage) {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var H = TOP + stage.msgs.length * ROW + 18;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    var defs = el('defs', {});
+    [['f-ah', 'ah'], ['f-ahg', 'ahg'], ['f-aha', 'aha'], ['f-ahy', 'ahy']].forEach(function (m) {
+      var mk = el('marker', { id: m[0], viewBox: '0 0 10 10', refX: '9', refY: '5', markerWidth: '7', markerHeight: '7', orient: 'auto-start-reverse' });
+      mk.appendChild(el('path', { d: 'M0 0L10 5L0 10z', 'class': m[1] }));
+      defs.appendChild(mk);
+    });
+    var g = el('linearGradient', { id: 'f-aura', x1: '0', y1: '0', x2: '1', y2: '1' });
+    [['0', '#34d399'], ['.45', '#2dd4bf'], ['.75', '#38bdf8'], ['1', '#a3e635']].forEach(function (s) { g.appendChild(el('stop', { offset: s[0], 'stop-color': s[1] })); });
+    defs.appendChild(g);
+    svg.appendChild(defs);
+
+    var used = {};
+    stage.msgs.forEach(function (m) { used[m[0]] = 1; used[m[1]] = 1; });
+    LANES.forEach(function (l) {
+      var x = laneX(l.id), on = !!used[l.id];
+      var grp = el('g', { opacity: on ? '1' : '0.32' });
+      grp.appendChild(el('line', { x1: x, y1: 62, x2: x, y2: H - 8, stroke: 'var(--line-2)', 'stroke-width': '1.2', 'stroke-dasharray': '3 5' }));
+      var cls = l.k === 'g' ? 'ng' : l.k === 'ours' ? 'ours' : l.k === 'ai' ? 'ai' : 'tile';
+      var box = el('rect', { 'class': cls, x: x - 60, y: 10, width: 120, height: 50, rx: 12 });
+      if (l.k === 'ai') box.setAttribute('stroke', 'url(#f-aura)');
+      grp.appendChild(box);
+      grp.appendChild(el('text', { 'class': 'h', x: x, y: 32, 'text-anchor': 'middle' }, l.name));
+      grp.appendChild(el('text', { 'class': 's', x: x, y: 49, 'text-anchor': 'middle' }, l.sub));
+      svg.appendChild(grp);
+    });
+
+    stage.msgs.forEach(function (m, i) {
+      var kind = m[3] || 'call', y = TOP + i * ROW + 14;
+      var x1 = laneX(m[0]), x2 = laneX(m[1]);
+      var cls = EDGE[kind];
+      var p;
+      if (m[0] === m[1]) {
+        p = el('path', { d: 'M' + x1 + ' ' + (y - 8) + 'h28v16h-26', 'class': cls, 'marker-end': 'url(#' + MARK[kind] + ')' });
+      } else {
+        var dir = x2 > x1 ? 1 : -1;
+        p = el('path', { d: 'M' + (x1 + dir * 4) + ' ' + y + 'H' + (x2 - dir * 5), 'class': cls, 'marker-end': 'url(#' + MARK[kind] + ')' });
+      }
+      if (kind === 'yes') { p.setAttribute('style', 'stroke:var(--amber-line);stroke-width:2.4'); }
+      if (kind === 'ai') { p.setAttribute('style', 'stroke-width:1.9'); }
+      if (kind === 'evt') { p.setAttribute('style', 'stroke-dasharray:6 4;stroke-width:1.7'); }
+      svg.appendChild(p);
+      svg.appendChild(el('circle', { cx: x1, cy: m[0] === m[1] ? y - 8 : y, r: 3.2, style: 'fill:' + (kind === 'yes' ? 'var(--amber)' : kind === 'ai' ? 'var(--ai)' : kind === 'evt' ? 'var(--primary)' : 'var(--fg-3)') }));
+      var t = el('text', { 'class': 'e', y: m[0] === m[1] ? y + 4 : y - 7, style: 'font:500 12px var(--font-ui);fill:var(--fg-2)' }, m[2]);
+      svg.appendChild(t);
+      var w = 0; try { w = t.getComputedTextLength(); } catch (e) { w = m[2].length * 6.4; }
+      if (m[0] === m[1]) {
+        var lx = x1 + 36;
+        if (lx + w > W - 8) { t.setAttribute('text-anchor', 'end'); t.setAttribute('x', x1 - 10); }
+        else { t.setAttribute('x', lx); }
+      } else {
+        var mid = (x1 + x2) / 2;
+        mid = Math.max(w / 2 + 8, Math.min(W - w / 2 - 8, mid));
+        t.setAttribute('x', mid); t.setAttribute('text-anchor', 'middle');
+      }
+    });
+    svg.setAttribute('aria-label', stage.name + ': ' + stage.msgs.map(function (m) {
+      var a = LANES.filter(function (l) { return l.id === m[0]; })[0].name, b = LANES.filter(function (l) { return l.id === m[1]; })[0].name;
+      return a + (m[0] === m[1] ? ' itself' : ' to ' + b) + ', ' + m[2];
+    }).join('; '));
+  }
+
+  var tabs = document.getElementById('stages');
+  var title = document.getElementById('flow-title'), lead = document.getElementById('flow-lead'), gcp = document.getElementById('flow-gcp'), note = document.getElementById('flow-note');
+  var panel = document.getElementById('flow-panel');
+  var current = 0, lastGroup = null;
+  STAGES.forEach(function (s, i) {
+    if (s.group !== lastGroup) { var gt = document.createElement('div'); gt.className = 'grp-t'; gt.textContent = s.group; tabs.appendChild(gt); lastGroup = s.group; }
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'stage' + (s.cls ? ' ' + s.cls : ''); b.id = 'tab-' + s.id;
+    b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', 'flow-panel');
+    b.innerHTML = '<span class="pt" aria-hidden="true"></span><span>' + s.name + '</span>';
+    b.addEventListener('click', function () { select(i, false); });
+    tabs.appendChild(b);
+  });
+  var buttons = Array.prototype.slice.call(tabs.querySelectorAll('[role=tab]'));
+  tabs.addEventListener('keydown', function (e) {
+    var k = e.key, n = null;
+    if (k === 'ArrowDown' || k === 'ArrowRight') n = (current + 1) % STAGES.length;
+    else if (k === 'ArrowUp' || k === 'ArrowLeft') n = (current - 1 + STAGES.length) % STAGES.length;
+    else if (k === 'Home') n = 0; else if (k === 'End') n = STAGES.length - 1;
+    if (n !== null) { e.preventDefault(); select(n, true); }
+  });
+  function select(i, focus) {
+    current = i; var s = STAGES[i];
+    buttons.forEach(function (b, j) { b.setAttribute('aria-selected', String(j === i)); b.tabIndex = j === i ? 0 : -1; });
+    if (focus) buttons[i].focus();
+    panel.setAttribute('aria-labelledby', 'tab-' + s.id);
+    title.textContent = s.agent ? s.name + ' · ' + s.agent : s.name;
+    lead.textContent = s.lead;
+    gcp.innerHTML = '';
+    s.gcp.forEach(function (n) { var c = document.createElement('span'); c.className = 'chip ' + (/Vertex|Gemini/.test(n) ? 'ai' : 'g'); c.textContent = n; gcp.appendChild(c); });
+    note.textContent = s.note || '';
+    render(s);
+  }
+  select(0, false);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { render(STAGES[current]); });
+})();
+</script>
+</body>
+</html>
