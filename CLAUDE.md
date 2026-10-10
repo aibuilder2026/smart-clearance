@@ -1745,4 +1745,17 @@
     - the day is 24 hours.
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 
+- **SC-141** (In Review, branch `SC-141-distributor-figures`; bug found by the maintainer): the distributor's Orders and Batches, figures that add up as written.
+  - **Found:** "calculations dont match" on Rakesh Traders' portal. Every one of his six cleared batches ends whole to the paisa, and both headlines were right. Batches' ₹66,918 is what Munchly credited him (8 credit notes); Orders' ₹1,05,928 is what he sold from the same batches. But:
+    - a kirana row read "456 packets at ₹18.00, 2 free with every 10 · ₹6,840", which multiplies to ₹8,208. With 2 free in every 12, the packets came to ₹15.00 each;
+    - the two headlines ("from Munchly since July", "sold from Munchly's batches") did not say which figure was which.
+  - **The fix** (design3 `core/ledger.js` and `screens/trade.jsx` first, then core's `dist.ts`, `DistBatches` and `DistOrders`):
+    - the row gives the effective price first, as the Route Room already does: "456 packets at ₹15.00 effective (₹18.00 a pack, 2 free with every 10)", in a batch in a journey and a cleared one;
+    - Batches reads "credited by Munchly since July", and ties the figures together: "They cost you ₹1,72,846; you sold ₹1,05,928 from them (on Orders), and the price support, with the expiry credit where packs expired, made up the rest";
+    - Orders names the credit notes on the cleared batches, ₹66,918, as on Batches.
+  - **Checks:**
+    - the frontend gate passes: core 260, with Rakesh's 18 goldens changing only those lines; api 78; workspace 87; admin 17; demo 5; console 3. The two live tests now hold the row's effective price and its ₹10,584, and the sentence's ₹1,72,846, and fail without the fix;
+    - backend-api 547 passed, 1 skipped (only the seed manifest changed);
+    - design3's `dist/` is rebuilt.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
