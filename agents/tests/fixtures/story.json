@@ -15,7 +15,9 @@
    "perCarton": 24,
    "lifeDays": 180,
    "kgPerUnit": 0.16,
-   "img": "pack-chips"
+   "packKg": 0.006,
+   "img": "pack-chips",
+   "gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
   },
   "biscuits": {
    "id": "biscuits",
@@ -25,11 +27,14 @@
    "category": "biscuits",
    "hsn": "1905",
    "mrp": 40,
+   "dp": 29,
    "cost": 22,
    "gst": 0.05,
+   "itcPerUnit": 1.24,
    "perCarton": 24,
    "lifeDays": 270,
    "kgPerUnit": 0.215,
+   "packKg": 0.008,
    "img": "pack-biscuits"
   },
   "chikki": {
@@ -40,11 +45,14 @@
    "category": "snacks",
    "hsn": "1704",
    "mrp": 25,
+   "dp": 18,
    "cost": 13,
    "gst": 0.05,
+   "itcPerUnit": 0.73,
    "perCarton": 30,
    "lifeDays": 180,
    "kgPerUnit": 0.11,
+   "packKg": 0.004,
    "img": "pack-chikki"
   },
   "poha": {
@@ -55,11 +63,14 @@
    "category": "staples",
    "hsn": "1904",
    "mrp": 55,
+   "dp": 40,
    "cost": 31,
    "gst": 0.05,
+   "itcPerUnit": 1.74,
    "perCarton": 20,
    "lifeDays": 270,
    "kgPerUnit": 0.27,
+   "packKg": 0.006,
    "img": "pack-poha"
   },
   "oats": {
@@ -70,11 +81,14 @@
    "category": "staples",
    "hsn": "2106",
    "mrp": 65,
+   "dp": 47.5,
    "cost": 36,
    "gst": 0.05,
+   "itcPerUnit": 2.03,
    "perCarton": 20,
    "lifeDays": 270,
    "kgPerUnit": 0.22,
+   "packKg": 0.005,
    "img": "pack-oats"
   },
   "mango": {
@@ -85,11 +99,13 @@
    "category": "beverages",
    "hsn": "2202",
    "mrp": 20,
+   "dp": 14.5,
    "cost": 11,
    "gst": 0.05,
    "perCarton": 27,
    "lifeDays": 180,
    "kgPerUnit": 0.215,
+   "packKg": 0.002,
    "img": "pack-mango"
   },
   "facewash": {
@@ -100,11 +116,14 @@
    "category": "personal-care",
    "hsn": "3401",
    "mrp": 120,
+   "dp": 88,
    "cost": 58,
    "gst": 0.18,
+   "itcPerUnit": 11.75,
    "perCarton": 12,
    "lifeDays": 730,
    "kgPerUnit": 0.12,
+   "packKg": 0.012,
    "img": "pack-facewash"
   },
   "hairoil": {
@@ -115,11 +134,14 @@
    "category": "personal-care",
    "hsn": "3305",
    "mrp": 150,
+   "dp": 110,
    "cost": 72,
    "gst": 0.05,
+   "itcPerUnit": 4.05,
    "perCarton": 12,
    "lifeDays": 730,
    "kgPerUnit": 0.23,
+   "packKg": 0.02,
    "img": "pack-hairoil"
   }
  },
@@ -130,14 +152,24 @@
    "short": "Rakesh Traders",
    "city": "Nagpur",
    "state": "Maharashtra",
+   "stateCode": "27",
    "godown": "Kalamna Market godown",
-   "address": "Kalamna Market, Nagpur, Maharashtra",
-   "gstin": "27AABCR1234F1Z5",
+   "address": "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra",
+   "gstin": "27ABHPR0000K1ZW",
+   "pan": "ABHPR0000K",
+   "fssai": "21526000000117",
+   "email": "accounts@rakeshtraders.example",
+   "bank": {
+    "name": "Example Co-operative Bank, Itwari, Nagpur",
+    "account": "0000 0117 2409",
+    "ifsc": "EXMP0000117"
+   },
    "kiranas": 38,
    "cluster": "Nagpur, Wardha and Kamptee",
    "territory": "Nagpur with Wardha and Kamptee",
    "pins": "440, 441, 442",
-   "staffCap": 50
+   "staffCap": 50,
+   "upi": "rakesh-traders@exampleupi"
   },
   "patil": {
    "id": "patil",
@@ -145,11 +177,23 @@
    "short": "Patil Distributors",
    "city": "Pune",
    "state": "Maharashtra",
+   "stateCode": "27",
    "godown": "Market Yard godown",
+   "address": "Shop 7, Market Yard, Gultekdi, Pune 411037, Maharashtra",
+   "gstin": "27AAKFP0000P1Z8",
+   "pan": "AAKFP0000P",
+   "fssai": "21526000000204",
+   "email": "accounts@patildistributors.example",
+   "bank": {
+    "name": "Example Co-operative Bank, Market Yard, Pune",
+    "account": "0000 0204 2409",
+    "ifsc": "EXMP0000204"
+   },
    "kiranas": 52,
    "cluster": "Pune city",
    "territory": "Pune",
-   "pins": "411, 412"
+   "pins": "411, 412",
+   "upi": "patil-distributors@exampleupi"
   },
   "gupta": {
    "id": "gupta",
@@ -157,11 +201,23 @@
    "short": "Gupta & Sons",
    "city": "Indore",
    "state": "Madhya Pradesh",
+   "stateCode": "23",
    "godown": "Siyaganj godown",
+   "address": "22 Siyaganj Main Road, Indore 452007, Madhya Pradesh",
+   "gstin": "23AAHFG0000G1ZB",
+   "pan": "AAHFG0000G",
+   "fssai": "21426000000209",
+   "email": "accounts@guptasons.example",
+   "bank": {
+    "name": "Example Co-operative Bank, Siyaganj, Indore",
+    "account": "0000 0209 2408",
+    "ifsc": "EXMP0000209"
+   },
    "kiranas": 47,
    "cluster": "Indore",
    "territory": "Indore",
-   "pins": "452, 453"
+   "pins": "452, 453",
+   "upi": "gupta-sons@exampleupi"
   },
   "lakshmi": {
    "id": "lakshmi",
@@ -169,12 +225,24 @@
    "short": "Lakshmi Agencies",
    "city": "Hyderabad",
    "state": "Telangana",
+   "stateCode": "36",
    "godown": "Begum Bazaar godown",
+   "address": "4-2-118 Begum Bazaar, Hyderabad 500012, Telangana",
+   "gstin": "36AAJFL0000L1ZM",
+   "pan": "AAJFL0000L",
+   "fssai": "23626000000118",
+   "email": "accounts@lakshmiagencies.example",
+   "bank": {
+    "name": "Example Co-operative Bank, Begum Bazaar, Hyderabad",
+    "account": "0000 0118 2410",
+    "ifsc": "EXMP0000118"
+   },
    "kiranas": 58,
    "cluster": "Hyderabad old city",
    "territory": "Hyderabad",
    "pins": "500, 501",
-   "staffCap": 150
+   "staffCap": 150,
+   "upi": "lakshmi-agencies@exampleupi"
   }
  },
  "batches": [
@@ -475,6 +543,296 @@
    "id": "k37",
    "name": "Mohan Stores",
    "orders": 0
+  },
+  {
+   "id": "h0",
+   "name": "Sri Lakshmi Ganapathi Kirana",
+   "orders": 24
+  },
+  {
+   "id": "h1",
+   "name": "Al-Noor Provision Store",
+   "orders": 28
+  },
+  {
+   "id": "h2",
+   "name": "Deccan General Stores",
+   "orders": 32
+  },
+  {
+   "id": "h3",
+   "name": "Sai Krishna Kirana",
+   "orders": 20
+  },
+  {
+   "id": "h4",
+   "name": "Hussaini Provision",
+   "orders": 36
+  },
+  {
+   "id": "h5",
+   "name": "Bhavani Kirana",
+   "orders": 24
+  },
+  {
+   "id": "h6",
+   "name": "Golconda Stores",
+   "orders": 28
+  },
+  {
+   "id": "h7",
+   "name": "Moazzam Kirana",
+   "orders": 16
+  },
+  {
+   "id": "h8",
+   "name": "Anjaneya Provision Store",
+   "orders": 32
+  },
+  {
+   "id": "h9",
+   "name": "Shalimar General Store",
+   "orders": 28
+  },
+  {
+   "id": "h10",
+   "name": "Ravi Teja Kirana",
+   "orders": 24
+  },
+  {
+   "id": "h11",
+   "name": "Madina Provision",
+   "orders": 28
+  },
+  {
+   "id": "h12",
+   "name": "Sri Durga Bhavani Stores",
+   "orders": 32
+  },
+  {
+   "id": "h13",
+   "name": "Hyderabadi Kirana",
+   "orders": 20
+  },
+  {
+   "id": "h14",
+   "name": "Gulzar House Stores",
+   "orders": 36
+  },
+  {
+   "id": "h15",
+   "name": "Padmavathi Kirana",
+   "orders": 24
+  },
+  {
+   "id": "h16",
+   "name": "Asif Nagar Provisions",
+   "orders": 28
+  },
+  {
+   "id": "h17",
+   "name": "Ramakrishna General Store",
+   "orders": 16
+  },
+  {
+   "id": "h18",
+   "name": "Taj Kirana",
+   "orders": 32
+  },
+  {
+   "id": "h19",
+   "name": "Sitara Provision Store",
+   "orders": 28
+  },
+  {
+   "id": "h20",
+   "name": "Vinayaka Stores",
+   "orders": 24
+  },
+  {
+   "id": "h21",
+   "name": "Nizam Kirana",
+   "orders": 28
+  },
+  {
+   "id": "h22",
+   "name": "Annapurna Provisions",
+   "orders": 32
+  },
+  {
+   "id": "h23",
+   "name": "Musi River Stores",
+   "orders": 20
+  },
+  {
+   "id": "h24",
+   "name": "Kothi Kirana",
+   "orders": 36
+  },
+  {
+   "id": "h25",
+   "name": "Siddiq General Store",
+   "orders": 24
+  },
+  {
+   "id": "h26",
+   "name": "Lalitha Provision",
+   "orders": 28
+  },
+  {
+   "id": "h27",
+   "name": "Mehboob Kirana",
+   "orders": 16
+  },
+  {
+   "id": "h28",
+   "name": "Srinivasa Stores",
+   "orders": 32
+  },
+  {
+   "id": "h29",
+   "name": "Zam Zam Provisions",
+   "orders": 28
+  },
+  {
+   "id": "h30",
+   "name": "Pochamma Kirana",
+   "orders": 24
+  },
+  {
+   "id": "h31",
+   "name": "Rahmat General Store",
+   "orders": 28
+  },
+  {
+   "id": "h32",
+   "name": "Krishnaveni Provisions",
+   "orders": 32
+  },
+  {
+   "id": "h33",
+   "name": "Shah Ali Kirana",
+   "orders": 20
+  },
+  {
+   "id": "h34",
+   "name": "Mahalakshmi Stores",
+   "orders": 36
+  },
+  {
+   "id": "h35",
+   "name": "Banjara Provision Store",
+   "orders": 24
+  },
+  {
+   "id": "h36",
+   "name": "Ghouse Kirana",
+   "orders": 28
+  },
+  {
+   "id": "h37",
+   "name": "Sri Rama Stores",
+   "orders": 16
+  },
+  {
+   "id": "h38",
+   "name": "Patel Market Kirana",
+   "orders": 32
+  },
+  {
+   "id": "h39",
+   "name": "Yadamma Provisions",
+   "orders": 28
+  },
+  {
+   "id": "h40",
+   "name": "Darussalam Stores",
+   "orders": 24
+  },
+  {
+   "id": "h41",
+   "name": "Gowri Kirana",
+   "orders": 28
+  },
+  {
+   "id": "h42",
+   "name": "Irani Gali Provisions",
+   "orders": 32
+  },
+  {
+   "id": "h43",
+   "name": "Satyanarayana Stores",
+   "orders": 20
+  },
+  {
+   "id": "h44",
+   "name": "Farhan General Store",
+   "orders": 36
+  },
+  {
+   "id": "h45",
+   "name": "Sunanda Kirana",
+   "orders": 24
+  },
+  {
+   "id": "h46",
+   "name": "Mir Alam Provisions",
+   "orders": 28
+  },
+  {
+   "id": "h47",
+   "name": "Jyothi Stores",
+   "orders": 16
+  },
+  {
+   "id": "h48",
+   "name": "Purani Haveli Kirana",
+   "orders": 32
+  },
+  {
+   "id": "h49",
+   "name": "Narayana Provision Store",
+   "orders": 28
+  },
+  {
+   "id": "h50",
+   "name": "Bilal Stores",
+   "orders": 28
+  },
+  {
+   "id": "h51",
+   "name": "Saraswathi Kirana",
+   "orders": 4
+  },
+  {
+   "id": "h52",
+   "name": "Osman Gunj Provisions",
+   "orders": 0
+  },
+  {
+   "id": "h53",
+   "name": "Vijaya Stores",
+   "orders": 0
+  },
+  {
+   "id": "h54",
+   "name": "Akbar Kirana",
+   "orders": 0
+  },
+  {
+   "id": "h55",
+   "name": "Manjula Provisions",
+   "orders": 0
+  },
+  {
+   "id": "h56",
+   "name": "Laad Bazaar Stores",
+   "orders": 0
+  },
+  {
+   "id": "h57",
+   "name": "Sri Venu Kirana",
+   "orders": 0
   }
  ],
  "label": {
@@ -515,7 +873,9 @@
    "perCarton": 24,
    "lifeDays": 180,
    "kgPerUnit": 0.16,
-   "img": "pack-chips"
+   "packKg": 0.006,
+   "img": "pack-chips",
+   "gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
   },
   "plan": {
    "batch": "MF-2409-117",
@@ -753,11 +1113,13 @@
    "category": "beverages",
    "hsn": "2202",
    "mrp": 20,
+   "dp": 14.5,
    "cost": 11,
    "gst": 0.05,
    "perCarton": 27,
    "lifeDays": 180,
    "kgPerUnit": 0.215,
+   "packKg": 0.002,
    "img": "pack-mango"
   },
   "plan": {
@@ -966,14 +1328,24 @@
     "short": "Rakesh Traders",
     "city": "Nagpur",
     "state": "Maharashtra",
+    "stateCode": "27",
     "godown": "Kalamna Market godown",
-    "address": "Kalamna Market, Nagpur, Maharashtra",
-    "gstin": "27AABCR1234F1Z5",
+    "address": "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra",
+    "gstin": "27ABHPR0000K1ZW",
+    "pan": "ABHPR0000K",
+    "fssai": "21526000000117",
+    "email": "accounts@rakeshtraders.example",
+    "bank": {
+     "name": "Example Co-operative Bank, Itwari, Nagpur",
+     "account": "0000 0117 2409",
+     "ifsc": "EXMP0000117"
+    },
     "kiranas": 38,
     "cluster": "Nagpur, Wardha and Kamptee",
     "territory": "Nagpur with Wardha and Kamptee",
     "pins": "440, 441, 442",
-    "staffCap": 50
+    "staffCap": 50,
+    "upi": "rakesh-traders@exampleupi"
    },
    "to": {
     "id": "agrawal",
@@ -982,8 +1354,9 @@
     "city": "Raipur",
     "state": "Chhattisgarh",
     "stateCode": "22",
-    "address": "Ganj Mandi, Raipur, Chhattisgarh",
-    "gstin": "22AAGFA4821M1Z3",
+    "address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+    "gstin": "22AAGFA0000A1ZW",
+    "pan": "AAGFA0000A",
     "kind": "Kirana wholesaler · ExpireSoon buyer"
    },
    "hsn": "2005",
@@ -1037,6 +1410,10 @@
    "no": "s.17(5)(h)",
    "status": "generated",
    "amount": 1224,
+   "reversed": 0,
+   "units": 1360,
+   "away": 0,
+   "atGodown": 0,
    "note": "Goods supplied under tax invoices, so the Section 17(5)(h) reversal does not apply."
   },
   {
@@ -1053,7 +1430,9 @@
    "owner": "Munchly Foods",
    "no": "0 units left",
    "status": "not required",
-   "amount": 0
+   "amount": 0,
+   "units": 0,
+   "reversed": 0
   }
  ],
  "counter": [
@@ -1196,7 +1575,7 @@
    "bid": 10,
    "out": {
     "action": "counter",
-    "price": 13.5,
+    "price": 12.5,
     "below": true
    }
   },
@@ -1255,6 +1634,96 @@
     "action": "accept",
     "price": 16
    }
+  },
+  {
+   "ask": 10,
+   "bid": 10,
+   "out": {
+    "action": "accept",
+    "price": 10
+   }
+  },
+  {
+   "ask": 10,
+   "bid": 13,
+   "out": {
+    "action": "accept",
+    "price": 13
+   }
+  },
+  {
+   "ask": 10,
+   "bid": 13.5,
+   "out": {
+    "action": "accept",
+    "price": 13.5
+   }
+  },
+  {
+   "ask": 10,
+   "bid": 14,
+   "out": {
+    "action": "accept",
+    "price": 14
+   }
+  },
+  {
+   "ask": 10,
+   "bid": 14.2,
+   "out": {
+    "action": "accept",
+    "price": 14.2
+   }
+  },
+  {
+   "ask": 10,
+   "bid": 14.25,
+   "out": {
+    "action": "accept",
+    "price": 14.25
+   }
+  },
+  {
+   "ask": 10,
+   "bid": 15,
+   "out": {
+    "action": "accept",
+    "price": 15
+   }
+  },
+  {
+   "ask": 10,
+   "bid": 16,
+   "out": {
+    "action": "accept",
+    "price": 16
+   }
   }
- ]
+ ],
+ "client": {
+  "name": "Munchly Foods Ltd",
+  "short": "Munchly Foods",
+  "gstin": "27AAKCM0000M1ZN",
+  "fssai": "10019022001234",
+  "pan": "AAKCM0000M",
+  "cin": "L15400MH2011PLC000117",
+  "address": "Plot B-14, MIDC Chakan Phase II, Pune 410501, Maharashtra",
+  "state": "Maharashtra",
+  "stateCode": "27",
+  "email": "accounts@munchly.example"
+ },
+ "buyer": {
+  "id": "agrawal",
+  "name": "Agrawal Wholesale",
+  "short": "Agrawal Wholesale",
+  "city": "Raipur",
+  "state": "Chhattisgarh",
+  "stateCode": "22",
+  "address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+  "gstin": "22AAGFA0000A1ZW",
+  "pan": "AAGFA0000A",
+  "kind": "Kirana wholesaler · ExpireSoon buyer"
+ },
+ "balanceHours": 48,
+ "ewayThreshold": 50000
 }

@@ -344,6 +344,8 @@ class Distributor(Base):
     pins: Mapped[str | None] = mapped_column(Text)
     # where its staff pay at a staff sale (SC-87)
     upi: Mapped[str | None] = mapped_column(Text)
+    # what his tax invoice names beside his GSTIN and address (SC-148): his PAN, state code, FSSAI licence, e-mail, bank
+    details: Mapped[dict[str, Any]] = mapped_column(JSONB, server_default=sql("'{}'::jsonb"))
     # the member who gave the permission, and whether he has paused it (the agents then act in his name no more)
     permission_by: Mapped[str | None] = mapped_column(Text)
     permission_paused: Mapped[bool] = mapped_column(Boolean, server_default=sql("false"))

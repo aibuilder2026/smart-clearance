@@ -131,6 +131,12 @@ export type WsDistributor = {
 	godown: string;
 	address: string | null;
 	gstin: string | null;
+	/** what his tax invoice names beside his GSTIN (SC-148): his state code, PAN, FSSAI licence, e-mail and bank */
+	stateCode: string | null;
+	pan: string | null;
+	fssai: string | null;
+	email: string | null;
+	bank: { name: string; account: string; ifsc: string } | null;
 	kiranas: number;
 	cluster: string;
 	territory: string;
@@ -150,6 +156,8 @@ export type WsBuyer = {
 	stateCode: string;
 	address: string;
 	gstin: string;
+	/** his PAN, on the invoice he is billed by (SC-148) */
+	pan: string;
 	kind: string;
 };
 
@@ -339,6 +347,13 @@ export type WsClient = {
 	city: string;
 	gstin: string;
 	fssai: string;
+	/** the identity its own papers carry (SC-148): its PAN, CIN, address and state, or null on a workspace without */
+	pan: string | null;
+	cin: string | null;
+	address: string | null;
+	state: string | null;
+	stateCode: string | null;
+	email: string | null;
 	listed: string;
 	revenue: string;
 	/** packs that go short-dated a quarter, and the share destroyed today */
@@ -528,6 +543,8 @@ export type Journey = {
 	};
 	docs: null | { id: string; status: string }[];
 	invoiceIssued: boolean;
+	/** when he issued it, on the journey's clock (SC-148): its e-invoice is worked out from it */
+	invoiceIssuedAt: string | null;
 	posted: boolean;
 	reviewed: boolean;
 };

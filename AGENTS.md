@@ -239,6 +239,7 @@ Local pages:
   - Figures come from `docs/dobara-journey-map.html`.
   - Every money figure is computed in `design3/core/money.js`.
   - Illustrative splits are labelled as illustrative.
+  - Every GSTIN, PAN, CIN, licence, bank account and IRN is fictional too, and well formed: a GSTIN passes its check character, its PAN's digits are 0000 (never issued), and an e-invoice's signed QR says its signature is illustrative (SC-148). The parties' identities live in `design3/core/data.js`; the e-invoice is worked out by `design3/core/papers.js`, never stored.
 - The platform's own landing page names no client: no name, product, person, workspace address or batch id (SC-28).
   - Munchly Foods is a client; its details belong in its workspace, the demo and the console.
   - The landing page tells one illustrative batch, and its showcase API carries no client details.

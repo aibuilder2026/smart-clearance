@@ -97,6 +97,8 @@
       lines: { kirana: kl || NONE("kirana"), expiresoon: es || NONE("expiresoon") },
       award: h.award ? Object.assign({}, h.award, { price: h.price, bid: h.bid }) : null,
       support: h.support, supportPlan: M.priceSupport(h.plan, sku), claim: M.expiryClaim(h.plan.units, sku),
+      // issued from Tally on its invoice step: the e-invoice's IRN and signed QR are worked out from it (SC-148)
+      invoiceIssuedAt: es ? when("invoice") : null,
       docs, invoice: docs.find(d => d.id === "invoice") || null, receipt,
       returnBy: D.addDays(h.bestBefore, -M.RULES.returnWindowDays), expiry: h.expiry,
       listing: n.listing ? { id: n.listing, units: es ? es.units : 0 } : null,

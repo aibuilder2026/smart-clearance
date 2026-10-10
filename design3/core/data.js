@@ -10,7 +10,10 @@
   // This prototype is Munchly's workspace; another client's would carry its own chain, channels and rules.
   const PLATFORM = { name: "Smart-Clearance", domain: "smartclearance.web.app" };
   const CLIENT = {
-    name: "Munchly Foods Ltd", short: "Munchly Foods", city: "Pune", listed: "NSE", gstin: "27AABCM1234F1Z5", fssai: "10019022001234",
+    name: "Munchly Foods Ltd", short: "Munchly Foods", city: "Pune", listed: "NSE", gstin: "27AAKCM0000M1ZN", fssai: "10019022001234",
+    // the identity its own papers carry (SC-148): every GSTIN is built as the portal builds one, on a PAN whose four digits
+    // are 0000, which are never issued, so none is a real taxpayer's
+    pan: "AAKCM0000M", cin: "L15400MH2011PLC000117", address: "Plot B-14, MIDC Chakan Phase II, Pune 410501, Maharashtra", state: "Maharashtra", stateCode: "27", email: "accounts@munchly.example",
     revenue: "₹640 crore", skus: 8, distributors: 4, kiranas: 195, shortDatedPerQuarter: 1800000, destroyedToday: 0.7,
   };
 
@@ -34,14 +37,14 @@
   // each territory is matched by pincode for the territory guard; a godown may set its own staff-sale cap. `upi` is the
   // address staff pay at a staff sale (SC-87): fictional, on no real bank's handle
   const DISTRIBUTORS = {
-    rakesh:  { id: "rakesh", name: "Rakesh Traders", short: "Rakesh Traders", city: "Nagpur", state: "Maharashtra", godown: "Kalamna Market godown", address: "Kalamna Market, Nagpur, Maharashtra", gstin: "27AABCR1234F1Z5", kiranas: 38, cluster: "Nagpur, Wardha and Kamptee", territory: "Nagpur with Wardha and Kamptee", pins: "440, 441, 442", staffCap: 50, upi: "rakesh-traders@exampleupi" },
-    patil:   { id: "patil", name: "Patil Distributors", short: "Patil Distributors", city: "Pune", state: "Maharashtra", godown: "Market Yard godown", kiranas: 52, cluster: "Pune city", territory: "Pune", pins: "411, 412", upi: "patil-distributors@exampleupi" },
-    gupta:   { id: "gupta", name: "Gupta & Sons", short: "Gupta & Sons", city: "Indore", state: "Madhya Pradesh", godown: "Siyaganj godown", kiranas: 47, cluster: "Indore", territory: "Indore", pins: "452, 453", upi: "gupta-sons@exampleupi" },
-    lakshmi: { id: "lakshmi", name: "Lakshmi Agencies", short: "Lakshmi Agencies", city: "Hyderabad", state: "Telangana", godown: "Begum Bazaar godown", kiranas: 58, cluster: "Hyderabad old city", territory: "Hyderabad", pins: "500, 501", staffCap: 150, upi: "lakshmi-agencies@exampleupi" },
+    rakesh:  { id: "rakesh", name: "Rakesh Traders", short: "Rakesh Traders", city: "Nagpur", state: "Maharashtra", stateCode: "27", godown: "Kalamna Market godown", address: "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra", gstin: "27ABHPR0000K1ZW", pan: "ABHPR0000K", fssai: "21526000000117", email: "accounts@rakeshtraders.example", bank: { name: "Example Co-operative Bank, Itwari, Nagpur", account: "0000 0117 2409", ifsc: "EXMP0000117" }, kiranas: 38, cluster: "Nagpur, Wardha and Kamptee", territory: "Nagpur with Wardha and Kamptee", pins: "440, 441, 442", staffCap: 50, upi: "rakesh-traders@exampleupi" },
+    patil:   { id: "patil", name: "Patil Distributors", short: "Patil Distributors", city: "Pune", state: "Maharashtra", stateCode: "27", godown: "Market Yard godown", address: "Shop 7, Market Yard, Gultekdi, Pune 411037, Maharashtra", gstin: "27AAKFP0000P1Z8", pan: "AAKFP0000P", fssai: "21526000000204", email: "accounts@patildistributors.example", bank: { name: "Example Co-operative Bank, Market Yard, Pune", account: "0000 0204 2409", ifsc: "EXMP0000204" }, kiranas: 52, cluster: "Pune city", territory: "Pune", pins: "411, 412", upi: "patil-distributors@exampleupi" },
+    gupta:   { id: "gupta", name: "Gupta & Sons", short: "Gupta & Sons", city: "Indore", state: "Madhya Pradesh", stateCode: "23", godown: "Siyaganj godown", address: "22 Siyaganj Main Road, Indore 452007, Madhya Pradesh", gstin: "23AAHFG0000G1ZB", pan: "AAHFG0000G", fssai: "21426000000209", email: "accounts@guptasons.example", bank: { name: "Example Co-operative Bank, Siyaganj, Indore", account: "0000 0209 2408", ifsc: "EXMP0000209" }, kiranas: 47, cluster: "Indore", territory: "Indore", pins: "452, 453", upi: "gupta-sons@exampleupi" },
+    lakshmi: { id: "lakshmi", name: "Lakshmi Agencies", short: "Lakshmi Agencies", city: "Hyderabad", state: "Telangana", stateCode: "36", godown: "Begum Bazaar godown", address: "4-2-118 Begum Bazaar, Hyderabad 500012, Telangana", gstin: "36AAJFL0000L1ZM", pan: "AAJFL0000L", fssai: "23626000000118", email: "accounts@lakshmiagencies.example", bank: { name: "Example Co-operative Bank, Begum Bazaar, Hyderabad", account: "0000 0118 2410", ifsc: "EXMP0000118" }, kiranas: 58, cluster: "Hyderabad old city", territory: "Hyderabad", pins: "500, 501", staffCap: 150, upi: "lakshmi-agencies@exampleupi" },
   };
 
   // outside every Munchly territory, so the territory guard lets him see the listing
-  const BUYER = { id: "agrawal", name: "Agrawal Wholesale", short: "Agrawal Wholesale", city: "Raipur", state: "Chhattisgarh", stateCode: "22", address: "Ganj Mandi, Raipur, Chhattisgarh", gstin: "22AAGFA4821M1Z3", kind: "Kirana wholesaler · ExpireSoon buyer" };
+  const BUYER = { id: "agrawal", name: "Agrawal Wholesale", short: "Agrawal Wholesale", city: "Raipur", state: "Chhattisgarh", stateCode: "22", address: "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh", gstin: "22AAGFA0000A1ZW", pan: "AAGFA0000A", kind: "Kirana wholesaler · ExpireSoon buyer" };
 
   // kind: Munchly staff, a trade or food-bank partner invited into Munchly's workspace, or someone outside it
   const PEOPLE = {

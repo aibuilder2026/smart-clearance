@@ -26,7 +26,7 @@ from sc_api.domain import journey as J
 from sc_api.domain.clock import IST, journey_morning
 from sc_api.services import audit, exports
 from sc_api.services.context import Ctx
-from sc_api.services.journey import dms, world
+from sc_api.services.journey import dms, identity, world
 from sc_api.services.journey import events as ev
 from sc_api.services.presenter import lock_client
 from sc_api.services.reference import load
@@ -155,6 +155,8 @@ async def _story(ctx: Ctx, c: m.Client, j: dict[str, Any], day0: date) -> None:
             ctx.session.add(
                 m.DocumentNumber(client_id=c.id, kind=kind, prefix=n["prefix"], next=n["next"], width=n["width"])
             )
+    # every party's identity on its GST papers (SC-148): a workspace set up before then gains it
+    await identity.parties(ctx, c, j)
     # the story's food banks issue their receipts (SC-110): one set up before then gains its receipt and meals rule
     # (SC-114), and one that has its own keeps it
     for p in j["setup"]["partners"]:

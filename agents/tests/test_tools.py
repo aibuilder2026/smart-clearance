@@ -140,27 +140,61 @@ def paper(doc_id: str) -> tuple[dict, dict]:
 
 
 def test_each_paper_lays_out_backend_apis_figures():
+    """SC-148: the tax invoice and the credit note in Tally's layout, every party with its GSTIN and state code"""
     doc, c = paper("invoice")
     page = pdf.html(doc, c, note="Issue it from Tally.", today="2026-10-04")
     for text in (
-        "Tax invoice",
+        "Tax Invoice",
+        "(DRAFT, for Rakesh Traders to issue from Tally)",
         "INV/26-27/0931",
         "Agrawal Wholesale",
-        "22AAGFA4821M1Z3",
-        "₹14.20",
-        "₹10,962.40",
-        "₹548.00",
-        "₹11,510.00",
-        "Issue it from Tally.",
+        "GSTIN/UIN: 22AAGFA0000A1ZW",
+        "GSTIN/UIN: 27ABHPR0000K1ZW",
+        "Place of Supply: Chhattisgarh (22)",
+        "14.20",
+        "10,962.40",
+        "548.00",
+        "₹ 11,510.00",
+        "INR Eleven Thousand Five Hundred Ten Only",
+        "Company's PAN: <b>ABHPR0000K</b>",
+        "Not required: the consignment is under ₹50,000",
     ):
         assert text in page, text
+    assert "Ack No." not in page  # a draft: the IRN and its acknowledgement come with the issue
     doc, c = paper("support")
     page = pdf.html(doc, c)
-    assert "CN/0117" in page and "₹8,768" in page and "₹6,021.60" in page and "Rakesh Traders" in page
+    for text in (
+        "CN/0117",
+        "₹ 8,768.00",
+        "6,021.60",
+        "Rakesh Traders",
+        "27AAKCM0000M1ZN",
+        "MFL/26-27/02417",
+        "section 34",
+    ):
+        assert text in page, text
     doc, c = paper("itc")
     assert "₹1,224.00" in pdf.html(doc, c) and "17(5)(h)" in pdf.html(doc, c)
     assert [d["id"] for d in STORY["docs"] if pdf.needs_pdf(d)] == ["invoice", "support", "itc"]
     assert HERO in page
+
+
+def test_an_issued_invoice_carries_its_e_invoice():
+    """SC-148: once the distributor issues it, its IRN, acknowledgement and signed QR code (tools/papers.py)"""
+    from sc_agents.agents.common import cut_case
+
+    doc = {**next(d for d in STORY["docs"] if d["id"] == "invoice"), "date": "2026-10-05"}
+    c = cut_case(case(phase="settled", photo="verified", docs=STORY["docs"], issued="2026-10-05T11:00:00+05:30"))
+    page = pdf.html(doc, c)
+    for text in (
+        "(ORIGINAL FOR RECIPIENT)",
+        "bb3abe3b3282947cf3a2b41c5e4272934ca49ecb5faab6980518ec265e958fa7",
+        "112611301431328",
+        "05/10/2026 11:00",
+        "<svg",
+        'class="qr"',
+    ):
+        assert text in page, text
 
 
 def test_each_food_bank_issues_its_own_paper():
@@ -205,10 +239,10 @@ def test_the_expiry_credit_note_lays_out_the_settlement():
         "pdf": None,
     }
     page = pdf.html(doc, c, today="2026-11-18")
-    assert "No. CN/0118 · 18 Nov 2026" in page  # no date of its own: the day it is laid out
+    assert "<b>18/11/2026</b>" in page  # no date of its own: the day it is laid out
     # a paper is dated by its own date, not the day it is laid out (the history's, laid out later, SC-125)
-    assert "No. CN/0118 · 23 Aug 2026" in pdf.html({**doc, "date": "2026-08-23"}, c, today="2026-10-02")
-    for text in ("Expiry credit note", "CN/0118", "₹3,087.50", "₹97.50", "₹85.80", "₹131.95", "₹3,402.75", "17(5)(h)"):
+    assert "<b>23/08/2026</b>" in pdf.html({**doc, "date": "2026-08-23"}, c, today="2026-10-02")
+    for text in ("Credit Note", "CN/0118", "3,087.50", "₹97.50", "₹85.80", "₹131.95", "₹3,402.75", "17(5)(h)"):
         assert text in page, text
     assert pdf.needs_pdf(doc) and not pdf.needs_pdf({**doc, "status": "not required"})
 

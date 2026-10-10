@@ -145,8 +145,19 @@ const personOf = (m: Member): StoryPerson => ({
 const skuOf = (x: WsSku): Sku => ({ ...x, dp: opt(x.dp), itcPerUnit: opt(x.itcPerUnit) });
 
 function distOf(d: WsDistributor): Distributor {
-	const { permission: _p, address, gstin, staffCap, ...rest } = d;
-	return { ...rest, address: opt(address), gstin: opt(gstin), staffCap: opt(staffCap) };
+	const { permission: _p, address, gstin, staffCap, stateCode, pan, fssai, email, bank, ...rest } = d;
+	// his identity on the tax invoice he issues (SC-148)
+	return {
+		...rest,
+		address: opt(address),
+		gstin: opt(gstin),
+		staffCap: opt(staffCap),
+		stateCode: opt(stateCode),
+		pan: opt(pan),
+		fssai: opt(fssai),
+		email: opt(email),
+		bank: bank ?? null
+	};
 }
 
 function batchOf(b: WsBatch, flags: { hero?: boolean; second?: boolean } = {}): Batch {
@@ -181,7 +192,16 @@ export function dataOf(snap: WorkspaceSnapshot, focus: { ref: string | null; sec
 		day0: snap.clock.day0 ?? dateOf(today),
 		platform: snap.platform,
 		workspace: workspaceOf(snap.workspace),
-		client: { ...snap.client },
+		// the identity the client's own papers carry (SC-148), where the workspace has it
+		client: {
+			...snap.client,
+			pan: opt(snap.client.pan),
+			cin: opt(snap.client.cin),
+			address: opt(snap.client.address),
+			state: opt(snap.client.state),
+			stateCode: opt(snap.client.stateCode),
+			email: opt(snap.client.email)
+		},
 		skus: Object.fromEntries(Object.entries(snap.skus).map(([k, x]) => [k, skuOf(x)])),
 		distributors: Object.fromEntries(Object.entries(snap.distributors).map(([k, d]) => [k, distOf(d)])),
 		people: Object.fromEntries(snap.members.map((m) => [m.id, personOf(m)])),
@@ -417,6 +437,8 @@ export function caseOf(
 	const dday0 = snap.clock.day0 ?? day0;
 
 	return {
+		// when he issued the invoice from Tally (SC-148): its e-invoice is worked out from it, on a batch's page too
+		invoiceIssuedAt: j.invoiceIssuedAt ?? null,
 		batch: batchOf(detail.batch, { hero: true }),
 		sku,
 		dist,
@@ -515,6 +537,7 @@ const EMPTY_HERO: Hero = {
 	truck: { status: 'idle' },
 	docs: null,
 	invoiceIssued: false,
+	invoiceIssuedAt: null,
 	posted: false,
 	reviewed: false,
 	staff: null
@@ -557,6 +580,7 @@ function heroOf(detail: CaseDetail | null, today: string): Hero {
 		truck: { status: j.truck.status, at: opt(at(j.truck.at) || null) },
 		docs: j.docs,
 		invoiceIssued: j.invoiceIssued,
+		invoiceIssuedAt: j.invoiceIssuedAt ?? null,
 		posted: j.posted,
 		reviewed: j.reviewed,
 		staff: j.staff

@@ -1,0 +1,4 @@
+[
+ {"url": "http://127.0.0.1:8787/designs/SC-148/current/mockup.html?who=priya&theme=light#/paperwork/MF-2409-117", "out": "current/paperwork-1440-light", "width": 1440, "theme": "light", "wait": 2400, "height": 1400},
+ {"url": "http://127.0.0.1:8787/designs/SC-148/current/mockup.html?who=priya&theme=light#/paperwork/MF-2409-117", "out": "current/invoice-sheet-1440-light", "width": 1440, "theme": "light", "wait": 2400, "height": 1100, "js": "[...document.querySelectorAll('button')].find(b => /Tax invoice/.test(b.textContent)).click()"}
+]

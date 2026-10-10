@@ -2,11 +2,20 @@
 // exports of a period, and a page printed on its own (the stub's PDFs, the period's report)
 import type { IconName } from '../../../icons/registry';
 import { csv, download, fmt } from '../../model';
-import type { LedgerBatch, LedgerOutcome, LedgerPeriod } from '../../types';
+import type { CaseData, Doc, Hero, LedgerBatch, LedgerOutcome, LedgerPeriod } from '../../types';
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
 export const kg = (n: number) => fmt.kg(r2(n));
 export const possessive = (name: string) => (/s$/.test(name) ? `${name}'` : `${name}'s`);
+/** when the tax invoice was issued from Tally (SC-148; screens/finance.jsx issuedWhen): a live paper says so, a page's
+ *  case keeps it (a history batch, a batch's page in the ledger), else the batch in focus's once its distributor issues
+ *  it (the hero) */
+export const issuedWhen = (c: CaseData, inv: Doc | null | undefined, hero: Hero | null): string | null =>
+	!inv
+		? null
+		: inv.status === 'issued'
+			? (inv.issuedAt ?? `${inv.date}T11:00`)
+			: (c.invoiceIssuedAt ?? (hero?.invoiceIssued ? (hero.invoiceIssuedAt ?? `${inv.date}T11:00`) : null));
 /** packets as cartons of `per` (model.ts cartons) */
 export { cartons } from '../../model';
 

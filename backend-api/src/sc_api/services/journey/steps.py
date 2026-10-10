@@ -1825,6 +1825,9 @@ async def issue_invoice(ctx: Ctx, client_id: str, ref: str) -> None:
     if invoice is None:
         raise stale("There is no invoice to issue.")
     s.case.invoice_issued_at = ev.now(ctx, s.c)
+    # laid out again, now with its e-invoice: the IRN, acknowledgement and signed QR come with the issue (SC-148)
+    s.case.docs = [{**d, "pdf": None} if d["id"] == "invoice" else d for d in s.case.docs]
+    await ev.publish(ctx, J.Event(J.STEP, {"type": J.SETTLE, "client": client_id, "ref": ref}, f"{client_id}:{ref}"))
     await audit.record(
         ctx,
         s.c.id,

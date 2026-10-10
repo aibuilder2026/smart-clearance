@@ -28,6 +28,14 @@ def main() -> None:
         "mango": {"batch": mango["batch"], "sku": mango["sku"], "plan": mango["plan"]},
         "docs": docs,
         "counter": m["counter"],
+        # the GST papers' parties (SC-148): the client as its own papers name it, the buyer as his invoice does
+        "client": {
+            k: j["client"].get(k)
+            for k in ("name", "short", "gstin", "fssai", "pan", "cin", "address", "state", "stateCode", "email")
+        },
+        "buyer": j["buyer"],
+        "balanceHours": j["market"]["balanceHours"],
+        "ewayThreshold": m["rules"]["ewayThreshold"],
     }
     (HERE / "story.json").write_text(json.dumps(story, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print(f"wrote {HERE / 'story.json'}")

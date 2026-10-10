@@ -305,7 +305,23 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
     papers = date.fromisoformat(docs["invoice"]["date"])
     assert van.date() == papers + timedelta(days=1) and van < window  # the scheme filled early: not the window's day
     assert seen["push"]["van"]["title"] == f"Van route for {van:%A}"
+    n = len(cloud.publisher.sent)
     assert (await api.post(f"{WS}/cases/{HERO}/documents/invoice/issue", headers=RAKESH)).status_code == 200
+    # issued, the invoice is laid out again with its e-invoice (SC-148): its time is kept, its PDF is asked for anew,
+    # and Paperwork reads both parties' GSTINs
+    issued = await case(api, PRIYA)
+    assert issued["journey"]["invoiceIssuedAt"]
+    assert next(d for d in issued["docs"] if d["id"] == "invoice")["pdf"] is False
+    asked = [p["payload"] for p in cloud.publisher.sent[n:]]
+    assert {"type": "settle", "client": "munchly", "ref": HERO}.items() <= asked[-1].items()
+    paper = (await api.get(f"/internal/clients/munchly/cases/{HERO}", headers=AGENT)).json()
+    assert (paper["client"]["gstin"], paper["buyer"]["gstin"], paper["distributor"]["gstin"]) == (
+        "27AAKCM0000M1ZN",
+        "22AAGFA0000A1ZW",
+        "27ABHPR0000K1ZW",
+    )
+    assert paper["journey"]["invoiceIssuedAt"] == issued["journey"]["invoiceIssuedAt"]
+    assert (paper["balanceHours"], paper["ewayThreshold"]) == (48, 50000)
     assert (await api.post(f"{WS}/cases/{HERO}/review", headers=PRIYA)).status_code == 200
     assert (await api.post(f"{WS}/cases/{HERO}/dispatches", json={"kind": "van"}, headers=RAKESH)).status_code == 200
     # and in the timeline, once it has run
