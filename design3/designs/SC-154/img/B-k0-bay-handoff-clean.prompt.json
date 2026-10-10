@@ -1,0 +1,29 @@
+{
+  "name": "B-k0-bay-handoff-clean",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "edit",
+  "prompt": "Remove every printed packet and every letter from this photograph: the printed snack packets at the bottom right become plain matte foil packets in solid colours with no lettering, and the small packet at the left too. Change nothing else: the same two people, the carton, the light and the framing.",
+  "seed": 154024,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "source",
+      "file": "B-k0-bay-handoff.png",
+      "sha256": "60671edb62d13a153aeeb506b89a4639271621b08c9b381cffb5453c798b0db2"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "latency_s": 19.3,
+  "use": "SC-154 option B keyframe 0, cleaned of printed packets",
+  "model_text": null,
+  "status": "done",
+  "output": "B-k0-bay-handoff-clean.webp 2752x1536",
+  "postprocess": "WebP q82 from B-k0-bay-handoff-clean.png",
+  "derived_from": "B-k0-bay-handoff-clean.png"
+}

@@ -53,9 +53,10 @@ plate and the film.
 
 **Motion,** with the prototype's numbers:
 
-- **the film** (`Hero`): 8 s by day, 6 s by night, played once over its poster, with Pause, Play and Replay (WCAG 2.2.2);
-  the heading's last word turns once through what a carton gets and rests on "chance", which is what is read out and
-  what the server sends. A reader who asks for less motion gets the plate;
+- **the film** (`Hero`): one day of the journey with real people in four chapters (SC-154), about 15 s, looping through a
+  dissolve under Pause and Play (WCAG 2.2.2), the page's camera leaning 1.25× on each chapter's subject; both themes
+  start on its first frame. The heading's last word turns once through what a carton gets and rests on "chance", which
+  is what is read out and what the server sends. A reader who asks for less motion gets the poster;
 - **the statement** (`Statement`): its words fill in from the tertiary ink to the full ink as it is read, 0 as its top
   reaches 85% of the window and 1 as its foot reaches 45%. The progress is one custom property on the paragraph, each
   word's opacity a clamp over it, so a scroll costs one write; with no script, or less motion, every word is lit;

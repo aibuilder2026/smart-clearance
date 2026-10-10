@@ -1,0 +1,29 @@
+{
+  "name": "A-k2-yard-dusk-v2",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "edit",
+  "prompt": "At the folding table by the gate, the distributor in the checked shirt is handing one solid-colour snack packet to the first worker in the queue, and holds a clipboard with a plain sheet in his other hand; no money, no notes, no coins, no phone anywhere in the picture. Change nothing else: the same van, people, dusk light and framing.",
+  "seed": 154017,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "source",
+      "file": "A-k2-yard-dusk-clean.png",
+      "sha256": "2b7685dad5e57de345f3e88a517250cbc2c22aa69306db44d255882e432f160d"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "latency_s": 19.1,
+  "use": "SC-154 option A keyframe 2, second version: a packet handed over and a clipboard, no cash in frame",
+  "model_text": null,
+  "status": "done",
+  "output": "A-k2-yard-dusk-v2.webp 2752x1536",
+  "postprocess": "WebP q82 from A-k2-yard-dusk-v2.png",
+  "derived_from": "A-k2-yard-dusk-v2.png"
+}

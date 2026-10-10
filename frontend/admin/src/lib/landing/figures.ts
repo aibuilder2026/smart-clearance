@@ -281,27 +281,28 @@ export function figures(s: Showcase, c: Catalog) {
 		}
 	];
 
-	// 1 · the film's story: the four chapters of the journey's day (SC-111); the person's chapter in amber
+	// 1 · the film's story: the four chapters of the journey's day (SC-154), in the journey's order; the person's
+	// chapter in amber
 	const staffCap = row('staff').capacity;
 	const story: Beat[] = [
 		{
-			at: '09:00',
+			at: '06:30',
 			who: 'The brand and the distributor',
 			t: `${fmt.num(N)} packs flagged; one yes, ${fmt.inr(s.plan.net)} on screen`,
 			human: true
 		},
 		{
-			at: '13:00',
-			who: 'The food bank',
-			t: `packs with ${s.rules.foodbankMinDays}+ days left go as meals, on the FSSAI checklist`
+			at: '11:00',
+			who: 'The kiranas',
+			t: `${SHOPS} shops order ${fmt.num(KL.units)} packs, buy ${buy} get ${free} free`
 		},
 		{
-			at: '18:30',
-			who: 'The kiranas and the staff sale',
-			t: `${SHOPS} shops order ${fmt.num(KL.units)} packs; the godown's own staff buy ${staffCap === null ? 'the rest' : `up to ${fmt.num(staffCap)}`}`
+			at: '18:00',
+			who: 'The food bank and the staff sale',
+			t: `packs with ${s.rules.foodbankMinDays}+ days left go as meals; the godown's own staff buy ${staffCap === null ? 'the rest' : `up to ${fmt.num(staffCap)}`}`
 		},
 		{
-			at: '22:00',
+			at: '21:30',
 			who: 'Paperwork',
 			t: `the tax invoice and the credit note drafted; ${fmt.inr(s.plan.itcRetained)} of GST credit kept`
 		}

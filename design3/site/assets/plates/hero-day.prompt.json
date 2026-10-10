@@ -1,0 +1,12 @@
+{
+  "derived_from": "one-journey.mp4",
+  "film_sidecar": "one-journey.prompt.json",
+  "at_s": 0.0,
+  "model": "Veo 3.1 on Vertex AI (clips), Gemini image models (keyframes)",
+  "created": "2026-10-10",
+  "designed_in": "design3/designs/SC-154",
+  "name": "hero-day",
+  "output": "hero-day.webp 1920x1080",
+  "post_process": "frame at 0.0s, WebP q82",
+  "use": "the hero film's poster, preloaded for its theme"
+}
