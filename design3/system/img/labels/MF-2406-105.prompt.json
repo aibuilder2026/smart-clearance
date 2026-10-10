@@ -1,9 +1,17 @@
 {
-  "model": "Qwen-Image 2.1 (bf16), image edit, local (qwen-image-bf16 0.2.0)",
-  "input": "agents/evals/vision/images/other-sku-biscuits.webp (the Vision eval set's clean label for the product)",
-  "seed": 1431,
-  "size": 1024,
-  "prompt": "Edit only the printed text on the white label, keeping everything else identical: the first line reads \"MUNCHLY CHOCO CREAM BISCUITS 200 g\"; the second line reads \"BATCH NO: MF-2406-105\"; the third line reads \"MFG: 17/11/2025\"; the fourth line reads \"BEST BEFORE: 14/08/2026\"; the last line reads \"MRP ₹40.00 (incl. of all taxes)\". Same bold black sans-serif font, same size and alignment, same carton, same lighting and background.",
-  "post": "cwebp -q 84",
-  "purpose": "SC-142: the label photo the distributor sent for the history batch MF-2406-105 (Munchly Choco Cream Biscuits 200 G, best before 14/08/2026)"
+  "model": "Qwen-Image 2.1 (bf16), text to image, run locally (qwen-image-bf16 0.2.0): the blank base photo",
+  "seed": 14711,
+  "size": "1024 (4:3, 1184 x 896)",
+  "prompt": "A close-up photo of a blank white rectangular paper label on a brown corrugated carton stacked on a wooden pallet, the camera slightly to the right and a little above, warm afternoon light from a rolling shutter door. nothing printed on the label, plain matte white paper with a thin glossy sheen, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours.",
+  "postProcessing": [
+    "design3/system/labels/label.py: the full statutory sticker (SC-147, option A) for the batch, as HTML",
+    "design3/system/labels/compose.mjs: rendered at twice its size, warped onto the base's sticker (bases.json quad), multiplied with a 0.55 px blur, each code read back with Chromium's BarcodeDetector",
+    "cwebp -q 86"
+  ],
+  "codes": {
+    "ean_13": "8900000001026",
+    "qr_code": "https://id.munchly.example/01/18900000001023/10/MF-2406-105?17=260814"
+  },
+  "read": "ok",
+  "purpose": "SC-147: the label photo Rakesh Traders sent for batch MF-2406-105 (Munchly Choco Cream Biscuits 200 g, best before 14/08/2026); every company, number and code fictional"
 }

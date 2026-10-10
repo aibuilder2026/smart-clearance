@@ -40,6 +40,7 @@ The production code starts in `frontend/` (SC-27): design system v3 in Svelte, t
 ```sh
 cd design3 && ./build.sh            # compile every .jsx to the .js beside it (esbuild); run after any edit
 cd design3 && ./dist.sh             # bundle the hosted build into design3/dist/
+python3 design3/system/labels/make.py labels   # every Munchly batch's label photo (SC-147), printed onto its base, each code read back
 python3 -m http.server 8787 --directory design3   # serve the demo, app and design system locally
 ```
 
@@ -241,6 +242,7 @@ Local pages:
   - Munchly Foods is a client; its details belong in its workspace, the demo and the console.
   - The landing page tells one illustrative batch, and its showcase API carries no client details.
 - Every generated image or clip ships with a `.prompt.json` sidecar recording its model, seed, prompt and post-processing. PNG originals stay local in `src/` folders; only the WebP ships.
+- Every carton label photo comes from the label maker, `design3/system/labels/` (SC-147): the full statutory sticker, its batch, dates and MRP as the batch's record has them, a GS1 barcode and the batch's QR code (fictional numbers, a `.example` domain) and the FSSAI licence, printed onto a Qwen-Image base photo, every code read back before it ships. Vision's eval set is made by the same maker (`agents/evals/vision/plan.py`).
 - Third-party Claude Code components are recorded in `.claude/third-party.md`. Read a component before using it; installing one needs the maintainer's yes.
 
 ## Tooling

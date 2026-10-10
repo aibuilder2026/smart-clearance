@@ -1,15 +1,25 @@
 {
- "model": "Qwen-Image-2.1 (bf16), run locally through the qwen-image-bf16 plugin 0.2.0 (its CLI)",
- "seed": 36,
+ "model": "Qwen-Image 2.1 (bf16), text to image, run locally (qwen-image-bf16 0.2.0): the blank base photo",
+ "seed": 14717,
  "size": "1024 (4:3, 1184 x 896)",
- "prompt": "A realistic close-up smartphone photo of a printed white label stuck on the side of a brown corrugated cardboard carton. The label is printed in bold black sans-serif type, one line each: \"GLOWRA COCONUT HAIR OIL 200 ml\", \"BATCH NO: GL-2410-012\", \"MFG: 14/02/2026\", \"BEST BEFORE: 14/02/2028\", \"MRP ₹150.00 (incl. of all taxes)\". Even light on a shelf. Photorealistic, natural colours, the label text crisp and legible.",
+ "prompt": "A close-up photo of a blank white rectangular paper label on a dusty brown corrugated carton in a narrow godown aisle, the camera square on, mixed warm and cool light, cartons stacked high behind. nothing printed on the label, plain matte white paper with a thin glossy sheen, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours.",
  "postProcessing": [
+  {
+   "step": "label",
+   "by": "design3/system/labels/label.py (SC-147, the full statutory sticker)",
+   "batch": "GL-2410-012",
+   "style": "standard"
+  },
+  {
+   "step": "print",
+   "by": "design3/system/labels/compose.mjs",
+   "onto": "bases/14717.webp"
+  },
   {
    "step": "convert",
    "to": "WebP",
    "quality": 88
   }
  ],
- "source": "src/hairoil.png (sha256 c8058709b7781483, kept locally)",
- "seen": null
+ "source": "design3/system/labels/bases/14717.webp (sha256 54fed2492197fc6c)"
 }
