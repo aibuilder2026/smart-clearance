@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Photo from '../common/Photo.svelte';
 	import Button from '../../../components/Button.svelte';
 	import Field from '../../../components/Field.svelte';
 	import List from '../../../components/List.svelte';
@@ -84,7 +85,7 @@
 			<div class="dz-two dz-pair">
 				{#each ['before', 'after'] as const as w (w)}{@const src = dzPhoto(d, batch, w, live)}
 					<div class="cam dz-cam">
-						{#if src}<img class="cam-feed whole" {src} alt={ALT[w]} />{/if}<span class="cam-tag"
+						{#if src}<Photo class="cam-feed whole" {src} alt={ALT[w]} />{/if}<span class="cam-tag"
 							>{w === 'before' ? 'Before' : 'After'}{dzAt(d, w)}</span
 						>
 					</div>{/each}

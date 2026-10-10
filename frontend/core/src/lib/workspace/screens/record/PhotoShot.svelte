@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Photo from '../common/Photo.svelte';
 	import Icon from '../../../icons/Icon.svelte';
 	import type { RecordPhoto } from '../../types';
 	import { PHOTO, photoSrc, recWhen } from './record';
@@ -14,6 +15,6 @@
 		class="rec-shot"
 		onclick={onopen}
 		aria-label="{PHOTO[p.id][0]}, sent {recWhen(p.at)}: open it"
-		><img {src} alt="{PHOTO[p.id][0]} for this batch" loading="lazy" /><span class="cam-tag">{PHOTO[p.id][1]}</span
+		><Photo {src} alt="{PHOTO[p.id][0]} for this batch" loading="lazy" /><span class="cam-tag">{PHOTO[p.id][1]}</span
 		></button
 	>{/if}

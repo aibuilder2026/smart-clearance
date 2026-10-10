@@ -444,7 +444,7 @@
     const example = `${IMG()}evidence/${ref_}-${slot.id}.webp`;
     return <div className="stack tight dz-slot">
       <div className="cam dz-cam">
-        <img className="cam-feed whole" src={shot ? (shot.url || example) : example} alt={shot ? slot.alt : ""} aria-hidden={shot ? undefined : "true"} style={shot ? undefined : { opacity: 0.55 }} />
+        <S.Photo className="cam-feed whole" src={shot ? (shot.url || example) : example} alt={shot ? slot.alt : ""} aria-hidden={shot ? undefined : "true"} style={shot ? undefined : { opacity: 0.55 }} />
         {!shot && <><div className="cam-frame" aria-hidden="true"><i /><i /><i /><i /></div><span className="cam-tag">Example</span></>}
         {shot && <span className="cam-tag">{slot.n} · {slot.title}</span>}
         <div className="cam-hint">{slot.hint}</div>
@@ -500,7 +500,7 @@
         </Card>
           : <Card className="stack snug">
             <div className="row" style={{ gap: 12 }}><Aura on={d.status === "reading"} className="icontile" style={{ borderRadius: 12, width: 40, height: 40 }}><Icon name={say[0]} size={19} /></Aura><div className="grow"><b>{say[1]}</b><div className="t-footnote muted">{d.status === "checked" ? `${op.short} at ${C} ${say[2]}` : say[2]}</div></div></div>
-            <div className="dz-two">{DZ_SLOTS.map(sl => <div key={sl.id} className="cam dz-cam"><img className="cam-feed whole" src={`${IMG()}evidence/${n.ref}-${sl.id}.webp`} alt={sl.alt} /><span className="cam-tag">{sl.n} · {sl.title}</span></div>)}</div>
+            <div className="dz-two">{DZ_SLOTS.map(sl => <div key={sl.id} className="cam dz-cam"><S.Photo className="cam-feed whole" src={`${IMG()}evidence/${n.ref}-${sl.id}.webp`} alt={sl.alt} /><span className="cam-tag">{sl.n} · {sl.title}</span></div>)}</div>
             {d.status === "reading" && !reduce && <span className="sr-only" role="status">Vision is checking your photos</span>}
             <Button variant="secondary" block onClick={() => go(d.status === "approved" ? "batches" : "home", d.status === "approved" ? { ref: n.ref } : undefined)}>{d.status === "approved" ? "Open the batch's papers" : "Back to today"}</Button>
           </Card>}

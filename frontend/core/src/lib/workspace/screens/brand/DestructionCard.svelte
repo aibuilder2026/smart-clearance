@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Photo from '../common/Photo.svelte';
 	import Badge from '../../../components/Badge.svelte';
 	import Button from '../../../components/Button.svelte';
 	import Card from '../../../components/Card.svelte';
@@ -53,7 +54,7 @@
 	{#if d.photos}<div class="dz-two dz-pair">
 			{#each ['before', 'after'] as const as w (w)}{@const src = dzPhoto(d, batch, w, live)}
 				<div class="cam dz-cam">
-					{#if src}<img
+					{#if src}<Photo
 							class="cam-feed whole"
 							{src}
 							alt={w === 'before'

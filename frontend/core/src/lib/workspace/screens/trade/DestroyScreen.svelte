@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Photo from '../common/Photo.svelte';
 	import Aura from '../../../components/Aura.svelte';
 	import Badge from '../../../components/Badge.svelte';
 	import Button from '../../../components/Button.svelte';
@@ -176,12 +177,12 @@
 						{#each SLOTS as sl (sl.id)}{@const shot = shots[sl.id]}{@const src = shotSrc(sl.id)}
 							<div class="stack tight dz-slot">
 								<div class="cam dz-cam">
-									{#if src}<img
+									{#if src}<Photo
 											class="cam-feed whole"
 											{src}
 											alt={shot ? sl.alt : ''}
 											aria-hidden={shot ? undefined : 'true'}
-											style={shot ? undefined : 'opacity: 0.55'}
+											opacity={shot ? 1 : 0.55}
 										/>{/if}
 									{#if !shot}<div class="cam-frame" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 										<span class="cam-tag">Example</span>{:else}<span class="cam-tag">{sl.n} · {sl.title}</span>{/if}
@@ -269,7 +270,7 @@
 					<div class="dz-two dz-pair">
 						{#each SLOTS as sl (sl.id)}{@const src = dzPhoto(full, n.ref, sl.id, live)}
 							<div class="cam dz-cam">
-								{#if src}<img class="cam-feed whole" {src} alt={sl.alt} />{/if}<span class="cam-tag"
+								{#if src}<Photo class="cam-feed whole" {src} alt={sl.alt} />{/if}<span class="cam-tag"
 									>{sl.n} · {sl.title}</span
 								>
 							</div>{/each}

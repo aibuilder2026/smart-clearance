@@ -2,10 +2,23 @@
 (function () {
   const { useSyncExternalStore, createContext, useContext, useState, useRef, useCallback, useEffect, Fragment } = React;
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, Store = window.SC3_STORE, Flow = window.SC3_FLOW; const fmt = M.fmt;
-  const { Icon, IconButton, Avatar, Badge, Button, useApp, Page, ModeMenuButton, Menu, cx } = K;
+  const { Icon, IconButton, Avatar, Badge, Button, useApp, Page, ModeMenuButton, Menu, Skeleton, cx } = K;
   const { motion, AnimatePresence, useReducedMotion } = Motion;
 
   const useStore = () => useSyncExternalStore(Store.subscribe, Store.get);
+
+  // a photo that loads from the network (SC-144): the kit's Skeleton holds its frame until it has loaded, then it fades
+  // in; one that does not load says so. Its frame is positioned (.cam, .rec-shot, .rec-big), and the photo fills it
+  function Photo({ src, alt = "", className, style, ...rest }) {
+    const [st, setSt] = useState("loading"); const ref = useRef(null);
+    useEffect(() => { const i = ref.current; setSt(i && i.complete && i.naturalWidth ? "ready" : "loading"); }, [src]);
+    const shown = style && style.opacity != null ? style.opacity : 1;
+    return <>
+      {st === "loading" && <Skeleton r={0} style={{ position: "absolute", inset: 0, height: "auto", borderRadius: "inherit" }} />}
+      {st === "failed" && <span className="photo-failed"><Icon name="image" size={20} /><span className="t-caption">The photo did not load</span></span>}
+      <img ref={ref} src={src} alt={alt} className={className} onLoad={() => setSt("ready")} onError={() => setSt("failed")} style={{ ...style, opacity: st === "ready" ? shown : 0, transition: "opacity 240ms var(--ease)" }} {...rest} />
+    </>;
+  }
 
   // a small router: the app binds it to the URL hash, the demo gives each device frame its own
   const RouteCtx = createContext({ route: { name: "command" }, go: () => {}, back: () => {} });
@@ -116,5 +129,5 @@
 
   const PEOPLE_BY_ID = id => D.PEOPLE[id] || (Store.get().users.find(u => u.id === id) || { name: id });
 
-  window.SC3_SCREENS = Object.assign(window.SC3_SCREENS || {}, { LockScreen, AccountCtx, WorkspaceCtx, LiveCtx, BatchCtx, useLive, PlayAs, PushBanners, useStore, Router, useRoute, heroModel, unreadFor, TopActions, Screen, Columns, SectionTitle, Locked, PEOPLE_BY_ID, PHASE_STATUS });
+  window.SC3_SCREENS = Object.assign(window.SC3_SCREENS || {}, { LockScreen, AccountCtx, WorkspaceCtx, LiveCtx, BatchCtx, useLive, PlayAs, Photo, PushBanners, useStore, Router, useRoute, heroModel, unreadFor, TopActions, Screen, Columns, SectionTitle, Locked, PEOPLE_BY_ID, PHASE_STATUS });
 })();

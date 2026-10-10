@@ -1788,10 +1788,32 @@
   - **Production:** the history's label photos go up with the hydrate job's `--photos,munchly,--allow-env,prod` once this is deployed; until then a past batch's label photo has no image there.
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 
-- **SC-143** (In Review, branch `SC-143-ci-main-green`; bug): CI on `main` had failed since SC-139, so Hosting never deployed SC-139 to SC-142.
+- **SC-143** (PR #123, merged; bug): CI on `main` had failed since SC-139, so Hosting never deployed SC-139 to SC-142.
   - **Found** after merging SC-142: the SC-139, SC-141 and SC-142 merges each failed CI. backend-api and the agents deployed, but Hosting's deploy depends on the build and was skipped. Production's four apps were still from before SC-139. The PRs had been merged before their checks finished.
   - **The build:** `scripts/no-seed.mjs` refused the live workspace build. Core's image glob bundled every photo under `design3/system/img`, and SC-139's evidence photos and SC-142's label photos are named for their batches (`MF-2409-117-before.webp`). The names showed in a chunk and in `service-worker.js`. The story's photos now live in core's `story-photos.ts`, which the workspace's live build replaces with an empty module (`workspace/src/lib/no-story-photos.ts`), as it does the stub. A live workspace reads every photo from backend-api's links; the stub build and the guided demo keep all 23.
   - **The secret scan:** gitleaks failed on SC-139's and SC-142's merges (112 findings on SC-139's) and passed on SC-141's, which left the fixtures alone. The likely cause is the fictional waste agencies' pollution-board authorisations (`"auth": "MPCB/SWM/NGP/0412"`) in the reference data and the regenerated live fixtures, which the generic-api-key rule reads as credentials. `.gitleaks.toml` extends gitleaks' own rules and allows only that shape. It was not run through gitleaks locally, which isn't installed here.
   - **Checks:** the frontend gate passes (core 270, api 78, workspace 92, admin 17, demo 5, console 3); the full build passes `no-seed.mjs`.
+
+  - **After the merge:** CI on `main` passed and deployed backend-api, the agents and Hosting, so production runs SC-139 to SC-143. The history's label photos reach production's photos bucket only with the hydrate job's `--photos,munchly,--allow-env,prod`, which has not been run.
+- **SC-144** (In Review, branch `SC-144-photo-loaders`): every photo loads under the kit's Skeleton shimmer, then fades in.
+  - **The request:** "all pictures loading must have hydration effect loader as we have for other sections of the app, reusue dont need to desigm". No design round, on the maintainer's word: the kit's own Skeleton, reused.
+  - **The build:** design3 first, then the port.
+    - `screens/common.jsx` `Photo`, and core's `screens/common/Photo.svelte`: the Skeleton fills the photo's frame until the photo has loaded, then the photo fades in (240 ms; at once under reduced motion). A photo that fails reads "The photo did not load" (`.photo-failed`).
+    - Used on the Record's photos and the photo opened whole, the distributor's destruction slots and his sent evidence, and Execution's card and the review sheet's destruction photos.
+    - `.rec-big` holds its frame while it loads. `screens.css` is copied verbatim.
+    - The camera's preview of the person's own photo is a local file and needs none.
+  - **Checks:**
+    - the frontend gate passes: core 270 (four goldens gain a space between the photos' tags), api 78, workspace 92, admin 17, demo 5, console 3;
+    - on the stub build, every photo starts under its skeleton, which goes once the photo has loaded (opacity 1), and a photo pointed at a missing file reads "The photo did not load";
+    - the motion spec counts `.skeleton` as a loading indicator. The browser suites were not run (SC-55).
+- **SC-145** (In Progress, branch `SC-145-dist-figures`): the distributor's Batches and Orders show how their figures add up.
+  - **The request:** "For batches and order, this value is differing for distributors please check this and fix", then "if they are correct or not triage it, if all good leave it... but UI should have a way to know what the calculations show".
+  - **The triage: the figures are correct.** Every cleared batch ends whole to the paisa: sold + credited = cost.
+    - Batches leads with the credit: ₹66,918, and ₹7,821 for MF-2407-116.
+    - Orders leads with the sales: ₹1,05,928, and ₹14,640 for MF-2407-116.
+    - Together they make the cost: ₹1,72,846, and ₹22,461 for MF-2407-116.
+
+    Neither page showed the sum. The values stay.
+  - **Design first:** three options on one board in app v3, `SC-145 design review.html`: A, the same sum on both pages (recommended); B, how this adds up, on request; C, one figure on both pages. Designs are in `design3/designs/SC-145/`. Waiting for the pick.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
