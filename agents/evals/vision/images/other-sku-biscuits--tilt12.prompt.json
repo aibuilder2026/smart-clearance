@@ -1,9 +1,20 @@
 {
- "model": "Qwen-Image-2.1 (bf16), run locally through the qwen-image-bf16 plugin 0.2.0 (its CLI)",
- "seed": 22,
+ "model": "Qwen-Image 2.1 (bf16), text to image, run locally (qwen-image-bf16 0.2.0): the blank base photo",
+ "seed": 14715,
  "size": "1024 (4:3, 1184 x 896)",
- "prompt": "A realistic close-up smartphone photo of a printed white label stuck on the side of a brown corrugated cardboard carton. The label is printed in bold black sans-serif type, one line each: \"MUNCHLY CHOCO CREAM BISCUITS 200 g\", \"BATCH NO: MF-2409-204\", \"MFG: 11/04/2026\", \"BEST BEFORE: 06/01/2027\", \"MRP ₹40.00 (incl. of all taxes)\". Even daylight, the camera square on. Photorealistic, natural colours, the label text crisp and legible.",
+ "prompt": "A close-up photo of a blank white rectangular paper label on the side of a brown corrugated carton held on a steel rack, the camera slightly from below and to the left, white LED light, a price-sticker roll blurred on the shelf. nothing printed on the label, plain matte white paper with a thin glossy sheen, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours.",
  "postProcessing": [
+  {
+   "step": "label",
+   "by": "design3/system/labels/label.py (SC-147, the full statutory sticker)",
+   "batch": "MF-2409-204",
+   "style": "standard"
+  },
+  {
+   "step": "print",
+   "by": "design3/system/labels/compose.mjs",
+   "onto": "bases/14715.webp"
+  },
   {
    "step": "rotate",
    "degrees": 12
@@ -14,6 +25,5 @@
    "quality": 88
   }
  ],
- "source": "src/other-sku-biscuits.png (sha256 9ceb8462ad55289d, kept locally)",
- "seen": null
+ "source": "design3/system/labels/bases/14715.webp (sha256 d14a1d7229d5cf85)"
 }

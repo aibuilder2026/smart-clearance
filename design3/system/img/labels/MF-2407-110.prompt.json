@@ -1,9 +1,17 @@
 {
-  "model": "Qwen-Image 2.1 (bf16), image edit, local (qwen-image-bf16 0.2.0)",
-  "input": "agents/evals/vision/images/facewash.webp (the Vision eval set's clean label for the product)",
-  "seed": 1451,
-  "size": 1024,
-  "prompt": "Edit only the printed text on the white label, keeping everything else identical: the first line reads \"GLOWRA ALOE FACE WASH 100 ml\"; the second line reads \"BATCH NO: MF-2407-110\"; the third line reads \"MFG: 21/09/2024\"; the fourth line reads \"BEST BEFORE: 21/09/2026\"; the last line reads \"MRP ₹120.00 (incl. of all taxes)\". Same bold black sans-serif font, same size and alignment, same carton, same lighting and background.",
-  "post": "cwebp -q 84",
-  "purpose": "SC-142: the label photo the distributor sent for the history batch MF-2407-110 (Glowra Aloe Face Wash 100 Ml, best before 21/09/2026); seed 1433's printed 21/01/2026"
+  "model": "Qwen-Image 2.1 (bf16), text to image, run locally (qwen-image-bf16 0.2.0): the blank base photo",
+  "seed": 14717,
+  "size": "1024 (4:3, 1184 x 896)",
+  "prompt": "A close-up photo of a blank white rectangular paper label on a dusty brown corrugated carton in a narrow godown aisle, the camera square on, mixed warm and cool light, cartons stacked high behind. nothing printed on the label, plain matte white paper with a thin glossy sheen, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours.",
+  "postProcessing": [
+    "design3/system/labels/label.py: the full statutory sticker (SC-147, option A) for the batch, as HTML",
+    "design3/system/labels/compose.mjs: rendered at twice its size, warped onto the base's sticker (bases.json quad), multiplied with a 0.55 px blur, each code read back with Chromium's BarcodeDetector",
+    "cwebp -q 86"
+  ],
+  "codes": {
+    "ean_13": "8900000001071",
+    "qr_code": "https://id.munchly.example/01/18900000001078/10/MF-2407-110?17=260921"
+  },
+  "read": "ok",
+  "purpose": "SC-147: the label photo Rakesh Traders sent for batch MF-2407-110 (Glowra Aloe Face Wash 100 ml, best before 21/09/2026); every company, number and code fictional"
 }

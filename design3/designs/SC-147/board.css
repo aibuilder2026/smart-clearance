@@ -35,17 +35,17 @@ a { color: var(--green-text); text-underline-offset: 3px; }
 ::selection { background: color-mix(in oklab, var(--green) 24%, transparent); }
 .wrap { max-width: 1240px; margin: 0 auto; padding: 48px 16px 72px; }
 h1, h2, h3, h4 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
-h1 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
-h2 { margin: 60px 0 14px; font-size: clamp(25px, 3vw, 32px); font-weight: 720; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 72, "wdth" 88; }
+h1 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 780; line-height: 1.06; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+h2 { margin: 60px 0 14px; font-size: clamp(25px, 3vw, 32px); font-weight: 720; line-height: 1.16; letter-spacing: -0.02em; font-variation-settings: "opsz" 72, "wdth" 88; }
 h3 { font-size: 26px; font-weight: 720; letter-spacing: -0.018em; font-variation-settings: "opsz" 48, "wdth" 90; }
 h4 { margin: 26px 0 10px; font: 650 16px/1.35 var(--ui); letter-spacing: 0; }
 p { margin: 0 0 12px; max-width: 74ch; color: var(--ink-2); text-wrap: pretty; }
 p b, li b, td b { color: var(--ink); font-weight: 600; }
-.lede { font-size: 18px; margin-top: 14px; }
+.lede { font-size: 18px; line-height: 1.55; margin-top: 14px; }
 blockquote { margin: 16px 0; padding: 16px 20px; border-radius: 14px; background: var(--sunken); color: var(--ink); font-size: 15.5px; max-width: 82ch; }
 blockquote ul { color: var(--ink); margin: 0; }
 ul { margin: 0 0 12px; padding-left: 20px; color: var(--ink-2); max-width: 80ch; display: grid; gap: 6px; }
-code { font: 500 0.9em/1 var(--mono); }
+code { font-family: var(--mono); font-weight: 500; font-size: 0.9em; }
 figure { margin: 0; min-width: 0; }
 figure img, figure video { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
 figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
@@ -82,7 +82,7 @@ dl.facts { margin: 0; display: grid; gap: 12px; }
 dl.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); }
 dl.facts dd { margin: 2px 0 0; color: var(--ink-2); font-size: 14.5px; }
 dl.facts dd ul { margin-top: 4px; font-size: 14.5px; }
-.tablewrap { overflow-x: auto; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.tablewrap { overflow-x: auto; padding: 6px; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
 table.cmp { border-collapse: collapse; width: 100%; min-width: 860px; font-size: 14px; color: var(--ink-2); }
 table.cmp th, table.cmp td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--line); }
 table.cmp thead th { color: var(--ink); font-weight: 650; background: var(--sunken); }
