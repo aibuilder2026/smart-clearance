@@ -521,12 +521,14 @@ button.dist-line:focus-visible { outline: 3px solid var(--ring); outline-offset:
 .dz-foot > .btn:last-child { flex: 1; }
 @media (max-width: 520px) { .dz-foot { flex-direction: column-reverse; } }
 @media (max-width: 420px) { .dz-two:not(.dz-pair) { grid-template-columns: minmax(0, 1fr); } .dz-pair .cam-tag { font-size: 11px; } }
+/* a photo that did not load (SC-144, common.jsx Photo) */
+.photo-failed { position: absolute; inset: 0; z-index: 1; display: grid; place-content: center; justify-items: center; gap: 6px; padding: 12px; text-align: center; background: var(--fill); color: var(--fg-2); }
 /* a batch's record (SC-142): the photos sent for it, the yeses, the audit trail; the distributor's photos */
 .rec-shot { position: relative; display: block; width: 100%; padding: 0; border: 0; border-radius: 16px; overflow: hidden; background: #050806; cursor: zoom-in; aspect-ratio: 4 / 3; box-shadow: var(--shadow-1); }
 .rec-shot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .rec-shot:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
 .rec-shot.none { display: grid; place-content: center; justify-items: center; gap: 6px; background: var(--fill); color: var(--fg-3); cursor: default; box-shadow: none; }
-.rec-big { border-radius: 16px; overflow: hidden; background: #050806; }
+.rec-big { position: relative; min-height: 200px; border-radius: 16px; overflow: hidden; background: #050806; }
 .rec-big img { display: block; width: 100%; height: auto; }
 .rec-check { gap: 8px; align-items: flex-start; }
 .rec-ok { color: var(--primary-text); flex: none; margin-top: 1px; }

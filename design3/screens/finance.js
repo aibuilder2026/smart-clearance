@@ -360,7 +360,7 @@
   function PhotoShot({ p, onOpen }) {
     const src = photoSrc(p), [title, tag] = PHOTO[p.id];
     if (!src) return /* @__PURE__ */ React.createElement("div", { className: "rec-shot none" }, /* @__PURE__ */ React.createElement(Icon, { name: "image", size: 20 }), /* @__PURE__ */ React.createElement("span", { className: "t-caption" }, "no photo kept"));
-    return /* @__PURE__ */ React.createElement("button", { type: "button", className: "rec-shot", onClick: onOpen, "aria-label": `${title}, sent ${recWhen(p.at)}: open it` }, /* @__PURE__ */ React.createElement("img", { src, alt: `${title} for this batch`, loading: "lazy" }), /* @__PURE__ */ React.createElement("span", { className: "cam-tag" }, tag));
+    return /* @__PURE__ */ React.createElement("button", { type: "button", className: "rec-shot", onClick: onOpen, "aria-label": `${title}, sent ${recWhen(p.at)}: open it` }, /* @__PURE__ */ React.createElement(S.Photo, { src, alt: `${title} for this batch`, loading: "lazy" }), /* @__PURE__ */ React.createElement("span", { className: "cam-tag" }, tag));
   }
   const RecCheck = ({ ok, children }) => /* @__PURE__ */ React.createElement("div", { className: "row tight t-footnote rec-check" }, /* @__PURE__ */ React.createElement(Icon, { name: ok ? "circle-check" : "circle-alert", size: 15, className: ok ? "rec-ok" : "rec-warn" }), children);
   function PhotoFacts({ p }) {
@@ -368,7 +368,7 @@
     return /* @__PURE__ */ React.createElement("div", { className: "stack tight" }, /* @__PURE__ */ React.createElement("span", { className: "t-footnote muted" }, "Sent by ", p.by, " · ", recWhen(p.at)), r && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(RecCheck, { ok: true }, "Vision read batch ", r.batch, ", made ", fmt.date(r.mfg), ", best before ", fmt.date(r.bestBefore), ", MRP ₹", Number(r.mrp).toFixed(2), r.at ? ` · ${recWhen(r.at)}` : ""), /* @__PURE__ */ React.createElement(RecCheck, { ok: r.matches !== false }, r.matches !== false ? "Matches the export" : "Does not match the export")), (p.checks || []).map((x) => /* @__PURE__ */ React.createElement(RecCheck, { key: x.id, ok: x.ok }, x.label)));
   }
   function PhotoSheet({ p, onClose }) {
-    return /* @__PURE__ */ React.createElement(Sheet, { open: !!p, onClose, title: p ? PHOTO[p.id][0] : "" }, p && /* @__PURE__ */ React.createElement("div", { className: "stack" }, /* @__PURE__ */ React.createElement("div", { className: "rec-big" }, /* @__PURE__ */ React.createElement("img", { src: photoSrc(p), alt: `${PHOTO[p.id][0]} for this batch` })), /* @__PURE__ */ React.createElement(PhotoFacts, { p })));
+    return /* @__PURE__ */ React.createElement(Sheet, { open: !!p, onClose, title: p ? PHOTO[p.id][0] : "" }, p && /* @__PURE__ */ React.createElement("div", { className: "stack" }, /* @__PURE__ */ React.createElement("div", { className: "rec-big" }, /* @__PURE__ */ React.createElement(S.Photo, { src: photoSrc(p), alt: `${PHOTO[p.id][0]} for this batch` })), /* @__PURE__ */ React.createElement(PhotoFacts, { p })));
   }
   function RecordPhotos({ photos, title, empty }) {
     const [open, setOpen] = useState(null);

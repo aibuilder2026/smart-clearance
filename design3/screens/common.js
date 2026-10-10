@@ -2,9 +2,19 @@
   const { useSyncExternalStore, createContext, useContext, useState, useRef, useCallback, useEffect, Fragment } = React;
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, Store = window.SC3_STORE, Flow = window.SC3_FLOW;
   const fmt = M.fmt;
-  const { Icon, IconButton, Avatar, Badge, Button, useApp, Page, ModeMenuButton, Menu, cx } = K;
+  const { Icon, IconButton, Avatar, Badge, Button, useApp, Page, ModeMenuButton, Menu, Skeleton, cx } = K;
   const { motion, AnimatePresence, useReducedMotion } = Motion;
   const useStore = () => useSyncExternalStore(Store.subscribe, Store.get);
+  function Photo({ src, alt = "", className, style, ...rest }) {
+    const [st, setSt] = useState("loading");
+    const ref = useRef(null);
+    useEffect(() => {
+      const i = ref.current;
+      setSt(i && i.complete && i.naturalWidth ? "ready" : "loading");
+    }, [src]);
+    const shown = style && style.opacity != null ? style.opacity : 1;
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, st === "loading" && /* @__PURE__ */ React.createElement(Skeleton, { r: 0, style: { position: "absolute", inset: 0, height: "auto", borderRadius: "inherit" } }), st === "failed" && /* @__PURE__ */ React.createElement("span", { className: "photo-failed" }, /* @__PURE__ */ React.createElement(Icon, { name: "image", size: 20 }), /* @__PURE__ */ React.createElement("span", { className: "t-caption" }, "The photo did not load")), /* @__PURE__ */ React.createElement("img", { ref, src, alt, className, onLoad: () => setSt("ready"), onError: () => setSt("failed"), style: { ...style, opacity: st === "ready" ? shown : 0, transition: "opacity 240ms var(--ease)" }, ...rest }));
+  }
   const RouteCtx = createContext({ route: { name: "command" }, go: () => {
   }, back: () => {
   } });
@@ -155,5 +165,5 @@
     }, initial: reduce ? false : { opacity: 0, y: -26, scale: 0.94 }, animate: { opacity: 1, y: 0, scale: 1 }, transition: { type: "spring", stiffness: 420, damping: 32 } }, /* @__PURE__ */ React.createElement("span", { className: "ln-head" }, push.app ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", { className: "ln-app", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Icon, { name: push.icon || "message-circle", size: 14, stroke: 2.2 })), /* @__PURE__ */ React.createElement("span", null, push.app)) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(K.Mark, { size: 22, still: true }), /* @__PURE__ */ React.createElement("span", null, "Smart-Clearance")), /* @__PURE__ */ React.createElement("span", { className: "ln-now" }, "now")), /* @__PURE__ */ React.createElement("b", null, push.title), /* @__PURE__ */ React.createElement("span", { className: cx("ln-body", hindi && "hi"), lang: hindi ? "hi" : void 0 }, push.body))), /* @__PURE__ */ React.createElement("div", { className: "lock-foot" }, push ? "Tap the notification to open" : `${p.short || p.name}'s phone`));
   }
   const PEOPLE_BY_ID = (id) => D.PEOPLE[id] || (Store.get().users.find((u) => u.id === id) || { name: id });
-  window.SC3_SCREENS = Object.assign(window.SC3_SCREENS || {}, { LockScreen, AccountCtx, WorkspaceCtx, LiveCtx, BatchCtx, useLive, PlayAs, PushBanners, useStore, Router, useRoute, heroModel, unreadFor, TopActions, Screen, Columns, SectionTitle, Locked, PEOPLE_BY_ID, PHASE_STATUS });
+  window.SC3_SCREENS = Object.assign(window.SC3_SCREENS || {}, { LockScreen, AccountCtx, WorkspaceCtx, LiveCtx, BatchCtx, useLive, PlayAs, Photo, PushBanners, useStore, Router, useRoute, heroModel, unreadFor, TopActions, Screen, Columns, SectionTitle, Locked, PEOPLE_BY_ID, PHASE_STATUS });
 })();
