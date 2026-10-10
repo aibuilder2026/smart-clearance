@@ -1,0 +1,47 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-145/option-a/mockup.html?who=rakesh&theme=light#/orders",
+  "out": "option-a/orders-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "full": false,
+  "height": 1250
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-145/option-a/mockup.html?who=rakesh&theme=light#/batches",
+  "out": "option-a/batches-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "full": false,
+  "height": 1350
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-145/option-a/mockup.html?who=rakesh&theme=dark#/orders",
+  "out": "option-a/orders-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2200,
+  "full": false,
+  "height": 1250
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-145/option-a/mockup.html?who=rakesh&theme=light#/orders",
+  "out": "option-a/orders-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2200,
+  "full": false,
+  "height": 1700
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-145/option-a/mockup.html?who=rakesh&theme=light#/batches",
+  "out": "option-a/batches-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2200,
+  "full": false,
+  "height": 1700
+ }
+]
