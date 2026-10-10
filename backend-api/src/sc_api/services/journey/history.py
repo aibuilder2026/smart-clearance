@@ -23,7 +23,7 @@ from sqlalchemy import select
 from sc_api import models as m
 from sc_api.cloud import Cloud, FakeMessenger, FakePublisher, FakeStorage
 from sc_api.domain import journey as J
-from sc_api.domain.clock import DAY_MINUTES, IST, FixedClock
+from sc_api.domain.clock import DAY_MINUTES, IST, FixedClock, Ids
 from sc_api.identity import synthetic_uid
 from sc_api.services import supply
 from sc_api.services.context import SYSTEM, Ctx
@@ -42,6 +42,12 @@ PAPERS = {"settle", "receipt"}
 
 def _at(when: str) -> datetime:
     return datetime.fromisoformat(when).replace(tzinfo=IST)
+
+
+def _fresh(x: Ctx) -> Ctx:
+    """a photo's upload takes a fresh id (SC-159): the history is built with seeded ids, so a rebuild could give a photo
+    the object name it had before, and the bucket, written once and never replaced, would keep the old photo there"""
+    return replace(x, ids=Ids())
 
 
 async def built(ctx: Ctx, client_id: str) -> bool:
@@ -164,7 +170,7 @@ async def _step(
         x = await as_(dist, at)
         label = LABELS.joinpath(f"{ref}.webp")
         data, kind = (label.read_bytes(), "image/webp") if label.is_file() else (PHOTO, "image/jpeg")
-        link = await steps.photo_upload(x, client_id, ref, kind, len(data))
+        link = await steps.photo_upload(_fresh(x), client_id, ref, kind, len(data))
         name = f"{client_id}/{ref}/{link['id']}"
         storage.objects[(hx.settings.photos_bucket, name)] = data
         if real is not None and hx.settings.photos_bucket:  # where the Record tab and his Photos tab read it
@@ -247,7 +253,7 @@ async def _destroy_sent(
     for which in steps.DZ_WHICH:
         data = EVIDENCE.joinpath(f"{ref}-{which}.webp").read_bytes()
         x = await as_(dist, _at(dz["photos"][which]))
-        link = await steps.destruction_photo(x, client_id, ref, which, "image/webp", len(data))
+        link = await steps.destruction_photo(_fresh(x), client_id, ref, which, "image/webp", len(data))
         name = f"{client_id}/{ref}/destruction-{which}-{link['id']}"
         storage.objects[(hx.settings.photos_bucket, name)] = data
         if real is not None and hx.settings.photos_bucket:
@@ -301,19 +307,21 @@ async def _case(ctx: Ctx, client_id: str, ref: str) -> m.Case:
     return case
 
 
-async def put_labels(ctx: Ctx, client_id: str) -> list[str]:
+async def put_labels(ctx: Ctx, client_id: str) -> tuple[list[str], list[str]]:
     """each history batch's label photo (SC-142) put where its case keeps it in the photos bucket: a workspace built
-    before SC-142 kept only a stand-in in memory, so its links led nowhere. Returns the batches whose photo went up"""
+    before SC-142 kept only a stand-in in memory, so its links led nowhere. The bucket is written once and never
+    replaced, so a photo already there stays (SC-159). Returns the batches whose photo went up, and those already
+    there"""
     if ctx.cloud is None or not ctx.settings.photos_bucket:
-        return []
-    put = []
+        return [], []
+    put, there = [], []
     q = select(m.Case).where(m.Case.client_id == client_id, m.Case.history.is_(True))
     for case in (await ctx.session.execute(q.order_by(m.Case.batch_ref))).scalars():
         name, label = (case.photo or {}).get("object"), LABELS.joinpath(f"{case.batch_ref}.webp")
         if name and label.is_file():
-            await ctx.cloud.storage.write(ctx.settings.photos_bucket, name, label.read_bytes(), "image/webp")
-            put.append(case.batch_ref)
-    return put
+            wrote = await ctx.cloud.storage.write(ctx.settings.photos_bucket, name, label.read_bytes(), "image/webp")
+            (put if wrote else there).append(case.batch_ref)
+    return put, there
 
 
 async def _quiet(ctx: Ctx, client_id: str, refs: set[str]) -> None:
