@@ -12,6 +12,7 @@
 	import Screen from '../common/Screen.svelte';
 	import OutcomeBadge from '../finance/OutcomeBadge.svelte';
 	import DistPapers from './DistPapers.svelte';
+	import DistPhotos from './DistPhotos.svelte';
 	import PaperSheet from './PaperSheet.svelte';
 	import PtHead from './PtHead.svelte';
 	import PtMoments from './PtMoments.svelte';
@@ -19,8 +20,8 @@
 	import WholeCard from './WholeCard.svelte';
 	import { day, stopOf, worldOf } from './pt';
 
-	// a batch's own page (SC-130, screens/trade.jsx DistBatch): its head, then What happened, Money (how he ended whole)
-	// and Papers. A batch he cleared reads its facts; the batch in a journey, the journey's own state; another batch
+	// a batch's own page (SC-130, screens/trade.jsx DistBatch): its head, then What happened, Money (how he ended whole),
+	// Papers and Photos (SC-142: the photos he sent for it). A batch he cleared reads its facts; the batch in a journey, the journey's own state; another batch
 	// still in a journey says the agents act on it and fills in once it settles
 	let { me, dist, id }: { me: User; dist: Distributor; id: string } = $props();
 	const ws = useWorkspace();
@@ -28,7 +29,8 @@
 	const TABS: { id: string; label: string; icon: IconName }[] = [
 		{ id: 'what', label: 'What happened', icon: 'history' },
 		{ id: 'money', label: 'Money', icon: 'coins' },
-		{ id: 'papers', label: 'Papers', icon: 'file-text' }
+		{ id: 'papers', label: 'Papers', icon: 'file-text' },
+		{ id: 'photos', label: 'Photos', icon: 'camera' }
 	];
 	let tab = $state('what');
 	let paper = $state<string | null>(null);
@@ -95,7 +97,7 @@
 						c={past}
 						{story}
 						onpaper={open}
-					/>{:else}<DistPapers
+					/>{:else if tab === 'photos'}<DistPhotos {pc} {past} {dist} />{:else}<DistPapers
 						c={past ?? { partner: null, docs: story!.docs }}
 						ready={!!past || !!s.hero.docs}
 						onopen={open}

@@ -44,7 +44,7 @@ async def test_the_workspace_summary(api):
             "id": "munchly",
             "name": "Munchly Foods",
             "short": "Munchly",
-            "domain": "munchly.smartclearance.com",
+            "domain": "munchly-smartclearance.web.app",
             "emailDomain": "munchly.example",
             "mark": {"from": "#f68d3e", "to": "#d6461e", "ink": "#ffffff"},
         },

@@ -20,6 +20,7 @@ import {
 	type Kirana,
 	type Step
 } from './flow.ts';
+import { approveDestructionStep, destroyStep } from './destruction.ts';
 import { esgStep, norm, taxStep } from './ledger.ts';
 import { DIST, HERO, KIRANAS, mango, PEOPLE, printed, shareOf, vanDayOf } from './mango.ts';
 import { Run } from './record.ts';
@@ -29,11 +30,14 @@ import { Run } from './record.ts';
 // Not this time, the rest read the scheme and let it go. The staff sale is recorded and Feeding India collects its
 // packs. Neha closes the scheme's window from the console, short of its packets, so they stay at the godown; the
 // Paperwork agent drafts the pack, and the van round takes the orders placed. Then Neha fires expiry day (Report now):
-// the packs left at the godown settle by Munchly's expiry policy, full credit, so Lakshmi Agencies is credited the
-// dealer price for them and Munchly destroys them, reversing their input GST (SC-94, SC-122).
+// the packs left at the godown settle by Munchly's expiry policy, destroyed at the godown (SC-139, route B). Lakshmi
+// Agencies destroys them through an authorised agency and sends the two photos and its certificate number; Vision
+// checks them, and Priya approves them from her Command Center. Only then does Impact report: the Expiry credit note
+// credits her the dealer price, the input GST she reverses on them (grossed up) and the agency's charges, and Munchly
+// keeps its own input GST.
 //
 // Then every screen and paper is read back and held to the ledger row backend-api posted: Priya's pack (the price-support
-// and expiry credit notes, the GST ITC memo, the FSSAI checklist, the donation receipt and the destruction certificate),
+// and expiry credit notes, the GST ITC memo, the FSSAI checklist, the donation receipt and the agency's certificate),
 // each paper's PDF read back, Execution's Left at the godown and Expiry settlement, the ledger's GST and Impact readings
 // with the GST summary and the BRSR table, the kiranas' offers (ordered, declined, expired), Meera's pickup and receipt,
 // and Lakshmi Agencies' portal with her copies. The Mango's plan has no ExpireSoon lot (22 days left is under
@@ -55,9 +59,12 @@ const SILENT = KIRANAS.slice(KIRANAS.length - SKIP + DECLINE);
 /** what each buyer orders: its story share where the offer screen can place it, else the nearest it can above it */
 const ORDERS = BUYERS.map((k) => ({ k, ...shareOf(k) }));
 const ORDERED = ORDERS.reduce((t, o) => t + o.units, 0);
-/** the Mango Drink's dealer price and its input credit a pack (design3 data.js; SC-94, SC-105: estimated) */
+/** the Mango Drink's dealer price and its input credit a pack (design3 data.js; SC-94, SC-105: estimated), its GST and
+ *  the agency's charges a pack (money.js RULES.destruction, SC-139) */
 const DP = 14.5;
 const ITC_PER = 0.55;
+const GST = 0.05;
+const CHARGES = 1.5;
 
 let run: Run;
 /** the packets the plan offers the kiranas, read from the case */
@@ -65,6 +72,12 @@ let planned = 0;
 /** the packs no channel took: the kiranas' planned packets less those ordered */
 const left = () => planned - ORDERED;
 const plannedOf = (c: Case | null) => c?.plan?.lines.find((l) => l.id === 'kirana')?.units ?? 0;
+/** the expiry credit note for the packs destroyed at her godown: the dealer price, the GST she reverses on them and the
+ *  agency's charges (money.js expirySettlement, policy godown) */
+const credit = () => r2(left() * DP);
+const gstOf = () => r2(left() * DP * GST);
+const chargesOf = () => r2(left() * CHARGES);
+const amount = () => r2(credit() + gstOf() + chargesOf());
 
 const num = (n: number) => n.toLocaleString('en-IN');
 const r2 = (n: number) => Math.round(n * 100) / 100;
@@ -265,7 +278,7 @@ const STEPS: Step[] = [
 	mango('papers'),
 	{
 		id: 'report',
-		title: "Neha fires expiry day's report from the console: the packs left at the godown settle by Munchly's policy",
+		title: "Neha fires expiry day's report from the console: Lakshmi Agencies is asked to destroy the packs left",
 		async run(page) {
 			const before = (await caseAs('priya'))!;
 			planned ||= plannedOf(before);
@@ -280,7 +293,10 @@ const STEPS: Step[] = [
 			await running().done('Report now: Expire it and report now?');
 			await alert.getByRole('button', { name: 'Report now' }).click();
 			await expect(alert).toBeHidden();
-			const c = await until('Impact posts the ledger', 'priya', (c) => c.journey.posted);
+			// packs are left, so Impact waits for their destruction's evidence and Priya's yes (SC-139)
+			const c = await until('the destruction is asked for', 'priya', (c) => !!c.destruction);
+			story('Ledger posted before the yes', String(c.journey.posted), 'false');
+			story('Destruction', c.destruction?.status, 'requested');
 			running().figure('Phase after the report', c.journey.phase);
 			running().figure('Plan net', inr(c.plan?.net));
 			running().figure('Actual net', inr(c.actual?.net));
@@ -289,25 +305,25 @@ const STEPS: Step[] = [
 			story(
 				'Expiry settlement',
 				c.expiry ? `${c.expiry.units} packs, ${c.expiry.policy}, destroyed by ${c.expiry.destroyedBy}` : '(none)',
-				`${left()} packs, full-credit, destroyed by client`
+				`${left()} packs, godown, destroyed by distributor`
 			);
-			story('Expiry credit', c.expiry?.credit ?? undefined, r2(left() * DP));
-			const paper = (id: string) => c.docs.find((d) => d.id === id);
-			story(
-				'Expiry paper',
-				paper('expiry') ? `${paper('expiry')!.type}, ${paper('expiry')!.units} packs` : '(none)',
-				`Expiry credit note, ${left()} packs`
-			);
+			story('Expiry credit at the dealer price', c.expiry?.credit ?? undefined, credit());
+			story('GST she reverses, grossed up', c.expiry?.gst, gstOf());
+			story("The agency's charges", c.expiry?.charges, chargesOf());
+			story('Expiry credit note on the yes', c.expiry?.amount ?? undefined, amount());
+			const cert = c.docs.find((d) => d.id === 'destruction');
 			story(
 				'Destruction certificate',
-				paper('destruction') ? `${paper('destruction')!.status}, ${paper('destruction')!.units} units` : '(none)',
-				`generated, ${left()} units`
+				cert ? `${cert.status}, ${cert.units} units` : '(none)',
+				`awaiting, ${left()} units`
 			);
 			for (const d of c.docs)
 				running().figure(`Paper: ${d.type}`, `${d.no || '—'} (${d.status}${d.pdf ? ', PDF' : ''})`);
-			await running().done('Impact posted the ledger, with the packs left settled');
+			await running().done('Expiry day: the papers drafted, the destruction asked of Lakshmi Agencies');
 		}
 	},
+	destroyStep({ who: DIST, agency: 'Deccan Green Waste Management', certificate: 'DGW/DC/26-27/0086' }),
+	approveDestructionStep(),
 	mango('review'),
 	{
 		id: 'godown',
@@ -323,16 +339,19 @@ const STEPS: Step[] = [
 			await settleCard.scrollIntoViewIfNeeded();
 			await expect(settleCard).toBeVisible();
 			const text = await mainText(page);
-			running().figure('Settlement sentence', text.match(/The [\d,]+ packs come back[^.]*\./)?.[0] ?? '(none)');
+			running().figure('Settlement sentence', text.match(/The [\d,]+ packs are destroyed at [^.]*\./)?.[0] ?? '(none)');
 			shows('Execution: left and settled', text, [
 				`${num(left())} packs`,
-				rupees(r2(left() * DP)),
+				rupees(amount()),
+				'Destroyed by',
+				'Of it: GST and charges',
+				rupees(r2(gstOf() + chargesOf())),
 				'Expiry settlement'
 			]);
-			await running().done('Execution: the Expiry settlement, full credit');
+			await running().done('Execution: the Expiry settlement, destroyed at the godown');
 			await page.getByRole('button', { name: 'Open the paper' }).click();
 			await expect(page).toHaveURL(new RegExp(`/paperwork/${HERO}`));
-			await expect(page.locator('#main')).toContainText(/packs expired at the godown/i);
+			await expect(page.locator('#main')).toContainText(/packs destroyed at the godown/i);
 			await running().done('The Expiry credit note, from Execution');
 		}
 	},
@@ -355,47 +374,56 @@ const STEPS: Step[] = [
 				await page.waitForTimeout(600);
 				return norm(await paper.innerText());
 			};
-			// the expiry credit note: the packs left, at the dealer price, to Lakshmi Agencies; Munchly's own costs
+			// the expiry credit note: the packs destroyed at her godown, at the dealer price, with the GST she reverses on
+			// them and the agency's charges, against the agency's certificate (SC-139)
 			const ex = doc('expiry');
+			const de = doc('destruction');
 			if (ex) {
 				shows('Paper: expiry credit note', await open(/Expiry credit note/), [
 					ex.no,
-					`${num(left())} packs expired at the godown`,
+					'NO GST ADJ.',
+					`${num(left())} packs destroyed at the godown`,
+					inr2(credit()),
+					'Input GST he reverses on them',
+					inr2(gstOf()),
+					'Destruction charges',
+					inr2(chargesOf()),
 					'Credit to Lakshmi Agencies',
-					inr2(r2(left() * DP)),
-					'Disposal',
-					'EPR on the packaging',
-					'Input GST reversed'
+					inr2(amount()),
+					...(de?.no ? [de.no] : [])
 				]);
+				same('Expiry credit note: amount', ex.amount ?? undefined, amount());
 				await running().done(`Paper: the Expiry credit note ${ex.no}`);
 			}
-			// the destruction certificate: the packs Munchly destroys, with their input GST reversed
-			const de = doc('destruction');
+			// the agency's certificate: the packs destroyed at her godown, the evidence approved, the GST she reverses
 			shows('Paper: destruction certificate', await open(/Destruction certificate/), [
-				'GENERATED',
-				'Units destroyed',
-				num(left()),
-				'Input GST reversed',
-				inr2(r2(left() * ITC_PER))
+				'DESTROYED',
+				`${num(left())} packs`,
+				'Deccan Green Waste Management',
+				'approved by Priya',
+				'Input GST he reverses',
+				inr2(gstOf())
 			]);
 			same('Destruction certificate: units', de?.units ?? undefined, F.destroyed);
-			same('Destruction certificate: GST reversed', de?.reversed ?? undefined, r2(F.destroyed * ITC_PER));
-			const pdfButton = await page.getByRole('button', { name: /Download Destruction certificate as a PDF/ }).count();
-			running().figure('Destruction certificate PDF', pdfButton ? 'Download PDF' : 'none: a record on the case');
-			await running().done(`Paper: the destruction certificate, ${num(left())} units`);
-			// the GST ITC memo: credit kept on the packs sold, reversed on the packs donated and destroyed
+			same('Destruction certificate: GST she reverses', de?.reversed ?? undefined, gstOf());
+			story("Destruction certificate: the agency's", de?.at ?? '(none)', 'godown');
+			await running().done(`Paper: the agency's destruction certificate ${de?.no ?? ''}, ${num(left())} packs`);
+			// the GST ITC memo: credit kept on the packs sold and on those destroyed at her godown (her stock: she reverses
+			// hers), reversed on the packs donated
 			const itc = doc('itc');
 			shows('Paper: GST ITC memo', await open(/GST ITC memo/), [
 				'ITC PART REVERSED',
 				'Destroyed, gifted or lost',
-				num(F.donated + F.destroyed),
+				num(F.donated),
+				"Destroyed at Lakshmi Agencies' godown",
+				num(left()),
 				rupees(F.itcKept),
 				rupees(F.itcReversed)
 			]);
 			same('ITC memo: kept', itc?.amount ?? undefined, F.itcKept);
 			same('ITC memo: reversed', itc?.reversed ?? undefined, F.itcReversed);
-			same('ITC reversed: donated and destroyed × ₹0.55', F.itcReversed, r2((F.donated + F.destroyed) * ITC_PER));
-			await running().done('Paper: the GST ITC memo, part reversed');
+			same('ITC reversed: donated × ₹0.55', F.itcReversed, r2(F.donated * ITC_PER));
+			await running().done('Paper: the GST ITC memo, part reversed on the donation only');
 			// the price-support credit note, the FSSAI checklist and the food bank's receipt
 			const sp = doc('support');
 			if (sp) {
@@ -424,7 +452,8 @@ const STEPS: Step[] = [
 				if (pdf.text === null) continue;
 				const want: (string | string[])[] = [d.no].filter(Boolean);
 				if (d.id === 'itc') want.push(rupees(F.itcKept));
-				if (d.id === 'expiry') want.push(rupees(r2(left() * DP)), num(left()));
+				if (d.id === 'expiry') want.push(rupees(credit()), rupees(amount()), num(left()));
+				if (d.id === 'destruction') want.push(num(left()), 'Deccan Green Waste Management');
 				if (d.id === 'receipt' || d.id === 'fssai') want.push(num(donated));
 				if (d.id === 'support' && d.amount != null) want.push(rupees(d.amount));
 				shows(`PDF text: ${d.type}`, pdf.text, want);
@@ -535,7 +564,10 @@ const STEPS: Step[] = [
 				`${num(left())} packets were not ordered`,
 				'Your staff sale sold',
 				'Feeding India collected',
-				`${num(left())} packs expired at your godown`,
+				`Asked to destroy ${num(left())} expired packs at your godown`,
+				"You sent the destruction's evidence",
+				'approved the destruction',
+				`${num(left())} packs destroyed at your godown`,
 				...(expiry ? [`on ${expiry.no}`] : [])
 			]);
 			if (/The scheme closed after 48 hours/.test(what))
@@ -544,7 +576,7 @@ const STEPS: Step[] = [
 					`/batches/${HERO}`,
 					'Her batch reads "The scheme closed after 48 hours", though Neha closed the window early from the console'
 				);
-			await running().done('Her batch: what happened, the packs that expired at her godown');
+			await running().done("Her batch: what happened, the packs destroyed at her godown on Priya's yes");
 			await page.locator('.bh-tabs').getByRole('button', { name: 'Money' }).click();
 			await expect(main).toContainText('You end whole');
 			const money = await mainText(page);
@@ -553,7 +585,7 @@ const STEPS: Step[] = [
 				'Your staff sale',
 				'Price-support credit note',
 				`Expiry credit note for ${num(left())} packs`,
-				rupees(r2(left() * DP)),
+				rupees(amount()),
 				'Your gain or loss ₹0'
 			]);
 			story(
@@ -586,16 +618,21 @@ const STEPS: Step[] = [
 				.click();
 			await page.waitForTimeout(600);
 			const cert = norm(await page.getByRole('dialog').last().innerText());
-			shows('Her copy of the destruction certificate', cert, ['Units destroyed', num(left())]);
-			const certPdf = await page.getByRole('dialog').last().getByRole('button', { name: 'Download PDF' }).count();
-			running().figure('Her destruction certificate PDF', certPdf ? 'Download PDF' : 'none: a record on the case');
-			await running().done('Her copy of the destruction certificate');
+			// the agency's certificate is hers, not a copy (SC-139)
+			shows('Her destruction certificate', cert, [
+				'DESTROYED',
+				`${num(left())} packs`,
+				'Input GST he reverses',
+				inr2(gstOf())
+			]);
+			await expect(page.getByRole('dialog').last().getByRole('button', { name: 'Download PDF' })).toBeVisible();
+			await running().done("Her destruction certificate, the agency's, with Download PDF");
 			await page.keyboard.press('Escape');
-			for (const d of [support, expiry, receipt].filter((x) => !!x)) {
+			for (const d of [support, expiry, doc('destruction'), receipt].filter((x) => !!x)) {
 				const pdf = await pdfOf(DIST, d!.id, d!.no);
 				same(`Her ${d!.no} PDF`, pdf.status, '200 application/pdf %PDF');
 			}
-			same('Her expiry credit, as the ledger has it', facts.expiry?.credit ?? undefined, r.figures.credit);
+			same('Her expiry credit note, as the ledger has it', facts.expiry?.amount ?? undefined, r.figures.credit);
 			same('Her price support, to the rupee', Math.round(facts.support?.total ?? 0), r.figures.support);
 
 			await as(page, DIST, '/orders', 'reads her orders, batch by batch');

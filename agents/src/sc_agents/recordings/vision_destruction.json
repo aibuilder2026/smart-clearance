@@ -1,0 +1,22 @@
+{
+ "json": {
+  "before": {
+   "batch": "MF-2409-117",
+   "count": 140,
+   "confidence": 0.93
+  },
+  "after": {
+   "slate": {
+    "batch": "MF-2409-117",
+    "count": 144,
+    "date": "03-10-26"
+   },
+   "landfill": true,
+   "destroyed": true
+  }
+ },
+ "usage": [
+  2210,
+  74
+ ]
+}

@@ -5,7 +5,7 @@ import { fmt } from '../format';
 import { D, EV, PLAN, SHOPS_ALL } from './data';
 import { stageAt } from './model';
 import { store } from './store.svelte';
-import type { State } from './types';
+import type { DestructionAgency, State } from './types';
 
 let nid = 0;
 const id = (p: string) => p + '-' + Date.now().toString(36) + '-' + ++nid;
@@ -15,6 +15,8 @@ const notify = (s: State, to: string, n: Omit<State['notifications'][number], 'i
 const audit = (s: State, who: string, what: string, target: string, at?: string) =>
 	void s.audit.unshift({ id: id('a'), who, what, target, at: at || 'now' });
 const all = (s: State) => s.hero.orders.length >= D.kiranas.length;
+const HERO = D.batches.find((b) => b.hero)!;
+const HERO_DIST = () => D.distributors[HERO.distributor];
 const P = D.push;
 
 // each action changes a draft of the store; names follow the journey map
@@ -259,13 +261,78 @@ export const A = {
 		s.hero.phase = 'cleared';
 		s.hero.posted = true;
 		feed(s, EV('ledger'));
-		notify(s, 'priya', { link: 'command', ...P.closed });
+		// packs destroyed at his godown (SC-139): the push says how many, and that the credit note is issued
+		const d = s.hero.destruction,
+			x = s.hero.expiry;
+		notify(s, 'priya', {
+			link: 'command',
+			...P.closed,
+			...(d
+				? {
+						title: `Batch closed · ${d.units} packs destroyed at the godown`,
+						body: `On your yes: ${HERO_DIST().short} credited ${fmt.inr2(x?.amount ?? 0)} against ${d.agency ? d.agency.name : 'the agency'}'s certificate ${d.certificate}. Your input GST is kept.`
+					}
+				: {})
+		});
 		audit(s, 'priya', 'signed off the BRSR row', 'MF-2409-117', '30 Oct');
+	},
+	// packs left at his godown on expiry day, destroyed there (SC-139): the story clears every pack, so these act only on
+	// a destruction put in the store (the live workspace has its own). Vision's checks land with the evidence
+	sendDestruction: (s: State, x?: Arg) => {
+		const d = s.hero.destruction;
+		if (!d || (d.status !== 'requested' && d.status !== 'asked')) return;
+		const sent = (x && typeof x === 'object' ? x : {}) as { agency?: DestructionAgency; certificate?: string };
+		const agency = sent.agency ?? D.setup.destruction.agencies[0];
+		Object.assign(d, {
+			status: 'checked',
+			agency: { id: agency.id, name: agency.name, auth: agency.auth, site: agency.site },
+			certificate:
+				sent.certificate ?? agency.series.prefix + String(agency.series.next).padStart(agency.series.width, '0'),
+			reason: null,
+			photos: { before: { name: 'before', at: '11:40' }, after: { name: 'after', at: '13:20' } },
+			sentAt: '14:00',
+			checks: (
+				[
+					['batch', `Batch ${HERO.id} read on the carton label`],
+					['count', `About ${Math.round(d.units / 10) * 10} packs in view (${d.units} left)`],
+					['slate', `The slate reads ${HERO.id} · ${d.units} packets`],
+					['when', 'Both photos taken today, at the godown and the landfill']
+				] as const
+			).map(([id, label]) => ({ id, label, ok: true }))
+		});
+		audit(
+			s,
+			'rakesh',
+			`sent the destruction's evidence: ${d.units} packs, ${agency.name}`,
+			`${HERO.id} · ${d.certificate}`,
+			'Expiry day'
+		);
+	},
+	approveDestruction: (s: State) => {
+		const d = s.hero.destruction;
+		if (!d || d.status !== 'checked') return;
+		Object.assign(d, { status: 'approved', approvedBy: 'priya', approvedAt: '11:00' });
+		audit(
+			s,
+			'priya',
+			`approved the destruction of ${d.units} packs at ${HERO_DIST().godown}`,
+			`${HERO.id} · ${d.certificate}`,
+			'Expiry day'
+		);
+	},
+	askDestructionAgain: (s: State, reason?: Arg) => {
+		const d = s.hero.destruction;
+		if (!d || d.status !== 'checked') return;
+		Object.assign(d, {
+			status: 'asked',
+			reason: (typeof reason === 'string' && reason) || 'the photos do not show the batch clearly'
+		});
+		audit(s, 'priya', `asked again for the destruction's evidence: ${d.reason}`, HERO.id, 'Expiry day');
 	}
 };
 
 export type ActionName = keyof typeof A;
-type Arg = string | number | boolean | undefined;
+type Arg = string | number | boolean | Record<string, unknown> | undefined;
 
 // the order in which the journey happens, grouped by the stage each step belongs to; a step a person takes names them
 export const SCRIPT: [string, ActionName, { arg?: Arg; human?: string }?][] = [
@@ -410,6 +477,8 @@ function nextStep(s: State): Step | null {
 			return { name: 'settle', delay: 1800 };
 		case 'settled':
 			if (h.van.status !== 'done') return auto ? { name: 'vanRound', delay: 9000, partner: 'rakesh' } : null;
+			// packs destroyed at his godown (SC-139): Impact reports only once the operator has approved the evidence
+			if (h.destruction && h.destruction.status !== 'approved') return null;
 			return { name: 'report', delay: 3500 };
 		default:
 			return null;

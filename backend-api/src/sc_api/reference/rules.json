@@ -4,6 +4,32 @@
 			"profile": {
 				"route": "distributors",
 				"owner": "distributor",
+				"expiry": "godown"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": true
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": false,
+					"locked": "Only for the manufacturer's own stock"
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "distributors",
+				"owner": "distributor",
 				"expiry": "full-credit"
 			},
 			"exits": {
@@ -75,6 +101,32 @@
 				"d2c": {
 					"on": false,
 					"locked": "Only for the manufacturer's own stock"
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "distributors",
+				"owner": "manufacturer",
+				"expiry": "godown"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": true
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": true,
+					"locked": null
 				}
 			}
 		},
@@ -160,6 +212,32 @@
 			"profile": {
 				"route": "modern-trade",
 				"owner": "distributor",
+				"expiry": "godown"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": false
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": false,
+					"locked": "Only for the manufacturer's own stock"
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "modern-trade",
+				"owner": "distributor",
 				"expiry": "full-credit"
 			},
 			"exits": {
@@ -231,6 +309,32 @@
 				"d2c": {
 					"on": false,
 					"locked": "Only for the manufacturer's own stock"
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "modern-trade",
+				"owner": "manufacturer",
+				"expiry": "godown"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": false
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": true,
+					"locked": null
 				}
 			}
 		},
@@ -316,6 +420,32 @@
 			"profile": {
 				"route": "own",
 				"owner": "distributor",
+				"expiry": "godown"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": true
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": true,
+					"locked": null
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "own",
+				"owner": "distributor",
 				"expiry": "full-credit"
 			},
 			"exits": {
@@ -369,6 +499,32 @@
 				"route": "own",
 				"owner": "distributor",
 				"expiry": "none"
+			},
+			"exits": {
+				"expiresoon": {
+					"on": true
+				},
+				"kirana": {
+					"on": true
+				},
+				"staff": {
+					"on": true,
+					"cap": 50
+				},
+				"foodbank": {
+					"on": true
+				},
+				"d2c": {
+					"on": true,
+					"locked": null
+				}
+			}
+		},
+		{
+			"profile": {
+				"route": "own",
+				"owner": "manufacturer",
+				"expiry": "godown"
 			},
 			"exits": {
 				"expiresoon": {
@@ -2083,7 +2239,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-10-01",
@@ -2091,7 +2250,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-10-02",
@@ -2099,7 +2261,10 @@
 						"recovered": 21152.4,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-10-03",
@@ -2107,7 +2272,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-10-04",
@@ -2115,7 +2283,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-10-05",
@@ -2123,7 +2294,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-10-06",
@@ -2131,9 +2305,19 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 8
+						"runs": 8,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					}
 				],
+				"food": {
+					"keptKg": 0,
+					"destroyedKg": 0,
+					"destroyed": 0,
+					"keptKgBefore": 0,
+					"destroyedKgBefore": 0
+				},
 				"inFlight": 9,
 				"inFlightClients": 1,
 				"inFlightSeries": [
@@ -2218,7 +2402,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-08",
@@ -2226,7 +2413,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-09",
@@ -2234,7 +2424,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-10",
@@ -2242,7 +2435,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-11",
@@ -2250,7 +2446,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-12",
@@ -2258,7 +2457,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-13",
@@ -2266,7 +2468,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-14",
@@ -2274,7 +2479,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-15",
@@ -2282,7 +2490,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-16",
@@ -2290,7 +2501,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-17",
@@ -2298,7 +2512,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-18",
@@ -2306,7 +2523,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-19",
@@ -2314,7 +2534,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-20",
@@ -2322,7 +2545,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-21",
@@ -2330,7 +2556,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-22",
@@ -2338,7 +2567,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-23",
@@ -2346,7 +2578,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-24",
@@ -2354,7 +2589,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-25",
@@ -2362,7 +2600,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-26",
@@ -2370,7 +2611,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-27",
@@ -2378,7 +2622,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-28",
@@ -2386,7 +2633,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-29",
@@ -2394,7 +2644,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-09-30",
@@ -2402,7 +2655,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-10-01",
@@ -2410,7 +2666,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-10-02",
@@ -2418,7 +2677,10 @@
 						"recovered": 21152.4,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-10-03",
@@ -2426,7 +2688,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-10-04",
@@ -2434,7 +2699,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-10-05",
@@ -2442,7 +2710,10 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 0
+						"runs": 0,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					},
 					{
 						"date": "2026-10-06",
@@ -2450,9 +2721,19 @@
 						"recovered": 0,
 						"closed": 0,
 						"units": 0,
-						"runs": 8
+						"runs": 8,
+						"keptKg": 0,
+						"destroyedKg": 0,
+						"destroyed": 0
 					}
 				],
+				"food": {
+					"keptKg": 0,
+					"destroyedKg": 0,
+					"destroyed": 0,
+					"keptKgBefore": 0,
+					"destroyedKgBefore": 0
+				},
 				"inFlight": 9,
 				"inFlightClients": 1,
 				"inFlightSeries": [

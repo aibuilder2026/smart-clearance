@@ -120,7 +120,7 @@ class ExitState(Shape):
 class Profile(Shape):
     route: Literal["distributors", "modern-trade", "own"]
     owner: Literal["distributor", "manufacturer"]
-    expiry: Literal["full-credit", "price-support", "none"]
+    expiry: Literal["godown", "full-credit", "price-support", "none"]
 
 
 class Gates(Shape):
@@ -280,6 +280,24 @@ class UploadLinkOut(Shape):
     expires_at: str
 
 
+class DestructionAgency(Shape):
+    id: str = Field(max_length=40)
+    name: str = Field(max_length=120)
+    city: str = Field(max_length=80)
+    auth: str = Field(max_length=80)
+
+
+class DestructionConfig(Shape):
+    """how a client has expired packs destroyed at a distributor's godown (SC-139; Channels and rules)"""
+
+    vision_check: bool
+    reviewer: str = Field(max_length=80)
+    remind_days: int
+    gross_up: bool
+    charges_per_unit: float
+    agencies: list[DestructionAgency]
+
+
 class ClientOut(Shape):
     id: str
     name: str
@@ -310,6 +328,8 @@ class ClientOut(Shape):
     approver: str | None
     agents: dict[str, AgentConfig]
     first_export: FirstExportOut | None
+    # how expired packs left at a godown are destroyed there (SC-139); null for a client whose policy does not
+    destruction: DestructionConfig | None = None
 
 
 class Staff(Shape):
@@ -377,6 +397,21 @@ class DayFigures(Shape):
     closed: int
     units: int
     runs: int
+    # the food the batches closed that day kept out of landfill (sold or given) and destroyed, in kilos, and the packs
+    # they destroyed (SC-149)
+    kept_kg: float
+    destroyed_kg: float
+    destroyed: int
+
+
+class FoodFigures(Shape):
+    """the food closed batches kept out of landfill and destroyed over the range, and over the range before (SC-149)"""
+
+    kept_kg: float
+    destroyed_kg: float
+    destroyed: int
+    kept_kg_before: float
+    destroyed_kg_before: float
 
 
 class Waiting(Shape):
@@ -411,6 +446,7 @@ class Dashboard(Shape):
     recovered: float
     recovered_before: float
     by_day: list[DayFigures]
+    food: FoodFigures
     in_flight: int
     in_flight_clients: int
     in_flight_series: list[int]
@@ -515,6 +551,7 @@ class OverrideInput(Shape):
 class RulesInput(Shape):
     rules: Rules
     exits: dict[ExitId, ExitState]
+    destruction: DestructionConfig | None = None
 
 
 class InviteInput(Shape):

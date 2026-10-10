@@ -16,6 +16,7 @@ from sc_agents.models import RECORDINGS
 WRITERS: dict[str, type[BaseModel]] = {
     "data_map": data.Mappings,
     "vision_read": vision.LabelRead,
+    "vision_destruction": vision.DestructionRead,
     "valuer_write": valuer.Notes,
     "router_write": router.Explanation,
     "lister_write": lister.Listing,

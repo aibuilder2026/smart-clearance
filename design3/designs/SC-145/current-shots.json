@@ -1,0 +1,20 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-145/current/mockup.html?who=rakesh&theme=light#/orders",
+  "out": "current/orders-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "full": false,
+  "height": 1200
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-145/current/mockup.html?who=rakesh&theme=light#/batches",
+  "out": "current/batches-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "full": false,
+  "height": 1300
+ }
+]

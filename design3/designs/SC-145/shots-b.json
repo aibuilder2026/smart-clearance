@@ -1,0 +1,67 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-145/option-b/mockup.html?who=rakesh&theme=light#/orders",
+  "out": "option-b/orders-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "full": false,
+  "height": 1250
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-145/option-b/mockup.html?who=rakesh&theme=light#/batches",
+  "out": "option-b/batches-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "full": false,
+  "height": 1350
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-145/option-b/mockup.html?who=rakesh&theme=dark#/orders",
+  "out": "option-b/orders-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2200,
+  "full": false,
+  "height": 1250
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-145/option-b/mockup.html?who=rakesh&theme=light#/orders",
+  "out": "option-b/orders-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2200,
+  "full": false,
+  "height": 1700
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-145/option-b/mockup.html?who=rakesh&theme=light#/batches",
+  "out": "option-b/batches-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2200,
+  "full": false,
+  "height": 1700
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-145/option-b/mockup.html?who=rakesh&theme=light#/batches",
+  "out": "option-b/sheet-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "full": false,
+  "height": 1000,
+  "js": "[...document.querySelectorAll('button')].find(b=>b.textContent.includes('How this adds up')).click()"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-145/option-b/mockup.html?who=rakesh&theme=light#/batches",
+  "out": "option-b/sheet-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2200,
+  "full": false,
+  "height": 1300,
+  "js": "[...document.querySelectorAll('button')].find(b=>b.textContent.includes('How this adds up')).click()"
+ }
+]

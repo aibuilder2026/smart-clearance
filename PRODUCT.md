@@ -14,7 +14,7 @@ Installable PWA: SvelteKit 3 + Svelte 5 (adapter-static) on Firebase Hosting, Fi
 
 ## Business Model
 
-Smart-Clearance is sold to manufacturers as software as a service. Each client gets a workspace at its own address (`<client>.smartclearance.com`), set up for its supply chain: its route to market, who owns short-dated stock, its expiry policy, the exits it allows, its territory guard and how its people sign in. The prototype is Munchly Foods' workspace at munchly.smartclearance.com. A smartclearance.com landing page and a super-admin console for managing client workspaces and their users are planned (SC-25).
+Smart-Clearance is sold to manufacturers as software as a service. Each client gets a workspace at its own address (`<client>-smartclearance.web.app`), set up for its supply chain: its route to market, who owns short-dated stock, its expiry policy, the exits it allows, its territory guard and how its people sign in. The prototype is Munchly Foods' workspace at munchly-smartclearance.web.app. A smartclearance.web.app landing page and a super-admin console for managing client workspaces and their users are planned (SC-25).
 
 ## Users
 
@@ -45,14 +45,14 @@ The only tool that combines the quick-commerce shelf-life gates (Blinkit 90+ day
 ## Capabilities and Constraints
 
 - Screens in design v3 (design3/, current): one set of role screens shared by the guided demo and the app, inside Munchly's workspace.
-  - Sign-in at munchly.smartclearance.com: email or phone first, Google Workspace for munchly.in, a one-time code for invited numbers, joining on a first invitation, "Find your workspace", a workspace sheet inside the app.
+  - Sign-in at munchly-smartclearance.web.app: email or phone first, Google Workspace for munchly.in, a one-time code for invited numbers, joining on a first invitation, "Find your workspace", a workspace sheet inside the app.
   - Brand: Setup (S0, with the territory guard, the distributors' permissions and the return window), Command Center (S1), Route Room with label, five channels, split, money and the approve sheet (S2), Execution with the listing API card, kirana orders on the cluster map, negotiation, the Mango Drink donation and the day-7 shelf check (S3), Batches.
   - Distributor: Today (one-time permission with pause, the plan, the van, the Raipur lot, the invoice draft, ending whole), label photo camera, van route, orders.
   - Kirana: offers in Hindi with an English toggle, offer and order with margin, orders.
   - ExpireSoon buyer, in ExpireSoon's own violet look and outside the workspace: marketplace, lot ES-24117 with bid panel and seller chat, my bids (S4).
   - Food bank: pickups with the FSSAI checklist. The papers and the ledger are the operator's: Paperwork with each document on paper and "who keeps what" (S5), and the Ledger with the BRSR export (S6).
   - Admin: Workspace (sign-in, supply-chain profile, distributors, branding), users, guardrails, integrations, audit. Every role: inbox and profile.
-  - The guided demo plays the nine journey stages as beats on a laptop (its address bar at munchly.smartclearance.com) and a phone running these screens, with both sign-ins in stage 1, lock-screen pushes and narration; the app adds sign-in, a person switcher and agents that run live.
+  - The guided demo plays the nine journey stages as beats on a laptop (its address bar at munchly-smartclearance.web.app) and a phone running these screens, with both sign-ins in stage 1, lock-screen pushes and narration; the app adds sign-in, a person switcher and agents that run live.
 - Screens in design v2 (design2/, superseded): the sheet (Today), batch detail tabs, Approvals, Orders, Partners, Reports and the role surfaces of the label world.
 - Money shown before any yes; nothing is listed, messaged or shipped before the approval tap, and nothing in the distributor's name before his one-time permission. ITC on donations is reversed as a rule; disposal, EPR and CO₂e factors are labelled indicative.
 - Medicines are out of scope. ExpireSoon and the food-bank partner are mocked in the prototype.

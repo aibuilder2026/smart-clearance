@@ -106,7 +106,7 @@
 		signPhone: true,
 		route: 'distributors',
 		owner: 'distributor',
-		expiry: 'full-credit',
+		expiry: 'godown',
 		exitOff: {},
 		preset: 'standard',
 		adminName: '',
@@ -182,7 +182,7 @@
 </script>
 
 {#snippet mark(size: number)}<WorkspaceMark ws={preview} {size} />{/snippet}
-{#snippet address()}<span class="mono t-footnote">{slug}.smartclearance.com</span>{/snippet}
+{#snippet address()}<span class="mono t-footnote">{slug}-smartclearance.web.app</span>{/snippet}
 
 <Screen
 	title="New client"
@@ -253,7 +253,7 @@
 									set({ slug: v, slugTouched: true });
 								}}
 								spellcheck={false}
-							/><span class="mono t-footnote subtle">.smartclearance.com</span></span
+							/><span class="mono t-footnote subtle">-smartclearance.web.app</span></span
 						></Field
 					>
 					<Field

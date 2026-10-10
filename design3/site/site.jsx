@@ -1,4 +1,4 @@
-// Smart-Clearance v3 · smartclearance.com: the product's own landing page, independent of any client (SC-60, refined in
+// Smart-Clearance v3 · smartclearance.web.app: the product's own landing page, independent of any client (SC-60, refined in
 // SC-78, SC-111). The journey through one day at the miniature business on film under the heading, in four acts, with a
 // strip reading its chapters;
 // a statement that fills in as it is read; the agents at work on the table, one in focus at a time; the product's
@@ -84,31 +84,26 @@
   function NavLinks({ active }) {
     return <nav className="nav-links" aria-label="Sections">{SECTIONS.map(([id, t]) => <a key={id} href={"#" + id} className={cx(active === id && "on")} aria-current={active === id ? "location" : undefined}><span className="nav-t">{t}</span></a>)}</nav>;
   }
-  function Nav({ onFind, onDemo }) {
-    const app = useApp(); const [menu, setMenu] = useState(false); const [sheet, setSheet] = useState(false); const desk = app.bp === "desktop";
+  function Nav() {
+    const app = useApp(); const [sheet, setSheet] = useState(false); const desk = app.bp === "desktop";
     const active = useActiveSection(SECTIONS.map(s => s[0]));
     const { scrollYProgress } = useScroll(); const reduce = useReducedMotion();
-    const signInItems = [
-      { label: "Sign in to", heading: true },
-      { label: "Find your workspace", icon: "search", onClick: onFind },
-      "-",
-      { label: "Smart-Clearance staff", icon: "shield", onClick: () => open(LINKS.console) },
-    ];
     return <header className="site-nav">
       <div className="nav-in">
         <a className="nav-brand" href="#top" aria-label="Smart-Clearance, back to the top"><span className="nav-mark"><Mark size={30} /></span><Wordmark size={16} /></a>
         {desk && <NavLinks active={active} />}
         <span className="nav-actions">
           <span className="nav-mode"><ModeMenuButton /></span>
-          <span className="nav-signin"><button type="button" className="nav-text" aria-haspopup="menu" aria-expanded={menu} onClick={() => setMenu(m => !m)}>Sign in</button><Menu open={menu} onClose={() => setMenu(false)} items={signInItems} width={268} label="Sign in to" /></span>
-          {app.bp !== "phone" ? <Button variant="primary" pill className="nav-demo" onClick={() => onDemo()}>Book a demo</Button> : <IconButton icon="menu" label="Menu" onClick={() => setSheet(true)} />}
+          <a className="nav-text" {...linkProps(LINKS.console)}>Console</a>
+          {app.bp !== "phone" ? <a className="btn btn-primary btn-pill nav-go" {...linkProps(LINKS.app)}>Workspace</a> : <IconButton icon="menu" label="Menu" onClick={() => setSheet(true)} />}
         </span>
       </div>
       <motion.span className="nav-progress" aria-hidden="true" style={{ scaleX: reduce ? 0 : scrollYProgress }} />
       <Sheet open={sheet} onClose={() => setSheet(false)} title="Smart-Clearance" side="bottom" detent="medium">
         <div className="stack">
           <div className="list">{SECTIONS.map(([id, t]) => <button type="button" key={id} className="list-row" onClick={() => { setSheet(false); setTimeout(() => goTo(id), 60); }}><span className="lr-main"><span className="lr-title">{t}</span></span><Icon name="chevron-right" size={18} className="chev" /></button>)}</div>
-          <Button variant="primary" size="lg" block onClick={() => { setSheet(false); onDemo(); }}>Book a demo</Button>
+          <a className="btn btn-primary btn-lg btn-block" {...linkProps(LINKS.app)} onClick={() => setSheet(false)}>Workspace</a>
+          <a className="btn btn-secondary btn-lg btn-block" {...linkProps(LINKS.console)} onClick={() => setSheet(false)}>Console</a>
         </div>
       </Sheet>
     </header>;
@@ -503,9 +498,9 @@
   };
   const CONN = ["dms", "tally", "bq", "sso", "expiresoon", "irp", "whatsapp"].map(id => P.CONNECTORS.find(c => c.id === id)).filter(Boolean);
   const ADDR = [
-    { id: "brand", url: "your-brand.smartclearance.com", live: true },
-    { id: "company", url: "your-company.smartclearance.com" },
-    { id: "group", url: "your-group.smartclearance.com" },
+    { id: "brand", url: "your-brand-smartclearance.web.app", live: true },
+    { id: "company", url: "your-company-smartclearance.web.app" },
+    { id: "group", url: "your-group-smartclearance.web.app" },
   ];
   const YOURS = { id: "yours", name: "Your brand", mark: { from: "#2fbf7f", to: "#0d5a3e", ink: "#ffffff" } };
   function useTyped(text, on, ms = 70) {
@@ -560,12 +555,12 @@
       <div className="wsd-title"><h3>{team.t}</h3><p>{team.d}</p></div>
       <AnimatePresence mode="wait"><motion.div key={team.id} className="wsd-body" initial={reduce ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.28, ease: EASE }}><TeamScreen id={team.id} />{!phone && <TeamFeed id={team.id} />}</motion.div></AnimatePresence>
     </div>;
-    const url = `https://${host || "·"}.smartclearance.com/${team.route}`;
+    const url = `https://${host || "·"}-smartclearance.web.app/${team.route}`;
     return <section id="teams" className="sec sec-ws" aria-labelledby="ws-h">
       <div className="wrap"><header className="sec-head"><h2 id="ws-h" className="sec-h plain">Your own workspace, set up for your supply chain.</h2><p className="sec-sub">Each manufacturer gets its own address, configured for how its stock really moves.</p></header></div>
       <div className="wsd-stage" ref={ref}>
         <div className="wsd-ground" aria-hidden="true" />
-        {phone ? <div className="wsd-phone" style={{ height: 868 * ps }}><div className="wsd-phone-in" style={{ transform: `scale(${ps})` }}><PhoneFrame time="09:41"><div className="wsd phone"><div className="wsd-addr"><Icon name="lock" size={11} stroke={2.2} />{host || "·"}.smartclearance.com</div>{rail}{main}</div></PhoneFrame></div></div>
+        {phone ? <div className="wsd-phone" style={{ height: 868 * ps }}><div className="wsd-phone-in" style={{ transform: `scale(${ps})` }}><PhoneFrame time="09:41"><div className="wsd phone"><div className="wsd-addr"><Icon name="lock" size={11} stroke={2.2} />{host || "·"}-smartclearance.web.app</div>{rail}{main}</div></PhoneFrame></div></div>
           : <WindowFrame url={url} style={{ width: "100%" }}><div className="wsd">{rail}{main}</div></WindowFrame>}
       </div>
       <div className="wrap">
@@ -659,7 +654,7 @@
     useEffect(() => { const f = () => setScrolled(window.scrollY > 40); f(); window.addEventListener("scroll", f, { passive: true }); return () => window.removeEventListener("scroll", f); }, []);
     const onDemo = plan => setDemo({ plan: typeof plan === "string" ? plan : null });
     return <div className={cx("site", scrolled && "scrolled")} id="top">
-      <Nav onFind={() => setFind(true)} onDemo={onDemo} />
+      <Nav />
       <main>
         <Hero onDemo={onDemo} />
         <Statement id="how" text="Short-dated stock that quick commerce sent back. Priced to every exit, the bin included. Sold in the days it has left." />

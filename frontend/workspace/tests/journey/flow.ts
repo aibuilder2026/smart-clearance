@@ -50,6 +50,8 @@ export type Case = {
 		units?: number | null;
 		amount?: number | null;
 		reversed?: number | null;
+		/** the destruction certificate of packs destroyed at his godown (SC-139), the agency's */
+		at?: string | null;
 	}[];
 	donation: { status: string; partner: string | null; units: number } | null;
 	moments: { van: { leavesAt: string | null } };
@@ -57,8 +59,26 @@ export type Case = {
 	feed: { key: string; text: string }[];
 	kiranas: { id: string; name: string }[];
 	realised: { lines: { id: string; units: number }[]; godown: number } | null;
-	/** expiry day's settlement of the packs left at the godown (SC-94) */
-	expiry: { policy: string; units: number; credit: number | null; destroyedBy: string | null } | null;
+	/** expiry day's settlement of the packs left at the godown (SC-94); under route B (SC-139) with the note's amount */
+	expiry: {
+		policy: string;
+		units: number;
+		credit: number | null;
+		amount?: number | null;
+		gst?: number;
+		charges?: number;
+		destroyedBy: string | null;
+	} | null;
+	/** packs destroyed at his godown (SC-139): the evidence he sent, Vision's checks and the operator's yes */
+	destruction?: {
+		status: string;
+		units: number;
+		reason: string | null;
+		agency: { id: string; name: string } | null;
+		certificate: string | null;
+		checks: { id: string; label: string; ok: boolean }[];
+		approvedBy: string | null;
+	} | null;
 };
 
 /** one step of a flow: it acts in the UI, then waits for what follows from it */

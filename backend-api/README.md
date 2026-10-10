@@ -198,6 +198,25 @@ by the agents in `agents/`. The contract is `frontend/api/src/types/workspace.ts
   kiranas order, the buyer bids and the Negotiator answers, the distributor dispatches, Paperwork drafts the papers,
   and Impact posts the ledger. Every step is one change with its timeline entry, its
   pushes, its audit line and the agents' next event; nothing here acts for a person.
+- **Packs left at the godown on expiry day** settle by the client's expiry policy (`clients.expiry`, the console's
+  Client profile). Under `godown` (SC-139, migration 0011) the distributor destroys them at his godown through an
+  authorised agency on the client's list (`clients.destruction`, the console's Rules). The case's `destruction` walks
+  `requested`, `reading`, `checked` (or `asked` again), then `approved`:
+  - he sends two photos (signed uploads) and the agency's certificate number;
+  - Vision checks them (`POST /internal/…/destruction/check`);
+  - the operator approves or asks again.
+
+  A `destruction.remind` timer nudges him after `remindDays`. Impact reports only on the yes. The expiry credit note is
+  then the dealer price plus the input GST he reverses on the packs (grossed up) plus the agency's charges, and the
+  destruction certificate is the agency's. The client keeps its own input GST. The history's three leftover batches
+  were destroyed this way, with their photos (`reference/evidence/`).
+- **A batch's record** (SC-142, `services/journey/record.py`, `GET …/cases/{ref}/record`, for those who read the
+  ledger): every step of its case, the agents' runs from its feed and each person's decision from the audit log in
+  their name, the kiranas' orders folded into one row. The audit log keeps wall time, so the case's lines are the
+  batch's from when it opened (wall time) to its next case, and each person's step is placed on the journey's clock
+  between the feed's moments around it. The distributor's facts carry the label photo he sent (`views.label_out`).
+  `hydrate.sh --photos CLIENT` puts the history's label photos (`reference/labels/`) in the photos bucket for a
+  workspace built before them.
 - **The money is money.js's** (`domain/money.py`); an agent brings only words (a reason, an offer, a reply), held to the
   computed figures, and a template stands in for whatever it gets wrong (`domain/copy.py`).
 - **What a member sees** is cut to their role on the server (`services/journey/views.py`): the buyer never sees the

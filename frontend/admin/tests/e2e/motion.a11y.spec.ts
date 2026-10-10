@@ -64,7 +64,7 @@ const STATES: [string, (page: Page) => Promise<void>][] = [
 	[
 		'site · Book a demo open',
 		async (p) => {
-			await p.locator('.site-nav').getByRole('button', { name: 'Book a demo' }).click();
+			await p.locator('.film-ctas').getByRole('button', { name: 'Book a demo' }).click();
 		}
 	]
 ];

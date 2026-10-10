@@ -99,6 +99,8 @@ def cut_case(c: dict[str, Any]) -> dict[str, Any]:
         "photoObject": c.get("photoObject"),
         "photosBucket": c.get("photosBucket"),
         "docsBucket": c.get("docsBucket"),
+        # packs destroyed at his godown (SC-139): where the evidence stands, for Vision's check; nothing of its figures
+        "destruction": {"status": (c.get("destruction") or {}).get("status")} if c.get("destruction") else None,
     }
 
 

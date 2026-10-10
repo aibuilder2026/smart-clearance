@@ -23,10 +23,12 @@ import {
 	type WsAuditRow,
 	type WsLedger,
 	type WsPartner,
+	type WsRecord,
 	type WsRules
 } from '@smart-clearance/api/workspace';
 import type {
 	ActionArg,
+	BatchRecord,
 	CaseData,
 	CaseTab,
 	Ledger,
@@ -54,6 +56,7 @@ import {
 	emptyState,
 	focusRef,
 	partnerOf,
+	photosOfCase,
 	publicOf,
 	stateOf,
 	userOf
@@ -103,6 +106,9 @@ export class LiveSource implements WorkspaceSource {
 	/** the ledger's batch pages asked for (SC-121), and what backend-api answered for each */
 	#paged = new SvelteSet<string>();
 	#pages = new SvelteMap<string, CaseDetail>();
+	// the batches whose record is open (SC-142), and each as backend-api last wrote it
+	#recorded = new SvelteSet<string>();
+	#records = new SvelteMap<string, WsRecord>();
 	#audit = $state<WsAuditRow[]>([]);
 	#asked = $state<string | null>(null);
 	#phase = $state<SourceStatus['phase']>('loading');
@@ -196,6 +202,33 @@ export class LiveSource implements WorkspaceSource {
 		this.#paged.add(ref);
 		void this.#readPage(ref);
 	};
+	/** a batch's record (SC-142): its steps as backend-api writes them, its photos from its case, each photo with who sent
+	 *  it from the step that sent it */
+	record(ref: string): BatchRecord | null {
+		const r = this.#records.get(ref);
+		if (!r) return null;
+		const d = this.#pages.get(ref) ?? [this.#focus, this.#second].find((c) => c?.ref === ref) ?? null;
+		const by = (key: string) => r.steps.find((x) => x.key === key)?.who.name ?? '';
+		const photos = (d ? photosOfCase(d) : []).map((p) => ({
+			...p,
+			by: by(p.id === 'label' ? 'photo.send' : 'destruction.send')
+		}));
+		return { ref, steps: r.steps, photos };
+	}
+	openRecord = (ref: string) => {
+		this.openPage(ref);
+		if (this.#recorded.has(ref)) return;
+		this.#recorded.add(ref);
+		void this.#readRecord(ref);
+	};
+	async #readRecord(ref: string) {
+		const r = await this.#api.record(ref).catch((e) => {
+			if (refusalOf(e) === 'not-found' || refusalOf(e) === 'forbidden') return null;
+			this.#error = e;
+			return null;
+		});
+		if (r && this.#recorded.has(ref)) this.#records.set(ref, r);
+	}
 	async #readPage(ref: string) {
 		const d = await this.#api.case(ref).catch((e) => {
 			if (refusalOf(e) === 'not-found' || refusalOf(e) === 'forbidden') return null;
@@ -322,6 +355,9 @@ export class LiveSource implements WorkspaceSource {
 		}
 		// a batch page open in the ledger reads its batch again when it changes (SC-121)
 		if (e.ref && this.#paged.has(e.ref) && (e.type === 'case' || e.type === 'ledger')) void this.#readPage(e.ref);
+		// and a batch's open record, when it moves on (SC-142)
+		if (e.ref && this.#recorded.has(e.ref) && (e.type === 'case' || e.type === 'feed' || e.type === 'ledger'))
+			void this.#readRecord(e.ref);
 		// a partner's history moves with its batches: an order, a pickup, a paper (SC-130)
 		if (e.type === 'ledger') return this.#want({ ledger: true, partner: true });
 		if (e.type === 'audit') return this.#want({ audit: true });
@@ -387,6 +423,7 @@ export class LiveSource implements WorkspaceSource {
 		this.#wanted = { snapshot: true, cases: [], ledger: true, audit: true, partner: true };
 		await this.#read();
 		for (const ref of this.#paged) void this.#readPage(ref);
+		for (const ref of this.#recorded) void this.#readRecord(ref);
 		if (!this.#snap) throw this.#error ?? new Error('The workspace did not load.');
 	}
 
@@ -628,6 +665,43 @@ export class LiveSource implements WorkspaceSource {
 				return this.#send(name, () => api.issueInvoice(ref, 'invoice'));
 			case 'review':
 				return this.#send(name, () => api.review(ref));
+			// packs destroyed at his godown (SC-139): both photos to their signed links, then the evidence for Vision
+			case 'sendDestruction': {
+				const x = arg as ActionArg<'sendDestruction'>;
+				return this.#send(name, async () => {
+					if (!x.before || !x.after) throw new ApiError(422, 'Take or upload both photos first.');
+					const photo = (which: 'before' | 'after', file: Blob) =>
+						this.#put_(`destruction:${which}:${ref}`, file, 'image/jpeg', {
+							link: (input) => api.destructionPhoto(ref, which, input),
+							done: async (id) => id
+						});
+					const before = await photo('before', x.before);
+					const after = await photo('after', x.after);
+					return api.sendDestruction(ref, {
+						agency: x.agency.id,
+						certificate: x.certificate,
+						photos: { before, after }
+					});
+				});
+			}
+			case 'approveDestruction':
+				return this.#send(
+					name,
+					() => api.approveDestruction(ref),
+					this.#show((c) => {
+						if (c.destruction) c.destruction = { ...c.destruction, status: 'approved', approvedAt: this.#now() };
+					})
+				);
+			case 'askDestructionAgain': {
+				const reason = arg as string;
+				return this.#send(
+					name,
+					() => api.askDestructionAgain(ref, reason),
+					this.#show((c) => {
+						if (c.destruction) c.destruction = { ...c.destruction, status: 'asked', reason };
+					})
+				);
+			}
 			case 'join':
 				// an invited member joins by signing in for the first time: nothing to send
 				return;
@@ -652,15 +726,15 @@ export class LiveSource implements WorkspaceSource {
 	}
 
 	/** a file to a signed link with its progress under its key, then the backend told it arrived; stoppable */
-	async #put_(
+	async #put_<T = ActionResult>(
 		key: string,
 		file: Blob,
 		type: string,
 		to: {
 			link: (i: { contentType: string; bytes: number; fileName?: string }) => Promise<UploadLink>;
-			done: (id: string) => Promise<ActionResult>;
+			done: (id: string) => Promise<T>;
 		}
-	) {
+	): Promise<T> {
 		const stop = new AbortController();
 		this.#aborts.set(key, stop);
 		this.#uploads.set(key, 0);

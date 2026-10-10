@@ -35,7 +35,9 @@
 		<PtLine k="What you receive" v={fmt.inr(w.recv)} strong />
 		<PtLine
 			k="What you paid"
-			sub={`${fmt.num(w.units)} × ₹${w.dp}, the van and the listing fee`}
+			sub={w.extra
+				? `${fmt.num(w.units)} × ₹${w.dp}, the van, the listing fee, the GST you reverse and the agency's charges`
+				: `${fmt.num(w.units)} × ₹${w.dp}, the van and the listing fee`}
 			v={fmt.inr(-w.paid)}
 		/>
 		<PtLine k="Your gain or loss" v={fmt.inr(w.gain)} strong />

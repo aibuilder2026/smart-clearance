@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-145 The distributor's figures</title>
+<meta name="description" content="Three ways for a distributor's Batches and Orders to show how their figures add up: what the batches cost him, what he sold and what the client credited him.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<link rel="stylesheet" href="board.css">
+<body>
+<main class="wrap">
+<h1>The distributor's figures</h1>
+<p class="lede">SC-145 · Munchly's workspace · three ways for Rakesh Traders' <b>Batches</b> and <b>Orders</b> to show how their figures add up. The figures stay as they are; what changes is that each page says what its figure is part of.</p>
+<p>The maintainer (10 Oct):</p>
+<blockquote><ul><li>“For batches and order, this value is differing for distributors please check this and fix.”</li><li>“If they are correct or not triage it, if all good leave it... but UI should have a way to know what the calculations show.”</li></ul></blockquote>
+
+<h2>The triage: the figures are correct</h2>
+<p>Every batch he cleared ends whole to the paisa: <b>what he sold from it plus what Munchly credited him is what it cost him</b>. The two pages each lead with a different part of that sum, and neither shows the sum itself:</p>
+<div class="shared">
+<div class="card"><h3 class="sub">Batches · ₹66,918</h3><p>What Munchly <b>credited</b> him since July: the price support, and the expiry credit where packs expired (8 credit notes). Each batch row shows its credit: the Peanut Chikki, MF-2407-116, <b>₹7,821</b>.</p></div>
+<div class="card"><h3 class="sub">Orders · ₹1,05,928</h3><p>What he <b>sold</b> from the same six batches: 115 kiranas' scheme orders, 5 ExpireSoon lots and a staff sale. Each batch shows its sales: the Peanut Chikki, <b>₹14,640</b>.</p></div>
+<div class="card"><h3 class="sub">Together · ₹1,72,846</h3><p>What the six batches <b>cost</b> him at the dealer price: ₹1,05,928 + ₹66,918. For the Peanut Chikki, ₹14,640 + ₹7,821 = <b>₹22,461</b>. Lakshmi Agencies is the same: ₹1,19,975 + ₹64,377 = ₹1,84,352.</p></div>
+</div>
+
+<h2>What the workspace shows today</h2>
+<div class="desks">
+<figure><img src="current/orders-1440-light.webp" width="1440" height="1200" loading="lazy" alt="Today: Rakesh's Orders, led by ₹1,05,928 sold."><figcaption>Rakesh · Orders · ₹1,05,928 sold</figcaption></figure>
+<figure><img src="current/batches-1440-light.webp" width="1440" height="1300" loading="lazy" alt="Today: Rakesh's Batches, led by ₹66,918 credited."><figcaption>Rakesh · Batches · ₹66,918 credited</figcaption></figure>
+</div>
+
+<h2>In every option</h2>
+<div class="shared">
+<div class="card"><h3 class="sub">The same figures</h3><p>Every figure is ledger.js's partners, as today: nothing is worked out again, and the batch's Money tab (You end whole) still shows every line of its sum.</p></div>
+<div class="card"><h3 class="sub">One sum, named</h3><p>Both pages say what their figure is part of: <b>cost = sold + credited</b>, and that he ended whole, ₹0 on every batch.</p></div>
+<div class="card"><h3 class="sub">Lakshmi Agencies too</h3><p>Every distributor's portal reads the same; the stills are Rakesh Traders'.</p></div>
+</div>
+
+<h2>The options</h2>
+<section class="opt rec" id="option-a"><header><h3>Option A · The same sum on both pages</h3><span class="tag">Recommended</span></header>
+<p>Batches and Orders open with <b>one card that reads the same on both</b>: what the cleared batches cost him <b>=</b> what he sold <b>+</b> what Munchly credited him. The page's own part is marked “this page”; the other links to its page; a bar shows the split. Every batch carries <b>its own sum</b> the same way: on Batches its credit leads (“₹7,821 credited + ₹14,640 sold = ₹22,461”), on Orders its sales.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>Nothing to open: the sum is on the page, the first thing read.</li><li>Each row answers “why is this number different from the other page” on its own line.</li><li>A bigger card at the top of both pages.</li></ul></dd></dl>
+<div class="desks"><figure><img src="option-a/orders-1440-light.webp" width="1440" height="1250" loading="lazy" alt="Option A: Orders with the sum card and each batch's sum."><figcaption>Orders · light</figcaption></figure><figure><img src="option-a/batches-1440-light.webp" width="1440" height="1350" loading="lazy" alt="Option A: Batches with the same sum card, credited marked."><figcaption>Batches · light</figcaption></figure></div>
+<div class="desks"><figure><img src="option-a/orders-1440-dark.webp" width="1440" height="1250" loading="lazy" alt="Option A: Orders in dark."><figcaption>Orders · dark</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-a/orders-390-light.webp" width="780" height="3400" loading="lazy" alt="Option A: Orders on a phone."><figcaption>Orders · phone</figcaption></figure><figure><img src="option-a/batches-390-light.webp" width="780" height="3400" loading="lazy" alt="Option A: Batches on a phone."><figcaption>Batches · phone</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="option-a/mockup.html?who=rakesh#/orders">Open option A</a><a class="btn" href="option-a/mockup.html?who=rakesh#/batches">Batches</a></div>
+</section>
+<section class="opt" id="option-b"><header><h3>Option B · How this adds up, on request</h3></header>
+<p>Each page keeps <b>its own figure</b> as today (Batches: credited; Orders: sold). Its card gains <b>How this adds up</b>, which opens one sheet, the same from both pages: every cleared batch with what it cost him, what he sold, what was credited and how he ended, and the totals. The two pages' figures are two columns of one table.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>The pages change least.</li><li>The whole working in one table, batch by batch.</li><li>It takes a tap to find, and the rows still show different figures on the two pages.</li></ul></dd></dl>
+<div class="desks"><figure><img src="option-b/sheet-1440-light.webp" width="1440" height="1000" loading="lazy" alt="Option B: the How this adds up sheet over Batches."><figcaption>How this adds up · from Batches</figcaption></figure><figure><img src="option-b/orders-1440-light.webp" width="1440" height="1250" loading="lazy" alt="Option B: Orders with How this adds up."><figcaption>Orders · light</figcaption></figure></div>
+<div class="desks"><figure><img src="option-b/orders-1440-dark.webp" width="1440" height="1250" loading="lazy" alt="Option B: Orders in dark."><figcaption>Orders · dark</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-b/sheet-390-light.webp" width="780" height="2600" loading="lazy" alt="Option B: the sheet on a phone."><figcaption>The sheet · phone</figcaption></figure><figure><img src="option-b/batches-390-light.webp" width="780" height="3400" loading="lazy" alt="Option B: Batches on a phone."><figcaption>Batches · phone</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="option-b/mockup.html?who=rakesh#/batches">Open option B</a><a class="btn" href="option-b/mockup.html?who=rakesh#/orders">Orders</a></div>
+</section>
+<section class="opt" id="option-c"><header><h3>Option C · One figure on both pages</h3></header>
+<p>Both pages lead with <b>the same figure</b>: what came back to him from the batches he cleared, all they cost him (₹1,72,846), then where it came from as a bar and two parts, sold (Orders) and credited (Batches). Every batch reads the same on both pages: “₹22,461 back”, its split, and its two parts.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>The pages agree outright: the same figure at the top and on every row.</li><li>Leads with what he got back, the figure a distributor cares about.</li><li>Neither page leads with its own subject any more: Orders' sales and Batches' credit become the smaller line.</li></ul></dd></dl>
+<div class="desks"><figure><img src="option-c/orders-1440-light.webp" width="1440" height="1250" loading="lazy" alt="Option C: Orders led by what came back."><figcaption>Orders · light</figcaption></figure><figure><img src="option-c/batches-1440-light.webp" width="1440" height="1350" loading="lazy" alt="Option C: Batches led by the same figure."><figcaption>Batches · light</figcaption></figure></div>
+<div class="desks"><figure><img src="option-c/orders-1440-dark.webp" width="1440" height="1250" loading="lazy" alt="Option C: Orders in dark."><figcaption>Orders · dark</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-c/orders-390-light.webp" width="780" height="3400" loading="lazy" alt="Option C: Orders on a phone."><figcaption>Orders · phone</figcaption></figure><figure><img src="option-c/batches-390-light.webp" width="780" height="3400" loading="lazy" alt="Option C: Batches on a phone."><figcaption>Batches · phone</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="option-c/mockup.html?who=rakesh#/orders">Open option C</a><a class="btn" href="option-c/mockup.html?who=rakesh#/batches">Batches</a></div>
+</section>
+
+<h2>Side by side</h2>
+<div class="tablewrap"><table class="cmp"><thead><tr><th></th><th>A · The same sum on both pages</th><th>B · How this adds up, on request</th><th>C · One figure on both pages</th></tr></thead><tbody>
+<tr><th>At the top</th><td>cost = sold + credited, the page's part marked</td><td>The page's own figure, as today, and How this adds up</td><td>What came back (the cost), split into sold and credited</td></tr>
+<tr><th>Each batch</th><td>Its own sum, the page's part first</td><td>As today; the table in the sheet</td><td>The same figure on both pages, with its split</td></tr>
+<tr><th>Seen without a tap</th><td>Yes</td><td>No: one tap</td><td>Yes</td></tr>
+<tr><th>What changes most</th><td>The top card of both pages; each row's figure gains a line</td><td>A button and a sheet</td><td>The figure both pages lead with</td></tr>
+</tbody></table></div>
+
+<h2>Recommended: option A</h2>
+<div class="rec-box"><p><b>The same sum on both pages</b> answers the question where it was asked: each page keeps its own subject (what sold, what was credited) and says, on the page and on every row, what it is part of and where the rest is. Nothing to open, and the two pages read as two halves of one sum.</p></div>
+
+<div class="q" style="margin-top:20px"><h3>To decide</h3><ul><li>Which option to build.</li></ul></div>
+
+<footer>Smart-Clearance · SC-145 · every company, person and figure fictional · the figures are core/ledger.js's partners and core/money.js's · mockups on design system v3, the workspace on its stub at the story's end</footer>
+</main>
+</body>
+</html>

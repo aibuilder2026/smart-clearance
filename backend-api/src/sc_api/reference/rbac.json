@@ -66,6 +66,10 @@
 			"description": "Send a batch's label photo"
 		},
 		{
+			"id": "destruction.send",
+			"description": "Send the evidence of expired packs destroyed at the godown (SC-139)"
+		},
+		{
 			"id": "plan.approve",
 			"description": "Approve a plan (the client's approver only)"
 		},
@@ -100,6 +104,10 @@
 		{
 			"id": "docs.review",
 			"description": "Review the client's papers"
+		},
+		{
+			"id": "destruction.approve",
+			"description": "Approve the destruction of expired packs at a distributor's godown, or ask again (SC-139)"
 		},
 		{
 			"id": "report.read",
@@ -193,6 +201,7 @@
 				"plan.approve",
 				"docs.read",
 				"docs.review",
+				"destruction.approve",
 				"report.read"
 			]
 		},
@@ -206,6 +215,7 @@
 				"setup.upload",
 				"distributor.permit",
 				"photo.send",
+				"destruction.send",
 				"dispatch.manage",
 				"staff.record",
 				"invoice.issue",

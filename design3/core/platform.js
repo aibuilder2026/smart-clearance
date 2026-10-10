@@ -5,7 +5,7 @@
 (function () {
   const D = window.SC3_DATA, M = window.SC3_MONEY, AppStore = window.SC3_STORE;
   const R = M.RULES;
-  const KEY = "sc3-platform", VERSION = 6;
+  const KEY = "sc3-platform", VERSION = 7;
 
   /* ---------- Smart-Clearance's own people (fictional) ---------- */
   const STAFF = [
@@ -104,7 +104,20 @@
   const PROFILE = {
     route: { label: "Route to market", options: [{ id: "distributors", label: "Through distributors" }, { id: "modern-trade", label: "Direct to modern trade" }, { id: "own", label: "Own warehouses and D2C" }] },
     owner: { label: "Who owns short-dated stock", options: [{ id: "distributor", label: "The distributor" }, { id: "manufacturer", label: "The manufacturer" }] },
-    expiry: { label: "Expiry policy", options: [{ id: "full-credit", label: "Full credit at expiry" }, { id: "price-support", label: "Price support only" }, { id: "none", label: "No returns" }] },
+    // SC-139: route B, destroyed at the distributor's godown, leads; route A, the take-back with a GST credit note
+    // under s.34 against the client's own invoice, is offered but not yet built (`soon`)
+    expiry: { label: "Expiry policy", options: [
+      { id: "godown", label: "Destroyed at the distributor's godown", note: "A financial credit note: the dealer price, the input GST he reverses and the agency's charges" },
+      { id: "full-credit", label: "Taken back by the client", note: "A GST credit note under s.34 against the client's invoice. Coming: needs the client's sales invoices", soon: true },
+      { id: "price-support", label: "Price support only", note: "He keeps and destroys them; the client pays the gap to the dealer price" },
+      { id: "none", label: "No returns", note: "His loss; he destroys them under his own records" }] },
+  };
+  // when packs are destroyed at a distributor's godown (SC-139): the evidence, Vision's check, who approves, the
+  // authorised agencies, what the credit note covers, and when he is asked again
+  const destructionDefaults = () => {
+    const x = D.SETUP.destruction;
+    return { visionCheck: x.visionCheck, reviewer: "Supply Chain", remindDays: x.remindDays, grossUp: x.grossUp, chargesPerUnit: x.chargesPerUnit,
+      agencies: x.agencies.map(a => ({ id: a.id, name: a.name, city: a.city, auth: a.auth })) };
   };
   const optLabel = (q, id) => { const o = PROFILE[q].options.find(x => x.id === id); return o ? o.label : id; };
   function exitsFor(profile) {
@@ -115,7 +128,8 @@
     const lines = [];
     if (profile.owner === "distributor") lines.push({ icon: "handshake", text: "Agents list, offer and invoice in the distributor's name, after his one-time permission" });
     else lines.push({ icon: "warehouse", text: "Agents list, offer and invoice in the manufacturer's own name" });
-    if (profile.expiry === "full-credit") lines.push({ icon: "hand-coins", text: "Price support is offered before stock expires, so it never comes back for full credit" });
+    if (profile.expiry === "godown") lines.push({ icon: "recycle", text: "Expired packs are destroyed at the distributor's godown against evidence the client approves; a financial credit note makes him whole" });
+    else if (profile.expiry === "full-credit") lines.push({ icon: "hand-coins", text: "Price support is offered before stock expires, so it never comes back for full credit" });
     else if (profile.expiry === "price-support") lines.push({ icon: "hand-coins", text: "Price support is the only lever; nothing comes back" });
     else lines.push({ icon: "ban", text: "No returns: every unsold pack is the distributor's loss, so speed matters most" });
     const ex = exitsFor(profile); const SHORT = { expiresoon: "ExpireSoon", kirana: "kiranas", staff: "staff sale", foodbank: "food bank", d2c: "discount D2C" }; const on = EXITS.filter(e => ex[e.id].on).map(e => SHORT[e.id]);
@@ -199,7 +213,9 @@
 
   /* ---------- the Overview's dashboard (SC-48): every figure an aggregate over the batches and the runs ---------- */
   // a batch's recovery counts on the day it closed, or, while it is still open past Settle, the day it was flagged. It
-  // is in flight from being flagged until it closes, and waits for a yes at Approve (the sixth stop). Days are India's
+  // is in flight from being flagged until it closes, and waits for a yes at Approve (the sixth stop). Days are India's.
+  // Its food counts on the day it closed (SC-149): the packs no channel took and that were destroyed (`destroyed`), the
+  // rest kept out of landfill, in kilos by its SKU's kilos a pack (`kg`)
   const APPROVE = 5, RANGES = [7, 30, 90], SIZES = [8, 16, 32], IST_MS = 19800000;
   const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const istDay = at => new Date(Date.parse(at) + IST_MS).toISOString().slice(0, 10);
@@ -213,11 +229,16 @@
     const bs = s.batches.filter(b => !client || b.client === client);
     const first = D.addDays(today, -(days - 1)), before = D.addDays(first, -days);
     const range = Array.from({ length: days }, (_, i) => D.addDays(first, i));
-    const rec = {}, closed = {}; let recoveredBefore = 0;
+    const rec = {}, closed = {}, food = {}, foodBefore = { kept: 0, destroyed: 0 }; let recoveredBefore = 0;
     bs.forEach(b => {
       const d = istDay(b.closedAt || b.openedAt);
       if (b.recovered > 0) { if (d >= first && d <= today) rec[d] = (rec[d] || 0) + b.recovered; else if (d >= before && d < first) recoveredBefore += b.recovered; }
-      if (b.closedAt) { const c = istDay(b.closedAt); closed[c] = closed[c] || [0, 0]; closed[c][0] += 1; closed[c][1] += b.units; }
+      if (b.closedAt) {
+        const c = istDay(b.closedAt), gone = b.destroyed || 0, kg = b.kg || 0;
+        closed[c] = closed[c] || [0, 0]; closed[c][0] += 1; closed[c][1] += b.units;
+        if (c >= first && c <= today) { const f = food[c] = food[c] || { kept: 0, destroyed: 0, packs: 0 }; f.kept += (b.units - gone) * kg; f.destroyed += gone * kg; f.packs += gone; }
+        else if (c >= before && c < first) { foodBefore.kept += (b.units - gone) * kg; foodBefore.destroyed += gone * kg; }
+      }
     });
     // the runs the prototype keeps are today's
     const runsToday = s.runs.filter(r => !client || r.client === client).length;
@@ -234,7 +255,10 @@
     const out = {
       readAt: `${two(t.getUTCHours())}:${two(t.getUTCMinutes())}:${two(t.getUTCSeconds())}`, days,
       recovered: r2(range.reduce((sum, d) => sum + (rec[d] || 0), 0)), recoveredBefore: r2(recoveredBefore),
-      byDay: range.map(d => ({ date: d, label: dayLabel(d), recovered: r2(rec[d] || 0), closed: (closed[d] || [0])[0], units: (closed[d] || [0, 0])[1], runs: d === today ? runsToday : 0 })),
+      byDay: range.map(d => ({ date: d, label: dayLabel(d), recovered: r2(rec[d] || 0), closed: (closed[d] || [0])[0], units: (closed[d] || [0, 0])[1], runs: d === today ? runsToday : 0,
+        keptKg: r2((food[d] || {}).kept || 0), destroyedKg: r2((food[d] || {}).destroyed || 0), destroyed: (food[d] || {}).packs || 0 })),
+      food: { keptKg: r2(range.reduce((t, d) => t + ((food[d] || {}).kept || 0), 0)), destroyedKg: r2(range.reduce((t, d) => t + ((food[d] || {}).destroyed || 0), 0)), destroyed: range.reduce((t, d) => t + ((food[d] || {}).packs || 0), 0),
+        keptKgBefore: r2(foodBefore.kept), destroyedKgBefore: r2(foodBefore.destroyed) },
       inFlight: open.length, inFlightClients: new Set(open.map(b => b.client)).size,
       inFlightSeries: range.map(d => { const cut = d < today ? dayEnd(d) : Math.min(now, dayEnd(d)); return bs.filter(b => Date.parse(b.openedAt) <= cut && (!b.closedAt || Date.parse(b.closedAt) > cut)).length; }),
       waiting: waiting.length, runsToday, byStop, atStop,
@@ -311,7 +335,7 @@
     // three SKUs keep gates of their own: the drink's shorter shelf, and the two 730-day Glowra packs (illustrative)
     const OWN_GATES = { mango: { blinkitDays: 45, qcomPct: 50 }, facewash: { blinkitDays: 180 }, hairoil: { blinkitDays: 180 } };
     const skus = Object.values(D.SKUS).map(s => ({ id: s.id, code: s.code, brand: s.brand, name: s.name, mrp: s.mrp, gst: s.gst, lifeDays: s.lifeDays, gates: OWN_GATES[s.id] || {} }));
-    const profile = { route: "distributors", owner: "distributor", expiry: "full-credit" };
+    const profile = { route: "distributors", owner: "distributor", expiry: D.SETUP.expiry };
     const client = {
       id: W.id, name: W.name, legal: D.CLIENT && D.CLIENT.name || "Munchly Foods Ltd", city: "Pune", industry: "Snacks, drinks and personal care", domain: W.domain, emailDomain: W.emailDomain, mark: W.mark,
       plan: "pilot", status: "live", since: W.since, region: W.region, profile, gates: { blinkitDays: R.gates.blinkit.minDays, qcomPct: Math.round(R.gates.zepto.pctLife * 100) },
@@ -321,7 +345,7 @@
       recovered: D.ACTUAL.net, batches: D.BATCHES.length,
       // its first stock export, set up in the console by Neha and mapped by the Data agent (SC-84)
       firstExport: { status: "mapped", file: D.SETUP.dms.file, rows: D.SETUP.dms.rows, batches: D.BATCHES.length, distributors: distributors.length, by: "Neha Kulkarni", at: null, columns: exportColumns(true) },
-      approver: "priya",
+      approver: "priya", destruction: destructionDefaults(),
     };
     client.agents = agentDefaults("standard", client);
     const last = { data: "08:30 today · 4 exports, 312 batches", watcher: "09:00 today · MF-2410-118 at risk, 22 days left", vision: "09:14 today · label read, 0.96", valuer: "09:21 today · exits priced; ExpireSoon needs 30+ days", router: "09:22 today · plan sent to Priya", gate: "09:40 today · Priya approved MF-2410-118", lister: "1 Oct · ES-24117 listed in Rakesh Traders' name", outreach: "09:42 today · offers to Lakshmi Agencies' kiranas", negotiator: "1 Oct · countered ₹14.20 on ES-24117", paperwork: "11:05 today · FSSAI checklist for Feeding India", impact: "waits for the return window to close on 29 Oct" };
@@ -341,7 +365,7 @@
   const BATCHES = D.BATCHES.map(b => {
     const t = TRACKS.find(x => x.batch === b.id), openedAt = "2026-10-02T09:00:00+05:30";
     return { client: "munchly", ref: b.id, sku: b.sku, distributor: b.distributor, units: b.units, bestBefore: b.bestBefore, done: t ? t.done : 1, current: t ? t.current : 1,
-      openedAt, stageAt: t && t.stageAt ? t.stageAt : openedAt, recovered: t && t.money ? t.money : 0 };
+      openedAt, stageAt: t && t.stageAt ? t.stageAt : openedAt, recovered: t && t.money ? t.money : 0, kg: D.SKUS[b.sku].kgPerUnit };
   });
   BATCHES.find(b => b.ref === "MF-2409-204").override = { qcomPct: 30, reason: "Zepto's Pune warehouse agreed to take this lot at 30% of its life", by: "Neha Kulkarni", at: "4 Oct, 16:20", setAt: "2026-10-04T16:20:00+05:30" };
   const RUNS = [
@@ -355,7 +379,7 @@
     { at: "11:05", agent: "paperwork", client: "munchly", text: "FSSAI checklist for Feeding India" },
   ];
   const AUDIT = [
-    { id: "a1", at: "30 Sep, 17:05", who: "Neha Kulkarni", client: "munchly", text: "Set up Munchly Foods from its supply-chain profile: through 4 distributors, the distributor owns the stock, full credit at expiry" },
+    { id: "a1", at: "30 Sep, 17:05", who: "Neha Kulkarni", client: "munchly", text: "Set up Munchly Foods from its supply-chain profile: through 4 distributors, the distributor owns the stock, destroyed at the distributor's godown" },
     { id: "a2", at: "30 Sep, 17:12", who: "Sameer Rao", client: "munchly", text: "Connected the distributors' stock exports, nightly CSV" },
     { id: "a3", at: "1 Oct, 09:00", who: "Neha Kulkarni", client: "munchly", text: "Moved Munchly Foods to Live on the Pilot plan" },
     { id: "a4", at: "1 Oct, 09:15", who: "Arjun Nair", client: "munchly", text: "Invited Rakesh bhai, Ganesh ji and Meera" },
@@ -441,9 +465,10 @@
     const id = slug(f.name); const profile = { route: f.route, owner: f.owner, expiry: f.expiry };
     const admin = { id: "admin-" + id, name: f.adminName, org: f.name, role: "Workspace admin", kind: "Workspace admin", access: "Admin", provider: "Google", status: "invited", img: null, email: f.adminEmail, phone: "" };
     const client = {
-      id, name: f.name, legal: f.name, city: f.city, industry: f.industry, domain: id + ".smartclearance.com", emailDomain: f.emailDomain, mark: { from: f.colour, to: f.colour, ink: "#ffffff" },
+      id, name: f.name, legal: f.name, city: f.city, industry: f.industry, domain: id + "-smartclearance.web.app", emailDomain: f.emailDomain, mark: { from: f.colour, to: f.colour, ink: "#ffffff" },
       plan: f.plan, status: "setting-up", since: null, region: "India", profile, gates: { blinkitDays: R.gates.blinkit.minDays, qcomPct: Math.round(R.gates.zepto.pctLife * 100) },
       territoryGuard: true, returnWindowDays: R.returnWindowDays, dayMinutes: DAY_MINUTES, exits: exitsFor(profile), rules: { reserve: R.negotiation.reservePerUnit, scheme: "2 free with every 10", staffCap: R.staffCap, tokenPct: Math.round(R.tokenPct * 100), offerWindowHours: 48, hindiOffers: true, requirePhoto: true },
+      destruction: destructionDefaults(),
       signIn: [{ id: "google", title: "Google Workspace", who: f.name + " staff", rule: f.emailDomain + " accounts only", on: f.signGoogle }, { id: "phone", title: "Mobile number and a one-time code", who: "Distributors and kirana owners", rule: "Numbers the client or its distributors invite", on: f.signPhone }],
       distributors: [], skus: [], people: [admin], integrations: [], recovered: 0, batches: 0, approver: admin.id, firstExport: null,
     };
@@ -461,7 +486,7 @@
     reset() { state = seed(); save(); emit(); },
     usePersistence() { persist = true; try { const raw = localStorage.getItem(KEY); if (raw) { const d = JSON.parse(raw); if (d && d.v === VERSION) state = d; } } catch (e) {} },
     client: id => state.clients.find(c => c.id === id),
-    buildClient, slug, summary, fieldLabel, showValue, money, exitsFor, profileLines, optLabel, agentDefaults,
+    buildClient, slug, summary, fieldLabel, showValue, money, exitsFor, profileLines, optLabel, agentDefaults, destructionDefaults,
     dashboard, batchPage, RANGES, SIZES,
     TODAY, GATE_BOUNDS, batchGates, gateText, skuGatesError, overrideError, skuGatesLine, overrideLine, clearOverrideLine,
     DAY_MINUTES, DAY_PRESETS, dayWords, spanWords, dayBadge, dayReadouts, dayHead, dayMinutesError, dayMinutesLine, poss,

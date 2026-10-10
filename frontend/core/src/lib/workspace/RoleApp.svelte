@@ -31,12 +31,14 @@
 	import PushStep from './screens/live/PushStep.svelte';
 	import BatchHead from './screens/brand/BatchHead.svelte';
 	import BatchJourney from './screens/brand/BatchJourney.svelte';
+	import BatchRecord from './screens/record/BatchRecord.svelte';
 	import Batches from './screens/brand/Batches.svelte';
 	import CommandCenter from './screens/brand/CommandCenter.svelte';
 	import Execution from './screens/brand/Execution.svelte';
 	import RouteRoom from './screens/brand/RouteRoom.svelte';
 	import Setup from './screens/brand/Setup.svelte';
 	import CameraScreen from './screens/trade/CameraScreen.svelte';
+	import DestroyScreen from './screens/trade/DestroyScreen.svelte';
 	import DistBatches from './screens/trade/DistBatches.svelte';
 	import DistHome from './screens/trade/DistHome.svelte';
 	import DistOrders from './screens/trade/DistOrders.svelte';
@@ -276,13 +278,12 @@
 		{#key inBatch && bv ? 'batch:' + bv.id : safe}
 			<div in:rise={{ y: 6, duration: 180 }} class={inBatch ? 'bpage' : undefined}>
 				{#if pushStep}<PushStep {me} push={pushStep.push} ondone={pushStep.done} />
-				{:else if inBatch && bv}{#if !it || part === 'journey'}<BatchJourney
+				{:else if inBatch && bv}{#if it && part === 'record'}<BatchRecord
 							{me}
-							{it}
-							v={bv}
-						/>{:else if part === 'route'}<RouteRoom {me} />{:else if ws.case?.batch.id !== it.ref}<Screen
+							at={it.ref}
+						/>{:else if !it || part === 'journey'}<BatchJourney {me} {it} v={bv} />{:else if part === 'route'}<RouteRoom
 							{me}
-							title={bv.skuObj.name}
+						/>{:else if ws.case?.batch.id !== it.ref}<Screen {me} title={bv.skuObj.name}
 							><Card class="stack" style="gap: 14px" aria-busy="true"
 								>{#each [0, 1, 2] as i (i)}<Skeleton h={i ? 18 : 44} r={i ? 6 : 12} />{/each}</Card
 							></Screen
@@ -303,6 +304,7 @@
 				{:else if safe === 'home'}{#if me.role === 'retailer'}<RetailHome {me} />{:else}<DistHome {me} />{/if}
 				{:else if safe === 'photo'}<CameraScreen {me} {realCamera} />
 				{:else if safe === 'van'}<VanRoute {me} />
+				{:else if safe === 'destroy'}<DestroyScreen {me} />
 				{:else if safe === 'orders'}{#if me.role === 'retailer'}<RetailOrders {me} />{:else}<DistOrders {me} />{/if}
 				{:else if safe === 'offer'}<OfferDetail {me} />
 				{:else if safe === 'market'}<Market {me} />

@@ -1,0 +1,65 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-142/option-b/mockup.html?who=priya&theme=light#/batches",
+  "out": "option-b/batches-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "full": false,
+  "height": 1500
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-142/option-b/mockup.html?who=priya&theme=light#/batches",
+  "out": "option-b/batches-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2400,
+  "full": false,
+  "height": 1700
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-142/option-b/mockup.html?who=priya&theme=light#/report/MF-2407-116",
+  "out": "option-b/record-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "full": false,
+  "height": 2700
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-142/option-b/mockup.html?who=priya&theme=dark#/report/MF-2407-116",
+  "out": "option-b/record-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2400,
+  "full": false,
+  "height": 2700
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-142/option-b/mockup.html?who=priya&theme=light#/report/MF-2407-116",
+  "out": "option-b/record-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2400,
+  "full": false,
+  "height": 3600
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-142/option-b/mockup.html?who=rakesh&theme=light#/batches/MF-2407-116",
+  "out": "option-b/dist-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "full": false,
+  "height": 1500
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-142/option-b/mockup.html?who=rakesh&theme=dark#/batches/MF-2407-116",
+  "out": "option-b/dist-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 2400,
+  "full": false,
+  "height": 2400
+ }
+]

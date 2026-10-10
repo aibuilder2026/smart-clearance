@@ -32,6 +32,12 @@
 			title: 'No papers yet',
 			body: "A batch's document pack appears here once it has been routed."
 		},
+		record: {
+			name: 'Record',
+			img: 'documents',
+			title: 'No record yet',
+			body: 'When the Watcher flags a batch, its record opens here: the photos sent for it, its yeses and every step.'
+		},
 		offer: {
 			name: 'Offer',
 			img: 'kirana',

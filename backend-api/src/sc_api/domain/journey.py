@@ -44,6 +44,7 @@ TIMER = "timer"  # an offer closing, an unsold lot closing, the report
 RUN_NOW = "agent.run_now"  # the console's Run now
 RESET = "journey.reset"
 RECEIPT = "receipt"  # Paperwork lays out the food bank's receipt as a PDF, once it has collected (SC-110)
+DESTROY = "destruction"  # Vision checks the evidence of packs destroyed at the distributor's godown (SC-139)
 
 
 @dataclass(frozen=True)
@@ -196,6 +197,12 @@ def can(case: dict[str, Any], action: str) -> str | None:
     photo = (case.get("photo") or {}).get("status")
     if action == "photo":
         return None if phase == "at-risk" and photo == "requested" else "No label photo is asked for now."
+    # packs destroyed at the distributor's godown (SC-139): his evidence while it is asked for, then the operator's yes
+    if action in ("destroy", "destroy-approve", "destroy-ask"):
+        dz = (case.get("destruction") or {}).get("status")
+        if action == "destroy":
+            return None if dz in ("requested", "asked") else "No destruction's evidence is asked for now."
+        return None if dz == "checked" else "There is no destruction's evidence waiting for a yes."
     if action == "approve":
         return None if phase == "planned" else "There is no plan waiting for a yes."
     if action == "order":

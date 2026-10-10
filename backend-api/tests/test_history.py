@@ -47,7 +47,18 @@ async def test_the_history_clears_each_batch_as_money_js_has_it(with_history, ct
             assert (docs["invoice"]["no"], c.listing["id"]) == (n["invoice"], n["listing"])
             assert c.invoice_issued_at is not None
         if "expiry" in n:
-            assert docs["expiry"]["no"] == n["expiry"] and docs["destruction"]["units"] == b["expect"]["destroyed"]
+            # destroyed at his godown (SC-139): the agency's certificate counts them, against the credit note
+            dz = b["destruction"]
+            units = b["expect"]["destroyed"] + b["expect"]["atGodown"]
+            assert docs["expiry"]["no"] == n["expiry"] and docs["destruction"]["units"] == units
+            assert docs["expiry"]["amount"] == b["expect"]["amount"]
+            if dz:
+                assert (docs["destruction"]["no"], docs["destruction"]["owner"]) == (
+                    dz["certificate"],
+                    docs["destruction"]["agency"],
+                )
+                assert c.destruction["status"] == "approved" and c.destruction["approvedBy"] == "Priya Deshmukh"
+                assert all(x["ok"] for x in c.destruction["checks"]), c.destruction["checks"]
         if "receipt" in n:
             assert c.donation["receipt"]["no"] == n["receipt"]
         batch = await ctx.session.get(m.Batch, ("munchly", b["ref"]))

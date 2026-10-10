@@ -67,8 +67,14 @@ The Masala Chips batch again, from a fresh journey, with food left at the godown
 - **No truck:** Agrawal Wholesale takes the lot, but the truck loads only once the scheme has closed (backend-api
   refuses it before: "The kirana scheme is still open until …").
 - **Report now:** Neha fires expiry day's report in the console. The batch closes as it stands (SC-94): the scheme closes
-  with the orders placed, the accepted lot counts as collected, the papers are drafted, and Impact's report settles the
-  144 packs left at the godown by Munchly's expiry policy, full credit, with an Expiry credit note.
+  with the orders placed, the accepted lot counts as collected and the papers are drafted. Munchly's expiry policy
+  destroys the 144 packs left at Rakesh's godown (SC-139, route B), so Impact waits for their evidence.
+- **The destruction** (`destruction.ts`, shared with the Mango leftover suite): Rakesh opens Destroy expired packs from
+  Today, uploads design3's two evidence photos for the batch (`design3/system/img/evidence/`: before, at the godown with
+  the batch label; after, at the landfill with the slate), names the agency and its certificate number, and sends them.
+  Vision checks both on live Gemini; a check that does not pass is kept as a note. Priya opens Review the destruction on
+  her Command Center and approves it, and Impact reports: the Expiry credit note (the dealer price, the GST he reverses
+  and the agency's charges) and the agency's certificate.
 - **What it reads back:** the pack (it opens on the Expiry credit note) and Priya's review; her Execution, with Left at
   the godown and the Expiry settlement, and the paper it opens; the batch's page in the ledger; the Command Center.
 - **The figures:** the orders, the packs left, the settlement and the expiry paper, against the run's own shortfall.
@@ -93,9 +99,11 @@ Its steps up to the scheme, the staff sale, the donation and the pack with its v
   those press Not this time on their Offers; the rest read the scheme and let it go.
 - **The window:** Neha closes the scheme's offer window from the console, short of its packets. With no ExpireSoon lot
   open, what was not ordered stays at the godown. The pack is then drafted, and the van round takes the orders placed.
-- **Report now:** expiry day settles the packs left at the godown by Munchly's expiry policy, full credit. Lakshmi
-  Agencies is credited the dealer price on an Expiry credit note, and Munchly destroys the packs, reversing their input
-  GST on the ITC memo and the destruction certificate.
+- **Report now:** expiry day asks Lakshmi Agencies to destroy the packs left at her godown (SC-139, route B). She sends
+  the two photos and Deccan Green Waste Management's certificate number, Vision checks them, and Priya approves them
+  from her Command Center (`destruction.ts`). Then Impact reports. The Expiry credit note credits her the dealer price,
+  the input GST she reverses on the packs (grossed up) and the agency's charges, ₹1.50 a pack. Munchly keeps its own
+  input GST on them, so the ITC memo reverses only the donated packs'.
 - **What it reads back:**
   - Priya's review;
   - Execution's Left at the godown and Expiry settlement;
@@ -105,7 +113,8 @@ Its steps up to the scheme, the staff sale, the donation and the pack with its v
     flows);
   - one kirana's offer for each outcome: ordered, declined and expired;
   - Meera's pickup and receipt;
-  - Lakshmi Agencies' portal, with her credit notes and her copies of the receipt and the destruction certificate.
+  - Lakshmi Agencies' portal: her credit notes, the agency's certificate (hers, with its PDF), and her copy of the
+    receipt.
 - **No tax invoice:** the Mango's plan has no ExpireSoon lot, so its GST papers are the two credit notes and the ITC memo.
 
 ```sh

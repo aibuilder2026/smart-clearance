@@ -1678,6 +1678,73 @@
     - The only note is the old one: the invoice reads "drafted" in Priya's pack after Rakesh issues it.
   - **After it:** production's journey day back at 24 hours; the chips cleared, the Mango Drink at day 0.
 
+- **SC-139** (PR #120, merged): packs left at the godown destroyed there, against evidence and a second yes (route B).
+  - **The request:** "If chips are destroyed at go down, ask for a photo and supply chain will need to review and approve it before the entire deal closes, destruction certificate, credit note and other stuffs should be properly generated and validated and realistic as much as possible"; the console's client configuration to match, and the GST papers and invoices to follow; then "I want the destruction image to be done as much reaslistic as possible as it is done today - like landfill etc."
+  - **Design first:** three options on one board in app v3, `SC-139 design review.html`:
+    - A, on Execution;
+    - B, a second yes (recommended);
+    - C, witnessed.
+
+    The maintainer picked **B**. Route A, the full-credit take-back, is offered in the console and built later. The credit is the dealer price, plus the GST gross-up, plus the agency's charges. The history's three leftover batches are restated under route B, with their documents, photos and approvals. Designs, the evidence photos, the build's stills and the decision are in `design3/designs/SC-139/`.
+  - **The policy:** the client's fourth expiry policy, `godown`, "Destroyed at the distributor's godown"; Munchly is set to it. Its settings are in the console's Rules, under Destroyed at the godown (`clients.destruction`):
+    - the two photos asked for;
+    - Vision's check;
+    - the reviewer (Supply Chain);
+    - a reminder after 2 days;
+    - the gross-up;
+    - ₹1.50 a pack in charges;
+    - the authorised agencies, each with its city, authorisation and certificate series. Munchly's are Orange City Enviro Services and Vidarbha Waste Care in Nagpur, and Deccan Green Waste Management in Hyderabad.
+  - **The flow:**
+    - **Expiry day** (or a report that finds packs left) asks the distributor: "Destroy N expired packs at your godown" on his Today, with a push. Impact waits.
+    - **The distributor** sends his evidence:
+      - two photos, taken or uploaded: before, at the godown with the carton's batch label; after, at the landfill with a slate;
+      - the agency from the client's list for his city;
+      - its certificate number.
+
+      The screen names the input GST he reverses in GSTR-3B (Table 4(B)(1)).
+    - **Vision** reads both photos on Gemini: the batch, the count, the slate's batch, count and date, the landfill, the packs destroyed. backend-api holds the read to the batch, the packs left and the day.
+    - **Priya** opens "Review the destruction" on her Command Center. It shows both photos, Vision's checks, the agency on Munchly's list, and what her yes issues. She approves ("Approve · issue the papers"), or asks again with a reason, which re-arms the reminder.
+    - **Only on the yes** does Impact report and the batch close.
+  - **The papers:**
+    - **The Expiry credit note:** a financial note with no GST. Its lines are the dealer price, the input GST he reverses on the packs (grossed up) and the agency's charges, against the agency's certificate. The chips' 144 packs come to ₹3,168.00 + ₹158.40 + ₹216.00 = ₹3,542.40.
+    - **The Destruction certificate** is the agency's, for him: the batch, the packs and kilos, the method (slit open, buried and covered at the authorised municipal landfill), the authorisation, the evidence and who approved it, and the GST he reverses. It is his paper on his portal, not a copy.
+    - **The ITC memo:** Munchly keeps its own input GST on these packs; they were his stock, so he reverses his.
+
+    Paperwork lays out both as PDFs (`expiry_note.html`, `destruction.html`).
+  - **The history, restated:**
+    - Lakshmi Agencies' Masala Oats MF-2406-107: 65 packs, DGW/DC/26-27/0085, CN/0111 ₹3,339.38;
+    - Rakesh Traders' Mango Drink MF-2407-111: 184 packs, OCE/DC/26-27/0217, CN/0115 ₹3,077.40;
+    - Rakesh Traders' Peanut Chikki MF-2407-116: 132 packs, OCE/DC/26-27/0218, CN/0116 ₹2,692.80.
+
+    Each has its two Qwen-Image photos (`design3/system/img/evidence/`, with sidecars), Priya's approval on its day and the agency's certificate. Munchly's input GST is kept.
+  - **The build:**
+    - **design3:** `trade.jsx` DestroyScreen; `brand.jsx` DestructionCard, DestructionSheet and the Command Center's review; `finance.jsx` the godown papers; `money.js` (`expirySettlement` and `realised` with the godown policy, `RULES.destruction`); `flow.js`; `ledger.js`; `platform.js` `destructionDefaults`; the console's Rules and Client profile.
+    - **The port:** core's `DestroyScreen`, `DestructionCard`, `DestructionSheet`, `ExpirySettlement`, `Paper`, `dist.ts` and `partners.ts`; the console's `RulesTab` and `Choice`; the workspace's live source, with both photos uploaded to signed links.
+    - **The contract:** `WsDestruction`, `DestructionInput`, `CaseDetail.destruction`, the godown fields on `WsDoc` and `ExpirySettlement`, `WsSetup.destruction`, and `Client.destruction` in the console.
+    - **backend-api:** migration 0011 (`clients.destruction`, `cases.destruction`, `godown` in the expiry check). In `steps.py`: `send_destruction`, `destruction_checked`, `approve_destruction`, `ask_destruction_again`, `remind_destruction`, and the report's gate. The `destruction.remind` timer. Four workspace routes and `/internal/…/destruction/check`. `destruction.send` and `destruction.approve` in `rbac.json`. The console's rules, and `history.py`'s three batches.
+    - **agents:** Vision's destruction read (`vision_destruction.txt`), and Paperwork's two templates.
+    - **The journey suites:** both leftover suites walk route B (`tests/journey/destruction.ts`): the distributor sends design3's evidence photos, Vision checks them live, and Priya approves. Neither was run.
+  - **Found on the way:**
+    - the swing was a rupee off where the godown credit was rounded a pack at a time;
+    - "Rakesh Traders's" in two sentences;
+    - the review sheet was too narrow at 1440, and its footer overflowed on phones;
+    - the live projection dropped the godown fields, so the note read ₹0.00;
+    - a partner's times stored without a zone were read in the server's;
+    - `hydrate.sh --papers` (`steps.lay_out_missing`) did not count the agency's certificate as a printed paper, and counted an awaiting one as missing. It now follows the agents' `needs_pdf` (`steps.printed`).
+  - **Checks:**
+    - backend-api 547 passed, 1 skipped (`test_destruction.py`, 4 new: the whole flow, the reminder, Vision off, the console's settings; the Mango's tests walk route B; `test_ledger.py`'s PDF test now asks for the agency's certificate and leaves an awaiting one, and fails without the fix);
+    - agents 202 passed (4 new);
+    - the frontend gate passes: core 260, api 78, workspace 87, admin 17, demo 5, console 3. The new goldens cover the request to the second yes, and a history batch's godown papers. The new live tests cover Today, the send with both uploads, Priya's review and the cleared moments;
+    - the live fixtures were regenerated, with two new moments (`destruction-asked`, `destruction-checked`);
+    - both PDFs were rendered and read;
+    - the browser suites and the journey suites were not run (SC-55).
+  - **Locally:**
+    - migrated to 0011, then rebuilt with `hydrate.sh --reset`;
+    - Munchly is on `godown`, and the three history batches are destroyed and approved by Priya;
+    - the agents' worker was restarted on the new code, and `--papers munchly` laid out the three agency certificates (OCE/DC/26-27/0218 reads 132 packs and ₹118.80 reversed by Rakesh Traders);
+    - the day is 24 hours.
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
+
 - **SC-140** (In Review, branch `SC-140-architecture`): the technical architecture for the hackathon submission, documentation only, asked for by the maintainer.
   - **The artifact:** [Smart-Clearance Architecture](https://claude.ai/artifact/MCFr2c1AVzX9xXKqcYVu47), in design system v3's tokens and mark, light and dark. It holds:
     - the system in one diagram;
@@ -1702,5 +1769,132 @@
   - **Checks:**
     - the page was played in a browser at 1440 × 900 and 390 × 844, with no console errors and no sideways scroll on a phone. The viewer's frame ignores bare anchors, so the page's section links scroll in script;
     - each of the PDF's 24 pages was rendered and looked at, and every Lucid page was exported and checked for overlaps; the figures on the AI and operations pages were checked against `agents/` and `infra/prod`.
+
+- **SC-141** (PR #121, merged; bug found by the maintainer): the distributor's Orders and Batches, figures that add up as written.
+  - **Found:** "calculations dont match" on Rakesh Traders' portal. Every one of his six cleared batches ends whole to the paisa, and both headlines were right. Batches' ₹66,918 is what Munchly credited him (8 credit notes); Orders' ₹1,05,928 is what he sold from the same batches. But:
+    - a kirana row read "456 packets at ₹18.00, 2 free with every 10 · ₹6,840", which multiplies to ₹8,208. With 2 free in every 12, the packets came to ₹15.00 each;
+    - the two headlines ("from Munchly since July", "sold from Munchly's batches") did not say which figure was which.
+  - **The fix** (design3 `core/ledger.js` and `screens/trade.jsx` first, then core's `dist.ts`, `DistBatches` and `DistOrders`):
+    - the row gives the effective price first, as the Route Room already does: "456 packets at ₹15.00 effective (₹18.00 a pack, 2 free with every 10)", in a batch in a journey and a cleared one;
+    - Batches reads "credited by Munchly since July", and ties the figures together: "They cost you ₹1,72,846; you sold ₹1,05,928 from them (on Orders), and the price support, with the expiry credit where packs expired, made up the rest";
+    - Orders names the credit notes on the cleared batches, ₹66,918, as on Batches.
+  - **Checks:**
+    - the frontend gate passes: core 260, with Rakesh's 18 goldens changing only those lines; api 78; workspace 87; admin 17; demo 5; console 3. The two live tests now hold the row's effective price and its ₹10,584, and the sentence's ₹1,72,846, and fail without the fix;
+    - backend-api 547 passed, 1 skipped (only the seed manifest changed);
+    - design3's `dist/` is rebuilt.
+
+- **SC-142** (PR #122, merged): a batch's record. Priya reads every batch, past ones too, with the photos sent for it, its yeses and every step; the distributor reads the photos he sent.
+  - **The request:** "Both supply chain operator and distributor should be able to see the photos they have sent for batch and destruction evidence pictures"; "Supply chain operator should be able to see past batches under Batches section with details like what picture was sent, audit log of the everything that happened in that batch, photos of destruction and approval sent etc." (The third part, the distributor's figures, was SC-141.)
+  - **Design first:** three options on one board in app v3, `SC-142 design review.html`:
+    - A, the Record tab (recommended);
+    - B, evidence on the timeline;
+    - C, the batch file.
+
+    The maintainer picked **A**, and "Yes, use them" for the history's label photos. Designs, the photos, the build's stills and the decision are in `design3/designs/SC-142/`.
+  - **The history's label photos:** the twelve pilot-quarter batches had none, so each has one printed with its own batch and dates (`design3/system/img/labels/`, Qwen-Image, with sidecars): Rakesh Traders' as edits of the Vision eval set's clean label, Lakshmi Agencies' rendered afresh. The story's chips use the eval set's own. `seed.mjs` copies them into backend-api's reference (`reference/labels/`), and the history uploads each as the photo its distributor sent.
+  - **Batches** (Priya's): under the batches in view ("In view · from the DMS export"), every batch that has cleared and passed its best-before, by month ("Cleared · September 2026"), with its outcome, the photos sent for it and what it recovered. Each opens its page on the Record.
+  - **The Record tab**, on a batch's page in the ledger (Money, Papers, Impact, Record) and on the operator's batch page (Journey, Route Room, Execution, Paperwork, Record):
+    - **the photos sent for it:** the label photo, with what Vision read and that it matched the export; destroyed at the godown, the before and after photos with Vision's four checks. Each opens whole in a sheet;
+    - **the audit trail**, day by day: each agent's run from the case's feed, in its words, and each person's decision as the audit log keeps it, in their name and for whom they act. The kiranas' orders fold into one row ("24 kiranas · Rakesh Traders' scheme, Ordered 456 packets"), opened on request. Filters for Everyone, People or Agents, and a CSV;
+    - **the yeses:** the plan's approval, the papers' review and the destruction's approval, each with who and when.
+  - **The distributor's batch page** gains **Photos**: his label photo with what Vision read, and the destruction's two with Vision's checks, then Priya's yes on them and the credit note it issued. On the live workspace it reads his own facts' links, never Munchly's audit log.
+  - **The clocks:** the audit log keeps wall time, the case and its feed the journey's. A case's lines are the batch's from the moment it opened (wall time) until its next case; the steps go in wall-time order, and each person's step is placed on the journey's clock between the feed's moments around it, so a compressed day, or a day length changed mid-journey, keeps them where they fell.
+  - **The build:** design3 first (`ledger.js` `record`, `finance.jsx` RecordTab and its pieces, `brand.jsx` Batches and BatchRecord, `trade.jsx` DistPhotos, `screens.css`'s `rec-*`), then core (`record.ts` for the stub, `photos.ts` for the live facts and the days in India's time, `screens/record/`, `DistPhotos`, `Batches`, `BatchPage`, `RoleApp`, `model.ts`'s record part, `screens.css` verbatim). The workspace's address takes `?tab=` (`/report/MF-2407-116?tab=record`).
+  - **The contract:** `WsRecord`, `WsRecordStep`, `WsRecordWho`, `WsLabelPhoto`, `WsPartnerCase.photo`, `WorkspaceApi.record()`; `contracts.sh` re-exported the OpenAPI.
+  - **backend-api:** `GET …/cases/{ref}/record` (`services/journey/record.py`, `report.read`); the distributor's facts carry his label photo (`views.label_out`, in the client's time); the history uploads each batch's label photo. `hydrate.sh --photos CLIENT` puts the history's label photos in the photos bucket for a workspace built before this (no reset).
+  - **Found on the way:** the photo times came back in UTC where the partner facts are in India time; "1 steps".
+  - **Checks:**
+    - backend-api 552 passed, 1 skipped (`test_record.py`, 5: the operator's record of a past batch, the roles, his photo, a compressed day keeping each step where it fell, and `--photos`);
+    - the frontend gate passes: core 270 (`record.test.ts`, 10 new, holding the stub's record to ledger.js for every history batch and the story at five stages; the operator's goldens gain the Record tab, Batches' cleared months and the record screen), api 78, workspace 92 (5 new live tests: Priya's Record, the ledger page's tab, the cleared months opening on the Record, Rakesh's and Lakshmi Agencies' photos), admin 17, demo 5, console 3;
+    - the live fixtures were regenerated, with each case's record;
+    - the stub build was played through in the browser at 1440 and 390: Batches' months, a past batch's Record with its three photos and 23 steps, Rakesh's Photos tab;
+    - the a11y spec gains the Record tab, its photo sheet and orders, and the distributor's Photos; the browser suites were not run (SC-55).
+  - **Locally:** `hydrate.sh --photos munchly` put the twelve history label photos in the local photos bucket.
+  - **Production:** the history's label photos go up with the hydrate job's `--photos,munchly,--allow-env,prod` once this is deployed; until then a past batch's label photo has no image there.
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
+
+- **SC-143** (PR #123, merged; bug): CI on `main` had failed since SC-139, so Hosting never deployed SC-139 to SC-142.
+  - **Found** after merging SC-142: the SC-139, SC-141 and SC-142 merges each failed CI. backend-api and the agents deployed, but Hosting's deploy depends on the build and was skipped. Production's four apps were still from before SC-139. The PRs had been merged before their checks finished.
+  - **The build:** `scripts/no-seed.mjs` refused the live workspace build. Core's image glob bundled every photo under `design3/system/img`, and SC-139's evidence photos and SC-142's label photos are named for their batches (`MF-2409-117-before.webp`). The names showed in a chunk and in `service-worker.js`. The story's photos now live in core's `story-photos.ts`, which the workspace's live build replaces with an empty module (`workspace/src/lib/no-story-photos.ts`), as it does the stub. A live workspace reads every photo from backend-api's links; the stub build and the guided demo keep all 23.
+  - **The secret scan:** gitleaks failed on SC-139's and SC-142's merges (112 findings on SC-139's) and passed on SC-141's, which left the fixtures alone. The likely cause is the fictional waste agencies' pollution-board authorisations (`"auth": "MPCB/SWM/NGP/0412"`) in the reference data and the regenerated live fixtures, which the generic-api-key rule reads as credentials. `.gitleaks.toml` extends gitleaks' own rules and allows only that shape. It was not run through gitleaks locally, which isn't installed here.
+  - **Checks:** the frontend gate passes (core 270, api 78, workspace 92, admin 17, demo 5, console 3); the full build passes `no-seed.mjs`.
+
+  - **After the merge:** CI on `main` passed and deployed backend-api, the agents and Hosting, so production runs SC-139 to SC-143. The history's label photos reach production's photos bucket only with the hydrate job's `--photos,munchly,--allow-env,prod`, which has not been run.
+- **SC-144** (PR #124, merged): every photo loads under the kit's Skeleton shimmer, then fades in.
+  - **The request:** "all pictures loading must have hydration effect loader as we have for other sections of the app, reusue dont need to desigm". No design round, on the maintainer's word: the kit's own Skeleton, reused.
+  - **The build:** design3 first, then the port.
+    - `screens/common.jsx` `Photo`, and core's `screens/common/Photo.svelte`: the Skeleton fills the photo's frame until the photo has loaded, then the photo fades in (240 ms; at once under reduced motion). A photo that fails reads "The photo did not load" (`.photo-failed`).
+    - Used on the Record's photos and the photo opened whole, the distributor's destruction slots and his sent evidence, and Execution's card and the review sheet's destruction photos.
+    - `.rec-big` holds its frame while it loads. `screens.css` is copied verbatim.
+    - The camera's preview of the person's own photo is a local file and needs none.
+  - **Checks:**
+    - the frontend gate passes: core 270 (four goldens gain a space between the photos' tags), api 78, workspace 92, admin 17, demo 5, console 3;
+    - on the stub build, every photo starts under its skeleton, which goes once the photo has loaded (opacity 1), and a photo pointed at a missing file reads "The photo did not load";
+    - the motion spec counts `.skeleton` as a loading indicator. The browser suites were not run (SC-55).
+- **SC-145** (In Review, branch `SC-145-dist-figures`): the distributor's Batches and Orders show how their figures add up.
+  - **The request:** "For batches and order, this value is differing for distributors please check this and fix", then "if they are correct or not triage it, if all good leave it... but UI should have a way to know what the calculations show".
+  - **The triage: the figures are correct.** Every cleared batch ends whole to the paisa: sold + credited = cost.
+    - Batches leads with the credit: ₹66,918, and ₹7,821 for MF-2407-116.
+    - Orders leads with the sales: ₹1,05,928, and ₹14,640 for MF-2407-116.
+    - Together they make the cost: ₹1,72,846, and ₹22,461 for MF-2407-116.
+
+    Neither page showed the sum. The values stay.
+  - **Design first:** three options on one board in app v3, `SC-145 design review.html`:
+    - A, the same sum on both pages (recommended);
+    - B, how this adds up, on request;
+    - C, one figure on both pages.
+
+    The maintainer picked **A**. Designs, the build's stills and the decision are in `design3/designs/SC-145/`.
+  - **The build** (design3 first, then core):
+    - **The card:** both pages open with "How your 6 cleared batches add up": what they cost you = you sold + Munchly credited you. The page's own part is marked "this page"; the other is a button to its page. A bar shows the split, and a line says he ended whole.
+    - **Each cleared batch** carries its own sum, the page's part first: on Batches "₹7,821 credited + ₹14,640 sold = ₹22,461", on Orders "₹14,640 sold + ₹7,821 credited = ₹22,461".
+    - **Batches in a journey:** on Orders they keep their sales so far, which join the sum once they clear.
+    - **Rounding:** the figures are whole rupees that add up as shown: the cost is the rounded sales plus the rounded credit. Where the paise round apart, that can sit a rupee from the Money tab's "What you paid" (Lakshmi Agencies' MF-2407-112: ₹40,763, against ₹40,763.50 paid).
+    - **Where:** design3's `ledger.js` partners `sumOf` and `sumsOf`, and `trade.jsx` `SumCard`, `SumTerm` and `SumLine`; core's `partners.ts` `sumOf` and `sumsOf`, `SumCard.svelte` and `SumLine.svelte`, and `pt.ts` `clearedOf`, so both pages sum the same cleared batches.
+  - **Checks:**
+    - backend-api 552 passed, 1 skipped;
+    - the frontend gate passes: core 273, with `partners.test.ts` holding both distributors' sums to ledger.js and Rakesh Traders' to the board's; api 78; workspace 93, with a new live test of Orders' sum; admin 17; demo 5; console 3;
+    - design3's build was shot at 1440 and 390, light and dark, for both distributors (`build/`);
+    - the browser suites were not run (SC-55).
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
+
+- **SC-146** (In Review, branch `SC-146-photo-loader-visible`; bug found by the maintainer): photos showed a black frame while they loaded.
+  - **Found:** "photos dont show any loading effect, just black". On Rakesh Traders' Photos tab the label and After photos were black boxes with only their tags.
+  - **The cause:** SC-144's skeleton was there but could not be seen. The kit's shimmer is a translucent tint (`--fill-2` to `--fill-3`, 7.5% to 12%), meant for a light card, and the photo frames (`.rec-shot`, `.cam`) are near-black. SC-144's check confirmed the skeleton was in the page, not that it showed.
+  - **The fix** (design3 `common.jsx` `Photo` first, then core's `Photo.svelte`): the photo's skeleton sits on the page's own surface (`--surface-2`) under the shimmer, above the frame and under the photo's tag. The kit's Skeleton is unchanged.
+  - **Checks:**
+    - with the photos held back mid-load, design3 (light and dark) and core's stub build each showed the shimmer placeholders with their tags, then the photos once they landed;
+    - the frontend gate passes: core 270, api 78, workspace 92, admin 17, demo 5, console 3.
+
+- **SC-149** (In Review, branch `SC-149-overview-destroyed`): the console's Overview stops drawing what it recovered twice, and shows the food destroyed.
+  - **The request:** "Console dashboard graph across all clients seems to be duplicating the recovered graph, see if we can add destroyed food into the graphs too... Agents at work and other sections looks fine dont touch them". The Recovered figure's sparkline and the Recovered, by day card drew the same series under the same total, and nothing recorded what a closed batch destroyed.
+  - **Design first:** three options on one board in platform v3, `SC-149 design review.html`, each the console on a review world (Munchly and four fictional clients, 180 days of batches):
+    - A, food by day (recommended);
+    - B, recovered and written off;
+    - C, food so far.
+
+    The maintainer picked **A**. Designs, stills, the build's stills and the decision are in `design3/designs/SC-149/`.
+  - **The card, Food, by day:** each day's kilos kept out of landfill (sold or given) rise from one baseline in the console's green, and the kilos destroyed (no channel took them) hang under it, hatched in clay, on one scale; the headline gives both totals and the share saved, the tooltip and Show as a table add the packs destroyed, what the day recovered and the batches closed. The Recovered figure and its sparkline stay; Agents at work and the rest are unchanged.
+    - **Colours:** validated with the dataviz script on the card's surface: `#167a52` / `#c2410c` in light (CVD ΔE 9.1), `#34a571` / `#e0662c` in dark (9.0); the ledger's red failed against the green (protan ΔE 1.7). The destroyed figure's text 6.0:1 and 7.4:1; a 0 kg figure stays in the plain ink.
+    - **Motion:** the bars grow once (420 ms, a few ms apart), a reading moves them, and a day that keeps more shows what it kept over today's bar; at once under reduced motion.
+  - **The data:** a closed batch keeps the packs it destroyed, `sc.batches.destroyed` (migration 0012), from the journey's ledger (destroyed by the client or at the godown) and from the synthetic world's hydrate (about 4 in 10 batches leave 2 to 25%, seeded by the batch, so the rest of the world draws as before). Kilos come from each SKU's `kg_per_unit`: hydrate reads it from the pack size; the migration fills in a missing one from the SKU's name, and backfills a journey batch's packs from its latest cleared case's ledger.
+  - **The contract:** `DayFigures` gains `keptKg`, `destroyedKg` and `destroyed`; `Dashboard` gains `food` (`FoodFigures`, with the range before). `platform.js`, `platform.ts` and `dashboard.py` agree, held by the fixtures; `contracts.sh` re-exported the OpenAPI.
+  - **The port:** `FoodChart.svelte` replaces `RecoveredChart.svelte`; `+page.svelte`'s card; `overview.ts` (`kg`, `kgAxis`, `savedShare`); `console.css` verbatim. The console's e2e spec reads the table as Food, by day.
+  - **Checks:**
+    - backend-api 554 passed, 1 skipped (2 new: a closed batch's food, and no more destroyed than it holds);
+    - the frontend gate passes: core 273, api 79 (1 new), workspace 93, admin 17, demo 5, console 3;
+    - design3 and the console's mock build played through on the review world at 1440 and a phone, light and dark: the tooltip, the table, 90 days, no page errors;
+    - the browser suites were not run (SC-55).
+  - **Locally:** migrated to 0012: Munchly's three godown batches read 381 packs destroyed, and every SKU has its kilos. The synthetic clients' batches closed before read 0 destroyed until the next `hydrate.sh --reset`.
+  - **Hosting:** design3's `dist/` is rebuilt; the hosted console loads commit `4632839` (every pinned file checked on jsDelivr first); it renders, the card in its empty state on the prototype's seed.
+
+- **SC-150** (PR #128, merged): the apps' addresses on Firebase Hosting's own domain, and the landing page's bar links the console and the workspace.
+  - **The request:** `<client>.smartclearance.com` becomes `<client>-smartclearance.web.app`, `smartclearance.com` becomes `smartclearance.web.app`, and `console.smartclearance.com` becomes `smartclearance-console.web.app`. On the landing page's bar, Sign in and Book a demo go, replaced by two links: Console and Workspace.
+  - **The addresses:** design3 (`data.js` composes Munchly's as `munchly-` + the platform domain; `platform.js`, the console, the landing page's workspace section), the port, backend-api (`workspace_domain` is `smartclearance.web.app`, and a client's address is `{slug}-{domain}`, the reserved and taken messages included), the tests, goldens, live fixtures and the docs. Migration `0013` rewrites each client's stored address and the workspace doc's platform domain (dry-run on the local data: all seven clients moved).
+  - **Kept as they were:** staff email addresses and the staff email checks (`@smartclearance.com`, an identity, not an address of the apps); infra's notes on registering the custom domain later; the design records under `design3/designs/` and the images' prompt sidecars.
+  - **The bar** (design3 `site.jsx` first, then `Nav.svelte`; `site.css` verbatim): the appearance menu, **Console** where Sign in was, **Workspace** as the primary pill where Book a demo was, each opening another tab. A phone keeps Console in the bar, and its menu sheet offers Workspace and Console. Book a demo stays in the hero and the close; Find your workspace stays in the footer. The maintainer named the change outright, so no design round.
+  - **Where they point:** the admin and console builds default `PUBLIC_APP_URL`, `PUBLIC_CONSOLE_URL` and `PUBLIC_SITE_URL` to the live web.app addresses (CI sets none of them, so the live pages linked the Claude Design prototypes). The guided demo's link is unchanged.
+  - **Checks:** the frontend gate passes (core 273, api 79, workspace 93, admin 17, demo 5, console 3); backend-api 554 passed, 1 skipped; the landing page's build shows the bar at 1200 and on a phone, with no console errors. The admin's e2e, a11y and parity specs follow the new bar (unrun, SC-55).
+  - **Hosting:** design3's `dist/` is rebuilt; the hosted Claude Design pages stay on their pinned commit.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

@@ -15,7 +15,8 @@ import type {
 	WorkspaceSnapshot,
 	WsAuditPage,
 	WsLedger,
-	WsPartner
+	WsPartner,
+	WsRecord
 } from '../types/workspace';
 
 export type WorkspaceHttpOptions = Omit<TransportOptions, 'token'> & {
@@ -151,6 +152,7 @@ export function workspaceHttp(
 		case: (ref) => call<CaseDetail>('GET', c(ref)),
 		ledger: () => call<WsLedger>('GET', '/ledger'),
 		partner: () => call<WsPartner>('GET', '/partner'),
+		record: (ref) => call<WsRecord>('GET', `${c(ref)}/record`),
 		audit: (before) => call<WsAuditPage>('GET', '/audit' + (before ? `?before=${enc(before)}` : '')),
 		documentUrl: (ref, doc) => call('GET', `/documents/${enc(ref)}/${enc(doc)}`),
 
@@ -169,6 +171,11 @@ export function workspaceHttp(
 		message: (ref, text) => change('POST', `${c(ref)}/messages`, { text }),
 		accept: (ref, bid) => change('POST', `${c(ref)}/bids/${enc(bid)}/accept`),
 		staffSale: (ref, sold) => change('POST', `${c(ref)}/staff-sale`, { sold }),
+		destructionPhoto: (ref, which, input) =>
+			change<UploadLink>('POST', `${c(ref)}/destruction/photos`, { which, ...input }),
+		sendDestruction: (ref, input) => change('POST', `${c(ref)}/destruction`, input),
+		approveDestruction: (ref) => change('POST', `${c(ref)}/destruction/approve`, {}),
+		askDestructionAgain: (ref, reason) => change('POST', `${c(ref)}/destruction/ask`, { reason }),
 		confirmPickup: (ref) => change('POST', `${c(ref)}/donation/confirm`),
 		collect: (ref) => change('POST', `${c(ref)}/donation/collect`),
 		dispatch: (ref, kind) => change('POST', `${c(ref)}/dispatches`, { kind }),

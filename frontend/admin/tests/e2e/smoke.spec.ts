@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { openSite } from './site';
 
 // The landing page in Firefox and WebKit (desktop, tablet and phone): it renders without errors, its figures are
-// there, and a menu and a sheet open and close.
+// there, the bar links the console (SC-150), and a menu and a sheet open and close.
 test('smoke · the landing page works', async ({ page }) => {
 	const errors: string[] = [];
 	page.on('pageerror', (e) => errors.push(e.message));
@@ -10,10 +10,14 @@ test('smoke · the landing page works', async ({ page }) => {
 	await openSite(page);
 	await expect(page.getByRole('heading', { level: 1 })).toContainText('Every near-expiry carton gets a second');
 	await expect(page.locator('.ledger')).toContainText('₹21,152');
-	await page.locator('.site-nav').getByRole('button', { name: 'Sign in' }).click();
-	await expect(page.getByRole('menu', { name: 'Sign in to' })).toBeVisible();
+	await page.locator('.site-nav').getByRole('button', { name: 'Appearance' }).click();
+	await expect(page.getByRole('menu', { name: 'Appearance' })).toBeVisible();
 	await page.keyboard.press('Escape');
 	await expect(page.getByRole('menu')).toHaveCount(0);
+	await expect(page.locator('.site-nav').getByRole('link', { name: 'Console' })).toHaveAttribute(
+		'href',
+		'https://smartclearance-console.web.app'
+	);
 	await page.locator('.foot').getByRole('button', { name: 'Find your workspace' }).click();
 	await expect(page.getByRole('dialog', { name: 'Find your workspace' })).toBeVisible();
 	await page.getByRole('button', { name: 'Close' }).click();

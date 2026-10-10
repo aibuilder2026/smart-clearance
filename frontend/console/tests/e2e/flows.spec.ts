@@ -191,7 +191,7 @@ test('flows · the Overview: a stop chosen, a page, the chart as a table, and up
 	await expect(page.locator('.cs-ov-pager'), 'a reload keeps the page').toContainText('9–9 of 9');
 	if (!isMobile) {
 		await page.getByRole('button', { name: 'Show as a table' }).click();
-		await expect(page.getByRole('region', { name: 'Recovered, by day' })).toContainText('₹21,152');
+		await expect(page.getByRole('region', { name: 'Food, by day' })).toContainText('₹21,152');
 	}
 	await page.getByRole('button', { name: 'Pause updates' }).click();
 	await expect(page.locator('.cs-ov-live')).toContainText('Paused');

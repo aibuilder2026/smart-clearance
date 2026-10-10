@@ -21,6 +21,7 @@
 	import Screen from '../common/Screen.svelte';
 	import BatchTabs, { tabsOf } from '../live/BatchTabs.svelte';
 	import CommandQuiet from '../live/CommandQuiet.svelte';
+	import DestructionSheet from './DestructionSheet.svelte';
 
 	// S1 Command Center: the first viewport is the batch, tracked like an order: tracker first, the agents beside it, the
 	// cluster under it (screens/brand.jsx CommandCenter). On the live workspace (SC-73, SC-68 option B) the batches in a
@@ -70,13 +71,19 @@
 	const asked = $derived(ws.focus && tabs.some((t) => t.ref === ws.focus) ? ws.focus : c.batch.id);
 	const switching = $derived(asked !== c.batch.id);
 	const waiting = $derived(open.filter((t) => t.human).length);
+	// packs destroyed at the distributor's godown (SC-139): the batch waits on the operator's second yes
+	let dzOpen = $state(false);
+	const dz = $derived(c ? (c.destruction ?? s.hero.destruction ?? null) : null);
+	const dzWaits = $derived(dz?.status === 'checked');
 </script>
 
-{#snippet primary()}{#if s.hero.phase === 'planned'}<Button
+{#snippet primary()}{#if dzWaits}<Button
 			variant="approve"
 			icon="check"
 			disabled={offline}
-			onclick={openRoute}>Review and approve</Button
+			onclick={() => (dzOpen = true)}>Review the destruction</Button
+		>{:else if s.hero.phase === 'planned'}<Button variant="approve" icon="check" disabled={offline} onclick={openRoute}
+			>Review and approve</Button
 		>{:else if ['approved', 'executing'].includes(s.hero.phase)}<Button
 			variant="primary"
 			iconRight="arrow-right"
@@ -145,7 +152,9 @@
 			{primary}
 			money={s.hero.plan ? money : undefined}
 			line={s.hero.phase === 'cleared'
-				? `All ${fmt.num(c.plan.units)} units placed: ${c.lines.kirana.units} with ${c.kiranas.length} kiranas, ${c.lines.expiresoon.units} with a ${c.buyer.city} wholesaler. Nothing went to the bin.`
+				? dz
+					? `${fmt.num(c.plan.units - dz.units)} of ${fmt.num(c.plan.units)} units placed; ${fmt.num(dz.units)} expired and were destroyed at ${c.dist.godown}, on your yes.`
+					: `All ${fmt.num(c.plan.units)} units placed: ${c.lines.kirana.units} with ${c.kiranas.length} kiranas, ${c.lines.expiresoon.units} with a ${c.buyer.city} wholesaler. Nothing went to the bin.`
 				: undefined}
 		/>{:else}<Card
 			><Empty
@@ -235,4 +244,13 @@
 		{#if app.bp === 'desktop'}<Columns sideWidth={340} {main} side={feed} />{:else}<div class="stack" style="gap: 20px">
 				{@render tracker()}{@render feed()}{@render list()}{@render cluster()}
 			</div>{/if}
+		<DestructionSheet
+			bind:open={dzOpen}
+			d={dz}
+			x={c.expiry ?? s.hero.expiry ?? null}
+			dist={c.dist}
+			sku={c.sku}
+			batch={c.batch.id}
+			client={ws.data.client.short}
+		/>
 	</Screen>{/if}

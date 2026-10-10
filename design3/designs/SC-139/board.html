@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-139 Destroyed at the godown</title>
+<meta name="description" content="Three options for route B: expired packs destroyed at the distributor's godown, evidenced, approved by Supply Chain, with a financial credit note and the distributor's GST reversal.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<style>
+:root {
+  --ground: #f2f6f3; --surface: #ffffff; --sunken: #eaf0ec;
+  --ink: #0d1c15; --ink-2: #45554d; --ink-3: #5f6e67;
+  --line: rgb(17 41 30 / 0.1); --line-2: rgb(17 41 30 / 0.17);
+  --green: #167a52; --green-text: #12704a; --green-soft: #e3f4ea;
+  --amber-text: #8a5a00; --amber-soft: #fff3d4;
+  --shadow: 0 1px 2px rgb(17 41 30 / 0.06), 0 8px 24px -6px rgb(17 41 30 / 0.1);
+  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+  --ui: "Geist", -apple-system, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --ground: #070b09; --surface: #101613; --sunken: #0a0f0c;
+  --ink: #ecf2ee; --ink-2: #a7b4ad; --ink-3: #82908a;
+  --line: rgb(214 255 232 / 0.085); --line-2: rgb(214 255 232 / 0.14);
+  --green: #3ccb8a; --green-text: #5fdca2; --green-soft: rgb(60 203 138 / 0.12);
+  --amber-text: #f5c76a; --amber-soft: rgb(247 192 74 / 0.12);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -8px rgb(0 0 0 / 0.5);
+  color-scheme: dark }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 15px/1.55 var(--ui); -webkit-font-smoothing: antialiased; }
+a { color: var(--green-text); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 6px; }
+::selection { background: color-mix(in oklab, var(--green) 24%, transparent); }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 48px 16px 72px; }
+h1, h2, h3, h4 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: clamp(34px, 5.4vw, 56px); font-weight: 780; line-height: 1.02; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 82; }
+h2 { margin: 60px 0 14px; font-size: clamp(25px, 3vw, 32px); font-weight: 720; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 72, "wdth" 88; }
+h3 { font-size: 26px; font-weight: 720; letter-spacing: -0.018em; font-variation-settings: "opsz" 48, "wdth" 90; }
+h4 { margin: 26px 0 10px; font: 650 16px/1.35 var(--ui); letter-spacing: 0; }
+p { margin: 0 0 12px; max-width: 74ch; color: var(--ink-2); text-wrap: pretty; }
+p b, li b, td b { color: var(--ink); font-weight: 600; }
+.lede { font-size: 18px; margin-top: 14px; }
+blockquote { margin: 16px 0; padding: 16px 20px; border-radius: 14px; background: var(--sunken); color: var(--ink); font-size: 15.5px; max-width: 82ch; }
+blockquote ul { color: var(--ink); margin: 0; }
+ul { margin: 0 0 12px; padding-left: 20px; color: var(--ink-2); max-width: 80ch; display: grid; gap: 6px; }
+code { font: 500 0.9em/1 var(--mono); }
+figure { margin: 0; min-width: 0; }
+figure img, figure video { display: block; width: 100%; height: auto; border-radius: 14px; background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+figcaption { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+.four { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+@media (min-width: 900px) { .four { grid-template-columns: minmax(0, 2.6fr) minmax(0, 2.6fr) minmax(0, 0.95fr) minmax(0, 0.95fr); } }
+.duo { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+@media (min-width: 900px) { .duo { grid-template-columns: minmax(0, 2.4fr) minmax(0, 2.4fr) minmax(0, 1fr) minmax(0, 1fr); } }
+.phones { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+@media (min-width: 700px) { .phones { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .phones { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.desks { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 700px) { .desks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.card { padding: 22px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+.shared { display: grid; gap: 18px; }
+@media (min-width: 900px) { .shared { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.shared h3.sub { margin: 0 0 6px; }
+h3.sub { font: 650 16px/1.35 var(--ui); letter-spacing: 0; font-variation-settings: normal; }
+.shared p, .shared li { font-size: 14.5px; }
+.opt { margin-top: 26px; display: grid; gap: 14px; padding: 26px 22px; border-radius: 28px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); scroll-margin-top: 20px; }
+.opt.rec { box-shadow: var(--shadow), 0 0 0 2px var(--green); }
+.opt header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.opt header p { margin: 0; flex-basis: 100%; font-size: 17px; color: var(--ink); max-width: 76ch; }
+.tag { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font: 600 12.5px/1 var(--ui); color: var(--green-text); background: var(--green-soft); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14.5px; text-decoration: none; color: var(--ink); background: var(--sunken); box-shadow: 0 0 0 1px var(--line); }
+.btn.primary { background: var(--green); color: #fff; box-shadow: none; }
+:root[data-theme="dark"] .btn.primary { color: #03170d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #03170d; } }
+.states { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; }
+.states a { display: inline-flex; align-items: center; min-height: 32px; }
+.vid { display: grid; gap: 18px; }
+@media (min-width: 900px) { .vid { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: start; } }
+dl.facts { margin: 0; display: grid; gap: 12px; }
+dl.facts dt { font-size: 12.5px; font-weight: 650; color: var(--ink-3); }
+dl.facts dd { margin: 2px 0 0; color: var(--ink-2); font-size: 14.5px; }
+dl.facts dd ul { margin-top: 4px; font-size: 14.5px; }
+.tablewrap { overflow-x: auto; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow), 0 0 0 1px var(--line); }
+table.cmp { border-collapse: collapse; width: 100%; min-width: 860px; font-size: 14px; color: var(--ink-2); }
+table.cmp th, table.cmp td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+table.cmp thead th { color: var(--ink); font-weight: 650; background: var(--sunken); }
+table.cmp tbody th { color: var(--ink); font-weight: 600; width: 14%; }
+table.cmp tr:last-child > * { border-bottom: 0; }
+.rec-box { padding: 22px; border-radius: 20px; background: var(--green-soft); }
+.rec-box p { color: var(--ink); }
+.q { padding: 20px 22px; border-radius: 20px; background: var(--amber-soft); }
+.q p, .q li { color: var(--ink); }
+.q h3 { font-size: 20px; margin-bottom: 8px; }
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
+</style>
+<body>
+<main class="wrap">
+<h1>Destroyed at the godown</h1>
+<p class="lede">SC-139 · Munchly's workspace and the console · three options for route B: the packs left at a distributor's godown on expiry day are destroyed there, the destruction is evidenced and approved by Supply Chain before the batch closes, and the papers follow the GST treatment Indian FMCG uses today. Every company, person and figure is fictional.</p>
+<p>The maintainer (10 Oct):</p>
+<blockquote><ul><li>“Lets with 3 point B. Make sure the console client configuration reflects the same.”</li><li>“Required documentation like GST and invoice should reflect all the changes as needed. If chips are destroyed at go down, ask for a photo and supply chain will need to review and approve it before the entire deal closes, destruction certificate, credit note and other stuffs should be properly generated and validated and realistic as much as possible.”</li><li>“I want the destruction image to be done as much realistic as possible as it is done today, like landfill etc.”</li></ul></blockquote>
+<h2>What happens today in the product</h2>
+<p>Under Munchly's <b>full credit</b> policy the packs left at the godown come back to Munchly, which destroys them; the expiry credit note carries no GST, Munchly's destruction certificate counts them and its GST memo reverses its own input credit. The gap: the distributor keeps the input credit he took on packs he no longer has, and no paper deals with it. The example below is the leftover chips case: 444 of the scheme's 588 packets ordered, so <b>144 packs</b> are left at Kalamna Market godown.</p>
+<div class="four"><figure><img src="current/087-Execution-the-Expiry-settlement-full-credit.webp" width="1440" height="900" loading="lazy" alt="Today: Execution's Expiry settlement, full credit."><figcaption>Execution · expiry settlement</figcaption></figure><figure><img src="current/089-Paper-the-Expiry-credit-note-CN-0118.webp" width="1440" height="900" loading="lazy" alt="Today: the expiry credit note."><figcaption>The expiry credit note</figcaption></figure><figure><img src="current/090-Paper-the-destruction-certificate-248-units.webp" width="1440" height="900" loading="lazy" alt="Today: Munchly's destruction certificate."><figcaption>Munchly's destruction certificate</figcaption></figure><figure><img src="current/091-Paper-the-GST-ITC-memo-part-reversed.webp" width="1440" height="900" loading="lazy" alt="Today: the GST ITC memo, part reversed."><figcaption>The ITC memo</figcaption></figure></div>
+<h2>Route B, in every option</h2>
+<div class="shared">
+<div class="card"><h3 class="sub">The money</h3><p>A <b>financial credit note</b> (no GST charged or adjusted) from Munchly to Rakesh Traders: 144 × ₹22 = <b>₹3,168.00</b>, plus the <b>₹158.40</b> of input GST he reverses on them (grossed up, so he ends whole), plus the agency's <b>₹216.00</b> destruction charges. <b>₹3,542.40</b> in all, adjusted against his account.</p></div>
+<div class="card"><h3 class="sub">The GST</h3><p>The packs were Rakesh Traders' stock, bought under Munchly's tax invoice: he destroys them, so <b>section 17(5)(h) falls on his credit</b>, reversed in his GSTR-3B (Table 4(B)(1)). Munchly destroyed nothing: its output tax on the sale stands and it <b>keeps its own input credit</b> (₹1,224, ₹0.90 a pack). No EPR charge on destroying them (EPR, point 5, is a later story).</p></div>
+<div class="card"><h3 class="sub">The destruction, as it is done today</h3><p>The packets are taken to the <b>authorised municipal landfill</b>, slit open, tipped into a pit and covered by a JCB, with a <b>slate</b> in the frame carrying the batch, the count and the date. The agency, the corporation's authorised waste contractor, issues its certificate. The batch <b>cannot close</b> until Supply Chain approves the evidence.</p></div>
+</div>
+<h4>The evidence photos (Qwen-Image, illustrative)</h4>
+<div class="duo"><figure><img src="evidence/before.webp" width="1024" height="775" loading="lazy" alt="Before: the 144 chips packets in a crate at Kalamna Market godown, the carton's batch label MF-2409-117 in view."><figcaption>Before · at the godown, the batch label in view</figcaption></figure><figure><img src="evidence/after.webp" width="1024" height="775" loading="lazy" alt="After: the packets slit open in a pit at the municipal landfill, a JCB covering them, a slate reading MF-2409-117, 144 PKTS, 03-10-26."><figcaption>After · at the landfill, the slate in the frame</figcaption></figure></div>
+<h4>The papers, after Priya's yes</h4>
+<p>The agency's <b>destruction certificate</b> (for Rakesh Traders: the batch, the packs and kilos, the method, the agency's authorisation, the evidence and who approved it, and his GST reversal), Munchly's <b>expiry credit note</b> (financial, against that certificate) and the <b>GST ITC memo</b> (credit kept). Each has its PDF; Rakesh's copies carry the certificate and the credit note.</p>
+<div class="desks"><figure><img src="common/papers-1440-light.webp" width="1440" height="900" loading="lazy" alt="The three papers after the approval, light."><figcaption>The papers</figcaption></figure><figure><img src="common/papers-1440-dark.webp" width="1440" height="900" loading="lazy" alt="The three papers after the approval, dark."><figcaption>The papers · dark</figcaption></figure></div>
+<h4>The console: the client's expiry policy</h4>
+<p>The supply-chain profile's <b>Expiry policy</b> gains <b>Destroyed at the distributor's godown</b>, and Munchly is set to it. Under it: the evidence asked for, the reviewer (the batch closes on that yes), the authorised agencies, what the credit covers, and when the distributor is asked again. <b>Taken back by Munchly</b> becomes the GST-correct route A (a GST credit note against Munchly's invoice), offered but not built in this round.</p>
+<div class="desks"><figure><img src="common/console-1440-light.webp" width="1440" height="914" loading="lazy" alt="The console's expiry policy for Munchly, light."><figcaption>Console · expiry policy</figcaption></figure><figure><img src="common/console-1440-dark.webp" width="1440" height="914" loading="lazy" alt="The console's expiry policy for Munchly, dark."><figcaption>Console · dark</figcaption></figure></div>
+<h2>The options: how the evidence comes in and how Priya approves it</h2>
+<section class="opt" id="option-a"><header><h3>Option A · On Execution</h3>
+<p>Rakesh's Today asks for <b>one photo</b> of the packs destroyed, and who destroyed them. Priya reviews it in a card on the batch's <b>Execution</b>, after Left at the godown: the photo, the packs, the agency, and <b>Approve · issue the papers</b> or <b>Ask again</b>.</p></header>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>The smallest change: one photo, one card.</li><li>One photo cannot show both the batch and its destruction; nothing checks it but Priya.</li><li>The approval sits on Execution, so it waits until Priya opens that batch.</li></ul></dd><dt>What the build touches</dt><dd>design3 <code>trade.jsx</code> (Rakesh's Today card and a destruction photo step) and <code>brand.jsx</code> (an Execution card); core's trade and brand screens; backend-api's expiry step (a new phase, the evidence upload, approve and ask again), money.js, the papers and the Paperwork agent's templates.</dd></dl>
+<div class="desks"><figure><img src="option-a/review-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option A: Priya's review, light."><figcaption>Priya's review</figcaption></figure><figure><img src="option-a/review-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option A: Priya's review, dark."><figcaption>Priya's review · dark</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-a/dist-390-light.webp" width="780" height="1688" loading="lazy" alt="Option A: Rakesh's side on a phone, light."><figcaption>Rakesh · phone</figcaption></figure><figure><img src="option-a/dist-390-dark.webp" width="780" height="1688" loading="lazy" alt="Option A: Rakesh's side on a phone, dark."><figcaption>Rakesh · phone · dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="godown/mockup.html?opt=a&amp;frame=review">Open option A</a><a class="btn" href="godown/mockup.html?opt=a&amp;frame=dist">Rakesh's side</a><a class="btn" href="godown/mockup.html?opt=a&amp;frame=console">The console</a></div></section>
+<section class="opt rec" id="option-b"><header><h3>Option B · A second yes</h3><span class="tag">Recommended</span>
+<p>Like the label photo and the plan's approval. Rakesh sends <b>two photos</b> (before, at the godown with the batch label; after, at the landfill with the slate) and the agency's certificate number. <b>Vision checks</b> them: the batch number, the count against the 144 left, when and where, the slate. Priya gets <b>1 waiting for your yes</b> on the Command Center and a push, and approves in a sheet that shows both photos, Vision's checks and exactly what her yes issues.</p></header>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>The evidence real brands ask for: the batch before, the destruction after, the slate, the agency's certificate.</li><li>Vision does the checking a person would, so Priya's yes is quick and safe; Ask again says why.</li><li>Mirrors the plan's approval, which the workspace already teaches.</li><li>The most to build: a Vision check of the photos, and a second approval flow.</li></ul></dd><dt>What the build touches</dt><dd>As A, plus Vision's destruction check (the agents' Vision pipeline, a new eval set), the Command Center's waiting count and the approve sheet's second kind.</dd></dl>
+<div class="desks"><figure><img src="option-b/review-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option B: Priya's review, light."><figcaption>Priya's review</figcaption></figure><figure><img src="option-b/review-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option B: Priya's review, dark."><figcaption>Priya's review · dark</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-b/dist-390-light.webp" width="780" height="2496" loading="lazy" alt="Option B: Rakesh's side on a phone, light."><figcaption>Rakesh · phone</figcaption></figure><figure><img src="option-b/dist-390-dark.webp" width="780" height="2496" loading="lazy" alt="Option B: Rakesh's side on a phone, dark."><figcaption>Rakesh · phone · dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="godown/mockup.html?opt=b&amp;frame=review">Open option B</a><a class="btn" href="godown/mockup.html?opt=b&amp;frame=dist">Rakesh's side</a><a class="btn" href="godown/mockup.html?opt=b&amp;frame=console">The console</a></div></section>
+<section class="opt" id="option-c"><header><h3>Option C · Witnessed</h3>
+<p>Rakesh <b>books a slot</b> with an authorised agency, and Munchly's area sales manager (Sunil Patil, fictional) <b>witnesses</b> the destruction and takes the photos in the app; the agency's certificate is uploaded; Priya approves after the witness.</p></header>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>The strongest control: a Munchly person at every destruction.</li><li>Slow and costly for 144 packs; most brands keep witnessing for large or high-value lots.</li><li>A new person in the workspace (the area sales manager) and a booking step.</li></ul></dd><dt>What the build touches</dt><dd>As A, plus a new role and member, a booking and witness flow, and the console's witness setting.</dd></dl>
+<div class="desks"><figure><img src="option-c/review-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option C: Priya's review, light."><figcaption>Priya's review</figcaption></figure><figure><img src="option-c/review-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option C: Priya's review, dark."><figcaption>Priya's review · dark</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-c/dist-390-light.webp" width="780" height="1688" loading="lazy" alt="Option C: Rakesh's side on a phone, light."><figcaption>Rakesh · phone</figcaption></figure><figure><img src="option-c/dist-390-dark.webp" width="780" height="1688" loading="lazy" alt="Option C: Rakesh's side on a phone, dark."><figcaption>Rakesh · phone · dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="godown/mockup.html?opt=c&amp;frame=review">Open option C</a><a class="btn" href="godown/mockup.html?opt=c&amp;frame=dist">Rakesh's side</a><a class="btn" href="godown/mockup.html?opt=c&amp;frame=console">The console</a></div></section>
+<h2>Recommendation</h2>
+<div class="rec-box"><p><b>Option B, A second yes.</b> It asks for what real brands ask for (the batch before, the destruction at the landfill with the slate, the agency's certificate), lets Vision do the checking a person would, and gives Priya one clear yes that issues exactly the papers it names, before the batch can close. Option C's witness could later be a console setting for lots above a value.</p></div>
+<h2>Questions for you</h2>
+<div class="q"><ul>
+<li><b>Route A:</b> keep <b>Taken back by Munchly</b> offered in the console as the GST-correct route (a GST credit note against Munchly's invoice), to build later, or hide it until then?</li>
+<li><b>The credit:</b> gross up the input GST he reverses (₹158.40 here), so he ends whole, and reimburse the agency's charges (₹1.50 a pack)? Both are on in these designs.</li>
+<li><b>The history:</b> Munchly's three Q2 batches left at the godown settled under full credit in July to September. Keep them as they were (the policy changed in October), or restate them under route B?</li>
+<li><b>If Rakesh sends nothing:</b> ask again after two days, as designed, and the batch stays open until he does?</li>
+</ul></div>
+<footer>SC-139 · design3/designs/SC-139 · the photos are Qwen-Image renders (sidecars in <code>evidence/</code>); every company, person and figure is fictional.</footer>
+</main>
+</body>
+</html>

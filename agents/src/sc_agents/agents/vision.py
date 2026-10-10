@@ -1,10 +1,15 @@
-"""Vision (verify): asks the distributor for one label photo when a batch is flagged, then reads it with Gemini Flash.
+"""Vision (verify): asks the distributor for one label photo when a batch is flagged, then reads it with Gemini Flash;
+and on expiry day checks the evidence of packs destroyed at his godown (SC-139).
 
 - `batch.at_risk` → `POST …/photo-request`: no model. backend-api asks the distributor (or, when the client needs no
   photo, sends the Valuer on).
 - `journey.step {type: decide}` → the photo from the photos bucket, read by Gemini Flash (multimodal) into
   {batch, mfg, bestBefore, mrp, pack, confidence}, then `POST …/photo-read {read}`. backend-api holds the read to the
   DMS record: a mismatch, or a confidence under the client's threshold, asks for another photo and the pipeline stops.
+
+- `journey.step {type: destruction}` → the two photos (before, at the godown; after, at the landfill), read together by
+  Gemini Flash into {before: {batch, count}, after: {slate: {batch, count, date}, landfill, destroyed}}, then
+  `POST …/destruction/check {read}`. backend-api holds the read to the batch; the operator decides on the yes.
 
 The model is not shown the DMS record, so it reads what is printed rather than what is expected. A read the model
 could not make (an error, a timeout) is tried again on Pub/Sub's next delivery; on the last one an empty read goes,
@@ -152,4 +157,145 @@ def read(rc: RunCtx) -> list:
             when=lambda s: due(s) and "photo" in s,
         ),
         step(rc, "vision_report", _report, agent=AGENT, when=lambda s: due(s) and "photo" in s),
+    ]
+
+
+# --- checking the destruction's evidence (SC-139) --------------------------------------------------------------------
+
+
+class BeforeRead(BaseModel):
+    # every field required, null where the photo does not show it (SC-77)
+    batch: str | None = Field(
+        description="the batch number on a carton's label, exactly as printed; null if none is readable"
+    )
+    count: int | None = Field(
+        description="how many packs are in view, counted or closely estimated; null if they cannot be"
+    )
+    confidence: float = Field(description="0 to 1: how sure the batch and the count are right")
+
+
+class Slate(BaseModel):
+    batch: str | None = Field(description="the batch number written on the slate; null if none")
+    count: int | None = Field(description="the count of packets written on the slate; null if none")
+    date: str | None = Field(description="the date written on the slate, as written (e.g. 03-10-26); null if none")
+
+
+class AfterRead(BaseModel):
+    slate: Slate
+    landfill: bool = Field(
+        description="true if the photo shows a landfill or disposal site: a pit, waste, earth-moving"
+    )
+    destroyed: bool = Field(
+        description="true if the packs are visibly slit open, crushed or buried, no longer sellable"
+    )
+
+
+class DestructionRead(BaseModel):
+    before: BeforeRead
+    after: AfterRead
+
+
+def tidy_destruction(read: dict[str, Any]) -> dict[str, Any]:
+    """the model's read as backend-api holds it to the batch: the batch as the DMS writes it, whole counts"""
+
+    def count(v: Any) -> int | None:
+        try:
+            n = round(float(v))
+        except (TypeError, ValueError):
+            return None
+        return n if n >= 0 else None
+
+    before, after = read.get("before") or {}, read.get("after") or {}
+    slate = after.get("slate") or {}
+    confidence = before.get("confidence")
+    try:
+        confidence = min(1.0, max(0.0, float(confidence))) if confidence is not None else 0.0
+    except (TypeError, ValueError):
+        confidence = 0.0
+    return {
+        "before": {
+            "batch": checks.batch_no(before.get("batch")),
+            "count": count(before.get("count")),
+            "confidence": round(confidence, 3),
+        },
+        "after": {
+            "slate": {
+                "batch": checks.batch_no(slate.get("batch")),
+                "count": count(slate.get("count")),
+                "date": (str(slate["date"]).strip()[:12] or None) if slate.get("date") else None,
+            },
+            "landfill": bool(after.get("landfill")),
+            "destroyed": bool(after.get("destroyed")),
+        },
+    }
+
+
+def destruction_due(state: dict[str, Any]) -> bool:
+    case = state.get("case") or {}
+    return _on(state) and (case.get("destruction") or {}).get("status") == "reading"
+
+
+async def _dz_photos(rc: RunCtx, state: dict[str, Any]) -> dict[str, Any]:
+    case = state["case"]
+    names = rc.msg.payload.get("photos") or {}
+    bucket = case.get("photosBucket") or rc.settings.photos_bucket
+    if not names.get("before") or not names.get("after") or not bucket:
+        return {"halt": True}
+    for which in ("before", "after"):
+        try:
+            data = await rc.deps.store.read(bucket, names[which])
+        except Exception as e:
+            raise Transient(f"the destruction's {which} photo gs://{bucket}/{names[which]}: {e}") from e
+        rc.blobs[f"dz_{which}"] = (data, mime_of(data))
+    rc.run(AGENT)
+    return {"dz_photos": names}
+
+
+def _dz_parts(rc: RunCtx):
+    def parts(state: dict[str, Any]) -> list[types.Part]:
+        before, bm = rc.blobs["dz_before"]
+        after, am = rc.blobs["dz_after"]
+        return [
+            types.Part(text="BEFORE: the expired packs at the distributor's godown."),
+            types.Part.from_bytes(data=before, mime_type=bm),
+            types.Part(text="AFTER: the same packs at the disposal site."),
+            types.Part.from_bytes(data=after, mime_type=am),
+            types.Part(text="Read both photos. Return only what you can see."),
+        ]
+
+    return parts
+
+
+async def _dz_report(rc: RunCtx, state: dict[str, Any]) -> dict[str, Any]:
+    run = rc.run(AGENT)
+    read = state.get("vision_destruction") or {}
+    if not read:
+        run.fell_back("no read")
+        if rc.msg.attempt < rc.settings.max_attempts:
+            raise Transient("Vision could not read the destruction's photos: Pub/Sub tries again")
+    out = await rc.report(
+        AGENT, case_path(rc.msg.client, rc.msg.ref or "", "destruction/check"), {"read": tidy_destruction(read)}
+    )
+    if out.get("noop"):
+        return halt()
+    return {}
+
+
+def destruction(rc: RunCtx) -> list:
+    return [
+        step(rc, "vision_dz_photos", _dz_photos, agent=AGENT, when=destruction_due),
+        writer(
+            rc,
+            name="vision_destruction",
+            agent=AGENT,
+            tier="flash",
+            prompt_name="vision_destruction",
+            schema=DestructionRead,
+            output_key="vision_destruction",
+            parts=_dz_parts(rc),
+            temperature=STRUCTURED,
+            selector=lambda s: (s.get("dz_photos") or {}).get("before", ""),
+            when=lambda s: destruction_due(s) and "dz_photos" in s,
+        ),
+        step(rc, "vision_dz_report", _dz_report, agent=AGENT, when=lambda s: destruction_due(s) and "dz_photos" in s),
     ]

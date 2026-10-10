@@ -1,0 +1,44 @@
+/* SC-149's chart inks: the food kept out of landfill in the console's green, the food destroyed in clay with a hatch.
+   Validated with the dataviz script against the card's surface: light #167a52 / #c2410c (CVD ΔE 9.1), dark #34a571 /
+   #e0662c (CVD ΔE 9.0) */
+:root { --viz-saved: #167a52; --viz-destroyed: #c2410c; --viz-destroyed-soft: rgb(194 65 12 / 0.16); --viz-destroyed-text: #b13a0a; }
+[data-theme="dark"] { --viz-saved: #34a571; --viz-destroyed: #e0662c; --viz-destroyed-soft: rgb(224 102 44 / 0.2); --viz-destroyed-text: #f08a5a; }
+
+.sc149-big { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 18px; }
+.sc149-big .fig { display: inline-flex; align-items: baseline; gap: 6px; }
+.sc149-big .fig b { font: 700 26px/1.1 var(--font-display); letter-spacing: -0.02em; color: var(--fg); font-variant-numeric: tabular-nums; font-variation-settings: "opsz" 48, "wdth" 88; }
+.sc149-big .fig b .cur { font-size: 0.62em; vertical-align: 0.42em; margin-right: 1px; }
+.sc149-big .fig > span { font-size: 13px; font-weight: 500; color: var(--fg-3); }
+.sc149-big .fig.destroyed b { color: var(--viz-destroyed-text); }
+.sc149-share { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: var(--r-full); background: var(--primary-soft); color: var(--primary-text); font-size: 12.5px; font-weight: 650; font-variant-numeric: tabular-nums; }
+
+.sc149-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 10px 0 0; padding: 0; list-style: none; font-size: 12.5px; color: var(--fg-2); }
+.sc149-legend li { display: inline-flex; align-items: center; gap: 6px; }
+.sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; flex: none; }
+.sw.saved, .sw.recovered { background: var(--viz-saved); }
+.sw.destroyed, .sw.written { background: repeating-linear-gradient(135deg, var(--viz-destroyed) 0 2px, var(--viz-destroyed-soft) 2px 4px); box-shadow: inset 0 0 0 1px var(--viz-destroyed); }
+.sc149-tip .tr span:first-child { display: inline-flex; align-items: center; gap: 6px; }
+.sc149-tip .sw { width: 9px; height: 9px; border-radius: 2px; }
+.sc149-tip { min-width: 192px; }
+
+.sc149-chart .sc149-up { fill: var(--viz-saved); }
+.sc149-chart .sc149-down { fill: url(#sc149-hatch); stroke: var(--viz-destroyed); stroke-width: 1; }
+.sc149-chart .sc149-col { fill: var(--fill); }
+.sc149-chart .sc149-wash { fill: var(--viz-saved); }
+.sc149-chart .sc149-line { fill: none; stroke: var(--viz-saved); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.sc149-chart .sc149-down-area, .sc149-chart .sc149-band-destroyed { fill: url(#sc149-hatch); }
+.sc149-chart .sc149-down-line { fill: none; stroke: var(--viz-destroyed); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.sc149-chart .sc149-band-saved { fill: color-mix(in oklab, var(--viz-saved) 16%, transparent); }
+.sc149-chart .sc149-dot-up { fill: var(--viz-saved); stroke: var(--surface); stroke-width: 2; }
+.sc149-chart .sc149-dot-down { fill: var(--viz-destroyed); stroke: var(--surface); stroke-width: 2; }
+.sc149-chart .sc149-end text { font-size: 11.5px; fill: var(--fg-3); }
+.sc149-chart .sc149-end .v { font-size: 13px; font-weight: 650; fill: var(--fg); }
+
+/* B: the first figure's food split, in place of the sparkline that repeated the card */
+.sc149-split { display: grid; gap: 6px; margin-top: 8px; }
+.sc149-split .bar { display: flex; gap: 2px; height: 8px; }
+.sc149-split .bar i { border-radius: 3px; }
+.sc149-split .bar .saved { background: var(--viz-saved); }
+.sc149-split .bar .destroyed { background: repeating-linear-gradient(135deg, var(--viz-destroyed) 0 2px, var(--viz-destroyed-soft) 2px 4px); box-shadow: inset 0 0 0 1px var(--viz-destroyed); min-width: 4px; }
+.sc149-split .t { font-size: 12.5px; color: var(--fg-3); }
+.sc149-split .t b { color: var(--fg-2); font-weight: 600; }

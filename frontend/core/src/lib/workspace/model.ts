@@ -117,8 +117,24 @@ export function heroModel(s: State, data: Pick<WorkspaceData, 'skus' | 'distribu
 	} else if (h.phase === 'cleared') {
 		// the packs that expired at the godown and were destroyed (SC-94, the live source); the story's batch destroys
 		// none (SC-135: the line read 0 for every batch)
-		const gone = c.expiry?.units ?? 0;
-		eta = gone ? `Cleared · ${fmt.num(gone)} packs destroyed` : 'Cleared · 0 cartons destroyed';
+		const gone = c.expiry?.units ?? h.expiry?.units ?? 0;
+		eta = gone
+			? `Cleared · ${fmt.num(gone)} packs destroyed${(c.destruction ?? h.destruction) ? ' at the godown' : ''}`
+			: 'Cleared · 0 cartons destroyed';
+	}
+	// packs destroyed at the distributor's godown (SC-139): the batch waits on the evidence, then on the second yes
+	const dz = h.phase !== 'cleared' ? (c.destruction ?? h.destruction)?.status : null;
+	if (dz === 'requested' || dz === 'asked') {
+		eta = `Waiting for ${c.dist.short + (/s$/.test(c.dist.short) ? "'" : "'s")} destruction evidence`;
+		etaTone = 'amber';
+		agentLive = '';
+	} else if (dz === 'reading') {
+		eta = "Checking the destruction's evidence";
+		agentLive = 'Vision is checking the evidence';
+	} else if (dz === 'checked') {
+		eta = 'The destruction waits for your yes';
+		etaTone = 'amber';
+		agentLive = '';
 	}
 	return {
 		h,
@@ -371,9 +387,11 @@ export const routesFor = (r: RoleId) =>
 				? ['listing']
 				: r === 'retailer'
 					? ['offer']
-					: r === 'operator'
-						? ['journey', 'route', 'execution', 'paperwork']
-						: []
+					: r === 'distributor'
+						? ['destroy']
+						: r === 'operator'
+							? ['journey', 'route', 'execution', 'paperwork', 'record']
+							: []
 		);
 /** every screen name the app knows, across the roles */
 export const SCREENS = Array.from(new Set((Object.keys(NAV) as RoleId[]).flatMap(routesFor)));
@@ -383,7 +401,7 @@ export const SCREENS = Array.from(new Set((Object.keys(NAV) as RoleId[]).flatMap
 /** the operator reads the workspace top down: the workspace, then a batch, then the batch's screens, each a tab under
  *  the batch's head; each is where the batch stands from one stop to another */
 export type BatchPart = {
-	id: 'journey' | 'route' | 'execution' | 'paperwork';
+	id: 'journey' | 'route' | 'execution' | 'paperwork' | 'record';
 	label: string;
 	short: string;
 	icon: IconName;
@@ -412,7 +430,9 @@ export const BATCH_PARTS: BatchPart[] = [
 		from: 7,
 		to: 7,
 		ahead: 'after the lines close'
-	}
+	},
+	// the batch's record (SC-142): open at every stop, like its Journey
+	{ id: 'record', label: 'Record', short: 'Record', icon: 'history', from: 99, to: 99, ahead: '' }
 ];
 export const BATCH_PART_IDS: string[] = BATCH_PARTS.map((p) => p.id);
 
@@ -450,7 +470,7 @@ export function partState(
 	it: JourneyItem,
 	p: BatchPart
 ): { here?: boolean; human?: boolean; ahead?: boolean; words: string } {
-	if (p.id === 'journey') return { words: '' };
+	if (p.id === 'journey' || p.id === 'record') return { words: '' };
 	if (p.id === partAt(it))
 		return { here: true, human: it.human, words: it.human ? 'needs your yes' : 'where the batch is' };
 	return it.stage < p.from ? { ahead: true, words: p.ahead } : { words: 'done' };

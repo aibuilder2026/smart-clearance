@@ -1,0 +1,287 @@
+[
+ {
+  "url": "http://localhost:8787/app/Smart-Clearance%20app%20v3.html#/home",
+  "out": "build/dist-today-requested-dark-1440",
+  "width": 1440,
+  "theme": "dark",
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791636406964
+   }
+  },
+  "js": "(()=>{const F=window.SC3_FLOW,St=window.SC3_STORE,D=window.SC3_DATA,M=window.SC3_MONEY;F.fastForward(8);const h=D.BATCHES.find(b=>b.hero);St.update(s=>{s.hero.expiry=M.expirySettlement(144,D.SKUS[h.sku],\"godown\");s.hero.destruction={status:\"requested\",units:144};s.notifications.forEach(n=>n.read=true);});})()",
+  "wait": 1500
+ },
+ {
+  "url": "http://localhost:8787/app/Smart-Clearance%20app%20v3.html#/home",
+  "out": "build/dist-today-requested-light-390",
+  "width": 390,
+  "theme": "light",
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791636406964
+   }
+  },
+  "js": "(()=>{const F=window.SC3_FLOW,St=window.SC3_STORE,D=window.SC3_DATA,M=window.SC3_MONEY;F.fastForward(8);const h=D.BATCHES.find(b=>b.hero);St.update(s=>{s.hero.expiry=M.expirySettlement(144,D.SKUS[h.sku],\"godown\");s.hero.destruction={status:\"requested\",units:144};s.notifications.forEach(n=>n.read=true);});})()",
+  "wait": 1500,
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/app/Smart-Clearance%20app%20v3.html#/destroy/MF-2409-117",
+  "out": "build/destroy-requested-dark-1440",
+  "width": 1440,
+  "theme": "dark",
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791636406964
+   }
+  },
+  "js": "(()=>{const F=window.SC3_FLOW,St=window.SC3_STORE,D=window.SC3_DATA,M=window.SC3_MONEY;F.fastForward(8);const h=D.BATCHES.find(b=>b.hero);St.update(s=>{s.hero.expiry=M.expirySettlement(144,D.SKUS[h.sku],\"godown\");s.hero.destruction={status:\"requested\",units:144};s.notifications.forEach(n=>n.read=true);});})()",
+  "wait": 1500,
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/app/Smart-Clearance%20app%20v3.html#/destroy/MF-2409-117",
+  "out": "build/destroy-photos-light-390",
+  "width": 390,
+  "theme": "light",
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791636406964
+   }
+  },
+  "js": "(()=>{const F=window.SC3_FLOW,St=window.SC3_STORE,D=window.SC3_DATA,M=window.SC3_MONEY;F.fastForward(8);const h=D.BATCHES.find(b=>b.hero);St.update(s=>{s.hero.expiry=M.expirySettlement(144,D.SKUS[h.sku],\"godown\");s.hero.destruction={status:\"requested\",units:144};s.notifications.forEach(n=>n.read=true);});})()",
+  "wait": 1500,
+  "full": true,
+  "click": [
+   "[aria-label=\"Take the before photo\"]",
+   "[aria-label=\"Take the after photo\"]"
+  ]
+ },
+ {
+  "url": "http://localhost:8787/app/Smart-Clearance%20app%20v3.html#/destroy/MF-2409-117",
+  "out": "build/destroy-sent-light-1440",
+  "width": 1440,
+  "theme": "light",
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791636406964
+   }
+  },
+  "js": "(()=>{const F=window.SC3_FLOW,St=window.SC3_STORE,D=window.SC3_DATA,M=window.SC3_MONEY;F.fastForward(8);const h=D.BATCHES.find(b=>b.hero);St.update(s=>{s.hero.expiry=M.expirySettlement(144,D.SKUS[h.sku],\"godown\");s.hero.destruction={status:\"requested\",units:144};s.notifications.forEach(n=>n.read=true);});F.act(\"sendDestruction\");})()",
+  "wait": 1500
+ },
+ {
+  "url": "http://localhost:8787/app/Smart-Clearance%20app%20v3.html#/command",
+  "out": "build/command-checked-light-1440",
+  "width": 1440,
+  "theme": "light",
+  "ls": {
+   "sc3-session": {
+    "uid": "priya",
+    "at": 1791636406964
+   }
+  },
+  "js": "(()=>{const F=window.SC3_FLOW,St=window.SC3_STORE,D=window.SC3_DATA,M=window.SC3_MONEY;F.fastForward(8);const h=D.BATCHES.find(b=>b.hero);St.update(s=>{s.hero.expiry=M.expirySettlement(144,D.SKUS[h.sku],\"godown\");s.hero.destruction={status:\"requested\",units:144};s.notifications.forEach(n=>n.read=true);});F.act(\"sendDestruction\");})()",
+  "wait": 1500
+ },
+ {
+  "url": "http://localhost:8787/app/Smart-Clearance%20app%20v3.html#/command",
+  "out": "build/review-dark-1440",
+  "width": 1440,
+  "theme": "dark",
+  "ls": {
+   "sc3-session": {
+    "uid": "priya",
+    "at": 1791636406964
+   }
+  },
+  "js": "(()=>{const F=window.SC3_FLOW,St=window.SC3_STORE,D=window.SC3_DATA,M=window.SC3_MONEY;F.fastForward(8);const h=D.BATCHES.find(b=>b.hero);St.update(s=>{s.hero.expiry=M.expirySettlement(144,D.SKUS[h.sku],\"godown\");s.hero.destruction={status:\"requested\",units:144};s.notifications.forEach(n=>n.read=true);});F.act(\"sendDestruction\");})()",
+  "wait": 1500,
+  "click": [
+   "button:has-text(\"Review the destruction\")"
+  ]
+ },
+ {
+  "url": "http://localhost:8787/app/Smart-Clearance%20app%20v3.html#/command",
+  "out": "build/review-light-390",
+  "width": 390,
+  "theme": "light",
+  "ls": {
+   "sc3-session": {
+    "uid": "priya",
+    "at": 1791636406964
+   }
+  },
+  "js": "(()=>{const F=window.SC3_FLOW,St=window.SC3_STORE,D=window.SC3_DATA,M=window.SC3_MONEY;F.fastForward(8);const h=D.BATCHES.find(b=>b.hero);St.update(s=>{s.hero.expiry=M.expirySettlement(144,D.SKUS[h.sku],\"godown\");s.hero.destruction={status:\"requested\",units:144};s.notifications.forEach(n=>n.read=true);});F.act(\"sendDestruction\");})()",
+  "wait": 1500,
+  "click": [
+   "button:has-text(\"Review the destruction\")"
+  ]
+ },
+ {
+  "url": "http://localhost:8787/app/Smart-Clearance%20app%20v3.html#/execution/MF-2409-117",
+  "out": "build/execution-approved-dark-1440",
+  "width": 1440,
+  "theme": "dark",
+  "ls": {
+   "sc3-session": {
+    "uid": "priya",
+    "at": 1791636406964
+   }
+  },
+  "js": "(async()=>{const F=window.SC3_FLOW,St=window.SC3_STORE,D=window.SC3_DATA,M=window.SC3_MONEY;F.fastForward(8);const h=D.BATCHES.find(b=>b.hero);St.update(s=>{s.hero.expiry=M.expirySettlement(144,D.SKUS[h.sku],\"godown\");s.hero.destruction={status:\"requested\",units:144};s.notifications.forEach(n=>n.read=true);});F.act(\"sendDestruction\");F.act(\"approveDestruction\");await new Promise(r=>setTimeout(r,4800));})()",
+  "wait": 1500,
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/app/Smart-Clearance%20app%20v3.html#/command",
+  "out": "build/command-cleared-light-1440",
+  "width": 1440,
+  "theme": "light",
+  "ls": {
+   "sc3-session": {
+    "uid": "priya",
+    "at": 1791636406964
+   }
+  },
+  "js": "(async()=>{const F=window.SC3_FLOW,St=window.SC3_STORE,D=window.SC3_DATA,M=window.SC3_MONEY;F.fastForward(8);const h=D.BATCHES.find(b=>b.hero);St.update(s=>{s.hero.expiry=M.expirySettlement(144,D.SKUS[h.sku],\"godown\");s.hero.destruction={status:\"requested\",units:144};s.notifications.forEach(n=>n.read=true);});F.act(\"sendDestruction\");F.act(\"approveDestruction\");await new Promise(r=>setTimeout(r,4800));})()",
+  "wait": 1500
+ },
+ {
+  "url": "http://localhost:8787/app/Smart-Clearance%20app%20v3.html#/report/MF-2407-111",
+  "out": "build/ledger-money-light-1440",
+  "width": 1440,
+  "theme": "light",
+  "ls": {
+   "sc3-session": {
+    "uid": "priya",
+    "at": 1791636406964
+   }
+  },
+  "js": "(()=>{const F=window.SC3_FLOW,St=window.SC3_STORE,D=window.SC3_DATA,M=window.SC3_MONEY;F.fastForward(8);const h=D.BATCHES.find(b=>b.hero);St.update(s=>{s.hero.expiry=M.expirySettlement(144,D.SKUS[h.sku],\"godown\");s.hero.destruction={status:\"requested\",units:144};s.notifications.forEach(n=>n.read=true);});})()",
+  "wait": 1500,
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/app/Smart-Clearance%20app%20v3.html#/report/MF-2407-111",
+  "out": "build/ledger-papers-dark-1440",
+  "width": 1440,
+  "theme": "dark",
+  "ls": {
+   "sc3-session": {
+    "uid": "priya",
+    "at": 1791636406964
+   }
+  },
+  "js": "(()=>{const F=window.SC3_FLOW,St=window.SC3_STORE,D=window.SC3_DATA,M=window.SC3_MONEY;F.fastForward(8);const h=D.BATCHES.find(b=>b.hero);St.update(s=>{s.hero.expiry=M.expirySettlement(144,D.SKUS[h.sku],\"godown\");s.hero.destruction={status:\"requested\",units:144};s.notifications.forEach(n=>n.read=true);});})()",
+  "wait": 1500,
+  "full": true,
+  "click": [
+   ".bh-tab:has-text(\"Papers\")"
+  ]
+ },
+ {
+  "url": "http://localhost:8787/app/Smart-Clearance%20app%20v3.html#/report/MF-2407-111",
+  "out": "build/ledger-expiry-note-light-1440",
+  "width": 1440,
+  "theme": "light",
+  "ls": {
+   "sc3-session": {
+    "uid": "priya",
+    "at": 1791636406964
+   }
+  },
+  "js": "(()=>{const F=window.SC3_FLOW,St=window.SC3_STORE,D=window.SC3_DATA,M=window.SC3_MONEY;F.fastForward(8);const h=D.BATCHES.find(b=>b.hero);St.update(s=>{s.hero.expiry=M.expirySettlement(144,D.SKUS[h.sku],\"godown\");s.hero.destruction={status:\"requested\",units:144};s.notifications.forEach(n=>n.read=true);});})()",
+  "wait": 1500,
+  "click": [
+   ".bh-tab:has-text(\"Papers\")",
+   "button:has-text(\"Expiry credit note\")"
+  ]
+ },
+ {
+  "url": "http://localhost:8787/app/Smart-Clearance%20app%20v3.html#/report/MF-2407-111",
+  "out": "build/ledger-certificate-light-1440",
+  "width": 1440,
+  "theme": "light",
+  "ls": {
+   "sc3-session": {
+    "uid": "priya",
+    "at": 1791636406964
+   }
+  },
+  "js": "(()=>{const F=window.SC3_FLOW,St=window.SC3_STORE,D=window.SC3_DATA,M=window.SC3_MONEY;F.fastForward(8);const h=D.BATCHES.find(b=>b.hero);St.update(s=>{s.hero.expiry=M.expirySettlement(144,D.SKUS[h.sku],\"godown\");s.hero.destruction={status:\"requested\",units:144};s.notifications.forEach(n=>n.read=true);});})()",
+  "wait": 1500,
+  "click": [
+   ".bh-tab:has-text(\"Papers\")",
+   "button:has-text(\"Destruction certificate\")"
+  ]
+ },
+ {
+  "url": "http://localhost:8787/app/Smart-Clearance%20app%20v3.html#/batches/MF-2407-116",
+  "out": "build/dist-certificate-dark-390",
+  "width": 390,
+  "theme": "dark",
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791636406964
+   }
+  },
+  "js": "(()=>{const F=window.SC3_FLOW,St=window.SC3_STORE,D=window.SC3_DATA,M=window.SC3_MONEY;F.fastForward(8);const h=D.BATCHES.find(b=>b.hero);St.update(s=>{s.hero.expiry=M.expirySettlement(144,D.SKUS[h.sku],\"godown\");s.hero.destruction={status:\"requested\",units:144};s.notifications.forEach(n=>n.read=true);});})()",
+  "wait": 1500,
+  "full": true,
+  "click": [
+   ".bh-tab:has-text(\"Papers\")"
+  ]
+ },
+ {
+  "url": "http://localhost:8787/console/Smart-Clearance%20console%20v3.html#/clients/munchly/rules",
+  "out": "build/console-rules-light-1440",
+  "width": 1440,
+  "theme": "light",
+  "ls": {
+   "sc3-console-session": {
+    "uid": "neha",
+    "at": 1791636406964
+   }
+  },
+  "wait": 3500,
+  "js": "(()=>{const h=[...document.querySelectorAll(\"h2,h3,.section-title,b,span\")].find(e=>e.textContent.trim()===\"Destroyed at the godown\"); if(h) h.scrollIntoView({block:\"start\"});})()"
+ },
+ {
+  "url": "http://localhost:8787/console/Smart-Clearance%20console%20v3.html#/clients/munchly/supply",
+  "out": "build/console-profile-dark-1440",
+  "width": 1440,
+  "theme": "dark",
+  "ls": {
+   "sc3-console-session": {
+    "uid": "neha",
+    "at": 1791636406964
+   }
+  },
+  "wait": 3500,
+  "click": [
+   "button:has-text(\"Edit\")"
+  ]
+ },
+ {
+  "url": "http://localhost:8787/console/Smart-Clearance%20console%20v3.html#/clients/munchly/rules",
+  "out": "build/console-rules-dark-1440",
+  "width": 1440,
+  "theme": "dark",
+  "ls": {
+   "sc3-console-session": {
+    "uid": "neha",
+    "at": 1791636406964
+   }
+  },
+  "wait": 3500,
+  "js": "(()=>{const h=[...document.querySelectorAll(\"h2,h3,.section-title,b,span\")].find(e=>e.textContent.trim()===\"Destroyed at the godown\"); if(h) h.scrollIntoView({block:\"start\"});})()"
+ }
+]

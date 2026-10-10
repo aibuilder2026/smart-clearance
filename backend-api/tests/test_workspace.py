@@ -443,23 +443,86 @@ async def test_the_mango_drinks_journey_end_to_end(api, munchly, cloud, ctx):
     assert c["realised"] == {"lines": lines, "godown": left} and want["godown"] == left
     assert c["actual"]["net"] == want["net"] < planned["plan"]["net"]
 
-    # settle and report: the van to the shops that ordered, the ledger on what happened
+    # settle: the van to the shops that ordered; the packs no channel took are destroyed at Lakshmi Agencies' godown
+    # first, under Munchly's route B (SC-139), so Impact's report asks for the evidence and waits
     assert (await api.post(f"{WS}/cases/{MANGO}/dispatches", json={"kind": "van"}, headers=LAKSHMI)).status_code == 200
     out = await agent(api, f"/cases/{MANGO}/report", "impact-m", "impact")
+    assert out == {"ok": True, "destruction": "requested"} or out.get("destruction") == "requested", out
+    dz = (await case(api, LAKSHMI, MANGO))["destruction"]
+    assert (dz["status"], dz["units"], dz["photos"]) == ("requested", left, None)
+    assert (await case(api, LAKSHMI, MANGO))["push"]["destroy"]["title"] == "Expired packs destroy karein"
+    sent = await destroyed_at_godown(api, cloud, MANGO, LAKSHMI, agency="dgw", units=left)
+    assert sent["status"] == "checked" and all(x["ok"] for x in sent["checks"]), sent["checks"]
+    assert sent["checks"][0]["label"] == f"Batch {MANGO} read on the carton label"
+    assert (await case(api, PRIYA, MANGO))["push"]["destroyReview"]["title"] == "The destruction waits for your yes"
+    assert (await api.post(f"{WS}/cases/{MANGO}/destruction/approve", headers=LAKSHMI)).status_code == 403
+    assert (await api.post(f"{WS}/cases/{MANGO}/destruction/approve", headers=PRIYA)).status_code == 200
+    out = await agent(api, f"/cases/{MANGO}/report", "impact-m2", "impact")
     assert (out["ledger"]["net"], out["ledger"]["godown"], out["ledger"]["meals"]) == (want["net"], left, 58)
+    assert out["ledger"]["atGodown"] == left and out["ledger"]["destroyed"] == 0
     batch = await ctx.session.get(m.Batch, ("munchly", MANGO))
     await ctx.session.refresh(batch)
     assert batch.outcome == "cleared" and round(batch.recovered, 2) == want["net"]
-    # the close tells Priya what the godown still holds (SC-87), and Lakshmi Agencies' staff pay to its own address
-    closed = (await case(api, PRIYA, MANGO))["push"]["closed"]
-    assert closed["title"] == f"Batch closed · {money.fmt.num(left)} packs expired at the godown"
-    # settled by Munchly's expiry policy, full credit at the ₹14.50 dealer price (SC-94)
+    # the papers: the expiry credit note's three lines against the agency's certificate, and the certificate
+    c = await case(api, PRIYA, MANGO)
+    docs = {d["id"]: d for d in c["docs"]}
+    settle = money.expiry_settlement(left, c["sku"], "godown")
+    x = docs["expiry"]
+    assert (x["type"], x["amount"], x["credit"], x["gst"], x["charges"]) == (
+        "Expiry credit note",
+        settle["amount"],
+        settle["credit"],
+        settle["gst"],
+        settle["charges"],
+    )
+    assert (x["certificate"], x["agency"]) == ("DGW/DC/26-27/0099", "Deccan Green Waste Management")
+    cert = docs["destruction"]
+    assert (cert["status"], cert["no"], cert["owner"], cert["units"]) == (
+        "generated",
+        "DGW/DC/26-27/0099",
+        "Deccan Green Waste Management",
+        left,
+    )
+    assert (cert["approvedBy"], cert["evidence"], cert["reversed"]) == (
+        "Priya Deshmukh",
+        {"photos": 2, "checks": 4, "of": 4},
+        settle["reversal"],
+    )
+    # Munchly keeps its credit on them: his stock, his reversal; only the donated packs' credit is reversed
+    own = money.realised(planned["plan"], c["sku"], {"kirana": ordered, "staff": 120, "foodbank": 58}, None, "godown")
+    assert docs["itc"]["atGodown"] == left and docs["itc"]["reversed"] == own["itcReversed"] < want["itcReversed"]
+    # the close tells Priya what was destroyed at the godown, and against which certificate (SC-139)
+    closed = c["push"]["closed"]
+    assert closed["title"] == f"Batch closed · {money.fmt.num(left)} packs destroyed at the godown"
     assert closed["body"].endswith(
-        f"The {money.fmt.num(left)} packs that expired at Begum Bazaar godown come back to Munchly for full credit "
-        f"({money.fmt.inr(left * 14.5)}), and Munchly destroys them."
+        "Issued against destruction certificate DGW/DC/26-27/0099; adjusted against Lakshmi Agencies' account."
     )
     snap = (await api.get(f"{WS}/snapshot", headers=LAKSHMI)).json()
     assert snap["distributors"]["lakshmi"]["upi"] == J["distributors"]["lakshmi"]["upi"]
+
+
+async def destroyed_at_godown(api, cloud, ref: str, who: dict, *, agency: str, units: int) -> dict:
+    """the distributor's evidence of packs destroyed at his godown (SC-139): both photos to their links, the agency
+    and its certificate, then Vision's read of them; the destruction as he then reads it"""
+    ids = {}
+    for which in ("before", "after"):
+        r = await api.post(
+            f"{WS}/cases/{ref}/destruction/photos",
+            json={"which": which, "contentType": "image/jpeg", "bytes": 4},
+            headers=who,
+        )
+        assert r.status_code == 200, r.text
+        ids[which] = r.json()["id"]
+        cloud.storage.objects[("photos-test", f"munchly/{ref}/destruction-{which}-{ids[which]}")] = b"jpeg"
+    body = {"agency": agency, "certificate": "DGW/DC/26-27/0099", "photos": ids}
+    r = await api.post(f"{WS}/cases/{ref}/destruction", json=body, headers=who)
+    assert r.status_code == 200, r.text
+    read = {
+        "before": {"batch": ref, "count": units, "confidence": 0.94},
+        "after": {"slate": {"batch": ref, "count": units, "date": None}, "landfill": True, "destroyed": True},
+    }
+    await agent(api, f"/cases/{ref}/destruction/check", f"vision-dz-{ref}", "vision", read=read)
+    return (await case(api, who, ref))["destruction"]
 
 
 async def _collected(api, ctx, cloud, meals: dict | None = None) -> None:
@@ -538,7 +601,12 @@ async def test_a_food_banks_own_rule_counts_the_meals(api, munchly, cloud, ctx):
     await agent(api, f"/cases/{MANGO}/offer/close", "close-m", "outreach")
     await api.post(f"{WS}/cases/{MANGO}/staff-sale", json={"sold": 150}, headers=LAKSHMI)
     await agent(api, f"/cases/{MANGO}/documents", "paperwork-m", "paperwork")  # no shop ordered: no van round
+    # the packs no channel took are destroyed at the godown first (SC-139), then Impact reports
     out = await agent(api, f"/cases/{MANGO}/report", "impact-m", "impact")
+    left = (await case(api, LAKSHMI, MANGO))["destruction"]["units"]
+    await destroyed_at_godown(api, cloud, MANGO, LAKSHMI, agency="dgw", units=left)
+    assert (await api.post(f"{WS}/cases/{MANGO}/destruction/approve", headers=PRIYA)).status_code == 200
+    out = await agent(api, f"/cases/{MANGO}/report", "impact-m2", "impact")
     assert out["ledger"]["meals"] == 31
 
 

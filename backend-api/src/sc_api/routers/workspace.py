@@ -21,7 +21,7 @@ from sc_api.domain import journey as J
 from sc_api.errors import ApiError
 from sc_api.schemas import Shape
 from sc_api.services.context import Ctx
-from sc_api.services.journey import admin, partners, steps, views, world
+from sc_api.services.journey import admin, partners, record, steps, views, world
 from sc_api.services.journey import events as ev
 from sc_api.services.journey.outbox import drain
 
@@ -57,6 +57,25 @@ class DispatchInput(Shape):
 
 class StaffSaleInput(Shape):
     sold: int = Field(ge=0, le=100000)
+
+
+class DestructionPhotoInput(UploadInput):
+    which: Literal["before", "after"]
+
+
+class DestructionPhotos(Shape):
+    before: str = Field(max_length=40)
+    after: str = Field(max_length=40)
+
+
+class DestructionInput(Shape):
+    agency: str = Field(max_length=40)
+    certificate: str = Field(max_length=40)
+    photos: DestructionPhotos
+
+
+class ReasonInput(Shape):
+    reason: str = Field(max_length=300)
 
 
 class PauseInput(Shape):
@@ -176,6 +195,12 @@ async def snapshot(ws: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
 @router.get(CASE, summary="One batch's journey, cut to the member's role")
 async def case(ws: str, ref: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
     return await views.case_detail(ctx, ws, ref, _member(request))
+
+
+@router.get(CASE + "/record", summary="A batch's record: every step, by the agent or the person who took it")
+async def batch_record(ws: str, ref: str, ctx: MemberCtx) -> dict[str, Any]:
+    ctx.require("report.read", "Your role can't see a batch's record.")
+    return await record.record(ctx, ws, ref)
 
 
 @router.get("/ledger", summary="The ledger: every batch cleared, by quarter and year")
@@ -366,6 +391,43 @@ async def staff_sale(ws: str, ref: str, data: StaffSaleInput, request: Request, 
     if (replay := await _replay(ctx, request, ws, ref)) is not None:
         return replay
     await steps.staff_sale(ctx, ws, ref, data.sold)
+    return await _done(ctx, request, ws, ref)
+
+
+# --- packs destroyed at the distributor's godown (SC-139) ------------------------------------------------------------
+
+
+@router.post(CASE + "/destruction/photos", summary="A signed link for one of the destruction's two photos")
+async def destruction_photo(ws: str, ref: str, data: DestructionPhotoInput, ctx: MemberCtx) -> dict[str, Any]:
+    link = await steps.destruction_photo(ctx, ws, ref, data.which, data.content_type, data.bytes)
+    await ctx.session.commit()
+    return link
+
+
+@router.post(CASE + "/destruction", summary="The destruction's evidence: the agency, its certificate, two photos")
+async def send_destruction(
+    ws: str, ref: str, data: DestructionInput, request: Request, ctx: MemberCtx
+) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws, ref)) is not None:
+        return replay
+    photos = {"before": data.photos.before, "after": data.photos.after}
+    await steps.send_destruction(ctx, ws, ref, data.agency, data.certificate, photos)
+    return await _done(ctx, request, ws, ref)
+
+
+@router.post(CASE + "/destruction/approve", summary="The operator's second yes: the batch closes on it")
+async def approve_destruction(ws: str, ref: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws, ref)) is not None:
+        return replay
+    await steps.approve_destruction(ctx, ws, ref)
+    return await _done(ctx, request, ws, ref)
+
+
+@router.post(CASE + "/destruction/ask", summary="Ask the distributor again for the destruction's evidence")
+async def ask_destruction(ws: str, ref: str, data: ReasonInput, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws, ref)) is not None:
+        return replay
+    await steps.ask_destruction_again(ctx, ws, ref, data.reason)
     return await _done(ctx, request, ws, ref)
 
 

@@ -16,7 +16,10 @@
 	// (screens/finance.jsx KeepsWhat)
 	const dp = $derived(c.sku.dp!);
 	const x = $derived(c.expiry && c.expiry.units > 0 ? c.expiry : null);
-	const credit = $derived(x?.credit ?? 0);
+	// destroyed at his godown (SC-139): the note carries the GST he reverses and the agency's charges, which he pays out
+	const godown = $derived(x?.policy === 'godown');
+	const spent = $derived(godown && x ? (x.reversal ?? 0) + (x.charges ?? 0) : 0);
+	const credit = $derived((godown ? x?.amount : x?.credit) ?? 0);
 	const settled = $derived(x?.total ?? 0);
 	const recv = $derived(c.support.rows.reduce((t, r) => t + r.units * r.price, 0) + c.support.total);
 	// a donation costs the client its handling and the credit given away with it, which the ledger's swing counts too
@@ -36,6 +39,9 @@
 		{#if x && credit > 0}<div class="row between">
 				<span>and the expiry credit for {fmt.num(x.units)} packs</span><span class="tnum">{fmt.inr(credit)}</span>
 			</div>{/if}
+		{#if spent > 0}<div class="row between">
+				<span>and the GST he reverses on them and the agency's charges</span><span class="tnum">{fmt.inr(-spent)}</span>
+			</div>{/if}
 		<div class="row between">
 			<span>and paid {fmt.num(c.plan.units)} × ₹{dp}, the van and the fee</span><span class="tnum"
 				>{fmt.inr(-paid)}</span
@@ -43,7 +49,7 @@
 		</div>
 		<div class="row between">
 			<b>{x && !credit ? 'Its loss on the expired packs' : 'He ends whole'}</b><span class="tnum strong"
-				>{fmt.inr(Math.round(recv + credit - paid))}</span
+				>{fmt.inr(Math.round(recv + credit - spent - paid))}</span
 			>
 		</div>
 		<div class="hairline" style="margin: 4px 0"></div>

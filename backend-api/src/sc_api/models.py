@@ -184,7 +184,7 @@ class Client(Base):
         CheckConstraint("status in ('setting-up','live')", name="status"),
         CheckConstraint("route in ('distributors','modern-trade','own')", name="route"),
         CheckConstraint("owner in ('distributor','manufacturer')", name="owner"),
-        CheckConstraint("expiry in ('full-credit','price-support','none')", name="expiry"),
+        CheckConstraint("expiry in ('godown','full-credit','price-support','none')", name="expiry"),
         CheckConstraint("gate_blinkit_days between 30 and 180", name="gate_blinkit_days"),
         CheckConstraint("gate_qcom_pct between 30 and 90", name="gate_qcom_pct"),
         CheckConstraint("return_window_days between 7 and 45", name="return_window_days"),
@@ -216,6 +216,9 @@ class Client(Base):
     route: Mapped[str] = mapped_column(Text)
     owner: Mapped[str] = mapped_column(Text)
     expiry: Mapped[str] = mapped_column(Text)
+    # how it has expired packs destroyed at a distributor's godown (SC-139): Vision's check, the reviewer, the reminder,
+    # the GST gross-up, the agency's charge a pack, the authorised agencies; null for a client whose policy does not
+    destruction: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     gate_blinkit_days: Mapped[int] = mapped_column(Integer)
     gate_qcom_pct: Mapped[int] = mapped_column(Integer)
     return_window_days: Mapped[int] = mapped_column(Integer)
@@ -451,6 +454,7 @@ class Batch(Base):
         CheckConstraint(
             "(gate_blinkit_days is null and gate_qcom_pct is null) = (gate_reason is null)", name="gate_reason"
         ),
+        CheckConstraint("destroyed between 0 and units", name="destroyed"),
         ForeignKeyConstraint(["client_id", "sku_id"], ["skus.client_id", "skus.id"]),
         ForeignKeyConstraint(["client_id", "distributor_id"], ["distributors.client_id", "distributors.id"]),
         Index(
@@ -471,6 +475,8 @@ class Batch(Base):
     money: Mapped[float | None] = mapped_column(MONEY)
     split: Mapped[str | None] = mapped_column(Text)
     recovered: Mapped[float] = mapped_column(MONEY, server_default="0")
+    # the packs no channel took and that were destroyed, once it closed (SC-149)
+    destroyed: Mapped[int] = mapped_column(Integer, server_default="0")
     opened_at: Mapped[datetime] = mapped_column(TS)
     # when it reached the stop it is at (SC-49): stamped as it opens, moves on and closes
     stage_at: Mapped[datetime] = mapped_column(TS)
@@ -594,6 +600,8 @@ class Case(Base):
     staff: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     # expiry day (SC-94): every plan line not yet run then counts as done, with nothing taken
     expired_at: Mapped[datetime | None] = mapped_column(TS)
+    # the packs left at the godown destroyed there (SC-139): asked for, the evidence sent, checked, approved
+    destruction: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     # a case of the client's history (SC-123): in view whenever the journey starts again
     history: Mapped[bool] = mapped_column(Boolean, server_default=sql("false"))
     escalated: Mapped[dict[str, Any] | None] = mapped_column(JSONB)

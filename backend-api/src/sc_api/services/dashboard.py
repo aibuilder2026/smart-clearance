@@ -7,6 +7,8 @@ Every figure is an aggregate over batches, agent_runs and clients at the moment 
 - A batch is in flight from the moment it is flagged until it closes; it waits for a yes at Approve, the sixth stop.
 - Agents at work (SC-49) draws the latest three batches to arrive at each stop (by stage_at), and today's closed ones.
 - Days are India's days, from the clock (the hydrate CLI's and the tests' clocks are simulated).
+- A closed batch's food counts on the day it closed (SC-149): the packs it destroyed, the rest kept out of landfill, in
+  kilos by its SKU's kilos a pack.
 """
 
 from collections import Counter
@@ -27,6 +29,7 @@ from sc_api.schemas import (
     ClosedToday,
     Dashboard,
     DayFigures,
+    FoodFigures,
     Waiting,
 )
 from sc_api.services.context import Ctx
@@ -86,6 +89,24 @@ async def dashboard(ctx: Ctx, days: int, client: str | None = None) -> Dashboard
             await s.execute(
                 select(_ist_day(B.closed_at), func.count(), func.coalesce(func.sum(B.units), 0))
                 .where(B.closed_at >= start, B.closed_at < end, *mine)
+                .group_by(_ist_day(B.closed_at))
+            )
+        ).all()
+    }
+    # the food, a day at a time over the range and the range before: kept out of landfill and destroyed (SC-149)
+    kg = func.coalesce(m.Sku.kg_per_unit, 0)
+    food = {
+        d: (float(kept), float(gone), int(packs))
+        for d, kept, gone, packs in (
+            await s.execute(
+                select(
+                    _ist_day(B.closed_at),
+                    func.sum((B.units - B.destroyed) * kg),
+                    func.sum(B.destroyed * kg),
+                    func.sum(B.destroyed),
+                )
+                .join(m.Sku, (m.Sku.client_id == B.client_id) & (m.Sku.id == B.sku_id))
+                .where(B.closed_at >= before, B.closed_at < end, *mine)
                 .group_by(_ist_day(B.closed_at))
             )
         ).all()
@@ -162,9 +183,19 @@ async def dashboard(ctx: Ctx, days: int, client: str | None = None) -> Dashboard
                 closed=closed.get(d, (0, 0))[0],
                 units=closed.get(d, (0, 0))[1],
                 runs=runs.get(d, 0),
+                kept_kg=round(food.get(d, (0.0, 0.0, 0))[0], 2),
+                destroyed_kg=round(food.get(d, (0.0, 0.0, 0))[1], 2),
+                destroyed=food.get(d, (0.0, 0.0, 0))[2],
             )
             for d in range_days
         ],
+        food=FoodFigures(
+            kept_kg=round(sum(f[0] for d, f in food.items() if d >= first), 2),
+            destroyed_kg=round(sum(f[1] for d, f in food.items() if d >= first), 2),
+            destroyed=sum(f[2] for d, f in food.items() if d >= first),
+            kept_kg_before=round(sum(f[0] for d, f in food.items() if d < first), 2),
+            destroyed_kg_before=round(sum(f[1] for d, f in food.items() if d < first), 2),
+        ),
         in_flight=len(open_rows),
         in_flight_clients=len({c for c, *_ in open_rows}),
         in_flight_series=in_flight_series,

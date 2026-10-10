@@ -6,7 +6,7 @@
   const { useState, useEffect, useMemo, useRef, Fragment } = React;
   const { motion, AnimatePresence, useReducedMotion } = Motion;
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, Flow = window.SC3_FLOW, S = window.SC3_SCREENS; const fmt = M.fmt;
-  const { cx, Icon, Badge, Button, Card, List, ListRow, Segmented, Sheet, Product, Empty, Money, Roll, Tile, MoneyPanel, DocCard, Menu, useApp, useNotice } = K;
+  const { cx, Icon, Badge, Button, Card, List, ListRow, Segmented, Sheet, Product, Empty, Money, Roll, Tile, MoneyPanel, DocCard, Menu, Avatar, useApp, useNotice } = K;
   const { useStore, useRoute, Screen, Columns, SectionTitle, Locked } = S;
   const LG = () => window.SC3_LEDGER; // core/ledger.js, read when a screen draws (the design-system page loads no ledger)
   const r2 = n => Math.round(n * 100) / 100;
@@ -57,6 +57,7 @@
 
   // a paper of a batch's pack (`c`, the batch's case: the story's chips batch, or a batch from the history). Each
   // reads what its batch did: the lines it ran, the credit kept and reversed, the packs given away or destroyed
+  const stamp = t => (!t ? "" : t.length > 5 ? `${fmt.day(t.slice(0, 10))}, ${t.slice(11, 16)}` : t);
   function Paper({ id, c: given }) {
     const c = given || LG().storyCase();
     const DOC = x => c.docs.find(d => d.id === x); const d = DOC(id); const inv = c.invoice || DOC("invoice"); const R = c.dist, B = c.buyer, dp = c.sku.dp, sp = c.support;
@@ -82,10 +83,18 @@
     // an SKU with no cost sheet of its own has its credit worked out as cost × GST, so it is estimated
     if (id === "itc") { const away = d.away != null ? d.away : (c.plan.donated || 0) + (c.plan.leftover || 0), sold = d.units != null ? d.units : c.plan.soldUnits, rev = d.reversed != null ? d.reversed : away ? c.plan.itcReversed : 0;
       const from = c.sku.itcPerUnit == null ? "estimated from the cost and the GST rate" : "from the cost sheet";
-      return <div className="paper pp">{head("GST ITC memo", `Section 17(5)(h) · ${D.CLIENT.short}`, away ? "ITC PART REVERSED" : "ITC KEPT", !away)}<Line k="Packets sold under tax invoices" v={fmt.num(sold)} /><Line k="Destroyed, gifted or lost" v={fmt.num(away)} /><Line k="Input GST kept" sub={`₹${c.plan.writeOff.itcPerUnit.toFixed(2)} a pack, ${from}`} v={fmt.inr2(d.amount)} strong /><Line k="Reversal in GSTR-3B, Table 4(B)(1)" v={rev ? fmt.inr2(rev) : "none"} />
-        <p className="pp-note">{rev ? `Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. The ${fmt.num(away)} packs of this batch given away or destroyed have their credit reversed; the ${fmt.num(sold)} sold under tax invoices keep theirs. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since 1 October 2023, 17(5)(fa) on CSR donations.` : `Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. These packs were sold under tax invoices, so it does not apply. The credit would be reversed only if the stock came back under the expiry claim and ${W.short} destroyed it. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since 1 October 2023, 17(5)(fa) on CSR donations.`}</p></div>; }
+      return <div className="paper pp">{head("GST ITC memo", `Section 17(5)(h) · ${D.CLIENT.short}`, away ? "ITC PART REVERSED" : "ITC KEPT", !away)}<Line k="Packets sold under tax invoices" v={fmt.num(sold)} /><Line k="Destroyed, gifted or lost" v={fmt.num(away)} />{d.atGodown ? <Line k={`Destroyed at ${possessive(c.dist.name)} godown`} sub="his stock: he reverses their credit" v={fmt.num(d.atGodown)} /> : null}<Line k="Input GST kept" sub={`₹${c.plan.writeOff.itcPerUnit.toFixed(2)} a pack, ${from}`} v={fmt.inr2(d.amount)} strong /><Line k="Reversal in GSTR-3B, Table 4(B)(1)" v={rev ? fmt.inr2(rev) : "none"} />
+        <p className="pp-note">{rev ? `Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. The ${fmt.num(away)} packs of this batch given away or destroyed have their credit reversed; the ${fmt.num(sold)} sold under tax invoices keep theirs. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since 1 October 2023, 17(5)(fa) on CSR donations.` : `Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. These packs were sold under tax invoices, so it does not apply. The credit would be reversed only if the stock came back under the expiry claim and ${W.short} destroyed it. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since 1 October 2023, 17(5)(fa) on CSR donations.`}{d.atGodown ? ` The ${fmt.num(d.atGodown)} packs destroyed at ${possessive(c.dist.name)} godown were his stock, bought under tax invoice: he reverses their input credit, and ${D.CLIENT.short} keeps its own.` : ""}</p></div>; }
     if (id === "expiry" && d) { const C = D.CLIENT.short, x = d;
       if (x.policy === "none") return <div className="paper pp">{head("Expiry notice", `${c.batch.id} · ${R.name}`, "NO RETURNS")}<Line k="Packs expired at the godown" v={fmt.num(x.units)} strong /><Line k={`Credit from ${C}`} v="none" /><p className="pp-note">{x.note}</p></div>;
+      // destroyed at his godown (SC-139): a financial note, against the agency's certificate: the dealer price, the input
+      // GST he reverses on them (grossed up) and the agency's charges
+      if (x.policy === "godown") return <div className="paper pp">{head(x.type, `${x.no} · ${C} → ${R.name}`, "NO GST ADJ.", true)}
+        <Line k={`${fmt.num(x.units)} packs destroyed at the godown`} sub={`at the ${fmt.rate(x.dp != null ? x.dp : dp)} dealer price`} v={fmt.inr2(x.credit)} />
+        {x.gst ? <Line k="Input GST he reverses on them" sub={`${x.gstPct != null ? x.gstPct : Math.round(c.sku.gst * 100)}%, section 17(5)(h)`} v={fmt.inr2(x.gst)} /> : null}
+        {x.charges ? <Line k="Destruction charges" sub={`${x.agency || "the agency"}, ₹${(x.charges / x.units).toFixed(2)} a pack`} v={fmt.inr2(x.charges)} /> : null}
+        <Line k={`Credit to ${R.name}`} v={fmt.inr2(x.amount)} strong />
+        <p className="pp-note">{x.note}</p></div>;
       return <div className="paper pp">{head(x.type, `${x.no} · ${C} → ${R.name}`, "NO GST ADJ.", true)}
         <Line k={`${fmt.num(x.units)} packs expired at the godown`} sub="at the dealer price" v={x.amount != null ? fmt.inr2(x.amount) : "—"} />
         <Line k={`Credit to ${R.name}`} v={x.amount != null ? fmt.inr2(x.amount) : "—"} strong />
@@ -95,6 +104,20 @@
     if (id === "fssai") { const own = d && d.status === "generated" && c.donation; const other = !own && c.donation && c.donation.batch && c.donation.batch.id !== c.batch.id && c.donation.units > 0 ? c.donation : null;
       return <div className="paper pp">{own ? <>{head("FSSAI surplus-food checklist", c.batch.id, "GENERATED", true)}<Line k="Packs donated" v={fmt.num(c.plan.donated)} /><Line k="Food bank" v={c.donation.partner.name} /><p className="pp-note">The batch's own checklist for the surplus food: {c.donation.units} packs from {c.donation.from || c.dist.godown} to {c.donation.partner.name}, inside their best-before, with the label photo attached.</p></>
         : <>{head("FSSAI surplus-food checklist", c.batch.id, "NOT REQUIRED")}<p className="pp-note">Nothing from this batch was donated.{other ? ` The ${S.shortName(other.sku)} batch ${other.batch.id} has its own checklist: ${other.units} packs to ${other.partner.name}, ${other.dist.city}.` : ""}</p></>}</div>; }
+    // destroyed at his godown (SC-139): the authorised agency's certificate, for him, once the evidence is approved: the
+    // batch, the packs and kilos, the method, the agency and its authorisation, the evidence and who approved it, and the
+    // input GST he reverses; until then it waits
+    if (d && d.at === "godown") { const done = d.status === "generated";
+      return <div className="paper pp">{head("Destruction certificate", done ? `${d.no} · ${d.agency}` : `${c.batch.id} · ${R.name}`, done ? "DESTROYED" : "AWAITING", done)}
+        <div className="pp-sub">For {R.name}, {R.address} · GSTIN {R.gstin}</div>
+        <Line k={`${c.sku.brand} ${c.sku.name}`} sub={`HSN ${c.sku.hsn} · batch ${c.batch.id} · best before ${fmt.date(c.batch.bestBefore)}`} v={`${fmt.num(d.units)} packs`} strong />
+        {done ? <><Line k="Weight" sub="food and packaging" v={fmt.kg(d.kg)} />
+          <Line k="Method" sub={`${d.method.charAt(0).toLowerCase()}${d.method.slice(1)}`} v={stamp(d.destroyedAt)} />
+          <Line k="Agency" sub={`authorisation ${d.auth}`} v={d.agency} />
+          <Line k="Evidence" sub={`two photos · Vision's checks ${d.evidence.checks} of ${d.evidence.of}`} v={`approved by ${d.approvedBy}`} />
+          <Line k="Input GST he reverses" sub="section 17(5)(h), GSTR-3B Table 4(B)(1)" v={fmt.inr2(d.reversed)} /></>
+          : <Line k="Input GST he will reverse" sub="section 17(5)(h)" v={fmt.inr2(d.reversed)} />}
+        <p className="pp-note">{done ? d.note : `Issued by the authorised agency once ${W.short} approves the destruction's evidence: two photos and the agency's certificate number.`}</p></div>; }
     // the packs the client destroys (SC-122: those that came back for full credit included), with their credit reversed
     const n = (d && d.units) || 0;
     return <div className="paper pp">{head("Destruction certificate", c.batch.id, n ? "GENERATED" : "NOT REQUIRED", !!n)}<Line k={n ? "Units destroyed" : "Units left to destroy"} v={fmt.num(n)} strong />{n ? <Line k="Input GST reversed" sub="section 17(5)(h), GSTR-3B Table 4(B)(1)" v={fmt.inr2(d && d.reversed != null ? d.reversed : n * c.plan.writeOff.itcPerUnit)} /> : null}<p className="pp-note">Issued only when units remain, with the ITC reversal entry pre-filled so finance is never surprised.</p></div>;
@@ -106,8 +129,10 @@
   function KeepsWhat({ c: given }) {
     const s = useStore(); const c = given || LG().storyCase();
     const x0 = c.history ? c.expiry : s.hero.expiry; const x = x0 && x0.units > 0 ? x0 : null; const dp = c.sku.dp;
-    const took = c.support.rows.reduce((t, r) => t + r.units * r.price, 0), credit = (x && x.credit) || 0, settled = x ? x.total : 0;
-    const recv = took + c.support.total; const paid = c.plan.units * dp + c.support.van + c.support.fee; const ends = Math.round(recv + credit - paid);
+    // destroyed at his godown (SC-139): the note carries the GST he reverses and the agency's charges, which he pays out
+    const godown = x && x.policy === "godown", spent = godown ? (x.reversal || 0) + (x.charges || 0) : 0;
+    const took = c.support.rows.reduce((t, r) => t + r.units * r.price, 0), credit = (x && (godown ? x.amount : x.credit)) || 0, settled = x ? x.total : 0;
+    const recv = took + c.support.total; const paid = c.plan.units * dp + c.support.van + c.support.fee; const ends = Math.round(recv + credit - spent - paid);
     // a donation costs Munchly its handling and the credit given away with it, as the ledger's swing counts (SC-122)
     const gift = c.plan.lines.find(l => l.id === "foodbank" && l.units > 0), given2 = gift ? gift.cost + gift.itcLoss : 0;
     return <Card className="stack snug">
@@ -115,6 +140,7 @@
       <div className="stack tight t-subhead">
         <div className="row between"><span>{c.dist.name} receives</span><span className="tnum">{fmt.inr(recv)}</span></div>
         {credit > 0 && <div className="row between"><span>and the expiry credit for {fmt.num(x.units)} packs</span><span className="tnum">{fmt.inr(credit)}</span></div>}
+        {spent > 0 && <div className="row between"><span>and the GST he reverses on them and the agency's charges</span><span className="tnum">{fmt.inr(-spent)}</span></div>}
         <div className="row between"><span>and paid {fmt.num(c.plan.units)} × ₹{dp}, the van and the fee</span><span className="tnum">{fmt.inr(-paid)}</span></div>
         <div className="row between"><b>{x && !credit ? "Its loss on the expired packs" : "He ends whole"}</b><span className="tnum strong">{fmt.inr(ends)}</span></div>
         <div className="hairline" style={{ margin: "4px 0" }} />
@@ -309,7 +335,7 @@
   }
 
   /* ---------- a batch's own page ---------- */
-  const TABS = [{ id: "money", label: "Money", icon: "coins" }, { id: "papers", label: "Papers", icon: "file-text" }, { id: "impact", label: "Impact", icon: "leaf" }];
+  const TABS = [{ id: "money", label: "Money", icon: "coins" }, { id: "papers", label: "Papers", icon: "file-text" }, { id: "impact", label: "Impact", icon: "leaf" }, { id: "record", label: "Record", icon: "history" }];
   const Row = ({ k, sub, v, tone, strong }) => <div className={cx("lg-line", strong && "strong")}><span>{k}{sub && <em> {sub}</em>}</span><span className={cx("tnum", tone)}>{v}</span></div>;
   const NotPosted = ({ h }) => <Locked icon="book-open-check" agent="Impact agent" live={h.phase === "settled" && h.van && h.van.status === "done"} text={`Posts the batch to the ledger once the return window closes on ${fmt.day(D.RETURN_BY)}, and writes the BRSR row with evidence links.`} />;
 
@@ -326,7 +352,9 @@
           <Row k="Van, listing fee and handling" v={fmt.inr(-(r.costs || 0))} tone="neg" />
           {r.itcLoss ? <Row k="Input credit given away with the donation" sub="s.17(5)(h)" v={fmt.inr(-r.itcLoss)} tone="neg" /> : null}
           <Row k="Recovered" v={fmt.inr(F.net)} strong />
-          {F.godown ? <div className="lg-note"><Icon name="warehouse" size={16} /><span>{fmt.num(F.godown)} packs no channel took expired at {c.dist.godown}. They came back to {W.short} for full credit ({fmt.inr(F.credit)}) and {W.short} destroyed them: disposal, EPR and {fmt.inr2(c.expiry.itc)} of credit reversed.</span></div> : null}
+          {F.godown ? <div className="lg-note"><Icon name={c.expiry.policy === "godown" ? "recycle" : "warehouse"} size={16} /><span>{c.expiry.policy === "godown"
+            ? `${fmt.num(F.godown)} packs no channel took expired at ${c.dist.godown} and were destroyed there through ${c.destruction && c.destruction.agency ? c.destruction.agency.name : "an authorised agency"}, on ${c.destruction && D.PEOPLE[c.destruction.approvedBy] ? possessive(D.PEOPLE[c.destruction.approvedBy].short) : "the operator's"} yes. ${W.short} credited ${c.dist.short} ${fmt.inr2(F.credit)}: the dealer price, the ${fmt.inr2(c.expiry.gst)} of GST he reverses and ${fmt.inr2(c.expiry.charges)} of the agency's charges. ${possessive(W.short)} own input credit is kept.`
+            : `${fmt.num(F.godown)} packs no channel took expired at ${c.dist.godown}. They came back to ${W.short} for full credit (${fmt.inr(F.credit)}) and ${W.short} destroyed them: disposal, EPR and ${fmt.inr2(c.expiry.itc)} of credit reversed.`}</span></div> : null}
         </Card>
         <Card className="stack snug">
           <div className="card-head"><span className="card-title">If it had been destroyed</span><Badge size="sm" tone="red" icon="trash-2">write-off</Badge></div>
@@ -366,6 +394,92 @@
   }
 
   // the batch's page: its head (the operator's batch head, SC-112) and its Money, Papers and Impact as tabs
+  /* ---------- a batch's record (SC-142, option A): the photos sent for it, the yeses, the audit trail ---------- */
+  // the photos: the label photo the distributor sent, with what Vision read of it, and, destroyed at his godown, the
+  // destruction's before and after, with Vision's checks. A photo's src is its signed link on the live workspace, else
+  // its file in the design system's img/
+  const PHOTO = { label: ["Label photo", "Label"], before: ["Before, at the godown", "1 · Before"], after: ["After, at the landfill", "2 · After"] };
+  const asDay = iso => new Date(iso.slice(0, 10) + "T00:00:00+05:30");
+  // a time as the record keeps it: an ISO day and time on the live workspace and in the history, the stub's own (09:19,
+  // Mon 5 Oct) for the story's batch
+  const isIso = t => /^\d{4}-\d\d-\d\d/.test(t || "");
+  const recWhen = t => (!t ? "" : !isIso(t) ? t : t.length > 10 ? `${fmt.day(t.slice(0, 10))}, ${t.slice(11, 16)}` : fmt.day(t));
+  const recDay = iso => asDay(iso).toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
+  const photoSrc = p => p.url || (p.img ? window.SC3_IMG + p.img : null);
+  const upFirst = t => (t ? t.charAt(0).toUpperCase() + t.slice(1) : t);
+  function PhotoShot({ p, onOpen }) {
+    const src = photoSrc(p), [title, tag] = PHOTO[p.id];
+    if (!src) return <div className="rec-shot none"><Icon name="image" size={20} /><span className="t-caption">no photo kept</span></div>;
+    return <button type="button" className="rec-shot" onClick={onOpen} aria-label={`${title}, sent ${recWhen(p.at)}: open it`}><S.Photo src={src} alt={`${title} for this batch`} loading="lazy" /><span className="cam-tag">{tag}</span></button>;
+  }
+  const RecCheck = ({ ok, children }) => <div className="row tight t-footnote rec-check"><Icon name={ok ? "circle-check" : "circle-alert"} size={15} className={ok ? "rec-ok" : "rec-warn"} />{children}</div>;
+  function PhotoFacts({ p }) {
+    const r = p.read;
+    return <div className="stack tight">
+      <span className="t-footnote muted">Sent by {p.by} · {recWhen(p.at)}</span>
+      {r && <><RecCheck ok>Vision read batch {r.batch}, made {fmt.date(r.mfg)}, best before {fmt.date(r.bestBefore)}, MRP ₹{Number(r.mrp).toFixed(2)}{r.at ? ` · ${recWhen(r.at)}` : ""}</RecCheck><RecCheck ok={r.matches !== false}>{r.matches !== false ? "Matches the export" : "Does not match the export"}</RecCheck></>}
+      {(p.checks || []).map(x => <RecCheck key={x.id} ok={x.ok}>{x.label}</RecCheck>)}
+    </div>;
+  }
+  function PhotoSheet({ p, onClose }) {
+    return <Sheet open={!!p} onClose={onClose} title={p ? PHOTO[p.id][0] : ""}>{p && <div className="stack"><div className="rec-big"><S.Photo src={photoSrc(p)} alt={`${PHOTO[p.id][0]} for this batch`} /></div><PhotoFacts p={p} /></div>}</Sheet>;
+  }
+  function RecordPhotos({ photos, title, empty }) {
+    const [open, setOpen] = useState(null);
+    return <Card className="stack snug">
+      <div className="card-head"><span className="card-title">{title}</span>{photos.length > 0 && <span className="t-footnote subtle">{photos.length} · tap to open</span>}</div>
+      {photos.length ? <div className={cx("rec-photos", photos.length === 2 && "two")}>{photos.map(p => <div key={p.id} className="rec-photo"><PhotoShot p={p} onOpen={() => setOpen(p)} /><b className="t-subhead">{PHOTO[p.id][0]}</b><PhotoFacts p={p} /></div>)}</div>
+        : <span className="t-footnote muted">{empty}</span>}
+      <PhotoSheet p={open} onClose={() => setOpen(null)} />
+    </Card>;
+  }
+  // who acted: a person's face, or the agent's tile
+  const AGENT_ICON = { watcher: "radar", vision: "scan-line", valuer: "coins", router: "route", lister: "shopping-bag", outreach: "send", negotiator: "messages-square", donation: "heart-handshake", paperwork: "file-text", impact: "leaf", data: "database", notifier: "bell" };
+  function Actor({ who, size = 36 }) {
+    if (who.kind === "person" && who.id) return <Avatar person={D.PEOPLE[who.id] || { name: who.name }} size={size < 36 ? "sm" : undefined} />;
+    const icon = who.kind === "agent" ? AGENT_ICON[who.id] || "sparkles" : "store";
+    return <span className={cx("icontile", who.kind === "agent" && "soft")} style={{ width: size, height: size, borderRadius: 11 }}><Icon name={icon} size={Math.round(size * 0.47)} stroke={2} /></span>;
+  }
+  const whoLine = w => (w.kind === "agent" ? `${w.name} · agent` : w.org ? `${w.name} · ${w.org}` : w.name);
+  // the yeses: what only a person at the client could let happen, in their name
+  function RecordYeses({ steps }) {
+    const yes = steps.filter(x => x.yes);
+    return <Card className="stack snug"><span className="card-title">The yeses</span><span className="t-footnote muted">What only a person at {W.short} could let happen, in their name.</span>
+      {yes.length ? yes.map(x => <div key={x.key + x.at} className="rec-yes"><Actor who={x.who} size={32} /><div className="grow" style={{ minWidth: 0 }}><b className="t-subhead">{x.who.name}</b><div className="t-footnote muted">{upFirst(x.text)}</div></div><time className="t-caption subtle tnum">{recWhen(x.at)}</time></div>)
+        : <span className="t-footnote muted">No yes yet: the plan waits for one.</span>}
+    </Card>;
+  }
+  // the audit trail: every step, day by day, by the agent or the person who took it; people's lines as the audit log
+  // keeps them, the kiranas' orders folded into one; filtered to people or agents, and downloaded as a CSV
+  function RecordTrail({ steps, batch }) {
+    const [who, setWho] = useState("all"); const [unfold, setUnfold] = useState({});
+    const rows = steps.filter(x => who === "all" || (who === "people" ? x.who.kind !== "agent" : x.who.kind === "agent"));
+    const days = []; rows.forEach(x => { const d = isIso(x.at) ? x.at.slice(0, 10) : ""; let g = days[days.length - 1]; if (!g || g.d !== d) days.push(g = { d, items: [] }); g.items.push(x); });
+    const people = steps.filter(x => x.who.kind !== "agent").length;
+    const save = () => download(`${batch}-audit-trail.csv`, csv([["When", "Who", "As", "What", "Yes"]].concat(rows.flatMap(x => [[isIso(x.at) ? x.at.replace("T", " ") : x.at, x.who.name, x.who.kind === "agent" ? "agent" : x.who.org || "", upFirst(x.text), x.yes ? "yes" : ""]].concat((x.items || []).map(i => [i.at.replace("T", " "), i.who.name, "kirana", upFirst(i.text), ""]))))));
+    return <Card className="stack snug">
+      <div className="card-head"><span className="card-title">Audit trail</span><span className="t-footnote subtle">{steps.length} {steps.length === 1 ? "step" : "steps"} · {people} by people</span></div>
+      <div className="rec-filters" role="group" aria-label="Whose steps">{[["all", "Everyone"], ["people", "People"], ["agents", "Agents"]].map(([k, t]) => <button key={k} type="button" className="chip" aria-pressed={who === k} onClick={() => setWho(k)}>{t}</button>)}</div>
+      {!steps.length && <span className="t-footnote muted">The record fills as the agents and the people act on the batch.</span>}
+      <div className="rec-trail">{days.map((g, gi) => <Fragment key={g.d + gi}>{(g.d || gi === 0) && <div className="rec-day">{g.d ? recDay(g.d) : "This journey"}</div>}
+        {g.items.map((x, i) => <div key={x.key + x.at + i} className={cx("rec-row", i === g.items.length - 1 && "end")}>
+          <Actor who={x.who} />
+          <div style={{ minWidth: 0 }}><span className="who">{whoLine(x.who)}</span><b>{upFirst(x.text)}{x.yes && <> <Badge size="sm" tone="amber">yes</Badge></>}</b>
+            {x.items && x.items.length > 0 && <><button type="button" className="pt-link t-footnote" aria-expanded={!!unfold[x.key + x.at]} onClick={() => setUnfold(u => Object.assign({}, u, { [x.key + x.at]: !u[x.key + x.at] }))}>{unfold[x.key + x.at] ? "Hide" : "Show"} the {x.items.length} {x.items.length === 1 ? "order" : "orders"}</button>
+              {unfold[x.key + x.at] && <div className="rec-items">{x.items.map((y, j) => <div key={j} className="row between t-footnote"><span><b>{y.who.name}</b> {y.text}</span><span className="subtle tnum">{isIso(y.at) ? y.at.slice(11, 16) : y.at}</span></div>)}</div>}</>}
+          </div>
+          <time>{isIso(x.at) ? x.at.slice(11, 16) : x.at}</time></div>)}</Fragment>)}</div>
+      <Button variant="secondary" icon="download" onClick={save} style={{ justifySelf: "start" }}>Download the audit trail (CSV)</Button>
+    </Card>;
+  }
+  // the Record tab: the photos first, then the trail beside the yeses
+  function RecordTab({ batch, steps, photos }) {
+    return <div className="stack" style={{ gap: 16 }}>
+      <RecordPhotos photos={photos} title="Photos sent for this batch" empty="No photo yet: Vision asks the distributor for the carton's label once the Watcher flags the batch." />
+      <div className="rec-cols"><RecordTrail steps={steps} batch={batch} /><RecordYeses steps={steps} /></div>
+    </div>;
+  }
+
   function BatchPage({ me, at, tab: tab0 }) {
     const s = useStore(); const app = useApp(); const phone = app.bp === "phone";
     const c = LG().caseOf(at);
@@ -380,7 +494,7 @@
     </div>;
     return <Screen me={me} title={c.sku.name} back="Ledger" hideLarge below={head}>
       <AnimatePresence mode="wait"><motion.div key={tab} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}>
-        {tab === "money" ? <MoneyTab c={c} row={row} h={h} /> : tab === "papers" ? <PaperPack me={me} c={c} h={h} /> : <ImpactTab c={c} row={row} h={h} />}
+        {tab === "money" ? <MoneyTab c={c} row={row} h={h} /> : tab === "papers" ? <PaperPack me={me} c={c} h={h} /> : tab === "record" ? <RecordTab batch={c.batch.id} steps={(story ? LG().record.storyRecord(s) : LG().record.recordOf(c)).steps} photos={story ? LG().record.storyPhotos(s) : LG().record.photosOf(c)} /> : <ImpactTab c={c} row={row} h={h} />}
       </motion.div></AnimatePresence>
     </Screen>;
   }
@@ -392,5 +506,5 @@
     return ref && LG().caseOf(ref) ? <BatchPage key={ref} me={me} at={ref} tab={(at && at.tab) || p.tab} /> : <Ledger me={me} />;
   }
 
-  Object.assign(window.SC3_SCREENS, { Paperwork, PaperPack, Report, Ledger, BatchPage, Paper, Receipt, KeepsWhat, OutcomeBadge, printPage, download, csv });
+  Object.assign(window.SC3_SCREENS, { RecordTab, RecordPhotos, PhotoSheet, PhotoFacts, Paperwork, PaperPack, Report, Ledger, BatchPage, Paper, Receipt, KeepsWhat, OutcomeBadge, printPage, download, csv });
 })();

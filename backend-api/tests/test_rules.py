@@ -44,7 +44,7 @@ def test_slug(case):
 
 
 def test_every_rule_has_fixtures():
-    assert len(FIXTURES["exitsFor"]) == 18
+    assert len(FIXTURES["exitsFor"]) == 24  # three routes, two owners, four expiry policies (SC-139: godown)
     assert len(FIXTURES["agentDefaults"]) == 3
     assert {c["agent"] for c in FIXTURES["showValue"]} == set(CONFIG["fields"])
 

@@ -6,6 +6,7 @@
 import type { IconName } from '@smart-clearance/core';
 import type {
 	Assess,
+	RecordPhoto,
 	AuditRow,
 	Batch,
 	Buyer,
@@ -51,7 +52,7 @@ import type {
 	WsSupport,
 	WsWorkspace
 } from '@smart-clearance/api/workspace';
-import { dateOf, dayLabel, dayMonth, dayN, dayTime, hhmm, hourWord, minutes, weekday, when } from './when';
+import { dateOf, dayLabel, dayMonth, dayN, dayTime, hhmm, hourWord, localMinute, minutes, weekday, when } from './when';
 
 /** the store's version the screens' State follows (core's store.svelte.ts) */
 export const STATE_VERSION = 5;
@@ -93,6 +94,18 @@ export const publicOf = (p: ApiPublic): WorkspacePublic => ({
 });
 
 /* ---------- people ---------- */
+
+/** a client with no destruction at the godown set up (SC-139): no agencies, nothing asked */
+const NO_DESTRUCTION: WorkspaceData['setup']['destruction'] = {
+	evidence: [],
+	visionCheck: false,
+	reviewer: 'ws-operator',
+	remindDays: 2,
+	grossUp: false,
+	chargesPerUnit: 0,
+	method: '',
+	agencies: []
+};
 
 export function userOf(m: Member, today: string): User {
 	return {
@@ -190,7 +203,10 @@ export function dataOf(snap: WorkspaceSnapshot, focus: { ref: string | null; sec
 			partners: snap.setup.partners.map(({ id: _id, ...p }) => p),
 			approval: snap.setup.approval,
 			permissions,
-			acts: snap.setup.acts
+			acts: snap.setup.acts,
+			// how packs left at a godown are destroyed there (SC-139); a client with none has no agencies
+			expiry: snap.setup.expiry ?? 'full-credit',
+			destruction: snap.setup.destruction ?? NO_DESTRUCTION
 		},
 		stages: snap.stages as Stage[],
 		// each batch in a journey is its own (SC-85): none is the story's second batch, shown beside the one in focus
@@ -287,8 +303,36 @@ function docOf(d: WsDoc): Doc {
 		itc: opt(d.itc),
 		reversed: opt(d.reversed),
 		away: opt(d.away),
+		atGodown: opt(d.atGodown),
 		// every paper the Paperwork agent laid out has its PDF to download (SC-100, SC-121)
 		pdf: d.pdf,
+		// destroyed at his godown (SC-139): the expiry note's three lines, and the agency's certificate
+		...((d.id === 'expiry' || d.id === 'destruction') && (d.at === 'godown' || d.policy === 'godown')
+			? {
+					at: 'godown',
+					credit: d.credit ?? null,
+					gst: opt(d.gst),
+					charges: opt(d.charges),
+					reversal: d.reversal ?? null,
+					dp: opt(d.dp),
+					certificate: opt(d.certificate),
+					agency: opt(d.agency),
+					auth: opt(d.auth),
+					method: opt(d.method),
+					site: opt(d.site),
+					for: opt(d.for),
+					from: opt(d.from),
+					batch: opt(d.batch),
+					bestBefore: opt(d.bestBefore),
+					hsn: opt(d.hsn),
+					destroyedAt: opt(d.destroyedAt),
+					kg: opt(d.kg),
+					packKg: opt(d.packKg),
+					evidence: opt(d.evidence),
+					approvedBy: opt(d.approvedBy),
+					approvedAt: opt(d.approvedAt)
+				}
+			: {}),
 		// the food bank's receipt (SC-110)
 		...(d.id === 'receipt'
 			? {
@@ -414,6 +458,8 @@ export function caseOf(
 		},
 		realised: detail.realised,
 		expiry: detail.expiry ?? null,
+		// packs destroyed at his godown (SC-139): the evidence, Vision's checks and the operator's yes
+		destruction: detail.destruction ?? null,
 		returnBy,
 		push: pushesOf(detail, today),
 		today: dayLabel(day0),
@@ -661,7 +707,9 @@ export function emptyData(pub: ApiPublic | null): WorkspaceData {
 			partners: [],
 			approval: '',
 			permissions: {},
-			acts: []
+			acts: [],
+			expiry: 'full-credit',
+			destruction: NO_DESTRUCTION
 		},
 		stages: [],
 		batches: [],
@@ -692,4 +740,45 @@ export function partnerOf(p: WsPartner): PartnerView {
 		shop: p.shop,
 		cases: p.cases.map((c) => ({ ...c, docs: c.docs.map(docOf), receipt: c.receipt ? docOf(c.receipt) : null }))
 	};
+}
+
+/** the photos sent for a batch (SC-142), from its case: its label photo with what Vision read, and the destruction's
+ *  two with Vision's checks, each with its short-lived link; who sent each comes from the batch's record */
+export function photosOfCase(d: CaseDetail): RecordPhoto[] {
+	const out: RecordPhoto[] = [];
+	const min = localMinute;
+	const ph = d.journey.photo;
+	if (ph?.url)
+		out.push({
+			id: 'label',
+			src: ph.url,
+			at: min(ph.at),
+			by: '',
+			read: ph.read
+				? {
+						at: min(ph.at),
+						batch: ph.read.batch,
+						mfg: ph.read.mfg,
+						bestBefore: ph.read.bestBefore,
+						mrp: ph.read.mrp,
+						matches: ph.read.matches
+					}
+				: null
+		});
+	const dz = d.destruction;
+	if (dz?.photos)
+		for (const w of ['before', 'after'] as const) {
+			const p = dz.photos[w];
+			if (p?.url)
+				out.push({
+					id: w,
+					src: p.url,
+					at: min(p.at),
+					by: '',
+					checks: (dz.checks ?? []).filter((x) =>
+						(w === 'before' ? ['batch', 'count'] : ['slate', 'when']).includes(x.id)
+					)
+				});
+		}
+	return out;
 }

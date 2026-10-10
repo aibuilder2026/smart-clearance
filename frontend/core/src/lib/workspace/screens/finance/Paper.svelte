@@ -37,6 +37,9 @@
 		c.sku.itcPerUnit == null ? 'estimated from the cost and the GST rate' : 'from the cost sheet'
 	);
 	const destroyed = $derived(d?.units ?? c.plan.leftover ?? 0);
+	// a time on a paper: 15 Sept, 13:20 for a date and time, else as it is
+	const stamp = (t?: string) => (!t ? '' : t.length > 5 ? `${fmt.day(t.slice(0, 10))}, ${t.slice(11, 16)}` : t);
+	const lower = (t: string) => t.charAt(0).toLowerCase() + t.slice(1);
 	const W = $derived(ws.data.workspace);
 	const kl = $derived(c.lines.kirana);
 </script>
@@ -152,7 +155,12 @@
 		)}{@render line('Packets sold under tax invoices', fmt.num(sold))}{@render line(
 			'Destroyed, gifted or lost',
 			fmt.num(away)
-		)}{@render line(
+		)}{#if memo?.atGodown}{@render line(
+				`Destroyed at ${possessive(R.name)} godown`,
+				fmt.num(memo.atGodown),
+				false,
+				'his stock: he reverses their credit'
+			)}{/if}{@render line(
 			'Input GST kept',
 			fmt.inr2(d?.amount ?? 0),
 			true,
@@ -168,7 +176,9 @@
 				on CSR donations.{:else}Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free.
 				These packs were sold under tax invoices, so it does not apply. The credit would be reversed only if the stock
 				came back under the expiry claim and {W.short} destroyed it. Credit on donated units is reversed: 17(5)(h) blocks
-				it on gifts and, since 1 October 2023, 17(5)(fa) on CSR donations.{/if}
+				it on gifts and, since 1 October 2023, 17(5)(fa) on CSR donations.{/if}{#if memo?.atGodown}
+				The {fmt.num(memo.atGodown)} packs destroyed at {possessive(R.name)} godown were his stock, bought under tax invoice:
+				he reverses their input credit, and {ws.data.client.short} keeps its own.{/if}
 		</p>
 	</div>
 {:else if id === 'expiry' && d}
@@ -177,6 +187,28 @@
 		{#if d.policy === 'none'}{@render head('Expiry notice', `${c.batch.id} · ${R.name}`, 'NO RETURNS')}
 			{@render line('Packs expired at the godown', fmt.num(d.units ?? 0), true)}
 			{@render line(`Credit from ${C}`, 'none')}
+		{:else if d.policy === 'godown'}<!-- destroyed at his godown (SC-139): a financial note against the agency's
+			certificate: the dealer price, the input GST he reverses on them (grossed up) and the agency's charges -->
+			{@render head(d.type, `${d.no} · ${C} → ${R.name}`, 'NO GST ADJ.', true)}
+			{@render line(
+				`${fmt.num(d.units ?? 0)} packs destroyed at the godown`,
+				fmt.inr2(d.credit ?? 0),
+				false,
+				`at the ${fmt.rate(d.dp ?? dp)} dealer price`
+			)}
+			{#if d.gst}{@render line(
+					'Input GST he reverses on them',
+					fmt.inr2(d.gst),
+					false,
+					`${d.gstPct ?? Math.round(c.sku.gst * 100)}%, section 17(5)(h)`
+				)}{/if}
+			{#if d.charges}{@render line(
+					'Destruction charges',
+					fmt.inr2(d.charges),
+					false,
+					`${d.agency || 'the agency'}, ${fmt.rate(d.charges / (d.units || 1))} a pack`
+				)}{/if}
+			{@render line(`Credit to ${R.name}`, fmt.inr2(d.amount), true)}
 		{:else}{@render head(d.type, `${d.no} · ${C} → ${R.name}`, 'NO GST ADJ.', true)}
 			{@render line(
 				`${fmt.num(d.units ?? 0)} packs expired at the godown`,
@@ -215,6 +247,46 @@
 						.donation.batch.id} has its own checklist:
 					{c.donation.units} packs to {c.donation.partner.name}, {c.donation.dist.city}.{/if}
 			</p>{/if}
+	</div>
+{:else if d && d.at === 'godown'}
+	<!-- destroyed at his godown (SC-139): the authorised agency's certificate, for him, once the evidence is approved: the
+	batch, the packs and kilos, the method, the agency and its authorisation, the evidence and who approved it, and the
+	input GST he reverses; until then it waits -->
+	{@const done = d.status === 'generated'}
+	<div class="paper pp">
+		{@render head(
+			'Destruction certificate',
+			done ? `${d.no} · ${d.agency}` : `${c.batch.id} · ${R.name}`,
+			done ? 'DESTROYED' : 'AWAITING',
+			done
+		)}
+		<div class="pp-sub">For {R.name}, {R.address} · GSTIN {R.gstin}</div>
+		{@render line(
+			`${c.sku.brand} ${c.sku.name}`,
+			`${fmt.num(d.units ?? 0)} packs`,
+			true,
+			`HSN ${c.sku.hsn} · batch ${c.batch.id} · best before ${fmt.date(c.batch.bestBefore)}`
+		)}
+		{#if done}{@render line('Weight', fmt.kg(d.kg ?? 0), false, 'food and packaging')}
+			{@render line('Method', stamp(d.destroyedAt), false, lower(d.method ?? ''))}
+			{@render line('Agency', d.agency ?? '', false, `authorisation ${d.auth}`)}
+			{@render line(
+				'Evidence',
+				`approved by ${d.approvedBy}`,
+				false,
+				`two photos · Vision's checks ${d.evidence?.checks ?? 0} of ${d.evidence?.of ?? 0}`
+			)}
+			{@render line(
+				'Input GST he reverses',
+				fmt.inr2(d.reversed ?? 0),
+				false,
+				'section 17(5)(h), GSTR-3B Table 4(B)(1)'
+			)}{:else}{@render line('Input GST he will reverse', fmt.inr2(d.reversed ?? 0), false, 'section 17(5)(h)')}{/if}
+		<p class="pp-note">
+			{done
+				? d.note
+				: `Issued by the authorised agency once ${W.short} approves the destruction's evidence: two photos and the agency's certificate number.`}
+		</p>
 	</div>
 {:else}
 	<div class="paper pp">

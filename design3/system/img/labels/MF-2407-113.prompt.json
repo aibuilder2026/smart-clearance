@@ -1,0 +1,9 @@
+{
+  "model": "Qwen-Image 2.1 (bf16), text to image, local (qwen-image-bf16 0.2.0)",
+  "aspect": "4:3",
+  "seed": 1440,
+  "size": 1024,
+  "prompt": "A realistic close-up smartphone photo of a printed white label stuck on the side of a brown corrugated cardboard carton. The label is printed in bold black sans-serif type, one line each: \"MUNCHLY MASALA CHIPS 150 g\", \"BATCH NO: MF-2407-113\", \"MFG: 31/03/2026\", \"BEST BEFORE: 27/09/2026\", \"MRP ₹30.00 (incl. of all taxes)\". Even light in a Hyderabad distributor's godown, a steel rack with cartons behind. Photorealistic, natural colours, the label text crisp and legible.",
+  "post": "cwebp -q 84",
+  "purpose": "SC-142: the label photo the distributor sent for the history batch MF-2407-113 (Munchly Masala Chips 150 G, best before 27/09/2026)"
+}

@@ -1,9 +1,9 @@
-"""What the workspace app reads from backend-api at five moments of the story's journey, written out for the frontend's
+"""What the workspace app reads from backend-api at seven moments of the story's journey, written out for the frontend's
 live-source test (frontend/workspace/tests/live/), so the screens are drawn on real answers rather than hand-made ones.
 
 It runs only when asked: scripts/live-fixtures.sh sets LIVE_FIXTURES_OUT and runs this file alone. Each moment's file
-holds the public workspace, and for each person the snapshot, the cases they see, the ledger and the audit log, exactly
-as the API answered them."""
+holds the public workspace, and for each person the snapshot, the cases they see with each one's record where they read
+it, the ledger and the audit log, exactly as the API answered them."""
 
 import json
 import os
@@ -24,6 +24,8 @@ from tests.test_workspace import (
     WS,
     J,
     agent,
+    case,
+    destroyed_at_godown,
     detect,
     put_photo,
     setup,
@@ -48,17 +50,22 @@ async def _write(api, moment: str, people: list[str]) -> None:
     for who in people:
         h = WHO[who]
         snap = (await api.get(f"{WS}/snapshot", headers=h)).json()
-        cases = {}
+        cases, records = {}, {}
         for c in snap["cases"]:
             r = await api.get(f"{WS}/cases/{c['ref']}", headers=h)
             if r.status_code == 200:
                 cases[c["ref"]] = r.json()
+            # a batch's record, for those who read it (SC-142)
+            r = await api.get(f"{WS}/cases/{c['ref']}/record", headers=h)
+            if r.status_code == 200:
+                records[c["ref"]] = r.json()
         q = await api.get(f"{WS}/ledger", headers=h)
         a = await api.get(f"{WS}/audit", headers=h)
         p = await api.get(f"{WS}/partner", headers=h)
         out["members"][who] = {
             "snapshot": snap,
             "cases": cases,
+            "records": records,
             "ledger": q.json() if q.status_code == 200 else None,
             "audit": a.json()["rows"] if a.status_code == 200 else [],
             # a partner's own history (SC-130)
@@ -145,5 +152,13 @@ async def test_write_the_live_fixtures(api, munchly, cloud):
     assert r.status_code == 200, r.text
     await agent(api, f"/cases/{MANGO}/documents", "paperwork-m", "paperwork")
     assert (await api.post(f"{WS}/cases/{MANGO}/dispatches", json={"kind": "van"}, headers=LAKSHMI)).status_code == 200
+    # the packs left at Lakshmi Agencies' godown are destroyed there under Munchly's route B (SC-139): Impact asks for
+    # the evidence, Lakshmi Agencies sends it and Vision checks it, and Priya's yes has Impact report
     await agent(api, f"/cases/{MANGO}/report", "impact-m", "impact")
+    await _write(api, "destruction-asked", ["priya", "lakshmi-owner"])
+    left = (await case(api, LAKSHMI, MANGO))["destruction"]["units"]
+    await destroyed_at_godown(api, cloud, MANGO, LAKSHMI, agency="dgw", units=left)
+    await _write(api, "destruction-checked", ["priya", "lakshmi-owner"])
+    assert (await api.post(f"{WS}/cases/{MANGO}/destruction/approve", headers=PRIYA)).status_code == 200
+    await agent(api, f"/cases/{MANGO}/report", "impact-m2", "impact")
     await _write(api, "cleared", ["priya", "rakesh", "arjun", "meera", "lakshmi-owner"])

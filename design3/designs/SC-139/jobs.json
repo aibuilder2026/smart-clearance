@@ -1,0 +1,114 @@
+[
+ {
+  "url": "http://localhost:8787/designs/SC-139/godown/mockup.html?opt=a&frame=dist&theme=light",
+  "out": "option-a/dist-390-light",
+  "width": 390,
+  "theme": "light",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-139/godown/mockup.html?opt=a&frame=review&theme=light",
+  "out": "option-a/review-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-139/godown/mockup.html?opt=a&frame=dist&theme=dark",
+  "out": "option-a/dist-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-139/godown/mockup.html?opt=a&frame=review&theme=dark",
+  "out": "option-a/review-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-139/godown/mockup.html?opt=b&frame=dist&theme=light",
+  "out": "option-b/dist-390-light",
+  "width": 390,
+  "theme": "light",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-139/godown/mockup.html?opt=b&frame=review&theme=light",
+  "out": "option-b/review-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-139/godown/mockup.html?opt=b&frame=dist&theme=dark",
+  "out": "option-b/dist-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-139/godown/mockup.html?opt=b&frame=review&theme=dark",
+  "out": "option-b/review-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-139/godown/mockup.html?opt=c&frame=dist&theme=light",
+  "out": "option-c/dist-390-light",
+  "width": 390,
+  "theme": "light",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-139/godown/mockup.html?opt=c&frame=review&theme=light",
+  "out": "option-c/review-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-139/godown/mockup.html?opt=c&frame=dist&theme=dark",
+  "out": "option-c/dist-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-139/godown/mockup.html?opt=c&frame=review&theme=dark",
+  "out": "option-c/review-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-139/godown/mockup.html?opt=b&frame=console&theme=light",
+  "out": "common/console-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-139/godown/mockup.html?opt=b&frame=papers&theme=light",
+  "out": "common/papers-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-139/godown/mockup.html?opt=b&frame=console&theme=dark",
+  "out": "common/console-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-139/godown/mockup.html?opt=b&frame=papers&theme=dark",
+  "out": "common/papers-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "full": true
+ }
+]

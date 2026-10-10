@@ -34,6 +34,10 @@ export function parts(iso: string): Parts {
 const pad = (n: number) => String(n).padStart(2, '0');
 const days = (a: string, b: string) => Math.round((Date.parse(a) - Date.parse(b)) / 86_400_000);
 
+/** a time in India time, to the minute (2026-10-02T08:00), as the record keeps it; one already written there stays */
+export const localMinute = (iso: string | null | undefined) =>
+	!iso ? '' : /(Z|[+-]\d\d:?\d\d)$/.test(iso) ? `${dateOf(iso)}T${hhmm(iso)}` : iso.slice(0, 16);
+
 /** 09:00 */
 export const hhmm = (iso: string) => {
 	const p = parts(iso);

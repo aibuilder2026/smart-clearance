@@ -1,6 +1,6 @@
 # @smart-clearance/admin
 
-The platform's own site, in SvelteKit 3. Today it serves the smartclearance.com landing page, a faithful port of
+The platform's own site, in SvelteKit 3. Today it serves the smartclearance.web.app landing page, a faithful port of
 `design3/site` (SC-60's picked design), and `/ds`, design system v3 as built in core. The staff console is its own
 app, [`../console`](../console/README.md) (SC-37), deployed on its own subdomain.
 
@@ -120,12 +120,13 @@ The UI reads one typed API, the landing page's entry of the shared [`@smart-clea
 
 Declared in `src/env.ts` (SvelteKit 3's `defineEnvVars`), public and inlined at build time. Copy `.env.example` to `.env`.
 
-| Variable                                                  | Default                                      |
-| --------------------------------------------------------- | -------------------------------------------- |
-| `PUBLIC_API_BASE`                                         | unset: the in-browser mock                   |
-| `PUBLIC_MOCK_LATENCY_MS`                                  | 0                                            |
-| `PUBLIC_DEMO_URL`, `PUBLIC_APP_URL`, `PUBLIC_CONSOLE_URL` | the hosted prototypes on Claude Design       |
-| `PUBLIC_DEV_ROUTES`                                       | off: `/ds` answers 404 in a production build |
+| Variable                               | Default                                      |
+| -------------------------------------- | -------------------------------------------- |
+| `PUBLIC_API_BASE`                      | unset: the in-browser mock                   |
+| `PUBLIC_MOCK_LATENCY_MS`               | 0                                            |
+| `PUBLIC_DEMO_URL`                      | the hosted guided demo on Claude Design      |
+| `PUBLIC_APP_URL`, `PUBLIC_CONSOLE_URL` | the live workspace and console on web.app    |
+| `PUBLIC_DEV_ROUTES`                    | off: `/ds` answers 404 in a production build |
 
 ## Tests
 

@@ -12,7 +12,8 @@ const design3 = fileURLToPath(new URL('../../design3', import.meta.url));
 
 export default defineConfig(({ mode }) => ({
 	// a live build (PUBLIC_API_BASE set) reads everything from backend-api: the prototype's stub, with Munchly's whole
-	// seed, is replaced by an empty module, so it cannot end up in the bundle (scripts/no-seed.mjs checks the build)
+	// seed, and the story's photos (core's story-photos.ts, named for its batches) are replaced by empty modules, so they
+	// cannot end up in the bundle (scripts/no-seed.mjs checks the build)
 	// $design3: the live build's splash (hooks.server.ts) is read from design3 in place
 	resolve: {
 		alias: [
@@ -22,6 +23,10 @@ export default defineConfig(({ mode }) => ({
 						{
 							find: '@smart-clearance/core/workspace/stub',
 							replacement: fileURLToPath(new URL('./src/lib/no-stub.ts', import.meta.url))
+						},
+						{
+							find: /^\.\/story-photos\.ts$/,
+							replacement: fileURLToPath(new URL('./src/lib/no-story-photos.ts', import.meta.url))
 						}
 					]
 				: [])

@@ -24,6 +24,8 @@
 	import Screen from '../common/Screen.svelte';
 	import ListingView from '../trade/ListingView.svelte';
 	import Chat from './Chat.svelte';
+	import DestructionCard from './DestructionCard.svelte';
+	import DestructionSheet from './DestructionSheet.svelte';
 	import ExpirySettlement from './ExpirySettlement.svelte';
 	import GodownLeft from './GodownLeft.svelte';
 	import StaffOps from './StaffOps.svelte';
@@ -37,6 +39,11 @@
 	const h = $derived(s.hero);
 	const hm = $derived(heroModel(s, ws.data, c));
 	let sheet = $state(false);
+	// packs destroyed at the distributor's godown (SC-139): the case's on the live workspace, the store's on the stub
+	let dzOpen = $state(false);
+	const dz = $derived(c.destruction ?? h.destruction ?? null);
+	const expiry = $derived(c.expiry ?? h.expiry ?? null);
+	const approver = $derived(dz?.approvedBy ? (ws.data.people[dz.approvedBy]?.short ?? dz.approvedBy) : null);
 
 	const started = $derived(isRouted(h.phase));
 	const units = $derived(h.orders.reduce((t, o) => t + o.units, 0));
@@ -253,11 +260,19 @@
 				net={c.actual.net}
 				dist={c.dist}
 			/>{/if}
-		{#if c.expiry && c.expiry.units > 0}<ExpirySettlement
-				settle={c.expiry}
+		{#if expiry && expiry.units > 0}<ExpirySettlement
+				settle={expiry}
 				dist={c.dist}
 				client={ws.data.client.short}
 				batch={c.batch.id}
+			/>{/if}
+		{#if dz}<DestructionCard
+				d={dz}
+				dist={c.dist}
+				batch={c.batch.id}
+				{approver}
+				live={ws.kind === 'live'}
+				onreview={() => (dzOpen = true)}
 			/>{/if}
 	</div>{/snippet}
 {#snippet side()}<SectionTitle>Agent timeline</SectionTitle><Card
@@ -278,4 +293,13 @@
 			/></Card
 		>{:else}<Columns sideWidth={340} {main} {side} />{/if}
 	<Sheet bind:open={sheet} title="ExpireSoon · as buyers see it"><ListingView readOnly /></Sheet>
+	<DestructionSheet
+		bind:open={dzOpen}
+		d={dz}
+		x={expiry}
+		dist={c.dist}
+		sku={c.sku}
+		batch={c.batch.id}
+		client={ws.data.client.short}
+	/>
 </Screen>

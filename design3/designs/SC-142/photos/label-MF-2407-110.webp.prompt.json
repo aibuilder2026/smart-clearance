@@ -1,0 +1,9 @@
+{
+  "model": "Qwen-Image 2.1 (bf16), image edit, local (qwen-image-bf16 0.2.0)",
+  "input": "agents/evals/vision/images/facewash.webp (the Vision eval set's clean label for the product)",
+  "seed": 1451,
+  "size": 1024,
+  "prompt": "Edit only the printed text on the white label, keeping everything else identical: the first line reads \"GLOWRA ALOE FACE WASH 100 ml\"; the second line reads \"BATCH NO: MF-2407-110\"; the third line reads \"MFG: 21/09/2024\"; the fourth line reads \"BEST BEFORE: 21/09/2026\"; the last line reads \"MRP ₹120.00 (incl. of all taxes)\". Same bold black sans-serif font, same size and alignment, same carton, same lighting and background.",
+  "post": "cwebp -q 84",
+  "purpose": "SC-142: the label photo the distributor sent for the history batch MF-2407-110 (Glowra Aloe Face Wash 100 Ml, best before 21/09/2026); seed 1433's printed 21/01/2026"
+}

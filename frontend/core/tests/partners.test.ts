@@ -10,6 +10,7 @@ import {
 	pickupsFor,
 	storyMoments,
 	storyWhole,
+	sumsOf,
 	whole
 } from '../src/lib/workspace/partners';
 import { store } from '../src/lib/workspace/store.svelte';
@@ -40,6 +41,20 @@ describe("a distributor's batches are ledger.js's", () => {
 				theirs = P.distPapers(x);
 			expect(plain(mine)).toEqual(plain(theirs));
 		}
+	});
+	for (const dist of ['rakesh', 'lakshmi'])
+		it(`${dist}'s cleared batches add up: what they cost him = what he sold + what was credited (SC-145)`, () => {
+			const past = distPast(HISTORY_CASES, dist);
+			const mine = sumsOf(past, STUB_WORLD);
+			expect(plain(mine)).toEqual(plain(P.sumsOf(P.distBatches(dist, W.SC3_STORE.get()).past)));
+			for (const x of mine.batches) expect(Math.abs(x.sold + x.credit - x.cost)).toBeLessThan(0.5);
+			expect(mine.n).toBe(6);
+		});
+	it("Rakesh Traders' sum is the board's: ₹1,05,928 sold + ₹66,918 credited = ₹1,72,846", () => {
+		const t = sumsOf(distPast(HISTORY_CASES, 'rakesh'), STUB_WORLD);
+		expect([Math.round(t.sold), Math.round(t.credit), Math.round(t.sold) + Math.round(t.credit), t.notes]).toEqual([
+			105928, 66918, 172846, 8
+		]);
 	});
 	it('every batch ends whole', () => {
 		for (const c of HISTORY_CASES) expect(whole(c, STUB_WORLD).gain).toBe(0);

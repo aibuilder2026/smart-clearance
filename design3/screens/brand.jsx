@@ -9,6 +9,8 @@
   const ES = D.PLAN.lines.find(l => l.id === "expiresoon"), KL = D.PLAN.lines.find(l => l.id === "kirana");
   const SHOPS = D.KIRANAS.length;
   const Pass = ({ children }) => children;
+  const HERO = D.BATCHES.find(b => b.hero);
+  const possessive = n => (/s$/.test(n) ? `${n}'` : `${n}'s`);
 
   /* ---------- S0 Setup ---------- */
   const FLOOR_ROWS = [["snacks", "Snacks", "chips"], ["biscuits", "Biscuits", "biscuits"], ["staples", "Staples", "poha"], ["beverages", "Beverages", "mango"], ["personal-care", "Personal care", "facewash"]];
@@ -106,13 +108,14 @@
   // the first viewport is the batch, tracked like an order: tracker first, the agents beside it, the cluster under it
   function CommandCenter({ me, onOpenRoute }) {
     const s = useStore(); const { go } = useRoute(); const app = useApp(); const hm = heroModel(s); const phone = app.bp === "phone";
-    const [sel, setSel] = useState(null);
+    const [sel, setSel] = useState(null); const [dz, setDz] = useState(false);
     const views = useMemo(() => D.BATCHES.map(b => { const v = D.batchView(b); if (b.hero) v.phase = hm.view.phase; if (b.second) v.phase = "executing"; return v; }), [s.seq]);
     const watchlist = views.filter(v => !(v.hero && s.hero.phase === "watching")).sort((a, b) => (a.phase === "at-risk" || (!a.phase && a.assess.status === "at-risk") ? -1 : 0) - (b.phase === "at-risk" || (!b.phase && b.assess.status === "at-risk") ? -1 : 0) || a.daysLeft - b.daysLeft);
     const openRoute = () => (onOpenRoute ? onOpenRoute() : go("route"));
     // every row opens its batch's page (SC-112), on the screen for where the batch stands
     const journeys = journeyItems(s, null); const openBatch = ref => { const it = journeys.find(i => i.ref === ref); go(partAt(it), { ref }); };
-    const primary = s.hero.phase === "planned" ? <Button variant="approve" icon="check" onClick={openRoute}>Review and approve</Button> : ["approved", "executing"].includes(s.hero.phase) ? <Button variant="primary" iconRight="arrow-right" onClick={() => go("execution", { ref: s.hero.id })}>Watch execution</Button> : <Button variant="primary" iconRight="arrow-right" onClick={openRoute}>Open Route Room</Button>;
+    const dzWaits = s.hero.destruction && s.hero.destruction.status === "checked";
+    const primary = dzWaits ? <Button variant="approve" icon="check" onClick={() => setDz(true)}>Review the destruction</Button> : s.hero.phase === "planned" ? <Button variant="approve" icon="check" onClick={openRoute}>Review and approve</Button> : ["approved", "executing"].includes(s.hero.phase) ? <Button variant="primary" iconRight="arrow-right" onClick={() => go("execution", { ref: s.hero.id })}>Watch execution</Button> : <Button variant="primary" iconRight="arrow-right" onClick={openRoute}>Open Route Room</Button>;
     const flagged = s.hero.phase !== "watching" && s.setup.confirmed;
     const routed = ["approved", "executing", "dispatched", "settled", "cleared"].includes(s.hero.phase);
     const perm = s.setup.permission;
@@ -121,7 +124,7 @@
     // left before the Watcher starts is the operator's yes to the guardrails
     const ready = !S.useLive() || s.setup.mapped > 0;
     const tracker = flagged ? <TrackerCard view={hm.view} done={hm.done} current={hm.current} eta={perm && perm.paused ? "Paused by Rakesh bhai" : hm.eta} etaTone={perm && perm.paused ? "amber" : hm.etaTone} agentLive={perm && perm.paused ? "" : hm.agentLive} primary={primary} money={money}
-      line={s.hero.phase === "cleared" ? `All ${fmt.num(D.PLAN.units)} units placed: ${KL.units} with ${SHOPS} kiranas, ${ES.units} with a ${D.BUYER.city} wholesaler. Nothing went to the bin.` : undefined} />
+      line={s.hero.phase === "cleared" ? (s.hero.destruction ? `${fmt.num(D.PLAN.units - s.hero.destruction.units)} of ${fmt.num(D.PLAN.units)} units placed; ${fmt.num(s.hero.destruction.units)} expired and were destroyed at ${D.DISTRIBUTORS[HERO.distributor].godown}, on your yes.` : `All ${fmt.num(D.PLAN.units)} units placed: ${KL.units} with ${SHOPS} kiranas, ${ES.units} with a ${D.BUYER.city} wholesaler. Nothing went to the bin.`) : undefined} />
       : <Card><Empty img="sprout-box" title={!s.setup.confirmed ? (ready ? "Confirm Setup to start watching" : "Connect your stock data to start") : !perm ? "Waiting for Rakesh Traders' permission" : "Nothing at risk yet"} body={!s.setup.confirmed ? (ready ? `Your distributors' stock export is mapped: ${fmt.num(D.SETUP.dms.rows)} batches from ${Object.keys(D.DISTRIBUTORS).length} distributors. Review the guardrails and confirm; the Watcher checks at ${s.rules.watchTime} the next morning.` : `Upload the distributor export once and set the guardrails. It takes about ${D.SETUP.minutes} minutes; the Watcher starts the next morning.`) : !perm ? "Rakesh bhai's stock is listed and offered in his name, so he gives a one-time permission in his app first. He can pause it at any time." : "The Watcher checks every batch against the quick-commerce gates and sell-through at 09:00. You get a push the moment one cannot make it."} action={!s.setup.confirmed ? <Button variant="primary" iconRight="arrow-right" onClick={() => go("setup")}>{ready ? "Review and confirm" : "Open Setup"}</Button> : !perm ? <S.PlayAs who="rakesh" route="home">Give the permission as Rakesh bhai</S.PlayAs> : null} /></Card>;
     const cluster = flagged && <Card pad={false} className="stack" style={{ overflow: "hidden", gap: 0 }}>
       <div className="card-head" style={{ padding: "14px 16px 10px" }}><span className="card-title">Nagpur cluster</span><Badge size="sm" tone={hm.ordered ? "green" : undefined} dot={!!hm.ordered} live={hm.ordered > 0 && hm.ordered < SHOPS}>{hm.ordered ? `${hm.ordered} of ${D.OFFERED} kiranas ordered` : s.hero.offer ? `${D.OFFERED} kiranas messaged` : `${D.OFFERED} kiranas`}</Badge></div>
@@ -134,6 +137,7 @@
     return <Screen me={me} title="Command Center" sub={flagged ? `${D.JOURNEY.today} · Watcher checked 312 batches at 09:00` : "Watcher runs daily at 09:00 across 312 batches"}>
       {app.bp === "desktop" ? <Columns sideWidth={340} main={<>{tracker}{cluster}{list}</>} side={feed} />
         : <div className="stack" style={{ gap: 20 }}>{tracker}{feed}{list}{cluster}</div>}
+      <DestructionSheet open={dz && !!s.hero.destruction} onClose={() => setDz(false)} d={s.hero.destruction} x={s.hero.expiry} dist={D.DISTRIBUTORS[HERO.distributor]} sku={D.SKUS[HERO.sku]} batch={HERO} />
     </Screen>;
   }
   // the Command Center on the live workspace (SC-73, SC-68 option B): the flagged batches as tabs over the tracker card,
@@ -317,17 +321,19 @@
   // expiry day's settlement (SC-94, option B): the packs left at the godown, settled by the client's expiry policy:
   // the policy, three figures (the credit to the distributor, who destroys the packs, the client's other costs), the
   // sentence, and the paper
-  const POLICY_NAME = { "full-credit": "Full credit at expiry", "price-support": "Price support only", none: "No returns" };
+  const POLICY_NAME = { godown: "Destroyed at the godown", "full-credit": "Full credit at expiry", "price-support": "Price support only", none: "No returns" };
   function expirySentence(x, client, dist) {
     const n = fmt.num(x.units), amount = x.credit != null ? ` (${fmt.inr(x.credit)})` : "";
     const whose = dist.name + (/s$/.test(dist.name) ? "'" : "'s");
+    if (x.policy === "godown") return `The ${n} packs are destroyed at ${dist.godown} through an authorised agency; ${client} credits ${dist.name} the dealer price, the GST it reverses and the agency's charges${x.amount != null ? ` (${fmt.inr(x.amount)})` : ""}.`;
     if (x.policy === "full-credit") return `The ${n} packs come back to ${client} for full credit${amount || " at the dealer price"}, and ${client} destroys them.`;
     if (x.policy === "price-support") return `The ${n} packs stay with ${dist.name}, which destroys them; ${client} pays it the gap to its price${amount}.`;
     return `With no returns, the ${n} packs are ${whose} loss, and it destroys them.`;
   }
   function ExpirySettlement({ settle: x, dist }) {
     const { go } = useRoute(); const client = D.CLIENT.short;
-    const figures = [[`Credit to ${dist.short}`, x.policy === "none" ? "—" : x.credit != null ? fmt.inr(x.credit) : "at the dealer price"], ["Destroyed by", x.destroyedBy === "client" ? client : dist.short], [x.policy === "full-credit" ? "Disposal, EPR, GST" : "Client's other costs", x.policy === "full-credit" ? fmt.inr(x.disposal + x.epr + x.itc) : "—"]];
+    const figures = x.policy === "godown" ? [[`Credit to ${dist.short}`, x.amount != null ? fmt.inr(x.amount) : "at the dealer price"], ["Destroyed by", dist.short], ["Of it: GST and charges", fmt.inr((x.gst || 0) + (x.charges || 0))]]
+      : [[`Credit to ${dist.short}`, x.policy === "none" ? "—" : x.credit != null ? fmt.inr(x.credit) : "at the dealer price"], ["Destroyed by", x.destroyedBy === "client" ? client : dist.short], [x.policy === "full-credit" ? "Disposal, EPR, GST" : "Client's other costs", x.policy === "full-credit" ? fmt.inr(x.disposal + x.epr + x.itc) : "—"]];
     return <Card className="stack snug">
       <div className="card-head"><span className="row tight"><span className="icontile" style={{ borderRadius: 9 }}><Icon name="hand-coins" size={17} stroke={2} /></span><span className="card-title">Expiry settlement</span></span><Badge tone={x.policy === "none" ? undefined : "green"} icon="check">{POLICY_NAME[x.policy]}</Badge></div>
       <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 120px), 1fr))" }}>{figures.map(([k, v]) => <div key={k} className="stack tight" style={{ gap: 2, padding: "10px 12px", borderRadius: 12, background: "var(--fill)" }}><span className="t-caption subtle">{k}</span><b className="tnum">{v}</b></div>)}</div>
@@ -336,8 +342,52 @@
     </Card>;
   }
 
+  // packs destroyed at the distributor's godown on expiry day (SC-139, option B): where the evidence stands, and on
+  // Priya's desk the review: both photos, Vision's checks, the agency, and what her yes issues. The batch closes on it
+  const evidenceSrc = (ref, which, d) => (d && d.photos && d.photos[which] && d.photos[which].url) || `${window.SC3_IMG}evidence/${ref}-${which}.webp`;
+  const DSTATE = { requested: ["amber", "waiting for the evidence"], asked: ["amber", "asked again"], reading: ["violet", "Vision is checking"], checked: ["amber", "waiting for your yes"], approved: ["green", "approved"] };
+  function DestructionCard({ d, dist, onReview }) {
+    const [tone, label] = DSTATE[d.status] || [undefined, d.status];
+    const body = { requested: `${dist.name} is asked to destroy the ${fmt.num(d.units)} packs at ${dist.godown} through an authorised agency, and to send two photos and its certificate.`,
+      asked: `You asked ${dist.short} again${d.reason ? `: ${d.reason}` : ""}.`, reading: "Vision is reading the batch, the count and the slate off the photos.",
+      checked: `${dist.short} sent the evidence: ${d.agency ? d.agency.name : "the agency"}, certificate ${d.certificate}. Vision checked it.`,
+      approved: `Approved${d.approvedBy && D.PEOPLE[d.approvedBy] ? ` by ${D.PEOPLE[d.approvedBy].short}` : ""}: the credit note and the agency's certificate are issued.` }[d.status];
+    return <Card className="stack snug">
+      <div className="card-head"><span className="row tight"><span className={cx("icontile", tone === "amber" && "amber")} style={{ borderRadius: 9 }}><Icon name="recycle" size={17} stroke={2} /></span><span className="card-title">Destruction at the godown</span></span><Badge tone={tone} dot={d.status !== "approved"} live={d.status === "reading"} icon={d.status === "approved" ? "check" : undefined}>{label}</Badge></div>
+      {d.photos && <div className="dz-two dz-pair">{["before", "after"].map(w => <div key={w} className="cam dz-cam"><S.Photo className="cam-feed whole" src={evidenceSrc(HERO.id, w, d)} alt={w === "before" ? "The packs at the godown, the batch label in view" : "The packs slit open at the landfill, the slate in view"} /><span className="cam-tag">{w === "before" ? "Before" : "After"}</span></div>)}</div>}
+      <span className="t-footnote muted">{body}</span>
+      {d.status === "checked" && <Button variant="approve" icon="check" onClick={onReview}>Review and approve</Button>}
+    </Card>;
+  }
+  function DestructionSheet({ open, onClose, d, x, dist, sku, batch }) {
+    const [asking, setAsking] = useState(false); const [why, setWhy] = useState("");
+    const C = D.CLIENT.short, live = S.useLive();
+    const close = () => { onClose(); setAsking(false); setWhy(""); };
+    const act = (name, arg) => { if (live && live.destruction) live.destruction(name, arg); else Flow.act(name, arg); close(); };
+    const footer = asking
+      ? <div className="dz-foot"><Button variant="ghost" size="lg" onClick={() => setAsking(false)}>Back</Button><Button variant="primary" size="lg" block icon="send" disabled={!why.trim()} onClick={() => act("askDestructionAgain", why.trim())}>Ask {dist.short} again</Button></div>
+      : <div className="dz-foot"><Button variant="secondary" size="lg" icon="rotate-ccw" onClick={() => setAsking(true)}>Ask again</Button><Button variant="approve" size="lg" block icon="check" onClick={() => act("approveDestruction")}>Approve · issue the papers</Button></div>;
+    const at = w => d.photos && d.photos[w] && d.photos[w].at ? ` · ${String(d.photos[w].at).slice(-5)}` : "";
+    return <Sheet open={open} onClose={close} title="Approve the destruction" footer={d && d.status === "checked" ? footer : null}>
+      {d && <div className="stack" style={{ gap: 14 }}>
+        <div className="row" style={{ gap: 12 }}><Product name={sku.img} size={44} alt="" /><div className="grow"><b>{sku.name} · {fmt.num(d.units)} packs</b><div className="t-footnote muted">Batch <span className="mono">{batch.id}</span> · expired at {dist.godown} · sent by {dist.name}</div></div></div>
+        <div className="dz-two dz-pair">{["before", "after"].map(w => <div key={w} className="cam dz-cam"><S.Photo className="cam-feed whole" src={evidenceSrc(batch.id, w, d)} alt={w === "before" ? "The packs at the godown, the batch label in view" : "The packs slit open at the landfill, the slate in view"} /><span className="cam-tag">{w === "before" ? "Before" : "After"}{at(w)}</span></div>)}</div>
+        {asking ? <K.Field label={`What ${dist.short} should send again`} htmlFor="dz-why"><K.Textarea id="dz-why" rows={3} value={why} onChange={e => setWhy(e.target.value)} placeholder="The batch label is not readable in the before photo" /></K.Field>
+          : <div className="stack" style={{ gap: 16 }}>
+            <div className="stack tight"><b className="t-subhead">{possessive("Vision")} checks</b>{(d.checks || []).map(ck => <div key={ck.id} className="row tight t-subhead dz-check"><Icon name={ck.ok ? "circle-check" : "circle-alert"} size={16} className={ck.ok ? "dz-ok" : "dz-warn"} />{ck.label}</div>)}
+              {d.agency && <div className="row tight t-subhead dz-check"><Icon name="circle-check" size={16} className="dz-ok" />{d.agency.name} is on {possessive(C)} list (authorisation {d.agency.auth}) · certificate {d.certificate}</div>}</div>
+            {x && <div className="stack tight dz-yes"><b className="t-subhead">On your yes</b><List>
+              <ListRow title={`Expiry credit note to ${dist.name}`} sub={`${fmt.num(x.units)} × ₹${sku.dp} + ${fmt.inr2(x.gst || 0)} GST he reverses + ${fmt.inr2(x.charges || 0)} destruction`} value={<span className="tnum">{fmt.inr2(x.amount)}</span>} />
+              <ListRow title="Destruction certificate" sub={`${d.agency ? d.agency.name : "the agency"}, ${d.certificate || ""}`} value={<span className="tnum">{fmt.num(d.units)} packs</span>} />
+              <ListRow title={`${possessive(C)} input GST`} sub={`the packs were ${possessive(dist.name)} stock`} value="kept" />
+            </List></div>}
+          </div>}
+      </div>}
+    </Sheet>;
+  }
+
   function Execution({ me, onOpenListing }) {
-    const s = useStore(); const h = s.hero; const app = useApp(); const hm = heroModel(s); const [sheet, setSheet] = useState(false);
+    const s = useStore(); const h = s.hero; const app = useApp(); const hm = heroModel(s); const [sheet, setSheet] = useState(false); const [dz, setDz] = useState(false);
     const started = ["approved", "executing", "dispatched", "settled", "cleared"].includes(h.phase);
     const units = h.orders.reduce((t, o) => t + o.units, 0);
     const lastBid = h.bids[h.bids.length - 1];
@@ -387,9 +437,11 @@
           {hasLine("staff") && <StaffOps staff={h.staff} line={D.PLAN.lines.find(l => l.id === "staff")} dist={D.DISTRIBUTORS[D.BATCHES.find(b => b.hero).distributor]} />}
           {h.realised && h.realised.godown > 0 && ["dispatched", "settled", "cleared"].includes(h.phase) && <GodownLeft realised={h.realised} plan={D.PLAN} actual={h.realisedNet} dist={D.DISTRIBUTORS[D.BATCHES.find(b => b.hero).distributor]} />}
           {h.expiry && h.expiry.units > 0 && <ExpirySettlement settle={h.expiry} dist={D.DISTRIBUTORS[D.BATCHES.find(b => b.hero).distributor]} />}
+          {h.destruction && <DestructionCard d={h.destruction} dist={D.DISTRIBUTORS[HERO.distributor]} onReview={() => setDz(true)} />}
         </div>}
         side={<><SectionTitle>Agent timeline</SectionTitle><Card><AgentFeed events={s.feed.filter(e => ["approve", "execute", "settle", "report"].includes(e.stage))} people={D.PEOPLE} live={hm.agentLive ? s.feed.filter(e => ["approve", "execute", "settle", "report"].includes(e.stage)).length - 1 : -1} /></Card></>} />}
       <Sheet open={sheet} onClose={() => setSheet(false)} title="ExpireSoon · as buyers see it">{window.SC3_SCREENS.ListingView ? React.createElement(window.SC3_SCREENS.ListingView, { readOnly: true }) : null}</Sheet>
+      <DestructionSheet open={dz && !!h.destruction} onClose={() => setDz(false)} d={h.destruction} x={h.expiry} dist={D.DISTRIBUTORS[HERO.distributor]} sku={D.SKUS[HERO.sku]} batch={HERO} />
     </Screen>;
   }
   const all = h => h.orders.length === D.KIRANAS.length;
@@ -403,6 +455,8 @@
     { id: "route", label: "Route Room", short: "Route", icon: "route", from: 2, to: 5, ahead: "from Verify" },
     { id: "execution", label: "Execution", short: "Execution", icon: "activity", from: 6, to: 6, ahead: "starts on approval" },
     { id: "paperwork", label: "Paperwork", short: "Papers", icon: "file-text", from: 7, to: 7, ahead: "after the lines close" },
+    // the batch's record (SC-142): open at every stop, like its Journey
+    { id: "record", label: "Record", short: "Record", icon: "history", from: 99, to: 99, ahead: "" },
   ];
   const BATCH_PART_IDS = BATCH_PARTS.map(p => p.id);
   const stopOf = it => (it.current >= 0 ? it.current : 9);
@@ -411,7 +465,7 @@
   const partAt = it => (it ? (BATCH_PARTS.find(p => p.id !== "journey" && stopOf(it) >= p.from && stopOf(it) <= p.to) || BATCH_PARTS[0]).id : "journey");
   // a screen of the batch, as its tab says it: where the batch stands (amber while it waits for a yes), done, or not yet
   function partState(it, p) {
-    if (p.id === "journey") return {};
+    if (p.id === "journey" || p.id === "record") return {};
     if (p.id === partAt(it)) return { here: true, human: it.human, words: it.human ? "needs your yes" : "where the batch is" };
     return stopOf(it) < p.from ? { ahead: true, words: p.ahead } : { done: true, words: "done" };
   }
@@ -492,8 +546,15 @@
     const feed = <div className="stack snug"><SectionTitle sub="Every hand-off on this batch, as it happens">Agent activity</SectionTitle><Card>{events.length ? <AgentFeed events={events} people={D.PEOPLE} live={it.hero && hm.agentLive ? s.feed.length - 1 : -1} max={phone ? 4 : 8} /> : <span className="t-footnote muted">The agents report here as they work this batch.</span>}</Card></div>;
     return <Screen me={me} title="Journey"><Columns sideWidth={340} main={<>{card}{cluster}</>} side={feed} /></Screen>;
   }
+  // the Record of a batch in a journey (SC-142): the story's batch from its feed and audit; the stub keeps no record of
+  // the Mango Drink, which it leaves at its label photo
+  function BatchRecord({ me, it, v }) {
+    const s = useStore(); const L = window.SC3_LEDGER.record;
+    return <Screen me={me} title="Record"><S.RecordTab batch={v.id} steps={it.hero ? L.storyRecord(s).steps : []} photos={it.hero ? L.storyPhotos(s) : []} /></Screen>;
+  }
   // one screen of a batch's page
   function BatchPart({ me, it, v, part }) {
+    if (it && part === "record") return <BatchRecord me={me} it={it} v={v} />;
     if (!it || part === "journey") return <BatchJourney me={me} it={it} v={v} />;
     if (part === "route") return <RouteRoom me={me} />;
     if (part === "execution") return it.hero ? <Execution me={me} /> : <NotYet me={me} title="Execution" icon="sparkles" head="Nothing is executing yet" body="Listing, outreach, negotiation and the food-bank booking start the moment the plan is approved." />;
@@ -507,7 +568,13 @@
     // each row opens the batch's page (SC-112): Batches is the operator's (SC-127)
     const live = S.useLive();
     const openRow = v => go(partAt(journeyItems(s, live).find(i => i.ref === v.id)), { ref: v.id });
-    return <Screen me={me} title="Batches" sub="Every lot the Watcher sees, from the DMS export">
+    // every batch that has cleared and passed its best-before (SC-126 took them off the table), by month, each opening
+    // its page on its Record (SC-142)
+    const LG = window.SC3_LEDGER, past = LG.HISTORY.map(h => LG.caseOf(h.ref)).sort((a, z) => (a.cleared < z.cleared ? 1 : -1));
+    const months = []; past.forEach(c => { const m = c.cleared.slice(0, 7); let g = months.find(x => x.m === m); if (!g) months.push(g = { m, label: new Date(c.cleared.slice(0, 10) + "T00:00:00+05:30").toLocaleDateString("en-IN", { month: "long", year: "numeric", timeZone: "Asia/Kolkata" }), items: [] }); g.items.push(c); });
+    const phone = app.bp === "phone";
+    return <Screen me={me} title="Batches" sub="Every lot the Watcher sees, and every batch that has cleared">
+      <div className="stack" style={{ gap: 20 }}><div className="stack tight"><div className="list-head">In view · from the DMS export</div>
       {app.bp === "phone" ? <div className="list">{views.map(v => <BatchRow key={v.id} view={v} compact onOpen={() => openRow(v)} />)}</div> :
       <DataTable label="Batches" rows={views.map(v => ({ ...v, name: v.skuObj.name }))} onRow={openRow} initialSort={["daysLeft", "asc"]} columns={[
         { key: "name", label: "Product", render: v => <span className="row tight"><Product name={v.skuObj.img} size={36} /><span className="stack tight" style={{ gap: 0 }}><b>{v.skuObj.name}</b><span className="mono subtle t-caption">{v.id}</span></span></span> },
@@ -516,7 +583,13 @@
         { key: "risk", label: "At risk", num: true, sortValue: v => v.assess.atRisk, render: v => v.assess.atRisk ? <span className="neg strong">{fmt.num(v.assess.atRisk)}</span> : "—" },
         { key: "gates", label: "Quick-commerce gates", sortable: false, render: v => <GateChips gates={v.assess.gates} size="sm" /> },
         { key: "status", label: "Status", sortValue: v => v.phase || v.assess.status, render: v => <StatusBadge status={v.phase || v.assess.status} /> },
-      ]} />}
+      ]} />}</div>
+      {months.map(g => <List key={g.m} head={`Cleared · ${g.label}`}>{g.items.map(c => { const ph = LG.record.photosOf(c), net = LG.rowOf(c).figures.net;
+        return <ListRow key={c.ref} chevron onClick={() => go("report", { ref: c.ref, tab: "record" })} leading={<Product name={c.sku.img} size={40} />}
+          title={<span className="row tight" style={{ gap: 8, flexWrap: "wrap" }}><span>{c.sku.name}</span><S.OutcomeBadge o={c.outcome} size="sm" /></span>}
+          sub={`${c.ref} · ${c.dist.name} · flagged ${fmt.day(c.flagged)} · cleared ${fmt.day(c.cleared)}${phone ? ` · ${fmt.inr(net)}` : ""}`}
+          value={phone ? null : <span className="row" style={{ gap: 16 }}><span className="rec-count"><Icon name="camera" size={15} />{ph.length} {ph.length === 1 ? "photo" : "photos"}</span><b className="tnum">{fmt.inr(net)}</b></span>} />; })}</List>)}
+      </div>
     </Screen>;
   }
   // what the Watcher sees of a batch, on a watched batch's Journey on the operator's batch page: its days, gates and

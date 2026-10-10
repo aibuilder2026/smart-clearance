@@ -6,6 +6,7 @@
 import { CHIPS, D, ES, INVOICE, KL, SHOPS_ALL } from './data';
 import { A, act as run, Agents, type ActionName } from './flow';
 import { stubLedger, stubPage } from './ledger';
+import { historyCase, recordOf, storyRecord } from './record';
 import history from './seed/history.json';
 import type { PartnerWorld } from './partners';
 import { setDefaultSource, type WorkspaceSource } from './source';
@@ -40,7 +41,8 @@ export const STUB_WORLD: PartnerWorld = {
 	buyer: D.buyer,
 	client: D.client.name,
 	short: D.workspace.short,
-	capTimes: D.rules.shopCapTimes
+	capTimes: D.rules.shopCapTimes,
+	people: D.people
 };
 
 export const data: WorkspaceData = Object.freeze({
@@ -157,6 +159,14 @@ class StubSource implements WorkspaceSource {
 	ledgerPage(ref: string) {
 		return stubPage(ref, data, kase, store.state);
 	}
+	// a batch's record (SC-142): a history batch's from its own stamps, the story's from its feed and audit; the stub
+	// keeps no record of the Mango Drink, which it leaves at its label photo
+	record(ref: string) {
+		const c = historyCase(ref);
+		if (c) return recordOf(c);
+		if (ref === D.batches.find((b) => b.hero)?.id) return storyRecord(store.state);
+		return D.batches.some((b) => b.id === ref) ? { ref, steps: [], photos: [] } : null;
+	}
 	// a partner's own history (SC-130): the client's history; each partner's screens take their own part of it, a
 	// kirana its shop among every shop the schemes go to (data.shops)
 	readonly partners: PartnerView = Object.freeze({
@@ -240,7 +250,7 @@ class StubSource implements WorkspaceSource {
 					const x = st.hero.orders.find((y) => y.id === kirana);
 					if (x && units != null) x.units = units;
 				});
-			} else run(name as ActionName, arg as string | number | boolean | undefined);
+			} else run(name as ActionName, arg as Parameters<typeof run>[1]);
 		};
 		if (!o?.feel) {
 			step();

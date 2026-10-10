@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Client, Exits, Rules } from '@smart-clearance/api/console';
+	import type { Client, DestructionConfig, Exits, Rules } from '@smart-clearance/api/console';
 	import {
 		Badge,
 		Button,
@@ -20,20 +20,34 @@
 	const k = useConsole();
 	const savedRules = $derived(JSON.stringify(c.rules));
 	const savedExits = $derived(JSON.stringify(c.exits));
+	const savedDz = $derived(JSON.stringify(c.destruction ?? null));
 	// svelte-ignore state_referenced_locally
 	let r: Rules = $state(JSON.parse(savedRules));
 	// svelte-ignore state_referenced_locally
 	let ex: Exits = $state(JSON.parse(savedExits));
+	// packs left at a distributor's godown on expiry day, destroyed there (SC-139): shown while that is the policy
+	// svelte-ignore state_referenced_locally
+	let dz: DestructionConfig | null = $state(JSON.parse(savedDz));
 	const discard = () => {
 		r = JSON.parse(savedRules);
 		ex = JSON.parse(savedExits);
+		dz = JSON.parse(savedDz);
 	};
 	$effect.pre(discard);
-	const dirty = $derived(JSON.stringify(r) !== savedRules || JSON.stringify(ex) !== savedExits);
+	const dirty = $derived(
+		JSON.stringify(r) !== savedRules || JSON.stringify(ex) !== savedExits || JSON.stringify(dz) !== savedDz
+	);
 	const set = <K extends keyof Rules>(key: K, v: Rules[K]) => (r = { ...r, [key]: v });
+	const setD = <K extends keyof DestructionConfig>(key: K, v: DestructionConfig[K]) => dz && (dz = { ...dz, [key]: v });
+	const godown = $derived(c.profile.expiry === 'godown' && !!dz);
 	const save = () =>
 		k.act(
-			() => api.saveRules(c.id, { rules: $state.snapshot(r), exits: $state.snapshot(ex) }),
+			() =>
+				api.saveRules(c.id, {
+					rules: $state.snapshot(r),
+					exits: $state.snapshot(ex),
+					...(dz ? { destruction: $state.snapshot(dz) } : {})
+				}),
 			'Channels and rules saved'
 		);
 </script>
@@ -65,6 +79,35 @@
 		label="Label photo before any plan"
 	/>{/snippet}
 {#snippet baseline()}<Badge size="sm">baseline</Badge>{/snippet}
+{#snippet required()}<Badge size="sm" tone="green">required</Badge>{/snippet}
+{#snippet visionCheck()}{#if dz}<Switch
+			checked={dz.visionCheck}
+			onchange={(v) => setD('visionCheck', v)}
+			label="Vision checks the destruction photos"
+		/>{/if}{/snippet}
+{#snippet reviewer()}<span>{dz?.reviewer}</span>{/snippet}
+{#snippet agencies()}<Badge size="sm">{dz?.agencies.length ?? 0}</Badge>{/snippet}
+{#snippet grossUp()}{#if dz}<Switch
+			checked={dz.grossUp}
+			onchange={(v) => setD('grossUp', v)}
+			label="Make good the GST he reverses"
+		/>{/if}{/snippet}
+{#snippet charges()}{#if dz}<Stepper
+			value={dz.chargesPerUnit}
+			min={0}
+			max={10}
+			step={0.5}
+			onchange={(v) => setD('chargesPerUnit', v)}
+			label="the agency's charges a pack, in rupees"
+		/>{/if}{/snippet}
+{#snippet remind()}{#if dz}<Stepper
+			value={dz.remindDays}
+			min={1}
+			max={7}
+			step={1}
+			onchange={(v) => setD('remindDays', v)}
+			label="days before he is asked again"
+		/>{/if}{/snippet}
 
 <div class="stack" style="gap: 18px">
 	{#snippet main()}
@@ -106,6 +149,33 @@
 				value={photo}
 			/>
 		</List>
+		{#if godown && dz}
+			<SectionTitle
+				sub="Packs left at a distributor's godown on expiry day: destroyed there, and the batch closes on Supply Chain's yes"
+				>Destroyed at the godown</SectionTitle
+			>
+			<List>
+				<ListRow
+					title="Evidence"
+					sub="Two photos, before and after, and the agency's certificate number"
+					value={required}
+				/>
+				<ListRow
+					title="Vision checks the photos"
+					sub="the batch number, the count, the slate, when and where"
+					value={visionCheck}
+				/>
+				<ListRow title="Reviewed by" sub="the batch closes on this yes" value={reviewer} />
+				<ListRow
+					title="Authorised agencies"
+					sub={dz.agencies.map((a) => `${a.name}, ${a.city}`).join(' · ')}
+					value={agencies}
+				/>
+				<ListRow title="The GST he reverses" sub="made good on the credit note, so he ends whole" value={grossUp} />
+				<ListRow title="The agency's charges" sub="reimbursed a pack, on the credit note" value={charges} />
+				<ListRow title="Ask again" sub="journey days after the request, if no evidence has come in" value={remind} />
+			</List>
+		{/if}
 	{/snippet}
 	<Columns sideWidth={460} {main} {side} />
 	<div class="row" style="justify-content: flex-end; gap: 10px">

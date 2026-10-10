@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SC-145 option A · The same sum on both pages</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Munchly Foods' workspace, a distributor's figures. Option A: Batches and Orders open with the same sum, cost = sold + credited, each page marking its own part, and every batch carries its own sum">
+<link rel="icon" href="../../../system/img/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../../system/tokens.css">
+<link rel="stylesheet" href="../../../system/base.css">
+<link rel="stylesheet" href="../../../system/components.css">
+<link rel="stylesheet" href="../../../screens/screens.css">
+<link rel="stylesheet" href="../../../app/app.css">
+<link rel="stylesheet" href="../fig.css">
+<script>
+  // the workspace on its stub, the story run to ?stage= (9 by default: the story cleared, the history in view), signed in
+  // as ?who= (priya, rakesh); ?theme= picks light or dark; the hash
+  // opens a screen
+  (function () {
+    var q = new URLSearchParams(location.search);
+    try {
+      if (q.get("theme")) localStorage.setItem("sc3-theme", q.get("theme"));
+      localStorage.setItem("sc3-session", JSON.stringify({ uid: q.get("who") || "rakesh", at: Date.now() }));
+    } catch (e) {}
+    window.SC130_STAGE = Number(q.get("stage") || 9);
+    if (!location.hash) history.replaceState(null, "", location.pathname + location.search + "#/orders");
+  })();
+</script>
+<script>window.SC3_IMG = /claudeusercontent\.com$/.test(location.hostname) ? "https://raw.githubusercontent.com/aibuilder2026/smart-clearance/__IMG_SHA__/design3/system/img/" : "../../../system/img/";</script>
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/framer-motion@11.18.2/dist/framer-motion.js"></script>
+<script src="../../../system/icons.js"></script>
+<script src="../../../core/money.js"></script>
+<script src="../../../core/data.js"></script>
+<script src="../../../core/store.js"></script>
+<script src="../../../core/flow.js"></script>
+<script src="../../../core/world.js"></script>
+<script src="../../../core/ledger.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script src="../../../system/kit.js"></script>
+<script src="../../../system/world.js"></script>
+<script src="../../../system/product.js"></script>
+<script src="../../../screens/common.js"></script>
+<script src="../../../screens/live.js"></script>
+<script src="../../../screens/brand.js"></script>
+<script src="../../../screens/trade.js"></script>
+<script src="../../../screens/finance.js"></script>
+<script src="../../../screens/admin.js"></script>
+<script src="../../../screens/auth.js"></script>
+<script src="../../../screens/roles.js"></script>
+<script src="../fig.js"></script>
+<script src="opt.js"></script>
+<script src="../../../app/app.js"></script>
+<script>window.SC3_FLOW.fastForward(window.SC130_STAGE); window.SC130_AFTER && window.SC130_AFTER();</script>
+</body>
+</html>
