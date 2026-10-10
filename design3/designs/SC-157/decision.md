@@ -30,4 +30,5 @@ The question on the board: should one small card of it also stand on the Command
 
 ## The pick
 
-Pending.
+10 Oct: the maintainer picked **B, the Impact reading, grown**, and on the board's question, **also a small card on
+the Command Center** (this quarter's kilos kept out, CO₂e and meals, opening the Ledger on its Impact reading).
