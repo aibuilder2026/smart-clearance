@@ -151,7 +151,15 @@
 								><MoreMenu
 									label="Actions for {d.name}"
 									width={240}
-									items={[{ label: 'Ask for the permission again', icon: 'send', onclick: () => ask(d) }]}
+									items={[
+										{
+											label: 'Ask for the permission again',
+											icon: 'send',
+											action: () => ask(d),
+											busy: 'Sending the reminder…',
+											done: 'Reminder sent'
+										}
+									]}
 								/>{/if}</span
 						>{/snippet}
 					<ListRow

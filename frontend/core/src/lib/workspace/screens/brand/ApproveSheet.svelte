@@ -56,6 +56,7 @@
 			if (ws.failed?.action !== 'approve') placed = true;
 		});
 	};
+	// trying again clears the failure, so the approve button takes Retry's place and says it is approving (SC-152)
 	const retry = () => {
 		const f = failed;
 		if (!f) return approve();
@@ -127,10 +128,15 @@
 				size="lg"
 				block
 				icon="refresh-cw"
-				loading={busy}
 				onclick={retry}>Retry · release the agents</Button
-			>{:else}<Button variant="approve" size="lg" block icon="check" loading={busy} onclick={approve}
-				>Approve · release the agents</Button
+			>{:else}<Button
+				variant="approve"
+				size="lg"
+				block
+				icon="check"
+				loading={busy}
+				busy="Approving the plan…"
+				onclick={approve}>Approve · release the agents</Button
 			>{/if}<Button variant="ghost" block onclick={close}>Not now</Button>{/if}{/snippet}
 
 <Sheet bind:open {onclose} title={placed ? 'Plan placed' : 'Approve the plan'} {footer}>

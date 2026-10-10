@@ -21,9 +21,10 @@
 	const dirty = $derived(JSON.stringify(r) !== JSON.stringify(ws.state.rules));
 	const set = <K extends keyof Rules>(k: K, v: Rules[K]) => (r = { ...r, [k]: v });
 	const setFloor = (k: string, v: number) => (r = { ...r, floors: { ...r.floors, [k]: v } });
-	const save = () => {
-		// the rules, then their line in the audit log
-		void ws.saveRules(r);
+	// the rules, then their line in the audit log; Save waits on the answer (SC-152), and the toast says so only once
+	// they have been saved
+	const save = async () => {
+		await ws.saveRules(r, { inline: true });
 		toast({ text: 'Guardrails saved · agents use them from the next run', tone: 'ok' });
 	};
 	const floorTitle = (k: string) => k.replace('-', ' ').replace(/^./, (c) => c.toUpperCase());
@@ -34,7 +35,9 @@
 			size="sm"
 			icon="check"
 			disabled={!dirty}
-			onclick={save}>Save</Button
+			action={save}
+			busy="Saving…"
+			done="Saved">Save</Button
 		>{/if}{/snippet}
 
 {#snippet approvalTaps()}<Stepper
@@ -180,8 +183,14 @@
 					value={epr}
 				/></List
 			>
-			{#if app.bp === 'phone'}<Button variant="primary" size="lg" icon="check" disabled={!dirty} onclick={save}
-					>Save guardrails</Button
+			{#if app.bp === 'phone'}<Button
+					variant="primary"
+					size="lg"
+					icon="check"
+					disabled={!dirty}
+					action={save}
+					busy="Saving…"
+					done="Saved">Save guardrails</Button
 				>{/if}
 		</div>
 	</div>

@@ -33,27 +33,41 @@
 	const o = $derived(n.offer ?? { open: false, offered: kiranas.length, shops: 0, units: 0 });
 	const can = $derived(n.papers && o.shops > 0 && !n.van);
 	let p = $state(untrack(() => (n.van ? 1 : 0)));
-	let running = $state(false);
+	// the van on its way on the map, before the round is sent
+	let driving = $state(false);
 	$effect(() => {
-		if (n.van && !untrack(() => running)) p = 1;
+		if (n.van && !untrack(() => driving)) p = 1;
 	});
 	const per = $derived(j.sku.perCarton);
-	// the van drives the round on the map, then the round is done
-	const start = () => {
-		running = true;
-		const t0 = performance.now();
-		const dur = prefersReducedMotion.current ? 10 : 3600;
-		const step = (now: number) => {
-			const k = Math.min(1, (now - t0) / dur);
-			p = k;
-			if (k < 1) requestAnimationFrame(step);
-			else {
-				running = false;
-				void ws.act('vanRound', undefined, { ref: n.ref });
-				toast({ text: `Round done · ${o.shops} shops, ${cartons(o.units, per)}`, tone: 'ok' });
-			}
-		};
-		requestAnimationFrame(step);
+	const drive = () =>
+		new Promise<void>((done) => {
+			const t0 = performance.now();
+			const dur = prefersReducedMotion.current ? 10 : 3600;
+			const step = (now: number) => {
+				const k = Math.min(1, (now - t0) / dur);
+				p = k;
+				if (k < 1) requestAnimationFrame(step);
+				else done();
+			};
+			requestAnimationFrame(step);
+		});
+	// the van drives the round on the map, then the round is sent; the button waits on both (SC-152), with no "still
+	// working" line while the van drives, and the round is done only once it has gone through: a refusal puts the van
+	// back at the godown and says why under the button
+	const start = async () => {
+		driving = true;
+		try {
+			await drive();
+		} finally {
+			driving = false;
+		}
+		try {
+			await ws.act('vanRound', undefined, { ref: n.ref, inline: true });
+		} catch (e) {
+			p = 0;
+			throw e;
+		}
+		toast({ text: `Round done · ${o.shops} shops, ${cartons(o.units, per)}`, tone: 'ok' });
 	};
 </script>
 
@@ -100,9 +114,10 @@
 			variant="primary"
 			size="lg"
 			icon="navigation"
-			loading={running}
-			disabled={!can || running}
-			onclick={start}
+			disabled={!can}
+			action={start}
+			busy="Starting the round…"
+			slow={driving ? false : undefined}
 			>{can
 				? 'Start the round'
 				: o.open

@@ -182,7 +182,9 @@
 		<Button disabled={!dirty} onclick={discard}>Discard</Button><Button
 			variant="primary"
 			disabled={!dirty}
-			onclick={save}>Save changes</Button
+			action={save}
+			busy="Saving…"
+			done="Saved">Save changes</Button
 		>
 	</div>
 </div>

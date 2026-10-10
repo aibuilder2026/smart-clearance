@@ -20,15 +20,10 @@
 	const ws = useWorkspace();
 	const { toast } = useNotice();
 	let open = $state(false);
-	let busy = $state(false);
+	// Issue from Tally waits on the answer (SC-152); the toast only once it has gone through
 	const issue = async () => {
-		busy = true;
-		try {
-			await ws.act('issueInvoice', undefined, { feel: 400, ref: batch });
-			toast({ text: 'Marked issued from Tally', tone: 'ok' });
-		} finally {
-			busy = false;
-		}
+		await ws.act('issueInvoice', undefined, { feel: 400, ref: batch, inline: true });
+		toast({ text: 'Marked issued from Tally', tone: 'ok' });
 	};
 </script>
 
@@ -40,8 +35,13 @@
 		{#if o.paper}<span class="row tight wrap" style="gap: 8px"
 				><span class="dist-paper"
 					><Icon name="file-text" size={13} /><span class="mono">{o.paper.no}</span><span>{o.paper.label}</span></span
-				>{#if o.paper.issue}<Button variant="secondary" size="sm" icon="check" loading={busy} onclick={issue}
-						>Issue from Tally</Button
+				>{#if o.paper.issue}<Button
+						variant="secondary"
+						size="sm"
+						icon="check"
+						action={issue}
+						busy="Issuing…"
+						done="Issued">Issue from Tally</Button
 					>{/if}</span
 			>{/if}
 		{#if o.shops?.length}<button

@@ -20,8 +20,9 @@
 	const schemeOpen = $derived(n.lines.some((l) => l.id === 'kirana') && (!n.offer || n.offer.open));
 	const per = $derived(j.sku.perCarton);
 	const balance = $derived(n.award ? Math.round((es.units * n.award.price - n.award.token) * 100) / 100 : 0);
-	const dispatch = () => {
-		void ws.act('dispatch', undefined, { ref: n.ref });
+	// loading the truck waits on the answer (SC-152); the toast only once it has gone through
+	const dispatch = async () => {
+		await ws.act('dispatch', undefined, { ref: n.ref, inline: true });
 		toast({ text: `${w.buyer.city} lot on the buyer's truck · invoice draft next`, tone: 'ok' });
 	};
 	const rows = $derived<[string, string][]>([
@@ -47,7 +48,14 @@
 	<List
 		>{#each rows as [k, v] (k)}<ListRow title={k} value={v} />{/each}</List
 	>
-	{#if !n.truck}<Button variant="primary" size="lg" icon="truck" disabled={!n.award || schemeOpen} onclick={dispatch}
+	{#if !n.truck}<Button
+			variant="primary"
+			size="lg"
+			icon="truck"
+			disabled={!n.award || schemeOpen}
+			action={dispatch}
+			busy="Loading the truck…"
+			done="Loaded"
 			>{!n.award
 				? 'Load after the award'
 				: schemeOpen

@@ -7,25 +7,25 @@
 		type Journey,
 		type JourneyTrigger
 	} from '@smart-clearance/api/console';
-	import { Badge, cx, Icon, Segmented, type IconName } from '@smart-clearance/core';
+	import { Badge, cx, Icon, type IconName } from '@smart-clearance/core';
 	import { useConsole } from '#lib/console.svelte.ts';
+	import AutonomyControl from './AutonomyControl.svelte';
 	import TrigRow from './TrigRow.svelte';
 
 	type Props = {
 		c: Client;
 		sel: string | null;
 		onselect: (id: string) => void;
-		onautonomy: (a: Agent, v: Autonomy) => void;
+		onautonomy: (a: Agent, v: Autonomy) => unknown;
 		/** on phones each agent shows its level; elsewhere it can be changed in place */
 		compact: boolean;
 		/** the client's runs and timers, each under its agent (SC-79) */
 		journey?: Journey;
 		just?: Record<string, boolean>;
-		onask?: (t: JourneyTrigger) => void;
+		onask?: (t: JourneyTrigger) => unknown;
 	};
 	let { c, sel, onselect, onautonomy, compact, journey, just = {}, onask = () => {} }: Props = $props();
 	const k = useConsole();
-	const levels = k.config.autonomy.map((x) => ({ id: x.id, label: x.label }));
 	const lower = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 </script>
 
@@ -60,13 +60,7 @@
 						{#if a.gate}<Badge tone="amber" icon="lock">Always on</Badge>{:else if compact}<Badge
 								size="sm"
 								tone={cfg.autonomy === 'act' ? 'green' : undefined}>{k.level(cfg.autonomy).label}</Badge
-							>{:else}<Segmented
-								class="sm"
-								label="{a.name}: autonomy"
-								options={levels}
-								value={cfg.autonomy as Autonomy}
-								onchange={(v) => onautonomy(a, v)}
-							/>{/if}
+							>{:else}<AutonomyControl class="sm" {c} {a} {onautonomy} />{/if}
 					</div>
 				</div>
 			</div>

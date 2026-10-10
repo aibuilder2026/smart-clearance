@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import { useApp } from '../../../app.svelte';
 	import Badge from '../../../components/Badge.svelte';
 	import Button from '../../../components/Button.svelte';
@@ -10,6 +11,7 @@
 	import Product from '../../../components/Product.svelte';
 	import Stepper from '../../../components/Stepper.svelte';
 	import Icon from '../../../icons/Icon.svelte';
+	import { Wait } from '../../../wait.svelte';
 	import { cartons, fmt, packSize } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
@@ -36,8 +38,21 @@
 	const counterToken = $derived(
 		Math.round((Math.round(c.lines.expiresoon.units * c.counter.price * 100) / 100) * ws.data.rules.tokenPct)
 	);
-	const place = () => ws.act('bid', price);
-	const accept = () => ws.act('accept');
+	// the bid and accepting the counter wait on the answer (SC-152), and say why when refused
+	const place = () => ws.act('bid', price, { inline: true });
+	const accept = () => ws.act('accept', undefined, { inline: true });
+	// the message to the seller (SC-92): the box keeps it while it is on its way, and clears once it has gone; a
+	// refusal keeps it, with the reason under the box and Try again (SC-152)
+	const chat = new Wait();
+	onDestroy(() => chat.stop());
+	const send = () => {
+		const text = msg.trim();
+		if (!text || !ws.message) return;
+		void chat.run(async () => {
+			await ws.message?.(text, { inline: true });
+			if (msg.trim() === text) msg = '';
+		});
+	};
 	const terms = $derived<[string, string][]>([
 		['Seller', `${c.dist.name}, ${c.dist.city} · verified`],
 		['Visible to', `buyers outside ${ws.data.workspace.short}'s distributor territories`],
@@ -135,8 +150,14 @@
 								>{fmt.inr2(token)}</span
 							>
 						</div>
-						<Button variant="violet" size="lg" block icon="gavel" onclick={place}
-							>Bid ₹{price.toFixed(2)} for {c.lines.expiresoon.units}</Button
+						<Button
+							variant="violet"
+							size="lg"
+							block
+							icon="gavel"
+							action={place}
+							busy="Placing your bid…"
+							done="Bid placed">Bid ₹{price.toFixed(2)} for {c.lines.expiresoon.units}</Button
 						>
 						<span class="t-caption subtle"
 							>Balance in {ws.data.market.balanceHours} h. The seller's agent replies in about a minute.</span
@@ -155,8 +176,14 @@
 								>→ counter ₹{(last.counter || c.counter.price).toFixed(2)}</span
 							>
 						</div>
-						{#if last.status === 'countered'}<Button variant="violet" size="lg" block icon="check" onclick={accept}
-								>Accept ₹{c.counter.price.toFixed(2)} · pay {fmt.inr(counterToken)} token</Button
+						{#if last.status === 'countered'}<Button
+								variant="violet"
+								size="lg"
+								block
+								icon="check"
+								action={accept}
+								busy="Accepting…"
+								done="Accepted">Accept ₹{c.counter.price.toFixed(2)} · pay {fmt.inr(counterToken)} token</Button
 							>{/if}
 					</Card>{/if}{/if}
 			<Card class="stack snug"
@@ -172,18 +199,56 @@
 						onsubmit={(e) => {
 							e.preventDefault();
 							// the live workspace sends it to the seller, whose Negotiator answers (SC-92); the prototype's box is for show
-							const text = msg.trim();
-							if (text) void ws.message?.(text);
-							msg = '';
+							if (ws.message) send();
+							else msg = '';
 						}}
 					>
 						<input
 							class="input grow"
 							placeholder={`Message ${c.dist.name}`}
 							bind:value={msg}
+							readonly={chat.working}
 							aria-label="Message the seller"
-						/><IconButton icon="send" label="Send" type="submit" />
-					</form>{/if}
+							aria-describedby={chat.phase === 'error' || chat.phase === 'slow' ? 'lv-chat-note' : undefined}
+						/>{#if chat.face === 'busy'}<button
+								type="submit"
+								class="iconbtn"
+								aria-label="Sending…"
+								title="Sending…"
+								aria-busy="true"
+								aria-disabled="true"
+								><svg class="btn-arc" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"
+									><circle
+										cx="10"
+										cy="10"
+										r="7.5"
+										fill="none"
+										stroke="currentColor"
+										stroke-opacity="0.28"
+										stroke-width="2.25"
+									/><path
+										d="M10 2.5a7.5 7.5 0 0 1 7.5 7.5"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2.25"
+										stroke-linecap="round"
+									/></svg
+								></button
+							>{:else}<IconButton icon="send" label="Send" type="submit" />{/if}
+					</form>
+					{#if chat.phase === 'error' || chat.phase === 'slow'}<span
+							id="lv-chat-note"
+							class="btn-note"
+							class:err={chat.phase === 'error'}
+							role={chat.phase === 'error' ? 'alert' : undefined}
+							>{#if chat.phase === 'slow'}<Icon name="cloud" size={14} /><span
+									>Still sending. The platform can take a few seconds to wake.</span
+								>{:else}<Icon name="circle-alert" size={14} /><span>{chat.error}</span><button
+									type="button"
+									class="btn btn-link btn-sm"
+									onclick={send}>Try again</button
+								>{/if}</span
+						>{/if}{/if}
 			</Card>
 		</div>
 	</div>{/if}

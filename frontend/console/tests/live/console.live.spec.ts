@@ -118,7 +118,13 @@ test('live · Support may not change a plan', async ({ page }) => {
 	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Overview');
 	await page.goto(CONSOLE + '/clients/munchly/plan');
 	await page.getByRole('group', { name: 'Plan' }).getByRole('button', { name: 'Enterprise' }).click();
-	await expect(page.locator('.toast').last()).toHaveText("Only a Super admin can change a client's plan.");
+	// the plan puts itself back and says why beside the control (SC-152)
+	await expect(page.locator('.save-note.err')).toHaveText(
+		"Only a Super admin can change a client's plan. Put back as it was."
+	);
+	await expect(
+		page.getByRole('group', { name: 'Plan' }).getByRole('button', { name: 'Enterprise' })
+	).not.toHaveAttribute('aria-pressed', 'true');
 	await signOut(page);
 });
 

@@ -53,7 +53,9 @@
 				><span class="row tight"
 					><Badge size="sm" tone={i.status === 'ok' ? 'green' : 'violet'} dot
 						>{i.status === 'ok' ? 'connected' : 'mocked'}</Badge
-					><Button variant="ghost" size="sm" loading={busy === i.id} onclick={() => test(i)}>Test</Button></span
+					><Button variant="ghost" size="sm" loading={busy === i.id} busy="Testing…" onclick={() => test(i)}
+						>Test</Button
+					></span
 				>
 			</div>{/each}
 	</div>

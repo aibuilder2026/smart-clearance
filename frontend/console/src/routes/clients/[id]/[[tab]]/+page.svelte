@@ -76,6 +76,7 @@
 
 	const back = () => goto(href('clients'));
 	const show = (t: ClientTab) => goto(href('clients', id, t), { replace: true, reset: false });
+	// each waits on the platform where it was pressed (SC-152): the menu's "…" button, Pause's alert, Plan's Go live
 	const setAll = (on: boolean) =>
 		c &&
 		k.act(() => api.setAllAgents(c.id, on), on ? `Agents resumed for ${c.name}` : `Every agent paused for ${c.name}`);
@@ -84,9 +85,17 @@
 		c
 			? [
 					c.id === 'munchly' ? { label: 'Open the workspace', icon: 'external-link' as const, href: LINKS.app } : null,
-					c.status !== 'live' ? { label: 'Go live', icon: 'circle-play' as const, onclick: goLive } : null,
+					c.status !== 'live'
+						? { label: 'Go live', icon: 'circle-play' as const, action: goLive, busy: 'Going live…', done: 'Live' }
+						: null,
 					allOff
-						? { label: 'Resume every agent', icon: 'play' as const, onclick: () => setAll(true) }
+						? {
+								label: 'Resume every agent',
+								icon: 'play' as const,
+								action: () => setAll(true),
+								busy: 'Resuming agents…',
+								done: 'Agents resumed'
+							}
 						: {
 								label: 'Pause every agent',
 								icon: 'pause' as const,
@@ -167,7 +176,10 @@
 			bind:open={pause}
 			title="Pause every agent for {c.name}?"
 			message="Nothing new is detected, priced, listed or sent until you resume. Plans already approved stay where they are."
-			actions={[{ label: 'Cancel' }, { label: 'Pause', danger: true, strong: true, onclick: () => setAll(false) }]}
+			actions={[
+				{ label: 'Cancel' },
+				{ label: 'Pause', busy: 'Pausing…', danger: true, strong: true, onclick: () => setAll(false) }
+			]}
 		/>
 	</Screen>
 {/if}

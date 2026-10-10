@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Catalog, ConsoleConfig, SignInInput, Staff } from '@smart-clearance/api/console';
-	import { Mark, Shell, Wordmark, useNotice } from '@smart-clearance/core';
+	import { Mark, refusal, Shell, Wordmark, useNotice } from '@smart-clearance/core';
 	import { createQuery } from '@tanstack/svelte-query';
 	import type { Snippet } from 'svelte';
 	import { onMount, tick } from 'svelte';
@@ -25,8 +25,9 @@
 	type Props = { me: Staff | null; config: ConsoleConfig; catalog: Catalog; children: Snippet };
 	let { me, config, catalog, children }: Props = $props();
 
+	const notices = useNotice();
 	// svelte-ignore state_referenced_locally (the platform's description is read once a session)
-	provideConsole(new Console(config, catalog, useNotice(), () => me!));
+	provideConsole(new Console(config, catalog, notices, () => me!));
 
 	const nameOf = (route: string | null | undefined): RouteName | null =>
 		route === '/' ? 'overview' : ((route?.split('/')[1] as RouteName | undefined) ?? null);
@@ -105,12 +106,30 @@
 		if (S) await S.open({ anchor: MARK.console });
 	}
 	// signing out: the console recedes behind the splash while the session closes (two stops: the platform's, then
-	// Firebase's), the sign-in takes its place, and the splash opens onto it from the card's mark
+	// Firebase's), the sign-in takes its place, and the splash opens onto it from the card's mark. A sign-out the
+	// platform refuses keeps the person signed in (SC-152): the splash says so and opens back onto the console, and a
+	// toast gives the reason
 	async function signOut() {
 		account = false;
 		const S = splash();
-		if (S) void S.begin('leave', { who: me?.name.split(' ')[0] });
-		await api.signOut();
+		const who = me?.name.split(' ')[0];
+		const leaving = S ? S.begin('leave', { who }) : Promise.resolve();
+		try {
+			await api.signOut();
+		} catch (e) {
+			await leaving;
+			if (S) {
+				await S.begin('enter', {
+					who,
+					title: 'You are still signed in',
+					sub: 'The sign-out did not go through.',
+					reads: []
+				});
+				await S.open({ anchor: MARK.console });
+			}
+			notices.toast({ text: `You are still signed in. ${refusal(e)}`, tone: 'err', ms: 6000 });
+			return;
+		}
 		S?.mark('session-end');
 		S?.mark('firebase');
 		queryClient.setQueryData(meQuery().queryKey, null);

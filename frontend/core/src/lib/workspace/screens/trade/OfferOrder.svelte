@@ -23,14 +23,10 @@
 	const h = $derived(ws.state.hero);
 	const k = $derived(kOf(me, c, shopOf(ws, me), ws.data.rules.shopCapTimes));
 	let n = $state(untrack(() => kOf(me, c, shopOf(ws, me), ws.data.rules.shopCapTimes).units));
-	let busy = $state(false);
 	const m = $derived(offerMath(n, c));
 	const mine = $derived(h.orders.find((o) => o.id === k.id));
-	const order = () => {
-		busy = true;
-		// the order with the count he chose, as one change
-		void ws.act('order', { kirana: k.id, units: n }, { feel: 650 }).then(() => (busy = false));
-	};
+	// the order with the count he chose, as one change; the button waits on it (SC-152)
+	const order = () => ws.act('order', { kirana: k.id, units: n }, { feel: 650, inline: true });
 	const lines = $derived<[string, string, string][]>([
 		['You pay', `${m.paid} × ₹${m.pack.toFixed(2)}`, fmt.inr(m.pay)],
 		['Free packets', `${c.scheme.free} with every ${c.scheme.buy}`, `${m.free}`],
@@ -81,8 +77,11 @@
 							></span
 						><Money value={m.margin} size="s" roll style="color: var(--primary-text)" />
 					</div>
-					<Button variant="primary" size="xl" block loading={busy} onclick={order}
-						><span class="hi" lang="hi">ऑर्डर करें</span> · {n} packets</Button
+					<Button variant="primary" size="xl" block action={order}
+						>{#snippet busy()}<span class="hi" lang="hi">ऑर्डर हो रहा है…</span>{/snippet}{#snippet done()}<span
+								class="hi"
+								lang="hi">ऑर्डर हो गया</span
+							>{/snippet}<span class="hi" lang="hi">ऑर्डर करें</span> · {n} packets</Button
 					>
 					<span class="t-caption subtle" style="text-align: center"
 						>Best before {fmt.date(c.batch.bestBefore)} · {c.batch.daysLeft} days on every packet · unsold packs go back to
