@@ -986,6 +986,20 @@ describe("a distributor's portal, batch by batch (SC-133)", () => {
 		expect(text(p)).toContain(`Vision read batch ${CHIPS}, made 18 May 2026, best before 18 Nov 2026, MRP ₹30.00`);
 	});
 
+	it("Lakshmi Agencies' cleared Mango Drink keeps its food bank's pickup, collected, in Deliveries and Orders", async () => {
+		// once a batch clears its donation leaves the journey's state: read from her partner facts (SC-134)
+		const m = moment('cleared');
+		const gift = m.members.priya.cases[MANGO].plan!.lines.find((l) => l.id === 'foodbank')!.units;
+		const v = await draw(source(fakeApi(m, 'lakshmi-owner')), 'van', MANGO);
+		await waitFor(() => expect(text(v)).toContain('van round'));
+		expect(text(v)).toContain('collected');
+		expect(text(v)).not.toContain('being booked');
+		v.unmount();
+		const o = await draw(source(fakeApi(m, 'lakshmi-owner')), 'orders');
+		await waitFor(() => expect(text(o)).toContain('Mango Drink'));
+		expect(text(o)).toContain(`${gift} packs given`);
+	});
+
 	it("Orders lists each batch's orders under it, with the paper each sold on", async () => {
 		const m = moment('cleared');
 		const r = await draw(source(fakeApi(m, 'rakesh')), 'orders');

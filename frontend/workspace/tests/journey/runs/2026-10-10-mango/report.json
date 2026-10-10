@@ -1,0 +1,297 @@
+{
+	"flow": "Munchly Mango E2E",
+	"status": "passed",
+	"took": 81,
+	"steps": [
+		{
+			"n": 1,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Command Center: the Mango Drink at cleared",
+			"at": "2026-10-10T07:22:42.710Z",
+			"ms": 6851,
+			"shot": "steps/01-Command-Center-the-Mango-Drink-at-cleared.png"
+		},
+		{
+			"n": 2,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Execution: the scheme sent, the staff sale open, the donation booked",
+			"at": "2026-10-10T07:22:48.034Z",
+			"ms": 5324,
+			"shot": "steps/02-Execution-the-scheme-sent-the-staff-sale-open-th.png"
+		},
+		{
+			"n": 3,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Paper: Price-support credit note CN/0118",
+			"at": "2026-10-10T07:22:54.249Z",
+			"ms": 6215,
+			"shot": "steps/03-Paper-Price-support-credit-note-CN-0118.png"
+		},
+		{
+			"n": 4,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Paper: GST ITC memo s.17(5)(h)",
+			"at": "2026-10-10T07:22:56.165Z",
+			"ms": 1916,
+			"shot": "steps/04-Paper-GST-ITC-memo-s-17-5-h-.png"
+		},
+		{
+			"n": 5,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Paper: FSSAI surplus-food checklist 58 units",
+			"at": "2026-10-10T07:22:58.070Z",
+			"ms": 1905,
+			"shot": "steps/05-Paper-FSSAI-surplus-food-checklist-58-units.png"
+		},
+		{
+			"n": 6,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Paper: Donation receipt FI/HYD/26-27/0417",
+			"at": "2026-10-10T07:23:00.013Z",
+			"ms": 1943,
+			"shot": "steps/06-Paper-Donation-receipt-FI-HYD-26-27-0417.png"
+		},
+		{
+			"n": 7,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Paper: Destruction certificate 0 units left",
+			"at": "2026-10-10T07:23:01.934Z",
+			"ms": 1921,
+			"shot": "steps/07-Paper-Destruction-certificate-0-units-left.png"
+		},
+		{
+			"n": 8,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Impact posted the ledger",
+			"at": "2026-10-10T07:23:03.431Z",
+			"ms": 1497,
+			"shot": "steps/08-Impact-posted-the-ledger.png"
+		},
+		{
+			"n": 9,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "ESG: the batch posted to the ledger",
+			"at": "2026-10-10T07:23:07.991Z",
+			"ms": 4560,
+			"shot": "steps/09-ESG-the-batch-posted-to-the-ledger.png"
+		},
+		{
+			"n": 10,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "ESG: the BRSR line, the meals and the evidence",
+			"at": "2026-10-10T07:23:09.779Z",
+			"ms": 1788,
+			"shot": "steps/10-ESG-the-BRSR-line-the-meals-and-the-evidence.png"
+		},
+		{
+			"n": 11,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "ESG: the ledger, the year in its Impact reading",
+			"at": "2026-10-10T07:23:14.342Z",
+			"ms": 4563,
+			"shot": "steps/11-ESG-the-ledger-the-year-in-its-Impact-reading.png"
+		},
+		{
+			"n": 12,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Today: nothing left for her on the Mango Drink",
+			"at": "2026-10-10T07:23:19.128Z",
+			"ms": 4786,
+			"shot": "steps/12-Today-nothing-left-for-her-on-the-Mango-Drink.png"
+		},
+		{
+			"n": 13,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Her batch: what happened",
+			"at": "2026-10-10T07:23:23.633Z",
+			"ms": 4505,
+			"shot": "steps/13-Her-batch-what-happened.png"
+		},
+		{
+			"n": 14,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Her batch: she ends whole",
+			"at": "2026-10-10T07:23:24.962Z",
+			"ms": 1329,
+			"shot": "steps/14-Her-batch-she-ends-whole.png"
+		},
+		{
+			"n": 15,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Her copy of the food bank's receipt FI/HYD/26-27/0417, with Download PDF",
+			"at": "2026-10-10T07:23:26.641Z",
+			"ms": 1679,
+			"shot": "steps/15-Her-copy-of-the-food-bank-s-receipt-FI-HYD-26-27.png"
+		},
+		{
+			"n": 16,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Orders: the scheme, the staff sale and the food bank, under the batch",
+			"at": "2026-10-10T07:23:34.499Z",
+			"ms": 7858,
+			"shot": "steps/16-Orders-the-scheme-the-staff-sale-and-the-food-ba.png"
+		},
+		{
+			"n": 17,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Deliveries: the round delivered, the staff sale recorded, the pickup collected",
+			"at": "2026-10-10T07:23:39.097Z",
+			"ms": 4598,
+			"shot": "steps/17-Deliveries-the-round-delivered-the-staff-sale-re.png"
+		},
+		{
+			"n": 18,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Label photo: every photo she sent",
+			"at": "2026-10-10T07:23:43.630Z",
+			"ms": 4533,
+			"shot": "steps/18-Label-photo-every-photo-she-sent.png"
+		},
+		{
+			"n": 19,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Batches: the Mango Drink cleared",
+			"at": "2026-10-10T07:23:48.153Z",
+			"ms": 4523,
+			"shot": "steps/19-Batches-the-Mango-Drink-cleared.png"
+		},
+		{
+			"n": 20,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "The Mango Drink's papers, processed",
+			"at": "2026-10-10T07:23:50.474Z",
+			"ms": 2321,
+			"shot": "steps/20-The-Mango-Drink-s-papers-processed.png"
+		},
+		{
+			"n": 21,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Execution: every line done",
+			"at": "2026-10-10T07:23:55.048Z",
+			"ms": 4574,
+			"shot": "steps/21-Execution-every-line-done.png"
+		},
+		{
+			"n": 22,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Command Center at the end",
+			"at": "2026-10-10T07:23:57.229Z",
+			"ms": 2181,
+			"shot": "steps/22-Command-Center-at-the-end.png"
+		}
+	],
+	"figures": {
+		"Phase at the start": "cleared",
+		"Label photo at the start": "verified",
+		"Write-off": "₹22,657.2",
+		"Plan net": "₹16,917.1",
+		"Plan line kirana": "1372 packs",
+		"Plan line staff": "150 packs",
+		"Plan line foodbank": "58 packs",
+		"Kiranas offered the scheme": 58,
+		"Donation booked": "58 packs to Feeding India",
+		"Paper: Price-support credit note": "CN/0118 (generated, PDF)",
+		"Paper: GST ITC memo": "s.17(5)(h) (generated, PDF)",
+		"Paper: FSSAI surplus-food checklist": "58 units (generated, PDF)",
+		"Paper: Donation receipt": "FI/HYD/26-27/0417 (generated, PDF)",
+		"Paper: Destruction certificate": "0 units left (not required)",
+		"Papers with their PDF": "support, itc, fssai, receipt",
+		"Van round push": "Van route for Saturday",
+		"Actual net": 16917.1,
+		"Left at the godown": 0,
+		"Realised kirana": "1372 packs",
+		"Realised staff": "150 packs",
+		"Realised foodbank": "58 packs",
+		"Phase after the report": "cleared",
+		"The year: recovered": "₹2,58,453.08",
+		"The year: input GST kept": "₹17,915.88",
+		"The year: kept out of landfill": "2516.81 kg",
+		"The year: meals": 930,
+		"The year: batches": 14,
+		"Today: the Mango Drink": "nothing left for her",
+		"Her batch: what happened": "as posted",
+		"Her batch: money": "as posted",
+		"Her gain or loss": 0,
+		"Her batch: papers and copies": "as posted",
+		"Her CN/0118 PDF": "200 application/pdf %PDF",
+		"Her FI/HYD/26-27/0417 PDF": "200 application/pdf %PDF",
+		"Her credit: the price support, to the rupee": 5932,
+		"Her orders": "as posted",
+		"Her deliveries": "as posted",
+		"Her label photos": "as posted"
+	},
+	"findings": [
+		{
+			"severity": "note",
+			"where": "MF-2410-118",
+			"what": "skipped, already done: the label photo was sent"
+		},
+		{
+			"severity": "note",
+			"where": "MF-2410-118",
+			"what": "skipped, already done: the plan was approved"
+		},
+		{
+			"severity": "warning",
+			"where": "/offer/MF-2410-118",
+			"what": "Bilal Stores ordered 16 of its 28, so the scheme fills to 1372 exactly"
+		},
+		{
+			"severity": "warning",
+			"where": "/offer/MF-2410-118",
+			"what": "Saraswathi Kirana's story order of 4 packets cannot be placed: the offer screen orders in twelves from its share of 28, so it ordered 16"
+		},
+		{
+			"severity": "note",
+			"where": "MF-2410-118",
+			"what": "skipped, already done: the scheme closed"
+		},
+		{
+			"severity": "note",
+			"where": "MF-2410-118",
+			"what": "skipped, already done: the staff sale was recorded"
+		},
+		{
+			"severity": "note",
+			"where": "MF-2410-118",
+			"what": "skipped, already done: the donation was collected"
+		},
+		{
+			"severity": "note",
+			"where": "MF-2410-118",
+			"what": "skipped, already done: the van round ran"
+		},
+		{
+			"severity": "note",
+			"where": "MF-2410-118",
+			"what": "skipped, already done: the pack was reviewed"
+		},
+		{
+			"severity": "note",
+			"where": "MF-2410-118",
+			"what": "skipped, already done: Impact posted the ledger"
+		}
+	]
+}

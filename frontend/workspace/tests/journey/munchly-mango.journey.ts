@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import type { WsLedgerTotals as LedgerTotals } from '@smart-clearance/api/workspace';
+import type { WsLedgerTotals as LedgerTotals, WsPartner } from '@smart-clearance/api/workspace';
 import { api, mint } from './auth.ts';
 import {
 	AGENT_WAIT,
@@ -8,6 +8,8 @@ import {
 	caseAs,
 	inr,
 	kiranasOf,
+	same,
+	shows,
 	sidebar,
 	staff,
 	story,
@@ -116,7 +118,13 @@ const STEPS: { id: string; title: string; run: (page: Page) => Promise<void> }[]
 				DIST,
 				(c) => c.journey.photo.status === 'requested'
 			);
-			await as(page, DIST, `/photo/${HERO}`, 'uploads the label photo from the Begum Bazaar godown');
+			// her Today asks for it on the batch's card, and its button opens the camera on the batch (SC-133)
+			await as(page, DIST, '/home', 'uploads the label photo from the Begum Bazaar godown');
+			const card = page.locator(`#batch-${HERO}`);
+			await expect(card).toContainText('Send one photo of the carton label');
+			await run.done("Today: the Mango Drink's card asks for the label photo");
+			await card.getByRole('button', { name: 'Open camera', exact: true }).click();
+			await expect(page).toHaveURL(new RegExp(`/photo/${HERO}`));
 			await expect(page.getByRole('button', { name: 'Upload a photo' })).toBeVisible();
 			await page
 				.locator('input[type=file]:not([capture])')
@@ -230,7 +238,13 @@ const STEPS: { id: string; title: string; run: (page: Page) => Promise<void> }[]
 		async run(page) {
 			const c = await until('the staff sale is open', DIST, (c) => Boolean(c.journey.staff));
 			if (c.journey.staff?.status === 'recorded') return skip('the staff sale was recorded');
-			await as(page, DIST, `/van/${HERO}`, `records the staff sale: ${c.journey.staff?.units} packs at the godown`);
+			// her Today asks for it, and its button opens the batch's Deliveries, where the staff sale is (SC-133)
+			await as(page, DIST, '/home', `records the staff sale: ${c.journey.staff?.units} packs at the godown`);
+			const card = page.locator(`#batch-${HERO}`);
+			await expect(card).toContainText('Record the staff sale');
+			await run.done('Today: the staff sale asked for on the batch');
+			await card.getByRole('button', { name: 'Record what sold', exact: true }).click();
+			await expect(page).toHaveURL(new RegExp(`/van/${HERO}`));
 			const record = page.getByRole('button', { name: 'Record the sale' });
 			await record.scrollIntoViewIfNeeded();
 			await run.done('The staff sale card, every pack to start');
@@ -288,7 +302,12 @@ const STEPS: { id: string; title: string; run: (page: Page) => Promise<void> }[]
 				: '';
 			story('Van round push', c.push.van?.title, `Van route for ${vanDay}`);
 			if (c.journey.van.status === 'done') return skip('the van round ran');
-			await as(page, DIST, `/van/${HERO}`, "runs the van round to Hyderabad's kiranas");
+			await as(page, DIST, '/home', "runs the van round to Hyderabad's kiranas");
+			const card = page.locator(`#batch-${HERO}`);
+			await expect(card).toContainText(`Run the ${vanDay} van round`);
+			await run.done('Today: the van round asked for on the batch');
+			await card.getByRole('button', { name: 'Start the round', exact: true }).click();
+			await expect(page).toHaveURL(new RegExp(`/van/${HERO}`));
 			await expect(page.locator('#main')).toContainText(`${vanDay} van round`);
 			const round = page.getByRole('button', { name: 'Start the round' });
 			await expect(round).toBeEnabled();
@@ -359,14 +378,20 @@ const STEPS: { id: string; title: string; run: (page: Page) => Promise<void> }[]
 		async run(page) {
 			// the batch's own page in the ledger (SC-121), on its impact
 			await as(page, 'priya', `/report/${HERO}`, "reads the Mango Drink's page in the ledger: its BRSR line");
-			await expect(page.getByText('BRSR line')).toBeVisible();
-			await expect(page.getByText(/^posted · /)).toBeVisible();
+			// a batch's page opens on Money for her (SC-127): its BRSR line is on Impact; read within the page, since the
+			// recording's caption names the BRSR line too
+			await page.locator('.bh-tabs').getByRole('button', { name: 'Impact' }).click();
+			const main = page.locator('#main');
+			await expect(main.getByText('BRSR line', { exact: true })).toBeVisible();
+			await expect(main.getByText(/^posted · /)).toBeVisible();
 			await run.done('ESG: the batch posted to the ledger');
 			await page.mouse.wheel(0, 900);
 			await page.waitForTimeout(500);
 			await run.done('ESG: the BRSR line, the meals and the evidence');
 			await as(page, 'priya', '/report', 'reads the ledger, the year so far');
-			await expect(page.getByText('kept out of landfill')).toBeVisible();
+			// the ledger opens on its Money reading for her (SC-127): the kilos are in its Impact reading
+			await page.getByRole('group', { name: 'Reading' }).getByRole('button', { name: 'Impact', exact: true }).click();
+			await expect(page.locator('#main').getByText('kept out of landfill').first()).toBeVisible();
 			await run.done('ESG: the ledger, the year in its Impact reading');
 			const l = await api<{ periods: { kind: string; current: boolean; totals: LedgerTotals }[] }>(
 				'workspace',
@@ -379,6 +404,148 @@ const STEPS: { id: string; title: string; run: (page: Page) => Promise<void> }[]
 			run.figure('The year: kept out of landfill', `${y.kg} kg`);
 			run.figure('The year: meals', y.meals);
 			run.figure('The year: batches', y.batches);
+		}
+	},
+	{
+		id: 'distributor',
+		title: "Lakshmi Agencies reads her portal: Today, the batch's page and papers, Orders, Deliveries and her photos",
+		async run(page) {
+			// Munchly's view of the batch (its plan, its papers), and hers: her partner facts
+			const c = (await caseAs('priya'))!;
+			const view = await api<WsPartner>('workspace', DIST, `${WS}/partner`);
+			const facts = view.cases.find((x) => x.ref === HERO);
+			if (!facts) throw new Error(`${HERO} is not in Lakshmi Agencies' partner view`);
+			const main = page.locator('#main');
+			const text = async () => (await main.innerText()).replace(/\s+/g, ' ').trim();
+			const num = (n: number) => n.toLocaleString('en-IN');
+			const date = (iso: string) =>
+				new Date(`${iso.slice(0, 10)}T00:00:00Z`).toLocaleDateString('en-IN', {
+					day: 'numeric',
+					month: 'short',
+					year: 'numeric',
+					timeZone: 'UTC'
+				});
+			const paper = (id: string) => c.docs.find((d) => d.id === id && d.status !== 'not required');
+			const support = paper('support');
+			const receipt = paper('receipt');
+			const shops = c.journey.orders.length;
+			const packets = c.journey.orders.reduce((t, o) => t + o.units, 0);
+			const gift = c.plan?.lines.find((l) => l.id === 'foodbank')?.units ?? 0;
+			const sold = c.journey.staff?.sold ?? 0;
+			const leaves = c.moments.van.leavesAt ?? '';
+			const day =
+				vanDay ||
+				(leaves ? new Date(leaves).toLocaleDateString('en-GB', { weekday: 'long', timeZone: 'Asia/Kolkata' }) : '');
+
+			// Today: the batch cleared, nothing left for her on it
+			await as(page, DIST, '/home', 'opens Today once the Mango Drink has cleared');
+			await expect(main).toContainText('Your other stock and the batches you cleared are on');
+			const card = await page.locator(`#batch-${HERO}`).count();
+			story(
+				'Today: the Mango Drink',
+				card ? 'a card still asks for something' : 'nothing left for her',
+				'nothing left for her'
+			);
+			await run.done('Today: nothing left for her on the Mango Drink');
+
+			// the batch's page: what happened, how she ended whole, her papers and her copies
+			await as(page, DIST, `/batches/${HERO}`, "reads the Mango Drink's page: what happened, her money, her papers");
+			await expect(main).toContainText('You sent the label photo');
+			shows('Her batch: what happened', await text(), [
+				`The Watcher flagged ${num(c.batch.assess?.atRisk ?? 0)} packs at risk`,
+				'You sent the label photo',
+				`The scheme went to ${c.journey.offer?.shops} of your kiranas`,
+				`${shops} kiranas ordered ${num(packets)} packets`,
+				'The Paperwork agent drafted your papers',
+				`Your ${day} van round delivered the scheme`,
+				'Settled: you ended whole'
+			]);
+			await run.done('Her batch: what happened');
+			await page.locator('.bh-tabs').getByRole('button', { name: 'Money' }).click();
+			await expect(main).toContainText('You end whole');
+			const money = await text();
+			shows('Her batch: money', money, [
+				'From your kiranas',
+				'Your staff sale',
+				'Price-support credit note',
+				'Your gain or loss ₹0'
+			]);
+			story(
+				'Her gain or loss',
+				/Your gain or loss ?₹0\b/.test(money) ? 0 : money.match(/Your gain or loss ?(\S+)/)?.[1],
+				0
+			);
+			await run.done('Her batch: she ends whole');
+			await page.locator('.bh-tabs').getByRole('button', { name: 'Papers' }).click();
+			await expect(main).toContainText('Your papers');
+			shows(
+				'Her batch: papers and copies',
+				await text(),
+				[support?.no, ...(receipt ? ['Copies for your records', receipt.no] : [])].filter((x): x is string => !!x)
+			);
+			if (receipt) {
+				await page
+					.getByRole('button', { name: new RegExp(receipt.type) })
+					.first()
+					.click();
+				await expect(page.getByRole('button', { name: 'Download PDF' })).toBeVisible();
+				await run.done(`Her copy of the food bank's receipt ${receipt.no}, with Download PDF`);
+				await page.keyboard.press('Escape');
+			}
+			// her papers' PDFs, from the links her Download PDF opens: the credit note, and her copy of the receipt
+			for (const d of [support, receipt].filter((x) => !!x)) {
+				const { url } = await api<{ url: string }>('workspace', DIST, `${WS}/documents/${HERO}/${d!.id}`);
+				const pdf = await fetch(url);
+				const head = new TextDecoder().decode(new Uint8Array(await pdf.arrayBuffer()).slice(0, 4));
+				same(
+					`Her ${d!.no} PDF`,
+					`${pdf.status} ${pdf.headers.get('content-type')} ${head}`,
+					'200 application/pdf %PDF'
+				);
+			}
+			// her credit, as the ledger posted it: the price support, to the rupee as her credit note has it
+			const posted = await api<{ batches: { ref: string; figures: { support: number } }[] }>(
+				'workspace',
+				'priya',
+				`${WS}/ledger`
+			);
+			same(
+				'Her credit: the price support, to the rupee',
+				Math.round(facts.support?.total ?? 0),
+				posted.batches.find((b) => b.ref === HERO)?.figures.support
+			);
+
+			// Orders: the kiranas' scheme, her staff sale, the food bank's packs
+			await as(page, DIST, '/orders', 'reads her orders, batch by batch');
+			await expect(main).toContainText('sold from Munchly');
+			shows('Her orders', await text(), [
+				`${shops} kiranas · ${num(packets)} packets`,
+				...(sold ? [`Your staff sale · ${num(sold)} packs`] : []),
+				...(gift ? [`${num(gift)} packs given`] : [])
+			]);
+			await run.done('Orders: the scheme, the staff sale and the food bank, under the batch');
+
+			// Deliveries: the round delivered, the staff sale recorded, the food bank's pickup collected
+			await as(page, DIST, `/van/${HERO}`, "reads the Mango Drink's deliveries, then the earlier ones");
+			await expect(main).toContainText('van round');
+			shows('Her deliveries', await text(), [
+				`${day} van round`,
+				'delivered',
+				'Staff sale ·',
+				`${num(sold)} of ${num(c.journey.staff?.units ?? 0)} sold to staff`,
+				'collects',
+				'collected'
+			]);
+			await run.done('Deliveries: the round delivered, the staff sale recorded, the pickup collected');
+
+			// the label photos she sent, and what Vision read
+			await as(page, DIST, '/photo', 'reads her label photos and what Vision read from each');
+			await expect(main).toContainText('Earlier label photos');
+			shows('Her label photos', await text(), [
+				'No label photo asked for now',
+				`Vision read batch ${HERO}${facts.batch.mfg ? `, made ${date(facts.batch.mfg)}` : ''}, best before ${date(facts.batch.bestBefore)}`
+			]);
+			await run.done('Label photo: every photo she sent');
 		}
 	},
 	{

@@ -1524,7 +1524,7 @@
     - the frontend gate passes (core 236, api 77, workspace 74, admin 17, demo 5, console 3);
     - the seeds were regenerated; design3's `dist/` is rebuilt.
 
-- **SC-133** (In Review, branch `SC-133-distributor-portal`): the distributor's portal, batch by batch.
+- **SC-133** (PR #114, merged): the distributor's portal, batch by batch.
   - **The request** (with three screenshots of the live app): the Van route "seems odd", and its Raipur lot looked stubbed; it should be per batch; Orders should show past orders, and "does not look logical, I cannot understand what is for what"; Today "seems misleading, the batch is all that is tracked for distributors in the app"; "Think of proper design for Distributors". Batches (SC-130) "is fine". The ₹0 reversed on the destruction certificate went to SC-132.
   - **Design first:** three options on one board in app v3, `SC-133 design review.html`:
     - A, a card for each batch (recommended);
@@ -1571,5 +1571,21 @@
       - the suite's own checks: "issued from Tally" now also reads on his cleared batches' orders, so it reads the chips' own; the price support exactly (₹8,767.60) against the credit note's rupees (₹8,768), now to the rupee.
     - **The only finding:** the old note that Priya's pack reads the invoice "drafted" after Rakesh issues it, as in the prototype.
     - **After it:** the journey day is back to 24 hours; the journey is left as the run ended.
+
+- **SC-134** (In Review, branch `SC-134-mango-e2e`): Munchly Mango E2E on the new UI (SC-127's one operator, SC-133's distributor portal), asked for by the maintainer ("Run mango drink e2e journey, fix anything if needed as per new ui we build").
+  - **The suite** (`munchly-mango.journey.ts`):
+    - Lakshmi's label photo, staff sale and van round start on Today and press the button on the Mango's own card (`#batch-MF-2410-118`), by its exact name;
+    - ESG opens the batch page's Impact tab and the ledger's Impact reading (since SC-127 pages open on Money);
+    - a new `distributor` step reads Lakshmi's portal back: Today, What happened (the packs at risk as Priya's case has them), Money (she ends whole at ₹0), Papers with the receipt as a copy, both PDFs, her credit against the ledger, Orders, Deliveries and her label photos;
+    - `shows` and `same` moved from `chips.ts` into `flow.ts`, shared by both flows.
+  - **Fixed in the app:** a cleared batch's food-bank pickup read "being booked" on the distributor's Deliveries, and her Orders lost "58 packs given": the donation leaves the workspace's state once a batch clears, and a distributor is never sent the plan. `dist.ts` now reads it from her partner facts, collected once they say so. A new live test covers it.
+  - **The run of 10 Oct** (`runs/2026-10-10-mango/REPORT.md`, the recording local): passed in four parts on the same journey, never resetting. Parts 1 and 2 stopped on the suite's own selectors, part 3 found the pickup, part 4 passed (81 s, 22 steps).
+    - Plan and actual ₹16,917.10, nothing left at the godown: 52 kiranas ordered 1,372, 150 to staff, 58 collected by Feeding India.
+    - CN/0118, the ITC memo, the FSSAI checklist and receipt FI/HYD/26-27/0417, each with its PDF; the Saturday round.
+    - Lakshmi ends whole at ₹0; her CN/0118 and receipt PDFs serve; her credit ₹5,932.
+    - The year so far: 14 batches, ₹2,58,453.08 recovered.
+    - The only finding left is the known one: Saraswathi Kirana and Bilal Stores order 16 each, in the offer screen's twelves.
+  - **The journey is left as the run ended** (both batches cleared); the day is back at 24 hours.
+  - **Checks:** the frontend gate passes (core 258, api 77, workspace 79, admin 17, demo 5, console 3).
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

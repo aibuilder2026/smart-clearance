@@ -138,6 +138,18 @@ const plain = (round: { day: string; date: string; leaves: string }) => ({
 
 /* ---------- where each batch stands ---------- */
 
+/** a batch's donation as his facts record it: booked, its pickup confirmed, collected */
+const donationOf = (pc: PartnerCase): DistNow['donation'] =>
+	pc.donation && pc.partner
+		? {
+				status: stepAt(pc, 'collect') ? 'collected' : stepAt(pc, 'pickup') ? 'confirmed' : 'booked',
+				partner: pc.partner.name,
+				units: pc.donation.units,
+				date: null,
+				time: null
+			}
+		: null;
+
 /** the batch in focus, from the journey's state; its donation's status where the state names it as its own. A partner
  *  is not sent the client's plan (the live workspace), so its lines, and the papers, come from his facts when the case
  *  has none */
@@ -156,6 +168,8 @@ export function nowOfFocus(
 	// the state's times are the day's own (09:19) on the stub, the live workspace's as it shows them
 	const iso = (t: string) => (/^\d\d:\d\d$/.test(t) ? `${day0}T${t}` : null);
 	const d = fb && mango.id === c.batch.id && mango.donation ? mango.donation : null;
+	// once a batch clears its donation leaves the journey's state (the live workspace): his facts still record it
+	const given = !d && fb && facts ? donationOf(facts) : null;
 	return {
 		ref: c.batch.id,
 		sku: c.sku.id,
@@ -194,7 +208,7 @@ export function nowOfFocus(
 					date: c.donation.date ?? null,
 					time: c.donation.time ?? null
 				}
-			: null,
+			: given,
 		round: plain(c.van),
 		from: 'focus'
 	};
@@ -273,16 +287,7 @@ export function nowOfFacts(pc: PartnerCase, phase: Phase | string | null | undef
 		papers: has('papers'),
 		invoice: inv && has('papers') ? { no: inv.no, total: inv.total ?? inv.amount, issued: has('invoice') } : null,
 		staff: st ? { status: has('staff') ? 'recorded' : 'open', units: st.units, price: st.price, sold } : null,
-		donation:
-			pc.donation && pc.partner
-				? {
-						status: has('collect') ? 'collected' : has('pickup') ? 'confirmed' : 'booked',
-						partner: pc.partner.name,
-						units: pc.donation.units,
-						date: null,
-						time: null
-					}
-				: null,
+		donation: donationOf(pc),
 		round: null,
 		from: 'facts'
 	};
