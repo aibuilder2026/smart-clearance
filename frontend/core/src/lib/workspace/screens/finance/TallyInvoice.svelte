@@ -98,7 +98,7 @@
 		</div>
 		{@render party('Buyer (Bill to)', B)}
 	</div>
-	<table class="tl-table">
+	<table class="tl-table tl-items">
 		<thead
 			><tr
 				><th>Sl</th><th>Description of Goods</th><th>HSN/SAC</th><th>Quantity</th><th>Rate</th><th>per</th><th

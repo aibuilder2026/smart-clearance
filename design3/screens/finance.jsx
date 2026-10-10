@@ -93,7 +93,7 @@
         <Cell k="Terms of Delivery" className="tl-tall">Ex-godown, {R.godown}, {R.city}<em style={{ marginTop: 8 }}>Reverse charge</em>No<em style={{ marginTop: 8 }}>E-way bill</em>{inv.total < M.RULES.ewayThreshold ? `Not required: the consignment is under ₹${M.fmt.num(M.RULES.ewayThreshold)}` : "Generated with the dispatch"}</Cell>
         <Party k="Buyer (Bill to)" p={B} extra={<><br />Place of Supply: {B.state} ({B.stateCode})</>} />
       </div>
-      <table className="tl-table"><thead><tr><th>Sl</th><th>Description of Goods</th><th>HSN/SAC</th><th>Quantity</th><th>Rate</th><th>per</th><th>Amount</th></tr></thead><tbody>
+      <table className="tl-table tl-items"><thead><tr><th>Sl</th><th>Description of Goods</th><th>HSN/SAC</th><th>Quantity</th><th>Rate</th><th>per</th><th>Amount</th></tr></thead><tbody>
         <tr><td>1</td><td><b>{sku.brand} {sku.name}</b><br /><span className="tl-small">Batch {c.batch.id} · best before {dmy(c.batch.bestBefore)} · MRP ₹{sku.mrp.toFixed(2)} a pack, incl. of all taxes</span>{tax.map(([k]) => <div key={k} className="tl-num" style={{ marginTop: 6 }}><b>{k}</b></div>)}<div className="tl-num">Round off</div></td>
           <td>{sku.hsn}</td><td className="tl-num"><b>{M.fmt.num(inv.units)} PCS</b></td><td className="tl-num">{inv.price.toFixed(2)}</td><td>PCS</td>
           <td className="tl-num">{n2(inv.taxable)}{tax.map(([k, v]) => <div key={k} style={{ marginTop: 6 }}><b>{n2(v)}</b></div>)}<div>{n2(inv.roundOff)}</div></td></tr>

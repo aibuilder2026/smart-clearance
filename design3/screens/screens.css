@@ -97,7 +97,7 @@
   .tl-einv svg { width: 116px; height: 116px; }
   .tl-table { font-size: 11px; }
   .tl-table th, .tl-table td { padding: 5px 3px; }
-  .tl-table th { overflow-wrap: anywhere; }
+  .tl-items th:nth-child(6), .tl-items td:nth-child(6) { display: none; }
   .tl-table td:nth-child(2) { min-width: 0; }
 }
 /* a phone's paper keeps its blocks inside its edges: a tighter inset, as a container cannot style itself */
