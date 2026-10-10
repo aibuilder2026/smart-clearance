@@ -1,0 +1,39 @@
+{
+  "name": "final-3-yard-dusk-v2",
+  "model": "veo-3.1-generate-001",
+  "location": "us-central1",
+  "service": "Vertex AI",
+  "prompt": "Photorealistic cinematic live action, exactly as in the image: violet dusk in the godown's yard, the sky amber at the horizon and deep violet above, the sodium lamps on. At the left the volunteer in the orange vest and the woman in white pass plain kraft cartons with a sage-green band into the back of the white van, carton after carton. At the right, by the gate, the distributor in the light blue checked shirt hands one solid-colour snack packet to the first worker in the queue, who takes it with a nod and steps aside as the next worker steps up; the distributor makes a tick on the plain sheet on his clipboard and picks up the next packet from the table. No money, no notes, no coins and no phones anywhere; nothing else changes hands. The camera drifts very slowly to the right, a gentle slide from the van toward the table, no handheld shake. The light does not change over the shot; the dusk holds. 35 mm, eye level. No text, no logos, no lettering anywhere.",
+  "negative_prompt": "text, lettering, logo, brand name, label, watermark, subtitles, children",
+  "seed": 154223,
+  "enhance_prompt": true,
+  "resolution": "1080p",
+  "aspect": "16:9",
+  "duration_s": 8,
+  "fps": 24,
+  "generate_audio": false,
+  "person_generation": "allow_adult",
+  "inputs": [
+    {
+      "role": "first",
+      "file": "A-k2-yard-dusk-v2.png",
+      "sha256": "a0a0a460eccccab82a2ee111a496180c438ffb2f731aea8e53f2ce476991f381"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 1.6,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "use": "SC-154 the film, chapter 3: the yard at dusk, a packet handed over and a tick on the clipboard, no cash (Veo 3.1, 1080p, take 2)",
+  "status": "done",
+  "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/d71bbcee-da3e-4e8b-ac84-b0ca2c9d26eb",
+  "latency_s": 157.0,
+  "rai_filtered": {
+    "count": 0,
+    "reasons": []
+  },
+  "files": [
+    "final-3-yard-dusk-v2.mp4"
+  ],
+  "probe": "{\n    \"programs\": [\n\n    ],\n    \"stream_groups\": [\n\n    ],\n    \"streams\": [\n        {\n            \"width\": 1920,\n            \"height\": 1080,\n            \"r_frame_rate\": \"24/1\",\n            \"nb_frames\": \"192\"\n        }\n    ],\n    \"format\": {\n        \"duration\": \"8.000000\",\n        \"size\": \"15597341\"\n    }\n}"
+}

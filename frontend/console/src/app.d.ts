@@ -20,7 +20,14 @@ declare global {
 			/** begins a wait; resolves once the cover is in, so the page behind can change under it */
 			begin: (
 				kind: 'enter' | 'leave',
-				opts: { who?: string; from?: DOMRect | null; reads?: { id: string; label: string }[] }
+				opts: {
+					who?: string;
+					from?: DOMRect | null;
+					reads?: { id: string; label: string }[];
+					/** words of its own, in place of the wait's (a sign-out refused: still signed in) */
+					title?: string;
+					sub?: string;
+				}
 			) => Promise<void>;
 			/** what the wait is on now: 'platform' once the console's code runs and its reads have gone out */
 			phase: (name: 'code' | 'platform' | 'wake' | 'open') => void;

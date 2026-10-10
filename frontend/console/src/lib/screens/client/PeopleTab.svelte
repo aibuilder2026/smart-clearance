@@ -10,12 +10,12 @@
 		SearchField,
 		Sheet,
 		useApp,
-		type Column,
-		type MenuItem
+		Wait,
+		type Column
 	} from '@smart-clearance/core';
 	import { api } from '#lib/api/client.ts';
 	import { useConsole } from '#lib/console.svelte.ts';
-	import MoreMenu from '../MoreMenu.svelte';
+	import MoreMenu, { type MoreItem } from '../MoreMenu.svelte';
 	import InviteForm, { ACCESS } from './InviteForm.svelte';
 
 	// the people in a client's workspace: who they are, how they sign in, their access; invite, change access, deactivate
@@ -42,22 +42,49 @@
 			() => api.updatePerson(c.id, p.id, { status }),
 			`${p.name} ${status === 'deactivated' ? 'deactivated' : 'reactivated'}`
 		);
-	async function setAccess(p: ClientPerson, access: Access) {
-		await k.act(() => api.updatePerson(c.id, p.id, { access }), `${p.name}: ${access}`);
-		accessFor = null;
+	// the access pressed waits in its row (SC-152): a spinner in the tick's place, the sheet closing once it is saved,
+	// and a refusal under the list
+	const accessWait = new Wait();
+	let pressed: Access | null = $state(null);
+	function setAccess(p: ClientPerson, a: Access) {
+		if (accessWait.working) return;
+		pressed = a;
+		void accessWait.run(async () => {
+			await k.act(() => api.updatePerson(c.id, p.id, { access: a }), `${p.name}: ${a}`);
+			accessFor = null;
+		});
 	}
-	const menuFor = (p: ClientPerson): (MenuItem | null)[] => [
+	$effect(() => {
+		if (!accessFor) accessWait.refuse(null);
+	});
+	// the menu's items that call the platform wait at its "…" button (MoreMenu)
+	const menuFor = (p: ClientPerson): (MoreItem | null)[] => [
 		{ label: 'Change access', icon: 'user-cog', onclick: () => (accessFor = p) },
 		p.status === 'invited'
 			? {
 					label: 'Resend invitation',
 					icon: 'send',
-					onclick: () => k.act(() => api.resendInvite(c.id, p.id), `Invitation resent to ${p.name}`)
+					action: () => k.act(() => api.resendInvite(c.id, p.id), `Invitation resent to ${p.name}`),
+					busy: 'Resending the invitation…',
+					done: 'Invitation resent'
 				}
 			: null,
 		p.status === 'deactivated'
-			? { label: 'Reactivate', icon: 'user-check', onclick: () => setStatus(p, 'active') }
-			: { label: 'Deactivate', icon: 'user-x', danger: true, onclick: () => setStatus(p, 'deactivated') }
+			? {
+					label: 'Reactivate',
+					icon: 'user-check',
+					action: () => setStatus(p, 'active'),
+					busy: 'Reactivating…',
+					done: 'Reactivated'
+				}
+			: {
+					label: 'Deactivate',
+					icon: 'user-x',
+					danger: true,
+					action: () => setStatus(p, 'deactivated'),
+					busy: 'Deactivating…',
+					done: 'Deactivated'
+				}
 	];
 </script>
 
@@ -132,15 +159,43 @@
 	>
 		{#if accessFor}{@const p = accessFor}
 			<div class="list">
-				{#each ACCESS as a (a)}<button
+				{#each ACCESS as a (a)}{@const waiting = accessWait.working && pressed === a}<button
 						type="button"
 						class="list-row"
 						style="grid-template-columns: minmax(0,1fr) auto; width: 100%; text-align: left"
+						aria-busy={waiting || undefined}
+						aria-disabled={accessWait.working || undefined}
 						onclick={() => setAccess(p, a)}
 						><span class="stack tight" style="gap: 0"
-							><b class="t-subhead">{a}</b><span class="t-caption subtle">{ACCESS_TEXT[a]}</span></span
-						>{#if p.access === a}<Icon name="check" size={18} />{/if}</button
+							><b class="t-subhead">{a}</b><span class="t-caption subtle"
+								>{waiting && accessWait.face === 'busy' ? 'Saving…' : ACCESS_TEXT[a]}</span
+							></span
+						>{#if waiting && accessWait.face === 'busy'}<svg
+								class="btn-arc"
+								width="18"
+								height="18"
+								viewBox="0 0 20 20"
+								aria-hidden="true"
+								><circle
+									cx="10"
+									cy="10"
+									r="7.5"
+									fill="none"
+									stroke="currentColor"
+									stroke-opacity="0.28"
+									stroke-width="2.25"
+								/><path
+									d="M10 2.5a7.5 7.5 0 0 1 7.5 7.5"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2.25"
+									stroke-linecap="round"
+								/></svg
+							>{:else if p.access === a}<Icon name="check" size={18} />{/if}</button
 					>{/each}
-			</div>{/if}
+			</div>
+			{#if accessWait.phase === 'error'}<p class="btn-note err" role="alert" style="max-width: none">
+					<Icon name="circle-alert" size={14} /><span>{accessWait.error}</span>
+				</p>{/if}{/if}
 	</Sheet>
 </div>

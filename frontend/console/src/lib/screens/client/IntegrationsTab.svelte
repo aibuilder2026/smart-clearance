@@ -11,7 +11,8 @@
 	const connect = () => k.act(() => api.requestFirstExport(c.id), 'Upload link sent');
 </script>
 
-{#snippet ask()}<Button variant="primary" icon="file-spreadsheet" onclick={connect}>Ask for the first export</Button
+{#snippet ask()}<Button variant="primary" icon="file-spreadsheet" action={connect} busy="Requesting…" done="Requested"
+		>Ask for the first export</Button
 	>{/snippet}
 
 <div class="stack" style="gap: 14px">

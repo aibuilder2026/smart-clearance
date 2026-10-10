@@ -76,6 +76,9 @@ async def test_a_distributor_reads_every_batch_of_his_as_design3_has_it(api, wit
             ), ref
             pairs = [(k["kirana"], k["units"]) for k in c["kiranas"]]
             assert pairs == [(k["kirana"], k["units"]) for k in x["kiranas"]], ref
+            # each order's time, and the tax invoice its distributor issued it, as ledger.js issued them (SC-153)
+            issued = [(k["at"], {**k["invoice"], "pdf": False}) for k in c["kiranas"]]
+            assert issued == [(k["at"], {**k["invoice"], "pdf": False}) for k in x["kiranas"]], ref
             steps = {s["step"]: s["at"] for s in c["steps"]}
             theirs = {s["step"]: s["at"] for s in x["steps"] if s["step"] in STEPS}
             assert {k: steps.get(k) for k in theirs} == theirs, ref

@@ -1,9 +1,20 @@
 {
- "model": "Qwen-Image-2.1 (bf16), run locally through the qwen-image-bf16 plugin 0.2.0 (its CLI)",
- "seed": 37,
+ "model": "Qwen-Image 2.1 (bf16), text to image, run locally (qwen-image-bf16 0.2.0): the blank base photo",
+ "seed": 14711,
  "size": "1024 (4:3, 1184 x 896)",
- "prompt": "A realistic close-up smartphone photo of a printed white label stuck on the side of a brown corrugated cardboard carton. The label is printed in bold black sans-serif type, one line each: \"MUNCHLY MASALA CHIPS 150 g\", \"BATCH NO: MF-2408-209\", \"MFG: 18/06/2026\", \"BEST BEFORE: 15/12/2026\", \"MRP ₹30.00 (incl. of all taxes)\". Even light in an Indore godown. Photorealistic, natural colours, the label text crisp and legible.",
+ "prompt": "A close-up photo of a blank white rectangular paper label on a brown corrugated carton stacked on a wooden pallet, the camera slightly to the right and a little above, warm afternoon light from a rolling shutter door. nothing printed on the label, plain matte white paper with a thin glossy sheen, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours.",
  "postProcessing": [
+  {
+   "step": "label",
+   "by": "design3/system/labels/label.py (SC-147, the full statutory sticker)",
+   "batch": "MF-2408-209",
+   "style": "standard"
+  },
+  {
+   "step": "print",
+   "by": "design3/system/labels/compose.mjs",
+   "onto": "bases/14711.webp"
+  },
   {
    "step": "perspective",
    "inset": 0.12
@@ -14,6 +25,5 @@
    "quality": 88
   }
  ],
- "source": "src/chips-gupta.png (sha256 5ecded53df00f0cf, kept locally)",
- "seen": null
+ "source": "design3/system/labels/bases/14711.webp (sha256 8c5e1b994aeef2ab)"
 }

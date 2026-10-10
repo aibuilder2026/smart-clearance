@@ -103,7 +103,7 @@
         title: "Find your workspace",
         side: app.bp === "phone" ? "bottom" : "center",
         detent: "large",
-        footer: /* @__PURE__ */ React.createElement(Button, { variant: "primary", size: "lg", block: true, onClick: find }, "Find workspaces")
+        footer: /* @__PURE__ */ React.createElement(Button, { variant: "primary", size: "lg", block: true, busy: "Looking…", onClick: find }, "Find workspaces")
       },
       /* @__PURE__ */ React.createElement("div", { className: "stack" }, /* @__PURE__ */ React.createElement("div", { className: "row tight" }, /* @__PURE__ */ React.createElement(Mark, { size: 28, still: true }), /* @__PURE__ */ React.createElement(Wordmark, { size: 17 }), /* @__PURE__ */ React.createElement("span", { className: "t-caption subtle mono" }, D.PLATFORM.domain)), /* @__PURE__ */ React.createElement("p", { className: "t-subhead muted", style: { margin: 0 } }, "Every manufacturer on Smart-Clearance has its own workspace, set up for its supply chain. Enter the email or mobile number you were invited with."), /* @__PURE__ */ React.createElement(Field, { label: "Email or mobile number", htmlFor: "fw-id", error: err }, /* @__PURE__ */ React.createElement(Input, { id: "fw-id", value: v, onChange: (e) => {
         setV(e.target.value);
@@ -211,7 +211,7 @@
     }, noValidate: true }, /* @__PURE__ */ React.createElement(Field, { label: "Work email or mobile number", htmlFor: "si-id", error: err && err.text }, /* @__PURE__ */ React.createElement(Input, { id: "si-id", value: id, onChange: (e) => {
       setId(e.target.value);
       setErr(null);
-    }, autoComplete: "username", spellCheck: false, autoCapitalize: "none", placeholder: WS.hint })), err && (err.find || err.es) && /* @__PURE__ */ React.createElement("div", { className: "row tight wrap", style: { marginTop: -4 } }, err.find && /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-link btn-sm", onClick: () => setSheet("find") }, "Find your workspace"), err.es && /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-link btn-sm", onClick: () => finish(err.es) }, "Open ExpireSoon instead")), /* @__PURE__ */ React.createElement(Button, { type: "submit", variant: "primary", size: "lg", block: true, loading: busy === "go" }, "Continue")), !guided && /* @__PURE__ */ React.createElement("div", { className: "si-try" }, /* @__PURE__ */ React.createElement("span", { className: "t-caption subtle strong" }, "Accounts in this prototype"), /* @__PURE__ */ React.createElement("div", { className: "row tight wrap", style: { justifyContent: "center" } }, TRY.map(([uid, val]) => {
+    }, autoComplete: "username", spellCheck: false, autoCapitalize: "none", placeholder: WS.hint })), err && (err.find || err.es) && /* @__PURE__ */ React.createElement("div", { className: "row tight wrap", style: { marginTop: -4 } }, err.find && /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-link btn-sm", onClick: () => setSheet("find") }, "Find your workspace"), err.es && /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-link btn-sm", onClick: () => finish(err.es) }, "Open ExpireSoon instead")), /* @__PURE__ */ React.createElement(Button, { type: "submit", variant: "primary", size: "lg", block: true, loading: busy === "go", busy: "Checking…" }, "Continue")), !guided && /* @__PURE__ */ React.createElement("div", { className: "si-try" }, /* @__PURE__ */ React.createElement("span", { className: "t-caption subtle strong" }, "Accounts in this prototype"), /* @__PURE__ */ React.createElement("div", { className: "row tight wrap", style: { justifyContent: "center" } }, TRY.map(([uid, val]) => {
       const u = userById(uid);
       return u ? /* @__PURE__ */ React.createElement("button", { type: "button", key: uid, className: "chip", onClick: () => {
         setId(val);
@@ -225,7 +225,7 @@
         title: "Enter the code",
         side: app.bp === "phone" ? "bottom" : "center",
         detent: "medium",
-        footer: /* @__PURE__ */ React.createElement(Button, { variant: "primary", size: "lg", block: true, loading: busy === "verify" || who && busy === who.id, disabled: code.length < 6, onClick: () => verify() }, "Verify and continue")
+        footer: /* @__PURE__ */ React.createElement(Button, { variant: "primary", size: "lg", block: true, loading: busy === "verify" || who && busy === who.id, busy: "Verifying…", disabled: code.length < 6, onClick: () => verify() }, "Verify and continue")
       },
       who && isPhone && /* @__PURE__ */ React.createElement("div", { className: "stack" }, /* @__PURE__ */ React.createElement("p", { className: "t-subhead muted", style: { margin: 0 } }, "Sent by SMS to ", phoneOf(digits(who.phone)), guided ? ", and filled in from the message." : ".", " This prototype's code is ", /* @__PURE__ */ React.createElement("b", { className: "mono" }, TEST_CODE), "."), /* @__PURE__ */ React.createElement(OTP, { value: code, onChange: (v) => {
         setCode(v);
@@ -243,7 +243,7 @@
         title: `Join ${WS.name}`,
         side: app.bp === "phone" ? "bottom" : "center",
         detent: "medium",
-        footer: /* @__PURE__ */ React.createElement(Button, { variant: "primary", size: "lg", block: true, loading: who && busy === who.id, onClick: join }, "Join the workspace")
+        footer: /* @__PURE__ */ React.createElement(Button, { variant: "primary", size: "lg", block: true, loading: who && busy === who.id, busy: "Joining…", onClick: join }, "Join the workspace")
       },
       who && /* @__PURE__ */ React.createElement("div", { className: "stack", style: { justifyItems: "center", textAlign: "center" } }, /* @__PURE__ */ React.createElement(WorkspaceMark, { ws: WS, size: 64 }), /* @__PURE__ */ React.createElement("div", { className: "t-title3", style: { textWrap: "balance" } }, who.org, " is invited to ", WS_OF), /* @__PURE__ */ React.createElement("p", { className: "t-subhead muted", style: { margin: 0, maxWidth: "40ch" } }, who.invitedBy || WS.name, " added this number as a ", role(who.role), ". Offers, orders and payments for ", WS.name, "' stock come here, in your language."), /* @__PURE__ */ React.createElement(Url, null))
     ), /* @__PURE__ */ React.createElement(FindWorkspace, { open: sheet === "find", onClose: () => setSheet(null), initial: id, onUse: (v) => {

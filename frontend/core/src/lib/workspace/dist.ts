@@ -7,7 +7,8 @@
 // facts. Nothing here reads the seed, so a live build carries none of it. core/tests/dist.test.ts holds them to
 // ledger.js.
 import { fmt } from '../format';
-import { scheme as schemeOf, stepAt, vanDay } from './partners';
+import { journeyInvoices, kiranaInvoice } from './model';
+import { stepAt, vanDay } from './partners';
 import type {
 	CaseData,
 	Destruction,
@@ -16,6 +17,7 @@ import type {
 	Hero,
 	PartnerCase,
 	Phase,
+	KiranaInvoice,
 	Shop,
 	Sku,
 	State
@@ -44,7 +46,8 @@ export type DistNow = {
 	lines: DistLine[];
 	/** the kirana scheme: open or over, the shops it went to, the shops that ordered and their packets */
 	offer: { open: boolean; offered: number; shops: number; units: number } | null;
-	shops: { kirana: string; units: number; at: string | null }[];
+	/** each shop that ordered, with the tax invoice he issued it (SC-153) */
+	shops: { kirana: string; units: number; at: string | null; invoice?: ShopInvoice | null }[];
 	listing: { id: string } | null;
 	award: { price: number; token: number } | null;
 	awardAt: string | null;
@@ -100,8 +103,26 @@ export type DistOrder = {
 	amount: number;
 	at: string | null;
 	paper?: { no: string; label: string; issue?: boolean } | null;
-	shops?: { name: string; units: number; at: string | null }[];
+	shops?: { name: string; units: number; at: string | null; invoice?: ShopInvoice | null }[];
+	/** the scheme's tax invoices: how many, the first number to the last, the GST he collected (SC-153) */
+	invoices?: { n: number; first: string; last: string; tax: number; total: number } | null;
 };
+/** a shop's tax invoice as his orders name it: its number, its total and its GST */
+export type ShopInvoice = { no: string; total: number; tax: number };
+const shopInvoice = (x: KiranaInvoice | null | undefined): ShopInvoice | null =>
+	x ? { no: x.no, total: x.total, tax: x.tax } : null;
+/** a scheme's invoices, as its row names them (ledger.js invoicesLine) */
+function invoicesLine(shops: readonly { invoice?: ShopInvoice | null }[]): DistOrder['invoices'] {
+	const v = shops.map((k) => k.invoice).filter((x): x is ShopInvoice => !!x);
+	if (!v.length) return null;
+	return {
+		n: v.length,
+		first: v[0].no,
+		last: v[v.length - 1].no,
+		tax: r2(v.reduce((t, x) => t + x.tax, 0)),
+		total: r2(v.reduce((t, x) => t + x.total, 0))
+	};
+}
 export type DistDelivery = { id: string; at: string; title: string; sub: string };
 export type DistPhoto = {
 	ref: string;
@@ -179,7 +200,8 @@ export function nowOfFocus(
 	c: CaseData,
 	mango: State['mango'],
 	day0: string,
-	facts?: PartnerCase | null
+	facts?: PartnerCase | null,
+	shops?: readonly Shop[]
 ): DistNow {
 	const units = h.orders.reduce((t, o) => t + o.units, 0);
 	const plan = c.plan.lines.length ? c.plan : (facts?.plan ?? c.plan);
@@ -210,7 +232,15 @@ export function nowOfFocus(
 					units
 				}
 			: null,
-		shops: h.orders.map((o) => ({ kirana: o.id, units: o.units, at: iso(o.at) })),
+		shops: (() => {
+			const inv = journeyInvoices(c, h.orders, day0, shops);
+			return h.orders.map((o) => ({
+				kirana: o.id,
+				units: o.units,
+				at: iso(o.at),
+				invoice: shopInvoice(inv.find((x) => x.kirana === o.id))
+			}));
+		})(),
 		listing: h.listing ? { id: h.listing.id } : null,
 		award: h.award ? { price: h.award.price, token: h.award.token } : null,
 		awardAt: h.award ? iso(h.award.at) : null,
@@ -300,7 +330,12 @@ export function nowOfFacts(pc: PartnerCase, phase: Phase | string | null | undef
 		offer: pc.offer
 			? { open: pc.offer.status === 'open', offered: pc.offered, shops: pc.kiranas.length, units: ordered }
 			: null,
-		shops: pc.kiranas.map((k) => ({ kirana: k.kirana, units: k.units, at: k.at ?? null })),
+		shops: pc.kiranas.map((k) => ({
+			kirana: k.kirana,
+			units: k.units,
+			at: k.at ?? null,
+			invoice: shopInvoice(k.invoice)
+		})),
 		// each as its step has it: the lot once listed, the award once the buyer took it, the invoice once drafted
 		listing: has('listing') ? pc.listing : null,
 		award: has('accept') ? pc.award : null,
@@ -342,7 +377,8 @@ export function distNows(
 				c,
 				s.mango,
 				i.day0,
-				i.cases.find((x) => x.ref === c.batch.id)
+				i.cases.find((x) => x.ref === c.batch.id),
+				i.shops
 			)
 		);
 	if (c && s.mango.id && s.mango.id !== c.batch.id && c.donation.dist.id === distId && inJourney(s.mango.phase))
@@ -565,7 +601,12 @@ export function ordersNow(n: DistNow, shopName: (id: string) => string, w: DistW
 	const dist = w.distributors[n.dist];
 	const out: DistOrder[] = [];
 	const o = n.offer;
-	const shops = n.shops.map((k) => ({ name: shopName(k.kirana), units: k.units, at: k.at ?? null }));
+	const shops = n.shops.map((k) => ({
+		name: shopName(k.kirana),
+		units: k.units,
+		at: k.at ?? null,
+		invoice: k.invoice ?? null
+	}));
 	const line = (id: string) => n.lines.find((l) => l.id === id) ?? null;
 	const kl = line('kirana');
 	const es = line('expiresoon');
@@ -589,7 +630,7 @@ export function ordersNow(n: DistNow, shopName: (id: string) => string, w: DistW
 				: null
 		});
 	if (kl && o && o.shops) {
-		const amount = r2(shops.reduce((t, k) => t + schemeOf(k.units, kl.packPrice ?? 0, sku.mrp).pay, 0));
+		const amount = r2(shops.reduce((t, k) => t + kiranaInvoice(k.units, kl, sku, w.scheme).taxable, 0));
 		out.push({
 			id: 'kirana',
 			units: o.units,
@@ -602,7 +643,8 @@ export function ordersNow(n: DistNow, shopName: (id: string) => string, w: DistW
 					: 'on the van round once the papers are drafted',
 			amount,
 			at: shops.reduce<string | null>((t, k) => (k.at && (!t || k.at > t) ? k.at : t), null),
-			shops
+			shops,
+			invoices: invoicesLine(shops)
 		});
 	}
 	if (st && n.staff && n.staff.status === 'recorded' && n.staff.sold)
@@ -659,8 +701,14 @@ export function ordersPast(c: PartnerCase, shopName: (id: string) => string, w: 
 			sub: `${c.kirana && c.kirana.ordered < c.kirana.planned ? `of ${num(c.kirana.planned)} offered · ` : ''}${van ? `delivered on the ${vanDay(c)} round` : 'delivered on the van round'}`,
 			amount: kl.gross,
 			at: stepAt(c, 'orders'),
-			shops: c.kiranas.map((k) => ({ name: shopName(k.kirana), units: k.units, at: k.at || null }))
+			shops: c.kiranas.map((k) => ({
+				name: shopName(k.kirana),
+				units: k.units,
+				at: k.at || null,
+				invoice: shopInvoice(k.invoice)
+			}))
 		});
+		out[out.length - 1].invoices = invoicesLine(out[out.length - 1].shops!);
 	}
 	if (st)
 		out.push({

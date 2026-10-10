@@ -24,7 +24,7 @@ type Case = {
 	actual: { net: number };
 	award: { price: number; token: number; bid: number } | null;
 	docs: { id: string; type: string; no: string; status: string }[];
-	kiranas: { kirana: string; name: string; units: number }[];
+	kiranas: { kirana: string; name: string; units: number; at?: string }[];
 	offered: number;
 	kirana: { planned: number; ordered: number } | null;
 	partner: { name: string } | null;
@@ -146,7 +146,7 @@ export function recordOf(c: Case): BatchRecord {
 				items: c.kiranas.map((k) => ({
 					who: { kind: 'person', id: null, name: shopName(k.kirana), org: null },
 					text: `ordered ${num(k.units)} packets`,
-					at: at('orders')!
+					at: k.at || at('orders')!
 				}))
 			}
 		);

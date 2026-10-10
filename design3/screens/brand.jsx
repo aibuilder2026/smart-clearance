@@ -99,7 +99,7 @@
           </div>
           <span className="t-footnote subtle">For Masala Chips 150 g: cost ₹{chips.cost}; {fmt.inr2(wo.itcPerUnit)} of input GST a packet from the cost sheet (chips are at {Math.round(chips.gst * 100)}% GST since GST 2.0); disposal {fmt.inr2(M.RULES.disposalPerUnit)} a unit; EPR ₹{M.RULES.eprPerKg} a kilo of product and pack. Factors marked indicative are editable here.</span>
         </Card>
-        <div className="row wrap" style={{ gap: 10 }}>{done ? <><Badge tone="green" icon="check">Watching since setup</Badge><Button variant="primary" iconRight="arrow-right" onClick={() => go("command")}>Open Command Center</Button></> : <><Button variant="primary" size="lg" icon="check" loading={busy} disabled={!mapped} aria-describedby={mapped ? undefined : "setup-why"} onClick={confirm}>Confirm and start watching</Button>{!mapped && <span id="setup-why" className="setup-why"><Icon name="info" size={15} stroke={2.2} />Confirm once the Data agent has mapped an export.</span>}</>}</div>
+        <div className="row wrap" style={{ gap: 10 }}>{done ? <><Badge tone="green" icon="check">Watching since setup</Badge><Button variant="primary" iconRight="arrow-right" onClick={() => go("command")}>Open Command Center</Button></> : <><Button variant="primary" size="lg" icon="check" loading={busy} busy="Confirming…" done="Confirmed" disabled={!mapped} aria-describedby={mapped ? undefined : "setup-why"} onClick={confirm}>Confirm and start watching</Button>{!mapped && <span id="setup-why" className="setup-why"><Icon name="info" size={15} stroke={2.2} />Confirm once the Data agent has mapped an export.</span>}</>}</div>
       </div>
     </Screen>;
   }
@@ -160,11 +160,16 @@
   }
 
   /* ---------- S2 Route Room ---------- */
-  // the carton on shelf B4, with its label printed in type so it stays legible at any size
-  function LabelShot({ cover, dim, children }) {
+  // the carton's label photo (SC-147): the batch's own photo, the full statutory sticker with its barcode, QR code and
+  // FSSAI licence (system/img/labels, made by system/labels); the carton on shelf B4 with its label set in type where a
+  // batch has no photo
+  const LABEL_PHOTOS = ["MF-2406-105", "MF-2406-106", "MF-2406-107", "MF-2406-108", "MF-2406-109", "MF-2407-110", "MF-2407-111", "MF-2407-112", "MF-2407-113", "MF-2407-114", "MF-2407-115", "MF-2407-116", "MF-2409-117", "MF-2410-118"];
+  function LabelShot({ cover, dim, batch = "MF-2409-117", children }) {
+    const img = window.SC3_IMG || "system/img/";
+    const photo = LABEL_PHOTOS.includes(batch);
     return <div className={cx("lshot", cover && "cover")} style={dim ? { filter: "saturate(0.85) brightness(0.94)" } : undefined}>
-      <img src={(window.SC3_IMG || "system/img/") + "label-shot.webp"} alt="" />
-      <div className="lshot-label" aria-hidden="true"><b>MUNCHLY</b><span className="ls-prod">Masala Chips 150 g</span><span>BATCH&nbsp; MF-2409-117</span><span>MFG&nbsp; 18 MAY 2026</span><span>BEST BEFORE&nbsp; 18 NOV 2026</span><span>MRP ₹30.00 incl. of all taxes</span><span>24 × 150 g</span></div>
+      <img src={photo ? img + "labels/" + batch + ".webp" : img + "label-shot.webp"} alt="" />
+      {!photo && <div className="lshot-label" aria-hidden="true"><b>MUNCHLY</b><span className="ls-prod">Masala Chips 150 g</span><span>BATCH&nbsp; MF-2409-117</span><span>MFG&nbsp; 18 MAY 2026</span><span>BEST BEFORE&nbsp; 18 NOV 2026</span><span>MRP ₹30.00 incl. of all taxes</span><span>24 × 150 g</span></div>}
       {children}
     </div>;
   }
@@ -191,7 +196,7 @@
       setTimeout(() => { setBusy(false); Flow.act("approve", me ? me.id : "priya"); setPlaced(true); }, 650);
     };
     const yes = offline ? <><Button variant="approve" size="lg" block icon="check" aria-disabled="true" aria-describedby="lv-sheet-net" className="lv-blocked">Approve · release the agents</Button><span style={{ justifySelf: "center" }}><S.Live.NeedsNet id="lv-sheet-net" /></span></>
-      : <Button variant="approve" size="lg" block icon={failed ? "refresh-cw" : "check"} loading={busy} onClick={approve}>{failed ? "Retry · release the agents" : "Approve · release the agents"}</Button>;
+      : <Button variant="approve" size="lg" block icon={failed ? "refresh-cw" : "check"} loading={busy} busy="Approving the plan…" onClick={approve}>{failed ? "Retry · release the agents" : "Approve · release the agents"}</Button>;
     return <Sheet open={open} onClose={onClose} title={placed ? "Plan placed" : "Approve the plan"} footer={placed ? <Button variant="primary" size="lg" block iconRight="arrow-right" onClick={() => { onClose(); go("execution", { ref: hero.id }); }}>Watch execution</Button> : <>{failed && !busy && <S.Live.ApproveFailed message={failed.message} />}{yes}<Button variant="ghost" block onClick={onClose}>Not now</Button></>}>
       {placed ? <div className="stack" style={{ justifyItems: "center", textAlign: "center", padding: "12px 0 8px" }}>
         <svg width="96" height="96" viewBox="0 0 96 96" aria-hidden="true"><motion.circle cx="48" cy="48" r="42" fill="none" stroke="var(--primary)" strokeWidth="6" initial={reduce ? false : { pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.6, ease: [0.65, 0, 0.35, 1] }} /><motion.path d="M30 49 L43 62 L67 36" fill="none" stroke="var(--primary)" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" initial={reduce ? false : { pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.45, duration: 0.4 }} /></svg>
@@ -365,8 +370,8 @@
     const close = () => { onClose(); setAsking(false); setWhy(""); };
     const act = (name, arg) => { if (live && live.destruction) live.destruction(name, arg); else Flow.act(name, arg); close(); };
     const footer = asking
-      ? <div className="dz-foot"><Button variant="ghost" size="lg" onClick={() => setAsking(false)}>Back</Button><Button variant="primary" size="lg" block icon="send" disabled={!why.trim()} onClick={() => act("askDestructionAgain", why.trim())}>Ask {dist.short} again</Button></div>
-      : <div className="dz-foot"><Button variant="secondary" size="lg" icon="rotate-ccw" onClick={() => setAsking(true)}>Ask again</Button><Button variant="approve" size="lg" block icon="check" onClick={() => act("approveDestruction")}>Approve · issue the papers</Button></div>;
+      ? <div className="dz-foot"><Button variant="ghost" size="lg" onClick={() => setAsking(false)}>Back</Button><Button variant="primary" size="lg" block icon="send" disabled={!why.trim()} action={() => act("askDestructionAgain", why.trim())} busy="Asking again…">Ask {dist.short} again</Button></div>
+      : <div className="dz-foot"><Button variant="secondary" size="lg" icon="rotate-ccw" onClick={() => setAsking(true)}>Ask again</Button><Button variant="approve" size="lg" block icon="check" action={() => act("approveDestruction")} busy="Approving…" done="Approved">Approve · issue the papers</Button></div>;
     const at = w => d.photos && d.photos[w] && d.photos[w].at ? ` · ${String(d.photos[w].at).slice(-5)}` : "";
     return <Sheet open={open} onClose={close} title="Approve the destruction" footer={d && d.status === "checked" ? footer : null}>
       {d && <div className="stack" style={{ gap: 14 }}>

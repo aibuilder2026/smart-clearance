@@ -123,6 +123,8 @@ def case(
     award: dict | None = None,
     docs: list | None = None,
     which: str = "hero",
+    issued: str | None = None,
+    orders: list | None = None,
 ) -> dict[str, Any]:
     """GET …/cases/{ref}: the case as Munchly's operator sees it, with what the agents need beside it"""
     s = STORY[which]
@@ -142,8 +144,9 @@ def case(
             "offer": offer,
             "chat": chat or [],
             "award": award,
-            "orders": [],
+            "orders": orders or [],
             "bids": [],
+            "invoiceIssuedAt": issued,
         },
         "plan": copy.deepcopy(s["plan"]) if planned else None,
         "donation": donation,
@@ -155,6 +158,12 @@ def case(
         "language": "hi",
         "listingApi": {"request": {"reserve": RESERVE, "price": 15, "units": 772}} if listing else None,
         "docsFull": docs,
+        # the GST papers' parties as they stand (SC-148)
+        "client": STORY["client"],
+        "buyer": STORY["buyer"],
+        "balanceHours": STORY["balanceHours"],
+        "ewayThreshold": STORY["ewayThreshold"],
+        "scheme": STORY["scheme"],
     }
 
 

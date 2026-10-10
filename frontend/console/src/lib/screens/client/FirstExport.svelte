@@ -42,7 +42,8 @@
 	const start = async (f: File | null | undefined) => {
 		if (!f || up) return;
 		up = { name: f.name, p: 0 };
-		await k.act(() => api.uploadExport(c.id, f, { onProgress: (p) => (up = up && { ...up, p }) }));
+		// the card's own progress is its wait; a refusal is a toast, as nothing here is pressed and waiting (SC-152)
+		await k.tell(() => api.uploadExport(c.id, f, { onProgress: (p) => (up = up && { ...up, p }) }));
 		up = null;
 	};
 	const pick = (e: Event & { currentTarget: HTMLInputElement }) => {

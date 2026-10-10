@@ -1,0 +1,15 @@
+/* SC-154 · the hero film options, over site/site.css: the page's camera, the review storyboard and the switcher */
+.film-lean { position: absolute; inset: 0; will-change: transform; transform-origin: 50% 50%; }
+.sb154 { max-width: 1280px; margin: 0 auto; padding: 28px 24px 8px; display: grid; gap: 14px; }
+.sb154-head { display: grid; gap: 8px; }
+.sb154-head p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--fg-2); max-width: 90ch; }
+.tag154 { justify-self: start; display: inline-flex; align-items: center; padding: 5px 10px; border-radius: 999px; font: 600 12.5px/1 var(--font-ui); background: var(--amber-soft); color: var(--amber-text); }
+.sb154-row { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); counter-reset: sb; }
+.sb154-row li { display: grid; gap: 6px; font: 600 12.5px/1.3 var(--font-ui); color: var(--fg-2); }
+.sb154-row img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); background: var(--surface); }
+@media (max-width: 760px) { .sb154-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.sw154 { position: fixed; left: 12px; top: calc(66px + var(--safe-top, 0px) + 12px); z-index: 60; display: flex; align-items: center; gap: 6px; padding: 6px 8px 6px 12px; border-radius: 999px; background: var(--glass-strong); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); font: 600 12.5px/1 var(--font-ui); color: var(--fg-2); }
+.sw154 b { margin-right: 4px; }
+.sw154 a { display: inline-flex; align-items: center; justify-content: center; min-width: 32px; min-height: 32px; border-radius: 999px; text-decoration: none; color: var(--fg); background: var(--fill); }
+.sw154 a[aria-current="true"] { background: var(--primary); color: var(--primary-fg); }
+.sw154 a:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }

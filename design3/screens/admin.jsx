@@ -4,7 +4,7 @@
   const { useState, useEffect, useMemo, useContext, createContext, Fragment } = React;
   const { motion, AnimatePresence } = Motion;
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, Store = window.SC3_STORE, Flow = window.SC3_FLOW, S = window.SC3_SCREENS; const fmt = M.fmt;
-  const { cx, Icon, IconButton, Avatar, Badge, Button, Card, List, ListRow, Segmented, Switch, Stepper, Sheet, Field, Input, Select, Menu, DataTable, Empty, Mark, WorkspaceMark, PoweredBy, useApp, useNotice, useTheme } = K;
+  const { cx, Icon, IconButton, Avatar, Badge, Button, Card, List, ListRow, Segmented, Switch, Stepper, Sheet, Field, Input, Select, Menu, DataTable, Empty, Mark, WorkspaceMark, PoweredBy, SaveNote, useSaving, useApp, useNotice, useTheme } = K;
   const { useStore, useRoute, Screen, Columns, SectionTitle } = S;
   const WS = D.WORKSPACE;
 
@@ -107,7 +107,7 @@
         ]} />}
         <p className="t-footnote subtle" style={{ margin: 0 }}>{WS.outside}</p>
       </div>
-      <Sheet open={invite} onClose={() => { setInvite(false); setErr(""); }} title="Invite someone" side={app.bp === "phone" ? "bottom" : "center"} detent="medium" footer={<Button variant="primary" block icon="user-plus" onClick={send}>Invite</Button>}>
+      <Sheet open={invite} onClose={() => { setInvite(false); setErr(""); }} title="Invite someone" side={app.bp === "phone" ? "bottom" : "center"} detent="medium" footer={<Button variant="primary" block icon="user-plus" action={send} busy="Inviting…">Invite</Button>}>
         <div className="stack">
           <Field label="Name or organisation" htmlFor="inv-name"><Input id="inv-name" value={form.name} onChange={e => { setForm({ ...form, name: e.target.value }); setErr(""); }} placeholder={WS.invite.name} /></Field>
           <Field label="Email" htmlFor="inv-contact" error={err || null}><Input id="inv-contact" icon="mail" type="email" value={form.contact} onChange={e => { setForm({ ...form, contact: e.target.value }); setErr(""); }} autoComplete="off" spellCheck={false} autoCapitalize="none" placeholder={`name@${WS.emailDomain}`} /></Field>
@@ -133,7 +133,7 @@
     const s = useStore(); const app = useApp(); const { toast } = useNotice(); const [r, setR] = useState(s.rules); const dirty = JSON.stringify(r) !== JSON.stringify(s.rules);
     const set = (k, v) => setR({ ...r, [k]: v }); const setFloor = (k, v) => setR({ ...r, floors: { ...r.floors, [k]: v } });
     const save = () => { Store.update(st => { st.rules = r; }); audit(me.id, "updated the guardrails", "Rules"); toast({ text: "Guardrails saved · agents use them from the next run", tone: "ok" }); };
-    return <Screen me={me} title="Guardrails" sub="What the agents may and may not do in Munchly's name" actions={app.bp !== "phone" && <Button variant="primary" size="sm" icon="check" disabled={!dirty} onClick={save}>Save</Button>}>
+    return <Screen me={me} title="Guardrails" sub="What the agents may and may not do in Munchly's name" actions={app.bp !== "phone" && <Button variant="primary" size="sm" icon="check" disabled={!dirty} action={save} busy="Saving…" done="Saved">Save</Button>}>
       <div style={{ display: "grid", gap: 20, gridTemplateColumns: app.bp === "desktop" ? "repeat(2, minmax(0,1fr))" : "minmax(0,1fr)", alignItems: "start" }}>
         <div className="stack" style={{ gap: 20 }}>
           <List head="Floor price, % of MRP" foot="No channel sells below its category's floor.">{Object.keys(r.floors).map(k => <ListRow key={k} title={k.replace("-", " ").replace(/^./, c => c.toUpperCase())} value={<Stepper value={r.floors[k]} onChange={v => setFloor(k, v)} min={20} max={70} step={5} label={"Floor for " + k} format={v => v + "%"} />} />)}</List>
@@ -144,7 +144,7 @@
           <List head="Offers and marketplace"><ListRow title="Kirana offers in Hindi" value={<Switch checked={r.hindiOffers} onChange={v => set("hindiOffers", v)} label="Hindi offers" />} /><ListRow title="Offer window" value={<Stepper value={r.offerWindowHours} onChange={v => set("offerWindowHours", v)} min={12} max={96} step={12} label="Offer window hours" format={v => v + " h"} />} /><ListRow title="Buyer token" value={<Stepper value={r.tokenPct} onChange={v => set("tokenPct", v)} min={5} max={30} step={5} label="Token percent" format={v => v + "%"} />} /><ListRow title="Scheme returns, days before best-before" value={<Stepper value={r.returnWindowDays} onChange={v => set("returnWindowDays", v)} min={15} max={30} label="Return window" format={v => v + " days"} />} /><ListRow title="Watcher runs daily at" value={<span className="tnum strong">{r.watchTime}</span>} /></List>
           <List head="Planning assumptions" foot="Used to size the kirana scheme and its cost."><ListRow title="Scheme uplift on normal sales" value={<Stepper value={r.kiranaUplift} onChange={v => set("kiranaUplift", Math.round(v * 10) / 10)} min={2} max={5} step={0.5} label="Scheme uplift" format={v => v.toFixed(1) + "×"} />} /><ListRow title="Van rate, a unit" value={<Stepper value={r.vanPerUnit} onChange={v => set("vanPerUnit", Math.round(v * 100) / 100)} min={0.25} max={2} step={0.25} label="Van rate" format={v => "₹" + v.toFixed(2)} />} /></List>
           <List head="Write-off factors" foot="Used for the true cost of destroying a batch. Both are indicative."><ListRow title="Disposal, a unit" value={<Stepper value={r.disposalPerUnit} onChange={v => set("disposalPerUnit", Math.round(v * 100) / 100)} min={0.5} max={5} step={0.25} label="Disposal per unit" format={v => "₹" + v.toFixed(2)} />} /><ListRow title="EPR, a kg of product and pack" value={<Stepper value={r.eprPerKg} onChange={v => set("eprPerKg", v)} min={1} max={20} label="EPR per kg" format={v => "₹" + v} />} /></List>
-          {app.bp === "phone" && <Button variant="primary" size="lg" icon="check" disabled={!dirty} onClick={save}>Save guardrails</Button>}
+          {app.bp === "phone" && <Button variant="primary" size="lg" icon="check" disabled={!dirty} action={save} busy="Saving…" done="Saved">Save guardrails</Button>}
         </div>
       </div>
     </Screen>;
@@ -156,7 +156,7 @@
     const s = useStore(); const { toast } = useNotice(); const [busy, setBusy] = useState(null);
     const test = i => { setBusy(i.id); setTimeout(() => { setBusy(null); toast({ text: `${i.name} · ${i.status === "mock" ? "stub answered" : "connected"} in ${80 + Math.round(Math.random() * 160)} ms`, tone: "ok" }); }, 900); };
     return <Screen me={me} title="Integrations" sub="Munchly's sign-in, Google Cloud services and partner APIs">
-      <div className="list">{s.integrations.map(i => <div key={i.id} className="list-row" style={{ gridTemplateColumns: "40px minmax(0,1fr) auto" }}><span className={cx("icontile", i.status === "mock" && "soft")}><Icon name={KIND_ICON[i.kind] || "plug"} size={17} stroke={2} /></span><span className="stack tight" style={{ gap: 0 }}><b className="t-subhead">{i.name} <span className="subtle t-caption" style={{ fontWeight: 500 }}>{i.kind}</span></b><span className="t-caption subtle">{i.note}</span></span><span className="row tight"><Badge size="sm" tone={i.status === "ok" ? "green" : "violet"} dot>{i.status === "ok" ? "connected" : "mocked"}</Badge><Button variant="ghost" size="sm" loading={busy === i.id} onClick={() => test(i)}>Test</Button></span></div>)}</div>
+      <div className="list">{s.integrations.map(i => <div key={i.id} className="list-row" style={{ gridTemplateColumns: "40px minmax(0,1fr) auto" }}><span className={cx("icontile", i.status === "mock" && "soft")}><Icon name={KIND_ICON[i.kind] || "plug"} size={17} stroke={2} /></span><span className="stack tight" style={{ gap: 0 }}><b className="t-subhead">{i.name} <span className="subtle t-caption" style={{ fontWeight: 500 }}>{i.kind}</span></b><span className="t-caption subtle">{i.note}</span></span><span className="row tight"><Badge size="sm" tone={i.status === "ok" ? "green" : "violet"} dot>{i.status === "ok" ? "connected" : "mocked"}</Badge><Button variant="ghost" size="sm" loading={busy === i.id} busy="Testing…" onClick={() => test(i)}>Test</Button></span></div>)}</div>
     </Screen>;
   }
 
@@ -189,11 +189,17 @@
     const setL = v => { setLang(v); try { localStorage.setItem(lkey, v); } catch (e) {} };
     const [push, setPush] = useState(true); const [digest, setDigest] = useState(false);
     const perm = s.setup.permission; const inside = me.role !== "buyer";
+    // the switch that pauses his permission saves (SC-152): the new value at once, then Saving…, Saved, or put back with
+    // the reason; between saves it follows the permission as the store has it
+    const [acting, setActing] = useState(!(perm && perm.paused));
+    const pausing = useSaving(x => { Flow.act("pause", !x); toast({ text: x ? "Resumed" : "Paused · nothing more happens in your name", tone: "ok" }); });
+    const saving = pausing.phase === "wait" || pausing.phase === "busy" || pausing.phase === "slow";
+    useEffect(() => { if (!saving) setActing(!(perm && perm.paused)); }, [perm && perm.paused, saving]);
     return <Screen me={me} title="Profile" sub={ROLES[me.role]}>
       <div className="stack" style={{ gap: 20, maxWidth: 680 }}>
         <Card className="row" style={{ gap: 16 }}><Avatar person={me} size="xl" ring /><div className="stack tight" style={{ gap: 2, minWidth: 0 }}><div className="t-title2">{me.name}</div><span className="muted">{ROLES[me.role]} · {me.org}</span><span className="t-footnote subtle row tight"><Icon name={me.provider === "google" ? "google" : me.provider === "phone" ? "smartphone" : "hourglass"} size={14} />{providerOf(me)}{me.email ? " · " + me.email : me.phone ? " · " + me.phone : ""}</span></div></Card>
         {inside && <List head="Workspace"><ListRow leading={<WorkspaceMark ws={WS} size={32} />} title={WS.name} sub={WS.domain} value={<Badge size="sm" tone="green">{KINDS[me.kind] || "member"}</Badge>} />{me.role === "admin" && <ListRow icon="building-2" title="Workspace settings" sub="Sign-in, supply-chain profile, branding" chevron onClick={() => go("workspace")} />}</List>}
-        {me.id === "rakesh" && perm && <List head="Acting for Rakesh Traders" foot="Inside Munchly's floors: listings, scheme offers, invoice drafts and dispatch slots in your name."><ListRow icon={perm.paused ? "circle-pause" : "handshake"} title={perm.paused ? "Paused" : "On since " + perm.at} value={<Switch checked={!perm.paused} onChange={v => { Flow.act("pause", !v); toast({ text: v ? "Resumed" : "Paused · nothing more happens in your name", tone: "ok" }); }} label="Let Smart-Clearance act for you" />} /></List>}
+        {me.id === "rakesh" && perm && <List head="Acting for Rakesh Traders" foot="Inside Munchly's floors: listings, scheme offers, invoice drafts and dispatch slots in your name."><ListRow icon={perm.paused ? "circle-pause" : "handshake"} title={perm.paused ? "Paused" : "On since " + perm.at} value={<span className="row tight">{pausing.phase !== "idle" && <SaveNote phase={pausing.phase} error={pausing.error} />}<Switch checked={acting} onChange={v => pausing.change(v, !v, setActing)} label="Let Smart-Clearance act for you" /></span>} /></List>}
         {me.role === "operator" && <List head="Your work"><ListRow icon="sliders-horizontal" title="Setup and guardrails" sub="DMS mapping, floors, territory guard, permissions" chevron onClick={() => go("setup")} /><ListRow icon="book-open" title="Ledger" sub="Money, GST and impact by quarter; BRSR and GST exports" chevron onClick={() => go("report")} /></List>}
         <List head="Appearance"><ListRow title="Theme" value={<Segmented options={[{ id: "light", label: "Light" }, { id: "dark", label: "Dark" }, { id: "system", label: "Auto" }]} value={mode} onChange={setMode} label="Theme" size="sm" />} /></List>
         <List head="Notifications" foot="Offers to the trade go out in the language each person picks."><ListRow title="Language" value={<Segmented options={[{ id: "en", label: "English" }, { id: "hi", label: "हिन्दी" }]} value={lang} onChange={setL} label="Notification language" size="sm" />} /><ListRow title="Push notifications" value={<Switch checked={push} onChange={setPush} label="Push notifications" />} /><ListRow title="Weekly digest by email" value={<Switch checked={digest} onChange={setDigest} label="Weekly digest" />} /></List>

@@ -144,8 +144,14 @@
 						</li>{/each}
 				</ol>{/if}
 			<div class="lv-step-acts">
-				{#if variant === 'ask'}<Button variant="primary" size="lg" icon="bell" loading={push.busy} onclick={allow}
-						>Turn on notifications</Button
+				{#if variant === 'ask'}<Button
+						variant="primary"
+						size="lg"
+						icon="bell"
+						loading={push.busy}
+						busy="Turning on…"
+						slow={false}
+						onclick={allow}>Turn on notifications</Button
 					>{/if}
 				{#if variant === 'denied'}<Button
 						variant="secondary"

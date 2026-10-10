@@ -29,6 +29,7 @@
 	import PushBanners from './screens/common/PushBanners.svelte';
 	import Screen from './screens/common/Screen.svelte';
 	import PushStep from './screens/live/PushStep.svelte';
+	import RouteLine from './RouteLine.svelte';
 	import BatchHead from './screens/brand/BatchHead.svelte';
 	import BatchJourney from './screens/brand/BatchJourney.svelte';
 	import BatchRecord from './screens/record/BatchRecord.svelte';
@@ -211,6 +212,10 @@
 	);
 	const noBatch = $derived(!ws.case && !!ABOUT_A_BATCH[safe] && !ownHistory);
 	const reading = $derived(noBatch && (ws.cases?.length ?? 0) > 0);
+	// a batch's screen while its case is read (the skeleton under its head)
+	const batchReading = $derived(
+		!!(inBatch && it && part !== 'record' && part !== 'journey' && part !== 'route' && ws.case?.batch.id !== it.ref)
+	);
 
 	provideRoute({
 		get route() {
@@ -325,6 +330,7 @@
 {/snippet}
 
 <PushBanners {me} onopen={openNote} />
+<RouteLine on={reading || batchReading} />
 {#if me.role === 'buyer'}<div class="esw">{@render shell()}</div>{:else}{@render shell()}{/if}
 {#if inside}<WorkspaceSheet
 		bind:open={wsOpen}

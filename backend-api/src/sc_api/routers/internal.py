@@ -148,8 +148,38 @@ async def case_of(client_id: str, ref: str, ctx: InternalCtx) -> dict[str, Any]:
     case = await views.latest_case(ctx, client_id, ref)
     assert case is not None
     c = await world.client(ctx, client_id)
+    doc = c.workspace_doc or {}
+    # the buyer as his papers name him today (SC-148), so a paper drafted before still prints his current identity
+    buyer = (
+        (
+            await ctx.session.execute(
+                select(m.Partner)
+                .where(m.Partner.client_id == client_id, m.Partner.kind == "buyer")
+                .order_by(m.Partner.id)
+            )
+        )
+        .scalars()
+        .first()
+    )
     return {
         **detail,
+        # the client as its own papers name it (SC-148): Paperwork's credit notes and memos carry its identity
+        "client": {
+            "name": c.legal_name,
+            "short": c.short,
+            "gstin": doc.get("gstin", ""),
+            "fssai": doc.get("fssai", ""),
+            **(doc.get("identity") or {}),
+        },
+        # the lot's terms its invoice states: the balance's hours (SC-148)
+        "balanceHours": (doc.get("market") or {}).get("balanceHours"),
+        # and the e-way bill's threshold, which its invoice names when none is needed
+        "ewayThreshold": money.RULES["ewayThreshold"],
+        # the kirana scheme its kiranas' invoices discount (SC-153): the offer's own, as it was sent
+        "scheme": (case.offer or {}).get("scheme") or money.RULES["scheme"],
+        "buyer": (
+            {"name": buyer.name, "short": buyer.short, "city": buyer.city, **(buyer.details or {})} if buyer else None
+        ),
         "photoObject": (case.photo or {}).get("object"),
         "photosBucket": ctx.settings.photos_bucket,
         "docsBucket": ctx.settings.docs_bucket,

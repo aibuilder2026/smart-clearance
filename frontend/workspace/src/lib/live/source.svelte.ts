@@ -40,6 +40,7 @@ import type {
 	JourneyClock,
 	RoleId,
 	Rules,
+	SendOptions,
 	SourceStatus,
 	State,
 	User,
@@ -506,7 +507,13 @@ export class LiveSource implements WorkspaceSource {
 
 	signOut = async () => {
 		this.#leave();
-		await this.#api.signOut();
+		try {
+			await this.#api.signOut();
+		} catch (e) {
+			// still signed in: the workspace keeps up to date again, and the refusal is the caller's to say (SC-152)
+			if (this.#member) this.#listen();
+			throw e;
+		}
 		this.#clear();
 	};
 
@@ -529,14 +536,24 @@ export class LiveSource implements WorkspaceSource {
 
 	/* ---------- the steps a person takes ---------- */
 
-	/** send a step: shown at once where that is safe, put back if refused; the answer's case replaces the one held */
-	async #send(action: HumanAction, run: () => Promise<{ case: CaseDetail | null } | void>, show?: () => () => void) {
+	/** send a step: shown at once where that is safe, put back if refused; the answer's case replaces the one held. A
+	 *  refusal is kept as `failed` for the band to say, or, sent inline, rejected for the button that sent it to say
+	 *  (SC-152, SendOptions). Sent inline, the button is what shows the wait, so the change is shown once the step has
+	 *  gone through, never before: a button the change would take off the screen stays to say how it went */
+	async #send(
+		action: HumanAction,
+		run: () => Promise<{ case: CaseDetail | null } | void>,
+		show?: () => () => void,
+		o?: SendOptions
+	): Promise<void> {
+		const inline = !!o?.inline;
 		this.#pending.add(action);
-		this.#failed = null;
-		const undo = show?.();
+		if (!inline || this.#failed?.action === action) this.#failed = null;
+		const undo = inline ? undefined : show?.();
 		try {
 			const out = await run();
 			if (out && out.case) this.#put(out.case.ref, out.case);
+			else if (inline) show?.();
 			this.#want({ snapshot: true });
 			this.#stream?.poke();
 		} catch (e) {
@@ -545,13 +562,14 @@ export class LiveSource implements WorkspaceSource {
 			if ((e as { name?: string })?.name === 'AbortError') return;
 			const stale = refusalOf(e) === 'stale';
 			if (stale) this.#want({ snapshot: true, all: true });
-			if (refusalOf(e) === 'signed-out') return this.#signedOut();
-			this.#failed = {
-				action,
-				stale,
-				message: e instanceof Error ? e.message : String(e),
-				retry: () => this.#send(action, run, show)
-			};
+			const message = e instanceof Error ? e.message : String(e);
+			if (refusalOf(e) === 'signed-out') {
+				await this.#signedOut();
+				if (inline) throw e instanceof Error ? e : new Error(message);
+				return;
+			}
+			if (inline) throw e instanceof Error ? e : new Error(message);
+			this.#failed = { action, stale, message, retry: () => this.#send(action, run, show) };
 		} finally {
 			this.#pending.delete(action);
 		}
@@ -560,28 +578,37 @@ export class LiveSource implements WorkspaceSource {
 	act = async <N extends HumanAction>(
 		name: N,
 		arg?: ActionArg<N>,
-		o?: { feel?: number; ref?: string }
+		o?: { feel?: number; ref?: string } & SendOptions
 	): Promise<void> => {
-		if (o?.feel) await new Promise((r) => setTimeout(r, o.feel));
+		// the tap is felt before the journey moves, and the step is pending from the press
+		if (o?.feel) {
+			this.#pending.add(name);
+			try {
+				await new Promise((r) => setTimeout(r, o.feel));
+			} finally {
+				this.#pending.delete(name);
+			}
+		}
 		const api = this.#api;
+		const send = (run: () => Promise<{ case: CaseDetail | null } | void>, show?: () => () => void): Promise<void> =>
+			this.#send(name, run, show, o);
 		// the batch it acts on: the one named (a distributor's Today, SC-133), else the batch in focus
 		const ref = o?.ref ?? this.#focus?.ref ?? '';
 		const second = this.#donor?.ref ?? '';
 		const focus = () => this.#focus;
 		switch (name) {
 			case 'connect':
-				return this.#send(name, () => api.confirmSetup());
+				return send(() => api.confirmSetup());
 			case 'permit':
-				return this.#send(name, () => api.permit(), this.#showPermission({ paused: false }));
+				return send(() => api.permit(), this.#showPermission({ paused: false }));
 			case 'pause': {
 				const paused = arg as boolean;
-				return this.#send(name, () => api.pause(paused), this.#showPermission({ paused }));
+				return send(() => api.pause(paused), this.#showPermission({ paused }));
 			}
 			case 'sendPhoto':
-				return this.#send(name, () => this.#upload(ref, arg as Blob | undefined));
+				return send(() => this.#upload(ref, arg as Blob | undefined));
 			case 'approve':
-				return this.#send(
-					name,
+				return send(
 					() => api.approve(ref, (this.#o.device ?? phone)()),
 					this.#show((c) => {
 						if (c.journey.plan) c.journey.plan = { ...c.journey.plan, status: 'approved' };
@@ -592,13 +619,13 @@ export class LiveSource implements WorkspaceSource {
 				const { kirana, units } = arg as ActionArg<'order'>;
 				const k = focus()?.kiranas.find((x) => x.id === kirana);
 				const n = units ?? k?.cap ?? 0;
-				return this.#send(
-					name,
+				return send(
 					() => api.order(ref, n),
 					this.#show((c) => {
 						c.journey.orders = [
 							...c.journey.orders,
-							{ id: kirana, units: n, at: this.#now(), by: this.#member?.id ?? '' }
+							// its tax invoice comes with backend-api's answer (SC-153)
+							{ id: kirana, units: n, at: this.#now(), by: this.#member?.id ?? '', invoice: null }
 						];
 					})
 				);
@@ -606,8 +633,7 @@ export class LiveSource implements WorkspaceSource {
 			case 'decline': {
 				// Not this time (SC-130): the shop's own answer, shown at once
 				const kirana = arg as string;
-				return this.#send(
-					name,
+				return send(
 					() => api.declineOffer(ref),
 					this.#show((c) => {
 						if (c.journey.offer)
@@ -620,8 +646,7 @@ export class LiveSource implements WorkspaceSource {
 			}
 			case 'bid': {
 				const price = arg as number;
-				return this.#send(
-					name,
+				return send(
 					() => api.bid(ref, price),
 					this.#show((c) => {
 						c.journey.bids = [
@@ -634,12 +659,11 @@ export class LiveSource implements WorkspaceSource {
 			case 'accept': {
 				const bid = [...(focus()?.journey.bids ?? [])].reverse().find((b) => b.status === 'countered');
 				if (!bid) return;
-				return this.#send(name, () => api.accept(ref, bid.id));
+				return send(() => api.accept(ref, bid.id));
 			}
 			case 'recordStaffSale': {
 				const sold = arg as number;
-				return this.#send(
-					name,
+				return send(
 					() => api.staffSale(ref, sold),
 					this.#show((c) => {
 						if (c.journey.staff)
@@ -654,21 +678,21 @@ export class LiveSource implements WorkspaceSource {
 				);
 			}
 			case 'confirmPickup':
-				return this.#send(name, () => api.confirmPickup(second || ref));
+				return send(() => api.confirmPickup(second || ref));
 			case 'collect':
-				return this.#send(name, () => api.collect(second || ref));
+				return send(() => api.collect(second || ref));
 			case 'dispatch':
-				return this.#send(name, () => api.dispatch(ref, 'truck'));
+				return send(() => api.dispatch(ref, 'truck'));
 			case 'vanRound':
-				return this.#send(name, () => api.dispatch(ref, 'van'));
+				return send(() => api.dispatch(ref, 'van'));
 			case 'issueInvoice':
-				return this.#send(name, () => api.issueInvoice(ref, 'invoice'));
+				return send(() => api.issueInvoice(ref, 'invoice'));
 			case 'review':
-				return this.#send(name, () => api.review(ref));
+				return send(() => api.review(ref));
 			// packs destroyed at his godown (SC-139): both photos to their signed links, then the evidence for Vision
 			case 'sendDestruction': {
 				const x = arg as ActionArg<'sendDestruction'>;
-				return this.#send(name, async () => {
+				return send(async () => {
 					if (!x.before || !x.after) throw new ApiError(422, 'Take or upload both photos first.');
 					const photo = (which: 'before' | 'after', file: Blob) =>
 						this.#put_(`destruction:${which}:${ref}`, file, 'image/jpeg', {
@@ -685,8 +709,7 @@ export class LiveSource implements WorkspaceSource {
 				});
 			}
 			case 'approveDestruction':
-				return this.#send(
-					name,
+				return send(
 					() => api.approveDestruction(ref),
 					this.#show((c) => {
 						if (c.destruction) c.destruction = { ...c.destruction, status: 'approved', approvedAt: this.#now() };
@@ -694,8 +717,7 @@ export class LiveSource implements WorkspaceSource {
 				);
 			case 'askDestructionAgain': {
 				const reason = arg as string;
-				return this.#send(
-					name,
+				return send(
 					() => api.askDestructionAgain(ref, reason),
 					this.#show((c) => {
 						if (c.destruction) c.destruction = { ...c.destruction, status: 'asked', reason };
@@ -708,11 +730,12 @@ export class LiveSource implements WorkspaceSource {
 		}
 	};
 
-	message = (text: string) => {
+	message = (text: string, o?: SendOptions) => {
 		const ref = this.#focus?.ref ?? '';
-		return this.#send('bid', () => this.#api.message(ref, text));
+		return this.#send('bid', () => this.#api.message(ref, text), undefined, o);
 	};
 
+	/** a read: it rejects when the link cannot be had, in the API's words, for its caller to say */
 	documentUrl = async (doc: string, ref?: string) =>
 		(await this.#api.documentUrl(ref ?? this.#focus?.ref ?? '', doc)).url;
 
@@ -750,12 +773,16 @@ export class LiveSource implements WorkspaceSource {
 	}
 
 	/** Setup's DMS export for the Data agent (SC-73): its progress in uploads, under 'export' */
-	uploadExport = (file: Blob) =>
-		this.#send('connect', () =>
-			this.#put_('export', file, 'text/csv', {
-				link: (input) => this.#api.uploadExport(input),
-				done: (id) => this.#api.exportUploaded(id)
-			})
+	uploadExport = (file: Blob, o?: SendOptions) =>
+		this.#send(
+			'connect',
+			() =>
+				this.#put_('export', file, 'text/csv', {
+					link: (input) => this.#api.uploadExport(input),
+					done: (id) => this.#api.exportUploaded(id)
+				}),
+			undefined,
+			o
 		);
 
 	/** stop a file on its way */
@@ -810,15 +837,18 @@ export class LiveSource implements WorkspaceSource {
 		}
 	};
 
-	invite = (i: InviteInput) =>
-		this.#send('join', () => this.#api.invite({ name: i.name, email: i.contact.trim(), role: i.role }));
+	invite = (i: InviteInput, o?: SendOptions) =>
+		this.#send('join', () => this.#api.invite({ name: i.name, email: i.contact.trim(), role: i.role }), undefined, o);
 
-	setUserStatus = (id: string, s: UserStatus) =>
-		s === 'invited' ? Promise.resolve() : this.#send('join', () => this.#api.updateMember(id, { status: s }));
+	setUserStatus = (id: string, s: UserStatus, o?: SendOptions) =>
+		s === 'invited'
+			? Promise.resolve()
+			: this.#send('join', () => this.#api.updateMember(id, { status: s }), undefined, o);
 
-	setUserRole = (id: string, r: RoleId) => this.#send('join', () => this.#api.updateMember(id, { role: r }));
+	setUserRole = (id: string, r: RoleId, o?: SendOptions) =>
+		this.#send('join', () => this.#api.updateMember(id, { role: r }), undefined, o);
 
-	saveRules = (r: Rules) => {
+	saveRules = (r: Rules, o?: SendOptions) => {
 		const snap = this.#snap;
 		const before = snap?.rules;
 		return this.#send(
@@ -829,7 +859,8 @@ export class LiveSource implements WorkspaceSource {
 				return () => {
 					if (snap && before) snap.rules = before;
 				};
-			}
+			},
+			o
 		);
 	};
 }

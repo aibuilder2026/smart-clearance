@@ -104,8 +104,14 @@
 		"short": "Munchly Foods",
 		"city": "Pune",
 		"listed": "NSE",
-		"gstin": "27AABCM1234F1Z5",
+		"gstin": "27AAKCM0000M1ZN",
 		"fssai": "10019022001234",
+		"pan": "AAKCM0000M",
+		"cin": "L15400MH2011PLC000117",
+		"address": "Plot B-14, MIDC Chakan Phase II, Pune 410501, Maharashtra",
+		"state": "Maharashtra",
+		"stateCode": "27",
+		"email": "accounts@munchly.example",
 		"revenue": "₹640 crore",
 		"skus": 8,
 		"distributors": 4,
@@ -266,15 +272,29 @@
 			"short": "Rakesh Traders",
 			"city": "Nagpur",
 			"state": "Maharashtra",
+			"stateCode": "27",
 			"godown": "Kalamna Market godown",
-			"address": "Kalamna Market, Nagpur, Maharashtra",
-			"gstin": "27AABCR1234F1Z5",
+			"address": "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra",
+			"gstin": "27ABHPR0000K1ZW",
+			"pan": "ABHPR0000K",
+			"fssai": "21526000000117",
+			"email": "accounts@rakeshtraders.example",
+			"bank": {
+				"name": "Example Co-operative Bank, Itwari, Nagpur",
+				"account": "0000 0117 2409",
+				"ifsc": "EXMP0000117"
+			},
 			"kiranas": 38,
 			"cluster": "Nagpur, Wardha and Kamptee",
 			"territory": "Nagpur with Wardha and Kamptee",
 			"pins": "440, 441, 442",
 			"staffCap": 50,
-			"upi": "rakesh-traders@exampleupi"
+			"upi": "rakesh-traders@exampleupi",
+			"series": {
+				"prefix": "RT/26-27/",
+				"next": 1279,
+				"width": 4
+			}
 		},
 		"patil": {
 			"id": "patil",
@@ -282,12 +302,28 @@
 			"short": "Patil Distributors",
 			"city": "Pune",
 			"state": "Maharashtra",
+			"stateCode": "27",
 			"godown": "Market Yard godown",
+			"address": "Shop 7, Market Yard, Gultekdi, Pune 411037, Maharashtra",
+			"gstin": "27AAKFP0000P1Z8",
+			"pan": "AAKFP0000P",
+			"fssai": "21526000000204",
+			"email": "accounts@patildistributors.example",
+			"bank": {
+				"name": "Example Co-operative Bank, Market Yard, Pune",
+				"account": "0000 0204 2409",
+				"ifsc": "EXMP0000204"
+			},
 			"kiranas": 52,
 			"cluster": "Pune city",
 			"territory": "Pune",
 			"pins": "411, 412",
-			"upi": "patil-distributors@exampleupi"
+			"upi": "patil-distributors@exampleupi",
+			"series": {
+				"prefix": "PD/26-27/",
+				"next": 512,
+				"width": 4
+			}
 		},
 		"gupta": {
 			"id": "gupta",
@@ -295,12 +331,28 @@
 			"short": "Gupta & Sons",
 			"city": "Indore",
 			"state": "Madhya Pradesh",
+			"stateCode": "23",
 			"godown": "Siyaganj godown",
+			"address": "22 Siyaganj Main Road, Indore 452007, Madhya Pradesh",
+			"gstin": "23AAHFG0000G1ZB",
+			"pan": "AAHFG0000G",
+			"fssai": "21426000000209",
+			"email": "accounts@guptasons.example",
+			"bank": {
+				"name": "Example Co-operative Bank, Siyaganj, Indore",
+				"account": "0000 0209 2408",
+				"ifsc": "EXMP0000209"
+			},
 			"kiranas": 47,
 			"cluster": "Indore",
 			"territory": "Indore",
 			"pins": "452, 453",
-			"upi": "gupta-sons@exampleupi"
+			"upi": "gupta-sons@exampleupi",
+			"series": {
+				"prefix": "GS/26-27/",
+				"next": 2041,
+				"width": 4
+			}
 		},
 		"lakshmi": {
 			"id": "lakshmi",
@@ -308,13 +360,29 @@
 			"short": "Lakshmi Agencies",
 			"city": "Hyderabad",
 			"state": "Telangana",
+			"stateCode": "36",
 			"godown": "Begum Bazaar godown",
+			"address": "4-2-118 Begum Bazaar, Hyderabad 500012, Telangana",
+			"gstin": "36AAJFL0000L1ZM",
+			"pan": "AAJFL0000L",
+			"fssai": "23626000000118",
+			"email": "accounts@lakshmiagencies.example",
+			"bank": {
+				"name": "Example Co-operative Bank, Begum Bazaar, Hyderabad",
+				"account": "0000 0118 2410",
+				"ifsc": "EXMP0000118"
+			},
 			"kiranas": 58,
 			"cluster": "Hyderabad old city",
 			"territory": "Hyderabad",
 			"pins": "500, 501",
 			"staffCap": 150,
-			"upi": "lakshmi-agencies@exampleupi"
+			"upi": "lakshmi-agencies@exampleupi",
+			"series": {
+				"prefix": "LA/26-27/",
+				"next": 972,
+				"width": 4
+			}
 		}
 	},
 	"buyer": {
@@ -324,8 +392,9 @@
 		"city": "Raipur",
 		"state": "Chhattisgarh",
 		"stateCode": "22",
-		"address": "Ganj Mandi, Raipur, Chhattisgarh",
-		"gstin": "22AAGFA4821M1Z3",
+		"address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+		"gstin": "22AAGFA0000A1ZW",
+		"pan": "AAGFA0000A",
 		"kind": "Kirana wholesaler · ExpireSoon buyer"
 	},
 	"people": {
@@ -2140,15 +2209,29 @@
 				"short": "Rakesh Traders",
 				"city": "Nagpur",
 				"state": "Maharashtra",
+				"stateCode": "27",
 				"godown": "Kalamna Market godown",
-				"address": "Kalamna Market, Nagpur, Maharashtra",
-				"gstin": "27AABCR1234F1Z5",
+				"address": "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra",
+				"gstin": "27ABHPR0000K1ZW",
+				"pan": "ABHPR0000K",
+				"fssai": "21526000000117",
+				"email": "accounts@rakeshtraders.example",
+				"bank": {
+					"name": "Example Co-operative Bank, Itwari, Nagpur",
+					"account": "0000 0117 2409",
+					"ifsc": "EXMP0000117"
+				},
 				"kiranas": 38,
 				"cluster": "Nagpur, Wardha and Kamptee",
 				"territory": "Nagpur with Wardha and Kamptee",
 				"pins": "440, 441, 442",
 				"staffCap": 50,
-				"upi": "rakesh-traders@exampleupi"
+				"upi": "rakesh-traders@exampleupi",
+				"series": {
+					"prefix": "RT/26-27/",
+					"next": 1279,
+					"width": 4
+				}
 			},
 			"to": {
 				"id": "agrawal",
@@ -2157,8 +2240,9 @@
 				"city": "Raipur",
 				"state": "Chhattisgarh",
 				"stateCode": "22",
-				"address": "Ganj Mandi, Raipur, Chhattisgarh",
-				"gstin": "22AAGFA4821M1Z3",
+				"address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+				"gstin": "22AAGFA0000A1ZW",
+				"pan": "AAGFA0000A",
 				"kind": "Kirana wholesaler · ExpireSoon buyer"
 			},
 			"hsn": "2005",

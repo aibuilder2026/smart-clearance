@@ -1,0 +1,22 @@
+/* Option C · Act at once: the button shows its result at once; one chip at the foot of the window carries the calls */
+.pc { display: inline-grid; justify-items: end; max-width: 100%; }
+.pc-block { display: grid; justify-items: stretch; }
+.pc-btn { overflow: hidden; }
+.pc-btn[data-phase="done"] { cursor: default; }
+.pc-btn[data-phase="busy"] { cursor: progress; }
+.pc-faces { display: inline-grid; gap: inherit; }
+.pc-faces > .pc-face { grid-area: 1 / 1; visibility: hidden; }
+.pc-face { display: inline-flex; align-items: center; justify-content: center; gap: inherit; white-space: nowrap; }
+.pc-live { position: absolute; inset: 0; padding: inherit; }
+.pc-ic { display: inline-grid; flex: none; place-items: center; }
+.pc-arc { animation: spin 0.8s linear infinite; }
+.pc-note { display: flex; align-items: center; gap: 6px; max-width: 46ch; margin-top: 8px; font-size: 12.5px; line-height: 1.4; color: var(--red-text); }
+.pc-host { position: fixed; z-index: 60; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); display: grid; gap: 8px; width: min(460px, calc(100% - 32px)); pointer-events: none; }
+.pc-chip { pointer-events: auto; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 10px 8px 14px; border-radius: 14px; background: var(--elevated); box-shadow: var(--shadow-3), 0 0 0 var(--hair) var(--line); font-size: 13.5px; line-height: 1.35; color: var(--fg); }
+.pc-chip .pc-ic { color: var(--fg-2); }
+.pc-chip.done .pc-ic { color: var(--primary-text); }
+.pc-chip.error .pc-ic { color: var(--red-text); }
+.pc-chip .pc-txt { flex: 1; min-width: 0; color: var(--fg-2); }
+.pc-chip .pc-txt b { color: var(--fg); font-weight: 650; }
+.pc-chip .btn-link { flex: none; }
+@media (prefers-reduced-motion: reduce) { .pc-arc { animation-duration: 1.6s; } }

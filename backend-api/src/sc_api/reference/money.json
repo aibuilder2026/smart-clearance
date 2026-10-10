@@ -10293,6 +10293,490 @@
 			"out": 200
 		}
 	],
+	"kiranaInvoice": [
+		{
+			"units": 24,
+			"line": {
+				"price": 18,
+				"packPrice": 21.6
+			},
+			"sku": {
+				"id": "chips",
+				"code": "MF-MC-150",
+				"brand": "Munchly",
+				"name": "Masala Chips 150 g",
+				"category": "snacks",
+				"hsn": "2005",
+				"mrp": 30,
+				"dp": 22,
+				"cost": 16,
+				"gst": 0.05,
+				"itcPerUnit": 0.9,
+				"perCarton": 24,
+				"lifeDays": 180,
+				"kgPerUnit": 0.16,
+				"packKg": 0.006,
+				"img": "pack-chips",
+				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
+			},
+			"out": {
+				"units": 24,
+				"rate": 21.6,
+				"gross": 518.4,
+				"discountPct": 16.67,
+				"discount": 86.4,
+				"taxable": 432,
+				"gstPct": 5,
+				"cgst": 10.8,
+				"sgst": 10.8,
+				"tax": 21.6,
+				"roundOff": 0.4,
+				"total": 454,
+				"hsn": "2005"
+			}
+		},
+		{
+			"units": 10,
+			"line": {
+				"price": 18,
+				"packPrice": 21.6
+			},
+			"sku": {
+				"id": "chips",
+				"code": "MF-MC-150",
+				"brand": "Munchly",
+				"name": "Masala Chips 150 g",
+				"category": "snacks",
+				"hsn": "2005",
+				"mrp": 30,
+				"dp": 22,
+				"cost": 16,
+				"gst": 0.05,
+				"itcPerUnit": 0.9,
+				"perCarton": 24,
+				"lifeDays": 180,
+				"kgPerUnit": 0.16,
+				"packKg": 0.006,
+				"img": "pack-chips",
+				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
+			},
+			"out": {
+				"units": 10,
+				"rate": 21.6,
+				"gross": 216,
+				"discountPct": 16.67,
+				"discount": 36,
+				"taxable": 180,
+				"gstPct": 5,
+				"cgst": 4.5,
+				"sgst": 4.5,
+				"tax": 9,
+				"roundOff": 0,
+				"total": 189,
+				"hsn": "2005"
+			}
+		},
+		{
+			"units": 16,
+			"line": {
+				"price": 18,
+				"packPrice": 21.6
+			},
+			"sku": {
+				"id": "chips",
+				"code": "MF-MC-150",
+				"brand": "Munchly",
+				"name": "Masala Chips 150 g",
+				"category": "snacks",
+				"hsn": "2005",
+				"mrp": 30,
+				"dp": 22,
+				"cost": 16,
+				"gst": 0.05,
+				"itcPerUnit": 0.9,
+				"perCarton": 24,
+				"lifeDays": 180,
+				"kgPerUnit": 0.16,
+				"packKg": 0.006,
+				"img": "pack-chips",
+				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
+			},
+			"out": {
+				"units": 16,
+				"rate": 21.6,
+				"gross": 345.6,
+				"discountPct": 16.67,
+				"discount": 57.6,
+				"taxable": 288,
+				"gstPct": 5,
+				"cgst": 7.2,
+				"sgst": 7.2,
+				"tax": 14.4,
+				"roundOff": -0.4,
+				"total": 302,
+				"hsn": "2005"
+			}
+		},
+		{
+			"units": 1,
+			"line": {
+				"price": 18,
+				"packPrice": 21.6
+			},
+			"sku": {
+				"id": "chips",
+				"code": "MF-MC-150",
+				"brand": "Munchly",
+				"name": "Masala Chips 150 g",
+				"category": "snacks",
+				"hsn": "2005",
+				"mrp": 30,
+				"dp": 22,
+				"cost": 16,
+				"gst": 0.05,
+				"itcPerUnit": 0.9,
+				"perCarton": 24,
+				"lifeDays": 180,
+				"kgPerUnit": 0.16,
+				"packKg": 0.006,
+				"img": "pack-chips",
+				"gstNote": "Chips moved from 12% to 5% GST under GST 2.0 on 22 September 2025."
+			},
+			"out": {
+				"units": 1,
+				"rate": 21.6,
+				"gross": 21.6,
+				"discountPct": 16.67,
+				"discount": 3.6,
+				"taxable": 18,
+				"gstPct": 5,
+				"cgst": 0.45,
+				"sgst": 0.45,
+				"tax": 0.9,
+				"roundOff": 0.1,
+				"total": 19,
+				"hsn": "2005"
+			}
+		},
+		{
+			"units": 36,
+			"line": {
+				"price": 12,
+				"packPrice": 14.4
+			},
+			"sku": {
+				"id": "mango",
+				"code": "MF-MD-200",
+				"brand": "Munchly",
+				"name": "Mango Drink 200 ml",
+				"category": "beverages",
+				"hsn": "2202",
+				"mrp": 20,
+				"dp": 14.5,
+				"cost": 11,
+				"gst": 0.05,
+				"perCarton": 27,
+				"lifeDays": 180,
+				"kgPerUnit": 0.215,
+				"packKg": 0.002,
+				"img": "pack-mango"
+			},
+			"out": {
+				"units": 36,
+				"rate": 14.4,
+				"gross": 518.4,
+				"discountPct": 16.67,
+				"discount": 86.4,
+				"taxable": 432,
+				"gstPct": 5,
+				"cgst": 10.8,
+				"sgst": 10.8,
+				"tax": 21.6,
+				"roundOff": 0.4,
+				"total": 454,
+				"hsn": "2202"
+			}
+		},
+		{
+			"units": 7,
+			"line": {
+				"price": 12,
+				"packPrice": 14.4
+			},
+			"sku": {
+				"id": "mango",
+				"code": "MF-MD-200",
+				"brand": "Munchly",
+				"name": "Mango Drink 200 ml",
+				"category": "beverages",
+				"hsn": "2202",
+				"mrp": 20,
+				"dp": 14.5,
+				"cost": 11,
+				"gst": 0.05,
+				"perCarton": 27,
+				"lifeDays": 180,
+				"kgPerUnit": 0.215,
+				"packKg": 0.002,
+				"img": "pack-mango"
+			},
+			"out": {
+				"units": 7,
+				"rate": 14.4,
+				"gross": 100.8,
+				"discountPct": 16.67,
+				"discount": 16.8,
+				"taxable": 84,
+				"gstPct": 5,
+				"cgst": 2.1,
+				"sgst": 2.1,
+				"tax": 4.2,
+				"roundOff": -0.2,
+				"total": 88,
+				"hsn": "2202"
+			}
+		},
+		{
+			"units": 10,
+			"line": {
+				"price": 24,
+				"packPrice": 28.8
+			},
+			"sku": {
+				"id": "biscuits",
+				"code": "MF-CC-200",
+				"brand": "Munchly",
+				"name": "Choco Cream Biscuits 200 g",
+				"category": "biscuits",
+				"hsn": "1905",
+				"mrp": 40,
+				"dp": 29,
+				"cost": 22,
+				"gst": 0.05,
+				"itcPerUnit": 1.24,
+				"perCarton": 24,
+				"lifeDays": 270,
+				"kgPerUnit": 0.215,
+				"packKg": 0.008,
+				"img": "pack-biscuits"
+			},
+			"out": {
+				"units": 10,
+				"rate": 28.8,
+				"gross": 288,
+				"discountPct": 16.67,
+				"discount": 48,
+				"taxable": 240,
+				"gstPct": 5,
+				"cgst": 6,
+				"sgst": 6,
+				"tax": 12,
+				"roundOff": 0,
+				"total": 252,
+				"hsn": "1905"
+			}
+		},
+		{
+			"units": 10,
+			"line": {
+				"price": 15,
+				"packPrice": 18
+			},
+			"sku": {
+				"id": "chikki",
+				"code": "MF-PC-100",
+				"brand": "Munchly",
+				"name": "Peanut Chikki 100 g",
+				"category": "snacks",
+				"hsn": "1704",
+				"mrp": 25,
+				"dp": 18,
+				"cost": 13,
+				"gst": 0.05,
+				"itcPerUnit": 0.73,
+				"perCarton": 30,
+				"lifeDays": 180,
+				"kgPerUnit": 0.11,
+				"packKg": 0.004,
+				"img": "pack-chikki"
+			},
+			"out": {
+				"units": 10,
+				"rate": 18,
+				"gross": 180,
+				"discountPct": 16.67,
+				"discount": 30,
+				"taxable": 150,
+				"gstPct": 5,
+				"cgst": 3.75,
+				"sgst": 3.75,
+				"tax": 7.5,
+				"roundOff": 0.5,
+				"total": 158,
+				"hsn": "1704"
+			}
+		},
+		{
+			"units": 16,
+			"line": {
+				"price": 39,
+				"packPrice": 46.8
+			},
+			"sku": {
+				"id": "oats",
+				"code": "MF-MO-200",
+				"brand": "Munchly",
+				"name": "Masala Oats 200 g",
+				"category": "staples",
+				"hsn": "2106",
+				"mrp": 65,
+				"dp": 47.5,
+				"cost": 36,
+				"gst": 0.05,
+				"itcPerUnit": 2.03,
+				"perCarton": 20,
+				"lifeDays": 270,
+				"kgPerUnit": 0.22,
+				"packKg": 0.005,
+				"img": "pack-oats"
+			},
+			"out": {
+				"units": 16,
+				"rate": 46.8,
+				"gross": 748.8,
+				"discountPct": 16.67,
+				"discount": 124.8,
+				"taxable": 624,
+				"gstPct": 5,
+				"cgst": 15.6,
+				"sgst": 15.6,
+				"tax": 31.2,
+				"roundOff": -0.2,
+				"total": 655,
+				"hsn": "2106"
+			}
+		},
+		{
+			"units": 18,
+			"line": {
+				"price": 33,
+				"packPrice": 39.6
+			},
+			"sku": {
+				"id": "poha",
+				"code": "MF-IP-250",
+				"brand": "Munchly",
+				"name": "Instant Poha 250 g",
+				"category": "staples",
+				"hsn": "1904",
+				"mrp": 55,
+				"dp": 40,
+				"cost": 31,
+				"gst": 0.05,
+				"itcPerUnit": 1.74,
+				"perCarton": 20,
+				"lifeDays": 270,
+				"kgPerUnit": 0.27,
+				"packKg": 0.006,
+				"img": "pack-poha"
+			},
+			"out": {
+				"units": 18,
+				"rate": 39.6,
+				"gross": 712.8,
+				"discountPct": 16.67,
+				"discount": 118.8,
+				"taxable": 594,
+				"gstPct": 5,
+				"cgst": 14.85,
+				"sgst": 14.85,
+				"tax": 29.7,
+				"roundOff": 0.3,
+				"total": 624,
+				"hsn": "1904"
+			}
+		},
+		{
+			"units": 20,
+			"line": {
+				"price": 33,
+				"packPrice": 39.6
+			},
+			"sku": {
+				"id": "poha",
+				"code": "MF-IP-250",
+				"brand": "Munchly",
+				"name": "Instant Poha 250 g",
+				"category": "staples",
+				"hsn": "1904",
+				"mrp": 55,
+				"dp": 40,
+				"cost": 31,
+				"gst": 0.05,
+				"itcPerUnit": 1.74,
+				"perCarton": 20,
+				"lifeDays": 270,
+				"kgPerUnit": 0.27,
+				"packKg": 0.006,
+				"img": "pack-poha"
+			},
+			"out": {
+				"units": 20,
+				"rate": 39.6,
+				"gross": 792,
+				"discountPct": 16.67,
+				"discount": 132,
+				"taxable": 660,
+				"gstPct": 5,
+				"cgst": 16.5,
+				"sgst": 16.5,
+				"tax": 33,
+				"roundOff": 0,
+				"total": 693,
+				"hsn": "1904"
+			}
+		},
+		{
+			"units": 3,
+			"line": {
+				"price": 72,
+				"packPrice": 86.4
+			},
+			"sku": {
+				"id": "facewash",
+				"code": "GL-AF-100",
+				"brand": "Glowra",
+				"name": "Aloe Face Wash 100 ml",
+				"category": "personal-care",
+				"hsn": "3401",
+				"mrp": 120,
+				"dp": 88,
+				"cost": 58,
+				"gst": 0.18,
+				"itcPerUnit": 11.75,
+				"perCarton": 12,
+				"lifeDays": 730,
+				"kgPerUnit": 0.12,
+				"packKg": 0.012,
+				"img": "pack-facewash"
+			},
+			"out": {
+				"units": 3,
+				"rate": 86.4,
+				"gross": 259.2,
+				"discountPct": 16.67,
+				"discount": 43.2,
+				"taxable": 216,
+				"gstPct": 18,
+				"cgst": 19.44,
+				"sgst": 19.44,
+				"tax": 38.88,
+				"roundOff": 0.12,
+				"total": 255,
+				"hsn": "3401"
+			}
+		}
+	],
 	"receipt": [
 		{
 			"units": 86,
@@ -12023,15 +12507,29 @@
 					"short": "Rakesh Traders",
 					"city": "Nagpur",
 					"state": "Maharashtra",
+					"stateCode": "27",
 					"godown": "Kalamna Market godown",
-					"address": "Kalamna Market, Nagpur, Maharashtra",
-					"gstin": "27AABCR1234F1Z5",
+					"address": "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra",
+					"gstin": "27ABHPR0000K1ZW",
+					"pan": "ABHPR0000K",
+					"fssai": "21526000000117",
+					"email": "accounts@rakeshtraders.example",
+					"bank": {
+						"name": "Example Co-operative Bank, Itwari, Nagpur",
+						"account": "0000 0117 2409",
+						"ifsc": "EXMP0000117"
+					},
 					"kiranas": 38,
 					"cluster": "Nagpur, Wardha and Kamptee",
 					"territory": "Nagpur with Wardha and Kamptee",
 					"pins": "440, 441, 442",
 					"staffCap": 50,
-					"upi": "rakesh-traders@exampleupi"
+					"upi": "rakesh-traders@exampleupi",
+					"series": {
+						"prefix": "RT/26-27/",
+						"next": 1279,
+						"width": 4
+					}
 				},
 				"buyer": {
 					"id": "agrawal",
@@ -12040,8 +12538,9 @@
 					"city": "Raipur",
 					"state": "Chhattisgarh",
 					"stateCode": "22",
-					"address": "Ganj Mandi, Raipur, Chhattisgarh",
-					"gstin": "22AAGFA4821M1Z3",
+					"address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+					"gstin": "22AAGFA0000A1ZW",
+					"pan": "AAGFA0000A",
 					"kind": "Kirana wholesaler · ExpireSoon buyer"
 				},
 				"client": {
@@ -12049,8 +12548,14 @@
 					"short": "Munchly Foods",
 					"city": "Pune",
 					"listed": "NSE",
-					"gstin": "27AABCM1234F1Z5",
+					"gstin": "27AAKCM0000M1ZN",
 					"fssai": "10019022001234",
+					"pan": "AAKCM0000M",
+					"cin": "L15400MH2011PLC000117",
+					"address": "Plot B-14, MIDC Chakan Phase II, Pune 410501, Maharashtra",
+					"state": "Maharashtra",
+					"stateCode": "27",
+					"email": "accounts@munchly.example",
 					"revenue": "₹640 crore",
 					"skus": 8,
 					"distributors": 4,
@@ -12083,15 +12588,29 @@
 						"short": "Rakesh Traders",
 						"city": "Nagpur",
 						"state": "Maharashtra",
+						"stateCode": "27",
 						"godown": "Kalamna Market godown",
-						"address": "Kalamna Market, Nagpur, Maharashtra",
-						"gstin": "27AABCR1234F1Z5",
+						"address": "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra",
+						"gstin": "27ABHPR0000K1ZW",
+						"pan": "ABHPR0000K",
+						"fssai": "21526000000117",
+						"email": "accounts@rakeshtraders.example",
+						"bank": {
+							"name": "Example Co-operative Bank, Itwari, Nagpur",
+							"account": "0000 0117 2409",
+							"ifsc": "EXMP0000117"
+						},
 						"kiranas": 38,
 						"cluster": "Nagpur, Wardha and Kamptee",
 						"territory": "Nagpur with Wardha and Kamptee",
 						"pins": "440, 441, 442",
 						"staffCap": 50,
-						"upi": "rakesh-traders@exampleupi"
+						"upi": "rakesh-traders@exampleupi",
+						"series": {
+							"prefix": "RT/26-27/",
+							"next": 1279,
+							"width": 4
+						}
 					},
 					"to": {
 						"id": "agrawal",
@@ -12100,8 +12619,9 @@
 						"city": "Raipur",
 						"state": "Chhattisgarh",
 						"stateCode": "22",
-						"address": "Ganj Mandi, Raipur, Chhattisgarh",
-						"gstin": "22AAGFA4821M1Z3",
+						"address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+						"gstin": "22AAGFA0000A1ZW",
+						"pan": "AAGFA0000A",
 						"kind": "Kirana wholesaler · ExpireSoon buyer"
 					},
 					"hsn": "2005",
@@ -12418,15 +12938,29 @@
 					"short": "Rakesh Traders",
 					"city": "Nagpur",
 					"state": "Maharashtra",
+					"stateCode": "27",
 					"godown": "Kalamna Market godown",
-					"address": "Kalamna Market, Nagpur, Maharashtra",
-					"gstin": "27AABCR1234F1Z5",
+					"address": "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra",
+					"gstin": "27ABHPR0000K1ZW",
+					"pan": "ABHPR0000K",
+					"fssai": "21526000000117",
+					"email": "accounts@rakeshtraders.example",
+					"bank": {
+						"name": "Example Co-operative Bank, Itwari, Nagpur",
+						"account": "0000 0117 2409",
+						"ifsc": "EXMP0000117"
+					},
 					"kiranas": 38,
 					"cluster": "Nagpur, Wardha and Kamptee",
 					"territory": "Nagpur with Wardha and Kamptee",
 					"pins": "440, 441, 442",
 					"staffCap": 50,
-					"upi": "rakesh-traders@exampleupi"
+					"upi": "rakesh-traders@exampleupi",
+					"series": {
+						"prefix": "RT/26-27/",
+						"next": 1279,
+						"width": 4
+					}
 				},
 				"buyer": {
 					"id": "agrawal",
@@ -12435,8 +12969,9 @@
 					"city": "Raipur",
 					"state": "Chhattisgarh",
 					"stateCode": "22",
-					"address": "Ganj Mandi, Raipur, Chhattisgarh",
-					"gstin": "22AAGFA4821M1Z3",
+					"address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+					"gstin": "22AAGFA0000A1ZW",
+					"pan": "AAGFA0000A",
 					"kind": "Kirana wholesaler · ExpireSoon buyer"
 				},
 				"client": {
@@ -12444,8 +12979,14 @@
 					"short": "Munchly Foods",
 					"city": "Pune",
 					"listed": "NSE",
-					"gstin": "27AABCM1234F1Z5",
+					"gstin": "27AAKCM0000M1ZN",
 					"fssai": "10019022001234",
+					"pan": "AAKCM0000M",
+					"cin": "L15400MH2011PLC000117",
+					"address": "Plot B-14, MIDC Chakan Phase II, Pune 410501, Maharashtra",
+					"state": "Maharashtra",
+					"stateCode": "27",
+					"email": "accounts@munchly.example",
 					"revenue": "₹640 crore",
 					"skus": 8,
 					"distributors": 4,
@@ -12478,15 +13019,29 @@
 						"short": "Rakesh Traders",
 						"city": "Nagpur",
 						"state": "Maharashtra",
+						"stateCode": "27",
 						"godown": "Kalamna Market godown",
-						"address": "Kalamna Market, Nagpur, Maharashtra",
-						"gstin": "27AABCR1234F1Z5",
+						"address": "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra",
+						"gstin": "27ABHPR0000K1ZW",
+						"pan": "ABHPR0000K",
+						"fssai": "21526000000117",
+						"email": "accounts@rakeshtraders.example",
+						"bank": {
+							"name": "Example Co-operative Bank, Itwari, Nagpur",
+							"account": "0000 0117 2409",
+							"ifsc": "EXMP0000117"
+						},
 						"kiranas": 38,
 						"cluster": "Nagpur, Wardha and Kamptee",
 						"territory": "Nagpur with Wardha and Kamptee",
 						"pins": "440, 441, 442",
 						"staffCap": 50,
-						"upi": "rakesh-traders@exampleupi"
+						"upi": "rakesh-traders@exampleupi",
+						"series": {
+							"prefix": "RT/26-27/",
+							"next": 1279,
+							"width": 4
+						}
 					},
 					"to": {
 						"id": "agrawal",
@@ -12495,8 +13050,9 @@
 						"city": "Raipur",
 						"state": "Chhattisgarh",
 						"stateCode": "22",
-						"address": "Ganj Mandi, Raipur, Chhattisgarh",
-						"gstin": "22AAGFA4821M1Z3",
+						"address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+						"gstin": "22AAGFA0000A1ZW",
+						"pan": "AAGFA0000A",
 						"kind": "Kirana wholesaler · ExpireSoon buyer"
 					},
 					"hsn": "2005",
@@ -12813,15 +13369,29 @@
 					"short": "Rakesh Traders",
 					"city": "Nagpur",
 					"state": "Maharashtra",
+					"stateCode": "27",
 					"godown": "Kalamna Market godown",
-					"address": "Kalamna Market, Nagpur, Maharashtra",
-					"gstin": "27AABCR1234F1Z5",
+					"address": "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra",
+					"gstin": "27ABHPR0000K1ZW",
+					"pan": "ABHPR0000K",
+					"fssai": "21526000000117",
+					"email": "accounts@rakeshtraders.example",
+					"bank": {
+						"name": "Example Co-operative Bank, Itwari, Nagpur",
+						"account": "0000 0117 2409",
+						"ifsc": "EXMP0000117"
+					},
 					"kiranas": 38,
 					"cluster": "Nagpur, Wardha and Kamptee",
 					"territory": "Nagpur with Wardha and Kamptee",
 					"pins": "440, 441, 442",
 					"staffCap": 50,
-					"upi": "rakesh-traders@exampleupi"
+					"upi": "rakesh-traders@exampleupi",
+					"series": {
+						"prefix": "RT/26-27/",
+						"next": 1279,
+						"width": 4
+					}
 				},
 				"buyer": {
 					"id": "agrawal",
@@ -12830,8 +13400,9 @@
 					"city": "Raipur",
 					"state": "Chhattisgarh",
 					"stateCode": "22",
-					"address": "Ganj Mandi, Raipur, Chhattisgarh",
-					"gstin": "22AAGFA4821M1Z3",
+					"address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+					"gstin": "22AAGFA0000A1ZW",
+					"pan": "AAGFA0000A",
 					"kind": "Kirana wholesaler · ExpireSoon buyer"
 				},
 				"client": {
@@ -12839,8 +13410,14 @@
 					"short": "Munchly Foods",
 					"city": "Pune",
 					"listed": "NSE",
-					"gstin": "27AABCM1234F1Z5",
+					"gstin": "27AAKCM0000M1ZN",
 					"fssai": "10019022001234",
+					"pan": "AAKCM0000M",
+					"cin": "L15400MH2011PLC000117",
+					"address": "Plot B-14, MIDC Chakan Phase II, Pune 410501, Maharashtra",
+					"state": "Maharashtra",
+					"stateCode": "27",
+					"email": "accounts@munchly.example",
 					"revenue": "₹640 crore",
 					"skus": 8,
 					"distributors": 4,
@@ -12873,15 +13450,29 @@
 						"short": "Rakesh Traders",
 						"city": "Nagpur",
 						"state": "Maharashtra",
+						"stateCode": "27",
 						"godown": "Kalamna Market godown",
-						"address": "Kalamna Market, Nagpur, Maharashtra",
-						"gstin": "27AABCR1234F1Z5",
+						"address": "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra",
+						"gstin": "27ABHPR0000K1ZW",
+						"pan": "ABHPR0000K",
+						"fssai": "21526000000117",
+						"email": "accounts@rakeshtraders.example",
+						"bank": {
+							"name": "Example Co-operative Bank, Itwari, Nagpur",
+							"account": "0000 0117 2409",
+							"ifsc": "EXMP0000117"
+						},
 						"kiranas": 38,
 						"cluster": "Nagpur, Wardha and Kamptee",
 						"territory": "Nagpur with Wardha and Kamptee",
 						"pins": "440, 441, 442",
 						"staffCap": 50,
-						"upi": "rakesh-traders@exampleupi"
+						"upi": "rakesh-traders@exampleupi",
+						"series": {
+							"prefix": "RT/26-27/",
+							"next": 1279,
+							"width": 4
+						}
 					},
 					"to": {
 						"id": "agrawal",
@@ -12890,8 +13481,9 @@
 						"city": "Raipur",
 						"state": "Chhattisgarh",
 						"stateCode": "22",
-						"address": "Ganj Mandi, Raipur, Chhattisgarh",
-						"gstin": "22AAGFA4821M1Z3",
+						"address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+						"gstin": "22AAGFA0000A1ZW",
+						"pan": "AAGFA0000A",
 						"kind": "Kirana wholesaler · ExpireSoon buyer"
 					},
 					"hsn": "2005",
@@ -13216,15 +13808,29 @@
 					"short": "Rakesh Traders",
 					"city": "Nagpur",
 					"state": "Maharashtra",
+					"stateCode": "27",
 					"godown": "Kalamna Market godown",
-					"address": "Kalamna Market, Nagpur, Maharashtra",
-					"gstin": "27AABCR1234F1Z5",
+					"address": "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra",
+					"gstin": "27ABHPR0000K1ZW",
+					"pan": "ABHPR0000K",
+					"fssai": "21526000000117",
+					"email": "accounts@rakeshtraders.example",
+					"bank": {
+						"name": "Example Co-operative Bank, Itwari, Nagpur",
+						"account": "0000 0117 2409",
+						"ifsc": "EXMP0000117"
+					},
 					"kiranas": 38,
 					"cluster": "Nagpur, Wardha and Kamptee",
 					"territory": "Nagpur with Wardha and Kamptee",
 					"pins": "440, 441, 442",
 					"staffCap": 50,
-					"upi": "rakesh-traders@exampleupi"
+					"upi": "rakesh-traders@exampleupi",
+					"series": {
+						"prefix": "RT/26-27/",
+						"next": 1279,
+						"width": 4
+					}
 				},
 				"buyer": {
 					"id": "agrawal",
@@ -13233,8 +13839,9 @@
 					"city": "Raipur",
 					"state": "Chhattisgarh",
 					"stateCode": "22",
-					"address": "Ganj Mandi, Raipur, Chhattisgarh",
-					"gstin": "22AAGFA4821M1Z3",
+					"address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+					"gstin": "22AAGFA0000A1ZW",
+					"pan": "AAGFA0000A",
 					"kind": "Kirana wholesaler · ExpireSoon buyer"
 				},
 				"client": {
@@ -13242,8 +13849,14 @@
 					"short": "Munchly Foods",
 					"city": "Pune",
 					"listed": "NSE",
-					"gstin": "27AABCM1234F1Z5",
+					"gstin": "27AAKCM0000M1ZN",
 					"fssai": "10019022001234",
+					"pan": "AAKCM0000M",
+					"cin": "L15400MH2011PLC000117",
+					"address": "Plot B-14, MIDC Chakan Phase II, Pune 410501, Maharashtra",
+					"state": "Maharashtra",
+					"stateCode": "27",
+					"email": "accounts@munchly.example",
 					"revenue": "₹640 crore",
 					"skus": 8,
 					"distributors": 4,
@@ -13572,15 +14185,29 @@
 					"short": "Rakesh Traders",
 					"city": "Nagpur",
 					"state": "Maharashtra",
+					"stateCode": "27",
 					"godown": "Kalamna Market godown",
-					"address": "Kalamna Market, Nagpur, Maharashtra",
-					"gstin": "27AABCR1234F1Z5",
+					"address": "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra",
+					"gstin": "27ABHPR0000K1ZW",
+					"pan": "ABHPR0000K",
+					"fssai": "21526000000117",
+					"email": "accounts@rakeshtraders.example",
+					"bank": {
+						"name": "Example Co-operative Bank, Itwari, Nagpur",
+						"account": "0000 0117 2409",
+						"ifsc": "EXMP0000117"
+					},
 					"kiranas": 38,
 					"cluster": "Nagpur, Wardha and Kamptee",
 					"territory": "Nagpur with Wardha and Kamptee",
 					"pins": "440, 441, 442",
 					"staffCap": 50,
-					"upi": "rakesh-traders@exampleupi"
+					"upi": "rakesh-traders@exampleupi",
+					"series": {
+						"prefix": "RT/26-27/",
+						"next": 1279,
+						"width": 4
+					}
 				},
 				"buyer": {
 					"id": "agrawal",
@@ -13589,8 +14216,9 @@
 					"city": "Raipur",
 					"state": "Chhattisgarh",
 					"stateCode": "22",
-					"address": "Ganj Mandi, Raipur, Chhattisgarh",
-					"gstin": "22AAGFA4821M1Z3",
+					"address": "Shop 3, Ganj Mandi, Raipur 492001, Chhattisgarh",
+					"gstin": "22AAGFA0000A1ZW",
+					"pan": "AAGFA0000A",
 					"kind": "Kirana wholesaler · ExpireSoon buyer"
 				},
 				"client": {
@@ -13598,8 +14226,14 @@
 					"short": "Munchly Foods",
 					"city": "Pune",
 					"listed": "NSE",
-					"gstin": "27AABCM1234F1Z5",
+					"gstin": "27AAKCM0000M1ZN",
 					"fssai": "10019022001234",
+					"pan": "AAKCM0000M",
+					"cin": "L15400MH2011PLC000117",
+					"address": "Plot B-14, MIDC Chakan Phase II, Pune 410501, Maharashtra",
+					"state": "Maharashtra",
+					"stateCode": "27",
+					"email": "accounts@munchly.example",
 					"revenue": "₹640 crore",
 					"skus": 8,
 					"distributors": 4,

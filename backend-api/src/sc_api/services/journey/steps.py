@@ -1029,8 +1029,17 @@ async def order(ctx: Ctx, client_id: str, ref: str, units: int) -> None:
     if units > left:
         raise ApiError(422, f"Only {left} packets are left in the scheme.", {"units": f"Up to {left} packets."})
     at = ev.now(ctx, s.c)
+    invoice = await kirana_invoice(ctx, s, kirana_id, units, at)
     ctx.session.add(
-        m.CaseOrder(case_id=s.case.id, kirana_id=kirana_id, units=units, at=at, wall=ctx.clock.now(), member_ref=me.ref)
+        m.CaseOrder(
+            case_id=s.case.id,
+            kirana_id=kirana_id,
+            units=units,
+            at=at,
+            wall=ctx.clock.now(),
+            member_ref=me.ref,
+            invoice=invoice,
+        )
     )
     # an order after Not this time takes the shop off the declined (SC-130)
     if kirana_id in (s.case.offer.get("declined") or {}):
@@ -1049,6 +1058,37 @@ async def order(ctx: Ctx, client_id: str, ref: str, units: int) -> None:
     if units == left:  # the scheme is full: it closes now
         await _close_offer(ctx, s)
     await _save(ctx, s)
+    if invoice:  # Paperwork lays out its PDF
+        await ev.publish(
+            ctx,
+            J.Event(J.STEP, {"type": J.KIRANA, "client": s.c.id, "ref": ref, "kirana": kirana_id}, f"{s.c.id}:{ref}"),
+        )
+
+
+async def kirana_invoice(ctx: Ctx, s: Scene, kirana_id: str, units: int, at: datetime) -> dict[str, Any] | None:
+    """the distributor's tax invoice for a kirana's scheme order (SC-153, ledger.js invoiceOf): he bills the order as
+    it is booked, numbered in his own sales series, every packet at the pack price less the scheme's discount, CGST
+    and SGST; dated when the shop ordered. A workspace with no series for him issues none (a Reset journey adds it)"""
+    if not await world.numbers(ctx, s.c.id, f"kirana.{s.dist.id}"):
+        return None
+    line = next((ln for ln in (s.case.plan or {}).get("lines", []) if ln["id"] == "kirana"), None)
+    if not line:
+        return None
+    shop = await ctx.session.get(m.Kirana, (s.c.id, kirana_id))
+    local = at.astimezone(IST).strftime("%Y-%m-%dT%H:%M")
+    return {
+        "no": await world.next_number(ctx, s.c.id, f"kirana.{s.dist.id}"),
+        "date": local[:10],
+        "at": local,
+        "kirana": kirana_id,
+        "shop": {
+            "id": kirana_id,
+            "name": shop.name if shop else kirana_id,
+            "area": shop.area if shop else "",
+            "pincode": (shop.pincode if shop else None) or "",
+        },
+        **money.kirana_invoice(units, line, s.sku_obj(), rules=s.rules),
+    }
 
 
 async def decline(ctx: Ctx, client_id: str, ref: str) -> None:
@@ -1770,6 +1810,14 @@ async def document_pdf(ctx: Ctx, client_id: str, ref: str, doc_id: str, name: st
     """the PDF the Paperwork agent rendered into the docs bucket: kept on a batch cleared before it arrived too
     (Report now clears a batch as its papers are drafted), and on the client's history (SC-123)"""
     s = await scene(ctx, client_id, ref, cleared=True)
+    if doc_id.startswith("kirana."):  # a kirana order's tax invoice (SC-153), kept on its order
+        o = await _order(ctx, s.case, doc_id.split(".", 1)[1])
+        if o is None or not o.invoice:
+            raise not_found("No such kirana invoice.")
+        o.invoice = {**o.invoice, "pdf": name}
+        await ctx.session.flush()
+        await ev.changed(ctx, s.c, ref)
+        return
     # a new dict for the paper, not the stored one changed in place: the column is then a value that differs from what
     # was loaded, so it is written (SC-100: in place, the PDF was never kept)
     s.case.docs = [{**d, "pdf": name} if d["id"] == doc_id else d for d in s.case.docs or []]
@@ -1809,7 +1857,25 @@ async def lay_out_missing(ctx: Ctx, client_id: str, *, again: bool = False) -> l
             settle = {"type": J.SETTLE, "client": client_id, "ref": ref}
             await ev.publish(ctx, J.Event(J.STEP, settle, f"{client_id}:{ref}"))
             asked.append(ref)
+        # the kiranas' tax invoices (SC-153), each its own PDF
+        orders = (await ctx.session.execute(select(m.CaseOrder).where(m.CaseOrder.case_id == case.id))).scalars()
+        for o in orders:
+            if not o.invoice:
+                continue
+            if again:
+                o.invoice = {**o.invoice, "pdf": None}
+            if not o.invoice.get("pdf"):
+                kirana = {"type": J.KIRANA, "client": client_id, "ref": ref, "kirana": o.kirana_id}
+                await ev.publish(ctx, J.Event(J.STEP, kirana, f"{client_id}:{ref}"))
+                if ref not in asked:
+                    asked.append(ref)
     return sorted(asked)
+
+
+async def _order(ctx: Ctx, case: m.Case, kirana_id: str) -> m.CaseOrder | None:
+    """a kirana's order on a case"""
+    q = select(m.CaseOrder).where(m.CaseOrder.case_id == case.id, m.CaseOrder.kirana_id == kirana_id)
+    return (await ctx.session.execute(q)).scalars().first()
 
 
 async def issue_invoice(ctx: Ctx, client_id: str, ref: str) -> None:
@@ -1825,6 +1891,9 @@ async def issue_invoice(ctx: Ctx, client_id: str, ref: str) -> None:
     if invoice is None:
         raise stale("There is no invoice to issue.")
     s.case.invoice_issued_at = ev.now(ctx, s.c)
+    # laid out again, now with its e-invoice: the IRN, acknowledgement and signed QR come with the issue (SC-148)
+    s.case.docs = [{**d, "pdf": None} if d["id"] == "invoice" else d for d in s.case.docs]
+    await ev.publish(ctx, J.Event(J.STEP, {"type": J.SETTLE, "client": client_id, "ref": ref}, f"{client_id}:{ref}"))
     await audit.record(
         ctx,
         s.c.id,

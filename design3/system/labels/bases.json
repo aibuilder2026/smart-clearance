@@ -1,0 +1,466 @@
+{
+ "14701": {
+  "file": "bases/14701.webp",
+  "seed": 14701,
+  "size": [
+   1184,
+   896
+  ],
+  "quad": [
+   [
+    141.0,
+    89.0
+   ],
+   [
+    1062.0,
+    97.0
+   ],
+   [
+    1064.0,
+    750.0
+   ],
+   [
+    131.0,
+    739.0
+   ]
+  ],
+  "aspect": 1.423,
+  "share": 0.588,
+  "prompt": "A realistic close-up smartphone photo of a plain blank white rectangular paper label sticker stuck flat on the side of a brown corrugated cardboard carton, the label fills most of the frame with a margin of brown cardboard visible on every side, nothing printed on the label, the label slightly glossy with tiny creases at one corner, even daylight from a godown window, the camera square on to the carton, sharp focus, natural colours."
+ },
+ "14710": {
+  "file": "bases/14710.webp",
+  "seed": 14710,
+  "size": [
+   1184,
+   896
+  ],
+  "quad": [
+   [
+    258.0,
+    258.0
+   ],
+   [
+    994.0,
+    214.0
+   ],
+   [
+    1002.0,
+    704.0
+   ],
+   [
+    245.0,
+    629.0
+   ]
+  ],
+  "aspect": 1.739,
+  "share": 0.314,
+  "prompt": "A close-up photo of a blank white rectangular paper label stuck on the side of a brown corrugated carton on a godown shelf, the camera slightly to the left so the label recedes a little to the right, cool tube light from above, other cartons blurred behind. nothing printed on the label, plain matte white paper with a thin glossy sheen, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours."
+ },
+ "14711": {
+  "file": "bases/14711.webp",
+  "seed": 14711,
+  "size": [
+   1184,
+   896
+  ],
+  "quad": [
+   [
+    236.0,
+    242.0
+   ],
+   [
+    1011.0,
+    180.0
+   ],
+   [
+    1022.0,
+    716.0
+   ],
+   [
+    236.0,
+    651.0
+   ]
+  ],
+  "aspect": 1.657,
+  "share": 0.36,
+  "prompt": "A close-up photo of a blank white rectangular paper label on a brown corrugated carton stacked on a wooden pallet, the camera slightly to the right and a little above, warm afternoon light from a rolling shutter door. nothing printed on the label, plain matte white paper with a thin glossy sheen, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours."
+ },
+ "14712": {
+  "file": "bases/14712.webp",
+  "seed": 14712,
+  "size": [
+   1184,
+   896
+  ],
+  "quad": [
+   [
+    172.0,
+    179.0
+   ],
+   [
+    1011.0,
+    179.0
+   ],
+   [
+    1031.0,
+    715.0
+   ],
+   [
+    163.0,
+    723.0
+   ]
+  ],
+  "aspect": 1.58,
+  "share": 0.452,
+  "prompt": "A photo taken looking down at a blank white rectangular paper label on the top flap of a brown corrugated carton, the carton's packing tape across one edge, flat even light in a distributor's godown. nothing printed on the label, plain matte white paper with a thin glossy sheen, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours."
+ },
+ "14713": {
+  "file": "bases/14713.webp",
+  "seed": 14713,
+  "size": [
+   1184,
+   896
+  ],
+  "quad": [
+   [
+    146.0,
+    182.0
+   ],
+   [
+    1019.0,
+    173.0
+   ],
+   [
+    1031.0,
+    719.0
+   ],
+   [
+    141.0,
+    715.0
+   ]
+  ],
+  "aspect": 1.634,
+  "share": 0.464,
+  "prompt": "A close-up photo of a blank white rectangular paper label on a brown corrugated carton in a dim godown, lit by a single bulb, slight shadow across the lower edge of the label, the camera square on and a little low. nothing printed on the label, plain matte white paper with a thin glossy sheen, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours."
+ },
+ "14714": {
+  "file": "bases/14714.webp",
+  "seed": 14714,
+  "size": [
+   1184,
+   896
+  ],
+  "quad": [
+   [
+    200.0,
+    224.0
+   ],
+   [
+    1004.0,
+    184.0
+   ],
+   [
+    1054.0,
+    657.0
+   ],
+   [
+    213.0,
+    728.0
+   ]
+  ],
+  "aspect": 1.683,
+  "share": 0.381,
+  "prompt": "A close-up photo of a blank white rectangular paper label on a slightly scuffed brown corrugated carton, the camera tilted a few degrees, bright daylight from a window on the right, a stack of cartons behind. nothing printed on the label, plain matte white paper with a thin glossy sheen, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours."
+ },
+ "14715": {
+  "file": "bases/14715.webp",
+  "seed": 14715,
+  "size": [
+   1184,
+   896
+  ],
+  "quad": [
+   [
+    295.0,
+    206.0
+   ],
+   [
+    994.0,
+    91.0
+   ],
+   [
+    1009.0,
+    753.0
+   ],
+   [
+    286.0,
+    645.0
+   ]
+  ],
+  "aspect": 1.307,
+  "share": 0.384,
+  "prompt": "A close-up photo of a blank white rectangular paper label on the side of a brown corrugated carton held on a steel rack, the camera slightly from below and to the left, white LED light, a price-sticker roll blurred on the shelf. nothing printed on the label, plain matte white paper with a thin glossy sheen, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours."
+ },
+ "14716": {
+  "file": "bases/14716.webp",
+  "seed": 14716,
+  "size": [
+   1184,
+   896
+  ],
+  "quad": [
+   [
+    158.0,
+    292.0
+   ],
+   [
+    1015.0,
+    221.0
+   ],
+   [
+    1064.0,
+    586.0
+   ],
+   [
+    201.0,
+    723.0
+   ]
+  ],
+  "aspect": 2.163,
+  "share": 0.339,
+  "prompt": "A close-up photo of a blank white rectangular paper label on a brown corrugated carton on a concrete floor, the camera above and to the right, soft overcast daylight through an open godown door. nothing printed on the label, plain matte white paper with a thin glossy sheen, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours."
+ },
+ "14717": {
+  "file": "bases/14717.webp",
+  "seed": 14717,
+  "size": [
+   1184,
+   896
+  ],
+  "quad": [
+   [
+    295.0,
+    214.0
+   ],
+   [
+    900.0,
+    215.0
+   ],
+   [
+    912.0,
+    650.0
+   ],
+   [
+    292.0,
+    653.0
+   ]
+  ],
+  "aspect": 1.401,
+  "share": 0.26,
+  "prompt": "A close-up photo of a blank white rectangular paper label on a dusty brown corrugated carton in a narrow godown aisle, the camera square on, mixed warm and cool light, cartons stacked high behind. nothing printed on the label, plain matte white paper with a thin glossy sheen, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours."
+ },
+ "14720": {
+  "file": "bases/14720.webp",
+  "seed": 14720,
+  "size": [
+   1184,
+   896
+  ],
+  "quad": [
+   [
+    281.0,
+    283.0
+   ],
+   [
+    909.0,
+    280.0
+   ],
+   [
+    925.0,
+    608.0
+   ],
+   [
+    268.0,
+    609.0
+   ]
+  ],
+  "aspect": 1.963,
+  "share": 0.208,
+  "prompt": "A hand holds up a small brown corrugated carton in a warehouse aisle, a blank white rectangular paper label on its side facing the camera, soft tube light, the fingers at the carton's edge clear of the label. nothing printed on the label, plain matte white paper, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours."
+ },
+ "14721": {
+  "file": "bases/14721.webp",
+  "seed": 14721,
+  "size": [
+   1184,
+   896
+  ],
+  "quad": [
+   [
+    242.0,
+    288.0
+   ],
+   [
+    970.0,
+    285.0
+   ],
+   [
+    961.0,
+    579.0
+   ],
+   [
+    249.0,
+    611.0
+   ]
+  ],
+  "aspect": 2.334,
+  "share": 0.221,
+  "prompt": "A brown corrugated carton on a grey steel godown rack, a blank white rectangular paper label on its side, a small rack tag reading B4 on the shelf edge below, other cartons beside it, even light. nothing printed on the label, plain matte white paper, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours."
+ },
+ "14722": {
+  "file": "bases/14722.webp",
+  "seed": 14722,
+  "size": [
+   1184,
+   896
+  ],
+  "quad": [
+   [
+    425.0,
+    214.0
+   ],
+   [
+    976.0,
+    230.0
+   ],
+   [
+    963.0,
+    545.0
+   ],
+   [
+    427.0,
+    644.0
+   ]
+  ],
+  "aspect": 1.471,
+  "share": 0.2,
+  "prompt": "A brown corrugated carton photographed at a steep angle from the left, about 40 degrees, a blank white rectangular paper label on its side strongly foreshortened, even godown light. nothing printed on the label, plain matte white paper, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours."
+ },
+ "14723": {
+  "file": "bases/14723.webp",
+  "seed": 14723,
+  "size": [
+   1184,
+   896
+  ],
+  "quad": [
+   [
+    297.0,
+    277.0
+   ],
+   [
+    1000.0,
+    227.0
+   ],
+   [
+    998.0,
+    559.0
+   ],
+   [
+    313.0,
+    644.0
+   ]
+  ],
+  "aspect": 1.995,
+  "share": 0.238,
+  "prompt": "A crushed and dented brown corrugated carton, one corner caved in, a blank white rectangular paper label on its side slightly creased, even light in a godown. nothing printed on the label, plain matte white paper, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours."
+ },
+ "14724": {
+  "file": "bases/14724.webp",
+  "seed": 14724,
+  "size": [
+   1184,
+   896
+  ],
+  "quad": [
+   [
+    293.0,
+    282.0
+   ],
+   [
+    852.0,
+    314.0
+   ],
+   [
+    856.0,
+    653.0
+   ],
+   [
+    294.0,
+    598.0
+   ]
+  ],
+  "aspect": 1.717,
+  "share": 0.182,
+  "prompt": "A brown corrugated carton in a dim godown corner lit by one weak bulb, a blank white rectangular paper label on its side, deep shadows, the camera square on. nothing printed on the label, plain matte white paper, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours."
+ },
+ "14725": {
+  "file": "bases/14725.webp",
+  "seed": 14725,
+  "size": [
+   1184,
+   896
+  ],
+  "quad": [
+   [
+    171.0,
+    245.0
+   ],
+   [
+    979.0,
+    254.0
+   ],
+   [
+    976.0,
+    626.0
+   ],
+   [
+    175.0,
+    638.0
+   ]
+  ],
+  "aspect": 2.103,
+  "share": 0.299,
+  "prompt": "A close-up photo of a blank white rectangular paper label on a brown corrugated carton in a Hyderabad distributor's godown, a blue rolling shutter half open behind, warm morning light, the camera a little to the right. nothing printed on the label, plain matte white paper, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours."
+ },
+ "14726": {
+  "file": "bases/14726.webp",
+  "seed": 14726,
+  "size": [
+   1184,
+   896
+  ],
+  "quad": [
+   [
+    317.0,
+    225.0
+   ],
+   [
+    914.0,
+    219.0
+   ],
+   [
+    917.0,
+    616.0
+   ],
+   [
+    316.0,
+    619.0
+   ]
+  ],
+  "aspect": 1.515,
+  "share": 0.234,
+  "prompt": "A close-up photo of a blank white rectangular paper label on a brown corrugated carton stacked three high beside a weighing scale, plain cream wall behind, flat tube light, the camera square on and a little high. nothing printed on the label, plain matte white paper, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours."
+ }
+}

@@ -115,8 +115,8 @@ async def test_paperwork_lays_out_the_note_and_the_agencys_certificate(run, back
         f"/cases/{HERO}/documents/destruction",
     ]
     note = store.objects[("docs-test", f"munchly/{HERO}/expiry.pdf")].decode()
-    assert "Destroyed at the godown" in note and "₹3,168.00" in note and "₹158.40" in note and "₹216.00" in note
-    assert "₹3,542.40" in note and "Against destruction certificate OCE/DC/26-27/0219" in note
+    assert "destroyed at the godown" in note and "3,168.00" in note and "158.40" in note and "216.00" in note
+    assert "₹ 3,542.40" in note and "Issued against destruction certificate OCE/DC/26-27/0219" in note
     cert = store.objects[("docs-test", f"munchly/{HERO}/destruction.pdf")].decode()
     assert "OCE/DC/26-27/0219" in cert and "MPCB/SWM/NGP/0412" in cert and "GSTIN 27AABCR1234F1Z5" in cert
     assert "4 of 4 checks passed; approved by Priya Deshmukh" in cert and "₹158.40" in cert

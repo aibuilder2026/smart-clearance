@@ -92,12 +92,9 @@
 	const sortBy = (key: NonNullable<BatchQuery['sort']>) =>
 		set({ sort: key, dir: view.query.sort === key && view.query.dir === 'asc' ? 'desc' : 'asc' });
 
-	function run(x: Attention) {
-		if (x.action.kind === 'remind') {
-			const dist = x.action.distributor;
-			void k.act(() => api.remindDistributor(x.client, dist), `Reminder sent to ${x.title}`);
-		} else void goto(href('clients', x.client, x.action.tab));
-	}
+	// a reminder waits on the platform in its own button (SC-152); Open opens the client's tab
+	const remind = (x: Attention, dist: string) =>
+		k.act(() => api.remindDistributor(x.client, dist), `Reminder sent to ${x.title}`);
 	// a demo request starts the setup flow, its company, contact and plan filled in
 	const setUp = (r: DemoRequest) => goto(`${href('new-client')}?request=${encodeURIComponent(r.id)}`);
 	const openBatch = (r: BatchRow) => goto(href('clients', r.client, 'supply'));
@@ -401,8 +398,17 @@
 					<List>
 						{#each overview.data.attention as x (x.id)}
 							{#snippet dot()}<span class={cx('cs-att', x.tone)} aria-hidden="true"></span>{/snippet}
-							{#snippet act()}<Button size="sm" variant="secondary" onclick={() => run(x)}>{x.action.label}</Button
-								>{/snippet}
+							{#snippet act()}{#if x.action.kind === 'remind'}{@const dist = x.action.distributor}<Button
+										size="sm"
+										variant="secondary"
+										action={() => remind(x, dist)}
+										busy="Sending the reminder…"
+										done="Reminder sent">{x.action.label}</Button
+									>{:else}{@const tab = x.action.tab}<Button
+										size="sm"
+										variant="secondary"
+										onclick={() => goto(href('clients', x.client, tab))}>{x.action.label}</Button
+									>{/if}{/snippet}
 							<ListRow
 								leading={dot}
 								title={x.title}

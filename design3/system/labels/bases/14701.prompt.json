@@ -1,0 +1,11 @@
+{
+  "model": "Qwen-Image 2.1 (bf16), text to image, run locally (qwen-image-bf16 0.2.0)",
+  "seed": 14701,
+  "size": "1024 (4:3, 1184 x 896)",
+  "prompt": "A realistic close-up smartphone photo of a plain blank white rectangular paper label sticker stuck flat on the side of a brown corrugated cardboard carton, the label fills most of the frame with a margin of brown cardboard visible on every side, nothing printed on the label, the label slightly glossy with tiny creases at one corner, even daylight from a godown window, the camera square on to the carton, sharp focus, natural colours.",
+  "postProcessing": [
+    "cwebp -q 90",
+    "quad.py: the blank sticker found (bases.json quad, aspect)"
+  ],
+  "purpose": "SC-147: a base photo of a blank sticker on a carton, which the label maker prints a batch's label onto; fictional"
+}

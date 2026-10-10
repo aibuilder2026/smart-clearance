@@ -721,6 +721,37 @@ def invoice(units: float, price: float, sku: Obj) -> dict[str, Any]:
     }
 
 
+def kirana_invoice(units: int, line: Obj, sku: Obj, *, rules: Obj = RULES) -> dict[str, Any]:
+    """a kirana's scheme order as its distributor invoices it (SC-153, money.js kiranaInvoice): every packet at the pack
+    price, less the scheme's discount (2 in every 12, so 16.67%), which leaves the taxable value the ledger counts,
+    packets x the effective price; then CGST and SGST at half the SKU's rate each, a supply within the state to an
+    unregistered shop; the total to the rupee, with a round-off line"""
+    buy, free = rules["scheme"]["buy"], rules["scheme"]["free"]
+    gross = r2(units * _get(line, "packPrice"))
+    taxable = r2(units * _get(line, "price"))
+    cgst = r2(taxable * _get(sku, "gst") / 2)
+    tax = r2(cgst + cgst)
+    exact = r2(taxable + tax)
+    total = js_round(exact)
+    out = {
+        "units": units,
+        "rate": line["packPrice"],
+        "gross": gross,
+        "discountPct": r2(free / (buy + free) * 100),
+        "discount": r2(gross - taxable),
+        "taxable": taxable,
+        "gstPct": js_round(_get(sku, "gst") * 100),
+        "cgst": cgst,
+        "sgst": cgst,
+        "tax": tax,
+        "roundOff": r2(total - exact),
+        "total": total,
+    }
+    if sku.get("hsn") is not None:
+        out["hsn"] = sku["hsn"]
+    return out
+
+
 def actual_net(p: Obj, award_price: float) -> dict[str, Any]:
     """the plan's net once the ExpireSoon lot is awarded at its price"""
     es = next((ln for ln in p["lines"] if ln["id"] == "expiresoon"), None)

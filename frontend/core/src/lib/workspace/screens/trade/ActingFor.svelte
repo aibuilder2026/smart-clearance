@@ -12,10 +12,12 @@
 	let { p }: Props = $props();
 	const ws = useWorkspace();
 	const { toast } = useNotice();
-	const flip = () => {
-		void ws.act('pause', !p.paused);
+	// Pause and Resume wait on the answer (SC-152); the toast says so only once it has gone through
+	const flip = async () => {
+		const resume = p.paused;
+		await ws.act('pause', !resume, { inline: true });
 		toast({
-			text: p.paused ? 'Resumed · the agents carry on' : 'Paused · nothing more happens in your name',
+			text: resume ? 'Resumed · the agents carry on' : 'Paused · nothing more happens in your name',
 			tone: 'ok'
 		});
 	};
@@ -33,7 +35,11 @@
 				: `Inside ${ws.data.workspace.short}'s floors · since ${p.at} · listings, scheme offers, invoice drafts, dispatch slots`}
 		</div>
 	</div>
-	<Button variant={p.paused ? 'primary' : 'secondary'} size="sm" icon={p.paused ? 'play' : 'pause'} onclick={flip}
-		>{p.paused ? 'Resume' : 'Pause'}</Button
+	<Button
+		variant={p.paused ? 'primary' : 'secondary'}
+		size="sm"
+		icon={p.paused ? 'play' : 'pause'}
+		action={flip}
+		busy={p.paused ? 'Resuming…' : 'Pausing…'}>{p.paused ? 'Resume' : 'Pause'}</Button
 	></Card
 >
