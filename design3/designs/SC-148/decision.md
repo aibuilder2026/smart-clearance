@@ -53,3 +53,12 @@ why they adjust no GST and are not reported to the portal.
 
 The open question, answered **an invoice per order**: each kirana's order gets its own tax invoice from its distributor
 (intra-state, CGST and SGST), in the journey and the history, instead of standing only as an order log.
+
+## The kirana invoices' two answers (10 Oct)
+
+- **Before GST**, as the ExpireSoon invoice is: ₹18.00 effective + CGST 2.5% + SGST 2.5%, and the shop pays the total.
+  Munchly's and the distributor's figures stay; a kirana's paid and margin follow the invoice.
+- **Scheme discount:** quantity × ₹21.60 less a 16.67% scheme discount, as Tally bills a trade scheme, so every
+  invoice equals what the ledger already counts, for any order size.
+
+The kirana invoices are built in their own story, **SC-153**, stacked on this one.
