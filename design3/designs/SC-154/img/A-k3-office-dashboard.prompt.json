@@ -1,0 +1,34 @@
+{
+  "name": "A-k3-office-dashboard",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "Evening in a small first-floor office above a godown in India, a warm desk lamp and the last blue light in the window. The brand's supply planner (the woman in the navy pinstripe kurta with a lanyard) and the distributor (the man in his fifties in a light blue checked shirt, no glasses) sit side by side at a desk, both looking at a desktop monitor that shows a clean green-and-white dashboard: a few bar and line charts, soft green tiles, no readable words or numbers. She points at a chart with a pen; he leans in, attentive. Neat paper documents with no readable text to one side, two steel chai tumblers set aside on a tray, a ceiling fan, a steel almirah, plain kraft cartons with a sage-green band stacked by the wall. Professional, calm. Cinematic 35 mm, shallow depth of field, the two faces and the screen sharp.\nPhotographic, cinematic live action, shot on a full-frame camera with a 35 mm lens, shallow depth of field, natural light, true-to-life skin, fabric and metal, no illustration, no 3D render, no cartoon. India, a small-town FMCG supply chain. Every pack and carton is unbranded: plain kraft-brown cartons with a single sage-green band, matte foil snack packets in solid colours with no lettering; no logos, no printed text, no signage that can be read; shop boards and labels out of focus. No children anywhere. Colour grade: warm, filmic, slightly desaturated greens and ambers.",
+  "seed": 154018,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "cast-planner.png",
+      "sha256": "f42eb539c0d0e4d1a56c93b80fecec5af0356e497734e44b4f3c914b0626ad25"
+    },
+    {
+      "role": "reference",
+      "file": "cast-distributor.png",
+      "sha256": "1d653740137dd7ecc50ee57fd3a015ea8a6193473a43a6460758a1956d6453ae"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "latency_s": 46.8,
+  "use": "SC-154 option A keyframe 3, second version: the office, the two of them reading the dashboard on a monitor",
+  "model_text": null,
+  "status": "done",
+  "output": "A-k3-office-dashboard.webp 2752x1536",
+  "postprocess": "WebP q82 from A-k3-office-dashboard.png",
+  "derived_from": "A-k3-office-dashboard.png"
+}

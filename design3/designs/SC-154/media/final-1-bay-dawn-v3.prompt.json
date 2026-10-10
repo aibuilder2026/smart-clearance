@@ -1,0 +1,39 @@
+{
+  "name": "final-1-bay-dawn-v3",
+  "model": "veo-3.1-generate-001",
+  "location": "us-central1",
+  "service": "Vertex AI",
+  "prompt": "Photorealistic cinematic live action, exactly as in the image: dawn at a small Indian snack factory's loading bay, low warm sun and a little haze. The woman in the navy pinstripe kurta holds her phone between them and scrolls the plan; the man in the light blue checked shirt, who wears no glasses and holds nothing, keeps his hands low, points once at her screen with one finger, looks up at her and nods, and she smiles and lowers the phone; behind them the two workers in grey T-shirts lift the last plain kraft cartons onto the blue truck and slide them in. Nobody touches their face or hair; no glasses appear anywhere. The camera dollies in very slowly toward the two of them, a gentle push, no handheld shake. Natural light, 35 mm, shallow depth of field, the people sharp. No text, no logos, no lettering, no number plate anywhere.",
+  "negative_prompt": "text, lettering, logo, brand name, label, watermark, subtitles, children",
+  "seed": 154231,
+  "enhance_prompt": true,
+  "resolution": "1080p",
+  "aspect": "16:9",
+  "duration_s": 8,
+  "fps": 24,
+  "generate_audio": false,
+  "person_generation": "allow_adult",
+  "inputs": [
+    {
+      "role": "first",
+      "file": "A-k0-bay-dawn-v2.png",
+      "sha256": "c5dc9b54ab7f00bdb3085475e9bb63f4b286a832f4b84ed29b2064f135c4084d"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 1.6,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "use": "SC-154 the film, chapter 1: the bay at dawn, hands kept to the phone, no glasses (Veo 3.1, 1080p, take 3)",
+  "status": "done",
+  "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/ee73a603-e327-429b-a31d-bd2898dce9b9",
+  "latency_s": 130.6,
+  "rai_filtered": {
+    "count": 0,
+    "reasons": []
+  },
+  "files": [
+    "final-1-bay-dawn-v3.mp4"
+  ],
+  "probe": "{\n    \"programs\": [\n\n    ],\n    \"stream_groups\": [\n\n    ],\n    \"streams\": [\n        {\n            \"width\": 1920,\n            \"height\": 1080,\n            \"r_frame_rate\": \"24/1\",\n            \"nb_frames\": \"192\"\n        }\n    ],\n    \"format\": {\n        \"duration\": \"8.000000\",\n        \"size\": \"11852347\"\n    }\n}"
+}

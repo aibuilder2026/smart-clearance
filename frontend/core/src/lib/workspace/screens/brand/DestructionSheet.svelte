@@ -42,12 +42,14 @@
 		asking = false;
 		why = '';
 	};
+	// her yes and asking again each wait on the answer in their button (SC-152): the sheet closes once it has gone
+	// through, and stays open with the reason under the button when it has not
 	const approve = async () => {
-		await ws.act('approveDestruction', undefined, { ref: batch });
+		await ws.act('approveDestruction', undefined, { ref: batch, inline: true });
 		close();
 	};
 	const again = async () => {
-		await ws.act('askDestructionAgain', why.trim(), { ref: batch });
+		await ws.act('askDestructionAgain', why.trim(), { ref: batch, inline: true });
 		close();
 	};
 	const live = $derived(ws.kind === 'live');
@@ -64,10 +66,12 @@
 					block
 					icon="send"
 					disabled={!why.trim()}
-					onclick={again}>Ask {dist.short} again</Button
+					action={again}
+					busy="Asking again…">Ask {dist.short} again</Button
 				>{:else}<Button variant="secondary" size="lg" icon="rotate-ccw" onclick={() => (asking = true)}
 					>Ask again</Button
-				><Button variant="approve" size="lg" block icon="check" onclick={approve}>Approve · issue the papers</Button
+				><Button variant="approve" size="lg" block icon="check" action={approve} busy="Approving…" done="Approved"
+					>Approve · issue the papers</Button
 				>{/if}
 		</div>{/if}{/snippet}
 

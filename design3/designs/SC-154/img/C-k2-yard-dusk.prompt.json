@@ -1,0 +1,29 @@
+{
+  "name": "C-k2-yard-dusk",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "edit",
+  "prompt": "The same godown yard from the same camera at the gate, at violet dusk: the sky amber at the horizon and deep violet above, sodium lamps on, the office window lit warm. A white van with a plain blue awning stands at the left with its back open, where a volunteer in an orange vest loads kraft cartons; by the gate a folding table under the tarpaulin with snack packets and a queue of workers in grey T-shirts buying from the distributor. Everything else exactly as before. Cinematic 35 mm, deep focus.\nPhotographic, cinematic live action, shot on a full-frame camera with a 35 mm lens, shallow depth of field, natural light, true-to-life skin, fabric and metal, no illustration, no 3D render, no cartoon. India, a small-town FMCG supply chain. Every pack and carton is unbranded: plain kraft-brown cartons with a single sage-green band, matte foil snack packets in solid colours with no lettering; no logos, no printed text, no signage that can be read; shop boards and labels out of focus. No children anywhere. Colour grade: warm, filmic, slightly desaturated greens and ambers.",
+  "seed": 154032,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "source",
+      "file": "C-k0-yard-dawn.png",
+      "sha256": "03158cc7a0fe964bc86745ec3e3b72590e7a9e653008e3d61c778ebf341be63f"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "latency_s": 19.7,
+  "use": "SC-154 option C keyframe 2: the same yard at violet dusk, an edit of keyframe 0",
+  "model_text": null,
+  "status": "done",
+  "output": "C-k2-yard-dusk.webp 2752x1536",
+  "postprocess": "WebP q82 from C-k2-yard-dusk.png",
+  "derived_from": "C-k2-yard-dusk.png"
+}

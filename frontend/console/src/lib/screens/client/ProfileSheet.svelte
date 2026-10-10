@@ -25,9 +25,10 @@
 			};
 	});
 
+	// Save waits on the platform (SC-152): the sheet closes once it went through, and a refusal stays under it
 	async function save() {
 		if (!f) return;
-		const done = await k.act(
+		await k.act(
 			() =>
 				api.saveProfile(c.id, {
 					profile: { route: f!.route, owner: f!.owner, expiry: f!.expiry },
@@ -36,12 +37,13 @@
 				}),
 			`${c.name}'s profile saved`
 		);
-		if (done) open = false;
+		open = false;
 	}
 </script>
 
 <Sheet bind:open title="Supply-chain profile" side={app.bp === 'phone' ? 'bottom' : 'side'} detent="large">
-	{#snippet footer()}<Button variant="primary" size="lg" block onclick={save}>Save profile</Button>{/snippet}
+	{#snippet footer()}<Button variant="primary" size="lg" block action={save} busy="Saving…">Save profile</Button
+		>{/snippet}
 	{#if f}
 		<div class="stack" style="gap: 18px">
 			{#each questions as q (q)}<Choice

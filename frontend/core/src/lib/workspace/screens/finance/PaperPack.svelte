@@ -95,8 +95,9 @@
 		);
 		toast({ text: 'Document pack exported', tone: 'ok' });
 	};
-	const review = () => {
-		void ws.act('review');
+	// Mark reviewed waits on the answer (SC-152), for this pack's batch; the toast only once it has gone through
+	const review = async () => {
+		await ws.act('review', undefined, { inline: true, ref: c.batch.id });
 		toast({ text: 'Pack reviewed · logged', tone: 'ok' });
 	};
 	// a paper's PDF: the live workspace's own, laid out by the Paperwork agent; the stub's, the paper printed
@@ -133,13 +134,16 @@
 			size="sm"
 			icon="download"
 			aria-label="Download {doc.type} as a PDF"
-			onclick={() => pdf(node)}>Download PDF</Button
+			action={() => pdf(node)}
+			busy="Opening the PDF…">Download PDF</Button
 		>{/if}{/snippet}
 {#snippet packRight()}<span class="row tight"
 		><Button variant="secondary" size="sm" icon="download" onclick={exportPack}>Export</Button>{#if h.reviewed}<Badge
 				tone="green"
 				icon="check">reviewed</Badge
-			>{:else}<Button variant="primary" size="sm" icon="check" onclick={review}>Mark reviewed</Button>{/if}</span
+			>{:else}<Button variant="primary" size="sm" icon="check" action={review} busy="Marking reviewed…" done="Reviewed"
+				>Mark reviewed</Button
+			>{/if}</span
 	>{/snippet}
 {#snippet main()}<SectionTitle sub="Generated, drafted or not required, each with its reason" right={packRight}
 		>Document pack</SectionTitle

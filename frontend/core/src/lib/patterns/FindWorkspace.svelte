@@ -67,7 +67,8 @@
 </script>
 
 <Sheet bind:open {onclose} title="Find your workspace" side={app.bp === 'phone' ? 'bottom' : 'center'} detent="large">
-	{#snippet footer()}<Button variant="primary" size="lg" block loading={busy} onclick={search}>Find workspaces</Button
+	{#snippet footer()}<Button variant="primary" size="lg" block loading={busy} busy="Looking…" onclick={search}
+			>Find workspaces</Button
 		>{/snippet}
 	<div class="stack">
 		<div class="row tight">

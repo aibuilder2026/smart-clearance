@@ -8,7 +8,7 @@
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, Flow = window.SC3_FLOW, S = window.SC3_SCREENS; const fmt = M.fmt;
   const { cx, Icon, Badge, Button, Card, List, ListRow, Segmented, Sheet, Product, Empty, Money, Roll, Tile, MoneyPanel, DocCard, Menu, Avatar, useApp, useNotice } = K;
   const { useStore, useRoute, Screen, Columns, SectionTitle, Locked } = S;
-  const LG = () => window.SC3_LEDGER; // core/ledger.js, read when a screen draws (the design-system page loads no ledger)
+  const LG = () => window.SC3_LEDGER; // core/ledger.js, read when a screen draws
   const r2 = n => Math.round(n * 100) / 100;
   const W = D.WORKSPACE;
   const first = name => String(name || "").split(" ")[0];
@@ -307,7 +307,7 @@
     const exportPack = () => { download(`${c.batch.id}-document-pack.csv`, csv([["Document", "Issued by", "Number", "Status", "Amount (₹)", "Note"], ...c.docs.map(d => [d.type, d.owner, d.no, d.status, d.amount ? d.amount.toFixed(2) : "", d.note || ""])])); toast({ text: "Document pack exported", tone: "ok" }); };
     // the stub's PDF is the paper printed: the browser saves it (on the live workspace, the Paperwork agent's own PDF)
     const pdf = node => () => { if (node.current) printPage(`${doc.type} ${doc.no || ""} · ${c.batch.id}`, `<div class="${node.current.className}">${node.current.innerHTML}</div>`, { styles: true }); };
-    const pdfButton = node => doc && doc.status !== "not required" ? <Button variant="secondary" size="sm" icon="download" onClick={pdf(node)} aria-label={`Download ${doc.type} as a PDF`}>Download PDF</Button> : null;
+    const pdfButton = node => doc && doc.status !== "not required" ? <Button variant="secondary" size="sm" icon="download" action={pdf(node)} busy="Opening the PDF…" aria-label={`Download ${doc.type} as a PDF`}>Download PDF</Button> : null;
     return <>
       {!ready ? <div className="stack" style={{ gap: 16 }}><Card className="row wrap" style={{ gap: 16 }}><Product name="documents" size={88} /><div className="grow stack tight" style={{ gap: 2 }}><b>{awarded ? "The pack is drafted at the award" : "The pack is drafted once every line is done"}</b><span className="t-footnote muted">{awarded ? `${his}'s tax invoice, the e-way bill check, ` : ""}{W.short}'s price-support credit note, the ITC memo, the FSSAI checklist and the destruction certificate, each generated or marked not required with the reason.</span></div></Card><Locked icon="file-text" agent="Paperwork agent" live={h.phase === "dispatched"} text={h.phase === "dispatched" ? "Drafting Rakesh's invoice, the e-way bill check, the credit note and the ITC memo." : "Drafts the whole pack once the lot is awarded and on the buyer's truck."} /><div className="docgrid">{c.docs.map(d => <K.Skeleton key={d.id} h={132} r={20} />)}</div></div> :
       <div className="stack" style={{ gap: 20 }}>
@@ -318,7 +318,7 @@
           <Tile label="Things to chase" icon="list-checks"><span className="num s">0</span></Tile>
         </div>
         <Columns sideWidth={460}
-          main={<><SectionTitle sub="Generated, drafted or not required, each with its reason" right={<span className="row tight"><Button variant="secondary" size="sm" icon="download" onClick={exportPack}>Export</Button>{h.reviewed ? <Badge tone="green" icon="check">reviewed</Badge> : <Button variant="primary" size="sm" icon="check" onClick={() => { Flow.act("review"); toast({ text: "Pack reviewed · logged", tone: "ok" }); }}>Mark reviewed</Button>}</span>}>Document pack</SectionTitle>
+          main={<><SectionTitle sub="Generated, drafted or not required, each with its reason" right={<span className="row tight"><Button variant="secondary" size="sm" icon="download" onClick={exportPack}>Export</Button>{h.reviewed ? <Badge tone="green" icon="check">reviewed</Badge> : <Button variant="primary" size="sm" icon="check" action={() => { Flow.act("review"); toast({ text: "Pack reviewed · logged", tone: "ok" }); }} busy="Marking reviewed…" done="Reviewed">Mark reviewed</Button>}</span>}>Document pack</SectionTitle>
             <div className="docgrid">{c.docs.concat(register ? [register] : []).map(d => <div key={d.id} className={cx("docpick", sel === d.id && app.bp === "desktop" && "on")}><DocCard doc={shown(d)} onOpen={() => open(d.id)} /></div>)}</div>
             <KeepsWhat c={c} />
 </>}

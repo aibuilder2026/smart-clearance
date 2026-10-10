@@ -52,7 +52,7 @@
   // a dropped stream is a band across the page, under the bar, that stays while it lasts
   function Band() {
     const live = useLive(); const f = live.failed && live.failed.action !== "approve" ? live.failed : null;
-    if (f) return <div className="lv-band lv-band-err" role="alert"><Icon name="circle-alert" size={18} /><span className="lv-band-t"><b>That didn't go through.</b> {f.message}</span><Button size="sm" variant="secondary" icon="refresh-cw" onClick={live.retry}>Retry</Button><K.IconButton icon="x" label="Dismiss" onClick={live.dismiss} /></div>;
+    if (f) return <div className="lv-band lv-band-err" role="alert"><Icon name="circle-alert" size={18} /><span className="lv-band-t"><b>That didn't go through.</b> {f.message}</span><Button size="sm" variant="secondary" icon="refresh-cw" action={live.retry} busy="Retrying…">Retry</Button><K.IconButton icon="x" label="Dismiss" onClick={live.dismiss} /></div>;
     if (!down(live.conn)) return null; const off = live.conn === "offline";
     return <div className="lv-band" role="status"><ConnMark conn={live.conn} /><span className="lv-band-t"><b>{off ? "You're offline." : "Reconnecting…"}</b> {off ? `Showing what was here at ${live.since}. Approving and sending wait for a connection.` : `Updates paused at ${live.since}, so what you see may be behind. Anything you do still goes through.`}</span>{off && <Button size="sm" variant="secondary" icon="refresh-cw" onClick={live.reconnect}>Try again</Button>}</div>;
   }
@@ -231,7 +231,7 @@
           <p className="lv-step-p">{T[1]}</p>
           {steps && <ol className="lv-steps">{steps.map(([a, b, c], i) => <li key={i}><span className="lv-stepn">{i + 1}</span><span>{a} <b>{b}</b> {c}</span></li>)}</ol>}
           <div className="lv-step-acts">
-            {variant === "ask" && <Button variant="primary" size="lg" icon="bell" onClick={onAllow}>Turn on notifications</Button>}
+            {variant === "ask" && <Button variant="primary" size="lg" icon="bell" action={onAllow} busy="Turning on…" slow={false}>Turn on notifications</Button>}
             {variant === "denied" && <Button variant="secondary" size="lg" icon="refresh-cw" onClick={onCheck}>Check again</Button>}
             <Button variant={variant === "ask" ? "ghost" : "primary"} size="lg" iconRight="arrow-right" onClick={onDone}>{variant === "ask" ? "Not now" : `Continue to ${home}`}</Button>
           </div>

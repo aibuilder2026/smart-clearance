@@ -1,4 +1,4 @@
-// Smart-Clearance v3 · the app: Munchly's workspace at munchly.smartclearance.com. Sign-in, every role, the agents
+// Smart-Clearance v3 · the app: Munchly's workspace at munchly-smartclearance.web.app. Sign-in, every role, the agents
 // running live, persisted per browser, installable. ?live shows it as it runs on backend-api (SC-73, SC-68 option B),
 // simulated here: below the stub's app, LiveApp.
 (function () {

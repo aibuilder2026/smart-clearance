@@ -1,0 +1,40 @@
+{
+  "name": "final-4-office-evening",
+  "model": "veo-3.1-generate-001",
+  "location": "us-central1",
+  "service": "Vertex AI",
+  "prompt": "Photorealistic cinematic live action, exactly as in the image: evening in the small office above the godown, the warm desk lamp on and the last blue light in the window. The planner in the navy pinstripe kurta and the distributor in the light blue checked shirt, glasses on, sit across the desk of neat papers and the tablet with their steel chai tumblers; she slides a paper toward him, he reads it and nods, taps the tablet once and leans back with a satisfied smile, and she smiles too and picks up her chai. The camera dollies in very slowly toward the two of them, a gentle push, no handheld shake. The light does not change over the shot. 35 mm, shallow depth of field. No text, no logos, no lettering anywhere; the papers and the tablet stay unreadable.",
+  "negative_prompt": "text, lettering, logo, brand name, label, watermark, subtitles, children",
+  "seed": 154214,
+  "enhance_prompt": true,
+  "resolution": "1080p",
+  "aspect": "16:9",
+  "duration_s": 8,
+  "fps": 24,
+  "generate_audio": false,
+  "person_generation": "allow_adult",
+  "inputs": [
+    {
+      "role": "first",
+      "file": "A-k3-office-evening.png",
+      "sha256": "b70701b315268e85c9ba3bf5605b57da319d349cdd46756fdd1e06654bb17dd2"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 1.6,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "use": "SC-154 the film, chapter 4: the office in the evening (Veo 3.1, 1080p, take 2; take 1 was filtered)",
+  "status": "done",
+  "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/e5b75edb-4da5-4680-938e-3f56b3469a6b",
+  "latency_s": 130.4,
+  "rai_filtered": {
+    "count": 0,
+    "reasons": []
+  },
+  "files": [
+    "final-4-office-evening.mp4"
+  ],
+  "probe": "{\n    \"programs\": [\n\n    ],\n    \"stream_groups\": [\n\n    ],\n    \"streams\": [\n        {\n            \"width\": 1920,\n            \"height\": 1080,\n            \"r_frame_rate\": \"24/1\",\n            \"nb_frames\": \"192\"\n        }\n    ],\n    \"format\": {\n        \"duration\": \"8.000000\",\n        \"size\": \"10843244\"\n    }\n}",
+  "kept": "the take is not in the film; its file stays local in src/takes/ (gitignored), this record keeps its cost"
+}

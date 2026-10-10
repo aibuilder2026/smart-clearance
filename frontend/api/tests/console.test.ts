@@ -277,7 +277,7 @@ describe('a new client', () => {
 		const c = await api.createClient(kesari());
 		expect(c).toMatchObject({
 			id: 'kesari',
-			domain: 'kesari.smartclearance.com',
+			domain: 'kesari-smartclearance.web.app',
 			status: 'setting-up',
 			approver: 'admin-kesari',
 			dayMinutes: 1440
@@ -303,7 +303,7 @@ describe('a new client', () => {
 	});
 	it('is refused an address that is taken, or an admin outside its domain', async () => {
 		await expect(api.createClient(kesari({ slug: 'munchly' }))).rejects.toMatchObject({
-			message: 'munchly.smartclearance.com is taken.'
+			message: 'munchly-smartclearance.web.app is taken.'
 		});
 		await expect(api.createClient(kesari({ adminEmail: 'ritu@gmail.com' }))).rejects.toMatchObject({
 			message: "Enter the admin's name and a @kesari.in address."

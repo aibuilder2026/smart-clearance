@@ -1,6 +1,6 @@
 # @smart-clearance/console
 
-The staff console (console.smartclearance.com), in SvelteKit 3: where Smart-Clearance's own staff set up and run each
+The staff console (smartclearance-console.web.app), in SvelteKit 3: where Smart-Clearance's own staff set up and run each
 manufacturer's workspace, its agents, supply chain, channels and rules, people, integrations and plan. It is a faithful
 port of `design3/console` (SC-25's approved design, hosted in platform v3), built and deployed on its own, apart from
 the landing page (`../admin`).
@@ -104,12 +104,12 @@ a slow download is never a failure (SC-131).
 
 Declared in `src/env.ts`, public and inlined at build time. Copy `.env.example` to `.env`.
 
-| Variable                 | Default                                                                          |
-| ------------------------ | -------------------------------------------------------------------------------- |
-| `PUBLIC_API_BASE`        | unset: the in-browser mock                                                       |
-| `PUBLIC_MOCK_LATENCY_MS` | 0                                                                                |
-| `PUBLIC_SITE_URL`        | the hosted landing page on Claude Design (the sign-in's smartclearance.com link) |
-| `PUBLIC_APP_URL`         | Munchly Foods' hosted workspace on Claude Design                                 |
+| Variable                 | Default                                                            |
+| ------------------------ | ------------------------------------------------------------------ |
+| `PUBLIC_API_BASE`        | unset: the in-browser mock                                         |
+| `PUBLIC_MOCK_LATENCY_MS` | 0                                                                  |
+| `PUBLIC_SITE_URL`        | the live landing page, smartclearance.web.app (the sign-in's link) |
+| `PUBLIC_APP_URL`         | Munchly Foods' live workspace, munchly-smartclearance.web.app      |
 
 ## Deploying on its own subdomain
 
@@ -122,7 +122,7 @@ caching for `/_app/immutable/`). Terraform in `../../infra` makes the console's 
 infra/scripts/deploy.sh console     # builds the console, then releases it to its site
 ```
 
-For `console.smartclearance.com`, set the site's `custom_domain` in `infra/prod/terraform.tfvars` and apply. Then
+For a custom domain such as `smartclearance-console.web.app`, set the site's `custom_domain` in `infra/prod/terraform.tfvars` and apply. Then
 add the DNS records Terraform outputs (`../../infra/README.md`, Custom domains). Any static host works the same way, as
 long as it rewrites unknown paths to `/index.html`.
 

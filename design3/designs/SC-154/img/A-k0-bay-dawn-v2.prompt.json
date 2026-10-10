@@ -1,0 +1,29 @@
+{
+  "name": "A-k0-bay-dawn-v2",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "edit",
+  "prompt": "Remove the reading glasses from the top of the man's head so he wears no glasses at all, his grey hair plain. Change nothing else: the same two people, poses, truck, light and framing.",
+  "seed": 154016,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "source",
+      "file": "A-k0-bay-dawn-clean.png",
+      "sha256": "1c6e3c172b7568d737c87eb63ac98bcce927c42e7ac23ca981cf2a609ed91161"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "latency_s": 18.6,
+  "use": "SC-154 option A keyframe 0, second version: no glasses on the distributor (Veo had given him a second pair)",
+  "model_text": null,
+  "status": "done",
+  "output": "A-k0-bay-dawn-v2.webp 2752x1536",
+  "postprocess": "WebP q82 from A-k0-bay-dawn-v2.png",
+  "derived_from": "A-k0-bay-dawn-v2.png"
+}

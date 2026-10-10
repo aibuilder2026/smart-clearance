@@ -3,14 +3,14 @@
 An agentic near-expiry stock router for Indian FMCG brands, built for the Google AI Hackathon 2026 (Retail &
 Commerce track). Ten agents watch a manufacturer's stock across its distributors, price every exit for a batch that
 will not sell in time, split it under each exit's caps, wait for one human yes, then list, sell, settle and report.
-Smart-Clearance is sold as software as a service: one workspace per manufacturer at `<client>.smartclearance.com`,
+Smart-Clearance is sold as software as a service: one workspace per manufacturer at `<client>-smartclearance.web.app`,
 set up by Smart-Clearance's own staff from a console.
 
 | Surface | Where | Status |
 | --- | --- | --- |
-| The landing page, smartclearance.com | [smartclearance.web.app](https://smartclearance.web.app) | live, on backend-api |
-| The staff console, console.smartclearance.com | [smartclearance-console.web.app](https://smartclearance-console.web.app) | live, on backend-api with Firebase sign-in |
-| Munchly Foods' workspace, munchly.smartclearance.com | [munchly-smartclearance.web.app](https://munchly-smartclearance.web.app) | live, on the prototype's stub data in the browser (SC-62) |
+| The landing page | [smartclearance.web.app](https://smartclearance.web.app) | live, on backend-api |
+| The staff console | [smartclearance-console.web.app](https://smartclearance-console.web.app) | live, on backend-api with Firebase sign-in |
+| Munchly Foods' workspace | [munchly-smartclearance.web.app](https://munchly-smartclearance.web.app) | live, on the prototype's stub data in the browser (SC-62) |
 | The guided demo | [smartclearance-demo.web.app](https://smartclearance-demo.web.app) | live, on the same stub data (SC-63, SC-64) |
 | backend-api, the platform API | Cloud Run in `asia-south1`, Cloud SQL for PostgreSQL 18 | live, with a synthetic world |
 | The design prototypes (design system, guided demo, workspace app, landing page, console) | [Claude Design](#documentation-map) | hosted, on in-browser mocks |

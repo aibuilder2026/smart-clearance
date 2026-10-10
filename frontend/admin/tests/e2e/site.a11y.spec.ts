@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { report, scan, type Finding } from '@smart-clearance/testing/a11y';
 import { isPhone, openSite } from './site';
 
-// smartclearance.com, the landing page: every section from the first viewport to the footer, the agents at work on
+// smartclearance.web.app, the landing page: every section from the first viewport to the footer, the agents at work on
 // the table with the card in focus paused and then sold, plus the sign-in menu, Find your workspace, the phone menu and
 // Book a demo (empty, with its errors, and sent).
 test('site · the whole page', async ({ page }, testInfo) => {
@@ -29,13 +29,9 @@ test.describe('the table, with motion on', () => {
 	});
 });
 
-test('site · sign-in menu, Find your workspace and Book a demo', async ({ page }, testInfo) => {
+test('site · the phone menu, Find your workspace and Book a demo', async ({ page }, testInfo) => {
 	await openSite(page);
 	const findings: Finding[] = [];
-	await page.locator('.site-nav').getByRole('button', { name: 'Sign in' }).click();
-	await page.waitForTimeout(400);
-	findings.push(...(await scan(page, 'site · sign-in menu')));
-	await page.keyboard.press('Escape');
 	if (isPhone(page)) {
 		await page.getByRole('button', { name: 'Menu' }).click();
 		await page.waitForTimeout(600);
@@ -82,7 +78,7 @@ test('site · the loader, on a load and on a change of theme', async ({ page }, 
 	// the film's poster held back, so the loader is still up to be scanned
 	let release: () => void = () => {};
 	const held = new Promise<void>((r) => (release = r));
-	await page.route(/town-(morning|night)\.[\w-]+\.webp$|town-(morning|night)\.webp$/, async (route) => {
+	await page.route(/hero-(day|night)\.[\w-]+\.webp$|hero-(day|night)\.webp$/, async (route) => {
 		await held;
 		await route.continue();
 	});

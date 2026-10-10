@@ -1,0 +1,23 @@
+{
+  "name": "B-k2-van-table",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "Violet dusk in the godown's yard. Close on a plain kraft-brown carton with a sage-green band held by a volunteer in a plain orange vest at the open back of a white van, while behind him, by the gate, a folding table under a tarpaulin with solid-colour snack packets and a queue of workers in grey T-shirts; sodium lamps on against the violet sky. The carton centred. Cinematic 35 mm, shallow depth of field.\nPhotographic, cinematic live action, shot on a full-frame camera with a 35 mm lens, shallow depth of field, natural light, true-to-life skin, fabric and metal, no illustration, no 3D render, no cartoon. India, a small-town FMCG supply chain. Every pack and carton is unbranded: plain kraft-brown cartons with a single sage-green band, matte foil snack packets in solid colours with no lettering; no logos, no printed text, no signage that can be read; shop boards and labels out of focus. No children anywhere. Colour grade: warm, filmic, slightly desaturated greens and ambers.",
+  "seed": 154022,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "latency_s": 17.8,
+  "use": "SC-154 option B keyframe 2: the carton at the van, the table behind",
+  "model_text": null,
+  "status": "done",
+  "output": "B-k2-van-table.webp 2752x1536",
+  "postprocess": "WebP q82 from B-k2-van-table.png",
+  "derived_from": "B-k2-van-table.png"
+}

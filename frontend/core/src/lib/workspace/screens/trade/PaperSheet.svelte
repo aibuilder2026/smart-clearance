@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Button from '../../../components/Button.svelte';
 	import Sheet from '../../../components/Sheet.svelte';
-	import { useNotice } from '../../../notice.svelte';
 	import { useWorkspace } from '../../source';
 	import type { Batch, CaseData, Distributor, Doc, KiranaInvoice as Invoice, Sku } from '../../types';
 	import KiranaInvoice from '../finance/KiranaInvoice.svelte';
@@ -26,7 +25,6 @@
 	};
 	let { open = $bindable(), ref, c, id, receipt, invoice, register }: Props = $props();
 	const ws = useWorkspace();
-	const { toast } = useNotice();
 	let one = $state<Invoice | null>(null);
 	$effect(() => {
 		if (!open) one = null;
@@ -54,15 +52,12 @@
 				: !!d && (live ? !!d.pdf && !!ws.documentUrl : true)
 	);
 	let node: HTMLElement | undefined = $state();
+	// the button waits on the link (SC-152), and a link that cannot be had says why under it
 	const pdf = async () => {
 		if (!head) return;
 		const doc = inv ? `kirana.${inv.kirana}` : register ? null : d?.id;
 		if (live && ws.documentUrl && doc) {
-			try {
-				window.open(await ws.documentUrl(doc, ref), '_blank', 'noopener');
-			} catch {
-				toast({ text: 'The PDF could not be opened. Try again in a moment.', tone: 'err' });
-			}
+			window.open(await ws.documentUrl(doc, ref), '_blank', 'noopener');
 			return;
 		}
 		if (node)
@@ -72,7 +67,8 @@
 	};
 </script>
 
-{#snippet footer()}{#if canPdf}<Button variant="secondary" block icon="download" onclick={pdf}>Download PDF</Button
+{#snippet footer()}{#if canPdf}<Button variant="secondary" block icon="download" action={pdf} busy="Opening the PDF…"
+			>Download PDF</Button
 		>{/if}{/snippet}
 <Sheet bind:open title={head ? head.type : ''} footer={head ? footer : undefined}>
 	{#if register && one}<button

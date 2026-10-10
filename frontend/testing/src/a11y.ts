@@ -86,6 +86,7 @@ export const COMPONENTS: Record<string, { sel: string; text?: string }> = {
 	OTP: { sel: '.otp[role="group"]' },
 	PhoneFrame: { sel: '.device-phone' },
 	PoweredBy: { sel: '.poweredby' },
+	SaveNote: { sel: '.save-note' },
 	Skeleton: { sel: '.skeleton' },
 	Splash: { sel: '.splash' },
 	SplitBar: { sel: '.t-caption .tnum', text: 'units at risk' },

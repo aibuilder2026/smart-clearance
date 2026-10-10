@@ -35,9 +35,10 @@
 	// the offer at the top: one still open (declined or not), or his order while it is on its way
 	const top = $derived(now && (now.status === 'ordered' || now.open) ? now : null);
 	const earlier = $derived(list.filter((o) => o !== top));
+	// Not this time waits on the answer (SC-152); the toast only once it has gone through
 	const no = async () => {
 		if (!shop) return;
-		await ws.act('decline', shop.id);
+		await ws.act('decline', shop.id, { inline: true });
 		toast({ text: `Declined · ${dist?.short}'s next scheme still comes to you` });
 	};
 	const rows = $derived<[string, string][]>([
@@ -58,7 +59,8 @@
 				variant="ghost"
 				size="lg"
 				block
-				onclick={no}>Not this time</Button
+				action={no}
+				busy="Declining…">Not this time</Button
 			>{:else if top && top.status === 'ordered'}<Card class="stack snug"
 				><div class="row" style="gap: 14px">
 					<Product name={top.sku.img} size={64} />

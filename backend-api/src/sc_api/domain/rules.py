@@ -163,9 +163,9 @@ def setup_errors(f: Mapping[str, Any], taken: Callable[[str], bool], workspace_d
     step2 = (
         "Use 2 to 24 lowercase letters, digits or hyphens."
         if not SLUG.match(s)
-        else f"{s}.{workspace_domain} is reserved for the platform."
+        else f"{s}-{workspace_domain} is reserved for the platform."
         if s in RESERVED_SLUGS
-        else f"{s}.{workspace_domain} is taken."
+        else f"{s}-{workspace_domain} is taken."
         if taken(s)
         else "Enter the domain its staff email from, such as kesari.in."
         if not domain_ok

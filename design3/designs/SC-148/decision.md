@@ -70,7 +70,7 @@ The kirana invoices are built in their own story, **SC-153**, stacked on this on
   e-way check and the memo with the GSTINs), DocCard's "issued", `screens.css`'s `.tl` block. Stills in `build/`.
 - core: `papers.ts` (held to papers.js, QR module for module), `TallyInvoice.svelte`, `TallyCredit.svelte`, `Paper.svelte`,
   `screens.css` verbatim.
-- backend-api: migration 0012 (`distributors.details`), the client's and the buyer's identity, the invoice's issue time,
+- backend-api: migration 0014 (`distributors.details`), the client's and the buyer's identity, the invoice's issue time,
   laid out again once issued; Paperwork reads the three GSTINs.
 - agents: the PDFs in the same layout (`tally.html`), the e-invoice worked out as papers.js does (`tools/papers.py`).
 - Locally every one of the history's 44 PDFs was laid out again: each invoice issued with its IRN, acknowledgement and

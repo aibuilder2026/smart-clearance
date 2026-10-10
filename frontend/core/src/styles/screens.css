@@ -137,6 +137,42 @@
 .es-thumb { display: grid; place-items: center; height: 124px; background: var(--surface-sunken); color: var(--fg-3); }
 .es-thumb.big { height: auto; aspect-ratio: 1; border-radius: 20px; }
 .es-gallery { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* the Lister's lot on Execution (SC-151): the lot as buyers see it, what only the client sees, its steps, and the raw call
+   behind a button */
+.esl { display: grid; gap: 12px; padding: 14px; border-radius: 16px; background: color-mix(in oklab, var(--violet) 6%, var(--surface)); box-shadow: inset 0 0 0 var(--hair) color-mix(in oklab, var(--violet) 22%, transparent); }
+.esl-top { display: flex; align-items: center; gap: 8px; }
+.esl-top .es-logo { width: 22px; height: 22px; border-radius: 6px; }
+.esl-top .es-word { font-size: 14px; }
+.esl-id { margin-left: auto; font-family: var(--font-mono); font-size: 11.5px; font-weight: 600; color: var(--fg-2); }
+.esl-lot { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 12px; align-items: center; }
+.esl-lot > * { min-width: 0; }
+.esl-thumb { display: grid; place-items: center; width: 72px; height: 72px; border-radius: 14px; background: var(--surface-sunken); }
+.esl-price { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; }
+.esl-price s { color: var(--fg-3); }
+.esl .es-date { white-space: normal; height: auto; min-height: 22px; padding: 2px 8px; }
+.esl-won { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 10px; background: var(--surface); font-size: 13px; }
+.esl-won svg { flex: none; color: var(--violet-text); }
+.priv { display: grid; gap: 2px; }
+.priv-row { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 10px; align-items: start; padding: 6px 0; font-size: 13.5px; }
+.priv-row svg { margin-top: 2px; color: var(--fg-3); }
+.priv-row b { font-weight: 620; }
+.esl-steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding: 0; margin: 0; list-style: none; }
+.esl-steps li { display: grid; gap: 4px; align-content: start; font-size: 12px; color: var(--fg-3); }
+.esl-steps li i { display: block; height: 4px; border-radius: 2px; background: var(--fill-2); }
+.esl-steps li.done i { background: var(--violet); }
+.esl-steps li.now i { background: linear-gradient(90deg, var(--violet) 50%, var(--fill-2) 50%); }
+.esl-steps li.done, .esl-steps li.now { color: var(--fg); }
+.esl-steps li b { font-weight: 600; }
+.esl-steps li span { font-family: var(--font-mono); font-size: 11px; color: var(--fg-2); }
+.xcall { display: grid; gap: 8px; }
+.xcall-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 2px; border: 0; background: none; font: inherit; font-size: 13px; font-weight: 560; color: var(--fg-2); cursor: pointer; justify-self: start; }
+.xcall-btn svg { transition: transform var(--t-fast) var(--ease); }
+.xcall-btn[aria-expanded="true"] svg { transform: rotate(90deg); }
+.xcall-btn:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 6px; }
+.xcall-body { animation: xcall-in var(--t-fast) var(--ease); }
+@keyframes xcall-in { from { opacity: 0; transform: translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) { .xcall-body { animation: none; } .xcall-btn svg { transition: none; } }
+@media (max-width: 480px) { .esl-lot { grid-template-columns: 56px minmax(0, 1fr); } .esl-thumb { width: 56px; height: 56px; border-radius: 12px; } }
 .esw .largetitle h1, .esw .nb-title { font-family: var(--font-ui); font-weight: 720; letter-spacing: -0.04em; font-variation-settings: normal; }
 
 /* the label shot: the carton photo with its label set in type, sized to the photo */
@@ -493,7 +529,8 @@
 @media (max-width: 640px) {
   .dist-step { flex-wrap: wrap; }
   .dist-step > .grow { flex: 1 1 calc(100% - 60px); }
-  .dist-step > .btn { flex: 1 1 100%; }
+  .dist-step > .btn, .dist-step > .btn-wait { flex: 1 1 100%; }
+  .dist-step > .btn-wait { justify-items: stretch; }
 }
 /* a channel's mark, in its own ink */
 .dist-chan { flex: none; display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; color: var(--ch); background: color-mix(in srgb, var(--ch) 14%, transparent); }
@@ -575,7 +612,8 @@ button.dist-line:focus-visible { outline: 3px solid var(--ring); outline-offset:
 .dz-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
 @media (max-width: 760px) { .dz-fields { grid-template-columns: minmax(0, 1fr); } }
 .dz-foot { display: flex; gap: 10px; }
-.dz-foot > .btn:last-child { flex: 1; }
+.dz-foot > .btn:last-child, .dz-foot > .btn-wait:last-child { flex: 1; }
+.dz-foot > .btn-wait:last-child { justify-items: stretch; }
 @media (max-width: 520px) { .dz-foot { flex-direction: column-reverse; } }
 @media (max-width: 420px) { .dz-two:not(.dz-pair) { grid-template-columns: minmax(0, 1fr); } .dz-pair .cam-tag { font-size: 11px; } }
 /* how a distributor's figures add up (SC-145): what the batches cost him = what he sold + what the client credited */
@@ -638,3 +676,9 @@ button.dist-line:focus-visible { outline: 3px solid var(--ring); outline-offset:
   .rec-row { grid-template-columns: 36px minmax(0, 1fr); }
   .rec-row time { grid-column: 2; grid-row: 2; padding-top: 4px; }
 }
+
+/* the workspace's route line (SC-152): while a screen reads what it needs, a green line runs along the top of the app,
+   eases most of the way and waits, then completes and lands its amber pin, as the console's does (SC-49) */
+.ws-route { position: absolute; z-index: calc(var(--z-bar) + 1); top: 0; left: 0; right: 0; height: 4px; pointer-events: none; }
+.ws-route .line { position: relative; display: block; height: 2px; border-radius: 0 2px 2px 0; background: var(--primary); }
+.ws-route .pin { position: absolute; right: -5px; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 0 2px var(--surface); }

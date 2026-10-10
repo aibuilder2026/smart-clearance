@@ -16,7 +16,7 @@
 	import { useWorkspace } from './source';
 	import type { User } from './types';
 
-	// a client's workspace at <client>.smartclearance.com (design3/app/app.jsx): the sign-in, then every role's app, on
+	// a client's workspace at <client>-smartclearance.web.app (design3/app/app.jsx): the sign-in, then every role's app, on
 	// the source the host provides: the stub, with the agents running live in this browser, or backend-api. The host
 	// app gives the screen the address names and how to change it; everything else lives here. On backend-api (SC-73,
 	// SC-68 option B) the sign-in is email and password, the console's splash covers the first load, signing in and
@@ -174,12 +174,24 @@
 			await sp.open({ anchor: ANCHOR.app });
 		}
 	}
-	// signing out: the splash covers the session closing, and opens onto the sign-in
+	// signing out: the splash covers the session closing, and opens onto the sign-in. A session that could not be closed
+	// leaves the person signed in: the splash lifts back onto the workspace, and the refusal goes to whoever asked
+	// (Profile says why, SC-152)
 	async function signOut() {
 		const sp = live ? splash : null;
 		const u = ws.me;
 		if (sp) void sp.begin('leave', { who: u ? u.short || u.name : undefined });
-		await ws.signOut();
+		try {
+			await ws.signOut();
+		} catch (e) {
+			if (sp) {
+				sp.mark('session-end');
+				sp.mark('firebase');
+				await tick();
+				await sp.open({ anchor: ANCHOR.app });
+			}
+			throw e;
+		}
 		sp?.mark('session-end');
 		sp?.mark('firebase');
 		asking = false;
@@ -198,7 +210,7 @@
 					else chooser = true;
 				}
 			: undefined,
-		signOut: () => void signOut(),
+		signOut,
 		reset: ws.reset ? () => ws.reset?.() : undefined,
 		get install() {
 			return install.can ? install.prompt : null;

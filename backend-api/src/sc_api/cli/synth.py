@@ -231,6 +231,7 @@ class World:
                 gst=gst,
                 life_days=life,
                 gates=vocab.own_gates(life),
+                kg_per_unit=_kg(pack),
             )
         await ctx.session.commit()
 
@@ -350,7 +351,10 @@ class World:
                     self.at(self.morning(day - takes, self.rng.randint(11, 17), self.rng.randint(0, 59)))
                     await agents.record_run(ctx, s, "gate", f"{approver_first} approved {ref}")
                     price = self.rng.uniform(0.35, 0.7) * (lo + hi) / 2
-                    await supply.close_batch(ctx, s, ref, recovered=round(units * price, 1), outcome="cleared")
+                    gone = _destroyed(ref, units)
+                    await supply.close_batch(
+                        ctx, s, ref, recovered=round((units - gone) * price, 1), outcome="cleared", destroyed=gone
+                    )
                     self.at(flagged_at + timedelta(minutes=self.rng.randint(5, 30)))
                     continue
                 # still in flight: as far along as the days since it was flagged allow, some waiting for a yes
@@ -483,6 +487,23 @@ MOVED = {
     6: "{ref}: listed and offered",
     7: "{ref}: invoice and credit note drafted",
 }
+
+
+# a pack's kilos from its size, as the stock export writes it: "200 g", "1 kg", "500 ml", "1 l", "4 x 75 g" (SC-149).
+# A millilitre is taken as a gram
+def _kg(pack: str) -> float | None:
+    m = re.fullmatch(r"(?:(\d+) x )?(\d+(?:\.\d+)?) (g|ml|kg|l)", pack.strip().lower())
+    if not m:
+        return None
+    many, size, unit = int(m.group(1) or 1), float(m.group(2)), m.group(3)
+    return round(many * size / (1 if unit in ("kg", "l") else 1000), 4)
+
+
+# the packs a closed batch destroyed: about 4 in 10 leave some, 2 to 25% of the batch, which no channel took (SC-149).
+# Seeded by the batch alone, so the rest of the world draws as it did before
+def _destroyed(ref: str, units: int) -> int:
+    r = Random(f"{ref}/destroyed")
+    return round(units * r.uniform(0.02, 0.25)) if r.random() < 0.42 else 0
 
 
 def _split(units: int) -> str:
