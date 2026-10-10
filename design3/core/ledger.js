@@ -666,5 +666,40 @@
   const partners = { distBatches, distPapers, moments, whole, sumOf, sumsOf, storyMoments, storyWhole, scheme, offersFor, pickupsFor, fssaiItems, stepAt, plusHours,
     STOP, distNow, journeyOf, journeys, ordersNow, ordersPast, deliveriesPast, photoOf, shopName, historyFacts, WORLD };
 
-  window.SC3_LEDGER = { HISTORY, STORY_CLEARED, historyCase, storyCase, caseOf, rowOf, rowsOf, totals, periods, ledger, ordersOf, outcomeOf, MIX, partners, record };
+  /* ---------- the Impact dashboard (SC-157): a period's figures drawn from its rows ---------- */
+  // the kilos by the week each batch cleared, by distributor, by product and by channel, and the period before, all from
+  // the ledger's rows; the screens (design3 finance.jsx, core's Svelte) read this, and core's ledger.ts is held to it
+  const MS = 864e5;
+  const CH = ["kirana", "expiresoon", "staff", "d2c", "foodbank", "writeoff"];
+  function dashboard(book, pid) {
+    const periods = book.periods; const p = periods.find(x => x.id === pid) || periods[periods.length - 1];
+    const rows = book.batches.filter(r => r.cleared >= p.from && r.cleared <= p.to);
+    const qs = periods.filter(x => x.kind === "quarter"); const qi = qs.findIndex(x => x.id === p.id);
+    const prev = p.kind === "quarter" && qi > 0 ? qs[qi - 1] : null;
+    const end = p.current ? book.today : p.to;
+    // the weeks run from the period's start, or from the first batch the workspace cleared when that came later (the
+    // year starts in April; the workspace since July), in whole weeks
+    const firstEver = book.batches.length ? Date.parse(book.batches[0].cleared) : Date.parse(p.from);
+    const d0 = Math.max(Date.parse(p.from), firstEver - ((firstEver - Date.parse(p.from)) % (7 * MS))), dEnd = Date.parse(end);
+    const weeks = [];
+    for (let t = d0; t <= dEnd; t += 7 * MS) weeks.push({ from: new Date(t).toISOString().slice(0, 10), kept: 0, resold: 0, donated: 0, destroyed: 0, closed: 0, net: 0, meals: 0 });
+    rows.forEach(r => { const i = Math.min(weeks.length - 1, Math.floor((Date.parse(r.cleared) - d0) / (7 * MS))); const w = weeks[i]; const F = r.figures; w.kept = r2(w.kept + F.kg); w.resold = r2(w.resold + F.resoldKg); w.donated = r2(w.donated + F.donatedKg); w.destroyed = r2(w.destroyed + F.destroyedKg); w.closed += 1; w.net = r2(w.net + F.net); w.meals += F.meals; });
+    const group = key => { const by = {}; rows.forEach(r => { const k = r[key]; by[k] = by[k] || { label: k, img: r.img, resold: 0, donated: 0, destroyed: 0, batches: 0 }; by[k].resold = r2(by[k].resold + r.figures.resoldKg); by[k].donated = r2(by[k].donated + r.figures.donatedKg); by[k].destroyed = r2(by[k].destroyed + r.figures.destroyedKg); by[k].batches += 1; }); return Object.values(by).map(x => Object.assign(x, { kept: r2(x.resold + x.donated) })).sort((a, b) => b.kept - a.kept || (a.label < b.label ? -1 : 1)); };
+    const mix = {}; rows.forEach(r => { const per = (r.figures.kg + r.figures.destroyedKg) / (r.figures.units || 1); r.lines.forEach(l => (mix[l.id] = (mix[l.id] || 0) + l.units * per)); mix.writeoff = (mix.writeoff || 0) + r.figures.destroyedKg; });
+    const mixKg = CH.filter(id => mix[id] > 0).map(id => [id, Math.round(mix[id] * 10) / 10]);
+    const t = p.totals, tPrev = prev ? prev.totals : null;
+    const share = t.kg + t.destroyedKg ? Math.round((t.kg / (t.kg + t.destroyedKg)) * 1000) / 10 : null;
+    return { pid: p.id, prev: prev ? prev.id : null, rows: rows.map(r => r.ref), weeks, byDist: group("distributorName"), bySku: group("name"), mixKg, share, end };
+  }
+  // the period the Command Center's Impact card reads (SC-157): the current quarter once a batch has cleared in it,
+  // else the latest quarter that has one, else the year so far
+  function impactPeriod(book) {
+    const qs = book.periods.filter(x => x.kind === "quarter");
+    const cur = qs.find(x => x.current);
+    if (cur && cur.totals.batches) return cur;
+    const withBatches = qs.filter(x => x.totals.batches);
+    return withBatches[withBatches.length - 1] || book.periods[book.periods.length - 1];
+  }
+
+  window.SC3_LEDGER = { HISTORY, STORY_CLEARED, historyCase, storyCase, caseOf, rowOf, rowsOf, totals, periods, ledger, ordersOf, outcomeOf, MIX, partners, record, dashboard, impactPeriod };
 })();

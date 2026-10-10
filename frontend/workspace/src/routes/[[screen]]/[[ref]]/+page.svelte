@@ -14,9 +14,22 @@
 	const screen = $derived(page.params.screen ?? null);
 	const ref = $derived(page.params.ref ?? null);
 	const tab = $derived(page.url.searchParams.get('tab'));
-	const at = (opts: { ref?: string; tab?: string }) =>
-		opts.ref ? `/${encodeURIComponent(opts.ref)}${opts.tab ? '?tab=' + encodeURIComponent(opts.tab) : ''}` : '';
-	const navigate = (name: string | null, opts: { replace?: boolean; ref?: string; tab?: string } = {}) =>
+	// the Ledger's reading the address opens on: /report?reading=impact (the Command Center's Impact card, SC-157)
+	const reading = $derived(page.url.searchParams.get('reading'));
+	const at = (opts: { ref?: string; tab?: string; reading?: string }) => {
+		const q = [
+			['tab', opts.tab],
+			['reading', opts.reading]
+		]
+			.filter((kv): kv is [string, string] => !!kv[1])
+			.map(([k, v]) => `${k}=${encodeURIComponent(v)}`);
+		const query = q.length ? `?${q.join('&')}` : '';
+		return opts.ref ? `/${encodeURIComponent(opts.ref)}${query}` : query;
+	};
+	const navigate = (
+		name: string | null,
+		opts: { replace?: boolean; ref?: string; tab?: string; reading?: string } = {}
+	) =>
 		void goto(name ? `/${name}${at(opts)}` : '/', {
 			replace: !!opts.replace,
 			reset: false
@@ -26,4 +39,4 @@
 	const splash = typeof window !== 'undefined' ? (window.SC3_SPLASH ?? null) : null;
 </script>
 
-<WorkspaceApp {screen} {ref} {tab} {navigate} back={() => history.back()} push={data.push} {splash} />
+<WorkspaceApp {screen} {ref} {tab} {reading} {navigate} back={() => history.back()} push={data.push} {splash} />

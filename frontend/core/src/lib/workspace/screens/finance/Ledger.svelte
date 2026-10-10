@@ -14,6 +14,7 @@
 	import Screen from '../common/Screen.svelte';
 	import ExportMenu from './ExportMenu.svelte';
 	import LedgerHeadline from './LedgerHeadline.svelte';
+	import ImpactReading from './ImpactReading.svelte';
 	import LedgerStrip from './LedgerStrip.svelte';
 	import OutcomeBadge from './OutcomeBadge.svelte';
 	import { figure, kg, READINGS, second, type Reading } from './ledger';
@@ -31,7 +32,9 @@
 	);
 	let picked = $state<string | null>(null);
 	const p = $derived(book.periods.find((x) => x.id === picked) ?? year);
-	let reading = $state<Reading>('money');
+	// the reading the address asks for (the Command Center's Impact card opens the ledger on Impact, SC-157)
+	const asked = router.route.params?.reading;
+	let reading = $state<Reading>(asked === 'impact' || asked === 'gst' ? asked : 'money');
 	const list = $derived(book.batches.filter((r) => r.cleared >= p.from && r.cleared <= p.to));
 	const flying = $derived(p.current ? book.inFlight : []);
 	const months = $derived(
@@ -59,16 +62,16 @@
 				><Segmented label="Reading" options={READINGS} bind:value={reading} />{#if phone}{@render exports()}{/if}</span
 			>
 		</div>
-		<Card class="stack" style="gap: 18px">
-			<LedgerHeadline {p} {reading} />
-			{#if list.length}<LedgerStrip {list} {reading} onopen={open} />{:else}<Empty
-					icon="book-open"
-					title="Nothing cleared in {p.label} yet"
-					body="Each batch joins the ledger when Impact posts it, after its return window closes.{flying.length
-						? ` ${flying.length} ${flying.length === 1 ? 'batch is' : 'batches are'} still out.`
-						: ''}"
-				/>{/if}
-		</Card>
+		{#if reading === 'impact'}<ImpactReading {book} {p} />{:else}<Card class="stack" style="gap: 18px">
+				<LedgerHeadline {p} {reading} />
+				{#if list.length}<LedgerStrip {list} {reading} onopen={open} />{:else}<Empty
+						icon="book-open"
+						title="Nothing cleared in {p.label} yet"
+						body="Each batch joins the ledger when Impact posts it, after its return window closes.{flying.length
+							? ` ${flying.length} ${flying.length === 1 ? 'batch is' : 'batches are'} still out.`
+							: ''}"
+					/>{/if}
+			</Card>{/if}
 		{#if flying.length}<List head="Still out">
 				{#each flying as b (b.ref)}
 					{#snippet lead()}<Product name={b.img} size={40} />{/snippet}

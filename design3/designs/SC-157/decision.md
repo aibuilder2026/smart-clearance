@@ -32,3 +32,32 @@ The question on the board: should one small card of it also stand on the Command
 
 10 Oct: the maintainer picked **B, the Impact reading, grown**, and on the board's question, **also a small card on
 the Command Center** (this quarter's kilos kept out, CO₂e and meals, opening the Ledger on its Impact reading).
+
+## What was built (option B, with the Command Center's card)
+
+- **The Impact reading** (design3 `screens/finance.jsx` `ImpactReading`, core `screens/finance/ImpactReading.svelte`):
+  the headline and its working stay; under them, in the same card, three tiles (kept out of landfill, destroyed with
+  the share saved, CO₂e avoided), each against the quarter before and with its weeks as a sparkline, and **Food, by
+  week** (SC-149's form: kept out rising from the baseline, destroyed hanging under it, hatched; a crosshair tooltip;
+  Show as a table). Then **Where the kilos went** (one bar of the channels, destroyed hatched last, a row each) and
+  **By distributor** or **By product** (resold, donated and destroyed on one scale). The period's batches follow as
+  before. Money and GST read as they did.
+- **The figures** are derived from the ledger's rows by `core/ledger.js` `dashboard()` and `impactPeriod()` (the
+  weeks from the period's start or the first batch cleared, by distributor, by product, by channel, the share saved,
+  the quarter before); core's `impact.ts` is the same, held to ledger.js for every period at stages 0 and 9
+  (`ledger.test.ts`). It reads the ledger whichever source made it, so the live workspace needs no new route.
+- **The Command Center's card** (`ImpactCard`, under the agent feed on the Command Center and its quiet day): the
+  quarter so far (or the latest with a batch cleared), its kilos kept out of landfill, CO₂e and meals, the weeks as a
+  sparkline, and **Open the ledger**, which opens the Ledger on its Impact reading (`/report?reading=impact`; the
+  port's address carries the reading as it carries a batch page's tab).
+- **Inks:** the console's (SC-149), validated with the dataviz script on the app's surfaces (`screens.css`,
+  `--viz-*`); donated takes the food bank's channel ink. The bars grow once (420 ms), still under reduced motion.
+- **Specs:** two live tests (the reading and its table; the card opening the ledger); the a11y spec scans the
+  reading, its table and the card.
+
+## Checks
+
+- The frontend gate passes: core 276 (3 new; the goldens follow the card), api 79, workspace 97 (2 new), admin 17,
+  demo 5, console 3.
+- design3's Ledger and Command Center and the port's stub build were shot at 1440 and 390, light and dark (`build/`).
+- The browser suites were not run (SC-55).

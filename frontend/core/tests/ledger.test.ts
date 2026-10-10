@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { fastForward } from '../src/lib/workspace/flow';
+import { dashboard, impactPeriod } from '../src/lib/workspace/impact';
 import { HISTORY_ROWS, periods, stubLedger, stubPage } from '../src/lib/workspace/ledger';
 import { store } from '../src/lib/workspace/store.svelte';
 import { data, kase } from '../src/lib/workspace/stub.svelte';
@@ -36,5 +37,34 @@ describe("the ledger is ledger.js's", () => {
 			expect(page.row?.ref).toBe(x.ref);
 		}
 		expect(stubPage('MF-0000-000', data, kase, store.get())).toBeNull();
+	});
+});
+
+describe("the Impact dashboard is ledger.js's (SC-157)", () => {
+	for (const n of [0, 9])
+		it(`at stage ${n}, for every period, and the Command Center's period`, () => {
+			W.SC3_FLOW.fastForward(n);
+			fastForward(n);
+			const ours = stubLedger(store.get());
+			const theirs = W.SC3_LEDGER.ledger(W.SC3_STORE.get());
+			for (const p of ours.periods)
+				expect(plain(dashboard(ours, p.id))).toEqual(plain(W.SC3_LEDGER.dashboard(theirs, p.id)));
+			expect(impactPeriod(ours).id).toBe(W.SC3_LEDGER.impactPeriod(theirs).id);
+		});
+	it('draws the pilot quarter: its weeks, the two distributors, the channels, the share saved', () => {
+		W.SC3_FLOW.fastForward(0);
+		fastForward(0);
+		const book = stubLedger(store.get());
+		const d = dashboard(book, 'fy27-q2');
+		// the weeks run from the first batch cleared (mid-August), not the quarter's first day
+		expect(d.weeks.length).toBeGreaterThan(6);
+		expect(d.weeks.length).toBeLessThanOrEqual(13);
+		expect(d.weeks[0].from >= book.batches[0].cleared.slice(0, 7)).toBe(true);
+		expect(d.weeks.reduce((t, w) => t + w.closed, 0)).toBe(12);
+		expect(d.byDist.map((x) => x.label).sort()).toEqual(['Lakshmi Agencies', 'Rakesh Traders']);
+		expect(d.byDist[0].kept).toBeGreaterThanOrEqual(d.byDist[1].kept);
+		expect(d.mixKg.map(([id]) => id)).toEqual(['kirana', 'expiresoon', 'staff', 'foodbank', 'writeoff']);
+		expect(d.share).toBeGreaterThan(90);
+		expect(impactPeriod(book).id).toBe('fy27-q2'); // nothing cleared in Q3 yet
 	});
 });

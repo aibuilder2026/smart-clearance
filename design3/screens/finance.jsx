@@ -196,6 +196,140 @@
     return <Screen me={me} title="Paperwork" sub={`${c.batch.id} · prepared by the Paperwork agent ${awarded ? "at the award" : "once every line was done"}`}><PaperPack me={me} c={c} h={s.hero} /></Screen>;
   }
 
+  /* ---------- the Impact reading's dashboard (SC-157, option B) ---------- */
+  // Every figure is a period's rows, derived by core/ledger.js dashboard(). The chart inks are the console's (SC-149),
+  // validated with the dataviz script on the app's surfaces: kept out of landfill in the green, destroyed in clay with a
+  // hatch, donated in the food bank's own ink. One axis, a legend, a table view; the bars grow once (420 ms)
+  const CH_INK = { kirana: "var(--ch-kirana)", expiresoon: "var(--ch-expiresoon)", staff: "var(--ch-staff)", d2c: "var(--ch-d2c)", foodbank: "var(--ch-foodbank)", writeoff: "var(--viz-gone)" };
+  const CH_NAMES = { kirana: "Kirana scheme", expiresoon: "ExpireSoon", staff: "Staff sale", d2c: "Discount D2C", foodbank: "Food bank", writeoff: "Destroyed" };
+  const kgAxis = v => (v >= 1000 ? (v / 1000).toLocaleString("en-IN", { maximumFractionDigits: 1 }) + " t" : Math.round(v) + " kg");
+  const weekLabel = iso => new Date(iso + "T00:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+  const pct = (a, b) => (b ? Math.round(((a - b) / b) * 100) : null);
+  const splitKg = v => (v >= 1000 ? [(v / 1000).toLocaleString("en-IN", { maximumFractionDigits: 2 }), "t"] : [Math.round(v).toLocaleString("en-IN"), "kg"]);
+  function useWidth2(init) { const ref = useRef(null); const [w, setW] = useState(init); useEffect(() => { if (!ref.current || !window.ResizeObserver) return; const ro = new ResizeObserver(e => setW(e[0].contentRect.width)); ro.observe(ref.current); return () => ro.disconnect(); }, []); return [ref, w]; }
+
+  function Spark({ values, gone }) {
+    const W = 92, H = 28, max = Math.max(1, ...values), n = values.length;
+    const X = i => (n > 1 ? (i / (n - 1)) * W : W / 2), Y = v => H - 2 - (v / max) * (H - 6);
+    const line = values.map((v, i) => (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(v).toFixed(1)).join(" ");
+    return <svg className={cx("im-spark", gone && "gone")} viewBox={`0 0 ${W} ${H}`} aria-hidden="true"><path className="a" d={`${line} L${W} ${H} L0 ${H} Z`} /><path className="l" d={line} /></svg>;
+  }
+  function ImpactTile({ icon, label, value, unit, foot, spark, gone, delta, deltaGood }) {
+    const cls = delta == null || delta === 0 ? "" : (delta > 0) === deltaGood ? "up" : "down";
+    return <div className={cx("im-tile", gone && "gone")}>
+      <span className="lbl"><Icon name={icon} size={15} />{label}</span>
+      <span className="val">{value}{unit && <small>{unit}</small>}</span>
+      <span className="foot"><span>{delta != null ? <><span className={cx("delta", cls)}>{delta > 0 ? "+" : ""}{delta}%</span> {foot}</> : foot}</span>{spark}</span>
+    </div>;
+  }
+  // the three figures against the period before, each with its weeks as a sparkline
+  function ImpactTiles({ d, p, prev }) {
+    const t = p.totals, tp = prev && prev.totals; const vs = f => d.weeks.map(f);
+    const [k, ku] = splitKg(t.kg), [g, gu] = splitKg(t.destroyedKg), [c, cu] = splitKg(t.co2);
+    const before = tp ? `vs ${prev.label}` : "first period";
+    return <div className="im-tiles">
+      <ImpactTile icon="leaf" label="Kept out of landfill" value={k} unit={ku} delta={tp ? pct(t.kg, tp.kg) : null} deltaGood foot={before} spark={<Spark values={vs(w => w.kept)} />} />
+      <ImpactTile icon="trash-2" label="Destroyed" value={g} unit={gu} gone foot={d.share != null ? `${d.share}% of the food saved` : "nothing cleared yet"} spark={<Spark values={vs(w => w.destroyed)} gone />} />
+      <ImpactTile icon="cloud" label="CO₂e avoided" value={c} unit={cu} delta={tp ? pct(t.co2, tp.co2) : null} deltaGood foot={`indicative, ${M.RULES.co2PerKg} kg a kg`} spark={<Spark values={vs(w => w.kept)} />} />
+    </div>;
+  }
+
+  const niceStep = x => { const mag = Math.pow(10, Math.floor(Math.log10(x))); return mag * ([1, 2, 2.5, 5, 10].find(m => x / mag <= m) || 10); };
+  function FoodWeeks({ weeks, height = 220, current }) {
+    const [hover, setHover] = useState(null); const [box, cw] = useWidth2(640); const reduce = useReducedMotion();
+    const W = Math.max(300, Math.round(cw)), H = height, pl = 52, pr = 8, pt = 12, pb = 26, n = weeks.length;
+    const up = Math.max(0, ...weeks.map(w => w.kept)), down = Math.max(0, ...weeks.map(w => w.destroyed));
+    const step = up || down ? niceStep(Math.max(up, down * 2) / 4) : 100;
+    const top = Math.max(step * 2, step * Math.ceil(up / step)), bottom = Math.max(step, step * Math.ceil(down / step));
+    const Y = x => pt + ((top - x) / (top + bottom)) * (H - pt - pb); const y0 = Y(0);
+    const slot = (W - pl - pr) / n, bw = Math.max(3, Math.min(26, slot - 6)); const X = i => pl + slot * (i + 0.5);
+    const ticks = []; for (let t = -bottom; t <= top + step / 2; t += step) ticks.push(Math.round(t));
+    const every = Math.max(1, Math.ceil(64 / slot));
+    const bar = (x, y1, from) => { const h = Math.abs(y1 - from), r = Math.min(3, bw / 2, h), k = y1 < from ? 1 : -1; if (h < 0.5) return `M${x} ${from} h${bw} h${-bw} Z`; return `M${x} ${from} V${y1 + k * r} Q${x} ${y1} ${x + r} ${y1} H${x + bw - r} Q${x + bw} ${y1} ${x + bw} ${y1 + k * r} V${from} Z`; };
+    const move = e => { const r = e.currentTarget.getBoundingClientRect(); const px = ((e.clientX - r.left) / r.width) * W; setHover(Math.max(0, Math.min(n - 1, Math.floor((px - pl) / slot)))); };
+    const kept = weeks.reduce((t, w) => t + w.kept, 0), gone = weeks.reduce((t, w) => t + w.destroyed, 0);
+    const w = hover != null ? weeks[hover] : null;
+    return <div className={cx("fw", reduce && "still")} ref={box} onMouseLeave={() => setHover(null)}>
+      <svg viewBox={`0 0 ${W} ${H}`} height={H} onMouseMove={move} role="img" aria-label={`Food a week: ${kg(kept)} kept out of landfill and ${kg(gone)} destroyed`}>
+        <defs><pattern id="fw-hatch" patternUnits="userSpaceOnUse" width="5" height="5" patternTransform="rotate(45)"><rect width="5" height="5" className="hatch-bg" /><line x1="0" y1="0" x2="0" y2="5" className="hatch-ln" /></pattern></defs>
+        {ticks.map(t => <line key={t} className={t ? "gl" : "base"} x1={pl} x2={W - pr} y1={Y(t)} y2={Y(t)} />)}
+        {ticks.map(t => <text key={"t" + t} className="ax" x={pl - 8} y={Y(t) + 4} textAnchor="end">{t < 0 ? "−" + kgAxis(-t) : kgAxis(t)}</text>)}
+        {weeks.map((wk, i) => ((i % every === 0 && i < n - 1) || i === n - 1) && <text key={"x" + i} className="ax" x={X(i)} y={H - 6} textAnchor={i === n - 1 ? "end" : "middle"}>{i === n - 1 && current ? "this week" : weekLabel(wk.from)}</text>)}
+        {hover != null && <rect className="col" x={X(hover) - slot / 2} y={pt} width={slot} height={H - pt - pb} />}
+        {weeks.map((wk, i) => <g key={i}>
+          <path className="kept" style={{ animationDelay: `${Math.min(6 * i, 300)}ms` }} d={bar(X(i) - bw / 2, Y(wk.kept), y0)} />
+          {wk.destroyed > 0 && <path className="gone" style={{ animationDelay: `${Math.min(6 * i, 300) + 120}ms` }} d={bar(X(i) - bw / 2, Y(-wk.destroyed) + 1, y0 + 1)} />}
+        </g>)}
+      </svg>
+      {w && <div className="tip" style={{ left: hover > n / 2 ? `calc(${(X(hover) / W) * 100}% - 204px)` : `calc(${(X(hover) / W) * 100}% + 12px)`, top: 8 }}>
+        <b>Week of {weekLabel(w.from)}</b>
+        <div className="tr"><span><i className="im-sw kept" aria-hidden="true" />Kept out of landfill</span><span>{kg(w.kept)}</span></div>
+        <div className="tr"><span><i className="im-sw gone" aria-hidden="true" />Destroyed</span><span>{w.destroyed ? kg(w.destroyed) : "none"}</span></div>
+        <div className="tr"><span>Batches cleared</span><span>{w.closed}</span></div>
+        <div className="tr"><span>Recovered</span><span>{fmt.inr(w.net)}</span></div>
+      </div>}
+    </div>;
+  }
+  function FoodTable({ weeks }) {
+    return <table className="fw-table"><thead><tr><th>Week of</th><th>Kept out (kg)</th><th>Resold</th><th>Donated</th><th>Destroyed</th><th>Batches</th><th>Recovered</th></tr></thead>
+      <tbody>{weeks.map((w, i) => <tr key={i}><td>{weekLabel(w.from)}</td><td>{w.kept}</td><td>{w.resold}</td><td>{w.donated}</td><td>{w.destroyed}</td><td>{w.closed}</td><td>{fmt.inr(w.net)}</td></tr>)}</tbody></table>;
+  }
+  // food by week: the two figures and the share saved, the legend, the chart or its table
+  function FoodCard({ d, p, prev, height }) {
+    const [table, setTable] = useState(false); const t = p.totals;
+    return <div className="fw-card stack" style={{ gap: 14 }}>
+      <div className="card-head"><span className="card-title">Food, by week</span><Button variant="secondary" size="sm" icon={table ? "activity" : "file-spreadsheet"} aria-pressed={table} onClick={() => setTable(v => !v)}>{table ? "Show as a chart" : "Show as a table"}</Button></div>
+      <div className="fw-head"><span className="fig"><b>{kg(t.kg)}</b><span>kept out of landfill in {p.label}</span></span>{d.share != null && <span className="share">{d.share}% saved</span>}<span className="fig gone"><b>{kg(t.destroyedKg)}</b><span>destroyed</span></span></div>
+      <ul className="fw-legend"><li><i className="im-sw kept" aria-hidden="true" />Kept out of landfill (sold or given)</li><li><i className="im-sw gone" aria-hidden="true" />Destroyed (no channel took it)</li></ul>
+      {table ? <div style={{ overflowX: "auto" }}><FoodTable weeks={d.weeks} /></div> : <FoodWeeks weeks={d.weeks} height={height} current={p.current} />}
+      <span className="im-note">{prev ? `${kg(prev.totals.kg)} kept out and ${kg(prev.totals.destroyedKg)} destroyed in ${prev.label}.` : `Every batch ${W.short} has cleared since ${W.since}; a week is counted when its batches clear.`} CO₂e, disposal and EPR are indicative.</span>
+    </div>;
+  }
+  // where the kilos went, by channel
+  function MixCard({ d, p }) {
+    const total = d.mixKg.reduce((t, m) => t + m[1], 0) || 1; let acc = 0;
+    return <Card className="stack" style={{ gap: 12 }}>
+      <div className="card-head"><span className="card-title">Where the kilos went</span><span className="t-caption subtle">{kg(total)} flagged at risk</span></div>
+      <div className="chart stack snug">
+        <svg viewBox="0 0 600 28" width="100%" height="28" preserveAspectRatio="none" role="img" aria-label="Where the kilos went, by channel">
+          <defs><pattern id="fw-hatch-mix" patternUnits="userSpaceOnUse" width="5" height="5" patternTransform="rotate(45)"><rect width="5" height="5" fill="var(--viz-gone-soft)" /><line x1="0" y1="0" x2="0" y2="5" stroke="var(--viz-gone)" strokeWidth="2.6" /></pattern></defs>
+          {d.mixKg.map(([id, v]) => { const w = (v / total) * 600, x = acc; acc += w; return <rect key={id} x={x + 1} y="0" width={Math.max(0, w - 2)} height="28" rx="5" fill={id === "writeoff" ? "url(#fw-hatch-mix)" : CH_INK[id]} stroke={id === "writeoff" ? "var(--viz-gone)" : "none"}><title>{CH_NAMES[id]}: {kg(v)}</title></rect>; })}
+        </svg>
+      </div>
+      <List>{d.mixKg.map(([id, v]) => <ListRow key={id} leading={<i className={cx("im-sw", id === "writeoff" && "gone")} style={id === "writeoff" ? undefined : { background: CH_INK[id] }} aria-hidden="true" />} title={CH_NAMES[id]} sub={id === "writeoff" ? "expired at the godown; destroyed on your yes" : id === "foodbank" ? `${fmt.num(p.totals.meals)} meals, on the food banks' receipts` : "sold under tax invoices and order logs"} value={<span className="tnum strong">{kg(v)} <span className="subtle t-caption">{Math.round((v / total) * 100)}%</span></span>} />)}</List>
+    </Card>;
+  }
+  // by distributor, by product: a row each, resold, donated and destroyed on one scale
+  function HBars({ rows, product }) {
+    const max = Math.max(1, ...rows.map(r => r.kept + r.destroyed));
+    return <div className="hb">{rows.map(r => <div key={r.label} className="hb-row">
+      <span className="lab">{product && <Product name={r.img} size={26} />}<span>{r.label}</span></span>
+      <span className="bar" aria-hidden="true"><i className="k" style={{ width: (r.resold / max) * 100 + "%" }} />{r.donated > 0 && <i className="n" style={{ width: (r.donated / max) * 100 + "%" }} />}{r.destroyed > 0 && <i className="d" style={{ width: (r.destroyed / max) * 100 + "%" }} />}</span>
+      <span className="v"><b>{kg(r.kept)}</b>{r.destroyed ? ` · ${kg(r.destroyed)} destroyed` : ""} · {r.batches} {r.batches === 1 ? "batch" : "batches"}</span>
+    </div>)}</div>;
+  }
+  function ByCard({ d }) {
+    const [by, setBy] = useState("dist");
+    return <Card className="stack" style={{ gap: 12 }}>
+      <div className="card-head"><span className="card-title">By {by === "dist" ? "distributor" : "product"}</span><Segmented size="sm" label="Group by" value={by} onChange={setBy} options={[{ id: "dist", label: "Distributor" }, { id: "sku", label: "Product" }]} /></div>
+      <HBars rows={by === "dist" ? d.byDist : d.bySku} product={by === "sku"} />
+      <ul className="fw-legend"><li><i className="im-sw kept" aria-hidden="true" />Resold</li><li><i className="im-sw donated" aria-hidden="true" />Donated</li><li><i className="im-sw gone" aria-hidden="true" />Destroyed</li></ul>
+    </Card>;
+  }
+  // the Impact reading, grown into the dashboard (option B): the headline and its working, the tiles and food by week in
+  // the same card, then where the kilos went and by distributor or product, over the period's batches
+  function ImpactReading({ book, p }) {
+    const d = useMemo(() => LG().dashboard(book, p.id), [book, p.id]); const prev = d.prev ? book.periods.find(x => x.id === d.prev) : null;
+    const app = useApp(); const phone = app.bp === "phone";
+    return <>
+      <Card className="stack" style={{ gap: 18 }}>
+        <Headline t={p.totals} reading="impact" p={p} />
+        {p.totals.batches ? <><ImpactTiles d={d} p={p} prev={prev} /><FoodCard d={d} p={p} prev={prev} height={phone ? 200 : 220} /></> : <Empty icon="book-open" title={`Nothing cleared in ${p.label} yet`} body="Each batch joins the ledger when Impact posts it, after its return window closes." />}
+      </Card>
+      {p.totals.batches ? <div className="im-grid two"><MixCard d={d} p={p} /><ByCard d={d} /></div> : null}
+    </>;
+  }
+
   /* ---------- the ledger ---------- */
   const READINGS = [{ id: "money", label: "Money", icon: "coins" }, { id: "gst", label: "GST", icon: "badge-check" }, { id: "impact", label: "Impact", icon: "leaf" }];
   const OUTCOME = { sold: { label: "Sold through", tone: "green", icon: "check" }, leftover: { label: "Left at the godown", icon: "warehouse" }, donation: { label: "Donated", icon: "heart-handshake" } };
@@ -308,7 +442,8 @@
     const book = useMemo(() => LG().ledger(s), [s.hero.posted, s.hero.phase, s.mango.phase]);
     const year = book.periods.find(x => x.kind === "year" && x.current) || book.periods[book.periods.length - 1];
     const [pid, setPid] = useState(year.id); const p = book.periods.find(x => x.id === pid) || year;
-    const [reading, setReading] = useState("money");
+    // the reading the address asks for (the Command Center's Impact card opens the ledger on Impact, SC-157)
+    const { route } = useRoute(); const [reading, setReading] = useState((route && route.params && route.params.reading) || "money");
     const list = book.batches.filter(r => r.cleared >= p.from && r.cleared <= p.to);
     const open = r => go("report", { ref: r.ref });
     const flying = p.current ? book.inFlight : [];
@@ -318,10 +453,10 @@
     return <Screen me={me} title="Ledger" sub={`One ledger, three readings · every batch ${W.short} has cleared since ${book.since}`} actions={!phone && exports}>
       <div className="stack" style={{ gap: 20 }}>
         <div className="row wrap between" style={{ gap: 12 }}><Segmented label="Period" value={p.id} onChange={setPid} options={book.periods.map(x => ({ id: x.id, label: x.label }))} /><span className="row tight wrap" style={{ gap: 12 }}><Segmented label="Reading" value={reading} onChange={setReading} options={READINGS} />{phone && exports}</span></div>
-        <Card className="stack" style={{ gap: 18 }}>
+        {reading === "impact" ? <ImpactReading book={book} p={p} /> : <Card className="stack" style={{ gap: 18 }}>
           <Headline t={p.totals} reading={reading} p={p} />
           {list.length ? <Strip list={list} reading={reading} onOpen={open} /> : <Empty icon="book-open" title={`Nothing cleared in ${p.label} yet`} body={`Each batch joins the ledger when Impact posts it, after its return window closes. ${flying.length ? `${flying.length} ${flying.length === 1 ? "batch is" : "batches are"} still out.` : ""}`} />}
-        </Card>
+        </Card>}
         {flying.length ? <List head="Still out">{flying.map(b => <ListRow key={b.ref} leading={<Product name={b.img} size={40} />} title={b.name} sub={`${b.ref} · ${b.distributorName} · flagged ${dayOf(b.flagged)}`} value={<Badge tone="blue" dot live>{(D.STAGES.find(x => x.id === b.stage) || { title: b.stage }).title}</Badge>} />)}</List> : null}
         {months.map(g => <List key={g.month} head={`${g.label} · ${g.totals.batches} ${g.totals.batches === 1 ? "batch" : "batches"} · ${sumOf(g.totals)}`}>
           {g.items.map(r => <ListRow key={r.ref} chevron onClick={() => open(r)} leading={<Product name={r.img} size={40} />}

@@ -1928,4 +1928,17 @@
   - **Checks:** backend-api 554; the frontend gate passes (core 273 with 9 goldens updated, api 79, workspace 95 with 2 new live tests, admin 17, demo 5, console 3); the e2e and a11y specs follow the card; the browser suites were not run.
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 
+- **SC-157** (In Review, branch `SC-157-esg-dashboard`, stacked on SC-156): Supply chain's ESG and food-waste dashboard, live from the ledger.
+  - **The request:** "Supply chain can have some cool ESG & food waste savings dashboard", with the console's Food kept out of landfill card as the reference.
+  - **Design first:** three options on one board in app v3, `SC-157 design review.html`, each the app itself on the stub:
+    - A, Impact, its own page (recommended);
+    - B, the Impact reading, grown;
+    - C, the flow.
+
+    The maintainer picked **B**, and a small card on the Command Center. Designs, stills and the decision are in `design3/designs/SC-157/`.
+  - **The Impact reading** keeps its headline and gains three tiles against the quarter before (with sparklines), Food by week (SC-149's form, with a table view), Where the kilos went and By distributor or product, over the period's batches. **The Command Center's card** reads the quarter so far and opens the Ledger on Impact (`/report?reading=impact`).
+  - **The figures:** `core/ledger.js` `dashboard()` and `impactPeriod()`, and core's `impact.ts` held to them; derived from the ledger's rows, so the live workspace needs no new route. The inks are SC-149's, validated on the app's surfaces.
+  - **Checks:** the frontend gate passes (core 276 with 3 new, api 79, workspace 97 with 2 new, admin 17, demo 5, console 3); the a11y spec scans the reading, its table and the card; the browser suites were not run.
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

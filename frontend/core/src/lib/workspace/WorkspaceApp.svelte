@@ -28,16 +28,18 @@
 		ref?: string | null;
 		/** the tab of the batch's page the address opens on (?tab=record, SC-142), when it names one */
 		tab?: string | null;
+		/** the Ledger's reading the address opens on (?reading=impact, SC-157), when it names one */
+		reading?: string | null;
 		/** change the address: a screen (and the batch it is about, and the tab of its page), or null for the root;
 		 *  replace swaps the current history entry */
-		navigate: (name: string | null, opts?: { replace?: boolean; ref?: string; tab?: string }) => void;
+		navigate: (name: string | null, opts?: { replace?: boolean; ref?: string; tab?: string; reading?: string }) => void;
 		back: () => void;
 		/** the live workspace's web push on this device */
 		push?: PushControl | null;
 		/** the live workspace's splash, inlined by the host first in <body> */
 		splash?: SplashControl | null;
 	};
-	let { screen, ref = null, tab = null, navigate, back, push = null, splash = null }: Props = $props();
+	let { screen, ref = null, tab = null, reading = null, navigate, back, push = null, splash = null }: Props = $props();
 	// the splash's motion runs on motion's animate()
 	$effect(() => {
 		if (splash) splash.animate = animate as NonNullable<SplashControl['animate']>;
@@ -52,9 +54,13 @@
 
 	let chooser = $state(false);
 	const me = $derived(ws.me);
-	const route = $derived<Route | null>(
-		screen ? { name: screen, params: ref ? (tab ? { ref, tab } : { ref }) : undefined } : null
-	);
+	// the address's parameters, only those it names (undefined when none)
+	const paramsOf = (o: Record<string, string | null>) => {
+		const out: Record<string, string> = {};
+		for (const [k, v] of Object.entries(o)) if (v) out[k] = v;
+		return Object.keys(out).length ? out : undefined;
+	};
+	const route = $derived<Route | null>(screen ? { name: screen, params: paramsOf({ ref, tab, reading }) } : null);
 	const W = $derived(ws.publicInfo?.workspace ?? ws.data.workspace);
 	const live = $derived(ws.kind === 'live');
 
@@ -219,7 +225,13 @@
 				/>{:else}<SignIn onsignin={(id) => signIn(id)} {install} />{/if}{:else}{#key me.id}<RoleApp
 					{me}
 					route={route ?? { name: HOME[me.role] }}
-					ongo={(r) => navigate(r.name, { replace: r.replace, ref: r.params?.ref, tab: r.params?.tab })}
+					ongo={(r) =>
+						navigate(r.name, {
+							replace: r.replace,
+							ref: r.params?.ref,
+							tab: r.params?.tab,
+							reading: r.params?.reading
+						})}
 					onback={() => (history.length > 1 ? back() : navigate(HOME[me.role], { replace: true }))}
 					realCamera
 					pushStep={asking && push ? { push, done: pushDone } : null}
