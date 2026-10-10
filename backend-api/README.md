@@ -198,6 +198,18 @@ by the agents in `agents/`. The contract is `frontend/api/src/types/workspace.ts
   kiranas order, the buyer bids and the Negotiator answers, the distributor dispatches, Paperwork drafts the papers,
   and Impact posts the ledger. Every step is one change with its timeline entry, its
   pushes, its audit line and the agents' next event; nothing here acts for a person.
+- **Packs left at the godown on expiry day** settle by the client's expiry policy (`clients.expiry`, the console's
+  Client profile). Under `godown` (SC-139, migration 0011) the distributor destroys them at his godown through an
+  authorised agency on the client's list (`clients.destruction`, the console's Rules). The case's `destruction` walks
+  `requested`, `reading`, `checked` (or `asked` again), then `approved`:
+  - he sends two photos (signed uploads) and the agency's certificate number;
+  - Vision checks them (`POST /internal/…/destruction/check`);
+  - the operator approves or asks again.
+
+  A `destruction.remind` timer nudges him after `remindDays`. Impact reports only on the yes. The expiry credit note is
+  then the dealer price plus the input GST he reverses on the packs (grossed up) plus the agency's charges, and the
+  destruction certificate is the agency's. The client keeps its own input GST. The history's three leftover batches
+  were destroyed this way, with their photos (`reference/evidence/`).
 - **The money is money.js's** (`domain/money.py`); an agent brings only words (a reason, an offer, a reply), held to the
   computed figures, and a template stands in for whatever it gets wrong (`domain/copy.py`).
 - **What a member sees** is cut to their role on the server (`services/journey/views.py`): the buyer never sees the

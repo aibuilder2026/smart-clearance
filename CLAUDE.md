@@ -1678,4 +1678,66 @@
     - The only note is the old one: the invoice reads "drafted" in Priya's pack after Rakesh issues it.
   - **After it:** production's journey day back at 24 hours; the chips cleared, the Mango Drink at day 0.
 
+- **SC-139** (In Review, branch `SC-139-destroy-at-godown`): packs left at the godown destroyed there, against evidence and a second yes (route B).
+  - **The request:** "If chips are destroyed at go down, ask for a photo and supply chain will need to review and approve it before the entire deal closes, destruction certificate, credit note and other stuffs should be properly generated and validated and realistic as much as possible"; the console's client configuration to match, and the GST papers and invoices to follow; then "I want the destruction image to be done as much reaslistic as possible as it is done today - like landfill etc."
+  - **Design first:** three options on one board in app v3, `SC-139 design review.html`:
+    - A, on Execution;
+    - B, a second yes (recommended);
+    - C, witnessed.
+
+    The maintainer picked **B**. Route A, the full-credit take-back, is offered in the console and built later. The credit is the dealer price, plus the GST gross-up, plus the agency's charges. The history's three leftover batches are restated under route B, with their documents, photos and approvals. Designs, the evidence photos, the build's stills and the decision are in `design3/designs/SC-139/`.
+  - **The policy:** the client's fourth expiry policy, `godown`, "Destroyed at the distributor's godown"; Munchly is set to it. Its settings are in the console's Rules, under Destroyed at the godown (`clients.destruction`):
+    - the two photos asked for;
+    - Vision's check;
+    - the reviewer (Supply Chain);
+    - a reminder after 2 days;
+    - the gross-up;
+    - ₹1.50 a pack in charges;
+    - the authorised agencies, each with its city, authorisation and certificate series. Munchly's are Orange City Enviro Services and Vidarbha Waste Care in Nagpur, and Deccan Green Waste Management in Hyderabad.
+  - **The flow:**
+    - **Expiry day** (or a report that finds packs left) asks the distributor: "Destroy N expired packs at your godown" on his Today, with a push. Impact waits.
+    - **The distributor** sends his evidence:
+      - two photos, taken or uploaded: before, at the godown with the carton's batch label; after, at the landfill with a slate;
+      - the agency from the client's list for his city;
+      - its certificate number.
+
+      The screen names the input GST he reverses in GSTR-3B (Table 4(B)(1)).
+    - **Vision** reads both photos on Gemini: the batch, the count, the slate's batch, count and date, the landfill, the packs destroyed. backend-api holds the read to the batch, the packs left and the day.
+    - **Priya** opens "Review the destruction" on her Command Center. It shows both photos, Vision's checks, the agency on Munchly's list, and what her yes issues. She approves ("Approve · issue the papers"), or asks again with a reason, which re-arms the reminder.
+    - **Only on the yes** does Impact report and the batch close.
+  - **The papers:**
+    - **The Expiry credit note:** a financial note with no GST. Its lines are the dealer price, the input GST he reverses on the packs (grossed up) and the agency's charges, against the agency's certificate. The chips' 144 packs come to ₹3,168.00 + ₹158.40 + ₹216.00 = ₹3,542.40.
+    - **The Destruction certificate** is the agency's, for him: the batch, the packs and kilos, the method (slit open, buried and covered at the authorised municipal landfill), the authorisation, the evidence and who approved it, and the GST he reverses. It is his paper on his portal, not a copy.
+    - **The ITC memo:** Munchly keeps its own input GST on these packs; they were his stock, so he reverses his.
+
+    Paperwork lays out both as PDFs (`expiry_note.html`, `destruction.html`).
+  - **The history, restated:**
+    - Lakshmi Agencies' Masala Oats MF-2406-107: 65 packs, DGW/DC/26-27/0085, CN/0111 ₹3,339.38;
+    - Rakesh Traders' Mango Drink MF-2407-111: 184 packs, OCE/DC/26-27/0217, CN/0115 ₹3,077.40;
+    - Rakesh Traders' Peanut Chikki MF-2407-116: 132 packs, OCE/DC/26-27/0218, CN/0116 ₹2,692.80.
+
+    Each has its two Qwen-Image photos (`design3/system/img/evidence/`, with sidecars), Priya's approval on its day and the agency's certificate. Munchly's input GST is kept.
+  - **The build:**
+    - **design3:** `trade.jsx` DestroyScreen; `brand.jsx` DestructionCard, DestructionSheet and the Command Center's review; `finance.jsx` the godown papers; `money.js` (`expirySettlement` and `realised` with the godown policy, `RULES.destruction`); `flow.js`; `ledger.js`; `platform.js` `destructionDefaults`; the console's Rules and Client profile.
+    - **The port:** core's `DestroyScreen`, `DestructionCard`, `DestructionSheet`, `ExpirySettlement`, `Paper`, `dist.ts` and `partners.ts`; the console's `RulesTab` and `Choice`; the workspace's live source, with both photos uploaded to signed links.
+    - **The contract:** `WsDestruction`, `DestructionInput`, `CaseDetail.destruction`, the godown fields on `WsDoc` and `ExpirySettlement`, `WsSetup.destruction`, and `Client.destruction` in the console.
+    - **backend-api:** migration 0011 (`clients.destruction`, `cases.destruction`, `godown` in the expiry check). In `steps.py`: `send_destruction`, `destruction_checked`, `approve_destruction`, `ask_destruction_again`, `remind_destruction`, and the report's gate. The `destruction.remind` timer. Four workspace routes and `/internal/…/destruction/check`. `destruction.send` and `destruction.approve` in `rbac.json`. The console's rules, and `history.py`'s three batches.
+    - **agents:** Vision's destruction read (`vision_destruction.txt`), and Paperwork's two templates.
+    - **The journey suites:** both leftover suites walk route B (`tests/journey/destruction.ts`): the distributor sends design3's evidence photos, Vision checks them live, and Priya approves. Neither was run.
+  - **Found on the way:**
+    - the swing was a rupee off where the godown credit was rounded a pack at a time;
+    - "Rakesh Traders's" in two sentences;
+    - the review sheet was too narrow at 1440, and its footer overflowed on phones;
+    - the live projection dropped the godown fields, so the note read ₹0.00;
+    - a partner's times stored without a zone were read in the server's.
+  - **Checks:**
+    - backend-api 547 passed, 1 skipped (`test_destruction.py`, 4 new: the whole flow, the reminder, Vision off, the console's settings; the Mango's tests walk route B);
+    - agents 202 passed (4 new);
+    - the frontend gate passes: core 260, api 78, workspace 87, admin 17, demo 5, console 3. The new goldens cover the request to the second yes, and a history batch's godown papers. The new live tests cover Today, the send with both uploads, Priya's review and the cleared moments;
+    - the live fixtures were regenerated, with two new moments (`destruction-asked`, `destruction-checked`);
+    - both PDFs were rendered and read;
+    - the browser suites and the journey suites were not run (SC-55).
+  - **Locally:** migrated to 0011 and rebuilt (`hydrate.sh --reset`): Munchly on `godown`, the three history batches destroyed and approved, and Paperwork laying out their PDFs. The day is 24 hours.
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
