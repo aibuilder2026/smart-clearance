@@ -1915,4 +1915,17 @@
   - **Checks:** the frontend gate passes (core 273, with 9 Execution goldens updated; api 79, workspace 93, admin 17, demo 5, console 3). design3 and the port's stub build were shot at 1440 and 390, light and dark. The workspace's and the demo's a11y specs open the call; the browser suites were not run (SC-55).
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 
+- **SC-156** (In Review, branch `SC-156-outreach-card`): Execution's Outreach card drops the sample message and says where the kirana scheme stands.
+  - **The request:** "messages are sent to multiple kiranas, no need to show them here"; "this block should show something like offer window over like other channels"; "Dont change anything with the VAN delivery map".
+  - **Design first:** three options on one board in app v3, `SC-156 design review.html`, each in five states (queued, open, filled, window over, delivered):
+    - A, the scheme's stops (recommended);
+    - B, the window first;
+    - C, the shops.
+
+    The maintainer picked **A**. Designs, stills and the decision are in `design3/designs/SC-156/`.
+  - **The card** (design3 `brand.jsx` `SchemeCard`, core `SchemeCard.svelte`): the scheme as the shops see it, the figures, the offer window as one line filled by the time gone, four stops with their times (Sent, First order, Closed, Van round), the cluster map untouched, the latest orders, and **The push, as sent** behind a button. The badge follows: queued, open, filled, window over, delivered.
+  - **The data:** the stub's offer carries `closesAt`; backend-api's case view and the contract carry `closedAt`; the live projection carries both and `elapsed`.
+  - **Checks:** backend-api 554; the frontend gate passes (core 273 with 9 goldens updated, api 79, workspace 95 with 2 new live tests, admin 17, demo 5, console 3); the e2e and a11y specs follow the card; the browser suites were not run.
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

@@ -33,4 +33,35 @@ them?
 
 ## The pick
 
-Pending.
+10 Oct: the maintainer picked **A, the scheme's stops**. On the board's question (should the Lister card also say its
+lot grew by the shortfall) they asked for more explanation; the build keeps the Lister card as it is, and the question
+stays open.
+
+## What was built (option A)
+
+- **The card** (design3 `brand.jsx` `SchemeCard`, core `screens/brand/SchemeCard.svelte`), on Execution in place of
+  the Outreach card:
+  - the scheme as the shops see it: the pack and the packets, the pack price with the free packs and the effective
+    price, best before, the distributor and each shop's cap;
+  - the two figures as before; the sample push is gone;
+  - the offer window as one line: its hours, when it closes, filled or ended, filled by the share of the window gone
+    (the live source's clock; the stub reads it from the push and the fill times);
+  - four stops with their times: Sent, First order, Closed, Van round;
+  - the cluster map with the van route, called exactly as before, and the latest three orders;
+  - **The push, as sent** (`aria-expanded`, 44 px, closed): the one message every shop got, with `{shop}` where its
+    own name goes, and its English.
+- **The badge** follows the scheme: queued, open, filled, window over, delivered.
+- **The offer's close times:** the stub's offer carries `closesAt` (design3 `flow.js`, core `flow.ts`); backend-api's
+  case view and the contract carry `closedAt`; the live projection carries both and `elapsed`, the share of the window
+  gone on the journey clock.
+- **Styles:** `screens.css`'s `.ks`, `.kwin`, `.esl-steps.green` and `.kpush`, copied verbatim into core.
+- **Specs:** the e2e flow polls the scheme's stops instead of the progress bar it replaced; the a11y scan of Execution
+  opens the push; two live tests draw the card on the executing and cleared moments.
+
+## Checks
+
+- backend-api 554 passed, 1 skipped; the live fixtures regenerated.
+- The frontend gate passes: core 273 (9 goldens of Execution updated), api 79, workspace 95 (2 new), admin 17,
+  demo 5, console 3.
+- design3's Execution and the port's stub build were shot at 1440 and 390, light and dark (`build/`).
+- The browser suites were not run (SC-55).

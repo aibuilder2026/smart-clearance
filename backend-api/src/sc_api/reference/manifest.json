@@ -8,7 +8,7 @@
 		"design3/screens/admin.jsx": "6540326d10681d19",
 		"design3/system/product.jsx": "2f84d8524b6c54c3",
 		"design3/core/world.js": "5dae63f47252c9c8",
-		"design3/core/flow.js": "c6d209b32104c5b4",
+		"design3/core/flow.js": "597681423b40cf63",
 		"design3/core/ledger.js": "54589c8546394487"
 	},
 	"files": {
@@ -19,7 +19,7 @@
 		"rules.json": "3f19d2a60c06c246",
 		"journey.json": "18a53b818b788315",
 		"money.json": "917ccd7357b40b9f",
-		"flow.json": "06793dc2d3108be3",
+		"flow.json": "89a768cb3ad6d615",
 		"labels/MF-2406-105.webp": "cb8897a7d35f9cd4",
 		"labels/MF-2406-106.webp": "ee3863345078ce6f",
 		"labels/MF-2406-107.webp": "42d577ce0d0c3e23",

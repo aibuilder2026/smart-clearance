@@ -475,7 +475,9 @@ export type Hero = {
 		reserve: number;
 		at: string;
 	};
-	offer: null | { status: string; at: string; shops: number };
+	/** the scheme to the kiranas: when it went, when its window closes (and closed), and the share of the window gone
+	 *  where the source has a clock (SC-156) */
+	offer: null | { status: string; at: string; shops: number; closesAt?: string; closedAt?: string; elapsed?: number };
 	orders: { id: string; units: number; at: string }[];
 	/** the shops that said not this time to the open scheme (SC-130); an order after all takes its shop off */
 	declined?: Record<string, { at: string }>;

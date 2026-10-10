@@ -54,6 +54,15 @@ import type {
 } from '@smart-clearance/api/workspace';
 import { dateOf, dayLabel, dayMonth, dayN, dayTime, hhmm, hourWord, localMinute, minutes, weekday, when } from './when';
 
+// the share of the offer window gone, between the push and the window's end, as far as the clock has come (SC-156)
+const windowElapsed = (from: string, until: string, now: string) => {
+	const a = Date.parse(from),
+		b = Date.parse(until),
+		t = Date.parse(now);
+	if (!(b > a) || Number.isNaN(t)) return undefined;
+	return Math.max(0, Math.min(1, (t - a) / (b - a)));
+};
+
 /** the store's version the screens' State follows (core's store.svelte.ts) */
 export const STATE_VERSION = 5;
 
@@ -539,7 +548,17 @@ function heroOf(detail: CaseDetail | null, today: string): Hero {
 					at: at(j.listing.at)
 				}
 			: null,
-		offer: j.offer ? { status: j.offer.status, at: at(j.offer.at), shops: j.offer.shops } : null,
+		// the scheme's window (SC-156): when it closes or closed, and the share of it gone on the journey clock
+		offer: j.offer
+			? {
+					status: j.offer.status,
+					at: at(j.offer.at),
+					shops: j.offer.shops,
+					closesAt: at(j.offer.closesAt),
+					closedAt: j.offer.closedAt ? at(j.offer.closedAt) : undefined,
+					elapsed: windowElapsed(j.offer.at, j.offer.closesAt, j.offer.closedAt ?? today)
+				}
+			: null,
 		orders: j.orders.map((o) => ({ id: o.id, units: o.units, at: at(o.at) })),
 		// the shops that said not this time (SC-130): a kirana is told its own
 		declined: Object.fromEntries(Object.entries(j.offer?.declined ?? {}).map(([k, v]) => [k, { at: at(v.at) }])),

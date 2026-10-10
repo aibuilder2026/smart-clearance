@@ -390,9 +390,60 @@
   // the raw call stays one tap away, closed, for the audit
   const lotPrice = p => "₹" + (Number.isInteger(p) ? p : p.toFixed(2));
   const andList = a => (a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1]);
-  function ApiCall({ lead, children }) {
+  function ApiCall({ lead, label = "The API call", children }) {
     const [open, setOpen] = useState(false);
-    return <div className="xcall"><div className="row between wrap" style={{ gap: 8 }}>{lead}<button type="button" className="xcall-btn" aria-expanded={open} onClick={() => setOpen(o => !o)}><Icon name="chevron-right" size={15} stroke={2.2} />The API call</button></div>{open && <div className="xcall-body stack tight">{children}</div>}</div>;
+    return <div className="xcall"><div className="row between wrap" style={{ gap: 8 }}>{lead}<button type="button" className="xcall-btn" aria-expanded={open} onClick={() => setOpen(o => !o)}><Icon name="chevron-right" size={15} stroke={2.2} />{label}</button></div>{open && <div className="xcall-body stack tight">{children}</div>}</div>;
+  }
+  // Outreach's scheme to the kiranas (SC-156, option A): the scheme as the shops see it, the figures, the offer window
+  // as one line, four stops with their times, the cluster map and the latest orders as before, and the one push every
+  // shop got behind a button. The window is the client's 48 hours; what no shop takes moves to ExpireSoon when it ends
+  const OFFER_HOURS = 48;
+  const hhmm = t => { const m = /(\d{1,2}):(\d{2})$/.exec(t || ""); return m ? +m[1] + m[2] / 60 : null; };
+  // the share of the window gone, from two same-day times (the stub has no clock); the live source sends its own
+  const windowShare = (from, to) => { const a = hhmm(from), b = hhmm(to); return a != null && b != null && b >= a ? Math.min(1, (b - a) / OFFER_HOURS) : null; };
+  function SchemeCard({ h, line, sku, batch, dist, shops, kiranas, push, vanDate, children }) {
+    const sent = !!h.offer, ordered = h.orders.length, units = h.orders.reduce((t, o) => t + o.units, 0);
+    const filled = sent && units >= line.units, closed = sent && (h.offer.status === "closed" || filled);
+    const last = h.orders[h.orders.length - 1];
+    const closedAt = closed ? h.offer.closedAt || (filled && last ? last.at : h.offer.closesAt) : null;
+    const left = line.units - units, delivered = h.van.status === "done";
+    const elapsed = !sent ? 0 : h.offer.elapsed != null ? h.offer.elapsed : closed ? (filled ? windowShare(h.offer.at, closedAt) || 0 : 1) : 0; // open: the stub has no clock; the live source sends elapsed
+    const badge = !sent ? <Badge>queued</Badge> : delivered ? <Badge tone="green" icon="check">delivered</Badge> : filled ? <Badge tone="green" dot>filled</Badge> : closed ? <Badge icon="hourglass">window over</Badge> : <Badge tone="blue" dot live>open</Badge>;
+    const result = !closed ? null : delivered ? `Delivered on ${possessive(dist.name.split(" ")[0])} van round, ${vanDate}: ${fmt.num(units)} packets to ${ordered} shops.`
+      : filled ? `Filled at ${closedAt}: ${ordered} of ${shops} shops took every packet, before the window closed.`
+      : `The window ended ${closedAt} with ${ordered} of ${shops} shops ordering ${fmt.num(units)}; the ${fmt.num(left)} left moved to ExpireSoon.`;
+    const steps = [["Sent", sent && h.offer.at], ["First order", h.orders[0] && h.orders[0].at], ["Closed", closedAt], ["Van round", delivered && vanDate]];
+    const done = !sent ? 0 : delivered ? 4 : closed ? 3 : ordered ? 2 : 1;
+    const nowAt = !sent || delivered ? -1 : done;
+    const bb = fmt.date(batch.bestBefore);
+    return <Card className="stack snug">
+      <div className="card-head"><span className="row tight"><Aura on={sent && !closed} className="icontile" style={{ borderRadius: 9 }}><Icon name="send" size={17} stroke={2} /></Aura><span className="card-title">Outreach · {shops} kiranas</span></span>{badge}</div>
+      {!sent && <span className="t-footnote muted">Sending the scheme to {shops} kiranas now, in {possessive(dist.name)} name.</span>}
+      <div className="ks" role="group" aria-label="The scheme as the shops see it">
+        <div className="ks-top"><span className="ks-logo" aria-hidden="true"><Icon name="store" size={13} stroke={2.2} /></span><span className="ks-word">The scheme</span><span className="t-caption subtle">as the shops see it</span><span className="ks-win">{OFFER_HOURS}-hour window</span></div>
+        <div className="ks-lot"><span className="ks-thumb"><Product name={sku.img} size={50} /></span>
+          <div className="stack tight" style={{ gap: 3, minWidth: 0 }}>
+            <b className="t-subhead">{sku.brand} {sku.name} · {fmt.num(line.units)} packets</b>
+            <span className="ks-price"><span className="ks-big">₹{line.packPrice.toFixed(2)}</span><span className="t-footnote muted">a pack · {M.RULES.scheme.free} free with every {M.RULES.scheme.buy} · ₹{line.price.toFixed(2)} effective</span></span>
+            <span><span className="ks-date">Best before {bb} · {batch.daysLeft} days</span></span>
+            <span className="t-caption subtle">From {dist.name}, {dist.city} · each shop up to {M.RULES.shopCapTimes}× its {M.RULES.kiranaWindowDays}-day sales</span>
+          </div>
+        </div>
+        {result && <div className="ks-result"><Icon name={filled || delivered ? "badge-check" : "hourglass"} size={17} /><span>{result}</span></div>}
+      </div>
+      <div className="row wrap" style={{ gap: 18 }}><div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={ordered} /><span className="subtle" style={{ fontSize: "0.45em" }}> / {shops}</span></span><span className="t-footnote subtle">kiranas ordered</span></div><div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={units} /><span className="subtle" style={{ fontSize: "0.45em" }}> / {line.units}</span></span><span className="t-footnote subtle">packets</span></div></div>
+      <div className="kwin" aria-label="The offer window">
+        <div className="kwin-head"><span>Offer window · <b>{OFFER_HOURS} h</b></span><span>{!sent ? "opens when the push goes out" : !closed ? <>closes <b>{h.offer.closesAt}</b></> : filled ? <>filled at <b>{closedAt}</b> · closed early</> : <>ended <b>{closedAt}</b></>}</span></div>
+        <div className="kwin-bar"><i className={cx(filled && "filled", closed && !filled && "over")} style={{ width: elapsed * 100 + "%" }} />{closed && <s style={{ left: elapsed * 100 + "%" }} />}</div>
+        <div className="kwin-ticks" aria-hidden="true"><span>{sent ? h.offer.at : "—"}</span><span>{OFFER_HOURS / 2} h</span><span>{OFFER_HOURS} h</span></div>
+      </div>
+      <ol className="esl-steps green" aria-label="Where the scheme stands">{steps.map(([k, t], i) => { const d = done > i && !!t; const now = i === nowAt; return <li key={k} className={cx(d && "done", now && "now")} aria-current={now ? "step" : undefined}><i /><b>{k}</b><span>{d ? t : now ? "waiting" : "\u00a0"}</span></li>; })}</ol>
+      {children}
+      <ClusterMap kiranas={kiranas} orderedCount={ordered} route height={200} />
+      <div className="stack tight">{h.orders.slice(-3).reverse().map(o => { const k = kiranas.find(x => x.id === o.id) || window.SC3_WORLD.KIRANAS.find(x => x.id === o.id); return <div key={o.id} className="row between t-subhead"><span>{k.name} <span className="subtle t-footnote">{k.area}</span></span><span className="tnum strong">{o.units} <span className="subtle t-caption">{o.at}</span></span></div>; })}{!ordered && <span className="t-footnote muted">Orders arrive as shops tap the offer. No shop can order more than {M.RULES.shopCapTimes}× its own {M.RULES.kiranaWindowDays}-day sales.</span>}</div>
+      <ApiCall label="The push, as sent"><div className="kpush"><K.Mark size={28} /><div><span className="hi t-subhead" lang="hi">{push.body.replace(kiranas[0].name, "{shop}")}</span><small>{push.en} · one message to all {shops} shops, each with its own name, in Hindi.</small></div></div></ApiCall>
+      <span className="t-footnote subtle">A shop that says Not this time keeps its {OFFER_HOURS} hours to change its mind. What no shop takes moves to ExpireSoon when the window ends.</span>
+    </Card>;
   }
   function ListerCard({ h, lot, sku, batch, dist, buyer, reserve, client, territories, req, res, onOpen }) {
     const ended = !!h.listing && h.listing.status === "ended"; const last = h.bids[h.bids.length - 1];
@@ -449,15 +500,9 @@
             <div className="card-head"><span className="row tight"><span className="icontile gray" style={{ borderRadius: 9 }}><Icon name="shopping-bag" size={17} stroke={2} /></span><span className="card-title">Lister · ExpireSoon</span></span><Badge>not in this plan</Badge></div>
             <span className="t-footnote muted">{esRow && !esRow.eligible ? `ExpireSoon is left out of this plan (${esRow.reason}).` : "The Router gave ExpireSoon nothing: the other exits pay more a unit."} The Lister has nothing to list.</span>
           </Card>}
-          <Card className="stack snug">
-            <div className="card-head"><span className="row tight"><Aura on={h.offer && units < KL.units} className="icontile" style={{ borderRadius: 9 }}><Icon name="send" size={17} stroke={2} /></Aura><span className="card-title">Outreach · {D.OFFERED} kiranas</span></span><Badge tone="blue" icon="bell">push · Hindi</Badge></div>
-            {h.offer && <div className="banner" style={{ boxShadow: "none", background: "var(--fill)", gridTemplateColumns: "28px minmax(0,1fr)" }}><K.Mark size={28} /><span className="hi t-subhead" lang="hi" style={{ lineHeight: 1.45 }}>{D.PUSH.offer.body}</span></div>}
-            <div className="row wrap" style={{ gap: 18 }}><div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={h.orders.length} /><span className="subtle" style={{ fontSize: "0.45em" }}> / {D.OFFERED}</span></span><span className="t-footnote subtle">kiranas ordered</span></div><div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={units} /><span className="subtle" style={{ fontSize: "0.45em" }}> / {KL.units}</span></span><span className="t-footnote subtle">units</span></div></div>
-            <K.Progress value={units / KL.units} label="Units ordered" />
+          <SchemeCard h={h} line={KL} sku={D.SKUS[HERO.sku]} batch={HERO} dist={D.DISTRIBUTORS[HERO.distributor]} shops={D.OFFERED} kiranas={D.KIRANAS} push={D.PUSH.offer} vanDate={D.JOURNEY.van.date}>
             {h.offer && !h.orders.some(o => o.id === "k0") && <S.PlayAs who="ganesh" route="offer">Order as Ganesh ji</S.PlayAs>}
-            <ClusterMap kiranas={D.KIRANAS} orderedCount={h.orders.length} route height={200} />
-            <div className="stack tight">{h.orders.slice(-3).reverse().map(o => { const k = D.KIRANAS.find(x => x.id === o.id) || window.SC3_WORLD.KIRANAS.find(x => x.id === o.id); return <div key={o.id} className="row between t-subhead"><span>{k.name} <span className="subtle t-footnote">{k.area}</span></span><span className="tnum strong">{o.units} <span className="subtle t-caption">{o.at}</span></span></div>; })}{!h.orders.length && <span className="t-footnote muted">Orders arrive as shops tap the offer. No shop can order more than {M.RULES.shopCapTimes}× its own 14-day sales.</span>}</div>
-          </Card>
+          </SchemeCard>
           <Card className="stack snug">
             <div className="card-head"><span className="row tight"><Aura on={!!lastBid && lastBid.status === "placed"} className="icontile gray" style={{ borderRadius: 9 }}><Icon name="messages-square" size={17} stroke={2} /></Aura><span className="card-title">Negotiator</span></span>{h.award ? <Badge tone="green" icon="check">awarded · ₹{D.COUNTER.price.toFixed(2)}</Badge> : <Badge>reserve ₹13.50 · hidden</Badge>}</div>
             {h.chat.length ? <Chat chat={h.chat} typing={lastBid && lastBid.status === "placed"} /> : <span className="t-footnote muted">Waiting for a bid from outside Munchly's territories. The agent counters anything under the reserve and promises only what Rakesh's calendar can keep.</span>}

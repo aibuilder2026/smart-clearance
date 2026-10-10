@@ -496,6 +496,8 @@ export type Journey = {
 		at: string;
 		shops: number;
 		closesAt: string;
+		/** when it closed: filled, the window ended, or closed early from the console (SC-156) */
+		closedAt: string | null;
 		/** the shops that said not this time (SC-130), by kirana; a kirana is told its own */
 		declined: Record<string, { at: string }>;
 	};

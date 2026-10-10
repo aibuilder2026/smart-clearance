@@ -241,6 +241,9 @@ test('Execution with every order in and the lot awarded', async ({ page }, testI
 	// the Lister's raw call, opened from its card (SC-151): the request and the response
 	await page.getByRole('button', { name: 'The API call' }).click();
 	await expect(page.getByRole('button', { name: 'The API call' })).toHaveAttribute('aria-expanded', 'true');
+	// the Outreach card's push, as sent (SC-156), behind its own button
+	await page.getByRole('button', { name: 'The push, as sent' }).click();
+	await expect(page.getByRole('button', { name: 'The push, as sent' })).toHaveAttribute('aria-expanded', 'true');
 	await hold(page);
 	findings.push(...(await scanHeld(page, "Execution · the Lister's API call open")));
 	await report(testInfo, findings);

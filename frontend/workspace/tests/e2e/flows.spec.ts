@@ -57,10 +57,9 @@ test("flows · Priya's day: signing in, Setup, the agents' plan, the one yes, an
 
 	// the Lister, Outreach and the donation agent at work, then the kiranas' orders coming in
 	await expect(page.getByText('pickup booked')).toBeVisible({ timeout: 15_000 });
-	const units = page.getByRole('progressbar', { name: 'Units ordered' });
-	await expect
-		.poll(async () => Number(await units.getAttribute('aria-valuenow')), { timeout: 20_000 })
-		.toBeGreaterThan(0);
+	// the scheme's stops (SC-156): Sent, then the first order lands
+	const stops = page.getByRole('list', { name: 'Where the scheme stands' });
+	await expect.poll(() => stops.locator('li.done').count(), { timeout: 20_000 }).toBeGreaterThan(1);
 	// the batch's Route Room again, from its tabs; back goes where the batch was opened from
 	await expect(page.getByRole('button', { name: 'Back to Command Center' })).toBeVisible();
 	await page.locator('.bh-tab', { hasText: /^Route/ }).click();

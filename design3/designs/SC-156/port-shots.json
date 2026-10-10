@@ -1,0 +1,2 @@
+[{"path":"/execution/MF-2409-117","out":"build/port-open-1440-light","width":1440,"theme":"light","stage":6,"after":["list","outreach","order"],"height":1400,"click":["text=The push, as sent"]},
+ {"path":"/execution/MF-2409-117","out":"build/port-done-390-dark","width":390,"theme":"dark","stage":9,"height":1900}]
