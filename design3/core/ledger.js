@@ -562,8 +562,97 @@
   const shopName = id => (D.KIRANAS.find(k => k.id === id) || W.KIRANAS.find(k => k.id === id) || { name: id }).name;
   const historyFacts = c => Object.assign({}, c, { sku: c.sku.id || c.sku, dist: c.dist.id || c.dist, kiranas: c.kiranas.map(k => ({ kirana: k.kirana, units: k.units, at: k.at })) });
 
+  // ---------- a batch's record (SC-142): the photos sent for it, the human yeses and the audit trail ----------
+  // backend-api writes the trail from the case's feed (each agent's run) and the audit log (each person's decision, in
+  // their name, the kiranas' orders folded into one row); the stub writes the same rows from the history's steps, or
+  // from the story's feed and audit. A row: { key, at, who: { kind, id, name, org }, text, yes, items? }
+  const YES = ["plan.approve", "docs.review", "destruction.approve"];
+  const agentOf = name => ({ kind: "agent", id: name.toLowerCase().replace(/ agent$/, ""), name, org: null });
+  const personOf = p => ({ kind: "person", id: p.id || null, name: p.name, org: p.org || null });
+  const byOrg = (org, name) => Object.values(D.PEOPLE).find(p => p.org === org) || { id: null, name: name || org, org };
+  const sortAt = rows => rows.map((r, i) => [r, i]).sort((a, z) => (a[0].at < z[0].at ? -1 : a[0].at > z[0].at ? 1 : a[1] - z[1])).map(x => x[0]);
+  function recordOf(c) {
+    const at = k => stepAt(c, k), out = [];
+    const add = (key, who, text, t, x) => { if (t) out.push(Object.assign({ key, at: t, who, text, yes: YES.includes(key) }, x)); };
+    const dist = personOf(byOrg(c.dist.name)), priya = personOf(D.PEOPLE.priya), buyer = personOf(byOrg(c.buyer.name, c.buyer.name));
+    const kl = planned(c, "kirana"), es = planned(c, "expiresoon"), fb = planned(c, "foodbank"), xd = c.destruction;
+    const doc = id => c.docs.find(d => d.id === id && d.status !== "not required");
+    const mfg = c.batch.mfg || D.addDays(c.batch.bestBefore, -c.sku.lifeDays);
+    const split = c.plan.lines.filter(l => l.units > 0 && l.id !== "writeoff").map(l => `${num(l.units)} ${{ kirana: "to the kiranas", expiresoon: "on ExpireSoon", staff: "to the staff sale", foodbank: "to the food bank" }[l.id] || l.id}`).join(", ");
+    add("watch", agentOf("Watcher"), `Flagged ${num(c.plan.units)} of ${num(c.batch.units)} packs at ${c.dist.godown}: ${c.batch.daysLeft} days left, failing every quick-commerce gate`, at("detect"));
+    add("photo.send", dist, "sent the label photo", at("photo"));
+    add("read", agentOf("Vision"), `Read the label: batch ${c.ref}, made ${M.fmt.date(mfg)}, best before ${M.fmt.date(c.batch.bestBefore)}, MRP ${rate(c.sku.mrp)}. Matches the DMS record`, at("read"));
+    add("value", agentOf("Valuer"), `Priced every exit against ${c.batch.daysLeft} days left`, at("value"));
+    add("route", agentOf("Router"), `Split the batch: ${split}; ${M.fmt.inr(c.plan.net)} planned`, at("route"));
+    add("plan.approve", priya, `approved the plan · net ${M.fmt.inr(c.plan.net)}`, at("approve"));
+    if (es) add("list", agentOf("Lister"), `Listed ${num(es.units)} on ExpireSoon in ${c.dist.name}' name (${c.numbers.listing})`, at("listing"));
+    if (kl) add("outreach", agentOf("Outreach"), `Sent the scheme to ${c.offered} kiranas: buy 10, get 2, for 48 hours`, at("offer"));
+    if (fb && c.partner) add("donation", agentOf("Donation"), `Booked ${c.partner.name} for ${num(fb.units)} packs`, at("donation"));
+    if (kl && c.kiranas.length) add("offer.order", { kind: "person", id: null, name: `${c.kiranas.length} kiranas`, org: `${c.dist.name}' scheme` }, `ordered ${num(c.kiranas.reduce((t, k) => t + k.units, 0))} packets`, at("orders"),
+      { items: c.kiranas.map(k => ({ who: { kind: "person", id: null, name: shopName(k.kirana), org: null }, text: `ordered ${num(k.units)} packets`, at: k.at || at("orders") })) });
+    if (c.award) {
+      add("listing.bid", buyer, `bid ${rate(c.award.bid)} on ${c.numbers.listing}`, at("bid"));
+      add("counter", agentOf("Negotiator"), `Countered at ${rate(c.award.price)}`, at("counter"));
+      add("listing.accept", buyer, `accepted ${rate(c.award.price)} and paid the ${M.fmt.inr(c.award.token)} token`, at("accept"));
+    }
+    if (took(c, "foodbank") && c.partner) add("donation.collect", personOf(byOrg(c.partner.name, c.partner.name)), `collected ${num(took(c, "foodbank").units)} packs`, at("collect"));
+    if (kl) add("closeOffer", agentOf("Outreach"), `The scheme closed: ${num(c.kirana.ordered)} of ${num(c.kirana.planned)} packets ordered`, at("closeOffer"));
+    if (took(c, "staff")) add("staff.record", dist, `recorded the staff sale: ${num(took(c, "staff").units)} packs`, at("staff"));
+    if (c.award) add("dispatch.truck", dist, `loaded ${c.buyer.name}'s truck`, at("truck"));
+    add("papers", agentOf("Paperwork"), `Drafted the pack: ${["invoice", "support", "itc", "fssai"].map(doc).filter(Boolean).map(d => (/^s\./.test(d.no) || !d.no ? d.type : d.no)).join(", ")}`, at("papers"));
+    if (doc("invoice")) add("invoice.issue", dist, `issued ${doc("invoice").no} from Tally`, at("invoice"));
+    if (kl) add("dispatch.van", dist, `ran the ${weekday(at("van") || c.cleared)} round: ${c.kiranas.length} drops`, at("van"));
+    add("docs.review", priya, `reviewed ${C}'s credit note and GST memo`, at("review"));
+    if (xd) {
+      add("destroyAsk", agentOf("Impact"), `Asked ${c.dist.name} to destroy the ${num(xd.units)} packs left at ${c.dist.godown}`, at("destroyAsk"));
+      add("destruction.send", dist, `sent the destruction's evidence: ${num(xd.units)} packs, ${xd.agency.name}`, at("destroySent"));
+      add("destroyChecked", agentOf("Vision"), `Checked the destruction's evidence: ${xd.checks.filter(x => x.ok).length} of ${xd.checks.length} checks pass`, xd.checkedAt);
+      add("destruction.approve", priya, `approved the destruction of ${num(xd.units)} packs at ${c.dist.godown}`, xd.approvedAt);
+    }
+    add("ledger", agentOf("Impact"), `Posted the ledger: ${M.fmt.inr(c.actual.net)} recovered`, at("report"));
+    return { ref: c.ref, steps: sortAt(out) };
+  }
+  // the story's batch, in a journey: its feed in order (the agents' runs and each person's step), without the workspace's
+  // setup or another batch's rows, and the decisions only its audit keeps (the papers' review after the pack, the BRSR
+  // sign-off after the ledger). The stub's times are its own (09:19, Mon 5 Oct): kept as they are
+  function storyRecord(s) {
+    const hero = D.BATCHES.find(b => b.hero), others = D.BATCHES.filter(b => !b.hero).map(b => b.id);
+    const KEY = { approved: "plan.approve", destroyApproved: "destruction.approve" };
+    const rows = s.feed.filter(e => e.stage !== "connect" && !/^Mango Drink batch/.test(e.text || "") && !others.some(id => (e.text || "").includes(id)))
+      .map(e => { const key = KEY[e.key] || e.key || "step"; return { key, at: e.at, who: e.agent ? agentOf(e.agent) : personOf(D.PEOPLE[e.person] || { id: e.person, name: e.person }), text: e.text, yes: YES.includes(key) }; });
+    const after = (key, row) => { const i = rows.map(r => r.key).lastIndexOf(key); if (i >= 0) rows.splice(i + 1, 0, row); else rows.push(row); };
+    s.audit.filter(a => a.target === hero.id && /reviewed|signed off/.test(a.what)).slice().reverse().forEach(a => {
+      const key = /reviewed/.test(a.what) ? "docs.review" : "report.signoff";
+      after(key === "docs.review" ? "papers" : "ledger", { key, at: a.at, who: personOf(D.PEOPLE[a.who] || { id: a.who, name: a.who }), text: a.what, yes: YES.includes(key) });
+    });
+    return { ref: hero.id, steps: rows };
+  }
+  // the photos sent for a batch: its label photo, with what Vision read, and the destruction's two, with Vision's checks
+  // (img: the file under the design system's img/)
+  function photosOf(c) {
+    const out = [], dp = byOrg(c.dist.name), xd = c.destruction, at = stepAt(c, "photo");
+    const mfg = c.batch.mfg || D.addDays(c.batch.bestBefore, -c.sku.lifeDays);
+    if (at) out.push({ id: "label", img: `labels/${c.ref}.webp`, at, by: dp.name,
+      read: { at: stepAt(c, "read"), batch: c.ref, mfg, bestBefore: c.batch.bestBefore, mrp: c.sku.mrp, matches: true } });
+    if (xd && xd.photos) ["before", "after"].forEach(w => xd.photos[w] && out.push({ id: w, img: `evidence/${xd.photos[w].name}`, at: xd.photos[w].at, by: dp.name,
+      checks: xd.checks.filter(x => (w === "before" ? ["batch", "count"] : ["slate", "when"]).includes(x.id)) }));
+    return out;
+  }
+  // the story's batch: its label photo once Rakesh has sent it, and the destruction's two once he has sent them
+  function storyPhotos(s) {
+    const hero = D.BATCHES.find(b => b.hero), sku = D.SKUS[hero.sku], h = s.hero, out = [], at = t => (/^\d\d:\d\d$/.test(t || "") ? `${D.DAY0}T${t}` : D.DAY0);
+    const rakesh = D.PEOPLE.rakesh.name;
+    if (h.photo && h.photo.status && h.photo.status !== "requested" && h.photo.status !== "none") out.push({ id: "label", img: `labels/${hero.id}.webp`, at: at(h.photo.at), by: rakesh,
+      read: h.photo.status === "verified" ? { at: at(h.photo.at), batch: hero.id, mfg: hero.mfg || D.addDays(hero.bestBefore, -sku.lifeDays), bestBefore: hero.bestBefore, mrp: sku.mrp, matches: true } : null });
+    const xd = h.destruction;
+    if (xd && xd.photos) ["before", "after"].forEach(w => xd.photos[w] && out.push({ id: w, img: `evidence/${hero.id}-${w}.webp`, at: at(xd.photos[w].at), by: rakesh,
+      checks: (xd.checks || []).filter(x => (w === "before" ? ["batch", "count"] : ["slate", "when"]).includes(x.id)) }));
+    return out;
+  }
+  const record = { recordOf, storyRecord, photosOf, storyPhotos, YES };
+
   const partners = { distBatches, distPapers, moments, whole, storyMoments, storyWhole, scheme, offersFor, pickupsFor, fssaiItems, stepAt, plusHours,
     STOP, distNow, journeyOf, journeys, ordersNow, ordersPast, deliveriesPast, photoOf, shopName, historyFacts, WORLD };
 
-  window.SC3_LEDGER = { HISTORY, STORY_CLEARED, historyCase, storyCase, caseOf, rowOf, rowsOf, totals, periods, ledger, ordersOf, outcomeOf, MIX, partners };
+  window.SC3_LEDGER = { HISTORY, STORY_CLEARED, historyCase, storyCase, caseOf, rowOf, rowsOf, totals, periods, ledger, ordersOf, outcomeOf, MIX, partners, record };
 })();

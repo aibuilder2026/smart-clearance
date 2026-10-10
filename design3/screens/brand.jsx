@@ -455,6 +455,8 @@
     { id: "route", label: "Route Room", short: "Route", icon: "route", from: 2, to: 5, ahead: "from Verify" },
     { id: "execution", label: "Execution", short: "Execution", icon: "activity", from: 6, to: 6, ahead: "starts on approval" },
     { id: "paperwork", label: "Paperwork", short: "Papers", icon: "file-text", from: 7, to: 7, ahead: "after the lines close" },
+    // the batch's record (SC-142): open at every stop, like its Journey
+    { id: "record", label: "Record", short: "Record", icon: "history", from: 99, to: 99, ahead: "" },
   ];
   const BATCH_PART_IDS = BATCH_PARTS.map(p => p.id);
   const stopOf = it => (it.current >= 0 ? it.current : 9);
@@ -463,7 +465,7 @@
   const partAt = it => (it ? (BATCH_PARTS.find(p => p.id !== "journey" && stopOf(it) >= p.from && stopOf(it) <= p.to) || BATCH_PARTS[0]).id : "journey");
   // a screen of the batch, as its tab says it: where the batch stands (amber while it waits for a yes), done, or not yet
   function partState(it, p) {
-    if (p.id === "journey") return {};
+    if (p.id === "journey" || p.id === "record") return {};
     if (p.id === partAt(it)) return { here: true, human: it.human, words: it.human ? "needs your yes" : "where the batch is" };
     return stopOf(it) < p.from ? { ahead: true, words: p.ahead } : { done: true, words: "done" };
   }
@@ -544,8 +546,17 @@
     const feed = <div className="stack snug"><SectionTitle sub="Every hand-off on this batch, as it happens">Agent activity</SectionTitle><Card>{events.length ? <AgentFeed events={events} people={D.PEOPLE} live={it.hero && hm.agentLive ? s.feed.length - 1 : -1} max={phone ? 4 : 8} /> : <span className="t-footnote muted">The agents report here as they work this batch.</span>}</Card></div>;
     return <Screen me={me} title="Journey"><Columns sideWidth={340} main={<>{card}{cluster}</>} side={feed} /></Screen>;
   }
+  // the Record of a batch in a journey (SC-142): the story's batch from its feed and audit; the Mango Drink, which the
+  // stub leaves at its label photo, from its agents' first runs
+  function BatchRecord({ me, it, v }) {
+    const s = useStore(); const L = window.SC3_LEDGER.record;
+    const at = t => (/^\d\d:\d\d$/.test(t || "") ? `${D.DAY0}T${t}` : D.DAY0);
+    const steps = it.hero ? L.storyRecord(s).steps : mangoFeed(v).map(e => ({ key: e.id, at: at(e.at), who: { kind: "agent", id: e.agent.toLowerCase(), name: e.agent, org: null }, text: e.text, yes: false }));
+    return <Screen me={me} title="Record"><S.RecordTab batch={v.id} steps={steps} photos={it.hero ? L.storyPhotos(s) : []} /></Screen>;
+  }
   // one screen of a batch's page
   function BatchPart({ me, it, v, part }) {
+    if (it && part === "record") return <BatchRecord me={me} it={it} v={v} />;
     if (!it || part === "journey") return <BatchJourney me={me} it={it} v={v} />;
     if (part === "route") return <RouteRoom me={me} />;
     if (part === "execution") return it.hero ? <Execution me={me} /> : <NotYet me={me} title="Execution" icon="sparkles" head="Nothing is executing yet" body="Listing, outreach, negotiation and the food-bank booking start the moment the plan is approved." />;
@@ -559,7 +570,13 @@
     // each row opens the batch's page (SC-112): Batches is the operator's (SC-127)
     const live = S.useLive();
     const openRow = v => go(partAt(journeyItems(s, live).find(i => i.ref === v.id)), { ref: v.id });
-    return <Screen me={me} title="Batches" sub="Every lot the Watcher sees, from the DMS export">
+    // every batch that has cleared and passed its best-before (SC-126 took them off the table), by month, each opening
+    // its page on its Record (SC-142)
+    const LG = window.SC3_LEDGER, past = LG.HISTORY.map(h => LG.caseOf(h.ref)).sort((a, z) => (a.cleared < z.cleared ? 1 : -1));
+    const months = []; past.forEach(c => { const m = c.cleared.slice(0, 7); let g = months.find(x => x.m === m); if (!g) months.push(g = { m, label: new Date(c.cleared.slice(0, 10) + "T00:00:00+05:30").toLocaleDateString("en-IN", { month: "long", year: "numeric", timeZone: "Asia/Kolkata" }), items: [] }); g.items.push(c); });
+    const phone = app.bp === "phone";
+    return <Screen me={me} title="Batches" sub="Every lot the Watcher sees, and every batch that has cleared">
+      <div className="stack" style={{ gap: 20 }}><div className="stack tight"><div className="list-head">In view · from the DMS export</div>
       {app.bp === "phone" ? <div className="list">{views.map(v => <BatchRow key={v.id} view={v} compact onOpen={() => openRow(v)} />)}</div> :
       <DataTable label="Batches" rows={views.map(v => ({ ...v, name: v.skuObj.name }))} onRow={openRow} initialSort={["daysLeft", "asc"]} columns={[
         { key: "name", label: "Product", render: v => <span className="row tight"><Product name={v.skuObj.img} size={36} /><span className="stack tight" style={{ gap: 0 }}><b>{v.skuObj.name}</b><span className="mono subtle t-caption">{v.id}</span></span></span> },
@@ -568,7 +585,13 @@
         { key: "risk", label: "At risk", num: true, sortValue: v => v.assess.atRisk, render: v => v.assess.atRisk ? <span className="neg strong">{fmt.num(v.assess.atRisk)}</span> : "—" },
         { key: "gates", label: "Quick-commerce gates", sortable: false, render: v => <GateChips gates={v.assess.gates} size="sm" /> },
         { key: "status", label: "Status", sortValue: v => v.phase || v.assess.status, render: v => <StatusBadge status={v.phase || v.assess.status} /> },
-      ]} />}
+      ]} />}</div>
+      {months.map(g => <List key={g.m} head={`Cleared · ${g.label}`}>{g.items.map(c => { const ph = LG.record.photosOf(c), net = LG.rowOf(c).figures.net;
+        return <ListRow key={c.ref} chevron onClick={() => go("report", { ref: c.ref, tab: "record" })} leading={<Product name={c.sku.img} size={40} />}
+          title={<span className="row tight" style={{ gap: 8, flexWrap: "wrap" }}><span>{c.sku.name}</span><S.OutcomeBadge o={c.outcome} size="sm" /></span>}
+          sub={`${c.ref} · ${c.dist.name} · flagged ${fmt.day(c.flagged)} · cleared ${fmt.day(c.cleared)}${phone ? ` · ${fmt.inr(net)}` : ""}`}
+          value={phone ? null : <span className="row" style={{ gap: 16 }}><span className="rec-count"><Icon name="camera" size={15} />{ph.length} {ph.length === 1 ? "photo" : "photos"}</span><b className="tnum">{fmt.inr(net)}</b></span>} />; })}</List>)}
+      </div>
     </Screen>;
   }
   // what the Watcher sees of a batch, on a watched batch's Journey on the operator's batch page: its days, gates and

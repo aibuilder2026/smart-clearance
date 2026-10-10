@@ -19,7 +19,7 @@
   const HOME = { operator: "command", distributor: "home", retailer: "home", buyer: "market", foodbank: "pickups", admin: "workspace" };
   const PARENT = { listing: "market", offer: "home" };
   const ALWAYS = ["inbox", "profile"];
-  const routesFor = (role) => NAV[role].map((n) => n.id).concat(ALWAYS, role === "buyer" ? ["listing"] : role === "retailer" ? ["offer"] : role === "distributor" ? ["destroy"] : role === "operator" ? ["journey", "route", "execution", "paperwork"] : []);
+  const routesFor = (role) => NAV[role].map((n) => n.id).concat(ALWAYS, role === "buyer" ? ["listing"] : role === "retailer" ? ["offer"] : role === "distributor" ? ["destroy"] : role === "operator" ? ["journey", "route", "execution", "paperwork", "record"] : []);
   const SIDEBAR_BATCHES = 5;
   const WHERE = { command: "Command Center", batches: "Batches", inbox: "Inbox", report: "Ledger", setup: "Setup", profile: "Profile" };
   function screenFor(me, name, opts) {

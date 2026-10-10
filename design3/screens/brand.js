@@ -358,13 +358,15 @@
     { id: "journey", label: "Journey", short: "Journey", icon: "radar", from: 1, to: 1, ahead: "" },
     { id: "route", label: "Route Room", short: "Route", icon: "route", from: 2, to: 5, ahead: "from Verify" },
     { id: "execution", label: "Execution", short: "Execution", icon: "activity", from: 6, to: 6, ahead: "starts on approval" },
-    { id: "paperwork", label: "Paperwork", short: "Papers", icon: "file-text", from: 7, to: 7, ahead: "after the lines close" }
+    { id: "paperwork", label: "Paperwork", short: "Papers", icon: "file-text", from: 7, to: 7, ahead: "after the lines close" },
+    // the batch's record (SC-142): open at every stop, like its Journey
+    { id: "record", label: "Record", short: "Record", icon: "history", from: 99, to: 99, ahead: "" }
   ];
   const BATCH_PART_IDS = BATCH_PARTS.map((p) => p.id);
   const stopOf = (it) => it.current >= 0 ? it.current : 9;
   const partAt = (it) => it ? (BATCH_PARTS.find((p) => p.id !== "journey" && stopOf(it) >= p.from && stopOf(it) <= p.to) || BATCH_PARTS[0]).id : "journey";
   function partState(it, p) {
-    if (p.id === "journey") return {};
+    if (p.id === "journey" || p.id === "record") return {};
     if (p.id === partAt(it)) return { here: true, human: it.human, words: it.human ? "needs your yes" : "where the batch is" };
     return stopOf(it) < p.from ? { ahead: true, words: p.ahead } : { done: true, words: "done" };
   }
@@ -438,7 +440,15 @@
     const feed = /* @__PURE__ */ React.createElement("div", { className: "stack snug" }, /* @__PURE__ */ React.createElement(SectionTitle, { sub: "Every hand-off on this batch, as it happens" }, "Agent activity"), /* @__PURE__ */ React.createElement(Card, null, events.length ? /* @__PURE__ */ React.createElement(AgentFeed, { events, people: D.PEOPLE, live: it.hero && hm.agentLive ? s.feed.length - 1 : -1, max: phone ? 4 : 8 }) : /* @__PURE__ */ React.createElement("span", { className: "t-footnote muted" }, "The agents report here as they work this batch.")));
     return /* @__PURE__ */ React.createElement(Screen, { me, title: "Journey" }, /* @__PURE__ */ React.createElement(Columns, { sideWidth: 340, main: /* @__PURE__ */ React.createElement(React.Fragment, null, card, cluster), side: feed }));
   }
+  function BatchRecord({ me, it, v }) {
+    const s = useStore();
+    const L = window.SC3_LEDGER.record;
+    const at = (t) => /^\d\d:\d\d$/.test(t || "") ? `${D.DAY0}T${t}` : D.DAY0;
+    const steps = it.hero ? L.storyRecord(s).steps : mangoFeed(v).map((e) => ({ key: e.id, at: at(e.at), who: { kind: "agent", id: e.agent.toLowerCase(), name: e.agent, org: null }, text: e.text, yes: false }));
+    return /* @__PURE__ */ React.createElement(Screen, { me, title: "Record" }, /* @__PURE__ */ React.createElement(S.RecordTab, { batch: v.id, steps, photos: it.hero ? L.storyPhotos(s) : [] }));
+  }
   function BatchPart({ me, it, v, part }) {
+    if (it && part === "record") return /* @__PURE__ */ React.createElement(BatchRecord, { me, it, v });
     if (!it || part === "journey") return /* @__PURE__ */ React.createElement(BatchJourney, { me, it, v });
     if (part === "route") return /* @__PURE__ */ React.createElement(RouteRoom, { me });
     if (part === "execution") return it.hero ? /* @__PURE__ */ React.createElement(Execution, { me }) : /* @__PURE__ */ React.createElement(NotYet, { me, title: "Execution", icon: "sparkles", head: "Nothing is executing yet", body: "Listing, outreach, negotiation and the food-bank booking start the moment the plan is approved." });
@@ -457,7 +467,16 @@
     });
     const live = S.useLive();
     const openRow = (v) => go(partAt(journeyItems(s, live).find((i) => i.ref === v.id)), { ref: v.id });
-    return /* @__PURE__ */ React.createElement(Screen, { me, title: "Batches", sub: "Every lot the Watcher sees, from the DMS export" }, app.bp === "phone" ? /* @__PURE__ */ React.createElement("div", { className: "list" }, views.map((v) => /* @__PURE__ */ React.createElement(BatchRow, { key: v.id, view: v, compact: true, onOpen: () => openRow(v) }))) : /* @__PURE__ */ React.createElement(DataTable, { label: "Batches", rows: views.map((v) => ({ ...v, name: v.skuObj.name })), onRow: openRow, initialSort: ["daysLeft", "asc"], columns: [
+    const LG = window.SC3_LEDGER, past = LG.HISTORY.map((h) => LG.caseOf(h.ref)).sort((a, z) => a.cleared < z.cleared ? 1 : -1);
+    const months = [];
+    past.forEach((c) => {
+      const m = c.cleared.slice(0, 7);
+      let g = months.find((x) => x.m === m);
+      if (!g) months.push(g = { m, label: (/* @__PURE__ */ new Date(c.cleared.slice(0, 10) + "T00:00:00+05:30")).toLocaleDateString("en-IN", { month: "long", year: "numeric", timeZone: "Asia/Kolkata" }), items: [] });
+      g.items.push(c);
+    });
+    const phone = app.bp === "phone";
+    return /* @__PURE__ */ React.createElement(Screen, { me, title: "Batches", sub: "Every lot the Watcher sees, and every batch that has cleared" }, /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 20 } }, /* @__PURE__ */ React.createElement("div", { className: "stack tight" }, /* @__PURE__ */ React.createElement("div", { className: "list-head" }, "In view · from the DMS export"), app.bp === "phone" ? /* @__PURE__ */ React.createElement("div", { className: "list" }, views.map((v) => /* @__PURE__ */ React.createElement(BatchRow, { key: v.id, view: v, compact: true, onOpen: () => openRow(v) }))) : /* @__PURE__ */ React.createElement(DataTable, { label: "Batches", rows: views.map((v) => ({ ...v, name: v.skuObj.name })), onRow: openRow, initialSort: ["daysLeft", "asc"], columns: [
       { key: "name", label: "Product", render: (v) => /* @__PURE__ */ React.createElement("span", { className: "row tight" }, /* @__PURE__ */ React.createElement(Product, { name: v.skuObj.img, size: 36 }), /* @__PURE__ */ React.createElement("span", { className: "stack tight", style: { gap: 0 } }, /* @__PURE__ */ React.createElement("b", null, v.skuObj.name), /* @__PURE__ */ React.createElement("span", { className: "mono subtle t-caption" }, v.id))) },
       { key: "dist", label: "Distributor", sortValue: (v) => v.dist.name, render: (v) => /* @__PURE__ */ React.createElement("span", null, v.dist.name, /* @__PURE__ */ React.createElement("div", { className: "t-caption subtle" }, v.dist.city)) },
       { key: "daysLeft", label: "Days left", num: true },
@@ -465,7 +484,21 @@
       { key: "risk", label: "At risk", num: true, sortValue: (v) => v.assess.atRisk, render: (v) => v.assess.atRisk ? /* @__PURE__ */ React.createElement("span", { className: "neg strong" }, fmt.num(v.assess.atRisk)) : "—" },
       { key: "gates", label: "Quick-commerce gates", sortable: false, render: (v) => /* @__PURE__ */ React.createElement(GateChips, { gates: v.assess.gates, size: "sm" }) },
       { key: "status", label: "Status", sortValue: (v) => v.phase || v.assess.status, render: (v) => /* @__PURE__ */ React.createElement(StatusBadge, { status: v.phase || v.assess.status }) }
-    ] }));
+    ] })), months.map((g) => /* @__PURE__ */ React.createElement(List, { key: g.m, head: `Cleared · ${g.label}` }, g.items.map((c) => {
+      const ph = LG.record.photosOf(c), net = LG.rowOf(c).figures.net;
+      return /* @__PURE__ */ React.createElement(
+        ListRow,
+        {
+          key: c.ref,
+          chevron: true,
+          onClick: () => go("report", { ref: c.ref, tab: "record" }),
+          leading: /* @__PURE__ */ React.createElement(Product, { name: c.sku.img, size: 40 }),
+          title: /* @__PURE__ */ React.createElement("span", { className: "row tight", style: { gap: 8, flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("span", null, c.sku.name), /* @__PURE__ */ React.createElement(S.OutcomeBadge, { o: c.outcome, size: "sm" })),
+          sub: `${c.ref} · ${c.dist.name} · flagged ${fmt.day(c.flagged)} · cleared ${fmt.day(c.cleared)}${phone ? ` · ${fmt.inr(net)}` : ""}`,
+          value: phone ? null : /* @__PURE__ */ React.createElement("span", { className: "row", style: { gap: 16 } }, /* @__PURE__ */ React.createElement("span", { className: "rec-count" }, /* @__PURE__ */ React.createElement(Icon, { name: "camera", size: 15 }), ph.length, " ", ph.length === 1 ? "photo" : "photos"), /* @__PURE__ */ React.createElement("b", { className: "tnum" }, fmt.inr(net)))
+        }
+      );
+    })))));
   }
   function BatchFacts({ view: sel }) {
     const s = useStore();

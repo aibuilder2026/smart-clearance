@@ -3,7 +3,7 @@
   const { motion, AnimatePresence, useReducedMotion } = Motion;
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, Flow = window.SC3_FLOW, S = window.SC3_SCREENS;
   const fmt = M.fmt;
-  const { cx, Icon, Badge, Button, Card, List, ListRow, Segmented, Sheet, Product, Empty, Money, Roll, Tile, MoneyPanel, DocCard, Menu, useApp, useNotice } = K;
+  const { cx, Icon, Badge, Button, Card, List, ListRow, Segmented, Sheet, Product, Empty, Money, Roll, Tile, MoneyPanel, DocCard, Menu, Avatar, useApp, useNotice } = K;
   const { useStore, useRoute, Screen, Columns, SectionTitle, Locked } = S;
   const LG = () => window.SC3_LEDGER;
   const r2 = (n) => Math.round(n * 100) / 100;
@@ -319,7 +319,7 @@
       }
     )))), /* @__PURE__ */ React.createElement("p", { className: "t-footnote subtle" }, "Every figure is the batch's posted ledger, as money.js works it out. CO₂e, disposal and EPR are indicative. The companies and people are fictional.")));
   }
-  const TABS = [{ id: "money", label: "Money", icon: "coins" }, { id: "papers", label: "Papers", icon: "file-text" }, { id: "impact", label: "Impact", icon: "leaf" }];
+  const TABS = [{ id: "money", label: "Money", icon: "coins" }, { id: "papers", label: "Papers", icon: "file-text" }, { id: "impact", label: "Impact", icon: "leaf" }, { id: "record", label: "Record", icon: "history" }];
   const Row = ({ k, sub, v, tone, strong }) => /* @__PURE__ */ React.createElement("div", { className: cx("lg-line", strong && "strong") }, /* @__PURE__ */ React.createElement("span", null, k, sub && /* @__PURE__ */ React.createElement("em", null, " ", sub)), /* @__PURE__ */ React.createElement("span", { className: cx("tnum", tone) }, v));
   const NotPosted = ({ h }) => /* @__PURE__ */ React.createElement(Locked, { icon: "book-open-check", agent: "Impact agent", live: h.phase === "settled" && h.van && h.van.status === "done", text: `Posts the batch to the ledger once the return window closes on ${fmt.day(D.RETURN_BY)}, and writes the BRSR row with evidence links.` });
   function MoneyTab({ c, row, h }) {
@@ -350,6 +350,59 @@
       }
     );
   }
+  const PHOTO = { label: ["Label photo", "Label"], before: ["Before, at the godown", "1 · Before"], after: ["After, at the landfill", "2 · After"] };
+  const asDay = (iso) => /* @__PURE__ */ new Date(iso.slice(0, 10) + "T00:00:00+05:30");
+  const isIso = (t) => /^\d{4}-\d\d-\d\d/.test(t || "");
+  const recWhen = (t) => !t ? "" : !isIso(t) ? t : t.length > 10 ? `${fmt.day(t.slice(0, 10))}, ${t.slice(11, 16)}` : fmt.day(t);
+  const recDay = (iso) => asDay(iso).toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
+  const photoSrc = (p) => p.url || (p.img ? window.SC3_IMG + p.img : null);
+  const upFirst = (t) => t ? t.charAt(0).toUpperCase() + t.slice(1) : t;
+  function PhotoShot({ p, onOpen }) {
+    const src = photoSrc(p), [title, tag] = PHOTO[p.id];
+    if (!src) return /* @__PURE__ */ React.createElement("div", { className: "rec-shot none" }, /* @__PURE__ */ React.createElement(Icon, { name: "image", size: 20 }), /* @__PURE__ */ React.createElement("span", { className: "t-caption" }, "no photo kept"));
+    return /* @__PURE__ */ React.createElement("button", { type: "button", className: "rec-shot", onClick: onOpen, "aria-label": `${title}, sent ${recWhen(p.at)}: open it` }, /* @__PURE__ */ React.createElement("img", { src, alt: `${title} for this batch`, loading: "lazy" }), /* @__PURE__ */ React.createElement("span", { className: "cam-tag" }, tag));
+  }
+  const RecCheck = ({ ok, children }) => /* @__PURE__ */ React.createElement("div", { className: "row tight t-footnote rec-check" }, /* @__PURE__ */ React.createElement(Icon, { name: ok ? "circle-check" : "circle-alert", size: 15, className: ok ? "rec-ok" : "rec-warn" }), children);
+  function PhotoFacts({ p }) {
+    const r = p.read;
+    return /* @__PURE__ */ React.createElement("div", { className: "stack tight" }, /* @__PURE__ */ React.createElement("span", { className: "t-footnote muted" }, "Sent by ", p.by, " · ", recWhen(p.at)), r && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(RecCheck, { ok: true }, "Vision read batch ", r.batch, ", made ", fmt.date(r.mfg), ", best before ", fmt.date(r.bestBefore), ", MRP ₹", Number(r.mrp).toFixed(2), r.at ? ` · ${recWhen(r.at)}` : ""), /* @__PURE__ */ React.createElement(RecCheck, { ok: r.matches !== false }, r.matches !== false ? "Matches the export" : "Does not match the export")), (p.checks || []).map((x) => /* @__PURE__ */ React.createElement(RecCheck, { key: x.id, ok: x.ok }, x.label)));
+  }
+  function PhotoSheet({ p, onClose }) {
+    return /* @__PURE__ */ React.createElement(Sheet, { open: !!p, onClose, title: p ? PHOTO[p.id][0] : "" }, p && /* @__PURE__ */ React.createElement("div", { className: "stack" }, /* @__PURE__ */ React.createElement("div", { className: "rec-big" }, /* @__PURE__ */ React.createElement("img", { src: photoSrc(p), alt: `${PHOTO[p.id][0]} for this batch` })), /* @__PURE__ */ React.createElement(PhotoFacts, { p })));
+  }
+  function RecordPhotos({ photos, title, empty }) {
+    const [open, setOpen] = useState(null);
+    return /* @__PURE__ */ React.createElement(Card, { className: "stack snug" }, /* @__PURE__ */ React.createElement("div", { className: "card-head" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, title), photos.length > 0 && /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, photos.length, " · tap to open")), photos.length ? /* @__PURE__ */ React.createElement("div", { className: cx("rec-photos", photos.length === 2 && "two") }, photos.map((p) => /* @__PURE__ */ React.createElement("div", { key: p.id, className: "rec-photo" }, /* @__PURE__ */ React.createElement(PhotoShot, { p, onOpen: () => setOpen(p) }), /* @__PURE__ */ React.createElement("b", { className: "t-subhead" }, PHOTO[p.id][0]), /* @__PURE__ */ React.createElement(PhotoFacts, { p })))) : /* @__PURE__ */ React.createElement("span", { className: "t-footnote muted" }, empty), /* @__PURE__ */ React.createElement(PhotoSheet, { p: open, onClose: () => setOpen(null) }));
+  }
+  const AGENT_ICON = { watcher: "radar", vision: "scan-line", valuer: "coins", router: "route", lister: "shopping-bag", outreach: "send", negotiator: "messages-square", donation: "heart-handshake", paperwork: "file-text", impact: "leaf", data: "database", notifier: "bell" };
+  function Actor({ who, size = 36 }) {
+    if (who.kind === "person" && who.id) return /* @__PURE__ */ React.createElement(Avatar, { person: D.PEOPLE[who.id] || { name: who.name }, size: size < 36 ? "sm" : void 0 });
+    const icon = who.kind === "agent" ? AGENT_ICON[who.id] || "sparkles" : "store";
+    return /* @__PURE__ */ React.createElement("span", { className: cx("icontile", who.kind === "agent" && "soft"), style: { width: size, height: size, borderRadius: 11 } }, /* @__PURE__ */ React.createElement(Icon, { name: icon, size: Math.round(size * 0.47), stroke: 2 }));
+  }
+  const whoLine = (w) => w.kind === "agent" ? `${w.name} · agent` : w.org ? `${w.name} · ${w.org}` : w.name;
+  function RecordYeses({ steps }) {
+    const yes = steps.filter((x) => x.yes);
+    return /* @__PURE__ */ React.createElement(Card, { className: "stack snug" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, "The yeses"), /* @__PURE__ */ React.createElement("span", { className: "t-footnote muted" }, "What only a person at ", W.short, " could let happen, in their name."), yes.length ? yes.map((x) => /* @__PURE__ */ React.createElement("div", { key: x.key + x.at, className: "rec-yes" }, /* @__PURE__ */ React.createElement(Actor, { who: x.who, size: 32 }), /* @__PURE__ */ React.createElement("div", { className: "grow", style: { minWidth: 0 } }, /* @__PURE__ */ React.createElement("b", { className: "t-subhead" }, x.who.name), /* @__PURE__ */ React.createElement("div", { className: "t-footnote muted" }, upFirst(x.text))), /* @__PURE__ */ React.createElement("time", { className: "t-caption subtle tnum" }, recWhen(x.at)))) : /* @__PURE__ */ React.createElement("span", { className: "t-footnote muted" }, "No yes yet: the plan waits for one."));
+  }
+  function RecordTrail({ steps, batch }) {
+    const [who, setWho] = useState("all");
+    const [unfold, setUnfold] = useState({});
+    const rows = steps.filter((x) => who === "all" || (who === "people" ? x.who.kind !== "agent" : x.who.kind === "agent"));
+    const days = [];
+    rows.forEach((x) => {
+      const d = isIso(x.at) ? x.at.slice(0, 10) : "";
+      let g = days[days.length - 1];
+      if (!g || g.d !== d) days.push(g = { d, items: [] });
+      g.items.push(x);
+    });
+    const people = steps.filter((x) => x.who.kind !== "agent").length;
+    const save = () => download(`${batch}-audit-trail.csv`, csv([["When", "Who", "As", "What", "Yes"]].concat(rows.flatMap((x) => [[isIso(x.at) ? x.at.replace("T", " ") : x.at, x.who.name, x.who.kind === "agent" ? "agent" : x.who.org || "", upFirst(x.text), x.yes ? "yes" : ""]].concat((x.items || []).map((i) => [i.at.replace("T", " "), i.who.name, "kirana", upFirst(i.text), ""]))))));
+    return /* @__PURE__ */ React.createElement(Card, { className: "stack snug" }, /* @__PURE__ */ React.createElement("div", { className: "card-head" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, "Audit trail"), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, steps.length, " steps · ", people, " by people")), /* @__PURE__ */ React.createElement("div", { className: "rec-filters", role: "group", "aria-label": "Whose steps" }, [["all", "Everyone"], ["people", "People"], ["agents", "Agents"]].map(([k, t]) => /* @__PURE__ */ React.createElement("button", { key: k, type: "button", className: "chip", "aria-pressed": who === k, onClick: () => setWho(k) }, t))), /* @__PURE__ */ React.createElement("div", { className: "rec-trail" }, days.map((g, gi) => /* @__PURE__ */ React.createElement(Fragment, { key: g.d + gi }, (g.d || gi === 0) && /* @__PURE__ */ React.createElement("div", { className: "rec-day" }, g.d ? recDay(g.d) : "This journey"), g.items.map((x, i) => /* @__PURE__ */ React.createElement("div", { key: x.key + x.at + i, className: cx("rec-row", i === g.items.length - 1 && "end") }, /* @__PURE__ */ React.createElement(Actor, { who: x.who }), /* @__PURE__ */ React.createElement("div", { style: { minWidth: 0 } }, /* @__PURE__ */ React.createElement("span", { className: "who" }, whoLine(x.who)), /* @__PURE__ */ React.createElement("b", null, upFirst(x.text), x.yes && /* @__PURE__ */ React.createElement(React.Fragment, null, " ", /* @__PURE__ */ React.createElement(Badge, { size: "sm", tone: "amber" }, "yes"))), x.items && x.items.length > 0 && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", { type: "button", className: "pt-link t-footnote", "aria-expanded": !!unfold[x.key + x.at], onClick: () => setUnfold((u) => Object.assign({}, u, { [x.key + x.at]: !u[x.key + x.at] })) }, unfold[x.key + x.at] ? "Hide" : "Show", " the ", x.items.length, " ", x.items.length === 1 ? "order" : "orders"), unfold[x.key + x.at] && /* @__PURE__ */ React.createElement("div", { className: "rec-items" }, x.items.map((y, j) => /* @__PURE__ */ React.createElement("div", { key: j, className: "row between t-footnote" }, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("b", null, y.who.name), " ", y.text), /* @__PURE__ */ React.createElement("span", { className: "subtle tnum" }, isIso(y.at) ? y.at.slice(11, 16) : y.at)))))), /* @__PURE__ */ React.createElement("time", null, isIso(x.at) ? x.at.slice(11, 16) : x.at)))))), /* @__PURE__ */ React.createElement(Button, { variant: "secondary", icon: "download", onClick: save, style: { justifySelf: "start" } }, "Download the audit trail (CSV)"));
+  }
+  function RecordTab({ batch, steps, photos }) {
+    return /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 16 } }, /* @__PURE__ */ React.createElement(RecordPhotos, { photos, title: "Photos sent for this batch", empty: "No photo yet: Vision asks the distributor for the carton's label once the Watcher flags the batch." }), /* @__PURE__ */ React.createElement("div", { className: "rec-cols" }, /* @__PURE__ */ React.createElement(RecordTrail, { steps, batch }), /* @__PURE__ */ React.createElement(RecordYeses, { steps })));
+  }
   function BatchPage({ me, at, tab: tab0 }) {
     const s = useStore();
     const app = useApp();
@@ -358,7 +411,7 @@
     const story = !c.history, h = story ? s.hero : CLEARED, row = !story || s.hero.posted ? LG().rowOf(c) : null;
     const [tab, setTab] = useState(tab0 || "money");
     const head = /* @__PURE__ */ React.createElement("div", { className: "bhead" }, /* @__PURE__ */ React.createElement("div", { className: "bh-id" }, /* @__PURE__ */ React.createElement("span", { className: "bh-pic", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Product, { name: c.sku.img, size: phone ? 46 : 72, alt: "" })), /* @__PURE__ */ React.createElement("div", { className: "bh-tt" }, /* @__PURE__ */ React.createElement("h1", null, c.sku.name), /* @__PURE__ */ React.createElement("div", { className: "bh-meta" }, /* @__PURE__ */ React.createElement("span", { className: "mono" }, c.batch.id), /* @__PURE__ */ React.createElement("span", { className: "sep", "aria-hidden": "true" }, "·"), /* @__PURE__ */ React.createElement("span", null, c.dist.name, ", ", c.dist.city)), /* @__PURE__ */ React.createElement("div", { className: "bh-meta" }, row ? /* @__PURE__ */ React.createElement(OutcomeBadge, { o: row.outcome }) : /* @__PURE__ */ React.createElement(Badge, { tone: "blue", dot: true, live: true }, "In flight"), /* @__PURE__ */ React.createElement("span", null, "Flagged ", dayOf(c.flagged), row ? ` · cleared ${dayOf(row.cleared)}` : "")))), /* @__PURE__ */ React.createElement("nav", { className: "bh-tabs", "aria-label": `${c.sku.name}, ${c.batch.id}` }, TABS.map((t) => /* @__PURE__ */ React.createElement("button", { key: t.id, type: "button", className: "bh-tab", "aria-current": tab === t.id ? "page" : void 0, onClick: () => setTab(t.id) }, tab === t.id && /* @__PURE__ */ React.createElement(motion.span, { layoutId: "lg-tab-thumb", className: "bh-tab-thumb", transition: { type: "spring", stiffness: 500, damping: 40 } }), !phone && /* @__PURE__ */ React.createElement(Icon, { name: t.icon, size: 16 }), /* @__PURE__ */ React.createElement("span", null, t.label)))));
-    return /* @__PURE__ */ React.createElement(Screen, { me, title: c.sku.name, back: "Ledger", hideLarge: true, below: head }, /* @__PURE__ */ React.createElement(AnimatePresence, { mode: "wait" }, /* @__PURE__ */ React.createElement(motion.div, { key: tab, initial: { opacity: 0, y: 6 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0 }, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } }, tab === "money" ? /* @__PURE__ */ React.createElement(MoneyTab, { c, row, h }) : tab === "papers" ? /* @__PURE__ */ React.createElement(PaperPack, { me, c, h }) : /* @__PURE__ */ React.createElement(ImpactTab, { c, row, h }))));
+    return /* @__PURE__ */ React.createElement(Screen, { me, title: c.sku.name, back: "Ledger", hideLarge: true, below: head }, /* @__PURE__ */ React.createElement(AnimatePresence, { mode: "wait" }, /* @__PURE__ */ React.createElement(motion.div, { key: tab, initial: { opacity: 0, y: 6 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0 }, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } }, tab === "money" ? /* @__PURE__ */ React.createElement(MoneyTab, { c, row, h }) : tab === "papers" ? /* @__PURE__ */ React.createElement(PaperPack, { me, c, h }) : tab === "record" ? /* @__PURE__ */ React.createElement(RecordTab, { batch: c.batch.id, steps: (story ? LG().record.storyRecord(s) : LG().record.recordOf(c)).steps, photos: story ? LG().record.storyPhotos(s) : LG().record.photosOf(c) }) : /* @__PURE__ */ React.createElement(ImpactTab, { c, row, h }))));
   }
   function Report({ me, at }) {
     const { route } = useRoute();
@@ -366,5 +419,5 @@
     const ref = at && at.ref || p.ref;
     return ref && LG().caseOf(ref) ? /* @__PURE__ */ React.createElement(BatchPage, { key: ref, me, at: ref, tab: at && at.tab || p.tab }) : /* @__PURE__ */ React.createElement(Ledger, { me });
   }
-  Object.assign(window.SC3_SCREENS, { Paperwork, PaperPack, Report, Ledger, BatchPage, Paper, Receipt, KeepsWhat, OutcomeBadge, printPage, download, csv });
+  Object.assign(window.SC3_SCREENS, { RecordTab, RecordPhotos, PhotoSheet, PhotoFacts, Paperwork, PaperPack, Report, Ledger, BatchPage, Paper, Receipt, KeepsWhat, OutcomeBadge, printPage, download, csv });
 })();

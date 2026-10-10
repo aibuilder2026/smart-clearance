@@ -571,7 +571,15 @@
     }))), watching.length ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(SectionTitle, { sub: "From your nightly DMS export: nothing at risk" }, "Watching"), /* @__PURE__ */ React.createElement("div", { className: "list" }, watching.map((b) => /* @__PURE__ */ React.createElement(BatchRow, { key: b.id, view: D.batchView(b), compact: phone, onOpen: () => {
     } })))) : null));
   }
-  const DIST_TABS = [{ id: "what", label: "What happened", icon: "history" }, { id: "money", label: "Money", icon: "coins" }, { id: "papers", label: "Papers", icon: "file-text" }];
+  const DIST_TABS = [{ id: "what", label: "What happened", icon: "history" }, { id: "money", label: "Money", icon: "coins" }, { id: "papers", label: "Papers", icon: "file-text" }, { id: "photos", label: "Photos", icon: "camera" }];
+  function DistPhotos({ c, story, s }) {
+    const R = window.SC3_LEDGER.record;
+    const full = story ? null : window.SC3_LEDGER.caseOf(c.ref);
+    const photos = story ? R.storyPhotos(s) : R.photosOf(full);
+    const yes = story ? null : R.recordOf(full).steps.find((x) => x.key === "destruction.approve");
+    const note = c.docs.find((d) => d.id === "expiry" && d.status !== "not required");
+    return /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 16 } }, /* @__PURE__ */ React.createElement(S.RecordPhotos, { photos, title: "Your photos for this batch", empty: "No photo yet: Vision asks for the carton's label once the Watcher flags the batch." }), yes && /* @__PURE__ */ React.createElement(Card, { className: "stack snug" }, /* @__PURE__ */ React.createElement("span", { className: "card-title" }, "Approved"), /* @__PURE__ */ React.createElement("div", { className: "rec-yes" }, /* @__PURE__ */ React.createElement(Avatar, { person: D.PEOPLE[yes.who.id] || { name: yes.who.name }, size: "sm" }), /* @__PURE__ */ React.createElement("div", { className: "grow", style: { minWidth: 0 } }, /* @__PURE__ */ React.createElement("b", { className: "t-subhead" }, yes.who.name), /* @__PURE__ */ React.createElement("div", { className: "t-footnote muted" }, yes.text.charAt(0).toUpperCase() + yes.text.slice(1))), /* @__PURE__ */ React.createElement("time", { className: "t-caption subtle tnum" }, fmt.day(yes.at.slice(0, 10)), ", ", yes.at.slice(11, 16))), note && /* @__PURE__ */ React.createElement("span", { className: "t-footnote muted" }, D.WORKSPACE.short, " credited you on ", note.no, " once it approved.")));
+  }
   function DistBatch({ me, dist, id }) {
     const s = useStore();
     const reduce = useReducedMotion();
@@ -599,6 +607,7 @@
     if (second) body = /* @__PURE__ */ React.createElement(Locked, { icon: "history", agent: "Smart-Clearance", text: `The agents act in your name on ${sku.name}: its moments, its money and its papers show here once it settles.` });
     else if (tab === "what") body = /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement(PtMoments, { items: past ? P().moments(c) : P().storyMoments(s) }));
     else if (tab === "money") body = /* @__PURE__ */ React.createElement(WholeCard, { c, story: !past, s, onPaper: setPaper });
+    else if (tab === "photos") body = /* @__PURE__ */ React.createElement(DistPhotos, { c, story: !past, s });
     else body = /* @__PURE__ */ React.createElement(DistPapers, { c, ready: !!past || !!s.hero.docs, onOpen: setPaper });
     return /* @__PURE__ */ React.createElement(Screen, { me, title: sku.name, back: "Batches", hideLarge: true, below: head }, /* @__PURE__ */ React.createElement(motion.div, { key: tab, initial: reduce ? false : { opacity: 0, y: 6 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] }, className: "pt-body" }, body), c && /* @__PURE__ */ React.createElement(PaperSheet, { open: !!paper, onClose: () => setPaper(null), c, id: paper, receipt: paper === "receipt" ? c.receipt : null }));
   }
