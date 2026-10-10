@@ -5,7 +5,8 @@
 
 	// a photo that loads from the network (SC-144, screens/common.jsx Photo): the kit's Skeleton holds its frame until it
 	// has loaded, then it fades in; one that does not load says so. Its frame is positioned (.cam, .rec-shot, .rec-big),
-	// and the photo fills it. `opacity` is the photo's own once loaded (an example shown faded)
+	// and the photo fills it. `opacity` is the photo's own once loaded (an example shown faded). The frames are near-black
+	// and the shimmer is a translucent tint, so the skeleton sits on the page's own surface, under the photo's tag (SC-146)
 	type Props = Omit<HTMLImgAttributes, 'src' | 'style'> & { src: string; alt?: string; opacity?: number };
 	let { src, alt = '', opacity = 1, ...rest }: Props = $props();
 	let st = $state<'loading' | 'ready' | 'failed'>('loading');
@@ -16,7 +17,10 @@
 	});
 </script>
 
-{#if st === 'loading'}<Skeleton r={0} style="position: absolute; inset: 0; height: auto; border-radius: inherit" />{/if}
+{#if st === 'loading'}<Skeleton
+		r={0}
+		style="position: absolute; inset: 0; height: auto; z-index: 1; border-radius: inherit; background-color: var(--surface-2)"
+	/>{/if}
 {#if st === 'failed'}<span class="photo-failed"
 		><Icon name="image" size={20} /><span class="t-caption">The photo did not load</span></span
 	>{/if}

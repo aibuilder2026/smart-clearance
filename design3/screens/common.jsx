@@ -8,13 +8,15 @@
   const useStore = () => useSyncExternalStore(Store.subscribe, Store.get);
 
   // a photo that loads from the network (SC-144): the kit's Skeleton holds its frame until it has loaded, then it fades
-  // in; one that does not load says so. Its frame is positioned (.cam, .rec-shot, .rec-big), and the photo fills it
+  // in; one that does not load says so. Its frame is positioned (.cam, .rec-shot, .rec-big), and the photo fills it. The
+  // frames are near-black and the shimmer is a translucent tint, so the skeleton sits on the page's own surface, under
+  // the photo's tag (SC-146)
   function Photo({ src, alt = "", className, style, ...rest }) {
     const [st, setSt] = useState("loading"); const ref = useRef(null);
     useEffect(() => { const i = ref.current; setSt(i && i.complete && i.naturalWidth ? "ready" : "loading"); }, [src]);
     const shown = style && style.opacity != null ? style.opacity : 1;
     return <>
-      {st === "loading" && <Skeleton r={0} style={{ position: "absolute", inset: 0, height: "auto", borderRadius: "inherit" }} />}
+      {st === "loading" && <Skeleton r={0} style={{ position: "absolute", inset: 0, height: "auto", zIndex: 1, borderRadius: "inherit", backgroundColor: "var(--surface-2)" }} />}
       {st === "failed" && <span className="photo-failed"><Icon name="image" size={20} /><span className="t-caption">The photo did not load</span></span>}
       <img ref={ref} src={src} alt={alt} className={className} onLoad={() => setSt("ready")} onError={() => setSt("failed")} style={{ ...style, opacity: st === "ready" ? shown : 0, transition: "opacity 240ms var(--ease)" }} {...rest} />
     </>;
