@@ -19,6 +19,7 @@ ROUND = "designs/SC-142/"
 
 board = (HERE / "board.html").read_text()
 board = re.sub(r'<img src="([^":]+)"', r'<img data-s="\1"', board)
+board = board.replace('href="board.css"', f'href="{JS}{ROUND}board.css"')
 for letter in "ABC":
     board = board.replace(f'href="option-{letter.lower()}/mockup.html?', f'href="SC-142%20option%20{letter}.html?')
 board = board.replace(
