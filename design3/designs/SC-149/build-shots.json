@@ -1,0 +1,70 @@
+[
+ {
+  "url": "http://localhost:8788/designs/SC-149/build/mockup.html?theme=light",
+  "out": "build/card-light-1440",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".cs-ov-card:has(.cs-ov-food-big)"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/build/mockup.html?theme=light",
+  "out": "build/card-light-390",
+  "width": 390,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".cs-ov-card:has(.cs-ov-food-big)"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/build/mockup.html?theme=dark",
+  "out": "build/card-dark-1440",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2600,
+  "el": ".cs-ov-card:has(.cs-ov-food-big)"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/build/mockup.html?theme=dark",
+  "out": "build/card-dark-390",
+  "width": 390,
+  "theme": "dark",
+  "wait": 2600,
+  "el": ".cs-ov-card:has(.cs-ov-food-big)"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/build/mockup.html?theme=light",
+  "out": "build/hover-light-1440",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".cs-ov-card:has(.cs-ov-food-big)",
+  "scroll": ".cs-ov-food",
+  "hover": [
+   ".cs-ov-food svg",
+   0.62,
+   0.4
+  ]
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/build/mockup.html?theme=light",
+  "out": "build/overview-light-1440",
+  "width": 1440,
+  "height": 1560,
+  "theme": "light",
+  "wait": 2600
+ },
+ {
+  "url": "http://localhost:8788/console/Smart-Clearance%20console%20v3.html",
+  "out": "build/seed-light-1440",
+  "width": 1440,
+  "theme": "light",
+  "wait": 4000,
+  "ls": {
+   "sc3-console-session": {
+    "uid": "neha",
+    "at": 1
+   }
+  },
+  "el": ".cs-ov-card:has(.cs-ov-food-big)"
+ }
+]

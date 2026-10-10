@@ -5,7 +5,7 @@
 (function () {
   const D = window.SC3_DATA, M = window.SC3_MONEY, AppStore = window.SC3_STORE;
   const R = M.RULES;
-  const KEY = "sc3-platform", VERSION = 6;
+  const KEY = "sc3-platform", VERSION = 7;
 
   /* ---------- Smart-Clearance's own people (fictional) ---------- */
   const STAFF = [
@@ -213,7 +213,9 @@
 
   /* ---------- the Overview's dashboard (SC-48): every figure an aggregate over the batches and the runs ---------- */
   // a batch's recovery counts on the day it closed, or, while it is still open past Settle, the day it was flagged. It
-  // is in flight from being flagged until it closes, and waits for a yes at Approve (the sixth stop). Days are India's
+  // is in flight from being flagged until it closes, and waits for a yes at Approve (the sixth stop). Days are India's.
+  // Its food counts on the day it closed (SC-149): the packs no channel took and that were destroyed (`destroyed`), the
+  // rest kept out of landfill, in kilos by its SKU's kilos a pack (`kg`)
   const APPROVE = 5, RANGES = [7, 30, 90], SIZES = [8, 16, 32], IST_MS = 19800000;
   const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const istDay = at => new Date(Date.parse(at) + IST_MS).toISOString().slice(0, 10);
@@ -227,11 +229,16 @@
     const bs = s.batches.filter(b => !client || b.client === client);
     const first = D.addDays(today, -(days - 1)), before = D.addDays(first, -days);
     const range = Array.from({ length: days }, (_, i) => D.addDays(first, i));
-    const rec = {}, closed = {}; let recoveredBefore = 0;
+    const rec = {}, closed = {}, food = {}, foodBefore = { kept: 0, destroyed: 0 }; let recoveredBefore = 0;
     bs.forEach(b => {
       const d = istDay(b.closedAt || b.openedAt);
       if (b.recovered > 0) { if (d >= first && d <= today) rec[d] = (rec[d] || 0) + b.recovered; else if (d >= before && d < first) recoveredBefore += b.recovered; }
-      if (b.closedAt) { const c = istDay(b.closedAt); closed[c] = closed[c] || [0, 0]; closed[c][0] += 1; closed[c][1] += b.units; }
+      if (b.closedAt) {
+        const c = istDay(b.closedAt), gone = b.destroyed || 0, kg = b.kg || 0;
+        closed[c] = closed[c] || [0, 0]; closed[c][0] += 1; closed[c][1] += b.units;
+        if (c >= first && c <= today) { const f = food[c] = food[c] || { kept: 0, destroyed: 0, packs: 0 }; f.kept += (b.units - gone) * kg; f.destroyed += gone * kg; f.packs += gone; }
+        else if (c >= before && c < first) { foodBefore.kept += (b.units - gone) * kg; foodBefore.destroyed += gone * kg; }
+      }
     });
     // the runs the prototype keeps are today's
     const runsToday = s.runs.filter(r => !client || r.client === client).length;
@@ -248,7 +255,10 @@
     const out = {
       readAt: `${two(t.getUTCHours())}:${two(t.getUTCMinutes())}:${two(t.getUTCSeconds())}`, days,
       recovered: r2(range.reduce((sum, d) => sum + (rec[d] || 0), 0)), recoveredBefore: r2(recoveredBefore),
-      byDay: range.map(d => ({ date: d, label: dayLabel(d), recovered: r2(rec[d] || 0), closed: (closed[d] || [0])[0], units: (closed[d] || [0, 0])[1], runs: d === today ? runsToday : 0 })),
+      byDay: range.map(d => ({ date: d, label: dayLabel(d), recovered: r2(rec[d] || 0), closed: (closed[d] || [0])[0], units: (closed[d] || [0, 0])[1], runs: d === today ? runsToday : 0,
+        keptKg: r2((food[d] || {}).kept || 0), destroyedKg: r2((food[d] || {}).destroyed || 0), destroyed: (food[d] || {}).packs || 0 })),
+      food: { keptKg: r2(range.reduce((t, d) => t + ((food[d] || {}).kept || 0), 0)), destroyedKg: r2(range.reduce((t, d) => t + ((food[d] || {}).destroyed || 0), 0)), destroyed: range.reduce((t, d) => t + ((food[d] || {}).packs || 0), 0),
+        keptKgBefore: r2(foodBefore.kept), destroyedKgBefore: r2(foodBefore.destroyed) },
       inFlight: open.length, inFlightClients: new Set(open.map(b => b.client)).size,
       inFlightSeries: range.map(d => { const cut = d < today ? dayEnd(d) : Math.min(now, dayEnd(d)); return bs.filter(b => Date.parse(b.openedAt) <= cut && (!b.closedAt || Date.parse(b.closedAt) > cut)).length; }),
       waiting: waiting.length, runsToday, byStop, atStop,
@@ -355,7 +365,7 @@
   const BATCHES = D.BATCHES.map(b => {
     const t = TRACKS.find(x => x.batch === b.id), openedAt = "2026-10-02T09:00:00+05:30";
     return { client: "munchly", ref: b.id, sku: b.sku, distributor: b.distributor, units: b.units, bestBefore: b.bestBefore, done: t ? t.done : 1, current: t ? t.current : 1,
-      openedAt, stageAt: t && t.stageAt ? t.stageAt : openedAt, recovered: t && t.money ? t.money : 0 };
+      openedAt, stageAt: t && t.stageAt ? t.stageAt : openedAt, recovered: t && t.money ? t.money : 0, kg: D.SKUS[b.sku].kgPerUnit };
   });
   BATCHES.find(b => b.ref === "MF-2409-204").override = { qcomPct: 30, reason: "Zepto's Pune warehouse agreed to take this lot at 30% of its life", by: "Neha Kulkarni", at: "4 Oct, 16:20", setAt: "2026-10-04T16:20:00+05:30" };
   const RUNS = [

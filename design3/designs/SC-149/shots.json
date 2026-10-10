@@ -1,0 +1,322 @@
+[
+ {
+  "url": "http://localhost:8788/designs/SC-149/current/mockup.html?theme=light",
+  "out": "current/overview-light-1440",
+  "width": 1440,
+  "height": 1560,
+  "theme": "light",
+  "wait": 2600,
+  "css": ".app-main, body { scroll-behavior: auto; }"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/current/mockup.html?theme=light",
+  "out": "current/card-light-1440",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".cs-ov-card:has(.cs-ov-big)"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/current/mockup.html?theme=light",
+  "out": "current/kpis-light-390",
+  "width": 390,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".cs-ov-kpis"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/current/mockup.html?theme=light",
+  "out": "current/card-light-390",
+  "width": 390,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".cs-ov-card:has(.cs-ov-big)"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/current/mockup.html?theme=dark",
+  "out": "current/overview-dark-1440",
+  "width": 1440,
+  "height": 1560,
+  "theme": "dark",
+  "wait": 2600,
+  "css": ".app-main, body { scroll-behavior: auto; }"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/current/mockup.html?theme=dark",
+  "out": "current/card-dark-1440",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2600,
+  "el": ".cs-ov-card:has(.cs-ov-big)"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/current/mockup.html?theme=dark",
+  "out": "current/kpis-dark-390",
+  "width": 390,
+  "theme": "dark",
+  "wait": 2600,
+  "el": ".cs-ov-kpis"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/current/mockup.html?theme=dark",
+  "out": "current/card-dark-390",
+  "width": 390,
+  "theme": "dark",
+  "wait": 2600,
+  "el": ".cs-ov-card:has(.cs-ov-big)"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/current/mockup.html?theme=light",
+  "out": "current/hover-light-1440",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".cs-ov-card:has(.cs-ov-big)",
+  "scroll": ".cs-ov-card:has(.cs-ov-big)",
+  "hover": [
+   ".cs-ov-card:has(.cs-ov-big) svg",
+   0.62,
+   0.4
+  ]
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-a/mockup.html?theme=light",
+  "out": "option-a/overview-light-1440",
+  "width": 1440,
+  "height": 1560,
+  "theme": "light",
+  "wait": 2600,
+  "css": ".app-main, body { scroll-behavior: auto; }"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-a/mockup.html?theme=light",
+  "out": "option-a/card-light-1440",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".sc149-card"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-a/mockup.html?theme=light",
+  "out": "option-a/kpis-light-390",
+  "width": 390,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".cs-ov-kpis"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-a/mockup.html?theme=light",
+  "out": "option-a/card-light-390",
+  "width": 390,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".sc149-card"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-a/mockup.html?theme=dark",
+  "out": "option-a/overview-dark-1440",
+  "width": 1440,
+  "height": 1560,
+  "theme": "dark",
+  "wait": 2600,
+  "css": ".app-main, body { scroll-behavior: auto; }"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-a/mockup.html?theme=dark",
+  "out": "option-a/card-dark-1440",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2600,
+  "el": ".sc149-card"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-a/mockup.html?theme=dark",
+  "out": "option-a/kpis-dark-390",
+  "width": 390,
+  "theme": "dark",
+  "wait": 2600,
+  "el": ".cs-ov-kpis"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-a/mockup.html?theme=dark",
+  "out": "option-a/card-dark-390",
+  "width": 390,
+  "theme": "dark",
+  "wait": 2600,
+  "el": ".sc149-card"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-a/mockup.html?theme=light",
+  "out": "option-a/hover-light-1440",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".sc149-card",
+  "scroll": ".sc149-card",
+  "hover": [
+   ".sc149-card svg",
+   0.62,
+   0.4
+  ]
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-b/mockup.html?theme=light",
+  "out": "option-b/overview-light-1440",
+  "width": 1440,
+  "height": 1560,
+  "theme": "light",
+  "wait": 2600,
+  "css": ".app-main, body { scroll-behavior: auto; }"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-b/mockup.html?theme=light",
+  "out": "option-b/card-light-1440",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".sc149-card"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-b/mockup.html?theme=light",
+  "out": "option-b/kpis-light-390",
+  "width": 390,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".cs-ov-kpis"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-b/mockup.html?theme=light",
+  "out": "option-b/card-light-390",
+  "width": 390,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".sc149-card"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-b/mockup.html?theme=dark",
+  "out": "option-b/overview-dark-1440",
+  "width": 1440,
+  "height": 1560,
+  "theme": "dark",
+  "wait": 2600,
+  "css": ".app-main, body { scroll-behavior: auto; }"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-b/mockup.html?theme=dark",
+  "out": "option-b/card-dark-1440",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2600,
+  "el": ".sc149-card"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-b/mockup.html?theme=dark",
+  "out": "option-b/kpis-dark-390",
+  "width": 390,
+  "theme": "dark",
+  "wait": 2600,
+  "el": ".cs-ov-kpis"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-b/mockup.html?theme=dark",
+  "out": "option-b/card-dark-390",
+  "width": 390,
+  "theme": "dark",
+  "wait": 2600,
+  "el": ".sc149-card"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-b/mockup.html?theme=light",
+  "out": "option-b/hover-light-1440",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".sc149-card",
+  "scroll": ".sc149-card",
+  "hover": [
+   ".sc149-card svg",
+   0.62,
+   0.4
+  ]
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-c/mockup.html?theme=light",
+  "out": "option-c/overview-light-1440",
+  "width": 1440,
+  "height": 1560,
+  "theme": "light",
+  "wait": 2600,
+  "css": ".app-main, body { scroll-behavior: auto; }"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-c/mockup.html?theme=light",
+  "out": "option-c/card-light-1440",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".sc149-card"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-c/mockup.html?theme=light",
+  "out": "option-c/kpis-light-390",
+  "width": 390,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".cs-ov-kpis"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-c/mockup.html?theme=light",
+  "out": "option-c/card-light-390",
+  "width": 390,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".sc149-card"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-c/mockup.html?theme=dark",
+  "out": "option-c/overview-dark-1440",
+  "width": 1440,
+  "height": 1560,
+  "theme": "dark",
+  "wait": 2600,
+  "css": ".app-main, body { scroll-behavior: auto; }"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-c/mockup.html?theme=dark",
+  "out": "option-c/card-dark-1440",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2600,
+  "el": ".sc149-card"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-c/mockup.html?theme=dark",
+  "out": "option-c/kpis-dark-390",
+  "width": 390,
+  "theme": "dark",
+  "wait": 2600,
+  "el": ".cs-ov-kpis"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-c/mockup.html?theme=dark",
+  "out": "option-c/card-dark-390",
+  "width": 390,
+  "theme": "dark",
+  "wait": 2600,
+  "el": ".sc149-card"
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-149/option-c/mockup.html?theme=light",
+  "out": "option-c/hover-light-1440",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".sc149-card",
+  "scroll": ".sc149-card",
+  "hover": [
+   ".sc149-card svg",
+   0.62,
+   0.4
+  ]
+ }
+]

@@ -188,8 +188,6 @@
   const LIVE_KEY = "sc3-console-live";
   const STOP_TITLES = D.STAGES.map(x => x.title);
   const two = n => String(n).padStart(2, "0");
-  const lakh = v => "₹" + (v / 100000).toFixed(1) + " lakh";
-  const kAxis = v => (v >= 100000 ? "₹" + (v / 100000).toFixed(v % 100000 ? 1 : 0) + "L" : v ? "₹" + Math.round(v / 1000) + "k" : "0");
   // the figures roll to their values, and roll again when a reading changes them (SC-49)
   function MoneyFig({ value }) { return <><span className="cur" aria-hidden="true">₹</span><Roll value={Math.round(value)} from={0} hidden /><span className="sr-only">{fmt.inr(value)}</span></>; }
   const useWidth = (ref, initial) => { const [w, setW] = useState(initial); useLayoutEffect(() => { if (!ref.current) return; const ro = new ResizeObserver(([e]) => setW(Math.max(120, Math.round(e.contentRect.width)))); ro.observe(ref.current); return () => ro.disconnect(); }, []); return w; };
@@ -209,45 +207,54 @@
   function Kpi({ label, icon, children, foot, spark, tone }) {
     return <div className={cx("cs-ov-kpi", tone)}><span className="k-label"><Icon name={icon} size={15} />{label}</span><span className="k-value">{typeof children === "number" ? <Roll value={children} from={0} /> : children}</span><span className="k-foot">{foot}</span>{spark && <Sparkline values={spark} tone={tone} />}</div>;
   }
-  // recovered a day: an area chart, one series, with a crosshair and a tooltip on hover, and a table to read it as. The
-  // line draws itself once (900 ms), the wash follows and today's dot lands; a reading moves the line (420 ms), and when
-  // today gains, what it gained shows beside its dot for a moment (SC-49)
-  function RecoveredChart({ byDay, height }) {
+  // the food a day (SC-149): the kilos closed batches kept out of landfill (sold or given) rise from one baseline, and the
+  // kilos they destroyed (no channel took them) hang under it, hatched in clay, on one scale; the space under the
+  // baseline is at least one step deep, so a day with little destroyed still reads. The bars grow once (420 ms, a few ms
+  // apart); a reading moves them (420 ms), and when today keeps more, what it kept shows over its bar for a moment
+  const kg = v => (v >= 1000 ? (v / 1000).toLocaleString("en-IN", { maximumFractionDigits: v >= 100000 ? 0 : 1 }) + " t" : Math.round(v).toLocaleString("en-IN") + " kg");
+  const kgAxis = v => (!v ? "0" : v >= 1000 ? (v / 1000).toLocaleString("en-IN", { maximumFractionDigits: 1 }) + " t" : Math.round(v) + " kg");
+  const savedShare = (kept, gone) => (kept + gone > 0 ? Math.round((kept / (kept + gone)) * 1000) / 10 : null);
+  const niceStep = v => { const p = Math.pow(10, Math.floor(Math.log10(v))); return p * ([1, 2, 2.5, 5, 10].find(m => v / p <= m) || 10); };
+  // a bar from the baseline, its far end rounded (3 px, less on a thin bar)
+  const barPath = (x, w, y0, y1) => {
+    const h = Math.abs(y1 - y0), r = Math.min(3, w / 2, h), up = y1 < y0, k = up ? 1 : -1;
+    if (h < 0.5) return `M${x} ${y0} h${w} h${-w} Z`;
+    return `M${x} ${y0} V${y1 + k * r} Q${x} ${y1} ${x + r} ${y1} H${x + w - r} Q${x + w} ${y1} ${x + w} ${y1 + k * r} V${y0} Z`;
+  };
+  function FoodChart({ byDay, height }) {
     const box = useRef(null); const w = useWidth(box, 640); const [hover, setHover] = useState(null); const reduce = useReducedMotion();
-    const today = byDay[byDay.length - 1], was = useRef(today ? today.recovered : 0); const [gain, setGain] = useState(null);
-    useEffect(() => { const v = today ? today.recovered : 0, before = was.current; was.current = v; if (v > before) { setGain({ v: v - before, at: Date.now() }); const t = setTimeout(() => setGain(null), 2600); return () => clearTimeout(t); } }, [today && today.recovered]);
-    const H = height, pl = 46, pr = 8, pt = 10, pb = 24, n = byDay.length;
-    const peak = Math.max(0, ...byDay.map(d => d.recovered));
-    const step = peak <= 0 ? 25000 : Math.pow(10, Math.floor(Math.log10(peak / 4))) * ([1, 2, 2.5, 5, 10].find(m => (peak / 4) / Math.pow(10, Math.floor(Math.log10(peak / 4))) <= m) || 10);
-    const top = Math.max(step * 4, step * Math.ceil(peak / step));
-    const X = i => pl + (n > 1 ? (i / (n - 1)) * (w - pl - pr) : (w - pl - pr) / 2), Y = v => pt + (1 - v / top) * (H - pt - pb);
-    const line = byDay.map((d, i) => `${i ? "L" : "M"}${X(i).toFixed(1)} ${Y(d.recovered).toFixed(1)}`).join(" ");
-    const ticks = []; for (let t = 0; t <= top + 1; t += top / 4) ticks.push(t);
+    const today = byDay[byDay.length - 1], was = useRef(today ? today.keptKg : 0); const [gain, setGain] = useState(null);
+    useEffect(() => { const v = today ? today.keptKg : 0, before = was.current; was.current = v; if (v > before) { setGain({ v: v - before, at: Date.now() }); const t = setTimeout(() => setGain(null), 2600); return () => clearTimeout(t); } }, [today && today.keptKg]);
+    const H = height, pl = 50, pr = 8, pt = 10, pb = 24, n = byDay.length;
+    const upMax = Math.max(0, ...byDay.map(d => d.keptKg)), downMax = Math.max(0, ...byDay.map(d => d.destroyedKg));
+    const step = upMax || downMax ? niceStep(Math.max(upMax, downMax * 2) / 4) : 250;
+    const top = Math.max(step * 2, step * Math.ceil(upMax / step)), bottom = Math.max(step, step * Math.ceil(downMax / step));
+    const Y = v => pt + ((top - v) / (top + bottom)) * (H - pt - pb), Y0 = Y(0);
+    const slot = (w - pl - pr) / n, bw = Math.max(2, Math.min(16, slot - 2)), X = i => pl + slot * (i + 0.5);
+    const ticks = []; for (let t = -bottom; t <= top + step / 2; t += step) ticks.push(Math.round(t * 100) / 100);
     const every = n <= 7 ? 1 : n <= 30 ? 7 : 14;
-    const best = byDay.reduce((a, d) => (d.recovered > a.recovered ? d : a), byDay[0] || { recovered: 0 });
-    const onMove = e => { const r = e.currentTarget.getBoundingClientRect(); const px = ((e.clientX - r.left) / r.width) * w; setHover(Math.max(0, Math.min(n - 1, Math.round(((px - pl) / (w - pl - pr)) * (n - 1))))); };
-    const total = byDay.reduce((t, d) => t + d.recovered, 0);
-    const area = `${line} L${X(n - 1)} ${Y(0)} L${X(0)} ${Y(0)} Z`, move = { duration: reduce ? 0 : 0.42, ease: EASE }, tx = X(n - 1), ty = Y(today ? today.recovered : 0);
-    return <div className="cs-ov-chart" ref={box} onMouseLeave={() => setHover(null)}>
-      <svg viewBox={`0 0 ${w} ${H}`} height={H} onMouseMove={onMove} role="img" aria-label={`Recovered a day, the last ${n} days: ${fmt.inr(total)} in all${best.recovered ? `, highest ${fmt.inr(best.recovered)} on ${best.label}` : ""}`}>
+    const onMove = e => { const r = e.currentTarget.getBoundingClientRect(); const px = ((e.clientX - r.left) / r.width) * w; setHover(Math.max(0, Math.min(n - 1, Math.floor((px - pl) / slot)))); };
+    const lag = i => (reduce ? 0 : Math.min(0.006 * i, 0.3)), grow = i => ({ duration: reduce ? 0 : 0.42, ease: EASE, delay: lag(i) });
+    const kept = byDay.reduce((t, d) => t + d.keptKg, 0), gone = byDay.reduce((t, d) => t + d.destroyedKg, 0), share = savedShare(kept, gone);
+    const label = `Food a day, the last ${n} days: ${kg(kept)} kept out of landfill and ${kg(gone)} destroyed${share == null ? "" : `, ${share}% saved`}`;
+    const h = hover != null ? byDay[hover] : null;
+    return <div className="cs-ov-chart cs-ov-food" ref={box} onMouseLeave={() => setHover(null)}>
+      <svg viewBox={`0 0 ${w} ${H}`} height={H} onMouseMove={onMove} role="img" aria-label={label}>
+        <defs><pattern id="cs-ov-hatch" patternUnits="userSpaceOnUse" width="5" height="5" patternTransform="rotate(45)"><rect width="5" height="5" className="hatch-bg" /><line x1="0" y1="0" x2="0" y2="5" className="hatch-ln" /></pattern></defs>
         {ticks.map(t => <line key={t} className={t ? "gl" : "base"} x1={pl} x2={w - pr} y1={Y(t)} y2={Y(t)} />)}
-        {ticks.map(t => <text key={"t" + t} className="ax" x={pl - 8} y={Y(t) + 4} textAnchor="end">{kAxis(t)}</text>)}
+        {ticks.map(t => <text key={"t" + t} className="ax" x={pl - 8} y={Y(t) + 4} textAnchor="end">{t < 0 ? "−" + kgAxis(-t) : kgAxis(t)}</text>)}
         {byDay.map((d, i) => (i % every === 0 && i < n - Math.ceil(every / 2)) || i === n - 1 ? <text key={d.date} className="ax" x={X(i)} y={H - 6} textAnchor={i === n - 1 ? "end" : "middle"}>{i === n - 1 ? "Today" : d.label}</text> : null)}
-        <motion.path key={"a" + n} fill="var(--primary)" initial={{ opacity: 0, d: area }} animate={{ opacity: 0.1, d: area }} transition={{ opacity: { duration: reduce ? 0 : 0.42, delay: reduce ? 0 : 0.7 }, d: move }} />
-        <motion.path key={"l" + n} fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" initial={{ pathLength: reduce ? 1 : 0, d: line }} animate={{ pathLength: 1, d: line }} transition={{ pathLength: { duration: reduce ? 0 : 0.9, ease: [0.45, 0, 0.25, 1] }, d: move }} />
-        <motion.g key={"t" + n} initial={reduce ? false : { scale: 0, opacity: 0, x: tx, y: ty }} animate={{ scale: 1, opacity: 1, x: tx, y: ty }} transition={{ scale: { delay: reduce ? 0 : 0.9, type: "spring", stiffness: 420, damping: 20 }, opacity: { delay: reduce ? 0 : 0.9, duration: 0.16 }, x: move, y: move }}>
-          {gain && !reduce && <motion.circle key={gain.at} r="5" fill="none" stroke="var(--primary)" strokeWidth="2" initial={{ scale: 1, opacity: 0.7 }} animate={{ scale: 3, opacity: 0 }} transition={{ duration: 1.2, ease: "easeOut" }} />}
-          <circle r="4.5" fill="var(--primary)" stroke="var(--surface)" strokeWidth="2" />
-        </motion.g>
-        {hover != null && <g><line x1={X(hover)} x2={X(hover)} y1={pt} y2={H - pb} stroke="var(--line-2)" /><circle cx={X(hover)} cy={Y(byDay[hover].recovered)} r="5" fill="var(--primary)" stroke="var(--surface)" strokeWidth="2" /></g>}
+        {hover != null && <rect className="col" x={X(hover) - slot / 2} y={pt} width={slot} height={H - pt - pb} />}
+        {byDay.map((d, i) => <motion.path key={"k" + n + i} className="kept" initial={reduce ? false : { d: barPath(X(i) - bw / 2, bw, Y0, Y0) }} animate={{ d: barPath(X(i) - bw / 2, bw, Y0, Y(d.keptKg)) }} transition={grow(i)} />)}
+        {byDay.map((d, i) => d.destroyedKg > 0 && <motion.path key={"d" + n + i} className="gone" initial={reduce ? false : { d: barPath(X(i) - bw / 2, bw, Y0 + 1, Y0 + 1) }} animate={{ d: barPath(X(i) - bw / 2, bw, Y0 + 1, Y(-d.destroyedKg) + 1) }} transition={Object.assign(grow(i), { delay: lag(i) + (reduce ? 0 : 0.12) })} />)}
       </svg>
-      <AnimatePresence>{gain && <motion.span key={gain.at} className="cs-ov-gain" style={{ left: `${(tx / w) * 100}%`, top: ty - 36, x: "-100%" }} initial={reduce ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: reduce ? 0 : -6 }} transition={{ duration: 0.24, ease: EASE }}>+{fmt.inr(gain.v)}</motion.span>}</AnimatePresence>
-      {hover != null && <div className="tip" style={{ left: hover > n / 2 ? `calc(${(X(hover) / w) * 100}% - 184px)` : `calc(${(X(hover) / w) * 100}% + 12px)`, top: 8 }}>
-        <b>{hover === n - 1 ? "Today" : byDay[hover].label}</b>
-        <div className="tr"><span>Recovered</span><span>{fmt.inr(byDay[hover].recovered)}</span></div>
-        <div className="tr"><span>Batches closed</span><span>{byDay[hover].closed}</span></div>
-        <div className="tr"><span>Packs closed</span><span>{byDay[hover].units.toLocaleString("en-IN")}</span></div>
-        <div className="tr"><span>Agent runs</span><span>{byDay[hover].runs}</span></div>
+      <AnimatePresence>{gain && <motion.span key={gain.at} className="cs-ov-gain" style={{ left: `${(X(n - 1) / w) * 100}%`, top: Y(today.keptKg) - 36, x: "-100%" }} initial={reduce ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: reduce ? 0 : -6 }} transition={{ duration: 0.24, ease: EASE }}>+{kg(gain.v)}</motion.span>}</AnimatePresence>
+      {h && <div className="tip" style={{ left: hover > n / 2 ? `calc(${(X(hover) / w) * 100}% - 204px)` : `calc(${(X(hover) / w) * 100}% + 12px)`, top: 8 }}>
+        <b>{hover === n - 1 ? "Today" : h.label}</b>
+        <div className="tr"><span><i className="sw kept" aria-hidden="true" />Kept out of landfill</span><span>{kg(h.keptKg)}</span></div>
+        <div className="tr"><span><i className="sw gone" aria-hidden="true" />Destroyed</span><span>{h.destroyed ? `${kg(h.destroyedKg)} · ${h.destroyed.toLocaleString("en-IN")} packs` : "none"}</span></div>
+        <div className="tr"><span>Recovered</span><span>{fmt.inr(h.recovered)}</span></div>
+        <div className="tr"><span>Batches closed</span><span>{h.closed}</span></div>
       </div>}
     </div>;
   }
@@ -351,14 +358,21 @@
       <Kpi label="Waiting for a yes" icon="hand" tone={d.waiting ? "amber" : undefined} foot={d.oldestWaiting ? <><span className="warn">oldest {d.oldestWaiting.hours} h</span> · {d.oldestWaiting.client}</> : "nothing waiting"}>{d.waiting}</Kpi>
       <Kpi label="Agent runs today" icon="bot" spark={d.byDay.map(x => x.runs)} foot={`${on} agents on`}>{d.runsToday}</Kpi>
     </div>;
-    const best = d.byDay.reduce((a, x) => (x.recovered > a.recovered ? x : a), d.byDay[0]);
+    const f = d.food, share = savedShare(f.keptKg, f.destroyedKg), shareBefore = savedShare(f.keptKgBefore, f.destroyedKgBefore);
+    const worst = d.byDay.reduce((a, x) => (x.destroyedKg > a.destroyedKg ? x : a), d.byDay[0]);
+    // the food, by day (SC-149, option A): what closed batches kept out of landfill and what they destroyed; the money
+    // stays with the Recovered figure above, and in the tooltip and the table
     const trend = <section className="cs-ov-card">
-      <div className="cs-ov-head"><div><div className="t">Recovered, by day</div><div className="s">Every client · what closed batches recovered</div></div>
+      <div className="cs-ov-head"><div><div className="t">Food, by day</div><div className="s">Every client · what closed batches kept out of landfill, and what they destroyed</div></div>
         <Segmented label="Range" value={String(days)} onChange={v => setDays(Number(v))} options={P.RANGES.map(n => ({ id: String(n), label: `${n} days` }))} /></div>
-      <div className="cs-ov-big"><MoneyFig value={d.recovered} /> <span className="cs-ov-in">in {days} days</span></div>
-      {asTable ? <div className="cs-ov-daytable"><DataTable label="Recovered, by day" rows={d.byDay.slice().reverse()} rowKey="date" dense columns={[{ key: "label", label: "Day" }, { key: "recovered", label: "Recovered", num: true, render: x => fmt.inr(x.recovered) }, { key: "closed", label: "Closed", num: true }, { key: "units", label: "Packs", num: true, render: x => x.units.toLocaleString("en-IN") }, { key: "runs", label: "Runs", num: true }]} /></div>
-        : <RecoveredChart byDay={d.byDay} height={phone ? 180 : 210} />}
-      <div className="cs-ov-foot"><span>{best && best.recovered ? `Highest ${fmt.inr(best.recovered)} on ${best.label}` : "Nothing recovered yet in this range"}{d.recoveredBefore ? ` · ${lakh(d.recoveredBefore)} the ${days} days before` : ""}</span><Button size="sm" variant="link" icon={asTable ? "chart-line" : "file-spreadsheet"} onClick={() => setAsTable(!asTable)}>{asTable ? "Show as a chart" : "Show as a table"}</Button></div>
+      <div className="cs-ov-food-big">
+        <span className="fig"><b>{kg(f.keptKg)}</b><span>kept out of landfill</span></span>
+        <span className={cx("fig", f.destroyedKg > 0 && "gone")}><b>{kg(f.destroyedKg)}</b><span>destroyed</span></span>
+        {share != null && <span className="share">{share}% of the food saved</span>}</div>
+      <ul className="cs-ov-legend" aria-label="Legend"><li><i className="sw kept" aria-hidden="true" />Kept out of landfill (sold or given)</li><li><i className="sw gone" aria-hidden="true" />Destroyed (no channel took it)</li></ul>
+      {asTable ? <div className="cs-ov-daytable"><DataTable label="Food, by day" rows={d.byDay.slice().reverse()} rowKey="date" dense columns={[{ key: "label", label: "Day" }, { key: "keptKg", label: "Kept out", num: true, render: x => kg(x.keptKg) }, { key: "destroyedKg", label: "Destroyed", num: true, render: x => (x.destroyedKg ? kg(x.destroyedKg) : "none") }, { key: "destroyed", label: "Packs destroyed", num: true, render: x => x.destroyed.toLocaleString("en-IN") }, { key: "recovered", label: "Recovered", num: true, render: x => fmt.inr(x.recovered) }, { key: "closed", label: "Closed", num: true }]} /></div>
+        : <FoodChart byDay={d.byDay} height={phone ? 200 : 230} />}
+      <div className="cs-ov-foot"><span>{share == null ? "Nothing closed in this range" : worst && worst.destroyedKg ? `Most destroyed ${kg(worst.destroyedKg)} on ${worst.label}` : "Nothing destroyed in this range"}{shareBefore != null ? ` · ${shareBefore}% saved the ${days} days before` : ""}</span><Button size="sm" variant="link" icon={asTable ? "chart-line" : "file-spreadsheet"} onClick={() => setAsTable(!asTable)}>{asTable ? "Show as a chart" : "Show as a table"}</Button></div>
     </section>;
     const agents = <AgentsAtWork d={d} run={s.runs[0]} paused={paused} client={client} value={q.status === "in-flight" ? q.stop : null} onPick={i => set({ status: "in-flight", stop: i })} />;
     const STATUS = [{ id: "in-flight", label: "In flight", n: page.counts.inFlight }, { id: "waiting", label: "Waiting for a yes", n: page.counts.waiting }, { id: "closed", label: "Closed", n: page.counts.closed }];
