@@ -1669,6 +1669,34 @@ describe("a batch's record (SC-142)", () => {
 	});
 });
 
+describe("Execution's Outreach card says where the kirana scheme stands (SC-156)", () => {
+	it('while the window is open: the scheme as the shops see it, its close, and the push behind a button', async () => {
+		const s = source(fakeApi(moment('executing'), 'priya'));
+		const r = await draw(s, 'execution', CHIPS);
+		await waitFor(() => expect(text(r)).toContain('Outreach · 38 kiranas'));
+		const ex = text(r);
+		expect(ex).toContain('The scheme');
+		expect(ex).toContain('588 packets');
+		expect(ex).toContain('Offer window · 48 h');
+		expect(ex).toMatch(/closes Sun \d\d:\d\d/); // 48 hours after the push, the Sunday
+		expect(ex).toMatch(/Sent\d\d:\d\dFirst order\d\d:\d\dClosedwaiting/); // the stops, with their times
+		expect(ex).not.toContain('नमस्ते'); // one message to every shop: not on the card
+		await fireEvent.click(r.getByRole('button', { name: 'The push, as sent' }));
+		await waitFor(() => expect(text(r)).toContain('{shop}'));
+		expect(text(r)).toContain('one message to all 38 shops');
+	});
+	it('once the batch has cleared: filled early, and the van round delivered it', async () => {
+		const s = source(fakeApi(moment('cleared'), 'priya'));
+		const r = await draw(s, 'execution', CHIPS);
+		await waitFor(() => expect(text(r)).toContain('Outreach · 38 kiranas'));
+		const ex = text(r);
+		expect(ex).toContain('delivered');
+		expect(ex).toMatch(/Delivered on Rakesh's van round/);
+		expect(ex).toContain('closed early');
+		expect(ex).not.toContain('push · Hindi');
+	});
+});
+
 describe('the GST papers in Tally’s layout (SC-148)', () => {
 	it("an invoice Rakesh issued carries its e-invoice: the IRN from the parties' GSTINs, its acknowledgement and the signed QR", async () => {
 		vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1440);

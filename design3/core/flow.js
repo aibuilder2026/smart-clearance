@@ -26,7 +26,7 @@
     decide: s => { s.hero.phase = "planned"; s.hero.plan = { status: "proposed", at: "09:22" }; feed(s, E("route")); feed(s, E("notify")); notify(s, "priya", Object.assign({ link: "route" }, D.PUSH.plan)); },
     approve: (s, by) => { s.hero.phase = "approved"; s.hero.plan = { status: "approved", at: "09:40", by: by || "priya", device: "phone" }; feed(s, E("approved")); audit(s, by || "priya", "approved the plan", "MF-2409-117 · net " + fmt.inr(PLAN.net), "09:40"); notify(s, "rakesh", Object.assign({ link: "home" }, D.PUSH.approved)); },
     list: s => { s.hero.phase = "executing"; s.hero.listing = { id: "ES-24117", status: "live", units: 772, price: 15, reserve: 13.5, at: "09:41" }; feed(s, E("list")); },
-    outreach: s => { s.hero.offer = { status: "sent", at: "09:41", shops: D.OFFERED }; feed(s, E("outreach")); notify(s, "ganesh", Object.assign({ link: "offer" }, D.PUSH.offer)); },
+    outreach: s => { s.hero.offer = { status: "sent", at: "09:41", closesAt: "Sun 4 Oct · 09:41", shops: D.OFFERED }; feed(s, E("outreach")); notify(s, "ganesh", Object.assign({ link: "offer" }, D.PUSH.offer)); },
     // a story shop orders its own share; another of Rakesh's shops (an invited one, world.js) its cap, while the scheme
     // has room: a full scheme takes no more orders (SC-130)
     order: (s, kid) => {

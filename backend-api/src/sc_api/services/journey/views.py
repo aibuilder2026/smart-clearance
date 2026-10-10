@@ -612,6 +612,7 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
                 "at": case.offer["at"],
                 "shops": case.offer["shops"],
                 "closesAt": case.offer["closesAt"],
+                "closedAt": case.offer.get("closedAt"),
                 # the shops that said not this time (SC-130): a kirana is told its own
                 "declined": {
                     k: {"at": v.get("at")}

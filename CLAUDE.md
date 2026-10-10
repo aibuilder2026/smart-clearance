@@ -2020,5 +2020,17 @@
   - **Cost:** $18.76 (£14.07) in all: the design round $5.66, seven final clips $11.20 (one more was filtered, free) and three keyframe edits, against the $45 cap.
   - **Docs:** AGENTS.md (the loop exemption names the new film; the Vertex rule), DESIGN.md (the hero film's material), this file's tool list.
   - **Hosting:** design3's `dist/` is rebuilt; the hosted landing page and console load commit `699c1af`, the branch brought up to date with main (SC-151, SC-152, SC-155), so both carry SC-152's buttons too; every pinned file checked on jsDelivr and GitHub raw first, and the landing page plays the film from it with no console errors.
+- **SC-156** (In Review, branch `SC-156-outreach-card`): Execution's Outreach card drops the sample message and says where the kirana scheme stands.
+  - **The request:** "messages are sent to multiple kiranas, no need to show them here"; "this block should show something like offer window over like other channels"; "Dont change anything with the VAN delivery map".
+  - **Design first:** three options on one board in app v3, `SC-156 design review.html`, each in five states (queued, open, filled, window over, delivered):
+    - A, the scheme's stops (recommended);
+    - B, the window first;
+    - C, the shops.
+
+    The maintainer picked **A**. Designs, stills and the decision are in `design3/designs/SC-156/`.
+  - **The card** (design3 `brand.jsx` `SchemeCard`, core `SchemeCard.svelte`): the scheme as the shops see it, the figures, the offer window as one line filled by the time gone, four stops with their times (Sent, First order, Closed, Van round), the cluster map untouched, the latest orders, and **The push, as sent** behind a button. The badge follows: queued, open, filled, window over, delivered.
+  - **The data:** the stub's offer carries `closesAt`; backend-api's case view and the contract carry `closedAt`; the live projection carries both and `elapsed`.
+  - **Checks:** backend-api 554; the frontend gate passes (core 273 with 9 goldens updated, api 79, workspace 95 with 2 new live tests, admin 17, demo 5, console 3); the e2e and a11y specs follow the card; the browser suites were not run.
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
