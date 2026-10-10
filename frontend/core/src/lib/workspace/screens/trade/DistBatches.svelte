@@ -10,13 +10,13 @@
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
 	import { useRoute } from '../../context';
 	import { batchViews, fmt } from '../../model';
-	import { creditOf, distPapers, distPast } from '../../partners';
+	import { creditOf, distPapers, distPast, whole } from '../../partners';
 	import { useWorkspace } from '../../source';
 	import type { BatchView, User } from '../../types';
 	import Screen from '../common/Screen.svelte';
 	import OutcomeBadge from '../finance/OutcomeBadge.svelte';
 	import DistBatch from './DistBatch.svelte';
-	import { day, monthOf, stopOf } from './pt';
+	import { day, monthOf, stopOf, worldOf } from './pt';
 
 	// every batch of the client's the Watcher flagged at his godown (SC-130, screens/trade.jsx DistBatches): in a journey
 	// now, everything he cleared by month under the one figure (what the client credited him), and the stock it is
@@ -42,6 +42,10 @@
 	const watching = $derived(views.filter((v) => (phaseOf(v) ?? 'watching') === 'watching'));
 	const past = $derived(distPast(cases, dist.id).filter((c) => !journey.some((v) => v.id === c.ref)));
 	const credit = $derived(past.reduce((t, c) => t + creditOf(c), 0));
+	// what the cleared batches cost him, and what he sold from them: the sales and the credit add up to the cost (SC-141)
+	const wholes = $derived(past.map((c) => whole(c, worldOf(ws))));
+	const cost = $derived(wholes.reduce((t, w) => t + w.paid, 0));
+	const sold = $derived(wholes.reduce((t, w) => t + w.rows.filter((r) => !r.paper).reduce((u, r) => u + r.v, 0), 0));
 	const notes = $derived(
 		past.reduce(
 			(t, c) =>
@@ -88,12 +92,12 @@
 				>{/if}
 			{#if past.length}<Card class="stack" style="gap: 10px">
 					<div class="lg-fig">
-						<Money value={credit} size="l" /><span class="lg-what">from {W.short} since July</span>
+						<Money value={credit} size="l" /><span class="lg-what">credited by {W.short} since July</span>
 					</div>
 					<p class="lg-working">
-						{past.length} batches cleared at your godown. On each, the price support (and on expiry day the expiry credit)
-						made up the gap to the dealer price you paid, so you ended whole: <b>{notes} credit notes</b>, each in its
-						batch's papers.
+						{past.length} batches cleared at your godown. They cost you {fmt.inr(cost)}; you sold {fmt.inr(sold)} from them
+						(on Orders), and the price support, with the expiry credit where packs expired, made up the rest, so you ended
+						whole: <b>{notes} credit notes</b>, each in its batch's papers.
 					</p>
 				</Card>{/if}
 			{#each months as g (g.m)}<List head={`Cleared · ${g.label}`}

@@ -278,6 +278,9 @@
   const planned = (c, id) => c.plan.lines.find(l => l.id === id && l.units > 0) || null;
   const rate = n => "₹" + n.toFixed(2);
   const num = n => M.fmt.num(n);
+  // a scheme's packets at what each came to, so the row multiplies out to its amount: 2 free in every 12 bring the
+  // effective price under the pack's (SC-141)
+  const schemeWhat = (units, amount, pack, sc) => `${num(units)} packets at ${rate(units ? Math.round(amount / units * 100) / 100 : 0)} effective (${rate(pack)} a pack, ${sc.free} free with every ${sc.buy})`;
   const weekday = iso => new Date(iso.slice(0, 10) + "T00:00:00+05:30").toLocaleDateString("en-IN", { weekday: "long", timeZone: "Asia/Kolkata" });
   // an IST time (2026-08-27T12:10) some hours on
   const plusHours = (iso, h) => { const t = new Date(new Date(iso + ":00+05:30").getTime() + (h + 5.5) * 3600e3); const p = x => String(x).padStart(2, "0"); return `${t.getUTCFullYear()}-${p(t.getUTCMonth() + 1)}-${p(t.getUTCDate())}T${p(t.getUTCHours())}:${p(t.getUTCMinutes())}`; };
@@ -511,9 +514,10 @@
     if (es && n.award) out.push({ id: "expiresoon", units: es.units, who: `${w.buyer.name}, ${w.buyer.city}`, what: `lot ${n.listing ? n.listing.id : ""} · ${num(es.units)} × ${rate(n.award.price)}`,
       sub: `token ${inr(n.award.token)} · balance ${inr(Math.round((es.units * n.award.price - n.award.token) * 100) / 100)} · ${n.truck ? "collected by the buyer's truck" : "the buyer's truck collects"}`,
       amount: Math.round(es.units * n.award.price * 100) / 100, at: n.awardAt || null, paper: n.invoice ? { no: n.invoice.no, label: n.invoice.issued ? "issued from Tally" : "drafted by the Paperwork agent", issue: !n.invoice.issued } : null });
-    if (kl && o && o.shops) out.push({ id: "kirana", units: o.units, who: `${o.shops} ${o.shops === 1 ? "kirana" : "kiranas"}`, what: `${num(o.units)} packets at ${rate(kl.packPrice)}, ${w.scheme.free} free with every ${w.scheme.buy}`,
-      sub: n.van ? `delivered on ${n.round ? `the ${n.round.day} round` : "the van round"}` : n.round ? `on the ${n.round.day} round, ${n.round.date}` : "on the van round once the papers are drafted",
-      amount: Math.round(shops.reduce((t, k) => t + scheme(k.units, kl.packPrice, sku.mrp).pay, 0) * 100) / 100, at: shops.reduce((t, k) => (k.at && (!t || k.at > t) ? k.at : t), null), shops });
+    if (kl && o && o.shops) { const amount = Math.round(shops.reduce((t, k) => t + scheme(k.units, kl.packPrice, sku.mrp).pay, 0) * 100) / 100;
+      out.push({ id: "kirana", units: o.units, who: `${o.shops} ${o.shops === 1 ? "kirana" : "kiranas"}`, what: schemeWhat(o.units, amount, kl.packPrice, w.scheme),
+        sub: n.van ? `delivered on ${n.round ? `the ${n.round.day} round` : "the van round"}` : n.round ? `on the ${n.round.day} round, ${n.round.date}` : "on the van round once the papers are drafted",
+        amount, at: shops.reduce((t, k) => (k.at && (!t || k.at > t) ? k.at : t), null), shops }); }
     if (st && n.staff && n.staff.status === "recorded" && n.staff.sold) out.push({ id: "staff", units: n.staff.sold, who: "Your staff sale", what: `${num(n.staff.sold)} packs at ${rate(st.price)}`, sub: `at ${dist.godown}`, amount: Math.round(n.staff.sold * st.price * 100) / 100, at: null });
     if (fb && n.donation && n.donation.status === "collected") out.push({ id: "foodbank", units: fb.units, who: n.donation.partner, what: `${num(fb.units)} packs given`, sub: "the receipt is in the batch's papers", amount: 0, at: null });
     return out;
@@ -527,7 +531,7 @@
     if (es) out.push({ id: "expiresoon", units: es.units, who: `${w.buyer.name}, ${w.buyer.city}`, what: `lot ${c.listing ? c.listing.id : ""} · ${num(es.units)} × ${rate(c.award.price)}`,
       sub: `token ${inr(c.award.token)} · balance ${inr(Math.round((es.units * c.award.price - c.award.token) * 100) / 100)} · collected by the buyer's truck`,
       amount: Math.round(es.units * c.award.price * 100) / 100, at: stepAt(c, "accept"), paper: inv ? { no: inv.no, label: issued ? "issued from Tally" : "drafted" } : null });
-    if (kl) out.push({ id: "kirana", units: kl.units, who: `${c.kiranas.length} ${c.kiranas.length === 1 ? "kirana" : "kiranas"}`, what: `${num(kl.units)} packets at ${rate(planned(c, "kirana").packPrice)}, ${w.scheme.free} free with every ${w.scheme.buy}`,
+    if (kl) out.push({ id: "kirana", units: kl.units, who: `${c.kiranas.length} ${c.kiranas.length === 1 ? "kirana" : "kiranas"}`, what: schemeWhat(kl.units, kl.gross, planned(c, "kirana").packPrice, w.scheme),
       sub: `${c.kirana && c.kirana.ordered < c.kirana.planned ? `of ${num(c.kirana.planned)} offered · ` : ""}${stepAt(c, "van") ? `delivered on the ${weekday(stepAt(c, "van"))} round` : "delivered on the van round"}`,
       amount: kl.gross, at: stepAt(c, "orders"), shops: c.kiranas.map(k => ({ name: shopName(k.kirana), units: k.units, at: k.at || null })) });
     if (st) out.push({ id: "staff", units: st.units, who: "Your staff sale", what: `${num(st.units)} packs at ${rate(st.price)}`, sub: `at ${w.distributors[c.dist].godown}`, amount: st.gross, at: stepAt(c, "staff") });

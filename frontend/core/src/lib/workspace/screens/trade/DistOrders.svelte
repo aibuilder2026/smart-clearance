@@ -6,7 +6,7 @@
 	import { useRoute } from '../../context';
 	import { ordersNow, ordersPast, type DistJourney, type DistOrder } from '../../dist';
 	import { fmt } from '../../model';
-	import { distPast } from '../../partners';
+	import { creditOf, distPast } from '../../partners';
 	import { useWorkspace } from '../../source';
 	import type { LedgerOutcome, Sku, User } from '../../types';
 	import Screen from '../common/Screen.svelte';
@@ -57,6 +57,19 @@
 			.filter((b) => b.rows.length)
 	);
 	const book = $derived(now.concat(past));
+	// what the client credited him on the cleared batches, the figure Batches leads with (SC-141)
+	const credit = $derived(
+		Math.round(
+			distPast(ws.partners?.cases ?? [], dist.id)
+				.filter((c) => !now.some((x) => x.ref === c.ref))
+				.reduce((t, c) => t + creditOf(c), 0)
+		)
+	);
+	const tail = $derived(
+		credit
+			? ` ${w.short}'s credit notes on the cleared ones, ${fmt.inr(credit)}, are on Batches.`
+			: " The price support is on each batch's papers."
+	);
 	const all = $derived(book.flatMap((b) => b.rows));
 	const sum = (rows: DistOrder[]) => Math.round(rows.reduce((t, o) => t + o.amount, 0) * 100) / 100;
 	const shops = $derived(all.filter((o) => o.id === 'kirana').reduce((t, o) => t + (o.shops?.length ?? 0), 0));
@@ -76,7 +89,7 @@
 					{book.length}
 					{book.length === 1 ? 'batch' : 'batches'} · {shops} kiranas' scheme orders · {lots} ExpireSoon {lots === 1
 						? 'lot'
-						: 'lots'} · {sales} staff {sales === 1 ? 'sale' : 'sales'}. The price support is on each batch's papers.
+						: 'lots'} · {sales} staff {sales === 1 ? 'sale' : 'sales'}.{tail}
 				</p></Card
 			>{:else}<Card
 				><Empty
