@@ -117,7 +117,6 @@
 	});
 	let step = $state(0);
 	let tried = $state(false);
-	let busy = $state(false);
 
 	const slug = $derived(f.slugTouched ? f.slug : slugOf(f.name));
 	const profile = $derived<Profile>({ route: f.route, owner: f.owner, expiry: f.expiry });
@@ -152,8 +151,9 @@
 		tried = false;
 		void to(Math.max(0, step - 1));
 	}
+	// Create workspace waits on the platform and on the new client's page (SC-152): it keeps saying so until the page
+	// opens, and a refusal is said under it with Try again
 	async function create() {
-		busy = true;
 		const client = await k.act(
 			() =>
 				api.createClient({
@@ -175,9 +175,8 @@
 				}),
 			(c) => `${c.name}'s workspace is set up`
 		);
-		busy = false;
 		// its first stock export is next, at the top of its Supply chain tab (SC-84)
-		if (client) await goto(href('clients', client.id, 'supply'), { replace: true });
+		await goto(href('clients', client.id, 'supply'), { replace: true });
 	}
 </script>
 
@@ -404,7 +403,9 @@
 						variant="primary"
 						iconRight="arrow-right"
 						onclick={next}>Continue</Button
-					>{:else}<Button variant="primary" icon="check" loading={busy} onclick={create}>Create workspace</Button>{/if}
+					>{:else}<Button variant="primary" icon="check" action={create} busy="Creating the workspace…"
+						>Create workspace</Button
+					>{/if}
 			</div>
 		</section>
 	</div>

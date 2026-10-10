@@ -125,6 +125,7 @@
 		err = null;
 		pick[id]?.click();
 	};
+	// the button waits on the photos and the evidence (SC-152); a refusal keeps both photos and says why under it
 	const send = async () => {
 		if (!ready || !n || !a) return;
 		sending = true;
@@ -132,7 +133,7 @@
 			await ws.act(
 				'sendDestruction',
 				{ agency: a, certificate: cert.trim(), before: shots.before?.file, after: shots.after?.file },
-				{ feel: live ? 0 : 700, ref: n.ref }
+				{ feel: live ? 0 : 700, ref: n.ref, inline: true }
 			);
 			shots = {};
 			cert = '';
@@ -245,10 +246,11 @@
 						size="lg"
 						block
 						icon="send"
-						loading={sending}
 						disabled={!ready}
 						aria-describedby="dz-need"
-						onclick={send}>Send to {C} for approval</Button
+						action={send}
+						busy="Sending the evidence…"
+						done="Sent for approval">Send to {C} for approval</Button
 					>
 					<span id="dz-need" class="t-caption subtle"
 						>{ready

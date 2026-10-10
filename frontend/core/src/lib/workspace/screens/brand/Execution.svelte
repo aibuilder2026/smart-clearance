@@ -2,10 +2,8 @@
 	import AgentFeed from '../../../components/AgentFeed.svelte';
 	import Aura from '../../../components/Aura.svelte';
 	import Badge from '../../../components/Badge.svelte';
-	import Button from '../../../components/Button.svelte';
 	import Card from '../../../components/Card.svelte';
 	import ClusterMap from '../../../components/ClusterMap.svelte';
-	import CodeBlock from '../../../components/CodeBlock.svelte';
 	import Empty from '../../../components/Empty.svelte';
 	import List from '../../../components/List.svelte';
 	import ListRow from '../../../components/ListRow.svelte';
@@ -27,6 +25,7 @@
 	import DestructionCard from './DestructionCard.svelte';
 	import DestructionSheet from './DestructionSheet.svelte';
 	import ExpirySettlement from './ExpirySettlement.svelte';
+	import ListerCard from './ListerCard.svelte';
 	import GodownLeft from './GodownLeft.svelte';
 	import StaffOps from './StaffOps.svelte';
 
@@ -91,30 +90,20 @@
 {#snippet main()}<div
 		style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); align-items: start"
 	>
-		{#if hasES}<Card class="stack snug">
-				<div class="card-head">
-					<span class="row tight"
-						><Aura on={!h.listing} class="icontile violet" style="border-radius: 9px"
-							><Icon name="shopping-bag" size={17} stroke={2} /></Aura
-						><span class="card-title">Lister · ExpireSoon</span></span
-					>{#if h.listing}<Badge
-							tone={h.listing.status === 'awarded' ? 'green' : 'violet'}
-							dot
-							live={h.listing.status === 'live'}>{h.listing.status}</Badge
-						>{:else}<Badge>queued</Badge>{/if}
-				</div>
-				<CodeBlock code={req} label="ExpireSoon request" />{#if h.listing}<CodeBlock
-						code={res}
-						label="ExpireSoon response"
-					/>{/if}
-				<span class="t-footnote subtle"
-					>The marketplace is mocked; the request and response are what a partner API returns. Buyers in {W.short}'s
-					territories never see the lot.</span
-				>
-				{#if h.listing}<Button variant="outline" icon="external-link" onclick={() => (sheet = true)}
-						>Open on ExpireSoon</Button
-					>{/if}
-			</Card>{:else}<Card class="stack snug">
+		{#if hasES}<ListerCard
+				{h}
+				lot={es}
+				sku={c.sku}
+				batch={c.batch}
+				dist={c.dist}
+				buyer={c.buyer}
+				reserve={h.listing ? h.listing.reserve : reserve}
+				client={W.short}
+				territories={Object.values(ws.data.distributors)}
+				{req}
+				{res}
+				onopen={() => (sheet = true)}
+			/>{:else}<Card class="stack snug">
 				<div class="card-head">
 					<span class="row tight"
 						><span class="icontile gray" style="border-radius: 9px"

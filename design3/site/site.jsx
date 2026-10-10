@@ -623,7 +623,7 @@
       setSent(req); setF(blank);
     };
     return <Sheet open={isOpen} onClose={onClose} title={plan ? `Talk to us about ${plan}` : "Book a demo"} side={app.bp === "phone" ? "bottom" : "center"} detent="large"
-      footer={sent ? <Button variant="primary" size="lg" block onClick={onClose}>Done</Button> : <Button variant="primary" size="lg" block icon="send" onClick={send}>Send request</Button>}>
+      footer={sent ? <Button variant="primary" size="lg" block onClick={onClose}>Done</Button> : <Button variant="primary" size="lg" block icon="send" busy="Sending…" onClick={send}>Send request</Button>}>
       {sent ? <div className="stack" style={{ justifyItems: "center", textAlign: "center", paddingTop: 8 }}>
         <span className="sd-done" aria-hidden="true"><Icon name="circle-check" size={36} /></span>
         <b className="t-title3">Thanks, {sent.name.split(" ")[0]}.</b>

@@ -106,7 +106,7 @@
   .cs-trig { grid-template-columns: minmax(0, 1fr); }
   .cs-trig-act { justify-content: flex-start; }
 }
-.cs-ctl { flex: none; }
+.cs-ctl { flex: none; display: grid; justify-items: end; gap: 4px; } /* the level, then its save line while it saves (SC-152) */
 .segmented.sm .seg { height: 26px; padding: 0 10px; font-size: 12.5px; }
 .cs-gate-note { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 14px; font-size: 14px; background: var(--amber-soft); color: var(--amber-text); }
 .cs-gate-note .ic { flex: none; margin-top: 2px; }

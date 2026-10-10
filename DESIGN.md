@@ -635,7 +635,14 @@ Components are HIG in behaviour and shadcn in anatomy: quiet at rest, decisive o
 - **Approve:** Yes Amber with amber-fg text and an amber lift. The one human yes on a surface ("Review and approve", "Approve · release the agents").
 - **Secondary / Tinted / Outline / Ghost:** sage fill; green-soft with green text; surface with a strong hairline ring and shadow-1; text only with a fill on hover.
 - **Destructive / Destructive soft / Violet / Link:** solid destructive; red-soft with red text; ExpireSoon violet (ExpireSoon actions only); green text with underline on hover.
-- **States:** press scales to 0.97 (icon buttons 0.94) over 160ms; disabled 45% opacity; loading hides the label and centres a stepped spinner in the button's text colour; focus is the global 2px green ring at 2px offset.
+- **States:** press scales to 0.97 (icon buttons 0.94) over 160ms; disabled 45% opacity; focus is the global 2px green ring at 2px offset.
+- **Waiting on the network (SC-152):** a button that calls the network says what it is doing, all in its own ink, never blank.
+  - The press locks it at once (the keyboard too, so nothing sends twice). Nothing more shows for an answer under 100ms; a shown wait stays at least 400ms, so nothing flickers.
+  - While it waits it keeps its width: its words rise to the waiting words ("Approving the plan…", 12px over 240ms on the ease), a spinner arc turns in the icon's place, and a 3px line in its ink creeps along its foot to 90% (1.1s, `cubic-bezier(0.3, 0.7, 0.4, 1)`).
+  - The answer: the line fills, a tick pops on the tick spring (520/22) and draws in 280ms, and the done word ("Plan approved") holds 1.2s before it rests; a button whose screen moves on has no done word.
+  - A refusal shakes it once (360ms) and puts the reason under it in red, in the server's words, with Try again; past 3s a quiet line under it says it is still working ("The platform can take a few seconds to wake").
+  - Screen readers hear the waiting and done words once; under reduced motion each step lands at once and the arc stands still.
+- **A control that saves:** a Switch or Segmented takes its new value at once, and the line beside it says Saving…, then Saved, or puts the value back and says why.
 
 ### Badges, Chips and Gates
 - **Badge:** 24px pill (20px small), 12.5px/600, tone pairs soft ground with its text ink (green, amber, red, violet, blue, outline); solid variants for counts on colour; a live dot pings three times.
@@ -666,7 +673,7 @@ Components are HIG in behaviour and shadcn in anatomy: quiet at rest, decisive o
 
 ### Sheets, Alerts, Banners, Toasts
 - **Sheet:** bottom sheet with a 36 × 5px grabber, medium and large detents, drag to settle or dismiss, sprung in (stiffness 420, damping 40, mass 0.9) over a sage scrim; a floating side panel (460px, 12px inset, 24px radius) from tablet up; centred form sheet when asked. Header 17px/650 with a round close button; footer separated by a hairline. A bottom sheet is always full height and slides down to show its medium detent; its bottom padding grows by the same distance, so the footer sits at the bottom of the screen at either detent. When the content overflows, the body becomes a focusable region (`tabindex="0"`) named by the sheet's title, with the 2px focus ring drawn inside its edge, so a keyboard can scroll it. A sheet (and an alert) takes focus when it opens, keeps Tab inside, closes on Escape and gives focus back to whatever opened it; with one over another only the top one listens. Inside a device preview (the demo, the design system page) it stays non-modal, so focus and Tab remain with the page around the device.
-- **Alert:** 320px frosted, centred text, hairline-divided actions.
+- **Alert:** 320px frosted, centred text, hairline-divided actions. An action that calls the network keeps the alert open while it waits, its answer saying what it is doing beside a spinner and the others standing down; a refusal stays in the alert in red, and the alert closes once the action has gone through.
 - **Banner:** frosted push banner (22px radius) top of phone, docked top-right at 380px from tablet.
 - **Toast:** elevated card at 14px radius above the tab bar on phone, bottom-centre elsewhere.
 - **Menu:** a frosted list at 14px radius under its button, with an optional leading heading that also names it, hairline separators and a check on the chosen item. It follows the WAI-ARIA menu-button pattern:

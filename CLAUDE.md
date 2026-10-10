@@ -1898,6 +1898,33 @@
   - **Checks:** the frontend gate passes (core 273, api 79, workspace 93, admin 17, demo 5, console 3); backend-api 554 passed, 1 skipped; the landing page's build shows the bar at 1200 and on a phone, with no console errors. The admin's e2e, a11y and parity specs follow the new bar (unrun, SC-55).
   - **Hosting:** design3's `dist/` is rebuilt; the hosted Claude Design pages stay on their pinned commit.
 
+- **SC-151** (In Review, branch `SC-151-expiresoon-listing-card`): Execution's Lister · ExpireSoon card reads as a marketplace listing, not a raw HTTP call.
+  - **The request:** "Expire Soon UI work, currently showing HTTP API call, can we improve this marketplace integration piece".
+  - **Design first:** three options on one board in app v3, `SC-151 design review.html`, each in five states (queued, live, countered, awarded, collected):
+    - A, the lot as listed (recommended);
+    - B, the handshake;
+    - C, the terms.
+
+    The maintainer picked **A**, and kept the raw call on the card, closed. Designs, stills and the decision are in `design3/designs/SC-151/`.
+  - **The card** (design3 `brand.jsx` `ListerCard` first, then core's `ListerCard.svelte`):
+    - the lot as buyers see it on ExpireSoon: the pack, the price against MRP, best before, the seller, the listing id; once won, the buyer, the price and the token;
+    - what only the client sees: the reserve, and the territories it is hidden in;
+    - four steps with the case's own times: Listed, Bid, Won, Collected;
+    - Open on ExpireSoon, and **The API call**, which opens the request and response under it.
+
+    No contract or backend change.
+  - **Checks:** the frontend gate passes (core 273, with 9 Execution goldens updated; api 79, workspace 93, admin 17, demo 5, console 3). design3 and the port's stub build were shot at 1440 and 390, light and dark. The workspace's and the demo's a11y specs open the call; the browser suites were not run (SC-55).
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
+
+- **SC-152** (In Review, branch `SC-152-button-pending`): a button that calls the network says what it is doing, in every app.
+  - **The request:** "UI/UX glitches, especially on button clicks across all apps when it makes network calls … currently it just becomes blank or hangs for sometime."
+  - **Found:** the kit's loading button hid its label (`color: transparent !important`) and its spinner inherited the transparent ink, so a waiting button was an empty pill, in design3 and every app. Of about 71 buttons that call the network, 45 showed nothing until the answer; 13 workspace screens said it worked before the answer (the live source never rejected); the console's controls snapped back until every query was read again.
+  - **Design first:** three options on one board in app v3, `SC-152 design review.html`, each a lab of real buttons from the four apps with the network simulated: A, says what it's doing (recommended); B, the fill; C, act at once. The maintainer picked **A**, with the spinner fix in the same build. Designs, stills and the decision are in `design3/designs/SC-152/`.
+  - **The button** (the kit's, then core's `Button`): `action` (it waits on it; a rejection is the refusal), `busy` and `done` words, `loading` and `error` for a screen that drives it, `slow`. It keeps its width, says what it is doing with a spinner in its own ink and a line creeping along its foot; a tick and the done word, or a shake and the reason under it with Try again; past 3 s it says it is still working. Nothing shows under 100 ms; a shown wait stays 400 ms. A button given none of these is the plain button (goldens unchanged).
+  - **Also:** Alert waits on an action that returns a promise; `SaveNote` and `save()` (the kit's `useSaving`) for a Switch or Segmented that saves; the workspace's `RouteLine` while a screen reads its batch; sign-out says when it fails, in both apps.
+  - **The workspace:** a step sent `inline` (`SendOptions`) rejects with the API's words instead of raising the band, and shows once it has gone through, never before. **The console:** `Console.act` resolves once saved (the console reads itself again without waiting) and rejects with the API's words; controls keep the value pressed; a menu item waits on its "…" button.
+  - **Checks:** the frontend gate passes (core 278 with 5 new, api 79, admin 17, console 8 with 5 new, workspace 96 with 3 new, demo 5). The workspace's sign-in was pressed in a headless browser on the stub build; the console agent played its states in the browser pane on the mock build. The browser suites were not run (SC-55); the motion specs count `.btn-arc` as a loading indicator.
+  - **Hosting:** the hosted landing page and console load commit `852020d`; every pinned file was checked on jsDelivr first, and both pages render. The app, demo and design-system pages stay on their pins; design3's design-system page crashes on load, which predates SC-152 (a task is offered for it).
 - **SC-154** (In Review, branch `SC-154-hero-film-vertex`): the hero film, live action on Vertex AI. The landing page's film tells the journey with real people, made with Google's models.
   - **The request:** "a really awesome video projecting the journey of the application in about 15 seconds", with "realistic human characters instead of cartoon", showing brands, distributors, kiranas, donations and the staff sale, made with Google's video and image models, with a plan of the Vertex AI models and their prices; professional and aesthetically pleasing.
   - **The maintainer's decisions (10 Oct):** tracked scripts rather than a plugin; the design round as storyboards plus one Veo 3.1 Fast draft clip per option at 720p without audio (about $8); the final on Veo 3.1 at 1080p without audio (the hero plays muted; silent video is half the price); no night act, both themes starting on the same frame; two money gates, each answered with a figure.
