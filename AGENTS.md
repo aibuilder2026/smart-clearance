@@ -337,6 +337,7 @@ From the Claude desktop app:
   - [demo v3](https://claude.ai/artifact/Xy49Vw8owe5moZBvXPAf3e)
   - [app v3](https://claude.ai/artifact/YHSwoQHc2JbBWVQtuGQzgm)
 - **The architecture artifact** (SC-140, for the hackathon submission): [Smart-Clearance Architecture](https://claude.ai/artifact/MCFr2c1AVzX9xXKqcYVu47), not pinned; its copy is `docs/smart-clearance-architecture.html`.
+- **Lucidchart** (SC-140): [Architecture on Google Cloud](https://lucid.app/lucidchart/0e33214e-b46f-4cfb-9413-b2c40de7d1c6/view), [Application Flow · the core loop](https://lucid.app/lucidchart/2965aa52-3190-4d68-8791-9c95c8fd7bbc/view), [Application Flow · a batch's journey](https://lucid.app/lucidchart/c2efb94b-7aa2-4cc1-a6cc-af4980ff255f/view).
 
 ## Known gaps
 

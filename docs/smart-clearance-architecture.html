@@ -356,6 +356,16 @@ table.matrix { border-collapse: collapse; width: 100%; min-width: 860px; font-si
 .wf-bar.dat { background: color-mix(in srgb, var(--g) 75%, var(--fg)); }
 .obs-points { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; margin-top: 18px; }
 
+/* ---------- the same diagrams in Lucidchart ---------- */
+.lucid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-top: 18px; }
+.lucid a { display: grid; gap: 4px; text-decoration: none; color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+.lucid a:hover { border-color: var(--primary); }
+.lucid a b { font-size: 15px; font-weight: 640; }
+.lucid a span { font-size: 13.5px; color: var(--fg-3); }
+.lucid-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+.lucid-head b { font: 680 18px/1.2 var(--font-display); }
+.lucid-head span { font-size: 13.5px; color: var(--fg-3); }
+
 /* ---------- footer ---------- */
 footer { border-top: 1px solid var(--line); padding-block: 44px 64px; }
 footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; align-items: flex-start; }
@@ -563,6 +573,13 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
         <div class="legend"><span><i class="k-g"></i>Google Cloud</span><span><i class="k-ours"></i>Our code</span><span><i class="k-ai"></i>AI</span></div>
       </figcaption>
     </figure>
+
+    <div class="lucid-head"><b>The same diagrams in Lucidchart</b><span>Built with Google Cloud's own icon set; open them to edit or comment</span></div>
+    <div class="lucid">
+      <a href="https://lucid.app/lucidchart/0e33214e-b46f-4cfb-9413-b2c40de7d1c6/view" target="_blank" rel="noopener"><b>Architecture on Google Cloud ↗</b><span>Three pages: the system, the agents' nine stops, CI/CD</span></a>
+      <a href="https://lucid.app/lucidchart/2965aa52-3190-4d68-8791-9c95c8fd7bbc/view" target="_blank" rel="noopener"><b>Application flow · the core loop ↗</b><span>The sequence every stop runs on</span></a>
+      <a href="https://lucid.app/lucidchart/c2efb94b-7aa2-4cc1-a6cc-af4980ff255f/view" target="_blank" rel="noopener"><b>Application flow · a batch's journey ↗</b><span>Every stop, request by request</span></a>
+    </div>
   </div>
 </section>
 
@@ -905,6 +922,7 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
           </figcaption>
         </figure>
         <p class="flow-note" id="flow-note"></p>
+        <p class="flow-note">The same flow is in Lucidchart as two sequence diagrams: <a href="https://lucid.app/lucidchart/2965aa52-3190-4d68-8791-9c95c8fd7bbc/view" target="_blank" rel="noopener">the core loop</a> and <a href="https://lucid.app/lucidchart/c2efb94b-7aa2-4cc1-a6cc-af4980ff255f/view" target="_blank" rel="noopener">a batch’s journey</a>.</p>
       </div>
     </div>
   </div>
@@ -1137,6 +1155,7 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
       <a href="https://munchly-smartclearance.web.app" target="_blank" rel="noopener">munchly-smartclearance.web.app</a>
       <a href="https://smartclearance-console.web.app" target="_blank" rel="noopener">smartclearance-console.web.app</a>
       <a href="https://smartclearance-demo.web.app" target="_blank" rel="noopener">smartclearance-demo.web.app</a>
+      <a href="https://lucid.app/lucidchart/0e33214e-b46f-4cfb-9413-b2c40de7d1c6/view" target="_blank" rel="noopener">Lucidchart architecture</a>
     </div>
   </div>
 </footer>
