@@ -83,7 +83,8 @@ def row(case: m.Case, sku: dict[str, Any], dist: m.Distributor) -> dict[str, Any
     sold = sum(took.get(k, 0) for k in SOLD)
     donated = took.get("foodbank", 0)
     godown = int(L.get("godown", 0))
-    destroyed = int(L.get("destroyed", 0))
+    # what was destroyed: by the client, and at his godown at the client's cost (SC-139)
+    destroyed = int(L.get("destroyed", 0)) + int(L.get("atGodown", 0))
     kg_unit = float(sku["kgPerUnit"])
     pack = float(sku.get("packKg") or 0)
     docs = {d["id"]: d for d in case.docs or []}
@@ -110,7 +111,10 @@ def row(case: m.Case, sku: dict[str, Any], dist: m.Distributor) -> dict[str, Any
         "packResoldKg": money.r2(sold * pack),
         "packDonatedKg": money.r2(donated * pack),
         "packDestroyedKg": money.r2(destroyed * pack),
-        "credit": expiry.get("credit", 0) if expiry.get("policy") != "none" else 0,
+        # the expiry credit note's amount: under route B with the GST he reverses and the agency's charges (SC-139)
+        "credit": (expiry.get("amount") if expiry.get("amount") is not None else expiry.get("credit", 0))
+        if expiry.get("policy") != "none"
+        else 0,
         "support": (docs.get("support") or {}).get("amount", 0),
     }
     papers = [

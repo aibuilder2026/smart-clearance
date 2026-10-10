@@ -120,7 +120,7 @@ class ExitState(Shape):
 class Profile(Shape):
     route: Literal["distributors", "modern-trade", "own"]
     owner: Literal["distributor", "manufacturer"]
-    expiry: Literal["full-credit", "price-support", "none"]
+    expiry: Literal["godown", "full-credit", "price-support", "none"]
 
 
 class Gates(Shape):
@@ -280,6 +280,24 @@ class UploadLinkOut(Shape):
     expires_at: str
 
 
+class DestructionAgency(Shape):
+    id: str = Field(max_length=40)
+    name: str = Field(max_length=120)
+    city: str = Field(max_length=80)
+    auth: str = Field(max_length=80)
+
+
+class DestructionConfig(Shape):
+    """how a client has expired packs destroyed at a distributor's godown (SC-139; Channels and rules)"""
+
+    vision_check: bool
+    reviewer: str = Field(max_length=80)
+    remind_days: int
+    gross_up: bool
+    charges_per_unit: float
+    agencies: list[DestructionAgency]
+
+
 class ClientOut(Shape):
     id: str
     name: str
@@ -310,6 +328,8 @@ class ClientOut(Shape):
     approver: str | None
     agents: dict[str, AgentConfig]
     first_export: FirstExportOut | None
+    # how expired packs left at a godown are destroyed there (SC-139); null for a client whose policy does not
+    destruction: DestructionConfig | None = None
 
 
 class Staff(Shape):
@@ -515,6 +535,7 @@ class OverrideInput(Shape):
 class RulesInput(Shape):
     rules: Rules
     exits: dict[ExitId, ExitState]
+    destruction: DestructionConfig | None = None
 
 
 class InviteInput(Shape):

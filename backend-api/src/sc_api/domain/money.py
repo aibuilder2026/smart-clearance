@@ -51,6 +51,9 @@ RULES: dict[str, Any] = {
     "floors": {"snacks": 0.35, "biscuits": 0.35, "staples": 0.40, "beverages": 0.30, "personal-care": 0.40},
     "ewayThreshold": 50000,
     "negotiation": {"reservePerUnit": 13.5, "counterPctOfAsk": 0.95},
+    # destroyed at the distributor's godown (SC-139): the agency's charge a pack, whether the credit note grosses up the
+    # GST he reverses, and how many journey days before he is asked again
+    "destruction": {"chargesPerUnit": 1.5, "grossUp": True, "remindDays": 2},
 }
 
 # the exits for a distributor's stock. Discount D2C is only for a manufacturer's own warehouse stock, so it is not here.
@@ -127,6 +130,11 @@ def js_round(x: float) -> Any:
         return x
     f = math.floor(x)
     return f + 1 if x - f >= 0.5 else f
+
+
+def _poss(name: str) -> str:
+    """a name's possessive, as money.js writes it: Rakesh Traders', Munchly's"""
+    return name + ("'" if name.endswith("s") else "'s")
 
 
 def r2(n: float) -> float:
@@ -592,6 +600,7 @@ def realised(
     done: Mapping[str, float] | None,
     meals_rule: Obj | None = None,
     policy: str = "full-credit",
+    opts: Obj | None = None,
     *,
     rules: Obj = RULES,
 ) -> dict[str, Any]:
@@ -602,7 +611,8 @@ def realised(
     collected (`meals_rule`, SC-110). The packs left at the godown follow the client's expiry `policy` (SC-122): under
     full credit they come back and the client destroys them, so their input credit is reversed and their disposal is
     the client's; otherwise the distributor destroys his own stock, and the client keeps its credit and avoids the
-    disposal."""
+    disposal. Destroyed at his godown (SC-139, `policy` "godown"), the client keeps its credit on them and pays his
+    GST reversal, grossed up, and the agency's charges (`opts`, RULES' destruction) instead of its own disposal."""
 
     def took(ln: Obj) -> Any:
         if ln["id"] != "writeoff" and done and done.get(ln["id"]) is not None:
@@ -630,14 +640,22 @@ def realised(
     donated = units(lambda ln: ln["id"] == "foodbank")
     left = p["leftover"] + godown
     wo = p["writeOff"]
-    left_cost = r2(left * (wo["perUnit"] - _get(sku, "cost"))) if _truthy(left) else 0
-    pnl = r2(net - p["bookCost"] - left_cost)
+    # destroyed at the distributor's godown at the client's cost (SC-139): the client keeps its input credit on them,
+    # and pays his GST reversal (grossed up) and the agency's charges, as the expiry credit note carries them
+    at_godown = godown if policy == "godown" else 0
+    if at_godown:
+        xs = expiry_settlement(at_godown, sku, "godown", opts=opts, rules=rules)
+        own = r2(p["leftover"] * (wo["perUnit"] - _get(sku, "cost"))) if _truthy(p["leftover"]) else 0
+        pnl = r2(net - p["bookCost"] - own - r2(xs["gst"] + xs["charges"]))
+    else:
+        left_cost = r2(left * (wo["perUnit"] - _get(sku, "cost"))) if _truthy(left) else 0
+        pnl = r2(net - p["bookCost"] - left_cost)
     kg = r2((p["units"] - left) * _get(sku, "kgPerUnit"))
     itc = itc_of(sku)
     # what the client itself destroys: the plan's own write-off, and under full credit the packs that came back
     ours = policy == "full-credit"
     destroyed = p["leftover"] + (godown if ours else 0)
-    spared = p["units"] - destroyed
+    spared = p["units"] - destroyed - at_godown
     return {
         **p,
         "lines": lines,
@@ -661,6 +679,7 @@ def realised(
         "donated": donated,
         "godown": godown,
         "destroyed": destroyed,
+        "atGodown": at_godown,
     }
 
 
@@ -745,20 +764,48 @@ def price_support(p: Obj, sku: Obj, award_price: float | None = None, *, rules: 
     return {"rows": rows, "gap": gap, "van": van, "fee": fee, "total": r2(gap + van + fee)}
 
 
-def expiry_settlement(units: float, sku: Obj, policy: str, *, rules: Obj = RULES) -> dict[str, Any]:
+def expiry_settlement(
+    units: float, sku: Obj, policy: str, *, opts: Obj | None = None, rules: Obj = RULES
+) -> dict[str, Any]:
     """the packs left at the godown on expiry day, settled by the client's expiry policy (SC-94; money.js
     expirySettlement). Full credit: they come back for the dealer price, and the client destroys them, paying disposal
     and EPR and reversing the GST credit. Price support: the client pays the distributor the gap to what he paid (they
-    fetched nothing, so the dealer price), and he destroys them. No returns: the distributor's loss"""
+    fetched nothing, so the dealer price), and he destroys them. No returns: the distributor's loss. Destroyed at his
+    godown (SC-139): he destroys them through an authorised agency, and the client credits him the dealer price, the
+    input GST he reverses on them (grossed up, by `opts`) and the agency's charges; the client keeps its own input
+    credit and pays no disposal or EPR of its own. `amount` is what the paper credits him"""
     wo = write_off(units, sku, rules=rules)
     dp = _get(sku, "dp")
     credit: Any = 0 if policy == "none" or not units else (None if dp is None or _nan(dp) else r2(units * dp))
+    if policy == "godown":
+        o = opts if opts is not None else rules.get("destruction", RULES["destruction"])
+        reversal = None if credit is None else r2(credit * _get(sku, "gst"))
+        gst = reversal if o["grossUp"] and reversal is not None else 0
+        charges = r2(units * o["chargesPerUnit"]) if units else 0
+        amount = None if credit is None else r2(credit + gst + charges)
+        return {
+            "policy": policy,
+            "units": units,
+            "credit": credit,
+            "gst": gst,
+            "charges": charges,
+            "reversal": reversal,
+            "amount": amount,
+            "destroyedBy": "distributor" if units else None,
+            "at": "godown" if units else None,
+            "kg": wo["kg"],
+            "disposal": 0,
+            "epr": 0,
+            "itc": 0,
+            "total": r2((credit or 0) + gst + charges),
+        }
     ours = policy == "full-credit" and units > 0
     disposal, epr, itc = (wo["disposal"], wo["epr"], wo["itc"]) if ours else (0, 0, 0)
     return {
         "policy": policy,
         "units": units,
         "credit": credit,
+        "amount": credit,
         "destroyedBy": ("client" if ours else "distributor") if units else None,
         "kg": wo["kg"],
         "disposal": disposal,
@@ -892,6 +939,7 @@ def documents(
     )
     # the credit kept on what was sold under tax invoices, and reversed on what was given away or destroyed (SC-122)
     away = p["donated"] + (p["destroyed"] if p.get("destroyed") is not None else p["leftover"])
+    at_godown = p.get("atGodown") or 0
     docs.append(
         {
             "id": "itc",
@@ -903,11 +951,19 @@ def documents(
             "reversed": p.get("itcReversed") or 0,
             "units": p["soldUnits"],
             "away": away,
+            "atGodown": at_godown,
             "note": (
                 f"Kept on the {to_locale(p['soldUnits'])} packs sold under tax invoices; reversed under Section "
                 f"17(5)(h) on the {to_locale(away)} given away or destroyed, in GSTR-3B Table 4(B)(1)."
                 if _truthy(p.get("itcReversed"))
                 else "Goods supplied under tax invoices, so the Section 17(5)(h) reversal does not apply."
+            )
+            # destroyed at his godown (SC-139): his stock, so the reversal is his, and the client keeps its own credit
+            + (
+                f" The {to_locale(at_godown)} packs destroyed at {_poss(seller['name'])} godown were his stock,"
+                f" bought under tax invoice: he reverses their input credit, and {client['short']} keeps its own."
+                if _truthy(at_godown)
+                else ""
             ),
         }
     )
@@ -926,6 +982,24 @@ def documents(
     )
     if rcpt:
         docs.append(dict(rcpt))
+    # destroyed at his godown (SC-139): the agency's certificate, for him, once the client has approved the evidence;
+    # until then it waits, with the input GST he will reverse on the packs
+    if _truthy(at_godown):
+        docs.append(
+            {
+                "id": "destruction",
+                "type": "Destruction certificate",
+                "owner": seller["name"],
+                "no": "awaiting destruction",
+                "status": "awaiting",
+                "amount": 0,
+                "units": at_godown,
+                "at": "godown",
+                "reversed": r2(at_godown * (_get(sku, "dp") or 0) * _get(sku, "gst")),
+                "note": "Issued by the authorised agency once the destruction's evidence is approved",
+            }
+        )
+        return docs
     docs.append(
         {
             "id": "destruction",

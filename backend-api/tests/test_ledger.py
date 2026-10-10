@@ -11,7 +11,12 @@ from tests.test_workspace import ARJUN, LAKSHMI, PRIYA, RAKESH, WS, case
 
 pytestmark = pytest.mark.usefixtures("with_history")
 SAME = {"net": "net", "swing": "swing", "pnl": "pnl", "itcKept": "itc", "itcReversed": "itcReversed", "kg": "kg"}
-SAME |= {"co2": "co2", "meals": "meals", "godown": "godown", "destroyed": "destroyed"}
+SAME |= {"co2": "co2", "meals": "meals", "godown": "godown"}
+
+
+def destroyed(b) -> int:
+    """what the ledger counts as destroyed: by the client, and at his godown at the client's cost (SC-139)"""
+    return b["expect"]["destroyed"] + b["expect"]["atGodown"]
 
 
 async def _ledger(api, who=PRIYA) -> dict:
@@ -27,6 +32,7 @@ async def test_each_batch_reads_as_its_posted_ledger(api):
     for b in H["batches"]:
         got = rows[b["ref"]]
         assert {k: got["figures"][k] for k in SAME} == {k: b["expect"][v] for k, v in SAME.items()}, b["ref"]
+        assert got["figures"]["destroyed"] == destroyed(b), b["ref"]
         assert got["outcome"] == b["outcome"] and got["history"] and got["reviewed"], b["ref"]
         f = got["figures"]
         assert f["sold"] + f["donated"] + f["godown"] <= f["units"]
@@ -47,6 +53,7 @@ async def test_the_periods_add_up_their_batches(api):
     for k, v in SAME.items():
         want = sum(b["expect"][v] for b in H["batches"])
         assert t[k] == pytest.approx(want if k != "co2" else t["kg"] * money.RULES["co2PerKg"], abs=0.02), k
+    assert t["destroyed"] == sum(destroyed(b) for b in H["batches"])
     assert t["batches"] == 12 and t["outcomes"] == {"sold": 7, "leftover": 3, "donation": 2}
     assert t["creditNotes"] == 15 and t["receipts"] == 2 and t["reviewed"] == 12
     assert t["invoices"] == sum("invoice" in b["numbers"] for b in H["batches"])

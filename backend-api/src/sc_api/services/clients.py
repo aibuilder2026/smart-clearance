@@ -22,6 +22,11 @@ RULE_LABEL = {
     "offerWindowHours": "offer window hours",
     "hindiOffers": "Hindi offers",
     "requirePhoto": "label photo first",
+    # destroyed at the godown (SC-139), as design3's console names them
+    "visionCheck": "Vision checks the destruction photos",
+    "grossUp": "the GST he reverses made good",
+    "chargesPerUnit": "the agency's charges a pack",
+    "remindDays": "ask again after days",
 }
 
 
@@ -53,6 +58,8 @@ class ClientSpec:
     require_photo: bool = True
     day_minutes: int = DAY_MINUTES  # the length of a journey day (SC-68): a client starts in real time
     agents: dict[str, dict[str, Any]] = field(default_factory=dict)
+    # how expired packs left at a godown are destroyed there (SC-139); the platform's defaults for route B
+    destruction: dict[str, Any] | None = None
 
 
 def _profile_label(ctx: Ctx, profile: dict[str, str]) -> str:
@@ -98,6 +105,9 @@ async def insert(ctx: Ctx, spec: ClientSpec, *, created_at: datetime | None = No
         require_photo=spec.require_photo,
         day_minutes=spec.day_minutes,
         sign_in=spec.sign_in,
+        destruction=spec.destruction
+        if spec.destruction is not None
+        else (dict(d["destruction"]) if spec.profile["expiry"] == "godown" and d.get("destruction") else None),
         created_at=created_at or ctx.clock.now(),
     )
     ctx.session.add(c)
@@ -282,6 +292,8 @@ async def save_profile(ctx: Ctx, client_id: str, data: ProfileInput) -> None:
         else:
             row.on = on
     c.route, c.owner, c.expiry = profile["route"], profile["owner"], profile["expiry"]
+    if c.expiry == "godown" and c.destruction is None and ctx.ref.defaults.get("destruction"):
+        c.destruction = dict(ctx.ref.defaults["destruction"])  # route B starts on the platform's settings (SC-139)
     c.gate_blinkit_days, c.gate_qcom_pct = data.gates.blinkit_days, data.gates.qcom_pct
     c.return_window_days = data.return_window_days
     await audit.record(
@@ -344,8 +356,21 @@ async def save_rules(ctx: Ctx, client_id: str, data: RulesInput) -> None:
         if key in current_rules and value != current_rules[key]:
             shown = ("on" if value else "off") if isinstance(value, bool) else js_str(value)
             changes.append(f"{RULE_LABEL.get(key, key)} {shown}")
+    # destroyed at the godown (SC-139): each setting changed, the agencies aside
+    dz = data.destruction.model_dump(by_alias=True) if data.destruction is not None and c.destruction else None
+    if dz is not None:
+        if not (0 <= dz["chargesPerUnit"] <= 10):
+            raise ApiError(422, "The agency's charge is ₹0 to ₹10 a pack.", {"chargesPerUnit": "₹0 to ₹10."})
+        if not (1 <= dz["remindDays"] <= 7):
+            raise ApiError(422, "He is asked again after 1 to 7 days.", {"remindDays": "1 to 7 days."})
+        for key, value in dz.items():
+            if key != "agencies" and value != (c.destruction or {}).get(key):
+                shown = ("on" if value else "off") if isinstance(value, bool) else js_str(value)
+                changes.append(f"{RULE_LABEL.get(key, key)} {shown}")
     if not changes:
         return
+    if dz is not None:
+        c.destruction = dz
     for exit_id, on in final_on.items():
         if exit_id in rows:
             rows[exit_id].on = on

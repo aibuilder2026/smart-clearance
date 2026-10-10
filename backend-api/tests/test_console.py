@@ -17,7 +17,7 @@ async def last_audit(api, h) -> dict:
 
 
 def kesari(**patch) -> dict:
-    profile = {"route": "distributors", "owner": "manufacturer", "expiry": "full-credit"}
+    profile = {"route": "distributors", "owner": "manufacturer", "expiry": "godown"}
     return {
         "name": "Kesari Foods",
         "city": "Indore",
@@ -363,11 +363,19 @@ async def test_a_new_client_from_its_demo_request(api, neha):
     assert c["agents"]["data"]["last"] == "not run yet"
     assert c["exits"]["d2c"]["on"] is True
     assert c["people"][0]["email"] == "ritu@kesari.example"
+    # destroyed at the godown (SC-139): a new client starts on the platform's settings
+    assert [a["id"] for a in c["destruction"]["agencies"]] == ["oce", "vwc", "dgw"]
+    assert {k: c["destruction"][k] for k in ("visionCheck", "remindDays", "grossUp", "chargesPerUnit")} == {
+        "visionCheck": True,
+        "remindDays": 2,
+        "grossUp": True,
+        "chargesPerUnit": 1.5,
+    }
     listed = {r["id"]: r for r in (await api.get("/v1/demo-requests", headers=neha)).json()}
     assert {k: listed[req["id"]][k] for k in ("status", "client")} == {"status": "set up", "client": "kesari"}
     assert (await last_audit(api, neha))["text"] == (
         "Set up Kesari Foods from its supply-chain profile: through distributors, the manufacturer owns the stock, "
-        "full credit at expiry; invited Ritu Malhotra as admin"
+        "destroyed at the distributor's godown; invited Ritu Malhotra as admin"
     )
     attention = (await api.get("/v1/console/overview", headers=neha)).json()["attention"]
     assert next(a for a in attention if a["id"] == "kesari-invite")["text"] == (

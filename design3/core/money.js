@@ -278,7 +278,7 @@
     docs.push({ id: "itc", type: "GST ITC memo", owner: parties.client.short, no: "s.17(5)(h)", status: "generated", amount: p.itcRetained, reversed: p.itcReversed || 0, units: p.soldUnits, away, atGodown: p.atGodown || 0,
       note: (p.itcReversed ? `Kept on the ${p.soldUnits.toLocaleString("en-IN")} packs sold under tax invoices; reversed under Section 17(5)(h) on the ${away.toLocaleString("en-IN")} given away or destroyed, in GSTR-3B Table 4(B)(1).` : "Goods supplied under tax invoices, so the Section 17(5)(h) reversal does not apply.")
         // destroyed at his godown (SC-139): his stock, so the reversal is his, and the client keeps its own credit on them
-        + (p.atGodown ? ` The ${p.atGodown.toLocaleString("en-IN")} packs destroyed at ${parties.seller.name}'s godown were his stock, bought under tax invoice: he reverses their input credit, and ${parties.client.short} keeps its own.` : "") });
+        + (p.atGodown ? ` The ${p.atGodown.toLocaleString("en-IN")} packs destroyed at ${parties.seller.name + (/s$/.test(parties.seller.name) ? "'" : "'s")} godown were his stock, bought under tax invoice: he reverses their input credit, and ${parties.client.short} keeps its own.` : "") });
     docs.push({ id: "fssai", type: "FSSAI surplus-food checklist", owner: parties.client.short, no: p.donated ? `${p.donated} units` : "no donation", status: p.donated ? "generated" : "not required", amount: 0 });
     if (rcpt) docs.push(rcpt);
     // the packs the client destroys: the plan's write-off, and under full credit those left at the godown (SC-122)

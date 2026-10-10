@@ -4644,6 +4644,7 @@
 					"invoice": "INV/26-27/0921",
 					"support": "CN/0102"
 				},
+				"destruction": null,
 				"expect": {
 					"net": 22055,
 					"swing": 26286.5,
@@ -4655,8 +4656,10 @@
 					"meals": 0,
 					"godown": 0,
 					"destroyed": 0,
+					"atGodown": 0,
 					"support": 8395,
-					"credit": 0
+					"credit": 0,
+					"amount": 0
 				}
 			},
 			{
@@ -4761,6 +4764,7 @@
 					"invoice": "INV/26-27/0922",
 					"support": "CN/0103"
 				},
+				"destruction": null,
 				"expect": {
 					"net": 15847,
 					"swing": 19216.74,
@@ -4772,8 +4776,10 @@
 					"meals": 0,
 					"godown": 0,
 					"destroyed": 0,
+					"atGodown": 0,
 					"support": 5141,
-					"credit": 0
+					"credit": 0,
+					"amount": 0
 				}
 			},
 			{
@@ -4895,6 +4901,15 @@
 					"support": "CN/0104",
 					"expiry": "CN/0111"
 				},
+				"destruction": {
+					"agency": "dgw",
+					"certificate": "DGW/DC/26-27/0085",
+					"photos": {
+						"before": "2026-08-23T11:40",
+						"after": "2026-08-23T13:20"
+					},
+					"slate": "23-08-26"
+				},
 				"expect": {
 					"net": 18842,
 					"swing": 21669.87,
@@ -4906,8 +4921,10 @@
 					"meals": 0,
 					"godown": 65,
 					"destroyed": 0,
+					"atGodown": 65,
 					"support": 8233,
-					"credit": 3087.5
+					"credit": 3087.5,
+					"amount": 3339.38
 				}
 			},
 			{
@@ -5012,6 +5029,7 @@
 					"invoice": "INV/26-27/0924",
 					"support": "CN/0105"
 				},
+				"destruction": null,
 				"expect": {
 					"net": 19320.8,
 					"swing": 22586.72,
@@ -5023,8 +5041,10 @@
 					"meals": 0,
 					"godown": 0,
 					"destroyed": 0,
+					"atGodown": 0,
 					"support": 7559.2,
-					"credit": 0
+					"credit": 0,
+					"amount": 0
 				}
 			},
 			{
@@ -5120,6 +5140,7 @@
 					"receipt": "FI/HYD/26-27/0415",
 					"support": "CN/0106"
 				},
+				"destruction": null,
 				"expect": {
 					"net": 15130.56,
 					"swing": 19737.84,
@@ -5131,8 +5152,10 @@
 					"meals": 406,
 					"godown": 0,
 					"destroyed": 0,
+					"atGodown": 0,
 					"support": 21880,
-					"credit": 0
+					"credit": 0,
+					"amount": 0
 				}
 			},
 			{
@@ -5237,6 +5260,7 @@
 					"invoice": "INV/26-27/0925",
 					"support": "CN/0107"
 				},
+				"destruction": null,
 				"expect": {
 					"net": 24660.5,
 					"swing": 30206.59,
@@ -5248,8 +5272,10 @@
 					"meals": 0,
 					"godown": 0,
 					"destroyed": 0,
+					"atGodown": 0,
 					"support": 10275.5,
-					"credit": 0
+					"credit": 0,
+					"amount": 0
 				}
 			},
 			{
@@ -5371,6 +5397,15 @@
 					"support": "CN/0108",
 					"expiry": "CN/0115"
 				},
+				"destruction": {
+					"agency": "oce",
+					"certificate": "OCE/DC/26-27/0217",
+					"photos": {
+						"before": "2026-09-15T11:40",
+						"after": "2026-09-15T13:20"
+					},
+					"slate": "15-09-26"
+				},
 				"expect": {
 					"net": 11320,
 					"swing": 15038.84,
@@ -5382,8 +5417,10 @@
 					"meals": 0,
 					"godown": 184,
 					"destroyed": 0,
+					"atGodown": 184,
 					"support": 3934,
-					"credit": 2668
+					"credit": 2668,
+					"amount": 3077.4
 				}
 			},
 			{
@@ -5488,6 +5525,7 @@
 					"invoice": "INV/26-27/0927",
 					"support": "CN/0109"
 				},
+				"destruction": null,
 				"expect": {
 					"net": 28862.9,
 					"swing": 31420.07,
@@ -5499,8 +5537,10 @@
 					"meals": 0,
 					"godown": 0,
 					"destroyed": 0,
+					"atGodown": 0,
 					"support": 11727.1,
-					"credit": 0
+					"credit": 0,
+					"amount": 0
 				}
 			},
 			{
@@ -5605,6 +5645,7 @@
 					"invoice": "INV/26-27/0928",
 					"support": "CN/0110"
 				},
+				"destruction": null,
 				"expect": {
 					"net": 17210.3,
 					"swing": 20808.86,
@@ -5616,8 +5657,10 @@
 					"meals": 0,
 					"godown": 0,
 					"destroyed": 0,
+					"atGodown": 0,
 					"support": 6351.7,
-					"credit": 0
+					"credit": 0,
+					"amount": 0
 				}
 			},
 			{
@@ -5713,6 +5756,7 @@
 					"receipt": "FI/NAG/26-27/0416",
 					"support": "CN/0112"
 				},
+				"destruction": null,
 				"expect": {
 					"net": 11440.02,
 					"swing": 15368.52,
@@ -5724,8 +5768,10 @@
 					"meals": 466,
 					"godown": 0,
 					"destroyed": 0,
+					"atGodown": 0,
 					"support": 25856,
-					"credit": 0
+					"credit": 0,
+					"amount": 0
 				}
 			},
 			{
@@ -5830,6 +5876,7 @@
 					"invoice": "INV/26-27/0929",
 					"support": "CN/0113"
 				},
+				"destruction": null,
 				"expect": {
 					"net": 21382.5,
 					"swing": 25424.62,
@@ -5841,8 +5888,10 @@
 					"meals": 0,
 					"godown": 0,
 					"destroyed": 0,
+					"atGodown": 0,
 					"support": 7704.5,
-					"credit": 0
+					"credit": 0,
+					"amount": 0
 				}
 			},
 			{
@@ -5964,6 +6013,15 @@
 					"support": "CN/0114",
 					"expiry": "CN/0116"
 				},
+				"destruction": {
+					"agency": "oce",
+					"certificate": "OCE/DC/26-27/0218",
+					"photos": {
+						"before": "2026-09-27T11:40",
+						"after": "2026-09-27T13:20"
+					},
+					"slate": "27-09-26"
+				},
 				"expect": {
 					"net": 14312,
 					"swing": 17497.88,
@@ -5975,8 +6033,10 @@
 					"meals": 0,
 					"godown": 132,
 					"destroyed": 0,
+					"atGodown": 132,
 					"support": 5128,
-					"credit": 2376
+					"credit": 2376,
+					"amount": 2692.8
 				}
 			}
 		],
@@ -8140,6 +8200,7 @@
 					"fee": 100
 				},
 				"expiry": null,
+				"destruction": null,
 				"docs": [
 					{
 						"id": "invoice",
@@ -8434,6 +8495,7 @@
 					"fee": 100
 				},
 				"expiry": null,
+				"destruction": null,
 				"docs": [
 					{
 						"id": "invoice",
@@ -8669,7 +8731,47 @@
 				},
 				"expiry": {
 					"units": 65,
-					"credit": 3087.5
+					"credit": 3087.5,
+					"amount": 3339.38,
+					"at": "godown",
+					"reversal": 154.38,
+					"charges": 97.5
+				},
+				"destruction": {
+					"status": "approved",
+					"units": 65,
+					"agency": {
+						"id": "dgw",
+						"name": "Deccan Green Waste Management",
+						"auth": "TSPCB/SWM/HYD/0287",
+						"site": "the municipal landfill, Hyderabad"
+					},
+					"certificate": "DGW/DC/26-27/0085",
+					"askedAt": "2026-08-23T10:00",
+					"sentAt": "2026-08-23T14:00",
+					"approvedAt": "2026-08-24T11:00",
+					"checks": [
+						{
+							"id": "batch",
+							"label": "Batch MF-2406-107 read on the carton label",
+							"ok": true
+						},
+						{
+							"id": "count",
+							"label": "About 70 packs in view (65 left)",
+							"ok": true
+						},
+						{
+							"id": "slate",
+							"label": "The slate reads MF-2406-107 · 65 packets · 23-08-26",
+							"ok": true
+						},
+						{
+							"id": "when",
+							"label": "Both photos taken that day, at the godown and the landfill",
+							"ok": true
+						}
+					]
 				},
 				"docs": [
 					{
@@ -8919,6 +9021,7 @@
 					"fee": 100
 				},
 				"expiry": null,
+				"destruction": null,
 				"docs": [
 					{
 						"id": "invoice",
@@ -9178,6 +9281,7 @@
 					"fee": 0
 				},
 				"expiry": null,
+				"destruction": null,
 				"docs": [
 					{
 						"id": "support",
@@ -9394,6 +9498,7 @@
 					"fee": 100
 				},
 				"expiry": null,
+				"destruction": null,
 				"docs": [
 					{
 						"id": "invoice",
@@ -9729,7 +9834,47 @@
 				},
 				"expiry": {
 					"units": 184,
-					"credit": 2668
+					"credit": 2668,
+					"amount": 3077.4,
+					"at": "godown",
+					"reversal": 133.4,
+					"charges": 276
+				},
+				"destruction": {
+					"status": "approved",
+					"units": 184,
+					"agency": {
+						"id": "oce",
+						"name": "Orange City Enviro Services",
+						"auth": "MPCB/SWM/NGP/0412",
+						"site": "the municipal landfill, Nagpur"
+					},
+					"certificate": "OCE/DC/26-27/0217",
+					"askedAt": "2026-09-15T10:00",
+					"sentAt": "2026-09-15T14:00",
+					"approvedAt": "2026-09-16T11:00",
+					"checks": [
+						{
+							"id": "batch",
+							"label": "Batch MF-2407-111 read on the carton label",
+							"ok": true
+						},
+						{
+							"id": "count",
+							"label": "About 180 packs in view (184 left)",
+							"ok": true
+						},
+						{
+							"id": "slate",
+							"label": "The slate reads MF-2407-111 · 184 packets · 15-09-26",
+							"ok": true
+						},
+						{
+							"id": "when",
+							"label": "Both photos taken that day, at the godown and the landfill",
+							"ok": true
+						}
+					]
 				},
 				"docs": [
 					{
@@ -9951,6 +10096,7 @@
 					"fee": 100
 				},
 				"expiry": null,
+				"destruction": null,
 				"docs": [
 					{
 						"id": "invoice",
@@ -10237,6 +10383,7 @@
 					"fee": 100
 				},
 				"expiry": null,
+				"destruction": null,
 				"docs": [
 					{
 						"id": "invoice",
@@ -10488,6 +10635,7 @@
 					"fee": 0
 				},
 				"expiry": null,
+				"destruction": null,
 				"docs": [
 					{
 						"id": "support",
@@ -10756,6 +10904,7 @@
 					"fee": 100
 				},
 				"expiry": null,
+				"destruction": null,
 				"docs": [
 					{
 						"id": "invoice",
@@ -11059,7 +11208,47 @@
 				},
 				"expiry": {
 					"units": 132,
-					"credit": 2376
+					"credit": 2376,
+					"amount": 2692.8,
+					"at": "godown",
+					"reversal": 118.8,
+					"charges": 198
+				},
+				"destruction": {
+					"status": "approved",
+					"units": 132,
+					"agency": {
+						"id": "oce",
+						"name": "Orange City Enviro Services",
+						"auth": "MPCB/SWM/NGP/0412",
+						"site": "the municipal landfill, Nagpur"
+					},
+					"certificate": "OCE/DC/26-27/0218",
+					"askedAt": "2026-09-27T10:00",
+					"sentAt": "2026-09-27T14:00",
+					"approvedAt": "2026-09-28T11:00",
+					"checks": [
+						{
+							"id": "batch",
+							"label": "Batch MF-2407-116 read on the carton label",
+							"ok": true
+						},
+						{
+							"id": "count",
+							"label": "About 130 packs in view (132 left)",
+							"ok": true
+						},
+						{
+							"id": "slate",
+							"label": "The slate reads MF-2407-116 · 132 packets · 27-09-26",
+							"ok": true
+						},
+						{
+							"id": "when",
+							"label": "Both photos taken that day, at the godown and the landfill",
+							"ok": true
+						}
+					]
 				},
 				"docs": [
 					{
