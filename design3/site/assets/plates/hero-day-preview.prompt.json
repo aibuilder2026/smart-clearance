@@ -1,0 +1,12 @@
+{
+  "derived_from": "one-journey.mp4",
+  "film_sidecar": "one-journey.prompt.json",
+  "at_s": 0.0,
+  "model": "Veo 3.1 on Vertex AI (clips), Gemini image models (keyframes)",
+  "created": "2026-10-10",
+  "designed_in": "design3/designs/SC-154",
+  "name": "hero-day-preview",
+  "output": "hero-day-preview.webp 48x27",
+  "post_process": "48 px copy of hero-day.webp, blurred",
+  "use": "the soft preview under the film until its poster arrives (SC-131)"
+}

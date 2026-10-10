@@ -18,6 +18,7 @@ import type {
 	Hero,
 	Integration,
 	Kirana,
+	KiranaInvoice,
 	Notification,
 	Partner,
 	PartnerView,
@@ -44,6 +45,7 @@ import type {
 	WsDistributor,
 	WsDoc,
 	WsFeedEvent,
+	WsKiranaInvoice,
 	WsPartner,
 	WsPlan,
 	WsPlanLine,
@@ -154,8 +156,19 @@ const personOf = (m: Member): StoryPerson => ({
 const skuOf = (x: WsSku): Sku => ({ ...x, dp: opt(x.dp), itcPerUnit: opt(x.itcPerUnit) });
 
 function distOf(d: WsDistributor): Distributor {
-	const { permission: _p, address, gstin, staffCap, ...rest } = d;
-	return { ...rest, address: opt(address), gstin: opt(gstin), staffCap: opt(staffCap) };
+	const { permission: _p, address, gstin, staffCap, stateCode, pan, fssai, email, bank, ...rest } = d;
+	// his identity on the tax invoice he issues (SC-148)
+	return {
+		...rest,
+		address: opt(address),
+		gstin: opt(gstin),
+		staffCap: opt(staffCap),
+		stateCode: opt(stateCode),
+		pan: opt(pan),
+		fssai: opt(fssai),
+		email: opt(email),
+		bank: bank ?? null
+	};
 }
 
 function batchOf(b: WsBatch, flags: { hero?: boolean; second?: boolean } = {}): Batch {
@@ -190,7 +203,16 @@ export function dataOf(snap: WorkspaceSnapshot, focus: { ref: string | null; sec
 		day0: snap.clock.day0 ?? dateOf(today),
 		platform: snap.platform,
 		workspace: workspaceOf(snap.workspace),
-		client: { ...snap.client },
+		// the identity the client's own papers carry (SC-148), where the workspace has it
+		client: {
+			...snap.client,
+			pan: opt(snap.client.pan),
+			cin: opt(snap.client.cin),
+			address: opt(snap.client.address),
+			state: opt(snap.client.state),
+			stateCode: opt(snap.client.stateCode),
+			email: opt(snap.client.email)
+		},
 		skus: Object.fromEntries(Object.entries(snap.skus).map(([k, x]) => [k, skuOf(x)])),
 		distributors: Object.fromEntries(Object.entries(snap.distributors).map(([k, d]) => [k, distOf(d)])),
 		people: Object.fromEntries(snap.members.map((m) => [m.id, personOf(m)])),
@@ -413,7 +435,14 @@ export function caseOf(
 	const closed = j.offer?.status === 'closed';
 	const kiranas: Kirana[] = detail.kiranas
 		.filter((k) => !closed || k.units > 0)
-		.map((k) => ({ id: k.id, name: k.name, area: k.area, units: k.units || k.cap, at: when(k.at, today) }));
+		.map((k) => ({
+			id: k.id,
+			name: k.name,
+			area: k.area,
+			units: k.units || k.cap,
+			at: when(k.at, today),
+			invoice: k.invoice ? invoiceOf(k.invoice) : null
+		}));
 	const sku = skuOf(detail.sku);
 	const dist = distOf(detail.distributor);
 	const vanAt = detail.moments.van.leavesAt;
@@ -426,6 +455,8 @@ export function caseOf(
 	const dday0 = snap.clock.day0 ?? day0;
 
 	return {
+		// when he issued the invoice from Tally (SC-148): its e-invoice is worked out from it, on a batch's page too
+		invoiceIssuedAt: j.invoiceIssuedAt ?? null,
 		batch: batchOf(detail.batch, { hero: true }),
 		sku,
 		dist,
@@ -524,6 +555,7 @@ const EMPTY_HERO: Hero = {
 	truck: { status: 'idle' },
 	docs: null,
 	invoiceIssued: false,
+	invoiceIssuedAt: null,
 	posted: false,
 	reviewed: false,
 	staff: null
@@ -559,7 +591,12 @@ function heroOf(detail: CaseDetail | null, today: string): Hero {
 					elapsed: windowElapsed(j.offer.at, j.offer.closesAt, j.offer.closedAt ?? today)
 				}
 			: null,
-		orders: j.orders.map((o) => ({ id: o.id, units: o.units, at: at(o.at) })),
+		orders: j.orders.map((o) => ({
+			id: o.id,
+			units: o.units,
+			at: at(o.at),
+			invoice: o.invoice ? invoiceOf(o.invoice) : null
+		})),
 		// the shops that said not this time (SC-130): a kirana is told its own
 		declined: Object.fromEntries(Object.entries(j.offer?.declined ?? {}).map(([k, v]) => [k, { at: at(v.at) }])),
 		bids: j.bids.map((b) => ({
@@ -576,6 +613,7 @@ function heroOf(detail: CaseDetail | null, today: string): Hero {
 		truck: { status: j.truck.status, at: opt(at(j.truck.at) || null) },
 		docs: j.docs,
 		invoiceIssued: j.invoiceIssued,
+		invoiceIssuedAt: j.invoiceIssuedAt ?? null,
 		posted: j.posted,
 		reviewed: j.reviewed,
 		staff: j.staff
@@ -753,11 +791,19 @@ export const emptyState = (): State => ({
 });
 
 /** a partner's own history (SC-130): what backend-api sent, with its papers as the screens read them */
+/** a kirana order's tax invoice as the screens read it (SC-153): backend-api's, its HSN where it names one */
+export const invoiceOf = (x: WsKiranaInvoice): KiranaInvoice => ({ ...x, hsn: x.hsn ?? '' });
+
 export function partnerOf(p: WsPartner): PartnerView {
 	return {
 		buyer: p.buyer,
 		shop: p.shop,
-		cases: p.cases.map((c) => ({ ...c, docs: c.docs.map(docOf), receipt: c.receipt ? docOf(c.receipt) : null }))
+		cases: p.cases.map((c) => ({
+			...c,
+			kiranas: c.kiranas.map((k) => ({ ...k, invoice: k.invoice ? invoiceOf(k.invoice) : null })),
+			docs: c.docs.map(docOf),
+			receipt: c.receipt ? docOf(c.receipt) : null
+		}))
 	};
 }
 

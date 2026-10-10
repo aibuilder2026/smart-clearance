@@ -1,0 +1,34 @@
+{
+  "name": "B-k0-bay-handoff",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "Dawn at a small Indian snack factory's loading bay, low warm sun. Close on a plain kraft-brown carton with a single sage-green band being handed from the brand's supply planner (the woman in the navy pinstripe kurta with a lanyard, left) to the distributor (the man in his fifties in a light blue checked shirt, right); both pairs of hands on the carton, their faces soft behind it, a blue truck and stacked cartons behind. The carton is the hero of the frame, centred. Cinematic 35 mm, shallow depth of field.\nPhotographic, cinematic live action, shot on a full-frame camera with a 35 mm lens, shallow depth of field, natural light, true-to-life skin, fabric and metal, no illustration, no 3D render, no cartoon. India, a small-town FMCG supply chain. Every pack and carton is unbranded: plain kraft-brown cartons with a single sage-green band, matte foil snack packets in solid colours with no lettering; no logos, no printed text, no signage that can be read; shop boards and labels out of focus. No children anywhere. Colour grade: warm, filmic, slightly desaturated greens and ambers.",
+  "seed": 154020,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "cast-planner.png",
+      "sha256": "f42eb539c0d0e4d1a56c93b80fecec5af0356e497734e44b4f3c914b0626ad25"
+    },
+    {
+      "role": "reference",
+      "file": "cast-distributor.png",
+      "sha256": "1d653740137dd7ecc50ee57fd3a015ea8a6193473a43a6460758a1956d6453ae"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "latency_s": 19.5,
+  "use": "SC-154 option B keyframe 0: the carton handed over at the bay, the first frame of clip 1 and the loop's return",
+  "model_text": null,
+  "status": "done",
+  "output": "B-k0-bay-handoff.webp 2752x1536",
+  "postprocess": "WebP q82 from B-k0-bay-handoff.png",
+  "derived_from": "B-k0-bay-handoff.png"
+}

@@ -42,8 +42,8 @@
 	// is up. Every load plays the route; every change of theme plays dusk or dawn.
 	const theme = useTheme();
 	const PLATE_BY_NAME: Record<string, string> = {
-		'business.webp': PLATES.town.day,
-		'business-night.webp': PLATES.town.night,
+		'hero-day.webp': PLATES.hero.day,
+		'hero-night.webp': PLATES.hero.night,
 		'table.webp': PLATES.table.day,
 		'table-night.webp': PLATES.table.night
 	};

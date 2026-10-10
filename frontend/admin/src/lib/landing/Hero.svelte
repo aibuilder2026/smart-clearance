@@ -10,20 +10,21 @@
 
 	let { f, ondemo }: { f: Figures; ondemo: () => void } = $props();
 
-	// The first viewport (SC-111): the journey through one day at the miniature business, on film under the heading.
-	// One film of four acts that loops without a cut: sunrise at the factory's bay, the brand and the distributor; a
-	// high sun at the community kitchen, the food bank; a violet dusk at the kirana lane and the staff-sale table; an
-	// indigo-violet night in the office, Paperwork; then dawn, and round. The light theme starts it in the morning, the
-	// dark one at the night. It loops under its Pause control (WCAG 2.2.2), drifts with the scroll rather than the
-	// clock, and the page's own camera leans in on each act's place; the strip under the copy reads the chapters. The
-	// heading's last word turns once, through what a carton gets, and rests on "chance", which is also what the server
-	// sends and what is read out. A reader who asks for less motion gets the plate, the final word and the last chapter.
+	// The first viewport (SC-154): the journey through one day, live action, on film under the heading. One film of
+	// four chapters with real people (every one fictional, every pack unbranded, no client named) that loops through a
+	// dissolve: dawn at the factory's bay, the brand's planner and the distributor; a high sun at the godown's counter,
+	// a kirana owner; a violet dusk in the yard, the food bank's van and the staff-sale table; evening in the office,
+	// Paperwork. Both themes start on its first frame. It loops under its Pause control (WCAG 2.2.2), drifts with the
+	// scroll rather than the clock, and the page's own camera leans in on each chapter's subject; the strip under the
+	// copy reads the chapters. The heading's last word turns once, through what a carton gets, and rests on "chance",
+	// which is also what the server sends and what is read out. A reader who asks for less motion gets the poster, the
+	// final word and the last chapter.
 	const WORDS = ['buyer', 'shelf', 'invoice', 'ledger line', 'chance'];
 	const app = useApp();
 	const theme = useTheme();
 	const night = $derived(app.mounted && theme.resolved === 'dark');
 	const reduce = $derived(app.mounted && prefersReducedMotion.current);
-	const poster = $derived(night ? PLATES.town.night : PLATES.town.day);
+	const poster = $derived(night ? PLATES.hero.night : PLATES.hero.day);
 	const preview = $derived(night ? PLATES.preview.night : PLATES.preview.day);
 	// the film waits for the loader to lift, so the first screen's files have the line to themselves (SC-131)
 	let go = $state(false);
@@ -72,17 +73,13 @@
 			live = false;
 		};
 	});
-	// the theme's own hour first: the morning by day, the night act in the dark
+	// both themes start on the same frame; the poster swaps with the theme, and the film plays once the loader lifts
 	$effect(() => {
 		playing = !reduce;
 		const v = vid;
 		if (!v) return;
-		v.currentTime = night ? FILM.night : 0;
 		if (!reduce && go) v.play().catch(() => {});
 	});
-	const onloadedmetadata = () => {
-		if (vid && night && vid.currentTime < 0.5) vid.currentTime = FILM.night;
-	};
 	const toggle = () => {
 		if (!vid) return;
 		if (playing) {
@@ -135,8 +132,8 @@
 			el.style.transform = '';
 		};
 	});
-	// the page's camera: the film leans in on the act's place, as far as its scale allows (design3's useLean). The
-	// player is the stage's own box (object-fit crops inside it), so the act's place lands in the clear part of the
+	// the page's camera: the film leans in on the chapter's subject, as far as its scale allows (design3's useLean). The
+	// player is the stage's own box (object-fit crops inside it), so the subject lands in the clear part of the
 	// stage: right of the copy on desktops, above it on phones
 	let box = $state({ w: 0, h: 0 });
 	$effect(() => {
@@ -182,8 +179,8 @@
 
 <!-- the first screen first (SC-131): the film's poster for the reader's theme, before anything else -->
 <svelte:head>
-	<link rel="preload" as="image" href={PLATES.town.day} media="(prefers-color-scheme: light)" fetchpriority="high" />
-	<link rel="preload" as="image" href={PLATES.town.night} media="(prefers-color-scheme: dark)" fetchpriority="high" />
+	<link rel="preload" as="image" href={PLATES.hero.day} media="(prefers-color-scheme: light)" fetchpriority="high" />
+	<link rel="preload" as="image" href={PLATES.hero.night} media="(prefers-color-scheme: dark)" fetchpriority="high" />
 </svelte:head>
 
 <section class="hero film" id="top-hero" aria-labelledby="hero-h">
@@ -202,7 +199,6 @@
 					playsinline
 					loop
 					preload={go ? 'auto' : 'none'}
-					{onloadedmetadata}
 				></video>
 			{/if}
 		</div>

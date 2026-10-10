@@ -26,7 +26,8 @@
 
 {#if failed}<div class="lv-band lv-band-err" role="alert">
 		<Icon name="circle-alert" size={18} /><span class="lv-band-t"><b>That didn't go through.</b> {failed.message}</span
-		><Button size="sm" variant="secondary" icon="refresh-cw" loading={retrying} onclick={retry}>Retry</Button
+		><Button size="sm" variant="secondary" icon="refresh-cw" loading={retrying} busy="Retrying…" onclick={retry}
+			>Retry</Button
 		>{#if ws.dismissFailure}<IconButton icon="x" label="Dismiss" onclick={() => ws.dismissFailure?.()} />{/if}
 	</div>{:else if live.down}<div class="lv-band" role="status">
 		<ConnMark conn={live.conn} /><span class="lv-band-t"

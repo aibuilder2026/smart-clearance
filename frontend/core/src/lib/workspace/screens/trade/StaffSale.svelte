@@ -21,10 +21,9 @@
 	// svelte-ignore state_referenced_locally
 	let n = $state(staff.units);
 	const open = $derived(staff.status === 'open');
-	const busy = $derived(ws.pending.has('recordStaffSale'));
+	// Record the sale waits on the answer (SC-152): Recording…, then the toast once it has gone through, or the reason
 	const record = async () => {
-		await ws.act('recordStaffSale', n, { feel: 400 });
-		if (ws.failed?.action === 'recordStaffSale') return;
+		await ws.act('recordStaffSale', n, { feel: 400, inline: true });
 		toast({ text: `Recorded · ${fmt.num(n)} of ${fmt.num(staff.units)} packs sold`, tone: 'ok' });
 	};
 
@@ -77,7 +76,9 @@
 				>of {fmt.num(staff.units)} packs sold</span
 			>
 		</div>
-		<Button variant="primary" size="lg" block icon="check" loading={busy} onclick={record}>Record the sale</Button>
+		<Button variant="primary" size="lg" block icon="check" action={record} busy="Recording…" done="Recorded"
+			>Record the sale</Button
+		>
 		<span class="t-caption subtle">Record once, when the sale is over. What does not sell stays at the godown.</span
 		>{:else}<span class="t-subhead"
 			><b>{fmt.num(staff.sold ?? 0)} of {fmt.num(staff.units)}</b> sold to staff at ₹{staff.price} a pack</span

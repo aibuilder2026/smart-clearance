@@ -66,6 +66,53 @@
 .pp-strong { font-weight: 700; font-size: 15px; }
 .pp-line:has(.pp-strong) { border-top: 1px solid #d9ded9; padding-top: 8px; margin-top: 2px; }
 .pp-note { margin: 6px 0 0; font-size: 12.5px; color: #4b5550; }
+/* the GST papers in Tally's layout (SC-148): bordered blocks side by side where the paper has room, stacked on a phone;
+   the PDF is the same paper on A4 */
+.tl { container-type: inline-size; padding: 18px 16px 16px; display: grid; grid-template-columns: minmax(0, 1fr); font: 400 12px/1.45 var(--font-ui); color: #141816; }
+.tl > * + * { margin-top: -1px; }
+.tl-title { text-align: center; font-weight: 700; font-size: 16px; letter-spacing: 0.02em; }
+.tl-copy { text-align: center; font-size: 10.5px; color: #4b5550; margin: 2px 0 10px !important; }
+.tl-grid { display: grid; gap: 1px; background: #2a302d; border: 1px solid #2a302d; }
+.tl-two { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); }
+.tl-meta { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1px; background: #2a302d; }
+.tl-cell { background: #fffefb; padding: 7px 9px; min-width: 0; overflow-wrap: anywhere; }
+.tl-cell em { display: block; font-style: normal; font-size: 10.5px; color: #59635e; }
+.tl-cell b { font-weight: 700; }
+.tl-span { grid-column: span 2; }
+.tl-tall { grid-row: span 2; }
+.tl-einv { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; }
+.tl-einv svg { width: 132px; height: 132px; display: block; }
+.tl-mono { font-family: var(--font-mono); font-size: 10.5px; word-break: break-all; }
+.tl-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.tl-table th, .tl-table td { border: 1px solid #2a302d; padding: 6px 7px; vertical-align: top; background: #fffefb; }
+.tl-table th { font-weight: 700; font-size: 11px; text-align: center; background: #f2f1ec; }
+.tl-num { text-align: right; white-space: nowrap; }
+.tl-table td:nth-child(2) { min-width: 9em; }
+.tl-small { font-size: 10.5px; color: #4b5550; }
+.tl-sign { min-height: 44px; margin-top: 8px; text-align: right; }
+.tl-foot { text-align: center; font-size: 10px; color: #4b5550; margin-top: 8px !important; }
+/* a label in the items' description, right-aligned and wrapping (the kirana invoice's scheme discount, SC-153) */
+.tl-right { text-align: right; }
+/* the lines under an item (its discount, the taxes, the round-off) as Tally prints them: rows of their own, no rule between */
+.tl-items tr.tl-sub td { border-top-style: hidden; padding-top: 3px; padding-bottom: 3px; }
+/* the sales register of a batch's invoices to its kiranas: a number opens its invoice */
+.tl-reg .tl-table td, .tl-reg .tl-table th { white-space: nowrap; }
+.tl-reg .tl-table td:nth-child(3) { white-space: normal; min-width: 7em; }
+.tl-link { padding: 0; border: 0; background: none; font: inherit; color: #1f6f43; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.tl-link:focus-visible { outline: 2px solid #1f6f43; outline-offset: 2px; border-radius: 2px; }
+.tl-reg { overflow-x: auto; }
+@container (max-width: 520px) {
+  .tl-two { grid-template-columns: minmax(0, 1fr); }
+  .tl-tall { grid-row: auto; }
+  .tl-einv svg { width: 116px; height: 116px; }
+  .tl-table { font-size: 11px; }
+  .tl-table th, .tl-table td { padding: 5px 3px; }
+  .tl-items th:nth-child(6), .tl-items td:nth-child(6) { display: none; }
+  .tl-reg .tl-gst { display: none; }
+  .tl-table td:nth-child(2) { min-width: 0; }
+}
+/* a phone's paper keeps its blocks inside its edges: a tighter inset, as a container cannot style itself */
+@media (max-width: 560px) { .tl { padding: 14px 10px 12px; } }
 /* the food bank's receipt, opened from the pickup it records (SC-110) */
 .receipt-row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 12px 14px; border: 0; border-radius: 14px; background: var(--primary-soft); color: inherit; font: inherit; text-align: left; cursor: pointer; transition: background-color var(--t-fast) var(--ease); }
 .receipt-row:hover { background: color-mix(in oklab, var(--primary) 20%, var(--surface)); }
@@ -512,7 +559,8 @@
 @media (max-width: 640px) {
   .dist-step { flex-wrap: wrap; }
   .dist-step > .grow { flex: 1 1 calc(100% - 60px); }
-  .dist-step > .btn { flex: 1 1 100%; }
+  .dist-step > .btn, .dist-step > .btn-wait { flex: 1 1 100%; }
+  .dist-step > .btn-wait { justify-items: stretch; }
 }
 /* a channel's mark, in its own ink */
 .dist-chan { flex: none; display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; color: var(--ch); background: color-mix(in srgb, var(--ch) 14%, transparent); }
@@ -571,6 +619,16 @@ button.dist-line:focus-visible { outline: 3px solid var(--ring); outline-offset:
 .dist-shops b { font-weight: 550; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dist-shops em { grid-row: 2; font-style: normal; font-size: 12px; color: var(--fg-2); }
 .dist-shops .tnum { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+/* each shop's order as a button, its tax invoice under it (SC-153, option A) */
+.dist-shops:has(> .dist-shop) { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 4px 12px; padding: 6px; }
+.dist-shop { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 8px; min-height: 44px; padding: 8px 10px; border: 0; border-radius: 10px; background: transparent; color: inherit; font: inherit; font-size: 13px; text-align: left; cursor: pointer; transition: background-color var(--t-fast) var(--ease); }
+.dist-shop:hover { background: var(--surface); }
+.dist-shop:focus-visible { outline: 3px solid var(--ring); outline-offset: -3px; }
+.dist-shop b { font-weight: 550; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dist-shop em { grid-row: 2; font-style: normal; font-size: 12px; color: var(--fg-2); }
+.dist-shop > .tnum { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+.dist-shop-no { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 8px; margin-top: 4px; padding-top: 4px; border-top: var(--hair) solid var(--line); font-size: 12px; color: var(--fg-2); }
+.dist-shop-no .mono { font-family: var(--font-mono); font-size: 11.5px; color: var(--primary-text); }
 /* ---------- packs destroyed at the distributor's godown (SC-139, option B): two photos, Vision's checks, the second yes ---------- */
 .dz-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .cam.dz-cam { aspect-ratio: 4 / 3; max-height: none; border-radius: 18px; box-shadow: none; }
@@ -584,7 +642,8 @@ button.dist-line:focus-visible { outline: 3px solid var(--ring); outline-offset:
 .dz-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
 @media (max-width: 760px) { .dz-fields { grid-template-columns: minmax(0, 1fr); } }
 .dz-foot { display: flex; gap: 10px; }
-.dz-foot > .btn:last-child { flex: 1; }
+.dz-foot > .btn:last-child, .dz-foot > .btn-wait:last-child { flex: 1; }
+.dz-foot > .btn-wait:last-child { justify-items: stretch; }
 @media (max-width: 520px) { .dz-foot { flex-direction: column-reverse; } }
 @media (max-width: 420px) { .dz-two:not(.dz-pair) { grid-template-columns: minmax(0, 1fr); } .dz-pair .cam-tag { font-size: 11px; } }
 /* how a distributor's figures add up (SC-145): what the batches cost him = what he sold + what the client credited */
@@ -648,6 +707,11 @@ button.dist-line:focus-visible { outline: 3px solid var(--ring); outline-offset:
   .rec-row time { grid-column: 2; grid-row: 2; padding-top: 4px; }
 }
 
+/* the workspace's route line (SC-152): while a screen reads what it needs, a green line runs along the top of the app,
+   eases most of the way and waits, then completes and lands its amber pin, as the console's does (SC-49) */
+.ws-route { position: absolute; z-index: calc(var(--z-bar) + 1); top: 0; left: 0; right: 0; height: 4px; pointer-events: none; }
+.ws-route .line { position: relative; display: block; height: 2px; border-radius: 0 2px 2px 0; background: var(--primary); }
+.ws-route .pin { position: absolute; right: -5px; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 0 2px var(--surface); }
 /* the Impact reading's dashboard (SC-157, option B), and the Impact card on the Command Center. The chart inks are the
    console's (SC-149), validated with the dataviz script on the app's surfaces: kept out of landfill #167a52 / #34a571,
    destroyed in clay #c2410c / #e0662c (CVD ΔE 9.1 light, 9.0 dark); donated takes the food bank's channel ink (the

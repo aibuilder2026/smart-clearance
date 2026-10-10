@@ -10,6 +10,7 @@
 	import { prefersReducedMotion } from '../../../motion';
 	import { fade, rise } from '../../../motion/transitions';
 	import { fmt } from '../../../format';
+	import { refusal } from '../../../wait.svelte';
 	import { useRoute } from '../../context';
 	import { useLive } from '../../live.svelte';
 	import { castOf } from '../../model';
@@ -53,6 +54,9 @@
 	let ratio: number | null = $state(null);
 	let flash = $state(false);
 	let sending = $state(false);
+	// a photo that did not go through: the reason under Send photo, with Try again (SC-152). The screen holds it, since
+	// the upload's progress takes the button's place while the file is on its way
+	let refused = $state<string | null>(null);
 	let over = $state(false);
 	let err: string | null = $state(null);
 	let phoneCam: HTMLInputElement | null = $state(null);
@@ -89,6 +93,7 @@
 			return;
 		}
 		err = null;
+		refused = null;
 		ratio = null;
 		photo = f;
 		shot = { url: URL.createObjectURL(f), how, name: f.name };
@@ -164,6 +169,7 @@
 	};
 	const again = () => {
 		const how = shot?.how;
+		refused = null;
 		shot = null;
 		photo = null;
 		ratio = null;
@@ -174,11 +180,17 @@
 		e.preventDefault();
 		if (!busy) use(e.dataTransfer?.files?.[0], 'upload');
 	};
-	const send = () => {
+	const send = async () => {
+		if (sending) return;
 		sending = true;
-		void ws
-			.act('sendPhoto', on ? (photo ?? undefined) : undefined, { feel: on ? 0 : 700 })
-			.then(() => (sending = false));
+		refused = null;
+		try {
+			await ws.act('sendPhoto', on ? (photo ?? undefined) : undefined, { feel: on ? 0 : 700, inline: true });
+		} catch (e) {
+			refused = refusal(e);
+		} finally {
+			sending = false;
+		}
 	};
 	// the scan line sweeps the label three times while Vision reads it, then rests
 	const scan = (el: HTMLElement) => {
@@ -286,7 +298,17 @@
 				icon={shot.how === 'camera' ? 'rotate-ccw' : 'image'}
 				onclick={again}
 				style="flex: none">{shot.how === 'camera' ? 'Retake' : 'Choose another'}</Button
-			><Button variant="primary" size="lg" block icon="send" loading={sending} onclick={send}>Send photo</Button>
+			><Button
+				variant="primary"
+				size="lg"
+				block
+				icon="send"
+				loading={sending}
+				error={refused}
+				onretry={send}
+				busy="Sending photo…"
+				onclick={send}>Send photo</Button
+			>
 		</div>{:else if camOn}<div class="cam-bar" in:fade={{ duration: 160 }}>
 			<Button variant="ghost" onclick={stopCam}>Cancel</Button><button
 				type="button"

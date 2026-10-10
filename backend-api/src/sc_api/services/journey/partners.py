@@ -158,7 +158,10 @@ def facts(
             ),
             "listing": {"id": case.listing["id"]} if dist and case.listing else None,
             "offered": len(offer.get("caps") or {}) if role != "foodbank" else 0,
-            "kiranas": [{"kirana": o.kirana_id, "units": o.units, "at": _local(o.at)} for o in mine],
+            "kiranas": [
+                {"kirana": o.kirana_id, "units": o.units, "at": _local(o.at), "invoice": views.invoice_out(o.invoice)}
+                for o in mine
+            ],
             "kirana": (
                 {"planned": int(kl["units"]), "ordered": sum(o.units for o in orders)}
                 if kl and role != "foodbank"

@@ -1,0 +1,11 @@
+[
+ {"url":"http://localhost:8787/designs/SC-153/current/app.html?who=ganesh#/offer/MF-2409-117","out":"build/kirana-offer-390-light","width":390,"theme":"light","wait":5200},
+ {"url":"http://localhost:8787/designs/SC-153/current/app.html?who=ganesh#/offer/MF-2409-117","out":"build/kirana-invoice-390-light","width":390,"theme":"light","wait":5200,"click":["button.pt-paper"]},
+ {"url":"http://localhost:8787/designs/SC-153/current/app.html?who=ganesh#/orders","out":"build/kirana-orders-390-light","width":390,"theme":"light","wait":5200},
+ {"url":"http://localhost:8787/designs/SC-153/current/app.html?who=ganesh#/offer/MF-2409-117","out":"build/kirana-invoice-390-dark","width":390,"theme":"dark","wait":5200,"click":["button.pt-paper"]},
+ {"url":"http://localhost:8787/designs/SC-153/current/app.html?who=rakesh#/orders","out":"build/dist-orders-1440-light","width":1440,"theme":"light","click":[".dist-toggle"]},
+ {"url":"http://localhost:8787/designs/SC-153/current/app.html?who=rakesh#/orders","out":"build/dist-shop-invoice-1440-light","width":1440,"theme":"light","click":[".dist-toggle",".dist-shop"]},
+ {"url":"http://localhost:8787/designs/SC-153/current/app.html?who=rakesh#/batches/MF-2407-116","out":"build/dist-register-1440-light","width":1440,"theme":"light","click":["button.bh-tab:has-text('Papers')","button.pt-paper:has-text('Tax invoices to kiranas')"]},
+ {"url":"http://localhost:8787/designs/SC-153/current/app.html?who=priya#/paperwork/MF-2409-117","out":"build/pack-1440-light","width":1440,"theme":"light","click":["button:has-text('Tax invoices to kiranas')"]},
+ {"url":"http://localhost:8787/designs/SC-153/current/app.html?who=priya#/paperwork/MF-2409-117","out":"build/pack-invoice-1440-dark","width":1440,"theme":"dark","click":["button:has-text('Tax invoices to kiranas')",".tl-link"]}
+]

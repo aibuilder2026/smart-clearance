@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-147 Carton labels</title>
+<meta name="description" content="Three ways for the label photos of Munchly's batches to carry a barcode, a QR code and the FSSAI licence, as a real carton does.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<link rel="stylesheet" href="board.css">
+<body>
+<main class="wrap">
+<h1>Carton labels</h1>
+<p class="lede">SC-147 · Munchly's workspace · three ways for the label photo a distributor sends to look like a real carton's label: a <b>barcode</b>, a <b>QR code</b> and the <b>FSSAI licence</b>, with the batch, its dates and the MRP Vision reads.</p>
+<p>The maintainer (10 Oct), with a photo of a real snack label for reference:</p>
+<blockquote><ul><li>“Food labels uploaded should have FSSAI approved bar code and QR code on the cartons. This should updated for all past batches and orders on Munchly.”</li><li>“I need you to update all images and invoices as needed for all past and present batches.”</li></ul></blockquote>
+<p>The GST bills and invoices are the same request's second part, on their own board: <b>SC-148</b>.</p>
+
+<h2>What the labels show today</h2>
+<p>Five lines: the product, the batch, the made and best-before dates, the MRP. No barcode, no QR code, no FSSAI licence, no maker's address. Every photo Munchly's workspace holds reads this way: the 12 batches cleared since July and the Masala Chips. The Mango Drink has no photo of its own yet.</p>
+<div class="desks">
+<figure><img src="current/label-MF-2409-117.webp" width="1184" height="896" loading="lazy" alt="Today's label photo for the Masala Chips: five lines of black text on a white sticker."><figcaption>MF-2409-117 · Masala Chips · today</figcaption></figure>
+<figure><img src="current/label-MF-2407-116.webp" width="1184" height="896" loading="lazy" alt="Today's label photo for a cleared batch, the Peanut Chikki, in the same five lines."><figcaption>MF-2407-116 · Peanut Chikki, cleared in July · today</figcaption></figure>
+</div>
+
+<h2>In every option</h2>
+<div class="shared">
+<div class="card"><h3 class="sub">Codes that scan</h3><p>Every code is drawn to its standard and read back from the finished photo with a barcode reader before it ships. A GS1 <b>EAN-13</b> for the pack (Masala Chips <code class="k">8900000001019</code>) or an <b>ITF-14</b> for the carton of 24 (<code class="k">18900000001016</code>), and a <b>QR code</b> that is the batch's GS1 Digital Link: <code class="k">id.munchly.example/01/18900000001016/10/MF-2409-117?17=261118</code>, the product, the batch and its best-before.</p></div>
+<div class="card"><h3 class="sub">FSSAI and GS1, as they are</h3><p>FSSAI does not issue barcodes: it asks for its logo and the maker's <b>14-digit licence number</b> on the label (Munchly's <code class="k">10019022001234</code>), and Legal Metrology for the maker's address, net quantity, MRP incl. of all taxes and customer care. The barcode is GS1's. Every number is fictional: the GTINs sit under GS1 India's 890 with a company number no business holds, the QR on a reserved <code>.example</code> domain, and the fssai mark is drawn here, not the authority's artwork.</p></div>
+<div class="card"><h3 class="sub">Vision still reads it</h3><p>The batch, made date, best-before and MRP print exactly as each batch's record has them, so Vision's label check still matches (the chips: 18/05/2026, 18/11/2026, ₹30). Each photo keeps today's carton and light: the label is printed onto a Qwen base photo as ink, not pasted on.</p></div>
+</div>
+
+<h2>The options</h2>
+<section class="opt rec" id="option-a"><header><h3>Option A · The full statutory sticker</h3><span class="tag">Recommended</span></header>
+<p>A printed sticker like the reference: the product in a band with the veg mark, the ingredients, the net quantity and MRP boxed, the batch and its dates boxed, the maker and customer care, the FSSAI licence, the pack's EAN-13 and the batch's QR code, and the storage line.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>Reads as the label the maintainer sent: every field a pack's label carries.</li><li>The batch and its dates stay large, in their own box, so Vision reads them as easily as today.</li><li>The busiest of the three: the most for Vision to look past.</li></ul></dd></dl>
+<div class="photos">
+<figure><img src="option-a/label-1184.webp" width="1184" height="896" loading="lazy" alt="Option A: a full statutory sticker for the Masala Chips with an EAN-13, a QR code and the FSSAI licence."><figcaption>MF-2409-117 · Masala Chips · EAN-13 and QR read back</figcaption></figure>
+<figure><img src="option-a/label-mango-1184.webp" width="1184" height="896" loading="lazy" alt="Option A for the Mango Drink, MF-2410-118: the same sticker with its own ingredients, codes and dates."><figcaption>MF-2410-118 · Mango Drink · its first photo</figcaption></figure>
+</div>
+</section>
+<section class="opt" id="option-b"><header><h3>Option B · The printed shipper carton</h3></header>
+<p>No sticker: the carton itself, printed in one colour at the factory (the brand, the product, 24 × 150 g, handling marks, the FSSAI licence, the maker), with the carton's ITF-14 and the batch's QR code, and the batch, its dates and MRP inkjet-coded into a box on the line.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>How most shipper cartons in a godown actually look: an ITF-14 is the code a carton carries.</li><li>The inkjet dot type is harder to read than a sticker, a more honest test of Vision.</li><li>No ingredients (they are on each pack inside), and it looks least like the reference.</li></ul></dd></dl>
+<div class="photos"><figure><img src="option-b/label-1184.webp" width="1184" height="896" loading="lazy" alt="Option B: a printed brown carton with MUNCHLY, an inkjet box with the batch, a QR code and an ITF-14."><figcaption>MF-2409-117 · Masala Chips · ITF-14 and QR read back</figcaption></figure></div>
+</section>
+<section class="opt" id="option-c"><header><h3>Option C · Today's label with a coded foot</h3></header>
+<p>Today's five lines as they are, with a foot added: the pack's EAN-13, the FSSAI licence with the maker, and the batch's QR code.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>Changes least: Vision reads the same five lines it reads now.</li><li>Still no ingredients, net quantity or customer care: less like the reference.</li></ul></dd></dl>
+<div class="photos"><figure><img src="option-c/label-1184.webp" width="1184" height="896" loading="lazy" alt="Option C: today's five lines with a foot carrying an EAN-13, the FSSAI licence and a QR code."><figcaption>MF-2409-117 · Masala Chips · EAN-13 and QR read back</figcaption></figure></div>
+</section>
+
+<h2>Side by side</h2>
+<div class="tablewrap"><table class="cmp"><thead><tr><th></th><th>A · The full statutory sticker</th><th>B · The printed shipper carton</th><th>C · Today's label with a coded foot</th></tr></thead><tbody>
+<tr><th>Barcode</th><td>EAN-13, the pack's</td><td>ITF-14, the carton's</td><td>EAN-13, the pack's</td></tr>
+<tr><th>QR code</th><td>The batch's Digital Link</td><td>The batch's Digital Link</td><td>The batch's Digital Link</td></tr>
+<tr><th>FSSAI</th><td>The mark and licence, the maker and customer care</td><td>The mark and licence, the maker</td><td>The mark and licence, the maker's town</td></tr>
+<tr><th>Ingredients, net quantity</th><td>Yes</td><td>Net weight only</td><td>No</td></tr>
+<tr><th>For Vision</th><td>The batch and dates boxed, large</td><td>Inkjet dots, harder</td><td>As today</td></tr>
+</tbody></table></div>
+
+<h2>What the build changes, whichever is picked</h2>
+<div class="shared">
+<div class="card"><h3 class="sub">Every Munchly batch</h3><p>A photo for each batch in the workspace's history and journey: the 12 cleared since July, the Masala Chips and the Mango Drink (new). The three destruction photos taken at the godown (SC-139) show the carton's label too, and are redrawn with it.</p></div>
+<div class="card"><h3 class="sub">Wherever a photo is sent</h3><p>The history's photos (<code>system/img/labels/</code>, backend-api's reference copies), the photos the journey suites and walk.sh upload, the label the stub draws, and then the local workspace's photos uploaded again. Production only on your yes.</p></div>
+<div class="card"><h3 class="sub">Vision's eval set</h3><p>The two story photos in it become the new labels. The other 71 eval photos test hard reads (blur, glare, other SKUs) and stay as they are, unless you say otherwise. A live eval of the new photos runs only on request (about GBP 0.10).</p></div>
+</div>
+
+<h2>Recommended: option A</h2>
+<div class="rec-box"><p><b>The full statutory sticker</b> is the label the request describes: the barcode, the QR code and the FSSAI licence, with every field a food label carries, and the batch and its dates kept large in their own box, so Vision's reading is no harder than today.</p></div>
+
+<div class="q" style="margin-top:20px"><h3>To decide</h3><ul><li>Which option to build.</li><li>Whether Vision's 71 other eval photos should change too (recommended: no).</li></ul></div>
+
+<footer>Smart-Clearance · SC-147 · every company, person, number and code fictional · base photos Qwen-Image 2.1 (local), labels drawn and printed onto them by <code>codes/</code>, every code read back</footer>
+</main>
+</body>
+</html>

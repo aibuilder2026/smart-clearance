@@ -109,29 +109,30 @@
     </header>;
   }
 
-  /* ---------- 1. the first viewport: the journey through one day on film, under the heading (SC-111) ---------- */
-  // One film of four acts in one town, looping under its Pause control (WCAG 2.2.2): sunrise at the factory's bay, the
-  // brand and the distributor; a high sun at the community kitchen, the food bank; a violet dusk at the kirana lane
-  // and the staff-sale table; an indigo-violet night in the office, Paperwork; then dawn, and round. Four plates edited
-  // from the approved town plate, four LTX clips chained through quarter-second dissolves, 14.2 s. The light theme
-  // starts in the morning, the dark one at the night. The page's own camera leans in on each act's place; the film
+  /* ---------- 1. the first viewport: the journey through one day on film, live action, under the heading (SC-154) ---------- */
+  // One film of four chapters with real people (every one fictional, every pack unbranded, no client named), looping
+  // under its Pause control (WCAG 2.2.2): dawn at the factory's bay, the brand's planner and the distributor over the
+  // plan; a high sun at the godown's counter, a kirana owner collecting her crate; a violet dusk in the yard, the food
+  // bank's van and the staff-sale table; evening in the office, Paperwork and the chai. Four 8 s Veo 3.1 clips from
+  // Nano Banana keyframes, trimmed and chained through half-second dissolves, the tail dissolving into the head, about
+  // 15 s. Both themes start on the same frame. The page's own camera leans in on each chapter's subject; the film
   // drifts with the scroll, not the clock; the strip under the copy reads the chapters. The heading's last word turns
-  // once, through what a carton gets, and rests on "chance". Under reduced motion: the plate, the final word, the last
-  // chapter.
+  // once, through what a carton gets, and rests on "chance". Under reduced motion: the poster, the final word, the
+  // last chapter.
   const FOODBANK = M.CHANNELS.find(c => c.id === "foodbank");
   const CHAPTERS = [
-    { at: "09:00", who: "The brand and the distributor", t: `${fmt.num(N)} packs flagged; one yes, ${fmt.inr(D.PLAN.net)} on screen`, human: true },
-    { at: "13:00", who: "The food bank", t: `packs with ${FOODBANK.minDays}+ days left go as meals, on the FSSAI checklist` },
-    { at: "18:30", who: "The kiranas and the staff sale", t: `${SHOPS} shops order ${fmt.num(KL.units)} packs; the godown's own staff buy up to ${fmt.num(row("staff").capacity)}` },
-    { at: "22:00", who: "Paperwork", t: `the tax invoice and the credit note drafted; ${fmt.inr(D.PLAN.itcRetained)} of GST credit kept` },
+    { at: "06:30", who: "The brand and the distributor", t: `${fmt.num(N)} packs flagged; one yes, ${fmt.inr(D.PLAN.net)} on screen`, human: true },
+    { at: "11:00", who: "The kiranas", t: `${SHOPS} shops order ${fmt.num(KL.units)} packs, buy ${SCHEME.buy} get ${SCHEME.free} free` },
+    { at: "18:00", who: "The food bank and the staff sale", t: `packs with ${FOODBANK.minDays}+ days left go as meals; the godown's own staff buy up to ${fmt.num(row("staff").capacity)}` },
+    { at: "21:30", who: "Paperwork", t: `the tax invoice and the credit note drafted; ${fmt.inr(D.PLAN.itcRetained)} of GST credit kept` },
   ];
-  // the film: where each chapter begins (seconds), where the night starts, its frame, and where each act's place is
-  // on the plate, for the camera to lean on
-  const FILM = { src: "one-day.mp4", bounds: [0, 3.28, 6.84, 10.41], night: 10.5, ar: 1920 / 1088, lean: 1.5,
-    at: [{ x: 0.37, y: 0.67 }, { x: 0.575, y: 0.42 }, { x: 0.64, y: 0.66 }, { x: 0.14, y: 0.64 }] };
-  const POSTER = { day: "town-morning.webp", night: "town-night.webp" };
+  // the film: where each chapter begins (seconds), its frame, how far the page's camera leans, and where each
+  // chapter's subject is in the frame, for it to lean on
+  const FILM = { src: "one-journey.mp4", bounds: [0, 3.55, 7.35, 11.15], ar: 16 / 9, lean: 1.25,
+    at: [{ x: 0.62, y: 0.5 }, { x: 0.5, y: 0.55 }, { x: 0.72, y: 0.5 }, { x: 0.5, y: 0.5 }] };
+  const POSTER = { day: "hero-day.webp", night: "hero-night.webp" };
   // the posters' soft previews (SC-131): 48 px copies, under the film until its poster arrives
-  const PREVIEW = { day: "town-morning-preview.webp", night: "town-night-preview.webp" };
+  const PREVIEW = { day: "hero-day-preview.webp", night: "hero-night-preview.webp" };
   const WORDS = ["buyer", "shelf", "invoice", "ledger line", "chance"];
   // the film drifts with the scroll, not with the clock: a slow rise and a touch of scale as the page is read
   function useFilmDrift() {
@@ -192,9 +193,8 @@
     // the film waits for the loader to lift, so the first screen's files have the line to themselves (SC-131)
     const [go, setGo] = useState(() => !window.SC3_LOADER || !!window.SC3_LOADER.lifted);
     useEffect(() => { if (go) return; const f = () => setGo(true); window.addEventListener("sc3:loader-lifted", f); return () => window.removeEventListener("sc3:loader-lifted", f); }, [go]);
-    // the theme's own hour first: the morning by day, the night act in the dark
-    useEffect(() => { setPlaying(!reduce); const v = vid.current; if (v) { v.currentTime = night ? FILM.night : 0; if (!reduce && go) v.play().catch(() => {}); } }, [night, reduce, go]);
-    const onMeta = () => { const v = vid.current; if (v && night && v.currentTime < 0.5) v.currentTime = FILM.night; };
+    // both themes start on the same frame; the poster swaps with the theme
+    useEffect(() => { setPlaying(!reduce); const v = vid.current; if (v && !reduce && go) v.play().catch(() => {}); }, [night, reduce, go]);
     const toggle = () => { const v = vid.current; if (!v) return; if (playing) { v.pause(); setPlaying(false); } else { v.play(); setPlaying(true); } };
     const clk = useClock(vid, playing && !reduce, FILM.bounds);
     const cam = useLean(stage, FILM.at[clk.i], FILM.lean, FILM.ar, reduce);
@@ -202,7 +202,7 @@
       <motion.div className="film-media" aria-hidden="true" style={{ y: drift.y, scale: drift.scale }} ref={stage}>
         <motion.div className="film-lean" animate={cam} transition={{ duration: 1.8, ease: EASE }}>
           <img className="film-preview" src={IMG + (night ? PREVIEW.night : PREVIEW.day)} alt="" />
-          {reduce ? <img src={poster} alt="" /> : <video ref={vid} className="fx front" src={MEDIA + FILM.src} poster={poster} muted playsInline loop preload={go ? "auto" : "none"} onLoadedMetadata={onMeta} />}
+          {reduce ? <img src={poster} alt="" /> : <video ref={vid} className="fx front" src={MEDIA + FILM.src} poster={poster} muted playsInline loop preload={go ? "auto" : "none"} />}
         </motion.div>
         <div className="film-shade" />
       </motion.div>
@@ -623,7 +623,7 @@
       setSent(req); setF(blank);
     };
     return <Sheet open={isOpen} onClose={onClose} title={plan ? `Talk to us about ${plan}` : "Book a demo"} side={app.bp === "phone" ? "bottom" : "center"} detent="large"
-      footer={sent ? <Button variant="primary" size="lg" block onClick={onClose}>Done</Button> : <Button variant="primary" size="lg" block icon="send" onClick={send}>Send request</Button>}>
+      footer={sent ? <Button variant="primary" size="lg" block onClick={onClose}>Done</Button> : <Button variant="primary" size="lg" block icon="send" busy="Sending…" onClick={send}>Send request</Button>}>
       {sent ? <div className="stack" style={{ justifyItems: "center", textAlign: "center", paddingTop: 8 }}>
         <span className="sd-done" aria-hidden="true"><Icon name="circle-check" size={36} /></span>
         <b className="t-title3">Thanks, {sent.name.split(" ")[0]}.</b>

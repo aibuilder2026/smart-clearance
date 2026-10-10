@@ -1,0 +1,41 @@
+/* SC-152's lab: the scenes' layout, on design system v3's tokens. Each option's own button styles are in its opt.css */
+body { background: var(--bg); overflow-x: clip; }
+.lab { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 0 24px 48px; }
+.lab-bar { position: sticky; top: 0; z-index: 20; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; margin: 0 calc(50% - 50vw); padding: 14px max(24px, calc(50vw - 596px)); background: color-mix(in oklab, var(--bg) 86%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 var(--hair) 0 var(--line); }
+.lab-title { display: grid; gap: 2px; }
+.lab-title b { font: 700 18px/1.2 var(--font-display); letter-spacing: -0.01em; color: var(--fg); }
+.lab-title span { font-size: 13px; color: var(--fg-2); }
+.lab-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.lab-lbl { font-size: 13px; font-weight: 600; color: var(--fg-2); }
+.lab-lede { max-width: 72ch; margin: 22px 0 22px; font-size: 15px; line-height: 1.55; color: var(--fg-2); }
+.lab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px; align-items: start; }
+.lab-scene { display: grid; gap: 14px; padding: 20px; }
+.lab-where { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 12.5px; color: var(--fg-2); }
+.lab-app { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: var(--r-full); background: var(--fill-2); color: var(--fg); font-weight: 600; }
+.lab-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.lab-head h3 { margin: 0; font: 650 17px/1.25 var(--font-ui); letter-spacing: -0.01em; color: var(--fg); }
+.lab-lines { display: grid; gap: 6px; margin: 0; font-size: 14px; }
+.lab-lines div { display: flex; justify-content: space-between; gap: 12px; color: var(--fg-2); }
+.lab-lines dd { margin: 0; font-variant-numeric: tabular-nums; color: var(--fg); }
+.lab-lines .tot { padding-top: 8px; border-top: var(--hair) solid var(--line); font-weight: 650; }
+.lab-lines .tot dt, .lab-lines .tot dd { color: var(--fg); }
+.lab-step { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 12px 0; border-top: var(--hair) solid var(--line); }
+.lab-step > div:first-child { display: grid; gap: 2px; min-width: 0; }
+.lab-step > div:first-child > b { font-size: 14.5px; font-weight: 600; color: var(--fg); }
+.lab-step > div:first-child > span { font-size: 13px; color: var(--fg-2); }
+.lab-copy { margin: 0; font-size: 14px; line-height: 1.5; color: var(--fg-2); }
+.lab-fields { display: grid; gap: 12px; }
+.lab-fields label { display: grid; gap: 6px; font-size: 13px; font-weight: 600; color: var(--fg-2); }
+.lab-right { display: flex; justify-content: flex-end; }
+.lab-foot { margin-top: 28px; font-size: 12.5px; color: var(--fg-3); }
+/* a control that saves: its label, the control, and its own line for the wait */
+.lab-toggle { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 10px 0; border-top: var(--hair) solid var(--line); }
+.lab-toggle > .t-lbl { flex: 1 1 140px; font-size: 14.5px; font-weight: 600; color: var(--fg); }
+.lab-toggle > .t-note { flex: 1 0 100%; min-height: 18px; font-size: 12.5px; color: var(--fg-2); }
+@media (max-width: 600px) {
+  .lab { padding: 0 16px 40px; }
+  .lab-bar { padding: 12px 16px; }
+  .lab-grid { grid-template-columns: 1fr; }
+}
+/* the kit's toasts sit in the app's own box; this page scrolls the window, so they are pinned to it */
+.toasts { position: fixed; bottom: 20px; }

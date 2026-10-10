@@ -1,0 +1,9 @@
+{
+  "model": "Qwen-Image 2.1 (bf16), text to image, local (qwen-image-bf16 0.2.0), the blank base only",
+  "seed": 14701,
+  "size": 1024,
+  "aspect": "4:3",
+  "prompt": "A realistic close-up smartphone photo of a plain blank white rectangular paper label sticker stuck flat on the side of a brown corrugated cardboard carton, the label fills most of the frame with a margin of brown cardboard visible on every side, nothing printed on the label, the label slightly glossy with tiny creases at one corner, even daylight from a godown window, the camera square on to the carton, sharp focus, natural colours.",
+  "post": "codes/label.py option a drawn as HTML (the codes from codes/codes.py), printed onto the base by codes/compose.mjs: rendered at 2x, multiplied into the print box with a 0.55 px blur, every code read back with Chromium's BarcodeDetector; cwebp -q 86",
+  "purpose": "SC-147 option A, the full statutory sticker: the label photo for batch MF-2410-118, every company, number and code fictional"
+}

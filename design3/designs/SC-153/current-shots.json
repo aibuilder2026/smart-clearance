@@ -1,0 +1,7 @@
+[
+ {"url":"http://localhost:8787/designs/SC-153/current/app.html?who=ganesh#/offer/MF-2409-117","out":"current/kirana-offer-390-light","width":390,"theme":"light","full":true},
+ {"url":"http://localhost:8787/designs/SC-153/current/app.html?who=ganesh#/orders","out":"current/kirana-orders-390-light","width":390,"theme":"light","full":true},
+ {"url":"http://localhost:8787/designs/SC-153/current/app.html?who=rakesh#/orders","out":"current/dist-orders-1440-light","width":1440,"theme":"light","full":true,"click":[".dist-toggle"]},
+ {"url":"http://localhost:8787/designs/SC-153/current/app.html?who=rakesh#/batches/MF-2409-117","out":"current/dist-batch-1440-light","width":1440,"theme":"light"},
+ {"url":"http://localhost:8787/designs/SC-153/current/app.html?who=priya#/paperwork/MF-2409-117","out":"current/pack-1440-light","width":1440,"theme":"light"}
+]

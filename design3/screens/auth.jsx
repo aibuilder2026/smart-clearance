@@ -65,7 +65,7 @@
       else setRes([]);
     };
     return <Sheet open={open} onClose={onClose} title="Find your workspace" side={app.bp === "phone" ? "bottom" : "center"} detent="large"
-      footer={<Button variant="primary" size="lg" block onClick={find}>Find workspaces</Button>}>
+      footer={<Button variant="primary" size="lg" block busy="Looking…" onClick={find}>Find workspaces</Button>}>
       <div className="stack">
         <div className="row tight"><Mark size={28} still /><Wordmark size={17} /><span className="t-caption subtle mono">{D.PLATFORM.domain}</span></div>
         <p className="t-subhead muted" style={{ margin: 0 }}>Every manufacturer on Smart-Clearance has its own workspace, set up for its supply chain. Enter the email or mobile number you were invited with.</p>
@@ -121,7 +121,7 @@
           <form className="si-form" onSubmit={e => { e.preventDefault(); proceed(); }} noValidate>
             <Field label="Work email or mobile number" htmlFor="si-id" error={err && err.text}><Input id="si-id" value={id} onChange={e => { setId(e.target.value); setErr(null); }} autoComplete="username" spellCheck={false} autoCapitalize="none" placeholder={WS.hint} /></Field>
             {err && (err.find || err.es) && <div className="row tight wrap" style={{ marginTop: -4 }}>{err.find && <button type="button" className="btn btn-link btn-sm" onClick={() => setSheet("find")}>Find your workspace</button>}{err.es && <button type="button" className="btn btn-link btn-sm" onClick={() => finish(err.es)}>Open ExpireSoon instead</button>}</div>}
-            <Button type="submit" variant="primary" size="lg" block loading={busy === "go"}>Continue</Button>
+            <Button type="submit" variant="primary" size="lg" block loading={busy === "go"} busy="Checking…">Continue</Button>
           </form>
           {!guided && <div className="si-try"><span className="t-caption subtle strong">Accounts in this prototype</span><div className="row tight wrap" style={{ justifyContent: "center" }}>{TRY.map(([uid, val]) => { const u = userById(uid); return u ? <button type="button" key={uid} className="chip" onClick={() => { setId(val); setErr(null); }}><Avatar person={u} size="xs" />{u.short || u.name}{u.status === "invited" ? " · invited" : ""}</button> : null; })}</div></div>}
           {!guided && <><div className="si-or" aria-hidden="true"><span>or</span></div><button type="button" className="btn btn-secondary btn-lg btn-block" onClick={() => setSheet("demo")}><Icon name="users" size={18} />Explore as someone in the story</button></>}
@@ -141,7 +141,7 @@
         </div>}
       </Sheet>
       <Sheet open={sheet === "code"} onClose={() => setSheet(null)} title="Enter the code" side={app.bp === "phone" ? "bottom" : "center"} detent="medium"
-        footer={<Button variant="primary" size="lg" block loading={busy === "verify" || (who && busy === who.id)} disabled={code.length < 6} onClick={() => verify()}>Verify and continue</Button>}>
+        footer={<Button variant="primary" size="lg" block loading={busy === "verify" || (who && busy === who.id)} busy="Verifying…" disabled={code.length < 6} onClick={() => verify()}>Verify and continue</Button>}>
         {who && isPhone && <div className="stack">
           <p className="t-subhead muted" style={{ margin: 0 }}>Sent by SMS to {phoneOf(digits(who.phone))}{guided ? ", and filled in from the message." : "."} This prototype's code is <b className="mono">{TEST_CODE}</b>.</p>
           <OTP value={code} onChange={v => { setCode(v); setCodeErr(""); if (v.length === 6 && !guided) verify(v); }} autoFocus={!app.embedded} />
@@ -150,7 +150,7 @@
         </div>}
       </Sheet>
       <Sheet open={sheet === "join"} onClose={() => setSheet(null)} title={`Join ${WS.name}`} side={app.bp === "phone" ? "bottom" : "center"} detent="medium"
-        footer={<Button variant="primary" size="lg" block loading={who && busy === who.id} onClick={join}>Join the workspace</Button>}>
+        footer={<Button variant="primary" size="lg" block loading={who && busy === who.id} busy="Joining…" onClick={join}>Join the workspace</Button>}>
         {who && <div className="stack" style={{ justifyItems: "center", textAlign: "center" }}>
           <WorkspaceMark ws={WS} size={64} />
           <div className="t-title3" style={{ textWrap: "balance" }}>{who.org} is invited to {WS_OF}</div>

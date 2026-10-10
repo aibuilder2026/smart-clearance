@@ -6,16 +6,21 @@ import type { IconName } from '@smart-clearance/core';
 type Words = {
 	title: string;
 	act: string;
+	/** what its button (or a timer's alert) says while it fires, and once it has (SC-152) */
+	busy: string;
+	done: string;
 	icon: IconName;
 	every?: (c: Client) => string;
 	ask?: (t: JourneyTrigger, when: string) => { title: string; message: string };
 };
 export const TRIG: Record<JourneyTrigger['key'], Words> = {
-	'data.daily': { title: 'Daily load', act: 'Run now', icon: 'play' },
-	'watcher.daily': { title: 'Daily check', act: 'Run now', icon: 'play' },
+	'data.daily': { title: 'Daily load', act: 'Run now', busy: 'Starting…', done: 'Started', icon: 'play' },
+	'watcher.daily': { title: 'Daily check', act: 'Run now', busy: 'Starting…', done: 'Started', icon: 'play' },
 	'offer.close': {
 		title: 'Offer window closes',
 		act: 'Close now',
+		busy: 'Closing…',
+		done: 'Closed',
 		icon: 'timer',
 		every: (c) => `${c.rules.offerWindowHours} h after the offer went out`,
 		ask: (t, when) => ({
@@ -26,6 +31,8 @@ export const TRIG: Record<JourneyTrigger['key'], Words> = {
 	'listing.close': {
 		title: 'Unsold lot closes',
 		act: 'Close now',
+		busy: 'Closing…',
+		done: 'Closed',
 		icon: 'timer',
 		every: () => "when the lot's days on ExpireSoon are up",
 		ask: (t, when) => ({
@@ -36,6 +43,8 @@ export const TRIG: Record<JourneyTrigger['key'], Words> = {
 	'report.due': {
 		title: 'Expiry day · report',
 		act: 'Report now',
+		busy: 'Reporting…',
+		done: 'Reported',
 		icon: 'timer',
 		every: () => 'on best-before',
 		ask: (t, when) => ({

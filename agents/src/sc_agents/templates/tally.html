@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{{ doc.type }} · {{ doc.no }}</title>
+{# the GST papers in Tally's layout (SC-148, option B): bordered blocks on A4, the parties with their GSTINs and state
+   codes, the goods or the particulars, the amount in words and the signatory. The same paper the workspace draws #}
+<style>
+  @page { size: A4; margin: 12mm 12mm 14mm; @bottom-left { content: "{{ case.ref }} · {{ doc.type }}"; font: 7.5pt sans-serif; color: #6b6b6b; } @bottom-right { content: "Page " counter(page) " of " counter(pages); font: 7.5pt sans-serif; color: #6b6b6b; } }
+  body { font-family: Arial, Helvetica, "DejaVu Sans", "Noto Sans Devanagari", sans-serif; font-size: 9pt; color: #141816; line-height: 1.38; margin: 0; }
+  .title { text-align: center; font-weight: 700; font-size: 13pt; letter-spacing: 0.02em; }
+  .copy { text-align: center; font-size: 8pt; color: #4b5550; margin: 2pt 0 7pt; }
+  table { width: 100%; border-collapse: collapse; }
+  td, th { border: 0.75pt solid #2a302d; padding: 3.5pt 5pt; vertical-align: top; }
+  th { font-size: 8pt; background: #f2f1ec; text-align: center; }
+  table + table { margin-top: -0.75pt; }
+  .k { display: block; font-size: 7.5pt; color: #59635e; }
+  .n { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .small { font-size: 7.5pt; color: #4b5550; }
+  .mono { font-family: "DejaVu Sans Mono", Menlo, monospace; font-size: 7.5pt; word-break: break-all; }
+  .sign { height: 30pt; text-align: right; padding-top: 8pt; }
+  .foot { text-align: center; font-size: 7.5pt; color: #4b5550; margin-top: 6pt; }
+  svg.qr { width: 30mm; height: 30mm; display: block; }
+</style>
+</head>
+<body>
+{% block body %}{% endblock %}
+</body>
+</html>

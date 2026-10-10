@@ -48,15 +48,28 @@
     </div>)}</div>;
   }
   // a paper on its page, in a sheet, with its PDF (the Paperwork agent's own on the live workspace; printed here)
-  function PaperSheet({ open, onClose, c, id, receipt }) {
-    const ref = useRef(null);
-    const d = receipt || (c && id && c.docs.find(x => x.id === id));
+  // a kirana's tax invoice (SC-153), or a batch's register of them, each number opening its invoice in the same sheet
+  function PaperSheet({ open, onClose, c, id, receipt, invoice, register }) {
+    const ref = useRef(null); const [one, setOne] = useState(null);
+    const inv = invoice || one;
+    const d = inv ? { type: "Tax invoice", no: inv.no } : register ? { type: "Tax invoices to kiranas", no: c && c.batch.id } : receipt || (c && id && c.docs.find(x => x.id === id));
+    const close = () => { setOne(null); onClose(); };
     const pdf = () => { const n = ref.current; if (n && d) S.printPage(`${d.type || "Donation receipt"} ${d.no || ""}`, `<div class="${n.className}">${n.innerHTML}</div>`, { styles: true }); };
-    return <Sheet open={open && !!d} onClose={onClose} title={d ? d.type || "Donation receipt" : ""} footer={d ? <Button variant="secondary" block icon="download" onClick={pdf}>Download PDF</Button> : null}>
-      {d && <div ref={ref} className="stack snug">{receipt ? <S.Receipt doc={receipt} batch={receipt.batch || (c && c.batch)} sku={receipt.sku || (c && c.sku)} dist={receipt.dist || (c && c.dist)} /> : <S.Paper id={id} c={c} />}</div>}
+    return <Sheet open={open && !!d} onClose={close} title={d ? d.type || "Donation receipt" : ""} footer={d ? <Button variant="secondary" block icon="download" action={pdf} busy="Opening the PDF…">Download PDF</Button> : null}>
+      {d && register && one && <button type="button" className="pt-link t-footnote" style={{ justifySelf: "start", marginBottom: 8 }} onClick={() => setOne(null)}>All {register.length} invoices</button>}
+      {d && <div ref={ref} className="stack snug">{inv ? <S.KiranaInvoice c={c} inv={inv} /> : register ? <S.KiranaRegister c={c} list={register} onOpen={setOne} /> : receipt ? <S.Receipt doc={receipt} batch={receipt.batch || (c && c.batch)} sku={receipt.sku || (c && c.sku)} dist={receipt.dist || (c && c.dist)} /> : <S.Paper id={id} c={c} />}</div>}
     </Sheet>;
   }
-  const PAPER_ICON = { invoice: "receipt", eway: "truck", support: "hand-coins", expiry: "warehouse", receipt: "heart-handshake", destruction: "trash-2" };
+  const PAPER_ICON = { invoice: "receipt", eway: "truck", support: "hand-coins", expiry: "warehouse", receipt: "heart-handshake", destruction: "trash-2", kiranas: "receipt" };
+  // the invoices of a batch's scheme as one row: how many, the first number to the last, the total (SC-153)
+  const lastNo = no => no.split("/").pop();
+  function RegisterRow({ list, onOpen, who }) {
+    return <button type="button" className="pt-paper" onClick={onOpen}>
+      <span className="icontile"><Icon name="receipt" size={17} stroke={2} /></span>
+      <span className="grow"><b>Tax invoices to kiranas · {list.length}</b><span className="t-footnote muted"><span className="mono">{list[0].no}{list.length > 1 ? ` to ${lastNo(list[list.length - 1].no)}` : ""}</span> · {who}</span></span>
+      <span className="tnum strong">{fmt.inr(list.reduce((t, x) => t + x.total, 0))}</span><Icon name="chevron-right" size={16} className="subtle" />
+    </button>;
+  }
   const issuedBy = (c, d) => (d.id === "invoice" || d.id === "eway" ? "You issue it" : d.id === "receipt" ? `${c.partner ? c.partner.name : "The food bank"} issued it to ${D.WORKSPACE.short} · a copy for you` : d.id === "destruction" ? (d.at === "godown" ? `${d.agency || "The agency"} destroyed them for you` : `${D.WORKSPACE.short} destroyed the packs · a copy for you`) : `${D.WORKSPACE.short} issued it to you`);
   // one paper as a row: its icon, type, number, who issued it, its amount
   function PaperRow({ c, d, onOpen }) {
@@ -83,13 +96,13 @@
       <div className="t-title3">Let Smart-Clearance act for Rakesh Traders</div>
       <div className="stack tight">{D.SETUP.acts.map(t => <div key={t} className="row top t-subhead" style={{ gap: 10 }}><Icon name="check" size={17} stroke={2.4} style={{ color: "var(--primary-text)", marginTop: 2, flex: "none" }} /><span>{t}</span></div>)}</div>
       <p className="t-footnote muted" style={{ margin: 0 }}>Always within Munchly's price floors. Every action shows here, and you can pause any of it. Munchly pays you the gap to the ₹{CHIPS.dp} you paid, so you end whole.</p>
-      <div className="row wrap" style={{ gap: 10 }}><Button variant="approve" size="lg" icon="check" loading={busy} onClick={allow}>Allow</Button><Button variant="ghost" size="lg" onClick={() => setLater(true)}>Not now</Button></div>
+      <div className="row wrap" style={{ gap: 10 }}><Button variant="approve" size="lg" icon="check" loading={busy} busy="Allowing…" done="Allowed" onClick={allow}>Allow</Button><Button variant="ghost" size="lg" onClick={() => setLater(true)}>Not now</Button></div>
     </div></motion.div>;
   }
   function ActingFor({ p }) {
     const { toast } = useNotice();
     const flip = () => { Flow.act("pause", !p.paused); toast({ text: p.paused ? "Resumed · the agents carry on" : "Paused · nothing more happens in your name", tone: "ok" }); };
-    return <Card className="row wrap" style={{ gap: 12 }}><span className={cx("icontile", p.paused ? "amber" : "")} style={{ width: 40, height: 40, borderRadius: 12 }}><Icon name={p.paused ? "circle-pause" : "handshake"} size={19} /></span><div className="grow" style={{ minWidth: 0 }}><b>{p.paused ? "Paused: nothing happens in your name" : "Smart-Clearance acts for you"}</b><div className="t-footnote muted">{p.paused ? "Listings, offers and invoice drafts wait until you resume." : `Inside Munchly's floors · since ${p.at} · listings, scheme offers, invoice drafts, dispatch slots`}</div></div><Button variant={p.paused ? "primary" : "secondary"} size="sm" icon={p.paused ? "play" : "pause"} onClick={flip}>{p.paused ? "Resume" : "Pause"}</Button></Card>;
+    return <Card className="row wrap" style={{ gap: 12 }}><span className={cx("icontile", p.paused ? "amber" : "")} style={{ width: 40, height: 40, borderRadius: 12 }}><Icon name={p.paused ? "circle-pause" : "handshake"} size={19} /></span><div className="grow" style={{ minWidth: 0 }}><b>{p.paused ? "Paused: nothing happens in your name" : "Smart-Clearance acts for you"}</b><div className="t-footnote muted">{p.paused ? "Listings, offers and invoice drafts wait until you resume." : `Inside Munchly's floors · since ${p.at} · listings, scheme offers, invoice drafts, dispatch slots`}</div></div><Button variant={p.paused ? "primary" : "secondary"} size="sm" icon={p.paused ? "play" : "pause"} action={flip} busy={p.paused ? "Resuming…" : "Pausing…"}>{p.paused ? "Resume" : "Pause"}</Button></Card>;
   }
   // the staff sale at the godown (SC-87, option A): the packs and the price, the distributor's UPI address to show staff,
   // and one count to record what sold, once, when the sale is over. The code beside the address is an illustration drawn
@@ -120,7 +133,7 @@
         <span className="t-subhead">{fmt.num(staff.units)} packs for your staff at <b>₹{staff.price}</b> a pack, at {staff.godown}. Staff pay you by UPI.</span>
         {dist.upi && <div className="row" style={{ gap: 14 }}><PayCode upi={dist.upi} /><div className="stack tight" style={{ gap: 2, minWidth: 0 }}><b className="mono t-footnote" style={{ overflowWrap: "anywhere" }}>{dist.upi}</b><span className="t-footnote muted">Your own UPI: staff pay you at the godown{clears ? `, over ${clears}` : ""}.</span></div></div>}
         <div className="row wrap" style={{ gap: 12 }}><Stepper value={n} onChange={setN} min={0} max={staff.units} label="packs sold to staff" /><span className="t-subhead muted">of {fmt.num(staff.units)} packs sold</span></div>
-        <Button variant="primary" size="lg" block icon="check" loading={busy} onClick={record}>Record the sale</Button>
+        <Button variant="primary" size="lg" block icon="check" loading={busy} busy="Recording…" done="Recorded" onClick={record}>Record the sale</Button>
         <span className="t-caption subtle">Record once, when the sale is over. What does not sell stays at the godown.</span>
       </> : <>
         <span className="t-subhead"><b>{fmt.num(staff.sold)} of {fmt.num(staff.units)}</b> sold to staff at ₹{staff.price} a pack</span>
@@ -165,6 +178,8 @@
   }
   // a step of his: what, the one button. A step that needs its screen opens it on the batch; the invoice is one tap
   const DONE = { issueInvoice: "Marked issued from Tally" };
+  // the step's button while it waits, and once it lands (SC-152)
+  const WORDS = { issueInvoice: ["Issuing…", "Issued"] };
   function Step({ t, j, primary }) {
     const { go } = useRoute(); const { toast } = useNotice(); const [busy, setBusy] = useState(false);
     const run = () => {
@@ -174,7 +189,7 @@
     return <div className={cx("dist-step", primary && "primary")}>
       <span className="icontile" style={{ width: primary ? 44 : 36, height: primary ? 44 : 36, borderRadius: 12 }}><Icon name={t.icon} size={primary ? 20 : 17} stroke={2} /></span>
       <span className="grow stack tight" style={{ gap: 2, minWidth: 0 }}><b className={primary ? "t-headline" : "t-subhead"}>{t.title}</b><span className="t-footnote muted">{t.sub}</span></span>
-      <Button variant={primary ? "primary" : "secondary"} size={primary ? "md" : "sm"} icon={t.icon} loading={busy} onClick={run}>{t.cta}</Button>
+      <Button variant={primary ? "primary" : "secondary"} size={primary ? "md" : "sm"} icon={t.icon} loading={busy} busy={(WORDS[t.act] || [])[0]} done={(WORDS[t.act] || [])[1]} onClick={run}>{t.cta}</Button>
     </div>;
   }
   // a batch in a journey, as one card: the batch, its next step for him, its lines
@@ -240,7 +255,7 @@
         <div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={o.shops} /><span className="subtle" style={{ fontSize: "0.45em" }}> / {o.offered}</span></span><span className="t-footnote subtle">shops on the round</span></div>
         <div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={o.units} /></span><span className="t-footnote subtle">packets · {cartons(o.units)}</span></div>
       </div>
-      {!n.van && <Button variant="primary" size="lg" icon="navigation" loading={running} disabled={!can || running} onClick={start}>{can ? "Start the round" : o.open ? `Waiting for orders · ${o.shops} of ${o.offered}` : !o.shops ? "No shop ordered" : "Runs once the papers are drafted"}</Button>}
+      {!n.van && <Button variant="primary" size="lg" icon="navigation" loading={running} busy="Starting the round…" slow={false} disabled={!can || running} onClick={start}>{can ? "Start the round" : o.open ? `Waiting for orders · ${o.shops} of ${o.offered}` : !o.shops ? "No shop ordered" : "Runs once the papers are drafted"}</Button>}
       <span className="t-caption subtle">₹{M.RULES.vanPerUnit.toFixed(2)} a packet for the van, repaid by {D.WORKSPACE.short} in the price support.</span>
     </Card>;
   }
@@ -263,7 +278,7 @@
       <div className="card-head"><span className="row tight"><Chan id="expiresoon" icon="truck" /><span className="card-title">The buyer's truck · ExpireSoon</span></span><Badge tone={n.truck ? "blue" : n.award ? "green" : "violet"}>{n.truck ? "collected" : n.award ? "sold" : n.listing ? "listed" : "not listed yet"}</Badge></div>
       <HaulLine progress={n.truck ? (["settled", "cleared"].includes(n.phase) ? 1 : 0.55) : 0} />
       <List>{[["Buyer", n.award ? `${D.BUYER.name}, ${D.BUYER.city}` : "whoever takes the lot"], ["Lot", `${n.listing ? `${n.listing.id} · ` : ""}${num(es.units)} packs · ${cartons(es.units)}`], ["Price", n.award ? `${rate(n.award.price)} a pack, the counter he took` : `${rate(es.price)} asked`], ["Token", n.award ? `${fmt.inr(n.award.token)} received` : "paid when a buyer takes it"], ["Balance", n.award ? `${fmt.inr(balance)} before loading` : "paid before loading"], ["Freight", "the buyer's own truck"]].map(([k, v]) => <ListRow key={k} title={k} value={v} />)}</List>
-      {!n.truck && <Button variant="primary" size="lg" icon="truck" disabled={!n.award || schemeOpen} onClick={dispatch}>{!n.award ? "Load after the award" : schemeOpen ? "Load once the scheme closes" : "Load the buyer's truck"}</Button>}
+      {!n.truck && <Button variant="primary" size="lg" icon="truck" disabled={!n.award || schemeOpen} action={dispatch} busy="Loading the truck…" done="Loaded">{!n.award ? "Load after the award" : schemeOpen ? "Load once the scheme closes" : "Load the buyer's truck"}</Button>}
       <span className="t-caption subtle">Your staff load it as normal godown work, once the balance lands.</span>
     </Card></>;
   }
@@ -417,7 +432,7 @@
           <Button variant="secondary" block onClick={() => go("home")}>Back to today</Button>
         </Card> : uploading ? <S.Live.SendFill p={live.uploads.photo} onCancel={() => live.cancelUpload("photo")} />
           : <AnimatePresence mode="wait" initial={false}>
-            {shot ? <motion.div key="send" className="row" style={{ gap: 10 }} initial={reduce ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}><Button variant="secondary" size="lg" icon={shot.how === "camera" ? "rotate-ccw" : "image"} onClick={again} style={{ flex: "none" }}>{shot.how === "camera" ? "Retake" : "Choose another"}</Button><Button variant="primary" size="lg" block icon="send" loading={sending} onClick={send}>Send photo</Button></motion.div>
+            {shot ? <motion.div key="send" className="row" style={{ gap: 10 }} initial={reduce ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}><Button variant="secondary" size="lg" icon={shot.how === "camera" ? "rotate-ccw" : "image"} onClick={again} style={{ flex: "none" }}>{shot.how === "camera" ? "Retake" : "Choose another"}</Button><Button variant="primary" size="lg" block icon="send" loading={sending} busy="Sending photo…" onClick={send}>Send photo</Button></motion.div>
               : camOn ? <motion.div key="cam" className="cam-bar" initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.16 }}><Button variant="ghost" onClick={stopCam}>Cancel</Button><button type="button" className="shutter" aria-label="Take the photo" disabled={!camLive} onClick={shutter}><span /></button><Button variant="ghost" icon="image" onClick={() => { stopCam(); upload(); }}>Upload</Button></motion.div>
               : <motion.div key="two" className="cam-two" initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.16 }}><Button variant={desk ? "secondary" : "primary"} size="lg" icon="camera" onClick={take}>Take a photo</Button><Button variant={desk ? "primary" : "secondary"} size="lg" icon="upload" onClick={upload}>Upload a photo</Button></motion.div>}
           </AnimatePresence>}
@@ -495,7 +510,7 @@
             <K.Field label="Agency's certificate number" htmlFor="dz-cert"><K.Input id="dz-cert" value={cert} onChange={e => setCert(e.target.value)} placeholder={a ? `${a.series.prefix}0000` : ""} spellCheck={false} autoCapitalize="characters" /></K.Field>
           </div>
           {err && <p className="cam-alert" role="alert"><Icon name="triangle-alert" size={15} />{err}</p>}
-          <Button variant="primary" size="lg" block icon="send" loading={sending} disabled={!ready} aria-describedby="dz-need" onClick={send}>Send to {C} for approval</Button>
+          <Button variant="primary" size="lg" block icon="send" loading={sending} busy="Sending the evidence…" done="Sent for approval" disabled={!ready} aria-describedby="dz-need" onClick={send}>Send to {C} for approval</Button>
           <span id="dz-need" className="t-caption subtle">{ready ? `Then reverse ${fmt.inr2(his)} of input GST on these packs in your GSTR-3B (Table 4(B)(1)). ${possessive(C)} credit note makes it good.` : `Both photos and the certificate number are needed. ${PHOTO_RULE}.`}</span>
         </Card>
           : <Card className="stack snug">
@@ -512,7 +527,7 @@
   /* ---------- Orders: every batch's orders, past and present ---------- */
   // an order: who bought what, for how much, on which paper (the invoice he issues, and Issue from Tally while it is a
   // draft); the scheme's shops on request
-  function OrderRow({ o }) {
+  function OrderRow({ o, onInvoice }) {
     const [open, setOpen] = useState(false); const [busy, setBusy] = useState(false); const { toast } = useNotice();
     const issue = () => { setBusy(true); setTimeout(() => { setBusy(false); Flow.act("issueInvoice"); toast({ text: DONE.issueInvoice, tone: "ok" }); }, 400); };
     return <div className="dist-order">
@@ -520,9 +535,11 @@
       <span className="grow stack tight" style={{ gap: 2, minWidth: 0 }}>
         <span className="t-subhead"><b>{o.who}</b> · {o.what}</span>
         <span className="t-footnote muted">{CH[o.id].name}{o.at ? ` · ${when(o.at)}` : ""}{o.sub ? ` · ${o.sub}` : ""}</span>
-        {o.paper && <span className="row tight wrap" style={{ gap: 8 }}><span className="dist-paper"><Icon name="file-text" size={13} /><span className="mono">{o.paper.no}</span><span>{o.paper.label}</span></span>{o.paper.issue && <Button variant="secondary" size="sm" icon="check" loading={busy} onClick={issue}>Issue from Tally</Button>}</span>}
+        {o.paper && <span className="row tight wrap" style={{ gap: 8 }}><span className="dist-paper"><Icon name="file-text" size={13} /><span className="mono">{o.paper.no}</span><span>{o.paper.label}</span></span>{o.paper.issue && <Button variant="secondary" size="sm" icon="check" loading={busy} busy="Issuing…" done="Issued" onClick={issue}>Issue from Tally</Button>}</span>}
+        {o.invoices && <span className="row tight wrap" style={{ gap: 8 }}><span className="dist-paper"><Icon name="receipt" size={13} /><span className="mono">{o.invoices.first}{o.invoices.n > 1 ? ` to ${lastNo(o.invoices.last)}` : ""}</span><span>{o.invoices.n} tax {o.invoices.n === 1 ? "invoice" : "invoices"} · {fmt.inr2(o.invoices.tax)} GST collected</span></span></span>}
         {o.shops && o.shops.length > 0 && <button type="button" className="pt-link t-footnote dist-toggle" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? "Hide" : "Show"} the {o.shops.length} shops' orders</button>}
-        {open && <div className="dist-shops">{o.shops.map(k => <span key={k.name}><b>{k.name}</b>{k.at && <em>{when(k.at)}</em>}<span className="tnum">{k.units}</span></span>)}</div>}
+        {open && <div className="dist-shops">{o.shops.map(k => k.invoice && onInvoice ? <button key={k.name} type="button" className="dist-shop" onClick={() => onInvoice(k.invoice.no)}><b>{k.name}</b>{k.at && <em>{when(k.at)}</em>}<span className="tnum">{k.units}</span><span className="dist-shop-no"><span className="mono">{k.invoice.no}</span><span className="tnum">{fmt.inr(k.invoice.total)}</span></span></button>
+          : <span key={k.name}><b>{k.name}</b>{k.at && <em>{when(k.at)}</em>}<span className="tnum">{k.units}</span></span>)}</div>}
       </span>
       <span className="tnum strong">{o.amount ? fmt.inr(o.amount) : "given"}</span>
     </div>;
@@ -558,8 +575,10 @@
     return <span className="lg-val">{lead === "credit" ? <><b className="tnum">{fmt.inr(v.credit)} credited</b><em>+ {fmt.inr(v.sold)} sold = {fmt.inr(v.cost)}</em></> : <><b className="tnum">{fmt.inr(v.sold)} sold</b><em>+ {fmt.inr(v.credit)} credited = {fmt.inr(v.cost)}</em></>}</span>;
   }
   function DistOrders({ me }) {
-    const s = useStore(); const { go } = useRoute(); const Px = P();
+    const s = useStore(); const { go } = useRoute(); const Px = P(); const [inv, setInv] = useState(null);
     const dist = distOf(me);
+    // a shop's invoice, opened from its order: the batch's case and the invoice by its number (SC-153)
+    const invCase = inv && window.SC3_LEDGER.caseOf(inv.ref), invoice = invCase && window.SC3_LEDGER.invoicesOf(invCase, s).find(x => x.no === inv.no);
     const now = Px.distNow(dist.id, s).map(n => { const j = Px.journeyOf(n); return { ref: n.ref, sku: j.sku, live: true, j, rows: Px.ordersNow(n, Px.shopName) }; });
     const past = Px.distBatches(dist.id, s).past.map(c => ({ ref: c.ref, sku: c.sku, live: false, outcome: c.outcome, cleared: c.cleared, rows: Px.ordersPast(Px.historyFacts(c), Px.shopName) })).filter(b => b.rows.length);
     const book = now.concat(past);
@@ -579,10 +598,11 @@
             <BatchLine sku={b.sku} id={b.ref} size={44} badge={b.live ? stopBadge(b.j) : <S.OutcomeBadge o={b.outcome} size="sm" />} sub={b.live ? (b.j.phase === "cleared" ? "cleared · every order" : b.rows.length ? "orders so far" : "no orders yet") : `cleared ${day(b.cleared)}`} />
             <span className="row tight">{b.rows.length > 0 && (!b.live && sums.batches.find(x => x.ref === b.ref) ? <SumLine x={sums.batches.find(x => x.ref === b.ref)} lead="sold" /> : <span className="tnum strong">{fmt.inr(sum(b.rows))}</span>)}<Button variant="ghost" size="sm" iconRight="chevron-right" onClick={() => go("batches", { ref: b.ref })}>Papers</Button></span>
           </div>
-          {b.rows.length ? <div className="dist-orders">{b.rows.map(o => <OrderRow key={o.id} o={o} />)}</div>
+          {b.rows.length ? <div className="dist-orders">{b.rows.map(o => <OrderRow key={o.id} o={o} onInvoice={no => setInv({ ref: b.ref, no })} />)}</div>
             : <p className="t-footnote muted" style={{ margin: 0 }}>{b.j.waiting || "Its orders show here as they come in."}</p>}
         </Card>)}
       </div>
+      {invoice && <PaperSheet open onClose={() => setInv(null)} c={invCase} invoice={invoice} />}
     </Screen>;
   }
 
@@ -635,6 +655,7 @@
     const L = window.SC3_LEDGER; const past = P().distBatches(dist.id, s).past.find(c => c.ref === id);
     const mine = D.BATCHES.find(b => b.id === id && b.distributor === dist.id); const hero = mine && mine.hero ? mine : null, second = mine && mine.second ? mine : null;
     const c = past || (hero ? L.storyCase() : null);
+    const kiranas = c ? L.invoicesOf(c, s) : [];
     if (!c && !second) return <Screen me={me} title="Batches" back="Batches"><Card><Empty icon="boxes" title="Not one of your batches" body="This batch is not at your godown." /></Card></Screen>;
     const sku = c ? c.sku : D.SKUS[second.sku];
     const head = <PtHead sku={sku} id={id} where={`${dist.godown}, ${dist.city}`} badge={past ? <S.OutcomeBadge o={c.outcome} size="sm" /> : <Badge size="sm" tone="blue" dot live>{stopOf(hero ? s.hero.phase : s.mango.phase)}</Badge>}
@@ -645,10 +666,10 @@
     else if (tab === "what") body = <Card><PtMoments items={past ? P().moments(c) : P().storyMoments(s)} /></Card>;
     else if (tab === "money") body = <WholeCard c={c} story={!past} s={s} onPaper={setPaper} />;
     else if (tab === "photos") body = <DistPhotos c={c} story={!past} s={s} />;
-    else body = <DistPapers c={c} ready={!!past || !!s.hero.docs} onOpen={setPaper} />;
+    else body = <DistPapers c={c} ready={!!past || !!s.hero.docs} onOpen={setPaper} kiranas={kiranas} />;
     return <Screen me={me} title={sku.name} back="Batches" hideLarge below={head}>
       <motion.div key={tab} initial={reduce ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }} className="pt-body">{body}</motion.div>
-      {c && <PaperSheet open={!!paper} onClose={() => setPaper(null)} c={c} id={paper} receipt={paper === "receipt" ? c.receipt : null} />}
+      {c && <PaperSheet open={!!paper} onClose={() => setPaper(null)} c={c} id={paper} receipt={paper === "receipt" ? c.receipt : null} register={paper === "kiranas" ? kiranas : null} />}
     </Screen>;
   }
   // how he ended whole: what he received against what he paid
@@ -665,19 +686,23 @@
     </Card>;
   }
   // his papers, then copies of what concerns his packs
-  function DistPapers({ c, ready, onOpen }) {
-    if (!ready) return <Locked icon="file-text" agent="Paperwork agent" text="Drafts your tax invoice to the buyer and Munchly's price-support credit note to you once every line of the plan is done." />;
+  function DistPapers({ c, ready, onOpen, kiranas }) {
+    // his tax invoices to the scheme's shops, issued as they ordered (SC-153): the batch's sales register
+    const reg = kiranas && kiranas.length ? <RegisterRow list={kiranas} onOpen={() => onOpen("kiranas")} who="You issue them" /> : null;
+    if (!ready) return <div className="stack" style={{ gap: 16 }}><Locked icon="file-text" agent="Paperwork agent" text="Drafts your tax invoice to the buyer and Munchly's price-support credit note to you once every line of the plan is done." />
+      {reg && <div><div className="pt-head">Your invoices to kiranas</div><div className="pt-papers">{reg}</div></div>}</div>;
     const p = P().distPapers(c);
     return <div className="stack" style={{ gap: 16 }}>
-      <div><div className="pt-head">Your papers</div><div className="pt-papers">{p.mine.map(d => <PaperRow key={d.id} c={c} d={d} onOpen={onOpen} />)}</div></div>
+      <div><div className="pt-head">Your papers</div><div className="pt-papers">{p.mine.map(d => <PaperRow key={d.id} c={c} d={d} onOpen={onOpen} />)}{reg}</div></div>
       {p.copies.length ? <div><div className="pt-head">Copies for your records</div><div className="pt-papers">{p.copies.map(d => <PaperRow key={d.id} c={c} d={d} onOpen={onOpen} />)}</div></div> : null}
       <p className="t-footnote subtle" style={{ margin: 0 }}>Each opens on paper with its PDF. {D.WORKSPACE.short}'s own GST memo and FSSAI checklist stay with {D.WORKSPACE.short}.</p>
     </div>;
   }
 
   /* ======================= Ganesh ji · kirana ======================= */
-  // the scheme: pay the pack price for 10 of every 12, sell all 12 at MRP
-  const offerMath = n => { const free = Math.floor(n / 12) * 2, paid = n - free, pack = KL.packPrice; return { n, free, paid, pack, pay: paid * pack, sell: n * CHIPS.mrp, margin: n * CHIPS.mrp - paid * pack }; };
+  // the scheme as the invoice has it (SC-153): every packet at the pack price less the scheme's discount, the GST on
+  // that, what he pays, and his margin selling them all at MRP
+  const offerMath = n => P().scheme(n, KL, CHIPS);
   function OfferCard({ onOpen, compact, shop }) {
     const [en, setEn] = useState(false); const p0 = D.PUSH.offer; const name = shop || "Shree Ganesh Kirana";
     const p = Object.assign({}, p0, { body: p0.body.replace("Shree Ganesh Kirana", name) });
@@ -700,7 +725,7 @@
     const after = () => { Store.update(st => { if (st.hero.declined) delete st.hero.declined[shop.id]; }); go("offer"); };
     return <Screen me={me} title="Offers" sub={`${k.name} · ${k.area}, ${dist.city}`}>
       <div className="stack" style={{ gap: 16, maxWidth: 620 }}>
-        {top && top.status === "open" ? <><OfferCard shop={k.name} onOpen={() => go("offer")} /><Button variant="ghost" size="lg" block onClick={no}>Not this time</Button></>
+        {top && top.status === "open" ? <><OfferCard shop={k.name} onOpen={() => go("offer")} /><Button variant="ghost" size="lg" block action={no} busy="Declining…">Not this time</Button></>
           : top && top.status === "ordered" ? <Card className="stack snug"><div className="row" style={{ gap: 14 }}><Product name={top.sku.img} size={64} /><div className="grow"><b>Ordered · {top.units} packets</b><div className="t-footnote muted">{top.sku.name} · placed {top.orderedAt.slice(11)} · comes on {D.JOURNEY.van.day}'s van</div></div><Badge tone="green" icon="check">confirmed</Badge></div></Card>
           : top && top.status === "declined" ? <Card className="stack snug"><div className="row" style={{ gap: 14 }}><Product name={top.sku.img} size={64} /><div className="grow"><b>You said not this time</b><div className="t-footnote muted">{top.sku.name} · declined {when(top.declinedAt)}. The offer stays open until {when(top.closed)} if you change your mind.</div></div></div><Button variant="secondary" block onClick={after}>Order after all</Button></Card>
           : <Card><Empty img="kirana" title="No open offer" body={`${dist.short}'s schemes arrive here as a notification, in Hindi, ready to order in one tap.`} /></Card>}
@@ -713,6 +738,7 @@
   }
   // an offer's own page: what came of it, and what was offered
   function OfferPage({ me, o }) {
+    const [open, setOpen] = useState(false); const c = o.invoice ? window.SC3_LEDGER.caseOf(o.ref) : null;
     const head = <PtHead sku={o.sku} id={o.ref} where={`From ${o.dist.short}`} badge={<OfferStatus o={o} size="sm" />} line={`Sent ${when(o.sent)}`} />;
     return <Screen me={me} title={o.sku.name} back="Offers" below={head} hideLarge>
       <div className="stack" style={{ gap: 16, maxWidth: 620 }}>
@@ -720,23 +746,29 @@
           <div className="card-head"><span className="card-title">Your order</span><Badge tone="green" icon="check">{o.van ? `delivered ${weekday(o.van)}` : "on the round"}</Badge></div>
           <div className="stack tight">
             <PtLine k={`You ordered ${o.units} packets`} sub={when(o.orderedAt)} v="" />
-            <PtLine k="You paid" sub={`${o.m.paid} × ₹${o.pack.toFixed(2)}`} v={fmt.inr(o.m.pay)} />
-            <PtLine k="Free packets" sub="2 with every 10" v={o.m.free} />
+            <PtLine k="Before GST" sub={`${o.units} × ₹${o.m.rate.toFixed(2)}, less the scheme's ${o.m.discountPct}%`} v={fmt.inr2(o.m.taxable)} />
+            <PtLine k="GST" sub={`CGST ${o.m.gstPct / 2}% + SGST ${o.m.gstPct / 2}%`} v={fmt.inr2(o.m.tax)} />
+            <PtLine k="You paid" sub="the invoice, to the rupee" v={fmt.inr(o.m.pay)} />
             <PtLine k="You sell at MRP" sub={`${o.units} × ₹${o.mrp}`} v={fmt.inr(o.m.sell)} />
             <div className="hairline" style={{ margin: "4px 0" }} />
-            <PtLine k="Your margin" v={fmt.inr(o.m.margin)} strong />
+            <PtLine k="Your margin" v={fmt.inr2(o.m.margin)} strong />
           </div>
+          {o.invoice && c && <div className="pt-papers"><button type="button" className="pt-paper" onClick={() => setOpen(true)}>
+            <span className="icontile"><Icon name="receipt" size={17} stroke={2} /></span>
+            <span className="grow"><b>Tax invoice</b><span className="t-footnote muted"><span className="mono">{o.invoice.no}</span> · {o.dist.short} issued it · paid on delivery</span></span>
+            <span className="tnum strong">{fmt.inr(o.invoice.total)}</span><Icon name="chevron-right" size={16} className="subtle" /></button></div>}
           {o.van && <span className="t-footnote subtle">Delivered on {weekday(o.van)}'s van, {day(o.van)} · paid on delivery to {o.dist.short}</span>}
         </Card> : <Card className="row top" style={{ gap: 14 }}><span className="icontile soft"><Icon name={o.status === "declined" ? "x" : "clock"} size={18} /></span>
           <div className="grow"><b>{o.status === "declined" ? "You said not this time" : "This offer expired"}</b><div className="t-footnote muted">{whyText(o)}. Nothing was ordered and nothing is owed.</div></div></Card>}
         <List head="What was offered">
-          <ListRow title="Price" value={`₹${o.pack.toFixed(2)} a packet · MRP ₹${o.mrp}`} />
-          <ListRow title="Scheme" value="Buy 10, get 2 free" />
+          <ListRow title="Price" value={`₹${o.pack.toFixed(2)} a packet, before GST · MRP ₹${o.mrp}`} />
+          <ListRow title="Scheme" value="Buy 10, get 2 free, as a discount on the invoice" />
           <ListRow title="Your share" value={`up to ${o.share} packets`} />
           <ListRow title="Open for" value="48 hours" />
           <ListRow title="Best before" value={fmt.date(o.bestBefore)} />
         </List>
       </div>
+      {o.invoice && c && <PaperSheet open={open} onClose={() => setOpen(false)} c={c} invoice={o.invoice} />}
     </Screen>;
   }
   // the offer route: an earlier offer by its ref opens its page; otherwise the open offer, to order from
@@ -755,14 +787,14 @@
         {!h.offer ? null : mine ? <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="card stack" style={{ padding: 22, justifyItems: "center", textAlign: "center" }}>
           <span className="icontile" style={{ width: 56, height: 56, borderRadius: 18 }}><Icon name="check" size={28} stroke={2.4} /></span>
           <div className="t-title2 hi" lang="hi">ऑर्डर हो गया</div>
-          <span className="muted">{mine.units} packets on {D.JOURNEY.van.day}'s van · pay on delivery</span>
+          <span className="muted">{mine.units} packets on {D.JOURNEY.van.day}'s van · pay {fmt.inr(offerMath(mine.units).pay)} on delivery, GST included</span>
           <Money value={offerMath(mine.units).margin} size="m" style={{ color: "var(--primary-text)" }} /><span className="t-footnote subtle">your margin at MRP on this order</span>
           <Button variant="secondary" onClick={() => go("home")}>Done</Button>
         </motion.div> : <Card className="stack" style={{ gap: 16 }}>
           <div className="row between"><div className="stack tight" style={{ gap: 0 }}><b>How many packets?</b><span className="t-footnote subtle">In twelves · your share is up to {k.units}</span></div><Stepper value={n} onChange={setN} min={12} max={k.units} step={12} label="Packets" /></div>
-          <div className="stack tight">{[["You pay", `${m.paid} × ₹${m.pack.toFixed(2)}`, fmt.inr(m.pay)], ["Free packets", "2 with every 10", `${m.free}`], ["You sell at MRP", `${n} × ₹${CHIPS.mrp}`, fmt.inr(m.sell)]].map(([k, sub, v]) => <div key={k} className="row between t-subhead"><span>{k} <span className="subtle t-footnote">{sub}</span></span><span className="tnum strong">{v}</span></div>)}</div>
+          <div className="stack tight">{[["Before GST", `${n} × ₹${m.rate.toFixed(2)}, less the scheme's ${m.discountPct}%`, fmt.inr2(m.taxable)], ["GST", `CGST ${m.gstPct / 2}% + SGST ${m.gstPct / 2}%`, fmt.inr2(m.tax)], ["You pay", "on the invoice, to the rupee", fmt.inr(m.pay)], ["You sell at MRP", `${n} × ₹${CHIPS.mrp}`, fmt.inr(m.sell)]].map(([k, sub, v]) => <div key={k} className="row between t-subhead"><span>{k} <span className="subtle t-footnote">{sub}</span></span><span className="tnum strong">{v}</span></div>)}</div>
           <div className="row between" style={{ padding: "12px 14px", borderRadius: 14, background: "var(--primary-soft)" }}><span className="stack tight" style={{ gap: 0 }}><b>Margin today</b><span className="t-footnote muted">₹{(m.pay / n).toFixed(2)} a packet in effect, sold at ₹{CHIPS.mrp}</span></span><Money value={m.margin} size="s" roll style={{ color: "var(--primary-text)" }} /></div>
-          <Button variant="primary" size="xl" block loading={busy} onClick={order}><span className="hi" lang="hi">ऑर्डर करें</span> · {n} packets</Button>
+          <Button variant="primary" size="xl" block loading={busy} busy={<span className="hi" lang="hi">ऑर्डर हो रहा है…</span>} done={<span className="hi" lang="hi">ऑर्डर हो गया</span>} onClick={order}><span className="hi" lang="hi">ऑर्डर करें</span> · {n} packets</Button>
           <span className="t-caption subtle" style={{ textAlign: "center" }}>Best before 18 Nov 2026 · 47 days on every packet · unsold packs go back to the salesman until {fmt.day(D.RETURN_BY)}</span>
         </Card>}
       </div>
@@ -771,11 +803,11 @@
   // the kirana's orders (SC-130): what each order earned, every one opening its offer's page
   function RetailOrders({ me }) {
     const s = useStore(); const { go } = useRoute(); const k = kOf(me); const list = P().offersFor(shopOf(me), s).filter(o => o.status === "ordered");
-    const margin = list.reduce((t, o) => t + o.m.margin, 0), packets = list.reduce((t, o) => t + o.units, 0);
+    const margin = list.reduce((t, o) => t + o.m.margin, 0), packets = list.reduce((t, o) => t + o.units, 0), paid = list.reduce((t, o) => t + o.m.pay, 0);
     return <Screen me={me} title="Orders" sub={k.name}>
       <div className="stack" style={{ gap: 16, maxWidth: 620 }}>
-        {list.length ? <><Card className="stack" style={{ gap: 8 }}><div className="lg-fig"><Money value={margin} size="l" /><span className="lg-what">your margin at MRP</span></div><p className="lg-working">{list.length} {list.length === 1 ? "order" : "orders"} since July, {fmt.num(packets)} packets, each delivered on the van with 2 free in every 12.</p></Card>
-          <List>{list.map(o => <ListRow key={o.ref} chevron onClick={() => go("offer", { ref: o.ref })} leading={<Product name={o.sku.img} size={40} />} title={`${o.sku.name} · ${o.units} packets`} sub={`ordered ${when(o.orderedAt)}${o.van ? ` · ${weekday(o.van)}'s van` : " · on the round"}`} value={<span className="lg-val"><b className="tnum">{fmt.inr(o.m.margin)}</b><em>margin</em></span>} />)}</List></>
+        {list.length ? <><Card className="stack" style={{ gap: 8 }}><div className="lg-fig"><Money value={margin} size="l" /><span className="lg-what">your margin at MRP</span></div><p className="lg-working">{list.length} {list.length === 1 ? "order" : "orders"} since July, {fmt.num(packets)} packets, {fmt.inr(paid)} paid on {list.length} tax {list.length === 1 ? "invoice" : "invoices"} from {list[0].dist.short}, GST included.</p></Card>
+          <List>{list.map(o => <ListRow key={o.ref} chevron onClick={() => go("offer", { ref: o.ref })} leading={<Product name={o.sku.img} size={40} />} title={`${o.sku.name} · ${o.units} packets`} sub={<span>{o.invoice ? <><span className="mono">{o.invoice.no}</span> · </> : null}ordered {when(o.orderedAt)}{o.van ? ` · ${weekday(o.van)}'s van` : " · on the round"}</span>} value={<span className="lg-val"><b className="tnum">{fmt.inr2(o.m.margin)}</b><em>margin</em></span>} />)}</List></>
           : <Card><Empty icon="shopping-basket" title="No orders yet" body="Orders you place from an offer show here with the van day." /></Card>}
       </div>
     </Screen>;
@@ -835,11 +867,11 @@
             <div className="card-head"><span className="card-title">Place a bid</span><span className="t-caption subtle">ask ₹15.00</span></div>
             <div className="row between"><span className="stack tight" style={{ gap: 0 }}><b>Your price a packet</b><span className="t-footnote subtle">for all {ES.units} units</span></span><Stepper value={price} onChange={setPrice} min={10} max={14} step={0.5} label="Bid price" format={v => "₹" + v.toFixed(2)} /></div>
             <div className="row between t-subhead"><span>15% token on your bid</span><span className="tnum strong">{fmt.inr2(token)}</span></div>
-            <Button variant="violet" size="lg" block icon="gavel" onClick={place}>Bid ₹{price.toFixed(2)} for {ES.units}</Button>
+            <Button variant="violet" size="lg" block icon="gavel" action={place} busy="Placing your bid…" done="Bid placed">Bid ₹{price.toFixed(2)} for {ES.units}</Button>
             <span className="t-caption subtle">Balance in {D.MARKET.balanceHours} h. The seller's agent replies in about a minute.</span>
           </Card> : <Card className="stack snug"><div className="card-head"><span className="card-title">Your bid</span><Badge tone={last.status === "countered" ? "violet" : undefined} dot live={last.status === "placed"}>{last.status === "placed" ? "waiting for the seller" : last.status}</Badge></div>
             <div className="row base" style={{ gap: 8 }}><span className="es-price lg">₹{last.price.toFixed(2)}</span><span className="muted">→ counter ₹{(last.counter || D.COUNTER.price).toFixed(2)}</span></div>
-            {last.status === "countered" && <Button variant="violet" size="lg" block icon="check" onClick={accept}>Accept ₹{D.COUNTER.price.toFixed(2)} · pay {fmt.inr(D.AWARD.token)} token</Button>}
+            {last.status === "countered" && <Button variant="violet" size="lg" block icon="check" action={accept} busy="Accepting…" done="Accepted">Accept ₹{D.COUNTER.price.toFixed(2)} · pay {fmt.inr(D.AWARD.token)} token</Button>}
           </Card>)}
         <Card className="stack snug"><div className="card-head"><span className="card-title">Chat with the seller</span><span className="t-caption subtle">answered by an agent</span></div>
           {h.chat.length ? <S.Chat chat={h.chat} typing={last && last.status === "placed"} /> : <span className="t-footnote muted">Ask about dates, dispatch or a lower price.</span>}
@@ -881,19 +913,19 @@
             <div className="row tight"><Mark size={28} /><span className="t-footnote subtle strong">Donation agent · Munchly Foods · {DN.asked}</span></div>
             <div className="row" style={{ gap: 16 }}><Product name="pack-mango" size={app.bp === "phone" ? 80 : 104} float /><div className="stack tight" style={{ gap: 4 }}><div className="t-title2">{n} packs of Mango Drink</div><span className="row tight wrap"><Badge icon="calendar">22 days left</Badge><Badge icon="map-pin">{DN.from}</Badge><Badge tone="green" icon="clipboard-check">FSSAI checklist</Badge></span></div></div>
             <p className="t-body" style={{ margin: 0 }}>{n} packs of Mango Drink, 22 days left, with the FSSAI checklist. Pickup {DN.day} {DN.hour} from {DN.from}?</p>
-            {d === "booked" ? <div className="row wrap" style={{ gap: 10 }}><Button variant="primary" size="lg" icon="check" onClick={() => Flow.act("confirmPickup")}>Confirm {DN.day} {DN.time}</Button><Button variant="secondary" size="lg" onClick={() => setLater(true)}>Suggest another time</Button></div>
+            {d === "booked" ? <div className="row wrap" style={{ gap: 10 }}><Button variant="primary" size="lg" icon="check" action={() => Flow.act("confirmPickup")} busy="Confirming…" done="Confirmed">Confirm {DN.day} {DN.time}</Button><Button variant="secondary" size="lg" onClick={() => setLater(true)}>Suggest another time</Button></div>
               : <div className="row top" style={{ gap: 10, justifyContent: "flex-end" }}><div className="t-subhead" style={{ padding: "9px 12px", borderRadius: 16, borderTopRightRadius: 6, background: "var(--primary)", color: "var(--primary-fg)", maxWidth: "85%" }}>{DN.reply}<div className="t-caption" style={{ opacity: 0.9 }}>Meera · {DN.confirmed}</div></div><Avatar person={D.PEOPLE.meera} size="sm" /></div>}
           </div></div>
           {d !== "booked" && <Card className="stack snug"><div className="card-head"><span className="card-title">Pickup</span><Badge tone="green" icon={d === "collected" ? "check" : "calendar"}>{d === "collected" ? "collected" : `${DN.date} · ${DN.time}`}</Badge></div>
             <K.VTracker items={[{ id: "req", title: "Requested by the donation agent", time: DN.asked }, { id: "conf", title: "Confirmed by Meera", time: DN.confirmed }, { id: "col", title: `Collected from ${DN.from}`, time: d === "collected" ? DN.collected : `${DN.date.split(" ")[0]} ${DN.time}` }, { id: "serve", title: `Served at ${DN.spot}`, time: "this week" }]} done={d === "collected" ? 3 : 2} current={d === "collected" ? 3 : 2} />
-            {d === "confirmed" && <Button variant="primary" size="lg" icon="package-check" onClick={() => { Flow.act("collect"); toast({ text: `${R.type} ${R.no} issued`, tone: "ok" }); }}>Mark collected</Button>}
+            {d === "confirmed" && <Button variant="primary" size="lg" icon="package-check" action={() => { Flow.act("collect"); toast({ text: `${R.type} ${R.no} issued`, tone: "ok" }); }} busy="Collecting…" done="Collected">Mark collected</Button>}
             {d === "collected" && <button type="button" className="receipt-row" onClick={() => setPaper(true)}><Icon name="receipt" size={20} /><span className="grow"><b>{R.type} {R.no}</b><span className="t-footnote">{fmt.num(R.units)} packs · {fmt.num(R.meals)} meals · shared with Munchly for its BRSR table</span></span><span className="receipt-view">View<Icon name="chevron-right" size={16} /></span></button>}
           </Card>}
           {history}
         </>}
         side={<><SectionTitle>FSSAI surplus-food checklist</SectionTitle><Card className="paper stack tight" style={{ padding: 18 }}>{["Sealed, undamaged packs", `Best before ${bb}, 22 days left`, "Ambient storage, away from sunlight", "Batch MF-2410-118 on every carton", "Donor: Munchly Foods via Lakshmi Agencies"].map(t => <div key={t} className="row top" style={{ gap: 8 }}><Icon name="square-check" size={17} style={{ color: "#167a52", marginTop: 1 }} /><span className="t-subhead">{t}</span></div>)}</Card>
           <List head="Your intake rules"><ListRow title="Days left" value="15 or more" /><ListRow title="Minimum lot" value="50 units" /><ListRow title="Logistics" value={D.SETUP.partners[0].pickup} /></List></>} />}
-      <Sheet open={paper} onClose={() => setPaper(false)} title={R.type} footer={R.pdf ? <Button variant="secondary" block icon="download">Download the PDF</Button> : null}><div className="stack snug"><S.Receipt doc={R} batch={mb} sku={D.SKUS[mb.sku]} dist={D.DISTRIBUTORS[mb.distributor]} /><span className="t-footnote muted">The same paper is in Munchly's document pack for {mb.id}.</span></div></Sheet>
+      <Sheet open={paper} onClose={() => setPaper(false)} title={R.type} footer={R.pdf ? <Button variant="secondary" block icon="download" busy="Opening the PDF…">Download the PDF</Button> : null}><div className="stack snug"><S.Receipt doc={R} batch={mb} sku={D.SKUS[mb.sku]} dist={D.DISTRIBUTORS[mb.distributor]} /><span className="t-footnote muted">The same paper is in Munchly's document pack for {mb.id}.</span></div></Sheet>
       <Sheet open={later} onClose={() => setLater(false)} title="Suggest another time" detent="medium" footer={<Button variant="primary" block onClick={() => { setLater(false); toast({ text: "Sent · the agent will confirm with Lakshmi Agencies" }); }}>Send</Button>}><div className="stack snug">{DN.slots.map(t => <label key={t} className="list-row" style={{ gridTemplateColumns: "auto 1fr", cursor: "pointer" }}><input type="radio" name="slot" defaultChecked={t === DN.slots[0]} /> {t}</label>)}</div></Sheet>
     </Screen>;
   }

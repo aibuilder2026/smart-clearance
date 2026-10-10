@@ -3,8 +3,10 @@
 	import { cartons, fmt, productName } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { CaseData } from '../../types';
-	import { possessive } from './ledger';
+	import { issuedWhen, possessive } from './ledger';
 	import Receipt from './Receipt.svelte';
+	import TallyCredit from './TallyCredit.svelte';
+	import TallyInvoice from './TallyInvoice.svelte';
 
 	// a document of the pack, set on paper (screens/finance.jsx Paper): the invoice Rakesh Traders issues, the e-way bill
 	// check, Munchly's price-support credit note, the ITC memo, the FSSAI checklist, the food bank's receipt (SC-110) and
@@ -42,6 +44,39 @@
 	const lower = (t: string) => t.charAt(0).toLowerCase() + t.slice(1);
 	const W = $derived(ws.data.workspace);
 	const kl = $derived(c.lines.kirana);
+	// issued from Tally: its e-invoice comes with it (SC-148); the hero is the batch in focus's
+	const issuedAt = $derived(issuedWhen(c, inv, !given || given.batch.id === ws.case?.batch.id ? ws.state.hero : null));
+	const n2 = (n: number) => n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+	// the price-support note's lines (SC-148: Tally's layout): what each exit sold under the dealer price, the van, the fee
+	const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
+	const supportRows = $derived([
+		...rows.map((r) =>
+			r.id === 'expiresoon'
+				? {
+						k: `ExpireSoon: ${fmt.num(r.units)} packs sold at ₹${r.price.toFixed(2)}, ₹${r.gap.toFixed(2)} under the dealer price`,
+						units: r.units,
+						rate: r.gap,
+						amount: r.amount
+					}
+				: r.id === 'kirana'
+					? {
+							k: `Kirana scheme: ${fmt.num(r.units)} packs to ${c.kiranas.length} kiranas at ₹${kl.price} effective, free packs included`,
+							units: r.units,
+							rate: r.gap,
+							amount: r.amount
+						}
+					: {
+							k: `${cap(r.short)}: ${fmt.num(r.units)} packs at ₹${r.price.toFixed(2)}, ₹${r.gap.toFixed(2)} under the dealer price`,
+							units: r.units,
+							rate: r.gap,
+							amount: r.amount
+						}
+		),
+		...(kRow
+			? [{ k: "Van round, the scheme's deliveries", units: kRow.units, rate: ws.data.rules.vanPerUnit, amount: sp.van }]
+			: []),
+		...(sp.fee ? [{ k: 'ExpireSoon listing fee', amount: sp.fee }] : [])
+	]);
 </script>
 
 {#snippet head(title: string, no: string, stamp: string, ok = false)}<div class="pp-head">
@@ -58,44 +93,15 @@
 	</div>{/snippet}
 
 {#if id === 'invoice'}
-	<div class="paper pp">
-		{@render head('Tax invoice', `${inv.no} · draft · ${fmt.date(inv.date!)}`, 'IGST')}
-		<div class="pp-parties">
-			<div>
-				<em>From</em><b>{R.name}</b><span>{R.address}</span><span class="pp-mono">GSTIN {R.gstin}</span>
-			</div>
-			<div>
-				<em>To</em><b>{B.name}</b><span>{B.address} · place of supply {B.stateCode}</span><span class="pp-mono"
-					>GSTIN {B.gstin}</span
-				>
-			</div>
-		</div>
-		<table class="pp-table">
-			<thead><tr><th>Item</th><th>HSN</th><th>Qty</th><th>Rate</th><th>Taxable</th></tr></thead>
-			<tbody
-				><tr
-					><td
-						>{c.sku.brand}
-						{c.sku.name}<br /><em>Batch {c.batch.id} · best before {fmt.date(c.batch.bestBefore)}</em></td
-					><td>{c.sku.hsn}</td><td>{inv.units}</td><td>₹{inv.price!.toFixed(2)}</td><td>{fmt.inr2(inv.taxable!)}</td
-					></tr
-				></tbody
-			>
-		</table>
-		{@render line('Taxable value', fmt.inr2(inv.taxable!))}{@render line(
-			`IGST ${inv.gstPct}%`,
-			fmt.inr2(inv.igst!),
-			false,
-			`${R.state} → ${B.state}`
-		)}{@render line('Round off', fmt.inr2(inv.roundOff!))}{@render line('Invoice total', fmt.inr2(inv.total!), true)}
-		<p class="pp-note">
-			Drafted by the Paperwork agent for {R.name} to issue from Tally. {c.sku.gstNote} The MRP of {fmt.rate(c.sku.mrp)} stays
-			printed on every pack: a discounted sale is fine, a second MRP is not (Legal Metrology).
-		</p>
-	</div>
+	<TallyInvoice {c} {inv} {issuedAt} />
 {:else if id === 'eway'}
 	<div class="paper pp">
 		{@render head('E-way bill check', `${c.batch.id} · ${c.listing.id}`, 'NOT REQUIRED', true)}{@render line(
+			'Supplier',
+			R.name,
+			false,
+			`GSTIN ${R.gstin}`
+		)}{@render line('Recipient', B.name, false, `GSTIN ${B.gstin}`)}{@render line(
 			'Consignment value with GST',
 			fmt.inr2(inv.total!)
 		)}{@render line('Threshold, inter-state', fmt.inr2(ws.data.rules.ewayThreshold))}{@render line(
@@ -109,47 +115,22 @@
 		</p>
 	</div>
 {:else if id === 'support'}
-	<div class="paper pp">
-		{@render head('Price-support credit note', `${d?.no} · ${ws.data.client.short} → ${R.name}`, 'NO GST ADJ.', true)}
-		{#each rows as r (r.id)}{#if r.id === 'expiresoon'}{@render line(
-					`${r.units} sold on ExpireSoon at ₹${r.price.toFixed(2)}`,
-					fmt.inr2(r.amount),
-					false,
-					`₹${dp} − ₹${r.price.toFixed(2)} = ₹${r.gap.toFixed(2)} a pack`
-				)}{:else if r.id === 'kirana'}{@render line(
-					`${r.units} sold to ${c.kiranas.length} kiranas at ₹${kl.price} effective`,
-					fmt.inr2(r.amount),
-					false,
-					`₹${dp} − ₹${kl.price} = ₹${r.gap.toFixed(2)}, free packs included`
-				)}{:else}{@render line(
-					`${r.units} to the ${r.short} at ₹${r.price.toFixed(2)}`,
-					fmt.inr2(r.amount),
-					false,
-					`₹${dp} − ₹${r.price.toFixed(2)} = ₹${r.gap.toFixed(2)} a pack`
-				)}{/if}
-			<!-- eslint-disable-next-line svelte/no-useless-mustaches -- a space Svelte would trim at the block's edge, between one line and the next -->
-			{' '}{/each}
-		{#if kRow}{@render line(
-				'Van delivery',
-				fmt.inr2(sp.van),
-				false,
-				`${kRow.units} × ₹${ws.data.rules.vanPerUnit.toFixed(2)}`
-			)}{/if}{#if sp.fee}{@render line('ExpireSoon listing fee', fmt.inr2(sp.fee))}{/if}{@render line(
-			'Round off',
-			fmt.inr2(d?.roundOff ?? 0)
-		)}
-		{@render line(`Credit to ${R.name}`, fmt.inr2(d?.amount ?? 0), true)}
-		<p class="pp-note">
-			A financial credit note, with no GST adjustment, so {R.name} ends whole at the ₹{dp} it paid. It covers the buy-{c
-				.scheme.buy}-get-{c.scheme.free} scheme too, so no separate scheme note is needed. {W.short} pays this instead of
-			an expiry claim of {fmt.inr(c.claim.total)}. Trued up after the return window closes on {fmt.day(c.returnBy)}.
-		</p>
-	</div>
+	<TallyCredit
+		{c}
+		no={d?.no ?? ''}
+		date={d?.date ?? inv?.date}
+		amount={d?.amount ?? 0}
+		roundOff={d?.roundOff ?? 0}
+		title="Credit Note"
+		sub="Price support · financial, no GST adjusted"
+		rows={supportRows}
+		reason={`Price support on the batch's clearance: the gap to the dealer price of ₹${dp} a pack on what each exit sold, and the costs ${R.short || R.name} met. It covers the buy-${c.scheme.buy}-get-${c.scheme.free} scheme too, instead of an expiry claim of ${fmt.inr(c.claim.total)}.`}
+	/>
 {:else if id === 'itc'}
 	<div class="paper pp">
 		{@render head(
 			'GST ITC memo',
-			`Section 17(5)(h) · ${ws.data.client.short}`,
+			`Section 17(5)(h) · ${ws.data.client.short} · GSTIN ${ws.data.client.gstin}`,
 			away ? 'ITC PART REVERSED' : 'ITC KEPT',
 			!away
 		)}{@render line('Packets sold under tax invoices', fmt.num(sold))}{@render line(
@@ -183,56 +164,89 @@
 	</div>
 {:else if id === 'expiry' && d}
 	{@const C = ws.data.client.short}
-	<div class="paper pp">
-		{#if d.policy === 'none'}{@render head('Expiry notice', `${c.batch.id} · ${R.name}`, 'NO RETURNS')}
+	{#if d.policy === 'none'}<div class="paper pp">
+			{@render head('Expiry notice', `${c.batch.id} · ${R.name}`, 'NO RETURNS')}
 			{@render line('Packs expired at the godown', fmt.num(d.units ?? 0), true)}
 			{@render line(`Credit from ${C}`, 'none')}
-		{:else if d.policy === 'godown'}<!-- destroyed at his godown (SC-139): a financial note against the agency's
-			certificate: the dealer price, the input GST he reverses on them (grossed up) and the agency's charges -->
-			{@render head(d.type, `${d.no} · ${C} → ${R.name}`, 'NO GST ADJ.', true)}
-			{@render line(
-				`${fmt.num(d.units ?? 0)} packs destroyed at the godown`,
-				fmt.inr2(d.credit ?? 0),
-				false,
-				`at the ${fmt.rate(d.dp ?? dp)} dealer price`
-			)}
-			{#if d.gst}{@render line(
-					'Input GST he reverses on them',
-					fmt.inr2(d.gst),
-					false,
-					`${d.gstPct ?? Math.round(c.sku.gst * 100)}%, section 17(5)(h)`
-				)}{/if}
-			{#if d.charges}{@render line(
-					'Destruction charges',
-					fmt.inr2(d.charges),
-					false,
-					`${d.agency || 'the agency'}, ${fmt.rate(d.charges / (d.units || 1))} a pack`
-				)}{/if}
-			{@render line(`Credit to ${R.name}`, fmt.inr2(d.amount), true)}
-		{:else}{@render head(d.type, `${d.no} · ${C} → ${R.name}`, 'NO GST ADJ.', true)}
-			{@render line(
-				`${fmt.num(d.units ?? 0)} packs expired at the godown`,
-				d.amount != null ? fmt.inr2(d.amount) : '—',
-				false,
-				'at the dealer price'
-			)}
-			{@render line(`Credit to ${R.name}`, d.amount != null ? fmt.inr2(d.amount) : '—', true)}
-			{#if d.policy === 'full-credit'}<div class="pp-sub">{possessive(C)} own costs, on destroying them</div>
-				{@render line('Disposal', fmt.inr2(d.disposal ?? 0))}
-				{@render line('EPR on the packaging', fmt.inr2(d.epr ?? 0))}
-				{@render line('Input GST reversed', fmt.inr2(d.itc ?? 0), false, 'section 17(5)(h)')}
-				{@render line(
-					'Expiry, all in',
-					fmt.inr2((d.amount ?? 0) + (d.disposal ?? 0) + (d.epr ?? 0) + (d.itc ?? 0)),
-					true
-				)}{/if}{/if}
-		<p class="pp-note">{d.note}</p>
-	</div>
+			<p class="pp-note">{d.note}</p>
+		</div>
+	{:else if d.policy === 'godown'}<!-- destroyed at his godown (SC-139): a financial note against the agency's
+		certificate: the dealer price, the input GST he reverses on them (grossed up) and the agency's charges -->
+		<TallyCredit
+			{c}
+			no={d.no}
+			date={d.date}
+			amount={d.amount}
+			title="Credit Note"
+			sub="Expiry, destroyed at the godown · financial, no GST adjusted"
+			reason={`The ${fmt.num(d.units ?? 0)} packs left at the godown on the best-before, destroyed there${d.agency ? ` by ${d.agency}` : ''}${d.certificate ? ` under certificate ${d.certificate}` : ''}.`}
+			note={d.certificate
+				? `Issued against destruction certificate ${d.certificate}, on ${possessive(W.short)} approval of the evidence.`
+				: null}
+			rows={[
+				{
+					k: `${fmt.num(d.units ?? 0)} packs destroyed at the godown, at the dealer price`,
+					units: d.units,
+					rate: d.dp ?? dp,
+					amount: d.credit ?? 0
+				},
+				...(d.gst
+					? [
+							{
+								k: `Input GST he reverses on them, ${d.gstPct ?? Math.round(c.sku.gst * 100)}%, section 17(5)(h)`,
+								amount: d.gst
+							}
+						]
+					: []),
+				...(d.charges
+					? [
+							{
+								k: `Destruction charges, ${d.agency || 'the agency'}`,
+								units: d.units,
+								rate: d.charges / (d.units || 1),
+								amount: d.charges
+							}
+						]
+					: [])
+			]}
+		/>
+	{:else}
+		<TallyCredit
+			{c}
+			no={d.no}
+			date={d.date}
+			amount={d.amount ?? 0}
+			title="Credit Note"
+			sub={`Expiry · ${d.policy === 'full-credit' ? 'full credit' : 'price support'} · financial, no GST adjusted`}
+			reason={`The ${fmt.num(d.units ?? 0)} packs left at the godown on the best-before${d.policy === 'full-credit' ? `, taken back at the dealer price; ${C} destroys them` : `: the gap to the dealer price paid, and ${R.short || R.name} destroys them`}.`}
+			rows={[
+				{
+					k: `${fmt.num(d.units ?? 0)} packs expired at the godown${d.policy === 'full-credit' ? ', at the dealer price' : ', price support'}`,
+					units: d.units,
+					rate: d.amount != null && d.units ? d.amount / d.units : null,
+					amount: d.amount ?? 0
+				}
+			]}
+		>
+			{#snippet after()}{#if d.policy === 'full-credit'}<div class="tl-grid">
+						<div class="tl-cell tl-small">
+							{possessive(C)} own costs on destroying them, not on this note: disposal ₹{n2(d.disposal ?? 0)}, EPR on
+							the packaging ₹{n2(d.epr ?? 0)}, input GST reversed under section 17(5)(h) ₹{n2(d.itc ?? 0)}; the expiry,
+							all in, ₹{n2((d.amount ?? 0) + (d.disposal ?? 0) + (d.epr ?? 0) + (d.itc ?? 0))}.
+						</div>
+					</div>{/if}{/snippet}
+		</TallyCredit>
+	{/if}
 {:else if id === 'receipt' && d}
 	<Receipt doc={d} batch={c.batch} sku={c.sku} dist={c.dist} />
 {:else if id === 'fssai'}
 	<div class="paper pp">
-		{#if d?.status === 'generated'}{@render head('FSSAI surplus-food checklist', c.batch.id, 'GENERATED', true)}
+		{#if d?.status === 'generated'}{@render head(
+				'FSSAI surplus-food checklist',
+				`${c.batch.id} · FSSAI Lic. No. ${ws.data.client.fssai}`,
+				'GENERATED',
+				true
+			)}
 			{@render line('Packs donated', fmt.num(c.plan.donated))}{@render line('Food bank', c.donation.partner.name)}
 			<p class="pp-note">
 				The batch's own checklist for the surplus food: {c.donation.units} packs from {c.donation.from || c.dist.godown}

@@ -1,0 +1,34 @@
+{
+  "name": "C-k0-yard-dawn",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "A wide establishing shot of an Indian distributor's godown yard at dawn, from a slightly raised camera at the gate: a long corrugated-roof godown with its roller door open and racks of plain kraft-brown cartons with a sage-green band inside, a small first-floor office with a window above it, a concrete yard with a weighing scale and a handcart, a tarpaulin folded by the gate, a chai stall at the wall, a neem tree at the right. Low warm sun, long shadows, light mist. A small blue truck has just arrived, and the brand's supply planner (a woman in a navy pinstripe kurta) and the distributor (a man in his fifties in a light blue checked shirt) shake hands beside it while two workers in grey T-shirts unload cartons. Cinematic 35 mm, deep focus, everything sharp.\nPhotographic, cinematic live action, shot on a full-frame camera with a 35 mm lens, shallow depth of field, natural light, true-to-life skin, fabric and metal, no illustration, no 3D render, no cartoon. India, a small-town FMCG supply chain. Every pack and carton is unbranded: plain kraft-brown cartons with a single sage-green band, matte foil snack packets in solid colours with no lettering; no logos, no printed text, no signage that can be read; shop boards and labels out of focus. No children anywhere. Colour grade: warm, filmic, slightly desaturated greens and ambers.",
+  "seed": 154030,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "cast-planner.png",
+      "sha256": "f42eb539c0d0e4d1a56c93b80fecec5af0356e497734e44b4f3c914b0626ad25"
+    },
+    {
+      "role": "reference",
+      "file": "cast-distributor.png",
+      "sha256": "1d653740137dd7ecc50ee57fd3a015ea8a6193473a43a6460758a1956d6453ae"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "latency_s": 20.0,
+  "use": "SC-154 option C keyframe 0: the yard at dawn, the master the other three times of day are edited from",
+  "model_text": null,
+  "status": "done",
+  "output": "C-k0-yard-dawn.webp 2752x1536",
+  "postprocess": "WebP q82 from C-k0-yard-dawn.png",
+  "derived_from": "C-k0-yard-dawn.png"
+}

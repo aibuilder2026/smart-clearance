@@ -1,0 +1,29 @@
+{
+  "name": "A-k0-bay-dawn-clean",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "edit",
+  "prompt": "Remove every letter, word and sign from this photograph: the chai stall's painted board at the top right becomes plain weathered wood, and any lettering on the truck or the cartons goes. Change nothing else: the same people, poses, light and framing.",
+  "seed": 154014,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "source",
+      "file": "A-k0-bay-dawn.png",
+      "sha256": "a2819723178997b7ecf9d78341672a75fce9b555b739aea80028b725c48164d5"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "latency_s": 18.8,
+  "use": "SC-154 option A keyframe 0, cleaned of lettering (the chai stall's board)",
+  "model_text": null,
+  "status": "done",
+  "output": "A-k0-bay-dawn-clean.webp 2752x1536",
+  "postprocess": "WebP q82 from A-k0-bay-dawn-clean.png",
+  "derived_from": "A-k0-bay-dawn-clean.png"
+}

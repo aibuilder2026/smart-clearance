@@ -45,6 +45,7 @@ RUN_NOW = "agent.run_now"  # the console's Run now
 RESET = "journey.reset"
 RECEIPT = "receipt"  # Paperwork lays out the food bank's receipt as a PDF, once it has collected (SC-110)
 DESTROY = "destruction"  # Vision checks the evidence of packs destroyed at the distributor's godown (SC-139)
+KIRANA = "kirana"  # Paperwork lays out the distributor's tax invoice for a kirana's order as a PDF (SC-153)
 
 
 @dataclass(frozen=True)

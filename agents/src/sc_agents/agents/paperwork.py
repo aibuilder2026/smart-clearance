@@ -12,6 +12,9 @@ figures, nothing to check against, and the PDF is complete without it.
 
 The food bank's receipt (SC-110) is issued as it collects, before the batch's pack: `journey.step receipt` lays it out
 at once, as `{client}/{ref}/receipt.pdf`, and the pack then carries it with its PDF.
+
+Each kirana's tax invoice (SC-153) is issued as the shop orders: `journey.step kirana` lays it out as
+`{client}/{ref}/kirana-{shop}.pdf`, then `PATCH …/documents/kirana.{shop} {object}`.
 """
 
 import asyncio
@@ -64,7 +67,9 @@ def _parts(state: dict[str, Any]) -> list[types.Part]:
     return [types.Part(text="THE PAPERS:\n" + json.dumps(facts, ensure_ascii=False))]
 
 
-async def _file(rc: RunCtx, case: dict[str, Any], doc: dict[str, Any], *, note: str | None, today: str) -> bool:
+async def _file(
+    rc: RunCtx, case: dict[str, Any], doc: dict[str, Any], *, note: str | None, today: str, name: str | None = None
+) -> bool:
     """one paper laid out, rendered, put in the docs bucket and reported; False when this host cannot render PDFs"""
     run = rc.run(AGENT)
     bucket = case.get("docsBucket") or rc.settings.docs_bucket
@@ -77,7 +82,7 @@ async def _file(rc: RunCtx, case: dict[str, Any], doc: dict[str, Any], *, note: 
         log.error("paperwork: cannot render PDFs here (%s); the papers stay without them", e)
         run.note = "no PDF renderer"
         return False
-    name = f"{rc.msg.client}/{case['ref']}/{doc['id']}.pdf"
+    name = name or f"{rc.msg.client}/{case['ref']}/{doc['id']}.pdf"
     await rc.deps.store.write(bucket, name, data, "application/pdf")
     await rc.report(
         AGENT,
@@ -117,6 +122,25 @@ async def _receipt(rc: RunCtx, state: dict[str, Any]) -> dict[str, Any]:
 
 def receipt(rc: RunCtx) -> list:
     return [step(rc, "paperwork_receipt", _receipt, agent=AGENT, when=_on)]
+
+
+async def _kirana(rc: RunCtx, state: dict[str, Any]) -> dict[str, Any]:
+    """a kirana's tax invoice from the distributor, laid out as the shop ordered (SC-153), dated the day it ordered"""
+    run = rc.run(AGENT)
+    case = cut_case(await rc.deps.backend.case(rc.msg.client, rc.msg.ref or ""))
+    shop = str(rc.msg.payload.get("kirana") or "")
+    inv = next((o["invoice"] for o in case.get("orders") or [] if o.get("id") == shop), None)
+    if not inv or inv.get("pdf"):  # none issued, or a redelivered event
+        run.status = "noop"
+        return halt()
+    doc = {**inv, "id": f"kirana.{shop}", "type": "Tax invoice"}
+    name = f"{rc.msg.client}/{case['ref']}/kirana-{shop}.pdf"
+    await _file(rc, case, doc, note=None, today=inv.get("date") or "", name=name)
+    return {}
+
+
+def kirana(rc: RunCtx) -> list:
+    return [step(rc, "paperwork_kirana", _kirana, agent=AGENT, when=_on)]
 
 
 def settle(rc: RunCtx) -> list:

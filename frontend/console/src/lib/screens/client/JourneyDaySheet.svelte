@@ -22,7 +22,6 @@
 	let v = $state(DAY_MINUTES);
 	let txt = $state(String(DAY_MINUTES));
 	let err = $state('');
-	let busy = $state(false);
 	// each opening starts from the client's own length; a refreshed client does not reset what is being typed
 	$effect.pre(() => {
 		if (open)
@@ -46,22 +45,21 @@
 		txt = String(n);
 		err = '';
 	}
+	// Save waits on the platform (SC-152): the sheet closes once it went through, and a refusal stays under it
 	async function save() {
 		if (err) return;
 		if (v === c.dayMinutes) return void (open = false);
 		const to = v;
-		busy = true;
-		const done = await k.act(
+		await k.act(
 			() => api.setDayMinutes(c.id, to),
 			`${c.name}: ${to >= DAY_MINUTES ? 'back to real time' : 'a journey day now lasts ' + dayWords(to)}`
 		);
-		busy = false;
-		if (done) open = false;
+		open = false;
 	}
 </script>
 
 <Sheet bind:open title="Length of a journey day" side={app.bp === 'phone' ? 'bottom' : 'center'} detent="large">
-	{#snippet footer()}<Button variant="primary" size="lg" block disabled={!!err} loading={busy} onclick={save}
+	{#snippet footer()}<Button variant="primary" size="lg" block disabled={!!err} action={save} busy="Saving…"
 			>Save</Button
 		><Button variant="ghost" block onclick={() => (open = false)}>Cancel</Button>{/snippet}
 	<div class="stack">
