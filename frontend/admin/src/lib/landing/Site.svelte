@@ -20,7 +20,7 @@
 	import Statement from './Statement.svelte';
 	import Workspace from './Workspace.svelte';
 
-	// smartclearance.com: the product's own landing page, independent of any client (design3/site, SC-60, refined in
+	// smartclearance.web.app: the product's own landing page, independent of any client (design3/site, SC-60, refined in
 	// SC-78). One day at the miniature business on film under the heading, a statement that fills in as it is read, the
 	// agents at work on the table, one in focus at a time, the product's moments as chapters, Impact's ledger, the
 	// workspace itself on a device, plans and the close. It names no client: the batch it follows is an illustrative
@@ -42,8 +42,8 @@
 	// is up. Every load plays the route; every change of theme plays dusk or dawn.
 	const theme = useTheme();
 	const PLATE_BY_NAME: Record<string, string> = {
-		'business.webp': PLATES.town.day,
-		'business-night.webp': PLATES.town.night,
+		'hero-day.webp': PLATES.hero.day,
+		'hero-night.webp': PLATES.hero.night,
 		'table.webp': PLATES.table.day,
 		'table-night.webp': PLATES.table.night
 	};
@@ -82,7 +82,7 @@
 <svelte:window onscroll={() => (scrolled = window.scrollY > 40)} />
 
 <div class={cx('site', scrolled && 'scrolled')} id="top">
-	<Nav {onfind} {ondemo} />
+	<Nav />
 	<main>
 		<Hero {f} {ondemo} />
 		<Statement

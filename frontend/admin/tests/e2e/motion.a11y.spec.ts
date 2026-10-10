@@ -9,7 +9,7 @@ test.beforeEach(async ({}, testInfo) => {
 	test.skip(testInfo.project.name !== 'desktop-light', 'motion checks run once, on desktop-light');
 });
 
-const LOADING = '.spinner, .skeleton, .spin';
+const LOADING = '.spinner, .skeleton, .spin, .btn-arc';
 const endless = (page: Page) =>
 	page.evaluate(
 		(loading) =>
@@ -64,7 +64,7 @@ const STATES: [string, (page: Page) => Promise<void>][] = [
 	[
 		'site · Book a demo open',
 		async (p) => {
-			await p.locator('.site-nav').getByRole('button', { name: 'Book a demo' }).click();
+			await p.locator('.film-ctas').getByRole('button', { name: 'Book a demo' }).click();
 		}
 	]
 ];

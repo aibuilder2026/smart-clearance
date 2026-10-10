@@ -52,17 +52,16 @@
 	// the receipt the food bank issues as it collects (SC-110); its PDF, on the live workspace, once Paperwork has laid it
 	// out
 	const receipt = $derived(d === 'collected' ? dn.receipt : null);
+	// her yes, the collection and the receipt's PDF each wait on the answer in their button (SC-152); the toast says
+	// the receipt was issued only once the collection has gone through
+	const confirm = () => ws.act('confirmPickup', undefined, { inline: true });
 	const collect = async () => {
-		await ws.act('collect');
+		await ws.act('collect', undefined, { inline: true });
 		const r = ws.case?.donation.receipt;
 		toast({ text: r ? `${r.type} ${r.no} issued` : `Receipt issued · ${n} drinks`, tone: 'ok' });
 	};
 	const pdf = async () => {
-		try {
-			window.open(await ws.documentUrl!('receipt'), '_blank', 'noopener');
-		} catch {
-			toast({ text: 'The PDF could not be opened. Try again in a moment.', tone: 'err' });
-		}
+		window.open(await ws.documentUrl!('receipt'), '_blank', 'noopener');
 	};
 	const suggest = () => {
 		later = false;
@@ -70,7 +69,8 @@
 	};
 </script>
 
-{#snippet pdfFooter()}<Button variant="secondary" block icon="download" onclick={pdf}>Download the PDF</Button
+{#snippet pdfFooter()}<Button variant="secondary" block icon="download" action={pdf} busy="Opening the PDF…"
+		>Download the PDF</Button
 	>{/snippet}
 
 <Screen
@@ -113,7 +113,7 @@
 							{dn.hour} from {dn.from}?
 						</p>
 						{#if d === 'booked'}<div class="row wrap" style="gap: 10px">
-								<Button variant="primary" size="lg" icon="check" onclick={() => ws.act('confirmPickup')}
+								<Button variant="primary" size="lg" icon="check" action={confirm} busy="Confirming…" done="Confirmed"
 									>Confirm {dn.day} {dn.time}</Button
 								><Button variant="secondary" size="lg" onclick={() => (later = true)}>Suggest another time</Button>
 							</div>{:else}<div class="row top" style="gap: 10px; justify-content: flex-end">
@@ -148,8 +148,13 @@
 							done={d === 'collected' ? 3 : 2}
 							current={d === 'collected' ? 3 : 2}
 						/>
-						{#if d === 'confirmed'}<Button variant="primary" size="lg" icon="package-check" onclick={collect}
-								>Mark collected</Button
+						{#if d === 'confirmed'}<Button
+								variant="primary"
+								size="lg"
+								icon="package-check"
+								action={collect}
+								busy="Collecting…"
+								done="Collected">Mark collected</Button
 							>{/if}
 						{#if receipt}<button type="button" class="receipt-row" onclick={() => (paper = true)}
 								><Icon name="receipt" size={20} /><span class="grow"

@@ -62,7 +62,8 @@
 				icon="send"
 				type="submit"
 				form="bd-form"
-				loading={send.isPending}>Send request</Button
+				loading={send.isPending}
+				busy="Sending…">Send request</Button
 			>{/if}{/snippet}
 	{#if sent}
 		<div class="stack" style="justify-items: center; text-align: center; padding-top: 8px">

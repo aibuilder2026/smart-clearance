@@ -59,7 +59,7 @@ test('sign-in · the page, a wrong email, and Find your workspace', async ({ pag
 	await expect(sheet).toBeVisible();
 	await sheet.getByLabel('Email or mobile number').fill('priya.deshmukh@munchly.in');
 	await sheet.getByRole('button', { name: 'Find workspaces' }).click();
-	await expect(sheet.getByText('munchly.smartclearance.com').first()).toBeVisible();
+	await expect(sheet.getByText('munchly-smartclearance.web.app').first()).toBeVisible();
 	await settled(page);
 	findings.push(...(await scan(page, 'sign-in · Find your workspace')));
 	await report(testInfo, findings);
@@ -236,7 +236,14 @@ test('Execution while the agents work, and the batch about to be settled', async
 test('Execution with every order in and the lot awarded', async ({ page }, testInfo) => {
 	await openWorkspace(page, '/execution', { stage: 7, clock: true });
 	await hold(page);
-	await report(testInfo, await scanHeld(page, 'Execution · every order in, the lot awarded'));
+	const findings: Finding[] = [...(await scanHeld(page, 'Execution · every order in, the lot awarded'))];
+	await release(page);
+	// the Lister's raw call, opened from its card (SC-151): the request and the response
+	await page.getByRole('button', { name: 'The API call' }).click();
+	await expect(page.getByRole('button', { name: 'The API call' })).toHaveAttribute('aria-expanded', 'true');
+	await hold(page);
+	findings.push(...(await scanHeld(page, "Execution · the Lister's API call open")));
+	await report(testInfo, findings);
 });
 
 test("a batch's papers: a document opened, and the pack before it is drafted", async ({ page }, testInfo) => {

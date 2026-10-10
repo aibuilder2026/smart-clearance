@@ -1,11 +1,11 @@
-// Smart-Clearance v3 · the console at console.smartclearance.com: where Smart-Clearance staff set up and run each
+// Smart-Clearance v3 · the console at smartclearance-console.web.app: where Smart-Clearance staff set up and run each
 // client's workspace. A client's agents are laid out as the stops they work, with the human approval as a locked amber
 // gate; setting up a client means deciding how far each agent may go before a person says yes.
 (function () {
   const { useState, useEffect, useLayoutEffect, useMemo, useCallback, useRef, Fragment, useSyncExternalStore } = React;
   const { motion, AnimatePresence, useReducedMotion, LayoutGroup } = Motion;
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, P = window.SC3_PLATFORM, S = window.SC3_SCREENS; const fmt = M.fmt;
-  const { cx, Icon, IconButton, Avatar, Badge, Button, Card, List, ListRow, Segmented, Switch, Stepper, Sheet, Alert, Field, Input, Select, Menu, Tabs, Check, DataTable, Empty, Mark, Wordmark, WorkspaceMark, Page, Shell, Tracker, TrackerCompact, Product, ThemeProvider, AppRoot, NoticeHost, useApp, useNotice, ModeMenuButton, Roll } = K;
+  const { cx, Icon, IconButton, Avatar, Badge, Button, Card, List, ListRow, Segmented, Switch, Stepper, Sheet, Alert, Field, Input, Select, Menu, Tabs, Check, DataTable, Empty, Mark, Wordmark, WorkspaceMark, Page, Shell, Tracker, TrackerCompact, Product, ThemeProvider, AppRoot, NoticeHost, useApp, useNotice, ModeMenuButton, Roll, SaveNote, useSaving } = K;
   const { Columns, SectionTitle } = S;
 
   P.usePersistence();
@@ -17,6 +17,38 @@
   const AGENT = id => P.AGENTS.find(a => a.id === id);
   const LEVEL = id => P.AUTONOMY.find(x => x.id === id);
   const hhmm = () => { const d = new Date(); return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); };
+
+  /* ---------- waiting on the platform (SC-152) ---------- */
+  // the kit's spinner, in the "…" button's place while a menu item's change is out
+  const Spin = ({ size = 18 }) => <svg className="btn-arc" width={size} height={size} viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5" fill="none" stroke="currentColor" strokeOpacity="0.28" strokeWidth="2.25" /><path d="M10 2.5a7.5 7.5 0 0 1 7.5 7.5" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" /></svg>;
+  const said = e => (e && e.message) || "That didn't go through. Try again.";
+  // the "…" button and its menu (MoreMenu in the port). An item that calls the platform (action, busy, done) closes the
+  // menu at once, so its wait shows where focus returns: the button turns a spinner while it is out and a tick once it
+  // went through, saying both to a screen reader; the toast says what changed, or why it did not
+  function More({ label, items, width = 240, style = { position: "relative" } }) {
+    const [open, setOpen] = useState(false); const { toast } = useNotice();
+    const job = useRef(null); const [words, setWords] = useState({ busy: "", done: "" });
+    const w = useSaving(() => job.current());
+    const working = w.phase === "wait" || w.phase === "busy" || w.phase === "slow";
+    const face = w.phase === "done" ? "done" : w.phase === "busy" || w.phase === "slow" ? "busy" : "rest";
+    const run = x => {
+      if (working || w.phase === "done") return;
+      setWords({ busy: x.busy, done: x.done });
+      job.current = () => Promise.resolve().then(x.action).catch(e => { toast({ text: said(e), tone: "err" }); throw e; });
+      w.change(0, 0, () => {});
+    };
+    const entries = items.map(x => (x && x.action ? { label: x.label, icon: x.icon, danger: x.danger, onClick: () => run(x) } : x));
+    return <span style={style}><button type="button" className="iconbtn" aria-label={label} title={label} aria-haspopup="menu" aria-expanded={open} aria-busy={working || undefined} onClick={() => setOpen(o => !o)}>{face === "busy" ? <Spin /> : face === "done" ? <Icon name="check" size={20} stroke={2.4} /> : <Icon name="ellipsis" size={20} />}</button><Menu open={open} onClose={() => setOpen(false)} items={entries} width={width} label={label} /><span className="sr-only" role="status">{face === "busy" ? words.busy : face === "done" ? words.done : ""}</span></span>;
+  }
+  // a control's SaveNote where the console keeps no room for it: no space at rest, still in the page for a screen
+  // reader (SaveLine in the port)
+  const SaveLine = ({ phase, error }) => <span className={phase === "idle" || phase === "wait" ? "sr-only" : undefined}><SaveNote phase={phase} error={error} /></span>;
+  // how far an agent may go, changed in place (the pipeline's stop, the inspector), saying Saving…, Saved, or why it
+  // went back (AutonomyControl in the port)
+  function AutonomyControl({ a, value, onAutonomy, className }) {
+    const sv = useSaving(v => onAutonomy(a, v));
+    return <><Segmented className={className} label={`${a.name}: autonomy`} options={P.AUTONOMY.map(x => ({ id: x.id, label: x.label }))} value={value} onChange={v => v !== value && sv.change(v, value, () => {})} /><SaveLine phase={sv.phase} error={sv.error} /></>;
+  }
 
   /* ---------- routes live in the hash ---------- */
   // #/overview · #/clients · #/clients/<id>/<tab> · #/new-client · #/agents · #/connectors · #/plans · #/staff · #/audit
@@ -142,7 +174,7 @@
         <img className="cs-si-plate" src={PLATE} alt="" width="1376" height="752" />
       </div>}
       <div className="si-panel"><div className="si-card">
-        <div className="si-ws"><Mark size={app.bp === "phone" ? 52 : 60} /><div className="si-ws-name">Smart-Clearance staff</div><span className="si-url"><Icon name="lock" size={12} stroke={2.2} />console.smartclearance.com</span></div>
+        <div className="si-ws"><Mark size={app.bp === "phone" ? 52 : 60} /><div className="si-ws-name">Smart-Clearance staff</div><span className="si-url"><Icon name="lock" size={12} stroke={2.2} />smartclearance-console.web.app</span></div>
         <div className="stack tight" style={{ gap: 6 }}><h1 className="si-title">Sign in</h1><p className="si-sub">Your smartclearance.com email address and your password.</p></div>
         <form className="si-form" noValidate onSubmit={submit}>
           <Field label="Work email" htmlFor="si-email"><Input id="si-email" icon="mail" type="email" value={email} onChange={edit(setEmail)} autoComplete="username" spellCheck={false} autoCapitalize="none" placeholder="name@smartclearance.com" /></Field>
@@ -152,8 +184,8 @@
           <p className="t-footnote muted cs-si-hint">New to the console? The platform team gives you your first password. Nothing is sent by email.</p>
         </form>
         <div className="si-foot">
-          <span className="t-footnote muted" style={{ maxWidth: "36ch" }}>Client teams sign in at their own workspace address, such as munchly.smartclearance.com.</span>
-          <span className="si-foot-row"><button type="button" className="btn btn-link btn-sm" onClick={() => setFind(true)}>Find a workspace</button><a className="btn btn-link btn-sm" href={LINKS.site}>smartclearance.com</a></span>
+          <span className="t-footnote muted" style={{ maxWidth: "36ch" }}>Client teams sign in at their own workspace address, such as munchly-smartclearance.web.app.</span>
+          <span className="si-foot-row"><button type="button" className="btn btn-link btn-sm" onClick={() => setFind(true)}>Find a workspace</button><a className="btn btn-link btn-sm" href={LINKS.site}>smartclearance.web.app</a></span>
           <span className="si-note">Prototype · every person and number is fictional</span>
         </div>
       </div></div>
@@ -188,8 +220,6 @@
   const LIVE_KEY = "sc3-console-live";
   const STOP_TITLES = D.STAGES.map(x => x.title);
   const two = n => String(n).padStart(2, "0");
-  const lakh = v => "₹" + (v / 100000).toFixed(1) + " lakh";
-  const kAxis = v => (v >= 100000 ? "₹" + (v / 100000).toFixed(v % 100000 ? 1 : 0) + "L" : v ? "₹" + Math.round(v / 1000) + "k" : "0");
   // the figures roll to their values, and roll again when a reading changes them (SC-49)
   function MoneyFig({ value }) { return <><span className="cur" aria-hidden="true">₹</span><Roll value={Math.round(value)} from={0} hidden /><span className="sr-only">{fmt.inr(value)}</span></>; }
   const useWidth = (ref, initial) => { const [w, setW] = useState(initial); useLayoutEffect(() => { if (!ref.current) return; const ro = new ResizeObserver(([e]) => setW(Math.max(120, Math.round(e.contentRect.width)))); ro.observe(ref.current); return () => ro.disconnect(); }, []); return w; };
@@ -209,45 +239,54 @@
   function Kpi({ label, icon, children, foot, spark, tone }) {
     return <div className={cx("cs-ov-kpi", tone)}><span className="k-label"><Icon name={icon} size={15} />{label}</span><span className="k-value">{typeof children === "number" ? <Roll value={children} from={0} /> : children}</span><span className="k-foot">{foot}</span>{spark && <Sparkline values={spark} tone={tone} />}</div>;
   }
-  // recovered a day: an area chart, one series, with a crosshair and a tooltip on hover, and a table to read it as. The
-  // line draws itself once (900 ms), the wash follows and today's dot lands; a reading moves the line (420 ms), and when
-  // today gains, what it gained shows beside its dot for a moment (SC-49)
-  function RecoveredChart({ byDay, height }) {
+  // the food a day (SC-149): the kilos closed batches kept out of landfill (sold or given) rise from one baseline, and the
+  // kilos they destroyed (no channel took them) hang under it, hatched in clay, on one scale; the space under the
+  // baseline is at least one step deep, so a day with little destroyed still reads. The bars grow once (420 ms, a few ms
+  // apart); a reading moves them (420 ms), and when today keeps more, what it kept shows over its bar for a moment
+  const kg = v => (v >= 1000 ? (v / 1000).toLocaleString("en-IN", { maximumFractionDigits: v >= 100000 ? 0 : 1 }) + " t" : Math.round(v).toLocaleString("en-IN") + " kg");
+  const kgAxis = v => (!v ? "0" : v >= 1000 ? (v / 1000).toLocaleString("en-IN", { maximumFractionDigits: 1 }) + " t" : Math.round(v) + " kg");
+  const savedShare = (kept, gone) => (kept + gone > 0 ? Math.round((kept / (kept + gone)) * 1000) / 10 : null);
+  const niceStep = v => { const p = Math.pow(10, Math.floor(Math.log10(v))); return p * ([1, 2, 2.5, 5, 10].find(m => v / p <= m) || 10); };
+  // a bar from the baseline, its far end rounded (3 px, less on a thin bar)
+  const barPath = (x, w, y0, y1) => {
+    const h = Math.abs(y1 - y0), r = Math.min(3, w / 2, h), up = y1 < y0, k = up ? 1 : -1;
+    if (h < 0.5) return `M${x} ${y0} h${w} h${-w} Z`;
+    return `M${x} ${y0} V${y1 + k * r} Q${x} ${y1} ${x + r} ${y1} H${x + w - r} Q${x + w} ${y1} ${x + w} ${y1 + k * r} V${y0} Z`;
+  };
+  function FoodChart({ byDay, height }) {
     const box = useRef(null); const w = useWidth(box, 640); const [hover, setHover] = useState(null); const reduce = useReducedMotion();
-    const today = byDay[byDay.length - 1], was = useRef(today ? today.recovered : 0); const [gain, setGain] = useState(null);
-    useEffect(() => { const v = today ? today.recovered : 0, before = was.current; was.current = v; if (v > before) { setGain({ v: v - before, at: Date.now() }); const t = setTimeout(() => setGain(null), 2600); return () => clearTimeout(t); } }, [today && today.recovered]);
-    const H = height, pl = 46, pr = 8, pt = 10, pb = 24, n = byDay.length;
-    const peak = Math.max(0, ...byDay.map(d => d.recovered));
-    const step = peak <= 0 ? 25000 : Math.pow(10, Math.floor(Math.log10(peak / 4))) * ([1, 2, 2.5, 5, 10].find(m => (peak / 4) / Math.pow(10, Math.floor(Math.log10(peak / 4))) <= m) || 10);
-    const top = Math.max(step * 4, step * Math.ceil(peak / step));
-    const X = i => pl + (n > 1 ? (i / (n - 1)) * (w - pl - pr) : (w - pl - pr) / 2), Y = v => pt + (1 - v / top) * (H - pt - pb);
-    const line = byDay.map((d, i) => `${i ? "L" : "M"}${X(i).toFixed(1)} ${Y(d.recovered).toFixed(1)}`).join(" ");
-    const ticks = []; for (let t = 0; t <= top + 1; t += top / 4) ticks.push(t);
+    const today = byDay[byDay.length - 1], was = useRef(today ? today.keptKg : 0); const [gain, setGain] = useState(null);
+    useEffect(() => { const v = today ? today.keptKg : 0, before = was.current; was.current = v; if (v > before) { setGain({ v: v - before, at: Date.now() }); const t = setTimeout(() => setGain(null), 2600); return () => clearTimeout(t); } }, [today && today.keptKg]);
+    const H = height, pl = 50, pr = 8, pt = 10, pb = 24, n = byDay.length;
+    const upMax = Math.max(0, ...byDay.map(d => d.keptKg)), downMax = Math.max(0, ...byDay.map(d => d.destroyedKg));
+    const step = upMax || downMax ? niceStep(Math.max(upMax, downMax * 2) / 4) : 250;
+    const top = Math.max(step * 2, step * Math.ceil(upMax / step)), bottom = Math.max(step, step * Math.ceil(downMax / step));
+    const Y = v => pt + ((top - v) / (top + bottom)) * (H - pt - pb), Y0 = Y(0);
+    const slot = (w - pl - pr) / n, bw = Math.max(2, Math.min(16, slot - 2)), X = i => pl + slot * (i + 0.5);
+    const ticks = []; for (let t = -bottom; t <= top + step / 2; t += step) ticks.push(Math.round(t * 100) / 100);
     const every = n <= 7 ? 1 : n <= 30 ? 7 : 14;
-    const best = byDay.reduce((a, d) => (d.recovered > a.recovered ? d : a), byDay[0] || { recovered: 0 });
-    const onMove = e => { const r = e.currentTarget.getBoundingClientRect(); const px = ((e.clientX - r.left) / r.width) * w; setHover(Math.max(0, Math.min(n - 1, Math.round(((px - pl) / (w - pl - pr)) * (n - 1))))); };
-    const total = byDay.reduce((t, d) => t + d.recovered, 0);
-    const area = `${line} L${X(n - 1)} ${Y(0)} L${X(0)} ${Y(0)} Z`, move = { duration: reduce ? 0 : 0.42, ease: EASE }, tx = X(n - 1), ty = Y(today ? today.recovered : 0);
-    return <div className="cs-ov-chart" ref={box} onMouseLeave={() => setHover(null)}>
-      <svg viewBox={`0 0 ${w} ${H}`} height={H} onMouseMove={onMove} role="img" aria-label={`Recovered a day, the last ${n} days: ${fmt.inr(total)} in all${best.recovered ? `, highest ${fmt.inr(best.recovered)} on ${best.label}` : ""}`}>
+    const onMove = e => { const r = e.currentTarget.getBoundingClientRect(); const px = ((e.clientX - r.left) / r.width) * w; setHover(Math.max(0, Math.min(n - 1, Math.floor((px - pl) / slot)))); };
+    const lag = i => (reduce ? 0 : Math.min(0.006 * i, 0.3)), grow = i => ({ duration: reduce ? 0 : 0.42, ease: EASE, delay: lag(i) });
+    const kept = byDay.reduce((t, d) => t + d.keptKg, 0), gone = byDay.reduce((t, d) => t + d.destroyedKg, 0), share = savedShare(kept, gone);
+    const label = `Food a day, the last ${n} days: ${kg(kept)} kept out of landfill and ${kg(gone)} destroyed${share == null ? "" : `, ${share}% saved`}`;
+    const h = hover != null ? byDay[hover] : null;
+    return <div className="cs-ov-chart cs-ov-food" ref={box} onMouseLeave={() => setHover(null)}>
+      <svg viewBox={`0 0 ${w} ${H}`} height={H} onMouseMove={onMove} role="img" aria-label={label}>
+        <defs><pattern id="cs-ov-hatch" patternUnits="userSpaceOnUse" width="5" height="5" patternTransform="rotate(45)"><rect width="5" height="5" className="hatch-bg" /><line x1="0" y1="0" x2="0" y2="5" className="hatch-ln" /></pattern></defs>
         {ticks.map(t => <line key={t} className={t ? "gl" : "base"} x1={pl} x2={w - pr} y1={Y(t)} y2={Y(t)} />)}
-        {ticks.map(t => <text key={"t" + t} className="ax" x={pl - 8} y={Y(t) + 4} textAnchor="end">{kAxis(t)}</text>)}
+        {ticks.map(t => <text key={"t" + t} className="ax" x={pl - 8} y={Y(t) + 4} textAnchor="end">{t < 0 ? "−" + kgAxis(-t) : kgAxis(t)}</text>)}
         {byDay.map((d, i) => (i % every === 0 && i < n - Math.ceil(every / 2)) || i === n - 1 ? <text key={d.date} className="ax" x={X(i)} y={H - 6} textAnchor={i === n - 1 ? "end" : "middle"}>{i === n - 1 ? "Today" : d.label}</text> : null)}
-        <motion.path key={"a" + n} fill="var(--primary)" initial={{ opacity: 0, d: area }} animate={{ opacity: 0.1, d: area }} transition={{ opacity: { duration: reduce ? 0 : 0.42, delay: reduce ? 0 : 0.7 }, d: move }} />
-        <motion.path key={"l" + n} fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" initial={{ pathLength: reduce ? 1 : 0, d: line }} animate={{ pathLength: 1, d: line }} transition={{ pathLength: { duration: reduce ? 0 : 0.9, ease: [0.45, 0, 0.25, 1] }, d: move }} />
-        <motion.g key={"t" + n} initial={reduce ? false : { scale: 0, opacity: 0, x: tx, y: ty }} animate={{ scale: 1, opacity: 1, x: tx, y: ty }} transition={{ scale: { delay: reduce ? 0 : 0.9, type: "spring", stiffness: 420, damping: 20 }, opacity: { delay: reduce ? 0 : 0.9, duration: 0.16 }, x: move, y: move }}>
-          {gain && !reduce && <motion.circle key={gain.at} r="5" fill="none" stroke="var(--primary)" strokeWidth="2" initial={{ scale: 1, opacity: 0.7 }} animate={{ scale: 3, opacity: 0 }} transition={{ duration: 1.2, ease: "easeOut" }} />}
-          <circle r="4.5" fill="var(--primary)" stroke="var(--surface)" strokeWidth="2" />
-        </motion.g>
-        {hover != null && <g><line x1={X(hover)} x2={X(hover)} y1={pt} y2={H - pb} stroke="var(--line-2)" /><circle cx={X(hover)} cy={Y(byDay[hover].recovered)} r="5" fill="var(--primary)" stroke="var(--surface)" strokeWidth="2" /></g>}
+        {hover != null && <rect className="col" x={X(hover) - slot / 2} y={pt} width={slot} height={H - pt - pb} />}
+        {byDay.map((d, i) => <motion.path key={"k" + n + i} className="kept" initial={reduce ? false : { d: barPath(X(i) - bw / 2, bw, Y0, Y0) }} animate={{ d: barPath(X(i) - bw / 2, bw, Y0, Y(d.keptKg)) }} transition={grow(i)} />)}
+        {byDay.map((d, i) => d.destroyedKg > 0 && <motion.path key={"d" + n + i} className="gone" initial={reduce ? false : { d: barPath(X(i) - bw / 2, bw, Y0 + 1, Y0 + 1) }} animate={{ d: barPath(X(i) - bw / 2, bw, Y0 + 1, Y(-d.destroyedKg) + 1) }} transition={Object.assign(grow(i), { delay: lag(i) + (reduce ? 0 : 0.12) })} />)}
       </svg>
-      <AnimatePresence>{gain && <motion.span key={gain.at} className="cs-ov-gain" style={{ left: `${(tx / w) * 100}%`, top: ty - 36, x: "-100%" }} initial={reduce ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: reduce ? 0 : -6 }} transition={{ duration: 0.24, ease: EASE }}>+{fmt.inr(gain.v)}</motion.span>}</AnimatePresence>
-      {hover != null && <div className="tip" style={{ left: hover > n / 2 ? `calc(${(X(hover) / w) * 100}% - 184px)` : `calc(${(X(hover) / w) * 100}% + 12px)`, top: 8 }}>
-        <b>{hover === n - 1 ? "Today" : byDay[hover].label}</b>
-        <div className="tr"><span>Recovered</span><span>{fmt.inr(byDay[hover].recovered)}</span></div>
-        <div className="tr"><span>Batches closed</span><span>{byDay[hover].closed}</span></div>
-        <div className="tr"><span>Packs closed</span><span>{byDay[hover].units.toLocaleString("en-IN")}</span></div>
-        <div className="tr"><span>Agent runs</span><span>{byDay[hover].runs}</span></div>
+      <AnimatePresence>{gain && <motion.span key={gain.at} className="cs-ov-gain" style={{ left: `${(X(n - 1) / w) * 100}%`, top: Y(today.keptKg) - 36, x: "-100%" }} initial={reduce ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: reduce ? 0 : -6 }} transition={{ duration: 0.24, ease: EASE }}>+{kg(gain.v)}</motion.span>}</AnimatePresence>
+      {h && <div className="tip" style={{ left: hover > n / 2 ? `calc(${(X(hover) / w) * 100}% - 204px)` : `calc(${(X(hover) / w) * 100}% + 12px)`, top: 8 }}>
+        <b>{hover === n - 1 ? "Today" : h.label}</b>
+        <div className="tr"><span><i className="sw kept" aria-hidden="true" />Kept out of landfill</span><span>{kg(h.keptKg)}</span></div>
+        <div className="tr"><span><i className="sw gone" aria-hidden="true" />Destroyed</span><span>{h.destroyed ? `${kg(h.destroyedKg)} · ${h.destroyed.toLocaleString("en-IN")} packs` : "none"}</span></div>
+        <div className="tr"><span>Recovered</span><span>{fmt.inr(h.recovered)}</span></div>
+        <div className="tr"><span>Batches closed</span><span>{h.closed}</span></div>
       </div>}
     </div>;
   }
@@ -332,7 +371,7 @@
     // what is waiting on a person, or on a file (as before SC-48)
     const attention = [];
     s.clients.forEach(c => {
-      c.distributors.filter(x => x.permission !== "given").forEach(x => attention.push({ id: c.id + "-" + x.id, c, tone: "amber", title: x.name, text: "one-time permission not given yet", act: "Ask again", run: () => { P.update(() => {}, { who: me.name, client: c.id, text: `Asked ${x.name} again for its one-time permission` }); toast({ text: `Reminder sent to ${x.name}`, tone: "ok" }); } }));
+      c.distributors.filter(x => x.permission !== "given").forEach(x => attention.push({ id: c.id + "-" + x.id, c, tone: "amber", title: x.name, text: "one-time permission not given yet", act: "Ask again", remind: true, run: () => { P.update(() => {}, { who: me.name, client: c.id, text: `Asked ${x.name} again for its one-time permission` }); toast({ text: `Reminder sent to ${x.name}`, tone: "ok" }); } }));
       if (c.status !== "live") { const admin = c.people.find(p => p.access === "Admin"); attention.push({ id: c.id + "-invite", c, tone: "amber", title: c.name, text: `waiting for ${admin ? admin.name : "its admin"} to accept the invitation`, act: "Open", run: () => go("clients", c.id, "people") }); }
     });
     if (s.clients.some(c => c.id === "munchly")) attention.push({ id: "gupta-export", c: client("munchly"), tone: "blue", title: "Gupta & Sons", text: "stock export arrived 2 h late today", act: "Open", run: () => go("clients", "munchly", "supply") });
@@ -351,14 +390,21 @@
       <Kpi label="Waiting for a yes" icon="hand" tone={d.waiting ? "amber" : undefined} foot={d.oldestWaiting ? <><span className="warn">oldest {d.oldestWaiting.hours} h</span> · {d.oldestWaiting.client}</> : "nothing waiting"}>{d.waiting}</Kpi>
       <Kpi label="Agent runs today" icon="bot" spark={d.byDay.map(x => x.runs)} foot={`${on} agents on`}>{d.runsToday}</Kpi>
     </div>;
-    const best = d.byDay.reduce((a, x) => (x.recovered > a.recovered ? x : a), d.byDay[0]);
+    const f = d.food, share = savedShare(f.keptKg, f.destroyedKg), shareBefore = savedShare(f.keptKgBefore, f.destroyedKgBefore);
+    const worst = d.byDay.reduce((a, x) => (x.destroyedKg > a.destroyedKg ? x : a), d.byDay[0]);
+    // the food, by day (SC-149, option A): what closed batches kept out of landfill and what they destroyed; the money
+    // stays with the Recovered figure above, and in the tooltip and the table
     const trend = <section className="cs-ov-card">
-      <div className="cs-ov-head"><div><div className="t">Recovered, by day</div><div className="s">Every client · what closed batches recovered</div></div>
+      <div className="cs-ov-head"><div><div className="t">Food, by day</div><div className="s">Every client · what closed batches kept out of landfill, and what they destroyed</div></div>
         <Segmented label="Range" value={String(days)} onChange={v => setDays(Number(v))} options={P.RANGES.map(n => ({ id: String(n), label: `${n} days` }))} /></div>
-      <div className="cs-ov-big"><MoneyFig value={d.recovered} /> <span className="cs-ov-in">in {days} days</span></div>
-      {asTable ? <div className="cs-ov-daytable"><DataTable label="Recovered, by day" rows={d.byDay.slice().reverse()} rowKey="date" dense columns={[{ key: "label", label: "Day" }, { key: "recovered", label: "Recovered", num: true, render: x => fmt.inr(x.recovered) }, { key: "closed", label: "Closed", num: true }, { key: "units", label: "Packs", num: true, render: x => x.units.toLocaleString("en-IN") }, { key: "runs", label: "Runs", num: true }]} /></div>
-        : <RecoveredChart byDay={d.byDay} height={phone ? 180 : 210} />}
-      <div className="cs-ov-foot"><span>{best && best.recovered ? `Highest ${fmt.inr(best.recovered)} on ${best.label}` : "Nothing recovered yet in this range"}{d.recoveredBefore ? ` · ${lakh(d.recoveredBefore)} the ${days} days before` : ""}</span><Button size="sm" variant="link" icon={asTable ? "chart-line" : "file-spreadsheet"} onClick={() => setAsTable(!asTable)}>{asTable ? "Show as a chart" : "Show as a table"}</Button></div>
+      <div className="cs-ov-food-big">
+        <span className="fig"><b>{kg(f.keptKg)}</b><span>kept out of landfill</span></span>
+        <span className={cx("fig", f.destroyedKg > 0 && "gone")}><b>{kg(f.destroyedKg)}</b><span>destroyed</span></span>
+        {share != null && <span className="share">{share}% of the food saved</span>}</div>
+      <ul className="cs-ov-legend" aria-label="Legend"><li><i className="sw kept" aria-hidden="true" />Kept out of landfill (sold or given)</li><li><i className="sw gone" aria-hidden="true" />Destroyed (no channel took it)</li></ul>
+      {asTable ? <div className="cs-ov-daytable"><DataTable label="Food, by day" rows={d.byDay.slice().reverse()} rowKey="date" dense columns={[{ key: "label", label: "Day" }, { key: "keptKg", label: "Kept out", num: true, render: x => kg(x.keptKg) }, { key: "destroyedKg", label: "Destroyed", num: true, render: x => (x.destroyedKg ? kg(x.destroyedKg) : "none") }, { key: "destroyed", label: "Packs destroyed", num: true, render: x => x.destroyed.toLocaleString("en-IN") }, { key: "recovered", label: "Recovered", num: true, render: x => fmt.inr(x.recovered) }, { key: "closed", label: "Closed", num: true }]} /></div>
+        : <FoodChart byDay={d.byDay} height={phone ? 200 : 230} />}
+      <div className="cs-ov-foot"><span>{share == null ? "Nothing closed in this range" : worst && worst.destroyedKg ? `Most destroyed ${kg(worst.destroyedKg)} on ${worst.label}` : "Nothing destroyed in this range"}{shareBefore != null ? ` · ${shareBefore}% saved the ${days} days before` : ""}</span><Button size="sm" variant="link" icon={asTable ? "chart-line" : "file-spreadsheet"} onClick={() => setAsTable(!asTable)}>{asTable ? "Show as a chart" : "Show as a table"}</Button></div>
     </section>;
     const agents = <AgentsAtWork d={d} run={s.runs[0]} paused={paused} client={client} value={q.status === "in-flight" ? q.stop : null} onPick={i => set({ status: "in-flight", stop: i })} />;
     const STATUS = [{ id: "in-flight", label: "In flight", n: page.counts.inFlight }, { id: "waiting", label: "Waiting for a yes", n: page.counts.waiting }, { id: "closed", label: "Closed", n: page.counts.closed }];
@@ -395,11 +441,11 @@
       {filters}{table}</div>;
     const lists = <>
       <div className="stack" style={{ gap: 12 }}><SectionTitle sub="Waiting on a person, or on a file">Needs attention</SectionTitle>
-        {attention.length ? <List>{attention.map(x => <ListRow key={x.id} leading={<span className={cx("cs-att", x.tone)} aria-hidden="true" />} title={x.title} sub={`${x.c.name} · ${x.text}`} value={<Button size="sm" variant="secondary" onClick={x.run}>{x.act}</Button>} />)}</List> : <Card><Empty icon="circle-check" title="Nothing is waiting" body="Every client's partners have given their permissions." /></Card>}</div>
-      <div className="stack" style={{ gap: 12 }}><SectionTitle sub="From Book a demo on smartclearance.com">Demo requests</SectionTitle>
+        {attention.length ? <List>{attention.map(x => <ListRow key={x.id} leading={<span className={cx("cs-att", x.tone)} aria-hidden="true" />} title={x.title} sub={`${x.c.name} · ${x.text}`} value={x.remind ? <Button size="sm" variant="secondary" action={x.run} busy="Sending the reminder…" done="Reminder sent">{x.act}</Button> : <Button size="sm" variant="secondary" onClick={x.run}>{x.act}</Button>} />)}</List> : <Card><Empty icon="circle-check" title="Nothing is waiting" body="Every client's partners have given their permissions." /></Card>}</div>
+      <div className="stack" style={{ gap: 12 }}><SectionTitle sub="From Book a demo on smartclearance.web.app">Demo requests</SectionTitle>
         {(s.requests || []).length ? <List>{s.requests.map(r => <ListRow key={r.id} icon="mail" iconTone="soft" title={r.company} sub={[r.name, r.email, r.makes, r.plan && `${r.plan} plan`, r.at].filter(Boolean).join(" · ")}
           value={r.status === "set up" ? <Badge size="sm" tone="green" icon="check">set up</Badge> : <Button size="sm" variant="secondary" onClick={() => startFrom(r)}>Set up</Button>} />)}</List>
-          : <Card><Empty icon="mail" title="No requests yet" body="When someone books a demo on smartclearance.com, the request lands here, ready to become a client." /></Card>}</div>
+          : <Card><Empty icon="mail" title="No requests yet" body="When someone books a demo on smartclearance.web.app, the request lands here, ready to become a client." /></Card>}</div>
       <div className="stack" style={{ gap: 12 }}><SectionTitle sub="The latest, as they land">Agent runs today</SectionTitle>
         {s.runs.length ? <List>{s.runs.slice(0, 5).map((r, i) => { const a = AGENT(r.agent); const c = client(r.client); return <ListRow key={i} leading={<span className="mono t-footnote cs-time">{r.at}</span>} title={`${a.name} · ${c ? c.name : r.client}`} sub={r.text} />; })}</List>
           : <Card><Empty icon="bot" title="No runs yet today" body="Each client's agents run on their own schedule." /></Card>}</div>
@@ -469,7 +515,7 @@
       onClose();
     };
     return <Sheet open={open} onClose={onClose} title="Length of a journey day" side={app.bp === "phone" ? "bottom" : "center"} detent="large"
-      footer={<><Button variant="primary" size="lg" block disabled={!!err} onClick={save}>Save</Button><Button variant="ghost" block onClick={onClose}>Cancel</Button></>}>
+      footer={<><Button variant="primary" size="lg" block disabled={!!err} action={save} busy="Saving…">Save</Button><Button variant="ghost" block onClick={onClose}>Cancel</Button></>}>
       <div className="stack">
         <p className="t-subhead muted" style={{ margin: 0 }}>How many minutes of real time one day of {P.poss(c.name)} journey lasts. The agents' schedules, the offer windows and every time in the workspace follow it.</p>
         <fieldset className="cs-jd-presets"><legend className="sr-only">Presets</legend>{P.DAY_PRESETS.map(p => <label key={p.id} className={cx("cs-jd-preset", v === p.id && "on")}><input type="radio" name="jd-preset" checked={v === p.id} onChange={() => pick(p.id)} /><span className="cs-jd-p-n">{p.label}</span><span className="cs-jd-p-v tnum">{p.id.toLocaleString("en-IN")} min</span><span className="cs-jd-p-s">{p.sub}</span>{v === p.id && <Icon name="check" size={16} stroke={2.4} />}</label>)}</fieldset>
@@ -484,7 +530,7 @@
   const TABS =[{ id: "agents", label: "Agents" }, { id: "supply", label: "Supply chain" }, { id: "rules", label: "Channels & rules" }, { id: "people", label: "People" }, { id: "integrations", label: "Integrations" }, { id: "plan", label: "Plan" }, { id: "audit", label: "Audit" }];
   function ClientPage({ id, tab, go, me }) {
     const s = usePlatform(); const app = useApp(); const c = s.clients.find(x => x.id === id);
-    const [menu, setMenu] = useState(false); const [pause, setPause] = useState(false); const [clock, setClock] = useState(false); const [reset, setReset] = useState(false); const { toast } = useNotice();
+    const [pause, setPause] = useState(false); const [clock, setClock] = useState(false); const [reset, setReset] = useState(false); const { toast } = useNotice();
     if (!c) return <Screen title="No such client" back="Clients" onBack={() => go("clients")}><Card><Empty icon="search" title="This client isn't set up" body="It may have been removed when the prototype's data was reset." action={<Button onClick={() => go("clients")}>All clients</Button>} /></Card></Screen>;
     const t = TABS.some(x => x.id === tab) ? tab : "agents";
     const allOff = agentsOn(c) === 0;
@@ -492,12 +538,12 @@
     const goLive = () => { P.update(d => { const x = d.clients.find(y => y.id === c.id); x.status = "live"; x.since = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }); }, { who: me.name, client: c.id, text: `Moved ${c.name} to Live on the ${planName(c.plan)} plan` }); toast({ text: `${c.name} is live`, tone: "ok" }); };
     const items = [
       c.id === "munchly" ? { label: "Open the workspace", icon: "external-link", onClick: () => { window.open(LINKS.app, "_blank", "noopener"); } } : null,
-      c.status !== "live" ? { label: "Go live", icon: "circle-play", onClick: goLive } : null,
-      allOff ? { label: "Resume every agent", icon: "play", onClick: () => setAll(true) } : { label: "Pause every agent", icon: "pause", danger: true, onClick: () => setPause(true) },
+      c.status !== "live" ? { label: "Go live", icon: "circle-play", action: goLive, busy: "Going live…", done: "Live" } : null,
+      allOff ? { label: "Resume every agent", icon: "play", action: () => setAll(true), busy: "Resuming agents…", done: "Agents resumed" } : { label: "Pause every agent", icon: "pause", danger: true, onClick: () => setPause(true) },
       P.journey(s, c.id).live ? { label: "Reset journey…", icon: "rotate-ccw", danger: true, onClick: () => setReset(true) } : null,
     ];
     return <Screen title={c.name} sub={`${c.domain} · ${planName(c.plan)}${c.since ? " since " + c.since : ""}`} back="Clients" onBack={() => go("clients")}
-      actions={<span style={{ position: "relative" }}><IconButton icon="ellipsis" label={`Actions for ${c.name}`} aria-haspopup="menu" aria-expanded={menu} onClick={() => setMenu(m => !m)} /><Menu open={menu} onClose={() => setMenu(false)} items={items} width={230} label={`Actions for ${c.name}`} /></span>}>
+      actions={<More label={`Actions for ${c.name}`} items={items} width={230} />}>
       <div className="stack" style={{ gap: 18 }}>
         <div className="cs-head">
           <WorkspaceMark ws={c} size={app.bp === "phone" ? 48 : 60} />
@@ -519,7 +565,7 @@
       </div>
       <JourneyDaySheet c={c} me={me} open={clock} onClose={() => setClock(false)} />
       <ResetJourneySheet c={c} me={me} open={reset} onClose={() => setReset(false)} />
-      <Alert open={pause} onClose={() => setPause(false)} title={`Pause every agent for ${c.name}?`} message="Nothing new is detected, priced, listed or sent until you resume. Plans already approved stay where they are." actions={[{ label: "Cancel" }, { label: "Pause", danger: true, strong: true, onClick: () => setAll(false) }]} />
+      <Alert open={pause} onClose={() => setPause(false)} title={`Pause every agent for ${c.name}?`} message="Nothing new is detected, priced, listed or sent until you resume. Plans already approved stay where they are." actions={[{ label: "Cancel" }, { label: "Pause", busy: "Pausing…", danger: true, strong: true, onClick: () => setAll(false) }]} />
     </Screen>;
   }
 
@@ -529,11 +575,11 @@
   // how long that is from now; Run now fires one at once. A timer asks first, since closing an offer early can't be
   // undone for that offer. The schedule is backend-api's (GET …/journey), here platform.js's.
   const TRIG = {
-    "data.daily": { title: "Daily load", act: "Run now", icon: "play" },
-    "watcher.daily": { title: "Daily check", act: "Run now", icon: "play" },
-    "offer.close": { title: "Offer window closes", act: "Close now", icon: "timer", every: c => `${c.rules.offerWindowHours} h after the offer went out`, ask: (t, when) => ({ title: "Close the offer window now?", message: `The kiranas' offer for ${t.ref} closes now instead of ${when}. What they did not order goes to the ExpireSoon lot while it is open, or stays at the godown. This can't be undone for this offer.` }) },
-    "listing.close": { title: "Unsold lot closes", act: "Close now", icon: "timer", every: () => "when the lot's days on ExpireSoon are up", ask: (t, when) => ({ title: "Close the unsold lot now?", message: `The ExpireSoon lot for ${t.ref} closes now instead of ${when}, and its packs stay at the godown. This can't be undone for this lot.` }) },
-    "report.due": { title: "Expiry day · report", act: "Report now", icon: "timer", every: () => "on best-before", ask: (t, when) => ({ title: "Expire it and report now?", message: `${t.ref} is treated as expired now instead of ${when}: open lines close as they stand, the papers follow, what is left at the godown settles by the client's expiry policy, and Impact writes the report. This can't be undone.` }) },
+    "data.daily": { title: "Daily load", act: "Run now", busy: "Starting…", done: "Started", icon: "play" },
+    "watcher.daily": { title: "Daily check", act: "Run now", busy: "Starting…", done: "Started", icon: "play" },
+    "offer.close": { title: "Offer window closes", act: "Close now", busy: "Closing…", done: "Closed", icon: "timer", every: c => `${c.rules.offerWindowHours} h after the offer went out`, ask: (t, when) => ({ title: "Close the offer window now?", message: `The kiranas' offer for ${t.ref} closes now instead of ${when}. What they did not order goes to the ExpireSoon lot while it is open, or stays at the godown. This can't be undone for this offer.` }) },
+    "listing.close": { title: "Unsold lot closes", act: "Close now", busy: "Closing…", done: "Closed", icon: "timer", every: () => "when the lot's days on ExpireSoon are up", ask: (t, when) => ({ title: "Close the unsold lot now?", message: `The ExpireSoon lot for ${t.ref} closes now instead of ${when}, and its packs stay at the godown. This can't be undone for this lot.` }) },
+    "report.due": { title: "Expiry day · report", act: "Report now", busy: "Reporting…", done: "Reported", icon: "timer", every: () => "on best-before", ask: (t, when) => ({ title: "Expire it and report now?", message: `${t.ref} is treated as expired now instead of ${when}: open lines close as they stand, the papers follow, what is left at the godown settles by the client's expiry policy, and Impact writes the report. This can't be undone.` }) },
   };
   const EVENT_OF = { vision: "a label photo arrives", valuer: "the label is verified", router: "the channels are priced", lister: "a plan is approved", outreach: "a plan is approved", negotiator: "a buyer bids or writes", paperwork: "a deal closes", impact: "the batch is settled" };
   const JT = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
@@ -568,7 +614,9 @@
       <span className="cs-trig-txt"><span className="cs-trig-t"><b>{words.title}</b>{t.ref && <span className="mono cs-trig-ref">{t.ref}</span>}</span>
         <span className="cs-trig-s">{sub}</span>
         {blocked && <span className="cs-trig-s cs-trig-why"><Icon name="hourglass" size={12} stroke={2.2} />{blocked}</span>}</span>
-      <span className="cs-trig-act"><Button variant="secondary" size="sm" icon={words.icon} disabled={!!blocked} onClick={() => trig.ask(t)} aria-label={`${words.act}: ${a.name}, ${words.title.toLowerCase()}${t.ref ? ", " + t.ref : ""}`}>{words.act}</Button></span>
+      <span className="cs-trig-act">{t.kind === "timer"
+        ? <Button variant="secondary" size="sm" icon={words.icon} disabled={!!blocked} onClick={() => trig.ask(t)} aria-label={`${words.act}: ${a.name}, ${words.title.toLowerCase()}${t.ref ? ", " + t.ref : ""}`}>{words.act}</Button>
+        : <Button variant="secondary" size="sm" icon={words.icon} disabled={!!blocked} action={() => trig.ask(t)} busy={words.busy} done={words.done} aria-label={`${words.act}: ${a.name}, ${words.title.toLowerCase()}${t.ref ? ", " + t.ref : ""}`}>{words.act}</Button>}</span>
     </div>;
   }
   function StopTriggers({ c, agent, trig }) {
@@ -584,7 +632,7 @@
   // a timer asks first: what it does, instead of when
   function TimerAlert({ c, trig }) {
     const t = trig.asking; const q = t ? TRIG[t.key].ask(t, journeyTime(t.due)) : { title: "", message: "" };
-    return <Alert open={!!t} onClose={trig.cancel} title={q.title} message={q.message} actions={[{ label: "Cancel" }, { label: t ? TRIG[t.key].act : "", strong: true, onClick: () => t && trig.fire(t) }]} />;
+    return <Alert open={!!t} onClose={trig.cancel} title={q.title} message={q.message} actions={[{ label: "Cancel" }, { label: t ? TRIG[t.key].act : "", busy: t ? TRIG[t.key].busy : undefined, strong: true, onClick: () => t && trig.fire(t) }]} />;
   }
   // the reset: what it does, and the day length the journey starts at (the client's own, unless another is picked)
   function ResetJourneySheet({ c, me, open, onClose }) {
@@ -597,7 +645,7 @@
       onClose();
     };
     return <Sheet open={open} onClose={onClose} title={`Start ${P.poss(c.name)} journey again?`} side={app.bp === "phone" ? "bottom" : "center"} detent="large"
-      footer={<><Button variant="destructive" size="lg" block icon="rotate-ccw" onClick={go}>Reset journey</Button><Button variant="ghost" block onClick={onClose}>Cancel</Button></>}>
+      footer={<><Button variant="destructive" size="lg" block icon="rotate-ccw" action={go} busy="Resetting the journey…">Reset journey</Button><Button variant="ghost" block onClick={onClose}>Cancel</Button></>}>
       <div className="stack">
         <p className="t-subhead muted" style={{ margin: 0 }}>Its open batches close as reset, and the story's batches start again on day 0 at 08:00. The Data agent runs at 08:30 and the Watcher at 09:00. Nothing is deleted: the audit log keeps the journey that was.</p>
         <fieldset className="cs-jd-presets"><legend className="t-footnote strong" style={{ marginBottom: 8 }}>Length of a journey day</legend>{P.DAY_PRESETS.map(p => <label key={p.id} className={cx("cs-jd-preset", v === p.id && "on")}><input type="radio" name="reset-day" checked={v === p.id} onChange={() => setV(p.id)} /><span className="cs-jd-p-n">{p.label}{p.id === c.dayMinutes ? " · now" : ""}</span><span className="cs-jd-p-v tnum">{p.id.toLocaleString("en-IN")} min</span><span className="cs-jd-p-s">{p.sub}</span>{v === p.id && <Icon name="check" size={16} stroke={2.4} />}</label>)}</fieldset>
@@ -629,7 +677,7 @@
               <span className={cx("icontile", a.gate ? "amber" : "soft")}><Icon name={a.icon} size={17} stroke={2} /></span>
               <span className="cs-text"><span className="cs-name"><b>{a.name}</b><span className="cs-stage">{P.STAGE_NAME[a.stage]}</span>{!cfg.on && !a.gate && <Badge size="sm">Off</Badge>}</span><span className="cs-sum">{a.gate ? P.summary("gate", cfg.settings, c) : a.job.charAt(0).toLowerCase() + a.job.slice(1) + " · " + P.summary(a.id, cfg.settings, c)}</span></span>
             </button>
-            <div className="cs-ctl">{a.gate ? <Badge tone="amber" icon="lock">Always on</Badge> : compact ? <Badge size="sm" tone={cfg.autonomy === "act" ? "green" : undefined}>{LEVEL(cfg.autonomy).label}</Badge> : <Segmented className="sm" label={`${a.name}: autonomy`} options={P.AUTONOMY.map(x => ({ id: x.id, label: x.label }))} value={cfg.autonomy} onChange={v => onAutonomy(a, v)} />}</div>
+            <div className="cs-ctl">{a.gate ? <Badge tone="amber" icon="lock">Always on</Badge> : compact ? <Badge size="sm" tone={cfg.autonomy === "act" ? "green" : undefined}>{LEVEL(cfg.autonomy).label}</Badge> : <AutonomyControl className="sm" a={a} value={cfg.autonomy} onAutonomy={onAutonomy} />}</div>
           </div></div>
           {trig && <StopTriggers c={c} agent={a.id} trig={trig} />}
         </li>; })}
@@ -648,17 +696,18 @@
       toast({ text: `${a.name} saved for ${c.name}`, tone: "ok" });
     };
     const toggle = v => P.update(d => { d.clients.find(x => x.id === c.id).agents[id].on = v; }, { who: me.name, client: c.id, text: `${v ? "Switched on" : "Switched off"} the ${a.name} agent for ${c.name}` });
+    const on = useSaving(toggle);
     return <div className="stack cs-insp" style={{ gap: 16 }}>
       <div className="row" style={{ gap: 12 }}><span className={cx("icontile", a.gate ? "amber" : "")} style={{ width: 42, height: 42, borderRadius: 12 }}><Icon name={a.icon} size={21} stroke={2} /></span><div className="stack tight" style={{ gap: 2 }}><b className="t-title3">{a.name}</b><span className="t-footnote subtle">{P.STAGE_NAME[a.stage]} · {a.gate ? "a person, always" : a.model + " on Vertex AI"}</span></div></div>
       <p className="t-subhead muted" style={{ margin: 0 }}>{a.job}.</p>
       {a.gate ? <div className="cs-gate-note"><Icon name="lock" size={16} stroke={2.2} /><span>Every plan waits for one person's approval, with the money on screen, for every client. It can't be switched off.</span></div> : <>
-        <List><ListRow title="On" sub={cfg.on ? "Runs for this client" : "Skipped; the stops around it carry on"} value={<Switch checked={cfg.on} onChange={toggle} label={`${a.name} on for ${c.name}`} />} /></List>
-        <div className="stack tight" style={{ gap: 8 }}><span className="t-footnote strong">Autonomy</span><Segmented label={`${a.name}: autonomy`} options={P.AUTONOMY.map(x => ({ id: x.id, label: x.label }))} value={cfg.autonomy} onChange={v => onAutonomy(a, v)} /><span className="t-footnote subtle">{LEVEL(cfg.autonomy).text}.</span></div>
+        <List><ListRow title="On" sub={cfg.on ? "Runs for this client" : "Skipped; the stops around it carry on"} value={<span className="row tight"><SaveLine phase={on.phase} error={on.error} /><Switch checked={cfg.on} onChange={v => on.change(v, cfg.on, () => {})} label={`${a.name} on for ${c.name}`} /></span>} /></List>
+        <div className="stack tight" style={{ gap: 8 }}><span className="t-footnote strong">Autonomy</span><AutonomyControl a={a} value={cfg.autonomy} onAutonomy={onAutonomy} /><span className="t-footnote subtle">{LEVEL(cfg.autonomy).text}.</span></div>
       </>}
       {fields.length > 0 && <div className="stack" style={{ gap: 12 }}>{fields.map(f => <SettingField key={f.key} f={f} c={c} agent={a} value={draft[f.key]} onChange={v => setDraft(x => ({ ...x, [f.key]: v }))} />)}</div>}
       {!a.gate && trig && <InspectorTriggers c={c} agent={id} trig={trig} />}
       <List><ListRow title="Last run" sub={cfg.last || "not run yet"} /></List>
-      <div className="row tight wrap"><span className="grow" /><Button variant="primary" size="sm" disabled={!dirty} onClick={save}>Save</Button></div>
+      <div className="row tight wrap"><span className="grow" /><Button variant="primary" size="sm" disabled={!dirty} action={save} busy="Saving…" done="Saved">Save</Button></div>
     </div>;
   }
   const nameOf = (c, pid) => { const p = c.people.find(x => x.id === pid); return p ? p.name : "nobody"; };
@@ -717,7 +766,7 @@
     </Card>;
   }
   function SupplyTab({ c, me }) {
-    const s = usePlatform(); const app = useApp(); const { toast } = useNotice(); const [edit, setEdit] = useState(false); const [menu, setMenu] = useState(null); const [skuId, setSkuId] = useState(null);
+    const s = usePlatform(); const app = useApp(); const { toast } = useNotice(); const [edit, setEdit] = useState(false); const [skuId, setSkuId] = useState(null);
     const differ = c.skus.filter(x => x.gates && (x.gates.blinkitDays != null || x.gates.qcomPct != null)).length;
     const open = (s.batches || []).filter(b => b.client === c.id && b.done < 9);
     const kiranas = c.distributors.reduce((t, d) => t + d.kiranas, 0);
@@ -751,7 +800,7 @@
         side={<>
           <SectionTitle sub="Each gives the agents a one-time permission to act in his name">Distributors</SectionTitle>
           {c.distributors.length ? <List>{c.distributors.map(d => <ListRow key={d.id} icon="warehouse" iconTone="soft" title={d.name} sub={`${d.city} · ${d.kiranas} kiranas · staff sale up to ${d.staffCap || c.rules.staffCap}`}
-            value={<span className="row tight">{d.permission === "given" ? <Badge size="sm" tone="green">given</Badge> : <Badge size="sm" tone="amber">not yet</Badge>}{d.permission !== "given" && <span style={{ position: "relative" }}><IconButton icon="ellipsis" label={`Actions for ${d.name}`} aria-haspopup="menu" aria-expanded={menu === d.id} onClick={() => setMenu(menu === d.id ? null : d.id)} /><Menu open={menu === d.id} onClose={() => setMenu(null)} width={240} label={`Actions for ${d.name}`} items={[{ label: "Ask for the permission again", icon: "send", onClick: () => ask(d) }]} /></span>}</span>} />)}</List>
+            value={<span className="row tight">{d.permission === "given" ? <Badge size="sm" tone="green">given</Badge> : <Badge size="sm" tone="amber">not yet</Badge>}{d.permission !== "given" && <More label={`Actions for ${d.name}`} width={240} items={[{ label: "Ask for the permission again", icon: "send", action: () => ask(d), busy: "Sending the reminder…", done: "Reminder sent" }]} />}</span>} />)}</List>
             : <Card><Empty icon="warehouse" title="No distributors yet" body="They arrive with the first stock export, and each is invited to give the agents its one-time permission." /></Card>}
         </>} />
       <SectionTitle sub={c.skus.length ? "From the latest stock export · each SKU's quick-commerce gates, and its batches' overrides" : null}>SKUs</SectionTitle>
@@ -804,7 +853,7 @@
     };
     const removeOverride = b => { P.update(d => { delete d.batches.find(x => x.client === c.id && x.ref === b.ref).override; }, { who: me.name, client: c.id, text: P.clearOverrideLine(b.ref) }); toast({ text: `${b.ref} is back on its SKU's gates`, tone: "ok" }); };
     const dist = id => (c.distributors.find(x => x.id === id) || { name: id, city: "" });
-    return <Sheet open={open} onClose={onClose} title={sku.name} side={app.bp === "phone" ? "bottom" : "side"} detent="large" footer={<Button variant="primary" size="lg" block onClick={save}>Save gates</Button>}>
+    return <Sheet open={open} onClose={onClose} title={sku.name} side={app.bp === "phone" ? "bottom" : "side"} detent="large" footer={<Button variant="primary" size="lg" block action={save} busy="Saving…">Save gates</Button>}>
       <div className="stack" style={{ gap: 18 }}>
         <div className="cs-gfacts"><span className="mono">{sku.code}</span><span>{sku.brand}</span><span><b>{fmt.inr(sku.mrp)}</b> MRP</span><span><b>{sku.lifeDays}</b>-day shelf life</span></div>
         <fieldset className="cs-gset"><legend>Quick-commerce gates for this SKU</legend>
@@ -828,10 +877,10 @@
               </div>
               <Field label="Why" htmlFor={"ob-why-" + b.ref} help="The agents and the audit log show it with the override"><textarea id={"ob-why-" + b.ref} className="input textarea" rows={2} maxLength={200} value={ovr.reason} onChange={e => setOvr({ ...ovr, reason: e.target.value, err: null })} /></Field>
               {ovr.err && <div className="cs-si-error" role="alert"><Icon name="circle-alert" size={18} /><span>{ovr.err}</span></div>}
-              <div className="row tight"><Button size="sm" variant="primary" onClick={() => saveOverride(b)}>Save the override</Button><Button size="sm" variant="ghost" onClick={() => setOvr(null)}>Cancel</Button></div>
+              <div className="row tight"><Button size="sm" variant="primary" action={() => saveOverride(b)} busy="Saving…">Save the override</Button><Button size="sm" variant="ghost" onClick={() => setOvr(null)}>Cancel</Button></div>
             </div>
             : b.override ? <div className="cs-govr">
-              <div className="cs-govr-h"><span>Overridden for this batch: {P.gateText(b.override)}</span><span className="row tight"><Button size="sm" variant="secondary" onClick={() => setOvr({ ref: b.ref, bl: b.override.blinkitDays != null ? String(b.override.blinkitDays) : "", qc: b.override.qcomPct != null ? String(b.override.qcomPct) : "", reason: b.override.reason })}>Change</Button><Button size="sm" variant="ghost" onClick={() => removeOverride(b)}>Remove</Button></span></div>
+              <div className="cs-govr-h"><span>Overridden for this batch: {P.gateText(b.override)}</span><span className="row tight"><Button size="sm" variant="secondary" onClick={() => setOvr({ ref: b.ref, bl: b.override.blinkitDays != null ? String(b.override.blinkitDays) : "", qc: b.override.qcomPct != null ? String(b.override.qcomPct) : "", reason: b.override.reason })}>Change</Button><Button size="sm" variant="ghost" action={() => removeOverride(b)} busy="Removing…" done="Removed">Remove</Button></span></div>
               <p>{b.override.reason}</p><span className="cs-gwho">{b.override.by}, {b.override.at}</span>
             </div>
             : <Button size="sm" icon="sliders-horizontal" onClick={() => setOvr({ ref: b.ref, bl: "", qc: "", reason: "" })} style={{ justifySelf: "start" }}>Override for this batch</Button>}
@@ -851,7 +900,7 @@
         { who: me.name, client: c.id, text: `Changed ${c.name}'s supply-chain profile: ${P.optLabel("route", f.route).toLowerCase()}, ${P.optLabel("owner", f.owner).toLowerCase()} owns the stock, ${P.optLabel("expiry", f.expiry).toLowerCase()}` });
       toast({ text: `${c.name}'s profile saved`, tone: "ok" }); onClose();
     };
-    return <Sheet open={open} onClose={onClose} title="Supply-chain profile" side={app.bp === "phone" ? "bottom" : "side"} detent="large" footer={<Button variant="primary" size="lg" block onClick={save}>Save profile</Button>}>
+    return <Sheet open={open} onClose={onClose} title="Supply-chain profile" side={app.bp === "phone" ? "bottom" : "side"} detent="large" footer={<Button variant="primary" size="lg" block action={save} busy="Saving…">Save profile</Button>}>
       <div className="stack" style={{ gap: 18 }}>
         {Object.keys(P.PROFILE).map(q => <Choice key={q} name={"pf-" + q} label={P.PROFILE[q].label} options={P.PROFILE[q].options} value={f[q]} onChange={v => setF({ ...f, [q]: v })} />)}
         <Field label="New SKUs: Blinkit takes stock with at least" htmlFor="pf-bl" help="days of shelf life left · SKUs with gates of their own keep them"><Input id="pf-bl" type="number" min={30} max={180} value={f.blinkitDays} onChange={e => setF({ ...f, blinkitDays: Number(e.target.value) || 30 })} /></Field>
@@ -908,7 +957,7 @@
               <ListRow title="Ask again" sub="journey days after the request, if no evidence has come in" value={<Stepper value={dz.remindDays} min={1} max={7} step={1} onChange={v => setD("remindDays", v)} label="days before he is asked again" />} />
             </List></>}
         </>} />
-      <div className="row" style={{ justifyContent: "flex-end", gap: 10 }}><Button disabled={!dirty} onClick={() => { setR(c.rules); setEx(c.exits); setDz(c.destruction); }}>Discard</Button><Button variant="primary" disabled={!dirty} onClick={save}>Save changes</Button></div>
+      <div className="row" style={{ justifyContent: "flex-end", gap: 10 }}><Button disabled={!dirty} onClick={() => { setR(c.rules); setEx(c.exits); setDz(c.destruction); }}>Discard</Button><Button variant="primary" disabled={!dirty} action={save} busy="Saving…" done="Saved">Save changes</Button></div>
     </div>;
   }
   const RULE_LABEL = { staffCap: "staff sale cap", offerWindowHours: "offer window hours", hindiOffers: "Hindi offers", requirePhoto: "label photo first",
@@ -917,24 +966,24 @@
   /* ---------- people ---------- */
   const ACCESS = ["Approver", "Admin", "Member", "Partner"];
   function PeopleTab({ c, me }) {
-    const app = useApp(); const { toast } = useNotice(); const [q, setQ] = useState(""); const [menu, setMenu] = useState(null); const [inv, setInv] = useState(false); const [accessFor, setAccessFor] = useState(null);
+    const app = useApp(); const { toast } = useNotice(); const [q, setQ] = useState(""); const [inv, setInv] = useState(false); const [accessFor, setAccessFor] = useState(null);
     const rows = c.people.filter(p => !q || (p.name + " " + p.org + " " + p.role).toLowerCase().includes(q.toLowerCase()));
     const setStatus = (p, status) => { P.update(d => { const x = d.clients.find(y => y.id === c.id).people.find(y => y.id === p.id); x.status = status; }, { who: me.name, client: c.id, text: `${status === "deactivated" ? "Deactivated" : "Reactivated"} ${p.name}` }); toast({ text: `${p.name} ${status === "deactivated" ? "deactivated" : "reactivated"}`, tone: "ok" }); };
     const setAccess = (p, a) => { P.update(d => { const x = d.clients.find(y => y.id === c.id).people.find(y => y.id === p.id); x.access = a; }, { who: me.name, client: c.id, text: `Gave ${p.name} ${a} access` }); toast({ text: `${p.name}: ${a}`, tone: "ok" }); setAccessFor(null); };
     const tone = st => st === "active" ? "green" : undefined;
-    const menuFor = p => [{ label: "Change access", icon: "user-cog", onClick: () => setAccessFor(p) }, p.status === "invited" ? { label: "Resend invitation", icon: "send", onClick: () => toast({ text: `Invitation resent to ${p.name}`, tone: "ok" }) } : null, p.status === "deactivated" ? { label: "Reactivate", icon: "user-check", onClick: () => setStatus(p, "active") } : { label: "Deactivate", icon: "user-x", danger: true, onClick: () => setStatus(p, "deactivated") }];
+    const menuFor = p => [{ label: "Change access", icon: "user-cog", onClick: () => setAccessFor(p) }, p.status === "invited" ? { label: "Resend invitation", icon: "send", action: () => toast({ text: `Invitation resent to ${p.name}`, tone: "ok" }), busy: "Resending the invitation…", done: "Invitation resent" } : null, p.status === "deactivated" ? { label: "Reactivate", icon: "user-check", action: () => setStatus(p, "active"), busy: "Reactivating…", done: "Reactivated" } : { label: "Deactivate", icon: "user-x", danger: true, action: () => setStatus(p, "deactivated"), busy: "Deactivating…", done: "Deactivated" }];
     const form = <InviteForm c={c} me={me} onDone={() => setInv(false)} />;
     return <div className="stack" style={{ gap: 16 }}>
       <div className="row wrap" style={{ gap: 10 }}><div className="grow" style={{ minWidth: 220 }}><K.SearchField value={q} onChange={setQ} placeholder="Search people" /></div><span className="row tight wrap"><Badge tone="green" dot>{c.people.filter(p => p.status === "active").length} active</Badge><Badge dot>{c.people.filter(p => p.status === "invited").length} invited</Badge></span>{app.bp !== "desktop" && <Button variant="primary" icon="user-plus" onClick={() => setInv(true)}>Invite</Button>}</div>
       <div className={app.bp === "desktop" ? "cs-people" : ""}>
-        {app.bp === "phone" ? <div className="list">{rows.map(p => <div key={p.id} className="list-row" style={{ gridTemplateColumns: "36px minmax(0,1fr) auto" }}><Avatar person={p} size="sm" /><span className="stack tight" style={{ gap: 0, minWidth: 0 }}><b className="t-subhead">{p.name}</b><span className="t-caption subtle">{p.role} · {p.provider}</span></span><span className="row tight"><Badge size="sm" tone={tone(p.status)} dot>{p.status}</Badge><span style={{ position: "relative" }}><IconButton icon="ellipsis" label={`Actions for ${p.name}`} aria-haspopup="menu" aria-expanded={menu === p.id} onClick={() => setMenu(menu === p.id ? null : p.id)} /><Menu open={menu === p.id} onClose={() => setMenu(null)} width={210} label={`Actions for ${p.name}`} items={menuFor(p)} /></span></span></div>)}</div>
+        {app.bp === "phone" ? <div className="list">{rows.map(p => <div key={p.id} className="list-row" style={{ gridTemplateColumns: "36px minmax(0,1fr) auto" }}><Avatar person={p} size="sm" /><span className="stack tight" style={{ gap: 0, minWidth: 0 }}><b className="t-subhead">{p.name}</b><span className="t-caption subtle">{p.role} · {p.provider}</span></span><span className="row tight"><Badge size="sm" tone={tone(p.status)} dot>{p.status}</Badge><More label={`Actions for ${p.name}`} width={210} items={menuFor(p)} /></span></div>)}</div>
           : <DataTable label={`People in ${c.name}'s workspace`} rows={rows} initialSort={["name", "asc"]} columns={[
             { key: "name", label: "Person", render: p => <span className="row tight"><Avatar person={p} size="sm" /><span className="stack tight" style={{ gap: 0 }}><b>{p.name}</b><span className="t-caption subtle">{p.org}</span></span></span> },
             { key: "role", label: "Role" },
             { key: "provider", label: "Signs in with" },
             { key: "access", label: "Access", render: p => p.access === "Approver" ? <Badge size="sm" tone="amber">Approver</Badge> : p.access },
             { key: "status", label: "Status", render: p => <Badge size="sm" tone={tone(p.status)} dot>{p.status}</Badge> },
-            { key: "act", label: "", sortable: false, render: p => <span style={{ position: "relative", display: "inline-block" }}><IconButton icon="ellipsis" label={`Actions for ${p.name}`} aria-haspopup="menu" aria-expanded={menu === p.id} onClick={() => setMenu(menu === p.id ? null : p.id)} /><Menu open={menu === p.id} onClose={() => setMenu(null)} width={210} label={`Actions for ${p.name}`} items={menuFor(p)} /></span> },
+            { key: "act", label: "", sortable: false, render: p => <More label={`Actions for ${p.name}`} width={210} style={{ position: "relative", display: "inline-block" }} items={menuFor(p)} /> },
           ]} />}
         {app.bp === "desktop" && <Card className="cs-invite"><b className="t-headline">Invite a person</b>{form}</Card>}
       </div>
@@ -948,22 +997,27 @@
   // the default password, which the operator hands over; nothing is ever mailed. Staff use the client's own domain, and
   // partners any address
   function InviteForm({ c, me, onDone }) {
-    const { toast } = useNotice(); const [f, setF] = useState({ name: "", contact: "", access: "Member" }); const [err, setErr] = useState("");
+    const { toast } = useNotice(); const [f, setF] = useState({ name: "", contact: "", access: "Member" }); const [err, setErr] = useState(""); const [busy, setBusy] = useState(false);
+    // Invite waits as the port's does on the platform (SC-152): here the change lands a moment after the press
     const send = () => {
+      if (busy) return;
       const contact = f.contact.trim().toLowerCase(); const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact);
       if (!f.name.trim()) { setErr("Enter a name."); return; }
       if (!email) { setErr(`Enter an email address, such as name@${c.emailDomain}.`); return; }
       if (f.access !== "Partner" && !contact.endsWith("@" + c.emailDomain)) { setErr(`${c.name} staff need a ${c.emailDomain} address. Partners can use any address.`); return; }
       const id = "p-" + Date.now().toString(36);
-      P.update(d => { d.clients.find(y => y.id === c.id).people.push({ id, name: f.name.trim(), org: f.access === "Partner" ? f.name.trim() : c.name, role: f.access === "Partner" ? "Partner" : "Staff", kind: f.access, access: f.access, provider: "Email and password", status: "invited", img: null, email: contact, phone: "" }); }, { who: me.name, client: c.id, text: `Invited ${f.name.trim()} as ${f.access}` });
-      toast({ text: `${f.name.trim()} can sign in with the default password`, tone: "ok" }); setF({ name: "", contact: "", access: "Member" }); setErr(""); onDone && onDone();
+      setBusy(true);
+      setTimeout(() => {
+        P.update(d => { d.clients.find(y => y.id === c.id).people.push({ id, name: f.name.trim(), org: f.access === "Partner" ? f.name.trim() : c.name, role: f.access === "Partner" ? "Partner" : "Staff", kind: f.access, access: f.access, provider: "Email and password", status: "invited", img: null, email: contact, phone: "" }); }, { who: me.name, client: c.id, text: `Invited ${f.name.trim()} as ${f.access}` });
+        toast({ text: `${f.name.trim()} can sign in with the default password`, tone: "ok" }); setF({ name: "", contact: "", access: "Member" }); setErr(""); setBusy(false); onDone && onDone();
+      }, 0);
     };
     return <form className="stack" style={{ gap: 12 }} onSubmit={e => { e.preventDefault(); send(); }} noValidate>
       <Field label="Name" htmlFor="inv-name"><Input id="inv-name" value={f.name} onChange={e => { setF({ ...f, name: e.target.value }); setErr(""); }} placeholder="Name or organisation" /></Field>
       <Field label="Email" htmlFor="inv-contact" error={err || null}><Input id="inv-contact" icon="mail" type="email" value={f.contact} onChange={e => { setF({ ...f, contact: e.target.value }); setErr(""); }} autoComplete="off" spellCheck={false} autoCapitalize="none" placeholder={`name@${c.emailDomain}`} /></Field>
       <Field label="Access" htmlFor="inv-access"><Select id="inv-access" value={f.access} onChange={e => setF({ ...f, access: e.target.value })}>{ACCESS.map(a => <option key={a}>{a}</option>)}</Select></Field>
       <p className="t-footnote subtle" style={{ margin: 0 }}>{c.name} staff need a {c.emailDomain} address; partners use any address. They sign in with it and the default password, which you hand over. Nothing is sent by email.</p>
-      <Button type="submit" variant="primary" icon="user-plus">Invite</Button>
+      <Button type="submit" variant="primary" icon="user-plus" loading={busy} busy="Inviting…" done="Invited">Invite</Button>
     </form>;
   }
 
@@ -974,19 +1028,20 @@
     const connect = () => { P.update(d => { d.clients.find(y => y.id === c.id).integrations.push({ id: "dms", name: "Distributor stock exports", kind: "Inventory", status: "waiting", note: "Upload link sent to the distributors" }); }, { who: me.name, client: c.id, text: `Asked ${c.name}'s distributors for their first stock export` }); toast({ text: "Upload link sent", tone: "ok" }); };
     return <div className="stack" style={{ gap: 14 }}>
       {c.integrations.length ? <List>{c.integrations.map(i => { const [tone, label] = STATUS[i.status] || [undefined, i.status]; const con = P.CONNECTORS.find(x => x.id === i.id); return <ListRow key={i.id} icon={con ? con.icon : "plug"} iconTone="soft" title={i.name} sub={`${i.kind} · ${i.note}`} value={<Badge size="sm" tone={tone} dot={!!tone}>{label}</Badge>} />; })}</List>
-        : <Card><Empty icon="plug" title="Nothing connected yet" body="Start with the distributors' stock exports; everything else follows the first file." action={<Button variant="primary" icon="file-spreadsheet" onClick={connect}>Ask for the first export</Button>} /></Card>}
+        : <Card><Empty icon="plug" title="Nothing connected yet" body="Start with the distributors' stock exports; everything else follows the first file." action={<Button variant="primary" icon="file-spreadsheet" action={connect} busy="Requesting…" done="Requested">Ask for the first export</Button>} /></Card>}
       <p className="t-footnote subtle" style={{ margin: 0 }}>Mocked connectors stand in for partner APIs in this prototype.</p>
     </div>;
   }
   function PlanTab({ c, me, onLive }) {
     const app = useApp(); const { toast } = useNotice();
+    const plan = useSaving(id => setPlan(id));
     const setPlan = id => { if (id === c.plan) return; P.update(d => { d.clients.find(y => y.id === c.id).plan = id; }, { who: me.name, client: c.id, text: `Moved ${c.name} from ${planName(c.plan)} to ${planName(id)}` }); toast({ text: `${c.name} on ${planName(id)}`, tone: "ok" }); };
     return <Columns sideWidth={420}
       main={<>
         <SectionTitle sub="Prices on request in this prototype">Plan</SectionTitle>
-        <Segmented label="Plan" options={P.PLANS.map(p => ({ id: p.id, label: p.name }))} value={c.plan} onChange={setPlan} className="lg" />
+        <Segmented label="Plan" options={P.PLANS.map(p => ({ id: p.id, label: p.name }))} value={c.plan} onChange={id => id !== c.plan && plan.change(id, c.plan, () => {})} className="lg" /><SaveLine phase={plan.phase} error={plan.error} />
         <Card><ul className="cs-scope">{(P.PLANS.find(p => p.id === c.plan) || P.PLANS[0]).scope.map(x => <li key={x}><Icon name="check" size={16} stroke={2.4} />{x}</li>)}</ul></Card>
-        {c.status !== "live" && <Card className="row wrap" style={{ gap: 12 }}><div className="stack tight grow" style={{ gap: 2 }}><b className="t-subhead">Not live yet</b><span className="t-footnote subtle">Go live once the admin has accepted and the first stock export has arrived.</span></div><Button variant="primary" icon="circle-play" onClick={onLive}>Go live</Button></Card>}
+        {c.status !== "live" && <Card className="row wrap" style={{ gap: 12 }}><div className="stack tight grow" style={{ gap: 2 }}><b className="t-subhead">Not live yet</b><span className="t-footnote subtle">Go live once the admin has accepted and the first stock export has arrived.</span></div><Button variant="primary" icon="circle-play" action={onLive} busy="Going live…">Go live</Button></Card>}
       </>}
       side={<>
         <SectionTitle>Usage</SectionTitle>
@@ -1013,7 +1068,7 @@
   function NewClient({ go, me }) {
     const s = usePlatform(); const app = useApp(); const { toast } = useNotice(); const top = useRef(null);
     const [step, setStep] = useState(0);
-    // a demo request from smartclearance.com can start the setup: its company, contact and plan come along
+    // a demo request from smartclearance.web.app can start the setup: its company, contact and plan come along
     const [f, setF] = useState(() => Object.assign({ name: "", city: "", industry: INDUSTRIES[0], colour: COLOURS[0][0], slug: "", slugTouched: false, emailDomain: "", signGoogle: true, signPhone: true, route: "distributors", owner: "distributor", expiry: "godown", exitOff: {}, preset: "standard", adminName: "", adminEmail: "", plan: "pilot", request: null }, s.draft || {}));
     useEffect(() => { if (s.draft) P.update(d => { delete d.draft; }); }, []);
     const set = patch => setF(x => ({ ...x, ...patch }));
@@ -1025,7 +1080,7 @@
     const adminOk = f.adminName.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.adminEmail.trim()) && f.adminEmail.trim().toLowerCase().endsWith("@" + f.emailDomain.trim().toLowerCase());
     const errs = [
       !f.name.trim() ? "Enter the company's name." : !f.city.trim() ? "Enter its home city." : null,
-      !/^[a-z0-9-]{2,24}$/.test(slug) ? "Use 2 to 24 lowercase letters, digits or hyphens." : taken ? `${slug}.smartclearance.com is taken.` : !domainOk ? "Enter the domain its staff email from, such as kesari.in." : !(f.signGoogle || f.signPhone) ? "Keep at least one way to sign in." : null,
+      !/^[a-z0-9-]{2,24}$/.test(slug) ? "Use 2 to 24 lowercase letters, digits or hyphens." : taken ? `${slug}-smartclearance.web.app is taken.` : !domainOk ? "Enter the domain its staff email from, such as kesari.in." : !(f.signGoogle || f.signPhone) ? "Keep at least one way to sign in." : null,
       null,
       Object.values(exits).some(x => x.on) ? null : "Keep at least one exit on.",
       null,
@@ -1038,7 +1093,7 @@
     useLayoutEffect(() => { const el = top.current; const sc = el && el.closest(".scroll"); if (sc) sc.scrollTop = 0; }, [step]);
     const create = () => {
       const client = P.buildClient({ name: f.name.trim(), city: f.city.trim(), industry: f.industry, colour: f.colour, emailDomain: f.emailDomain.trim().toLowerCase(), signGoogle: f.signGoogle, signPhone: f.signPhone, route: f.route, owner: f.owner, expiry: f.expiry, preset: f.preset, adminName: f.adminName.trim(), adminEmail: f.adminEmail.trim().toLowerCase(), plan: f.plan });
-      client.id = slug; client.domain = slug + ".smartclearance.com"; client.exits = exits;
+      client.id = slug; client.domain = slug + "-smartclearance.web.app"; client.exits = exits;
       P.update(d => { d.clients.push(client); if (f.request) d.requests = (d.requests || []).map(r => r.id === f.request ? Object.assign({}, r, { status: "set up", client: slug }) : r); }, { who: me.name, client: slug, text: `Set up ${client.name} from its supply-chain profile: ${P.optLabel("route", f.route).toLowerCase()}, ${P.optLabel("owner", f.owner).toLowerCase()} owns the stock, ${P.optLabel("expiry", f.expiry).toLowerCase()}; invited ${client.people[0].name} as admin` });
       toast({ text: `${client.name}'s workspace is set up`, tone: "ok" }); go("clients", slug, "supply", true); // the first stock export comes next (SC-84)
     };
@@ -1051,7 +1106,7 @@
         <fieldset className="cs-choice"><legend>Workspace mark</legend><div className="row wrap" style={{ gap: 14 }}><WorkspaceMark ws={preview} size={52} /><div className="cs-swatches">{COLOURS.map(([hex, name]) => <label key={hex} className={cx("cs-swatch", f.colour === hex && "on")} style={{ "--sw": hex }}><input type="radio" name="nc-colour" checked={f.colour === hex} onChange={() => set({ colour: hex })} /><span className="sr-only">{name}</span></label>)}</div></div><span className="t-footnote subtle">The client's colour stays inside its mark; the workspace keeps Smart-Clearance's theming.</span></fieldset>
       </div>,
       <div className="stack cs-form" style={{ gap: 14 }} key="workspace">
-        <Field label="Workspace address" htmlFor="nc-slug" help="Where its people sign in"><span className="cs-slug"><Input id="nc-slug" value={slug} onChange={e => set({ slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""), slugTouched: true })} spellCheck={false} /><span className="mono t-footnote subtle">.smartclearance.com</span></span></Field>
+        <Field label="Workspace address" htmlFor="nc-slug" help="Where its people sign in"><span className="cs-slug"><Input id="nc-slug" value={slug} onChange={e => set({ slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""), slugTouched: true })} spellCheck={false} /><span className="mono t-footnote subtle">-smartclearance.web.app</span></span></Field>
         <Field label="Staff email domain" htmlFor="nc-domain" help="Only addresses at this domain can sign in as staff"><Input id="nc-domain" value={f.emailDomain} onChange={e => set({ emailDomain: e.target.value })} spellCheck={false} autoCapitalize="none" placeholder="kesari.in" /></Field>
         <fieldset className="cs-choice"><legend>How people sign in</legend><div className="stack tight" style={{ gap: 8 }}><Check checked={f.signGoogle} onChange={v => set({ signGoogle: v })}>Google Workspace, for staff</Check><Check checked={f.signPhone} onChange={v => set({ signPhone: v })}>Mobile number and a one-time code, for invited distributors and kiranas</Check></div></fieldset>
       </div>,
@@ -1074,7 +1129,7 @@
       <div className="cs-two" key="review">
         <List head="Summary">
           <ListRow leading={<WorkspaceMark ws={preview} size={32} />} title={f.name} sub={`${f.city} · ${f.industry}`} />
-          <ListRow title="Address" value={<span className="mono t-footnote">{slug}.smartclearance.com</span>} />
+          <ListRow title="Address" value={<span className="mono t-footnote">{slug}-smartclearance.web.app</span>} />
           <ListRow title="Staff sign in with" sub={[f.signGoogle && `Google (${f.emailDomain})`, f.signPhone && "a one-time code, by invitation"].filter(Boolean).join("; ")} />
           <ListRow title="Supply chain" sub={`${P.optLabel("route", f.route)} · ${P.optLabel("owner", f.owner)} owns the stock · ${P.optLabel("expiry", f.expiry)}`} />
           <ListRow title="Exits" sub={P.EXITS.filter(e => exits[e.id].on).map(e => e.name).join(", ")} />
@@ -1093,7 +1148,7 @@
           <h2 id="cs-step-h" className="t-title3">{STEPS[step]}</h2>
           {body[step]}
           {tried && errs[step] && <p className="cs-err" role="alert">{errs[step]}</p>}
-          <div className="row" style={{ gap: 10, justifyContent: "flex-end", paddingTop: 6 }}>{step > 0 && <Button onClick={back}>Back</Button>}{step < STEPS.length - 1 ? <Button variant="primary" iconRight="arrow-right" onClick={next}>Continue</Button> : <Button variant="primary" icon="check" onClick={create}>Create workspace</Button>}</div>
+          <div className="row" style={{ gap: 10, justifyContent: "flex-end", paddingTop: 6 }}>{step > 0 && <Button onClick={back}>Back</Button>}{step < STEPS.length - 1 ? <Button variant="primary" iconRight="arrow-right" onClick={next}>Continue</Button> : <Button variant="primary" icon="check" action={create} busy="Creating the workspace…">Create workspace</Button>}</div>
         </section>
       </div>
     </Screen>;
@@ -1146,7 +1201,7 @@
         { key: "role", label: "Role" }, { key: "team", label: "Team" }, { key: "passkey", label: "Passkey" },
         { key: "status", label: "Status", render: x => <Badge size="sm" tone={x.status === "active" ? "green" : undefined} dot>{x.status}</Badge> },
       ]} />
-      <Sheet open={inv} onClose={() => setInv(false)} title="Invite a colleague" side={app.bp === "phone" ? "bottom" : "center"} detent="large" footer={<Button variant="primary" size="lg" block icon="send" onClick={send}>Send invitation</Button>}>
+      <Sheet open={inv} onClose={() => setInv(false)} title="Invite a colleague" side={app.bp === "phone" ? "bottom" : "center"} detent="large" footer={<Button variant="primary" size="lg" block icon="send" action={send} busy="Sending the invitation…">Send invitation</Button>}>
         <div className="stack" style={{ gap: 12 }}>
           <Field label="Name" htmlFor="st-name"><Input id="st-name" value={f.name} onChange={e => { setF({ ...f, name: e.target.value }); setErr(""); }} /></Field>
           <Field label="smartclearance.com email" htmlFor="st-email" error={err || null}><Input id="st-email" type="email" value={f.email} onChange={e => { setF({ ...f, email: e.target.value }); setErr(""); }} spellCheck={false} autoCapitalize="none" placeholder="name@smartclearance.com" /></Field>
@@ -1174,7 +1229,7 @@
         <div className="row" style={{ gap: 14 }}><Avatar person={me} size="lg" /><div className="stack tight" style={{ gap: 2 }}><b className="t-headline">{me.name}</b><span className="t-footnote subtle">{me.role} · {me.team}</span></div></div>
         <List><ListRow title="Email" value={<span className="t-footnote">{me.email}</span>} /><ListRow title="Passkey" value={<span className="t-footnote">{me.passkey}</span>} /></List>
         <div className="row tight wrap"><Button icon="log-out" onClick={onOut}>Sign out</Button><Button variant="ghost" icon="rotate-ccw" onClick={() => setReset(true)}>Reset prototype data</Button></div>
-        <Alert open={reset} onClose={() => setReset(false)} title="Reset the prototype's data?" message="Clients you set up and every change go back to the seed: Munchly Foods as the only client." actions={[{ label: "Cancel" }, { label: "Reset", danger: true, strong: true, onClick: () => { P.reset(); toast({ text: "Back to the seed data", tone: "ok" }); onClose(); } }]} />
+        <Alert open={reset} onClose={() => setReset(false)} title="Reset the prototype's data?" message="Clients you set up and every change go back to the seed: Munchly Foods as the only client." actions={[{ label: "Cancel" }, { label: "Reset", busy: "Resetting…", danger: true, strong: true, onClick: () => { P.reset(); toast({ text: "Back to the seed data", tone: "ok" }); onClose(); } }]} />
       </div>
     </Sheet>;
   }

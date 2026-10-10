@@ -107,8 +107,10 @@ async def add_sku(
     gst: float,
     life_days: int,
     gates: Mapping[str, int] | None = None,
+    kg_per_unit: float | None = None,
 ) -> None:
-    """an SKU from a stock export; gates of its own come from the export's category, or later from the console"""
+    """an SKU from a stock export; gates of its own come from the export's category, or later from the console; its
+    kilos a pack, where the export or the pack size gives them, weigh the food a batch keeps out of landfill (SC-149)"""
     g = gates or {}
     if (problem := rule.sku_gates_error(g or None)) is not None:
         raise ApiError(422, problem)
@@ -124,6 +126,7 @@ async def add_sku(
             life_days=life_days,
             gate_blinkit_days=g.get("blinkitDays"),
             gate_qcom_pct=g.get("qcomPct"),
+            kg_per_unit=kg_per_unit,
         )
     )
     await ctx.session.flush()
@@ -326,7 +329,10 @@ async def open_batch(
         await ctx.session.flush()
 
 
-async def close_batch(ctx: Ctx, client_id: str, ref: str, *, recovered: float, outcome: str) -> None:
+async def close_batch(
+    ctx: Ctx, client_id: str, ref: str, *, recovered: float, outcome: str, destroyed: int = 0
+) -> None:
+    """a batch closes with what it recovered, and the packs no channel took and that were destroyed (SC-149)"""
     b = await ctx.session.get(m.Batch, (client_id, ref), with_for_update=True)
     if b is None:
         raise not_found("batch")
@@ -337,7 +343,9 @@ async def close_batch(ctx: Ctx, client_id: str, ref: str, *, recovered: float, o
     e = rule.effective({"blinkitDays": c.gate_blinkit_days, "qcomPct": c.gate_qcom_pct}, _own(x), _override(b))
     b.judged_blinkit_days, b.judged_qcom_pct = e.blinkit_days, e.qcom_pct
     b.stage_done = b.stage_current = 9
-    b.recovered, b.outcome, b.closed_at = recovered, outcome, ctx.clock.now()
+    if not 0 <= destroyed <= b.units:
+        raise ApiError(422, f"A batch of {b.units} packs can't have destroyed {destroyed}.")
+    b.recovered, b.outcome, b.destroyed, b.closed_at = recovered, outcome, destroyed, ctx.clock.now()
     b.stage_at = b.closed_at
     await ctx.session.flush()
 

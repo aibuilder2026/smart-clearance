@@ -68,13 +68,15 @@
 		};
 	});
 
+	// each button waits on the platform (SC-152): the sheet or the override's form closes once it went through, and a
+	// refusal stays under the button; what the form itself finds wrong is said beside its fields, as before
 	async function save() {
 		if (!f || !sku) return;
 		const g: SkuGates | null = f.own === 'own' ? { blinkitDays: num(f.bl), qcomPct: num(f.qc) } : null;
 		const problem = skuGatesError(g);
 		if (problem) return void (err = problem);
-		const done = await k.act(() => api.saveSkuGates(c.id, sku.id, g), `${sku.name}'s gates saved`);
-		if (done) open = false;
+		await k.act(() => api.saveSkuGates(c.id, sku.id, g), `${sku.name}'s gates saved`);
+		open = false;
 	}
 	async function saveOverride(ref: string) {
 		if (!ovr) return;
@@ -86,7 +88,8 @@
 			...(input.blinkitDays != null ? { blinkitDays: input.blinkitDays } : {}),
 			...(input.qcomPct != null ? { qcomPct: input.qcomPct } : {})
 		};
-		if (await k.act(() => api.overrideBatch(c.id, ref, clean), `${ref}'s override saved`)) ovr = null;
+		await k.act(() => api.overrideBatch(c.id, ref, clean), `${ref}'s override saved`);
+		ovr = null;
 	}
 	const removeOverride = (ref: string) =>
 		k.act(() => api.clearBatchOverride(c.id, ref), `${ref} is back on its SKU's gates`);
@@ -102,7 +105,8 @@
 </script>
 
 <Sheet bind:open title={sku?.name ?? ''} side={app.bp === 'phone' ? 'bottom' : 'side'} detent="large">
-	{#snippet footer()}<Button variant="primary" size="lg" block onclick={save}>Save gates</Button>{/snippet}
+	{#snippet footer()}<Button variant="primary" size="lg" block action={save} busy="Saving…">Save gates</Button
+		>{/snippet}
 	{#if sku && f}
 		<div class="stack" style="gap: 18px">
 			<div class="cs-gfacts">
@@ -236,7 +240,8 @@
 									<Icon name="circle-alert" size={18} /><span>{ovr.err}</span>
 								</div>{/if}
 							<div class="row tight">
-								<Button size="sm" variant="primary" onclick={() => saveOverride(b.ref)}>Save the override</Button
+								<Button size="sm" variant="primary" action={() => saveOverride(b.ref)} busy="Saving…"
+									>Save the override</Button
 								><Button size="sm" variant="ghost" onclick={() => (ovr = null)}>Cancel</Button>
 							</div>
 						</div>
@@ -247,7 +252,9 @@
 									><Button size="sm" variant="secondary" onclick={() => change(b)}>Change</Button><Button
 										size="sm"
 										variant="ghost"
-										onclick={() => removeOverride(b.ref)}>Remove</Button
+										action={() => removeOverride(b.ref)}
+										busy="Removing…"
+										done="Removed">Remove</Button
 									></span
 								>
 							</div>

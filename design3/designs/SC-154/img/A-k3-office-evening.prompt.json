@@ -1,0 +1,34 @@
+{
+  "name": "A-k3-office-evening",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "Evening in a small first-floor office above the godown, a warm desk lamp and the last blue light in the window. The brand's supply planner (the woman in the navy pinstripe kurta) and the distributor (the man in the light blue checked shirt, glasses now on) sit across a desk of neat paper documents with no readable text, a tablet showing only a soft green form with no legible words, two steel chai tumblers; they raise the tumblers to each other, relieved. A ceiling fan, a steel almirah, a calendar out of focus. Cinematic 35 mm, shallow depth of field, intimate.\nPhotographic, cinematic live action, shot on a full-frame camera with a 35 mm lens, shallow depth of field, natural light, true-to-life skin, fabric and metal, no illustration, no 3D render, no cartoon. India, a small-town FMCG supply chain. Every pack and carton is unbranded: plain kraft-brown cartons with a single sage-green band, matte foil snack packets in solid colours with no lettering; no logos, no printed text, no signage that can be read; shop boards and labels out of focus. No children anywhere. Colour grade: warm, filmic, slightly desaturated greens and ambers.",
+  "seed": 154013,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "cast-planner.png",
+      "sha256": "f42eb539c0d0e4d1a56c93b80fecec5af0356e497734e44b4f3c914b0626ad25"
+    },
+    {
+      "role": "reference",
+      "file": "cast-distributor.png",
+      "sha256": "1d653740137dd7ecc50ee57fd3a015ea8a6193473a43a6460758a1956d6453ae"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "latency_s": 24.7,
+  "use": "SC-154 option A keyframe 3: the office in the evening, the first frame of clip 4",
+  "model_text": null,
+  "status": "done",
+  "output": "A-k3-office-evening.webp 2752x1536",
+  "postprocess": "WebP q82 from A-k3-office-evening.png",
+  "derived_from": "A-k3-office-evening.png"
+}

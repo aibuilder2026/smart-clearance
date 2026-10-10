@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte';
+	import { SvelteMap } from 'svelte/reactivity';
 	import { useApp } from '../../../app.svelte';
 	import Avatar from '../../../components/Avatar.svelte';
 	import Badge from '../../../components/Badge.svelte';
@@ -6,6 +8,7 @@
 	import DataTable, { type Column } from '../../../components/DataTable.svelte';
 	import Field from '../../../components/Field.svelte';
 	import Input from '../../../components/Input.svelte';
+	import SaveNote from '../../../components/SaveNote.svelte';
 	import SearchField from '../../../components/SearchField.svelte';
 	import Select from '../../../components/Select.svelte';
 	import Sheet from '../../../components/Sheet.svelte';
@@ -13,6 +16,7 @@
 	import type { IconName } from '../../../icons/registry';
 	import { isEmail } from '../../../identity';
 	import { useNotice } from '../../../notice.svelte';
+	import { Wait } from '../../../wait.svelte';
 	import { kinds, PROVIDER_ICONS, providerOf, STATUS_TONE } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { RoleId, User, UserStatus } from '../../types';
@@ -45,15 +49,31 @@
 	);
 	const choices = $derived((Object.entries(ws.data.roles) as [RoleId, string][]).filter(([k]) => k !== 'buyer'));
 
-	const setStatus = (u: User, status: UserStatus) => {
-		void ws.setUserStatus(u.id, status);
-		toast({ text: `${u.short || u.name} ${status === 'deactivated' ? 'deactivated' : 'reactivated'}`, tone: 'ok' });
+	// a change to a person saves where it shows (SC-152): their status says Saving…, then Saved, or why it stayed as it
+	// was; a role chosen in its sheet says so under the roles. The toasts only once it has gone through
+	const saving = new SvelteMap<string, Wait>();
+	const waitFor = (id: string) => {
+		let w = saving.get(id);
+		if (!w) saving.set(id, (w = new Wait({ done: () => true })));
+		return w;
 	};
+	const roleWait = new Wait();
+	onDestroy(() => {
+		saving.forEach((w) => w.stop());
+		roleWait.stop();
+	});
+	const setStatus = (u: User, status: UserStatus) =>
+		void waitFor(u.id).run(async () => {
+			await ws.setUserStatus(u.id, status, { inline: true });
+			toast({ text: `${u.short || u.name} ${status === 'deactivated' ? 'deactivated' : 'reactivated'}`, tone: 'ok' });
+		});
 	// the roles the client's own staff hold; the others are its partners'
 	const STAFF: RoleId[] = ['operator', 'admin'];
 	const domain = $derived(ws.data.workspace.emailDomain);
 	let err = $state('');
-	const send = () => {
+	// Invite waits on the answer (SC-152): the sheet closes once the invitation has gone through, and stays open with
+	// the reason under the button when it has not
+	const send = async () => {
 		const name = form.name.trim();
 		const email = form.contact.trim().toLowerCase();
 		err = '';
@@ -61,20 +81,26 @@
 		if (!isEmail(email)) return void (err = `Enter an email address, such as name@${domain}.`);
 		if (STAFF.includes(form.role) && !email.endsWith('@' + domain))
 			return void (err = `${ws.data.workspace.short} staff need a ${domain} address. Partners can use any address.`);
-		void ws.invite({ name, contact: email, role: form.role });
+		await ws.invite({ name, contact: email, role: form.role }, { inline: true });
 		invite = false;
 		form = { name: '', contact: '', role: 'retailer' };
 		toast({ text: `${name} can sign in with the default password`, tone: 'ok' });
 	};
-	const setRole = (u: User, k: RoleId) => {
-		void ws.setUserRole(u.id, k);
-		toast({ text: 'Role updated', tone: 'ok' });
-		roleFor = null;
+	const setRole = (u: User, k: RoleId) =>
+		void roleWait.run(async () => {
+			await ws.setUserRole(u.id, k, { inline: true });
+			toast({ text: 'Role updated', tone: 'ok' });
+			roleFor = null;
+		});
+	const chooseRole = (u: User) => {
+		if (!roleWait.working) roleWait.refuse(null);
+		roleFor = u;
 	};
 	const signInIcon = (u: User): IconName => PROVIDER_ICONS[u.provider];
 </script>
 
-{#snippet menu(u: User)}<RowMenu {u} {me} onrole={() => (roleFor = u)} onstatus={setStatus} />{/snippet}
+{#snippet menu(u: User)}<RowMenu {u} {me} onrole={() => chooseRole(u)} onstatus={setStatus} />{/snippet}
+{#snippet saved(u: User)}{@const w = saving.get(u.id)}{#if w && w.phase !== 'idle'}<SaveNote wait={w} />{/if}{/snippet}
 {#snippet inviteAction()}{#if app.bp !== 'phone'}<Button
 			variant="primary"
 			size="sm"
@@ -93,13 +119,16 @@
 	>{/snippet}
 {#snippet provider(u: User)}<span class="row tight"><Icon name={signInIcon(u)} size={15} />{providerOf(u)}</span
 	>{/snippet}
-{#snippet status(u: User)}<Badge size="sm" tone={STATUS_TONE[u.status]} dot>{u.status}</Badge>{/snippet}
+{#snippet status(u: User)}<span class="row tight wrap"
+		><Badge size="sm" tone={STATUS_TONE[u.status]} dot>{u.status}</Badge>{@render saved(u)}</span
+	>{/snippet}
 {#snippet act(u: User)}
 	<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions (the span keeps a click on the menu from reaching the row; its button takes the keyboard) -->
 	<span style="position: relative; display: inline-block" onclick={(e) => e.stopPropagation()}>{@render menu(u)}</span>
 {/snippet}
 
-{#snippet sendInvite()}<Button variant="primary" block icon="user-plus" onclick={send}>Invite</Button>{/snippet}
+{#snippet sendInvite()}<Button variant="primary" block icon="user-plus" action={send} busy="Inviting…">Invite</Button
+	>{/snippet}
 
 <Screen
 	{me}
@@ -125,8 +154,8 @@
 								>{ws.data.roles[u.role]} · {providerOf(u)}</span
 							></span
 						><span class="row tight"
-							><Badge size="sm" tone={STATUS_TONE[u.status]}>{u.status}</Badge><span style="position: relative"
-								>{@render menu(u)}</span
+							>{@render saved(u)}<Badge size="sm" tone={STATUS_TONE[u.status]}>{u.status}</Badge><span
+								style="position: relative">{@render menu(u)}</span
 							></span
 						>
 					</div>{/each}
@@ -202,9 +231,11 @@
 						type="button"
 						class="list-row"
 						style="grid-template-columns: minmax(0,1fr) auto; width: 100%; text-align: left"
+						aria-busy={roleWait.working || undefined}
 						onclick={() => setRole(u, k)}
 						><span>{v}</span>{#if u.role === k}<Icon name="check" size={18} />{/if}</button
 					>{/each}
-			</div>{/if}
+			</div>
+			{#if roleWait.phase !== 'idle'}<SaveNote wait={roleWait} />{/if}{/if}
 	</Sheet>
 </Screen>

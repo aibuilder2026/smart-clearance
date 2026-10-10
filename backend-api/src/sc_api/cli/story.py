@@ -215,6 +215,8 @@ class Story:
             )
             if d["permission"] == "given":
                 await supply.give_permission(ctx, c["id"], d["id"], record=False)
+        # each SKU's kilos a pack, as the console's seed weighs its batches (SC-149)
+        kgs = {b["sku"]: b["kg"] for b in self.state["batches"] if b["client"] == c["id"] and b.get("kg")}
         for s in c["skus"]:
             await supply.add_sku(
                 ctx,
@@ -227,6 +229,7 @@ class Story:
                 gst=s["gst"],
                 life_days=s["lifeDays"],
                 gates=s.get("gates") or None,
+                kg_per_unit=kgs.get(s["id"]),
             )
         for i in c["integrations"]:
             await supply.add_integration(

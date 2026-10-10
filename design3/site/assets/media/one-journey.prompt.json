@@ -1,0 +1,111 @@
+{
+  "name": "one-journey",
+  "model": "Veo 3.1 on Vertex AI (clips), Gemini image models (keyframes)",
+  "service": "Vertex AI",
+  "duration_s": 15.208,
+  "frame": "1920x1080",
+  "fps": 24,
+  "clips": [
+    {
+      "name": "final-1-bay-dawn-v3",
+      "model": "veo-3.1-generate-001",
+      "prompt": "Photorealistic cinematic live action, exactly as in the image: dawn at a small Indian snack factory's loading bay, low warm sun and a little haze. The woman in the navy pinstripe kurta holds her phone between them and scrolls the plan; the man in the light blue checked shirt, who wears no glasses and holds nothing, keeps his hands low, points once at her screen with one finger, looks up at her and nods, and she smiles and lowers the phone; behind them the two workers in grey T-shirts lift the last plain kraft cartons onto the blue truck and slide them in. Nobody touches their face or hair; no glasses appear anywhere. The camera dollies in very slowly toward the two of them, a gentle push, no handheld shake. Natural light, 35 mm, shallow depth of field, the people sharp. No text, no logos, no lettering, no number plate anywhere.",
+      "negative_prompt": "text, lettering, logo, brand name, label, watermark, subtitles, children",
+      "seed": 154231,
+      "resolution": "1080p",
+      "duration_s": 8,
+      "fps": 24,
+      "inputs": [
+        {
+          "role": "first",
+          "file": "A-k0-bay-dawn-v2.png",
+          "sha256": "c5dc9b54ab7f00bdb3085475e9bb63f4b286a832f4b84ed29b2064f135c4084d"
+        }
+      ],
+      "trim_s": [
+        0.2,
+        4.5
+      ],
+      "cost_usd": 1.6,
+      "latency_s": 130.6
+    },
+    {
+      "name": "final-2-godown-noon",
+      "model": "veo-3.1-generate-001",
+      "prompt": "Photorealistic cinematic live action, exactly as in the image: late morning inside the distributor's godown, bright sun through the open roller door behind, dust drifting in the shaft of light. The kirana shop owner in the maroon saree lifts the crate of solid-colour snack packets off the counter, smiles at the distributor in the light blue checked shirt and turns to carry it toward the door; he finishes a tick in his paper register, looks up and gives her a small nod. The camera dollies in very slowly, a gentle push toward the counter, no handheld shake. The light does not change over the shot. Natural light, 35 mm, shallow depth of field. No text, no logos, no lettering anywhere.",
+      "negative_prompt": "text, lettering, logo, brand name, label, watermark, subtitles, children",
+      "seed": 154202,
+      "resolution": "1080p",
+      "duration_s": 8,
+      "fps": 24,
+      "inputs": [
+        {
+          "role": "first",
+          "file": "A-k1-godown-noon.png",
+          "sha256": "d1aedba0b88b4e2c22ce4f25ec9ff81290d0dc8079aff1fcde505ca3a3dd6f8f"
+        }
+      ],
+      "trim_s": [
+        0.1,
+        4.4
+      ],
+      "cost_usd": 1.6,
+      "latency_s": 130.7
+    },
+    {
+      "name": "final-3-yard-dusk-v2",
+      "model": "veo-3.1-generate-001",
+      "prompt": "Photorealistic cinematic live action, exactly as in the image: violet dusk in the godown's yard, the sky amber at the horizon and deep violet above, the sodium lamps on. At the left the volunteer in the orange vest and the woman in white pass plain kraft cartons with a sage-green band into the back of the white van, carton after carton. At the right, by the gate, the distributor in the light blue checked shirt hands one solid-colour snack packet to the first worker in the queue, who takes it with a nod and steps aside as the next worker steps up; the distributor makes a tick on the plain sheet on his clipboard and picks up the next packet from the table. No money, no notes, no coins and no phones anywhere; nothing else changes hands. The camera drifts very slowly to the right, a gentle slide from the van toward the table, no handheld shake. The light does not change over the shot; the dusk holds. 35 mm, eye level. No text, no logos, no lettering anywhere.",
+      "negative_prompt": "text, lettering, logo, brand name, label, watermark, subtitles, children",
+      "seed": 154223,
+      "resolution": "1080p",
+      "duration_s": 8,
+      "fps": 24,
+      "inputs": [
+        {
+          "role": "first",
+          "file": "A-k2-yard-dusk-v2.png",
+          "sha256": "a0a0a460eccccab82a2ee111a496180c438ffb2f731aea8e53f2ce476991f381"
+        }
+      ],
+      "trim_s": [
+        0.3,
+        4.6
+      ],
+      "cost_usd": 1.6,
+      "latency_s": 157.0
+    },
+    {
+      "name": "final-4-office-dashboard",
+      "model": "veo-3.1-generate-001",
+      "prompt": "Photorealistic cinematic live action, exactly as in the image: evening in the small office above the godown, the warm desk lamp on and the last blue light in the window. The planner in the navy pinstripe kurta and the distributor in the light blue checked shirt, no glasses, sit side by side reading the green-and-white dashboard on the monitor; she traces the rising line on a chart with her pen and glances at him, he nods slowly and leans in, then sits back, satisfied; the bars on the dashboard tick up a little as it refreshes. Nothing is picked up or drunk; the chai tumblers stay on their tray. The camera dollies in very slowly toward the screen and the two faces, a gentle push, no handheld shake. The light does not change over the shot. 35 mm, shallow depth of field, professional and calm. No readable text, numbers, logos or lettering anywhere, on the screen or the papers.",
+      "negative_prompt": "text, lettering, logo, brand name, label, watermark, subtitles, children",
+      "seed": 154224,
+      "resolution": "1080p",
+      "duration_s": 8,
+      "fps": 24,
+      "inputs": [
+        {
+          "role": "first",
+          "file": "A-k3-office-dashboard.png",
+          "sha256": "665b657b4f3bd31095863998f82ec9df9f6ab04a1ea2ac072c7409427fb6f072"
+        }
+      ],
+      "trim_s": [
+        0.3,
+        4.6
+      ],
+      "cost_usd": 1.6,
+      "latency_s": 133.9
+    }
+  ],
+  "cut": "4 clips trimmed and chained through 0.5 s dissolves, the tail dissolving over 0.5 s into the first clip's head, which is then cut, so the film loops without a seam; eq contrast=1.03:saturation=1.06",
+  "encode": "ffmpeg -an -c:v libx264 -preset slow -profile:v high -crf 27 -pix_fmt yuv420p -movflags +faststart",
+  "audio": false,
+  "watermark": "SynthID",
+  "cost_usd_clips": 6.4,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "use": "smartclearance.web.app's hero film (SC-154): one day of the journey with real people, in four chapters, looping through a dissolve; both themes start on its first frame. The drafts the design round was picked on, and the earlier takes, are in design3/designs/SC-154/media",
+  "designed_in": "design3/designs/SC-154"
+}

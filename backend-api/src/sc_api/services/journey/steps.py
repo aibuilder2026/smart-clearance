@@ -2470,6 +2470,8 @@ async def report(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> dict[st
     await _run(ctx, s, client_id, run, f"posted {ref}'s ledger: {money.fmt.inr(actual['net'])} recovered")
     s.case.status, s.case.closed_at = "cleared", at
     await _save(ctx, s, note="cleared")
-    await supply.close_batch(ctx, client_id, ref, recovered=float(actual["net"]), outcome="cleared")
+    # the packs destroyed, by the client or at his godown, as the ledger counts them (SC-139), for the Overview (SC-149)
+    gone = int(ledger.get("destroyed") or 0) + int(ledger.get("atGodown") or 0)
+    await supply.close_batch(ctx, client_id, ref, recovered=float(actual["net"]), outcome="cleared", destroyed=gone)
     await ev.apply_speed(ctx, s.c)
     return {"ledger": ledger}

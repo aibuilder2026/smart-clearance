@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ApiError, staffInviteError, type Staff, type StaffRole } from '@smart-clearance/api/console';
+	import { staffInviteError, type Staff, type StaffRole } from '@smart-clearance/api/console';
 	import {
 		Avatar,
 		Badge,
@@ -14,7 +14,7 @@
 	} from '@smart-clearance/core';
 	import { createQuery } from '@tanstack/svelte-query';
 	import { api } from '#lib/api/client.ts';
-	import { refresh, staffQuery } from '#lib/api/queries.ts';
+	import { staffQuery } from '#lib/api/queries.ts';
 	import { useConsole } from '#lib/console.svelte.ts';
 	import Screen from '#lib/screens/Screen.svelte';
 
@@ -26,23 +26,14 @@
 	let invite = $state(false);
 	let f = $state({ name: '', email: '', role: 'Support' as StaffRole });
 	let err = $state('');
-	let busy = $state(false);
 
+	// Send invitation waits on the platform (SC-152): the sheet closes once it is saved, and a refusal is said under the
+	// button with Try again; what the form finds wrong stays beside the email, as before
 	async function send() {
 		const problem = staffInviteError(f);
 		if (problem) return void (err = problem);
 		const name = f.name.trim();
-		busy = true;
-		try {
-			await api.inviteStaff($state.snapshot(f));
-		} catch (e) {
-			err = e instanceof ApiError ? e.message : 'The invitation did not go out. Try again.';
-			return;
-		} finally {
-			busy = false;
-		}
-		await refresh();
-		k.notices.toast({ text: `Invitation sent to ${name}`, tone: 'ok' });
+		await k.act(() => api.inviteStaff($state.snapshot(f)), `Invitation sent to ${name}`);
 		invite = false;
 		f = { name: '', email: '', role: 'Support' };
 		err = '';
@@ -73,8 +64,13 @@
 		] satisfies Column<Staff>[]}
 	/>
 	<Sheet bind:open={invite} title="Invite a colleague" side={app.bp === 'phone' ? 'bottom' : 'center'} detent="large">
-		{#snippet footer()}<Button variant="primary" size="lg" block icon="send" loading={busy} onclick={send}
-				>Send invitation</Button
+		{#snippet footer()}<Button
+				variant="primary"
+				size="lg"
+				block
+				icon="send"
+				action={send}
+				busy="Sending the invitation…">Send invitation</Button
 			>{/snippet}
 		<div class="stack" style="gap: 12px">
 			<Field label="Name" htmlFor="st-name"><Input id="st-name" bind:value={f.name} oninput={() => (err = '')} /></Field

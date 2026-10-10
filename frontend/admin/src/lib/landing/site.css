@@ -1,4 +1,4 @@
-/* Smart-Clearance v3 · smartclearance.com, the product's own landing page (SC-60, refined in SC-78): the miniature
+/* Smart-Clearance v3 · smartclearance.web.app, the product's own landing page (SC-60, refined in SC-78): the miniature
    business through one day on film under the heading, in four acts with a strip reading its chapters (SC-111); a statement that
    fills in as it is read; the agents at work on the table, one in focus at a time; the product's moments as chapters
    in colour fields; Impact's ledger; the workspace itself on a device, one tab per team; plans and the close. The page
@@ -29,17 +29,17 @@ html, body { overflow-x: clip; }
 .nav-text:hover { color: #cfeedd; }
 .site.scrolled .nav-text:hover { color: var(--primary-text); }
 .site-nav .iconbtn { color: inherit; }
-.nav-signin { position: relative; }
 .nav-mode { display: inline-flex; }
-.nav-demo { height: 40px; }
+/* the two ways in (SC-150): the staff console, and a client's workspace */
+.nav-go { height: 40px; }
 .nav-progress { display: block; height: 2px; transform-origin: 0 50%; background: var(--primary); opacity: 0; transition: opacity 240ms var(--ease); }
 .site.scrolled .nav-progress { opacity: 1; }
 .site-nav a:focus-visible, .site-nav button:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
 
 /* ---------- 1 · the first viewport: the journey's day at the business on film, enormous type over it, the chapters under it ---------- */
 .hero.film { position: relative; display: grid; align-items: end; align-content: end; min-height: max(560px, 100svh); isolation: isolate; overflow: hidden; color: #fff; background: #0b1a14; }
-/* the film drifts with the scroll, not the clock (site.jsx moves it), and the page's camera leans in on each act's place
-   inside it (SC-111) */
+/* the film drifts with the scroll, not the clock (site.jsx moves it), and the page's camera leans in on each chapter's
+   subject inside it (SC-111, SC-154) */
 .film-media { position: absolute; inset: 0; z-index: -1; overflow: hidden; will-change: transform; transform-origin: 50% 40%; }
 .film-lean { position: absolute; inset: 0; will-change: transform; transform-origin: 50% 50%; }
 .film-media video, .film-media img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 44% 56%; }
@@ -48,7 +48,10 @@ html, body { overflow-x: clip; }
 /* the plate's soft preview (SC-131): a 48 px copy of the poster, blurred, under the film until its poster arrives */
 .film-media .film-preview { position: absolute; inset: 0; z-index: -1; filter: blur(18px) saturate(1.08); transform: scale(1.08); }
 @media (prefers-reduced-motion: reduce) { .film-media .fx { transition: none; } }
-.film-shade { position: absolute; inset: 0; background: linear-gradient(to top, rgb(5 12 9 / 0.82) 0, rgb(5 12 9 / 0.5) 34%, rgb(5 12 9 / 0.14) 64%, rgb(5 12 9 / 0.1) 100%), linear-gradient(to right, rgb(5 12 9 / 0.45) 0, transparent 58%); }
+.film-shade { position: absolute; inset: 0; background: linear-gradient(to top, rgb(5 12 9 / 0.86) 0, rgb(5 12 9 / 0.58) 34%, rgb(5 12 9 / 0.26) 64%, rgb(5 12 9 / 0.2) 100%), linear-gradient(to right, rgb(5 12 9 / 0.56) 0, rgb(5 12 9 / 0.3) 40%, transparent 66%); }
+/* live action is brighter under the copy than the diorama was (SC-154): on phones, where the heading sits over the
+   middle of the frame, a darker band behind the copy keeps it at 4.5:1 */
+@media (max-width: 760px) { .film-shade { background: linear-gradient(to top, rgb(5 12 9 / 0.9) 0, rgb(5 12 9 / 0.74) 30%, rgb(5 12 9 / 0.5) 58%, rgb(5 12 9 / 0.26) 80%, rgb(5 12 9 / 0.22) 100%); } }
 .film-copy { position: relative; z-index: 1; width: 100%; max-width: 1344px; margin: 0 auto; padding: 120px 16px 14px; display: grid; gap: 16px; justify-items: start; }
 .film-h { margin: 0; font-family: var(--font-display); font-weight: 520; font-size: clamp(40px, 7.4cqw, 108px); line-height: 0.98; letter-spacing: -0.03em; font-variation-settings: "opsz" 96, "wdth" 96; color: #fff; max-width: 10.5ch; text-wrap: balance; }
 .film-word { display: inline-grid; vertical-align: baseline; }

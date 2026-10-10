@@ -24,7 +24,7 @@
 	import PeopleList from './PeopleList.svelte';
 	import Url from './Url.svelte';
 
-	// signing in to the client's workspace, munchly.smartclearance.com (screens/auth.jsx SignIn). Email or phone first:
+	// signing in to the client's workspace, munchly-smartclearance.web.app (screens/auth.jsx SignIn). Email or phone first:
 	// a munchly.in address goes to Munchly's Google Workspace, an invited number gets a one-time code, a first-time
 	// invitee joins the workspace, and anyone else is pointed to "Find your workspace". guided: the demo drives it (a
 	// prefilled identity, the SMS code filled in, no shortcuts)
@@ -210,7 +210,9 @@
 								onclick={() => finish(es)}>Open ExpireSoon instead</button
 							>{/if}
 					</div>{/if}
-				<Button type="submit" variant="primary" size="lg" block loading={busy === 'go'}>Continue</Button>
+				<Button type="submit" variant="primary" size="lg" block loading={busy === 'go'} busy="Checking…"
+					>Continue</Button
+				>
 			</form>
 			{#if !guided}<div class="si-try">
 					<span class="t-caption subtle strong">Accounts in this prototype</span>
@@ -282,6 +284,7 @@
 				size="lg"
 				block
 				loading={busy === 'verify' || (!!who && busy === who.id)}
+				busy="Verifying…"
 				disabled={code.length < 6}
 				onclick={() => verify()}>Verify and continue</Button
 			>{/snippet}
@@ -313,8 +316,13 @@
 		{/if}
 	</Sheet>
 	<Sheet open={sheet === 'join'} onclose={close} title="Join {W.name}" {side} detent="medium">
-		{#snippet footer()}<Button variant="primary" size="lg" block loading={!!who && busy === who.id} onclick={join}
-				>Join the workspace</Button
+		{#snippet footer()}<Button
+				variant="primary"
+				size="lg"
+				block
+				loading={!!who && busy === who.id}
+				busy="Joining…"
+				onclick={join}>Join the workspace</Button
 			>{/snippet}
 		{#if who}
 			<div class="stack" style="justify-items: center; text-align: center">

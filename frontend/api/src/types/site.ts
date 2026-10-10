@@ -1,4 +1,4 @@
-// The landing page's part of the contract (smartclearance.com): the showcase it tells its story with, and the calls its
+// The landing page's part of the contract (smartclearance.web.app): the showcase it tells its story with, and the calls its
 // visitors make. Shared shapes are in shared.ts.
 import type { Catalog, DemoRequest, DemoRequestInput, WorkspaceMatch } from './shared';
 

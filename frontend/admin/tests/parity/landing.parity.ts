@@ -59,7 +59,6 @@ test('parity · every section of the landing page', async ({ browser }, testInfo
 
 const phone = (page: Page) => (page.viewportSize()?.width ?? 1440) < 768;
 const OVERLAYS: [string, number, (page: Page) => Promise<unknown>][] = [
-	['the sign-in menu', 0.003, (p) => p.locator('.site-nav').getByRole('button', { name: 'Sign in' }).click()],
 	['the appearance menu', 0.003, (p) => p.locator('.site-nav').getByRole('button', { name: 'Appearance' }).click()],
 	[
 		'Find your workspace',

@@ -1,6 +1,6 @@
 # @smart-clearance/workspace
 
-A manufacturer's workspace, in SvelteKit 3: Munchly Foods' at munchly.smartclearance.com, where its staff, its
+A manufacturer's workspace, in SvelteKit 3: Munchly Foods' at munchly-smartclearance.web.app, where its staff, its
 distributors and kiranas, its food-bank partners and an ExpireSoon buyer each work the near-expiry batch from their own
 side (SC-62). It is a faithful port of `design3/app` and `design3/screens` (the approved app v3 design, hosted in the
 app v3 Claude Design project), so it had no design round.

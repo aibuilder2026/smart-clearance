@@ -1,0 +1,44 @@
+{
+  "name": "b-1-handoff-t2",
+  "model": "veo-3.1-fast-generate-001",
+  "location": "us-central1",
+  "service": "Vertex AI",
+  "prompt": "Photorealistic cinematic live action, beginning exactly on the first image and ending exactly on the last: a plain kraft-brown carton with a single sage-green band stays centred in the frame the whole time while the world changes around it. At dawn at the loading bay the woman in the navy pinstripe kurta hands the carton to the man in the light blue checked shirt; he turns with it, and as he turns the bay and the blue truck dissolve into the inside of his godown at midday, racks of the same cartons behind, and he sets the carton on a worn wooden counter and slides it across to the woman in the maroon saree with a gold border, whose hands take it. One continuous handheld shot that follows the carton, smooth, no cuts. Natural light, 35 mm, shallow depth of field. No text, no logos, no lettering anywhere.",
+  "negative_prompt": "text, lettering, logo, brand name, label, watermark, subtitles, children",
+  "seed": 154122,
+  "enhance_prompt": true,
+  "resolution": "720p",
+  "aspect": "16:9",
+  "duration_s": 8,
+  "fps": 24,
+  "generate_audio": false,
+  "person_generation": "allow_adult",
+  "inputs": [
+    {
+      "role": "first",
+      "file": "B-k0-bay-handoff-clean.png",
+      "sha256": "48419e47242aad7e1740c8c03a88d29a5f8ce10965fad24c75286fe0bfb4bb5f"
+    },
+    {
+      "role": "last",
+      "file": "B-kmid-counter-handoff.png",
+      "sha256": "62ec0efa7c23df3b32944d41a323be56e01a9f3428505a99b42ea865997594f0"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.64,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "use": "SC-154 option B draft: the carton from the bay to the counter (Veo 3.1 Fast, 720p, take 2)",
+  "status": "done",
+  "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-fast-generate-001/operations/521b04ab-4d9e-448f-a0dc-077b678a377a",
+  "latency_s": 70.9,
+  "rai_filtered": {
+    "count": 0,
+    "reasons": []
+  },
+  "files": [
+    "b-1-handoff-t2.mp4"
+  ],
+  "probe": "{\n    \"programs\": [\n\n    ],\n    \"stream_groups\": [\n\n    ],\n    \"streams\": [\n        {\n            \"width\": 1280,\n            \"height\": 720,\n            \"r_frame_rate\": \"24/1\",\n            \"nb_frames\": \"192\"\n        }\n    ],\n    \"format\": {\n        \"duration\": \"8.000000\",\n        \"size\": \"4470745\"\n    }\n}"
+}

@@ -6,9 +6,9 @@ One visual system, built from the same code into the product's pages:
 | --- | --- | --- |
 | `system/` | Design system: tokens, the HIG/shadcn kit, the live-tracking world, imagery | `system/Smart-Clearance DS v3.html` |
 | `demo/` | Guided demo: the nine journey stages as beats in Munchly's workspace, on a laptop and a phone running the real screens | `demo/Smart-Clearance demo v3.html` |
-| `app/` | App prototype: Munchly's workspace at munchly.smartclearance.com, with its sign-in, every role, live agents on a mock backend; an installable PWA | `app/Smart-Clearance app v3.html` |
-| `console/` | The console at console.smartclearance.com, where Smart-Clearance staff set up each client's workspace: its agents, supply chain, channels, rules, people, integrations and plan. Seeded with Munchly Foods; its own mock backend is `core/platform.js` | `console/Smart-Clearance console v3.html` |
-| `site/` | The product's landing page at smartclearance.com: a miniature Indian town by day and by night, where the agents work one illustrative batch through its nine stops in the hero; then how it works, the batch's five exits, the workspace and the plans. Its illustrations ship in `site/assets/plates/` | `site/Smart-Clearance site v3.html` |
+| `app/` | App prototype: Munchly's workspace at munchly-smartclearance.web.app, with its sign-in, every role, live agents on a mock backend; an installable PWA | `app/Smart-Clearance app v3.html` |
+| `console/` | The console at smartclearance-console.web.app, where Smart-Clearance staff set up each client's workspace: its agents, supply chain, channels, rules, people, integrations and plan. Seeded with Munchly Foods; its own mock backend is `core/platform.js` | `console/Smart-Clearance console v3.html` |
+| `site/` | The product's landing page at smartclearance.web.app: a miniature Indian town by day and by night, where the agents work one illustrative batch through its nine stops in the hero; then how it works, the batch's five exits, the workspace and the plans. Its illustrations ship in `site/assets/plates/` | `site/Smart-Clearance site v3.html` |
 | `designs/` | Every design review, one folder per issue: the options, comps and mock-ups, the review board and the pick. This is the source of truth for designs (SC-26); see `designs/README.md` | `designs/SC-<n>/board.html` |
 
 Shared code lives in `core/` (money computed from the journey map's rules, the fictional dataset, the store, the journey as actions with an agent reconciler) and `screens/` (every role's screens and the workspace sign-in, used by both the demo and the app). `demo/`, `app/`, `console/` and `site/` reach them through symlinks.
@@ -17,7 +17,7 @@ The production frontend, `frontend/` at the repo root, implements this design in
 
 ## One workspace per manufacturer
 
-Smart-Clearance is sold to manufacturers as software as a service: each one gets a workspace at its own address, set up for its supply chain. This prototype is Munchly Foods' workspace at `munchly.smartclearance.com`, set up in `core/data.js` (`WORKSPACE`): who owns short-dated stock, the expiry policy, the exits, the territory guard and how people sign in.
+Smart-Clearance is sold to manufacturers as software as a service: each one gets a workspace at its own address, set up for its supply chain. This prototype is Munchly Foods' workspace at `munchly-smartclearance.web.app`, set up in `core/data.js` (`WORKSPACE`): who owns short-dated stock, the expiry policy, the exits, the territory guard and how people sign in.
 
 - **Branding.** The Smart-Clearance mark and theming lead every screen, and Munchly's workspace sits under the mark. On desktop it is a pill under the sidebar lockup; on the tablet rail it is the mark; on phones it is a button at the left of the bar. Munchly's own colours stay inside its mark. Munchly leads its own sign-in page, with "Powered by Smart-Clearance" at the foot.
 - **Sign-in, email or phone first.**
@@ -37,7 +37,7 @@ Smart-Clearance is sold to manufacturers as software as a service: each one gets
 
 The console is the platform's own surface, separate from every client workspace.
 
-- **Sign-in.** Staff only: a smartclearance.com Google account, then a passkey. Try "Use a passkey" as Neha Kulkarni.
+- **Sign-in.** Staff only: a smartclearance.web.app Google account, then a passkey. Try "Use a passkey" as Neha Kulkarni.
 - **A client's agents** are laid out as the stops they work, from Data to Impact. Each one is Suggest, Ask or Act, with its limits, schedule and last run in an inspector. The human approval between Router and Lister is a locked amber gate for every client.
 - **A new client** is set up in seven steps from its supply-chain profile (route to market, who owns the stock, expiry policy). The profile decides its exits, and a preset decides how far its agents go at first.
 - **Every change** persists in the browser (`sc3-platform`) and writes an audit line. "Reset prototype data" in the account sheet goes back to the seed. The console keeps its own copy of Munchly's setup; the app does not read it yet.
@@ -46,7 +46,7 @@ The console is the platform's own surface, separate from every client workspace.
 
 ## The landing page (SC-25)
 
-smartclearance.com sells Smart-Clearance itself, independent of any client. It names no client: the batch it follows is an illustrative one (SC-28).
+smartclearance.web.app sells Smart-Clearance itself, independent of any client. It names no client: the batch it follows is an illustrative one (SC-28).
 
 - **The first viewport** follows the approved comp box for box at 1280 × 800, scaled with the page in container units. The town is composed twice: by day, and at night in dark mode; the Appearance button in the top bar (and the footer's switch) picks light, dark or the device's setting. The tracker card fills its stops once.
 - **How it works** is three moments, each a card from the product rising into place with the agents at work named beside it (SC-28).

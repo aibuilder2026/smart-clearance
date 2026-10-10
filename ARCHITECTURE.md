@@ -90,9 +90,9 @@ flowchart LR
 | Surface | Prototype (design3) | Production | Backend |
 | --- | --- | --- | --- |
 | Design system v3 | `system/`, hosted on Claude Design | `frontend/core` (Svelte), and `/ds` on the landing page's dev server | none needed |
-| Landing page, smartclearance.com | `site/`, hosted | `frontend/admin`, live on Firebase Hosting | backend-api: showcase, catalog, workspace lookup, demo requests |
-| Staff console, console.smartclearance.com | `console/`, hosted | `frontend/console`, live on Firebase Hosting | backend-api: everything under `/v1/console`, with Firebase sign-in |
-| A client's workspace app, `<client>.smartclearance.com` | `app/`, hosted (Munchly Foods, an installable PWA) | not ported yet | none yet |
+| Landing page, smartclearance.web.app | `site/`, hosted | `frontend/admin`, live on Firebase Hosting | backend-api: showcase, catalog, workspace lookup, demo requests |
+| Staff console, smartclearance-console.web.app | `console/`, hosted | `frontend/console`, live on Firebase Hosting | backend-api: everything under `/v1/console`, with Firebase sign-in |
+| A client's workspace app, `<client>-smartclearance.web.app` | `app/`, hosted (Munchly Foods, an installable PWA) | not ported yet | none yet |
 | Guided demo | `demo/`, hosted | not planned as production | none |
 | The agents | the mock in `core/platform.js` and `core/flow.js` | `agents/`, planned | will read `sc.batch_gates` |
 

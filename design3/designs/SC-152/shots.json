@@ -1,0 +1,170 @@
+[
+ {
+  "url": "http://localhost:8788/designs/SC-152/current/mockup.html?freeze=pending&theme=light",
+  "out": "current/pending-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true,
+  "wait": 1600
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-152/current/mockup.html?freeze=pending&theme=dark",
+  "out": "current/pending-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "full": true,
+  "wait": 1600
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-152/current/mockup.html?freeze=pending&theme=light",
+  "out": "current/pending-390-light",
+  "width": 390,
+  "theme": "light",
+  "full": true,
+  "wait": 1600
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-152/option-a/mockup.html?freeze=pending&theme=light",
+  "out": "option-a/pending-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true,
+  "wait": 1600
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-152/option-a/mockup.html?freeze=pending&theme=dark",
+  "out": "option-a/pending-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "full": true,
+  "wait": 1600
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-152/option-a/mockup.html?freeze=pending&theme=light",
+  "out": "option-a/pending-390-light",
+  "width": 390,
+  "theme": "light",
+  "full": true,
+  "wait": 1600
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-152/option-a/mockup.html?freeze=done&theme=light",
+  "out": "option-a/done-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true,
+  "wait": 1600
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-152/option-a/mockup.html?freeze=error&theme=light",
+  "out": "option-a/error-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true,
+  "wait": 1600
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-152/option-a/mockup.html?freeze=slow&theme=light",
+  "out": "option-a/slow-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true,
+  "wait": 1600
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-152/option-b/mockup.html?freeze=pending&theme=light",
+  "out": "option-b/pending-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true,
+  "wait": 1600
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-152/option-b/mockup.html?freeze=pending&theme=dark",
+  "out": "option-b/pending-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "full": true,
+  "wait": 1600
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-152/option-b/mockup.html?freeze=pending&theme=light",
+  "out": "option-b/pending-390-light",
+  "width": 390,
+  "theme": "light",
+  "full": true,
+  "wait": 1600
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-152/option-b/mockup.html?freeze=done&theme=light",
+  "out": "option-b/done-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true,
+  "wait": 1600
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-152/option-b/mockup.html?freeze=error&theme=light",
+  "out": "option-b/error-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true,
+  "wait": 1600
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-152/option-b/mockup.html?freeze=slow&theme=light",
+  "out": "option-b/slow-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true,
+  "wait": 1600
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-152/option-c/mockup.html?freeze=pending&theme=light",
+  "out": "option-c/pending-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true,
+  "wait": 1600
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-152/option-c/mockup.html?freeze=pending&theme=dark",
+  "out": "option-c/pending-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "full": true,
+  "wait": 1600
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-152/option-c/mockup.html?freeze=pending&theme=light",
+  "out": "option-c/pending-390-light",
+  "width": 390,
+  "theme": "light",
+  "full": true,
+  "wait": 1600
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-152/option-c/mockup.html?freeze=done&theme=light",
+  "out": "option-c/done-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true,
+  "wait": 1600
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-152/option-c/mockup.html?freeze=error&theme=light",
+  "out": "option-c/error-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true,
+  "wait": 1600
+ },
+ {
+  "url": "http://localhost:8788/designs/SC-152/option-c/mockup.html?freeze=slow&theme=light",
+  "out": "option-c/slow-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true,
+  "wait": 1600
+ }
+]

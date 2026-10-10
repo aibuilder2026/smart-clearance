@@ -1,4 +1,4 @@
-// Smart-Clearance v3 · smartclearance.com's loader (SC-35; SC-131, option B, the route runs). Plain ES2019, loaded
+// Smart-Clearance v3 · smartclearance.web.app's loader (SC-35; SC-131, option B, the route runs). Plain ES2019, loaded
 // first in <body>, before React, and self-contained: it brings its own styles, so it paints with the page's first
 // bytes, before any stylesheet has arrived.
 //   · Every load of the page, reloads included, plays the route: the mark's route stands faint and a bright stretch of
@@ -406,7 +406,7 @@
 
   // a switch: cover the page as it is, change the theme underneath, wait for the new plates, part into the page
   function preload(to) {
-    var base = W.SC3_SITE_IMG || "assets/plates/", list = [["town-" + (to === "dark" ? "night" : "morning") + ".webp", true]];
+    var base = W.SC3_SITE_IMG || "assets/plates/", list = [["hero-" + (to === "dark" ? "night" : "day") + ".webp", true]];
     // the table too, when it is on screen or close to it
     [[".tb-plate", "table"]].forEach(function (q) {
       var n = D.querySelector(q[0]); if (!n) return; var r = n.getBoundingClientRect();

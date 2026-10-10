@@ -456,6 +456,7 @@ class Batch(Base):
         CheckConstraint(
             "(gate_blinkit_days is null and gate_qcom_pct is null) = (gate_reason is null)", name="gate_reason"
         ),
+        CheckConstraint("destroyed between 0 and units", name="destroyed"),
         ForeignKeyConstraint(["client_id", "sku_id"], ["skus.client_id", "skus.id"]),
         ForeignKeyConstraint(["client_id", "distributor_id"], ["distributors.client_id", "distributors.id"]),
         Index(
@@ -476,6 +477,8 @@ class Batch(Base):
     money: Mapped[float | None] = mapped_column(MONEY)
     split: Mapped[str | None] = mapped_column(Text)
     recovered: Mapped[float] = mapped_column(MONEY, server_default="0")
+    # the packs no channel took and that were destroyed, once it closed (SC-149)
+    destroyed: Mapped[int] = mapped_column(Integer, server_default="0")
     opened_at: Mapped[datetime] = mapped_column(TS)
     # when it reached the stop it is at (SC-49): stamped as it opens, moves on and closes
     stage_at: Mapped[datetime] = mapped_column(TS)

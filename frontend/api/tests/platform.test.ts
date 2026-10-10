@@ -192,6 +192,7 @@ describe("the Overview's dashboard (SC-48) matches platform.js", () => {
 		b.batches[2].closedAt = '2026-10-05T15:00:00+05:30';
 		b.batches[2].recovered = 25000;
 		b.batches[2].outcome = 'cleared';
+		b.batches[2].destroyed = 120;
 		b.batches[3].closedAt = '2026-09-10T11:00:00+05:30';
 		b.batches[3].recovered = 9000;
 		b.batches[4].current = b.batches[4].done = 5;
@@ -205,6 +206,20 @@ describe("the Overview's dashboard (SC-48) matches platform.js", () => {
 					expect(dashboard(w, { days, client, today: seed.today, now: noon })).toEqual(
 						P.dashboard(w, { days, client, now: noon })
 					);
+	});
+	it("counts a closed batch's food on the day it closed: kept out of landfill and destroyed, in kilos (SC-149)", () => {
+		const w = worlds()[1];
+		const d = dashboard(w, { days: 7, today: seed.today, now: noon });
+		const b = w.batches[2],
+			day = d.byDay.find((x) => x.date === '2026-10-05')!;
+		expect(b.kg).toBeGreaterThan(0);
+		expect([day.keptKg, day.destroyedKg, day.destroyed]).toEqual([
+			Math.round((b.units - 120) * b.kg! * 100) / 100,
+			Math.round(120 * b.kg! * 100) / 100,
+			120
+		]);
+		expect(d.food.destroyed).toBe(120);
+		expect(dashboard(worlds()[0], { days: 7, today: seed.today, now: noon }).food.keptKg).toBe(0);
 	});
 	it('gives the same pages, filtered, searched and sorted', () => {
 		const queries: BatchQuery[] = [

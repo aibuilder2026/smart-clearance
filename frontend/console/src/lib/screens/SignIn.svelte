@@ -85,7 +85,7 @@
 			<div class="si-ws">
 				<Mark size={app.bp === 'phone' ? 52 : 60} />
 				<div class="si-ws-name">Smart-Clearance staff</div>
-				<span class="si-url"><Icon name="lock" size={12} stroke={2.2} />console.smartclearance.com</span>
+				<span class="si-url"><Icon name="lock" size={12} stroke={2.2} />smartclearance-console.web.app</span>
 			</div>
 			<div class="stack tight" style="gap: 6px">
 				<h1 class="si-title">Sign in</h1>
@@ -133,12 +133,12 @@
 			</form>
 			<div class="si-foot">
 				<span class="t-footnote muted" style="max-width: 36ch"
-					>Client teams sign in at their own workspace address, such as munchly.smartclearance.com.</span
+					>Client teams sign in at their own workspace address, such as munchly-smartclearance.web.app.</span
 				>
 				<span class="si-foot-row"
 					><button type="button" class="btn btn-link btn-sm" onclick={() => (find = true)}>Find a workspace</button><a
 						class="btn btn-link btn-sm"
-						href={LINKS.site}>smartclearance.com</a
+						href={LINKS.site}>smartclearance.web.app</a
 					></span
 				>
 				{#if usingMock}<span class="si-note">Prototype · every person and number is fictional</span>{/if}
@@ -152,7 +152,7 @@
 			find = false;
 			window.open(LINKS.app, '_blank', 'noopener');
 		}}
-		domain="smartclearance.com"
+		domain="smartclearance.web.app"
 		note={usingMock ? 'Only Munchly Foods is set up in this prototype.' : undefined}
 	/>
 </div>

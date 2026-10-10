@@ -1,0 +1,34 @@
+{
+  "name": "A-k1-godown-noon",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "Late morning inside the distributor's godown, bright sun through the open roller door behind. At a worn wooden counter the kirana shop owner (the woman in her forties in a maroon saree with a gold border) lifts a plastic crate of matte snack packets in solid colours with no lettering, smiling at the distributor (the man in the light blue checked shirt) who ticks a paper register; floor-to-ceiling racks of plain kraft cartons with a sage-green band to either side; a handcart and a hanging weighing scale; dust in the shaft of light. Cinematic 35 mm, eye level, shallow depth of field.\nPhotographic, cinematic live action, shot on a full-frame camera with a 35 mm lens, shallow depth of field, natural light, true-to-life skin, fabric and metal, no illustration, no 3D render, no cartoon. India, a small-town FMCG supply chain. Every pack and carton is unbranded: plain kraft-brown cartons with a single sage-green band, matte foil snack packets in solid colours with no lettering; no logos, no printed text, no signage that can be read; shop boards and labels out of focus. No children anywhere. Colour grade: warm, filmic, slightly desaturated greens and ambers.",
+  "seed": 154011,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "cast-kirana.png",
+      "sha256": "986237da3b0e5f787af99289b7e68137302a72b1d5474ca9815e6d66ac4fb175"
+    },
+    {
+      "role": "reference",
+      "file": "cast-distributor.png",
+      "sha256": "1d653740137dd7ecc50ee57fd3a015ea8a6193473a43a6460758a1956d6453ae"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "latency_s": 24.1,
+  "use": "SC-154 option A keyframe 1: the godown counter at noon, the first frame of clip 2",
+  "model_text": null,
+  "status": "done",
+  "output": "A-k1-godown-noon.webp 2752x1536",
+  "postprocess": "WebP q82 from A-k1-godown-noon.png",
+  "derived_from": "A-k1-godown-noon.png"
+}

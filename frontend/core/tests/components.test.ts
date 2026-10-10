@@ -1,8 +1,10 @@
-import { render } from '@testing-library/svelte';
-import { describe, expect, it } from 'vitest';
+import { fireEvent, render } from '@testing-library/svelte';
+import { flushSync } from 'svelte';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import Button from '../src/lib/components/Button.svelte';
 import Money from '../src/lib/components/Money.svelte';
 import Icon from '../src/lib/icons/Icon.svelte';
+import { Wait, WAIT } from '../src/lib/wait.svelte';
 import FieldFixture from './fixtures/FieldFixture.svelte';
 
 describe('Money', () => {
@@ -74,5 +76,98 @@ describe('Icon', () => {
 		const svg = container.querySelector('svg')!;
 		expect(svg.getAttribute('role')).toBe('img');
 		expect(svg.querySelector('title')!.textContent).toBe('Staff');
+	});
+});
+
+// SC-152: a button that waits on the network keeps its words visible, says what it is doing, and lands on the answer
+describe('a button that waits', () => {
+	beforeEach(() => {
+		vi.useFakeTimers();
+		// jsdom has no Web Animations; the faces' transitions ask for it
+		if (!Element.prototype.animate)
+			Element.prototype.animate = function () {
+				return {
+					cancel() {},
+					finish() {},
+					play() {},
+					pause() {},
+					finished: Promise.resolve(),
+					onfinish: null
+				} as unknown as Animation;
+			};
+	});
+	afterEach(() => vi.useRealTimers());
+	const later = async (ms: number) => {
+		await vi.advanceTimersByTimeAsync(ms);
+		flushSync();
+	};
+
+	it('shows nothing for a fast answer, and locks while it waits', async () => {
+		let n = 0;
+		const action = () => (n++, new Promise((r) => setTimeout(r, 50)));
+		const { container } = render(Button, { props: { action, busy: 'Saving…', children: undefined } });
+		const b = container.querySelector('button')!;
+		await fireEvent.click(b);
+		expect(b.getAttribute('aria-busy')).toBe('true');
+		await fireEvent.click(b);
+		expect(n).toBe(1);
+		await later(60);
+		expect(b.dataset.phase).toBe('idle');
+		expect(container.querySelector('.btn-arc')).toBeNull();
+	});
+	it('says what it is doing, then the done word, then rests', async () => {
+		const action = () => new Promise((r) => setTimeout(r, 900));
+		const { container } = render(Button, { props: { action, busy: 'Approving the plan…', done: 'Plan approved' } });
+		const b = container.querySelector('button')!;
+		await fireEvent.click(b);
+		await later(WAIT.show + 10);
+		expect(b.dataset.phase).toBe('busy');
+		expect(container.querySelector('.btn-arc')).not.toBeNull();
+		expect(container.querySelector('[role=status]')!.textContent).toBe('Approving the plan…');
+		await later(900);
+		expect(b.dataset.phase).toBe('done');
+		expect(container.querySelector('[role=status]')!.textContent).toBe('Plan approved');
+		await later(WAIT.hold + 10);
+		expect(b.dataset.phase).toBe('idle');
+	});
+	it('says when it is slow, and puts a refusal under itself with Try again', async () => {
+		let fail = true;
+		const action = () =>
+			new Promise((ok, no) => setTimeout(() => (fail ? no(new Error('Days left must be 7 or more.')) : ok(1)), 3500));
+		const { container } = render(Button, { props: { action, busy: 'Saving…' } });
+		const b = container.querySelector('button')!;
+		await fireEvent.click(b);
+		await later(WAIT.slow + 10);
+		expect(container.querySelector('.btn-note')!.textContent).toContain('Still working');
+		expect(b.getAttribute('aria-describedby')).toBe(container.querySelector('.btn-note')!.id);
+		await later(600);
+		const note = container.querySelector('.btn-note.err')!;
+		expect(note.getAttribute('role')).toBe('alert');
+		expect(note.textContent).toContain('Days left must be 7 or more.');
+		fail = false;
+		await fireEvent.click(note.querySelector('button')!);
+		await later(WAIT.show + 10);
+		expect(b.dataset.phase).toBe('busy');
+	});
+	it('follows a screen that drives it, with its refusal', async () => {
+		const { container, rerender } = render(Button, { props: { loading: false, busy: 'Recording…' } });
+		const b = container.querySelector('button')!;
+		await rerender({ loading: true, busy: 'Recording…' });
+		await later(WAIT.show + 10);
+		expect(b.textContent).toContain('Recording…');
+		await rerender({ loading: false, busy: 'Recording…', error: 'Already recorded on another phone.' });
+		await later(WAIT.least);
+		expect(container.querySelector('.btn-note.err')!.textContent).toContain('Already recorded on another phone.');
+	});
+	it('keeps a shown wait long enough to read', async () => {
+		const w = new Wait();
+		w.begin();
+		await later(WAIT.show + 10);
+		expect(w.phase).toBe('busy');
+		w.end(null);
+		await later(WAIT.least - 150);
+		expect(w.phase).toBe('busy');
+		await later(200);
+		expect(w.phase).toBe('idle');
 	});
 });

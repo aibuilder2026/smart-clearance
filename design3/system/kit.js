@@ -109,9 +109,171 @@
   function Spinner({ size = 20, className }) {
     return /* @__PURE__ */ React.createElement("svg", { className: cx("spinner", className), width: size, height: size, viewBox: "0 0 24 24", "aria-label": "Loading", role: "status" }, Array.from({ length: 8 }).map((_, i) => /* @__PURE__ */ React.createElement("rect", { key: i, x: "11", y: "2", width: "2", height: "6", rx: "1", fill: "currentColor", opacity: 0.25 + i / 8 * 0.75, transform: `rotate(${i * 45} 12 12)` })));
   }
-  const Button = React.forwardRef(function Button2({ variant = "secondary", size, icon, iconRight, loading, block, pill, className, children, ...rest }, ref) {
-    return /* @__PURE__ */ React.createElement("button", { ref, type: "button", className: cx("btn", `btn-${variant}`, size && `btn-${size}`, block && "btn-block", pill && "btn-pill", !children && "btn-icon", className), "data-loading": loading ? "true" : void 0, "aria-busy": loading || void 0, ...rest }, icon && /* @__PURE__ */ React.createElement(Icon, { name: icon, size: size === "sm" ? 16 : size === "xl" ? 20 : 18 }), children, iconRight && /* @__PURE__ */ React.createElement(Icon, { name: iconRight, size: size === "sm" ? 16 : 18 }), loading && /* @__PURE__ */ React.createElement(Spinner, { size: 18 }));
+  const WAIT = { show: 100, least: 400, slow: 3e3, hold: 1200 };
+  const SHAKE = { x: [0, -8, 8, -5, 5, -2, 0] };
+  function useWait({ action, loading, error, done, again }) {
+    const [phase, setPhase] = useState(loading ? "wait" : error ? "error" : "idle");
+    const [err, setErr] = useState(error || null);
+    const t = useRef({ timers: [], shown: 0 });
+    const clear = () => {
+      t.current.timers.forEach(clearTimeout);
+      t.current.timers = [];
+    };
+    const later = (f, ms) => t.current.timers.push(setTimeout(f, ms));
+    const begin = () => {
+      clear();
+      setErr(null);
+      setPhase("wait");
+      t.current.shown = 0;
+      later(() => {
+        t.current.shown = Date.now();
+        setPhase((p) => p === "wait" ? "busy" : p);
+      }, WAIT.show);
+      later(() => setPhase((p) => p === "busy" ? "slow" : p), WAIT.slow);
+    };
+    const end = (message) => {
+      const s = t.current.shown, hold = s ? Math.max(0, WAIT.least - (Date.now() - s)) : 0;
+      clear();
+      later(() => {
+        if (message) {
+          setErr(message);
+          setPhase("error");
+        } else if (done) {
+          setPhase("done");
+          later(() => setPhase("idle"), WAIT.hold);
+        } else setPhase("idle");
+      }, hold);
+    };
+    useEffect(() => {
+      if (loading) begin();
+      return clear;
+    }, []);
+    const was = useRef(!!loading);
+    useEffect(() => {
+      if (action || !!loading === was.current) return;
+      was.current = !!loading;
+      loading ? begin() : end(error || null);
+    }, [loading]);
+    useEffect(() => {
+      if (action || loading) return;
+      if (error) {
+        setErr(error);
+        setPhase("error");
+      } else setPhase((p) => p === "error" ? "idle" : p);
+    }, [error]);
+    const go = async (e) => {
+      if (phase !== "idle" && phase !== "error" && !(again && phase === "done")) return;
+      begin();
+      try {
+        await action(e);
+        end(null);
+      } catch (x) {
+        end(x && x.message || "That didn't go through. Try again.");
+      }
+    };
+    return { phase, err, go };
+  }
+  function Arc({ size = 18 }) {
+    return /* @__PURE__ */ React.createElement("svg", { className: "btn-arc", width: size, height: size, viewBox: "0 0 20 20", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("circle", { cx: "10", cy: "10", r: "7.5", fill: "none", stroke: "currentColor", strokeOpacity: "0.28", strokeWidth: "2.25" }), /* @__PURE__ */ React.createElement("path", { d: "M10 2.5a7.5 7.5 0 0 1 7.5 7.5", fill: "none", stroke: "currentColor", strokeWidth: "2.25", strokeLinecap: "round" }));
+  }
+  function Tick({ size = 18 }) {
+    const reduce = useReducedMotion();
+    return /* @__PURE__ */ React.createElement(motion.svg, { width: size, height: size, viewBox: "0 0 24 24", "aria-hidden": "true", initial: reduce ? false : { scale: 0.4 }, animate: { scale: 1 }, transition: { type: "spring", stiffness: 520, damping: 22 } }, /* @__PURE__ */ React.createElement(motion.path, { d: "M5 12.5l4.5 4.5L19 7.5", fill: "none", stroke: "currentColor", strokeWidth: "2.6", strokeLinecap: "round", strokeLinejoin: "round", initial: { pathLength: reduce ? 1 : 0 }, animate: { pathLength: 1 }, transition: { duration: reduce ? 0 : 0.28, ease: [0.22, 1, 0.36, 1] } }));
+  }
+  const Button = React.forwardRef(function Button2({ variant = "secondary", size, icon, iconRight, loading, action, busy, done, error, onRetry, slow, block, pill, className, children, onClick, ...rest }, ref) {
+    const waits = action !== void 0 || busy !== void 0 || done !== void 0 || loading !== void 0 || error !== void 0;
+    const reduce = useReducedMotion();
+    const { phase: p, err, go } = useWait({ action, loading, error, done });
+    const own = useRef(null);
+    const restW = useRef(0);
+    const face = p === "done" ? "done" : p === "busy" || p === "slow" ? "busy" : "rest";
+    useLayoutEffect(() => {
+      if (face === "rest" && own.current) restW.current = own.current.offsetWidth;
+    });
+    const noteId = useMemo(() => "bn" + Math.random().toString(36).slice(2, 7), []);
+    const sz = size === "sm" ? 16 : size === "xl" ? 20 : 18;
+    const classes = cx("btn", `btn-${variant}`, size && `btn-${size}`, block && "btn-block", pill && "btn-pill", !children && "btn-icon", className);
+    if (!waits) return /* @__PURE__ */ React.createElement("button", { ref, type: "button", className: classes, onClick, ...rest }, icon && /* @__PURE__ */ React.createElement(Icon, { name: icon, size: sz }), children, iconRight && /* @__PURE__ */ React.createElement(Icon, { name: iconRight, size: size === "sm" ? 16 : 18 }));
+    const working = p === "wait" || p === "busy" || p === "slow";
+    const setRef = (el) => {
+      own.current = el;
+      if (typeof ref === "function") ref(el);
+      else if (ref) ref.current = el;
+    };
+    const press = (e) => {
+      if (working || p === "done") {
+        e.preventDefault();
+        return;
+      }
+      if (action) go(e);
+      else onClick && onClick(e);
+    };
+    const retry = action ? go : onRetry;
+    const faces = {
+      rest: /* @__PURE__ */ React.createElement(React.Fragment, null, icon && /* @__PURE__ */ React.createElement(Icon, { name: icon, size: sz }), children, iconRight && /* @__PURE__ */ React.createElement(Icon, { name: iconRight, size: size === "sm" ? 16 : 18 })),
+      busy: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Arc, { size: sz }), busy || children),
+      done: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Tick, { size: sz }), done || children)
+    };
+    return /* @__PURE__ */ React.createElement("span", { className: cx("btn-wait", block && "btn-wait-block") }, /* @__PURE__ */ React.createElement(
+      motion.button,
+      {
+        ref: setRef,
+        type: "button",
+        className: classes,
+        "data-phase": p,
+        "aria-busy": working || void 0,
+        "aria-disabled": working || p === "done" || void 0,
+        "aria-describedby": p === "slow" && slow !== false || p === "error" ? noteId : void 0,
+        onClick: press,
+        ...rest,
+        style: { ...rest.style, minWidth: face !== "rest" && restW.current ? restW.current : void 0 },
+        animate: p === "error" && !reduce ? SHAKE : { x: 0 },
+        transition: { duration: 0.36, ease: "easeOut" }
+      },
+      /* @__PURE__ */ React.createElement("span", { className: "btn-faces" }, /* @__PURE__ */ React.createElement(AnimatePresence, { initial: false }, /* @__PURE__ */ React.createElement(motion.span, { key: face, className: "btn-face", initial: reduce ? false : { y: 12, opacity: 0 }, animate: { y: 0, opacity: 1 }, exit: reduce ? { opacity: 0, transition: { duration: 0 } } : { y: -12, opacity: 0 }, transition: { duration: 0.24, ease: [0.22, 1, 0.36, 1] } }, faces[face]))),
+      face !== "rest" && /* @__PURE__ */ React.createElement(
+        motion.i,
+        {
+          className: "btn-line",
+          "aria-hidden": "true",
+          initial: { scaleX: reduce ? 0.9 : 0 },
+          animate: { scaleX: face === "done" ? 1 : 0.9, opacity: face === "done" ? 0 : 1 },
+          transition: face === "done" ? { scaleX: { duration: 0.16, ease: [0.22, 1, 0.36, 1] }, opacity: { delay: 0.5, duration: 0.3 } } : { duration: reduce ? 0 : 1.1, ease: [0.3, 0.7, 0.4, 1] }
+        }
+      )
+    ), /* @__PURE__ */ React.createElement("span", { className: "sr-only", role: "status" }, face === "busy" ? busy || "Working" : face === "done" ? done || "Done" : ""), /* @__PURE__ */ React.createElement(AnimatePresence, { initial: false }, (p === "slow" && slow !== false || p === "error") && /* @__PURE__ */ React.createElement(
+      motion.span,
+      {
+        key: p,
+        id: noteId,
+        className: cx("btn-note", p === "error" && "err"),
+        role: p === "error" ? "alert" : void 0,
+        initial: reduce ? false : { opacity: 0, y: -4 },
+        animate: { opacity: 1, y: 0 },
+        exit: { opacity: 0, transition: { duration: 0.12 } },
+        transition: { duration: 0.24, ease: [0.22, 1, 0.36, 1] }
+      },
+      p === "slow" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Icon, { name: "cloud", size: 14 }), /* @__PURE__ */ React.createElement("span", null, slow || "Still working. The platform can take a few seconds to wake.")) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Icon, { name: "circle-alert", size: 14 }), /* @__PURE__ */ React.createElement("span", null, err), retry && /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-link btn-sm", onClick: retry }, "Try again"))
+    )));
   });
+  function useSaving(run) {
+    const job = useRef(null);
+    const { phase, err, go } = useWait({ action: () => job.current(), done: true, again: true });
+    const change = (next, before, set) => {
+      if (phase === "wait" || phase === "busy" || phase === "slow") return;
+      set(next);
+      job.current = () => Promise.resolve(run(next)).catch((e) => {
+        set(before);
+        throw e;
+      });
+      go();
+    };
+    return { phase, error: err, change };
+  }
+  function SaveNote({ phase, error }) {
+    const working = phase === "busy" || phase === "slow";
+    return /* @__PURE__ */ React.createElement("span", { className: cx("save-note", phase === "error" && "err"), role: phase === "error" ? "alert" : "status" }, working ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Arc, { size: 14 }), phase === "slow" ? "Still saving. The platform can take a few seconds to wake." : "Saving…") : phase === "done" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", { className: "save-ok" }, /* @__PURE__ */ React.createElement(Icon, { name: "check", size: 14, stroke: 2.4 })), "Saved") : phase === "error" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Icon, { name: "circle-alert", size: 14 }), error, " Put back as it was.") : null);
+  }
   function IconButton({ icon, label, round, badge, className, size = 20, ...rest }) {
     return /* @__PURE__ */ React.createElement("button", { type: "button", className: cx("iconbtn", round && "round", className), "aria-label": label, title: label, ...rest }, /* @__PURE__ */ React.createElement(Icon, { name: icon, size: round ? 16 : size }), badge ? /* @__PURE__ */ React.createElement("span", { className: "badge-count" }, badge) : null);
   }
@@ -392,11 +554,32 @@
   function Alert({ open, title, message, actions = [], onClose }) {
     const app = useApp();
     const panel = useRef(null);
-    useModal(open, panel, onClose);
-    return /* @__PURE__ */ React.createElement(Portal, null, /* @__PURE__ */ React.createElement(AnimatePresence, null, open && /* @__PURE__ */ React.createElement(Fragment, { key: "alert" }, /* @__PURE__ */ React.createElement(motion.div, { className: "scrim", initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, onClick: onClose }), /* @__PURE__ */ React.createElement(motion.div, { ref: panel, tabIndex: -1, role: "alertdialog", "aria-modal": app.embedded ? void 0 : "true", "aria-label": title, className: "alert", initial: { opacity: 0, scale: 1.08, x: "-50%", y: "-50%" }, animate: { opacity: 1, scale: 1, x: "-50%", y: "-50%" }, exit: { opacity: 0, scale: 0.96, x: "-50%", y: "-50%" }, transition: { type: "spring", stiffness: 500, damping: 36 } }, /* @__PURE__ */ React.createElement("div", { className: "al-body" }, /* @__PURE__ */ React.createElement("h3", null, title), message && /* @__PURE__ */ React.createElement("p", null, message)), /* @__PURE__ */ React.createElement("div", { className: "al-actions", style: actions.length > 2 ? { gridAutoFlow: "row" } : void 0 }, actions.map((a) => /* @__PURE__ */ React.createElement("button", { key: a.label, type: "button", className: cx(a.strong && "strong", a.danger && "danger"), onClick: () => {
-      a.onClick && a.onClick();
-      onClose && onClose();
-    } }, a.label)))))));
+    const [wait, setWait] = useState(null);
+    useEffect(() => {
+      if (!open) setWait(null);
+    }, [open]);
+    useModal(open, panel, wait && wait.on ? () => {
+    } : onClose);
+    const press = async (a) => {
+      if (wait && wait.on) return;
+      const out = a.onClick && a.onClick();
+      if (!out || typeof out.then !== "function") {
+        onClose && onClose();
+        return;
+      }
+      setWait({ label: a.label, on: true, err: null });
+      try {
+        await out;
+        setWait(null);
+        onClose && onClose();
+      } catch (e) {
+        setWait({ label: a.label, on: false, err: e && e.message || "That didn't go through. Try again." });
+      }
+    };
+    return /* @__PURE__ */ React.createElement(Portal, null, /* @__PURE__ */ React.createElement(AnimatePresence, null, open && /* @__PURE__ */ React.createElement(Fragment, { key: "alert" }, /* @__PURE__ */ React.createElement(motion.div, { className: "scrim", initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, onClick: onClose }), /* @__PURE__ */ React.createElement(motion.div, { ref: panel, tabIndex: -1, role: "alertdialog", "aria-modal": app.embedded ? void 0 : "true", "aria-label": title, className: "alert", initial: { opacity: 0, scale: 1.08, x: "-50%", y: "-50%" }, animate: { opacity: 1, scale: 1, x: "-50%", y: "-50%" }, exit: { opacity: 0, scale: 0.96, x: "-50%", y: "-50%" }, transition: { type: "spring", stiffness: 500, damping: 36 } }, /* @__PURE__ */ React.createElement("div", { className: "al-body" }, /* @__PURE__ */ React.createElement("h3", null, title), message && /* @__PURE__ */ React.createElement("p", null, message), wait && wait.err && /* @__PURE__ */ React.createElement("p", { className: "al-err", role: "alert" }, wait.err)), /* @__PURE__ */ React.createElement("div", { className: "al-actions", style: actions.length > 2 ? { gridAutoFlow: "row" } : void 0 }, actions.map((a) => {
+      const on = !!(wait && wait.on && wait.label === a.label);
+      return /* @__PURE__ */ React.createElement("button", { key: a.label, type: "button", className: cx(a.strong && "strong", a.danger && "danger"), "aria-busy": on || void 0, disabled: !!(wait && wait.on && !on), onClick: () => press(a) }, on ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Arc, { size: 16 }), a.busy || a.label) : a.label);
+    }))))));
   }
   function Menu({ open, onClose, items, align = "right", width = 240, style, label }) {
     const ref = useRef(null);
@@ -588,6 +771,8 @@
     Alert,
     Menu,
     NoticeHost,
+    SaveNote,
+    useSaving,
     useNotice,
     Mark,
     Wordmark,

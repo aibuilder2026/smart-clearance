@@ -14,16 +14,13 @@
 	const c = $derived(ws.case);
 	const who = $derived(dist ?? c!.dist);
 
-	// the one-time permission: the agent may act in his name, inside Munchly's floors, and he can pause it
-	let busy = $state(false);
+	// the one-time permission: the agent may act in his name, inside Munchly's floors, and he can pause it. Allow waits
+	// on the answer (SC-152): Allowing…, then Allowed and the toast, or the reason under it
 	let later = $state(false);
 	const { toast } = useNotice();
-	const allow = () => {
-		busy = true;
-		void ws.act('permit', undefined, { feel: 600 }).then(() => {
-			busy = false;
-			toast({ text: 'Allowed · you can pause it any time', tone: 'ok' });
-		});
+	const allow = async () => {
+		await ws.act('permit', undefined, { feel: 600, inline: true });
+		toast({ text: 'Allowed · you can pause it any time', tone: 'ok' });
 	};
 </script>
 
@@ -61,11 +58,8 @@
 						.workspace.short} pays you the gap to what you paid, so you end whole.{/if}
 			</p>
 			<div class="row wrap" style="gap: 10px">
-				<Button variant="approve" size="lg" icon="check" loading={busy} onclick={allow}>Allow</Button><Button
-					variant="ghost"
-					size="lg"
-					onclick={() => (later = true)}>Not now</Button
-				>
+				<Button variant="approve" size="lg" icon="check" action={allow} busy="Allowing…" done="Allowed">Allow</Button
+				><Button variant="ghost" size="lg" onclick={() => (later = true)}>Not now</Button>
 			</div>
 		</div>
 	</div>

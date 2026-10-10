@@ -1,0 +1,29 @@
+{
+  "name": "A-k2-yard-dusk",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "Violet dusk in the godown's yard, the sky turning from amber at the horizon to deep violet overhead, sodium lamps just coming on. At the left a white Maruti van with its back doors open and a plain blue awning, where a volunteer in a plain orange vest and a woman in a plain white salwar pass kraft cartons with a sage-green band into the van for a community kitchen. At the right, by the gate, a folding table under a tarpaulin stacked with solid-colour snack packets, where a short queue of godown workers in grey T-shirts buy packets from the distributor (the man in the light blue checked shirt). Warm practical lights against the cool sky. Cinematic 35 mm, slightly wide, eye level.\nPhotographic, cinematic live action, shot on a full-frame camera with a 35 mm lens, shallow depth of field, natural light, true-to-life skin, fabric and metal, no illustration, no 3D render, no cartoon. India, a small-town FMCG supply chain. Every pack and carton is unbranded: plain kraft-brown cartons with a single sage-green band, matte foil snack packets in solid colours with no lettering; no logos, no printed text, no signage that can be read; shop boards and labels out of focus. No children anywhere. Colour grade: warm, filmic, slightly desaturated greens and ambers.",
+  "seed": 154012,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "cast-distributor.png",
+      "sha256": "1d653740137dd7ecc50ee57fd3a015ea8a6193473a43a6460758a1956d6453ae"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "latency_s": 21.6,
+  "use": "SC-154 option A keyframe 2: the yard at violet dusk, the van and the staff-sale table, the first frame of clip 3",
+  "model_text": null,
+  "status": "done",
+  "output": "A-k2-yard-dusk.webp 2752x1536",
+  "postprocess": "WebP q82 from A-k2-yard-dusk.png",
+  "derived_from": "A-k2-yard-dusk.png"
+}
