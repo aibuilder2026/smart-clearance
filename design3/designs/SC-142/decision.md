@@ -42,6 +42,10 @@ On one board in app v3, `SC-142 design review.html`.
   leads with its evidence (every photo and yes) and gains an Audit log table, exported as CSV. Rakesh's Label photo
   becomes Photos, every photo he sent, batch by batch.
 
-## The pick
+## The pick (10 Oct)
 
-Waiting for the maintainer.
+- **Option A, the Record tab.** Every cleared batch on Priya's Batches, by month; a Record tab on each batch's page
+  (the photos sent for it with what Vision read, the yeses, the audit trail filtered to people or agents, a CSV); a
+  Photos tab on the distributor's batch page.
+- **The history's label photos:** "Yes, use them". Each of the twelve pilot-quarter batches keeps the label photo
+  in `photos/` as the one its distributor sent.
