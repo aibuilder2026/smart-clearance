@@ -1782,8 +1782,16 @@ async def document_pdf(ctx: Ctx, client_id: str, ref: str, doc_id: str, name: st
         await ev.ledger_changed(ctx, s.c, ref)
 
 
-# the papers the Paperwork agent lays out as PDFs (agents: tools/pdf.py PAPERS)
+# the papers the Paperwork agent lays out as PDFs (agents: tools/pdf.py PAPERS), and the agency's destruction
+# certificate for packs destroyed at his godown (SC-139); the client's own certificate is a record on the case
 PDF_PAPERS = frozenset({"invoice", "support", "itc", "fssai", "receipt", "expiry"})
+
+
+def printed(d: dict[str, Any]) -> bool:
+    """a paper Paperwork lays out as a PDF, once it is issued (not awaiting another's, SC-139): as agents' needs_pdf"""
+    if d.get("status") in ("not required", "awaiting"):
+        return False
+    return d["id"] in PDF_PAPERS or (d["id"] == "destruction" and d.get("at") == "godown")
 
 
 async def lay_out_missing(ctx: Ctx, client_id: str, *, again: bool = False) -> list[str]:
@@ -1795,9 +1803,9 @@ async def lay_out_missing(ctx: Ctx, client_id: str, *, again: bool = False) -> l
         if case.status == "reset":
             continue
         if again and case.docs:  # a new list, so the change is written
-            case.docs = [{**d, "pdf": None} if d["id"] in PDF_PAPERS else d for d in case.docs]
+            case.docs = [{**d, "pdf": None} if printed(d) else d for d in case.docs]
         docs = case.docs or []
-        if any(d["id"] in PDF_PAPERS and d.get("status") != "not required" and not d.get("pdf") for d in docs):
+        if any(printed(d) and not d.get("pdf") for d in docs):
             settle = {"type": J.SETTLE, "client": client_id, "ref": ref}
             await ev.publish(ctx, J.Event(J.STEP, settle, f"{client_id}:{ref}"))
             asked.append(ref)

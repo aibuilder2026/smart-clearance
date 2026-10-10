@@ -117,8 +117,9 @@ async def test_the_ledger_is_design3s(api):
 
 async def test_paperwork_is_asked_only_for_the_pdfs_still_missing(ctx):
     """SC-125: a paper drafted before its template existed (the expiry credit note), or whose PDF failed, is laid out
-    on request; a batch whose papers all have theirs, or lack one only for a record (the destruction certificate), is
-    left alone"""
+    on request; a batch whose papers all have theirs, or lack one only for a record (the client's own destruction
+    certificate), is left alone. The agency's certificate of packs destroyed at his godown is laid out too (SC-139),
+    once it is issued"""
     from sqlalchemy import select
 
     from sc_api import models as m
@@ -127,15 +128,22 @@ async def test_paperwork_is_asked_only_for_the_pdfs_still_missing(ctx):
     rows = await ctx.session.execute(select(m.Case).where(m.Case.client_id == "munchly", m.Case.history.is_(True)))
     cases = {c.batch_ref: c for c in rows.scalars()}
     leftover = next(b["ref"] for b in H["batches"] if b["outcome"] == "leftover")
-    done = cases[leftover]
-    pdf = lambda d: None if d["id"] == "destruction" else f"munchly/{leftover}/{d['id']}.pdf"  # noqa: E731
-    done.docs = [{**d, "pdf": pdf(d)} for d in done.docs]
+    sold = next(b["ref"] for b in H["batches"] if b["outcome"] == "sold")
+    agency = lambda d: d["id"] == "destruction" and d.get("at") == "godown"  # noqa: E731
+    assert any(agency(d) for d in cases[leftover].docs)
+    for ref in (sold, leftover):  # every paper laid out, but the leftover's certificate
+        pdf = lambda d, ref=ref: None if agency(d) else f"munchly/{ref}/{d['id']}.pdf"  # noqa: E731
+        cases[ref].docs = [{**d, "pdf": pdf(d)} for d in cases[ref].docs]
     await ctx.session.flush()
     asked = await steps.lay_out_missing(ctx, "munchly")
-    assert set(asked) == REFS - {leftover}
+    assert set(asked) == REFS - {sold}
     sent = (await ctx.session.execute(select(m.Outbox).where(m.Outbox.published_wall.is_(None)))).scalars().all()
     settles = [o.payload["ref"] for o in sent if o.payload.get("type") == "settle" and o.payload.get("ref") in asked]
     assert sorted(set(settles)) == asked
+    # a certificate still awaiting the agency's is not laid out
+    cases[leftover].docs = [{**d, "status": "awaiting"} if agency(d) else d for d in cases[leftover].docs]
+    await ctx.session.flush()
+    assert leftover not in await steps.lay_out_missing(ctx, "munchly")
     # again: every paper afresh, the batch whose PDFs were all laid out too
     assert set(await steps.lay_out_missing(ctx, "munchly", again=True)) == REFS
-    assert not any(d.get("pdf") for d in done.docs if d["id"] in steps.PDF_PAPERS)
+    assert not any(d.get("pdf") for d in cases[sold].docs if steps.printed(d))
