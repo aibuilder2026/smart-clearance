@@ -40,6 +40,8 @@ On one board in app v3, `SC-147 design review.html`.
 - **C · Today's label with a coded foot:** today's five lines, and a foot with the EAN-13, the FSSAI licence and the QR
   code.
 
-## The pick
+## The pick (10 Oct)
 
-Pending.
+**Option A · The full statutory sticker**, on every label photo, past and present. The maintainer's answer on the eval
+set: "Relabel all 73, everything in past and present to new format", so Vision's whole eval set, its hard cases
+included, carries the new label too.

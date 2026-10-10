@@ -45,11 +45,11 @@ On one board in app v3, `SC-148 design review.html`, each with the story's tax i
   signed QR code (its signature illustrative) on the tax invoice.
 - **C · The app's paper, completed:** today's look, with every missing field added.
 
-## Open question
+## The pick (10 Oct)
 
-Whether each kirana's order also gets its own tax invoice from the distributor (intra-state CGST and SGST), or stays an
-order log on the scheme.
+**Option B · The e-invoice**: Tally's layout with every rule 46 field, and on the tax invoice the IRN, the
+acknowledgement and the signed QR code (its signature illustrative); Munchly's credit notes in the same layout, saying
+why they adjust no GST and are not reported to the portal.
 
-## The pick
-
-Pending.
+The open question, answered **an invoice per order**: each kirana's order gets its own tax invoice from its distributor
+(intra-state, CGST and SGST), in the journey and the history, instead of standing only as an order log.
