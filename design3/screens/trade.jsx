@@ -83,7 +83,7 @@
       <div className="t-title3">Let Smart-Clearance act for Rakesh Traders</div>
       <div className="stack tight">{D.SETUP.acts.map(t => <div key={t} className="row top t-subhead" style={{ gap: 10 }}><Icon name="check" size={17} stroke={2.4} style={{ color: "var(--primary-text)", marginTop: 2, flex: "none" }} /><span>{t}</span></div>)}</div>
       <p className="t-footnote muted" style={{ margin: 0 }}>Always within Munchly's price floors. Every action shows here, and you can pause any of it. Munchly pays you the gap to the ₹{CHIPS.dp} you paid, so you end whole.</p>
-      <div className="row wrap" style={{ gap: 10 }}><Button variant="approve" size="lg" icon="check" loading={busy} onClick={allow}>Allow</Button><Button variant="ghost" size="lg" onClick={() => setLater(true)}>Not now</Button></div>
+      <div className="row wrap" style={{ gap: 10 }}><Button variant="approve" size="lg" icon="check" loading={busy} busy="Allowing…" done="Allowed" onClick={allow}>Allow</Button><Button variant="ghost" size="lg" onClick={() => setLater(true)}>Not now</Button></div>
     </div></motion.div>;
   }
   function ActingFor({ p }) {
@@ -120,7 +120,7 @@
         <span className="t-subhead">{fmt.num(staff.units)} packs for your staff at <b>₹{staff.price}</b> a pack, at {staff.godown}. Staff pay you by UPI.</span>
         {dist.upi && <div className="row" style={{ gap: 14 }}><PayCode upi={dist.upi} /><div className="stack tight" style={{ gap: 2, minWidth: 0 }}><b className="mono t-footnote" style={{ overflowWrap: "anywhere" }}>{dist.upi}</b><span className="t-footnote muted">Your own UPI: staff pay you at the godown{clears ? `, over ${clears}` : ""}.</span></div></div>}
         <div className="row wrap" style={{ gap: 12 }}><Stepper value={n} onChange={setN} min={0} max={staff.units} label="packs sold to staff" /><span className="t-subhead muted">of {fmt.num(staff.units)} packs sold</span></div>
-        <Button variant="primary" size="lg" block icon="check" loading={busy} onClick={record}>Record the sale</Button>
+        <Button variant="primary" size="lg" block icon="check" loading={busy} busy="Recording…" done="Recorded" onClick={record}>Record the sale</Button>
         <span className="t-caption subtle">Record once, when the sale is over. What does not sell stays at the godown.</span>
       </> : <>
         <span className="t-subhead"><b>{fmt.num(staff.sold)} of {fmt.num(staff.units)}</b> sold to staff at ₹{staff.price} a pack</span>
@@ -165,6 +165,8 @@
   }
   // a step of his: what, the one button. A step that needs its screen opens it on the batch; the invoice is one tap
   const DONE = { issueInvoice: "Marked issued from Tally" };
+  // the step's button while it waits, and once it lands (SC-152)
+  const WORDS = { issueInvoice: ["Issuing…", "Issued"] };
   function Step({ t, j, primary }) {
     const { go } = useRoute(); const { toast } = useNotice(); const [busy, setBusy] = useState(false);
     const run = () => {
@@ -174,7 +176,7 @@
     return <div className={cx("dist-step", primary && "primary")}>
       <span className="icontile" style={{ width: primary ? 44 : 36, height: primary ? 44 : 36, borderRadius: 12 }}><Icon name={t.icon} size={primary ? 20 : 17} stroke={2} /></span>
       <span className="grow stack tight" style={{ gap: 2, minWidth: 0 }}><b className={primary ? "t-headline" : "t-subhead"}>{t.title}</b><span className="t-footnote muted">{t.sub}</span></span>
-      <Button variant={primary ? "primary" : "secondary"} size={primary ? "md" : "sm"} icon={t.icon} loading={busy} onClick={run}>{t.cta}</Button>
+      <Button variant={primary ? "primary" : "secondary"} size={primary ? "md" : "sm"} icon={t.icon} loading={busy} busy={(WORDS[t.act] || [])[0]} done={(WORDS[t.act] || [])[1]} onClick={run}>{t.cta}</Button>
     </div>;
   }
   // a batch in a journey, as one card: the batch, its next step for him, its lines
@@ -240,7 +242,7 @@
         <div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={o.shops} /><span className="subtle" style={{ fontSize: "0.45em" }}> / {o.offered}</span></span><span className="t-footnote subtle">shops on the round</span></div>
         <div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={o.units} /></span><span className="t-footnote subtle">packets · {cartons(o.units)}</span></div>
       </div>
-      {!n.van && <Button variant="primary" size="lg" icon="navigation" loading={running} disabled={!can || running} onClick={start}>{can ? "Start the round" : o.open ? `Waiting for orders · ${o.shops} of ${o.offered}` : !o.shops ? "No shop ordered" : "Runs once the papers are drafted"}</Button>}
+      {!n.van && <Button variant="primary" size="lg" icon="navigation" loading={running} busy="Starting the round…" slow={false} disabled={!can || running} onClick={start}>{can ? "Start the round" : o.open ? `Waiting for orders · ${o.shops} of ${o.offered}` : !o.shops ? "No shop ordered" : "Runs once the papers are drafted"}</Button>}
       <span className="t-caption subtle">₹{M.RULES.vanPerUnit.toFixed(2)} a packet for the van, repaid by {D.WORKSPACE.short} in the price support.</span>
     </Card>;
   }
@@ -417,7 +419,7 @@
           <Button variant="secondary" block onClick={() => go("home")}>Back to today</Button>
         </Card> : uploading ? <S.Live.SendFill p={live.uploads.photo} onCancel={() => live.cancelUpload("photo")} />
           : <AnimatePresence mode="wait" initial={false}>
-            {shot ? <motion.div key="send" className="row" style={{ gap: 10 }} initial={reduce ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}><Button variant="secondary" size="lg" icon={shot.how === "camera" ? "rotate-ccw" : "image"} onClick={again} style={{ flex: "none" }}>{shot.how === "camera" ? "Retake" : "Choose another"}</Button><Button variant="primary" size="lg" block icon="send" loading={sending} onClick={send}>Send photo</Button></motion.div>
+            {shot ? <motion.div key="send" className="row" style={{ gap: 10 }} initial={reduce ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}><Button variant="secondary" size="lg" icon={shot.how === "camera" ? "rotate-ccw" : "image"} onClick={again} style={{ flex: "none" }}>{shot.how === "camera" ? "Retake" : "Choose another"}</Button><Button variant="primary" size="lg" block icon="send" loading={sending} busy="Sending photo…" onClick={send}>Send photo</Button></motion.div>
               : camOn ? <motion.div key="cam" className="cam-bar" initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.16 }}><Button variant="ghost" onClick={stopCam}>Cancel</Button><button type="button" className="shutter" aria-label="Take the photo" disabled={!camLive} onClick={shutter}><span /></button><Button variant="ghost" icon="image" onClick={() => { stopCam(); upload(); }}>Upload</Button></motion.div>
               : <motion.div key="two" className="cam-two" initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.16 }}><Button variant={desk ? "secondary" : "primary"} size="lg" icon="camera" onClick={take}>Take a photo</Button><Button variant={desk ? "primary" : "secondary"} size="lg" icon="upload" onClick={upload}>Upload a photo</Button></motion.div>}
           </AnimatePresence>}
@@ -495,7 +497,7 @@
             <K.Field label="Agency's certificate number" htmlFor="dz-cert"><K.Input id="dz-cert" value={cert} onChange={e => setCert(e.target.value)} placeholder={a ? `${a.series.prefix}0000` : ""} spellCheck={false} autoCapitalize="characters" /></K.Field>
           </div>
           {err && <p className="cam-alert" role="alert"><Icon name="triangle-alert" size={15} />{err}</p>}
-          <Button variant="primary" size="lg" block icon="send" loading={sending} disabled={!ready} aria-describedby="dz-need" onClick={send}>Send to {C} for approval</Button>
+          <Button variant="primary" size="lg" block icon="send" loading={sending} busy="Sending the evidence…" done="Sent for approval" disabled={!ready} aria-describedby="dz-need" onClick={send}>Send to {C} for approval</Button>
           <span id="dz-need" className="t-caption subtle">{ready ? `Then reverse ${fmt.inr2(his)} of input GST on these packs in your GSTR-3B (Table 4(B)(1)). ${possessive(C)} credit note makes it good.` : `Both photos and the certificate number are needed. ${PHOTO_RULE}.`}</span>
         </Card>
           : <Card className="stack snug">
@@ -762,7 +764,7 @@
           <div className="row between"><div className="stack tight" style={{ gap: 0 }}><b>How many packets?</b><span className="t-footnote subtle">In twelves · your share is up to {k.units}</span></div><Stepper value={n} onChange={setN} min={12} max={k.units} step={12} label="Packets" /></div>
           <div className="stack tight">{[["You pay", `${m.paid} × ₹${m.pack.toFixed(2)}`, fmt.inr(m.pay)], ["Free packets", "2 with every 10", `${m.free}`], ["You sell at MRP", `${n} × ₹${CHIPS.mrp}`, fmt.inr(m.sell)]].map(([k, sub, v]) => <div key={k} className="row between t-subhead"><span>{k} <span className="subtle t-footnote">{sub}</span></span><span className="tnum strong">{v}</span></div>)}</div>
           <div className="row between" style={{ padding: "12px 14px", borderRadius: 14, background: "var(--primary-soft)" }}><span className="stack tight" style={{ gap: 0 }}><b>Margin today</b><span className="t-footnote muted">₹{(m.pay / n).toFixed(2)} a packet in effect, sold at ₹{CHIPS.mrp}</span></span><Money value={m.margin} size="s" roll style={{ color: "var(--primary-text)" }} /></div>
-          <Button variant="primary" size="xl" block loading={busy} onClick={order}><span className="hi" lang="hi">ऑर्डर करें</span> · {n} packets</Button>
+          <Button variant="primary" size="xl" block loading={busy} busy={<span className="hi" lang="hi">ऑर्डर हो रहा है…</span>} done={<span className="hi" lang="hi">ऑर्डर हो गया</span>} onClick={order}><span className="hi" lang="hi">ऑर्डर करें</span> · {n} packets</Button>
           <span className="t-caption subtle" style={{ textAlign: "center" }}>Best before 18 Nov 2026 · 47 days on every packet · unsold packs go back to the salesman until {fmt.day(D.RETURN_BY)}</span>
         </Card>}
       </div>

@@ -21,6 +21,7 @@ export { CH_ORDER, chColor } from './channels';
 export { ICONS, type IconName, type IconNode } from './icons/registry';
 export { COVERAGE, type Coverage } from './coverage';
 export { Notices, useNotice, provideNotice, type Toast, type Banner } from './notice.svelte';
+export { Wait, WAIT, refusal, type WaitPhase } from './wait.svelte';
 
 export { default as Icon } from './icons/Icon.svelte';
 export { default as ThemeProvider } from './components/ThemeProvider.svelte';

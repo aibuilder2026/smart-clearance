@@ -446,7 +446,8 @@
 @media (max-width: 640px) {
   .dist-step { flex-wrap: wrap; }
   .dist-step > .grow { flex: 1 1 calc(100% - 60px); }
-  .dist-step > .btn { flex: 1 1 100%; }
+  .dist-step > .btn, .dist-step > .btn-wait { flex: 1 1 100%; }
+  .dist-step > .btn-wait { justify-items: stretch; }
 }
 /* a channel's mark, in its own ink */
 .dist-chan { flex: none; display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; color: var(--ch); background: color-mix(in srgb, var(--ch) 14%, transparent); }
@@ -518,7 +519,8 @@ button.dist-line:focus-visible { outline: 3px solid var(--ring); outline-offset:
 .dz-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
 @media (max-width: 760px) { .dz-fields { grid-template-columns: minmax(0, 1fr); } }
 .dz-foot { display: flex; gap: 10px; }
-.dz-foot > .btn:last-child { flex: 1; }
+.dz-foot > .btn:last-child, .dz-foot > .btn-wait:last-child { flex: 1; }
+.dz-foot > .btn-wait:last-child { justify-items: stretch; }
 @media (max-width: 520px) { .dz-foot { flex-direction: column-reverse; } }
 @media (max-width: 420px) { .dz-two:not(.dz-pair) { grid-template-columns: minmax(0, 1fr); } .dz-pair .cam-tag { font-size: 11px; } }
 /* how a distributor's figures add up (SC-145): what the batches cost him = what he sold + what the client credited */

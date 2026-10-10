@@ -93,13 +93,96 @@
       {Array.from({ length: 8 }).map((_, i) => <rect key={i} x="11" y="2" width="2" height="6" rx="1" fill="currentColor" opacity={0.25 + (i / 8) * 0.75} transform={`rotate(${i * 45} 12 12)`} />)}
     </svg>;
   }
-  const Button = React.forwardRef(function Button({ variant = "secondary", size, icon, iconRight, loading, block, pill, className, children, ...rest }, ref) {
-    return <button ref={ref} type="button" className={cx("btn", `btn-${variant}`, size && `btn-${size}`, block && "btn-block", pill && "btn-pill", !children && "btn-icon", className)} data-loading={loading ? "true" : undefined} aria-busy={loading || undefined} {...rest}>
-      {icon && <Icon name={icon} size={size === "sm" ? 16 : size === "xl" ? 20 : 18} />}
+  // A button that waits on the network (SC-152, option A): it keeps its width and says what it is doing (busy), with a
+  // spinner in the icon's place and a line creeping along its foot; the answer lands as a tick and the done word (done),
+  // or a shake and the reason under it with Try again; past 3 s a line under it says it is still working. Nothing shows
+  // for an answer under 100 ms, and a shown wait stays 400 ms. `action` runs on the press and the button waits on it (a
+  // rejection is the refusal, in its own words); a screen can drive it instead with `loading` and `error` (and onRetry).
+  // `slow` words the 3 s line, or false when the wait is not the network. A button given none of these is the plain one
+  const WAIT = { show: 100, least: 400, slow: 3000, hold: 1200 };
+  const SHAKE = { x: [0, -8, 8, -5, 5, -2, 0] };
+  function useWait({ action, loading, error, done }) {
+    const [phase, setPhase] = useState(loading ? "wait" : error ? "error" : "idle");
+    const [err, setErr] = useState(error || null);
+    const t = useRef({ timers: [], shown: 0 });
+    const clear = () => { t.current.timers.forEach(clearTimeout); t.current.timers = []; };
+    const later = (f, ms) => t.current.timers.push(setTimeout(f, ms));
+    const begin = () => {
+      clear(); setErr(null); setPhase("wait"); t.current.shown = 0;
+      later(() => { t.current.shown = Date.now(); setPhase(p => (p === "wait" ? "busy" : p)); }, WAIT.show);
+      later(() => setPhase(p => (p === "busy" ? "slow" : p)), WAIT.slow);
+    };
+    const end = message => {
+      const s = t.current.shown, hold = s ? Math.max(0, WAIT.least - (Date.now() - s)) : 0;
+      clear();
+      later(() => {
+        if (message) { setErr(message); setPhase("error"); }
+        else if (done) { setPhase("done"); later(() => setPhase("idle"), WAIT.hold); }
+        else setPhase("idle");
+      }, hold);
+    };
+    useEffect(() => { if (loading) begin(); return clear; }, []);
+    // driven by the screen: loading on is the wait, off is the answer (a refusal when error is set)
+    const was = useRef(!!loading);
+    useEffect(() => { if (action || !!loading === was.current) return; was.current = !!loading; loading ? begin() : end(error || null); }, [loading]);
+    useEffect(() => { if (action || loading) return; if (error) { setErr(error); setPhase("error"); } else setPhase(p => (p === "error" ? "idle" : p)); }, [error]);
+    const go = async e => {
+      if (phase !== "idle" && phase !== "error") return;
+      begin();
+      try { await action(e); end(null); } catch (x) { end((x && x.message) || "That didn't go through. Try again."); }
+    };
+    return { phase, err, go };
+  }
+  function Arc({ size = 18 }) {
+    return <svg className="btn-arc" width={size} height={size} viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5" fill="none" stroke="currentColor" strokeOpacity="0.28" strokeWidth="2.25" /><path d="M10 2.5a7.5 7.5 0 0 1 7.5 7.5" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" /></svg>;
+  }
+  function Tick({ size = 18 }) {
+    const reduce = useReducedMotion();
+    return <motion.svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" initial={reduce ? false : { scale: 0.4 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 520, damping: 22 }}>
+      <motion.path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: reduce ? 1 : 0 }} animate={{ pathLength: 1 }} transition={{ duration: reduce ? 0 : 0.28, ease: [0.22, 1, 0.36, 1] }} /></motion.svg>;
+  }
+  const Button = React.forwardRef(function Button({ variant = "secondary", size, icon, iconRight, loading, action, busy, done, error, onRetry, slow, block, pill, className, children, onClick, ...rest }, ref) {
+    const waits = action !== undefined || busy !== undefined || done !== undefined || loading !== undefined || error !== undefined;
+    const reduce = useReducedMotion();
+    const { phase: p, err, go } = useWait({ action, loading, error, done });
+    const own = useRef(null); const restW = useRef(0);
+    const face = p === "done" ? "done" : p === "busy" || p === "slow" ? "busy" : "rest";
+    useLayoutEffect(() => { if (face === "rest" && own.current) restW.current = own.current.offsetWidth; });
+    const noteId = useMemo(() => "bn" + Math.random().toString(36).slice(2, 7), []);
+    const sz = size === "sm" ? 16 : size === "xl" ? 20 : 18;
+    const classes = cx("btn", `btn-${variant}`, size && `btn-${size}`, block && "btn-block", pill && "btn-pill", !children && "btn-icon", className);
+    if (!waits) return <button ref={ref} type="button" className={classes} onClick={onClick} {...rest}>
+      {icon && <Icon name={icon} size={sz} />}
       {children}
       {iconRight && <Icon name={iconRight} size={size === "sm" ? 16 : 18} />}
-      {loading && <Spinner size={18} />}
     </button>;
+    const working = p === "wait" || p === "busy" || p === "slow";
+    const setRef = el => { own.current = el; if (typeof ref === "function") ref(el); else if (ref) ref.current = el; };
+    const press = e => { if (working || p === "done") { e.preventDefault(); return; } if (action) go(e); else onClick && onClick(e); };
+    const retry = action ? go : onRetry;
+    const faces = {
+      rest: <>{icon && <Icon name={icon} size={sz} />}{children}{iconRight && <Icon name={iconRight} size={size === "sm" ? 16 : 18} />}</>,
+      busy: <><Arc size={sz} />{busy || children}</>,
+      done: <><Tick size={sz} />{done || children}</>,
+    };
+    return <span className={cx("btn-wait", block && "btn-wait-block")}>
+      <motion.button ref={setRef} type="button" className={classes} data-phase={p} aria-busy={working || undefined} aria-disabled={working || p === "done" || undefined}
+        aria-describedby={(p === "slow" && slow !== false) || p === "error" ? noteId : undefined} onClick={press} {...rest}
+        style={{ ...rest.style, minWidth: face !== "rest" && restW.current ? restW.current : undefined }}
+        animate={p === "error" && !reduce ? SHAKE : { x: 0 }} transition={{ duration: 0.36, ease: "easeOut" }}>
+        <span className="btn-faces"><AnimatePresence initial={false}>
+          <motion.span key={face} className="btn-face" initial={reduce ? false : { y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={reduce ? { opacity: 0, transition: { duration: 0 } } : { y: -12, opacity: 0 }} transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}>{faces[face]}</motion.span>
+        </AnimatePresence></span>
+        {face !== "rest" && <motion.i className="btn-line" aria-hidden="true" initial={{ scaleX: reduce ? 0.9 : 0 }} animate={{ scaleX: face === "done" ? 1 : 0.9, opacity: face === "done" ? 0 : 1 }}
+          transition={face === "done" ? { scaleX: { duration: 0.16, ease: [0.22, 1, 0.36, 1] }, opacity: { delay: 0.5, duration: 0.3 } } : { duration: reduce ? 0 : 1.1, ease: [0.3, 0.7, 0.4, 1] }} />}
+      </motion.button>
+      <span className="sr-only" role="status">{face === "busy" ? busy || "Working" : face === "done" ? done || "Done" : ""}</span>
+      <AnimatePresence initial={false}>{((p === "slow" && slow !== false) || p === "error") && <motion.span key={p} id={noteId} className={cx("btn-note", p === "error" && "err")} role={p === "error" ? "alert" : undefined}
+        initial={reduce ? false : { opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, transition: { duration: 0.12 } }} transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}>
+        {p === "slow" ? <><Icon name="cloud" size={14} /><span>{slow || "Still working. The platform can take a few seconds to wake."}</span></>
+          : <><Icon name="circle-alert" size={14} /><span>{err}</span>{retry && <button type="button" className="btn btn-link btn-sm" onClick={retry}>Try again</button>}</>}
+      </motion.span>}</AnimatePresence>
+    </span>;
   });
   function IconButton({ icon, label, round, badge, className, size = 20, ...rest }) {
     return <button type="button" className={cx("iconbtn", round && "round", className)} aria-label={label} title={label} {...rest}><Icon name={icon} size={round ? 16 : size} />{badge ? <span className="badge-count">{badge}</span> : null}</button>;
@@ -278,14 +361,27 @@
       </motion.div>
     </Fragment>}</AnimatePresence></Portal>;
   }
+  // An action that returns a promise keeps the alert open while it waits (SC-152): its answer says what it is doing
+  // (`busy`) with a spinner, the others wait, and a refusal stays in the alert, in its own words; the alert closes once
+  // the action has gone through
   function Alert({ open, title, message, actions = [], onClose }) {
     const app = useApp(); const panel = useRef(null);
-    useModal(open, panel, onClose);
+    const [wait, setWait] = useState(null);
+    useEffect(() => { if (!open) setWait(null); }, [open]);
+    useModal(open, panel, wait && wait.on ? () => {} : onClose);
+    const press = async a => {
+      if (wait && wait.on) return;
+      const out = a.onClick && a.onClick();
+      if (!out || typeof out.then !== "function") { onClose && onClose(); return; }
+      setWait({ label: a.label, on: true, err: null });
+      try { await out; setWait(null); onClose && onClose(); }
+      catch (e) { setWait({ label: a.label, on: false, err: (e && e.message) || "That didn't go through. Try again." }); }
+    };
     return <Portal><AnimatePresence>{open && <Fragment key="alert">
       <motion.div className="scrim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} />
       <motion.div ref={panel} tabIndex={-1} role="alertdialog" aria-modal={app.embedded ? undefined : "true"} aria-label={title} className="alert" initial={{ opacity: 0, scale: 1.08, x: "-50%", y: "-50%" }} animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }} exit={{ opacity: 0, scale: 0.96, x: "-50%", y: "-50%" }} transition={{ type: "spring", stiffness: 500, damping: 36 }}>
-        <div className="al-body"><h3>{title}</h3>{message && <p>{message}</p>}</div>
-        <div className="al-actions" style={actions.length > 2 ? { gridAutoFlow: "row" } : undefined}>{actions.map(a => <button key={a.label} type="button" className={cx(a.strong && "strong", a.danger && "danger")} onClick={() => { a.onClick && a.onClick(); onClose && onClose(); }}>{a.label}</button>)}</div>
+        <div className="al-body"><h3>{title}</h3>{message && <p>{message}</p>}{wait && wait.err && <p className="al-err" role="alert">{wait.err}</p>}</div>
+        <div className="al-actions" style={actions.length > 2 ? { gridAutoFlow: "row" } : undefined}>{actions.map(a => { const on = !!(wait && wait.on && wait.label === a.label); return <button key={a.label} type="button" className={cx(a.strong && "strong", a.danger && "danger")} aria-busy={on || undefined} disabled={!!(wait && wait.on && !on)} onClick={() => press(a)}>{on ? <><Arc size={16} />{a.busy || a.label}</> : a.label}</button>; })}</div>
       </motion.div>
     </Fragment>}</AnimatePresence></Portal>;
   }

@@ -57,6 +57,10 @@ Button.
 only on success; the console's controls keep their value and its buttons let go once saved; the workspace gets the
 console's route line between screens; sign-out says when it fails; reduced motion lands every step at once.
 
-## The pick
+## The pick (10 Oct)
 
-Waiting for the maintainer.
+**Option A · Says what it's doing**, with the blank-spinner fix in the same build (not shipped apart). Every button that
+calls the network keeps its size, says what it is doing with a spinner in the icon's place and a line along its foot,
+lands as a tick and the done word, or shakes and puts the reason under it with Try again; past 3 s a line says it is
+still working. Built design3 first (the kit's Button), then core's Button and one action helper, then every app's
+buttons.

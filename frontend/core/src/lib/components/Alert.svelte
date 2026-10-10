@@ -1,6 +1,7 @@
 <script lang="ts" module>
-	/** a button at the foot of an alert; any of them closes it, after its own action */
-	export type AlertAction = { label: string; onclick?: () => void; danger?: boolean; strong?: boolean };
+	/** a button at the foot of an alert; any of them closes it, after its own action. An action that returns a promise
+	 *  keeps the alert open while it waits (SC-152), its button saying `busy`; a refusal stays in the alert */
+	export type AlertAction = { label: string; onclick?: () => unknown; busy?: string; danger?: boolean; strong?: boolean };
 </script>
 
 <script lang="ts">
@@ -8,6 +9,7 @@
 	import { useApp } from '../app.svelte';
 	import { cx } from '../cx';
 	import { DURATION, SPRINGS, motionMs, springCurve } from '../motion';
+	import { refusal } from '../wait.svelte';
 
 	type Props = {
 		open?: boolean;
@@ -25,6 +27,27 @@
 	const close = () => {
 		open = false;
 		onclose?.();
+	};
+	// the action waiting on its answer, and a refusal to show in the alert
+	let waiting: string | null = $state(null);
+	let refused: string | null = $state(null);
+	$effect(() => {
+		if (!open) waiting = refused = null;
+	});
+	const press = async (a: AlertAction) => {
+		if (waiting) return;
+		const out = a.onclick?.();
+		if (!(out instanceof Promise)) return close();
+		waiting = a.label;
+		refused = null;
+		try {
+			await out;
+			waiting = null;
+			close();
+		} catch (e) {
+			waiting = null;
+			refused = refusal(e);
+		}
 	};
 	const spring = springCurve(SPRINGS.alert);
 	const at = (from: number, to: number, t: number) => from + (to - from) * t;
@@ -46,7 +69,10 @@
 	};
 </script>
 
-<AlertDialog.Root bind:open onOpenChange={(v) => !v && onclose?.()}>
+<AlertDialog.Root
+	bind:open={() => open, (v) => (waiting && !v ? undefined : (open = v))}
+	onOpenChange={(v) => !v && !waiting && onclose?.()}
+>
 	<AlertDialog.Portal to={app.overlays ?? undefined}>
 		<AlertDialog.Overlay forceMount>
 			{#snippet child({ props, open: shown })}
@@ -74,16 +100,37 @@
 								>{#snippet child({ props: p })}<h3 {...plain(p)}>{title}</h3>{/snippet}</AlertDialog.Title
 							>{#if message}<AlertDialog.Description
 									>{#snippet child({ props: p })}<p {...p}>{message}</p>{/snippet}</AlertDialog.Description
-								>{/if}
+								>{/if}{#if refused}<p class="al-err" role="alert">{refused}</p>{/if}
 						</div>
 						<div class="al-actions" style={actions.length > 2 ? 'grid-auto-flow: row' : undefined}>
 							{#each actions as a (a.label)}<button
 									type="button"
 									class={cx(a.strong && 'strong', a.danger && 'danger')}
-									onclick={() => {
-										a.onclick?.();
-										close();
-									}}>{a.label}</button
+									aria-busy={waiting === a.label || undefined}
+									disabled={!!waiting && waiting !== a.label}
+									onclick={() => press(a)}
+									>{#if waiting === a.label}<svg
+											class="btn-arc"
+											width="16"
+											height="16"
+											viewBox="0 0 20 20"
+											aria-hidden="true"
+											><circle
+												cx="10"
+												cy="10"
+												r="7.5"
+												fill="none"
+												stroke="currentColor"
+												stroke-opacity="0.28"
+												stroke-width="2.25"
+											/><path
+												d="M10 2.5a7.5 7.5 0 0 1 7.5 7.5"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="2.25"
+												stroke-linecap="round"
+											/></svg
+										>{a.busy ?? a.label}{:else}{a.label}{/if}</button
 								>{/each}
 						</div>
 					</div>

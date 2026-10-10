@@ -37,10 +37,22 @@
 .btn-block { width: 100%; }
 .btn-icon { width: 40px; padding: 0; }
 .btn-icon.btn-sm { width: 32px; }
-.btn[data-loading="true"] { color: transparent !important; pointer-events: none; }
-.btn[data-loading="true"] .spinner { position: absolute; inset: 0; margin: auto; color: inherit; }
-.btn-primary[data-loading="true"] .spinner, .btn-violet[data-loading="true"] .spinner { --spin-color: var(--primary-fg); }
-.btn-approve[data-loading="true"] .spinner { --spin-color: var(--amber-fg); }
+/* a button that waits on the network (SC-152): it keeps its width and says what it is doing, all in its own ink (a
+   spinner in the icon's place, a line creeping along its foot); a tick and the done word, or the reason under it */
+.btn-wait { display: inline-grid; justify-items: end; max-width: 100%; vertical-align: middle; }
+.btn-wait-block { display: grid; justify-items: stretch; width: 100%; }
+.btn[data-phase] { overflow: hidden; }
+.btn[aria-busy="true"] { cursor: progress; }
+.btn[data-phase="done"] { cursor: default; }
+.btn-faces { display: inline-grid; gap: inherit; }
+.btn-face { grid-area: 1 / 1; display: inline-flex; align-items: center; justify-content: center; gap: inherit; white-space: nowrap; }
+.btn-arc { flex: none; animation: spin 0.8s linear infinite; }
+.btn-line { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; transform-origin: left center; background: currentColor; opacity: 0.55; pointer-events: none; }
+.btn-note { display: grid; grid-template-columns: auto 1fr; align-items: start; gap: 2px 6px; max-width: 46ch; margin-top: 8px; font-size: 12.5px; font-weight: 400; line-height: 1.4; color: var(--fg-2); text-align: left; }
+.btn-note .ic { margin-top: 1.5px; }
+.btn-note.err { color: var(--red-text); }
+.btn-note > .btn-link { grid-column: 2; justify-self: start; height: 28px; padding: 0; font-size: 13px; }
+.btn-wait-block > .btn-note { max-width: none; }
 .iconbtn { position: relative; display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; color: var(--fg-2); transition: background-color var(--t-fast), color var(--t-fast), transform var(--t-fast) var(--ease); flex: none; }
 .iconbtn:hover { background: var(--fill); color: var(--fg); }
 .iconbtn:active { transform: scale(0.94); }
@@ -269,6 +281,9 @@ button.list-row:hover, a.list-row:hover { background: var(--fill); }
 .alert .al-actions button + button { box-shadow: calc(var(--hair) * -1) 0 0 var(--line-2); }
 .alert .al-actions button.strong { font-weight: 650; }
 .alert .al-actions button.danger { color: var(--red-text); }
+.alert .al-actions button[aria-busy="true"] { display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: progress; }
+.alert .al-actions button:disabled { opacity: 0.45; cursor: not-allowed; }
+.alert .al-err { color: var(--red-text); }
 .menu { position: absolute; z-index: calc(var(--z-sheet) + 3); min-width: 220px; padding: 6px; border-radius: 14px; background: var(--glass-strong); -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%); box-shadow: var(--shadow-3), 0 0 0 var(--hair) var(--line); }
 .menu .mi { display: flex; align-items: center; gap: 10px; width: 100%; height: 38px; padding: 0 10px; border-radius: 9px; font-size: 14.5px; text-align: left; color: var(--fg); }
 .menu .mi:hover, .menu .mi:focus-visible { background: var(--fill-2); outline: none; }
