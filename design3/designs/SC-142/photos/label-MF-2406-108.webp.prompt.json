@@ -1,0 +1,9 @@
+{
+  "model": "Qwen-Image 2.1 (bf16), image edit, local (qwen-image-bf16 0.2.0)",
+  "input": "agents/evals/vision/images/poha.webp (the Vision eval set's clean label for the product)",
+  "seed": 1432,
+  "size": 1024,
+  "prompt": "Edit only the printed text on the white label, keeping everything else identical: the first line reads \"MUNCHLY INSTANT POHA 250 g\"; the second line reads \"BATCH NO: MF-2406-108\"; the third line reads \"MFG: 08/12/2025\"; the fourth line reads \"BEST BEFORE: 04/09/2026\"; the last line reads \"MRP ₹55.00 (incl. of all taxes)\". Same bold black sans-serif font, same size and alignment, same carton, same lighting and background.",
+  "post": "cwebp -q 84",
+  "purpose": "SC-142: the label photo the distributor sent for the history batch MF-2406-108 (Munchly Instant Poha 250 G, best before 04/09/2026)"
+}

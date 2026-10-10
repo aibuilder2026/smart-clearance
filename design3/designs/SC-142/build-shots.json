@@ -1,0 +1,137 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/batches",
+  "out": "build/batches-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1700,
+  "ls": {
+   "sc3-session": {
+    "uid": "priya",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/batches",
+  "out": "build/batches-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1700,
+  "ls": {
+   "sc3-session": {
+    "uid": "priya",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/report/MF-2407-116",
+  "out": "build/record-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 2700,
+  "ls": {
+   "sc3-session": {
+    "uid": "priya",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)",
+  "click": [
+   "nav.bh-tabs button:nth-child(4)"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/report/MF-2407-116",
+  "out": "build/record-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2400,
+  "height": 2700,
+  "ls": {
+   "sc3-session": {
+    "uid": "priya",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)",
+  "click": [
+   "nav.bh-tabs button:nth-child(4)"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/report/MF-2407-116",
+  "out": "build/record-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2400,
+  "height": 3600,
+  "ls": {
+   "sc3-session": {
+    "uid": "priya",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)",
+  "click": [
+   "nav.bh-tabs button:nth-child(4)"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/record/MF-2409-117",
+  "out": "build/record-journey-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 2000,
+  "ls": {
+   "sc3-session": {
+    "uid": "priya",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/batches/MF-2407-116",
+  "out": "build/dist-photos-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "height": 1300,
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)",
+  "click": [
+   "nav.bh-tabs button:nth-child(4)"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html#/batches/MF-2407-116",
+  "out": "build/dist-photos-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 2400,
+  "height": 2400,
+  "ls": {
+   "sc3-session": {
+    "uid": "rakesh",
+    "at": 1791500000000
+   }
+  },
+  "js": "window.SC3_FLOW.fastForward(9)",
+  "click": [
+   "nav.bh-tabs button:nth-child(4)"
+  ]
+ }
+]

@@ -6,7 +6,7 @@
   const { useState, useEffect, useMemo, useRef, Fragment } = React;
   const { motion, AnimatePresence, useReducedMotion } = Motion;
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, Flow = window.SC3_FLOW, S = window.SC3_SCREENS; const fmt = M.fmt;
-  const { cx, Icon, Badge, Button, Card, List, ListRow, Segmented, Sheet, Product, Empty, Money, Roll, Tile, MoneyPanel, DocCard, Menu, useApp, useNotice } = K;
+  const { cx, Icon, Badge, Button, Card, List, ListRow, Segmented, Sheet, Product, Empty, Money, Roll, Tile, MoneyPanel, DocCard, Menu, Avatar, useApp, useNotice } = K;
   const { useStore, useRoute, Screen, Columns, SectionTitle, Locked } = S;
   const LG = () => window.SC3_LEDGER; // core/ledger.js, read when a screen draws (the design-system page loads no ledger)
   const r2 = n => Math.round(n * 100) / 100;
@@ -335,7 +335,7 @@
   }
 
   /* ---------- a batch's own page ---------- */
-  const TABS = [{ id: "money", label: "Money", icon: "coins" }, { id: "papers", label: "Papers", icon: "file-text" }, { id: "impact", label: "Impact", icon: "leaf" }];
+  const TABS = [{ id: "money", label: "Money", icon: "coins" }, { id: "papers", label: "Papers", icon: "file-text" }, { id: "impact", label: "Impact", icon: "leaf" }, { id: "record", label: "Record", icon: "history" }];
   const Row = ({ k, sub, v, tone, strong }) => <div className={cx("lg-line", strong && "strong")}><span>{k}{sub && <em> {sub}</em>}</span><span className={cx("tnum", tone)}>{v}</span></div>;
   const NotPosted = ({ h }) => <Locked icon="book-open-check" agent="Impact agent" live={h.phase === "settled" && h.van && h.van.status === "done"} text={`Posts the batch to the ledger once the return window closes on ${fmt.day(D.RETURN_BY)}, and writes the BRSR row with evidence links.`} />;
 
@@ -394,6 +394,92 @@
   }
 
   // the batch's page: its head (the operator's batch head, SC-112) and its Money, Papers and Impact as tabs
+  /* ---------- a batch's record (SC-142, option A): the photos sent for it, the yeses, the audit trail ---------- */
+  // the photos: the label photo the distributor sent, with what Vision read of it, and, destroyed at his godown, the
+  // destruction's before and after, with Vision's checks. A photo's src is its signed link on the live workspace, else
+  // its file in the design system's img/
+  const PHOTO = { label: ["Label photo", "Label"], before: ["Before, at the godown", "1 · Before"], after: ["After, at the landfill", "2 · After"] };
+  const asDay = iso => new Date(iso.slice(0, 10) + "T00:00:00+05:30");
+  // a time as the record keeps it: an ISO day and time on the live workspace and in the history, the stub's own (09:19,
+  // Mon 5 Oct) for the story's batch
+  const isIso = t => /^\d{4}-\d\d-\d\d/.test(t || "");
+  const recWhen = t => (!t ? "" : !isIso(t) ? t : t.length > 10 ? `${fmt.day(t.slice(0, 10))}, ${t.slice(11, 16)}` : fmt.day(t));
+  const recDay = iso => asDay(iso).toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
+  const photoSrc = p => p.url || (p.img ? window.SC3_IMG + p.img : null);
+  const upFirst = t => (t ? t.charAt(0).toUpperCase() + t.slice(1) : t);
+  function PhotoShot({ p, onOpen }) {
+    const src = photoSrc(p), [title, tag] = PHOTO[p.id];
+    if (!src) return <div className="rec-shot none"><Icon name="image" size={20} /><span className="t-caption">no photo kept</span></div>;
+    return <button type="button" className="rec-shot" onClick={onOpen} aria-label={`${title}, sent ${recWhen(p.at)}: open it`}><img src={src} alt={`${title} for this batch`} loading="lazy" /><span className="cam-tag">{tag}</span></button>;
+  }
+  const RecCheck = ({ ok, children }) => <div className="row tight t-footnote rec-check"><Icon name={ok ? "circle-check" : "circle-alert"} size={15} className={ok ? "rec-ok" : "rec-warn"} />{children}</div>;
+  function PhotoFacts({ p }) {
+    const r = p.read;
+    return <div className="stack tight">
+      <span className="t-footnote muted">Sent by {p.by} · {recWhen(p.at)}</span>
+      {r && <><RecCheck ok>Vision read batch {r.batch}, made {fmt.date(r.mfg)}, best before {fmt.date(r.bestBefore)}, MRP ₹{Number(r.mrp).toFixed(2)}{r.at ? ` · ${recWhen(r.at)}` : ""}</RecCheck><RecCheck ok={r.matches !== false}>{r.matches !== false ? "Matches the export" : "Does not match the export"}</RecCheck></>}
+      {(p.checks || []).map(x => <RecCheck key={x.id} ok={x.ok}>{x.label}</RecCheck>)}
+    </div>;
+  }
+  function PhotoSheet({ p, onClose }) {
+    return <Sheet open={!!p} onClose={onClose} title={p ? PHOTO[p.id][0] : ""}>{p && <div className="stack"><div className="rec-big"><img src={photoSrc(p)} alt={`${PHOTO[p.id][0]} for this batch`} /></div><PhotoFacts p={p} /></div>}</Sheet>;
+  }
+  function RecordPhotos({ photos, title, empty }) {
+    const [open, setOpen] = useState(null);
+    return <Card className="stack snug">
+      <div className="card-head"><span className="card-title">{title}</span>{photos.length > 0 && <span className="t-footnote subtle">{photos.length} · tap to open</span>}</div>
+      {photos.length ? <div className={cx("rec-photos", photos.length === 2 && "two")}>{photos.map(p => <div key={p.id} className="rec-photo"><PhotoShot p={p} onOpen={() => setOpen(p)} /><b className="t-subhead">{PHOTO[p.id][0]}</b><PhotoFacts p={p} /></div>)}</div>
+        : <span className="t-footnote muted">{empty}</span>}
+      <PhotoSheet p={open} onClose={() => setOpen(null)} />
+    </Card>;
+  }
+  // who acted: a person's face, or the agent's tile
+  const AGENT_ICON = { watcher: "radar", vision: "scan-line", valuer: "coins", router: "route", lister: "shopping-bag", outreach: "send", negotiator: "messages-square", donation: "heart-handshake", paperwork: "file-text", impact: "leaf", data: "database", notifier: "bell" };
+  function Actor({ who, size = 36 }) {
+    if (who.kind === "person" && who.id) return <Avatar person={D.PEOPLE[who.id] || { name: who.name }} size={size < 36 ? "sm" : undefined} />;
+    const icon = who.kind === "agent" ? AGENT_ICON[who.id] || "sparkles" : "store";
+    return <span className={cx("icontile", who.kind === "agent" && "soft")} style={{ width: size, height: size, borderRadius: 11 }}><Icon name={icon} size={Math.round(size * 0.47)} stroke={2} /></span>;
+  }
+  const whoLine = w => (w.kind === "agent" ? `${w.name} · agent` : w.org ? `${w.name} · ${w.org}` : w.name);
+  // the yeses: what only a person at the client could let happen, in their name
+  function RecordYeses({ steps }) {
+    const yes = steps.filter(x => x.yes);
+    return <Card className="stack snug"><span className="card-title">The yeses</span><span className="t-footnote muted">What only a person at {W.short} could let happen, in their name.</span>
+      {yes.length ? yes.map(x => <div key={x.key + x.at} className="rec-yes"><Actor who={x.who} size={32} /><div className="grow" style={{ minWidth: 0 }}><b className="t-subhead">{x.who.name}</b><div className="t-footnote muted">{upFirst(x.text)}</div></div><time className="t-caption subtle tnum">{recWhen(x.at)}</time></div>)
+        : <span className="t-footnote muted">No yes yet: the plan waits for one.</span>}
+    </Card>;
+  }
+  // the audit trail: every step, day by day, by the agent or the person who took it; people's lines as the audit log
+  // keeps them, the kiranas' orders folded into one; filtered to people or agents, and downloaded as a CSV
+  function RecordTrail({ steps, batch }) {
+    const [who, setWho] = useState("all"); const [unfold, setUnfold] = useState({});
+    const rows = steps.filter(x => who === "all" || (who === "people" ? x.who.kind !== "agent" : x.who.kind === "agent"));
+    const days = []; rows.forEach(x => { const d = isIso(x.at) ? x.at.slice(0, 10) : ""; let g = days[days.length - 1]; if (!g || g.d !== d) days.push(g = { d, items: [] }); g.items.push(x); });
+    const people = steps.filter(x => x.who.kind !== "agent").length;
+    const save = () => download(`${batch}-audit-trail.csv`, csv([["When", "Who", "As", "What", "Yes"]].concat(rows.flatMap(x => [[isIso(x.at) ? x.at.replace("T", " ") : x.at, x.who.name, x.who.kind === "agent" ? "agent" : x.who.org || "", upFirst(x.text), x.yes ? "yes" : ""]].concat((x.items || []).map(i => [i.at.replace("T", " "), i.who.name, "kirana", upFirst(i.text), ""]))))));
+    return <Card className="stack snug">
+      <div className="card-head"><span className="card-title">Audit trail</span><span className="t-footnote subtle">{steps.length} {steps.length === 1 ? "step" : "steps"} · {people} by people</span></div>
+      <div className="rec-filters" role="group" aria-label="Whose steps">{[["all", "Everyone"], ["people", "People"], ["agents", "Agents"]].map(([k, t]) => <button key={k} type="button" className="chip" aria-pressed={who === k} onClick={() => setWho(k)}>{t}</button>)}</div>
+      {!steps.length && <span className="t-footnote muted">The record fills as the agents and the people act on the batch.</span>}
+      <div className="rec-trail">{days.map((g, gi) => <Fragment key={g.d + gi}>{(g.d || gi === 0) && <div className="rec-day">{g.d ? recDay(g.d) : "This journey"}</div>}
+        {g.items.map((x, i) => <div key={x.key + x.at + i} className={cx("rec-row", i === g.items.length - 1 && "end")}>
+          <Actor who={x.who} />
+          <div style={{ minWidth: 0 }}><span className="who">{whoLine(x.who)}</span><b>{upFirst(x.text)}{x.yes && <> <Badge size="sm" tone="amber">yes</Badge></>}</b>
+            {x.items && x.items.length > 0 && <><button type="button" className="pt-link t-footnote" aria-expanded={!!unfold[x.key + x.at]} onClick={() => setUnfold(u => Object.assign({}, u, { [x.key + x.at]: !u[x.key + x.at] }))}>{unfold[x.key + x.at] ? "Hide" : "Show"} the {x.items.length} {x.items.length === 1 ? "order" : "orders"}</button>
+              {unfold[x.key + x.at] && <div className="rec-items">{x.items.map((y, j) => <div key={j} className="row between t-footnote"><span><b>{y.who.name}</b> {y.text}</span><span className="subtle tnum">{isIso(y.at) ? y.at.slice(11, 16) : y.at}</span></div>)}</div>}</>}
+          </div>
+          <time>{isIso(x.at) ? x.at.slice(11, 16) : x.at}</time></div>)}</Fragment>)}</div>
+      <Button variant="secondary" icon="download" onClick={save} style={{ justifySelf: "start" }}>Download the audit trail (CSV)</Button>
+    </Card>;
+  }
+  // the Record tab: the photos first, then the trail beside the yeses
+  function RecordTab({ batch, steps, photos }) {
+    return <div className="stack" style={{ gap: 16 }}>
+      <RecordPhotos photos={photos} title="Photos sent for this batch" empty="No photo yet: Vision asks the distributor for the carton's label once the Watcher flags the batch." />
+      <div className="rec-cols"><RecordTrail steps={steps} batch={batch} /><RecordYeses steps={steps} /></div>
+    </div>;
+  }
+
   function BatchPage({ me, at, tab: tab0 }) {
     const s = useStore(); const app = useApp(); const phone = app.bp === "phone";
     const c = LG().caseOf(at);
@@ -408,7 +494,7 @@
     </div>;
     return <Screen me={me} title={c.sku.name} back="Ledger" hideLarge below={head}>
       <AnimatePresence mode="wait"><motion.div key={tab} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}>
-        {tab === "money" ? <MoneyTab c={c} row={row} h={h} /> : tab === "papers" ? <PaperPack me={me} c={c} h={h} /> : <ImpactTab c={c} row={row} h={h} />}
+        {tab === "money" ? <MoneyTab c={c} row={row} h={h} /> : tab === "papers" ? <PaperPack me={me} c={c} h={h} /> : tab === "record" ? <RecordTab batch={c.batch.id} steps={(story ? LG().record.storyRecord(s) : LG().record.recordOf(c)).steps} photos={story ? LG().record.storyPhotos(s) : LG().record.photosOf(c)} /> : <ImpactTab c={c} row={row} h={h} />}
       </motion.div></AnimatePresence>
     </Screen>;
   }
@@ -420,5 +506,5 @@
     return ref && LG().caseOf(ref) ? <BatchPage key={ref} me={me} at={ref} tab={(at && at.tab) || p.tab} /> : <Ledger me={me} />;
   }
 
-  Object.assign(window.SC3_SCREENS, { Paperwork, PaperPack, Report, Ledger, BatchPage, Paper, Receipt, KeepsWhat, OutcomeBadge, printPage, download, csv });
+  Object.assign(window.SC3_SCREENS, { RecordTab, RecordPhotos, PhotoSheet, PhotoFacts, Paperwork, PaperPack, Report, Ledger, BatchPage, Paper, Receipt, KeepsWhat, OutcomeBadge, printPage, download, csv });
 })();

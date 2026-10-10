@@ -33,6 +33,8 @@ from sc_api.services.reference import load
 
 PHOTO = b"\xff\xd8\xff\xe0 history label photo"
 EVIDENCE = resources.files("sc_api.reference").joinpath("evidence")
+# each history batch's label photo, as its distributor sent it (SC-142, design3/system/img/labels)
+LABELS = resources.files("sc_api.reference").joinpath("labels")
 As = Callable[[str, datetime], Awaitable[Ctx]]
 # the PDFs Paperwork lays out once the history is built: the pack (settle) and the food bank's receipt
 PAPERS = {"settle", "receipt"}
@@ -160,8 +162,13 @@ async def _step(
         await steps.photo_request(x, client_id, ref, None)
     elif step == "photo":
         x = await as_(dist, at)
-        link = await steps.photo_upload(x, client_id, ref, "image/jpeg", len(PHOTO))
-        storage.objects[(hx.settings.photos_bucket, f"{client_id}/{ref}/{link['id']}")] = PHOTO
+        label = LABELS.joinpath(f"{ref}.webp")
+        data, kind = (label.read_bytes(), "image/webp") if label.is_file() else (PHOTO, "image/jpeg")
+        link = await steps.photo_upload(x, client_id, ref, kind, len(data))
+        name = f"{client_id}/{ref}/{link['id']}"
+        storage.objects[(hx.settings.photos_bucket, name)] = data
+        if real is not None and hx.settings.photos_bucket:  # where the Record tab and his Photos tab read it
+            await real.storage.write(hx.settings.photos_bucket, name, data, kind)
         await steps.photo_sent(x, client_id, ref, link["id"])
     elif step == "read":
         sku = j["skus"][b["sku"]]
@@ -292,6 +299,21 @@ async def _case(ctx: Ctx, client_id: str, ref: str) -> m.Case:
     )
     assert case is not None
     return case
+
+
+async def put_labels(ctx: Ctx, client_id: str) -> list[str]:
+    """each history batch's label photo (SC-142) put where its case keeps it in the photos bucket: a workspace built
+    before SC-142 kept only a stand-in in memory, so its links led nowhere. Returns the batches whose photo went up"""
+    if ctx.cloud is None or not ctx.settings.photos_bucket:
+        return []
+    put = []
+    q = select(m.Case).where(m.Case.client_id == client_id, m.Case.history.is_(True))
+    for case in (await ctx.session.execute(q.order_by(m.Case.batch_ref))).scalars():
+        name, label = (case.photo or {}).get("object"), LABELS.joinpath(f"{case.batch_ref}.webp")
+        if name and label.is_file():
+            await ctx.cloud.storage.write(ctx.settings.photos_bucket, name, label.read_bytes(), "image/webp")
+            put.append(case.batch_ref)
+    return put
 
 
 async def _quiet(ctx: Ctx, client_id: str, refs: set[str]) -> None:

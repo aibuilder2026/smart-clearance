@@ -839,6 +839,10 @@ const outputs = {
 		'journey.json': json(journey),
 		'money.json': json(moneyFixtures),
 		'flow.json': json(flowFixture),
+		// each history batch's label photo, as its distributor sent it (SC-142), which its build puts in the photos bucket
+		...Object.fromEntries(
+			L.HISTORY.map((c) => [`labels/${c.ref}.webp`, readFileSync(join(design3, `system/img/labels/${c.ref}.webp`))])
+		),
 		// the evidence of the history's packs destroyed at a godown (SC-139), which its build puts in the photos bucket
 		...Object.fromEntries(
 			L.HISTORY.filter((c) => c.destruction).flatMap((c) =>

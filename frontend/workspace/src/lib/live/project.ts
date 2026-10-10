@@ -6,6 +6,7 @@
 import type { IconName } from '@smart-clearance/core';
 import type {
 	Assess,
+	RecordPhoto,
 	AuditRow,
 	Batch,
 	Buyer,
@@ -51,7 +52,7 @@ import type {
 	WsSupport,
 	WsWorkspace
 } from '@smart-clearance/api/workspace';
-import { dateOf, dayLabel, dayMonth, dayN, dayTime, hhmm, hourWord, minutes, weekday, when } from './when';
+import { dateOf, dayLabel, dayMonth, dayN, dayTime, hhmm, hourWord, localMinute, minutes, weekday, when } from './when';
 
 /** the store's version the screens' State follows (core's store.svelte.ts) */
 export const STATE_VERSION = 5;
@@ -739,4 +740,45 @@ export function partnerOf(p: WsPartner): PartnerView {
 		shop: p.shop,
 		cases: p.cases.map((c) => ({ ...c, docs: c.docs.map(docOf), receipt: c.receipt ? docOf(c.receipt) : null }))
 	};
+}
+
+/** the photos sent for a batch (SC-142), from its case: its label photo with what Vision read, and the destruction's
+ *  two with Vision's checks, each with its short-lived link; who sent each comes from the batch's record */
+export function photosOfCase(d: CaseDetail): RecordPhoto[] {
+	const out: RecordPhoto[] = [];
+	const min = localMinute;
+	const ph = d.journey.photo;
+	if (ph?.url)
+		out.push({
+			id: 'label',
+			src: ph.url,
+			at: min(ph.at),
+			by: '',
+			read: ph.read
+				? {
+						at: min(ph.at),
+						batch: ph.read.batch,
+						mfg: ph.read.mfg,
+						bestBefore: ph.read.bestBefore,
+						mrp: ph.read.mrp,
+						matches: ph.read.matches
+					}
+				: null
+		});
+	const dz = d.destruction;
+	if (dz?.photos)
+		for (const w of ['before', 'after'] as const) {
+			const p = dz.photos[w];
+			if (p?.url)
+				out.push({
+					id: w,
+					src: p.url,
+					at: min(p.at),
+					by: '',
+					checks: (dz.checks ?? []).filter((x) =>
+						(w === 'before' ? ['batch', 'count'] : ['slate', 'when']).includes(x.id)
+					)
+				});
+		}
+	return out;
 }

@@ -106,6 +106,7 @@ def facts(
     support: dict[str, Any] | None,
     van_time: str = "07:00",
     destruction: dict[str, Any] | None = None,
+    photo: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """a batch as the partner's pages read it, cut to its part; a distributor's, with the packs destroyed at his
     godown and their evidence (SC-139, `destruction` as views.destruction_out reads it)"""
@@ -201,6 +202,8 @@ def facts(
                 else None
             ),
             "destruction": destruction if dist else None,
+            # the label photo he sent (SC-142), as views.label_out reads it
+            "photo": photo if dist else None,
             "docs": docs,
         }
     )
@@ -259,6 +262,7 @@ async def partner(ctx: Ctx, client_id: str, cm: m.ClientMember) -> dict[str, Any
         if role == "distributor":
             support = views.support_of(case, c, skus[case.sku_id], orders[case.id], rules)
         dz = views.destruction_out(ctx, case.destruction) if role == "distributor" else None
-        out["cases"].append(facts(case, batch, orders[case.id], feed[case.id], cm, support, world.van_time(c), dz))
+        ph = views.label_out(ctx, case) if role == "distributor" else None
+        out["cases"].append(facts(case, batch, orders[case.id], feed[case.id], cm, support, world.van_time(c), dz, ph))
     out["cases"].sort(key=lambda x: (x["flagged"], x["ref"]), reverse=True)
     return out

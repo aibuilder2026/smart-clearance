@@ -84,6 +84,7 @@ backend-api/scripts/default-password.sh --copy   # the password every account st
 backend-api/scripts/hydrate.sh --journey-reset munchly   # Munchly's live journey from its start again (the story's own calendar)
 backend-api/scripts/hydrate.sh --day-minutes munchly=1440   # a client's journey day (1440 is real time): set it back after an E2E run, which leaves it at 60
 backend-api/scripts/hydrate.sh --papers munchly [--again]   # have Paperwork lay out the PDFs a client's papers lack (--again: every paper afresh)
+backend-api/scripts/hydrate.sh --photos munchly   # put the history's label photos in the photos bucket, for a workspace built before SC-142
 backend-api/scripts/app-env.sh              # point the console's, the landing page's and the workspace app's .env.local at the local API (restart their dev servers)
 backend-api/scripts/hydrate.sh --live-only  # Munchly's live workspace on a world that already has its story (production: the hydrate job with --live-only,--allow-env,prod)
 backend-api/scripts/walk.sh [--day-minutes N]   # Munchly's journey walked over HTTP, with the agents running (agents/scripts/dev.sh); --api, --origin and --allow-env prod walk production
