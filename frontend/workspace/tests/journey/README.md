@@ -54,7 +54,7 @@ batch on from wherever it stands, and can be run again after a failure.
 E2E_SLOWMO=120 corepack pnpm test:journey:mango --headed
 ```
 
-Its run of 9 Oct is in `runs/2026-10-09-mango/`.
+Its run of 10 Oct, on the distributor portal with Lakshmi Agencies' portal read back (SC-134), is in `runs/2026-10-10-mango/`; the run of 9 Oct is in `runs/2026-10-09-mango/`.
 
 ## Munchly Chips Leftover E2E
 

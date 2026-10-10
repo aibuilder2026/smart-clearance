@@ -9,6 +9,8 @@ import {
 	inr,
 	kiranasOf,
 	running,
+	same,
+	shows,
 	sidebar,
 	staff,
 	story,
@@ -69,27 +71,6 @@ const kgOf = (n: number) =>
 	n >= 1000
 		? `${(r2(n) / 1000).toLocaleString('en-IN', { maximumFractionDigits: 2 })} t`
 		: `${r2(n).toLocaleString('en-IN', { maximumFractionDigits: 1 })} kg`;
-
-/** what a screen or an export shows, held to the ledger: each part (or one of its spellings) must be in the text */
-function shows(name: string, text: string, parts: (string | string[])[]) {
-	// a screen's text breaks its lines where its layout does: compared with and without its spaces
-	const flat = (x: string) => x.replace(/\s+/g, '');
-	const missing = parts.filter(
-		(p) => !(Array.isArray(p) ? p : [p]).some((x) => text.includes(x) || flat(text).includes(flat(x)))
-	);
-	running().figure(name, missing.length ? `missing ${missing.map((p) => [p].flat()[0]).join('; ')}` : 'as posted');
-	if (missing.length)
-		running().find('warning', HERO, `${name} does not read ${missing.map((p) => `"${[p].flat()[0]}"`).join(', ')}`);
-	expect.soft(missing, name).toEqual([]);
-}
-
-/** a value an export or a screen carries, against the ledger's */
-function same(name: string, actual: string | number | undefined, posted: string | number | undefined) {
-	running().figure(name, actual ?? '(missing)');
-	if (String(actual) !== String(posted))
-		running().find('warning', HERO, `${name}: ${actual} where the ledger has ${posted}`);
-	expect.soft(String(actual), name).toBe(String(posted));
-}
 
 /** the chips' ledger row as backend-api posted it, and the quarter it cleared in */
 async function posted() {

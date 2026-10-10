@@ -37,6 +37,8 @@ export type Case = {
 		posted: boolean;
 	};
 	plan: { net: number; lines: { id: string; units: number }[] } | null;
+	/** the batch, with what the Watcher read of it when it flagged it */
+	batch: { assess?: { atRisk: number } | null };
 	writeOff: { total: number } | null;
 	actual: { net: number } | null;
 	docs: { id: string; type: string; no: string; status: string; pdf: boolean; units?: number | null }[];
@@ -135,6 +137,31 @@ export function story(name: string, actual: string | number | undefined, expecte
 	run.figure(name, actual ?? '(missing)');
 	if (actual !== expected) run.find('warning', ref, `${name}: ${actual} where the story has ${expected}`);
 	expect.soft(actual, name).toBe(expected);
+}
+
+/** what a screen or an export shows, held to the ledger: each part (or one of its spellings) must be in the text */
+export function shows(name: string, text: string, parts: (string | string[])[]) {
+	// a screen's text breaks its lines where its layout does: compared with and without its spaces
+	const flat = (x: string) => x.replace(/\s+/g, '');
+	const missing = parts.filter(
+		(p) => !(Array.isArray(p) ? p : [p]).some((x) => text.includes(x) || flat(text).includes(flat(x)))
+	);
+	now().run.figure(name, missing.length ? `missing ${missing.map((p) => [p].flat()[0]).join('; ')}` : 'as posted');
+	if (missing.length)
+		now().run.find(
+			'warning',
+			now().ref,
+			`${name} does not read ${missing.map((p) => `"${[p].flat()[0]}"`).join(', ')}`
+		);
+	expect.soft(missing, name).toEqual([]);
+}
+
+/** a value an export or a screen carries, against the ledger's */
+export function same(name: string, actual: string | number | undefined, posted: string | number | undefined) {
+	now().run.figure(name, actual ?? '(missing)');
+	if (String(actual) !== String(posted))
+		now().run.find('warning', now().ref, `${name}: ${actual} where the ledger has ${posted}`);
+	expect.soft(String(actual), name).toBe(String(posted));
 }
 
 export const sidebar = (page: Page, label: string) =>
