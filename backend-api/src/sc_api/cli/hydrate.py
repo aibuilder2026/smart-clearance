@@ -72,8 +72,11 @@ async def run(args: argparse.Namespace) -> None:
             print(f"sc-hydrate: Paperwork lays out the missing PDFs of {len(asked)} batch(es): {', '.join(asked)}")
             return
         if args.photos:  # the history's label photos, put in the photos bucket (SC-142)
-            put = await history.put_labels(ctx, args.photos)
-            print(f"sc-hydrate: {len(put)} label photo(s) of {args.photos}'s history in the photos bucket")
+            put, there = await history.put_labels(ctx, args.photos)
+            print(
+                f"sc-hydrate: {len(put)} label photo(s) of {args.photos}'s history put in the photos bucket, "
+                f"{len(there)} already there"
+            )
             return
         if args.journey_reset:
             out = await reset.reset(replace(ctx, ids=Ids()), args.journey_reset)

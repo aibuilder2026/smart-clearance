@@ -1867,7 +1867,7 @@
     - with the photos held back mid-load, design3 (light and dark) and core's stub build each showed the shimmer placeholders with their tags, then the photos once they landed;
     - the frontend gate passes: core 270, api 78, workspace 92, admin 17, demo 5, console 3.
 
-- **SC-147** (In Review, branch `SC-147-label-codes`): every carton label photo carries a barcode, a QR code and the FSSAI licence, past and present.
+- **SC-147** (PR #134, merged): every carton label photo carries a barcode, a QR code and the FSSAI licence, past and present.
   - **The request:** "food labels uploaded should have FSSAI approved bar code and QR code on the cartons. this should updated for all past batches and orders on munchly", with a real snack label for reference. The GST papers, its second part, are SC-148.
   - **Design first:** three options on one board in app v3, `SC-147 design review.html`:
     - A, the full statutory sticker (recommended);
@@ -1891,7 +1891,7 @@
     - every visible barcode and QR code read back from its photo;
     - the evals were not run on live Gemini (on request only, about GBP 1 to 2).
 
-- **SC-148** (In Review, branch `SC-148-gst-papers`, stacked on SC-147): the GST papers in Tally's layout, every party with a valid GSTIN, and the tax invoice with its e-invoice, past and present.
+- **SC-148** (PR #135, merged): the GST papers in Tally's layout, every party with a valid GSTIN, and the tax invoice with its e-invoice, past and present.
   - **The request:** "Same for GST bills and invoices, they should be proper with GST number and realistic as much as possible. I need you to update all images and invoices as needed for all past and present batches." Found: no GSTIN on the papers passed its check character; Lakshmi Agencies, Patil Distributors and Gupta & Sons had none ("GSTIN undefined"); Paperwork's PDFs named Munchly by its name only; the invoice lacked most of CGST rule 46; the credit notes named no invoice.
   - **Design first:** three options on one board in app v3, `SC-148 design review.html`:
     - A, as Tally prints it;
@@ -1914,7 +1914,7 @@
     - the live fixtures were regenerated; every QR code drawn decodes with Chromium's BarcodeDetector;
     - the browser suites were not run (SC-55).
   - **Locally:** migrated, rebuilt with `hydrate.sh --reset`, then `--papers munchly --again`: Paperwork laid out all 44 of the history's PDFs afresh (each invoice issued, with its IRN; each credit note against its dispatch invoice). The day is 24 hours.
-  - **Production:** the identities arrive with the next deploy's migration and a Reset journey (or the hydrate job with `--live-only`); the history's PDFs there are laid out again only with the hydrate job's `--papers,munchly,--again,--allow-env,prod`, which has not been run.
+  - **Production:** CI deployed `3e7a4c6` (SC-147, SC-148 and SC-153), and SC-160 replaced production's data with local's, so the identities, the history's papers and the kirana invoices are there as locally.
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 
 - **SC-149** (In Review, branch `SC-149-overview-destroyed`): the console's Overview stops drawing what it recovered twice, and shows the food destroyed.
@@ -1975,7 +1975,7 @@
   - **The workspace:** a step sent `inline` (`SendOptions`) rejects with the API's words instead of raising the band, and shows once it has gone through, never before. **The console:** `Console.act` resolves once saved (the console reads itself again without waiting) and rejects with the API's words; controls keep the value pressed; a menu item waits on its "…" button.
   - **Checks:** the frontend gate passes (core 278 with 5 new, api 79, admin 17, console 8 with 5 new, workspace 96 with 3 new, demo 5). The workspace's sign-in was pressed in a headless browser on the stub build; the console agent played its states in the browser pane on the mock build. The browser suites were not run (SC-55); the motion specs count `.btn-arc` as a loading indicator.
   - **Hosting:** the hosted landing page and console load commit `852020d`; every pinned file was checked on jsDelivr first, and both pages render. The app, demo and design-system pages stay on their pins; design3's design-system page crashes on load, which predates SC-152 (a task is offered for it).
-- **SC-153** (In Review, branch `SC-153-kirana-invoices`, stacked on SC-148): a tax invoice from the distributor for every kirana order, past and present.
+- **SC-153** (PR #136, merged): a tax invoice from the distributor for every kirana order, past and present.
   - **The request:** SC-148's board asked whether each shop's order should get its own tax invoice; the maintainer answered **"An invoice per order"**, then **"Before GST"** (₹18.00 effective, plus CGST and SGST at 2.5% each, the shop paying the total) and **"Scheme discount"** (the packets at ₹21.60, less 16.67%, so every invoice equals what the ledger counts).
   - **Design first:** three options on one board in app v3, `SC-153 design review.html`, each the app on its stub with only its screens changed:
     - A, with each order (recommended);
@@ -2002,6 +2002,18 @@
     - the browser suites were not run (SC-55).
   - **Locally:** migrated to 0015, rebuilt with `hydrate.sh --reset`, and `--papers munchly` had Paperwork lay out the history's 214 kirana invoices. The day is 24 hours.
   - **Hosting:** the hosted app page stays on its pinned commit.
+- **SC-159** (In Review, branch `SC-159-history-photo-ids`; bug): a rebuilt history kept an old label or evidence photo where its object name repeated.
+  - **Found** while readying the local history for SC-160: MF-2406-105's label photo was still the one from before SC-147, though the other eleven were SC-147's.
+  - **The cause:** `hydrate.sh --reset` builds the world with seeded ids, so a rebuild could give a history photo the object name it had before; the bucket is written once and never replaced (`Storage.write`), so the old photo stayed. `--photos` counted every photo as put, written or not.
+  - **The fix** (`services/journey/history.py`): the history's label and evidence uploads take fresh ids (`_fresh`); `put_labels` returns what it wrote and what was already there, and `--photos` prints both.
+  - **Checks:** backend-api 568 passed, 1 skipped; the new test (`test_record.py`) builds the history on seeded ids and holds each photo to a fresh name and its batch's own bytes, and fails without the fix.
+  - **Locally:** rebuilt on the fix; all 18 history photos the case details serve (12 labels; the 3 godown batches' before and after) match the reference byte for byte. Paperwork laid out every history paper and the 214 kirana invoices with the current templates, run in process, since another session's agents worker (SC-158, on `main` from before SC-147) shares the local subscriptions, dropped the kirana events and laid out 10 batches' papers with the old templates.
+
+- **SC-160** (In Review; operations): production's data replaced with local's after SC-147, SC-148, SC-153 and SC-159, asked for by the maintainer ("sync all photos, documents, papers, postgresql and big query data to production").
+  - **Done (11 Oct)** with `backend-api/scripts/sync.sh` (SC-136), production at schema 0015 after CI deployed `3e7a4c6`: rehearsed into a scratch database first, then the on-demand backup `1791675143836` (23:32 UTC, 10 Oct), the database (37 tables, 5,882 rows, 19 sequences), the photos, docs and exports buckets, and BigQuery's seven tables. The plan after it shows every table equal.
+  - **Read back through production's API:** all 18 history photos match the reference; the history's tax invoice (issued, with its IRN), credit note (against `MFL/25-26/02405`), a kirana invoice (`RT/26-27/1164`, ₹605) and an agency's destruction certificate (`OCE/DC/26-27/0218`) serve as PDFs; the ledger reads Q2 FY27 as 12 batches and ₹2,20,383.58; Munchly's journey is at day 0 on 24-hour days.
+  - **Replaced with it:** production's own journeys since SC-136 (31 cases, 614 kirana orders), its 2 devices registered for pushes (no push reaches them until they register again from the app), and its idempotency keys. Objects only production had stay in its buckets for the backup, until the 30-day lifecycle removes them.
+
 - **SC-154** (In Review, branch `SC-154-hero-film-vertex`): the hero film, live action on Vertex AI. The landing page's film tells the journey with real people, made with Google's models.
   - **The request:** "a really awesome video projecting the journey of the application in about 15 seconds", with "realistic human characters instead of cartoon", showing brands, distributors, kiranas, donations and the staff sale, made with Google's video and image models, with a plan of the Vertex AI models and their prices; professional and aesthetically pleasing.
   - **The maintainer's decisions (10 Oct):** tracked scripts rather than a plugin; the design round as storyboards plus one Veo 3.1 Fast draft clip per option at 720p without audio (about $8); the final on Veo 3.1 at 1080p without audio (the hero plays muted; silent video is half the price); no night act, both themes starting on the same frame; two money gates, each answered with a figure.
