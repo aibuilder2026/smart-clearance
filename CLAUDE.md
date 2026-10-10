@@ -1833,4 +1833,12 @@
     - the browser suites were not run (SC-55).
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 
+- **SC-146** (In Review, branch `SC-146-photo-loader-visible`; bug found by the maintainer): photos showed a black frame while they loaded.
+  - **Found:** "photos dont show any loading effect, just black". On Rakesh Traders' Photos tab the label and After photos were black boxes with only their tags.
+  - **The cause:** SC-144's skeleton was there but could not be seen. The kit's shimmer is a translucent tint (`--fill-2` to `--fill-3`, 7.5% to 12%), meant for a light card, and the photo frames (`.rec-shot`, `.cam`) are near-black. SC-144's check confirmed the skeleton was in the page, not that it showed.
+  - **The fix** (design3 `common.jsx` `Photo` first, then core's `Photo.svelte`): the photo's skeleton sits on the page's own surface (`--surface-2`) under the shimmer, above the frame and under the photo's tag. The kit's Skeleton is unchanged.
+  - **Checks:**
+    - with the photos held back mid-load, design3 (light and dark) and core's stub build each showed the shimmer placeholders with their tags, then the photos once they landed;
+    - the frontend gate passes: core 270, api 78, workspace 92, admin 17, demo 5, console 3.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
