@@ -35,6 +35,7 @@ def main() -> None:
         },
         "buyer": j["buyer"],
         "balanceHours": j["market"]["balanceHours"],
+        "ewayThreshold": m["rules"]["ewayThreshold"],
     }
     (HERE / "story.json").write_text(json.dumps(story, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print(f"wrote {HERE / 'story.json'}")

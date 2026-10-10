@@ -1724,5 +1724,6 @@
   "pan": "AAGFA0000A",
   "kind": "Kirana wholesaler · ExpireSoon buyer"
  },
- "balanceHours": 48
+ "balanceHours": 48,
+ "ewayThreshold": 50000
 }

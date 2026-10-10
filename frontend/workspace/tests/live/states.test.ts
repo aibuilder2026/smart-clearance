@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { createHash } from 'node:crypto';
 import { dayLabel } from '../../src/lib/live/when';
 import { fireEvent, render, waitFor, within, type RenderResult } from '@testing-library/svelte';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -574,15 +575,25 @@ describe("expiry day's settlement (SC-94)", () => {
 		await waitFor(() => expect(text(r)).toContain('Expiry credit note'));
 		const d = moment('cleared').members.priya.cases[MANGO].docs.find((x) => x.id === 'expiry')!;
 		const t = text(r);
-		expect(t).toContain(`${d.no} · Munchly → Lakshmi Agencies`);
-		expect(t).toContain(
-			`${d.units!.toLocaleString('en-IN')} packs destroyed at the godown at the ₹14.50 dealer price${inr2(d.credit!)}`
-		);
-		expect(t).toContain(`Input GST he reverses on them 5%, section 17(5)(h)${inr2(d.gst!)}`);
-		expect(t).toContain(`Destruction charges Deccan Green Waste Management, ₹1.50 a pack${inr2(d.charges!)}`);
-		expect(t).toContain(`Credit to Lakshmi Agencies${inr2(d.amount!)}`);
+		// Tally's layout (SC-148): Munchly's credit note to the distributor, against the invoice it billed the batch on
+		const n2 = (n: number) => n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+		const u = d.units!.toLocaleString('en-IN');
+		expect(t).toContain(`Credit Note No.${d.no}`);
+		expect(t).toContain('Issued toLakshmi Agencies');
+		expect(t).toContain('GSTIN/UIN: 27AAKCM0000M1ZN');
+		expect(t).toContain('GSTIN/UIN: 36AAJFL0000L1ZM');
+		expect(t).toContain('Against our invoiceMFL/26-27/02418');
+		expect(t).toContain(`${u} packs destroyed at the godown, at the dealer price${u}14.50${n2(d.credit!)}`);
+		expect(t).toContain(`Input GST he reverses on them, 5%, section 17(5)(h)${n2(d.gst!)}`);
+		expect(t).toContain(`Destruction charges, Deccan Green Waste Management${u}1.50${n2(d.charges!)}`);
+		expect(t).toContain(`Credit to Lakshmi Agencies₹ ${n2(d.amount!)}`);
 		expect(t).not.toContain("Munchly's own costs, on destroying them");
-		expect(t).toContain(d.note);
+		// what the paper's note says, in the layout's words: financial, against the certificate, on his account
+		expect(t).toContain('not a GST credit note under section 34 of the CGST Act');
+		expect(t).toContain(
+			`Issued against destruction certificate ${d.certificate}, on Munchly's approval of the evidence.`
+		);
+		expect(t).toContain("Adjusted against Lakshmi Agencies' account");
 	});
 
 	it("the agency's certificate, and the GST ITC memo keeping Munchly's credit on the packs destroyed at his godown", async () => {
@@ -1513,6 +1524,31 @@ describe("a batch's record (SC-142)", () => {
 		expect(t).toMatch(/Approved the destruction of [\d,]+ packs at /);
 		expect(t).toContain('Munchly credited you on CN/0119 once it approved.');
 		expect(r.container.querySelectorAll('.rec-shot img')).toHaveLength(3);
+		expect(t).not.toMatch(/NaN|undefined|Invalid Date/);
+		r.unmount();
+	});
+});
+
+describe('the GST papers in Tally’s layout (SC-148)', () => {
+	it("an invoice Rakesh issued carries its e-invoice: the IRN from the parties' GSTINs, its acknowledgement and the signed QR", async () => {
+		vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1440);
+		const s = source(fakeApi(moment('cleared'), 'priya'));
+		const r = await draw(s, 'paperwork', CHIPS);
+		await waitFor(() => expect(text(r)).toContain('Tax invoice'));
+		const c = moment('cleared').members.priya.cases[CHIPS];
+		const inv = c.docs.find((d) => d.id === 'invoice')!;
+		expect(c.journey.invoiceIssuedAt).toBeTruthy();
+		await fireEvent.click(r.getAllByRole('button', { name: /Tax invoice/ })[0]);
+		await waitFor(() => expect(text(r)).toContain('(ORIGINAL FOR RECIPIENT)'));
+		const irn = createHash('sha256').update(`27ABHPR0000K1ZW2026-27INV${inv.no}`).digest('hex');
+		const t = text(r);
+		expect(t).toContain(irn);
+		expect(t).toMatch(/Ack No\.:\s*1126\d{11}/);
+		expect(t).toContain('GSTIN/UIN: 27ABHPR0000K1ZW');
+		expect(t).toContain('GSTIN/UIN: 22AAGFA0000A1ZW');
+		expect(t).toContain('Place of Supply: Chhattisgarh (22)');
+		expect(t).not.toContain('DRAFT, for Rakesh Traders');
+		expect(r.container.querySelector('.tl-einv svg')).not.toBeNull();
 		expect(t).not.toMatch(/NaN|undefined|Invalid Date/);
 		r.unmount();
 	});

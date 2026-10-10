@@ -321,6 +321,7 @@ async def test_the_story_journey_end_to_end(api, munchly, cloud, ctx):
         "27ABHPR0000K1ZW",
     )
     assert paper["journey"]["invoiceIssuedAt"] == issued["journey"]["invoiceIssuedAt"]
+    assert (paper["balanceHours"], paper["ewayThreshold"]) == (48, 50000)
     assert (await api.post(f"{WS}/cases/{HERO}/review", headers=PRIYA)).status_code == 200
     assert (await api.post(f"{WS}/cases/{HERO}/dispatches", json={"kind": "van"}, headers=RAKESH)).status_code == 200
     # and in the timeline, once it has run

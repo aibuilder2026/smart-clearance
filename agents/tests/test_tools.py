@@ -157,6 +157,7 @@ def test_each_paper_lays_out_backend_apis_figures():
         "₹ 11,510.00",
         "INR Eleven Thousand Five Hundred Ten Only",
         "Company's PAN: <b>ABHPR0000K</b>",
+        "Not required: the consignment is under ₹50,000",
     ):
         assert text in page, text
     assert "Ack No." not in page  # a draft: the IRN and its acknowledgement come with the issue

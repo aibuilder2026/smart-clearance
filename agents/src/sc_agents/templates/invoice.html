@@ -21,7 +21,7 @@
   <tr><td><span class="k">Dispatched through</span>Buyer's own truck</td><td><span class="k">Destination</span>{{ B.city }}</td></tr>
   <tr>
     <td><span class="k">Consignee (Ship to)</span><b>{{ B.name }}</b><br>{{ B.address }}<br>GSTIN/UIN: {{ B.gstin }}<br>State Name: {{ B.state }}, Code: {{ B.stateCode }}</td>
-    <td colspan="2" rowspan="2"><span class="k">Terms of Delivery</span>Ex-godown, {{ R.godown }}, {{ R.city }}<span class="k" style="margin-top:6pt">Reverse charge</span>No<span class="k" style="margin-top:6pt">E-way bill</span>{% if eway and eway.status == "not required" %}Not required: the consignment is under the threshold{% else %}Generated with the dispatch{% endif %}</td>
+    <td colspan="2" rowspan="2"><span class="k">Terms of Delivery</span>Ex-godown, {{ R.godown }}, {{ R.city }}<span class="k" style="margin-top:6pt">Reverse charge</span>No<span class="k" style="margin-top:6pt">E-way bill</span>{% if eway and eway.status == "not required" %}Not required: the consignment is under {{ case.ewayThreshold|inr }}{% else %}Generated with the dispatch{% endif %}</td>
   </tr>
   <tr><td><span class="k">Buyer (Bill to)</span><b>{{ B.name }}</b><br>{{ B.address }}<br>GSTIN/UIN: {{ B.gstin }}<br>State Name: {{ B.state }}, Code: {{ B.stateCode }}<br>Place of Supply: {{ B.state }} ({{ B.stateCode }})</td></tr>
 </table>

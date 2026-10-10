@@ -103,6 +103,7 @@ def cut_case(c: dict[str, Any]) -> dict[str, Any]:
         "buyer": c.get("buyer"),
         "invoiceIssuedAt": journey.get("invoiceIssuedAt"),
         "balanceHours": c.get("balanceHours"),
+        "ewayThreshold": c.get("ewayThreshold"),
         "kiranaOrders": sum(1 for k in c.get("kiranas") or [] if (k.get("units") or 0) > 0),
         "photoObject": c.get("photoObject"),
         "photosBucket": c.get("photosBucket"),

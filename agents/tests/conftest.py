@@ -161,6 +161,7 @@ def case(
         "client": STORY["client"],
         "buyer": STORY["buyer"],
         "balanceHours": STORY["balanceHours"],
+        "ewayThreshold": STORY["ewayThreshold"],
     }
 
 
