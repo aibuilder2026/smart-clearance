@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Photo from '../common/Photo.svelte';
 	import Card from '../../../components/Card.svelte';
 	import Sheet from '../../../components/Sheet.svelte';
 	import { cx } from '../../../cx';
@@ -33,7 +34,7 @@
 </Card>
 <Sheet bind:open={shown} title={open ? PHOTO[open.id][0] : ''}
 	>{#if open}<div class="stack">
-			<div class="rec-big"><img src={photoSrc(open)} alt="{PHOTO[open.id][0]} for this batch" /></div>
+			<div class="rec-big"><Photo src={photoSrc(open) ?? ''} alt="{PHOTO[open.id][0]} for this batch" /></div>
 			<PhotoFacts p={open} />
 		</div>{/if}</Sheet
 >

@@ -410,7 +410,7 @@
   function PhotoShot({ p, onOpen }) {
     const src = photoSrc(p), [title, tag] = PHOTO[p.id];
     if (!src) return <div className="rec-shot none"><Icon name="image" size={20} /><span className="t-caption">no photo kept</span></div>;
-    return <button type="button" className="rec-shot" onClick={onOpen} aria-label={`${title}, sent ${recWhen(p.at)}: open it`}><img src={src} alt={`${title} for this batch`} loading="lazy" /><span className="cam-tag">{tag}</span></button>;
+    return <button type="button" className="rec-shot" onClick={onOpen} aria-label={`${title}, sent ${recWhen(p.at)}: open it`}><S.Photo src={src} alt={`${title} for this batch`} loading="lazy" /><span className="cam-tag">{tag}</span></button>;
   }
   const RecCheck = ({ ok, children }) => <div className="row tight t-footnote rec-check"><Icon name={ok ? "circle-check" : "circle-alert"} size={15} className={ok ? "rec-ok" : "rec-warn"} />{children}</div>;
   function PhotoFacts({ p }) {
@@ -422,7 +422,7 @@
     </div>;
   }
   function PhotoSheet({ p, onClose }) {
-    return <Sheet open={!!p} onClose={onClose} title={p ? PHOTO[p.id][0] : ""}>{p && <div className="stack"><div className="rec-big"><img src={photoSrc(p)} alt={`${PHOTO[p.id][0]} for this batch`} /></div><PhotoFacts p={p} /></div>}</Sheet>;
+    return <Sheet open={!!p} onClose={onClose} title={p ? PHOTO[p.id][0] : ""}>{p && <div className="stack"><div className="rec-big"><S.Photo src={photoSrc(p)} alt={`${PHOTO[p.id][0]} for this batch`} /></div><PhotoFacts p={p} /></div>}</Sheet>;
   }
   function RecordPhotos({ photos, title, empty }) {
     const [open, setOpen] = useState(null);
