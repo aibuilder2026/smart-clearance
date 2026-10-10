@@ -1891,4 +1891,32 @@
   - **Production:** the identities arrive with the next deploy's migration and a Reset journey (or the hydrate job with `--live-only`); the history's PDFs there are laid out again only with the hydrate job's `--papers,munchly,--again,--allow-env,prod`, which has not been run.
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 
+- **SC-153** (In Review, branch `SC-153-kirana-invoices`, stacked on SC-148): a tax invoice from the distributor for every kirana order, past and present.
+  - **The request:** SC-148's board asked whether each shop's order should get its own tax invoice; the maintainer answered **"An invoice per order"**, then **"Before GST"** (₹18.00 effective, plus CGST and SGST at 2.5% each, the shop paying the total) and **"Scheme discount"** (the packets at ₹21.60, less 16.67%, so every invoice equals what the ledger counts).
+  - **Design first:** three options on one board in app v3, `SC-153 design review.html`, each the app on its stub with only its screens changed:
+    - A, with each order (recommended);
+    - B, the bill book;
+    - C, as PDFs.
+
+    The maintainer picked **A**. Designs, the build's stills and the decision are in `design3/designs/SC-153/`.
+  - **The invoice** (money.js `kiranaInvoice`, money.py `kirana_invoice`, held by fixtures): Tally's tax invoice (SC-148's layout) for a B2C supply within the state: the distributor's identity, the shop as buyer (Unregistered) with its address and pincode, the place of supply, every packet at the pack price less the scheme's discount, CGST and SGST as rows of their own, the total to the rupee, the amounts in words; no IRN. Ganesh ji's 24 packets: ₹518.40 less ₹86.40 = ₹432.00, ₹10.80 + ₹10.80, round-off ₹0.40, **₹454**.
+  - **Numbered** in each distributor's own sales series (`data.js` `series`, `world.js` `NUMBERS` `kirana.<id>`): the history's 214 as they were placed, two minutes apart from each batch's orders step (Rakesh Traders `RT/26-27/1164` to `1278`, Lakshmi Agencies `LA/26-27/0873` to `0971`), then the story's from the series' next (the chips' 31: `RT/26-27/1279` to `1309`). Issued as the shop orders, dated then.
+  - **Where it shows** (design3 first, then core):
+    - the kirana's order page: its figures as the invoice has them (before GST, the GST, what he paid, his margin: ₹266 where it read ₹288) and "Tax invoice · RT/26-27/1279", opening in a sheet with its PDF; his Orders name each invoice; the ordering screen's figures follow it;
+    - the distributor's Orders: the scheme's row names its invoices and the GST he collected; each shop's order shows its invoice and total, and opens it; his batch's papers gain the sales register;
+    - Priya's pack: one card, "Tax invoices to kiranas", the register beside it, each number opening its invoice.
+  - **Also:** the order page's free packets ("2 in every 12") read more paid than the ledger counted on an order not in twelves (73 of the history's: Mauli Kirana's 10 packets read ₹288 where the ledger had ₹240); as a discount on the invoice every order equals the ledger.
+  - **backend-api:** migration 0013 (`case_orders.invoice`); `steps.order` issues it in the distributor's series and asks Paperwork for its PDF (`journey.step kirana`); the case detail, the shops' list and the partner facts carry it (a kirana its own); `GET …/documents/{ref}/kirana.{shop}` serves its PDF to the shop, its distributor and Munchly; `hydrate.sh --papers` lays out any that lack one; the history numbers them as ledger.js does, and Reset journey puts the series back.
+  - **agents:** Paperwork's `kirana_invoice.html`, laid out as `{client}/{ref}/kirana-{shop}.pdf`.
+  - **The contract:** `WsKiranaInvoice`, on the journey's orders, `KiranaOffer` and `WsPartnerCase.kiranas`; `contracts.sh` re-exported the OpenAPI.
+  - **Found on the way, fixed on SC-148:** on a phone the Tally papers' blocks ran past the paper's right edge; a narrow paper now keeps its one track to the paper's width and hides the items' per column, so every header stays whole.
+  - **Checks:**
+    - backend-api 565 passed, 1 skipped (the story's invoices numbered from RT/26-27/1279, who may open a PDF; the history's 214 held to ledger.js through the partner facts; `--papers` asking for the invoices without one);
+    - agents 207 passed (the kirana invoice laid out and reported);
+    - the frontend gate passes: core 280 (`invoices.test.ts`: money.js's figures, ledger.js's story and history invoices; the goldens follow), api 78, workspace 97 (3 new live tests: Ganesh ji's invoice and its PDF, Rakesh's shop and register, Priya's pack), admin 17, demo 5, console 3;
+    - the live fixtures and the seeds were regenerated; design3's `dist/` is rebuilt;
+    - the browser suites were not run (SC-55).
+  - **Locally:** migrated to 0013, rebuilt with `hydrate.sh --reset`, and `--papers munchly` had Paperwork lay out the history's 214 kirana invoices. The day is 24 hours.
+  - **Hosting:** the hosted app page stays on its pinned commit.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

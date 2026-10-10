@@ -42,3 +42,18 @@ On one board in app v3, `SC-153 design review.html`, each the app on its stub wi
 **Option A · With each order**, the recommended one: each invoice opens in a sheet from the order it bills (the kirana's
 order page, each shop on the distributor's Orders), the batch's sales register among the distributor's papers and as one
 card in Priya's pack, each number opening its invoice; the kirana's figures follow the invoice.
+
+## The build (10–11 Oct)
+
+- design3 first: `core/money.js` `kiranaInvoice`, each distributor's `series` in `data.js` and `world.js` `NUMBERS`,
+  `core/ledger.js` (the history's invoices numbered as placed, the story's from the series' next, the shop's figures
+  and the distributor's orders following them), `screens/finance.jsx` KiranaInvoice and KiranaRegister and the pack's
+  card, `screens/trade.jsx` (the order page, the ordering screen, Orders, the shops, the batch's papers), `screens.css`.
+  Stills in `build/`.
+- core: `model.ts` `kiranaInvoice`, `journeyInvoices`, `invoicesOfCase`; `partners.ts`, `dist.ts`, `record.ts`; the
+  screens; `screens.css` verbatim.
+- backend-api, the agents and the live workspace: the invoice issued as the shop orders, its PDF laid out by Paperwork.
+- Found on the way, fixed on SC-148: the Tally papers ran past their right edge on a phone. On the invoice, the
+  discount, the taxes and the round-off became rows of their own, so a long label keeps its amount beside it; a narrow
+  register leaves out the CGST and SGST columns.
+
