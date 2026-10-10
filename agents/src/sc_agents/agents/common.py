@@ -81,6 +81,8 @@ def cut_case(c: dict[str, Any]) -> dict[str, Any]:
             "state": dist.get("state"),
             "godown": dist.get("godown"),
             "address": dist.get("address"),
+            # his identity on the tax invoice he issues (SC-148)
+            **{k: dist.get(k) for k in ("gstin", "stateCode", "pan", "fssai", "email", "bank")},
             "paused": bool((dist.get("permission") or {}).get("paused")),
             "permitted": dist.get("permission") is not None,
         },
@@ -96,6 +98,12 @@ def cut_case(c: dict[str, Any]) -> dict[str, Any]:
         "award": journey.get("award") or c.get("award"),
         "chat": journey.get("chat") or [],
         "docs": c.get("docsFull") or [],
+        # the GST papers' parties as they stand today, and when the invoice was issued (SC-148)
+        "client": c.get("client"),
+        "buyer": c.get("buyer"),
+        "invoiceIssuedAt": journey.get("invoiceIssuedAt"),
+        "balanceHours": c.get("balanceHours"),
+        "kiranaOrders": sum(1 for k in c.get("kiranas") or [] if (k.get("units") or 0) > 0),
         "photoObject": c.get("photoObject"),
         "photosBucket": c.get("photosBucket"),
         "docsBucket": c.get("docsBucket"),

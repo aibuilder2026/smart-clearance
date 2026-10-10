@@ -1,0 +1,33 @@
+{# the client's credit notes to the distributor in Tally's layout (SC-148): financial, so no GST is adjusted and
+   nothing goes to the IRP; against the invoice it billed the batch on (tools/papers.py dispatch_of) #}
+{% macro credit(case, doc, title, sub, reason, rows, note, dispatch, words, today) %}
+{% set C = case.client or {} %}{% set R = case.distributor %}
+<div class="title">{{ title }}</div>
+<div class="copy">({{ sub }})</div>
+<table>
+  <tr>
+    <td rowspan="2" style="width:52%"><b>{{ C.name or doc.owner }}</b><br>{{ C.address }}<br>GSTIN/UIN: {{ C.gstin }}<br>State Name: {{ C.state }}, Code: {{ C.stateCode }}<br>CIN: {{ C.cin }}<br>FSSAI Lic. No.: {{ C.fssai }}</td>
+    <td><span class="k">Credit Note No.</span><b>{{ doc.no }}</b></td><td><span class="k">Dated</span><b>{{ (doc.date or today)|dmy }}</b></td>
+  </tr>
+  <tr><td colspan="2"><span class="k">Against our invoice</span>{% if dispatch %}<b>{{ dispatch.no }}</b> dated {{ dispatch.date|dmy }}<br>{% endif %}Batch {{ case.ref }}, {{ case.sku.brand }} {{ case.sku.name }}</td></tr>
+  <tr>
+    <td><span class="k">Issued to</span><b>{{ R.name }}</b><br>{{ R.address or R.city }}<br>GSTIN/UIN: {{ R.gstin }}<br>State Name: {{ R.state }}, Code: {{ R.stateCode }}</td>
+    <td colspan="2"><span class="k">Reason</span>{{ reason }}</td>
+  </tr>
+</table>
+<table>
+  <tr><th style="width:4%">Sl</th><th>Particulars</th><th>Packs</th><th>Rate</th><th>Amount</th></tr>
+  {% for r in rows %}<tr><td>{{ loop.index }}</td><td>{{ r.k }}</td><td class="n">{{ r.units|num if r.units is not none else "" }}</td><td class="n">{{ r.rate|n2 if r.rate is not none else "" }}</td><td class="n">{{ r.amount|n2 }}</td></tr>{% endfor %}
+  {% if doc.roundOff %}<tr><td></td><td class="n">Round off</td><td></td><td></td><td class="n">{{ doc.roundOff|n2 }}</td></tr>{% endif %}
+  <tr><td></td><td class="n"><b>Credit to {{ R.name }}</b></td><td></td><td></td><td class="n"><b>₹ {{ (doc.amount or 0)|n2 }}</b></td></tr>
+  <tr><td colspan="5">Amount (in words): <b>{{ words(doc.amount or 0) }}</b></td></tr>
+</table>
+<table>
+  <tr>
+    <td class="small" style="width:52%">Financial credit note: not a GST credit note under section 34 of the CGST Act, so no tax is adjusted and it is not reported to the IRP. The output tax on the original sale stands.{% if note %}<br><br>{{ note }}{% endif %}<br><br>Company's PAN: <b>{{ C.pan }}</b></td>
+    <td><div class="sign">for <b>{{ C.name or doc.owner }}</b></div><div class="n">Authorised Signatory</div></td>
+  </tr>
+</table>
+{% if caller is defined %}{{ caller() }}{% endif %}
+<div class="foot">Adjusted against {{ R.name }}{{ "'" if R.name.endswith("s") else "'s" }} account · This is a Computer Generated Document</div>
+{% endmacro %}

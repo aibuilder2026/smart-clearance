@@ -1,63 +1,27 @@
-{% extends "base.html" %}
+{% extends "tally.html" %}
+{% from "_credit.html" import credit %}
+{# the packs left at the godown on the best-before, settled by the client's expiry policy (SC-94): destroyed at his
+   godown against the agency's certificate (SC-139), taken back at full credit, or price support; a notice where the
+   policy gives no credit #}
 {% block body %}
-<div class="parties">
-  <div>
-    <div class="label">From</div>
-    <strong>{{ doc.owner }}</strong>
-  </div>
-  <div>
-    <div class="label">To</div>
-    <strong>{{ case.distributor.name }}</strong><br>
-    {{ case.distributor.godown or case.distributor.city }}
-  </div>
-</div>
-{% if doc.policy == "godown" %}
-{# destroyed at his godown (SC-139): the dealer price, the input GST he reverses on them (grossed up) and the agency's
-   charges, against the agency's certificate #}
-<table>
-  <thead>
-    <tr><th>Destroyed at the godown</th><th class="n">Packs</th><th class="n">Credit</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>{{ case.sku.brand }} {{ case.sku.name }}, at the {{ doc.dp|inr(true) }} dealer price</td>
-      <td class="n">{{ doc.units|num }}</td>
-      <td class="n">{{ doc.credit|inr(true) if doc.credit is not none else "—" }}</td>
-    </tr>
-    {% if doc.gst %}<tr><td>Input GST he reverses on them, {{ doc.gstPct }}%, section 17(5)(h)</td><td></td><td class="n">{{ doc.gst|inr(true) }}</td></tr>{% endif %}
-    {% if doc.charges %}<tr><td>Destruction charges, {{ doc.agency or "the agency" }}</td><td></td><td class="n">{{ doc.charges|inr(true) }}</td></tr>{% endif %}
-    <tr class="total"><td colspan="2">Credit to {{ case.distributor.name }}</td><td class="n">{{ doc.amount|inr(true) if doc.amount is not none else "—" }}</td></tr>
-  </tbody>
-</table>
-{% if doc.certificate %}<p class="muted">Against destruction certificate {{ doc.certificate }}{% if doc.agency %} of {{ doc.agency }}{% endif %}.</p>{% endif %}
+{% if doc.policy == "none" %}
+<div class="title">Expiry Notice</div>
+<div class="copy">(no returns)</div>
+<table><tr><td>{{ doc.units|num }} packs of batch {{ case.ref }} expired at {{ case.distributor.godown or case.distributor.city }}. No credit from {{ doc.owner }}.{% if doc.note %}<br><br>{{ doc.note }}{% endif %}</td></tr></table>
+{% elif doc.policy == "godown" %}
+{% set rows = [{"k": (doc.units|num) ~ " packs destroyed at the godown, at the dealer price", "units": doc.units, "rate": doc.dp, "amount": doc.credit or 0}] %}
+{% if doc.gst %}{% set rows = rows + [{"k": "Input GST he reverses on them, " ~ doc.gstPct ~ "%, section 17(5)(h)", "units": none, "rate": none, "amount": doc.gst}] %}{% endif %}
+{% if doc.charges %}{% set rows = rows + [{"k": "Destruction charges, " ~ (doc.agency or "the agency"), "units": doc.units, "rate": doc.charges / (doc.units or 1), "amount": doc.charges}] %}{% endif %}
+{{ credit(case, doc, "Credit Note", "Expiry, destroyed at the godown · financial, no GST adjusted",
+  "The " ~ (doc.units|num) ~ " packs left at the godown on the best-before, destroyed there" ~ (" by " ~ doc.agency if doc.agency else "") ~ (" under certificate " ~ doc.certificate if doc.certificate else "") ~ ".",
+  rows, ("Issued against destruction certificate " ~ doc.certificate ~ ", on the client's approval of the evidence.") if doc.certificate else none, dispatch, words, today) }}
 {% else %}
-<table>
-  <thead>
-    <tr><th>Expired at the godown</th><th class="n">Packs</th><th class="n">Credit</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>{{ case.sku.brand }} {{ case.sku.name }}, at the dealer price</td>
-      <td class="n">{{ doc.units|num }}</td>
-      <td class="n">{{ doc.amount|inr(true) if doc.amount is not none else "—" }}</td>
-    </tr>
-    <tr class="total"><td colspan="2">Credit to {{ case.distributor.name }}</td><td class="n">{{ doc.amount|inr(true) if doc.amount is not none else "—" }}</td></tr>
-  </tbody>
-</table>
+{% set full = doc.policy == "full-credit" %}
+{% set rows = [{"k": (doc.units|num) ~ " packs expired at the godown" ~ (", at the dealer price" if full else ", price support"), "units": doc.units, "rate": ((doc.amount or 0) / doc.units) if doc.units else none, "amount": doc.amount or 0}] %}
+{% call credit(case, doc, "Credit Note", "Expiry · " ~ ("full credit" if full else "price support") ~ " · financial, no GST adjusted",
+  "The " ~ (doc.units|num) ~ " packs left at the godown on the best-before" ~ (", taken back at the dealer price; " ~ doc.owner ~ " destroys them" if full else ": the gap to the dealer price paid, and " ~ (case.distributor.short or case.distributor.name) ~ " destroys them") ~ ".",
+  rows, none, dispatch, words, today) %}
+{% if full %}<table><tr><td class="small">{{ doc.owner }}'s own costs on destroying them, not on this note: disposal {{ doc.disposal|inr(true) }}, EPR on the packaging {{ doc.epr|inr(true) }}, input GST reversed under section 17(5)(h) {{ doc.itc|inr(true) }}; the expiry, all in, {{ ((doc.amount or 0) + doc.disposal + doc.epr + doc.itc)|inr(true) }}.</td></tr></table>{% endif %}
+{% endcall %}
 {% endif %}
-{% if doc.policy == "full-credit" %}
-<table>
-  <thead>
-    <tr><th colspan="2">{{ doc.owner }}'s own costs, on destroying them</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>Disposal</td><td class="n">{{ doc.disposal|inr(true) }}</td></tr>
-    <tr><td>EPR on the packaging</td><td class="n">{{ doc.epr|inr(true) }}</td></tr>
-    <tr><td>Input GST reversed, section 17(5)(h)</td><td class="n">{{ doc.itc|inr(true) }}</td></tr>
-    <tr class="total"><td>Expiry, all in</td><td class="n">{{ ((doc.amount or 0) + doc.disposal + doc.epr + doc.itc)|inr(true) }}</td></tr>
-  </tbody>
-</table>
-{% endif %}
-{% if doc.policy != "godown" %}<p class="muted">A financial credit note, with no GST adjustment.</p>{% endif %}
-{% if doc.note %}<div class="note">{{ doc.note }}</div>{% endif %}
 {% endblock %}

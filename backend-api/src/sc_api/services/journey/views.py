@@ -352,6 +352,8 @@ async def snapshot(ctx: Ctx, client_id: str, cm: m.ClientMember) -> dict[str, An
             "city": c.city,
             "gstin": doc.get("gstin", ""),
             "fssai": doc.get("fssai", ""),
+            # the identity its own papers carry (SC-148): its PAN, CIN, address and state
+            **{k: (doc.get("identity") or {}).get(k) for k in ("pan", "cin", "address", "state", "stateCode", "email")},
             # the client as its profile states it; its SKUs and distributors as the workspace holds them
             "listed": (doc.get("client") or {}).get("listed", ""),
             "revenue": (doc.get("client") or {}).get("revenue", ""),
@@ -412,7 +414,7 @@ def _peer(me: m.ClientMember, other: m.ClientMember, beat: dict[str, str]) -> bo
 
 def _buyer_details(p: m.Partner) -> dict[str, Any]:
     d = p.details or {}
-    return {k: d.get(k, "") for k in ("state", "stateCode", "address", "gstin", "kind")}
+    return {k: d.get(k, "") for k in ("state", "stateCode", "address", "gstin", "pan", "kind")}
 
 
 def _batch_out(bo: dict[str, Any]) -> dict[str, Any]:
@@ -653,6 +655,8 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
         ),
         "docs": [{"id": d_["id"], "status": d_["status"]} for d_ in case.docs] if case.docs else None,
         "invoiceIssued": case.invoice_issued_at is not None,
+        # when he issued it, on the journey's clock: its e-invoice is worked out from it (SC-148)
+        "invoiceIssuedAt": _iso(case.invoice_issued_at),
         "posted": case.ledger is not None,
         "reviewed": case.reviewed is not None,
     }

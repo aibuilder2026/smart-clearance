@@ -276,10 +276,10 @@ async def test_paperwork_drafts_renders_and_files_each_paper(run, backend, store
         (f"/cases/{HERO}/documents/itc", f"munchly/{HERO}/itc.pdf"),
     ]
     invoice = store.objects[("docs-test", f"munchly/{HERO}/invoice.pdf")].decode()
-    assert invoice.startswith("%PDF") and "INV/26-27/0931" in invoice and "₹11,510.00" in invoice
+    assert invoice.startswith("%PDF") and "INV/26-27/0931" in invoice and "₹ 11,510.00" in invoice
     assert "Check each paper" in invoice  # the Flash cover note in the footer
     credit = store.objects[("docs-test", f"munchly/{HERO}/support.pdf")].decode()
-    assert "CN/0117" in credit and "₹8,768" in credit
+    assert "CN/0117" in credit and "₹ 8,768.00" in credit
 
 
 async def test_paperwork_redelivered_renders_only_what_is_missing(run, backend):

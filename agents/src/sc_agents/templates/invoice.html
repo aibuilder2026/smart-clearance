@@ -1,35 +1,53 @@
-{% extends "base.html" %}
+{% extends "tally.html" %}
+{# the tax invoice the distributor issues from Tally for the ExpireSoon lot: inter-state, so IGST; once issued, its
+   e-invoice block (the IRN, acknowledgement and signed QR worked out by tools/papers.py) #}
+{% set R = case.distributor %}{% set B = case.buyer or doc.to %}{% set inter = R.stateCode != B.stateCode %}
+{% set lot = (case.listing or {}).get("id", "") %}{% set token = (case.award or {}).get("token") %}
+{% set gst = doc.igst or 0 %}
 {% block body %}
-<div class="parties">
-  <div>
-    <div class="label">Seller</div>
-    <strong>{{ doc["from"].name }}</strong><br>
-    {{ doc["from"].address or doc["from"].city }}<br>
-    {% if doc["from"].gstin %}GSTIN {{ doc["from"].gstin }}{% endif %}
-  </div>
-  <div>
-    <div class="label">Buyer</div>
-    <strong>{{ doc.to.name }}</strong><br>
-    {{ doc.to.address or doc.to.city }}<br>
-    {% if doc.to.gstin %}GSTIN {{ doc.to.gstin }}{% endif %}
-  </div>
-</div>
+<div class="title">Tax Invoice</div>
+<div class="copy">{% if e %}(ORIGINAL FOR RECIPIENT){% else %}(DRAFT, for {{ R.short or R.name }} to issue from Tally){% endif %}</div>
 <table>
-  <thead>
-    <tr><th>Item</th><th>HSN</th><th class="n">Packs</th><th class="n">Rate</th><th class="n">Taxable value</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>{{ case.sku.brand }} {{ case.sku.name }}, batch {{ case.ref }}</td>
-      <td>{{ doc.hsn }}</td>
-      <td class="n">{{ doc.units|num }}</td>
-      <td class="n">{{ doc.price|inr(true) }}</td>
-      <td class="n">{{ doc.taxable|inr(true) }}</td>
-    </tr>
-    <tr><td colspan="4">IGST at {{ doc.gstPct }}%</td><td class="n">{{ doc.igst|inr(true) }}</td></tr>
-    {% if doc.roundOff %}<tr><td colspan="4">Round-off</td><td class="n">{{ doc.roundOff|inr(true) }}</td></tr>{% endif %}
-    <tr class="total"><td colspan="4">Total</td><td class="n">{{ doc.total|inr(true) }}</td></tr>
-  </tbody>
+  {% if e %}<tr><td style="width:75%"><b>e-Invoice</b><br><span class="small">IRN:</span> <span class="mono">{{ e.irn }}</span><br><b>Ack No.:</b> {{ e.ackNo }} &nbsp; <b>Ack Date:</b> {{ e.ackDate[:10]|dmy }} {{ e.ackDate[11:16] }}<br><span class="small">Signed QR code from the Invoice Registration Portal (its signature illustrative)</span></td><td>{{ qr|safe }}</td></tr>
+  {% else %}<tr><td colspan="2"><b>e-Invoice</b> <span class="small">· the IRN and the signed QR code come from the Invoice Registration Portal once {{ R.short or R.name }} issues it</span></td></tr>{% endif %}
 </table>
-{% if doc.note %}<div class="note">{{ doc.note }}</div>{% endif %}
+<table>
+  <tr>
+    <td rowspan="4" style="width:52%"><b>{{ R.name }}</b><br>{{ R.address or R.city }}<br>GSTIN/UIN: {{ R.gstin }}<br>State Name: {{ R.state }}, Code: {{ R.stateCode }}{% if R.fssai %}<br>FSSAI Lic. No.: {{ R.fssai }}{% endif %}{% if R.email %}<br>E-Mail: {{ R.email }}{% endif %}</td>
+    <td><span class="k">Invoice No.</span><b>{{ doc.no }}</b></td><td><span class="k">Dated</span><b>{{ doc.date|dmy }}</b></td>
+  </tr>
+  <tr><td><span class="k">Delivery Note</span>{{ lot }}</td><td><span class="k">Mode/Terms of Payment</span>{% if token %}Token {{ token|inr }} paid; balance in {{ case.balanceHours }} h{% else %}Balance in {{ case.balanceHours }} h{% endif %}</td></tr>
+  <tr><td><span class="k">Buyer's Order No.</span>ExpireSoon lot {{ lot }}</td><td><span class="k">Dated</span>{{ doc.date|dmy }}</td></tr>
+  <tr><td><span class="k">Dispatched through</span>Buyer's own truck</td><td><span class="k">Destination</span>{{ B.city }}</td></tr>
+  <tr>
+    <td><span class="k">Consignee (Ship to)</span><b>{{ B.name }}</b><br>{{ B.address }}<br>GSTIN/UIN: {{ B.gstin }}<br>State Name: {{ B.state }}, Code: {{ B.stateCode }}</td>
+    <td colspan="2" rowspan="2"><span class="k">Terms of Delivery</span>Ex-godown, {{ R.godown }}, {{ R.city }}<span class="k" style="margin-top:6pt">Reverse charge</span>No<span class="k" style="margin-top:6pt">E-way bill</span>{% if eway and eway.status == "not required" %}Not required: the consignment is under the threshold{% else %}Generated with the dispatch{% endif %}</td>
+  </tr>
+  <tr><td><span class="k">Buyer (Bill to)</span><b>{{ B.name }}</b><br>{{ B.address }}<br>GSTIN/UIN: {{ B.gstin }}<br>State Name: {{ B.state }}, Code: {{ B.stateCode }}<br>Place of Supply: {{ B.state }} ({{ B.stateCode }})</td></tr>
+</table>
+<table>
+  <tr><th style="width:4%">Sl</th><th>Description of Goods</th><th>HSN/SAC</th><th>Quantity</th><th>Rate</th><th>per</th><th>Amount</th></tr>
+  <tr style="height:64pt">
+    <td>1</td>
+    <td><b>{{ case.sku.brand }} {{ case.sku.name }}</b><br><span class="small">Batch {{ case.ref }} · best before {{ case.batch.bestBefore|dmy }} · MRP {{ case.sku.mrp|inr(true) }} a pack, incl. of all taxes</span>
+      {% if inter %}<div class="n" style="margin-top:6pt"><b>IGST @ {{ doc.gstPct }}%</b></div>{% else %}<div class="n" style="margin-top:6pt"><b>CGST @ {{ doc.gstPct / 2 }}%</b></div><div class="n"><b>SGST @ {{ doc.gstPct / 2 }}%</b></div>{% endif %}<div class="n">Round off</div></td>
+    <td>{{ doc.hsn }}</td><td class="n"><b>{{ doc.units|num }} PCS</b></td><td class="n">{{ "%.2f"|format(doc.price) }}</td><td>PCS</td>
+    <td class="n">{{ doc.taxable|n2 }}{% if inter %}<div style="margin-top:6pt"><b>{{ gst|n2 }}</b></div>{% else %}<div style="margin-top:6pt"><b>{{ (gst / 2)|n2 }}</b></div><div><b>{{ (gst / 2)|n2 }}</b></div>{% endif %}<div>{{ (doc.roundOff or 0)|n2 }}</div></td>
+  </tr>
+  <tr><td></td><td class="n"><b>Total</b></td><td></td><td class="n"><b>{{ doc.units|num }} PCS</b></td><td></td><td></td><td class="n"><b>₹ {{ doc.total|n2 }}</b></td></tr>
+  <tr><td colspan="7">Amount Chargeable (in words)<br><b>{{ words(doc.total) }}</b></td></tr>
+</table>
+<table>
+  <tr><th>HSN/SAC</th><th>Taxable Value</th>{% if inter %}<th>IGST · Rate</th><th>Amount</th>{% else %}<th>CGST · Rate</th><th>SGST · Rate</th><th>Amount</th><th>Amount</th>{% endif %}<th>Total Tax</th></tr>
+  <tr><td>{{ doc.hsn }}</td><td class="n">{{ doc.taxable|n2 }}</td>{% if inter %}<td class="n">{{ doc.gstPct }}%</td><td class="n">{{ gst|n2 }}</td>{% else %}<td class="n">{{ doc.gstPct / 2 }}%</td><td class="n">{{ doc.gstPct / 2 }}%</td><td class="n">{{ (gst / 2)|n2 }}</td><td class="n">{{ (gst / 2)|n2 }}</td>{% endif %}<td class="n">{{ gst|n2 }}</td></tr>
+  <tr><td colspan="{{ 5 if inter else 7 }}">Tax Amount (in words): <b>{{ words(gst) }}</b></td></tr>
+</table>
+<table>
+  <tr>
+    <td style="width:52%">Company's PAN: <b>{{ R.pan }}</b><span class="k" style="margin-top:6pt">Declaration</span>We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct. Goods sold within their best-before date, under the brand's one-time permission.</td>
+    <td><span class="k">Company's Bank Details</span>{% if R.bank %}Bank Name: {{ R.bank.name }}<br>A/c No.: {{ R.bank.account }}<br>Branch &amp; IFS Code: {{ R.bank.ifsc }}{% endif %}<div class="sign">for <b>{{ R.name }}</b></div><div class="n">Authorised Signatory</div></td>
+  </tr>
+</table>
+<div class="foot">SUBJECT TO {{ (R.city or "")|upper }} JURISDICTION · This is a Computer Generated Invoice</div>
+{% if not e %}<div class="foot">Drafted by Smart-Clearance's Paperwork agent from the batch's record for {{ R.short or R.name }} to issue from Tally.{% if note %} {{ note }}{% endif %}</div>{% endif %}
 {% endblock %}
