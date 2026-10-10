@@ -1745,6 +1745,31 @@
     - the day is 24 hours.
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 
+- **SC-140** (In Review, branch `SC-140-architecture`): the technical architecture for the hackathon submission, documentation only, asked for by the maintainer.
+  - **The artifact:** [Smart-Clearance Architecture](https://claude.ai/artifact/MCFr2c1AVzX9xXKqcYVu47), in design system v3's tokens and mark, light and dark. It holds:
+    - the system in one diagram;
+    - Firebase, Cloud Run and Gemini as the brief asks, and why Firestore is not in the build (Cloud SQL holds the record);
+    - every Google Cloud component, what it does here and why;
+    - the agents' nine stops with their Gemini tier, and one ADK run;
+    - the application flow, interactive and with no figures: the core loop, signing in, and each stop as a sequence across the apps, Firebase, backend-api, Cloud SQL, Pub/Sub, the agents, Gemini, BigQuery and Cloud Storage;
+    - keyless identity, CI/CD (GitHub Actions, Workload Identity Federation, Cloud Build), the testing (gates, a11y, e2e, parity, live, journey, evals) and one trace.
+  - **The copy:** `docs/smart-clearance-architecture.html`. The artifact and its copy link the three Lucid documents.
+  - **Lucidchart**, made through the Lucid connector once connected, in the maintainer's Lucid account (private until shared there):
+    - [Smart-Clearance Architecture on Google Cloud](https://lucid.app/lucidchart/0e33214e-b46f-4cfb-9413-b2c40de7d1c6/view): the system, the agents' nine stops and CI/CD, on Google Cloud's own icon set (GCP 2021);
+    - [Application Flow · the core loop](https://lucid.app/lucidchart/2965aa52-3190-4d68-8791-9c95c8fd7bbc/view) and [Application Flow · a batch's journey](https://lucid.app/lucidchart/c2efb94b-7aa2-4cc1-a6cc-af4980ff255f/view): Lucid sequence diagrams, every stop as a group, with no figures;
+    - [Smart-Clearance Google Cloud and AI](https://lucid.app/lucidchart/631bbb66-9b43-4e20-abf0-f44fa6a68174/view), for the PDF: the services layer by layer, Cloud Run, Pub/Sub and Cloud Scheduler, where the data lives, who signs as whom, the agents and the Gemini models behind them, and a model call, bounded;
+    - two earlier drafts (the architecture's first, whose text rendered too small, and Google Cloud and AI's first, whose container tags overlapped their titles) are renamed "(superseded draft, safe to delete)"; the connector cannot delete;
+    - `docs/smart-clearance-architecture.drawio` keeps the same three pages for Lucidchart's draw.io import.
+  - **The PDF:** `docs/smart-clearance-architecture.pdf`, rewritten on the maintainer's ask: 24 pages, A4 landscape, every diagram a Lucidchart export (14 pages from the four documents), in Smart-Clearance's own theme (the brand bar and route, the night and morning town plates on the cover and the close, Bricolage Grotesque and Geist). It holds:
+    - Google Cloud: the system, the layers, every component with what it does and why, then Firebase (and why not Firestore), Cloud Run, Pub/Sub and Cloud Scheduler, data, identity, delivery, operations and cost;
+    - the AI: why Gemini on Vertex AI and why two tiers (Pro where a person decides on the words, Flash for reading and drafting), every agent with its model, why, and what happens if the call fails, the ADK pipelines, the guardrails and the evals;
+    - the core loop and a batch's journey, from the Lucid sequence diagrams.
+
+    It is printed by headless Chrome from its own fixed-page print source, kept outside the repo; it replaces the 39-page print of the artifact.
+  - **Checks:**
+    - the page was played in a browser at 1440 × 900 and 390 × 844, with no console errors and no sideways scroll on a phone. The viewer's frame ignores bare anchors, so the page's section links scroll in script;
+    - each of the PDF's 24 pages was rendered and looked at, and every Lucid page was exported and checked for overlaps; the figures on the AI and operations pages were checked against `agents/` and `infra/prod`.
+
 - **SC-141** (PR #121, merged; bug found by the maintainer): the distributor's Orders and Batches, figures that add up as written.
   - **Found:** "calculations dont match" on Rakesh Traders' portal. Every one of his six cleared batches ends whole to the paisa, and both headlines were right. Batches' ₹66,918 is what Munchly credited him (8 credit notes); Orders' ₹1,05,928 is what he sold from the same batches. But:
     - a kirana row read "456 packets at ₹18.00, 2 free with every 10 · ₹6,840", which multiplies to ₹8,208. With 2 free in every 12, the packets came to ₹15.00 each;
@@ -1863,7 +1888,7 @@
   - **Locally:** migrated to 0012: Munchly's three godown batches read 381 packs destroyed, and every SKU has its kilos. The synthetic clients' batches closed before read 0 destroyed until the next `hydrate.sh --reset`.
   - **Hosting:** design3's `dist/` is rebuilt; the hosted console loads commit `4632839` (every pinned file checked on jsDelivr first); it renders, the card in its empty state on the prototype's seed.
 
-- **SC-150** (In Review, branch `SC-150-web-app-domains`): the apps' addresses on Firebase Hosting's own domain, and the landing page's bar links the console and the workspace.
+- **SC-150** (PR #128, merged): the apps' addresses on Firebase Hosting's own domain, and the landing page's bar links the console and the workspace.
   - **The request:** `<client>.smartclearance.com` becomes `<client>-smartclearance.web.app`, `smartclearance.com` becomes `smartclearance.web.app`, and `console.smartclearance.com` becomes `smartclearance-console.web.app`. On the landing page's bar, Sign in and Book a demo go, replaced by two links: Console and Workspace.
   - **The addresses:** design3 (`data.js` composes Munchly's as `munchly-` + the platform domain; `platform.js`, the console, the landing page's workspace section), the port, backend-api (`workspace_domain` is `smartclearance.web.app`, and a client's address is `{slug}-{domain}`, the reserved and taken messages included), the tests, goldens, live fixtures and the docs. Migration `0013` rewrites each client's stored address and the workspace doc's platform domain (dry-run on the local data: all seven clients moved).
   - **Kept as they were:** staff email addresses and the staff email checks (`@smartclearance.com`, an identity, not an address of the apps); infra's notes on registering the custom domain later; the design records under `design3/designs/` and the images' prompt sidecars.
