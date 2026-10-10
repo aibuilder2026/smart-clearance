@@ -1,0 +1,34 @@
+{
+  "name": "C-k1-yard-noon",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "edit",
+  "prompt": "The same godown yard from the same camera at the gate, at midday: hard overhead sun, short shadows, a clear pale sky. The blue truck has gone; two autorickshaws and a scooter wait at the roller door while a kirana shop owner (a woman in a maroon saree) and two other shopkeepers carry plastic crates of solid-colour snack packets out of the godown; the distributor at the door with his register. Everything else exactly as before. Cinematic 35 mm, deep focus.\nPhotographic, cinematic live action, shot on a full-frame camera with a 35 mm lens, shallow depth of field, natural light, true-to-life skin, fabric and metal, no illustration, no 3D render, no cartoon. India, a small-town FMCG supply chain. Every pack and carton is unbranded: plain kraft-brown cartons with a single sage-green band, matte foil snack packets in solid colours with no lettering; no logos, no printed text, no signage that can be read; shop boards and labels out of focus. No children anywhere. Colour grade: warm, filmic, slightly desaturated greens and ambers.",
+  "seed": 154031,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "source",
+      "file": "C-k0-yard-dawn.png",
+      "sha256": "03158cc7a0fe964bc86745ec3e3b72590e7a9e653008e3d61c778ebf341be63f"
+    },
+    {
+      "role": "source",
+      "file": "cast-kirana.png",
+      "sha256": "986237da3b0e5f787af99289b7e68137302a72b1d5474ca9815e6d66ac4fb175"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "latency_s": 24.5,
+  "use": "SC-154 option C keyframe 1: the same yard at noon, an edit of keyframe 0 so the geometry holds",
+  "model_text": null,
+  "status": "done",
+  "output": "C-k1-yard-noon.webp 2752x1536",
+  "postprocess": "WebP q82 from C-k1-yard-noon.png",
+  "derived_from": "C-k1-yard-noon.png"
+}

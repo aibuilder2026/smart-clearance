@@ -29,6 +29,13 @@ import type {
 /** a step that did not go through: what happened, in the API's words, and the same step again */
 export type Failure = { action: HumanAction; message: string; stale: boolean; retry(): Promise<void> };
 
+/** how a step answers a refusal (SC-152). Without `inline`, a step never rejects: the live source keeps the refusal as
+ *  `failed`, which the screen's band (LiveBand) says with Retry. With `inline`, the button that sent it says why: the
+ *  step rejects with an Error in the API's own words and leaves `failed` alone, so nothing says it twice. Either way a
+ *  change shown at once is put back, a stale step reads the workspace again, a signed-out refusal signs out, and a
+ *  file the person stopped on its way is not a refusal (it resolves). The stub never refuses. */
+export type SendOptions = { inline?: boolean };
+
 export interface WorkspaceSource {
 	readonly kind: 'stub' | 'live';
 	readonly status: SourceStatus;
@@ -76,7 +83,7 @@ export interface WorkspaceSource {
 	/** the live source only: try the live stream again now */
 	reconnect?(): void;
 	/** the live source only: a DMS export for the Data agent, its progress in uploads ('export') */
-	uploadExport?(file: Blob): Promise<void>;
+	uploadExport?(file: Blob, o?: SendOptions): Promise<void>;
 	/** the live source only: stop a file on its way (its key in uploads) */
 	cancelUpload?(key: string): void;
 	/** the stub only: the people a visitor can step into */
@@ -90,18 +97,25 @@ export interface WorkspaceSource {
 	setFocus(ref: string | null): void;
 	signIn(i: { email: string; password: string } | { uid: string }): Promise<User>;
 	signOut(): Promise<void>;
-	/** a step a person takes; feel waits that long first, so a tap is felt before the journey moves. It acts on the
-	 *  batch in focus, or on the batch `ref` names (the live workspace; the stub has its story's batches only) */
-	act<N extends HumanAction>(name: N, arg?: ActionArg<N>, o?: { feel?: number; ref?: string }): Promise<void>;
+	/** a step a person takes; feel waits that long first, so a tap is felt before the journey moves (it is pending
+	 *  meanwhile). It acts on the batch in focus, or on the batch `ref` names (the live workspace; the stub has its
+	 *  story's batches only). With `inline`, a refusal rejects for the button that sent it to say (SendOptions) */
+	act<N extends HumanAction>(
+		name: N,
+		arg?: ActionArg<N>,
+		o?: { feel?: number; ref?: string } & SendOptions
+	): Promise<void>;
 	/** the live source only: the buyer's message to the seller, which the Negotiator answers */
-	message?(text: string): Promise<void>;
-	/** the live source only: a link to a document's PDF, for a few minutes; of the batch in focus, or the one named */
+	message?(text: string, o?: SendOptions): Promise<void>;
+	/** the live source only: a link to a document's PDF, for a few minutes; of the batch in focus, or the one named. A
+	 *  read, not a step: it always rejects when the link cannot be had, so its caller says why */
 	documentUrl?(doc: string, ref?: string): Promise<string>;
+	/** optimistic: shown read at once, put back if refused; it never rejects */
 	markRead(ids: string[] | 'all'): Promise<void>;
-	invite(i: InviteInput): Promise<void>;
-	setUserStatus(id: string, s: UserStatus): Promise<void>;
-	setUserRole(id: string, r: RoleId): Promise<void>;
-	saveRules(r: Rules): Promise<void>;
+	invite(i: InviteInput, o?: SendOptions): Promise<void>;
+	setUserStatus(id: string, s: UserStatus, o?: SendOptions): Promise<void>;
+	setUserRole(id: string, r: RoleId, o?: SendOptions): Promise<void>;
+	saveRules(r: Rules, o?: SendOptions): Promise<void>;
 	/** the stub only: the journey back to its start */
 	reset?(): void;
 }

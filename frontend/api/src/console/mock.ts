@@ -55,7 +55,7 @@ import {
 /** where the mock keeps the platform's state, and who is signed in */
 export const CONSOLE_KEY = 'sc-console';
 export const SESSION_KEY = 'sc-console-session';
-const VERSION = 6;
+const VERSION = 7;
 
 type State = {
 	v: number;
@@ -279,7 +279,7 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 			legal: f.name.trim(),
 			city: f.city.trim(),
 			industry: f.industry,
-			domain: id + '.smartclearance.com',
+			domain: id + '-smartclearance.web.app',
 			emailDomain: f.emailDomain.trim().toLowerCase(),
 			mark: { from: f.colour, to: f.colour, ink: '#ffffff' },
 			plan: f.plan,

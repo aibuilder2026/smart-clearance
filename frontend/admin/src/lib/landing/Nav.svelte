@@ -1,20 +1,16 @@
 <script lang="ts">
 	import {
-		Button,
 		Icon,
 		IconButton,
 		Mark,
-		Menu,
 		ModeMenuButton,
 		Sheet,
 		Wordmark,
 		cx,
 		prefersReducedMotion
 	} from '@smart-clearance/core';
-	import { LINKS, SECTIONS, goTo } from './links';
+	import { LINKS, SECTIONS, goTo, linkProps } from './links';
 
-	let { onfind, ondemo }: { onfind: () => void; ondemo: () => void } = $props();
-	let menu = $state(false);
 	let sheet = $state(false);
 
 	// The bar (SC-78): the brand, the links centred with a dot under the section the reader is in, the actions; clear
@@ -51,7 +47,8 @@
 	});
 </script>
 
-<!-- the sections show on desktops and Book a demo beside them; a phone gets a menu button instead (base.css's
+<!-- the sections show on desktops and the two ways in beside them (SC-150): the staff console, and a client's
+     workspace; a phone keeps Console and gets a menu button instead of Workspace (base.css's
      .desk-only, .not-phone and .phone-only, so the server renders every width) -->
 <header class="site-nav">
 	<div class="nav-in">
@@ -67,22 +64,8 @@
 		</nav>
 		<span class="nav-actions">
 			<span class="nav-mode"><ModeMenuButton /></span>
-			<span class="nav-signin"
-				><Menu
-					bind:open={menu}
-					width={268}
-					label="Sign in to"
-					items={[
-						{ label: 'Sign in to', heading: true },
-						{ label: 'Find your workspace', icon: 'search', onclick: onfind },
-						'-',
-						{ label: 'Smart-Clearance staff', icon: 'shield', href: LINKS.console }
-					]}
-				>
-					{#snippet trigger(props)}<button {...props} type="button" class="nav-text">Sign in</button>{/snippet}
-				</Menu></span
-			>
-			<Button variant="primary" pill class="nav-demo not-phone" onclick={() => ondemo()}>Book a demo</Button><IconButton
+			<a class="nav-text" {...linkProps(LINKS.console)}>Console</a>
+			<a class="btn btn-primary btn-pill nav-go not-phone" {...linkProps(LINKS.app)}>Workspace</a><IconButton
 				icon="menu"
 				label="Menu"
 				class="phone-only"
@@ -109,14 +92,10 @@
 						/></button
 					>{/each}
 			</div>
-			<Button
-				variant="primary"
-				size="lg"
-				block
-				onclick={() => {
-					sheet = false;
-					ondemo();
-				}}>Book a demo</Button
+			<a class="btn btn-primary btn-lg btn-block" {...linkProps(LINKS.app)} onclick={() => (sheet = false)}>Workspace</a
+			>
+			<a class="btn btn-secondary btn-lg btn-block" {...linkProps(LINKS.console)} onclick={() => (sheet = false)}
+				>Console</a
 			>
 		</div>
 	</Sheet>

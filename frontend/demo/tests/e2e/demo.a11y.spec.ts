@@ -6,7 +6,7 @@ import { device, hold, holdable, isReal, next, nextUntil, openDemo, release, set
 // (the notes beside the stage, under it, or the real-phone mode); then the states a visitor opens: phone only, the
 // notes hidden, the finale, the splash, the appearance menu, the real phone's notes, and the moves made inside the
 // devices that the beats skip (a workspace found, a button at work, a one-time code, the channels as a table, the
-// compact tracker's sheet, the marketplace, an empty list). Every core component the demo uses, its devices' workspace
+// compact tracker's sheet, the Lister's API call, the marketplace, an empty list). Every core component the demo uses, its devices' workspace
 // screens included, is on screen in one of these scans (SC-58).
 
 // The laptop and the phone on the stage are previews of the real screens, drawn at their own size and scaled down to
@@ -153,6 +153,13 @@ test("demo · inside the devices: the channels as a table, the tracker's sheet, 
 	// stage 7, on to Agrawal ji's turn: Ganesh ji opens the offer and orders, the other kiranas follow
 	await page.keyboard.press('7');
 	await settle(page, 4200);
+	// the Lister's raw call, opened from its card on Priya's laptop (SC-151)
+	if (!isReal(page)) {
+		const desk = device(page, "Priya's laptop");
+		await desk.getByRole('button', { name: 'The API call' }).click();
+		await expect(desk.locator('pre.code').first()).toBeVisible();
+		findings.push(...(await check(page, "stage 7 · the Lister's API call open")));
+	}
 	await nextUntil(page, "Agrawal ji's phone", 'Agrawal ji');
 	const phone = device(page, "Agrawal ji's phone");
 	await phone.getByRole('button', { name: 'Bids' }).click();

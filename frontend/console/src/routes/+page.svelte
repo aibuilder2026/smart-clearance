@@ -27,17 +27,17 @@
 	import { useConsole } from '#lib/console.svelte.ts';
 	import { href } from '#lib/links.ts';
 	import { NAV } from '#lib/nav.ts';
-	import { apiQuery, readPaused, readView, viewSearch, writePaused, type View } from '#lib/overview.ts';
+	import { apiQuery, kg, readPaused, readView, savedShare, viewSearch, writePaused, type View } from '#lib/overview.ts';
 	import Kpi from '#lib/screens/overview/Kpi.svelte';
 	import MoneyFig from '#lib/screens/overview/MoneyFig.svelte';
 	import Pager from '#lib/screens/overview/Pager.svelte';
 	import AgentsAtWork from '#lib/screens/overview/AgentsAtWork.svelte';
-	import RecoveredChart from '#lib/screens/overview/RecoveredChart.svelte';
+	import FoodChart from '#lib/screens/overview/FoodChart.svelte';
 	import StopSeg from '#lib/screens/overview/StopSeg.svelte';
 	import Screen from '#lib/screens/Screen.svelte';
 
 	// Overview, the platform as a live dashboard (SC-48, option A, the command centre): four figures with their lines,
-	// the agents at work along the nine stops (SC-49), recovered by day, every client's batches a page at a time, and
+	// the agents at work along the nine stops (SC-49), the food by day (SC-149), every client's batches a page at a time, and
 	// what waits on a person. The figures roll, the charts draw themselves, and a reading moves what it changed. Every figure comes from backend-api (or the mock); the range, filters and page live in the
 	// address. The figures are read again every 30 s, with Pause; nothing on the page moves on its own (WCAG 2.2.2)
 	const app = useApp();
@@ -64,7 +64,11 @@
 	const change = $derived(
 		d && d.recoveredBefore ? Math.round(((d.recovered - d.recoveredBefore) / d.recoveredBefore) * 100) : null
 	);
-	const best = $derived(d?.byDay.reduce((a, x) => (x.recovered > a.recovered ? x : a), d.byDay[0]));
+	// the food, by day (SC-149, option A): what closed batches kept out of landfill and what they destroyed; the money
+	// stays with the Recovered figure, and in the tooltip and the table
+	const share = $derived(d ? savedShare(d.food.keptKg, d.food.destroyedKg) : null);
+	const shareBefore = $derived(d ? savedShare(d.food.keptKgBefore, d.food.destroyedKgBefore) : null);
+	const worst = $derived(d?.byDay.reduce((a, x) => (x.destroyedKg > a.destroyedKg ? x : a), d.byDay[0]));
 	let asTable = $state(false);
 
 	// a change to the view lands in the address, without a new history entry or a jump
@@ -88,12 +92,9 @@
 	const sortBy = (key: NonNullable<BatchQuery['sort']>) =>
 		set({ sort: key, dir: view.query.sort === key && view.query.dir === 'asc' ? 'desc' : 'asc' });
 
-	function run(x: Attention) {
-		if (x.action.kind === 'remind') {
-			const dist = x.action.distributor;
-			void k.act(() => api.remindDistributor(x.client, dist), `Reminder sent to ${x.title}`);
-		} else void goto(href('clients', x.client, x.action.tab));
-	}
+	// a reminder waits on the platform in its own button (SC-152); Open opens the client's tab
+	const remind = (x: Attention, dist: string) =>
+		k.act(() => api.remindDistributor(x.client, dist), `Reminder sent to ${x.title}`);
 	// a demo request starts the setup flow, its company, contact and plan filled in
 	const setUp = (r: DemoRequest) => goto(`${href('new-client')}?request=${encodeURIComponent(r.id)}`);
 	const openBatch = (r: BatchRow) => goto(href('clients', r.client, 'supply'));
@@ -105,7 +106,6 @@
 			: r.stage === 5
 				? 'Waiting for a yes'
 				: titles[r.stage];
-	const lakh = (v: number) => '₹' + (v / 100000).toFixed(1) + ' lakh';
 	const q = $derived(view.query);
 	const filtered = $derived(!!(q.q || q.client || q.stop != null));
 	const tableTitle = $derived(
@@ -135,7 +135,9 @@
 	>{/snippet}
 {#snippet dayLabel(x: { label: string })}{x.label}{/snippet}
 {#snippet dayRecovered(x: { recovered: number })}{fmt.inr(x.recovered)}{/snippet}
-{#snippet dayUnits(x: { units: number })}{x.units.toLocaleString('en-IN')}{/snippet}
+{#snippet dayKept(x: { keptKg: number })}{kg(x.keptKg)}{/snippet}
+{#snippet dayDestroyed(x: { destroyedKg: number })}{x.destroyedKg ? kg(x.destroyedKg) : 'none'}{/snippet}
+{#snippet dayPacks(x: { destroyed: number })}{x.destroyed.toLocaleString('en-IN')}{/snippet}
 
 <Screen
 	title="Overview"
@@ -190,8 +192,8 @@
 			<section class="cs-ov-card">
 				<div class="cs-ov-head">
 					<div>
-						<div class="t">Recovered, by day</div>
-						<div class="s">Every client · what closed batches recovered</div>
+						<div class="t">Food, by day</div>
+						<div class="s">Every client · what closed batches kept out of landfill, and what they destroyed</div>
 					</div>
 					<Segmented
 						label="Range"
@@ -200,28 +202,41 @@
 						options={RANGES.map((n) => ({ id: String(n), label: `${n} days` }))}
 					/>
 				</div>
-				<div class="cs-ov-big"><MoneyFig value={d.recovered} /> <span class="cs-ov-in">in {d.days} days</span></div>
+				<div class="cs-ov-food-big">
+					<span class="fig"><b>{kg(d.food.keptKg)}</b><span>kept out of landfill</span></span>
+					<span class={cx('fig', d.food.destroyedKg > 0 && 'gone')}
+						><b>{kg(d.food.destroyedKg)}</b><span>destroyed</span></span
+					>
+					{#if share != null}<span class="share">{share}% of the food saved</span>{/if}
+				</div>
+				<ul class="cs-ov-legend" aria-label="Legend">
+					<li><i class="sw kept" aria-hidden="true"></i>Kept out of landfill (sold or given)</li>
+					<li><i class="sw gone" aria-hidden="true"></i>Destroyed (no channel took it)</li>
+				</ul>
 				{#if asTable}<div class="cs-ov-daytable">
 						<DataTable
-							label="Recovered, by day"
+							label="Food, by day"
 							rows={d.byDay.slice().reverse()}
 							rowKey="date"
 							dense
 							columns={[
 								{ key: 'label', label: 'Day', cell: dayLabel },
+								{ key: 'keptKg', label: 'Kept out', num: true, cell: dayKept },
+								{ key: 'destroyedKg', label: 'Destroyed', num: true, cell: dayDestroyed },
+								{ key: 'destroyed', label: 'Packs destroyed', num: true, cell: dayPacks },
 								{ key: 'recovered', label: 'Recovered', num: true, cell: dayRecovered },
-								{ key: 'closed', label: 'Closed', num: true },
-								{ key: 'units', label: 'Packs', num: true, cell: dayUnits },
-								{ key: 'runs', label: 'Runs', num: true }
+								{ key: 'closed', label: 'Closed', num: true }
 							] satisfies Column<(typeof d.byDay)[number]>[]}
 						/>
-					</div>{:else}<RecoveredChart byDay={d.byDay} height={phone ? 180 : 210} />{/if}
+					</div>{:else}<FoodChart byDay={d.byDay} height={phone ? 200 : 230} />{/if}
 				<div class="cs-ov-foot">
 					<span
-						>{best && best.recovered
-							? `Highest ${fmt.inr(best.recovered)} on ${best.label}`
-							: 'Nothing recovered yet in this range'}{d.recoveredBefore
-							? ` · ${lakh(d.recoveredBefore)} the ${d.days} days before`
+						>{share == null
+							? 'Nothing closed in this range'
+							: worst && worst.destroyedKg
+								? `Most destroyed ${kg(worst.destroyedKg)} on ${worst.label}`
+								: 'Nothing destroyed in this range'}{shareBefore != null
+							? ` · ${shareBefore}% saved the ${d.days} days before`
 							: ''}</span
 					><Button
 						size="sm"
@@ -383,8 +398,17 @@
 					<List>
 						{#each overview.data.attention as x (x.id)}
 							{#snippet dot()}<span class={cx('cs-att', x.tone)} aria-hidden="true"></span>{/snippet}
-							{#snippet act()}<Button size="sm" variant="secondary" onclick={() => run(x)}>{x.action.label}</Button
-								>{/snippet}
+							{#snippet act()}{#if x.action.kind === 'remind'}{@const dist = x.action.distributor}<Button
+										size="sm"
+										variant="secondary"
+										action={() => remind(x, dist)}
+										busy="Sending the reminder…"
+										done="Reminder sent">{x.action.label}</Button
+									>{:else}{@const tab = x.action.tab}<Button
+										size="sm"
+										variant="secondary"
+										onclick={() => goto(href('clients', x.client, tab))}>{x.action.label}</Button
+									>{/if}{/snippet}
 							<ListRow
 								leading={dot}
 								title={x.title}
@@ -402,7 +426,7 @@
 					>{/if}
 			</div>
 			<div class="stack" style="gap: 12px">
-				<SectionTitle sub="From Book a demo on smartclearance.com">Demo requests</SectionTitle>
+				<SectionTitle sub="From Book a demo on smartclearance.web.app">Demo requests</SectionTitle>
 				{#if requests.data?.length}
 					<List>
 						{#each requests.data as r (r.id)}
@@ -421,7 +445,7 @@
 						><Empty
 							icon="mail"
 							title="No requests yet"
-							body="When someone books a demo on smartclearance.com, the request lands here, ready to become a client."
+							body="When someone books a demo on smartclearance.web.app, the request lands here, ready to become a client."
 						/></Card
 					>{/if}
 			</div>

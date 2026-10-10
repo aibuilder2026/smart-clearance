@@ -82,7 +82,7 @@
 	};
 	const host = $derived(HOST.slice(0, typed));
 	const team: Team = $derived(f.teams[tab]);
-	const url = $derived(`https://${host || '·'}.smartclearance.com/${team.route}`);
+	const url = $derived(`https://${host || '·'}-smartclearance.web.app/${team.route}`);
 	const h = $derived(f.how);
 	const ledger = $derived(f.ledger.slice(0, 4));
 </script>
@@ -203,7 +203,9 @@
 				<div class="wsd-phone-in" style="transform: scale({ps})">
 					<PhoneFrame time="09:41">
 						<div class="wsd phone">
-							<div class="wsd-addr"><Icon name="lock" size={11} stroke={2.2} />{host || '·'}.smartclearance.com</div>
+							<div class="wsd-addr">
+								<Icon name="lock" size={11} stroke={2.2} />{host || '·'}-smartclearance.web.app
+							</div>
 							{@render rail()}
 							{@render main()}
 						</div>

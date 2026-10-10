@@ -1,0 +1,40 @@
+{
+  "name": "final-1-bay-dawn",
+  "model": "veo-3.1-generate-001",
+  "location": "us-central1",
+  "service": "Vertex AI",
+  "prompt": "Photorealistic cinematic live action, exactly as in the image: dawn at a small Indian snack factory's loading bay, low warm sun and a little haze. The woman in the navy pinstripe kurta shows the man in the light blue checked shirt the plan on her phone; he reads it, looks up at her and nods once, and she smiles and locks the phone; behind them the two workers in grey T-shirts lift the last plain kraft cartons onto the blue truck and slide them in. The camera dollies in very slowly toward the two of them, a gentle push, no handheld shake. Natural light, 35 mm, shallow depth of field, the people sharp. No text, no logos, no lettering anywhere.",
+  "negative_prompt": "text, lettering, logo, brand name, label, watermark, subtitles, children",
+  "seed": 154201,
+  "enhance_prompt": true,
+  "resolution": "1080p",
+  "aspect": "16:9",
+  "duration_s": 8,
+  "fps": 24,
+  "generate_audio": false,
+  "person_generation": "allow_adult",
+  "inputs": [
+    {
+      "role": "first",
+      "file": "A-k0-bay-dawn-clean.png",
+      "sha256": "1c6e3c172b7568d737c87eb63ac98bcce927c42e7ac23ca981cf2a609ed91161"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 1.6,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "use": "SC-154 the film, chapter 1: the bay at dawn (Veo 3.1, 1080p, take 1)",
+  "status": "done",
+  "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/f1d08e42-8dd9-4774-b49e-1711ccdb1d1e",
+  "latency_s": 131.2,
+  "rai_filtered": {
+    "count": 0,
+    "reasons": []
+  },
+  "files": [
+    "final-1-bay-dawn.mp4"
+  ],
+  "probe": "{\n    \"programs\": [\n\n    ],\n    \"stream_groups\": [\n\n    ],\n    \"streams\": [\n        {\n            \"width\": 1920,\n            \"height\": 1080,\n            \"r_frame_rate\": \"24/1\",\n            \"nb_frames\": \"192\"\n        }\n    ],\n    \"format\": {\n        \"duration\": \"8.000000\",\n        \"size\": \"14703768\"\n    }\n}",
+  "kept": "the take is not in the film; its file stays local in src/takes/ (gitignored), this record keeps its cost"
+}

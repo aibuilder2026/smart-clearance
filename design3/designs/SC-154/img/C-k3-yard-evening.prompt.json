@@ -1,0 +1,29 @@
+{
+  "name": "C-k3-yard-evening",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "edit",
+  "prompt": "The same godown yard from the same camera at the gate, in the blue hour after dusk: the sky a deep indigo-violet with the last glow at the horizon, the sodium lamps warm, the yard quiet and the roller door half down; the office window above lit warm with two figures at a desk inside; the folded tarpaulin back by the gate. Everything else exactly as before. Cinematic 35 mm, deep focus.\nPhotographic, cinematic live action, shot on a full-frame camera with a 35 mm lens, shallow depth of field, natural light, true-to-life skin, fabric and metal, no illustration, no 3D render, no cartoon. India, a small-town FMCG supply chain. Every pack and carton is unbranded: plain kraft-brown cartons with a single sage-green band, matte foil snack packets in solid colours with no lettering; no logos, no printed text, no signage that can be read; shop boards and labels out of focus. No children anywhere. Colour grade: warm, filmic, slightly desaturated greens and ambers.",
+  "seed": 154033,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "source",
+      "file": "C-k0-yard-dawn.png",
+      "sha256": "03158cc7a0fe964bc86745ec3e3b72590e7a9e653008e3d61c778ebf341be63f"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "latency_s": 21.0,
+  "use": "SC-154 option C keyframe 3: the same yard in the blue hour, an edit of keyframe 0",
+  "model_text": null,
+  "status": "done",
+  "output": "C-k3-yard-evening.webp 2752x1536",
+  "postprocess": "WebP q82 from C-k3-yard-evening.png",
+  "derived_from": "C-k3-yard-evening.png"
+}

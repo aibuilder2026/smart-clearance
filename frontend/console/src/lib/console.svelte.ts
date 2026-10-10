@@ -1,20 +1,23 @@
 import type { Catalog, Client, ConsoleConfig, Staff } from '@smart-clearance/api/console';
-import type { Notices } from '@smart-clearance/core';
+import { refusal, type Notices } from '@smart-clearance/core';
 import { createContext } from 'svelte';
-import { refresh } from './api/queries';
+import { refresh as refreshAll } from './api/queries';
 
 /** What every screen of the console reads: how the platform describes itself (its config and catalog), who is signed in,
  *  and act(), which makes a change, refreshes what the console shows and says so in a toast. The prototype's screens
  *  read these from window.SC3_PLATFORM. */
 export class Console {
 	readonly #me: () => Staff;
+	readonly #refresh: () => Promise<unknown>;
 	constructor(
 		readonly config: ConsoleConfig,
 		readonly catalog: Catalog,
 		readonly notices: Notices,
-		me: () => Staff
+		me: () => Staff,
+		refresh: () => Promise<unknown> = refreshAll
 	) {
 		this.#me = me;
+		this.#refresh = refresh;
 	}
 
 	get me() {
@@ -31,15 +34,22 @@ export class Console {
 		return this.catalog.agents.length - 1;
 	}
 
-	/** makes a change, refreshes everything shown, and confirms it; a failure is said in a toast and gives undefined */
-	act = async <T>(run: () => Promise<T>, ok?: string | ((r: T) => string)): Promise<T | undefined> => {
+	/** makes a change and resolves once it is saved, so the button that waits on it lets go then (SC-152): everything
+	 *  shown is read again in place, not awaited, and the toast confirms only a change that went through. A refusal
+	 *  rejects with the API's own words, for the button to say under itself */
+	act = async <T>(run: () => Promise<T>, ok?: string | ((r: T) => string)): Promise<T> => {
+		const r = await run();
+		void this.#refresh().catch(() => {});
+		if (ok) this.notices.toast({ text: typeof ok === 'string' ? ok : ok(r), tone: 'ok' });
+		return r;
+	};
+	/** act(), for a caller with no button to say a refusal under (a file dropped on a card): the refusal is a toast, and
+	 *  it gives undefined */
+	tell = async <T>(run: () => Promise<T>, ok?: string | ((r: T) => string)): Promise<T | undefined> => {
 		try {
-			const r = await run();
-			await refresh();
-			if (ok) this.notices.toast({ text: typeof ok === 'string' ? ok : ok(r), tone: 'ok' });
-			return r;
+			return await this.act(run, ok);
 		} catch (e) {
-			this.notices.toast({ text: e instanceof Error ? e.message : 'That did not go through. Try again.', tone: 'err' });
+			this.notices.toast({ text: refusal(e), tone: 'err' });
 			return undefined;
 		}
 	};

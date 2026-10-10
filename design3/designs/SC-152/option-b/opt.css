@@ -1,0 +1,24 @@
+/* Option B · The fill: the button's ground fills from the left in a deeper tone of its own colour. The words sit over
+   the fill, so each variant's fill keeps its label at 4.5:1 or more (measured on the build for the picked option) */
+.pf-btn { overflow: hidden; isolation: isolate; --pf: color-mix(in oklab, var(--fg) 12%, var(--fill-2)); }
+.pf-btn.btn-primary { --pf: color-mix(in oklab, var(--primary) 70%, #000); }
+/* a button with dark ink fills lighter, one with white ink fills deeper, so the label only gains contrast */
+:root[data-theme="dark"] .pf-btn.btn-primary { --pf: color-mix(in oklab, var(--primary) 62%, #fff); }
+.pf-btn.btn-approve { --pf: color-mix(in oklab, var(--amber) 55%, #fff); }
+.pf-btn.btn-outline { --pf: var(--primary-soft); }
+.pf-btn.btn-secondary { --pf: color-mix(in oklab, var(--primary) 22%, var(--fill-2)); }
+.pf-btn[aria-disabled="true"] { cursor: progress; }
+.pf-btn[data-phase="done"] { cursor: default; }
+.pf-fill { position: absolute; inset: 0; z-index: -1; transform-origin: left center; transform: scaleX(0); background: var(--pf); overflow: hidden; pointer-events: none; }
+.pf-fill.err { background: color-mix(in oklab, var(--red) 40%, var(--pf)); }
+/* the sheen over the filled part, only while it waits (a loading indicator) */
+.pf-btn[data-phase="busy"] .pf-fill::after, .pf-btn[data-phase="slow"] .pf-fill::after { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.22) 50%, transparent 70%); transform: translateX(-100%); animation: pf-sheen 1.4s var(--ease) infinite; }
+@keyframes pf-sheen { to { transform: translateX(100%); } }
+.pf-faces { display: inline-grid; gap: inherit; }
+.pf-face { grid-area: 1 / 1; display: inline-flex; align-items: center; justify-content: center; gap: inherit; white-space: nowrap; transition: opacity var(--t-fast) var(--ease); }
+.pf-face.off { visibility: hidden; opacity: 0; }
+.pf-ic { display: inline-grid; flex: none; place-items: center; }
+.pf-row { position: relative; }
+.pf-rowline { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; transform-origin: left center; background: var(--primary); border-radius: 2px; }
+.pf-rowline.err { background: var(--red); }
+@media (prefers-reduced-motion: reduce) { .pf-btn .pf-fill::after { animation: none !important; } }

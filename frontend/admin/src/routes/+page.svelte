@@ -9,7 +9,7 @@
 	const showcase = createQuery(() => showcaseQuery());
 	const catalog = createQuery(() => catalogQuery());
 
-	const SITE = 'https://smartclearance.com';
+	const SITE = 'https://smartclearance.web.app';
 	const description =
 		'AI agents find the best exit for near-expiry stock, and a person says yes once. Smart-Clearance routes short-dated FMCG stock to kiranas, marketplaces, staff sales and food banks before it reaches the bin.';
 </script>
@@ -23,7 +23,7 @@
 	<meta property="og:title" content="Smart-Clearance · every near-expiry carton gets a second chance" />
 	<meta property="og:description" content={description} />
 	<meta property="og:url" content="{SITE}/" />
-	<meta property="og:image" content="{SITE}{PLATES.town.day}" />
+	<meta property="og:image" content="{SITE}{PLATES.hero.day}" />
 	<meta name="twitter:card" content="summary_large_image" />
 </svelte:head>
 

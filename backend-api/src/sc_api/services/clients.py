@@ -84,7 +84,7 @@ async def insert(ctx: Ctx, spec: ClientSpec, *, created_at: datetime | None = No
         legal_name=spec.legal or spec.name,
         city=spec.city,
         industry=spec.industry,
-        domain=f"{spec.id}.{ctx.settings.workspace_domain}",
+        domain=f"{spec.id}-{ctx.settings.workspace_domain}",
         email_domain=spec.email_domain.lower(),
         mark=spec.mark,
         plan_id=spec.plan,
@@ -141,7 +141,7 @@ async def insert(ctx: Ctx, spec: ClientSpec, *, created_at: datetime | None = No
 
 
 async def _taken(ctx: Ctx, slug: str) -> bool:
-    domain = f"{slug}.{ctx.settings.workspace_domain}"
+    domain = f"{slug}-{ctx.settings.workspace_domain}"
     found = await ctx.session.execute(select(m.Client.id).where((m.Client.id == slug) | (m.Client.domain == domain)))
     return found.first() is not None
 

@@ -1,10 +1,12 @@
 <script lang="ts">
+	import { onDestroy, untrack } from 'svelte';
 	import Avatar from '../../../components/Avatar.svelte';
 	import Badge from '../../../components/Badge.svelte';
 	import Button from '../../../components/Button.svelte';
 	import Card from '../../../components/Card.svelte';
 	import List from '../../../components/List.svelte';
 	import ListRow from '../../../components/ListRow.svelte';
+	import SaveNote from '../../../components/SaveNote.svelte';
 	import Segmented from '../../../components/Segmented.svelte';
 	import Switch from '../../../components/Switch.svelte';
 	import WorkspaceMark from '../../../components/WorkspaceMark.svelte';
@@ -12,6 +14,7 @@
 	import type { IconName } from '../../../icons/registry';
 	import { useNotice } from '../../../notice.svelte';
 	import { useTheme } from '../../../theme.svelte';
+	import { refusal, save, Wait } from '../../../wait.svelte';
 	import { useAccount, useRoute } from '../../context';
 	import { kinds, PROVIDER_ICONS, providerOf } from '../../model';
 	import { useWorkspace } from '../../source';
@@ -56,20 +59,46 @@
 	const pushSub = $derived(acc.push ? PUSH_SAYS[acc.push.state] : undefined);
 	let digest = $state(false);
 	const perm = $derived(ws.state.setup.permission);
+	// the switch that pauses his permission saves (SC-152): it takes the new value at once and says Saving…, then
+	// Saved, or puts it back and says why. Between saves it follows the permission as the workspace has it
+	const pausing = new Wait({ done: () => true });
+	onDestroy(() => pausing.stop());
+	let acting = $state(untrack(() => !ws.state.setup.permission?.paused));
+	$effect(() => {
+		const on = !perm?.paused;
+		if (!pausing.working) acting = on;
+	});
+	const setActing = (v: boolean) =>
+		save(pausing, {
+			next: v,
+			before: !v,
+			set: (x) => (acting = x),
+			run: async (x) => {
+				await ws.act('pause', !x, { inline: true });
+				toast({ text: x ? 'Resumed' : 'Paused · nothing more happens in your name', tone: 'ok' });
+			}
+		});
+	// signing out: the splash covers it on the live workspace; a session that could not be closed says why here
+	const signOut = async () => {
+		try {
+			await acc.signOut?.();
+		} catch (e) {
+			toast({ text: `You're still signed in. ${refusal(e)}`, tone: 'err' });
+		}
+	};
 	const inside = $derived(me.role !== 'buyer');
 	const signInIcon = $derived<IconName>(PROVIDER_ICONS[me.provider]);
 </script>
 
 {#snippet wsMark()}<WorkspaceMark ws={ws.data.workspace} size={32} />{/snippet}
 {#snippet member()}<Badge size="sm" tone="green">{kinds(ws.data.workspace)[me.kind] || 'member'}</Badge>{/snippet}
-{#snippet acting()}<Switch
-		checked={!perm?.paused}
-		onchange={(v) => {
-			void ws.act('pause', !v);
-			toast({ text: v ? 'Resumed' : 'Paused · nothing more happens in your name', tone: 'ok' });
-		}}
-		label="Let Smart-Clearance act for you"
-	/>{/snippet}
+{#snippet actingSwitch()}<span class="row tight"
+		>{#if pausing.phase !== 'idle'}<SaveNote wait={pausing} />{/if}<Switch
+			checked={acting}
+			onchange={setActing}
+			label="Let Smart-Clearance act for you"
+		/></span
+	>{/snippet}
 {#snippet themeSwitch()}<Segmented
 		options={[
 			{ id: 'light', label: 'Light' },
@@ -140,7 +169,7 @@
 				><ListRow
 					icon={perm.paused ? 'circle-pause' : 'handshake'}
 					title={perm.paused ? 'Paused' : 'On since ' + perm.at}
-					value={acting}
+					value={actingSwitch}
 				/></List
 			>{/if}
 		{#if me.role === 'operator'}<List head="Your work"
@@ -200,7 +229,7 @@
 						iconTone="red"
 						title="Sign out"
 						sub={inside ? `Back to ${ws.data.workspace.domain}` : undefined}
-						onclick={acc.signOut}
+						onclick={signOut}
 					/>{/if}
 			</List>{/if}
 	</div>

@@ -2,13 +2,13 @@
 	"day0": "2026-10-02",
 	"platform": {
 		"name": "Smart-Clearance",
-		"domain": "smartclearance.com"
+		"domain": "smartclearance.web.app"
 	},
 	"workspace": {
 		"id": "munchly",
 		"name": "Munchly Foods",
 		"short": "Munchly",
-		"domain": "munchly.smartclearance.com",
+		"domain": "munchly-smartclearance.web.app",
 		"emailDomain": "munchly.in",
 		"mark": {
 			"from": "#f68d3e",

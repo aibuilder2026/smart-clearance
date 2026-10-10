@@ -1,6 +1,6 @@
 # @smart-clearance/admin
 
-The platform's own site, in SvelteKit 3. Today it serves the smartclearance.com landing page, a faithful port of
+The platform's own site, in SvelteKit 3. Today it serves the smartclearance.web.app landing page, a faithful port of
 `design3/site` (SC-60's picked design), and `/ds`, design system v3 as built in core. The staff console is its own
 app, [`../console`](../console/README.md) (SC-37), deployed on its own subdomain.
 
@@ -53,9 +53,10 @@ plate and the film.
 
 **Motion,** with the prototype's numbers:
 
-- **the film** (`Hero`): 8 s by day, 6 s by night, played once over its poster, with Pause, Play and Replay (WCAG 2.2.2);
-  the heading's last word turns once through what a carton gets and rests on "chance", which is what is read out and
-  what the server sends. A reader who asks for less motion gets the plate;
+- **the film** (`Hero`): one day of the journey with real people in four chapters (SC-154), about 15 s, looping through a
+  dissolve under Pause and Play (WCAG 2.2.2), the page's camera leaning 1.25× on each chapter's subject; both themes
+  start on its first frame. The heading's last word turns once through what a carton gets and rests on "chance", which
+  is what is read out and what the server sends. A reader who asks for less motion gets the poster;
 - **the statement** (`Statement`): its words fill in from the tertiary ink to the full ink as it is read, 0 as its top
   reaches 85% of the window and 1 as its foot reaches 45%. The progress is one custom property on the paragraph, each
   word's opacity a clamp over it, so a scroll costs one write; with no script, or less motion, every word is lit;
@@ -120,12 +121,13 @@ The UI reads one typed API, the landing page's entry of the shared [`@smart-clea
 
 Declared in `src/env.ts` (SvelteKit 3's `defineEnvVars`), public and inlined at build time. Copy `.env.example` to `.env`.
 
-| Variable                                                  | Default                                      |
-| --------------------------------------------------------- | -------------------------------------------- |
-| `PUBLIC_API_BASE`                                         | unset: the in-browser mock                   |
-| `PUBLIC_MOCK_LATENCY_MS`                                  | 0                                            |
-| `PUBLIC_DEMO_URL`, `PUBLIC_APP_URL`, `PUBLIC_CONSOLE_URL` | the hosted prototypes on Claude Design       |
-| `PUBLIC_DEV_ROUTES`                                       | off: `/ds` answers 404 in a production build |
+| Variable                               | Default                                      |
+| -------------------------------------- | -------------------------------------------- |
+| `PUBLIC_API_BASE`                      | unset: the in-browser mock                   |
+| `PUBLIC_MOCK_LATENCY_MS`               | 0                                            |
+| `PUBLIC_DEMO_URL`                      | the hosted guided demo on Claude Design      |
+| `PUBLIC_APP_URL`, `PUBLIC_CONSOLE_URL` | the live workspace and console on web.app    |
+| `PUBLIC_DEV_ROUTES`                    | off: `/ds` answers 404 in a production build |
 
 ## Tests
 

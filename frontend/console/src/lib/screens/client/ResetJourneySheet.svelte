@@ -11,19 +11,17 @@
 	const app = useApp();
 	const k = useConsole();
 	let v = $state(DAY_MINUTES);
-	let busy = $state(false);
 	$effect.pre(() => {
 		if (open) untrack(() => (v = c.dayMinutes));
 	});
+	// Reset journey waits on the platform (SC-152): the sheet closes once it went through, and a refusal stays under it
 	async function go() {
 		const to = v;
-		busy = true;
-		const done = await k.act(
+		await k.act(
 			() => api.resetJourney(c.id, { dayMinutes: to }),
 			`${possessive(c.name)} journey starts again: day 0, at ${to >= DAY_MINUTES ? 'real time' : dayBadge(to).toLowerCase()}`
 		);
-		busy = false;
-		if (done) open = false;
+		open = false;
 	}
 </script>
 
@@ -33,8 +31,13 @@
 	side={app.bp === 'phone' ? 'bottom' : 'center'}
 	detent="large"
 >
-	{#snippet footer()}<Button variant="destructive" size="lg" block icon="rotate-ccw" loading={busy} onclick={go}
-			>Reset journey</Button
+	{#snippet footer()}<Button
+			variant="destructive"
+			size="lg"
+			block
+			icon="rotate-ccw"
+			action={go}
+			busy="Resetting the journey…">Reset journey</Button
 		><Button variant="ghost" block onclick={() => (open = false)}>Cancel</Button>{/snippet}
 	<div class="stack">
 		<p class="t-subhead muted" style="margin: 0">

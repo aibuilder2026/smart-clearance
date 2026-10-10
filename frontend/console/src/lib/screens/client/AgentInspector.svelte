@@ -1,8 +1,11 @@
 <script lang="ts">
 	import type { Agent, AgentSettings, Autonomy, Client, Journey, JourneyTrigger } from '@smart-clearance/api/console';
-	import { Button, cx, Icon, List, ListRow, Segmented, Switch, type IconName } from '@smart-clearance/core';
+	import { Button, cx, Icon, List, ListRow, Switch, type IconName } from '@smart-clearance/core';
 	import { api } from '#lib/api/client.ts';
 	import { useConsole } from '#lib/console.svelte.ts';
+	import { Saving } from '#lib/saving.svelte.ts';
+	import SaveLine from '../SaveLine.svelte';
+	import AutonomyControl from './AutonomyControl.svelte';
 	import { EVENT_OF } from './journey.ts';
 	import SettingField from './SettingField.svelte';
 	import TrigRow from './TrigRow.svelte';
@@ -10,11 +13,11 @@
 	type Props = {
 		c: Client;
 		id: string;
-		onautonomy: (a: Agent, v: Autonomy) => void;
+		onautonomy: (a: Agent, v: Autonomy) => unknown;
 		/** the client's runs and timers (SC-79): this agent's own, fired from here too */
 		journey?: Journey;
 		just?: Record<string, boolean>;
-		onask?: (t: JourneyTrigger) => void;
+		onask?: (t: JourneyTrigger) => unknown;
 	};
 	let { c, id, onautonomy, journey, just = {}, onask = () => {} }: Props = $props();
 	const mine = $derived(journey?.triggers.filter((t) => t.agent === id) ?? []);
@@ -22,19 +25,28 @@
 	const a = $derived(k.agent(id));
 	const cfg = $derived(c.agents[id]);
 	const fields = $derived(k.config.fields[id] ?? []);
-	const levels = k.config.autonomy.map((x) => ({ id: x.id, label: x.label }));
 
 	// the settings are edited as a draft and saved together; the draft starts again whenever the saved ones change
 	const saved = $derived(JSON.stringify(cfg.settings));
 	let draft: AgentSettings = $derived(JSON.parse(saved));
 	const dirty = $derived(JSON.stringify(draft) !== saved);
 
+	// Save waits on the platform and says Saved; the switch keeps its place while it saves and says so (SC-152)
 	const save = () =>
 		k.act(() => api.updateAgent(c.id, id, { settings: $state.snapshot(draft) }), `${a.name} saved for ${c.name}`);
-	const toggle = (on: boolean) => k.act(() => api.updateAgent(c.id, id, { on }));
+	const on = new Saving(
+		() => cfg.on,
+		(v: boolean) => k.act(() => api.updateAgent(c.id, id, { on: v }))
+	);
 </script>
 
-{#snippet onSwitch()}<Switch checked={cfg.on} onchange={toggle} label="{a.name} on for {c.name}" />{/snippet}
+{#snippet onSwitch()}<span class="row tight"
+		><SaveLine wait={on.wait} /><Switch
+			checked={on.value}
+			onchange={on.change}
+			label="{a.name} on for {c.name}"
+		/></span
+	>{/snippet}
 
 <!-- the selected agent: what it does, whether it runs, how far it goes, its limits and schedule, its last run -->
 <div class="stack cs-insp" style="gap: 16px">
@@ -59,17 +71,14 @@
 		<List
 			><ListRow
 				title="On"
-				sub={cfg.on ? 'Runs for this client' : 'Skipped; the stops around it carry on'}
+				sub={on.value ? 'Runs for this client' : 'Skipped; the stops around it carry on'}
 				value={onSwitch}
 			/></List
 		>
 		<div class="stack tight" style="gap: 8px">
-			<span class="t-footnote strong">Autonomy</span><Segmented
-				label="{a.name}: autonomy"
-				options={levels}
-				value={cfg.autonomy as Autonomy}
-				onchange={(v) => onautonomy(a, v)}
-			/><span class="t-footnote subtle">{k.level(cfg.autonomy).text}.</span>
+			<span class="t-footnote strong">Autonomy</span><AutonomyControl {c} {a} {onautonomy} /><span
+				class="t-footnote subtle">{k.level(cfg.autonomy).text}.</span
+			>
 		</div>
 	{/if}
 	{#if fields.length}<div class="stack" style="gap: 12px">
@@ -96,6 +105,13 @@
 			>{/if}{/if}
 	<List><ListRow title="Last run" sub={cfg.last || 'not run yet'} /></List>
 	<div class="row tight wrap">
-		<span class="grow"></span><Button variant="primary" size="sm" disabled={!dirty} onclick={save}>Save</Button>
+		<span class="grow"></span><Button
+			variant="primary"
+			size="sm"
+			disabled={!dirty}
+			action={save}
+			busy="Saving…"
+			done="Saved">Save</Button
+		>
 	</div>
 </div>

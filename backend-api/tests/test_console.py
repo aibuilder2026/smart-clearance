@@ -352,7 +352,7 @@ async def test_a_new_client_from_its_demo_request(api, neha):
     c = r.json()
     assert {k: c[k] for k in ("id", "domain", "status", "approver", "since", "dayMinutes")} == {
         "id": "kesari",
-        "domain": "kesari.smartclearance.com",
+        "domain": "kesari-smartclearance.web.app",
         "status": "setting-up",
         "approver": "admin-kesari",
         "since": None,
@@ -390,11 +390,11 @@ async def test_a_new_client_from_its_demo_request(api, neha):
 
 async def test_a_new_client_is_refused_a_taken_address_or_an_admin_outside_its_domain(api, neha):
     r = await api.post(C, json=kesari(slug="munchly"), headers=neha)
-    assert r.json() == {"message": "munchly.smartclearance.com is taken."}
+    assert r.json() == {"message": "munchly-smartclearance.web.app is taken."}
     r = await api.post(C, json=kesari(adminEmail="ritu@gmail.com"), headers=neha)
     assert r.json() == {"message": "Enter the admin's name and a @kesari.example address."}
     r = await api.post(C, json=kesari(slug="console"), headers=neha)
-    assert r.json() == {"message": "console.smartclearance.com is reserved for the platform."}
+    assert r.json() == {"message": "console-smartclearance.web.app is reserved for the platform."}
 
 
 # --- staff ---------------------------------------------------------------------------------------------------------

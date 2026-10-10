@@ -13,17 +13,16 @@
 	const ws = useWorkspace();
 	const { go } = useRoute();
 	const { toast } = useNotice();
-	let busy = $state(false);
+	// the step's button while it waits, and once it lands (SC-152, screens/trade.jsx WORDS)
+	const WORDS: Record<string, [string, string]> = { issueInvoice: ['Issuing…', 'Issued'] };
+	const words = $derived(t.act ? WORDS[t.act] : undefined);
+	// a step that opens its screen goes there; one that acts waits on the answer, and says so only once it has gone
+	// through
+	const open = () => t.route && go(t.route, { ref: j.ref });
 	const run = async () => {
-		if (t.route) return go(t.route, { ref: j.ref });
 		if (!t.act) return;
-		busy = true;
-		try {
-			await ws.act(t.act, undefined, { feel: 400, ref: j.ref });
-			toast({ text: 'Marked issued from Tally', tone: 'ok' });
-		} finally {
-			busy = false;
-		}
+		await ws.act(t.act, undefined, { feel: 400, ref: j.ref, inline: true });
+		toast({ text: 'Marked issued from Tally', tone: 'ok' });
 	};
 </script>
 
@@ -38,7 +37,9 @@
 		variant={primary ? 'primary' : 'secondary'}
 		size={primary ? undefined : 'sm'}
 		icon={t.icon}
-		loading={busy}
-		onclick={run}>{t.cta}</Button
+		action={t.route ? undefined : run}
+		busy={words?.[0]}
+		done={words?.[1]}
+		onclick={t.route ? open : undefined}>{t.cta}</Button
 	>
 </div>

@@ -16,7 +16,8 @@ export const [useRoute, provideRoute] = createContext<Router>();
 export type Account = {
 	/** with an id, become that person (at a screen, if given); without, choose who */
 	switchTo?: (id?: string, route?: string) => void;
-	signOut?: () => void;
+	/** sign out; it rejects, in the API's words, when the session could not be closed (still signed in, SC-152) */
+	signOut?: () => void | Promise<void>;
 	reset?: () => void;
 	/** the browser's install prompt, when it offers one; null when it doesn't, undefined where there is no install */
 	install?: (() => void) | null;

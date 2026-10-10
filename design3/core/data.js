@@ -8,7 +8,7 @@
 
   // Smart-Clearance is sold to manufacturers, one workspace each, set up for that manufacturer's supply chain.
   // This prototype is Munchly's workspace; another client's would carry its own chain, channels and rules.
-  const PLATFORM = { name: "Smart-Clearance", domain: "smartclearance.com" };
+  const PLATFORM = { name: "Smart-Clearance", domain: "smartclearance.web.app" };
   const CLIENT = {
     name: "Munchly Foods Ltd", short: "Munchly Foods", city: "Pune", listed: "NSE", gstin: "27AABCM1234F1Z5", fssai: "10019022001234",
     revenue: "₹640 crore", skus: 8, distributors: 4, kiranas: 195, shortDatedPerQuarter: 1800000, destroyedToday: 0.7,
@@ -110,7 +110,7 @@
 
 
   const WORKSPACE = {
-    id: "munchly", name: "Munchly Foods", short: "Munchly", domain: "munchly." + PLATFORM.domain, emailDomain: "munchly.in",
+    id: "munchly", name: "Munchly Foods", short: "Munchly", domain: "munchly-" + PLATFORM.domain, emailDomain: "munchly.in",
     // the client's own colours live inside its mark and nowhere else in the interface
     mark: { from: "#f68d3e", to: "#d6461e", ink: "#ffffff" },
     since: "1 Jul 2026", plan: "Pilot", region: "India, Mumbai region",

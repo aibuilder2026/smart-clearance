@@ -1,4 +1,4 @@
-// Smart-Clearance v3 · smartclearance.com: the product's own landing page, independent of any client (SC-60, refined in
+// Smart-Clearance v3 · smartclearance.web.app: the product's own landing page, independent of any client (SC-60, refined in
 // SC-78, SC-111). The journey through one day at the miniature business on film under the heading, in four acts, with a
 // strip reading its chapters;
 // a statement that fills in as it is read; the agents at work on the table, one in focus at a time; the product's
@@ -84,59 +84,55 @@
   function NavLinks({ active }) {
     return <nav className="nav-links" aria-label="Sections">{SECTIONS.map(([id, t]) => <a key={id} href={"#" + id} className={cx(active === id && "on")} aria-current={active === id ? "location" : undefined}><span className="nav-t">{t}</span></a>)}</nav>;
   }
-  function Nav({ onFind, onDemo }) {
-    const app = useApp(); const [menu, setMenu] = useState(false); const [sheet, setSheet] = useState(false); const desk = app.bp === "desktop";
+  function Nav() {
+    const app = useApp(); const [sheet, setSheet] = useState(false); const desk = app.bp === "desktop";
     const active = useActiveSection(SECTIONS.map(s => s[0]));
     const { scrollYProgress } = useScroll(); const reduce = useReducedMotion();
-    const signInItems = [
-      { label: "Sign in to", heading: true },
-      { label: "Find your workspace", icon: "search", onClick: onFind },
-      "-",
-      { label: "Smart-Clearance staff", icon: "shield", onClick: () => open(LINKS.console) },
-    ];
     return <header className="site-nav">
       <div className="nav-in">
         <a className="nav-brand" href="#top" aria-label="Smart-Clearance, back to the top"><span className="nav-mark"><Mark size={30} /></span><Wordmark size={16} /></a>
         {desk && <NavLinks active={active} />}
         <span className="nav-actions">
           <span className="nav-mode"><ModeMenuButton /></span>
-          <span className="nav-signin"><button type="button" className="nav-text" aria-haspopup="menu" aria-expanded={menu} onClick={() => setMenu(m => !m)}>Sign in</button><Menu open={menu} onClose={() => setMenu(false)} items={signInItems} width={268} label="Sign in to" /></span>
-          {app.bp !== "phone" ? <Button variant="primary" pill className="nav-demo" onClick={() => onDemo()}>Book a demo</Button> : <IconButton icon="menu" label="Menu" onClick={() => setSheet(true)} />}
+          <a className="nav-text" {...linkProps(LINKS.console)}>Console</a>
+          {app.bp !== "phone" ? <a className="btn btn-primary btn-pill nav-go" {...linkProps(LINKS.app)}>Workspace</a> : <IconButton icon="menu" label="Menu" onClick={() => setSheet(true)} />}
         </span>
       </div>
       <motion.span className="nav-progress" aria-hidden="true" style={{ scaleX: reduce ? 0 : scrollYProgress }} />
       <Sheet open={sheet} onClose={() => setSheet(false)} title="Smart-Clearance" side="bottom" detent="medium">
         <div className="stack">
           <div className="list">{SECTIONS.map(([id, t]) => <button type="button" key={id} className="list-row" onClick={() => { setSheet(false); setTimeout(() => goTo(id), 60); }}><span className="lr-main"><span className="lr-title">{t}</span></span><Icon name="chevron-right" size={18} className="chev" /></button>)}</div>
-          <Button variant="primary" size="lg" block onClick={() => { setSheet(false); onDemo(); }}>Book a demo</Button>
+          <a className="btn btn-primary btn-lg btn-block" {...linkProps(LINKS.app)} onClick={() => setSheet(false)}>Workspace</a>
+          <a className="btn btn-secondary btn-lg btn-block" {...linkProps(LINKS.console)} onClick={() => setSheet(false)}>Console</a>
         </div>
       </Sheet>
     </header>;
   }
 
-  /* ---------- 1. the first viewport: the journey through one day on film, under the heading (SC-111) ---------- */
-  // One film of four acts in one town, looping under its Pause control (WCAG 2.2.2): sunrise at the factory's bay, the
-  // brand and the distributor; a high sun at the community kitchen, the food bank; a violet dusk at the kirana lane
-  // and the staff-sale table; an indigo-violet night in the office, Paperwork; then dawn, and round. Four plates edited
-  // from the approved town plate, four LTX clips chained through quarter-second dissolves, 14.2 s. The light theme
-  // starts in the morning, the dark one at the night. The page's own camera leans in on each act's place; the film
+  /* ---------- 1. the first viewport: the journey through one day on film, live action, under the heading (SC-154) ---------- */
+  // One film of four chapters with real people (every one fictional, every pack unbranded, no client named), looping
+  // under its Pause control (WCAG 2.2.2): dawn at the factory's bay, the brand's planner and the distributor over the
+  // plan; a high sun at the godown's counter, a kirana owner collecting her crate; a violet dusk in the yard, the food
+  // bank's van and the staff-sale table; evening in the office, Paperwork and the chai. Four 8 s Veo 3.1 clips from
+  // Nano Banana keyframes, trimmed and chained through half-second dissolves, the tail dissolving into the head, about
+  // 15 s. Both themes start on the same frame. The page's own camera leans in on each chapter's subject; the film
   // drifts with the scroll, not the clock; the strip under the copy reads the chapters. The heading's last word turns
-  // once, through what a carton gets, and rests on "chance". Under reduced motion: the plate, the final word, the last
-  // chapter.
+  // once, through what a carton gets, and rests on "chance". Under reduced motion: the poster, the final word, the
+  // last chapter.
   const FOODBANK = M.CHANNELS.find(c => c.id === "foodbank");
   const CHAPTERS = [
-    { at: "09:00", who: "The brand and the distributor", t: `${fmt.num(N)} packs flagged; one yes, ${fmt.inr(D.PLAN.net)} on screen`, human: true },
-    { at: "13:00", who: "The food bank", t: `packs with ${FOODBANK.minDays}+ days left go as meals, on the FSSAI checklist` },
-    { at: "18:30", who: "The kiranas and the staff sale", t: `${SHOPS} shops order ${fmt.num(KL.units)} packs; the godown's own staff buy up to ${fmt.num(row("staff").capacity)}` },
-    { at: "22:00", who: "Paperwork", t: `the tax invoice and the credit note drafted; ${fmt.inr(D.PLAN.itcRetained)} of GST credit kept` },
+    { at: "06:30", who: "The brand and the distributor", t: `${fmt.num(N)} packs flagged; one yes, ${fmt.inr(D.PLAN.net)} on screen`, human: true },
+    { at: "11:00", who: "The kiranas", t: `${SHOPS} shops order ${fmt.num(KL.units)} packs, buy ${SCHEME.buy} get ${SCHEME.free} free` },
+    { at: "18:00", who: "The food bank and the staff sale", t: `packs with ${FOODBANK.minDays}+ days left go as meals; the godown's own staff buy up to ${fmt.num(row("staff").capacity)}` },
+    { at: "21:30", who: "Paperwork", t: `the tax invoice and the credit note drafted; ${fmt.inr(D.PLAN.itcRetained)} of GST credit kept` },
   ];
-  // the film: where each chapter begins (seconds), where the night starts, its frame, and where each act's place is
-  // on the plate, for the camera to lean on
-  const FILM = { src: "one-day.mp4", bounds: [0, 3.28, 6.84, 10.41], night: 10.5, ar: 1920 / 1088, lean: 1.5,
-    at: [{ x: 0.37, y: 0.67 }, { x: 0.575, y: 0.42 }, { x: 0.64, y: 0.66 }, { x: 0.14, y: 0.64 }] };
-  const POSTER = { day: "town-morning.webp", night: "town-night.webp" };
+  // the film: where each chapter begins (seconds), its frame, how far the page's camera leans, and where each
+  // chapter's subject is in the frame, for it to lean on
+  const FILM = { src: "one-journey.mp4", bounds: [0, 3.55, 7.35, 11.15], ar: 16 / 9, lean: 1.25,
+    at: [{ x: 0.62, y: 0.5 }, { x: 0.5, y: 0.55 }, { x: 0.72, y: 0.5 }, { x: 0.5, y: 0.5 }] };
+  const POSTER = { day: "hero-day.webp", night: "hero-night.webp" };
   // the posters' soft previews (SC-131): 48 px copies, under the film until its poster arrives
-  const PREVIEW = { day: "town-morning-preview.webp", night: "town-night-preview.webp" };
+  const PREVIEW = { day: "hero-day-preview.webp", night: "hero-night-preview.webp" };
   const WORDS = ["buyer", "shelf", "invoice", "ledger line", "chance"];
   // the film drifts with the scroll, not with the clock: a slow rise and a touch of scale as the page is read
   function useFilmDrift() {
@@ -197,9 +193,8 @@
     // the film waits for the loader to lift, so the first screen's files have the line to themselves (SC-131)
     const [go, setGo] = useState(() => !window.SC3_LOADER || !!window.SC3_LOADER.lifted);
     useEffect(() => { if (go) return; const f = () => setGo(true); window.addEventListener("sc3:loader-lifted", f); return () => window.removeEventListener("sc3:loader-lifted", f); }, [go]);
-    // the theme's own hour first: the morning by day, the night act in the dark
-    useEffect(() => { setPlaying(!reduce); const v = vid.current; if (v) { v.currentTime = night ? FILM.night : 0; if (!reduce && go) v.play().catch(() => {}); } }, [night, reduce, go]);
-    const onMeta = () => { const v = vid.current; if (v && night && v.currentTime < 0.5) v.currentTime = FILM.night; };
+    // both themes start on the same frame; the poster swaps with the theme
+    useEffect(() => { setPlaying(!reduce); const v = vid.current; if (v && !reduce && go) v.play().catch(() => {}); }, [night, reduce, go]);
     const toggle = () => { const v = vid.current; if (!v) return; if (playing) { v.pause(); setPlaying(false); } else { v.play(); setPlaying(true); } };
     const clk = useClock(vid, playing && !reduce, FILM.bounds);
     const cam = useLean(stage, FILM.at[clk.i], FILM.lean, FILM.ar, reduce);
@@ -207,7 +202,7 @@
       <motion.div className="film-media" aria-hidden="true" style={{ y: drift.y, scale: drift.scale }} ref={stage}>
         <motion.div className="film-lean" animate={cam} transition={{ duration: 1.8, ease: EASE }}>
           <img className="film-preview" src={IMG + (night ? PREVIEW.night : PREVIEW.day)} alt="" />
-          {reduce ? <img src={poster} alt="" /> : <video ref={vid} className="fx front" src={MEDIA + FILM.src} poster={poster} muted playsInline loop preload={go ? "auto" : "none"} onLoadedMetadata={onMeta} />}
+          {reduce ? <img src={poster} alt="" /> : <video ref={vid} className="fx front" src={MEDIA + FILM.src} poster={poster} muted playsInline loop preload={go ? "auto" : "none"} />}
         </motion.div>
         <div className="film-shade" />
       </motion.div>
@@ -503,9 +498,9 @@
   };
   const CONN = ["dms", "tally", "bq", "sso", "expiresoon", "irp", "whatsapp"].map(id => P.CONNECTORS.find(c => c.id === id)).filter(Boolean);
   const ADDR = [
-    { id: "brand", url: "your-brand.smartclearance.com", live: true },
-    { id: "company", url: "your-company.smartclearance.com" },
-    { id: "group", url: "your-group.smartclearance.com" },
+    { id: "brand", url: "your-brand-smartclearance.web.app", live: true },
+    { id: "company", url: "your-company-smartclearance.web.app" },
+    { id: "group", url: "your-group-smartclearance.web.app" },
   ];
   const YOURS = { id: "yours", name: "Your brand", mark: { from: "#2fbf7f", to: "#0d5a3e", ink: "#ffffff" } };
   function useTyped(text, on, ms = 70) {
@@ -560,12 +555,12 @@
       <div className="wsd-title"><h3>{team.t}</h3><p>{team.d}</p></div>
       <AnimatePresence mode="wait"><motion.div key={team.id} className="wsd-body" initial={reduce ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.28, ease: EASE }}><TeamScreen id={team.id} />{!phone && <TeamFeed id={team.id} />}</motion.div></AnimatePresence>
     </div>;
-    const url = `https://${host || "·"}.smartclearance.com/${team.route}`;
+    const url = `https://${host || "·"}-smartclearance.web.app/${team.route}`;
     return <section id="teams" className="sec sec-ws" aria-labelledby="ws-h">
       <div className="wrap"><header className="sec-head"><h2 id="ws-h" className="sec-h plain">Your own workspace, set up for your supply chain.</h2><p className="sec-sub">Each manufacturer gets its own address, configured for how its stock really moves.</p></header></div>
       <div className="wsd-stage" ref={ref}>
         <div className="wsd-ground" aria-hidden="true" />
-        {phone ? <div className="wsd-phone" style={{ height: 868 * ps }}><div className="wsd-phone-in" style={{ transform: `scale(${ps})` }}><PhoneFrame time="09:41"><div className="wsd phone"><div className="wsd-addr"><Icon name="lock" size={11} stroke={2.2} />{host || "·"}.smartclearance.com</div>{rail}{main}</div></PhoneFrame></div></div>
+        {phone ? <div className="wsd-phone" style={{ height: 868 * ps }}><div className="wsd-phone-in" style={{ transform: `scale(${ps})` }}><PhoneFrame time="09:41"><div className="wsd phone"><div className="wsd-addr"><Icon name="lock" size={11} stroke={2.2} />{host || "·"}-smartclearance.web.app</div>{rail}{main}</div></PhoneFrame></div></div>
           : <WindowFrame url={url} style={{ width: "100%" }}><div className="wsd">{rail}{main}</div></WindowFrame>}
       </div>
       <div className="wrap">
@@ -628,7 +623,7 @@
       setSent(req); setF(blank);
     };
     return <Sheet open={isOpen} onClose={onClose} title={plan ? `Talk to us about ${plan}` : "Book a demo"} side={app.bp === "phone" ? "bottom" : "center"} detent="large"
-      footer={sent ? <Button variant="primary" size="lg" block onClick={onClose}>Done</Button> : <Button variant="primary" size="lg" block icon="send" onClick={send}>Send request</Button>}>
+      footer={sent ? <Button variant="primary" size="lg" block onClick={onClose}>Done</Button> : <Button variant="primary" size="lg" block icon="send" busy="Sending…" onClick={send}>Send request</Button>}>
       {sent ? <div className="stack" style={{ justifyItems: "center", textAlign: "center", paddingTop: 8 }}>
         <span className="sd-done" aria-hidden="true"><Icon name="circle-check" size={36} /></span>
         <b className="t-title3">Thanks, {sent.name.split(" ")[0]}.</b>
@@ -659,7 +654,7 @@
     useEffect(() => { const f = () => setScrolled(window.scrollY > 40); f(); window.addEventListener("scroll", f, { passive: true }); return () => window.removeEventListener("scroll", f); }, []);
     const onDemo = plan => setDemo({ plan: typeof plan === "string" ? plan : null });
     return <div className={cx("site", scrolled && "scrolled")} id="top">
-      <Nav onFind={() => setFind(true)} onDemo={onDemo} />
+      <Nav />
       <main>
         <Hero onDemo={onDemo} />
         <Statement id="how" text="Short-dated stock that quick commerce sent back. Priced to every exit, the bin included. Sold in the days it has left." />

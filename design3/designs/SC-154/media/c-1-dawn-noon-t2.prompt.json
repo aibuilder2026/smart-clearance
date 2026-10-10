@@ -1,0 +1,44 @@
+{
+  "name": "c-1-dawn-noon-t2",
+  "model": "veo-3.1-fast-generate-001",
+  "location": "us-central1",
+  "service": "Vertex AI",
+  "prompt": "Photorealistic cinematic live action from a locked-off camera at the gate of an Indian distributor's godown yard, exactly as in the first image. Over the shot the dawn turns to midday: the sun climbs, the mist burns off, the shadows shorten and swing round, the sky goes from warm haze to clear pale blue. The woman in the navy kurta and the man in the checked shirt finish their handshake and walk toward the office door; the two workers carry the last cartons into the godown; the blue truck pulls out through the gate; two green-and-yellow autorickshaws roll in and park by the roller door, and a shopkeeper in a maroon saree carries a crate of colourful snack packets out of the godown. The buildings, the tree, the gate and the yard stay exactly where they are. The clip ends exactly on the last image. No camera movement, no zoom. No text, no logos, no lettering anywhere. Natural light, 35 mm, deep focus.",
+  "negative_prompt": "text, lettering, logo, brand name, label, watermark, subtitles, children",
+  "seed": 154102,
+  "enhance_prompt": true,
+  "resolution": "720p",
+  "aspect": "16:9",
+  "duration_s": 8,
+  "fps": 24,
+  "generate_audio": false,
+  "person_generation": "allow_adult",
+  "inputs": [
+    {
+      "role": "first",
+      "file": "C-k0-yard-dawn.png",
+      "sha256": "03158cc7a0fe964bc86745ec3e3b72590e7a9e653008e3d61c778ebf341be63f"
+    },
+    {
+      "role": "last",
+      "file": "C-k1-yard-noon.png",
+      "sha256": "ab311b3755d801c376f7de7c88ef3524ca75152cadcc538c086f1e153aa696d5"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.64,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-10",
+  "use": "SC-154 option C draft: the yard from dawn to noon (Veo 3.1 Fast, 720p, take 2)",
+  "status": "done",
+  "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-fast-generate-001/operations/64c8f129-e44f-4ed7-bc48-03f234cb91cf",
+  "latency_s": 68.0,
+  "rai_filtered": {
+    "count": 0,
+    "reasons": []
+  },
+  "files": [
+    "c-1-dawn-noon-t2.mp4"
+  ],
+  "probe": "{\n    \"programs\": [\n\n    ],\n    \"stream_groups\": [\n\n    ],\n    \"streams\": [\n        {\n            \"width\": 1280,\n            \"height\": 720,\n            \"r_frame_rate\": \"24/1\",\n            \"nb_frames\": \"192\"\n        }\n    ],\n    \"format\": {\n        \"duration\": \"8.000000\",\n        \"size\": \"4137872\"\n    }\n}"
+}

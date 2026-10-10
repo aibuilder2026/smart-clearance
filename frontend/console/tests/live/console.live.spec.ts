@@ -55,7 +55,9 @@ test('live · Book a demo on the landing page becomes a client in the console', 
 	const find = page.getByRole('dialog', { name: 'Find your workspace' });
 	await find.getByLabel('Email or mobile number').fill('priya.deshmukh@munchly.example');
 	await find.getByRole('button', { name: 'Find workspaces' }).click();
-	await expect(find.locator('.card').first()).toHaveText(/^\s*Munchly Foods\s*munchly\.smartclearance\.com\s*Open\s*$/);
+	await expect(find.locator('.card').first()).toHaveText(
+		/^\s*Munchly Foods\s*munchly-smartclearance\.web\.app\s*Open\s*$/
+	);
 	await page.keyboard.press('Escape');
 	await page.locator('.site-nav').getByRole('button', { name: 'Book a demo' }).click();
 	await page.getByLabel('Your name').fill('Ritu Malhotra');
@@ -116,7 +118,13 @@ test('live · Support may not change a plan', async ({ page }) => {
 	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Overview');
 	await page.goto(CONSOLE + '/clients/munchly/plan');
 	await page.getByRole('group', { name: 'Plan' }).getByRole('button', { name: 'Enterprise' }).click();
-	await expect(page.locator('.toast').last()).toHaveText("Only a Super admin can change a client's plan.");
+	// the plan puts itself back and says why beside the control (SC-152)
+	await expect(page.locator('.save-note.err')).toHaveText(
+		"Only a Super admin can change a client's plan. Put back as it was."
+	);
+	await expect(
+		page.getByRole('group', { name: 'Plan' }).getByRole('button', { name: 'Enterprise' })
+	).not.toHaveAttribute('aria-pressed', 'true');
 	await signOut(page);
 });
 
