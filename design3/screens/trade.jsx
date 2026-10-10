@@ -617,7 +617,7 @@
       <div className="stack tight">{w.rows.map(r => <PtLine key={r.k} k={r.k} sub={r.sub} v={fmt.inr(r.v)} onClick={r.paper && !story ? () => onPaper(r.paper) : null} />)}
         <div className="hairline" style={{ margin: "4px 0" }} />
         <PtLine k="What you receive" v={fmt.inr(w.recv)} strong />
-        <PtLine k="What you paid" sub={`${fmt.num(w.units)} × ₹${w.dp}, the van and the listing fee`} v={fmt.inr(-w.paid)} />
+        <PtLine k="What you paid" sub={w.extra ? `${fmt.num(w.units)} × ₹${w.dp}, the van, the listing fee, the GST you reverse and the agency's charges` : `${fmt.num(w.units)} × ₹${w.dp}, the van and the listing fee`} v={fmt.inr(-w.paid)} />
         <PtLine k="Your gain or loss" v={fmt.inr(w.gain)} strong /></div>
       <span className="t-caption subtle">Instead of waiting weeks for an expiry claim, with no claim paperwork.</span>
     </Card>;

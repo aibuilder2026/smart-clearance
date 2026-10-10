@@ -302,8 +302,36 @@ function docOf(d: WsDoc): Doc {
 		itc: opt(d.itc),
 		reversed: opt(d.reversed),
 		away: opt(d.away),
+		atGodown: opt(d.atGodown),
 		// every paper the Paperwork agent laid out has its PDF to download (SC-100, SC-121)
 		pdf: d.pdf,
+		// destroyed at his godown (SC-139): the expiry note's three lines, and the agency's certificate
+		...((d.id === 'expiry' || d.id === 'destruction') && (d.at === 'godown' || d.policy === 'godown')
+			? {
+					at: 'godown',
+					credit: d.credit ?? null,
+					gst: opt(d.gst),
+					charges: opt(d.charges),
+					reversal: d.reversal ?? null,
+					dp: opt(d.dp),
+					certificate: opt(d.certificate),
+					agency: opt(d.agency),
+					auth: opt(d.auth),
+					method: opt(d.method),
+					site: opt(d.site),
+					for: opt(d.for),
+					from: opt(d.from),
+					batch: opt(d.batch),
+					bestBefore: opt(d.bestBefore),
+					hsn: opt(d.hsn),
+					destroyedAt: opt(d.destroyedAt),
+					kg: opt(d.kg),
+					packKg: opt(d.packKg),
+					evidence: opt(d.evidence),
+					approvedBy: opt(d.approvedBy),
+					approvedAt: opt(d.approvedAt)
+				}
+			: {}),
 		// the food bank's receipt (SC-110)
 		...(d.id === 'receipt'
 			? {
