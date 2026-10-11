@@ -2058,4 +2058,24 @@
   - **Checks:** the frontend gate passes (core 276 with 3 new, api 79, workspace 97 with 2 new, admin 17, demo 5, console 3); the a11y spec scans the reading, its table and the card; the browser suites were not run.
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 
+- **SC-161** (In Review, branch `SC-161-chips-e2e-new-features`): Munchly Chips E2E checks what SC-139 to SC-157 built, and a recorded run, asked for by the maintainer ("run munchly chips happy path end to end journey flow, verify each and every step, especially the new features that developed").
+  - **The suite** (`frontend/workspace/tests/journey/features.ts`, called from `chips.ts` as the journey reaches each feature):
+    - the label photo's EAN-13 and QR code read back with Chromium's BarcodeDetector, and Vision's read (SC-147);
+    - Execution's ExpireSoon and Outreach cards, each at three states with its stops, the API call and the push behind their buttons (SC-151, SC-156);
+    - a tax invoice for every kirana order, the first shop's order page and invoice, the sales register, every PDF (SC-153);
+    - the issued invoice's e-invoice (its IRN worked out from the GSTIN and number), the GSTINs, the credit note against the dispatch invoice, "issued" in the pack (SC-148);
+    - nothing to destroy under the godown policy (SC-139);
+    - the Record, with the photo loader (SC-142, SC-144, SC-146), and Rakesh's Photos;
+    - Rakesh's effective prices and sums on Orders and Batches (SC-141, SC-145);
+    - the Impact dashboard and the Command Center's card (SC-157);
+    - the console's Food by day and Munchly's web.app address (SC-149, SC-150);
+    - every button the run presses, watched as it waits (SC-152).
+
+    Three new steps: `record`, `impact` and `console` (20 in all).
+  - **The run of 11 Oct** (`runs/2026-10-11/REPORT.md`; the 8 min 46 s recording local): passed in 8 min 45 s, 99 steps, from a reset, every figure the story's. Four shorter runs before it stopped on the new checks' own selectors; no app code changed.
+  - **Findings, not fixed:**
+    - Rakesh's sums on Orders and Batches leave out the chips once they clear ("the batch still in a journey"), as design3's `ledger.js` does (offered as a separate task);
+    - the kirana's order button tells a screen reader "Working" and "Done", its Hindi words being snippets.
+  - **Checks:** the frontend gate passes (core 288, api 79, workspace 104, admin 17, console 8, demo 5). The day is back at 24 hours.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

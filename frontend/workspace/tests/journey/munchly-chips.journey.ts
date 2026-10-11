@@ -1,6 +1,7 @@
 import { test } from '@playwright/test';
 import { mint } from './auth.ts';
 import { CHIPS, HERO, PEOPLE } from './chips.ts';
+import { buttonsReport, watchButtons } from './features.ts';
 import { begin } from './flow.ts';
 import { Run } from './record.ts';
 
@@ -25,6 +26,8 @@ test('Munchly Chips E2E: the Masala Chips batch, end to end, every person in the
 	run = new Run(page, info);
 	begin(run, HERO);
 	mint(PEOPLE);
+	// every button the run presses, as it waits and once it is done (SC-152)
+	await watchButtons(page);
 	const from = process.env.E2E_FROM ? STEPS.findIndex((s) => s.id === process.env.E2E_FROM) : 0;
 	const to = process.env.E2E_UNTIL ? STEPS.findIndex((s) => s.id === process.env.E2E_UNTIL) : STEPS.length - 1;
 	let error: string | undefined;
@@ -37,6 +40,7 @@ test('Munchly Chips E2E: the Masala Chips batch, end to end, every person in the
 		error = (e as Error).message;
 		throw e;
 	} finally {
+		buttonsReport();
 		const md = run.write(error ? 'failed' : 'passed', error);
 		await info.attach('report.md', { body: md, contentType: 'text/markdown' });
 	}

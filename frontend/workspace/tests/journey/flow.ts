@@ -23,10 +23,37 @@ export type Member = { id: string; name: string; role: string };
 export type Case = {
 	journey: {
 		phase: string;
-		photo: { status: string };
+		photo: {
+			status: string;
+			/** what Vision read from the label (SC-147: the statutory sticker) */
+			read?: {
+				batch: string | null;
+				mfg: string | null;
+				bestBefore: string | null;
+				mrp: number | null;
+				matches: boolean;
+			} | null;
+		};
 		listing: { id: string; status: string; units: number; price: number } | null;
 		offer: { status: string; shops: number } | null;
-		orders: { units: number; by?: string }[];
+		/** each shop's order, with the tax invoice its distributor issued it (SC-153) */
+		orders: {
+			id?: string;
+			units: number;
+			by?: string;
+			invoice?: {
+				no: string;
+				kirana: string;
+				shop: { id: string; name: string };
+				units: number;
+				taxable: number;
+				cgst: number;
+				sgst: number;
+				tax: number;
+				total: number;
+				pdf: boolean;
+			} | null;
+		}[];
 		bids: { id: string; status: string; price: number; counter?: number }[];
 		award: { units: number; price: number; token: number } | null;
 		truck: { status: string };
