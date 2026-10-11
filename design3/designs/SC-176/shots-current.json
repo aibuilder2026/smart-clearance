@@ -1,0 +1,30 @@
+[
+ {
+  "url": "http://127.0.0.1:8796/app/Smart-Clearance%20app%20v3.html?state=live&shot=1",
+  "out": "current/command-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200
+ },
+ {
+  "url": "http://127.0.0.1:8796/app/Smart-Clearance%20app%20v3.html?state=live&shot=1&r=1",
+  "out": "current/command-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2200
+ },
+ {
+  "url": "http://127.0.0.1:8796/app/Smart-Clearance%20app%20v3.html?state=live&shot=1",
+  "out": "current/command-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2200
+ },
+ {
+  "url": "http://127.0.0.1:8796/app/Smart-Clearance%20app%20v3.html?state=route-switch&shot=1",
+  "out": "current/route-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200
+ }
+]
