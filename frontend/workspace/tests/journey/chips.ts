@@ -1,7 +1,28 @@
 import { expect } from '@playwright/test';
 import type { WsPartner } from '@smart-clearance/api/workspace';
 import { api } from './auth.ts';
-import { esgStep, norm, posted, taxStep, type TaxEsg } from './ledger.ts';
+import {
+	consoleAddress,
+	consoleFood,
+	creditNote,
+	impactDashboard,
+	invoicesOf,
+	issuedInvoice,
+	kiranaInvoices,
+	kiranaOrderPage,
+	kiranaPdf,
+	labelCodes,
+	listerCard,
+	packStatus,
+	photosLoaded,
+	record,
+	salesRegister,
+	schemeCard,
+	sumAddsUp,
+	sumCard,
+	visionRead
+} from './features.ts';
+import { esgStep, kgOf, norm, posted, taxStep, type TaxEsg } from './ledger.ts';
 import {
 	AGENT_WAIT,
 	as,
@@ -25,6 +46,8 @@ import {
 // E2E_DAY_MINUTES (60, Rehearsal): the journey day the reset starts; a 48-hour offer is open 2 hours of real time.
 
 export const HERO = 'MF-2409-117';
+/** the label photo Rakesh sends: the story's own, with the statutory sticker (SC-147) */
+const LABEL = new URL('../../../../agents/evals/vision/images/story-clean.webp', import.meta.url).pathname;
 const DAY_MINUTES = Number(process.env.E2E_DAY_MINUTES ?? 60);
 const PRESETS: Record<number, RegExp> = { 1440: /Real time/, 60: /Rehearsal/, 5: /Demo/, 1: /Fast/ };
 // the story's kiranas for Rakesh's cluster: their own orders fill the scheme to the packet
@@ -152,15 +175,50 @@ export function distributorStep(): Step {
 
 			// Orders: who bought what, for how much, on which paper
 			await as(page, 'rakesh', '/orders', 'reads his orders, batch by batch, with the paper each sold on');
-			await expect(main).toContainText('sold from Munchly');
-			shows('His orders', await text(), [
+			await expect(main).toContainText("what sold from each of Munchly's batches");
+			const orders = await text();
+			shows('His orders', orders, [
 				`lot ${c.journey.listing?.id} · 772 × ₹14.20`,
 				...(invoice ? [`${invoice.no} issued from Tally`] : []),
-				'31 kiranas · 588 packets at ₹21.60, 2 free with every 10',
 				'₹10,962',
 				'₹10,584'
 			]);
+			// the scheme's row at what each packet came to (SC-141), on its 31 tax invoices (SC-153)
+			shows('His orders: the scheme row (SC-141, SC-153)', orders, [
+				'588 packets at ₹18.00 effective (₹21.60 a pack, 2 free with every 10)',
+				'RT/26-27/1279 to 1309',
+				'31 tax invoices',
+				'GST collected'
+			]);
+			sumAddsUp('Orders: a cleared batch', orders);
+			// the chips have cleared, but the sum keeps them as a batch in a journey, as design3's prototype does (its
+			// sums are the history's): a reader sees "Cleared" on the row and "still in a journey" in the sum
+			if (/still in a journey joins the sum once it clears/.test(orders) && mine.cleared)
+				running().find(
+					'warning',
+					'/orders',
+					`${HERO} cleared on ${mine.cleared}, but Orders' sum still counts it as "the batch still in a journey" and leaves it out (its row reads Cleared); Batches likewise`
+				);
 			await running().done('Orders: the lot and the scheme, each on its paper');
+			await sumCard(page, 'Orders', 'Orders');
+			await page.locator('.pt-sum').scrollIntoViewIfNeeded();
+			await running().done('Orders: how his cleared batches add up');
+
+			// Batches: the same sum, from the credit's side (SC-145)
+			await as(page, 'rakesh', '/batches', 'reads his batches: how the cleared ones add up');
+			await sumCard(page, 'Batches', 'Batches');
+			const batches = await text();
+			sumAddsUp('Batches: a cleared batch', batches);
+			shows('Batches: the chips cleared', batches, [HERO, 'Masala Chips']);
+			await running().done('Batches: how his cleared batches add up');
+
+			// the photos he sent for the chips, on the batch's page (SC-142), loaded (SC-144, SC-146)
+			await as(page, 'rakesh', `/batches/${HERO}`, 'reads the photos he sent for the chips');
+			await page.locator('.bh-tabs').getByRole('button', { name: 'Photos' }).click();
+			await expect(main).toContainText('Vision read');
+			await photosLoaded('His Photos tab', main);
+			shows('His Photos tab (SC-142)', await text(), ['Label photo', `Vision read`, HERO, 'Matches the export']);
+			await running().done('His batch: the label photo he sent, and what Vision read');
 
 			// Deliveries: the round delivered, the truck collected, then the earlier ones
 			await as(page, 'rakesh', `/van/${HERO}`, "reads the chips' deliveries, then the earlier ones");
@@ -204,6 +262,7 @@ export const CHIPS: Step[] = [
 				'After Setup is confirmed'
 			);
 			await running().done('Journey reset to day 0, 08:00');
+			await consoleAddress(page);
 		}
 	},
 	{
@@ -268,13 +327,14 @@ export const CHIPS: Step[] = [
 		async run(page) {
 			await as(page, 'rakesh', `/photo/${HERO}`, 'uploads the label photo from the godown');
 			await expect(page.getByRole('button', { name: 'Upload a photo' })).toBeVisible();
-			await page
-				.locator('input[type=file]:not([capture])')
-				.setInputFiles(new URL('../../../../agents/evals/vision/images/story-clean.webp', import.meta.url).pathname);
+			// the sticker's codes, read back from the very file he sends (SC-147)
+			await labelCodes(page, LABEL);
+			await page.locator('input[type=file]:not([capture])').setInputFiles(LABEL);
 			await running().done('The label photo chosen');
 			await page.getByRole('button', { name: 'Send photo' }).click();
 			await expect(page.getByText(/Dhanyavaad/)).toBeVisible({ timeout: AGENT_WAIT });
 			await running().done('Vision read the label');
+			visionRead(await until('Vision has read the label', 'priya', (c) => !!c.journey.photo.read, 60_000));
 		}
 	},
 	{
@@ -315,6 +375,8 @@ export const CHIPS: Step[] = [
 			story('ExpireSoon lot', `${c.journey.listing?.units} packs at ₹${c.journey.listing?.price}`, '772 packs at ₹15');
 			await as(page, 'priya', `/execution/${HERO}`, 'watches the agents carry out the plan');
 			await running().done('Execution: the lot listed, the scheme sent');
+			await listerCard(page, c, 'live');
+			await schemeCard(page, c, 'open');
 		}
 	},
 	{
@@ -324,13 +386,28 @@ export const CHIPS: Step[] = [
 			for (const [i, k] of KIRANAS.entries()) {
 				await as(page, k.member, `/offer/${HERO}`, `orders ${k.orders} packets (${i + 1} of ${KIRANAS.length})`);
 				const order = page.getByRole('button', { name: new RegExp(`· ${k.orders} packets`) });
-				if (!(await order.isVisible().catch(() => false)) && (await page.getByText(/ऑर्डर हो गया|Ordered/).count())) {
+				// placed, the screen reads the order on its way (SC-130), once it has gone through (SC-152)
+				const placed = page.getByText(/ऑर्डर हो गया|Ordered · \d+/).first();
+				if (!(await order.isVisible().catch(() => false)) && (await placed.count())) {
 					running().find('note', `/offer/${HERO}`, `${k.name} had already ordered`);
-					continue;
+				} else {
+					await order.click();
+					await expect(placed).toBeVisible();
+					await running().done(`${k.name} ordered ${k.orders} packets`);
 				}
-				await order.click();
-				await expect(page.getByText(/ऑर्डर हो गया/).first()).toBeVisible();
-				await running().done(`${k.name} ordered ${k.orders} packets`);
+				if (i === 0) {
+					// Rakesh Traders' tax invoice for the order, issued as the shop ordered (SC-153)
+					const mine = await until(`${k.name}'s order has its tax invoice`, 'priya', (c) =>
+						c.journey.orders.some((o) => o.id === k.id && !!o.invoice)
+					);
+					const inv = mine.journey.orders.find((o) => o.id === k.id)!.invoice!;
+					story(
+						`${k.name}'s invoice (SC-153)`,
+						`${inv.no}, ${inv.units} packets, ₹${inv.total}`,
+						'RT/26-27/1279, 24 packets, ₹454'
+					);
+					await kiranaOrderPage(page, k.member, inv);
+				}
 			}
 			const c = await until(
 				'the scheme fills and closes',
@@ -343,6 +420,9 @@ export const CHIPS: Step[] = [
 				`${c.journey.orders.length} shops, ${c.journey.orders.reduce((t, o) => t + o.units, 0)} packets`,
 				'31 shops, 588 packets'
 			);
+			kiranaInvoices(c);
+			await as(page, 'priya', `/execution/${HERO}`, 'sees the scheme filled on Execution');
+			await schemeCard(page, c, 'filled');
 		}
 	},
 	{
@@ -378,6 +458,8 @@ export const CHIPS: Step[] = [
 				'Invoice total ₹11,510.00'
 			);
 			await running().done('Agrawal took the counter and paid the token');
+			await as(page, 'priya', `/execution/${HERO}`, 'sees the lot won on Execution');
+			await listerCard(page, c, 'awarded');
 		}
 	},
 	{
@@ -452,8 +534,15 @@ export const CHIPS: Step[] = [
 					running().find('warning', `/paperwork/${HERO}`, `no card for the paper "${d.type}"`);
 					continue;
 				}
+				const status = await packStatus(page, d.type);
 				await card.click();
 				await page.waitForTimeout(600);
+				if (d.id === 'invoice') {
+					// issued from Tally, so issued in the pack, with its e-invoice (SC-148)
+					story("Tax invoice in Priya's pack (SC-148)", /\bissued\b/.test(status) ? 'issued' : status, 'issued');
+					await issuedInvoice(page, d.no);
+				}
+				if (d.id === 'support') await creditNote(page);
 				if (d.id === 'fssai' && d.status === 'not required') {
 					// a batch with no donation names no batch as donated (SC-98)
 					const paper = (await page.locator('#main').innerText()).replace(/\s+/g, ' ');
@@ -465,13 +554,22 @@ export const CHIPS: Step[] = [
 				}
 				await running().done(`Paper: ${d.type}${d.no ? ` ${d.no}` : ''}`);
 			}
-			// what Rakesh issued from Tally, as Priya reads it
-			if (c.journey.invoiceIssued && c.docs.some((d) => d.id === 'invoice' && d.status === 'drafted'))
-				running().find(
-					'note',
-					`/paperwork/${HERO}`,
-					`the tax invoice still reads "drafted" in Priya's pack after Rakesh issued it from Tally (as in the prototype)`
-				);
+			// the kiranas' tax invoices in the pack, as the sales register, each with its PDF (SC-153)
+			const kiranas = invoicesOf(c);
+			await salesRegister(page, kiranas);
+			const laid = await until(
+				'Paperwork lays out every kirana invoice',
+				'priya',
+				(c) => c.journey.orders.every((o) => o.invoice?.pdf),
+				3 * 60_000
+			).catch(() => null);
+			const withPdf = (laid ?? (await caseAs('priya'))!).journey.orders.filter((o) => o.invoice?.pdf).length;
+			story(
+				'Kirana invoices with their PDF (SC-153)',
+				`${withPdf} of ${kiranas.length}`,
+				`${kiranas.length} of ${kiranas.length}`
+			);
+			if (kiranas[0]) await kiranaPdf(kiranas[0]);
 			await page.getByRole('button', { name: 'Mark reviewed' }).click();
 			await expect(page.getByText('reviewed', { exact: true })).toBeVisible();
 			await until('the review is recorded', 'priya', (c) => c.journey.reviewed, 30_000);
@@ -497,6 +595,16 @@ export const CHIPS: Step[] = [
 			const c = await until('Impact posts the ledger', 'priya', (c) => c.journey.posted);
 			story('Actual net', c.actual?.net, 21152.4);
 			story('Left at the godown', c.realised?.godown, 0);
+			running().figure("Munchly's expiry policy", c.expiry?.policy ?? '(no settlement)');
+			story(
+				'Packs to destroy at the godown (SC-139)',
+				c.destruction
+					? `${c.destruction.units} packs, ${c.destruction.status}`
+					: c.expiry?.units
+						? `${c.expiry.units} packs`
+						: 'none',
+				'none'
+			);
 			running().figure('Phase after the report', c.journey.phase);
 			for (const d of c.docs) running().figure(`Paper: ${d.type}`, `${d.no || '—'} (${d.status})`);
 			await running().done('Impact posted the ledger');
@@ -504,6 +612,19 @@ export const CHIPS: Step[] = [
 	},
 	taxStep(CHIPS_TAX_ESG),
 	esgStep(CHIPS_TAX_ESG),
+	{
+		id: 'record',
+		title: "Priya reads the batch's Record: the photos sent for it, the audit trail, the yeses",
+		run: (page) => record(page)
+	},
+	{
+		id: 'impact',
+		title: "Priya reads the Impact dashboard and the Command Center's Impact card",
+		async run(page) {
+			const { q } = await posted();
+			await impactDashboard(page, kgOf(q.totals.kg), kgOf(q.totals.co2), q.label);
+		}
+	},
 	distributorStep(),
 	{
 		id: 'close',
@@ -513,9 +634,20 @@ export const CHIPS: Step[] = [
 			await running().done("The ledger: the batch's money");
 			await as(page, 'priya', `/execution/${HERO}`, 'sees the batch through on Execution');
 			await running().done('Execution: every line done');
+			const c = (await caseAs('priya'))!;
+			await listerCard(page, c, 'collected');
+			await schemeCard(page, c, 'delivered');
 			await sidebar(page, 'Command Center').click();
 			await page.waitForTimeout(800);
 			await running().done('Command Center at the end');
+		}
+	},
+	{
+		id: 'console',
+		title: "Neha reads the console's Overview: Food, by day, across every client",
+		async run(page) {
+			await staff(page, '/', 'reads the Overview: food kept out of landfill and destroyed, by day');
+			await consoleFood(page);
 		}
 	}
 ];
