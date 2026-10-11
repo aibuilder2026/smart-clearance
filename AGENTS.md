@@ -41,6 +41,9 @@ The production code starts in `frontend/` (SC-27): design system v3 in Svelte, t
 cd design3 && ./build.sh            # compile every .jsx to the .js beside it (esbuild); run after any edit
 cd design3 && ./dist.sh             # bundle the hosted build into design3/dist/
 python3 design3/system/labels/make.py labels   # every Munchly batch's label photo (SC-147), printed onto its base, each code read back
+python3 design3/system/signatures/make.py signatures   # every signatory's specimen signature, keyed from its Qwen scan (SC-174)
+node design3/system/signatures/seals.mjs        # every firm's rubber stamp and round seal, drawn
+node design3/system/receipts/make.mjs          # every staff sale's consolidated receipt, printed onto its desk photo (SC-174)
 python3 -m http.server 8787 --directory design3   # serve the demo, app and design system locally
 ```
 
@@ -246,6 +249,9 @@ Local pages:
   - The one exception is the demo film (SC-164): SC-158's film shows Munchly's journey, and the landing page plays it only when Watch is pressed, from YouTube (unlisted, no-cookie), under a poster that names no client. Its chapters and captions are read only when the theatre opens, so the page's own text still names none.
 - Every generated image or clip ships with a `.prompt.json` sidecar recording its model, seed, prompt and post-processing. PNG originals stay local in `src/` folders; only the WebP ships.
 - Every carton label photo comes from the label maker, `design3/system/labels/` (SC-147): the full statutory sticker, its batch, dates and MRP as the batch's record has them, a GS1 barcode and the batch's QR code (fictional numbers, a `.example` domain) and the FSSAI licence, printed onto a Qwen-Image base photo, every code read back before it ships. Vision's eval set is made by the same maker (`agents/evals/vision/plan.py`).
+- Every paper is signed (SC-174): the firm's signatory's specimen signature over its stamp (a distributor's rectangular rubber stamp, Munchly's and an agency's round seal), from the signature maker, `design3/system/signatures/` (Qwen-Image scans of each name in ballpoint, keyed to their ink; the stamps drawn). The people are fictional, and so are their signatures. A real organisation's paper (a food bank's receipt) is never signed.
+- A staff sale records on its consolidated receipt (SC-174): the distributor sends one receipt listing every staff payment by its UPI reference (fictional, `6275…`), Vision reads it, and the sale records only once its payments come to what sold. The history's and the stories' receipts are printed by the receipt maker, `design3/system/receipts/`, onto a Qwen-Image photo of a sheet on a desk.
+- The certificate of destruction states in full what the rules ask (SC-174): the goods, batch, packs and kilos; the reason; the agency's method and facility; the day and the window; its supervising officer and two independent witnesses, each signing; and the log from the godown to the cover (`papers.js` `destructionLog`, `domain/papers.py`).
 - Vertex AI's models (Veo 3.1 for clips, the Gemini image models for keyframes) are run through `design3/tools/vertex-media/`, whose scripts write the sidecars themselves and price every call before it is made (SC-154). Generation costs money, so a design round and a build each start with the maintainer's yes on a figure, and `cost.py` reports the spend against it.
 - Third-party Claude Code components are recorded in `.claude/third-party.md`. Read a component before using it; installing one needs the maintainer's yes.
 
