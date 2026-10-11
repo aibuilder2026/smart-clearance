@@ -2271,20 +2271,20 @@
   - **The document,** 21 sections: the system; the surfaces; every Google Cloud service with what it does and why (and why not Firestore); versions from the lockfiles; the core loop and a batch's journey stop by stop, the case's phases and the destruction at the godown (Mermaid); the agents (modules, events to pipelines, the two Gemini tiers, the guardrails, the evals); backend-api's routers, contexts and journey services; the outbox, the tick, the timers, SSE and FCM; the data (two ERDs, migrations 0001 to 0015, BigQuery, the buckets); the frontend's seven packages and its stub and live sources; design3; identity and the roles; the cloud runtime and Terraform's files; delivery; local development; testing; one trace from the browser to Gemini; accessibility; decisions; known gaps; and the diagrams' sources with how to refresh them. Mermaid draws only what Lucid does not.
   - **Found on the way, listed in its known gaps:** `monitoring.tf` describes the model timeout as 20 s where the code gives 30 s; the agents' `sc-agents-harvest` entry point names a module that does not exist; the Data eval summary predates the shelf cases' removal.
   - **Checks:** the ten Mermaid diagrams parse and render with Mermaid 11.4; every relative link and anchor resolves; all twelve images are used. README's and AGENTS.md's pointers follow.
-- **SC-172** (epic): papers as evidence. The staff sale's consolidated receipt, the certificate of destruction in full, and a signature on every paper, for past and current batches, then production synced.
+- **SC-172** (epic, done): papers as evidence. The staff sale's consolidated receipt, the certificate of destruction in full, and a signature on every paper, for past and current batches, then production synced.
   - **The request (11 Oct):**
     - "Can we somehow track receipts given to Staff sale, they will be needed for paperwork evidence": the distributor uploads one consolidated receipt for the staff sale, with UPI payment ids;
     - the certificate of destruction to carry the description, batch numbers, the exact quantity and weight, the reason, the approved method, the date, time and authorised facility, and the signatures of the supervising officer and two independent witnesses ("can be faked");
     - "none of the GST invoices, credit note and price support note has signatures";
     - "old past batches and current batches to be fixed … and then local and production storage and database be synced".
   - **The stories:** SC-173 (the design round), SC-174 (the build), SC-175 (production's sync), stacked in that order.
-- **SC-173** (In Review, branch `SC-173-papers-evidence-design`): the design round, on one board in app v3, `SC-173 design review.html`, each option drawn on the real screens and papers:
+- **SC-173** (PR #158, merged): the design round, on one board in app v3, `SC-173 design review.html`, each option drawn on the real screens and papers:
   - the staff sale's receipt: A, with the count (recommended); B, a step of its own; C, the payments are the count;
   - the certificate: A, one page, numbered (recommended); B, the certificate and its log;
   - the signatures: A, ink and the firm's stamp (recommended); B, digitally signed.
 
   The maintainer picked **A**, **B** and **A**, and kept the signatories' names. Designs, the trial signatures, stills and the decision are in `design3/designs/SC-173/`.
-- **SC-174** (In Review, branch `SC-174-papers-evidence`, stacked on SC-173): the build, design3 first, then backend-api, the agents and the frontend.
+- **SC-174** (PR #159, merged; deployed by CI): the build, design3 first, then backend-api, the agents and the frontend.
   - **The staff sale's receipt (A, with the count):**
     - the distributor's Staff sale card takes one consolidated receipt beside the count, a photo or a PDF under 8 MB (Take a photo, Upload): every staff payment by its UPI reference, from his books or his UPI app's statement;
     - Vision reads it on Gemini (`vision_staff_receipt.txt`): its number and date, each payment's reference, payer, time and amount, the total;
@@ -2317,9 +2317,13 @@
     - the browser suites were not run (SC-55).
   - **Locally:** rebuilt with `hydrate.sh --reset`, then `--papers munchly --again`: Paperwork laid out every history paper afresh with its signature, the three certificates on two pages, and the 214 kirana invoices. Both history receipts read and matched; every paper has its PDF. The day is 24 hours.
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
-- **SC-175** (To Do): production's data replaced with local's after SC-174 (the database, the photos and docs buckets, BigQuery), once SC-174 is merged and deployed, while infra's `data_sync_until` (12 Oct, 12:00 UTC) allows.
+- **SC-175** (done): production's data replaced with local's after SC-174 (`backend-api/scripts/sync.sh`, SC-136), on the maintainer's yes, once #158 to #161 were merged and CI had deployed SC-174.
+  - **Before it:** Munchly's local journey was reset to day 0 on 24-hour days, as for SC-160, keeping the pilot quarter's history; no paper lacked its PDF; the rehearsal copied 8,769 rows, every table equal.
+  - **Applied (11 Oct):** the on-demand backup `1791753533423` (21:18 UTC), the database (8,769 rows, every table equal), the photos, docs and exports buckets, and BigQuery's seven tables.
+  - **Read back through production's API:** MF-2406-109's receipt LA/SR/26-27/0001 (read, ₹3,300, 24 UPI payments, its photo); MF-2407-111's certificate OCE/DC/26-27/0217 with its window and witnesses, and its PDF, the tax invoice's and the expiry credit note's; the journey at day 0 on 24-hour days.
+  - **Replaced with it,** kept in the backup: a real Book a demo request sent from the live landing page on 11 Oct (it looks like a test), one device registered for pushes, and production's own journey activity since SC-160.
 
-- **SC-179** (In Review, branch `SC-179-chips-sad-path`, stacked on SC-174): Munchly Chips Sad Path E2E, a journey suite on three screens at once, recorded as one video, asked for by the maintainer.
+- **SC-179** (PR #160, merged): Munchly Chips Sad Path E2E, a journey suite on three screens at once, recorded as one video, asked for by the maintainer.
   - **The request:** "Munchly Chip E2E sad path on local wherein only 2 kiranas will buy and rest will decline, resulting in destruction", shown live with "3 browsers open side by side": the supply chain operator on a laptop and the distributor on a tablet, staying signed in throughout, and kiranas and the others signing in on a phone as needed; the whole session recorded "with all three screens open and seen".
   - **The maintainer's second take:** both tablets in landscape; the clicks shown; the certificate's signing, the photos' validation, the kiranas' invoices and the Impact screens read on screen; every screen fully loaded, Priya and Rakesh always online.
   - **The stage** (`tests/journey/stage.ts`):
@@ -2352,7 +2356,7 @@
     - the case does not expose the scheme's shortfall.
   - **Checks:** the frontend gate passes (core 382, api 83, workspace 109, admin 22, demo 9, console 2). The day is back at 24 hours.
 
-- **SC-180** (In Review, branch `SC-180-evidence-photos-while-checked`, stacked on SC-179; bug found by Munchly Chips Sad Path E2E): the distributor's destruction photos while Vision checks them, and a photo that blinked on every read.
+- **SC-180** (PR #161, merged; bug found by Munchly Chips Sad Path E2E): the distributor's destruction photos while Vision checks them, and a photo that blinked on every read.
   - **Found:** on Rakesh's tablet, "Vision is checking your photos" sat over two black frames until the check was done; and every read of a case reloaded a photo already on screen under its placeholder.
   - **The causes:**
     - the destruction screen reads the evidence from his partner facts, which the live source read again only on a stream event, so they still held the destruction as asked, with no photos;
